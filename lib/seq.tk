@@ -1,12 +1,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/09/19 15:43:39  jussi
+#	Minor refinements.
+#
 #	Revision 1.1  1995/09/12 22:42:09  jussi
 #	Initial revision of archive.
 
 ############################################################
 
-set seq_host  quarg.cs.wisc.edu
+set seq_host  $env(HOSTNAME)
 set seq_port  1515
 set seq_path  /tmp
 set seq_query ""
@@ -22,7 +25,7 @@ proc seqMain {} {
 
     # see if .seq window already exists; if so, just return
     set err [catch {set exists [wm state .seq]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .seq; return }
 
     toplevel .seq
     wm maxsize .seq 1000 1000

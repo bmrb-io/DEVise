@@ -1,6 +1,8 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/09/05 22:47:56  jussi
+#	Added/updated CVS header.
 
 proc dialog {w title text bitmap default args} {
 	global button
@@ -23,7 +25,8 @@ proc dialog {w title text bitmap default args} {
 	set txtHeight [LineHeight $text]
 #   puts "dialog width $txtWidth height $txtHeight"
 	text $w.top.msg -font -*-*-medium-r-normal-*-140-*-*-m-* \
-		-width $txtWidth -height $txtHeight 
+		-width $txtWidth -height $txtHeight \
+		-relief flat
 	$w.top.msg insert end $text
 	$w.top.msg configure -state disabled
 #	message $w.top.msg -width 3i -text $text\

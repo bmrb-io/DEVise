@@ -1,6 +1,8 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/09/05 22:47:53  jussi
+#	Added/updated CVS header.
 
 # Program: template
 # Description: file selector box
@@ -334,8 +336,8 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
   FSBoxFSShow $fsBox(internalPath) $fsBox(pattern) $fsBox(all)
 
   # bindings
-  bind .fsBox.files.files <Double-Button-1> "
-    FSBoxFSFileSelectDouble %W $fsBox(showPixmap) \{$fsBoxActionOk\} %y"
+#  bind .fsBox.files.files <Double-Button-1> "
+#    FSBoxFSFileSelectDouble %W $fsBox(showPixmap) \{$fsBoxActionOk\} %y"
   bind .fsBox.files.files <ButtonPress-1> "
     FSBoxFSFileSelect %W $fsBox(showPixmap) %y"
   bind .fsBox.files.files <Button1-Motion> "
@@ -441,7 +443,7 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
 
   if {"$fsBoxActionOk" == "" && "$fsBoxActionCancel" == ""} {
     # wait for the box to be destroyed
-    update idletask
+    tkwait visibility .fsBox
     grab .fsBox
     tkwait window .fsBox
 
@@ -876,8 +878,9 @@ proc FSBoxBindSelectOne {fsBoxW fsBoxY} {# xf ignore me 6
 
   set fsBoxNearest [$fsBoxW nearest $fsBoxY]
   if {$fsBoxNearest >= 0} {
-    $fsBoxW select from $fsBoxNearest
-    $fsBoxW select to $fsBoxNearest
+#    $fsBoxW select from $fsBoxNearest
+#    $fsBoxW select to $fsBoxNearest
+    $fsBoxW get $fsBoxNearest
   }
 }
 

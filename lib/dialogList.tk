@@ -1,6 +1,8 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/09/05 22:47:58  jussi
+#	Added/updated CVS header.
 
 # dialog box with item lists
 #	sort == 1 to sort all items
@@ -38,7 +40,8 @@ proc dialogList { w title text bitmap default args items {sort 1 } } {
 	set txtWidth [LineWidth $text]
 	set txtHeight [LineHeight $text]
 	text $w.top.msg -width $txtWidth -height $txtHeight \
-			-font -*-*-medium-r-normal-*-140-*-*-m-*
+		-font -*-*-medium-r-normal-*-140-*-*-m-* \
+		-relief flat
 	$w.top.msg insert end $text
 	$w.top.msg configure -state disabled
 	#	message $w.top.msg -width 3i -text $text\
@@ -51,10 +54,8 @@ proc dialogList { w title text bitmap default args items {sort 1 } } {
 	}
 
 	# Create a list box for items
-	set widthFormat [format {%sx10} $listWidth]
 	listbox $w.list -relief raised -yscrollcommand "$w.scroll set" \
-		-geometry $widthFormat
-	tk_listboxSingleSelect $w.list
+		-width $listWidth -selectmode single
 	scrollbar $w.scroll -command "$w.list yview"
 	pack $w.list -in $w.listFrame -side left -fill x -expand 1
 	pack $w.scroll -in $w.listFrame -side right -fill y
@@ -64,8 +65,7 @@ proc dialogList { w title text bitmap default args items {sort 1 } } {
 	foreach i $items {
 		$w.list insert end $i
 	}
-	$w.list select from 0
-
+	$w.list selection set 0
 
 	# 3. Create a row of buttons at the bottom of the dialog.
 

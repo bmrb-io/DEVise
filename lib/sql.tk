@@ -1,12 +1,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/09/19 15:43:40  jussi
+#	Minor refinements.
+#
 #	Revision 1.1  1995/09/13 14:19:53  jussi
 #	Initial revision of archive.
 
 ############################################################
 
-set sql_host  quarg.cs.wisc.edu
+set sql_host  $env(HOSTNAME)
 set sql_port  1515
 set sql_path  /tmp
 set sql_query ""
@@ -22,7 +25,7 @@ proc sqlMain {} {
 
     # see if .sql window already exists; if so, just return
     set err [catch {set exists [wm state .sql]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .sql; return }
 
     toplevel .sql
     wm maxsize .sql 1000 1000

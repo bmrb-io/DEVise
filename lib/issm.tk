@@ -1,6 +1,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.2  1995/09/12 22:41:47  jussi
+#	Minor updates. ISSM dialog no longer grabs the focus and prevents
+#	DEVise from proceeding.
+#
 #	Revision 1.1  1995/09/06 15:35:33  jussi
 #	Initial revision of archive.
 
@@ -47,14 +51,14 @@ proc issm_onDisk {symbol} {
 
 proc issm_setupMain {main} {
     toplevel $main
-    wm minsize $main 485 650
-    wm maxsize $main 485 1000
+    wm minsize $main 500 400
+    wm maxsize $main 500 1000
     wm title $main "ISSM"
-    wm geometry $main =485x650+50+50
+    wm geometry $main =500x650+50+50
     selection clear $main
 
     label $main.title -relief raised -text "ISSM Stock Database" \
-	    -font -adobe-helvetica-medium-o-normal--*-140-*
+	    -font -adobe-helvetica-medium-r-normal--*-140-*
     pack $main.title -side top -fill x -ipady 5m
 }
 
@@ -92,11 +96,11 @@ proc issm_setupButtons {buttons fsel flist} {
     
     button $buttons.row2.ok -text OK -width 10 \
 	    -command "issm_extractFiles"
-    button $buttons.row2.done -text Done -width 10 \
+    button $buttons.row2.close -text Close -width 10 \
 	    -command "destroy .issm"
     button $buttons.row2.help -text Help -width 10 \
 	    -command "issm_helpWindow"
-    pack $buttons.row2.ok $buttons.row2.done $buttons.row2.help \
+    pack $buttons.row2.ok $buttons.row2.close $buttons.row2.help \
 	    -side left -padx 3m
 
 #    bind $fsel.list <Any-Button-1> +issm_setSelectButton
@@ -108,7 +112,8 @@ proc issm_setupButtons {buttons fsel flist} {
 proc issm_setupFirmSel {fsel} {
     frame $fsel -relief groove -borderwidth 2 -width 3c
     listbox $fsel.list -relief raised -borderwidth 2 \
-	    -yscrollcommand "$fsel.scroll set" -font 9x15bold
+	    -yscrollcommand "$fsel.scroll set" -font 9x15 \
+	    -selectmode extended
     scrollbar $fsel.scroll -command "$fsel.list yview"
     label $fsel.msg -text "Stocks selected:"
     pack $fsel.msg -side top -pady 3m
@@ -124,7 +129,8 @@ proc issm_setupFirmSel {fsel} {
 proc issm_setupFirmList {flist fsel} {
     frame $flist -relief groove -borderwidth 2
     listbox $flist.list -relief raised -borderwidth 2 \
-	    -yscrollcommand "$flist.scroll set" -font 9x15bold
+	    -yscrollcommand "$flist.scroll set" -font 9x15 \
+	    -selectmode extended
     scrollbar $flist.scroll -command "$flist.list yview"
     label $flist.msg -text "Database has 0 stocks."
     pack $flist.msg -side top -pady 3m
@@ -143,7 +149,7 @@ proc issm_scanFirmList {listb msg} {
     $listb delete 0 end
     set issm_firmlst ""
     set issm_numfirms 0
-    set indexFile issm-p.idx
+    set indexFile issm.idx
     set err [catch { set firms [open $indexFile] }]
     if {$err > 0} {
 	issm_putMessage "Cannot find index file $indexFile."
@@ -239,6 +245,7 @@ proc issm_addSelection {listb} {
     if {$owner != ".issm.firmlst.list"} { return }
     set err [catch { set flist [selection get] }]
     if {$err > 0} { return }
+    set flist [split $flist \n]
     foreach sel $flist {
 	set symbol [lrange $sel 0 0]
 	if {[issm_lstIndex $issm_firmsel $symbol] < 0} {
@@ -259,6 +266,7 @@ proc issm_removeSelection {listb} {
     if {$owner != $listb} { return }
     set err [catch { set flist [selection get] }]
     if {$err > 0} { return }
+    set flist [split $flist \n]
     foreach sel $flist {
 	set symbol [lrange $sel 0 0]
 	set loc [issm_lstIndex $issm_firmsel $symbol]
@@ -410,8 +418,10 @@ proc issm_setupStatus {stat} {
     label $stat.msg -textvariable issm_status
     pack $stat.msg -side top -padx 8m -pady 4m
     grab set $stat
-    raise $stat
     update
+    # for some reason raising the window takes a long time,
+    # on the order of one half or even one second
+    # raise $stat
 }
 
 ############################################################
@@ -421,7 +431,7 @@ proc issmMain {} {
 
     # see if .issm window already exists; if so, just return
     set err [catch {set exists [wm state .issm]}]
-    if {!$err} { return }
+    if {!$err} { wm deiconify .issm; return }
 
     issm_setupMain .issm
 
