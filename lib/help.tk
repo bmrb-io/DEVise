@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.6  1995/09/22 17:33:44  jussi
+#	Added copyright message.
+#
 #	Revision 1.5  1995/09/19 16:50:48  jussi
 #	Further fixes to accommodate new Tcl/Tk.
 #
@@ -35,7 +38,6 @@
 proc helpUnit { num } {
 	return $num\i
 }
-
 
 set helpWinCreated 0
 proc DoHelp { } {
@@ -268,6 +270,8 @@ proc DoHelp { } {
 	frame $topicFrame
 	set index [lsort { DEVise file schema tdata mapping gdata \
 		"visual filter" view window link tour gui}]
+        lappend index copyright disclaimer agreement
+
 	set listboxName $topicFrame.listbox 
 	set topicScrollName $topicFrame.scroll
 	set topicName $topicFrame.topicName
@@ -280,7 +284,6 @@ proc DoHelp { } {
 		$listboxName insert end $item
 	}
 	scrollbar $topicScrollName -command "$listboxName yview"
-
 
 #	create text widget
 	set textName .help.txtFrame.txt
@@ -319,8 +322,6 @@ proc DoHelp { } {
 	pack $listboxName  -in $topicFrame -side right -expand 1 -fill both
 
 	pack .help.txtFrame -side top -in .help -fill x -expand 1
-
-
 
 #	read text widget from helpfile */
 	set f [open $libdir/helpfile.txt]
