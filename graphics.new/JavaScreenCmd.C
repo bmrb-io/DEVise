@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2001
+  (c) Copyright 1998-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.126  2001/12/13 21:35:55  wenger
+  Added flexibility to enable/disable mouse location display individually
+  for X and Y axes (needed for peptide-cgi session improvements requested
+  by John Markley).
+
   Revision 1.125  2001/11/28 21:56:43  wenger
   Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 
@@ -597,6 +602,7 @@
 
 //#define DEBUG
 #define DEBUG_LOG
+//#define DEBUG_ARGS
 #define JS_TIMER 1
 #define MONOLITHIC_TEST 0
 #define NO_BATCH 0 // Non-zero for test only.
@@ -625,8 +631,8 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 9;
-static const int protocolMinorVersion = 3;
+static const int protocolMajorVersion = 10;
+static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -755,6 +761,10 @@ getFileSize(const char* filename)
 //====================================================================
 JSArgs::JSArgs(int maxArgs)
 {
+#if defined(DEBUG_ARGS)
+  printf("JSArgs::JSArgs(%d)\n", maxArgs);
+#endif
+
   _maxArgs = maxArgs;
   _argv = new (const char *)[_maxArgs];
   _dynamic = new Boolean[_maxArgs];
@@ -782,6 +792,10 @@ JSArgs::~JSArgs()
 void
 JSArgs::FillString(const char *value)
 {
+#if defined(DEBUG_ARGS)
+  printf("  JSArgs::FillString(%s); _argc = %d\n", value, _argc);
+#endif
+
   DOASSERT(_argc < _maxArgs, "Too many arguments");
   _argv[_argc++] = value;
 }
@@ -790,6 +804,10 @@ JSArgs::FillString(const char *value)
 void
 JSArgs::FillInt(int value)
 {
+#if defined(DEBUG_ARGS)
+  printf("  JSArgs::FillInt(%d); _argc = %d\n", value, _argc);
+#endif
+
   DOASSERT(_argc < _maxArgs, "Too many arguments");
   char buf[128];
   sprintf(buf, "%d", value);
@@ -802,6 +820,10 @@ JSArgs::FillInt(int value)
 void
 JSArgs::FillDouble(double value)
 {
+#if defined(DEBUG_ARGS)
+  printf("  JSArgs::FillDouble(%g); _argc = %d\n", value, _argc);
+#endif
+
   DOASSERT(_argc < _maxArgs, "Too many arguments");
   char buf[128];
   sprintf(buf, "%.10g", value);
@@ -3242,7 +3264,7 @@ JavaScreenCmd::SendViewDataArea(View *view)
 
 		  double multFactor = view->GetXAxisMultFact();
 
-		  JSArgs args(7);
+		  JSArgs args(12);
 		  args.FillString(_controlCmdName[VIEWDATAAREA]);
 		  args.FillString(view->GetName());
 		  args.FillString("X");
@@ -3250,6 +3272,19 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		  args.FillDouble(filter.xHigh);
 		  args.FillString(axisFormat);
 		  args.FillDouble(multFactor);
+
+		  args.FillInt(view->_xAxis.IsInUse());
+
+		  int family;
+		  float pointSize;
+		  Boolean bold;
+		  Boolean italic;
+		  view->_xAxis.GetFont(family, pointSize, bold, italic);
+
+		  args.FillInt(family);
+		  args.FillDouble(pointSize);
+		  args.FillInt(bold);
+		  args.FillInt(italic);
 
 		  args.ReturnVal(this);
 		}
@@ -3271,7 +3306,7 @@ JavaScreenCmd::SendViewDataArea(View *view)
 
 		  double multFactor = view->GetYAxisMultFact();
 
-		  JSArgs args(7);
+		  JSArgs args(12);
 		  args.FillString(_controlCmdName[VIEWDATAAREA]);
 		  args.FillString(view->GetName());
 		  args.FillString("Y");
@@ -3279,6 +3314,19 @@ JavaScreenCmd::SendViewDataArea(View *view)
 		  args.FillDouble(filter.yHigh);
 		  args.FillString(axisFormat);
 		  args.FillDouble(multFactor);
+
+		  args.FillInt(view->_yAxis.IsInUse());
+
+		  int family;
+		  float pointSize;
+		  Boolean bold;
+		  Boolean italic;
+		  view->_yAxis.GetFont(family, pointSize, bold, italic);
+
+		  args.FillInt(family);
+		  args.FillDouble(pointSize);
+		  args.FillInt(bold);
+		  args.FillInt(italic);
 
 		  args.ReturnVal(this);
 		}

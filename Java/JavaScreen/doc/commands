@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 9.3.
+version 10.0.
 
 
 For the details of the format in which commands are send on the socket,
@@ -429,21 +429,27 @@ see comments in DEViseCommSocket.java.
 
     5.8 JAVAC_ViewDataArea
     Purpose: defines the size of a view in data units so that the
-             JavaScreen
-             can convert mouse location to data units to display it.
-    Arguments: 4 to 6
+             JavaScreen can convert mouse location to data units to display
+	     it, and can also draw the axis labels.
+    Arguments: 11
         <view name>: name of view for which data area is being specified.
         <axis>: "X" or "Y".
         <low value>: low (left or bottom of axis) data value.
         <high value>: high (right or top of axis) data value.
-        <axis/mouse format>: optional.  The format to be used in labeling
+        <axis/mouse format>: The format to be used in labeling
                              axis ticks and displaying the mouse location.
                              The format is either a printf-style string
                              (e.g., "%.4f") or a cftime string (e.g.,
                              "%b %d %Y %T"), according to whether the axis
                              data is a date or floating-point value.
-        <mult factor>: optional.  Multiply the data value by this factor 
+        <mult factor>: multiply the data value by this factor 
                        before displaying mouse position (may be negative).
+	<label axis>: whether to label the axis (0 = no, 1 = yes).
+        <axis font type>: font family (0 = Courier, 1 = Times, 2 = Helvetica,
+	                  3 = Lucida, 4 = New Century Schoolbook).
+        <axis font size>: size of font in points
+        <axis font bold>: 1 if font is bold, 0 otherwise
+        <axis font italic>: 1 if font is italic, 0 otherwise
 
 
     5.9 JAVAC_UpdateViewImage

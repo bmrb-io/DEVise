@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.116  2002/01/24 16:24:27  xuk
+// Fixed bug 739: restore pre-collaboration state, if cancel before completely going into collaboration mode or enter wrong collaboration password.
+// 																				CVS: ----------------------------------------------------------------------
+//
 // Revision 1.115  2001/12/13 21:35:02  wenger
 // Added flexibility to enable/disable mouse location display individually
 // for X and Y axes (needed for peptide-cgi session improvements requested
@@ -1583,7 +1587,7 @@ public class DEViseCmdDispatcher implements Runnable
 
     private void viewDataArea(String command, String[] args) throws YException
     {
-        if (args.length < 5 || args.length > 7) {
+        if (args.length != 12) {
             throw new YException(
               "Ill-formated command received from server \"" + command +
               "\"", "DEViseCmdDispatcher::processCmd()", 2);

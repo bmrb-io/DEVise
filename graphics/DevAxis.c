@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2001
+  (c) Copyright 1999-2002
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  2001/11/30 21:20:30  wenger
+  Fixed bug 737 (zero-size visual filter crashes DEVise) and related
+  bugs.
+
   Revision 1.9  2001/05/27 19:59:21  wenger
   Fixed bug 676 (problem with near-zero axis label values).
 
@@ -233,15 +237,19 @@ DevAxis::DrawAxis(WindowRep *win, int x, int y, int w, int h)
 	DrawLine(win, info);
   }
 
-  if (info._drawTicks) {
-    if (_attrType == DateAttr) {
-	  DrawDateTicks(win, info);
+  //TEMP -- uncomment this after the JS end of drawing axis labels is
+  // implemented.
+  //TEMP if (!Session::GetIsJsSession()) {
+    if (info._drawTicks) {
+      if (_attrType == DateAttr) {
+        DrawDateTicks(win, info);
+      }
     }
-  }
 
-  if (info._drawTicks) {
-	DrawFloatTicks(win, info);
-  }
+    if (info._drawTicks) {
+	  DrawFloatTicks(win, info);
+    }
+  //TEMP }
 
   win->PopTransform();
 }

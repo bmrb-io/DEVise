@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2002
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2001/12/13 21:35:32  wenger
+// Added flexibility to enable/disable mouse location display individually
+// for X and Y axes (needed for peptide-cgi session improvements requested
+// by John Markley).
+//
 // Revision 1.61  2001/11/28 21:56:19  wenger
 // Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
 //
@@ -268,7 +273,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
-    public static final String PROTOCOL_VERSION = new String("9.3");
+    public static final String PROTOCOL_VERSION = new String("10.0");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");
