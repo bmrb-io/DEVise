@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/23 00:24:00  wenger
+  Incorporated all of the PostScript-related stuff into the client/server
+  library; added printing to PostScript to the example client and server;
+  made some fixes to PSDisplay, PSWindowRep, and XWindowRep classes as
+  a result of testing with client/server stuff.
+
   Revision 1.2  1996/10/18 15:19:43  jussi
   Added CompDate class.
 
@@ -449,11 +455,13 @@ WinServer::WinServer(char *name, int port) : Server(name, port)
   _screenDisp = DeviseDisplay::DefaultDisplay();
   _fileDisp = DeviseDisplay::GetPSDisplay();
   DOASSERT(_screenDisp, "Out of memory");
+  DOASSERT(_fileDisp, "Out of memory");
 }
 
 WinServer::~WinServer()
 {
   delete _screenDisp;
+  delete _fileDisp;
 }
 
 void WinServer::MainLoop()
