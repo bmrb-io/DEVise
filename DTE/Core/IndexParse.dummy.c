@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/09/05 22:20:04  donjerko
+  Made changes for port to NT.
+
   Revision 1.2  1997/08/22 23:13:02  okan
   Changed #include <string.h> 's to #include <string>
 
@@ -68,7 +71,7 @@
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
-Site* IndexParse::createSite(){
+Iterator* IndexParse::createExec(){
 	assert(!"rtree index is not linked in");
 	return NULL;
 }

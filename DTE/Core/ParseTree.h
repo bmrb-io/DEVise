@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/12/04 04:05:13  donjerko
+  *** empty log message ***
+
   Revision 1.23  1997/11/23 21:23:29  donjerko
   Added ODBC stuff.
 
@@ -85,7 +88,7 @@ public:
 		return &EMPTY_SCHEMA;
 	}
 	virtual Iterator* createExec() = 0; // throws exception
-	virtual string guiRepresentation() const {assert(0);}	// throws
+	virtual string guiRepresentation() const {assert(0); return NULL;}	// throws
 };
 
 class Aggregates;

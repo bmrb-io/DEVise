@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1997/12/04 04:05:07  donjerko
+  *** empty log message ***
+
   Revision 1.41  1997/11/24 23:13:13  weaver
   Changes for the new ColorManager.
 
@@ -994,7 +997,8 @@ public:
 	void Aggregates::typeCheck(TypeCheck& typeCheck);
 	virtual List<BaseSelection*>* getSelectList(){
 		assert(0);
-	     // return selList;
+		return NULL;
+	    //return selList;
 	}
 	List<BaseSelection*>* filterList(){
 		return filteredSelList;
