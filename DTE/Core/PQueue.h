@@ -31,9 +31,9 @@ public:
   PQueue(int num_flds, TypeID *fld_types, int num_sort_flds, 
          int *sort_flds, SortOrder sort_order, int size) 
     : num_flds(num_flds), fld_types(fld_types), num_sort_flds(num_sort_flds), 
-      sort_flds(sort_flds), order(order)
+      sort_flds(sort_flds), order(sort_order)
     {
-       Items = new (Node *) [size]; 
+       Items = new (Node *) [size+1]; 
        num_of_elems = 0;
        
        comparePtrs  = new (GeneralPtr *)[num_flds];
@@ -42,7 +42,7 @@ public:
          {
            TypeID retVal;  // is a dummy	           
            TRY(comparePtrs[i] = getOperatorPtr("comp", fld_types[i],
-                                                    fld_types[i],retVal),);
+					       fld_types[i],retVal),);
          }
     }
   

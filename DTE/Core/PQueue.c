@@ -12,9 +12,17 @@ void PQueue::enq(Node *newitem)
 
   while (parent >= 0)
     {
-      if (tupleCompare(sort_flds, num_sort_flds, comparePtrs,
-                       Items[place]->tuple, Items[parent]->tuple) < 0)
-  	 break;
+      // Assumes Ascending sort order
+      if (order == Ascending){
+	if (tupleCompare(sort_flds, num_sort_flds, comparePtrs,
+			 Items[place]->tuple, Items[parent]->tuple) >= 0)
+	  break;
+      }
+       else{
+	if (tupleCompare(sort_flds, num_sort_flds, comparePtrs,
+			 Items[place]->tuple, Items[parent]->tuple) <= 0)
+	  break;
+      }
       
       Node *temp = Items[place];
       Items[place] = Items[parent];
@@ -52,14 +60,28 @@ void PQueue::adjust(int root)
     // Root is not a leaf
     int right_child = child + 1;
     
-    int right = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
-                             Items[right_child]->tuple, Items[child]->tuple) ;
+      int right = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
+			       Items[right_child]->tuple, Items[child]->tuple);
+    if (right_child < num_of_elems) {
+      
+    if (order == Ascending){
+	if (right < 0)
+	  child = right_child; // index of smaller child
+    }
+      else{
+	if (right > 0)
+	  child = right_child; // index of larger child
+      } 
+    }
 
-    if ((right_child < num_of_elems) && right < 0)
-      child = right_child; // index of larger child
-    
-    int root_smaller = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
-                                Items[child]->tuple, Items[root]->tuple);
+    int root_smaller;
+    if (order == Ascending)
+      root_smaller = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
+				  Items[child]->tuple, Items[root]->tuple);
+    else
+      root_smaller = tupleCompare(sort_flds, num_sort_flds, comparePtrs,
+				  Items[root]->tuple, Items[child]->tuple);
+ 
     if (root_smaller < 0)
      {	
        Node *temp = Items[root];
@@ -73,3 +95,14 @@ void PQueue::adjust(int root)
   return;
 } 
   
+
+
+
+
+
+
+
+
+
+
+
