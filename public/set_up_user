@@ -1,0 +1,42 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This is a script to set up a user to run DEVise with the option of
+#  using their own data, session files, etc.
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+echo ""
+echo "Setting you up to run DEVise with your own data, schemas, session"
+echo "files, and cache."
+
+mkdir devise
+cd devise
+mkdir dat cache session
+cp -r /p/devise/public/schema schema
+cp /p/devise/public/devisepub .
+cp /p/devise/public/run.script---copy.and.customize devise
+
+echo ""
+echo "To be able to run DEVise from any directory, you must perform the"
+echo "following additional steps:"
+echo "o Add the 'devise' directory to your path."
+echo "o Edit the 'devise' script file and make all of the paths absolute"
+echo "  rather than relative."
