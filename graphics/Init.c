@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/07/12 15:21:00  jussi
+  Removed references to Timer.
+
   Revision 1.13  1996/07/09 15:59:55  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -141,6 +144,7 @@ Boolean Init::_elimOverlap = true; /* true if overlapping
 Boolean Init::_dispGraphics = true; /* true to display graphics */
 Boolean Init::_batchRecs = true; /* true if batching records */
 Boolean Init::_printViewStat = false;  /* true to print view statistics */
+char * Init::_daliServer = NULL;
 
 /**************************************************************
 Remove positions from index to index+len-1 from argv
@@ -194,6 +198,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-ylow <value>: not yet implemented\n");
   fprintf(stderr, "\t-xhigh <value>: not yet implemented\n");
   fprintf(stderr, "\t-yhigh <value>: not yet implemented\n");
+  fprintf(stderr, "\t-dali <name>: specify name of dali server\n");
 
   Exit::DoExit(1);
 }
@@ -441,7 +446,6 @@ void Init::DoInit(int &argc, char **argv)
 
       else if (strcmp(&argv[i][1], "usage") == 0) {
 	Usage(argv[0]);
-  	Exit::DoExit(1);
       }
 
       else if (strcmp(&argv[i][1], "xlow") == 0) {
@@ -475,9 +479,23 @@ void Init::DoInit(int &argc, char **argv)
 	_hasYHigh = true;
 	MoveArg(argc,argv,i,2);
       }
-      else i++;
+
+      else if (strcmp(&argv[i][1], "dali") == 0) {
+	if (i >= argc -1)
+	  Usage(argv[0]);
+	_daliServer = CopyString(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
+
+
+      else {
+	i++;
+      }
     }
-    else i++;
+    else {
+      i++;
+    }
   }
 
   if (!journalName)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/04/18 18:12:59  jussi
+  Replaced 'postScript' member variable and method with more appropriate
+  name 'batchFile.'
+
   Revision 1.4  1996/02/05 23:56:55  jussi
   Added DEVise logo display.
 
@@ -93,6 +97,8 @@ public:
   */
   static char *BatchFile() { return _batchFile; }
 
+  static char *DaliServer() {return _daliServer; }
+
 private:
 
   static Boolean _savePopup; /* true if pop-up window should be saved and
@@ -128,6 +134,8 @@ private:
   static Boolean _dispGraphics;
   static Boolean _batchRecs;
   static Boolean _printViewStat;
+
+  static char *_daliServer;
 };
 
 #endif

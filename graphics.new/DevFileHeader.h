@@ -13,13 +13,19 @@
 */
 
 /*
-  Description of module.
+  Declaration of DevFileHeader class.
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.1  1996/07/11 17:25:40  wenger
+  Devise now writes headers to some of the files it writes;
+  DataSourceSegment class allows non-fixed data length with non-zero
+  offset; GUI for editing schema files can deal with comment lines;
+  added targets to top-level makefiles to allow more flexibility.
+
  */
 
 #ifndef _DevFileHeader_h_

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/08/04 21:05:35  beyer
+  changed key handling
+
   Revision 1.25  1996/07/23 15:34:43  jussi
   Added mechanism for bypassing the Devise internal color map.
 
@@ -244,6 +247,11 @@ public:
 
   /* export window image to other graphics formats */
   virtual void ExportImage(DisplayExportFormat format, char *filename) {}
+
+  /* import graphics via Dali */
+  virtual DevStatus DaliImage(Coord centerX, Coord centerY, Coord width,
+    Coord height, char *filename, int imageLen, char *image)
+    { return StatusOk; }
 
   /* drawing primitives */
 

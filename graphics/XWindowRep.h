@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/08/09 15:27:08  wenger
+  Fixed a typo (name of Compression class misspelled).
+
   Revision 1.22  1996/07/23 15:34:46  jussi
   Added mechanism for bypassing the Devise internal color map.
 
@@ -152,6 +155,10 @@ public:
 	/* export window image to other graphics formats */
 	virtual void ExportImage(DisplayExportFormat format, char *filename);
 
+	/* import graphics via Dali */
+  	virtual DevStatus DaliImage(Coord centerX, Coord centerY, Coord width,
+	  Coord height, char *filename, int imageLen, char *image);
+
 	/* drawing primitives */
 	/* Return TRUE if window is scrollable */
 	virtual Boolean Scrollable();
@@ -160,7 +167,7 @@ public:
 	virtual void Scroll(Coord x, Coord y, Coord width, Coord height,
 			    Coord dstX, Coord dstY);
 
-	/* Scroll absoluate */
+	/* Scroll absolute */
 	virtual void ScrollAbsolute(int x, int y, unsigned width,
 				    unsigned height, int dstX, int dstY);
 

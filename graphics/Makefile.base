@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1996/08/13 17:45:35  flisakow
+#      Make consistently uses C and CC for gcc and g++, respectively.
+#
 #  Revision 1.26  1996/08/12 18:43:32  flisakow
 #    Makefiles changed to use AR and RANLIB vars from Makefile.common.
 #
@@ -41,14 +44,15 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	Util.c View.c ViewWin.c ViewLayout.C XawControl.c XawWidget.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
-	Map3D.C Temp.c PSWindowRep.c PSDisplay.c
+	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
+	DevStatus.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))
 LIBOBJ = $(SRCc:.c=.o)
 LIBOBJ += $(SRCC:.C=.o)
 
-OTHERSRC = testWindowRep.c jstat.c
+OTHERSRC = testWindowRep.c jstat.c TestDevStatus.c
 
 OTHEROBJ = $(OTHERSRC:.c=.o)
 
@@ -83,10 +87,13 @@ testWindowRep: $(TESTOBJ) $(LIBNAME)
 	$(CC) -o $@ $(TESTOBJ) $(ARCH_LDFLAGS) -L. -lgraphics \
 		-lXmu -lXt -lXext -lX11 -lm $(ARCH_LDPOST)
 
+TestDevStatus: TestDevStatus.o DevStatus.o
+	$(CC) -o $@ TestDevStatus.o DevStatus.o $(ARCH_LDFLAGS) $(ARCH_LDPOST)
+
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) jstat testWindowRep
+	-rm $(LIBNAME) jstat testWindowRep TestDevStatus
 
 mostlyclean:
 	-rm $(LIBOBJ) $(OTHEROBJ)

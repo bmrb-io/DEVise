@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.59  1996/08/08 20:59:55  beyer
+  fixed some debugging problems
+
   Revision 1.58  1996/08/07 20:11:26  wenger
   Fixed various key event-related bugs (see Bugs file); changed
   direction of camera movement for 3D to be more in agreement
@@ -228,6 +231,7 @@
 #include "XWindowRep.h"
 #include "XDisplay.h"
 #include "Compress.h"
+#include "DaliIfc.h"
 #ifndef LIBCS
 #include "Init.h"
 #endif
@@ -602,7 +606,7 @@ void XWindowRep::ImportImage(Coord x, Coord y,
 
   FILE *fp = fopen(filename, "rb");
   if (!fp) {
-    fprintf(stderr, "Cannot open file %s", filename);
+    fprintf(stderr, "Cannot open file %s\n", filename);
     return;
   }
 
@@ -685,6 +689,28 @@ void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
       break;
     }
   }
+}
+
+DevStatus
+XWindowRep::DaliImage(Coord centerX, Coord centerY, Coord width, Coord height,
+	char *filename, int imageLen, char *image)
+{
+  DevStatus result = StatusOk;
+
+  if (filename == NULL) filename = "-";
+
+  int handle;
+  result += DaliIfc::ShowImage(Init::DaliServer(), _win, (int) centerX,
+    (int) centerY, (int) width, (int) height, filename, imageLen, image,
+    handle);
+  if (result.IsComplete())
+  {
+#if DEBUG
+    printf("Displayed Dali image; handle = %d\n", handle);
+#endif
+  }
+
+  return result;
 }
 
 /* get geometry of root window enclosing this window */

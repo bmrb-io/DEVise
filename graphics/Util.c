@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/07/14 20:04:47  jussi
+  Made code to compile in OSF/1.
+
   Revision 1.11  1996/07/05 14:39:47  jussi
   Fixed minor problem with null-termination in DateString().
 
@@ -56,9 +59,12 @@
 #include <sys/dir.h>
 #endif
 #include <unistd.h>
+#include <errno.h>
+#include <fcntl.h>
 
 #include "Util.h"
 #include "Exit.h"
+#include "DevError.h"
 
 long ModTime(char *fname)
 {
@@ -68,6 +74,56 @@ long ModTime(char *fname)
     Exit::DoExit(2);
   }
   return (long)sbuf.st_mtime;
+}
+
+DevStatus
+ReadFile(char *filename, int &size, char *&buffer)
+{
+  DevStatus result = StatusOk;
+
+  struct stat sbuf;
+  if (stat(filename, &sbuf) < 0)
+  {
+    reportError("Can't get size of file", errno);
+    result = StatusFailed;
+  }
+  else
+  {
+    size = sbuf.st_size;
+    buffer = new char[size];
+    if (buffer == NULL)
+    {
+      reportError("Out of memory", errno);
+      result = StatusFailed;
+    }
+    else
+    {
+      int fd = open(filename, O_RDONLY);
+      if (fd < 0)
+      {
+        reportError("Can't open file", errno);
+        result = StatusFailed;
+      }
+      else
+      {
+        if (read(fd, buffer, size) != size)
+	{
+          reportError("Error reading file", errno);
+          result = StatusFailed;
+	}
+
+	if (close(fd) < 0)
+	{
+          reportError("Error closing file", errno);
+          result = StatusWarn;
+	}
+      }
+
+      if (!result.IsComplete()) delete [] buffer;
+    }
+  }
+
+  return result;
 }
 
 char *CopyString(char *str)

@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1996/08/15 19:54:50  wenger
+#  Added 'pure' targets for attrproj and devread; fixed some dynamic
+#  memory problems.  Found some bugs while demo'ing for soils science
+#  people.
+#
 #  Revision 1.19  1996/08/13 17:45:30  flisakow
 #      Make consistently uses C and CC for gcc and g++, respectively.
 #
@@ -62,6 +67,7 @@ LIBOBJ = \
 	../graphics/Time.o \
 	../graphics/Util.o \
 	../graphics/DevError.o \
+	../graphics/DevStatus.o \
 	../graphics.new/RecInterp.o \
 	../graphics.new/CompositeParser.o \
 	../graphics.new/Group.o \
@@ -89,7 +95,7 @@ pure: aptest.pure show.pure
 
 
 APTEST = $(CC) -v -o $@ $(ARCH_LDFLAGS) -L. $(ALLTESTOBJ) \
-	-lattrproj -ltcl -lm
+	-lattrproj
 
 aptest: $(ALLTESTOBJ) $(LIB)
 	$(APTEST) $(ARCH_LDPOST)

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/18 01:25:28  jussi
+  Added definition of strdup for Ultrix.
+
   Revision 1.9  1996/07/12 18:24:30  wenger
   Fixed bugs with handling file headers in schemas; added DataSourceBuf
   to TDataAscii.
@@ -64,6 +67,10 @@
 
 /* get the name file was last modified */
 extern long ModTime(char *fname);
+
+/* Read the contents of a file into a buffer (buffer allocated by this
+ * function). */
+extern DevStatus ReadFile(char *filename, int &size, char *&buffer);
 
 extern char *CopyString(char *str);
 

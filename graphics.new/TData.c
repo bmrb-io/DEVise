@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/08/15 19:54:31  wenger
+  Added 'pure' targets for attrproj and devread; fixed some dynamic
+  memory problems.  Found some bugs while demo'ing for soils science
+  people.
+
   Revision 1.7  1996/08/12 20:49:58  jussi
   Added missing statement that creates a new DataSourceWeb for
   WWW data sources.
@@ -253,8 +258,7 @@ TData::WriteHeader(int fd)
 {
   DevStatus result = StatusOk;
 
-  result = StatusCombine(result,
-    WriteString(fd, DevFileHeader::Get(FILE_TYPE_TDATA)));
+  result += WriteString(fd, DevFileHeader::Get(FILE_TYPE_TDATA));
 
   return result;
 }

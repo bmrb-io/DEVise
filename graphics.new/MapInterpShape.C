@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/08/08 21:01:20  beyer
+  Moved virtual functions from .h to .C file
+
   Revision 1.11  1996/08/03 15:38:02  jussi
   Flag _solid3D now has three values. Added line segment width.
 
@@ -54,8 +57,12 @@
   Added CVS header.
 */
 
+#include <sys/param.h>
+
 #include "MapInterpShape.h"
 #include "Map3D.h"
+#include "Init.h"
+#include "Util.h"
 
 //#define DEBUG
 
@@ -1115,6 +1122,8 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 					       int numSyms, TDataMap *map,
 					       ViewGraph *view, int pixelSize)
 {
+    const Boolean sendImageOnSocket = false;
+
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize);
 	return;
@@ -1148,7 +1157,20 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	if (color == XorColor)
 	  win->SetCopyMode();
 
-	char *file = "image.gif";
+
+	// Determine the name of the file containing the image to display.
+        char fileBuf[MAXPATHLEN];
+        char *file = fileBuf;
+        if ((Init::DaliServer() != NULL) && !sendImageOnSocket)
+        {
+          char *directory = getenv("PWD");
+          DOASSERT(directory != NULL, "Can't get current directory");
+          sprintf(fileBuf, "%s/image.gif", directory);
+        }
+        else
+        {
+          file = "image.gif";
+        }
 
 	if (offset->shapeAttrOffset[0] >= 0) {
 	    int key = (int)GetShapeAttr0(gdata, map, offset);
@@ -1163,10 +1185,34 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	}
 
 #ifdef DEBUG
-	printf("Drawing GIF image %s at %.2f,%.2f\n", file, x, y);
+	printf("Drawing GIF image %s at %.2f,%.2f\n", file, tx, ty);
 #endif
 
-	win->ImportImage(x, y, GIF, file);
+
+	// Display the image.
+	if (Init::DaliServer() != NULL)
+	{
+	  if (sendImageOnSocket)
+	  {
+            int size;
+            char *image = NULL;
+            (void) ReadFile(file, size, image);
+
+	    if (image != NULL)
+	    {
+	      win->DaliImage(tx, ty, 100.0, 100.0, "-", size, image);
+              delete [] image;
+	    }
+	  }
+	  else
+	  {
+	    win->DaliImage(tx, ty, 100.0, 100.0, file, 0, (char *) NULL);
+	  }
+	}
+	else
+	{
+	  win->ImportImage(tx, ty, GIF, file);
+	}
     }
 }
 

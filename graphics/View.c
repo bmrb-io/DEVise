@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.68  1996/08/09 22:39:00  wenger
+  Fixed bug 027 (error in dispatcher code sometimes put callback into
+  list twice); fixed error in View.c that caused compile failure.
+
   Revision 1.67  1996/08/08 20:59:11  beyer
   changed some #ifdefs #if defined
 
@@ -278,6 +282,8 @@
 #include "Jpeg.h"
 #endif
 #include "Display.h"
+#include "Init.h"
+#include "DaliIfc.h"
 
 //#define DEBUG
 
@@ -1330,6 +1336,9 @@ XXX: need to crop exposure against _filter before sending query.
 
 void View::Run()
 {
+#if defined(DEBUG)
+  printf("\nView::Run for view %s (0x%p)\n", GetName(), _dispatcherID);
+#endif
   /* if view is in pile mode but not the top view, it has to wait until
      the top view has erased the window and drawn axes and other
      decorations; the top view will send explicit refresh requests
@@ -1367,7 +1376,7 @@ void View::Run()
   }
 
   ControlPanel::Mode mode = ControlPanel::Instance()->GetMode();
-#if defined(DEBUG)
+#if defined(DEBUGxxx)
   if (mode == ControlPanel::LayoutMode)
     printf("layout mode ");
   else
@@ -1596,6 +1605,7 @@ void View::Run()
 #if defined(DEBUG)
     printf("Clearing data area in window 0x%p\n", winRep);
 #endif
+    if (Init::DaliServer() != NULL) DaliIfc::Reset(Init::DaliServer());
     winRep->SetFgColor(GetBgColor());
     winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
   }

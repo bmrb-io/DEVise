@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/08/15 19:54:48  wenger
+  Added 'pure' targets for attrproj and devread; fixed some dynamic
+  memory problems.  Found some bugs while demo'ing for soils science
+  people.
+
   Revision 1.10  1996/08/02 15:53:36  wenger
   Added AttrProj member functions for reading entire records (no projection).
 
@@ -113,7 +118,7 @@ AttrProj::AttrProj(char *schemaFile, char *attrProjFile, char *dataFile)
 	DOASSERT(schemaName != NULL, "Can' parse schema");
 
 	DevStatus ppRes = ParseProjection(attrProjFile);
-	DOASSERT(StatIsComplete(ppRes), "Can't parse projection");
+	DOASSERT(ppRes.IsComplete(), "Can't parse projection");
 
 	_recBufSize = _tDataP->RecSize();
 	_recBuf = new char[_recBufSize];

@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/08/15 19:55:02  wenger
+#  Added 'pure' targets for attrproj and devread; fixed some dynamic
+#  memory problems.  Found some bugs while demo'ing for soils science
+#  people.
+#
 #  Revision 1.2  1996/08/14 20:00:51  flisakow
 #      Need a devread directory for each m/c arch.
 #
@@ -68,6 +73,7 @@ LIBOBJ = \
 	../graphics/Time.o \
 	../graphics/Util.o \
 	../graphics/DevError.o \
+	../graphics/DevStatus.o \
 	../graphics.new/RecInterp.o \
 	../graphics.new/CompositeParser.o \
 	../graphics.new/Group.o \
@@ -94,7 +100,7 @@ lib: $(LIB)
 pure: drtest.pure
 
 DRTEST = $(CC) -o $@ $(ARCH_LDFLAGS) types.o -L. $(ALLTESTOBJ) \
-	-ldevread -ltcl -lm
+	-ldevread
 
 drtest: $(ALLTESTOBJ) types.o $(LIB) 
 	$(DRTEST) $(ARCH_LDPOST)
