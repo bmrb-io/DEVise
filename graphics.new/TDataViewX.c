@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/10 02:22:32  jussi
+  Added support for > 1 mappings in a view.
+
   Revision 1.12  1996/04/09 22:53:41  jussi
   Added View parameter to DrawGDataArray.
 
@@ -61,6 +64,7 @@
 */
 
 #include <assert.h>
+
 #include "Init.h"
 #include "TDataViewX.h"
 #include "TDataMap.h"
@@ -121,7 +125,7 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   if (MoreMapping()) {
     _map = NextMapping();
 #ifdef DEBUG
-    printf("Submitting first query\n");
+    printf("Submitting query 1 of %d: 0x%p\n", _mappings.Size(), _map);
 #endif
     _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
   } else {
@@ -253,10 +257,10 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 void TDataViewX::QueryDone(int bytes, void *userData)
 {
   if (MoreMapping()) {
-#ifdef DEBUG
-    printf("Submitting next query\n");
-#endif
     _map = NextMapping();
+#ifdef DEBUG
+    printf("Submitting next query 0x%p\n", _map);
+#endif
     _queryProc->BatchQuery(_map, _queryFilter, this, 0, _timestamp);
     return;
   }
