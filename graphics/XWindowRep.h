@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/02 21:34:21  jussi
+  Added support for TK_WINDOW i.e. Tcl/Tk controls surrounding each
+  view and window, but this implementation was superseded by code
+  in ViewWin.c and therefore was renamed TK_WINDOW_old. Also
+  added Reparent method.
+
   Revision 1.3  1995/11/28 00:01:15  jussi
   Added WritePostscript() method.
 
@@ -98,6 +104,7 @@ public:
 	virtual void SetPattern(Pattern p);
 
 	virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height);
+	virtual void InvertFillRect(Coord xlow, Coord ylow, Coord width, Coord height);
 	/* Fill rectangles, variable width/height */
 	virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
 			Coord *height, int num);
@@ -119,6 +126,7 @@ public:
 			Coord startAngle, Coord endAngle);
 
 	virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
+	virtual void InvertLine(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
 	virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
 
