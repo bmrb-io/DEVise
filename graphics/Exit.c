@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/16 19:45:35  jussi
+  Added DoAbort() method and DOASSERT macro.
+
   Revision 1.3  1996/01/11 21:51:14  jussi
   Replaced libc.h with stdlib.h. Added copyright notice.
 
@@ -42,12 +45,13 @@ void Exit::DoExit(int code)
 
 void Exit::DoAbort(char *reason, char *file, int line)
 {
-  fprintf(stderr, "An internal error has occurred. The reason is:\n");
-  fprintf(stderr, "  %s\n", reason);
+  char fulltext[256];
+  sprintf(fulltext, "%s (%s:%d)", reason, file, line);
 
-  char res[256];
-  sprintf(res, "%s (%s:%d)", reason, file, line);
-  ControlPanel::Instance()->DoAbort(res);
+  fprintf(stderr, "An internal error has occurred. The reason is:\n");
+  fprintf(stderr, "  %s\n", fulltext);
+
+  ControlPanel::Instance()->DoAbort(fulltext);
 
   DoExit(2);
 }
