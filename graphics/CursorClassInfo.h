@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/29 18:29:48  jussi
+  Added the copyright message and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 21:12:35  jussi
   Added/updated CVS header.
 */
@@ -25,6 +28,28 @@
 
 #include "ClassDir.h"
 #include "VisualArg.h"
+#include "DList.h"
+
+class CursorClassInfo;
+DefinePtrDList(DevCursorList, CursorClassInfo *);
+
+class DevCursor{
+public:
+  static int GetCount() { return _cursorList.Size(); }
+
+  /* Read-only access to link list. */
+  static int InitIterator() { return _cursorList.InitIterator(); }
+  static Boolean More(int index) { return _cursorList.More(index); }
+  static CursorClassInfo *Next(int index) { return _cursorList.Next(index); }
+  static void DoneIterator(int index) { _cursorList.DoneIterator(index); }
+
+  static void Dump(FILE *fp);
+
+protected:
+  friend class CursorClassInfo;
+
+  static DevCursorList _cursorList;
+};
 
 class DeviseCursor;
 class CursorClassInfo: public ClassInfo {
@@ -65,6 +90,8 @@ public:
 
   /* Get parameters that can be used to re-create this instance */
   virtual void CreateParams(int &argc, char **&argv);
+
+  void Dump(FILE *fp);
 
 private:
   VisualFlag _flag;

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.139  1997/07/17 18:44:16  wenger
+#	Added menu selections to report number of strings and save string space.
+#
 #	Revision 1.138  1997/07/15 19:15:34  wenger
 #	All session files now saved as batch scripts instead of Tcl scripts.
 #
@@ -884,6 +887,8 @@ menu .mbar.session.menu.printMenu -tearoff 0
 	-command { GetStringCount }
 .mbar.session.menu add command -label "Save String Space" \
 	-command { SaveStringSpace }
+.mbar.session.menu add command -label "Dump Link/Cursor Info" \
+	-command { DumpLinksCursors }
 .mbar.session.menu add separator
 
 .mbar.session.menu add command -label "Quit" -command DoExit

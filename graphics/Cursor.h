@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/06/09 14:46:34  wenger
+  Added cursor grid; fixed bug 187; a few minor cleanups.
+
   Revision 1.8  1996/11/13 16:56:05  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -80,6 +83,7 @@ public:
   View *GetDst() { return _dst; }
   
   /* Get current visual filter. return TRUE if it exists. */
+  //TEMPTEMP -- filter arg should probably be a const!
   Boolean GetVisualFilter(VisualFilter *&filter, GlobalColor &color);
 
   /* Move the X and Y coords of source */

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/06/25 21:25:28  wenger
+  Added writeDesc (write session description) command needed by Hongyu's
+  Java client.
+
   Revision 1.2  1996/11/03 02:41:36  kmurli
   Modified to include the query schema level. Also modified to include DQL
   processing
@@ -74,7 +78,8 @@ DevFileHeader::Get(char *fileType)
 		!strcmp(fileType, FILE_TYPE_CORAL) ||
 		!strcmp(fileType, FILE_TYPE_PIXMAP) ||
 		!strcmp(fileType, FILE_TYPE_SCHEMACAT) ||
-		!strcmp(fileType, FILE_TYPE_SESSIONDESC))
+		!strcmp(fileType, FILE_TYPE_SESSIONDESC) ||
+		!strcmp(fileType, FILE_TYPE_LINKDESC))
 	{
 		// File type is legal.
 	}

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/06/25 21:25:29  wenger
+  Added writeDesc (write session description) command needed by Hongyu's
+  Java client.
+
   Revision 1.3  1996/11/03 02:41:37  kmurli
   Modified to include the query schema level. Also modified to include DQL
   processing
@@ -58,6 +62,7 @@
 #define FILE_TYPE_PIXMAP	"pixmap"
 #define FILE_TYPE_SCHEMACAT	"schemaCat"
 #define FILE_TYPE_SESSIONDESC	"sessionDesc"
+#define FILE_TYPE_LINKDESC	"linkDesc"
 
 
 class DevFileHeader

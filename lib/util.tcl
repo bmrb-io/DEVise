@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.49  1997/07/17 18:44:17  wenger
+#  Added menu selections to report number of strings and save string space.
+#
 #  Revision 1.48  1997/06/25 17:05:17  wenger
 #  Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
 #  function, disabled updating of record links during print, print dialog
@@ -1072,5 +1075,20 @@ proc SaveStringSpace {} {
 
   if {$filename != ""} {
     DEVise saveStringSpace $filename
+  }
+}
+
+############################################################
+# Dump info about links and cursors to a file.
+
+proc DumpLinksCursors {} {
+  global fsBox
+
+  set fsBox(path) [CWD]
+  set fsBox(pattern) *
+  set filename [ FSBox "Select file for link/cursor info" ]
+
+  if {$filename != ""} {
+    DEVise dumpLinkCursor $filename
   }
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/06/09 14:46:36  wenger
+  Added cursor grid; fixed bug 187; a few minor cleanups.
+
   Revision 1.3  1995/12/29 18:29:38  jussi
   Added the copyright message and cleaned up the code a bit.
 
@@ -26,14 +29,35 @@
 #include <stdio.h>
 #include "CursorClassInfo.h"
 #include "Cursor.h"
+#include "View.h"
 #include "Util.h"
 #include "Exit.h"
+
+//#define DEBUG
+
+DevCursorList DevCursor::_cursorList;
+
+void
+DevCursor::Dump(FILE *fp)
+{
+  fprintf(fp, "\nCURSORS:\n");
+
+  int index = DevCursor::InitIterator();
+  while (DevCursor::More(index)) {
+    CursorClassInfo *cursorInfo = DevCursor::Next(index);
+    cursorInfo->Dump(fp);
+  }
+  DevCursor::DoneIterator(index);
+
+}
 
 CursorClassInfo::CursorClassInfo()
 {
   _name = NULL;
   _flag = 0;
   _cursor = NULL;
+
+  DevCursor::_cursorList.Insert(this);
 }
 
 CursorClassInfo::CursorClassInfo(char *name, VisualFlag flag,
@@ -42,12 +66,18 @@ CursorClassInfo::CursorClassInfo(char *name, VisualFlag flag,
   _name = name;
   _flag = flag;
   _cursor = cursor;
+
+  DevCursor::_cursorList.Insert(this);
 }
 
 CursorClassInfo::~CursorClassInfo()
 {
   if (_cursor != NULL)
     delete _cursor;
+
+  if (!DevCursor::_cursorList.Delete(this)) {
+    reportErrNosys("Unable to delete from cursor list");
+  }
 }
 
 char *CursorClassInfo::ClassName()
@@ -127,4 +157,44 @@ void CursorClassInfo::CreateParams(int &argc, char **&argv)
   args[3] = buf3;
   sprintf(buf4, "%f", gridY);
   args[4] = buf4;
+}
+
+void
+CursorClassInfo::Dump(FILE *fp)
+{
+  if (_name != NULL) {
+    fprintf(fp, "Cursor `%s'\n", _name);
+
+    fprintf(fp, "  Type:");
+    VisualFilter *filter;
+    GlobalColor color;
+    _cursor->GetVisualFilter(filter, color);
+    if (filter != NULL) {
+      if (filter->flag & VISUAL_X) fprintf(fp, "X ");
+      if (filter->flag & VISUAL_Y) fprintf(fp, "Y ");
+    }
+    fprintf(fp, "\n");
+
+    View *view = _cursor->GetSource();
+    if (view != NULL) {
+      fprintf(fp, "  Source view:\n");
+      Boolean occupyTop;
+      int extent;
+      char *viewTitle;
+      view->GetLabelParam(occupyTop, extent, viewTitle);
+      if (viewTitle == NULL) viewTitle = "NULL";
+      fprintf(fp, "    `%s' (`%s')\n", view->GetName(), viewTitle);
+    }
+
+    view = _cursor->GetDst();
+    if (view != NULL) {
+      fprintf(fp, "  Destination view:\n");
+      Boolean occupyTop;
+      int extent;
+      char *viewTitle;
+      view->GetLabelParam(occupyTop, extent, viewTitle);
+      if (viewTitle == NULL) viewTitle = "NULL";
+      fprintf(fp, "    `%s' (`%s')\n", view->GetName(), viewTitle);
+    }
+  }
 }

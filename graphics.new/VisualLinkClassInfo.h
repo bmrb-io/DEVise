@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/31 15:37:43  jussi
+  Moved to the graphics.new directory.
+
   Revision 1.3  1996/01/30 21:10:07  jussi
   Removed extraneous Changeable() which is inherited from ClassInfo.
 
@@ -28,6 +31,28 @@
 
 #include "ClassDir.h"
 #include "VisualArg.h"
+#include "DList.h"
+
+class VisualLinkClassInfo;
+DefinePtrDList(DevLinkList, VisualLinkClassInfo *);
+
+class DevLink {
+public:
+  static int GetCount() { return _linkList.Size(); }
+
+  /* Read-only access to link list. */
+  static int InitIterator() { return _linkList.InitIterator(); }
+  static Boolean More(int index) { return _linkList.More(index); }
+  static VisualLinkClassInfo *Next(int index) { return _linkList.Next(index); }
+  static void DoneIterator(int index) { _linkList.DoneIterator(index); }
+
+  static void Dump(FILE *fp);
+
+protected:
+  friend class VisualLinkClassInfo;
+
+  static DevLinkList _linkList;
+};
 
 class VisualLink;
 
@@ -64,6 +89,8 @@ public:
   
   /* Get parameters that can be used to re-create this instance */
   virtual void CreateParams(int &argc, char **&argv);
+
+  void Dump(FILE *fp);
 
 private:
   VisualFlag _flag;

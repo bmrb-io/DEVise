@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/31 15:37:42  jussi
+  Moved to the graphics.new directory.
+
   Revision 1.2  1995/09/05 21:13:27  jussi
   Added/updated CVS header.
 */
@@ -25,24 +28,81 @@
 #include "VisualLinkClassInfo.h"
 #include "VisualLink.h"
 #include "RecordLink.h"
+#include "ViewGraph.h"
 #include "Util.h"
 #include "Exit.h"
 
+//#define DEBUG
+
+DevLinkList DevLink::_linkList;
+
+void
+DevLink::Dump(FILE *fp)
+{
+  const char *pileString = "Pile:";
+  const int pileStrLen = strlen(pileString);
+
+  fprintf(fp, "\nREGULAR LINKS:\n");
+  int index = DevLink::InitIterator();
+  while (DevLink::More(index)) {
+    VisualLinkClassInfo *linkInfo = DevLink::Next(index);
+    if (linkInfo->InstanceName() != NULL &&
+        strncmp(linkInfo->InstanceName(), pileString, pileStrLen)) {
+      linkInfo->Dump(fp);
+    }
+  }
+  DevLink::DoneIterator(index);
+
+  fprintf(fp, "\nPILE LINKS:\n");
+  index = DevLink::InitIterator();
+  while (DevLink::More(index)) {
+    VisualLinkClassInfo *linkInfo = DevLink::Next(index);
+    if (linkInfo->InstanceName() != NULL &&
+        !strncmp(linkInfo->InstanceName(), pileString, pileStrLen)) {
+      linkInfo->Dump(fp);
+    }
+  }
+  DevLink::DoneIterator(index);
+}
+
 VisualLinkClassInfo::VisualLinkClassInfo()
 {
+#if defined(DEBUG)
+  printf("VisualLinkClassInfo(%p)::VisualLinkClassInfo()\n", this);
+#endif
+
+  _name = NULL;
+  _flag = 0;
+  _link = NULL;
+
+  DevLink::_linkList.Insert(this);
 }
 
 VisualLinkClassInfo::VisualLinkClassInfo(char *name, VisualFlag flag, 
 					 VisualLink *link)
 {
+#if defined(DEBUG)
+  printf("VisualLinkClassInfo(%p)::VisualLinkClassInfo(%s)\n", this, name);
+#endif
+
   _name = name;
   _flag = flag;
   _link = link;
+
+  DevLink::_linkList.Insert(this);
 }
 
 VisualLinkClassInfo::~VisualLinkClassInfo()
 {
+#if defined(DEBUG)
+  printf("VisualLinkClassInfo(%p)::~VisualLinkClassInfo(%s)\n", this, _name);
+#endif
+
   delete _link;
+
+  if (!DevLink::_linkList.Delete(this)) {
+    reportErrNosys("Unable to delete from link list");
+  }
 }
 
 char *VisualLinkClassInfo::ClassName()
@@ -65,6 +125,10 @@ void VisualLinkClassInfo::ParamNames(int &argc, char **&argv)
 
 ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc, char **argv)
 {
+#if defined(DEBUG)
+  printf("VisualLinkClassInfo(%p)::CreateWithParams(%s)\n", this, argv[0]);
+#endif
+
   DOASSERT(argc == 2, "Invalid arguments");
   char *name = CopyString(argv[0]);
   int flag = atoi(argv[1]);
@@ -107,4 +171,55 @@ void VisualLinkClassInfo::CreateParams(int &argc, char **&argv)
   args[0] = _name;
   sprintf(buf1, "%d", _flag);
   args[1] = buf1;
+}
+
+void
+VisualLinkClassInfo::Dump(FILE *fp)
+{
+  if (_name != NULL) {
+    char *name = _link->GetName();
+    if (strcmp(_name, name)) {
+      reportErrNosys("warning: link name doens't match info name");
+    }
+    fprintf(fp, "Link `%s':\n", name);
+
+    VisualFlag flag = _link->GetFlag();
+    if (_flag != flag) {
+      reportErrNosys("warning: link flag doens't match info flag");
+    }
+    fprintf(fp, "  Type: ");
+    if (flag & VISUAL_X) fprintf(fp, "X ");
+    if (flag & VISUAL_Y) fprintf(fp, "Y ");
+    if (flag & VISUAL_SIZE) fprintf(fp, "size ");
+    if (flag & VISUAL_PATTERN) fprintf(fp, "pattern ");
+    if (flag & VISUAL_COLOR) fprintf(fp, "color ");
+    if (flag & VISUAL_ORIENTATION) fprintf(fp, "orientation ");
+    if (flag & VISUAL_SHAPE) fprintf(fp, "shape ");
+    if (flag & VISUAL_RECORD) fprintf(fp, "record ");
+    fprintf(fp, "\n");
+
+    ViewGraph *view = _link->GetMasterView();
+    if (view != NULL) {
+      fprintf(fp, "  Master view:\n");
+      Boolean occupyTop;
+      int extent;
+      char *viewTitle;
+      view->GetLabelParam(occupyTop, extent, viewTitle);
+      if (viewTitle == NULL) viewTitle = "NULL";
+      fprintf(fp, "    `%s' (`%s')\n", view->GetName(), viewTitle);
+    }
+
+    fprintf(fp, "  Views:\n");
+    int index = _link->InitIterator();
+    while (_link->More(index)) {
+      view = _link->Next(index);
+      Boolean occupyTop;
+      int extent;
+      char *viewTitle;
+      view->GetLabelParam(occupyTop, extent, viewTitle);
+      if (viewTitle == NULL) viewTitle = "NULL";
+      fprintf(fp, "    `%s' (`%s')\n", view->GetName(), viewTitle);
+    }
+    _link->DoneIterator(index);
+  }
 }

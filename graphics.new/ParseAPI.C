@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.70  1997/07/17 18:43:59  wenger
+  Added menu selections to report number of strings and save string space.
+
   Revision 1.69  1997/06/25 21:25:29  wenger
   Added writeDesc (write session description) command needed by Hongyu's
   Java client.
@@ -328,6 +331,8 @@
 #include "DevError.h"
 #include "ViewLens.h"
 #include "WinClassInfo.h"
+#include "VisualLinkClassInfo.h"
+#include "CursorClassInfo.h"
 #include "MappingInterp.h"
 
 #include "LMControl.h"		// LayoutManager
@@ -365,7 +370,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   
   result[0] = '\0';
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("ParseAPI[%ld]: ", (long) getpid());
   for (int i = 0; i < argc; i++)
   {
@@ -1708,6 +1713,25 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         control->ReturnVal(API_NAK, "can't save string space");
         return -1;
       }
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+
+    if (!strcmp(argv[0], "dumpLinkCursor")) {
+      // Argument: <file name>
+#if defined(DEBUG)
+      printf("dumpLinkCursor <%s>\n", argv[1]);
+#endif
+      FILE *fp = fopen(argv[1], "w");
+      if (fp == NULL) {
+        control->ReturnVal(API_NAK, "can't dump link/cursor info");
+        return -1;
+      }
+      char *header = DevFileHeader::Get(FILE_TYPE_LINKDESC);
+      fprintf(fp, "%s", header);
+      DevLink::Dump(fp);
+      DevCursor::Dump(fp);
+      (void) fclose(fp);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
