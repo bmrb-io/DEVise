@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.29  1997/04/03 16:36:47  wenger
+  Reduced memory and CPU usage in statistics; fixed a memory leak in the
+  statistics code; switched devised back to listening on port 6100
+  (changed accidentally?); turned off a bunch of debug output.
+
   Revision 1.28  1997/03/19 19:41:51  andyt
   Embedded Tcl/Tk windows are now sized in data units, not screen pixel
   units. The old list of ETk window handles (WindowRep class) has been
@@ -538,6 +543,7 @@ void ServerAPI::OpenDataChannel(int port){
       if (ind < 0) {
 	  perror("Cannot open the data channel");
 	  close(_dataFd);
+	  _dataFd = -1;
 	  return;
       }
 #ifdef DEBUG

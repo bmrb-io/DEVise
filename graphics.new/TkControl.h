@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/11/18 23:27:04  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.19  1997/11/12 15:46:41  wenger
   Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
   into the trunk.
@@ -156,10 +160,10 @@ public:
   virtual int RemoveReplica(char *hostName, int port) { return 1; }
 
 #if OPEN_TEST_FILE
-  int fd;
-  virtual void OpenDataChannel(int port) { fd = open("/tmp/devise_tst",
+  int _fd;
+  virtual void OpenDataChannel(int port) { _fd = open("/tmp/devise_tst",
       O_RDWR | O_CREAT | O_TRUNC, 0644); }
-  virtual int getFd(){ return fd;} 
+  virtual int getFd(){ return _fd; } 
 #else
   virtual void OpenDataChannel(int port) { }
   virtual int getFd(){ return -1;} 
