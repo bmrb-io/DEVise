@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/11/23 21:17:55  jussi
+  Removed failing support for variable-sized records.
+
   Revision 1.12  1996/11/12 17:19:47  jussi
   Removed unnecessary methods which are already provided in the
   base class (TData).
@@ -160,71 +163,79 @@ char *GData::GetName()
 Init getting records.
 ***************************************************************/
 
-void GData::InitGetRecs(RecId lowId, RecId highId, RecordOrder order)
+TData::TDHandle GData::InitGetRecs(RecId lowId, RecId highId,
+                                   Boolean asyncAllowed,
+                                   ReleaseMemoryCallback *callback)
 {
 #ifdef DEBUG
   printf("GData::InitGetRecs(%ld,%ld)\n", lowId, highId);
 #endif
 
-  _nextId = lowId;
-  _highId = highId;
-  _numRecs = highId - lowId + 1;
-  _rec = _rangeMap->FindMaxLower(_nextId);
-  if (!_rec) {
-    fprintf(stderr, "GData::InitGetRecs(): %ld,%ld out of range\n",
-	    lowId, highId);
-    DOASSERT(0, "Invalid record range");
-  }
+  GDataRequest *req = new GDataRequest;
+  DOASSERT(req, "Out of memory");
+
+  req->nextId = lowId;
+  req->endId = highId;
+  req->relcb = callback;
+
+  req->numRecs = highId - lowId + 1;
+  req->rec = _rangeMap->FindMaxLower(req->nextId);
+  DOASSERT(req->rec, "Invalid record range");
+
+  return req;
 }
 
-Boolean GData::GetRecs(void *buf, int bufSize, RecId &startRid,
-		       int &numFetched, int &dataFetched)
+Boolean GData::GetRecs(TDHandle treq, void *buf, int bufSize,
+                       RecId &startRid, int &numFetched, int &dataFetched)
 {
+  DOASSERT(treq, "Invalid request handle");
+  GDataRequest *req = (GDataRequest *)treq;
+
 #ifdef DEBUG
   printf("GData::GetRecs bufSize %d, %ld recs left, nex Id %ld\n", 
-	 bufSize, _numRecs, _nextId);
+	 bufSize, _numRecs, req->nextId);
 #endif
   DOASSERT(_recFile != NULL, "No file for GData");
 
-  if (_numRecs <= 0)
+  if (req->numRecs <= 0)
     return false;
 	
   /* Get all the ranges we need to get */
   int num = bufSize / _recSize;
   DOASSERT(num > 0, "Invalid buffer size");
   
-  if (num > (int)_numRecs)
-    num = _numRecs;
+  if (num > (int)req->numRecs)
+    num = req->numRecs;
   
   char *bufAddr = (char *)buf;
   
   /* Set return param and update internal vars */
-  startRid = _nextId;
+  startRid = req->nextId;
   numFetched = num;
-  _numRecs -= num;
+  req->numRecs -= num;
   dataFetched = numFetched *_recSize;
   
 #ifdef DEBUG
   printf("%d fetched, %d bytes returned, %ld left\n",
-	 numFetched, dataFetched, _numRecs);
+	 numFetched, dataFetched, req->numRecs);
 #endif
 
   while (num > 0) {
-    if (_nextId > _rec->tHigh) {
+    if (req->nextId > req->rec->tHigh) {
       /* finished this range. try next range */
-      _rec = _rangeMap->NextRangeRec(_rec);
-      DOASSERT(_rec, "Invalid record range");
+      req->rec = _rangeMap->NextRangeRec(req->rec);
+      DOASSERT(req->rec, "Invalid record range");
       continue;
     }
     
     /* Get data in this range */
-    if (_nextId < _rec->tLow || _nextId > _rec->tHigh)
+    if (req->nextId < req->rec->tLow || req->nextId > req->rec->tHigh)
       DOASSERT(0, "Invalid record range");
     
-    int numToReturn = _rec->tHigh - _nextId + 1;
+    int numToReturn = req->rec->tHigh - req->nextId + 1;
     if (numToReturn > num)
       numToReturn = num;
-    RecId gId = _rec->gLow + (_nextId - _rec->tLow);
+    RecId gId = req->rec->gLow + (req->nextId - req->rec->tLow);
 
 #ifdef DEBUG
     printf("getting gId %ld, num %d\n", gId, numToReturn);
@@ -234,15 +245,17 @@ Boolean GData::GetRecs(void *buf, int bufSize, RecId &startRid,
     
     bufAddr += numToReturn * _recSize;
     num -= numToReturn;
-    _nextId += numToReturn;
-    
+    req->nextId += numToReturn;
   }
   
   return true;
 }
 
-void GData::DoneGetRecs()
+void GData::DoneGetRecs(TDHandle req)
 {
+  DOASSERT(req, "Invalid request handle");
+
+  delete req;
 }
 
 /* For writing records. Default: not implemented. */
@@ -345,12 +358,12 @@ int GData::UserAttr(int attrNum)
    Return true if open ended (no high limit) */
 Boolean GData::NextUnConverted(RecId id, RecId &low, RecId &high)
 {
-  return _rangeMap->NextUnprocessed(id,low,high);
+  return _rangeMap->NextUnprocessed(id, low, high);
 }
 
 void GData::PrintConverted()
 {
-  printf("GData converted: ");
+  printf("GData converted:\n");
   _rangeMap->Print();
 }
 

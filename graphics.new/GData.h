@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/23 21:17:56  jussi
+  Removed failing support for variable-sized records.
+
   Revision 1.5  1996/11/12 17:19:35  jussi
   Removed unnecessary methods which are already provided in the
   base class (TData).
@@ -50,6 +53,12 @@ public:
 };
 
 DefinePtrDList(GDataCallbackList, GDataCallback *)
+
+class GDataRequest: public TDataRequest {
+  public:
+    GDataRangeMapRec *rec;
+    RecId numRecs;
+};
 
 class GData: public TData {
 public:
@@ -89,10 +98,14 @@ public:
 
 	/**** Getting Records ****/
 
+        typedef GDataRequest *GDHandle;
+
 	/**************************************************************
 	Init getting records.
 	***************************************************************/
-	virtual void InitGetRecs(RecId lowId, RecId highId,RecordOrder order);
+	virtual TDHandle InitGetRecs(RecId lowId, RecId highId,
+                                     Boolean asyncAllowed,
+                                     ReleaseMemoryCallback *callback);
 
 	/**************************************************************
 	Get next batch of records, as much as fits into buffer. 
@@ -106,10 +119,10 @@ public:
 		dataSize: # of bytes taken up by data.
 		recPtrs: pointer to records for variable size records.
 	**************************************************************/
-	virtual Boolean GetRecs(void *buf, int bufSize, RecId &startRid,
-                                int &numRecs, int &dataSize);
+	virtual Boolean GetRecs(TDHandle handle, void *buf, int bufSize,
+                                RecId &startRid, int &numRecs, int &dataSize);
 
-	virtual void DoneGetRecs();
+	virtual void DoneGetRecs(TDHandle handle);
 
 	virtual int GetModTime();
 
@@ -143,7 +156,6 @@ public:
 	Boolean NextRange(RecId &lowId, RecId &highId);
 	void DoneConvertedIterator();
 
-
 	/* Print what has been converted */
 	void PrintConverted();
 
@@ -153,10 +165,6 @@ private:
 	GDataRangeMap *_rangeMap;
 	int _recsLeft; /* # of records left to convert */
 	int _totalRecs; /* # of recs converted */
-
-	/* For getting records */
-	RecId _nextId, _highId, _numRecs;
-	GDataRangeMapRec *_rec;
 
 	GDataCallbackList _callbacks;
 
