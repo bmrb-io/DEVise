@@ -35,7 +35,6 @@ DTE_INCLUDES = \
 	-I../../graphics \
 	-I../../graphics.new \
 	-I$(DTE_DIR)/GUI \
-	-I$(DTE_DIR)/Script \
 	-I../../unidata \
 	$(PERL_INCL)
 

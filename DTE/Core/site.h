@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/07/30 21:39:27  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.23  1997/06/21 22:48:08  donjerko
   Separated type-checking and execution into different classes.
 
@@ -114,7 +117,7 @@ public:
 		delete iterator;
 		if(mySelect){
 			for(mySelect->rewind(); !mySelect->atEnd(); mySelect->step()){
-				mySelect->get()->destroy();
+//				mySelect->get()->destroy();
 				delete mySelect->get();
 			}
 		}
