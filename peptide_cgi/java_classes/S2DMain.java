@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2001/05/14 19:36:50  wenger
+// We now still generate chemical shift visualizations if we can't get
+// residue counts.
+//
 // Revision 1.16  2001/05/14 18:08:26  wenger
 // Parameterized all star file tag names, etc.
 //
@@ -110,7 +114,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.10";
+    public static final String PEP_CGI_VERSION = "2.11";
 
     private int _accessionNum;
     private String _dataDir;
