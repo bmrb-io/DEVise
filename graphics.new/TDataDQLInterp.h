@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/02 16:54:32  wenger
+  Fixed compile warning; added standard headers to some files;
+  conditionaled out debug code.
+
  */
 
 /* interpreted TData using parsed information */
@@ -35,7 +39,7 @@ class TDataDQLInterpClassInfo: public ClassInfo {
 public:
   TDataDQLInterpClassInfo(char*className,char * schemaFile,char *fileType,char *dataFile,char *query);
   TDataDQLInterpClassInfo(char *className,char * schemaFile,
-  AttrList attrs,char * name,char * type,char *query,TData *tdata);
+  AttrList attrs,char * name,char * type,char * param,char *query,TData *tdata);
 
   virtual ~TDataDQLInterpClassInfo();
 
@@ -67,6 +71,7 @@ private:
   char * _className; 
   char * _schemaFile; 
   char * _type;
+  char * _param;
   TData *_tdata;
   int _recSize;
   int _numFlds;

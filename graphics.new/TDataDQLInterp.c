@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/12/02 16:54:31  wenger
+  Fixed compile warning; added standard headers to some files;
+  conditionaled out debug code.
+
  */
 
 #include <string.h>
@@ -55,6 +59,7 @@ TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
 /* Note that this only saves a pointer to the attrList; it doesn't copy it. */
 
   _className = strdup(className); 
+  _param = strdup(query);	
 
   String phySchemaFile;
 
@@ -133,7 +138,7 @@ TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
   _name = NULL;
 }
 
-TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char * className, char *schemaFile, AttrList attrs,char * name,char * type,char *query, 
+TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(char * className, char *schemaFile, AttrList attrs,char * name,char * type,char *query, char *param,
 TData *tdata): _attrs(attrs)
 {
 
@@ -147,6 +152,7 @@ TData *tdata): _attrs(attrs)
   _name = strdup(name);
   _type = strdup(type);
   _query = strdup(query);
+  _param = strdup(param);
   _tdata = tdata;
 }
 
@@ -169,7 +175,7 @@ static char *args[3];
 
 void TDataDQLInterpClassInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 3;
+ /* argc = 3;
   argv = args;
   args[0] = buf[0];
   args[1] = buf[1];
@@ -178,6 +184,11 @@ void TDataDQLInterpClassInfo::ParamNames(int &argc, char **&argv)
   strcpy(buf[0], "Name {foobar}");
   strcpy(buf[1], "Type {foobar}");
   strcpy(buf[2], "Param {foobar}");
+
+  */
+ argc = 5;	
+  
+
 }
 
 ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
@@ -213,7 +224,7 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
           
 
   return new TDataDQLInterpClassInfo(
-	_className,_schemaFile,_attrs, name, type, _query, tdata);
+	_className,_schemaFile,_attrs, name, type, _query, _param,tdata);
 }
 
 char *TDataDQLInterpClassInfo::InstanceName()
@@ -230,10 +241,13 @@ void *TDataDQLInterpClassInfo::GetInstance()
 void TDataDQLInterpClassInfo::CreateParams(int &argc, char **&argv)
 {
   argc = 3;
+  
   argv = args;
+  
   args[0] = _name;
   args[1] = _type;
   args[2] = _query;
+
 }
 #endif
 

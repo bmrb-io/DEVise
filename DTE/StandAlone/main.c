@@ -42,6 +42,7 @@ int main(int argc, char** argv){
 
 	while((tup = engine.getNext())){
 		for(int i = 0; i < numFlds; i++){
+			//cout << " Tuple typ == " << types[i] <<"\n";
 			displayAs(cout, tup[i], types[i]);
 			cout << '\t';
 		}
