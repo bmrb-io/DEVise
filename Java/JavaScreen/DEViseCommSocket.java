@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  1999/09/24 17:11:47  hongyu
+// adding support for 3-d molecule view
+//
 // Revision 1.4  1999/08/03 05:56:49  hongyu
 // bug fixes    by Hongyu Yao
 //
@@ -481,17 +484,7 @@ public class DEViseCommSocket
                 numberRead = 0;
             }
 
-            int b;
-            for (int i = numberRead; i < dataSize; i++) {
-                b = imgis.read();
-                if (b < 0) {
-                    closeSocket();
-                    throw new YException("Abrupt end of input stream reached", "DEViseCommSocket:receiveData()");
-                }
-
-                dataRead[numberRead] = (byte)b;
-                numberRead++;
-            }
+            imgis.readFully(dataRead);
 
             byte[] data = dataRead;
 
