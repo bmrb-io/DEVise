@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/04/29 17:53:50  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
  */
 
 #ifndef _DerivedTable_h_
@@ -42,6 +47,8 @@ public:
   DerivedTable(char *name, TData *tdata, char *masterAttrName,
       DevStatus &result);
   virtual ~DerivedTable();
+
+  virtual char *GetName() { return _name; }
 
   virtual DevStatus Initialize();
   virtual DevStatus InsertValues(TData *tdata, int recCount, void **tdataRecs);

@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/04/10 18:29:26  wenger
+  TData attribute links (aka set links) mostly implemented through table
+  insertion; a crude GUI for creating them is implemented; fixed some
+  bugs in link GUI; changed order in session file for TData attribute links.
+
  */
 
 #ifndef _MasterSlaveLink_h_
@@ -54,9 +59,6 @@ public:
   virtual void Abort() = 0;
   virtual RecordLinkType GetLinkType () = 0;
   virtual void SetLinkType(RecordLinkType type) = 0;
-
-  virtual DevStatus InsertValues(TData *tdata, int recCount,
-      void **tdataRecs) = 0;
 
   static void EnableUpdates() { _disableUpdates = false; }
   static void DisableUpdates() { _disableUpdates = true; }

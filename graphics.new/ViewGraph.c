@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.78  1998/04/29 17:53:59  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.77  1998/04/28 18:03:21  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -518,8 +523,10 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
 
 ViewGraph::~ViewGraph(void)
 {
-    DO_DEBUG(printf("ViewGraph::~ViewGraph(0x%p, %s)\n",
-		    this, (GetName() != NULL) ? GetName() : "<null>"));
+#if defined(DEBUG)
+    printf("ViewGraph::~ViewGraph(0x%p, %s)\n",
+		this, (GetName() != NULL) ? GetName() : "<null>");
+#endif
 
     // note: viewgraphs report their destruction twice, once during
     // ~ViewGraph() and once during ~View()
@@ -565,6 +572,8 @@ ViewGraph::~ViewGraph(void)
     delete _gds;
 	delete queryCallback;
 	delete _countMapping;
+
+    UnlinkMasterSlave();
 }
 
 //******************************************************************************
@@ -619,6 +628,35 @@ void ViewGraph::DropAsMasterView(MasterSlaveLink *link)
                link->GetName());
 #endif
     }
+}
+
+void
+ViewGraph::UnlinkMasterSlave()
+{
+	//
+	// For all links that this view is the master of, reset the master view.
+	//
+    int index = _masterLink.InitIterator();
+	while (_masterLink.More(index)) {
+	  MasterSlaveLink *msLink = _masterLink.Next(index);
+	  _masterLink.DeleteCurrent(index);
+	  msLink->SetMasterView(NULL);
+	}
+	_masterLink.DoneIterator(index);
+
+	//
+	// For all links that this view is a slave of, remove this view from the
+	// link.
+	//
+	index = _slaveLink.InitIterator();
+	while (_slaveLink.More(index)) {
+	  MasterSlaveLink *msLink = _slaveLink.Next(index);
+	  _slaveLink.DeleteCurrent(index);
+	  msLink->DeleteView(this);
+	}
+	_slaveLink.DoneIterator(index);
+
+	_updateLink.SetMasterView(NULL);
 }
 
 void ViewGraph::AddAsSlaveView(MasterSlaveLink *link)

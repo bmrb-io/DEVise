@@ -24,6 +24,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/04/29 17:53:56  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.3  1998/04/28 18:03:14  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -46,11 +51,9 @@
 #include <sys/types.h>
 
 #include "MasterSlaveLink.h"
-#include "DList.h"
 #include "DevStatus.h"
 
 class TData;
-class DerivedTable;
 
 enum TDType { TDataPhys, TDataLog };
 
@@ -78,15 +81,13 @@ public:
   const char *GetMasterAttrName() { return _masterAttrName; }
   const char *GetSlaveAttrName() { return _slaveAttrName; }
 
-  virtual DevStatus InsertValues(TData *tdata, int recCount, void **tdataRecs);
-
 protected:
-  DevStatus CreateTable(ViewGraph *masterView);
+  DevStatus CreateTable();
   DevStatus SetSlaveTable(ViewGraph *view);
   DevStatus DestroyTable();
   TData *GetTData(ViewGraph *view, TDType tdType);
 
-  DerivedTable *_masterTable;
+  char *_masterTableName;
 
   char *_masterAttrName;
   char *_slaveAttrName;

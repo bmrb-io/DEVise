@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/04/29 17:53:56  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.23  1998/04/28 18:03:15  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -446,7 +451,9 @@ void TDataMap::SetDefaultShape(ShapeID shapeID, int numAttr,
 
 void TDataMap::ResetGData(int gRecSize)
 {
+#if defined(DEBUG)
   printf("TDataMap::ResetGData with recSize %d\n", gRecSize);
+#endif
 
   if (_gdata) {
     QueryProc::Instance()->ClearGData(_gdata);

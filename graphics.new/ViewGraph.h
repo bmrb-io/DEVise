@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.49  1998/04/29 17:54:00  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.48  1998/04/10 18:29:34  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -272,6 +277,7 @@ DefineDList(BStatList, BasicStats *)
 class TDataMap;
 class MasterSlaveLink;
 class CountMapping;
+class DerivedTable;
 
 struct MappingInfo {
   TDataMap *map;
@@ -345,6 +351,9 @@ class ViewGraph : public View
   virtual void DropAsMasterView(MasterSlaveLink *link);
   virtual void AddAsSlaveView(MasterSlaveLink *link);
   virtual void DropAsSlaveView(MasterSlaveLink *link);
+
+  /* Unlink all MasterSlaveLinks connected to this view. */
+  virtual void UnlinkMasterSlave();
 
   // Stats update link access
   UpdateLink& GetUpdateLink() { return _updateLink; }
@@ -470,6 +479,11 @@ class ViewGraph : public View
       return StatusFailed;
     }
   }
+
+  virtual char *CreateDerivedTable(char *namePrefix, char *masterAttrName) {
+    return NULL; }
+  virtual void DestroyDerivedTable(char *tableName) {}
+  virtual DerivedTable *GetDerivedTable(char *tableName) { return NULL; }
 
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/04/29 17:53:57  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.6  1998/04/10 18:29:32  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -45,6 +50,7 @@
 #include "RecordLink.h"
 #include "BooleanArray.h"
 #include "CountMapping.h"
+#include "DerivedTable.h"
 
 //#define DEBUG
 
@@ -65,11 +71,77 @@ ViewData::ViewData(char* name, VisualFilter& initFilter, QueryProc* qp,
 						 AxisLabel* xAxis, AxisLabel* yAxis, Action* action)
 	:	ViewGraph(name, initFilter, qp, xAxis, yAxis, fgid, bgid, action)
 {
+#if defined(DEBUG)
+	printf("ViewData::ViewData(0x%p, %s)\n", this, name);
+#endif
+}
+
+//******************************************************************************
+ViewData::~ViewData()
+{
+#if defined(DEBUG)
+	printf("ViewData::~ViewData(0x%p, %s)\n", this, _name);
+#endif
+
+  // We have to do this here, even though it's done in the ViewGraph
+  // destructor, so that we unlink TAttrLinks before the ViewData stuff
+  // is destroyed.
+  UnlinkMasterSlave();
+
+  int index = _derivedTables.InitIterator();
+  while (_derivedTables.More(index)) {
+    DerivedTable *table = _derivedTables.Next(index);
+	delete table;
+	_derivedTables.DeleteCurrent(index);
+  }
+  _derivedTables.DoneIterator(index);
 }
 
 //******************************************************************************
 // Callback Methods (QueryCallback)
 //******************************************************************************
+
+void
+ViewData::QueryInit(void* userData)
+{
+#if defined(DEBUG)
+  printf("ViewData::QueryInit()\n");
+#endif
+
+  int index = _derivedTables.InitIterator();
+  while (_derivedTables.More(index)) {
+    DerivedTable *table = _derivedTables.Next(index);
+    if (!table->Initialize().IsComplete()) {
+	  char errBuf[1024];
+         sprintf(errBuf, "Error initializing table %s", table->GetName());
+	  reportErrNosys(errBuf);
+    }
+  }
+  _derivedTables.DoneIterator(index);
+
+  ViewGraph::QueryInit(userData);
+}
+
+void
+ViewData::QueryDone(int bytes, void* userData, TDataMap* map)
+{
+#if defined(DEBUG)
+  printf("ViewData::QueryDone(%d)\n", bytes);
+#endif
+
+  int index = _derivedTables.InitIterator();
+  while (_derivedTables.More(index)) {
+    DerivedTable *table = _derivedTables.Next(index);
+    if (!table->Done().IsComplete()) {
+	  char errBuf[1024];
+         sprintf(errBuf, "Error terminating table %s", table->GetName());
+	  reportErrNosys(errBuf);
+    }
+  }
+  _derivedTables.DoneIterator(index);
+
+  ViewGraph::QueryDone(bytes, userData, map);
+}
 
 void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 								 void* gdata, int numGData,
@@ -348,17 +420,7 @@ ViewData::HasDerivedTable()
 	printf("ViewData::HasDerivedTable()\n");
 #endif
 
-	Boolean result = false;
-
-	int index = _masterLink.InitIterator();
-	while (_masterLink.More(index)) {
-	  DeviseLink *link = _masterLink.Next(index);
-	  if (link->GetFlag() & VISUAL_TATTR) {
-		result = true;
-		break;
-	  }
-	}
-	_masterLink.DoneIterator(index);
+	Boolean result = _derivedTables.Size() > 0;
 
 	return result;
 }
@@ -368,23 +430,101 @@ void
 ViewData::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 {
 #if defined(DEBUG)
-	printf("ViewData::InsertValues()\n");
+	printf("ViewData::InsertValues(%d)\n", recCount);
 #endif
 
-	int index = _masterLink.InitIterator();
-	while (_masterLink.More(index)) {
-	  MasterSlaveLink *link = _masterLink.Next(index);
-	  if (link->GetFlag() & VISUAL_TATTR) {
-		if (!link->InsertValues(tdata, recCount,
-		    tdataRecs).IsComplete()) {
-		  char errBuf[256];
-		  sprintf(errBuf, "Error inserting values into link %s",
-			  link->GetName());
-		  reportErrNosys(errBuf);
-		}
+	int index = _derivedTables.InitIterator();
+	while (_derivedTables.More(index)) {
+	  DerivedTable *table = _derivedTables.Next(index);
+	  if (!table->InsertValues(tdata, recCount, tdataRecs).IsComplete()) {
+		char errBuf[1024];
+        sprintf(errBuf, "Error inserting values into table %s",
+		    table->GetName());
+		reportErrNosys(errBuf);
 	  }
 	}
-	_masterLink.DoneIterator(index);
+	_derivedTables.DoneIterator(index);
+}
+
+//******************************************************************************
+char *
+ViewData::CreateDerivedTable(char *namePrefix, char *masterAttrName)
+{
+#if defined(DEBUG)
+	printf("ViewData::CreateDerivedTable(%s)\n", masterAttrName);
+#endif
+
+  //TEMP: we should check here to avoid creating two tables with the same
+  //attribute.
+  TDataMap *tdMap = GetFirstMap();
+  if (tdMap == NULL) return NULL;
+  TData *tdata = tdMap->GetPhysTData();
+  if (tdata == NULL) return NULL;
+
+  int namelen = strlen(namePrefix) + strlen(masterAttrName) + 1;
+  char *name = new char[namelen + 1];
+  sprintf(name, "%s:%s", namePrefix, masterAttrName);
+  DevStatus result;
+  DerivedTable *table = new DerivedTable(name, tdata, masterAttrName, result);
+  if (!result.IsComplete()) {
+    delete table;
+    table = NULL;
+	delete [] name;
+	name = NULL;
+  } else {
+	_derivedTables.Insert(table);
+  }
+
+  return name;
+}
+
+//******************************************************************************
+void
+ViewData::DestroyDerivedTable(char *tableName)
+{
+#if defined(DEBUG)
+  printf("ViewData::DestroyDerivedTable(%s)\n", tableName);
+#endif
+
+  Boolean found = false;
+  int index = _derivedTables.InitIterator();
+  while (_derivedTables.More(index)) {
+    DerivedTable *table = _derivedTables.Next(index);
+	if (!strcmp(tableName, table->GetName())) {
+	  _derivedTables.DeleteCurrent(index);
+	  found = true;
+	  break;
+	}
+  }
+  _derivedTables.DoneIterator(index);
+
+  if (!found) {
+	char errBuf[1024];
+	sprintf(errBuf, "Table %s not found in table list", tableName);
+	reportErrNosys(errBuf);
+  }
+}
+
+//******************************************************************************
+DerivedTable *
+ViewData::GetDerivedTable(char *tableName)
+{
+#if defined(DEBUG)
+  printf("ViewData::GetDerivedTable(%s)\n", tableName);
+#endif
+
+  DerivedTable *table = NULL;
+  int index = _derivedTables.InitIterator();
+  while (_derivedTables.More(index)) {
+    DerivedTable *tmpTable = _derivedTables.Next(index);
+	if (!strcmp(tableName, tmpTable->GetName())) {
+	  table = tmpTable;
+	  break;
+	}
+  }
+  _derivedTables.DoneIterator(index);
+
+  return table;
 }
 
 //******************************************************************************

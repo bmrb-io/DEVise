@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/04/29 17:53:57  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.4  1998/04/10 18:29:32  wenger
   TData attribute links (aka set links) mostly implemented through table
   insertion; a crude GUI for creating them is implemented; fixed some
@@ -46,6 +51,9 @@
 #include "Color.h"
 
 class BooleanArray;
+class DerivedTable;
+
+DefinePtrDList(DerivedTableList, DerivedTable *);
 
 //******************************************************************************
 // class ViewData
@@ -66,14 +74,19 @@ class ViewData : public ViewGraph
 					PColorID bgid = GetPColorID(defBackColor),
 					AxisLabel* xAxis = NULL, AxisLabel* yAxis = NULL,
 					Action* action = NULL);
-		virtual ~ViewData(void) {}
+		virtual ~ViewData();
 
-		//TEMP virtual void CreateDerivedTable();
-		//TEMP virtual void DestroyDerivedTable();
+		virtual char *CreateDerivedTable(char *namePrefix,
+			char *masterAttrName);
+		virtual void DestroyDerivedTable(char *tableName);
+		virtual DerivedTable *GetDerivedTable(char *tableName);
 
 	protected:
 
 		// Callback methods (QueryCallback)
+		virtual void QueryInit(void* userData);
+		virtual void QueryDone(int bytes, void* userData,
+						       TDataMap* map = NULL);
 		virtual void*	GetObj(void) { return this; }
 		virtual MSLinkList*	GetMasterLinkList(void) { return &_masterLink; }
 		virtual MSLinkList*	GetRecordLinkList(void) { return &_slaveLink; }
@@ -84,6 +97,8 @@ class ViewData : public ViewGraph
 									BooleanArray*& drawnList);
         virtual Boolean HasDerivedTable();
 		virtual void InsertValues(TData *tdata, int recCount, void **tdataRecs);
+
+		DerivedTableList _derivedTables;
 };
 
 //******************************************************************************
