@@ -1,7 +1,26 @@
-/* HostMappingClassInfo.c */
+/*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
+  $Id$
+
+  $Log$*/
+
 #include <sys/time.h>
 #include <time.h>
 #include <math.h>
+
 #include "tcl.h"
 #include "DeviseTypes.h"
 #include "Display.h"
@@ -20,7 +39,6 @@
 #include "BufMgr.h"
 #include "TDataHost.h"
 #include "Temp.h"
-#include "ViewWinVer.h"
 #include "Snapshot.h"
 #include "ViewScatter.h"
 #include "HostMappingClassInfo.h"
