@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2002/01/10 22:16:57  wenger
+// Forgot to update version with addition of structure type selection.
+//
 // Revision 1.29  2001/12/18 18:42:59  wenger
 // Changed mouse location display in peptide-cgi session templates as
 // requested by John Markley.
@@ -163,7 +166,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.20";
+    public static final String PEP_CGI_VERSION = "2.21";
 
     private int _masterAccNum; // accession number the user requested
 
