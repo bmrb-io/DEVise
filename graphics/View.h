@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/02/05 23:57:00  jussi
+  Added DEVise logo display.
+
   Revision 1.13  1996/01/30 00:02:41  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -278,7 +281,6 @@ protected:
 
 private:
 	void DrawHighlight();
-	void DrawLogo();
 
 	/* from ControlPanelCallback */
 	void ModeChange(ControlPanel::Mode mode);
