@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.70  1996/12/27 14:59:49  donjerko
+#	Import button is used only for importing new streams.
+#	Added a button "Display" in the import window that immediately goes to
+#	visualization.
+#
 #	Revision 1.69  1996/12/23 22:20:40  donjerko
 #	  Commented out a bunch of non-working Tk/Tcl code.  Changed OK/Cancel
 #	  pairs to have OK always on the left, Cancel on the right.  Renamed
@@ -439,8 +444,6 @@ proc OpenNewDataSource {derivedOnly} {
 ############################################################
 
 proc OpenAndDefineDataSources {derivedOnly snames} {
-	puts "in OpenAnd.."
-	puts $snames
     global sourceList derivedSourceList
 
     foreach sname $snames {
@@ -1190,7 +1193,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 
         # ask DEVise to create view instance
         set sorted $sortedx
-        set viewbasename "View"
+#TEMPTEMP?        set viewbasename "View"
+        set viewbasename "View 1"
 
 	set mmm_list {Max Mean Min}	
 	set stat_list {Stat Gstat}

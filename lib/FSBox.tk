@@ -6,6 +6,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.5  1995/09/28 17:05:43  jussi
+#	Fixed paths menu. Fixed Double-Button1 selection.
+#
 #	Revision 1.4  1995/09/22 17:33:14  jussi
 #	Added ownership message.
 #
@@ -405,9 +408,9 @@ proc FSBox {{fsBoxMessage "Select file:"} {fsBoxFileName ""} {fsBoxActionOk ""} 
               .fsBox.file.labelfile {left} \
               .fsBox.file.file {left fill expand}
   pack append .fsBox.frame1 \
+              .fsBox.frame1.ok {left fill expand} \
               .fsBox.frame1.cancel {left fill expand} \
-              .fsBox.frame1.rescan {left fill expand} \
-              .fsBox.frame1.ok {left fill expand} 
+              .fsBox.frame1.rescan {left fill expand}
   pack append .fsBox.path.paths \
               .fsBox.path.paths.paths {left}
   pack append .fsBox.pattern.patterns \

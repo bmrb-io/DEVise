@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1996/12/20 16:50:37  wenger
+#  Fonts for view label, x axis, and y axis can now be changed.
+#
 #  Revision 1.26  1996/11/20 16:48:22  jussi
 #  Display/layout mode no longer saved in the session. When session
 #  is restored, the user's currently selected mode is in control.
@@ -458,8 +461,8 @@ proc DoSaveAs { asTemplate asExport withData asBatchScript } {
     if {$file == ""} { return }
 
     set button [ dialog .saveSession "Save Session" \
-	    "Save session to file\n$file?"  "" 1  {Cancel} OK ]
-    if {$button != 1} { return }
+	    "Save session to file\n$file?"  "" 0  OK {Cancel} ]
+    if {$button != 0} { return }
 
     DoActualSave $file $asTemplate $asExport $withData $asBatchScript
     if {!$asTemplate} {
