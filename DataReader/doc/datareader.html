@@ -435,7 +435,7 @@ Allowed values: &lt;a quoted string containing a legitimate format&gt;<BR>
 Sample use:<BR>
 <pre>
 	# Reads dates like: 12/2/97-14:22:30
-	date_format = "MM/DD/YY-hh:mm:ss";
+	date_format = "%m/%d/%y-%H:%M:%S";
 </pre>
 
 Default value: none
@@ -450,64 +450,69 @@ The format codes have the following meanings:<BR>
 		<P><b>Replaced by</b></TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>B</B></TD>
+		<B><P>%E</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
-		<P>"BC" or "AD"</TD>
+		<P>"BC" or "AD" (epoch)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>DD</B></TD>
+		<B><P>%d</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>day of the month as a decimal number (1-31)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>ff</B></TD>
+		<B><P>%f</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>fractional second, as a decimal number (0-999999)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>hh</B></TD>
+		<B><P>%H</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>the hour as a decimal integer (0-23 or 1-12)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>mm</B></TD>
+		<B><P>%M</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>minute, as a decimal number (0-59)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>MM</B></TD>
+		<B><P>%m</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>month, as a decimal number (1-12)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>MONTH</B></TD>
+		<B><P>%B</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>full month name, e.g., "February"</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>MON</B></TD>
+		<B><P>%b</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>abbreviated month name, e.g., "Feb"</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>P</B></TD>
+		<B><P>%P</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>AM/PM designation for 12-hour clock (AM)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>ss</B></TD>
+		<B><P>%S</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>second, as a decimal number (0-59)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>YY</B></TD>
+		<B><P>%y</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>year without century as a decimal number (0-99)</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
-		<B><P>YYYY</B></TD>
+		<B><P>%Y</B></TD>
 		<TD WIDTH="89%" VALIGN="MIDDLE">
 		<P>year with century as a decimal number (0-9999)</TD>
+		</TR>
+	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
+		<B><P>%%</B></TD>
+		<TD WIDTH="89%" VALIGN="MIDDLE">
+		<P>literal %</TD>
 		</TR>
 	<TR><TD WIDTH="11%" VALIGN="MIDDLE">
 		<P><B>&lt;other&gt;</B></TD>

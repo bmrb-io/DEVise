@@ -6,7 +6,7 @@ comment = "#";
 	
 double sci_const;
 date date1
-  date_format = "MM/DD/YY hh:mm"
+  date_format = "%m/%d/%y %H:%M"
 ;
 string str1
   maxlen = 10

@@ -4,6 +4,6 @@ record_separator = [\n]+;
 field_separator = [ 	]+ ;
 comment = "#";
 	
-date date1 date_format = "YYYYMMDD";
-date date2 date_format = "MON-YY";
-date date3 date_format = "MONTH-YYYY";
+date date1 date_format = "%Y%m%d";
+date date2 date_format = "%b-%y";
+date date3 date_format = "%B-%Y";

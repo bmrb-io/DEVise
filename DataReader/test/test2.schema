@@ -6,6 +6,6 @@ comment = "#";
 key = (sci_const);
 	
 double sci_const;
-date date1 date_format = "MM/DD/YY hh:mm:ss.ff";
+date date1 date_format = "%m/%d/%y %H:%M:%S.%f";
 string str1[10];
 int last;

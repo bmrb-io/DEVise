@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1999/02/04 20:04:27  wenger
+  Implemented simplified DataReader schema format; field separators
+  now propagate to quoted string attributes; fixed some bugs in some
+  special cases; updated documentation (still needs some work).
+
   Revision 1.16  1999/01/29 23:30:26  beyer
   fixed memory leak and record size problem
 
@@ -462,190 +467,82 @@ Status DRSchema::normalizeDate(char*& curDate) {
 	ostringstream tmpString;
 
 	while (*tmp != '\0') {
-		switch (*tmp) {
-			case 'B':
-				tmpString << *tmp;
-				tmp++;
+		if (*tmp == '%') {
+			tmp++;
+			if (tmp > boundary) {
+				cerr << "Parse Error! Date Format is incomplete!..." << endl;
+				return FAIL;
+			}
+
+			switch (*tmp) {
+			case 'E': // epoch (BC/AD)
+				tmpString << "B";
 				break;
 
-			case 'D':
-				tmp++;
-				if (tmp > boundary) {
-					cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-					return FAIL;
-				}
-
-				if (*tmp != 'D') {
-					cerr << "Parse Error! Date Format is incorrect, it should be : DD" << endl;
-					return FAIL;
-				}
-				tmpString << 'd' ;
-				tmp++ ;
+			case 'd': // decimal day of month (1-31)
+				tmpString << "d";
 				break;
 
-			case 'f':
-				tmp++;
-				if (tmp > boundary) {
-					cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-					return FAIL;
-				}
-				
-				if (*tmp != 'f') {
-					cerr << "Parse Error! Date Format is incorrect, it should be : ff" << endl;
-					return FAIL;
-				}
-				tmpString << 'f' ;
-				tmp++;
+			case 'f': // fractional second
+				tmpString << "f";
 				break;
 
-			case 'h':
-				tmp++;
-				if (tmp > boundary) {
-					cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-					return FAIL;
-				}
-				
-				if (*tmp != 'h') {
-					cerr << "Parse Error! Date Format is incorrect, it should be : hh" << endl;
-					return FAIL;
-				}
-				tmpString << 'h' ;
-				tmp++;
+			case 'H': // decimal hour (0-23)
+				tmpString << "h";
 				break;
 
-			case 'm':
-				tmp++;
-				if (tmp > boundary) {
-					cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-					return FAIL;
-				}
-				
-				if (*tmp != 'm') {
-					cerr << "Parse Error! Date Format is incorrect, it should be : mm" << endl;
-					return FAIL;
-				}
-				tmpString << 'i' ;
-				tmp++;
-				break;
-				
-			case 'M':
-				tmp++;
-				if (tmp > boundary) {
-					cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-					return FAIL;
-				}
-				
-				if (*tmp == 'M') {
-					tmpString << 'm' ;
-					tmp++;
-				} else if (*tmp == 'O') {
-					tmp++;
-					if (tmp > boundary) {
-						cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-						return FAIL;
-					}
-				
-					if (*tmp != 'N') {
-						cerr << "Parse Error! Date Format is incorrect" << endl;
-						return FAIL;
-					}
-					tmp++;
-					if (tmp > boundary) {
-						tmpString << 'N' ;
-						break;
-					}
-				
-					if (*tmp == 'T') {
-						tmp++;
-						if (tmp > boundary) {
-							cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-							return FAIL;
-						}
-				
-						if (*tmp != 'H') {
-							cerr << "Parse Error! Date Format is incorrect" << endl;
-							return FAIL;
-						}
-						tmpString << 'M';
-						tmp++;
-					} else {
-						tmpString << 'N';
-					}
-				} else {
-					cerr << "Parse Error! Date Format is incorrect" << endl;
-					return FAIL;
-				}
+			case 'M': // decimal minute (0-59)
+				tmpString << "i";
 				break;
 
-			case 'P':
-				tmpString << 'P';
-				tmp++;
+			case 'm': // decimal month (1-12)
+				tmpString << "m";
 				break;
 
-			case 's':
-				tmp++;
-				if (tmp > boundary) {
-					cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-					return FAIL;
-				}
-				
-				if (*tmp != 's') {
-					cerr << "Parse Error! Date Format is incorrect, it should be : ss" << endl;
-					return FAIL;
-				}
-				tmpString << 's' ;
-				tmp++;
+			case 'B': // full month, e.g., February
+				tmpString << "M";
 				break;
 
-			case 'Y':
-				tmp++;
-				if (tmp > boundary) {
-					cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-					return FAIL;
-				}
-				
-				if (*tmp != 'Y') {
-					cerr << "Parse Error! Date Format is incorrect, it should be : YY or YYYY" << endl;
-					return FAIL;
-				}
-				tmp++;
-				if (tmp > boundary) {
-					tmpString << 'y';
-					break;
-				}
-				
-				if (*tmp != 'Y') {
-					tmpString << 'y';
-				} else {
-					if (*tmp != 'Y') {
-						cerr << "Parse Error! Date Format is incorrect, it should be : YY or YYYY" << endl;
-						return FAIL;
-					}
-					tmp++;
-					if (tmp > boundary) {
-						cerr << "Parse Error! Date Format is incomplete !..." << endl ;
-						return FAIL;
-					}
-				
-					if (*tmp != 'Y') {
-						cerr << "Parse Error! Date Format is incorrect, it should be : YY or YYYY" << endl;
-						return FAIL;
-					}
-					tmp++;
-					tmpString << 'Y';
-					break;
-				}
+			case 'b': // abbreviated month, e.g., Feb
+				tmpString << "N";
+				break;
 
-			default:
-				tmp++;
-				tmpString << *(tmp-1); // anything, skip this
+			case 'P': // AM/PM
+				tmpString << "P";
+				break;
+
+			case 'S': // decimal second (0-61)
+				tmpString << "s";
+				break;
+
+			case 'y': // year without century (0-99)
+				tmpString << "y";
+				break;
+
+			case 'Y': // year with century, e.g., 1999
+				tmpString << "Y";
+				break;
+
+			case '%': // literal %
+				tmpString << "%";
+				break;
+
+			default: // unrecognized code
+				cerr << "Unrecognized date format code: %" << *tmp << endl;
+				return FAIL;
+				break;
+			}
+		} else {
+			tmpString << *tmp;
 		}
+
+		tmp++;
 	}
-        string tstr = tmpString.str();
-	char* tmp1 = curDate;
+
+	delete [] curDate;
+	string tstr = tmpString.str();
 	curDate = new char[tstr.length()+1];
 	strcpy(curDate,tstr.c_str());
-	delete [] tmp1;
 	return OK;
 }
 

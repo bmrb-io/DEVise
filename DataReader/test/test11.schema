@@ -1,0 +1,13 @@
+datareader 2.0;
+
+record_separator = [\n]+;
+field_separator = [ \t]+ ;
+comment = "#";
+	
+date date1 date_format = "%Y %E";
+string str1[10];
+date date2
+  date_format = "%Y %m"
+#  length = 7
+  ;
+date date3 date_format = "%H %P";

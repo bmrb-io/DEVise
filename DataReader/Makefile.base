@@ -19,6 +19,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.10  1999/02/04 20:04:26  wenger
+# Implemented simplified DataReader schema format; field separators
+# now propagate to quoted string attributes; fixed some bugs in some
+# special cases; updated documentation (still needs some work).
+#
 # Revision 1.9  1999/01/18 22:34:16  wenger
 # Considerable changes to the DataReader:  reading is now per-field rather
 # than per-character (except for dates); the "extractor" functions now do
@@ -162,5 +167,9 @@ test9: testParser
 test10: testParser
 	testParser ../../DataReader/test/test10.dat \
 		../../DataReader/test/test10.schema
+
+test11: testParser
+	testParser ../../DataReader/test/test11.dat \
+		../../DataReader/test/test11.schema
 
 ###############################################################################
