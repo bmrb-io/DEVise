@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/11/21 01:23:24  jussi
+  Removed _memFetched and InitScan().
+
   Revision 1.11  1996/08/01 22:44:55  jussi
   Record ranges in record link files can now be arbitrarily large.
 
@@ -65,6 +68,8 @@
 #include "DList.h"
 #include "BufPolicy.h"
 #include "Dispatcher.h"
+#include "SortedTable.h"
+#include "Timer.h"
 
 class BufMgr;
 class TData;
@@ -73,11 +78,12 @@ class GData;
 class DictGroup;
 class RecFile;
 
-/* data for QueryProcFull */
 enum QPFullType { QPFull_X, QPFull_YX, QPFull_Scatter };
 enum QPFullState { QPFull_InitState, QPFull_ScanState, QPFull_EndState };
 
 const int QPFULL_MAX_MAPPINGS = 1024;
+
+const int QP_TIMER_INTERVAL = 1000;
 
 struct QPFullData {
   QPFullData *next;                     /* for linked list on free list */
@@ -91,14 +97,13 @@ struct QPFullData {
   QPFullType qType;
   QPFullState state;
 
-  /* for QPFull_ScanState: current == next id to get.
-     low == low id, high == high id */
-  RecId low, current, high;
+  RecId low;                            /* first record in query scope */
+  RecId high;                           /* last record in query scope */
+  RecId current;                        /* current record in query scope */
 
   Boolean isRandom;                     /* true if doing random display */
-  int iteration;                        /* current iteration */
 
-  QPRange *range;	                /* data range that has been returned */
+  QPRange range;	                /* data range that has been returned */
   
   int bytes;                            /* # of bytes processed in query */
   
@@ -115,7 +120,8 @@ struct QPFullData {
 
 DefinePtrDList(QPFullDataList, QPFullData *)
 
-class QueryProcFull: public QueryProc, private QPRangeCallback {
+class QueryProcFull: public QueryProc, private QPRangeCallback,
+                     public DispatcherCallback, public TimerCallback {
 public:
   QueryProcFull();
 
@@ -128,6 +134,12 @@ public:
 	
   /* Abort a query given the mapping and the callback. */
   virtual void AbortQuery(TDataMap *map, QueryCallback *callback);
+
+  /* Activate query processor when timer expires */
+  virtual void TimerWake(int arg) {
+      Dispatcher::Current()->RequestCallback(_dispatcherID);
+      Timer::Queue(QP_TIMER_INTERVAL, this, 0);
+  }
 
   virtual BufMgr *GetMgr();
 
@@ -159,7 +171,7 @@ public:
   /* Get minimum X value for mapping. Return true if found */
   virtual Boolean GetMinX(TDataMap *map, Coord &minX);
 
-private:
+protected:
   BufPolicy::policy _policy;
 
   Boolean _prefetch, _useExisting;
@@ -203,11 +215,18 @@ private:
      Return true if found.
   */
   Boolean DoBinarySearch(BufMgr *mgr, TData *tdata, TDataMap *map,
-			 Coord xVal, Boolean isPrefetch,
-			 RecId &id, Boolean bounded = false,
-			 RecId lowBound = 0, RecId highBound = 0,
-			 Boolean maxLower = true);
+			 Coord xVal, Boolean isPrefetch, RecId &id,
+                         Boolean bounded = false, RecId lowBound = 0,
+                         RecId highBound = 0, Boolean maxLower = true);
 	
+  /* Do Linear Search, and return the Id of first matching record.
+     The parameters are the same as those of DoBinarySearch().
+  */
+  Boolean DoLinearSearch(BufMgr *mgr, TData *tdata, TDataMap *map,
+                         Coord xVal, Boolean isPrefetch, RecId &id, 
+			 Boolean bounded = false, RecId lowBound = 0,
+			 RecId highBound = 0, Boolean maxLower = true);
+  
   /*
      Return true if we should only retrieve TDAta from 
      buffer manager. This is determined by the number of queries
@@ -227,9 +246,9 @@ private:
 
   /* Distribute tdata/gdata to all queries that need it */
   void DistributeTData(QPFullData *qData, RecId startRid,
-		       int numRecs, void *buf, void **recs);
+		       int numRecs, void *buf);
   void DistributeGData(QPFullData *qData, RecId startRid,
-		       int numRecs, void *buf, void **recs);
+		       int numRecs, void *buf);
   
   /* Return first query in query list */
   QPFullData *FirstQuery();
@@ -247,13 +266,6 @@ private:
   /* Do gdata convertion */
   void DoGDataConvert();
   
-  /* Allocate an record for query. Init the range field. */
-  QPFullData *AllocEntry();
-  void FreeEntry(QPFullData *entry);
-
-  /* freelist */
-  QPFullData *_freeList;
-  
   /* Report to journal */
   void JournalReport();
 
@@ -261,7 +273,6 @@ private:
   QPFullData *_rangeQData;              /* query we are currently processing */
   void *_rangeBuf;
   RecId _rangeStartId;
-  void **_rangeRecs;                    /* pointer to first reocrd */
   int _rangeNumRecs;
   Boolean _rangeTData;
   virtual void QPRangeInserted(RecId low, RecId high);
@@ -285,8 +296,29 @@ private:
   int _tqueryBeginIndex;           /* index of next record to examine */
   Boolean _tqueryApprox;           /* true for approximate match */
 
-protected:
-  DispatcherID _dispatcherID;
+  /*
+     The following data structures and methods cache X coordinate values
+     found on tape data sources. They provide intermediate points of
+     reference (mapping Coord X -> RecId r) so that DoLinearSearch()
+     doesn't have to do a search from scratch every time.
+  */
+  void AssociateMappingWithCoordinateTable(TDataMap *map);
+  void AddCoordMapping(TDataMap *map, RecId id, Coord coord);
+
+  /* Tables of past coordinate values; one table per unique mapping. */
+  int _numCoordinateTables;
+  struct coordinateTableEntry {
+    TDataMap *map;
+    char  *xCmd;
+    SortedTable<Coord, RecId> _table;
+  };
+  coordinateTableEntry **_coordinateTables;
+
+  /* from DispatcherCallback */
+  char *DispatchedName() { return "QueryProcFull"; }
+  void Run() { ProcessQuery(); }
+
+  DispatcherID _dispatcherID;      /* dispatcher ID */
 };
 
 #endif
