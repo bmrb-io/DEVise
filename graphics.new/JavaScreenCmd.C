@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  1999/01/29 21:09:50  wenger
+  Fixed bug 451 (dragging cursor in JS bypasses cursor grid).
+
   Revision 1.50  1999/01/29 16:41:37  wenger
   Fixed problem with source view not being redrawn correctly when cursor
   is dragged in the JavaScreen.
@@ -572,6 +575,10 @@ FillScreen()
         printf("window %s AbsoluteOrigin = %d, %d\n", window->GetName(),
 		  winX, winY);
 #endif
+
+		// Windows can have negative positions (off of virtual desktop).
+		winX = ABS(winX);
+		winY = ABS(winY);
 
         if (left < 0 || winX < left) {
 		  left = winX;
