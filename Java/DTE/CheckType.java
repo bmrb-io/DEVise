@@ -47,9 +47,11 @@ public class CheckType {
 	Operator op = (Operator)(query.getSelectClause( ).elementAt(0));
 	try {
 	    op =(Operator)op.typeCheck( symbolTable );
-        }
+	}
 	catch( TypeCheckException e ) {
-	    throw e;
+	    System.out.println( "Ha!");
+	    System.out.println( e );
+	    System.exit( 1 );
         }
 
         System.out.println("Query is: " + query.printTypes() );
@@ -65,12 +67,15 @@ public class CheckType {
     public static void main(String[] args) throws IOException {
         CheckType test = new CheckType( );
         test.parse( );
-	try {
+            test.typeCheck( );
+/*	try {
             test.typeCheck( );
         }
 	catch( TypeCheckException e ) {
+	    System.out.println( "Ha!");
 	    System.out.println( e );
 	    System.exit( 1 );
         }
+	    */
     }
 }

@@ -122,27 +122,13 @@ public class Query {
 
 	    for(int i = 0; i < selectClause.size(); i++){
 	        Expression e = (Expression) selectClause.elementAt(i);
-		try {
-		    e = e.typeCheck(symbolTable);
-                }
-
-		catch( TypeCheckException a ) {
-		    throw a;
-                }
-
+		e = e.typeCheck(symbolTable);
 		selectClause.setElementAt(e, i);
 	    }
 
 	    for(int i = 0; i < predList.size(); i++){
 		Expression e = (Expression) predList.elementAt(i);
-		try {
-		    e = e.typeCheck(symbolTable);
-                }
-
-		catch( TypeCheckException a ) {
-		    throw a;
-                }
-
+		e = e.typeCheck(symbolTable);
 		predList.setElementAt(e, i);
 	    }
 	}
