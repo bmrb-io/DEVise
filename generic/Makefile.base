@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.50  1998/03/31 16:40:29  wenger
+#  Added an 'export' directory to csgroup and re-made solaris dependencies
+#  accordingly.
+#
 #  Revision 1.49  1998/03/26 15:20:21  zhenhai
 #  *** empty log message ***
 #
@@ -168,7 +172,8 @@
 include ../../Makefile.common
 
 BASIC_CFLAGS = -D__tcltk $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../src/color/export -I../../tape $(GLINCLUDE)\
+	-I../../src/color/export -I../../src/utils/export -I../../tape \
+	$(GLINCLUDE)\
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX -DNEW_LAYOUT
 
 CFLAGS =$(BASIC_CFLAGS) -I../../csgroup/export

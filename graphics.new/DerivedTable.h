@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/04/30 14:24:18  wenger
+  DerivedTables are now owned by master views rather than links;
+  views now unlink from master and slave links in destructor.
+
   Revision 1.1  1998/04/29 17:53:50  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -35,6 +39,7 @@
 #include <sys/types.h>
 
 #include "DevStatus.h"
+#include "ObjectValid.h"
 
 class TData;
 class ISchema;
@@ -62,7 +67,7 @@ protected:
 
   char *_tdataName; // name of TData from which this table is derived
 
-  char *_masterAttrName;//TEMP -- change to list?
+  char *_masterAttrName;
 
   char *_tableFile; // file containing table tuples
   int _recordCount; // number of records inserted into table
@@ -73,7 +78,7 @@ protected:
   UniqueInserter *_inserter;
 
 private:
-  Boolean _objectValid;
+  ObjectValid _objectValid;
 };
 
 #endif // _DerivedTable_h_

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.29  1998/04/29 17:53:57  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.28  1998/04/28 18:03:17  wenger
   Added provision for "logical" and "physical" TDatas to mappings,
   instead of creating new mappings for slave views; other TAttrLink-
@@ -159,6 +164,7 @@
 #include "Color.h"
 #include "XColor.h"
 #include "Coloring.h"
+#include "ObjectValid.h"
 
 class AttrList;
 
@@ -298,6 +304,8 @@ class TDataMap
   /* Set the "physical" TData.  The new TData should have the same
    * attributes as the old TData. */
   void SetPhysTData(TData *tdata);
+
+  int GetPhysTdTimestamp() { return _physTdTimestamp; }
   
   /* Get record size for TData */
   int TDataRecordSize();
@@ -373,7 +381,7 @@ protected:
   Coord _maxSymDepth;
 
 private:
-  Boolean _objectValid;
+  ObjectValid _objectValid;
 
   GDataAttrOffset *_gOffset; /* offset of GData attributes */
 
@@ -410,6 +418,7 @@ private:
   // TData is the result of the join(s) with the master table(s).
   TData *_logicalTdata;
   TData *_tdata; // "physical" tdata
+  int _physTdTimestamp; // when physical tdata last got changed
 
   GData *_gdata;
   VisualFlag _dynamicArgs; /* attributes that are set dynamically */

@@ -24,6 +24,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/04/30 14:24:21  wenger
+  DerivedTables are now owned by master views rather than links;
+  views now unlink from master and slave links in destructor.
+
   Revision 1.4  1998/04/29 17:53:56  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -52,6 +56,7 @@
 
 #include "MasterSlaveLink.h"
 #include "DevStatus.h"
+#include "ObjectValid.h"
 
 class TData;
 
@@ -82,10 +87,11 @@ public:
   const char *GetSlaveAttrName() { return _slaveAttrName; }
 
 protected:
-  DevStatus CreateTable();
-  DevStatus SetSlaveTable(ViewGraph *view);
-  DevStatus DestroyTable();
-  TData *GetTData(ViewGraph *view, TDType tdType);
+  friend class SlaveTable;
+
+  DevStatus CreateMasterTable();
+  DevStatus DestroyMasterTable();
+  static TData *GetTData(ViewGraph *view, TDType tdType);
 
   char *_masterTableName;
 
@@ -93,7 +99,7 @@ protected:
   char *_slaveAttrName;
 
 private:
-  Boolean _objectValid;
+  ObjectValid _objectValid;
 };
 
 #endif // _TAttrLink_h_

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1998/04/30 14:24:21  wenger
+  DerivedTables are now owned by master views rather than links;
+  views now unlink from master and slave links in destructor.
+
   Revision 1.24  1998/04/29 17:53:56  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -119,6 +123,7 @@
 #include "Util.h"
 #include "XColor.h"
 #include "DevError.h"
+#include "TimeStamp.h"
 
 //#define DEBUG
 
@@ -136,8 +141,6 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
 		   VisualFlag *dimensionInfo, int numDimensions,
 		   Boolean createGData)
 {
-  _objectValid = false;
-
   _gOffset = NULL;
 
   _incarnation++;
@@ -197,12 +200,14 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
 
   _hintInitialized = false;
 
-  _objectValid = true;
+  // Timestamp is 0 here in case mapping gets created after link somehow.
+  _physTdTimestamp = 0;
+
+  _objectValid.Set();
 }
 
 TDataMap::~TDataMap()
 {
-  _objectValid = false;
   delete _gdata;
   _gdata = NULL;
   delete [] _shapeAttrs;
@@ -393,11 +398,7 @@ char *TDataMap::CreateGDataPath(char *gdataName)
 
 void TDataMap::SetPhysTData(TData *tdata)
 {
-#if 0 // TEMP: see bug 337
-  DOASSERT(_objectValid, "operation on invalid object");
-#else
-  if (!_objectValid) return;
-#endif
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (tdata->RecSize() != _logicalTdata->RecSize()) {
     char errBuf[1024];
     sprintf(errBuf, "New physical TData %s is incompatible with logical "
@@ -406,6 +407,7 @@ void TDataMap::SetPhysTData(TData *tdata)
   } else {
     //TEMP -- possibly also compare attribute lists
     _tdata = tdata;
+    _physTdTimestamp = TimeStamp::NextTimeStamp();
     ResetGData(_gRecSize);
   }
 }

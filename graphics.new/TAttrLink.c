@@ -29,6 +29,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/04/30 14:24:20  wenger
+  DerivedTables are now owned by master views rather than links;
+  views now unlink from master and slave links in destructor.
+
   Revision 1.7  1998/04/29 17:53:55  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -83,27 +87,6 @@
 
 //#define DEBUG
 
-static TData *
-CreateTData(char *name)
-{
-  //TEMP -- maybe we DON'T want to go thru this so that the
-  // TData isn't put into the class directory
-  if (!Session::CreateTData(name).IsComplete()) {
-    return NULL;
-  }
-  return (TData *)ControlPanel::Instance()->GetClassDir()->FindInstance(name);
-}
-
-static DevStatus
-DestroyTData(TData *tdata)
-{
-  DevStatus result = StatusOk;
-
-  //TEMP ControlPanel::Instance()->GetClassDir()->DestroyInstance(tdata->GetName());
-
-  return result;
-}
-
 /*------------------------------------------------------------------------------
  * function: TAttrLink::TAttrLink
  * Constructor.
@@ -119,7 +102,7 @@ TAttrLink::TAttrLink(char *name, char *masterAttrName, char *slaveAttrName) :
   _masterTableName = NULL;
   _masterAttrName = CopyString(masterAttrName);
   _slaveAttrName = CopyString(slaveAttrName);
-  _objectValid = true;
+  _objectValid.Set();
 }
 
 /*------------------------------------------------------------------------------
@@ -132,12 +115,11 @@ TAttrLink::~TAttrLink()
   printf("TAttrLink(%s)::~TAttrLink()\n", _name);
 #endif
 
-  (void) DestroyTable();
+  (void) DestroyMasterTable();
   delete [] _masterAttrName;
   _masterAttrName = NULL;
   delete [] _slaveAttrName;
   _slaveAttrName = NULL;
-  _objectValid = false;
 }
 
 /*------------------------------------------------------------------------------
@@ -147,7 +129,7 @@ TAttrLink::~TAttrLink()
 void
 TAttrLink::SetFlag(VisualFlag flag)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetFlag(%d)\n", _name, flag);
 #endif
@@ -163,7 +145,7 @@ TAttrLink::SetFlag(VisualFlag flag)
 void
 TAttrLink::SetMasterView(ViewGraph *view)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetMasterView(%s)\n", _name,
       view != NULL ? view->GetName() : "NULL");
@@ -171,7 +153,7 @@ TAttrLink::SetMasterView(ViewGraph *view)
 
   if (view != NULL && _masterView == view) return;
 
-  (void) DestroyTable();
+  (void) DestroyMasterTable();
 
   MasterSlaveLink::SetMasterView(view);
   //TEMP -- make sure master view doesn't cache GData
@@ -180,21 +162,15 @@ TAttrLink::SetMasterView(ViewGraph *view)
     //
     // Create the table to hold the master attribute values.
     //
-    (void) CreateTable();
+    (void) CreateMasterTable();
   } else {
     //
-    // Remove the mappings from all slave views.
+    // Update all slave views.
     //
     int index = _viewList->InitIterator();
     while (_viewList->More(index)) {
       ViewGraph *slaveView = _viewList->Next(index);
-      TDataMap *map = slaveView->GetFirstMap();
-      if (map != NULL) {
-	//TEMP: this doesn't do the right thing, but it keeps us from
-	// crashing
-        map->SetPhysTData(map->GetLogTData());
-	slaveView->Refresh();
-      }
+      slaveView->TAttrLinkChanged();
     }
     _viewList->DoneIterator(index);
   }
@@ -207,18 +183,12 @@ TAttrLink::SetMasterView(ViewGraph *view)
 void
 TAttrLink::InsertView(ViewGraph *view)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::InsertView(%s)\n", _name, view->GetName());
 #endif
 
   MasterSlaveLink::InsertView(view);
-
-  if (_masterTableName != NULL) {
-    if (!SetSlaveTable(view).IsComplete()) {
-      MasterSlaveLink::DeleteView(view);
-    }
-  }
 }
 
 /*------------------------------------------------------------------------------
@@ -228,7 +198,7 @@ TAttrLink::InsertView(ViewGraph *view)
 bool
 TAttrLink::DeleteView(ViewGraph *view)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::DeleteView(%s)\n", _name, view->GetName());
 #endif
@@ -240,16 +210,6 @@ TAttrLink::DeleteView(ViewGraph *view)
   if (result) {
     if (isMaster) {
       SetMasterView(NULL);
-    } else {
-      //
-      // Set the physical TData of the view back to the original (logical)
-      // TData.
-      //
-      TDataMap *map = view->GetFirstMap();
-      TData *oldTdata = map->GetPhysTData();
-      map->SetPhysTData(map->GetLogTData());
-      if (!DestroyTData(oldTdata).IsComplete()) result = false;
-      //TEMP -- remove old TData from temp catalog
     }
   }
 
@@ -263,7 +223,7 @@ TAttrLink::DeleteView(ViewGraph *view)
 void
 TAttrLink::Initialize()
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::Initialize()\n", _name);
 #endif
@@ -282,7 +242,7 @@ TAttrLink::Initialize()
   }
 
   if (_masterTableName == NULL) {
-    (void) CreateTable();
+    (void) CreateMasterTable();
   } else {
     //
     // Make sure the master table has the same TData as the master view
@@ -297,8 +257,8 @@ TAttrLink::Initialize()
       printf("TAttrLink %s: master view (%s) has new tdata\n", GetName(),
           _masterView->GetName());
 #endif
-      (void) DestroyTable();
-      (void) CreateTable();
+      (void) DestroyMasterTable();
+      (void) CreateMasterTable();
     }
   }
 }
@@ -310,7 +270,7 @@ TAttrLink::Initialize()
 void
 TAttrLink::Done()
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::Done()\n", _name);
 #endif
@@ -323,31 +283,12 @@ TAttrLink::Done()
   }
 
   //
-  // Create TDatas for all slave views that don't have them.
-  //
-  int index = _viewList->InitIterator();
-  while (_viewList->More(index)) {
-    ViewGraph *slaveView = _viewList->Next(index);
-    TDataMap *map = slaveView->GetFirstMap();
-    // TEMP: this is a crude test for whether the slave view already has
-    // the appropriate TData
-    if (map->GetLogTData() == map->GetPhysTData()) {
-      if (!SetSlaveTable(slaveView).IsComplete()) {
-        // Can't do this while iterator is open.
-        //TEMP MasterSlaveLink::DeleteView(slaveView);
-      }
-    }
-  }
-  _viewList->DoneIterator(index);
-
-  //
   // Invalidate the TDatas of all slave views.
   //
-  index = InitIterator();
+  int index = InitIterator();
   while (More(index)) {
     ViewGraph *view = Next(index);
     TData *tdata = GetTData(view, TDataPhys);
-    //TEMP -- this changes visual filter
     if (tdata != NULL) tdata->InvalidateTData();
   }
   DoneIterator(index);
@@ -365,7 +306,7 @@ TAttrLink::Done()
 void
 TAttrLink::Abort()
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::Abort()\n", _name);
 #endif
@@ -378,7 +319,7 @@ TAttrLink::Abort()
 void
 TAttrLink::SetLinkType(RecordLinkType type)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::SetLinkType(%d)\n", _name, type);
 #endif
@@ -387,15 +328,15 @@ TAttrLink::SetLinkType(RecordLinkType type)
 }
 
 /*------------------------------------------------------------------------------
- * function: TAttrLink::CreateTable
+ * function: TAttrLink::CreateMasterTable
  * Creates the table for storing the master attribute values.
  */
 DevStatus
-TAttrLink::CreateTable()
+TAttrLink::CreateMasterTable()
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("TAttrLink(%s)::CreateTable()\n", _name);
+  printf("TAttrLink(%s)::CreateMasterTable()\n", _name);
 #endif
 
   DevStatus result = StatusOk;
@@ -411,148 +352,15 @@ TAttrLink::CreateTable()
 }
 
 /*------------------------------------------------------------------------------
- * function: TAttrLink::SetSlaveTable
- * Sets the table for a slave view (creates a new table that's the join
- * of the original table and the table of master attribute values).
- */
-DevStatus
-TAttrLink::SetSlaveTable(ViewGraph *view)
-{
-  DOASSERT(_objectValid, "operation on invalid object");
-#if defined(DEBUG)
-  printf("TAttrLink(%s)::SetSlaveTable(%s)\n", _name, view->GetName());
-#endif
-
-// TEMP: maybe we should always unlink slave view before calling this -- or
-// delete the slave table and mapping for it
-
-  DevStatus result = StatusOk;
-
-  //
-  // Make sure we have a table of the master attribute values.
-  //
-  if (_masterTableName == NULL) {
-    char errBuf[256];
-    sprintf(errBuf, "No master table for link %s", GetName());
-    reportErrNosys(errBuf);
-    result = StatusFailed;
-  }
-
-  //
-  // Make sure the slave view has a TData already defined, and that the
-  // TData is a Table (as opposed to a UNIXFILE, or whatever).
-  //
-  TData *tdata;
-  if (result.IsComplete()) {
-    tdata = GetTData(view, TDataLog);
-    if (tdata == NULL) result = StatusFailed;
-  }
-  if (result.IsComplete()) {
-    if (strcmp(tdata->DispatchedName(), "TDataDQL")) {
-      reportErrNosys("Slave view of TAttrLink must have Table data source");
-      result = StatusFailed;
-    }
-  }
-
-  //
-  // Define a new TData that's the join of the slave view's original
-  // TData with the table of master attribute values.
-  //
-  const int nameSize = 128;
-  char slaveTableName[nameSize];
-  memset((void *)slaveTableName, 0, nameSize);
-  if (result.IsComplete()) {
-
-    // Generate query for slave table.
-    const int querySize = 1024;
-    char query[querySize];
-    memset((void *)query, 0, querySize);
-    ostrstream ost(query, querySize);
-
-    ost << "select ";
-
-    int count = 0;
-    AttrList *tdAttrs = tdata->GetAttrList();
-    tdAttrs->InitIterator();
-    while (tdAttrs->More()) {
-      AttrInfo *attr = tdAttrs->Next();
-
-      // Don't put recId into query.
-      if (strcmp(attr->name, "recId")) {
-        if (count > 0) ost << ", ";
-        ost << "t1." << attr->name;
-        count++;
-      }
-    }
-    tdAttrs->DoneIterator();
-    DerivedTable *masterTable = _masterView->GetDerivedTable(_masterTableName);
-    DOASSERT(masterTable != NULL, "No master table!");
-    ost << " from " << tdata->GetName() << " as t1, " <<
-	*masterTable->GetRelationId() <<
-        " as t2 where t1." << _slaveAttrName << " = t2." << _masterAttrName;
-
-#if defined(DEBUG)
-    printf("  slave table query = %s\n", query);
-#endif
-
-    // Generate attribute list for slave table.
-
-    // -1 because we don't include recId.
-    int numFlds = tdAttrs->NumAttrs() - 1;
-    string *attributeNames = new string[numFlds];
-
-    count = 0;
-    tdAttrs->InitIterator();
-    while (tdAttrs->More()) {
-      AttrInfo *attr = tdAttrs->Next();
-
-      // Don't put recId into attribute list.
-      if (strcmp(attr->name, "recId")) {
-        attributeNames[count] = attr->name;
-        count++;
-      }
-    }
-    tdAttrs->DoneIterator();
-    ViewInterface vi(numFlds, attributeNames, query);
-
-    // Create the table.
-    RelationId newRelId = RELATION_MNGR.registerNewRelation(vi);
-    if (currExcept) {
-      cerr << currExcept->toString() << endl;
-      currExcept = NULL;
-      return StatusFailed;
-    }
-
-    ostrstream nost(slaveTableName, nameSize);
-    nost << newRelId;
-
-#if defined(DEBUG)
-    printf("  newRelId: %s\n", slaveTableName);
-#endif
-  }
-
-  //
-  // Change the view's mapping's physical TData to the new TData.
-  //
-  TDataMap *map;
-  if (result.IsComplete()) {
-    map = view->GetFirstMap();
-    map->SetPhysTData(CreateTData(slaveTableName));
-  }
-
-  return result;
-}
-
-/*------------------------------------------------------------------------------
- * function: TAttrLink::DestroyTable
+ * function: TAttrLink::DestroyMasterTable
  * Destroys the table for storing the master attribute values.
  */
 DevStatus
-TAttrLink::DestroyTable()
+TAttrLink::DestroyMasterTable()
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("TAttrLink(%s)::DestroyTable()\n", _name);
+  printf("TAttrLink(%s)::DestroyMasterTable()\n", _name);
 #endif
 
   if (_masterTableName != NULL) _masterView->DestroyDerivedTable(
@@ -570,7 +378,6 @@ TAttrLink::DestroyTable()
 TData *
 TAttrLink::GetTData(ViewGraph *view, TDType tdType)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
 #if defined(DEBUG)
   printf("TAttrLink(%s)::GetTData(%s, %d)\n", _name, view->GetName(), tdType);
 #endif

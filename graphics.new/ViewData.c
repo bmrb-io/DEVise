@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/04/30 14:24:22  wenger
+  DerivedTables are now owned by master views rather than links;
+  views now unlink from master and slave links in destructor.
+
   Revision 1.7  1998/04/29 17:53:57  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -491,6 +495,7 @@ ViewData::DestroyDerivedTable(char *tableName)
   while (_derivedTables.More(index)) {
     DerivedTable *table = _derivedTables.Next(index);
 	if (!strcmp(tableName, table->GetName())) {
+	  delete table;
 	  _derivedTables.DeleteCurrent(index);
 	  found = true;
 	  break;

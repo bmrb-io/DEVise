@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/04/14 21:03:05  wenger
+  TData attribute links (aka set links) are working except for actually
+  creating the join table, and some cleanup when unlinking, etc.
+
   Revision 1.15  1997/10/03 16:00:03  wenger
   Improved error messages.
 
@@ -80,11 +84,13 @@
 ClassDir::ClassDir()
 {
   _numCategories = 0;
+  _destroyingAll = false;
 }
 
 void ClassDir::InsertCategory(char *name)
 {
   DOASSERT(_numCategories < MaxCategories, "Too many categories");
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
 
   CategoryRec *rec = new CategoryRec;
   rec->name = name;
@@ -99,6 +105,7 @@ void ClassDir::InsertCategory(char *name)
 
 void ClassDir::InsertClass(ClassInfo *cInfo)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name, cInfo->CategoryName())) {
@@ -123,6 +130,7 @@ char *argArray[ARG_ARRAY_SIZE];
 
 void ClassDir::ClassNames(char *category, int &num, char **&names)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   num = 0;
   names = argArray;
 
@@ -143,6 +151,7 @@ void ClassDir::ClassNames(char *category, int &num, char **&names)
 void ClassDir::InstancePointers(char *category, char *className,
 				int &num, char **&instanceNames)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   num = 0;
   instanceNames = argArray;
 
@@ -166,6 +175,7 @@ void ClassDir::InstancePointers(char *category, char *className,
 void ClassDir::InstanceNames(char *category, char *className,
 			     int &num, char **&instanceNames)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   num = 0;
   instanceNames = argArray;
 
@@ -189,6 +199,7 @@ void ClassDir::InstanceNames(char *category, char *className,
 void ClassDir::GetParams(char *category, char *className, 
 			 int &numParams, char **&params)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name, category)) {
@@ -212,6 +223,7 @@ void ClassDir::GetParams(char *category, char *className,
 void ClassDir::SetDefault(char *category, char *className,
 			  int numParams, char **params)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name, category)) {
@@ -231,6 +243,7 @@ void ClassDir::SetDefault(char *category, char *className,
 char *ClassDir::CreateWithParams(char *category, char *className,
 				 int numParams, char **paramNames)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
 #if defined(DEBUG) || 0
   for(int i = 0; i<numParams; i++) {
   	printf("In ClassDir: category=%s, className=%s, argv[%d]=%s\n", 
@@ -291,7 +304,8 @@ char *ClassDir::CreateWithParams(char *category, char *className,
 
 void *ClassDir::FindInstance(char *name)
 {
-#if defined(DEBUG) || 0
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
+#if defined(DEBUG)
   printf("Trying to find %s\n", name);
 #endif
   for(int i = 0; i < _numCategories; i++) {
@@ -300,7 +314,6 @@ void *ClassDir::FindInstance(char *name)
       ClassRec *classRec = catRec->_classRecs[j];
       for(int k = 0; k < classRec->_numInstances; k++) {
 
-//printf("In FindInstance, trying to compare with %s\n", classRec->_instances[k]->InstanceName());
 	if (!strcmp(classRec->_instances[k]->InstanceName(), name)){
 	  return classRec->_instances[k]->GetInstance();
 	  }
@@ -323,6 +336,7 @@ void *ClassDir::FindInstance(char *name)
 ClassInfo *
 ClassDir::FindClassInfo(char *instanceName)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
 #if defined(DEBUG)
   printf("Trying to find %s\n", instanceName);
 #endif
@@ -345,6 +359,8 @@ ClassDir::FindClassInfo(char *instanceName)
 
 void ClassDir::DestroyAllInstances()
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
+  _destroyingAll = true;
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
 #ifdef DEBUG
@@ -365,12 +381,14 @@ void ClassDir::DestroyAllInstances()
       classRec->_numInstances = 0;
     }
   }
+  _destroyingAll = false;
 }
 
 /* Destroy instance */
 
 void ClassDir::DestroyInstance(char *name)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     for(int j = 0; j < catRec->_numClasses; j++) {
@@ -397,6 +415,7 @@ void ClassDir::DestroyInstance(char *name)
 
 void ClassDir::DestroyTransientClasses()
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
 #ifdef DEBUG
   printf("Before DestroyTransientClasses, ClassDir shows:\n");
   Print();
@@ -448,6 +467,7 @@ void ClassDir::CreateParams(char *category, char *className,
 			    char *instanceName, 
 			    int &numParams, char **&params)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name,category)) {
@@ -539,6 +559,7 @@ void ClassInfo::GetDefaultParams(int &argc, char **&argv)
 
 Boolean ClassDir::Changeable(char *name)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     for(int j = 0; j < catRec->_numClasses; j++) {
@@ -557,6 +578,7 @@ Boolean ClassDir::Changeable(char *name)
 
 void ClassDir::ChangeParams(char *name, int num, char **paramNames)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     for(int j = 0; j < catRec->_numClasses; j++) {
@@ -573,6 +595,7 @@ void ClassDir::ChangeParams(char *name, int num, char **paramNames)
 
 void ClassDir::GetParams(char *name, int &num, char **&paramNames)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     for(int j = 0; j < catRec->_numClasses; j++) {
@@ -591,6 +614,7 @@ void ClassDir::GetParams(char *name, int &num, char **&paramNames)
 
 void *ClassDir::UserInfo(char *category, char *className)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     if (!strcmp(catRec->name,category)) {
@@ -610,6 +634,7 @@ void *ClassDir::UserInfo(char *category, char *className)
 
 void ClassDir::Print()
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   printf("%d categories\n", _numCategories);
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
@@ -629,6 +654,7 @@ void ClassDir::Print()
 
 char *ClassDir::FindInstanceName(void *inst)
 {
+  DOASSERT(!_destroyingAll, "In ClassDir::DestroyAllInstances()");
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     for(int j = 0; j < catRec->_numClasses; j++) {

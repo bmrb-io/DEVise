@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.134  1998/05/05 15:14:49  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.133  1998/04/13 22:24:57  zhenhai
   Optimized 2D cursors to read and draw individual patches instead
   of patches for the whole region. Added 3D cursors to show directions.
@@ -3280,8 +3285,8 @@ void	View::Run(void)
 	        _refresh, _updateTransform, _updateNumDim);
 #endif
 
-	//TEMPTEMP -- there seems to be almost no difference between what we do
-	// for _hasExposure, _filterChanged, _refresh, _updateTransform
+	//TEMP -- there seems to be almost no difference between what we do
+	// for _hasExposure, _filterChanged, _refresh, and _updateTransform.
 	// and _updateNumDim.
 
 	if ((mode == ControlPanel::LayoutMode) && 
@@ -3405,6 +3410,10 @@ void	View::Run(void)
 
 		return;
 	}
+
+	// Make sure the view's physical TData is up-to-date as per any
+	// TAttrLinks the view is a slave of.
+	UpdatePhysTData();
 
 	if (!_updateTransform && !_hasExposure && !_refresh && _filterChanged)
 	{

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/04/28 18:03:02  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.12  1998/02/03 23:46:38  wenger
   Fixed a problem Hongyu had with getting GData on socket; fixed bugs
   283 and 285 (resulted from problems in color manager merge);
@@ -117,7 +122,7 @@ void QueryProc::RefreshTData(TData *tdata)
 #endif
             vg->AbortQuery();
             vg->Refresh();
-            if (vg->GetAutoScale())
+            if (tdata->GoHomeOnInvalidate() && vg->GetAutoScale())
               vg->GoHome();
         }
     }

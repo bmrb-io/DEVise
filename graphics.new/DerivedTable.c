@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/04/29 17:53:50  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
  */
 
 #include <stdio.h>
@@ -49,8 +54,6 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
       tdata->GetName(), masterAttrName);
 #endif
 
-  _objectValid = false;
-
   result = StatusOk;
 
   _name = CopyString(name);
@@ -72,7 +75,7 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
     char errBuf[256];
     sprintf(errBuf, "Can't find attribute <%s>", _masterAttrName);
     reportErrNosys(errBuf);
-    result = StatusFailed;
+    result += StatusFailed;
     return;
   }
 
@@ -83,11 +86,11 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
   int recordSize = tdata->RecSize();
   if (recordSize < 0) {
     reportErrNosys("Can't deal with variable-size TData records");
-    result = StatusFailed;
+    result += StatusFailed;
     return;
   } else if (recordSize == 0) {
     reportErrNosys("TData record size is zero");
-    result = StatusFailed;
+    result += StatusFailed;
     return;
   }
 
@@ -119,7 +122,7 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
 
   default:
     reportErrNosys("Illegal attribute type");
-    result = StatusFailed;
+    result += StatusFailed;
     return;
     break;
   }
@@ -130,8 +133,25 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
   _tableFile = tempnam(Init::TmpDir(), "tdaln");
   if (_tableFile == NULL) {
     reportErrSys("Out of memory");
-    result = StatusFailed;
+    result += StatusFailed;
     return;
+  }
+
+  //
+  // Create the (empty) table file right away, so that it can be referenced
+  // by other relations before values get filled in.
+  //
+  int fd = open(_tableFile, O_WRONLY | O_CREAT, 0644);
+  if (fd == -1) {
+    char errBuf[2*MAXPATHLEN];
+    sprintf(errBuf, "Unable to create table file %s", _tableFile);
+    reportErrSys(errBuf);
+    result += StatusFailed;
+  } else {
+    if (close(fd) != 0) {
+      reportErrSys("Error closing table file");
+      result += StatusWarn;
+    }
   }
 
   _stdInt = new StandardInterface(*_schema, _tableFile);
@@ -140,14 +160,14 @@ DerivedTable::DerivedTable(char *name, TData *tdata, char *masterAttrName,
   if (currExcept) {
     cerr << currExcept->toString() << endl;
     currExcept = NULL;
-    result = StatusFailed;
+    result += StatusFailed;
     return;
   }
 #if defined(DEBUG)
   printf("  Created master table file %s\n", _tableFile);
 #endif
 
-  _objectValid = true;
+  _objectValid.Set();
 }
 
 /*------------------------------------------------------------------------------
@@ -160,8 +180,6 @@ DerivedTable::~DerivedTable()
   printf("DerivedTable(%s)::~DerivedTable()\n", _name);
 #endif
 
-  _objectValid = false;
-
   delete [] _name;
   _name = NULL;
   delete [] _tdataName;
@@ -170,15 +188,14 @@ DerivedTable::~DerivedTable()
   _masterAttrName = NULL;
 
   RELATION_MNGR.deleteRelation(*_relId);
+  delete _relId;
+  _relId = NULL;
 
   delete _schema;
   _schema = NULL;
 
   delete _stdInt;
   _stdInt = NULL;
-
-  delete _relId;
-  _relId = NULL;
 
   if (_inserter != NULL) {
     _inserter->close();
@@ -204,7 +221,7 @@ DerivedTable::~DerivedTable()
 DevStatus
 DerivedTable::Initialize()
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("DerivedTable(%s)::Initialize()\n", _name);
 #endif
@@ -215,7 +232,7 @@ DerivedTable::Initialize()
   if (currExcept) {
     cerr << currExcept->toString() << endl;
     currExcept = NULL;
-    result = StatusFailed;
+    result += StatusFailed;
   }
 
   _recordCount = 0;
@@ -230,7 +247,7 @@ DerivedTable::Initialize()
 DevStatus
 DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("DerivedTable(%s)::InsertValues()\n", _name);
 #endif
@@ -246,7 +263,7 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
     char errBuf[256];
     sprintf(errBuf, "Can't find attribute <%s>", _masterAttrName);
     reportErrNosys(errBuf);
-    result = StatusFailed;
+    result += StatusFailed;
   }
 
   //
@@ -302,13 +319,13 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 
         case DateAttr: {
           reportErrNosys("TAttrLinks not yet implemented for dates");//TEMP
-          result = StatusFailed;//TEMP
+          result += StatusFailed;//TEMP
           break;
 	}
 
         default: {
           reportErrNosys("Illegal attribute type");
-          result = StatusFailed;
+          result += StatusFailed;
           break;
 	}
       }
@@ -329,7 +346,7 @@ DerivedTable::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 DevStatus
 DerivedTable::Done()
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
   printf("DerivedTable(%s)::Done()\n", _name);
 #endif
@@ -348,7 +365,7 @@ DerivedTable::Done()
   if (currExcept) {
     cerr << currExcept->toString() << endl;
     currExcept = NULL;
-    result = StatusFailed;
+    result += StatusFailed;
   }
 
   delete _inserter;

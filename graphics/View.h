@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.63  1998/05/05 15:14:51  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.62  1998/03/18 08:19:44  zhenhai
   Added visual links between 3D graphics.
 
@@ -650,6 +655,8 @@ protected:
 	void ReportFilterChanged(VisualFilter &filter, int flushed);
 	void ReportViewRecomputed();
 	void ReportViewDestroyed();
+
+	virtual void UpdatePhysTData() {}
 
 	/* Update the visual filter with scrolling. Return
 	the stat as followed:

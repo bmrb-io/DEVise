@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.50  1998/04/30 14:24:24  wenger
+  DerivedTables are now owned by master views rather than links;
+  views now unlink from master and slave links in destructor.
+
   Revision 1.49  1998/04/29 17:54:00  wenger
   Created new DerivedTable class in preparation for moving the tables
   from the TAttrLinks to the ViewDatas; found bug 337 (potential big
@@ -278,6 +282,7 @@ class TDataMap;
 class MasterSlaveLink;
 class CountMapping;
 class DerivedTable;
+class SlaveTable;
 
 struct MappingInfo {
   TDataMap *map;
@@ -329,6 +334,7 @@ class GDataBin;
 class ViewGraph : public View
 {
 		friend class ViewGraph_QueryCallback;
+		friend class SlaveTable;
 
 	private:
 
@@ -485,11 +491,15 @@ class ViewGraph : public View
   virtual void DestroyDerivedTable(char *tableName) {}
   virtual DerivedTable *GetDerivedTable(char *tableName) { return NULL; }
 
+  virtual void TAttrLinkChanged();
+
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};
 
   /* Insert records into record links whose master this view is */
   void WriteMasterLink(RecId start, int num);
+
+  virtual void UpdatePhysTData();
 
   /* List of mappings displayed in this view */
   MappingInfoList _mappings;
@@ -521,6 +531,9 @@ class ViewGraph : public View
   Boolean _deleteAction;           /* delete _action when this is destroyed? */
   MSLinkList _masterLink;      /* links whose master this view is */
   MSLinkList _slaveLink;       /* slave record link list */
+  int _slaveTAttrTimestamp;	// changed when linked or unlinked from
+				// TAttrLink, or master views TData changed
+  SlaveTable *_slaveTable;
 
   UpdateLink _updateLink;	// link to view that want to know when
 				// this view has changed
@@ -529,7 +542,7 @@ class ViewGraph : public View
 
   PointStorage _pstorage;          /* storage for missing data points */
 
-  //TEMPTEMP -- why do we have _queryFilter here, when View already has one?
+  //TEMP -- why do we have _queryFilter here, when View already has one?
   VisualFilter _queryFilter;
   int          _timestamp;
   QueryProc    *_queryProc;

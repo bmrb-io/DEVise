@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/04/29 17:53:51  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.1  1998/03/08 00:01:08  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -39,13 +44,12 @@ DeviseLink::DeviseLink(char *name, VisualFlag linkFlag)
   printf("DeviseLink(0x%p)::DeviseLink(%s, %d)\n", this, name, linkFlag);
 #endif
 
-  _objectValid = false;
   _name = name;
   _linkAttrs = linkFlag;
   _viewList = new LinkViewList;//TEMP -- leaked
 
   View::InsertViewCallback(this);
-  _objectValid = true;
+  _objectValid.Set();
 }
 
 DeviseLink::~DeviseLink()
@@ -62,14 +66,13 @@ DeviseLink::~DeviseLink()
     _viewList->DeleteCurrent(index);
   }
   DoneIterator(index);
-  _objectValid = false;
 }
 
 /* insert view into link */
 
 void DeviseLink::InsertView(ViewGraph *view)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (_viewList->Find(view))
     /* view already inserted */
     return;
@@ -85,7 +88,7 @@ void DeviseLink::InsertView(ViewGraph *view)
 
 bool DeviseLink::DeleteView(ViewGraph *view)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (!_viewList->Find(view)) {
       /* view not in list */
       return false;
@@ -101,42 +104,42 @@ bool DeviseLink::DeleteView(ViewGraph *view)
 
 Boolean DeviseLink::ViewInLink(ViewGraph *view)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   return _viewList->Find(view);
 }
 
 void DeviseLink::ViewDestroyed(View *view)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   DeleteView((ViewGraph *)view);
 }
 
 int DeviseLink::InitIterator()
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   return _viewList->InitIterator();
 }
 
 Boolean DeviseLink::More(int index)
 { 
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   return _viewList->More(index);
 }
 
 ViewGraph *DeviseLink::Next(int index)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   return _viewList->Next(index);
 }
 
 void DeviseLink::DoneIterator(int index)
 {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   _viewList->DoneIterator(index);
 }
 
 void DeviseLink::Print() {
-  DOASSERT(_objectValid, "operation on invalid object");
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   printf("Name = %s\n", GetName());
   printf("Views in Link ->\n");
   int index = _viewList->InitIterator();

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.80  1998/05/05 15:15:20  zhenhai
+  Implemented 3D Cursor as a rectangular block in the destination view
+  showing left, right, top, bottom, front and back cutting planes of the
+  source view.
+
   Revision 1.79  1998/04/30 14:24:23  wenger
   DerivedTables are now owned by master views rather than links;
   views now unlink from master and slave links in destructor.
@@ -362,6 +367,8 @@
 #include "AssoArray.h"
 #include "CommandObj.h"
 #include "CmdContainer.h"
+#include "TimeStamp.h"
+#include "SlaveTable.h"
 
 #include "MappingInterp.h"
 #include "CountMapping.h"
@@ -523,6 +530,8 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
       // added.
   _countMapping = new CountMapping(CountMapping::AttrY, CountMapping::AttrX);
 #endif
+
+  _slaveTable = new SlaveTable(this);
 }
 
 ViewGraph::~ViewGraph(void)
@@ -578,6 +587,9 @@ ViewGraph::~ViewGraph(void)
 	delete _countMapping;
 
     UnlinkMasterSlave();
+
+	delete _slaveTable;
+	_slaveTable = NULL;
 }
 
 //******************************************************************************
@@ -645,6 +657,7 @@ ViewGraph::UnlinkMasterSlave()
 	  MasterSlaveLink *msLink = _masterLink.Next(index);
 	  _masterLink.DeleteCurrent(index);
 	  msLink->SetMasterView(NULL);
+      if (msLink->GetFlag() == VISUAL_TATTR) TAttrLinkChanged();
 	}
 	_masterLink.DoneIterator(index);
 
@@ -669,26 +682,27 @@ void ViewGraph::AddAsSlaveView(MasterSlaveLink *link)
     DropAsMasterView(link);
 
     if (!_slaveLink.Find(link)) {
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("View %s becomes slave of record link %s\n", GetName(),
                link->GetName());
 #endif
         _slaveLink.Append(link);
     }
-    Refresh();
+
+    if (link->GetFlag() == VISUAL_TATTR) TAttrLinkChanged();
 }
 
 void ViewGraph::DropAsSlaveView(MasterSlaveLink *link)
 {
     if (_slaveLink.Find(link)) {
         _slaveLink.Delete(link);
-#ifdef DEBUG
+#if defined(DEBUG)
         printf("View %s no longer slave of record link %s\n", GetName(),
                link->GetName());
 #endif
     }
 
-    Refresh();
+    if (link->GetFlag() == VISUAL_TATTR) TAttrLinkChanged();
 }
 
 void ViewGraph::InsertMapping(TDataMap *map, char *label)
@@ -1046,6 +1060,26 @@ void ViewGraph::PanUpOrDown(PanDirection direction)
       camera.pan_up+=0.10*panFactor;
       SetCamera(camera);
     }
+}
+
+/* Lets view know that something in one of the TAttrLinks it's a slave of
+ * has changed (master view changed, for example). */
+void
+ViewGraph::TAttrLinkChanged()
+{
+    _slaveTAttrTimestamp = TimeStamp::NextTimeStamp();
+    Refresh();
+}
+
+/* Update the physical TData (for TAttrLinks). */
+void
+ViewGraph::UpdatePhysTData()
+{
+#if defined(DEBUG)
+    printf("ViewGraph(%s)::UpdatePhysTData()\n", _name);
+#endif
+
+    (void) _slaveTable->UpdateTData();
 }
 
 void ViewGraph::WriteMasterLink(RecId start, int num)
@@ -1697,7 +1731,8 @@ ViewGraph::SetSendParams(const GDataSock::Params &params)
 void	ViewGraph::QueryDone(int bytes, void* userData, TDataMap* map)
 {
 #if defined(DEBUG)
-	printf("ViewGraph::QueryDone(), index = %d, bytes = %d\n", _index, bytes);
+	printf("ViewGraph(%s)::QueryDone(), index = %d, bytes = %d\n", GetName(),
+		_index, bytes);
 #endif
 
 	_pstorage.Clear();

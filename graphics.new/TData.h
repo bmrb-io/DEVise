@@ -16,6 +16,10 @@
    $Id$
 
    $Log$
+   Revision 1.19  1998/04/14 21:03:18  wenger
+   TData attribute links (aka set links) are working except for actually
+   creating the join table, and some cleanup when unlinking, etc.
+
    Revision 1.18  1997/12/23 23:35:37  liping
    Changed internal structure of BufMgrFull and classes it called
    The buffer manager is now able to accept queries on any attribute from the
@@ -199,6 +203,9 @@ class TData {
     // cleans the query processor
     virtual void InvalidateTData();
 
+    Boolean GoHomeOnInvalidate() { return _goHomeOnInvalidate; }
+    void SetGoHomeOnInvalidate(Boolean goHome) { _goHomeOnInvalidate = goHome; }
+
     /* Get name */
     virtual char *GetName() { return _name; }
     virtual char *GetTableName() { return _name; }
@@ -278,6 +285,8 @@ class TData {
 
     DataSource* _data;                  // data source
     int _version;                       // last _data->Version()
+
+    Boolean _goHomeOnInvalidate;
 
     char* MakeCacheFileName(char *name, char *type);
     

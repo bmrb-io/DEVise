@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/04/14 21:03:06  wenger
+  TData attribute links (aka set links) are working except for actually
+  creating the join table, and some cleanup when unlinking, etc.
+
   Revision 1.6  1996/05/11 19:09:52  jussi
   Minor fix.
 
@@ -188,6 +192,7 @@ public:
 private:
 	CategoryRec *_categories[MaxCategories];
 	int _numCategories;
+	Boolean _destroyingAll;
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/03/04 19:11:03  wenger
+  Fixed some more dynamic memory errors.
+
   Revision 1.22  1998/02/20 06:17:13  beyer
   resurected histograms
 
@@ -163,6 +166,7 @@ TData::TData(char* name, char* type, char* param, int recSize)
     _recSize = recSize;
     _data = NULL;
     _version = 0;
+    _goHomeOnInvalidate = true;
 
     // Find out whether the data occupies an entire data source or only
     // a segment of it
@@ -285,6 +289,7 @@ TData::TData(DataSource* data_source)
     _recSize = 0;
     _data = data_source;
     _version = 0;
+    _goHomeOnInvalidate = true;
 }
 
 /*------------------------------------------------------------------------------

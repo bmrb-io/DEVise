@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/04/29 17:53:51  wenger
+  Created new DerivedTable class in preparation for moving the tables
+  from the TAttrLinks to the ViewDatas; found bug 337 (potential big
+  problems) while working on this.
+
   Revision 1.2  1998/03/27 15:08:57  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -38,6 +43,7 @@
 #include "DList.h"
 #include "ViewCallback.h"
 #include "VisualArg.h"
+#include "ObjectValid.h"
 
 class ViewGraph;
 
@@ -87,7 +93,7 @@ protected:
   VisualFlag _linkAttrs; // Which attribute(s) is link on?
 
 private:
-  Boolean _objectValid;
+  ObjectValid _objectValid;
 };
 
 #endif /* _DeviseLink_h_ */
