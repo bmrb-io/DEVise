@@ -15,6 +15,11 @@
 # $Id$
 
 # $Log$
+# Revision 1.27  1998/01/07 19:32:07  wenger
+# Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+# server library into Devise); updated solaris, sun, linux, and hp
+# dependencies.
+#
 # Revision 1.26  1997/12/23 21:00:19  wenger
 # Got the latest version of DEVise to compile and link on SPARC/Solaris;
 # removed (old) layout manager code from DEVise link.
@@ -116,8 +121,8 @@ static: libs
 	cd generic; make static; cd ..
 
 strip:
-	strip generic/generic
-	strip generic/devise generic/deviseb generic/devised
-	strip multi/disp
+	- strip generic/generic generic/generic.static
+	- strip generic/devise generic/deviseb generic/devised
+	- strip multi/disp
 
 # DO NOT DELETE
