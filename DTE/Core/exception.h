@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/03/17 17:19:07  donjerko
+  Added new namespace management through relation ids.
+
   Revision 1.16  1997/12/04 04:05:18  donjerko
   *** empty log message ***
 
@@ -105,14 +108,13 @@ public:
 	}
 };
 
-typedef struct timeval Timeval;
 
 class ITimer {
-	Timeval initT;
-	Timeval lastT;
+	timeval initT;
+	timeval lastT;
 	bool isInit;
 private:
-	float subtract(Timeval bigger, Timeval smaller){
+	float subtract(timeval bigger, timeval smaller){
 		if (smaller.tv_usec > bigger.tv_usec) {
 
              bigger.tv_usec += 1000000;
@@ -134,7 +136,7 @@ public:
 		if(!isInit){
 			reset();
 		}
-		Timeval curT;
+		timeval curT;
 //		assert(gettimeofday(&curT, NULL) != -1);
 		float fromInit = subtract(curT, initT);
 		float fromLast = subtract(curT, lastT);
