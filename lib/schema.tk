@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1995/10/25 19:21:46  ravim
+#  Added new types.
+#
 #  Revision 1.3  1995/10/17 05:16:32  ravim
 #  Can define arbitrary group structures.
 #
@@ -58,7 +61,7 @@ frame .newschema.firstrow -relief raised -bg honeydew2
 frame .newschema.commseprow -relief raised  -bg honeydew2
 frame .newschema.opt -relief raised  -bg honeydew2
 frame .newschema.attr -relief raised -bg honeydew2
-pack .newschema.firstrow .newschema.attr  .newschema.commseprow\
+pack .newschema.firstrow  .newschema.commseprow .newschema.attr \
 	.newschema.opt 	-side top -fill x -padx 1m -pady 1m
 
 #-----------------------------------------------------------
@@ -113,22 +116,28 @@ pack .newschema.attradd -in .newschema.attr \
 	-side bottom -padx 3m -pady 1m -fill x
 
 label .newschema.attrlist.label -text "List of Attributes" -bg honeydew2 -fg red
+label .newschema.attrlist.spec -text "Type      Order     Name" -bg honeydew2 -fg red -font 9x15
 pack .newschema.attrlist.label -side top -fill x
+pack .newschema.attrlist.spec -side top -anchor nw
 listbox .newschema.attrlist.list -relief raised -bd 1 \
 	-yscrollcommand ".newschema.attrlist.scroll set" \
+	-xscrollcommand ".newschema.attrlist.xscroll set" \
 	-font 9x15 -selectmode extended -bg honeydew2
 scrollbar .newschema.attrlist.scroll \
 	-command ".newschema.attrlist.list yview" -bg honeydew2
+scrollbar .newschema.attrlist.xscroll -orient horizontal \
+	-command ".newschema.attrlist.list xview" -bg honeydew2
 pack .newschema.attrlist.scroll -side right -fill y
-pack .newschema.attrlist.list -fill x
+pack .newschema.attrlist.xscroll -side bottom -fill x
+pack .newschema.attrlist.list -fill x 
 
 # By default insert all elements of attrlist into the list
 foreach attr $attrlist {
     # Format before inserting
-    set tname [lindex $attr 0]
-    set ttype [lindex $attr 1]
-    set tsort [lindex $attr 2]
-    set fstr [format "%-15s  %-8s  %s" $tname $ttype $tsort]
+    set ttype [lindex $attr 0]
+    set tsort [lindex $attr 1]
+    set tname [lindex $attr 2]
+    set fstr [format "%-8s  %-8s  %s" $ttype $tsort $tname]
     .newschema.attrlist.list insert end $fstr
     set attrnum [expr $attrnum+1]
 }
@@ -136,26 +145,22 @@ foreach attr $attrlist {
 frame .newschema.attrspec -relief raised -bg honeydew2
 frame .newschema.attrop -relief raised -bg honeydew2
 pack .newschema.attrspec .newschema.attrop \
-	-in .newschema.attradd -side left -fill y -expand 1 -padx 3m -pady 1m
+	-in .newschema.attradd -side top -fill x -padx 3m -pady 1m
+
 frame .newschema.attrname -relief raised -bd 1 -bg honeydew2
-frame .newschema.attrtype -relief raised  -bg honeydew2
-pack .newschema.attrname .newschema.attrtype \
+frame .newschema.atype -relief raised -bd 1 -bg honeydew2
+frame .newschema.asort -relief raised -bd 1 -bg honeydew2
+pack .newschema.attrname .newschema.atype .newschema.asort \
 	-in .newschema.attrspec -side top -fill x -padx 3m -pady 1m
 
 label .newschema.attrname.label -text "Attribute Name " -bg honeydew2 -fg red
-entry .newschema.attrname.entry -width 15 -relief sunken -bd 2 \
+entry .newschema.attrname.entry -width 25 -relief sunken -bd 2 \
 	-textvariable aname -bg bisque
-pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 1m \
+pack .newschema.attrname.label .newschema.attrname.entry -side left -padx 3m \
 	-pady 1m
 
-frame .newschema.atype -relief raised -bd 1 -bg DarkRed
-frame .newschema.asort -relief raised -bd 1 -bg DarkRed
-pack .newschema.atype -in .newschema.attrtype \
-	-side left -padx 3m 
-pack .newschema.asort -in .newschema.attrtype \
-	-side left -padx 3m 
 
-label .newschema.atype.label -text "Type" -bg honeydew2 -fg red
+label .newschema.atype.label -text "Type   " -bg honeydew2 -fg red
 radiobutton .newschema.atype.double -text double -variable atype \
 	-value "double" -anchor nw -bg honeydew2
 radiobutton .newschema.atype.int -text int -variable atype \
@@ -168,14 +173,14 @@ radiobutton .newschema.atype.date -text date -variable atype \
 	-value "date" -anchor nw -bg honeydew2
 pack .newschema.atype.label .newschema.atype.double .newschema.atype.int \
 	.newschema.atype.string .newschema.atype.float \
-	.newschema.atype.date  -side top -fill x
-label .newschema.asort.label -text "Sorted"  -bg honeydew2 -fg red
+	.newschema.atype.date  -side left -fill x -padx 1m 
+label .newschema.asort.label -text "Sorted "  -bg honeydew2 -fg red
 radiobutton .newschema.asort.yes -text Yes -variable asort \
 	-value "sorted" -anchor nw -bg honeydew2
 radiobutton .newschema.asort.no -text No -variable asort \
 	-value "unsorted" -anchor nw -bg honeydew2
 pack .newschema.asort.label .newschema.asort.yes .newschema.asort.no \
-	-side top -fill x
+	-side left -fill x -padx 1m
 
 button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 -command {
     if {$aname == ""} {
@@ -185,7 +190,7 @@ button .newschema.attrop.add -text "Add item" -bg gray75 -fg IndianRed4 -command
 	# Increment count
 	set attrnum [expr $attrnum+1]
 	# Insert into list and clear selection
-	set fstr [format "%-15s %-8s %s" $aname $atype $asort]
+	set fstr [format "%-8s  %-8s  %s" $atype $asort $aname]
 	.newschema.attrlist.list insert end $fstr
 	set aname ""
 	set atype "double"
@@ -199,25 +204,29 @@ button .newschema.attrop.delete -text "Delete item" -bg gray75 -fg IndianRed4\
     set attrnum [expr $attrnum-1]
 }
 # Set up key binding for modify list
-bind .newschema.attrlist.list <Double-Button-1> {
-    set attrl [.newschema.attrlist.list get active]
-    set aname [lindex $attrl 0]
-    set atype [lindex $attrl 1]
-    set asort [lindex $attrl 2]
+bind .newschema.attrlist.list <Double-1> {
+    set attrl [.newschema.attrlist.list get active] 
+    set atype [lindex $attrl 0]
+    set asort [lindex $attrl 1] 
+    set aname [lindex $attrl 2]
 }
     
 button .newschema.attrop.modify -text "Modify item" -bg gray75 -fg IndianRed4\
 	-command {
-    set fstr [format "%-15s  %-8s  %s" $aname $atype $asort]
-    .newschema.attrlist.list insert active $fstr
-    .newschema.attrlist.list delete active
-    # Clear selection
-    set aname ""
-    set atype "double"
-    set asort "unsorted"
+    if {$aname == ""} {
+	showmesg "Double click on an item to select it."
+    } else {
+	set fstr [format "%-8s  %-8s  %s" $atype $asort $aname]
+	.newschema.attrlist.list insert active $fstr
+	.newschema.attrlist.list delete active
+	# Clear selection
+	set aname ""
+	set atype "double"
+	set asort "unsorted"
+    }
 }
 pack .newschema.attrop.add .newschema.attrop.delete \
-	.newschema.attrop.modify -side top -padx 3m -pady 1m -expand 1
+	.newschema.attrop.modify -side left -padx 3m -pady 1m -expand 1
 
 #-----------------------------------------------------------
 # Bottom portion of window
@@ -316,18 +325,18 @@ proc openschema {} {
 #-----------------------------------------------------------
 # General function to display a message
 proc showmesg {str} {
-    toplevel .msg -bg honeydew2 
+    toplevel .msg -bg red
     wm title .msg Message
     wm iconname .msg Message
     
-    frame .msg.str -relief raised -bd 1 -bg honeydew2
-    frame .msg.ok -relief raised -bg honeydew2
+    frame .msg.str -relief raised -bd 1 -bg red
+    frame .msg.ok -relief raised -bg red
     pack .msg.str .msg.ok -side top -fill x -padx 3m -pady 3m
 
-    message .msg.str.msg -width 3i -text $str -bg honeydew2 -fg red
+    message .msg.str.msg -width 3i -text $str -bg red -fg white
     pack .msg.str.msg -side right -expand 1 -fill both -padx 3m -pady 3m
 
-    button .msg.ok.but -text OK -bg gray75 -fg IndianRed4 \
+    button .msg.ok.but -text OK -bg white -fg red \
 	    -command {destroy .msg}
     pack .msg.ok.but -side top -expand 1 -padx 3m -pady 1m
 
@@ -340,17 +349,17 @@ proc showmesg {str} {
 #-----------------------------------------------------------
 # Procedure that creates the schema file
 proc writefile {name type comm sep alist} {
-    global tgrps glist 
-    set f [open $name.schema w]
+    global tgrps glist datadir
+    set f [open $datadir/$name.schema w]
 
     puts $f "type $name $type" 
     puts $f "comment $comm"
     puts $f "separator '$sep'"
     
     foreach attr $alist {
-	set aname [lindex $attr 0]
-	set atype [lindex $attr 1]
-	set asort [lindex $attr 2]
+	set atype [lindex $attr 0]
+	set asort [lindex $attr 1]
+	set aname [lindex $attr 2]
 	
 	if {$asort != "unsorted"} {
 	    puts -nonewline $f "sorted "
@@ -399,10 +408,10 @@ proc readfile {filename} {
 
 	if {$first != "sorted"} {
 	    scan $line "attr %s %s" attrname attrtype
-	    set attr [list $attrname $attrtype unsorted]
+	    set attr [list $attrtype unsorted $attrname] 
 	} else {
 	    scan $line "sorted attr %s %s" attrname attrtype
-	    set attr [list $attrname $attrtype sorted]
+	    set attr [list $attrtype sorted $attrname]
 	}
 
 	puts "Inserting .. $attr"
@@ -453,6 +462,11 @@ proc gbrowse {} {
     # Insert all existing top level groups into the listbox
     foreach nm $tgrps {
 	.gbrowse.list.list insert end $nm
+    }
+
+    # Set up binding
+    bind .gbrowse.list.list <Double-1> {
+	set gname [.gbrowse.list.list get active]
     }
 
 
@@ -551,7 +565,7 @@ proc dispgrp {gname } {
     pack .grp.list .grp.ops .grp.bot -side top -fill x -padx 3m -pady 1m
 
     # List showing current group structure
-    label .grp.list.label -text "Group : $gname" -bg honeydew2 -fg Red
+    label .grp.list.label -text "Display for Group : $gname" -bg honeydew2 -fg Red
     pack .grp.list.label -side top -fill x
 
     listbox .grp.list.list -relief raised -bd 1 \
@@ -570,7 +584,7 @@ proc dispgrp {gname } {
     frame .grp.curr -relief raised -bg honeydew2 
     pack .grp.curr -in .grp.ops -side top -fill x -padx 2m -pady 1m
     label .grp.curr.label -text "Current group " -bg honeydew2 -fg Red
-    entry .grp.curr.entry -width 10 -relief sunken -bd 2 \
+    entry .grp.curr.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable currgrp -bg bisque
     pack .grp.curr.label .grp.curr.entry -side left -padx 2m -expand 1
 
@@ -589,7 +603,7 @@ proc dispgrp {gname } {
     pack .grp.item.top.label 
     
     label .grp.item.mid.label -text "Name " -bg honeydew2 -fg Red
-    entry .grp.item.mid.entry -width 10 -relief sunken -bd 2 \
+    entry .grp.item.mid.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable iname -bg bisque
     pack .grp.item.mid.label .grp.item.mid.entry -side left -fill x \
 	    -padx 3m -pady 1m
@@ -608,7 +622,9 @@ proc dispgrp {gname } {
 	    set glist($currgrp) [lappend glist($currgrp) $elem]
 	    # Now insert in the listbox
 	    set cnt -1
-	    gpos $gname $iname
+	    endpos $gname $currgrp 
+	    # Actual position got by decrementing
+	    set cnt [expr $cnt-1]
 	    .grp.list.list insert $cnt $iname
 	    set iname ""
 	}
@@ -648,11 +664,11 @@ proc dispgrp {gname } {
     pack .grp.ngrp.top .grp.ngrp.mid .grp.ngrp.bot -side top -fill x \
 	    -padx 1m -pady 1m
 
-    label .grp.ngrp.top.label -text "Nested Group" -bg honeydew2 -fg Red
+    label .grp.ngrp.top.label -text "Sub Group" -bg honeydew2 -fg Red
     pack .grp.ngrp.top.label 
     
     label .grp.ngrp.mid.label -text "Name " -bg honeydew2 -fg Red
-    entry .grp.ngrp.mid.entry -width 10 -relief sunken -bd 2 \
+    entry .grp.ngrp.mid.entry -width 25 -relief sunken -bd 2 \
 	    -textvariable ngname -bg bisque
     pack .grp.ngrp.mid.label .grp.ngrp.mid.entry -side left -fill x \
 	    -padx 3m -pady 1m
@@ -660,29 +676,32 @@ proc dispgrp {gname } {
     button .grp.ngrp.bot.add -text "Create" \
 	    -bg gray75 -fg IndianRed4 -command {
 	if {$ngname == ""} {
-	    showmesg "Please specify the name of the nested group."
+	    showmesg "Please specify the name of the sub group."
 	} elseif {[info exists glist($currgrp)] == 0} {
 	    showmesg "Current group $currgrp is not valid."
 	} else {
 	    set elem [list $ngname g]
 	    set glist($currgrp) [lappend glist($currgrp) $elem]
+	    set glist($ngname) ""
 	    set cnt -1
-	    gpos $gname $ngname
+	    endpos $gname $currgrp
+	    # Actual position by subtracting 2
+	    set cnt [expr $cnt-2]
 	    .grp.list.list insert $cnt "end group $ngname"
 	    .grp.list.list insert $cnt "begin group $ngname"
 	    set nlist [lappend nlist $currgrp]
 	    set currgrp $ngname
-	    set glist($ngname) ""
+	    set ngname ""
 	}
     }
     button .grp.ngrp.bot.del -text "Delete" \
 	    -bg gray75 -fg IndianRed4 -command {
 	if {$ngname == ""} {
-	    showmesg "Please specify the name of the nested group."
+	    showmesg "Please specify the name of the sub group."
 	} else {
 	    set outer [gsearch $gname $ngname]
 	    if {$outer == ""} {
-		showmesg "Nested group $ngname is invalid."
+		showmesg "Subgroup $ngname is invalid."
 	    } else {
 		set elem [list $ngname g]
 		set idx [lsearch $glist($outer) $elem]
@@ -709,6 +728,19 @@ proc dispgrp {gname } {
     pack .grp.ngrp.bot.add .grp.ngrp.bot.del \
 	    -side left -expand 1 -padx 3m -pady 1m
 
+    # Bind the double-click on the listbox
+    bind .grp.list.list <Double-1> {
+	set selec [.grp.list.list get active]
+	set first [lindex $selec 0]
+	if {$first == "begin"} {
+	    set ngname [lindex $selec 2]
+	} elseif {$first == "end"} {
+	    set ngname [lindex $selec 2]
+	} else {
+	    set iname $first
+	}
+    }
+	
     # Frame containing save and cancel buttons
     button .grp.bot.save -text "Save" \
 	    -bg gray75 -fg IndianRed4 -command {
@@ -717,12 +749,16 @@ proc dispgrp {gname } {
 	set resgrp $gname
 	# reset nlist
 	set nlist ""
+	set ngname ""
+	set iname ""
     }
     button .grp.bot.cancel -text "Cancel" \
 	    -bg gray75 -fg IndianRed4 -command {
 	destroy .grp
 	# Return empty string
 	set resgrp ""
+	set ngname ""
+	set iname ""
     }
     pack .grp.bot.save .grp.bot.cancel -side left -expand 1 \
 	    -padx 3m -pady 1m    
@@ -859,7 +895,7 @@ proc gsearch {gnm inm} {
     return ""
 }
 
-proc gpos {gnm inm} {
+proc endpos {gnm ngnm} {
     global glist cnt
 
     # This function returns the "flattened" position of the item "inm"
@@ -871,15 +907,44 @@ proc gpos {gnm inm} {
 	set cnt [expr $cnt+1]
 	set nm [lindex $elem 0]
 	set ty [lindex $elem 1]
-	if {$nm == $inm} {
-	    return 1
-	}
 	if {$ty == "g"} {
-	    set ret [gpos $nm $inm]
+	    set ret [endpos $nm $ngnm]
 	    if {$ret == 1} {
 		return 1
 	    }
 	}
+
+	if {$nm == $ngnm} {
+	    return 1
+	}
+
+    }
+    set cnt [expr $cnt+1]
+    return 0
+}
+
+proc begpos {gnm ngnm} {
+    global glist cnt
+
+    # This function returns the "flattened" position of the item "inm"
+    # within the group "gnm". This would be the line number of this
+    # item within the listbox displaying the group
+    # Returns 0 if the item was not found, 1 if found
+
+    foreach elem $glist($gnm) {
+	set cnt [expr $cnt+1]
+	set nm [lindex $elem 0]
+	set ty [lindex $elem 1]
+	if {$nm == $ngnm} {
+	    return 1
+	}
+	if {$ty == "g"} {
+	    set ret [endpos $nm $ngnm]
+	    if {$ret == 1} {
+		return 1
+	    }
+	}
+
     }
     set cnt [expr $cnt+1]
     return 0
