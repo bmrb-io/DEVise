@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1997/12/04 18:31:39  wenger
+  Merged new expression evaluation code thru the expression_br_2 tag.
+
   Revision 1.33.6.1  1997/12/03 22:52:28  whh
   Devise now uses new C++ expression evaluation code instead of Tcl
   interpreter.
@@ -351,18 +354,14 @@ private:
   int _maxTDataAttrNum;        /* max # of attributes in TData used */
   int _maxGDataShapeAttrNum;   /* max shape attribute number encountered */
   
-  static double *_tclAttrs;    /* attributes used to evaluate tcl variables */
-  static double _interpResult; /* result to be set by tcl interpreter */
+  double _exprResult;          /* result of evaluating an expression */
   
   static Shape **_shapes;
-  static int _tclRecId;
+  int _recId;
   
-  static Tcl_Interp *_interp;  /* Tcl interpreter */
-
   // native expression analysis engine
-  // added by whh,
-  CGraphicExpr *pNativeExpr;  
+  // (only used for "complex" commands
+  CGraphicExpr *_pNativeExpr;  
 };
 
 #endif
-

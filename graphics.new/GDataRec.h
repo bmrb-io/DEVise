@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/11/24 23:14:51  weaver
+  Changes for the new ColorManager.
+
   Revision 1.6.10.1  1997/05/21 20:40:26  weaver
   Changes for new ColorManager
 
@@ -63,7 +66,7 @@ struct GDataRec {
   Coord     _xDummy;
   Coord     _yDummy;
   Coord     _zDummy;
-		PColorID	_colorDummy;
+  PColorID  _colorDummy;
   Coord     _sizeDummy;
   Pattern   _patternDummy;
   ShapeID   _shapeDummy;

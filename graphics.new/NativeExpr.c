@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/01/26 23:19:27  wenger
+  Fixed a bug in expression evaluation code (didn't allow underscores in
+  attribute names) and added better error messages.
+
   Revision 1.3  1997/12/23 23:35:30  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -52,6 +56,51 @@
 
 #define MAX_STACK_SIZE 100
 
+enum VarType { CONST_INT, CONST_FLOAT, SYMBOL, VARIABLE, FUNCTION, OPERATOR };
+
+enum TokenType {
+  EX_ERROR,   // error during extraction
+  EX_END,     // end of stream
+  EX_NIL,     // none of the known tokens
+  EX_NUMBER,  // any number
+  EX_INT,     // integer
+  EX_FLOAT,   // float
+  EX_SYMBOL,  // symbol that contains alphanum chars
+  EX_VAR,     // symbol that prefixed by a $
+  EX_OPERATOR, // +, -, *, /
+  EX_LEFTBRACE,  // (
+  EX_RIGHTBRACE, // )
+  EX_COMMA,   // ,
+  EX_STRING,   // constant string, delimited by double quotes (")
+};
+
+struct Var {
+  enum VarType iType;
+  char *pszName;  // store name of symbol, var, function, operator
+  char *pszValue;
+  double dValue;  // for number
+  int iNoParam;
+  struct Var **ppParam;
+};
+
+struct Node {
+  struct Var v;
+  struct Node *pLeft;
+  struct Node *pRight;
+};
+
+struct Operator {
+  char *pszOperator;
+  int iPriority;
+  int iUnary;
+};
+
+// record attribute name <-> value conversion table
+struct AttrValue {
+  char *pszName;
+  double dVal;
+  struct AttrValue* pNext;
+};
 
 /***********************  FUNCTION PROTOTYPES ********************************/
 static void SkipSpace( char **ppszStr );
@@ -62,10 +111,7 @@ static int GetPriority( char *pszOperator );
 static int PostOrder( struct Node *pExprRoot );
 static int PopOperator( void );
 static int AddOperator( char *pszToken, int iUnary );
-// double EvalExpr( struct Node *pExprRoot );
-// int InsertAttr( char *pszName, double dVal );
 static int InitExpr( void );
-// int InitAttrList( void );
 static double GetVarValue( char *pszName );
 static double GetSymbolValue( char *pszName );
 #if defined(EXPR_TEST)
@@ -141,6 +187,10 @@ static int TestValue( void )
 
 CGraphicExpr::CGraphicExpr( MappingInterpCmd *cmd )
 {
+#if defined(DEBUG)
+  printf("CGraphicExpr::CGraphicExpr()\n");
+#endif
+
   int iCount;
   
   if( cmd->xCmd != NULL )
@@ -937,9 +987,9 @@ int PushOperand( enum TokenType iToken, char *pszToken )
 
   switch( iToken )
     {
-    case TK_NUMBER:
-    case TK_INT:
-    case TK_FLOAT:
+    case EX_NUMBER:
+    case EX_INT:
+    case EX_FLOAT:
       OperandStack[iOperandStackTop].v.iType = CONST_FLOAT;
       OperandStack[iOperandStackTop].v.pszValue = 
 	(char *)malloc( strlen(pszToken) + 1 );
@@ -947,14 +997,14 @@ int PushOperand( enum TokenType iToken, char *pszToken )
       OperandStack[iOperandStackTop].v.dValue = strtod( pszToken, NULL );
       break;
 
-    case TK_SYMBOL:
+    case EX_SYMBOL:
       OperandStack[iOperandStackTop].v.iType = SYMBOL;
       OperandStack[iOperandStackTop].v.pszName =
 	(char *)malloc( strlen(pszToken) + 1 );
       strcpy( OperandStack[iOperandStackTop].v.pszName, pszToken );
       break;
 
-    case TK_VAR:
+    case EX_VAR:
       OperandStack[iOperandStackTop].v.iType = VARIABLE;
       OperandStack[iOperandStackTop].v.pszName =
 	(char *)malloc( strlen(pszToken) + 1 );
@@ -979,7 +1029,7 @@ int PushOperator( enum TokenType iToken, char *pszToken, int iUnary )
 
   switch( iToken )
     {
-    case TK_OPERATOR:
+    case EX_OPERATOR:
 MorePop:
       if( ( iOperatorStackTop == -1 ) // no operator now
 	  || iUnary    // is unary operator, has highest priority
@@ -1004,10 +1054,10 @@ MorePop:
 
       }
 
-    case TK_LEFTBRACE:
+    case EX_LEFTBRACE:
       return AddOperator( pszToken, 0 );
 
-    case TK_RIGHTBRACE:
+    case EX_RIGHTBRACE:
       while( iOperatorStackTop >= 0 )
       {
 	// pop out all operators and operands between nearest pair of brackets
@@ -1147,12 +1197,12 @@ int GetPriority( char *pszOperator )
 int ParseExpression( char *pszExpr, struct Node **ppExprRoot  )
 {
 #if defined(DEBUG)
-  printf("\nParseExpression(%s)\n", pszExpr);
+  printf("ParseExpression(%s)\n", pszExpr);
 #endif
 
   char *pRunPtr = pszExpr;
   char *pszToken = NULL;  // point to token returned
-  enum TokenType iPrevToken = TK_NIL;  // start of expression
+  enum TokenType iPrevToken = EX_NIL;  // start of expression
   enum TokenType iNowToken;
   
   InitExpr();
@@ -1166,57 +1216,64 @@ int ParseExpression( char *pszExpr, struct Node **ppExprRoot  )
 #endif
     switch( iNowToken )
       {
-      case TK_VAR:
-	if( 0 != PushOperand( TK_VAR, pszToken ) )
+      case EX_VAR:
+	if( 0 != PushOperand( EX_VAR, pszToken ) )
 	  return -1;
 	break;
 
-      case TK_SYMBOL:
-	if( 0 != PushOperand( TK_SYMBOL, pszToken ) )
+      case EX_SYMBOL:
+	if( 0 != PushOperand( EX_SYMBOL, pszToken ) )
 	  return -1;
 	break;
 
-      case TK_NUMBER:
-	if( 0 != PushOperand( TK_NUMBER, pszToken ) )
+      case EX_NUMBER:
+	if( 0 != PushOperand( EX_NUMBER, pszToken ) )
 	  return -1;
 	break;
 
-      case TK_OPERATOR:
+      case EX_OPERATOR:
 	if( !strcmp( pszToken, "[" ) || !strcmp( pszToken, "]" ) )
 	{
 	  // unary operator: floor & ceiling
-	  if( 0 != PushOperator( TK_OPERATOR, pszToken, 1 ) )
+	  if( 0 != PushOperator( EX_OPERATOR, pszToken, 1 ) )
 	    return -1;
 	  break;
 	}
 	if( !strcmp( pszToken, "+" ) || !strcmp( pszToken, "-" ) )
 	{
 	  // check if is unary
-	  if( iPrevToken == TK_NIL || iPrevToken == TK_LEFTBRACE )
+	  if( iPrevToken == EX_NIL || iPrevToken == EX_LEFTBRACE )
 	  {
 	    // unary operator
-	    if( 0 != PushOperator( TK_OPERATOR, pszToken, 1 ) )
+	    if( 0 != PushOperator( EX_OPERATOR, pszToken, 1 ) )
 	      return -1;
 	    break;
 	  }
 	}
 
-	if( 0 != PushOperator( TK_OPERATOR, pszToken, 0 ) )
+	if( 0 != PushOperator( EX_OPERATOR, pszToken, 0 ) )
 	  return -1;
 	break;
 
-      case TK_LEFTBRACE:
-	if( 0 != PushOperator( TK_LEFTBRACE, pszToken, 0 ) )
+      case EX_LEFTBRACE:
+	if( 0 != PushOperator( EX_LEFTBRACE, pszToken, 0 ) )
 	  return -1;
 	break;
 
-      case TK_RIGHTBRACE:
-	if( 0 != PushOperator( TK_RIGHTBRACE, pszToken, 0 ) )
+      case EX_RIGHTBRACE:
+	if( 0 != PushOperator( EX_RIGHTBRACE, pszToken, 0 ) )
+	  return -1;
+	break;
+
+      case EX_STRING:
+	// Treat a constant string as numerical zero, at least until
+	// we can actually deal with strings.
+	if( 0 != PushOperand( EX_NUMBER, "0" ) )
 	  return -1;
 	break;
 
       default:
-	fprintf(stderr, "Expression analysis internal error evaluating {%s}\n",
+	fprintf(stderr, "Expression analysis internal error parsing {%s}\n",
 	  pszExpr);
         fprintf(stderr, "  Can't recognize token in {%s}\n",
 	  pRunPtr != NULL ? pRunPtr : "NULL");
@@ -1232,7 +1289,7 @@ int ParseExpression( char *pszExpr, struct Node **ppExprRoot  )
   {
     // reach the end of the expression but still stack not empty
     // pop out all the remaining operators
-    if( 0 != PushOperator( TK_OPERATOR, NULL, 0 ) )
+    if( 0 != PushOperator( EX_OPERATOR, NULL, 0 ) )
       return -1;  // NULL for end of expression
   }
 
@@ -1256,12 +1313,12 @@ int ParseExpression( char *pszExpr, struct Node **ppExprRoot  )
 // RETURN: the type of the token just extracted 
 enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
 {
-  enum TokenType RetTok = TK_END;
+  enum TokenType RetTok = EX_END;
   int iCount;
 
   if( ( ppszStr == NULL ) || ( *ppszStr == NULL ) ) {
     printf("NULL input string to GetNextToken().\n");
-    return TK_ERROR;
+    return EX_ERROR;
   }
 
 #if defined(DEBUG)
@@ -1275,15 +1332,15 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
     switch( **ppszStr )
     {
     case '(':
-      RetTok = TK_LEFTBRACE;
+      RetTok = EX_LEFTBRACE;
       break;
 
     case ')':
-      RetTok = TK_RIGHTBRACE;
+      RetTok = EX_RIGHTBRACE;
       break;
 
     case ',':
-      RetTok = TK_COMMA;
+      RetTok = EX_COMMA;
       break;
 
     case '+':
@@ -1294,7 +1351,7 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
     case ']':  // floor
     case '[':  // ceiling
     case '@':  // log
-      RetTok = TK_OPERATOR;
+      RetTok = EX_OPERATOR;
       break;
 
     case '$':  // variable
@@ -1310,15 +1367,46 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
 
       if(iCount == 1) {
         fprintf(stderr, "Only $, no variable name.\n");
-	return TK_NIL;  // only $, no chars
+	return EX_NIL;  // only $, no chars
       }
 
       if(-1 == DupStr(ppszStr, ppszToken, iCount)) {
 	fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
-	return TK_ERROR;
+	return EX_ERROR;
       }
 
-      return TK_VAR;
+      return EX_VAR;
+
+    case '"':  // string
+      //find end of string
+      iCount = 1;  // number of chars in this symbol
+      (*ppszStr) ++;
+
+      while(true)
+      {
+	if (**ppszStr == '\0')
+	{
+	  fprintf(stderr, "Warning: no closing quote on string <%s>\n",
+	    *ppszStr - iCount);
+	  break;
+	}
+
+        iCount ++;
+        (*ppszStr) ++;
+
+        if (**ppszStr == '"') {
+          iCount ++;
+          (*ppszStr) ++;
+	  break;
+	}
+      }
+
+      if(-1 == DupStr(ppszStr, ppszToken, iCount)) {
+        fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
+        return EX_ERROR;
+      }
+
+      return EX_STRING;
 
     default:  // symbols, numbers, unknowns
       if(isalpha(**ppszStr))
@@ -1335,10 +1423,10 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
 
 	if(-1 == DupStr(ppszStr, ppszToken, iCount)) {
 	  fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
-	  return TK_ERROR;
+	  return EX_ERROR;
 	}
 
-	return TK_SYMBOL;
+	return EX_SYMBOL;
       }
       else 
 	if( isdigit(**ppszStr) || **ppszStr == '.' )
@@ -1348,21 +1436,21 @@ enum TokenType GetNextToken( char **ppszStr, char **ppszToken )
 
 	  if(-1 == DupStr(ppszStr, ppszToken, iCount)) {
 	    fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
-	    return TK_ERROR;
+	    return EX_ERROR;
 	  }
 
-	  return TK_NUMBER;
+	  return EX_NUMBER;
 	}
 
       fprintf(stderr, "Unrecognized character {%c}\n", **ppszStr);
-      return TK_NIL;  // unrecognized character
+      return EX_NIL;  // unrecognized character
     }  // end of switch
   
     // continue from all cases except default & $
     *ppszToken = (char *)malloc(2);
     if(*ppszToken == NULL) {
       fprintf(stderr, "Out of memory at %s: %d.\n", __FILE__, __LINE__);
-      return TK_ERROR;
+      return EX_ERROR;
     }
 
     **ppszToken = **ppszStr;  // copy the character

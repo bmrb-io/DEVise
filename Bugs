@@ -1065,6 +1065,25 @@ Num Date        Status  Description
 
 272 01/23/98	OPEN	Trying to create an index causes a core dump. (rkw)
 
+273 01/28/98	OPEN	UniData cannot recognize pipes (|) as field delimiters
+			(also check about any other characters).  (rkw/ad)
+
+274 01/29/98	OPEN	When generating a GIF, DEVise should check whether
+			the window is entirely on the screen so we can
+			prevent a fatal X error. (rkw)
+
+275 01/29/98	FIXED	There are expression evaluation errors in the
+			search engine demo. (rkw)
+
+276 01/29/98	OPEN	Printing all windows or printing display only prints
+			one window in batch mode (1.4.7 and 1.5.0). (rkw)
+
+277 01/30/98	OPEN	XWindowRep should avoid creating Tcl/Tk objects
+			when drawing to pixmaps (otherwise they pop up
+			on the screen). (rkw)
+
+278 01/30/98	OPEN	Can't bring up schema editing GUI. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
