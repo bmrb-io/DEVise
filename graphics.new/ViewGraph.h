@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/07/19 02:55:00  jussi
+  Added point storage for storing missing data points.
+
   Revision 1.20  1996/07/12 19:40:13  jussi
   View statistics are now printed into a memory buffer.
 
@@ -171,6 +174,7 @@ public:
 
   /* Return pointer to buffer with view statistics */
   virtual char *GetViewStatistics() { return _statBuffer; }
+  virtual char *GetViewHistogram()  { return _histBuffer; }
 
   /* Set/get action */
   void SetAction(Action *action) { _action = action; }
@@ -198,7 +202,9 @@ public:
   BasicStats _allStats;            /* basic stats for all categories */
   BasicStats _stats[MAXCOLOR];     /* basic stats per category */
   char _statBuffer[3072];          /* view statistics */
-
+  char _histBuffer[3072];	   /* histograms */
+  Coord yMax, yMin;		   /* the ymax and ymin for _allStats */
+  
   Action *_action;                 /* action in this view */
   RecordLinkList _masterLink;      /* links whose master this view is */
   RecordLinkList _slaveLink;       /* slave record link list */

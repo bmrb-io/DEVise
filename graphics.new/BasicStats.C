@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/07/14 04:07:03  jussi
+  Removed unnecessary #include statements.
+
   Revision 1.17  1996/07/13 17:29:18  jussi
   ViewKGraph now uses the more general ViewCallback interface.
 
@@ -102,6 +105,10 @@ void BasicStats::Init(ViewGraph *vw)
   nval = 0;
   nsamples = 0;
   ViewStats::Init(vw);
+  for(int j=0; j<HIST_NUM; j++){
+	hist[j]=0;
+  }
+  width = 0;
 }
 
 void BasicStats::Sample(double x, double y)
@@ -116,6 +123,7 @@ void BasicStats::Sample(double x, double y)
   }
   if (x > xmax) xmax = x;
   if (x < xmin) xmin = x;
+/*width = (ymax-ymin)/HIST_NUM; */
 
   // Group samples into batches
   // For values within a batch, simply add to total - at the end of the
@@ -141,6 +149,14 @@ void BasicStats::Sample(double x, double y)
   int_x = int_y = 0;
 }
 
+void BasicStats::Histogram(double y)
+{
+       int index = (int) (y - ymin)/width;
+       if(index>=HIST_NUM) index = HIST_NUM-1;
+       DOASSERT(index >= 0 && index < HIST_NUM, "Invalid histogram index!");
+       hist[index]++;
+}
+
 void BasicStats::Done()
 {
   if (nsamples > 0) {
@@ -158,9 +174,10 @@ void BasicStats::Done()
     }
 
     // recompute var and std with correct formulas
-    if (nsamples > 1) {
+    if (nsamples >= 1) {
       var = ((float)ysum_sqr) / (nsamples - 1) - avg * avg;
       std = sqrt(var);
+/*      width = (ymax-ymin)/HIST_NUM; */
     } else {
       var = 0;
       std = 0;
@@ -219,6 +236,11 @@ void BasicStats::Report()
   win->SetCopyMode();
 }
 
+void BasicStats::ReturnHist()
+{
+  for(int j = 0; j<HIST_NUM; j++) printf("%d ", hist[j]);
+  printf("\n");
+}
 Coord BasicStats::GetStatVal(int statnum)
 {
   switch (statnum) {
@@ -236,6 +258,21 @@ Coord BasicStats::GetStatVal(int statnum)
   }
 
   return 0;
+}
+
+int BasicStats::GetHistVal(int index)
+{
+    return hist[index];
+}
+
+Coord BasicStats::GetHistWidth()
+{
+    return width;
+}
+
+void BasicStats::SetHistWidth(Coord max, Coord min)
+{
+    width = (max-min)/HIST_NUM;
 }
 
 char *BasicStats::GetStatName(int statnum)

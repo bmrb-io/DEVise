@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/07/13 00:22:21  jussi
+  ViewGraph writes only the minimum number of necessary records
+  in the color statistics buffer.
+
   Revision 1.23  1996/07/12 19:40:12  jussi
   View statistics are now printed into a memory buffer.
 
@@ -120,9 +124,12 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
 
     // add terminating null
     _DisplayStats[STAT_NUM] = 0;
-
+    
+    // no ymax and ymin yet 
+    yMax = yMin = 0;
     // no statistics yet
     _statBuffer[0] = 0;
+    _histBuffer[0] = 0;
 
     // auto scaling is in effect by default
     _autoScale = true;
@@ -470,6 +477,7 @@ void ViewGraph::PrepareStatsBuffer()
 {
     /* initialize statistics buffer */
     _statBuffer[0] = 0;
+    _histBuffer[0] = 0;
 
     /* find last non-zero count */
     int j;
@@ -486,8 +494,8 @@ void ViewGraph::PrepareStatsBuffer()
         j = MAXCOLOR - 1;
 
     /* put the statistics in the stat buffer */
+    char line[128];
     for(int i = 0; i <= j; i++) {
-        char line[128];
         sprintf(line, "%d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
                 i, (int)_stats[i].GetStatVal(STAT_COUNT),	
                 _stats[i].GetStatVal(STAT_MEAN),
@@ -505,6 +513,20 @@ void ViewGraph::PrepareStatsBuffer()
         }
         strcat(_statBuffer, line);
     }
+
+    for(int i=0; i<HIST_NUM; i++) {
+	sprintf(line, "%.2f %d\n", _allStats.GetStatVal(STAT_MIN)+(i+0.5)*_allStats.GetHistWidth(), 
+		_allStats.GetHistVal(i));
+	if(strlen(_histBuffer) + strlen(line) + 1 > sizeof _histBuffer) {
+	    fprintf(stderr, "Out of histogram buffer space\n");
+	    break;
+	}
+	strcat(_histBuffer, line);
+    }
+#ifdef DEBUG
+    printf("%s\n", _statBuffer);
+    printf("%s\n", _histBuffer);
+#endif
 }
 
 /* Handle button press event */

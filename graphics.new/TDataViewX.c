@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/07/19 17:31:31  jussi
+  Fixed problem in InsertSymbol().
+
   Revision 1.28  1996/07/19 17:26:04  jussi
   Added code that prevents record overlap elimination when
   records are of LineShape or LineShadeShape.
@@ -334,13 +337,17 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
       // Compute statistics only for records that match the filter's
       // X range and that exceed the Y low boundary
+      if (_allStats.GetHistWidth() == 0 && yMax != 0 && yMin != 0) {
+/*		printf("yMax = %.2f yMin = %.2f\n", yMax, yMin); */
+		_allStats.SetHistWidth(yMax, yMin);
+      }
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh
 	  && y >= _queryFilter.yLow) {
 	if (color < MAXCOLOR)
 	  _stats[color].Sample(x, y);
 	_allStats.Sample(x, y);
+	if(_allStats.GetHistWidth() > 0)_allStats.Histogram(y);
       }
-
       // Contiguous ranges which match the filter's X *and* Y range
       // are stored in the record link
       if (x < _queryFilter.xLow || x > _queryFilter.xHigh
@@ -403,6 +410,8 @@ void TDataViewX::QueryDone(int bytes, void *userData)
   _index = -1;
 
   _allStats.Done();
+  yMax = _allStats.GetStatVal(STAT_MAX);
+  yMin = _allStats.GetStatVal(STAT_MIN);
   _allStats.Report();
 
   for(int i = 0; i < MAXCOLOR; i++)

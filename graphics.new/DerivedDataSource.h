@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/12 21:53:31  jussi
+  Rewrote once more.
+
   Revision 1.1  1996/07/12 03:52:29  jussi
   Initial revision.
 */
@@ -30,15 +33,17 @@
 class DerivedDataSource {
   public:
     static Boolean IsDerivedDataType(char *type) {
-        if (!strcmp(type, "BASICSTAT"))
+        if ((!strcmp(type, "BASICSTAT")) || (!strcmp(type, "HISTOGRAM")))
             return true;
         return false;
     }
+
 
     static char *GetDerivedData(char *type, char *name);
 
   protected:
     virtual char *GetViewStatistics() = 0;
+    virtual char *GetViewHistogram() = 0;
 };
 
 #endif

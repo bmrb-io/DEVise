@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/14 04:06:48  jussi
+  Added #include of DeviseTypes.h.
+
   Revision 1.10  1996/07/13 17:29:07  jussi
   ViewKGraph now uses the more general ViewCallback interface.
 
@@ -68,6 +71,8 @@ class ViewKGraph;
 
 // Total number of stats
 #define STAT_NUM    7
+//Total number of classes for histogram
+#define HIST_NUM    50
 
 // Maximum length of the name of any stat
 #define STATNAMELEN 10
@@ -96,11 +101,17 @@ public:
 
   virtual void Init(ViewGraph *vw);
   virtual void Sample(double x, double y);
+  virtual void Histogram(double y);
   virtual void Done();
   virtual void Report();
-  
+  virtual void ReturnHist();
+
   virtual Coord GetStatVal(int statnum);
+  virtual int GetHistVal(int index);
+  virtual Coord GetHistWidth();
+  virtual void SetHistWidth(Coord max, Coord min);
   virtual char *GetStatName(int statnum);
+
 
 private:
   double ysum, xsum;
@@ -109,7 +120,9 @@ private:
   double xatymax, xatymin;
   double int_x, int_y;
   int nsamples, nval;
-
+  int hist[HIST_NUM];   /* the histogram counts for each class, make it static for now */
+  double width; /* width = (ymax-ymin) divided by 50 */
+  
   // Stat values
   double avg, var, std;
   double clow[NUM_Z_VALS], chigh[NUM_Z_VALS];

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/12 21:53:30  jussi
+  Rewrote once more.
+
   Revision 1.2  1996/07/12 19:14:36  jussi
   Rewrote GetDerivedData() method.
 
@@ -44,7 +47,7 @@ char *DerivedDataSource::GetDerivedData(char *type, char *name)
 
     DerivedDataSource *src = 0;
 
-    if (!strcmp(name, "View")) {
+    if (!strcmp(name, "View") || !strcmp(name, "Hist")) {
         ViewGraph *v = (ViewGraph *)ControlPanel::FindInstance(objectName);
         if (!v) {
             fprintf(stderr, "Cannot find view %s\n", objectName);
@@ -70,6 +73,9 @@ char *DerivedDataSource::GetDerivedData(char *type, char *name)
 
     if (!strcmp(type, "BASICSTAT")) {
         dataBuf = src->GetViewStatistics();
+    }
+    if (!strcmp(type, "HISTOGRAM")) {
+	dataBuf = src->GetViewHistogram();
     }
 
     return dataBuf;
