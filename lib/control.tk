@@ -15,6 +15,13 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.97  1996/11/25 22:31:31  beyer
+#	1. extended .devise.rc search
+#	2. added DestroyView command
+#	3. query window updated properly, history window update changed
+#	4. filter properly set to (0,100) instead of (100,0) when high,low values
+#	   are not known.
+#
 #	Revision 1.96  1996/11/20 20:35:35  wenger
 #	Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
 #	some Makefile improvements so compile works first time; fixed up files
@@ -544,6 +551,10 @@ if {0} {
 }
 
 wm title . "DEVise"
+
+bind . q DoExit
+bind . <Control-c> DoExit
+bind . <Control-C> DoExit
 
 frame .mbar  -relief raised -bd 4 -bg green
 frame .panel -bg white
