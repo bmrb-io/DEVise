@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/11/23 21:13:37  jussi
+  Merged DispQueryProcFull functionality into QueryProcFull.
+  Merged QueryProcTape functionality into QueryProcFull.
+  Removed failing support for variable-sized records.
+  Improved debugging by using configurable debugging levels.
+
   Revision 1.38  1996/11/21 01:23:42  jussi
   Consolidated processing of sequential and randomized queries.
 
@@ -186,7 +192,7 @@
 #include "Control.h"
 #include "RecordLink.h"
 
-#define DEBUGLVL 3
+#define DEBUGLVL 0
 
 /* temp page to hold data for converting tdata into gdata. */
 static const int GDATA_BUF_SIZE = 6400 * sizeof(double);
