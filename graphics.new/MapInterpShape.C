@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/12/03 17:03:04  jussi
+  Added support for setting font size.
+
   Revision 1.25  1996/11/26 16:51:33  ssl
   Added support for piled viws
 
@@ -348,7 +351,7 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 
 int FullMapping_RectXShape::NumShapeAttrs()
 {
-    return 1; 
+    return 2; 
 }
 
 
@@ -1280,7 +1283,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 
 int FullMapping_GifImageShape::NumShapeAttrs()
 {
-    return 1;
+    return 3;
 }
 
 

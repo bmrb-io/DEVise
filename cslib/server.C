@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/26 15:43:54  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.2  1996/11/23 00:24:02  wenger
   Incorporated all of the PostScript-related stuff into the client/server
   library; added printing to PostScript to the example client and server;
@@ -212,7 +218,8 @@ void SampleWinServer::Print()
 
   /* Open the print file. */
   char *filename = "/tmp/client_server.0.ps";
-  assert(((PSDisplay *) _fileDisp)->OpenPrintFile(filename).IsComplete());
+  DevStatus status = ((PSDisplay *) _fileDisp)->OpenPrintFile(filename);
+  assert(status.IsComplete());
   ((PSDisplay *) _fileDisp)->PrintPSHeader("cslib sample server");
 
   /* Switch over to file output. */

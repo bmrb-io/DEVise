@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/12/03 17:00:27  jussi
+  Added SetFont() for generic font support. Removed SetSmallFont().
+
   Revision 1.12  1996/11/26 15:44:06  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -196,7 +199,7 @@ PSWindowRep::~PSWindowRep()
 
 void PSWindowRep::Reparent(Boolean child, void *other, int x, int y)
 {
-    DOASSERT(false, "PSWindowRep::Reparent() not yet implemented");
+    reportErrNosys("PSWindowRep::Reparent() not yet implemented");
     /* do something */
 }
 
@@ -309,7 +312,7 @@ void PSWindowRep::ImportImage(Coord x, Coord y,
     return;
   }
 
-  DOASSERT(false, "PSWindowRep::ImportImage() not yet implemented");
+  reportErrNosys("PSWindowRep::ImportImage() not yet implemented");
   /* do something */
 
   fclose(fp);
@@ -324,7 +327,7 @@ void PSWindowRep::ImportImage(Coord x, Coord y,
 
 void PSWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
-  DOASSERT(false, "PSWindowRep::ExportImage() not yet implemented");
+  reportErrNosys("PSWindowRep::ExportImage() not yet implemented");
     /* do something */
 }
 
@@ -367,7 +370,7 @@ void PSWindowRep::SetBgColor(GlobalColor bg)
 
   WindowRep::SetBgColor(bg);
 #ifdef GRAPHICS
-  DOASSERT(false, "PSWindowRep::SetBgColor() not yet implemented");
+  reportErrNosys("PSWindowRep::SetBgColor() not yet implemented");
     /* do something */
 #endif
 }
@@ -378,7 +381,7 @@ void PSWindowRep::SetBgColor(GlobalColor bg)
 void PSWindowRep::SetWindowBgColor(GlobalColor bg)
 {
 #ifdef GRAPHICS
-  DOASSERT(false, "PSWindowRep::SetWindowBgColor() not yet implemented");
+  reportErrNosys("PSWindowRep::SetWindowBgColor() not yet implemented");
   /* do something */
 #endif
 }
@@ -907,7 +910,7 @@ void PSWindowRep::FillPixelPoly(Point *pts, int n)
 #endif
 
 #ifdef GRAPHICS
-  DOASSERT(false, "PSWindowRep::FillPixelPoly() not yet implemented");
+  reportErrNosys("PSWindowRep::FillPixelPoly() not yet implemented");
   /* do something */
 #endif
 }
@@ -932,7 +935,7 @@ void PSWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
   int realEnd = ROUND(int, ToDegree(endAngle) * 64);
 
 #ifdef GRAPHICS
-  DOASSERT(false, "PSWindowRep::Arc() not yet implemented");
+  reportErrNosys("PSWindowRep::Arc() not yet implemented");
   /* do something */
 #endif
 }
@@ -1202,7 +1205,7 @@ void PSWindowRep::SetXorMode()
 //TEMPTEMP -- maybe turn off drawing or set some kind of pattern
 
 #ifdef GRAPHICS
-  //DOASSERT(false, "PSWindowRep::SetXorMode() not yet implemented");
+  reportErrNosys("PSWindowRep::SetXorMode() not yet implemented");
   /* do something */
 #endif
 }
@@ -1217,7 +1220,6 @@ void PSWindowRep::SetCopyMode()
 #endif
 
 #ifdef GRAPHICS
-  //DOASSERT(false, "PSWindowRep::SetCopyMode() not yet implemented");
   /* do something */
 #endif
 }
@@ -1243,7 +1245,7 @@ void PSWindowRep::SetFont(char *family, char *weight, char *slant,
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::UpdateWinDimensions()
 {
-  //DOASSERT(false, "PSWindowRep::UpdateWinDimensions() not yet implemented");
+  reportErrNosys("PSWindowRep::UpdateWinDimensions() not yet implemented");
   /* do something */
 }
 
@@ -1364,7 +1366,7 @@ void PSWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 	 x, y, w, h);
 #endif
 
-  DOASSERT(false, "PSWindowRep::MoveResize() not yet implemented");
+  reportErrNosys("PSWindowRep::MoveResize() not yet implemented");
   /* do something */
 
   UpdateWinDimensions();
@@ -1377,7 +1379,7 @@ void PSWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 
 void PSWindowRep::Iconify()
 {
-  DOASSERT(false, "PSWindowRep::Iconify() not yet implemented");
+  reportErrNosys("PSWindowRep::Iconify() not yet implemented");
     /* do something */
 }
 
@@ -1392,7 +1394,7 @@ void PSWindowRep::Raise()
   printf("PSWindowRep::Raise window %p\n", this);
 #endif
 
-  //DOASSERT(false, "PSWindowRep::Raise() not yet implemented");
+  reportErrNosys("PSWindowRep::Raise() not yet implemented");
   /* do something */
 }
 
@@ -1407,7 +1409,7 @@ void PSWindowRep::Lower()
   printf("PSWindowRep::Lower window %p:\n", this);
 #endif
 
-  DOASSERT(false, "PSWindowRep::Lower() not yet implemented");
+  reportErrNosys("PSWindowRep::Lower() not yet implemented");
   /* do something */
 }
 
