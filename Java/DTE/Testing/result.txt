@@ -1,0 +1,109 @@
+selproj-1.q:     select all "cs" courses numbered between 500 and 800
+
+Query Answer is:
+509 math-for-cs 
+513 numerical-analysis 
+514 numerical-analysis 
+520 intr-tc 
+525 linear-programming 
+526 advanced-lp 
+532 tap 
+533 image-processing 
+536 intr-compiler 
+537 into-os 
+538 intr-tdpl 
+539 intr-annfs 
+540 intr-artificial-inti 
+545 nlc 
+547 cs-modeling 
+550 computer-and-socity 
+552 intr-ca 
+558 intr-cg 
+562 expert-system 
+564 dbms 
+577 intr-algorithm 
+638 undergrad-topics 
+640 intr-network 
+681 intr-senior-thesis 
+699 directed-study 
+701 proglangcompiler 
+702 computer-construction 
+704 principle-pl 
+712 finite-diff-meth 
+713 numerical-anal-de 
+720 non-lp 
+733 computational-meth-smms 
+736 advanced-os 
+737 performance_eval
+740 advanced-network 
+752 advanced-ca 
+764 topics-dbms 
+766 computer-version 
+767 graph-theory 
+784 data-model-lang 
+
+
+
+
+selproj-2.q:      print the chair of "math" department
+
+Query Answer is:
+math Richard 
+
+
+
+
+join2proj-1.q:    print the jenna's major department name and the its chair  
+
+Query Answer is:
+cs Johnson 
+
+
+
+
+join2proj-2.q:    print all students' name and major who are taking math 210.
+
+Query Answer is:
+jesse math 
+richard cs 
+jees cs 
+ali art 
+
+
+
+
+join3proj-1.q:    print all the course names and course numbers and the department names openning the course for the courses jamme is taking
+
+Query Answer is:
+law 512 suitlaw 
+cs 564 dbms 
+cs 737 performance 
+
+
+
+
+join3proj-2.q:    print the names and sid of all students who are taking 'dbms' 
+
+Query Answer is:
+jenna 7837 
+honghong 6292 
+jamme 8347 
+hopes 3344 
+brotherw 9828 
+
+
+
+
+
+complex.q:        this is to demo some fancy operations supported 
+
+Query Answer is:
+31 false 
+
+
+
+
+
+
+
+

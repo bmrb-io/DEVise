@@ -54,6 +54,7 @@ cs 713 numerical-anal-de
 cs 720 non-lp
 cs 733 computational-meth-smms
 cs 736 advanced-os
+cs 737 performance-eval
 cs 740 advanced-network
 cs 752 advanced-ca
 edca 820 elementary-teaching
