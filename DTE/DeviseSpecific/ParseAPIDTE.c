@@ -37,16 +37,6 @@ int ParseAPIDTE(int argc, char **argv, ControlPanel *control){
       return 1;
     }
 
-    if(!strcmp(argv[0],"dteImportFileType")){
-      char * name = dteImportFileType(argv[1]);
-      if (!name){
-     control->ReturnVal(API_NAK, strdup(""));
-     return -1;
-      }
-      control->ReturnVal(API_ACK, name);
-      return 1;
-    }
-
     if(!strcmp(argv[0], "dteListCatalog")){
       char* catListing = dteListCatalog(argv[1]);
       control->ReturnVal(API_ACK, catListing);

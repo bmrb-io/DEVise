@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1997/03/14 18:36:59  donjerko
+  Separated DTE calls from ParseAPI.C into ParseAPIDTE.c
+
   Revision 1.55  1997/03/06 23:52:02  ssl
   Added functionality for issuing a flush on the TData from GUI
 
@@ -264,6 +267,8 @@
 #include "DevError.h"
 #include "ViewLens.h"
 #include "WinClassInfo.h"
+
+#include "CatalogComm.h"
 #define PURIFY 0
 
 #ifdef PURIFY
@@ -300,11 +305,25 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   printf("\n");
 #endif
 
-  // The first few commands have a variable number of arguments
+	// DTE commands are done in separate file which is shared by
+	// stand alone DTE gui.
 
 	if((argc >= 1) && (strlen(argv[0]) >= 3) && !strncmp(argv[0], "dte", 3)){
+
+	    if(argc == 2 && !strcmp(argv[0],"dteImportFileType")){
+		 char * name = dteImportFileType(argv[1]);
+		 if (!name){
+		control->ReturnVal(API_NAK, strdup(""));
+		return -1;
+		 }
+		 control->ReturnVal(API_ACK, name);
+		 return 1;
+	    }
+	
 		return ParseAPIDTE(argc, argv, control);
 	}
+
+  // The first few commands have a variable number of arguments
 
   if (!strcmp(argv[0], "changeParam")) {
     classDir->ChangeParams(argv[1], argc - 2, &argv[2]);
