@@ -9,4 +9,4 @@
 \rm -f jspop.out
 touch jspop.out
 
-nohup java jspop -debug $* >! jspop.out
+nohup java jspop -debug $* >& jspop.out

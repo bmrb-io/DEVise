@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2000/06/12 22:13:58  wenger
+// Cleaned up and commented DEViseServer, JssHandler, DEViseComponentPanel,
+// DEViseTrafficLight, YImageCanvas; added debug output of number of
+// bytes of data available to the JS.
+//
 // Revision 1.8  2000/06/05 16:35:08  wenger
 // Added comments and cleaned up the code a little.
 //
@@ -167,7 +172,8 @@ public class JssHandler implements Runnable
 		      "Invalid request received from jss \"" + msg + "\"");
 		}
 
-                if (cmd[0].startsWith("JSS_Add") && cmd.length == 4) {
+		//TEMP -- check args better
+                if (cmd[0].startsWith(DEViseCommands.S_ADD) && cmd.length == 4) {
 		    int port = Integer.parseInt(cmd[1]);
 		    int cmdport = Integer.parseInt(cmd[2]);
 		    int imgport = Integer.parseInt(cmd[3]);

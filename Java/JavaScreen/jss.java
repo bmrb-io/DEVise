@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2000/03/30 19:14:36  wenger
+// Improved error messages for socket creation failures.
+//
 // Revision 1.10  2000/03/23 16:26:19  wenger
 // Cleaned up headers and added requests for comments.
 //
@@ -97,7 +100,7 @@ public class jss implements Runnable
     {
         String version = System.getProperty("java.version");
         if (version.compareTo("1.1") < 0)  {
-            System.out.println("Error: Java version 1.1 or greater is needed to run this program\n"
+            System.err.println("Error: Java version 1.1 or greater is needed to run this program\n"
                                + "The version you used is " + version + "\n");
             System.exit(0);
         }
@@ -116,7 +119,7 @@ public class jss implements Runnable
             InetAddress address = InetAddress.getLocalHost();
             localHostname = address.getHostName();
         } catch (UnknownHostException e) {
-            System.out.println("Can not start jss - unknown local host!");
+            System.err.println("Can not start jss - unknown local host!");
             System.exit(1);
         }
 
@@ -124,8 +127,8 @@ public class jss implements Runnable
         try {
             jssServerSocket = new ServerSocket(jssPort);
         } catch (IOException e) {
-            System.out.println("Can not start server socket at port " + jssPort);
-	    System.out.println(e.getMessage());
+            System.err.println("Can not start server socket at port " + jssPort);
+	        System.err.println(e.getMessage());
             quit();
         }
 
@@ -138,7 +141,7 @@ public class jss implements Runnable
                 System.out.println("Successfully start devised no." + (i + 1) + " out of " + devisedNumber + "\n");
             }
         } catch (YException e) {
-            System.out.println(e.getMsg());
+            System.err.println(e.getMsg());
             quit();
         }
 
@@ -186,11 +189,12 @@ public class jss implements Runnable
             for (int i = 0; i < deviseds.size(); i++) {
                 connectToJSPOP();
                 devised server = (devised)deviseds.elementAt(i);
-                sendToJSPOP("JSS_Add " + jssPort + " " + server.cmdPort + " " + server.imgPort);
+                sendToJSPOP(DEViseCommands.S_ADD + " " + jssPort + " " +
+				  server.cmdPort + " " + server.imgPort);
                 disconnectFromJSPOP();
             }
         } catch (YException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             isListen = false;
         }
 
@@ -212,16 +216,16 @@ public class jss implements Runnable
                         try {
                             isQuit = processRequest(msg);
                         } catch (YException exp) {
-                            System.out.println("Failed to process request from jspop");
-                            System.out.println(exp.getMessage());
+                            System.err.println("Failed to process request from jspop");
+                            System.err.println(exp.getMessage());
                             disconnectFromJSPOP();
                         }
 
                         isListen = !isQuit;
                     } catch (IOException ex) {
-                        System.out.println("IO Error while open connection to jspop host " + jspopHost);
+                        System.err.println("IO Error while open connection to jspop host " + jspopHost);
                     } catch (YException ex) {
-                        System.out.println(ex.getMessage());
+                        System.err.println(ex.getMessage());
                     }
 
                     if (jspopIS != null) {
@@ -247,7 +251,7 @@ public class jss implements Runnable
                     }
                 }
             } catch (IOException e) {
-                System.out.println("jss server can not listen on jss socket so it is aborting!");
+                System.err.println("jss server cannot listen on jss socket so it is aborting!");
                 break;
             }
         }
@@ -309,7 +313,7 @@ public class jss implements Runnable
             jspopOS.writeInt(msg.length());
             jspopOS.writeBytes(msg);
             jspopOS.flush();
-            System.out.println("Message successfully sended!");
+            System.out.println("Message successfully sent!");
         } catch (IOException e) {
             throw new YException("IO Error while send message to JSPOP", "jss:sendToJSPOP()");
         }
@@ -334,6 +338,7 @@ public class jss implements Runnable
         }
     }
 
+	// Returns true iff the JSS should quit.
     private synchronized boolean processRequest(String msg) throws YException
     {
         if (msg == null) {
@@ -342,44 +347,57 @@ public class jss implements Runnable
 
         String[] cmd = DEViseGlobals.parseString(msg);
         if (cmd == null) {
-            System.out.println("Invalid request received from jspop \"" + msg + "\"");
+            System.err.println("Can't parse request received from jspop: <"
+			  + msg + ">");
             return false;
         }
 
-        if (cmd[0].startsWith("JSS_Restart") && cmd.length == 3) {
-            try {
-                int cmdport = Integer.parseInt(cmd[1]);
-                int imgport = Integer.parseInt(cmd[2]);
-                for (int i = 0; i < deviseds.size(); i++) {
-                    devised server = (devised)deviseds.elementAt(i);
-                    if (server.cmdPort == cmdport && server.imgPort == imgport) {
-                        server.stop();
-                        deviseds.removeElement(server);
+        if (cmd[0].startsWith(DEViseCommands.S_RESTART)) {
+			if (cmd.length == 3) {
+                try {
+                    int cmdport = Integer.parseInt(cmd[1]);
+					int imgport = Integer.parseInt(cmd[2]);
+                    for (int i = 0; i < deviseds.size(); i++) {
+                        devised server = (devised)deviseds.elementAt(i);
+                        if (server.cmdPort == cmdport &&
+						  server.imgPort == imgport) {
+                            server.stop();
+                            deviseds.removeElement(server);
 
-                        try {
-                            server = new devised(idStr, devisedScript);
-                        } catch (YException ex) {
-                            System.out.println("Can not start new devised");
-                            server = null;
+                            try {
+                                server = new devised(idStr, devisedScript);
+                            } catch (YException ex) {
+                                System.err.println("Cannot start new devised");
+                                server = null;
+                            }
+
+                            if (server != null) {
+                                deviseds.addElement(server);
+                                connectToJSPOP();
+                                sendToJSPOP(DEViseCommands.S_ADD + " " +
+								  jssPort + " " + server.cmdPort + " " +
+								  server.imgPort);
+                                disconnectFromJSPOP();
+                            }
+    
+                            break;
                         }
-
-                        if (server != null) {
-                            deviseds.addElement(server);
-                            connectToJSPOP();
-                            sendToJSPOP("JSS_Add " + jssPort + " " + server.cmdPort + " " + server.imgPort);
-                            disconnectFromJSPOP();
-                        }
-
-                        break;
                     }
+                } catch (NumberFormatException e) {
+				    System.err.println("NumberFormatException: " +
+					  e.getMessage());
+                    System.err.println("Invalid request received from jspop: <"
+					  + msg + ">");
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid request received from jspop \"" + msg + "\"");
-            }
-        } else if (cmd[0].startsWith("JSS_Quit")) {
+		    } else {
+			    System.err.println("Wrong number of arguments in command: <"
+				  + msg + ">");
+			}
+        } else if (cmd[0].startsWith(DEViseCommands.S_QUIT)) {
             return true;
         } else {
-            System.out.println("Invalid request received from jspop \"" + msg + "\"");
+            System.err.println("Can't recognize command received from jspop: <"
+			  + msg + ">");
         }
 
         return false;
@@ -392,18 +410,18 @@ public class jss implements Runnable
                 try {
                     Socket socket = new Socket("localhost", jssPort);
                     DataOutputStream os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-                    String msg = "JSS_Quit";
+                    String msg = DEViseCommands.S_QUIT;
                     os.writeInt(msg.length());
                     os.writeBytes(msg);
                     os.flush();
                     os.close();
                     socket.close();
                 } catch (UnknownHostException e) {
-                    System.out.println("Can not find local jss host");
+                    System.err.println("Cannot find local jss host");
                 } catch (NoRouteToHostException e) {
-                    System.out.println("Can not find route to local jss host, may caused by an internal firewall");
+                    System.err.println("Cannot find route to local jss host, may caused by an internal firewall");
                 } catch (IOException e) {
-                    System.out.println("IO Error while connecting to local jss host");
+                    System.err.println("IO Error while connecting to local jss host");
                 }
 
                 System.exit(0);
@@ -415,7 +433,7 @@ public class jss implements Runnable
                             throw new NumberFormatException();
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("Please use a positive integer number between 1 and 10 as the number of devised servers you want to started");
+                        System.err.println("Please use a positive integer number between 1 and 10 as the number of devised servers you want to started");
                         System.exit(1);
                     }
                 }
@@ -427,7 +445,7 @@ public class jss implements Runnable
                             throw new NumberFormatException();
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("Please use a positive integer number between 1024 and 65535 as the port number for JSS Server");
+                        System.err.println("Please use a positive integer number between 1024 and 65535 as the port number for JSS Server");
                         System.exit(1);
                     }
                 }
@@ -439,7 +457,7 @@ public class jss implements Runnable
                             throw new NumberFormatException();
                         }
                     } catch (NumberFormatException e) {
-                        System.out.println("Please use a positive integer number between 1024 and 65535 as the port number of jspop");
+                        System.err.println("Please use a positive integer number between 1024 and 65535 as the port number of jspop");
                         System.exit(1);
                     }
                 }
@@ -448,7 +466,7 @@ public class jss implements Runnable
                     try {
                         debugLevel = Integer.parseInt(args[i].substring(6));
                     } catch (NumberFormatException e) {
-                        System.out.println("Please use an integer number as the debug level!");
+                        System.err.println("Please use an integer number as the debug level!");
                         System.exit(1);
                     }
                 } else {
@@ -471,7 +489,7 @@ public class jss implements Runnable
                 System.out.println(usage);
                 System.exit(0);
             } else {
-                System.out.println("Invalid jss option \"" + args[i] + "\"!");
+                System.err.println("Invalid jss option \"" + args[i] + "\"!");
                 System.out.println(usage);
                 System.exit(1);
             }
@@ -511,28 +529,28 @@ class devised
             imgPort = socket2.getLocalPort();
             switchPort = socket3.getLocalPort();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             throw new YException("Can not find any free port in local host to start a new devised");
         } finally {
             if (socket1 != null) {
                 try {
                     socket1.close();
                 } catch (IOException e) {
-                    System.out.println("Can not close socket at port " + cmdPort);
+                    System.err.println("Cannot close socket at port " + cmdPort);
                 }
             }
             if (socket2 != null) {
                 try {
                     socket2.close();
                 } catch (IOException e) {
-                    System.out.println("Can not close socket at port " + imgPort);
+                    System.err.println("Cannot close socket at port " + imgPort);
                 }
             }
             if (socket3 != null) {
                 try {
                     socket3.close();
                 } catch (IOException e) {
-                    System.out.println("Can not close socket at port " + switchPort);
+                    System.err.println("Cannot close socket at port " + switchPort);
                 }
             }
         }
@@ -584,9 +602,9 @@ class devised
                 }
             }
         } catch (IOException e) {
-            System.out.println("IO Error while trying to kill an old devised at port " + cmdPort + "," + imgPort + "," + switchPort);
+            System.err.println("IO Error while trying to kill an old devised at port " + cmdPort + "," + imgPort + "," + switchPort);
         } catch (SecurityException e) {
-            System.out.println("Security Error while trying to kill an old devised at port " + cmdPort + "," + imgPort + "," + switchPort);
+            System.err.println("Security Error while trying to kill an old devised at port " + cmdPort + "," + imgPort + "," + switchPort);
         } finally {
             kill.destroy();
             kill = null;

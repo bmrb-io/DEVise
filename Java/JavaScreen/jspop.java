@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2000/06/05 16:35:08  wenger
+// Added comments and cleaned up the code a little.
+//
 // Revision 1.28  2000/04/05 15:42:24  wenger
 // Changed JavaScreen version to 3.3 because of memory fixes; other minor
 // improvements in code; conditionaled out some debug code.
@@ -564,8 +567,8 @@ public class jspop implements Runnable
             Socket socket = new Socket(server.hostname, server.jssport);
             DataOutputStream os = new DataOutputStream(
 	      new BufferedOutputStream(socket.getOutputStream()));
-            String msg = "JSS_Restart " + server.cmdPort + " " +
-	      server.dataPort;
+            String msg = DEViseCommands.S_RESTART + " " + server.cmdPort +
+	      " " + server.dataPort;
             System.out.println("Try to send restart request to " +
 	      server.hostname + " ...");
             os.writeInt(msg.length());

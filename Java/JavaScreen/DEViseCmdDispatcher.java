@@ -23,6 +23,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2000/07/20 22:38:26  venkatan
+// Mouse Location Format display:
+// 1. Both X and Y axis formats are recognised.
+// 2. "-" is recognised for "" String.
+// 3. %.0f is now recognised.
+//
 // Revision 1.64  2000/07/20 16:26:06  venkatan
 // Mouse Location Display format - is now controlled by printf type
 // format strings specified by the VIEW_DATA_AREA command
@@ -376,11 +382,12 @@ public class DEViseCmdDispatcher implements Runnable
 
                 if (commands[i].length() == 0) {
                     continue;
-                } else if (!commands[i].startsWith(DEViseCommands.PREFIX)) {
+                } else if (!commands[i].startsWith(DEViseCommands.JS_PREFIX)) {
                     jsc.pn("Invalid command: " + commands[i]);
                     continue;
                 }
 
+		//TEMP -- check arg counts
                 if (commands[i].startsWith(DEViseCommands.CLOSE_SESSION)) {
                     jsc.jscreen.updateScreen(false);
 
@@ -983,7 +990,8 @@ public class DEViseCmdDispatcher implements Runnable
                     for (int j = 1; j < cmds.length; j++)
                         cmd = cmd + " {" + cmds[j] + "}";
 
-                    if (cmd.startsWith(DEViseCommands.PREFIX)) {
+		    //TEMP -- check arg counts
+                    if (cmd.startsWith(DEViseCommands.JS_PREFIX)) {
                         if (cmd.startsWith(DEViseCommands.ACK)) {
                             jsc.animPanel.setActiveImageNumber(5);
                         } else {
