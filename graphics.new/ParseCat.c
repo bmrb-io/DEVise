@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/04/26 17:51:15  wenger
+  Fixed up schema parsing code to also handle logical schemas in
+  session files; restored parseSchema command to
+  parseSchema <name> <physical> <logical>.
+
   Revision 1.21  1996/04/25 21:42:15  wenger
   Temporary version of code to parse schemas in session files --
   writes schema to a temporary file (currently not implemented for
@@ -117,6 +122,8 @@
 #include "Group.h"
 #include "GroupDir.h"
 #include "DeviseTypes.h"
+#include "DataSource.h"
+#include "DevError.h"
 
 //#define DEBUG
 
@@ -132,6 +139,7 @@ static int numAttrs          = 0;
 static AttrList *attrs       = 0;
 
 static int _line = 0;
+static char *   srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: SetVal
@@ -506,7 +514,7 @@ ParseAttr(
 	{
 	    if (!hasFileType )
 		{
-	        fprintf(stderr,"no file type yet\n");
+			reportError("no file type yet", devNoSyserr);
 			result = StatusFailed;
 			return result;
 		}
@@ -561,9 +569,8 @@ ParseAttr(
  * schema and a logical schema) is being read.
  */
 static char *
-ParseCatPhysical(char *catFile, Boolean physicalOnly)
+ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 {
-	FILE *file= NULL;
 	Boolean hasSource = false;
 	char *source = 0; /* source of data. Which interpreter we use depends
 			     on this */
@@ -595,23 +602,20 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 	attrs = NULL;
 	numAttrs = 0;
 
-	/*
-	printf("opening file %s\n", catFile);
-	*/
-	file = fopen(catFile, "r");
-	if (file == NULL){
-		fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+	if (schemaSource->fopen("r") != StatusOk)
+	{
+		reportError("schemaSource->fopen() failed", devNoSyserr);
 		goto error;
 	}
 	_line = 0;
-	while (fgets(buf,LINESIZE, file) != NULL)
+	while (schemaSource->fgets(buf, LINESIZE) != NULL)
 	{
 		StripTrailingNewline(buf);
 
 		_line++;
-		/*
-		printf("getting line %s\n", buf);
-		*/
+#if 0
+		printf("getting line '%s'\n", buf);
+#endif
 		if (buf[0] == '#' || buf[0] == '\n' || buf[0] == '\r')
 			continue;
 		Parse(buf,numArgs, args);
@@ -639,7 +643,7 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 			/* parse separator */
 			hasSeparator = ParseSeparator(numArgs, args);
 			if (!hasSeparator){
-				fprintf(stderr,"can't parse separator\n");
+				reportError("can't parse separator", devNoSyserr);
 				goto error;
 			}
 		}
@@ -651,7 +655,7 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		else if (strcmp(args[0],"comment") == 0)
 		{
 			if (numArgs != 2){
-				fprintf(stderr,"can't parse comment string\n");
+				reportError("can't parse comment string", devNoSyserr);
 				goto error;
 			}
 			hasComment = true;
@@ -661,7 +665,8 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		{
 			if (numArgs != 3)
 			{
-				fprintf(stderr,"can't parse file type need 3 args\n");
+				reportError("can't parse file type -- need 3 args",
+					devNoSyserr);
 				goto error;
 			}
 			if (strcmp(args[2],"ascii") == 0)
@@ -684,14 +689,15 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 				/* Let's add the schema name to the directory now */
 				/* First check if the schema is already loaded, in
 				   which case we do nothing more */
-				if (gdir->find_entry(StripPath(catFile)))
+				if (gdir->find_entry(StripPath(schemaSource->getName())))
 				{
 				  GLoad = false;
 				}
 				else
 				{
-				  printf("Adding schema %s to directory \n", StripPath(catFile));
-				  gdir->add_entry(StripPath(catFile));
+				  printf("Adding (physical) schema %s to directory \n",
+					StripPath(schemaSource->getName()));
+				  gdir->add_entry(StripPath(schemaSource->getName()));
 				  GLoad = true;
 				}
 			}
@@ -709,7 +715,7 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		      if (!currgrp)		/* Top level */
 		      {
 			currgrp = new Group(args[1], NULL, TOPGRP);
-			gdir->add_topgrp(StripPath(catFile), currgrp);
+			gdir->add_topgrp(StripPath(schemaSource->getName()), currgrp);
 		      }
 		      else
 			currgrp = currgrp->insert_group(args[1]);
@@ -748,12 +754,12 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 	}
 
 	if (!hasFileType ){
-		fprintf(stderr,"ParseCat: no file type specified\n");
+		reportError("ParseCat: no file type specified", devNoSyserr);
 		goto error;
 	}
 
 	if (numAttrs == 0){
-		fprintf(stderr,"ParseCat: no attribute specified\n");
+		reportError("ParseCat: no attribute specified", devNoSyserr);
 		goto error;
 	}
 
@@ -762,10 +768,10 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 	if (physicalOnly)
 	{
 	/* If no group has been defined, create a default group */
-	if (GLoad && (gdir->num_topgrp(StripPath(catFile)) == 0))
+	if (GLoad && (gdir->num_topgrp(StripPath(schemaSource->getName())) == 0))
 	{
 	  Group *newgrp = new Group("__default", NULL, TOPGRP);
-	  gdir->add_topgrp(StripPath(catFile), newgrp);
+	  gdir->add_topgrp(StripPath(schemaSource->getName()), newgrp);
 	  for (i=0; i < numAttrs; i++) {
 	    AttrInfo *iInfo = attrs->Get(i);
 	    if (iInfo->type != StringAttr)
@@ -857,16 +863,16 @@ ParseCatPhysical(char *catFile, Boolean physicalOnly)
 		}
 	}
 
-	fclose(file);
+	schemaSource->fclose();
 
-	if (physicalOnly) InsertCatFile(CopyString(catFile));
+	if (physicalOnly) InsertCatFile(CopyString(schemaSource->getName()));
 
 	if (Init::PrintTDataAttr())
 		attrs->Print();
 	return fileType;
 
 error:
-	if (file != NULL) fclose(file);
+	schemaSource->fclose();
 
 	if (attrs != NULL) delete attrs;
 	fprintf(stderr,"error at line %d\n", _line);
@@ -878,24 +884,22 @@ error:
  * Read and parse a logical schema from a catalog file.
  */
 static char *
-ParseCatLogical(char *catFile, char *sname)
+ParseCatLogical(DataSource *schemaSource, char *sname)
 {
   Group *currgrp = NULL;
-  FILE *file= NULL;
   Boolean GLoad = true;
   char buf[LINESIZE];
   int numArgs;
   char **args;
 
-  file = fopen(catFile, "r");
-  if (file == NULL) {
-    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+  if (schemaSource->fopen("r") != StatusOk)
+  {
     goto error;
   }
   _line = 0;
   
   /* read the first line first */
-  fgets(buf, LINESIZE, file);
+  schemaSource->fgets(buf, LINESIZE);
   
   /* Let's add the group name to the directory now */
   /* The groups for a particular logical schema are identified by the 
@@ -905,16 +909,18 @@ ParseCatLogical(char *catFile, char *sname)
   /* First check if the schema is already loaded, in
      which case we do nothing more */
 
-  if (gdir->find_entry(StripPath(catFile)))
+  if (gdir->find_entry(schemaSource->getName()))
     GLoad = false;
   else
   {
-    printf("Adding schema %s to directory \n", StripPath(catFile));
-    gdir->add_entry(StripPath(catFile));
+    printf("Adding (logical) schema %s to directory \n",
+		schemaSource->getName());
+    gdir->add_entry(schemaSource->getName());
     GLoad = true;
   }
  
-  while (fgets(buf,LINESIZE, file) != NULL) {
+  while (schemaSource->fgets(buf,LINESIZE) != NULL)
+  {
 	  StripTrailingNewline(buf);
       
       _line++;
@@ -940,7 +946,7 @@ ParseCatLogical(char *catFile, char *sname)
 	    if (!currgrp)		/* Top level */
 	    {
 	      currgrp = new Group(args[1], NULL, TOPGRP);
-	      gdir->add_topgrp(StripPath(catFile), currgrp);
+	      gdir->add_topgrp(schemaSource->getName(), currgrp);
 	    }
 	    else
 	      currgrp = currgrp->insert_group(args[1]);
@@ -970,10 +976,10 @@ ParseCatLogical(char *catFile, char *sname)
   }
 
   /* If no group has been defined, create a default group */
-  if (GLoad && (gdir->num_topgrp(StripPath(catFile)) == 0))
+  if (GLoad && (gdir->num_topgrp(schemaSource->getName()) == 0))
   {
     Group *newgrp = new Group("__default", NULL, TOPGRP);
-    gdir->add_topgrp(StripPath(catFile), newgrp);
+    gdir->add_topgrp(schemaSource->getName(), newgrp);
     for(int i = 0; i < numAttrs; i++) {
       AttrInfo *iInfo = attrs->Get(i);
       if (iInfo->type != StringAttr)
@@ -981,13 +987,12 @@ ParseCatLogical(char *catFile, char *sname)
     }
   }
 
-  fclose(file);
+  schemaSource->fclose();
 
   return sname;
 
  error:
-  if (file != NULL)
-    fclose(file);
+  schemaSource->fclose();
   
   fprintf(stderr,"error at line %d\n", _line);
   return NULL;
@@ -1001,8 +1006,9 @@ char *
 ParseCat(char *catFile) 
 {
   // Check the first line of catFile - if it is "physical abc",
-  // call ParseCatPhysical(abc, false) and then ParseCatLogical(catFile)
-  // Otherwise, simply call ParseCatPhysical(catFile, true).
+  // call ParseCatPhysical(DataSourceFile(abc), false) and then
+  // ParseCatLogical(DataSourceFile(catFile)).
+  // Otherwise, simply call ParseCatPhysical(DataSourceFile(catFile), true).
 
   char *	result = NULL;
 
@@ -1017,7 +1023,8 @@ ParseCat(char *catFile)
     if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
 	{
       fclose(fp);
-      result = ParseCatPhysical(catFile, true);
+	  DataSourceFile	schemaSource(catFile, StripPath(catFile));
+      result = ParseCatPhysical(&schemaSource, true);
     }
 	else
 	{
@@ -1026,11 +1033,13 @@ ParseCat(char *catFile)
       fclose(fp);
 
       char *sname;
-      if (!(sname = ParseCatPhysical(buf, false))) result = NULL;
+	  DataSourceFile	schemaSource(buf, StripPath(buf));
+      if (!(sname = ParseCatPhysical(&schemaSource, false))) result = NULL;
 
       InsertCatFile(CopyString(catFile));
 
-      result = ParseCatLogical(catFile, sname);
+	  DataSourceFile	logSchemaSource(catFile, StripPath(catFile));
+      result = ParseCatLogical(&logSchemaSource, sname);
 	}
   }
 
@@ -1045,52 +1054,22 @@ char *
 ParseSchema(char *schemaName, char *physSchema, char *logSchema)
 {
 	char *		result = NULL;
+	Boolean		physicalOnly = (logSchema == NULL) || !strcmp(logSchema, "");
 
 	if ((physSchema != NULL) && strcmp(physSchema, ""))
 	{
-		char	tmpPhysFile[MAXPATHLEN];
-
-		tmpnam(tmpPhysFile);
-		int fd = open(tmpPhysFile, O_WRONLY | O_CREAT, 0600);
-		if (fd == -1)
-		{
-			fprintf(stderr, "Creation of temporary schema file failed\n");
-		}
-		else
-		{
-			write(fd, physSchema, strlen(physSchema));
-			close(fd);
-
-      		result = ParseCatPhysical(tmpPhysFile, true);
-
-			unlink(tmpPhysFile);
-		}
+		DataSourceBuf	schemaSource(physSchema, schemaName);
+      	result = ParseCatPhysical(&schemaSource, physicalOnly);
 	}
 	else
 	{
 		fprintf(stderr, "No physical schema specified\n");
 	}
 
-
-	if ((logSchema != NULL) && strcmp(logSchema, ""))
+	if (!physicalOnly)
 	{
-		char	tmpLogFile[MAXPATHLEN];
-
-		tmpnam(tmpLogFile);
-		int fd = open(tmpLogFile, O_WRONLY | O_CREAT, 0600);
-		if (fd == -1)
-		{
-			fprintf(stderr, "Creation of temporary schema file failed\n");
-		}
-		else
-		{
-			write(fd, logSchema, strlen(logSchema));
-			close(fd);
-
-      		result = ParseCatLogical(tmpLogFile, result);
-
-			unlink(tmpLogFile);
-		}
+		DataSourceBuf	schemaSource(logSchema, schemaName);
+    	result = ParseCatLogical(&schemaSource, result);
 	}
 
 	return result;

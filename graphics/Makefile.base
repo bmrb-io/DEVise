@@ -18,7 +18,7 @@ LD = ld
 LIBSRC = Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
 	ClassDir.c ColorMgr.c Compress.c Control.c Cursor.c CursorClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
-	Exit.c FilterQueue.c Geom.c \
+	Exit.c DevError.c FilterQueue.c Geom.c \
 	Init.c Journal.c Parse.c Selection.c  Time.c Timer.c TimeStamp.c \
 	Util.c View.c ViewWin.c ViewLayout.C VisualLink.c \
 	VisualLinkClassInfo.c XawControl.c XawWidget.c \
