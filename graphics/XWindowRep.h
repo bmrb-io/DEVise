@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.32  1996/11/13 16:56:23  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.31  1996/10/18 20:34:14  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -278,6 +288,7 @@ public:
 	/* Set XOR or normal drawing mode on */
 	virtual void SetXorMode();
 	virtual void SetCopyMode();
+	virtual void SetOrMode();
 
 	/* Set normal or small font */
 	virtual void SetNormalFont();
@@ -305,13 +316,13 @@ public:
 
 	/* Return contents of window as a pixmap */
 	virtual DevisePixmap *GetPixmap();
-
 	/* Display pixmap in window */
 	virtual void DisplayPixmap(DevisePixmap *pixmap);
-
 	/* Free pixmap from memory */
 	virtual void FreePixmap(DevisePixmap *pixmap);
 
+	Compression *GetCompress() {return _compress;}
+	
 #ifdef TK_WINDOW_old
 	/* Tk window size changed -- update size of this window */
 	virtual void TkWindowSizeChanged();
@@ -374,7 +385,7 @@ protected:
 
 	/* export window image as GIF */
 	void ExportGIF(FILE *fp, int isView = 0);
-
+	
 	/* recursively copy the contents of subpixmaps onto parent pixmap */
 	static void CoalescePixmaps(XWindowRep *root);
 
@@ -425,7 +436,7 @@ private:
 	Pixmap _pixmap;
 	XWindowRep    *_parent;
 	XWindowRepList _children;
-
+	
 	/* GC for rubber-banding */
 	GC _rectGc;
 

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.30  1996/11/01 19:04:38  kmurli
+#  Makefile changed to include DQL sources
+#
 #  Revision 1.29  1996/10/18 20:34:05  wenger
 #  Transforms and clip masks now work for PostScript output; changed
 #  WindowRep::Text() member functions to ScaledText() to make things
@@ -56,7 +59,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
-	DevStatus.c DualWindowRep.c
+	DevStatus.c DualWindowRep.c 
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))

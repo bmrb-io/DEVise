@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/11/13 16:56:15  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.17  1996/11/07 22:40:18  wenger
   More functions now working for PostScript output (FillPoly, for example);
   PostScript output also working for piled views; PSWindowRep member
@@ -132,7 +142,6 @@ public:
 
     /* Insert ViewWin into a parent */
     void AppendToParent(ViewWin *parent);
-
     /* Delete ViewWin from parent */
     void DeleteFromParent();
 	
@@ -168,7 +177,8 @@ public:
     
     /* Get the Window Rep of this View window */
     WindowRep *GetWindowRep() { return _windowRep; }
-
+//    WindowRep *GetAltRep() { return _alternate;}
+//    void SetAltRep(WindowRep *w) { _alternate = w;}
     /* Detach all children from this view */
     void DetachChildren();
 
@@ -253,6 +263,7 @@ protected:
     unsigned int _height; /* current height */
     ViewWinList _children;
     ViewWin *_parent;     /* parent window */
+//    WindowRep *_alternate;  /* testing pile view */
     DualWindowRep _winReps;
     char *_name;          /* name of window */
     int _weight;          /* relative weight of window */

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/11/26 15:44:12  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.34  1996/11/13 16:56:17  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -387,6 +393,7 @@ public:
   /* Set XOR or normal drawing mode on */
   virtual void SetXorMode() = 0;
   virtual void SetCopyMode() = 0;
+  virtual void SetOrMode() {}
 
   /* Set normal or small font */
   virtual void SetNormalFont() = 0;
@@ -571,9 +578,14 @@ public:
   
   /* Display pixmap in window */
   virtual void DisplayPixmap(DevisePixmap *pixmap) = 0;
-  
   /* Free pixmap from memory */
   virtual void FreePixmap(DevisePixmap *pixmap) = 0;
+
+//TEMPTEMP -- this is kind of X-specific
+  /* called by derived class to get currennt local color from
+     global color */
+  LocalColor GetLocalColor(GlobalColor globalColor);
+  
 
 protected:
 
@@ -636,11 +648,6 @@ protected:
   /* called by derived class on window destroy event */
   virtual void HandleWindowDestroy();
 
-//TEMPTEMP -- this is kind of X-specific
-  /* called by derived class to get currennt local color from
-     global color */
-  LocalColor GetLocalColor(GlobalColor globalColor);
-  
   /* constructor */
   WindowRep(DeviseDisplay *disp, GlobalColor fgndColor = ForegroundColor,
 	    GlobalColor bgndColor = BackgroundColor, Pattern p = Pattern0);
@@ -670,3 +677,24 @@ protected:
 };
 
 #endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

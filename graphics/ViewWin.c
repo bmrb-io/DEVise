@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/11/26 15:44:11  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.24  1996/11/18 23:11:20  wenger
   Added procedures to generated PostScript to reduce the size of the
   output and speed up PostScript processing; added 'small font' capability
@@ -164,7 +170,7 @@ ViewWin::ViewWin(char *name, GlobalColor fg, GlobalColor bg, int weight,
 #ifdef MARGINS
   _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;
 #endif
-
+//  _alternate = NULL;
 #ifdef TK_WINDOW
   _marginsOn = false;
   _leftMargin = _rightMargin = _topMargin = _bottomMargin = 0;

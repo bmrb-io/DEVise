@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.87  1996/11/26 15:44:09  wenger
+  Added features and fixed bugs in PostScript-related parts of the
+  client/server library and the PSWindowRep class; page size can now be
+  set in PSDisplay; did some cleanup of the DeviseDisplay and WindowRep
+  methods (allowed elimination of many typecasts).
+
   Revision 1.86  1996/11/20 20:34:55  wenger
   Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
   some Makefile improvements so compile works first time; fixed up files
@@ -360,7 +366,7 @@
 
 #include <time.h>
 
-//#define DEBUG
+#define DEBUG
 
 #include "Util.h"
 #include "View.h"
@@ -477,9 +483,7 @@ View::View(char *name, VisualFilter &initFilter,
   _dispDataValues = false;
   _pileMode = false;
   _pileViewHold = true;
-
   _printing = false;
-
   _hasOverrideColor = false;
   _overrideColor = fg;
 
@@ -672,7 +676,7 @@ void View::Mark(int index, Boolean marked)
 
 Boolean View::CheckCursorOp(WindowRep *win, int x, int y, int button)
 {
-  // view has no cursors, so we can't move them either
+  // view has no cursors, so we cant move them either
   if (!_cursors->Size())
     return false;
 
@@ -1479,8 +1483,8 @@ void View::Run()
   if (_pileMode) {
     ViewWin *parent = GetParent();
 
-    // If we're running client/server Devise, we may get here before this
-    // view's parent has been created, so don't bomb out.  RKW 8/30/96.
+    // If we are running client/server Devise, we may get here before this
+    // view''s parent has been created, so do not bomb out.  RKW 8/30/96.
     if (parent == NULL) return;
     //DOASSERT(parent, "View has no parent");
 
@@ -1563,6 +1567,7 @@ void View::Run()
 #if defined(DEBUG)
     printf("View not refreshed and filter not changed, nothing to do\n");
 #endif
+    ReportQueryDone(0, false);
     return;
   }
 
@@ -2056,6 +2061,7 @@ void View::AbortQuery()
 
 void View::Refresh()
 {
+  _doneRefresh = false;
   _refresh = true;
   Dispatcher::Current()->RequestCallback(_dispatcherID);
 }
@@ -2086,10 +2092,11 @@ void View::ReportViewRecomputed()
   int index;
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
+    printf("View = %p, ViewCallbacklist = %p\n", this, _viewCallbackList);
     ViewCallback *callBack = _viewCallbackList->Next(index);
 #if defined(DEBUG)
-    printf("Calling ViewRecomputed callback 0x%p for view 0x%p\n",
-	   callBack, this);
+    printf("Calling ViewRecomputed callback 0x%p for view 0x%p (%s)\n",
+	   callBack, this, GetName());
 #endif
     callBack->ViewRecomputed(this);
   }
@@ -2102,6 +2109,7 @@ void View::ReportViewDestroyed()
     return;
   
   int index;
+  _doneRefresh = false;
   for(index = _viewCallbackList->InitIterator(); 
       _viewCallbackList->More(index);) {
     ViewCallback *callBack = _viewCallbackList->Next(index);
@@ -2112,6 +2120,7 @@ void View::ReportViewDestroyed()
     callBack->ViewDestroyed(this);
   }
   _viewCallbackList->DoneIterator(index);
+  
 }
 
 void View::ReportFilterAboutToChange()
@@ -2167,11 +2176,11 @@ void View::InsertViewCallback(ViewCallback *callBack)
 void View::DeleteViewCallback(ViewCallback *callBack)
 {
   DOASSERT(_viewCallbackList, "Invalid view callback list");
-
 #if defined(DEBUG)
   printf("Removing 0x%p from view callback list\n", callBack);
 #endif
 
+  _viewCallbackList->PrintIterators( );
   _viewCallbackList->Delete(callBack);
 }
 

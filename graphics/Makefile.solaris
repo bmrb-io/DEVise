@@ -226,6 +226,7 @@ Dispatcher.o: BufPolicy.h Selection.h View.h ViewWin.h WindowRep.h Geom.h
 Dispatcher.o: /usr/include/math.h /usr/include/floatingpoint.h
 Dispatcher.o: /usr/include/sys/ieeefp.h Transform.h DevisePixmap.h Compress.h
 Dispatcher.o: DualWindowRep.h ViewCallback.h AttrList.h Cursor.h Time.h
+Dispatcher.o: Display.h ColorMgr.h
 Display.o: XDisplay.h Display.h DeviseTypes.h /usr/include/values.h
 Display.o: DevStatus.h /usr/include/sys/types.h
 Display.o: /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h
@@ -258,12 +259,12 @@ DualWindowRep.o: /usr/include/ctype.h PSWindowRep.h Display.h Dispatcher.h
 DualWindowRep.o: /usr/include/unistd.h /usr/include/sys/unistd.h Journal.h
 DualWindowRep.o: ColorMgr.h
 Exit.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
-Exit.o: /usr/include/stdlib.h Exit.h Init.h DeviseTypes.h
-Exit.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h
+Exit.o: /usr/include/stdlib.h /usr/include/unistd.h /usr/include/sys/types.h
 Exit.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 Exit.o: /usr/include/sys/select.h /usr/include/sys/time.h
-Exit.o: /usr/include/sys/time.h BufPolicy.h Control.h VisualArg.h Color.h
-Exit.o: Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
+Exit.o: /usr/include/sys/time.h /usr/include/sys/unistd.h Exit.h Init.h
+Exit.o: DeviseTypes.h /usr/include/values.h DevStatus.h BufPolicy.h Control.h
+Exit.o: VisualArg.h Color.h Pattern.h DList.h ClassDir.h DaliIfc.h Xdef.h
 Exit.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 Exit.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 Exit.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h
@@ -849,3 +850,23 @@ ViewLayout.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ViewLayout.o: /usr/include/sys/time.h WindowRep.h /usr/include/stdio.h
 ViewLayout.o: /usr/include/stdlib.h Geom.h Color.h Transform.h VisualArg.h
 ViewLayout.o: Pattern.h DevisePixmap.h Compress.h DualWindowRep.h
+ViewLens.o: /usr/include/sys/time.h Util.h /usr/include/stdlib.h
+ViewLens.o: /usr/include/sys/feature_tests.h /usr/include/stdio.h
+ViewLens.o: /usr/include/string.h /usr/include/ctype.h /usr/include/math.h
+ViewLens.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+ViewLens.o: DeviseTypes.h /usr/include/values.h DevStatus.h
+ViewLens.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ViewLens.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ViewLens.o: /usr/include/sys/time.h Exit.h ViewLens.h Dispatcher.h
+ViewLens.o: /usr/include/unistd.h /usr/include/sys/unistd.h DList.h Journal.h
+ViewLens.o: VisualArg.h Color.h Pattern.h ViewWin.h WindowRep.h Geom.h
+ViewLens.o: Transform.h DevisePixmap.h Compress.h DualWindowRep.h Control.h
+ViewLens.o: ClassDir.h ViewCallback.h AttrList.h Init.h BufPolicy.h Cursor.h
+ViewLens.o: ../graphics.new/ViewGraph.h View.h ../graphics.new/BasicStats.h
+ViewLens.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+ViewLens.o: ../graphics.new/DataSourceFixedBuf.h
+ViewLens.o: ../graphics.new/DataSourceBuf.h ../graphics.new/DataSource.h
+ViewLens.o: ../graphics.new/UpdateLink.h ../graphics.new/VisualLink.h
+ViewLens.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ViewLens.o: ../graphics.new/PointStorage.h FilterQueue.h TimeStamp.h Parse.h
+ViewLens.o: Map3D.h Display.h ColorMgr.h

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.77  1996/11/26 09:31:30  beyer
+  If control or alt key used, key is always sent as upper case.
+
   Revision 1.76  1996/11/23 00:24:14  wenger
   Incorporated all of the PostScript-related stuff into the client/server
   library; added printing to PostScript to the example client and server;
@@ -1725,7 +1728,6 @@ void XWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow,
       if (event.xbutton.button == (unsigned int)button) {
 	/* final button position */
 	DrawRubberband(x1,y1,x2,y2);
-	
 	x2 = event.xbutton.x;
 	y2 = event.xbutton.y;
 	done = true;
@@ -1810,7 +1812,7 @@ void XWindowRep::HandleEvent(XEvent &event)
               // always report as upper case if control or alt used
               d_key = toupper(d_key);
             } else {
-              // don't report shift for normal keys, eg, 'C', not SHIFT-C
+              // don''t report shift for normal keys, eg, 'C', not SHIFT-C
               d_modifier &= ~DeviseKey::SHIFT;
             }
 	} else {
@@ -2230,6 +2232,19 @@ void XWindowRep::SetXorMode()
 
 #ifdef GRAPHICS
   XSetState(_display, _gc, AllPlanes, AllPlanes, GXxor, AllPlanes);
+#endif
+}
+
+void XWindowRep::SetOrMode()
+{
+#ifdef DEBUG
+  printf("XWindowRep::SetOrMode\n");
+#endif
+
+#ifdef GRAPHICS
+  XSetState(_display, _gc, 
+	    AllPlanes, AllPlanes,
+            GXand, AllPlanes);
 #endif
 }
 
@@ -2752,7 +2767,7 @@ void XWindowRep::Flush()
   XSync(_display, false);
 }
 
-static const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
+const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
 static char _pixmapBuf[MAX_PIXMAP_BUF_SIZE];
 
 /* Get current window pixmap */
@@ -2804,6 +2819,10 @@ DevisePixmap *XWindowRep::GetPixmap()
       return NULL;
     }
 
+#ifdef DEBUG
+    printf("*****************%d bits per pixel \n", image->bits_per_pixel);
+#endif
+
     if (initPixmap) {
       pixmap->imageBytes = image->bytes_per_line * height;
       pixmap->bytes_per_line = image->bytes_per_line;
@@ -2811,6 +2830,11 @@ DevisePixmap *XWindowRep::GetPixmap()
       pixmap->data = (unsigned char *)image->data;
       initPixmap = false;
     }
+#ifdef DEBUG
+      fprintf(stderr,"%s ", (unsigned char *)pixmap->data);
+      printf("\n");
+#endif
+
     int outCount;
     char *cBuf = _compress->CompressLine(image->data, image->bytes_per_line,
 					 outCount);
@@ -3076,4 +3100,8 @@ void XWindowRep::DetachFromTkWindow()
   _tkPathName[0] = 0;
   _tkWindow = 0;
 }
+
+
 #endif
+
+

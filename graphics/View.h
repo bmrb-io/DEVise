@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  1996/11/20 16:49:57  jussi
+  Added AbortQuery() and removed AbortAndReexecute().
+
   Revision 1.44  1996/11/13 16:56:14  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -390,11 +393,25 @@ class View
 	Boolean IsInPileMode() { return _pileMode; }
 	void SetPileMode(Boolean mode);
 
+	Boolean DoneRefresh() { return _doneRefresh;}
+
+	void SetPileViewHold(Boolean mode) { _pileViewHold = mode;}
 	/* Get/set override color */
 	GlobalColor GetOverrideColor(Boolean &active) {
 	  active = _hasOverrideColor;
 	  return _overrideColor;
 	}
+	/* Draw View on XOR Layer */
+	void SetXORFlag(Boolean active) {
+	  if (! active) {
+	    _XORflag = active;
+	  }
+	  return;
+	}
+	Boolean GetXORFlag() {
+	  return _XORflag;
+	}
+
 	void SetOverrideColor(GlobalColor color, Boolean active);
 
 	/******** Pixmap manipulations *********/
@@ -628,11 +645,22 @@ protected:
 	Boolean _hasOverrideColor;      /* override color defined */
 	GlobalColor _overrideColor;     /* color that overrides color
 					   defined in mapping */
-
+        Boolean _XORflag;    /* draw view on XOR layer */
 	/* 3D data structures */
 	Camera _camera;
-
+	
+	Boolean _doneRefresh;   /* for any dependent views to determine the 
+				 * state of the view 
+                                 */
 	virtual DevStatus PrintPSDone();
 };
 
 #endif
+
+
+
+
+
+
+
+

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/08/04 20:58:52  beyer
+  Insertion with iterators is now ok.
+
   Revision 1.7  1996/07/25 14:33:48  guangshu
   Added member function InsertOrderly
 
@@ -100,6 +103,7 @@ public:\
 	void InsertBeforeCurrent(int index, valType v); \
 	void DoneIterator(int index);\
 	void DeleteAll();\
+	void PrintIterators();\
 \
 protected:\
 	/* insert node2 after node 1 */\
@@ -205,6 +209,16 @@ int listName::InitIterator(int backwards) {\
 	}\
 	DOASSERT(0, "No more space for iterators");\
 	return -1; /* to keep compiler happy */\
+}\
+\
+/* DEBUGGING FUNCTION : Print Iterators */ \
+void listName::PrintIterators() { \
+    printf("printing active iterators (%d)",_numIterators );\
+    for (int i = 0; i < MaxIterators; i++) { \
+	if (_iterators[i].current != NULL) {\
+	   printf("iterator open %p\n", _iterators[i].current);\
+	}\
+    }\
 }\
 \
 /* Init iterator to return the last N records */\
@@ -380,6 +394,7 @@ public:\
 		_voidList.InsertBeforeCurrent(indx,v);\
 	}\
 	void DoneIterator(int index){_voidList.DoneIterator(index);}\
+	void PrintIterators() {_voidList.PrintIterators();}\
 private:\
 	VoidList _voidList; \
 };
