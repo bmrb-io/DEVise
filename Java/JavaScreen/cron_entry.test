@@ -1,3 +1,3 @@
-6,16,26,36,46,56 * * * * (cd /p/devise/wenger/devise.dev2/Java/JavaScreen; /s/std/bin/runauth ./run_check test 2 tiger /p/devise/wenger/devise.dev2/Java/JavaScreen)
+6,16,26,36,46,56 * * * * (cd /p/devise/wenger/devise.dev2/Java/JavaScreen; /s/std/bin/runauth ./run_check test 2 quarg /p/devise/wenger/devise.dev2/Java/JavaScreen)
 * * * * * (cd /p/devise/wenger/devise.dev2/Java/JavaScreen; /s/std/bin/runauth ./run_check regular 2)
 * * * * * (cd /p/devise/ext9/wenger3/devise.dev4/Java/JavaScreen; /s/std/bin/runauth ./run_check regular 2)

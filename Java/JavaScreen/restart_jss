@@ -42,8 +42,8 @@ echo "Restarting jss and associated processes on `hostname`."
 
 
 # Kill the existing processes.
-jss.kill -id$idStr
-DEVise.kill -id $idStr
+jss.kill $idStr
+DEVise.kill $idStr
 
 
 # Rename the log files.

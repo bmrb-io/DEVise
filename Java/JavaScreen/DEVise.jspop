@@ -10,50 +10,10 @@
 
 ############################################################
 
-# Set output file name according to ID string (if any).
-set idStr = ""
-@ index = 0
-while ($index < $#argv)
-  if (xxx$argv[$index] == "xxx-id") then
-    @ next = $index + 1
-    set idStr = $argv[$next]
-    break
-  endif
-  @ index = $index + 1
-end
-
-set info = `ports+files $idStr`
-set outfile = `echo $info | cut -d' ' -f6`
-
-
 # For Tasvir and EmbeddedTk.
 set path = ( $path /p/devise/public/bin )
 
-setenv HOSTNAME `hostname | sed -e s/\\..\*//`
-
-setenv DEVISE_ROOT		/p/devise/demo
-#setenv DEVISE_ROOT		/p/devise/wenger
-
-setenv DEVISE_DAT		$DEVISE_ROOT/dat
-setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.js.dte
-setenv DEVISE_ID_FILE		$DEVISE_ROOT/schema/schema/temp_catalog.js
-setenv DEVISE_DEF_FILE		$DEVISE_ROOT/schema/schema/def_file.js
-setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.js.dte
-setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.js.dte
-setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
-setenv DEVISE_MATER_DIR		$DEVISE_ROOT/dat
-setenv DEVISE_CACHE		$DEVISE_ROOT/cache
-setenv DEVISE_SCHEMA		$DEVISE_ROOT/schema/schema
-setenv DEVISE_SESSION		$DEVISE_ROOT/session.js
-setenv DEVISE_PALETTE		$DEVISE_ROOT/palette
-
-setenv DEVISE_TMP		/tmp/$USER-devise-tmp
-setenv DEVISE_WORK		/tmp/$USER-devise-work
-setenv LM_DAT			/tmp/LM/dat
-setenv LM_TMP			/tmp/LM/dat
-
-setenv DEVISE_LIB               lib
-setenv LM_LIB                   $DEVISE_LIB/LM 
-setenv DEVISE_EXEC              ./devised
-
-$DEVISE_EXEC $* -logLevel 4 -jscache 1>>& $outfile &
+# Note: for some reason, nohup is needed for this to work
+# when the jss is launched via rsh (pid files don't get removed
+# otherwise).
+nohup DEVise_savepid $* &

@@ -1,5 +1,4 @@
-#! /s/std/bin/perl
-#! /usr/bin/perl
+#! /bin/sh
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -21,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2001/05/11 20:36:11  wenger
+#  Set up a package for the JavaScreen code.
+#
 #  Revision 1.6  2001/01/22 17:08:13  wenger
 #  Added DEViseCheckPop to actually connect to the jspop when checking
 #  with cron; added JAVAC_CheckPop command to make this possible; cleaned
@@ -57,73 +59,72 @@
 
 ############################################################
 
-die "usage: check_jss [idStr]\n" if ($#ARGV < -1 or $#ARGV > 0);
-
-if ($#ARGV == 0) {
-  $idStr = shift(@ARGV);
-} else {
-  $idStr = "";
-}
-
-$debug = 0;
-
-print "idStr = $idStr\n" if ($debug);
-
-$foundJss = 0;
-$foundDevised = 0;
+if [ $# -gt 1 ]
+then
+  echo "Usage: check_jss [id_string]"
+  exit 1
+fi
 
 
-# One of the hardest parts of getting this script to work has been running
-# ps in such a way that the port arguments still show up when the damn
-# path to java gets real long.  -ww option to ps would guarantee that
-# the line would be long enough, except that with the latest Intel/Solaris
-# ps, this makes the command totally hang!!  RKW 1999-12-17.
+#
+# Check for the JSS itself.
+#
+pidfile="jss_pid.*.*"
+if [ $# = 1 ]
+then
+  pidfile="jss_pid.$1.*"
+fi
 
-$arch = `uname`;
-chomp $arch;
-if ($arch eq "Linux") {
-  $ps_cmd = "/bin/ps axw";
-} else {
-  $ps_cmd = "/usr/ucb/ps -axw";
-}
+# Check for appropriate pid file to see if a jss process exists.
+pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
 
-open PS, "$ps_cmd 2>/dev/null |" or die "can't fork: $!";
+foundJss=0
+if [ xxx = xxx$pids ]
+then
+  #echo "No JSS process found" 1>&2
+  echo "needed for stupid sh if/else" > /dev/null
+else
+  foundJss=1
+fi
 
-while (<PS>) {
-  if ($idStr eq "") {
-    if ($_ =~ /java *JavaScreen.jss/) {
-      $foundJss = 1;
-    }
-  } else {
-    if ($_ =~ /java *JavaScreen.jss.*id$idStr/) {
-      $foundJss = 1;
-    }
-  }
-  # Wildcard here because -w option screws up ps output.
-  if ($idStr eq "") {
-    if ($_ =~ /devised/) {
-      $foundDevised = 1;
-    }
-  } else {
-    if ($_ =~ /devised.*id $idStr/) {
-      $foundDevised = 1;
-    }
-  }
-}
+#
+# Check for DEVised(s).
+#
+pidfile="devised_pid.*.*"
+if [ $# = 1 ]
+then
+  pidfile="devised_pid.$1.*"
+fi
 
-close PS;
+# Check for appropriate pid file to see if a devised process exists.
+pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
 
-print "foundJss = $foundJss, foundDevised = $foundDevised\n" if ($debug);
+foundDevised=0
+if [ xxx = xxx$pids ]
+then
+  #echo "No DEVised process found" 1>&2
+  echo "needed for stupid sh if/else" > /dev/null
+else
+  foundDevised=1
+fi
 
-$curTime = localtime(time());
-if (!$foundJss) {
-  print STDERR "No jss process found (at $curTime)\n";
-} elsif (!$foundDevised) {
-  print STDERR "No devised process found (at $curTime)\n";
-}
+#
+# Output the final check value.
+#
+curTime=`date`
+if [ $foundJss != 1 ]
+then
+  echo "No JSS process found (at $curTime)" 1>&2
+fi
 
-if ($foundJss && $foundDevised) {
-  print "OK\n";
-} else {
-  print "FAIL\n";
-}
+if [ $foundDevised != 1 ]
+then
+  echo "No DEVised process found (at $curTime)" 1>&2
+fi
+
+if [ $foundJss = 1 -a $foundDevised = 1 ]
+then
+  echo "OK"
+else
+  echo "FAIL"
+fi

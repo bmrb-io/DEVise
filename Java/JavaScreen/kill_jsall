@@ -12,7 +12,7 @@
 
 if ($#argv > 1) then
   echo "Usage: kill_jsall [id_string]"
-  exit
+  exit 1
 endif
 
 set idString = ""
@@ -34,8 +34,8 @@ if ($answer == y || $answer == Y) then
     jss.kill
     DEVise.kill
   else
-    jspop.kill -id$idString
-    jss.kill -id$idString
-    DEVise.kill -id $idString
+    jspop.kill $idString
+    jss.kill $idString
+    DEVise.kill $idString
   endif
 endif

@@ -1,0 +1,64 @@
+#! /bin/sh
+
+############################################################
+
+# Start the jspop (JavaScreen Point of Presence) and save its PID.
+
+# Note: specific port number must NOT be specified in this script.
+
+# Note: this script should only be run by the jspop script.
+
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+#
+# Set log file name according to ID string (if any).
+#
+idStr=""
+for arg in $*
+do
+  if [ $arg = "-idregular" ]
+  then
+    idStr="regular"
+  elif [ $arg = "-idsoil" ]
+  then
+    idStr="soil"
+  elif [ $arg = "-idtest" ]
+  then
+    idStr="test"
+  elif [ $arg = "-idtst2" ]
+  then
+    idStr="tst2"
+  fi
+done
+
+info=`ports+files $idStr`
+outfile=`echo $info | cut -d' ' -f4`
+
+if [ `hostname` = "yola" ]
+then
+  unset DISPLAY
+  unset LD_LIBRARY_PATH
+fi
+
+
+#
+# Re-initialize the log file.
+#
+\rm -f $outfile
+touch $outfile
+
+
+#
+# Fire up the jspop, creating the appropriate pid file, and
+# deleting the pid file when the jspop exits.
+#
+java JavaScreen.jspop -debug $* 2>&1 >> $outfile &
+
+pidfile="jspop_pid.$idStr.$!"
+touch $pidfile
+wait $!
+rm $pidfile

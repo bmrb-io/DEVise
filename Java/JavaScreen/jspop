@@ -12,38 +12,6 @@
 
 ############################################################
 
-# Set log file name according to ID string (if any).
-set idStr = ""
-foreach arg ($argv[*])
-  if (xxx$arg == "xxx-idregular") then
-    set idStr = "regular"
-    break
-  else if (xxx$arg == "xxx-idsoil") then
-    set idStr = "soil"
-    break
-  else if (xxx$arg == "xxx-idtest") then
-    set idStr = "test"
-    break
-  else if (xxx$arg == "xxx-idtst2") then
-    set idStr = "tst2"
-    break
-  endif
-end
-
-set info = `ports+files $idStr`
-set outfile = `echo $info | cut -d' ' -f4`
-
-
-if (`hostname` == "yola") then
-  unsetenv DISPLAY
-  unsetenv LD_LIBRARY_PATH
-endif
-
-
-# Re-initialize the log file.
-\rm -f $outfile
-touch $outfile
-
-
 set path = ( /s/java-1/bin $path )
-nohup java JavaScreen.jspop -debug $* >& $outfile &
+
+nohup jspop_savepid $* &

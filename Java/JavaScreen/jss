@@ -12,56 +12,6 @@
 
 ############################################################
 
-# Set log file names according to ID string (if any).
-set idStr = ""
-foreach arg ($argv[*])
-  if (xxx$arg == "xxx-idregular") then
-    set idStr = "regular"
-    break
-  else if (xxx$arg == "xxx-idsoil") then
-    set idStr = "soil"
-    break
-  else if (xxx$arg == "xxx-idtest") then
-    set idStr = "test"
-    break
-  else if (xxx$arg == "xxx-idtst2") then
-    set idStr = "tst2"
-    break
-  endif
-end
-
-set info = `ports+files $idStr`
-set joutfile = `echo $info | cut -d' ' -f5`
-set doutfile = `echo $info | cut -d' ' -f6`
-
-
-# Fire up Xvfb and set DISPLAY accordingly.
-if (! -e /tmp/.X11-unix/X1) then
-  if (`hostname` == "aden.bmrb.wisc.edu") then
-    nohup Xvfb :1 -screen 0 1280x1024x8 &
-    #nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
-  else
-    nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
-    #nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
-  endif
-endif
-
-setenv DISPLAY unix:1.0
-
-
-# Make sure Xvfb gets going before starting the jss.
-sleep 10
-
-
-# Re-initialize the log files.
-\rm -f $joutfile
-\rm -f $doutfile
-touch $joutfile
-touch $doutfile
-
-
-# Note: I would also like to save stderr to the log file here, but
-# for some strange reason that goofs up everything when this script is
-# run via rsh.  RKW 2000-12-08.
 set path = ( /s/java-1/bin $path )
-nohup java JavaScreen.jss -debug $* > $joutfile &
+
+nohup jss_savepid $* &

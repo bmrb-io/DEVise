@@ -43,7 +43,7 @@ echo "Restarting jspop on `hostname`."
 
 
 # Kill the jspop if it's running.
-jspop.kill -id$idStr
+jspop.kill $idStr
 
 
 # Rename jspop log file.

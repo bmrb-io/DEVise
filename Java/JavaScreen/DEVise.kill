@@ -1,9 +1,8 @@
-#! /s/std/bin/perl
-#! /usr/bin/perl
+#! /bin/sh
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1998-2000
+#  (c) Copyright 1998-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -21,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  2001/01/08 20:31:50  wenger
+#  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#  back onto the trunk.
+#
 #  Revision 1.6.4.5  2001/01/05 20:49:39  wenger
 #  Merged changes from zero_js_cache_check thru dup_gds_fix from the trunk
 #  onto the js_cgi_br branch.
@@ -80,35 +83,27 @@
 
 ############################################################
 
-if ($#ARGV >= 0) {
-    $pattern = "devised .*@ARGV";
-    # ww option forces extra-wide output
-    #TEMP -ww option in ps goofs things up; but without it we may goof
-    # up if path is too long
-    #TEMPopen PS, "ps -axww >& 1 |" or die "can't fork: $!";
-    open PS, "ps ax >& 1 |" or die "can't fork: $!";
-} else {
-    $pattern = "devised";
-    # c option prevents path from being shown as part of command name
-    open PS, "ps axc >& 1 |" or die "can't fork: $!";
-}
+if [ $# -gt 1 ]
+then
+  echo "Usage: DEVise.kill [id_string]"
+  exit 1
+fi
 
-while (<PS>) {
-    #print "line: ";
-    #print;
-    # Avoid killing ourself!
-    if ((!($_ =~ /DEVise.kill/)) and $_ =~ /$pattern/) {
-	print "Killing $_";
+pidfile="devised_pid.*.*"
+if [ $# = 1 ]
+then
+  pidfile="devised_pid.$1.*"
+fi
 
-	if ($_ =~ / *(\d+)/) {
-	    $pid = $1;
-            system("kill -s INT $pid");
-            system sleep 1;
-            system("kill -s INT $pid");
-            system sleep 1;
-            system("kill -s INT $pid");
-	}
-    }
-}
+pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
 
-close PS;
+for pid in $pids
+do
+  echo "Killing $pid"
+  kill -INT $pid
+  sleep 1
+  kill -INT $pid
+  sleep 1
+  kill -INT $pid
+  wait $pid
+done

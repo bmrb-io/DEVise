@@ -1,0 +1,90 @@
+#! /bin/sh
+
+############################################################
+
+# Start the jss (JavaScreen Server) and save its PID.
+
+# Note: specific port number must NOT be specified in this script.
+
+# Note: this script should only be run by the jss script.
+
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+#
+# Set log file names according to ID string (if any).
+#
+idStr=""
+for arg in $*
+do
+  if [ $arg = "-idregular" ]
+  then
+    idStr="regular"
+  elif [ $arg = "-idsoil" ]
+  then
+    idStr="soil"
+  elif [ $arg = "-idtest" ]
+  then
+    idStr="test"
+  elif [ $arg = "-idtst2" ]
+  then
+    idStr="tst2"
+  fi
+done
+
+info=`ports+files $idStr`
+joutfile=`echo $info | cut -d' ' -f5`
+doutfile=`echo $info | cut -d' ' -f6`
+
+
+#
+# Fire up Xvfb and set DISPLAY accordingly.
+#
+if [ ! -f /tmp/.X11-unix/X1 ]
+then
+  if [ `hostname` = "aden.bmrb.wisc.edu" ]
+  then
+    nohup Xvfb :1 -screen 0 1280x1024x8 &
+    #nohup Xvfb :1 -screen 0 1280x1024x8 -fp "unix/:-1" &
+  else
+    nohup /s/std/bin/Xvfb :1 -screen 0 1280x1024x8 &
+    #nohup /s/std/bin/Xvfb :1 -screen 0 1024x768x8 &
+  fi
+
+  # Make sure Xvfb gets going before starting the jss.
+  sleep 10
+fi
+
+DISPLAY="unix:1.0"
+export DISPLAY
+
+
+#
+# Re-initialize the log files.
+#
+\rm -f $joutfile
+\rm -f $doutfile
+touch $joutfile
+touch $doutfile
+
+#
+# Fire up the jss, creating the appropriate pid file, and deleting the
+# pid file when the jss exits.
+#
+
+java JavaScreen.jss -debug $* 2>&1 >> $joutfile &
+
+pidfile="jss_pid.$idStr.$!"
+touch $pidfile
+wait $!
+rm $pidfile
+
+
+# Note: we need to to this here because of rsh (because when this script
+# finishes rsh exits, which screws up any DEVise_savepid scripts that are
+# still running -- stupid rsh!) although it might be a good idea anyhow,
+# since if the jss dies, the deviseds don't do us any good anyhow.
+DEVise.kill $idStr

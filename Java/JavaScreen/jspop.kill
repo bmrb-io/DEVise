@@ -1,9 +1,8 @@
-#! /s/std/bin/perl
-#! /usr/freeware/bin/perl
+#! /bin/sh
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000
+#  (c) Copyright 2000-2001
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -21,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2001/05/11 20:36:15  wenger
+#  Set up a package for the JavaScreen code.
+#
 #  Revision 1.4  2001/01/08 20:31:59  wenger
 #  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 #  back onto the trunk.
@@ -48,28 +50,23 @@
 
 ############################################################
 
-if ($#ARGV >= 0) {
-    $pattern = "java JavaScreen.jspop .*@ARGV";
-} else {
-    $pattern = "java JavaScreen.jspop";
-}
+if [ $# -gt 1 ]
+then
+  echo "Usage: jspop.kill [id_string]"
+  exit 1
+fi
 
-if (`hostname` eq "yola\n") {
-  open PS, "ps -ef >& 1 |" or die "can't fork: $!";
-} else {
-  open PS, "ps -axw >& 1 |" or die "can't fork: $!";
-}
+pidfile="jspop_pid.*.*"
+if [ $# = 1 ]
+then
+  pidfile="jspop_pid.$1.*"
+fi
 
-while (<PS>) {
-    # Avoid killing ourself!
-    if ((!($_ =~ /jspop.kill/)) and $_ =~ /$pattern/) {
-	print "Killing $_";
+pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
 
-	if ($_ =~ / *(\d+)/) {
-	    $pid = $1;
-            system("kill $pid");
-	}
-    }
-}
-
-close PS;
+for pid in $pids
+do
+  echo "Killing $pid"
+  kill $pid
+  wait $pid
+done

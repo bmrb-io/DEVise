@@ -1,5 +1,4 @@
-#! /s/std/bin/perl
-#! /usr/freeware/bin/perl
+#! /bin/sh
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -21,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  2001/05/11 20:36:11  wenger
+#  Set up a package for the JavaScreen code.
+#
 #  Revision 1.21  2001/02/20 20:02:24  wenger
 #  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
 #  to the trunk.
@@ -127,92 +129,59 @@
 
 ############################################################
 
-die "usage: check_jspop [idStr]\n" if ($#ARGV < -1 or $#ARGV > 0);
+if [ $# -gt 1 ]
+then
+  echo "Usage: check_jspop [id_string]"
+  exit 1
+fi
 
-if ($#ARGV == 0) {
-  $idStr = shift(@ARGV);
-} else {
-  $idStr = "";
-}
-
-$debug = 0;
-
-print "idStr = $idStr\n" if ($debug);
-
-$foundJspop = 0;
+idStr=""
+pidfile="jspop_pid.*.*"
+if [ $# = 1 ]
+then
+  idStr=$1
+  pidfile="jspop_pid.$1.*"
+fi
 
 
-# One of the hardest parts of getting this script to work has been running
-# ps in such a way that the port arguments still show up when the damn
-# path to java gets real long.  -ww option to ps would guarantee that
-# the line would be long enough, except that with the latest Intel/Solaris
-# ps, this makes the command totally hang!!  RKW 1999-12-17.
+# Check for appropriate pid file to see if a jspop process exists.
+pids=`ls $pidfile 2> /dev/null | cut -d'.' -f3`
 
-$arch = `uname`;
-chomp $arch;
-if ($arch eq "Linux") {
-  $ps_cmd = "/bin/ps axw";
-} elsif (`hostname` eq "yola\n") {
-  $ps_cmd = "/sbin/ps -ef";
-} else {
-  $ps_cmd = "/usr/ucb/ps -axw";
-}
+foundPop=0
+if [ xxx$pids = xxx ]
+then
+  #echo "No JSPoP process found" 1>&2
+  echo "needed for stupid sh if/else" > /dev/null
+else
+  foundPop=1
+fi
 
-open PS, "$ps_cmd 2>/dev/null |" or die "can't fork: $!";
-
-while (<PS>) {
-  if ($idStr eq "") {
-    if ($_ =~ /java *JavaScreen.jspop/) {
-      $foundJspop = 1;
-    }
-  } else {
-    if ($_ =~ /java *JavaScreen.jspop.*id$idStr/) {
-      $foundJspop = 1;
-    }
-  }
-}
-
-close PS;
 
 # Make sure we can connect to the jspop.
-if ($foundJspop) {
-  my $connected = 0;
+connected=0
+if [ $foundPop = 1 ]
+then
+  info=`ports+files $idStr`;
+  port=`echo $info | cut -d' ' -f1`
 
-  my $info = `ports+files $idStr`;
-  my @values = split / /, $info;
-  my $port = $values[0];
+  result=`check_connect -port$port 2>check_connect.err`
 
-  open CONNECT, "check_connect -port$port 2>check_connect.err |" or die "can't fork: $!";
+  if [ $result = "OK" ]
+  then
+    connected=1
+  else
+    echo "Cannot connect to JSPoP" 1>&2
+    cat check_connect.err 1>&2
+    rm -f check_connect.err
+  fi
+fi
 
-  while (<CONNECT>) {
-    if ($_ eq "OK\n") {
-      $connected = 1;
-    }
-  }
-  close CONNECT;
-
-  if (!$connected) {
-    print STDERR "Cannot connect to jspop:\n";
-    open ERROR, "<check_connect.err" or die "can't open error file: $!";
-    while (<ERROR>) {
-      print STDERR "$_";
-    }
-    close ERROR;
-    $foundJspop = 0;
-  }
-} else {
-  print STDERR "No jspop process found\n";
-}
-
-print "foundJspop = $foundJspop\n" if ($debug);
-
-$curTime = localtime(time());
-if (!$foundJspop) {
-  print STDERR "No jspop process found or cannot connect (at $curTime)\n";
-}
-
-if ($foundJspop) {
-  print "OK\n";
-} else {
-  print "FAIL\n";
-}
+# Output the final check value.
+if [ $foundPop = 1 -a $connected = 1 ]
+then
+  echo "OK"
+else
+  curTime=`date`
+  echo "No JSPoP process found or cannot connect (at $curTime)" 1>&2
+  echo "FAIL"
+fi
