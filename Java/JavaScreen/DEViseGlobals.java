@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2001/05/11 20:36:07  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.53  2001/05/03 16:28:01  xuk
 // Changed version to 6.2
 //
@@ -208,7 +211,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("4.2");
+    public static final String VERSION = new String("4.3");
     public static final String PROTOCOL_VERSION = new String("6.2");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
