@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:14:46  jussi
+  Added CVS header.
+*/
 
 #include "Exit.h"
 #include "TDataAttr.h"
@@ -110,7 +113,7 @@ char *GData::GetName(){
 /**************************************************************
 Init getting records.
 ***************************************************************/
-virtual void GData::InitGetRecs(RecId lowId, RecId highId,RecordOrder order){
+void GData::InitGetRecs(RecId lowId, RecId highId,RecordOrder order){
 /*
 printf("GData::InitGetRecs(%d,%d)\n",lowId, highId);
 */
