@@ -2673,6 +2673,20 @@ Num Date        Status  Description
 671 05/18/01	FIXED	RecInterp::PrintAttr() could overflow the buffer. (rkw)
 			(Fixed by rkw, 5/18/01.)
 
+672 05/21/01	OPEN	JavaScreen: 4096_full.ds session (with balls) doesn't
+			work right when running the JS itself on pumori (balls
+			are not drawn!) (rkw)
+
+673 05/21/01	OPEN	JavaScreen: 3D drill-down often doesn't work on the
+			first click. (eu/rkw)
+
+674 05/22/01	OPEN	Drill-down on a record link follower view doesn't
+			work right (records are shown for drill-down that
+			are not selected by the leader view). (rkw)
+
+675 05/23/01	OPEN	Axis mult factor should be applied to value returned
+			in drill-down. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
