@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/06/19 19:56:56  wenger
+#  Improved UtilAtof() to increase speed; updated code for testing it.
+#
 #  Revision 1.8  1996/06/15 14:26:44  jussi
 #  Added saving of mapping legends.
 #
@@ -487,6 +490,16 @@ proc DoActualSave { infile asTemplate asExport withData } {
 	foreach hist [ DEVise getVisualFilters $view ] {
 	    puts $f "DEVise insertViewHistory \$$viewVar {[lindex $hist 0]} {[lindex $hist 1]} {[lindex $hist 2]} {[lindex $hist 3]} {[lindex $hist 4]}"
 	}
+    }
+
+    puts $f ""
+    puts $f "# Set camera location for each view"
+    foreach view [ViewSet] {
+	set camera [DEVise get3DLocation $view]
+	set x [lindex $camera 1]
+	set y [lindex $camera 2]
+	set z [lindex $camera 3]
+	puts $f "DEVise set3DLocation \$$viewVar $x $y $z"
     }
 
     if { $mode == 1 } {
