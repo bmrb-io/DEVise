@@ -15,12 +15,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/07/17 00:27:39  jussi
+#  Initial revision.
 
 ############################################################
 
 ARCH_FLAGS   = -DULTRIX -I/s/tcl/include
 ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
-ARCH_LDPOST  = -static
+ARCH_LDPOST  =
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new
 include ../../attrproj/Makefile.base

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/07/13 02:39:49  jussi
+#  Added -static linker option.
+#
 #  Revision 1.9  1996/07/13 02:18:15  jussi
 #  Removed /usr/unsup/lib which appeared unnecessary.
 #
@@ -24,14 +27,13 @@
 #
 #  Revision 1.7  1995/09/28 15:10:05  jussi
 #  Added copyright and CVS log messages.
-#
 
 ############################################################
 
 ARCH_FLAGS   = -DSUN -I/s/tcl/include
 ARCH_LDFLAGS = -L/s/tcl/lib
 ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
-ARCH_LDPOST  = -static
+ARCH_LDPOST  =
 
 VPATH = ../../multi
 include $(VPATH)/Makefile.base

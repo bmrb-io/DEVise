@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/07/13 02:17:57  jussi
+#  Removed /usr/unsup/lib which appeared unnecessary.
+#
 #  Revision 1.8  1996/05/31 21:36:31  wenger
 #  Fixed core dump in SPARC/Solaris version caused by GData buffer
 #  misalignment; cleaned up generic/Makefile.base, etc., to get HP
@@ -25,14 +28,13 @@
 #
 #  Revision 1.6  1995/09/28 15:10:00  jussi
 #  Added copyright and CVS log messages.
-#
 
 ############################################################
 
 ARCH_FLAGS   = -DSUN -I/s/tcl/include
 ARCH_LDFLAGS =  -L/s/tcl/lib
 ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
-ARCH_LDPOST  = -static
+ARCH_LDPOST  =
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base

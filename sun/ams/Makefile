@@ -15,6 +15,8 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1995/09/28 15:09:57  jussi
+#  Added copyright and CVS log messages.
 
 ############################################################
 
