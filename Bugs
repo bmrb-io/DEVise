@@ -196,6 +196,10 @@ Num Date        Status  Description
 			in client/server library can't handle continuous
 			calls (holding down mouse button). (rkw/na)
 
+061 11/11/96    FIXED   GData is never cached in memory! Found bug in
+                        TData.h: int RecSize() somehow no longer virtual
+                        as it should be. (jpm)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
