@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2002/02/06 23:08:54  xuk
+// Draw the axis labels in the JavaScreen.
+// Added new functions: getXlabel(), getYlabel(), roundUp();
+// Changed updateDataRange().
+//
 // Revision 1.62  2001/12/13 21:35:33  wenger
 // Added flexibility to enable/disable mouse location display individually
 // for X and Y axes (needed for peptide-cgi session improvements requested
@@ -860,8 +865,6 @@ public class DEViseView
     // get the label for Y axis
     public String getYLabel(float y)
     {
-	int length = 0;
-
 	if ((viewDataYType.toLowerCase()).equals("date")) {
 	    y *= 1000.0f; 
 	    Date date = new Date((long)y);
@@ -873,19 +876,42 @@ public class DEViseView
 		+ cal.get(Calendar.SECOND);
 	    return (format.format(date) + time);
 	} else {
+	    int length = 0;
+	    float abs = Math.abs(y);
 	    String labelY = new Float(y).toString();
-	    length = (labelY.length() >= 4) ? 4 : labelY.length();
+
+	    if (abs > 50000) {
+		int y0 = (int)(y);
+		labelY = DEViseViewInfo.viewParser(y0, viewInfoFormatY);
+		int e = labelY.indexOf('E');
+		while (labelY.charAt(e-1) == '0') {
+		    labelY = labelY.substring(0, e-1).concat(labelY.substring(e, labelY.length()));
+		    e = e-1;
+		}
+		length = labelY.length();
+	    }
+	    else if (abs >= 1) { // -1 =< y <= 1
+		length = (int)(Math.log(abs) / Math.log(10)) + 1;
+		if (y < 0) // "-"
+		    length ++;
+	    } else {
+		length = (labelY.length() >= 4) ? 4 : labelY.length();
+	    }
+
 	    labelY = labelY.substring(0, length);
 	    
-	    if (labelY.charAt(length-1) == '.')
-		labelY = labelY.substring(0, length-1);
-	    if (labelY.charAt(length-2) == '.' && labelY.charAt(length-1) == '0')
-		labelY = labelY.substring(0, length-2);
-	    
+	    if (length > 2) {
+		if (labelY.charAt(length-1) == '.') 
+		    labelY = labelY.substring(0, length-1);
+		if (labelY.charAt(length-2) == '.' && labelY.charAt(length-1) == '0')
+		    labelY = labelY.substring(0, length-2);
+	    }
+
+	    length = labelY.length();
 	    // right alignment
-	    int space = 4 - labelY.length();
+	    int space = 6 - length;
 	    for (int i = 0; i < space; i++)
-		labelY = "  ".concat(labelY);
+		labelY = " ".concat(labelY);
 
 	    return labelY;
 	}
@@ -894,27 +920,34 @@ public class DEViseView
     // get the label for X axis
     public String getXLabel(float x)
     {
-	int length = 0;
-
 	if ((viewDataXType.toLowerCase()).equals("date")) {
-	    x *= 1000.0f; 
-	    Date date = new Date((long)x);
-	    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
-	    Calendar cal = Calendar.getInstance();
-	    cal.setTime(date);
-	    String time = " " + cal.get(Calendar.HOUR_OF_DAY) + ":"
-		+ cal.get(Calendar.MINUTE) + ":"
-		+ cal.get(Calendar.SECOND);
-	    return (format.format(date) + time);
+	    return getDateLabel(x, viewInfoFormatX);
 	} else {
+	    int length = 0;
+	    float abs = Math.abs(x);
 	    String labelX = new Float(x).toString();
-	    length = (labelX.length() >= 4) ? 4 : labelX.length();
-	    labelX = labelX.substring(0, length);
 
-	    if (labelX.charAt(length-1) == '.')
-		labelX = labelX.substring(0, length-1);
-	    if (labelX.charAt(length-2) == '.' && labelX.charAt(length-1) == '0')
-		labelX = labelX.substring(0, length-2);
+	    if (abs >= 1) { // -1 =< x <= 1
+		length = (int)(Math.log(abs) / Math.log(10)) + 1;
+		if (x < 0) // "-"
+		    length ++;
+	    } else {
+		length = (labelX.length() >= 4) ? 4 : labelX.length();
+	    }
+
+	    labelX = labelX.substring(0, length);
+	    
+	    if (length > 2) {
+		if (labelX.charAt(length-1) == '.')
+		    labelX = labelX.substring(0, length-1);
+		if (labelX.charAt(length-2) == '.' && labelX.charAt(length-1) == '0')
+		    labelX = labelX.substring(0, length-2);
+	    }
+
+	    // right alignment
+	    int space = 6 - length;
+	    for (int i = 0; i < space; i++)
+		labelX = " ".concat(labelX);
 
 	    return labelX;
 	}
@@ -959,4 +992,54 @@ public class DEViseView
 	
 	return f;
     }
+
+    public String getDateLabel(float f, String format)
+    {
+	f *= 1000.0f; 
+	Date date = new Date((long)f);
+	Calendar cal = Calendar.getInstance();
+	cal.setTime(date);
+	int i = 0;
+	char c;
+	String result = new String("");
+
+	while (i < format.length()) {
+	    String st = "";
+	    c = format.charAt(i);
+
+	    if (c == 'b') {
+		DateFormat dateformat = DateFormat.getDateInstance(DateFormat.MEDIUM);
+		st = dateformat.format(date);
+		int first = st.indexOf('-');
+		int second = st.indexOf('-', first+1);
+		st = st.substring(first+1, second);
+	    } 
+	    else if (c == 'd') {
+		st = new Integer(cal.get(Calendar.DAY_OF_MONTH)).toString();
+	    }
+	    else if (c == 'Y') {
+		st = new Integer(cal.get(Calendar.YEAR)).toString();
+	    }
+	    else if (c == 'T') {
+		st = cal.get(Calendar.HOUR_OF_DAY) + ":"
+		    + cal.get(Calendar.MINUTE) + ":"
+		    + cal.get(Calendar.SECOND);
+	    }
+	    else if (c == 'm') {
+		st = new Integer(cal.get(Calendar.MONTH)).toString();
+	    }
+	    else if (c == ' ') {
+		st = " ";
+	    }
+	    else if (c == '-') {
+		st = "-";
+	    }
+
+	    result = result.concat(st);
+	    i++;
+	}
+
+	return result;
+    }
+
 }
