@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/01/15 16:56:00  jussi
+  Minor fixes.
+
   Revision 1.5  1996/01/12 15:21:48  jussi
   Replaced libc.h with stdlib.h.
 
@@ -106,6 +109,7 @@ rids in gdata a superset of rids in in tdata, and vice versa.
 #include "GData.h"
 #include "GDataBin.h"
 #include "PageSize.h"
+#include "Display.h"
 
 /* temp page to hold data for converting tdata into gdata. */
 static const int GDATA_BUF_SIZE = 51200;
@@ -204,6 +208,7 @@ QueryProcSimple::QueryProcSimple(){
 	else 
 		_mgr = new BufMgrNull();
 
+	_needDisplayFlush = true;
 }
 
 /*************************************************************************
@@ -300,8 +305,15 @@ void QueryProcSimple::ProcessQuery(){
 	QueryData *query;
 	switch(_state){
 		case WaitCmd:
-			if (QueryListSize() > 0)
-				_state = NewCmd;
+			if (QueryListSize() > 0) {
+			  _state = NewCmd;
+			  _needDisplayFlush = true;
+			} else {
+			  if (_needDisplayFlush) {
+			    DeviseDisplay::DefaultDisplay()->Flush();
+			    _needDisplayFlush = false;
+			  }
+			}
 			break;
 		case NewCmd:
 			query = FirstQuery();

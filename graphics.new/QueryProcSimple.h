@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/15 16:56:17  jussi
+  Minor fixes.
+
   Revision 1.4  1996/01/13 23:10:26  jussi
   Minor fix.
 
@@ -241,6 +244,8 @@ private:
   void InitInMemConversion(TData *tdata, GData *gdata, TDataMap *map);
   Boolean InMemConvert();
   void DoneInMemConvert();
+
+  Boolean _needDisplayFlush;       /* display needs to be flushed */
 };
 
 #endif

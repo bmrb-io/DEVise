@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:43:27  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:44  jussi
   Added CVS header.
 */
@@ -278,6 +281,8 @@ private:
     SortedTable<Coord, RecId> _table;
   };
   sortedTableEntry **_sortedTables;
+
+  Boolean _needDisplayFlush;       /* display needs to be flushed */
 };
 
 #endif
