@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/05/20 18:45:02  jussi
+  Merged with ClientServer library code.
+
   Revision 1.12  1996/04/18 18:14:55  jussi
   Moved definition of XWindowRepList to XWindowRep.h.
 
@@ -74,7 +77,7 @@
 
 class XDisplay: public DeviseDisplay {
 public:
-    XDisplay(char *name=NULL);
+    XDisplay(char *name = 0);
 
 #ifdef TK_WINDOW_EV2
     virtual ~XDisplay();
@@ -87,13 +90,13 @@ public:
     }
 
     virtual int NumPlanes() {
-      return DisplayPlanes(_display,DefaultScreen(_display));
+      return DisplayPlanes(_display, DefaultScreen(_display));
     }
 
     virtual void Dimensions(Coord &width, Coord &height) {
       int screen = DefaultScreen(_display);
-      width = (Coord) DisplayWidth(_display,screen);
-      height = (Coord) DisplayHeight(_display,screen);
+      width = (Coord) DisplayWidth(_display, screen);
+      height = (Coord) DisplayHeight(_display, screen);
     }
 
     /* Create a new window Rep. Dimensions are in normatlized
@@ -117,13 +120,12 @@ public:
     /* Flush buffered window operations to screen */
     virtual void Flush();
 
+protected:
 #ifndef LIBCS
-    // Register with the dispatcher..
-    virtual void  Register();
+    /* Register with the dispatcher */
+    virtual void Register();
 #endif
 
-protected:
-    /* from DeviseDisplay */
     Boolean ClosestColor(Colormap &map, XColor &color, Color &c,
 			 float &error);
     virtual void AllocColor(char *name, Color globalColor);
