@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/05/28 15:38:21  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.13.4.1  1997/05/20 16:10:45  ssl
   Added layout manager to DEVise
 
@@ -256,18 +259,28 @@ char *ClassDir::CreateWithParams(char *category, char *className,
 	    return iInfo->InstanceName();
 	  }
 	  fprintf(stderr,
-		  "Cannot create instance in class %s of category %s\n",
+		  "Cannot create instance in class {%s} of category {%s}\n",
 		  className, category);
 	  return NULL;
 	}
       }
-      fprintf(stderr, "Cannot find class %s in category %s\n",
+      fprintf(stderr, "Cannot find class {%s} in category {%s}\n",
 	      className, category);
+      fprintf(stderr, "Class names:\n");
+      for(int j = 0; j < catRec->_numClasses; j++) {
+	ClassRec *classRec = catRec->_classRecs[j];
+	fprintf(stderr, "  %s\n", classRec->classInfo->ClassName());
+      }
       return NULL;
     }
   }
 
-  fprintf(stderr, "Cannot find category %s\n", category);
+  fprintf(stderr, "Cannot find category {%s}\n", category);
+  fprintf(stderr, "Category names:\n");
+  for(int i = 0; i < _numCategories; i++) {
+    CategoryRec *catRec = _categories[i];
+    fprintf(stderr, "  %s\n", catRec->name);
+  }
   return NULL;
 }
 
