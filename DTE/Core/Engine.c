@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/03/20 20:42:18  donjerko
+  Removed the List usage from Aggregates and replaced it with Plex, a
+  form of dynamic array.
+
   Revision 1.13  1997/02/03 04:11:26  donjerko
   Catalog management moved to DTE
 
@@ -62,6 +66,7 @@
 #include "Engine.h"
 #include "ParseTree.h"
 #include "joins.h"
+#include "ExecOp.h"
 
 extern int my_yyparse();
 extern int yydebug;
@@ -95,17 +100,6 @@ int Engine::optimize(){
 	return 0;
 }
 
-/*
-void sp(String & str){
-	
-	if (str)
-		cout << str.chars() << endl;
+Iterator* ViewEngine::createExec(){
+	return new ViewEngineExec(topNode->createExec(), numFlds);
 }
-
-void bp(BaseSelection *sel){
-
-	if (sel)
-		sel->display(cout);
-     cout << endl;
-}
-*/

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/07/30 21:39:15  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.13  1997/07/22 15:00:51  donjerko
   *** empty log message ***
 
@@ -58,62 +61,45 @@
 #include <strstream.h>
 
 class Engine : public PlanOp {
+protected:
 	String query;
 	Site* topNode;
-	String* attributeNames;
 	Iterator* topNodeIt;
 public:
-	Engine() :  topNode(NULL), attributeNames(NULL), topNodeIt(NULL) {}
+	Engine() :  topNode(NULL), topNodeIt(NULL) {}
 	Engine(String query) : query(query), topNode(NULL),
-		attributeNames(NULL), topNodeIt(NULL) {}
+		topNodeIt(NULL) {}
 	virtual ~Engine(){
 		delete topNode;	// should delete all the sites
-		delete [] attributeNames;
 		delete topNodeIt;
 	}
 	int optimize();	// throws
 	int optimize(String query){	// throws
 		delete topNode;	// should delete all the sites
 		topNode = NULL;
-		delete [] attributeNames;
-		attributeNames = NULL;
 		delete topNodeIt;
 		topNodeIt = NULL;
 		this->query = query;
 		return optimize();
 	}
-     int getNumFlds(){
+     virtual int getNumFlds(){
 		return topNode->getNumFlds();
      }
-     const String* getTypeIDs(){
+     virtual const String* getTypeIDs(){
           return topNode->getTypeIDs();
      }
 	const Tuple* getNext(){
 		assert(topNodeIt || !"Initialize engine before calling getNext");
 		return topNodeIt->getNext();
 	}
-	const String* getAttributeNames(){
-		if(attributeNames){
-			return attributeNames;
-		}
-		else{
-			return topNode->getAttributeNames();
-		}
+	virtual const String* getAttributeNames(){
+		return topNode->getAttributeNames();
 	}
      String* getOrderingAttrib(){
 		assert(topNode);
 		return topNode->getOrderingAttrib();
      }
-	void renameAttributes(const String* newAttributeNames){
-		assert(attributeNames == NULL);
-		int nf = topNode->getNumFlds();
-		attributeNames = new String[nf];
-		assert(attributeNames);
-		for(int i = 0; i < nf; i++){
-			attributeNames[i] = newAttributeNames[i];
-		}
-	}
-	Stats* getStats(){
+	virtual Stats* getStats(){
 		return topNode->getStats();
 	}
 	void reset(int lowRid, int highRid){
@@ -121,15 +107,65 @@ public:
 	}
 	void initialize(){
 		assert(getNumFlds() != 0);
-		topNodeIt = createExec();
+		assert(topNodeIt == NULL);
+		topNodeIt = topNode->createExec();
 		topNodeIt->initialize();
 	}
 	void finalize(){
 		topNodeIt->finalize();
 	}
-	Iterator* createExec(){
+	virtual Iterator* createExec(){
+		assert(0);
 		return topNode->createExec();
 	}
+};
+
+class ViewEngine : public Engine {
+	String* attributeNames;
+	TypeID* typeIDs;
+	int numFlds;
+public:
+	ViewEngine(String query, const String* attrs, int numInpFlds) : 
+		Engine(query), attributeNames(NULL), typeIDs(NULL) {
+
+		numFlds = numInpFlds + 1;
+		attributeNames = new String[numFlds];
+		attributeNames[0] = "recId";
+		for(int i = 1; i < numFlds; i++){
+			assert(attrs[i - 1] != "recId");
+			attributeNames[i] = attrs[i - 1];
+		}
+	}
+	~ViewEngine(){
+		delete [] attributeNames;
+		delete [] typeIDs;
+	}
+     const TypeID* getTypeIDs(){
+		if(typeIDs){
+			return typeIDs;
+		}
+		assert(topNode);
+		assert(topNode->getNumFlds() + 1 == numFlds);
+          const TypeID* inTypes = topNode->getTypeIDs();
+		typeIDs = new TypeID[numFlds];
+		typeIDs[0] = "int";
+		for(int i = 1; i < numFlds; i++){
+			typeIDs[i] = inTypes[i - 1];
+		}
+		return typeIDs;
+     }
+	const String* getAttributeNames(){
+		return attributeNames;
+	}
+     int getNumFlds(){
+		assert(topNode);
+		assert(topNode->getNumFlds() + 1 == numFlds);
+		return numFlds;
+     }
+	virtual Stats* getStats(){
+		return new Stats(numFlds);
+	}
+	Iterator* createExec();
 };
 
 #endif

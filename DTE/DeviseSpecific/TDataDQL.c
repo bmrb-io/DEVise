@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/07/22 15:01:31  donjerko
+  Moved querying in InitGetRec
+
   Revision 1.17  1997/07/03 01:51:44  liping
   changed query interface to TData from RecId to double
 
@@ -125,8 +128,8 @@ TDataDQL::TDataDQL(
 
 void TDataDQL::runQuery(){
 
-#if defined(DEBUG) || 1
-//	cout << "Running: " << _query << endl;
+#if defined(DEBUG)
+	cout << "Running: " << _query << endl;
 	cerr << ".";
 #endif
 
@@ -331,8 +334,8 @@ TData::TDHandle TDataDQL::InitGetRecs(double lowVal, double highVal,
   SQLquery+=whereClause;
   String query(SQLquery);
 
-#if defined(DEBUG) || 1
-//	cout << "Running: " << query << endl;
+#if defined(DEBUG)
+	cout << "Running: " << query << endl;
 	static int entryCount;
 	static double cumRecs;
 	if(entryCount++ % 100 == 0){
@@ -391,7 +394,7 @@ Boolean TDataDQL::GetRecs(TDHandle req, void *buf, int bufSize,
   
   _bytesFetched += dataSize;
 
-#if defined(DEBUG) || 1
+#if defined(DEBUG)
 	static int entryCount;
 	if(entryCount++ % 1000 == 0){
 		cerr << " get recs called " << entryCount << "times\n";

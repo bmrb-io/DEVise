@@ -40,7 +40,7 @@ public:
           assert(inputIt);
           return inputIt->getOffset();
      }
-
+     virtual const Tuple* getThis(Offset offset, RecId recId);
 };
 
 class IndexScanExec : public Iterator {
@@ -128,4 +128,51 @@ public:
 	virtual const Tuple* getNext();
 };
 
+class ViewEngineExec : public Iterator {
+	Iterator* inp;
+	int numFlds;
+	Tuple* tuple;
+	int counter;
+public:
+	ViewEngineExec(Iterator* inp, int numFlds) :
+		inp(inp), numFlds(numFlds) {
+
+		tuple = new Tuple[numFlds];
+		counter = 0;
+	}
+	~ViewEngineExec(){
+		delete inp;
+		delete [] tuple;
+	}
+     virtual void initialize(){
+          inp->initialize();
+     }
+	virtual const Tuple* getNext(){
+		const Tuple* inputTup = inp->getNext();
+		if(!inputTup){
+			return NULL;
+		}
+		tuple[0] = (void*) counter++;
+		for(int i = 1; i < numFlds; i++){
+			tuple[i] = inputTup[i - 1];
+		}
+		return tuple;
+	}
+     virtual Offset getOffset(){
+          assert(inp);
+		// cerr << "Passed ViewEngineExec\n";
+          return inp->getOffset();
+     }
+     virtual const Tuple* getThis(Offset offset, RecId recId){
+          assert(inp);
+          const Tuple* inputTup = inp->getThis(offset, recId);
+		assert(inputTup);
+		tuple[0] = (void*) recId;
+		// cerr << "tuple[0] set to " << int(tuple[0]) << endl;
+		for(int i = 1; i < numFlds; i++){
+			tuple[i] = inputTup[i - 1];
+		}
+		return tuple;
+	}
+};
 #endif

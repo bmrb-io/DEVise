@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/07/30 21:39:23  donjerko
+  Separated execution part from typchecking in expressions.
+
   Revision 1.20  1997/07/22 15:00:54  donjerko
   *** empty log message ***
 
@@ -248,10 +251,11 @@ Site* ViewInterface::getSite(){
 	// This is just a temporary hack because it does not provide
 	// any optimization. View is executed unmodified.
 
-	Engine* engine = new Engine(query);
+	Engine* engine = new ViewEngine(query, 
+		(const String *) attributeNames, numFlds);
 	TRY(engine->optimize(), NULL);
 	int numEngFlds = engine->getNumFlds();
-	if(numEngFlds != numFlds){
+	if(numEngFlds != numFlds + 1){
 		ostrstream estr;
 		estr << "Number of fields in the view (" << numFlds << ") ";
 		estr << "is not equal to the number in the query ";
@@ -261,7 +265,6 @@ Site* ViewInterface::getSite(){
 		delete e;
 		THROW(new Exception(except), NULL);
 	}
-	engine->renameAttributes(attributeNames);
 	return new LocalTable("", engine); 
 }
 

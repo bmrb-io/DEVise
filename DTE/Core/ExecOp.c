@@ -48,6 +48,15 @@ const Tuple* SelProjExec::getNext(){
 	return next;
 }
 
+const Tuple* SelProjExec::getThis(Offset offset, RecId recId){
+	assert(inputIt);
+	assert(next);
+	// cerr << "selprojexec getThis\n";
+	const Tuple* input = inputIt->getThis(offset, recId);
+	tupleFromList(next, mySelect, input);
+	return next;
+}
+
 const Tuple* NLJoinExec::getNext(){
 	bool cond = false;
 	const Tuple* innerTup = NULL;

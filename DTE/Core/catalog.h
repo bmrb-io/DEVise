@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/07/22 15:00:55  donjerko
+  *** empty log message ***
+
   Revision 1.16  1997/06/30 23:05:05  donjerko
   CVS:
 
@@ -189,9 +192,12 @@ public:
 		assert(table);
 		assert(table->isEmpty());
 		assert(attributeNames);
-		String* retVal = attributeNames;
-		attributeNames = NULL;
-		return new ISchema(retVal, numFlds);
+		String* retVal = new String[numFlds + 1];
+		retVal[0] = "recId";
+		for(int i = 0; i < numFlds; i++){
+			retVal[i + 1] = attributeNames[i];
+		}
+		return new ISchema(retVal, numFlds + 1);
 	}
 };
 
