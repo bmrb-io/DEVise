@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  1997/01/22 20:14:00  wenger
+#  Removed other non-functional user interface components (includes workaround
+#  for bug 127); fixed a number of OK/Cancel button positions.
+#
 #  Revision 1.18  1997/01/22 14:40:34  wenger
 #  Added devise.etk to release scripts; removed merged view buttons from
 #  Stack Control dialog.
@@ -600,7 +604,7 @@ proc DoWindowSplit {} {
 ############################################################
 
 proc DoWindowStackControl {} {
-    global curView stackWinOpened
+    global curView
 
     if {[WindowVisible .stack]} {
 	return
@@ -634,32 +638,26 @@ proc DoWindowStackControl {} {
 	    -command { DoWindowStack }
     button .stack.bot.row2.but.unstack -text "Unstack" -width 10 \
 	    -command { DoWindowUnstack }
-
-    button .stack.bot.row1.but.rotate -text "Rotate" -width 10 \
-	    -command { RotateMergedView }
-    button .stack.bot.row2.but.flip -text "Flip" -width 10 \
+    button .stack.bot.row1.but.flip -text "Flip" -width 10 \
 	    -command { FlipStackedView }
 
-    frame .stack.bot.row1.but.placeholder -relief flat -width 30m -height 8m
 #    button .stack.bot.row1.but.edit -text "Edit..." -width 10 \
 #	    -command { EditMergedView }
 
     button .stack.bot.row2.but.close -text Close -width 10 \
-	    -command "global stackyWinOpened; \
-	              set stackWinOpened false; \
-	              destroy .stack"
+	    -command { destroy .stack }
 
     pack .stack.bot.row1.but.pile \
-            .stack.bot.row1.but.stack .stack.bot.row1.but.rotate \
-	    .stack.bot.row1.but.placeholder \
+            .stack.bot.row1.but.stack \
+            .stack.bot.row1.but.flip \
 	    -side left -padx 3m
 #    pack .stack.bot.row1.but.pile \
-#            .stack.bot.row1.but.stack .stack.bot.row1.but.rotate \
+#            .stack.bot.row1.but.stack \
 #            .stack.bot.row1.but.edit \
 #	    -side left -expand 1 -fill x -padx 3m
 
     pack .stack.bot.row2.but.unpile \
-	    .stack.bot.row2.but.unstack .stack.bot.row2.but.flip \
+	    .stack.bot.row2.but.unstack \
             .stack.bot.row2.but.close \
 	    -side left -expand 1 -fill x -padx 3m
 
@@ -667,8 +665,6 @@ proc DoWindowStackControl {} {
     pack .stack.bot.row2.but -side top
     pack .stack.bot.row1 .stack.bot.row2 -side top -pady 1m
     pack .stack.bot -side top -pady 5m
-
-    set stackWinOpened true
 
     if {$curView != ""} {
 	.stack.title.text configure -text "View: $curView"
