@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/06/13 20:15:26  jussi
+#  Fixed bug in DoViewRemove.
+#
 #  Revision 1.8  1996/05/31 15:48:34  jussi
 #  Added DoSetLinkMaster and DoResetLinkMaster procedures.
 #
@@ -1003,12 +1006,8 @@ proc DoViewAction {} {
 
 ############################################################
 
-proc DoSetBgColor {} {
-    global curView viewColor
-
-    set but [dialog .setBgColorError "Not Supported Yet" \
-	    "Changing view background color not supported yet." "" 0 OK ]
-    return
+proc DoSetFgColor {} {
+    global curView fgColor
 
     if {![CurrentView]} {
 	return
@@ -1016,15 +1015,39 @@ proc DoSetBgColor {} {
 
     set curViewClass [GetClass view $curView]
     set param [DEVise getCreateParam view $curViewClass $curView]
-    set viewColor [lindex $param 5]
-    set oldViewColor $viewColor
+    set fgColor [lindex $param 5]
+    set oldFgColor $fgColor
 
-    getColor viewColor
-    if {$oldViewColor == $viewColor} {
+    getColor fgColor
+    if {$oldFgColor == $fgColor} {
 	return
     }
 
-    set param [linsert [lrange $param 0 4] end $viewColor]
+    set param [lreplace $param 5 5 $fgColor]
+    set cmd "DEVise changeParam $param"
+    eval $cmd
+}
+
+############################################################
+
+proc DoSetBgColor {} {
+    global curView bgColor
+
+    if {![CurrentView]} {
+	return
+    }
+
+    set curViewClass [GetClass view $curView]
+    set param [DEVise getCreateParam view $curViewClass $curView]
+    set bgColor [lindex $param 6]
+    set oldBgColor $bgColor
+
+    getColor bgColor
+    if {$oldBgColor == $bgColor} {
+	return
+    }
+
+    set param [lreplace $param 6 6 $bgColor]
     set cmd "DEVise changeParam $param"
     eval $cmd
 }
