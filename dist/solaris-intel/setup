@@ -36,8 +36,6 @@ cd bin
 cd ..
 
 cd dyn_lib
-set dir = `pwd`
-#ssh trigger "cd $dir; ./setup"
 ./setup
 cd ..
 

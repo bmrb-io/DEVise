@@ -36,8 +36,7 @@ cd bin
 cd ..
 
 cd dyn_lib
-set dir = `pwd`
-ssh cardinal "cd $dir; ./setup"
+./setup
 cd ..
 
 mkdir cache

@@ -20,19 +20,4 @@
 
 ############################################################
 
-cp /usr/lib/libtk8.0.so .
-cp /usr/lib/libtcl8.0.so .
-cp /usr/X11R6/lib/libX11.so.6 .
-cp /lib/libdl.so.2 .
-cp /s/gcc/lib/libstdc++-libc6.1-2.so.3 .
-cp /lib/libm.so.6 .
-cp /lib/libc.so.6 .
-cp /lib/ld-linux.so.2 .
-
-cp /usr/X11R6/lib/libXmu.so.6 .
-cp /usr/X11R6/lib/libXt.so.6 .
-cp /usr/X11R6/lib/libSM.so.6 .
-cp /usr/X11R6/lib/libICE.so.6 .
-cp /usr/X11R6/lib/libXext.so.6 .
-
-chmod 644 *.so*
+ln -s ../../dist_sw/dyn_lib_arch/i386_linux/* .

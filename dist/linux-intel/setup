@@ -38,8 +38,7 @@ cd bin
 cd ..
 
 cd dyn_lib
-set dir = `pwd`
-ssh pumori "cd $dir; ./setup"
+./setup
 cd ..
 
 mkdir cache
