@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.115  2001/12/13 21:35:02  wenger
+// Added flexibility to enable/disable mouse location display individually
+// for X and Y axes (needed for peptide-cgi session improvements requested
+// by John Markley).
+//
 // Revision 1.114  2001/11/25 03:42:07  xuk
 // Sent heartbeat in collaboration mode.
 //
@@ -1075,13 +1080,18 @@ public class DEViseCmdDispatcher implements Runnable
 	    if (jsc.specialID != -1) {
                 // a collaborator
 		jsc.showMsg(response);
-		jsc.specialID = -1;
+		
 		jsc.socketMode();
+		jsc.specialID = -1;
+		jsc.collabinterrupted = true;
+		jsc.dispatcher.dispatcherThread.interrupt();
 		jsc.animPanel.stop();
 		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 		jsc.jscreen.updateScreen(false);
-		dispatcherThread.interrupt();
-		setStatus(0);
+		jsc.dispatcher.setStatus(0);
+		
+		jsc.restorePreCollab();
+
 	    } else {
 		if (!command.startsWith(DEViseCommands.GET_SESSION_LIST)) {
 		    jsc.showMsg(response);
