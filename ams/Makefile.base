@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1995/12/14 19:11:26  jussi
+#  Added -Wall -O -DUNIX compiler options.
+#
 #  Revision 1.4  1995/11/15 18:27:37  jussi
 #  Added CRSP library.
 #
@@ -42,8 +45,8 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 
 all: ams extendAms extend
 
-ams:    ams.o ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
-	../compustat/cstatobj.o MapClassInfo.o
+ams:    ams.o MapClassInfo.o ../graphics.new/libobj.o ../tape/tapeobj.o \
+	../issm/issmobj.o ../compustat/cstatobj.o ../crsp/crspobj.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 extend: extend.o
