@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/01/10 00:39:40  jussi
+  Added support for storing date values as hi/lo values.
+
   Revision 1.10  1995/12/22 00:07:24  jussi
   Name of logical schema, not physical schema, is recorded in
   catFiles. The absolute path name gets stored in a session file,
@@ -62,106 +65,158 @@
 #include "Group.h"
 #include "GroupDir.h"
 
+#define DEBUG
+
 GroupDir *gdir = new GroupDir();
 
 #define LINESIZE 512
-const int INIT_CAT_FILES = 64;
-static char **_catFiles = (char **)NULL;
-static int _numCatFiles = 0;
-static int _catFileArraySize= 0;
-static	int numAttrs = 0;
-static 	AttrList *attrs=NULL ;
 
-static int _line= 0; 	/* line number */
+const int INIT_CAT_FILES     = 64;
+static char **_catFiles      = 0;
+static int _numCatFiles      = 0;
+static int _catFileArraySize = 0;
+static int numAttrs          = 0;
+static AttrList *attrs       = 0;
+
+static int _line = 0;
+
+static char *getTail(char *fname)
+{
+  /* Either the character string after the last slash or the entire string
+     if there are no slashes in it */
+
+  char *ret = fname;
+  int len = strlen(fname);
+  
+  for(int i = 0; i < len; i++)
+    if (fname[i] == '/')
+      ret = &(fname[i + 1]);
+
+  return ret;
+}
+
+static void SetVal(AttrVal *aval, char *valstr, AttrType valtype)
+{
+  /* Set the value field in aval to the value equivalent of valstr based
+     on the valtype */
+
+  double tempval;
+
+  switch(valtype) {
+    case IntAttr: 
+      aval->intVal = atoi(valstr);
+      break;
+    case FloatAttr:
+      aval->floatVal = atof(valstr);
+      break;
+    case DoubleAttr:
+      aval->doubleVal = atof(valstr);
+      break;
+    case StringAttr:
+      aval->strVal = CopyString(valstr);
+      break;
+    case DateAttr:
+      (void)ParseFloatDate(valstr, tempval);
+      aval->dateVal = (time_t)tempval;
+      break;
+    default:
+      fprintf(stderr,"unknown attr value\n");
+      Exit::DoExit(2);
+      break;
+    }
+}
+
 /* Insert a new file name into file */
-static void InsertCatFile(char *name){
-	if (_catFiles == (char **)NULL){
-		_catFiles = new char *[INIT_CAT_FILES];
-		_catFileArraySize = INIT_CAT_FILES;
-	}
-	else if (_numCatFiles >= _catFileArraySize) {
-		char **temp = new char *[_catFileArraySize+INIT_CAT_FILES];
-		int i;
-		for (i=0; i < _numCatFiles; i++){
-			temp[i] = _catFiles[i];
-		}
-		delete _catFiles;
-		_catFiles = temp;
-		_catFileArraySize += INIT_CAT_FILES;
-	}
-	_catFiles[_numCatFiles++] = name;
+static void InsertCatFile(char *name)
+{
+  if (!_catFiles){
+    _catFiles = new char *[INIT_CAT_FILES];
+    _catFileArraySize = INIT_CAT_FILES;
+  } else if (_numCatFiles >= _catFileArraySize) {
+    char **temp = new char *[_catFileArraySize + INIT_CAT_FILES];
+    for(int i=0; i < _numCatFiles; i++) {
+      temp[i] = _catFiles[i];
+    }
+    delete _catFiles;
+    _catFiles = temp;
+    _catFileArraySize += INIT_CAT_FILES;
+  }
+  _catFiles[_numCatFiles++] = name;
 }
 
-void CatFiles(int &numFiles, char **&fileNames){
-	numFiles = _numCatFiles;
-	fileNames = _catFiles;
+void CatFiles(int &numFiles, char **&fileNames)
+{
+  numFiles = _numCatFiles;
+  fileNames = _catFiles;
 }
 
-void ClearCats(){
-	_numCatFiles = 0;
+void ClearCats()
+{
+  _numCatFiles = 0;
 }
 
 const int MAX_GENCLASSINFO = 20;
 static int _numGenClass = 0;
-struct GenRec { 
-	char *source;
-	GenClassInfo *genInfo;
-};
-GenRec _genClasses[MAX_GENCLASSINFO];
 
-void RegisterGenClassInfo(char *source, GenClassInfo *gen){
-	if (_numGenClass == MAX_GENCLASSINFO ){
-		fprintf(stderr,"too many interpreted TData class generator\n");
-		Exit::DoExit(1);
-	}
-	_genClasses[_numGenClass].source = source;
-	_genClasses[_numGenClass++].genInfo = gen;
+static struct { 
+  char *source;
+  GenClassInfo *genInfo;
+} _genClasses[MAX_GENCLASSINFO];
+
+void RegisterGenClassInfo(char *source, GenClassInfo *gen)
+{
+  if (_numGenClass == MAX_GENCLASSINFO) {
+    fprintf(stderr, "too many interpreted TData class generator\n");
+    Exit::DoExit(1);
+  }
+  _genClasses[_numGenClass].source = source;
+  _genClasses[_numGenClass++].genInfo = gen;
 }
 
-GenClassInfo *FindGenClass(char *source){
-	int i;
-	for (i=0; i < _numGenClass; i++){
-		if (strcmp(_genClasses[i].source,source) == 0)
-			return _genClasses[i].genInfo;
-	}
+GenClassInfo *FindGenClass(char *source)
+{
+  for(int i = 0; i < _numGenClass; i++) {
+    if (strcmp(_genClasses[i].source,source) == 0)
+      return _genClasses[i].genInfo;
+  }
 
-	fprintf(stderr,"Can't find TData generator for input sourrce %s\n",source);
-	Exit::DoExit(1);
-
-	// keep compiler happy
-	return 0;
+  fprintf(stderr,"Can't find TData generator for input sourrce %s\n",source);
+  Exit::DoExit(1);
+  
+  // keep compiler happy
+  return 0;
 }
-
 
 /* Parse a character, Return -1 if can't parse */
-Boolean ParseChar(char *instr, char &c){
-	char *str = instr;
-	if (*str == '\\'){
-		str++;
-		switch(*str){
-			case 'n':
-				c = '\n';
-				break;
-			case 'r':
-				c = '\r';
-				break;
-			case 't':
-				c = '\t';
-				break;
-			case '\'':
-				c = '\'';
-				break;
-			default:
-				goto error;
-				break;
-		}
-	}
-	else c = *str;
+static Boolean ParseChar(char *instr, char &c)
+{
+  char *str = instr;
+  if (*str == '\\') {
+    str++;
+    switch(*str) {
+    case 'n':
+      c = '\n';
+      break;
+    case 'r':
+      c = '\r';
+      break;
+    case 't':
+      c = '\t';
+      break;
+    case '\'':
+      c = '\'';
+      break;
+    default:
+      goto error;
+      break;
+    }
+  } else
+    c = *str;
+  return true;
 
-	return true;
-error:
-	fprintf(stderr,"ParseCat: invalid separator %s\n", instr);
-	return false;
+ error:
+  fprintf(stderr, "ParseCat: invalid separator %s\n", instr);
+  return false;
 }
 
 /* Parse separators */
@@ -169,69 +224,42 @@ const int MAX_SEPARATORS = 50;
 static char separators[MAX_SEPARATORS];
 static int numSeparators;
 
-Boolean ParseSeparator(int numArgs, char **args){
-	if (numArgs >= MAX_SEPARATORS){
-		fprintf(stderr,"ParseCat: too many separators, max = %d\n",
-			MAX_SEPARATORS);
-		return false;
-	}
-	int i;
-	for (i=1; i < numArgs; i++){
-		if (!ParseChar(args[i], separators[i-1]))
-			return false;
-	}
-	numSeparators = numArgs-1;
-	return true;
+Boolean ParseSeparator(int numArgs, char **args)
+{
+  if (numArgs >= MAX_SEPARATORS) {
+    fprintf(stderr, "ParseCat: too many separators, max = %d\n",
+	    MAX_SEPARATORS);
+    return false;
+  }
+
+  for(int i = 1; i < numArgs; i++) {
+    if (!ParseChar(args[i], separators[i - 1]))
+      return false;
+  }
+
+  numSeparators = numArgs - 1;
+  return true;
 }
 
 /* Parse white space */
 static char whitespaces[MAX_SEPARATORS];
 static int numWhitespace;
-Boolean ParseWhiteSpace(int numArgs, char **args){
-	if (numArgs >= MAX_SEPARATORS){
-		fprintf(stderr,"ParseCat: too many separators, max = %d\n",
-			MAX_SEPARATORS);
-		return false;
-	}
-	int i;
-	for (i=1; i < numArgs; i++){
-		if (!ParseChar(args[i], whitespaces[i-1]))
-			return false;
-	}
-	numWhitespace = numArgs-1;
-	return true;
-}
 
-char *ParseCat(char *catFile) 
+Boolean ParseWhiteSpace(int numArgs, char **args)
 {
-  char buf[100];
-  // Check the first line of catFile - if it is "physical abc",
-  // call ParseCatPhysical (abc) and then ParseCatLogical(catFile)
-  // Otherwise, simply call ParseCatPhysical(catFile).
-  FILE *fp = fopen(catFile, "r");
-  if (!fp) 
-  {
-    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
-    return NULL;
+  if (numArgs >= MAX_SEPARATORS) {
+    fprintf(stderr, "ParseCat: too many separators, max = %d\n",
+	    MAX_SEPARATORS);
+    return false;
   }
 
-  if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
-  {
-    fclose(fp);
-    return ParseCatOriginal(catFile);
+  for(int i = 1; i < numArgs; i++) {
+    if (!ParseChar(args[i], whitespaces[i - 1]))
+      return false;
   }
 
-  // Read in the file name 
-  fscanf(fp, "%s", buf);
-  fclose(fp);
-
-  char *sname;
-  if ((sname = ParseCatPhysical(buf)) == NULL)
-    return NULL;
-
-  InsertCatFile(CopyString(catFile));
-
-  return ParseCatLogical(catFile, sname);
+  numWhitespace = numArgs - 1;
+  return true;
 }
 
 char *ParseCatOriginal(char *catFile){
@@ -283,13 +311,12 @@ char *ParseCatOriginal(char *catFile){
 		if (numArgs == 0)
 			continue;
 
-		/*
+#ifdef DEBUG
 		printf("parse: ");
-		for (ind=0; ind < numArgs; ind++){
-			printf("'%s' ", args[ind]);
-		}
+		for(int ind = 0; ind < numArgs; ind++)
+		  printf("'%s' ", args[ind]);
 		printf("\n");
-		*/
+#endif
 
 		if (strcmp(args[0],"end")== 0)
 			break;
@@ -346,10 +373,11 @@ char *ParseCatOriginal(char *catFile){
 			  GLoad = true;
 			}
 		} else if (strcmp(args[0],"attr") == 0 ||
-			strcmp(args[0],"compattr") == 0 || strcmp(args[0],"sorted") == 0){
+			   strcmp(args[0],"compattr") == 0 ||
+			   strcmp(args[0],"sorted") == 0) {
 			/* an attribute */
 			Boolean isSorted = false;
-			if (strcmp(args[0],"sorted") == 0){
+			if (strcmp(args[0],"sorted") == 0) {
 				/* sorted attribute */
 				isSorted = true;
 				if (strcmp(args[1],"attr") && strcmp(args[1],"compattr")){
@@ -406,6 +434,7 @@ char *ParseCatOriginal(char *catFile){
 				goto error;
 			}
 
+			char *attrName = CopyString(args[1]);
 
 			Boolean hasMatchVal = false;
 			AttrVal matchVal;
@@ -423,7 +452,7 @@ char *ParseCatOriginal(char *catFile){
 			  hasMatchVal = true;
 			  SetVal(&matchVal, args[attrNum], attrType);
 			  attrNum++;
-			} 
+			}
 			
 			if ((attrNum < numArgs) && 
 			    (strcmp(args[attrNum], "hi")) && 
@@ -468,48 +497,49 @@ char *ParseCatOriginal(char *catFile){
 			  } 
 			}
 
-
-			if (attrs == NULL){
-				if (!hasFileType ){
-					fprintf(stderr,"no file type yet\n");
-					goto error;
-				}
-				attrs = new AttrList(fileType);
-			}
-
-			int roundAmount = 0;
-			switch(attrType){
-				case FloatAttr:
-					roundAmount = sizeof(float);
-					break;
-				case DoubleAttr:
-					roundAmount = sizeof(double);
-					break;
-				case StringAttr:
-					roundAmount = sizeof(char);
-					break;
-				case DateAttr:
-					roundAmount = sizeof(time_t);
-					break;
-				case IntAttr:
-					roundAmount = sizeof(int);
-					break;
-				default:
-					fprintf(stderr,"ParseCat: don't know type\n");
-					Exit::DoExit(2);
-			}
-			if (recSize/roundAmount*roundAmount != recSize){
-					/* round to rounding boundaries */
-					recSize = (recSize/roundAmount+1)*roundAmount;
-			}
-			attrs->InsertAttr(numAttrs,args[1],recSize,
-					  attrLength,attrType, hasMatchVal,
-					  &matchVal, isComposite, isSorted,
-					  hasHi, &hiVal, hasLo, &loVal);
-			numAttrs++;
-			recSize += attrLength;
+		if (attrs == NULL){
+		    if (!hasFileType ){
+		        fprintf(stderr,"no file type yet\n");
+			goto error;
 		      }
-		else if (strcmp(args[0], "group") == 0)
+		    attrs = new AttrList(fileType);
+		}
+
+		int roundAmount = 0;
+		switch(attrType){
+		  case FloatAttr:
+		    roundAmount = sizeof(float);
+		    break;
+		  case DoubleAttr:
+		    roundAmount = sizeof(double);
+		    break;
+		  case StringAttr:
+		    roundAmount = sizeof(char);
+		    break;
+		  case DateAttr:
+		    roundAmount = sizeof(time_t);
+		    break;
+		  case IntAttr:
+		    roundAmount = sizeof(int);
+		    break;
+		  default:
+		    fprintf(stderr,"ParseCat: don't know type\n");
+		  Exit::DoExit(2);
+		  }
+		if (recSize/roundAmount*roundAmount != recSize){
+		    /* round to rounding boundaries */
+		    recSize = (recSize/roundAmount+1)*roundAmount;
+		  }
+		attrs->InsertAttr(numAttrs, attrName, recSize,
+				  attrLength, attrType, hasMatchVal,
+				  &matchVal, isComposite, isSorted,
+				  hasHi, &hiVal, hasLo, &loVal);
+		numAttrs++;
+		recSize += attrLength;
+
+		delete attrName;
+		      }
+	else if (strcmp(args[0], "group") == 0)
 		{
 		  if (GLoad) {
 		      if (!currgrp)		/* Top level */
@@ -538,18 +568,17 @@ char *ParseCatOriginal(char *catFile){
 		      currgrp = currgrp->parent_group();
 		    }
 		}
-		else {
-			fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
-			goto error;
-		}
+	else {
+	    fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
+	    goto error;
 	}
+	      }
 
 	/* round record size */
 	if (recSize/8*8 != recSize){
 		/* round to rounding boundaries */
 		recSize = (recSize/8+1)*8;
 	}
-
 
 	if (!hasFileType ){
 		fprintf(stderr,"ParseCat: no file type specified\n");
@@ -656,7 +685,6 @@ error:
 	return NULL;
 }
 
-
 char *ParseCatPhysical(char *catFile){
 	FILE *file= NULL;
 	Boolean hasSource = false;
@@ -704,13 +732,12 @@ char *ParseCatPhysical(char *catFile){
 		if (numArgs == 0)
 			continue;
 
-		/*
+#ifdef DEBUG
 		printf("parse: ");
-		for (ind=0; ind < numArgs; ind++){
-			printf("'%s' ", args[ind]);
-		}
+		for(int ind = 0; ind < numArgs; ind++)
+		  printf("'%s' ", args[ind]);
 		printf("\n");
-		*/
+#endif
 
 		if (strcmp(args[0],"end")== 0)
 			break;
@@ -756,10 +783,11 @@ char *ParseCatPhysical(char *catFile){
 			fileType = CopyString(args[1]);
 			hasFileType = true;
 		} else if (strcmp(args[0],"attr") == 0 ||
-			strcmp(args[0],"compattr") == 0 || strcmp(args[0],"sorted") == 0){
+			   strcmp(args[0],"compattr") == 0 ||
+			   strcmp(args[0],"sorted") == 0) {
 			/* an attribute */
 			Boolean isSorted = false;
-			if (strcmp(args[0],"sorted") == 0){
+			if (strcmp(args[0],"sorted") == 0) {
 				/* sorted attribute */
 				isSorted = true;
 				if (strcmp(args[1],"attr") && strcmp(args[1],"compattr")){
@@ -815,6 +843,8 @@ char *ParseCatPhysical(char *catFile){
 				fprintf(stderr,"unknown type %s\n",args[2]);
 				goto error;
 			}
+
+			char *attrName = CopyString(args[1]);
 
 			Boolean hasMatchVal = false;
 			AttrVal matchVal;
@@ -911,12 +941,14 @@ char *ParseCatPhysical(char *catFile){
 		    /* round to rounding boundaries */
 		    recSize = (recSize/roundAmount+1)*roundAmount;
 		  }
-		attrs->InsertAttr(numAttrs,args[1],recSize,
-				  attrLength,attrType, hasMatchVal, &matchVal,
-				  isComposite, isSorted,
+		attrs->InsertAttr(numAttrs, attrName, recSize,
+				  attrLength, attrType, hasMatchVal,
+				  &matchVal, isComposite, isSorted,
 				  hasHi, &hiVal, hasLo, &loVal);
 		numAttrs++;
 		recSize += attrLength;
+
+		delete attrName;
 		      }
 	else {
 	    fprintf(stderr,"ParseCat: unknown command %s\n", args[0]);
@@ -929,7 +961,6 @@ char *ParseCatPhysical(char *catFile){
 		/* round to rounding boundaries */
 		recSize = (recSize/8+1)*8;
 	}
-
 
 	if (!hasFileType ){
 		fprintf(stderr,"ParseCat: no file type specified\n");
@@ -1022,7 +1053,6 @@ error:
 	fprintf(stderr,"error at line %d\n", _line);
 	return NULL;
 }
-
 
 char *ParseCatLogical(char *catFile, char *sname)
 {
@@ -1132,7 +1162,7 @@ char *ParseCatLogical(char *catFile, char *sname)
 
   return sname;
 
-error:
+ error:
   if (file != NULL)
     fclose(file);
   
@@ -1140,48 +1170,33 @@ error:
   return NULL;
 }
 
-char *getTail(char *fname)
+char *ParseCat(char *catFile) 
 {
-  /* Either the character string after the last slash or the entire string
-     if there are no slashes in it */
+  // Check the first line of catFile - if it is "physical abc",
+  // call ParseCatPhysical (abc) and then ParseCatLogical(catFile)
+  // Otherwise, simply call ParseCatPhysical(catFile).
 
-  char *ret = fname;
-  int len = strlen(fname);
-  int i;
-  
-  for (i = 0; i < len; i++)
-    if (fname[i] == '/')
-      ret = &(fname[i+1]);
+  FILE *fp = fopen(catFile, "r");
+  if (!fp) {
+    fprintf(stderr,"ParseCat: can't open file %s\n", catFile);
+    return NULL;
+  }
 
-  return ret;
-}
+  char buf[100];
+  if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical")) {
+    fclose(fp);
+    return ParseCatOriginal(catFile);
+  }
 
-void SetVal(AttrVal *aval, char *valstr, AttrType valtype)
-{
-  /* Set the value field in aval to the value equivalent of valstr based
-     on the valtype */
+  // Read in the file name
+  fscanf(fp, "%s", buf);
+  fclose(fp);
 
-  switch (valtype)  {
-    case IntAttr: 
-      aval->intVal = atoi(valstr);
-      break;
-    case FloatAttr:
-      aval->floatVal = atof(valstr);
-      break;
-    case DoubleAttr:
-      aval->doubleVal = atof(valstr);
-      break;
-    case StringAttr:
-      aval->strVal = CopyString(valstr);
-      break;
-    case DateAttr:
-      aval->dateVal = atoi(valstr);
-      break;
-    default:
-      fprintf(stderr,"unknown attr value\n");
-      Exit::DoExit(2);
-      break;
-    }
+  char *sname;
+  if (!(sname = ParseCatPhysical(buf)))
+    return NULL;
 
-  return;
+  InsertCatFile(CopyString(catFile));
+
+  return ParseCatLogical(catFile, sname);
 }
