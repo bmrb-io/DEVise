@@ -65,6 +65,6 @@ generic/devise -p 6102
 
 sleep 2
 
-kill_devised
+kill_devised -p 6102
 
 rmmem

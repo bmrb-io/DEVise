@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/07/22 15:36:36  wenger
+  Added capability to dump human-readable information about all links
+  and cursors.
+
   Revision 1.4  1997/06/25 21:25:29  wenger
   Added writeDesc (write session description) command needed by Hongyu's
   Java client.
@@ -61,7 +65,8 @@
 #define FILE_TYPE_CORAL		"coral"
 #define FILE_TYPE_PIXMAP	"pixmap"
 #define FILE_TYPE_SCHEMACAT	"schemaCat"
-#define FILE_TYPE_SESSIONDESC	"sessionDesc"
+#define FILE_TYPE_SESSIONDESCP	"sessionDescPhys"
+#define FILE_TYPE_SESSIONDESCL	"sessionDescLog"
 #define FILE_TYPE_LINKDESC	"linkDesc"
 
 

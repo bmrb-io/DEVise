@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/03/08 00:01:09  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
  */
 
 #ifndef _DeviseLink_h_
@@ -33,6 +37,7 @@
 class ViewGraph;
 
 DefinePtrDList(LinkViewList, ViewGraph *)
+enum RecordLinkType { NotRecordLink, Positive, Negative };
 
 class DeviseLink: public ViewCallback {
 public:
@@ -45,6 +50,10 @@ public:
   /* Set/get visual flag */
   virtual void SetFlag(VisualFlag flag) { _linkAttrs = flag; }
   virtual VisualFlag GetFlag() { return _linkAttrs; }
+
+  /* Record link type */
+  virtual RecordLinkType GetLinkType() { return NotRecordLink; }
+  virtual void SetLinkType(RecordLinkType) {}
 
   /* Set view as link master, or reset */
   virtual void SetMasterView(ViewGraph *view) {}

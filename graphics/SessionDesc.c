@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-1998
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/06/25 21:25:20  wenger
+  Added writeDesc (write session description) command needed by Hongyu's
+  Java client.
+
  */
 
 #define _SessionDesc_C_
@@ -31,25 +35,34 @@
 #include "DevError.h"
 #include "DevFileHeader.h"
 #include "WinClassInfo.h"
-#include "ViewWin.h"
-#include "View.h"
+#include "ViewGraph.h"
+#include "VisualLinkClassInfo.h"
+#include "DeviseLink.h"
+#include "CursorClassInfo.h"
 
 //#define DEBUG
 
-static DevStatus WriteHeader(FILE *file);
-static DevStatus WriteAllWindows(FILE *file);
-static DevStatus WriteWindow(FILE *file, ViewWin *window, int winNum);
-static DevStatus WriteView(FILE *file, View *view, int winNum, int viewNum);
+class SessionDescPrv {
+public:
+  static DevStatus WriteHeader(FILE *file, Boolean physical);
+  static DevStatus PhysWriteAllWindows(FILE *file);
+  static DevStatus PhysWriteWindow(FILE *file, ViewWin *window, int winNum);
+  static DevStatus PhysWriteView(FILE *file, View *view, int winNum,
+    int viewNum);
+  static DevStatus LogWriteViews(FILE *file);
+  static DevStatus LogWriteLinks(FILE *file);
+  static DevStatus LogWriteCursors(FILE *file);
+};
 
 /*------------------------------------------------------------------------------
  * function: SessionDesc::Write
  * Write the description of the current session to the given file.
  */
 DevStatus
-SessionDesc::Write(char *filename)
+SessionDesc::Write(char *filename, Boolean physical)
 {
 #if defined(DEBUG)
-  printf("SessionDesc::Write(%s)\n", filename);
+  printf("SessionDesc::Write(%s, %d)\n", filename, physical);
 #endif
 
   DevStatus result(StatusOk);
@@ -61,8 +74,14 @@ SessionDesc::Write(char *filename)
     reportErrSys(errBuf);
     result += StatusFailed;
   } else {
-    result += WriteHeader(file);
-    result += WriteAllWindows(file);
+    result += SessionDescPrv::WriteHeader(file, physical);
+    if (physical) {
+      result += SessionDescPrv::PhysWriteAllWindows(file);
+    } else {
+      result += SessionDescPrv::LogWriteViews(file);
+      result += SessionDescPrv::LogWriteLinks(file);
+      result += SessionDescPrv::LogWriteCursors(file);
+    }
 
     if (fclose(file) != 0) {
       char errBuf[MAXPATHLEN+100];
@@ -76,19 +95,20 @@ SessionDesc::Write(char *filename)
 }
 
 /*------------------------------------------------------------------------------
- * function: WriteHeader
+ * function: SessionDescPrv::WriteHeader
  * Write the session description header.
  */
 DevStatus
-WriteHeader(FILE *file)
+SessionDescPrv::WriteHeader(FILE *file, Boolean physical)
 {
 #if defined(DEBUG)
-  printf("WriteHeader()\n");
+  printf("SessionDescPrv::WriteHeader()\n");
 #endif
 
   DevStatus result(StatusOk);
 
-  char *header = DevFileHeader::Get(FILE_TYPE_SESSIONDESC);
+  char *header = DevFileHeader::Get(physical ? FILE_TYPE_SESSIONDESCP :
+    FILE_TYPE_SESSIONDESCL);
 
   int length = strlen(header);
   if (fwrite(header, length, 1, file) != 1) {
@@ -101,14 +121,14 @@ WriteHeader(FILE *file)
 }
 
 /*------------------------------------------------------------------------------
- * function: WriteAllWindows
+ * function: SessionDescPrv::PhysWriteAllWindows
  * Write the window information for all windows.
  */
 DevStatus
-WriteAllWindows(FILE *file)
+SessionDescPrv::PhysWriteAllWindows(FILE *file)
 {
 #if defined(DEBUG)
-  printf("WriteAllWindows()\n");
+  printf("SessionDescPrv::PhysWriteAllWindows()\n");
 #endif
 
   DevStatus result(StatusOk);
@@ -124,7 +144,7 @@ WriteAllWindows(FILE *file)
     windowInfo = DevWindow::Next(index);
     window = (ViewWin *) windowInfo->GetInstance();
     if (window != NULL) {
-      result += WriteWindow(file, window, winNum);
+      result += PhysWriteWindow(file, window, winNum);
       winNum++;
     }
   }
@@ -134,14 +154,14 @@ WriteAllWindows(FILE *file)
 }
 
 /*------------------------------------------------------------------------------
- * function: WriteWindow
+ * function: SessionDescPrv::PhysWriteWindow
  * Write the window information for one window.
  */
 DevStatus
-WriteWindow(FILE *file, ViewWin *window, int winNum)
+SessionDescPrv::PhysWriteWindow(FILE *file, ViewWin *window, int winNum)
 {
 #if defined(DEBUG)
-  printf("WriteWindow(0x%p)\n", window);
+  printf("SessionDescPrv::PhysWriteWindow(0x%p)\n", window);
 #endif
 
   DevStatus result(StatusOk);
@@ -165,7 +185,7 @@ WriteWindow(FILE *file, ViewWin *window, int winNum)
   while (window->More(index)) {
     view = (View *) window->Next(index);
     if (view != NULL) {
-      result += WriteView(file, view, winNum, viewNum);
+      result += PhysWriteView(file, view, winNum, viewNum);
       viewNum++;
     }
   }
@@ -175,17 +195,17 @@ WriteWindow(FILE *file, ViewWin *window, int winNum)
 }
 
 /*------------------------------------------------------------------------------
- * function: WriteView
+ * function: SessionDescPrv::PhysWriteView
  * Write the view information for one view.
  *
  * Note: this will probably have to be changed to deal with Shilpa's view-
  * within-a-view stuff.
  */
 DevStatus
-WriteView(FILE *file, View *view, int winNum, int viewNum)
+SessionDescPrv::PhysWriteView(FILE *file, View *view, int winNum, int viewNum)
 {
 #if defined(DEBUG)
-  printf("WriteView(0x%p)\n", view);
+  printf("SessionDescPrv::PhysWriteView(0x%p)\n", view);
 #endif
 
   DevStatus result(StatusOk);
@@ -224,6 +244,228 @@ WriteView(FILE *file, View *view, int winNum, int viewNum)
     viewNum, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
 
   return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: SessionDescPrv::LogWriteViews
+ * Write the logical information for all views.
+ */
+DevStatus
+SessionDescPrv::LogWriteViews(FILE *file)
+{
+#if defined(DEBUG)
+  printf("SessionDescPrv::LogWriteViews()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  fprintf(file, "# Views:\n");
+  fprintf(file, "# Item\tName\tType\n");
+
+  int count = 0;
+  int index = View::InitViewIterator();
+  while (View::MoreView(index)) {
+    count++;
+    View *view = View::NextView(index);
+    fprintf(file, "View%d\t\"%s\"\tview\tnull\tnull\n", count,
+	view->GetName());
+  }
+  View::DoneViewIterator(index);
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: SessionDescPrv::LogWriteLinks
+ * Write the logical information for all links.
+ */
+DevStatus
+SessionDescPrv::LogWriteLinks(FILE *file)
+{
+#if defined(DEBUG)
+  printf("SessionDescPrv::LogWriteLinks()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  fprintf(file, "\n# Links:\n");
+  fprintf(file, "# Item\tName\tType\tMaster\tSlave\n");
+
+  int count = 0;
+
+  //
+  // For each link...
+  //
+  int linkIndex = DevLink::InitIterator();
+  while (DevLink::More(linkIndex)) {
+    VisualLinkClassInfo *linkInfo = DevLink::Next(linkIndex);
+    if (linkInfo != NULL) {
+      DeviseLink *link = (DeviseLink *) linkInfo->GetInstance();
+      if (link != NULL) {
+        count++;
+
+	//
+	// Figure out the type of link.
+	//
+	char *baseStr;
+	char linkType[32];
+	VisualFlag flag = link->GetFlag();
+
+	if (flag & VISUAL_RECORD) {
+	  RecordLinkType recLinkType = link->GetLinkType();
+	  if (recLinkType == Positive) {
+	    sprintf(linkType, "reclink+");
+	  } else if (recLinkType == Negative) {
+	    sprintf(linkType, "reclink-");
+	  } else {
+	    sprintf(linkType, "reclink?");
+	  }
+
+	  if (flag & ~VISUAL_RECORD) {
+	    char errBuf[256];
+	    sprintf("Warning: record link %s also has other link attributes",
+		link->GetName());
+	    reportErrNosys(errBuf);
+	    status += StatusWarn;
+	  }
+	} else {
+	  //
+	  // Non-pile (user-created) links are not allowed to have a
+	  // name starting with "Pile: ".
+	  //
+	  const char *pileStr = "Pile: ";
+	  if (!strncmp(link->GetName(), pileStr, strlen(pileStr))) {
+	    baseStr = "pile";
+	  } else {
+	    baseStr = "vislink";
+	  }
+
+	  if ((flag & VISUAL_X) && (flag & VISUAL_Y)) {
+	    sprintf(linkType, "%sXY", baseStr);
+	  } else if (flag & VISUAL_X) {
+	    sprintf(linkType, "%sX", baseStr);
+	  } else if (flag & VISUAL_Y) {
+	    sprintf(linkType, "%sY", baseStr);
+	  } else {
+	    sprintf(linkType, "unknown");
+	  }
+	}
+
+	//
+	// Get a list of the views connected to this link.
+	//
+	const int maxViewNames = 100;
+	char *viewNames[maxViewNames];
+	viewNames [0] = "null";
+	viewNames [1] = "null";
+	int viewCount;
+	if (flag & VISUAL_RECORD) {
+	  //
+	  // Record link is special -- master view is not in the view list.
+	  //
+	  ViewGraph *masterView = link->GetMasterView();
+	  if (masterView != NULL) {
+	    viewNames[0] = masterView->GetName();
+	    if (viewNames[0] == NULL) viewNames[0] = "null";
+	    viewCount = 1;
+	  } else {
+	    viewCount = 0;
+	  }
+	} else {
+	  viewCount = 0;
+	}
+
+        int viewIndex = link->InitIterator();
+	while (link->More(viewIndex)) {
+	  ViewGraph *view = link->Next(viewIndex);
+	  if (view != NULL) {
+	    viewNames[viewCount] = view->GetName();
+	    viewCount++;
+	    if (viewCount >= maxViewNames) {
+	      reportErrNosys("Maximum number of views exceeded");
+	      break;
+	    }
+	  }
+	}
+	link->DoneIterator(viewIndex);
+
+	//
+	// Now print the info for this link.
+	//
+	viewCount = MAX(2, viewCount); // Print the link even if no views.
+	for (int viewNum = 1; viewNum < viewCount; viewNum++) {
+	fprintf(file, "Link%d\t\"%s\"\t%s\t\"%s\"\t\"%s\"\n", count,
+	    link->GetName(), linkType, viewNames[0], viewNames[viewNum]);
+        }
+      }
+    }
+  }
+  DevLink::DoneIterator(linkIndex);
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: SessionDescPrv::LogWriteCursors
+ * Write the logical information for all cursors.
+ */
+DevStatus
+SessionDescPrv::LogWriteCursors(FILE *file)
+{
+#if defined(DEBUG)
+  printf("SessionDescPrv::LogWriteCursors()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  fprintf(file, "\n# Cursors:\n");
+  fprintf(file, "# Item\tName\tType\tSource\tDestination\n");
+
+  int count = 0;
+  int index = DevCursor::InitIterator();
+  while (DevCursor::More(index)) {
+    CursorClassInfo *cursorInfo = DevCursor::Next(index);    
+    if (cursorInfo != NULL) {
+      DeviseCursor *cursor = (DeviseCursor *) cursorInfo->GetInstance();
+      if (cursor != NULL) {
+        count++;
+
+	char *cursorType;
+	VisualFlag flag = cursor->GetFlag();
+	if ((flag & VISUAL_X) && (flag & VISUAL_Y)) {
+	  cursorType = "cursorXY";
+	} else if (flag & VISUAL_X) {
+	  cursorType = "cursorX";
+	} else if (flag & VISUAL_Y) {
+	  cursorType = "cursorY";
+	} else {
+	  cursorType = "unknown";
+	}
+
+	char *sourceName = "null";
+	View *view = cursor->GetSource();
+	if (view != NULL) {
+	  sourceName = view->GetName();
+	  if (sourceName == NULL) sourceName = "null";
+	}
+
+	char *destName = "null";
+	view = cursor->GetDst();
+	if (view != NULL) {
+	  destName = view->GetName();
+	  if (destName == NULL) destName = "null";
+	}
+
+	fprintf(file, "Cursor%d\t\"%s\"\t%s\t\"%s\"\t\"%s\"\n", count,
+	    cursorInfo->InstanceName(), cursorType, sourceName, destName);
+      }
+    }
+  }
+  DevCursor::DoneIterator(index);
+
+
+
+  return status;
 }
 
 /*============================================================================*/

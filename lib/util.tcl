@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.55  1998/02/26 20:50:40  taodb
+#  Removed redundancy between groupcontrol.tk and control.tk
+#
 #  Revision 1.54  1998/02/12 17:17:35  wenger
 #  Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -1084,5 +1087,20 @@ proc DumpLinksCursors {} {
 
   if {$filename != ""} {
     DEVise dumpLinkCursor $filename
+  }
+}
+
+############################################################
+# Save (physical or logical) session description to a file.
+
+proc SaveSessionDesc {physical} {
+  global fsBox
+
+  set fsBox(path) [CWD]
+  set fsBox(pattern) *
+  set filename [ FSBox "Select file for session description" ]
+
+  if {$filename != ""} {
+    DEVise writeDesc $filename $physical
   }
 }

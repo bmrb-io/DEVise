@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/19 18:36:26  taodb
+  Fixed core dump for illegal devise commands
+
   Revision 1.4  1998/03/08 00:01:03  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -78,6 +81,21 @@
 #include "htable.h"
 #include "datum.h"
 #include "CmdContainer.h"
+
+#define REGISTER_COMMAND(objType)\
+{\
+	DeviseCommandOption	cmdOption;\
+	cmdOption.setCmdName(#objType);\
+	DeviseCommand_##objType *obj= new (DeviseCommand_##objType)(cmdOption);\
+	insertCmd(#objType,(DeviseCommand*)obj,sizeof(DeviseCommand_##objType)); \
+}
+
+#define REGISTER_COMMAND_WITH_OPTION(objType,cmdOption)\
+{\
+	cmdOption.setCmdName(#objType);\
+	DeviseCommand_##objType *obj= new (DeviseCommand_##objType)(cmdOption);\
+	insertCmd(#objType,(DeviseCommand*)obj); \
+}
 
 CmdContainer*	cmdContainerp;
 static const int CMD_HASHSIZE = 4;
@@ -293,13 +311,22 @@ CmdContainer::~CmdContainer()
 int
 CmdContainer::Run(int argc, char** argv, ControlPanel* control)
 {
+#if defined(DEBUG)
+    printf("CmdContainer::Run(");
+	for (int index = 0; index < argc; index++) {
+	  printf("<%s>", argv[index]);
+	  if (index < argc - 1) printf(", ");
+	}
+    printf(")\n");
+#endif
+
 	DeviseCommand*	cmd;
 	int	retval;
 
 	cmd = lookupCmd(argv[0]);
 	if (cmd == NULL)
 	{
-		fprintf(stderr, "Unrecognized command or wrong number of args.\n");
+		fprintf(stderr, "Unrecognized command (%s)\n", argv[0]);
 		fprintf(stderr, "Command is: ");
 		int index;
 		char *prefix = "";

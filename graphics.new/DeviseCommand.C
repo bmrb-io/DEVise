@@ -2845,28 +2845,37 @@ DeviseCommand_getCursorGrid::Run(int argc, char** argv)
     }
     return ret_value;
 }
-int
-DeviseCommand_writeDesc::Run(int argc, char** argv)
-{
-    int ret_value;
-    ret_value=DeviseCommand::Run(argc, argv);
-    if (ret_value)
-    {
-        {
-          // Argument: <file name>
-    #if defined(DEBUG)
-          printf("writeDesc <%s>\n", argv[1]);
-    #endif
-          if (!SessionDesc::Write(argv[1]).IsComplete()) {
-            control->ReturnVal(API_NAK, "can't write session description");
-            return -1;
-          }
-          control->ReturnVal(API_ACK, "done");
-          return 1;
-        }
-    }
-    return ret_value;
-}
+
+IMPLEMENT_COMMAND_BEGIN(writeDesc)
+// Arguments: <file name> [<physical>]
+// Returns: "done"
+
+#if defined(DEBUG)
+	printf("DEVise writeDesc\n");
+#endif
+
+	if ((argc == 2) || (argc == 3)) {
+		Boolean physical;
+		if (argc == 2) {
+			physical = true;
+		} else {
+			physical = atoi(argv[2]);
+		}
+
+		if (SessionDesc::Write(argv[1], physical).IsComplete()) {
+			control->ReturnVal(API_ACK, "done");
+			return 1;
+		} else {
+			control->ReturnVal(API_NAK, "Error saving session description");
+			return -1;
+		}
+	} else {
+		control->ReturnVal(API_NAK,
+		  "Wrong number of arguments for DEVise writeDesc");
+		return -1;
+	}
+IMPLEMENT_COMMAND_END
+
 int
 DeviseCommand_saveStringSpace::Run(int argc, char** argv)
 {

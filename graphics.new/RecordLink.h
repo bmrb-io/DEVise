@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/03/08 00:01:12  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.7  1997/06/25 17:05:37  wenger
   Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
   function, disabled updating of record links during print, print dialog
@@ -64,7 +68,6 @@ struct RecordRange {
 };
 
 DefinePtrDList(RecordRangeList, RecordRange *)
-enum RecordLinkType { Positive, Negative };
 
 class RecordLink : public DeviseLink {
  public:
@@ -87,8 +90,8 @@ class RecordLink : public DeviseLink {
   void Done();
   void Abort();
   void Print();
-  RecordLinkType GetLinkType () { return _linkType; }
-  void SetLinkType(RecordLinkType type) { _linkType = type; }
+  virtual RecordLinkType GetLinkType () { return _linkType; }
+  virtual void SetLinkType(RecordLinkType type) { _linkType = type; }
   Boolean CheckTData(ViewGraph *view, Boolean isMaster);
 
   static void EnableUpdates() { _disableUpdates = false; }

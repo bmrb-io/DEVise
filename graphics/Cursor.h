@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/03/26 15:21:25  zhenhai
+  The cursor drawings now use CursorStore as backup instead of using
+  XOR mode for drawing and erasing.
+
   Revision 1.11  1997/11/24 23:14:12  weaver
   Changes for the new ColorManager.
 
@@ -105,6 +109,8 @@ class DeviseCursor : private ViewCallback, public Coloring
   
   /* Get current visual filter. return TRUE if it exists. */
   Boolean GetVisualFilter(VisualFilter *&filter);
+
+  VisualFlag GetFlag() { return _visFlag; }
 
   /* Move the X and Y coords of source */
   void MoveSource(Coord x, Coord y);

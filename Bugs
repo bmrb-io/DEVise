@@ -1257,6 +1257,10 @@ Num Date        Status  Description
 			a core dump. (rkw)
 			(Fixed by Dongbin 3/19/98)
 
+330 03/26/98	OPEN	DEVise doesn't complain if you create a link that
+			has record and X and/or Y selected as link attributes.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
