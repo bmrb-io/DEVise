@@ -48,7 +48,9 @@ data (jpm/rkw ?/?/96)
 Make depends need to be improved so that they find include files in other
 devise directories. (kb/rkw 7/31/96)
 
-Clean up unused/unneeded sources. (kb/rkw 7/31/96)
+Clean up unused/unneeded sources.  Reorganize source tree (at least
+get rid of graphics/graphics.new) and make naming consistent (.c/.C). 
+(kb/rkw 7/31/96)
 
 Have the ability to have null values in records. (kb/rkw 7/31/96)
 
@@ -57,6 +59,96 @@ Improvements to selection/projection, etc., as per meetings of 5/13/96.
 Move handling of web data to V-engine.
 
 Move handling of special format (e.g. business school) data to V-engine.
+
+Moving averages, weighted statistics, weighted moving averages (kb 8/2/96)
+
+Detect and reject duplicate definitions of windows, views, etc. (kb 8/2/96)
+
+Session groups - The ability to open two or more sessions, which get
+merged together, except that there is a namespace (maybe) for each one
+and they can be closed individually. (ml/kb 8/2/96)
+
+Catalogs - The current catalog is not type safe - objects are cast two
+and from void*, without any checks to make sure that it is the right
+type of object.  If the user sends a window name as a view name, it
+will crash the backend.  If the catalogs were kept on a per type
+basis, eg, a view catalog, a window catalog, etc., and the user always
+specified the type with any request (eg 'find view X'), then it
+becomes type safe, and there is a seperate namespace for each type of
+object (ie, there can be a 'time' link, a 'time' cursor, and a 'time'
+window).  Another possiblility is to have the backend return handles
+(oids) to objects (that should be checked for validity) which the
+frontend uses for subsequent requests.  This would allow object names
+to easily change, and more than one object of the same type could
+exist in the catalog (good for session merging).  (kb 8/2/96)
+
+Configurable keys.  We can create a set of 'devise actions' that allow
+the user to define their own keyboard mappings.  We could also define
+a devise action that just forwards the request to the front-end (the
+user could define the space key as 'control_panel(raise)', and the
+CNTL-C key as 'control_panel(quit)').  This has been started (see
+DeviseKey.h, DeviseKeyBinding.[hC], XWindowRep.c, MapIntToInt.[hC])
+but needs some work to get all of the functionality described here.
+The system independent keycodes are complete for keystrokes, but not
+for mouse input (which I was hoping could be defined with the same
+mechanism as the keyboard, but there are some issues - eg. a 'mouse
+press' event is actually two window events, but to the user its one
+event marked with a 'begin event' and 'end event'). (kb 8/2/96)
+
+Highlight record link - A record link that instead of selecting only
+matching records, it highlights the records.  That is, when you
+select some records in the master view, it doesn't zoom in, it
+just highlights the records, and then the matching records in the
+slave views get highlighted as well.  (With this type of link, there
+doesn't have to be a master and slave, they could be peers.)  The
+match should be on any field, including record id. (kb 8/2/96)
+
+Cursor zoom - define two modes for zooming on a cursor view.  The first
+is the standard zoom that we all know and love.  The second type of zoom
+doesn't affect the cursor, but rather, it performs a zoom in or out on
+the other (source) view.  (kb 8/2/96)
+
+Make mapping dialog work like the query dialog in that you can select
+different views and the mapping dialog switches to the current
+mapping, and then there should be an 'apply' button to accept changes
+without closing the dialog.  (kb 8/2/96)
+
+Make the open-file dialog box remember its last directory for each
+type of file.  Eg, there could be an SelectSession proc and an
+SelectDataSource proc that set the current directory to whatever
+the user had used the previous time.  (kb 8/2/96)
+
+Remove sourceList() dependencies from the front-end.  Right now, the
+front-end has to consult its catalogs to get information about streams
+that are fully defined in the back-end.  If the proper DEVise API
+commands were added, this would not be necessary.  The advantage is
+that streams can be defined without being defined at the front-end,
+but the front-end can still be used to create new views, etc. (kb 8/2/96)
+
+Configurable zoom magnification - Action.[ch] now has configurable
+magnification of zoom in/out, but there is no way for the user to set
+it.  An API command and some tcl interface needs to be created.  Also,
+the mag level is only for 2d plots right now, it needs to be extended
+to 3d.  On a related note, should a ViewGraph have an Action as a
+member function, or should there just be one global Action?  (kb 8/3/96)
+
+A tcl slider mechanism for zooming in/out. (kb 8/3/96)
+
+A mini-control panel that uses minimal space, easy access to common
+functions, and stays on top of all other windows.
+
+Zoom/New data view locks - some mechanism (see Action.c) in now in
+place to lock corners or widths of a view.  When a corner is locked,
+zooming will not affect that corner.  An API command needs to be
+created for setting locks programmatically.  When new data arrives, it
+should also respect the locks (that's why there are 'width' locks).
+Need support for 3d. (kb 8/3/96)
+
+Figure out why TkControlPanel::Raise() doesn't quite work right. The
+control panel gets raised, but it doesn't redraw itself until it
+receives some events - and even then there is about a 3 second delay.
+It might just be a tk/fvwm problem - maybe a later version of tk will
+fix it. (kb 8/4/96)
 
 
 COMPLETED
