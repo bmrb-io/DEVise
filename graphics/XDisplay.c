@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/06/21 19:30:10  jussi
+  Replaced MinMax calls with MIN() and MAX().
+
   Revision 1.22  1996/05/20 18:45:02  jussi
   Merged with ClientServer library code.
 
@@ -192,14 +195,7 @@ XDisplay::XDisplay(char *name)
 #ifndef LIBCS
 void XDisplay::Register()
 {
-  int fd = ConnectionNumber(_display);
-
-#ifdef DEBUG
-  printf("About to be registered... %d\n", fd);
-#endif
-
-  (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,
-						10, AllState, true, fd);
+  Dispatcher::Current()->Register(this, 10, AllState, true, fd());
 }
 #endif
 
@@ -524,7 +520,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 }
 
 /**************************************************************
- Destroy a window. Parameter "win" better be of type XwindowRep *.
+Destroy a window. Parameter "win" better be of type XwindowRep *.
 **************************************************************/
 
 void XDisplay::DestroyWindowRep(WindowRep *win)
@@ -554,23 +550,25 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
   XSync(_display, false);
 }
 
-/******************************************************************
-Internal non-blocking event processing .
+/*******************************************************************
+Internal non-blocking event processing
 ********************************************************************/
 
 void XDisplay::InternalProcessing()
 {
 #ifdef TK_WINDOW_EV2
-  // X events handled in HandleTkEvent
+  /* X events are handled in HandleTkEvent */
   return;
 #endif
 
+  XFlush(_display);
+
   while (XPending(_display) > 0) {
-    /* There are events on the queue */
+    /* There are events in the queue */
     XEvent event;
     XNextEvent(_display, &event);
 
-    /* dispatch event to appropriate window.*/
+    /* dispatch event to appropriate window */
     Boolean found = false;
     int index;
     for(index = _winList.InitIterator(); _winList.More(index);) {
@@ -578,8 +576,8 @@ void XDisplay::InternalProcessing()
       if (win->GetWinId() && win->GetWinId() == event.xany.window) {
 	/* Note: got to be careful here. We need to
 	   call DoneIterator() before informing the WindowRep
-	   because it might trigger a call to DestroyWindowRep() to
-	   delete the window. Delete() can't be called
+	   because it might trigger a call to DestroyWindowRep()
+	   to delete the window. Delete() can't be called
 	   when the iterator is active. */
 	_winList.DoneIterator(index);
 	found = true;
@@ -599,6 +597,10 @@ void XDisplay::InternalProcessing()
 #endif
     }
   }
+
+#ifdef DEBUG
+  printf("X event queue length = %d\n", XQLength(_display));
+#endif
 }
 
 #ifdef TK_WINDOW_EV2
@@ -610,7 +612,8 @@ int XDisplay::HandleXEvent(XEvent &event)
 
   /* dispatch event to appropriate window.*/
   Boolean found = false;
-  for(int index = _winList.InitIterator(); _winList.More(index);) {
+  int index;
+  for(index = _winList.InitIterator(); _winList.More(index);) {
     XWindowRep *win = _winList.Next(index);
     if (win->_win == event.xany.window) {
       /* Note: got to be careful here. We need to
