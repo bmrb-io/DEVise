@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/29 21:40:22  wenger
+  Fixed various compile errors and warnings.
+
   Revision 1.9  1996/07/12 19:38:07  jussi
   Minor changes to code to improve the messages printed on
   screen in conjunction with DataSourceWeb.C.
@@ -143,7 +146,6 @@ readline(int fd, char *buf)
 static void
 string_to_sin(char *string, struct sockaddr_in *sin)
 {
-	int             i;
 	char    *cur_byte;
 	char    *end_string;
 
@@ -229,11 +231,9 @@ int open_ftp( char *name )
   struct sockaddr_in	sin;
   int		sock_fd;
   int		status;
-  char		*port_sep;
   char		*end_of_addr;
   int		port_num = FTP_PORT;
   struct hostent *he;
-  int		read_count;
   char		*ftp_resp;
   int		ip_addr[4];
   int		port[2];
@@ -375,10 +375,9 @@ int open_http( char *name, size_t * bytes_in_body)
   int	status;
   char	*port_sep;
   char	*end_of_addr;
-  char  *clength_start;
   char  *stat_code_start;
   char  *reason_phrase_start;
-  int	stat_code, l;
+  int	stat_code;
   int	port_num = HTTP_PORT;
   struct hostent *he;
 
@@ -493,7 +492,6 @@ int open_http( char *name, size_t * bytes_in_body)
       long tempVar;
       sscanf(buffer, "%*s %ld", &tempVar);
       *bytes_in_body = tempVar;
-      break;
     }  
   }
 
