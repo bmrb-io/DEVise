@@ -6,6 +6,19 @@ set path = ( $path /p/devise/public/bin )
 
 setenv DEVISE_ROOT		/p/devise
 
+# Set up the 'standard' data, sessions, etc., so these will be used
+# if something is missing from the demo or personal versions.
+setenv DEVISE_DAT		$DEVISE_ROOT/dat
+setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.dte
+setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.dte
+setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.dte
+setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
+setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
+setenv DEVISE_CACHE		$DEVISE_ROOT/cache
+setenv DEVISE_SCHEMA		$DEVISE_ROOT/schema/schema
+setenv DEVISE_SESSION		$DEVISE_ROOT/session
+setenv DEVISE_PALETTE		$DEVISE_ROOT/palette
+
 if ($#argv > 0) then
   if ($1 == "p") then
     # Use personal data, sessions, etc.
@@ -28,22 +41,12 @@ if ($#argv > 0) then
     setenv DEVISE_CACHE   	$DEVISE_ROOT/cache
     setenv DEVISE_SCHEMA  	$DEVISE_ROOT/demo/schema/schema
     setenv DEVISE_SESSION 	$DEVISE_ROOT/demo/session
+    setenv DEVISE_PALETTE	$DEVISE_ROOT/demo/palette
     shift
   else if ($1 == "u") then
     echo "Usage: dev|mul [p|d|u] [DEVise args]"
     exit 1
   endif
-else
-  # Use 'default' data, sessions, etc.
-  setenv DEVISE_DAT		$DEVISE_ROOT/dat
-  setenv DEVISE_HOME_TABLE	$DEVISE_ROOT/schema/schema/catalog.dte
-  setenv DEVISE_INDEX_TABLE	$DEVISE_ROOT/schema/schema/sysind.dte
-  setenv DEVISE_MINMAX_TABLE	$DEVISE_ROOT/schema/schema/minmax.dte
-  setenv DEVISE_MINMAX_DIR	$DEVISE_ROOT/dat
-  setenv DEVISE_MATERIAL_DIR	$DEVISE_ROOT/dat
-  setenv DEVISE_CACHE		$DEVISE_ROOT/cache
-  setenv DEVISE_SCHEMA		$DEVISE_ROOT/schema/schema
-  setenv DEVISE_SESSION		$DEVISE_ROOT/session
 endif
 
 setenv DEVISE_TMP		/tmp/$USER-devise-tmp
