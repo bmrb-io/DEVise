@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.24  1998/09/01 20:13:18  wenger
+  Fixed problems with sometimes sending incorrect cursor coordinates to
+  JavaScreen and sending DrawCursor commands before windows are created;
+  removed extra braces on error messages to JavaScreen; changed from
+  sending x0, y0, x1, y1 to x0, y0, width, height in JAVAC_CreateWindow
+  commands.
+
   Revision 1.23  1998/08/28 22:01:17  wenger
   Made Dispatcher::WaitForQueries() function -- improved over earlier
   versions because it also checks the callback list (this fixes bug 367);
@@ -1255,12 +1262,13 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	VisualFilter viewFilter;
 	view->GetVisualFilter(viewFilter);
 
-    if (cursorFilter.flag & VISUAL_X) {
-		cursorFilter.yLow = viewFilter.yLow;
-		cursorFilter.yHigh = viewFilter.yHigh;
-	} else if (cursorFilter.flag & VISUAL_Y) {
+    if (!(cursorFilter.flag & VISUAL_X)) {
 		cursorFilter.xLow = viewFilter.xLow;
 		cursorFilter.xHigh = viewFilter.xHigh;
+	} 
+	if (!(cursorFilter.flag & VISUAL_Y)) {
+		cursorFilter.yLow = viewFilter.yLow;
+		cursorFilter.yHigh = viewFilter.yHigh;
 	}
 
 	//
