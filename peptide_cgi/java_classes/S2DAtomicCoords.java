@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/12/11 20:23:34  wenger
+// First version of bond-visualization generation; added RCS Id string to
+// schema files; manually added environment variables to data source
+// definitions.
+//
 // Revision 1.1  2001/10/10 22:37:33  wenger
 // First version of atomic coordinate extraction and visualization (atoms,
 // not bonds, only tested on 4096 -- coordinates must be in same NMR-STAR
@@ -66,9 +71,8 @@ public class S2DAtomicCoords {
     private S2DConnections _connections = null;
     private int _atomCount;
 
-    //TEMPTEMP -- is this right, or should it be 10?
     //TEMPTEMP -- what units? Angstroms?
-    private static final double MAX_BOND_LENGTH = 5.0;
+    private static final double MAX_BOND_LENGTH = 4.0;
 
     //===================================================================
     // PUBLIC METHODS

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2001/05/14 18:08:27  wenger
+// Parameterized all star file tag names, etc.
+//
 // Revision 1.9  2001/05/08 18:24:18  wenger
 // Fixed problem getting residue count if a star file contains info for
 // more than one protein; added residue counts to 'all shifts' and 'H
@@ -92,6 +95,8 @@ public class S2DStarIfc {
 
     private String _fileName = null;
 
+    private static StarParser _parser = null;
+
     private StarNode _starTree = null;
 
     //===================================================================
@@ -154,9 +159,14 @@ public class S2DStarIfc {
                   new java.net.URL(getURLName(_fileName));
 	        is = starfile.openStream();
 	    }
-            StarParser parser = new StarParser(is);
-	    parser.StarFileNodeParse(parser);
-	    _starTree = parser.endResult();
+
+	    if (_parser != null) {
+	        _parser.ReInit(is);
+	    } else {
+                _parser = new StarParser(is);
+	    }
+	    StarParser.StarFileNodeParse(_parser);
+	    _starTree = _parser.popResult();
 	    is.close();
 
 	    //TEMP -- should we find certain critical save frames

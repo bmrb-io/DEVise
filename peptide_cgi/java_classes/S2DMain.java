@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2001/12/11 20:23:34  wenger
+// First version of bond-visualization generation; added RCS Id string to
+// schema files; manually added environment variables to data source
+// definitions.
+//
 // Revision 1.25  2001/12/05 20:07:51  wenger
 // Partially added provision for multiple-star-file entries; fixed minor
 // problem in setup makefile.
@@ -148,7 +153,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.16";
+    public static final String PEP_CGI_VERSION = "2.17";
 
     private int _masterAccNum; // accession number the user requested
 
@@ -418,9 +423,6 @@ public class S2DMain {
             Integer entry = (Integer)_accNums.elementAt(index);
 	    int accNum = entry.intValue();
 
-if (false) {//TEMP -- temporarily disabled until I can figure out how to
-// get starlibj to parse more than one star file.  RKW 2001-12-05.
-
 	    // TEMP -- removed hard-coded links once we establish some
 	    // kind of convention for the _Related_BMRB_accession_number
 	    // info.
@@ -431,7 +433,6 @@ if (false) {//TEMP -- temporarily disabled until I can figure out how to
 	    } else if (accNum == 4096) {
 	        addAccNum(4038);
 	    }
-} //TEMP
 
 	    if (index > 0) { // avoid parsing the "master" file twice
                 star = new S2DStarIfc(accNum);
