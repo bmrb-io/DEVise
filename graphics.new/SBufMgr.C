@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/11/12 17:23:40  jussi
+  Renamed SBufMgr class to CacheMgr and MemPool to MemMgr. This is
+  to reflect the new terms (cache manager, memory manager) used in
+  the documentation.
+
   Revision 1.9  1996/11/11 15:50:56  jussi
   Removed IOTask virtual base class and substituted UnixIOTask for
   it. When SBufMgr accesses an IOTask, no separate process is
@@ -427,8 +432,11 @@ int IOTask::Read(unsigned long long offset,
 
 int IOTask::Write(unsigned long long offset,
                       unsigned long bytes,
-                      char *&addr)
+                      char *addr)
 {
+    if (!addr)
+        return -1;
+
     Request req = { WriteReq, offset, bytes, addr };
     Request reply;
 
@@ -438,13 +446,6 @@ int IOTask::Write(unsigned long long offset,
 
     if (reply.result < 0)
         return reply.result;
-
-    DOASSERT(req.addr == reply.addr, "Invalid page address 1");
-    // Deallocate page since it was not buffered
-    if (MemMgr::Instance()->Deallocate(MemMgr::Cache, req.addr) < 0)
-        return -1;
-
-    addr = reply.addr = 0;
 
     return reply.bytes;
 }
@@ -1089,24 +1090,13 @@ int MemMgr::Allocate(PageType type, char *&page)
     return 0;
 }
 
-int MemMgr::Release(PageType type, char *&page)
-{
-    // Make decision whether to reclaim page or not; decision
-    // based on ratio of cache/buffer pages, for example
-
-    if (1) {
-        Deallocate(type, page);
-        page = 0;
-    }
-
-    return 0;
-}
-
 int MemMgr::Deallocate(PageType type, char *page)
 {
     AcquireMutex();
 
-    DOASSERT(!_freePage[*_numFree], "Invalid page");
+    DOASSERT(*_numFree < _numPages, "Invalid page 2");
+    DOASSERT(!_freePage[*_numFree], "Invalid page 3");
+
     _freePage[(*_numFree)++] = page;
     if (type == Buffer) {
         (*_numBuffer)--;
@@ -1257,24 +1247,16 @@ int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     int status = _ht.lookup(addr, index);
 #endif
 
-    Boolean newPage = false;
-
     if (status >= 0) {                  // frame found
         PageFrame &frame = _frames[index];
-        if (!frame.valid)
-            printf("frame valid %d\n", frame.valid);
         DOASSERT(frame.valid, "Invalid page frame 1");
         frame.pinCnt++;
-        if (!frame.page)
-            newPage = true;
     } else {
         if ((index = AllocFrame()) < 0) {
             printf("No free frame\n");
             return index;
         }
         PageFrame &frame = _frames[index];
-        assert(!frame.page);
-        newPage = true;
 #ifndef SHARED_MEMORY
         if ((status = _ht.insert(addr, index)) < 0) {
             printf("Cannot insert to hash table\n");
@@ -1288,22 +1270,22 @@ int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
     DOASSERT(frame.valid, "Invalid page frame 2");
     frame.refbit = true;
 
-    // When data is piped from I/O devices, the I/O tasks will not allocate
-    // memory space for us; with shared or local memory, I/O tasks allocate
-    // memory, so we have to do it only we're not going to call the
-    // I/O task here
-
-    if (!read || !newPage) {
-        if (!frame.page) {
-            if ((status = _mgr.Allocate(MemMgr::Cache, frame.page)) < 0) {
-                printf("Cannot get free page from manager\n");
-                return status;
-            }
-            frame.size = _pageSize;
+    if (!frame.page) {
+        if ((status = _mgr.Allocate(MemMgr::Cache, frame.page)) < 0) {
+            printf("Cannot get free page from manager\n");
+            return status;
         }
+        frame.size = _pageSize;
+    } else {
+#if DEBUGLVL >= 3
+        printf("Frame %d has page 0x%p\n", index, frame.page);
+#endif
     }
 
-    if (read && newPage) {
+    page = frame.page;
+    DOASSERT(page, "Invalid page address 2");
+
+    if (read) {
         frame.iopending = true;
         ReleaseMutex();
         if ((status = stream->Read(((unsigned long long)pageNo) *
@@ -1315,13 +1297,9 @@ int CacheMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
         AcquireMutex();
         frame.iopending = false;
         frame.size = status;
+    } else {
+        memset(frame.page, 0, _pageSize);
     }
-
-    page = frame.page;
-    DOASSERT(page, "Invalid page address 2");
-
-    if (!read && newPage)
-        memset(page, 0, _pageSize);
 
 #if DEBUGLVL >= 3
     printf("Page 0x%p:%d pinned in frame %d, addr 0x%p, pinCnt is %d\n",
@@ -1374,15 +1352,9 @@ int CacheMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
 
     if (frame.pinCnt == 1) {
         DOASSERT(frame.page, "Invalid page address 3");
-        if (!frame.dirty) {
-            // Release unpinned non-dirty pages back to memory manager
+        if (frame.dirty && force) {
 #if DEBUGLVL >= 5
-            printf("Releasing page 0x%p to memory manager\n", frame.page);
-#endif
-            _mgr.Release(MemMgr::Cache, frame.page);
-        } else if (force) {
-#if DEBUGLVL >= 5
-            printf("Forcibly writing page %ld to device\n", frame.addr.pageNo);
+            printf("Forcing page %ld to device\n", frame.addr.pageNo);
 #endif
             frame.iopending = true;
             ReleaseMutex();
@@ -1400,14 +1372,7 @@ int CacheMgr::_UnPinPage(IOTask *stream, int pageNo, Boolean dirty,
             }
             AcquireMutex();
             frame.iopending = false;
-            if (frame.page)
-                _mgr.Release(MemMgr::Cache, frame.page);
-#ifndef SHARED_MEMORY
-            if ((status = _ht.remove(frame.addr)) < 0) {
-                return status;
-            }
-#endif
-            frame.Clear();
+            frame.dirty = false;
         }
     }
 
@@ -1434,9 +1399,7 @@ int CacheMgr::_UnPin(IOTask *stream, Boolean dirty)
             if ((status = _ht.remove(frame.addr)) < 0)
                 return status;
 #endif
-            if (dirty)
-                frame.dirty = true;
-            if (frame.dirty) {
+            if (frame.dirty || dirty) {
 #if DEBUGLVL >= 5
                 printf("Flushing page %ld to device\n", frame.addr.pageNo);
 #endif
@@ -1456,10 +1419,13 @@ int CacheMgr::_UnPin(IOTask *stream, Boolean dirty)
                 }
                 AcquireMutex();
                 frame.iopending = false;
+                frame.dirty = false;
             }
-            if (frame.page)
-                _mgr.Release(MemMgr::Cache, frame.page);
+            if ((status = _mgr.Deallocate(MemMgr::Cache, frame.page)) < 0)
+                return status;
             frame.Clear();
+            frame.page = 0;
+            frame.size = 0;
         }
     }
 
@@ -1499,9 +1465,9 @@ int CacheMgr::AllocFrame()
     }
 
     PageFrame &frame = _frames[i];
-    if (frame.valid)
+    if (frame.valid && frame.dirty)
         Dump();
-    DOASSERT(!frame.valid, "Invalid page frame 4");
+    DOASSERT(!frame.valid || !frame.dirty, "Invalid page frame 4");
 
     return i;
 }
@@ -1585,6 +1551,8 @@ int CacheMgrLRU::PickVictim()
             return status;
 #endif
 
+        int status;
+
         if (frame.dirty) {              // page has unwritten data on it
             DOASSERT(frame.page, "Invalid page address 5");
 #if DEBUGLVL >= 5
@@ -1593,29 +1561,25 @@ int CacheMgrLRU::PickVictim()
 #endif
             frame.iopending = true;
             ReleaseMutex();
-            int status = frame.addr.stream->Write(
+            status = frame.addr.stream->Write(
                             ((unsigned long long)frame.addr.pageNo) *
                             ((unsigned long long)_pageSize),
-                                                  frame.size, frame.page);
+                                              frame.size, frame.page);
             if (status < 0)
                 return status;
-            if (status < _pageSize) {
+            if (status < frame.size) {
                 fprintf(stderr, "Wrote %d bytes out of %d\n",
-                        status, _pageSize);
+                        status, frame.size);
                 return -1;
             }
             AcquireMutex();
             frame.iopending = false;
+            frame.dirty = false;
 #if DEBUGLVL >= 5
             printf("Flushed page %ld from frame %d\n", frame.addr.pageNo,
                    selectedFrame);
 #endif
         }
-
-        if (frame.page)
-            _mgr.Release(MemMgr::Cache, frame.page);
-
-        frame.Clear();
 
         return selectedFrame;
     }
