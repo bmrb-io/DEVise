@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/04/14 00:15:35  jussi
+  Added copyright notice and cleaned up the code quite a bit.
+  Fixed bug in Print() method.
+
   Revision 1.2  1995/09/05 21:12:26  jussi
   Added/updated CVS header.
 */
@@ -25,6 +29,8 @@
 #include "ClassDir.h"
 #include "Exit.h"
 #include "Util.h"
+
+//#define DEBUG
 
 ClassDir::ClassDir()
 {
@@ -244,7 +250,7 @@ void ClassDir::DestroyInstance(char *name)
 	     printf("now destroying %s\n", name);
 	  */
 	  delete instRec;
-	  for(int l = k; l < classRec->_numInstances; l++) {
+	  for(int l = k; l < classRec->_numInstances - 1; l++) {
 	    classRec->_instances[l] = classRec->_instances[l + 1];
 	  }
 	  classRec->_numInstances--;
@@ -259,23 +265,39 @@ void ClassDir::DestroyInstance(char *name)
 
 void ClassDir::DestroyTransientClasses()
 {
+#ifdef DEBUG
+  printf("Before DestroyTransientClasses, ClassDir shows:\n");
+  Print();
+#endif
+
   for(int i = 0; i < _numCategories; i++) {
     CategoryRec *catRec = _categories[i];
     int j = 0;
     while (j < catRec->_numClasses) {
       ClassRec *classRec = catRec->_classRecs[j];
-      if (classRec->classInfo->IsTransient()) {
-	for(int k = 0; k < classRec->_numInstances; k++) {
-	  ClassInfo *instRec = classRec->_instances[k];
-	  delete instRec;
-	}
-	delete classRec->classInfo;
-	for(int l = j; l < catRec->_numClasses; l++) {
-	  catRec->_classRecs[l] = catRec->_classRecs[l + 1];
-	}
-	catRec->_numClasses--;
-      } else
+      if (!classRec->classInfo->IsTransient()) {
 	j++;
+	continue;
+      }
+#ifdef DEBUG
+      printf("Now destroying category %s, class %s\n", catRec->name,
+	     classRec->classInfo->ClassName());
+#endif
+      for(int k = 0; k < classRec->_numInstances; k++) {
+	ClassInfo *instRec = classRec->_instances[k];
+#ifdef DEBUG
+	printf("  Destroying instance %s\n", instRec->InstanceName());
+#endif
+	delete instRec;
+      }
+#ifdef DEBUG
+      printf("  Destroying class %s\n", classRec->classInfo->ClassName());
+#endif
+      delete classRec->classInfo;
+      for(int l = j; l < catRec->_numClasses - 1; l++) {
+	catRec->_classRecs[l] = catRec->_classRecs[l + 1];
+      }
+      catRec->_numClasses--;
     }
   }
 }
