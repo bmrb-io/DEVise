@@ -15,6 +15,11 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.6  1995/09/28 17:44:03  jussi
+#	Included size, pattern, and orientation in all mapping definitions
+#	although these are not used by DEVise currently. Minor other
+#	touch-ups.
+#
 #	Revision 1.5  1995/09/27 17:20:34  ravim
 #	Added support for groups in schemas.
 #
@@ -1848,7 +1853,7 @@ proc selYAuto {grpname} {
 	button .selY$grpname.but.ok -text OK -width 20 -command \
 		[format "destroy .selY%s" $grpname]
 
-	pack .selY$grpname.but.ok -side left -fill x -expand 1
+	pack .selY$grpname.but.ok -side left -expand 1
 }
 			
 
