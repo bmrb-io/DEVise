@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/21 23:32:07  jussi
+  Added copyright notice and cleaned up the code significantly.
+
   Revision 1.2  1995/09/05 22:15:01  jussi
   Added CVS header.
 */
@@ -36,9 +39,9 @@ struct FullMapping_GData {
 
 #define GetAttr(ptr, attrName, attrType, offset) \
 	*((attrType *)(ptr+offset->attrName))
-/*	*((attrType *)((ptr)+(offset)->(attrName))) */
 
-inline Coord GetX(char *ptr, TDataMap *map, GDataAttrOffset *offset) {
+inline Coord GetX(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
   if (offset->xOffset < 0)
     return map->GetDefaultX();
   else {
@@ -46,28 +49,32 @@ inline Coord GetX(char *ptr, TDataMap *map, GDataAttrOffset *offset) {
   }
 }
 
-inline Coord GetY(char *ptr, TDataMap *map, GDataAttrOffset *offset) {
+inline Coord GetY(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
   if (offset->yOffset < 0)
     return map->GetDefaultY();
   else
     return GetAttr(ptr,yOffset, Coord, offset);
 }
 
-inline Color GetColor(char *ptr, TDataMap *map, GDataAttrOffset *offset) {
+inline Color GetColor(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
   if (offset->colorOffset < 0)
     return map->GetDefaultColor();
   else
     return GetAttr(ptr,colorOffset, Color , offset);
 }
 
-inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset) {
+inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
   if (offset->patternOffset < 0)
     return map->GetDefaultPattern();
   else
     return GetAttr(ptr,patternOffset, Pattern, offset);
 }
 
-inline Coord GetShapeAttr0(char *ptr, TDataMap *map, GDataAttrOffset *offset) {
+inline Coord GetShapeAttr0(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
   if (offset->shapeAttrOffset[0] < 0) {
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[0];
@@ -75,7 +82,8 @@ inline Coord GetShapeAttr0(char *ptr, TDataMap *map, GDataAttrOffset *offset) {
     return GetAttr(ptr, shapeAttrOffset[0], Coord, offset);
 }
 
-inline Coord GetShapeAttr1(char *ptr, TDataMap *map, GDataAttrOffset *offset) {
+inline Coord GetShapeAttr1(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
   if (offset->shapeAttrOffset[1] < 0){
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[1];
@@ -120,21 +128,25 @@ public:
 			 
       int i = 0;
       while (i < numSyms) {
+
 	char *gdata = (char *)gdataArray[i];
 	int count = 1;
 	_x[0] = GetX(gdata, map, offset);
 	_y[0] = GetY(gdata, map, offset);
+	Color lastColor = GetColor(gdata, map, offset);
+
 	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
 	  char *colorGData = (char *)gdataArray[colorIndex];
-	  if (GetColor(colorGData,map,offset) != GetColor(gdata, map, offset))
+	  if (GetColor(colorGData,map,offset) != lastColor)
 	    break;
 	  _x[count] = GetX(colorGData, map, offset);
 	  _y[count++] = GetY(colorGData, map, offset);
 	}
 	
-	win->SetFgColor(GetColor(gdata, map, offset));
+	win->SetFgColor(lastColor);
 	win->DrawPixelArray(_x, _y, count, pixelWidth);
 	
+	lastColor = GetColor((char *)gdataArray[colorIndex], map, offset);
 	i = colorIndex;
       }
 
@@ -146,31 +158,41 @@ public:
 	int count = 1;
 	Coord width = GetShapeAttr0(gdata, map, offset);
 	Coord height = GetShapeAttr1(gdata, map, offset);
-	
-	_x[0] = GetX(gdata, map, offset)- width / 2.0;
-	_y[0] = GetY(gdata, map, offset) - height / 2.0;
+
+	_x[0] = GetX(gdata, map, offset);
+	if (width > 1)
+	  _x[0] -= width / 2.0;
+	_y[0] = GetY(gdata, map, offset);
+	if (height > 1)
+	  _y[0] -= height / 2.0;
 	_width[0] = width;
 	_height[0] = height;
 	
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	Color lastColor = GetColor(gdata, map, offset);
+
+	for(int colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	  char *colorGData = (char *)gdataArray[colorIndex];
-	  if (GetColor(colorGData, map, offset)
-	      != GetColor(gdata, map, offset))
+	  if (GetColor(colorGData, map, offset) != lastColor)
 	    break;
 	  
 	  width = GetShapeAttr0(colorGData, map, offset);
 	  height = GetShapeAttr1(colorGData, map, offset);
-	  _x[count] = GetX(colorGData, map, offset)- width / 2.0;
-	  _y[count] = GetY(colorGData, map, offset)- height / 2.0;
+	  _x[count] = GetX(colorGData, map, offset);
+	  if (width > 1)
+	    _x[count] -= width / 2.0;
+	  _y[count] = GetY(colorGData, map, offset);
+	  if (height > 1)
+	    _y[count] -= height / 2.0;
 	  _width[count] = width;
 	  _height[count] = height;
 	  
 	  count++;
 	}
 	
-	win->SetFgColor(GetColor(gdata,map, offset));
+	win->SetFgColor(lastColor);
 	win->FillRectArray(_x, _y, _width, _height, count);
 	
+	lastColor = GetColor((char *)gdataArray[colorIndex], map, offset);
 	i = colorIndex;
       }
     }
@@ -216,10 +238,13 @@ public:
     if (maxWidth <= xPerPixel) {
       int i = 0;
       while (i < numSyms){
+
 	char *gdata = (char *)gdataArray[i];
 	int count = 1;
 	_x[0] = GetX(gdata, map, offset);
 	_y[0] = GetY(gdata, map, offset);
+	Color lastColor = GetColor(gdata, map, offset);
+
 	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++){
 	  char *colorGData = (char *)gdataArray[colorIndex];
 	  if (GetColor(colorGData,map,offset) != GetColor(gdata, map, offset))
@@ -228,9 +253,10 @@ public:
 	  _y[count++] = GetY(colorGData, map, offset);
 	}
 	
-	win->SetFgColor(GetColor(gdata, map, offset));
+	win->SetFgColor(lastColor);
 	win->DrawPixelArray(_x, _y, count, pixelWidth);
 	
+	lastColor = GetColor((char *)gdataArray[colorIndex], map, offset);
 	i = colorIndex;
       }
 
@@ -294,10 +320,16 @@ public:
       win->SetPattern(GetPattern(gdata, map, offset));
       Coord y = GetY(gdata, map, offset);
       Coord width = GetShapeAttr0(gdata, map, offset);
-      if (y >= 0.0)
-	win->FillRect(GetX(gdata, map, offset) - width / 2.0, 0.0, width, y);
-      else
-	win->FillRect(GetX(gdata, map, offset) - width / 2.0, y, width, -y);
+      if (y >= 0.0) {
+	if (width > 1)
+	  win->FillRect(GetX(gdata, map, offset) - width / 2.0, 0.0, width, y);
+	else
+	  win->FillRect(GetX(gdata, map, offset), 0.0, width, y);
+      } else {
+	if (width > 1)
+	  win->FillRect(GetX(gdata, map, offset) - width / 2.0, y, width, -y);
+	else
+	  win->FillRect(GetX(gdata, map, offset), y, width, -y);
     }
   }
 };
