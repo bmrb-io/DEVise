@@ -717,6 +717,12 @@ Num Date        Status  Description
 			conflict, because the TDatas are named by the
 			schema name. (dd/rkw)
 
+173 03/05/97    OPEN    When remove a view from a window, the view name is
+                        still on the ClassDir list. So next time when searching
+                        the removed view, it finds that it is still there but
+                        actually it's not. (gc/rkw)
+
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
