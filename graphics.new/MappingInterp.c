@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/04/15 16:08:09  jussi
+  Moved call to SetGDataOffset() to the constructor.
+
   Revision 1.23  1996/04/09 23:05:40  jussi
   Added View parameter to DrawGDataArray().
 
@@ -225,14 +228,14 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[5] = new FullMapping_VectorShape;
     _shapes[6] = new FullMapping_BlockShape;
     _shapes[7] = new FullMapping_3DVectorShape;
+    _shapes[8] = new FullMapping_HorLineShape;
 
-    /* Init tcl */
     _interp = Tcl_CreateInterp();
-    if (Tcl_Init(_interp) == TCL_ERROR) {
-      fprintf(stderr, "MappingInterp: can't init tcl\n");
-      Exit::DoExit(2);
+    if (!_interp || Tcl_Init(_interp) == TCL_ERROR) {
+      DOASSERT(0, "Cannot create or initialize a Tcl interpreter");
     }
-    /* set max precision */
+
+    /* set max precision for floating point numbers */
     Tcl_Eval(_interp, "set tcl_precision 17");
 
     /* link interpreter variables with tcl variables */
@@ -428,8 +431,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	  break;
 
 	default:
-	  fprintf(stderr, "MappingInterp: unknown attr type\n");
-	  Exit::DoExit(2);
+	  DOASSERT(0, "Unknown attribute type");
 	}
       }
     }
@@ -950,10 +952,7 @@ static void InitString()
 
 static void InsertChar(char c)
 {
-  if (_numChar +1 >= MAX_STRING) {
-    fprintf(stderr, "Insertchar: no more space\n");
-    Exit::DoExit(2);
-  }
+  DOASSERT(_numChar + 1 < MAX_STRING, "No more string space");
   _stringBuf[_numChar++] = c;
   _stringBuf[_numChar] = '\0';
 }
@@ -961,10 +960,7 @@ static void InsertChar(char c)
 static void InsertString(char *string)
 {
   int length = strlen(string);
-  if (_numChar+length >= MAX_STRING) {
-    fprintf(stderr, "InsertString: no more space\n");
-    Exit::DoExit(2);
-  }
+  DOASSERT(_numChar + length < MAX_STRING, "No more string space");
   char *ptr = &_stringBuf[_numChar];
   while (*string != '\0') {
     *ptr++ = *string++;
@@ -1076,11 +1072,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
 	/* from cmd+1 to ptr-1 is a variable name */
 	char buf[80];
 	int len = ptr - 1 - (cmd + 1) + 1;
-	if (len >= (int)(sizeof buf)) {
-	  fprintf(stderr, "can not handle variable name > %d\n",
-		  (int)(sizeof buf));
-	  Exit::DoExit(2);
-	}
+	DOASSERT(len < (int)sizeof buf, "Variable name too long");
 	memcpy(buf, cmd + 1, len);
 	buf[len] = 0;
 	
@@ -1302,8 +1294,7 @@ inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
     break;
   }
 
-  fprintf(stderr, "Unknown MappingSimpleCmdEntry\n");
-  Exit::DoExit(1);
+  DOASSERT(0, "Unknown simple command type");
 
   // keep compiler happy
   return 0;
