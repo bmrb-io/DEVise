@@ -9,6 +9,7 @@ if (! -d sunx86_54) then
   ln -s ../solaris/generic/generic sunx86_54/generic
   ln -s ../solaris/generic/issm sunx86_54/issm
   ln -s ../solaris/ams/ams sunx86_54/ams
+  ln -s ../solaris/multi/disp sunx86_54/multi
 endif
 
 if (! -d sun4m_412) then
@@ -16,6 +17,7 @@ if (! -d sun4m_412) then
   ln -s ../sun/generic/generic sun4m_412/generic
   ln -s ../sun/generic/issm sun4m_412/issm
   ln -s ../sun/ams/ams sun4m_412/ams
+  ln -s ../sun/multi/disp sun4m_412/multi
 endif
 
 if (! -d hp700_ux90) then
@@ -23,6 +25,7 @@ if (! -d hp700_ux90) then
   ln -s ../hp/generic/generic hp700_ux90/generic
   ln -s ../hp/generic/issm hp700_ux90/issm
   ln -s ../hp/ams/ams hp700_ux90/ams
+  ln -s ../hp/multi/disp hp700_ux90/multi
 endif
 
 ln -fs /p/devise/dat/*.idx .
