@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/10 02:23:34  jussi
+  Added direction parameter to InitMappingIterator(), and added
+  SwapMappings() method.
+
   Revision 1.9  1995/12/28 20:46:38  jussi
   Minor clean up.
 
@@ -85,6 +89,11 @@ void ViewGraph::InsertMapping(TDataMap *map)
   }
   
   Refresh();
+}
+
+void ViewGraph::RemoveMapping(TDataMap *map)
+{
+  _mappings.Delete(map);
 }
 
 void ViewGraph::InitMappingIterator(Boolean backwards)

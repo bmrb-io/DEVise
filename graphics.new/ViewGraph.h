@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/04/10 02:24:14  jussi
+  Added direction parameter to InitMappingIterator(), and
+  added SwapMappings() method.
+
   Revision 1.8  1996/04/05 20:13:32  wenger
   Fixed error causing pure virtual function to be called
   if a session was closed during a query; fixed an error
@@ -59,15 +63,15 @@ public:
 	    AxisLabel *xAxis, AxisLabel *yAxis,
 	    Color fg, Color bg,
 	    Action *action = NULL);
+
   virtual void InsertMapping(TDataMap *map);
+  virtual void RemoveMapping(TDataMap *map);
+  virtual void SwapMappings(TDataMap *map1, TDataMap *map2);
 
   void InitMappingIterator(Boolean backwards = false);
   Boolean MoreMapping();
   TDataMap *NextMapping();
   void DoneMappingIterator();
-
-  /* Switch the order of map1 and map2 */
-  void SwapMappings(TDataMap *map1, TDataMap *map2);
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
