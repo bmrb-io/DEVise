@@ -16,15 +16,16 @@ extract.o: /usr/include/stddef.h rectape.h ../tape/tapedrive.h
 extract.o: /usr/include/tar.h ../tape/machdep.h /usr/include/limits.h
 extract.o: /usr/include/sys/param.h /usr/include/machine/param.h
 extract.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-extract.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
-extract.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-extract.o: /usr/include/sys/sem.h binconv.h issmdata.h
+extract.o: /usr/include/machine/spl.h /usr/include/sys/ioctl.h
+extract.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+extract.o: /usr/include/sys/shm.h /usr/include/sys/sem.h binconv.h issmdata.h
 rectape.o: /usr/include/stdlib.h rectape.h /usr/include/assert.h
 rectape.o: ../tape/tapedrive.h /usr/include/stdio.h
 rectape.o: /usr/include/sys/stdsyms.h /usr/include/tar.h ../tape/machdep.h
 rectape.o: /usr/include/limits.h /usr/include/sys/param.h
 rectape.o: /usr/include/sys/types.h /usr/include/machine/param.h
 rectape.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
-rectape.o: /usr/include/sys/ioctl.h /usr/include/sys/wait.h
-rectape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-rectape.o: /usr/include/sys/sem.h binconv.h /usr/include/string.h
+rectape.o: /usr/include/machine/spl.h /usr/include/sys/ioctl.h
+rectape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+rectape.o: /usr/include/sys/shm.h /usr/include/sys/sem.h binconv.h
+rectape.o: /usr/include/string.h

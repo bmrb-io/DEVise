@@ -12,7 +12,7 @@ MapClassInfo.o: /usr/include/sys/time.h /usr/include/math.h
 MapClassInfo.o: /s/tcl/include/tcl.h /usr/include/stdio.h
 MapClassInfo.o: ../graphics/DeviseTypes.h ../graphics/Display.h
 MapClassInfo.o: ../graphics/Geom.h ../graphics/Dispatcher.h
-MapClassInfo.o: ../graphics/DList.h ../graphics/Exit.h
+MapClassInfo.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
 MapClassInfo.o: ../graphics/VisualArg.h ../graphics/Color.h
 MapClassInfo.o: ../graphics/Journal.h ../graphics/ColorMgr.h
 MapClassInfo.o: ../graphics.new/RectShape.h ../graphics.new/Shape.h
@@ -26,7 +26,7 @@ MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Action.h
 MapClassInfo.o: ../graphics/Util.h /usr/include/assert.h
-MapClassInfo.o: /usr/include/stdlib.h /usr/include/ctype.h
+MapClassInfo.o: /usr/include/string.h /usr/include/ctype.h
 MapClassInfo.o: ../graphics/Selection.h ../graphics/View.h
 MapClassInfo.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 MapClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
@@ -45,11 +45,11 @@ ams.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 ams.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 ams.o: /usr/include/sys/select.h /usr/include/sys/time.h
 ams.o: /usr/include/sys/time.h /usr/include/stdio.h ../graphics/DeviseTypes.h
-ams.o: ../graphics/Dispatcher.h ../graphics/DList.h ../graphics/Exit.h
-ams.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
-ams.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
-ams.o: ../graphics/ColorMgr.h ../graphics/Control.h ../graphics/Init.h
-ams.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+ams.o: ../graphics/Dispatcher.h /usr/include/stdlib.h ../graphics/DList.h
+ams.o: ../graphics/Exit.h ../graphics/VisualArg.h ../graphics/Color.h
+ams.o: ../graphics/Journal.h ../graphics/Display.h ../graphics/Geom.h
+ams.o: /usr/include/math.h ../graphics/ColorMgr.h ../graphics/Control.h
+ams.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
 ams.o: ../graphics/ClassDir.h ../graphics.new/MapInterpClassInfo.h
 ams.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
 ams.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
@@ -78,27 +78,28 @@ ams.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 ams.o: ../graphics.new/ParseCat.h ../graphics.new/Command.h
 ams.o: ../graphics/Timer.h MapClassInfo.h
 amsStat.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+amsStat.o: /usr/include/stdlib.h /usr/include/fcntl.h
 amsStat.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 amsStat.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 amsStat.o: /usr/include/sys/time.h /usr/include/sys/time.h
-amsStat.o: /usr/include/sys/stat.h /usr/include/fcntl.h
 amsStat.o: /usr/include/sys/fcntl.h /usr/include/limits.h
-amsStat.o: /usr/include/sys/uio.h /usr/include/unistd.h
-amsStat.o: /usr/include/sys/unistd.h ../graphics.new/TDataAppend.h
-amsStat.o: ../graphics.new/TData.h ../graphics/DeviseTypes.h
-amsStat.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
-amsStat.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/DList.h
-amsStat.o: ../graphics/Exit.h ../graphics.new/DiskFile.h
-amsStat.o: ../graphics.new/ams.h /usr/include/math.h
+amsStat.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+amsStat.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
+amsStat.o: ../graphics.new/TDataAppend.h ../graphics.new/TData.h
+amsStat.o: ../graphics/DeviseTypes.h ../graphics.new/RecId.h
+amsStat.o: ../graphics.new/RecOrder.h ../graphics/VisualArg.h
+amsStat.o: ../graphics/Color.h ../graphics/DList.h ../graphics/Exit.h
+amsStat.o: ../graphics.new/DiskFile.h ../graphics.new/ams.h
+amsStat.o: /usr/include/math.h
 extendAms.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+extendAms.o: /usr/include/stdlib.h /usr/include/fcntl.h
 extendAms.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 extendAms.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 extendAms.o: /usr/include/sys/time.h /usr/include/sys/time.h
-extendAms.o: /usr/include/sys/stat.h /usr/include/fcntl.h
 extendAms.o: /usr/include/sys/fcntl.h /usr/include/limits.h
-extendAms.o: /usr/include/sys/uio.h /usr/include/unistd.h
-extendAms.o: /usr/include/sys/unistd.h ../graphics.new/ams.h
-extendAms.o: /usr/include/math.h
+extendAms.o: /usr/include/unistd.h /usr/include/sys/unistd.h
+extendAms.o: /usr/include/sys/uio.h /usr/include/sys/stat.h
+extendAms.o: ../graphics.new/ams.h /usr/include/math.h
 testdir.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 testdir.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 testdir.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
