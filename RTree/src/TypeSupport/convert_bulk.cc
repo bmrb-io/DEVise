@@ -10,6 +10,13 @@
 #include <sys/types.h>
 #include <netinet/in.h> 
 
+#if defined(__LITTLE_ENDIAN) && !defined(_LITTLE_ENDIAN)
+  #define _LITTLE_ENDIAN
+#endif
+#if defined(__BIG_ENDIAN) && !defined(_BIG_ENDIAN)
+  #define _BIG_ENDIAN
+#endif
+
 inline long long htonll(long long x)
 {
 #if defined(_LITTLE_ENDIAN)
