@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.38  2000/03/08 21:22:11  wenger
+#  Added paths to old compiler for Purify'ing.
+#
 #  Revision 1.37  1999/11/16 17:01:35  wenger
 #  Removed all DTE-related conditional compiles; changed version number to
 #  1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -161,11 +164,13 @@
 
 LD = ld
 
-CC = g++
+#TEMP -- Until we get things working with gcc 3.0.3
+CC = /s/gcc-2.95.3/bin/g++
 # For Purify.
 #CC = /s/egcs/bin/g++
 
-C  = gcc
+#TEMP -- Until we get things working with gcc 3.0.3
+C  = /s/gcc-2.95.3/bin/gcc
 # For Purify.
 #C  = /s/egcs/bin/gcc
 

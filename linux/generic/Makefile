@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.18  2001/12/27 15:26:26  wenger
+#  Got rid of static linking on devised.
+#
 #  Revision 1.17  2001/10/17 17:37:01  wenger
 #  Linux devised now statically linked to make distributions work.
 #
@@ -96,7 +99,8 @@ include ../Makefile.config
 
 ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
 ARCH_D_SYSLIBS = -lX11 -lm -ldl
-ARCH_SYSLIBS = -ltk8.0 -ltcl8.0 $(ARCH_D_SYSLIBS)
+# ARCH_SYSLIBS = -ltk8.0 -ltcl8.0 $(ARCH_D_SYSLIBS)
+ARCH_SYSLIBS = -ltk8.3 -ltcl8.3 $(ARCH_D_SYSLIBS)
 ARCH_LDPOST  = 
 ARCH_D_LDPOST  = $(ARCH_LDPOST)
 # to make everything statically-linked...
