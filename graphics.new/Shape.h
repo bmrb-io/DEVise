@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/11/20 01:08:37  jussi
+  Changed threshold value for randomization from 0.5 to 0.15.
+
   Revision 1.23  1996/11/20 00:42:33  jussi
   Added support for X,Y randomization.
 
@@ -351,10 +354,15 @@ class Shape {
       } else if (cloudHeight == 0.0) {
         _x[cnt] += (rand() % 1000) / 1000.0 * cloudWidth;
       } else {
+#if defined(OVAL_CLOUD)
         float length = (rand() % 1000) / 1000.0 * cloudWidth;
         float dir = (rand() % 360) / 360.0 * 2 * 3.14;
         _x[cnt] += length * sin(dir);
         _y[cnt] += length * cos(dir) * cloudHeight / cloudWidth;
+#else
+        _x[cnt] += (rand() % 1000) / 1000.0 * cloudWidth;
+        _y[cnt] += (rand() % 1000) / 1000.0 * cloudHeight;
+#endif
       }
     }
   }
