@@ -1,13 +1,17 @@
 #!/s/perl/bin/perl -w
 
-$rm = 'ipcrm';
-foreach (grep(/$ENV{'USER'}/, `ipcs`)) {
-    ($type, $id) = split;
-    $rm .= " -$type $id";
-}
-if( $rm ne 'ipcrm' ) {
-    print "$rm\n";
-    system($rm);
+if (grep(/^$ENV{'USER'}.*devise/, `ps aux`)) {
+    print "Nothing done because you are running a DEVise\n";
 } else {
-    print "no resources to remove\n";
+    $rm = 'ipcrm';
+    foreach (grep(/$ENV{'USER'}/, `ipcs`)) {
+        ($type, $id) = split;
+        $rm .= " -$type $id";
+    }
+    if( $rm ne 'ipcrm' ) {
+        print "$rm\n";
+        system($rm);
+    } else {
+        print "no resources to remove\n";
+    }
 }
