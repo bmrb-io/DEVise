@@ -15,7 +15,7 @@ public:
   typedef char BasicType;
   typedef char ManagedType;
 
-  const static int typeID = 1;
+  const static int typeID = 10;
   const static char* const typeName = "bool";
 
   DteBoolAdt(bool nullable = false) : DteAdt(nullable, 1) {}
