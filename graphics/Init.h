@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/09/04 21:24:49  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.6  1996/08/23 16:55:36  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -96,14 +103,14 @@ public:
   static Boolean PrintViewStat() { return _printViewStat; }
   static Boolean DisplayLogo() { return _dispLogo; }
 
-  /*
-     return name of script file to be executed
-     after system has become idle
-  */
   static char *BatchFile() { return _batchFile; }
 
   static char *DaliServer() { return _daliServer; }
-  static Boolean DaliQuit() {return _daliQuit; }
+  static Boolean DaliQuit() { return _daliQuit; }
+
+
+  static int ScreenWidth() { return _screenWidth; }
+  static int ScreenHeight() { return _screenHeight; }
 
 private:
 
@@ -143,6 +150,9 @@ private:
 
   static char *_daliServer;
   static Boolean _daliQuit;
+
+  static int _screenWidth;
+  static int _screenHeight;
 };
 
 #endif

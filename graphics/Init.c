@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/09/04 21:24:49  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.15  1996/08/23 16:55:34  wenger
   First version that allows the use of Dali to display images (more work
   needs to be done on this); changed DevStatus to a class to make it work
@@ -151,6 +158,8 @@ Boolean Init::_batchRecs = true; /* true if batching records */
 Boolean Init::_printViewStat = false;  /* true to print view statistics */
 char * Init::_daliServer = NULL;
 Boolean Init::_daliQuit = false;
+int Init::_screenWidth = -1;      /* screen width (batch mode) */
+int Init::_screenHeight = -1;     /* screen height (batch mode) */
 
 /**************************************************************
 Remove positions from index to index+len-1 from argv
@@ -206,6 +215,8 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-yhigh <value>: not yet implemented\n");
   fprintf(stderr, "\t-dali <name>: specify name of dali server\n");
   fprintf(stderr, "\t-daliquit: kills dali server when Devise exits\n");
+  fprintf(stderr, "\t-screenWidth <value>: sets screen width for batch mode\n");
+  fprintf(stderr, "\t-screenHeight <value>: sets screen height for batch mode\n");
 
   Exit::DoExit(1);
 }
@@ -547,6 +558,24 @@ void Init::DoInit(int &argc, char **argv)
       else if (strcmp(&argv[i][1], "daliquit") == 0) {
 	_daliQuit = true;
 	MoveArg(argc,argv,i,1);
+      }
+
+      else if (strcmp(&argv[i][1], "screenWidth") == 0) {
+	if (i >= argc - 1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_screenWidth = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "screenHeight") == 0) {
+	if (i >= argc - 1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_screenHeight = atoi(argv[i+1]);
+	MoveArg(argc,argv,i,2);
       }
 
       else {
