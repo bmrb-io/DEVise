@@ -4,8 +4,8 @@
 CC = g++
 
 LDFLAGS = $(ARCH_LDFLAGS) ../graphics.new/libobj.o \
-	../tape/tapeobj.o ../issm/issmobj.o MapClassInfo.o \
-	-ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm \
+	../tape/tapeobj.o ../issm/issmobj.o ../compustat/cstatobj.o \
+	MapClassInfo.o -ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm \
 	$(ARCH_LDPOST)
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 	-fexternal-templates
@@ -13,7 +13,7 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 all: ams extendAms extend
 
 ams:    ams.o ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
-	MapClassInfo.o
+	../compustat/cstatobj.o MapClassInfo.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
 extend: extend.o
