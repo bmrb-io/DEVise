@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/02/03 19:45:29  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.2  1996/12/13 21:34:39  jussi
   Added checking of available semaphores and shared memory.
 
@@ -26,7 +32,7 @@
 #ifndef MemMgr_h
 #define MemMgr_h
 
-#include "../../graphics/DeviseTypes.h"
+#include "DeviseTypes.h"
 #include "DCE.h"
 
 // Memory manager

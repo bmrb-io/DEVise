@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/02/03 19:45:20  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.10  1996/12/18 15:32:09  jussi
   Added synchronization methods and IsBusy() method.
 
@@ -77,7 +83,7 @@
 
 #include <sys/types.h>
 
-#include "../../graphics/Exit.h"
+#include "Exit.h"
 #include "MemMgr.h"
 
 
