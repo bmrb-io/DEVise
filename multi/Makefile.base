@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  1996/12/23 17:00:35  donjerko
+#  Moved -ldte behind -lgraphics
+#
 #  Revision 1.18  1996/11/18 18:13:40  donjerko
 #  Added final touches for DTE
 #
@@ -60,6 +63,11 @@ LDFLAGS = $(ARCH_LDFLAGS) \
 	-L../crsp -L../compustat -lmonolith -lgraphicsnew -lgraphics \
 	-lgraphicsnew -ldte -lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS) \
 	$(ARCH_LDPOST)
+
+# Set up for profiling.
+ifneq ($(DEV_PROFILE),)
+        ARCH_LDPOST  += -ldl
+endif
 
 ALLSRC = disp.c TDataMulti.c TDataHost.c TDataCycle.c Message.c \
 	MappingClassInfo.c HostMappingClassInfo.c \

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  1997/01/30 19:48:43  jussi
+#  Added StateMap.o to object list.
+#
 #  Revision 1.25  1996/12/23 17:00:06  donjerko
 #  Moved -ldte behind -lgraphics
 #
@@ -53,6 +56,12 @@ LDFLAGS = -L../DTE/ -L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -lgraphicsnew -lgraphics \
 	-lgraphicsnew -ldte \
 	-lissm -lcrsp -lcstat -ltape $(ARCH_SYSLIBS)
+
+# Set up for profiling.
+ifneq ($(DEV_PROFILE),)
+	ARCH_LDPOST  += -ldl
+endif
+
 
 SRC = generic.c devise.C deviseb.C CompDate.c StateMap.C
 

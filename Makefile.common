@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1996/11/05 18:22:57  wenger
+#  Minor mods to get things to compile on SGI systems.
+#
 #  Revision 1.7  1996/10/15 17:48:28  wenger
 #  Changed '-g' to '-gstabs' to debugging works on Pentiums.
 #
@@ -73,6 +76,12 @@ ifeq ($(DEV_DEBUG),)
 	OPTFLAG = -O
 else
 	OPTFLAG = -gstabs
+endif
+
+# Set up for profiling.
+ifneq ($(DEV_PROFILE),)
+	CC += -pg
+	C += -pg
 endif
 
 # Compile rules.

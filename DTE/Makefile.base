@@ -36,7 +36,7 @@ DTE_INCLUDES = \
 	-I$(DTE_DIR)/Script
 
 CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
-	-Wall -Wno-unused \
+	-Wall -Wno-unused $(OPTFLAG) \
 	-DUNIX -DATTRPROJ -DLIBCS \
 	-fexternal-templates 
 
@@ -54,6 +54,11 @@ ifdef NO_RTREE
 	CORE_SRC += RTreeRead.dummy.c
 else
 	CORE_SRC += RTreeRead.c
+endif
+
+# Set up for profiling.
+ifneq ($(DEV_PROFILE),)
+	ARCH_LDPOST  += -ldl
 endif
 
 DEVISE_SPECIFIC_SRC = \
