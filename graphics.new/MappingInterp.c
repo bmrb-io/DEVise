@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/09/04 21:25:02  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.38  1996/08/04 21:59:49  beyer
   Added UpdateLinks that allow one view to be told to update by another view.
   Changed TData so that all TData's have a DataSource (for UpdateLinks).
@@ -334,7 +341,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 
   /* sorted in the X direction? */
   AttrInfo *info = attrList->Find("x");
-  if (info->isSorted)
+  if ((info != NULL) && (info->isSorted))
     SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
 }
 
@@ -354,10 +361,8 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
 
   /* sorted in the X direction? */
   AttrInfo *info = attrList->Find("x");
-  if (info != NULL) {
-    if (info->isSorted)
-      SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
-  }
+  if ((info != NULL) && (info->isSorted))
+    SetDimensionInfo(new VisualFlag(VISUAL_X), 1);
 
   TDataMap::ResetGData(FindGDataSize(cmd, _attrList, flag, attrFlag));
 }

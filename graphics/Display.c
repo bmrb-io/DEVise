@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/09/05 21:30:15  jussi
+  Moved user-specified screen size to Display.
+
   Revision 1.10  1996/07/19 14:25:30  jussi
   Return black color for undefined colors instead of crashing.
 
@@ -49,13 +52,18 @@
   Added/updated CVS header.
 */
 
+//#define DEBUG
+
 #include "XDisplay.h"
+#include "PSDisplay.h"
+#include "Util.h"
 #ifndef LIBCS
 #include "Init.h"
 #endif
 
 DeviseDisplayList DeviseDisplay::_displays;
 DeviseDisplay *DeviseDisplay::_defaultDisplay = 0;
+DeviseDisplay *DeviseDisplay::_psDisplay = 0;
 
 /********************************************************************
 Get the default display
@@ -68,14 +76,29 @@ DeviseDisplay *DeviseDisplay::DefaultDisplay()
   return _defaultDisplay;
 }
 
+/********************************************************************
+Get the PostScript display
+*********************************************************************/
+
+DeviseDisplay *DeviseDisplay::GetPSDisplay()
+{
+  if (!_psDisplay)
+    _psDisplay = new PSDisplay();
+  return _psDisplay;
+}
+
 /************************************************************/
 
 DeviseDisplay::DeviseDisplay()
 {
+  DO_DEBUG(printf("DeviseDisplay::DeviseDisplay()\n"));
+
   _numColors = 0;
   _colorMapSize = InitColorMapSize;
   _colorMap = new Color[InitColorMapSize];
   _displays.Append(this);
+
+  DO_DEBUG(printf("Number of displays = %d\n", _displays.Size()));
 
 #ifndef LIBCS
   _desiredScreenWidth = Init::ScreenWidth();

@@ -15,16 +15,21 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/10 16:23:01  jussi
+  Initial revision.
+*/
+
+//#define DEBUG
 
 #include "PSDisplay.h"
+#include "PSWindowRep.h"
+#include "Util.h"
 #ifndef LIBCS
 #include "Control.h"
 #include "Journal.h"
 #include "Init.h"
 #endif
-
-//#define DEBUG
 
 /*******************************************************************
 Open a new display
@@ -32,6 +37,7 @@ Open a new display
 
 PSDisplay::PSDisplay(char *name)
 {
+  DO_DEBUG(printf("PSDisplay::PSDisplay(%s)\n", name != NULL ? name : "NULL"));
   /* do something */
 }
 
@@ -52,7 +58,7 @@ void PSDisplay::AllocColor(char *name, Color globalColor)
 Allocate color by RGB
 *********************************************************************/
 
-void PSDisplay::AllocColor(double r, double g, double b, Color globalColor)
+void PSDisplay::AllocColor(float r, float g, float b, Color globalColor)
 {
 #ifdef DEBUG
   printf("PSDisplay::AllocColor(%.2f,%.2f,%.2f)\n", r, g, b);
@@ -72,6 +78,186 @@ WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 				     Coord min_width, Coord min_height,
 				     Boolean relative, Boolean winBoundary)
 {
+  DO_DEBUG(printf("PSDisplay::CreateWindowRep(%s)\n", name));
+
+  return new PSWindowRep(this/*TEMPTEMP?*/, fgnd, bgnd, NULL/*TEMPTEMP?*/,
+    (int) x, (int) y);
+
+#if 0 //TEMPTEMP
+  Window parent = DefaultRootWindow(_display);
+
+  Coord realX, realY, realWidth, realHeight;
+  Coord real_min_width, real_min_height;
+  if (relative) {
+    RealWindowDimensions(parent, x, y, width, height, realX, realY,
+			 realWidth, realHeight);
+    RealWindowWidthHeight(parent, min_width, min_height,
+			  real_min_width, real_min_height);
+  } else {
+    realX = x;
+    realY = y;
+    realWidth = width;
+    realHeight = height;
+    real_min_width = min_width;
+    real_min_height = min_height;
+  }
+
+#ifndef LIBCS
+  if (ControlPanel::Instance()->GetBatchMode()) {
+    // we're in batch mode -- create a pixmap instead of a window
+
+    unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
+    Pixmap pixmap = XCreatePixmap(_display, parent, (unsigned)realWidth,
+				  (unsigned)realHeight, depth);
+    DOASSERT(pixmap, "Cannot create pixmap");
+
+#ifdef DEBUG
+    printf("XDisplay: Created X pixmap 0x%lx at %u,%u, size %ux%u\n",
+	   pixmap, (unsigned)realX, (unsigned)realY,
+	   (unsigned)realWidth, (unsigned)realHeight);
+#endif
+
+    XWindowRep *xwin = new XWindowRep(_display, pixmap, this,
+				      (XWindowRep *)parentRep,
+				      fgnd, bgnd, (int)realX, (int)realY);
+    DOASSERT(xwin, "Cannot create XWindowRep");
+
+    _winList.Insert(xwin);
+  
+    return xwin;
+  }
+#endif
+
+  Color realFgnd, realBgnd;
+  realFgnd = GetLocalColor(fgnd);
+  realBgnd = GetLocalColor(bgnd);
+
+  /* Define event mask. */
+
+  unsigned long int mask = ExposureMask | ButtonPressMask 
+	                   | ButtonReleaseMask | Button1MotionMask
+                           | Button2MotionMask | Button3MotionMask
+                           | StructureNotifyMask | KeyPressMask
+                           | VisibilityChangeMask;
+
+#ifdef RAWMOUSEEVENTS
+  mask |= PointerMotionMask;
+#endif
+  
+  /* Define window attributes. */
+
+  XSetWindowAttributes attr;
+  attr.background_pixmap 	= None;
+  attr.background_pixel  	= realBgnd;
+  attr.border_pixmap  		= CopyFromParent;
+  attr.border_pixel  		= realFgnd;
+  attr.bit_gravity  		= ForgetGravity;   /* CenterGravity */
+  attr.win_gravity  		= NorthWestGravity;
+  attr.backing_store  		= Always;          /* WhenMapped/NotUseful */
+  attr.backing_planes  		= AllPlanes;
+  attr.backing_pixel  		= 0;
+  attr.save_under  		= False;
+  attr.event_mask  		= mask;
+  attr.do_not_propagate_mask	= 0;
+  attr.override_redirect  	= False;
+  attr.colormap	= DefaultColormap(_display, DefaultScreen(_display));
+  attr.cursor  			= None;
+
+  /* Create the window. */
+
+  if (parentRep)
+    parent = ((XWindowRep *)parentRep)->GetWinId();
+
+  unsigned int border_width;
+  if (winBoundary)
+    border_width = (!parent ? 5 : 1);
+  else
+    border_width = (!parent ? 5 : 0);
+
+  Window w = XCreateWindow(_display, parent, (unsigned)realX, (unsigned)realY, 
+			   (unsigned)realWidth, (unsigned)realHeight,
+			   border_width, 0, InputOutput, CopyFromParent,
+			   AllPlanes, &attr);
+  DOASSERT(w, "Cannot create window");
+
+#ifdef DEBUG
+  printf("XDisplay: Created X window 0x%lx to parent 0x%lx at %u,%u,\n",
+	 w, parent, (unsigned)realX, (unsigned)realY);
+  printf("          size %u,%u, borderwidth %d\n", (unsigned)realWidth,
+	 (unsigned)realHeight, border_width);
+#endif
+
+  /*
+   * Deal with providing the window with an initial position & size.
+   * Fill out the XSizeHints struct to inform the window manager. See
+   * Sections 9.1.6 & 10.3.
+   */
+
+  XSizeHints xsh;
+  xsh.flags 	= PPosition | PSize | PMinSize;
+  xsh.height 	= (int)realHeight;
+  xsh.width 	= (int)realWidth;
+  xsh.x 	= (int)realX;
+  xsh.y 	= (int)realY;
+  xsh.min_width = (int)real_min_width;
+  xsh.min_height = (int)real_min_height;
+
+  XSetStandardProperties(_display, w, name, name, None, 0, 0, &xsh);
+
+  /* Set window manager hints for iconification. */
+
+#if 0
+  if (ControlPanel::Instance()->Restoring() && Init::Iconify()) {
+    xwmh.flags = InputHint | StateHint | IconPositionHint;
+    xwmh.input = true;
+    xwmh.initial_state = IconicState;
+    xwmh.icon_x = (unsigned)realX;
+    xwmh.icon_y = (unsigned)realY;
+  }
+#endif
+
+  xwmh.flags = InputHint | StateHint;
+  xwmh.input = true;
+  xwmh.initial_state = NormalState;
+  XSetWMHints(_display, w, &xwmh);
+  
+  /* Allow window manager to send WM_DELETE_WINDOW messages. */
+
+  Atom deleteWindowAtom = XInternAtom(_display, "WM_DELETE_WINDOW", False);
+  Atom protocolAtom = XInternAtom(_display, "WM_PROTOCOLS", False);
+  XChangeProperty(_display, w, protocolAtom, XA_ATOM, 32,
+                  PropModeReplace, (unsigned char *)&deleteWindowAtom, 1);
+
+  /* Map the window so that it appears on the display. */
+
+  if (XMapWindow(_display, w) < 0)
+    return NULL;
+
+  /* Do a sync to force the window to appear immediately. */
+
+  XSync(_display, false);
+
+#if 0
+  /* Wait for MapNotify event to come back from server. */
+
+  XEvent e;
+  e.event = 0;
+  while (e.event != MapNotify) {
+    XNextEvent(_display, &e);
+  }
+#endif
+
+  /* Return the XWindowRep structure. */
+
+  XWindowRep *xwin = new XWindowRep(_display, w, this,
+                                    (XWindowRep *)parentRep,
+                                    fgnd, bgnd, false);
+  DOASSERT(xwin, "Cannot create XWindowRep");
+  _winList.Insert(xwin);
+  
+  return xwin;
+#endif //TEMPTEMP
+
   /* do something */
   return 0;
 }
@@ -82,5 +268,41 @@ Destroy a window
 
 void PSDisplay::DestroyWindowRep(WindowRep *win)
 {
+  DO_DEBUG(printf("PSDisplay::DestroyWindowRep(%p)\n", win));
+
+#if 0 //TEMPTEMP
+  XWindowRep *xwin = (XWindowRep *)win;
+  if (!_winList.Delete(xwin)) {
+    fprintf(stderr, "XDisplay:Window to be deleted not found\n");
+    Exit::DoExit(1);
+  }
+
+  // Free the Dali images and sleep before destroying the X window so
+  // Dali doesn't get 'bad window' errors.
+  if (xwin->DaliImageCount() > 0)
+  {
+    (void) xwin->DaliFreeImages();
+    sleep(1);
+  }
+
+  if (xwin->GetWinId()) {
+#ifdef DEBUG
+    printf("XDisplay::DestroyWindowRep 0x%p, window 0x%lx\n",
+	   xwin, xwin->GetWinId());
+#endif
+    XDestroyWindow(_display, xwin->GetWinId());
+  } else {
+#ifdef DEBUG
+    printf("XDisplay::DestroyWindowRep 0x%p, pixmap 0x%lx\n",
+	   xwin, xwin->GetPixmapId());
+#endif
+    XFreePixmap(_display, xwin->GetPixmapId());
+  }
+
+  delete xwin;
+
+  XSync(_display, false);
+#endif //TEMPTEMP
+
   delete win;
 }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/09/09 14:31:41  jussi
+  Added #ifdef LIBCS statements to make code compile in the
+  ClientServer library target.
+
   Revision 1.14  1996/09/05 21:30:16  jussi
   Moved user-specified screen size to Display.
 
@@ -94,6 +98,9 @@ public:
 
   /* get the default display */
   static DeviseDisplay *DefaultDisplay();
+
+  /* get the PostScript display */
+  static DeviseDisplay *GetPSDisplay();
 
   /* get file descriptor for connection */
   virtual int fd() = 0;
@@ -192,6 +199,7 @@ protected:
   unsigned long _colorMapSize;
   Color *_colorMap;
   static DeviseDisplay *_defaultDisplay;
+  static DeviseDisplay *_psDisplay;
 
 #ifndef LIBCS
   int _desiredScreenWidth;

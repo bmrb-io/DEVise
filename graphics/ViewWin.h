@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/14 16:52:30  jussi
+  Added handling of window destroy events from window manager.
+
   Revision 1.12  1996/07/14 04:06:04  jussi
   Added HandleWindowDestroy() method.
 
@@ -96,6 +99,8 @@ public:
 
     /* Iconify window, if top level. Not guaranteed to succeed */
     void Iconify();
+
+    DevStatus ExportImage(DisplayExportFormat format, char *filename);
 
     /* Insert ViewWin into a parent */
     void AppendToParent(ViewWin *parent);
@@ -179,6 +184,8 @@ public:
     Color GetFgColor() { return _foreground; }
     virtual void SetFgBgColor(Color fg, Color bg);
 
+    virtual DevStatus PrintPS(FILE *file);
+
 protected:
     /* called by base class when it has been mapped/unmapped */
     virtual void SubClassMapped() = 0;
@@ -200,7 +207,9 @@ protected:
     unsigned int _height; /* current height */
     ViewWinList _children;
     ViewWin *_parent;     /* parent window */
-    WindowRep *_windowRep;
+    WindowRep *_windowRep;/* current WindowRep */
+    WindowRep *_screenWinRep; /* WindowRep for output to screen */
+    WindowRep *_fileWinRep; /* WindowRep for output to file */
     char *_name;          /* name of window */
     int _weight;          /* relative weight of window */
     Boolean _mapped;      /* TRUE if this window is mapped */

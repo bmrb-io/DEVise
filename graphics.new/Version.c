@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/09/04 21:25:03  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.7  1996/08/30 15:56:11  wenger
   Modified View and QueryProcessor code to work correctly with current
   dispatcher semantics (call back forever unless cancelled).
@@ -68,6 +75,9 @@ static const char *	version = "1.1.8";
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";
 
+// Trademark logo for each DEVise window.
+static const char *	winLogo = "Visualization by DEVise (tm) 1996";
+
 
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
@@ -93,6 +103,16 @@ const char *
 Version::GetCopyright()
 {
 	return copyright;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Version::GetWinLogo
+ * Get the DEVise window trademark logo message.
+ */
+const char *
+Version::GetWinLogo()
+{
+	return winLogo;
 }
 
 /*------------------------------------------------------------------------------

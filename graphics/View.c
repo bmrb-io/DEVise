@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.74  1996/09/06 06:59:43  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.73  1996/09/05 22:18:12  jussi
   Fixed problem with system hanging in batch mode.
 
@@ -288,6 +295,8 @@
 
 #include <time.h>
 
+//#define DEBUG
+
 #include "Util.h"
 #include "View.h"
 #include "Geom.h"
@@ -303,8 +312,6 @@
 #include "Display.h"
 #include "Init.h"
 #include "DaliIfc.h"
-
-//#define DEBUG
 
 /* width/height of sensitive area for cursor */
 static const int VIEW_CURSOR_SENSE = 10;
@@ -333,6 +340,7 @@ View::View(char *name, VisualFilter &initFilter,
 	   int weight, Boolean boundary) :
 	ViewWin(name, fg, bg, weight, boundary)
 {
+  DO_DEBUG(printf("View::View(%s, this = %p)\n", name, this));
   _jump = _zoomIn = _zoomOut = _scrollLeft = _scrollRight = _unknown = 0;
 
   _modeRefresh = false;
@@ -2791,4 +2799,25 @@ void View::SetViewDir(int H, int V)
 {
   _camera.H = H;
   _camera.V = V;
+}
+
+DevStatus
+View::PrintPS(FILE *file)
+{
+  DO_DEBUG(printf("View::PrintPS(%s)\n", _name));
+  DevStatus result = StatusOk;
+
+  // Switch over to PostScript drawing mode.
+  _windowRep = _fileWinRep;
+
+  // Print this view.
+  fprintf(file, "Dumping view %s\n", _name);//TEMPTEMP
+
+  // Switch back to screen drawing mode.
+  _windowRep = _screenWinRep;
+
+  // Print any children of this view.
+  result += ViewWin::PrintPS(file);
+
+  return result;
 }

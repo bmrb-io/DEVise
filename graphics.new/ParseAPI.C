@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/09/05 22:19:03  jussi
+  Added setScreenSize command. Renamed connectData as getWindowImage.
+  Added getDisplayImage command.
+
   Revision 1.28  1996/08/29 22:17:22  guangshu
   Added connectData for DEVise server.
 
@@ -1582,7 +1586,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find window");
 	return -1;
       }
-      viewWin->GetWindowRep()->ExportImage(format, argv[3]);
+      viewWin->ExportImage(format, argv[3]);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

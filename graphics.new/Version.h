@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/07/09 16:00:25  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
  */
 
 #ifndef _Version_h_
@@ -31,6 +36,7 @@ class Version
 public:
     static const char *Get();
     static const char *GetCopyright();
+    static const char *GetWinLogo();
     static void PrintInfo();
 };
 

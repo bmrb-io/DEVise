@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/09/06 06:59:44  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.16  1996/07/14 16:52:16  jussi
   Added handling of window destroy events from window manager.
 
@@ -70,6 +77,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
+
+//#define DEBUG
 
 #include "ViewWin.h"
 #include "Display.h"
@@ -77,18 +87,22 @@
 #include "ClassDir.h"
 #include "Control.h"
 #include "Init.h"
+#include "DevError.h"
+#include "Version.h"
+#include "Util.h"
 
 #ifdef TK_WINDOW
 #include <tcl.h>
 #include <tk.h>
 #endif
 
-//#define DEBUG
-
 ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
 {
+  DO_DEBUG(printf("ViewWin::ViewWin(%s, this = %p)\n", name, this));
   _name = name;
   _windowRep = NULL;
+  _screenWinRep = NULL;
+  _fileWinRep = NULL;
   _parent = NULL;
   _mapped = false;
   _weight = weight;
@@ -112,6 +126,50 @@ void ViewWin::Iconify()
 {
   if (_windowRep)
     _windowRep->Iconify();
+}
+
+DevStatus
+ViewWin::ExportImage(DisplayExportFormat format, char *filename)
+{
+  DO_DEBUG(printf("ViewWin::ExportImage(_parent = %p)\n", _parent));
+  DevStatus result = StatusOk;
+
+#if 0 //TEMPTEMP
+  if (format == POSTSCRIPT || format == EPS)
+  {
+    ViewWin *printWinP = this;
+
+    // Find top level ViewWin (this should be called on the top level in the
+    // first place, but make sure).
+    while (printWinP->_parent != NULL)
+    {
+      printWinP = printWinP->_parent;
+    }
+
+    FILE *file = fopen(filename, "w");
+    if (file == NULL)
+    {
+      reportError("Can't open print file", errno);
+      result += StatusFailed;
+    }
+    else
+    {
+      result += printWinP->PrintPS(file);
+
+      if (fclose(file) != 0)
+      {
+	reportError("Error closing print file", errno);
+	result += StatusWarn;
+      }
+    }
+  }
+  else
+#endif
+  {
+    GetWindowRep()->ExportImage(format, filename);
+  }
+
+  return result;
 }
 
 void ViewWin::AppendToParent(ViewWin *parent)
@@ -148,43 +206,53 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
   Coord min_width = 170;
   Coord min_height = 100;
 
+  WindowRep *parentWinRep;
+  Color foreground;
+  Color background;
+
   if (_parent) {
 #ifdef DEBUG
     printf("ViewWin 0x%p mapping to parent 0x%p\n", this,
 	   _parent->GetWindowRep());
 #endif
-    _windowRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
-		    x, y, w, h, _foreground, _background,
-		    _parent->GetWindowRep(), min_width, min_height,
-                    relativeMinSize, _winBoundary);
-    _windowRep->RegisterCallback(this);
-#ifdef TK_WINDOW_old
-    _windowRep->Decorate(_parent->GetWindowRep(), _name,
-			 (unsigned int)min_width,
-			 (unsigned int)min_height);
-#endif
+    parentWinRep = _parent->GetWindowRep();
+    foreground = _foreground;
+    background = _background;
   } else {
-    /* Create a new WindowRep */
 #ifdef DEBUG
     printf("ViewWin 0x%p mapping to root\n", this);
 #endif
-    _windowRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
-		    x, y, w, h, ForegroundColor, BackgroundColor, NULL,
-		    min_width, min_height, relativeMinSize, _winBoundary);
-    _windowRep->RegisterCallback(this);
+    parentWinRep = NULL;
+    foreground = ForegroundColor;
+    background = BackgroundColor;
+  }
+
+  _screenWinRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
+	x, y, w, h, foreground, background, parentWinRep, min_width,
+	min_height, relativeMinSize, _winBoundary);
+  _screenWinRep->RegisterCallback(this);
+
+  _fileWinRep = DeviseDisplay::GetPSDisplay()->CreateWindowRep(_name,
+	x, y, w, h, foreground, background, parentWinRep, min_width,
+	min_height, relativeMinSize, _winBoundary);
+
+  _windowRep = _screenWinRep;
+
 #ifdef MARGINS
+  if (!_parent) {
     if (Init::DisplayLogo()) {
       /* Allocate top margin */
       _topMargin = _windowRep->GetSmallFontHeight() + 2;
       /* Draw margins */
       DrawMargins();
     }
+  }
 #endif
+
 #ifdef TK_WINDOW_old
-    _windowRep->Decorate(NULL, _name, (unsigned int)min_width,
+    _windowRep->Decorate(parentWinRep, _name, (unsigned int)min_width,
 			 (unsigned int)min_height);
 #endif
-  }
 
 #ifdef TK_WINDOW
   /* Get and set appropriate margins */
@@ -218,9 +286,14 @@ void ViewWin::Unmap()
   SubClassUnmapped();
 
   if (!WindowRep::IsDestroyPending())
-    DeviseDisplay::DefaultDisplay()->DestroyWindowRep(_windowRep);
-
+  {
+    DeviseDisplay::DefaultDisplay()->DestroyWindowRep(_screenWinRep);
+    DeviseDisplay::GetPSDisplay()->DestroyWindowRep(_fileWinRep);
+  }
   _windowRep = NULL;
+  _screenWinRep = NULL;
+  _fileWinRep = NULL;
+
   _hasGeometry = false;
   _mapped = false;
 }
@@ -517,7 +590,7 @@ void ViewWin::DrawMargins()
   if (!_topMargin)
     return;
 
-  char *logo = "Visualization by DEVise (c) 1996";
+  const char *logo = Version::GetWinLogo();
 
   int x, y;
   unsigned int w, h;
@@ -533,7 +606,7 @@ void ViewWin::DrawMargins()
   win->SetFgColor(GetBgColor());
   win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);
   win->SetFgColor(GetFgColor());
-  win->AbsoluteText(logo, x + 1, y + 1, w - 2, _topMargin - 2,
+  win->AbsoluteText((char *) logo, x + 1, y + 1, w - 2, _topMargin - 2,
 		    WindowRep::AlignNorth, true);
   win->SetNormalFont();
 }
@@ -664,3 +737,19 @@ void ViewWin::ToggleMargins()
     AddMarginControls();
 }
 #endif
+
+DevStatus
+ViewWin::PrintPS(FILE *file)
+{
+  DevStatus result = StatusOk;
+
+  int index = _children.InitIterator();
+  while (_children.More(index))
+  {
+    ViewWin *child = _children.Next(index);
+    result += child->PrintPS(file);
+  }
+  _children.DoneIterator(index);
+
+  return result;
+}

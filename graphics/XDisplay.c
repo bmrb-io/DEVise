@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  1996/09/05 21:30:14  jussi
+  Moved user-specified screen size to Display.
+
   Revision 1.34  1996/09/05 20:03:47  jussi
   Minor fix to get rid of compiler warning.
 
@@ -163,12 +166,15 @@
 #include "Journal.h"
 #include "Init.h"
 #endif
+#include "Version.h"
 
 extern "C" {
 #include "xv.h"
 }
 
 //#define DEBUG
+
+#include "Util.h"
 
 #ifdef TK_WINDOW_EV2
 static int HandleTkEvent(ClientData data, XEvent *event)
@@ -185,6 +191,7 @@ Open a new X display
 
 XDisplay::XDisplay(char *name)
 {
+  DO_DEBUG(printf("XDisplay::XDisplay(%s)\n", name != NULL ? name : "NULL"));
   if (!(_display = XOpenDisplay(name))) {
     fprintf(stderr, "Cannot open XDisplay\n");
     Exit::DoExit(1);
@@ -416,11 +423,11 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
 
   int ptype = (gbits == 24 ? PIC24 : PIC8);
   int colorstyle = -1;                  // use 1 for grayscale
-  char *comment = "Visualization by DEVise (c) 1996";
+  const char *comment = Version::GetWinLogo();
 
   int status = WriteGIF(fp, grabPic, ptype, gWIDE, gHIGH,
 			grabmapR, grabmapG, grabmapB, ncolors,
-			colorstyle, comment);
+			colorstyle, (char *) comment);
   if (status)
     fprintf(stderr, "Cannot write GIF image\n");
 
@@ -723,6 +730,7 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 				     Coord min_width, Coord min_height,
 				     Boolean relative, Boolean winBoundary)
 {
+  DO_DEBUG(printf("XDisplay::CreateWindowRep(%s)\n", name));
   Window parent = DefaultRootWindow(_display);
 
   Coord realX, realY, realWidth, realHeight;
@@ -903,6 +911,7 @@ Destroy a window. Parameter "win" better be of type XwindowRep *.
 
 void XDisplay::DestroyWindowRep(WindowRep *win)
 {
+  DO_DEBUG(printf("XDisplay::DestroyWindowRep(%p)\n", win));
   XWindowRep *xwin = (XWindowRep *)win;
   if (!_winList.Delete(xwin)) {
     fprintf(stderr, "XDisplay:Window to be deleted not found\n");
@@ -923,12 +932,14 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
 	   xwin, xwin->GetWinId());
 #endif
     XDestroyWindow(_display, xwin->GetWinId());
+    xwin->_win = 0;
   } else {
 #ifdef DEBUG
     printf("XDisplay::DestroyWindowRep 0x%p, pixmap 0x%lx\n",
 	   xwin, xwin->GetPixmapId());
 #endif
     XFreePixmap(_display, xwin->GetPixmapId());
+    xwin->_pixmap = 0;
   }
 
   delete xwin;

@@ -11,6 +11,7 @@ Add true PostScript printing capability. (yi/rkw 7/9/96)
 
 HIGH PRIORITY
 -------------
+Update examples on Devise web page. (ml/rkw 9/6/96)
 
 
 LOW PRIORITY
@@ -173,6 +174,8 @@ Large line width for Line plots doesn't look right. (kb 9/4/96)
 Support for custom fill bitmaps and/or user defined fill palette (kb 9/5/96)
 
 Support for custom colors and/or user defined color palette (kb 9/5/96)
+
+Put 3-D borders around views. (ml/rkw/9/6/96)
 
 
 COMPLETED

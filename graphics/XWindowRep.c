@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.67  1996/09/09 14:31:42  jussi
+  Added #ifdef LIBCS statements to make code compile in the
+  ClientServer library target.
+
   Revision 1.66  1996/09/06 06:59:47  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -288,6 +292,8 @@ extern "C" {
 // so this define must come after xv.h.
 //#define DEBUG
 
+#include "Util.h"
+
 #define MAXPIXELDUMP 0
 
 #define ROUND(type, value) ((type)(value + 0.5))
@@ -429,11 +435,13 @@ static XWindowRepInit xwindowrep_initializer;
 Initializer
 ***********************************************************************/
 
-XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
+XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
 			XWindowRep *parent, Color fgndColor, Color bgndColor,
 			Boolean backingStore) :
 	WindowRep(DVDisp, fgndColor, bgndColor)
 {
+  DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p,
+    window = 0x%lx)\n", this, parent, window));
   _display = display;
   _win = window;
   _pixmap = 0;
@@ -445,11 +453,13 @@ XWindowRep:: XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   Init();
 }
 
-XWindowRep:: XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp,
+XWindowRep::XWindowRep(Display *display, Pixmap pixmap, XDisplay *DVDisp,
 			XWindowRep *parent, Color fgndColor, Color bgndColor,
 			int x, int y) :
 	WindowRep(DVDisp, fgndColor, bgndColor)
 {
+  DO_DEBUG(printf("XWindowRep::XWindowRep(this = %p, parent = %p,
+    pixmap = 0x%lx)\n", this, parent, pixmap));
   _display = display;
   _win = 0;
   _pixmap = pixmap;
@@ -517,6 +527,7 @@ void XWindowRep::Init()
 
 XWindowRep::~XWindowRep()
 {
+  DO_DEBUG(printf("XWindowRep::~XWindowRep(this = %p)\n", this));
   XFreeGC(_display, _gc);
   XFreeGC(_display, _rectGc);
   
@@ -524,6 +535,7 @@ XWindowRep::~XWindowRep()
   FreeBitmap(_dstBitmap);
   
   /* _win or _pixmap is destroyed by XDisplay */
+  DOASSERT(_win == 0 && _pixmap == 0, "X window or pixmap not freed");
 
 #ifndef LIBCS
   // This should have already been done by XDisplay::DestroyWindowRep(),
@@ -686,6 +698,7 @@ void XWindowRep::ImportImage(Coord x, Coord y,
 
 void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
+  DO_DEBUG(printf("XWindowRep::ExportImage(this = %p)\n", this));
   if (format == GIF) {
     FILE *fp = fopen(filename, "wb");
     if (!fp) {

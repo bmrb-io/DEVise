@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/10 16:25:33  jussi
+  Removed _dispGraphics variable.
+
   Revision 1.1  1996/07/10 16:23:03  jussi
   Initial revision.
 */
@@ -118,7 +121,7 @@ public:
     virtual int  GetSmallFontHeight();
 
     /* Draw rubberbanding rectangle */
-    virtual void DrawRubberband(int x1, int y1, int x2, int y2);
+    virtual void DrawRubberband(int x1, int y1, int x2, int y2) {}
 
     /* Get window rep dimensions */
     virtual void Dimensions(unsigned int &width, unsigned int &height);

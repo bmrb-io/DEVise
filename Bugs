@@ -116,6 +116,9 @@ Num Date        Status  Description
 
 037 09/04/96	FIXED	Set X in mapping to a constant -> core dump. (rkw)
 
+038 09/05/96	FIXED	'Not Supported Yet' window needs an 'OK' button.
+			(rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.

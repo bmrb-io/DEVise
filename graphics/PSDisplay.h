@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/10 16:23:01  jussi
+  Initial revision.
+*/
 
 #ifndef PSDisplay_h
 #define PSDisplay_h
@@ -59,6 +62,10 @@ public:
     /* Flush buffered window operations to screen */
     virtual void Flush() {}
 
+    /* Export display image to other graphics formats */
+    virtual void ExportImage(DisplayExportFormat format, char *filename) {}
+    virtual void ExportGIF(FILE *fp) {}
+
 protected:
 #ifndef LIBCS
     /* Register with the dispatcher */
@@ -66,7 +73,7 @@ protected:
 #endif
 
     virtual void AllocColor(char *name, Color globalColor);
-    virtual void AllocColor(double r, double g, double b, Color globalColor);
+    virtual void AllocColor(float r, float g, float b, Color globalColor);
 };
 
 #endif

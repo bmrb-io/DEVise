@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/08/04 22:18:37  jussi
+  Changed return type of ToggleViewLocks from bool to void.
+
   Revision 1.38  1996/08/04 21:03:36  beyer
   Added view-locks and changed key handling.
 
@@ -407,6 +410,9 @@ class View
 	  ViewWin::SetFgBgColor(fg, bg);
 	  Refresh();
 	}
+
+	// Print this view (and any child views) to PostScript.
+	virtual DevStatus PrintPS(FILE *file);
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
