@@ -1,0 +1,5 @@
+javadoc -d /u/s/s/ssl/Work/LM/doc/AwtUtil AwtUtil 
+javadoc -d /u/s/s/ssl/Work/LM/doc/Util    Util 
+javadoc -d /u/s/s/ssl/Work/LM/doc/LayoutMgr/Application LayoutMgr.Application 
+javadoc -d /u/s/s/ssl/Work/LM/doc/LayoutMgr/MetaData LayoutMgr.MetaData
+javadoc -d /u/s/s/ssl/Work/LM/doc/LayoutEditor LayoutEditor

@@ -1,0 +1,32 @@
+Rect mode :
+
+1) Rubberband => create rectangle
+2) Click left button => place default rectangle at point
+3) Drawn rectangle is shown with markers for editing
+
+Clicking within rectangle with left button Selects it
+If shift is pressed then multiple items can be selected
+Sizing handles indicates that an item is selected
+
+Depending on where the click is dragging the mouse 
+   moves it
+   resizes along edge
+   resizes along corner
+
+Cliking outside the rectangle deselects it
+
+Duplicate : 
+
+Click on rect and choose duplicate option
+To create equally spaced duplicate, move first duplicate to place dsired.
+Subsequent ones get created equally spaced.
+
+
+To resize:
+
+Prop from corner : SHIFT + corner handle
+Vertically, hor or diag from center  CTRL and drag a sizing handle
+Prop from center outward : CTRL + shift + corner handle
+
+Overirde grid and guide settings ALT + drag sizing handle
+

@@ -1,0 +1,146 @@
+/****************************************************************************
+Source Code for DEVise Layout Manager
+Copyright(c) 1997 DEVise Group, University of Wisconsin-Madison.
+Author : Shilpa Lawande
+class ImageItemPanel.java
+****************************************************************************/
+
+//Packages 
+
+package AwtUtil;
+
+import java.lang.*;
+import java.awt.*;
+import java.awt.event.*;
+import COM.objectspace.jgl.*;
+import gjt.*;
+
+// Class
+/**
+ * The <CODE>ImageItemPanel</CODE> class
+ *
+ * @author  Shilpa Lawande
+ */
+
+public class ItemPanel extends Panel implements ItemSelectable
+{
+  /* Test code */
+  public static void main(String args[]) {
+    Frame f = new Frame();
+    f.setSize(150, 700);
+
+    ItemPanel p = new ItemPanel(100, 700);
+    f.add(p, "Center");
+    for (int i = 0; i < 10; i++) {
+      Image img = p.createImage(ImageItem.getImageProducer("/u/s/s/ssl/Work/LM/Icons/gifs/RLink.gif"));
+      ImageItem item 
+        = new ImageItem(img, "Image" + i, 20, 20);
+      p.add(item);
+    }
+    f.pack();
+    f.show();
+  }
+
+  boolean m_allowMultiple; // multiple selections allowed
+  int m_width;
+  int m_height;
+  ItemListener m_listener;
+  DList m_selectedItems;
+  MouseHandler m_mouseHandler;
+
+  public ItemPanel(int width, int height) {
+    super(new ColumnLayout());
+    m_width = width;
+    m_height = height;
+    m_listener = null;
+    m_selectedItems = new DList();
+    m_mouseHandler = new MouseHandler();
+    addMouseListener(m_mouseHandler);
+  }  
+  
+  class MouseHandler extends MouseAdapter { 
+    public void mousePressed(MouseEvent e) {
+      System.out.println("ItemPanel : mouseClicked");
+      Object item = e.getSource();
+      System.out.println(item);
+      if (item instanceof Selectable) {
+        if (!e.isShiftDown()) {
+          selectExactlyOne((Selectable)item);
+        } else { 
+          setStateOne((Selectable)item, Selectable.SELECTED);
+        }
+      } else {
+        setStateAll(Selectable.UNSELECTED);
+      }
+      repaint();
+    }
+  }
+
+  public Dimension getPreferredSize() {
+    int width, int height) {
+  }
+  // Itemselectable interface
+  public void addItemListener(ItemListener l) {
+    m_listener = AWTEventMulticaster.add(m_listener, l);  
+  }
+  public void removeItemListener(ItemListener l) {
+    m_listener = AWTEventMulticaster.remove(m_listener, l);
+  }
+  public Object[] getSelectedObjects(){
+    int numSelections = m_selectedItems.size();
+    if (numSelections == 0) {
+      return null;
+    }
+    Object selectedObjs[] = new Object[numSelections];
+    int i = 0;
+    for (DListIterator d = m_selectedItems.begin(); d.hasMoreElements(); i++){
+      selectedObjs[i] = d.nextElement(); 
+    }
+    return selectedObjs;
+  }
+
+  public void setStateOne(Selectable item, int stateToSet) {
+    if (item.getState() == stateToSet) {
+      return;
+    }
+    System.out.println("SelectOneItem");
+    ItemEvent e;
+    item.setState(stateToSet);
+    if (stateToSet == Selectable.SELECTED) {
+      e = new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED, item, 
+                        ItemEvent.SELECTED);
+    } else {
+      e = new ItemEvent(this, ItemEvent.ITEM_STATE_CHANGED, item,
+                        ItemEvent.DESELECTED);
+    }
+    m_selectedItems.add(item);
+    if (m_listener != null) {
+      m_listener.itemStateChanged(e);
+    }
+  }
+  public void setStateAll(int stateToSet) {
+    for (DListIterator d = m_selectedItems.begin(); d.hasMoreElements();){
+      ((Selectable)d.nextElement()).setState(stateToSet);
+    }
+    m_selectedItems.clear();
+  }
+  public void selectExactlyOne(Selectable item) {
+    int count = getComponentCount();
+    Component comp[] = getComponents();
+    for (int i = 0; i < count; i++) {
+      Selectable s = (Selectable)comp[i];
+      if (s == item) {
+        setStateOne(s, Selectable.SELECTED);  
+      } else {
+        setStateOne(s, Selectable.UNSELECTED);
+      }
+    }
+  }
+
+  pblic void remove(Component comp){ 
+    super.add(comp);
+    comp.removeMouseListener(m_mouseHandler);
+    invalidate();
+    repaint();
+  }
+}
