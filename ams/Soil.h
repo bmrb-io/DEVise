@@ -2,6 +2,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/05 20:20:37  jussi
+  Updated CVS header
+
+  Revision 1.2  1995/09/05 20:19:19  jussi
+  Added VCS header
 */
 
 #ifndef Soil_h

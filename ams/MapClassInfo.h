@@ -1,4 +1,12 @@
-/* Mapping class info for compiled mapings */
+/*
+  $Id$
+
+  $Log$*/
+
+/*
+   Mapping class info for compiled mapings
+*/
+
 #ifndef MapClassInfo_h
 #define MapClassInfo_h
 #include "ClassDir.h"

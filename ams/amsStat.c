@@ -2,11 +2,8 @@
   $Id$
 
   $Log$
-  Revision 1.3  1995/09/05 20:08:33  jussi
-  Updated header
-
-  Revision 1.2  1995/09/05 20:05:24  jussi
-  Added VCS header.
+  Revision 1.2  1995/09/05 20:19:21  jussi
+  Added VCS header
 */
 
 /*
