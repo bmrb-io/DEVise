@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/11 19:09:44  jussi
+  Added replica management.
+
   Revision 1.3  1996/05/11 17:26:57  jussi
   Reorganized code in order to interface with ParseAPI properly.
 
@@ -30,11 +33,9 @@
   is for use in the ServerAPI.c
 */
 
-#ifndef TkControl_h
-#define TkControl_h
+#ifndef ServerAPI_h
+#define ServerAPI_h
 
-#include <tk.h>
-#include <tcl.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
