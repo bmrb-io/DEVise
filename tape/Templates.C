@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/13 02:32:57  jussi
+  Changed template instantiation.
+
   Revision 1.3  1995/09/22 15:46:17  jussi
   Added copyright message.
 
@@ -28,7 +31,7 @@
 #pragma implementation "SortedTable.h"
 #endif
 
-#include "QueryProcTape.h"
+#include "QueryProcFull.h"
 
 #ifdef __GNUG__
 template class SortedTable<Coord, RecId>;
