@@ -12,23 +12,20 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Release the client/server and batch versions of DEVise.
+#  Release the client/server and batch versions of DEVise, for
+#  Intel/Solaris and SPARC/Solaris only.
 
 ############################################################
 
 #  $Id$
 
 #  $Log$
-#  Revision 1.1  1996/12/06 16:15:35  wenger
-#  First version of this -- needed to release c/s version of devise.
-#
 
 ############################################################
 
-set files = "hp/generic/devise hp/generic/deviseb hp/generic/devised \
-solaris/generic/devise solaris/generic/deviseb solaris/generic/devised \
-solsparc/generic/devise solsparc/generic/deviseb solsparc/generic/devised \
-sun/generic/devise sun/generic/deviseb sun/generic/devised"
+set files = "solaris/generic/devise solaris/generic/deviseb \
+solaris/generic/devised solsparc/generic/devise solsparc/generic/deviseb \
+solsparc/generic/devised"
 
 set target = /p/devise/public
 
@@ -49,7 +46,7 @@ end
 echo You are about to release YOUR copy of client/server Devise to the
 echo general public. The target directory is $target.
 echo ""
-echo The release includes Solaris/Sun/HP executables.
+echo The release includes Solaris executables.
 echo ""
 echo -n "Are you absolutely sure you want to do this? [N] "
 
@@ -91,21 +88,6 @@ endif
 cp -p solsparc/generic/devise $target/sun4m_54/devisec
 cp -p solsparc/generic/deviseb $target/sun4m_54/deviseb
 cp -p solsparc/generic/devised $target/sun4m_54/devised
-
-if (! -d $target/sun4m_412) then
-  mkdir $target/sun4m_412
-endif
-cp -p sun/generic/devise $target/sun4m_412/devisec
-cp -p sun/generic/deviseb $target/sun4m_412/deviseb
-cp -p sun/generic/devised $target/sun4m_412/devised
-
-if (! -d $target/hp700_ux90) then
-  mkdir $target/hp700_ux90
-endif
-cp -p hp/generic/devise $target/hp700_ux90/devisec
-cp -p hp/generic/deviseb $target/hp700_ux90/deviseb
-cp -p hp/generic/devised $target/hp700_ux90/devised
-
 
 echo ""
 echo Done!
