@@ -9,12 +9,12 @@ generic.o: /usr/include/sys/types.h /usr/include/sgidefs.h
 generic.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 generic.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/stdio.h
 generic.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-generic.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-generic.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/Display.h
-generic.o: ../graphics/Geom.h /usr/include/math.h ../graphics/ColorMgr.h
-generic.o: ../graphics/Control.h ../graphics/Init.h ../graphics/BufPolicy.h
-generic.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
-generic.o: ../graphics.new/MapInterpClassInfo.h
+generic.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
+generic.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
+generic.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+generic.o: ../graphics/ColorMgr.h ../graphics/Control.h ../graphics/Init.h
+generic.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+generic.o: ../graphics/ClassDir.h ../graphics.new/MapInterpClassInfo.h
 generic.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
 generic.o: ../graphics/ViewWin.h ../graphics/WindowRep.h
 generic.o: ../graphics/Transform.h ../graphics/Pattern.h
@@ -34,12 +34,12 @@ issm.o: /usr/include/sys/types.h /usr/include/sgidefs.h
 issm.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
 issm.o: /usr/include/sys/time.h /usr/include/time.h /usr/include/stdio.h
 issm.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
-issm.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
-issm.o: ../graphics/Color.h ../graphics/Journal.h ../graphics/Display.h
-issm.o: ../graphics/Geom.h /usr/include/math.h ../graphics/ColorMgr.h
-issm.o: ../graphics/Control.h ../graphics/Init.h ../graphics/BufPolicy.h
-issm.o: ../graphics/WinClassInfo.h ../graphics/ClassDir.h
-issm.o: ../graphics.new/MapInterpClassInfo.h
+issm.o: /usr/include/stdlib.h ../graphics/DList.h ../graphics/Exit.h
+issm.o: ../graphics/VisualArg.h ../graphics/Color.h ../graphics/Journal.h
+issm.o: ../graphics/Display.h ../graphics/Geom.h /usr/include/math.h
+issm.o: ../graphics/ColorMgr.h ../graphics/Control.h ../graphics/Init.h
+issm.o: ../graphics/BufPolicy.h ../graphics/WinClassInfo.h
+issm.o: ../graphics/ClassDir.h ../graphics.new/MapInterpClassInfo.h
 issm.o: ../graphics/VisualLinkClassInfo.h ../graphics/View.h
 issm.o: ../graphics/ViewWin.h ../graphics/WindowRep.h ../graphics/Transform.h
 issm.o: ../graphics/Pattern.h ../graphics/DevisePixmap.h

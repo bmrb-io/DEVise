@@ -11,7 +11,8 @@ QueryProcTape.o: ../graphics/VisualArg.h ../graphics/Color.h
 QueryProcTape.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
 QueryProcTape.o: ../graphics/DList.h ../graphics/Exit.h
 QueryProcTape.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-QueryProcTape.o: /usr/include/stdio.h ../graphics/Journal.h SortedTable.h
+QueryProcTape.o: /usr/include/stdio.h /usr/include/stdlib.h
+QueryProcTape.o: /usr/include/sgidefs.h ../graphics/Journal.h SortedTable.h
 QueryProcTape.o: ../graphics.new/GData.h ../graphics.new/TData.h
 QueryProcTape.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
 QueryProcTape.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
@@ -24,30 +25,31 @@ QueryProcTape.o: ../graphics/Transform.h /usr/include/math.h
 QueryProcTape.o: ../graphics.new/MappingInterp.h
 QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/AttrList.h
 QueryProcTape.o: /usr/include/sys/time.h /usr/include/sys/types.h
-QueryProcTape.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-QueryProcTape.o: /usr/include/sys/select.h ../graphics/Config.h
+QueryProcTape.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+QueryProcTape.o: ../graphics/Config.h
 TDataBinaryInterp.o: /usr/include/string.h TDataBinaryInterp.h
 TDataBinaryInterp.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
 TDataBinaryInterp.o: ../graphics.new/TDataAscii.h /usr/include/stdio.h
-TDataBinaryInterp.o: ../graphics/Dispatcher.h ../graphics/DList.h
+TDataBinaryInterp.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+TDataBinaryInterp.o: /usr/include/sgidefs.h ../graphics/DList.h
 TDataBinaryInterp.o: ../graphics/Exit.h ../graphics/VisualArg.h
 TDataBinaryInterp.o: ../graphics/Color.h ../graphics/Journal.h
 TDataBinaryInterp.o: ../graphics.new/TData.h ../graphics.new/RecId.h
 TDataBinaryInterp.o: ../graphics.new/RecOrder.h ../graphics/AttrList.h
 TDataBinaryInterp.o: /usr/include/sys/time.h /usr/include/sys/types.h
-TDataBinaryInterp.o: /usr/include/sgidefs.h /usr/include/sys/bsd_types.h
-TDataBinaryInterp.o: /usr/include/sys/select.h ../graphics/Config.h
-TDataBinaryInterp.o: ../graphics.new/RecInterp.h
+TDataBinaryInterp.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+TDataBinaryInterp.o: ../graphics/Config.h ../graphics.new/RecInterp.h
 TDataBinaryInterp.o: ../graphics.new/CompositeParser.h ../graphics/Parse.h
-TDataBinaryInterp.o: ../graphics/Control.h ../graphics/Util.h
-TDataBinaryInterp.o: /usr/include/assert.h /usr/include/stdlib.h
-TDataBinaryInterp.o: /usr/include/time.h /usr/include/ctype.h
-TDataTape.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/fcntl.h
-TDataTape.o: /usr/include/sys/types.h /usr/include/sgidefs.h
-TDataTape.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-TDataTape.o: /usr/include/sys/fcntl.h /usr/include/limits.h
-TDataTape.o: /usr/include/unistd.h /usr/include/sys/stat.h
-TDataTape.o: /usr/include/sys/time.h ../graphics/Parse.h TDataTape.h
+TDataBinaryInterp.o: /usr/include/time.h ../graphics/Control.h
+TDataBinaryInterp.o: ../graphics/Util.h /usr/include/assert.h
+TDataBinaryInterp.o: /usr/include/ctype.h
+TDataTape.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/stdlib.h
+TDataTape.o: /usr/include/sgidefs.h /usr/include/fcntl.h
+TDataTape.o: /usr/include/sys/types.h /usr/include/sys/bsd_types.h
+TDataTape.o: /usr/include/sys/select.h /usr/include/sys/fcntl.h
+TDataTape.o: /usr/include/limits.h /usr/include/unistd.h
+TDataTape.o: /usr/include/sys/stat.h /usr/include/sys/time.h
+TDataTape.o: ../graphics/Parse.h /usr/include/time.h TDataTape.h
 TDataTape.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 TDataTape.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
 TDataTape.o: ../graphics/Color.h ../graphics/Journal.h
@@ -60,20 +62,20 @@ TDataTape.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
 TDataTape.o: /usr/include/sys/wait.h /usr/include/sys/procset.h
 TDataTape.o: /usr/include/sys/siginfo.h /usr/include/sys/resource.h
 TDataTape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
-TDataTape.o: /usr/include/sys/sem.h ../graphics/Util.h /usr/include/stdlib.h
-TDataTape.o: /usr/include/time.h /usr/include/string.h /usr/include/ctype.h
-TDataTape.o: ../graphics/Init.h ../graphics/BufPolicy.h
+TDataTape.o: /usr/include/sys/sem.h ../graphics/Util.h /usr/include/string.h
+TDataTape.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
 TDataTapeInterp.o: /usr/include/string.h /usr/include/assert.h
 TDataTapeInterp.o: TDataTapeInterp.h ../graphics/DeviseTypes.h
 TDataTapeInterp.o: ../graphics/ClassDir.h TDataTape.h /usr/include/stdio.h
 TDataTapeInterp.o: /usr/include/sys/types.h /usr/include/sgidefs.h
 TDataTapeInterp.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
-TDataTapeInterp.o: ../graphics/Dispatcher.h ../graphics/DList.h
-TDataTapeInterp.o: ../graphics/Exit.h ../graphics/VisualArg.h
-TDataTapeInterp.o: ../graphics/Color.h ../graphics/Journal.h
-TDataTapeInterp.o: ../graphics.new/TData.h ../graphics.new/RecId.h
-TDataTapeInterp.o: ../graphics.new/RecOrder.h tapedrive.h /usr/include/tar.h
-TDataTapeInterp.o: machdep.h /usr/include/limits.h /usr/include/sys/param.h
+TDataTapeInterp.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+TDataTapeInterp.o: ../graphics/DList.h ../graphics/Exit.h
+TDataTapeInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
+TDataTapeInterp.o: ../graphics/Journal.h ../graphics.new/TData.h
+TDataTapeInterp.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
+TDataTapeInterp.o: tapedrive.h /usr/include/tar.h machdep.h
+TDataTapeInterp.o: /usr/include/limits.h /usr/include/sys/param.h
 TDataTapeInterp.o: /usr/include/sys/signal.h /usr/include/sys/ioctl.h
 TDataTapeInterp.o: /usr/include/sys/ioccom.h /usr/include/net/soioctl.h
 TDataTapeInterp.o: /usr/include/sys/termio.h /usr/include/sys/termios.h
@@ -84,15 +86,15 @@ TDataTapeInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
 TDataTapeInterp.o: /usr/include/sys/sem.h ../graphics/AttrList.h
 TDataTapeInterp.o: ../graphics/Config.h ../graphics.new/RecInterp.h
 TDataTapeInterp.o: ../graphics.new/CompositeParser.h ../graphics/Parse.h
-TDataTapeInterp.o: ../graphics/Control.h ../graphics/Util.h
-TDataTapeInterp.o: /usr/include/stdlib.h /usr/include/time.h
-TDataTapeInterp.o: /usr/include/ctype.h
+TDataTapeInterp.o: /usr/include/time.h ../graphics/Control.h
+TDataTapeInterp.o: ../graphics/Util.h /usr/include/ctype.h
 Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
 Templates.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
 Templates.o: ../graphics/Color.h ../graphics.new/RecId.h
 Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
 Templates.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
-Templates.o: /usr/include/stdio.h ../graphics/Journal.h SortedTable.h
+Templates.o: /usr/include/stdio.h /usr/include/stdlib.h
+Templates.o: /usr/include/sgidefs.h ../graphics/Journal.h SortedTable.h
 Templates.o: /usr/include/assert.h ../graphics.new/GData.h
 Templates.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
 Templates.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
