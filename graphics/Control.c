@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/08/07 19:26:10  jussi
+  Added methods which allow query processor to control when
+  a synchronization message is sent to client.
+
   Revision 1.10  1996/05/22 21:03:54  jussi
   ControlPanel::_controlPanel is now set by main program.
 
@@ -55,6 +59,7 @@
 #include "Dispatcher.h"
 #include "Journal.h"
 #include "Util.h"
+#include "Display.h"
 
 ControlPanel *ControlPanel::_controlPanel = 0;
 ClassDir *ControlPanel::_classDir = 0;
@@ -77,6 +82,19 @@ ClassDir *ControlPanel::GetClassDir()
     _classDir->InsertCategory("cursor");
   }
   return _classDir;
+}
+
+void ControlPanel::DestroySessionData()
+{
+  _batchMode = false;
+  _syncNotify = false;
+  _syncAllowed = false;
+
+#ifndef LIBCS
+  // reset screen size to original size
+  DeviseDisplay::DefaultDisplay()->DesiredScreenWidth() = Init::ScreenWidth();
+  DeviseDisplay::DefaultDisplay()->DesiredScreenHeight() =Init::ScreenHeight();
+#endif
 }
 
 /***************************************************************
