@@ -15,7 +15,11 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.4  1995/12/14 15:44:57  jussi
+  Added copyright and CVS headers. Replaced WinVertical and
+  WinHorizontal with TileLayout.
+*/
 
 #include <sys/time.h>
 #include <time.h>
@@ -194,13 +198,8 @@ main(int argc, char **argv){
 	/* create control panel */
 	ControlPanel *ctrl = ControlPanel::Instance();
 
-	int i;
-	double cur = 0.0;
-
 	int depth = DeviseDisplay::DefaultDisplay()->NumPlanes();
-	/*
-	depth = 2;
-	*/
+
 	if (depth >= 8) {
 		printf("using colors\n");
 		double colorVal= 0.0;
@@ -210,7 +209,7 @@ main(int argc, char **argv){
 		all_busyColor = ColorMgr::AllocColor("green");
 		some_idleColor = ColorMgr::AllocColor("red");
 
-		for (i=0; i < MAX_COLORS; i++){
+		for(int i = 0; i < MAX_COLORS; i++){
 			colorArray0[i] = ColorMgr::AllocColor(1.0, colorVal, colorVal);
 			colorArray1[i] = ColorMgr::AllocColor(colorVal, 1.0, colorVal);
 			colorArray2[i] = ColorMgr::AllocColor(colorVal,  colorVal, 1.0);
@@ -230,7 +229,7 @@ main(int argc, char **argv){
 		Color color1  = ColorMgr::AllocColor("green");
 		Color color2  = ColorMgr::AllocColor("blue");
 		*/
-		for (i=0; i < MAX_COLORS; i++){
+		for(int i = 0; i < MAX_COLORS; i++){
 			colorArray0[i] = color0;
 			colorArray1[i] = color1;
 			colorArray2[i] = color2;
