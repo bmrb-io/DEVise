@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/05/31 15:45:55  jussi
+#  A customized Makefile.base.aix is used in AIX.
+#
 
 ############################################################
 
@@ -43,8 +46,8 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
 LDFLAGS = $(ARCH_LDFLAGS) \
 	-L../graphics.new -L../graphics -L../tape -L../issm \
 	-L../crsp -L../compustat -lmonolith -lgraphics.new -lgraphics \
-	-lissm -lcrsp -lcstat -ltape -ltk4.0 -ltcl7.4 -lXaw -lXmu \
-	-lXt -lXext -lX11 -lm $(ARCH_LDPOST)
+	-lissm -lcrsp -lcstat -ltape -ltk4.0 -ltcl7.4 --lX11 -lm \
+	$(ARCH_LDPOST)
 
 ALLLIBS = ../graphics/libgraphics.a ../graphics.new/libgraphics.new.a \
 	../tape/libtape.a ../issm/libissm.a ../compustat/libcstat.a \
