@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/10/18 15:24:33  jussi
+  Added RGB color selection methods for LIBCS compiles.
+
   Revision 1.4  1996/09/24 19:06:28  wenger
   PostScript code for lines, rects, text at least partially working (disabled
   for commit).  Still needs scaling and colors.  Added files for tarring
@@ -125,7 +128,7 @@ public:
     virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
     virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
-    virtual void Text(char *text, Coord x, Coord y, Coord width,
+    virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
                       Coord height, TextAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false);
     
@@ -164,6 +167,18 @@ public:
     /* Free pixmap from memory */
     virtual void FreePixmap(DevisePixmap *pixmap) {}
 
+    virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
+      _transforms[_current].Transform(x, y, newX, newY);
+      TransPixToPoint(newX, newY);
+    }	
+
+    /* Transform from "pixels" to points. */
+    virtual void TransPixToPoint(Coord &newX, Coord &newY) {
+      newY *= -1.0;
+      //TEMPTEMP -- need more scaling stuff here
+    }
+
+
 protected:
     friend class PSDisplay;
 
@@ -182,6 +197,8 @@ private:
     /* Update window dimensions; globals: _x, _y, _width, _height */
     void UpdateWinDimensions();
 
+    void DrawLine(FILE *printFile, Coord x1, Coord y1, Coord x2,
+      Coord y2);
     void DrawFilledRect(FILE *printFile, Coord x1, Coord y1, Coord x2,
       Coord y2);
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.78  1996/10/02 15:23:38  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.77  1996/09/27 15:52:34  wenger
   Fixed a number of memory leaks.
 
@@ -1374,7 +1378,7 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
   GetWindowRep()->PopClip();
   GetWindowRep()->Flush();
 
-  if (_windowRep == _fileWinRep)
+  if (_winReps.IsFileOutput())
   {
     (void) PrintPSDone();
   }
@@ -2860,10 +2864,11 @@ View::PrintPS()
   PSDisplay *psDispP = (PSDisplay *) DeviseDisplay::GetPSDisplay();
 
   // Switch this view over to PostScript drawing mode.
-  _windowRep = _fileWinRep;
+  _winReps.SetFileOutput();
 
   // Force a refresh to print the PostScript.
   fprintf(psDispP->GetPrintFile(), "\n%% Start of view '%s'\n", _name);
+  fprintf(psDispP->GetPrintFile(), "50 700 translate\n");//TEMPTEMP
   Refresh();
 
   return result;
@@ -2881,7 +2886,7 @@ View::PrintPSDone()
   fprintf(psDispP->GetPrintFile(), "%% End of view '%s'\n", _name);
 
   // Switch this view back to screen drawing mode.
-  _windowRep = _screenWinRep;
+  _winReps.SetScreenOutput();
 
   // Continue printing any more views that need to be printed.
   result += ViewWin::PrintPS();

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/10/09 14:33:45  wenger
+  Had to make changes to get my new code to compile on HP and Sun.
+
   Revision 1.14  1996/10/07 22:53:50  wenger
   Added more error checking and better error messages in response to
   some of the problems uncovered by CS 737 students.
@@ -155,6 +158,7 @@ ReadFile(char *filename, int &size, char *&buffer)
 
 char *CopyString(char *str)
 {
+  if (str == NULL) return str;
   char *result = new char[strlen(str) + 1];
   if (!result) {
     fprintf(stderr, "Insufficient memory for new string\n");

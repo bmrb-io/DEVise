@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  1996/08/23 16:55:37  wenger
+#  First version that allows the use of Dali to display images (more work
+#  needs to be done on this); changed DevStatus to a class to make it work
+#  better; various minor bug fixes.
+#
 #  Revision 1.27  1996/08/13 17:45:35  flisakow
 #      Make consistently uses C and CC for gcc and g++, respectively.
 #
@@ -45,7 +50,7 @@ LIBSRC = AttrList.c AxisLabelClassInfo.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C xvgifwr.c xv24to8.c xvgrab.c xvgif.c \
 	Map3D.C Temp.c PSWindowRep.c PSDisplay.c DaliIfc.c DaliPatron.c \
-	DevStatus.c
+	DevStatus.c DualWindowRep.c
 
 SRCc = $(filter %.c,$(LIBSRC))
 SRCC = $(filter %.C,$(LIBSRC))

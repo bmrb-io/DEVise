@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/09/18 20:17:31  guangshu
+  Modified function ExportGIF.
+
   Revision 1.29  1996/09/09 14:31:42  jussi
   Added #ifdef LIBCS statements to make code compile in the
   ClientServer library target.
@@ -127,6 +130,7 @@
 #include "WindowRep.h"
 #include "Xdef.h"
 #include "DList.h"
+#include "Util.h"
 
 class XWindowRep;
 
@@ -192,6 +196,8 @@ public:
 
 #ifndef LIBCS
 	/* import graphics via Dali */
+	virtual void SetDaliServer(char *serverName) { _daliServer =
+	  CopyString(serverName); }
   	virtual DevStatus DaliShowImage(Coord centerX, Coord centerY,
                                         Coord width, Coord height,
                                         char *filename, int imageLen,
@@ -254,7 +260,7 @@ public:
 	virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
 	virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
-	virtual void Text(char *text, Coord x, Coord y, Coord width,
+	virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
 			  Coord height, TextAlignment alignment = AlignCenter,
 			  Boolean skipLeadingSpaces = false);
 
@@ -438,6 +444,7 @@ private:
 
 #ifndef LIBCS
 	DaliImageList _daliImages;
+	char *_daliServer;
 #endif
 };
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/09/19 20:11:55  wenger
+  More PostScript output code (still disabled); some code for drawing
+  view borders (disabled).
+
   Revision 1.14  1996/09/10 20:07:12  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -87,11 +91,14 @@
 #include "DeviseTypes.h"
 #include "WindowRep.h"
 #include "Color.h"
+#include "DualWindowRep.h"
 
 #ifdef TK_WINDOW
 #include <tcl.h>
 #include <tk.h>
 #endif
+
+#define _windowRep _winReps.GetWindowRep()
 
 class ViewWin;
 DefinePtrDList(ViewWinList, ViewWin *);
@@ -214,9 +221,7 @@ protected:
     unsigned int _height; /* current height */
     ViewWinList _children;
     ViewWin *_parent;     /* parent window */
-    WindowRep *_windowRep;/* current WindowRep */
-    WindowRep *_screenWinRep; /* WindowRep for output to screen */
-    WindowRep *_fileWinRep; /* WindowRep for output to file */
+    DualWindowRep _winReps;
     char *_name;          /* name of window */
     int _weight;          /* relative weight of window */
     Boolean _mapped;      /* TRUE if this window is mapped */

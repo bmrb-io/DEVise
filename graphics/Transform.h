@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/07/20 18:48:00  jussi
+  Added 3D line segment shape and renamed some 3D type names to
+  be more general.
+
   Revision 1.9  1996/07/10 18:59:37  jussi
   Fixed Transform3D::SetViewMatrix().
 
@@ -90,7 +94,7 @@ public:
     _cartesian = t->_cartesian;
   }
 
-  /* Copy from another mattrix */
+  /* Copy from another matrix */
   void Copy(Transform2D &t) {
     t.GetCoords(_a00,_a01,_a02,_a10,_a11,_a12);
     _cartesian = t._cartesian;
@@ -257,7 +261,7 @@ public:
     _cartesian = t->_cartesian;
   }
 
-  /* Copy from another mattrix */
+  /* Copy from another matrix */
   void Copy(Transform3D &t) {
     t.GetCoords(_a00,_a01,_a02,_a03,
                 _a10,_a11,_a12,_a13,
@@ -291,6 +295,7 @@ public:
   void Rotate(Coord theta) {
   }
 
+#if 0 // These are never used(!).  RKW 10/15/96.
   /* Return the transformed X,Y,Z coordinates */
   void Transform(Coord x, Coord y, Coord z, 
 		 Coord &newX, Coord &newY, Coord &newZ) {
@@ -328,6 +333,7 @@ public:
 			Coord &oldX, Coord &oldY, Coord &oldZ) {
     oldX = x; oldY = y; oldZ = z;
   }
+#endif
 
   /* Multiply other matrix after this one matrix. Store the
      result in this */

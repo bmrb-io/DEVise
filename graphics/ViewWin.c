@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/09/19 20:11:54  wenger
+  More PostScript output code (still disabled); some code for drawing
+  view borders (disabled).
+
   Revision 1.18  1996/09/10 20:07:12  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -108,9 +112,6 @@ ViewWin::ViewWin(char *name, Color fg, Color bg, int weight, Boolean boundary)
 {
   DO_DEBUG(printf("ViewWin::ViewWin(%s, this = %p)\n", name, this));
   _name = name;
-  _windowRep = NULL;
-  _screenWinRep = NULL;
-  _fileWinRep = NULL;
   _parent = NULL;
   _mapped = false;
   _weight = weight;
@@ -233,16 +234,19 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
     background = BackgroundColor;
   }
 
-  _screenWinRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(_name,
-	x, y, w, h, foreground, background, parentWinRep, min_width,
+  WindowRep *screenWinRep = DeviseDisplay::DefaultDisplay()->CreateWindowRep(
+	_name, x, y, w, h, foreground, background, parentWinRep, min_width,
 	min_height, relativeMinSize, _winBoundary);
-  _screenWinRep->RegisterCallback(this);
+  screenWinRep->RegisterCallback(this);
+  screenWinRep->SetDaliServer(Init::DaliServer());
+  _winReps.SetScreenWinRep(screenWinRep);
 
-  _fileWinRep = DeviseDisplay::GetPSDisplay()->CreateWindowRep(_name,
-	x, y, w, h, foreground, background, parentWinRep, min_width,
+  WindowRep *fileWinRep = DeviseDisplay::GetPSDisplay()->CreateWindowRep(_name,
+	x, y, w, h, foreground, background, NULL, min_width,
 	min_height, relativeMinSize, _winBoundary);
+  _winReps.SetFileWinRep(fileWinRep);
 
-  _windowRep = _screenWinRep;
+  _winReps.SetScreenOutput();
 
 #ifdef MARGINS
   if (!_parent) {
@@ -293,12 +297,12 @@ void ViewWin::Unmap()
 
   if (!WindowRep::IsDestroyPending())
   {
-    DeviseDisplay::DefaultDisplay()->DestroyWindowRep(_screenWinRep);
-    DeviseDisplay::GetPSDisplay()->DestroyWindowRep(_fileWinRep);
+    DeviseDisplay::DefaultDisplay()->DestroyWindowRep(
+      _winReps.GetScreenWinRep());
+    DeviseDisplay::GetPSDisplay()->DestroyWindowRep(_winReps.GetFileWinRep());
   }
-  _windowRep = NULL;
-  _screenWinRep = NULL;
-  _fileWinRep = NULL;
+  _winReps.SetScreenWinRep(NULL);
+  _winReps.SetFileWinRep(NULL);
 
   _hasGeometry = false;
   _mapped = false;

@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/10 16:40:39  jussi
+  Initial revision.
+*/
 
 #include "NullWindowRep.h"
 #include "NullDisplay.h"
@@ -648,7 +651,7 @@ void NullWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 
 /* Draw scale text */
 
-void NullWindowRep::Text(char *text, Coord x, Coord y,
+void NullWindowRep::ScaledText(char *text, Coord x, Coord y,
                          Coord width, Coord height,
                          TextAlignment alignment,
                          Boolean skipLeadingSpace)

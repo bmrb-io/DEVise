@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/07/10 16:40:40  jussi
+  Initial revision.
+*/
 
 #ifndef NullWindowRep_h
 #define NullWindowRep_h
@@ -96,7 +99,7 @@ public:
     virtual void Line(Coord x1, Coord y1, Coord x2, Coord y2, Coord width);
     virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
-    virtual void Text(char *text, Coord x, Coord y, Coord width,
+    virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
                       Coord height, TextAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false);
     

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.31  1996/09/06 06:59:45  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.30  1996/09/04 21:24:50  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -221,7 +228,7 @@ class WindowRep {
 public:
   /* destructor */
   virtual ~WindowRep();
-  
+
 #ifdef TK_WINDOW_old
   /* Decorate window */
   virtual void Decorate(WindowRep *parent, char *name,
@@ -270,10 +277,12 @@ public:
 
 
   /* import graphics via Dali */
+  virtual void SetDaliServer(char *serverName) { DOASSERT(false,
+    "Can't do SetDaliServer() on this object"); }
   virtual DevStatus DaliShowImage(Coord centerX, Coord centerY, Coord width,
     Coord height, char *filename, int imageLen, char *image)
-    { return StatusOk; }
-  virtual DevStatus DaliFreeImages() { return StatusOk; }
+    { return StatusFailed; }
+  virtual DevStatus DaliFreeImages() { return StatusFailed; }
   virtual int DaliImageCount() { return 0; }
 
   /* drawing primitives */
@@ -344,8 +353,8 @@ public:
   enum TextAlignment { AlignNorthWest, AlignNorth, AlignNorthEast, 
 			 AlignWest, AlignCenter, AlignEast, AlignSouthWest,
 			 AlignSouth, AlignSouthEast};
-  virtual void Text(char *text, Coord x, Coord y, Coord width, Coord height,
-		    TextAlignment alignment = AlignCenter, 
+  virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
+		    Coord height, TextAlignment alignment = AlignCenter, 
 		    Boolean skipLeadingSpaces = false) = 0;
   
   /* draw absolute text: one that does not scale the text */
@@ -394,7 +403,7 @@ public:
   }
   
   /* pop transformation matrix */
-  void PopTransform(){
+  void PopTransform() {
     if (_current <= 0){
       fprintf(stderr,"WindowRep::PopTransform: underflow\n");
       Exit::DoExit(1);
@@ -403,11 +412,11 @@ public:
   }
 
   /* operations on current transformation matrix */
-  void Scale(Coord sx, Coord sy){
+  void Scale(Coord sx, Coord sy) {
     _transforms[_current].Scale(sx,sy);
   }
 
-  void Translate(Coord dx, Coord dy){
+  void Translate(Coord dx, Coord dy) {
     _transforms[_current].Translate(dx,dy);
   }
 
@@ -424,8 +433,8 @@ public:
     _transforms[_current].PostMultiply(t);
   }
 
-  void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
-    _transforms[_current].Transform(x,y,newX,newY);
+  virtual void Transform(Coord x, Coord y, Coord &newX, Coord &newY) {
+    _transforms[_current].Transform(x, y, newX, newY);
   }
 
   void PrintTransform() {
@@ -454,7 +463,7 @@ public:
   }
   
   /* pop transformation matrix */
-  void PopTransform3(){
+  void PopTransform3() {
     if (_current3 <= 0){
       fprintf(stderr,"WindowRep::PopTransform: underflow\n");
       Exit::DoExit(1);
@@ -484,10 +493,12 @@ public:
     _transforms3[_current3].PostMultiply(t);
   }
 
-  void Transform3(Coord x, Coord y, Coord z,
+#if 0 // Not used -- RKW 10/12/96.
+  virtual void Transform3(Coord x, Coord y, Coord z,
                   Coord &newX, Coord &newY, Coord &newZ) {
-    _transforms3[_current3].Transform(x,y,z,newX,newY,newZ);
+    _transforms3[_current3].Transform(x, y, z, newX, newY, newZ);
   }
+#endif
 
   void PrintTransform3() {
     _transforms3[_current3].Print();
@@ -503,8 +514,8 @@ public:
   // ---------------------------------------------------------- 
 
   /* push clipping onto stack. The coords are defined with respect to the
-     current trnasformation matrix. */
-  virtual void PushClip(Coord x,Coord y,Coord w,Coord h) = 0;
+     current transformation matrix. */
+  virtual void PushClip(Coord x, Coord y, Coord w, Coord h) = 0;
   /* pop the clip region. */
   virtual void PopClip() = 0;
   
@@ -533,7 +544,9 @@ public:
 
 protected:
 
-  /* called by derived class to cached current clip region */
+  friend class DualWindowRep;
+
+  /* called by derived class to cache current clip region */
   void _PushClip(Coord x, Coord y, Coord w, Coord h) {
     if (_clipCurrent >= WindowRepClipDepth - 1){
       fprintf(stderr,"WindowRep::PushClip: overflow\n");
@@ -613,7 +626,9 @@ protected:
   ClipRectList  _damageRects;     /* damaged areas */
   Boolean _damaged;
 
+#if 0 // Not used anywhere.  RKW 10/11/96.
   Coord _x, _y, _width, _height;  /* location and dimensions of window */
+#endif
   Color _fgndColor, _bgndColor;   /* current fg and bg colors */
   Pattern _pattern;               /* current pattern */
   int _line_width;		  /* current border line width */

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.70  1996/09/26 20:39:24  jussi
+  Removed duplicate default argument.
+
   Revision 1.69  1996/09/18 20:16:56  guangshu
   Modified function ExportGIF.
 
@@ -459,6 +462,9 @@ XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
   if (_parent)
     _parent->_children.Append(this);
   _backingStore = false;
+#ifndef LIBCS
+  _daliServer = NULL;
+#endif
 
   Init();
 }
@@ -552,6 +558,7 @@ XWindowRep::~XWindowRep()
   // but do it again here just in case...  If it's already been done,
   // this won't actually do anything.
   (void) DaliFreeImages();
+  delete [] _daliServer;
 #endif
 
   if (_parent) {
@@ -629,6 +636,8 @@ void XWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 #endif
 
   WindowRep::_PushClip(xlow, ylow, width, height);
+
+  return;
 }
 
 /*******************************************************************/
@@ -650,13 +659,14 @@ void XWindowRep::PopClip()
 #endif
 
   } else {
-
     /* no more clipping */
 #ifdef GRAPHICS 
     if (_dispGraphics)
       XSetClipMask(_display, _gc, None);
 #endif
   }
+
+  return;
 }
 
 /* import window image */
@@ -784,7 +794,7 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
 
   DevStatus result = StatusOk;
 
-  if (Init::DaliServer() == NULL)
+  if (_daliServer == NULL)
   {
     reportError("No Dali server specified", devNoSyserr);
     result = StatusFailed;
@@ -794,7 +804,7 @@ XWindowRep::DaliShowImage(Coord centerX, Coord centerY, Coord width,
     if (filename == NULL) filename = "-";
 
     int handle;
-    result += DaliIfc::ShowImage(Init::DaliServer(), _win, (int) centerX,
+    result += DaliIfc::ShowImage(_daliServer, _win, (int) centerX,
       (int) centerY, (int) width, (int) height, filename, imageLen, image,
       handle);
     if (result.IsComplete())
@@ -828,7 +838,7 @@ XWindowRep::DaliFreeImages()
   {
     int handle = _daliImages.Next(index);
     _daliImages.DeleteCurrent(index);
-    result += DaliIfc::FreeImage(Init::DaliServer(), handle);
+    result += DaliIfc::FreeImage(_daliServer, handle);
   }
   _daliImages.DoneIterator(index);
 
@@ -1963,7 +1973,7 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
                    + fontStruct->max_bounds.descent;
   
   if (textWidth > winWidth || textHeight > winHeight) {
-    Text(text, x, y, width, height, alignment, skipLeadingSpace);
+    ScaledText(text, x, y, width, height, alignment, skipLeadingSpace);
     return;
   }
   
@@ -2029,10 +2039,11 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 #endif
 }
 
-/* Draw scale text */
+/* Draw scaled text */
 
-void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
-		      TextAlignment alignment, Boolean skipLeadingSpace)
+void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
+		      Coord height, TextAlignment alignment,
+		      Boolean skipLeadingSpace)
 {
 #ifdef DEBUG
   printf("XWindowRep::Text: %s at %.2f,%.2f,%.2f,%.2f\n",

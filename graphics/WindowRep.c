@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/09/06 06:59:44  beyer
+  - Improved support for patterns, modified the pattern bitmaps.
+  - possitive pattern numbers are used for opaque fills, while
+    negative patterns are used for transparent fills.
+  - Added a border around filled shapes.
+  - ShapeAttr3 is (temporarily) interpreted as the width of the border line.
+
   Revision 1.17  1996/08/28 00:19:38  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -93,7 +100,6 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
   _bgndColor = bgndColor;
   _display = disp;
   _pattern = p;
-  _width = 0;
 }
 
 WindowRep::~WindowRep()
