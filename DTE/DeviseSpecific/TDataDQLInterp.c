@@ -45,8 +45,6 @@ TDataDQLInterpClassInfo::TDataDQLInterpClassInfo(
 	char* tableName, const char* query) : _attrs(tableName)
 {
 
-/* Note that this only saves a pointer to the attrList; it doesn't copy it. */
-
 // this constructor does nothing
 
 	_tdata = NULL;
@@ -123,11 +121,17 @@ ClassInfo *TDataDQLInterpClassInfo::CreateWithParams(int argc, char **argv)
 	_tableName = strdup(argv[0]);
 	char* attrs = argv[1];
 	_type = strdup(argv[1]);
-	List<char*>* attrList = new List<char*>;
+
+	// List<char*>* attrList = new List<char*>;
+	List<char*>* attrList = NULL;
+
+	/*
 	for(char* currAtt = strtok(attrs, " "); currAtt;
 					currAtt = strtok(NULL, " ")){
 		attrList->append(strdup(currAtt));
 	}
+	*/
+
 	String query = "select *";
 	/*
 	attrList->rewind();

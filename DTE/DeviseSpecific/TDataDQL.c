@@ -145,16 +145,23 @@ void TDataDQL::runQuery(){
 
 	int offset = 0;
 	_sizes = new int[_numFlds]; 
-	attrList->rewind();
+	if(attrList){
+		attrList->rewind();
+	}
 	_attrs.Clear();
 	for(int i = 0; i < _numFlds; i++){
-		// assert(!attrList->atEnd());
 
-		// char* atname = attrList->get();
-		const char* atname = strchr(_attributeNames[i].chars(), '.') + 
-			sizeof(char);
+		const char* atname = NULL;
+		if(attrList){
+			assert(!attrList->atEnd());
+			atname = attrList->get();
+			attrList->step();
+		}
+		else{
+			atname = strchr(_attributeNames[i].chars(), '.') + sizeof(char);
+		}
+		assert(atname);
 		cout << "atname = " << atname << endl;
-		// attrList->step();
 		TRY(int deviseSize = packSize(_types[i]), );
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
