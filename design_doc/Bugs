@@ -2325,12 +2325,17 @@ Num Date        Status  Description
 
 592 05/22/00	OPEN	JavaScreen: sometimes doesn't catch keystrokes in
 			views. (rkw)
+			(See also bug 594.)
 
 593 05/23/00	OPEN	JavaScreen: no longer asks for confirmation when
 			you click Exit with a session open. (rkw)
 
 594 06/05/00	OPEN	JavaScreen: JS inside Netscape doesn't seem to
 			pick up keystrokes in 3D views. (rkw)
+			(See also bug 592.)
+
+595 06/06/00	OPEN	JavaScreen: java.lang.ArrayIndexOutOfBoundsException
+			when opening AWON session. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
