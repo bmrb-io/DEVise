@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.20  1996/05/14 15:06:09  jussi
+#  Added catch statement to DEVise saveWindowImage call.
+#
 #  Revision 1.19  1996/05/11 17:24:57  jussi
 #  Added warning output to DictLookup.
 #
@@ -564,7 +567,6 @@ proc PrintActual {toprinter printcmd filename allviews format} {
 	set file [format $template $i]
 	puts "Save window $win to file $file"
 	set err [ catch { DEVise saveWindowImage $format $win $file } ]
-	puts "err = $err"
 	if {$err > 0} {
 	    dialog .printError "Window Image Save Error" \
 		    "An error occurred while saving window images to files." \
