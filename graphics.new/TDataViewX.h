@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/25 01:20:19  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.2  1995/09/05 22:16:05  jussi
   Added CVS header.
 */
@@ -28,6 +34,7 @@
 #include "GDataBin.h"
 #include "TDataCMap.h"
 #include "Color.h"
+#include "BasicStats.h"
 
 class TDataViewX: public ViewGraph, private QueryCallback,
 	private GDataBinCallback {
@@ -70,5 +77,6 @@ private:
   GDataBin *_dataBin;
   int _totalGData, _numBatches;
   Boolean _batchRecs; /* true to batch records */
+  BasicStats *_stats;
 };
 #endif

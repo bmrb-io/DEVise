@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/25 01:20:18  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.4  1995/11/24 21:24:39  jussi
   Fixed inconsistencies in computing xPerPixel vs. scaling done by
   View.
@@ -47,6 +53,9 @@ TDataViewX::TDataViewX(char *name,
   _cMap = NULL;
   _totalGData = _numBatches = 0;
   _batchRecs = Init::BatchRecs();
+
+  // Create the Stats class
+  _stats = new BasicStats();
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)
@@ -78,6 +87,9 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
     return;
   }
   
+  // Init stats class
+  _stats->Init(this);
+
   _queryFilter = filter;
   
   _queryProc->BatchQuery(_map, _queryFilter, this, NULL, timestamp);
@@ -102,6 +114,28 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 {
   _totalGData += numGData;
   _numBatches++;
+  int gRecSize = mapping->GDataRecordSize();
+
+  // Update stats based on gdata
+  struct GDataTemp 
+  {
+    Coord x, y;
+  };
+  char *tp = (char *)gdata;
+  for (int tmp = 0; tmp < numGData; tmp++) 
+  {
+    GDataTemp *gt = (GDataTemp *)tp;
+    if ((gt->x < _queryFilter.xLow) ||
+	(gt->x > _queryFilter.xHigh) ||
+	(gt->y < _queryFilter.yLow) ||
+	(gt->y > _queryFilter.yHigh)) 
+    {
+      tp += gRecSize;
+      continue;
+    }
+    _stats->Sample(gt->x, gt->y);
+    tp += gRecSize;
+  }
   
   if (_batchRecs) {
     _dataBin->InsertSymbol(recId, gdata, numGData);
@@ -109,7 +143,6 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
     _dataBin->PrintStat();
 #endif
   } else {
-    int gRecSize = mapping->GDataRecordSize();
     char *ptr = (char *)gdata;
     for(int i = 0; i < numGData; i++) {
       _dataBin->InsertSymbol(recId, ptr, 1);
@@ -123,6 +156,8 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
 void TDataViewX::QueryDone(int bytes, void *userData)
 {
+  _stats->Done();
+  _stats->Report();
   _dataBin->Final();
   ReportQueryDone(bytes);
 }
