@@ -27,10 +27,18 @@ cd common
 clean
 cd ..
 
-\rm -r hpux-hppa
-\rm -r solaris-intel
-\rm -r solaris-sparc
-\rm -r sunos-sparc
+
+# \rm -r hpux-hppa
+
+cd solaris-intel
+clean
+cd ..
+
+cd solaris-sparc
+clean
+cd ..
+
+# \rm -r sunos-sparc
 
 cd linux-intel
 clean

@@ -12,7 +12,8 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the distribution area.
+#  Run this script to set up the linux-intel architecture-specific
+#  subdirectory.
 
 ############################################################
 
@@ -20,21 +21,26 @@
 
 ############################################################
 
-ln -s ../dist_sw/public/dat .
-ln -s ../dist_sw/public/doc .
-ln -s ../dist_sw/public/lib .
-ln -s ../dist_sw/public/palette .
-ln -s ../dist_sw/public/schema .
-ln -s ../dist_sw/public/session .
+ln -s ../common/README .
+ln -s ../common/dat .
+ln -s ../common/doc .
+ln -s ../common/lib .
+ln -s ../common/palette .
+ln -s ../common/run .
+ln -s ../common/schema .
+ln -s ../common/session .
 
-mkdir tcl
-cd tcl
-cp -p /s/tcl7.4/lib/tcl7.4/* .
+ln -s ../common/tcl .
+ln -s ../common/tk .
+
+mkdir bin
+cd bin
+../../scripts/setup.bin
 cd ..
 
-mkdir tk
-cd tk
-cp -p /s/tcl7.4/lib/tk4.0/* .
+cd dyn_lib
+set dir = `pwd`
+ssh cardinal "cd $dir; ./setup"
 cd ..
 
-ln -s ../../dist_sw/run/devise.rc run
+mkdir cache

@@ -32,3 +32,4 @@
 \rm session
 \rm -rf tcl
 \rm -rf tk
+\rm dyn_lib/*.so*

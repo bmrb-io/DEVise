@@ -20,21 +20,16 @@
 
 ############################################################
 
-ln -s ../dist_sw/public/dat .
-ln -s ../dist_sw/public/doc .
-ln -s ../dist_sw/public/lib .
-ln -s ../dist_sw/public/palette .
-ln -s ../dist_sw/public/schema .
-ln -s ../dist_sw/public/session .
-
-mkdir tcl
-cd tcl
-cp -p /s/tcl7.4/lib/tcl7.4/* .
-cd ..
-
-mkdir tk
-cd tk
-cp -p /s/tcl7.4/lib/tk4.0/* .
-cd ..
-
-ln -s ../../dist_sw/run/devise.rc run
+\rm README
+\rm -rf bin/
+\rm -rf cache/
+\rm dat
+\rm doc
+\rm lib
+\rm palette
+\rm run
+\rm schema
+\rm session
+\rm tcl
+\rm tk
+\rm dyn_lib/*.so*

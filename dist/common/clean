@@ -27,7 +27,7 @@
 \rm schema
 \rm session
 
-\rm tcl
-\rm tk
+\rm -rf tcl
+\rm -rf tk
 
 \rm run/devise.rc

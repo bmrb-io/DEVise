@@ -20,6 +20,11 @@
 
 ############################################################
 
+if (`hostname` != trigger) then
+  echo "Setup must be done on trigger"
+  exit 1
+endif
+
 ln -s /p/devise dist_sw
 ln -s ~devise/public/html .
 
@@ -27,36 +32,34 @@ cd common
 ./setup
 cd ..
 
-echo "Creating hpux-hppa directory"
-setenv ARCH_DIR hp700_ux90
-mkdir hpux-hppa
-cd hpux-hppa
-../scripts/setup.arch_common
-cd ..
+# echo "Creating hpux-hppa directory"
+# setenv ARCH_DIR hp700_ux90
+# mkdir hpux-hppa
+# cd hpux-hppa
+# ../scripts/setup.arch_common
+# cd ..
 
 echo "Creating solaris-intel directory"
 setenv ARCH_DIR sunx86_54
-mkdir solaris-intel
 cd solaris-intel
-../scripts/setup.arch_common
+./setup
 cd ..
 
 echo "Creating solaris-sparc directory"
 setenv ARCH_DIR sun4m_54
-mkdir solaris-sparc
 cd solaris-sparc
-../scripts/setup.arch_common
+./setup
 cd ..
 
-echo "Creating sunos-sparc directory"
-setenv ARCH_DIR sun4m_412
-mkdir sunos-sparc
-cd sunos-sparc
-../scripts/setup.arch_common
-cd ..
+# echo "Creating sunos-sparc directory"
+# setenv ARCH_DIR sun4m_412
+# mkdir sunos-sparc
+# cd sunos-sparc
+# ../scripts/setup.arch_common
+# cd ..
 
 echo "Creating linux-intel directory"
 setenv ARCH_DIR i386_linux
 cd linux-intel
-setup
+./setup
 cd ..

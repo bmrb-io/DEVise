@@ -12,8 +12,8 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the common parts of the architecture-specific
-#  subdirectories.
+#  Run this script to set up the linux-intel architecture-specific
+#  subdirectory.
 
 ############################################################
 
@@ -31,13 +31,18 @@ ln -s ../common/schema .
 ln -s ../common/session .
 
 mkdir tcl
-ln -s /s/tcl/lib/tcl8.3/*.tcl tcl
+cp -p /s/tcl/lib/tcl8.3/*.tcl tcl
 mkdir tk
-ln -s /s/tcl/lib/tk8.3/*.tcl tk
+cp -p /s/tcl/lib/tk8.3/*.tcl tk
 
 mkdir bin
 cd bin
 ../../scripts/setup.bin
+cd ..
+
+cd dyn_lib
+set dir = `pwd`
+ssh pumori "cd $dir; ./setup"
 cd ..
 
 mkdir cache
