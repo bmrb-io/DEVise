@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.22  1995/11/20 22:21:33  jussi
+#	Added schemadir, cachedir, and sessiondir.
+#
 #	Revision 1.21  1995/11/19 06:03:59  ravim
 #	New schema options - user/superuser
 #
@@ -519,7 +522,7 @@ proc DoCreateTData { file type } {
     if {$result == ""} {
 	set but [ dialog .createError "CreateError" \
 		"Can't import file $file of type $type" \
-		"" 0 {OK} ]
+		"" 0 OK ]
 	return
     }
 
@@ -636,8 +639,7 @@ proc DoSelectTData {} {
 	if { $answer == 0 } {
 	    # Select a new file
 	    return [ DoSelectFile ]
-	} elseif { $answer == 1 || \
-		[string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif { $answer == 1 || $dialogListVar(selected) == "" } {
 	    # Cancel selected or no file selected.
 	    return 
 	} else {
@@ -672,6 +674,7 @@ proc DropAttrTypes { attrs } {
 # The default is the sorted X attribute other than recId, if one exists.
 # Otherwise, it's the recId.
 # otherwise, it's the 0th attribute.
+
 proc FindDefaultXAttr { attrs } {
     set numAttrs 0
     foreach attr $attrs {
@@ -692,7 +695,7 @@ proc FindDefaultXAttr { attrs } {
 	return $temp(0)
     } else {
 	# puts "numAttrs >= 2"
-	if { [string compare $temp(0) "recId"] == 0} {
+	if { $temp(0) == "recId"} {
 	    return $temp(1)
 	} else {
 	    return $temp(0)
@@ -714,15 +717,16 @@ proc CreateInterpretedMapping { tdata } {
     set defColor 2
     set defShape 2
     
-    set parm [dialogMapping .enterMapping "enterMapping" \
+    set parm [dialogMapping .enterMapping "Enter Mapping" \
 	    "Enter Mapping" ""  \
+	    $simpleAttrs \
 	    [list  \
 	    [list x $simpleAttrs $defX] \
 	    [list y $simpleAttrs $defY]\
 	    [list color $DEViseColors $defColor]\
 	    [list shape $DEViseShapes $defShape]\
 	    ] 1 ] 
-    if { [string compare $parm ""] ==  0 } {
+    if {$parm == ""} {
 	return
     }
     
@@ -737,10 +741,10 @@ proc CreateInterpretedMapping { tdata } {
     
     set cmd "DEVise createInterp $params"
     set result [eval $cmd]
-    if { [string compare $result "" ] == 0 } {
+    if {$result == ""} {
 	set but [dialog .CreateError \
 		"Can't create mapping for tdata $tdata" \
-		"" 0 {OK} ]
+		"" 0 OK ]
 	return 
     }
     
@@ -775,10 +779,10 @@ proc DoActualCreateGData { tdata mapping } {
 
 	set cmd "DEVise create mapping $mapping $dialogParamVar(params)"
 	set result [eval $cmd]
-	if { [string compare $result "" ] == 0 } {
+	if {$result == ""} {
 	    set but [ dialog .CreateError \
 		    "Can't create mapping using $mapping" \
-		    "" 0 {OK} ]
+		    "" 0 OK ]
 	    return
 	}
 	return $result
@@ -818,10 +822,10 @@ proc DoActualCreateGData { tdata mapping } {
 	
 	set cmd "DEVise create mapping $mapping $params"
 	set result [eval $cmd]
-	if { [string compare $result "" ] == 0 } {
+	if {$result == ""} {
 	    set but [ dialog .CreateError \
 		    "Can't create mapping using $mapping" \
-		    "" 0 {OK} ]
+		    "" 0 OK ]
 	    return
 	}
 	return $result
@@ -835,7 +839,7 @@ proc DoCreateGData { tdata } {
 
     while { 1 } {
 	set tmappings [ DEVise get mapping ]
-	if { [string compare $tmappings "" ] == 0 } {
+	if {$tmappings == ""} {
 	    set but [dialog .noMap "No Mapping" \
 		    "No existing mapping.\n\
 		    Create mapping for tdata\n$tdata?" "" 1 \
@@ -844,7 +848,7 @@ proc DoCreateGData { tdata } {
 		return
 	    }
 	    set mapping [CreateInterpretedMapping $tdata]
-	    if { [string compare $mapping "" ] == 0 } {
+	    if {$mapping == ""} {
 		return
 	    }
 	    break
@@ -854,12 +858,11 @@ proc DoCreateGData { tdata } {
 		"" 0 { Cancel New OK } $tmappings ]
 	if { $answer == 1} {
 	    set mapping [CreateInterpretedMapping $tdata]
-	    if { [string compare $mapping "" ] == 0} {
+	    if {$mapping == ""} {
 		return
 	    }
 	    break
-	} elseif { $answer == 0  || \
-		[string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif {$answer == 0  || $dialogListVar(selected) == ""} {
 	    # no answer 
 	    return 
 	} else {
@@ -888,12 +891,11 @@ proc DoGetGData {} {
 	if { $answer == 0 } {
 	    # Create a new one
 	    set tdata [ DoSelectTData ]
-	    if { [ string compare $tdata "" ] == 0 } {
+	    if {$tdata == ""} {
 		return
 	    }
 	    return [ DoCreateGData $tdata ]
-	} elseif { $answer == 1 || \
-		[string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif {$answer == 1 || $dialogListVar(selected) == ""} {
 	    return
 	} else {
 	    return $dialogListVar(selected)
@@ -928,9 +930,9 @@ proc DoActualCreateView { viewType name } {
 
     set cmd "DEVise create view $viewType $dialogParamVar(params)"
     set result [eval $cmd]
-    if { [string compare $result "" ] == 0 } {
+    if {$result == ""} {
 	set but [ dialog .viewError "ViewError" \
-		"Can't create view using $viewType" "" 0 {OK} ]
+		"Can't create view using $viewType" "" 0 OK ]
 	return
     }
     return $result
@@ -943,7 +945,7 @@ proc DoCreateView { message gdata} {
     set viewClasses [ DEVise get view ]
     set answer [ dialogList .createView "CreateView" $message \
 	    "" 0 { Cancel OK } $viewClasses 0]
-    if { $answer == 0 || [string compare dialogListVar(selected) "" ] == 0 } {
+    if {$answer == 0 || $dialogListVar(selected) == ""} {
 	return
     } else {
 	return [ DoActualCreateView $dialogListVar(selected) \
@@ -970,8 +972,7 @@ proc DoGetView { gdata } {
 	if { $answer == 1 } {
 	    return [ DoCreateView  \
 		    "Select type of view to display $gdata" $gdata ]
-	} elseif { $answer == 0 || \
-		[ string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif {$answer == 0 || $dialogListVar(selected) == ""} {
 	    return
 	} else {
 	    return $dialogListVar(selected)
@@ -992,9 +993,9 @@ proc DoActualCreateWindow { winType } {
     }
     set cmd "DEVise create window $winType $dialogParamVar(params)"
     set result [eval $cmd ]
-    if { [string compare $result "" ] == 0 } {
+    if {$result == ""} {
 	set but [ dialog .winError "winError" \
-		"Can't create window using $winType" "" 0 {OK} ]
+		"Can't create window using $winType" "" 0 OK ]
 	return
     }
     return $result
@@ -1009,8 +1010,7 @@ proc DoCreateWindow { message } {
     }
     set answer [ dialogList .createWin "CreateWindow"  \
 	    $message "" "" { Cancel Ok } $winTypes ]
-    if { $answer == 0 || \
-	    [ string compare $dialogListVar(selected) "" ] == 0 } {
+    if {$answer == 0 || $dialogListVar(selected) == ""} {
 	return
     } else {
 	return [ DoActualCreateWindow $dialogListVar(selected) ]
@@ -1029,8 +1029,7 @@ proc DoGetWindow {} {
 		{ Cancel New Ok } $winSet ]
 	if { $answer == 1 } {
 	    return [ DoCreateWindow "Select window type" ]
-	} elseif { $answer == 0  || \
-		[ string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif {$answer == 0  || $dialogListVar(selected) == ""} {
 	    return 
 	} else {
 	    return $dialogListVar(selected)
@@ -1050,28 +1049,28 @@ proc DoVisualizeFile {} {
 
 # Do File/TData command. Return 1 if OK, else return nothing
 proc DoActualVisualizeTData { tdata } {
-    if { [ string compare $tdata "" ] == 0 } {
+    if {$tdata == ""} {
 	# no tdata selected.
 	return
     }
     
     # Do mapping for tdata
     set gdata [ DoCreateGData $tdata ]
-    if { [ string compare $gdata "" ] == 0 } {
+    if {$gdata == ""} {
 	# no tdata selected.
 	return
     }
     
     # put gdata into view 
     set view [ DoGetView $gdata ]
-    if { [string compare $view "" ] == 0 } {
+    if {$view == ""} {
 	return
     }
     set res [DEVise insertMapping $view $gdata ]
 
     # Find a window for view
     set window [ DoGetWindow ]
-    if { [string compare $window "" ] == 0 }  { 
+    if {$window == ""}  { 
 	return
     }
     set res [ DEVise insertWindow $view $window ]
@@ -1081,20 +1080,20 @@ proc DoActualVisualizeTData { tdata } {
 
 proc DoVisualizeGData {} {
     set gdata [ DoGetGData ]
-    if { [ string compare $gdata "" ] == 0 } {
+    if {$gdata == ""} {
 	return
     }
 
     # gdata into view 
     set view [ DoGetView $gdata ]
-    if { [string compare $view "" ] == 0 } {
+    if {$view == ""} {
 	return
     }
     set res [DEVise insertMapping $view $gdata ]
     
     # Find a window for view
     set window [ DoGetWindow ]
-    if { [string compare $window "" ] == 0 }  { 
+    if {$window == ""}  { 
 	return
     }
     set res [ DEVise insertWindow $view $window ]
@@ -1141,7 +1140,7 @@ proc DoViewRemove {} {
     # Remove view
     set ans [DEVise removeView $curView]
     if {$ans != ""} {
-	dialogList .removeError "RemoveError" $ans "" 0 {OK}
+	dialogList .removeError "RemoveError" $ans "" 0 OK
 	return
     }
 
@@ -1258,12 +1257,12 @@ proc SaveAllViewAxisLabel { f viewDict } {
 	foreach v $views {
 	    set viewVar [DictLookup $viewDict $v]
 	    set xAxisLabel [ DEVise getAxis $v x]
-	    if { [string compare $xAxisLabel "" ] != 0 } {
+	    if {$xAxisLabel != ""} {
 		puts $f "DEVise setAxis \$$viewVar $xAxisLabel x"
 	    }
 	    
 	    set yAxisLabel [ DEVise getAxis $v y]
-	    if { [string compare $yAxisLabel "" ] != 0 } {
+	    if {$yAxisLabel != ""} {
 		puts $f "DEVise setAxis \$$viewVar $yAxisLabel y"
 	    }
 	    
@@ -1287,7 +1286,7 @@ proc SaveAllViewAction { f dict} {
 	foreach v $views {
 	    set viewVar [DictLookup $dict $v]
 	    set action [DEVise getAction $v]
-	    if { [string compare $action "" ] != 0 } {
+	    if {$action != ""} {
 		puts $f "DEVise setAction \$$viewVar $action"
 	    }
 	}
@@ -1331,10 +1330,10 @@ proc SaveCursorViews { file dict} {
 	set views [DEVise getCursorViews $cursor]
 	set src [DictLookup $dict [lindex $views 0]]
 	set dst [DictLookup $dict [lindex $views 1]]
-	if { [string compare $src "" ] != 0 } {
+	if {$src != ""} {
 	    puts $file "DEVise setCursorSrc $cursor \$$src"
 	}
-	if { [string compare $dst "" ] != 0 } {
+	if {$dst != ""} {
 	    puts $file "DEVise setCursorDst $cursor \$$dst"
 	}
     }
@@ -1357,7 +1356,7 @@ proc DoActualSave { infile asTemplate } {
 
 	if { ! [ file writable $infile ] } {
 	    set but [ dialog .saveError "File $infile not writable" \
-		    "" 0 {OK} ]
+		    "" 0 OK ]
 	    ChangeStatus 0
 	    return
 	}
@@ -1469,7 +1468,7 @@ proc DoActualSave { infile asTemplate } {
 	    set params [DEVise getCreateParam view $viewClass $inst]
 	    set viewMap [lindex [DEVise getViewMappings $inst] 0]
 	    set viewVar view_$viewNum
-	    if { [string compare $viewMap "" ] == 0 } { 
+	    if {$viewMap == ""} { 
 		puts $f "set $viewVar $inst"
 	    } else {
 		set viewTData [DEVise getMappingTData $viewMap]
@@ -1565,7 +1564,7 @@ proc DoActualSave { infile asTemplate } {
     if { [ file exists $bitmapFile ] } {
 	if { ! [ file writable $bitmapFile ] } {
 	    set but [ dialog .saveError "File $bitmapFile not writable" \
-		    "" 0 {OK} ]
+		    "" 0 OK ]
 	    ChangeStatus 0
 	    return
 	}
@@ -1583,7 +1582,7 @@ proc DoActualSave { infile asTemplate } {
     puts $f "set pixmapFile \[ DEVise open \$pixmapName rb \]"
     puts $f "set fileDate \[ DEVise readLine \$pixmapFile \]"
     puts $f "set sessionDate \{$date\}"
-    puts $f "if \{ \[string compare \$fileDate \$sessionDate \] == 0 \} \{ "
+    puts $f "if \{\$fileDate == \$sessionDate\} \{ "
     set viewSet [ViewSet]
     foreach view $viewSet {
 	DEVise savePixmap $view $bitF
@@ -1611,8 +1610,8 @@ proc DoSave {} {
     }
 
     set button [ dialog .saveSession "SaveSession" \
-	    "Save session to file\n$sessionName?"  "" 1  {Cancel} {Ok}  ]
-    if { $button == 1 } {
+	    "Save session to file\n$sessionName?"  "" 1  {Cancel} OK ]
+    if {$button == 1} {
 	DoActualSave $sessionName 0
     }
 }
@@ -1625,13 +1624,15 @@ proc DoSaveAs { asTemplate } {
     set fsBox(pattern) *.tk
     set file [ FSBox ]
     
+    if {$file == ""} { return }
+
     set button [ dialog .saveSession "saveSession" \
-	    "Save session to file\n$file?"  "" 1  {Cancel} {Ok} ]
-    if {$button == 1} {
-	DoActualSave $file $asTemplate
-	if {!$asTemplate} {
-	    set sessionName $file
-	}
+	    "Save session to file\n$file?"  "" 1  {Cancel} OK ]
+    if {$button != 1} { return }
+
+    DoActualSave $file $asTemplate
+    if {!$asTemplate} {
+	set sessionName $file
     }
 }
 
@@ -1643,6 +1644,7 @@ proc DoSaveAs { asTemplate } {
 #	example: .afsio_rc
 # 3) next, check $argv0_rc
 #  example: afsio.rc
+
 set progName [ file tail $argv0 ]
 set envName [ format "%s_RC" [string toupper $progName] ]
 set rcFile1 [ format ".%s_rc" $progName ]
@@ -1792,7 +1794,7 @@ proc ProcessViewFilterChange { view flushed xLow yLow xHigh yHigh marked} {
 proc ProcessMarkSelected { sel } {
     global curView
     set mark [.historyWin.listMark get $sel]
-    if { [string compare $mark "*" ] == 0 } {
+    if {$mark == "*"} {
 	set newMark " "
 	set newVal 0
     } else {
@@ -1823,7 +1825,7 @@ proc ProcessUseButton {} {
     set ylow [DEVise parseDateFloat [.history.ylow get ]]
     set xhigh [DEVise parseDateFloat [.history.xhigh get ]]
     set yhigh [DEVise parseDateFloat [.history.yhigh get ]]
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
 
@@ -1839,7 +1841,7 @@ proc ProcessUseButton {} {
 
 proc ProcessLeftButton {} {
     global curView left_amount
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
     set filter [DEVise getCurVisualFilter $curView ]
@@ -1865,7 +1867,7 @@ proc ProcessLeftButton {} {
 
 proc ProcessRightButton {} { 
     global curView right_amount
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
     set filter [DEVise getCurVisualFilter $curView ]
@@ -1891,7 +1893,7 @@ proc ProcessRightButton {} {
 
 proc ProcessUpButton {} { 
     global curView up_amount
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
     set filter [DEVise getCurVisualFilter $curView ]
@@ -1917,7 +1919,7 @@ proc ProcessUpButton {} {
 
 proc ProcessDownButton {} {
     global curView down_amount
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
     set filter [DEVise getCurVisualFilter $curView ]
@@ -1943,7 +1945,7 @@ proc ProcessDownButton {} {
 
 proc ProcessInButton {} {
     global curView in_amount
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
     set filter [DEVise getCurVisualFilter $curView ]
@@ -1970,7 +1972,7 @@ proc ProcessInButton {} {
 
 proc ProcessYInButton {} {
     global curView in_amount
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
     set filter [DEVise getCurVisualFilter $curView ]
@@ -1997,7 +1999,7 @@ proc ProcessYInButton {} {
 
 proc ProcessOutButton {} { 
     global curView out_amount
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
     set filter [DEVise getCurVisualFilter $curView ]
@@ -2023,7 +2025,7 @@ proc ProcessOutButton {} {
 }
 proc ProcessYOutButton {} { 
     global curView out_amount
-    if { [string compare $curView "" ] == 0 } {
+    if {$curView == ""} {
 	return
     }
     set filter [DEVise getCurVisualFilter $curView ]
@@ -2064,7 +2066,7 @@ proc DoEditMapping {} {
     set maps [InterpretedGData ]
     if {$maps == ""} {
 	dialog .editError "EditMappingError" \
-		"No Interpreted Mapping" "" 0 {ok} 
+		"No Interpreted Mapping" "" 0 OK
 	return
     }
     
@@ -2085,24 +2087,41 @@ proc DoEditMapping {} {
     
     # Get parameters for the mapping
     set params [DEVise getInstParam $map]
-    if { [string compare $params "" ] == 0 } {
+    if {$params == ""} {
 	dialog .editError "EditMappingError" \
-		"No parameter for this mapping" "" 0 {ok} 
+		"No parameter for this mapping" "" 0 OK
 	return
     }
 
     # puts "got params $params"
-    set xParm [string trim [lindex [lindex $params 3] 1] "$ "]
-    set yParm [string trim [lindex [lindex $params 4] 1] "$ "]
+    set xParm [lindex [lindex $params 3] 1]
+    set yParm [lindex [lindex $params 4] 1]
     set colorParm [lindex [lindex $params 5] 1]
+    set orientParm [lindex [lindex $params 6] 1]
+    set sizeParm [lindex [lindex $params 7] 1]
+    set patternParm [lindex [lindex $params 8] 1]
     set shapeParm [lindex [lindex $params 9] 1]
+    set shapeAttr0 [lindex [lindex $params 10] 1]
+    set shapeAttr1 [lindex [lindex $params 11] 1]
+
     set tdata [lindex [lindex $params 0] 1]
+    set simpleAttrs [lsort [ElimStringAttr [DEVise getSchema $tdata]]]
+    set simpleAttrs [DropAttrTypes $simpleAttrs]
+
     # set attrs [DEVise getSchema $tdata]
-    set parm [dialogMapping .editMapping "EditMapping" \
+    set parm [dialogMapping .editMapping "Edit Mapping" \
 	    "Edit Mapping" ""   \
+	    $simpleAttrs \
 	    [list \
-	    [list color $DEViseColors $colorParm] \
-	    [list shape $DEViseShapes $shapeParm] \
+	    [list X {1 2 3 4 5 6 7 8 9 10} $xParm] \
+	    [list Y {1 2 3 4 5 6 7 8 9 10} $yParm] \
+	    [list Color $DEViseColors $colorParm] \
+	    [list Orientation {0} $orientParm] \
+	    [list Size {1 2 3 4} $sizeParm] \
+	    [list Pattern {0} $patternParm] \
+	    [list Shape $DEViseShapes $shapeParm] \
+	    [list "PixelWidth" {0.1 0.5 1 2} $shapeAttr0] \
+	    [list "PixelHeight" {0.1 0.5 1 2} $shapeAttr1] \
 	    ] 0 ]
     
     # puts "dialogMapping returns $parm"
@@ -2114,13 +2133,15 @@ proc DoEditMapping {} {
     set params [list [lindex [lindex $params 0] 1] \
 	    [lindex [lindex $params 1] 1] \
 	    [lindex [lindex $params 2] 1] \
-	    \$$xParm \$$yParm [lindex $parm 0 ] \
-	    [lindex [lindex $params 6] 1] \
-	    [lindex [lindex $params 7] 1] \
-	    [lindex [lindex $params 8] 1] \
+	    [lindex $parm 0] \
 	    [lindex $parm 1] \
-	    [lindex [lindex $params 10] 1] \
-	    [lindex [lindex $params 11] 1] ]
+	    [lindex $parm 2] \
+	    [lindex $parm 3] \
+	    [lindex $parm 4] \
+	    [lindex $parm 5] \
+	    [lindex $parm 6] \
+	    [lindex $parm 7] \
+	    [lindex $parm 8] ]
 
     # Change parameter
     set cmd "DEVise changeParam \{$map\} $params"
@@ -2158,7 +2179,7 @@ proc DoCursorCreate {} {
     }
     set flag $dialogCkButVar(selected)
     set name $dialogCkButVar(entry)
-    if { [string compare $name ""] == 0 } {
+    if {$name == ""} {
 	set but [dialog .noName "NoName" \
 		"Error: No name for cursor specified" "" 0 {Continue }]
 	return 
@@ -2171,9 +2192,9 @@ proc DoCursorCreate {} {
     }
 
     set result [DEVise create cursor Cursor $name $flag]
-    if { [string compare $result "" ] == 0 } {
+    if {$result == ""} {
 	set but [ dialog .cursorError "CursorError" \
-		"Can't create cursor" "" 0 {OK} ]
+		"Can't create cursor" "" 0 OK ]
 	return
     }
 
@@ -2192,8 +2213,7 @@ proc DoGetCursor {} {
 		{ New Cancel OK } $cursorSet ]
 	if { $answer == 0 } {
 	    set cursor [ DoCursorCreate ]
-	} elseif { $answer == 1 || \
-		[ string compare $dialogListVar(selected) "" ] == 0 } {
+	} elseif {$answer == 1 || $dialogListVar(selected) == ""} {
 	    set cursor ""
 	} else {
 	    set cursor $dialogListVar(selected)
@@ -2207,14 +2227,14 @@ proc DoGetCursor {} {
 proc DoSetCursorSrc {} {
     global curView dialogListVar
 
-    if { [ string compare $curView "" ] ==  0 } {
+    if {$curView == ""} {
 	set but [dialog .cursorError "CursorError " \
-		"Please select a view first by clicking in it" "" 0 {OK} ]
+		"Please select a view first by clicking in it" "" 0 OK ]
 	return
     }
 
     set cursor [DoGetCursor]
-    if { [string compare $cursor "" ] == 0 } {
+    if {$cursor == ""} {
 	return
     }
 
@@ -2224,14 +2244,14 @@ proc DoSetCursorSrc {} {
 proc DoSetCursorDst {} {
     global curView dialogListVar
 
-    if { [ string compare $curView "" ] ==  0 } {
+    if {$curView == ""} {
 	set but [dialog .cursorError "CursorError " \
-		"Please select a view first by clicking in it" "" 0 {OK} ]
+		"Please select a view first by clicking in it" "" 0 OK ]
 	return
     }
     
     set cursor [DoGetCursor]
-    if { [string compare $cursor "" ] == 0 } {
+    if {$cursor == ""} {
 	return
     }
     
@@ -2251,7 +2271,7 @@ proc DoLinkCreate {} {
 
     set flag $dialogCkButVar(selected)
     set name $dialogCkButVar(entry)
-    if { [string compare $name ""] == 0 } {
+    if {$name == ""} {
 	set but [dialog .noName "NoName" \
 		"Error: No name for link specified" "" 0 {Continue }]
 	return 
@@ -2264,9 +2284,9 @@ proc DoLinkCreate {} {
     }
 
     set result [DEVise create link Visual_Link $name $flag]
-    if { [string compare $result "" ] == 0 } {
+    if {$result == ""} {
 	set but [ dialog .linkError "LinkError" \
-		"Can't create link" "" 0 {OK} ]
+		"Can't create link" "" 0 OK ]
 	return
     }
 
@@ -2278,19 +2298,19 @@ proc DisplayLinkInfo { link } {
     set views [DEVise getLinkViews $link]
     if { [llength $views] == 0 } {
 	dialog .linkInfo "LinkInfo" \
-		"Link $link currently does not link any view" "" 0 {OK} ]
+		"Link $link currently does not link any view" "" 0 OK ]
 	return
     }
-    dialogList .linkInfo "LinkInfo" "Views linked by $link" "" 0 {OK} $views
+    dialogList .linkInfo "LinkInfo" "Views linked by $link" "" 0 OK $views
 }
 
 # Link current view
 proc DoViewLink {} {
     global curView dialogListVar
 
-    if { [ string compare $curView "" ] ==  0 } {
+    if {$curView == ""} {
 	set but [dialog .linkError "LinkViewError" \
-		"Please select a view first by clicking in it" "" 0 {OK} ]
+		"Please select a view first by clicking in it" "" 0 OK ]
 	return
     }
 
@@ -2303,13 +2323,12 @@ proc DoViewLink {} {
 		    view\n$curView" "" 0 \
 		    { Info New Cancel OK } $linkSet ]
 	    if { $answer == 0 } {
-		if { [string compare $dialogListVar(selected) "" ] != 0 } {
+		if {$dialogListVar(selected) != ""} {
 		    DisplayLinkInfo $dialogListVar(selected)
 		}
 	    } elseif { $answer == 1 } {
 		set link [ DoLinkCreate ]
-	    } elseif { $answer == 2 || \
-		    [ string compare $dialogListVar(selected) "" ] == 0 } {
+	    } elseif {$answer == 2 || $dialogListVar(selected) == ""} {
 		set link ""
 		break
 	    } else {
@@ -2319,14 +2338,14 @@ proc DoViewLink {} {
 	}
     }
 
-    if { [ string compare $link "" ] == 0 } {
+    if {$link == ""} {
 	return
     }
 
     set anwer [DEVise insertLink $link $curView]
     # if {$anwer != 0 } {
 	# set but [ dialog .linkError "LinkError" \
-		# "Can't insert view $curView into link $link" "" 0 {OK} ]
+		# "Can't insert view $curView into link $link" "" 0 OK ]
     #}
 }
 
@@ -2335,7 +2354,7 @@ proc DoViewUnlink {} {
     global curView dialogListVar
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .unlinkError "UnlinkViewError" \
-		"Please select a view first by clicking in it" "" 0 {OK} ]
+		"Please select a view first by clicking in it" "" 0 OK ]
 	return
     }
 
@@ -2349,7 +2368,7 @@ proc DoViewUnlink {} {
 
     if { [llength $viewLinks ] == 0 } {
 	set but [ dialog .removeLink "RemoveLink" \
-		"View $curView has no established link" "" 0 {OK} ]
+		"View $curView has no established link" "" 0 OK ]
     } else {
 	set answer [ dialogList .getLink "GetLink" \
 		"Select a link to unlink for view $curView" "" 0 \
@@ -2370,7 +2389,7 @@ proc DoModifyLink {} {
     set linkSet [LinkSet]
     if { [llength $linkSet ] == 0 } {
 	set but [dialog .linkModError "LinkModError" \
-		"No link has been created yet" "" 0 {OK} ]
+		"No link has been created yet" "" 0 OK ]
 	return
     }
     
@@ -2402,7 +2421,7 @@ proc CheckView {} {
     global curView
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .viewError "ViewError" \
-		"Please select a view first by clicking in it" "" 0 {OK} ]
+		"Please select a view first by clicking in it" "" 0 OK ]
 	return 0
     }
     return 1
@@ -2424,7 +2443,7 @@ proc DoActualCreateAxisLabel { type } {
     set result [eval $cmd ]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .axisError "AxisError" \
-		"Can't create axis" "" 0 {OK} ]
+		"Can't create axis" "" 0 OK ]
 	return
     }
 
@@ -2498,7 +2517,7 @@ proc DoActualCreateAction { type } {
     set result [eval $cmd ]
     if { [string compare $result "" ] == 0 } {
 	set but [ dialog .actionError "ActionError" \
-		"Can't create action" "" 0 {OK} ]
+		"Can't create action" "" 0 OK ]
 	return
     }
     return $result
@@ -2772,7 +2791,7 @@ proc DoSwitchTData {} {
 	    set result [eval $cmd]
 	    if { [string compare $result "" ] == 0 } {
 		set but [ dialog .CreateError "Can't create mapping" \
-			"" 0 {OK} ]
+			"" 0 OK ]
 		return
 	    }
 	}
@@ -2785,7 +2804,7 @@ proc DoSwitchTData {} {
 	set cmd "DEVise create view $curViewClass $newViewParam"
 	set result [eval $cmd ]
 	if { [string compare $result "" ] == 0 } {
-	    set but [ dialog .CreateError "Can't create view" "" 0 {OK} ]
+	    set but [ dialog .CreateError "Can't create view" "" 0 OK ]
 	    return
 	}
 	DEVise insertMapping $view $mapName
@@ -2976,7 +2995,7 @@ proc DupWindow {} {
     global curView
     if {$curView == ""} {
 	set but [dialog .dupWinError "DupWindowError" \
-		"Please select a window by clicking any view in it" "" 0 {OK} ]
+		"Please select a window by clicking any view in it" "" 0 OK ]
 	return
     }
     set win [DEVise getViewWin $curView]
@@ -3020,7 +3039,7 @@ proc DoToggleAxis { axis } {
     global curView
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .toggleWinError "ToggleAxisError" \
-		"Please select a view by clicking in it" "" 0 {OK} ]
+		"Please select a view by clicking in it" "" 0 OK ]
 	return
     }
     
@@ -3033,7 +3052,7 @@ proc DoToggleAxisAllViews { axis } {
     global curView
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .toggleWinError "ToggleAxisError" \
-		"Please select a view by clicking in it" "" 0 {OK} ]
+		"Please select a view by clicking in it" "" 0 OK ]
 	return
     }
     
@@ -3056,7 +3075,7 @@ proc DoSwapView {} {
     [string compare $curView $lastView] == 0 } {
 	set but [dialog .swapViewError "SwapViewError" \
 		"Please select two views by clicking in them in order\n\
-		The views must be in the same window." "" 0 {OK} ]
+		The views must be in the same window." "" 0 OK ]
 	return
     }
 
@@ -3066,7 +3085,7 @@ proc DoSwapView {} {
     if { [string  compare $win1 $win2] != 0 } {
 	set but [dialog .swapViewError "SwapViewError" \
 		"Please select two views by clicking in them in order\n\
-		The views must be in the same window." "" 0 {OK} ]
+		The views must be in the same window." "" 0 OK ]
 	return
     }
 
@@ -3078,7 +3097,7 @@ proc DoSavePixmap {} {
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .swapViewError "SwapViewError" \
 		"Please select two views by clicking in them in order\n\
-		The views must be in the same window." "" 0 {OK} ]
+		The views must be in the same window." "" 0 OK ]
 	return
     }
     
@@ -3092,7 +3111,7 @@ proc DoLoadPixmap {} {
     if { [ string compare $curView "" ] ==  0 } {
 	set but [dialog .swapViewError "LoadPixmapError" \
 		"Please select two views by clicking in them in order\n\
-		The views must be in the same window." "" 0 {OK} ]
+		The views must be in the same window." "" 0 OK ]
 	return
     }
     
