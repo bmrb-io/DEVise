@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/08/07 20:11:43  wenger
+  Fixed various key event-related bugs (see Bugs file); changed
+  direction of camera movement for 3D to be more in agreement
+  with how panning works for 2D views.
+
   Revision 1.22  1996/08/04 21:12:57  beyer
   Added support for devise keys
 
@@ -131,6 +136,9 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     printf("ActionDefault::KeySelected(0x%x, %g, %g)\n", (int)key, x, y);
   }
 #endif
+    const int minPixelWidth = 1;
+    const int maxPixelWidth = 30;
+
     ControlPanel::Instance()->SelectView(view);
     VisualFilter filter;
 
@@ -141,7 +149,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  int index = view->InitMappingIterator();
 	  while(view->MoreMapping(index)) {
 	      TDataMap *map = view->NextMapping(index)->map;
-	      if (map->GetPixelWidth() < 30) {
+	      if (map->GetPixelWidth() < maxPixelWidth) {
 		  changed = true;
 		  map->SetPixelWidth(map->GetPixelWidth() + 1);
 	      }
@@ -157,7 +165,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 	  int index = view->InitMappingIterator();
 	  while(view->MoreMapping(index)) {
 	      TDataMap *map = view->NextMapping(index)->map;
-	      if (map->GetPixelWidth() > 1) { 
+	      if (map->GetPixelWidth() > minPixelWidth) { 
 		  changed = true;
 		  map->SetPixelWidth(map->GetPixelWidth() - 1);
 	      }

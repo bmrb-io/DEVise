@@ -119,6 +119,8 @@ Num Date        Status  Description
 038 09/05/96	FIXED	'Not Supported Yet' window needs an 'OK' button.
 			(rkw)
 
+039 09/12.96	FIXED	+/- keys don't change symbol sizes. (ml/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
