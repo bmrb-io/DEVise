@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/05/03 19:53:42  wenger
+  Fixed bug in AttrList class that caused Devise to crash on mappings
+  that use recId; commented out debug code in UnixRecFile.c..
+
   Revision 1.14  1997/04/25 23:15:48  ssl
   turned off debug code.
 
@@ -185,6 +189,13 @@ AttrInfo *AttrList::Find(char *name)
       return info;
   }
   return NULL;
+}
+
+AttrInfo *AttrList::FindShapeAttr(int i)
+{
+    char attrName[40];
+    sprintf(attrName, "shapeAttr_%d", i);
+    return Find(attrName);
 }
 
 int AttrList::GetAttrNum(char *name)

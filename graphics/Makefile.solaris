@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.63  1997/05/28 15:38:54  wenger
+# Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 # Revision 1.62  1997/05/21 22:09:53  andyt
 # Added EmbeddedTk and Tasvir functionality to client-server library.
 # Changed protocol between devise and ETk server: 1) devise can specify
@@ -769,8 +772,9 @@ XWindowRep.o: DevError.h ETkIfc.h ETk.h Xdef.h /s/X11/include/X11/Xlib.h
 XWindowRep.o: /s/X11/include/X11/X.h /s/X11/include/X11/Xfuncproto.h
 XWindowRep.o: /s/X11/include/X11/Xosdefs.h /usr/include/stddef.h
 XWindowRep.o: /s/X11/include/X11/Xutil.h Util.h XDisplay.h Display.h
-XWindowRep.o: Dispatcher.h Journal.h ColorMgr.h XBitmap.h
-XWindowRep.o: ../graphics.new/MapIntToInt.h ../graphics.new/DeviseKey.h
+XWindowRep.o: Dispatcher.h Journal.h ColorMgr.h XBitmap.h DaliIfc.h Init.h
+XWindowRep.o: BufPolicy.h ../graphics.new/MapIntToInt.h
+XWindowRep.o: ../graphics.new/DeviseKey.h
 jstat.o: /usr/include/math.h /usr/include/floatingpoint.h
 jstat.o: /usr/include/sys/ieeefp.h Journal.h DeviseTypes.h
 jstat.o: /usr/include/values.h DevStatus.h /usr/include/sys/types.h

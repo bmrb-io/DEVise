@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/04/25 22:46:54  ssl
+  Added a method to get attr num given its name.
+
   Revision 1.9  1997/03/07 17:41:40  donjerko
   Added method Clear() that resets attrList to empty.
 
@@ -109,6 +112,9 @@ public:
 
   /* Find an attribute, or NULL if not found */
   AttrInfo *Find(char *name);
+
+  /* Find a shape attribute, or NULL if not found */
+  AttrInfo *FindShapeAttr(int i);
 
   /* Get ith attribute info */
   AttrInfo *Get(int index);
