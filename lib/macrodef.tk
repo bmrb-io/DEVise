@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.3  1995/09/22 17:33:47  jussi
+#	Added copyright message.
+#
 #	Revision 1.2  1995/09/21 15:36:27  jussi
 #	Added small icons.
 #
@@ -1305,7 +1308,9 @@ proc DefMapping {tdata schema} {
 
 proc DefView {} {
     global views
-    global viewname xlo xhi ylo yhi
+    global xlo xhi ylo yhi color shape size pattern orient viewname
+    global DEViseColors DEViseShapes
+    global devcolors devshapes
 
     # see if .def window already exists; if so, just return
     set err [catch {set exists [wm state .def]}]
@@ -1321,6 +1326,7 @@ proc DefView {} {
     set xhi "100.0"
     set ylo "0.0"
     set yhi "100.0"
+
     set viewParams [DEVise getparam view SortedX]
     foreach param $viewParams {
 	set pname [lindex $param 0]
@@ -1351,23 +1357,84 @@ proc DefView {} {
     pack .def.view.left .def.view.right -side left -fill both \
 	    -expand 1
 
-    label .def.view.left.xlo -text "X low" -width 8
-    label .def.view.left.xhi -text "X high" -width 8
-    label .def.view.left.ylo -text "Y low" -width 8
-    label .def.view.left.yhi -text "Y high" -width 8
-    label .def.view.left.name -text Name -width 8
+    label .def.view.left.xlo -text "X low" -width 12
+    label .def.view.left.xhi -text "X high" -width 12
+    label .def.view.left.ylo -text "Y low" -width 12
+    label .def.view.left.yhi -text "Y high" -width 12
+    label .def.view.left.color -text Color -width 12
+    label .def.view.left.shape -text Shape -width 12
+    label .def.view.left.size -text Size -width 12
+    label .def.view.left.pattern -text Pattern -width 12
+    label .def.view.left.orient -text Orientation -width 12
+    label .def.view.left.name -text Name -width 12
     pack .def.view.left.xlo .def.view.left.xhi \
-	    .def.view.left.ylo .def.view.left.yhi -side top -pady 0.7m
+	    .def.view.left.ylo .def.view.left.yhi \
+	    .def.view.left.color .def.view.left.shape \
+	    .def.view.left.size .def.view.left.pattern \
+	    .def.view.left.orient -side top -pady 0.7m
     pack .def.view.left.name -side top -pady 3m
 
-    entry .def.view.right.xlo -relief sunken -width 25 -textvariable xlo
-    entry .def.view.right.xhi -relief sunken -width 25 -textvariable xhi
-    entry .def.view.right.ylo -relief sunken -width 25 -textvariable ylo
-    entry .def.view.right.yhi -relief sunken -width 25 -textvariable yhi
-    entry .def.view.right.name -relief sunken -width 25 -textvariable viewname
+    entry .def.view.right.xlo -relief sunken -width 20 -textvariable xlo
+    entry .def.view.right.xhi -relief sunken -width 20 -textvariable xhi
+    entry .def.view.right.ylo -relief sunken -width 20 -textvariable ylo
+    entry .def.view.right.yhi -relief sunken -width 20 -textvariable yhi
+    menubutton .def.view.right.color -relief raised \
+	    -textvariable color -menu .def.view.right.color.menu -width 20
+    menubutton .def.view.right.shape -relief raised \
+	    -textvariable shape -menu .def.view.right.shape.menu -width 20
+    menubutton .def.view.right.size -relief raised \
+	    -textvariable size -menu .def.view.right.size.menu -width 20
+    menubutton .def.view.right.pattern -relief raised \
+	    -textvariable pattern -menu .def.view.right.pattern.menu -width 20
+    menubutton .def.view.right.orient -relief raised \
+	    -textvariable orient -menu .def.view.right.orient.menu -width 20
+    entry .def.view.right.name -relief sunken -width 20 -textvariable viewname
     pack .def.view.right.xlo .def.view.right.xhi \
-	    .def.view.right.ylo .def.view.right.yhi -side top
+	    .def.view.right.ylo .def.view.right.yhi \
+	    .def.view.right.color .def.view.right.shape \
+	    .def.view.right.size .def.view.right.pattern \
+	    .def.view.right.orient -side top
     pack .def.view.right.name -side top -pady 3m
+
+    menu .def.view.right.color.menu -tearoff 0
+    foreach color $DEViseColors {
+	set idx [lindex $color 0]
+	set name [lindex $color 1]
+	set devcolors($name) $idx
+	.def.view.right.color.menu add radiobutton -label $name \
+		-variable color -value $name
+    }
+    tk_menuBar .def.view.right .def.view.right.color
+    set color red
+
+    menu .def.view.right.shape.menu -tearoff 0
+    foreach shape $DEViseShapes {
+	set idx [lindex $shape 0]
+	set name [lindex $shape 1]
+	set devshapes($name) $idx
+	.def.view.right.shape.menu add radiobutton -label $name \
+		-variable shape -value $name
+    }
+    tk_menuBar .def.view.right .def.view.right.shape
+    set shape Bar
+
+    menu .def.view.right.size.menu -tearoff 0
+    .def.view.right.size.menu add radiobutton -label 1 \
+	    -variable size -value 1
+    tk_menuBar .def.view.right .def.view.right.size
+    set size 1
+
+    menu .def.view.right.pattern.menu -tearoff 0
+    .def.view.right.pattern.menu add radiobutton -label Normal \
+	    -variable pattern -value Normal
+    tk_menuBar .def.view.right .def.view.right.pattern
+    set pattern Normal
+
+    menu .def.view.right.orient.menu -tearoff 0
+    .def.view.right.orient.menu add radiobutton -label Normal \
+	    -variable orient -value Normal
+    tk_menuBar .def.view.right .def.view.right.orient
+    set orient Normal
 
     button .def.but.ok -text OK -width 10 \
 	    -command {
@@ -1408,7 +1475,8 @@ proc DefView {} {
 ############################################################
 
 proc DefLink {} {
-    global links x y color shape size pattern orient linkname
+    global links
+    global x y color shape size pattern orient linkname
     global macroSelectColor
 
     # see if .def window already exists; if so, just return
