@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  1999/10/10 19:59:26  hongyu
+// *** empty log message ***
+//
 // Revision 1.26  1999/10/10 08:49:52  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -54,7 +57,8 @@ public final class DEViseGlobals
     public static final short API_CMD = 0, API_ACK = 1, API_NAK = 2,
                               API_CTL = 3, API_JAVA = 5, API_IMAGE = 6,
                               API_DATA = 7;
-    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644;
+    public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688;
+    public static final String JSPOPHOST = new String("biron.cs.wisc.edu");
     public static final String VERSION = new String("3.0");
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
