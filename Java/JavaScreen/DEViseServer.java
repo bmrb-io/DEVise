@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2001/03/20 20:11:39  wenger
+// Added more debug output to the JS client and jspop.
+//
 // Revision 1.54  2001/03/20 17:50:12  xuk
 // *** empty log message ***
 //
@@ -649,6 +652,9 @@ public class DEViseServer implements Runnable
         } else if (clientCmd.startsWith(DEViseCommands.REOPEN_SESSION)) {
 	    cmdReopenSession();
 
+        } else if (clientCmd.startsWith(DEViseCommands.SET_3D_CONFIG)) {
+	    cmdSet3DConfig(clientCmd);
+
         } else {
 	    cmdClientDefault(clientCmd);
         }
@@ -742,25 +748,27 @@ public class DEViseServer implements Runnable
         }
 
 	// also close the collaboration JSs
-	for (int i = 0; i < client.collabSockets.size(); i++) {
-	    DEViseCommSocket sock = 
-		(DEViseCommSocket)client.collabSockets.elementAt(i);			
-	    if (!sock.isEmpty()) {
-		try {
-		    String clientCmd = sock.receiveCmd();
-
-		    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-			client.collabSockets.removeElement(sock);
-			sock.closeSocket();
-			sock = null;
-		    }
-		} catch (InterruptedIOException e) {}
-	    } else {
-		pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
-		       + " to collabration client" + " " + i);
-		sock.sendCmd(DEViseCommands.CLOSE_SESSION);
-	    }			    
-	}
+	if (client.collabInit != 1) {
+	    for (int i = 0; i < client.collabSockets.size(); i++) {
+		DEViseCommSocket sock = 
+		    (DEViseCommSocket)client.collabSockets.elementAt(i);			
+		if (!sock.isEmpty()) {
+		    try {
+			String clientCmd = sock.receiveCmd();
+			
+			if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+			    client.collabSockets.removeElement(sock);
+			    sock.closeSocket();
+			    sock = null;
+			}
+		    } catch (InterruptedIOException e) {}
+		} else {
+		    pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
+			   + " to collabration client" + " " + i);
+		    sock.sendCmd(DEViseCommands.CLOSE_SESSION);
+		}			    
+	    }
+	} // if (client.collabInit != 1)
     }
 
     private void cmdGetSessionList(String clientCmd) throws YException
@@ -858,6 +866,36 @@ public class DEViseServer implements Runnable
             serverCmds[0] = DEViseCommands.ERROR +
 	      " {Can not open session \"" + client.sessionName + "\"}";
         }
+    }
+
+    private void cmdSet3DConfig(String clientCmd) throws YException
+    {
+	sendCmd(clientCmd);
+
+	// send config to collaborated JSs
+	try {
+	    for (int i = 0; i < client.collabSockets.size(); i++) {
+		DEViseCommSocket sock = (DEViseCommSocket)client.collabSockets.elementAt(i);			
+		if (!sock.isEmpty()) {
+		    String cmd = sock.receiveCmd();
+		    
+		    if (cmd.startsWith(DEViseCommands.EXIT)) {
+			client.collabSockets.removeElement(sock);
+			sock.closeSocket();
+			sock = null;
+		    } else {
+			pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
+			sock.sendCmd(clientCmd);
+			sock.sendCmd(DEViseCommands.DONE);
+		    } 
+		} else {
+		    pop.pn("Sending command to collabration client " + i + ": " + clientCmd);
+		    sock.sendCmd(clientCmd);
+		    sock.sendCmd(DEViseCommands.DONE);
+		}			    
+	    }
+	} catch (InterruptedIOException e) {
+	}
     }
 
 // ------------------------------------------------------------------------
