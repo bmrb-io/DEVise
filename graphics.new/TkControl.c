@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/03/07 16:54:39  jussi
+  Added association of TDataMap and ViewGraph.
+
   Revision 1.32  1996/01/27 00:21:22  jussi
   Added support for postscript execution; scripts which are
   executed after query processor has evaluated all queries
@@ -1281,7 +1284,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			link->DeleteView(view);
 		}
 		else if (strcmp(argv[1],"insertWindow") == 0){
-			View *view = (View *)classDir->FindInstance(argv[2]);
+			ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
 			if (!view) {
 				fprintf(stderr,
 					"TkControl:Cmd insertWindow can't find view %s\n", argv[2]);
