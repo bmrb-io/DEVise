@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2001/01/30 03:12:09  xuk
+// Add collabSocket for collaboration client. changes for sendCmd() and sendData().
+//
 // Revision 1.23  2001/01/26 22:22:21  wenger
 // Removed unused receiveCmd method.
 //
@@ -484,6 +487,7 @@ public class DEViseClient
     // Send a series of commands to the client.
     public synchronized void sendCmd(String[] cmds) throws YException
     {
+	pop.pn("we are in client.");
         for (int i = 0; i < cmds.length; i++) {
             sendCmd(cmds[i]);
         }
@@ -501,8 +505,15 @@ public class DEViseClient
 		}
 		if (collabSocket != null) { // also send to collab JS
 		    if (!collabSocket.isEmpty()) {
-			collabSocket.closeSocket();
-			collabSocket = null;
+			try {
+			    String clientCmd = collabSocket.receiveCmd();
+
+			    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+				collabSocket.closeSocket();
+				collabSocket = null;
+			    }
+			} catch (InterruptedIOException e) {
+			}
 		    } else {
 		        pop.pn("Sending command to collabration client");
                         collabSocket.sendCmd(cmd);
