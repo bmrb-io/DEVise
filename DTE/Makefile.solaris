@@ -27,7 +27,8 @@ depend:
 	cd ..;\
 	cd GUI; \
 	makedepend -a -f../Makefile.solaris -I../Core -I../RTree -I../Script \
-	-I../GUI -I../../graphics -I../../graphics.new -I../../attrproj \
+	-I../GUI -I../DeviseSpecific -I../../graphics -I../../graphics.new \
+	-I../../attrproj \
 	-I/s/gcc-2.7.2/lib/g++-include\
 	*.c;\
 	cd ..;\
@@ -289,6 +290,11 @@ TDataDQL.o: ../../graphics.new/DataSourceFileStream.h
 TDataDQL.o: ../../graphics.new/DataSourceSegment.h
 TDataDQL.o: ../../graphics.new/DataSourceBuf.h ../../graphics/DevError.h
 TDataDQL.o: ../../graphics.new/DataSeg.h ../../graphics.new/QueryProc.h
+TDataDQL.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
+TDataDQL.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
+TDataDQL.o: ../Core/StandardRead.h ../Core/FunctionRead.h
 TDataDQL.o: ../../graphics.new/DataSourceWeb.h
 TDataDQLInterp.o: /usr/include/string.h /usr/include/sys/feature_tests.h
 TDataDQLInterp.o: ../../graphics.new/machdep.h /usr/include/limits.h
@@ -357,12 +363,7 @@ TDataDQLInterp.o: ../../graphics/Control.h ../../graphics/Util.h
 TDataDQLInterp.o: /usr/include/math.h /usr/include/floatingpoint.h
 TDataDQLInterp.o: /usr/include/sys/ieeefp.h ../../graphics/DevError.h
 TDataDQLInterp.o: ../../graphics.new/ParseCat.h
-TDataDQLInterp.o: ../../graphics.new/DataSourceBuf.h ../Core/Engine.h
-TDataDQLInterp.o: ../Core/site.h ../Core/myopt.h
-TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
-TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
-TDataDQLInterp.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
-TDataDQLInterp.o: ../Core/StandardRead.h ../Core/FunctionRead.h
+TDataDQLInterp.o: ../../graphics.new/DataSourceBuf.h
 TuplePtr.Plex.o: /s/gcc-2.7.2/lib/g++-include/stream.h
 TuplePtr.Plex.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 TuplePtr.Plex.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -599,6 +600,49 @@ DevRead.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
 DevRead.o: ../../graphics/Util.h /usr/include/stdlib.h /usr/include/ctype.h
 DevRead.o: /usr/include/math.h /usr/include/floatingpoint.h
 DevRead.o: /usr/include/sys/ieeefp.h ../../graphics.new/DataSeg.h
+DevRead.dummy.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+DevRead.dummy.o: /usr/include/sys/va_list.h /usr/include/string.h
+DevRead.dummy.o: ../../graphics.new/machdep.h /usr/include/limits.h
+DevRead.dummy.o: /usr/include/sys/isa_defs.h /usr/include/sys/types.h
+DevRead.dummy.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+DevRead.dummy.o: /usr/include/sys/time.h /usr/include/sys/time.h
+DevRead.dummy.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
+DevRead.dummy.o: /usr/include/sys/wait.h /usr/include/sys/siginfo.h
+DevRead.dummy.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+DevRead.dummy.o: /usr/include/sys/procset.h /usr/include/sys/ipc.h
+DevRead.dummy.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+DevRead.dummy.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DevRead.dummy.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DevRead.dummy.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DevRead.dummy.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DevRead.dummy.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+DevRead.dummy.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+DevRead.dummy.o: /usr/include/sys/turnstile.h /usr/include/sys/pirec.h
+DevRead.dummy.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+DevRead.dummy.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+DevRead.dummy.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
+DevRead.dummy.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+DevRead.dummy.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
+DevRead.dummy.o: DevRead.h ../../graphics/DeviseTypes.h /usr/include/values.h
+DevRead.dummy.o: ../../graphics/DevStatus.h ../../graphics.new/RecId.h
+DevRead.dummy.o: types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/String.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/Regex.h exception.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
+DevRead.dummy.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
+DevRead.dummy.o: ../../graphics/AttrList.h ../../graphics/DList.h
+DevRead.dummy.o: ../../graphics/Exit.h ../../graphics/Init.h
+DevRead.dummy.o: ../../graphics/BufPolicy.h queue.h Utility.h Iterator.h
+DevRead.dummy.o: ../../attrproj/ApParseCat.h ../../graphics.new/TData.h
+DevRead.dummy.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
+DevRead.dummy.o: ../../graphics.new/DCE.h /usr/include/errno.h
+DevRead.dummy.o: /usr/include/sys/errno.h /usr/include/sys/stat.h
+DevRead.dummy.o: ../../graphics/Util.h /usr/include/stdlib.h
+DevRead.dummy.o: /usr/include/ctype.h /usr/include/math.h
+DevRead.dummy.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+DevRead.dummy.o: ../../graphics.new/DataSeg.h
 DropIndexParse.o: ParseTree.h queue.h /usr/include/assert.h
 DropIndexParse.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DropIndexParse.o: /usr/include/sys/va_list.h myopt.h
@@ -1518,15 +1562,44 @@ script.o: ../../attrproj/ApInit.h ../RTree/RTreeCommon.h ncsa.h
 util.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 util.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/memory.h
 
-ParseAPIDTE.o: ../../graphics.new/ParseAPI.h ParseAPIDTE.h
-ParseAPIParent.o: ParseAPIParent.h ../../graphics.new/ParseAPI.h
-ParseAPIParent.o: ParseAPIDTE.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+ParseAPIDTE.o: /s/gcc-2.7.2/lib/g++-include/libio.h
+ParseAPIDTE.o: ../../graphics.new/ParseAPI.h ParseAPIDTE.h DTEControl.h
+ParseAPIDTE.o: /usr/include/assert.h /usr/include/stdio.h
+ParseAPIDTE.o: /usr/include/sys/feature_tests.h /usr/include/sys/va_list.h
+ParseAPIDTE.o: ../DeviseSpecific/CatalogComm.h
+ParseAPIParent.o: ../../graphics.new/ParseAPI.h ParseAPIParent.h
+ParseAPIParent.o: ParseAPIDTE.h DTEControl.h /usr/include/assert.h
+ParseAPIParent.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+ParseAPIParent.o: /usr/include/sys/va_list.h ../DeviseSpecific/CatalogComm.h
+ParseAPIParent.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+ParseAPIParent.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+ParseAPIParent.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/sys/ddi.h
+ParseAPIParent.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
+ParseAPIParent.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
+ParseAPIParent.o: /usr/include/sys/time.h /usr/include/sys/time.h
+ParseAPIParent.o: /usr/include/sys/map.h /usr/include/sys/t_lock.h
+ParseAPIParent.o: /usr/include/sys/machlock.h /usr/include/sys/dki_lkinfo.h
+ParseAPIParent.o: /usr/include/sys/dl.h /usr/include/sys/sleepq.h
+ParseAPIParent.o: /usr/include/sys/turnstile.h /usr/include/sys/param.h
+ParseAPIParent.o: /usr/include/sys/unistd.h /usr/include/sys/pirec.h
+ParseAPIParent.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
+ParseAPIParent.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
+ParseAPIParent.o: /usr/include/sys/buf.h /usr/include/sys/kstat.h
+ParseAPIParent.o: /usr/include/sys/uio.h /usr/include/sys/stream.h
+ParseAPIParent.o: /usr/include/sys/vnode.h /usr/include/sys/cred.h
+ParseAPIParent.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
+ParseAPIParent.o: /usr/include/sys/strmdep.h /usr/include/string.h
 TkControl.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 TkControl.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 TkControl.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdlib.h
-TkControl.o: /usr/include/sys/feature_tests.h Control.h ParseAPIParent.h
-TkControl.o: ../../graphics.new/ParseAPI.h ParseAPIDTE.h
+TkControl.o: /usr/include/sys/feature_tests.h DTEControl.h
+TkControl.o: /usr/include/assert.h /usr/include/stdio.h
+TkControl.o: /usr/include/sys/va_list.h ParseAPIParent.h ParseAPIDTE.h
 
+FormatVolume.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+FormatVolume.o: /usr/include/sys/va_list.h RTreeCommon.h
 RTree.o: RTree.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
 RTree.o: /usr/include/sys/va_list.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 RTree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -1561,6 +1634,12 @@ bulk_data.o: /usr/include/sys/time.h /usr/include/sys/time.h
 bulk_data.o: /usr/include/sys/mman.h type_compat.h /usr/include/errno.h
 bulk_data.o: /usr/include/sys/errno.h /usr/include/stdio.h
 bulk_data.o: /usr/include/sys/va_list.h globals.h
+convert_bulk.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+convert_bulk.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+convert_bulk.o: /usr/include/strings.h /usr/include/string.h
+convert_bulk.o: tools/correct_math.C /usr/include/math.h
+convert_bulk.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+convert_bulk.o: tools/heap.h
 genrtree.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 genrtree.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 genrtree.o: /usr/include/sys/select.h /usr/include/sys/time.h
@@ -1663,7 +1742,7 @@ bitmap.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 bitmap.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/sys/types.h
 bitmap.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 bitmap.o: /usr/include/sys/select.h /usr/include/sys/time.h
-bitmap.o: /usr/include/sys/time.h bitmap.h
+bitmap.o: /usr/include/sys/time.h bitmap.h /usr/include/assert.h
 box.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 box.o: /usr/include/sys/va_list.h box.h key.h /usr/include/stdlib.h bit_vec.h
 box.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

@@ -29,10 +29,10 @@ DTE_INCLUDES = \
 	-I$(DTE_DIR)/StandAlone \
 	-I$(DTE_DIR)/RTree -I$(DTE_DIR)/RTree/tools \
 	-I$(DTE_DIR)/Script \
-	-I$(DTE_DIR)/GUI \
 	-I../../graphics \
 	-I../../graphics.new \
-	-I../../attrproj 
+	-I../../attrproj \
+	-I$(DTE_DIR)/GUI
 
 CFLAGS = -gstabs $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-Wall -Wno-unused \
