@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/11/05 00:22:05  donjerko
+  Added initialization of Streaming Buffer Mgr, used by RTree.
+
+  Revision 1.18.6.1  1998/03/05 16:11:09  wenger
+  Added DebugLog class for use in extensive logging of debug information.
+
   Revision 1.18  1997/05/21 22:09:51  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -102,10 +108,8 @@
 #include "Control.h"
 #include "DaliIfc.h"
 #include "ETkIfc.h"
-#endif
-
-#if !defined(LIBCS) && !defined(ATTRPROJ)
 #include "InitShut.h"
+#include "DebugLog.h"
 #endif
 
 void Exit::DoExit(int code)
@@ -117,6 +121,10 @@ void Exit::DoExit(int code)
 #if !defined(LIBCS) && !defined(ATTRPROJ)
 //    cout << "Calling RTree shutdown\n";
     shutdown_system();
+#endif
+
+#if !defined(LIBCS) && !defined(ATTRPROJ)
+    DebugLog::DeleteAll();
 #endif
 
 #if !defined(LIBCS)

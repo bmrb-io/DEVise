@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.78  1998/03/08 00:01:10  wenger
+#  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+#  update problems) -- major changes to visual links.
+#
 #  Revision 1.77  1998/03/05 20:36:21  wenger
 #  Fixed bugs 304 and 309 (problems with view colors); fixed a few other
 #  problems related to *ClassInfo classes.
@@ -96,6 +100,9 @@
 #  Revision 1.61  1997/11/12 15:45:48  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 #  into the trunk.
+#
+#  Revision 1.60.4.3  1998/03/05 16:10:53  wenger
+#  Added DebugLog class for use in extensive logging of debug information.
 #
 #  Revision 1.60.4.2  1998/01/07 15:59:47  wenger
 #  Removed replica cababilities (since this will be replaced by collaboration
@@ -236,7 +243,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C DataSourceDQL.c  \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
-	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c
+	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))

@@ -1170,7 +1170,7 @@ Num Date        Status  Description
 307 03/02/98	FIXED	DEVise gives 'Bad free() ignored.' messages when
 			quitting (at least on Intel/Solaris). (rkw)
 
-308 03/03/98	OPEN	devised uses lots of CPU when idle. (sm/rkw)
+308 03/03/98	FIXED	devised uses lots of CPU when idle. (sm/rkw)
 
 309 03/04/98	FIXED	Copying a view does not copy the background color
 			to the new view. (ml/rkw)

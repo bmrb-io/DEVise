@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.1.4.1  1998/03/05 16:10:18  wenger
+  Fixed bug 308 (excessive CPU use while idle).
+
+  Revision 1.1  1997/09/05 22:35:58  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
  */
 
 #include <stdio.h>
@@ -117,8 +124,15 @@ Scheduler::Run()
   printf("Scheduler::Run()\n");
 #endif
 
+#if 0
+  // Note: having the Scheduler always request a callback caused bug 308
+  // (excessive CPU use while idle).  Right now, since the Scheduler doesn't
+  // do much besides provide an interface layer on top of the Dispatcher,
+  // we don't ever need to get called back.  Once the Scheduler really
+  // does something, we need to make sure we only get called back when
+  // we really need to.  RKW Mar. 5, 1998.
   Dispatcher::Current()->RequestCallback(_id);
-
+#endif
 }
 
 /*------------------------------------------------------------------------------
