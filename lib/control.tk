@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.44  1996/01/13 17:59:07  jussi
+#	Initialization is read from devise.rc if no other .rc file
+#	is found.
+#
 #	Revision 1.43  1996/01/09 16:39:51  jussi
 #	Added support for Tcl expressions as mappings.
 #
@@ -232,13 +236,16 @@ DEVise changeMode $mode
 set hostCfg $libdir/config.tcl
 if {![file exists $hostCfg]} {
     puts "Cannot read configuration file $hostCfg"
-}
-puts "Reading configuration file $hostCfg"
-source $hostCfg
-set hostCfg $libdir/config.$env(HOSTNAME)
-if {[file exists $hostCfg]} {
+} else {
     puts "Reading configuration file $hostCfg"
     source $hostCfg
+}
+
+if {![catch {set hostCfg $libdir/config.$env(HOSTNAME)}]} {
+    if {[file exists $hostCfg]} {
+	puts "Reading configuration file $hostCfg"
+	source $hostCfg
+    }
 }
 
 source $libdir/dialog.tk
@@ -720,7 +727,7 @@ proc ImportFileType {} {
 
 # Check to see if file already exists 
 proc FileExist { file } {
-    foreach tdata [ TdataSet] {
+    foreach tdata [TdataSet] {
 	if {$file == [DEVise tdataFileName $tdata]} {
 	    return 1
 	}
@@ -1581,6 +1588,12 @@ proc DoActualSave { infile asTemplate } {
 
     puts $f "# Import file (Create TData)"
     puts $f "# format: DEVise create tdata fileType filePath fileAlias"
+    puts $f ""
+    if {!$asTemplate} {
+	puts $f "set loadPixmap \$template"
+	puts $f ""
+    } 
+
     set fileDict ""
     set fileNum 1
     set classes [DEVise get tdata]
@@ -1606,7 +1619,17 @@ proc DoActualSave { infile asTemplate } {
 		puts $f "\t\}"
 		puts $f "\} else \{"
 		puts $f "\tset $tdataVar \{$fileAlias\}"
-		puts $f "\tDEVise create tdata $class $filePath \$$tdataVar"
+		puts $f "\tset source \[OpenDataSource \$$tdataVar]"
+		puts $f "\tif \{\$source == \"\"\} \{"
+		puts $f "\t\treturn 0"
+		puts $f "\t\}"
+		puts $f "\tset dispname \[lindex \$source 0\]"
+		puts $f "\tset filePath \[lindex \$source 1\]"
+		puts $f "\tDEVise create tdata $class \$filePath \$dispname"
+		puts $f "\tif \{\$dispname != \$$tdataVar\} \{"
+		puts $f "\t\tset loadPixmap 0"
+		puts $f "\t\tset $tdataVar \$dispname"
+		puts $f "\t\}"
 		puts $f "\}"
 	    }
 	    set fileNum [expr $fileNum+1]
@@ -1793,7 +1816,7 @@ proc DoActualSave { infile asTemplate } {
     puts $f ""
     puts $f "# Load pixmaps from views"
     puts $f "set pixmapName $bitmapFile"
-    puts $f "if \{ !\$template && \[ file exists \$pixmapName \] \} \{"
+    puts $f "if \{ \$loadPixmap && \[ file exists \$pixmapName \] \} \{"
     puts $f "	set pixmapFile \[ DEVise open \$pixmapName rb \]"
     puts $f "	set fileDate \[ DEVise readLine \$pixmapFile \]"
     puts $f "	set sessionDate \{$date\}"
@@ -2816,7 +2839,7 @@ proc DoClose {} {
     }
     
     foreach view [ViewSet] {
-	puts "destroying view $view"
+	# puts "destroying view $view"
 	DEVise destroy $view
     }
 
@@ -3557,19 +3580,19 @@ proc DoLoadPixmap {} {
 # This procedure asks user for file name, and imports it as 
 # the new TData
 
-proc GetTDataTemplate { type total num} {
+proc GetTDataTemplate {type total num} {
     global fsBox dialogParamVar datadir
 
     set fsBox(path) $datadir
     set fsBox(pattern) *
 
-    while { 1 } {
+    while {1} {
 	set file [ FSBox "Select file $num of $total, type $type" ]
 	if {$file == ""} {
 	    return ""
 	}
 
-	if  {![FileExist $file]} {
+	if {![FileExist $file]} {
 	    break
 	}
 	set but [dialog .fileExist "File Exists" \
@@ -3577,7 +3600,7 @@ proc GetTDataTemplate { type total num} {
 		Please select another file" "" 0 Continue]
     }
 
-    while { 1 } {
+    while {1} {
 	set fileAlias [ file tail $file ]
 	set tempParam [list [ list  FileAlias $fileAlias ] ]
 	set button [ dialogParam .fileParam "FileParam" \
@@ -3590,7 +3613,7 @@ proc GetTDataTemplate { type total num} {
 	if {![DEVise exists $fileAlias]} {
 	    break
 	}
-	set but [dialog .fileExist "FileExist" \
+	set but [dialog .fileExist "Alias Exists" \
 		"Alias $fileAlias exists already" "" 1 {continue}]
     }
 
