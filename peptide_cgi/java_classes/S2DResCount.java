@@ -12,16 +12,17 @@
 
 // ------------------------------------------------------------------------
 
-//TEMPTEMP
-// This class implements the calculation and output of chemical shift data.
-// For each set of chemical shift data, it creates a data file, a session
-// file, an individual html file, and a link in the summary html file.
+// This class implements the counting of the number of residues for each
+// amino acid.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.1  2001/05/09 14:38:46  wenger
+// Oops!  Forgot to cvs add this before!!
+//
 
 // ========================================================================
 
@@ -40,6 +41,9 @@ public class S2DResCount {
     private int[] _resSeqCodes;
     private String[] _residueLabels;
 
+    private String[] _acidList = new String[] { "ALA", "ARG", "ASP", "ASN",
+      "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE",
+      "PRO", "SER", "THR", "TRP", "TYR", "VAL" };
     private Hashtable _ht = null;
 
     //===================================================================
@@ -60,15 +64,11 @@ public class S2DResCount {
 	//
         // Pre-load hash table with all amino acids, count of 0.
 	//
-	String[] acidList = new String[] { "ALA", "ARG", "ASP", "ASN", "CYS",
-	  "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE",
-	  "PRO", "SER", "THR", "TRP", "TYR", "VAL" };
-
-	_ht = new Hashtable(acidList.length);
+	_ht = new Hashtable(_acidList.length);
 
 	Integer tmpInt = new Integer(0);
-	for (int index = 0; index < acidList.length; index++) {
-	    _ht.put (acidList[index], tmpInt);
+	for (int index = 0; index < _acidList.length; index++) {
+	    _ht.put (_acidList[index], tmpInt);
 	}
     }
 
@@ -120,9 +120,12 @@ public class S2DResCount {
 	// Write out the totals.
 	//
         try {
-	    Enumeration enum = _ht.keys();
-	    while (enum.hasMoreElements()) {
-	        String residueLabel = (String)enum.nextElement();
+	    if (_ht.size() != _acidList.length) {
+	        System.err.println("Warning: probable bad entries in amino " +
+		  "acid count list");
+	    }
+	    for (int index = 0; index < _acidList.length; index++) {
+	        String residueLabel = _acidList[index];
 	        Integer tmpInt = (Integer)_ht.get(residueLabel);
 	        writer.write(residueLabel + " " + tmpInt + "\n");
 	    }

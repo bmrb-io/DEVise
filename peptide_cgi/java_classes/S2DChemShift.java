@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2001/05/08 18:24:18  wenger
+// Fixed problem getting residue count if a star file contains info for
+// more than one protein; added residue counts to 'all shifts' and 'H
+// vs. N' visualizations.
+//
 // Revision 1.7  2001/04/24 18:06:43  wenger
 // More improvements to "all chem shifts" visualization; found and fixed
 // bug 666.
@@ -181,17 +186,17 @@ public class S2DChemShift {
 		    // Special cases of combining HA2 with HA and HA3 with
 		    // CB as per algorithm.
 		    //TEMP -- need alg reference here
-	            if (atomName.equalsIgnoreCase("HA") ||
-		      (atomName.equalsIgnoreCase("HA2") &&
-		      resLabel.equalsIgnoreCase("GLY"))) {
+	            if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA) ||
+		      (atomName.equalsIgnoreCase(S2DNames.ATOM_HA2) &&
+		      resLabel.equalsIgnoreCase(S2DNames.ACID_GLY))) {
 		        haDeltashift = deltashift;
-	            } else if (atomName.equalsIgnoreCase("C")) {
+	            } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_C)) {
 		        cDeltashift = deltashift;
-		    } else if (atomName.equalsIgnoreCase("CA")) {
+		    } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_CA)) {
 		        caDeltashift = deltashift;
-		    } else if (atomName.equalsIgnoreCase("CB") ||
-		      (atomName.equalsIgnoreCase("HA3") &&
-		      resLabel.equalsIgnoreCase("GLY"))) {
+		    } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_CB) ||
+		      (atomName.equalsIgnoreCase(S2DNames.ATOM_HA3) &&
+		      resLabel.equalsIgnoreCase(S2DNames.ACID_GLY))) {
 		        cbDeltashift = deltashift;
 		    } else {
 		        //TEMP -- should we ever get here????
@@ -342,17 +347,20 @@ public class S2DChemShift {
 		        // Special cases of combining HA2 with HA and HA3 with
 		        // CB as per algorithm.
 		        //TEMP -- need alg reference here
-	                if (atomName.equalsIgnoreCase("HA") ||
-		          (atomName.equalsIgnoreCase("HA2") &&
-			  resLabel.equalsIgnoreCase("GLY"))) {
+	                if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA) ||
+		          (atomName.equalsIgnoreCase(S2DNames.ATOM_HA2) &&
+			  resLabel.equalsIgnoreCase(S2DNames.ACID_GLY))) {
 		            haCsi = csi;
-	                } else if (atomName.equalsIgnoreCase("C")) {
+	                } else if (atomName.equalsIgnoreCase(
+			  S2DNames.ATOM_C)) {
 		            cCsi = csi;
-		        } else if (atomName.equalsIgnoreCase("CA")) {
+		        } else if (atomName.equalsIgnoreCase(
+			  S2DNames.ATOM_CA)) {
 		            caCsi = csi;
-		        } else if (atomName.equalsIgnoreCase("CB") ||
-		          (atomName.equalsIgnoreCase("HA3") &&
-			  resLabel.equalsIgnoreCase("GLY"))) {
+		        } else if (atomName.equalsIgnoreCase(
+			  S2DNames.ATOM_CB) ||
+		          (atomName.equalsIgnoreCase(S2DNames.ATOM_HA3) &&
+			  resLabel.equalsIgnoreCase(S2DNames.ACID_GLY))) {
 		            cbCsi = csi;
 		        } else {
 		            //TEMP -- should we ever get here????
@@ -453,11 +461,13 @@ public class S2DChemShift {
 		      resLabel.equalsIgnoreCase(_residueLabels[index]) &&
 		      resSeqCode == _resSeqCodes[index]) {
 	                String atomType = _atomTypes[index];
-			if (atomType.equalsIgnoreCase("H")) {
+			if (atomType.equalsIgnoreCase(S2DNames.ATOM_H)) {
 			    starNumH++;
-			} else if (atomType.equalsIgnoreCase("C")) {
+			} else if (atomType.equalsIgnoreCase(
+			  S2DNames.ATOM_C)) {
 			    starNumC++;
-			} else if (atomType.equalsIgnoreCase("N")) {
+			} else if (atomType.equalsIgnoreCase(
+			  S2DNames.ATOM_N)) {
 			    starNumN++;
 			}
 
@@ -630,14 +640,14 @@ public class S2DChemShift {
 	        String atomName = _atomNames[index];
 	        double chemShift = _chemShiftVals[index];
 
-		if (atomName.equalsIgnoreCase("H")) {
+		if (atomName.equalsIgnoreCase(S2DNames.ATOM_H)) {
 		    if (hasH) {
 		        System.err.println("Multiple H entries in one " +
 			  "residue(" + currSeqCode + ")!");
 		    }
 		    hasH = true;
 		    hShift = chemShift;
-		} else if (atomName.equalsIgnoreCase("N")) {
+		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_N)) {
 		    if (hasN) {
 		        System.err.println("Multiple N entries in one " +
 			  "residue(" + currSeqCode + ")!");

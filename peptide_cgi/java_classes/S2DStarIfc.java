@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/05/08 18:24:18  wenger
+// Fixed problem getting residue count if a star file contains info for
+// more than one protein; added residue counts to 'all shifts' and 'H
+// vs. N' visualizations.
+//
 // Revision 1.8  2001/03/13 14:50:10  wenger
 // Added cache invalidation: cache files are not used if peptide-cgi code
 // or NMR-Star file has changed since relevant cache files were generated.
@@ -207,7 +212,7 @@ public class S2DStarIfc {
 	// only be one SaveFrame with this name.
 	if (frames.size() != 1) {
 	    System.err.println("Found " + frames.size() +
-	      " save frames for save_entry_information;" +
+	      " save frames for " + S2DNames.SAVE_ENTRY_INFO + ";" +
 	      " expect exactly 1.");
 	} else {
 	    result = ((DataItemNode)((SaveFrameNode)frames.firstElement()).
@@ -248,8 +253,8 @@ public class S2DStarIfc {
     
 	        String currAtomName =
 		  currRow.elementAt(atomNameIndex).getValue();
-	        if (currAtomName.equalsIgnoreCase("HA") ||
-		  currAtomName.equalsIgnoreCase("HA2")) {
+	        if (currAtomName.equalsIgnoreCase(S2DNames.ATOM_HA) ||
+		  currAtomName.equalsIgnoreCase(S2DNames.ATOM_HA2)) {
 	            haCsCount++;
 	        }
 
@@ -320,7 +325,8 @@ public class S2DStarIfc {
 	    }
             DataItemNode node = (DataItemNode)list.elementAt(0);
 	    String molPolymerClass = node.getValue();
-            if (molPolymerClass.equalsIgnoreCase("protein")) result = true;
+            if (molPolymerClass.equalsIgnoreCase(S2DNames.PROTEIN))
+	      result = true;
 
 	} catch (S2DException ex) {
 	    if (DEBUG >= 1) {
@@ -495,7 +501,7 @@ public class S2DStarIfc {
 
         if (catNodeList.size() != 1) {
             throw new S2DError("Found " + catNodeList.size() +
-	      " save frames for _Saveframe_category_type," +
+	      " save frames for " + S2DNames.SAVEFRAME_CAT_TYPE + ";" +
 	      " expect exactly 1.");
         }
 
@@ -600,7 +606,7 @@ public class S2DStarIfc {
         //
 	// Get the corresponding save frame.
 	//
-	String frameName = "save_" + molLabel;
+	String frameName = S2DNames.SAVE_FRAME_PREFIX + molLabel;
 	list = _starTree.searchByName(frameName);
 	if (list.size() != 1) {
 	    throw new S2DError("There should be exactly one " +

@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2001/05/08 18:24:18  wenger
+// Fixed problem getting residue count if a star file contains info for
+// more than one protein; added residue counts to 'all shifts' and 'H
+// vs. N' visualizations.
+//
 // Revision 1.8  2001/04/17 17:09:10  wenger
 // Added display of H vs. N chem shifts.
 //
@@ -64,6 +69,16 @@ public class S2DNames
     //
     public static final String ASSIGNED_CHEM_SHIFTS =
       "assigned_chemical_shifts";
+    public static final String ATOM_1_ATOM_NAME = "_Atom_one_atom_name";
+    public static final String ATOM_1_NAME = "_Atom_one_name";
+    public static final String ATOM_1_RES_LABEL = "_Atom_one_residue_label";
+    public static final String ATOM_1_RES_SEQ_CODE =
+      "_Atom_one_residue_seq_code";
+    public static final String ATOM_2_ATOM_NAME = "_Atom_two_atom_name";
+    public static final String ATOM_2_NAME = "_Atom_two_name";
+    public static final String ATOM_2_RES_LABEL = "_Atom_two_residue_label";
+    public static final String ATOM_2_RES_SEQ_CODE =
+      "_Atom_two_residue_seq_code";
     public static final String ATOM_NAME = "_Atom_name";
     public static final String ATOM_TYPE = "_Atom_type";
     public static final String CHEM_SHIFT_VALUE = "_Chem_shift_value";
@@ -71,6 +86,10 @@ public class S2DNames
       "_Conformer_submitted_total_number";
     public static final String COUPLING_CONSTANT_CODE =
       "_Coupling_constant_code";
+    public static final String COUPLING_CONSTANT_VALUE =
+      "_Coupling_constant_value";
+    public static final String COUPLING_CONSTANT_VALUE_ERR =
+      "_Coupling_constant_value_error";
     public static final String COUPLING_CONSTANTS = "coupling_constants";
     public static final String DETAILS = "_Details";
     public static final String ENTRY_TITLE = "_Entry_title";
@@ -84,6 +103,9 @@ public class S2DNames
     public static final String H_EXCHANGE_RATES = "H_exchange_rates";
     public static final String HEME = "HEME";
     public static final String HETERONUCLEAR_NOE = "heteronuclear_NOE";
+    public static final String HET_NOE_VALUE = "_Heteronuclear_NOE_value";
+    public static final String HET_NOE_VALUE_ERR =
+      "_Heteronuclear_NOE_value_error";
     public static final String MOL_POLYMER_CLASS = "_Mol_polymer_class";
     public static final String MOL_SYSTEM = "molecular_system";
     public static final String MOL_SYSTEM_NAME = "_Mol_system_name";
@@ -98,18 +120,40 @@ public class S2DNames
     public static final String SAVE_DIST_CONSTRAINTS =
       "save_distance_constraints";
     public static final String SAVE_ENTRY_INFO = "save_entry_information";
+    public static final String SAVE_FRAME_PREFIX = "save_";
     public static final String SAVE_GMG4 = "save_GMG4";
     public static final String SAVEFRAME_CATEGORY = "_Saveframe_category";
     public static final String SAVEFRAME_CAT_TYPE = "_Saveframe_category_type";
     public static final String SAVEFRAME_PREFIX = "_save";
+    public static final String SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
     public static final String T1_RELAX = "T1_relaxation";
+    public static final String T1_VALUE = "_T1_value";
+    public static final String T1_VALUE_ERR = "_T1_value_error";
     public static final String T2_RELAX = "T2_relaxation";
+    public static final String T2_VALUE = "_T2_value";
+    public static final String T2_VALUE_ERR = "_T2_value_error";
 
     //
     // Atom names.
     //
-    public static final String BACKBONE_ATOM_NAME = "CA";
-    //TEMP -- add more here
+    public static final String ATOM_C = "C";
+    public static final String ATOM_CA = "CA";
+    public static final String ATOM_CB = "CB";
+    public static final String ATOM_H = "H";
+    public static final String ATOM_HA = "HA";
+    public static final String ATOM_HA2 = "HA2";
+    public static final String ATOM_HA3 = "HA3";
+    public static final String ATOM_N = "N";
+
+    //
+    // Residue labels (amino acids).
+    //
+    public static final String ACID_GLY = "GLY";
+
+    //
+    // Misc. values.
+    //
+    public static final String PROTEIN = "protein";
 
     //
     // URL for getting NMR-STAR files from BMRB.

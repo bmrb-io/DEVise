@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2001/05/08 18:24:18  wenger
+// Fixed problem getting residue count if a star file contains info for
+// more than one protein; added residue counts to 'all shifts' and 'H
+// vs. N' visualizations.
+//
 // Revision 1.14  2001/04/30 17:45:18  wenger
 // Added special link to 3D 4096 visualization to 4096 summary page;
 // added "No chemical shift data available" message to appropriate
@@ -102,7 +107,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "2.8";
+    public static final String PEP_CGI_VERSION = "2.9";
 
     private int _accessionNum;
     private String _dataDir;
@@ -651,28 +656,27 @@ public class S2DMain {
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
 
-	//TEMP -- change strings to named constants
 	String[] resSeqCodes = star.getFrameValues(frame,
-	  "_T1_value", "_Residue_seq_code");
+	  S2DNames.T1_VALUE, S2DNames.RESIDUE_SEQ_CODE);
 
 	String[] resLabels = star.getFrameValues(frame,
-	  "_T1_value", "_Residue_label");
+	  S2DNames.T1_VALUE, S2DNames.RESIDUE_LABEL);
 
 	String[] atomNames = star.getFrameValues(frame,
-	  "_T1_value", "_Atom_name");
+	  S2DNames.T1_VALUE, S2DNames.ATOM_NAME);
 
 	String[] relaxValues = star.getFrameValues(frame,
-	  "_T1_value", "_T1_value");
+	  S2DNames.T1_VALUE, S2DNames.T1_VALUE);
 
 	//TEMP -- 4096 has "_T1_error" instead of "_T1_value_error".
 	String[] relaxErrors = star.getOptionalFrameValues(frame,
-	  "_T1_value", "_T1_value_error", relaxValues.length, "0");
+	  S2DNames.T1_VALUE, S2DNames.T1_VALUE_ERR, relaxValues.length, "0");
 
 	_summary.startFrame(star.getFrameDetails(frame));
 
 	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum, _dataDir,
 	  _sessionDir, _summary, S2DUtils.TYPE_T1_RELAX,
-	  star.getOneFrameValue(frame, "_Spectrometer_frequency_1H"),
+	  star.getOneFrameValue(frame, S2DNames.SPEC_FREQ_1H),
 	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors);
 
 	relaxation.writeRelaxation(frameIndex);
@@ -690,28 +694,27 @@ public class S2DMain {
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
 
-	//TEMP -- change strings to named constants
 	String[] resSeqCodes = star.getFrameValues(frame,
-	  "_T2_value", "_Residue_seq_code");
+	  S2DNames.T2_VALUE, S2DNames.RESIDUE_SEQ_CODE);
 
 	String[] resLabels = star.getFrameValues(frame,
-	  "_T2_value", "_Residue_label");
+	  S2DNames.T2_VALUE, S2DNames.RESIDUE_LABEL);
 
 	String[] atomNames = star.getFrameValues(frame,
-	  "_T2_value", "_Atom_name");
+	  S2DNames.T2_VALUE, S2DNames.ATOM_NAME);
 
 	String[] relaxValues = star.getFrameValues(frame,
-	  "_T2_value", "_T2_value");
+	  S2DNames.T2_VALUE, S2DNames.T2_VALUE);
 
 	//TEMP -- 4096 has "_T2_error" instead of "_T2_value_error".
 	String[] relaxErrors = star.getOptionalFrameValues(frame,
-	  "_T2_value", "_T2_value_error", relaxValues.length, "0");
+	  S2DNames.T2_VALUE, S2DNames.T2_VALUE_ERR, relaxValues.length, "0");
 
 	_summary.startFrame(star.getFrameDetails(frame));
 
 	S2DRelaxation relaxation = new S2DRelaxation(_accessionNum, _dataDir,
 	  _sessionDir, _summary, S2DUtils.TYPE_T2_RELAX,
-	  star.getOneFrameValue(frame, "_Spectrometer_frequency_1H"),
+	  star.getOneFrameValue(frame, S2DNames.SPEC_FREQ_1H),
 	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors);
 
 	relaxation.writeRelaxation(frameIndex);
@@ -732,39 +735,38 @@ public class S2DMain {
 	//
 	// Get the values we need from the Star file.
 	//
-	//TEMP -- change strings to named constants
 	String[] atom1ResSeqs = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_one_residue_seq_code");
+	  S2DNames.COUPLING_CONSTANT_VALUE, S2DNames.ATOM_1_RES_SEQ_CODE);
 
 	String[] atom2ResSeqs = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_two_residue_seq_code");
+	  S2DNames.COUPLING_CONSTANT_VALUE, S2DNames.ATOM_2_RES_SEQ_CODE);
 
 	String[] couplingConstValues = star.getFrameValues(frame,
-	  "_Coupling_constant_value", "_Coupling_constant_value");
+	  S2DNames.COUPLING_CONSTANT_VALUE, S2DNames.COUPLING_CONSTANT_VALUE);
 
 	String[] couplingConstCodes = star.getOptionalFrameValues(frame,
-	  "_Coupling_constant_value", "_Coupling_constant_code",
+	  S2DNames.COUPLING_CONSTANT_VALUE, S2DNames.COUPLING_CONSTANT_CODE,
 	  atom1ResSeqs.length, "0");
 
 	String[] atom1ResLabels = star.getOptionalFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_one_residue_label",
+	  S2DNames.COUPLING_CONSTANT_VALUE, S2DNames.ATOM_1_RES_LABEL,
 	  atom1ResSeqs.length, "0");
 
 	String[] atom1Names = star.getOptionalFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_one_name",
+	  S2DNames.COUPLING_CONSTANT_VALUE, S2DNames.ATOM_1_NAME,
 	  atom1ResSeqs.length, "0");
 
 	String[] atom2ResLabels = star.getOptionalFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_two_residue_label",
+	  S2DNames.COUPLING_CONSTANT_VALUE, S2DNames.ATOM_2_RES_LABEL,
 	  atom1ResSeqs.length, "0");
 
 	String[] atom2Names = star.getOptionalFrameValues(frame,
-	  "_Coupling_constant_value", "_Atom_two_name",
+	  S2DNames.COUPLING_CONSTANT_VALUE, S2DNames.ATOM_2_NAME,
 	  atom1ResSeqs.length, "0");
 
 	String[] couplingConstErrors = star.getOptionalFrameValues(frame,
-	  "_Coupling_constant_value", "_Coupling_constant_value_error",
-	  atom1ResSeqs.length, "0");
+	  S2DNames.COUPLING_CONSTANT_VALUE,
+	  S2DNames.COUPLING_CONSTANT_VALUE_ERR, atom1ResSeqs.length, "0");
 
 	_summary.startFrame(star.getFrameDetails(frame));
 
@@ -788,26 +790,25 @@ public class S2DMain {
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
 
-	//TEMP -- change strings to named constants
 	String[] resSeqCodes = star.getFrameValues(frame,
-	  "_Heteronuclear_NOE_value", "_Residue_seq_code");
+	  S2DNames.HET_NOE_VALUE, S2DNames.RESIDUE_SEQ_CODE);
 
 	String[] resLabels = star.getFrameValues(frame,
-	  "_Heteronuclear_NOE_value", "_Residue_label");
+	  S2DNames.HET_NOE_VALUE, S2DNames.RESIDUE_LABEL);
 
 	String[] hetNOEValues = star.getFrameValues(frame,
-	  "_Heteronuclear_NOE_value", "_Heteronuclear_NOE_value");
+	  S2DNames.HET_NOE_VALUE, S2DNames.HET_NOE_VALUE);
 
 	String[] hetNOEErrors = star.getFrameValues(frame,
-	  "_Heteronuclear_NOE_value", "_Heteronuclear_NOE_value_error");
+	  S2DNames.HET_NOE_VALUE, S2DNames.HET_NOE_VALUE_ERR);
 
 	_summary.startFrame(star.getFrameDetails(frame));
 
 	S2DHetNOE hetNOE = new S2DHetNOE(_accessionNum, _dataDir,
 	  _sessionDir, _summary,
-	  star.getOneFrameValue(frame, "_Spectrometer_frequency_1H"),
-	  star.getOneFrameValue(frame, "_Atom_one_atom_name"),
-	  star.getOneFrameValue(frame, "_Atom_two_atom_name"),
+	  star.getOneFrameValue(frame, S2DNames.SPEC_FREQ_1H),
+	  star.getOneFrameValue(frame, S2DNames.ATOM_1_ATOM_NAME),
+	  star.getOneFrameValue(frame, S2DNames.ATOM_2_ATOM_NAME),
 	  resSeqCodes, resLabels, hetNOEValues, hetNOEErrors);
 
 	hetNOE.writeHetNOE(frameIndex);
