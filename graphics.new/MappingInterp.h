@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/09 22:54:46  jussi
+  Added View parameter to DrawGDataArray().
+
   Revision 1.12  1996/02/13 16:30:01  jussi
   Made declaration of friend ConvertOne use the inline keyword.
 
@@ -112,7 +115,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 8;
+const int MaxInterpShapes = 9;
 
 class MappingInterp: public TDataMapDispatch {
   friend inline double ConvertOne(char *from, MappingSimpleCmdEntry *entry,
