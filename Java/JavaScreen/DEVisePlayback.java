@@ -18,6 +18,9 @@
 // ------------------------------------------------------------------------
 // ------------------------------------------------------------------------
 // $Log$
+// Revision 1.4  2001/10/05 19:26:32  xuk
+// Fixed bug 698: manipulating 3D command playback.
+//
 // Revision 1.3  2001/10/02 22:05:51  xuk
 // *** empty log message ***
 //
@@ -51,9 +54,14 @@ public class DEVisePlayback implements Runnable
 	long pretime = 0, time = 0;
 
 	try {
-	    //BufferedReader file = new BufferedReader(new FileReader(_filename));
-	    URL myURL = new URL(_filename);
-	    BufferedReader file = new BufferedReader(new InputStreamReader(myURL.openStream()));
+	    BufferedReader file = null;
+
+	    if ( _filename.startsWith("http") ) { 
+		URL myURL = new URL(_filename);
+		file = new BufferedReader(new InputStreamReader(myURL.openStream()));
+	    } else {
+		file = new BufferedReader(new FileReader(_filename));
+	    }
 
 	    String line = null;
 	     

@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.116  2001/10/02 22:00:58  xuk
+// Added command-line opition for client log playback.
+// Modified jsdevisec() for auto playback.
+//
 // Revision 1.115  2001/09/28 18:53:55  xuk
 // JavaScreen command log playback.
 // Added isPlayback, isDisplay, isOriginal, logFileName variables;
@@ -2190,7 +2194,7 @@ class SetCgiUrlDlg extends Dialog
 class SetLogFileDlg extends Dialog
 {
     jsdevisec jsc = null;
-    public TextField file = new TextField("http://", 30);
+    public TextField file = new TextField(30);
     public Checkbox display = new Checkbox("Is Display", true);
     public Checkbox original = new Checkbox("Original Rate", true);
     public Button setButton = new Button("   Set   ");
