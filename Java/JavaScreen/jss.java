@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2000/02/15 20:50:43  hongyu
+// *** empty log message ***
+//
 // Revision 1.4  2000/02/14 09:26:33  hongyu
 // *** empty log message ***
 //
@@ -139,7 +142,7 @@ public class jss implements Runnable
         boolean isListen = true;
         String hostname = null;
 
-        System.out.println("\nTry to connect to jspop server ...\n");
+        System.out.println("\nTry to connect to jspop server " + jspopHost + " at port " + jspopPort + " ...\n");
         try {
             connectToJSPOP();
             for (int i = 0; i < deviseds.size(); i++) {
