@@ -3,6 +3,12 @@
 ## Copyright (c) 1997 DEVise Group
 ## DEVise Color Management
 ##******************************************************************************
+
+#  $Id$
+
+#  $Log$
+
+##******************************************************************************
 ## File: Makefile
 ## Last modified: Thu Oct 16 13:58:16 1997 by Chris Weaver
 ##******************************************************************************
@@ -17,53 +23,37 @@
 ##
 ##******************************************************************************
 
-UTILS_INCLUDES = -I/s/X11/include -I../color/ -I../utils/ \
+include ../../Makefile.common
+
+UTILS_INCLUDES = -I../../src/color/ -I../../src/utils/ \
 	-I../../DTE/Core -I../../DTE/DeviseSpecific -I../../DTE/RTree \
 	-I../../graphics -I../../graphics.new -I../../tape -I../../unidata
-UTILS_LIBS = ../utils/libutils.a
-
-CC = g++
-AR = ar
-
-ifeq ($(DEV_DEBUG),)
-	OPTFLAG =
-else
-    ifeq ($(DEV_DEBUG),-1)
-	OPTFLAG = -O
-    else
-	OPTFLAG = -gstabs
-	endif
-endif
 
 TEMPLATE_FLAGS = -fno-implicit-templates
 
-UTILS_CFLAGS = $(UTILS_INCLUDES) $(TEMPLATE_FLAGS) $(OPTFLAG) -Wall -Wno-unused
+CFLAGS = $(ARCH_FLAGS) $(UTILS_INCLUDES) $(TEMPLATE_FLAGS) $(OPTFLAG) \
+	-Wall -Wno-unused
 
-UTILS_SRC =
+UTILS_SRC = templates.C
 
 UTILS_OBJ = $(UTILS_SRC:.C=.o)
 
 UTILS_LIB = libutils.a
 
 all:	$(UTILS_LIB)
+lib:	$(UTILS_LIB)
 
-$(UTILS_LIB):	$(UTILS_OBJ) templates.o
-	$(AR) cr $@ $(UTILS_OBJ) templates.o
+$(UTILS_LIB):	$(UTILS_OBJ)
+	$(AR) cr $@ $(UTILS_OBJ)
 
-.C.o:
-	$(CC) -c $(UTILS_CFLAGS) $<
-
+# Note: special compile rule is needed here so templates get instantiated
+# correctly.  RKW Dec. 2, 1997.
 templates.o:
-	$(CC) -c $(UTILS_INCLUDES) \
-	$(OPTFLAG) -Wall -Wno-unused templates.C $<
+	$(CC) -c $(ARCH_FLAGS) $(UTILS_INCLUDES) \
+		$(OPTFLAG) -Wall -Wno-unused $(VPATH)/templates.C $<
 
 clean:	mostlyclean
 	-rm $(UTILS_LIB)
 
 mostlyclean:
 	-rm $(UTILS_OBJ) templates.o
-
-depend:
-	makedepend -fMakefile $(UTILS_INCLUDES) $(UTILS_SRC)
-
-# DO NOT DELETE

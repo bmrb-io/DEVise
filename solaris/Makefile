@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.23  1997/11/14 00:34:56  donjerko
+# Fixed the multi target.
+#
 # Revision 1.22  1997/11/05 00:24:09  donjerko
 # *** empty log message ***
 #
@@ -50,7 +53,7 @@
 #
 
 LIBMODULES = graphics graphics.new tape issm compustat crsp \
-	unidata DTE RTree LM xvertext
+	unidata DTE RTree LM xvertext color utils
 
 #devread is obsolete
 #attrproj is broken

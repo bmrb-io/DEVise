@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.37  1997/11/24 23:14:05  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.36  1997/11/05 00:21:18  donjerko
 #  Added RTree library.
 #
@@ -94,9 +97,9 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 # which caused -lgraphicsnew to be listed twice below...
 # dd: dte need stuff from Jussi's SBM which is in graphics.new
 
-LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape -L../issm \
+LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
+	-L../color -L../utils -L../issm \
 	-L../crsp -L../compustat -L../LM -L../xvertext \
-	-L../../src/color -L../../src/utils \
 	-lgraphicsnew -lgraphics -lutils -lcolor \
 	-ldte -lrtree -lgraphicsnew \
 	-llm -lXrot \
@@ -118,7 +121,7 @@ SRCC = $(filter %.C,$(SRC))
 OBJ = $(SRCc:.c=.o)
 OBJ += $(SRCC:.C=.o)
 
-ALLLIBS = ../src/utils/libutils.a ../src/color/libcolor.a \
+ALLLIBS = ../utils/libutils.a ../color/libcolor.a \
 	../graphics/libgraphics.a \
 	../graphics.new/libgraphicsnew.a ../unidata/libunidata.a \
 	../DTE/libdte.a \
