@@ -1,0 +1,5 @@
+#! /usr/bin/csh -f
+
+pushd /p/devise/jussi
+wc */*.[Cch] */*/Makefile */Makefile.base */*.lex */*.y */*.tk */*.tcl
+popd
