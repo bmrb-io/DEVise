@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/12 22:04:34  jussi
+  Added support for private semaphores and shared memory (default).
+
   Revision 1.6  1996/12/03 20:35:37  jussi
   Added debugging message.
 
@@ -57,8 +60,6 @@
 
 #ifdef MODIFIED
 #include "Exit.h"
-#define UXCALL(c,s) {if ((c) < 0) { perror(s); \
-                                    DOASSERT(0, "Unix call failed"); }}
 #endif
 
 #ifdef SHARED_KEYS
@@ -91,16 +92,18 @@ Semaphore::Semaphore(key_t key, int &status, int nsem)
   // possibly create and then attach to semaphore
 
   if ((id = semget(key, nsem, SEM_R | SEM_A)) < 0) {
-    if (errno != ENOENT)
+    if (errno != ENOENT) {
       perror("semget");
-    assert(errno == ENOENT);
+      return;
+    }
 #ifdef DEBUG
     cerr << "%%  Creating semaphore (" << nsem << " sems)" << endl;
 #endif
     id = semget(key, nsem, SEM_R | SEM_A | IPC_CREAT);
-    if (id < 0)
+    if (id < 0) {
       perror("semget");
-    assert(id >= 0);
+      return;
+    }
   } else {
 #ifdef DEBUG
     cerr << "%%  Attached to existing semaphore (" << nsem << " sems)" << endl;
@@ -135,7 +138,8 @@ int Semaphore::destroyAll()
   for(key_t key = SemaphoreBase; key < maxKey; key++) {
     int id;
     if ((id = semget(key, 1, SEM_R | SEM_A)) < 0) {
-      assert(errno == ENOENT);
+      if (errno != ENOENT)
+        perror("semget");
     } else {
 #ifdef DEBUG
       cerr << "%%  Removing semaphore " << id << endl;
@@ -172,18 +176,22 @@ int Semaphore::setValue(int num, int sem)
 #else
   int result = semctl(id, sem, SETVAL, num);
 #endif
-  if (result < 0)
+  if (result < 0) {
     perror("semctl");
+    return result;
+  }
+
 #ifdef DEBUG
   cerr << "%%  Semaphore " << sem << " set to value " << num << endl;
 #endif
-  assert(result >= 0);
+
   return num;
 }
 
 #if defined(SHARED_KEYS)
 static void attachTable()
 {
+  shmKeyTable = 0;
   char *segment = 0;
   int created = 0;
   SharedMemory *shm = new SharedMemory(ShmKeyTableKey,
@@ -191,9 +199,10 @@ static void attachTable()
 				       segment, created);
   // avoid compiler warnings (unused var)
   shm = shm;
-  if (!segment)
+  if (!segment) {
     cerr << "Cannot attach to shared memory key table" << endl;
-  assert(segment);
+    return;
+  }
   shmKeyTable = (struct ShmKeyTable *)segment;
   if (created) {
     shmKeyTable->semNextKey = SemaphoreBase;
@@ -241,16 +250,19 @@ SemaphoreV::SemaphoreV(key_t key, int &status, int nsem)
 
 int SemaphoreV::create(int maxSems)
 {
-  DOASSERT(!_sem, "Real semaphore exists already");
+  if (_sem) {
+    fprintf(stderr, "Real semaphore exists already\n");
+    return -1;
+  }
+
+  _semBase = _maxSems = _semCount = 0;
 
   int status;
   _sem = new Semaphore(Semaphore::newKey(), status, maxSems);
   if (!_sem || status < 0)
     return -1;
 
-  _semBase = 0;
   _maxSems = maxSems;
-  _semCount = 0;
 
   return status;
 }
@@ -268,9 +280,10 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
 
   if (key != IPC_PRIVATE) {
     if ((id = shmget(key, 0, SHM_R | SHM_W)) < 0) {
-      if (errno != ENOENT)
+      if (errno != ENOENT) {
         perror("shmget");
-      assert(errno == ENOENT);
+        return;
+      }
     }
   }
 
@@ -278,9 +291,10 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
       // successfully attached -- now do a consistency check
     struct shmid_ds sbuf;
     int result = shmctl(id, IPC_STAT, &sbuf);
-    if (result < 0)
+    if (result < 0) {
       perror("shmctl");
-    assert(result >= 0);
+      return;
+    }
 #ifdef DEBUG
     cerr << "%%  Attached to existing shared memory (" << sbuf.shm_segsz
          << " bytes, " << sbuf.shm_nattch << " attachments)" << endl;
@@ -294,9 +308,10 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
            << sbuf.shm_segsz << " vs. " << size << endl;
       cerr << "Deleting old segment" << endl;
       result = shmctl(id, IPC_RMID, 0);
-      if (result < 0)
+      if (result < 0) {
         perror("shmctl");
-      assert(result >= 0);
+        return;
+      }
       id = -1;
     }
   }
@@ -310,18 +325,22 @@ SharedMemory::SharedMemory(key_t key, int size, char *&address, int &created) :
     created = 1;
   }
 
-  if (id < 0)
+  if (id < 0) {
     perror("shmget");
-  assert(id >= 0);
+    return;
+  }
 
 #ifdef DEBUG
   cerr << "%%  Shared memory id " << id << endl;
 #endif
 
-  address = addr = (char *)shmat(id, 0, 0);
-  if ((long)addr == -1)
+  char *ptr = (char *)shmat(id, 0, 0);
+  if ((long)ptr == -1) {
     perror("shmat");
-  assert((long)addr != -1);
+    return;
+  }
+
+  address = addr = ptr;
 }
 
 SharedMemory::~SharedMemory()
@@ -359,13 +378,9 @@ int SharedMemory::destroyAll()
   for(key_t key = ShmKeyTableKey; key < maxKey; key++) {
     int id;
     if ((id = shmget(key, 0, SHM_R | SHM_W)) < 0) {
-      assert(errno == ENOENT);
+      if (errno != ENOENT)
+        perror("shmget");
     } else {
-      struct shmid_ds sbuf;
-      int result = shmctl(id, IPC_STAT, &sbuf);
-      if (result < 0)
-	perror("shmctl");
-      assert(result >= 0);
 #ifdef DEBUG
       cerr << "%%  Removing shared memory segment " << id << endl;
 #endif
@@ -422,14 +437,14 @@ void IOBuffer::attach()
 
   int status;
   sems = new SemaphoreV(semKey, status, 3);
-  UXCALL(status, "sem");
+  assert(status >= 0);
   
   // attach to shared memory segment
 
   char *buf = 0;
   int created = 0;
   shmem = new SharedMemory(shmKey, size + 7 * sizeof(int), buf, created);
-  UXCALL(!shmem ? -1 : 0, "shm");
+  assert(shmem && buf);
   comm = (CommBuffer *)buf;
   if (created)
     init();

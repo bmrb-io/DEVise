@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/12 22:04:34  jussi
+  Added support for private semaphores and shared memory (default).
+
   Revision 1.6  1996/12/03 20:35:38  jussi
   Added debugging message.
 
@@ -62,6 +65,7 @@
 #include <errno.h>
 #include <assert.h>
 #include <stdio.h>
+#include <limits.h>
 
 #ifdef MODIFIED
 #include <sys/types.h>
@@ -222,6 +226,20 @@ public:
 
   static key_t newKey() {
     return Semaphore::newKey();         // create new key
+  }
+
+  static int numAvailable() {           // number of available virtual sems
+    return _maxSems - _semBase;
+  }
+
+  static int maxNumSemaphores() {       // largest size of semaphore array
+    return 16;
+#if 0
+    // this number should really be returned, but in Solaris
+    // the number is inflated and allocating a semaphore vector
+    // of this size will fail
+    return _POSIX_SEM_NSEMS_MAX;
+#endif
   }
 
 private:
