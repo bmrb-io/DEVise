@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/06/27 16:40:19  jussi
+  The networking code now handles interrupted (EINTR) recv() calls
+  properly.
+
   Revision 1.9  1996/06/27 15:53:43  jussi
   Changed a debugging statement.
 
@@ -57,6 +61,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <assert.h>
 
 #include "ClientAPI.h"
 
@@ -331,6 +336,9 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
 
 int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
 {
+  static int recBuffSize = 0;
+  static char *recBuff = 0;
+
   NetworkHeader hdr;
   hdr.flag = htons(flag);
   hdr.nelem = htons(argc);
@@ -347,15 +355,24 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
   }
   hdr.size = htons(tsize);
 
+  u_short msgsize = sizeof hdr + tsize;
+  if (!recBuff || msgsize >= recBuffSize) {
+    delete recBuff;
+    recBuffSize = msgsize + 1;
 #ifdef DEBUG
-  printf("Sending header: flag %u, nelem %u, size %u\n", flag, argc, tsize);
+    printf("Increasing size of recBuff to %d bytes\n", recBuffSize);
 #endif
-
-  int result = send(fd, (char *)&hdr, sizeof hdr, 0);
-  if (result < (int)sizeof hdr) {
-    perror("send");
-    return -1;
+    recBuff = new char [recBuffSize];
+    if (!recBuff) {
+      fprintf(stderr, "Out of memory\n");
+      return -1;
+    }
   }
+
+  char *buff = recBuff;
+
+  memcpy(recBuff, &hdr, sizeof hdr);
+  buff += sizeof hdr;
 
   for(i = 0; i < argc; i++) {
     // must send terminating NULL too
@@ -366,13 +383,9 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
     printf("Sending size of element %d: %u\n", i, size);
 #endif
     size = htons(size);
-    result = send(fd, (char *)&size, sizeof size, 0);
-    if (result < (int)sizeof size) {
-      perror("send");
-      return -1;
-    }
+    memcpy(buff, &size, sizeof size);
+    buff += sizeof size;
     size = ntohs(size);
-
     if (bracket)
       size -= 2;
 
@@ -380,35 +393,31 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
 #ifdef DEBUG
       printf("Sending element %d: \"{%s}\"\n", i, argv[i]);
 #endif
-      char *obrace = "{";
-      result = send(fd, obrace, 1, 0);
-      if (result == 1) {
-	// don't send null of argument, instead send null after closing brace
-	result = send(fd, argv[i], size - 1, 0);
-	if (result == size - 1) {
-	  char *cbrace = "}";
-	  result = send(fd, cbrace, 2, 0);
-	  if (result < 2)
-	    result = -1;
-	} else
-	  result = -1;
-      } else
-	result = -1;
-
-      if (result < 0) {
-	perror("send");
-	return -1;
-      }
+      *buff++ = '{';
+      // don't send null of argument, instead send null after closing brace
+      memcpy(buff, argv[i], size - 1);
+      buff += size - 1;
+      *buff++ = '}';
+      *buff++ = 0;
     } else {
 #ifdef DEBUG
       printf("Sending element %d: \"%s\"\n", i, argv[i]);
 #endif
-      result = send(fd, argv[i], size, 0);
-      if (result < size) {
-	perror("send");
-	return -1;
-      }
+      memcpy(buff, argv[i], size);
+      buff += size;
     }
+  }
+
+  assert(buff - recBuff == msgsize);
+
+#ifdef DEBUG
+  printf("Sending message: flag %u, nelem %u, size %u\n", flag, argc, tsize);
+#endif
+
+  int result = send(fd, recBuff, msgsize, 0);
+  if (result < (int)sizeof hdr) {
+    perror("send");
+    return -1;
   }
 
 #ifdef DEBUG
