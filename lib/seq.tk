@@ -1,0 +1,66 @@
+#	$Id$
+
+#	$Log$
+############################################################
+
+set seq_host quarg.cs.wisc.edu
+set seq_port 1515
+set seq_path /tmp
+
+if {[info exists env(SEQ_DISKPATH)]} {
+    set seq_path $env(SEQ_DISKPATH)
+}
+
+############################################################
+
+proc seqMain {} {
+    global seq_host seq_port seq_path
+
+    # see if .seq window already exists; if so, just return
+    set err [catch {set exists [wm state .seq]}]
+    if {!$err} { return }
+
+    toplevel .seq
+    wm maxsize .seq 1000 1000
+    wm title .seq "Sequence Query"
+    wm geometry .seq +50+50
+    selection clear .seq
+
+    frame .seq.query -relief groove -borderwidth 2
+    frame .seq.but -relief groove -borderwidth 2
+    pack .seq.query -side top -pady 3m -fill both -expand 1
+    pack .seq.but -side top -pady 3m -fill x
+
+    frame .seq.query.left
+    frame .seq.query.right
+    pack .seq.query.left .seq.query.right -side left -padx 3m -fill both \
+	    -expand 1
+
+    label .seq.query.left.name -text "Hostname:" -width 15
+    label .seq.query.left.port -text "Port Number:" -width 15
+    label .seq.query.left.path -text "Path Name:" -width 15
+    label .seq.query.left.query -text "Query:" -width 15
+    pack .seq.query.left.name .seq.query.left.port \
+	    .seq.query.left.path .seq.query.left.query \
+	    -side top
+
+    entry .seq.query.right.name -relief sunken -width 30 \
+	    -textvariable seq_host
+    entry .seq.query.right.port -relief sunken -width 30 \
+	    -textvariable seq_port
+    entry .seq.query.right.path -relief sunken -width 30 \
+	    -textvariable seq_path
+    entry .seq.query.right.query -relief sunken -width 30 \
+	    -textvariable seq_query
+    pack .seq.query.right.name .seq.query.right.port \
+	    .seq.query.right.path .seq.query.right.query \
+	    -side top -pady 0.5m
+
+    button .seq.but.ok -text OK -width 10 \
+	    -command { destroy .seq }
+    button .seq.but.cancel -text Cancel -width 10 \
+	    -command { destroy .seq }
+    pack .seq.but.ok .seq.but.cancel -padx 3m -side left -expand 1
+
+    tkwait visibility .seq
+}
