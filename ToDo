@@ -434,9 +434,6 @@ to save them when they save a session. (td/rkw 12/4/97)
 Remove timers and incorporate similar functionality into the dispatcher
 to prevent interrupted system calls. (devel 12/4/97)
 
-Disable Layout Manager menu selection until the layout manager is
-fully integrated. (devel 12/4/97)
-
 Get color back into Tcl/Tk windows. (devel 12/4/97)
 
 Have separate templates.c files for each library. (devel 12/4/97)
@@ -536,6 +533,9 @@ Have a 'clear' selection in mapping menus. (ml/rkw 5/30/97)
 Add a "dashed line" drawing function in the WindowRep classes. (na/rkw 9/20/96)
 
 Move opening and saving of session files to back end. (rkw 10/3/97)
+
+Disable Layout Manager menu selection until the layout manager is
+fully integrated. (devel 12/4/97)
 
 
 CANCELLED

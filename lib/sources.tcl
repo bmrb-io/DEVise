@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.72  1997/12/04 04:06:53  donjerko
+#	New View interface.
+#
 #	Revision 1.71  1997/12/01 21:22:07  wenger
 #	Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br3 tag
 #	into the trunk.
@@ -317,16 +320,7 @@ set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
 set sourceTypes(DEVise) "{Devise} $schemadir/logical/UNIXFILE"
 #set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
-set sourceFile $datadir/sourcedef.tcl
-#set sourceFile /local.doc/oldstuff/coral/newrun/northeast/devise/sourcedef.tcl
-if {[file exists $sourceFile]} {
-#TEMPTEMP -- this is still old-style data source code!!!
-    Puts "Using data stream catalog $sourceFile"
-    source $sourceFile
-}
-
 source $libdir/mapdef.tcl
-source $libdir/autosrc.tcl
 source $libdir/issm.tk
 source $libdir/cstat.tk
 source $libdir/crsp.tcl
