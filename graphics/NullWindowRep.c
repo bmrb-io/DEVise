@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/11/20 20:34:52  wenger
+  Fixed bugs 062, 073, 074, and 075; added workaround for bug 063; make
+  some Makefile improvements so compile works first time; fixed up files
+  to correspond to new query catalog name.
+
   Revision 1.2  1996/10/18 20:34:06  wenger
   Transforms and clip masks now work for PostScript output; changed
   WindowRep::Text() member functions to ScaledText() to make things
@@ -715,20 +720,15 @@ void NullWindowRep::SetCopyMode()
 #endif
 }
 
+void NullWindowRep::SetFont(char *family, char *weight, char *slant,
+                            char *width, int pointSize)
+{
+    /* do something */
+}
+
 void NullWindowRep::SetNormalFont()
 {
-    /* do something */
-}
-
-void NullWindowRep::SetSmallFont()
-{
-    /* do something */
-}
-
-int NullWindowRep::GetSmallFontHeight()
-{
-    /* do something */
-    return 1;
+    SetFont("Times", "Medium", "r", "normal", 120);
 }
 
 void NullWindowRep::UpdateWinDimensions()

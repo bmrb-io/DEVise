@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/10/18 20:34:06  wenger
+  Transforms and clip masks now work for PostScript output; changed
+  WindowRep::Text() member functions to ScaledText() to make things
+  more clear; added WindowRep::SetDaliServer() member functions to make
+  Dali stuff more compatible with client/server library.
+
   Revision 1.1  1996/07/10 16:40:40  jussi
   Initial revision.
 */
@@ -112,10 +118,10 @@ public:
     virtual void SetXorMode();
     virtual void SetCopyMode();
 
-    /* Set normal or small font */
+    /* Set font or return to normal font */
+    virtual void SetFont(char *family, char *weight, char *slant,
+                         char *width, int pointSize);
     virtual void SetNormalFont();
-    virtual void SetSmallFont();
-    virtual int  GetSmallFontHeight();
 
     /* Draw rubberbanding rectangle */
     virtual void DrawRubberband(int x1, int y1, int x2, int y2);
