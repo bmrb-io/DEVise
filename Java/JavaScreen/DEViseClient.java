@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2001/02/12 02:53:00  xuk
+// JavaScreen can prevent from being collaborated.
+// Added isAbleCollab boolean variable;
+// In getCmd(), for Javac_Connect command check collaboration status.
+//
 // Revision 1.26  2001/02/06 16:37:25  xuk
 // change for multiple collaborated JSs:
 // add collabSocket vector for multiple collaborate sockets;
@@ -455,7 +460,6 @@ public class DEViseClient
 			    if (user != null) { 
 				cmdBuffer.removeAllElements();
 				cmdBuffer.addElement(DEViseCommands.PROTOCOL_VERSION + " " + cmds[3]);
-				pop.pn("Collaboration Status: " + cmds[4]);
 				if (cmds[4].equals(DEViseGlobals.DISABLECOLLAB)) {
 				    isAbleCollab = false;
 				}
@@ -476,6 +480,11 @@ public class DEViseClient
 		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
 			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
+		    } else if (command.startsWith(DEViseCommands.GET_COLLAB_LIST)) {
+			String state = DEViseCommands.COLLAB_STATE + " {" +collabSockets.size() + "}";
+			state = state.trim();
+			sendCmd(new String[] {state, DEViseCommands.DONE});
+			cmdBuffer.removeAllElements();
 		    } else {
 			//
 			// Send an ACK immediately so that the client
@@ -489,8 +498,10 @@ public class DEViseClient
 		if (DEBUG >= 1) {
 		    System.out.println("  got command: " + (String)cmdBuffer.elementAt(0));
 	        }
-
-                return (String)cmdBuffer.elementAt(0);
+		if (cmdBuffer.size() != 0)
+		    return (String)cmdBuffer.elementAt(0);
+		else 
+		    return null;
 
             } catch (YException e) {
                 //close();
@@ -514,13 +525,7 @@ public class DEViseClient
     {
         if (status != CLOSE) {
 	    if (cmd != null) {
-		if (collabInit != 1) {
-		    pop.pn("Sending command to client(" + ID + " " + hostname +
-			   ") :  \"" + cmd + "\"");
-		    socket.sendCmd(cmd);
-		}
-
-		if (! collabSockets.isEmpty()) { // also send to collab JS
+		if (!collabSockets.isEmpty()) { // also send to collab JS
 		    if (collabInit == 1) {
 			DEViseCommSocket sock = (DEViseCommSocket)collabSockets.lastElement();
 			if (!sock.isEmpty()) {
@@ -531,11 +536,14 @@ public class DEViseClient
 				    collabSockets.removeElement(sock);
 				    sock.closeSocket();
 				    sock = null;
+				} else {
+				    pop.pn("Sending command to collabration client: " + cmd);
+				    sock.sendCmd(cmd);
 				}
-			    } catch (InterruptedIOException e) {
+       			    } catch (InterruptedIOException e) {
 			    }
 			} else {
-			    pop.pn("Sending command to collabration client");
+			    pop.pn("Sending command to collabration client: " + cmd);
 			    sock.sendCmd(cmd);
 			}
 		    } else {
@@ -549,16 +557,34 @@ public class DEViseClient
 					collabSockets.removeElement(sock);
 					sock.closeSocket();
 					sock = null;
+					// change the cmd, if this sock exits
+					if (cmd.startsWith(DEViseCommands.COLLAB_STATE)) {	
+					    cmd = null;
+					    cmd = DEViseCommands.COLLAB_STATE + " {" +collabSockets.size() + "}";
+					    cmd = cmd.trim();
+					}
+				    } else {
+					if (!cmd.startsWith(DEViseCommands.COLLAB_STATE)) {
+					    pop.pn("Sending command to collabration client: " + cmd);
+					    sock.sendCmd(cmd);
+					}
 				    }
 				} catch (InterruptedIOException e) {
 				}
 			    } else {
-				pop.pn("Sending command to collabration client" + " " + i);
-				sock.sendCmd(cmd);			    
+				if (!cmd.startsWith(DEViseCommands.COLLAB_STATE)) {
+				    pop.pn("Sending command to collabration client" + " " + i);
+				    sock.sendCmd(cmd);
+				}			    
 			    }
 			}
 		    }
                 }
+		if (collabInit != 1) {
+		    pop.pn("Sending command to client(" + ID + " " + hostname +
+		       ") :  \"" + cmd + "\"");
+		    socket.sendCmd(cmd);
+		}
 	    }
         } else {
             throw new YException("Invalid client");
