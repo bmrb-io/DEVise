@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2002/02/20 18:08:35  xuk
+// Improvement on axis label drawing.
+//
 // Revision 1.67  2002/02/19 22:13:32  xuk
 // Improvement for label drawing.
 //
@@ -861,6 +864,8 @@ public class DEViseView
         return null;
     }
 
+    //TEMP -- why are x and y labels calculated differently? RKW 2002-03-26
+
     // get the label for Y axis
     public String getYLabel(float y)
     {
@@ -881,14 +886,19 @@ public class DEViseView
 		    e = e-1;
 		}
 		length = labelY.length();
-	    }
-	    else if (abs >= 10) { // |y| >= 10
+	    } else if (abs >= 10) { // |y| >= 10
 		length = (int)(Math.log(abs) / Math.log(10) + 0.0001) + 1;
-		if (y < 0) // "-"
+		if (y < 0) { // "-"
 		    length ++;
+	        }
 	    } else {
-		length = (labelY.length() >= 4) ? 4 : labelY.length();
+		//TEMP -- will this produce bad results for very
+		// small values (e.g. 1.0e-5)?  RKW 2002-03-26
+		length = Math.min(labelY.length(), 4);
 	    }
+
+	    // Kludge fix for bug 760.  RKW 2002-03-26.
+	    length = Math.min(length, labelY.length());
 
 	    labelY = labelY.substring(0, length);
 
@@ -911,13 +921,19 @@ public class DEViseView
 	    float abs = Math.abs(x);
 	    String labelX = new Float(x).toString();
 
-	    if (abs >= 1) { // -1 =< x <= 1
+	    if (abs >= 1) {
 		length = (int)(Math.log(abs) / Math.log(10) + 0.001) + 1;
-		if (x < 0) // "-"
+		if (x < 0) { // "-"
 		    length ++;
+	        }
 	    } else {
-		length = (labelX.length() >= 4) ? 4 : labelX.length();
+		//TEMP -- will this produce bad results for very
+		// small values (e.g. 1.0e-5)?  RKW 2002-03-26
+		length = Math.min(labelX.length(), 4);
 	    }
+
+	    // Kludge fix for bug 760.  RKW 2002-03-26.
+	    length = Math.min(length, labelX.length());
 
 	    labelX = labelX.substring(0, length);
 
