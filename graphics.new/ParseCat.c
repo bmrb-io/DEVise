@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/05/07 22:28:37  jussi
+  Moved the call to InsertCatFile() from ParseCatPhysical to
+  ParseCat.
+
   Revision 1.23  1996/05/07 16:04:20  wenger
   Added final version of code for reading schemas from session files;
   added an error-reporting class to improve error info.
@@ -126,7 +130,8 @@
 #include "Group.h"
 #include "GroupDir.h"
 #include "DeviseTypes.h"
-#include "DataSource.h"
+#include "DataSourceBuf.h"
+#include "DataSourceFileStream.h"
 #include "DevError.h"
 
 //#define DEBUG
@@ -606,13 +611,13 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 	attrs = NULL;
 	numAttrs = 0;
 
-	if (schemaSource->fopen("r") != StatusOk)
+	if (schemaSource->Open("r") != StatusOk)
 	{
-		reportError("schemaSource->fopen() failed", devNoSyserr);
+		reportError("schemaSource->Open() failed", devNoSyserr);
 		goto error;
 	}
 	_line = 0;
-	while (schemaSource->fgets(buf, LINESIZE) != NULL)
+	while (schemaSource->Fgets(buf, LINESIZE) != NULL)
 	{
 		StripTrailingNewline(buf);
 
@@ -693,15 +698,15 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 				/* Let's add the schema name to the directory now */
 				/* First check if the schema is already loaded, in
 				   which case we do nothing more */
-				if (gdir->find_entry(StripPath(schemaSource->getName())))
+				if (gdir->find_entry(StripPath(schemaSource->getLabel())))
 				{
 				  GLoad = false;
 				}
 				else
 				{
 				  printf("Adding (physical) schema %s to directory \n",
-					StripPath(schemaSource->getName()));
-				  gdir->add_entry(StripPath(schemaSource->getName()));
+					StripPath(schemaSource->getLabel()));
+				  gdir->add_entry(StripPath(schemaSource->getLabel()));
 				  GLoad = true;
 				}
 			}
@@ -719,7 +724,7 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 		      if (!currgrp)		/* Top level */
 		      {
 			currgrp = new Group(args[1], NULL, TOPGRP);
-			gdir->add_topgrp(StripPath(schemaSource->getName()), currgrp);
+			gdir->add_topgrp(StripPath(schemaSource->getLabel()), currgrp);
 		      }
 		      else
 			currgrp = currgrp->insert_group(args[1]);
@@ -772,10 +777,10 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 	if (physicalOnly)
 	{
 	/* If no group has been defined, create a default group */
-	if (GLoad && (gdir->num_topgrp(StripPath(schemaSource->getName())) == 0))
+	if (GLoad && (gdir->num_topgrp(StripPath(schemaSource->getLabel())) == 0))
 	{
 	  Group *newgrp = new Group("__default", NULL, TOPGRP);
-	  gdir->add_topgrp(StripPath(schemaSource->getName()), newgrp);
+	  gdir->add_topgrp(StripPath(schemaSource->getLabel()), newgrp);
 	  for (i=0; i < numAttrs; i++) {
 	    AttrInfo *iInfo = attrs->Get(i);
 	    if (iInfo->type != StringAttr)
@@ -867,14 +872,14 @@ ParseCatPhysical(DataSource *schemaSource, Boolean physicalOnly)
 		}
 	}
 
-	schemaSource->fclose();
+	schemaSource->Close();
 
 	if (Init::PrintTDataAttr())
 		attrs->Print();
 	return fileType;
 
 error:
-	schemaSource->fclose();
+	schemaSource->Close();
 
 	if (attrs != NULL) delete attrs;
 	fprintf(stderr,"error at line %d\n", _line);
@@ -894,14 +899,14 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
   int numArgs;
   char **args;
 
-  if (schemaSource->fopen("r") != StatusOk)
+  if (schemaSource->Open("r") != StatusOk)
   {
     goto error;
   }
   _line = 0;
   
   /* read the first line first */
-  schemaSource->fgets(buf, LINESIZE);
+  schemaSource->Fgets(buf, LINESIZE);
   
   /* Let's add the group name to the directory now */
   /* The groups for a particular logical schema are identified by the 
@@ -911,17 +916,17 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
   /* First check if the schema is already loaded, in
      which case we do nothing more */
 
-  if (gdir->find_entry(schemaSource->getName()))
+  if (gdir->find_entry(schemaSource->getLabel()))
     GLoad = false;
   else
   {
     printf("Adding (logical) schema %s to directory \n",
-		schemaSource->getName());
-    gdir->add_entry(schemaSource->getName());
+		schemaSource->getLabel());
+    gdir->add_entry(schemaSource->getLabel());
     GLoad = true;
   }
  
-  while (schemaSource->fgets(buf,LINESIZE) != NULL)
+  while (schemaSource->Fgets(buf,LINESIZE) != NULL)
   {
 	  StripTrailingNewline(buf);
       
@@ -948,7 +953,7 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
 	    if (!currgrp)		/* Top level */
 	    {
 	      currgrp = new Group(args[1], NULL, TOPGRP);
-	      gdir->add_topgrp(schemaSource->getName(), currgrp);
+	      gdir->add_topgrp(schemaSource->getLabel(), currgrp);
 	    }
 	    else
 	      currgrp = currgrp->insert_group(args[1]);
@@ -978,10 +983,10 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
   }
 
   /* If no group has been defined, create a default group */
-  if (GLoad && (gdir->num_topgrp(schemaSource->getName()) == 0))
+  if (GLoad && (gdir->num_topgrp(schemaSource->getLabel()) == 0))
   {
     Group *newgrp = new Group("__default", NULL, TOPGRP);
-    gdir->add_topgrp(schemaSource->getName(), newgrp);
+    gdir->add_topgrp(schemaSource->getLabel(), newgrp);
     for(int i = 0; i < numAttrs; i++) {
       AttrInfo *iInfo = attrs->Get(i);
       if (iInfo->type != StringAttr)
@@ -989,12 +994,12 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
     }
   }
 
-  schemaSource->fclose();
+  schemaSource->Close();
 
   return sname;
 
  error:
-  schemaSource->fclose();
+  schemaSource->Close();
   
   fprintf(stderr,"error at line %d\n", _line);
   return NULL;
@@ -1025,7 +1030,7 @@ ParseCat(char *catFile)
     if (fscanf(fp, "%s", buf) != 1 || strcmp(buf, "physical"))
 	{
       fclose(fp);
-      DataSourceFile	schemaSource(catFile, StripPath(catFile));
+      DataSourceFileStream	schemaSource(catFile, StripPath(catFile));
       result = ParseCatPhysical(&schemaSource, true);
       InsertCatFile(CopyString(catFile));
     }
@@ -1036,12 +1041,12 @@ ParseCat(char *catFile)
       fclose(fp);
 
       char *sname;
-      DataSourceFile	schemaSource(buf, StripPath(buf));
+      DataSourceFileStream	schemaSource(buf, StripPath(buf));
       if (!(sname = ParseCatPhysical(&schemaSource, false))) result = NULL;
 
       InsertCatFile(CopyString(catFile));
 
-      DataSourceFile	logSchemaSource(catFile, StripPath(catFile));
+      DataSourceFileStream	logSchemaSource(catFile, StripPath(catFile));
       result = ParseCatLogical(&logSchemaSource, sname);
     }
   }

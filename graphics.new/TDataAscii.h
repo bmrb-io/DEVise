@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/07 16:43:01  jussi
+  Cache file name now based on file alias (TData name). Added parameter
+  to the Decode() function call.
+
   Revision 1.7  1996/03/26 21:18:44  jussi
   Merged with TDataTape. Added magic number to cache file.
 
@@ -62,6 +66,8 @@ const int LINESIZE = 4096;                   // maximum size of each line
    the same file. */
 
 const int FILE_CONTENT_COMPARE_BYTES = 4096;
+
+class DataSource;
 
 class TDataAscii: public TData, private DispatcherCallback {
 public:
@@ -196,8 +202,7 @@ private:
 	char *_alias;                   // alias of file/dataset
 	char *_cacheFileName;           // name of cache file
 	int _recSize;                   // size of record
-	FILE *_file;                    // file pointer
-	TapeDrive *_tape;               // pointer to tape drive
+	DataSource *_data;				// Source of data (disk file or tape)
 	Boolean _fileGrown;             // true if file has grown
 
 	RecId _lowId, _highId;          // current range to read data

@@ -13,13 +13,18 @@
 */
 
 /*
-  Header file for DataSource, DataSourceFile, and DataSourceBuf classes.
+  Header file for DataSource class.
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/07 22:28:19  jussi
+  Reverted the changes made in the previous check-in because I
+  found a better way to fix the problem where only the tail
+  part of a schema file name is returned when a session is saved.
+
   Revision 1.2  1996/05/07 22:13:50  jussi
   Added virtual method getName() to DataSourceFile which returns
   the filename, not the regular name or alias. The filename is
@@ -34,52 +39,61 @@
 #ifndef _DataSource_h_
 #define _DataSource_h_
 
+
 #include "DeviseTypes.h"
+
 
 class DataSource
 {
 public:
-	DataSource(char *name);
+	DataSource(char *label);
 	virtual ~DataSource();
 
-	virtual DevStatus fopen(char *type) = 0;
-	virtual DevStatus fclose() = 0;
-	virtual char *fgets(char *buffer, int size) = 0;
-	virtual char *getName();
+	virtual char *objectType() {return "DataSource";};
+
+	virtual char *getLabel();
+
+	// These functions essentially do the same thing as the standard
+	// functions of the same name.  The names are capitalized to avoid
+	// conflicts with macros in some system header files that redefine
+	// symbols such as ftell, etc.
+	virtual DevStatus Open(char *mode) = 0;
+	virtual DevStatus Close() = 0;
+	virtual int Fileno();
+
+	virtual char *Fgets(char *buffer, int size);
+	virtual size_t Fread(char *buf, size_t size, size_t itemCount);
+	virtual size_t Read(char *buf, int byteCount);
+
+	virtual size_t Fwrite(const char *buf, size_t size, size_t itemCount);
+	virtual size_t Write(const char *buf, size_t byteCount);
+
+	// Returns -1 if error, 0 otherwise.
+	virtual int Seek(long offset, int from) = 0;
+	virtual long Tell() = 0;
+
+	// Go to the end of the data, and return that location.
+	virtual int gotoEnd() = 0;
+
+	// Append to the end of the data.
+	virtual int append(void *buf, int recSize);
+
+	// Print statistics about this object.
+	virtual void printStats();
+
+	// Is this object a (disk) file?
+	virtual Boolean isFile() = 0;
+
+	// Is this object a buffer?
+	virtual Boolean isBuf() = 0;
+
+	// Is this object a tape?
+	virtual Boolean isTape() = 0;
 
 private:
-	char *		_name;
+	char *		_label;
 };
 
-class DataSourceFile : public DataSource
-{
-public:
-	DataSourceFile(char *filename, char *name);
-	virtual ~DataSourceFile();
-
-	virtual DevStatus fopen(char *type);
-	virtual DevStatus fclose();
-	virtual char *fgets(char *buffer, int bufSize);
-
-private:
-	char *		_filename;
-	FILE *		_file;
-};
-
-class DataSourceBuf : public DataSource
-{
-public:
-	DataSourceBuf(char *buffer, char *name);
-	virtual ~DataSourceBuf();
-
-	virtual DevStatus fopen(char *type);
-	virtual DevStatus fclose();
-	virtual char *fgets(char *buffer, int bufSize);
-
-private:
-	char *		_sourceBuf;
-	char *		_currentLoc;
-};
 
 #endif /* _DataSource_h_ */
 

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/07 16:44:19  jussi
+  Cache file name now based on file alias (TData name). Added recPos
+  parameter to Decode() function call. Added support for a simple
+  index which is needed when streams are split into multiple
+  sub-streams (via matching values defined in the schema).
+
   Revision 1.5  1996/05/05 03:08:15  jussi
   Added support for composite attributes. Also added tape drive
   support.
@@ -50,11 +56,15 @@
 #include "Exit.h"
 #include "Util.h"
 #include "Init.h"
+#include "DataSourceFileStream.h"
+#include "DataSourceTape.h"
+#include "DevError.h"
 
 //#define DEBUG
 
 static char fileContent[BIN_CONTENT_COMPARE_BYTES];
 static char cachedFileContent[BIN_CONTENT_COMPARE_BYTES];
+static char *   srcFile = __FILE__;
 
 TDataBinary::TDataBinary(char *name, char *alias, int recSize, int physRecSize)
 {
@@ -63,24 +73,25 @@ TDataBinary::TDataBinary(char *name, char *alias, int recSize, int physRecSize)
   _recSize = recSize;
   _physRecSize = physRecSize;
 
-  _file = NULL;
-  _tape = NULL;
+  _data = NULL;
 
   if (!strncmp(name, "/dev/rmt", 8) || !strncmp(name, "/dev/nrmt", 9)
       || !strncmp(name, "/dev/rst", 8) || !strncmp(name, "/dev/nrst", 9)) {
-    _tape = new TapeDrive(name, "r");
-    if (!_tape || !*_tape) {
-      fprintf(stderr, "Cannot open tape '%s': ", name);
-      perror("fopen");
-      DOASSERT(0, "Cannot open tape drive");
-    }
+	_data = new DataSourceTape(name, NULL);
   } else {
-    _file = fopen(name, "r");
-    if (!_file) {
-      fprintf(stderr, "Cannot open file '%s' ", name);
-      perror("fopen");
-      DOASSERT(0, "Cannot open file");
-    }
+	_data = new DataSourceFileStream(name, NULL);
+  }
+
+  if (_data == NULL)
+  {
+    DOASSERT(0, "Cannot open data file");
+  }
+  else
+  {
+	if (_data->Open("r") != StatusOk)
+	{
+      DOASSERT(0, "Cannot open data file");
+	}
   }
 
   _bytesFetched = 0;
@@ -105,11 +116,7 @@ TDataBinary::~TDataBinary()
 
   Dispatcher::Current()->Unregister(this);
 
-  if (_tape)
-    delete _tape;
-  else
-    fclose(_file);
-
+  delete _data;
   delete _index;
   delete _alias;
   delete _name;
@@ -129,26 +136,9 @@ Boolean TDataBinary::HeadID(RecId &recId)
 
 Boolean TDataBinary::LastID(RecId &recId)
 {
-  if (_tape) {
-    if (_fileGrown) {
-      // seek to EOF
-      long end = 1024 * 1024 * 1024;
-      if (_tape->seek(end) >= end)
-	DOASSERT(0, "Could not seek to end of tape file");
-      _currPos = _tape->tell();
-    }
-  } else {
-    // see if file has grown
-      if (fseek(_file, 0, SEEK_END) < 0) {
-	perror("fseek");
-	DOASSERT(0, "Cannot perform file seek");
-      }
-    _currPos = ftell(_file);
-    if (_currPos < 0) {
-      perror("ftell");
-      DOASSERT(0, "Cannot get current file position");
-    }
-  }
+  // see if file has grown
+    _currPos = _data->gotoEnd();
+  DOASSERT(_currPos >= 0, "Error finding end of data");
 
   if (_currPos > _lastPos)
     BuildIndex();
@@ -212,12 +202,22 @@ void TDataBinary::GetIndex(RecId id, int *&indices)
 
 int TDataBinary::GetModTime()
 {
+  int		result;
   struct stat sbuf;
-  if (fstat(fileno(_file), &sbuf) < 0) {
-    perror("fstat");
-    DOASSERT(0, "Cannot get file statistics");
+
+  if (_data->isTape())
+  {
+	reportError("Can't get modification time for tape data", devNoSyserr);
+	result = -1;
   }
-  return (long)sbuf.st_mtime;
+  else
+  {
+  	int status = fstat(_data->Fileno(), &sbuf);
+  	DOASSERT(status >= 0, "Cannot get file statistics");
+	result = (long) sbuf.st_mtime;
+  }
+
+  return result;
 }
 
 char *TDataBinary::MakeCacheName(char *alias)
@@ -253,25 +253,13 @@ void TDataBinary::Initialize()
 
   /* cache file exists. See if we are still working on the same
      file, and if we are, reinitialize */
-  if (_tape) {
-    if (_tape->seek(0) != 0) {
-      perror("tapeseek");
-      goto error;
-    }
-    if (_tape->read(fileContent, BIN_CONTENT_COMPARE_BYTES)
-	!= BIN_CONTENT_COMPARE_BYTES) {
-      perror("taperead");
-      goto error;
-    }
-  } else {
-    if (fseek(_file, 0, SEEK_SET) < 0) {
-      perror("fseek");
-      goto error;
-    }
-    if (fread(fileContent, BIN_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
-      perror("fread");
-      goto error;
-    }
+  if (_data->Seek(0, SEEK_SET) < 0) {
+    perror("fseek");
+    goto error;
+  }
+  if (_data->Fread(fileContent, BIN_CONTENT_COMPARE_BYTES, 1) != 1) {
+    perror("fread");
+    goto error;
   }
 
   if (read(cacheFd, cachedFileContent, BIN_CONTENT_COMPARE_BYTES)
@@ -368,28 +356,16 @@ void TDataBinary::Checkpoint()
     goto error;
   }
 
-  if (_tape) {
-    if (_tape->seek(0) != 0) {
-      perror("tapeseek");
-      goto error;
-    }
-    if (_tape->read(fileContent, BIN_CONTENT_COMPARE_BYTES)
-	!= BIN_CONTENT_COMPARE_BYTES) {
-      perror("taperead");
-      goto error;
-    }
-  } else {
-    if (fseek(_file, 0, SEEK_SET) < 0) {
-      perror("fseek");
-      goto error;
-    }
-    if (fread(fileContent, BIN_CONTENT_COMPARE_BYTES, 1, _file) != 1) {
-      if (!errno)
-	fprintf(stderr, "File not checkpointed due to its small size\n");
-      else
-	perror("fread");
-      goto error;
-    }
+  if (_data->Seek(0, SEEK_SET) < 0) {
+    perror("fseek");
+    goto error;
+  }
+  if (_data->Fread(fileContent, BIN_CONTENT_COMPARE_BYTES, 1) != 1) {
+    if (!errno)
+      fprintf(stderr, "File not checkpointed due to its small size\n");
+    else
+      perror("fread");
+    goto error;
   }
   
   /* write contents of file to be compared later */
@@ -424,10 +400,7 @@ void TDataBinary::Checkpoint()
 
   close(cacheFd);
 
-  if (_tape)
-    _currPos = _tape->tell();
-  else
-    _currPos = ftell(_file);
+  _currPos = _data->Tell();
 
   return;
   
@@ -436,10 +409,7 @@ void TDataBinary::Checkpoint()
     close(cacheFd);
   (void)unlink(_cacheFileName);
 
-  if (_tape)
-    _currPos = _tape->tell();
-  else
-    _currPos = ftell(_file);
+  _currPos = _data->Tell();
 }
 
 /* Build index for the file. This code should work when file size
@@ -456,18 +426,10 @@ void TDataBinary::BuildIndex()
   char recBuf[_recSize];
   int oldTotal = _totalRecs;
   
-  if (_tape) {
-    // File has been appended, extend index
-    if (_tape->seek(_lastPos) != _lastPos) {
-      perror("tapeseek");
-      DOASSERT(0, "Cannot perform seek on tape drive");
-    }
-  } else {
-    // File has been appended, extend index
-    if (fseek(_file, _lastPos, SEEK_SET) < 0) {
-      perror("fseek");
-      DOASSERT(0, "Cannot perform file seek");
-    }
+  // File has been appended, extend index
+  if (_data->Seek(_lastPos, SEEK_SET) < 0) {
+    perror("fseek");
+    DOASSERT(0, "Cannot perform file seek");
   }
 
   _currPos = _lastPos;
@@ -476,10 +438,7 @@ void TDataBinary::BuildIndex()
 
     int len = 0;
 
-    if (_tape)
-      len = _tape->read(physRec, _physRecSize);
-    else
-      len = fread(physRec, 1, _physRecSize, _file);
+    len = _data->Fread(physRec, 1, _physRecSize);
     if (!len)
       break;
     DOASSERT(len >= 0, "Cannot read data stream");
@@ -501,16 +460,11 @@ void TDataBinary::BuildIndex()
     _currPos += len;
   }
 
-  if (_tape) {
-    // last position is > current position because TapeDrive advances
-    // bufferOffset to the next block, past the EOF, when tape file
-    // ends
-    _lastPos = _tape->tell();
-    DOASSERT(_lastPos >= _currPos, "Incorrect file position");
-  } else {
-    _lastPos = ftell(_file);
-    DOASSERT(_lastPos == _currPos, "Incorrect file position");
-  }
+  // last position is > current position because TapeDrive advances
+  // bufferOffset to the next block, past the EOF, when tape file
+  // ends
+  _lastPos = _data->Tell();
+  DOASSERT(_lastPos >= _currPos, "Incorrect file position");
 
   _fileGrown = false;
 
@@ -530,26 +484,19 @@ void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 
     long recloc = _index[id + i];
 
-    if (_tape) {
-      if (_tape->seek(recloc) != recloc) {
-	perror("tapeseek");
-	DOASSERT(0, "Cannot perform seek on tape drive");
+    // Note that if the data source is a tape, we _always_ seek, even if
+    // we think we're already at the right place.  This was copied from
+    // the previously-existing code.  RKW 5/21/96.
+    if (_data->isTape() || (_currPos != recloc)) {
+      if (_data->Seek(recloc, SEEK_SET) < 0) {
+	perror("fseek");
+	DOASSERT(0, "Cannot perform file seek");
       }
       _currPos = recloc;
-      if (_tape->read(ptr, _physRecSize) != _physRecSize)
-	DOASSERT(0, "Cannot read from tape");
-    } else {
-      if (_currPos != recloc) {
-	if (fseek(_file, recloc, SEEK_SET) < 0) {
-	  perror("fseek");
-	  DOASSERT(0, "Cannot perform file seek");
-	}
-	_currPos = recloc;
-      }
-      if (fread(ptr, _physRecSize, 1, _file) != 1) {
-	perror("fread");
-	DOASSERT(0, "Cannot read from file");
-      }
+    }
+    if (_data->Fread(ptr, _physRecSize, 1) != 1) {
+      perror("fread");
+      DOASSERT(0, "Cannot read from file");
     }
 
     Boolean valid = Decode(ptr, _currPos / _physRecSize, ptr);
@@ -576,7 +523,7 @@ void TDataBinary::ExtendIndex()
 
 void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
-  DOASSERT(!_tape, "Writing to tape not supported yet");
+  DOASSERT(!_data->isTape(), "Writing to tape not supported yet");
 
   if (_totalRecs >= _indexSize)         // index buffer too small?
     ExtendIndex();                      // extend it
@@ -584,23 +531,11 @@ void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
   _index[_totalRecs++] = _lastPos;
   int len = numRecs * _physRecSize;
 
-  if (_tape) {
-    if (_tape->append(buf, len) != len) {
-      perror("tapewrite");
-      DOASSERT(0, "Cannot append to tape");
-    }
-    _lastPos = _tape->tell();
-  } else {
-    if (fseek(_file, _lastPos, SEEK_SET) < 0) {
-      perror("fseek");
-      DOASSERT(0, "Cannot perform file seek");
-    }
-    if (fwrite(buf, len, 1, _file) != 1) {
-      perror("fwrite");
-      DOASSERT(0, "Cannot write to file");
-    }
-    _lastPos = ftell(_file);
+  if (_data->append(buf, len) != len) {
+    perror("tapewrite");
+    DOASSERT(0, "Cannot append to tape");
   }
+  _lastPos = _data->Tell();
 
   _currPos = _lastPos;
   _fileGrown = true;
@@ -614,10 +549,10 @@ void TDataBinary::WriteLine(void *rec)
 
 void TDataBinary::Cleanup()
 {
-  if (_tape) {
-    _tape->printStats();
-    delete _tape;
-    _tape = NULL;
+  if (_data->isTape()) {
+    _data->printStats();
+    delete _data;
+    _data = NULL;
   }
 }
 

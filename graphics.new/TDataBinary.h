@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/07 16:44:20  jussi
+  Cache file name now based on file alias (TData name). Added recPos
+  parameter to Decode() function call. Added support for a simple
+  index which is needed when streams are split into multiple
+  sub-streams (via matching values defined in the schema).
+
   Revision 1.3  1996/05/05 03:08:29  jussi
   Added support for composite attributes. Also added tape drive
   support.
@@ -51,6 +57,8 @@ const int BIN_INDEX_ALLOC_INCREMENT = 25000; // allocation increment for index
    the same file. */
 
 const int BIN_CONTENT_COMPARE_BYTES = 4096;
+
+class DataSource;
 
 class TDataBinary: public TData, private DispatcherCallback {
 public:
@@ -179,8 +187,7 @@ private:
   char *_cacheFileName;           // name of cache file
   int _recSize;                   // size of record
   int _physRecSize;               // physical record size
-  FILE *_file;                    // file pointer
-  TapeDrive *_tape;               // pointer to tape drive
+  DataSource *_data;			  // Source of data (disk file or tape)
   Boolean _fileGrown;             // true if file has grown
 
   RecId _lowId, _highId;          // current range to read data

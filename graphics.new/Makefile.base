@@ -38,7 +38,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c Temp.c TData.c TDataViewX.c ViewScatter.c \
 	ViewRanges.c ViewGraph.c QPRange.c ParseAPI.C \
-	ViewClassInfo.c MapInterpShape.C DataSource.c
+	ViewClassInfo.c MapInterpShape.C DataSource.c DataSourceBuf.c \
+	DataSourceFileStream.c DataSourceTape.c
 	
 QPSrc1 = $(filter %.c,$(QPSrc))
 QPSrc2 = $(filter %.C,$(QPSrc))

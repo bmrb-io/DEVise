@@ -13,13 +13,18 @@
 */
 
 /*
-  Implementation of DataSource, DataSourceFile, and DataSourceBuf classes.
+  Implementation of DataSource class.
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.3  1996/05/07 22:28:14  jussi
+  Reverted the changes made in the previous check-in because I
+  found a better way to fix the problem where only the tail
+  part of a schema file name is returned when a session is saved.
+
   Revision 1.2  1996/05/07 22:13:44  jussi
   Added virtual method getName() to DataSourceFile which returns
   the filename, not the regular name or alias. The filename is
@@ -34,14 +39,16 @@
 
 //#define DEBUG
 
-#include "stdio.h"
-#include "string.h"
-#include "errno.h"
-#include "sys/param.h"
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <sys/param.h>
+#include <unistd.h>
 
 #include "DataSource.h"
 #include "Util.h"
 #include "DevError.h"
+#include "tapedrive.h"
 
 
 #if !defined(lint) && defined(RCSID)
@@ -54,11 +61,19 @@ static char *	srcFile = __FILE__;
  * function: DataSource::DataSource
  * DataSource constructor.
  */
-DataSource::DataSource(char *name)
+DataSource::DataSource(char *label)
 {
-	DO_DEBUG(printf("DataSource::DataSource(%s)\n", name));
+	DO_DEBUG(printf("DataSource::DataSource(%s)\n",
+		(label != NULL) ? label : "<null>"));
 
-	_name = strdup(name);
+	if (label != NULL)
+	{
+		_label = strdup(label);
+	}
+	else
+	{
+		_label = NULL;
+	}
 }
 
 /*------------------------------------------------------------------------------
@@ -69,205 +84,158 @@ DataSource::~DataSource()
 {
 	DO_DEBUG(printf("DataSource::~DataSource()\n"));
 
-	delete [] _name;
+	if (_label != NULL)
+	{
+		delete [] _label;
+	}
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSource::getName
- * Get the name of a DataSource object.
+ * function: DataSource::getLabel
+ * Get the label of a DataSource object.
  */
 char *
-DataSource::getName()
+DataSource::getLabel()
 {
-	DO_DEBUG(printf("DataSource::getName()\n"));
+	DO_DEBUG(printf("DataSource::getLabel()\n"));
 
-	return _name;
+	return _label;
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSourceFile::DataSourceFile
- * DataSourceFile constructor.
+ * function: DataSource::Fileno
+ * This is a dummy function to catch calls to Fileno() for derived classes
+ * that don't implement it.
  */
-DataSourceFile::DataSourceFile(char *filename, char *name) : DataSource(name)
+int
+DataSource::Fileno()
 {
-	DO_DEBUG(printf("DataSourceFile::DataSourceFile(%s, %s)\n", filename,
-		name));
+	DO_DEBUG(printf("DataSource::Fileno()\n"));
 
-	_filename = strdup(filename);
-	_file = NULL;
+	fprintf(stderr, "Fileno method not implemented for class %s\n",
+		objectType());
+	DOASSERT(false, "");
+
+	return -1;
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSourceFile::~DataSourceFile
- * DataSourceFile destructor.
- */
-DataSourceFile::~DataSourceFile()
-{
-	DO_DEBUG(printf("DataSourceFile::~DataSourceFile()\n"));
-
-	delete [] _filename;
-	if (_file != NULL) ::fclose(_file);
-}
-
-/*------------------------------------------------------------------------------
- * function: DataSourceFile::fopen
- * Do an fopen() on the file corresponding to the DataSourceFile object.
- */
-DevStatus
-DataSourceFile::fopen(char *type)
-{
-	DO_DEBUG(printf("DataSourceFile::fopen()\n"));
-
-	DevStatus	result = StatusOk;
-
-	_file = ::fopen(_filename, type);
-	if (_file == NULL)
-	{
-		char	errBuf[MAXPATHLEN+100];
-		sprintf(errBuf, "unable to open file %s", _filename);
-		reportError(errBuf, errno);
-		result = StatusFailed;
-	}
-
-	return result;
-}
-
-/*------------------------------------------------------------------------------
- * function: DataSourceFile::fclose
- * Do an fclose() on the file corresponding to the DataSourceFile object.
- */
-DevStatus
-DataSourceFile::fclose()
-{
-	DO_DEBUG(printf("DataSourceFile::fclose()\n"));
-
-	DevStatus	result = StatusOk;
-
-	if (::fclose(_file) != 0)
-	{
-		reportError("error closing file", errno);
-		result = StatusFailed;
-	}
-	_file = NULL;	// So destructor doesn't try to close it again.
-
-	return result;
-}
-
-/*------------------------------------------------------------------------------
- * function: DataSourceFile::fgets
- * Do an fgets() on the file corresponding to the DataSourceFile object.
+ * function: DataSource::Fgets
+ * This is a dummy function to catch calls to Fgets() for derived classes
+ * that don't implement it.
  */
 char *
-DataSourceFile::fgets(char *buffer, int bufSize)
+DataSource::Fgets(char *buffer, int size)
 {
-	DO_DEBUG(printf("DataSourceFile::fgets()\n"));
+	DO_DEBUG(printf("DataSource::Fgets()\n"));
 
-	return ::fgets(buffer, bufSize, _file);
+	fprintf(stderr, "Fgets method not implemented for class %s\n",
+		objectType());
+	DOASSERT(false, "");
+
+	return NULL;
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSourceBuf::DataSourceBuf
- * DataSourceBuf constructor.
+ * function: DataSource::Fread
+ * This is a dummy function to catch calls to Fread() for derived classes
+ * that don't implement it.
  */
-DataSourceBuf::DataSourceBuf(char *buffer, char *name) : DataSource(name)
+size_t
+DataSource::Fread(char *buf, size_t size, size_t itemCount)
 {
-	DO_DEBUG(printf("DataSourceBuf::DataSourceBuf(%s)\n", name));
+	DO_DEBUG(printf("DataSource::Fread()\n"));
 
-	_sourceBuf = buffer;
-	_currentLoc = NULL;
+	fprintf(stderr, "Fread method not implemented for class %s\n",
+		objectType());
+	DOASSERT(false, "");
+
+	return 0;
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSourceBuf::~DataSourceBuf
- * DataSourceBuf destructor.
+ * function: DataSource::Read
+ * This is a dummy function to catch calls to Read() for derived classes
+ * that don't implement it.
  */
-DataSourceBuf::~DataSourceBuf()
+size_t
+DataSource::Read(char *buf, int byteCount)
 {
-	DO_DEBUG(printf("DataSourceBuf::~DataSourceBuf()\n"));
+	DO_DEBUG(printf("DataSource::Read()\n"));
+
+	fprintf(stderr, "Read method not implemented for class %s\n",
+		objectType());
+	DOASSERT(false, "");
+
+	return 0;
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSourceBuf::fopen
- * Simulate an fopen() on the DataSourceBuf object.
+ * function: DataSource::Fwrite
+ * This is a dummy function to catch calls to Fwrite() for derived classes
+ * that don't implement it.
  */
-DevStatus
-DataSourceBuf::fopen(char *)
+size_t
+DataSource::Fwrite(const char *buf, size_t size, size_t itemCount)
 {
-	DO_DEBUG(printf("DataSourceBuf::fopen()\n"));
+	DO_DEBUG(printf("DataSource::Fwrite()\n"));
 
-	DevStatus	result = StatusOk;
+	fprintf(stderr, "Fwrite method not implemented for class %s\n",
+		objectType());
+	DOASSERT(false, "");
 
-	_currentLoc = _sourceBuf;
-
-	return result;
+	return 0;
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSourceBuf::fclose
- * Simulate an fclose() on the DataSourceBuf object.
+ * function: DataSource::Write
+ * This is a dummy function to catch calls to Write() for derived classes
+ * that don't implement it.
  */
-DevStatus
-DataSourceBuf::fclose()
+size_t
+DataSource::Write(const char *buf, size_t byteCount)
 {
-	DO_DEBUG(printf("DataSourceBuf::fclose()\n"));
+	DO_DEBUG(printf("DataSource::Write()\n"));
 
-	DevStatus	result = StatusOk;
+	fprintf(stderr, "Write method not implemented for class %s\n",
+		objectType());
+	DOASSERT(false, "");
 
-	_currentLoc = NULL;
-
-	return result;
+	return 0;
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSourceBuf::fgets
- * Simulate an fgets() on the DataSourceBuf object.
+ * function: DataSource::append
+ * This is a dummy function to catch calls to append() for derived classes
+ * that don't implement it.
  */
-char *
-DataSourceBuf::fgets(char *buffer, int bufSize)
+int
+DataSource::append(void *buf, int recSize)
 {
-	DO_DEBUG(printf("DataSourceBuf::fgets()\n"));
+	DO_DEBUG(printf("DataSource::append()\n"));
 
-	char *		result = buffer;
-	char *		endOfBuf = buffer + bufSize - 1;
-	Boolean		endOfLine = false;
-	char *		outputP = buffer;
+	fprintf(stderr, "append method not implemented for class %s\n",
+		objectType());
+	DOASSERT(false, "");
 
-	if (_currentLoc == NULL)
-	{
-		reportError("DataSourceBuf: not open", devNoSyserr);
-	}
-	else
-	{
-		while ((outputP < endOfBuf) && !endOfLine)
-		{
-			*outputP = *_currentLoc;
+	return -1;
+}
 
-			// End of string in the buffer is equivalent to EOF in real
-			// fgets().
-			if (*_currentLoc == '\0')
-			{
-				if (outputP == buffer) result = NULL;	// Signal "EOF".
-				break;
-			}
+/*------------------------------------------------------------------------------
+ * function: DataSource::printStats
+ * This is a dummy function to catch calls to printStats() for derived classes
+ * that don't implement it.
+ */
+void
+DataSource::printStats()
+{
+	DO_DEBUG(printf("DataSource::printStats()\n"));
 
-			if (*_currentLoc == '\n') endOfLine = true;
+	fprintf(stderr, "printStats method not implemented for class %s\n",
+		objectType());
+	DOASSERT(false, "");
 
-			_currentLoc++;
-			outputP++;
-		}
-
-		// Terminate the output string.
-		if (outputP < endOfBuf)
-		{
-			*outputP = '\0';
-		}
-		else
-		{
-			*endOfBuf = '\0';
-		}
-	}
-
-	return result;
+	return;
 }
 
 /*============================================================================*/
