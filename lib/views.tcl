@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.52  1998/07/17 15:33:57  wenger
+#  Improved link creation GUI as per request from Raghu; started on
+#  DataReader schema GUI; changed version to 1.5.4.
+#
 #  Revision 1.51  1998/06/15 19:55:30  wenger
 #  Fixed bugs 338 and 363 (problems with special cases of set links).
 #
@@ -2481,6 +2485,7 @@ proc LinkViewMsg {} {
     if { $answer == 1 } {
 	set linkViewStatus 0
     }
+    #TEMP -- it would be good to disable all of the other menus, etc., here
 }
 
 ############################################################
