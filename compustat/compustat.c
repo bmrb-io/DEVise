@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/09/22 22:36:41  jussi
+  Added tape block size parameter.
+
   Revision 1.4  1995/09/22 15:52:14  jussi
   Added copyright message.
 
@@ -416,11 +419,13 @@ double comp_get_val(char *str, int len, int pre)
 
   /* Now add up the two parts of the float number adjusting for the 
      implied decimal point */
-  /* We will optimize for the case pre=3 and 4 */
+  /* We will optimize for the case pre=3, 4 and 6*/
   if (pre == 3)
     denom = 1000.0;
   else if (pre == 4)
     denom = 10000.0;
+  else if (pre == 6)
+    denom = 1000000.0;
   else
   {
     printf("Error : precision %d is not supported\n", pre);
