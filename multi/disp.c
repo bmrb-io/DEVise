@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/22 21:07:06  jussi
+  ControlPanel::_controlPanel is now set by main program.
+
   Revision 1.6  1996/05/07 21:11:29  jussi
   Cleaned up the code a little bit.
 
@@ -31,7 +34,6 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include "tcl.h"
 #include "DeviseTypes.h"
 #include "Display.h"
 #include "Dispatcher.h"
@@ -141,7 +143,7 @@ main(int argc, char **argv)
   ControlPanel::RegisterClass(new HostMappingInfo);
   ControlPanel::RegisterClass(new CycleOccMappingInfo);
   ControlPanel::RegisterClass(new CycleEffMappingInfo);
-  ControlPanel::RegisterClass(new VisualLinkClassInfo());
+  ControlPanel::RegisterClass(new VisualLinkClassInfo);
   ControlPanel::RegisterClass(new ViewScatterInfo);
   ControlPanel::RegisterClass(new HostClassInfo);
   ControlPanel::RegisterClass(new CycleClassInfo);
@@ -151,7 +153,7 @@ main(int argc, char **argv)
   
   mapInfo = new MapInfo;
 
-  /* job ordering based on lenght. job_order[i] == order of job i */
+  /* job ordering based on length. job_order[i] == order of job i */
   int job_ordering[MAX_JOBS];
   mapInfo->job_ordering = job_ordering;
 
