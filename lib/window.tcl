@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1997/01/23 16:02:24  jussi
+#  Removed debugging message.
+#
 #  Revision 1.21  1997/01/23 16:02:12  jussi
 #  Added code that raises the top view in a stack when stack
 #  order is rotated.
@@ -761,7 +764,6 @@ proc DoWindowPile {} {
 
     # create new XY link for piled views
     set link [UniqueName "Pile: Link"]
-    puts "Creating $link for pile"
     set result [DEVise create link Visual_Link $link 3]
     if {$result == ""} {
         dialog .linkError "Link Error" \
@@ -771,7 +773,6 @@ proc DoWindowPile {} {
 
     # insert pile link into current view first so that its filter
     # will progagate to other views in pile
-    puts "Inserting $link into $curView"
     DEVise insertLink $link $curView
 
     # set pileMode flag 'on' in all views in current window and
@@ -780,11 +781,9 @@ proc DoWindowPile {} {
     set win [DEVise getViewWin $curView]
     foreach v [DEVise getWinViews $win] {
         if {$v != $curView} {
-            puts "Inserting $link into $v"
             DEVise insertLink $link $v
-	    DEVise refreshView $curView
+	    DEVise refreshView $v
         }
-        puts "Setting $v to pile mode"
         DEVise setViewPileMode $v 1
     }
 
@@ -821,18 +820,14 @@ proc DoWindowUnpile {} {
 	}
     }
 
-    puts "Pile has links: $pileLinks"
-
     # set pileMode flag 'off' in all views in current window and
     # remove pile links from all views
 
     set win [DEVise getViewWin $curView]
     foreach v [DEVise getWinViews $win] {
-        puts "Setting $v to normal mode"
         DEVise setViewPileMode $v 0
         foreach link $pileLinks {
 	    if {[DEVise viewInLink $link $v]} {
-                puts "Unlinking $link from $v"
 		DEVise unlinkView $link $v
 	    }
         }
@@ -872,7 +867,9 @@ proc DoWindowUnstack {} {
     set layout [DEVise getWindowLayout $win]
     set newLayout [list [lindex $layout 0] [lindex $layout 1] 0]
     eval DEVise setWindowLayout {$win} $newLayout
-    DEVise refreshView $curView
+    foreach v [DEVise getWinViews $win] {
+        DEVise refreshView $v
+    }
 }
 
 ############################################################
