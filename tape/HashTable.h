@@ -19,6 +19,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/07/19 03:32:56  jussi
+  Fixed bug in lookup().
+
   Revision 1.5  1996/07/15 16:59:42  jussi
   Added support for user-provided comparison functions.
 
@@ -31,6 +34,8 @@
   Revision 1.2  1995/09/05 20:31:39  jussi
   Added CVS header.
 */
+
+#define MODIFIED
 
 #ifndef HASH_H
 #define HASH_H
@@ -70,12 +75,20 @@ class HashTable {
   int remove(Index &index);  
   int clear();
 
+#ifdef MODIFIED
+  int num() { return _num; }
+#endif
+
  private:
 #ifdef DEBUGHASH
   void dump();                               // dump contents of hash table
 #endif
 
   int tableSize;                             // size of hash table
+#ifdef MODIFIED
+  int _num;                                  // number of entries in table
+#endif
+
   HashBucket<Index, Value> **ht;             // actual hash table
   int (*hashfcn)(Index &index,
 		 int numBuckets);            // hash function
@@ -99,7 +112,10 @@ HashTable<Index,Value>::HashTable(int tableSz,
     exit(1);
   }
   for(int i = 0; i < tableSize; i++)
-    ht[i] = NULL;
+    ht[i] = 0;
+#ifdef MODIFIED
+  _num = 0;
+#endif
 }
 
 // Insert entry into hash table mapping Index to Value.
@@ -121,6 +137,10 @@ int HashTable<Index,Value>::insert(Index &index, Value &value)
   bucket->next = ht[idx];
   ht[idx] = bucket;
 
+#ifdef MODIFIED
+  ++_num;
+#endif
+
 #ifdef DEBUGHASH
   dump();
 #endif
@@ -138,12 +158,8 @@ int HashTable<Index,Value>::lookup(Index &index, Value &value)
 
   HashBucket<Index, Value> *bucket = ht[idx];
   while(bucket) {
-#ifdef DEBUGHASH_XXX
-    cerr << "%%  Comparing " << *(long *)&bucket->index
-         << " vs. " << *(long *)index << endl;
-#endif
     if ((!compfcn && bucket->index == index)
-        || (compfcn &&!compfcn(bucket->index, index))) {
+        || (compfcn && !compfcn(bucket->index, index))) {
       value = bucket->value;
       return 0;
     }
@@ -159,7 +175,7 @@ int HashTable<Index,Value>::lookup(Index &index, Value &value)
 
 // A function which allows duplicate Indices to be retrieved
 // iteratively. The first match is returned in next if current
-// is NULL. Upon subsequent calls, caller should set
+// is null. Upon subsequent calls, caller should set
 // current = next before calling again. If Index not found,
 // returns -1.
 
@@ -213,6 +229,9 @@ int HashTable<Index,Value>::remove(Index &index)
       else
 	prevBuc->next = bucket->next;
       delete bucket;
+#ifdef MODIFIED
+      --_num;
+#endif
 #ifdef DEBUGHASH
       dump();
 #endif
