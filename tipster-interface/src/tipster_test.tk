@@ -1,0 +1,189 @@
+#!/s/std/bin/wish -f
+
+wm geometry . +0+0
+wm title . "Tipster Test"
+
+set backGround DarkOliveGreen
+set foreGround white
+
+frame .mbar -relief raised -bd   2
+pack  .mbar -side   top    -fill x
+
+
+label .mbar.label1 -text "TIPSTER"
+pack  .mbar.label1 -fill x
+
+button .mbar.label2 -relief raised -text "SMART" -command {
+    if { [winfo exists .mbar3] == 1 } {
+	destroy .mbar3
+    }
+    
+    if { [winfo exists .mbar2] == 0  && [winfo exists .col1]== 0 && \
+         [winfo exists .col2]== 0   && [winfo exists .col3]== 0 && \
+         [winfo exists .col4]== 0 } {
+       
+	wm geometry .
+	wm geometry .  
+	wm title . "SMART"
+	set backGround DarkOliveGreen
+	set foreGround white
+	
+	frame .mbar2 -relief raised -bd   2
+	pack  .mbar2 -side   top    -fill x
+	label .mbar2.label1 -text "SMART"
+	pack  .mbar2.label1 -fill x
+	
+	entry .mbar2.entry -width 30 -relief sunken -textvariable cmd
+	pack  .mbar2.entry -fill x
+	
+        frame .col1
+        frame .col2
+        frame .col3
+        frame .col4
+
+	button .col1.smartlabel1 -relief raised -text "Query" -command {
+               smQuery $cmd
+	}
+   
+	button .col1.smartlabel2 -relief raised -text "Fetch" -command {
+               smAll $cmd
+	}
+	
+	button .col1.smartlabel3 -relief raised -text "Title" -command {
+               smAll "t"
+	}
+	
+	button .col1.smartlabel4 -relief raised -text "More" -command {
+               smAll "m"
+	}
+
+	button .col1.smartlabel5 -relief raised -text "Next" -command {
+               smAll "n"
+	}
+
+	button .col2.smartlabel6 -relief raised -text "RawDoc" -command {
+               smAll "R"
+	}
+
+	button .col2.smartlabel7 -relief raised -text "TopRank" -command {
+               smAll "T"
+	}
+
+	button .col2.smartlabel8 -relief raised -text "Location" -command {
+               smAll "L"
+	}
+
+	button .col2.smartlabel9 -relief raised -text "SpecFile" -command {
+               smAll "S"
+	}
+
+	button .col3.smartlabel10 -relief raised -text "DMatch" -command {
+               smAll "Dmatch $cmd"
+	}
+
+	button .col3.smartlabel11 -relief raised -text "DVec" -command {
+               smAll "Dvec $cmd"
+	}
+
+	button .col3.smartlabel12 -relief raised -text "DRun" -command {
+               smAll "Drun $cmd"
+	}
+
+	button .col3.smartlabel13 -relief raised -text "DSim" -command {
+               smAll "Dsim $cmd"
+	}
+
+	button .col4.smartlabel14 -relief raised -text "QMatch" -command {
+               smAll "Qmatch $cmd"
+	}
+
+	button .col4.smartlabel15 -relief raised -text "QVec" -command {
+               smAll "Qvec"
+	}
+
+	button .col4.smartlabel16 -relief raised -text "QText" -command {
+               smAll "Qtext"
+	}
+
+	button .col4.smartlabel17 -relief raised -text "QSim" -command {
+               smAll "Qsim $cmd"
+	}
+
+        pack .col1 .col2 .col3 .col4 -side top -fill x
+
+	pack  .col1.smartlabel1 .col1.smartlabel2 .col1.smartlabel3 \
+              .col1.smartlabel4  .col1.smartlabel5 -side left \
+                -expand 1 -fill both
+
+        pack  .col2.smartlabel6  .col2.smartlabel7 .col2.smartlabel8 \
+              .col2.smartlabel9   -side left -expand 1 -fill both 
+
+	pack  .col3.smartlabel10 .col3.smartlabel11 \
+              .col3.smartlabel12 .col3.smartlabel13 -side left \
+                -expand 1 -fill both
+               
+        pack  .col4.smartlabel14 .col4.smartlabel15 .col4.smartlabel16 \
+              .col4.smartlabel17  -side left -expand 1 -fill both
+
+    }
+
+}
+
+button .mbar.label4 -relief raised -text "INQUERY" -command {
+    if { [winfo exists .mbar2] == 1 } {
+	destroy .mbar2
+	destroy .col1
+	destroy .col2
+	destroy .col3
+	destroy .col4
+    }
+    
+    if { [winfo exists .mbar3] == 0 } {
+	
+	wm geometry .
+	wm title . "INQUERY"
+	set backGround DarkOliveGreen
+	set foreGround white
+	
+	frame .mbar3 -relief raised -bd   2
+	pack  .mbar3 -side   top    -fill x
+	label .mbar3.label1 -text "INQUERY"
+	pack  .mbar3.label1 -fill x
+	
+	entry .mbar3.entry -width 30 -relief sunken -textvariable cmd
+	pack  .mbar3.entry -fill x
+	
+	button .mbar3.smartlabel1 -relief raised -text "Query" -command {
+             Query $cmd
+	}
+   
+	button .mbar3.smartlabel2 -relief raised -text "Fetch" -command {
+             Fetch $cmd
+	}
+	
+	button .mbar3.smartlabel3 -relief raised -text "Title" -command {
+             Title $cmd
+	}
+	
+	pack  .mbar3.smartlabel1 .mbar3.smartlabel2 .mbar3.smartlabel3 \
+         -side left -expand  1 -fill x
+    }
+    
+}
+
+button .mbar.label5 -relief raised -text "ALL" -command {
+    entry .mbar.entry -width 30 -relief sunken -textvariable cmd
+    pack  .mbar.entry -fill x
+    smart $cmd
+}
+
+button .mbar.label3 -relief raised -text "QUIT"  -command {
+    smQuit "q"
+    destroy .
+}
+pack  .mbar.label2 .mbar.label4 .mbar.label5 .mbar.label3 -side left  \
+ -expand 1 -fill x
+
+tkwait visibility .mbar
+
+

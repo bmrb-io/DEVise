@@ -1,0 +1,190 @@
+/*            Work done for the smart/inquery interface  
+
+-> Inquery runs on Sun-Sparc machine (jazz-man here) the tar-ed
+   code = /p/devise/sanj/InQuery/inq.sanj.tar.gz 
+   is the source+executables on jazz-man. It is compiled under the 
+   assumption of the root directory as /local.jazz-man/InQuery/sanj/ where
+   the files were untar-ed. 
+
+
+
+The work done as a part consists of understanding the smart/inquery
+client-server API and see if devise can be used as a tool to visualize
+that.
+
+Server Interface
+
+Inquery:
+Inquery had pre-existing support for client-server architecture.
+So using that was not difficult.
+
+Dir: /local.jazz-man/InQuery/sanj/inquery/
+
+Files of interest:
+
+/local.jazz-man/InQuery/sanj/inquery/src/get_query.c
+ contains the mini-server running on jazz-man. A client opens up a 
+ connection to this server.  This connects to the inquery-server running
+ already on jazz-man. Client sends the request to the mini-server and 
+ this then returns the results of the query to the client. 
+ The answer in stored in the /tmp/inq.query file on the client..
+
+ Result contains: document id, document data and document title
+
+ This file can  be visualized using Devise.
+
+/local.jazz-man/InQuery/sanj/inquery/src/fetch_doc.c
+ another mini-server running on jazz-man. A client opens up a 
+ connection to this server. This connects to the inquery-server running
+ already on jazz-man. Client sends the document-id as returned as the
+ result of the query and the document contents are fetched and stored
+ in the file /tmp/inq.doc.query at the client site.
+
+ This file can  be visualized using Devise.
+
+/local.jazz-man/InQuery/sanj/inquery/src/network.c
+/local.jazz-man/InQuery/sanj/inquery/h/network.h
+ contain the networking functions that are used in the code.
+
+/local.jazz-man/InQuery/sanj/inquery/make/client-server
+ contains the command for the compilation of the two mini-servers above.
+
+ get_query.c -> getquery
+ fetch_doc.c -> fetchdoc
+
+ and the executables are stored in the bin directory.
+
+ ->> working with inquery 
+
+  * go to the /local.jazz-man/InQuery/sanj/inquery/make directory
+  * $ sh client-server 
+      creates two executables in the ../binary directory
+
+  o working with the default port numbers 
+  Run the connection server :
+       $ conn_server_ip &  (in the binary dir)
+      In case there is a problem, remove the /tmp/INQUERY.server and retry 
+
+  Run the inquery server :
+       $ inquery-server ../tests/time &  (in the binary dir)
+        ../tests/time is the database directory serviced by the inquery server.
+
+  Now run the two mini-servers:
+       $ getquery &
+       $ fetchdoc &
+
+  These two mini-servers connect to the inquery-server which in turn connects
+to the conn_server. 
+  Changing some part of the code of the two mini-servers (the port #, machine
+name , db name) etc.. are required when a different inquery-server is needed ...
+mentioned in the source files:
+
+
+                  conn_server_ip 
+                   |         |
+      inquery-server         inquery-server  inquery-server  .....
+        |                         |
+        |                         |
+        |                         |
+ fetchdoc getquery  ->fork->  fetchdoc getquery  ....
+   |      |                    |     |
+   |      | fixed port numbers |     |
+   |      |                    |     |
+    client                     client
+
+
+ Smart:
+
+ This was a monolithic software and required more work. There were two
+options: 
+ -> fork off a separate smart process for every request..
+ -> convert smart to client-server and somehow protect the global data across
+    multiple calls.
+
+ I asked Chris (the Smart man) about his opinion and he suggested that the
+attempts for making smart a client-server stuff involved the first choice
+in the past(fork off.) .. I had already implemented that part - so the 
+choice was somewhat restricted to no-choice. I still think that if somehow
+the second option can be carried out, the program would be much neater
+than the one I implemented.
+
+Dir:
+ /p/devise/sanj/smart/smart.11.0/
+
+Files of interest:
+ /p/devise/sanj/smart/smart.11.0/src/mini_server.c
+ contains a mini-server running on the machine for smart. 
+ It accepts connections from a client on a fixed port and then 
+ forks off a new smart process for serving that. It then waits to hear
+ from the smart process. meanwhile smart process executes and then
+ finds an unused port number which it returns to the  mini-server and
+ the mini-server returns that to the client. The client then uses this
+ port number to connect to the smart process forked off as a response
+ to its request to connect.
+ The queries henceforth for this client are server directly by the smart
+ process without any intervention from the mini-server which awaits more
+ requests from other clients.
+
+ /p/devise/sanj/smart/smart.11.0/src/libinter/inter.c
+ Here the file inter.c has been modified. The mini_server starts the 
+smart process in an interactive mode alongwith the name of the database
+served by the process. Inter.c has been modified so that the smart process
+is duped into believing that the input is coming from stdin where as the
+input is read from the socket.  This file contains also the point where 
+the answers are throwm onto the socket instead of the stdout..
+
+ Results are stored in the file : /tmp/sm.query
+
+ /p/devise/sanj/smart/smart.11.0/src/libretrieve/user_q_edit.c 
+ This is for queries part where a query text is sent and the matching
+documents are returned. Here also the query is read from the socket instead
+of the stdin on a socket returned by the smart process to the mini_server
+initially.
+
+ Results are stored in the file : /tmp/sm.doc.query
+
+ /p/devise/sanj/smart/smart.11.0/src/libretrieve/user_q_cat.c 
+ Again there is stdin there - i had initially changed this to read from 
+socket but that did not make any change in the functionality. Think that 
+this file is not used in the interactive mode and hence restored the structure.
+If sometimes there is a problem this file might be important to take a look at.
+
+ Result files can be easily visualized using devise..
+
+ Compilation:
+ sh /p/devise/sanj/smart/smart.11.0/src/serv
+
+  creates the file: bin/smart-mini-server
+  run: $ smart-mini-server 
+
+ The name of the database run is in the mini_server.c file ....
+ ......./spec file describes the database..
+ this is hardcoded and can be changed easily...
+
+ Structure:
+          smart-mini-server (running on smart machine)
+          |     |             |            | 
+          |     |        Port# |       forks off a smart process and waits 
+          |     |            (3)|         | (2)
+      (4) |     | (1)            |smart process (finds an empty port   
+     Port |     |                       |        and returns to the server)
+      #   |     |                       |(5)
+          client  -----------------------                
+                  connects directly to the smart process on the returned port #
+
+
+ client interface
+
+ the code is in the file ~sanj/ra/code
+ smart.c   -> commands for the smart client
+ inquery.c -> commands for the smart client
+ main.c    -> the main procedure
+
+compile using the Makefile <make> ..
+run a.out  as a.out smart-server-machine inq-server-machine tipster_test.tk 
+
+ 
+ ALL has not been implemented (since could not find a common data source for
+     both inquery and smart --)
+     
+
