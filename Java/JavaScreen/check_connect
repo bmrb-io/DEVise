@@ -9,5 +9,3 @@
 ############################################################
 
 java DEViseCheckPop $*
-#TEMPTEMP java DEViseCheckPop  1> check_connect.err
-#TEMPTEMP java DEViseCheckPop $* 2> check_connect.err
