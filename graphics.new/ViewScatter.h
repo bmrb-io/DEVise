@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/02/03 19:45:39  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
+  Revision 1.11.4.1  1997/02/11 23:26:04  guangshu
+  Defined BStatList _blist in order to do gstat in scattered views.
+
   Revision 1.11  1996/11/26 16:51:42  ssl
   Added support for piled viws
 
@@ -114,6 +123,8 @@ private:
   TDataMap     *_map;
   int          _index;
   void         *_recs[WINDOWREP_BATCH_SIZE]; /* max # of pointers */
+
+  BStatList    _blist;  // Keep a list of BasicStats so we can delete them
 };
 
 #endif

@@ -305,11 +305,10 @@ Num Date        Status  Description
 			the result of a middle button click. (ml/rkw)
 			Deferred
 
-081 11/22/96	OPEN	Derived data histograms not always working (see
+081 11/22/96	FIXED	Derived data histograms not always working (see
 			the session test/sales1.tk, must be on tiger to
 			use this). (ml/rkw)
 			(Histograms not supported on scatter plots yet.)
-			Deferred
 
 082 11/25/96	FIXED	Load session test/a2.tk -> core dump. (rkw/jpm)
 
@@ -362,10 +361,9 @@ Num Date        Status  Description
 			command name "findNumericCaseValue"' from Tcl/Tk.
 			(rkw)
 
-097 12/16/96	OPEN	'Duplicate window' should make an entirely separate
+097 12/16/96	FIXED	'Duplicate window' should make an entirely separate
 			copy of the window -- changing mappings, etc., in
 			one window should not affect the other one. (ml/rkw)
-			Deferred
 
 098 12/16/96	FIXED	Load session test/molbio_demo.tk -> clip mask doesn't
 			work on two of three piled views. (rkw/jpm)
@@ -605,20 +603,51 @@ Num Date        Status  Description
 			that cursor. (kb/rkw)
 			Deferred
 
-145 01/30/97	OPEN	Mapping window is not updated when a new view is
+145 01/30/97	FIXED	Mapping window is not updated when a new view is
 			selected. (kb/rkw) (See related item of 8/2/96 in
 			the to-do list.)
-			Deferred
 
 146 01/30/97	OPEN	KGraph doesn't always redraw properly (when covered
 			then resized & raised). (kb/rkw)
 			Deferred
 
-147 01/30/97	OPEN	When drilling down, it's often too hard to hit the
+147 01/30/97	FIXED?	When drilling down, it's often too hard to hit the
 			place that will get a record. (ml/rkw)
 
-148 02/03/97	OPEN	Try to create a window with the same name as an
+148 02/03/97	FIXED	Try to create a window with the same name as an
 			existing window -> Devise exits. (ml/rkw)
+
+149 02/07/97	OPEN	Changing the window background color should also
+			change the background color of the trademark notice
+			in that window. (rkw)
+			Deferred
+
+150 02/09/97	OPEN	TDataMap::GetDynamicArgs() doesn't seem to be
+			returning correct value. (rkw)
+			Deferred
+
+151 02/09/97	FIXED	In schema editor widgets, 'low value' should come
+			before 'high value'. (ml/rkw)
+
+152 02/09/97	OPEN	In schema editor attribute list, the properites of
+			the attributes should be listed in the order 'name
+			type sorted composite low high'. (ml/rkw)
+			Deferred
+
+153 02/09/97	FIXED	Selecting 'Other' for 'Source Data' in Copy/Edit
+			fails. (ml/rkw)
+
+154 02/10/97	FIXED	Load session test/text_size.tk, change size to 4 ->
+			redraws really slowly.  (You need
+			text_size.devise.strings copied to devise.strings for
+			this to work.) (ml/rkw)
+
+155 02/10/97	FIXED	For vectors, the size of the arrowhead should not
+			be changed according to the size of the entire
+			vector. (ml/rkw)
+
+156 02/10/97	FIXED	Pile links should be deleted when views are unpiled.
+			(ml/rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

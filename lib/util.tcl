@@ -15,8 +15,26 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.41  1997/02/11 00:48:06  ssl
+#  Fixed minor bug with Record Link list
+#
 #  Revision 1.40  1997/02/03 20:02:04  ssl
 #  Added interface for negative record links and user defined layout mode
+#
+#  Revision 1.39.4.2  1997/02/11 01:17:41  ssl
+#  Cleaned up the UI for piled views
+#  1) Made pile links invisible to user
+#  2) Added create/destroy link options to the link menu
+#  3) Enhanced the link info window to show all info about a link (type, views,
+#     master, link params )
+#  4) Pile links get removed when the pile is unpiled
+#  5) Set/Reset Master now only shows list of record links
+#
+#  Revision 1.39.4.1  1997/02/07 15:21:47  wenger
+#  Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
+#  window names); added axis toggling and color selections to Window menu;
+#  other minor fixes to GUI; show command to Tasvir now requests image to
+#  be shown all at once.
 #
 #  Revision 1.39  1997/01/30 02:12:02  beyer
 #  added stringCaseCmp for case insensitive string comparisons and
@@ -421,6 +439,19 @@ proc RecordLinkSet {} {
 }
 ############################################################
 
+#list of non pile links
+proc NonPileLinkSet {} {
+    set nonPileLinks {}
+    foreach link [LinkSet] {
+	if {[string range $link 0 4] != "Pile:"} {
+	    lappend nonPileLinks $link
+	}
+    }
+    return $nonPileLinks
+}
+
+############################################################
+
 # list of all windows
 
 proc WinSet {} {
@@ -549,7 +580,7 @@ proc getColor {varname} {
     }
 
     button .getColor.bot.but.cancel -text Cancel -width 10 \
-	    -command "destroy .getColor"
+	    -command "set $varname cancel; destroy .getColor"
     pack .getColor.bot.but.cancel -side left
 
     tkwait visibility .getColor

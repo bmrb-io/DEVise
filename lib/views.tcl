@@ -15,8 +15,40 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.25  1997/02/03 20:02:02  ssl
+#  Added interface for negative record links and user defined layout mode
+#
 #  Revision 1.24  1997/02/03 04:12:42  donjerko
 #  Catalog management moved to DTE
+#
+#  Revision 1.23.4.5  1997/02/11 16:49:17  ssl
+#  Fixed minor problem with links
+#
+#  Revision 1.23.4.4  1997/02/11 01:17:40  ssl
+#  Cleaned up the UI for piled views
+#  1) Made pile links invisible to user
+#  2) Added create/destroy link options to the link menu
+#  3) Enhanced the link info window to show all info about a link (type, views,
+#     master, link params )
+#  4) Pile links get removed when the pile is unpiled
+#  5) Set/Reset Master now only shows list of record links
+#
+#  Revision 1.23.4.3  1997/02/09 20:14:21  wenger
+#  Fixed bug 147 (or at least some instances of it) -- found a bug in the
+#  query processor that caused it to miss records it should have found;
+#  fixed bugs 151 and 153.
+#
+#  Revision 1.23.4.2  1997/02/08 02:08:42  ssl
+#  1)Fixed mapping dialog to update when selected view changes
+#  2)Removed  OK buttons and renamed Cancel to Close
+#  3)Added a Flip button which allows user to flip views whenever the view
+#    is a pile. NOT ENABLED FOR STACKs or other views.
+#
+#  Revision 1.23.4.1  1997/02/07 15:21:48  wenger
+#  Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
+#  window names); added axis toggling and color selections to Window menu;
+#  other minor fixes to GUI; show command to Tasvir now requests image to
+#  be shown all at once.
 #
 #  Revision 1.23  1997/01/22 23:46:26  jussi
 #  Removed references to queryWinOpened, query3dWinOpened,
@@ -150,6 +182,7 @@ proc ProcessViewSelected { view } {
 
 	return
     }
+    UpdateMappingDialog .editMapping $curView
 
     if {[WindowExists .stack]} {
 	.stack.title.text configure -text "View: $curView"
@@ -261,7 +294,7 @@ proc DoViewCopy {} {
     }
     .copy.top.old.tdata.menu.list add separator
     .copy.top.old.tdata.menu.list add command -label "Other..." -command {
-	set newtdata [OpenNewDataSource]
+	set newtdata [OpenNewDataSource 0]
 	if {$newtdata != ""} {
 	    set tdata $newtdata
 	    .copy.top.old.tdata.menu.list add command -label $tdata \
@@ -657,7 +690,22 @@ proc DisplayLinkInfo { link } {
 		"Link $link currently does not link any view" "" 0 OK
 	return
     }
-    dialogList .linkInfo "Link Info" "Views linked by $link" "" 0 OK $views
+    set flag [DEVise getLinkFlag $link]
+    if { $flag == 128 } {
+	set type "Record"
+	set master [DEVise getLinkMaster $link]
+	set labels [list  [list Type 10 "$type Link" ] \
+		          [list Master 10 $master] ]
+    } else {
+	set type "Visual"
+	set labels [list [list Type 10 "$type Link" ] ]
+    }
+    dialogInfo .linkInfo "Link Info" "Views linked by $link" "" \
+    	    0 OK $views  $labels  \
+	    [list $flag 20 2 4 col x y color size pattern \
+	    orientation shape record ]
+    # quick hash - actually should write general purpose widgets to do  
+    # selections with multiple kinds of widgets in one window
 }
 
 ############################################################
@@ -671,7 +719,7 @@ proc DoViewLink {} {
     }
 
     while { 1 } {
-	set linkSet [LinkSet]
+	set linkSet [NonPileLinkSet]
 	if { [llength $linkSet] == 0 } {
 	    set link [DoLinkCreate]
             break
@@ -712,7 +760,7 @@ proc DoViewUnlink {} {
 	return
     }
 
-    set linkSet [LinkSet]
+    set linkSet [NonPileLinkSet]
     set viewLinks ""
     foreach link $linkSet {
 	if { [DEVise viewInLink $link $curView] } {
@@ -760,6 +808,37 @@ proc DoSetLinkType {} {
     DEVise refreshView $linkMaster
 }
 
+############################################################
+proc DoLinkDestroy {} {
+    global dialogListVar
+    set linkSet [NonPileLinkSet]
+    set answer [ dialogList .getLink "Select Link" \
+	    "Select a link to delete" "" 0 \
+	    { OK Cancel } $linkSet ]
+    if { $answer == 1 } {
+	return
+    } elseif { $dialogListVar(selected) == "" } {
+	return
+    } else {
+	DeleteLink $dialogListVar(selected) 
+    }
+}
+
+############################################################
+
+proc DeleteLink { link } {
+    if { $link == "" } {
+	return
+    }
+    set views [DEVise getLinkViews $link]
+    if { [llength $views] > 0 } {
+	set but [ dialog .deleteLink "Link still active" \
+		"Cannot delete link, unlink views first" "" 0 OK ]
+	return
+    }
+    DEVise destroy $link
+}
+
 
 # Set current view as master
 proc DoSetLinkMaster {} {
@@ -769,7 +848,7 @@ proc DoSetLinkMaster {} {
 	return
     }
 
-    set linkSet [LinkSet]
+    set linkSet [RecordLinkSet]
     if { [llength $linkSet] == 0 } {
 	set link [DoLinkCreate]
 	if {$link == ""} {
@@ -778,7 +857,7 @@ proc DoSetLinkMaster {} {
     }
     
     while { 1 } {
-	set linkSet [LinkSet]
+	set linkSet [RecordLinkSet]
 	set answer [ dialogList .getLink "Select Link" \
 		"Select a link for view\n$curView" "" 0 \
 		{ OK Info New Cancel } $linkSet ]
@@ -806,7 +885,7 @@ proc DoSetLinkMaster {} {
 proc DoResetLinkMaster {} {
     global dialogListVar
 
-    set linkSet [LinkSet]
+    set linkSet [RecordLinkSet]
     if { [llength $linkSet] == 0 } {
 	dialog .noLinks "No Links" "There are no links." "" 0 OK
 	return
@@ -837,7 +916,7 @@ proc DoResetLinkMaster {} {
 # Modify parameters of a link
 proc DoModifyLink {} {
     global dialogCkButVar dialogListVar
-    set linkSet [LinkSet]
+    set linkSet [NonPileLinkSet]
     if { [llength $linkSet ] == 0 } {
 	set but [dialog .linkModError "Link Modify Error" \
 		"No link has been created yet" "" 0 OK ]
@@ -1045,55 +1124,46 @@ proc DoViewAction {} {
 
 ############################################################
 
-proc DoSetFgColor {} {
-    global curView fgColor
+proc DoSetFgBgColor { isForeground {perWindow 0} } {
+    global curView newColor
 
     if {![CurrentView]} {
 	return
     }
 
-    set curViewClass [GetClass view $curView]
-    set param [DEVise getCreateParam view $curViewClass $curView]
-    set fgColor [lindex $param 5]
-    set oldFgColor $fgColor
+    if {$isForeground} {
+        set paramIndex 5
+    } else {
+        set paramIndex 6
+    }
 
-    getColor fgColor
-    if {$oldFgColor == $fgColor} {
+    getColor newColor
+    if {$newColor == "cancel"} {
 	return
     }
 
-    set param [lreplace $param 5 5 $fgColor]
-    set cmd "DEVise changeParam $param"
-    eval $cmd
+    if {$perWindow} {
+	set viewList [DEVise getWinViews [DEVise getViewWin $curView]]
+    } else {
+        set viewList [list $curView]
+    }
+
+    foreach viewName $viewList {
+        set curViewClass [GetClass view $viewName]
+        set param [DEVise getCreateParam view $curViewClass $viewName]
+        set oldColor [lindex $param $paramIndex]
+
+        if {$oldColor != $newColor} {
+            set param [lreplace $param $paramIndex $paramIndex $newColor]
+            set cmd "DEVise changeParam $param"
+            eval $cmd
+	}
+    }
 }
 
 ############################################################
 
-proc DoSetBgColor {} {
-    global curView bgColor
-
-    if {![CurrentView]} {
-	return
-    }
-
-    set curViewClass [GetClass view $curView]
-    set param [DEVise getCreateParam view $curViewClass $curView]
-    set bgColor [lindex $param 6]
-    set oldBgColor $bgColor
-
-    getColor bgColor
-    if {$oldBgColor == $bgColor} {
-	return
-    }
-
-    set param [lreplace $param 6 6 $bgColor]
-    set cmd "DEVise changeParam $param"
-    eval $cmd
-}
-
-############################################################
-
-proc DoSetTitle {} {
+proc DoSetTitle { {perWindow 0} } {
     global curView newTitle
 
     if {[WindowVisible .setTitle]} {

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/02/03 19:45:38  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
+  Revision 1.30.4.1  1997/02/11 23:24:22  guangshu
+  Define BStatList upper one level in order to do all the stats in both
+  scattered and sorted view.
+
   Revision 1.30  1996/11/26 16:51:42  ssl
   Added support for piled viws
 
@@ -152,6 +162,7 @@ const int MAX_GSTAT = 10000;
 
 
 DefineDList(GStatList, int)
+DefineDList(BStatList, BasicStats *)
 
 class TDataMap;
 class RecordLink;

@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.54  1997/02/03 19:45:33  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
+  Revision 1.53.2.1  1997/02/09 20:14:09  wenger
+  Fixed bug 147 (or at least some instances of it) -- found a bug in the
+  query processor that caused it to miss records it should have found;
+  fixed bugs 151 and 153.
+
   Revision 1.53  1997/01/30 21:41:10  jussi
   Disabled 'query finished' debugging message.
 
@@ -243,6 +254,7 @@
 #include "Control.h"
 #include "RecordLink.h"
 #include "BufPolicy.h"
+#include "Shape.h"
 
 #define DEBUGLVL 0
 //#define DEBUG_NEG_LINKS 0
@@ -2029,9 +2041,14 @@ algorithm:
 Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                                 char *&retBuf)
 {
+#if defined(DEBUG)
+    printf("QueryProcFull::GetTData()\n");
+#endif
     TData *tdata = _tdataQuery->tdata;
     TDataMap *map = _tdataQuery->map;
     Boolean isTData;
+
+    GDataAttrOffset *gdataOffsets = map->GetGDataOffset();
 
     while (1) {
         if (!_hasTqueryRecs) {
@@ -2069,10 +2086,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                 map->ConvertToGData(recId,tptr,1,_gdataBuf);
                 Boolean match = true;
                 if ( _tdataQuery->filter.flag & VISUAL_X) {
-                    if (map->GetDynamicArgs() & VISUAL_X)
-                        x = ((GDataBinRec *)_gdataBuf)->x;
-                    else
-                        x = map->GetDefaultX();
+		    x = ShapeGetX(_gdataBuf, map, gdataOffsets);
                     
                     if (x < _tdataQuery->filter.xLow ||
                         x > _tdataQuery->filter.xHigh)
@@ -2080,10 +2094,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                 }
                 
                 if (_tdataQuery->filter.flag & VISUAL_Y) {
-                    if (map->GetDynamicArgs() & VISUAL_Y) 
-                        y = ((GDataBinRec *)_gdataBuf)->y;
-                    else
-                        y = map->GetDefaultY();
+		    y = ShapeGetY(_gdataBuf, map, gdataOffsets);
                     
                     if (y < _tdataQuery->filter.yLow ||
                         y > _tdataQuery->filter.yHigh)
@@ -2117,10 +2128,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                     map->ConvertToGData(recId, tptr, 1, _gdataBuf);
                     Boolean match = true;
                     if ( _tdataQuery->filter.flag & VISUAL_X) {
-                        if (map->GetDynamicArgs() & VISUAL_X)
-                            x = ((GDataBinRec *)_gdataBuf)->x;
-                        else
-                            x = map->GetDefaultX();
+		        x = ShapeGetX(_gdataBuf, map, gdataOffsets);
                         
                         if (x < _tdataQuery->filter.xLow ||
                             x > _tdataQuery->filter.xHigh)
@@ -2128,10 +2136,7 @@ Boolean QueryProcFull::GetTData(RecId &retStartRid, int &retNumRecs,
                     }
                     
                     if (_tdataQuery->filter.flag & VISUAL_Y) {
-                        if (map->GetDynamicArgs() & VISUAL_Y) 
-                            y = ((GDataBinRec *)_gdataBuf)->y;
-                        else
-                            y = map->GetDefaultY();
+		        y = ShapeGetY(_gdataBuf, map, gdataOffsets);
                         
                         if (y < _tdataQuery->filter.yLow ||
                             y > _tdataQuery->filter.yHigh)
@@ -2192,7 +2197,7 @@ void QueryProcFull::GetX(QPFullData *query, RecId id, Coord &x)
 {
   DOASSERT(query, "Invalid query");
 
-  if (!(query->map->GetDynamicArgs() & VISUAL_X)) {
+  if (query->map->GetGDataOffset()->xOffset < 0) {
       x = query->map->GetDefaultX();
       return;
   }

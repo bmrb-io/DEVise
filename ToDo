@@ -24,11 +24,6 @@ Make automated test scripts. (rr/rkw 1/9.97)
 
 Major source code reorganization. (rkw 1/9/97)
 
-Make mapping dialog work like the query dialog in that you can select
-different views and the mapping dialog switches to the current
-mapping, and then there should be an 'apply' button to accept changes
-without closing the dialog.  (kb 8/2/96)
-
 Be able to use the mapping dialog to change some values for all views in
 a window (for example, change the symbol for all views from bars to lines).
 There should be a "keep the same" selection for attributes where you
@@ -351,6 +346,9 @@ Allow dotted/dashed lines in Devise. (ma/rkw 2/3/97)
 
 Allow user to change window names. (ma/rkw 2/4/97)
 
+Allow the user to configure the visual filter that will be selected
+with the 5 key. (ml/rkw 2/11/97)
+
 
 COMPLETED
 ---------
@@ -392,6 +390,11 @@ Improve sizing of Tasvir images so that they work like other symbols.
 (rkw 9/12/96)
 
 Move handling of web data to V-engine.
+
+Make mapping dialog work like the query dialog in that you can select
+different views and the mapping dialog switches to the current
+mapping, and then there should be an 'apply' button to accept changes
+without closing the dialog.  (kb 8/2/96)
 
 
 CANCELLED

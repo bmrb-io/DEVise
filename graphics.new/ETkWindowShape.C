@@ -83,8 +83,8 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 	// if there is a problem in displaying the Tk window,
 	// then at least the user sees some symbol in the window
 	gdata = (char *)gdataArray[i];
-	x = GetX(gdata, map, offset);
-	y = GetY(gdata, map, offset);
+	x = ShapeGetX(gdata, map, offset);
+	y = ShapeGetY(gdata, map, offset);
 	color = GetColor(view, gdata, map, offset);
 	if (color == XorColor)
 	    win->SetXorMode();

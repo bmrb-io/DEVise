@@ -1,0 +1,219 @@
+#========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1997
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#	$Id$	
+
+#	$Log$
+#	Revision 1.1.2.2  1997/02/11 16:00:24  wenger
+#	Commented out some debug code in the links stuff; added standard header
+#	to dialogInfo.tk.
+#
+
+############################################################
+#
+# dialog box with item lists, and a frame in which additional info
+# widgets may be packed in (the widgets should have been created and 
+
+# defined elsewhere and this widget only packs them into a window )
+# All other features same as a dialog List
+#	sort == 1 to sort all items
+# Return the button pressed.
+# Global variable dialogListVar(selected) is set to the current selection, 
+# or ""
+#
+############################################################
+
+set dialogInfoVar(selected) ""
+
+proc dialogInfo { w title text bitmap default args items labels buttons {sort 1 } } {
+    global button 
+    global dialogListVar
+    
+    #	Find width of listbox
+    set listWidth 1
+    foreach item $items {
+	set len [LineWidth $item]
+	if {$len > $listWidth } {
+	    set listWidth [expr $len+1]
+	}
+    }
+    
+    # 1. Create the top-level window and divide it into top
+    # and bottom parts.
+    
+    toplevel $w -class Dialog
+    wm geometry $w +100+100
+    wm title $w $title
+    wm iconname $w Dialog
+    frame $w.top -relief raised -bd 1
+    frame $w.listFrame
+    frame $w.info -relief raised -bd 1
+    pack $w.top $w.listFrame $w.info -side top -fill both
+    
+    frame $w.bot -relief raised -bd 1
+    pack $w.bot -side bottom -fill both
+    
+    # 2. Fill the top part with the bitmap and message.
+    
+    set txtWidth [LineWidth $text]
+    set txtHeight [LineHeight $text]
+    text $w.top.msg -width $txtWidth -height $txtHeight \
+	    -font -*-*-medium-r-normal-*-140-*-*-m-* \
+	    -relief flat
+    $w.top.msg insert end $text
+    $w.top.msg configure -state disabled
+    #	message $w.top.msg -width 3i -text $text\
+	    #			-font -Adobe-Times-Medium-R-Normal-*-180-*
+    pack $w.top.msg -side right -expand 1 -fill both\
+	    -padx 3m -pady 3m
+    if {$bitmap != ""} {
+	label $w.top.bitmap -bitmap $bitmap
+	pack $w.top.bitmap -side left -padx 3m -pady 3m
+    }
+    
+    # Create a list box for items
+    listbox $w.list -relief raised -yscrollcommand "$w.scroll set" \
+	    -width $listWidth -selectmode single
+    scrollbar $w.scroll -command "$w.list yview"
+    pack $w.list -in $w.listFrame -side left -fill x -expand 1
+    pack $w.scroll -in $w.listFrame -side right -fill y
+    if {$sort} {
+	set items [lsort $items]
+    }
+    foreach i $items {
+	$w.list insert end $i
+    }
+    $w.list selection set 0
+    
+    #########################Create labels and buttons as requested 
+    foreach label $labels {
+	# format of label is { text , width, value }
+	set text [lindex $label 0]
+	set width [lindex $label 1]
+	set value [lindex $label 2]
+	frame $w.info.p$label 
+	label $w.info.p$label.l -text $text -width $width -bd 1 \
+		-relief  raised
+	label $w.info.p$label.e -text $value -fg white \
+		-relief sunken -bd 1
+	pack $w.info.p$label.l  -side left -in $w.info.p$label 
+	pack $w.info.p$label.e $w.info.p$label.e -side left  \
+		-in $w.info.p$label \
+		-expand 1 -fill x
+	pack $w.info.p$label -side top -in $w.info -fill x
+#	puts "created $label"
+    }
+    if { $buttons != {} } {
+	set flag [lindex $buttons 0]
+	set width [lindex $buttons 1]
+	set rows [lindex $buttons 2]
+	set cols [lindex $buttons 3]
+	set order [lindex $buttons 4]
+	set buts [lrange $buttons 5 end]
+	set numButs [llength $buts] 
+	if { $numButs != 0 } {
+	    if { $cols == -1 } {
+		set cols [expr $numButs/$rows]
+	    } elseif { $rows == -1 } {
+		set rows [expr $numButs/$cols]
+	    } else {
+		set numButs [expr $rows * $cols]
+	    }
+	    frame $w.info.buttons -relief raised -bd 1
+	    pack $w.info.buttons -side bottom -in $w.info -fill x
+	    if { $order == "row" } {
+		set count1 $rows
+		set count2 $cols
+		set packframe "top"
+		set packbutton "left"
+	    } else {
+		set count1 $cols
+		set count2 $rows
+		set packframe "left"
+		set packbutton "top"
+	    }
+
+	    for { set i 0 } { $i < $count1 } { incr i 1 } {
+		frame $w.info.frame$i
+		pack $w.info.frame$i -side $packframe -in $w.info.buttons 
+	    }
+	    set row 0
+	    set col 0
+	    for { set i 0 } { $i < $numButs } { incr i 1 } {
+		set but [lindex $buts $i]
+		global but$i
+		set but$i [expr (($flag & ( 1 << $i)) != 0) ]
+		set val [expr (($flag & ( 1 << $i )) != 0) ]
+#		puts $val
+		checkbutton $w.info.frame$row.but$col -width 10 \
+			-text $but -variable but$i -anchor w 
+		pack $w.info.frame$row.but$col -side $packbutton -in  \
+			$w.info.frame$row
+		incr col 1
+		if { $col >= $count2 } {
+		    set col 0
+		    incr row 1
+		}
+	    }
+	}
+    }   
+    
+    # 3. Create a row of buttons at the bottom of the dialog.
+    
+    set i 0
+    foreach but $args {
+	button $w.bot.button$i -text $but -command\
+		    "set button $i"
+	if {$i == $default} {
+		frame $w.bot.default -relief sunken -bd 1
+	    raise $w.bot.button$i
+	    pack $w.bot.default -side left -expand 1 -fill x
+	    #					-padx 3m -pady 2m
+	    pack $w.bot.button$i -in $w.bot.default\
+		    -side left -expand 1 -fill x
+	    #					-padx 2m -pady 2m -ipadx 2m -ipady 1m
+	} else {
+	    pack $w.bot.button$i -side left -expand 1 -fill x
+	    #					-padx 3m -pady 3m -ipadx 2m -ipady 1m
+	}
+	incr i
+    }
+    
+    # 4. Set up a binding for <Return>, if there`s a default,
+    # set a grab, and claim the focus too.
+    
+    if {$default >= 0} {
+	bind $w <Return> "$w.bot.button$default flash; \
+		set button $default"
+    }
+    set oldFocus [focus]
+    grab set $w
+    focus $w
+    
+    # 5. Wait for the user to respond, then restore the focus
+    # and return the index of the selected button.
+    
+    tkwait variable button
+    
+    set index [ $w.list curselection ]
+    if { $index >= 0 } {
+	set dialogListVar(selected) [ $w.list get $index ]
+    } else {
+	set dialogListVar(selected) ""
+    }
+    
+    destroy $w
+    focus $oldFocus
+	return $button
+}

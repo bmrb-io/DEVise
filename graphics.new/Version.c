@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/01/31 19:04:18  wenger
+  Changed Devise version to 1.4.0.
+
+  Revision 1.25.4.1  1997/02/07 15:21:33  wenger
+  Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
+  window names); added axis toggling and color selections to Window menu;
+  other minor fixes to GUI; show command to Tasvir now requests image to
+  be shown all at once.
+
   Revision 1.25  1997/01/23 17:02:43  wenger
   Bumped version up to 1.3.0.
 

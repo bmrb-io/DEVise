@@ -1,4 +1,4 @@
-		Tasks for Devise 1.3.0 Release
+		Tasks for Devise 1.3.x Release
 			$Revision$
 
 x- "Freeze" sources
@@ -23,9 +23,22 @@ x- Change the Devise version number in the sources
     - Maybe commit SGI-related changes as a CVS branch
 !- Update online help
 a- Update user manual
-- Fix bug 148
-- Fix problem with mapping dialog not getting updated when user selects
-  a new view.
+
+x- Fix bug 148
+x- Fix problem with mapping dialog not getting updated when user selects
+  a new view.  (Bug 145, also on to-do list.)
+x- Fix bug 097.
+x- Add 'per-window' options (see to-do list, 2/6/97).
+x- Remove 'All Views' option from 'Toggle X Axis' and 'Toggle Y Axis'.
+x- Fix bug 154.
+x- Allow direct creation of a new window.
+x- Fix bug 155.
+x- Fix bug 156.
+x- Add GUI to delete session files.
+- Fix problem with Jussi's string table code.
+x- Fix bug 081.
+- Fix Miron's record ID bug.
+
 - Redo internal release and distribution file generation.
 - Update web page
 - Tag html and doc directories
@@ -34,6 +47,8 @@ a- Update user manual
   documentation.
 - Put 1.3.0 release on FTP site
 - Announce on devise-sup mailing list.
+
+- Merge 1.3 branch in CVS back into the main trunk.
 
 x = done
 ~ = almost done

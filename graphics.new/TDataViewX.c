@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.50.4.1  1997/02/09 20:14:11  wenger
+  Fixed bug 147 (or at least some instances of it) -- found a bug in the
+  query processor that caused it to miss records it should have found;
+  fixed bugs 151 and 153.
+
+  Revision 1.50  1997/01/23 17:40:04  jussi
+  Removed references to GetXMin().
+
   Revision 1.49  1997/01/14 15:48:23  wenger
   Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
   flexibility in overriding startup script default; fixed bug 116
@@ -440,8 +448,8 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
     for(int i = 0; i < numGData; i++) {
       // Extract X, Y, shape, and color information from gdata record
-      Coord x = GetX(tp, mapping, offset);
-      Coord y = GetY(tp, mapping, offset);
+      Coord x = ShapeGetX(tp, mapping, offset);
+      Coord y = ShapeGetY(tp, mapping, offset);
       ShapeID shape = GetShape(tp, mapping, offset);
       GlobalColor color = mapping->GetDefaultColor();
       if (offset->colorOffset >= 0)

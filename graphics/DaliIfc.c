@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.7.4.1  1997/02/07 15:21:19  wenger
+  Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
+  window names); added axis toggling and color selections to Window menu;
+  other minor fixes to GUI; show command to Tasvir now requests image to
+  be shown all at once.
+
+  Revision 1.7  1997/01/09 18:41:16  wenger
+  Added workarounds for some Tasvir image bugs, added debug code.
+
   Revision 1.6  1996/12/18 18:52:00  wenger
   Devise requests Tasvir not to use subwindows for its images; sizing of
   Tasvir images now basically works like a RectX, except that the aspect
@@ -130,7 +139,8 @@ DaliIfc::ShowImage(char *daliServer, Window win, int centerX,
   char commandBuf[DALI_MAX_STR_LENGTH];
   char replyBuf[DALI_MAX_STR_LENGTH];
 
-  sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking -nosubwin",
+  sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking -nosubwin"
+    " -showafter 0 -sync 0",
     filename, (long) win, topLeftX, topLeftY, botRightX, botRightY);
   if (image != NULL)
   {

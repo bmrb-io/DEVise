@@ -15,6 +15,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.3.4.1  1997/02/07 15:21:45  wenger
+#	Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
+#	window names); added axis toggling and color selections to Window menu;
+#	other minor fixes to GUI; show command to Tasvir now requests image to
+#	be shown all at once.
+#
+#	Revision 1.3  1995/09/22 17:33:43  jussi
+#	Added copyright message.
+#
 #	Revision 1.2  1995/09/05 22:47:59  jussi
 #	Added/updated CVS header.
 
@@ -53,10 +62,11 @@ proc dialogParam { w title text bitmap default args params } {
 
 	# 2. Fill the top part with the bitmap and message.
 
-    set txtWidth [LineWidth $text]
+        set txtWidth [LineWidth $text]
 	set txtHeight [LineHeight $text]
 	text $w.top.msg -width $txtWidth -height $txtHeight \
-			-font -*-*-medium-r-normal-*-140-*-*-m-*
+			-font -*-*-medium-r-normal-*-140-*-*-m-* \
+			-borderwidth 0
 	$w.top.msg insert end $text
 	$w.top.msg configure -state disabled
 

@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/02/03 19:45:35  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
+  Revision 1.15.4.1  1997/02/11 23:29:00  guangshu
+  Moved the definition of BStatList to ViewGraph in order to collect
+  statistics for scattered view.
+
   Revision 1.15  1996/11/26 16:51:39  ssl
   Added support for piled viws
 
@@ -87,8 +97,6 @@
 #include "TDataCMap.h"
 #include "Color.h"
 #include "DList.h"
-
-DefineDList(BStatList, BasicStats *)
 
 class TDataViewX: public ViewGraph, private QueryCallback,
 	private GDataBinCallback {

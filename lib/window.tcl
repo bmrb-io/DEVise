@@ -15,6 +15,38 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1997/02/03 20:02:03  ssl
+#  Added interface for negative record links and user defined layout mode
+#
+#  Revision 1.26.4.5  1997/02/11 16:00:24  wenger
+#  Commented out some debug code in the links stuff; added standard header
+#  to dialogInfo.tk.
+#
+#  Revision 1.26.4.4  1997/02/11 01:17:40  ssl
+#  Cleaned up the UI for piled views
+#  1) Made pile links invisible to user
+#  2) Added create/destroy link options to the link menu
+#  3) Enhanced the link info window to show all info about a link (type, views,
+#     master, link params )
+#  4) Pile links get removed when the pile is unpiled
+#  5) Set/Reset Master now only shows list of record links
+#
+#  Revision 1.26.4.3  1997/02/09 17:04:33  wenger
+#  Fixed bug 097 (duplicating a window now creates a new set of mappings for
+#  the views in the new window).
+#
+#  Revision 1.26.4.2  1997/02/08 02:08:43  ssl
+#  1)Fixed mapping dialog to update when selected view changes
+#  2)Removed  OK buttons and renamed Cancel to Close
+#  3)Added a Flip button which allows user to flip views whenever the view
+#    is a pile. NOT ENABLED FOR STACKs or other views.
+#
+#  Revision 1.26.4.1  1997/02/07 15:21:48  wenger
+#  Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
+#  window names); added axis toggling and color selections to Window menu;
+#  other minor fixes to GUI; show command to Tasvir now requests image to
+#  be shown all at once.
+#
 #  Revision 1.26  1997/01/27 22:39:38  wenger
 #  Fixed workaround to bug 137 so it doesn't mess things up in batch mode.
 #
@@ -115,7 +147,7 @@ proc RemoveWindow {win} {
     if {$win == ""} {
 	set winSet [ WinSet ]
 	set answer [ dialogList .window "Select Window" \
-		"Select window to remove" "" "" \
+		"Select window to destroy" "" "" \
 		{ OK Cancel } $winSet ]
 	if {$answer == 1  || $dialogListVar(selected) == ""} {
 	    return 
@@ -126,7 +158,7 @@ proc RemoveWindow {win} {
     set views [DEVise getWinViews $win]
     if {$views != ""} {
 	dialog .viewsInWindow "Views Still In Window" \
-		"Window contains views. Remove all views first." \
+		"Window contains views.  Remove or destroy all views first." \
 		"" 0 OK
 	return
     }
@@ -331,8 +363,28 @@ proc DupWindow {} {
 
 	set maps [DEVise getViewMappings $view]
 	foreach map $maps {
+            # Get the parameters for the existing mapping.
+	    set mapClass [GetClass mapping $map]
+            set params [DEVise getCreateParam mapping $mapClass $map]
+
+	    # Create a new (unique) name for the new mapping.
+	    set oldMapName [lindex $params 1]
+	    set newMapName [UniqueName $oldMapName]
+
+	    # Create a new mapping with the same parameters (except the
+	    # name) as the old one.
+	    set params [lreplace $params 1 1 $newMapName]
+            set cmd "DEVise create mapping $mapClass $params"
+	    set result [eval $cmd]
+	    if {$result == ""} {
+	        dialog .copyError "Mapping Error" \
+		    "Cannot create mapping." "" 0 OK
+		return
+	    }
+
+	    # Insert the new mapping into the new window.
             set legend [DEVise getMappingLegend $view $map]
-	    DEVise insertMapping $newView $map $legend
+	    DEVise insertMapping $newView $newMapName $legend
 	}
     }
 }
@@ -408,7 +460,11 @@ proc DoActualCreateWindow { winType } {
     if { $button == 1} {
 	return
     }
-    
+
+    set windowName [lindex $dialogParamVar(params) 0]
+    set windowName [UniqueName $windowName]
+    set dialogParamVar(params) [lreplace $dialogParamVar(params) 0 0 $windowName]
+
     set cmd "DEVise create window $winType $dialogParamVar(params)"
     set result [eval $cmd]
     if {$result == ""} {
@@ -709,7 +765,14 @@ proc DoWindowStackControl {} {
     pack .stack.bot -side top -pady 5m
 
     if {$curView != ""} {
-	.stack.title.text configure -text "View: $curView"
+	if { [DEVise getViewPileMode $curView] } { 
+	    set win [DEVise getViewWin $curView]
+	    set views [DEVise getWinViews $win]
+	    set topView [lindex $views end]
+	    .stack.title.text configure -text "Top View : $topView"
+	} else {
+	    .stack.title.text configure -text "Current View: $curView"
+	}
     }
 }
 
@@ -801,6 +864,12 @@ proc FlipStackedView {} {
     if {[lindex $layout 2]} {
         DEVise raiseView [lindex [DEVise getWinViews $win] 0]
     }    
+    set pileMode [DEVise getViewPileMode $curView]
+    if { $pileMode } {
+	set views [DEVise getWinViews $win]
+	UpdateMappingDialog .editMapping $curView
+	catch {.stack.title.text configure -text "Top View: [lindex $views end]"}
+    }
 }
 
 ############################################################
@@ -849,6 +918,11 @@ proc DoWindowPile {} {
 
     # set window to stacked mode
     DEVise setWindowLayout $win -1 -1 1
+    
+    set views [DEVise getWinViews $win]
+#    puts "Pile views : $views"
+    .stack.title.text configure -text "Top View: [lindex $views end]"
+    UpdateMappingDialog .editMapping $curView
 }
 
 ############################################################
@@ -859,7 +933,7 @@ proc DoWindowUnpile {} {
     if {![CurrentView]} {
 	return
     }
-
+    .stack.title.text configure -text "Current View: $curView"
     # no need to unpile if there are no views other than curView
     if {[llength [DEVise getWinViews [DEVise getViewWin $curView]]] < 2} {
 	return
@@ -892,12 +966,18 @@ proc DoWindowUnpile {} {
 	    }
         }
     }
-
+#    puts "pile links : $pileLinks"
+    foreach link $pileLinks  {
+	DEVise destroy $link
+    }
     # restore window layout
     set layout [DEVise getWindowLayout $win]
     set newLayout [list [lindex $layout 0] [lindex $layout 1] 0]
     eval DEVise setWindowLayout {$win} $newLayout
     DEVise refreshView $curView
+    DEVise highlightView $curView 1
+    UpdateMappingDialog .editMapping $curView
+
 }
 
 ############################################################
@@ -912,6 +992,10 @@ proc DoWindowStack {} {
     set win [DEVise getViewWin $curView]
     DEVise setWindowLayout $win -1 -1 1
     DEVise refreshView $curView
+    set views [DEVise getWinViews $win]
+#    puts "Stacking views $views, curView = $curView"
+    set topView [lindex $views 0]
+#    puts "Putting view $topView on top"
 }
 
 ############################################################
@@ -930,6 +1014,9 @@ proc DoWindowUnstack {} {
     foreach v [DEVise getWinViews $win] {
         DEVise refreshView $v
     }
+#    puts "Unstack : curView = $curView"
+    DEVise highlightView $curView 1
+    UpdateMappingDialog .editMapping $curView
 }
 
 ############################################################
@@ -951,3 +1038,24 @@ proc WinViewList {} {
 	dialogList .winViewList "View List" "Window $win Views" "" 0 {OK} $views
     }
 }
+
+############################################################
+
+proc DoToggleAxisWindow { axis } {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+
+    set stat [DEVise getAxisDisplay $curView $axis]
+    set stat [expr !$stat]
+
+    set viewList [DEVise getWinViews [DEVise getViewWin $curView]]
+
+    foreach viewName $viewList {
+        DEVise setAxisDisplay $viewName $axis $stat
+    }
+}
+
+############################################################

@@ -15,8 +15,47 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.116  1997/02/03 19:49:52  ssl
+#	Added UI for Layout Manager and negative record links
+#
 #	Revision 1.115  1997/02/03 04:12:37  donjerko
 #	Catalog management moved to DTE
+#
+#	Revision 1.114.4.7  1997/02/11 22:50:08  wenger
+#	Removed 'All Views' option from axis toggling menu selections.
+#
+#	Revision 1.114.4.6  1997/02/11 20:46:40  wenger
+#	Added GUI to delete session files; minor fix to release.bash.
+#
+#	Revision 1.114.4.5  1997/02/11 01:17:38  ssl
+#	Cleaned up the UI for piled views
+#	1) Made pile links invisible to user
+#	2) Added create/destroy link options to the link menu
+#	3) Enhanced the link info window to show all info about a link (type, views,
+#	   master, link params )
+#	4) Pile links get removed when the pile is unpiled
+#	5) Set/Reset Master now only shows list of record links
+#
+#	Revision 1.114.4.4  1997/02/10 23:54:23  wenger
+#	Moved view and window Destroy selections to the bottoms of the menus;
+#	added a direct means to create a new window; minor improvements to
+#	mapping dialog.
+#
+#	Revision 1.114.4.3  1997/02/09 16:14:20  wenger
+#	Cleaned up the data source GUI a little more (as per suggestions from
+#	Miron).
+#
+#	Revision 1.114.4.2  1997/02/08 02:08:41  ssl
+#	1)Fixed mapping dialog to update when selected view changes
+#	2)Removed  OK buttons and renamed Cancel to Close
+#	3)Added a Flip button which allows user to flip views whenever the view
+#	  is a pile. NOT ENABLED FOR STACKs or other views.
+#
+#	Revision 1.114.4.1  1997/02/07 15:21:43  wenger
+#	Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
+#	window names); added axis toggling and color selections to Window menu;
+#	other minor fixes to GUI; show command to Tasvir now requests image to
+#	be shown all at once.
 #
 #	Revision 1.114  1997/01/29 17:03:01  wenger
 #	Removed main help (but not help demo or history) from user interface.
@@ -534,6 +573,7 @@ if {![catch {set hostCfg $libdir/config.$env(HOSTNAME)}]} {
 source $libdir/dialog.tk
 source $libdir/FSBox.tk
 source $libdir/dialogList.tk
+source $libdir/dialogInfo.tk
 source $libdir/dialogParam.tk
 source $libdir/dialogCkBut.tk
 source $libdir/dialogMapping.tk
@@ -666,6 +706,11 @@ menu .mbar.session.menu.exportMenu -tearoff 0
 	-command {DoSaveAs 0 1 1 0}
 .mbar.session.menu add command -label "Merge Template" \
 	-command {DoTemplateMerge}
+
+.mbar.session.menu add separator
+.mbar.session.menu add command -label "Delete Session" \
+	-command {DoDelete}
+
 .mbar.session.menu add separator
 .mbar.session.menu add command -label "Add Replica" -command { AddReplica }
 .mbar.session.menu add command -label "Remove Replica" \
@@ -906,18 +951,29 @@ menu .mbar.gdata.menu -tearoff 0
 
 menu .mbar.view.menu -tearoff 0
 
-#.mbar.view.menu add command -label "XAxis" -command { DoViewAxis x }
-#.mbar.view.menu add command -label "YAxis" -command { DoViewAxis y }
-.mbar.view.menu add cascade -label "Toggle X Axis" \
-	-menu .mbar.view.menu.xaxismenu
-.mbar.view.menu add cascade -label "Toggle Y Axis" \
-	-menu .mbar.view.menu.yaxismenu
+.mbar.view.menu add command -label "Toggle X Axis" \
+	-command { DoToggleAxis X }
+.mbar.view.menu add command -label "Toggle Y Axis" \
+	-command { DoToggleAxis Y }
+.mbar.view.menu add command -label "Foreground..." \
+	-command { DoSetFgBgColor 1 0 }
+.mbar.view.menu add command -label "Background..." \
+	-command { DoSetFgBgColor 0 0 }
+
+.mbar.view.menu add separator
+.mbar.view.menu add command -label "Title" -command DoSetTitle
+.mbar.view.menu add cascade -label "Fonts" -menu .mbar.view.menu.fontsmenu
 
 .mbar.view.menu add separator
 .mbar.view.menu add cascade -label "Links" \
 	-menu .mbar.view.menu.linkMenu 
 
 menu .mbar.view.menu.linkMenu -tearoff 0
+.mbar.view.menu.linkMenu add command -label "Create Link" \
+	-command { DoLinkCreate } 
+.mbar.view.menu.linkMenu add command -label "Destroy Link" \
+	-command { DoLinkDestroy }
+.mbar.view.menu.linkMenu add separator
 .mbar.view.menu.linkMenu add command -label "Link" -command DoViewLink
 .mbar.view.menu.linkMenu add command -label "Unlink" -command DoViewUnlink
 .mbar.view.menu.linkMenu add separator
@@ -928,14 +984,9 @@ menu .mbar.view.menu.linkMenu -tearoff 0
 .mbar.view.menu.linkMenu add command -label "Set Link Type" \
 	-command { DoSetLinkType }
 
-.mbar.view.menu add separator
-.mbar.view.menu add cascade -label "Cursor" \
+#.mbar.view.menu add separator
+.mbar.view.menu add cascade -label "Cursors" \
 	-menu .mbar.view.menu.cursorMenu 
-.mbar.view.menu add separator
-.mbar.view.menu add command -label "Destroy View" -command {
-    global curView
-    DestroyView $curView
-}
 
 
 menu .mbar.view.menu.cursorMenu -tearoff 0
@@ -955,29 +1006,31 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 .mbar.view.menu add command -label "Color Statistics" -command { DoColorStat }
 .mbar.view.menu add cascade -label "Kiviat Graph" -menu .mbar.view.menu.kmenu
 .mbar.view.menu add separator
-.mbar.view.menu add command -label "Foreground..." -command DoSetFgColor
-.mbar.view.menu add command -label "Background..." -command DoSetBgColor
-.mbar.view.menu add cascade -label "Fonts" -menu .mbar.view.menu.fontsmenu
 .mbar.view.menu add cascade -label "Dimensions" -menu .mbar.view.menu.dimmenu
-.mbar.view.menu add command -label "Title" -command DoSetTitle
 .mbar.view.menu add command -label "Color Override" -command DoSetOverrideColor
 .mbar.view.menu add command -label "3D Query" -command Do3DQuery
+
+.mbar.view.menu add separator
+.mbar.view.menu add command -label "Destroy" -command {
+    global curView
+    DestroyView $curView
+}
 
 #.mbar.view.menu add command -label "Action" -command DoViewAction
 #.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap
 #.mbar.view.menu add command -label "Load Pixmap" -command DoLoadPixmap
 
-menu .mbar.view.menu.xaxismenu -tearoff 0 
-.mbar.view.menu.xaxismenu add command -label "Current View"  \
-	-command { DoToggleAxis X }
-.mbar.view.menu.xaxismenu add command -label "All Views" \
-	-command { DoToggleAxisAllViews X }
+#menu .mbar.view.menu.xaxismenu -tearoff 0 
+#.mbar.view.menu.xaxismenu add command -label "Current View"  \
+#	-command { DoToggleAxis X }
+#.mbar.view.menu.xaxismenu add command -label "All Views" \
+#	-command { DoToggleAxisAllViews X }
 
-menu .mbar.view.menu.yaxismenu -tearoff 0 
-.mbar.view.menu.yaxismenu add command -label "Current View" \
-	-command { DoToggleAxis Y }
-.mbar.view.menu.yaxismenu add command -label "All Views" \
-	-command { DoToggleAxisAllViews Y }
+#menu .mbar.view.menu.yaxismenu -tearoff 0 
+#.mbar.view.menu.yaxismenu add command -label "Current View" \
+#	-command { DoToggleAxis Y }
+#.mbar.view.menu.yaxismenu add command -label "All Views" \
+#	-command { DoToggleAxisAllViews Y }
 
 menu .mbar.view.menu.kmenu -tearoff 1
 .mbar.view.menu.kmenu add radiobutton -label Mean -variable kval -value 0
@@ -1015,6 +1068,24 @@ menu .mbar.view.menu.dimmenu -tearoff 0
 	-command { DoSetViewDimensions 3 }
 
 menu .mbar.window.menu -tearoff 0
+.mbar.window.menu add command -label "Toggle X Axis" \
+    -command { DoToggleAxisWindow X }
+.mbar.window.menu add command -label "Toggle Y Axis" \
+    -command { DoToggleAxisWindow Y }
+.mbar.window.menu add command -label "Foreground..." \
+    -command { DoSetFgBgColor 1 1 }
+.mbar.window.menu add command -label "Background..." \
+    -command { DoSetFgBgColor 0 1 }
+
+# We probably should add these functions to the window menu eventually,
+# but I don't want to deal with them right now.  RKW 2/7/97.
+#.mbar.window.menu add separator
+#.mbar.window.menu add command -label "Title"
+#.mbar.window.menu add cascade -label "Fonts"
+
+.mbar.window.menu add separator
+.mbar.window.menu add command -label "New" \
+    -command { set tmp [DoCreateWindow "Select window type"]; unset tmp }
 .mbar.window.menu add command -label "Layout" -command { SetWindowLayout "" }
 .mbar.window.menu add command -label "Layout-Manager" -command { RootLayout }
 .mbar.window.menu add command -label "Remove" -command { RemoveWindow "" }
@@ -1034,6 +1105,9 @@ menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Bring View Back" -command DoBringView
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "View List" -command WinViewList
+
+.mbar.window.menu add separator
+.mbar.window.menu add command -label "Destroy" -command { RemoveWindow "" }
 
 menu .mbar.help.menu -tearoff 0
 .mbar.help.menu add command -label "Demo" -command DoDemo
@@ -1057,10 +1131,12 @@ pack .panel.messages -side left -expand 0 -fill y
 button .panel.query.button -text "Query" -width 7 -relief raised \
 	-font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
 	-highlightthickness 0 -bd 3 -command { SetQuery }
+
 button .panel.query.button2 -text "Mapping" -width 7 -relief raised \
 	-font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
 	-highlightthickness 0 -bd 3 -command { DoEditMapping } \
 	-state disabled
+
 
 pack .panel.query.button .panel.query.button2 -side top -padx 2m -pady 1m
 
@@ -1194,82 +1270,70 @@ proc FindDefaultXAttr { attrs } {
     }
 }
 
+#SSL - new mapping box implementation
 # Do editing for mapping
-proc DoEditMapping {} {
-    global curView
-
-    if {![CurrentView]} {
-	return
-    }
-    
-    if {[WindowVisible .editMapping]}  {
-	return
-    }
-    
-    # Get mapping for the view (first one)
-    set map [lindex [DEVise getViewMappings $curView] 0]
-    
-    # See if map is interpreted
-    set found 0
-    foreach m [InterpretedGData] {
-	if {$m == $map} {
-	    set found 1
-	    break
-	}
-    }
-    if {!$found} {
-	dialog .editError "Mapping Not Interpreted" \
-		"View has a compiled mapping which cannot be edited." "" 0 OK
-	return
-    }
-    
-    EditMapping $map     
-}
-
-
-proc EditMapping { map } {
-    global sourceList derivedSourceList
-
-    # Get parameters for the mapping
-    set params [DEVise getInstParam $map]
-    
-    if {$params == ""} {
-	dialog .editError "No Mapping Parameters" \
-		"Mapping has no parameters." "" 0 OK
-	return
-    }
-    
-    set tdata [lindex [lindex $params 0] 1]
-    
-	set catEntry [DEVise dteShowCatalogEntry $tdata]
-	set catEntry [lindex $catEntry 0]
-	set entryType [lindex $catEntry 1]
-	if {$catEntry == ""} {
-		set sfname [lindex $derivedSourceList($tdata) 3]
-		set schemaname [file tail $sfname]
-	} elseif {[isDTEType $entryType]} {
-		set schemaname $tdata
-	} else {
-		set sfname [lindex $catEntry 4]
-		set schemaname [file tail $sfname]
-	}
-
-#   set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
-#   if {$err > 0} {
-#	set sfname [lindex $derivedSourceList($tdata) 3]
-#   }
-#   set schemaname [file tail $sfname]
-
-    # set attrs [DEVise getSchema $tdata]
-    
-    dialogMapping .editMapping "Edit Mapping" \
-	    "Edit Mapping" ""   \
-	    $schemaname \
-	    $params \
-	    $map \
-	    0
-}
-
+#proc DoEditMapping {} {
+#    global curView
+#
+#    if {![CurrentView]} {
+#	 return
+#    }
+#    
+#    if {[WindowVisible .editMapping]}  {
+#	 return
+#    }
+#    
+#    # Get mapping for the view (first one)
+#    set map [lindex [DEVise getViewMappings $curView] 0]
+#    
+#    # See if map is interpreted
+#    set found 0
+#    foreach m [InterpretedGData] {
+#	 if {$m == $map} {
+#	     set found 1
+#	     break
+#	 }
+#    }
+#    if {!$found} {
+#	 dialog .editError "Mapping Not Interpreted" \
+#		 "View has a compiled mapping which cannot be edited." "" 0 OK
+#	 return
+#    }
+#    
+#    EditMapping $map     
+#}
+#
+#
+#proc EditMapping { map } {
+#    global sourceList derivedSourceList
+#
+#    # Get parameters for the mapping
+#    set params [DEVise getInstParam $map]
+#    
+#    if {$params == ""} {
+#	 dialog .editError "No Mapping Parameters" \
+#		 "Mapping has no parameters." "" 0 OK
+#	 return
+#    }
+#    
+#    set tdata [lindex [lindex $params 0] 1]
+#    
+#    set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
+#    if {$err > 0} {
+#	 set sfname [lindex $derivedSourceList($tdata) 3]
+#    }
+#    set schemaname [file tail $sfname]
+#
+#    # set attrs [DEVise getSchema $tdata]
+#    
+#    dialogMapping .editMapping "Edit Mapping" \
+#	     "Edit Mapping" ""   \
+#	     $schemaname \
+#	     $params \
+#	     $map \
+#	     0
+#}
+#
 
 # Close current session
 proc DoClose {{askUser 1}} {
@@ -1361,6 +1425,26 @@ proc DoOpen { asTemplate } {
     } else {
 	puts "Could not restore session"
         puts $errorInfo
+    }
+}
+
+# Allow user to delete a session file.
+proc DoDelete {} {
+    global fsBox sessiondir
+
+    # Get a session file name
+    set fsBox(path) $sessiondir
+    set fsBox(pattern) *.tk
+    set file [ FSBox "Select session file to DELETE" ]
+    
+    if {$file == ""} {
+	return
+    }
+
+    set but [dialog .open "Delete Session" "Delete the session file $file?" \
+	"" 0 Delete Cancel ]
+    if {$but == 0} {
+	exec rm $file
     }
 }
 

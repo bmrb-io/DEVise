@@ -15,6 +15,19 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.56  1997/02/03 04:12:42  donjerko
+#	Catalog management moved to DTE
+#
+#	Revision 1.55.4.2  1997/02/09 16:14:47  wenger
+#	Cleaned up the data source GUI a little more (as per suggestions from
+#	Miron).
+#
+#	Revision 1.55.4.1  1997/02/07 15:21:45  wenger
+#	Updated Devise version to 1.3.1; fixed bug 148 (GUI now forces unique
+#	window names); added axis toggling and color selections to Window menu;
+#	other minor fixes to GUI; show command to Tasvir now requests image to
+#	be shown all at once.
+#
 #	Revision 1.55  1997/01/30 17:25:42  wenger
 #	Removed all data source types except UNIXFILE and WWW.
 #

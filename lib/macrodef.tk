@@ -15,6 +15,13 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.72  1997/02/03 04:12:38  donjerko
+#	Catalog management moved to DTE
+#
+#	Revision 1.71.4.1  1997/02/09 16:14:45  wenger
+#	Cleaned up the data source GUI a little more (as per suggestions from
+#	Miron).
+#
 #	Revision 1.71  1997/01/06 19:12:04  wenger
 #	Fixed the relative positions of 'OK' and 'Cancel' buttons on a number of
 #	windows; view names now start with 'View 1' instead of 'View'; removed
@@ -731,8 +738,8 @@ proc MacroImport {mode derivedOnly} {
 	if {[llength $tdataSet] >= 0} {
 	    set answer [ dialogList .selectTData "Visualize Data Stream"  \
 		    "Select a data stream" \
-		    "" 0 { OK New Cancel } $tdataSet ]
-	    if {$answer == 2 || $dialogListVar(selected) == ""} {
+		    "" 0 { OK Cancel } $tdataSet ]
+	    if {$answer == 1 || $dialogListVar(selected) == ""} {
 		return
 	    }
 	    if {$answer == 0} { 

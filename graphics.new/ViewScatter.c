@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.29.4.2  1997/02/11 23:26:50  guangshu
+  Added statistics for scattered view.
+
+  Revision 1.29.4.1  1997/02/09 20:14:12  wenger
+  Fixed bug 147 (or at least some instances of it) -- found a bug in the
+  query processor that caused it to miss records it should have found;
+  fixed bugs 151 and 153.
+
+  Revision 1.29  1997/01/11 23:04:32  jussi
+  Changed code to use GetFirstSibling().
+
   Revision 1.28  1996/12/18 22:12:13  beyer
   Query abort (especially for statistical views) bug fixed.
 
@@ -152,6 +163,16 @@ ViewScatter::~ViewScatter()
   // before this destructor exits, or members needed to do the abort
   // will no longer be defined.
   SubClassUnmapped();
+
+  int index = _blist.InitIterator();
+  while (_blist.More(index)) {
+    delete _blist.Next(index);
+  }
+  _blist.DoneIterator(index);
+  _blist.DeleteAll();
+  _gstat.Clear();
+  _glist.DeleteAll();
+
 }
 
 void ViewScatter::InsertMapping(TDataMap *map)
@@ -167,8 +188,17 @@ void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
   for(int i = 0; i < MAXCOLOR; i++)
     _stats[i].Init(this);
 
+  int index = _blist.InitIterator();
+  while (_blist.More(index)) {
+    delete _blist.Next(index);
+  }
+  _blist.DoneIterator(index);
+  _blist.DeleteAll();
+  _gstat.Clear();     /* Clear the hashtable and calculate it again */
+  _glist.DeleteAll(); /* Clear the gdata list */
+
   // Initialize record links whose master this view is
-  int index = _masterLink.InitIterator();
+  index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
     RecordLink *link = _masterLink.Next(index);
     link->Initialize();
@@ -261,8 +291,8 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
   for(int i = 0; i < numGData; i++) {
 
     // Extract X, Y, shape, and color information from gdata record
-    Coord x = GetX(ptr, mapping, offset);
-    Coord y = GetY(ptr, mapping, offset);
+    Coord x = ShapeGetX(ptr, mapping, offset);
+    Coord y = ShapeGetY(ptr, mapping, offset);
     ShapeID shape = GetShape(ptr, mapping, offset);
 #if 0
     Coord width  = GetWidth(ptr, mapping, offset);
@@ -286,6 +316,23 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       if (color < MAXCOLOR)
 	_stats[color].Sample(x, y);
       _allStats.Sample(x, y);
+      _allStats.Histogram(y);
+
+      if(_glist.Size() <= MAX_GSTAT) {
+          int X = (int) x;
+          BasicStats *bs;
+          if(_gstat.Lookup(X, bs)) {
+              bs->Sample(x,y);
+          } else {
+              bs = new BasicStats();
+              DOASSERT(bs, "Out of memory");
+              bs->Init(0);
+              _glist.InsertOrderly(X, 1);
+              bs->Sample(x, y);
+              _gstat.Insert(X, bs);
+              _blist.Insert(bs);
+          }
+        }
     }
 
     // Contiguous ranges which match the filter''s X and Y range

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/02/03 19:45:38  ssl
+  1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
+  2) ViewLens.[Ch] : new implementation of piled views
+  3) ParseAPI.C : new API for ViewLens, negative record links and layout
+     manager
+
   Revision 1.3  1996/12/03 15:20:03  wenger
   Conditionaled out some debug code.
 
@@ -529,8 +535,8 @@ void ViewLens::ReturnGData(TDataMap *mapping, RecId recId,
   int firstRec = 0;
   for(int i = 0; i < numGData; i++) {
     // Extract X, Y, shape, and color information from gdata record
-    Coord x = GetX(ptr, mapping, offset);
-    Coord y = GetY(ptr, mapping, offset);
+    Coord x = ShapeGetX(ptr, mapping, offset);
+    Coord y = ShapeGetY(ptr, mapping, offset);
     ShapeID shape = GetShape(ptr, mapping, offset);
 
     GlobalColor color = mapping->GetDefaultColor();

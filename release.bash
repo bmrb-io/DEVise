@@ -13,4 +13,4 @@ cp run_public/devise.etk /p/devise/run
 
 tar cv --exclude=CVS public | tar xv --directory=/p/devise
 
-cp run_public/devise $target/devisepub
+cp run_public/devise /p/devise/public/devisepub

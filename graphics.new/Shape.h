@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.26.4.1  1997/02/09 20:14:11  wenger
+  Fixed bug 147 (or at least some instances of it) -- found a bug in the
+  query processor that caused it to miss records it should have found;
+  fixed bugs 151 and 153.
+
+  Revision 1.26  1996/11/23 21:05:46  jussi
+  Made randomized square centered at X,Y.
+
   Revision 1.25  1996/11/21 01:24:39  jussi
   Changed shape of cloud from oval to rectangular.
 
@@ -133,14 +141,14 @@ inline RecId GetRecId(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   return GetAttr(ptr, recidOffset, RecId, offset);
 }
 
-inline Coord GetX(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+inline Coord ShapeGetX(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
   if (offset->xOffset < 0)
     return map->GetDefaultX();
   return GetAttr(ptr, xOffset, Coord, offset);
 }
 
-inline Coord GetY(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+inline Coord ShapeGetY(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
   if (offset->yOffset < 0)
     return map->GetDefaultY();
@@ -296,8 +304,8 @@ class Shape {
     while (i < numSyms) {
       char *gdata = (char *)gdataArray[i];
       int count = 1;
-      _x[0] = GetX(gdata, map, offset);
-      _y[0] = GetY(gdata, map, offset);
+      _x[0] = ShapeGetX(gdata, map, offset);
+      _y[0] = ShapeGetY(gdata, map, offset);
       GlobalColor firstColor = GetColor(view, gdata, map, offset);
       
       int colorIndex;
@@ -305,8 +313,8 @@ class Shape {
 	char *colorGData = (char *)gdataArray[colorIndex];
 	if (GetColor(view, colorGData, map, offset) != firstColor)
 	  break;
-	_x[count] = GetX(colorGData, map, offset);
-	_y[count] = GetY(colorGData, map, offset);
+	_x[count] = ShapeGetX(colorGData, map, offset);
+	_y[count] = ShapeGetY(colorGData, map, offset);
         count++;
       }
       
