@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.126  1997/03/21 20:21:15  donjerko
+#	Fixed the problem with visualizing UNIXFILE
+#
 #	Revision 1.125  1997/03/20 22:29:50  guangshu
 #	Changed statistics user interface.
 #
@@ -1425,7 +1428,7 @@ proc DoClose {{askUser 1}} {
 	}
     }	
     
-    if {$askUser } {
+    if {$askUser && [SessionIsOpen]} {
       set but [dialog .open "Close Session" "Close Current Session?" \
 	    "" 0 OK Cancel ]
     } else {
@@ -1459,7 +1462,7 @@ proc DoClose {{askUser 1}} {
 proc DoOpen { asTemplate } {
     global fsBox sessiondir restoring template sessionName errorInfo
 
-    if {[DEVise getWinCount] > 1 && ![DoClose]} {
+    if {[SessionIsOpen] && ![DoClose]} {
 	# abort opening a new session
 	return
     }
@@ -1467,7 +1470,7 @@ proc DoOpen { asTemplate } {
     # Get a session file name
     set fsBox(path) $sessiondir
     set fsBox(pattern) *.tk
-    set file [ FSBox "Select session file" ]
+    set file [ FSBox "Select session file to open" ]
     
     if {$file == ""} {
 	return
@@ -1698,6 +1701,7 @@ proc DoSwitchTData {} {
 ############################################################
 
 proc GetTDataTemplate {type total num} {
+#TEMPTEMP -- this doesn't work
     global sourceList
 
     while {1} {

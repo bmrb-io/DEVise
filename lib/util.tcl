@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.46  1997/04/21 23:11:02  guangshu
+#  Improved code of UniqueName.
+#
 #  Revision 1.45  1997/03/25 17:59:42  wenger
 #  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 #
@@ -561,9 +564,13 @@ proc PrintCategory { category } {
 ############################################################
 
 proc DoExit {} {
-    set answer [ dialog .quit "Quit" \
-	    "Are you sure you want to quit?" "" 0 \
-	    { OK } { Cancel} ]
+    if {[SessionIsOpen]} {
+      set answer [ dialog .quit "Quit" \
+	      "Are you sure you want to quit?" "" 0 \
+	      { OK } { Cancel} ]
+    } else {
+      set answer 0
+    }
     if { $answer == 0 } {
 	DEVise exit
 	destroy .
@@ -658,9 +665,7 @@ proc PrintViewSetUp {} {
     
     set toprinter 1
     set printcmd "lpr "
-#    set filename "/tmp/devise"
-#    set filename "/local.doc/oldstuff/coral/newrun/northeast/age_sex/out/"
-    set filename "/u/g/u/guangshu/public/html/pictures/demo/"
+    set filename "/tmp/devise"
     set printsrc 0 
 
     frame .printdef.top -relief groove -borderwidth 2
@@ -1004,3 +1009,29 @@ proc lsortCase {l} {
     return [lsort -command stringCaseCmp $l];
 }
 
+############################################################
+
+# Returns 1 if a session if open, 0 otherwise.
+# Note: there may be some small possibility that DEVise could have
+# some session objects and this procedure could still return 0.
+# However, I think that chance is pretty small.  RKW 4/29/97.
+
+proc SessionIsOpen {} {
+
+    # Check whether we have any windows other than the main window.
+    if {[DEVise getWinCount] > 1} {
+      return 1
+    } else {
+      # Check whether we have any TDatas.
+      set tDataCount 0
+      foreach class [DEVise get tdata] {
+        incr tDataCount [llength [DEVise get tdata $class]]
+      }
+
+      if {$tDataCount > 0} {
+	return 1
+      } else {
+	return 0
+      }
+    }
+}

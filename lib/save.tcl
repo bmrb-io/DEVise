@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.34  1997/04/21 23:07:57  guangshu
+#  Save statistics (In memory and by DTE) with session.
+#
 #  Revision 1.33  1997/04/14 20:46:03  donjerko
 #  DTE files are recognized as one begining with "." but not with "./".
 #
@@ -474,6 +477,11 @@ proc DoSave {} {
 
 proc DoSaveAs { asTemplate asExport withData asBatchScript } {
     global sessionName fsBox sessiondir templateMode
+
+    if {![SessionIsOpen]} {
+      puts "No session open -- save not allowed"
+      return
+    }
 
     # Get file name
     set fsBox(path) $sessiondir
