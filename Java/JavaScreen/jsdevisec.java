@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.75  2001/01/30 03:00:09  xuk
+// Add "Collaboration" button for collabration JavaScreen.
+// Add specialID for collabrated JS ID.
+//
 // Revision 1.74  2001/01/25 19:40:34  wenger
 // Added mode switching capability to the jsb (embedded) form of the client.
 //
@@ -194,7 +198,7 @@ public class jsdevisec extends Panel
     private Button helpButton = new Button("Help");
     private Label commMode = new Label("");
     private Button modeButton = new Button("Mode");
-    private Button collabButton = new Button("Collabrate");
+    private Button collabButton = new Button("Collaborate");
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
