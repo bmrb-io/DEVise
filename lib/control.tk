@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.46  1996/01/13 23:09:13  jussi
+#	Added support for Z attribute and shape attribute 2.
+#
 #	Revision 1.45  1996/01/13 21:03:50  jussi
 #	Default .rc file is now devise.rc. Session files are now smarter
 #	about the TDatas they try to open; the absolute pathnames are no
@@ -415,9 +418,13 @@ menu .mbar.file.menu -tearoff 0
 #.mbar.file.menu add separator
 #.mbar.file.menu add command -label "Sources..." -command NotImplemented
 .mbar.file.menu add separator
-.mbar.file.menu add command -label "File" -command DoVisualizeFile
-.mbar.file.menu add command -label "TData" -command DoVisualizeTData
-.mbar.file.menu add command -label "GData" -command DoVisualizeGData
+.mbar.file.menu add cascade -label "Obsolete..." \
+	-menu .mbar.file.menu.obsmenu
+
+menu .mbar.file.menu.obsmenu -tearoff 0
+.mbar.file.menu.obsmenu add command -label "File" -command DoVisualizeFile
+.mbar.file.menu.obsmenu add command -label "TData" -command DoVisualizeTData
+.mbar.file.menu.obsmenu add command -label "GData" -command DoVisualizeGData
 
 menu .mbar.view.menu -tearoff 0
 .mbar.view.menu add command -label "Edit Mapping" -command DoEditMapping
