@@ -46,7 +46,7 @@ BufMgrObj = BufMgr.o BufMgrNull.o VoidArray.o  RangeInfo.o RecRange.o \
 # query processor
 
 QPSrc= CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
-	Bitmap.c ParseCat.c \
+	Bitmap.c ParseCat.c Group.C GroupDir.C ItemList.C\
 	DispQueryProc.c QueryProc.c QueryProcSimple.c QueryProcFull.c \
 	RecInterp.c TDataAsciiInterp.c TDataMap.c \
 	TDataMapDispatch.c GDataBin.c GDataBinX.c TDataAscii.c \
@@ -56,7 +56,7 @@ QPSrc= CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ViewClassInfo.c
 
 QPObj=  CompositeParser.o MappingInterp.o MapInterpClassInfo.o \
-	Bitmap.o DispQueryProc.o ParseCat.o \
+	Bitmap.o DispQueryProc.o ParseCat.o Group.o GroupDir.o ItemList.o\
 	QueryProc.o QueryProcSimple.o QueryProcFull.o \
 	RecInterp.o TDataAsciiInterp.o TDataMap.o \
 	TDataMapDispatch.o GDataBin.o GDataBinX.o TDataAscii.o \
