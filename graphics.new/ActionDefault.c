@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/05/07 16:36:32  jussi
+  Changed type of view parameter from View * to ViewGraph *.
+  Added handling of keypad number 5 (autoscale view).
+
   Revision 1.13  1996/04/23 21:58:23  jussi
   A scatter plot now uses both Y and X coordinates when executing
   a TData query.
@@ -163,7 +167,7 @@ void ActionDefault::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
     view->SetVisualFilter(filter);
   }
 
-  else if (!isScatterPlot && (key == 'z' || key == 'Z' || key == '9')) {
+  else if (!isScatterPlot && key == '9') {
     /* zoom out */
     view->GetVisualFilter(filter);
     Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
