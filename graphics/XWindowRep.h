@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.38  1997/01/09 18:41:21  wenger
+  Added workarounds for some Tasvir image bugs, added debug code.
+
   Revision 1.37  1996/12/30 23:51:15  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -176,8 +179,10 @@ DefinePtrDList(XWindowRepList, XWindowRep *);
 DefineDList(DaliImageList, int);
 #endif
 
+#ifndef LIBCS
 // List of embedded Tk window handles
 DefineDList(ETkWinList, int);
+#endif
 
 /* Bitmap info */
 struct XBitmapInfo {
@@ -217,6 +222,9 @@ public:
 	/* Flush windowRep's content to display */
 	virtual void Flush();
 
+	/* Find out whether window has backing store. */
+	virtual Boolean HasBackingStore();
+
 	/* Move and resize window, relative to the parent */
 	virtual void MoveResize(int x, int y, unsigned w, unsigned h);
 
@@ -245,6 +253,7 @@ public:
 	virtual int DaliImageCount() { return _daliImages.Size(); };
 #endif
 
+#ifndef LIBCS
 	/* Display embedded Tk windows */
 	virtual void SetETkServer(char *serverName)
 	{
@@ -265,6 +274,7 @@ public:
 	{
 	    return _etkWindows.Size();
 	}
+#endif
 
 	/* drawing primitives */
 	/* Return TRUE if window is scrollable */
@@ -510,10 +520,12 @@ private:
 	char *_daliServer;
 #endif
 
+#ifndef LIBCS
 	// List of embedded Tk windows
 	ETkWinList _etkWindows;
 	// Machine on which embedded Tk server is running
 	char *_etkServer;
+#endif
 	
 };
 

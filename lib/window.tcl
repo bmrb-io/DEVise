@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16  1997/01/08 18:56:51  wenger
+#  Added 'View List' selection to window menu (gives a list of the views
+#  in the window containing the selected view, especially useful for
+#  piled views); fixed OK/Cancel in Remove Window dialog.
+#
 #  Revision 1.15  1996/11/26 17:25:22  ssl
 #  added support for stacked views
 #
@@ -83,7 +88,6 @@ proc RemoveWindow {win} {
 
     set views [DEVise getWinViews $win]
     if {$views != ""} {
-puts "DIAG views = $views"
 	dialog .viewsInWindow "Views Still In Window" \
 		"Window contains views. Remove all views first." \
 		"" 0 OK

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/03 23:29:09  wenger
+  Fixed PostScript bounding box to closely surround the image (fixed
+  bug 089).
+
   Revision 1.11  1996/12/02 18:39:38  wenger
   Removed limits on maximum PostScript page size.
 
@@ -283,8 +287,9 @@ void PSDisplay::PrintPSHeader(char *title, Coord winWidth,
   fprintf(_printFile, "%%%%Page: 1 1\n");
 
 
-  /* Print a procedure to draw a filled rectangle. */
-  fprintf(_printFile, "/DevFillRect  %% stack: x1, y1, x2, y2\n");
+  /* Print a procedure to create a rectangular path (to be stroked or
+   * filled). */
+  fprintf(_printFile, "/DevRect  %% stack: x1, y1, x2, y2\n");
   fprintf(_printFile, "{ newpath\n");
   fprintf(_printFile, "/y2 exch def\n");
   fprintf(_printFile, "/x2 exch def\n");
@@ -296,7 +301,6 @@ void PSDisplay::PrintPSHeader(char *title, Coord winWidth,
   fprintf(_printFile, "x2 y1 lineto\n");
   fprintf(_printFile, "x1 y1 lineto\n");
   fprintf(_printFile, "closepath\n");
-  fprintf(_printFile, "fill\n");
   fprintf(_printFile, "} def\n");
 
 

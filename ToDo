@@ -325,6 +325,9 @@ be shown automatically if there are no windows existing. (ma/rkw 1/15/97)
 The Devise documentation should have an explicit list of the steps needed
 to go from a raw data file to a Devise visualization. (ma/rkw 1/15/97)
 
+Perhaps add 'Edit' and 'Close' buttons to the 'Active Tables' dialog.
+(rkw 1/15/97)
+
 
 COMPLETED
 ---------

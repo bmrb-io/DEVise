@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/12/30 23:51:10  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.16  1996/12/20 18:43:29  wenger
   Unfilled arcs and variable line widths now work in PostScript output.
 
@@ -144,6 +149,7 @@ public:
     /* export window image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
 
+#ifndef LIBCS
     /* Display embedded Tk (ETk) windows */
     virtual void SetETkServer(char *serverName) {
 	reportError("Can't do SetETkServer() on this WindowRep object",
@@ -190,6 +196,7 @@ public:
     virtual int ETk_WindowCount() {
 	return 0;
     }
+#endif
     
     /* drawing primitives */
     /* Return TRUE if window is scrollable */
@@ -357,6 +364,12 @@ private:
 
     /* "Pixel" to point transform. */
     Transform2D _pixToPointTrans;
+
+    /* Save old foreground color when changing current foreground color
+     * to try to simulate XOR. */
+    GlobalColor _oldFgndColor;
+
+    Boolean _xorMode;
 
 #ifdef LIBCS
     RgbVals _foreground;

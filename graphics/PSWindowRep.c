@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/01/13 18:07:49  wenger
+  Fixed bugs 043, 083, 084, 091, 114.
+
   Revision 1.18  1997/01/10 16:05:38  wenger
   Fixed bugs 090 and 108 (two instances of the same problem).
 
@@ -163,6 +166,8 @@ PSWindowRep::PSWindowRep(DeviseDisplay *display,
   _y = y;
   _width = width;
   _height = height;
+
+  _xorMode = false;
 
 #ifdef LIBCS
   ColorMgr::GetColorRgb(fgndColor, _foreground.red, _foreground.green,
@@ -367,6 +372,8 @@ void PSWindowRep::SetFgColor(GlobalColor fg)
 #endif
 
   WindowRep::SetFgColor(fg);
+  _oldFgndColor = fg;
+
 #ifdef GRAPHICS
   FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
   
@@ -919,7 +926,7 @@ void PSWindowRep::FillPoly(Point *pts, int pointCount)
   }
   fprintf(printFile, "%f %f lineto\n", pointArray[0].x, pointArray[0].y);
   fprintf(printFile, "closepath\n");
-  fprintf(printFile, "fill\n");
+  fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
 #endif
 }
 
@@ -1018,7 +1025,7 @@ void PSWindowRep::Arc(Coord xCenter, Coord yCenter, Coord horizDiam,
   fprintf(printFile, "closepath\n");
 
   if (fill) {
-    fprintf(printFile, "fill\n");
+    fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
   } else {
     fprintf(printFile, "stroke\n");
   }
@@ -1085,7 +1092,14 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
   TransPixToPoint(x1, y1, x1new, y1new);
   TransPixToPoint(x2, y2, x2new, y2new);
 
+  // Scale width to points.
+  Coord tx3, ty3, tx4, ty4;
+  TransPixToPoint(0.0, 0.0, tx3, ty3);
+  TransPixToPoint(width, 0.0, tx4, ty4);
+
+  fprintf(printFile, "%f setlinewidth\n", fabs(tx4 - tx3));
   DrawLine(printFile, x1new, y1new, x2new, y2new);
+  fprintf(printFile, "0 setlinewidth\n");
 #endif
 }
 
@@ -1250,7 +1264,7 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 		       Coord height, TextAlignment alignment,
 		       Boolean skipLeadingSpace)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("PSWindowRep::Text: %s at %.2f,%.2f,%.2f,%.2f\n",
 	 text, x, y, width, height);
 #endif
@@ -1297,15 +1311,25 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::SetXorMode()
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("PSWindowRep::SetXorMode\n");
 #endif
 
-//TEMPTEMP -- maybe turn off drawing or set some kind of pattern
+  if (_xorMode) return;
+
+  _xorMode = true;
 
 #ifdef GRAPHICS
-  reportErrNosys("PSWindowRep::SetXorMode() not yet implemented");
-  /* do something */
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+
+  _oldFgndColor = GetFgColor();
+
+  float red, green, blue;
+  ColorMgr::GetColorRgb(GetBgColor(), red, green, blue);
+  red = 1.0 - red;
+  green = 1.0 - green;
+  blue = 1.0 - blue;
+  fprintf(printFile, "%f %f %f setrgbcolor\n", red, green, blue);
 #endif
 }
 
@@ -1318,8 +1342,16 @@ void PSWindowRep::SetCopyMode()
   printf("PSWindowRep::SetCopyMode\n");
 #endif
 
+  if (!_xorMode) return;
+
+  _xorMode = false;
+
 #ifdef GRAPHICS
-  /* do something */
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+
+  if (GetFgColor() != _oldFgndColor) {
+    SetFgColor(_oldFgndColor);
+  }
 #endif
 }
 
@@ -1551,7 +1583,8 @@ void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
     Coord x2, Coord y2)
 {
 #if USE_PS_PROCEDURES
-  fprintf(printFile, "%f %f %f %f DevFillRect\n", x1, y1, x2, y2);
+  fprintf(printFile, "%f %f %f %f DevRect\n", x1, y1, x2, y2);
+  fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
 #else
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", x1, y1);
@@ -1560,7 +1593,7 @@ void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
   fprintf(printFile, "%f %f lineto\n", x2, y1);
   fprintf(printFile, "%f %f lineto\n", x1, y1);
   fprintf(printFile, "closepath\n");
-  fprintf(printFile, "fill\n");
+  fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
 #endif
 
   return;
@@ -1600,8 +1633,9 @@ void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
 {
   Coord halfsize = size / 2.0;
 #if USE_PS_PROCEDURES
-  fprintf(printFile, "%f %f %f %f DevFillRect\n", x1 - halfsize,
+  fprintf(printFile, "%f %f %f %f DevRect\n", x1 - halfsize,
     y1 - halfsize, x1 + halfsize, y1 + halfsize);
+  fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
 #else
   fprintf(printFile, "newpath\n");
   fprintf(printFile, "%f %f moveto\n", x1 - halfsize, y1 - halfsize);
@@ -1610,7 +1644,7 @@ void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
   fprintf(printFile, "%f %f lineto\n", x1 + halfsize, y1 - halfsize);
   fprintf(printFile, "%f %f lineto\n", x1 - halfsize, y1 - halfsize);
   fprintf(printFile, "closepath\n");
-  fprintf(printFile, "fill\n");
+  fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
 #endif
 
   return;

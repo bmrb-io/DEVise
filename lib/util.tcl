@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.36  1997/01/13 18:08:16  wenger
+#  Fixed bugs 043, 083, 084, 091, 114.
+#
 #  Revision 1.35  1996/12/23 22:20:42  donjerko
 #    Commented out a bunch of non-working Tk/Tcl code.  Changed OK/Cancel
 #    pairs to have OK always on the left, Cancel on the right.  Renamed
@@ -646,7 +649,6 @@ proc PrintWithMap {} {
 
 proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 			url defaultUrl} {
-puts "DIAG PrintActual, printcmd = $printcmd, filename = $filename"
     global curView
 
     set format [string tolower $fmt]

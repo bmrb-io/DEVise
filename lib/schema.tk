@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.24  1996/12/15 07:01:38  donjerko
+#  Added the window to create an index on streams.
+#
 #  Revision 1.23  1996/11/18 18:13:32  donjerko
 #  Added final touches for DTE
 #
@@ -1021,7 +1024,7 @@ proc readphysical {filename} {
 	set attr [list $attrtype $sorted $hival $loval $attrname $acomp \
 		$astrlen]
 
-	puts "ATTR LIST Inserting .. $attr"
+	#puts "ATTR LIST Inserting .. $attr"
 
 	set attrlist [linsert $attrlist $num $attr]
 	set len [readSchemaLine $f line]

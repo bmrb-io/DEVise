@@ -151,7 +151,7 @@ Num Date        Status  Description
 047 10/08/96	FIXED	Load /p/devise/wenger/session/hourstats.tk, iconify
 			the window -> crash. (rkw)
 
-048 10/09/96	OPEN	Devise core dumps if data file named in catalog
+048 10/09/96	FIXED	Devise core dumps if data file named in catalog
 			does not exist. (rkw)
 
 049 10/11/96	OPEN	Load MailOrder/a2_full.tk session -- DEVISE_TMP
@@ -305,7 +305,7 @@ Num Date        Status  Description
 
 087 12/02/96	FIXED	Removing a view causes DEVise to exit. (rkw)
 
-088 12/02/96	OPEN	If you click on a view to select it while data is
+088 12/02/96	FIXED	If you click on a view to select it while data is
 			being drawn, the XOR'ing of the selection box gets
 			goofed up. (ssl/rkw)
 
@@ -452,6 +452,30 @@ Num Date        Status  Description
 119 01/15/97	OPEN	If you have too many attributes, the 'Select X'
 			menu in the 'Define Visualization' dialog goes
 			off the bottom of the screen (ma/rkw)
+
+120 01/15/97	OPEN	DTE/Makefile.base duplicates much of
+			devread/Makefile.base. (rkw)
+
+121 01/16/97	FIXED	Assertion 'color < Instance()->_numColors' in
+			ColorMgr::GetColorRgb() failed when printing
+			PostScript.  (Doesn't seem to be repeatable.) (rkw)
+
+122 01/16/97	FIXED	Changing mapping (forcing data to be redrawn) goofs
+			up the drawing of the view selection box. (rkw)
+
+123 01/16/97	WORK	Load the sesson demo/COD1.tk; resize the 'Global
+			View' window; then obscure any part of that window
+			by raising another window -> the data area of the
+			'Global View' window gets erased.  (Because the
+			window is erroneously receiving an Expose event
+			instead of the VisibilityNotify event it should
+			be getting.) (rkw)
+			Note: this bug shows up with fvwm but not with twm,
+			tvtwm, or mwm.
+			(Workaround in View::HandleExpose().)
+
+124 01/17/97	OPEN	Drawing of the selection box gets goofed up if the
+			actual data overdraws it. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

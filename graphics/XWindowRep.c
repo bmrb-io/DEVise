@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.85  1997/01/13 18:07:51  wenger
+  Fixed bugs 043, 083, 084, 091, 114.
+
   Revision 1.84  1997/01/09 18:41:20  wenger
   Added workarounds for some Tasvir image bugs, added debug code.
 
@@ -353,7 +356,11 @@
 #include "XDisplay.h"
 #include "Compress.h"
 #include "DevError.h"
+
+#ifndef LIBCS
 #include "ETkIfc.h"
+#endif
+
 #ifndef LIBCS
 #include "DaliIfc.h"
 #include "Init.h"
@@ -384,8 +391,10 @@ extern "C" {
 ImplementDList(DaliImageList, int);
 #endif
 
+#ifndef LIBCS
 // List of embedded Tk window handles
 ImplementDList(ETkWinList, int);
+#endif
 
 // key translations
 // Removed 'num lock' from AltMask (rkw 8/7/96).
@@ -536,7 +545,9 @@ XWindowRep::XWindowRep(Display *display, Window window, XDisplay *DVDisp,
 #ifndef LIBCS
   _daliServer = NULL;
 #endif
+#ifndef LIBCS
   _etkServer = NULL;
+#endif
   
   Init();
 }
@@ -637,8 +648,10 @@ XWindowRep::~XWindowRep()
   delete [] _daliServer;
 #endif
 
+#ifndef LIBCS
   (void) ETk_FreeWindows();
   delete [] _etkServer;
+#endif
   
   if (_parent) {
     if (!_parent->_children.Delete(this))
@@ -927,6 +940,7 @@ XWindowRep::DaliFreeImages()
 #endif // #ifndef LIBCS
 
 
+#ifndef LIBCS
 //------------------------------------------------------------------------
 // BEGIN ETk interface
 //
@@ -1142,6 +1156,7 @@ XWindowRep::ETk_MoveWindow(int handle, Coord centerX, Coord centerY)
 //
 // END ETk interface
 // -----------------------------------------------------------------------
+#endif
 
 /* get geometry of root window enclosing this window */
 
@@ -3020,6 +3035,18 @@ void XWindowRep::Flush()
   /* Do a sync to force output */
   XSync(_display, false);
 }
+
+
+/* Find out whether X window has backing store.  (Note: _backingStore member
+ * is meaningless.) */
+
+Boolean XWindowRep::HasBackingStore()
+{
+  XWindowAttributes attr;
+  XGetWindowAttributes(_display, _win, &attr);
+  return attr.backing_store;
+}
+
 
 const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
 static char _pixmapBuf[MAX_PIXMAP_BUF_SIZE];

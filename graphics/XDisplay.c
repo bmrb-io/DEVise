@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.47  1996/12/30 23:51:13  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.46  1996/12/15 20:22:35  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -1192,12 +1197,14 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
     sleep(1);
   }
 
+#ifndef LIBCS
   // Free embedded Tk windows and sleep before destroying the X window
   if (xwin->ETk_WindowCount() > 0)
   {
     (void) xwin->ETk_FreeWindows();
     sleep(1);
   }
+#endif
 
   if (xwin->GetWinId()) {
 #ifdef DEBUG

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/12/30 23:51:12  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.22  1996/11/26 15:44:11  wenger
   Added features and fixed bugs in PostScript-related parts of the
   client/server library and the PSWindowRep class; page size can now be
@@ -134,8 +139,10 @@ WindowRep::~WindowRep()
   delete _callbackList;
   if (DaliImageCount() > 0)
       DaliFreeImages();
+#ifndef LIBCS
   if (ETk_WindowCount() > 0)
       ETk_FreeWindows();
+#endif
 }
 
 /* called by derived class to when window is resized or moved */

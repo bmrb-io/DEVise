@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/27 17:34:49  wenger
+  Fixed some problems with XWindowRep::ScaledText(); added some more stuff
+  to the cslib example server.
+
   Revision 1.6  1996/12/20 18:43:20  wenger
   Unfilled arcs and variable line widths now work in PostScript output.
 
@@ -119,6 +123,11 @@ class SampleWinServer : public WinServer {
     _winReps.GetWindowRep()->FillRect(x + 0.25 * w, y + 0.25 * h, 0.5 * w,
       0.5 * h);
 
+    _winReps.GetWindowRep()->SetXorMode();
+    _winReps.GetWindowRep()->FillRect(x + 0.15 * w, y + 0.6 * h, 0.3 * w,
+      0.3 * h);
+    _winReps.GetWindowRep()->SetCopyMode();
+
     _winReps.GetWindowRep()->SetFgColor(BlackColor);
     _winReps.GetWindowRep()->SetBgColor(SlateBlueColor);
     _winReps.GetWindowRep()->GetFgRGB(red, green, blue);
@@ -196,7 +205,7 @@ class SampleWinServer : public WinServer {
 
 /* Note: we should add code to test the following functions:
  * FillPoly FillPixelPoly DrawPixel DrawPixelArray FillPixelRect Line
- * AbsoluteLine SetXorMode SetCopyMode SetOrMode SetFont
+ * AbsoluteLine SetOrMode SetFont
  * SetNormalFont SetDaliServer DaliShowImage DaliFreeImages. */
 
     /* make sure everything gets drawn to the screen */

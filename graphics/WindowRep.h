@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1997/01/09 18:41:18  wenger
+  Added workarounds for some Tasvir image bugs, added debug code.
+
   Revision 1.41  1996/12/30 23:51:13  andyt
   First version with support for Embedded Tcl/Tk windows. WindowRep classes
   now have member functions for creating and destroying Tk windows.
@@ -250,7 +253,7 @@ public:
       return 0;
   }
 #endif
-	
+
   /* Handle map/unmap info.
      mapped : means window has been mapped.
      unmapped: means window has been unmapped. (This can also mean
@@ -303,6 +306,9 @@ public:
   /* Flush windowRep's content to display */
   virtual void Flush() = 0;
 
+  /* Find out whether window has backing store. */
+  virtual Boolean HasBackingStore() { return false; }
+	
   /* Move and resize window, relative to the parent */
   virtual void MoveResize(int x, int y, unsigned int w, unsigned int h) = 0;
 
@@ -338,6 +344,7 @@ public:
   virtual DevStatus DaliFreeImages() { return StatusFailed; }
   virtual int DaliImageCount() { return 0; }
 
+#ifndef LIBCS
   /* Display embedded Tk (ETk) windows */
   virtual void SetETkServer(char *serverName) {
       reportError("Can't do SetETkServer() on this WindowRep object",
@@ -384,6 +391,7 @@ public:
   virtual int ETk_WindowCount() {
       return 0;
   }
+#endif
   
   /* drawing primitives */
 
@@ -755,24 +763,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

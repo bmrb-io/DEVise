@@ -22,6 +22,13 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/18 23:11:16  wenger
+  Added procedures to generated PostScript to reduce the size of the
+  output and speed up PostScript processing; added 'small font' capability
+  and trademark notice to PostScript output; improved text positioning in
+  PostScript output (but still a ways to go); added a little debug code;
+  fixed data/axis area bugs (left gaps); fixed misc. bugs in color handling.
+
   Revision 1.5  1996/11/13 16:56:04  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -91,7 +98,8 @@ public:
 
   /* Get the name of a given color by its global color number. */
   static char *GetColorName(GlobalColor color) {
-    DOASSERT(color < Instance()->_numColors, "Color not allocated");
+    //DOASSERT(color < Instance()->_numColors, "Color not allocated");
+    if (color < 0 || color >= Instance()->_numColors) color = BlackColor;
     ColorData *data = Instance()->_colorArray[color];
     if (data->colorName != NULL) {
       return data->colorName;
@@ -103,12 +111,20 @@ public:
   /* Get the RGB values of a given color by its global color number. */
   static void GetColorRgb(GlobalColor color, float &red, float &green,
     float &blue) {
-    DOASSERT(color < Instance()->_numColors, "Color not allocated");
+    //DOASSERT(color < Instance()->_numColors, "Color not allocated");
+    if (color < 0 || color >= Instance()->_numColors) color = BlackColor;
     ColorData *data = Instance()->_colorArray[color];
-    DOASSERT(data->hasRgb, "No RGB values for color");
-    red = data->rgb.red;
-    green = data->rgb.green;
-    blue = data->rgb.blue;
+    //DOASSERT(data->hasRgb, "No RGB values for color");
+    if (data->hasRgb) {
+      red = data->rgb.red;
+      green = data->rgb.green;
+      blue = data->rgb.blue;
+    } else {
+      fprintf(stderr, "No RGB values for color %d\n", color);
+      red = 0.0;
+      green = 0.0;
+      blue = 0.0;
+    }
   }
 
 protected:

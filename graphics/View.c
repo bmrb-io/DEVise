@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.99  1997/01/14 20:05:31  wenger
+  Fixed some compile warnings; fixed relative positions of OK/Cancel
+  buttons in link GUI; removed some debug code I accidentally left
+  in place.
+
   Revision 1.98  1997/01/14 15:48:08  wenger
   Fixed bug 105; changed '-noshm' flag to '-sharedMem 0|1' for more
   flexibility in overriding startup script default; fixed bug 116
@@ -429,6 +434,14 @@
 // Whether to draw view borders -- must eventually be controlled by GUI.
 static const Boolean viewBorder = false;
 
+// Whether to fill the background of the entire view, rather than filling
+// the various parts separately.  About the only time you wouldn't want to
+// use this is on a machine that doesn't have backing store for the windows.
+#define FILL_WHOLE_BACKGROUND 1
+
+// Whether to use the workaround for bug 123.
+#define USE_BUG123_WORKAROUND 1
+
 /* width/height of sensitive area for cursor */
 static const int VIEW_CURSOR_SENSE = 10;
 
@@ -758,6 +771,25 @@ void View::HandleExpose(WindowRep *w, int x, int y, unsigned width,
   printf("View::HandleExpose %d,%d,%u,%u\n", x, y, width, height);
 #endif
 
+#if USE_BUG123_WORKAROUND
+  /* If we have backing store, all Expose events should be for the whole
+   * view. */
+  if (GetWindowRep()->HasBackingStore()) {
+    int viewX, viewY;
+    unsigned int viewWidth, viewHeight;
+    Geometry(viewX, viewY, viewWidth, viewHeight);
+    if ((viewX != x) ||
+      (viewY != y) ||
+      (viewWidth != width) ||
+      (viewHeight != height)) {
+#if defined(DEBUG)
+      printf("View(%s)::HandleExpose() ignoring Expose event\n", GetName());
+#endif
+      return;
+    }
+  }
+#endif
+
   if (!_hasExposure) {
 
     _hasExposure = true;
@@ -1055,31 +1087,39 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
   /* Fill the whole background so we don't have the missing "stripes"
    * in PostScript.  Note that we _must_ have an identity matrix for
    * the window transform for this to work. */
-  win->SetFgColor(GetBgColor());
-  win->FillRect((Coord) winX, (Coord) winY, (Coord) winW, (Coord) winH);
+  if (FILL_WHOLE_BACKGROUND || _winReps.IsFileOutput()) {
+    win->SetFgColor(GetBgColor());
+    win->FillRect((Coord) winX, (Coord) winY, (Coord) winW, (Coord) winH);
+  }
 
   DrawLabel();
 
+#if !FILL_WHOLE_BACKGROUND
   /* Clear highlight area */
   win->SetFgColor(GetBgColor());
   DrawHighlight();
+#endif
 
   if (_numDimensions == 2) {
     int axisX, axisY, axisWidth, axisHeight, startX;
     if (xAxis.inUse) {
+#if !FILL_WHOLE_BACKGROUND
       GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
       win->SetFgColor(GetBgColor());
       win->SetPattern(Pattern0);
       win->SetLineWidth(0);
       win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
+#endif
       DrawXAxis(win, x, y, w, h);
     }
     if (yAxis.inUse) {
+#if !FILL_WHOLE_BACKGROUND
       GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
       win->SetFgColor(GetBgColor());
       win->SetPattern(Pattern0);
       win->SetLineWidth(0);
       win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
+#endif
       DrawYAxis(win, x, y, w, h);
     }
   }
@@ -1773,6 +1813,7 @@ void View::Run()
     _hasExposure = false;
   }
 
+#if !FILL_WHOLE_BACKGROUND
   if (_hasExposure) {
     /* limit exposure to the size of the window */
 #if defined(DEBUG)
@@ -1809,6 +1850,7 @@ void View::Run()
 	   _queryFilter.xHigh, _queryFilter.yHigh);
 #endif
   }
+#endif
   
   /* Decorate view with axes etc. */
   
@@ -1847,6 +1889,7 @@ void View::Run()
   else
       GetDataArea(dataX, dataY, dataW, dataH);
 
+#if !FILL_WHOLE_BACKGROUND
   /* use exposure rectangle if needed */
   if (_hasExposure) {
     int dataX2 = MIN(_exposureRect.xHigh, dataX + dataW - 1);
@@ -1856,6 +1899,7 @@ void View::Run()
     dataW = dataX2 - dataX + 1;
     dataH = dataY2 - dataY + 1;
   }
+#endif
 
   /* clip area to be drawn */
   winRep->PushClip(dataX, dataY, dataW - 1, dataH - 1);
@@ -1875,10 +1919,12 @@ void View::Run()
 	(void) winRep->ETk_FreeWindows();
 	sleep(1);
     }
+#if !FILL_WHOLE_BACKGROUND
     winRep->SetFgColor(GetBgColor());
     winRep->SetPattern(Pattern0);
     winRep->SetLineWidth(0);
     winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
+#endif
   }
   
   /* pop the identity transform matrix */
@@ -1901,6 +1947,9 @@ void View::Run()
     _bytes = 0;
 #if defined(DEBUG)
     printf("View %s sending query\n", GetName());
+    printf("  filter: %d, (%f, %f, %f, %f)\n", _queryFilter.flag,
+      _queryFilter.xLow, _queryFilter.xHigh, _queryFilter.yLow,
+      _queryFilter.yHigh);
 #endif
     DerivedStartQuery(_queryFilter, _timeStamp);
   } else {
@@ -2340,6 +2389,10 @@ void View::Highlight(Boolean flag)
 
 void View::DrawHighlight()
 {
+#if defined(DEBUG)
+  printf("View(%s)::DrawHighlight()\n", GetName());
+#endif
+
   if (!Mapped())
     return;
 
@@ -2347,9 +2400,15 @@ void View::DrawHighlight()
 
   int x,y;
   unsigned int w,h;
+
+  Geometry(x, y, w, h);
+
+  /* Make sure we can draw the whole highlight. */
+  winRep->PushTop();
+  winRep->MakeIdentity();
+  winRep->PushClip((Coord) x, (Coord) y, (Coord) w - 1, (Coord) h - 1);
   
   if (_label.occupyTop) {
-    Geometry(x, y, w, h);
     winRep->AbsoluteLine(x, y, w - 1, x, 3);
     winRep->AbsoluteLine(x + w - 1, y, x + w - 1, y + h - 1, 3);
     winRep->AbsoluteLine(x + w - 1, y + h - 1, x, y + h - 1, 3);
@@ -2360,6 +2419,10 @@ void View::DrawHighlight()
     winRep->AbsoluteLine(x + _label.extent / 2, y + _label.extent, 
 			 x + _label.extent / 2, labelH, _label.extent);
   }
+
+  winRep->PopClip();
+  winRep->PopTransform();
+
   winRep->Flush();
 }
 
@@ -2463,22 +2526,25 @@ void View::DoDrawCursors()
       printf("DoDrawCursors: Drawing XY cursor in\n  %s\n", GetName());
 #endif
       if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh
-	    || filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh))
+	    || filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
 	winRep->FillRect(xLow, yLow, xHigh - xLow, yHigh - yLow);
+      }
     } else if (filter->flag & VISUAL_X) {
 #if defined(DEBUG)
       printf("DoDrawCursors: Drawing X cursor in\n  %s\n", GetName());
 #endif
-      if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh))
+      if (!(filter->xHigh < _filter.xLow || filter->xLow > _filter.xHigh)) {
 	winRep->FillRect(xLow, _filter.yLow, xHigh - xLow,
 			 _filter.yHigh - _filter.yLow);
+      }
     } else if (filter->flag & VISUAL_Y) {
 #if defined(DEBUG)
       printf("DoDrawCursors: Drawing Y cursor in\n  %s\n", GetName());
 #endif
-      if (!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh))
+      if (!(filter->yHigh < _filter.yLow || filter->yLow > _filter.yHigh)) {
 	winRep->FillRect(_filter.xLow, yLow,
 			 _filter.xHigh - _filter.xLow, yHigh - yLow);
+      }
     }
   }
 

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/30 23:51:09  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.5  1996/12/15 20:22:29  wenger
   Changed pointSize in SetFont() from tenths of points to points.
 
@@ -80,6 +85,7 @@ public:
     /* export window image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
 
+#ifndef LIBCS
     /* Display embedded Tk (ETk) windows */
     virtual void SetETkServer(char *serverName) {
 	reportError("Can't do SetETkServer() on this WindowRep object",
@@ -126,6 +132,7 @@ public:
     virtual int ETk_WindowCount() {
 	return 0;
     }
+#endif
     
     /* drawing primitives */
     /* Return TRUE if window is scrollable */
