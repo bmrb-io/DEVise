@@ -20,6 +20,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1997/06/09 14:47:14  wenger
+# Added cursor grid; fixed bug 187; a few minor cleanups.
+#
 # Revision 1.3  1997/06/05 21:08:56  wenger
 # User-configurability of '4', '5', and '6' keys is now completed.
 #
@@ -48,6 +51,7 @@ proc GetViewHome {} {
     toplevel .getViewHome
     wm title .getViewHome "Set View Home"
 
+    frame .getViewHome.row0
     frame .getViewHome.row1
     frame .getViewHome.row2
     frame .getViewHome.row3
@@ -55,6 +59,7 @@ proc GetViewHome {} {
     frame .getViewHome.row5
     frame .getViewHome.row6
     frame .getViewHome.row7
+    frame .getViewHome.row8
 
     # Create the various widgets.
     button .getViewHome.ok -text "OK" -width 10 \
@@ -62,12 +67,19 @@ proc GetViewHome {} {
     button .getViewHome.cancel -text "Cancel" -width 10 \
       -command "destroy .getViewHome"
 
+    global viewHomeDoX viewHomeDoY
+    checkbutton .getViewHome.doXHome -text {Home on X} -variable viewHomeDoX
+    checkbutton .getViewHome.doYHome -text {Home on Y} -variable viewHomeDoY
+
     # See ViewGraph.h for mode values...
     global viewHomeMode
     radiobutton .getViewHome.auto -text "Automatic" -variable viewHomeMode \
       -value 1 -command "SwitchHomeMode"
     radiobutton .getViewHome.man -text "Fixed" -variable viewHomeMode \
       -value 2 -command "SwitchHomeMode"
+
+    global viewHomeYZero
+    checkbutton .getViewHome.doYZero -text {Y Min Zero} -variable viewHomeYZero
 
     global viewHomeXMar viewHomeYMar
     label .getViewHome.xMarLab -text "X Margin:"
@@ -97,20 +109,26 @@ proc GetViewHome {} {
       -command "SetHomeToCurrent"
 
     # These frames are for spacing only.
+    frame .getViewHome.row0a -width 10m -height 6m
     frame .getViewHome.row2a -width 130m -height 6m
     frame .getViewHome.row4a -width 10m -height 6m
     frame .getViewHome.row7a -width 10m -height 4m
 
     # Pack some widgets into the frames.  Other widges will be packed in
     # the SwitchHomeMode procedure.
+    pack .getViewHome.row0 -side top
+    pack .getViewHome.row0a -side top
     pack .getViewHome.row1 -side bottom -pady 4m
     pack .getViewHome.row2 -side top
     pack .getViewHome.row2a -side top
 
     pack .getViewHome.ok .getViewHome.cancel -in .getViewHome.row1 \
       -side left -padx 3m
+    pack .getViewHome.doXHome .getViewHome.doYHome -in .getViewHome.row0 \
+      -side left -pady 1m
     pack .getViewHome.auto .getViewHome.man -in .getViewHome.row2 \
-      -side top -pady 1m
+      -side left -pady 1m
+    pack .getViewHome.doYZero -in .getViewHome.row8 -side left
     pack .getViewHome.xMarLab .getViewHome.xMarEnt -in .getViewHome.row3 \
       -side left
     pack .getViewHome.yMarLab .getViewHome.yMarEnt -in .getViewHome.row4 \
@@ -125,13 +143,16 @@ proc GetViewHome {} {
     # Returns: <mode> <autoXMargin> <autoYMargin> <manXLo> <manYLo>
     # <manXHi> <manYHi>
     set home [DEVise viewGetHome $curView]
-    set viewHomeMode [lindex $home 0]
-    set viewHomeXMar [lindex $home 1]
-    set viewHomeYMar [lindex $home 2]
-    set viewHomeXLow [lindex $home 3]
-    set viewHomeYLow [lindex $home 4]
-    set viewHomeXHigh [lindex $home 5]
-    set viewHomeYHigh [lindex $home 6]
+    set viewHomeDoX [lindex $home 0]
+    set viewHomeDoY [lindex $home 1]
+    set viewHomeMode [lindex $home 2]
+    set viewHomeYZero [lindex $home 3]
+    set viewHomeXMar [lindex $home 4]
+    set viewHomeYMar [lindex $home 5]
+    set viewHomeXLow [lindex $home 6]
+    set viewHomeYLow [lindex $home 7]
+    set viewHomeXHigh [lindex $home 8]
+    set viewHomeYHigh [lindex $home 9]
     SwitchHomeMode
 
     # Wait for the user to make a selection from this window.
@@ -146,7 +167,8 @@ proc SwitchHomeMode {} {
   global viewHomeMode
 
   if {$viewHomeMode == 1} {
-    pack .getViewHome.row3 -after .getViewHome.row2a -pady 1m
+    pack .getViewHome.row8 -after .getViewHome.row2a -pady 1m
+    pack .getViewHome.row3 -after .getViewHome.row8 -pady 1m
     pack .getViewHome.row4 -after .getViewHome.row3 -pady 1m
     pack .getViewHome.row4a -after .getViewHome.row4 -pady 1m
 
@@ -155,6 +177,7 @@ proc SwitchHomeMode {} {
     pack forget .getViewHome.row7
     pack forget .getViewHome.row7a
   } else {
+    pack forget .getViewHome.row8
     pack forget .getViewHome.row3
     pack forget .getViewHome.row4
     pack forget .getViewHome.row4a
@@ -191,11 +214,15 @@ proc SetViewHome {} {
     global viewHomeXMar viewHomeYMar
     global viewHomeXLow viewHomeXHigh
     global viewHomeYLow viewHomeYHigh
+    global viewHomeDoX viewHomeDoY
+    global viewHomeYZero
 
     # Arguments: <viewName> <mode> <autoXMargin> <autoYMargin> <manXLo>
     # <manYLo> <manXHi> <manYHi>
-    DEVise viewSetHome $curView $viewHomeMode $viewHomeXMar $viewHomeYMar \
-      $viewHomeXLow $viewHomeYLow $viewHomeXHigh $viewHomeYHigh
+    DEVise viewSetHome $curView $viewHomeDoX $viewHomeDoY $viewHomeMode \
+      $viewHomeYZero \
+      $viewHomeXMar $viewHomeYMar $viewHomeXLow $viewHomeYLow $viewHomeXHigh \
+      $viewHomeYHigh
 }
 
 ##########################################################################

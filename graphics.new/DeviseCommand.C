@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  1999/03/12 18:46:02  wenger
+  Implemented duplicate symbol elimination.
+
   Revision 1.49  1999/03/10 19:11:05  wenger
   Implemented DataReader schema GUI; made other improvements to schema
   editing GUI, such as sorting the schema lists.
@@ -2875,8 +2878,8 @@ DeviseCommand_viewGetHome::Run(int argc, char** argv)
     {
         {
           // Arguments: <viewName>
-          // Returns: <mode> <autoXMargin> <autoYMargin> <manXLo> <manYLo>
-          // <manXHi> <manYHi>
+          // Returns: <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin>
+		  // <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
     #if defined(DEBUG)
           printf("viewGetHome <%s>\n", argv[1]);
     #endif
@@ -2888,8 +2891,10 @@ DeviseCommand_viewGetHome::Run(int argc, char** argv)
           ViewHomeInfo info;
           view->GetHomeInfo(info);
           char buf[100];
-          sprintf(buf, "%d %f %f %f %f %f %f", (int) info.mode, info.autoXMargin,
-    	info.autoYMargin, info.manXLo, info.manYLo, info.manXHi, info.manYHi);
+          sprintf(buf, "%d %d %d %d %f %f %f %f %f %f", info.homeX, info.homeY,
+		    (int)info.mode, info.autoYMinZero,
+			info.autoXMargin, info.autoYMargin, info.manXLo,
+			info.manYLo, info.manXHi, info.manYHi);
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -4519,33 +4524,46 @@ DeviseCommand_setViewGDS::Run(int argc, char** argv)
 int
 DeviseCommand_viewSetHome::Run(int argc, char** argv)
 {
-    {
-        {
-          // Arguments: <viewName> <mode> <autoXMargin> <autoYMargin> <manXLo>
-          // <manYLo> <manXHi> <manYHi>
-    #if defined(DEBUG)
-          printf("viewSetHome <%s> <%s> <%s> <%s> <%s> <%s> <%s> <%s>\n", argv[1],
-    	argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8]);
-    #endif
-          ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
-          if (!view) {
-    	ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
-          }
-          ViewHomeInfo info;
-          info.mode = (ViewHomeMode) atoi(argv[2]);
-          info.autoXMargin = atof(argv[3]);
-          info.autoYMargin = atof(argv[4]);
-          info.manXLo = atof(argv[5]);
-          info.manYLo = atof(argv[6]);
-          info.manXHi = atof(argv[7]);
-          info.manYHi = atof(argv[8]);
-          view->SetHomeInfo(info);
-          ReturnVal(API_ACK, "done");
-          return 1;
+    // Arguments: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]
+    // <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+	if (argc == 9 || argc == 12) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
         }
-    }
-    return true;
+
+        ViewHomeInfo info;
+		int argNum = 2;
+
+		// Old version of this command didn't include these.
+		if (argc == 12) {
+		  info.homeX = atoi(argv[argNum++]);
+		  info.homeY = atoi(argv[argNum++]);
+		}
+
+        info.mode = (ViewHomeMode) atoi(argv[argNum++]);
+		if (argc == 12) {
+	      info.autoYMinZero = atoi(argv[argNum++]);
+		}
+        info.autoXMargin = atof(argv[argNum++]);
+        info.autoYMargin = atof(argv[argNum++]);
+        info.manXLo = atof(argv[argNum++]);
+        info.manYLo = atof(argv[argNum++]);
+        info.manXHi = atof(argv[argNum++]);
+        info.manYHi = atof(argv[argNum++]);
+        view->SetHomeInfo(info);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in viewSetHome\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
 }
 
 IMPLEMENT_COMMAND_BEGIN(playLog)

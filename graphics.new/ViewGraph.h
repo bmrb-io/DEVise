@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/03/12 18:46:06  wenger
+  Implemented duplicate symbol elimination.
+
   Revision 1.60  1999/03/03 18:22:04  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -370,8 +373,21 @@ enum ViewHomeMode {
   HomeManual
 };
 
-struct ViewHomeInfo {
+class ViewHomeInfo {
+public:
+  ViewHomeInfo() {
+    homeX = homeY = true;
+    mode = HomeAuto;
+    autoYMinZero = false;
+    autoXMargin = autoYMargin = 0.0;
+    manXLo = manYLo = 0.0;
+    manXHi = manYHi = 100.0;
+  }
+
+  Boolean homeX;
+  Boolean homeY;
   ViewHomeMode mode;
+  Boolean autoYMinZero;
   Coord autoXMargin, autoYMargin;
   Coord manXLo, manYLo;	// data units
   Coord manXHi, manYHi;	// data units

@@ -1807,6 +1807,14 @@ Num Date        Status  Description
 
 468 03/09/99	OPEN	Changing cursor color seems to have no effect. (rkw)
 
+469 03/15/99	FIXED	'5' (home) key doesn't work right in views that are
+			followers of record links, because the TData attribute
+			info gives the min and max of all records, not just
+			the ones that are selected by the record link. (rkw)
+
+470 03/16/99	OPEN	Open a session while queries for an existing session
+			are running -> QueryProc fails an assertion. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

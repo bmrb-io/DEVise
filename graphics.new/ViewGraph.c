@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.96  1999/03/12 18:46:05  wenger
+  Implemented duplicate symbol elimination.
+
   Revision 1.95  1999/03/03 18:22:04  wenger
   Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
   and 467 (query errors with sorted attributes); minor improvements to
@@ -575,14 +578,6 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
     _gstatInMem = true;
     histViewName = NULL;
 
-    _homeInfo.mode = HomeAuto;
-    _homeInfo.autoXMargin = 0.0;
-    _homeInfo.autoYMargin = 0.0;
-    _homeInfo.manXLo = 0.0;
-    _homeInfo.manYLo = 0.0;
-    _homeInfo.manXHi = 100.0;
-    _homeInfo.manYHi = 100.0;
-
     _horPanInfo.mode = PanModeRelative;
     _horPanInfo.relPan = 0.5;
     _horPanInfo.absPan = 1.0;
@@ -990,102 +985,123 @@ void ViewGraph::GoHome()
 
 	switch (_homeInfo.mode) {
 	case HomeAuto: {
-	  Boolean setXLow = false;
-	  Boolean setXHigh = false;
+	  if (_homeInfo.homeX) {
+	    Boolean setXLow = false;
+	    Boolean setXHigh = false;
 
-          if (xAttr) {
-              if (xAttr->hasLoVal) {
-                filter.xLow = AttrList::GetVal(&xAttr->loVal, xAttr->type) -
-		  _homeInfo.autoXMargin;
-	        setXLow = true;
-	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
-		if (hasFirstRec) {
-                  filter.xLow = (Coord)firstRec;
-	          setXLow = true;
-		}
+	    // Check data ranges first (fixes bug 469).
+	    if (_dataRangesValid) {
+	      if (!setXLow) {
+	        filter.xLow = _dataXMin;
+		setXLow = true;
 	      }
-
-              if (xAttr->hasHiVal) {
-                filter.xHigh = AttrList::GetVal(&xAttr->hiVal, xAttr->type) +
-		  _homeInfo.autoXMargin;
-	        setXHigh = true;
-	      } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
-		if (hasLastRec) {
-                  filter.xHigh = (Coord)lastRec;
-	          setXHigh = true;
-		}
+	      if (!setXHigh) {
+	        filter.xHigh = _dataXMax;
+		setXHigh = true;
 	      }
-          }
+	    }
 
-	  if (_dataRangesValid) {
-	    if (!setXLow) {
-	      filter.xLow = _dataXMin;
-	    }
-	    if (!setXHigh) {
-	      filter.xHigh = _dataXMax;
-	    }
+            if (xAttr) {
+		if (!setXLow) {
+                  if (xAttr->hasLoVal) {
+                    filter.xLow = AttrList::GetVal(&xAttr->loVal,
+		        xAttr->type) - _homeInfo.autoXMargin;
+	            setXLow = true;
+	          } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
+		    if (hasFirstRec) {
+                      filter.xLow = (Coord)firstRec;
+	              setXLow = true;
+		    }
+	          }
+		}
+
+		if (!setXHigh) {
+                  if (xAttr->hasHiVal) {
+                    filter.xHigh = AttrList::GetVal(&xAttr->hiVal,
+		        xAttr->type) + _homeInfo.autoXMargin;
+	            setXHigh = true;
+	          } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
+		    if (hasLastRec) {
+                      filter.xHigh = (Coord)lastRec;
+	              setXHigh = true;
+		    }
+	          }
+		}
+            }
+
+            if (filter.xHigh == filter.xLow) {
+              filter.xHigh += 1.0;
+              filter.xLow -= 1.0;
+            }
 	  }
 
-          if (filter.xHigh == filter.xLow) {
-            filter.xHigh += 1.0;
-            filter.xLow -= 1.0;
-          }
 
+	  if (_homeInfo.homeY) {
+	    Boolean setYLow = false;
+	    Boolean setYHigh = false;
 
-	  Boolean setYLow = false;
-	  Boolean setYHigh = false;
-          if (yAttr) {
-              if (yAttr->hasLoVal) {
-                filter.yLow = AttrList::GetVal(&yAttr->loVal, yAttr->type) -
-		  _homeInfo.autoYMargin;
-	        setYLow = true;
-	      } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
-		if (hasFirstRec) {
-                  filter.yLow = (Coord)firstRec;
-	          setYLow = true;
-		}
+	    // Check data ranges first (fixes bug 469).
+	    if (_dataRangesValid) {
+	      if (!setYLow) {
+	        filter.yLow = _dataYMin;
+		setYLow = true;
 	      }
-              if (yAttr->hasHiVal) {
-                filter.yHigh = AttrList::GetVal(&yAttr->hiVal, yAttr->type) +
-		  _homeInfo.autoYMargin;
-	        setYHigh = true;
-	      } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
-		if (hasLastRec) {
-                  filter.yHigh = (Coord)lastRec;
-	          setYHigh = true;
-		}
+	      if (!setYHigh) {
+	        filter.yHigh = _dataYMax;
+		setYHigh = true;
 	      }
-          }
+            }
 
-	  if (_dataRangesValid) {
-	    if (!setYLow) {
-	      filter.yLow = _dataYMin;
+            if (yAttr) {
+		if (!setYLow) {
+                  if (yAttr->hasLoVal) {
+                    filter.yLow = AttrList::GetVal(&yAttr->loVal,
+		        yAttr->type) - _homeInfo.autoYMargin;
+	            setYLow = true;
+	          } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
+		    if (hasFirstRec) {
+                      filter.yLow = (Coord)firstRec;
+	              setYLow = true;
+		    }
+	          }
+		}
+
+		if (!setYHigh) {
+                  if (yAttr->hasHiVal) {
+                    filter.yHigh = AttrList::GetVal(&yAttr->hiVal,
+		        yAttr->type) + _homeInfo.autoYMargin;
+	            setYHigh = true;
+	          } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
+		    if (hasLastRec) {
+                      filter.yHigh = (Coord)lastRec;
+	              setYHigh = true;
+		    }
+	          }
+		}
+            }
+
+            if (filter.yHigh == filter.yLow) {
+              filter.yLow -= 1.0;
+              filter.yHigh += 1.0;
+            }
+
+	    if (_homeInfo.autoYMinZero) {
+              filter.yLow = MIN(filter.yLow, 0.0);
 	    }
-	    if (!setYHigh) {
-	      filter.yHigh = _dataYMax;
-	    }
           }
-
-          if (filter.yHigh == filter.yLow) {
-            filter.yLow -= 1.0;
-            filter.yHigh += 1.0;
-          }
-
-
-#if 0
-          if (!IsScatterPlot()) {
-            filter.yLow = MIN(filter.yLow, 0.0);
-	  }
-#endif
 
 	  break;
 	}
 
 	case HomeManual: {
-	  filter.xLow = _homeInfo.manXLo;
-	  filter.xHigh = _homeInfo.manXHi;
-	  filter.yLow = _homeInfo.manYLo;
-	  filter.yHigh = _homeInfo.manYHi;
+	  if (_homeInfo.homeX) {
+	    filter.xLow = _homeInfo.manXLo;
+	    filter.xHigh = _homeInfo.manXHi;
+	  }
+	  if (_homeInfo.homeY) {
+	    filter.yLow = _homeInfo.manYLo;
+	    filter.yHigh = _homeInfo.manYHi;
+	  }
 	  break;
 	}
 
