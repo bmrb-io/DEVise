@@ -1020,7 +1020,7 @@ Num Date        Status  Description
 			bytes). (rkw)
 			(See also bug 235.)
 
-259 12/16/97	OPEN	Can't save sessions. (rkw)
+259 12/16/97	FIXED	Can't save sessions. (rkw)
 
 260 12/17/97	OPEN	Mouse events seem to not get translated to the
 			correct coordinates (since OpenGL commit). (rkw)
