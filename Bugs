@@ -4,6 +4,8 @@
 Num Date        Status  Description
 --- --------    ------  -------------------------------------------------------
 001 05/14/96	OPEN	There are a number of memory leaks. (rkw)
+			(Most of these have been fixed -- at least the big
+			ones.  rkw 10/15/96)
 
 002 05/14/96	FIXED	DEVise hogs an awful lot of CPU cycles even when
 			you are not doing anything. (rkw/kb) (jpm)
@@ -142,7 +144,9 @@ Num Date        Status  Description
 			schema editing window. (rkw)
 
 046 10/07/96	OPEN	Create a window with the same name as a data stream
-			-> crash. (rkw)
+			-> crash. (rkw)  (This is a consequence of bug 016.)
+			(Workaround implemented: ClassDir exits if a duplicate
+			name is added. rkw 10/15/96)
 
 047 10/08/96	FIXED	Load /p/devise/wenger/session/hourstats.tk, iconify
 			the window -> crash. (rkw)
@@ -159,6 +163,10 @@ Num Date        Status  Description
 			setting it doesn't work). (rkw)
 
 051 10/15/96    FIXED	Showing statistics as text produces many errors. (rkw)
+
+052 10/16/96	OPEN	When importing a data stream (particularly when
+			mapping recId to X) xlow sometimes comes up
+			greater than xhigh. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
