@@ -1,0 +1,17 @@
+Currently supported Image formats:
+
+JPEG
+
+PNM (PGM and PPM)
+
+SPIHT (Grayscale only)
+       Said & Pearlman's wavelet compression. This is
+       supported only if you have the program "decdtree"
+       in your path. Moreover, the original format has been
+       modified by adding a magic string "SPHTG" at the
+       beginning of the file.)
+
+TIFF, GIF, Sun raster (you need the appropriate *topnm
+       filters in your path)
+
+
