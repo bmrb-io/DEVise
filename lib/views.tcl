@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.40  1997/07/22 18:41:13  wenger
+#  Workaround for bug 210: GUI disallows link names starting with 'Pile:'.
+#
 #  Revision 1.39  1997/07/15 14:59:28  wenger
 #  Fixed a bug in the view destroying Tcl code; user can now destroy a window
 #  that contains views (DEVise asks for confirmation, destroys the views).
@@ -1860,7 +1863,7 @@ proc DoGroupByStat {} {
 	set tdataType [lindex $sourcedef 2]
 	if {$tdataType == "UNIXFILE"} {
 		set schemafile [lindex $sourcedef 3]
-	} elseif {$tdataType == "Table" || $tdataType == "SQLView"} {
+	} elseif {[isDTEType $tdataType]} {
 		set schemafile [lindex $sourcedef 1]
         } else { 
 	# GDATASTAT or other stat
@@ -1869,7 +1872,7 @@ proc DoGroupByStat {} {
 
 	puts "schemafile=$schemafile"
         set schemaname [file tail $schemafile]
-	if {$tdataType == "Table" || $tdataType == "SQLView"} {
+	if { [isDTEType $tdataType] } {
         	set topgrp [SelectTopGroup $sourceName]
     		set defaultX [setupAttrRadioMenu \
 		 .groupBy.xsel.menu.tdata byAttr "tdata." $sourceName $topgrp $topgrp]
@@ -1903,7 +1906,7 @@ proc DoGroupByStat {} {
      		-menu .groupBy.aggregate.menu.tdata
      menu .groupBy.aggregate.menu.gdata -tearoff 0
 
-     if {$tdataType == "Table" || $tdataType == "SQLView"} {
+     if { [isDTEType $tdataType] } {
 #     	set defaultAgg [setupAttrRadioMenu \
 #	 .groupBy.aggregate.menu.tdata aggregate "tdata." $schemaname $topgrp $topgrp]
      	set defaultAgg [setupAttrRadioMenu \

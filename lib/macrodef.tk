@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.92  1997/08/06 19:23:49  wenger
+#	Changed 'Image' to 'Pixels' in 'Define Visualization' dialog.
+#
 #	Revision 1.91  1997/06/10 19:22:17  wenger
 #	Removed (some) debug output.
 #
@@ -366,6 +369,7 @@
 
 proc isDTEType {type} {
 	if {$type == "SQLView" || $type == "Table" || $type == "DEVise"
+		|| $type == "MaterView"
 		|| $type == "Directory" || $type == "StandardTable" } {
 		return 1
 	} else {

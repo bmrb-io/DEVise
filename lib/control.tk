@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.140  1997/07/22 15:36:47  wenger
+#	Added capability to dump human-readable information about all links
+#	and cursors.
+#
 #	Revision 1.139  1997/07/17 18:44:16  wenger
 #	Added menu selections to report number of strings and save string space.
 #
@@ -980,6 +984,20 @@ proc displayTable {table} {
          }
           DEVise dteDeleteCatalogEntry $d
           updateSources
+     }
+}
+
+.mbar.tdata.menu add separator
+
+.mbar.tdata.menu add command -label "Materialize" -command {
+	set table [selectStream]
+     foreach d $table {
+		statusWindow .info "Status" \
+		"Materializing table \"$d\"\n Please wait."
+
+		DEVise dteMaterializeCatalogEntry $d
+		catch {destroy .info}
+		updateSources
      }
 }
 
