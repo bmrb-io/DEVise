@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  1996/07/11 17:26:08  wenger
+#  Devise now writes headers to some of the files it writes;
+#  DataSourceSegment class allows non-fixed data length with non-zero
+#  offset; GUI for editing schema files can deal with comment lines;
+#  added targets to top-level makefiles to allow more flexibility.
+#
 #  Revision 1.18  1996/07/08 17:15:44  jussi
 #  Added protective braces around mapping label.
 #
@@ -538,6 +544,7 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
     if {$withData} {
 	puts $fileId "set filename \[file tail \$file\]"
 	puts $fileId "set directory \[file dirname \$file\]"
+        puts $fileId ""
     }
 
     if {$asExport} {
@@ -551,8 +558,16 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
 		set params [DEVise getCreateParam tdata $class $inst]
 		set fileAlias [lindex $params 0]
 		set sourcedef $sourceList($fileAlias)
+                set type [lindex $sourcedef 0]
 
-		if {$withData} {
+                # For non-UNIXFILE data sources, we cannot store $filename
+                # and $directory in the source definition as we would
+                # be overwriting some other stuff (like the URL);
+                # however we need to store some values in positionOffsets
+                # and lengthOffsets so that SaveAllData can reference
+                # the values.
+
+		if {$type == "UNIXFILE" && $withData} {
 		    # Replace the filename with '$filename' and the directory
 		    # with '$directory'.  We use format instead of lreplace
 		    # because lreplace puts braces around $filename and
@@ -565,16 +580,19 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
 			[lindex $sourcedef 5] [lindex $sourcedef 6]]
 
 		    puts -nonewline $fileId \
-	    		"\taddDataSource $fileAlias \[list $sourcedef \{"
+                        "addDataSource \{$fileAlias\} \[list $sourcedef \{"
 		    set "positionOffsets($fileAlias)" [tell $fileId]
 		    puts -nonewline $fileId "$placeholder "
 		    set "lengthOffsets($fileAlias)" [tell $fileId]
 		    puts $fileId "$placeholder\}\]"
 		} else {
-		    puts $fileId "\taddDataSource $fileAlias \[list $sourcedef\]"
+		    set "positionOffsets($fileAlias)" 0
+		    set "lengthOffsets($fileAlias)" 0
+		    puts $fileId "addDataSource \{$fileAlias\} \[list $sourcedef\]"
 		}
 	    }
 	}
+        puts $fileId ""
     }
 }
 
@@ -848,7 +866,6 @@ proc SaveOneData { fileId tdata positionOffset lengthOffset } {
     # Make sure this TData is a UNIXFILE, otherwise we can't save it yet.
     set type [lindex $source 0]
     if {$type != "UNIXFILE"} {
-	puts "TData $tdata is not a UNIXFILE -- can't write to template"
 	return
     }
 
