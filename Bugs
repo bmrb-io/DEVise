@@ -62,6 +62,8 @@ Num Date        Status  Description
 
 020 08/05/96	OPEN	Numeric keypad keys only work in solaris version? (rkw)
 
+021 08/05/96	OPEN	'5' key doesn't work. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 NB = not (really) a bug.
