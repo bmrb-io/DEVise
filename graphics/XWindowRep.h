@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.29  1996/09/09 14:31:42  jussi
+  Added #ifdef LIBCS statements to make code compile in the
+  ClientServer library target.
+
   Revision 1.28  1996/09/06 06:59:48  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -357,7 +361,7 @@ protected:
         Window FindTopWindow(Window win);
 
 	/* export window image as GIF */
-	void ExportGIF(FILE *fp);
+	void ExportGIF(FILE *fp, int isView = 0);
 
 	/* recursively copy the contents of subpixmaps onto parent pixmap */
 	static void CoalescePixmaps(XWindowRep *root);

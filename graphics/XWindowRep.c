@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.68  1996/09/10 20:07:14  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.67  1996/09/09 14:31:42  jussi
   Added #ifdef LIBCS statements to make code compile in the
   ClientServer library target.
@@ -873,10 +880,12 @@ Window XWindowRep::FindTopWindow(Window win)
 
 /* export image as GIF */
 
-void XWindowRep::ExportGIF(FILE *fp)
+void XWindowRep::ExportGIF(FILE *fp, int isView = 0)
 {
   if (_win) {
-    Window win = FindTopWindow(_win);
+    Window win;
+    if(isView == 0) win = FindTopWindow(_win);
+    else win = _win;
     XWindowAttributes xwa;
     if (!XGetWindowAttributes(_display, win, &xwa)) {
       fprintf(stderr, "Cannot get window attributes\n");
