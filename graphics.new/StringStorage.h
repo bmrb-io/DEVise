@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1997/01/30 19:47:14  jussi
+  Added PopulateFromInitFile() method.
+
   Revision 1.3  1996/08/29 18:24:42  wenger
   A number of Dali-related improvements: ShapeAttr1 now specifies image
   type when shape is 'image'; added new '-bytes' flag to Dali commands
@@ -64,8 +67,14 @@ class StringStorage {
 
     static int Clear() {
         int code = _strings.clear();
-        if (code < 0) return code;
-        return _keys.clear();
+        if (code >= 0) {
+            code = _keys.clear();
+            if (code >= 0) {
+                PopulateFromInitFile();
+                return 0;
+            }
+        }
+        return code;
     }
 
     static int PopulateFromInitFile();
