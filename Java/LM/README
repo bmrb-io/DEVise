@@ -1,0 +1,50 @@
+Layout Manager for DEVise
+Version 1.0
+
+Author : Shilpa Lawande
+
+Packages :
+
+AwtUtil : Utilities related to AWT and UI
+Util : Ascii serialization capability
+LayoutEditor : A layout editor used to create custom layouts
+LayoutMgr : This has two packages -
+Application : The UI for the Layout Manager
+MetaData : Back end data structures for DEVise objects
+
+
+Directory Structure :
+			  LM (top level directory)
+			   |
+			   |
+	-----------------------------------------------------------------------------------------------
+	|            |           |                |          |             |         |                |
+	AwtUtil     Util       LayoutEditor     LayoutMgr   classes       Schema    Session           doc
+						  |         (*.class files for java classes)    (Embedded htm
+						--------------
+						|            |
+					Application          MetaData
+
+
+Other files :
+
+Catalog : The dummy catalog for the data tables
+Schema directory : contains schema files 
+Session directory : session files 
+                
+Currently the schema directory, session directory etc are static variables in the LMgr.java 
+class in LayoutMgr.Application package. These should be made environment variables or config
+parameters in a later version. 
+
+Documentation : 
+
+Code that is not self-explanatory has been commented with HTML tags. Userman.html is a very
+brief user manual. For a conceptual description check out the masters thesis :
+A Meta-Visualization Framework for DEVise by Shilpa Lawande. (See directory Java/LM/report under
+devise srces). Implementation comments and a list of bugs and unimplemented features is
+maintained in LayoutMgr/Application/TODO.
+
+
+For questions on implementation you could send email to ssl@cs.wisc.edu. 
+
+
