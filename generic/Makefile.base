@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.61  1999/02/18 17:30:54  wenger
+#  Removed UniData from DEVise.
+#
 #  Revision 1.60  1999/01/05 15:31:06  wenger
 #  Automatically links or doesn't link libperl as necessary.
 #
@@ -220,11 +223,17 @@ BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
 # which caused -lgraphicsnew to be listed twice below...
 # dd: dte need stuff from Jussi's SBM which is in graphics.new
 
+ifeq (,$(findstring NO_DTE,$(DEBUG_FLAGS)))
+	DTE_STUFF = -ldte -lrtree
+else
+	DTE_STUFF =
+endif
+
 LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-L../color -L../utils -L../issm -L../csgroup\
 	-L../crsp -L../compustat -L../xvertext \
 	-lgraphicsnew -lgraphics -lutils -lcolor \
-	-ldte -lrtree -lgraphicsnew -lcsgroup \
+	$(DTE_STUFF) -lgraphicsnew -lcsgroup \
 	-lXrot \
 	-lissm -lcrsp -lcstat -ltape \
 	-L../DataReader -ldatareader \
