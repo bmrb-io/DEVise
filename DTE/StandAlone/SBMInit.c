@@ -12,7 +12,7 @@ CacheMgr *cacheMgr;
 
 void initialize_system(){
   int status;
-  memMgr = new MemMgr(poolSize, pageSize, status);
+  memMgr = new MemMgr(poolSize, pageSize, true, status);
   assert(memMgr);
   if (status < 0) {
     fprintf(stderr, "Cannot create memory manager\n");

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/12/04 04:05:30  donjerko
+  *** empty log message ***
+
   Revision 1.19  1997/11/23 21:23:44  donjerko
   *** empty log message ***
 
@@ -172,6 +175,7 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 	engine.initialize();
 	const Tuple* tup = engine.getNext();
 	if(!tup){
+//		cerr << "query = " << query << endl << " is empty " << endl;
 		return strdup("");
 	}
 	retVal += addQuotes(string(IString::getCStr(tup[0])));

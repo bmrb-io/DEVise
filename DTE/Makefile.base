@@ -138,6 +138,8 @@ unidata:
 rtree:
 	cd ../RTree/ && make lib && make librarysbm && cd ../DTE
 
+CorePartOfLib: $(LIBNAME)($(CORE_OBJ))
+
 dte: main.o $(STAND_ALONE_OBJ) $(CORE_OBJ) unidata rtree
 	$(CC) -o dte $< $(STAND_ALONE_OBJ) $(CORE_OBJ) $(STAND_ALONE_LIBS) \
 	$(ARCH_LDFLAGS) $(ARCH_SYSLIBS) $(ARCH_LDPOST)
@@ -192,6 +194,9 @@ $(LIBNAME)(Templates.o): Templates.c
 	$(CC) -c  $(CFLAGS_WO_TEMPLATES) $<
 	$(AR) r $@ $%
 	$(RM) $%
+
+Templates.o: Templates.c
+	$(CC) -c  $(CFLAGS_WO_TEMPLATES) $<
 
 .PHONY: clean mostlyclean
 
