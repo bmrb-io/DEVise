@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/01/25 17:44:29  jussi
+  Added debugging output.
+
   Revision 1.9  1996/01/12 16:21:05  jussi
   Replaced signed int with unsigned int.
 
@@ -96,6 +99,12 @@ void Parse(char *str, int &numArgs, char **&returnArgs, char *blanks,
 	str++;
 	start = str;
 	while(*str && *str != '\'')
+	  str++;
+      } else if (*str == '"') {
+	/* reading a literal */
+	str++;
+	start = str;
+	while(*str && *str != '"')
 	  str++;
       } else {
 	while(*str && !IsBlank(*str, blanks, numBlanks)) 
