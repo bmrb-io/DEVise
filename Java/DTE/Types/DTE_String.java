@@ -84,11 +84,7 @@ public class DTE_String extends DTE_Type implements Cloneable
   }
 
   public String toString( ) {
-      String str = null;
-
-      for(int i =0; i < length; i++)
-	  str += val[i];
-	   
+      String str = new String( val );
       return str;
   }
 
