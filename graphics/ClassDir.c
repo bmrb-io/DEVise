@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/03/21 16:15:42  guangshu
+  Minor changes corresponding to DTE change in FindInstance.
+
   Revision 1.9  1996/10/08 21:49:00  wenger
   ClassDir now checks for duplicate instance names; fixed bug 047
   (problem with FileIndex class); fixed various other bugs.
@@ -261,7 +264,7 @@ void *ClassDir::FindInstance(char *name)
 #if defined(DEBUG) || 0
       printf("category name %s name %s\n", catRec->name, classRec->_instances[k]->InstanceName());
 #endif
-	if (!strncmp(classRec->_instances[k]->InstanceName(), name, strlen(name))) {
+	if (!strcmp(classRec->_instances[k]->InstanceName(), name)) {
 	  return classRec->_instances[k]->GetInstance(); }
       }
     }
