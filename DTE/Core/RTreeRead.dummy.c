@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/06/08 04:09:52  okan
+  *** empty log message ***
+
   Revision 1.7  1998/06/08 03:47:52  okan
   *** empty log message ***
 
@@ -46,10 +49,9 @@
 
 #include "RTreeRead.h"
 
-RTreeReadExec(const IndexDesc& indexDesc,
-	int dataSize, Type** tuple,
-	UnmarshalPtr* unmarshalPtrs, int* rtreeFldLens, int ridPosition,
-	typed_key_t* queryBox)	 {
+RTreeReadExec::RTreeReadExec(const string& _filename, int _root_page,
+                BoundingBox* _bbox, const TypeIDList& _added_types)
+{
 	assert(!"rtree is not linked in");
 }
 
@@ -63,24 +65,18 @@ Iterator* RTreeIndex::createExec(){
 	return NULL;
 }
 
-int RTreeIndex::queryBoxSize(){
-	return 0;
-}
-
 const Tuple* RTreeReadExec::getNext(){
 	return NULL;
 }
 
-Offset RTreeReadExec::getNextOffset(){
-	return Offset();
-}
-
-RecId RTreeReadExec::getRecId(){
-	return 0;
-}
-
 void RTreeReadExec::initialize(){
 	return;
+}
+
+const TypeIDList& RTreeReadExec::getTypes()
+{
+	TypeIDList retVal;
+	return retVal;
 }
 
 bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
