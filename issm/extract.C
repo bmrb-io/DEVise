@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/16 20:56:38  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.7  1995/11/14 23:00:30  jussi
   Updated interface with Tcl scripts which now pass not only the
   symbol and offset of a company to extract but also the file
@@ -723,38 +726,114 @@ static int extract(RecTape &tape, char *stock, long offset, char *file)
   return 1;
 }
 
+// Searches through the index file and finds the entry for the given 
+// key. Then, returns the tape offset for this security.
+
+static long int find_issm_offset(FILE *idxfile, char *key)
+{
+  unsigned long int offval;
+  char symbol[12];
+
+  while(fscanf(idxfile, "%[^,],%lu,%*[^\n]\n", symbol, &offval) == 2) {
+    if (!strcmp(symbol, key))
+      return offval;
+  }
+
+  printf("ERROR: could not find key %s in the index file\n", key);
+  return -1;
+}
+
+static int issm_create(char *tapeDrive, char *tapeFile, char *tapeOff,
+		       char *tapeBsize, char *idxFile, char **argv, int argc)
+{
+  DOASSERT(argc % 2 == 0, "Invalid parameters");
+  int num = argc / 2;
+
+  // Get the index file pointer
+  FILE *idxfile;
+  if (!(idxfile = fopen(idxFile, "r"))) {
+    printf("Error: could not open index file: %s\n", idxFile);
+    return TCL_ERROR;
+  }
+  
+  // We will retrieve num offsets and sort them
+  long int *offset_arr = (long int *)
+                         malloc(num * sizeof(long int));
+  int *spos_arr = (int *)malloc(num * sizeof(int));
+  DOASSERT(offset_arr && spos_arr, "Out of memory");
+
+  int i;
+  for(i = 0; i < num; i++) {
+    spos_arr[i] = i * 2;
+    // find offset for this security by looking through the index file
+    offset_arr[i] = find_issm_offset(idxfile, argv[i * 2]);
+    // add offset of beginning of tape file
+    offset_arr[i] += atol(tapeOff);
+    rewind(idxfile);
+  }
+
+  fclose(idxfile);
+
+  // Now sort offset_arr - bubble sort for now
+  for(i = 0; i < num; i++) {
+    for(int j = i + 1; j < num; j++) {
+      if (offset_arr[i] > offset_arr[j]) {
+	unsigned long int tmp = offset_arr[i];
+	offset_arr[i] = offset_arr[j];
+	offset_arr[j] = tmp;
+	tmp = spos_arr[i];
+	spos_arr[i] = spos_arr[j];
+	spos_arr[j] = tmp;
+      }
+    }
+  }
+
+  RecTape tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
+  if (!tape) {
+    fprintf(stderr, "Error: could not open tape device %s\n", tapeDrive);
+    return TCL_ERROR;
+  }
+
+  int errors = 0;
+  for(i = 0; i < num; i++) {
+    if (offset_arr[i] < atol(tapeOff))
+      continue;
+    if (extract(tape, argv[spos_arr[i]], (unsigned long int)offset_arr[i],
+		argv[spos_arr[i] + 1]) <= 0)
+      ++errors;
+  }
+
+  free(offset_arr);
+  free(spos_arr);
+
+  if (errors)
+    return TCL_ERROR;
+
+  return TCL_OK;
+}
+
 int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 {
   // Allow other functions to UPDATE_TCL
 
   globalInterp = interp;
 
-  DOASSERT(argc >= 7, "Invalid parameters");
+  DOASSERT(argc >= 8, "Invalid parameters");
 
   // Get parameter values from TCL script
 
   char *tapeDrive = argv[1];
   char *tapeFile = argv[2];
-  char *tapeBsize = argv[3];
+  char *tapeOff = argv[3];
+  char *tapeBsize = argv[4];
+  char *idxFile = argv[5];
 
-  cout << "Reading from " << tapeDrive << ":" << tapeFile
-       << " (" << tapeBsize << ")" << endl;
+  printf("Reading from %s:%s:%s (%s)\n",
+	 tapeDrive, tapeFile, tapeOff, tapeBsize);
 
-  RecTape tape(tapeDrive, "r", atoi(tapeFile), atoi(tapeBsize));
-  if (!tape) {
-    cerr << "Cannot open " << tapeDrive << " for reading." << endl;
-    return TCL_ERROR;
-  }
+  // pass pairs of <key, cachefilename> to extraction routine
 
-  for(int i = 4; i < argc; i += 3) {
-    char *stock = argv[i];
-    long offset = atol(argv[i + 1]);
-    char *file = argv[i+2];
-    int status = extract(tape, stock, offset, file);
-    if (status <= 0)
-      return TCL_ERROR;
-  }
-
-  return TCL_OK;
+  return issm_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile,
+		     &argv[6], argc - 6);
 }
 #endif
