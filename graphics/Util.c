@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 18:48:14  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.5  1995/12/14 17:12:38  jussi
   Small fixes.
 
@@ -46,7 +49,7 @@ long ModTime(char *fname)
 {
   struct stat sbuf;
   if (stat(fname, &sbuf) < 0) {
-    fprintf(stderr,"ModTime:: error\n");
+    fprintf(stderr, "Cannot get modtime of %s\n", fname);
     Exit::DoExit(2);
   }
   return (long)sbuf.st_mtime;
@@ -54,8 +57,11 @@ long ModTime(char *fname)
 
 char *CopyString(char *str)
 {
-  int len = strlen(str) + 1;
-  char *result = new char[len];
+  char *result = new char[strlen(str) + 1];
+  if (!result) {
+    fprintf(stderr, "Insufficient memory for new string\n");
+    Exit::DoExit(2);
+  }
   strcpy(result, str);
   return result;
 }
