@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/07/14 04:03:24  jussi
+  HandleWindowDestroy() now destroys the window, conditionally.
+  Moved the destructor from the header file to the .c file.
+
   Revision 1.22  1996/07/10 18:59:22  jussi
   Moved 3D transform variables to WindowRep.
 
@@ -322,6 +326,9 @@ public:
   /* get display of this Window Rep */
   DeviseDisplay *GetDisplay() { return _display; };
   
+  /* Get flag which indicates if window destroy is pending */
+  static Boolean IsDestroyPending() { return _destroyPending; }
+
   // ---------------------------------------------------------- 
 
   /* 2D transformation matrix operations */
@@ -554,13 +561,15 @@ private:
   Transform3D _transforms3[WindowRepTransformDepth];
   int _current3;        /* current index in the stack */
 
-  ClipRectList  _damageRects; /* damaged areas*/
+  ClipRectList  _damageRects;     /* damaged areas */
   Boolean _damaged;
 
-  Coord _x, _y, _width, _height; /* location and dimensions of window */
-  Color _fgndColor, _bgndColor;
-  Pattern _pattern;
-  DeviseDisplay *_display;
+  Coord _x, _y, _width, _height;  /* location and dimensions of window */
+  Color _fgndColor, _bgndColor;   /* current fg and bg colors */
+  Pattern _pattern;               /* current pattern */
+  DeviseDisplay *_display;        /* display object */
+
+  static Boolean _destroyPending; /* true if window destroy is pending */
 };
 
 #endif
