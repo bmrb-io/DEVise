@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/03/02 22:30:25  wenger
+  Got DEVise to link on SGI (haha) -- had to change things so that all
+  templates are implicit (they are still not implicit on other
+  architectures, to save space), had to use GNU's ar instead of SGI's,
+  various other kludges.
+
   Revision 1.6  1998/02/02 18:26:16  wenger
   Strings file can now be loaded manually; name of strings file is now
   stored in session file; added 'serverExit' command and kill_devised
@@ -139,7 +145,11 @@ StringStorage::StringHash(char *&string, int numBuckets)
 int
 StringStorage::PopulateFromInitFile()
 {
+#if 0
   return Load(defaultFile);
+#else
+  return 0;
+#endif
 }
 
 int
