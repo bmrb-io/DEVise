@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/04/04 05:18:30  kmurli
+  Major modification: The dispatcher now receives the register command
+  from the displays directly (i.e. from XDisplay instead of from Display)
+  corrected a bug in call to register function. Also now dispatcher
+  uses socket number passed from the XDisplay class to select on it and
+  call the relevant functions.
+
   Revision 1.12  1996/02/26 23:46:39  jussi
   XDisplay tries to load 5x8 font if loading 5x7 fails.
 
@@ -55,6 +62,8 @@
   Revision 1.2  1995/09/05 21:13:38  jussi
   Added/updated CVS header.
 */
+
+#define XLIB_ILLEGAL_ACCESS
 
 #include <X11/Intrinsic.h>
 #include <math.h>
@@ -142,8 +151,7 @@ XDisplay::XDisplay(char *name)
   Tk_CreateGenericHandler(HandleTkEvent, (ClientData)this);
 #endif
 
-	Register();
-
+  Register();
 }
 
 // A simple function to register the Display with the dispatcher..
@@ -151,10 +159,12 @@ XDisplay::XDisplay(char *name)
 void XDisplay::Register()
 {
 #ifdef DEBUG
-   printf("About to be registered... %d\n",_display->fd);
+  printf("About to be registered... %d\n",_display->fd);
 #endif
 
-   (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,10,AllState,true,_display->fd);
+  (DeviseDisplay::ReturnDispatcher())->Register((DeviseDisplay *)this,
+						10, AllState, true,
+						_display->fd);
 }
 
 
