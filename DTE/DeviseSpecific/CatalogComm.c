@@ -16,8 +16,6 @@
   $Id$
 
   $Log$
-  Revision 1.10  1997/07/30 21:39:40  donjerko
-  *** empty log message ***
 
   Revision 1.9  1997/06/16 16:05:10  donjerko
   New memory management in exec phase. Unidata included.
@@ -50,7 +48,7 @@
 
 static int numFlds;	// just for debugging
 
-#define DEBUG
+// #define DEBUG
 
 void getDirAndFileNames(const char* fullPath, char*& dir, char*& file){
 	assert(fullPath[0] == '.');
