@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/05 22:02:01  jussi
+  DoPopup now uses AbsoluteOrigin to compute the absolute pixel
+  position of a popup window rather than duplicate the code.
+  Minor other improvements in debugging output.
+
   Revision 1.7  1995/12/02 21:28:01  jussi
   Added support for TK_WINDOW but the first implementation is
   obsoleted and renamed TK_WINDOW_old. Added various debugging
@@ -147,39 +152,45 @@ void XWindowRep::Reparent(Boolean child, void *other, int x, int y)
 
 /******************************************************************/
 
-void XWindowRep::PushClip(Coord x,Coord y,Coord w,Coord h)
+void XWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 {
 #ifdef DEBUG
-  printf("XWindowRep::PushClip(%.2f,%.2f,%.2f,%.2f)\n",x,y,w,h);
+  printf("XWindowRep::PushClip(%.2f,%.2f,%.2f,%.2f)\n", x, y, w, h);
 #endif
 
-  Coord xlow,ylow,xhi,yhi,width,height;
-  Coord x1, y1, x2,y2;
-  WindowRep::Transform(x,y, x1, y1);
-  WindowRep::Transform(x+w,y+h, x2,y2);
-  xlow = MinMax::min(x1,x2);
-  xhi = MinMax::max(x1,x2);
-  ylow = MinMax::min(y1,y2);
-  yhi = MinMax::max(y1,y2);
-  width = xhi-xlow; height = yhi-ylow;
+  Coord xlow, ylow, xhi, yhi, width, height;
+  Coord x1, y1, x2, y2;
+  WindowRep::Transform(x, y, x1, y1);
+  WindowRep::Transform(x + w, y + h, x2, y2);
+  xlow = MinMax::min(x1, x2);
+  xhi = MinMax::max(x1, x2);
+  ylow = MinMax::min(y1, y2);
+  yhi = MinMax::max(y1, y2);
+  width = xhi - xlow + 1;
+  height = yhi - ylow + 1;
   
 #ifdef DEBUG
   printf("XwindowRep::PushClip: transformed into (%.2f,%.2f,%.2f,%.2f)\n",
-	 xlow,ylow,width,height);
+	 xlow, ylow, width, height);
 #endif
 
-  XRectangle rect ;
+  XRectangle rect;
   rect.x = ROUND(short, xlow);
-  rect.y= ROUND(short, ylow);
-  rect.width = (unsigned short)ceil(width);
-  rect.height = (unsigned short)ceil(height);
+  rect.y = ROUND(short, ylow);
+  rect.width = (unsigned)(ROUND(int, xhi) - ROUND(int, xlow) + 1);
+  rect.height = (unsigned)(ROUND(int, yhi) - ROUND(int, ylow) + 1);
+
+#ifdef DEBUG
+  printf("XwindowRep::PushClip: rounded to (%d,%d,%d,%d)\n",
+	 rect.x, rect.y, rect.width, rect.height);
+#endif
 
 #ifdef GRAPHICS
   if (_dispGraphics)
-    XSetClipRectangles(_display,_gc,0, 0, &rect,1,Unsorted);
+    XSetClipRectangles(_display, _gc, 0, 0, &rect, 1, Unsorted);
 #endif
 
-  WindowRep::_PushClip(xlow,ylow,width,height);
+  WindowRep::_PushClip(xlow, ylow, width, height);
 }
 
 /*******************************************************************/
@@ -187,11 +198,12 @@ void XWindowRep::PushClip(Coord x,Coord y,Coord w,Coord h)
 virtual void XWindowRep::PopClip()
 {
   WindowRep::_PopClip();
-  Coord x,y,w,h;
-  XRectangle rect ; 
-  if (WindowRep::ClipTop(x,y,w,h)) {
+  Coord x, y, w, h;
+  XRectangle rect; 
+
+  if (WindowRep::ClipTop(x, y, w, h)) {
     rect.x = ROUND(short, x);
-    rect.y= ROUND(short, y);
+    rect.y = ROUND(short, y);
     rect.width = (unsigned short)ceil(w);
     rect.height = (unsigned short)ceil(h);
 #ifdef GRAPHICS
@@ -491,21 +503,23 @@ virtual void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
   /* XXX: need to clip rect against window dimensions */
 
   Coord txlow, tylow, txmax, tymax;
-  Coord x1,y1,x2,y2;
-  WindowRep::Transform(xlow,ylow+height,x1,y1);
-  WindowRep::Transform(xlow+width,ylow,x2,y2);
-  txlow = MinMax::min(x1,x2);
-  txmax= MinMax::max(x1,x2);
-  tylow = MinMax::min(y1,y2);
-  tymax = MinMax::max(y1,y2);
+  Coord x1, y1, x2, y2;
+  WindowRep::Transform(xlow, ylow + height, x1, y1);
+  WindowRep::Transform(xlow + width, ylow, x2, y2);
+  txlow = MinMax::min(x1, x2);
+  txmax = MinMax::max(x1, x2);
+  tylow = MinMax::min(y1, y2);
+  tymax = MinMax::max(y1, y2);
   
   /* fill rectangle, remember that the window coordinate
      system starts at the upper left corner */
 
-  unsigned pixelWidth = (unsigned)(txmax-txlow+1);
-  if (pixelWidth == 0) pixelWidth = 1;
-  unsigned pixelHeight = unsigned(tymax-tylow+1);
-  if (pixelHeight == 0) pixelHeight=1;
+  unsigned pixelWidth = (unsigned)(ROUND(int, txmax) - ROUND(int, txlow) + 1);
+  if (pixelWidth == 0)
+    pixelWidth = 1;
+  unsigned pixelHeight = (unsigned)(ROUND(int, tymax) - ROUND(int, tylow) + 1);
+  if (pixelHeight == 0)
+    pixelHeight = 1;
   
 #ifdef DEBUG
   printf("After transformation: x %d, y %d, width %d, height %d\n",
@@ -662,6 +676,10 @@ virtual void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 virtual void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
 			      Coord width)
 {
+#ifdef DEBUG
+  printf("XWindowRep::Line %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);
+#endif
+  
   Coord tx1, ty1, tx2, ty2;
   WindowRep::Transform(x1 ,y1, tx1, ty1);
   WindowRep::Transform(x2, y2, tx2, ty2);
@@ -677,14 +695,14 @@ virtual void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
 
 void XWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 {
+#ifdef DEBUG
+  printf("XWindowRep::AbsoluteLine %d,%d,%d,%d\n", x1, y1, x2, y2);
+#endif
   
 #ifdef GRAPHICS
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
 		       JoinRound);
-#ifdef DEBUG
-    printf("AbsoluteLine %d,%d,%d,%d\n", x1, y1, x2, y2);
-#endif
     XDrawLine(_display, _win, _gc, x1, y1, x2, y2);
   }
 #endif
@@ -917,31 +935,35 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 			      TextAlignment alignment, 
 			      Boolean skipLeadingSpace)
 {
-  /* transforminto window coords */
-  Coord tx1,ty1,tx2,ty2;
-  WindowRep::Transform(x,y,tx1,ty1);
-  WindowRep::Transform(x+width,y+height,tx2,ty2);
-  int winX,winY, winWidth, winHeight; /* box in window coord */
-  winX = ROUND(int, MinMax::min(tx1,tx2));
-  winY = ROUND(int, MinMax::min(ty1,ty2));
+#ifdef DEBUG
+  printf("XWindowRep::AbsoluteText: %s at %.2f,%.2f,%.2f,%.2f\n",
+	 text, x, y, width, height);
+#endif
+
+  /* transform into window coords */
+  Coord tx1, ty1, tx2, ty2;
+  WindowRep::Transform(x, y, tx1, ty1);
+  WindowRep::Transform(x + width, y + height, tx2, ty2);
+  int winX, winY, winWidth, winHeight; /* box in window coord */
+  winX = ROUND(int, MinMax::min(tx1, tx2));
+  winY = ROUND(int, MinMax::min(ty1, ty2));
   winWidth = ROUND(int, MinMax::max(tx1, tx2)) - winX + 1;
   winHeight = ROUND(int, MinMax::max(ty1, ty2)) - winY + 1;
   
-  int textLength = strlen(text);
-  if (textLength == 0) return;
-  
   if (skipLeadingSpace) {
     /* skip leading spaces before drawing text */
-    while (*text == ' ') { 
-      text++; textLength--; 
-    }
-    if (*text== '\0') return;
+    while (*text == ' ')
+      text++;
   }
+  
+  int textLength = strlen(text);
+  if (textLength == 0)
+    return;
   
   XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
   int textWidth = XTextWidth(fontStruct, text, textLength);
-  int textHeight = 
-    fontStruct->max_bounds.ascent + fontStruct->max_bounds.descent;
+  int textHeight = fontStruct->max_bounds.ascent
+                   + fontStruct->max_bounds.descent;
   
   if (textWidth > winWidth || textHeight > winHeight) {
     Text(text, x, y, width, height, alignment, skipLeadingSpace);
@@ -950,9 +972,9 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   
   int startX, startY;
   int widthDiff = winWidth - textWidth;
-  int halfWidthDiff = widthDiff/2;
+  int halfWidthDiff = widthDiff / 2;
   int heightDiff = winHeight - textHeight;
-  int halfHeightDiff = heightDiff/2;
+  int halfHeightDiff = heightDiff / 2;
 
   switch(alignment) {
   case AlignNorthWest:
@@ -962,42 +984,42 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 
   case AlignNorth:
     startX = winX + halfWidthDiff; 
-    startY = winY+ fontStruct->max_bounds.ascent;
+    startY = winY + fontStruct->max_bounds.ascent;
     break;
 
   case AlignNorthEast:
     startX = winX + widthDiff; 
-    startY = winY+ fontStruct->max_bounds.ascent;
+    startY = winY + fontStruct->max_bounds.ascent;
     break;
 
   case AlignWest: 
     startX = winX; 
-    startY = winY + halfHeightDiff+ fontStruct->max_bounds.ascent;
+    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
     break;
 
   case AlignCenter: 
     startX = winX + halfWidthDiff; 
-    startY = winY + halfHeightDiff+ fontStruct->max_bounds.ascent;
+    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
     break;
 
   case AlignEast:
-    startX = winX+ widthDiff; 
-    startY = winY + halfHeightDiff+ fontStruct->max_bounds.ascent;
+    startX = winX + widthDiff; 
+    startY = winY + halfHeightDiff + fontStruct->max_bounds.ascent;
     break;
 
   case AlignSouthWest:
     startX = winX; 
-    startY = winY+ heightDiff + fontStruct->max_bounds.ascent;
+    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
     break;
 
   case AlignSouth:
     startX = winX + halfWidthDiff; 
-    startY = winY+heightDiff + fontStruct->max_bounds.ascent;
+    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
     break;
 
   case AlignSouthEast:
-    startX = winX+ widthDiff; 
-    startY = winY+heightDiff + fontStruct->max_bounds.ascent;
+    startX = winX + widthDiff; 
+    startY = winY + heightDiff + fontStruct->max_bounds.ascent;
     break;
   }
   
@@ -1010,25 +1032,27 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
 		      TextAlignment alignment, Boolean skipLeadingSpace)
 {
 #ifdef DEBUG
-  printf("text: %s at %.2f,%.2f,%.2f,%.2f\n", text, x, y, width, height);
+  printf("XWindowRep::Text: %s at %.2f,%.2f,%.2f,%.2f\n",
+	 text, x, y, width, height);
 #endif
 
   /* transform into window coords */
-  Coord tx1,ty1,tx2,ty2;
-  WindowRep::Transform(x,y,tx1,ty1);
-  WindowRep::Transform(x+width,y+height,tx2,ty2);
-  int winX,winY, winWidth, winHeight; /* box in window coord */
-  winX = ROUND(int, MinMax::min(tx1,tx2));
-  winY = ROUND(int, MinMax::min(ty1,ty2));
-  winWidth = ROUND(int, MinMax::max(tx1,tx2)) - winX + 1;
-  winHeight = ROUND(int, MinMax::max(ty1,ty2)) - winY + 1;
+  Coord tx1, ty1, tx2, ty2;
+  WindowRep::Transform(x, y, tx1, ty1);
+  WindowRep::Transform(x + width, y + height, tx2, ty2);
+  int winX, winY, winWidth, winHeight; /* box in window coord */
+  winX = ROUND(int, MinMax::min(tx1, tx2));
+  winY = ROUND(int, MinMax::min(ty1, ty2));
+  winWidth = ROUND(int, MinMax::max(tx1, tx2)) - winX + 1;
+  winHeight = ROUND(int, MinMax::max(ty1, ty2)) - winY + 1;
+
   int textLength = strlen(text);
   if (textLength == 0) return;
 
   XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
   int textWidth = XTextWidth(fontStruct, text, textLength);
-  int textHeight = 
-    fontStruct->max_bounds.ascent + fontStruct->max_bounds.descent;
+  int textHeight = fontStruct->max_bounds.ascent
+                   + fontStruct->max_bounds.descent;
   
   if (textWidth > _srcBitmap.width || textHeight > _srcBitmap.height)
     /* allocate a bigger source pixmap */
@@ -1037,8 +1061,8 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   /* use original text to calculate scale factor 
      to scale text to fit in rectangle of 
      dimensions (winWidth, winHeight)*/
-  double xscale = (double)winWidth/(double)textWidth;
-  double yscale = (double)winHeight/(double)textHeight;
+  double xscale = (double)winWidth / (double)textWidth;
+  double yscale = (double)winHeight / (double)textHeight;
   double scale = MinMax::min(xscale, yscale);
   
   if (skipLeadingSpace) {
@@ -1057,12 +1081,12 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
 #endif
 
   /* draw text in source bitmap */
-  XDrawImageString(_display,_srcBitmap.pixmap,_srcBitmap.gc, 
-		   0, fontStruct->max_bounds.ascent, text,textLength);
+  XDrawImageString(_display, _srcBitmap.pixmap, _srcBitmap.gc, 
+		   0, fontStruct->max_bounds.ascent, text, textLength);
   
   /* scale into dest bitmap */
   int dstWidth = ROUND(int, textWidth * scale);
-  int dstHeight = ROUND(int, textHeight*scale);
+  int dstHeight = ROUND(int, textHeight * scale);
 
 #ifdef DEBUG
   printf("scale= %.2f, textWidth = %d, textHeight = %d, dstw=%d, dstH = %d\n",
@@ -1074,10 +1098,10 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   
   /* draw the text according to alignment */
   int startX, startY;
-  int widthDiff = winWidth-dstWidth;
-  int halfWidthDiff = widthDiff/2;
-  int heightDiff = winHeight-dstHeight;
-  int halfHeightDiff = heightDiff/2;
+  int widthDiff = winWidth - dstWidth;
+  int halfWidthDiff = widthDiff / 2;
+  int heightDiff = winHeight - dstHeight;
+  int halfHeightDiff = heightDiff / 2;
 
   switch(alignment) {
   case AlignNorthWest:
@@ -1085,7 +1109,7 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
     break;
 
   case AlignNorth:
-    startX = winX + halfWidthDiff; startY = winY ;
+    startX = winX + halfWidthDiff; startY = winY;
     break;
     
   case AlignNorthEast:
@@ -1101,7 +1125,7 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
     break;
 
   case AlignEast:
-    startX = winX+ widthDiff; startY = winY + halfHeightDiff;
+    startX = winX + widthDiff; startY = winY + halfHeightDiff;
     break;
 
   case AlignSouthWest:
@@ -1113,7 +1137,7 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
     break;
     
   case AlignSouthEast:
-    startX = winX+ widthDiff; startY = winY+heightDiff;
+    startX = winX + widthDiff; startY = winY+heightDiff;
     break;
   }
   
@@ -1322,9 +1346,9 @@ void XWindowRep::DoPopup(int x, int y, int button)
   attr.background_pixel		= bgnd;
   attr.border_pixmap		= CopyFromParent;
   attr.border_pixel		= fgnd;
-  attr.bit_gravity		= ForgetGravity /*CenterGravity*/;
+  attr.bit_gravity		= ForgetGravity /* CenterGravity */;
   attr.win_gravity		= NorthWestGravity;
-  attr.backing_store		= /* Always*/ NotUseful ;
+  attr.backing_store		= /* Always */ NotUseful;
   attr.backing_planes		= AllPlanes;
   attr.backing_pixel		= 0;
   attr.save_under		= True;
@@ -1474,7 +1498,7 @@ void XWindowRep::ScrollAbsolute(int x, int y, unsigned width, unsigned height,
 				int dstX, int dstY)
 {
 #ifdef DEBUG
-  printf("XWindowRep::ScrollABsolute(x:%d,y:%d,w:%d,h:%d,dx:%d,dy:%d)\n",
+  printf("XWindowRep::ScrollAbsolute(x:%d,y:%d,w:%d,h:%d,dx:%d,dy:%d)\n",
 	 x, y, width, height, dstX, dstY);
 #endif
 
@@ -1493,7 +1517,7 @@ void XWindowRep::Flush()
   XSync(_display, false);
 }
 
-const int MAX_PIXMAP_BUF_SIZE = 262144;
+static const int MAX_PIXMAP_BUF_SIZE = 256 * 1024;
 static char _pixmapBuf[MAX_PIXMAP_BUF_SIZE];
 
 /* Get current window pixmap */
