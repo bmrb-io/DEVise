@@ -371,6 +371,14 @@ currently displayed in a window. (rkw 2/17/97)
 There should be something like a 'go to' button in the Query History window,
 that would let you select and execute a particular query. (rr/rkw 3/14/97)
 
+Allow larger sizes for fonts in text labels. (ml/rkw 3/18/97)
+
+Allow text labels to be generated from integer (or float/double?) attributes
+in addition to strings. (ml/rkw 3/18/97)
+
+Improve user interface for selecting font properties for text labels.
+(ml/rkw 3/18/97)
+
 
 COMPLETED
 ---------
