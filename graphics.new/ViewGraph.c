@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.34  1996/08/04 21:59:57  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.33  1996/08/03 15:20:17  jussi
   Made "out of statistics buffer space" messages appear only when
   DEBUG is defined.
@@ -572,40 +579,31 @@ void ViewGraph::PrepareStatsBuffer()
     _histBuffer->Clear();
     _gdataStatBuffer->Clear();
 
-    /* find last non-zero count */
-    int j;
-    for(j = MAXCOLOR - 1; j >= 0; j--) {
-        if (_stats[j].GetStatVal(STAT_COUNT) > 0)
-            break;
-    }
-
-    /* print one extra record */
-    j++;
-    if (j >= MAXCOLOR)
-        j = MAXCOLOR - 1;
-
     /* put the statistics in the stat buffer */
-    char line[128];
+    char line[1024];
     int i;
-    for(i = 0; i <= j; i++) {
-        int len = 
-	  sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g\n",
-                i, (int)_stats[i].GetStatVal(STAT_COUNT),	
-                _stats[i].GetStatVal(STAT_MEAN),
-                _stats[i].GetStatVal(STAT_MAX),
-                _stats[i].GetStatVal(STAT_MIN),
-                _stats[i].GetStatVal(STAT_ZVAL85L),
-                _stats[i].GetStatVal(STAT_ZVAL85H),
-                _stats[i].GetStatVal(STAT_ZVAL90L),
-                _stats[i].GetStatVal(STAT_ZVAL90H),
-                _stats[i].GetStatVal(STAT_ZVAL95L),
-                _stats[i].GetStatVal(STAT_ZVAL95H));
-        if( _statBuffer->Write(line, len) != len ) {
+    for(i = 0; i < MAXCOLOR; i++) {
+	if( _stats[i].GetStatVal(STAT_COUNT) > 0 ) {
+	    int len = 
+	      sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g\n",
+		      i, (int)_stats[i].GetStatVal(STAT_COUNT),	
+		      _stats[i].GetStatVal(STAT_MEAN),
+		      _stats[i].GetStatVal(STAT_MAX),
+		      _stats[i].GetStatVal(STAT_MIN),
+		      _stats[i].GetStatVal(STAT_ZVAL85L),
+		      _stats[i].GetStatVal(STAT_ZVAL85H),
+		      _stats[i].GetStatVal(STAT_ZVAL90L),
+		      _stats[i].GetStatVal(STAT_ZVAL90H),
+		      _stats[i].GetStatVal(STAT_ZVAL95L),
+		      _stats[i].GetStatVal(STAT_ZVAL95H));
+	    DOASSERT(len < sizeof(line), "too much data in sprintf");
+	    if( _statBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
-            fprintf(stderr, "Out of statistics buffer space\n");
+		fprintf(stderr, "Out of statistics buffer space\n");
 #endif
-            break;
-        }
+		break;
+	    }
+	}
     }
 
     double width = _allStats.GetHistWidth();
@@ -616,6 +614,7 @@ void ViewGraph::PrepareStatsBuffer()
 	double pos = _allStats.GetHistMin() + width / 2.0;
 	for(int i = 0; i < HIST_NUM; i++) {
 	    int len = sprintf(line, "%g %d\n", pos, _allStats.GetHistVal(i));
+	    DOASSERT(len < sizeof(line), "too much data in sprintf");
 	    if( _histBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
 	        fprintf(stderr, "Out of histogram buffer space\n");
@@ -638,6 +637,7 @@ void ViewGraph::PrepareStatsBuffer()
 			     bs->GetStatVal(STAT_MAX),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MIN));
+	   DOASSERT(len < sizeof(line), "too much data in sprintf");
 	   if( _gdataStatBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
 	       fprintf(stderr, "Out of GData Stat Buffer space\n");
