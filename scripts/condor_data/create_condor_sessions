@@ -21,7 +21,7 @@ endif
 
 
 # Remove the old processed data.
-rm -r userdat
+rm userdat/*
 
 # Split the data into one file per user.
 split_user_data $dataFile userdat
