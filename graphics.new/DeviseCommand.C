@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/12/01 20:04:30  wenger
+  More reductions of memory usage in DEVise -- basically eliminated the
+  histogram capability (this really saves a lot, since there are big
+  structures in every ViewGraph for this); made creation of TDatas more
+  efficient by bypassing command code.
+
   Revision 1.36  1998/11/19 21:12:49  wenger
   Implemented non-DTE version of DEVise (new code handles data source catalog
   functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -198,8 +204,6 @@
 #include "CursorClassInfo.h"
 #include "MappingInterp.h"
 #include "QueryProc.h"
-
-#include "LMControl.h"		// LayoutManager
 
 #include "CatalogComm.h"
 #include "SessionDesc.h"

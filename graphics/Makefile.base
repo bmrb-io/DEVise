@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.69  1998/11/19 21:13:25  wenger
+#  Implemented non-DTE version of DEVise (new code handles data source catalog
+#  functions; Tables, SQLViews, etc., are not implemented); changed version to
+#  1.6.0.
+#
 #  Revision 1.68  1998/11/02 19:22:33  wenger
 #  Added "range/MQL" session description capability.
 #
@@ -218,7 +223,6 @@ CFLAGS = $(ARCH_FLAGS) -I../../graphics  -I../../graphics.new \
 	-I../../src/color/export -I../../src/utils/export \
 	-I../../generic \
 	-I../../util -I../../tape -I../../DTE/StandAlone \
-	-I../../LM/C++ \
 	-I../../csgroup/export \
 	-I../../src/data/export \
 	$(GLINCLUDE) \

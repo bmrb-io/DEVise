@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.57  1998/11/30 22:17:39  wenger
+#  Added -lmalloc to link line so DEVise doesn't use perl's malloc.
+#
 #  Revision 1.56  1998/11/19 21:13:17  wenger
 #  Implemented non-DTE version of DEVise (new code handles data source catalog
 #  functions; Tables, SQLViews, etc., are not implemented); changed version to
@@ -208,7 +211,7 @@ BATCH_CFLAGS =$(BASIC_CFLAGS) -I../../csgroup
 
 LDFLAGS = -L../DTE/ -L../RTree -L../graphics.new -L../graphics -L../tape \
 	-L../color -L../utils -L../issm -L../csgroup\
-	-L../crsp -L../compustat -L../LM -L../xvertext \
+	-L../crsp -L../compustat -L../xvertext \
 	-lgraphicsnew -lgraphics -lutils -lcolor \
 	-ldte -lrtree -lgraphicsnew -lcsgroup \
 	-lXrot \

@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.98  1998/11/16 18:58:45  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.97  1998/06/10 18:04:13  wenger
   Improved new cursor drawing (bug in Mesa implementation sometimes makes
   it look ugly); cursor color now saved in sessions.
@@ -471,8 +475,6 @@
 #include "CursorClassInfo.h"
 #include "MappingInterp.h"
 #include "QueryProc.h"
-
-#include "LMControl.h"		// LayoutManager
 
 #if !defined(NO_DTE)
   #include "CatalogComm.h"

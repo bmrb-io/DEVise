@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.89  1998/11/19 21:12:50  wenger
+#  Implemented non-DTE version of DEVise (new code handles data source catalog
+#  functions; Tables, SQLViews, etc., are not implemented); changed version to
+#  1.6.0.
+#
 #  Revision 1.88  1998/07/03 23:42:19  wenger
 #  Fixed some memory leaks; added provision to print data segment size
 #  at certain places in the code.
@@ -254,7 +259,7 @@ IMPLICIT_TEMPLATES = 1
 include ../../Makefile.common
 
 CFLAGS =  $(ARCH_FLAGS) \
-	-I../../graphics -I../../LM \
+	-I../../graphics \
 	-I../../src/color/export -I../../src/utils/export \
 	-I../../DTE/DeviseSpecific -I../../DTE/Core -I../../unidata \
 	-I../../csgroup/export\
