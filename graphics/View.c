@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/02/01 20:28:52  jussi
+  Axis areas were cleared even if axes were not displayed. Fixed
+  this.
+
   Revision 1.20  1996/01/30 21:11:21  jussi
   Replaced references to specific colors with references to
   BackgrounColor and ForegroundColor.
@@ -1508,7 +1512,6 @@ void View::Highlight(Boolean flag)
 
   WindowRep *winRep = GetWindowRep();
   winRep->SetXorMode();
-  winRep->SetFgColor(HighlightColor);
   DrawHighlight();
   winRep->SetCopyMode();
 }
@@ -1663,7 +1666,11 @@ void View::DoDrawCursors()
     VisualFilter *filter;
     Color color;
     cursor->GetVisualFilter(filter, color);
+#if 0
+    // cursor drawn in xor mode, so foreground color won't matter
+    // (and should not be set here)
     winRep->SetFgColor(color);
+#endif
 
     if (filter->flag & VISUAL_X) {
 #ifdef DEBUG

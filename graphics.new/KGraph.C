@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/30 21:12:56  jussi
+  Minor changes in visual appearance.
+
   Revision 1.7  1996/01/29 23:56:42  jussi
   Made code refer to ForegroundColor and BackgroundColor instead
   of black and white.
@@ -150,7 +153,6 @@ void KGraph::DrawCircle()
 void KGraph::DrawAxes()
 {
   _win->SetXorMode();
-  _win->SetFgColor(HighlightColor);
 
   Coord x, y;
   int theta = 360 / _naxes;
@@ -160,12 +162,6 @@ void KGraph::DrawAxes()
     Rotate(rad / 2, i * theta, x, y);
     _win->Line(cx, cy, x, y, 1);
   }
-
-#if 0
-  // Generate origin label
-  Rotate(rad / 2, 0, x, y);
-  _win->AbsoluteText("O ", x + 4, y - 6 , 50, 10, WindowRep::AlignWest);
-#endif
 
   _win->SetCopyMode();
 }

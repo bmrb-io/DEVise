@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/01/30 18:15:54  jussi
+  Minor improvements in visual appearance.
+
   Revision 1.12  1995/12/28 20:44:38  jussi
   Changed the approach with which inverted lines are drawn.
   Statistics report printed only when at least one statistic
@@ -173,7 +176,6 @@ void BasicStats::Report()
   
   // Draw line
   win->SetXorMode();
-  win->SetFgColor(HighlightColor);
 
   // Draw stats depending on the binary string representing the stats to 
   // be displayed
