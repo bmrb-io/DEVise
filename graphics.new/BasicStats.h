@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/08 23:46:12  ravim
+  Callbacks added.
+
   Revision 1.4  1995/12/07 02:20:10  ravim
   Stats displayed based on the specification string in ViewGraph class.
 
@@ -41,10 +44,11 @@ class ViewKGraph;
 #define STAT_MEAN 0
 #define STAT_MAX 1
 #define STAT_MIN 2
-#define STAT_NONE 3
+#define STAT_COUNT 3
+#define STAT_NONE 4
 
 // Total number of stats
-#define STAT_NUM 3
+#define STAT_NUM 4
 // Maximum length of the name of any stat
 #define STATNAMELEN 10
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/08 23:46:01  ravim
+  Callbacks added.
+
   Revision 1.7  1995/12/07 02:19:42  ravim
   Stats graphically displayed based on the stat specification string in ViewGraph class.
 
@@ -132,6 +135,7 @@ Coord BasicStats::GetStatVal(int statnum)
     case STAT_MEAN: return ysum/(nsamples ? nsamples : 1);
     case STAT_MAX: return ymax;
     case STAT_MIN: return ymin;
+    case STAT_COUNT: return nsamples;
     default: printf("Error: Unknown statistic\n");
     };
 
@@ -144,6 +148,7 @@ char *BasicStats::GetStatName(int statnum)
     case STAT_MEAN: return "MEAN";
     case STAT_MAX: return "MAX";
     case STAT_MIN: return "MIN";
+    case STAT_COUNT: return "COUNT";
     default: return "NONE";
     }
 }
