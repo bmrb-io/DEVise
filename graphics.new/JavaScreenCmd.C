@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.109  2000/12/14 16:38:46  wenger
+  More debug output: JavaScreenCmd constructor and ReturnVal() log command
+  name.
+
   Revision 1.108  2000/11/17 22:59:06  wenger
   Fixed problems with command logging of cursor movements and pile/stack
   flips.
@@ -543,7 +547,8 @@ char *JavaScreenCmd::_serviceCmdName[] =
     "JAVAC_CursorChanged",
     "JAVAC_ProtocolVersion",
     "JAVAC_ResetFilters",
-    "JAVAC_GetViewHelp"
+    "JAVAC_GetViewHelp",
+    "null_svc_cmd"
 };
 
 // be very careful that this order agrees with the ControlCmdType definition

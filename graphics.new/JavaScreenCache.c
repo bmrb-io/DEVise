@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  2000/06/05 16:22:42  wenger
+  Basically finished command/GData/GIF caching for JavaScreen support
+  (there are a few refinements that could still be added); changed the
+  default to do/use caching.
+
  */
 
 #include <sys/types.h>
@@ -143,6 +148,12 @@ JavaScreenCache::StartPlayingBack(JavaScreenCmd *jsc, const char *sessionFile,
                 reportErrNosys("Data cache file is older than session file");
                 result += StatusCancel;
             }
+
+	    //TEMP -- can we check what size the file *should* be?
+	    if (dataStat.st_size == 0) {
+                reportErrNosys("Data cache file is zero size");
+                result += StatusCancel;
+	    }
         }
 
         //TEMP -- Maybe check internal date of command cache file.
