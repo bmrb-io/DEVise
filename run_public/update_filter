@@ -23,5 +23,5 @@ else
 
   /p/devise/run/devise -session $session -batch $batchfile
 
-  #\rm $batchfile
+  \rm $batchfile
 endif
