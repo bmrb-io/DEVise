@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.100  2000/04/26 19:39:00  wenger
+  JavaScreen caching code is largely implemented except for checking
+  the validity of the cache files; committing with caching disabled
+  to work on cursor draw command ordering (includes improvements to
+  DevFileHeader class).
+
   Revision 1.99  2000/03/28 21:46:25  wenger
   Started implementation of caching commands, GIFs, and GData to speed up
   session opening.
@@ -2033,10 +2039,10 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 
     JavaScreenCmd::ControlCmdType result = DONE;
 
-	if (update) {
-		EraseChangedCursors();
-	}
-
+	//
+	// For each "dirty" top-level view, delete and re-create all child
+	// views, and set child view Z values.
+	//
 	int viewIndex2 = _topLevelViews.InitIterator();
 	while (_topLevelViews.More(viewIndex2)) {
 		View *view = (View *)_topLevelViews.Next(viewIndex2);
@@ -2057,16 +2063,6 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		    while (view->More(subViewIndex)) {
 			    View *subView = (View *)view->Next(subViewIndex);
 
-			    // Force a redraw of all cursors in view symbols that have just
-			    // been created.  This ensures that the cursors will be redrawn
-			    // by the JavaScreen, even if the devised wouldn't otherwise
-			    // have to redraw them.  RKW 1999-10-14.
-	            Boolean savePostpone = _postponeCursorCmds;
-	            _postponeCursorCmds = true;
-			    subView->HideCursors();
-			    subView->DrawCursors();
-                _postponeCursorCmds = savePostpone;
-
 			    subView->SetZ(view->GetZ() + 1.0);
 			    if (CreateView(subView, view) < 0) {
 				    result = ERROR;
@@ -2078,6 +2074,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		}
 	}
 	_topLevelViews.DoneIterator(viewIndex2);
+
 
 	//
 	// For each "GIF view", if it's dirty, dump it to the GIF file, and send
@@ -2128,6 +2125,18 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 					(void) unlink(fileName);
 					FreeString(fileName);
 				}
+
+				// If this view is not a GData view, tell the JS to draw
+				// any cursors in this view and its child views.  Note that
+				// we haven't yet checked which views have "dirty" GData, so
+				// if a GData view's GIF is dirty but the GData is not,
+				// things won't work right (that's why I left in the call
+				// to DrawChangedCursors() near the end).  I don't think
+				// it should be possible to get into that state, though.
+				// RKW 2000-05-01.
+				if (!_gdataViews.Find(view)) {
+				    DrawViewCursors(view);
+				}
 			}
 			if (tmpResult != DONE) result = tmpResult;
 		}
@@ -2136,7 +2145,6 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 
 	DOASSERT(dirtyGifCount == dirtyGifList.Size(),
 	  "Error in dirty window list");
-
 
 	//
 	// For each "GData view", if it's dirty, send the command for the
@@ -2170,10 +2178,16 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 			}
 
 			if (tmpResult != DONE) result = tmpResult;
+
+			// Tell the JS to redraw all cursors in this view and its
+			// child views.
+		    DrawViewCursors(view);
 		}
 	}
 	_gdataViews.DoneIterator(viewIndex);
 
+	// There shouldn't be any cursors that need to be redrawn at this
+	// point, but we'll leave this call in here just in case.  RKW 2000-05-01.
 	DrawChangedCursors();
 
 	//
@@ -2690,6 +2704,38 @@ JavaScreenCmd::DrawChangedCursors()
 	_drawnCursors.DoneIterator(index);
 
 	_drawnCursors.DeleteAll();
+}
+
+//====================================================================
+// Send commands to the JavaScreen to draw all cursors in this view
+// and its subviews.
+void
+JavaScreenCmd::DrawViewCursors(View *view)
+{
+#if defined(DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::DrawViewCursors(%s)\n", view->GetName());
+#endif
+
+	// Draw this view's cursors.
+    int index = view->_cursors->InitIterator();
+	while (view->_cursors->More(index)) {
+	    DeviseCursor *cursor = view->_cursors->Next(index);
+		DrawCursor(view, cursor, this);
+		if (_drawnCursors.Find(cursor)) {
+			_drawnCursors.Delete(cursor);
+		}
+	}
+	view->_cursors->DoneIterator(index);
+
+
+	// Recursively do the subviews.
+    index = view->InitIterator();
+    while (view->More(index)) {
+	    View *subView = (View *)view->Next(index);
+		DrawViewCursors(subView);
+    }
+	view->DoneIterator(index);
 }
 
 //====================================================================

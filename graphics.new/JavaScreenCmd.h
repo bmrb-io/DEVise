@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.36  2000/04/26 19:39:01  wenger
+  JavaScreen caching code is largely implemented except for checking
+  the validity of the cache files; committing with caching disabled
+  to work on cursor draw command ordering (includes improvements to
+  DevFileHeader class).
+
   Revision 1.35  2000/04/06 17:53:47  wenger
   Minor changes for setup on Eldon's laptop.
 
@@ -316,6 +322,7 @@ class JavaScreenCmd
 		void UpdateViewImage(View *view, int imageSize);
 		void EraseChangedCursors();
 		void DrawChangedCursors();
+		void DrawViewCursors(View *view);
 
 		DevStatus StartPlayingBack(const char *sessionFile);
 		DevStatus SendCmd(const char* cmd);
