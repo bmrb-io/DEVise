@@ -15,13 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/01/12 16:06:41  jussi
+#  Gcc header files for HP-UX seem to have vanished; substituted
+#  Sun header file directory instead.
+#
 #  Revision 1.1  1995/10/15 19:12:18  jussi
 #  Initial revision.
 #
 
 ############################################################
 
-ARCH_FLAGS = -DHPUX -I/s/gcc/sun4m_412/lib/g++-include
+ARCH_FLAGS = -DHPUX
 
 VPATH = ../../graphics
 include $(VPATH)/Makefile.base
