@@ -1,6 +1,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.6  1995/09/07 22:59:41  jussi
+#	Implemented saving and loading sessions (new type) and automatic
+#	view creation.
+#
 #	Revision 1.5  1995/09/07 20:34:21  jussi
 #	Finished an intermediate stage in designing an integrated
 #	tdata/window/map/view/link definition.
@@ -3127,8 +3131,8 @@ proc MacroDef {} {
     pack .map.but.save .map.but.saveas .map.but.load .map.but.auto \
 	    -in .map.but.row1 -side left -padx 5m
 
-    button .map.but.ok -text OK -width 10 -command NotImplemented
-    button .map.but.apply -text Apply -width 10 -command NotImplemented
+    button .map.but.ok -text OK -width 10 -state disabled -command {}
+    button .map.but.apply -text Apply -width 10 -state disabled -command {}
     button .map.but.cancel -text Cancel -width 10 -command "destroy .map"
     button .map.but.help -text Help -width 10 -command MacroDefHelp
     pack .map.but.ok .map.but.apply .map.but.cancel .map.but.help \
@@ -3411,7 +3415,7 @@ proc MacroDefAutoActual {tdata x} {
     set window "$tdata Auto"
     set err [catch {set exists $windows($window)}]
     if {$err > 0} {
-	set windows($window) {0.1 0.3 0.7 0.7}
+	set windows($window) {0.1 0.3 0.5 0.5}
     }
     
     # scan x in file and compute xlo and xhi
@@ -3487,7 +3491,7 @@ proc MacroDefTdata {m default} {
 	if {$tdata == $none} {
 	    set tdata $name
 	}
-	if {$default == $t} {
+	if {$default == $name} {
 	    set defExists 1
 	}
     }
@@ -3501,9 +3505,14 @@ proc MacroDefTdata {m default} {
 	.map.but.auto configure -state normal
     }
 
-    $m.mbar.menu add command -label "Other..." -command {
-	NotImplemented
-	# set modified 1
+    $m.mbar.menu add command -label "Other..." \
+	    -command {
+	set sname [DefSource]
+	if {$sname != ""} {
+	    # fix this: .map.tdata s.b. $m
+	    MacroDefTdata .map.tdata $sname
+	    set modified 1
+	}
     }
     tk_menuBar $m $m.mbar
 }
@@ -3537,9 +3546,14 @@ proc MacroDefWindows {m default} {
 	set window $default
     }
 
-    .map.window.mbar.menu add command -label "New..." -command {
-	NotImplemented
-	# set modified 1
+    .map.window.mbar.menu add command -label "New..." \
+	    -command {
+	set winname [DefWindow]
+	if {$winname != ""} {
+	    # fix this: .map.window s.b. $m
+	    MacroDefWindows .map.window $winname
+	    set modified 1
+	}
     }
     tk_menuBar .map.window .map.window.mbar
 }
@@ -3675,6 +3689,195 @@ proc MacroDefLinks {m default} {
     tk_menuBar $m $m.mbar
 }
 
+proc DefSource {} {
+    global tdatas schemas maps fsBox sname
+
+    # see if .source window already exists; if so, just return
+    set err [catch {set exists [wm state .source]}]
+    if {!$err} { return }
+
+    set fsBox(pattern) *
+    set source [FSBox]
+
+    if {$source == ""} { return }
+    if {![file isfile $source]} { return }
+
+    set schema ""
+    foreach tdata $tdatas {
+	set name [lindex $tdata 0]
+	set file [lindex $tdata 1]
+	if {$source == $file} {
+	    set fname [file tail $source]
+	    dialog .sourceExists "Source Exists" \
+		    "Source file $fname is already open\n\
+		    under source name $name." \
+		    "" 0 {OK}
+	    return
+	}
+    }
+
+    set fsBox(pattern) *.schema
+    set schema [FSBox]
+
+    if {$schema == ""} { return }
+    if {![file isfile $schema]} { return }
+
+    toplevel .source
+    wm minsize .source 400 200
+    wm maxsize .source 1000 200
+    wm title .source "Define Source"
+    wm geometry .source =750x200+100+100
+    selection clear .source
+
+    label .source.label -text "Enter name of data source"
+    frame .source.mid -relief groove -borderwidth 2
+    frame .source.but -relief groove -borderwidth 2
+    pack .source.label .source.mid .source.but -side top -pady 3m \
+	    -fill both -expand 1
+
+    frame .source.left -relief groove -borderwidth 2
+    frame .source.right -relief groove -borderwidth 2
+    pack .source.left -in .source.mid -side left
+    pack .source.right -in .source.mid -side left -fill x -expand 1
+
+    label .source.left.sname -text "Source name" -width 12
+    label .source.left.source -text "Source file" -width 12
+    label .source.left.schema -text "Schema file" -width 12
+    pack .source.left.sname -side top -fill x -pady 3m
+    pack .source.left.source .source.left.schema -side top -fill x
+
+    set sname ""
+    entry .source.right.sname -relief sunken -textvariable sname -width 20
+    label .source.right.source -text $source -width 60 -anchor w
+    label .source.right.schema -text $schema -width 60 -anchor w
+    pack .source.right.sname -side top -fill x -pady 3m
+    pack .source.right.source .source.right.schema -side top -fill x
+
+    button .source.but.ok -text OK -width 10 \
+	    -command {
+	if {$sname == ""} {
+	    dialog .needSource "No Source Name" \
+		    "Please enter name of source data." \
+		    "" 0 {OK}
+	} else {
+	    set err [catch {set exists $schemas($sname)}]
+	    if {!$err} {
+		dialog .sourceExists "Source Name Exists" \
+			"Source name $sname exists already." \
+			"" 0 {OK}
+	    } else {
+		destroy .source
+	    }
+	}
+    }
+    button .source.but.cancel -text Cancel -width 10 \
+	    -command {
+	set sname ""
+	destroy .source
+    }
+    pack .source.but.ok .source.but.cancel -side left -expand 1
+
+    tkwait visibility .source
+    grab set .source
+    tkwait window .source
+
+    if {$sname != ""} {
+	lappend tdatas [list $sname $source]
+	set err [catch {set sdef $maps($schema)}]
+	if {$err > 0} {
+	    # read schema here and put it in $sdef
+	    set sdef "{Xattr double 1} {Yattr int 0}"
+	    set maps($schema) ""
+	}
+	set schemas($sname) [list $schema $sdef]
+    }
+
+    return $sname
+}
+
+proc DefWindow {} {
+    global windows x y w h winname
+
+    # see if .def window already exists; if so, just return
+    set err [catch {set exists [wm state .def]}]
+    if {!$err} { return }
+
+    toplevel .def
+    wm minsize .def 200 200
+    wm maxsize .def 500 500
+    wm title .def "Define Window"
+    wm geometry .def =200x200+100+100
+    selection clear .def
+
+    set winname "Default"
+    set x "0.1"
+    set y "0.3"
+    set w "0.5"
+    set h "0.5"
+
+    label .def.label -text "Enter window parameters"
+    frame .def.win
+    frame .def.but
+    pack .def.label -side top -pady 3m
+    pack .def.win -side top -fill both -expand 1
+    pack .def.but -side top -fill x -expand 1
+
+    frame .def.win.left
+    frame .def.win.right
+    pack .def.win.left .def.win.right -side left -fill both \
+	    -expand 1
+
+    label .def.win.left.x -text X -width 8
+    label .def.win.left.y -text Y -width 8
+    label .def.win.left.w -text Width -width 8
+    label .def.win.left.h -text Height -width 8
+    label .def.win.left.name -text Name -width 8
+    pack .def.win.left.x .def.win.left.y \
+	    .def.win.left.w .def.win.left.h -side top
+    pack .def.win.left.name -side top -pady 3m
+
+    entry .def.win.right.x -relief sunken -width 15 -textvariable x
+    entry .def.win.right.y -relief sunken -width 15 -textvariable y
+    entry .def.win.right.w -relief sunken -width 15 -textvariable w
+    entry .def.win.right.h -relief sunken -width 15 -textvariable h
+    entry .def.win.right.name -relief sunken -width 15 -textvariable winname
+    pack .def.win.right.x .def.win.right.y \
+	    .def.win.right.w .def.win.right.h -side top -pady 0.5m
+    pack .def.win.right.name -side top -pady 3m
+
+    button .def.but.ok -text OK -width 10 \
+	    -command {
+	if {$winname == ""} {
+	    dialog .needInfo "Missing Information" \
+		    "Please enter all requested information." \
+		    "" 0 {OK}
+	} else {
+	    set err [catch {set exists $windows($winname)}]
+	    if {!$err} {
+		dialog .winExists "Win Exists" \
+			"Window $winname exists already." \
+			"" 0 {OK}
+	    } else {
+		set defn [list $x $y $w $h]
+		set windows($winname) $defn
+		destroy .def
+	    }
+	}
+    }
+    button .def.but.cancel -text Cancel -width 10 \
+	    -command {
+	set winname ""
+	destroy .def
+    }
+    pack .def.but.ok .def.but.cancel -side left -expand 1
+
+    tkwait visibility .def
+    grab set .def
+    tkwait window .def
+
+    return $winname
+}
+
 proc DefMapping {schema} {
     global DEViseColors DEViseShapes
     global mappings devcolors devshapes
@@ -3806,21 +4009,24 @@ proc DefMapping {schema} {
     button .def.but.ok -text OK -width 10 \
 	    -command {
 	if {$mapname == ""} {
-	    destroy .def
-	}
-	set err [catch {set exists $mappings($mapname)}]
-	if {!$err} {
-	    dialog .mapExists "Mapping Exists" \
-		"Mapping $mapname exists already." \
-		"" 0 {OK}
+	    dialog .needInfo "Missing Information" \
+		    "Please enter all requested information." \
+		    "" 0 {OK}
 	} else {
-	    set cidx $devcolors($color)
-	    set sidx $devshapes($shape)
-	    set pidx 0
-	    set oidx 0
-	    set defn [list $x $y $cidx $sidx $size $pidx $oidx]
-	    set mappings($mapname) $defn
-	    destroy .def
+	    set err [catch {set exists $mappings($mapname)}]
+	    if {!$err} {
+		dialog .mapExists "Mapping Exists" \
+			"Mapping $mapname exists already." \
+			"" 0 {OK}
+	    } else {
+		set cidx $devcolors($color)
+		set sidx $devshapes($shape)
+		set pidx 0
+		set oidx 0
+		set defn [list $x $y $cidx $sidx $size $pidx $oidx]
+		set mappings($mapname) $defn
+		destroy .def
+	    }
 	}
     }
     button .def.but.cancel -text Cancel -width 10 \
@@ -3891,17 +4097,20 @@ proc DefView {} {
     button .def.but.ok -text OK -width 10 \
 	    -command {
 	if {$viewname == ""} {
-	    destroy .def
-	}
-	set err [catch {set exists $views($viewname)}]
-	if {!$err} {
-	    dialog .viewExists "View Exists" \
-		"View $viewname exists already." \
-		"" 0 {OK}
+	    dialog .needInfo "Missing Information" \
+		    "Please enter all requested information." \
+		    "" 0 {OK}
 	} else {
-	    set defn [list $xlo $xhi $ylo $yhi]
-	    set views($viewname) $defn
-	    destroy .def
+	    set err [catch {set exists $views($viewname)}]
+	    if {!$err} {
+		dialog .viewExists "View Exists" \
+			"View $viewname exists already." \
+			"" 0 {OK}
+	    } else {
+		set defn [list $xlo $xhi $ylo $yhi]
+		set views($viewname) $defn
+		destroy .def
+	    }
 	}
     }
     button .def.but.cancel -text Cancel -width 10 \
@@ -3970,17 +4179,20 @@ proc DefLink {} {
     button .def.but.ok -text OK -width 10 \
 	    -command {
 	if {$linkname == ""} {
-	    destroy .def
-	}
-	set err [catch {set exists $links($linkname)}]
-	if {!$err} {
-	    dialog .linkExists "Link Exists" \
-		"Link $linkname exists already." \
-		"" 0 {OK}
+	    dialog .needInfo "Missing Information" \
+		    "Please enter all requested information." \
+		    "" 0 {OK}
 	} else {
-	    set defn [list $x $y $color $shape $size $pattern $orientation]
-	    set links($linkname) $defn
-	    destroy .def
+	    set err [catch {set exists $links($linkname)}]
+	    if {!$err} {
+		dialog .linkExists "Link Exists" \
+			"Link $linkname exists already." \
+			"" 0 {OK}
+	    } else {
+		set defn [list $x $y $color $shape $size $pattern $orientation]
+		set links($linkname) $defn
+		destroy .def
+	    }
 	}
     }
     button .def.but.cancel -text Cancel -width 10 \
