@@ -1,12 +1,15 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:13:13  jussi
+  Added/update CVS header.
+*/
 
 #include <sys/types.h>
 #include <stdio.h>
 #include <sys/stat.h>
-#ifdef PENTIUM
+#if defined(PENTIUM) || defined(HPUX)
 #include <dirent.h>
 #else
 #include <sys/dir.h>
@@ -58,13 +61,13 @@ void ClearDir(char *dir){
 */
 	DIR *dirp = opendir(dir);
 	if (dirp != NULL){
-#ifdef PENTIUM
+#if defined(PENTIUM) || defined(HPUX)
 		struct dirent *dp;
 #else
 		struct direct *dp;
 #endif
 		for (dp = readdir(dirp); dp != NULL; dp = readdir(dirp)){
-#if defined(IBM_POWER_STATION)||defined(PENTIUM)
+#if defined(IBM_POWER_STATION) || defined(PENTIUM) || defined(HPUX)
 			struct dirent *realdp = (struct dirent *)dp;
 #else
 			struct direct *realdp = dp;
