@@ -1,7 +1,10 @@
 /*
    $Id$
 
-   $Log$*/
+   $Log$
+   Revision 1.1  1995/09/18 18:30:33  jussi
+   Initial revision of archive.
+*/
 
 #ifndef _COMPUSTAT_H_
 #define _COMPUSTAT_H_
@@ -25,7 +28,6 @@ char *comp_idx_form[COMP_NUM_IDX_FIELDS*2] = {
     "STATE",  "I",
     "COUNTY", "I"
   };
-
 
 /* Description of data fields to extract - each field is described through 
    three numbers
