@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/12/15 20:21:41  wenger
+  Added '-noshm' command line flag to allow user to disable shared memory;
+  temporarily disabled RTree stuff.
+
   Revision 1.27  1996/12/15 06:52:31  donjerko
   Added the initialization and shutdown for RTree code.
 
@@ -128,9 +132,7 @@
 #include "BufPolicy.h"
 #include "Util.h"
 #include "Version.h"
-#if 0 //TEMPTEMP
 #include "RTreeCommon.h"
-#endif
 
 static char uniqueFileName[100];
 
@@ -265,9 +267,7 @@ static void Usage(char *prog)
 void Init::DoInit(int &argc, char **argv)
 {
 
-#if 0 //TEMPTEMP
   initialize_system(VolumeName, RTreeFile, VolumeSize);
-#endif
 
   /* Create work directory, if needed */
   char *workDir = getenv("DEVISE_WORK");
