@@ -1935,6 +1935,9 @@ Num Date        Status  Description
 499 06/07/99	OPEN	"Next in Pile" in mapping dialog doesn't work right in
 			"unconventional" piles (e.g., piled view syms). (rkw)
 
+500 06/15/99	OPEN	Flipping a piled view containing a piled view symbol
+			doesn't work right. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
