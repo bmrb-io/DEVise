@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1997/05/28 15:39:29  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.20.4.1  1997/05/20 16:11:15  ssl
   Added layout manager to DEVise
 
@@ -227,8 +230,9 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(viewName);
 	DOASSERT(v, "HISTOGRAM view not found");
 	_data = v->GetViewHistogram();
-	DO_DEBUG(printf("found histogram data source 0x%p from view 0x%p\n",
-			_data, v));
+#if defined(DEBUG)
+	printf("found histogram data source 0x%p from view 0x%p\n", _data, v);
+#endif
     } else if (!strncmp(_type, "GDATASTAT_X", 11)) {
 	DOASSERT( strncmp(name, "GstatX", 6) == 0, "invalid gdatastat prefix");
 	char *viewName = strchr(name, ':');

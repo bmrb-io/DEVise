@@ -17,6 +17,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.70  1998/02/19 23:25:12  wenger
+#  Improved color library and got client/server test code to work
+#  (except for setting colors by RGB): reduced compile interdependencies,
+#  especially in color library; color and utils libraries install headers
+#  as per code reorg plans; added standard DEVise headers to all color
+#  manager files; moved color initialization into Display constructors;
+#  fixed some compile warnings throughout the code.
+#
 #  Revision 1.69  1998/02/12 17:16:35  wenger
 #  Merged through collab_br_2; updated version number to 1.5.1.
 #
@@ -380,6 +388,11 @@ NativeExpr.main.o:
 	mv NativeExpr.o NativeExpr.main.o
 
 .PHONY: clean mostlyclean
+
+#depend Makefile.depend: $(VPATH)/*.[cCh]
+depend Makefile.depend:
+	-rm Makefile.depend
+	-$(CC) -M $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
 
 clean: mostlyclean
 	-rm $(LIBNAME) genStrData strData libclient.a libserver.a\

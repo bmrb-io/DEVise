@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.68  1998/02/13 15:51:38  wenger
+  Changed ViewData to be based on old ViewScatter class instead of
+  TDataViewX; ViewData now returns a list of the records drawn to
+  the query processor; removed unused GDataBinX class.
+
   Revision 1.67  1998/02/10 21:13:15  wenger
   Changed signatures of ReturnGData() in QueryCallback and its subclasses
   to pass back lists of records drawn (not implemented yet); moved
@@ -415,6 +420,7 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
     _histBuffer = new DataSourceFixedBuf(HIST_BUF_SIZE, "histBuffer");
     _histBuffer->AddRef();
     _histBuffer->SetControllingView(this);
+    _histBuffer->Write("0 0\n", 4); // ksb: kludge! doesn't work w/o some data
 
     _gdataStatBufferX = new DataSourceFixedBuf(DERIVED_BUF_SIZE, "gdataStatBufferX");
     _gdataStatBufferY = new DataSourceFixedBuf(DERIVED_BUF_SIZE, "gdataStatBufferY");
@@ -597,27 +603,19 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
     if (!MoreMapping(index)) {
       // this is the first mapping
       // update the histogram bucket sizes
-//      AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
-//      if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
+      AttrInfo *yAttr = map->MapGAttr2TAttr(MappingCmd_Y);
+      if( yAttr && yAttr->hasLoVal && yAttr->hasHiVal ) {
 	// y min & max known for the file, so use those to define buckets
-//	double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
-//	double hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
-//	_allStats.SetHistWidth(lo, hi);
-//       } else {
+	double lo = AttrList::GetVal(&yAttr->loVal, yAttr->type);
+	double hi = AttrList::GetVal(&yAttr->hiVal, yAttr->type);
+	_allStats.SetHistogram(lo, hi, GetHistogramBuckets());
+      } else {
 	// global min & max are not known, so use filter hi & lo
         VisualFilter filter;
         GetVisualFilter(filter);
-	double yMax = _allStats.GetStatVal(STAT_MAX);
-	double yMin = _allStats.GetStatVal(STAT_MIN);
-	double hi = (yMax > filter.yHigh) ? yMax:filter.yHigh; 
-	double lo = (yMin > filter.yLow) ? yMin:filter.yLow;
-	_allStats.SetHistWidth(lo, hi);
-#if defined(DEBUG) || 0
-	printf("ViewGraph::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n", 
-		yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
-#endif
-//	_allStats.SetHistWidth(filter.yLow, filter.yHigh);
-//      }
+	_allStats.SetHistogram(filter.yLow, filter.yHigh, 
+                               GetHistogramBuckets());
+      }
     }
     DoneMappingIterator(index);
 
@@ -1067,6 +1065,15 @@ char **ExtractDate(char *string) {
 }
 
 
+void ViewGraph::SetHistogram(Coord min, Coord max, int buckets)
+{
+  AbortQuery();
+  _allStats.SetHistogram(min, max, buckets);
+  ResetGStatInMem();
+  Refresh();
+}
+
+
 void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 {
     /* initialize statistics buffer */
@@ -1137,7 +1144,7 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
         printf("Hist width in ViewGraph after set is %g\n", _allStats.GetHistWidth());
 #endif
 */    }
-	int size = 32 * _allStats.GetnumBuckets(); // 24 is the max size for each line
+	int size = HISTOGRAM_REC_SIZE * _allStats.GetnumBuckets(); // 24 is the max size for each line
 	_histBuffer->Resize(size);
 	double pos = _allStats.GetHistMin() + width / 2.0;
 #if defined(DEBUG) || 0
@@ -1410,10 +1417,7 @@ void ViewGraph::SetHistogramWidthToFilter()
     }
     printf("Histogram for view %s set to (%g, %g) from %s range\n",
 	   GetName(), lo, hi, is_filter ? "filter" : "file");
-    _allStats.SetHistWidth(lo, hi);
-    ResetGStatInMem();
-    AbortQuery();
-    Refresh();
+    SetHistogram(lo, hi, GetHistogramBuckets());
 }
 
 void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)

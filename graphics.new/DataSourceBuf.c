@@ -20,6 +20,9 @@
    $Id$
 
    $Log$
+   Revision 1.8  1997/04/21 22:50:05  guangshu
+   Minor change.
+
    Revision 1.7  1996/10/08 21:49:07  wenger
    ClassDir now checks for duplicate instance names; fixed bug 047
    (problem with FileIndex class); fixed various other bugs.
@@ -69,6 +72,7 @@
 #include <sys/param.h>
 #include <unistd.h>
 
+#define DEBUG
 #include "DataSourceBuf.h"
 #include "Util.h"
 #include "DevError.h"
@@ -99,8 +103,7 @@ DataSourceBuf::DataSourceBuf(char *buffer, int buffer_size,
     _end_buffer = _sourceBuf + buffer_size -1;
     _end_data = _sourceBuf + data_size -1;
     DOASSERT(_end_data <= _end_buffer, "more data than buffer space");
-    _currentLoc = NULL;
-    written = false;
+    _currentLoc = _sourceBuf;
 }
 
 /*------------------------------------------------------------------------------
@@ -280,7 +283,6 @@ DataSourceBuf::Write(const char *buf, size_t byteCount)
 	    result = byteCount;
 	}
     }
-    if(!written) written = true;
     
     return result;
 }

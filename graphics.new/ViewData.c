@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/13 15:51:36  wenger
+  Changed ViewData to be based on old ViewScatter class instead of
+  TDataViewX; ViewData now returns a list of the records drawn to
+  the query processor; removed unused GDataBinX class.
+
 */
 
 //******************************************************************************
@@ -103,32 +108,6 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	int					gRecSize = mapping->GDataRecordSize();
 	int					recIndex = 0;
 	int					firstRec = 0;
-	double				width = _allStats.GetHistWidth();
-
-#if defined(DEBUG) || 0
-	printf("Hist width in ViewData is %g\n", width);
-#endif
-
-	VisualFilter		filter;
-
-	GetVisualFilter(filter);
-
-	double				yMax = _allStats.GetStatVal(STAT_MAX);
-	double				yMin = _allStats.GetStatVal(STAT_MIN);
-	double				ratio = (filter.yHigh-filter.yLow)/(yMax-yMin);
-
-	if((width == 0) || (ratio > 2))
-	{
-		double	hi = (yMax > filter.yHigh) ? yMax:filter.yHigh;
-		double	lo = (yMin > filter.yLow) ? yMin:filter.yLow;
-
-		_allStats.SetHistWidth(lo, hi);
-
-#if defined(DEBUG) || 0
-		printf("ViewData::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n",
-			   yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
-#endif
-	}
 
     // Get info from GData records, figure out whether symbols are within
 	// visual filter.

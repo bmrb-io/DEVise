@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/02/10 21:13:17  wenger
+  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+  to pass back lists of records drawn (not implemented yet); moved
+  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+
   Revision 1.43  1998/01/14 16:39:24  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -234,7 +239,9 @@
   const int DERIVED_BUF_SIZE = 9600;
 #endif
 
-const int HIST_BUF_SIZE = 6144;
+const int HISTOGRAM_REC_SIZE = 24;
+const int MAX_HISTOGRAM_BUCKETS = 100;
+const int HIST_BUF_SIZE = MAX_HISTOGRAM_BUCKETS * HISTOGRAM_REC_SIZE;
 const int STAT2D_BUF_SIZE = 131072;
 
 #include "Action.h"
@@ -392,21 +399,16 @@ class ViewGraph : public View
   
   /* Get pointer to statistics object */
   BasicStats *GetStatObj() { return &_allStats; }
-  void SetHistBucks(int num) { _allStats.SetnumBuckets(num); }
+  void SetHistogram(Coord min, Coord max, int buckets);
+  Coord GetHistogramMin() { return _allStats.GetHistMin(); }     
+  Coord GetHistogramMax() { return _allStats.GetHistMax(); }     
+  int GetHistogramBuckets() { return _allStats.GetnumBuckets(); }     
 
   /* Return pointer to buffer with view statistics */
-  DataSourceBuf* GetViewStatistics() { 
-        if (!_statBuffer->IsBufWritten()) PrepareStatsBuffer(GetFirstMap());
-  	return _statBuffer; }
-  DataSourceBuf* GetViewHistogram()  { 
-  	if (!_statBuffer->IsBufWritten()) PrepareStatsBuffer(GetFirstMap());
-	return _histBuffer; }
-  DataSourceBuf* GetGdataStatisticsX() { 
-  	if (!_statBuffer->IsBufWritten()) PrepareStatsBuffer(GetFirstMap());
-	return _gdataStatBufferX; }
-  DataSourceBuf* GetGdataStatisticsY() { 
-  	if (!_statBuffer->IsBufWritten()) PrepareStatsBuffer(GetFirstMap());
-	return _gdataStatBufferY; }
+  DataSourceBuf* GetViewStatistics() { return _statBuffer; }
+  DataSourceBuf* GetViewHistogram()  { return _histBuffer; }
+  DataSourceBuf* GetGdataStatisticsX() { return _gdataStatBufferX; }
+  DataSourceBuf* GetGdataStatisticsY() { return _gdataStatBufferY; }
 
   // uses filter''s y range to set the histogram upper & lower bounds
   void SetHistogramWidthToFilter();

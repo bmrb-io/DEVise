@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/09/10 14:15:35  beyer
+  Fixed confidence intervals.
+
   Revision 1.29  1997/08/20 22:10:50  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -132,10 +135,12 @@ BasicStats::BasicStats()
 #endif
 
   _vw = 0;
-  hist_min = hist_max = width = 0;
-  numBuckets = DEFAULT_NUM;  //default number of buckets = 50
-
-  hist = NULL;
+  hist_min = hist_max = width = 100;
+  numBuckets = DEFAULT_HISTOGRAM_BUCKETS;
+  hist = new int[numBuckets];
+  for(int j = 0; j < numBuckets; j++){
+    hist[j] = 0;
+  }
   Init(_vw);
 }
 
@@ -167,14 +172,7 @@ void BasicStats::Init(ViewGraph *vw)
   nval = 0;
   nsamples = 0;
   if (vw) ViewStats::Init(vw);
-//  numBuckets = DEFAULT_NUM;
-  if (numBuckets > 0 ){
-    if (hist) delete [] hist;
-    hist = new int[numBuckets];
-    for(int j=0; j<numBuckets; j++){
-	hist[j]=0;
-    }
-  }
+
 }
 
 void BasicStats::Sample(double x, double y)
@@ -375,62 +373,33 @@ Coord BasicStats::GetHistMax()
     return hist_max;
 }
 
-void BasicStats::SetHistWidth(Coord min, Coord max)
+void BasicStats::SetHistogram(Coord min, Coord max, int buckets)
 {
+  DOASSERT(numBuckets > 0, "numBuckets less than 1");
+  numBuckets = buckets;
 #if defined(DEBUG)
-  printf("BasicStats(0x%p)::SetHistWidth()\n", this);
+  printf("set width: min:%g max:%g\n", min, max);
 #endif
-
-    if(numBuckets == 0) numBuckets = DEFAULT_NUM; 
-#if defined(DEBUG)
-    printf("set width: min:%g max:%g\n", min, max);
-#endif
-    DOASSERT(min <= max, "histogram min > max");
-    if( min == max ) {
-	min -= 0.5;
-	max += 0.5;
-    }
-    hist_min = min;
-    hist_max = max;
-    DOASSERT(numBuckets > 0, "numBuckets less than 1");
-    width = (max - min) / numBuckets;
-#if defined(DEBUG)
-    printf("width: %g\n", width);
-#endif
-}
-
-void BasicStats::SetnumBuckets(int num)
-{
-#if defined(DEBUG)
-  printf("BasicStats(0x%p)::SetNumBuckets(%d)\n", this, num);
-#endif
-
-  if(num > 0) 
-  {
-     numBuckets = num;
-#if defined(DEBUG) || 0
-     printf("hist_max=%g, hist_min=%g\n", hist_max, hist_min);
-#endif
-     // update the histogram width accordingly
-     if(num > 0 && hist_max > hist_min) 
-	width = (hist_max - hist_min)/numBuckets; 
-#if defined(DEBUG)
-     printf("****** Old hist=%p\n", hist);
-#endif
-     if (hist) delete [] hist;
-     hist = new int[numBuckets];
-     if (!hist) 
-     {fprintf(stderr, "Run out of memory. Exitting now\n"); exit(1);}
-     for(int i = 0; i < numBuckets; i++) {
-       hist[i] = 0;
-     }
-#if defined(DEBUG)
-     printf("****** New hist=%p width=%g\n", hist, width);
-#endif
-  } else {
-     fprintf(stderr, "Wrong number of buckets\n");
+  if( min == max ) {
+    min -= 0.5;
+    max += 0.5;
   }
+  DOASSERT(min < max, "histogram min > max");
+  hist_min = min;
+  hist_max = max;
+  width = (max - min) / numBuckets;
+#if defined(DEBUG)
+  printf("width: %g\n", width);
+#endif
+
+  if (hist) delete [] hist;
+  hist = new int[numBuckets];
+  for(int i = 0; i < numBuckets; i++) {
+    hist[i] = 0;
+  }
+
 }
+
 char *BasicStats::GetStatName(int statnum)
 {
   switch (statnum) {

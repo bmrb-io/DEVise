@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/03/20 22:04:42  guangshu
+  Added function SetnumBucks.
+
   Revision 1.16  1996/08/07 15:23:20  guangshu
   Simplified the calculation of statistics and Added support for regression lines.
 
@@ -88,7 +91,7 @@ class ViewKGraph;
 // Total number of stats
 #define STAT_NUM   8 
 //Total number of classes for histogram
-//#define HIST_NUM    50
+#define DEFAULT_HISTOGRAM_BUCKETS    10
 
 // Maximum length of the name of any stat
 #define STATNAMELEN 10
@@ -116,7 +119,6 @@ class ViewKGraph;
 
 const double zval[NUM_Z_VALS] = { 1.464, 1.645, 1.960 };
 const int num_per_batch = 1;
-const int DEFAULT_NUM = 50;
 
 class BasicStats: public ViewStats
 {
@@ -136,8 +138,7 @@ public:
   virtual Coord GetHistWidth();
   virtual Coord GetHistMin();
   virtual Coord GetHistMax();
-  virtual void SetHistWidth(Coord min, Coord max);
-  virtual void SetnumBuckets(int num);
+  virtual void SetHistogram(Coord min, Coord max, int buckets);
   virtual int GetnumBuckets(){ return numBuckets;}
   virtual char *GetStatName(int statnum);
 

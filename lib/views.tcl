@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.45  1998/02/03 23:46:51  wenger
+#  Fixed a problem Hongyu had with getting GData on socket; fixed bugs
+#  283 and 285 (resulted from problems in color manager merge);
+#  conditionaled out some debug output.
+#
 #  Revision 1.44  1998/01/27 23:04:45  wenger
 #  Broke the server's view selection dependency on the client (except when
 #  running in collaboration mode).
@@ -2065,40 +2070,40 @@ proc DoGroupByStat {} {
 
 ############################################################
 proc DoHistStat {} {
-    global curView derivedSourceList
-    global tdata viewsel linksel windowsel bgcolor
-    global titlesel xaxissel yaxissel byAttr ylist newgdata
+    global curView windowsel
+#    global viewsel linksel windowsel bgcolor
+#    global titlesel xaxissel yaxissel byAttr ylist newgdata
 
-    if {[WindowVisible .histStat]} {
-	return 
+#    if {[WindowVisible .histStat]} {
+#	return 
+#    }
+    if {$curView == ""} {
+        dialog .viewNotFound "No view selected" "" 0 OK
+        return
     }
+
+    set histdata [DEVise getHistogram $curView]
+    set min [lindex $histdata 0]
+    set max [lindex $histdata 1]
+    set buckets [lindex $histdata 2]
+
+    set windowsel [DEVise getViewWin $curView]
 
     toplevel 	.histStat
     wm title	.histStat "Histogram Stat"
     wm geometry .histStat +150+150
 
-    frame .histStat.top
-    frame .histStat.upper
-    frame .histStat.bottom
-    pack .histStat.top -side top -pady 1m -expand 1 -fill both
-    pack .histStat.upper -side top -pady 1m -expand 1 -fill both
-    pack .histStat.bottom -side top -pady 1m -expand 1 -fill both
+    set labelwidth 10
 
-    label .histStat.windowLabel -text "Window: "
+    frame .histStat.winFrame
+    label .histStat.windowLabel -text "window" -width $labelwidth
     menubutton .histStat.windowsel -relief raised \
 		-textvariable windowsel -menu .histStat.windowsel.windowMenu \
 		-width 20
-    pack .histStat.windowLabel .histStat.windowsel -in .histStat.top \
+    pack .histStat.windowLabel .histStat.windowsel -in .histStat.winFrame \
 		-side left -pady 1m
+    pack .histStat.winFrame -side top
 
-    set windowsel ""
-    if {$curView != ""} {
-        set windowsel [DEVise getViewWin $curView]
-    }
-    if {$windowsel == ""} {
-        set windowsel "None selected yet"
-    }
-   
     menu .histStat.windowsel.windowMenu -tearoff 0
     foreach w [WinSet] {
         .histStat.windowsel.windowMenu add command -label $w \
@@ -2115,47 +2120,67 @@ proc DoHistStat {} {
         }
     }
 
-    label .histStat.histLabel -text "Number of buckets"
-    entry .histStat.buckEntry -text "" -relief  sunken -width 15 -font 8x13
-    .histStat.buckEntry insert 0 50
+    frame .histStat.minFrame
+    label .histStat.minLabel -text "min" -width $labelwidth
+    entry .histStat.minEntry
+    .histStat.minEntry insert 0 $min
+    pack .histStat.minLabel .histStat.minEntry -in .histStat.minFrame -side left
+    pack .histStat.minFrame -side top
 
-    pack .histStat.histLabel .histStat.buckEntry -in .histStat.upper \
-		-side left -pady 1m 
+    frame .histStat.maxFrame
+    label .histStat.maxLabel -text "max" -width $labelwidth
+    entry .histStat.maxEntry
+    .histStat.maxEntry insert 0 $max
+    pack .histStat.maxLabel .histStat.maxEntry -in .histStat.maxFrame -side left
+    pack .histStat.maxFrame -side top
 
+    frame .histStat.bucketsFrame
+    label .histStat.bucketsLabel -text "buckets" -width $labelwidth
+    entry .histStat.bucketsEntry
+    .histStat.bucketsEntry insert 0 $buckets
+    pack .histStat.bucketsLabel .histStat.bucketsEntry \
+            -in .histStat.bucketsFrame -side left
+    pack .histStat.bucketsFrame -side top
+
+    frame .histStat.bottom
     button .histStat.ok -text OK -width 15 -command {
-	set numBucks [.histStat.buckEntry get]
-	DEVise setBuckRefresh $curView $numBucks 
-	set tdata ""
-	set tdata "{Hist: $curView}"
-	set tdata_1 "Hist: $curView"
-	set exist [DEVise exists $tdata_1]
-	if {![DEVise exists $tdata_1]} { 
-	 	set viewsel 2  
-		# Bar Chart
-		set linksel 0
-        	# Linkk X
-    		set bgcolor "AntiqueWhite"
-   		set titlesel 1
-	        set xaxissel 1
-       		set yaxissel 1
-       		set newgdata 1
-		set sname "{Hist: $curView}"
-       		set ylist Value
-        	set x Bucket
-
-		scanDerivedSources
-    		updateDerivedSources
-		set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
-		puts "name_schema_pair + $name_schema_pair"
-
-		MacroDefAutoActual $tdata $viewsel $linksel $windowsel \
-            	   $titlesel $xaxissel $yaxissel $x $ylist $newgdata 
-		}
-		return
+        set min [.histStat.minEntry get]
+        set max [.histStat.maxEntry get]
+        set buckets [.histStat.bucketsEntry get]
+	set tdata "Hist: $curView"
+        DEVise setHistogram $curView $min $max $buckets
+	if {![DEVise exists $tdata]} { 
+            set viewsel 2  
+            # Bar Chart
+            set linksel 0
+            # Linkk X
+            # set bgcolor "AntiqueWhite"
+            set titlesel 1
+            set xaxissel 1
+            set yaxissel 1
+            set newgdata 1
+            set ylist Value
+            set x Bucket
+            
+            scanDerivedSources
+            updateDerivedSources
+            OpenAndDefineDataSources 1 "{$tdata}"
+            #set name_schema_pair [OpenAndDefineDataSources 1 $tdata]
+            #puts "name_schema_pair + $name_schema_pair"
+            
+            MacroDefAutoActual "{$tdata}" $viewsel $linksel $windowsel \
+                    $titlesel $xaxissel $yaxissel $x $ylist $newgdata 
+        }
+        destroy .histStat
     }
-    button .histStat.cancel -text Cancel -width 15 -command {
-		destroy .histStat }
+
+    button .histStat.cancel -text Cancel -width 15 \
+            -command { destroy .histStat }
     pack .histStat.ok .histStat.cancel -in .histStat.bottom -side left -pady 1m 
+    pack .histStat.bottom -side top
+
+    grab set .histStat
+    tkwait window .histStat
 }
 
 ############################################################

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.99  1997/12/04 04:06:50  donjerko
+#	New View interface.
+#
 #	Revision 1.98  1997/12/02 23:28:08  weaver
 #	*** empty log message ***
 #
@@ -892,51 +895,43 @@ proc setupAttrRadioMenu {menu var prefix schemaname grpname topgrp} {
 ############################################################
 
 proc MacroImport {mode derivedOnly} {
-    global schemadir
-    global dialogListVar sourceList derivedSourceList
-
-    set tdata ""
-
+    global dialogListVar
     if {!$derivedOnly && $mode > 0} {
 	set tdataSet [TdataSet]
 	if {[llength $tdataSet] >= 0} {
 	    set answer [ dialogList .selectTData "Visualize Data Stream"  \
 		    "Select a data stream" \
 		    "" 0 { OK Cancel } $tdataSet ]
-	    if {$answer == 1 || $dialogListVar(selected) == ""} {
-		return
-	    }
 	    if {$answer == 0} { 
-		set tdata $dialogListVar(selected)
-	    } else {
-		set tdata ""
+                displayTable $dialogListVar(selected)
 	    }
 	}
     }
 
-    if {$tdata == ""} {
-	set name_schema_pair [OpenNewDataSource $derivedOnly]
-	set tdata [lindex $name_schema_pair 0]
-	set schemaname [lindex $name_schema_pair 1]
-	set is_dte_type [lindex $name_schema_pair 2]
-#	puts "is_dte_type = $is_dte_type"
-	set schemafile "$schemadir/$schemaname"
-    }
+#     if {$tdata == ""} {
+# 	set name_schema_pair [OpenNewDataSource $derivedOnly]
+# 	set tdata [lindex $name_schema_pair 0]
+# 	set schemaname [lindex $name_schema_pair 1]
+# 	set is_dte_type [lindex $name_schema_pair 2]
+# #	puts "is_dte_type = $is_dte_type"
+# 	set schemafile "$schemadir/$schemaname"
+#     }
     
-    if {$tdata == ""} { return }
+#    if {$tdata == ""} { return }
 
-    if {$derivedOnly} {
-	set schemafile [lindex $derivedSourceList($tdata) 3]
-    } else {
-#	set schemafile [lindex $sourceList($tdata) 3]
-    }
+#     if {$derivedOnly} {
+# 	set schemafile [lindex $derivedSourceList($tdata) 3]
+#     } else {
+# #	set schemafile [lindex $sourceList($tdata) 3]
+#     }
 
-    if {$mode && $derivedOnly} {
-	StatText $tdata $schemafile
-    } else {
-#        set schemaname [file tail $schemafile]
-	MacroDefAuto $tdata $schemaname $is_dte_type
-    }
+#     if {$mode && $derivedOnly} {
+# 	StatText $tdata $schemafile
+#     } else {
+# #        set schemaname [file tail $schemafile]
+# 	MacroDefAuto $tdata $schemaname $is_dte_type
+#     }
+
 }
 
 #############################################################

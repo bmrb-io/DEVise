@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/04/21 22:50:49  guangshu
+  Added function IsBufWritten.
+
   Revision 1.5  1996/08/04 21:23:23  beyer
   DataSource's are now reference counted.
   Added Version() which TData now check to see if the DataSource has changed,
@@ -78,7 +81,6 @@ public:
 
 	virtual size_t Fwrite(const char *buf, size_t size, size_t itemCount);
 	virtual size_t Write(const char *buf, size_t byteCount);
-	Boolean IsBufWritten() { return written; }
 
 	virtual int Seek(long offset, int from);
 	virtual long Tell();
@@ -95,7 +97,6 @@ public:
 	char *          _end_buffer;
 	char *          _end_data;
 	char *		_currentLoc;
-	Boolean 	written;
 };
 
 

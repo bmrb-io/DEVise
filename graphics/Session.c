@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/02/02 18:25:59  wenger
+  Strings file can now be loaded manually; name of strings file is now
+  stored in session file; added 'serverExit' command and kill_devised
+  script to cleanly kill devised; fixed bug 249; more info is now
+  printed for unrecognized commands.
+
   Revision 1.13  1998/01/07 19:28:44  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -360,6 +366,38 @@ Session::CreateTData(char *name)
   DevStatus status = StatusOk;
   ControlPanelSimple control(status);
 
+  // check for derived sources
+  if( strncmp(name, "Hist: ", 6) == 0 ) {
+    char* schemaName = "HISTOGRAM";
+    char* schemaText = 
+      "type HISTOGRAM ascii\n"
+      "separator ' '\n"
+      "sorted attr Bucket double\n"
+      "attr Value int\n";
+    ParseSchema(schemaName, schemaText, NULL);
+
+    char *argvIn[6];
+    argvIn[0] = "dataSegment";
+    argvIn[1] = name;
+    argvIn[2] = "";
+    argvIn[3] = "0";
+    argvIn[4] = "0";
+    if (ParseAPI(5, argvIn, &control) < 0) {
+      status = StatusFailed;
+    }
+
+    argvIn[0] = "create";
+    argvIn[1] = "tdata";
+    argvIn[2] = schemaName;
+    argvIn[3] = name;
+    argvIn[4] = schemaName;
+    argvIn[5] = "";
+    if (ParseAPI(6, argvIn, &control) < 0) {
+      status = StatusFailed;
+    }
+    return status;
+  }
+
   // Get the DTE catalog entry for this data source.
   char *catEntry = dteShowCatalogEntry(name);
   if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
@@ -404,31 +442,15 @@ Session::CreateTData(char *name)
         status = StatusFailed;
       } else {
 	if (isDteType(argvOut[1])) {
-
-		//if (argcOut <= 5)	// this does not work. DD
-
-	  // This should be a DTE-type data source.
-	  if (!isDteType(argvOut[1])) {
-	    reportErrNosys(
-		"Conflict between data source type and catalog entries");
-	    status = StatusFailed;
-	  } else {
-	    isDteSource = true;
-	    // All we really need for a DTE source is the name.
-	  }
+          isDteSource = true;
+          // All we really need for a DTE source is the name.
 	} else {
 	  // This should be a non-DTE-type data source.
-	  if (isDteType(argvOut[1])) {
-	    reportErrNosys(
-		"Conflict between data source type and catalog entries");
-	    status = StatusFailed;
-	  } else {
-	    isDteSource = false;
-            strcpy(schema, argvOut[3]);
-            strcpy(schemaFile, argvOut[4]);
-            strcpy(sourceType, argvOut[1]);
-            sprintf(param, "%s/%s", argvOut[8], argvOut[2]);
-	  }
+          isDteSource = false;
+          strcpy(schema, argvOut[3]);
+          strcpy(schemaFile, argvOut[4]);
+          strcpy(sourceType, argvOut[1]);
+          sprintf(param, "%s/%s", argvOut[8], argvOut[2]);
 	}
         free((char *) argvOut);
       }
@@ -677,6 +699,8 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "viewGetHorPan", "viewSetHorPan", instance);
 
   status += SaveParams(saveData, "getViewGDS", "setViewGDS", instance);
+
+  status += SaveParams(saveData, "getHistogram", "setHistogram", instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

@@ -22,6 +22,14 @@
   $Id$
 
   $Log$
+  Revision 1.91  1998/02/19 23:25:14  wenger
+  Improved color library and got client/server test code to work
+  (except for setting colors by RGB): reduced compile interdependencies,
+  especially in color library; color and utils libraries install headers
+  as per code reorg plans; added standard DEVise headers to all color
+  manager files; moved color initialization into Display constructors;
+  fixed some compile warnings throughout the code.
+
   Revision 1.90  1998/02/05 23:46:04  wenger
   Added view-level specification of symbol alignment, API commands, simple
   GUI for Sanjay.
@@ -703,6 +711,47 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
     return 1;
   }
 
+  if (!strcmp(argv[0], "setHistogram")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+      control->ReturnVal(API_NAK, "Cannot find view");
+      return -1;
+    }
+    double min = atof(argv[2]);
+    double max = atof(argv[3]);
+    int buckets = atoi(argv[4]);
+    if( min >= max ) {
+      control->ReturnVal(API_NAK, "min >= max");
+      return -1;
+    }
+    if( buckets > MAX_HISTOGRAM_BUCKETS ) {
+      sprintf(result, "buckets > %d", MAX_HISTOGRAM_BUCKETS);
+      control->ReturnVal(API_NAK, result);
+      return -1;
+    }
+    if( buckets < 1 ) {
+      control->ReturnVal(API_NAK, "buckets < 1");
+      return -1;
+    }
+    view->SetHistogram(atof(argv[2]), atof(argv[3]), atoi(argv[4]));
+    control->ReturnVal(API_ACK, "done");
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "getHistogram")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+      control->ReturnVal(API_NAK, "Cannot find view");
+      return -1;
+    }
+    sprintf(result, "%g %g %d", view->GetHistogramMin(),
+            view->GetHistogramMax(), view->GetHistogramBuckets());
+    control->ReturnVal(API_ACK, result);
+    return 1;
+  }
+
+
+#if defined(KSB_MAYBE_DELETE_THIS_OLD_STATS_STUFF)
   if (!strcmp(argv[0], "setBuckRefresh")) {
     ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
     if (!view) {
@@ -766,6 +815,7 @@ int		ParseAPI(int argc, char** argv, ControlPanel* control)
 
     return 1;
   }
+#endif
 
   if (!strcmp(argv[0], "getSourceName")) {
    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);

@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.155  1998/02/12 17:17:28  wenger
+#	Merged through collab_br_2; updated version number to 1.5.1.
+#
 #	Revision 1.154  1998/02/05 23:46:15  wenger
 #	Added view-level specification of symbol alignment, API commands, simple
 #	GUI for Sanjay.
@@ -944,8 +947,8 @@ menu .mbar.session.menu.printMenu -tearoff 0
 	-command { SaveStringSpace }
 .mbar.session.menu add command -label "Dump Link/Cursor Info" \
 	-command { DumpLinksCursors }
-.mbar.session.menu add separator
 
+#.mbar.session.menu add separator
 menu .mbar.session.menu.collaborationMenu -tearoff 0
 .mbar.session.menu.collaborationMenu add command -label "Create/Join Group" \
 	-command { DEVise GroupCmd QueryGroup }
@@ -1003,6 +1006,9 @@ proc displayTable {table} {
 	set table [selectStream]
 	displayTable $table
 }
+
+.mbar.tdata.menu add command -label "Display Active" -command { MacroImport 1 0 }
+
 
 .mbar.tdata.menu add separator
 
@@ -1246,8 +1252,6 @@ menu .mbar.tdata.menu.filterMenu -tearoff 0
 .mbar.tdata.menu add cascade -label "Schema" \
 	-menu .mbar.tdata.menu.schemaMenu 
 
-.mbar.tdata.menu add separator
-
 menu .mbar.tdata.menu.import -tearoff 0
 foreach sourcetype [lsort [array names sourceTypes]] {
 	.mbar.tdata.menu.import add command -label $sourcetype \
@@ -1272,12 +1276,10 @@ menu .mbar.tdata.menu.schemaMenu -tearoff 0
 #.mbar.tdata.menu add cascade -label "Mapping" \
 #   -menu .mbar.tdata.menu.mappingMenu
 
-.mbar.tdata.menu add command -label "Active Tables" -command { MacroImport 1 0 }
-
 #.mbar.tdata.menu add command -label "Save Data Stream" -command { SaveTData }
-.mbar.tdata.menu add separator
-.mbar.tdata.menu add command -label "Derived Data Text" -command { MacroImport 1 1 } 
-.mbar.tdata.menu add command -label "Derived Data View" -command { MacroImport 0 1 }
+#.mbar.tdata.menu add separator
+#.mbar.tdata.menu add command -label "Derived Data Text" -command { MacroImport 1 1 } 
+#.mbar.tdata.menu add command -label "Derived Data View" -command { MacroImport 0 1 }
 
 menu .mbar.tdata.menu.mappingMenu -tearoff 0
 
@@ -1368,10 +1370,8 @@ menu .mbar.view.menu.statMenu -tearoff 0
 .mbar.view.menu.statMenu add command -label "Basic Stat" \
 	-command { DoBasicStat
 		   Update2DBasicStatWindow }
-.mbar.view.menu.statMenu add command -label "Group By" \
-	-command DoGroupByStat
-.mbar.view.menu.statMenu add command -label "Histogram" \
-	-command DoHistStat
+# .mbar.view.menu.statMenu add command -label "Group By" -command DoGroupByStat
+.mbar.view.menu.statMenu add command -label "Histogram" -command DoHistStat
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Destroy" -command {
     global curView
