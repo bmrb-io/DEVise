@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/06/21 19:17:10  jussi
+  Added correct values for theta, phi, and rho when '5' is pressed
+  in radial coordinate mode.
+
   Revision 1.17  1996/06/16 01:33:24  jussi
   Added handling of case where xlow == xhigh or ylow == yhigh
   in zooming functions.
@@ -263,8 +267,8 @@ static Boolean PutMessage(char *msg)
   return true;
 }
 
-static Boolean InitPutMessage(double x, AttrType xAttr, double y,
-			      AttrType yAttr)
+static Boolean InitPutMessage(double x, AttrType xAttr,
+			      double y, AttrType yAttr)
 {
   msgIndex = 0;
   numMsgs = 0;
@@ -314,6 +318,14 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
   
   InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
   
+  if (view->GetNumDimensions() != 2) {
+    PutMessage("");
+    PutMessage("Record query not supported yet");
+    PutMessage("for this type of view.");
+    EndPutMessage(numMsgs, msgs);
+    return true;
+  }
+
   char *errorMsg;
   if (!PrintRecords(view, x, y, xHigh, yHigh, errorMsg)) {
     InitPutMessage((x + xHigh) / 2.0, xAttr, (y + yHigh) / 2.0, yAttr);
