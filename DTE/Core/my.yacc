@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/06/16 16:04:51  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.22  1997/04/14 20:44:13  donjerko
   Removed class Path and introduced new BaseSelection class Member.
 
@@ -175,7 +178,9 @@ input : query {
 definition: CREATE optIndType INDEX index_name ON table_name 
 	'(' keyAttrs ')' optIndAdd {
 		parseTree = new IndexParse($2, $4, $6, $8, $10);
-		return my_yyaccept();
+		YYACCEPT;
+		// return my_yyaccept();  
+		// this does not work unless the last argument is optional
 	}
 	| DROP INDEX table_name index_name {
 		parseTree = new DropIndexParse($3, $4);
