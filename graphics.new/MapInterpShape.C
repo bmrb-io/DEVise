@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/06/13 18:07:45  wenger
+  Orientation is now working for text labels and fixed text labels.
+
   Revision 1.40  1997/05/06 17:29:03  wenger
   Tasvir image code gives warning if image filename or image is not a string.
 
@@ -212,12 +215,14 @@
 */
 
 #include <sys/param.h>
+#include <iostream.h>
 
 #include "MapInterpShape.h"
 #include "Map3D.h"
 #include "Init.h"
 #include "Util.h"
 #include "DevError.h"
+#include "StringStorage.h"
 
 //#define DEBUG
 
@@ -297,6 +302,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	GlobalColor firstColor = BlackColor;
 	Pattern firstPattern = Pattern0;
 	int firstLineWidth = 0;
+	Coord firstOrientation = 0.0;
 
 	int count = 0;
 
@@ -307,14 +313,17 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		Coord size = GetSize(gdata, map, offset);
 		size *= pixelSize;
 		Pattern pattern = GetPattern(gdata, map, offset);
+	    Coord orientation = GetOrientation(gdata, map, offset);
 
-		if (count > 0 && (color != firstColor || pattern != firstPattern))
+		if (count > 0 && (color != firstColor || pattern != firstPattern ||
+			orientation != firstOrientation))
 		  break;
 		
 		if (count == 0) {
-		firstColor = GetColor(view, gdata, map, offset);
-		firstPattern = GetPattern(gdata, map, offset);
+		firstColor = color;
+		firstPattern = pattern;
 		firstLineWidth = int(GetLineWidth(gdata, map, offset)+0.5);
+		firstOrientation = orientation;
 		}
 
 		_width[count] = fabs(pixelSize * size
@@ -322,11 +331,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		_height[count] = fabs(pixelSize * size
 								  * GetShapeAttr1(gdata, map, offset));
 		_x[count] = GetX(gdata, map, offset);
-		if (_width[count] > pixelWidth)
-		  _x[count] -= _width[count] / 2.0;
 		_y[count] = GetY(gdata, map, offset);
-		if (_height[count] > pixelHeight)
-		  _y[count] -= _height[count] / 2.0;
 
 		count++;
 	}
@@ -349,7 +354,8 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	win->SetPattern(firstPattern);
 	win->SetLineWidth(firstLineWidth);
 
-	win->FillRectArray(_x, _y, _width, _height, count);
+	win->FillRectArray(_x, _y, _width, _height, count, WindowRep::AlignCenter,
+	    firstOrientation);
 
 	if (view->GetDisplayDataValues()) {
 		for(int s = 0; s < count; s++)
@@ -512,7 +518,10 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	win->SetPattern(GetPattern(gdata, map, offset));
 	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
-	win->FillPixelRect(tx, ty, width, height);
+	Coord orientation = GetOrientation(gdata, map, offset);
+
+	win->FillPixelRect(tx, ty, width, height, 1.0, 1.0,
+	  WindowRep::AlignCenter, orientation);
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x, y, y);
@@ -1839,7 +1848,8 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 	if ((Boolean)GetShapeAttr4(gdata, map, offset)) {
 	  Pattern oldPattern = win->GetPattern();
 	  win->SetPattern((Pattern)-1);
-      win->FillRect(x - width / 2, y - height / 2, width, height);
+      win->FillRectAlign(x, y, width, height, WindowRep::AlignCenter,
+		orientation);
 	  win->SetPattern(oldPattern);
 	}
     win->ScaledText(label, x - width / 2, y - height / 2, width, height,

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  1997/06/13 18:07:28  wenger
+  Orientation is now working for text labels and fixed text labels.
+
   Revision 1.52  1997/06/10 18:38:25  wenger
   Got DEVise to compile on HP again; updated hp, solaris, and sun dependencies.
 
@@ -540,6 +543,9 @@ public:
   }
   
   /* drawing primitives */
+  enum SymbolAlignment { AlignNorthWest, AlignNorth, AlignNorthEast, 
+			 AlignWest, AlignCenter, AlignEast, AlignSouthWest,
+			 AlignSouth, AlignSouthEast};
 
   /* Return TRUE if window is scrollable */
   virtual Boolean Scrollable() = 0;
@@ -579,20 +585,30 @@ public:
 
   virtual void FillRect(Coord xlow, Coord ylow,
 			Coord width, Coord height) = 0;
+  virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
+			     Coord height,
+			     SymbolAlignment alignment = AlignSouthWest,
+			     Coord orientation = 0.0) = 0;
 
   /* Fill rectangles, variable width/height */
   virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
-			     Coord *height, int num) = 0;
+			     Coord *height, int num,
+			     SymbolAlignment alignment = AlignSouthWest,
+			     Coord orientation = 0.0) = 0;
   /* Fill rectangles, same width/height */
   virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord width, 
-			     Coord height, int num) = 0;
+			     Coord height, int num,
+			     SymbolAlignment alignment = AlignSouthWest,
+                             Coord orientation = 0.0) = 0;
 
   virtual void DrawPixel(Coord x, Coord y) = 0;
   virtual void DrawPixelArray(Coord *x, Coord *y, int num, int width) = 0;
   /* fill rectangle. All coordinates are in pixels. x and y are
      at the center of the rectangle */
   virtual void FillPixelRect(Coord x, Coord y, Coord width, Coord height,
-			     Coord minWidth = 1.0, Coord minHeight = 1.0) = 0;
+			     Coord minWidth = 1.0, Coord minHeight = 1.0,
+			     SymbolAlignment alignment = AlignSouthWest,
+                             Coord orientation = 0.0) = 0;
   virtual void FillPoly(Point *, int n) = 0;
   virtual void FillPixelPoly(Point *, int n) = 0;
 
@@ -610,18 +626,15 @@ public:
      calculations or for drawing. Padding all texts with leading spaces
      so that they are the same lenght and setting skipLeadingSpaces
      to TRUE ensures that the texts are draw with the same size */
-  enum TextAlignment { AlignNorthWest, AlignNorth, AlignNorthEast, 
-			 AlignWest, AlignCenter, AlignEast, AlignSouthWest,
-			 AlignSouth, AlignSouthEast};
   virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
-		    Coord height, TextAlignment alignment = AlignCenter, 
+		    Coord height, SymbolAlignment alignment = AlignCenter, 
 		    Boolean skipLeadingSpaces = false,
 		    Coord orientation = 0.0) = 0;
   
   /* draw absolute text: one that does not scale the text */
   virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
 			    Coord height,
-			    TextAlignment alignment = AlignCenter, 
+			    SymbolAlignment alignment = AlignCenter, 
 			    Boolean skipLeadingSpaces = false, 
 			    Coord orientation = 0.0) = 0;
 
@@ -891,7 +904,7 @@ protected:
   /* constructor */
   WindowRep(DeviseDisplay *disp, GlobalColor fgndColor = ForegroundColor,
 	    GlobalColor bgndColor = BackgroundColor, Pattern p = Pattern0);
-  
+
   WindowRepCallbackList  *_callbackList;
 
   Transform2D _transforms[WindowRepTransformDepth];

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.31  1997/06/25 17:05:25  wenger
+  Fixed bug 192 (fixed problem in the PSWindowRep::FillPixelRect() member
+  function, disabled updating of record links during print, print dialog
+  grabs input.
+
   Revision 1.30  1997/06/13 18:07:26  wenger
   Orientation is now working for text labels and fixed text labels.
 
@@ -813,7 +818,7 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
     Coord y1 = rectArray[pointNum].y;
     Coord x2 = x1 + rectArray[pointNum].width;
     Coord y2 = y1 + rectArray[pointNum].height;
-    DrawFilledRect(printFile, x1, y1, x2, y2);
+    DrawAbsRect(printFile, x1, y1, x2, y2);
   }
 #endif
 }
@@ -824,7 +829,8 @@ void PSWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 /* Fill rectangles, variable width/height */
 
 void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
-			       Coord *height, int num)
+			       Coord *height, int num,
+			       SymbolAlignment alignment, Coord orientation)
 {
 #ifdef DEBUG
   printf("PSWindowRep::FillRectArray: %d points\n", num);
@@ -846,21 +852,14 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 
   for(int i = 0; i < num; i++) {
     Coord x1, y1, x2, y2;
-    Coord txlow, tylow, txmax, tymax;
-    Transform(xlow[i], ylow[i] + height[i], x1, y1);
-    Transform(xlow[i] + width[i], ylow[i], x2, y2);
-    txlow = MIN(x1, x2);
-    txmax = MAX(x1, x2);
-    tylow = MIN(y1, y2);
-    tymax = MAX(y1, y2);
+    Transform(xlow[i], ylow[i], x1, y1);
+    Transform(xlow[i] + width[i], ylow[i] + height[i], x2, y2);
     
-    unsigned pixelWidth = (unsigned)(txmax - txlow + 1);
-    if (pixelWidth == 0) pixelWidth = 1;
-    unsigned pixelHeight = unsigned(tymax - tylow + 1);
-    if (pixelHeight == 0) pixelHeight = 1;
+    Coord pixelWidth = ABS(x1 - x2);
+    Coord pixelHeight = ABS(y1 - y2);
     
-    rectArray[i].x = txlow;
-    rectArray[i].y = tylow;
+    rectArray[i].x = x1;
+    rectArray[i].y = y1;
     rectArray[i].width = pixelWidth;
     rectArray[i].height = pixelHeight;
   }
@@ -886,11 +885,9 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 
   for(int pointNum = 0; pointNum < num; pointNum++) {
-    Coord x1 = rectArray[pointNum].x;
-    Coord y1 = rectArray[pointNum].y;
-    Coord x2 = x1 + rectArray[pointNum].width;
-    Coord y2 = y1 + rectArray[pointNum].height;
-    DrawFilledRect(printFile, x1, y1, x2, y2);
+    DrawAlignedRect(printFile, rectArray[pointNum].x, rectArray[pointNum].y,
+      rectArray[pointNum].width, rectArray[pointNum].height, alignment,
+      orientation);
   }
 #endif
 }
@@ -901,9 +898,10 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 /* Fill rectangles, same width/height */
 
 void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
-			       Coord height, int num)
+			       Coord height, int num,
+			       SymbolAlignment alignment, Coord orientation)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("PSWindowRep::FillRectArray: %d points, width %.2f, height %.2f\n",
          num, width, height);
 
@@ -919,22 +917,15 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 
   for(int i = 0; i < num; i++) {
-    Coord txlow, tylow, txmax, tymax;
-    Coord x1,y1,x2,y2;
-    Transform(xlow[i], ylow[i] + height, x1, y1);
-    Transform(xlow[i] + width, ylow[i], x2, y2);
-    txlow = MIN(x1, x2);
-    txmax= MAX(x1, x2);
-    tylow = MIN(y1, y2);
-    tymax = MAX(y1, y2);
+    Coord x1, y1, x2, y2;
+    Transform(xlow[i], ylow[i], x1, y1);
+    Transform(xlow[i] + width, ylow[i] + height, x2, y2);
 
-    unsigned pixelWidth = (unsigned)(txmax - txlow+1);
-    if (pixelWidth == 0) pixelWidth = 1;
-    unsigned pixelHeight = unsigned(tymax - tylow+1);
-    if (pixelHeight == 0) pixelHeight=1;
+    Coord pixelWidth = ABS(x1 - x2);
+    Coord pixelHeight = ABS(y1 - y2);
     
-    rectArray[i].x = txlow;
-    rectArray[i].y = tylow;
+    rectArray[i].x = x1;
+    rectArray[i].y = y1;
     rectArray[i].width = pixelWidth;
     rectArray[i].height = pixelHeight;
   }
@@ -960,11 +951,9 @@ void PSWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 
   for(int pointNum = 0; pointNum < num; pointNum++) {
-    Coord x1 = rectArray[pointNum].x;
-    Coord y1 = rectArray[pointNum].y;
-    Coord x2 = x1 + rectArray[pointNum].width;
-    Coord y2 = y1 + rectArray[pointNum].height;
-    DrawFilledRect(printFile, x1, y1, x2, y2);
+    DrawAlignedRect(printFile, rectArray[pointNum].x, rectArray[pointNum].y,
+      rectArray[pointNum].width, rectArray[pointNum].height, alignment,
+      orientation);
   }
 #endif
 }
@@ -1012,7 +1001,45 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
 #endif
 
-  DrawFilledRect(printFile, txlow, tylow, txmax, tymax);
+  DrawAbsRect(printFile, txlow, tylow, txmax, tymax);
+#endif
+}
+
+
+
+/*---------------------------------------------------------------------------*/
+void PSWindowRep::FillRectAlign(Coord xlow, Coord ylow, Coord width,
+				Coord height, SymbolAlignment alignment,
+				Coord orientation)
+{
+#if defined(DEBUG)
+  printf("PSWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
+         xlow, ylow, width, height);
+#endif
+
+  /* XXX: need to clip rect against window dimensions */
+
+  Coord x1, y1, x2, y2;
+  Transform(xlow, ylow, x1, y1);
+  Transform(xlow + width, ylow + height, x2, y2);
+  
+  Coord pixelWidth = ABS(x1 - x2);
+  Coord pixelHeight = ABS(y1 - y2);
+  
+#ifdef DEBUG
+  printf("After transformation: x %d, y %d, width %d, height %d\n",
+	 ROUND(int, txlow), ROUND(int, tylow), pixelWidth, pixelHeight);
+#endif
+
+#ifdef GRAPHICS
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
+#endif
+
+  DrawAlignedRect(printFile, x1, y1, pixelWidth, pixelHeight, alignment,
+    orientation);
 #endif
 }
 
@@ -1023,7 +1050,8 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
    at the center of the rectangle */
 
 void PSWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
-			       Coord minWidth, Coord minHeight)
+			       Coord minWidth, Coord minHeight,
+			       SymbolAlignment alignment, Coord orientation)
 {
 #if defined(DEBUG)
   printf("PSWindowRep::FillPixelRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
@@ -1063,7 +1091,7 @@ void PSWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
   fprintf(printFile, "%% PSWindowRep::%s()\n", __FUNCTION__);
 #endif
 
-  DrawFilledRect(printFile, tx1, ty1, tx2, ty2);
+  DrawAlignedRect(printFile, x, y, width, height, alignment, orientation);
 #endif
 }
 
@@ -1328,7 +1356,7 @@ void PSWindowRep::AbsoluteLine(int x1, int y1, int x2, int y2, int width)
 
 void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 			      Coord width, Coord height,
-			      TextAlignment alignment, 
+			      SymbolAlignment alignment, 
 			      Boolean skipLeadingSpace, Coord orientation)
 {
 #ifdef DEBUG
@@ -1346,7 +1374,7 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
 /* Draw scaled text */
 
 void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
-		       Coord height, TextAlignment alignment,
+		       Coord height, SymbolAlignment alignment,
 		       Boolean skipLeadingSpace, Coord orientation)
 {
 #if defined(DEBUG)
@@ -1639,11 +1667,75 @@ void PSWindowRep::DrawLine(FILE *printFile, Coord x1, Coord y1,
 }
 
 
+/*---------------------------------------------------------------------------*/
+/* Draw an absolute rectangle (coordinates must have already been scaled if
+ * that is necessary). */
+void PSWindowRep::DrawAlignedRect(FILE *printFile, Coord x1, Coord y1,
+    Coord width, Coord height, SymbolAlignment alignment, Coord orientation)
+{
+  fprintf(printFile, "newpath\n");
+  fprintf(printFile, "%f %f moveto\n", x1, y1);
+
+  /* Do any rotation that's necessary. */
+  if (orientation != 0.0) {
+    fprintf(printFile, "gsave\n");
+    fprintf(printFile, "%f rotate\n", orientation);
+  }
+
+  switch (alignment) {
+  case AlignNorthWest:
+    fprintf(printFile, "%f %f rmoveto\n", 0.0, -height);
+    break;
+
+  case AlignNorth:
+    fprintf(printFile, "%f %f rmoveto\n", -width / 2.0, -height);
+    break;
+
+  case AlignNorthEast:
+    fprintf(printFile, "%f %f rmoveto\n", -width, -height);
+    break;
+
+  case AlignWest:
+    fprintf(printFile, "%f %f rmoveto\n", 0.0, -height / 2.0);
+    break;
+
+  case AlignCenter:
+    fprintf(printFile, "%f %f rmoveto\n", -width / 2.0, -height / 2.0);
+    break;
+
+  case AlignEast:
+    fprintf(printFile, "%f %f rmoveto\n", -width, -height / 2.0);
+    break;
+
+  case AlignSouthWest:
+    // No movement needed.
+    break;
+
+  case AlignSouth:
+    fprintf(printFile, "%f %f rmoveto\n", -width / 2.0, 0.0);
+    break;
+
+  case AlignSouthEast:
+    fprintf(printFile, "%f %f rmoveto\n", -width, 0.0);
+    break;
+
+  default:
+    DOASSERT(false, "Illegal alignment option");
+    break;
+  }
+
+  DrawRelRect(printFile, width, height);
+
+  if (orientation != 0.0) {
+    fprintf(printFile, "grestore\n");
+  }
+}
+
 
 /*---------------------------------------------------------------------------*/
-/* Draw a filled rectangle (coordinates must have already been scaled if
+/* Draw an absolute rectangle (coordinates must have already been scaled if
  * that is necessary). */
-void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
+void PSWindowRep::DrawAbsRect(FILE *printFile, Coord x1, Coord y1,
     Coord x2, Coord y2)
 {
 #if USE_PS_PROCEDURES
@@ -1669,6 +1761,32 @@ void PSWindowRep::DrawFilledRect(FILE *printFile, Coord x1, Coord y1,
   return;
 }
 
+
+/*---------------------------------------------------------------------------*/
+/* Draw an relative rectangle (coordinates must have already been scaled if
+ * that is necessary). */
+void PSWindowRep::DrawRelRect(FILE *printFile, Coord width, Coord height)
+{
+#if USE_PS_PROCEDURES
+  fprintf(printFile, "%f %f DevRelRect\n", width, height);
+#else
+  fprintf(printFile, "%f %f rlineto\n", 0.0, height);
+  fprintf(printFile, "%f %f rlineto\n", width, 0.0);
+  fprintf(printFile, "%f %f rlineto\n", 0.0, -height);
+  fprintf(printFile, "%f %f rlineto\n", -width, 0.0);
+  fprintf(printFile, "closepath\n");
+#endif
+
+  /* This is kind of a kludge so that the outlining of the text shapes works
+   * correctly. */
+  if ((_pattern == Pattern1) || (_pattern == (Pattern) -1)) {
+    fprintf(printFile, "%s\n", "stroke");
+  } else {
+    fprintf(printFile, "%s\n", _xorMode ? "stroke" : "fill");
+  }
+
+  return;
+}
 
 
 /*---------------------------------------------------------------------------*/
@@ -1725,7 +1843,7 @@ void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
 /* Draw scaled or absolute text */
 
 void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
-		       Coord width, Coord height, TextAlignment alignment,
+		       Coord width, Coord height, SymbolAlignment alignment,
 		       Boolean skipLeadingSpace, Coord orientation)
 {
   /* transform into window coords */
@@ -1862,8 +1980,8 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 /*---------------------------------------------------------------------------*/
 /* Get the correct PostScript code strings according to the alignment
  * we're using. */
-void PSWindowRep::GetAlignmentStrings(TextAlignment alignment, char *&comment,
-    char *&moveToWindow, char *&moveToText)
+void PSWindowRep::GetAlignmentStrings(SymbolAlignment alignment,
+    char *&comment, char *&moveToWindow, char *&moveToText)
 {
   comment = "";
   moveToWindow = "";

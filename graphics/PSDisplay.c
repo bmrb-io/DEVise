@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/06/13 18:02:39  wenger
+  Got client/server library to compile with latest changes.
+
   Revision 1.19  1997/06/04 15:50:26  wenger
   Printing windows to PostScript as pixmaps is now implemented, including
   doing so when printing the entire display.
@@ -479,6 +482,19 @@ void PSDisplay::PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
   fprintf(_printFile, "x2 y2 lineto\n");
   fprintf(_printFile, "x2 y1 lineto\n");
   fprintf(_printFile, "x1 y1 lineto\n");
+  fprintf(_printFile, "closepath\n");
+  fprintf(_printFile, "} def\n");
+
+
+  /* Print a procedure to create a relative rectangular path (to be stroked or
+   * filled). */
+  fprintf(_printFile, "/DevRelRect  %% stack: width, height\n");
+  fprintf(_printFile, "{ /height exch def\n");
+  fprintf(_printFile, "/width exch def\n");
+  fprintf(_printFile, "0.0 height rlineto\n");
+  fprintf(_printFile, "width 0.0 rlineto\n");
+  fprintf(_printFile, "0.0 -1.0 height mul rlineto\n");
+  fprintf(_printFile, "-1.0 width mul 0.0 rlineto\n");
   fprintf(_printFile, "closepath\n");
   fprintf(_printFile, "} def\n");
 

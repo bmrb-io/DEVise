@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1997/06/13 18:07:27  wenger
+  Orientation is now working for text labels and fixed text labels.
+
   Revision 1.24  1997/05/21 22:09:57  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -242,12 +245,21 @@ public:
 #endif
 
     virtual void FillRect(Coord xlow, Coord ylow, Coord width, Coord height);
+    virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,
+			       Coord height,
+			       SymbolAlignment alignment = AlignSouthWest,
+			       Coord orientation = 0.0);
+
     /* Fill rectangles, variable width/height */
     virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord *width, 
-                               Coord *height, int num);
+                               Coord *height, int num,
+			       SymbolAlignment alignment = AlignSouthWest,
+			       Coord orientation = 0.0);
     /* Fill rectangles, same width/height */
     virtual void FillRectArray(Coord *xlow, Coord *ylow, Coord width,
-                               Coord height, int num);
+                               Coord height, int num,
+			       SymbolAlignment alignment = AlignSouthWest,
+			       Coord orientation = 0.0);
 
     virtual void DrawPixel(Coord x, Coord y);
     virtual void DrawPixelArray(Coord *x, Coord *y, int num, int width);
@@ -255,7 +267,9 @@ public:
     /* Fill rectangle. All coordinates are in pixels. x and y are
        at the center of the rectangle */
     virtual void FillPixelRect(Coord x, Coord y, Coord width, Coord height,
-                               Coord minWidth = 1.0, Coord minHeigh = 1.0);
+                               Coord minWidth = 1.0, Coord minHeigh = 1.0,
+			       SymbolAlignment alignment = AlignSouthWest,
+			       Coord orientation = 0.0);
     virtual void FillPoly(Point *, int n);
     virtual void FillPixelPoly(Point *, int n);
 
@@ -267,13 +281,13 @@ public:
     virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width);
 
     virtual void ScaledText(char *text, Coord x, Coord y, Coord width,
-                      Coord height, TextAlignment alignment = AlignCenter,
+                      Coord height, SymbolAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false,
 		      Coord orientation = 0.0);
     
     virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
                               Coord height,
-                              TextAlignment alignment = AlignCenter,
+                              SymbolAlignment alignment = AlignCenter,
                               Boolean skipLeadingSpaces = false,
 			      Coord orientation = 0.0);
 
@@ -359,19 +373,22 @@ private:
 
     void DrawLine(FILE *printFile, Coord x1, Coord y1, Coord x2,
       Coord y2);
-    void DrawFilledRect(FILE *printFile, Coord x1, Coord y1, Coord x2,
+    void DrawAlignedRect(FILE *printFile, Coord x1, Coord y1, Coord width,
+      Coord height, SymbolAlignment alignment, Coord orientation);
+    void DrawAbsRect(FILE *printFile, Coord x1, Coord y1, Coord x2,
       Coord y2);
+    void DrawRelRect(FILE *printFile, Coord width, Coord height);
     void SetClipPath(FILE *printFile, Coord x1, Coord y1, Coord x2,
       Coord y2);
     void DrawDot(FILE *printFile, Coord x1, Coord y1, Coord size = 1.0);
 
     virtual void DrawText(Boolean scaled, char *text, Coord x, Coord y,
 		      Coord width, Coord height,
-		      TextAlignment alignment = AlignCenter,
+		      SymbolAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false,
 		      Coord orientation = 0.0);
 
-    void GetAlignmentStrings(TextAlignment alignment, char *&comment,
+    void GetAlignmentStrings(SymbolAlignment alignment, char *&comment,
       char *&moveToWindow, char *&moveToText);
 
     /* current dimensions of window */

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/04/29 17:35:11  wenger
+  Minor fixes to new text labels; added fixed text label shape;
+  CheckDirSpace() no longer prints an error message if it can't get disk
+  status.
+
   Revision 1.35  1996/11/13 16:57:04  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -152,12 +157,9 @@
 #ifndef MapInterShape_H
 #define MapInterShape_H
 
-#include <iostream.h>
-
 #include "Transform.h"
 #include "Geom.h"
 #include "RectShape.h"
-#include "StringStorage.h"
 
 //#define DEBUG
 
