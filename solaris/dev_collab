@@ -30,6 +30,8 @@ generic/collaborator &
 
 sleep 5
 
+rmmem
+
 generic/devised -port 6101 -switchport 6201 &
 sleep 5
 generic/devise -p 6101 &
