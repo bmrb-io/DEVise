@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/29 15:10:23  jussi
+  Added copyright notice and added primitives for Tk window support.
+
   Revision 1.2  1995/09/05 22:16:11  jussi
   Added CVS header.
 */
@@ -88,12 +91,9 @@ protected:
 		Coord x, Coord y, Coord w, Coord h);
 	
 private:
-	/* from ViewCallback */
-	/* Called by View when its visual filter has changed.
-	flushed == index of 1st element in the history that has been flushed.*/
+	virtual void FilterAboutToChange(View *view) {}
 	virtual void FilterChanged(View *view, VisualFilter &filter,
-			int flushed);
-
+				   int flushed);
 	virtual void ViewCreated(View *view);
 	virtual void ViewDestroyed(View *view);
 
