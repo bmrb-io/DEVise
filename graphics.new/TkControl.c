@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/01/10 00:37:40  jussi
+  Added support for hi/lo values defined in schema.
+
   Revision 1.25  1996/01/09 16:36:26  jussi
   Added references to Seq.c and seq_extract.
 
@@ -718,40 +721,47 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				*/
 				char attrBuf[160];
 				int numAttrs = attrList->NumAttrs();
-				int i;
-				Tcl_AppendElement(interp,"recId int 1");
-				for (i=0; i < numAttrs; i++){
+				Tcl_AppendElement(interp,"recId int 1 0 0 0 0");
+				for(int i = 0; i < numAttrs; i++) {
 					AttrInfo *info = attrList->Get(i);
 					/*
 					printf("inserting %s\n",info->name);
 					*/
 					switch(info->type){
 						case FloatAttr:
-							sprintf(attrBuf,"%s float %d %g %g",
+							sprintf(attrBuf,"%s float %d %d %g %d %g",
 								info->name, info->isSorted,
+								info->hasHiVal,
 								(info->hasHiVal ? info->hiVal.floatVal : 100),
+								info->hasLoVal,
 								(info->hasLoVal ? info->loVal.floatVal : 0));
 							break;
 						case DoubleAttr:
-							sprintf(attrBuf,"%s double %d %g %g",
+							sprintf(attrBuf,"%s double %d %d %g %d %g",
 								info->name, info->isSorted,
+								info->hasHiVal,
 								(info->hasHiVal ? info->hiVal.doubleVal : 100),
+								info->hasLoVal,
 								(info->hasLoVal ? info->loVal.doubleVal : 0));
 							break;
 						case StringAttr:
-							sprintf(attrBuf,"%s string %d",info->name,
+							sprintf(attrBuf,"%s string %d 0 0 0 0",info->name,
 								info->isSorted);
 							break;
 						case IntAttr:
-							sprintf(attrBuf,"%s int %d %ld %ld",
+							sprintf(attrBuf,"%s int %d %d %ld %d %ld",
 								info->name, info->isSorted,
+								info->hasHiVal,
 								(long)(info->hasHiVal ? info->hiVal.intVal : 100),
+								info->hasLoVal,
 								(long)(info->hasLoVal ? info->loVal.intVal : 0));
 							break;
 						case DateAttr:
-							sprintf(attrBuf,"%s date %d %ld %ld",
+							sprintf(attrBuf,"%s date %d %d %ld %d %ld",
 								info->name, info->isSorted,
+								info->hasHiVal,
 								(long)(info->hasHiVal ? info->hiVal.dateVal : 100),
+								info->hasLoVal,
 								(long)(info->hasLoVal ? info->loVal.dateVal : 0));
 							break;
 						default:
