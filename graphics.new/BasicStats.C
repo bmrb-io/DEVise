@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/06 05:41:04  ravim
+  Changes in color and added function to return specific stat values.
+
   Revision 1.5  1995/12/05 17:03:47  jussi
   Added a couple of checks to ensure min and max are computed
   correctly.
@@ -82,7 +85,7 @@ void BasicStats::Done()
 
 void BasicStats::Report()
 {
-  if (!_vw || !_vw->GetDisplayStats())
+  if (!_vw || (atoi(_vw->GetDisplayStats()) == 0))
     return;
 
   printf("***********Statistics Report***********\n");
@@ -100,9 +103,16 @@ void BasicStats::Report()
   // Draw line
   Color prev = win->GetFgColor();
   win->SetFgColor(GreenColor);
-  win->Line(filter->xLow, ymax, filter->xHigh, ymax, 2);
-  win->Line(filter->xLow, ymin, filter->xHigh, ymin, 2);
-  win->Line(filter->xLow, avg, filter->xHigh, avg, 2);
+  
+  // Draw stats depending on the binary string representing the stats to 
+  // be displayed
+  char *statstr = _vw->GetDisplayStats();
+  if (statstr[STAT_MAX] == '1')
+    win->Line(filter->xLow, ymax, filter->xHigh, ymax, 2);
+  if (statstr[STAT_MIN] == '1')
+    win->Line(filter->xLow, ymin, filter->xHigh, ymin, 2);
+  if (statstr[STAT_MEAN] == '1')
+    win->Line(filter->xLow, avg, filter->xHigh, avg, 2);
   win->SetFgColor(prev);
 }
 
