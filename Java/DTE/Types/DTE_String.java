@@ -2,7 +2,7 @@ package Types;
 
 import java.io.*;
 
-class DTE_String extends DTE_Type implements Cloneable 
+public class DTE_String extends DTE_Type implements Cloneable 
 {
   String val;
 
