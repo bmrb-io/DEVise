@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/06/04 19:58:47  wenger
+  Added the data segment option to TDataBinary; various minor cleanups.
+
   Revision 1.22  1996/06/04 14:21:39  wenger
   Ascii data can now be read from session files (or other files
   where the data is only part of the file); added some assertions
@@ -200,10 +203,7 @@ TDataAscii::TDataAscii(char *name, char *alias, int recSize) : TData()
 
   _fileGrown = false;
   
-  if (_data->isTape())
-    Dispatcher::Current()->Register(this);
-  else
-    Dispatcher::Current()->Register(this, 10, GoState, false, _data->Fileno());
+  Dispatcher::Current()->Register(this);
 }
 
 TDataAscii::~TDataAscii()
@@ -457,10 +457,11 @@ void TDataAscii::Checkpoint()
     goto error;
   }
 
-    if (_data->Seek(0, SEEK_SET) < 0) {
-      perror("fseek");
-      goto error;
-    }
+  if (_data->Seek(0, SEEK_SET) < 0) {
+    perror("fseek");
+    goto error;
+  }
+
   if (_data->Fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1) != 1) {
     if (!errno)
 	fprintf(stderr, "File not checkpointed due to its small size\n");
