@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.131  2001/11/19 22:20:38  xuk
+// Changes for String[] format socket/commands.
+//
 // Revision 1.130  2001/11/19 17:17:03  wenger
 // Merged changes through collab_cleanup_br_2 to trunk.
 //
@@ -992,10 +995,9 @@ public class jsdevisec extends Panel
             }
         } else {
             showMsg(msg[0]);
-
-			// Set the session directory back to the previous one and
-			// update it on the session dialog.
-			currentDir = previousDir;
+	    // Set the session directory back to the previous one and
+	    // update it on the session dialog.
+	    currentDir = previousDir;
             if (sessiondlg != null) {
                 sessiondlg.setDirectory();
             }

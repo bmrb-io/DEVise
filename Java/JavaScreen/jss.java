@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2001/10/05 15:51:35  wenger
+// Minor cleanup: fixed usage messages, improved argument checking.
+//
 // Revision 1.17  2001/09/25 14:38:47  wenger
 // Modified all JS-related scripts, etc., to work without '.' in path;
 // fixed some problems in the JSS related to starting and killing deviseds.
@@ -475,6 +478,8 @@ public class jss implements Runnable
                     try {
                         devisedNumber = Integer.parseInt(args[i].substring(7));
                         if (devisedNumber < 1 || devisedNumber > 10) {
+			// For testing no devised 
+			// if (devisedNumber < 0 || devisedNumber > 10) {
                             throw new NumberFormatException();
                         }
                     } catch (NumberFormatException e) {
