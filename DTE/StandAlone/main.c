@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/06/16 16:05:22  donjerko
+  New memory management in exec phase. Unidata included.
+
 
   Revision 1.8  1997/03/28 16:08:05  wenger
   Added headers to all source files that didn't have them; updated
@@ -69,7 +72,7 @@ int main(int argc, char** argv){
 	if(numFlds > 0){
 		const TypeID* typeIDs = engine.getTypeIDs();
 		TRY(WritePtr* writePtrs = newWritePtrs(typeIDs, numFlds), 0);
-		String* attrs = engine.getAttributeNames();
+		const String* attrs = engine.getAttributeNames();
 		for(int i = 0; i < numFlds; i++){
 			cout << attrs[i] << " ";
 		}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/06/16 16:05:10  donjerko
+  New memory management in exec phase. Unidata included.
+
   Revision 1.8  1997/04/22 15:25:24  wenger
   Conditionaled out lots of debug code; fixed data source visualization
   window so the window for the data again defaults to 'New' if there are
@@ -219,17 +222,15 @@ char* dteShowAttrNames(const char* schemaFile, const char* dataFile){
 	tmp.Open(schema, data);
 	CATCH(exit(1));
 	int numFlds = tmp.getNumFlds();
-	String* attrs = tmp.getAttributeNames();
+	const String* attrs = tmp.getAttributeNames();
 	String retVal;
 	for(int i = 0; i < numFlds; i++){
 		retVal += attrs[i] + " ";
 	}
-	delete [] attrs;
 	return strdup(retVal.chars());
 }
 
 char* dteListAttributes(const char* tableName){
-	String* attrNames;
 	int numFlds;
 	String query = "schema " + String(tableName);
 	Engine engine(query);
@@ -243,7 +244,7 @@ char* dteListAttributes(const char* tableName){
           exit(0);
      )
 	assert(engine.getNumFlds() == 1);
-	TypeID* types = engine.getTypeIDs();
+	const TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "schema");
 	engine.initialize();
 	const Tuple* tuple;
@@ -251,14 +252,13 @@ char* dteListAttributes(const char* tableName){
 	ISchema* schema = (ISchema*) tuple[0];
 	assert(!(tuple = engine.getNext()));
 	engine.finalize();
-	attrNames = schema->getAttributeNames();
+	const String* attrNames = schema->getAttributeNames();
 	numFlds = schema->getNumFlds();
-	delete schema;
 	String retVal;
 	for(int i =  0; i < numFlds; i++){
 		retVal += attrNames[i] + " ";
 	}
-	delete [] attrNames;
+	delete schema;
 	return strdup(retVal.chars());
 }
 
@@ -356,7 +356,7 @@ char* dteShowIndexDesc(const char* tableName, const char* indexName){
           exit(0);
      )
 	assert(engine.getNumFlds() == 1);
-	TypeID* types = engine.getTypeIDs();
+	const TypeID* types = engine.getTypeIDs();
 	assert(types[0] == "indexdesc");
 	engine.initialize();
 	const Tuple* tuple;
