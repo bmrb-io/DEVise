@@ -79,15 +79,7 @@ void TDataDQL::runQuery(){
 
 	_result.clear();
      Engine engine(_query);
-     engine.optimize();
-	CATCH(
-		cout << "DTE error coused by query: \n";
-		cout << "   " << _query << endl;
-		currExcept->display(); 
-		currExcept = NULL; 
-		cout << endl;
-		exit(0);
-	)
+     TRY(engine.optimize(), );
      _numFlds = engine.getNumFlds();
      _types = engine.getTypeIDs();
      Tuple* tup;
@@ -139,13 +131,21 @@ void TDataDQL::runQuery(){
 		assert(!attrList->atEnd());
 		char* atname = attrList->get();
 		attrList->step();
-		int deviseSize = packSize(_result[0][i], _types[i]);
+		TRY(int deviseSize = packSize(_types[i]), );
 		_sizes[i] = deviseSize;
 		AttrType deviseType = getDeviseType(_types[i]);
 		AttrVal* hiVal = (AttrVal*) highTup[i];
 		AttrVal* loVal = (AttrVal*) lowTup[i];
+
+		// Devise will not take high and low values for strings
+
+		bool hasHighLow = true;
+		if(_types[i].through(5).contains("string")){
+			hasHighLow = false;
+		}
 		_attrs.InsertAttr(i, strdup(atname), offset, deviseSize, 
-			deviseType, false, 0, false, false, true, hiVal, true, loVal); 
+			deviseType, false, 0, false, false, hasHighLow, hiVal, 
+			hasHighLow, loVal); 
 		offset += deviseSize;
 	}
 
@@ -161,6 +161,14 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) : _attrs
 	_query = strdup(query);
 	this->attrList = attrList;
 	runQuery();
+	CATCH(
+		cout << "DTE error coused by query: \n";
+		cout << "   " << _query << endl;
+		currExcept->display(); 
+		currExcept = NULL; 
+		cout << endl;
+		exit(0);
+	)
 }
 
 AttrList* TDataDQL::GetAttrList(){
@@ -298,6 +306,14 @@ void TDataDQL::InvalidateTData()
 {
     cout << "Invalidating TDataDQL" << endl;
     runQuery();
+	CATCH(
+		cout << "DTE error coused by query: \n";
+		cout << "   " << _query << endl;
+		currExcept->display(); 
+		currExcept = NULL; 
+		cout << endl;
+		exit(0);
+	)
     TData::InvalidateTData();
 }
 

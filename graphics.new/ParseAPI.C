@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1997/03/06 23:52:02  ssl
+  Added functionality for issuing a flush on the TData from GUI
+
   Revision 1.54  1997/03/06 02:37:20  donjerko
   *** empty log message ***
 
@@ -261,7 +264,6 @@
 #include "DevError.h"
 #include "ViewLens.h"
 #include "WinClassInfo.h"
-#include "CatalogComm.h"
 #define PURIFY 0
 
 #ifdef PURIFY
@@ -282,6 +284,8 @@ void ResetVkg()
   vkg = 0;
 }
 
+int ParseAPIDTE(int argc, char **argv, ControlPanel *control);
+
 int ParseAPI(int argc, char **argv, ControlPanel *control)
 {
   ClassDir *classDir = control->GetClassDir();
@@ -297,6 +301,10 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 #endif
 
   // The first few commands have a variable number of arguments
+
+	if((argc >= 1) && (strlen(argv[0]) >= 3) && !strncmp(argv[0], "dte", 3)){
+		return ParseAPIDTE(argc, argv, control);
+	}
 
   if (!strcmp(argv[0], "changeParam")) {
     classDir->ChangeParams(argv[1], argc - 2, &argv[2]);
@@ -432,12 +440,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
   if (argc == 1) {
 
-    if(!strcmp(argv[0], "dteListAllIndexes")){
-    	 char* retVal = dteListAllIndexes();
-      control->ReturnVal(API_ACK, retVal);
-      return 1;
-    }
-
     if (!strcmp(argv[0], "date")) {
       time_t tm = time((time_t *)0);
       control->ReturnVal(API_ACK, DateString(tm));
@@ -505,47 +507,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 2) {
-
-    if(!strcmp(argv[0], "dteDeleteCatalogEntry")){
-    	 dteDeleteCatalogEntry(argv[1]);
-      control->ReturnVal(API_ACK, "");
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteReadSQLFilter")){
-    	 char* retVal = dteReadSQLFilter(argv[1]);
-      control->ReturnVal(API_ACK, retVal);
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteShowCatalogEntry")){
-    	 char* catEntry = dteShowCatalogEntry(argv[1]);
-      control->ReturnVal(API_ACK, catEntry);
-      return 1;
-    }
-
-    if(!strcmp(argv[0],"dteImportFileType")){
-      char * name = dteImportFileType(argv[1]); 
-      if (!name){
-	strcpy(result,"");
-	control->ReturnVal(API_NAK, result);
-	return -1;
-      }
-      control->ReturnVal(API_ACK, name);
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteListCatalog")){
-    	 char* catListing = dteListCatalog(argv[1]);
-      control->ReturnVal(API_ACK, catListing);
-      return 1;
-    }
-
-    if(!strcmp(argv[0], "dteListAttributes")){
-    	 char* attrListing = dteListAttributes(argv[1]);
-      control->ReturnVal(API_ACK, attrListing);
-      return 1;
-    }
 
     if (!strcmp(argv[0], "abortQuery")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
@@ -1338,33 +1299,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     }
   }
   if (argc == 3) {
-    if(!strcmp(argv[0], "dteDeleteIndex")){
-    	 dteDeleteIndex(argv[1], argv[2]);
-      control->ReturnVal(API_ACK, "");
-      return 1;
-    }
-    if(!strcmp(argv[0], "dteShowIndexDesc")){
-    	 char* indexDesc = dteShowIndexDesc(argv[1], argv[2]);
-      control->ReturnVal(API_ACK, indexDesc);
-      return 1;
-    }
-    if(!strcmp(argv[0], "dteShowAttrNames")){
-    	 char* attrListing = dteShowAttrNames(argv[1], argv[2]);
-      control->ReturnVal(API_ACK, attrListing);
-      return 1;
-    }
-    if(!strcmp(argv[0], "dteShowCatalogEntry")){
-    	 char* catEntry = dteShowCatalogEntry(argv[1], argv[2]);
-      control->ReturnVal(API_ACK, catEntry);
-      return 1;
-    }
 
-    if(!strcmp(argv[0], "dteInsertCatalogEntry")){
-    	 dteInsertCatalogEntry(argv[1], argv[2]);
-      control->ReturnVal(API_ACK, "");
-      return 1;
-    }
-    
     if (!strcmp(argv[0], "setLinkMaster")) {
       VisualLink *link = (VisualLink *)classDir->FindInstance(argv[1]);
       if (!link) {
@@ -2106,12 +2041,6 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
   }
 
   if (argc == 6) {
-
-	if (!strcmp(argv[0],"dteCreateIndex")){
-		dteCreateIndex(argv[1], argv[2], argv[3], argv[4], argv[5]);
-		control->ReturnVal(API_ACK, "");
-		return 1;
-	}	
 
     if (!strcmp(argv[0], "setWinGeometry")) {
       View *view = (View *)classDir->FindInstance(argv[1]);
