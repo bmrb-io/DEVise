@@ -1,0 +1,153 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 1992-1996
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved$target
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group$target
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+
+############################################################
+
+set target = ~/public/attrproj/src
+
+if ($#argv > 0) then
+  set target = $1
+endif
+
+if (! -d $target) then
+  mkdir $target
+endif
+
+cp ../*/ApDispatcher.h $target
+cp ../*/ApInit.c $target
+cp ../*/ApInit.h $target
+cp ../*/ApParseCat.c $target
+cp ../*/ApParseCat2.c $target
+cp ../*/ApParseCat.h $target
+cp ../*/AttrList.c $target
+cp ../*/AttrList.h $target
+cp ../*/AttrProj.c $target
+cp ../*/AttrProj2.c $target
+cp ../*/AttrProj.h $target
+cp ../*/BufPolicy.h $target
+cp ../*/ClassDir.h $target
+cp ../*/Color.h $target
+cp ../*/CompDate.c $target
+cp ../*/CompDate.h $target
+cp ../*/CompositeParser.c $target
+cp ../*/CompositeParser.h $target
+cp ../*/Config.h $target
+cp ../*/Control.h $target
+cp ../*/DList.c $target
+cp ../*/DList.h $target
+cp ../*/DataSeg.c $target
+cp ../*/DataSeg.h $target
+cp ../*/DataSource.c $target
+cp ../*/DataSource.h $target
+cp ../*/DataSourceBuf.c $target
+cp ../*/DataSourceBuf.h $target
+cp ../*/DataSourceFileDesc.c $target
+cp ../*/DataSourceFileDesc.h $target
+cp ../*/DataSourceFileStream.c $target
+cp ../*/DataSourceFileStream.h $target
+cp ../*/DataSourceFixedBuf.h $target
+cp ../*/DataSourceSegment.c $target
+cp ../*/DataSourceSegment.h $target
+cp ../*/DataSourceTape.c $target
+cp ../*/DataSourceTape.h $target
+cp ../*/DataSourceWeb.c $target
+cp ../*/DataSourceWeb.h $target
+cp ../*/DevError.c $target
+cp ../*/DevError.h $target
+cp ../*/DevFileHeader.c $target
+cp ../*/DevFileHeader.h $target
+cp ../*/DevStatus.c $target
+cp ../*/DevStatus.h $target
+cp ../*/DeviseTypes.h $target
+cp ../*/Dispatcher.h $target
+cp ../*/Exit.c $target
+cp ../*/Exit.h $target
+cp ../*/Group.C $target
+cp ../*/Group.h $target
+cp ../*/GroupDir.C $target
+cp ../*/GroupDir.h $target
+cp ../*/Init.h $target
+cp ../*/ItemList.C $target
+cp ../*/ItemList.h $target
+cp ../*/Journal.h $target
+cp ../*/MapInterpClassInfo.h $target
+cp ../*/Parse.c $target
+cp ../*/Parse.h $target
+cp ../*/Pattern.h $target
+cp ../*/ProjectionList.c $target
+cp ../*/ProjectionList.h $target
+cp ../*/QueryProc.h $target
+cp ../*/RecId.h $target
+cp ../*/RecInterp.c $target
+cp ../*/RecInterp.h $target
+cp ../*/RecOrder.h $target
+cp ../*/TData.c $target
+cp ../*/TData.h $target
+cp ../*/TData2DRec.c $target
+cp ../*/TDataAppend.c $target
+cp ../*/TDataAscii.c $target
+cp ../*/TDataAscii.h $target
+cp ../*/TDataAsciiInterp.c $target
+cp ../*/TDataAsciiInterp.h $target
+cp ../*/TDataBinary.c $target
+cp ../*/TDataBinary.h $target
+cp ../*/TDataBinaryInterp.c $target
+cp ../*/TDataBinaryInterp.h $target
+cp ../*/TDataMap.c $target
+cp ../*/TDataMmap.c $target
+cp ../*/TDataRangeList.c $target
+cp ../*/TDataRangeSource.c $target
+cp ../*/TDataRec.c $target
+cp ../*/TDataViewX.c $target
+cp ../*/Time.c $target
+cp ../*/Time.h $target
+cp ../*/TimeStamp.c $target
+cp ../*/TimeStamp.h $target
+cp ../*/Timer.c $target
+cp ../*/Timer.h $target
+cp ../*/Util.c $target
+cp ../*/Util.h $target
+cp ../*/VectorArray.c $target
+cp ../*/VectorArray.h $target
+cp ../*/Version.c $target
+cp ../*/Version.h $target
+cp ../*/VisualArg.h $target
+cp ../*/aptest.c $target
+cp ../*/aptest2.c $target
+cp ../*/global.h $target
+cp ../*/machdep.h $target
+cp ../*/show.c $target
+cp ../*/tapedrive.C $target
+cp ../*/tapedrive.h $target
+cp ../*/vector.c $target
+cp ../*/vector.h $target
+cp ../*/MemMgr.C $target
+cp ../*/MemMgr.h $target
+cp ../*/DCE.h $target
+cp ../*/DCE.C $target
+cp ../*/FileIndex.h $target
+cp ../*/FileIndex.c $target
+cp ../*/DataSourceDQL.c $target
+cp ../*/DataSourceDQL.h $target
+cp ../*/TDataSeqAscii.c $target
+cp ../*/TDataSeqAscii.h $target
+cp ../*/TDataSeqAsciiInterp.c $target
+cp ../*/TDataSeqAsciiInterp.h $target
+cp ../*/Makefile.birch $target/Makefile
