@@ -183,25 +183,29 @@ while clicking `undo' cancels the change.
 
 <A name="Mode"><H3>Layout vs. Display Modes</H3></A>
 
-DEVise has two modes of operation:layout and display modes. Users
-toggle between these two modes by clicking at the <img src="mode.gif">
-button. In the layout mode, the user constructs mappings and views and
+DEVise has two modes of operation:  layout and display modes. Users
+toggle between these two modes by clicking the <img src="mode.gif">
+button (when you're in layout mode, the button looks like this:
+<img src="mode2.gif">).
+In layout mode, the user constructs mappings and views and
 decides where to place views in windows without having the graphics
 update in the window. The windows are eventually updated when the user
-switches into display mode.
+switches to display mode.
 
-<P>Placing DEVise in the layout mode is a time saver when large amounts
-of data are involved. The layout mode allows the user to construct a visual
-query without waiting for the graphics to be updated. Otherwise, adding a 
+<P>Putting DEVise into layout mode is a time saver when large amounts
+of data are involved.  Layout mode allows the user to construct a visual
+query without waiting for the graphics to be updated.  Otherwise, adding a 
 view in a window may cause all other views already in the same window, 
-together with linked views in other windows, to be updated simultaneously.
-may take a long time.
+together with linked views in other windows, to be updated simultaneously,
+which may take a long time.
 
 <A name="Axes"><H3>Axes</H3></A>
 
-The user can turn the display of view axes on/off. This is accessed
-through the ``View/Toggle X Axis'' and the ``View/Toggle Y Axis''
-menus.
+The user can turn the display of view axes on/off. This is done via
+the ``View/Toggle X Axis'' and the ``View/Toggle Y Axis''
+menu selections.  You can toggle the display of axes for all views
+in a window using the ``Window/Toggle X Axis'' and ``Window/Toggle Y Axis''
+menu selections.
 
 <A name="Mouse"><H3>Mouse and Keyboard Events</H3></A>
 
@@ -213,10 +217,6 @@ as the current view.
 <LI>Click in a view with the middle button to <a href="#Query">query</A>
 the data that lies under the graphical object closest to the mouse
 location.
-<LI>Click on left, right, up, or down arrow in the control panel to
-scroll a view.
-<LI>Click on zoom in or out buttons in control panel to zoom in or
-out of a view in the X or Y direction.
 <LI>Draw a rectangle with the left mouse button pressed in a view to
 zoom only in the X axis (best for bar graphs).
 <LI>Draw a rectangle with the right mouse button pressed in a view to
@@ -228,10 +228,9 @@ The following keyboard commands are available:
 <UL>
 <LI>Press number 4, 6, 8, or 2 to scroll view left, right, up, or down.
 Numbers correspond to arrows on a numeric keypad with NumLock on.
-<LI>Press number 7 or 9 to zoom in or out of a view in the X direction.
-<LI>Press number 1 or 3 to zoom in or out of a view in the Y direction.
-<LI>Press s to toggle symbol display on or off.
-<LI>Press v to toggle connector display on or off.
+<LI>Press number 7 or 9 to zoom in or out on a view in the X direction.
+<LI>Press number 1 or 3 to zoom in or out on a view in the Y direction.
+<LI>Press &lt;escape&gt; to bring the control panel to the top.
 </UL>
 
 <A name="History"><H3>History Window</H3></A>
@@ -296,8 +295,8 @@ interest. One way to save this location is to mark it in the <A
 href="#History">history window</A>. However, the user may also want to
 compare two separate locations. This is most easily accomplished by
 making a copy of the window so that the two may be placed side by side
-for comparison. This is done by choosing the ``Window/Duplicate
-Window'' menu command.
+for comparison. This is done by choosing the ``Window/Duplicate'' menu
+command.
 
 <P>After duplicating the window, the user is provided with two
 identical windows. The user can use the first window as a reference
@@ -320,11 +319,11 @@ textually on the user's terminal.
 
 Views and windows are the means through which the user decides to
 place graphics. First, views can be removed from windows to reduce
-clutter, or be moved to other windows for side by side comparison with
-other views. These functions are accessed through the ``View/Remove
-from Window'' and ``View/Bring Back to window'' menus. When placed
+clutter, or moved to other windows for side by side comparison with
+other views. These functions are accessed through the ``Window/Remove
+View'' and ``Window/Bring View Back'' menu selections. When placed
 within the same window, the positions of views may also be swapped
-using the ``View/Swap Position'' menu.
+using the ``Window/Swap Views'' menu.
 
 <P>Windows are responsible for arranging views inside their
 boundaries.  Different placement strategies may be
@@ -338,69 +337,100 @@ of a window, or for turning the window into an icon.
 
 <H3>Menus</H3>
 
-There are five groups of menus: Session, Visualize, View, Cursor, and
-Window. We now describe each one in turn, beginning with the Session
+There are six groups of menus: Session, Tables, GraphData, View, Window,
+and Help.  We now describe each one in turn, beginning with the Session
 menu. Recall that the state of each <A href="#Intro">visual query</A>
 is a <A href="#Session">session</A>. The session menu deals with
 saving and restoring visual queries:
 
 <UL>
 <LI>Open: restore a previously saved visual query to its original state.
-<LI>Open as template: Apply a previously saved visual query to a different
-set of input data. The user selects the new input data when session is
-restored.
-<LI>Close: close current session.
 <LI>Save: save session under the default name.
 <LI>Save as: save session under a different name.
+<LI>Close: close current session.
+<LI>Open as Template: Apply a previously saved visual query to a different
+set of input data. The user selects the new input data when session is
+restored.
 <LI>Save as Template: save visual query as a template.
+<LI>Save as Batch Script: save the current session as a batch script rather
+than as a Tcl script.
+<LI>Export Template: save the current session with its data source
+definitions and possibly the data itself.
+<LI>Merge Template: TEMPTEMP
+<LI>Delete Session: delete a session file.
+<LI>Add Replica: TEMPTEMP
+<LI>Remove Replica: TEMPTEMP
 <LI>Print: print contents of window or save as Postscript.
 <LI>Quit: quit DEVise.
 </UL>
 
-<P>The ``Visualize'' Menu is used to manage data streams and define
+<P>The ``Tables'' Menu is used to manage data streams and define
 visualizations. See <A href="#DefineMapping">here</A> for more
 information.
+
+<P>The ``Graph Data'' menu deals with the mapping and TData of the
+currently-selected view.
+
+<UL>
+<LI>Edit Mapping:<A href="#EditMapping">edit mapping</A> for current view.
+<LI>Copy/Edit: duplicate the currently-selected view, possibly with
+different TData and a different mapping.
+<LI><A href="#Switch">Switch TData</A>: Apply the same mapping that 
+creates the current view to a different input data.
+</UL>
 
 <P>The ``View'' menu is used to operate on views. Most of the menu
 items require that the current view be specified by clicking in the
 view with the left mouse button. The menu items are:
 
 <UL>
-<LI>Edit Mapping:<A href="#EditMapping">edit mapping</A> for current view.
-<LI><A href="#Switch">Switch TData</A>: Apply the same mapping that 
-creates the current view to a different input data.
-<LI>Swap position: Swap the positions of the last two views selected as
-current view.
-<LI>Move to Window: Move current view to another window.
-<LI>Remove from Window: Remove current view from its window.
-<LI>Bring Back to Window: Bring back a view that was removed earlier.
-<LI>Link: Select a <A href="#Link">visual link</A> for current view.
-<LI>Unlink: Remove current view from a <A href="#Link">visual link</a>.
 <LI>Toggle X Axis: toggle X axis display on/off.
 <LI>Toggle Y Axis: toggle Y axis display on/off.
-<LI>Toggle Statistics: toggle statistics display (min/max/avg) on/off.
-<LI>Show KGraph: control Kiviat graph displays.
+<LI>Foreground: set foreground (axes, title, etc.) color.
+<LI>Background: set background color.
 <LI>Title: set, edit, or delete view titles.
+<LI>Fonts: control title and axis fonts.
+<LI>Links: control visual links.
+<LI>Cursors: control cursors.
+<LI>Statistics: control statistics display (min/max/avg).
+<LI>Color Statistics: TEMPTEMP
+<LI>Kiviat Graph: control Kiviat graph displays.
+<LI>Dimensions: TEMPTEMP
+<LI>Color Override: allow overriding data color specified in mapping.
+<LI>3D Query: TEMPTEMP
+<LI>Destroy: destroy the selected view.
 </UL>
 
-<P>The ``Cursor'' menu is used to operate on <A
-href="#Cursor">cursors</A>:
-
-<UL>
-<LI>Create: create a cursor.
-<LI>Delete: delete a cursor.
-<LI>Set source: make the current view the source of the cursor.
-<LI>Set destination: make the current view the destination of the cursor.
-</UL>
 
 <P>The ``Window'' menu operates on windows:
 
 <UL>
+<LI>Toggle X Axis: toggle X axis display on/off.
+<LI>Toggle Y Axis: toggle Y axis display on/off.
+<LI>Foreground: set foreground (axes, title, etc.) color.
+<LI>Background: set background color.
+<LI>New: create a new window.
 <LI>Layout: change the layout of a window.
-<LI>Remove: remove an empty window.
 <LI><A href="#Duplicate">Duplicate</A>: Make a copy of current window.
+<LI>Stack Control: control stacks and piles.
+<LI>Swap Views: swap the positions of the last two views selected.
+<LI>Move View: Move current view to another window.
+<LI>Remove View: Remove current view from its window.
+<LI>Bring View Back: Bring back a view that was removed earlier.
+<LI>View List: see a list of the names of all views in the current window.
+<LI>Destroy: destroy an empty window.
+
 <LI>Help: Open up the help window to display online documentation.
 <LI>History: Open up the history window.
+</UL>
+
+
+<P>The ``Help'' menu is not very useful at the present time:
+
+<UL>
+<LI>Demo: as of now, this just opens the file select box to select a
+session file.
+<LI>History: open up the query history window.
 </UL>
 
 <H3>Widgets</H3>
