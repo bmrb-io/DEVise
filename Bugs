@@ -1212,6 +1212,7 @@ Num Date        Status  Description
 			names. (rkw)
 
 320 03/11/98	OPEN	SQLViews don't work. (rkw)
+			(Partly fixed by Donko 3/12/98.)
 
 321 03/11/98	FIXED	Rubberband line on Linux client/server form causes
 			crash. (rkw)
