@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  1999/06/23 20:59:15  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -157,8 +160,10 @@ public class DEViseCmdDispatcher implements Runnable
                 if (result.equals(YMsgBox.YIDNO)) {
                     return;
                 } else {
-                    dispatcherThread.stop();
-                    dispatcherThread = null;
+                    if (dispatcherThread != null) {
+                        dispatcherThread.stop();
+                        dispatcherThread = null;
+                    }
 
                     disconnect();
 
@@ -353,8 +358,23 @@ public class DEViseCmdDispatcher implements Runnable
                     w = Integer.parseInt(cmd[11]);
                     h = Integer.parseInt(cmd[12]);
                     Rectangle dataloc = new Rectangle(x, y, w, h);
-                    int bg = (Color.white).getRGB();
-                    int fg = (Color.black).getRGB();
+                    
+                    int bg, fg;
+                    Color color = DEViseGlobals.convertColor(cmd[13]);
+                    if (color != null) {
+                    	fg = color.getRGB();
+                    } else {
+                    	throw new NumberFormatException();
+                    }	
+                    color = DEViseGlobals.convertColor(cmd[14]);
+                    if (color != null) {
+                    	bg = color.getRGB();
+                    } else {
+                    	throw new NumberFormatException();
+                    }		
+                    //int bg = (Color.white).getRGB();
+                    //int fg = (Color.black).getRGB();
+                    
                     String xtype = cmd[15], ytype = cmd[16];
                     String viewtitle = cmd[17];                    
                     double gridx = (Double.valueOf(cmd[18])).doubleValue();

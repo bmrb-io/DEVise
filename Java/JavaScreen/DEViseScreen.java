@@ -255,9 +255,13 @@ public class DEViseScreen extends Panel
                 isCanvasDeleted = true;
                 whichCanvasDeleted = view.canvas;
             }
-
+            
+            if (currentView == view) {
+            	setCurrentView(null);
+            }
+            
             allViews.removeElement(view);
-            viewTable.remove(view.viewName);
+            viewTable.remove(view.viewName);                        
 
             repaint();
         }
@@ -281,6 +285,9 @@ public class DEViseScreen extends Panel
         if (currentView != null) {
             if (currentView.getCanvas() != null) {
                 currentView.getCanvas().repaint();
+                if (currentView != view && currentView.getCanvas().activeView == currentView) {
+                	currentView.getCanvas().activeView = null;
+                }
             }
         }
 

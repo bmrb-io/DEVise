@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  1999/06/23 20:59:16  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -29,7 +32,7 @@ public class DEViseCursor
     public String name = null, viewname = null;
     public Image image = null;
     public DEViseView parentView = null;
-
+    
     public DEViseCursor(String cn, String vn, Rectangle rect, String move, String resize, double gx, double gy) throws YException
     {
         if (cn == null || vn == null)

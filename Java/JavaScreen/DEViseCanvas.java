@@ -204,7 +204,7 @@ public class DEViseCanvas extends Container
             g.drawImage(image, 0, 0, this);
         } else {
             g.setColor(new Color(view.viewBg));
-            g.fillRect(0, 0, canvasDim.width, canvasDim.height);
+            g.fillRect(0, 0, canvasDim.width - 1, canvasDim.height - 1);
         }
 
         Rectangle loc = null;
@@ -276,17 +276,18 @@ public class DEViseCanvas extends Container
             if (isMouseDragged) {
                 if (mousePosition == 2 || mousePosition == 3 || mousePosition == 6 || mousePosition == 7) { // draw cursor movement box
                     loc = new Rectangle(activeView.getCursor(activeView.whichCursor).getLoc());
+                    //jsc.pn("loc = " + loc.x + " " + loc.y + " " + loc.width + " " + loc.height);
                     loc.x = activeView.xtoparent(loc.x);
                     loc.y = activeView.ytoparent(loc.y);
                     int edge = 1;
                     g.setColor(Color.yellow);
-                    g.drawRect(loc.x, loc.y, loc.width, loc.height);
-                    g.drawRect(loc.x + edge, loc.y + edge, loc.width - edge * 2, loc.height - edge * 2);
+                    g.drawRect(loc.x, loc.y, loc.width - 1, loc.height - 1);
+                    g.drawRect(loc.x + edge, loc.y + edge, loc.width - edge * 2 - 1, loc.height - edge * 2 - 1);
                     edge++;
                     g.setColor(Color.red);
-                    g.drawRect(loc.x + edge, loc.y + edge, loc.width - edge * 2, loc.height - edge * 2);
+                    g.drawRect(loc.x + edge, loc.y + edge, loc.width - edge * 2 - 1, loc.height - edge * 2 - 1);
                     edge++;
-                    g.drawRect(loc.x + edge, loc.y + edge, loc.width - edge * 2, loc.height - edge * 2);
+                    g.drawRect(loc.x + edge, loc.y + edge, loc.width - edge * 2 - 1, loc.height - edge * 2 - 1);
                 } else if (mousePosition == 1 || mousePosition == 5) { // draw rubber band
                     int x0, y0, w, h;
 
@@ -310,10 +311,10 @@ public class DEViseCanvas extends Container
                     if (h < 3) h = 3;
                     loc = new Rectangle(x0, y0, w, h);
                     g.setColor(Color.yellow);
-                    g.drawRect(loc.x, loc.y, loc.width, loc.height);
+                    g.drawRect(loc.x, loc.y, loc.width - 1, loc.height - 1);
                     int edge = 1;
                     g.setColor(Color.red);
-                    g.drawRect(loc.x + edge, loc.y + edge, loc.width - edge * 2, loc.height - edge * 2);
+                    g.drawRect(loc.x + edge, loc.y + edge, loc.width - edge * 2 - 1, loc.height - edge * 2 - 1);
                 }
             }
 
@@ -325,8 +326,8 @@ public class DEViseCanvas extends Container
             }
 
             g.setColor(Color.red);
-            g.drawRect(loc.x, loc.y, loc.width, loc.height);
-            g.drawRect(loc.x + 1, loc.y + 1, loc.width - 2, loc.height - 2);
+            g.drawRect(loc.x, loc.y, loc.width - 1, loc.height - 1);
+            g.drawRect(loc.x + 1, loc.y + 1, loc.width - 3, loc.height - 3);
         }
     }
 
@@ -640,26 +641,31 @@ public class DEViseCanvas extends Container
                     jsc.viewInfo.updateInfo(xpos, ypos);
 
                     //activeView.updateCursorLoc(activeView.whichCursor, 1, ep.x - op.x, ep.y - op.y);
-                    int dx = ep.x - op.x, dy = ep.y - op.y;
+                    //int dx = ep.x - op.x, dy = ep.y - op.y;
+                    int dx = ep.x - sp.x, dy = ep.y - sp.y;
                     
                     if (activeView.whichCursor >= 0 && activeView.whichCursor < activeView.viewCursors.size()) {
                         DEViseCursor cursor = (DEViseCursor)activeView.viewCursors.elementAt(activeView.whichCursor);
-                    
+                        
+                        //int tx = cursor.x * 2 + cursor.width;
                         if (cursor.gridx > 0) {
+                            //dx = ((tx + dx) / cursor.gridx) * cursor.gridx - tx;
                             dx = (dx / cursor.gridx) * cursor.gridx;
                         }
-                    
+                        
+                        //int ty = cursor.y * 2 + cursor.height;
                         if (cursor.gridy > 0) {
-                            dy = (dy / cursor.gridy) * cursor.gridy;
+                            //dy = ((ty + dy) / cursor.gridy) * cursor.gridy - ty;
+                            dy = (dy / cursor.gridy) *cursor.gridy;
                         }
                     
-                        activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy);
+                        activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy, true);
                     }
                 
                     //op.x = ep.x;
-                    op.x = op.x + dx;
+                    //op.x = op.x + dx;
                     //op.y = ep.y;
-                    op.y = op.y + dy;
+                    //op.y = op.y + dy;
 
                     if (activeView.isFirstTime) {
                         cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
@@ -684,7 +690,8 @@ public class DEViseCanvas extends Container
                     String xpos = activeView.getX(ep.x), ypos = activeView.getY(ep.y);
                     jsc.viewInfo.updateInfo(xpos, ypos);
 
-                    activeView.updateCursorLoc(activeView.whichCursor, 2, ep.x - op.x, ep.y - op.y);
+                    //activeView.updateCursorLoc(activeView.whichCursor, 2, ep.x - op.x, ep.y - op.y);
+                    activeView.updateCursorLoc(activeView.whichCursor, 2, ep.x - sp.x, ep.y - sp.y, true);
 
                     if (activeView.isFirstTime) {
                         cmd = cmd + "JAVAC_MouseAction_Click " + activeView.getCurlyName() + " " +  activeView.xtome(ep.x) + " " + activeView.ytome(ep.y) + "\n";
@@ -787,26 +794,31 @@ public class DEViseCanvas extends Container
                 String xpos = activeView.getX(ep.x), ypos = activeView.getY(ep.y);
                 jsc.viewInfo.updateInfo(xpos, ypos);
                                     
-                int dx = ep.x - op.x, dy = ep.y - op.y;
+                //int dx = ep.x - op.x, dy = ep.y - op.y;
+                int dx = ep.x - sp.x, dy = ep.y - sp.y;
                 
                 if (activeView.whichCursor >= 0 && activeView.whichCursor < activeView.viewCursors.size()) {
                     DEViseCursor cursor = (DEViseCursor)activeView.viewCursors.elementAt(activeView.whichCursor);
                     
+                    //int tx = cursor.x * 2 + cursor.width;
                     if (cursor.gridx > 0) {
+                        //dx = ((tx + dx) / cursor.gridx) * cursor.gridx - tx;
                         dx = (dx / cursor.gridx) * cursor.gridx;
                     }
                     
+                    //int ty = cursor.y * 2 + cursor.height;
                     if (cursor.gridy > 0) {
-                        dy = (dy / cursor.gridy) * cursor.gridy;
+                        //dy = ((ty + dy) / cursor.gridy) * cursor.gridy - ty;
+                        dy = (dy / cursor.gridy) *cursor.gridy;
                     }
                     
-                    activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy);
+                    activeView.updateCursorLoc(activeView.whichCursor, 1, dx, dy, false);
                 }
                 
                 //op.x = ep.x;
-                op.x = op.x + dx;
+                //op.x = op.x + dx;
                 //op.y = ep.y;
-                op.y = op.y + dy;
+                //op.y = op.y + dy;
 
                 repaint();
             } else if (mousePosition == 3 || mousePosition == 7) {
@@ -816,10 +828,11 @@ public class DEViseCanvas extends Container
                 String xpos = activeView.getX(ep.x), ypos = activeView.getY(ep.y);
                 jsc.viewInfo.updateInfo(xpos, ypos);
 
-                activeView.updateCursorLoc(activeView.whichCursor, 2, ep.x - op.x, ep.y - op.y);
+                activeView.updateCursorLoc(activeView.whichCursor, 2, ep.x - sp.x, ep.y - sp.y, false);
+                //activeView.updateCursorLoc(activeView.whichCursor, 2, ep.x - op.x, ep.y - op.y);
 
-                op.x = ep.x;
-                op.y = ep.y;
+                //op.x = ep.x;
+                //op.y = ep.y;
 
                 repaint();
             } else {

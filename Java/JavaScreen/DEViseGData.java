@@ -37,7 +37,7 @@ public class DEViseGData
     
     public String string = null;
     public Color color = null;
-    public Font font = null;
+    public Font font = null;    
     
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation> <symbol type> <shape attr 0> ... <shape attr 9>
     public DEViseGData(String name, String gdata, double xm, double xo, double ym, double yo) throws YException
@@ -101,15 +101,21 @@ public class DEViseGData
                 });
 
             symbol = button;
-        } else if (symbolType == 12 || symbolType == 16) {
+        } else if (symbolType == 12) { 
             isJavaSymbol = false;
             
             string = data[8];
             
-            double w = (Double.valueOf(data[10])).doubleValue();
-            double h = (Double.valueOf(data[11])).doubleValue();
-            width = (int)(w * xm);
-            height = (int)(h * ym);
+            double w, h;
+            try {
+                w = (Double.valueOf(data[10])).doubleValue();
+                h = (Double.valueOf(data[11])).doubleValue();
+            } catch (NumberFormatException e) {
+                throw new YException("Invalid Gdata!");
+            }    
+            
+            width = (int)(w * size * xm);
+            height = (int)(h * size * ym);
             
             if (width < 0) 
             	width = -width;
@@ -128,7 +134,14 @@ public class DEViseGData
             
             if (color == null || font == null) {
             	string = null;
-            }	
+            }
+            
+            // because java draw string from its baseline, so we have to make corrections
+	    	Toolkit tk = Toolkit.getDefaultToolkit();
+            FontMetrics fm = tk.getFontMetrics(font);
+            int fh = fm.getHeight();
+            y = y + fh;
+            	
         } else {
             isJavaSymbol = false;
 

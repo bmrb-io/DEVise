@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  1999/06/23 20:59:17  wenger
+// Added standard DEVise header.
+//
 
 // ========================================================================
 
@@ -65,6 +68,7 @@ public class DEViseView
     // whichSide = 7 indicate at right-top corner of current cursor
     // whichSide = 8 indicate at right-bottom corner of current cursor
     public int whichChild, whichCursor, whichSide;
+    public Rectangle oldRect = null;
     public boolean isFirstTime = true;
 
     public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, double Z, int bg, int fg, Rectangle dl, String xt, String yt, double gx, double gy, int rb, int cm, int dd, int ky)
@@ -685,12 +689,22 @@ public class DEViseView
     }
 
     // adjust the postion and size of the cursor that is being resizing or moving
-    public void updateCursorLoc(int which, int state, int dx, int dy)
+    public void updateCursorLoc(int which, int state, int dx, int dy, boolean isLast)
     {
         if (which < 0 || which >= viewCursors.size())
             return;
-
+        
         DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(which);
+        
+        if (oldRect == null) {
+            oldRect = new Rectangle(cursor.x, cursor.y, cursor.width, cursor.height);            
+        }
+        
+        cursor.x = oldRect.x;
+        cursor.y = oldRect.y;
+        cursor.width = oldRect.width;
+        cursor.height = oldRect.height;
+        
         int x0 = 0, y0 = 0;
         if (parentView != null) {
             x0 = viewLoc.x;
@@ -717,16 +731,18 @@ public class DEViseView
                 }    
 
                 tmpx = cursor.x + cursor.width;
-                cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
-
+                cx = adjustPosX(x0 + dx + cursor.x) - x0;
+                //cx = adjustPosX(x0 + dx + cursor.x, cursor.width);
+                
                 if (cx >= tmpx) {
                     cursor.x = tmpx;
                     cursor.width = cx - tmpx;
+                    
                     if (cursor.width == 0) {
                         cursor.width = 1;
                     }
-
-                    whichSide = 2;
+                    
+                    if (isLast) whichSide = 2;
                 } else {
                     cursor.x = cx;
                     cursor.width = tmpx - cx;
@@ -750,7 +766,7 @@ public class DEViseView
                         cursor.width = 1;
                     }
 
-                    whichSide = 1;
+                    if (isLast) whichSide = 1;
                 } else {
                     cursor.width = cx - tx;
                 }
@@ -763,7 +779,8 @@ public class DEViseView
                 }    
 
                 tmpy = cursor.y + cursor.height;
-                cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+                //cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+                cy = adjustPosY(y0 + dy + cursor.y) - y0;
 
                 if (cy >= tmpy) {
                     cursor.y = tmpy;
@@ -772,7 +789,7 @@ public class DEViseView
                         cursor.height = 1;
                     }
 
-                    whichSide = 4;
+                    if (isLast) whichSide = 4;
                 } else {
                     cursor.y = cy;
                     cursor.height = tmpy - cy;
@@ -796,7 +813,7 @@ public class DEViseView
                         cursor.height = 1;
                     }
 
-                    whichSide = 3;
+                    if (isLast) whichSide = 3;
                 } else {
                     cursor.height = cy - ty;
                 }
@@ -812,7 +829,8 @@ public class DEViseView
 
                 if (cursor.isXResizable) {
                     tmpx = cursor.x + cursor.width;
-                    cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
+                    //cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
+                    cx = adjustPosX(x0 + dx + cursor.x) - x0;
 
                     if (cx >= tmpx) {
                         cursor.x = tmpx;
@@ -830,7 +848,8 @@ public class DEViseView
 
                 if (cursor.isYResizable) {
                     tmpy = cursor.y + cursor.height;
-                    cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+                    //cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+                    cy = adjustPosY(y0 + dy + cursor.y) - y0;
 
                     if (cy >= tmpy) {
                         cursor.y = tmpy;
@@ -849,12 +868,12 @@ public class DEViseView
                 if (isXChange || isYChange) {
                     if (isXChange) {
                         if (isYChange) {
-                            whichSide = 8;
+                            if (isLast) whichSide = 8;
                         } else {
-                            whichSide = 7;
+                            if (isLast) whichSide = 7;
                         }
                     } else {
-                        whichSide = 6;
+                        if (isLast) whichSide = 6;
                     }
                 }
 
@@ -869,7 +888,8 @@ public class DEViseView
 
                 if (cursor.isXResizable) {
                     tmpx = cursor.x + cursor.width;
-                    cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
+                    //cx = adjustPosX(x0 + dx + cursor.x, cursor.width) - x0;
+                    cx = adjustPosX(x0 + dx + cursor.x) - x0;
 
                     if (cx >= tmpx) {
                         cursor.x = tmpx;
@@ -906,12 +926,12 @@ public class DEViseView
                 if (isXChange || isYChange) {
                     if (isXChange) {
                         if (isYChange) {
-                            whichSide = 7;
+                            if (isLast) whichSide = 7;
                         } else {
-                            whichSide = 8;
+                            if (isLast) whichSide = 8;
                         }
                     } else {
-                        whichSide = 5;
+                        if (isLast) whichSide = 5;
                     }
                 }
 
@@ -944,7 +964,8 @@ public class DEViseView
 
                 if (cursor.isYResizable) {
                     tmpy = cursor.y + cursor.height;
-                    cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+                    //cy = adjustPosY(y0 + dy + cursor.y, cursor.height) - y0;
+                    cy = adjustPosY(y0 + dy + cursor.y) - y0;
 
                     if (cy >= tmpy) {
                         cursor.y = tmpy;
@@ -963,12 +984,12 @@ public class DEViseView
                 if (isXChange || isYChange) {
                     if (isXChange) {
                         if (isYChange) {
-                            whichSide = 6;
+                            if (isLast) whichSide = 6;
                         } else {
-                            whichSide = 5;
+                            if (isLast) whichSide = 5;
                         }
                     } else {
-                        whichSide = 8;
+                        if (isLast) whichSide = 8;
                     }
                 }
 
@@ -1020,17 +1041,21 @@ public class DEViseView
                 if (isXChange || isYChange) {
                     if (isXChange) {
                         if (isYChange) {
-                            whichSide = 5;
+                            if (isLast) whichSide = 5;
                         } else {
-                            whichSide = 6;
+                            if (isLast) whichSide = 6;
                         }
                     } else {
-                        whichSide = 7;
+                        if (isLast) whichSide = 7;
                     }
                 }
 
                 break;
             }
+        }
+                
+        if (isLast) {
+            oldRect = null;
         }
     }
 
