@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2002/02/12 20:56:44  xuk
+// Improvement for drawing axis labels.
+// Added getDatelabel() for different date format.
+//
 // Revision 1.63  2002/02/06 23:08:54  xuk
 // Draw the axis labels in the JavaScreen.
 // Added new functions: getXlabel(), getYlabel(), roundUp();
@@ -866,15 +870,7 @@ public class DEViseView
     public String getYLabel(float y)
     {
 	if ((viewDataYType.toLowerCase()).equals("date")) {
-	    y *= 1000.0f; 
-	    Date date = new Date((long)y);
-	    DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
-	    Calendar cal = Calendar.getInstance();
-	    cal.setTime(date);
-	    String time = " " + cal.get(Calendar.HOUR_OF_DAY) + ":"
-		+ cal.get(Calendar.MINUTE) + ":"
-		+ cal.get(Calendar.SECOND);
-	    return (format.format(date) + time);
+	    return getDateLabel(y, viewInfoFormatY);
 	} else {
 	    int length = 0;
 	    float abs = Math.abs(y);
@@ -907,12 +903,6 @@ public class DEViseView
 		    labelY = labelY.substring(0, length-2);
 	    }
 
-	    length = labelY.length();
-	    // right alignment
-	    int space = 6 - length;
-	    for (int i = 0; i < space; i++)
-		labelY = " ".concat(labelY);
-
 	    return labelY;
 	}
     }
@@ -943,11 +933,6 @@ public class DEViseView
 		if (labelX.charAt(length-2) == '.' && labelX.charAt(length-1) == '0')
 		    labelX = labelX.substring(0, length-2);
 	    }
-
-	    // right alignment
-	    int space = 6 - length;
-	    for (int i = 0; i < space; i++)
-		labelX = " ".concat(labelX);
 
 	    return labelX;
 	}
@@ -993,6 +978,7 @@ public class DEViseView
 	return f;
     }
 
+    // get date label according to cftime format
     public String getDateLabel(float f, String format)
     {
 	f *= 1000.0f; 
@@ -1027,6 +1013,15 @@ public class DEViseView
 	    }
 	    else if (c == 'm') {
 		st = new Integer(cal.get(Calendar.MONTH)).toString();
+	    }
+	    else if (c == 'H') {
+		st = new Integer(cal.get(Calendar.HOUR_OF_DAY)).toString();
+	    }
+	    else if (c == 'M') {
+		st = new Integer(cal.get(Calendar.MINUTE)).toString();
+	    }
+	    else if (c == ':') {
+		st = ":";
 	    }
 	    else if (c == ' ') {
 		st = " ";

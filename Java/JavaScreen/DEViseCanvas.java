@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.86  2002/02/12 20:55:45  xuk
+// Improvement to drawing axis labels.
+//
 // Revision 1.85  2002/02/06 23:07:07  xuk
 // Draw the axis labels in the JavaScreen.
 // Added new function paintAxisLabel().
@@ -829,11 +832,14 @@ public class DEViseCanvas extends Container
 		    float currentY = 0;
 		    String labelY = null;
 		    float step = 0;
+		    int width = 0;
 
 		if ((v.viewDataYType.toLowerCase()).equals("real")) {
 		    // round up the step
 		    step = 40 * v.dataYStep;
 		    step = v.roundUp(step);
+		    gc.setFont(DEViseFonts.getFont(v.fontSizeY, v.fontTypeY, 
+						   v.fontBoldY, v.fontItalicY));
 
 		    if (v.viewDataYMin >= 0) {
 			currentY = v.viewDataYMin;
@@ -849,10 +855,8 @@ public class DEViseCanvas extends Container
 			    currentY *= v.factorY;
 			    
 			    labelY = v.getYLabel(currentY);
-			    
-			    gc.setFont(DEViseFonts.getFont(v.fontSizeY, v.fontTypeY, 
-							   v.fontBoldY, v.fontItalicY));
-			    gc.drawString(labelY, loc.x-50, currentYPos+5); 
+			    width = gc.getFontMetrics().stringWidth(labelY);
+			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			    currentYPos -= 40;	    
 			    currentY += step;
@@ -867,10 +871,9 @@ public class DEViseCanvas extends Container
 			    currentY *= v.factorY;
 			    
 			    labelY = v.getYLabel(currentY);
-			    
-			    gc.setFont(DEViseFonts.getFont(v.fontSizeY, v.fontTypeY, 
-						       v.fontBoldY, v.fontItalicY));
-			    gc.drawString(labelY, loc.x-50, currentYPos+5); 
+			    width = gc.getFontMetrics().stringWidth(labelY);
+
+			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			    currentYPos -= 40;	    
 			    currentY += step;
@@ -885,10 +888,9 @@ public class DEViseCanvas extends Container
 			    currentY *= v.factorY;
 			    
 			    labelY = v.getYLabel(currentY);
-			    
-			    gc.setFont(DEViseFonts.getFont(v.fontSizeY, v.fontTypeY, 
-							   v.fontBoldY, v.fontItalicY));
-			    gc.drawString(labelY, loc.x-50, currentYPos+5); 
+			    width = gc.getFontMetrics().stringWidth(labelY);
+
+			    gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			    gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			    currentYPos += 40;	    
 			    currentY -= step;
@@ -915,11 +917,14 @@ public class DEViseCanvas extends Container
 		    float currentX = 0;
 		    String labelX = null;
 		    float step = 0;
+		    int width = 0;
 
 		if ((v.viewDataXType.toLowerCase()).equals("real")) {
 		    // round up the step
 		    step = 100 * v.dataXStep;
 		    step = v.roundUp(step);
+		    gc.setFont(DEViseFonts.getFont(v.fontSizeX, v.fontTypeX, 
+						   v.fontBoldX, v.fontItalicX));
 
 		    if (v.viewDataXMin >= 0) {
 			currentX = v.viewDataXMin;
@@ -935,10 +940,9 @@ public class DEViseCanvas extends Container
 			    currentX *= v.factorX;
 			    
 			    labelX = v.getXLabel(currentX);
+			    width = gc.getFontMetrics().stringWidth(labelX);
 			    
-			    gc.setFont(DEViseFonts.getFont(v.fontSizeX, v.fontTypeX, 
-							   v.fontBoldX, v.fontItalicX));
-			    gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
 					currentXPos, loc.y+loc.height+5);
 			    currentXPos += 100;
@@ -954,10 +958,8 @@ public class DEViseCanvas extends Container
 			    currentX *= v.factorX;
 			    
 			    labelX = v.getXLabel(currentX);
-			    
-			    gc.setFont(DEViseFonts.getFont(v.fontSizeX, v.fontTypeX, 
-						       v.fontBoldX, v.fontItalicX));
-			    gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+			    width = gc.getFontMetrics().stringWidth(labelX);			    
+			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
 					currentXPos, loc.y+loc.height+5);
 			    currentXPos += 100;
@@ -973,10 +975,8 @@ public class DEViseCanvas extends Container
 			    currentX *= v.factorX;
 			    
 			    labelX = v.getXLabel(currentX);
-			    
-			    gc.setFont(DEViseFonts.getFont(v.fontSizeX, v.fontTypeX, 
-							   v.fontBoldX, v.fontItalicX));
-			    gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+			    width = gc.getFontMetrics().stringWidth(labelX);	
+			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
 					currentXPos, loc.y+loc.height+5);
 			    currentXPos -= 100;
@@ -984,18 +984,21 @@ public class DEViseCanvas extends Container
 			}		
 		    }
 		} else { // for "date"
+		    v.fontSizeX = (v.fontSizeX <= 12) ? v.fontSizeX : 12;
 		    gc.setFont(DEViseFonts.getFont(v.fontSizeX, v.fontTypeX, 
-						   v.fontBoldX, v.fontItalicX));
+							   v.fontBoldX, v.fontItalicX));
 
 		    currentX = v.viewDataXMin * v.factorX;
 		    labelX = v.getXLabel(currentX);
-		    gc.drawString(labelX, loc.x, loc.y+loc.height+10); 
+		    
+		    gc.drawString(labelX, loc.x, loc.y+loc.height+15); 
 		    gc.drawLine(loc.x, loc.y+loc.height, 
 				loc.x, loc.y+loc.height+5);
 
 		    currentX = v.viewDataXMax * v.factorX;
 		    labelX = v.getXLabel(currentX);
-		    gc.drawString(labelX, loc.x+loc.width-90, loc.y+loc.height+10); 
+		    width = gc.getFontMetrics().stringWidth(labelX);
+		    gc.drawString(labelX, loc.x+loc.width-width, loc.y+loc.height+15); 
 		    gc.drawLine(loc.x+loc.width, loc.y+loc.height, 
 				loc.x+loc.width, loc.y+loc.height+5);
 		}    
@@ -1011,11 +1014,14 @@ public class DEViseCanvas extends Container
 	    float currentY = 0;
 	    String labelY = null;
 	    float step = 0;
+	    int width = 0;
 
 	    if ((view.viewDataYType.toLowerCase()).equals("real")) {
 		// round up the step
 		step = 40 * view.dataYStep;
 		step = view.roundUp(step);
+		gc.setFont(DEViseFonts.getFont(view.fontSizeY, view.fontTypeY, 
+					       view.fontBoldY, view.fontItalicY));
 
 		if (view.viewDataYMin >= 0) {
 		    currentY = view.viewDataYMin;
@@ -1031,10 +1037,8 @@ public class DEViseCanvas extends Container
 			currentY *= view.factorY;
 			
 			labelY = view.getYLabel(currentY);
-			
-			gc.setFont(DEViseFonts.getFont(view.fontSizeY, view.fontTypeY, 
-						       view.fontBoldY, view.fontItalicY));
-			gc.drawString(labelY, loc.x-50, currentYPos+5); 
+			width = gc.getFontMetrics().stringWidth(labelY);
+			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			currentYPos -= 40;	    
 			currentY += step;
@@ -1049,10 +1053,9 @@ public class DEViseCanvas extends Container
 			currentY *= view.factorY;
 			
 			labelY = view.getYLabel(currentY);
-			
-			gc.setFont(DEViseFonts.getFont(view.fontSizeY, view.fontTypeY, 
-						       view.fontBoldY, view.fontItalicY));
-			gc.drawString(labelY, loc.x-50, currentYPos+5); 
+			width = gc.getFontMetrics().stringWidth(labelY);
+
+			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			currentYPos -= 40;	    
 			currentY += step;
@@ -1067,10 +1070,9 @@ public class DEViseCanvas extends Container
 			currentY *= view.factorY;
 			
 			labelY = view.getYLabel(currentY);
-			
-			gc.setFont(DEViseFonts.getFont(view.fontSizeY, view.fontTypeY, 
-						       view.fontBoldY, view.fontItalicY));
-			gc.drawString(labelY, loc.x-50, currentYPos+5); 
+			width = gc.getFontMetrics().stringWidth(labelY);
+
+			gc.drawString(labelY, loc.x-15-width, currentYPos+5); 
 			gc.drawLine(loc.x-5, currentYPos, loc.x-2, currentYPos);
 			currentYPos += 40;	    
 			currentY -= step;
@@ -1098,11 +1100,14 @@ public class DEViseCanvas extends Container
 	    float currentX = 0;
 	    String labelX = null;
 	    float step = 0;
+	    int width = 0;
 	    
 	    if ((view.viewDataXType.toLowerCase()).equals("real")) {
 		// round up the step
 		step = 100 * view.dataXStep;
 		step = view.roundUp(step);
+		gc.setFont(DEViseFonts.getFont(view.fontSizeX, view.fontTypeX, 
+					       view.fontBoldX, view.fontItalicX));
 
 		if (view.viewDataXMin >= 0) {
 		    currentX = view.viewDataXMin;
@@ -1118,10 +1123,8 @@ public class DEViseCanvas extends Container
 			currentX *= view.factorX;
 			
 			labelX = view.getXLabel(currentX);
-			
-			gc.setFont(DEViseFonts.getFont(view.fontSizeX, view.fontTypeX, 
-						       view.fontBoldX, view.fontItalicX));
-			gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+			width = gc.getFontMetrics().stringWidth(labelX);	
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+5);
 			currentXPos += 100;
@@ -1137,10 +1140,8 @@ public class DEViseCanvas extends Container
 			currentX *= view.factorX;
 			
 			labelX = view.getXLabel(currentX);
-			
-			gc.setFont(DEViseFonts.getFont(view.fontSizeX, view.fontTypeX, 
-						       view.fontBoldX, view.fontItalicX));
-			gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+			width = gc.getFontMetrics().stringWidth(labelX);	
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+5);
 			currentXPos += 100;
@@ -1156,10 +1157,8 @@ public class DEViseCanvas extends Container
 			currentX *= view.factorX;
 			
 			labelX = view.getXLabel(currentX);
-			
-			gc.setFont(DEViseFonts.getFont(view.fontSizeX, view.fontTypeX, 
-						       view.fontBoldX, view.fontItalicX));
-			gc.drawString(labelX, currentXPos-10, loc.y+loc.height+20); 
+			width = gc.getFontMetrics().stringWidth(labelX);	
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
 				    currentXPos, loc.y+loc.height+5);
 			currentXPos -= 100;
@@ -1167,18 +1166,20 @@ public class DEViseCanvas extends Container
 		    }		
 		}
 	    } else { // for "date"
+		view.fontSizeX = (view.fontSizeX <= 12) ? view.fontSizeX : 12; 
 		gc.setFont(DEViseFonts.getFont(view.fontSizeX, view.fontTypeX, 
 					       view.fontBoldX, view.fontItalicX));
 		    
 		currentX = view.viewDataXMin * view.factorX;
 		labelX = view.getXLabel(currentX);
-		gc.drawString(labelX, loc.x, loc.y+loc.height+10); 
+		gc.drawString(labelX, loc.x, loc.y+loc.height+15); 
 		gc.drawLine(loc.x, loc.y+loc.height, 
 			    loc.x, loc.y+loc.height+5);
 		
 		currentX = view.viewDataXMax * view.factorX;
 		labelX = view.getXLabel(currentX);
-		gc.drawString(labelX, loc.x+loc.width-90, loc.y+loc.height+10); 
+		width = gc.getFontMetrics().stringWidth(labelX);
+		gc.drawString(labelX, loc.x+loc.width-width, loc.y+loc.height+15); 
 		gc.drawLine(loc.x+loc.width, loc.y+loc.height, 
 			    loc.x+loc.width, loc.y+loc.height+5);
 	    }    
