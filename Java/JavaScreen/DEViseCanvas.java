@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.88  2002/02/18 22:07:59  xuk
+// Modification for axis label drawing.
+//
 // Revision 1.87  2002/02/13 17:33:33  xuk
 // Drawing axis labels according to the string length in pixels.
 //
@@ -946,18 +949,19 @@ public class DEViseCanvas extends Container
 			    currentX = (int)((currentX + v.labelFactorX * 0.5) / v.labelFactorX);
 			    currentX = currentX * v.labelFactorX;
 			}
+
 			currentXPos = loc.x + 
 			    (int)((currentX - v.viewDataXMin) / v.dataXStep);
+
 			while (currentXPos <= loc.x + loc.width) {
 			    currentX *= v.factorX;
 			    
 			    labelX = v.getXLabel(currentX);
 			    width = gc.getFontMetrics().stringWidth(labelX);
 			    
-			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
+			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
-					currentXPos, loc.y+loc.height+5);
-			    //currentXPos += 100;
+					currentXPos, loc.y+loc.height+3);
 			    currentX += step;
 			    currentXPos = loc.x + 
 				(int)((currentX - v.viewDataXMin) / v.dataXStep);
@@ -973,9 +977,9 @@ public class DEViseCanvas extends Container
 			    
 			    labelX = v.getXLabel(currentX);
 			    width = gc.getFontMetrics().stringWidth(labelX);			    
-			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
+			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
-					currentXPos, loc.y+loc.height+5);
+					currentXPos, loc.y+loc.height+3);
 			    //currentXPos += 100;
 			    currentX += step;
 			    currentXPos = loc.x + 
@@ -992,9 +996,9 @@ public class DEViseCanvas extends Container
 			    
 			    labelX = v.getXLabel(currentX);
 			    width = gc.getFontMetrics().stringWidth(labelX);	
-			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
+			    gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			    gc.drawLine(currentXPos, loc.y+loc.height, 
-					currentXPos, loc.y+loc.height+5);
+					currentXPos, loc.y+loc.height+3);
 			    // currentXPos -= 100;
 			    currentX -= step;
 			    currentXPos = loc.x + 
@@ -1011,14 +1015,14 @@ public class DEViseCanvas extends Container
 		    
 		    gc.drawString(labelX, loc.x, loc.y+loc.height+15); 
 		    gc.drawLine(loc.x, loc.y+loc.height, 
-				loc.x, loc.y+loc.height+5);
+				loc.x, loc.y+loc.height+3);
 
 		    currentX = v.viewDataXMax * v.factorX;
 		    labelX = v.getXLabel(currentX);
 		    width = gc.getFontMetrics().stringWidth(labelX);
 		    gc.drawString(labelX, loc.x+loc.width-width, loc.y+loc.height+15); 
 		    gc.drawLine(loc.x+loc.width, loc.y+loc.height, 
-				loc.x+loc.width, loc.y+loc.height+5);
+				loc.x+loc.width, loc.y+loc.height+3);
 		}    
 	    }   
 	}
@@ -1088,8 +1092,6 @@ public class DEViseCanvas extends Container
     
 		    // drawing downward
 		    currentY = 0 - step;
-		    // currentYPos = loc.y + loc.height - 
-		    //(int)((0 - view.viewDataYMin) / view.dataYStep) + 40;
 		    currentYPos = loc.y + loc.height - 
 			(int)((currentY - view.viewDataYMin) / view.dataYStep);
 		    	
@@ -1147,16 +1149,18 @@ public class DEViseCanvas extends Container
 			currentX = (int)((currentX + view.labelFactorX * 0.5) / view.labelFactorX);
 			currentX = currentX * view.labelFactorX;
 		    }
+
 		    currentXPos = loc.x + 
-			(int)((currentX - view.viewDataXMin) / view.dataXStep);		    
+			(int)((currentX - view.viewDataXMin) / view.dataXStep);
+		    
 		    while (currentXPos <= loc.x + loc.width) {
 			currentX *= view.factorX;
 			
 			labelX = view.getXLabel(currentX);
 			width = gc.getFontMetrics().stringWidth(labelX);	
-			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
-				    currentXPos, loc.y+loc.height+5);
+				    currentXPos, loc.y+loc.height+3);
 			// currentXPos += 100;
 			currentX += step;
 			currentXPos = loc.x + 
@@ -1173,9 +1177,9 @@ public class DEViseCanvas extends Container
 			
 			labelX = view.getXLabel(currentX);
 			width = gc.getFontMetrics().stringWidth(labelX);	
-			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
-				    currentXPos, loc.y+loc.height+5);
+				    currentXPos, loc.y+loc.height+3);
 			// currentXPos += 100;
 			currentX += step;
 			currentXPos = loc.x + 
@@ -1192,9 +1196,9 @@ public class DEViseCanvas extends Container
 			
 			labelX = view.getXLabel(currentX);
 			width = gc.getFontMetrics().stringWidth(labelX);	
-			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+20); 
+			gc.drawString(labelX, currentXPos-width/2+1, loc.y+loc.height+15); 
 			gc.drawLine(currentXPos, loc.y+loc.height, 
-				    currentXPos, loc.y+loc.height+5);
+				    currentXPos, loc.y+loc.height+3);
 			// currentXPos -= 100;
 			currentX -= step;
 			currentXPos = loc.x + 
@@ -1210,14 +1214,14 @@ public class DEViseCanvas extends Container
 		labelX = view.getXLabel(currentX);
 		gc.drawString(labelX, loc.x, loc.y+loc.height+15); 
 		gc.drawLine(loc.x, loc.y+loc.height, 
-			    loc.x, loc.y+loc.height+5);
+			    loc.x, loc.y+loc.height+3);
 		
 		currentX = view.viewDataXMax * view.factorX;
 		labelX = view.getXLabel(currentX);
 		width = gc.getFontMetrics().stringWidth(labelX);
 		gc.drawString(labelX, loc.x+loc.width-width, loc.y+loc.height+15); 
 		gc.drawLine(loc.x+loc.width, loc.y+loc.height, 
-			    loc.x+loc.width, loc.y+loc.height+5);
+			    loc.x+loc.width, loc.y+loc.height+3);
 	    }    
 	}   
 	

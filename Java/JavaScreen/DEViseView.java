@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2002/02/18 22:08:00  xuk
+// Modification for axis label drawing.
+//
 // Revision 1.65  2002/02/13 17:33:28  xuk
 // Drawing axis labels according to the string length in pixels.
 //
@@ -899,11 +902,10 @@ public class DEViseView
 
 	    labelY = labelY.substring(0, length);
 
-	    if (length > 2) {
-		if (labelY.charAt(length-1) == '.') 
+	    while ( (labelY.charAt(length-1) == '.') || 
+		(labelY.indexOf('.') != -1 && labelY.charAt(length-1) == '0') ){
 		    labelY = labelY.substring(0, length-1);
-		if (labelY.charAt(length-2) == '.' && labelY.charAt(length-1) == '0')
-		    labelY = labelY.substring(0, length-2);
+		    length--;
 	    }
 	    return labelY;
 	}
@@ -920,7 +922,7 @@ public class DEViseView
 	    String labelX = new Float(x).toString();
 
 	    if (abs >= 1) { // -1 =< x <= 1
-		length = (int)(Math.log(abs) / Math.log(10)) + 1;
+		length = (int)(Math.log(abs) / Math.log(10) + 0.001) + 1;
 		if (x < 0) // "-"
 		    length ++;
 	    } else {
@@ -928,13 +930,12 @@ public class DEViseView
 	    }
 
 	    labelX = labelX.substring(0, length);
-	    
-	    if (length > 2) {
-		if (labelX.charAt(length-1) == '.')
+
+	    while ( (labelX.charAt(length-1) == '.') || 
+		(labelX.indexOf('.') != -1 && labelX.charAt(length-1) == '0') ){
 		    labelX = labelX.substring(0, length-1);
-		if (labelX.charAt(length-2) == '.' && labelX.charAt(length-1) == '0')
-		    labelX = labelX.substring(0, length-2);
-	    }
+		    length--;
+	    }	    
 
 	    return labelX;
 	}
@@ -948,34 +949,43 @@ public class DEViseView
 	float temp = 0;
 
 	// get the factor
-	if (f > 1) {
+	if (f >= 1) {
 	    log = (int)(Math.log(f)/Math.log(10));
 	    factor = (float)Math.pow(10, log);
-	}
+
 	
-	// for step >= 10, round up to 0.5*factor
-	if (factor > 1) {
-	    temp = (int)((f + factor * 0.5) / factor);
-	    temp = temp * factor;
-	    if (temp >= f) {
-		if ((temp - f) > (f - temp + 0.5 * factor))
-		    temp -= (float)(0.5 * factor);
-	    } else {
-		if ((f - temp) > (temp + 0.5 * factor - f))
-		    temp += (float)(0.5 * factor);
-	    }
-	    f = (int)temp;		    
-	}
-	
-	// for step [1, 10)
-	if (factor == 1 && f >= 1) {
-	    if (f > 7.5) 
-		f = 10.0f;
-	    else if (f > 3)
-		f = 5.0f;
+	    // for step >= 10, round up to 0.5*factor
+	    if (factor > 1) {
+		temp = (int)((f + factor * 0.5) / factor);
+		temp = temp * factor;
+		if (temp >= f) {
+		    if ((temp - f) > (f - temp + 0.5 * factor))
+			temp -= (float)(0.5 * factor);
+		} else {
+		    if ((f - temp) > (temp + 0.5 * factor - f))
+			temp += (float)(0.5 * factor);
+		}
+		f = (int)temp;		    
+	    } else { // for step [1, 10)
+		if (f > 7.5) 
+		    f = 10.0f;
+		else if (f > 4)
+		    f = 5.0f;
+		else if (f > 1.8)
+		    f = 2.0f;
+		else 
+		    f = 1.0f;
+	    }	
+	} else { // 0 < f < 1
+	    if (f < 0.15)
+		f = (float)0.1;
+	    else if (f < 0.25)
+		f = (float)0.2;
+	    else if (f < 0.7)
+		f = (float)0.5;
 	    else 
-		f = (int)f;
-	}	
+		f = (float)1.0;
+	}
 	
 	return f;
     }
