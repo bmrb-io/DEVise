@@ -933,6 +933,13 @@ Num Date        Status  Description
 			doesn't let you add a new attribute prior to an
 			existing attribute. (rkw)
 
+234 10/08/97	OPEN	The number of BasicStats objects created by
+			ViewScatter and/or TDataViewX can be very large
+			(thousands) and may be unbounded. (rkw)
+
+235 10/09/97	OPEN	The DTE (at least on Linux) sometimes has trouble
+			with long strings (e.g., 1024 characters). (rkw/dj)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
