@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.39  1996/09/19 03:34:02  guangshu
+  Minor midification to make it more flexible when saving the mapping file.
+
   Revision 1.38  1996/09/18 20:14:43  guangshu
   Added function ExportView to save each view in a window to a separate gif
   file. Modified function ExportGIF.
@@ -449,7 +452,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
     
 }
 
-void XDisplay::ExportGIF(FILE *fp, int isView = 0)
+void XDisplay::ExportGIF(FILE *fp, int isView)
 {
   /* compute the bounding rectangle of all windows */
 

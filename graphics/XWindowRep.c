@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.69  1996/09/18 20:16:56  guangshu
+  Modified function ExportGIF.
+
   Revision 1.68  1996/09/10 20:07:14  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -880,7 +883,7 @@ Window XWindowRep::FindTopWindow(Window win)
 
 /* export image as GIF */
 
-void XWindowRep::ExportGIF(FILE *fp, int isView = 0)
+void XWindowRep::ExportGIF(FILE *fp, int isView)
 {
   if (_win) {
     Window win;
