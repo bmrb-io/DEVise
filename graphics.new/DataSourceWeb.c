@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/07/12 19:37:21  jussi
+  Added timeout processing for network connections.
+
   Revision 1.2  1996/07/02 22:48:14  jussi
   Fixed small bug in AsyncIO. Close() no longer uses the base
   class Close() routine.
@@ -40,6 +43,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <signal.h>
 #include <unistd.h>
 #include <sys/param.h>
 #include <sys/types.h>
@@ -57,22 +61,18 @@ static char rcsid[] = "$RCSfile$ $Revision$ $State$";
 
 static char * srcFile = __FILE__;
 
-static const int ConnectTimeout = 2;    /* timeout of network connect */
-
 /*------------------------------------------------------------------------------
  * function: DataSourceWeb::DataSourceWeb
  * DataSourceWeb constructor.
  */
 DataSourceWeb::DataSourceWeb(char *url, char *label, char *cache) :
-	DataSourceFileStream("no file", label)
+	DataSourceFileStream(cache, label)
 {
     DO_DEBUG(printf("DataSourceWeb::DataSourceWeb(%s,%s,%s)\n",
                     url, cache, (label != NULL) ? label : "null"));
 
     _url = strdup(url);
-    _cache = strdup(cache);
-    _fd = -1;
-    _cfile = NULL;
+    _childPid = -1;
 }
 
 /*------------------------------------------------------------------------------
@@ -83,94 +83,64 @@ DataSourceWeb::~DataSourceWeb()
 {
     DO_DEBUG(printf("DataSourceWeb::~DataSourceWeb()\n"));
 
-    if (_cfile != NULL) fclose(_cfile);
-    if (_fd >= 0) close(_fd);
+    if (_childPid >= 0)
+        (void)kill(_childPid, SIGKILL);
+
     delete _url;
-    delete _cache;
 }
 
 /*------------------------------------------------------------------------------
  * function: DataSourceWeb::Open
- * Do an fdopen() on the file descriptor.
+ * Open Web data source.
  */
 DevStatus
 DataSourceWeb::Open(char *mode)
 {
     DO_DEBUG(printf("DataSourceWeb::Open()\n"));
 
-    if (strcmp(mode, "r"))
-    {
+    DOASSERT(!_file && _childPid < 0, "Invalid file or process id");
+
+    if (strcmp(mode, "r")) {
         reportError("cannot write to a Web data source", EINVAL);
         return StatusFailed;
     }
 
     // if file can be opened for reading, assume that the cache file
     // is complete and there is no need to fetch more data from the URL
-    _file = fopen(_cache, "r");
+    _file = fopen(_filename, "r");
     if (_file != NULL) {
         return StatusOk;
     }
 
-    printf("Initiating data transfer from %s\n", _url);
-
-    Timer::Queue(ConnectTimeout * 1000, this, 0, true);
-
-    size_t len = 0;
-    if (!strncmp(_url, "ftp://", 6))
-      _fd = open_ftp(_url);
-    else
-      _fd = open_http(_url, &len);
-
-    Timer::Cancel(this, 0);
-
-    if (_fd < 0 && errno == EINTR)
-    {
-        fprintf(stderr, "Connection to %s timed out\n", _url);
-        return StatusFailed;
-    }
-
-    if (_fd < 0)
-    {
-        char errBuf[256];
-        sprintf(errBuf, "unable to open URL %s", _url);
+    // create cache file and close it immediately
+    _file = fopen(_filename, "w");
+    if (!_file) {
+        char	errBuf[MAXPATHLEN+100];
+        sprintf(errBuf, "cannot create cache file %s", _filename);
         reportError(errBuf, errno);
         return StatusFailed;
     }
+    fclose(_file);
 
-    // attempt to create an empty cache file
-    _cfile = fopen(_cache, "w");
-    if (_cfile == NULL)
-    {
-        char errBuf[MAXPATHLEN+100];
-        sprintf(errBuf, "unable to create cache file %s", _cache);
-        reportError(errBuf, errno);
+    // reopen cache file for reading
+    _file = fopen(_filename, "r");
+    DOASSERT(_file, "Inconsistent file activity");
+
+    _childPid = fork();
+    if (_childPid < 0) {
+        reportError("cannot fork process", errno);
         return StatusFailed;
     }
 
-    // open a second instance of the same file, for reading
-    _file = fopen(_cache, "r");
-    DOASSERT(_file != NULL, "Invalid file pointer");
+    if (!_childPid) {
+        DevStatus status = ChildProc();
+        if (status != StatusOk)
+            reportError("Web data transfer failed", errno);
+        _exit(1);
+    }
 
     return StatusOk;
 }
-
-/*------------------------------------------------------------------------------
- * function: DataSourceWeb::IsOk
- * Return true if cache file is valid.
- */
-Boolean
-DataSourceWeb::IsOk()
-{
-    if (_file == NULL)
-        return false;
-
-    struct stat sbuf;
-    if (stat(_cache, &sbuf) < 0)
-        return false;
-
-    return true;
-}
-
 
 /*------------------------------------------------------------------------------
  * function: DataSourceWeb::Close
@@ -181,55 +151,75 @@ DataSourceWeb::Close()
 {
     DO_DEBUG(printf("DataSourceWeb::Close()\n"));
 
-    if (_file != NULL) fclose(_file);
-    if (_cfile != NULL) fclose(_cfile);
-    if (_fd >= 0) close(_fd);
+    if (_childPid >= 0)
+        (void)kill(_childPid, SIGKILL);
 
-    _fd = -1;
-    _cfile = NULL;
-    _file = NULL;
+    _childPid = -1;
 
-    return StatusOk;
+    return DataSourceFileStream::Close();
 }
 
 /*------------------------------------------------------------------------------
- * function: DataSourceWeb::AsyncIO
- * Returns the file descriptor associated with this object.
+ * function: DataSourceWeb::ChildProc
+ * Child process for fetching data from Web source.
  */
-void
-DataSourceWeb::AsyncIO()
+DevStatus
+DataSourceWeb::ChildProc()
 {
-    DO_DEBUG(printf("DataSourceWeb::AsyncIO()\n"));
-    DOASSERT(_fd > 0 && _cfile, "Invalid socket or file");
+    DO_DEBUG(printf("DataSourceWeb::ChildProc()\n"));
 
     Timer::StopTimer();
 
+    printf("Initiating data transfer from %s\n", _url);
+
+    int fd;
+    size_t totlen = 0;
+
+    if (!strncmp(_url, "ftp://", 6))
+        fd = open_ftp(_url);
+    else
+        fd = open_http(_url, &totlen);
+
+    if (fd < 0) {
+        fprintf(stderr, "Unable to open URL %s", _url);
+        return StatusFailed;
+    }
+
+    // attempt to create an empty cache file
+    FILE *cfile = fopen(_filename, "w");
+    if (!cfile) {
+        fprintf(stderr, "Unable to create cache file %s", _filename);
+        return StatusFailed;
+    }
+
     char buffer[1024];
 
-    int len = read(_fd, buffer, sizeof buffer);
-    if (len < 0) {
-        reportError("cannot read from network", errno);
-        printf("Closing connection to %s\n", _url);
-    }
-    if (len == 0) {
-        printf("Data transfer from %s complete\n", _url);
-    }
-    if (len <= 0) {
-        fclose(_cfile);
-        close(_fd);
-        _cfile = NULL;
-        _fd = -1;
-    }
-    if (len > 0) {
-	if (fseek(_cfile, 0, SEEK_END) < 0)
-          reportError("cannot go to end of file", errno);
-        else {
-            if (fwrite(buffer, len, 1, _cfile) != 1)
-              reportError("cannot write to cache file", errno);
+    while (1) {
+        int len = read(fd, buffer, sizeof buffer);
+        if (len == 0) {
+            printf("Data transfer from %s complete\n", _url);
+            close(fd);
+            fclose(cfile);
+            return StatusOk;
+        }
+        if (len < 0) {
+            fprintf(stderr, "Cannot read from network\n");
+            break;
+        }
+        if (fseek(cfile, 0, SEEK_END) < 0) {
+            fprintf(stderr, "Cannot seek to end of file\n");
+            break;
+        }
+        if (fwrite(buffer, len, 1, cfile) != 1) {
+            fprintf(stderr, "Cannot write to cache file\n");
+            break;
         }
     }
+    
+    close(fd);
+    fclose(cfile);
 
-    Timer::StartTimer();
+    return StatusFailed;
 }
 
 /*------------------------------------------------------------------------------
