@@ -4,8 +4,6 @@
 
 ACTIVE
 ------
-Include Tasvir images in PostScript output. (ml/rkw 2/27/97)
-
 Improve control of fonts. (ml/rkw 11/19/96)
 
 Be able to save schemas to a "TData file". (ml/rkw 6/13/96)
@@ -19,11 +17,22 @@ but the front-end can still be used to create new views, etc. (kb 8/2/96)
 
 Make automated test scripts. (rr/rkw 1/9/97)
 
+Port DEVise to Windows NT.
+
+Move LineWidth from ShapeAttr3 to its own Gdata spot, next to Pattern.
+Should LineWidth be absolute pixel size, or in user coords? 
+How should the LineWidth be handled for the Line symbol?
+The LineWidth might need to be stored in the PointStorage.
+Large line width for Line plots doesn't look right. (kb 9/4/96)
+
+Support for custom colors and/or user defined color palette (kb 9/5/96)
+
+Eliminate color names (do everything by RGB).  (See notes in
+graphics/PostScript.doc.)  (ml/rkw 11/12/96)
+
 
 HIGH PRIORITY
 -------------
-Get PostScript output of full screen working. (ml/rkw 2/19/97)
-
 GUI for printing needs improvement. (ml/rkw 2/19/97)
 
 Fix speed problem for some sessions in Linux (try the LL.tk sesssion).
@@ -61,8 +70,6 @@ exporting a template with data. (ml/rkw 6/4/96)
 Make some kind of graphical browser/editor for session files. (ml/rkw 6/4/96?)
 
 Improve error handling (rkw/jpm/gc 6/28/96)
-
-Port DEVise to Windows NT.
 
 Reduce unnecessary interclass dependencies/extra includes (rkw/jpm ?/?/96)
 
@@ -174,15 +181,7 @@ anywhere on a rectangle rather than its center.   (kb/jm 9/3/96)
 Rename WindowRep::FillRect* to DrawRect* since the rectangle drawn
 is not always filled.  (kb 9/3/96)
 
-Move LineWidth from ShapeAttr3 to its own Gdata spot, next to Pattern.
-Should LineWidth be absolute pixel size, or in user coords? 
-How should the LineWidth be handled for the Line symbol?
-The LineWidth might need to be stored in the PointStorage.
-Large line width for Line plots doesn't look right. (kb 9/4/96)
-
 Support for custom fill bitmaps and/or user defined fill palette (kb 9/5/96)
-
-Support for custom colors and/or user defined color palette (kb 9/5/96)
 
 Put 3-D borders around views. (ml/rkw/9/6/96)
 
@@ -198,9 +197,6 @@ Add a "wiggly line" drawing function in the WindowRep classes. (na/rkw 9/20/96)
 Display session name somewhere. (rkw 9/26/96)
 
 Combine TDataAscii and TDataBinary. (rkw/jpm 10/3/96)
-
-Add a note to the user manual more clearly specifying the difference
-between separators and white space. (rkw 10/7/96)
 
 Have Devise itself, attrproj, and devread all use the same ParseCat
 code. (rkw 10/10/96)
@@ -252,9 +248,6 @@ first ~10 lines of a corresponding data file. (ml/rkw 11/12/96)
 
 Switch positions of 'hi' and 'lo' in schema editor. (ml/rkw 11/12/96)
 
-Eliminate color names (do everything by RGB).  (See notes in
-graphics/PostScript.doc.)  (ml/rkw 11/12/96)
-
 Be able to set view foreground and background colors in the mapping
 window. (ml/rkw 11/12/96)
 
@@ -291,8 +284,8 @@ Put info about batch and client/server modes in the user documentation.
 Be able to store some kind of comment or explanation in a session file.
 (rkw 12/12/96)
 
-Perhaps allow colors to be specified by RGB value (have RGB value in
-a data attribute). (jpm/rkw 12/12/96)
+Perhaps allow colors for data to be specified by RGB value (have RGB
+value in a data attribute). (jpm/rkw 12/12/96)
 
 Allow data from stdin to be used (maybe stick it into a buffer DataSource).
 (ml/jpm/rkw 12/12/96)
@@ -320,12 +313,6 @@ the image, rather than asking for a huge image size as it does now).
 (rkw 1/9/97)
 
 Put sessions into the Devise catalog. [rr/rkw 1/14/97]
-
-In the 'Define Visualization' dialog, the 'Create Window' dialog should
-be shown automatically if there are no windows existing. (ma/rkw 1/15/97)
-
-The Devise documentation should have an explicit list of the steps needed
-to go from a raw data file to a Devise visualization. (ma/rkw 1/15/97)
 
 Perhaps add 'Edit' and 'Close' buttons to the 'Active Tables' dialog.
 (rkw 1/15/97)
@@ -430,6 +417,19 @@ Make mapping dialog work like the query dialog in that you can select
 different views and the mapping dialog switches to the current
 mapping, and then there should be an 'apply' button to accept changes
 without closing the dialog.  (kb 8/2/96)
+
+Include Tasvir images in PostScript output. (ml/rkw 2/27/97)
+
+Get PostScript output of full screen working. (ml/rkw 2/19/97)
+
+Add a note to the user manual more clearly specifying the difference
+between separators and white space. (rkw 10/7/96)
+
+In the 'Define Visualization' dialog, the 'Create Window' dialog should
+be shown automatically if there are no windows existing. (ma/rkw 1/15/97)
+
+The Devise documentation should have an explicit list of the steps needed
+to go from a raw data file to a Devise visualization. (ma/rkw 1/15/97)
 
 
 CANCELLED
