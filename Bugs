@@ -1167,6 +1167,11 @@ Num Date        Status  Description
 
 306 03/02/98	OPEN	Attempting to save a session causes a core dump. (rkw)
 
+307 03/02/98	OPEN	DEVise gives 'Bad free() ignored.' messages when
+			quitting (at least on Intel/Solaris). (rkw)
+
+308 03/03/98	OPEN	devised uses lots of CPU when idle. (sm/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
