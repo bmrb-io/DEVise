@@ -3007,6 +3007,9 @@ Num Date        Status  Description
 746 1/7/02	OPEN	JavaScreen: mouse location display shows 0.0 even
 			when the format is - (blank). (rkw)
 
+747 1/10/02	OPEN	Axis multiplication factor doesn't get copied when
+			a view is copied. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
