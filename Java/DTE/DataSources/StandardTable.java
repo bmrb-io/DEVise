@@ -14,7 +14,7 @@ public class StandardTable implements DataSource{
 
   public StandardTable(){
     schema = new Schema();
-    String urlString = null;
+    String urlString = new String();
   }
        
   public StandardTable(Schema sch, String url){
@@ -36,22 +36,24 @@ public class StandardTable implements DataSource{
   }
 
   public boolean read(StreamTokenizer st) throws IOException {
-    if(schema.read(st)){
-      {
-	if(st.nextToken() == StreamTokenizer.TT_WORD){
-	  urlString = (String) st.sval; 
-	  return true;
-	}
-	else throw new IOException("RelFileName Expected");
-      }
-    else return false;   
+    try{
+        schema.read(st);
+    }catch(IOException e){
+      throw new IOException();};
+     
+    if(st.nextToken() != StreamTokenizer.TT_EOF){
+      urlString += st.toString(); 
+      return true;
     }
+    else throw new IOException("RelFileName Expected");
   }
+ 
+ 
 
   public String getString(){
     String str = getTypeNm();
     str += " " + schema.getString();
-    str += " " + urlString + ";";
+    str += " " + urlString + ";\n";
     return str;
   }
 
