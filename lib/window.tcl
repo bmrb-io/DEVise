@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.25  1997/01/27 20:15:25  wenger
+#  Workaround to bug 137: disables Stack Control dialog buttons while drawing.
+#
 #  Revision 1.24  1997/01/23 21:47:45  wenger
 #  Fixed a couple more OK/Cancel button pairs.
 #
@@ -690,6 +693,10 @@ proc DoWindowStackControl {} {
 ############################################################
 
 proc EnableStackControl {} {
+    if {![WindowExists .stack]} {
+	return
+    }
+
     .stack.bot.row1.but.pile config -state normal
     .stack.bot.row2.but.unpile config -state normal
     .stack.bot.row1.but.stack config -state normal
@@ -700,6 +707,10 @@ proc EnableStackControl {} {
 ############################################################
 
 proc DisableStackControl {} {
+    if {![WindowExists .stack]} {
+	return
+    }
+
     .stack.bot.row1.but.pile config -state disabled
     .stack.bot.row2.but.unpile config -state disabled
     .stack.bot.row1.but.stack config -state disabled
