@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 9.1.
+version 9.2.
 
 
 For the details of the format in which commands are send on the socket,
@@ -83,6 +83,13 @@ see comments in DEViseCommSocket.java.
              sent in response)
     Arguments: 0
 
+    2.11 JAVAC_RefreshData
+    Purpose: Have the devised re-read all data for the current session,
+             and generate new images, etc.
+    Arguments: 1
+        <do home>: 0 = don't do home on changed views; 1 = do home on changed
+	           views
+
 
 3. JSPoP to JavaScreen
 
@@ -158,20 +165,7 @@ see comments in DEViseCommSocket.java.
         <session file>: path of session file to open, relative to
                         $DEVISE_SESSION.
 
-    4.5 JAVAC_MouseAction_Click
-    Purpose: tells the devised that the user has clicked at the specified
-             location; this command is not sent if the click results in a
-             cursor movement.
-             Note: I'm not sure there are any remaining cases where this
-                   command is actually used.
-    Arguments: 3
-        <view name>: name of view in which mouse click occurred.
-        <x location>: x location of mouse click in pixels, relative to left
-                      edge of view.
-        <y location>: y location of mouse click in pixels, relative to top
-                      edge of view.
-
-    4.6 JAVAC_ShowRecords
+    4.5 JAVAC_ShowRecords
     Purpose: requests that the devised return TData record information for
              the given location (drill down) in a two-dimensional view.
     Arguments: 3
@@ -181,7 +175,7 @@ see comments in DEViseCommSocket.java.
         <y location>: y location of event causing records to be shown, in
                       pixels, relative to the top edge of the view.
 
-    4.7 JAVAC_MouseAction_RubberBand
+    4.6 JAVAC_MouseAction_RubberBand
     Purpose: tells the devised that the user drew the specified rubber band
              line with the mouse; this normally results in the view being
              zoomed in or out.
@@ -201,7 +195,7 @@ see comments in DEViseCommSocket.java.
         <x-only zoom>: optional.  1 if zoom should be x-only, 0 if zoom
 	               should be xy.
 
-    4.8 JAVAC_SetDisplaySize
+    4.7 JAVAC_SetDisplaySize
     Purpose: tells the devised the size of the area in which the JavaScreen
              can display views, so that the view sizes can be adjusted to fit
              within that area.
@@ -211,14 +205,14 @@ see comments in DEViseCommSocket.java.
 	<x resolution>: X resolution of display, in pixels per inch.
 	<y resolution>: Y resolution of display, in pixels per inch.
 
-    4.9 JAVAC_KeyAction
+    4.8 JAVAC_KeyAction
     Purpose: tells the devised that the user has pressed a key with the mouse
              in the specified view.
     Arguments: 2
         <view name>: name of the view in which the key press occurred.
         <key>: the key that was pressed (integer value sent as string).
 
-    4.10 JAVAC_SaveSession
+    4.9 JAVAC_SaveSession
     Purpose: tells the devised to save the current session to the specified
              file.
              Notes: currently only used by JSPoP
@@ -228,22 +222,22 @@ see comments in DEViseCommSocket.java.
                               view is selected, 0 otherwise. default is 0
                               if empty.
 
-    4.11 JAVAC_ServerExit
+    4.10 JAVAC_ServerExit
     Purpose: tells the devised to quit.
              Notes: currently not used
     Arguments: 0
 
-    4.12 JAVAC_ServerCloseSocket
+    4.11 JAVAC_ServerCloseSocket
     Purpose: this command currently does nothing.
              Notes: currently not used
     Arguments: 0
 
-    4.13 JAVAC_ImageChannel
+    4.12 JAVAC_ImageChannel
     Purpose: this command currently does nothing.
              Notes: currently not used
     Arguments: 0
 
-    4.14 JAVAC_CursorChanged
+    4.13 JAVAC_CursorChanged
     Purpose: sent when the user moves or resizes a cursor.
     Arguments: 5
         <cursor name>: name of the cursor that was moved.
@@ -254,7 +248,7 @@ see comments in DEViseCommSocket.java.
         <width>: width of the cursor, in pixels.
         <height>: height of the cursor, in pixels.
 
-    4.15 JAVAC_ProtocolVersion
+    4.14 JAVAC_ProtocolVersion
     Purpose: used to check whether the JavaScreen and the devised implement
              compatible versions of the communication protocol.
              Notes: currently only used by JSPoP
@@ -262,7 +256,7 @@ see comments in DEViseCommSocket.java.
         <version>: version of the protocol implemented by the JavaScreen, in
                    the form <major>.<minor>.
 
-    4.16 JAVAC_ShowRecords3D
+    4.15 JAVAC_ShowRecords3D
     Purpose: requests that the devised return TData record information for
              the given location (drill down) in a three-dimensional view.
              Note: this command is not yet fully implemented.
@@ -277,12 +271,12 @@ see comments in DEViseCommSocket.java.
         <z location 2>: z location of object 2, in data units.
 	...
 
-    4.17 JAVAC_ResetFilters
+    4.16 JAVAC_ResetFilters
     Purpose: tells the devised to reset the visual filters of all views to
              the values specified in the session file.
     Arguments: 0
 
-    4.18 JAVAC_GetViewHelp
+    4.17 JAVAC_GetViewHelp
     Purpose: tells the devised to return the help information for the
              specified view.
     Arguments: 3
@@ -293,7 +287,7 @@ see comments in DEViseCommSocket.java.
         <y location>: y location of event causing help info to be shown,
                       in pixels, relative to the top edge of the view.
 
-    4.19 JAVAC_Set3DConfig
+    4.18 JAVAC_Set3DConfig
     Purpose: Set 3D view configurations, support 3D view collaboration
     Arguments: 15
 	<view name>: a string indicating the active view name

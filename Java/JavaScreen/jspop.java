@@ -22,11 +22,18 @@
 
 // ------------------------------------------------------------------------
 
-// // $Id$
+// $Id$
 
 // $Log$
+// Revision 1.74  2001/11/19 17:17:03  wenger
+// Merged changes through collab_cleanup_br_2 to trunk.
+//
 // Revision 1.73  2001/11/13 17:57:01  xuk
 // Could send command in String[] format, no need to compose a long command string before sending.
+//
+// Revision 1.72.2.2  2001/11/21 22:11:16  wenger
+// Fixed the JSPoP deadlock problem caused by a new client connection
+// happening while in the middle of a client switch.
 //
 // Revision 1.72.2.1  2001/11/13 20:31:36  wenger
 // Cleaned up new collab code in the JSPoP and client: avoid unnecessary
@@ -805,7 +812,7 @@ public class jspop implements Runnable
         }
     }
 
-    public synchronized int getClientCount()
+    public int getClientCount()
     {
         return suspendClients.size() + activeClients.size();
     }
@@ -1121,7 +1128,7 @@ public class jspop implements Runnable
     //   - ID and hostname of each active client
     //   - number of suspended clients
     //   - ID and hostname of each suspended client
-    public synchronized String getServerState()
+    public String getServerState()
     {
         String state = "{";
 

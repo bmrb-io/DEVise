@@ -21,6 +21,18 @@
   $Id$
 
   $Log$
+  Revision 1.124.2.1  2001/11/19 21:03:55  wenger
+  Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
+  Squid to be able to force DEVise to re-read all data and update the
+  visualization; did some cleanup of JavaScreenCmd.C.
+
+  Revision 1.124  2001/11/07 22:31:37  wenger
+  Merged changes thru bmrb_dist_br_1 to the trunk (this includes the
+  js_no_reconnect_br_1 thru js_no_reconnect_br_2 changes that I
+  accidentally merged onto the bmrb_dist_br branch previously).
+  (These changes include JS heartbeat improvements and the fix to get
+  CGI mode working again.)
+
   Revision 1.123.2.1  2001/11/07 17:22:27  wenger
   Switched the JavaScreen client ID from 64 bits to 32 bits so Perl can
   handle it; got CGI mode working again (bug 723).  (Changed JS version
@@ -578,6 +590,7 @@
 #include "DebugLog.h"
 #include "ElapsedTime.h"
 #include "DrillDown3D.h"
+#include "TData.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -610,7 +623,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 9;
-static const int protocolMinorVersion = 0;
+static const int protocolMinorVersion = 2;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -636,6 +649,7 @@ char *JavaScreenCmd::_serviceCmdName[] =
     "JAVAC_ResetFilters",
     "JAVAC_GetViewHelp",
     "JAVAC_Set3DConfig",
+    "JAVAC_RefreshData",
     "null_svc_cmd"
 };
 
@@ -1194,6 +1208,9 @@ JavaScreenCmd::Run()
 		case SET_3D_CONFIG:
 			RcvSet3DConfig();
 			break;
+		case REFRESH_DATA:
+			RefreshData();
+			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
 	}
@@ -1217,7 +1234,7 @@ JavaScreenCmd::GetSessionList()
 		UpdateSessionList(_argv[0]);
 	} else {
 		// Wrong number of arguments.
-		errmsg = "Usage: GetSessionList [directory name]";
+		errmsg = "Usage: JAVAC_GetSessionList [directory name]";
 		_status = ERROR;
 	}
 	return;
@@ -1234,7 +1251,7 @@ JavaScreenCmd::OpenSession()
 
 	if (_argc != 1)
 	{
-		errmsg = "Usage: OpenSession <session name>";
+		errmsg = "Usage: JAVAC_OpenSession <session name>";
 		_status = ERROR;
 		return;
 	}
@@ -1445,7 +1462,7 @@ JavaScreenCmd::MouseAction_Click()
 	{
 		// Note: x and y are relative to GIF origin.  This used to be the
 		// DEVise window, but now it's the view.
-		errmsg = "Usage: MouseAction_Click <view name> <x> <y>";
+		errmsg = "Usage: JAVAC_MouseAction_Click <view name> <x> <y>";
 		_status = ERROR;
 		return;
 	}
@@ -1486,7 +1503,7 @@ JavaScreenCmd::ShowRecords()
 	// DEVise window, but now it's the view.
 	if (_argc != 3)
 	{
-		errmsg = "Usage: ShowRecords <view name> <x> <y>";
+		errmsg = "Usage: JAVAC_ShowRecords <view name> <x> <y>";
 		_status = ERROR;
 		return;
 	}
@@ -1518,7 +1535,7 @@ JavaScreenCmd::ShowRecords3D()
 	  "JavaScreenCmd::ShowRecords3D(", _argc, _argv, ")\n");
 #endif
 
-	const char *usage = "Usage: ShowRecords3D <view name> <count> <x1> "
+	const char *usage = "Usage: JAVAC_ShowRecords3D <view name> <count> <x1> "
 	  "<y1> <z1> <x2> <y2> <z2> ...";
 
 	// Note: x, y, and z are the values from the relevant GData record.
@@ -1577,7 +1594,7 @@ JavaScreenCmd::MouseAction_RubberBand()
 
 	if (_argc < 5 || _argc > 7)
 	{
-		errmsg = "Usage: MouseAction_RubberBand <view name>"
+		errmsg = "Usage: JAVAC_MouseAction_RubberBand <view name>"
 				 " <x1> <y1> <x2> <y2> [zoom out] [x-only zoom]";
 		// Note: (x1, y1) is where mouse started; Y is down from the top of
 		// the view/GIF.
@@ -1621,7 +1638,7 @@ JavaScreenCmd::MouseAction_RubberBand()
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
-	_postponeCursorCmds = true;
+    PreRedraw();
 
 	// Update the visual filter of the view that the
 	// rubberband line started in.
@@ -1632,13 +1649,7 @@ JavaScreenCmd::MouseAction_RubberBand()
 	int button = xOnly ? 1 : 3;
     view->HandlePress(NULL, xLow, yLow, xHigh, yHigh, button, state);
 
-	// Make sure everything has actually been re-drawn before we
-	// continue.
-	Dispatcher::Current()->WaitForQueries();
-	_postponeCursorCmds = false;
-
-	// Send the updated window image(s).
-	_status = SendChangedViews(true);
+    PostRedraw();
 }
 
 //====================================================================
@@ -1651,7 +1662,7 @@ JavaScreenCmd::CloseCurrentSession()
 #endif
 
 	if (_argc != 0) {
-		errmsg = "Usage: CloseCurrentSession";
+		errmsg = "Usage: JAVAC_CloseCurrentSession";
 		_status = ERROR;
 		return;
 	}
@@ -1673,8 +1684,8 @@ JavaScreenCmd::SetDisplaySize()
 #endif
 
 	if (_argc != 4) {
-		errmsg = "Usage: SetDisplaySize <width> <height> <x resolution> "
-		  "<y resolution>";
+		errmsg = "Usage: JAVAC_SetDisplaySize <width> <height> "
+		  "<x resolution> <y resolution>";
 		_status = ERROR;
 		return;
 	}
@@ -1699,7 +1710,7 @@ JavaScreenCmd::KeyAction()
 
 	//TEMP -- this must be changed to give key press location
 	if (_argc != 2) {
-		errmsg = "Usage: KeyAction <viewName> <key>";
+		errmsg = "Usage: JAVAC_KeyAction <viewName> <key>";
 		_status = ERROR;
 		return;
 	}
@@ -1715,17 +1726,11 @@ JavaScreenCmd::KeyAction()
         Coord xLoc = 0; //TEMP
         Coord yLoc = 0; //TEMP
 
-		_postponeCursorCmds = true;
+        PreRedraw();
 
         view->HandleKey(NULL, key, xLoc, yLoc);
 
-		// Make sure everything has actually been re-drawn before we
-		// continue.
-		Dispatcher::Current()->WaitForQueries();
-		_postponeCursorCmds = false;
-
-		// Send the updated window image(s).
-		_status = SendChangedViews(true);
+        PostRedraw();
 	}
 	return;
 }
@@ -1745,7 +1750,7 @@ JavaScreenCmd::SaveSession()
 	} else if (_argc == 2) {
 		saveSelView = atoi(_argv[1]);
 	} else {
-		errmsg = "Usage: SaveSession <file name> [save selected view]";
+		errmsg = "Usage: JAVAC_SaveSession <file name> [save selected view]";
 		_status = ERROR;
 		return;
 	}
@@ -1828,7 +1833,8 @@ JavaScreenCmd::CursorChanged()
 	// DEVise window, but now it's the view.
 	if (_argc != 5)
 	{
-		errmsg = "Usage: CursorChanged <cursor name> <x> <y> <width> <height>";
+		errmsg = "Usage: JAVAC_CursorChanged <cursor name> <x> <y> "
+		  "<width> <height>";
 		_status = ERROR;
 		return;
 	}
@@ -1864,7 +1870,7 @@ JavaScreenCmd::CursorChanged()
 	    return;
 	}
 
-	_postponeCursorCmds = true;
+    PreRedraw();
 
 	//
 	// Convert new cursor size and location from pixels to data units,
@@ -1880,13 +1886,7 @@ JavaScreenCmd::CursorChanged()
 	Coord height = ABS(dataYHigh - dataYLow);
 	cursor->MoveSource(centerX, centerY, width, height, false);
 
-	// Make sure everything has actually been re-drawn before we
-	// continue.
-	Dispatcher::Current()->WaitForQueries();
-	_postponeCursorCmds = false;
-
-	// Send the updated window image(s).
-	_status = SendChangedViews(true);
+    PostRedraw();
 
 	return;
 }
@@ -1902,7 +1902,7 @@ JavaScreenCmd::JSProtocolVersion()
 #endif
 
 	if (_argc != 1) {
-		errmsg = "Usage: ProtocolVersion <major.minor>";
+		errmsg = "Usage: JAVAC_ProtocolVersion <major.minor>";
 		_status = ERROR;
 	} else {
 		int jsMajor, jsMinor;
@@ -1934,27 +1934,14 @@ JavaScreenCmd::JSResetFilters()
 	  "JavaScreenCmd::JSResetFilters(", _argc, _argv, ")\n");
 #endif
 
-	_postponeCursorCmds = true;
+    PreRedraw();
 
 	if (!Session::ResetFilters().IsComplete()) {
 		errmsg = DevError::GetLatestError();
 		_status = ERROR;
 	}
 
-	// Make sure everything has actually been re-drawn before we
-	// continue.
-	Dispatcher::Current()->WaitForQueries();
-	_postponeCursorCmds = false;
-
-	// Send the updated window image(s).
-	ControlCmdType tmpStatus = SendChangedViews(true);
-	if (tmpStatus == ERROR) _status = tmpStatus;
-
-    // Avoid unnecessary JAVAC_Done command, if things went okay.
-	// (SendChangedViews() sends JAVAC_Done.)
-    if (_status == DONE) {
-        _status = NULL_COMMAND;
-    }
+    PostRedraw();
 }
 
 //====================================================================
@@ -1971,7 +1958,7 @@ JavaScreenCmd::GetViewHelp()
 	// DEVise window, but now it's the view.
 	if (_argc != 3)
 	{
-		errmsg = "Usage: GetViewHelp <view name> <x> <y>";
+		errmsg = "Usage: JAVAC_GetViewHelp <view name> <x> <y>";
 		_status = ERROR;
 		return;
 	}
@@ -3326,7 +3313,10 @@ JavaScreenCmd::RcvSet3DConfig()
 
 	if (_argc != 15)
 	{
-		errmsg = "Usage: JAVAC_Set3DConfig <view name> <data[0][0]> <data[0][1]> <data[0][2]> <data[1][0]> <data[1][1]> <data[1][2]> <data[2][0]> <data[2][1]> <data[2][2]> <origin[0]> <origin[1]> <origin[2]> <shiftedX> <shiftedY>";
+		errmsg = "Usage: JAVAC_Set3DConfig <view name> <data[0][0]> "
+		  "<data[0][1]> <data[0][2]> <data[1][0]> <data[1][1]> <data[1][2]> "
+		  "<data[2][0]> <data[2][1]> <data[2][2]> <origin[0]> <origin[1]> "
+		  "<origin[2]> <shiftedX> <shiftedY>";
 		_status = ERROR;
 		return;
 	}
@@ -3424,4 +3414,88 @@ JavaScreenCmd::SendSet3DConfig(View *view)
         JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
 	    args.ReturnVal(&jsc);
 	}
+}
+
+//====================================================================
+// Process a JAVAC_RefreshData that we received.
+void
+JavaScreenCmd::RefreshData()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::RefreshData(", _argc, _argv, ")\n");
+#endif
+
+	if (_argc != 1) {
+		errmsg = "Usage: JAVAC_RefreshData <do home>";
+		_status = ERROR;
+		return;
+	}
+
+	Boolean doHome = (atoi(_argv[0]) != 0);
+
+	PreRedraw();
+
+	//
+	// Find and invalidate all TDatas.
+	//
+    ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
+
+	// Get all class names for TData category.
+	const char *catName = "tdata";
+	int classArgc;
+	const char **tmpArgv;
+	classDir->ClassNames(catName, classArgc, tmpArgv);
+	char **classArgv;
+	CopyArgs(classArgc, tmpArgv, classArgv);
+
+    // For each class, get all instances.
+	for (int classIndex = 0; classIndex < classArgc; classIndex++) {
+	    int instArgc;
+		char **instArgv;
+	    classDir->InstancePointers(catName, classArgv[classIndex], instArgc,
+		  instArgv);
+        for (int instIndex = 0; instIndex < instArgc; instIndex++) {
+		    TData *tdata = (TData *)instArgv[instIndex];
+			if (doHome) {
+			    tdata->SetGoHomeOnInvalidate(true);
+			} else {
+			    tdata->SetGoHomeOnInvalidate(false);
+			}
+		    tdata->InvalidateTData();
+		}
+	}
+
+    FreeArgs(classArgc, classArgv);
+
+	PostRedraw();
+}
+
+//====================================================================
+// Call this method before doing things that will result in a redraw.
+void
+JavaScreenCmd::PreRedraw()
+{
+    _postponeCursorCmds = true;
+}
+
+//====================================================================
+// Call this method after doing things that will result in a redraw.
+void
+JavaScreenCmd::PostRedraw()
+{
+	// Make sure everything has actually been re-drawn before we
+	// continue.
+	Dispatcher::Current()->WaitForQueries();
+	_postponeCursorCmds = false;
+
+	// Send the updated window image(s).
+	ControlCmdType tmpStatus = SendChangedViews(true);
+	if (tmpStatus == ERROR) _status = tmpStatus;
+
+    // Avoid unnecessary JAVAC_Done command, if things went okay.
+	// (SendChangedViews() sends JAVAC_Done.)
+    if (_status == DONE) {
+        _status = NULL_COMMAND;
+    }
 }

@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.54.6.1  2001/11/21 23:35:36  wenger
+// Fixed bug 729 (JavaScreen problem displaying mouse location for date
+// axes).
+//
+// Revision 1.54  2001/05/11 20:36:10  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.53  2001/05/03 19:34:39  xuk
 // Added two factors for displaying mouse position.
 //
@@ -150,8 +157,7 @@ public class DEViseViewInfo extends Panel
         add(mouseY);
     }
 
-    public void updateInfo(String name, String x, String y, 
-			   float factorX, float factorY)
+    public void updateInfo(String name, String x, String y)
     {
         if (name == null) {
             //viewName.setText("");
@@ -168,40 +174,22 @@ public class DEViseViewInfo extends Panel
         if (x == null) {
             mouseX.setText("");
         } else {
-	    try {
-		Float floatX = new Float(x);
-		float fX = floatX.floatValue();
-
-		fX = fX * factorX;
-		String strX = String.valueOf(fX);
-		mouseX.setText(strX);
-	    } catch (NumberFormatException e) {
-		jsc.pn ("String does not contain a parsable float.");
-	    }
+            mouseX.setText(x);
         }
 
         if (y == null) {
             mouseY.setText("");
         } else {
-	    try {
-		Float floatY = new Float(y);
-		float fY = floatY.floatValue();
-
-		fY = fY * factorY;
-		String strY = String.valueOf(fY);
-		mouseY.setText(strY);
-	    } catch (NumberFormatException e) {
-		jsc.pn ("String does not contain a parsable float.");
-	    }
+            mouseY.setText(y);
         }
 
         validate();
     }
 
 
-    public void updateInfo(String x, String y, float factorX, float factorY)
+    public void updateInfo(String x, String y)
     {
-        updateInfo(null, x, y, factorX, factorY);
+        updateInfo(null, x, y);
     }
 
     public void updateInfo()
@@ -239,6 +227,8 @@ public class DEViseViewInfo extends Panel
        String result = "" + x;
        if(format  == null) return "" + x;
       try{
+       //TEMP -- we should create a PrintfFormatter for each axis when
+       // the view is created, not each time we show the location!
        PrintfFormatter pf = new PrintfFormatter(format);
        result = pf.form((double) x);
        return result;
@@ -392,7 +382,8 @@ class PrintfFormatter {
      */
 
     public static void print(java.io.PrintStream s, String fmt, double x)
-    {  s.print(new PrintfFormatter(fmt).form(x));
+    {
+        s.print(new PrintfFormatter(fmt).form(x));
     }
     
     /**
@@ -439,14 +430,19 @@ class PrintfFormatter {
 	int i = 0;
 	
 	while (i < s.length() && Character.isWhitespace(s.charAt(i))) i++;
-	if (i < s.length() && s.charAt(i) == '0')
-	    {  if (i + 1 < s.length() && (s.charAt(i + 1) == 'x' || s.charAt(i + 1) == 'X'))
+	if (i < s.length() && s.charAt(i) == '0') {
+	    if (i + 1 < s.length() &&
+	      (s.charAt(i + 1) == 'x' || s.charAt(i + 1) == 'X')) {
 		return parseLong(s.substring(i + 2), 16);
-	    else return parseLong(s, 8);
+	    } else {
+	        return parseLong(s, 8);
 	    }
-	else return parseLong(s, 10);
+	} else {
+	    return parseLong(s, 10);
+        }
     }
     
+    //TEMP -- what is this?  why don't we use Long.parseLong???
     private static long parseLong(String s, int base)
     {
 	int i = 0;

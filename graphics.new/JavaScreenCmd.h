@@ -21,6 +21,14 @@
   $Id$
 
   $Log$
+  Revision 1.44.6.1  2001/11/19 21:03:55  wenger
+  Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
+  Squid to be able to force DEVise to re-read all data and update the
+  visualization; did some cleanup of JavaScreenCmd.C.
+
+  Revision 1.44  2001/10/08 19:21:02  wenger
+  Fixed bug 702 (JavaScreen locks up on unrecognized command in DEVised).
+
   Revision 1.43  2001/10/03 19:09:57  wenger
   Various improvements to error logging; fixed problem with return value
   from JavaScreenCmd::Run().
@@ -259,6 +267,7 @@ class JavaScreenCmd
 			RESET_FILTERS,
 			GET_VIEW_HELP,
 			SET_3D_CONFIG,
+			REFRESH_DATA,
 			NULL_SVC_CMD
 		}ServiceCmdType;
 
@@ -335,6 +344,7 @@ class JavaScreenCmd
 		void JSResetFilters();
 		void GetViewHelp();
 		void RcvSet3DConfig();
+		void RefreshData();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
@@ -361,6 +371,12 @@ class JavaScreenCmd
 		void DrawViewCursors(View *view);
 		void SendAll3DConfig();
 		void SendSet3DConfig(View *view);
+
+		// Call this method before doing things that will result in a redraw.
+		void PreRedraw();
+
+		// Call this method after doing things that will result in a redraw.
+		void PostRedraw();
 
 	protected:
 		static void DrawCursor(View *view, DeviseCursor *cursor);

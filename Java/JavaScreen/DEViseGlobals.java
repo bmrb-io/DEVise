@@ -20,6 +20,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2001/11/19 17:17:02  wenger
+// Merged changes through collab_cleanup_br_2 to trunk.
+//
+// Revision 1.59.2.3  2001/11/19 21:04:02  wenger
+// Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
+// Squid to be able to force DEVise to re-read all data and update the
+// visualization; did some cleanup of JavaScreenCmd.C.
+//
 // Revision 1.59.2.2  2001/11/14 19:05:17  wenger
 // Should have changed protocol version to 9.1 before, when I added the
 // JAVAC_InitCollaboration command.
@@ -257,7 +265,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
-    public static final String PROTOCOL_VERSION = new String("9.1");
+    public static final String PROTOCOL_VERSION = new String("9.2");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");

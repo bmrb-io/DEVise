@@ -27,6 +27,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.82.4.1  2001/11/21 23:35:36  wenger
+// Fixed bug 729 (JavaScreen problem displaying mouse location for date
+// axes).
+//
+// Revision 1.82  2001/10/16 22:14:27  wenger
+// Major cleanup of command playback code; fixed bug 711 (problem with
+// command log playback).
+//
 // Revision 1.81  2001/09/28 18:57:28  xuk
 // JavaScreen command log playback.
 // Modified in paint() mothod.
@@ -1263,8 +1271,7 @@ public class DEViseCanvas extends Container
 
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName,
-		  activeView.getX(sp.x), activeView.getY(sp.y), 
-		  activeView.factorX, activeView.factorY);
+		  activeView.getX(sp.x), activeView.getY(sp.y));
                 if (jscreen.getCurrentView() != activeView) {
                     jscreen.setCurrentView(activeView);
                 }
@@ -1353,8 +1360,7 @@ public class DEViseCanvas extends Container
                     ep.y = activeView.translateY(p.y, 1);
 
                     jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-		      activeView.getY(ep.y), activeView.factorX, 
-		      activeView.factorY);
+		      activeView.getY(ep.y));
 
                     int dx = ep.x - sp.x, dy = ep.y - sp.y;
                     DEViseCursor cursor = selectedCursor;
@@ -1374,8 +1380,7 @@ public class DEViseCanvas extends Container
                     ep.y = activeView.translateY(p.y, 1);
 
                     jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-		      activeView.getY(ep.y), activeView.factorX, 
-		      activeView.factorY);
+		      activeView.getY(ep.y));
 
                     int w = ep.x - sp.x, h = ep.y - sp.y;
                     if (w < 0)
@@ -1534,8 +1539,7 @@ public class DEViseCanvas extends Container
                 op.y = p.y;
 
                 jsc.viewInfo.updateInfo(activeView.getX(p.x),
-		  activeView.getY(p.y), activeView.factorX, 
-		  activeView.factorY);
+		  activeView.getY(p.y));
 
                 if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) {
                     crystal.translate(dx, dy);
@@ -1557,8 +1561,7 @@ public class DEViseCanvas extends Container
                 ep.y = activeView.translateY(p.y, 1);
 
                 jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-		  activeView.getY(ep.y), activeView.factorX, 
-		  activeView.factorY);
+		  activeView.getY(ep.y));
 
                 if (selectedCursor != null) {
 
@@ -1603,8 +1606,7 @@ public class DEViseCanvas extends Container
 
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName,
-		  activeView.getX(p.x), activeView.getY(p.y), 
-		  activeView.factorX, activeView.factorY);
+		  activeView.getX(p.x), activeView.getY(p.y));
                 if (jscreen.getCurrentView() != activeView) {
                     jscreen.setCurrentView(activeView);
                 }
@@ -1768,8 +1770,7 @@ public class DEViseCanvas extends Container
             // show the data at current mouse position
 	    if (activeView != null) {
                 jsc.viewInfo.updateInfo(activeView.viewName,
-		  activeView.getX(p.x), activeView.getY(p.y), 
-		  activeView.factorX, activeView.factorY);
+		  activeView.getX(p.x), activeView.getY(p.y));
 	    }
 
         } else { // activeView is null and all other values will be initialized value before

@@ -24,6 +24,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2001/11/27 18:13:11  xuk
+// Return error message to JS, when there is no devised running on JSPoP side.
+// Modified in run(), when there is no available DEViseServer, send error message to client and close client.
+//
+// Revision 1.13.6.1  2001/11/21 22:11:16  wenger
+// Fixed the JSPoP deadlock problem caused by a new client connection
+// happening while in the middle of a client switch.
+//
 // Revision 1.13  2001/05/11 20:36:05  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -106,7 +114,7 @@ public class DEViseClientDispatcher implements Runnable, DEViseCheckableThread
         status = s;
     }
 
-    public synchronized boolean getStatus()
+    public boolean getStatus()
     {
         return status;
     }

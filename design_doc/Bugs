@@ -2848,7 +2848,7 @@ Num Date        Status  Description
 712 10/16/01	FIXED	JavaScreen: collaboration no longer works. (rkw)
 			(Fixed by rkw, 10/16/01.)
 
-713 10/16/01	OPEN	JavaScreen: collaboration doesn't work right when
+713 10/16/01	FIXED?	JavaScreen: collaboration doesn't work right when
 			collaborating clients have different screen sizes.
 			(rkw)
 
@@ -2898,7 +2898,7 @@ Num Date        Status  Description
 723 10/24/01	FIXED	JavaScreen: CGI mode doesn't work anymore. (rkw)
 			(Fixed by rkw, 11/07/01.)
 
-724 10/28/01	OPEN	JavaScreen: command/socket code parses commands
+724 10/28/01	FIXED?	JavaScreen: command/socket code parses commands
 			unnecessarily and doesn't unabiguously preserve
 			argument divisions (e.g., spaces within arguments
 			can cause problems). (rkw)
@@ -2912,6 +2912,39 @@ Num Date        Status  Description
 			return an error message to the client, rather than
 			just leaving it hanging. (rkw)
 			(Fixed by xuk, 11/27/01.)
+
+727 11/20/01	OPEN	Line graphs don't work in DEVise if the records are
+			not in order of the X axis attribute. (rkw)
+
+728 11/21/01	OPEN	Automatic filter updates (if enabled) should probably
+			be retriggered for a child view every time the parent
+			view changes anything about the child. (rkw)  (Or
+			at least when the Child Value changes.)
+
+729 11/21/01	FIXED	JavaScreen: mouse X location is not displayed correctly
+			for views with date on the X axis. (ml/rkw)
+			(Fixed by rkw, 11/21/01.)
+
+730 11/26/01	OPEN	Line graphs don't work in DEVise if the view is a
+			record link follower. (rkw)
+
+731 11/27/01	OPEN	Automatic filter updates don't seem to work right in
+			piled child views -- the whole thing seems to do a
+			home as each child is added to the pile, as opposed
+			to doing a home on the whole pile once all views are
+			in place. (rkw)
+
+732 11/27/01	OPEN	Home on child views doesn't work right in JS demo
+			session PaulB/sample3.ds.  It seems like it's partly
+			the record links, and partly the piling of views; and
+			maybe the fact that the views are child views also
+			comes into it. (When you first do home, the X and Y
+			values are usually wrong, then a second home fixes
+			things.) (rkw)
+
+733 11/27/01	OPEN	JavaScreen: in the JS demo session PaulB/sample3.ds,
+			the "100k Files" and "5k Files" views show only one
+			view in the child view piles. (rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

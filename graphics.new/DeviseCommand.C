@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.123.6.1  2001/11/19 21:03:53  wenger
+  Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
+  Squid to be able to force DEVise to re-read all data and update the
+  visualization; did some cleanup of JavaScreenCmd.C.
+
+  Revision 1.123  2001/10/04 19:03:48  wenger
+  JavaScreen support allows session files without .ds extension; various
+  improvements to session file processing.
+
   Revision 1.122  2001/10/03 19:09:56  wenger
   Various improvements to error logging; fixed problem with return value
   from JavaScreenCmd::Run().
@@ -904,6 +913,14 @@ IMPLEMENT_COMMAND_BEGIN(JAVAC_Set3DConfig)
 		argc-1, &argv[1]);
 	return jc.Run();
 IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_RefreshData)
+	JavaScreenCmd jc(_control,JavaScreenCmd::REFRESH_DATA,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+
 
 //TEMP -- all commands should check arg count
 //**********************************************************************

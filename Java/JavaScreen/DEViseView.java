@@ -24,6 +24,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.60.6.1  2001/11/21 23:35:36  wenger
+// Fixed bug 729 (JavaScreen problem displaying mouse location for date
+// axes).
+//
+// Revision 1.60  2001/09/26 15:11:59  wenger
+// Fixed bugs 694 (JS rubberband line now reflects X-only zoom) and 695
+// (JS now properly deals with disallowed cursor movement).
+//
 // Revision 1.59  2001/05/11 20:36:10  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -540,14 +548,16 @@ public class DEViseView
             return "";
         }
 
-        x = x - loc.x;
+        x -= loc.x;
 
         float xstep = dataXStep;
         // x0 represent the value at the left side of that pixel x
         float x0 = (x - viewDataLoc.x) * xstep + viewDataXMin;
 
+	x0 *= factorX;
+
         if ((viewDataXType.toLowerCase()).equals("date")) {
-            x0 = x0 * 1000.0f;
+            x0 *= 1000.0f; // convert to millisec????
             Date date = new Date((long)x0);
             DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
             Calendar cal = Calendar.getInstance();
@@ -557,6 +567,7 @@ public class DEViseView
                              + cal.get(Calendar.SECOND);
             return (format.format(date) + time);
         } else {
+	    // TEMP -- round to the nearest thousandth?
             if (x0 > 0) {
                 x0 = (int)(x0 * 1000.0f + 0.5f) / 1000.0f;
             } else {
@@ -584,14 +595,16 @@ public class DEViseView
             return "";
         }
 
-        y = y - loc.y;
+        y -= loc.y;
 
         float ystep = dataYStep;
         // y0 represent the value at the top side of that pixel
         float y0 = viewDataYMax - (y - viewDataLoc.y) * ystep;
 
+	y0 *= factorY;
+
         if ((viewDataYType.toLowerCase()).equals("date")) {
-            y0 = y0 * 1000.0f;
+            y0 *= 1000.0f; // convert to millisec????
             Date date = new Date((long)y0);
             DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT);
             Calendar cal = Calendar.getInstance();
@@ -601,6 +614,7 @@ public class DEViseView
                              + cal.get(Calendar.SECOND);
             return (format.format(date) + time);
         } else {
+	    // TEMP -- round to the nearest thousandth?
             if (y0 > 0) {
                 y0 = (int)(y0 * 1000.0f + 0.5f) / 1000.0f;
             } else {

@@ -65,6 +65,8 @@ with "magic" flag values.
 
 JavaScreen: need to clean up temporary session files
 
+Allow XY cursor with bottom anchored at 0 (rkw 11/20/01)
+
 (add stuff from old to-do list?)
 (add stuff from my to-do list)
 

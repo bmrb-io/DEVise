@@ -27,8 +27,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.73  2001/11/19 17:17:03  wenger
+// Merged changes through collab_cleanup_br_2 to trunk.
+//
 // Revision 1.72  2001/11/13 17:57:01  xuk
 // Could send command in String[] format, no need to compose a long command string before sending.
+//
+// Revision 1.71.2.2  2001/11/21 22:11:16  wenger
+// Fixed the JSPoP deadlock problem caused by a new client connection
+// happening while in the middle of a client switch.
 //
 // Revision 1.71.2.1  2001/11/13 20:31:35  wenger
 // Cleaned up new collab code in the JSPoP and client: avoid unnecessary
@@ -368,7 +375,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     }
 
     // Returns STATUS_*.
-    public synchronized int getStatus()
+    public int getStatus()
     {
         return status;
     }
@@ -490,7 +497,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         return isValid;
     }
 
-    public synchronized boolean isAvailable()
+    public boolean isAvailable()
     {
         if (newClient == null) {
             return true;
@@ -499,7 +506,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         }
     }
 
-    public synchronized DEViseClient getCurrentClient()
+    public DEViseClient getCurrentClient()
     {
         return client;
     }
@@ -1227,15 +1234,16 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 client.isSessionOpened = false;
 
                 try {
-		    if (!client.sessionSaved)
+		    if (!client.sessionSaved) {
 			if (sendCmd(DEViseCommands.SAVE_SESSION + " {" +
 				    client.savedSessionName + "}")) {
 			    client.isSwitchSuccessful = true;
 			} else {
 			    pop.pn("Can not save session for old client while switching client!");
 			}
-		    else
+		    } else {
 			client.isSwitchSuccessful = true;
+                    }
 
                     if (!sendCmd(DEViseCommands.CLOSE_SESSION)) {
                         pop.pn("Can not close current session for old client while switching client!");
@@ -1297,11 +1305,13 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
     private boolean sendCmd(String clientCmd) throws YException
     {
-        if (clientCmd == null)
+        if (clientCmd == null) {
             return true;
+	}
 
-        if (socket == null)
+        if (socket == null) {
             throw new YException("Invalid communication socket");
+        }
 
         String response = null;
         boolean isEnd = false, isFinish = false, isError = false;

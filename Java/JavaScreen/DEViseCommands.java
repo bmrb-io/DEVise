@@ -19,6 +19,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2001/11/19 17:17:02  wenger
+// Merged changes through collab_cleanup_br_2 to trunk.
+//
+// Revision 1.15.2.2  2001/11/19 21:04:02  wenger
+// Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
+// Squid to be able to force DEVise to re-read all data and update the
+// visualization; did some cleanup of JavaScreenCmd.C.
+//
 // Revision 1.15.2.1  2001/11/13 20:31:35  wenger
 // Cleaned up new collab code in the JSPoP and client: avoid unnecessary
 // client switches in the JSPoP (on JAVAC_Connect, for example), removed
@@ -174,6 +182,8 @@ public final class DEViseCommands
     public static final String OPEN_SESSION = JS_PREFIX + "OpenSession";
 
     public static final String PROTOCOL_VERSION = JS_PREFIX + "ProtocolVersion";
+
+    public static final String REFRESH_DATA = JS_PREFIX + "RefreshData";
 
     public static final String RESET_FILTERS = JS_PREFIX + "ResetFilters";
 

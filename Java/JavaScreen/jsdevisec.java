@@ -22,11 +22,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.132  2001/11/27 18:14:31  xuk
+// Return error message to JS, when there is no devised running on JSPoP side.
+//
 // Revision 1.131  2001/11/19 22:20:38  xuk
 // Changes for String[] format socket/commands.
 //
 // Revision 1.130  2001/11/19 17:17:03  wenger
 // Merged changes through collab_cleanup_br_2 to trunk.
+//
+// Revision 1.129.2.2  2001/11/19 21:04:02  wenger
+// Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
+// Squid to be able to force DEVise to re-read all data and update the
+// visualization; did some cleanup of JavaScreenCmd.C.
 //
 // Revision 1.129.2.1  2001/11/13 20:31:35  wenger
 // Cleaned up new collab code in the JSPoP and client: avoid unnecessary
@@ -874,6 +882,13 @@ public class jsdevisec extends Panel
 	    logPlayBack();
 	}
     } // end of constructor
+
+    public void refreshAllData(boolean doHome)
+    {
+	String cmd = DEViseCommands.REFRESH_DATA;
+	cmd += doHome ? " 1" : " 0";
+        dispatcher.start(cmd);
+    }
 
     public void hideDebug() {
 	if (debugWindow != null) {

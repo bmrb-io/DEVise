@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.69.6.1  2001/11/19 21:03:55  wenger
+  Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
+  Squid to be able to force DEVise to re-read all data and update the
+  visualization; did some cleanup of JavaScreenCmd.C.
+
+  Revision 1.69  2001/09/24 15:29:11  wenger
+  Added warning if you close or quit with unsaved session changes (note
+  that visual filter changes are not considered "changes").
+
   Revision 1.68  2001/06/12 15:29:46  wenger
   Implemented a choice of modulus (default) or truncate color modes.
 
@@ -525,6 +534,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_Set3DConfig)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_RefreshData)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------

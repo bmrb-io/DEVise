@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.78.6.1  2001/11/19 21:03:53  wenger
+  Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
+  Squid to be able to force DEVise to re-read all data and update the
+  visualization; did some cleanup of JavaScreenCmd.C.
+
+  Revision 1.78  2001/10/08 19:21:02  wenger
+  Fixed bug 702 (JavaScreen locks up on unrecognized command in DEVised).
+
   Revision 1.77  2001/10/03 19:09:56  wenger
   Various improvements to error logging; fixed problem with return value
   from JavaScreenCmd::Run().
@@ -476,6 +484,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_ResetFilters)
 	REGISTER_COMMAND(JAVAC_GetViewHelp)
 	REGISTER_COMMAND(JAVAC_Set3DConfig)
+	REGISTER_COMMAND(JAVAC_RefreshData)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
