@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1998/08/25 20:56:32  wenger
+  Implemented support for JavaScreen cursors (not yet fully tested).
+
   Revision 1.11  1998/08/24 14:51:33  wenger
   Implemented support for JavaScreen drill-down.
 
@@ -60,7 +63,10 @@
  */
 #ifndef _JAVA_SCREEN_CMD
 #define _JAVA_SCREEN_CMD
+
 #include <string>
+
+#include "DeviseTypes.h"
 
 typedef double TDataVal;
 typedef string GDataVal;
@@ -72,20 +78,20 @@ class JavaRectangle
 {
 	public:
 		JavaRectangle(){}
-		JavaRectangle(double x1, double y1, double x2, double y2):
-			_x1(x1),_y1(y1), _x2(x2),_y2(y2){};
+		JavaRectangle(double x0, double y0, double width, double height):
+			_x0(x0),_y0(y0), _width(width),_height(height){};
 		JavaRectangle& operator =(const JavaRectangle& jr)
 		{
-			_x1 = jr._x1;
-			_y1 = jr._y1;
-			_x2 = jr._x2;
-			_y2 = jr._y2;
+			_x0 = jr._x0;
+			_y0 = jr._y0;
+			_width = jr._width;
+			_height = jr._height;
 			return *this;
 		}
-		double _x1;
-		double _y1;
-		double _x2;
-		double _y2;
+		double _x0;
+		double _y0;
+		double _width;
+		double _height;
 };
 
 class JavaViewInfo
@@ -177,6 +183,8 @@ class JavaScreenCmd
 		ControlCmdType	_status;
 		char			*errmsg;
 
+		static Boolean	_openingSession;
+
 		// JavaScreen->Server Requests
 		void GetSessionList();
 		void CloseCurrentSession();
@@ -207,6 +215,7 @@ class JavaScreenCmd
 		int  ControlCmd(ControlCmdType  status);
 		void ReturnVal(int argc, char** argv);
 		void UpdateSessionList(char *dirName);
+		void DrawAllCursors();
 
 	protected:
 		friend class View;

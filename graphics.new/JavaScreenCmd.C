@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/08/28 22:01:17  wenger
+  Made Dispatcher::WaitForQueries() function -- improved over earlier
+  versions because it also checks the callback list (this fixes bug 367);
+  fixed other piled-related JavaScreen support problems; JAVAC_OpenSession
+  closes any existing session before opening the new one.
+
   Revision 1.22  1998/08/25 20:56:31  wenger
   Implemented support for JavaScreen cursors (not yet fully tested).
 
@@ -125,8 +131,11 @@
 #include "Display.h"
 #include "ArgList.h"
 #include "Cursor.h"
+#include "CursorClassInfo.h"
 
 //#define DEBUG
+
+Boolean JavaScreenCmd::_openingSession = false;
 
 static char *_sessionDir = NULL;
 
@@ -179,7 +188,7 @@ void
 JavaScreenCmd::GetSessionList()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::GetSessionList(");
+    printf("\nJavaScreenCmd::GetSessionList(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
@@ -192,7 +201,7 @@ JavaScreenCmd::GetSessionList()
 		UpdateSessionList(_argv[0]);
 	} else {
 		// Wrong number of arguments.
-		errmsg = "{Usage: GetSessionList [directory name]}";
+		errmsg = "Usage: GetSessionList [directory name]";
 		_status = ERROR;
 	}
 	return;
@@ -202,17 +211,19 @@ void
 JavaScreenCmd::OpenSession()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::OpenSession(");
+    printf("\nJavaScreenCmd::OpenSession(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
 
 	if (_argc != 1)
 	{
-		errmsg = "{Usage: OpenSession <session name>}";
+		errmsg = "Usage: OpenSession <session name>";
 		_status = ERROR;
 		return;
 	}
+
+	_openingSession = true;
 
 	// Close the current session, if any, to prevent possible name conflicts
 	// and other problems.
@@ -296,10 +307,10 @@ JavaScreenCmd::OpenSession()
         printf("window AbsoluteOrigin = %d, %d\n", winX, winY);
 #endif
 
-		JavaRectangle winRect(winX, winY, winX+winW-1, winY+winH-1);
+		JavaRectangle winRect(winX, winY, winW, winH);
 #if defined(DEBUG)
-        printf("window JavaRectangle: (%g, %g), (%g, %g)\n", winRect._x1,
-			winRect._y1, winRect._x2, winRect._y2);
+        printf("window JavaRectangle: (%g, %g), (%g, %g)\n", winRect._x0,
+			winRect._y0, winRect._width, winRect._height);
 #endif
 
         string winName(window->GetName());
@@ -331,11 +342,10 @@ JavaScreenCmd::OpenSession()
           printf("  view WindowRep Origin = %d, %d\n", viewX, viewY);
 #endif
 
-		  JavaRectangle viewRect(viewX, viewY, viewX + viewW - 1,
-			  viewY + viewH - 1);
+		  JavaRectangle viewRect(viewX, viewY, viewW, viewH);
 #if defined(DEBUG)
-          printf("  view JavaRectangle: (%g, %g), (%g, %g)\n", viewRect._x1,
-			  viewRect._y1, viewRect._x2, viewRect._y2);
+          printf("  view JavaRectangle: (%g, %g), (%g, %g)\n", viewRect._x0,
+			  viewRect._y0, viewRect._width, viewRect._height);
 #endif
 
 		  string viewName(view->GetName());
@@ -356,6 +366,11 @@ JavaScreenCmd::OpenSession()
 	  }
 	}
 	DevWindow::DoneIterator(winIndex);
+
+	_openingSession = false;
+
+	DrawAllCursors();
+
 #if defined(DEBUG)
     printf("End of OpenSession; _status = %d\n", _status);
 #endif
@@ -365,7 +380,7 @@ void
 JavaScreenCmd::MouseAction_Click()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::MouseAction_Click(");
+    printf("\nJavaScreenCmd::MouseAction_Click(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
@@ -373,14 +388,14 @@ JavaScreenCmd::MouseAction_Click()
 	if (_argc != 3)
 	{
 		// Note: x and y are relative to *window* origin, not view origin.
-		errmsg = "{Usage: MouseAction_Click <view name> <x> <y>}";
+		errmsg = "Usage: MouseAction_Click <view name> <x> <y>";
 		_status = ERROR;
 		return;
 	}
 
 	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
 	if (view == NULL) {
-		errmsg = "{Can't find specified view}";
+		errmsg = "Can't find specified view";
 		_status = ERROR;
 		return;
 	}
@@ -402,7 +417,7 @@ void
 JavaScreenCmd::MouseAction_DoubleClick()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::MouseAction_DoubleClick(");
+    printf("\nJavaScreenCmd::MouseAction_DoubleClick(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
@@ -410,21 +425,21 @@ JavaScreenCmd::MouseAction_DoubleClick()
 	// Note: x and y are relative to window origin, not view origin.
 	if (_argc != 3)
 	{
-		errmsg = "{Usage: MouseAction_DoubleClick <view name> <x> <y>}";
+		errmsg = "Usage: MouseAction_DoubleClick <view name> <x> <y>";
 		_status = ERROR;
 		return;
 	}
 
 	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
 	if (view == NULL) {
-		errmsg = "{Can't find specified view}";
+		errmsg = "Can't find specified view";
 		_status = ERROR;
 		return;
 	}
 
     ViewWin *window = view->GetParent();
 	if (window == NULL) {
-		errmsg = "{Can't find specified window}";
+		errmsg = "Can't find specified window";
 		_status = ERROR;
 		return;
 	}
@@ -450,14 +465,14 @@ void
 JavaScreenCmd::MouseAction_RubberBand()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::MouseAction_RubberBand(");
+    printf("\nJavaScreenCmd::MouseAction_RubberBand(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
 
 	if (_argc != 5)
 	{
-		errmsg = "{Usage: MouseAction_RubberBand <window name>}"
+		errmsg = "Usage: MouseAction_RubberBand <window name>"
 				 " <x1> <y1> <x2> <y2>";
 		// Note: (x1, y1) is where mouse started; Y is down from the top of
 		// the window.  RKW May 28, 1998.
@@ -554,7 +569,7 @@ void
 JavaScreenCmd::CloseCurrentSession()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::CloseCurrentSession(");
+    printf("\nJavaScreenCmd::CloseCurrentSession(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
@@ -572,13 +587,13 @@ void
 JavaScreenCmd::SetDisplaySize()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::SetDisplaySize(");
+    printf("\nJavaScreenCmd::SetDisplaySize(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
 
 	if (_argc != 2) {
-		errmsg = "{Usage: SetDisplaySize <width> <height>}";
+		errmsg = "Usage: SetDisplaySize <width> <height>";
 		_status = ERROR;
 		return;
 	}
@@ -595,21 +610,21 @@ void
 JavaScreenCmd::KeyAction()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::KeyAction(");
+    printf("\nJavaScreenCmd::KeyAction(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
 
 	//TEMP -- this must be changed to give key press location
 	if (_argc != 2) {
-		errmsg = "{Usage: KeyAction <viewName> <key>}";
+		errmsg = "Usage: KeyAction <viewName> <key>";
 		_status = ERROR;
 		return;
 	}
 
 	ViewGraph *view = (ViewGraph *)ControlPanel::FindInstance(_argv[0]);
 	if (view == NULL) {
-		errmsg = "{Cannot find given view}";
+		errmsg = "Cannot find given view";
 		_status = ERROR;
 	} else {
 	    int key = atoi(_argv[1]);
@@ -635,14 +650,14 @@ void
 JavaScreenCmd::SaveSession()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::SaveSession(");
+    printf("\nJavaScreenCmd::SaveSession(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
 
 	if (_argc != 1)
 	{
-		errmsg = "{Usage: SaveSession <file name>}";
+		errmsg = "Usage: SaveSession <file name>";
 		_status = ERROR;
 		return;
 	}
@@ -655,7 +670,7 @@ JavaScreenCmd::SaveSession()
 	sprintf(fullpath, "%s/%s", _sessionDir, _argv[0]);
 
 	if (!Session::Save(fullpath, false, false, false).IsComplete()) {
-		errmsg = "{Error saving session}";
+		errmsg = "Error saving session";
 		_status = ERROR;
 	} else {
 		_status = DONE;
@@ -669,12 +684,13 @@ void
 JavaScreenCmd::ServerExit()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::ServerExit(");
+    printf("\nJavaScreenCmd::ServerExit(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
 
 	printf("Server exiting on command from JavaScreen\n");
+	ControlPanel::Instance()->DestroySessionData();
 	ControlPanel::Instance()->DoQuit();
 
 	_status = DONE;
@@ -686,7 +702,7 @@ void
 JavaScreenCmd::ServerCloseSocket()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::ServerCloseSocket(");
+    printf("\nJavaScreenCmd::ServerCloseSocket(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
@@ -702,7 +718,7 @@ void
 JavaScreenCmd::ImageChannel()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::ImageChannel(");
+    printf("\nJavaScreenCmd::ImageChannel(");
     PrintArgs(stdout, _argc, _argv, false);
     printf(")\n");
 #endif
@@ -718,7 +734,7 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateGData(GDataVal gval)
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::RequestUpdateGData()\n");
+    printf("\nJavaScreenCmd::RequestUpdateGData()\n");
 #endif
 
 	// Add---begin
@@ -742,7 +758,7 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::RequestUpdateRecordValue()\n");
+    printf("\nJavaScreenCmd::RequestUpdateRecordValue()\n");
 #endif
 
     char **args = new char *[argc+1];
@@ -811,7 +827,7 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 JavaScreenCmd::~JavaScreenCmd()
 {
 #if defined(DEBUG)
-    printf("JavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this, (int)_ctype);
+    printf("\nJavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this, (int)_ctype);
 #endif
 
 	int	i;
@@ -830,7 +846,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
 #if defined(DEBUG)
-    printf("JavaScreenCmd(0x%p)::JavaScreenCmd(%d)\n", this, (int)ctype);
+    printf("\nJavaScreenCmd(0x%p)::JavaScreenCmd(%d)\n", this, (int)ctype);
 #endif
 
 	int	i;
@@ -885,7 +901,7 @@ int
 JavaScreenCmd::Run()
 {
 #if defined(DEBUG)
-    printf("JavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
+    printf("\nJavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
 #endif
 
 	_status = DONE;
@@ -987,13 +1003,13 @@ void
 JavaScreenCmd::FillArgv(char** argv, int& pos, const JavaRectangle& jr)
 {
 	char	buf[128];
-	sprintf(buf,"%.0f", jr._x1);
+	sprintf(buf,"%.0f", jr._x0);
 	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%.0f", jr._y1);
+	sprintf(buf,"%.0f", jr._y0);
 	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%.0f", jr._x2);
+	sprintf(buf,"%.0f", jr._width);
 	argv[pos ++] = strdup(buf);
-	sprintf(buf,"%.0f", jr._y2);
+	sprintf(buf,"%.0f", jr._height);
 	argv[pos ++] = strdup(buf);
 }
 
@@ -1001,7 +1017,7 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::SendWindowImage(%s)\n", fileName);
+    printf("\nJavaScreenCmd::SendWindowImage(%s)\n", fileName);
 #endif
 
 	ControlCmdType	status = DONE;
@@ -1012,7 +1028,7 @@ JavaScreenCmd::SendWindowImage(const char* fileName, int& filesize)
 	{
 		perror("Image file:");
 		status = ERROR;
-		errmsg = "{Cannot open image file}";
+		errmsg = "Cannot open image file";
 	}
 	else
 	{
@@ -1046,7 +1062,7 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendChangedWindows()
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::SendChangedWindows()\n");
+    printf("\nJavaScreenCmd::SendChangedWindows()\n");
 #endif
 
     JavaScreenCmd::ControlCmdType result = DONE;
@@ -1063,6 +1079,7 @@ JavaScreenCmd::SendChangedWindows()
 
 			char *fileName = tmpnam(NULL);
 			if (!window->ExportImage(GIF, fileName).IsComplete()) {
+				errmsg = "Error exporting window image";
 				result = ERROR;
 			}
 	
@@ -1102,7 +1119,7 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::RequestCreateWindow(%s)\n",
+    printf("\nJavaScreenCmd::RequestCreateWindow(%s)\n",
 	winInfo._winName.c_str());
 #endif
 
@@ -1117,13 +1134,11 @@ JavaScreenCmd::RequestCreateWindow(JavaWindowInfo& winInfo)
 		winInfo._winName.c_str());
     if (!viewWin) {
       reportErrNosys("Cannot find window");
+	  errmsg = "Cannot find window";
       return ERROR;
     }
     
     viewWin->ExportImage(GIF, fileName);
-
-
-
 
 	filesize = getFileSize(fileName);
 #if defined(DEBUG)
@@ -1191,7 +1206,7 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateWindow(char* winName, int imageSize)
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::RequestUpdateWindow(%s, %d)\n", winName, imageSize);
+    printf("\nJavaScreenCmd::RequestUpdateWindow(%s, %d)\n", winName, imageSize);
 #endif
 
 	char* argv[3];
@@ -1208,25 +1223,101 @@ void
 JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 {
 #if defined (DEBUG)
-    printf("JavaScreenCmd::DrawCursor(%s, %s)\n", view->GetName(),
+    printf("\nJavaScreenCmd::DrawCursor(%s, %s)\n", view->GetName(),
       cursor->GetName());
 #endif
 
+	if (_openingSession) {
+#if defined (DEBUG)
+        printf("Cursor draw postponed until done opening session.\n");
+#endif
+		return;
+	}
+
+	//
 	// Get the cursor's visual filter (the same as the source view's).
-    VisualFilter *filter;
-	cursor->GetVisualFilter(filter);
+	//
+	VisualFilter cursorFilter;
+	{
+        VisualFilter *filter;
+	    cursor->GetVisualFilter(filter);
+	    cursorFilter = *filter;
+	}
 #if defined(DEBUG)
-    printf("Cursor vis. filter: (%g, %g), (%g, %g)\n", filter->xLow,
-	  filter->yLow, filter->xHigh, filter->yHigh);
+    printf("Cursor vis. filter: (%g, %g), (%g, %g)\n", cursorFilter.xLow,
+	  cursorFilter.yLow, cursorFilter.xHigh, cursorFilter.yHigh);
 #endif
 
-	// Transform data coordinates to pixels.
-	Coord xPixLow, yPixLow, xPixHigh, yPixHigh;
-	WindowRep *winRep = view->GetWindowRep();
-	winRep->Transform(filter->xLow, filter->yLow, xPixLow, yPixLow);
-	winRep->Transform(filter->xHigh, filter->yHigh, xPixHigh, yPixHigh);
+	//
+	// Get the destination view's visual filter, and change the cursor filter
+	// to fit the view filter according to whether the cursor is X, Y, or XY.
+	//
+	VisualFilter viewFilter;
+	view->GetVisualFilter(viewFilter);
+
+    if (cursorFilter.flag & VISUAL_X) {
+		cursorFilter.yLow = viewFilter.yLow;
+		cursorFilter.yHigh = viewFilter.yHigh;
+	} else if (cursorFilter.flag & VISUAL_Y) {
+		cursorFilter.xLow = viewFilter.xLow;
+		cursorFilter.xHigh = viewFilter.xHigh;
+	}
+
+	//
+	// Make sure the cursor's visual filter doesn't go outside destination
+	// view's visual filter.
+	//
+	cursorFilter.xLow = MAX(cursorFilter.xLow, viewFilter.xLow);
+	cursorFilter.yLow = MAX(cursorFilter.yLow, viewFilter.yLow);
+	cursorFilter.xHigh = MIN(cursorFilter.xHigh, viewFilter.xHigh);
+	cursorFilter.yHigh = MIN(cursorFilter.yHigh, viewFilter.yHigh);
+
 #if defined(DEBUG)
-    printf("Pixels: (%g, %g), (%g, %g)\n", xPixLow, yPixLow, xPixHigh,
+    printf("Modified cursor vis. filter: (%g, %g), (%g, %g)\n",
+	  cursorFilter.xLow, cursorFilter.yLow, cursorFilter.xHigh,
+	  cursorFilter.yHigh);
+#endif
+
+	//
+	// Transform data coordinates to pixels.
+	//
+	int xPixLow, yPixLow, xPixHigh, yPixHigh;
+	{
+		Coord xPix1, yPix1, xPix2, yPix2;
+		WindowRep *winRep = view->GetWindowRep();
+		winRep->Transform(cursorFilter.xLow, cursorFilter.yLow, xPix1, yPix1);
+		winRep->Transform(cursorFilter.xHigh, cursorFilter.yHigh, xPix2,
+	  	  yPix2);
+	
+		xPixLow = (int)MIN(xPix1, xPix2);
+		yPixLow = (int)MIN(yPix1, yPix2);
+		xPixHigh = (int)MAX(xPix1, xPix2);
+		yPixHigh = (int)MAX(yPix1, yPix2);
+	}
+
+#if defined(DEBUG)
+    printf("Pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow, xPixHigh,
+	  yPixHigh);
+#endif
+
+	//
+	// Make sure everything is within the view.  This should be taken care
+	// of by setting up the visual filters correctly, but there seem to be
+	// some off-by-one problems in the view transform or maybe in the
+	// truncation to integer.
+	//
+	xPixLow = MAX(xPixLow, 0);
+	yPixLow = MAX(yPixLow, 0);
+	{
+	    int viewX, viewY;
+	    unsigned viewW, viewH;
+	    view->RealGeometry(viewX, viewY, viewW, viewH);
+		xPixHigh = MIN(xPixHigh, (int)viewW-1);
+		yPixHigh = MIN(yPixHigh, (int)viewH-1);
+    }
+
+#if defined(DEBUG)
+    printf("Modified pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow, xPixHigh,
 	  yPixHigh);
 #endif
 
@@ -1234,23 +1325,33 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	int yLoc = (int)MIN(yPixLow, yPixHigh);
 	int width = (int)ABS(xPixHigh - xPixLow);
 	int height = (int)ABS(yPixHigh - yPixLow);
-
 #if defined(DEBUG)
     printf("x, y: (%d, %d), width, height: (%d, %d)\n", xLoc, yLoc, width,
 	  height);
 #endif
 
+	//
     // Translate from view origin to window origin.
-	int viewX, viewY;
-	winRep->Origin(viewX, viewY);
+	//
+	{
+	    int viewX, viewY;
+		WindowRep *winRep = view->GetWindowRep();
+	    winRep->Origin(viewX, viewY);
 #if defined(DEBUG)
     printf("View (window rep) origin: %d, %d\n", viewX, viewY);
 #endif
+		xLoc += viewX;
+		yLoc += viewY;
+	}
 
-	xLoc += viewX;
-	yLoc += viewY;
+#if defined(DEBUG)
+    printf("Modified x, y: (%d, %d), width, height: (%d, %d)\n", xLoc, yLoc,
+	  width, height);
+#endif
 
-
+	//
+    // Generate the command to send.
+	//
 	char *argv[6];
 	int	pos = 0;
 	argv[pos++] = _controlCmdName[DRAWCURSOR];
@@ -1260,7 +1361,9 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	FillInt(argv, pos, width);
 	FillInt(argv, pos, height);
 
+	//
     // This JavaScreenCmd object is created only to send the command.
+	//
     JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
     jsc.ReturnVal(6, argv);
 
@@ -1268,7 +1371,6 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	delete [] argv[3];
 	delete [] argv[4];
 	delete [] argv[5];
-
 }
 
 void
@@ -1278,6 +1380,13 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
     printf("JavaScreenCmd::EraseCursor(%s, %s)\n", view->GetName(),
       cursor->GetName());
 #endif
+
+	if (_openingSession) {
+#if defined (DEBUG)
+        printf("Cursor erase postponed until done opening session.\n");
+#endif
+		return;
+	}
 
 	char* argv[2];
 	argv[0] = _controlCmdName[ERASECURSOR];
@@ -1358,7 +1467,7 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	DIR *directory = opendir(_sessionDir);
 	if (directory == NULL) {
 		reportErrSys("Can't open session directory");
-		errmsg = "{Can't open session directory}";
+		errmsg = "Can't open session directory";
 		_status = ERROR;
 		return;
 	} else {
@@ -1396,4 +1505,25 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 
 	_status = RequestUpdateSessionList(args.GetCount(),
 	  (char **)args.GetArgs());	
+}
+
+void
+JavaScreenCmd::DrawAllCursors()
+{
+#if defined(DEBUG)
+	printf("JavaScreenCmd::DrawAllCursors()\n");
+#endif
+
+	int index = DevCursor::InitIterator();
+	while (DevCursor::More(index)) {
+		CursorClassInfo *info = DevCursor::Next(index);
+		if (info != NULL) {
+			DeviseCursor *cursor = (DeviseCursor *)info->GetInstance();
+			if (cursor != NULL) {
+				View *view = cursor->GetDst();
+				DrawCursor(view, cursor);
+			}
+		}
+	}
+	DevCursor::DoneIterator(index);
 }
