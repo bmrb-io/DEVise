@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.64  1999/10/08 19:58:08  wenger
+#  Fixed bugs 470 and 513 (crashes when closing a session while a query
+#  is running), 510 (disabling actions in piles), and 511 (problem in
+#  saving sessions); also fixed various problems related to cursors on
+#  piled views.
+#
 #  Revision 1.63  1998/11/17 14:48:09  wenger
 #  Changed master/slave to leader/follower and fixed a few problems in GUI,
 #  session description, etc.
@@ -502,22 +508,6 @@ proc TdataSet {} {
 
 proc GdataSet {} {
     return [CategoryInstances "mapping"]
-}
-
-############################################################
-
-# All interpreted GData
-
-proc InterpretedGData {} {
-    set gSet [ GdataSet ]
-    set result ""
-    foreach gdata $gSet {
-	set isInterpreted [DEVise isInterpretedGData $gdata]
-	if {$isInterpreted} {
-	    lappend result $gdata
-	}
-    }
-    return $result
 }
 
 ############################################################

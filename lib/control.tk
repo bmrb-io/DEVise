@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.206  1999/12/02 16:26:52  wenger
+#	Fixed bug 518 (confirm before saving a session the first time); got rid
+#	of error message during normal Tasvir launch.
+#	
 #	Revision 1.205  1999/12/01 00:08:08  wenger
 #	Added (commented out) test code to duplicate Omer's view insertion/
 #	set view geometry problem.
@@ -2009,68 +2013,6 @@ proc FindDefaultXAttr { attrs } {
     }
 }
 
-#proc DoEditMapping {} {
-#    global curView
-#
-#    if {![CurrentView]} {
-#	 return
-#    }
-#    
-#    if {[WindowVisible .editMapping]}  {
-#	 return
-#    }
-#    
-#    # Get mapping for the view (first one)
-#    set map [lindex [DEVise getViewMappings $curView] 0]
-#    
-#    # See if map is interpreted
-#    set found 0
-#    foreach m [InterpretedGData] {
-#	 if {$m == $map} {
-#	     set found 1
-#	     break
-#	 }
-#    }
-#    if {!$found} {
-#	 dialog .editError "Mapping Not Interpreted" \
-#		 "View has a compiled mapping which cannot be edited." "" 0 OK
-#	 return
-#    }
-#    
-#    EditMapping $map     
-#}
-#
-#
-#proc EditMapping { map } {
-#    global sourceList derivedSourceList
-#
-#    # Get parameters for the mapping
-#    set params [DEVise getInstParam $map]
-#    
-#    if {$params == ""} {
-#	 dialog .editError "No Mapping Parameters" \
-#		 "Mapping has no parameters." "" 0 OK
-#	 return
-#    }
-#    
-#    set tdata [lindex [lindex $params 0] 1]
-#    
-#    set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
-#    if {$err > 0} {
-#	 set sfname [lindex $derivedSourceList($tdata) 3]
-#    }
-#    set schemaname [file tail $sfname]
-#
-#    # set attrs [DEVise getSchema $tdata]
-#    
-#    dialogMapping .editMapping "Edit Mapping" \
-#	     "Edit Mapping" ""   \
-#	     $schemaname \
-#	     $params \
-#	     $map \
-#	     0
-#}
-#
 # Close current session
 proc DoClose {{askUser 1}} {
     global sessionName templateMode datadir sourceList
@@ -2567,13 +2509,17 @@ proc PlayBackLog {} {
 
     # Get a log file name
     set fsBox(path) /tmp
+    #TEMPTEMP?
+    set fsBox(path) .
     # Change for saving sessions as batch scripts only.
     set fsBox(pattern) {cmdLog.*}
+    #TEMPTEMP
+    set fsBox(pattern) {cmdLog*}
     set file [ FSBox "Select log file to play back" ]
     
     if {$file == ""} {
 	return
     }
 
-    DEVise playLog $file 0 1 0 999999
+    DEVise playLog $file
 }

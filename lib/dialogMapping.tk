@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.54  1999/08/10 20:15:11  wenger
+#       Parent views can now control the titles of view symbols.
+#
 #       Revision 1.53  1999/07/21 18:51:26  wenger
 #       Moved alignment and data font information from view into mapping.
 #
@@ -482,13 +485,7 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 	# Get mapping for the view (first one)
 	set map [lindex [DEVise getViewMappings $curView] 0]
 	#See if map is interpreted
-	set found 0
-	foreach m [InterpretedGData] {
-		if {$m == $map} {
-			set found 1
-			break
-		}
-	}
+    set found [DEVise isInterpretedGData $map]
 
 	if {!$found} {
 		dialog .editError "Mapping Not Interpreted" \
