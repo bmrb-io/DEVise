@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/03 22:55:04  jussi
+  Updated to reflect new TData interface.
+
   Revision 1.3  1996/12/03 20:44:08  jussi
   Removed reference to unneeded file Snapshot.h.
 
@@ -38,7 +41,7 @@ int binarySearch = false;
 void GetRec(TData *tdata, RecId id, MultiRec &rec)
 {
     TData::TDHandle handle = tdata->InitGetRecs(id,id);
-    RecId startRid; int numRecs, dataSize;
+    double startRid; int numRecs, dataSize;
     if(!tdata->GetRecs(handle,&rec,sizeof(MultiRec),startRid,numRecs,dataSize)) {
         fprintf(stderr,"GetRec: no record\n");
         Exit::DoExit(1);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.63  1997/06/18 15:33:14  wenger
+  Fixed bug 177; improved workaround of bug 137; incremented version
+  number (because of Unidata being added).
+
   Revision 1.62  1997/05/30 21:24:38  wenger
   Fixed record link bug by re-enabling PrepareProcessedList().
 
@@ -1956,9 +1960,11 @@ void QueryProcFull::DoGDataConvert()
   RecId startRid;
   int numRetrieved;
   int dataSize;
+  double tmpStartRid;
   Boolean status = tdata->GetRecs(handle, _tdataBuf, TDATA_BUF_SIZE,
-                                  startRid, numRetrieved, dataSize);
+                                  tmpStartRid, numRetrieved, dataSize);
   DOASSERT(status, "Cannot get TData");
+  startRid = (RecId) tmpStartRid;
   tdata->DoneGetRecs(handle);
   
   /* Convert [startRid, startRid + numRetrieved - 1] */
