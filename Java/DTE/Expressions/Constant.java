@@ -37,8 +37,16 @@ public class Constant implements Expression {
 		return this;
 	}
 
-	public ExecExpr createExec( OptNode[] opn ) {
+	public ExecExpr createExec(Vector[] projLists) throws InternalError {
 		return new ExecConst( value );
+	}
+
+	public boolean exclusive(Vector aliases){
+		return true;   // constants are contained in any table
+	}
+
+	public void collect(Vector aliases, Vector expressions){
+		expressions.addElement(this);
 	}
 }
 

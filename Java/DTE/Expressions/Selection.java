@@ -1,6 +1,7 @@
 package Expressions;
 
 import Types.*;
+import java.util.*;
 
 /** class Selection is used to represent expression like emp.salary */
 
@@ -22,6 +23,14 @@ public class Selection implements Expression {
         this.type = type;
     }
 
+    public boolean equals(Object obj){
+        if(! getClass().equals(obj.getClass())){
+            return false;
+        }
+	   Selection selObj = (Selection) obj;
+	   return alias.equals(selObj.alias) && attribute.equals(selObj.attribute);
+    }
+
     public String toString(){
         return alias + "." + attribute;
     }
@@ -39,18 +48,25 @@ public class Selection implements Expression {
         throw new RuntimeException( str );
     }
 
-    public ExecExpr createExec(OptNode[] nodes) throws InternalError{
-        Expression[][] exprList = new Expression[2][];
-        for(int i = 0; i < nodes.length; i++){
-            exprList[i] = nodes[i].getProjectList();
-        }
-
-        for(int i = 0; i < nodes.length; i++)
-            for(int field = 0; field < exprList[i].length; field++)
-                if(exprList[i][field] == this)
+    public ExecExpr createExec(Vector[] projLists) throws InternalError{
+        for(int i = 0; i < projLists.length; i++){
+            for(int field = 0; field < projLists[i].size(); field++){
+                if(equals(projLists[i].elementAt(field))){
                     return new ExecSelect(i, field);
-
+                }
+            }
+        }
         throw new InternalError("What's wrong? Let me ask Donko...\n");
+    }
+
+    public boolean exclusive(Vector aliases){
+        return aliases.contains(alias);    
+    }
+
+    public void collect(Vector aliases, Vector expressions){
+        if(exclusive(aliases)){
+	       expressions.addElement(this);
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 package Expressions;
 
 import Types.*;
+import java.util.*;
 
 /** Expression is used to represents all the SQL expressions that can be found
     in WHERE or SELECT clause. 
@@ -35,6 +36,16 @@ public interface Expression {
 	input streams to this expression and that is why the arguments to
 	this method are one or two OptNodes. */
 
-	public ExecExpr createExec(OptNode[] opn);
+	public ExecExpr createExec(Vector[] projLists) throws InternalError;
+
+	/** Returns true if this expression (including all of its children)
+	refers only to tables listed in vector of aliases */
+
+	public boolean exclusive(Vector aliases);
+
+	/** Append the exclusive (as defined above) expressions
+	to the vector of expressions */
+
+	public void collect(Vector aliases, Vector expressions);
 }
 
