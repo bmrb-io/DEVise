@@ -29,7 +29,7 @@
 <BR><BR>
 
 <CENTER><H1>A Guide to DataReader for the schema writer</H1></CENTER>
-<CENTER><H3>Version 2.0: February 3, 1999</H3></CENTER>
+<CENTER><H3>Version 2.0: February 8, 1999</H3></CENTER>
 
 <BR><BR>
 
@@ -435,7 +435,7 @@ Allowed values: &lt;a quoted string containing a legitimate format&gt;<BR>
 Sample use:<BR>
 <pre>
 	# Reads dates like: 12/2/97-14:22:30
-	date_format = "%m/%d/%y-%H:%M:%S";
+	date_format = "%m/%d/%y-%H:%M:%S"
 </pre>
 
 Default value: none
@@ -538,7 +538,7 @@ Allowed values: &lt;integer value&gt;<BR>
 
 Sample use:<BR>
 <pre>
-	length = 8;
+	length = 8
 </pre>
 
 Default value: none<BR>
@@ -551,8 +551,7 @@ Default value: none<BR>
 
 <UL>
 
-<!-- TEMPTEMP need to explain string foo[10] format -->
-<LI>The 'maxlen' option indicates how much storage should be reserved for strings that are read in.  This option can only be specified for strings.  Attribute can't have maxlen and length at the same time.  If the specified string is longer than given 'maxlen', only first maxlen bytes of the strings are read and a warning message is displayed.  Note that the maxlen value <em>does</em> include the terminating NULL (the opposite of length).<BR>
+<LI>The 'maxlen' option indicates how much storage should be reserved for strings that are read in.  This option can only be specified for strings.  Attribute can't have maxlen and length at the same time.  If the specified string is longer than given 'maxlen', only first maxlen-1 bytes of the string are read.  Note that the maxlen value <em>does</em> include the terminating NULL (the opposite of length).<BR>
 
 <BR>
 
@@ -562,10 +561,18 @@ Allowed values: &lt;integer value&gt;<BR>
 
 Sample use:<BR>
 <pre>
-	maxlen = 40;
+	maxlen = 40
 </pre>
 
 Default value: none<BR>
+<br>
+
+Maxlen can also be specified by putting the value in square brackets
+immediately following the attribute name:<br>
+
+<pre>
+	string title[20];
+</pre>
 
 <BR>
 
@@ -587,7 +594,7 @@ Allowed values: &lt;quoted string&gt;<BR>
 
 Sample use:<BR>
 <pre>
-	nullif = "NULL";
+	nullif = "NULL"
 </pre>
 
 Default value: none<BR>
@@ -600,13 +607,23 @@ Default value: none<BR>
 
 <br>Note that 'quote' can also be specified at the schema level.<br>
 
-TEMPTEMP -- note that this whole section is pretty messed up<br>
-
 <UL>
 
-<LI>The 'quote' option indicates what the quoting character is for strings in the datafile.  All strings in the file need not be quoted.  Any string that begins with the quote character is presumed to end with it also, so a string in the data who's first character is literally the quote character _must_ be quoted to be read properly.<BR><BR>
+<LI>The 'quote' option indicates the quoting charater for a string.  At
+the present time, if a quote character is defined for an attribute, all
+strings for that attribute <em>must</em> begin and end with the quote
+character.  To include the quote character within a string, it must be
+escaped with a backslash.
+<br><br>
+
 Fixed length fields can't define a quote character.<BR><BR>
-If field separator is not defined for quoted strings, quoted field terminates at the second quote character and the next character is assumed to be the beginning of the next field (even if it is xxx separator).  Because of this implementation, schema-level xxx separator definition does not effect string fields, if schema-level (or field-level) quote character is defined.<BR><BR>
+
+If field separator is not defined for quoted strings, quoted field
+terminates at the second quote character and the next character is assumed
+to be the beginning of the next field.  If a field separator character
+is defined, the quoted string ends at the closing quotes, but any subsequent
+separator characters are consumed before the next field is read.
+<br><br>
 <BR>
 
 Allowed values: &lt;single character in brackets&gt;<BR>
@@ -615,98 +632,10 @@ Allowed values: &lt;single character in brackets&gt;<BR>
 
 Sample use:<BR>
 <pre>
-	quote = ['];
+	quote = [']
 </pre>
 
 Default value: none<br>
-
-<br><br>
-Consider the following schema:<BR>
-
-<BR>
-
-<PRE>
-
-schema {
-	record_separator = [\n];
-	field_separator = [ +];
-	attr x {
-		type = string;
-		quote = ["];
-		maxlen = 10;
-	}
-
-	attr y {
-		type = string;
-		quote = ["];
-		maxlen = 10;
-	}
-}
-
-</PRE>
-
-
-
-<BR>
-
-For the following record:<BR>
-
-<BR>
-
-"try+me"+first<BR>
-
-&#9;&#9;<BR>
-
-x would be "try+me" and y would be "first"<BR>
-
-<BR>
-
-&#9;&#9;For<BR>
-
-<BR>
-
-try+me+first<BR>
-
-<BR>
-
-x would be "try" , y would be "me" and the rest of the line would be ignored.<BR>
-
-<BR>
-<PRE>
-schema {
-	record_separator = [\n];
-	field_separator = [ ];
-	attr x {
-		type = string;
-		quote = ["];
-		maxlen = 10;
-	}
-
-	attr y {
-		type = string;
-		maxlen = 10;
-	}
-}
-
-<B>is equivalent to</B>
-
-schema {
-	record_separator = [\n];
-	attr x {
-		type = string;
-		quote = ["];
-		maxlen = 10;
-	}
-
-	attr y {
-		type = string;
-		field_separator = [ ];
-		maxlen = 10;
-	}
-}
-</PRE>
-
-<BR>
 
 </UL>
 
@@ -716,8 +645,6 @@ schema {
 <hr>
 
 <br>
-
-<!-- TEMPTEMP -- give code example?; alignment -->
 
 All text and images Copyright &#169; 1996-1999, DEVise Development Group,
 Madison, WI.
