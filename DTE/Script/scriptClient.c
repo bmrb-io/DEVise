@@ -1,136 +1,109 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1997
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
+#include <memory.h>
+#include <iostream.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+//#include <sys/time.h>
+#include <netinet/in.h>
+#include <ctype.h>
+#include <netdb.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include <stdio.h>
 
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
+#include "common.h"
 
+#define max_seg 1024
 
-#include<iostream.h>
-#include<memory.h>
-#include<string.h>
-#include<assert.h>
-#include<math.h>
-#include "types.h"
-#include "exception.h"
-#include "Engine.h"
-#include "ApInit.h" /* for DoInit */
-#include "RTreeCommon.h"
-#include "ncsa.h"
+#ifdef CLIENT_DEBUG
+        #define DBCLIENT(a) {cout << __FILE__ << ':' << __LINE__ << ' ' << a << endl;}
 
-const int DETAIL = 1;
+#else
+        #define DBCLIENT(a) {}
+#endif
 
-int main(int argc, char** argv){
+int main(int argc, char** argv)
+{
+  int cl;
+  char *outbuf, *inbuf;
+  int sock, nfound;
+  //static struct timeval timeout = { 0, 0 };
+  struct hostent *hostp;
+  fd_set rmask;
+  struct sockaddr_in server;
+  
+  printf("Content-type: text/plain%c%c",10,10);
+  cl = atoi(getenv("CONTENT_LENGTH"));
+  outbuf = new char[cl];
+  cin.read(outbuf,cl);
 
-        int numFlds;
-	String* types;
-	String* attrs;
+  // debugging message;
+  // cout << "cl=" << cl << "\n";
+  // cout.write(outbuf, cl); 
+  // cout << "\n";
+  // end of debugging message;
 
-	Init::DoInit();     // to initialize Devise reading stuff
-	char* queryString = NULL;
-     int entryCnt = post_query();
-	if(entryCnt == 0){
-		return 0;
-	}
-	bool execute = false;
-	bool profile = false;
-	char* shipping = NULL;
-	char* table = NULL;
-	ReadPtr fieldRead;
-	WritePtr fieldWrite;
-	Type *field;
+  // the following segment contains socket stuff;
+  if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) 
+    {
+      cerr << "socket";
+      delete[] outbuf;
+      exit(1);
+    }
+  
+  hostp = gethostbyname(DTEserver);
+  
+  memset((void *) &server, 0, sizeof server);
+  server.sin_family = AF_INET;
+  memcpy((void *) &server.sin_addr, hostp->h_addr, hostp->h_length);
+  server.sin_port =htons((unsigned short) DTEserverport);
+  
+  if (connect(sock, (struct sockaddr *)&server, sizeof server) < 0)
+    {
+      (void) close(sock);
+      cerr << "connect";
+      delete[] outbuf;
+      exit(1);
+    }
+  
+  if ((write(sock, &cl, sizeof(int)))<0)
+    {
+      cerr << "*** write cl ***";
+      (void) close(sock);
+      delete[] outbuf;
+      exit(1);
+    }
+  
+  if ((write(sock, outbuf, cl))<0)
+    {
+      cerr << "*** write outbuf ***";
+      delete[] outbuf;
+      (void) close(sock);
+      exit(1);
+    }
+  delete[] outbuf;
 
-	for(int i = 0; i < entryCnt; i++){
-		String option = entries[i].name;
-		if(option == "execute"){
-			execute = true;
-		}
-		else if(option == "profile"){
-			profile = true;
-		}
-		else if(option == "query"){
-			queryString = entries[i].val;
-			// int queryLength = strlen(queryString);
-			// queryString[queryLength - 1] = ';';
-		}
-		else if(option == "shipping"){
-			shipping = entries[i].val;
-		}
-		else if(option == "table"){
-			table = entries[i].val;
-		}
-		else{
-			cout << "1 unknown option: " << option << endl;
-			return 0;
-		}
-	}
-	if(execute){
-	}
-	else if(profile){
-		// Change the tables in from clause to the samples.
-		// do the post processing.
-		cout << "1 profile not implemented\n";
-		return 0;
-	}
-	else{
-		if(!shipping || !table){
-			cout << "1 shipping table not specified\n";
-		}
-		// create and load local table;
-		cout << "1 shipping not implemented\n";
-		return 0;
-	}
+/*  
+  FD_ZERO(&rmask);
+  FD_SET(sock, &rmask);
+  nfound = select(FD_SETSIZE, &rmask, (fd_set *)0, (fd_set *)0, &timeout);
+  while ( (nfound<=0) || (!FD_ISSET(sock, &rmask) ))
+    {
+      FD_SET(sock, &rmask);
+      nfound = select(FD_SETSIZE, &rmask, 0, 0, &timeout);
+    }
+ */
 
-	String query(queryString);
-
-	sockBuf=new Cor_sockbuf(DTEserver, (unsigned short) DTEserverport);
-	ostream out(sockBuf);
-	out << queryString << " ~~| ";
-
-	istream in(sockBuf);
-	  
-	out << "0 OK\n";
-
-	in >> numFlds;
-	
-	for(int i = 0; i < numFlds; i++){
-	  in >> types[i];
-          cout << types[i] << " ";
-	}
-
-	cout << endl;
-
-	for(int i = 0; i < numFlds; i++)
-	  {
-	    in >> attrs[i];
-	    cout << attrs[i] << " ";
-	  }
-	cout << endl;
-	cout << ";" << endl;
-
-	String terminator;
-
-	in >> terminator;
-
-	while (!strcmp(terminator, "|~~"))
-	  {
-	    for(int i = 0; i < numFlds; i++)
-	      {
-		fieldRead=getReadPtr(types[i]);
-		fieldRead(in, field);
-		fieldWrite=getWritePtr(types[i]);
-		fieldWritePtr(cout, field);
-		cout << "\t";
-	      }
-	    cout << endl;
-	  }
-
-	delete sockBuf;
-      }
+  inbuf=new char[max_seg];
+  int bytesread = read(sock, inbuf, max_seg);
+  
+  while (bytesread>0)
+    {
+      cout.write(inbuf, bytesread);
+      bytesread = read(sock, inbuf, max_seg);
+    }
+  
+  delete[] inbuf;
+  close(sock);
+}

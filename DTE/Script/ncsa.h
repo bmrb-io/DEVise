@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/28 16:08:02  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef NCSA_H
@@ -30,6 +34,6 @@ typedef struct {
 
 extern entry entries[MAX_ENTRIES];
 
-int post_query();
+int post_query(int cl, FILE* stream);
 
 #endif

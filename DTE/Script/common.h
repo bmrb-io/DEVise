@@ -6,6 +6,6 @@
 #define SCRIPT_SERVER_DEFINE
 
 #define DTEserver "doc.cs.wisc.edu"
-#define DTEserverport 9275
+#define DTEserverport 9575
 
 #endif

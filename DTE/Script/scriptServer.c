@@ -1,179 +1,262 @@
-/*
-  ========================================================================
-  DEVise Data Visualization Software
-  (c) Copyright 1992-1997
-  By the DEVise Development Group
-  Madison, Wisconsin
-  All Rights Reserved.
-  ========================================================================
+#ifdef DTE_AS_SERVER
+	#include <stdlib.h>
+	#include <unistd.h>
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <netdb.h>
+	#include <arpa/inet.h>
+	#include <String.h>
+#endif
 
-  Under no circumstances is this software to be copied, distributed,
-  or altered in any way without prior permission from the DEVise
-  Development Group.
-*/
-
-
-#include<iostream.h>
-#include<memory.h>
-#include<string.h>
+#include <string.h>
+#include <iostream.h>
+#include <memory.h>
 #include<assert.h>
 #include<math.h>
-#include "types.h"
-#include "exception.h"
-#include "Engine.h"
-#include "ApInit.h" /* for DoInit */
-#include "RTreeCommon.h"
-#include "ncsa.h"
 
 #ifdef DTE_AS_SERVER
-  #include "SockStream.h"
-  #include "common.h"
+	#include "common.h"
+#endif
+
+#include "ApInit.h" /* for DoInit */
+#include "RTreeCommon.h"
+#include "Engine.h"
+#include "types.h"
+#include "exception.h"
+#include "ncsa.h"
+#include "SockStream.h"
+
+#ifdef SERVER_DEBUG
+        #define DBSERVER(a) {cout << __FILE__ << ':' << __LINE__ << ' ' << a << endl;}
 #else
-  #define out cout
+        #define DBSERVER(a) {}
 #endif
 
 const int DETAIL = 1;
 
-int main(int argc, char** argv){
-
 #ifndef DTE_AS_SERVER
+	#define out cout
+#endif
 
-	Init::DoInit();     // to initialize Devise reading stuff
-	char* queryString = NULL;
-     int entryCnt = post_query();
-	if(entryCnt == 0){
-		return 0;
-	}
-	bool execute = false;
-	bool profile = false;
-	char* shipping = NULL;
-	char* table = NULL;
-	for(int i = 0; i < entryCnt; i++){
-		String option = entries[i].name;
-		if(option == "execute"){
-			execute = true;
-		}
-		else if(option == "profile"){
-			profile = true;
-		}
-		else if(option == "query"){
-			queryString = entries[i].val;
-			// int queryLength = strlen(queryString);
-			// queryString[queryLength - 1] = ';';
-		}
-		else if(option == "shipping"){
-			shipping = entries[i].val;
-		}
-		else if(option == "table"){
-			table = entries[i].val;
-		}
-		else{
-			cout << "1 unknown option: " << option << endl;
-			return 0;
-		}
-	}
-	if(execute){
-	}
-	else if(profile){
-		// Change the tables in from clause to the samples.
-		// do the post processing.
-		cout << "1 profile not implemented\n";
-		return 0;
-	}
-	else{
-		if(!shipping || !table){
-			cout << "1 shipping table not specified\n";
-		}
-		// create and load local table;
-		cout << "1 shipping not implemented\n";
-		return 0;
-	}
+int main(int argc, char** argv)
+{
+  
+ Init::DoInit();
+  char* queryString = NULL;
 
-	String query(queryString);
-
-#else   // ifndef DTE_AS_SERVER
-
-  String query, temperory, keeped="";
-
-  Cor_sockbuf *sockBuf=new Cor_sockbuf((unsigned short) serverport);
-  Cor_sockbuf *accepted;
-
-  for (;;)
+#ifdef DTE_AS_SERVER
+  int request_sock, new_sock;
+  struct sockaddr_in server, remote;
+  fd_set rmask;
+  //static struct timeval timeout = { 1, 0 };
+  int addrlen, nfound, bytesread, ugly=0, cl;
+  char *inbuf, *outbuf;
+  
+  if ((request_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     {
-
-  accepted=sockBuf->AcceptConnection();
-  keeped="";
-
-
-  istream in(accepted);
-  in >> temperory;
-  while (strcmp(temperory, "~~|")!=0)
-    {
-
-    keeped+=temperory;
-    keeped+=" ";
-
+      cerr << "*** socket ***";
+      exit(1);
     }
+  
+   memset((void *) &server, 0, sizeof (server));
+   server.sin_family = AF_INET;
+   server.sin_addr.s_addr = INADDR_ANY;
+   server.sin_port = htons((unsigned short)DTEserverport);
 
-  query=keeped;
+   if (bind(request_sock, (struct sockaddr *)&server, sizeof server) < 0)
+     {
+       cerr << "*** bind ***";
+       exit(1);
+     }
 
-  ostream out(accepted);
+   if (listen(request_sock, SOMAXCONN) < 0)
+     {
+       cerr << "*** listen ***";
+       exit(1);
+     }
 
-#endif  // ifndef DTE_AS_SERVER
+   for (;;)
+     {
+       addrlen = sizeof(remote);
+       DBSERVER("--- BEFORE ACCEPT\n");
+       new_sock = accept(request_sock, (struct sockaddr *)&remote, &addrlen);
+       if (new_sock < 0)
+         {
+           cerr << "*** accept ***";
+           exit(1);
+         }
+       DBSERVER("--- AFTER ACCEPT\n");
 
-// so far query is set
+       bytesread = read(new_sock, &cl, sizeof (int));
+	DBSERVER(cl)
+	FILE* inputStream = fdopen(new_sock, "r");
+#else
 
-     Engine engine(query);
-     TRY(engine.optimize(), 0);
+     printf("Content-type: text/plain%c%c",10,10);
+	FILE* inputStream = stdin;
+	int cl = atoi(getenv("CONTENT_LENGTH"));
+
+#endif //ifdef DTE_AS_SERVER
+
+       int entryCnt = post_query(cl, inputStream);
+
+#ifdef DTE_AS_SERVER
+       Cor_sockbuf *accepted;
+       accepted=new Cor_sockbuf((int) new_sock);
+       ostream out(accepted);
+#endif
+
+       if(entryCnt == 0)
+	 {
+	#ifdef DTE_AS_SERVER
+	  out << "1 entryCnt=0\n";
+	  delete accepted;
+               continue;
+	#else
+		return (0);
+	#endif
+	 }
+       bool execute = false;
+       bool profile = false;
+       char* shipping = NULL;
+       char* table = NULL;
+        #ifdef DTE_AS_SERVER 
+	ugly=0;
+	#endif
+       for(int i = 0; i < entryCnt; i++)
+	 {
+	   String option = entries[i].name;
+	   if(option == "execute")
+	     {
+	       execute = true;
+	     }
+	   else if(option == "profile")
+	     {
+	       profile = true;
+	     }
+	   else if(option == "query")
+	     {
+	       queryString = entries[i].val;
+	       // int queryLength = strlen(queryString);
+	       // queryString[queryLength - 1] = ';';
+	     }
+	   else if(option == "shipping"){
+	     shipping = entries[i].val;
+	   }
+	   else if(option == "table"){
+	     table = entries[i].val;
+	   }
+	   else
+	     {
+		#ifdef DTE_AS_SERVER
+	       out << "1 unknown option: " << option << endl;
+	       ugly=1;
+	       delete accepted;		
+	       continue;
+		#else
+			out << "1 unknown option: " << option << endl;
+                        return 0;
+		#endif
+	   }
+	 }
+
+	#ifdef DTE_AS_SERVER
+       if (ugly)
+	 continue;
+	#endif
+       if(execute)
+	 {
+	 }	  
+       else if(profile)
+	 {
+	   // Change the tables in from clause to the samples.
+	     // do the post processing.
+	     #ifdef DTE_AS_SERVER
+	   out << "1 profile not implemented\n";
+	   delete accepted;
+	   continue;
+		#else
+		 out << "1 profile not implemented\n";
+                return 0;
+		#endif
+	 }
+       else
+	 {
+	   if(!shipping || !table)
+	     {
+		out << "1 shipping table not specified\n";
+	     }
+	   // create and load local table;
+		#ifdef DTE_AS_SERVER
+	   out << "1 shipping not implemented\n";
+	   delete accepted;
+	   continue;
+		#else
+		out << "1 shipping not implemented\n";
+                return 0;
+		#endif
+	 }
+
+        String query(queryString);
+  
+       Engine engine(query);
+	DBSERVER("before TRY")
+	#ifdef DTE_AS_SERVER
+	engine.optimize();
+	if (currExcept){
+		out << "1 Parse error in: ";
+		out << queryString;
+		delete accepted;
+		currExcept=0;
+		continue;
+		}
+	DBSERVER("after TRY")
+	#else
+	TRY(engine.optimize(), 0);
+	#endif
      int numFlds = engine.getNumFlds();
+	#ifdef DTE_AS_SERVER
+	if (!(numFlds>0)) 
+	  {
+		out << "1 numFlds<=0\n";
+		delete accepted;
+		continue;
+	  }
+	#else
 	assert(numFlds > 0);
-	WritePtr* writePtrs = engine.getWritePtrs();
+	#endif
+        WritePtr* writePtrs = engine.getWritePtrs();
      String* types = engine.getTypeIDs();
-	String* attrs = engine.getAttributeNames();
+        String* attrs = engine.getAttributeNames();
      Tuple tup[numFlds];
 
-#ifndef DTE_AS_SERVER
      out << "0 OK\n";
-#endif 
-
      out << numFlds << endl;
-
      for(int i = 0; i < numFlds; i++){
           out << types[i] << " ";
      }
      out << endl;
      for(int i = 0; i < numFlds; i++){
-		out << attrs[i] << " ";
-     }
+                out << attrs[i] << " ";
+	      }
+
      out << endl;
-	out << ";" << endl;
+        out << ";" << endl;
 
-	engine.initialize();
+        engine.initialize();
      while(engine.getNext(tup)){
-
-#ifdef DTE_AS_SERVER
-       out << "|~~ ";
-#endif
-
           for(int i = 0; i < numFlds; i++){
-			writePtrs[i](out, tup[i]);
+                        writePtrs[i](out, tup[i]);
                out << '\t';
           }
           out << endl;
      }
-
-#ifdef DTE_AS_SERVER
-       out << "~~| ";
-#endif
-
-	engine.finalize();
-
-#ifdef DTE_AS_SERVER
-    delete accepted;
-  }
-  delete  sockBuf;
-#endif
-	}
-
+        engine.finalize();
+	#ifdef DTE_AS_SERVER
+	delete accepted;
+}
+	#endif
+}
 
 

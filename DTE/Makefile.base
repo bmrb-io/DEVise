@@ -38,7 +38,7 @@ DTE_INCLUDES = \
 CFLAGS = $(ARCH_FLAGS) $(DTE_INCLUDES)\
 	-Wall -Wno-unused $(OPTFLAG) \
 	-DUNIX -DATTRPROJ -DLIBCS \
-	-fexternal-templates 
+	-fexternal-templates
 
 ifdef NO_RTREE
 	CFLAGS += -DNO_RTREE
@@ -69,6 +69,9 @@ GUI_SRC = CatalogComm.c DTEControl.c TkControl.c
 
 ParseAPIDTE_SA.o : ParseAPIDTE.c ParseAPIDTE.o
 	$(CC) -c $(CFLAGS) -DDTE_STANDALONE -o $@ $<
+
+scriptServer_CS.o : scriptServer.c scriptServer.o common.h
+	$(CC) -c $(CFLAGS) -DDTE_AS_SERVER -o $@ $<
 
 GUI_OBJ = $(CORE_SRC:.c=.o) $(GUI_SRC:.c=.o) $(RTREE_SRC:.C=.o) \
 	ParseAPIDTE_SA.o
@@ -121,9 +124,17 @@ RTREE_UTIL = FormatVolume.c
 
 STAND_ALONE_SRC = main.c 
 
-SCRIPT_SRC = post-query.c util.c script.c
+SCRIPT_SRC = post-query.c util.c
 
-SCRIPT_OBJ = $(CORE_SRC:.c=.o) $(RTREE_SRC:.C=.o) $(SCRIPT_SRC:.c=.o)
+SCRIPT_OBJ = $(CORE_SRC:.c=.o) $(RTREE_SRC:.C=.o) $(SCRIPT_SRC:.c=.o) \
+	scriptServer.o
+
+SCRIPTSERVER_OBJ = $(CORE_SRC:.c=.o) $(RTREE_SRC:.C=.o) $(SCRIPT_SRC:.c=.o) \
+	scriptServer_CS.o
+
+SCRIPTCLIENT_SRC = scriptClient.c
+
+SCRIPTCLIENT_OBJ = $(SCRIPTCLIENT_SRC:.c=.o)
 
 LIBSRC = $(CORE_SRC) $(DEVISE_SPECIFIC_SRC)
 
@@ -152,6 +163,14 @@ quant: $(STAND_ALONE_OBJ)
 script: $(SCRIPT_OBJ)
 	$(CC) -o script $(SCRIPT_OBJ) $(ARCH_LDFLAGS) -L../devread \
 	-ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST)
+
+scriptServer:	$(SCRIPTSERVER_OBJ)
+	$(CC) -o scriptServer $(SCRIPTSERVER_OBJ) $(ARCH_LDFLAGS) -L../devread \
+	-ldevread $(ARCH_SYSLIBS) $(ARCH_LDPOST) 
+
+scriptClient:	$(SCRIPTCLIENT_OBJ)
+	$(CC) -o scriptClient $(SCRIPTCLIENT_OBJ) $(ARCH_LDFLAGS) \
+	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 gui: $(GUI_OBJ)
 	$(CC) -o gui $(GUI_OBJ) $(ARCH_GUILDFLAGS) -L../devread \
