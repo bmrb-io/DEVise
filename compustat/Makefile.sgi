@@ -41,3 +41,20 @@ index.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
 index.o: /usr/include/netdb.h /usr/include/sys/socket.h
 index.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
 index.o: /usr/include/arpa/inet.h
+project.o: /usr/include/stdio.h /usr/include/stdlib.h /usr/include/sgidefs.h
+project.o: /usr/include/string.h /usr/include/ctype.h /usr/include/unistd.h
+project.o: /usr/local/include/assert.h compustat.h index.h
+project.o: ../tape/tapedrive.h /usr/include/tar.h ../graphics.new/machdep.h
+project.o: /usr/include/limits.h /usr/include/sys/types.h
+project.o: /usr/include/sys/bsd_types.h /usr/include/sys/select.h
+project.o: /usr/include/sys/param.h /usr/include/sys/signal.h
+project.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+project.o: /usr/include/sys/procset.h /usr/include/sys/siginfo.h
+project.o: /usr/include/sys/resource.h /usr/include/sys/ipc.h
+project.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
+project.o: /usr/include/sys/ioctl.h /usr/include/sys/ioccom.h
+project.o: /usr/include/net/soioctl.h /usr/include/sys/termio.h
+project.o: /usr/include/sys/termios.h /usr/include/sys/ttydev.h
+project.o: /usr/include/netdb.h /usr/include/sys/socket.h
+project.o: /usr/include/netinet/in.h /usr/include/sys/endian.h
+project.o: /usr/include/arpa/inet.h
