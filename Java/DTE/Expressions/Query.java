@@ -7,8 +7,9 @@ import java.io.*;
 public class Query {
 	Vector selectClause;
 	Vector fromClause;
-	Vector whereClause;
-	public Query(Vector selectClause, Vector fromClause, Vector whereClause){
+	Expression whereClause;
+	public Query(Vector selectClause, Vector fromClause, 
+		Expression whereClause){
 		
 	}
 	// Jie, add toString function that will return string like:
