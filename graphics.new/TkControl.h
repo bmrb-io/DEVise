@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/05/11 03:14:12  jussi
+  Removed some control panel variables like FileName, GDataName,
+  WindowName etc.
+
   Revision 1.6  1996/04/16 19:46:24  jussi
   Added DoAbort() method.
 
@@ -32,87 +36,100 @@
   Added CVS header.
 */
 
-/* Xaw implementation for control panel */
-
 #ifndef TkControl_h
 #define TkControl_h
 
 #include <tcl.h>
 #include <tk.h>
+
 #include "Dispatcher.h"
 #include "Control.h"
 #include "ViewCallback.h"
+#include "GroupDir.h"
+#include "ParseAPI.h"
 
 class View;
 class MapInterpClassInfo;
 
+extern GroupDir *gdir;
+
 class TkControlPanel: public ControlPanel, public DispatcherCallback,
-                      private ViewCallback{
+                      private ViewCallback
+{
 public:
-	TkControlPanel();
+  TkControlPanel();
 
 #ifdef TK_WINDOW
-	virtual Tcl_Interp *GetInterp() { return _interp; }
-	virtual Tk_Window GetMainWindow() { return _mainWindow; }
+  virtual Tcl_Interp *GetInterp() { return _interp; }
+  virtual Tk_Window GetMainWindow() { return _mainWindow; }
 #endif
 
-	virtual void SelectView(View *view);
+  virtual void SelectView(View *view);
 
-	/* Get current mode */
-	virtual Mode GetMode();
+  /* Get/set busy status. */
+  virtual void SetBusy();
+  virtual void SetIdle();
+  virtual Boolean IsBusy();
 
-	/* Set busy status, should be called in pairs. */
-	virtual void SetBusy();
-	virtual void SetIdle();
+  /* Start/restart session */
+  virtual void StartSession();
+  virtual void DestroySessionData();
+  virtual void RestartSession() {
+    DestroySessionData();
+  }
 
-	/* Get current busy status */
-	virtual Boolean IsBusy();
+  /* Execute script */
+  virtual void ExecuteScript(char *script);
 
-	virtual void StartSession();
+  /* Abort program */
+  virtual void DoAbort(char *reason);
 
-	/* Execute script */
-	virtual void ExecuteScript(char *script);
+  /* Get GroupDir info */
+  virtual GroupDir *GetGroupDir() { return gdir; }
 
-	/* Abort program */
-	virtual void DoAbort(char *reason);
+  /* Get MapInterpClassInfo info */
+  virtual MapInterpClassInfo *GetInterpProto() { return _interpProto; }
 
 protected:
-	virtual void SubclassInsertDisplay(DeviseDisplay *disp,
-					   Coord x, Coord y,
-					   Coord w,Coord h);
-	virtual void SubclassRegisterView(View *view);
-	virtual void SubclassUnregisterView(View *view);
-	virtual void SubclassDoInit();
-	virtual void SubclassDoViewPerspectiveChanged(View *view,
-						      Coord x, Coord y,
-						      Coord w, Coord h);
-	
-	virtual void DestroyClientData();
+  virtual void SubclassInsertDisplay(DeviseDisplay *disp,
+				     Coord x, Coord y,
+				     Coord w, Coord h) {}
+  virtual void SubclassRegisterView(View *view) {}
+  virtual void SubclassUnregisterView(View *view) {}
+  virtual void SubclassDoInit() {}
+  virtual void SubclassDoViewPerspectiveChanged(View *view,
+						Coord x, Coord y,
+						Coord w, Coord h) {}
 
 private:
-	virtual void FilterAboutToChange(View *view) {}
-	virtual void FilterChanged(View *view, VisualFilter &filter,
-				   int flushed);
-	virtual void ViewCreated(View *view);
-	virtual void ViewDestroyed(View *view);
+  virtual void FilterAboutToChange(View *view) {}
+  virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
+  virtual void ViewCreated(View *view);
+  virtual void ViewDestroyed(View *view);
 
-	/* process tcl command */
-	static int ControlCmd(ClientData clientData, Tcl_Interp *interp,
-		int argc, char *argv[]);
+  char *DispatchedName() { return "TkControlPanel"; }
+  void Run();
 
-	/* from DispatcherCallback */
-	char *DispatchedName() {
-		return "TkControlPanel";
-	}
-	void Run();
+  int _busy;
+  static MapInterpClassInfo *_interpProto;
 
-	Tcl_Interp *_interp;
-	Tk_Window _mainWindow;
+  static int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
-	char *_argv0;
-	int _busy; /* >0 if system is busy processing queries */
-	static ControlPanel::Mode _mode;
-	static MapInterpClassInfo *_interpProto; /* proto interpreted mapping */
+  Tcl_Interp *_interp;
+  Tk_Window _mainWindow;
+  char *_argv0;
+
+  virtual int ReturnVal(int flag, char *result) {
+    strcpy(_interp->result, result);
+    return flag;
+  }
+  virtual int ReturnVal(int argc, char **argv) {
+    Tcl_ResetResult(_interp);
+    for(int i = 0; i < argc; i++) 
+      Tcl_AppendElement(_interp, argv[i]);
+    return API_OK;
+  }
 };
 
 #endif

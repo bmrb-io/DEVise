@@ -1,7 +1,25 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
   $Log$
+  Revision 1.6  1996/05/11 03:11:32  jussi
+  Removed all unnecessary ControlPanel methods like FileName(),
+  FileAlias() etc.
+
   Revision 1.5  1996/05/09 18:12:02  kmurli
   No change to this makefile.
 
@@ -17,14 +35,17 @@
 
 #ifndef Control_h
 #define Control_h
+
 #include "DeviseTypes.h"
 #include "VisualArg.h"
 #include "DList.h"
 
 class Dispatcher;
 
-/* list of views for the control panel, arranged according
-to dispatcher */
+/*
+ list of views for the control panel, arranged according to dispatcher
+*/
+
 struct CPViewList;
 class View;
 
@@ -34,14 +55,15 @@ class ClassInfo;
 class ClassDir;
 
 class ControlPanelCallback;
-
+class MapInterpClassInfo;
+class GroupDir;
 
 DefinePtrDList(ControlPanelCallbackList ,ControlPanelCallback *);
 
 class DeviseDisplay;
 class ControlPanel  {
 public:
-	enum Mode { DisplayMode , LayoutMode};
+	enum Mode { DisplayMode, LayoutMode};
 
 	void InsertCallback(ControlPanelCallback *callback);
 	void DeleteCallback(ControlPanelCallback *callback);
@@ -52,13 +74,14 @@ public:
 	static void RegisterClass(ClassInfo *cInfo, Boolean transient = false);
 
 	/* Make view the current view */
-	virtual void SelectView(View *view)= 0;
+	virtual void SelectView(View *view) = 0;
 
 	/* Find pointer to instance with given name */
 	static void *FindInstance(char *name);
 
-	/* Get current mode */
-	virtual Mode GetMode() = 0;
+	/* Get/set current mode */
+	virtual Mode GetMode() { return _mode; }
+	virtual void SetMode(Mode mode) { _mode = mode; }
 
 	/* Set busy status, should be called in pairs. */
 	virtual void SetBusy() = 0;
@@ -67,24 +90,28 @@ public:
 	/* Get current busy status */
 	virtual Boolean IsBusy() = 0;
 
-	/* Start current session */
-	virtual void StartSession() = 0;
+	/* Start/restart session */
+	virtual void StartSession() {}
+	virtual void DestroySessionData() {}
+	virtual void RestartSession() {}
 
 	/* Execute script */
 	virtual void ExecuteScript(char *script) = 0;
 
 	/* Instantiate control panel into display */
-	static void InsertDisplay(DeviseDisplay *disp,Coord x=0.0, Coord y=0.4, 
-		Coord w=0.15, Coord h=0.59){
-		Instance()->SubclassInsertDisplay(disp,x,y,w,h);
-	};
+	static void InsertDisplay(DeviseDisplay *disp,
+				  Coord x = 0.0, Coord y = 0.4, 
+				  Coord w = 0.15, Coord h = 0.59) {
+	  Instance()->SubclassInsertDisplay(disp,x,y,w,h);
+	}
 
 	/* Init control panel, before dispatcher starts running.
-	Create control panel if not already created.
-	Update contronl panel state to reflect current dispatcher */
-	static void Init(){
-		Instance()->SubclassDoInit();
-	};
+	   Create control panel if not already created.
+	   Update contronl panel state to reflect current dispatcher
+	   */
+	static void Init() {
+	  Instance()->SubclassDoInit();
+	}
 
 	/* return the one and only instance of control panel */
 	static ControlPanel *Instance();
@@ -98,22 +125,30 @@ public:
 	/* abort */
 	virtual void DoAbort(char *reason);
 
-protected:
+	/* return one or multiple values to caller of API */
+	virtual int ReturnVal(int flag, char *result) = 0;
+	virtual int ReturnVal(int argc, char **argv) = 0;
 
 	/* Get ClassDir info */
-	static ClassDir *GetClassDir() ;
+	static ClassDir *GetClassDir();
+
+	/* Get GroupDir info */
+	virtual GroupDir *GetGroupDir() = 0;
+
+	/* Get MapInterpClassInfo info */
+	virtual MapInterpClassInfo *GetInterpProto() = 0;
+
+protected:
 
 	friend class Dispatcher;
 
 	/* dervied classes must implement these: */
-	virtual void SubclassInsertDisplay(DeviseDisplay *disp,Coord x, Coord y, 
-		Coord w,Coord h)= 0;
-	virtual void SubclassDoInit()=0;
-
+	virtual void SubclassInsertDisplay(DeviseDisplay *disp,
+					   Coord x, Coord y, 
+					   Coord w, Coord h) = 0;
+	virtual void SubclassDoInit() = 0;
 
 	/* helper functions for derived classes */
-
-
 
 	/* return */
 	void DoReturn();
@@ -172,12 +207,11 @@ protected:
 
 	ControlPanel();
 	static ControlPanel *_controlPanel; /* one and only control panel */
+	static Mode _mode;
 
 private:
 	/* update current view to reflect current dispatcher */
 	void UpdateNewDispatcher();
-
-
 
 	static ClassDir *_classDir;
 
@@ -186,7 +220,7 @@ private:
 
 class ControlPanelCallback {
 public:
-	virtual void ModeChange(ControlPanel::Mode mode)=0;
+	virtual void ModeChange(ControlPanel::Mode mode) = 0;
 };
 
 #endif
