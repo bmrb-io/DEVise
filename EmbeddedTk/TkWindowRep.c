@@ -1,9 +1,10 @@
 
 #include "TkWindowRep.h"
 #include "EmbeddedTk.h"
+#include "ETkCommands.h"
 
-#if defined(SERVER_CMD)
-#include "DeviseServerCmd.h"
+#if defined(ZOOQUERY)
+#include "ZooCommands.h"
 #endif
 
 #include <iostream.h>
@@ -19,10 +20,12 @@ DeleteTclInterpreter(ClientData clientData)
 {
     Tcl_Interp *i = (Tcl_Interp *) clientData;
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Deleting Tcl interpreter 0x%x\n",
-	    (unsigned int) i);
+    fprintf(ETk_LogFile, "======BEGIN Tcl_DeleteInterp 0x%x\n", (int) i);
 #endif
     Tcl_DeleteInterp(i);
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "======END Tcl_DeleteInterp 0x%x\n", (int) i);
+#endif
 }
 
 int TkWindowRep::_numInstances = 0;
@@ -64,19 +67,24 @@ TkWindowRep::~TkWindowRep()
 // Eval an in-memory Tcl script
 //
 ETk_Status
-TkWindowRep::Eval(char *script)
+TkWindowRep::Eval(char *script, char *returnValue)
 {
-    int result;
-    if (_interp == NULL) {
+    int tclResult;
+    if (_interp == NULL)
+    {
 	return ETk_NoTclInterpreter;
     }
-    result = Tcl_Eval(_interp, script);
-    if (result == TCL_ERROR) {
-	strncpy(ETk_TclErrorMessage, _interp->result, ETK_MAX_STRLEN);
+    tclResult = Tcl_Eval(_interp, script);
+    returnValue = strncpy(returnValue, _interp->result, ETK_MAX_STRLEN);
+    returnValue[ETK_MAX_STRLEN - 1] = '\0';
+    if (tclResult == TCL_ERROR)
+    {
 #ifdef DEBUG
 	fprintf(ETk_LogFile, "Error in Tcl interpreter 0x%x: %s\n",
 		(int) _interp, _interp->result);
 #endif
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, _interp->result);
 	return ETk_TclError;
     }
     return ETk_OK;
@@ -128,15 +136,26 @@ TkWindowRep::Unmap()
 }
 
 ETk_Status
-TkWindowRep::GetLocation(int &xleft, int &ytop, int &width, int &height)
+TkWindowRep::GetLocation(int &xleft, int &ytop,
+			 unsigned int &width, unsigned int &height)
 {
+    Window parentWin;
+    unsigned int borderWidth;
+    unsigned int depth;
+
     if (_interp == NULL)
+    {
 	return ETk_NoTclInterpreter;
-    xleft = Tk_X(_mainwin);
-    ytop = Tk_Y(_mainwin);
-    width = Tk_Width(_mainwin);
-    height = Tk_Height(_mainwin);
+    }
+
+    XGetGeometry(Tk_Display(_mainwin), Tk_WindowId(_mainwin),
+		 &parentWin,
+		 &xleft, &ytop,
+		 &width, &height,
+		 &borderWidth, &depth);
+
     return ETk_OK;
+
 }
 
 //
@@ -162,6 +181,8 @@ TkWindowRep::EvalFile(char *file, int argc, char **argv)
 	fprintf(ETk_LogFile, 
 		"Error initializing Tcl: %s\n", _interp->result);
 #endif
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, _interp->result);
 	return ETk_TclError;
     }
 	
@@ -171,7 +192,8 @@ TkWindowRep::EvalFile(char *file, int argc, char **argv)
 	fprintf(ETk_LogFile, 
 		"Error initializing Tcl: %s\n", _interp->result);
 #endif
-	strncpy(ETk_TclErrorMessage, _interp->result, ETK_MAX_STRLEN);
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, _interp->result);
 	return ETk_TclError;
     }
 	
@@ -184,7 +206,8 @@ TkWindowRep::EvalFile(char *file, int argc, char **argv)
 	    fprintf(ETk_LogFile, 
 		    "Error initializing Tcl: %s\n", _interp->result);
 #endif
-	    strncpy(ETk_TclErrorMessage, _interp->result, ETK_MAX_STRLEN);
+	    sprintf(ETk_TclResult, "%.*s",
+		    ETK_MAX_STRLEN - 1, _interp->result);
 	    return ETk_TclError;
 	}
 	
@@ -196,7 +219,8 @@ TkWindowRep::EvalFile(char *file, int argc, char **argv)
 	fprintf(ETk_LogFile, "Error in Tcl interpreter 0x%x: %s\n",
 		(int) _interp, _interp->result);
 #endif
-	strncpy(ETk_TclErrorMessage, _interp->result, ETK_MAX_STRLEN);
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, _interp->result);
 	return ETk_TclError;
     }
     
@@ -206,7 +230,8 @@ TkWindowRep::EvalFile(char *file, int argc, char **argv)
 	fprintf(ETk_LogFile, "Error in Tcl interpreter 0x%x: %s\n",
 		(int) _interp, _interp->result);
 #endif
-	strncpy(ETk_TclErrorMessage, _interp->result, ETK_MAX_STRLEN);
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, _interp->result);
 	return ETk_TclError;
     }
     
@@ -217,20 +242,19 @@ TkWindowRep::EvalFile(char *file, int argc, char **argv)
 ETk_Status
 TkWindowRep::CreateTkWindowRep(Window parent, char *script, 
 			       int argc, char **argv,
-			       int x, int y, 
-			       int width, int height,
-			       TkWindowRep*& win)
+			       int &x, int &y, 
+			       int &width, int &height,
+			       const char *anchor,
+			       int handle, TkWindowRep*& win)
 {
-    assert(parent);
-    
-    win = new TkWindowRep;
-    if (win == NULL)
+    ETk_Status status = ETk_OK;
+    static int ncalls = 0;
+    ncalls++;
+        
+    if ((win = new TkWindowRep) == NULL)
     {
 	return ETk_OutOfMemory;
     }
-    
-    static int ncalls = 0;
-    ncalls++;
     
     // Create and initialize a Tcl interpreter
     Tcl_Interp *interp = Tcl_CreateInterp();
@@ -250,21 +274,23 @@ TkWindowRep::CreateTkWindowRep(Window parent, char *script,
 #ifdef DEBUG
 	fprintf(ETk_LogFile, "Error initializing Tcl: %s\n", interp->result);
 #endif
-	strncpy(ETk_TclErrorMessage, interp->result, ETK_MAX_STRLEN);
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, interp->result);
 	Tcl_DeleteInterp(interp);
 	return ETk_TclError;
     }
     
     // Create a toplevel Tk Window, but don't map it.
     Tk_Window tkwin = Tk_CreateMainWindow(interp, ETk_TheDisplayName, 
-					  "BaseName", "ClassName");
+					  "ETkApp", "ETkWindow");
     if (tkwin == NULL)
     {
 #ifdef DEBUG
-	fprintf(ETk_LogFile, "Could not create Tk window: %s\n",
+	fprintf(ETk_LogFile, "Could not create EmbeddedTk window: %s\n",
 		interp->result);
 #endif
-	strncpy(ETk_TclErrorMessage, interp->result, ETK_MAX_STRLEN);
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, interp->result);
 	Tcl_DeleteInterp(interp);
 	return ETk_TclError;
     }
@@ -275,16 +301,31 @@ TkWindowRep::CreateTkWindowRep(Window parent, char *script,
 #ifdef DEBUG
 	fprintf(ETk_LogFile, "Error initializing Tk: %s\n", interp->result);
 #endif
-	strncpy(ETk_TclErrorMessage, interp->result, ETK_MAX_STRLEN);
+	sprintf(ETk_TclResult, "%.*s",
+		ETK_MAX_STRLEN - 1, interp->result);
 	Tcl_DeleteInterp(interp);
 	return ETk_TclError;
     }
     
-#if defined(SERVER_CMD)
+#if defined(LIBCS)
     //
-    // Add a "Server" command to the interpreter
+    // Add "Server" command to the interpreter
     //
-    Tcl_CreateCommand(interp, "Server", DeviseServerCmd,
+    Tcl_CreateCommand(interp, "ETk_Server", ETk_ServerCmd,
+		      (ClientData) win, 0);
+#endif
+    
+    //
+    // Add "GetCoords" command to the interpreter
+    //
+    Tcl_CreateCommand(interp, "ETk_GetCoords", ETk_GetCoordsCmd,
+		      (ClientData) win, 0);
+    
+#if defined(ZOOQUERY)
+    //
+    // Add "ZooQuery" command to the interpreter
+    //
+    Tcl_CreateCommand(interp, "ZooQuery", ZooQueryCmd,
 		      (ClientData) win, 0);
 #endif
     
@@ -299,149 +340,113 @@ TkWindowRep::CreateTkWindowRep(Window parent, char *script,
     win->_parent = parent;
     win->_oid = _numInstances;
     
-    // Reparent the window
-    Tk_MakeWindowExist(tkwin);
-    XReparentWindow(Tk_Display(tkwin), Tk_WindowId(tkwin), parent, x, y);
+    //
+    // Reparent the window. If parent == 0, then the new window will be
+    // a toplevel window.
+    //
+    if (parent > 0)
+    {
+	Tk_MakeWindowExist(tkwin);
+	XReparentWindow(Tk_Display(tkwin), Tk_WindowId(tkwin), parent, x, y);
+    }
 
-    ETk_Status s = ETk_OK;
-    
-    if (0) {
+    char command[100];	
+    do {
 	
 	//
-	// This block of code is only for debugging. It allows commands
-	// to be sent to the TkWindowRep object interactively at a
-	// terminal prompt.
+	// Unmap the window
 	//
-	
-	char command[1000];
-	cout << "Type commands to send to window:" << endl;
-	int done = 0;
-	
-	while (!done) {
-	    cout << win->_oid << "% ";
-	    gets(command);
-	    if (!strcmp(command, "exit")) {
-		done = 1;
-	    }
-	    if (!strcmp(command, "resize")) {
-		char w[100];
-		char h[100];
-		puts("width: ");
-		gets(w);
-		puts("height: ");
-		gets(h);
-		win->Resize(atoi(w), atoi(h));
-	    }
-	    else {
-		cout << "EVAL: " << command << endl;
-		s = win->Eval(command);
-		cout << "STATUS: " << ETk_StatusToString(s) << endl;
-		if (s == ETk_TclError) {
-		    cout << "Tcl error: " << win->_interp->result << endl;
-		}
-		else if (s == ETk_OK) {
-		    cout << "RESULT: " << win->_interp->result << endl;
-		}
-	    }
+	char tclResult[ETK_MAX_STRLEN];
+	if ((status = win->Eval("wm withdraw .", tclResult)) != ETk_OK)
+	{
+	    break;
 	}
 	
-    }
-    
-    else
-    {
-	char command[100];
-	sprintf(command, ". config -width %d -height %d", width, height);
+	sprintf(command, "set ETk(handle) %d", handle);
+	if ((status = win->Eval(command, tclResult)) != ETk_OK)
+	{
+	    break;
+	}
+
+	//
+	// Turn off window size propagation if width and height
+	// are specified.
+	//
+	if (width > 0 && height > 0)
+	{
+	    if ((status = win->Eval("pack propagate . false",
+				    tclResult)) != ETk_OK)
+	    {
+		break;
+	    }
+	}
+
+	//
+	// Execute the script
+	//
+	if ((status = win->EvalFile(script, argc, argv)) != ETk_OK)
+	{
+	    break;
+	}
+
+	//
+	// Get desired dimensions
+	//
+	if (width <= 0)
+	{
+	    width = Tk_ReqWidth(tkwin);
+	}
+	if (height <= 0)
+	{
+	    height = Tk_ReqHeight(tkwin);
+	}
 	
-	do {
-	    if ((s = win->Eval("pack propagate . false")) != ETk_OK) break;
-	    if ((s = win->Eval(command)) != ETk_OK) break;
-	    if ((s = win->EvalFile(script, argc, argv)) != ETk_OK) break;
-	    if ((s = win->Eval("update")) != ETk_OK) break;
-	} while (0);
-    }
-    
-    return s;
-    
-}
+	//
+	// Resize the window
+	//
+	sprintf(command, ". config -width %d -height %d", width, height);
+	if ((status = win->Eval(command, tclResult)) != ETk_OK)
+	    break;
+	
+	//
+	// Now the window is anchored with the top-left corner at (x,y).
+	// If the desired anchor is not "nw", then move the window.
+	//
+	int xcenter, ycenter;
+	if (!strcmp(anchor, "nw"))
+	{
+	    xcenter = x + (width / 2);
+	    ycenter = y + (height / 2);
+	}
+	else  // assume anchor == "c"
+	{
+	    xcenter = x;
+	    ycenter = y;
+	    Tk_MoveWindow(tkwin, x - (width / 2), y - (height / 2));
+	}
 
-ETk_Status
-TkWindowRep::HasResetProc(bool &result)
-{
-    int tclerr;
-    char *cmd = "info commands ETk_Reset";
+	//
+	// Make the window visible
+	//
+	if ((status = win->Eval("update", tclResult)) != ETk_OK)
+	{
+	    break;
+	}
+	if ((status = win->Eval("wm deiconify .", tclResult)) != ETk_OK)
+	{
+	    break;
+	}
+	
+	//
+	// Make sure that the caller gets the x-y coords for the 
+	// center, not for the anchor point.
+	//
+	x = xcenter;
+	y = ycenter;
+	
+    } while (0);
     
-    if (_interp == NULL) {
-	return ETk_NoTclInterpreter;
-    }
-    
-    tclerr = Tcl_Eval(_interp, cmd);
-    if (tclerr == TCL_ERROR) {
-	strncpy(ETk_TclErrorMessage, _interp->result, ETK_MAX_STRLEN);
-#ifdef DEBUG
-	fprintf(ETk_LogFile, "Error in Tcl interpreter 0x%x: %s\n",
-		(int) _interp, _interp->result);
-#endif
-	return ETk_TclError;
-    }
-    
-    if (!strcmp(_interp->result, "ETk_Reset"))
-    {
-	result = true;
-    }
-    else
-    {
-	result = false;
-    }
-    
-    return ETk_OK;
-
-}
-
-ETk_Status
-TkWindowRep::Reset(int argc, char **argv)
-{
-    char *reset_cmd = "ETk_Reset";
-    char argc_string[20];
-    int i;
-    int tcl_err;
-    ostrstream os;
-    
-    if (_interp == NULL)
-    {
-	return ETk_NoTclInterpreter;
-    }
-    
-    sprintf(argc_string, "%d", argc);
-
-    for (i = 0; i < argc; i++)
-    {
-	os << argv[i] << " ";
-    }
-    os << '\0';
-    
-    tcl_err = Tcl_VarEval(_interp, reset_cmd, argc_string, os.str());
-    if (tcl_err == TCL_ERROR)
-    {
-#ifdef DEBUG
-	fprintf(ETk_LogFile, "Error in Tcl interpreter 0x%x: %s\n",
-		(int) _interp, _interp->result);
-#endif
-	strncpy(ETk_TclErrorMessage, _interp->result, ETK_MAX_STRLEN);
-	return ETk_TclError;
-    }
-    
-    tcl_err = Tcl_Eval(_interp, "update");
-    if (tcl_err == TCL_ERROR)
-    {
-#ifdef DEBUG
-	fprintf(ETk_LogFile, "Error in Tcl interpreter 0x%x: %s\n",
-		(int) _interp, _interp->result);
-#endif
-	strncpy(ETk_TclErrorMessage, _interp->result, ETK_MAX_STRLEN);
-	return ETk_TclError;
-    }
-    
-    return ETk_OK;
+    return status;
     
 }
 

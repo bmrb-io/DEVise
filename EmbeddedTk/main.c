@@ -31,7 +31,7 @@ static FILE*   g_LogFile;
 
 static char TheCommand[ETK_MAX_STRLEN];
 static char TheReply[ETK_MAX_STRLEN];
-static Tk_FileProc ServiceConnectionRequest;
+Tk_FileProc ServiceConnectionRequest;
 
 /********************************************************
    read a \n-terminated line from fd into s, replacing
@@ -41,10 +41,6 @@ static Tk_FileProc ServiceConnectionRequest;
 static int
 newlinefd(char *s, int fd, int maxc)
 {
-#ifdef DEBUG
-    fprintf(g_LogFile, "Reading a line from fd %d\n", fd);
-#endif
-
     int i, lim = maxc-1;
     char c;
     i = 0;
@@ -60,7 +56,7 @@ newlinefd(char *s, int fd, int maxc)
     s[i] = '\0';
 
 #ifdef DEBUG
-    fprintf(g_LogFile, "    the line: %s\n", s);
+    fprintf(g_LogFile, "Read a line on fd %d: %s\n", fd, s);
 #endif
 
     return i;
@@ -134,7 +130,7 @@ NewHandle(void)
     return g_LastHandle;
 }
 
-/* send reply and close connection */
+// send reply and close connection
 static void
 WriteReply(int ok, const char *reply, int fd)
 {
@@ -164,7 +160,7 @@ WriteReply(int ok, const char *reply, int fd)
     if ((len = strlen(big_reply)) > ETK_MAX_STRLEN)
     {
 	len = ETK_MAX_STRLEN;
-	/* should not really come here */ 
+	// should not really come here 
     }
     
     if (MyWrite(fd, (unsigned char*) big_reply, len) != len)
@@ -191,12 +187,13 @@ ProcessShow(char *cmd, int fd)
     char *nextarg;
     char *filename;
     Window parent;
-    int xleft, ytop, xright, ybottom, wwidth, wheight;
+    int x, y, width, height;
     int i;
     int handle;
     TkWindowRep* w;
+    char *anchor;
         
-    // Show command: show file window x y width height argc
+    // Show command: show file window x y width height anchor argc
     // Then each arg goes on a separate line
 
     if (ETk_NumWindows >= ETk_MaxWindows)
@@ -207,7 +204,7 @@ ProcessShow(char *cmd, int fd)
     
     nextarg = strtok(cmd, DELIMITERS);
     
-    /* get file name */ 
+    // get file name 
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -216,7 +213,7 @@ ProcessShow(char *cmd, int fd)
     }
     filename = strdup(nextarg);
     
-    /* get window */ 
+    // get window 
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -224,28 +221,22 @@ ProcessShow(char *cmd, int fd)
 	return;
     }
     parent = (Window) strtol(nextarg, (char **) 0, 16);
+    /*
     if (!parent)
     {
 	WriteReply(0, "Invalid XWindow given: show failed", fd);
 	return;
     }
+    */
     
-    /* get coordinates */ 
+    // get coordinates 
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
 	WriteReply(0, "Missing coordinate(s): show failed", fd);
 	return;
     }
-    xleft = atoi(nextarg);
-    
-    nextarg = strtok(0, DELIMITERS);
-    if (!nextarg)
-    {
-	WriteReply(0, "Missing coordinate(s): show failed", fd);
-	return;
-    }
-    ytop = atoi(nextarg);
+    x = atoi(nextarg);
     
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
@@ -253,7 +244,7 @@ ProcessShow(char *cmd, int fd)
 	WriteReply(0, "Missing coordinate(s): show failed", fd);
 	return;
     }
-    xright = atoi(nextarg);
+    y = atoi(nextarg);
     
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
@@ -261,17 +252,32 @@ ProcessShow(char *cmd, int fd)
 	WriteReply(0, "Missing coordinate(s): show failed", fd);
 	return;
     }
-    ybottom = atoi(nextarg);
+    width = atoi(nextarg);
     
-    wwidth = xright - xleft;
-    wheight = ybottom - ytop;
-    if (wwidth <= 0 || wheight <= 0)
+    nextarg = strtok(0, DELIMITERS);
+    if (!nextarg)
     {
-	WriteReply(0, "Bad coordinates: show failed", fd);
+	WriteReply(0, "Missing coordinate(s): show failed", fd);
 	return;
     }
+    height = atoi(nextarg);
     
-    /* get argc */ 
+    // get anchor
+    nextarg = strtok(0, DELIMITERS);
+    if (!nextarg)
+    {
+	anchor = "c";
+    }
+    else if (!strcmp(nextarg, "nw"))
+    {
+	anchor = "nw";
+    }
+    else
+    {
+	anchor = "c";
+    }
+    
+    // get argc 
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -305,25 +311,12 @@ ProcessShow(char *cmd, int fd)
 	argv[i] = strdup(TheCommand);
     }
     
-    bool do_reset = false;
     ETk_Status s;
     
-    if (ETk_WindowExists(filename, xleft, ytop, wwidth, wheight, handle))
-    {
-	w = ETk_Windows[handle].win;
-	s = w->HasResetProc(do_reset);
-	if (s == ETk_OK && do_reset)
-	{
-	    s = w->Reset(argc, argv);
-	}
-    }
-    else
-    {
-	handle = NewHandle();    
-	s = TkWindowRep::CreateTkWindowRep(parent, filename, argc, argv,
-					   xleft, ytop, wwidth, wheight, w);
-    }
-    
+    handle = NewHandle();    
+    s = TkWindowRep::CreateTkWindowRep(parent, filename, argc, argv,
+				       x, y, width, height, anchor,
+				       handle, w);
     //
     // Free memory
     //
@@ -337,27 +330,144 @@ ProcessShow(char *cmd, int fd)
 
     if (s != ETk_OK)
     {
-	sprintf(TheReply, "Error creating window: %s",
-		s == ETk_TclError ? ETk_TclErrorMessage
-		: ETk_StatusToString(s));
+	sprintf(TheReply, "%s",
+		(s == ETk_TclError ? ETk_TclResult : ETk_StatusToString(s)));
 	WriteReply(0, TheReply, fd);
 	return;
     }
     
-    if (!do_reset)
-    {
-	ETk_Windows[handle].win = w;
-	ETk_Windows[handle].in_use = 1;
-	ETk_Windows[handle].script = new char [strlen(filename) + 1];
-	strcpy(ETk_Windows[handle].script, filename);
-	ETk_NumWindows++;
-    }
+    ETk_Windows[handle].win = w;
+    ETk_Windows[handle].in_use = 1;
+    ETk_Windows[handle].script = new char [strlen(filename) + 1];
+    strcpy(ETk_Windows[handle].script, filename);
+    ETk_NumWindows++;
     
-    sprintf(TheReply, "%d", handle);
+    sprintf(TheReply, "%d %d %d %d %d", handle, x, y, width, height);
     WriteReply(1, TheReply, fd);
     
 #ifdef DEBUG
     fprintf(g_LogFile, "Done with ProcessShow() on fd %d\n", fd);
+#endif
+    
+}
+
+static void
+ProcessEval(char *cmd, int fd)
+{
+    int argc;
+    char **argv;
+    char *nextarg;
+    Window parent;
+    int i;
+    int handle;
+    TkWindowRep* w;
+    int cmdLen = 0;
+    
+    //
+    // Eval command: eval handle argc
+    // Then each arg goes on a separate line
+    //
+    
+    nextarg = strtok(cmd, DELIMITERS);
+    
+    // get handle name 
+    nextarg = strtok(0, DELIMITERS);
+    if (!nextarg)
+    {
+	WriteReply(0, "No handle given: eval failed", fd);
+	return;
+    }
+    handle = atoi(nextarg);
+    if ((handle < 0) || (handle >= ETk_MaxWindows) ||
+	!ETk_Windows[handle].in_use)
+    {
+	WriteReply(0, "Invalid handle given: eval failed", fd);
+	return;
+    }
+    
+    // get argc 
+    nextarg = strtok(0, DELIMITERS);
+    if (!nextarg)
+    {
+	WriteReply(0, "No argument count given: eval failed", fd);
+	return;
+    }
+    argc = atoi(nextarg);
+    if (argc <= 0)
+    {
+	WriteReply(0, "Invalid argument count given: eval failed", fd);
+	return;
+    }
+
+    //
+    // Read the argv array, one element on each line
+    //
+    int result = 1;
+    argv = new char *[argc];
+    if (argv == NULL)
+    {
+	WriteReply(0, "Out of memory", fd);
+	return;
+    }
+    for (i = 0; i < argc; i++)
+    {
+	newlinefd(TheCommand, fd, ETK_MAX_STRLEN);
+	argv[i] = strdup(TheCommand);
+	cmdLen += (strlen(argv[i]) + 1);
+    }
+    
+    //
+    // Build a big command from the argv array
+    //
+    char *bigCmd = new char[cmdLen];
+    bigCmd[0] = '\0';
+    if (argv == NULL)
+    {
+	sprintf(TheReply, "Out of memory");
+	result = 0;
+    }
+    else
+    {
+	for (i = 0; i < argc; i++)
+	{
+	    if (i > 0)
+	    {
+		strcat(bigCmd, " ");
+	    }
+	    strcat(bigCmd, argv[i]);
+	}
+    }
+
+    //
+    // Free memory
+    //
+    for (i = 0; i < argc; i++)
+    {
+	free(argv[i]);
+    }
+    if (argc > 0)
+    {
+	free(argv);
+    }
+
+    if (result)
+    {
+	//
+	// Eval
+	//
+	ETk_Status s = ETk_EvalCmd(handle, bigCmd, TheReply);
+	if (s != ETk_OK)
+	{
+	    result = 0;
+	}
+    }
+    
+    WriteReply(result, TheReply, fd);
+    
+    free(bigCmd);
+
+#ifdef DEBUG
+    fprintf(g_LogFile, "Done with ProcessEval() on fd %d\n", fd);
 #endif
     
 }
@@ -370,7 +480,7 @@ ProcessFree(char *cmd, int fd)
     
     nextarg = strtok(cmd, DELIMITERS);
     
-    /* get handle name */ 
+    // get handle name 
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -400,7 +510,7 @@ ProcessMap(char *cmd, int fd)
     
     nextarg = strtok(cmd, DELIMITERS);
     
-    /* get handle name */ 
+    // get handle name 
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -437,7 +547,7 @@ ProcessUnmap(char *cmd, int fd)
     
     nextarg = strtok(cmd, DELIMITERS);
     
-    /* get handle name */ 
+    // get handle name 
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -476,7 +586,7 @@ ProcessMove(char *cmd, int fd)
     
     nextarg = strtok(cmd, DELIMITERS);
     
-    /* get handle name */
+    // get handle name
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -485,7 +595,7 @@ ProcessMove(char *cmd, int fd)
     }
     handle = atoi(nextarg);
     
-    /* get x */
+    // get x
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -494,7 +604,7 @@ ProcessMove(char *cmd, int fd)
     }
     xcenter = atoi(nextarg);
     
-    /* get y */
+    // get y
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -533,7 +643,7 @@ ProcessResize(char *cmd, int fd)
     
     nextarg = strtok(cmd, DELIMITERS);
     
-    /* get handle name */
+    // get handle name
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -542,7 +652,7 @@ ProcessResize(char *cmd, int fd)
     }
     handle = atoi(nextarg);
     
-    /* get width */
+    // get width
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -551,7 +661,7 @@ ProcessResize(char *cmd, int fd)
     }
     width = atoi(nextarg);
     
-    /* get height */
+    // get height
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -590,7 +700,7 @@ ProcessMoveResize(char *cmd, int fd)
     
     nextarg = strtok(cmd, DELIMITERS);
     
-    /* get handle name */
+    // get handle name
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -599,7 +709,7 @@ ProcessMoveResize(char *cmd, int fd)
     }
     handle = atoi(nextarg);
     
-    /* get x */
+    // get x
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -608,7 +718,7 @@ ProcessMoveResize(char *cmd, int fd)
     }
     xCenter = atoi(nextarg);
     
-    /* get y */
+    // get y
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -617,7 +727,7 @@ ProcessMoveResize(char *cmd, int fd)
     }
     yCenter = atoi(nextarg);
     
-    /* get width */
+    // get width
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -626,7 +736,7 @@ ProcessMoveResize(char *cmd, int fd)
     }
     width = atoi(nextarg);
     
-    /* get height */
+    // get height
     nextarg = strtok(0, DELIMITERS);
     if (!nextarg)
     {
@@ -657,25 +767,9 @@ ProcessMoveResize(char *cmd, int fd)
 }
 
 static void
-ProcessReset(char *cmd, int fd)
-{
-    // Do nothing for now...
-    WriteReply(1, "", fd);
-    
-}
-
-static void
-ProcessQuery(char *cmd, int fd)
-{
-    // Do nothing for now...
-    WriteReply(1, "1 1", fd);
-}
-
-static void
 ProcessStatus(char *cmd, int fd)
 {
-    // Do nothing for now...
-    WriteReply(1, "1 1", fd);
+    WriteReply(1, "", fd);
 }
 
 static void
@@ -684,15 +778,8 @@ ProcessQuit(char *cmd, int fd)
     WriteReply(1, "", fd);
 }
 
-static void
-ProcessLogfile(char *cmd, int fd)
-{
-    // Do nothing for now...
-    WriteReply(1, "", fd);
-}
-
 static int
-ProcessRequest(int fd)
+ProcessClientRequest(int fd)
 {
     newlinefd(TheCommand, fd, ETK_MAX_STRLEN);
     
@@ -700,7 +787,11 @@ ProcessRequest(int fd)
     fprintf(g_LogFile, "Processing: %s\n", TheCommand);
 #endif
     
-    if (!strncmp(TheCommand, "free", 4))
+    if (!strncmp(TheCommand, "eval", 4))
+    {
+	ProcessEval(TheCommand, fd);
+    }
+    else if (!strncmp(TheCommand, "free", 4))
     {
 	ProcessFree(TheCommand, fd);
     }
@@ -734,6 +825,10 @@ ProcessRequest(int fd)
     {
 	ProcessShow(TheCommand, fd);
     }
+    else if (!strncmp(TheCommand, "status", 4))
+    {
+	ProcessStatus(TheCommand, fd);
+    }
     else if (!strncmp(TheCommand, "unmap", 5))
     {
 	ProcessUnmap(TheCommand, fd);
@@ -745,18 +840,18 @@ ProcessRequest(int fd)
     return(1);
 }
 
-static void
+void
 ServiceConnectionRequest(ClientData clientData, int mask)
 {
     int fd = (int) clientData;
-    mask = mask;
+    mask = mask; // unused
     
     struct sockaddr_in tempAddr;
     int done = 0;
     int len = sizeof(struct sockaddr_in);
 
 #ifdef DEBUG
-    fprintf(g_LogFile, "Waiting for connection request\n");
+    fprintf(g_LogFile, "\nWaiting for connection request\n");
 #endif
     
     int socketFd = accept(fd, (struct sockaddr *)&tempAddr, &len);
@@ -767,7 +862,7 @@ ServiceConnectionRequest(ClientData clientData, int mask)
 	fprintf(g_LogFile, "Connection request arrived\n");
 #endif
 	g_ReplySent = 0;
-	ProcessRequest(socketFd);
+	ProcessClientRequest(socketFd);
     }
 
     else
@@ -827,6 +922,7 @@ main(int argc, char *argv[])
 	    }
 	    port = atoi(argv[n]);
 	}
+	
 	else
 	{
 	    fprintf(stderr,
@@ -879,6 +975,7 @@ main(int argc, char *argv[])
     }
     fprintf(stderr, "EmbeddedTk server listening on port %u\n", 
 	    ntohs(servAddr.sin_port));
+    ETk_ListenFD = listenFd;
 
     status = ETk_Init(display, g_LogFile);
     if (status != ETk_OK)

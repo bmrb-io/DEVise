@@ -6,7 +6,8 @@
 #include <errno.h>
 #include <string.h>
 
-extern "C" {
+extern "C"
+{
     char *strdup(const char *s1);
 }
 
@@ -15,8 +16,9 @@ char        *ETk_TheDisplayName = NULL;
 int          ETk_NumWindows = 0;
 int          ETk_MaxWindows = ETK_MAX_WINDOWS;
 ETk_Window  *ETk_Windows;
-char         ETk_TclErrorMessage[ETK_MAX_STRLEN];
+char         ETk_TclResult[ETK_MAX_STRLEN];
 FILE        *ETk_LogFile = NULL;
+int          ETk_ListenFD = -1;
 
 static ETk_WinId
 FindWindow(TkWindowRep *win);
@@ -64,18 +66,6 @@ ETk_Init(char *displayname, FILE *errfile)
 	ETk_Windows[i].script = NULL;
     }
 
-#if 0
-    //
-    // This is obsolete. I now let Tk handle all X events
-    //
-    if (!(ETk_TheDisplay = XOpenDisplay(ETk_TheDisplayName))) {
-	return ETk_DisplayError;
-    }
-    ETk_TheScreen = DefaultScreen(ETk_TheDisplay);
-    XSetIOErrorHandler(ETk_FatalError);
-    XSetErrorHandler(ETk_NonFatalError);
-#endif
-
     return ETk_OK;
 
 }
@@ -87,7 +77,10 @@ void ETk_ShutDown()
 {
     // Do nothing for now...
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Executing ETk_ShutDown\n");    
+    fprintf(ETk_LogFile, "BEGIN %s\n", __FUNCTION__);    
+#endif
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "END %s\n", __FUNCTION__);    
 #endif
 }
 
@@ -117,18 +110,24 @@ ETk_Status
 ETk_FreeWindow(ETk_WinId handle)
 {
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Executing ETk_FreeWindow %d\n", (int) handle);
+    fprintf(ETk_LogFile, "BEGIN %s %d\n", __FUNCTION__, (int) handle);
 #endif
     
     if (!ETk_Windows[handle].in_use)
+    {
 	return ETk_InvalidWindow;
+    }
     
     if (ETk_Windows[handle].win == NULL)
+    {
 	return ETk_InvalidWindow;
+    }
     
     Tk_Window tkwin = ETk_Windows[handle].win->GetTkWindow();
     if (tkwin == NULL)
+    {
 	return ETk_InvalidWindow;
+    }
 
     //
     // Calling Tk_DestroyWindow will generate a Destroy event for the
@@ -137,9 +136,13 @@ ETk_FreeWindow(ETk_WinId handle)
     // frees the resources for that window
     //
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Calling Tk_DestroyWindow 0x%x\n", (int) tkwin);
+    fprintf(ETk_LogFile, "------BEGIN Tk_DestroyWindow 0x%x\n", (int) tkwin);
 #endif
     Tk_DestroyWindow(tkwin);
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "------END Tk_DestroyWindow 0x%x\n", (int) tkwin);
+    fprintf(ETk_LogFile, "END %s %d\n", __FUNCTION__, (int) handle);
+#endif
     
     return ETk_OK;
 
@@ -153,11 +156,13 @@ static ETk_Status
 FreeWindowOnDestroy(ETk_WinId wid)
 {
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "BEGIN FreeWindowOnDestroy %d\n", (int) wid);
+    fprintf(ETk_LogFile, "BEGIN %s %d\n", __FUNCTION__, (int) wid);
 #endif
     
     if (!ETk_Windows[wid].in_use) 
+    {
 	return ETk_InvalidWindow;
+    }
 
     delete ETk_Windows[wid].win;
     delete [] ETk_Windows[wid].script;
@@ -182,32 +187,33 @@ FreeWindowOnDestroy(ETk_WinId wid)
 void 
 StructureNotifyHandler(ClientData clientData, XEvent *eventPtr)
 {
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "BEGIN %s 0x%x\n", __FUNCTION__, int(clientData));
+    fprintf(ETk_LogFile, "  Event type: %d\n", eventPtr->type);
+#endif
+    
     TkWindowRep *win = (TkWindowRep *) clientData;
 
-#ifdef DEBUG
-    fprintf(ETk_LogFile, "BEGIN StructureNotifyHandler 0x%x\n", (int) win);
-#endif
-    
-    if (eventPtr->type != DestroyNotify) {
-#ifdef DEBUG
-	fprintf(ETk_LogFile, "  Not a Destroy event!\n");
-#endif
-	return;
-    }
-    
     ETk_WinId handle = FindWindow(win);
-
-    if (handle < 0) {
+    if (handle < 0)
+    {
 #ifdef DEBUG
 	fprintf(ETk_LogFile, "  Invalid window\n");
 #endif
 	return;
     }
     
-    FreeWindowOnDestroy(handle);
+    switch (eventPtr->type)
+    {
+      case DestroyNotify:
+	FreeWindowOnDestroy(handle);
+	break;
+      default:
+	break;
+    }
     
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "END StructureNotifyHandler 0x%x\n", (int) win);
+    fprintf(ETk_LogFile, "END %s 0x%x\n", __FUNCTION__, (int) win);
 #endif
     
 }
@@ -247,7 +253,9 @@ FindWindow(TkWindowRep *win)
     for (i = 0; i < ETk_MaxWindows; i++)
     {
 	if (ETk_Windows[i].in_use && (ETk_Windows[i].win == win))
+	{
 	    return (ETk_WinId) i;
+	}
     }
     return (ETk_WinId) -1;
 }
@@ -255,41 +263,64 @@ FindWindow(TkWindowRep *win)
 ETk_Status
 ETk_RefreshWindow(ETk_WinId wid)
 {
-    if (!ETk_Windows[wid].in_use)
-	return ETk_InvalidWindow;
-    
-    // Do nothing for now...
+    ETk_Status result = ETk_OK;
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Executing ETk_RefreshWindow %d\n", (int) wid);
+    fprintf(ETk_LogFile, "BEGIN %s %d\n", __FUNCTION__, (int) wid);
 #endif
-    
-    return ETk_OK;
-
+    if (!ETk_Windows[wid].in_use)
+    {
+	result = ETk_InvalidWindow;
+    }
+    else
+    {
+	// Do nothing for now...
+    }
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "END %s %d\n", __FUNCTION__, (int) wid);
+#endif
+    return result;
 }
 
 ETk_Status
 ETk_MoveWindow(ETk_WinId wid, int xCenter, int yCenter)
 {
-    if (!ETk_Windows[wid].in_use)
-	return ETk_InvalidWindow;
-    
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Executing ETk_MoveWindow %d. x = %d, y = %d\n",
-	    (int) wid, xCenter, yCenter);
+    fprintf(ETk_LogFile, "BEGIN %s %d. x = %d, y = %d\n",
+	    __FUNCTION__, (int) wid, xCenter, yCenter);
 #endif
     
-    TkWindowRep *tkwin = ETk_Windows[wid].win;
-    if (tkwin == NULL)
-	return ETk_InvalidWindow;
-    
-    int xleft, ytop, width, height;
+    ETk_Status result = ETk_OK;
+    int xleft, ytop;
+    unsigned int width, height;
     int newX, newY;
+    TkWindowRep *tkwin;
+	    
+    if (!ETk_Windows[wid].in_use)
+    {
+	result = ETk_InvalidWindow;
+    }
+    else
+    {
+	tkwin = ETk_Windows[wid].win;
+	if (tkwin == NULL)
+	{
+	    result = ETk_InvalidWindow;
+	}
+	else
+	{
+	    tkwin->GetLocation(xleft, ytop, width, height);
+	    newX = xCenter - (width / 2);
+	    newY = yCenter - (height / 2);
+	    result =  tkwin->Move(newX, newY);
+	}
+    }
     
-    tkwin->GetLocation(xleft, ytop, width, height);
-    newX = xCenter - (width / 2);
-    newY = yCenter - (height / 2);
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "END %s %d\n",
+	    __FUNCTION__, (int) wid);
+#endif
     
-    return tkwin->Move(newX, newY);
+    return result;
 
 }
 
@@ -300,27 +331,44 @@ ETk_MoveWindow(ETk_WinId wid, int xCenter, int yCenter)
 ETk_Status
 ETk_ResizeWindow(ETk_WinId wid, int width, int height)
 {
-    if (!ETk_Windows[wid].in_use)
-	return ETk_InvalidWindow;
-    
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Executing ETk_ResizeWindow %d. x = %d, y = %d\n",
-	    (int) wid, width, height);
+    fprintf(ETk_LogFile, "BEGIN %s %d. x = %d, y = %d\n",
+	    __FUNCTION__, (int) wid, width, height);
 #endif
     
-    TkWindowRep *tkwin = ETk_Windows[wid].win;
-    if (tkwin == NULL)
-	return ETk_InvalidWindow;
-    
-    int xleft, ytop, oldwidth, oldheight;
+    ETk_Status result = ETk_OK;
+    int xleft, ytop;
+    unsigned int oldwidth, oldheight;
     int xcenter, ycenter;
+    TkWindowRep *tkwin;
     
-    tkwin->GetLocation(xleft, ytop, oldwidth, oldheight);
-    xcenter = xleft + (oldwidth / 2);
-    ycenter = ytop + (oldheight / 2);
+    if (!ETk_Windows[wid].in_use)
+    {
+	result = ETk_InvalidWindow;
+    }
+    else
+    {
+	tkwin = ETk_Windows[wid].win;
+	if (tkwin == NULL)
+	{
+	    result = ETk_InvalidWindow;
+	}
+	else
+	{
+	    tkwin->GetLocation(xleft, ytop, oldwidth, oldheight);
+	    xcenter = xleft + (oldwidth / 2);
+	    ycenter = ytop + (oldheight / 2);
+	    result = tkwin->MoveResize(xcenter - (width / 2),
+				       ycenter - (height / 2),
+				       width, height);
+	}
+    }
     
-    return tkwin->MoveResize(xcenter - (width / 2), ycenter - (height / 2),
-			     width, height);
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "BEGIN %s %d\n", __FUNCTION__, (int) wid);
+#endif
+
+    return result;
 
 }
 
@@ -331,57 +379,144 @@ ETk_Status
 ETk_MoveResizeWindow(ETk_WinId wid, int xcenter, int ycenter,
 		     int width, int height)
 {
-    if (!ETk_Windows[wid].in_use)
-	return ETk_InvalidWindow;
-    
 #ifdef DEBUG
     fprintf(ETk_LogFile,
-	    "Executing ETk_MoveResizeWindow %d. x %d, y %d, w %d, h %d\n",
+	    "BEGIN %s %d. x %d, y %d, w %d, h %d\n", __FUNCTION__, 
 	    (int) wid, xcenter, ycenter, width, height);
 #endif
     
-    TkWindowRep *tkwin = ETk_Windows[wid].win;
-    if (tkwin == NULL)
-	return ETk_InvalidWindow;
+    ETk_Status result = ETk_OK;
+    TkWindowRep *tkwin;
+
+    if (!ETk_Windows[wid].in_use)
+    {
+	result = ETk_InvalidWindow;
+    }
+    else
+    {
+	tkwin = ETk_Windows[wid].win;
+	if (tkwin == NULL)
+	{
+	    result = ETk_InvalidWindow;
+	}
+	else
+	{
+	    result = tkwin->MoveResize(xcenter - (width / 2),
+				       ycenter - (height / 2),
+				       width, height);
+	}
+    }
     
-    return tkwin->MoveResize(xcenter - (width / 2), ycenter - (height / 2),
-			     width, height);
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "END %s %d\n", __FUNCTION__, (int) wid);
+#endif
+    
+    return result;
 
 }
 
 ETk_Status
 ETk_MapWindow(ETk_WinId wid)
 {
-    if (!ETk_Windows[wid].in_use)
-	return ETk_InvalidWindow;
-    
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Executing ETk_MapWindow %d\n", (int) wid);
+    fprintf(ETk_LogFile, "BEGIN %s %d\n", __FUNCTION__, (int) wid);
 #endif
     
-    TkWindowRep *tkwin = ETk_Windows[wid].win;
-    if (tkwin == NULL)
-	return ETk_InvalidWindow;
+    ETk_Status result = ETk_OK;
+    TkWindowRep *tkwin;
+
+    if (!ETk_Windows[wid].in_use)
+    {
+	result = ETk_InvalidWindow;
+    }
+    else
+    {
+	tkwin = ETk_Windows[wid].win;
+	if (tkwin == NULL)
+	{
+	    result = ETk_InvalidWindow;
+	}
+	else
+	{
+	    result = tkwin->Map();
+	}
+    }
+
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "END %s %d\n", __FUNCTION__, (int) wid);
+#endif
     
-    return tkwin->Map();
+    return result;
 
 }
 
 ETk_Status
 ETk_UnmapWindow(ETk_WinId wid)
 {
-    if (!ETk_Windows[wid].in_use)
-	return ETk_InvalidWindow;
-    
 #ifdef DEBUG
-    fprintf(ETk_LogFile, "Executing ETk_UnmapWindow %d\n", (int) wid);
+    fprintf(ETk_LogFile, "BEGIN %s %d\n", __FUNCTION__, (int) wid);
 #endif
     
-    TkWindowRep *tkwin = ETk_Windows[wid].win;
-    if (tkwin == NULL)
-	return ETk_InvalidWindow;
+    ETk_Status result = ETk_OK;
+    TkWindowRep *tkwin;
+
+    if (!ETk_Windows[wid].in_use)
+    {
+	result = ETk_InvalidWindow;
+    }
+    else
+    {
+	tkwin = ETk_Windows[wid].win;
+	if (tkwin == NULL)
+	{
+	    result = ETk_InvalidWindow;
+	}
+	else
+	{
+	    result = tkwin->Unmap();
+	}
+    }
+
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "END %s %d\n", __FUNCTION__, (int) wid);
+#endif
     
-    return tkwin->Unmap();
+    return result;
+
+}
+
+ETk_Status
+ETk_EvalCmd(ETk_WinId wid, char *cmd, char *returnValue)
+{
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "BEGIN %s %d\n", __FUNCTION__, (int) wid);
+#endif
+    
+    ETk_Status result = ETk_OK;
+    TkWindowRep *tkwin;
+
+    if (!ETk_Windows[wid].in_use)
+    {
+	result = ETk_InvalidWindow;
+    }
+    else
+    {
+	tkwin = ETk_Windows[wid].win;
+	if (tkwin == NULL)
+	{
+	    result = ETk_InvalidWindow;
+	}
+	else
+	{
+	    result = tkwin->Eval(cmd, returnValue);
+	}
+    }
+
+#ifdef DEBUG
+    fprintf(ETk_LogFile, "END %s %d\n", __FUNCTION__, (int) wid);
+#endif
+    
+    return result;
 
 }
 
@@ -428,6 +563,9 @@ ETk_StatusToString(ETk_Status s)
 	break;
       case ETk_NoTclInterpreter:
 	return "No Tcl interpreter exists";
+	break;
+      case ETk_CouldNotConnect:
+	return "Could not connect";
 	break;
       case ETk_Unknown:
 	return "Unknown error";

@@ -2,7 +2,6 @@
 #ifndef _EMBEDDEDTK_H_
 #define _EMBEDDEDTK_H_
 
-//#include "TkWindowRep.h"
 #include <stdio.h>
 #include <tcl.h>
 #include <X11/X.h>
@@ -13,7 +12,11 @@
 #define ETK_MAX_STRLEN 1024
 #define ETK_MAX_WINDOWS 1024
 
-const int ETK_PORT = 6700;
+#if defined(LIBCS)
+ #include "ETk.h"
+#else
+ const int ETK_PORT = 6700;
+#endif
 
 typedef int ETk_WinId;
 
@@ -30,7 +33,7 @@ struct ETk_Window
     char *script;
 };
 
-enum ETk_Status
+enum ETkStatus
 {
     ETk_OK = 0,
     ETk_OutOfMemory,
@@ -45,8 +48,12 @@ enum ETk_Status
     ETk_Interrupted,
     ETk_TclError,
     ETk_NoTclInterpreter,
+    ETk_CouldNotConnect,
     ETk_Unknown
 };
+
+// For backwards compatibility
+typedef ETkStatus ETk_Status;
 
 //
 // Global variables
@@ -56,23 +63,29 @@ extern char       *ETk_TheDisplayName;    // X display name
 extern int         ETk_NumWindows;        // Number of windows in use
 extern ETk_Window *ETk_Windows;           // Array of window structs
 extern int         ETk_MaxWindows;        // Current size of window array
-extern char        ETk_TclErrorMessage[]; // Error message from Tcl interp.
+extern char        ETk_TclResult[];       // Result from Tcl interpreter
 extern FILE*       ETk_LogFile;           // Error log
+extern int         ETk_ListenFD;          // FD for listening
 
-extern ETk_Status ETk_Init(char *dname, FILE *logfile);
-extern void ETk_ShutDown();
-extern ETk_Status ETk_FreeWindow(ETk_WinId wid);
-extern void StructureNotifyHandler(ClientData clientData, XEvent* eventPtr);
-extern ETk_Status ETk_MoveWindow(ETk_WinId wid, int xCenter, int yCenter);
-extern ETk_Status ETk_ResizeWindow(ETk_WinId wid, int width, int height);
-extern ETk_Status ETk_MoveResizeWindow(ETk_WinId wid,
-				       int xCenter, int yCenter,
-				       int width, int height);
-extern ETk_Status ETk_MapWindow(ETk_WinId wid);
-extern ETk_Status ETk_UnmapWindow(ETk_WinId wid);
-extern char* ETk_StatusToString(ETk_Status s);
-extern bool ETk_WindowExists(char *script, int x, int y,
-			     int width, int height, ETk_WinId &handle);
+extern void      StructureNotifyHandler(ClientData clientData,
+					XEvent* eventPtr);
+
+extern ETkStatus ETk_Init(char *dname, FILE *logfile);
+extern void      ETk_ShutDown();
+extern ETkStatus ETk_FreeWindow(ETk_WinId wid);
+extern ETkStatus ETk_MoveWindow(ETk_WinId wid, int xCenter, int yCenter);
+extern ETkStatus ETk_ResizeWindow(ETk_WinId wid, int width, int height);
+extern ETkStatus ETk_MoveResizeWindow(ETk_WinId wid,
+				      int xCenter, int yCenter,
+				      int width, int height);
+extern ETkStatus ETk_MapWindow(ETk_WinId wid);
+extern ETkStatus ETk_UnmapWindow(ETk_WinId wid);
+extern ETkStatus ETk_EvalCmd(ETk_WinId wid, char *cmd,
+			     char *returnValue);
+extern char     *ETk_StatusToString(ETkStatus s);
+extern bool      ETk_WindowExists(char *script, int x, int y,
+				  int width, int height,
+				  ETk_WinId &handle);
 
 #endif
 

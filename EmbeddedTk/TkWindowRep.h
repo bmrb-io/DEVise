@@ -27,9 +27,10 @@ class TkWindowRep
     
     static ETk_Status CreateTkWindowRep(Window parent, char *script,
 					int argc, char **argv,
-					int x, int y, 
-					int width, int height,
-					TkWindowRep*& win);
+					int &x, int &y, 
+					int &width, int &height,
+					const char *anchor,
+					int handle, TkWindowRep*& win);
     
     int GetOID()
     {
@@ -51,13 +52,14 @@ class TkWindowRep
 	return w;
     }
     
-    ETk_Status Eval(char *script);
+    ETk_Status Eval(char *script, char *returnValue);
     
     ETk_Status EvalFile(char *file, int argc, char **argv);
     
     ETk_Status Update()
     {
-	return Eval("update");
+	char dummy[ETK_MAX_STRLEN];
+	return Eval("update", dummy);
     }
     
     ETk_Status Move(int xleft, int ytop);
@@ -65,9 +67,8 @@ class TkWindowRep
     ETk_Status MoveResize(int xleft, int ytop, int width, int height);
     ETk_Status Map();
     ETk_Status Unmap();
-    ETk_Status GetLocation(int &xleft, int &ytop, int &width, int &height);
-    ETk_Status HasResetProc(bool &result);
-    ETk_Status Reset(int argc, char **argv);
+    ETk_Status GetLocation(int &xleft, int &ytop,
+			   unsigned int &width, unsigned int &height);
 
 };
 
