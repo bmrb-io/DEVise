@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/10 00:01:24  jussi
+  TDataMapDispatch replaced with TDataMap.
+
   Revision 1.3  1996/05/16 19:26:59  jussi
   Removed references to ControlPanel::File_Alias().
 
@@ -42,8 +45,6 @@
 #include "VisualArg.h"
 #include "Init.h"
 #include "TDataMap.h"
-#include "DispQueryProc.h"
-#include "BufMgr.h"
 #include "TDataCycle.h"
 #include "Temp.h"
 #include "Snapshot.h"

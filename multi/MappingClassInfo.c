@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/13 16:57:28  wenger
+  Color working in direct PostScript output (which is now enabled);
+  improved ColorMgr so that it doesn't allocate duplicates of colors
+  it already has, also keeps RGB values of the colors it has allocated;
+  changed Color to GlobalColor, LocalColor to make the distinction
+  explicit between local and global colors (_not_ interchangeable);
+  fixed global vs. local color conflict in View class; changed 'dali'
+  references in command-line arguments to 'tasvir' (internally, the
+  code still mostly refers to Dali).
+
   Revision 1.5  1996/07/10 00:01:26  jussi
   TDataMapDispatch replaced with TDataMap.
 
@@ -48,8 +58,6 @@
 #include "VisualArg.h"
 #include "Init.h"
 #include "TDataMap.h"
-#include "DispQueryProc.h"
-#include "BufMgr.h"
 #include "TDataMulti.h"
 #include "Temp.h"
 #include "Snapshot.h"

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/11/18 23:40:44  wenger
+  Got 'multi' to compile with latest Color stuff.
+
   Revision 1.4  1996/07/10 00:01:25  jussi
   TDataMapDispatch replaced with TDataMap.
 
@@ -45,8 +48,6 @@
 #include "VisualArg.h"
 #include "Init.h"
 #include "TDataMap.h"
-#include "DispQueryProc.h"
-#include "BufMgr.h"
 #include "TDataHost.h"
 #include "Temp.h"
 #include "Snapshot.h"
