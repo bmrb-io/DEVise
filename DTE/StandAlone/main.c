@@ -23,4 +23,5 @@ int main(int argc, char** argv){
 	processQuery(cin, cout);
 
      shutdown_system();
+	 return 1;
 }
