@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/31 19:04:26  jussi
+  Removed alternate keyboard mappings for zoom in/out.
+
   Revision 1.1  1996/05/07 16:35:13  jussi
   Moved files from graphics directory.
 
@@ -73,6 +76,10 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
   VisualFilter filter;
   Boolean symbolsOn = view->DisplaySymbols();
   Boolean connectorsOn = view->DisplayConnectors();
+  Camera camera;
+  double incr_ = 0.0;
+
+  Boolean isScatterPlot = view->IsScatterPlot();
 
   Boolean zoomInX  = (key == '7');
   Boolean zoomOutX = (key == '9');
@@ -98,85 +105,374 @@ void Action::KeySelected(ViewGraph *view, char key, Coord x, Coord y)
       (void)view->DisplayConnectors(true);
   }
 
+#define _STEP_SIZE_ 20
+// #define YLC
+
   else if (key == '>' || key == '.' || key == '6') {
     /* scroll data right */
-    view->GetVisualFilter(filter);
-    Coord width = filter.xHigh - filter.xLow;
-    Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-    filter.xLow -= halfWidth;
-    Coord xMin;
-    if (view->GetXMin(xMin) && filter.xLow < xMin)
-      filter.xLow = xMin;
-    filter.xHigh = filter.xLow + width;
-    view->SetVisualFilter(filter);
+    if (view->GetNumDimensions() == 2) {
+    		view->GetVisualFilter(filter);
+    		Coord width = filter.xHigh - filter.xLow;
+    		Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
+    		filter.xLow -= halfWidth;
+    		Coord xMin;
+    		if (view->GetXMin(xMin) && filter.xLow < xMin)
+      		filter.xLow = xMin;
+    		filter.xHigh = filter.xLow + width;
+    		view->SetVisualFilter(filter);
+    } else {
+		camera = view->GetCamera();
+		if (! camera.spherical_coord) {
+		  /* when further away, it will move faster */
+		  incr_ = camera.x_ / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.1 && incr_ > -0.1)
+			incr_ = (incr_ > 0 ? 0.1 : -0.1);
+		  camera.x_ = (camera.x_ >= 0 ?
+			camera.x_ + incr_ : camera.x_ - incr_);
+		} else {
+		  incr_ = camera._theta / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.01 && incr_ > -0.01)
+			incr_ = (incr_ >= 0 ? 0.01 : -0.01);
+		  camera._theta = (camera._theta > 0 ?
+			camera._theta + incr_ : camera._theta - incr_);
+		}
+		if (! camera.fix_focus) {
+			// printf ("R -> fx = %.2f\n", camera.fx);
+			if ((camera.fx >= 0 || camera.fx < 0) && incr_ >= 0)
+				camera.fx = camera.fx + incr_;
+			else if ((camera.fx < 0 || camera.fx > 0) && incr_ < 0)
+				camera.fx = camera.fx - incr_;
+			// camera.fx = (camera.fx >= 0 ?
+			// 	camera.fx + fabs(incr_) : camera.fx - fabs(incr_));
+		}
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+    } // end of if-then-else
   }
 
   else if (key == '<' || key == ',' || key == '4') {
     /* scroll data left */
-    view->GetVisualFilter(filter);
-    Coord width = filter.xHigh - filter.xLow;
-    Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
-    filter.xLow += halfWidth;
-    filter.xHigh = filter.xLow + width;
-    view->SetVisualFilter(filter);
+    if (view->GetNumDimensions() == 2) {
+		view->GetVisualFilter(filter);
+		Coord width = filter.xHigh - filter.xLow;
+		Coord halfWidth = (filter.xHigh - filter.xLow) / 2.0;
+		filter.xLow += halfWidth;
+		filter.xHigh = filter.xLow + width;
+		view->SetVisualFilter(filter);
+	} else { 
+		camera = view->GetCamera();
+		if (! camera.spherical_coord) {
+		  /* when further away, it will move faster */
+		  incr_ = camera.x_ / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.1 && incr_ > -0.1)
+			incr_ = (incr_ > 0 ? 0.1 : -0.1);
+		  camera.x_ = (camera.x_ >= 0 ?
+			camera.x_ - incr_ : camera.x_ +  incr_);
+		} else {
+		  incr_ = camera._theta / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.01 && incr_ > -0.01)
+			incr_ = (incr_ > 0 ? 0.01 : -0.01);
+		  camera._theta = (camera._theta >= 0 ?
+			camera._theta - incr_ : camera._theta + incr_);
+		}
+		if (camera.fix_focus == 0) {
+			// printf ("L -> fx = %.4f\n", camera.fx);
+			if ((camera.fx >= 0 || camera.fx < 0) && incr_ >= 0)
+				camera.fx = camera.fx - incr_;
+			else if ((camera.fx < 0 || camera.fx > 0) && incr_ < 0)
+				camera.fx = camera.fx + incr_;
+			// camera.fx = (camera.fx >=  0 ?
+			// 	camera.fx -  incr_ : camera.fx +  incr_);
+		}
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+	} // end of if-then-else
   }
 
   else if (key == '8') {
     /* scroll data up */
-    view->GetVisualFilter(filter);
-    Coord height = filter.yHigh - filter.yLow;
-    Coord halfHeight = height / 2.0;
-    filter.yLow -= halfHeight;
-    filter.yHigh = filter.yLow + height;
-    view->SetVisualFilter(filter);
+    if (view->GetNumDimensions() == 2) {
+		view->GetVisualFilter(filter);
+		Coord height = filter.yHigh - filter.yLow;
+		Coord halfHeight = height / 2.0;
+		filter.yLow -= halfHeight;
+		filter.yHigh = filter.yLow + height;
+		view->SetVisualFilter(filter);
+    } else {
+		camera = view->GetCamera();
+		if (! camera.spherical_coord) {
+		  incr_ = camera.y_ / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.1 && incr_ > -0.1)
+			incr_ = (incr_ > 0 ? 0.1 : -0.1);
+		  camera.y_ = (camera.y_ >= 0 ? 
+			camera.y_ + incr_  : camera.y_ - incr_);
+		} else {
+		  incr_ = camera._phi / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.01 && incr_ > -0.01)
+			incr_ = (incr_ > 0 ? 0.01 : -0.01);
+		  camera._phi = (camera._phi >= 0 ?
+			camera._phi + incr_ : camera._phi - incr_);
+		}
+		if (! camera.fix_focus) {
+			// printf ("U -> fy = %.2f\n", camera.fy);
+			if ((camera.fy >= 0 || camera.fy < 0) && incr_ >= 0)
+				camera.fy = camera.fy + incr_;
+			else if ((camera.fy < 0 || camera.fy > 0) && incr_ < 0)
+				camera.fy = camera.fy - incr_;
+			// camera.fy = (camera.fy >= 0 ?
+			// 	camera.fy + fabs(incr_) : camera.fy - fabs(incr_));
+		}
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+    } // end of if-then-else
   }
 
   else if (key == '2') {
     /* scroll data down */
-    view->GetVisualFilter(filter);
-    Coord height = filter.yHigh - filter.yLow;
-    Coord halfHeight = height / 2.0;
-    filter.yLow += halfHeight;
-    filter.yHigh = filter.yLow + height;
-    view->SetVisualFilter(filter);
+    if (view->GetNumDimensions() == 2) {
+		view->GetVisualFilter(filter);
+		Coord height = filter.yHigh - filter.yLow;
+		Coord halfHeight = height / 2.0;
+		filter.yLow += halfHeight;
+		filter.yHigh = filter.yLow + height;
+		view->SetVisualFilter(filter);
+    } else {
+		camera = view->GetCamera();
+		if (! camera.spherical_coord) {
+		  incr_ = camera.y_ / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.1 && incr_ > -0.1)
+			incr_ = (incr_ > 0 ? 0.1 : -0.1);
+		  camera.y_ = (camera.y_ >= 0 ?
+			camera.y_ - incr_ : camera.y_ + incr_);
+		} else {
+		  incr_ = camera._phi / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.01 && incr_ > -0.01)
+			incr_ = (incr_ > 0 ? 0.01 : -0.01);
+		  camera._phi = (camera._phi >= 0 ?
+			camera._phi - incr_ : camera._phi + incr_);
+		}
+		if (! camera.fix_focus) {
+			// printf ("D -> fy = %.2f\n", camera.fy);
+			if ((camera.fy >= 0 || camera.fy < 0) && incr_ >= 0)
+				camera.fy = camera.fy - incr_;
+			else if ((camera.fy < 0 || camera.fy > 0) && incr_ < 0)
+				camera.fy = camera.fy + incr_;
+			// camera.fy = (camera.fy >= 0 ?
+			// 	camera.fy - fabs(incr_) : camera.fy + fabs(incr_));
+		}
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+    } // end of if-then-else
   }
 
-  if (zoomInX) {
+  else if (isScatterPlot && key == '7') {
     /* zoom in X */
-    view->GetVisualFilter(filter);
-    Coord quarterWidth = (filter.xHigh - filter.xLow) / 4.0;
-    filter.xLow += quarterWidth;
-    filter.xHigh -= quarterWidth;
-    view->SetVisualFilter(filter);
+    if (view->GetNumDimensions() == 2) {
+		view->GetVisualFilter(filter);
+		Coord quarterWidth = (filter.xHigh - filter.xLow) / 4.0;
+		filter.xLow += quarterWidth;
+		filter.xHigh -= quarterWidth;
+		view->SetVisualFilter(filter);
+    } else {
+		camera = view->GetCamera();
+		incr_ = camera._dvs / _STEP_SIZE_;
+		/* this is to make sure we don't zoom pass the viewing plane */
+		if (incr_ < 1) incr_ = 1;
+#ifdef YLC
+     printf ("old dvs = %d\n", camera._dvs);
+#endif
+		if (camera._dvs < incr_)
+			/* make sure we don't go behind the screen */
+			camera._dvs = 0;
+		else
+			camera._dvs -= (int)incr_;
+#ifdef YLC
+     printf ("old-new dvs = %d   incr = %f\n",camera._dvs,incr_);
+#endif
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+    } // end of if-then-else
   }
 
-  if (zoomOutX) {
+  else if (isScatterPlot && key == '9') {
     /* zoom out X */
-    view->GetVisualFilter(filter);
-    Coord halfWidth = (filter.xHigh-filter.xLow) / 2.0;
-    filter.xLow -= halfWidth;
-    filter.xHigh += halfWidth;
-    Coord xMin;
-    if (view->GetXMin(xMin) && filter.xLow < xMin)
-      filter.xLow = xMin;
-    view->SetVisualFilter(filter);
+    if (view->GetNumDimensions() == 2) {
+		view->GetVisualFilter(filter);
+		Coord halfWidth = (filter.xHigh-filter.xLow) / 2.0;
+		filter.xLow -= halfWidth;
+		filter.xHigh += halfWidth;
+		Coord xMin;
+		if (view->GetXMin(xMin) && filter.xLow < xMin)
+			filter.xLow = xMin;
+		view->SetVisualFilter(filter);
+    } else {
+		camera = view->GetCamera();
+		incr_ = camera._dvs / _STEP_SIZE_;
+		/* make sure incr_ is not too small */
+		if (incr_ < 1) incr_ = 1;
+		camera._dvs += (int)incr_;
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+    } // end of if-then-else
   }
 
-  if (zoomInY) {
+  else if (isScatterPlot && key == '1') {
     /* zoom in Y */
-    view->GetVisualFilter(filter);
-    Coord quarterHeight = (filter.yHigh - filter.yLow) / 4.0;
-    filter.yLow += quarterHeight;
-    filter.yHigh -= quarterHeight;
-    view->SetVisualFilter(filter);
+    if (view->GetNumDimensions() == 2) {
+		view->GetVisualFilter(filter);
+		Coord quarterHeight = (filter.yHigh - filter.yLow) / 4.0;
+		filter.yLow += quarterHeight;
+		filter.yHigh -= quarterHeight;
+		view->SetVisualFilter(filter);
+    } else {
+		camera = view->GetCamera();
+		incr_ = camera._dvs / _STEP_SIZE_;
+		if (incr_ < 1) incr_ = 1;
+		if (camera._dvs < incr_)
+			/* make sure we don't go behind the screen */
+			camera._dvs = 0;
+		else
+			camera._dvs -= (int)incr_;
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+    } // end of if-then-else
   }
 
-  if (zoomOutY) {
+  else if (isScatterPlot && key == '3') {
     /* zoom out Y */
-    view->GetVisualFilter(filter);
-    Coord halfHeight = (filter.yHigh - filter.yLow) / 2.0;
-    filter.yLow -= halfHeight;
-    filter.yHigh += halfHeight;
-    view->SetVisualFilter(filter);
+    if (view->GetNumDimensions() == 2) {
+		view->GetVisualFilter(filter);
+		Coord halfHeight = (filter.yHigh - filter.yLow) / 2.0;
+		filter.yLow -= halfHeight;
+		filter.yHigh += halfHeight;
+		view->SetVisualFilter(filter);
+    } else {
+		camera = view->GetCamera();
+		incr_ = camera._dvs / _STEP_SIZE_;
+		if (incr_ < 1) incr_ = 1;
+		camera._dvs += (int)incr_;
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+    } // end of if-then-else
   }
-}
+
+  else if (key == 'i' || key == 'I') {
+	if (view->GetNumDimensions() == 3) {
+		camera = view->GetCamera();
+		if (! camera.spherical_coord) {
+	       /* fixed camera's x and y coordiates relative to 
+			the screen, move the camera into the screen */
+		  incr_ = camera.z_ / _STEP_SIZE_;
+		  if (incr_ < 0.1 && incr_ > -0.1)
+			incr_ = (incr_ > 0 ? 0.1 : -0.1);
+		  camera.z_ = (camera.z_ >= 0 ? 
+			camera.z_ + incr_ : camera.z_ - incr_);
+		} else {
+		  // increase the distance between the camera and aim
+		  incr_ = camera._rho / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.01 && incr_ > -0.01)
+			incr_ = (incr_ > 0 ? 0.01 : -0.01);
+		  camera._rho = camera._rho - incr_;
+		}
+		if (! camera.fix_focus) {
+			// printf ("I -> fz = %.2f\n", camera.fz);
+			if ((camera.fz >= 0 || camera.fz < 0) && incr_ >= 0)
+				camera.fz = camera.fz + incr_;
+			else if ((camera.fz < 0 || camera.fz > 0) && incr_ < 0)
+				camera.fz = camera.fz - incr_;
+			// camera.fz = (camera.fz >= 0 ?
+			// 	camera.fz + fabs(incr_) : camera.fz - fabs(incr_)); 
+		}
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+	}
+  }
+
+  else if (key == 'o' || key == 'O') {
+	if (view->GetNumDimensions() == 3) {
+		camera = view->GetCamera();
+		if (! camera.spherical_coord) {
+	       /* fixed camera's x and y coordiates relative to the screen, 
+	          move the camera away from the screen */
+		  incr_ = camera.z_ / _STEP_SIZE_;
+		  if (incr_ < 0.1 && incr_ > -0.1)
+			incr_ = (incr_ > 0 ? 0.1 : -0.1);
+		  camera.z_ = (camera.z_ >= 0 ? 
+			camera.z_ - incr_ : camera.z_ + incr_);
+		} else {
+		  // increase the distance between the camera and aim
+		  incr_ = camera._rho / _STEP_SIZE_;
+		  /* make sure incr_ stay within reasonable size */
+		  if (incr_ < 0.01 && incr_ > -0.01)
+			incr_ = (incr_ > 0 ? 0.01 : -0.01);
+		  camera._rho = camera._rho + incr_;
+		}
+		if (! camera.fix_focus) {
+			// printf ("O -> fz = %.2f\n", camera.fz);
+			if ((camera.fz >= 0 || camera.fz < 0) && incr_ >= 0)
+				camera.fz = camera.fz - incr_;
+			else if ((camera.fz < 0 || camera.fz > 0) && incr_ < 0)
+				camera.fz = camera.fz + incr_;
+			// camera.fz = (camera.fz >= 0 ?
+			// 	camera.fz - fabs(incr_) : camera.fz + fabs(incr_)); 
+		}
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+	}
+  }
+
+  /* this will let us fix the focus point or move the focus pt
+	with the camera */
+  else if (key == 'f' || key == 'F') {
+	if (view->GetNumDimensions() == 3) {
+		camera = view->GetCamera();
+		if (camera.fix_focus == 1)
+			camera.fix_focus = 0; /* false */
+		else
+			camera.fix_focus = 1; /* true */
+#ifdef YLC1
+	printf ("camera fix_focus = %d\n", camera.fix_focus);
+#endif
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+	}
+  }
+
+  else if (key == 'r' || key == 'R') {
+	if (view->GetNumDimensions() == 3) {
+		camera = view->GetCamera();
+		if (camera.spherical_coord == 1)
+			camera.spherical_coord = 0; /* false */
+		else
+			camera.spherical_coord = 1; /* true */
+
+#ifdef YLC1
+	printf ("camera spherical_coord = %d\n", camera.spherical_coord);
+#endif
+		view->SetCamera(camera);
+		view->GetVisualFilter(filter);
+		view->SetVisualFilter(filter);
+	}
+  }
+} // end of Action::KeySelected
+
