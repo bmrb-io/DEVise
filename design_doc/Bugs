@@ -1858,7 +1858,7 @@ Num Date        Status  Description
 			properly when session is opened (see jsdemo
 			test/date_format_problem.ds). (rkw)
 
-483 04/19/99	OPEN	Load JS demo session test/bug483.ds in JS and try
+483 04/19/99	CD	Load JS demo session test/bug483.ds in JS and try
 			to drag the cursor in the bottom window -> JS reports
 			cursor movement in the wrong view. (rkw)
 
