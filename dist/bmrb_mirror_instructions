@@ -1,5 +1,5 @@
 	Instructions for DEVise/JavaScreen/Peptide-CGI Installation
-		$Id$
+	$Id$
 
 * CONTENTS
 
@@ -40,6 +40,28 @@ You should get the following files:
 - peptide-cgi_x.x.tgz (where x.x is the peptide-cgi version)
 
 
+* USERS
+
+You should have to do very little, if any, of the installation process
+as root.  Because the current schema requires that some files be in the
+/p/devise directory, you will probably have to create that directory
+as root.  There may be a few things you'll have to do as root, simply
+because of file and directory permissions.  However, none of the installation
+inherently requires root permissions.  It's probably best if you create
+a "normal" user to do all of the installation, and if you run into
+places that need root permission, simply manually create the required
+directories as root (you may want to do a chown on them, to the user
+doing the installation).
+
+The JavaScreen processes do *not* have to run as root, and in fact
+should not, for security.  Basically, the DEVised processes run to
+support the JavaScreen need read permissions in /p/devise and its
+subdirectories, and write permission in /p/devise/session/.tmp.
+
+The web server user needs write permission in the peptide-cgi
+dynamic_data and dynamic_sessions directories.
+
+
 * DEMO AREA INSTALLATION
 
 At the present time, the demo area skeleton must be installed in /p/devise.
@@ -71,6 +93,23 @@ configured to be installed other that as part of the JavaScreen installation.
 This limitation should be removed in the near future.
 
 
+* XVFB INSTALLATION
+
+Note that for the JavaScreen to work, you must have Xvfb (X virtual frame
+buffer) installed on the machine on which the JSS and DEViseds will run.
+You can find sources, and executables for various architectures, on the
+web.  It doesn't matter where you install Xvfb, since you will edit
+the config file to indicate the path to the executable.  You should
+try running the following command to make sure that Xvfb works on your
+system:
+
+    Xvfb :1 -screen 0 1280x1024x8
+
+On some systems (especially some Linux systems) you may have to add
+the arguments '-fp "unix/:-1"' to enable Xvfb to find the fonts it
+needs.
+
+
 * JAVASCREEN INSTALLATION
 
 First, untar the JavaScreen.tar.gz file.  You MUST untar this file in the
@@ -97,11 +136,36 @@ You can test the JavaScreen as follows:
 - Run 'kill_jsall' to kill off the JavaScreen processes before doing the
   actual install.
 
-Run the command 'make -f Makefile.setup install'.  Then edit your crontab
-file to create a cron job that automatically checks the JSPop.  Look at
-the supplied cron_entry.* files for examples.  After installing the cron
-job, you should get an email stating that no jspop process was found;
-after that, the JavaScreen-related processes should be running.
+To do the actual installation, perform the following steps:
+
+- If you are installing a new version of the JavaScreen in place of an
+  older version, if possible do the installation when no user is actually
+  connected to the JSPoP.  You can find out what users are connected by
+  looking at the jspop.out.regular log file in the logs directory of the
+  previously-installed version.
+
+- If you are installing a new version of the JavaScreen in place of an
+  older version, it's a good idea to send an email to any known users
+  that the JavaScreen will be unavailable for a short period of time.
+
+- If you are installing a new version of the JavaScreen in place of an
+  older version, you MUST kill all of the processes of the old version
+  before doing the installation.  Do this by going to the directory where
+  the old version is installed, and running the command
+
+    kill_jsall
+
+- Run the command:
+
+    make -f Makefile.setup install
+
+  This will do the actual installation into your selected directory.
+
+- Edit your crontab file to create a cron job that automatically checks
+  the JSPop.  Look at the supplied cron_entry.* files for examples.  After
+  installing the cron job, you should get an email stating that no jspop
+  process was found; after that, the JavaScreen-related processes should be
+  running (see the list of processes above).
 
 
 * PEPTIDE-CGI INSTALLATION
