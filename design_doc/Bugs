@@ -1367,6 +1367,9 @@ Num Date        Status  Description
 361 06/03/98	OPEN	Printing 3D OpenGL views to PostScript does not work.
 			(rkw)
 
+362 06/04/98	OPEN	You can't see the button for 'white' in the color
+			chooser GUI. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
