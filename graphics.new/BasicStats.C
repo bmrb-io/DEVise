@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1995/12/18 03:11:56  ravim
+  Confidence intervals displayed.
+
   Revision 1.9  1995/12/15 03:39:56  ravim
   Added "count" stat.
 
@@ -66,6 +69,7 @@ void BasicStats::Init(ViewGraph *vw)
 {
   xsum = xsum_sqr = xmax = xmin = 0;
   ysum = ysum_sqr = ymax = ymin = 0;
+  xatymax = xatymin = 0;
   int_x = int_y = 0;
   avg = std = var = 0;
   for (int i = 0; i < NUM_Z_VALS; i++)
@@ -79,8 +83,16 @@ void BasicStats::Init(ViewGraph *vw)
 
 void BasicStats::Sample(double x, double y)
 {
-  if (!nsamples || y > ymax) ymax = y;
-  if (!nsamples || y < ymin) ymin = y;
+  if (!nsamples || y > ymax) 
+  {
+    ymax = y;
+    xatymax = x;
+  }
+  if (!nsamples || y < ymin) 
+  {
+    ymin = y;
+    xatymin = x;
+  }
   if (x > xmax) xmax = x;
   if (x < xmin) xmin = x;
 
@@ -160,9 +172,15 @@ void BasicStats::Report()
   // be displayed
   char *statstr = _vw->GetDisplayStats();
   if (statstr[STAT_MAX] == '1')
+  {
     win->InvertLine(filter->xLow, ymax, filter->xHigh, ymax, 2);
+    win->InvertLine(xatymax, 0, xatymax, filter->yHigh, 1);
+  }
   if (statstr[STAT_MIN] == '1')
+  {
     win->InvertLine(filter->xLow, ymin, filter->xHigh, ymin, 2);
+    win->InvertLine(xatymin, 0, xatymin, filter->yHigh, 1);
+  }
   if (statstr[STAT_MEAN] == '1')
     win->InvertLine(filter->xLow, avg, filter->xHigh, avg, 2);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/18 03:12:21  ravim
+  Confidence intervals displayed.
+
   Revision 1.6  1995/12/15 03:40:16  ravim
   Added "count" stat.
 
@@ -93,6 +96,7 @@ private:
   double ysum, xsum;
   double ysum_sqr, xsum_sqr;
   double ymin, xmin, ymax, xmax;
+  double xatymax, xatymin;
   double int_x, int_y;
   int nsamples, nval;
   VoidList vkg_list;
