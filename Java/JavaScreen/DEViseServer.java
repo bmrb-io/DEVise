@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2001/04/12 15:54:06  wenger
+// Made some minor improvements to the hang checking.
+//
 // Revision 1.60  2001/04/11 21:16:29  xuk
 // A collaboration leader could find out the followers hostname.
 //
@@ -440,10 +443,20 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             System.out.println("DEViseServer(" + _objectNum +
 	      ").setCurrentClient(" + c.getConnectionID() + ") in thread " +
 	      Thread.currentThread());
+	    System.out.println("  current client is: " +
+	      ((client != null) ? (client.getConnectionID().toString()) :
+	      "null"));
         }
 
-        if (c == null)
+        if (c == null) {
             return;
+        }
+
+        if (c.getStatus() == DEViseClient.SERVE) {
+	    System.err.println("ERROR!!! New client (" + c.getConnectionID() +
+	      ") is already connected to a server!!!");
+	    return;
+	}
 
         c.setStatus(DEViseClient.SERVE);
         newClient = c;
@@ -1151,6 +1164,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             client = newClient;
             newClient = null;
             if (client != null) {
+                if (DEBUG >= 1) {
+                    System.out.println("DEViseServer(" + _objectNum +
+		      ") actually switched to client " +
+		      client.getConnectionID());
+	        }
                 pop.activateClient(client);
             }
         }
