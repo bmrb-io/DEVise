@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1997/02/26 16:31:41  wenger
+  Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
+
   Revision 1.55  1997/02/14 16:47:46  wenger
   Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 
@@ -556,7 +559,7 @@ void QueryProcFull::AssociateMappingWithCoordinateTable(TDataMap *map)
 
 void QueryProcFull::AbortQuery(TDataMap *map, QueryCallback *callback)
 {
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 3 
   printf("abort query for %s %s\n", map->GetTData()->GetName(),
 	 map->GetName());
 #endif
@@ -1152,7 +1155,7 @@ void QueryProcFull::EndQuery(QPFullData *query)
   }
   ReportQueryElapsedTime(query);
   if( query->callback != NULL ) {
-    query->callback->QueryDone(query->bytes, query->userData);
+    query->callback->QueryDone(query->bytes, query->userData, query->map);
   }
 #ifdef DEBUG_NEG_LINKS
   printf("****************************EndQuery %p (slave : %d) \n", query,
@@ -1186,7 +1189,7 @@ Boolean QueryProcFull::DoBinarySearch(QPFullData *query,
                                       RecId lowBound, RecId highBound,
                                       Boolean maxLower)
 {
-#if DEBUGLVL >= 5
+#if DEBUGLVL >= 5 
   printf("DoBinarySearch xVal = %f, maxLower = %d\n", xVal, maxLower);
 #endif
 
@@ -1942,7 +1945,7 @@ void QueryProcFull::AddCoordMapping(TDataMap *map, RecId id, Coord coord)
 void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 				   Boolean approx)
 {
-#if DEBUGLVL >= 5
+#if DEBUGLVL >= 5 || 1
   printf("InitTdataQuery xLow: %f, xHigh %f, yLow %f, yHigh %f approx %d\n",
 	 filter.xLow, filter.xHigh, filter.yLow, filter.yHigh,
 	 approx);
@@ -2012,7 +2015,7 @@ void QueryProcFull::InitTDataQuery(TDataMap *map, VisualFilter &filter,
 			  _tdataQuery->low, lastId, false)) {
 	_tdataQuery->high = lastId;
       }
-#if DEBUGLVL >= 3
+#if DEBUGLVL >= 3 
       printf("Binary search endId %ld\n", _tdataQuery->high);
 #endif
     } else {
