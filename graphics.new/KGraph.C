@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/16 00:47:58  ravim
+  Handle window events for popup and resize.
+
   Revision 1.4  1995/12/08 23:45:48  ravim
   Polygon filled. Window name and stat name displayed.
 
@@ -54,7 +57,7 @@ KGraph::~KGraph()
   delete [] _pts;
   delete [] _xyarr;
   if (msgBuf)
-    for (int i = 0; i < _naxes+3; i++)
+    for(int i = 0; i < _naxes+3; i++)
       delete msgBuf[i];
   delete [] msgBuf;
 }
@@ -65,7 +68,7 @@ void KGraph::Init(char *winname, char *statname)
   delete [] _pts;
   delete [] _xyarr;
   if (msgBuf)
-    for (int i = 0; i < _naxes+3; i++)
+    for(int i = 0; i < _naxes+3; i++)
       delete msgBuf[i];
   delete [] msgBuf;
 
@@ -88,16 +91,17 @@ void KGraph::setAxes(int num)
   _naxes = num;
   _pts = new Coord[num];
   _xyarr = new Point[num];
-  for (int i = 0; i < num; i++)
+  int i;
+  for(i = 0; i < num; i++)
     _pts[i] = 0.0;
   msgBuf = new (char *)[_naxes+3];
-  for (i = 0; i < _naxes+3; i++)
+  for(i = 0; i < _naxes+3; i++)
     msgBuf[i] = new char[MAX_POPUP_LEN];
 }
 
 void KGraph::setPoints(Coord *pts, int num)
 {
-  for (int i = 0; i < num; i++)
+  for(int i = 0; i < num; i++)
     _pts[i] = pts[i];
 }
 
@@ -144,15 +148,15 @@ void KGraph::DrawAxes()
   int theta = 360/_naxes;
 
   // Draw axes
-  for (int i = 0; i < _naxes; i++)
+  for(int i = 0; i < _naxes; i++)
   {
-    Rotate(rad/2, i*theta, x, y);
+    Rotate(rad/2, i * theta, x, y);
     _win->Line(cx, cy, x, y, 1);
   }
 
   // Generate origin label
   Rotate(rad/2, 0, x, y);
-  _win->AbsoluteText("O ", x+4, y-6 , 50, 10, WindowRep::AlignWest);
+  _win->AbsoluteText("O ", x + 4, y - 6 , 50, 10, WindowRep::AlignWest);
 
 }
 
@@ -163,14 +167,15 @@ void KGraph::PlotPoints()
 
   // Find max of all the points to be plotted
   Coord max = _pts[0];
-  for (int i = 1; i < _naxes; i++)
+  int i;
+  for(i = 1; i < _naxes; i++)
     max = (_pts[i] > max)? _pts[i] : max;
 
   // Plot all points by drawing lines between them in order
   Coord x1, y1, x2, y2;
   Rotate(Scale(_pts[_naxes-1], max), (_naxes-1)*theta, x1, y1);
 
-  for (i = 0; i < _naxes ; i++)
+  for(i = 0; i < _naxes ; i++)
   {
     Rotate(Scale(_pts[i], max), i*theta, x2, y2);
     // store this point in a x-y array - need to fill polygon later
@@ -214,7 +219,7 @@ void KGraph::ShowVal()
 
   starty += 17;
   // For each axes display value
-  for (int i = 0; i < _naxes; i++)
+  for(int i = 0; i < _naxes; i++)
   {
     char buf[15];
     sprintf(buf, "%4.2f", _pts[i]);
@@ -252,10 +257,10 @@ Boolean KGraph::HandlePopUp(WindowRep *w, int x, int y, int button,
   sprintf(msgBuf[1], "%s", _statname);
   sprintf(msgBuf[2], "Values clockwise from 0");
   
-  for (int i = 0; i < _naxes; i++)
+  for(int i = 0; i < _naxes; i++)
     sprintf(msgBuf[3+i], "%4.2f", _pts[i]);
 
-  numMsgs = _naxes+3;
+  numMsgs = _naxes + 3;
   return true;
 }
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/08 23:43:49  ravim
+  Callbacks added.
+
   Revision 1.2  1995/12/06 05:39:25  ravim
   Initial revision.
 */
@@ -35,7 +38,7 @@ ViewKGraph::ViewKGraph()
 
 ViewKGraph::~ViewKGraph()
 {
-  for (int i = 0; i < _numstats; i++)
+  for(int i = 0; i < _numstats; i++)
     _stats_list[i]->DeleteCallback(this);
   delete [] _stats_list;
   delete _kg;
@@ -45,7 +48,7 @@ ViewKGraph::~ViewKGraph()
 void ViewKGraph::Init()
 {
   // Remove itself from the callback list of all these stat objects
-  for (int i = 0; i < _numstats; i++)
+  for(int i = 0; i < _numstats; i++)
     (_stats_list[i])->DeleteCallback(this);
   delete [] _stats_list;
   
@@ -70,11 +73,12 @@ Boolean ViewKGraph::AddViews(ViewGraph **v, int num, char *name)
   _dis = ((v[0])->GetWindowRep())->GetDisplay();
   // Create _stats_list
   _stats_list = new (BasicStats *)[num];
-  for (int i = 0; i < num; i++)
+  int i;
+  for(i = 0; i < num; i++)
     _stats_list[i] = v[i]->GetStatObj();
 
   // Register to be called back when any of these stats change
-  for (i = 0; i < num; i++)
+  for(i = 0; i < num; i++)
     (_stats_list[i])->RegisterCallback(this);
 
   // Store window name in private member
@@ -101,7 +105,7 @@ Boolean ViewKGraph::Display(int statnum)
 
   _kg->setAxes(_numstats);
   Coord *parr = new Coord[_numstats];
-  for (int i = 0; i < _numstats; i++)
+  for(int i = 0; i < _numstats; i++)
     parr[i] = _stats_list[i]->GetStatVal(_statnum);
 
   _kg->setPoints(parr, _numstats);

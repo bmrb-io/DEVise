@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/14 21:16:43  jussi
+  Replaced 0x%x with 0x%p.
+
   Revision 1.4  1995/12/14 18:06:08  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -165,7 +168,7 @@ printf("GData::GetRecs bufSize %d, %ld recs left, nex Id %ld\n",
 		Exit::DoExit(2);
 	}
 
-	if (num > _numRecs)
+	if (num > (int)_numRecs)
 		num = _numRecs;
 	
 	char *bufAddr = (char *)buf;
