@@ -1,0 +1,10 @@
+CC = g++
+
+CFLAGS = $(ARCH_FLAGS) -O -Wall -I../../graphics.new
+LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
+
+.C.o:
+	$(CC) -c $(CFLAGS) $<
+
+http_url: http_url.o
+	$(CC) -o $@ $@.o $(LDFLAGS)
