@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.221  2000/03/21 17:12:23  wenger
+  Removed various unused methods from the View class.
+
   Revision 1.220  2000/03/21 16:24:35  wenger
   'f' or 'F' key in a view now flips the appropriate pile or stack, if
   there is one.
@@ -2918,6 +2921,17 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
     winRep->FillPixelRect(pixXLow, pixYLow,
         pixXHigh - pixXLow - 1.0,
         pixYHigh - pixYLow - 1.0, 1.0, 1.0, WindowRep::AlignNorthWest);
+
+    // Clear out the middle.
+	{ // for variable scope
+	    const int thickness = 4;
+	    int width = (int)(pixXHigh - pixXLow - thickness * 2);
+	    int height = (int)(pixYHigh - pixYLow - thickness * 2);
+		if (width > 0 && height > 0) {
+            winRep->FillPixelRect(pixXLow + thickness, pixYLow + thickness,
+			  width, height, 1.0, 1.0, WindowRep::AlignNorthWest);
+		}
+	}
 
     // Draw the border.
     winRep->SetForeground(whiteColor);
