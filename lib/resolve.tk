@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1995/12/06 05:36:38  ravim
+#  Displays number of entries in lists.
+#
 #  Revision 1.2  1995/11/30 02:22:02  ravim
 #  Changed some colors.
 #
@@ -272,7 +275,8 @@ proc readrel {fname lname} {
     # Open the file for reading
     set f [open $datadir/$fname r]
 
-    # Read and ignore the first line - comment added by coral
+    # Read and ignore the first two lines - comment added by coral
+    set line [gets $f]
     set line [gets $f]
     
     # Repeat - read line and insert into list
