@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/06/21 19:25:22  jussi
+  Initial revision.
+*/
 
 #include "Map3D.h"
 #include "WindowRep.h"
@@ -221,12 +224,13 @@ void Map3D::MapBlockSegments(BLOCK *block_data, int numSyms,
 
     Point pts[BLOCK_VERTEX];
 
-    for(int j = 0; j < BLOCK_VERTEX; j++) {
+    int j;
+    for(j = 0; j < BLOCK_VERTEX; j++) {
       POINT3D tmppt = CompLocationOnViewingSpace(block_data[i].vt[j]);
       pts[j] = CompProjectionOnViewingPlane(tmppt, camera);
     }
     
-    for(int j = 0; j < BLOCK_EDGES; j++) {
+    for(j = 0; j < BLOCK_EDGES; j++) {
       _segment[_numSegments].pt[0].x = pts[block_data[i].ed[j].p].x;
       _segment[_numSegments].pt[0].y = pts[block_data[i].ed[j].p].y;
       _segment[_numSegments].pt[1].x = pts[block_data[i].ed[j].q].x;
@@ -260,12 +264,13 @@ void Map3D::MapBlockPlanes(BLOCK *block_data, int numSyms,
 
     Point pts[BLOCK_VERTEX];
 
-    for(int j = 0; j < BLOCK_VERTEX; j++) {
+    int j;
+    for(j = 0; j < BLOCK_VERTEX; j++) {
       POINT3D tmppt = CompLocationOnViewingSpace(block_data[i].vt[j]);
       pts[j] = CompProjectionOnViewingPlane(tmppt, camera);
     }
     
-    for(int j = 0; j < BLOCK_SIDES; j++) {
+    for(j = 0; j < BLOCK_SIDES; j++) {
       _plane[_numPlanes].pt[0].x = pts[block_data[i].sd[j].pt[0]].x;
       _plane[_numPlanes].pt[0].y = pts[block_data[i].sd[j].pt[0]].y;
       _plane[_numPlanes].pt[1].x = pts[block_data[i].sd[j].pt[1]].x;
