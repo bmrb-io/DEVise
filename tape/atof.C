@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:46:18  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:52  jussi
   Added CVS header.
 */
@@ -35,11 +38,11 @@ static const double power10[] = { 1, 10, 100, 1000, 10000, 100000,
 static const int maxDecimals = sizeof power10 / sizeof power10[0];
 
 #ifdef MYATOI
-static const int ipower10[] = { 1, 10, 100, 1000, 10000, 100000,
-				1000000, 10000000, 100000000,
-				1000000000 };
+static const long ipower10[] = { 1, 10, 100, 1000, 10000, 100000,
+				 1000000, 10000000, 100000000,
+				 1000000000 };
 
-inline int myatoi(char *&str)
+inline long myatol(char *&str)
 {
   char *start = str;
   while(isdigit(*str))
@@ -65,19 +68,19 @@ inline double myatof(char *str)
   } else if (*str == '+')
     str++;
 
-  int integer = atoi(str);
+  long int integer = atol(str);
   while(isdigit(*str))
     str++;
 
   if (*str != '.' && *str != 'e')
     return sign * integer;
 
-  int fraction = 0;
+  long int fraction = 0;
   int decimals = 0;
 
   if (*str == '.') {
     char *start = ++str;
-    fraction = atoi(str);
+    fraction = atol(str);
     while(isdigit(*str))
       str++;
     decimals = str - start;
@@ -118,12 +121,14 @@ int main(int argc, char **argv)
 		      "+2302022", "-12340922", "+20322.23232",
 		      "-.234234", "2334234.", "1e6", "1e-6",
 		      "1.1234e-22", "+5.23e+24", "-.3422e-2",
-		      "+5e+2", "-4e-2" };
+		      "+5e+2", "-4e-2", "-87654321.87654321",
+		      "-987654321.987654321" };
   int numbers = sizeof strings / sizeof strings[0];
 
   cout << "Verifying accuracy of myatof()..." << endl;
   for(int i = 0; i < numbers; i++) {
     if (myatof(strings[i]) != atof(strings[i])) {
+      cout << "Failure at number " << i << endl;
       cout << "myatof(" << strings[i] << ") == "
 	   << myatof(strings[i])
 	   << ", should be " << atof(strings[i]) << endl;
