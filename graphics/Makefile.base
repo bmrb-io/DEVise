@@ -35,7 +35,7 @@ LIBOBJ=  Action.o ActionClassInfo.o AttrList.o AxisLabelClassInfo.o \
 OTHERSRC= testWindowRep.c testViewWin.c testView.c jstat.c
 
 allobj.o: $(LIBOBJ)
-	$(LD) -r -o $@.o $(LIBOBJ)
+	$(LD) -r -o $@ $(LIBOBJ)
 
 count:
 	wc $(LIBSRC) 
