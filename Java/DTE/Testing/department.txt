@@ -1,0 +1,13 @@
+math Richard
+cs   Johnson
+engr Smith
+chem Roger
+law  Stephen
+bus  Sherry
+stat Bates
+edca Julia
+engl Fancralkd
+music Robert
+art   Janna
+agr  Perent
+phys Peter
