@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/07/13 17:29:18  jussi
+  ViewKGraph now uses the more general ViewCallback interface.
+
   Revision 1.16  1996/06/20 17:10:22  guangshu
   Added support for color statistics.
 
@@ -72,9 +75,7 @@
 
 #include <stdio.h>
 
-#include "XDisplay.h"
 #include "BasicStats.h"
-#include "ViewKGraph.h"
 #include "ViewGraph.h"
 
 const int StatLineWidth = 1;
