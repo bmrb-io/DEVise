@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/04/11 17:53:45  jussi
+  Added command verbs raiseView and lowerView.
+
   Revision 1.39  1996/04/10 15:30:07  jussi
   Added removeMapping command verb.
 
@@ -367,109 +370,6 @@ Boolean TkControlPanel::Restoring()
   return _restoring;
 }
 
-/********************************************************************
-Commands:
-	catFiles: get all catalog files imported.
-	exit: exit program
-	get category: get all classes belonging to a category.
-	importFileType file: import file type from file
-	get category class: get all instances beloging to class
-	getparam category class: get params for creating class.
-
-	changeableParam instance: true if instance can return current parameters
-	getInstParam instance: get current parameters for an instance
-	changeParam instance [ params]: change params for instance
-
-	exists instance: Return true if instance exists, else false.
-	getCreateParam category class instance: get parameters that can
-		be used to recreate an instance.
-	getViewMappings view: Get all mappings connected to view
-	refreshView view: Refresh a view
-	changeMode mode: 0 == display, 1 == layout mode
-	getWinViews win: get all views in this window.
-	getViewWin view: get window for this view, or ""
-	getLinkViews: get all views in this link
-
-	create category class [params]: create a new instance of class and
-			return its name, or "" if nothing created..
-	insertMapping view mapping: connect mapping to view
-	insertLink link view: connect view to link
-	viewInLink link view: return true if view is in this visual link
-	unlinkView link view: unlink view from link
-	getLinkFlag link: return flag for link
-	setLinkFlag link flag: set flag for link
-
-	insertWindow view window: insert view into window
-	saveWindowImage window file: save window image as Postscript to file
-	removeView viewName: remove view from its window
-	isMapped view: Return true if view is mapped.
-	setDefault category class [params]: set defaults for a class
-	tcheckpoint tinstances: do checkpoint on tdata
-	getVisualFilters view:  Get all visual filters for a view, in
-				string format
-	getCurVisualFilter view: get current visual filter for a view,
-			in float format
-	setFilter view xlow ylow xhigh yhigh: set visual filter for view
-	highlightView view flag: highlight/unhighlight view
-
-	setAxis view axisLabel type: set axis label for view. type == "x" or "y"
-	getAxis view type: get axis for view. type == "x" or "y"
-
-	setAction view action : set action for view
-	getAction view: get action for view
-
-	getSchema tdata: get schema for tdata. Return:
-		{ {attr type sorted} {attr type sorted} ... }
-
-	getPixelWidth mapping: get current pixel width for mapping
-	setPixelWidth mapping width: set mapping's pixel width
-
-	createInterp tdata interpName x y color size pattern orientation
-		shape shapeAttr 0 shapeAttr 1: create interpreted mapping with 
-		these args. Return NULL if no mapping created. Otherwise,
-		return name of the mapping.
-	isInterpreted mappClass: return true if interpreted mapping class.
-	isInterpretedGData gdata: return true if interpreted GData.
-	interpMapClassInfo: return infomation that
-		can be used to create interpreted mapping classes. Info
-		is of the form: { {class 1 args } {class2 args2 } ... },
-		where the args are { tdata mappingName sorted x y color ... }
-	
-	paseDateFloat "date"
-
-	destroy instance: destroy this instance
-	openSession file: open and restore the session file, assuming
-			no pre-existing objects in memory.	
-	openTemplate file: open and restore the session file, assuming
-			no pre-existing objects in memory.	
-	printDispatcher: print what's in the dispatcher.
-	clearQP: clear query processor's queries.
-	clearInterp: clear list of interpreted classes
-	getMappingTData map: Get the tdata for mapping
-	markViewFilter view index true_false: mark indexth visualfilter
-		of view as either marked or unmarked.
-	getCursorViews cursor: get src and dst views of cursor.
-	setCursorSrc cursor view : set source of cursor
-	setCursorDst cursor view: set destination of cursor
-
-	For view initialization:
-	clearViewHistory view: clear history of view
-	insertViewHistory view xl yl xh yh marked: insert history into view
-		without changing visual filter.
-	tdataFileName tdata: return actual file name of tdata.
-	getAxisDisplay view [X|Y]: return "1" if X/Y axis display is on. else, 0
-	setAxisDisplay view [X|Y] boolean: set X/Y axis display on/off.
-	swapView win view1 view2: swap the positions of the two views
-		in the window.
-	close fileId: close a file with the given id.
-	open file flag: open a file with the specified flags. Return id to it.
-	savePixmap View file: save view's pixmap to file. This is experimental.
-	loadPixmap View file: load view's pixmap.
-	date: return current file
-	readLine file: read a line from file, return the line
-	writeLine line file: write a line to file
-	invalidatePixmap view: invalid pixmap cache for view
-*********************************************************************/
 int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]) {
 	TkControlPanel *control = (TkControlPanel *)clientData;
@@ -489,19 +389,9 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			sprintf(interp->result,"%s",DateString(tm));
 		}
 		else if (strcmp(argv[1],"clearQP") == 0) {
-			/*
-			classDir->Print();
-			*/
-
 			classDir->DestroyTransientClasses();
-
 			QueryProc::Instance()->ClearQueries();
-
-			/* Clear all catalog files */
 			ClearCats();
-		}
-		else if (strcmp(argv[1],"clearInterp") == 0) {
-			control->_interpProto->ClearMapClasses();
 		}
 		else if (strcmp(argv[1],"clearTopGroups") == 0) {
 			delete gdir;
@@ -509,31 +399,6 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 		else if (strcmp(argv[1],"printDispatcher") == 0) {
 			Dispatcher::Current()->Print();
-		}
-		else if (strcmp(argv[1],"interpMapClassInfo") == 0) {
-			int num;
-			MapInterpClassInfo **infos;
-			_interpProto->MapClasses(num, infos);
-			int i;
-			/*
-			Tcl_AppendResult(interp," { ", NULL);
-			*/
-			for (i=0; i < num; i++) {
-				MapInterpClassInfo *cInfo = infos[i];
-				int numArgs; char **args;
-				cInfo->CreateParams(numArgs, args);
-				int j;
-				Tcl_AppendResult(interp," {", NULL);
-				for (j=0; j < numArgs; j++) {
-					if (args[j] == NULL)
-						Tcl_AppendResult(interp, " {} ", NULL);
-					else Tcl_AppendResult(interp, " {", args[j], "} ", NULL);
-				}
-				Tcl_AppendResult(interp," }", NULL);
-			}
-			/*
-			Tcl_AppendResult(interp," } ", NULL);
-			*/
 		}
 		else if (strcmp(argv[1],"catFiles") == 0) {
 			CatFiles(numArgs, args);
@@ -589,6 +454,16 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 				goto error;
 			}
 			vg->InvalidatePixmaps();
+		}
+		else if (strcmp(argv[1],"createMappingClass") == 0) {
+		  ClassInfo *classInfo = 
+		    _interpProto->CreateWithParams(argc-2,&argv[2]);
+		  if (!classInfo) {
+		    interp->result = "Can't create mapping class";
+		    goto error;
+		  }
+		  interp->result = classInfo->ClassName();
+		  RegisterClass(classInfo, true);
 		}
 		else if (strcmp(argv[1],"readLine") == 0 ) {
 			FILE *file = (FILE *)atol(argv[2]);
@@ -1434,16 +1309,10 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		classDir->ChangeParams(argv[2],argc-3,&argv[3]);
 	}
 	else if (strcmp(argv[1],"createInterp") == 0) {
-		/*
-		printf("CreateInterp %d args\n", argc-2);
-		int i;
-		for (i=0; i < argc; i++) {
-			printf("arg %d: %s\n", i, argv[i]);
-		}
-		*/
+	  /* This command is supported for backward compatibility only */
 		ClassInfo *classInfo = 
 			_interpProto->CreateWithParams(argc-2,&argv[2]);
-		if (classInfo == NULL) {
+		if (!classInfo) {
 			interp->result = "Can't create mapping";
 			goto error;
 		}
