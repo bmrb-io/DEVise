@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.66  1997/05/30 20:45:31  wenger
+  Added GUI to allow user to specify windows to exclude from display
+  print and/or print from pixmaps (for EmbeddedTk).  Exclusion is
+  implemented but pixmap printing is not.
+
   Revision 1.65  1997/05/30 15:41:19  wenger
   Most of the way to user-configurable '4', '5', and '6' keys -- committing
   this stuff now so it doesn't get mixed up with special stuff for printing
@@ -2419,7 +2424,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         return -1;
       }
       Boolean exclude = atoi(argv[2]);
-      Boolean pixmap = atoi(argv[2]);
+      Boolean pixmap = atoi(argv[3]);
       win->SetPrintExclude(exclude);
       win->SetPrintPixmap(pixmap);
       control->ReturnVal(API_ACK, "done");
