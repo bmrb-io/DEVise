@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.53  2000/03/14 17:05:33  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.52  2000/02/16 18:51:40  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -1301,7 +1305,10 @@ ParseCat(char *fileType, char *catFile, char *dataFile)
     else
     {
       char *sname;
-      DataSourceFileStream	schemaSource(token2, StripPath(token2));
+	  char *physSchemaFile = RemoveEnvFromPath(token2);
+      DataSourceFileStream	schemaSource(physSchemaFile,
+	      StripPath(physSchemaFile));
+	  FreeString(physSchemaFile);
       if (!(sname = ParseCatPhysical(&schemaSource, false))) {
 		result = NULL;
 	  } else {
@@ -1364,7 +1371,10 @@ ParseCat(char *catFile)
     else
     {
       char *sname;
-      DataSourceFileStream	schemaSource(token2, StripPath(token2));
+	  char *physSchemaFile = RemoveEnvFromPath(token2);
+      DataSourceFileStream	schemaSource(physSchemaFile,
+	      StripPath(physSchemaFile));
+	  FreeString(physSchemaFile);
       if (!(sname = ParseCatPhysical(&schemaSource, false))) {
 		result = NULL;
       } else {

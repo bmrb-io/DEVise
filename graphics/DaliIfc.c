@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  1999/12/02 16:26:44  wenger
+  Fixed bug 518 (confirm before saving a session the first time); got rid
+  of error message during normal Tasvir launch.
+
   Revision 1.17  1999/10/05 17:55:36  wenger
   Added debug log level.
 
@@ -205,9 +209,15 @@ DaliIfc::ShowImage(const char *daliServer, Drawable win, int centerX,
   char commandBuf[DALI_MAX_STR_LENGTH];
   char replyBuf[DALI_MAX_STR_LENGTH];
 
+  char *fullfile = NULL;
+  if (filename != NULL) {
+    fullfile = RemoveEnvFromPath(filename);
+  }
+
   sprintf(commandBuf, "show %s 0x%lx %d %d %d %d -dither -xbacking -nosubwin"
     " -showafter 0 -sync 0",
-    filename, (long) win, topLeftX, topLeftY, botRightX, botRightY);
+    fullfile, (long) win, topLeftX, topLeftY, botRightX, botRightY);
+  FreeString(fullfile);
   if (!maintainAspect) strcat(commandBuf, " -noaspect");
   if (image != NULL)
   {
@@ -250,7 +260,7 @@ DaliIfc::ShowImage(const char *daliServer, Drawable win, int centerX,
 
 /*------------------------------------------------------------------------------
  * function: DaliIfc::PSShowImage
- * Show an image using Dali.
+ * Show a PostScript image using Dali (for printing to PostScript).
  */
 DevStatus
 DaliIfc::PSShowImage(const char *daliServer, int width, int height,
@@ -268,8 +278,14 @@ DaliIfc::PSShowImage(const char *daliServer, int width, int height,
   char commandBuf[DALI_MAX_STR_LENGTH];
   char replyBuf[DALI_MAX_STR_LENGTH];
 
-  sprintf(commandBuf, "psshow %s - -width %d -height %d", filename, width,
+  char *fullfile = NULL;
+  if (filename != NULL) {
+    fullfile = RemoveEnvFromPath(filename);
+  }
+
+  sprintf(commandBuf, "psshow %s - -width %d -height %d", fullfile, width,
     height);
+  FreeString(fullfile);
   if (!maintainAspect) strcat(commandBuf, " -noaspect");
   if (image != NULL)
   {

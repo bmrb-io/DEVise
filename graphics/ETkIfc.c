@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/09/19 16:19:43  beyer
+  Lengthened some timeouts for etk.
+
   Revision 1.5  1997/05/21 22:09:50  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -113,11 +116,18 @@ ETkIfc::CreateWindow(const char *etkServer, Window win,
 #endif
     
     DevStatus result = StatusOk;
+
+    char *fullfile = NULL;
+    if (filename != NULL) {
+        fullfile = RemoveEnvFromPath(filename);
+    }
     
     sprintf(command, "show %s 0x%lx %d %d %d %d %s %d",
-	    filename, (long) win,
+	    fullfile, (long) win,
 	    x, y, width, height,
 	    AnchorToString(anchor), argc);
+
+    FreeString(fullfile);
     
     double timeout = 5.0;
     
@@ -521,12 +531,14 @@ SendETkCommand(int fd, char *commandBuf,
     {
 	for (i = 0; i < argc && result.IsComplete(); i++)
 	{
-	    length = strlen(argv[i]);
-	    if (MyWrite(fd, (unsigned char *) argv[i], length) != length)
+	    char *fullArg = RemoveEnvFromPath(argv[i]);
+	    length = strlen(fullArg);
+	    if (MyWrite(fd, (unsigned char *)fullArg, length) != length)
 	    {
 		reportError("Unable to send command to ETk server", errno);
 		result = StatusFailed;
 	    }
+	    FreeString(fullArg);
 	    if (MyWrite(fd, (unsigned char *) "\n", 1) != 1)
 	    {
 		reportError("Unable to send command to ETk server", errno);
