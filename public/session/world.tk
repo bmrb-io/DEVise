@@ -6,7 +6,7 @@
 # DEVise endHeader
 
 # Import schemas
-DEVise importFileType ../schema/WORLD
+DEVise importFileType ./schema/WORLD
 
 # Layout mode
 DEVise changeMode 0

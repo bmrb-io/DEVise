@@ -6,7 +6,7 @@
 # DEVise endHeader
 
 # Import schemas
-DEVise importFileType ../schema/schema/physical/STOCK
+DEVise importFileType ./schema/schema/physical/STOCK
 
 # Layout mode
 DEVise changeMode 0
@@ -347,7 +347,7 @@ DEVise set3DLocation $view_8 4.6 4 -4 0 0 0
 DEVise set3DLocation $view_9 4.6 4 -4 0 0 0
 
 # Load pixmaps from views
-set pixmapName ../session/demo.tk.pixmap
+set pixmapName ./session/demo.tk.pixmap
 if { $loadPixmap && [ file exists $pixmapName ] } {
 	set pixmapFile [ DEVise open $pixmapName rb ]
 	set fileDate [ DEVise readLine $pixmapFile ]
