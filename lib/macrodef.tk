@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.88  1997/05/01 01:20:19  guangshu
+#	Removed some comment lines and some minor cleaning up.
+#
 #	Revision 1.87  1997/04/25 16:54:17  wenger
 #	Text labels are now sized in the same way as Rects; fixed font bug in
 #	middle button query popup; removed the dialog that warns you about your
@@ -636,7 +639,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 		set topgrps [DEVise getTopGroups $sname]
    	} else {
           	set topgrps [DEVise getTopGroups [file tail $schemafile]]
-		puts "topgrps = $topgrps"
+#DEBUG		puts "topgrps = $topgrps"
         	if {[llength $topgrps] == 0} {
 
             	    if {![file readable $schemafile]} {
@@ -1247,8 +1250,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
                          titlesel xaxissel yaxissel x ylist
                          newgdata {ofAttr ""}} {
 
-    puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel $window $bgcolor
-#		$titlesel $xaxissel $yaxissel $x $ylist $newgdata"
+#DEBUG  puts "In MacroDefAutoActual tdata=$tdata $viewsel $linksel $window $bgcolor
+#DEBUG	$titlesel $xaxissel $yaxissel $x $ylist $newgdata"
     global viewDefault DEViseShapes curView
 
     set pos ""
@@ -1264,7 +1267,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
 	set vname  [string trim $vname]
     } 
 
-    puts "Before getSchema $tdata"
+#DEBUG    puts "Before getSchema $tdata"
 
     set schema [DEVise getSchema $tdata]
 #    puts "In MacroDefAutoActual, schema = $schema"
