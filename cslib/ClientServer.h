@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/08/07 18:42:10  wenger
+  Added SingleStep() functions to the Server and WinServer classes (needed
+  for Opossum).
+
   Revision 1.4  1997/05/21 21:05:10  andyt
   Support for multiple clients in client-server library. Single-client mode
   still supported by compiling with -DSINGLE_CLIENT. Client-server library
@@ -172,7 +176,6 @@ class WinServer : public Server, public WindowRepCallback {
     WinServer(char *name, int port, int maxClients = 10);
 #endif
     virtual ~WinServer();
-    virtual void MainLoop();              // main loop of server
     virtual void SingleStep();            // once throught the body of MainLoop
 
  protected:
