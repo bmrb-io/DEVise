@@ -27,7 +27,7 @@ ln -s ../dist_sw/public/palette .
 ln -s ../dist_sw/public/schema .
 ln -s ../dist_sw/public/session .
 
-ln -s /s/tcl7.4/lib/tcl7.4 .
-ln -s /s/tcl7.4/lib/tk4.0 .
+ln -s /s/tcl7.4/lib/tcl7.4 tcl
+ln -s /s/tcl7.4/lib/tk4.0 tk
 
 ln -s ../../dist_sw/run/devise.rc run

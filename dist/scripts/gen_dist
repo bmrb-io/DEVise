@@ -63,6 +63,12 @@ cd $home
 # tar cvfzhX $dest $home/scripts/tar_exclude .
 # cd $home
 
+set src = linux-intel
+set dest = $target/linux-intel.tar.gz
+cd $src
+tar cvfzhX $dest $home/scripts/tar_exclude .
+cd $home
+
 set src = html/devise
 set dest = $target/quick_intro.tar.gz
 cd $src

@@ -54,3 +54,9 @@ mkdir sunos-sparc
 cd sunos-sparc
 ../scripts/setup.arch_common
 cd ..
+
+echo "Creating linux-intel directory"
+setenv ARCH_DIR i386_linux
+cd linux-intel
+setup
+cd ..

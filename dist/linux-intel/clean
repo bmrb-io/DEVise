@@ -20,14 +20,15 @@
 
 ############################################################
 
+\rm README
+\rm -rf bin/
+\rm -rf cache/
 \rm dat
 \rm doc
 \rm lib
 \rm palette
+\rm run
 \rm schema
 \rm session
-
 \rm tcl
 \rm tk
-
-\rm run/devise.rc

@@ -19,8 +19,8 @@ setenv DEVISE_TMP     /tmp/`whoami`-devise-tmp
 setenv DEVISE_WORK    /tmp/`whoami`-devise-work
 setenv DEVISE_EXEC    $DEVISE_ROOT/bin/devise
 
-setenv TK_LIBRARY     $DEVISE_ROOT/tk4.0
-setenv TCL_LIBRARY    $DEVISE_ROOT/tcl7.4
+setenv TK_LIBRARY     $DEVISE_ROOT/tk
+setenv TCL_LIBRARY    $DEVISE_ROOT/tcl
 
 setenv LM_LIB         $DEVISE_LIB/LM
 setenv LM_DAT         /tmp/LM/dat

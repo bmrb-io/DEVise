@@ -29,8 +29,8 @@ ln -s ../common/palette .
 ln -s ../common/run .
 ln -s ../common/schema .
 ln -s ../common/session .
-ln -s ../common/tcl7.4 .
-ln -s ../common/tk4.0 .
+ln -s ../common/tcl .
+ln -s ../common/tk .
 
 mkdir bin
 cd bin

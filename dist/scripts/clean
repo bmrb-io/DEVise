@@ -31,3 +31,7 @@ cd ..
 \rm -r solaris-intel
 \rm -r solaris-sparc
 \rm -r sunos-sparc
+
+cd linux-intel
+clean
+cd ..
