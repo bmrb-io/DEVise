@@ -337,7 +337,6 @@ void Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 	printf("Calling callback 0x%p: called fd = %d  req = %d\n", 
 	       info->callBack, info->fd, info->callback_requested); 
 #endif
-	CancelCallback(info);
 	info->callBack->Run();
       }
     }
