@@ -399,6 +399,9 @@ links, especially record links).  For example, if a view gets re-drawn
 because its window got resized by the user, the redraw shouldn't get
 propagated to other views it links to. (ml/rkw 7/29/97)
 
+There seem to be many copies of the VisualFilter for a given view -- this
+should be changed so that there is only one. (rkw 7/31/97)
+
 
 COMPLETED
 ---------
