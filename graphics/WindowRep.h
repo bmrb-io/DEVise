@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/24 21:26:21  jussi
+  Added copyright notice and cleaned up code. Added PrintTransform
+  method to help debugging.
+
   Revision 1.2  1995/09/05 21:13:35  jussi
   Added/updated CVS header.
 */
@@ -118,6 +122,9 @@ public:
   Boolean DeleteCallback(WindowRepCallback *c) {
     return _callbackList->Delete(c);
   }
+
+  /* convert window image to Postscript code */
+  virtual void WritePostscript(Boolean encapsulated, char *filename) {}
 
   /* drawing primitives */
 

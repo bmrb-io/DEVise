@@ -1,10 +1,28 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1995
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:13:42  jussi
+  Added/updated CVS header.
+*/
 
 #ifndef XWindowRep_h
 #define XWindowRep_h
+
 #include "WindowRep.h"
 #include "Xdef.h"
 #if defined(SUN) || defined(PENTIUM)
@@ -43,6 +61,9 @@ public:
 	virtual void PushClip(Coord x,Coord y,Coord w,Coord h);
 
 	virtual void PopClip();
+
+	/* convert window image to Postscript code */
+	virtual void WritePostscript(Boolean encapsulated, char *filename);
 
 	/* drawing primitives */
 	/* Return TRUE if window is scrollable */
@@ -129,8 +150,6 @@ protected:
 	void HandleEvent(XEvent &event);
 
 	Window GetWin() { return _win; }
-
-
 
 private:
 	/* Update window dimensions; globals:
