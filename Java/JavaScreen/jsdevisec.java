@@ -19,6 +19,9 @@
 // $Id$
 //
 // $Log$
+// Revision 1.14  1998/06/11 15:07:52  wenger
+// Added standard header to Java files.
+//
 //
 // ------------------------------------------------------------------------
 
@@ -384,7 +387,7 @@ class DEViseOpenDlg extends Dialog
     private jsdevisec jsc = null;
     private boolean status = false;
     private String sessionName = null;
-    private List fileList = null;
+    private java.awt.List fileList = null;
     private Label label = new Label("Current Available Session:");
     private Button okButton = new Button("OK");
     private Button cancelButton = new Button("Cancel");
@@ -401,7 +404,7 @@ class DEViseOpenDlg extends Dialog
         
         label.setFont(new Font("Serif", Font.BOLD, 16));
                 
-        fileList = new List(8, false);
+        fileList = new java.awt.List(8, false);
         //fileList.setBackground(UIGlobals.textbgcolor);
         fileList.setBackground(Color.white);
         fileList.setForeground(UIGlobals.textfgcolor);
