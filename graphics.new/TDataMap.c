@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/11/04 20:34:01  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.27  1998/08/17 18:51:55  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -212,7 +217,10 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   // Timestamp is 0 here in case mapping gets created after link somehow.
   _physTdTimestamp = 0;
 
-  _stringTableName = NULL;
+  _stringXTableName = NULL;
+  _stringYTableName = NULL;
+  _stringZTableName = NULL;
+  _stringGenTableName = NULL;
 
   _objectValid.Set();
 }
@@ -221,11 +229,21 @@ TDataMap::~TDataMap()
 {
   delete _gdata;
   _gdata = NULL;
+
   delete [] _shapeAttrs;
   _shapeAttrs = NULL;
 
-  delete [] _stringTableName;
-  _stringTableName = NULL;
+  delete [] _stringXTableName;
+  _stringXTableName = NULL;
+
+  delete [] _stringYTableName;
+  _stringYTableName = NULL;
+
+  delete [] _stringZTableName;
+  _stringZTableName = NULL;
+
+  delete [] _stringGenTableName;
+  _stringGenTableName = NULL;
 }
 
 //******************************************************************************
@@ -490,39 +508,73 @@ void TDataMap::ResetGData(int gRecSize)
 }
 
 void
-TDataMap::SetStringTable(char *name)
+TDataMap::SetStringTable(TableType type, char *name)
 {
 #if defined(DEBUG)
-  printf("TDataMap(%s)::SetStringTable(%s)\n", GetName(), name ? name : "NULL");
+  printf("TDataMap(%s)::SetStringTable(%d, %s)\n", GetName(), type,
+    name ? name : "NULL");
 #endif
+
+  char **tableNameP = TableType2NameP(type);
 
   // Note: we're storing the table name, rather than a pointer to the table,
   // here in case the string table is destroyed while this mapping still
   // exists -- if the user loads a different strings file, for example.
   // RKW 1998-11-03.
-  delete [] _stringTableName;
-  _stringTableName = CopyString(name);
-  if (!StringStorage::FindByName(_stringTableName)) {
+  delete [] *tableNameP;
+  *tableNameP = CopyString(name);
+  if (!StringStorage::FindByName(*tableNameP)) {
     fprintf(stderr, "Warning: string table %s does not exist\n",
-      _stringTableName);
+      *tableNameP);
   }
 }
 
 StringStorage *
-TDataMap::GetStringTable()
+TDataMap::GetStringTable(TableType type)
 {
 #if defined(DEBUG)
-  printf("TDataMap(%s)::GetStringTable()\n", GetName());
+  printf("TDataMap(%s)::GetStringTable(%d)\n", GetName(), type);
 #endif
 
-  StringStorage *stringTable = StringStorage::FindByName(_stringTableName);
+  char **tableNameP = TableType2NameP(type);
+
+  StringStorage *stringTable = StringStorage::FindByName(*tableNameP);
   if (!stringTable) {
 	fprintf(stderr,
-	  "Warning: string table %s not found; substituting default table\n",
-	  _stringTableName);
-    stringTable = new StringStorage(_stringTableName);
+	  "Warning: string table %s not found; creating it\n", *tableNameP);
+    stringTable = new StringStorage(*tableNameP);
   }
   return stringTable;
+}
+
+char **
+TDataMap::TableType2NameP(TableType type)
+{
+  char **tableNameP;
+
+  switch (type) {
+  case TableX:
+    tableNameP = &_stringXTableName;
+    break;
+
+  case TableY:
+    tableNameP = &_stringYTableName;
+    break;
+
+  case TableZ:
+    tableNameP = &_stringZTableName;
+    break;
+
+  case TableGen:
+    tableNameP = &_stringGenTableName;
+    break;
+  
+  default:
+    DOASSERT(0, "Invalid TableType");
+    break;
+  }
+
+  return tableNameP;
 }
 
 //******************************************************************************

@@ -1657,6 +1657,13 @@ Num Date        Status  Description
 			(Partly fixed by rkw, 11/3/98 -- doesn't work right,
 			but doesn't crash.)
 
+433 11/06/98	OPEN	Load session Test/tree_w_cursor.ds: drill-down works
+			abominably. (rkw)
+
+434 11/06/98	OPEN	Load session Test/tree_w_cursor.ds: DEVise doesn't
+			want to display node8 in the cursor source view
+			for some reason. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

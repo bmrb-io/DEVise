@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/11/04 20:33:54  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.13  1997/11/24 23:14:50  weaver
   Changes for the new ColorManager.
 
@@ -145,7 +150,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     //
 
     offset = map->GetGDataOffset();
-    StringStorage *stringTable = map->GetStringTable();
+    StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
     for (i = 0; i < numSyms; i++)
     {

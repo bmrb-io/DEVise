@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.55  1998/11/04 20:34:05  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.54  1998/10/20 19:46:19  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -292,11 +297,11 @@ const int STAT2D_BUF_SIZE = 131072;
 #include "Action.h"
 #include "RecId.h"
 #include "PointStorage.h"
+#include "TDataMap.h"
 
 DefineDList(GStatList, double)
 DefineDList(BStatList, BasicStats *)
 
-class TDataMap;
 class MasterSlaveLink;
 class CountMapping;
 class DerivedTable;
@@ -523,8 +528,10 @@ public:
   void GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr);
   DevStatus SetCountMapping(Boolean enabled, char *countAttr, char *putAttr);
 
-  void SetStringTable(char *name);
-  char *GetStringTable() { return _stringTableName; }
+  void SetStringTable(TDataMap::TableType type, char *name);
+  char *GetStringTable(TDataMap::TableType type) {
+    return *TableType2NameP(type);
+  }
 
  protected:
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs){};
@@ -540,6 +547,8 @@ public:
   virtual void DerivedStartQuery(VisualFilter &filter,
                                  int timestamp);
   virtual void DerivedAbortQuery();
+
+  char **TableType2NameP(TDataMap::TableType type);
 
   /* True if statistics need to be displayed along with data */
   char _DisplayStats[STAT_NUM + 1];
@@ -597,7 +606,10 @@ public:
   Boolean _drawToScreen;
   Boolean _sendToSocket;
   GDataSock::Params _gdsParams;
-  char *_stringTableName;
+  char *_stringXTableName;
+  char *_stringYTableName;
+  char *_stringZTableName;
+  char *_stringGenTableName;
 
 	protected:
 

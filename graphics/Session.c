@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.33  1998/10/28 19:22:15  wenger
+  Added code to check all data sources (runs through the catalog and tries
+  to open all of them); this includes better error handling in a number of
+  data source-related areas of the code; also fixed errors in the propagation
+  of command results.
+
   Revision 1.32  1998/10/20 19:46:00  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -449,6 +455,11 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
 
     fprintf(saveData.fp, "\n# Set camera location for each view\n");
     status += ForEachInstance("view", SaveCamera, &saveData);
+
+    // This is done here because it must be done *after* mappings are
+    // inserted into views.
+    fprintf(saveData.fp, "\n# Set string tables for each view\n");
+    status += ForEachInstance("view", SaveStringTables, &saveData);
 
     if (selectedView) {
       fprintf(saveData.fp, "\n# Select view\n");
@@ -1227,6 +1238,34 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
     PrintArgs(saveData->fp, 9, argvOut);
     free((char *) argvOut);
   }
+
+  if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::SaveStringTables
+ * Save the camera location for the given view.
+ */
+DevStatus
+Session::SaveStringTables(char *category, char *devClass, char *instance,
+    SaveData *saveData)
+{
+#if defined(DEBUG)
+  printf("Session::SaveStringTables({%s} {%s} {%s})\n", category, devClass,
+      instance);
+#endif
+
+  DevStatus status = StatusOk;
+
+  status += SaveParams(saveData, "viewGetStringTable", "viewSetStringTable",
+      instance, "x");
+  status += SaveParams(saveData, "viewGetStringTable", "viewSetStringTable",
+      instance, "y");
+  status += SaveParams(saveData, "viewGetStringTable", "viewSetStringTable",
+      instance, "z");
+  status += SaveParams(saveData, "viewGetStringTable", "viewSetStringTable",
+      instance, "gen");
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

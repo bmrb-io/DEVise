@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.89  1998/11/04 20:34:04  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.88  1998/11/03 18:27:08  wenger
   Partial fix to bugs 426 and 432.
 
@@ -564,7 +569,10 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _countMapping = NULL;
 
   _slaveTable = new SlaveTable(this);
-  _stringTableName = NULL;
+  _stringXTableName = NULL;
+  _stringYTableName = NULL;
+  _stringZTableName = NULL;
+  _stringGenTableName = NULL;
 }
 
 ViewGraph::~ViewGraph(void)
@@ -624,8 +632,17 @@ ViewGraph::~ViewGraph(void)
 	delete _slaveTable;
 	_slaveTable = NULL;
 
-	delete [] _stringTableName;
-	_stringTableName = NULL;
+	delete [] _stringXTableName;
+	_stringXTableName = NULL;
+
+	delete [] _stringYTableName;
+	_stringYTableName = NULL;
+
+	delete [] _stringZTableName;
+	_stringZTableName = NULL;
+
+	delete [] _stringGenTableName;
+	_stringGenTableName = NULL;
 }
 
 //******************************************************************************
@@ -2090,21 +2107,53 @@ ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr)
 }
 
 void
-ViewGraph::SetStringTable(char *name)
+ViewGraph::SetStringTable(TDataMap::TableType type, char *name)
 {
-  delete [] _stringTableName;
-  _stringTableName = CopyString(name);
+  char **tableNameP = TableType2NameP(type);
+
+  delete [] *tableNameP;
+  *tableNameP = CopyString(name);
 
   // Note: this will cause problems if a mapping is shared by multiple
   // views.  RKW 1998-11-03.
   int index = InitMappingIterator();
   while (MoreMapping(index)) {
     MappingInfo *info = NextMapping(index);
-    info->map->SetStringTable(name);
+    info->map->SetStringTable(type, *tableNameP);
   }
   DoneMappingIterator(index);
 
   Refresh();
+}
+
+char **
+ViewGraph::TableType2NameP(TDataMap::TableType type)
+{
+  char **tableNameP;
+
+  switch (type) {
+  case TDataMap::TableX:
+    tableNameP = &_stringXTableName;
+    break;
+
+  case TDataMap::TableY:
+    tableNameP = &_stringYTableName;
+    break;
+
+  case TDataMap::TableZ:
+    tableNameP = &_stringZTableName;
+    break;
+
+  case TDataMap::TableGen:
+    tableNameP = &_stringGenTableName;
+    break;
+  
+  default:
+    DOASSERT(0, "Invalid TableType");
+    break;
+  }
+
+  return tableNameP;
 }
 
 //******************************************************************************

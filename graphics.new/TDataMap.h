@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.31  1998/11/04 20:34:01  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.30  1998/05/06 22:05:00  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -239,9 +244,11 @@ class TDataMap
     return _numDimensions;
   }
 
-  void SetStringTable(char *name);
-  StringStorage *GetStringTable();
+  enum TableType { TableInvalid, TableX, TableY, TableZ, TableGen };
+  char **TableType2NameP(TableType type);
 
+  void SetStringTable(TableType type, char *name);
+  StringStorage *GetStringTable(TableType type);
 		
   virtual Boolean IsInterpreted() { return false; }
   virtual Boolean IsComplexShape(ShapeID shape) { return false; }
@@ -402,7 +409,7 @@ private:
   /* Create name of GData */
   char *CreateGDataName(char *tdataName, char *mappingName);
   char *CreateGDataPath(char *gdataName);
-  
+
   /* default values */
   Coord _x;
   Coord _y;
@@ -457,7 +464,10 @@ private:
   /* user data. used by QueryProcessor to insert its own info. */
   void *_userData;
 
-  char *_stringTableName;
+  char *_stringXTableName;
+  char *_stringYTableName;
+  char *_stringZTableName;
+  char *_stringGenTableName;
 };
 
 //******************************************************************************

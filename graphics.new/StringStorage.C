@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/11/04 20:34:00  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.9  1998/06/28 21:41:43  beyer
   changed to implicit templates
 
@@ -62,6 +67,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "StringStorage.h"
 #include "Util.h"
@@ -85,7 +91,7 @@ static const char *_defaultFile = "devise.strings";
 static StringStorage *_defaultTable = NULL;
 static StringTabList _tables;
 static const char *_defaultTableName = "default";
-static const char *_tableDelimiter = "StringTable:";
+static const char *_tableDelimiter = "%StringTable:";
 static const char *_sortedStr = "sorted";
 
 StringStorage::StringStorage(const char *name) :
@@ -251,7 +257,7 @@ StringStorage::SaveAll(const char *filename)
   FILE *fp = fopen(filename, "w");
   if (fp == NULL) {
     reportErrSys("can't open strings file");
-    result = 1; 
+    result = -1; 
   } else {
     int index = _tables.InitIterator();
     while (_tables.More(index)) {
@@ -264,8 +270,12 @@ StringStorage::SaveAll(const char *filename)
       int key;
       char *string;
       for (key = 0; key < count; key++) {
-        table->Lookup(key, string);
-        fprintf(fp, "%s\n", string);
+        if (table->Lookup(key, string) != 0) {
+	  reportErrNosys("Key lookup failed");
+	  result = -1;
+	} else {
+          fprintf(fp, "%s\n", string);
+	}
       }
 
     }
@@ -274,6 +284,11 @@ StringStorage::SaveAll(const char *filename)
     if (fclose(fp) != 0) {
       reportErrSys("error closing strings file");
     }
+  }
+
+  if (result == 0) {
+    delete [] _stringFile;
+    _stringFile = CopyString(filename);
   }
 
   return result;
@@ -285,6 +300,8 @@ StringStorage::LoadAll(const char *filename)
 #if defined(DEBUG_STRINGS)
   printf("StringStorage::LoadAll(%s)\n", filename);
 #endif
+
+  int result = 0;
 
   if (ClearAll() < 0) {
     char errBuf[1024];
@@ -316,7 +333,7 @@ StringStorage::LoadAll(const char *filename)
       // Line defines a table name.
       //
       if (sort) {
-        table->Sort();
+        if (table->Sort() != 0) result = -1;
       }
 
       (void) strtok(buf, " \t\n"); // Bypass delimiter string
@@ -345,13 +362,14 @@ StringStorage::LoadAll(const char *filename)
           buf[strlen(buf) - 1] = 0;
       int key;
       int code = table->Insert(buf, key);
+      if (code < 0) result = -1;
 #ifdef DEBUG_STRINGS
       printf("Inserted \"%s\" with key %d, code %d\n", buf, key, code);
 #endif
     }
   }
   if (sort) {
-    table->Sort();
+    if (table->Sort() != 0) result = -1;
   }
 
   if (fclose(fp) != 0) {
@@ -361,19 +379,57 @@ StringStorage::LoadAll(const char *filename)
   delete [] _stringFile;
   _stringFile = CopyString(filename);
 
-  return 0;
+  return result;
 }
 
-void
+int
 StringStorage::Sort()
 {
 #if defined(DEBUG_STRINGS)
   printf("StringStorage(%s)::Sort()\n", _tableName);
 #endif
 
-//TEMP -- need to actually sort here
+  //
+  // Copy strings to an array, clear out the hash tables, sort array with
+  // qsort(), re-insert strings.
+  //
+
+  int strCount = GetCount();
+  char **strings = new char*[strCount];
+  if (!strings) {
+    reportErrSys("Out of memory");
+    return -1;
+  }
+
+  // Note: this relies on keys being consecutive.
+  for (int key = 0; key < strCount; key++) {
+    if (Lookup(key, strings[key]) != 0) {
+      reportErrNosys("Key lookup failed");
+      return -1;
+    }
+  }
+  _strings.clear();
+  _keys.clear();
+
+  qsort(strings, strCount, sizeof(strings[0]), SortComp);
+
+  // Note: this relies on keys being consecutive.
+  for (int key = 0; key < strCount; key++) {
+    int code = _strings.insert(strings[key], key);
+    if (code != 0) {
+      reportErrNosys("String insertion failed");
+      return -1;
+    }
+    code = _keys.insert(key, strings[key]);
+    if (code != 0) {
+      reportErrNosys("Key insertion failed");
+      return -1;
+    }
+  }
 
   _sorted = true;
+
+  return 0;
 }
 
 int

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.39  1998/11/04 20:33:58  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.38  1998/08/17 18:51:51  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -362,6 +367,9 @@ private:
   void ConvertToGDataSimple(RecId startRecId, void *buf,
 			    int numRecs, void *gdataPtr);
   
+  void InsertExprAttrs(RecId recId, char *tDataRec,
+    StringStorage *stringTable);
+
   /* Find size of GData given attribute flag information */
   // Note: MUST be static so it can be called before the constructor.
   static FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,

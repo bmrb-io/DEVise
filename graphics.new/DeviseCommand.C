@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/11/04 20:33:52  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.31  1998/11/02 19:22:42  wenger
   Added "range/MQL" session description capability.
 
@@ -4795,6 +4800,88 @@ IMPLEMENT_COMMAND_BEGIN(writeRangeDesc)
 		}
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in writeRangeDesc\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+TDataMap::TableType
+Name2StringTableType(char *name)
+{
+  TDataMap::TableType type = TDataMap::TableInvalid;
+  if (!strcmp(name, "x")) {
+    type = TDataMap::TableX;
+  } else if (!strcmp(name, "y")) {
+    type = TDataMap::TableY;
+  } else if (!strcmp(name, "z")) {
+    type = TDataMap::TableZ;
+  } else if (!strcmp(name, "gen")) {
+    type = TDataMap::TableGen;
+  }
+
+  return type;
+}
+
+IMPLEMENT_COMMAND_BEGIN(viewSetStringTable)
+    // Arguments: <view name> <table type> <table name>
+	//   (Table type is "x", "y", "z", or "gen".)
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 4) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+		TDataMap::TableType type = Name2StringTableType(argv[2]);
+		if (type == TDataMap::TableInvalid) {
+          ReturnVal(API_NAK, "Invalid table type");
+	      return -1;
+		}
+		char *tableName = argv[3];
+		if (!strcmp(tableName, "")) tableName = NULL;
+		view->SetStringTable(type, tableName);
+        ReturnVal(API_ACK, "done");
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in viewSetStringTable\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewGetStringTable)
+    // Arguments: <view name> <table type>
+	//   (Table type is "x", "y", "z", or "gen".)
+    // Returns: <table name>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+        if (!view) {
+          ReturnVal(API_NAK, "Cannot find view");
+          return -1;
+        }
+
+		TDataMap::TableType type = Name2StringTableType(argv[2]);
+		if (type == TDataMap::TableInvalid) {
+          ReturnVal(API_NAK, "Invalid table type");
+	      return -1;
+		}
+		char *tableName = view->GetStringTable(type);
+		if (tableName == NULL) tableName = "";
+        ReturnVal(API_ACK, tableName);
+	    return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in viewGetStringTable\n",
+		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

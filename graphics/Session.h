@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/09/30 17:44:33  wenger
+  Fixed bug 399 (problems with parsing of UNIXFILE data sources); fixed
+  bug 401 (improper saving of window positions).
+
   Revision 1.10  1998/09/08 20:25:59  wenger
   Added option to save which view is selected when saving a session -- for
   JavaScreen client switching support.
@@ -137,6 +141,8 @@ private:
   static DevStatus SaveViewHistory(char *category, char *devClass,
       char *instance, SaveData *saveData);
   static DevStatus SaveCamera(char *category, char *devClass,
+      char *instance, SaveData *saveData);
+  static DevStatus SaveStringTables(char *category, char *devClass,
       char *instance, SaveData *saveData);
 
   static DevStatus SaveParams(SaveData *saveData, char *getCommand,

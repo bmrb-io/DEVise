@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1998/11/02 19:22:41  wenger
+  Added "range/MQL" session description capability.
+
   Revision 1.20  1998/10/28 19:22:25  wenger
   Added code to check all data sources (runs through the catalog and tries
   to open all of them); this includes better error handling in a number of
@@ -390,6 +393,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(getCursorType)
 	REGISTER_COMMAND(viewGoHome)
 	REGISTER_COMMAND(writeRangeDesc)
+	REGISTER_COMMAND(viewSetStringTable)
+	REGISTER_COMMAND(viewGetStringTable)
 }
 
 CmdContainer::~CmdContainer()

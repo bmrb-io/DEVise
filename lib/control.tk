@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.170  1998/11/02 19:22:51  wenger
+#	Added "range/MQL" session description capability.
+#
 #	Revision 1.169  1998/10/28 19:22:37  wenger
 #	Added code to check all data sources (runs through the catalog and tries
 #	to open all of them); this includes better error handling in a number of
@@ -867,6 +870,7 @@ source $libdir/group.tk
 source $libdir/dr_schema.tcl
 source $libdir/link.tcl
 source $libdir/count_mapping.tcl
+source $libdir/string_table.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1448,11 +1452,13 @@ menu .mbar.view.menu.statMenu -tearoff 0
 # .mbar.view.menu.statMenu add command -label "Group By" -command DoGroupByStat
 .mbar.view.menu.statMenu add command -label "Histogram" -command DoHistStat
 .mbar.view.menu add separator
+.mbar.view.menu add command -label "Symbol Alignment" -command EditSymbolAlignment
+.mbar.view.menu add command -label "Assign String Tables" -command EditStringTables 
+.mbar.view.menu add separator
 .mbar.view.menu add command -label "Destroy" -command {
     global curView
     DestroyView $curView
 }
-.mbar.view.menu add command -label "Symbol Alignment" -command EditSymbolAlignment
 
 #.mbar.view.menu add command -label "Action" -command DoViewAction
 #.mbar.view.menu add command -label "Save Pixmap" -command DoSavePixmap

@@ -70,7 +70,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
   AttrInfo *attrinfo;
   int gdataOffset;
   GDataAttrOffset *offset = map->GetGDataOffset();
-  StringStorage *stringTable = map->GetStringTable();
+  StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
   char *gdata, *viewname;
 
   Coord x, y;

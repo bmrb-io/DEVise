@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/11/04 20:33:44  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.5  1998/08/21 22:16:48  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
   linked DEVise for distribution.
@@ -196,7 +201,7 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *map,
 
   if (_status.IsComplete()) {
     GDataAttrOffset *offsets = map->GetGDataOffset();
-    StringStorage *stringTable = map->GetStringTable();
+    StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
     AttrList *attrList = map->GDataAttrList();
 
     // Note: at least for now, I am assuming that for string attributes

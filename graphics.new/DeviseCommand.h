@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/11/02 19:22:44  wenger
+  Added "range/MQL" session description capability.
+
   Revision 1.17  1998/10/21 17:16:40  wenger
   Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
   Show All" (go home) button to Query dialog; fixed bug 421 (crash when
@@ -1454,6 +1457,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(writeRangeDesc) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewSetStringTable) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewGetStringTable) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

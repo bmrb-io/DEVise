@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/11/04 20:34:00  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.9  1998/02/02 18:26:16  wenger
   Strings file can now be loaded manually; name of strings file is now
   stored in session file; added 'serverExit' command and kill_devised
@@ -98,7 +103,8 @@ class StringStorage {
     // Return 0 if OK, -1 otherwise.
     int Clear();
 
-    void Sort();
+    // Return 0 if OK, -1 otherwise.
+    int Sort();
 
     static const char *GetFile() { return _stringFile; }
 
@@ -111,6 +117,10 @@ class StringStorage {
 
     static int KeyHash(int &key, int numBuckets) {
         return key % numBuckets;
+    }
+
+    static int SortComp(char **string1, char **string2) {
+        return strcmp(*string1, *string2);
     }
 
     int _stringNum;                   // sequence number for string

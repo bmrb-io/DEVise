@@ -17,6 +17,11 @@
   $Id$
 
   $Log$
+  Revision 1.54  1998/11/04 20:33:55  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.53  1998/06/23 17:50:19  wenger
   Fixed some compile warnings.
 
@@ -1587,7 +1592,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     sprintf(defaultFile, "%s/image.gif", directory);
     
     GDataAttrOffset *offset = map->GetGDataOffset();
-	StringStorage *stringTable = map->GetStringTable();
+	StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
     
     // first draw a cross mark at each GIF image location;
     // if there is a problem in displaying the GIF image,
@@ -1788,7 +1793,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	}
 
 	GDataAttrOffset *offset = map->GetGDataOffset();
-	StringStorage *stringTable = map->GetStringTable();
+	StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
 	for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
@@ -1945,7 +1950,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
   Coord filterHeight = filter.yHigh - filter.yLow;
   
   GDataAttrOffset *offset = map->GetGDataOffset();
-  StringStorage *stringTable = map->GetStringTable();
+  StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
   Coord oldPointSize = -9999.9;
 
@@ -2276,7 +2281,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 #endif
 
   GDataAttrOffset *offset = map->GetGDataOffset();
-  StringStorage *stringTable = map->GetStringTable();
+  StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
   Coord oldpixelperUnit = -9999.9;
 
@@ -2813,7 +2818,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
   Coord filterHeight = filter.yHigh - filter.yLow;
 
   GDataAttrOffset *offset = map->GetGDataOffset();
-  StringStorage *stringTable = map->GetStringTable();
+  StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
   Coord oldPointSize = -9999.9;
 
