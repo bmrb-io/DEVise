@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/01/09 22:27:59  jussi
+  Added 3D block shape.
+
   Revision 1.7  1995/12/22 18:07:47  jussi
   Increased MaxInterpShapes to accommodate the new Vector shape.
 
@@ -52,21 +55,28 @@
 /* structure used to store the commands for mapping */
 const int MappingCmd_X           = (1 << 0);
 const int MappingCmd_Y           = (1 << 1);
-const int MappingCmd_Color       = (1 << 2);
-const int MappingCmd_Size        = (1 << 3);
-const int MappingCmd_Pattern     = (1 << 4);
-const int MappingCmd_Orientation = (1 << 5);
-const int MappingCmd_Shape       = (1 << 6);
+const int MappingCmd_Z           = (1 << 2);
+const int MappingCmd_Color       = (1 << 3);
+const int MappingCmd_Size        = (1 << 4);
+const int MappingCmd_Pattern     = (1 << 5);
+const int MappingCmd_Orientation = (1 << 6);
+const int MappingCmd_Shape       = (1 << 7);
 const int MappingInterpAllFlags  = 0xffff;
 
 struct MappingInterpCmd {
-  char *xCmd, *yCmd, *colorCmd, *sizeCmd, *patternCmd,
-  *shapeCmd, *orientationCmd;
+  char *xCmd;
+  char *yCmd;
+  char *zCmd;
+  char *colorCmd;
+  char *sizeCmd;
+  char *patternCmd;
+  char *shapeCmd;
+  char *orientationCmd;
   char *shapeAttrCmd[MAX_GDATA_ATTRS];
 };
 
 struct MappingSimpleCmdEntry {
-  enum SimpleCmdType { AttrCmd, ConstCmd, NULLCmd};
+  enum SimpleCmdType { AttrCmd, ConstCmd, NULLCmd };
   SimpleCmdType cmdType; /* type of command: either attribute, or constant*/
   union{
     AttrInfo *attr;      /* ptr to attribute info */
@@ -75,8 +85,14 @@ struct MappingSimpleCmdEntry {
 };
 
 struct MappingSimpleCmd {
-  MappingSimpleCmdEntry xCmd, yCmd, colorCmd, sizeCmd, patternCmd,
-  shapeCmd, orientationCmd;
+  MappingSimpleCmdEntry xCmd;
+  MappingSimpleCmdEntry yCmd;
+  MappingSimpleCmdEntry zCmd;
+  MappingSimpleCmdEntry colorCmd;
+  MappingSimpleCmdEntry sizeCmd;
+  MappingSimpleCmdEntry patternCmd;
+  MappingSimpleCmdEntry shapeCmd;
+  MappingSimpleCmdEntry orientationCmd;
   MappingSimpleCmdEntry shapeAttrCmd[MAX_GDATA_ATTRS];
 };
 

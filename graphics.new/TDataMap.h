@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/25  01:20:16  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.3  1995/11/21 23:20:03  jussi
   Added copyright notice and cleaned up code. Added SetDefaultX
   and SetDefaultY methods, removed SetDefaultLocation.
@@ -28,7 +34,9 @@
 
 #ifndef TDataMap_h
 #define TDataMap_h
+
 #include <stdio.h>
+
 #include "DeviseTypes.h"
 #include "Exit.h"
 #include "DList.h"
@@ -48,12 +56,16 @@ class Symbol;
 class WindowRep;
 class Bitmap;
 
-const unsigned MAX_MAPPING_SHAPE_ATTRS = 10;
-
 /* Offsets for GData attributes.Not all is valid. */
 struct GDataAttrOffset {
-  int xOffset, yOffset, colorOffset, sizeOffset, shapeOffset,
-      patternOffset, orientationOffset;
+  int xOffset;
+  int yOffset;
+  int zOffset;
+  int colorOffset;
+  int sizeOffset;
+  int shapeOffset;
+  int patternOffset;
+  int orientationOffset;
   int shapeAttrOffset[MAX_GDATA_ATTRS];
 };
 
@@ -65,8 +77,7 @@ public:
      name: name of this type of mapping.
      gdataName:  name of GData (name of this mapping instance */
 
-  TDataMap(char *name, TData *tdata, char *gdataName, 
-	   int gdataRecSize,
+  TDataMap(char *name, TData *tdata, char *gdataName, int gdataRecSize,
 	   VisualFlag dynamicArgs, int dynamicShapeAttrs, int maxGDataPages,
 	   VisualFlag *dimensionInfo, int numDimensions,
 	   Boolean createGData = true);
@@ -85,7 +96,7 @@ public:
 		
   virtual Boolean IsInterpreted() { return false; }
 
-  char *GetName() { return _mappingName; }	/* type of mapping */
+  char *GetName() { return _mappingName; }    /* type of mapping */
   char *GetGDataName() { return _gdataName; } /* name of GData */
 
   /* clear GData and start anew. This
@@ -98,6 +109,7 @@ public:
   void GetDefaultLocation(Coord &x, Coord &y){ x = _x; y = _y; }
   Coord GetDefaultX() { return _x; }
   Coord GetDefaultY() { return _y; }
+  Coord GetDefaultZ() { return _z; }
   Color GetDefaultColor() { return _color;};
   Coord GetDefaultSize() {return _size; };
   Pattern GetDefaultPattern() { return _pattern ;};
@@ -105,6 +117,7 @@ public:
   ShapeID GetDefaultShape(){ return _shapeId;}
   int GetDefaultNumShapeAttrs(){ return _numShapeAttr;}
   ShapeAttr *GetDefaultShapeAttrs(){ return _shapeAttrs;};
+
   int GetPixelWidth() { return _pixelWidth; }
   void SetPixelWidth(int width) {_pixelWidth = width; }
   
@@ -145,7 +158,7 @@ public:
   int TDataRecordSize();
   
   /* Get record size for GData */
-  int GDataRecordSize(){ return _gRecSize;}
+  int GDataRecordSize() { return _gRecSize; }
   
   /**************************************************************
     User provided function to return a hint of the RecId
@@ -194,14 +207,14 @@ protected:
      derived classes.*/
   void SetDefaultX(Coord x) { _x = x; }
   void SetDefaultY(Coord y) { _y = y; }
+  void SetDefaultZ(Coord z) { _z = z; }
   void SetDefaultColor(Color color) { _color = color; }
   void SetDefaultSize(Coord size) { _size = size; }
   void SetDefaultPattern(Pattern pattern) { _pattern = pattern; }
   void SetDefaultOrientation(Coord orientation) { _orientation = orientation; }
-  void SetDefaultShapeAttr(int attrNum, Coord shapeAttr);
-  
   void SetDefaultShape(ShapeID shapeID, int numAttr = 0, 
 		       ShapeAttr *shapeAttr = NULL);
+  void SetDefaultShapeAttr(int attrNum, Coord shapeAttr);
   
   void UpdateBoundingBox(Coord width, Coord height);
   
@@ -225,9 +238,13 @@ private:
   char *CreateGDataPath(char *gdataName);
   
   /* default values */
-  Coord _x, _y;
-  Color _color; Coord _size;
-  Pattern _pattern; Coord _orientation;
+  Coord _x;
+  Coord _y;
+  Coord _z;
+  Color _color;
+  Coord _size;
+  Pattern _pattern;
+  Coord _orientation;
   ShapeID _shapeId;
   int _numShapeAttr;
   ShapeAttr *_shapeAttrs;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/01/09 22:08:33  jussi
+  Added GetZ() function.
+
   Revision 1.8  1995/12/28 19:30:37  jussi
   Small fix to remove compiler warning.
 
@@ -61,44 +64,35 @@ inline Coord GetX(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
   if (offset->xOffset < 0)
     return map->GetDefaultX();
-  else {
-    return GetAttr(ptr, xOffset, Coord, offset);
-  }
+  return GetAttr(ptr, xOffset, Coord, offset);
 }
 
 inline Coord GetY(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
   if (offset->yOffset < 0)
     return map->GetDefaultY();
-  else
-    return GetAttr(ptr, yOffset, Coord, offset);
+  return GetAttr(ptr, yOffset, Coord, offset);
 }
 
 inline Coord GetZ(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
-#if 0
   if (offset->zOffset < 0)
     return map->GetDefaultZ();
-  else
-    return GetAttr(ptr, zOffset, Coord, offset);
-#endif
-  return 0;
+  return GetAttr(ptr, zOffset, Coord, offset);
 }
 
 inline Color GetColor(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
   if (offset->colorOffset < 0)
     return map->GetDefaultColor();
-  else
-    return GetAttr(ptr, colorOffset, Color , offset);
+  return GetAttr(ptr, colorOffset, Color , offset);
 }
 
 inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
   if (offset->patternOffset < 0)
     return map->GetDefaultPattern();
-  else
-    return GetAttr(ptr, patternOffset, Pattern, offset);
+  return GetAttr(ptr, patternOffset, Pattern, offset);
 }
 
 inline Coord GetShapeAttr0(char *ptr, TDataMap *map, GDataAttrOffset *offset)
@@ -106,8 +100,8 @@ inline Coord GetShapeAttr0(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   if (offset->shapeAttrOffset[0] < 0) {
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[0];
-  } else
-    return GetAttr(ptr, shapeAttrOffset[0], Coord, offset);
+  }
+  return GetAttr(ptr, shapeAttrOffset[0], Coord, offset);
 }
 
 inline Coord GetShapeAttr1(char *ptr, TDataMap *map, GDataAttrOffset *offset)
@@ -115,8 +109,8 @@ inline Coord GetShapeAttr1(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   if (offset->shapeAttrOffset[1] < 0){
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[1];
-  } else
-    return GetAttr(ptr, shapeAttrOffset[1], Coord, offset);
+  }
+  return GetAttr(ptr, shapeAttrOffset[1], Coord, offset);
 }
 
 inline Coord GetShapeAttr2(char *ptr, TDataMap *map, GDataAttrOffset *offset)
@@ -124,8 +118,8 @@ inline Coord GetShapeAttr2(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   if (offset->shapeAttrOffset[2] < 0){
     ShapeAttr *attrs = map->GetDefaultShapeAttrs();
     return attrs[2];
-  } else
-    return GetAttr(ptr, shapeAttrOffset[2], Coord, offset);
+  }
+  return GetAttr(ptr, shapeAttrOffset[2], Coord, offset);
 }
 
 class WindowRep;

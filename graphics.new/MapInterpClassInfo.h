@@ -1,17 +1,37 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 22:15:00  jussi
+  Added CVS header.
+*/
 
 #ifndef MapInterpClassInfo_h
 #define MapInterpClassInfo_h
+
 #include "ClassDir.h"
 #include "VisualArg.h"
 
 const int MAX_INTERPRETED_MAPPING_CLASS = 512;
+
 class MappingInterp;
 class TData;
 class MappingInterpCmd;
+
 class MapInterpClassInfo: public ClassInfo {
 public:
 	/* constructor for prototype MapInterp */
@@ -53,7 +73,6 @@ public:
 	/* Change parameters dynamically at run time */
 	virtual void ChangeParams(int argc, char **argv);
 
-
 	/* Set default parameters */
 	void SetDefaultParams(int argc, char **argv);
 
@@ -81,9 +100,10 @@ public:
 	}
 
 private:
-void ExtractCommand(int argc, char **argv, MappingInterpCmd *cmd,
-	int &cmdFlag,int &attrFlag, VisualFlag *dimensionInfo, int &numDimensions,
-		char *&tdataAlias, TData *&tdata, char *&name);
+	void ExtractCommand(int argc, char **argv, MappingInterpCmd *cmd,
+			    int &cmdFlag, int &attrFlag,
+			    VisualFlag *dimensionInfo, int &numDimensions,
+			    char *&tdataAlias, TData *&tdata, char *&name);
 
 	char *_fileAlias;
 	char *_className; /* name of this interpreted mapping class */
@@ -103,4 +123,5 @@ void ExtractCommand(int argc, char **argv, MappingInterpCmd *cmd,
 	static int _numMapClasses;
 	static MapInterpClassInfo *_mapClasses[MAX_INTERPRETED_MAPPING_CLASS];
 };
+
 #endif

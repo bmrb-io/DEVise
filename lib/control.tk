@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.45  1996/01/13 21:03:50  jussi
+#	Default .rc file is now devise.rc. Session files are now smarter
+#	about the TDatas they try to open; the absolute pathnames are no
+#	longer stored in a session file, rather the display name is used.
+#
 #	Revision 1.44  1996/01/13 17:59:07  jussi
 #	Initialization is read from devise.rc if no other .rc file
 #	is found.
@@ -916,6 +921,7 @@ proc CreateInterpretedMapping { tdata } {
 	    [list  \
 	    [list x $simpleAttrs $defX] \
 	    [list y $simpleAttrs $defY]\
+	    [list z $simpleAttrs $defZ]\
 	    [list color $DEViseColors $defColor]\
 	    [list shape $DEViseShapes $defShape]\
 	    ] 1 ] 
@@ -929,10 +935,10 @@ proc CreateInterpretedMapping { tdata } {
     
     # extract parameters
     set params [list $tdata $mapName {} \
-	    \$[lindex $parm 0] \$[lindex $parm 1] \
-	    [findNumericValue $DEViseColors [lindex $parm 2]] \
-	    {} {} {} [findNumericValue $DEViseShapes [lindex $parm 3]] \
-	    {} {} ]
+	    \$[lindex $parm 0] \$[lindex $parm 1] \$[lindex $parm 2] \
+	    [findNumericValue $DEViseColors [lindex $parm 3]] \
+	    {} {} {} [findNumericValue $DEViseShapes [lindex $parm 4]] \
+	    {} {} {} ]
     
     set cmd "DEVise createInterp $params"
     set result [eval $cmd]
@@ -951,13 +957,6 @@ proc DoActualCreateGData { tdata mapping } {
     global dialogParamVar gdataName fileAlias
     set fileAlias $tdata
     set gdataName [UniqueName [ format "%s#%s" $tdata $mapping ]]
-
-    # if { [DEVise exists $gdataName ] } {
-	# set but [dialog .gdataExist "gdataExist" \
-		# "Error: gdata $gdataName already exists" \
-		# "" 0 {Cancel} ]
-	# return
-    # }
 
     set paramNames [ DEVise getparam mapping $mapping ]
 
@@ -1013,7 +1012,9 @@ proc DoActualCreateGData { tdata mapping } {
 		[ lindex [lindex $paramNames 8] 1] \
 		[ lindex [lindex $paramNames 9] 1] \
 		[ lindex [lindex $paramNames 10] 1] \
-		[ lindex [lindex $paramNames 11] 1]] 
+		[ lindex [lindex $paramNames 11] 1] \
+		[ lindex [lindex $paramNames 12] 1] \
+		[ lindex [lindex $paramNames 13] 1]] 
 	
 	set cmd "DEVise create mapping $mapping $params"
 	set result [eval $cmd]
@@ -2333,13 +2334,15 @@ proc DoEditMapping {} {
     # puts "got params $params"
     set xParm [lindex [lindex $params 3] 1]
     set yParm [lindex [lindex $params 4] 1]
-    set colorParm [findNameValue $DEViseColors [lindex [lindex $params 5] 1]]
-    set orientParm [lindex [lindex $params 6] 1]
-    set sizeParm [lindex [lindex $params 7] 1]
-    set patternParm [lindex [lindex $params 8] 1]
-    set shapeParm [findNameValue $DEViseShapes [lindex [lindex $params 9] 1]]
-    set shapeAttr0 [lindex [lindex $params 10] 1]
-    set shapeAttr1 [lindex [lindex $params 11] 1]
+    set zParm [lindex [lindex $params 5] 1]
+    set colorParm [findNameValue $DEViseColors [lindex [lindex $params 6] 1]]
+    set orientParm [lindex [lindex $params 7] 1]
+    set sizeParm [lindex [lindex $params 8] 1]
+    set patternParm [lindex [lindex $params 9] 1]
+    set shapeParm [findNameValue $DEViseShapes [lindex [lindex $params 10] 1]]
+    set shapeAttr0 [lindex [lindex $params 11] 1]
+    set shapeAttr1 [lindex [lindex $params 12] 1]
+    set shapeAttr2 [lindex [lindex $params 13] 1]
 
     set tdata [lindex [lindex $params 0] 1]
     set simpleAttrs [lsort [ElimStringAttr [DEVise getSchema $tdata]]]
@@ -2352,13 +2355,15 @@ proc DoEditMapping {} {
 	    [list \
 	    [list X {1 2 3 4 5 6 7 8 9 10} $xParm] \
 	    [list Y {1 2 3 4 5 6 7 8 9 10} $yParm] \
+	    [list Z {1 2 3 4 5 6 7 8 9 10} $zParm] \
 	    [list Color $DEViseColors $colorParm] \
 	    [list Orientation {1} $orientParm] \
 	    [list Size {0 1 2 3 4} $sizeParm] \
 	    [list Pattern {0} $patternParm] \
 	    [list Shape $DEViseShapes $shapeParm] \
-	    [list "SymbolWidth" {0.1 0.5 1 2} $shapeAttr0] \
-	    [list "SymbolHeight" {0.1 0.5 1 2} $shapeAttr1] \
+	    [list "ShapeAttr0" {0.1 0.5 1 2} $shapeAttr0] \
+	    [list "ShapeAttr1" {0.1 0.5 1 2} $shapeAttr1] \
+	    [list "ShapeAttr2" {0.1 0.5 1 2} $shapeAttr2] \
 	    ] 0 ]
     
     if {$parm == ""} {
@@ -2371,13 +2376,15 @@ proc DoEditMapping {} {
 	    [lindex [lindex $params 2] 1] \
 	    [lindex $parm 0] \
 	    [lindex $parm 1] \
-	    [findNumericValue $DEViseColors [lindex $parm 2]] \
-	    [lindex $parm 3] \
+	    [lindex $parm 2] \
+	    [findNumericValue $DEViseColors [lindex $parm 3]] \
 	    [lindex $parm 4] \
 	    [lindex $parm 5] \
-	    [findNumericValue $DEViseShapes [lindex $parm 6]] \
-	    [lindex $parm 7] \
-	    [lindex $parm 8] ]
+	    [lindex $parm 6] \
+	    [findNumericValue $DEViseShapes [lindex $parm 7]] \
+	    [lindex $parm 8] \
+	    [lindex $parm 9] \
+	    [lindex $parm 10] ]
 
     # Change parameter
     set cmd "DEVise changeParam \{$map\} $params"

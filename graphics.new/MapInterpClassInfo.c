@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/28 19:37:35  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.4  1995/12/14 21:17:43  jussi
   Replaced 0x%x with 0x%p.
 
@@ -27,6 +30,8 @@
   Revision 1.2  1995/09/05 22:14:59  jussi
   Added CVS header.
 */
+
+#include <ctype.h>
 
 #include "DeviseTypes.h"
 #include "Control.h"
@@ -97,19 +102,17 @@ MapInterpClassInfo::MapInterpClassInfo(char *className,
 MapInterpClassInfo::~MapInterpClassInfo()
 {
   /* we'll waste memory for now by not deleting stuff */
-  /*
-     printf("MapInterpClassInfo destructor\n");
-  */
   if (_map != NULL)
     delete _map;
 }
 
 /* Return true if string is not empty. A string is not empty
    if it contains characters other than '\n', '\t', and '\r' */
-Boolean NotEmpty(char *str)
+
+static Boolean NotEmpty(char *str)
 {
   while (*str != '\0') {
-    if (!( *str == '\n' || *str == ' ' || *str == '\r' || *str == '\t'))
+    if (!isspace(*str))
       return true;
     str++;
   }
@@ -125,38 +128,30 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
 					char *&tdataAlias, TData *&tdata,
 					char *&name)
 {
-  if (argc != 12) {
-    fprintf(stderr, "MapInterpClassInfo::ExtractCommand: argc != 12\n");
+  // we need to support both the old and the new style until
+  // sufficient time has passed to make the old style really
+  // obsolete
+
+  // the old style has: x, y, color, size, pattern, orientation, shape,
+  // and shape attributes 0 and 1
+
+  // the new style has: x, y, z, color, size, pattern, orientation, shape,
+  // and shape attributes 0, 1, and 2
+
+  if (argc != 12 && argc != 14) {
+    fprintf(stderr, "MapInterpClassInfo::ExtractCommand: argc != 14\n");
     Exit::DoExit(2);
   }
 
-  cmdFlag = 0;
-  attrFlag=0;
-
-  int i;
-  for(i = 3; i <= 9; i++) {
-    if (NotEmpty(argv[i])) {
-      cmdFlag |= (1 << (i-3));
-    }
-  }
-
-  if (NotEmpty(argv[10]))
-    attrFlag |= 1;
-  if (NotEmpty(argv[11]))
-    attrFlag |= 2;
-
-  /*
-     printf("cmdFlag 0x%p attrFlag 0x%p\n",cmdFlag, attrFlag);
-  */
-
-  cmd->xCmd = cmd->yCmd = cmd->colorCmd = cmd->sizeCmd =
+  cmd->xCmd = cmd->yCmd = cmd->zCmd = cmd->colorCmd = cmd->sizeCmd =
     cmd->patternCmd = cmd->shapeCmd = cmd->orientationCmd = NULL;
-  for(i = 0; i < MAX_GDATA_ATTRS; i++)
+  for(int i = 0; i < MAX_GDATA_ATTRS; i++)
     cmd->shapeAttrCmd[i] = NULL;
   
   tdataAlias = CopyString(argv[0]);
-  if ((tdata=(TData *)ControlPanel::FindInstance(tdataAlias)) == NULL) {
-    fprintf(stderr, "MapInterpClassInfo::CreateWithParams: can't find tdata\n");
+  if ((tdata = (TData *)ControlPanel::FindInstance(tdataAlias)) == NULL) {
+    fprintf(stderr, 
+	    "MapInterpClassInfo::CreateWithParams: can't find tdata\n");
     Exit::DoExit(2);
   }
   
@@ -168,53 +163,69 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
     dimensionInfo[0] = VISUAL_X;
   }
   
-  if (cmdFlag & MappingCmd_X) {
+  cmdFlag = 0;
+  attrFlag = 0;
+
+  if (NotEmpty(argv[3])) {
     cmd->xCmd = CopyString(argv[3]);
+    cmdFlag |= MappingCmd_X;
   }
-  
-  if (cmdFlag & MappingCmd_Y) {
+  if (NotEmpty(argv[4])) {
     cmd->yCmd = CopyString(argv[4]);
+    cmdFlag |= MappingCmd_Y;
   }
-  
-  if (cmdFlag & MappingCmd_Color) {
-    cmd->colorCmd = CopyString(argv[5]);
+
+  int shift = (argc == 14 ? 1 : 0); 
+
+  if (NotEmpty(argv[5 + shift])) {
+    cmd->colorCmd = CopyString(argv[5 + shift]);
+    cmdFlag |= MappingCmd_Color;
   }
-  
-  if (cmdFlag & MappingCmd_Size) {
-    cmd->sizeCmd = CopyString(argv[6]);
+  if (NotEmpty(argv[6 + shift])) {
+    cmd->sizeCmd = CopyString(argv[6 + shift]);
+    cmdFlag |= MappingCmd_Size;
   }
-  
-  if (cmdFlag & MappingCmd_Pattern) {
-    cmd->patternCmd = CopyString(argv[7]);
+  if (NotEmpty(argv[7 + shift])) {
+    cmd->patternCmd = CopyString(argv[7 + shift]);
+    cmdFlag |= MappingCmd_Pattern;
   }
-  
-  if (cmdFlag & MappingCmd_Orientation) {
-    cmd->orientationCmd = CopyString(argv[8]);
+  if (NotEmpty(argv[8 + shift])) {
+    cmd->orientationCmd = CopyString(argv[8 + shift]);
+    cmdFlag |= MappingCmd_Orientation;
   }
-  
-  if (cmdFlag & MappingCmd_Shape) {
-    cmd->shapeCmd = CopyString(argv[9]);
+  if (NotEmpty(argv[9 + shift])) {
+    cmd->shapeCmd = CopyString(argv[9 + shift]);
+    cmdFlag |= MappingCmd_Shape;
   }
-  
-  if (attrFlag & 1) {
-    cmd->shapeAttrCmd[0] = CopyString(argv[10]);
+  if (NotEmpty(argv[10 + shift])) {
+    cmd->shapeAttrCmd[0] = CopyString(argv[10 + shift]);
+    attrFlag |= 1;
   }
-  
-  if (attrFlag & 2) {
-    cmd->shapeAttrCmd[1] = CopyString(argv[11]);
+  if (NotEmpty(argv[11 + shift])) {
+    cmd->shapeAttrCmd[1] = CopyString(argv[11 + shift]);
+    attrFlag |= 2;
+  }
+
+  if (argc == 14) {
+    if (NotEmpty(argv[5])) {
+      cmd->zCmd = CopyString(argv[5]);
+      cmdFlag |= MappingCmd_Z;
+    }
+    if (NotEmpty(argv[13])) {
+      cmd->shapeAttrCmd[2] = CopyString(argv[13]);
+      attrFlag |= 4;
+    }
   }
 }
 
-static char buf[12][256];
-static char *args[12];
+static char buf[14][256];
+static char *args[14];
 
 void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
 {
-  argc = 12;
+  argc = 14;
   argv = args;
 
-  /* parameters are: tdata, x, y, color, size, pattern, orientation,
-     shape, and shapeAttr */
   if (_cmd == NULL) {
     /* params for creating a new mapping */
     sprintf(buf[0], "File_Alias {%s}", ControlPanel::Instance()->FileAlias());
@@ -224,13 +235,15 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
     args[2] = "Sorted X";
     args[3] = "X";
     args[4] = "Y";
-    args[5] = "Color";
-    args[6] = "Size";
-    args[7] = "Pattern";
-    args[8] = "Orientation";
-    args[9] = "Shape";
-    args[10] = "ShapeAttr0";
-    args[11] = "ShapeAttr1";
+    args[5] = "Z";
+    args[6] = "Color";
+    args[7] = "Size";
+    args[8] = "Pattern";
+    args[9] = "Orientation";
+    args[10] = "Shape";
+    args[11] = "ShapeAttr0";
+    args[12] = "ShapeAttr1";
+    args[13] = "ShapeAttr2";
 
   } else {
 
@@ -248,8 +261,10 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
     } else {
       sprintf(buf[1], "GData_Name {%s}", _name);
     }
+
     args[0] = buf[0];
     args[1] = buf[1];
+
     if (_numDimensions == 1) {
       args[2] = "Sorted X";
     } else
@@ -267,47 +282,59 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
     } else
       args[4] = "Y";
     
-    if ( _cmd->colorCmd != NULL) {
-      sprintf(buf[5], "Color {%s}", _cmd->colorCmd);
+    if (_cmd->zCmd != NULL) {
+      sprintf(buf[5], "Z {%s}", _cmd->zCmd);
       args[5] = buf[5];
     } else
-      args[5] = "Color";
+      args[5] = "Z";
     
-    if ( _cmd->sizeCmd != NULL) {
-      sprintf(buf[6], "Size {%s}", _cmd->sizeCmd);
+    if ( _cmd->colorCmd != NULL) {
+      sprintf(buf[6], "Color {%s}", _cmd->colorCmd);
       args[6] = buf[6];
     } else
-      args[6] = "Size";
+      args[6] = "Color";
     
-    if ( _cmd->patternCmd != NULL) {
-      sprintf(buf[7], "Pattern {%s}", _cmd->patternCmd);
+    if ( _cmd->sizeCmd != NULL) {
+      sprintf(buf[7], "Size {%s}", _cmd->sizeCmd);
       args[7] = buf[7];
     } else
-      args[7] = "Pattern";
+      args[7] = "Size";
     
-    if ( _cmd->orientationCmd != NULL) {
-      sprintf(buf[8], "Orientation {%s}", _cmd->orientationCmd);
+    if ( _cmd->patternCmd != NULL) {
+      sprintf(buf[8], "Pattern {%s}", _cmd->patternCmd);
       args[8] = buf[8];
     } else
-      args[8] = "Orientation";
+      args[8] = "Pattern";
     
-    if ( _cmd->shapeCmd!= NULL) {
-      sprintf(buf[9], "Shape {%s}", _cmd->shapeCmd);
+    if ( _cmd->orientationCmd != NULL) {
+      sprintf(buf[9], "Orientation {%s}", _cmd->orientationCmd);
       args[9] = buf[9];
     } else
-      args[9] = "Shape";
+      args[9] = "Orientation";
     
-    if ( _cmd->shapeAttrCmd[0] != NULL) {
-      sprintf(buf[10], "ShapeAttr0 {%s}", _cmd->shapeAttrCmd[0]);
+    if ( _cmd->shapeCmd!= NULL) {
+      sprintf(buf[10], "Shape {%s}", _cmd->shapeCmd);
       args[10] = buf[10];
     } else
-      args[10] = "ShapeAttr0";
+      args[10] = "Shape";
     
-    if (_cmd->shapeAttrCmd[1] != NULL) {
-      sprintf(buf[11], "ShapeAttr1 {%s}", _cmd->shapeAttrCmd[1]);
+    if ( _cmd->shapeAttrCmd[0] != NULL) {
+      sprintf(buf[11], "ShapeAttr0 {%s}", _cmd->shapeAttrCmd[0]);
       args[11] = buf[11];
     } else
-      args[11] = "ShapeAttr1";
+      args[11] = "ShapeAttr0";
+    
+    if (_cmd->shapeAttrCmd[1] != NULL) {
+      sprintf(buf[12], "ShapeAttr1 {%s}", _cmd->shapeAttrCmd[1]);
+      args[12] = buf[12];
+    } else
+      args[12] = "ShapeAttr1";
+    
+    if (_cmd->shapeAttrCmd[2] != NULL) {
+      sprintf(buf[13], "ShapeAttr2 {%s}", _cmd->shapeAttrCmd[2]);
+      args[13] = buf[13];
+    } else
+      args[13] = "ShapeAttr2";
   }
 }
 
@@ -334,14 +361,8 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
   int numDimensions;
   char *tdataAlias, *name;
 
-  /*
-     printf("MapInterpclassInfo: CreateWithParams: extractCmd\n");
-  */
   ExtractCommand(argc, argv, cmd, cmdFlag, attrFlag,
 		 dimensionInfo, numDimensions, tdataAlias, tdata, name);
-  /*
-     printf("MapInterpclassInfo: CreateWithParams: after extractCmd\n");
-  */
   
   if (_cmd == NULL) {
     /*
@@ -364,12 +385,11 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
      printf("MapInterpclassInfo: CreateWithParams: create new instance\n");
   */
     
-  MappingInterp *map = new MappingInterp(name,tdata,cmd,
+  MappingInterp *map = new MappingInterp(name, tdata, cmd,
 					 cmdFlag, attrFlag, dimensionInfo,
 					 numDimensions);
   
-  return new MapInterpClassInfo(_className,
-				tdataAlias, name, dimensionInfo,
+  return new MapInterpClassInfo(_className, tdataAlias, name, dimensionInfo,
 				numDimensions, map, tdata, cmd, cmdFlag,
 				attrFlag);
 }
@@ -403,7 +423,7 @@ void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
 {
   /* parameters are: fileAlias mapName  x, y, color, size, 
      pattern, orientation, shape, and shapeAttr */
-  argc = 12;
+  argc = 14;
   argv = args;
   
   args[0] = _fileAlias;
@@ -429,38 +449,48 @@ void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
   } else
     args[4] = "";
   
-  if ( _cmd->colorCmd != NULL) {
-    args[5] = _cmd->colorCmd;
+  if (_cmd->zCmd != NULL) {
+    args[5] = _cmd->zCmd;
   } else
     args[5] = "";
   
-  if ( _cmd->sizeCmd != NULL) {
-    args[6] = _cmd->sizeCmd;
+  if ( _cmd->colorCmd != NULL) {
+    args[6] = _cmd->colorCmd;
   } else
     args[6] = "";
   
-  if ( _cmd->patternCmd != NULL) {
-    args[7] = _cmd->patternCmd;
+  if ( _cmd->sizeCmd != NULL) {
+    args[7] = _cmd->sizeCmd;
   } else
-    args[7] = NULL;
+    args[7] = "";
+  
+  if ( _cmd->patternCmd != NULL) {
+    args[8] = _cmd->patternCmd;
+  } else
+    args[8] = NULL;
   
   if ( _cmd->orientationCmd != NULL) {
-    args[8] = _cmd->orientationCmd;
+    args[9] = _cmd->orientationCmd;
   } else
-    args[8] = "";
+    args[9] = "";
   
   if ( _cmd->shapeCmd!= NULL) {
-    args[9] = _cmd->shapeCmd;
+    args[10] = _cmd->shapeCmd;
   } else
-    args[9] = NULL;
+    args[10] = NULL;
   
   if ( _cmd->shapeAttrCmd[0] != NULL) {
-    args[10] = _cmd->shapeAttrCmd[0];
+    args[11] = _cmd->shapeAttrCmd[0];
   } else
-    args[10] = "";
+    args[11] = "";
   
-  if (_cmd != NULL && _cmd->shapeAttrCmd[0] != NULL) {
-    args[11] = _cmd->shapeAttrCmd[1];
+  if ( _cmd->shapeAttrCmd[1] != NULL) {
+    args[12] = _cmd->shapeAttrCmd[1];
   } else
-    args[11] = NULL;
+    args[12] = NULL;
+  
+  if ( _cmd->shapeAttrCmd[2] != NULL) {
+    args[13] = _cmd->shapeAttrCmd[2];
+  } else
+    args[13] = NULL;
 }

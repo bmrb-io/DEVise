@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/01/09 22:27:44  jussi
+  Added 3D block shape.
+
   Revision 1.15  1996/01/09 16:35:48  jussi
   Added missing SetDefaultX() and SetDefaultY() calls.
 
@@ -72,6 +75,7 @@
 
 #include <stdio.h>
 #include <tcl.h>
+
 #include "DeviseTypes.h"
 #include "Bitmap.h"
 #include "AttrList.h"
@@ -116,36 +120,40 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
   int size = 0;
   double val;
 
-  if (flag & MappingCmd_X && !IsConstCmd(cmd->xCmd,val)) {
+  if (flag & MappingCmd_X && !IsConstCmd(cmd->xCmd, val)) {
     size = WordBoundary(size, sizeof(double));
     size += sizeof(double);
   }
-  if (flag & MappingCmd_Y && !IsConstCmd(cmd->yCmd,val)) {
+  if (flag & MappingCmd_Y && !IsConstCmd(cmd->yCmd, val)) {
     size = WordBoundary(size, sizeof(double));
     size += sizeof(double);
   }
-  if ((flag & MappingCmd_Color) && !IsConstCmd(cmd->colorCmd,val)) {
+  if (flag & MappingCmd_Z && !IsConstCmd(cmd->zCmd, val)) {
+    size = WordBoundary(size, sizeof(double));
+    size += sizeof(double);
+  }
+  if ((flag & MappingCmd_Color) && !IsConstCmd(cmd->colorCmd, val)) {
     size = WordBoundary(size, sizeof(Color));
     size += sizeof(Color);
   }
-  if ((flag & MappingCmd_Size) && !IsConstCmd(cmd->sizeCmd,val)) {
+  if ((flag & MappingCmd_Size) && !IsConstCmd(cmd->sizeCmd, val)) {
     size = WordBoundary(size, sizeof(double));
     size += sizeof(double);
   }
-  if ((flag & MappingCmd_Pattern) && !IsConstCmd(cmd->patternCmd,val)) {
+  if ((flag & MappingCmd_Pattern) && !IsConstCmd(cmd->patternCmd, val)) {
     size = WordBoundary(size, sizeof(Pattern));
     size += sizeof(Pattern);
   }
-  if ((flag & MappingCmd_Shape) && !IsConstCmd(cmd->shapeCmd,val)) {
+  if ((flag & MappingCmd_Shape) && !IsConstCmd(cmd->shapeCmd, val)) {
     size = WordBoundary(size, sizeof(ShapeID));
     size += sizeof(ShapeID);
   }
   if ((flag & MappingCmd_Orientation) && 
-      !IsConstCmd(cmd->orientationCmd,val)) {
+      !IsConstCmd(cmd->orientationCmd, val)) {
     size = WordBoundary(size, sizeof(double));
     size += sizeof(double);
   }
-  
+
   for(int j = 0; j < MAX_GDATA_ATTRS; j++) {
     if ((attrFlag & (1 << j)) && !IsConstCmd(cmd->shapeAttrCmd[j], val) ) {
       size = WordBoundary(size, sizeof(double));
@@ -173,17 +181,12 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 			 Init::MaxGDataPages(),
 			 dimensionInfo, numDimensions, true)
 {
-  /*
-     printf("MappingInterp::constructor 0x%p, %d dimensions cmdFlag 0x%p, attrFlag 0x%p\n",
-     this, numDimensions, flag, attrFlag);
-  */
+#ifdef DEBUG
+  printf("MappingInterp: 0x%p, %d dimensions, cmdFlag 0x%x, attrFlag 0x%x\n",
+	 this, numDimensions, flag, attrFlag);
+#endif
 
   _tclCmd = new MappingInterpCmd();
-
-  /* 
-     printf("new command color = '%s'\n", cmd->colorCmd);
-  */
-
   _attrList = tdata->GetAttrList();
   _simpleCmd = new MappingSimpleCmd();
 
@@ -407,9 +410,6 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
     static char cmdbuf[255];
     const int maxcmd = sizeof cmdbuf - 7 - 1;
 
-    /*
-       printf("eval x\n");
-    */
     if (_offsets->xOffset >= 0) {
       if (_tclCmd->xCmd == NULL) {
 	_interpResult = GetDefaultX();
@@ -418,15 +418,9 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->xCmd);
 	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
       }
-      /*
-	 printf("eval x\n");
-      */
       *((double *)(gPtr + _offsets->xOffset)) = _interpResult;
     }
     
-    /*
-       printf("eval y\n");
-    */
     if (_offsets->yOffset >= 0) {
       if (_tclCmd->yCmd == NULL) {
 	_interpResult = GetDefaultY();
@@ -435,13 +429,18 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
 	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->yCmd);
 	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
       }
-      /*
-	 printf("eval y\n");
-      */
       *((double *)(gPtr + _offsets->yOffset)) = _interpResult;
-      /*
-	 printf("y is %f\n", _interpResult);
-      */
+    }
+    
+    if (_offsets->zOffset >= 0) {
+      if (_tclCmd->zCmd == NULL) {
+	_interpResult = GetDefaultZ();
+      } else {
+	_interpResult = 0.0;
+	sprintf(cmdbuf, "[expr %.*s]", maxcmd, _tclCmd->zCmd);
+	code = Tcl_VarEval(_interp, "set interpResult ", cmdbuf, NULL);
+      }
+      *((double *)(gPtr + _offsets->zOffset)) = _interpResult;
     }
     
     if (_offsets->colorOffset >= 0 ) {
@@ -510,7 +509,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
     }
 
     if (_offsets->orientationOffset >= 0 ) {
-      if (_tclCmd->yCmd == NULL) {
+      if (_tclCmd->orientationCmd == NULL) {
 	_interpResult = GetDefaultOrientation();
       } else {
 	_interpResult = 0.0;
@@ -526,7 +525,7 @@ void MappingInterp::ConvertToGData(RecId startRecId, void *buf,
     ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
     for(j = 0; j <= _maxGDataShapeAttrNum; j++) {
       if (_offsets->shapeAttrOffset[j] >= 0) {
-	if (_tclCmd->yCmd == NULL) {
+	if (_tclCmd->shapeAttrCmd[j] == NULL) {
 	  _interpResult = shapeAttr[j];
 	} else {
 	  _interpResult = 0.0;
@@ -555,8 +554,8 @@ AttrList *MappingInterp::InitCmd(char *name)
   AttrList *attrList = new AttrList(name);
 
   /* Init offsets to GData attributes */
-  _offsets->xOffset= _offsets->yOffset = _offsets->colorOffset = -1;
-  _offsets->sizeOffset = _offsets->shapeOffset = -1;
+  _offsets->xOffset = _offsets->yOffset = _offsets->zOffset = -1;
+  _offsets->colorOffset = _offsets->sizeOffset = _offsets->shapeOffset = -1;
   _offsets->patternOffset = _offsets->orientationOffset = -1;
   int i;
   for(i = 0; i < MAX_GDATA_ATTRS; i++)
@@ -600,6 +599,20 @@ AttrList *MappingInterp::InitCmd(char *name)
     }
   }
 
+  if (_cmdFlag & MappingCmd_Z) {
+    if (!ConvertSimpleCmd(_cmd->zCmd, _simpleCmd->zCmd, attrType, isSorted))
+      goto complexCmd;
+    if (_simpleCmd->zCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
+      /* constant */
+      SetDefaultZ((Coord)_simpleCmd->zCmd.cmd.num);
+    } else {
+      _offsets->zOffset = offset = WordBoundary(offset, sizeof(double));
+      attrList->InsertAttr(2, "z",offset,sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
   if (_cmdFlag & MappingCmd_Color) {
     if (!ConvertSimpleCmd(_cmd->colorCmd, _simpleCmd->colorCmd, attrType,
 			  isSorted))
@@ -609,7 +622,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultColor((Color)_simpleCmd->colorCmd.cmd.num);
     } else {
       _offsets->colorOffset = offset = WordBoundary(offset, sizeof(Color));
-      attrList->InsertAttr(2, "color",offset,sizeof(double),attrType,
+      attrList->InsertAttr(3, "color",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(Color);
     }
@@ -624,7 +637,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultSize((Coord)_simpleCmd->sizeCmd.cmd.num);
     } else {
       _offsets->sizeOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(3, "size",offset,sizeof(double),attrType,
+      attrList->InsertAttr(4, "size",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(double);
     }
@@ -639,7 +652,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultPattern((Pattern)_simpleCmd->patternCmd.cmd.num);
     } else {
       _offsets->patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
-      attrList->InsertAttr(4, "pattern",offset,sizeof(double),attrType,
+      attrList->InsertAttr(5, "pattern",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(Pattern);
     }
@@ -657,7 +670,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       SetDefaultShape(shape);
     } else {
       _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
-      attrList->InsertAttr(5, "shape",offset,sizeof(double),attrType,
+      attrList->InsertAttr(6, "shape",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(ShapeID);
     }
@@ -674,7 +687,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _offsets->orientationOffset = offset = WordBoundary(offset,
 							  sizeof(double));
-      attrList->InsertAttr(6, "orientation",offset,sizeof(double),attrType,
+      attrList->InsertAttr(7, "orientation",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(double);
     }
@@ -700,7 +713,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 	sprintf(attrName, "shapeAttr_%d", j);
 	_offsets->shapeAttrOffset[j] = offset = WordBoundary(offset,
 							     sizeof(double));
-	attrList->InsertAttr(7 + j, attrName, offset, sizeof(double),
+	attrList->InsertAttr(8 + j, attrName, offset, sizeof(double),
 			     attrType, false,  NULL, false, isSorted);
 	offset += sizeof(double);
       }
@@ -713,10 +726,12 @@ AttrList *MappingInterp::InitCmd(char *name)
   printf("Command is %s\n", name);
   PrintCmd();
   attrList->Print();
-  printf("offsets x: %d, y %d, color %d, size %d, shape %d, pattern %d, orientation %d\n", 
-	 _offsets->xOffset, _offsets->yOffset, _offsets->colorOffset, 
-	 _offsets->sizeOffset, _offsets->shapeOffset,
-	 _offsets->patternOffset, _offsets->orientationOffset);
+  printf("offsets: x %d, y %d, z %d, color %d, size %d,\n", 
+	 _offsets->xOffset, _offsets->yOffset, _offsets->zOffset,
+	 _offsets->colorOffset, _offsets->sizeOffset);
+  printf("         shape %d, pattern %d, orientation %d\n", 
+	 _offsets->shapeOffset, _offsets->patternOffset,
+	 _offsets->orientationOffset);
   printf("attr offsets:");
   for(i = 0; i < MAX_GDATA_ATTRS; i++)
     printf(" %d", _offsets->shapeAttrOffset[i]);
@@ -727,8 +742,8 @@ AttrList *MappingInterp::InitCmd(char *name)
   
  complexCmd:
   /* Init offsets to GData attributes */
-  _offsets->xOffset= _offsets->yOffset = _offsets->colorOffset = -1;
-  _offsets->sizeOffset = _offsets->shapeOffset = -1;
+  _offsets->xOffset = _offsets->yOffset = _offsets->zOffset = -1;
+  _offsets->colorOffset = _offsets->sizeOffset = _offsets->shapeOffset = -1;
   _offsets->patternOffset = _offsets->orientationOffset = -1;
   for(i = 0; i < MAX_GDATA_ATTRS; i++)
     _offsets->shapeAttrOffset[i] = -1;
@@ -770,6 +785,19 @@ AttrList *MappingInterp::InitCmd(char *name)
     }
   }
 
+  if (_cmdFlag & MappingCmd_Z) {
+    if (IsConstCmd(_cmd->zCmd, constVal)) {
+      SetDefaultZ((Coord)constVal);
+      _tclCmd->zCmd = NULL;
+    } else {
+      _tclCmd->zCmd = ConvertCmd(_cmd->zCmd, attrType, isSorted);
+      _offsets->zOffset = offset = WordBoundary(offset,sizeof(double));
+      attrList->InsertAttr(2, "z", offset, sizeof(double), attrType,
+			   false, NULL, false, isSorted);
+      offset += sizeof(double);
+    }
+  }
+
   if (_cmdFlag & MappingCmd_Color) {
     if (IsConstCmd(_cmd->colorCmd, constVal)) {
       SetDefaultColor((Color)constVal);
@@ -777,7 +805,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _tclCmd->colorCmd = ConvertCmd(_cmd->colorCmd, attrType, isSorted);
       _offsets->colorOffset = offset = WordBoundary(offset,sizeof(Color));
-      attrList->InsertAttr(2, "color",offset,sizeof(double),attrType,
+      attrList->InsertAttr(3, "color",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(Color);
     }
@@ -790,7 +818,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _tclCmd->sizeCmd = ConvertCmd(_cmd->sizeCmd, attrType, isSorted);
       _offsets->sizeOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(3, "size",offset,sizeof(double),attrType,
+      attrList->InsertAttr(4, "size",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(double);
     }
@@ -804,7 +832,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       _tclCmd->patternCmd = 
 	ConvertCmd(_cmd->patternCmd, attrType, isSorted);
       _offsets->patternOffset = offset = WordBoundary(offset,sizeof(Pattern));
-      attrList->InsertAttr(4, "pattern",offset,sizeof(double),attrType,
+      attrList->InsertAttr(5, "pattern",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(Pattern);
     }
@@ -820,7 +848,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     } else {
       _tclCmd->shapeCmd = ConvertCmd(_cmd->shapeCmd, attrType, isSorted);
       _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(ShapeID));
-      attrList->InsertAttr(5, "shape",offset,sizeof(double),attrType,
+      attrList->InsertAttr(6, "shape",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(ShapeID);
     }
@@ -834,7 +862,7 @@ AttrList *MappingInterp::InitCmd(char *name)
       _tclCmd->orientationCmd = ConvertCmd(_cmd->orientationCmd, attrType, 
 					   isSorted);
       _offsets->shapeOffset = offset = WordBoundary(offset,sizeof(double));
-      attrList->InsertAttr(6, "orientation",offset,sizeof(double),attrType,
+      attrList->InsertAttr(7, "orientation",offset,sizeof(double),attrType,
 			   false,  NULL, false, isSorted);
       offset += sizeof(double);
     }
@@ -854,7 +882,7 @@ AttrList *MappingInterp::InitCmd(char *name)
 	  ConvertCmd(_cmd->shapeAttrCmd[j],attrType, isSorted);
 	_offsets->shapeAttrOffset[j] = offset = WordBoundary(offset,
 							     sizeof(double));
-	attrList->InsertAttr(j + 7, attrName, offset, sizeof(double),
+	attrList->InsertAttr(8 + j, attrName, offset, sizeof(double),
 			     attrType, false,  NULL, false, isSorted);
 	offset += sizeof(double);
       }
@@ -865,10 +893,12 @@ AttrList *MappingInterp::InitCmd(char *name)
   printf("Command is %s\n", name);
   PrintCmd();
   attrList->Print();
-  printf("offsets x: %d, y %d, color %d, size %d, shape %d, pattern %d, orientation %d\n", 
-	 _offsets->xOffset, _offsets->yOffset, _offsets->colorOffset, 
-	 _offsets->sizeOffset, _offsets->shapeOffset,
-	 _offsets->patternOffset, _offsets->orientationOffset);
+  printf("offsets: x %d, y %d, z %d, color %d, size %d,\n", 
+	 _offsets->xOffset, _offsets->yOffset, _offsets->zOffset,
+	 _offsets->colorOffset, _offsets->sizeOffset);
+  printf("         shape %d, pattern %d, orientation %d\n", 
+	 _offsets->shapeOffset, _offsets->patternOffset,
+	 _offsets->orientationOffset);
   printf("attr offsets: ");
   for(i = 0; i < MAX_GDATA_ATTRS; i++)
     printf(" %d", _offsets->shapeAttrOffset[i]);
@@ -1092,6 +1122,12 @@ void MappingInterp::PrintCmd()
       printf("\n");
     }
     
+    if (_cmdFlag & MappingCmd_Z) {
+      printf("z: %s --> ", _cmd->zCmd);
+      PrintSimpleCmdEntry(&_simpleCmd->zCmd);
+      printf("\n");
+    }
+
     if (_cmdFlag & MappingCmd_Color) {
       printf("color: %s --> ", _cmd->colorCmd);
       PrintSimpleCmdEntry(&_simpleCmd->colorCmd);
@@ -1138,6 +1174,9 @@ void MappingInterp::PrintCmd()
     
     if (_cmdFlag & MappingCmd_Y)
       printf("y: %s --> %s\n", _cmd->yCmd, _tclCmd->yCmd);
+    
+    if (_cmdFlag & MappingCmd_Z)
+      printf("z: %s --> %s\n", _cmd->zCmd, _tclCmd->zCmd);
     
     if (_cmdFlag & MappingCmd_Color)
       printf("color: %s --> %s\n", _cmd->colorCmd, _tclCmd->colorCmd);
@@ -1255,6 +1294,10 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
     if ( _offsets->yOffset >= 0) {
       dPtr = (double *)(gPtr + _offsets->yOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->yCmd, 1.0);
+    }
+    if (_offsets->zOffset >= 0) {
+      dPtr = (double *)(gPtr + _offsets->zOffset);
+      *dPtr = ConvertOne(tPtr, &_simpleCmd->zCmd, 1.0);
     }
     if (_offsets->colorOffset >= 0) {
       Color *cPtr = (Color *)(gPtr + _offsets->colorOffset);

@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.29  1996/01/13 20:56:26  jussi
+#	Reorganized code that opens a data source. The same routine
+#	(OpenDataSource) is now used in the session file.
+#
 #	Revision 1.28  1996/01/11 21:01:44  jussi
 #	Data stream is cached before schema is read; this is because
 #	for SEQ the schema is produced as part of the caching step.
@@ -328,8 +332,9 @@ proc MacroDefNewMapping {} {
     if {[lsearch [DEVise get mapping] $gdata] < 0} {
 	# ask DEVise to create interpreted mapping
 	# parameter format: x y color size pattern orientation shape
-	set result [DEVise createInterp $tdata $gdata "" \$$x \$$y \
-		$color $size $pattern $orient $shape $shapeAttr0 $shapeAttr1]
+	set result [DEVise createInterp $tdata $gdata "" \$$x \$$y "" \
+		$color $size $pattern $orient $shape $shapeAttr0 \
+		$shapeAttr1 ""]
     }
 
     set mapinstance "$tdata#$gdata" 
@@ -860,8 +865,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window layout titlesel
 	    # ask DEVise to create interpreted mapping
 	    # parameter format: x y color size pattern orientation shape
 	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
-		    $color $size $pattern $orient $shape $shapeAttr0 \
-		    $shapeAttr1]
+		    "" $color $size $pattern $orient $shape $shapeAttr0 \
+		    $shapeAttr1 ""]
 	}
 
 	set mapinstance [UniqueName "$tdata#$mapname"]
