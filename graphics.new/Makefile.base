@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.53  1996/12/30 23:57:33  andyt
+#  First version with support for Embedded Tcl/Tk windows. Added new
+#  ETkWindow symbol shape. Improved the MappingInterp::MapGAttr2TAttr
+#  function to handle all GData attributes (used to only handle a subset).
+#
 #  Revision 1.52  1996/12/15 06:48:46  donjerko
 #  Added support for RTrees and moved DQL sources to DTE/DeviseSpecific dir
 #
@@ -157,8 +162,18 @@ libbufmgr.a: $(BufMgrObj)
 	$(AR) cr $@ $(BufMgrObj)
 	$(RANLIB) $@
 
-testSBufMgr: testSBufMgr.o SBufMgr.o DCE.o
-	$(CC) -o $@ $@.o SBufMgr.o DCE.o \
+testSBufMgr: testSBufMgr.o SBufMgr.o DCE.o ../generic/CompDate.o
+	$(CC) -o $@ $@.o SBufMgr.o DCE.o ../generic/CompDate.o \
+		-L../graphics -lgraphics -L. -lgraphicsnew -lX11 -lm \
+                $(ARCH_LDFLAGS)
+
+testSBM2: testSBM2.o SBufMgr.o DCE.o ../generic/CompDate.o
+	$(CC) -o $@ $@.o SBufMgr.o DCE.o ../generic/CompDate.o \
+		-L../graphics -lgraphics -L. -lgraphicsnew -lX11 -lm \
+                $(ARCH_LDFLAGS)
+
+testSBM3: testSBM3.o SBufMgr.o DCE.o ../generic/CompDate.o
+	$(CC) -o $@ $@.o SBufMgr.o DCE.o ../generic/CompDate.o \
 		-L../graphics -lgraphics -L. -lgraphicsnew -lX11 -lm \
                 $(ARCH_LDFLAGS)
 
