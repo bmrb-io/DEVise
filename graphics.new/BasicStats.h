@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/22 02:36:12  ravim
+  Vertical lines for maximum and minimum.
+
   Revision 1.7  1995/12/18 03:12:21  ravim
   Confidence intervals displayed.
 
@@ -47,26 +50,37 @@
 class ViewKGraph;
 
 // List of stats collected here
-#define STAT_MEAN 0
-#define STAT_MAX 1
-#define STAT_MIN 2
-#define STAT_COUNT 3
-#define ZVAL85 4
-#define ZVAL90 5
-#define ZVAL95 6
-#define STAT_NONE 7
+#define STAT_MEAN   0
+#define STAT_MAX    1
+#define STAT_MIN    2
+#define STAT_COUNT  3
+#define ZVAL85      4
+#define ZVAL90      5
+#define ZVAL95      6
+#define STAT_NONE   7
 
 // Total number of stats
-#define STAT_NUM 7
+#define STAT_NUM    7
+
 // Maximum length of the name of any stat
 #define STATNAMELEN 10
+
+// The following are only used for retrieving
+// clow[NUM_Z_VALS], chigh[NUM_Z_VALS]
+
+#define STAT_ZVAL85L 11
+#define STAT_ZVAL85H 12
+#define STAT_ZVAL90L 13
+#define STAT_ZVAL90H 14
+#define STAT_ZVAL95L 15
+#define STAT_ZVAL95H 16
+
 // Number of confidence intervals
 #define NUM_Z_VALS 3
+
 const double zval[NUM_Z_VALS] = {1.464, 1.645, 1.960};
 const int num_per_batch = 1;
 
-// The generic stats collection and reporting class
-// For now, computes some simple stats - can be extended later 
 class BasicStats: public ViewStats
 {
 public:

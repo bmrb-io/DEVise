@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1996/06/16 01:54:11  jussi
+  Added calls to IsComplexShape().
+
   Revision 1.13  1996/05/31 15:41:23  jussi
   Added support for record links.
 
@@ -70,6 +73,7 @@
 #include "ViewScatter.h"
 #include "TDataMap.h"
 #include "Shape.h"
+#include "Util.h"
 #include "RecordLink.h"
 
 //#define DEBUG
@@ -101,6 +105,12 @@ void ViewScatter::InsertMapping(TDataMap *map)
 
 void ViewScatter::DerivedStartQuery(VisualFilter &filter, int timestamp)
 {
+  // Initialize statistics collection
+  _allStats.Init(this);
+
+  for(int i = 0; i < MAXCOLOR; i++)
+    _stats[i].Init(this);
+
   // Initialize record links whose master this view is
   int index = _masterLink.InitIterator();
   while(_masterLink.More(index)) {
@@ -157,67 +167,76 @@ void ViewScatter::QueryInit(void *userData)
 void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 			      void *gdata, int numGData)
 {
-  int gRecSize = mapping->GDataRecordSize();
-  
+  DOASSERT(_index >= 0, "Invalid iterator index");
+
 #ifdef DEBUG
   printf("ViewScatter %d recs buf start 0x%p, end 0x%p\n", numGData,
 	 gdata, ((char *)gdata) + numGData * gRecSize - 1);
 #endif
 
-  char *ptr = (char *)gdata;
+  int gRecSize = mapping->GDataRecordSize();
   int recIndex = 0;
-  VisualFilter *filter = GetVisualFilter();
-  Coord maxWidth, maxHeight;
-  mapping->MaxBoundingBox(maxWidth, maxHeight);
-  GDataAttrOffset *offset = mapping->GetGDataOffset();
+  
+  // Collect statistics and update record links only for last mapping
+  if (!MoreMapping(_index)) {
 
-  int firstRec = 0;
+    char *ptr = (char *)gdata;
+    Coord maxWidth, maxHeight;
+    mapping->MaxBoundingBox(maxWidth, maxHeight);
+    GDataAttrOffset *offset = mapping->GetGDataOffset();
 
-  for(int i = 0; i < numGData; i++) {
+    int firstRec = 0;
 
-    // extract X, Y, shape, and color information from gdata record
+    for(int i = 0; i < numGData; i++) {
 
-    Coord x = GetX(ptr, mapping, offset);
-    Coord y = GetY(ptr, mapping, offset);
-    ShapeID shape = GetShape(ptr, mapping, offset);
-    Boolean complexShape = mapping->IsComplexShape(shape);
-    Color color = mapping->GetDefaultColor();
-    if (offset->colorOffset >= 0)
-      color = *(Color *)(ptr + offset->colorOffset);
+      // Extract X, Y, shape, and color information from gdata record
+      Coord x = GetX(ptr, mapping, offset);
+      Coord y = GetY(ptr, mapping, offset);
+      ShapeID shape = GetShape(ptr, mapping, offset);
+      Boolean complexShape = mapping->IsComplexShape(shape);
+      Color color = mapping->GetDefaultColor();
+      if (offset->colorOffset >= 0)
+	color = *(Color *)(ptr + offset->colorOffset);
 
-    // eliminate records which won't appear on the screen
+      // Eliminate records which don't match the filter's X and Y range
+      if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh &&
+	  y >= _queryFilter.yLow && y <= _queryFilter.yHigh) {
+	if (color < MAXCOLOR)
+	  _stats[color].Sample(x, y);
+	_allStats.Sample(x, y);
+      }
 
-    if (!complexShape &&
-	(x + maxWidth / 2 < filter->xLow || 
-	 x - maxWidth / 2 > filter->xHigh || 
-	 y + maxHeight / 2 < filter->yLow || 
-	 y - maxHeight / 2 > filter->yHigh)) {
+      // Contiguous ranges which match the filter's X and Y range
+      // are stored in the record link
+      if (!complexShape &&
+	  (x + maxWidth / 2 < _queryFilter.xLow || 
+	   x - maxWidth / 2 > _queryFilter.xHigh || 
+	   y + maxHeight / 2 < _queryFilter.yLow || 
+	   y - maxHeight / 2 > _queryFilter.yHigh)) {
+	if (i > firstRec)
+	  WriteMasterLink(recId + firstRec, i - firstRec);
 
-      // Only last mapping is used for record linking
-      if (!MoreMapping(_index) && i > firstRec)
-	WriteMasterLink(recId + firstRec, i - firstRec);
+	// Next contiguous batch of record id's starts at i+1
+	firstRec = i + 1;
 
-      // Next contiguous batch of record id's starts at i+1
-      firstRec = i + 1;
-
-      ptr += gRecSize;
-      continue;
-    }
+	ptr += gRecSize;
+	continue;
+      }
     
-    _recs[recIndex++] = ptr;
-    if (recIndex == WINDOWREP_BATCH_SIZE) {
-      mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
-      recIndex = 0;
+      _recs[recIndex++] = ptr;
+      if (recIndex == WINDOWREP_BATCH_SIZE) {
+	mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
+	recIndex = 0;
+      }
+      ptr += gRecSize;
     }
-    ptr += gRecSize;
+
+    if (numGData > firstRec)
+      WriteMasterLink(recId + firstRec, numGData - firstRec);
   }
 
   if (recIndex > 0)
     mapping->DrawGDataArray(this, GetWindowRep(), _recs, recIndex);
-
-  // Only last mapping is used for record linking
-  if (!MoreMapping(_index) && numGData > firstRec)
-    WriteMasterLink(recId + firstRec, numGData - firstRec);
 }
 
 /* Done with query */
@@ -237,6 +256,14 @@ void ViewScatter::QueryDone(int bytes, void *userData)
   DoneMappingIterator(_index);
   _map = 0;
   _index = -1;
+
+  _allStats.Done();
+  _allStats.Report();
+
+  for(int i = 0; i < MAXCOLOR; i++)
+    _stats[i].Done();
+
+  WriteColorStatsToFile();
 
   DrawLegend();
 

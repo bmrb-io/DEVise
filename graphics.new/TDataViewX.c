@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/06/20 16:49:50  jussi
+  Added Y condition to filter comparison.
+
   Revision 1.20  1996/06/13 00:16:31  jussi
   Added support for views that are slaves of more than one record
   link. This allows one to express disjunctive queries.
@@ -93,11 +96,15 @@
   Added CVS header.
 */
 
+#include <assert.h>
+#include <string.h>
+
 #include "Init.h"
 #include "TDataViewX.h"
 #include "TDataMap.h"
 #include "ConnectorShape.h"
 #include "Shape.h"
+#include "Util.h"
 #include "RecordLink.h"
 
 //#define DEBUG
@@ -150,7 +157,10 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
 #endif
 
   // Initialize statistics collection
-  _stats.Init(this);
+  _allStats.Init(this);
+
+  for(int i = 0; i < MAXCOLOR; i++)
+    _stats[i].Init(this);
 
   // Initialize record links whose master this view is
   int index = _masterLink.InitIterator();
@@ -203,7 +213,7 @@ void TDataViewX::DerivedAbortQuery()
 }
 
 Boolean TDataViewX::DisplaySymbols(Boolean state)
-{
+{ 
   if (state == _dispSymbols)
     return state;
 
@@ -221,7 +231,7 @@ Boolean TDataViewX::DisplaySymbols(Boolean state)
 }
 
 Boolean TDataViewX::DisplayConnectors(Boolean state)
-{
+{ 
   if (state == _dispConnectors)
     return state;
 
@@ -252,7 +262,7 @@ Boolean TDataViewX::DisplayConnectors(Boolean state)
 /* Query data ready to be returned. Do initialization here. */
 
 void TDataViewX::QueryInit(void *userData)
-{
+{ 
   _dataBin->Init(_map, &_queryFilter, GetWindowRep()->TopTransform(),
 		 _dispSymbols, _dispConnectors, _cMap, this);
 }
@@ -269,7 +279,6 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   // Collect statistics and update record links only for last mapping
   if (!MoreMapping(_index)) {
 
-    // Update stats based on gdata
     char *tp = (char *)gdata;
     GDataAttrOffset *offset = mapping->GetGDataOffset();
 
@@ -277,7 +286,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
     for(int i = 0; i < numGData; i++) {
 
-      // extract X, Y, shape, and color information from gdata record
+      // Extract X, Y, shape, and color information from gdata record
       Coord x = GetX(tp, mapping, offset);
       Coord y = GetY(tp, mapping, offset);
       ShapeID shape = GetShape(tp, mapping, offset);
@@ -285,18 +294,23 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       if (offset->colorOffset >= 0)
 	color = *(Color *)(tp + offset->colorOffset);
 
-      // compute statistics only for records that match the filter's
+      // Compute statistics only for records that match the filter's
       // X range and that exceed the Y low boundary
       if (x >= _queryFilter.xLow && x <= _queryFilter.xHigh
-	  && y >= _queryFilter.yLow)
-	_stats.Sample(x, y);
+	  && y >= _queryFilter.yLow) {
+	if (color < MAXCOLOR)
+	  _stats[color].Sample(x, y);
+	_allStats.Sample(x, y);
+      }
 
-      // contiguous ranges which match the filter's X *and* Y range
+      // Contiguous ranges which match the filter's X *and* Y range
       // are stored in the record link
       if (x < _queryFilter.xLow || x > _queryFilter.xHigh
 	  || y < _queryFilter.yLow || y > _queryFilter.yHigh) {
 	if (i > firstRec)
 	  WriteMasterLink(recId + firstRec, i - firstRec);
+
+	// Next contiguous batch of record id's starts at i+1
 	firstRec = i + 1;
       }
       
@@ -341,8 +355,14 @@ void TDataViewX::QueryDone(int bytes, void *userData)
   _map = 0;
   _index = -1;
 
-  _stats.Done();
-  _stats.Report();
+  _allStats.Done();
+  _allStats.Report();
+
+  for(int i = 0; i < MAXCOLOR; i++)
+    _stats[i].Done();
+
+  WriteColorStatsToFile();
+
   _dataBin->Final();
 
   DrawLegend();

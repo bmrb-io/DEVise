@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/06/15 13:51:27  jussi
+  Added SetMappingLegend() method.
+
   Revision 1.18  1996/06/13 00:16:32  jussi
   Added support for views that are slaves of more than one record
   link. This allows one to express disjunctive queries.
@@ -86,6 +89,7 @@
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "ActionDefault.h"
+#include "Init.h"
 #include "RecordLink.h"
 
 //#define DEBUG
@@ -100,7 +104,6 @@ ViewGraph::ViewGraph(char *name, VisualFilter &initFilter,
   if (!_action)
     _action = new ActionDefault("default");
 
-  // initialize statistics toggles to ASCII zero (not binary zero)
   memset(_DisplayStats, '0', STAT_NUM);
 
   // add terminating null
@@ -331,23 +334,25 @@ Boolean ViewGraph::IsScatterPlot()
 
 void ViewGraph::SetDisplayStats(char *stat)
 {
-  if (strlen(stat) != STAT_NUM) {
-    fprintf(stderr, "ViewGraph::SetDisplayStats: incorrect length: %d\n",
-	    (int)strlen(stat));
+  if (strlen(stat) > STAT_NUM) {
+    fprintf(stderr, "Incorrect view statistics length: %d\n",
+ 	    (int)strlen(stat));
     return;
   }
 
-  // Never redisplay data as long as the visual filter is the same
-  // Before drawing the lines, need to figure out which of them to draw
-  // If a line existing before needs to be deleted - draw line again
-  // If a line not there before needs to be drawn - draw it
-  // If line not there before, not to be drawn - dont draw it
-  // If line there now, needs to remain - dont draw it
-  // Basically XOR logic
+  // Never redisplay data as long as the visual filter is the same.
+  // Before drawing the lines, need to figure out which of them to draw.
+  // If a line existing before needs to be deleted - draw line again.
+  // If a line not there before needs to be drawn - draw it.
+  // If line not there before, not to be drawn - don't draw it.
+  // If line there now, needs to remain - don't draw it.
+  // Basically XOR logic.
   
   StatsXOR(_DisplayStats, stat, _DisplayStats);
-  _stats.Report();
-  strncpy(_DisplayStats, stat, STAT_NUM);
+  _allStats.Report();
+
+  // use memcpy to avoid copying the terminating null in stat
+  memcpy(_DisplayStats, stat, strlen(stat));
 }
 
 Boolean ViewGraph::ToRemoveStats(char *oldset, char *newset)
@@ -367,6 +372,53 @@ void ViewGraph::StatsXOR(char *oldstat, char *newstat, char *result)
 {
   for (int i = 0; i < STAT_NUM; i++)
     result[i] = ((oldstat[i] - '0')^(newstat[i] - '0')) + '0';
+}
+
+char *ViewGraph::MakeStatFileName()
+{
+  char *fname = StripPath(GetName());
+  unsigned int nameLen = strlen(Init::WorkDir()) + strlen(fname) + 6 + 1;
+  char *name = new char [nameLen];
+  sprintf(name, "%s/%s.stat", Init::WorkDir(), fname);
+  DOASSERT(strlen(name) < nameLen, "Name too long");
+  return name;
+}
+
+void ViewGraph::WriteColorStatsToFile()
+{
+  char *statFile = MakeStatFileName();
+  FILE *file = fopen(statFile, "w");
+
+  if (!file) {
+    printf("Cannot create statistics file %s: ", statFile);
+    perror("fopen");
+    delete statFile;
+    return;
+  }
+
+  /* write column header */
+  fprintf(file, "// Color Count Mean Max Min Z85L Z85H Z90L Z90H Z95L Z95H\n");
+  fprintf(file, "\n");
+
+  /* put the statistics in the stat file */
+  for(int i = 0; i < MAXCOLOR; i++) {
+    fprintf(file, "%d %d %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f\n",
+	    i, (int)_stats[i].GetStatVal(STAT_COUNT),	
+	    _stats[i].GetStatVal(STAT_MEAN),
+	    _stats[i].GetStatVal(STAT_MAX),
+	    _stats[i].GetStatVal(STAT_MIN),
+	    _stats[i].GetStatVal(STAT_ZVAL85L),
+	    _stats[i].GetStatVal(STAT_ZVAL85H),
+	    _stats[i].GetStatVal(STAT_ZVAL90L),
+	    _stats[i].GetStatVal(STAT_ZVAL90H),
+	    _stats[i].GetStatVal(STAT_ZVAL95L),
+	    _stats[i].GetStatVal(STAT_ZVAL95H));
+  }
+
+  fclose(file);
+  delete statFile;
+
+  /* tell query processor to refresh views based on this file */
 }
 
 /* Handle button press event */

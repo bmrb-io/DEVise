@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/06/15 13:51:28  jussi
+  Added SetMappingLegend() method.
+
   Revision 1.15  1996/06/13 00:16:33  jussi
   Added support for views that are slaves of more than one record
   link. This allows one to express disjunctive queries.
@@ -79,6 +82,9 @@
 #include "DList.h"
 #include "Color.h"
 #include "BasicStats.h"
+
+const int MAXCOLOR = 43;
+
 #include "Action.h"
 #include "RecId.h"
 
@@ -135,7 +141,9 @@ public:
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
   void SetDisplayStats(char *stat);
-  BasicStats *GetStatObj() { return &_stats; }
+  
+  /* There could be some problems for this function */
+  BasicStats *GetStatObj() { return &_allStats; }
 
   /* Set/get action */
   void SetAction(Action *action) { _action = action; }
@@ -145,19 +153,25 @@ public:
   Boolean IsScatterPlot();
       
  protected:
+  /* Create statistics file name and write statistics to file */
+  char *MakeStatFileName();
+  void WriteColorStatsToFile();
+
   /* Insert records into record links whose master this view is */
   void WriteMasterLink(RecId start, int num);
 
   /* List of mappings displayed in this view */
   MappingInfoList _mappings;
 
-  /* TRUE if Statistics need to be displayed along with data */
+  /* True if statistics need to be displayed along with data */
   char _DisplayStats[STAT_NUM + 1];
-  BasicStats _stats;
 
-  Action *_action;                      /* action in this view */
-  RecordLinkList _masterLink;           /* links whose master this view is */
-  RecordLinkList _slaveLink;            /* slave record link list */
+  BasicStats _allStats;            /* basic stats for all categories */
+  BasicStats _stats[MAXCOLOR];     /* basic stats per category */
+
+  Action *_action;                 /* action in this view */
+  RecordLinkList _masterLink;      /* links whose master this view is */
+  RecordLinkList _slaveLink;       /* slave record link list */
 
  private:
   Boolean ToRemoveStats(char *oldset, char *newset);
@@ -167,10 +181,10 @@ public:
   virtual void HandlePress(WindowRep * w, int xlow,
 			   int ylow, int xhigh, int yhigh, int button);
 
-  /* handle key event */
+  /* Handle key event */
   virtual void HandleKey(WindowRep *w ,char key, int x, int y);
 
-  /* handle pop-up */
+  /* Handle pop-up */
   virtual Boolean HandlePopUp(WindowRep *, int x, int y, int button,
 			      char **&msgs, int &numMsgs);
 };

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1996/02/05 21:49:13  jussi
+  Fixed error in computation of var and std.
+
   Revision 1.14  1996/02/02 21:52:41  jussi
   Removed SetFgColor() right after SetXorMode() which changed the
   effect of the xor function.
@@ -75,6 +78,7 @@ const int StatLineWidth = 1;
 
 BasicStats::BasicStats()
 {
+  _vw = 0;
 }
 
 BasicStats::~BasicStats()
@@ -182,6 +186,7 @@ void BasicStats::Report()
   printf("\t95%%: (%.2f, %.2f)\n", clow[2], chigh[2]);
 
   // Draw a line across the window to depict the min, max and average
+
   // Get the window
   WindowRep *win = _vw->GetWindowRep();
   // Get the visual filter
@@ -221,12 +226,17 @@ void BasicStats::Report()
 Coord BasicStats::GetStatVal(int statnum)
 {
   switch (statnum) {
-    case STAT_NONE:  return 0;
-    case STAT_MEAN:  return (nsamples ? (ysum / nsamples) : 0);
-    case STAT_MAX:   return ymax;
-    case STAT_MIN:   return ymin;
-    case STAT_COUNT: return nsamples;
-    default: printf("Error: Unknown statistic\n");
+    case STAT_MEAN:    return (nsamples ? (ysum / nsamples) : 0);
+    case STAT_MAX:     return ymax;
+    case STAT_MIN:     return ymin;
+    case STAT_COUNT:   return nsamples;
+    case STAT_ZVAL85L: return clow[0];
+    case STAT_ZVAL85H: return chigh[0]; 
+    case STAT_ZVAL90L: return clow[1];
+    case STAT_ZVAL90H: return chigh[1];
+    case STAT_ZVAL95L: return clow[2];
+    case STAT_ZVAL95H: return chigh[2];
+    default:           return 0;
   }
 
   return 0;
@@ -235,11 +245,17 @@ Coord BasicStats::GetStatVal(int statnum)
 char *BasicStats::GetStatName(int statnum)
 {
   switch (statnum) {
-    case STAT_MEAN:  return "MEAN";
-    case STAT_MAX:   return "MAX";
-    case STAT_MIN:   return "MIN";
-    case STAT_COUNT: return "COUNT";
-    default: return "NONE";
+    case STAT_MEAN:    return "MEAN";
+    case STAT_MAX:     return "MAX";
+    case STAT_MIN:     return "MIN";
+    case STAT_COUNT:   return "COUNT";
+    case STAT_ZVAL85L: return "ZVAL85L";
+    case STAT_ZVAL85H: return "ZVAL85H";
+    case STAT_ZVAL90L: return "ZVAL90L";
+    case STAT_ZVAL90H: return "ZVAL90H";
+    case STAT_ZVAL95L: return "ZVAL95L";
+    case STAT_ZVAL95H: return "ZVAL95H";
+    default:           return "NONE";
   }
 }
 
