@@ -140,7 +140,7 @@ mozilla_remote_find_window (Display *dpy)
   if (result && tenative)
     {
       fprintf (stderr,
-	       "%s: warning: both version %s (0x%x) and version\n"
+	       "%s: warning: both Netscape version %s (0x%x) and version\n"
 	       "\t%s (0x%x) are running.  Using version %s.\n",
 	       progname, tenative_version, (unsigned int) tenative,
 	       expected_mozilla_version, (unsigned int) result,
@@ -151,7 +151,7 @@ mozilla_remote_find_window (Display *dpy)
   else if (tenative)
     {
       fprintf (stderr,
-	       "%s: warning: expected version %s but found version\n"
+	       "%s: warning: expected Netscape version %s but found version\n"
 	       "\t%s (0x%x) instead.\n",
 	       progname, expected_mozilla_version,
 	       tenative_version, (unsigned int) tenative);
