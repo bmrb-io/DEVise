@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/02/18 18:06:05  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.14  1997/02/03 04:11:35  donjerko
   Catalog management moved to DTE
 
@@ -1034,6 +1037,7 @@ public:
           return SELECT_ID;
      }
 	virtual bool match(BaseSelection* x, Path*& upTo){
+		assert(x);
           if(!(selectID() == x->selectID())){
                return false;
           }

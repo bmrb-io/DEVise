@@ -132,7 +132,9 @@ Site* QueryTree::createSite(){
 	// Need to fix a mamimum for this..
 	Aggregates **aggregates =new (Aggregates*)[MAX_AGG];
 	int count = 0;
-    aggregates[count]=new Aggregates(selectList,sequenceby,withPredicate,groupBy);
+    aggregates[count] = 
+    	new Aggregates(selectList,sequenceby,withPredicate,groupBy);
+
 	while(aggregates[count]->isApplicable()){
 			   
 	   	// Change the select list
@@ -147,6 +149,13 @@ Site* QueryTree::createSite(){
     	aggregates[count]=new Aggregates(selectList,sequenceby,withPredicate,groupBy);
 	}
 	count --;
+
+	assert(groupBy);
+	if(count == -1 && !groupBy->isEmpty()){
+		aggregates[0] = new 
+			Aggregates(selectList,sequenceby,withPredicate,groupBy);
+		count = 0;
+	}
 
 	LOG(logFile << "Decomposing query on " << numSites << " sites\n";)
      sites->rewind();

@@ -21,7 +21,7 @@ bool Aggregates::isApplicable(){
 		Path * newPath;
 
 		if(curr->isGlobal() && curr->getPath()->isFunction()){
-			String* name = curr->getPath()->getPathName();
+			const String* name = curr->getPath()->getPathName();
 			isApplicableValue = true;
 		}
 		selList->step();
@@ -209,15 +209,19 @@ void Aggregates::typify(Site* inputIterator){
 		while(!selectList->atEnd()){
 			
 			Path *path;
-	    	if (selectList->get()->match(groupBy->get(),path)){
-				
-	    		if (selectList->get()->match(sequenceAttr,path))
+			if (selectList->get()->match(groupBy->get(),path)){
+				if (sequenceAttr && 
+					selectList->get()->match(sequenceAttr,path)){
 					taboo[groupBy->getCurrPos()] =1; 
-				else
+				}
+				else{
 					taboo[groupBy->getCurrPos()] = 0; 
-				 	
-				positions[groupBy->getCurrPos()] = selectList->getCurrPos();
-				types[groupBy->getCurrPos()] = TypeIDList[selectList->getCurrPos()];
+				}
+						
+				positions[groupBy->getCurrPos()] = 
+					selectList->getCurrPos();
+				types[groupBy->getCurrPos()] = 
+					TypeIDList[selectList->getCurrPos()];
 				match = true;
 			}
 			selectList->step();
@@ -230,10 +234,12 @@ void Aggregates::typify(Site* inputIterator){
 	
 	// Now all that is done ...
 	// Form the Grouping class;;
-	groupIterator = new Grouping(iterator,positions,taboo,types,seqAttrPos,groupBy->cardinality());
+	groupIterator = new Grouping(
+		iterator,positions,taboo,types,seqAttrPos,groupBy->cardinality());
 }
 
-void Aggregates::getSeqAttrType(String * AttribNameList,TypeID *TypeIDList ,int countFlds)
+void Aggregates::getSeqAttrType(
+	String * AttribNameList,TypeID *TypeIDList ,int countFlds)
 {
 	if (!sequenceAttr)	{
 		fillNextFunc = new AggWindow(this,"",-1);

@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/02/18 18:06:04  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.10  1997/02/03 04:11:34  donjerko
   Catalog management moved to DTE
 
@@ -81,7 +84,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Ff][Rr][Oo][Mm]         {return FROM;}
 [Aa][Ss]				{return AS;}
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
-[Ss][eE][qQ][uU][Ee][Nn][cC][eE][bB][yY]  {return SEQUENCEBY;}
+[Ss][eE][qQ][uU][Ee][Nn][cC][eE] {return SEQUENCE;}
 [Gg][Rr][Oo][uU][Pp]  {return GROUP;}
 [Bb][Yy]			  {return BY;}
 [Jj][Oo][Ii][Nn][Pp][Rr][Ee][Vv]  {return JOINPREV;}

@@ -86,10 +86,16 @@ class AggWindow
 	void sort(	int *positions,TypeID * types,int count);
 	void sortOn(int ,GeneralPtr);
 	bool equalAttr(Tuple *n,Tuple *s){
-
-	  return ((IBool *)(equalOpr->opPtr)(n[position],s[position]))->getValue();
+		if(!equalOpr){
+			return true;
+		}
+		assert(equalOpr->opPtr);
+		IBool* val = (IBool *)(equalOpr->opPtr)(n[position],s[position]);
+		assert(val);
+		return val->getValue();
 	}
 	int compareAttr(Tuple *n,Tuple *s){
+		assert(compOpr);
 		return ((IInt *)(compOpr->opPtr)(n[position],s[position]))->getValue();
 	}
 	~AggWindow(){

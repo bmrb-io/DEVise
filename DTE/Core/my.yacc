@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/02/18 18:06:04  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.14  1997/02/03 04:11:34  donjerko
   Catalog management moved to DTE
 
@@ -66,6 +69,7 @@ extern BaseSelection* withPredicate;
 extern String *sequencebyTable; 
 int yyerror(char* msg);
 extern char* queryString;
+static int my_yyaccept();
 
 %}
 %union{
@@ -87,7 +91,7 @@ extern char* queryString;
 %token FROM
 %token AS
 %token WHERE
-%token SEQUENCEBY 
+%token SEQUENCE
 %token GROUP 
 %token BY 
 %token JOINNEXT 
@@ -208,13 +212,13 @@ query : SELECT listOfSelections
 		optSequenceByClause optGroupByClause {
 		parseTree = new QueryTree(
 			$2,$4,$5,$6,withPredicate,$7,namesToResolve);
-		return 0;
+		return my_yyaccept();
 	}
 	| SELECT '*' FROM listOfTables optWhereClause 
 			optSequenceByClause optGroupByClause  {
 		parseTree = new QueryTree(
 	 	NULL, $4, $5, $6, withPredicate,$7,namesToResolve);
-		return 0;
+		return my_yyaccept();
 	}
      ;
 listOfSelections : listOfSelections ',' predicate {
@@ -280,9 +284,9 @@ optWhereClause : WHERE predicate {
 	}
 	;
 
-optSequenceByClause :SEQUENCEBY STRING optWithClause{
-        $$ = $2;
-		withPredicate= $3;
+optSequenceByClause :SEQUENCE BY STRING optWithClause{
+		$$ = $3;
+		withPredicate= $4;
 	}
 	| {
 		$$ = NULL;
@@ -449,4 +453,11 @@ expression : STRING {
 %%
 int yyerror(char* msg){
 	return 0;
+}
+
+static int my_yyaccept(){
+	if(yychar != YYEOF){
+		YYABORT;
+	}
+	YYACCEPT;
 }
