@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1999/07/12 19:02:11  wenger
+  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+
   Revision 1.13  1999/01/13 15:58:29  beyer
   fixed static const
 
@@ -177,7 +180,13 @@ public:
   }
 
   int getValue(int sem = 0) {           // get value of semaphore
+#if 1 // Set to 0 to compile on aden.bmrb.wisc.edu.
     int result = semctl(id, sem, GETVAL, 0);
+#else
+    semun args;
+    args.val = 0;
+    int result = semctl(id, sem, GETVAL, args);
+#endif
     if (result < 0)
       perror("semctl");
     assert(result >= 0);
