@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/05/11 17:23:24  jussi
+  Added command line options for setting host name and port number.
+
   Revision 1.1  1996/05/11 01:51:42  jussi
   Initial revision.
 */
@@ -32,6 +35,7 @@
 static char *_progName = 0;
 static char *_hostName = "localhost";
 static int _portNum = DefaultDevisePort;
+static int _deviseFd = -1;
 
 static char *_idleScript = 0;
 static char *_scriptFile = 0;
@@ -39,6 +43,7 @@ static char *_scriptFile = 0;
 void DoAbort(char *reason)
 {
   fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
+  (void)DeviseClose(_deviseFd);
   exit(1);
 }
 
@@ -48,14 +53,21 @@ int DEViseCmd(int argc, char **argv, char *result)
   printf("Function %s, %d args\n", argv[1], argc - 1);
 #endif
 
-  if (DeviseSend(argv, argc) < 0)
+  if (DeviseSend(_deviseFd, argv, argc) < 0)
     DOASSERT(0, "Server has terminated");
 
-  int errorFlag;
-  if (DeviseReceive(result, errorFlag, argv[0]) < 0)
-    DOASSERT(0, "Server has terminated");
+  u_short flag;
+  do {
+    if (DeviseReceive(_deviseFd, result, flag, argv[1]) < 0)
+      DOASSERT(0, "Server has terminated");
+    if (flag == API_CTL) {
+#ifdef DEBUG
+      printf("Ignoring control command: \"%s\"\n", result);
+#endif
+    }
+  } while (flag != API_ACK && flag != API_NAK);
 
-  if (errorFlag)
+  if (flag == API_NAK)
     return -1;
 
   return 1;
@@ -156,7 +168,7 @@ void SetupConnection()
 
   printf("Connecting to server %s:%d.\n", _hostName, _portNum);
 
-  (void)DeviseOpen(_hostName, _portNum, 0);
+  _deviseFd = DeviseOpen(_hostName, _portNum, 0);
 	
   printf("Connection established.\n\n");
 
@@ -175,11 +187,6 @@ void Usage()
 int main(int argc, char **argv)
 {
   _progName = argv[0];
-
-  if (argc < 3) {
-    Usage();
-    exit(1);
-  }
 
   for(int i = 1; i < argc; i++) {
     if (!strcmp(argv[i], "-h")) {
@@ -210,8 +217,13 @@ int main(int argc, char **argv)
     }
   }
 
+  if (!_scriptFile) {
+    Usage();
+    exit(1);
+  }
+
   SetupConnection();
-  (void)DeviseClose();
+  (void)DeviseClose(_deviseFd);
 
   return 1;
 }
