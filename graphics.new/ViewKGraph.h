@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/12/06 05:40:25  ravim
+  Initial version.
+*/
 
 #ifndef ViewKGraph_h
 #define ViewKGraph_h
@@ -33,11 +36,16 @@ public:
 
   void Init();
   
-  // Specify all the views corr. to this graph
-  Boolean AddViews(ViewGraph **v, int num);
+  // Specify all the views corr. to this graph - also specify the name of 
+  // the window to be created for the graph.
+  Boolean AddViews(ViewGraph **v, int num, char *name);
 
   // Call which displays the graph corr. to the specified statistic
   Boolean Display(int statnum);
+
+  // CallBack from a statistic class object which means that some of the
+  // data to be displayed has changed.
+  void Callback(BasicStats *bs);
 
 private:
   BasicStats **_stats_list;
@@ -51,6 +59,9 @@ private:
   KGraph *_kg;
   // Devise display
   DeviseDisplay *_dis;
+
+  // Window name
+  char *_name;
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/07 02:20:10  ravim
+  Stats displayed based on the specification string in ViewGraph class.
+
   Revision 1.3  1995/12/06 05:41:29  ravim
   New function which returns specific stat values.
 
@@ -29,7 +32,10 @@
 #ifndef BasicStats_h
 #define BasicStats_h
 
+#include "DList.h"
 #include "ViewStats.h"
+
+class ViewKGraph;
 
 // List of stats collected here
 #define STAT_MEAN 0
@@ -39,6 +45,8 @@
 
 // Total number of stats
 #define STAT_NUM 3
+// Maximum length of the name of any stat
+#define STATNAMELEN 10
 
 // The generic stats collection and reporting class
 // For now, computes some simple stats - can be extended later 
@@ -58,11 +66,20 @@ public:
   virtual void Report();
   
   virtual Coord GetStatVal(int statnum);
+  virtual char *GetStatName(int statnum);
+
+  // A ViewKGraph registers with this object that it should be notified
+  // whenever a change in the stats occurs. This is then used to keep
+  // the KGraph up to date with the data being displayed in the views to
+  // which it is connected.
+  virtual void RegisterCallback(ViewKGraph *vkg);
+  virtual void DeleteCallback(ViewKGraph *vkg);
 
 private:
   double ysum, xsum;
   double ysum_sqr, xsum_sqr;
   double ymin, xmin, ymax, xmax;
   int nsamples;
+  VoidList vkg_list;
 };
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/07 02:19:42  ravim
+  Stats graphically displayed based on the stat specification string in ViewGraph class.
+
   Revision 1.6  1995/12/06 05:41:04  ravim
   Changes in color and added function to return specific stat values.
 
@@ -39,12 +42,11 @@
 #include <stdio.h>
 #include "XDisplay.h"
 #include "BasicStats.h"
-#include "KGraph.h"
+#include "ViewKGraph.h"
 #include "ViewGraph.h"
 
 BasicStats::BasicStats()
 {
-
 
 }
 
@@ -61,6 +63,7 @@ void BasicStats::Init(ViewGraph *vw)
 
   nsamples = 0;
   ViewStats::Init(vw);
+
 }
 
 void BasicStats::Sample(double x, double y)
@@ -80,7 +83,13 @@ void BasicStats::Sample(double x, double y)
 
 void BasicStats::Done()
 {
+  // Since the stats have now changed, go through the callback list and
+  // call all of them. This is needed to keep the KGraph upto date.
+  int idx = vkg_list.InitIterator();
+  while (vkg_list.More(idx))
+    ((ViewKGraph *)(vkg_list.Next(idx)))->Callback(this);
 
+  vkg_list.DoneIterator(idx);
 }
 
 void BasicStats::Report()
@@ -127,6 +136,28 @@ Coord BasicStats::GetStatVal(int statnum)
     };
 
   return 0;
+}
+
+char *BasicStats::GetStatName(int statnum)
+{
+  switch (statnum) {
+    case STAT_MEAN: return "MEAN";
+    case STAT_MAX: return "MAX";
+    case STAT_MIN: return "MIN";
+    default: return "NONE";
+    }
+}
+
+void BasicStats::RegisterCallback(ViewKGraph *vkg)
+{
+  // Add vkg to the list of classes to be invoked when the stats change
+  vkg_list.Insert((void *)vkg);
+}
+
+void BasicStats::DeleteCallback(ViewKGraph *vkg)
+{
+  // Remove the entry from the list bcos we no longer have to notify 
+  vkg_list.Delete((void *)vkg);
 }
 
       

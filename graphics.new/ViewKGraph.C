@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/12/06 05:39:25  ravim
+  Initial revision.
+*/
 
 #include <stdio.h>
 #include "ViewKGraph.h"
@@ -27,16 +30,23 @@ ViewKGraph::ViewKGraph()
   _dis = NULL;
   _numstats = 0;
   _statnum = STAT_NONE;
+  _name = NULL;
 }
 
 ViewKGraph::~ViewKGraph()
 {
+  for (int i = 0; i < _numstats; i++)
+    _stats_list[i]->DeleteCallback(this);
   delete [] _stats_list;
   delete _kg;
+  delete [] _name;
 }
 
 void ViewKGraph::Init()
 {
+  // Remove itself from the callback list of all these stat objects
+  for (int i = 0; i < _numstats; i++)
+    (_stats_list[i])->DeleteCallback(this);
   delete [] _stats_list;
   
   // Initialize private members
@@ -46,7 +56,7 @@ void ViewKGraph::Init()
   _statnum = STAT_NONE;
 }
 
-Boolean ViewKGraph::AddViews(ViewGraph **v, int num)
+Boolean ViewKGraph::AddViews(ViewGraph **v, int num, char *name)
 {
   // First check if Init has been called before this
   if (_stats_list)
@@ -63,6 +73,15 @@ Boolean ViewKGraph::AddViews(ViewGraph **v, int num)
   for (int i = 0; i < num; i++)
     _stats_list[i] = v[i]->GetStatObj();
 
+  // Register to be called back when any of these stats change
+  for (i = 0; i < num; i++)
+    (_stats_list[i])->RegisterCallback(this);
+
+  // Store window name in private member
+  delete [] _name;
+  _name = new char[strlen(name)+1];
+  strcpy(_name, name);
+
   return true;
 }
 
@@ -78,7 +97,8 @@ Boolean ViewKGraph::Display(int statnum)
   if (!_kg)
     _kg = new KGraph(_dis);
 
-  _kg->Init();
+  _kg->Init(_name, _stats_list[0]->GetStatName(_statnum));
+
   _kg->setAxes(_numstats);
   Coord *parr = new Coord[_numstats];
   for (int i = 0; i < _numstats; i++)
@@ -91,3 +111,11 @@ Boolean ViewKGraph::Display(int statnum)
   return true;
 }
 
+
+void ViewKGraph::Callback(BasicStats *bs)
+{
+  // The statvalue corr to this stat class has changed.
+  // So call to display again.
+
+  Display(_statnum);
+}
