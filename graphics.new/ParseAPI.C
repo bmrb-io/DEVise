@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1996/12/20 16:50:25  wenger
+  Fonts for view label, x axis, and y axis can now be changed.
+
   Revision 1.46  1996/12/15 06:48:52  donjerko
   Added support for RTrees and moved DQL sources to DTE/DeviseSpecific dir
 
@@ -1781,6 +1784,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       viewWin->ExportImage(format, argv[3]);
+
+      /* Allow the generation of the print file to complete before this
+       * command returns, so that the Tcl code can lpr it if necessary. */
+      while (DeviseDisplay::GetPSDisplay()->GetPrintFile()) {
+	Dispatcher::SingleStepCurrent();
+      }
+
       control->ReturnVal(API_ACK, "done");
       return 1;
     }

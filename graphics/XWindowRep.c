@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.84  1997/01/09 18:41:20  wenger
+  Added workarounds for some Tasvir image bugs, added debug code.
+
   Revision 1.83  1997/01/08 19:01:45  wenger
   Fixed bug 064 and various other problems with drawing piled views;
   added related debug code.
@@ -1392,6 +1395,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 #endif
 
   if (width == 1) {
+    DOASSERT(num <= WINDOWREP_BATCH_SIZE, "points array will overflow");
     for(int i = 0; i < num; i++) {
       Coord tx, ty;
       WindowRep::Transform(x[i], y[i], tx, ty);
@@ -1422,6 +1426,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
   /* each "pixel" is wider than one screen pixel */
 
   int halfWidth = width/2;
+  DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
   for(int i = 0; i < num; i++) {
     Coord tx,ty;
     WindowRep::Transform(x[i],y[i],tx,ty);
@@ -1472,6 +1477,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 #endif
 
+  DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
   for(int i = 0; i < num; i++) {
     Coord x1, y1, x2, y2;
     Coord txlow, tylow, txmax, tymax;
@@ -1570,6 +1576,7 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord width,
 #endif
 #endif
 
+  DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
   for(int i = 0; i < num; i++) {
     Coord txlow, tylow, txmax, tymax;
     Coord x1,y1,x2,y2;
@@ -1672,7 +1679,7 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
 void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 			       Coord minWidth, Coord minHeight)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("XWindowRep::FillPixelRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
          x, y, width, height);
 #endif
@@ -1683,7 +1690,7 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
   pixelX = ROUND(int, x - pixelWidth / 2);
   pixelY = ROUND(int, y - pixelHeight / 2);
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("After transformation: x %d, y %d, width %d, height %d\n",
 	 pixelX, pixelY, pixelWidth, pixelHeight);
 #endif
@@ -1738,6 +1745,7 @@ void XWindowRep::FillPoly(Point *pts, int n)
     n = WINDOWREP_BATCH_SIZE;
   }
 
+  DOASSERT(n <= WINDOWREP_BATCH_SIZE, "points array will overflow");
   for(int i = 0; i < n; i++) {
     Coord tx, ty;
     Transform(pts[i].x, pts[i].y, tx, ty);
@@ -1806,6 +1814,7 @@ void XWindowRep::FillPixelPoly(Point *pts, int n)
     n = WINDOWREP_BATCH_SIZE;
   }
 
+  DOASSERT(n <= WINDOWREP_BATCH_SIZE, "points array will overflow");
   for(int i = 0;  i < n; i++ ) {
     points[i].x = ROUND(short, pts[i].x);
     points[i].y = ROUND(short, pts[i].y);

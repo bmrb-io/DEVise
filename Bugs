@@ -37,7 +37,7 @@ Num Date        Status  Description
 			as argument may not be work correctly (alignment of
 			_tmpPtr). (rkw)
 
-011 06/06/96	OPEN	DEVise doesn't deal well with bar charts where data
+011 06/06/96	CD	DEVise doesn't deal well with bar charts where data
 			is all zeros -- sometimes crashes. (rkw)
 
 012 06/06/96	OPEN	All TData's ever used in a session get saved, even
@@ -134,7 +134,7 @@ Num Date        Status  Description
 042 09/19/96	FIXED	Devise doesn't complain if you give an illegal
 			command line option. (rkw)
 
-043 09/24/96	OPEN	XWindowRep, PSWindowRep don't always check that they
+043 09/24/96	FIXED	XWindowRep, PSWindowRep don't always check that they
 			aren't overflowing points, rectAngles arrays. (rkw)
 
 044 09/25/96	FIXED	GDataBin objects take way too much memory (256K
@@ -185,7 +185,7 @@ Num Date        Status  Description
 056 10/24/96	OPEN	Too hard to hit the middle of boxes to display
 			record data. (rkw)
 
-057 10/24/96	OPEN	When you switch the layout of a window (e.g., vertical
+057 10/24/96	CD	When you switch the layout of a window (e.g., vertical
 			to horizontal) the window often is not redrawn. (rkw)
 
 058 10/29/96	FIXED	Changing line width doesn't work in direct PostScript.
@@ -220,7 +220,7 @@ Num Date        Status  Description
 			Display' window is not drawn, even though a point
 			query indicates that the data is there. (rkw)
 
-066 11/14/96	OPEN	Load session test/dbc1.tk; decrease the size of
+066 11/14/96	CD	Load session test/dbc1.tk; decrease the size of
 			the symbols in the 'RunTime vs. ExecTime' view
 			with the '-' key -> symbols change to single pixels
 			much too soon. (rkw)
@@ -238,18 +238,21 @@ Num Date        Status  Description
 069 11/14/96	CD	Load session test/dbc2.tk; most views are initially
 			drawn with incorrect colors.  This somehow fixes
 			itself if you force a redraw (resize windows, etc.).
-			Problem does not seem to exist any longer. (rkw/jpm)
+			Problem does not seem to exist any longer.  Perhaps
+			the saved pixmaps just got goofed up. (rkw/jpm)
 
 070 11/14/96	CD/NB?	Load session test/dbc2.tk; toggling axes does not
 			work correctly. Problem does not seem to exist
                         any longer. Perhaps this was not really a problem
                         in the first place? (jpm)
+			(See also bug 110.)
 
 071 11/18/96	FIXED	In piled views with axes, the data from non-"top"
 			views sometimes overdraws the X axis and is drawn
 			to the left of the Y axis. (rkw/jpm)
+			(See also bug 098.)
 
-072 11/19/96	OPEN	(With multi) Open test/multidemo2.tk, close it ->
+072 11/19/96	FIXED	(With multi) Open test/multidemo2.tk, close it ->
 			core dump (at least on HP and SPARC/Solaris). (rkw)
 
 073 11/19/96	FIXED	Hit connector key ('c') on a scatter plot ->
@@ -266,7 +269,9 @@ Num Date        Status  Description
 			(rr/rkw)
 
 077 11/21/96	OPEN	Importing data into a window with piled views
-			doesn't work. (rkw)
+			doesn't work correctly -- new view gets put into
+			window but is not visible unless views are unpiled.
+			(rkw)
 
 078 11/21/96	OPEN	Open a template as a session, cancel out of selecting
 			a data stream -> some of the (internal) objects for
@@ -285,9 +290,9 @@ Num Date        Status  Description
 
 082 11/25/96	FIXED	Load session test/a2.tk -> core dump. (rkw/jpm)
 
-083 11/25/96	OPEN	Printing directly to a printer doesn't work. (rkw)
+083 11/25/96	FIXED	Printing directly to a printer doesn't work. (rkw)
 
-084 11/25/96	OPEN	Temporary print file isn't removed after printing.
+084 11/25/96	FIXED	Temporary print file isn't removed after printing.
 			(rkw)
 
 085 11/26/96	FIXED	Record links to window with map not working right in
@@ -295,7 +300,7 @@ Num Date        Status  Description
 			drawn; then if you force a redraw, only the correct
 			ones are drawn). (rkw)
 
-086 11/27/96	OPEN	Can't print session wenger/session/PrintTest6.tk
+086 11/27/96	CD	Can't print session wenger/session/PrintTest6.tk
 			(never finishes). (rkw)
 
 087 12/02/96	FIXED	Removing a view causes DEVise to exit. (rkw)
@@ -310,14 +315,14 @@ Num Date        Status  Description
 090 12/03/96	FIXED	Load session test/MM1System.tk, print to PostScript;
 			'Pwi' text comes out at wrong place. (ml/rkw)
 
-091 12/03/96	OPEN	Print all windows to PostScript with more than one
+091 12/03/96	FIXED	Print all windows to PostScript with more than one
 			window -> core dump. (ml/rkw)
 
 092 12/04/96	CD	Load session test/MM1System.tk -> lowest label on
 			Y axis is a very small number instead of zero.
 			Problem does not seem to exist any longer. (ml/rkw)
 
-093 12/04/96	OPEN	Opening a statistics view from any other view causes
+093 12/04/96	FIXED	Opening a statistics view from any other view causes
                         a core dump.  (Load session demo/colors.tk, and then
                         open the histogram view).  The believed cause is the
                         TData detects a change in the data and then cancels
@@ -330,7 +335,7 @@ Num Date        Status  Description
 
 095 12/16/96	FIXED	'OK' button in mapping editor doesn't work. (rkw)
 
-096 12/16/96	OPEN	Can't display histograms at all -- you get 'invalid
+096 12/16/96	CD	Can't display histograms at all -- you get 'invalid
 			command name "findNumericCaseValue"' from Tcl/Tk.
 			(rkw)
 
@@ -407,6 +412,10 @@ Num Date        Status  Description
 
 113 01/10/97	OPEN	Devise does not clean up shared memory resources
 			if it crashes. (rkw)
+
+114 01/10/97	FIXED	Load session /p/devise/session/test/baa1.tk, select
+			view 'Location 1 Visits', print -> the data in the
+			'BAA.am' view doesn't get printed.
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -15,6 +15,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.35  1996/12/23 22:20:42  donjerko
+#    Commented out a bunch of non-working Tk/Tcl code.  Changed OK/Cancel
+#    pairs to have OK always on the left, Cancel on the right.  Renamed
+#    and moved around various menu items; to avoid confusion.
+#
+#    More changes will follow later, after you're had time to adjust.
+#
+#    Shaun/Donko
+#
 #  Revision 1.34  1996/12/17 05:23:40  beyer
 #  Added missing findNumericCaseValue.
 #
@@ -637,6 +646,7 @@ proc PrintWithMap {} {
 
 proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 			url defaultUrl} {
+puts "DIAG PrintActual, printcmd = $printcmd, filename = $filename"
     global curView
 
     set format [string tolower $fmt]
@@ -749,7 +759,8 @@ proc PrintActual {toprinter printcmd filename printsrc fmt map mapfile \
 	         Puts "Printing file $file to printer"
                  set pcmd [ lindex $printcmd 0 ]
                  set parg [ lrange $printcmd 1 end ]
-	         eval [ exec $pcmd $parg $file ]
+	         exec $pcmd $parg $file
+		 exec rm $file
 	     }
         }
 	incr i

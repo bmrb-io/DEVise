@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/01/10 16:05:38  wenger
+  Fixed bugs 090 and 108 (two instances of the same problem).
+
   Revision 1.17  1996/12/20 18:43:28  wenger
   Unfilled arcs and variable line widths now work in PostScript output.
 
@@ -809,7 +812,7 @@ void PSWindowRep::FillRect(Coord xlow, Coord ylow, Coord width, Coord height)
 void PSWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 			       Coord minWidth, Coord minHeight)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("PSWindowRep::FillPixelRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
          x, y, width, height);
 #endif
@@ -824,10 +827,19 @@ void PSWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 
   Coord tx1, ty1, tx2, ty2;
 
+#if 1
+  /* Pixel to point transformation is already taken care of before this
+   * function is called. */
+  tx1 = x1;
+  ty1 = y1;
+  tx2 = x2;
+  ty2 = y2;
+#else
   TransPixToPoint(x1, y1, tx1, ty1);
   TransPixToPoint(x2, y2, tx2, ty2);
+#endif
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("After transformation: (%f, %f), (%f, %f)\n", tx1, ty1, tx2, ty2);
 #endif
 

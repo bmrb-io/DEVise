@@ -12,6 +12,12 @@
   Development Group.
 */
 
+/*
+   $Id$
+
+   $Log$
+ */
+
 #ifndef ClientAPI_h
 #define ClientAPI_h
 
@@ -21,6 +27,8 @@
 #include "missing.h"
 #endif
 
+//TEMPTEMP -- Is this really needed?  It causes compile errors in some
+//versions of Linux.  RKW 1/13/97.
 #ifndef FD_SET
 #define fd_set int
 #define FD_ZERO(fdset) memset(fdset, 0, sizeof fdset)
