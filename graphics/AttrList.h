@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/10/21 17:16:29  wenger
+  Fixed bug 101 (problems with the '5' (home) key); added "Set X, Y to
+  Show All" (go home) button to Query dialog; fixed bug 421 (crash when
+  closing set link sessions); fixed bug 423 (saving session file over
+  directory).
+
   Revision 1.13  1998/10/13 19:40:35  wenger
   Added SetAttrs() function to TData and its subclasses to allow Liping to
   push projection down to the DTE.
@@ -104,11 +110,11 @@ struct AttrInfo {
 	AttrVal loVal;             /* low value */
 };
 
-const int MAX_ATTRLIST_SIZE = DEVISE_MAX_TDATA_ATTRS;
+const int MIN_ATTRLIST_SIZE = 32;
 
 class AttrList {
 public:
-  AttrList(char *name);
+  AttrList(char *name, int startSize = MIN_ATTRLIST_SIZE);
   ~AttrList();
 
   /* Copy constructor */
@@ -160,12 +166,14 @@ public:
   void AttrList::Clear();
 
 private:
-  AttrInfo *_attrs[MAX_ATTRLIST_SIZE];
-  int   _size;
+  AttrInfo **_attrs;
+  int   _arraySize; // size of _attrs array
+  int   _size; // actual number of entries
   int   _index;
   char *_name;
 
   static void PrintVal(AttrVal *aval, AttrType atype);
+  void EnlargeArray();
 };
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.79  1998/11/20 18:38:52  wenger
+  Fixed bug 440 (crash caused by empty mapping command for X in combination
+  with other errors).
+
   Revision 1.78  1998/11/11 14:30:59  wenger
   Implemented "highlight views" for record links and set links; improved
   ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -564,7 +568,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
     _shapes[18] = new FullMapping_TextDataLabelShape;
   }
 
-  _tdataFlag = new Bitmap(DEVISE_MAX_TDATA_ATTRS);
+  _tdataFlag = new Bitmap(tdata->GetAttrList()->NumAttrs());
   
   _offsets = new GDataAttrOffset;
   SetGDataOffset(_offsets);
@@ -596,6 +600,8 @@ MappingInterp::~MappingInterp()
 
   delete GDataAttrList();
   SetGDataAttrList(NULL);
+
+  delete [] _tdataFlag;
 
   // added by whh, support for native expression analysis
   delete _pNativeExpr;

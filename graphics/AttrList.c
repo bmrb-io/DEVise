@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1998/10/13 19:40:35  wenger
+  Added SetAttrs() function to TData and its subclasses to allow Liping to
+  push projection down to the DTE.
+
   Revision 1.16  1997/05/28 20:01:41  andyt
   Shape attributes for 'Tcl/Tk Window' shape can now be variables, numeric
   constants, or string constants. Used to assume that all attributes except
@@ -73,16 +77,21 @@
 static char *GetTypeString(AttrType type);
 static void WriteVal(int fd, AttrVal *aval, AttrType atype);
 
-AttrList::AttrList(char *name)
+AttrList::AttrList(char *name, int startSize)
 {
-  for(int i = 0; i < MAX_ATTRLIST_SIZE; i++)
+  startSize = MAX(startSize, MIN_ATTRLIST_SIZE);
+  _attrs = new AttrInfo *[startSize];
+  DOASSERT(_attrs, "Out of memory");
+  _arraySize = startSize;
+
+  for(int i = 0; i < _arraySize; i++)
     _attrs[i] = NULL;
   _size = 0;
   _name = name;
 }
 
 void AttrList::Clear(){
-  for(int i = 0; i < MAX_ATTRLIST_SIZE; i++){
+  for(int i = 0; i < _arraySize; i++){
     delete _attrs[i];
     _attrs[i] = NULL;
   }
@@ -91,17 +100,21 @@ void AttrList::Clear(){
 
 AttrList::~AttrList()
 {
-  for(int i = 0; i < _size; i++) {
-    if (_attrs[i] != NULL)
-      delete _attrs[i];
-  }
+  Clear();
+  delete [] _attrs;
+  _attrs = NULL;
 }
 
 /* Copy constructor */
 AttrList::AttrList(AttrList &attrs)
 {
-  for(int i = 0; i < MAX_ATTRLIST_SIZE; i++)
+  _attrs = new AttrInfo *[attrs.NumAttrs()];
+  DOASSERT(_attrs, "Out of memory");
+  _arraySize = attrs.NumAttrs();
+
+  for(int i = 0; i < _arraySize; i++) {
     _attrs[i] = NULL;
+  }
   _size = 0;
   _name = CopyString(attrs.GetName());
 
@@ -146,9 +159,13 @@ void AttrList::InsertAttr(int attrNum, char *name, int offset, int length,
 			  Boolean isSorted, Boolean hasHiVal, AttrVal *hiVal,
 			  Boolean hasLoVal, AttrVal *loVal)
 {
-  if (attrNum < 0 || attrNum >= MAX_ATTRLIST_SIZE) {
+  if (attrNum < 0) {
     fprintf(stderr,"AttrList::InsertAttr: invalid attrNum %d\n", attrNum);
     Exit::DoExit(1);
+  }
+
+  if (attrNum >= _arraySize) {
+    EnlargeArray();
   }
 
   if (_attrs[attrNum] != NULL) {
@@ -345,7 +362,7 @@ void AttrList::Write(int fd)
       write (fd, buf, strlen(buf));
     }
 
-    // Match value.  TEMPTEMP -- before or after length??
+    // Match value.  TEMP -- before or after length??
     if (infoP->hasMatchVal)
     {
       string = "= ";
@@ -399,6 +416,28 @@ void AttrList::PrintVal(AttrVal *aval, AttrType atype)
     default:
       break;
   }
+}
+
+void
+AttrList::EnlargeArray()
+{
+  int newArraySize = _arraySize * 2;
+  AttrInfo **newAttrs = new AttrInfo *[newArraySize];
+  DOASSERT(newAttrs, "Out of memory");
+
+  int index;
+  for (index = 0; index < _size; index++) {
+    newAttrs[index] = _attrs[index];
+    _attrs[index] = NULL;
+  }
+  for (index = _size; index < newArraySize; index++) {
+    newAttrs[index] = NULL;
+  }
+
+  delete [] _attrs;
+
+  _attrs = newAttrs;
+  _arraySize = newArraySize;
 }
 
 static char *
@@ -457,7 +496,7 @@ WriteVal(int fd, AttrVal *aval, AttrType atype)
     break;
 
   case DateAttr:
-    sprintf(buf, "%ld ", (long)aval->dateVal);//TEMPTEMP?
+    sprintf(buf, "%ld ", (long)aval->dateVal);//TEMP?
     break;
 
   default:
