@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/01/23 20:53:33  jussi
+  Added isAscii parameter to Gen().
+
   Revision 1.9  1995/12/28 20:20:12  jussi
   Small fix to remove compiler warning.
 
@@ -41,10 +44,11 @@
   Added CVS header.
 */
 
-#include <sys/types.h>
-#include <sys/time.h>
 #include <time.h>
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/time.h>
+
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
 #include "Display.h"
@@ -62,16 +66,11 @@
 #include "RecInterp.h"
 #include "AttrList.h"
 #include "QueryProc.h"
-#ifndef NOTAPE
 #include "QueryProcTape.h"
-#endif
 #include "ViewGraph.h"
 #include "TDataMap.h"
 #include "TData.h"
 #include "CursorClassInfo.h"
-#ifndef NOTAPE
-#include "TDataTapeInterp.h"
-#endif
 #include "ParseCat.h"
 #include "Command.h"
 #include "MapClassInfo.h"
@@ -382,85 +381,51 @@ private:
 	int _obsTimeOffset;
 };
 
-#ifndef NOTAPE
-class AmsGenClass: public GenClassInfo  {
-public:
-  virtual ClassInfo *Gen(char *source, Boolean isAscii, char *className,
-			 AttrList *attrList, int recSize, char *separators,
-			 int numSeparators, Boolean isSeparator,
-			 char *commentString) {
-    if (!strcmp(source,"tape")) {
-      if (isAscii) {
-	return new TDataTapeInterpClassInfo(className, attrList,
-					    recSize, separators, numSeparators,
-					    isSeparator, commentString);
-      } else {
-	fprintf(stderr,"Binary tape source not implemented yet.\n");
-      }
-    }
-    
-    fprintf(stderr,"schema source %s not found\n", source);
-    Exit::DoExit(1);
-    
-    // keep compiler happy
-    return 0;
-  }
-};
-
-
 QueryProc *genQueryProcTape()
 {
   return new QueryProcTape;
 }
-#endif
 
 main(int argc, char **argv){
 
-	Init::DoInit(argc,argv);
-
-	/* Register composite parser */
-	CompositeParser::Register("Soil", new AmsComposite);
-
-#ifndef NOTAPE
-	CompositeParser::Register("TapeSoil", new AmsComposite);
-#endif
-	CompositeParser::Register("Basel92", new BaselComposite);
-
-#ifndef NOTAPE
-	/* Register parser for tape */
-	RegisterGenClassInfo("tape",new AmsGenClass());
-
-	/* Register known query processors */
-	QueryProc::Register("Tape", genQueryProcTape);
-#endif
-
-	/* Register known classes  with control panel */
-	ControlPanel::RegisterClass(new TileLayoutInfo);
-	ControlPanel::RegisterClass(new ViewXInfo);
-	ControlPanel::RegisterClass(new ViewScatterInfo);
-	ControlPanel::RegisterClass(new VisualLinkClassInfo());
-	ControlPanel::RegisterClass(new CursorClassInfo());
-	/* Create compiled mappings for solar radiation and rain */
-	ControlPanel::RegisterClass(new MapInfo(MapInfo::SolDnType));
-	ControlPanel::RegisterClass(new MapInfo(MapInfo::RainType));
-	ControlPanel::RegisterClass(new MapInfo(MapInfo::TempType));
-
-	/* hack to start control panel so that it'll read the RC files */
-	ControlPanel *ctrl = ControlPanel::Instance();
-
-	/* This is a hack to create a display before running Dispatcher.
-	Otherwise, we'll get an error */
-	DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
-
-	/* Start session (possibly restoring an old one */
-	ctrl->StartSession();
-
-	/* Create a command class to read input from keyboard */
-	Command *cmd = new Command(QueryProc::Instance());
-
-	/* keep compiler happy */
-	disp = disp;
-	cmd = cmd;
-
-	Dispatcher::RunNoReturn();
+ Init::DoInit(argc, argv);
+   
+ /* Register composite parser */
+ CompositeParser::Register("Soil", new AmsComposite);
+   
+ CompositeParser::Register("Basel92", new BaselComposite);
+   
+ /* Register known query processors */
+ QueryProc::Register("Tape", genQueryProcTape);
+   
+ /* Register known classes  with control panel */
+ ControlPanel::RegisterClass(new TileLayoutInfo);
+ ControlPanel::RegisterClass(new ViewXInfo);
+ ControlPanel::RegisterClass(new ViewScatterInfo);
+ ControlPanel::RegisterClass(new VisualLinkClassInfo());
+ ControlPanel::RegisterClass(new CursorClassInfo());
+   
+ /* Create compiled mappings for solar radiation and rain */
+ ControlPanel::RegisterClass(new MapInfo(MapInfo::SolDnType));
+ ControlPanel::RegisterClass(new MapInfo(MapInfo::RainType));
+ ControlPanel::RegisterClass(new MapInfo(MapInfo::TempType));
+   
+ /* hack to start control panel so that it'll read the RC files */
+ ControlPanel *ctrl = ControlPanel::Instance();
+ 
+ /* This is a hack to create a display before running Dispatcher.
+    Otherwise, we'll get an error */
+ DeviseDisplay *disp = DeviseDisplay::DefaultDisplay();
+ 
+ /* Start session (possibly restoring an old one */
+ ctrl->StartSession();
+ 
+ /* Create a command class to read input from keyboard */
+ Command *cmd = new Command(QueryProc::Instance());
+ 
+ /* keep compiler happy */
+ disp = disp;
+ cmd = cmd;
+ 
+ Dispatcher::RunNoReturn();
 }
