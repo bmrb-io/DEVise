@@ -377,26 +377,28 @@ XWindowRep.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
 XWindowRep.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
 XWindowRep.o: /usr/include/sys/time.h /usr/include/sys/time.h
 XWindowRep.o: /usr/include/sys/unistd.h /usr/include/errno.h
-XWindowRep.o: /usr/include/sys/errno.h XWindowRep.h /usr/include/string.h
-XWindowRep.o: /usr/include/math.h /usr/include/floatingpoint.h
-XWindowRep.o: /usr/include/sys/ieeefp.h WindowRep.h /usr/include/stdio.h
-XWindowRep.o: /usr/include/stdlib.h Geom.h DeviseTypes.h Color.h Transform.h
-XWindowRep.o: VisualArg.h Pattern.h DList.h Exit.h DevisePixmap.h Compress.h
-XWindowRep.o: Xdef.h /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
+XWindowRep.o: /usr/include/sys/errno.h /usr/include/ctype.h
+XWindowRep.o: /s/X11/include/X11/keysym.h /s/X11/include/X11/keysymdef.h
+XWindowRep.o: XWindowRep.h /usr/include/string.h /usr/include/math.h
+XWindowRep.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+XWindowRep.o: WindowRep.h /usr/include/stdio.h /usr/include/stdlib.h Geom.h
+XWindowRep.o: DeviseTypes.h Color.h Transform.h VisualArg.h Pattern.h DList.h
+XWindowRep.o: Exit.h DevisePixmap.h Compress.h Xdef.h
+XWindowRep.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
 XWindowRep.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h
 XWindowRep.o: /usr/include/stddef.h /s/X11/include/X11/Xutil.h XDisplay.h
 XWindowRep.o: Display.h Dispatcher.h Journal.h ColorMgr.h XBitmap.h Init.h
 XWindowRep.o: BufPolicy.h xv.h /s/X11/include/X11/Xos.h /usr/include/fcntl.h
-XWindowRep.o: /usr/include/sys/fcntl.h /usr/include/ctype.h
-XWindowRep.o: /usr/include/malloc.h /s/X11/include/X11/cursorfont.h
-XWindowRep.o: /s/X11/include/X11/keysym.h /s/X11/include/X11/keysymdef.h
-XWindowRep.o: /s/X11/include/X11/Intrinsic.h /s/X11/include/X11/Xresource.h
-XWindowRep.o: /s/X11/include/X11/Core.h /s/X11/include/X11/Composite.h
-XWindowRep.o: /s/X11/include/X11/Constraint.h /s/X11/include/X11/Object.h
-XWindowRep.o: /s/X11/include/X11/RectObj.h /s/X11/include/X11/Xatom.h
-XWindowRep.o: /s/X11/include/X11/Xmd.h /usr/include/signal.h
-XWindowRep.o: /usr/include/sys/signal.h /usr/include/sys/siginfo.h
-XWindowRep.o: /usr/include/sys/machsig.h /usr/include/vm/faultcode.h
+XWindowRep.o: /usr/include/sys/fcntl.h /usr/include/malloc.h
+XWindowRep.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/Intrinsic.h
+XWindowRep.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
+XWindowRep.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
+XWindowRep.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
+XWindowRep.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
+XWindowRep.o: /usr/include/signal.h /usr/include/sys/signal.h
+XWindowRep.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+XWindowRep.o: /usr/include/vm/faultcode.h ../graphics.new/MapIntToInt.h
+XWindowRep.o: ../graphics.new/DeviseKey.h
 XawControl.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 XawControl.o: /usr/include/stdlib.h /usr/include/sys/time.h
 XawControl.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

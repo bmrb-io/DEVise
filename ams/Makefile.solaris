@@ -26,16 +26,15 @@ MapClassInfo.o: ../graphics/Control.h ../graphics/ClassDir.h
 MapClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MapClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h
 MapClassInfo.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
-MapClassInfo.o: ../graphics.new/DerivedDataSource.h /usr/include/string.h
 MapClassInfo.o: ../graphics.new/GdataStat.h ../tape/HashTable.h
 MapClassInfo.o: ../graphics.new/Action.h ../graphics.new/PointStorage.h
 MapClassInfo.o: ../graphics/Temp.h ../graphics/Map3D.h
 MapClassInfo.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
 MapClassInfo.o: ../graphics.new/Connector.h ../graphics.new/GDataBin.h
 MapClassInfo.o: ../graphics.new/ActionDefault.h ../graphics/Util.h
-MapClassInfo.o: /usr/include/ctype.h ../graphics/Selection.h
-MapClassInfo.o: ../graphics/Init.h ../graphics/BufPolicy.h
-MapClassInfo.o: ../graphics.new/DispQueryProc.h
+MapClassInfo.o: /usr/include/string.h /usr/include/ctype.h
+MapClassInfo.o: ../graphics/Selection.h ../graphics/Init.h
+MapClassInfo.o: ../graphics/BufPolicy.h ../graphics.new/DispQueryProc.h
 MapClassInfo.o: ../graphics.new/QueryProcSimple.h ../graphics.new/QueryProc.h
 MapClassInfo.o: ../graphics.new/BufHint.h ../graphics.new/QueryProcFull.h
 MapClassInfo.o: ../graphics.new/QPRange.h ../graphics/Timer.h
@@ -62,9 +61,8 @@ ams.o: ../graphics/ViewWin.h ../graphics/ViewCallback.h
 ams.o: ../graphics/AttrList.h ../graphics/Config.h ../graphics/Cursor.h
 ams.o: ../graphics/AxisLabelClassInfo.h ../graphics.new/ViewClassInfo.h
 ams.o: ../graphics.new/ViewGraph.h ../graphics.new/BasicStats.h
-ams.o: ../graphics.new/ViewStats.h ../graphics.new/DerivedDataSource.h
-ams.o: /usr/include/string.h ../graphics.new/GdataStat.h ../tape/HashTable.h
-ams.o: ../graphics.new/Action.h ../graphics.new/RecId.h
+ams.o: ../graphics.new/ViewStats.h ../graphics.new/GdataStat.h
+ams.o: ../tape/HashTable.h ../graphics.new/Action.h ../graphics.new/RecId.h
 ams.o: ../graphics.new/PointStorage.h ../graphics.new/TDataViewX.h
 ams.o: ../graphics.new/QueryProc.h ../graphics.new/GDataBin.h
 ams.o: ../graphics.new/TDataCMap.h ../graphics.new/ConnectorShape.h
