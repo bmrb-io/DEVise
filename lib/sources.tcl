@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.36  1996/07/01 19:37:43  jussi
+#	Made changes to reflect new TData constructor interface. Web
+#	data caching is now handled in the server, not in the client.
+#
 #	Revision 1.35  1996/06/20 17:20:15  guangshu
 #	Fixed small bug.
 #
@@ -1141,7 +1145,7 @@ proc scanDerivedSources {} {
 
     foreach cachefile [glob -nocomplain [format "%s/*.stat" $workdir]] {
 	set sname [file tail $cachefile]
-	set source "STAT"
+	set source "UNIXFILE"
 	set key $sname
 	set schematype COLORSTAT
 	set schemafile $schemadir/physical/COLORSTAT
