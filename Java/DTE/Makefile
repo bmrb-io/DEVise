@@ -3,10 +3,13 @@ CLASSES = Classes
 #PACKAGE=Util
 #CLASSPATH=/s/java/lib/classes.zip:../$(CLASSES)
 
-SRC=DTE_Type.java \
-    Iterator.java
+SRC =   DTE_Type.java \
+	Iterator.java \
+	ListOp.java \
 
-PACKAGES = Types Iterators Expressions NameToIdMaps DataSources
+#    ExecExpr.java \
+    
+PACKAGES = Types Iterators Expressions NameToIdMaps DataSources Functions
 
 .SUFFIXES: .java.class 
 
