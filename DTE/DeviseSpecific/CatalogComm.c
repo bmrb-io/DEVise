@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/04/14 17:04:00  donjerko
+  Removed command "schema", using typecheck "select * from ..." instead.
+
   Revision 1.26  1998/04/10 16:25:52  donjerko
   *** empty log message ***
 
@@ -97,7 +100,9 @@
 // #define DEBUG
 
 void getDirAndFileNames(const char* fullPath, char*& dir, char*& file){
+#if 0 // Assertion eliminated to allow names like '1.5' for internal tables.
 	assert(fullPath[0] == '.');
+#endif
 	int len = strlen(fullPath);
 	for(int i = len; i >= 0; i--){
 		if(fullPath[i] == '.'){
@@ -168,7 +173,7 @@ char* dteListCatalog(const char* catName, int& errorCode){
 }
 
 char* dteShowCatalogEntry(const char* tableName){
-#if defined(DEBUG)
+#if defined(DEBUG) || 1 //TEMPTEMP
 	cout << "in dteShowCatalogEntry(" << tableName << ")\n";
 #endif
 	char* entryName;
@@ -184,16 +189,20 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 
 	string err = "Failed to show catalog entry " + string(entryName);
 
-#if defined(DEBUG)
+#if defined(DEBUG) || 1 //TEMPTEMP
 	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
 #endif
 	string query = "select cat.name, cat.interf from " +
 		string(catName) + " as cat where cat.name = " +
 		addSQLQuotes(entryName, '\'');
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	Engine engine(query);
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	CHECK(engine.optimize(), err, 0);
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	string retVal;
 	const Tuple* tup = engine.getFirst();
+/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	if(!tup){
 //		cerr << "query = " << query << endl << " is empty " << endl;
 		return strdup("");
@@ -202,7 +211,7 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 	retVal += " ";
 	CHECK(retVal += InterfWrapper::getInterface(tup[1])->guiRepresentation(),
 		err, 0);
-#if defined(DEBUG)
+#if defined(DEBUG) || 1 //TEMPTEMP
   	cerr << "Returning: " << retVal << endl;
 #endif
 	return strdup(retVal.c_str());
