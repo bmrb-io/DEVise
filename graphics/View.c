@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.138  1998/06/12 19:55:18  wenger
+  Attribute of TAttr/set links can now be changed; GUI has menu of available
+  attributes; attribute is set when master view is set instead of at link
+  creation; misc. debug code added.
+
   Revision 1.137  1998/06/10 18:04:05  wenger
   Improved new cursor drawing (bug in Mesa implementation sometimes makes
   it look ugly); cursor color now saved in sessions.
@@ -2923,7 +2928,7 @@ void View::PrintStat()
   printf("  Unknown %d, %.2f%%\n", _unknown, 100.0 * _unknown / total);
 }
 
-#ifdef 0
+#if 0
 void View::CompRhoPhiTheta()
 {
 #if defined(DEBUG)
