@@ -1,0 +1,14 @@
+#! /bin/csh -f
+
+############################################################
+
+# This file is just to get the path, etc., set up right to run check_jspop
+# from cron.
+
+# $Id$
+
+############################################################
+
+set path = ( /usr/ucb /bin /p/devise/run $path )
+
+check_jspop
