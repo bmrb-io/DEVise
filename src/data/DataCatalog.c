@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2001
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  2000/04/18 16:13:46  wenger
+  Environment variables can now be used in data source definitions;
+  $DEVISE_DAT and $DEVISE_SCHEMA are added to new definitions as appropriate.
+
   Revision 1.8  1999/12/29 19:21:54  wenger
   Fixed bug 548 (problem handling extra quotes in data source definitions).
 
@@ -325,7 +329,7 @@ DataCatalog::DataCatalog(const char *filename)
   char errBuf[2 * MAXPATHLEN];
 
   if (filename) {
-    _catFile = CopyString(filename);
+    _catFile = RemoveEnvFromPath(filename);
   } else {
     const char *defaultCatFile = "./catalog.dte";
     const char *envVar = "DEVISE_HOME_TABLE";
@@ -838,7 +842,9 @@ DataCatalog::FindEntry(const char *entryName, const char *catFile)
   //
   // Now go look for an entry matching <name> in the given catalog.
   //
-  FILE *fp = fopen(catFile, "r");
+  char *realCatFile = RemoveEnvFromPath(catFile);
+  FILE *fp = fopen(realCatFile, "r");
+  FreeString(realCatFile);
   if (fp == NULL) {
     sprintf(errBuf, "Unable to open data source catalog file %s\n", catFile);
     reportErrSys(errBuf);
@@ -941,6 +947,11 @@ DataCatalog::FindCatFile(const char *catName, char buf[], int bufSize)
         catFile = buf;
       }
     }
+
+    // Remove environment variables (if any) from file path.
+    char *tmp = RemoveEnvFromPath(catFile);
+    nice_strncpy(buf, tmp, bufSize);
+    FreeString(tmp);
   }
 
   return catFile;

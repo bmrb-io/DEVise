@@ -2550,9 +2550,10 @@ Num Date        Status  Description
 			when JS is in CGI mode. (rkw)
 			(Fixed by rkw, 3/9/01.)
 
-644 03/13/01	OPEN	Data source subdirectories don't work (problem with
+644 03/13/01	FIXED	Data source subdirectories don't work (problem with
 			using environment variables in data source
 			definitions?).  (rkw)
+			(Fixed by rkw, 3/13/01.)
 
 645 03/13/01	OPEN	Duplicating a window doesn't copy fonts. (rkw)
 
