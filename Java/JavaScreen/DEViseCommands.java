@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2001/02/19 20:31:42  xuk
+// Added command(s) and GUI so that a collaboration leader can find out who is
+// collaborating with it.
+// Added JAVAC_GET_COLLAB_LIST and JAVAC_COLLAB_STATE commands.
+//
 // Revision 1.5  2001/02/16 17:47:33  xuk
 // Added new command JAVAC_Clients for collaboration JS to collect active client ID list.
 //
@@ -141,6 +146,8 @@ public final class DEViseCommands
 
     public static final String GET_COLLAB_LIST = JS_PREFIX + "GetCollabList";
     public static final String COLLAB_STATE = JS_PREFIX + "CollabState";
+
+    public static final String SET_COLLAB_PASS = JS_PREFIX + "SetCollabPass";
 
     // -------------------------------------------------------------------
     // JSS commands.
