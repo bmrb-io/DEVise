@@ -69,8 +69,8 @@ struct SolDnCompiled_GData {
 
 class SolDnCompiled_RectXShape  : public RectXShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
+                          Coord &width, Coord &height) {
 
 
 
@@ -89,8 +89,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		
-    Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth, maxHeight);
+    if (view->GetNumDimensions() == 3)
+      return;
+
+    Coord maxWidth, maxHeight, maxDepth;
+    map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
@@ -221,11 +224,12 @@ public:
 		}
 	}
 
-	virtual void UpdateBoundingBox(int pageNum, void **syms, int numSyms) {
-		if (TDataMap::TestAndSetPage(pageNum)) return;
-		Coord width, height;
-		_shapes[0]->BoundingBoxGData(this, syms, numSyms, width, height);
-		TDataMap::UpdateBoundingBox(width, height);
+	virtual void UpdateMaxSymSize(void *gdata, int numSyms) {
+		_maxSymWidth = 0;
+		_maxSymHeight = 0;
+		_maxSymDepth = 0;
+		_shapes[0]->MaxSymSize(this, gdata, numSyms,
+		                       _maxSymWidth, _maxSymHeight);
 	}
 
 	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
@@ -304,8 +308,8 @@ struct RainCompiled_GData {
 
 class RainCompiled_BarShape  : public BarShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
+                          Coord &width, Coord &height) {
 
 
 
@@ -317,23 +321,16 @@ public:
 
 
 
-    for(int i = 0; i < numSyms; i++) {
-      RainCompiled_GData  *gdata = (RainCompiled_GData  *)gdataArray[i];
-      Coord temp;
+# 89 "/p/devise/parser/proto/BarShape_proto.h"
 
-
-
-
-
-      temp = fabs((gdata->y) );
-      if (temp > height) height = temp;
-
-    }
   }
 
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		
+    if (view->GetNumDimensions() == 3)
+      return;
+
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
     win->Transform(1, 1, x1, y1);
@@ -425,11 +422,12 @@ public:
 		}
 	}
 
-	virtual void UpdateBoundingBox(int pageNum, void **syms, int numSyms) {
-		if (TDataMap::TestAndSetPage(pageNum)) return;
-		Coord width, height;
-		_shapes[0]->BoundingBoxGData(this, syms, numSyms, width, height);
-		TDataMap::UpdateBoundingBox(width, height);
+	virtual void UpdateMaxSymSize(void *gdata, int numSyms) {
+		_maxSymWidth = 0;
+		_maxSymHeight = 0;
+		_maxSymDepth = 0;
+		_shapes[0]->MaxSymSize(this, gdata, numSyms,
+		                       _maxSymWidth, _maxSymHeight);
 	}
 
 	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
@@ -511,8 +509,8 @@ struct TempCompiled_GData {
 
 class TempCompiled_RectXShape  : public RectXShape {
 public:
-  virtual void BoundingBoxGData(TDataMap *map, void **gdataArray, int numSyms,
-				Coord &width, Coord &height) {
+  virtual void MaxSymSize(TDataMap *map, void *gdataPtr, int numSyms,
+                          Coord &width, Coord &height) {
 
 
 
@@ -531,8 +529,11 @@ public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize) {
 		
-    Coord maxWidth, maxHeight;
-    map->MaxBoundingBox(maxWidth, maxHeight);
+    if (view->GetNumDimensions() == 3)
+      return;
+
+    Coord maxWidth, maxHeight, maxDepth;
+    map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
     Coord x0, y0, x1, y1;
     win->Transform(0, 0, x0, y0);
@@ -662,11 +663,12 @@ public:
 		}
 	}
 
-	virtual void UpdateBoundingBox(int pageNum, void **syms, int numSyms) {
-		if (TDataMap::TestAndSetPage(pageNum)) return;
-		Coord width, height;
-		_shapes[0]->BoundingBoxGData(this, syms, numSyms, width, height);
-		TDataMap::UpdateBoundingBox(width, height);
+	virtual void UpdateMaxSymSize(void *gdata, int numSyms) {
+		_maxSymWidth = 0;
+		_maxSymHeight = 0;
+		_maxSymDepth = 0;
+		_shapes[0]->MaxSymSize(this, gdata, numSyms,
+		                       _maxSymWidth, _maxSymHeight);
 	}
 
 	virtual void DrawGDataArray(View *view, WindowRep *win, void **syms, int numSyms) {
