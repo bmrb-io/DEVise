@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2001/01/31 22:21:34  xuk
+// Modify sendCmd(), for wrong collaboration JS ID. Close the collabSocket only when a JAVAC_EXIT is received from client.
+//
 // Revision 1.24  2001/01/30 03:12:09  xuk
 // Add collabSocket for collaboration client. changes for sendCmd() and sendData().
 //
@@ -170,7 +173,9 @@ public class DEViseClient
 
     private static int _objectCount = 0;
 
-    public DEViseCommSocket collabSocket = null;
+    //public DEViseCommSocket collabSocket = null;
+    //public int collabInit = 0;
+    public Vector collabSockets = new Vector();
     public int collabInit = 0;
 
     public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id,
@@ -219,8 +224,9 @@ public class DEViseClient
         socket = sock;
     }
 
-    public void setCollabSocket(DEViseCommSocket sock) {
-        collabSocket = sock;
+    public void addCollabSocket(DEViseCommSocket sock) {
+        //collabSocket = sock;
+	collabSockets.addElement(sock);
 	collabInit = 1;
     }
 
@@ -487,7 +493,6 @@ public class DEViseClient
     // Send a series of commands to the client.
     public synchronized void sendCmd(String[] cmds) throws YException
     {
-	pop.pn("we are in client.");
         for (int i = 0; i < cmds.length; i++) {
             sendCmd(cmds[i]);
         }
@@ -503,20 +508,44 @@ public class DEViseClient
 			   ") :  \"" + cmd + "\"");
 		    socket.sendCmd(cmd);
 		}
-		if (collabSocket != null) { // also send to collab JS
-		    if (!collabSocket.isEmpty()) {
-			try {
-			    String clientCmd = collabSocket.receiveCmd();
 
-			    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
-				collabSocket.closeSocket();
-				collabSocket = null;
+		if (! collabSockets.isEmpty()) { // also send to collab JS
+		    if (collabInit == 1) {
+			DEViseCommSocket sock = (DEViseCommSocket)collabSockets.lastElement();
+			if (!sock.isEmpty()) {
+			    try {
+				String clientCmd = sock.receiveCmd();
+
+				if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+				    collabSockets.removeElement(sock);
+				    sock.closeSocket();
+				    sock = null;
+				}
+			    } catch (InterruptedIOException e) {
 			    }
-			} catch (InterruptedIOException e) {
+			} else {
+			    pop.pn("Sending command to collabration client");
+			    sock.sendCmd(cmd);
 			}
 		    } else {
-		        pop.pn("Sending command to collabration client");
-                        collabSocket.sendCmd(cmd);
+			for (int i = 0; i < collabSockets.size(); i++) {
+			    DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(i);			
+			    if (!sock.isEmpty()) {
+				try {
+				    String clientCmd = sock.receiveCmd();
+
+				    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+					collabSockets.removeElement(sock);
+					sock.closeSocket();
+					sock = null;
+				    }
+				} catch (InterruptedIOException e) {
+				}
+			    } else {
+				pop.pn("Sending command to collabration client" + " " + i);
+				sock.sendCmd(cmd);			    
+			    }
+			}
 		    }
                 }
 	    }
@@ -540,13 +569,24 @@ public class DEViseClient
 			socket.sendData(d);
 			pop.pn("  Done sending data");
 		    }
-                    if (collabSocket != null) { // also send to collab JS
-                        pop.pn("Sending data to collabration client" + "(" + d.length + " bytes)");
-                        collabSocket.sendData(d);
-                        pop.pn("  Done sending data");
-                    }
-                }
-            }
+
+		    if (! collabSockets.isEmpty()) { // also send to collab JS
+			if (collabInit == 1) {
+			    DEViseCommSocket sock = (DEViseCommSocket)collabSockets.lastElement();
+			    pop.pn("Sending data to collabration client" + "(" + d.length + " bytes)");
+			    sock.sendData(d);
+			    pop.pn("Done sending data");
+			} else {
+			    for (int j = 0; j < collabSockets.size(); j++) {
+				DEViseCommSocket sock = (DEViseCommSocket)collabSockets.elementAt(j);
+				pop.pn("Sending data to collabration client" + " " + j + "(" + d.length + " bytes)");
+				sock.sendData(d);
+				pop.pn("Done sending data");	
+			    }
+			}
+		    }
+		}
+	    }
 
 	    if (collabInit == 1)
 		collabInit = 0;
