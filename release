@@ -17,10 +17,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/01/23 22:06:45  jussi
+#  Initial revision.
+#
 
 ############################################################
 
-set files = "solaris/generic/issm sun/generic/issm hp/generic/issm \
+set files = "solaris/generic/generic sun/generic/generic hp/generic/generic \
 	lib/control.tk doc/userman.ps doc/sysman.ps doc/Agreement \
 	doc/Copyright doc/Disclaimer"
 set target = /p/devise/public
@@ -59,9 +62,12 @@ sleep 1
 
 echo ""
 echo Releasing new copy of Devise executables...
-cp -p solaris/generic/issm $target/sunx86_54/devise
-cp -p sun/generic/issm $target/sun4m_412/devise
-cp -p hp/generic/issm $target/hp700_ux90/devise
+ls -l solaris/generic/generic $target/sunx86_54/devise
+cp -p solaris/generic/generic $target/sunx86_54/devise
+ls -l sun/generic/generic $target/sun4m_412/devise
+cp -p sun/generic/generic $target/sun4m_412/devise
+ls -l hp/generic/generic $target/hp700_ux90/devise
+cp -p hp/generic/generic $target/hp700_ux90/devise
 
 echo ""
 echo Releasing new Tcl/Tk code...
