@@ -2603,6 +2603,29 @@ Num Date        Status  Description
 			default palette was not associated with a session.
 			(rkw)
 
+656 04/18/01	OPEN	JavaScreen: in the JSB, the title (including version
+			number) is partially covered up by the mouse location
+			display. (rkw)
+
+657 04/20/01	OPEN	JavaScreen: if a collaboration leader goes into
+			socket mode (as opposed to exiting), any collaboration
+			followers don't go out of collaboration mode; if
+			they had a session opened before going into
+			collaboration mode, they get goofed up. (rkw)
+
+658 04/20/01	OPEN	JavaScreen: restoring pre-collaboration session
+			only happens if JS goes out of collaboration mode
+			manually (as opposed to automatically because the
+			leader exited). (rkw)
+
+659 04/20/01	OPEN	JavaScreen: if no leaders are available for
+			collaboration, the selection dialog should not
+			be shown. (rkw)
+
+660 04/20/01	OPEN	JavaScreen: there is no way for a user to tell
+			whether they've enabled collaboration if no follower
+			is connected to them. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
