@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1995/12/14 18:50:28  jussi
+  Removed unused variables.
+
   Revision 1.1  1995/11/27 15:38:58  jussi
   Initial revision.
 */
@@ -113,7 +116,8 @@ public:
 	Color lastColor = GDATA_COLOR;
 #endif
 
-	for(int colorIndex = i+1; colorIndex < numSyms; colorIndex++) {
+	int colorIndex;
+	for(colorIndex = i + 1; colorIndex < numSyms; colorIndex++) {
 	  GDATANAME *gdata = (GDATANAME *)gdataArray[colorIndex];
 #ifdef DYNAMIC_COLOR
 	  if (GDATA_COLOR != lastColor)

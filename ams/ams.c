@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/14 19:11:05  jussi
+  Further small fixes.
+
   Revision 1.7  1995/12/14 18:43:50  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -386,10 +389,13 @@ public:
 			return new TDataTapeInterpClassInfo(className,attrList,
 				recSize, separators, numSeparators,
 				isSeparator, commentString);
-		} else {
-			fprintf(stderr,"schema source %s not found\n", source);
-			Exit::DoExit(1);
 		}
+
+		fprintf(stderr,"schema source %s not found\n", source);
+	        Exit::DoExit(1);
+
+		// keep compiler happy
+		return 0;
 	}
 };
 
