@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1996/12/18 22:12:11  beyer
+  Query abort (especially for statistical views) bug fixed.
+
   Revision 1.45  1996/12/18 15:33:38  jussi
   Rewrote DoInMemGDataConvert() to improve performance.
 
@@ -383,9 +386,11 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
   if (query->tdata->GetDataSource()->isTape()) {
       query->useCoordMap = true;
       RecId low, high;
-      if (query->tdata->HeadID(low) && query->tdata->LastID(high)
+      if (!Init::ForceTapeSearch()
+          && query->tdata->HeadID(low) && query->tdata->LastID(high)
           && (high - low + 1) * query->tdata->RecSize() < 200 * MByte) {
           /* If tape file is small, force linear processing (no search). */
+          numDimensions = 0;
           numTDimensions = 0;
           query->useCoordMap = false;
       }
@@ -639,7 +644,7 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
      a binary search.
   */
 
-  if (query->tdata->GetDataSource()->isTape()) {
+  if (!Init::ForceBinarySearch() && query->tdata->GetDataSource()->isTape()) {
       /* Find first record that matches filter */
       if (!DoLinearSearch(_mgr, query->tdata, query->map,
                           query->filter.xLow, false, query->low)) {
@@ -685,7 +690,8 @@ void QueryProcFull::InitQPFullX(QPFullData *query)
   _mgr->FocusHint(query->hintId, query->tdata, query->gdata);
   AdvanceState(query, QPFull_ScanState);
   query->map->SetFocusId(query->low);
-  if (query->high - query->low > QPFULL_RANDOM_RECS)
+  if (!query->tdata->GetDataSource()->isTape() &&
+      query->high - query->low > QPFULL_RANDOM_RECS)
       query->isRandom = Init::Randomize();
   else
       query->isRandom = false;
@@ -1140,6 +1146,9 @@ Boolean QueryProcFull::DoBinarySearch(BufMgr *mgr,
   return true;
 }
 
+#undef DEBUGLVL
+#define DEBUGLVL 9
+
 /**********************************************************************
   Do Linear Search, and returning the Id of first matching record.
   isPrefetch == TRUE if we're doing prefetch.
@@ -1220,7 +1229,7 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
   }
 
   /*
-     Wwitch from jumping to reading when jump distance is less
+     Switch from jumping to reading when jump distance is less
      than 2 megabytes; use factor 2 to multiply jump distance
      each time the target record is not found.
   */
@@ -1253,13 +1262,28 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
     mgr->PhaseHint(BufferPolicy::BinSearchPhase);
     while (1) {
       /* Get data for current record */
+#if DEBUGLVL >= 9
+      printf("at %ld: ", current);
+#endif
       GetX(mgr, tdata, map, current, x);
 #if DEBUGLVL >= 9
-      printf("at %ld, value is %.2f\n", current, x);
+      printf("value is %.2f\n", x);
 #endif
       AddCoordMapping(map, current, x);
 
-      if (x >= xVal) {                  /* Past the value we're searching? */
+      if (x == xVal) {
+#if DEBUGLVL >= 9
+	printf("found exactly the value we're searching for: %.2f\n", xVal);
+#endif
+        /* ensure that read mode finds this record immediately */
+        previous = current;
+        break;
+      }
+
+      if (x > xVal) {                   /* Past the value we're searching? */
+#if DEBUGLVL >= 9
+	printf("past the value we're searching for: %.2f\n", xVal);
+#endif
 	if ((int)(current - previous) < minSkip)
 	  break;                        /* Switch to reading mode */
 #if DEBUGLVL >= 9
@@ -1278,7 +1302,7 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
       DOASSERT(skip > 0, "Inconsistent data");
       current += skip;                  /* Skip forward */
       if (current > high)
-	current = high;
+        current = high;
     }
     mgr->PhaseHint(BufferPolicy::ScanPhase);
   }
@@ -1292,9 +1316,10 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
     return true;
   }
 
-  current = previous + 1;               /* Back off to previous location */
+  if (current > previous)
+    current = previous + 1;             /* Back off to previous location */
 #if DEBUGLVL >= 9
-  printf("switching to read mode\n");
+  printf("switching to read mode [%ld,%ld]\n", current, high);
 #endif
 
   /* Read until record is found */
@@ -1327,6 +1352,9 @@ Boolean QueryProcFull::DoLinearSearch(BufMgr *mgr,
 
   return true;
 }
+
+#undef DEBUGLVL
+#define DEBUGLVL 0
 
 /*
    Return true if sum of GData record sizes exceeds the size of 
