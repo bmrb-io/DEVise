@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.86  1996/07/16 23:48:07  jussi
+#	Added Session/Save as Batch Script command.
+#
 #	Revision 1.85  1996/07/15 21:13:32  jussi
 #	Fixed the ordering of size, pattern, and orientation in EditMapping.
 #
@@ -26,9 +29,9 @@
 #	Added View/Color Statistics menu option.
 #
 #	Revision 1.82  1996/07/09 16:00:43  wenger
-#	Added master version number and compile date to C++ code (also displayed
-#	in the user interface); added -usage and -version command line arguments;
-#	updated usage message.
+#	Added master version number and compile date to C++ code (also
+#	displayed in the user interface); added -usage and -version
+#	command line arguments; updated usage message.
 #
 #	Revision 1.81  1996/07/09 14:27:21  jussi
 #	Added missing parameter to OpenNewDataSource call.
@@ -335,9 +338,9 @@ set DEViseColors \
 	{38 blue2} {39 blue3} {40 blue4} {41 gold1} {42 gold2}}
 
 set DEViseShapes \
-	{{0 Rect} {1 RectX} {2 Bar} {3 {Regular Polygon}} {4 Oval} \
-	{5 Vector} {6 HorLine} {7 Segment} \
-	{8 HighLow} {9 Polyline} {10 {GIF Image}} \
+	{{0 Rect} {1 RectX} {2 Bar} {13 Line} {14 {Line Shade}} \
+        {3 {Regular Polygon}} {4 Oval} {5 Vector} {6 HorLine} \
+        {7 Segment} {8 HighLow} {9 Polyline} {10 {GIF Image}} \
 	{11 {Polyline File}} {12 {Text Label}}}
 
 # global variables:
