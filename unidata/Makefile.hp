@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  1997/04/09 19:10:32  wenger
+# Got unidata to compile -- but not run -- on solaris, solsparc, sun.
+#
 
 ############################################################
 
@@ -25,24 +28,24 @@ depend:
 
 Attr.o: Attr.h /usr/include/stdlib.h /usr/include/sys/stdsyms.h IntStack.h
 Attr.o: Traits.h /usr/include/string.h bitmap.h /usr/include/limits.h
-Attr.o: PerlFrag.h /usr/include/stdio.h /usr/include/math.h udParam.h RecId.h
-Attr.o: Schema.h /usr/include/unistd.h /usr/include/sys/unistd.h Enum.h
-Attr.o: Lexer.h Comment.h Config.h /usr/include/time.h
-Attr.o: /usr/include/sys/time.h UniData.h SlideBuf.h getftime.h
+Attr.o: PerlFrag.h /usr/include/stdio.h /usr/include/math.h Lexer.h udParam.h
+Attr.o: RecId.h Schema.h /usr/include/unistd.h /usr/include/sys/unistd.h
+Attr.o: Enum.h Comment.h Config.h /usr/include/time.h /usr/include/sys/time.h
+Attr.o: UniData.h SlideBuf.h getftime.h
 Comment.o: Comment.h
 Enum.o: Enum.h /usr/include/string.h Attr.h /usr/include/stdlib.h
 Enum.o: /usr/include/sys/stdsyms.h IntStack.h Traits.h bitmap.h
 Enum.o: /usr/include/limits.h PerlFrag.h /usr/include/stdio.h
-Enum.o: /usr/include/math.h
+Enum.o: /usr/include/math.h Lexer.h
 IntStack.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h IntStack.h
 PerlFrag.o: PerlFrag.h /usr/include/stdio.h /usr/include/string.h
-PerlFrag.o: /usr/include/math.h Attr.h /usr/include/stdlib.h
+PerlFrag.o: /usr/include/math.h Lexer.h Attr.h /usr/include/stdlib.h
 PerlFrag.o: /usr/include/sys/stdsyms.h IntStack.h Traits.h bitmap.h
 PerlFrag.o: /usr/include/limits.h
 Schema.o: /usr/include/string.h Schema.h /usr/include/stdio.h
 Schema.o: /usr/include/math.h /usr/include/unistd.h /usr/include/sys/unistd.h
 Schema.o: Attr.h /usr/include/stdlib.h /usr/include/sys/stdsyms.h IntStack.h
-Schema.o: Traits.h bitmap.h /usr/include/limits.h PerlFrag.h Enum.h Lexer.h
+Schema.o: Traits.h bitmap.h /usr/include/limits.h PerlFrag.h Lexer.h Enum.h
 Schema.o: Comment.h Config.h /usr/include/time.h /usr/include/sys/time.h
 Schema.o: Token.h /usr/include/assert.h
 SlideBuf.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
@@ -64,25 +67,25 @@ UniData.o: /usr/include/time.h /usr/include/sys/time.h UniData.h
 UniData.o: /usr/include/unistd.h /usr/include/sys/unistd.h RecId.h SlideBuf.h
 UniData.o: Schema.h /usr/include/stdio.h /usr/include/math.h Attr.h
 UniData.o: IntStack.h Traits.h bitmap.h /usr/include/limits.h PerlFrag.h
-UniData.o: Enum.h Lexer.h Comment.h udParam.h udIndex.h fast_atof.h
+UniData.o: Lexer.h Enum.h Comment.h udParam.h udIndex.h fast_atof.h
 UniData.o: getftime.h /usr/include/assert.h
 fast_atof.o: /usr/include/ctype.h /usr/include/sys/stdsyms.h
 getftime.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 getftime.o: /usr/include/string.h /usr/include/ctype.h getftime.h
 getftime.o: /usr/include/time.h /usr/include/sys/time.h
 pmain.o: /usr/include/stdio.h /usr/include/math.h PerlFrag.h
-pmain.o: /usr/include/string.h
+pmain.o: /usr/include/string.h Lexer.h
 udIndex.o: udIndex.h /usr/include/unistd.h /usr/include/sys/unistd.h RecId.h
 udParam.o: udParam.h /usr/include/stdlib.h /usr/include/sys/stdsyms.h RecId.h
 udParam.o: Schema.h /usr/include/stdio.h /usr/include/math.h
 udParam.o: /usr/include/unistd.h /usr/include/sys/unistd.h Attr.h IntStack.h
 udParam.o: Traits.h /usr/include/string.h bitmap.h /usr/include/limits.h
-udParam.o: PerlFrag.h Enum.h Lexer.h Comment.h Config.h /usr/include/time.h
+udParam.o: PerlFrag.h Lexer.h Enum.h Comment.h Config.h /usr/include/time.h
 udParam.o: /usr/include/sys/time.h
 umain.o: /usr/include/stdlib.h /usr/include/sys/stdsyms.h
 umain.o: /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/fcntl.h
 umain.o: /usr/include/sys/fcntl.h /usr/include/time.h /usr/include/sys/time.h
 umain.o: UniData.h RecId.h SlideBuf.h Schema.h /usr/include/stdio.h
 umain.o: /usr/include/math.h Attr.h IntStack.h Traits.h /usr/include/string.h
-umain.o: bitmap.h /usr/include/limits.h PerlFrag.h Enum.h Lexer.h Comment.h
+umain.o: bitmap.h /usr/include/limits.h PerlFrag.h Lexer.h Enum.h Comment.h
 umain.o: Config.h udParam.h

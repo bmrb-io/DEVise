@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.14  1997/03/28 16:07:17  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -94,9 +98,9 @@ CatalogComm.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 CatalogComm.o: /usr/include/values.h ../../graphics/DevStatus.h
 CatalogComm.o: ../../graphics/DList.h ../../graphics/Exit.h
 CatalogComm.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-CatalogComm.o: ../Core/queue.h /usr/include/stdio.h ../Core/Utility.h
-CatalogComm.o: ../Core/Engine.h ../Core/site.h ../Core/myopt.h ../Core/url.h
-CatalogComm.o: /usr/include/sys/uio.h /usr/include/unistd.h
+CatalogComm.o: ../Core/Utility.h ../Core/Engine.h ../Core/site.h
+CatalogComm.o: ../Core/queue.h /usr/include/stdio.h ../Core/myopt.h
+CatalogComm.o: ../Core/url.h /usr/include/sys/uio.h /usr/include/unistd.h
 CatalogComm.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
 CatalogComm.o: ../Core/StandardRead.h ../Core/FunctionRead.h
 CatalogComm.o: ../Core/DevRead.h ../../graphics.new/RecId.h ../Core/catalog.h
@@ -110,7 +114,8 @@ CatalogComm2.o: ../../graphics/Dispatcher.h /usr/include/stdlib.h
 CatalogComm2.o: /usr/include/unistd.h ../../graphics/DList.h
 CatalogComm2.o: ../../graphics/Exit.h ../../graphics/Journal.h
 CatalogComm2.o: ../../graphics/VisualArg.h ../../graphics/Color.h
-CatalogComm2.o: ../../graphics/Pattern.h ../../graphics.new/TData.h
+CatalogComm2.o: ../../graphics/Pattern.h ../Core/queue.h
+CatalogComm2.o: /usr/include/assert.h ../../graphics.new/TData.h
 CatalogComm2.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
 CatalogComm2.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
 CatalogComm2.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
@@ -118,18 +123,18 @@ CatalogComm2.o: /usr/include/sys/shm.h /usr/include/sys/param.h
 CatalogComm2.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
 CatalogComm2.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
 CatalogComm2.o: /usr/include/machine/mmu.h /usr/include/errno.h
-CatalogComm2.o: /usr/include/sys/errno.h /usr/include/assert.h
-CatalogComm2.o: /usr/include/limits.h /usr/include/sys/stat.h
-CatalogComm2.o: ../../graphics.new/machdep.h /usr/include/sys/time.h
-CatalogComm2.o: /usr/include/time.h /usr/include/sys/wait.h
-CatalogComm2.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
-CatalogComm2.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
-CatalogComm2.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
-CatalogComm2.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
-CatalogComm2.o: /usr/include/netdb.h /usr/include/sys/socket.h
-CatalogComm2.o: /usr/include/netinet/in.h ../../graphics.new/FileIndex.h
-CatalogComm2.o: ../../graphics/AttrList.h ../../graphics/Init.h
-CatalogComm2.o: ../../graphics/BufPolicy.h TuplePtr.XPlex.h TuplePtr.Plex.h
+CatalogComm2.o: /usr/include/sys/errno.h /usr/include/limits.h
+CatalogComm2.o: /usr/include/sys/stat.h ../../graphics.new/machdep.h
+CatalogComm2.o: /usr/include/sys/time.h /usr/include/time.h
+CatalogComm2.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
+CatalogComm2.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+CatalogComm2.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+CatalogComm2.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+CatalogComm2.o: /usr/include/sys/sockio.h /usr/include/netdb.h
+CatalogComm2.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+CatalogComm2.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
+CatalogComm2.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
+CatalogComm2.o: TuplePtr.XPlex.h TuplePtr.Plex.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/stddef
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
@@ -151,9 +156,9 @@ CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/String.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/Regex.h ../Core/exception.h
 CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
-CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/queue.h
-CatalogComm2.o: ../Core/Utility.h ../../graphics.new/GroupDir.h
-CatalogComm2.o: ../../graphics.new/ItemList.h ../../graphics.new/Group.h
+CatalogComm2.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/Utility.h
+CatalogComm2.o: ../../graphics.new/GroupDir.h ../../graphics.new/ItemList.h
+CatalogComm2.o: ../../graphics.new/Group.h
 CatalogComm2.o: ../../graphics.new/MapInterpClassInfo.h
 CatalogComm2.o: ../../graphics/Control.h
 DTEControl.o: DTEControl.h ParseAPIDTE.h
@@ -211,7 +216,7 @@ DqlInclude.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 DqlInclude.o: /usr/include/values.h ../../graphics/DevStatus.h
 DqlInclude.o: ../../graphics/DList.h ../../graphics/Exit.h
 DqlInclude.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-DqlInclude.o: ../Core/queue.h ../Core/Utility.h ../Core/site.h
+DqlInclude.o: ../Core/Utility.h ../Core/site.h ../Core/queue.h
 DqlInclude.o: ../Core/myopt.h /s/gcc-2.7.2/lib/g++-include/strstream.h
 DqlInclude.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
 DqlInclude.o: /usr/include/sys/uio.h ../Core/SockStream.h ../Core/listop.h
@@ -232,30 +237,31 @@ TDataDQL.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
 TDataDQL.o: /usr/include/sys/stat.h /usr/include/sys/types.h
 TDataDQL.o: /usr/include/sys/sysmacros.h /usr/include/limits.h
 TDataDQL.o: /usr/include/unistd.h /usr/include/errno.h
-TDataDQL.o: /usr/include/sys/errno.h ../../graphics/AttrList.h
-TDataDQL.o: /usr/include/sys/time.h /usr/include/time.h
-TDataDQL.o: ../../graphics/DeviseTypes.h /usr/include/values.h
-TDataDQL.o: ../../graphics/DevStatus.h ../../graphics/DList.h
-TDataDQL.o: ../../graphics/Exit.h ../../graphics/Init.h
-TDataDQL.o: ../../graphics/BufPolicy.h ../../graphics/Timer.h
-TDataDQL.o: ../../graphics/Parse.h TDataDQL.h ../../graphics/Dispatcher.h
-TDataDQL.o: /usr/include/string.h ../../graphics/Journal.h
+TDataDQL.o: /usr/include/sys/errno.h /usr/include/string.h
+TDataDQL.o: ../../graphics/AttrList.h /usr/include/sys/time.h
+TDataDQL.o: /usr/include/time.h ../../graphics/DeviseTypes.h
+TDataDQL.o: /usr/include/values.h ../../graphics/DevStatus.h
+TDataDQL.o: ../../graphics/DList.h ../../graphics/Exit.h
+TDataDQL.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
+TDataDQL.o: ../../graphics/Timer.h ../../graphics/Parse.h TDataDQL.h
+TDataDQL.o: ../../graphics/Dispatcher.h ../../graphics/Journal.h
 TDataDQL.o: ../../graphics/VisualArg.h ../../graphics/Color.h
-TDataDQL.o: ../../graphics/Pattern.h ../../graphics.new/TData.h
-TDataDQL.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
-TDataDQL.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
-TDataDQL.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h
-TDataDQL.o: /usr/include/sys/shm.h /usr/include/sys/param.h
-TDataDQL.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
-TDataDQL.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
-TDataDQL.o: /usr/include/machine/mmu.h ../../graphics.new/machdep.h
-TDataDQL.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h
-TDataDQL.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
-TDataDQL.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
-TDataDQL.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
-TDataDQL.o: /usr/include/sys/sockio.h /usr/include/netdb.h
-TDataDQL.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-TDataDQL.o: ../../graphics.new/FileIndex.h TuplePtr.XPlex.h TuplePtr.Plex.h
+TDataDQL.o: ../../graphics/Pattern.h ../Core/queue.h
+TDataDQL.o: ../../graphics.new/TData.h ../../graphics.new/RecId.h
+TDataDQL.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
+TDataDQL.o: ../../graphics.new/DCE.h /usr/include/sys/ipc.h
+TDataDQL.o: /usr/include/sys/sem.h /usr/include/sys/shm.h
+TDataDQL.o: /usr/include/sys/param.h /usr/include/machine/param.h
+TDataDQL.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataDQL.o: /usr/include/vm/faultcode.h /usr/include/machine/mmu.h
+TDataDQL.o: ../../graphics.new/machdep.h /usr/include/sys/wait.h
+TDataDQL.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+TDataDQL.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+TDataDQL.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+TDataDQL.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+TDataDQL.o: /usr/include/netdb.h /usr/include/sys/socket.h
+TDataDQL.o: /usr/include/netinet/in.h ../../graphics.new/FileIndex.h
+TDataDQL.o: TuplePtr.XPlex.h TuplePtr.Plex.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/stddef
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
@@ -273,10 +279,9 @@ TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/Pix.h TuplePtr.defs.h
 TDataDQL.o: ../Core/types.h /s/gcc-2.7.2/lib/g++-include/String.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/Regex.h ../Core/exception.h
 TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
-TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/queue.h
-TDataDQL.o: ../Core/Utility.h ../../graphics/Util.h /usr/include/ctype.h
-TDataDQL.o: /usr/include/math.h /usr/include/floatingpoint.h
-TDataDQL.o: /usr/include/sys/ieeefp.h
+TDataDQL.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/Utility.h
+TDataDQL.o: ../../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
+TDataDQL.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
 TDataDQL.o: ../../graphics.new/DataSourceFileStream.h
 TDataDQL.o: ../../graphics.new/DataSourceSegment.h
 TDataDQL.o: ../../graphics.new/DataSourceBuf.h ../../graphics/DevError.h
@@ -316,14 +321,14 @@ TDataDQLInterp.o: TDataDQL.h /usr/include/stdio.h ../../graphics/Dispatcher.h
 TDataDQLInterp.o: /usr/include/stdlib.h ../../graphics/DList.h
 TDataDQLInterp.o: ../../graphics/Exit.h ../../graphics/Journal.h
 TDataDQLInterp.o: ../../graphics/VisualArg.h ../../graphics/Color.h
-TDataDQLInterp.o: ../../graphics/Pattern.h ../../graphics.new/TData.h
+TDataDQLInterp.o: ../../graphics/Pattern.h ../Core/queue.h
+TDataDQLInterp.o: /usr/include/assert.h ../../graphics.new/TData.h
 TDataDQLInterp.o: ../../graphics.new/RecId.h ../../graphics.new/DataSource.h
 TDataDQLInterp.o: ../../graphics.new/MemMgr.h ../../graphics.new/DCE.h
 TDataDQLInterp.o: /usr/include/errno.h /usr/include/sys/errno.h
-TDataDQLInterp.o: /usr/include/assert.h /usr/include/sys/stat.h
-TDataDQLInterp.o: ../../graphics.new/FileIndex.h ../../graphics/AttrList.h
-TDataDQLInterp.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-TDataDQLInterp.o: TuplePtr.XPlex.h TuplePtr.Plex.h
+TDataDQLInterp.o: /usr/include/sys/stat.h ../../graphics.new/FileIndex.h
+TDataDQLInterp.o: ../../graphics/AttrList.h ../../graphics/Init.h
+TDataDQLInterp.o: ../../graphics/BufPolicy.h TuplePtr.XPlex.h TuplePtr.Plex.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/stddef
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/std/stddef.h
@@ -341,8 +346,8 @@ TDataDQLInterp.o: /usr/include/fcntl.h /usr/include/sys/fcntlcom.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/Pix.h TuplePtr.defs.h
 TDataDQLInterp.o: ../Core/types.h ../Core/exception.h
 TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
-TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/queue.h
-TDataDQLInterp.o: ../Core/Utility.h ../../graphics.new/RecInterp.h
+TDataDQLInterp.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../Core/Utility.h
+TDataDQLInterp.o: ../../graphics.new/RecInterp.h
 TDataDQLInterp.o: ../../graphics.new/CompositeParser.h ../../graphics/Parse.h
 TDataDQLInterp.o: ../../graphics/Control.h ../../graphics/Util.h
 TDataDQLInterp.o: /usr/include/math.h /usr/include/floatingpoint.h
@@ -398,7 +403,7 @@ TuplePtr.Plex.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 TuplePtr.Plex.o: /usr/include/values.h ../../graphics/DevStatus.h
 TuplePtr.Plex.o: ../../graphics/DList.h ../../graphics/Exit.h
 TuplePtr.Plex.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-TuplePtr.Plex.o: ../Core/queue.h ../Core/Utility.h
+TuplePtr.Plex.o: ../Core/Utility.h
 TuplePtr.XPlex.o: TuplePtr.XPlex.h TuplePtr.Plex.h
 TuplePtr.XPlex.o: /s/gcc-2.7.2/lib/g++-include/std.h
 TuplePtr.XPlex.o: /s/gcc-2.7.2/lib/g++-include/stddef
@@ -444,7 +449,7 @@ TuplePtr.XPlex.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 TuplePtr.XPlex.o: /usr/include/values.h ../../graphics/DevStatus.h
 TuplePtr.XPlex.o: ../../graphics/DList.h ../../graphics/Exit.h
 TuplePtr.XPlex.o: ../../graphics/Init.h ../../graphics/BufPolicy.h
-TuplePtr.XPlex.o: ../Core/queue.h ../Core/Utility.h
+TuplePtr.XPlex.o: ../Core/Utility.h
 
 Aggregates.o: Aggregates.h types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 Aggregates.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -470,13 +475,12 @@ Aggregates.o: /usr/include/netdb.h /usr/include/sys/socket.h
 Aggregates.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 Aggregates.o: /usr/include/values.h ../../graphics/DevStatus.h
 Aggregates.o: ../../graphics/DList.h ../../graphics/Exit.h
-Aggregates.o: ../../graphics/Init.h ../../graphics/BufPolicy.h queue.h
-Aggregates.o: /usr/include/stdio.h Utility.h myopt.h
-Aggregates.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
-Aggregates.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h
-Aggregates.o: /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
-Aggregates.o: listop.h site.h Iterator.h StandardRead.h FunctionRead.h
-Aggregates.o: catalog.h Inserter.h
+Aggregates.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
+Aggregates.o: myopt.h /s/gcc-2.7.2/lib/g++-include/strstream.h
+Aggregates.o: /s/gcc-2.7.2/lib/g++-include/strfile.h queue.h
+Aggregates.o: /usr/include/stdio.h url.h /usr/include/sys/uio.h
+Aggregates.o: /usr/include/unistd.h SockStream.h listop.h site.h Iterator.h
+Aggregates.o: StandardRead.h FunctionRead.h catalog.h Inserter.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 DeleteParse.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
@@ -538,7 +542,7 @@ DevRead.o: /s/gcc-2.7.2/lib/g++-include/Regex.h exception.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/fstream.h
 DevRead.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h ../../graphics/AttrList.h
 DevRead.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-DevRead.o: ../../graphics/BufPolicy.h queue.h Utility.h Iterator.h
+DevRead.o: ../../graphics/BufPolicy.h Utility.h Iterator.h
 DevRead.o: ../../attrproj/ApParseCat.h ../../graphics.new/TData.h
 DevRead.o: ../../graphics.new/DataSource.h ../../graphics.new/MemMgr.h
 DevRead.o: ../../graphics.new/DCE.h /usr/include/errno.h
@@ -640,8 +644,8 @@ FunctionRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
 FunctionRead.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 FunctionRead.o: /usr/include/values.h ../../graphics/DevStatus.h
 FunctionRead.o: ../../graphics/DList.h ../../graphics/Exit.h
-FunctionRead.o: ../../graphics/Init.h ../../graphics/BufPolicy.h queue.h
-FunctionRead.o: /usr/include/stdio.h Utility.h url.h /usr/include/sys/uio.h
+FunctionRead.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
+FunctionRead.o: queue.h /usr/include/stdio.h url.h /usr/include/sys/uio.h
 FunctionRead.o: /usr/include/unistd.h SockStream.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 IndexParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -744,7 +748,7 @@ QueryTree.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h url.h
 QueryTree.o: /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
 QueryTree.o: listop.h site.h Iterator.h StandardRead.h FunctionRead.h
 QueryTree.o: catalog.h Inserter.h DevRead.h ../../graphics.new/RecId.h
-QueryTree.o: Aggregates.h ParseTree.h joins.h
+QueryTree.o: Aggregates.h ParseTree.h joins.h Sort.h
 RTreeRead.o: RTreeRead.h StandardRead.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -771,17 +775,17 @@ RTreeRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
 RTreeRead.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 RTreeRead.o: /usr/include/values.h ../../graphics/DevStatus.h
 RTreeRead.o: ../../graphics/DList.h ../../graphics/Exit.h
-RTreeRead.o: ../../graphics/Init.h ../../graphics/BufPolicy.h queue.h
-RTreeRead.o: /usr/include/stdio.h Utility.h Iterator.h myopt.h
-RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
-RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h
-RTreeRead.o: /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
-RTreeRead.o: listop.h ../RTree/RTree.h ../RTree/genrtree.h
-RTreeRead.o: ../RTree/port_genrtree.h ../RTree/type_compat.h
-RTreeRead.o: ../RTree/tools/stack_t2.h ../RTree/tools/ptr_stack.h
-RTreeRead.o: ../RTree/tools/pqueue.h ../RTree/tools/pqueue.C
-RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/stream.h ../RTree/tools/pqueue.h
-RTreeRead.o: ../RTree/tools/key.h /usr/include/stdlib.h ../RTree/tools/box.h
+RTreeRead.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
+RTreeRead.o: Iterator.h myopt.h /s/gcc-2.7.2/lib/g++-include/strstream.h
+RTreeRead.o: /s/gcc-2.7.2/lib/g++-include/strfile.h queue.h
+RTreeRead.o: /usr/include/stdio.h url.h /usr/include/sys/uio.h
+RTreeRead.o: /usr/include/unistd.h SockStream.h listop.h ../RTree/RTree.h
+RTreeRead.o: ../RTree/genrtree.h ../RTree/port_genrtree.h
+RTreeRead.o: ../RTree/type_compat.h ../RTree/tools/stack_t2.h
+RTreeRead.o: ../RTree/tools/ptr_stack.h ../RTree/tools/pqueue.h
+RTreeRead.o: ../RTree/tools/pqueue.C /s/gcc-2.7.2/lib/g++-include/stream.h
+RTreeRead.o: ../RTree/tools/pqueue.h ../RTree/tools/key.h
+RTreeRead.o: /usr/include/stdlib.h ../RTree/tools/box.h
 RTreeRead.o: ../RTree/tools/bit_vec.h ../RTree/bulk_data.h ../RTree/hfpage.h
 RTreeRead.o: /usr/include/math.h /usr/include/floatingpoint.h
 RTreeRead.o: /usr/include/sys/ieeefp.h /usr/include/sys/mman.h
@@ -821,9 +825,10 @@ SchemaParse.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
 SchemaParse.o: url.h /usr/include/sys/uio.h /usr/include/unistd.h
 SchemaParse.o: SockStream.h listop.h site.h Iterator.h StandardRead.h
 SchemaParse.o: FunctionRead.h catalog.h Inserter.h
-Sort.o: Sort.h Iterator.h types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+Sort.o: Sort.h site.h /usr/include/assert.h queue.h /usr/include/stdio.h
+Sort.o: types.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-Sort.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/assert.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/libio.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/String.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/Regex.h /usr/include/string.h
 Sort.o: /usr/include/sys/stdtypes.h /usr/include/sys/types.h
@@ -844,11 +849,11 @@ Sort.o: /usr/include/netdb.h /usr/include/sys/socket.h
 Sort.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 Sort.o: /usr/include/values.h ../../graphics/DevStatus.h
 Sort.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-Sort.o: ../../graphics/BufPolicy.h queue.h /usr/include/stdio.h Utility.h
-Sort.o: StandardRead.h Inserter.h url.h /usr/include/sys/uio.h
+Sort.o: ../../graphics/BufPolicy.h Utility.h myopt.h
 Sort.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
-Sort.o: /s/gcc-2.7.2/lib/g++-include/strfile.h /usr/include/unistd.h
-Sort.o: SockStream.h
+Sort.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/sys/uio.h
+Sort.o: /usr/include/unistd.h SockStream.h listop.h Iterator.h StandardRead.h
+Sort.o: FunctionRead.h Inserter.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 StandardRead.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -877,9 +882,9 @@ StandardRead.o: /usr/include/netdb.h /usr/include/sys/socket.h
 StandardRead.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 StandardRead.o: /usr/include/values.h ../../graphics/DevStatus.h
 StandardRead.o: ../../graphics/DList.h ../../graphics/Exit.h
-StandardRead.o: ../../graphics/Init.h ../../graphics/BufPolicy.h queue.h
-StandardRead.o: /usr/include/stdio.h Utility.h Iterator.h url.h
-StandardRead.o: /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
+StandardRead.o: ../../graphics/Init.h ../../graphics/BufPolicy.h Utility.h
+StandardRead.o: Iterator.h url.h /usr/include/sys/uio.h /usr/include/stdio.h
+StandardRead.o: /usr/include/unistd.h SockStream.h
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/String.h
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
 UnionParse.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -1181,11 +1186,12 @@ types.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
 types.o: ../../graphics/DeviseTypes.h /usr/include/values.h
 types.o: ../../graphics/DevStatus.h ../../graphics/DList.h
 types.o: ../../graphics/Exit.h ../../graphics/Init.h
-types.o: ../../graphics/BufPolicy.h queue.h /usr/include/stdio.h Utility.h
-types.o: myopt.h /s/gcc-2.7.2/lib/g++-include/strstream.h
-types.o: /s/gcc-2.7.2/lib/g++-include/strfile.h url.h /usr/include/sys/uio.h
-types.o: /usr/include/unistd.h SockStream.h listop.h catalog.h site.h
-types.o: Iterator.h StandardRead.h FunctionRead.h Inserter.h
+types.o: ../../graphics/BufPolicy.h Utility.h myopt.h
+types.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
+types.o: /s/gcc-2.7.2/lib/g++-include/strfile.h queue.h /usr/include/stdio.h
+types.o: url.h /usr/include/sys/uio.h /usr/include/unistd.h SockStream.h
+types.o: listop.h catalog.h site.h Iterator.h StandardRead.h FunctionRead.h
+types.o: Inserter.h
 url.o: url.h /usr/include/sys/types.h /usr/include/sys/stdtypes.h
 url.o: /usr/include/sys/sysmacros.h /usr/include/sys/socket.h
 url.o: /usr/include/sys/uio.h /usr/include/netinet/in.h /usr/include/netdb.h
@@ -1235,8 +1241,8 @@ main.o: /usr/include/netdb.h /usr/include/sys/socket.h
 main.o: ../../graphics/AttrList.h ../../graphics/DeviseTypes.h
 main.o: /usr/include/values.h ../../graphics/DevStatus.h
 main.o: ../../graphics/DList.h ../../graphics/Exit.h ../../graphics/Init.h
-main.o: ../../graphics/BufPolicy.h ../Core/queue.h /usr/include/stdio.h
-main.o: ../Core/Utility.h ../Core/Engine.h ../Core/site.h ../Core/myopt.h
+main.o: ../../graphics/BufPolicy.h ../Core/Utility.h ../Core/Engine.h
+main.o: ../Core/site.h ../Core/queue.h /usr/include/stdio.h ../Core/myopt.h
 main.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 main.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
 main.o: /usr/include/sys/uio.h /usr/include/unistd.h ../Core/SockStream.h
@@ -1271,14 +1277,59 @@ script.o: /usr/include/sys/socket.h ../../graphics/AttrList.h
 script.o: ../../graphics/DeviseTypes.h /usr/include/values.h
 script.o: ../../graphics/DevStatus.h ../../graphics/DList.h
 script.o: ../../graphics/Exit.h ../../graphics/Init.h
-script.o: ../../graphics/BufPolicy.h ../Core/queue.h /usr/include/stdio.h
-script.o: ../Core/Utility.h ../Core/Engine.h ../Core/site.h ../Core/myopt.h
+script.o: ../../graphics/BufPolicy.h ../Core/Utility.h ../Core/Engine.h
+script.o: ../Core/site.h ../Core/queue.h /usr/include/stdio.h ../Core/myopt.h
 script.o: /s/gcc-2.7.2/lib/g++-include/strstream.h
 script.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
 script.o: /usr/include/sys/uio.h /usr/include/unistd.h ../Core/SockStream.h
 script.o: ../Core/listop.h ../Core/Iterator.h ../Core/StandardRead.h
 script.o: ../Core/FunctionRead.h ../../attrproj/ApInit.h
 script.o: ../RTree/RTreeCommon.h ncsa.h
+scriptClient.o: /usr/include/memory.h /s/gcc-2.7.2/lib/g++-include/iostream.h
+scriptClient.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+scriptClient.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdlib.h
+scriptClient.o: /usr/include/sys/stdtypes.h /usr/include/unistd.h
+scriptClient.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+scriptClient.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+scriptClient.o: /usr/include/ctype.h /usr/include/netdb.h
+scriptClient.o: /usr/include/string.h /usr/include/arpa/inet.h
+scriptClient.o: /usr/include/stdio.h common.h
+scriptServer.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/iostream.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/memory.h
+scriptServer.o: /usr/include/assert.h /usr/include/math.h
+scriptServer.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+scriptServer.o: ../../attrproj/ApInit.h ../../graphics/DeviseTypes.h
+scriptServer.o: /usr/include/values.h ../../graphics/DevStatus.h
+scriptServer.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+scriptServer.o: ../../graphics/BufPolicy.h ../RTree/RTreeCommon.h
+scriptServer.o: ../Core/Engine.h ../Core/types.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/String.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/Regex.h
+scriptServer.o: /usr/include/netinet/in.h /usr/include/time.h
+scriptServer.o: ../Core/exception.h /s/gcc-2.7.2/lib/g++-include/fstream.h
+scriptServer.o: /usr/include/sys/time.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/iomanip.h
+scriptServer.o: ../../graphics.new/machdep.h /usr/include/limits.h
+scriptServer.o: /usr/include/sys/param.h /usr/include/machine/param.h
+scriptServer.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+scriptServer.o: /usr/include/vm/faultcode.h /usr/include/sys/wait.h
+scriptServer.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+scriptServer.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+scriptServer.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+scriptServer.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+scriptServer.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+scriptServer.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+scriptServer.o: /usr/include/netdb.h /usr/include/sys/socket.h
+scriptServer.o: ../../graphics/AttrList.h ../../graphics/DList.h
+scriptServer.o: ../../graphics/Exit.h ../../graphics/Init.h ../Core/Utility.h
+scriptServer.o: ../Core/site.h ../Core/queue.h /usr/include/stdio.h
+scriptServer.o: ../Core/myopt.h /s/gcc-2.7.2/lib/g++-include/strstream.h
+scriptServer.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
+scriptServer.o: /usr/include/sys/uio.h /usr/include/unistd.h
+scriptServer.o: ../Core/SockStream.h ../Core/listop.h ../Core/Iterator.h
+scriptServer.o: ../Core/StandardRead.h ../Core/FunctionRead.h ncsa.h
 util.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
 util.o: /usr/include/stdio.h /usr/include/memory.h
 

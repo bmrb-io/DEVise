@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.35  1997/04/25 15:41:22  donjerko
+# Split the script into client and server.
+#
 # Revision 1.34  1997/04/14 20:11:29  xbao
 # Updated dependencies.
 #
@@ -1631,27 +1634,6 @@ scriptServer.o: /s/gcc-2.7.2/lib/g++-include/strfile.h ../Core/url.h
 scriptServer.o: /usr/include/unistd.h ../Core/SockStream.h ../Core/listop.h
 scriptServer.o: ../Core/Iterator.h ../Core/StandardRead.h
 scriptServer.o: ../Core/FunctionRead.h ncsa.h
-trash.o: /usr/include/memory.h /s/gcc-2.7.2/lib/g++-include/iostream.h
-trash.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
-trash.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/stdlib.h
-trash.o: /usr/include/sys/feature_tests.h /usr/include/unistd.h
-trash.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h
-trash.o: /usr/include/sys/machtypes.h /usr/include/sys/select.h
-trash.o: /usr/include/sys/time.h /usr/include/sys/time.h
-trash.o: /usr/include/sys/unistd.h /usr/include/sys/socket.h
-trash.o: /usr/include/sys/netconfig.h /usr/include/netinet/in.h
-trash.o: /usr/include/sys/stream.h /usr/include/sys/vnode.h
-trash.o: /usr/include/sys/t_lock.h /usr/include/sys/machlock.h
-trash.o: /usr/include/sys/dki_lkinfo.h /usr/include/sys/dl.h
-trash.o: /usr/include/sys/sleepq.h /usr/include/sys/turnstile.h
-trash.o: /usr/include/sys/param.h /usr/include/sys/pirec.h
-trash.o: /usr/include/sys/mutex.h /usr/include/sys/rwlock.h
-trash.o: /usr/include/sys/semaphore.h /usr/include/sys/condvar.h
-trash.o: /usr/include/sys/cred.h /usr/include/sys/uio.h
-trash.o: /usr/include/vm/seg_enum.h /usr/include/sys/poll.h
-trash.o: /usr/include/sys/strmdep.h /usr/include/sys/byteorder.h
-trash.o: /usr/include/ctype.h /usr/include/netdb.h /usr/include/string.h
-trash.o: /usr/include/arpa/inet.h common.h
 util.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 util.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/memory.h
 

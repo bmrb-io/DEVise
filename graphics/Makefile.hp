@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.37  1997/03/28 16:09:18  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -514,7 +518,7 @@ testWindowRep.o: DevStatus.h DList.h Exit.h Journal.h VisualArg.h Color.h
 testWindowRep.o: Pattern.h Display.h Geom.h /usr/include/math.h ColorMgr.h
 testWindowRep.o: WindowRep.h Transform.h DevisePixmap.h Compress.h DevError.h
 testWindowRep.o: /usr/include/errno.h /usr/include/sys/errno.h Init.h
-testWindowRep.o: BufPolicy.h
+testWindowRep.o: BufPolicy.h Control.h ClassDir.h
 xv24to8.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
 xv24to8.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 xv24to8.o: /usr/include/string.h /usr/include/fcntl.h
@@ -540,30 +544,6 @@ xv24to8.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
 xv24to8.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
 xv24to8.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 xv24to8.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
-xvgif.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
-xvgif.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
-xvgif.o: /usr/include/string.h /usr/include/fcntl.h /usr/include/sys/fcntl.h
-xvgif.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-xvgif.o: /usr/include/sys/time.h /usr/include/stdio.h /usr/include/math.h
-xvgif.o: /usr/include/ctype.h /usr/include/stddef.h /usr/include/stdlib.h
-xvgif.o: /usr/include/errno.h /usr/include/sys/errno.h /usr/include/malloc.h
-xvgif.o: /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h
-xvgif.o: /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xutil.h
-xvgif.o: /s/X11/include/X11/cursorfont.h /s/X11/include/X11/keysym.h
-xvgif.o: /s/X11/include/X11/keysymdef.h /s/X11/include/X11/Intrinsic.h
-xvgif.o: /s/X11/include/X11/Xresource.h /s/X11/include/X11/Core.h
-xvgif.o: /s/X11/include/X11/Composite.h /s/X11/include/X11/Constraint.h
-xvgif.o: /s/X11/include/X11/Object.h /s/X11/include/X11/RectObj.h
-xvgif.o: /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmd.h
-xvgif.o: /usr/include/signal.h /usr/include/sys/signal.h
-xvgif.o: ../graphics.new/machdep.h /usr/include/limits.h
-xvgif.o: /usr/include/sys/param.h /usr/include/machine/param.h
-xvgif.o: /usr/include/sys/sysmacros.h /usr/include/machine/spl.h
-xvgif.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
-xvgif.o: /usr/include/sys/shm.h /usr/include/sys/sem.h
-xvgif.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
-xvgif.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
-xvgif.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 xvgifwr.o: xv.h /s/X11/include/X11/Xos.h /s/X11/include/X11/Xosdefs.h
 xvgifwr.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 xvgifwr.o: /usr/include/string.h /usr/include/fcntl.h

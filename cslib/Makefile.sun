@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.4  1997/03/28 16:08:48  wenger
+# Added headers to all source files that didn't have them; updated
+# solaris, solsparc, and hp dependencies.
+#
 
 ############################################################
 
@@ -79,4 +83,3 @@ server.o: ../graphics/WindowRep.h ../graphics/Transform.h
 server.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 server.o: ../graphics/DevError.h /usr/include/errno.h
 server.o: /usr/include/sys/errno.h ../graphics/DualWindowRep.h
-server.o: ../graphics/PSDisplay.h
