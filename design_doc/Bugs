@@ -2111,6 +2111,12 @@ Num Date        Status  Description
 			views zooms the wrong view (load Test/bad_pile1.ds).
 			(rkw)
 
+541 12/02/99	OPEN	Size of atoms in 3D JavaScreen view is not affected
+			by the size specified in the mapping. (rkw)
+
+542 12/03/99	OPEN	JavaScreen totally fails if font family specified
+			in GData is illegal. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
