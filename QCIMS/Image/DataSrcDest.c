@@ -104,9 +104,6 @@ int open_http(const char *name, long * bytes_in_body)
     name += 7; 
   }
 
-  /* Skip over http:// */
-  name += 7;
-
   port_sep = strchr(name, ':');
   end_of_addr = strchr(name, '/');
   if (end_of_addr) {
