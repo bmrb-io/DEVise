@@ -5,7 +5,7 @@ LDFLAGS = $(ARCH_LDFLAGS) ../graphics.new/libobj.o \
 	../crsp/crspobj.o -ltk -ltcl -lXaw -lXmu -lXt -lXext -lX11 -lm \
 	$(ARCH_LDPOST)
 CFLAGS = $(ARCH_FLAGS) -fexternal-templates -I../../graphics \
-	-I../../graphics.new
+	-I../../graphics.new -Wall -O -DUNIX
 
 .c.o:
 	$(CC) -c $(CFLAGS) $<
