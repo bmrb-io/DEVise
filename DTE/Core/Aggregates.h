@@ -12,14 +12,39 @@ public:
   virtual Type* getValue() = 0;
 };
 
-class ExecGroupAttr : public ExecAggregate {
+class ExecGroupAttr {
+  ADTCopyPtr copyPtr;
+  GeneralPtr* comparePtr;
+  Type* prevGroup;
+  size_t valueSize;
+
 public:
-  bool isdifferent(Type* newVal) const;
-  virtual void initialize(const Type* input);
-  virtual void update(const Type* input){
-    assert(0);
+  ExecGroupAttr(ADTCopyPtr copyPtr, GeneralPtr* comparePtr, Type* value, 
+		size_t valueSize) :
+    copyPtr(copyPtr), comparePtr(comparePtr), prevGroup(value), 
+    valueSize(valueSize) {}
+
+  bool isdifferent(const Type* newVal){
+    Type* cmp;
+    comparePtr->opPtr(prevGroup, newVal, cmp);
+
+    if (int(cmp) == 0) 
+      return true;
+    else
+      return false;
   }
-  virtual Type* getValue();
+
+  virtual void initialize(const Type* input){
+    copyPtr(input, prevGroup, valueSize);	    
+  }
+
+  virtual void update(const Type* input){
+    copyPtr(input, prevGroup, valueSize);	    
+  }
+
+  virtual Type* getValue(){
+    return prevGroup;
+  }
 };
 
 class ExecMinMax : public ExecAggregate {
@@ -311,6 +336,35 @@ public:
 
 };
 
+class GroupAttribute {
+protected:
+  TypeID typeID;
+  GeneralPtr* comparePtr;
+  
+public:
+  GroupAttribute() {}
+
+  TypeID typify(TypeID inputT){	// throws
+    TypeID boolT;
+    typeID = inputT;
+
+    TypeID retVal;  // is a dummy	       
+    TRY(comparePtr = getOperatorPtr("comp", inputT, inputT, retVal), NULL); 
+    return typeID;
+  }
+
+  ExecGroupAttr* createExec(){
+    ADTCopyPtr copyPtr;
+    TRY(copyPtr = getADTCopyPtr(typeID), NULL);
+
+    size_t valueSize;
+    Type *value = allocateSpace(typeID, valueSize);
+
+    return new ExecGroupAttr(copyPtr, comparePtr, value, valueSize);
+  }
+
+};
+
 class StandAggsExec : public Iterator {
 	Iterator* inputIter;
 	ExecAggregate** aggExecs;
@@ -337,40 +391,41 @@ public:
 
 class StandGroupByExec : public Iterator {
   Iterator* inputIter; // Assumes is sorted on grouping attributes by optimizer
-	ExecAggregate** aggExecs;
-	int numFlds;
-	Tuple* retTuple;
-	int* grpByPos;		// positions of group by attributes
-	int grpByPosLen;
+  ExecAggregate** aggExecs;
+  ExecGroupAttr** grpByExecs;
+  int numFlds;
+  Tuple* retTuple;
+  int* grpByPos;		// positions of group by attributes
+  int grpByPosLen;
+  bool isFirstGroup; 
+  
 public:
   
-	StandGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
-			 int numFlds, int* grpByPos, int grpByPosLen) :
-	  inputIter(inputIter), aggExecs(aggExecs), numFlds(numFlds),
-	  grpByPos(grpByPos), grpByPosLen(grpByPosLen) {
-	    retTuple = new Tuple[numFlds];
-	}
+  StandGroupByExec(Iterator* inputIter, ExecAggregate** aggExecs,
+		   ExecGroupAttr** grpByExecs, int numFlds, int* grpByPos, 
+		   int grpByPosLen) :
+    inputIter(inputIter), aggExecs(aggExecs), grpByExecs(grpByExecs),
+    numFlds(numFlds),  grpByPos(grpByPos), grpByPosLen(grpByPosLen) {
+      retTuple = new Tuple[numFlds];
+  }
 
-	virtual ~StandGroupByExec(){
+  virtual ~StandGroupByExec(){
+    
+    // should destroy all of its members
+    
+    delete inputIter;
+    delete [] retTuple;	// destroy too
+    // ...
+  }
 
-		// should destroy all of its members
-
-		delete inputIter;
-		delete [] retTuple;	// destroy too
-		// ...
-	}
-
-	virtual void initialize(){// implement this
-	}
-
-	virtual const Tuple* getNext(){
-		return NULL; // implement
-	}
-
-	// Need to check this..
-	virtual void reset(int lowRid, int highRid){
-		TRY(inputIter->reset(lowRid, highRid), );
-	}
+  virtual void initialize();
+  
+  virtual const Tuple* getNext();
+  
+  // Need to check this..
+  virtual void reset(int lowRid, int highRid){
+    TRY(inputIter->reset(lowRid, highRid), );
+  }
 };
 
 class Aggregates : public Site {
@@ -384,10 +439,12 @@ class Aggregates : public Site {
 	BaseSelection* withPredicate;	
 	Site* inputPlanOp;
 	int withPredicatePos;	
-	List<BaseSelection*>* groupBy;
-	int *positions;
-	TypeID* typeIDs;
-	Aggregate** aggFuncs;
+  List<BaseSelection*>* groupBy;
+  int *positions; // positions of groupBy fields
+  int numGrpByFlds;
+  TypeID* typeIDs;
+  Aggregate** aggFuncs;
+  GroupAttribute** grpByFuncs;
 public:
 	Aggregates(
 		List<BaseSelection*>* selectClause,	// queries select clause
@@ -404,13 +461,21 @@ public:
 			aggFuncs = new (Aggregate*)[numFlds];
 			typeIDs = new TypeID[numFlds];
 			for(int i = 0; i < numFlds; i++){
-				aggFuncs[i] = NULL;
-				typeIDs[i] = UNKN_TYPE;
+			  aggFuncs[i] = NULL;
+			  typeIDs[i] = UNKN_TYPE;
+			}
+			if (groupBy){
+			  numGrpByFlds = groupBy->cardinality();
+			  grpByFuncs = new (GroupAttribute*)[numGrpByFlds];
+			  for (int i = 0; i < numGrpByFlds; i++)
+			    grpByFuncs[i] = NULL;
+			  positions = new int[numGrpByFlds];
 			}
 		}
 		else {
 			numFlds = 0;
 			aggFuncs = NULL;
+			grpByFuncs = NULL;
 		}
 		isApplicableValue = false;
 		alreadyChecked = false;

@@ -59,9 +59,14 @@ bool Aggregates::isApplicable(){
 		selList->step();
 		i++;
 	}
-	/*
+	// Check if groupbys are there - find out positions and num of flds
+	// Create a new GroupAttribute object
+	// Error checking should include matching of select & groupby clauses
+	
+	i=0;
 	groupBy->rewind();
 	while(!groupBy->atEnd()){
+		
 		bool match = false;
 		selList->rewind();
 		while(!selList->atEnd()){
@@ -72,12 +77,14 @@ bool Aggregates::isApplicable(){
 			selList->step();
 		}	
 		if (!match){
-			filteredSelList->append(groupBy->get());
 			selList->append(groupBy->get());
 		}
+		grpByFuncs[i] = new GroupAttribute();
+		positions[i] = 0; // need to get the positions here
+		i++;
 		groupBy->step();
 	}
-	*/
+	
 	return isApplicableValue;
 }
 
@@ -89,6 +96,12 @@ void Aggregates::typify(Site* inputPlanOp){
 	for(int i = 0; i < numFlds; i++){
 		typeIDs[i] = aggFuncs[i]->typify(inptypes[i]);
 	}
+
+	if (numGrpByFlds >0){
+	  assert(numGrpByFlds == groupBy->cardinality());
+	  for (int i = 0; i < numGrpByFlds; i++)
+	    grpByFuncs[positions[i]]->typify(inptypes[positions[i]]);
+	}
 }
 
 Iterator* Aggregates::createExec(){
@@ -98,6 +111,16 @@ Iterator* Aggregates::createExec(){
 	for(int i = 0; i < numFlds; i++){
 		aggExecs[i] = aggFuncs[i]->createExec();
 	}
+	
+        if(numGrpByFlds > 0){
+	  ExecGroupAttr** grpByExecs = new (ExecGroupAttr*)[numGrpByFlds];
+	  for(int i = 0; i < numGrpByFlds; i++){
+	    grpByExecs[positions[i]] = grpByFuncs[positions[i]]->createExec();
+	  }		
+	  return new StandGroupByExec(inputIter, aggExecs, grpByExecs, numFlds,
+				      positions, numGrpByFlds);
+	}
+
 	return new StandAggsExec(inputIter, aggExecs, numFlds);
 }
 
@@ -119,8 +142,114 @@ const Tuple* StandAggsExec::getNext(){
 			aggExecs[i]->update(currt[i]);
 		}
 	}
+
 	for(int i = 0; i < numFlds; i++){
 		retTuple[i] = aggExecs[i]->getValue();
 	}
 	return retTuple;
 }
+
+void StandGroupByExec::initialize(){
+	assert(inputIter);
+	inputIter->initialize();
+	isFirstGroup = true;
+}
+
+const Tuple* StandGroupByExec::getNext(){
+
+  const Tuple* currt = inputIter->getNext();
+  if(!currt){
+    if (isFirstGroup)
+      return NULL;
+    else{ // the last tuple forms a group of its own
+      for(int i = 0; i < numFlds; i++)
+	retTuple[i] = aggExecs[i]->getValue();
+      return retTuple;
+    }
+  }
+  
+  if (isFirstGroup){
+    isFirstGroup = false;
+    for(int i = 0; i < numFlds; i++)
+      aggExecs[i]->initialize(currt[i]);
+
+    for (int i = 0; i < grpByPosLen; i++)
+      grpByExecs[grpByPos[i]]->initialize(currt[grpByPos[i]]);
+    
+    while((currt = inputIter->getNext())){
+      bool isdiff = false;
+      for (int i = 0; i < grpByPosLen && !isdiff; i++){
+	isdiff = isdiff || grpByExecs[brpByPos[i]]->isdifferent(currt[grpByPos[i]]);
+      }
+      if (isdiff) // new group is encountered
+	break;
+
+      for(int i = 0; i < numFlds; i++){
+	aggExecs[i]->update(currt[i]);
+      }
+    }
+    
+    if (currt){ // New group needs to be formed
+      // Reset the values for aggExecs and grpByExecs with new tuple
+      for(int i = 0; i < numFlds; i++)
+	aggExecs[i]->initialize(currt[i]);
+
+      for (int i = 0; i < grpByPosLen; i++)
+	grpByExecs[grpByPos[i]]->initialize(currt[grpByPos[i]]);
+    }
+    
+    for(int i = 0; i < numFlds; i++)
+      retTuple[i] = aggExecs[i]->getValue();
+    
+    return retTuple;
+  }
+
+  // Is not the first group
+  // Check if the new tuple differs from the first tuple of group
+  bool isdiff = false;
+  for (int i = 0; i < grpByPosLen && !isdiff; i++){
+    isdiff = isdiff || grpByExecs[grpBysPos[i]]->isdifferent(currt[grpByPos[i]]);
+  }
+
+  if (isdiff){ // Prev tuple forms a group of its own
+    for(int i = 0; i < numFlds; i++)
+      aggExecs[i]->initialize(currt[i]);
+
+    for (int i = 0; i < grpByPosLen; i++)
+      grpByExecs[grpByPos[i]]->initialize(currt[grpByPos[i]]);
+    
+    for(int i = 0; i < numFlds; i++)
+      retTuple[i] = aggExecs[i]->getValue();
+    
+    return retTuple;
+  }
+  
+  // Else New tuple is added to the group
+  while((currt = inputIter->getNext())){
+    bool isdiff = false;
+    for (int i = 0; i < grpByPosLen && !isdiff; i++){
+      isdiff = isdiff || grpByExecs[grpBysPos[i]]->isdifferent(currt[grpByPos[i]]);
+    } 
+    if (isdiff) // new group is encountered
+      break;
+    
+    for(int i = 0; i < numFlds; i++){
+      aggExecs[i]->update(currt[i]);
+    }
+  }
+    
+  if (currt){ // New group needs to be formed
+    // Reset the values for aggExecs and grpByExecs with new tuple
+    for(int i = 0; i < numFlds; i++)
+      aggExecs[i]->initialize(currt[i]);
+    
+    for (int i = 0; i < grpByPosLen; i++)
+      grpByExecs[grpBysPos[i]]->initialize(currt[grpByPos[i]]);
+  }
+    
+  for(int i = 0; i < numFlds; i++)
+    retTuple[i] = aggExecs[i]->getValue();
+  
+  return retTuple;
+}
+
