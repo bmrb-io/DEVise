@@ -25,6 +25,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/10/02 15:23:48  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.4  1996/07/14 20:34:09  jussi
   Rewrote class to fork a process that does all data transfers
   from the Web site.
@@ -182,7 +186,7 @@ DataSourceWeb::ChildProc()
     if (!strncmp(_url, "ftp://", 6))
         fd = open_ftp(_url);
     else
-        fd = open_http(_url, &totlen);
+        fd = open_http(_url, 1, &totlen);
 
     if (fd < 0) {
         fprintf(stderr, "Unable to open URL %s", _url);

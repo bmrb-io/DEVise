@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/09/26 18:58:11  jussi
+  Removed unused variables. Fixed problem with parsing HTTP header.
+
   Revision 1.10  1996/07/29 21:40:22  wenger
   Fixed various compile errors and warnings.
 
@@ -87,6 +90,7 @@ extern int errno;
 #define HTTP_PORT	80
 
 #define HTTP_GET_FORMAT "GET %s HTTP/1.0\n\n"
+#define HTTP_PUT_FORMAT "POST %s HTTP/1.0\nContent-Length: %d\n\n"
 
 #define HTTP_C_LENGTH "content-length"
 #define HTTP_C_LENGTH_LEN strlen(HTTP_C_LENGTH)
@@ -226,7 +230,7 @@ char *get_ftpd_response(int sock_fd, int resp_val)
   return buffer;
 }
 
-int open_ftp( char *name )
+int open_ftp( char *name, int isInput )
 {
   struct sockaddr_in	sin;
   int		sock_fd;
@@ -238,6 +242,11 @@ int open_ftp( char *name )
   int		ip_addr[4];
   int		port[2];
   int		rval;
+
+  if (!isInput) {
+      fprintf(stderr, "Writing to FTP site not supported yet\n");
+      return -1;
+  }
 
   sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (sock_fd < 0)
@@ -368,7 +377,7 @@ int open_ftp( char *name )
   return -1;
 }
 
-int open_http( char *name, size_t * bytes_in_body)
+int open_http( char *name, int isInput, size_t *bytes_in_body )
 {
   struct sockaddr_in sin;
   int	sock_fd;
@@ -430,6 +439,14 @@ int open_http( char *name, size_t * bytes_in_body)
 #ifdef DEBUG
   printf("http: sending get command\n");
 #endif
+
+  if (!isInput) {
+      sprintf(buffer, HTTP_PUT_FORMAT, end_of_addr, *bytes_in_body);
+      status = write(sock_fd, buffer, strlen(buffer));
+      if (status != (int)strlen(buffer))
+          return status;
+      return sock_fd;
+  }
 
   sprintf(buffer, HTTP_GET_FORMAT, end_of_addr);
   write(sock_fd, buffer, strlen(buffer));
