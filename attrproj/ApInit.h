@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/10/07 22:53:41  wenger
+  Added more error checking and better error messages in response to
+  some of the problems uncovered by CS 737 students.
+
   Revision 1.3  1996/05/22 18:50:41  wenger
   Greatly simplified Init::DoInit() to only do what's necessary for
   attribute projection; other minor changes.
@@ -35,6 +39,8 @@
 
 #include "DeviseTypes.h"
 #include "BufPolicy.h"
+
+const int DEVISE_MAX_TDATA_ATTRS = 512;
 
 class Init {
 public:
