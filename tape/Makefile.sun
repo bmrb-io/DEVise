@@ -1,0 +1,160 @@
+depend:
+	makedepend -fMakefile.sun \
+		-I../graphics -I../graphics.new -I../tape \
+		*.C
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+
+QueryProcTape.o: /usr/include/assert.h QueryProcTape.h
+QueryProcTape.o: ../graphics.new/QueryProc.h ../graphics/DeviseTypes.h
+QueryProcTape.o: ../graphics/VisualArg.h ../graphics/Color.h
+QueryProcTape.o: ../graphics.new/RecId.h ../graphics.new/QPRange.h
+QueryProcTape.o: ../graphics/DList.h ../graphics/Exit.h
+QueryProcTape.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
+QueryProcTape.o: /usr/include/stdio.h ../graphics/Journal.h SortedTable.h
+QueryProcTape.o: ../graphics.new/GData.h ../graphics.new/TData.h
+QueryProcTape.o: ../graphics.new/RecOrder.h ../graphics.new/BufMgr.h
+QueryProcTape.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
+QueryProcTape.o: ../graphics/Init.h ../graphics.new/BufMgrFull.h
+QueryProcTape.o: ../graphics.new/RangeInfo.h ../graphics.new/BufMgrNull.h
+QueryProcTape.o: ../graphics.new/TDataMap.h ../graphics/Pattern.h
+QueryProcTape.o: ../graphics.new/ShapeID.h ../graphics.new/Bitmap.h
+QueryProcTape.o: ../graphics.new/GDataRec.h ../graphics.new/GDataBin.h
+QueryProcTape.o: ../graphics.new/MappingInterp.h
+QueryProcTape.o: ../graphics.new/TDataMapDispatch.h ../graphics/AttrList.h
+QueryProcTape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+QueryProcTape.o: ../graphics/Config.h
+TDataBinaryInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+TDataBinaryInterp.o: TDataBinaryInterp.h ../graphics/DeviseTypes.h
+TDataBinaryInterp.o: ../graphics/ClassDir.h ../graphics.new/TDataAscii.h
+TDataBinaryInterp.o: /usr/include/stdio.h ../graphics/Dispatcher.h
+TDataBinaryInterp.o: ../graphics/DList.h ../graphics/Exit.h
+TDataBinaryInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
+TDataBinaryInterp.o: ../graphics/Journal.h ../graphics.new/TData.h
+TDataBinaryInterp.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
+TDataBinaryInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
+TDataBinaryInterp.o: /usr/include/sys/time.h ../graphics/Config.h
+TDataBinaryInterp.o: ../graphics.new/RecInterp.h /usr/include/sys/types.h
+TDataBinaryInterp.o: /usr/include/sys/sysmacros.h
+TDataBinaryInterp.o: ../graphics.new/CompositeParser.h ../graphics/Parse.h
+TDataBinaryInterp.o: ../graphics/Control.h ../graphics/Util.h
+TDataBinaryInterp.o: /usr/include/assert.h /usr/include/stdlib.h
+TDataBinaryInterp.o: /usr/include/strings.h /usr/include/ctype.h
+TDataTape.o: /usr/include/assert.h /usr/include/stdio.h /usr/include/fcntl.h
+TDataTape.o: /usr/include/sys/fcntlcom.h /usr/include/sys/stdtypes.h
+TDataTape.o: /usr/include/sys/stat.h /usr/include/sys/types.h
+TDataTape.o: /usr/include/sys/sysmacros.h /usr/include/limits.h
+TDataTape.o: /usr/include/unistd.h ../graphics/Parse.h TDataTape.h
+TDataTape.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
+TDataTape.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/VisualArg.h
+TDataTape.o: ../graphics/Color.h ../graphics/Journal.h
+TDataTape.o: ../graphics.new/TData.h ../graphics.new/RecId.h
+TDataTape.o: ../graphics.new/RecOrder.h tapedrive.h machdep.h
+TDataTape.o: /usr/include/sys/param.h /usr/include/machine/param.h
+TDataTape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataTape.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+TDataTape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataTape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataTape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataTape.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+TDataTape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+TDataTape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataTape.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+TDataTape.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/strings.h
+TDataTape.o: /usr/include/ctype.h ../graphics/Init.h ../graphics/BufPolicy.h
+TDataTapeInterp.o: /usr/include/string.h /usr/include/sys/stdtypes.h
+TDataTapeInterp.o: /usr/include/assert.h TDataTapeInterp.h
+TDataTapeInterp.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
+TDataTapeInterp.o: TDataTape.h /usr/include/stdio.h /usr/include/sys/types.h
+TDataTapeInterp.o: /usr/include/sys/sysmacros.h ../graphics/Dispatcher.h
+TDataTapeInterp.o: ../graphics/DList.h ../graphics/Exit.h
+TDataTapeInterp.o: ../graphics/VisualArg.h ../graphics/Color.h
+TDataTapeInterp.o: ../graphics/Journal.h ../graphics.new/TData.h
+TDataTapeInterp.o: ../graphics.new/RecId.h ../graphics.new/RecOrder.h
+TDataTapeInterp.o: tapedrive.h machdep.h /usr/include/limits.h
+TDataTapeInterp.o: /usr/include/sys/param.h /usr/include/machine/param.h
+TDataTapeInterp.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+TDataTapeInterp.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+TDataTapeInterp.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+TDataTapeInterp.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+TDataTapeInterp.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+TDataTapeInterp.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+TDataTapeInterp.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+TDataTapeInterp.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+TDataTapeInterp.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+TDataTapeInterp.o: ../graphics/AttrList.h ../graphics/Config.h
+TDataTapeInterp.o: ../graphics.new/RecInterp.h
+TDataTapeInterp.o: ../graphics.new/CompositeParser.h ../graphics/Parse.h
+TDataTapeInterp.o: ../graphics/Control.h ../graphics/Util.h
+TDataTapeInterp.o: /usr/include/stdlib.h /usr/include/strings.h
+TDataTapeInterp.o: /usr/include/ctype.h
+Templates.o: QueryProcTape.h ../graphics.new/QueryProc.h
+Templates.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
+Templates.o: ../graphics/Color.h ../graphics.new/RecId.h
+Templates.o: ../graphics.new/QPRange.h ../graphics/DList.h ../graphics/Exit.h
+Templates.o: ../graphics/BufPolicy.h ../graphics/Dispatcher.h
+Templates.o: /usr/include/stdio.h ../graphics/Journal.h SortedTable.h
+Templates.o: /usr/include/assert.h ../graphics.new/GData.h
+Templates.o: ../graphics.new/TData.h ../graphics.new/RecOrder.h
+Templates.o: ../graphics.new/BufMgr.h ../graphics.new/BufHint.h
+Templates.o: ../graphics.new/BufferPolicy.h
+atof.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+atof.o: /usr/include/assert.h /usr/include/ctype.h /usr/include/sys/timeb.h
+devtype.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+devtype.o: /usr/include/sys/stat.h /usr/include/sys/types.h
+devtype.o: /usr/include/sys/sysmacros.h
+extend.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+extend.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
+exttape.o: /usr/include/stdlib.h /usr/include/sys/stdtypes.h
+exttape.o: /usr/include/stdio.h /usr/include/assert.h /usr/include/string.h
+exttape.o: tapedrive.h machdep.h /usr/include/limits.h
+exttape.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+exttape.o: /usr/include/sys/param.h /usr/include/machine/param.h
+exttape.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+exttape.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+exttape.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+exttape.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+exttape.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+exttape.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+exttape.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+exttape.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+exttape.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+tapedrive.o: /usr/include/unistd.h /usr/include/string.h
+tapedrive.o: /usr/include/sys/stdtypes.h /usr/include/assert.h tapedrive.h
+tapedrive.o: /usr/include/stdio.h machdep.h /usr/include/limits.h
+tapedrive.o: /usr/include/sys/types.h /usr/include/sys/sysmacros.h
+tapedrive.o: /usr/include/sys/param.h /usr/include/machine/param.h
+tapedrive.o: /usr/include/machine/devaddr.h /usr/include/sys/signal.h
+tapedrive.o: /usr/include/vm/faultcode.h /usr/include/sys/ioctl.h
+tapedrive.o: /usr/include/sys/ttychars.h /usr/include/sys/ttydev.h
+tapedrive.o: /usr/include/sys/ttold.h /usr/include/sys/ioccom.h
+tapedrive.o: /usr/include/sys/ttycom.h /usr/include/sys/filio.h
+tapedrive.o: /usr/include/sys/sockio.h /usr/include/sys/time.h
+tapedrive.o: /usr/include/sys/time.h /usr/include/sys/wait.h
+tapedrive.o: /usr/include/sys/ipc.h /usr/include/sys/shm.h
+tapedrive.o: /usr/include/machine/mmu.h /usr/include/sys/sem.h
+testtape.o: tapedrive.h /usr/include/stdio.h machdep.h /usr/include/limits.h
+testtape.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+testtape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+testtape.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+testtape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+testtape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+testtape.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+testtape.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+testtape.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+testtape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+testtape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+testtape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+testtape.o: /usr/include/sys/sem.h
+vertape.o: tapedrive.h /usr/include/stdio.h machdep.h /usr/include/limits.h
+vertape.o: /usr/include/sys/types.h /usr/include/sys/stdtypes.h
+vertape.o: /usr/include/sys/sysmacros.h /usr/include/sys/param.h
+vertape.o: /usr/include/machine/param.h /usr/include/machine/devaddr.h
+vertape.o: /usr/include/sys/signal.h /usr/include/vm/faultcode.h
+vertape.o: /usr/include/sys/ioctl.h /usr/include/sys/ttychars.h
+vertape.o: /usr/include/sys/ttydev.h /usr/include/sys/ttold.h
+vertape.o: /usr/include/sys/ioccom.h /usr/include/sys/ttycom.h
+vertape.o: /usr/include/sys/filio.h /usr/include/sys/sockio.h
+vertape.o: /usr/include/sys/time.h /usr/include/sys/time.h
+vertape.o: /usr/include/sys/wait.h /usr/include/sys/ipc.h
+vertape.o: /usr/include/sys/shm.h /usr/include/machine/mmu.h
+vertape.o: /usr/include/sys/sem.h
