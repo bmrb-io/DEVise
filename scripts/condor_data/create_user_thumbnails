@@ -23,6 +23,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1999/08/10 18:30:18  wenger
+#  Reduced font size for user names; user names now drawn by the JavaScreen;
+#  reduced size of user name window.
+#
 #  Revision 1.8  1999/08/06 17:59:53  wenger
 #  Changed data font from Courier to New Century Schoolbook.
 #
@@ -150,7 +154,7 @@ sub DefineData {
   # Create a data source for the top-level data (list of users).
   #TEMP -- name should probably be a variable
   my $dataName = $data_prefix . "UserList";
-  my $dataFile = $top_level_file;
+  my $dataFile = "UserList";
 
   #TEMP?
   my $schemaType = "CondorUserList";

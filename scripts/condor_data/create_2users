@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1999/08/30 20:11:45  wenger
+#  Turned on axes without ticks in user data views.
+#
 #  Revision 1.11  1999/08/17 19:47:10  wenger
 #  Converted Condor UserMonth session from high/low symbols to piles for
 #  better representation of data; fixed some cursor/pile drawing bugs and
@@ -203,7 +206,7 @@ sub DefineData {
   # Create a data source for the top-level data (list of users).
   #TEMP -- name should probably be a variable
   my $dataName = $data_prefix . "UserList";
-  my $dataFile = $top_level_file;
+  my $dataFile = "UserList";
 
   #TEMP?
   my $schemaType = "CondorUserList";
