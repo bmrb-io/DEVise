@@ -1,0 +1,206 @@
+<!--
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1998
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+-->
+
+<!--
+  $Id$
+-->
+
+<HTML>
+<HEAD>
+<TITLE>DEVise GUI Reference</TITLE>
+</HEAD>
+<BODY background="../logo_background.gif">
+
+<h1>DEVise Graphical User Interface</h1>
+
+<p>The following menus are available in the DEVise main window:
+<ul>
+<li><a href="#session_menu">Session</a>
+<li><a href="#tables_menu">Tables</a>
+<li><a href="#graphdata_menu">GraphData</a>
+<li><a href="#view_menu">View</a>
+<li><a href="#window_menu">Window</a>
+<li><a href="#color_menu">Color</a>
+<li><a href="#help_menu">Help</a>
+</ul>
+
+<p>The following buttons are available in the DEVise main window:
+<ul>
+<li><a href="#query_button">Query</a>
+<li><a href="#mapping_button">Mapping</a>
+<li><a href="#displaylayout_button">Display/Layout</a>
+<li><a href="#stop_button">Stop</a>
+<li><a href="#devise_button">DEVise</a>
+</ul>
+
+<p>The following keys can be used in DEVise views:
+<ul>
+<li>1
+<li>2 (down)
+<li>3
+<li>4 (left)
+<li>5 (home)
+<li>6 (right)
+<li>7
+<li>8 (up
+<li>9
+<li> etc....
+<!-- TEMPTEMP -- need more here -->
+</ul>
+
+<hr>
+<a name="session_menu"><h3>Session Menu</h3></a>
+
+<img src="session_menu.gif">
+
+<h5>Open</h5>
+<p>Shows a dialog allowing you to select a file, and opens that file (if
+possible) as a <a href="concepts.html#session">DEVise session</a>.  If you
+already have a session open (that is, if you have any existing views or
+windows) you will be asked to confirm that it is okay to close that session
+before opening the new one.
+
+<h5>Save</h5>
+<p>Saves the current session state to the current session file.  If there
+is no current session file (you created a session from scratch and haven't
+yet saved it), this selection has the same effec as 'Save As'.
+
+<h5>Save As</h5>
+<p>Shows a dialog allowing you to select a file, and saves the current
+session state to that file.  The prefrerred file extension for DEVise session
+files is '.ds' (DEVise session).  Some older files may have the extension
+'.tk'.
+
+<h5>Close</h5>
+<p>Closes the current session (destroys all windows, views, etc.).  You will
+be asked for confirmation before the session is actually closed.
+
+<h5>Delete Session</h5>
+<p>Allows you to delete a session file.
+
+<h5>Print</h5>
+<p>
+
+<h5>Load String Space</h5>
+<p>Shows a dialog allowing you to select a file, and loads the
+<a href="concepts.html#string_space">DEVise string space</a> from that file.
+
+<h5>Get String Count</h5>
+<p>Shows a dialog reporting the number of strings in the
+<a href="concepts.html#string_space">DEVise string space</a>.
+
+<h5>Save String Space</h5>
+<p>Shows a dialog allowing you to select a file, and saves the
+<a href="concepts.html#string_space">DEVise string space</a> to that file.
+
+<h5>Dump Link/Cursor Info</h5>
+<p>
+
+<h5>Save Session Description</h5>
+<p>
+
+
+<h5>Quit</h5>
+<p>Quits DEVise.  If you have a session open, you'll be asked for confirmation
+before DEVise quits.
+
+
+<hr>
+<a name="tables_menu"><h3>Tables Menu</h3></a>
+
+<h5>Display</h5>
+<h5>Display Active</h5>
+<h5>New</h5>
+<h5>Edit</h5>
+<h5>Move</h5>
+<h5>Delete</h5>
+<h5></h5>
+<h5></h5>
+<h5></h5>
+
+<hr>
+<a name="graphdata_menu"><h3>GraphData Menu</h3></a>
+
+<h5>Edit Mapping</h5>
+<h5>Copy/Edit</h5>
+<h5>Switch TData</h5>
+<h5>Flush TData</h5>
+
+<hr>
+<a name="view_menu"><h3>View Menu</h3></a>
+
+<h5>Toggle X Axis</h5>
+<h5>Toggle Y Axis</h5>
+<h5>Title</h5>
+<h5>Fonts</h5>
+<h5>Links</h5>
+<h5>Cursors</h5>
+<h5>Statistics</h5>
+<h5>Kiviat Graph</h5>
+<h5>Dimensions</h5>
+<h5>Keypad Config</h5>
+<h5>3D Query</h5>
+<h5>Save GData</h5>
+<h5>Destroy</h5>
+<h5>Symbol Alignment</h5>
+
+<hr>
+<a name="window_menu"><h3>Window Menu</h3></a>
+
+<h5>Toggle X Axis</h5>
+<h5>Toggle Y Axis</h5>
+<h5>New</h5>
+<h5>Layout</h5>
+<h5>Duplicate</h5>
+<h5>Stack Control</h5>
+<h5>Swap Views</h5>
+<h5>Move View</h5>
+<h5>Remove View</h5>
+<h5>Restore View</h5>
+<h5>View List</h5>
+<h5>Print Config</h5>
+<h5>Destroy</h5>
+
+<hr>
+<a name="color_menu"><h3>Color Menu</h3></a>
+
+<h5>Global Foreground</h5>
+<h5>Global Background</h5>
+<h5>Window Foreground</h5>
+<h5>Window Background</h5>
+<h5>View Foreground</h5>
+<h5>View Background</h5>
+<h5>Cursor Foreground</h5>
+<h5>Palette</h5>
+
+<hr>
+<a name="help_menu"><h3>Help Menu</h3></a>
+
+<h5>About</h5>
+<h5>Demo</h5>
+<h5>History</h5>
+
+<hr>
+<a name="query_button"><h3>Query Button</h3></a>
+
+<a name="mapping_button"><h3>Mapping Button</h3></a>
+
+<a name="displaylayout_button"><h3>Display/Layout Button</h3></a>
+
+<a name="stop_button"><h3>Stop Button</h3></a>
+
+<a name="devise_button"><h3>DEVise Button</h3></a>
+
+</BODY>
+</HTML>
