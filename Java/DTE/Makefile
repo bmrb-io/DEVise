@@ -5,6 +5,7 @@ SRC =   DTE_Type.java \
 	Iterator.java \
 	ListOp.java \
 	ExecExpr.java \
+	DataSource.java \
     
 PACKAGES = Types Iterators Expressions NameToIdMaps DataSources
 
@@ -24,7 +25,7 @@ opt:
 	javac OptimizerTest.java -d $(CLASSES)
 
 Parser/SQLParser.java: Parser/SQLParser.jj
-	cd Parser && javacc SQLParser.jj && cd ..
+	cd Parser && javacc SQLParser.jj  && cd ..
 
 parser: Parser/SQLParser.java
 	javac ParserTest.java -d $(CLASSES)

@@ -8,9 +8,9 @@ import Parser.*;
 /** This is a main DTE class */
 
 public class ParserTest {
-	private Query query;
+	private static Query query;
 
-	void parse(){	// throws parse error
+	public static void parse() throws ParseException{	// throws parse error
 
 		// Jin has to implement this function and stuff closely related
 		// to it.
@@ -24,6 +24,18 @@ public class ParserTest {
 	}
 
 	public static void main(String[] args) throws IOException {
-		parse();	
+
+/*                SQLParser parser = new SQLParser(System.in);
+				query = parser.query();
+						System.out.println("Query was: " + query);
+	*/
+	try
+	{
+	parse();
+
+	}catch (ParseException e )
+	{
+	   System.out.println("opps!" + e );
+        }
 	}
 }
