@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/28 18:45:12  jussi
+  Added copyright notice and made small fixes to remove compiler
+  warnings.
+
   Revision 1.2  1995/09/05 21:12:37  jussi
   Added/updated CVS header.
 */
@@ -24,6 +28,8 @@
 
 #ifndef DList_h
 #define DList_h
+
+#include <assert.h>
 #include "Exit.h"
 
 /* data for iterator */
@@ -225,8 +231,13 @@ int listName::InitIteratorLastN(int n){\
 	return -1; /* to keep compiler happy */\
 }\
 \
-int listName::More(int index) { return _iterators[index].current != _head; }\
+int listName::More(int index) {\
+	assert(index >= 0 && index < MaxIterators);\
+	return _iterators[index].current != _head;\
+}\
+\
 valType listName::Next(int index) { \
+	assert(index >= 0 && index < MaxIterators);\
 	IteratorData *iData = &_iterators[index];\
 	valType v = iData->current->val;\
 	if (iData->backwards)\
@@ -236,11 +247,14 @@ valType listName::Next(int index) { \
 }\
 \
 void listName::DeleteCurrent(int index) {\
+	assert(index >= 0 && index < MaxIterators);\
 	if (_iterators[index].backwards)\
 		_DListDelete(_iterators[index].current->next);\
-	else _DListDelete(_iterators[index].current->prev);\
+	else\
+		_DListDelete(_iterators[index].current->prev);\
 }\
 void listName::InsertAfterCurrent(int index, valType v){ \
+	assert(index >= 0 && index < MaxIterators);\
 	IteratorData *iData = &_iterators[index];\
 	ListElement *node = new ListElement;\
 	node->val = v;\
@@ -250,6 +264,7 @@ void listName::InsertAfterCurrent(int index, valType v){ \
 		_Insert(iData->current->prev, node);\
 } \
 void listName::InsertBeforeCurrent(int index, valType v){ \
+	assert(index >= 0 && index < MaxIterators);\
 	IteratorData *iData = &_iterators[index];\
 	ListElement *node = new ListElement;\
 	node->val = v;\
@@ -259,6 +274,7 @@ void listName::InsertBeforeCurrent(int index, valType v){ \
 		_Insert(iData->current->prev->prev, node);\
 } \
 void listName::DoneIterator(int index){\
+	assert(index >= 0 && index < MaxIterators);\
 	_iterators[index].current = NULL;\
 	if (--_numIterators < 0){\
 		fprintf(stderr,"DList::DoneIterator: count < 0\n");\
