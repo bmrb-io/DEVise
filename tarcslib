@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1997/04/21 15:01:34  wenger
+#  Added DrawRubberband() virtual function to WindowRep class, so that it
+#  doesn't have to be called directly through the XWindowRep class;
+#  cleaned out unnecessary includes from the cslib example server code and
+#  distribution.
+#
 #  Revision 1.6  1996/12/10 23:14:36  wenger
 #  Dammit, error with extra include sneaked back in -- what happened to
 #  rev. 1.4 anyhow?
@@ -52,21 +58,42 @@ echo Creating Client-Server Library tar files...
 mkdir cslibtar
 cd cslibtar
 mkdir include
-ln -s ../../graphics/Color.h ../../graphics/ColorMgr.h \
-        ../../graphics/Compress.h ../../graphics/DList.h \
-        ../../graphics/DevError.h ../../graphics/DevStatus.h \
-        ../../graphics/DevisePixmap.h ../../graphics/DeviseTypes.h \
-        ../../graphics/Display.h ../../graphics/Exit.h \
+ln -s ../../graphics/Color.h \
+	../../graphics/ColorMgr.h \
+        ../../graphics/Compress.h \
+	../../graphics/DList.h \
+        ../../graphics/DevError.h \
+	../../graphics/DevStatus.h \
+        ../../graphics/DevisePixmap.h \
+	../../graphics/DeviseTypes.h \
+        ../../graphics/Display.h \
+        ../../graphics/PSDisplay.h \
+	../../graphics/Exit.h \
         ../../graphics/Geom.h \
-        ../../graphics/Pattern.h ../../graphics/Transform.h \
+        ../../graphics/Pattern.h \
+	../../graphics/Transform.h \
         ../../graphics/VisualArg.h \
         ../../graphics/WindowRep.h \
-	../../graphics/DualWindowRep.h include
+	../../graphics/XWindowRep.h \
+	../../graphics/DualWindowRep.h \
+	../../graphics/PSWindowRep.h \
+	../../graphics/ETk.h \
+	../../graphics/ETkIfc.h \
+	../../graphics/DaliIfc.h \
+	../../graphics/Xdef.h \
+	../../graphics/Util.h \
+	include
 ln -s ../../graphics.new/ClientAPI.h \
-        ../../graphics.new/ParseAPI.h include
-ln -s ../cslib/Makefile.com ../cslib/ClientServer.* \
-        ../cslib/server.* ../cslib/client.* \
-        ../cslib/opossum.* ../cslib/Readme.tex .
+        ../../graphics.new/ParseAPI.h \
+	include
+ln -s ../cslib/Makefile.com \
+	../cslib/ClientServer.* \
+        ../cslib/server.* \
+	../cslib/client.* \
+        ../cslib/opossum.* \
+        ../cslib/earth.gif \
+        ../cslib/ETkSample.tcl \
+	../cslib/Readme.tex .
 
 foreach platform (solaris solsparc sun hp)
   ln -s ../$platform/cslib/Makefile.dist Makefile
