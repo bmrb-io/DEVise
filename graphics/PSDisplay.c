@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/05/05 16:53:45  wenger
+  Devise now automatically launches Tasvir and/or EmbeddedTk servers if
+  necessary.
+
   Revision 1.15  1997/04/11 18:48:51  wenger
   Added dashed line support to the cslib versions of WindowReps; added
   option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -190,6 +194,12 @@ Destroy a window
 void PSDisplay::DestroyWindowRep(WindowRep *win)
 {
   DO_DEBUG(printf("PSDisplay::DestroyWindowRep(%p)\n", win));
+
+  PSWindowRep *psWin = (PSWindowRep *) win;
+  if (!_winList.Delete(psWin)) {
+    reportErrNosys("Window to be deleted not found");
+    Exit::DoExit(1);
+  }
 
   delete win;
 }
