@@ -1474,6 +1474,8 @@ script.o: ../../attrproj/ApInit.h ../RTree/RTreeCommon.h ncsa.h
 util.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
 util.o: /usr/include/stdio.h /usr/include/sys/va_list.h /usr/include/memory.h
 
+FormatVolume.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
+FormatVolume.o: /usr/include/sys/va_list.h RTreeCommon.h
 RTree.o: RTree.h /usr/include/stdio.h /usr/include/sys/feature_tests.h
 RTree.o: /usr/include/sys/va_list.h /s/gcc-2.7.2/lib/g++-include/iostream.h
 RTree.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
@@ -1508,6 +1510,12 @@ bulk_data.o: /usr/include/sys/time.h /usr/include/sys/time.h
 bulk_data.o: /usr/include/sys/mman.h type_compat.h /usr/include/errno.h
 bulk_data.o: /usr/include/sys/errno.h /usr/include/stdio.h
 bulk_data.o: /usr/include/sys/va_list.h globals.h
+convert_bulk.o: /usr/include/stdlib.h /usr/include/sys/feature_tests.h
+convert_bulk.o: /usr/include/stdio.h /usr/include/sys/va_list.h
+convert_bulk.o: /usr/include/strings.h /usr/include/string.h
+convert_bulk.o: tools/correct_math.C /usr/include/math.h
+convert_bulk.o: /usr/include/floatingpoint.h /usr/include/sys/ieeefp.h
+convert_bulk.o: tools/heap.h
 genrtree.o: /usr/include/sys/types.h /usr/include/sys/feature_tests.h
 genrtree.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 genrtree.o: /usr/include/sys/select.h /usr/include/sys/time.h
@@ -1610,7 +1618,7 @@ bitmap.o: /s/gcc-2.7.2/lib/g++-include/streambuf.h
 bitmap.o: /s/gcc-2.7.2/lib/g++-include/libio.h /usr/include/sys/types.h
 bitmap.o: /usr/include/sys/isa_defs.h /usr/include/sys/machtypes.h
 bitmap.o: /usr/include/sys/select.h /usr/include/sys/time.h
-bitmap.o: /usr/include/sys/time.h bitmap.h
+bitmap.o: /usr/include/sys/time.h bitmap.h /usr/include/assert.h
 box.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 box.o: /usr/include/sys/va_list.h box.h key.h /usr/include/stdlib.h bit_vec.h
 box.o: /usr/include/sys/types.h /usr/include/sys/isa_defs.h

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8  1997/02/03 04:13:47  donjerko
+#  Catalog management moved to DTE
+#
 #  Revision 1.7  1996/12/24 21:01:10  kmurli
 #  Included FunctionRead to support joinprev and joinnext
 #
@@ -54,6 +57,10 @@ dte: $(STAND_ALONE_OBJ)
 script: $(SCRIPT_OBJ)
 	$(CC) -o script $(SCRIPT_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
 
-FormatVolume: FormatVolume.c
+FormatVolume: FormatVolume.C
 	$(CC) $< -o $@
+
+convert_bulk: convert_bulk.C correct_math.C heap.o
+	$(CC) heap.o $< -o $@
+
 # DO NOT DELETE

@@ -118,7 +118,7 @@ STAND_ALONE_OBJ = $(CORE_SRC:.c=.o) $(STAND_ALONE_SRC:.c=.o) \
 
 LIBNAME = libdte.a
 
-all: $(LIBNAME) dte FormatVolume
+all: $(LIBNAME) dte FormatVolume convert_bulk
 lib: $(LIBNAME)
 
 devread: 
@@ -142,7 +142,7 @@ $(DTE_DIR)/Core/lex.yy.c: $(DTE_DIR)/Core/my.lex
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) dte FormatVolume
+	-rm $(LIBNAME) dte FormatVolume convert_bulk
 
 mostlyclean:
 	-rm $(LIBOBJ) $(STAND_ALONE_OBJ)

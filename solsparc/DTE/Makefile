@@ -13,6 +13,9 @@
 ############################################################
 
 #  $Log$
+#  Revision 1.5  1997/02/03 04:14:28  donjerko
+#  Catalog management moved to DTE
+#
 #  Revision 1.6  1996/12/16 07:22:15  donjerko
 #  Fixed some compile problems
 #
@@ -49,5 +52,9 @@ dte: $(STAND_ALONE_OBJ)
 pure: $(STAND_ALONE_OBJ)
 	purify $(CC) -gstabs -o dte.pure $(STAND_ALONE_OBJ) -L../devread -ldevread -lm -lsocket -lnsl
 
-FormatVolume: FormatVolume.c
+FormatVolume: FormatVolume.C
 	$(CC) $< -o $@
+
+convert_bulk: convert_bulk.C correct_math.C heap.h heap.o
+	$(CC) -DBYTE_BIG_ENDIAN -DWORD_BIG_ENDIAN heap.o $< -o $@
+
