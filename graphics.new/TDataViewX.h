@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/02/14 16:47:48  wenger
+  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+
   Revision 1.16  1997/02/03 19:45:35  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -143,7 +146,7 @@ private:
 			   void *gdata, int numGData);
   
   /* Done with query */
-  virtual void QueryDone(int bytes, void *userData);
+  virtual void QueryDone(int bytes, void *userData, TDataMap *map=NULL);
   
   VisualFilter _queryFilter;
   int          _timestamp;
