@@ -39,3 +39,4 @@ if (-e $outfile && ! -z $outfile) then
 endif
 
 touch /tmp/js_check
+touch ./js_check
