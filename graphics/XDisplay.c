@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.36  1996/09/10 20:07:13  wenger
+  High-level parts of new PostScript output code are in place (conditionaled
+  out for now so that the old code is used until the new code is fully
+  working); changed (c) (tm) in windows so images are not copyrighted
+  by DEVise; minor bug fixes; added more debug code in the course of working
+  on the PostScript stuff.
+
   Revision 1.35  1996/09/05 21:30:14  jussi
   Moved user-specified screen size to Display.
 
@@ -282,6 +289,108 @@ void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
   fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
 }
 
+void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename, 
+				char *mapFileName, char *url, char *defaultUrl)
+{
+  if (format == GIF) {
+     FILE *fp1 = fopen(gifFilename,"wb");
+     if (!fp1) {
+	fprintf(stderr, "Cannot open file %s for writing\n", gifFilename);
+	return;
+      }
+
+     FILE *fp2 = fopen(mapFileName,"wb");
+     if (!fp2) {
+        fprintf(stderr, "Cannot open file %s for writing\n", mapFileName);
+        return;
+      }
+      char line[LINE_SIZE];
+      sprintf(line, "rect %s?", url);
+      int x = 0 ,y = 0;
+      unsigned int w = 0, h = 0;
+
+      int index1 = _winList.InitIterator();
+      int i = 0;
+
+      while(_winList.More(index1)) {
+         XWindowRep *win = _winList.Next(index1); 
+	 if (win->_parent)
+            continue;   
+         int wx, wy;
+	 unsigned int ww, wh;
+	 win->GetRootGeometry(wx, wy, ww, wh);
+
+#if defined(DEBUG) || 0
+            printf("The geometry of this window: wx = %d, wy = %d, 
+                        ww = %u, wh = %u\n", wx, wy, ww, wh);
+#endif
+
+	 if (!w && !h) {
+      	    /* this is the first window */
+      	    x = wx;
+            y = wy;
+            w = ww;
+            h = wh;
+#if defined(DEBUG) || 0
+    	    printf("In the first window: x = %d, y = %d, 
+			w = %u, h = %u\n", x, y, w, h);
+#endif
+    	 } else {
+      	    /* compute combined area */
+      	    int x2 = MAX(x + w - 1, wx + ww - 1);
+      	    int y2 = MAX(y + h - 1, wy + wh - 1);
+      	    x = MIN(x, wx);
+       	    y = MIN(y, wy);
+      	    w = x2 - x + 1;
+      	    h = y2 - y + 1;
+    	 }
+      }
+      _winList.DoneIterator(index1);
+#if defined(DEBUG) || 0
+      printf("The display has: x = %d, y = %d,
+			w = %u, h = %u\n", x, y, w, h);
+#endif
+
+      index1 = _winList.InitIterator();
+      while(_winList.More(index1)) {
+	 XWindowRep *win = _winList.Next(index1);
+	 if (win->_parent)
+	    continue;
+	 int rx =0, ry = 0;
+	 unsigned int rw, rh;
+	 win->GetRootGeometry(rx, ry, rw, rh);
+#if  defined(DEBUG) || 0
+	 printf("The parent has: rx = %d, ry = %d, rw = %u, rh = %u\n",
+			rx, ry, rw, rh);
+#endif
+
+         int index2 = win->_children.InitIterator();
+	 while(win->_children.More(index2)) {
+	     XWindowRep *winc = win->_children.Next(index2);
+	     int sub_x = 0, sub_y = 0;
+	     unsigned int sub_w, sub_h;
+	     winc->Origin(sub_x, sub_y);
+	     winc->Dimensions(sub_w, sub_h);
+	     char temp[LINE_SIZE];
+  	     sprintf(temp, "%s%d %d,%d %u,%u\n", line, i, sub_x+(rx-x), 
+			sub_y+(ry-y)+23, sub_w+sub_x+(rx-x), sub_h+sub_y+(ry-y)+23); 
+	     i++;
+	     fprintf(fp2, temp);
+	 }
+         win->_children.DoneIterator(index2);
+      }
+      _winList.DoneIterator(index1);
+      fprintf(fp2, "default %s\n", defaultUrl);
+      fclose(fp2);
+      MakeAndWriteGif(fp1, x, y, w, h);
+      fclose(fp1);
+      return;
+  }
+
+  fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
+    
+}
+
 void XDisplay::ExportGIF(FILE *fp)
 {
   /* compute the bounding rectangle of all windows */
@@ -318,7 +427,11 @@ void XDisplay::ExportGIF(FILE *fp)
 #ifdef DEBUG
   printf("Bounding rectangle of windows is %d,%d,%u,%u\n", x, y, w, h);
 #endif
+  MakeAndWriteGif(fp, x, y, w, h);
+}
 
+void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
+{
   /* Allocate a pixmap large enough to hold all windows */
 
   unsigned int depth = DefaultDepth(_display, DefaultScreen(_display));
@@ -338,7 +451,7 @@ void XDisplay::ExportGIF(FILE *fp)
 
   /* Copy windows to pixmap */
 
-  index = _winList.InitIterator();
+  int index = _winList.InitIterator();
   while(_winList.More(index)) {
     XWindowRep *win = _winList.Next(index);
     if (win->_parent)
