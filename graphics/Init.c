@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.60  2000/05/16 14:35:38  wenger
+  Added -jscache command-line argument.
+
   Revision 1.59  2000/02/18 22:21:27  wenger
   Various changes to make cron scripts work better with new two-machine
   setup: added -id argument to devise, jspop, jss; updated cron scripts
@@ -346,7 +349,7 @@ int Init::_maxclients = DefaultMaxClients;
 Boolean Init::_doDebugLog = true;
 int Init::_logLevel = (int)DebugLog::LevelInfo2;
 Boolean Init::_doHangCheck = true;
-Boolean Init::_useJSCache = false;//TEMP
+Boolean Init::_useJSCache = true;
 
 Boolean Init::_quitOnDisconnect = false;
 int Init::_clientTimeout = 0;

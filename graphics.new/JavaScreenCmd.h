@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.37  2000/05/01 18:02:52  wenger
+  Modified JavaScreenCmd::SendChangedViews() to reduce "cursor disappearing":
+  JAVAC_DrawCursor commands now are sent ASAP after the corresponding
+  JAVAC_UpdateViewImage or JAVAC_UpdateGData command.
+
   Revision 1.36  2000/04/26 19:39:01  wenger
   JavaScreen caching code is largely implemented except for checking
   the validity of the cache files; committing with caching disabled
@@ -185,6 +190,7 @@
 #include <string>
 
 #include "DeviseTypes.h"
+#include "JavaScreenCache.h"
 
 typedef double TDataVal;
 typedef string GDataVal;
@@ -200,6 +206,7 @@ class JavaScreenCmd
 {
 	friend class View;
 	friend class JSArgs;
+	friend class JavaScreenCache;
 
 	public:
 		typedef enum 
@@ -257,6 +264,8 @@ class JavaScreenCmd
 	protected:
 		// < 0 if error
 		int ReturnVal(int argc, char** argv);
+		ControlCmdType SendWindowData(const char* fileName,
+		  Boolean doChecksum, int &checksumValue);
 
 	private:
 		static char* _controlCmdName[CONTROLCMD_NUM];
@@ -270,14 +279,7 @@ class JavaScreenCmd
 
 		static Boolean	_postponeCursorCmds;
 
-		Boolean			_recording;	// true iff recording commands and data
-		DevStatus		_recordingStatus;
-		char *			_commandFileName;
-		FILE *			_commandFile;
-		char *			_dataFileName;
-		int				_dataFile;
-
-		Boolean 		_playingBack; // true iff playing back commands and data
+		static JavaScreenCache _cache;
 
 		// JavaScreen->Server Requests
 		void GetSessionList();
@@ -305,8 +307,6 @@ class JavaScreenCmd
 
 		// Convenience functions
 		void CloseJavaConnection();
-		ControlCmdType SendWindowData(const char* fileName,
-		  Boolean doChecksum, int &checksumValue);
 		ControlCmdType SendViewGData(ViewGraph *view);
 		int  ControlCmd(ControlCmdType  status);
 		void UpdateSessionList(char *dirName);
@@ -324,19 +324,8 @@ class JavaScreenCmd
 		void DrawChangedCursors();
 		void DrawViewCursors(View *view);
 
-		DevStatus StartPlayingBack(const char *sessionFile);
-		DevStatus SendCmd(const char* cmd);
-		DevStatus StopPlayingBack();
-		DevStatus StartRecording(const char *sessionFile);
-		DevStatus StopRecording();
-		DevStatus OpenCacheFiles(const char *sessionFile, Boolean
-		  writing);
-        DevStatus CloseCacheFiles(Boolean deleteFiles);
-
 	protected:
-		//TEMPTEMP -- is this the right way to return value?
-		static void DrawCursor(View *view, DeviseCursor *cursor,
-		  JavaScreenCmd *jsc = NULL);
+		static void DrawCursor(View *view, DeviseCursor *cursor);
 		static void EraseCursor(View *view, DeviseCursor *cursor);
 };
 

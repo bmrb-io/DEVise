@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.101  2000/05/01 18:02:42  wenger
+  Modified JavaScreenCmd::SendChangedViews() to reduce "cursor disappearing":
+  JAVAC_DrawCursor commands now are sent ASAP after the corresponding
+  JAVAC_UpdateViewImage or JAVAC_UpdateGData command.
+
   Revision 1.100  2000/04/26 19:39:00  wenger
   JavaScreen caching code is largely implemented except for checking
   the validity of the cache files; committing with caching disabled
@@ -457,7 +462,6 @@
 #include "PileStack.h"
 #include "DebugLog.h"
 #include "ElapsedTime.h"
-#include "DevFileHeader.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -491,9 +495,7 @@ static const float viewZInc = 0.001;
 static const int protocolMajorVersion = 4;
 static const int protocolMinorVersion = 1;
 
-static const char *_dispSizePrefix = "display size: ";
-static const char *_protocolVersionPrefix = "protocol version: ";
-static const char *_cmdPrefix = "command: ";
+JavaScreenCache JavaScreenCmd::_cache;
 
 // be very careful that this order agree with the ControlCmdType definition
 char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
@@ -951,14 +953,6 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	_argv = new (char*)[argc];
 	errmsg = NULL;
 
-	_recording = false;
-	_commandFile = NULL;
-	_commandFileName = NULL;
-	_dataFile = -1;
-	_dataFileName = NULL;
-
-	_playingBack = false;
-
     for (i=0; i< _argc; ++i)
     {
         int j = 0;
@@ -1170,9 +1164,16 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// and other problems.
 	DoCloseSession();
 
-#if 0//TEMPTEMP // Under development.
-    (void)StartPlayingBack(fullpath);
-#endif
+	if (Init::UseJSCache()) {
+        (void)_cache.StartPlayingBack(this, fullpath, protocolMajorVersion);
+	}
+	if (_cache.IsPlayingBack()) {
+        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+		  "Opening session by playing back cache");
+	} else {
+        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+		  "Opening session without using cache");
+	}
 
 	_postponeCursorCmds = true;
 
@@ -1248,11 +1249,14 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// ...end of kludgey section.
 	//
 
-#if 0//TEMPTEMP // Under development.
-	if (!_playingBack) {
-	    (void)StartRecording(fullpath);
+	if (Init::UseJSCache() && !_cache.IsPlayingBack()) {
+	    (void)_cache.StartRecording(fullpath, protocolMajorVersion,
+		  protocolMinorVersion);
 	}
-#endif
+	if (_cache.IsRecording()) {
+        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+		  "Recording opening of session to cache files");
+	}
 
 	// Send commands to create the top-level views.
 	int viewIndex = _topLevelViews.InitIterator();
@@ -1280,15 +1284,20 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 		  "Cleaning up partially-opened session\n");
 #endif
         DoCloseSession();
-		if (_recording) _recordingStatus += StatusFailed;
+		if (_cache.IsRecording()) _cache.AddRecordingStatus(StatusFailed);
     }
 
-	if (_recording) {
-	    (void)StopRecording();
+	if (_cache.IsRecording()) {
+        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+		  "Done recording to cache files; status = ",
+		    _cache.GetRecordingStatus().Value());
+	    (void)_cache.StopRecording();
 	}
 
-	if (_playingBack) {
-	    (void)StopPlayingBack();
+	if (_cache.IsPlayingBack()) {
+        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+		  "Done playing back command cache file");
+	    (void)_cache.StopPlayingBack();
 	}
 
 #if JS_TIMER
@@ -1933,7 +1942,7 @@ JavaScreenCmd::SendWindowData(const char* fileName, Boolean doChecksum,
 
 	// If we're in playback mode, the data will have been sent by the
 	// playback code, so don't do anything here.
-    if (_playingBack) return status;
+    if (_cache.IsPlayingBack()) return status;
 
 	int filesize = 0;
 
@@ -1977,20 +1986,8 @@ JavaScreenCmd::SendWindowData(const char* fileName, Boolean doChecksum,
 			}
 			filesize += bytesRead;
 
-			if (_recording) {
-				int bytesWritten = write(_dataFile, buf, bytesRead);
-			    if (bytesWritten < 0) {
-				    reportErrSys("write data file");
-					_recordingStatus += StatusFailed;
-			    } else if (bytesWritten != bytesRead) {
-				    // Note: we may want to re-try the write here.  RKW
-					// 2000-03-28.
-				    char errBuf[2048];
-				    sprintf(errBuf, "Expected to write %d bytes; wrote %d",
-				      bytesRead, bytesWritten);
-				    reportErrSys(errBuf);
-					_recordingStatus += StatusFailed;
-			    }
+			if (_cache.IsRecording()) {
+				(void)_cache.SaveData(buf, bytesRead);
 			}
 
 #if defined(DEBUG_LOG)
@@ -2204,6 +2201,11 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	//
     for (int winNum = 0; winNum < dirtyGifCount; winNum++) {
 		if (result == DONE) {
+#if 0
+            sprintf(logBuf, "Sending image data for view <%s>\n",
+			  viewNames[winNum]);
+    		DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
 			int checksumValue;
 			(void) SendWindowData(imageNames[winNum], DO_CHECKSUM,
 			  checksumValue);
@@ -2342,9 +2344,7 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 
 //====================================================================
 void
-//TEMPTEMP -- jsc argument here is a kludge -- _playingBack, etc., should
-// probably be static
-JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor, JavaScreenCmd *jsc)
+JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 {
 #if defined (DEBUG_LOG)
     sprintf(logBuf, "JavaScreenCmd::DrawCursor(%s, %s)\n", view->GetName(),
@@ -2469,13 +2469,8 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor, JavaScreenCmd *jsc)
 	//
     // This JavaScreenCmd object is created only to send the command.
 	//
-#if 0 //TEMPTEMP
-	//TEMPTEMP -- this object doesn't have recording turned on
     JavaScreenCmd jsc(ControlPanel::Instance(), NULL_SVC_CMD, 0, NULL);
 	args.ReturnVal(&jsc);
-#else //TEMPTEMP
-	args.ReturnVal(jsc);
-#endif //TEMPTEMP
 }
 
 //====================================================================
@@ -2522,6 +2517,8 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
     sprintf(logBuf, "JavaScreenCmd(0x%p)::ReturnVal(", this);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf, argc, argv,
 	  ")\n");
+    sprintf(logBuf, "_cache.IsPlayingBack() = %d", _cache.IsPlayingBack());
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 #if defined(DEBUG)
     printf("JavaScreenCmd::ReturnVal(");
@@ -2531,15 +2528,11 @@ JavaScreenCmd::ReturnVal(int argc, char** argv)
 
 	// If we're in playback mode, the command or result will have been sent
 	// by the playback code, so don't do anything here.
-    if (_playingBack) return 0;
+    if (_cache.IsPlayingBack()) return 0;
 
     // record the command in the command file if necessary
-	if (_recording) {
-	    fprintf(_commandFile, _cmdPrefix);
-		for (int aNum = 0; aNum < argc; aNum++) {
-		    fprintf(_commandFile, "{%s} ", argv[aNum]);
-		}
-		fprintf(_commandFile, "\n");
+	if (_cache.IsRecording()) {
+		_cache.SaveCommand(argc, argv);
 	}
 
 	// send the command out
@@ -2698,7 +2691,7 @@ JavaScreenCmd::DrawChangedCursors()
 		DeviseCursor *cursor = _drawnCursors.Next(index);
 		View *view = cursor->GetDst();
 		if (view != NULL) {
-			DrawCursor(view, cursor, this);
+			DrawCursor(view, cursor);
 		}
 	}
 	_drawnCursors.DoneIterator(index);
@@ -2721,7 +2714,7 @@ JavaScreenCmd::DrawViewCursors(View *view)
     int index = view->_cursors->InitIterator();
 	while (view->_cursors->More(index)) {
 	    DeviseCursor *cursor = view->_cursors->Next(index);
-		DrawCursor(view, cursor, this);
+		DrawCursor(view, cursor);
 		if (_drawnCursors.Find(cursor)) {
 			_drawnCursors.Delete(cursor);
 		}
@@ -3092,308 +3085,4 @@ JavaScreenCmd::UpdateViewImage(View *view, int imageSize)
 	args.FillInt(imageSize);
 
 	args.ReturnVal(this);
-}
-
-//====================================================================
-DevStatus
-JavaScreenCmd::StartPlayingBack(const char *sessionFile)
-{
-#if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::StartPlayingBack(%s)\n", sessionFile);
-    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
-#endif
-
-    DevStatus result(StatusOk);
-
-//TEMPTEMP -- make sure cache files are newer than session file
-
-    result += OpenCacheFiles(sessionFile, false);
-
-	if (result.IsComplete()) {
-
-		// Check file header.
-		DevFileHeader::Info info;
-		//TEMPTEMP -- check result
-	    result += DevFileHeader::Read(_commandFile, info);
-
-	    if (result.IsComplete()) {
-		    if (strcmp(info.fileType, FILE_TYPE_JSCMDCACHE)) {
-				char errBuf[MAXPATHLEN + 128];
-				sprintf(errBuf,
-				  "File %s is not a JavaScreen command cache file",
-				  _commandFileName);
-				reportErrNosys(errBuf);
-			    result += StatusFailed;
-			}
-		}
-	}
-
-	if (result.IsComplete()) {
-//TEMPTEMP -- check protocol version
-
-        // Check display size for match
-		int prefixLen = strlen(_dispSizePrefix);
-		const int sizeBufSize = 512;
-        char sizeBuf[sizeBufSize];
-		Boolean foundSize = false;
-		//TEMPTEMP -- use nice_fgets??
-		//TEMPTEMP - what if we don't find it at all?
-		while (fgets(sizeBuf, sizeBufSize, _commandFile) && !foundSize) {
-		    if (!strncmp(sizeBuf, _dispSizePrefix, prefixLen)) {
-			    foundSize = true;
-				int cacheWidth, cacheHeight;
-				sscanf(&sizeBuf[prefixLen], "%dx%d", &cacheWidth,
-				  &cacheHeight);
-				int curWidth =
-				  DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
-				int curHeight =
-				  DeviseDisplay::DefaultDisplay()->DesiredScreenHeight();
-				if (cacheWidth != curWidth || cacheHeight != curHeight) {
-				    char errBuf[1024];
-					sprintf(errBuf, "Current display size %dx%d does not match cache file display size of %dx%d; cached data not used",
-					  curWidth, curHeight, cacheWidth, cacheHeight);
-					reportErrNosys(errBuf);
-					result += StatusFailed;
-				}
-			}
-	    }
-    }
-
-	if (result.IsComplete()) {
-		// Play back the command file.
-		int prefixLen = strlen(_cmdPrefix);
-		const int cmdBufSize = 512;
-        char cmdBuf[cmdBufSize];
-		//TEMPTEMP -- use nice_fgets??
-		while (fgets(cmdBuf, cmdBufSize, _commandFile)) {
-		    if (!strncmp(cmdBuf, _cmdPrefix, prefixLen)) {
-			    result += SendCmd(&cmdBuf[prefixLen]);
-			}
-		}
-    }
-
-	if (result.IsComplete()) {
-        // Play back the data (image and GData) file.
-		int tmp;
-		//TEMPTEMP -- check return value
-		//TEMPTEMP -- what about checksum?
-		//TEMPTEMP -- maybe don't use SendWindowData here
-	    SendWindowData(_dataFileName, false, tmp);
-
-		// This must be set *after* sending the data, otherwise
-		// SendWindowData() won't do anything.
-	    _playingBack = true;
-    }
-
-//TEMPTEMP -- if we send JAVAC_Done here, what happens if user does
-// something while devised is still really opening the session?
-
-    if (!_playingBack) {
-	    result += CloseCacheFiles(false);
-	}
-
-    return result;
-}
-
-//====================================================================
-DevStatus
-JavaScreenCmd::SendCmd(const char* cmd)
-{
-    DevStatus result(StatusOk);
-
-    ArgList args;
-	args.ParseString(cmd);
-
-#if defined(DEBUG)
-	printf("Sending command: ");
-	PrintArgs(stdout, args.GetCount(), args.GetArgs(), true);
-#endif
-
-	//TEMPTEMP -- check return value
-	//TEMPTEMP -- eliminate cast
-	ReturnVal(args.GetCount(), (char **)args.GetArgs());
-
-    return result;
-}
-
-//====================================================================
-DevStatus
-JavaScreenCmd::StartRecording(const char *sessionFile)
-{
-#if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::StartRecording(%s)\n", sessionFile);
-    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
-#endif
-
-    DevStatus result(StatusOk);
-
-	if (_recording) {
-	    reportErrNosys("Can't start recording when already recording");
-		result = StatusFailed;
-	}
-
-	if (result.IsComplete()) {
-		result += OpenCacheFiles(sessionFile, true);
-	}
-
-	if (result.IsComplete()) {
-	    _recording = true;
-		_recordingStatus = StatusOk;
-
-		// Write file header.
-		const char *header = DevFileHeader::Get(FILE_TYPE_JSCMDCACHE);
-		fprintf(_commandFile, "%s\n", header);
-
-		// Save display size.
-	    int width = DeviseDisplay::DefaultDisplay()->DesiredScreenWidth();
-	    int height = DeviseDisplay::DefaultDisplay()->DesiredScreenHeight();
-		fprintf(_commandFile, "%s%dx%d\n", _dispSizePrefix, width, height);
-
-		// Save protocol version.
-		fprintf(_commandFile, "%s%d.%d\n\n", _protocolVersionPrefix,
-		  protocolMajorVersion, protocolMinorVersion);
-	} else {
-	    if (_commandFile) {
-		    (void)fclose(_commandFile);
-			_commandFile = NULL;
-		}
-	}
-
-//TEMP -- what if command file already exists?
-
-    return result;
-}
-
-//====================================================================
-DevStatus
-JavaScreenCmd::OpenCacheFiles(const char *sessionFile, Boolean writing)
-{
-    DevStatus result(StatusOk);
-
-	_commandFile = NULL;
-	_dataFile = -1;
-
-	if (result.IsComplete()) {
-		char fileBuf[MAXPATHLEN];
-		sprintf(fileBuf, "%s.commands", sessionFile);
-		_commandFileName = CopyString(fileBuf);
-		_commandFile = fopen(_commandFileName, writing ? "w" : "r");
-		if (!_commandFile) {
-			sprintf(logBuf, "Can't open command file %s", _commandFileName);
-		    reportErrSys(logBuf);
-			result += StatusFailed;
-		}
-	}
-
-	if (result.IsComplete()) {
-		char fileBuf[MAXPATHLEN];
-		sprintf(fileBuf, "%s.data", sessionFile);
-		_dataFileName = CopyString(fileBuf);
-		_dataFile = open(fileBuf, writing ? O_WRONLY | O_CREAT : O_RDONLY,
-		  0644);
-		if (_dataFile < 0) {
-		    sprintf(logBuf, "Can't open data file %s", _dataFileName);
-		    reportErrSys(logBuf);
-			result += StatusFailed;
-		}
-	}
-
-	if (!result.IsComplete()) {
-	    result += CloseCacheFiles(false);
-	}
-
-	return result;
-}
-
-//====================================================================
-DevStatus
-JavaScreenCmd::StopPlayingBack()
-{
-#if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::StopPlayingBack()\n");
-    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
-#endif
-
-    DevStatus result(StatusOk);
-
-    if (!_playingBack) {
-	    //TEMPTEMP
-	}
-
-	if (result.IsComplete()) {
-		result += CloseCacheFiles(false);
-	}
-
-	_playingBack = false;
-
-    return result;
-}
-
-//====================================================================
-DevStatus
-JavaScreenCmd::StopRecording()
-{
-#if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::StopRecording()\n");
-    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
-#endif
-
-    DevStatus result(StatusOk);
-
-    if (!_recording) {
-	}
-
-	if (result.IsComplete()) {
-		result += CloseCacheFiles(!_recordingStatus.IsComplete());
-	}
-
-	_recording = false;
-
-    return result;
-}
-
-//====================================================================
-DevStatus
-JavaScreenCmd::CloseCacheFiles(Boolean deleteFiles)
-{
-    DevStatus result(StatusOk);
-
-	if (_commandFile) {
-	    if (fclose(_commandFile) != 0) {
-	        reportErrSys("Error closing command file");
-	        result = StatusFailed;
-	    }
-	    _commandFile = NULL;
-	}
-
-	if (deleteFiles && _commandFileName) {
-	    if (unlink(_commandFileName) < 0) {
-		    sprintf(logBuf, "Error unlinking command file %s",
-			  _commandFileName);
-		    reportErrSys(logBuf);
-			result += StatusWarn;
-		}
-	}
-	FreeString(_commandFileName);
-	_commandFileName = NULL;
-
-	if (_dataFile != -1) {
-	    if (close(_dataFile) < 0) {
-	        reportErrSys("Error closing data file");
-		    result = StatusFailed;
-	    }
-	    _dataFile = -1;
-	}
-
-	if (deleteFiles && _dataFileName) {
-	    if (unlink(_dataFileName) < 0) {
-		    sprintf(logBuf, "Error unlinking data file %s", _dataFileName);
-		    reportErrSys(logBuf);
-			result += StatusWarn;
-		}
-	}
-	FreeString(_dataFileName);
-	_dataFileName = NULL;
-
-    return result;
 }

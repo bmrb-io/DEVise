@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.97  1999/11/19 21:34:54  wenger
+#  Removed Journal class and related code (no longer works); removed various
+#  other unused or unnecessary code.
+#
 #  Revision 1.96  1999/09/07 19:00:56  wenger
 #  dteInsertCatalogEntry command changed to tolerate an attempt to insert
 #  duplicate entries without causing a problem (to allow us to get rid of
@@ -329,7 +333,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
         StringStorage.C PointStorage.C SBufMgr.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
 	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
-	JavaScreenCmd.h JavaScreenCmd.C DRUtils.c DupElim.c
+	JavaScreenCmd.C JavaScreenCache.c DRUtils.c DupElim.c
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))
