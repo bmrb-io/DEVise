@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/22 18:06:51  jussi
+  Added Vector shape.
+
   Revision 1.4  1995/11/28 00:05:42  jussi
   Added polygon and oval shapes.
 
@@ -66,5 +69,11 @@ class OvalShape : public Shape {};
    arrow head also). */
 
 class VectorShape : public Shape {};
+
+/* BlockShape: a 3-dimensional block centered at (x,y,z) which has
+   dimensions specified by the 0th, 1st, and 2nd shape attribute
+   (width, height, depth). */
+
+class BlockShape : public Shape {};
 
 #endif
