@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 18:55:35  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.5  1995/12/14 17:22:13  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -45,7 +48,32 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
   _fgndColor = fgndColor; _bgndColor = bgndColor;
   _display = disp;
   _pattern = p;
-}
+
+  // ---------------------------------------------------------- 
+  // 3D
+//  camera.x_ = 1.6; camera.y_ = -2.0; camera.z_ = 3.5;
+  _camera.x_ = 4.6; _camera.y_ = -3.0; _camera.z_ = 4.0;
+  CompRhoPhiTheta();
+  _dvs = 250;
+  _twist_angle = deg_rad(0.0);
+  int i, j;
+  for (i = 0; i < 4; i++)
+     for (j = 0; j < 4; j++)
+        _TransformViewMatrix[i][j] = 0.0;
+  CompViewingTransf();
+  _perspective = 1;
+  _NumXSegs = 0;
+  // set the reference axis
+  _AxisPt[1].x_ = _AxisPt[3].z_ = 1.5;  _AxisPt[2].y_ = _AxisPt[1].x_ * 1.5;
+  _AxisPt[1].y_ = _AxisPt[1].z_ = 0.0;
+  _AxisPt[2].x_ = _AxisPt[2].z_ = 0.0;
+  _AxisPt[3].x_ = _AxisPt[3].y_ = 0.0;
+  _AxisPt[0].x_ = _AxisPt[0].y_ = _AxisPt[0].z_ = 0.0;
+  _Axis[0].p = 0;  _Axis[0].q = 1;  // x axis
+  _Axis[1].p = 0;  _Axis[1].q = 2;  // y axis
+  _Axis[2].p = 0;  _Axis[2].q = 3;  // z axis
+
+} // end of WindowRep() constructor
 
 /***************************************************************
 called by derived class to when window is resized or moved: 
@@ -242,4 +270,67 @@ Color WindowRep::GetLocalColor(Color globalColor)
 {
   return _display->GetLocalColor(globalColor);
 }
+
+
+// ---------------------------------------------------------- 
+void
+WindowRep::CompRhoPhiTheta()
+{
+	_rho = sqrt(SQUARE(_camera.x_) + SQUARE(_camera.y_) + 
+		SQUARE(_camera.z_));
+
+	if (fabs(_camera.x_) == 0 && fabs(_camera.y_) == 0)
+		_phi = 0.0;
+	else
+		_phi = acos(_camera.z_ / _rho);
+
+	if (fabs(_camera.x_) == 0 && _camera.y_ > 0)
+		_theta = PI / 2.0;
+	else if (fabs(_camera.x_) == 0 && _camera.y_ < 0)
+		_theta = PI * 3.0 / 2.0;
+	else if (fabs(_camera.x_) == 0 && fabs(_camera.y_) == 0)
+		_theta = 0.0;
+	else if (_camera.x_ > 0 && _camera.y_ > 0)
+		_theta = atan(_camera.y_ / _camera.x_);
+	else if (_camera.x_ < 0 && _camera.y_ > 0)
+		_theta = PI + atan(_camera.y_ / _camera.x_);
+	else if (_camera.x_ < 0 && _camera.y_ < 0)
+		_theta = PI + atan(_camera.y_ / _camera.x_);
+	else
+		_theta = (2 * PI) + atan(_camera.y_ / _camera.x_);
+} // end of CompRhoPhiTheta()
+
+// Theory: from Mirocomputer Graphics for the IBM PC
+// by: Roy E. Myers, 1984, pp 156-163
+void
+WindowRep::CompViewingTransf()
+{
+     double st = sin(_theta),
+          ct = cos(_theta),
+          sp = sin(_phi),
+          cp = cos(_phi);
+
+     _TransformViewMatrix[0][0] = -st;
+     _TransformViewMatrix[0][1] = -ct * cp;
+     _TransformViewMatrix[0][2] = -ct * sp;
+     _TransformViewMatrix[0][3] = 0.0;
+
+     _TransformViewMatrix[1][0] = ct;
+     _TransformViewMatrix[1][1] = -st * cp;
+     _TransformViewMatrix[1][2] = -st * sp;
+     _TransformViewMatrix[1][3] = 0.0;
+
+     _TransformViewMatrix[2][0] = 0.0;
+     _TransformViewMatrix[2][1] = sp;
+     _TransformViewMatrix[2][2] = -cp;
+     _TransformViewMatrix[2][3] = 0.0;
+
+     _TransformViewMatrix[3][0] = 0.0;
+     _TransformViewMatrix[3][1] = 0.0;
+     _TransformViewMatrix[3][2] = _rho;
+     _TransformViewMatrix[3][3] = 1.0;
+} // end of CompViewingTransf
+
+
+
 
