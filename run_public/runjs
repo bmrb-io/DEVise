@@ -68,6 +68,7 @@ sleep(5); # Make sure devised gets going before JavaScreen tries to connect.
 #
 # Launch JavaScreen.
 #
+chdir('/p/devise/public/Java/JavaScreen');
 $ENV{CLASSPATH} = '/p/devise/public/Java/JavaScreen';
 Spawn("java js -CP$cmdPort -IP$imgPort -DP$dataPort");
 
