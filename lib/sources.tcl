@@ -15,6 +15,10 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.26  1996/01/25 17:45:53  jussi
+#	Refined 'query-changed' condition when editing a stream
+#	definition.
+#
 #	Revision 1.25  1996/01/19 18:33:40  jussi
 #	Function selectStream now takes an optional title parameter
 #	which is displayed at the top of the data stream list if
@@ -111,19 +115,19 @@
 
 # Default values for data source types, redefined in sourcedef.tcl.
 
-set sourceTypes(COMMAND) {{Unix Command Output} $schemadir/logical/COMMAND}
-set sourceTypes(COMPUSTAT) {{Annual and Quarterly Company Financial Data} $schemadir/logical/COMPUSTAT compustat.idx}
-set sourceTypes(CRSP) {{Security Data} $schemadir/logical/CRSP crsp_dsm94.idx}
-set sourceTypes(ISSM) {{Historical Stock Data (Trades and Quotes} $schemadir/logical/ISSM-T issm.idx}
-set sourceTypes(NETWORK) {{Network Server Output} $schemadir/logical/NETWORK}
-set sourceTypes(SEQ) {{SEQ Query Output} $schemadir/logical/SEQ}
-set sourceTypes(SQL) {{SQL Query Output} $schemadir/logical/SQL}
-set sourceTypes(UNIXFILE) {{Unix File} $schemadir/logical/UNIXFILE}
-set sourceTypes(WWW) {{World Wide Web} $schemadir/logical/WWW}
+set sourceTypes(COMMAND) "{Unix Command Output} $schemadir/logical/COMMAND"
+set sourceTypes(COMPUSTAT) "{Annual and Quarterly Company Financial Data} $schemadir/logical/COMPUSTAT compustat.idx"
+set sourceTypes(CRSP) "{Security Data} $schemadir/logical/CRSP crsp_dsm94.idx"
+set sourceTypes(ISSM) "{Historical Stock Data (Trades and Quotes} $schemadir/logical/ISSM-T issm.idx"
+set sourceTypes(NETWORK) "{Network Server Output} $schemadir/logical/NETWORK"
+set sourceTypes(SEQ) "{SEQ Query Output} $schemadir/logical/SEQ"
+set sourceTypes(SQL) "{SQL Query Output} $schemadir/logical/SQL"
+set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
+set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
 set sourceFile $datadir/sourcedef.tcl
 if {[file exists $sourceFile]} {
-    puts "Using source definition file $sourceFile"
+    puts "Using data stream catalog $sourceFile"
     source $sourceFile
 }
 
