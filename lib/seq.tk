@@ -1,11 +1,15 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.1  1995/09/12 22:42:09  jussi
+#	Initial revision of archive.
+
 ############################################################
 
-set seq_host quarg.cs.wisc.edu
-set seq_port 1515
-set seq_path /tmp
+set seq_host  quarg.cs.wisc.edu
+set seq_port  1515
+set seq_path  /tmp
+set seq_query ""
 
 if {[info exists env(SEQ_DISKPATH)]} {
     set seq_path $env(SEQ_DISKPATH)
@@ -14,7 +18,7 @@ if {[info exists env(SEQ_DISKPATH)]} {
 ############################################################
 
 proc seqMain {} {
-    global seq_host seq_port seq_path
+    global seq_host seq_port seq_path seq_query
 
     # see if .seq window already exists; if so, just return
     set err [catch {set exists [wm state .seq]}]
@@ -26,8 +30,10 @@ proc seqMain {} {
     wm geometry .seq +50+50
     selection clear .seq
 
+    label .seq.title -text "Enter SEQ Query"
     frame .seq.query -relief groove -borderwidth 2
-    frame .seq.but -relief groove -borderwidth 2
+    frame .seq.but
+    pack .seq.title -side top -pady 3m
     pack .seq.query -side top -pady 3m -fill both -expand 1
     pack .seq.but -side top -pady 3m -fill x
 
@@ -42,7 +48,7 @@ proc seqMain {} {
     label .seq.query.left.query -text "Query:" -width 15
     pack .seq.query.left.name .seq.query.left.port \
 	    .seq.query.left.path .seq.query.left.query \
-	    -side top
+	    -side top -pady 0.7m
 
     entry .seq.query.right.name -relief sunken -width 30 \
 	    -textvariable seq_host
@@ -50,14 +56,19 @@ proc seqMain {} {
 	    -textvariable seq_port
     entry .seq.query.right.path -relief sunken -width 30 \
 	    -textvariable seq_path
-    entry .seq.query.right.query -relief sunken -width 30 \
-	    -textvariable seq_query
+    text .seq.query.right.query -relief sunken -borderwidth 2 \
+	    -width 30 -height 10
+    .seq.query.right.query insert end $seq_query
     pack .seq.query.right.name .seq.query.right.port \
 	    .seq.query.right.path .seq.query.right.query \
-	    -side top -pady 0.5m
+	    -side top
 
     button .seq.but.ok -text OK -width 10 \
-	    -command { destroy .seq }
+	    -command {
+	set seq_query [.seq.query.right.query get 1.0 end]
+	puts "Query: $seq_query"
+	destroy .seq
+    }
     button .seq.but.cancel -text Cancel -width 10 \
 	    -command { destroy .seq }
     pack .seq.but.ok .seq.but.cancel -padx 3m -side left -expand 1
