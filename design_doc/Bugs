@@ -2689,6 +2689,10 @@ Num Date        Status  Description
 			in drill-down. (rkw)
 			(Fixed by rkw, 5/23/01.)
 
+676 05/25/01	OPEN	Axis label may be a very small non-zero value when
+			it should be zero (see demo session
+			test/bad_y_axis.ds). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
