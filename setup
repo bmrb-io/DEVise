@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  1996/01/23 22:09:00  jussi
+#  Added copyright notice.
+#
 
 ############################################################
 
@@ -45,6 +48,8 @@ ln -s ../solaris/Makefile .
 cd ../hp
 ln -s ../solaris/Makefile .
 cd ../sgi
+ln -s ../solaris/Makefile .
+cd ../linux
 ln -s ../solaris/Makefile .
 
 cd ..
