@@ -16,7 +16,8 @@ Action.o: ../graphics/Geom.h /usr/include/math.h ../graphics/Transform.h
 Action.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 Action.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 Action.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/Cursor.h
-Action.o: BasicStats.h ViewStats.h RecId.h
+Action.o: BasicStats.h ViewStats.h DerivedDataSource.h /usr/include/string.h
+Action.o: RecId.h
 ActionClassInfo.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ActionClassInfo.o: ActionClassInfo.h ../graphics/DeviseTypes.h
 ActionClassInfo.o: ../graphics/ClassDir.h Action.h ../graphics/View.h
@@ -51,8 +52,8 @@ ActionDefault.o: ../graphics/Compress.h ../graphics/Control.h
 ActionDefault.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ActionDefault.o: ../graphics/AttrList.h ../graphics/Config.h
 ActionDefault.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
-ActionDefault.o: ../graphics/Selection.h RecInterp.h QueryProc.h TData.h
-ActionDefault.o: RecOrder.h
+ActionDefault.o: DerivedDataSource.h ../graphics/Selection.h RecInterp.h
+ActionDefault.o: QueryProc.h TData.h RecOrder.h
 AmsDiskFile.o: /usr/include/stdlib.h AmsDiskFile.h DiskFile.h
 AmsDiskFile.o: ../graphics/DeviseTypes.h TDataAppend.h TData.h RecId.h
 AmsDiskFile.o: RecOrder.h ams.h /usr/include/math.h
@@ -158,7 +159,7 @@ DataSeg.o: /usr/include/string.h DataSeg.h ../graphics/Util.h
 DataSeg.o: /usr/include/stdlib.h /usr/include/stdio.h
 DataSeg.o: /usr/include/sys/stdsyms.h /usr/include/time.h
 DataSeg.o: /usr/include/sys/time.h /usr/include/ctype.h /usr/include/math.h
-DataSeg.o: ../graphics/Exit.h
+DataSeg.o: ../graphics/DeviseTypes.h ../graphics/Exit.h
 DataSource.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DataSource.o: /usr/include/string.h /usr/include/errno.h
 DataSource.o: /usr/include/sys/errno.h /usr/include/sys/param.h
@@ -213,11 +214,11 @@ DataSourceSegment.o: /usr/include/sys/sysmacros.h /usr/include/sys/time.h
 DataSourceSegment.o: /usr/include/machine/spl.h /usr/include/unistd.h
 DataSourceSegment.o: /usr/include/sys/unistd.h DataSourceFileStream.h
 DataSourceSegment.o: DataSource.h ../graphics/DeviseTypes.h DataSourceTape.h
-DataSourceSegment.o: DataSourceSegment.h ../graphics/Util.h
+DataSourceSegment.o: DataSourceBuf.h DataSourceSegment.h ../graphics/Util.h
 DataSourceSegment.o: /usr/include/stdlib.h /usr/include/time.h
 DataSourceSegment.o: /usr/include/ctype.h /usr/include/math.h
 DataSourceSegment.o: ../graphics/Exit.h ../graphics/DevError.h
-DataSourceSegment.o: DataSourceWeb.h DataSourceFileDesc.h
+DataSourceSegment.o: DataSourceWeb.h DataSourceFileDesc.h ../graphics/Timer.h
 DataSourceTape.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 DataSourceTape.o: /usr/include/string.h /usr/include/errno.h
 DataSourceTape.o: /usr/include/sys/errno.h /usr/include/sys/param.h
@@ -281,7 +282,8 @@ GDataBin.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 GDataBin.o: ../graphics/Control.h ../graphics/ClassDir.h
 GDataBin.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 GDataBin.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/Cursor.h
-GDataBin.o: BasicStats.h ViewStats.h Action.h TDataCMap.h ../graphics/Init.h
+GDataBin.o: BasicStats.h ViewStats.h DerivedDataSource.h
+GDataBin.o: /usr/include/string.h Action.h TDataCMap.h ../graphics/Init.h
 GDataBin.o: ../graphics/BufPolicy.h
 GDataRangeMap.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 GDataRangeMap.o: /usr/include/sys/stat.h /usr/include/fcntl.h
@@ -311,7 +313,8 @@ GDataSnap.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 GDataSnap.o: ../graphics/Control.h ../graphics/ClassDir.h
 GDataSnap.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 GDataSnap.o: /usr/include/sys/time.h ../graphics/Config.h
-GDataSnap.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+GDataSnap.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+GDataSnap.o: DerivedDataSource.h /usr/include/string.h Action.h
 GDataSnap.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/ColorMgr.h
 GDataSnap.o: ../graphics/Selection.h ../graphics/Init.h
 GDataSnap.o: ../graphics/BufPolicy.h GDataSnap.h GDataVar.h
@@ -332,9 +335,10 @@ MapInterpClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 MapInterpClassInfo.o: ../graphics/Compress.h ../graphics/ViewCallback.h
 MapInterpClassInfo.o: ../graphics/AttrList.h /usr/include/sys/time.h
 MapInterpClassInfo.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-MapInterpClassInfo.o: ViewStats.h Action.h Bitmap.h TData.h RecOrder.h
+MapInterpClassInfo.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
+MapInterpClassInfo.o: Action.h Bitmap.h TData.h RecOrder.h
 MapInterpClassInfo.o: MapInterpClassInfo.h ../graphics/Util.h
-MapInterpClassInfo.o: /usr/include/time.h /usr/include/string.h
+MapInterpClassInfo.o: /usr/include/time.h
 MappingInterp.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 MappingInterp.o: /s/tcl/include/tcl.h ../graphics/DeviseTypes.h Bitmap.h
 MappingInterp.o: ../graphics/AttrList.h /usr/include/sys/time.h
@@ -351,10 +355,10 @@ MappingInterp.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 MappingInterp.o: /usr/include/sys/types.h ../graphics/Journal.h
 MappingInterp.o: ../graphics/ViewWin.h ../graphics/Control.h
 MappingInterp.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
-MappingInterp.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+MappingInterp.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+MappingInterp.o: DerivedDataSource.h /usr/include/string.h Action.h
 MappingInterp.o: MapInterpShape.h RectShape.h Shape.h ../graphics/Util.h
-MappingInterp.o: /usr/include/time.h /usr/include/string.h
-MappingInterp.o: /usr/include/ctype.h ../graphics/Init.h
+MappingInterp.o: /usr/include/time.h /usr/include/ctype.h ../graphics/Init.h
 MappingInterp.o: ../graphics/BufPolicy.h
 MultiArray.o: MultiArray.h /usr/include/stdio.h /usr/include/sys/stdsyms.h
 MultiArray.o: ../graphics/DeviseTypes.h VoidArray.h ../graphics/Exit.h
@@ -405,9 +409,9 @@ QueryProc.o: ../graphics/WindowRep.h ../graphics/Geom.h /usr/include/math.h
 QueryProc.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 QueryProc.o: ../graphics/Compress.h ../graphics/ViewCallback.h
 QueryProc.o: ../graphics/AttrList.h /usr/include/sys/time.h
-QueryProc.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
-QueryProc.o: TDataMap.h ShapeID.h GDataRec.h TData.h RecOrder.h
-QueryProc.o: ../graphics/Init.h
+QueryProc.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+QueryProc.o: DerivedDataSource.h /usr/include/string.h Action.h TDataMap.h
+QueryProc.o: ShapeID.h GDataRec.h TData.h RecOrder.h ../graphics/Init.h
 QueryProcFull.o: QueryProcFull.h QueryProc.h ../graphics/DeviseTypes.h
 QueryProcFull.o: ../graphics/VisualArg.h ../graphics/Color.h
 QueryProcFull.o: ../graphics/Pattern.h RecId.h QPRange.h ../graphics/DList.h
@@ -427,7 +431,8 @@ QueryProcFull.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 QueryProcFull.o: ../graphics/Control.h ../graphics/ClassDir.h
 QueryProcFull.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 QueryProcFull.o: /usr/include/sys/time.h ../graphics/Config.h
-QueryProcFull.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+QueryProcFull.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+QueryProcFull.o: DerivedDataSource.h /usr/include/string.h Action.h
 QueryProcFull.o: GDataBin.h TData.h GData.h RecordLink.h RecFile.h
 QueryProcFull.o: VisualLink.h
 QueryProcSimple.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
@@ -447,10 +452,10 @@ QueryProcSimple.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 QueryProcSimple.o: ../graphics/Control.h ../graphics/ClassDir.h
 QueryProcSimple.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 QueryProcSimple.o: /usr/include/sys/time.h ../graphics/Cursor.h BasicStats.h
-QueryProcSimple.o: ViewStats.h Action.h BufMgrNull.h BufMgr.h BufferPolicy.h
-QueryProcSimple.o: RecOrder.h BufMgrFull.h RangeInfo.h GData.h TData.h
-QueryProcSimple.o: GDataBin.h PageSize.h ../graphics/Display.h
-QueryProcSimple.o: ../graphics/ColorMgr.h
+QueryProcSimple.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
+QueryProcSimple.o: Action.h BufMgrNull.h BufMgr.h BufferPolicy.h RecOrder.h
+QueryProcSimple.o: BufMgrFull.h RangeInfo.h GData.h TData.h GDataBin.h
+QueryProcSimple.o: PageSize.h ../graphics/Display.h ../graphics/ColorMgr.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: ../graphics/DList.h ../graphics/Exit.h
 RangeHash.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
@@ -511,11 +516,12 @@ Snapshot.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 Snapshot.o: ../graphics/Control.h ../graphics/ClassDir.h
 Snapshot.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 Snapshot.o: /usr/include/sys/time.h ../graphics/Config.h ../graphics/Cursor.h
-Snapshot.o: BasicStats.h ViewStats.h Action.h TData.h RecOrder.h
+Snapshot.o: BasicStats.h ViewStats.h DerivedDataSource.h
+Snapshot.o: /usr/include/string.h Action.h TData.h RecOrder.h
 Snapshot.o: TDataRangeSource.h RangeCallback.h BufMgr.h
 Snapshot.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
 Snapshot.o: GDataRangeSource.h GData.h ViewRanges.h ../graphics/Util.h
-Snapshot.o: /usr/include/time.h /usr/include/string.h /usr/include/ctype.h
+Snapshot.o: /usr/include/time.h /usr/include/ctype.h
 StringHash.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h StringHash.h
 TData.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h TData.h
 TData.o: ../graphics/DeviseTypes.h RecId.h RecOrder.h ../graphics/Exit.h
@@ -541,9 +547,10 @@ TDataAscii.o: ../graphics/VisualArg.h ../graphics/Color.h
 TDataAscii.o: ../graphics/Pattern.h TData.h RecId.h RecOrder.h DataSource.h
 TDataAscii.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
 TDataAscii.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
-TDataAscii.o: DataSourceTape.h ../graphics/DevError.h DataSeg.h QueryProc.h
-TDataAscii.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
-TDataAscii.o: DataSourceFileDesc.h
+TDataAscii.o: DataSourceTape.h DataSourceBuf.h DerivedDataSource.h
+TDataAscii.o: ../graphics/DevError.h DataSeg.h QueryProc.h ../graphics/Init.h
+TDataAscii.o: ../graphics/BufPolicy.h DataSourceWeb.h DataSourceFileDesc.h
+TDataAscii.o: ../graphics/Timer.h
 TDataAsciiInterp.o: /usr/include/string.h /usr/include/ctype.h
 TDataAsciiInterp.o: /usr/include/unistd.h /usr/include/sys/unistd.h
 TDataAsciiInterp.o: TDataAsciiInterp.h ../graphics/DeviseTypes.h
@@ -576,7 +583,7 @@ TDataBinary.o: ../graphics/Util.h /usr/include/string.h /usr/include/ctype.h
 TDataBinary.o: /usr/include/math.h DataSourceFileStream.h DataSourceSegment.h
 TDataBinary.o: DataSourceTape.h ../graphics/DevError.h DataSeg.h QueryProc.h
 TDataBinary.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceWeb.h
-TDataBinary.o: DataSourceFileDesc.h
+TDataBinary.o: DataSourceFileDesc.h ../graphics/Timer.h
 TDataBinaryInterp.o: /usr/include/string.h /usr/include/unistd.h
 TDataBinaryInterp.o: /usr/include/sys/unistd.h TDataBinaryInterp.h
 TDataBinaryInterp.o: ../graphics/DeviseTypes.h ../graphics/ClassDir.h
@@ -607,8 +614,8 @@ TDataMap.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 TDataMap.o: ../graphics/Control.h ../graphics/ClassDir.h
 TDataMap.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 TDataMap.o: /usr/include/sys/time.h ../graphics/Cursor.h BasicStats.h
-TDataMap.o: ViewStats.h Action.h GData.h TData.h RecOrder.h GDataBin.h
-TDataMap.o: QueryProc.h
+TDataMap.o: ViewStats.h DerivedDataSource.h Action.h GData.h TData.h
+TDataMap.o: RecOrder.h GDataBin.h QueryProc.h
 TDataMmap.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 TDataMmap.o: /usr/include/sys/stat.h /usr/include/fcntl.h
 TDataMmap.o: /usr/include/sys/fcntl.h /usr/include/limits.h
@@ -642,11 +649,12 @@ TDataViewX.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 TDataViewX.o: ../graphics/Control.h ../graphics/ClassDir.h
 TDataViewX.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 TDataViewX.o: /usr/include/sys/time.h ../graphics/Config.h
-TDataViewX.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
-TDataViewX.o: GDataBin.h TDataCMap.h ConnectorShape.h Connector.h ShapeID.h
-TDataViewX.o: TDataMap.h GDataRec.h Shape.h ../graphics/Temp.h
-TDataViewX.o: ../graphics/Map3D.h ../graphics/Util.h /usr/include/time.h
-TDataViewX.o: /usr/include/ctype.h RecordLink.h RecFile.h VisualLink.h
+TDataViewX.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+TDataViewX.o: DerivedDataSource.h Action.h GDataBin.h TDataCMap.h
+TDataViewX.o: ConnectorShape.h Connector.h ShapeID.h TDataMap.h GDataRec.h
+TDataViewX.o: Shape.h ../graphics/Temp.h ../graphics/Map3D.h
+TDataViewX.o: ../graphics/Util.h /usr/include/time.h /usr/include/ctype.h
+TDataViewX.o: RecordLink.h RecFile.h VisualLink.h
 TkControl.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 TkControl.o: /usr/include/stdlib.h TkControl.h /s/tcl/include/tcl.h
 TkControl.o: /s/tcl/include/tk.h /s/X11/include/X11/Xlib.h
@@ -704,12 +712,13 @@ ViewClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ViewClassInfo.o: ../graphics/Compress.h ../graphics/Control.h
 ViewClassInfo.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewClassInfo.o: ../graphics/AttrList.h ../graphics/Config.h
-ViewClassInfo.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+ViewClassInfo.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+ViewClassInfo.o: DerivedDataSource.h /usr/include/string.h Action.h
 ViewClassInfo.o: GDataBin.h TDataCMap.h ConnectorShape.h Connector.h
 ViewClassInfo.o: ShapeID.h ViewScatter.h ViewClassInfo.h
 ViewClassInfo.o: ../graphics/Selection.h ../graphics/Util.h
-ViewClassInfo.o: /usr/include/string.h /usr/include/ctype.h ActionDefault.h
-ViewClassInfo.o: VisualLink.h ../graphics/ColorMgr.h ../graphics/Parse.h
+ViewClassInfo.o: /usr/include/ctype.h ActionDefault.h VisualLink.h
+ViewClassInfo.o: ../graphics/ColorMgr.h ../graphics/Parse.h
 ViewGraph.o: ViewGraph.h ../graphics/View.h ../graphics/DeviseTypes.h
 ViewGraph.o: ../graphics/Dispatcher.h /usr/include/stdio.h
 ViewGraph.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h
@@ -723,10 +732,11 @@ ViewGraph.o: ../graphics/Compress.h ../graphics/Control.h
 ViewGraph.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewGraph.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-ViewGraph.o: ViewStats.h Action.h RecId.h TDataMap.h ShapeID.h GDataRec.h
-ViewGraph.o: ActionDefault.h ../graphics/Util.h /usr/include/time.h
-ViewGraph.o: /usr/include/string.h /usr/include/ctype.h ../graphics/Init.h
-ViewGraph.o: ../graphics/BufPolicy.h RecordLink.h RecFile.h VisualLink.h
+ViewGraph.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
+ViewGraph.o: RecId.h TDataMap.h ShapeID.h GDataRec.h ActionDefault.h
+ViewGraph.o: ../graphics/Util.h /usr/include/time.h /usr/include/ctype.h
+ViewGraph.o: ../graphics/Init.h ../graphics/BufPolicy.h RecordLink.h
+ViewGraph.o: RecFile.h VisualLink.h
 ViewRanges.o: ViewRanges.h ../graphics/View.h ../graphics/DeviseTypes.h
 ViewRanges.o: ../graphics/Dispatcher.h /usr/include/stdio.h
 ViewRanges.o: /usr/include/sys/stdsyms.h /usr/include/stdlib.h
@@ -754,10 +764,11 @@ ViewScatter.o: ../graphics/Compress.h ../graphics/Control.h
 ViewScatter.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewScatter.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewScatter.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-ViewScatter.o: ViewStats.h Action.h GDataBin.h TDataMap.h ShapeID.h
-ViewScatter.o: GDataRec.h Shape.h ../graphics/Temp.h ../graphics/Map3D.h
-ViewScatter.o: ../graphics/Util.h /usr/include/time.h /usr/include/string.h
-ViewScatter.o: /usr/include/ctype.h RecordLink.h RecFile.h VisualLink.h
+ViewScatter.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
+ViewScatter.o: GDataBin.h TDataMap.h ShapeID.h GDataRec.h Shape.h
+ViewScatter.o: ../graphics/Temp.h ../graphics/Map3D.h ../graphics/Util.h
+ViewScatter.o: /usr/include/time.h /usr/include/ctype.h RecordLink.h
+ViewScatter.o: RecFile.h VisualLink.h
 VisualLink.o: VisualLink.h ViewGraph.h ../graphics/View.h
 VisualLink.o: ../graphics/DeviseTypes.h ../graphics/Dispatcher.h
 VisualLink.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
@@ -772,7 +783,8 @@ VisualLink.o: ../graphics/Compress.h ../graphics/Control.h
 VisualLink.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 VisualLink.o: ../graphics/AttrList.h /usr/include/sys/time.h
 VisualLink.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-VisualLink.o: ViewStats.h Action.h RecId.h
+VisualLink.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
+VisualLink.o: RecId.h
 VisualLinkClassInfo.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 VisualLinkClassInfo.o: VisualLinkClassInfo.h ../graphics/ClassDir.h
 VisualLinkClassInfo.o: ../graphics/DeviseTypes.h ../graphics/VisualArg.h
@@ -788,10 +800,10 @@ VisualLinkClassInfo.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 VisualLinkClassInfo.o: ../graphics/Compress.h ../graphics/Control.h
 VisualLinkClassInfo.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 VisualLinkClassInfo.o: /usr/include/sys/time.h ../graphics/Config.h
-VisualLinkClassInfo.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+VisualLinkClassInfo.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+VisualLinkClassInfo.o: DerivedDataSource.h /usr/include/string.h Action.h
 VisualLinkClassInfo.o: RecId.h RecordLink.h RecFile.h ../graphics/Util.h
-VisualLinkClassInfo.o: /usr/include/time.h /usr/include/string.h
-VisualLinkClassInfo.o: /usr/include/ctype.h
+VisualLinkClassInfo.o: /usr/include/time.h /usr/include/ctype.h
 VoidArray.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h VoidArray.h
 VoidArray.o: ../graphics/DeviseTypes.h ../graphics/Exit.h
 VoidHash.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
@@ -859,9 +871,9 @@ testGData.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 testGData.o: ../graphics/Control.h ../graphics/ClassDir.h
 testGData.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 testGData.o: /usr/include/sys/time.h ../graphics/Config.h
-testGData.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
-testGData.o: PageRange.h BufMgr.h ../graphics/BufPolicy.h BufHint.h
-testGData.o: BufferPolicy.h
+testGData.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+testGData.o: DerivedDataSource.h /usr/include/string.h Action.h PageRange.h
+testGData.o: BufMgr.h ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
 testGDataRange.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 testGDataRange.o: /usr/include/stdlib.h GDataRangeMap.h
 testGDataRange.o: ../graphics/DeviseTypes.h RecId.h GDataRec.h
@@ -884,8 +896,9 @@ testGDataVar.o: ../graphics/Compress.h ../graphics/Control.h
 testGDataVar.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 testGDataVar.o: ../graphics/AttrList.h /usr/include/sys/time.h
 testGDataVar.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-testGDataVar.o: ViewStats.h Action.h PageRange.h BufMgr.h
-testGDataVar.o: ../graphics/BufPolicy.h BufHint.h BufferPolicy.h
+testGDataVar.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
+testGDataVar.o: Action.h PageRange.h BufMgr.h ../graphics/BufPolicy.h
+testGDataVar.o: BufHint.h BufferPolicy.h
 testMmap.o: /usr/include/sys/types.h /usr/include/sys/stdsyms.h
 testMmap.o: /usr/include/sys/mman.h /usr/include/sys/stat.h
 testMmap.o: /usr/include/fcntl.h /usr/include/sys/fcntl.h
@@ -917,7 +930,8 @@ testQueryProc.o: ../graphics/Compress.h ../graphics/Control.h
 testQueryProc.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 testQueryProc.o: ../graphics/AttrList.h /usr/include/sys/time.h
 testQueryProc.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-testQueryProc.o: ViewStats.h Action.h QueryProc.h
+testQueryProc.o: ViewStats.h DerivedDataSource.h /usr/include/string.h
+testQueryProc.o: Action.h QueryProc.h
 testRangeList.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 testRangeList.o: /usr/include/stdlib.h RangeList.h ../graphics/DeviseTypes.h
 testRangeList.o: RecId.h RangeInfo.h ../graphics/Parse.h /usr/include/time.h
@@ -1000,7 +1014,26 @@ BasicStats.o: ViewGraph.h ../graphics/View.h ../graphics/ViewWin.h
 BasicStats.o: ../graphics/Control.h ../graphics/ClassDir.h
 BasicStats.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 BasicStats.o: /usr/include/sys/time.h ../graphics/Config.h
-BasicStats.o: ../graphics/Cursor.h Action.h RecId.h KGraph.h
+BasicStats.o: ../graphics/Cursor.h DerivedDataSource.h Action.h RecId.h
+BasicStats.o: KGraph.h
+DCE.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/assert.h
+DCE.o: /usr/include/sys/stat.h DCE.h /usr/include/sys/types.h
+DCE.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h /usr/include/sys/shm.h
+DCE.o: /usr/include/errno.h /usr/include/sys/errno.h machdep.h
+DCE.o: /usr/include/limits.h /usr/include/sys/param.h
+DCE.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
+DCE.o: /usr/include/sys/time.h /usr/include/machine/spl.h
+DCE.o: /usr/include/sys/wait.h /usr/include/sys/ioctl.h /usr/include/netdb.h
+DCE.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
+DCE.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
+DCE.o: /usr/include/arpa/inet.h ../graphics/Exit.h
+DerivedDataSource.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
+DerivedDataSource.o: DerivedDataSource.h /usr/include/string.h
+DerivedDataSource.o: ../graphics/DeviseTypes.h ../graphics/Control.h
+DerivedDataSource.o: /usr/include/sys/types.h ../graphics/VisualArg.h
+DerivedDataSource.o: ../graphics/Color.h ../graphics/Pattern.h
+DerivedDataSource.o: ../graphics/DList.h ../graphics/Exit.h
+DerivedDataSource.o: ../graphics/ClassDir.h
 Group.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 Group.o: /usr/include/string.h Group.h /usr/include/stdlib.h
 Group.o: MapInterpClassInfo.h ../graphics/ClassDir.h
@@ -1040,7 +1073,8 @@ MapInterpShape.o: ../graphics/DevisePixmap.h ../graphics/Compress.h
 MapInterpShape.o: ../graphics/Control.h ../graphics/ClassDir.h
 MapInterpShape.o: ../graphics/ViewCallback.h ../graphics/AttrList.h
 MapInterpShape.o: /usr/include/sys/time.h ../graphics/Config.h
-MapInterpShape.o: ../graphics/Cursor.h BasicStats.h ViewStats.h Action.h
+MapInterpShape.o: ../graphics/Cursor.h BasicStats.h ViewStats.h
+MapInterpShape.o: DerivedDataSource.h /usr/include/string.h Action.h
 MapInterpShape.o: ../graphics/Temp.h ../graphics/Map3D.h
 ParseAPI.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 ParseAPI.o: /usr/include/ctype.h /usr/include/assert.h ParseAPI.h
@@ -1056,13 +1090,13 @@ ParseAPI.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 ParseAPI.o: ../graphics/Compress.h ../graphics/ViewCallback.h
 ParseAPI.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ParseAPI.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-ParseAPI.o: ViewStats.h Action.h RecId.h KGraph.h ../graphics/Display.h
-ParseAPI.o: ../graphics/ColorMgr.h ../graphics/Util.h /usr/include/time.h
-ParseAPI.o: /usr/include/string.h ParseCat.h TData.h RecOrder.h TDataMap.h
-ParseAPI.o: ShapeID.h GDataRec.h ../graphics/Parse.h GroupDir.h ItemList.h
-ParseAPI.o: Group.h MapInterpClassInfo.h ../graphics/ViewLayout.h
-ParseAPI.o: VisualLink.h ../graphics/FilterQueue.h DataSeg.h Version.h
-ParseAPI.o: DevFileHeader.h
+ParseAPI.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
+ParseAPI.o: RecId.h KGraph.h ../graphics/Display.h ../graphics/ColorMgr.h
+ParseAPI.o: ../graphics/Util.h /usr/include/time.h ParseCat.h TData.h
+ParseAPI.o: RecOrder.h TDataMap.h ShapeID.h GDataRec.h ../graphics/Parse.h
+ParseAPI.o: GroupDir.h ItemList.h Group.h MapInterpClassInfo.h
+ParseAPI.o: ../graphics/ViewLayout.h VisualLink.h ../graphics/FilterQueue.h
+ParseAPI.o: DataSeg.h Version.h DevFileHeader.h
 RecordLink.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
 RecordLink.o: /usr/include/stdlib.h RecordLink.h RecId.h RecFile.h
 RecordLink.o: ../graphics/DeviseTypes.h VisualLink.h ViewGraph.h
@@ -1077,9 +1111,9 @@ RecordLink.o: ../graphics/Compress.h ../graphics/Control.h
 RecordLink.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 RecordLink.o: ../graphics/AttrList.h /usr/include/sys/time.h
 RecordLink.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-RecordLink.o: ViewStats.h Action.h ../graphics/Init.h ../graphics/BufPolicy.h
-RecordLink.o: ../graphics/Util.h /usr/include/time.h /usr/include/string.h
-RecordLink.o: /usr/include/ctype.h
+RecordLink.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
+RecordLink.o: ../graphics/Init.h ../graphics/BufPolicy.h ../graphics/Util.h
+RecordLink.o: /usr/include/time.h /usr/include/ctype.h
 Seq.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
 Seq.o: /usr/include/string.h /usr/include/unistd.h /usr/include/sys/unistd.h
 Seq.o: /usr/include/ctype.h /s/tcl/include/tcl.h /s/tcl/include/tk.h
@@ -1094,7 +1128,8 @@ Seq.o: /usr/include/sys/sem.h /usr/include/sys/ioctl.h /usr/include/netdb.h
 Seq.o: /usr/include/sys/bitypes.h /usr/include/sys/cdefs.h
 Seq.o: /usr/include/sys/socket.h /usr/include/netinet/in.h
 Seq.o: /usr/include/arpa/inet.h ../graphics/Util.h /usr/include/time.h
-Seq.o: /usr/include/math.h ../graphics/Exit.h ../graphics/Parse.h
+Seq.o: /usr/include/math.h ../graphics/DeviseTypes.h ../graphics/Exit.h
+Seq.o: ../graphics/Parse.h
 ViewKGraph.o: ViewKGraph.h ../graphics/DeviseTypes.h ViewGraph.h
 ViewKGraph.o: ../graphics/View.h ../graphics/Dispatcher.h
 ViewKGraph.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h
@@ -1109,9 +1144,9 @@ ViewKGraph.o: ../graphics/Compress.h ../graphics/Control.h
 ViewKGraph.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 ViewKGraph.o: ../graphics/AttrList.h /usr/include/sys/time.h
 ViewKGraph.o: ../graphics/Config.h ../graphics/Cursor.h BasicStats.h
-ViewKGraph.o: ViewStats.h Action.h RecId.h KGraph.h ../graphics/Display.h
-ViewKGraph.o: ../graphics/ColorMgr.h ../graphics/Util.h /usr/include/time.h
-ViewKGraph.o: /usr/include/string.h /usr/include/ctype.h
+ViewKGraph.o: ViewStats.h DerivedDataSource.h /usr/include/string.h Action.h
+ViewKGraph.o: RecId.h KGraph.h ../graphics/Display.h ../graphics/ColorMgr.h
+ViewKGraph.o: ../graphics/Util.h /usr/include/time.h /usr/include/ctype.h
 Web.o: /usr/include/stdio.h /usr/include/sys/stdsyms.h /usr/include/stdlib.h
 Web.o: /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/string.h
 Web.o: /usr/include/errno.h /usr/include/sys/errno.h ../graphics/Exit.h Web.h

@@ -30,6 +30,7 @@ QueryProcTape.o: ../graphics/ClassDir.h ../graphics/ViewCallback.h
 QueryProcTape.o: ../graphics/AttrList.h /usr/include/sys/time.h
 QueryProcTape.o: ../graphics/Config.h ../graphics/Cursor.h
 QueryProcTape.o: ../graphics.new/BasicStats.h ../graphics.new/ViewStats.h
+QueryProcTape.o: ../graphics.new/DerivedDataSource.h /usr/include/string.h
 QueryProcTape.o: ../graphics.new/Action.h ../graphics.new/GDataBin.h
 QueryProcTape.o: ../graphics.new/MappingInterp.h ../graphics.new/Bitmap.h
 QueryProcTape.o: ../graphics/Display.h ../graphics/ColorMgr.h
@@ -48,8 +49,8 @@ Templates.o: ../graphics.new/BufHint.h ../graphics.new/BufferPolicy.h
 devtype.o: /usr/include/stdlib.h /usr/include/sys/stat.h
 devtype.o: /usr/include/sys/stdsyms.h
 tapedrive.o: /usr/include/unistd.h /usr/include/sys/unistd.h
-tapedrive.o: /usr/include/string.h /usr/include/sys/stdsyms.h tapedrive.h
-tapedrive.o: /usr/include/stdio.h /usr/include/tar.h
+tapedrive.o: /usr/include/string.h tapedrive.h /usr/include/stdio.h
+tapedrive.o: /usr/include/sys/stdsyms.h /usr/include/tar.h
 tapedrive.o: ../graphics.new/machdep.h /usr/include/limits.h
 tapedrive.o: /usr/include/sys/param.h /usr/include/sys/types.h
 tapedrive.o: /usr/include/machine/param.h /usr/include/sys/sysmacros.h
