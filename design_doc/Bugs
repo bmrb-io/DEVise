@@ -2829,6 +2829,20 @@ Num Date        Status  Description
 707 10/08/01	OPEN	Collaboration (non-JavaScreen-based) no longer works.
 			(rkw)
 
+708 10/16/01	OPEN	JavaScreen: the client shouldn't allow the user to
+			perform any actions while it's sleeping during timed
+			command log playback. (rkw)
+
+709 10/16/01	OPEN	JavaScreen: there should be some visual indication
+			of being in command playback mode. (rkw)
+
+710 10/16/01	OPEN	JavaScreen: sleep time in timed command playback
+			should be adjusted to account for the time taken
+			by the execution of the previous command. (rkw)
+
+711 10/16/01	OPEN	JavaScreen: command playback cannot be done in
+			timed mode if not displaying. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
