@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.115  2001/05/03 19:39:11  wenger
+  Changed negative axis flag to multiplicative factor to be more flexible;
+  pass multiplicative factor to JS to correct mouse location display (mods
+  to JAVAC_ViewDataArea command); corrected mouse location display in DEVise
+  Tcl GUI.
+
   Revision 1.114  2001/04/20 21:05:19  wenger
   Changed 3D version of JAVAC_ShowRecords to use the previously-defined
   JAVAC_ShowRecords3D command; DEVise accepts that command but doesn't
@@ -533,6 +539,7 @@
 #include "PileStack.h"
 #include "DebugLog.h"
 #include "ElapsedTime.h"
+#include "DrillDown3D.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -1390,7 +1397,7 @@ JavaScreenCmd::MouseAction_Click()
 		return;
 	}
 
-	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
+	ViewGraph *view = (ViewGraph *)View::FindViewByName(_argv[0]);
 	if (view == NULL) {
 		errmsg = "Can't find specified view";
 		_status = ERROR;
@@ -1431,7 +1438,7 @@ JavaScreenCmd::ShowRecords()
 		return;
 	}
 
-	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
+	ViewGraph *view = (ViewGraph *)View::FindViewByName(_argv[0]);
 	if (view == NULL) {
 		errmsg = "Can't find specified view";
 		_status = ERROR;
@@ -1462,7 +1469,7 @@ JavaScreenCmd::ShowRecords3D()
 	  "<y1> <z1> <x2> <y2> <z2> ...";
 
 	// Note: x, y, and z are the values from the relevant GData record.
-	if (_argc < 5)
+	if (_argc < 2)
 	{
 		errmsg = usage;
 		_status = ERROR;
@@ -1477,9 +1484,33 @@ JavaScreenCmd::ShowRecords3D()
 		return;
 	}
 
-    const char *msg = "3D drill-down not yet handled by DEVise";//TEMP
-	const char **args = &msg;
-	_status = RequestUpdateRecordValue(1, (char **)args);
+	ViewGraph *view = (ViewGraph *)View::FindViewByName(_argv[0]);
+	if (view == NULL) {
+		errmsg = "Can't find specified view";
+		_status = ERROR;
+		return;
+	}
+
+	Point3D* coords = new Point3D[count];
+	DOASSERT(coords != NULL, "Out of memory");
+
+	int argNum = 2;
+	for (int index = 0; index < count; index++) {
+	    coords[index].x_ = atof(_argv[argNum++]);
+	    coords[index].y_ = atof(_argv[argNum++]);
+	    coords[index].z_ = atof(_argv[argNum++]);
+	}
+
+	int msgCount;
+	const char *const *messages;
+	DrillDown3D drill;
+	if (drill.RunQuery(view, count, coords).IsComplete()) {
+	    drill.GetResults(msgCount, messages);
+
+	    if (msgCount > 0) {
+	        _status = RequestUpdateRecordValue(msgCount, (char **)messages);
+	    }
+	}
 }
 
 //====================================================================
@@ -1524,7 +1555,7 @@ JavaScreenCmd::MouseAction_RubberBand()
 	    xOnly = false;
 	}
 	
-    ViewGraph *view = (ViewGraph *)ControlPanel::FindInstance(_argv[0]);
+    ViewGraph *view = (ViewGraph *)View::FindViewByName(_argv[0]);
 	if (view == NULL) {
 		errmsg = "Can't find specified view";
 		_status = ERROR;
@@ -1617,7 +1648,7 @@ JavaScreenCmd::KeyAction()
 		return;
 	}
 
-	ViewGraph *view = (ViewGraph *)ControlPanel::FindInstance(_argv[0]);
+	ViewGraph *view = (ViewGraph *)View::FindViewByName(_argv[0]);
 	if (view == NULL) {
 		errmsg = "Cannot find given view";
 		_status = ERROR;
@@ -1889,7 +1920,7 @@ JavaScreenCmd::GetViewHelp()
 		return;
 	}
 
-	ViewGraph *view = (ViewGraph *) ControlPanel::FindInstance(_argv[0]);
+	ViewGraph *view = (ViewGraph *)View::FindViewByName(_argv[0]);
 	if (view == NULL) {
 		errmsg = "Can't find specified view";
 		_status = ERROR;

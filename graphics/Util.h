@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.29  2001/04/12 20:14:59  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.28  2000/06/20 22:16:55  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -404,6 +410,8 @@ void PrintArgs(FILE *fp, int argc, const char * const *argv,
 void CopyArgs(int argc, const char * const * argvOld, char **&argvNew);
 void FreeArgs(int argc, char **argv);
 
+Boolean dequal(double d1, double d2, double zeroTol = 1.0e-5,
+    double relTol = 1.0e-5);
 
 #ifdef DEBUG
 #define DO_DEBUG(stuff) stuff

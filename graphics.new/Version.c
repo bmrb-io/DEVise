@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.60  2001/02/20 20:02:54  wenger
+  Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
+  to the trunk.
+
   Revision 1.59.4.1  2001/02/16 21:37:59  wenger
   Updated DEVise version to 1.7.2; implemented 'forward' and 'back' (like
   a web browser) on 'sets' of visual filters.
@@ -331,7 +335,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.2";
+static const char *	version = "1.7.3";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2001";

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.41  2001/04/12 20:14:59  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.40  2000/06/20 22:16:55  wenger
   Added floating-point format for axes and mouse location display.
 
@@ -676,4 +682,28 @@ void FreeArgs(int argc, char **argv)
   }
 
   delete [] argv;
+}
+
+Boolean
+dequal(double d1, double d2, double zeroTol, double relTol)
+{
+    Boolean result = false;
+
+    if (d1 == d2) {
+        result = true;
+    } else {
+        double absDiff = fabs(d1 - d2);
+	if (d1 == 0.0 || d2 == 0.0) {
+	    if (absDiff < zeroTol) {
+	        result = true;
+	    }
+	} else {
+	    double relDiff = fabs(absDiff / d1);
+	    if (relDiff < relTol) {
+	        result = true;
+	    }
+	}
+    }
+
+    return result;
 }

@@ -17,6 +17,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.100  2001/04/12 20:15:12  wenger
+#  First phase of external process dynamic data generation is in place
+#  for RectX symbols (needs GUI and some cleanup); added the ability to
+#  specify format for dates and ints in GData; various improvements to
+#  diagnostic output.
+#
 #  Revision 1.99  2000/08/10 16:10:49  wenger
 #  Phase 1 of getting rid of shared-memory-related code.
 #
@@ -341,7 +347,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
         StringStorage.C PointStorage.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
 	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
-	JavaScreenCmd.C JavaScreenCache.c DRUtils.c DupElim.c
+	JavaScreenCmd.C JavaScreenCache.c DRUtils.c DupElim.c DrillDown3D.c
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))
