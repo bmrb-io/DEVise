@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.32  1996/01/17 19:27:34  jussi
+#	Minor fix.
+#
 #	Revision 1.31  1996/01/16 01:30:16  jussi
 #	Some reorganization of code. Removed duplicate code etc.
 #
@@ -145,12 +148,8 @@ proc MacroDefInit {} {
 
 ############################################################
 
-proc MacroDefStart {} {
+proc MacroDefLoad {} {
     global tdatas schemas maps mappings views links windows modified
-
-    # see if .map window already exists; if so, just return
-    set err [catch {set exists [wm state .map]}]
-    if {!$err} { wm deiconify .map; return }
 
     set tdatas ""
     catch {unset schemas}
@@ -227,7 +226,6 @@ proc MacroDefStart {} {
     }
 
     set modified 0
-    MacroDef
 }
 
 ############################################################
@@ -284,6 +282,8 @@ proc MacroDef {} {
 	    -fill both -expand 1
     pack .map.gdata .map.view .map.link -in .map.right -side top -pady 3m \
 	    -fill both -expand 1
+
+    MacroDefLoad
 
     MacroDefTdata .map.tdata "$none"
     MacroDefWindows .map.window "$none"
@@ -425,8 +425,48 @@ proc MacroDefHelp {} {
 
 ############################################################
 
+proc SelectTopGroup {schemaname} {
+    global selgrp
+
+    # get the list of top level group names from DEVise
+    set topgrps [DEVise getTopGroups $schemaname]
+
+    if {[llength $topgrps] == 1 && [lindex $topgrps 0] == "__default"} {
+	return "__default"
+    }
+
+    # Create window to show list of top level group names
+    toplevel .topgrps
+    wm title .topgrps "Choose Attribute Group"
+    wm geometry .topgrps +100+100
+    selection clear .topgrps
+    listbox .topgrps.list -relief raised -borderwidth 2 \
+	    -yscrollcommand ".topgrps.scroll set" \
+	    -font 9x15 -selectmode single
+    scrollbar .topgrps.scroll -command ".topgrps.list yview"
+    button .topgrps.ok -text OK -command {
+	set selgrp [.topgrps.list get active]
+	destroy .topgrps
+    }
+    pack .topgrps.ok -side bottom -fill x
+    pack .topgrps.scroll -side right -fill y
+    pack .topgrps.list -fill x 
+    
+    foreach i $topgrps {
+	.topgrps.list insert end $i
+    }
+    
+    tkwait visibility .topgrps
+    grab set .topgrps
+    tkwait window .topgrps
+
+    return $selgrp
+}
+
+############################################################
+
 proc MacroDefAuto {tdata} {
-    global schemas modified x yvar selgrp schemaname schema
+    global schemas modified x yvar schemaname schema
     global viewsel viewselname macroSelectColor macroMenuSelectColor
     global layoutsel linksel winnamesel titlesel
     global xaxissel yaxissel sourceList
@@ -440,38 +480,7 @@ proc MacroDefAuto {tdata} {
     set sfname [lindex $sourceList($tdata) 3]
     set schemaname [file tail $sfname]
 
-    # get the list of top level group names from DEVise
-    set topgrps [DEVise getTopGroups $schemaname]
-
-    if {[llength $topgrps] == 1 && [lindex $topgrps 0] == "__default"} {
-	set selgrp "__default"
-    } else {
-	# Create window to show list of top level group names
-	toplevel .topgrps
-	wm title .topgrps "Choose Attribute Group"
-	wm geometry .topgrps +100+100
-	selection clear .topgrps
-	listbox .topgrps.list -relief raised -borderwidth 2 \
-		-yscrollcommand ".topgrps.scroll set" \
-		-font 9x15 -selectmode single
-	scrollbar .topgrps.scroll -command ".topgrps.list yview"
-	button .topgrps.ok -text OK -command {
-	    set selgrp [.topgrps.list get active]
-	    set topgrp $selgrp
-	    destroy .topgrps
-	}
-	pack .topgrps.ok -side bottom -fill x
-	pack .topgrps.scroll -side right -fill y
-	pack .topgrps.list -fill x 
-	
-	foreach i $topgrps {
-	    .topgrps.list insert end $i
-	}
-	
-	tkwait visibility .topgrps
-	grab set .topgrps
-	tkwait window .topgrps
-    }
+    set topgrp [SelectTopGroup $schemaname]
 
     toplevel .auto
     wm title .auto "Automatic Views"
@@ -516,8 +525,10 @@ proc MacroDefAuto {tdata} {
 
     label .auto.xsel.label -text "Select X:"
     menubutton .auto.xsel.attr -relief raised \
-	    -textvariable x -menu .auto.xsel.attr.g$selgrp -width 15
+	    -textvariable x -menu .auto.xsel.attr.g$topgrp -width 15
     pack .auto.xsel.label .auto.xsel.attr -side left -padx 3m
+    setupAttrRadioMenu .auto.xsel.attr.g$topgrp x "" $schemaname \
+	    $topgrp $topgrp
 
     label .auto.viewsel.label -text "View Type:"
     menubutton .auto.viewsel.view -relief raised \
@@ -571,50 +582,19 @@ proc MacroDefAuto {tdata} {
     pack .auto.yaxissel.yaxis -side left -padx 3m
     set yaxissel 1
 
-    if {$selgrp == "__default"} {
+    if {$topgrp == "__default"} {
 	set slabel "Select Y"
 	set swidth 15
     } else {
-	set slabel "Select Y from $selgrp"
-	set swidth [expr [llength [split $selgrp {}]] + 15]
+	set slabel "Select Y from $topgrp"
+	set swidth [expr [llength [split $topgrp {}]] + 15]
     }
     label .auto.ysel.label -text $slabel -width $swidth
     pack .auto.ysel.label -side top -fill x -expand 1 -pady 2m
 
     frame .auto.ysel.sel
     pack .auto.ysel.sel -side top -padx 3m -pady 1m -expand 1
-
-    # For selecting Y attrs - a button here will pop up a new window
-    # containing a list of name from which a selection can be made
-
-    setupButtons .auto.ysel.sel $selgrp $selgrp
-
-    # Have a list containing the name of the selected group.
-    # In every iteration of the loop, create a menu with the name ending
-    # with the group name.
-
-    set addname($selgrp) .auto.xsel.attr.g$selgrp
-    set grplist $selgrp
-    set topgrp $selgrp
-    while {[llength $grplist] > 0} {
-	set grpname [lindex $grplist 0]
-	set grplist [lreplace $grplist 0 0]
-	menu $addname($grpname) -tearoff 0
-	set subgrps [DEVise getItems $schemaname $topgrp $grpname]
-        foreach sub $subgrps {
-		set subname [lindex $sub 0]
-		if {[lindex $sub 1] != "intr"} {
-			$addname($grpname) add radiobutton \
-				-label $subname -variable x -value $subname 
-		} else {
-			$addname($grpname) add cascade \
-				-label $subname \
-				-menu $addname($grpname).g$subname
-			set grplist [linsert $grplist 0 $subname]
-			set addname($subname) $addname($grpname).g$subname
-		}
-	}
-    }
+    setupAttrCheckButtons .auto.ysel.sel yvar $schemaname $topgrp $topgrp
 
     # Try to select default X to be a sorted attribute
     set x [lindex [lindex $schema 0] 0]
@@ -1971,38 +1951,10 @@ proc CreateBitmapMenuButton { w file varname } {
     return $w
 }
 
-# Procedure for displaying Y coordinates in Auto mode
+############################################################
 
-proc selYAuto {grpname topgrp} {
-    global yvar macroSelectColor schemaname
-
-    # Check if the window already exists
-    set err [catch {set exists [wm state .selY$grpname]}]
-    if {!$err} {wm deiconify .selY$grpname; return}
-
-    # Create new window
-    toplevel .selY$grpname
-    wm title .selY$grpname "Group: $grpname"
-    wm geometry .selY$grpname +100+100
-	
-    label .selY$grpname.label -text "Select Y parameters"
-    frame .selY$grpname.sel -relief groove -borderwidth 2
-    frame .selY$grpname.but 
-    pack .selY$grpname.label -side top -pady 2m -fill x -expand 1
-    pack .selY$grpname.sel -side top -pady 2m -fill x -expand 1
-    pack .selY$grpname.but -side top -pady 2m -fill x -expand 1
-    
-    # Call function to set up buttons
-    setupButtons .selY$grpname.sel $grpname $topgrp
-    
-    button .selY$grpname.but.ok -text OK -width 20 -command \
-	    [format "destroy .selY%s" $grpname]
-    
-    pack .selY$grpname.but.ok -side top -expand 1 -padx 3m
-}
-			
-proc setupButtons {win grpname topgrp} {
-    global yvar macroSelectColor schemaname
+proc setupAttrCheckButtons {win var schemaname grpname topgrp} {
+    global $var macroSelectColor
 
     set row -1
     set col -1
@@ -2027,17 +1979,21 @@ proc setupButtons {win grpname topgrp} {
 	incr numattrs
     }
 
-    if {$maxwidth > 15} {
-	set maxcol 1
-	set colwidth [expr $maxwidth + 2]
-    } else {
-	set maxcol 5
-	set colwidth 15
+    if {$maxwidth < 13} {
+	set maxwidth 13
     }
+    incr maxwidth 2
+    set maxcol [expr 75 / $maxwidth]
+    if {$maxcol < 1} {
+	set maxcol 1
+    }
+    set colwidth $maxwidth
     
     foreach itm $grplist {
 	set subname [lindex $itm 0]
 	set type [lindex $itm 1]
+	set checkvar [format "%s(%s)" $var $subname]
+
 	if {$col < 0} {
 	    incr row
 	    set col 0
@@ -2045,18 +2001,24 @@ proc setupButtons {win grpname topgrp} {
 	    pack $win.row$row -side top -fill x \
 		    -expand 1
 	}
+
+	# If regular attribute, add a check button; otherwise,
+	# add a button which launches a submenu window
+
 	if {$type != "intr"} {
 	    checkbutton $win.row$row.col$col \
-		    -text $subname -variable yvar($subname) \
-		    -width $colwidth -anchor w -indicatoron 0 \
+		    -text $subname -variable $checkvar \
+		    -width $colwidth -indicatoron 0 \
 		    -selectcolor $macroSelectColor
-	    set yvar($subname) 0
+	    set $checkvar 0
 	} else {
-	    button $win.row$row.col$col \
+	    menubutton $win.row$row.col$col \
+		    -relief raised \
 		    -text $subname -width $colwidth \
-		    -bg darkslategray4  -fg wheat \
-		    -command \
-		    [format "selYAuto %s %s" $subname $topgrp] 
+		    -bg darkslategray4 -fg wheat \
+		    -menu "$win.row$row.col$col.menu"
+	    setupAttrCheckMenu $win.row$row.col$col.menu $var $schemaname \
+		    $subname $topgrp
 	}
 	pack $win.row$row.col$col -side left \
 		-fill x -expand 1
@@ -2066,7 +2028,7 @@ proc setupButtons {win grpname topgrp} {
 	}
     }
 
-    #Add empty frames at end of last row
+    # Add empty frames at end of last row
     for {} {$row >= 0 && $col >= 0 && $col < $maxcol} {incr col} {
 	label $win.row$row.col$col -text "" \
 		-width $colwidth -relief flat -borderwidth 4
@@ -2077,5 +2039,505 @@ proc setupButtons {win grpname topgrp} {
 
 ############################################################
 
+proc setupAttrCheckMenu {menu var schemaname grpname topgrp} {
+    global $var
+
+    menu $menu -tearoff 0
+
+    set grplist [DEVise getItems $schemaname $topgrp $grpname]
+
+    foreach itm $grplist {
+	set subname [lindex $itm 0]
+	set type [lindex $itm 1]
+	set checkvar [format "%s(%s)" $var $subname]
+
+	# If regular attribute, add a check button; otherwise,
+	# add a cascaded menu for group
+
+	if {$type != "intr"} {
+	    $menu add checkbutton -label $subname -variable $checkvar
+	    set $checkvar 0
+	} else {
+	    $menu add cascade -label $subname -menu $menu.g$subname
+	    setupAttrCheckMenu $menu.g$subname $var $schemaname \
+		    $subname $topgrp
+	}
+    }
+}
+
+############################################################
+
+proc setupAttrRadioMenu {menu var prefix schemaname grpname topgrp} {
+    global $var
+
+    menu $menu -tearoff 0
+
+    set grplist [DEVise getItems $schemaname $topgrp $grpname]
+
+    foreach itm $grplist {
+	set subname [lindex $itm 0]
+	set type [lindex $itm 1]
+
+	# If regular attribute, add a check button; otherwise,
+	# add a cascaded menu for group
+
+	if {$type != "intr"} {
+	    $menu add radiobutton -label $subname -variable $var \
+		    -value $prefix$subname
+	} else {
+	    $menu add cascade -label $subname -menu $menu.g$subname
+	    setupAttrRadioMenu $menu.g$subname $var $prefix $schemaname \
+		    $subname $topgrp
+	}
+    }
+}
+
+############################################################
+
+proc MacroImport {mode} {
+    global dialogListVar
+
+    set tdata ""
+
+    if {$mode > 0} {
+	set tdataSet [TdataSet]
+	if {[llength $tdataSet] > 0} {
+	    set answer [ dialogList .selectTData "Visualize Data Stream"  \
+		    "Select a data stream" \
+		    "" 2 { New Cancel Ok } $tdataSet ]
+	    if {$answer == 1 || $dialogListVar(selected) == ""} {
+		return
+	    }
+	    if {$answer == 2} { 
+		set tdata $dialogListVar(selected)
+	    } else {
+		set tdata ""
+	    }
+	}
+    }
+
+    if {$tdata == ""} {
+	set tdata [OpenNewDataSource]
+    }
+
+    if {$tdata == ""} { return }
+
+    MacroDefAutoNew $tdata
+}
+
+############################################################
+
+proc MacroDefAutoNew {tdata} {
+    global x yvar viewselname layoutsel linksel winnamesel titlesel
+    global xaxissel yaxissel
+    global sourceList macroSelectColor macroMenuSelectColor
+    global cancel
+
+    # see if .auto window already exists; if so, just return
+    set err [catch {set exists [wm state .auto]}]
+    if {!$err} { wm deiconify .auto; return }
+
+    set schema [ElimStringAttr [DEVise getSchema $tdata]]
+    set sfname [lindex $sourceList($tdata) 3]
+    set schemaname [file tail $sfname]
+
+    set topgrp [SelectTopGroup $schemaname]
+
+    toplevel .auto
+    wm title .auto "Automatic Views"
+    wm geometry .auto +100+100
+    selection clear .auto
+
+    label .auto.label -text "Select Auto Parameters"
+    frame .auto.top
+    frame .auto.mid
+    frame .auto.bot
+    frame .auto.ysel -relief groove -borderwidth 2
+    frame .auto.but
+    pack .auto.label -side top -pady 3m -fill x -expand 1
+    pack .auto.top -side top -pady 3m -fill x -expand 1
+    pack .auto.mid -side top -pady 3m -fill x -expand 1
+    pack .auto.bot -side top -pady 3m -fill x -expand 1
+    pack .auto.ysel -side top -pady 3m -fill x -expand 1
+    pack .auto.but -side top -pady 3m -fill x -expand 1
+
+    frame .auto.winnamesel -relief groove -borderwidth 2
+    frame .auto.xsel -relief groove -borderwidth 2
+    pack .auto.winnamesel .auto.xsel -in .auto.top -side left \
+	    -ipady 3m -padx 3m -fill x -expand 1
+
+    frame .auto.viewsel -relief groove -borderwidth 2
+    frame .auto.layoutsel -relief groove -borderwidth 2
+    pack .auto.viewsel .auto.layoutsel -in .auto.mid \
+	    -side left -ipady 3m -padx 3m -fill x -expand 1
+
+    frame .auto.titlesel -relief groove -borderwidth 2
+    frame .auto.linksel -relief groove -borderwidth 2
+    frame .auto.xaxissel -relief groove -borderwidth 2
+    frame .auto.yaxissel -relief groove -borderwidth 2
+    pack .auto.titlesel .auto.linksel .auto.xaxissel .auto.yaxissel \
+	    -in .auto.bot -side left -ipady 3m -padx 3m -fill x -expand 1
+
+    label .auto.winnamesel.label -text "Window Name:"
+    entry .auto.winnamesel.entry -relief sunken -textvariable winnamesel \
+	    -width 30
+    pack .auto.winnamesel.label .auto.winnamesel.entry -side left -padx 3m
+    set winnamesel "$tdata (Auto)"
+
+    label .auto.xsel.label -text "Select X:"
+    menubutton .auto.xsel.attr -relief raised \
+	    -textvariable x -menu .auto.xsel.attr.g$topgrp -width 15
+    pack .auto.xsel.label .auto.xsel.attr -side left -padx 3m
+    setupAttrRadioMenu .auto.xsel.attr.g$topgrp x "" $schemaname \
+	    $topgrp $topgrp
+
+    label .auto.viewsel.label -text "View Type:"
+    menubutton .auto.viewsel.view -relief raised \
+	    -textvariable viewselname -menu .auto.viewsel.view.menu -width 15
+    pack .auto.viewsel.label .auto.viewsel.view -side left -padx 3m
+
+    menu .auto.viewsel.view.menu -tearoff 0
+    .auto.viewsel.view.menu add radiobutton -label "Scatter Plot" \
+	    -variable viewselname -value "Scatter Plot" -command {
+	set viewsel 0
+    }
+    .auto.viewsel.view.menu add radiobutton -label Image \
+	    -variable viewselname -value Image -command {
+	set viewsel 1
+    }
+    .auto.viewsel.view.menu add radiobutton -label "Bar Chart" \
+	    -variable viewselname -value "Bar Chart" -command {
+	set viewsel 2
+    }
+    set viewselname "Bar Chart"
+    set viewsel 2
+
+    label .auto.layoutsel.label -text "Layout:"
+    menubutton .auto.layoutsel.layout -relief raised \
+	    -textvariable layoutsel -menu .auto.layoutsel.layout.menu \
+	    -width 15
+    pack .auto.layoutsel.label .auto.layoutsel.layout -side left -padx 3m
+
+    menu .auto.layoutsel.layout.menu -tearoff 0
+    .auto.layoutsel.layout.menu add radiobutton -label Tiled \
+	    -variable layoutsel -value Tiled
+    .auto.layoutsel.layout.menu add radiobutton -label Vertical \
+	    -variable layoutsel -value Vertical
+    .auto.layoutsel.layout.menu add radiobutton -label Horizontal \
+	    -variable layoutsel -value Horizontal
+    set layoutsel Vertical
+
+    checkbutton .auto.titlesel.title -text Title -variable titlesel
+    pack .auto.titlesel.title -side left -padx 3m
+    set titlesel 0
+
+    checkbutton .auto.linksel.link -text "Link X" -variable linksel
+    pack .auto.linksel.link -side left -padx 3m
+    set linksel 1
+
+    checkbutton .auto.xaxissel.xaxis -text "X Axis" -variable xaxissel
+    pack .auto.xaxissel.xaxis -side left -padx 3m
+    set xaxissel 0
+
+    checkbutton .auto.yaxissel.yaxis -text "Y Axis" -variable yaxissel
+    pack .auto.yaxissel.yaxis -side left -padx 3m
+    set yaxissel 1
+
+    if {$topgrp == "__default"} {
+	set slabel "Select Y"
+	set swidth 15
+    } else {
+	set slabel "Select Y from $topgrp"
+	set swidth [expr [llength [split $topgrp {}]] + 15]
+    }
+    label .auto.ysel.label -text $slabel -width $swidth
+    pack .auto.ysel.label -side top -fill x -expand 1 -pady 2m
+
+    frame .auto.ysel.sel
+    pack .auto.ysel.sel -side top -padx 3m -pady 1m -expand 1
+    setupAttrCheckButtons .auto.ysel.sel yvar $schemaname $topgrp $topgrp
+
+    # Try to select default X to be a sorted attribute
+    set x [lindex [lindex $schema 0] 0]
+    foreach attr $schema {
+	set name [lindex $attr 0]
+	set type [lindex $attr 1]
+	set sorted [lindex $attr 2]
+	if {$sorted > 0 && $name != "recId"} {
+	    set x $name
+	    break
+	}
+    }
+
+    tk_menuBar .auto.xsel .auto.xsel.attr
+    set cancel 0
+
+    button .auto.but.ok -text OK -width 15 -command {
+	set cancel 0
+    }
+    button .auto.but.cancel -text Cancel -width 15 -command {
+	set cancel 1
+    }
+    pack .auto.but.ok .auto.but.cancel -side left -expand 1 -padx 3m
+
+    tkwait variable cancel
+    destroy .auto
+
+    if {$cancel} {
+	return
+    }
+
+    set ylist ""
+    foreach yname [array names yvar] {
+	if {$yvar($yname) > 0} {
+	    lappend ylist $yname
+	}
+    }
+    if {$ylist == ""} {
+	dialog .autoError "Note" \
+		"Please select one or more\n\
+		Y attributes for automatic\n\
+		mapping." "" 0 OK
+	return
+    }
+    
+    # puts "The value of x is $x"
+    # puts "The ylist is $ylist"
+    
+    MacroDefAutoActualNew $tdata $viewsel $linksel $winnamesel $layoutsel \
+	    $titlesel $xaxissel $yaxissel $x $ylist
+}
+
+############################################################
+
+proc MacroDefAutoActualNew {tdata viewsel linksel window layout titlesel
+                            xaxissel yaxissel x ylist} {
+    global viewDefault
+
+    set window [UniqueName $window]
+
+    if {![DEVise exists $window]} {
+	# ask DEVise to create window
+	if {$layout == "Tiled"} {
+	    set winparam "0.3 0.3 0.4 0.4"
+	    set layoutparam "-1 -1"
+	} elseif {$layout == "Vertical" } {
+	    set winparam "0.3 0.15 0.4 0.7"
+	    set layoutparam "-1 1"
+	} else {
+	    set winparam "0.15 0.3 0.7 0.4"
+	    set layoutparam "1 -1"
+	}
+	set cmd "DEVise create window TileLayout \{$window\} $winparam"
+	set result [eval $cmd]
+	if {$result == ""} {
+	    dialog .windowError "Window Error" \
+		    "Error creating window $window" "" 0 OK
+	    return
+	}
+	eval "DEVise setWindowLayout \{$window\} $layoutparam"
+    }
+    
+    set schema [ElimStringAttr [DEVise getSchema $tdata]]
+
+    set bgColor white
+    set sortedx 0
+    set xlo ""
+    set xhi ""
+
+    # Find out type of X and whether it is sorted or not
+    foreach attr $schema {
+	set name [lindex $attr 0]
+	if {$name != $x} {continue}
+	set xtype [lindex $attr 1]
+	set sortedx [lindex $attr 2]
+	set hasxhi [lindex $attr 3]
+	if {$hasxhi} {
+	    set xhi [lindex $attr 4]
+	}
+	set hasxlo [lindex $attr 5]
+	if {$hasxlo} {
+	    set xlo [lindex $attr 6]
+	}
+	break
+    }
+
+    # also consult lo/hi values defined in .rc file
+    set viewParams ""
+    catch { set viewParams $viewDefault($xtype) }
+    foreach param $viewParams {
+	set pname [lindex $param 0]
+	set value [lindex $param 1]
+	if {$xlo == "" && $pname == "xlow"} {
+	    set xlo $value
+	}
+	if {$xhi == "" && $pname == "xhigh"} {
+	    set xhi $value
+	}
+    }
+
+    # if no defaults specified anywhere, resort to these defaults
+    if {$xhi == ""} {
+	set xhi 0
+    }
+    if {$xlo == ""} {
+	set xlo 100
+    }
+
+    # puts "Mapping will have xlo $xlo and xhi $xhi"
+
+    if {$sortedx > 0} {
+	set sortedx SortedX
+    } else {
+	set sortedx Scatter
+    }
+
+    if {$linksel} {
+	set linkname [format "%s Link" $x]
+	if {![DEVise exists $linkname]} {
+	    # ask DEVise to create link
+	    set result [DEVise create link Visual_Link $linkname 1]
+	    if {$result == ""} {
+		dialog .linkError "Link Error" \
+			"Error creating link $linkname" "" 0 OK
+		return
+	    }
+	}
+    }
+
+    set color 2
+    set shape $viewsel
+    set size 1
+    set pattern 0
+    set orient 0
+    set shapeAttr0 ""
+    set shapeAttr1 ""
+
+    if {$shape == 1} {
+	# set pixel width and height to one for image displays
+	set shape 0
+	set shapeAttr0 1
+	set shapeAttr1 1
+    }
+
+    foreach attr $schema {
+	set name [lindex $attr 0]
+	if {[lsearch $ylist $name] < 0} { continue }
+
+	set type [lindex $attr 1]
+	set sorted [lindex $attr 2]
+	set yhi ""
+	set hasyhi [lindex $attr 3]
+	if {$hasyhi} {
+	    set yhi [lindex $attr 4]
+	}
+	set ylo ""
+	set hasylo [lindex $attr 5]
+	if {$hasylo} {
+	    set ylo [lindex $attr 6]
+	}
+
+	# also consult lo/hi values defined in .rc file
+	set viewParams ""
+	catch { set viewParams $viewDefault($type) }
+	foreach param $viewParams {
+	    set pname [lindex $param 0]
+	    set value [lindex $param 1]
+	    if {$ylo == "" && $pname == "ylow"} {
+		set ylo $value
+	    }
+	    if {$yhi == "" && $pname == "yhigh"} {
+		set yhi $value
+	    }
+	}
+
+	# for bar shape, make ylo zero
+	if {$shape == 2} {
+	    set ylo 0
+	}
+
+	# if no defaults specified anywhere, resort to these defaults
+	if {$yhi == ""} {
+	    set yhi 0
+	}
+	if {$ylo == ""} {
+	    set ylo 100
+	}
+
+	# puts "Mapping will have ylo $ylo and yhi $yhi"
+
+	set mapname [format "%s_vs_%s" $name $x]
+
+	set viewname [format "%s View" $name]
+
+	# ask DEVise to create view instance
+	set sorted $sortedx
+	set viewbasename "$name vs. $x"
+	set viewinstance [UniqueName $viewbasename]
+	if {[lsearch [ViewSet] $viewinstance] >= 0} {
+	    dialog .viewError "View Error" \
+		    "View $viewinstance exists already." "" 0 OK
+	    return
+	}
+	set result [DEVise create view $sorted $viewinstance \
+		$xlo $xhi $ylo $yhi $bgColor]
+	if {$result == ""} {
+	    dialog .viewError "View Error" \
+		    "Error creating view $viewinstance" "" 0 OK
+	    return
+	}
+	
+	# ask DEVise to turn on/off label
+	if {$titlesel} {
+	    DEVise setLabel $viewinstance 1 16 $viewbasename
+	}
+
+	# ask DEVise to turn on/off X axis
+	DEVise setAxisDisplay $viewinstance X $xaxissel
+
+	# ask DEVise to turn on/off Y axis
+	DEVise setAxisDisplay $viewinstance Y $yaxissel
+
+	if {[lsearch [DEVise get mapping] $mapname] < 0} {
+	    # ask DEVise to create interpreted mapping
+	    # parameter format: x y color size pattern orientation shape
+	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
+		    "" $color $size $pattern $orient $shape $shapeAttr0 \
+		    $shapeAttr1 ""]
+	}
+
+	set mapinstance [UniqueName "$tdata#$mapname"]
+	# ask DEVise to create an instance of mapping
+	set result [DEVise create mapping $mapname $tdata $mapinstance \
+		"" \$$x \$$name $color $size $pattern $orient $shape \
+		$shapeAttr0 $shapeAttr1]
+	DEVise setPixelWidth $mapinstance 1
+
+	# ask DEVise to insert $viewinstance into $mapinstance
+	set result [DEVise insertMapping $viewinstance $mapinstance]
+	# seems that there's no error code returned
+
+	# ask DEVise to insert $viewinstance into $window
+	set result [DEVise insertWindow $viewinstance $window]
+	# seems that there's no error code returned
+
+	if {$linksel} {
+	    # ask DEVise to link $viewinstance to $linkname
+	    set result [DEVise insertLink $linkname $viewinstance]
+	    # seems that there's no error code returned
+	}
+
+	DEVise clearViewHistory $viewinstance
+	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
+
+	ProcessViewSelected $viewinstance
+
+	incr color
+    }
+}
+
+############################################################
+
 # Initialize the macro definition utility
+
 MacroDefInit
