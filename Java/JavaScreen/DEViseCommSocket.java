@@ -12,13 +12,17 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
+// This class handles the command socket/image socket pairs that
+// connect the devised to the jspop, and the jspop to the js.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.8  2000/03/23 16:26:13  wenger
+// Cleaned up headers and added requests for comments.
+//
 // Revision 1.7  2000/03/06 08:09:10  hongyu
 // fix the 'invalid image data' bug --- hongyu
 //
@@ -45,9 +49,9 @@ import  java.net.*;
 
 public class DEViseCommSocket
 {
-    private Socket socket = null;
-    private DataInputStream is = null;
-    private DataOutputStream os = null;
+    private Socket cmdSocket = null;
+    private DataInputStream cmdis = null;
+    private DataOutputStream cmdos = null;
 
     private Socket imgSocket = null;
     private DataInputStream imgis = null;
@@ -62,19 +66,21 @@ public class DEViseCommSocket
     private int bufferSize = 512;
 
     // The following data are used in receiveCmd() and receiveData() to support timeout
-    private boolean isControl = true;
+    private boolean isControl = true; // ADD COMMENT about purpose of isControl
     private int controlFlag = 0, numberOfElement = 0, totalSize = 0;
     private byte[] dataRead = null;
     private int numberRead = 0;
 
 
-    public DEViseCommSocket(Socket sk, Socket sk1, int to) throws YException
+    public DEViseCommSocket(Socket cmdsk, Socket imgsk, int to)
+      throws YException
     {
-        if (sk == null || sk1 == null) {
-            throw new YException("Invalid socket in arguments", "DEViseCommSocket:constructor");
+        if (cmdsk == null || imgsk == null) {
+            throw new YException("Invalid socket in arguments",
+	      "DEViseCommSocket:constructor");
         } else {
-            socket = sk;
-            imgSocket = sk1;
+            cmdSocket = cmdsk;
+            imgSocket = imgsk;
         }
 
         if (to < 0)
@@ -82,39 +88,54 @@ public class DEViseCommSocket
         else
             timeout = to;
 
+	CreateStreams();
+    }
+
+    // Create input and output streams if we already have the sockets.
+    private void CreateStreams() throws YException
+    {
         try {
-            os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
-            is = new DataInputStream(socket.getInputStream());
-            socket.setSoTimeout(timeout);
+            cmdos = new DataOutputStream(new BufferedOutputStream(
+	      cmdSocket.getOutputStream(), bufferSize));
+            cmdis = new DataInputStream(cmdSocket.getInputStream());
+            cmdSocket.setSoTimeout(timeout);
 
             imgos = new DataOutputStream(imgSocket.getOutputStream());
             imgis = new DataInputStream(imgSocket.getInputStream());
             imgSocket.setSoTimeout(timeout);
         } catch (NoRouteToHostException e) {
             closeSocket();
-            throw new YException("Can not find route to host, may caused by an internal firewall", "DEViseCommSocket:constructor");
+            throw new YException(
+	      "Can not find route to host, may caused by an internal firewall",
+	      "DEViseCommSocket:constructor");
         } catch (SocketException e) {
             closeSocket();
-            throw new YException("Can not set timeout for sockets", "DEViseCommSocket:constructor");
+            throw new YException("Can not set timeout for sockets",
+	      "DEViseCommSocket:constructor");
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Can not open i/o stream for sockets", "DEViseCommSocket:constructor");
+            throw new YException("Can not open i/o stream for sockets",
+	      "DEViseCommSocket:constructor");
         }
     }
 
-    public DEViseCommSocket(Socket sk, Socket sk1) throws YException
+    public DEViseCommSocket(Socket cmdsk, Socket imgsk) throws YException
     {
         // default time out is 1 second
-        this(sk, sk1, 1000);
+        this(cmdsk, imgsk, 1000);
     }
 
-    public DEViseCommSocket(String hostname, int cmdport, int imgport, int to) throws YException
+    public DEViseCommSocket(String hostname, int cmdport, int imgport, int to)
+      throws YException
     {
         if (hostname == null)
-            throw new YException("Invalid hostname in arguments", "DEViseCommSocket:constructor");
+            throw new YException("Invalid hostname in arguments",
+	      "DEViseCommSocket:constructor");
 
-        if (cmdport < 1024 || cmdport > 65535 || imgport < 1024 || imgport > 65535)
-            throw new YException("Invalid port number in arguments", "DEViseCommSocket:constructor");
+        if (cmdport < 1024 || cmdport > 65535 ||
+	  imgport < 1024 || imgport > 65535)
+            throw new YException("Invalid port number in arguments",
+	      "DEViseCommSocket:constructor");
 
         if (to < 0)
             timeout = 0;
@@ -122,40 +143,28 @@ public class DEViseCommSocket
             timeout = to;
 
         try {
-            socket = new Socket(hostname, cmdport);
+            cmdSocket = new Socket(hostname, cmdport);
             imgSocket = new Socket(hostname, imgport);
         } catch (NoRouteToHostException e) {
             closeSocket();
-            throw new YException("Can not find route to host, may caused by an internal firewall", "DEViseCommSocket:constructor");
+            throw new YException(
+	      "Can not find route to host, may caused by an internal firewall", 
+	      "DEViseCommSocket:constructor");
         } catch (UnknownHostException e) {
             closeSocket();
-            throw new YException("Unkonwn host {" + hostname + "}", "DEViseCommSocket:constructor");
+            throw new YException("Unkonwn host {" + hostname + "}",
+	      "DEViseCommSocket:constructor");
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Can not open socket connection to host {" + hostname + "}", "DEViseCommSocket:constructor");
+            throw new YException("Can not open socket connection to host {"
+	      + hostname + "}", "DEViseCommSocket:constructor");
         }
 
-        try {
-            os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
-            is = new DataInputStream(socket.getInputStream());
-            socket.setSoTimeout(timeout);
-
-            imgos = new DataOutputStream(imgSocket.getOutputStream());
-            imgis = new DataInputStream(imgSocket.getInputStream());
-            imgSocket.setSoTimeout(timeout);
-        } catch (NoRouteToHostException e) {
-            closeSocket();
-            throw new YException("Can not find route to host, may caused by an internal firewall", "DEViseCommSocket:constructor");
-        } catch (SocketException e) {
-            closeSocket();
-            throw new YException("Can not set timeout for sockets", "DEViseCommSocket:constructor");
-        } catch (IOException e) {
-            closeSocket();
-            throw new YException("Can not open i/o stream for sockets", "DEViseCommSocket:constructor");
-        }
+	CreateStreams();
     }
 
-    public DEViseCommSocket(String hostname, int cmdport, int imgport) throws YException
+    public DEViseCommSocket(String hostname, int cmdport, int imgport)
+      throws YException
     {
         // default time out is 1 second
         this(hostname, cmdport, imgport, 1000);
@@ -164,20 +173,20 @@ public class DEViseCommSocket
     public synchronized void closeSocket()
     {
         try {
-            if (os != null)
-                os.close();
+            if (cmdos != null)
+                cmdos.close();
         } catch (IOException e) {
         }
 
         try {
-            if (is != null)
-                is.close();
+            if (cmdis != null)
+                cmdis.close();
         } catch (IOException e) {
         }
 
         try {
-            if (socket != null)
-                socket.close();
+            if (cmdSocket != null)
+                cmdSocket.close();
         } catch (IOException e) {
         }
 
@@ -199,118 +208,92 @@ public class DEViseCommSocket
         } catch (IOException e) {
         }
 
-        os = null;
-        is = null;
-        socket = null;
+        cmdos = null;
+        cmdis = null;
+        cmdSocket = null;
         imgos = null;
         imgis = null;
         imgSocket = null;
     }
 
-    // if at the moment of calling, there are something coming from the input stream,
+    // if at the moment of calling, there is something coming from the input stream,
     // isEmpty will return false, otherwise, it will return true
     public synchronized boolean isEmpty() throws YException
     {
         try {
-            if (is == null && imgis == null)
-                return true;
-
-            if ((is != null && is.available() > 0) || (imgis != null && imgis.available() > 0)) {
+            if ((cmdis != null && cmdis.available() > 0) ||
+	      (imgis != null && imgis.available() > 0)) {
                 return false;
             } else {
                 return true;
-
-                /*
-                try {
-                    Thread.sleep(checkingSocketTimeout);
-                } catch (InterruptedException e1) {
-                }
-
-                // give it a second chance
-                if ((is != null && is.available() > 0) || (imgis != null && imgis.available() > 0)) {
-                    return false;
-                } else {
-                    return true;
-                }
-                */
             }
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Can not read from input stream", "DEViseCommSocket:isEmpty()");
+            throw new YException("Can not read from input stream",
+	      "DEViseCommSocket:isEmpty()");
         }
     }
 
+    // Clear all incoming data off of the sockets.
     public synchronized void clearSocket() throws YException
     {
         clearSocket(-1);
     }
 
-    public synchronized void clearSocket(int count) throws YException
+    // Clear all incoming data off of the sockets.
+    // imageBytes = -1 if size of image unknown
+    public synchronized void clearSocket(int imageBytes) throws YException
     {
         resetData();
 
-        //int count1 = 0, count2 = 0;
         try {
-            if (socket!= null && is != null) {
-                socket.setSoTimeout(0);
-
-                int size = is.available();
-                //count1 += size;
-                boolean isEnd = false;
-                while (size > 0 || !isEnd) {
-                    if (size <= 0) {
-                        try {
-                            Thread.sleep(checkingCmdSocketTimeout);
-                        } catch (InterruptedException e1) {
-                        }
-                        isEnd = true;
-                    } else {
-                        byte[] tmpdat = new byte[size];
-                        is.readFully(tmpdat);
-                    }
-
-                    size = is.available();
-                    //count1 += size;
-                }
-
-                socket.setSoTimeout(timeout);
+            if (cmdSocket != null && cmdis != null) {
+                cmdSocket.setSoTimeout(0);
+		clearStream(cmdis, checkingCmdSocketTimeout);
+                cmdSocket.setSoTimeout(timeout);
             }
 
-            if (imgSocket!= null && imgis != null) {
+            if (imgSocket != null && imgis != null) {
                 imgSocket.setSoTimeout(0);
 
-                if (count < 0) {
-                    int size = imgis.available();
-                    //count2 += size;
-                    boolean isEnd = false;
-                    while (size > 0 || !isEnd) {
-                        if (size <= 0) {
-                            try {
-                                Thread.sleep(checkingImgSocketTimeout);
-                            } catch (InterruptedException e1) {
-                            }
-                            isEnd = true;
-                        } else {
-                            byte[] tmpdat = new byte[size];
-                            imgis.readFully(tmpdat);
-                        }
-
-                        size = imgis.available();
-                        //count2 += size;
-                    }
-                } else if (count > 0) {
-                    byte [] tmpdat = new byte[count];
-                    imgis.readFully(tmpdat);
-                }
+                if (imageBytes < 0) {
+		    clearStream(imgis, checkingImgSocketTimeout);
+                } else if (imageBytes > 0) {
+		    imgis.skipBytes(imageBytes);
+                } else {
+		    // do nothing
+		}
 
                 imgSocket.setSoTimeout(timeout);
             }
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:clearSocket()");
+            throw new YException(
+	      "Error occurs while reading from input stream",
+	      "DEViseCommSocket:clearSocket()");
         }
 
         //System.out.println("CmdSocket cleared: " + count1 + " and ImgSocket cleared: " + count2);
+    }
+
+    private static void clearStream(DataInputStream istream, int to)
+      throws IOException
+    {
+        int size = istream.available();
+        boolean isEnd = false;
+        while (size > 0 || !isEnd) {
+            if (size <= 0) {
+                try {
+                    Thread.sleep(to);
+                } catch (InterruptedException e1) {
+                }
+                isEnd = true;
+            } else {
+		istream.skipBytes(size);
+            }
+
+            size = istream.available();
+        }
     }
 
     private synchronized void resetData()
@@ -323,11 +306,24 @@ public class DEViseCommSocket
         numberRead = 0;
     }
 
-    public synchronized void sendCmd(String cmd, short flag) throws YException
+    // Note: the format of commands on the socket is as follows:
+    // u_short msgType // API_CMD, etc. -- see DEViseGlobals,java,
+    //                    graphics.new/ParseAPI.h
+    // u_short argCount
+    // u_short totalBytes
+    // u_short arg1Bytes
+    // char [] arg1String // null terminated
+    // u_short arg2Bytes
+    // char [] arg2String // null terminated
+    // ...
+
+    public synchronized void sendCmd(String cmd, short msgType)
+      throws YException
     {
-        if (os == null) {
+        if (cmdos == null) {
             closeSocket();
-            throw new YException("Invalid output stream", "DEViseCommSocket:sendCmd()");
+            throw new YException("Invalid output stream",
+	      "DEViseCommSocket:sendCmd()");
         }
 
         // for invalid cmd, simply discard it
@@ -345,7 +341,9 @@ public class DEViseCommSocket
         try {
             nelem = cmdBuffer.length;
             for (int i = 0; i < nelem; i++)  {
+		// null-terminate the string for C/C++ on the other end
                 cmdBuffer[i] = cmdBuffer[i] + "\u0000";
+
                 // since DataOutputStream is a Byte oriented Stream, so it will write
                 // each unicode character(16bits) as ISO-Latin-1 8bits character, which
                 // means only the low 8bits of each unicode character is write out, and
@@ -353,26 +351,26 @@ public class DEViseCommSocket
                 size = size + 2 + cmdBuffer[i].length();
             }
 
-            os.writeShort(flag);
+            cmdos.writeShort(msgType);
             // if nelem is greater than MAX_VALUE of short, if you use readUnsignedShort
             // on the other size, you can still get correct value
-            os.writeShort(nelem);
-            os.writeShort(size);
+            cmdos.writeShort(nelem);
+            cmdos.writeShort(size);
 
             for (int i = 0; i < nelem; i++) {
                 // Since we are using a BufferedOutputStream as the underlying stream of
                 // our DataOutputStream, so we must make sure that while the buffer is full,
                 // we must flush our stream.
-                if ((os.size() - flushedSize) >= (bufferSize - 2)) {
-                    flushedSize = os.size();
-                    os.flush();
+                if ((cmdos.size() - flushedSize) >= (bufferSize - 2)) {
+                    flushedSize = cmdos.size();
+                    cmdos.flush();
                 }
 
-                os.writeShort(cmdBuffer[i].length());
-                os.writeBytes(cmdBuffer[i]);
+                cmdos.writeShort(cmdBuffer[i].length());
+                cmdos.writeBytes(cmdBuffer[i]);
             }
 
-            os.flush();
+            cmdos.flush();
         } catch (IOException e) {
             closeSocket();
             throw new YException("Error occurs while writing to output stream", "DEViseCommSocket:sendCmd()");
@@ -384,11 +382,16 @@ public class DEViseCommSocket
         sendCmd(cmd, DEViseGlobals.API_JAVA);
     }
 
-    public synchronized String receiveCmd() throws YException, InterruptedIOException
+    // Receive a command.  Note that this method may be interrupted by
+    // the socket timeout.  If so, it can be repeatedly called until
+    // an entire command has been received.
+    public synchronized String receiveCmd()
+      throws YException, InterruptedIOException
     {
-        if (is == null) {
+        if (cmdis == null) {
             closeSocket();
-            throw new YException("Invalid input stream", "DEViseCommSocket:receiveCmd()");
+            throw new YException("Invalid input stream",
+	      "DEViseCommSocket:receiveCmd()");
         }
 
         try {
@@ -398,9 +401,10 @@ public class DEViseCommSocket
                     numberRead = 0;
                 }
 
+		// TEMP -- try read(buf, offset, len) here
                 int b;
                 for (int i = numberRead; i < 6; i++) {
-                    b = is.read();
+                    b = cmdis.read();
                     if (b < 0) {
                         closeSocket();
                         throw new YException("Abrupt end of input stream reached", "DEViseCommSocket.receiveCmd()");
@@ -428,12 +432,14 @@ public class DEViseCommSocket
                 numberRead = 0;
             }
 
+	    // TEMP -- try read(buf, offset, len) here
             int b;
             for (int i = numberRead; i < totalSize; i++) {
-                b = is.read();
+                b = cmdis.read();
                 if (b < 0) {
                     closeSocket();
-                    throw new YException("Abrupt end of input stream reached", "DEViseCommSocket.receiveCmd()");
+                    throw new YException("Abrupt end of input stream reached",
+		      "DEViseCommSocket.receiveCmd()");
                 }
 
                 dataRead[numberRead] = (byte)b;
@@ -493,15 +499,21 @@ public class DEViseCommSocket
                            // actually does nothing
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Error occurs while writing to output stream", "DEViseCommSocket:sendData()");
+            throw new YException("Error occurs while writing to output stream",
+	      "DEViseCommSocket:sendData()");
         }
     }
 
-    public synchronized byte[] receiveData(int dataSize) throws YException, InterruptedIOException
+    // Receive data.  Note that this method may be interrupted by
+    // the socket timeout.  If so, it can be repeatedly called until
+    // the entire data set has been received.
+    public synchronized byte[] receiveData(int dataSize)
+      throws YException, InterruptedIOException
     {
         if (imgis == null) {
             closeSocket();
-            throw new YException("Invalid input stream", "DEViseCommSocket:receiveData()");
+            throw new YException("Invalid input stream",
+	      "DEViseCommSocket:receiveData()");
         }
 
         // simply give up receiving if input size is invalid
@@ -515,6 +527,7 @@ public class DEViseCommSocket
                 numberRead = 0;
             }
 
+	    // TEMP -- try read(buf, offset, len) here -- check speed
             imgis.readFully(dataRead);
 
             byte[] data = dataRead;
@@ -526,7 +539,9 @@ public class DEViseCommSocket
             throw e;
         } catch (IOException e) {
             closeSocket();
-            throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:receiveData()");
+            throw new YException(
+	      "Error occurs while reading from input stream",
+	      "DEViseCommSocket:receiveData()");
         }
     }
 }
