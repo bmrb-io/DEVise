@@ -17,6 +17,12 @@
   $Id$
 
   $Log$
+  Revision 1.35  1997/04/11 18:49:14  wenger
+  Added dashed line support to the cslib versions of WindowReps; added
+  option to not maintain aspect ratio in Tasvir images; re-added shape
+  help file that somehow didn't get added in 1.3 merges; removed code
+  for displaying GIFs locally (including some of the xv code).
+
   Revision 1.34  1997/03/25 17:59:24  wenger
   Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
 
@@ -1695,17 +1701,17 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 			pointSize = 12.0;
 	GlobalColor color = GetColor(view, gdata, map, offset);
 
-	char *label = "X";
-
-	if (offset->shapeAttrOffset[0] >= 0) {
-		int key = (int)GetShapeAttr0(gdata, map, offset);
-		int code = StringStorage::Lookup(key, label);
-#ifdef DEBUG
-		printf("Key %d returns \"%s\", code %d\n", key, label, code);
+	char *label;
+        int key = (int)GetShapeAttr0(gdata, map, offset);
+        int code = StringStorage::Lookup(key, label);
+        if( code < 0 ) {        // key not found
+          label = "X";
+#if defined(DEBUG)
+          printf("Using default label \"%s\"\n", label);
 #endif
-	} else {
-#ifdef DEBUG
-		printf("Using default label \"%s\"\n", label);
+        } else {
+#if defined(DEBUG)
+          printf("Key %d returns \"%s\", code %d\n", key, label, code);
 #endif
 	}
 
