@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/12/02 21:38:56  jussi
+  Added horizontal view layout.
+
   Revision 1.4  1995/09/22 16:01:09  jussi
   Added copyright message.
 
@@ -410,8 +413,7 @@ main(int argc, char **argv){
 #endif
 
 	/* Register known classes  with control panel */
-	ControlPanel::RegisterClass(new WinVerInfo);
-	ControlPanel::RegisterClass(new WinHorInfo);
+	ControlPanel::RegisterClass(new TileLayoutInfo);
 	ControlPanel::RegisterClass(new ViewXInfo);
 	ControlPanel::RegisterClass(new ViewScatterInfo);
 	ControlPanel::RegisterClass(new VisualLinkClassInfo());
