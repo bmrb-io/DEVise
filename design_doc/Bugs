@@ -2490,7 +2490,7 @@ Num Date        Status  Description
 			running applet in Netscape produces a communication
 			error. (rkw)
 
-630 12/22/00	OPEN	JavaScreen: when running in CGI mode in Netscape,
+630 12/22/00	KLUDGED	JavaScreen: when running in CGI mode in Netscape,
 			there's a communications error when you exit the
 			client. (rkw)
 
