@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/06/27 00:00:35  jussi
+#  Coordinates of 3D focal point are now saved and displayed.
+#
 #  Revision 1.4  1996/06/20 21:38:57  jussi
 #  Added radial coordinates of the camera and rectangular coordinates
 #  of the focal point to the 3D query dialog.
@@ -316,7 +319,8 @@ proc Do3DQuery {} {
     pack .query3d.title -side top -pady 1m -expand 1 -fill both
 
     label .query3d.title.text -text "No View Selected"
-    pack .query3d.title.text -side top -pady 1m
+    label .query3d.title.sub -text ""
+    pack .query3d.title.text .query3d.title.sub -side top -pady 1m
 
     # build xyzLoc widgets (rectangular and radial coordinates of
     # camera, plus rectangular coordinates of focal point)
@@ -472,6 +476,7 @@ proc Update3DLocation {} {
     .query3d.focLoc.y.e configure -text ""
     .query3d.focLoc.z.e configure -text ""
     .query3d.title.text configure -text "No View Selected"
+    .query3d.title.sub configure -text ""
 
     if {$curView == ""} {
 	return
@@ -487,5 +492,20 @@ proc Update3DLocation {} {
     .query3d.focLoc.x.e configure -text [lindex $loc 4]
     .query3d.focLoc.y.e configure -text [lindex $loc 5]
     .query3d.focLoc.z.e configure -text [lindex $loc 6]
+
     .query3d.title.text configure -text "View: $curView"
+
+    set coordsys "Rectangular"
+    if {[lindex $loc 0]} {
+        set coordsys "Radial"
+    }
+    set fixfocus "MoveFocus"
+    if {[lindex $loc 10]} {
+        set fixfocus ""
+    }
+    set persp "Non-Perspective"
+    if {[lindex $loc 11]} {
+        set persp ""
+    }
+    .query3d.title.sub configure -text "$coordsys $fixfocus $persp"
 }
