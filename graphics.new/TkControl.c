@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1995/12/06 05:42:57  ravim
+  Added function to display KGraph.
+
   Revision 1.17  1995/12/05 17:07:00  jussi
   View statistics are now part of ViewGraph and not View, its subclass.
 
@@ -100,6 +103,7 @@ Tk_Window ControlPanelMainWindow = 0;
 #endif
 
 extern GroupDir *gdir;
+ViewKGraph *vkg = NULL;
 
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -455,27 +459,30 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	}
 	else if (strcmp(argv[1], "showkgraph") == 0) {
-	    /* Create a new ViewKGraph object */
-	    ViewKGraph vkg;
+	    if ((atoi(argv[2]) == 1) || (!vkg))  {
+		/* Create a new ViewKGraph object */
+		delete vkg;
+		vkg = new ViewKGraph();
+	      }
 	    int i = 0;
 	    /* Number of views */
-	    int nview = argc - 3;
+	    int nview = argc - 4;
 	    ViewGraph **vlist = (ViewGraph **)malloc(nview*sizeof(ViewGraph *));
 	    for (i = 0; i < nview; i++) {
-	      vlist[i] = (ViewGraph *)classDir->FindInstance(argv[3+i]);
+	      vlist[i] = (ViewGraph *)classDir->FindInstance(argv[4+i]);
 	      if (vlist[i] == NULL) {
 		  interp->result = "Cannot find view";
 		  goto error;
 		}
 	    }
-	    vkg.Init();
+	    vkg->Init();
 	    /* Add these to the ViewKGraph class and display */
-	    if (vkg.AddViews(vlist, nview) == false) {
+	    if (vkg->AddViews(vlist, nview) == false) {
 		interp->result = "Could not add views to ViewKGraph";
 		goto error;
 	      }
 		  
-	    if (vkg.Display(atoi(argv[2])) == false) {
+	    if (vkg->Display(atoi(argv[3])) == false) {
 		interp->result = "Could not display the KGraph";
 		goto error;
 	      }
@@ -946,7 +953,7 @@ int TkControlPanel::ControlCmd(ClientData clientData, Tcl_Interp *interp,
 			goto error;
 		    }
 		    /* Turn on/off display of statistics */
-		    vg->SetDisplayStats(atoi(argv[3]));
+		    vg->SetDisplayStats(argv[3]);
 		}
 		else if (strcmp(argv[1],"savePixmap") == 0){
 			/*
