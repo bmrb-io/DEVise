@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.62  1996/08/29 18:24:32  wenger
+  A number of Dali-related improvements: ShapeAttr1 now specifies image
+  type when shape is 'image'; added new '-bytes' flag to Dali commands
+  when sending images; TDataBinaryInterp now uses StringStorage so GData
+  can access strings; fixed hash function for StringStorage so having the
+  high bit set in a byte in the string doesn't crash the hash table;
+  improved the error checking in some of the Dali code.
+
   Revision 1.61  1996/08/28 00:19:39  wenger
   Improved use of Dali to correctly free images (use of Dali is now fully
   functional with filenames in data).
@@ -654,10 +662,15 @@ void XWindowRep::ImportImage(Coord x, Coord y,
 void XWindowRep::ExportImage(DisplayExportFormat format, char *filename)
 {
   if (format == GIF) {
-    ExportGIF(filename);
+    FILE *fp = fopen(filename, "wb");
+    if (!fp) {
+         fprintf(stderr, "Cannot open file %s for writing\n", filename);
+         return;
+    }
+    ExportGIF(fp);
     return;
   }
-
+  printf("%d\n", format);
   DOASSERT(_win, "Exporting a pixmap not supported yet");
 
   Window win = FindTopWindow(_win);
@@ -818,7 +831,7 @@ Window XWindowRep::FindTopWindow(Window win)
 
 /* export image as GIF */
 
-void XWindowRep::ExportGIF(char *filename)
+void XWindowRep::ExportGIF(FILE *fp)
 {
   if (_win) {
     Window win = FindTopWindow(_win);
@@ -828,7 +841,7 @@ void XWindowRep::ExportGIF(char *filename)
       return;
     }
     XRaiseWindow(_display, win);
-    ((XDisplay *)GetDisplay())->ConvertAndWriteGIF(win, xwa, filename);
+    ((XDisplay *)GetDisplay())->ConvertAndWriteGIF(win, xwa, fp);
     return;
   }
 
@@ -854,7 +867,7 @@ void XWindowRep::ExportGIF(char *filename)
 
   CoalescePixmaps(this);
 
-  ((XDisplay *)GetDisplay())->ConvertAndWriteGIF(_pixmap, xwa, filename);
+  ((XDisplay *)GetDisplay())->ConvertAndWriteGIF(_pixmap, xwa, fp);
 }
 
 void XWindowRep::CoalescePixmaps(XWindowRep *root)
@@ -1380,14 +1393,14 @@ void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
 void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2, 
 		      Coord width)
 {
-#ifdef DEBUG
+#if defined(DEBUG) || 0
   printf("XWindowRep::Line %.2f,%.2f,%.2f,%.2f\n", x1, y1, x2, y2);
 #endif
   
   Coord tx1, ty1, tx2, ty2;
   WindowRep::Transform(x1 ,y1, tx1, ty1);
   WindowRep::Transform(x2, y2, tx2, ty2);
-#ifdef GRAPHICS
+#if defined(GRAPHICS) || 1
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
 		       JoinRound);
