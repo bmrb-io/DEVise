@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/03/07 17:44:20  donjerko
+  *** empty log message ***
+
   Revision 1.17  1997/02/03 19:45:35  ssl
   1) RecordLink.[Ch],QueryProcFull.[ch]  : added negative record links
   2) ViewLens.[Ch] : new implementation of piled views
@@ -219,11 +222,16 @@ TData::TData(char* name, char* type, char* param, int recSize)
 	_data = v->GetViewHistogram();
 	DO_DEBUG(printf("found histogram data source 0x%p from view 0x%p\n",
 			_data, v));
-    } else if (!strcmp(_type, "GDATASTAT")) {
-	DOASSERT( strncmp(name, "Gstat: ", 7) == 0, "invalid gdatastat prefix");
-	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+7);
+    } else if (!strcmp(_type, "GDATASTAT_X")) {
+	DOASSERT( strncmp(name, "GstatX: ", 8) == 0, "invalid gdatastat prefix");
+	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+8);
 	DOASSERT(v, "GDATASTAT view not found");
-	_data = v->GetGdataStatistics();
+	_data = v->GetGdataStatisticsX();
+    } else if (!strcmp(_type, "GDATASTAT_Y")) {
+	DOASSERT( strncmp(name, "GstatY: ", 8) == 0, "invalid gdatastat prefix");
+	ViewGraph* v = (ViewGraph *)ControlPanel::FindInstance(name+8);
+	DOASSERT(v, "GDATASTAT view not found");
+	_data = v->GetGdataStatisticsY();
     }
     else if (!strcmp(_type, "WWW")) {
 	char *file = MakeCacheFileName(_name, _type);
