@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.32  1996/10/07 22:54:08  wenger
+#  Added more error checking and better error messages in response to
+#  some of the problems uncovered by CS 737 students.
+#
 #  Revision 1.31  1996/09/18 20:08:22  guangshu
 #  Added option when save gif files. It can save every view inside a window.
 #  Before it can only save the whole window.
@@ -771,7 +775,8 @@ proc WindowVisible {w} {
     if {$state == "iconic"} {
 	wm deiconify $w
     } else {
-	wm iconify $w
+	wm withdraw $w
+	wm deiconify $w
     }
 
     return 1
