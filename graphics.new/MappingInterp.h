@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.18  1996/05/31 21:35:34  wenger
+  Fixed core dump in SPARC/Solaris version caused by GData buffer
+  misalignment; cleaned up generic/Makefile.base, etc., to get HP
+  version to link correctly and eliminate special Makefile.base.aix.
+
   Revision 1.17  1996/05/22 21:05:10  jussi
   Added HighLowShape. Added tentative version of GifImageShape.
 
@@ -130,7 +135,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 12;
+const int MaxInterpShapes = 15;
 
 class MappingInterp: public TDataMapDispatch {
   friend inline double ConvertOne(char *from,
@@ -139,19 +144,28 @@ class MappingInterp: public TDataMapDispatch {
 
 public:
   MappingInterp(char *name,
-		TData *tdata, MappingInterpCmd *cmd, int flag,int attrFlag,
+		TData *tdata, MappingInterpCmd *cmd,
+		unsigned long int flag,
+		unsigned long int attrFlag,
 		VisualFlag *dimensionInfo, int numDimensions);
 
   MappingInterpCmd *GetMappingCmd() { return _cmd; }
 
   virtual Boolean IsInterpreted() { return true; }
+  virtual Boolean IsComplexShape(ShapeID shape) {
+    if (shape <= 10)
+      return false;
+    return true;
+  }
 
   /* change the commands */
-  void ChangeCmd(MappingInterpCmd *cmd, int flag, int attrFlag,
-		 VisualFlag *dimensionInfo, int NumDimensions);
+  void ChangeCmd(MappingInterpCmd *cmd, unsigned long int flag,
+		 unsigned long int attrFlag, VisualFlag *dimensionInfo,
+		 int NumDimensions);
   
   /* Get current commands */
-  MappingInterpCmd *GetCmd(int &cmdFlag, int &attrFlag);
+  MappingInterpCmd *GetCmd(unsigned long int &cmdFlag,
+			   unsigned long int &attrFlag);
   
   /* find the max box bounding for all records */
 #if 0
@@ -205,7 +219,7 @@ private:
   
   /* Find size of GData given attribute flag information */
   FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
-		int flag, int attrFlag);
+		unsigned long int flag, unsigned long int attrFlag);
   
   Boolean IsConstCmd(char *cmd, Coord &val);
   
@@ -215,8 +229,8 @@ private:
   MappingSimpleCmd *_simpleCmd;  /* simple command */
   Boolean _isSimpleCmd;          /* true if _simpleCmd, otherwise _tclCmd */
   
-  int _cmdFlag;
-  int _cmdAttrFlag;
+  unsigned long int _cmdFlag;
+  unsigned long int _cmdAttrFlag;
   
   /* Offsets of GData attributes */
   GDataAttrOffset *_offsets;
