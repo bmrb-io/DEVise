@@ -1,6 +1,6 @@
 # Data source configuration
 
-set "sourceConfig(WWW)" {www_fetch}
+set "sourceConfig(WWW)" {}
 set "sourceConfig(NETWORK)" {network_client blondie.cs.wisc.edu 1400}
 set "sourceConfig(UNIXFILE)" {}
 set "sourceConfig(COMMAND)" {}
