@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2001/10/12 19:12:42  wenger
+// Changed client ID generation to avoid any chance of duplicates;
+// updated command format documentation.
+//
 // Revision 1.60  2001/10/12 01:47:32  xuk
 // Using timestamp-based client ID.
 // 1. Got rid of _nextClientId;
@@ -303,7 +307,7 @@ public class jspop implements Runnable
     //      default: No Debug information is written
     //
 
-    private static final int SOCK_REC_TIMEOUT = 100000; // milliseconds
+    private static final int SOCK_REC_TIMEOUT = 1000; // milliseconds
 
     private ServerSocket cmdServerSocket = null;
     //private ServerSocket dataServerSocket = null;
