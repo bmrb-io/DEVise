@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.93  1999/08/18 20:46:06  wenger
+  First step for axis drawing improvement: moved code to new DevAxis
+  class with unchanged functionality.
+
   Revision 1.92  1999/08/05 21:42:37  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -826,6 +830,7 @@ protected:
 
 private:
     void CleanUpViewSyms();
+	void InvalidateCursors();
 
 protected:
 	void DrawHighlight();

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.191  1999/08/30 19:34:24  wenger
+  Unified X and Y axis drawing code; found and fixed bug 505 (changing axis
+  date format didn't force redraw).
+
   Revision 1.190  1999/08/18 20:46:04  wenger
   First step for axis drawing improvement: moved code to new DevAxis
   class with unchanged functionality.
@@ -2498,7 +2502,7 @@ Boolean
 View::DrawCursors()
 {
 #if defined(DEBUG)
-  printf("DrawCursors for %s\n", GetName());
+  printf("View(%s)::DrawCursors()\n", GetName());
 #endif
 
   if (!Mapped()) {
@@ -2559,7 +2563,7 @@ Boolean
 View::HideCursors()
 {
 #if defined(DEBUG)
-  printf("HideCursors for %s\n", GetName());
+  printf("View(%s)::HideCursors()\n", GetName());
 #endif
 
   if (!Mapped()) {
@@ -2599,7 +2603,7 @@ void
 View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
 {
 #if defined(DEBUG)
-  printf("DoDrawCursor(%s)\n", cursor->GetName());
+  printf("View(%s)::DoDrawCursor(%s)\n", GetName(), cursor->GetName());
 #endif
 
   Boolean pixelsValid;
@@ -3866,23 +3870,16 @@ void	View::Run(void)
 		// Since we've just cleared the whole view background, we've erased
 		// all cursors in this view and any views piled with this view.
 		//
-	    _cursorsOn = false;
-		PileStack *ps = GetParentPileStack();
-		if (ps) {
+		if (IsInPileMode()) {
+		    PileStack *ps = GetParentPileStack();
 		    int viewIndex = ps->InitIterator();
 			while (ps->More(viewIndex)) {
 			    View *tmpView = (View *)ps->Next(viewIndex);
-				tmpView->_cursorsOn = false;
-
-                int cursorIndex;
-                for (cursorIndex = tmpView->_cursors->InitIterator();
-				    tmpView->_cursors->More(cursorIndex);) {
-                  DeviseCursor *cursor = tmpView->_cursors->Next(cursorIndex);
-				  cursor->InvalidateOldDestPixels();
-                }
-	            tmpView->_cursors->DoneIterator(cursorIndex);
-			}
+				tmpView->InvalidateCursors();
+		    }
 			ps->DoneIterator(viewIndex);
+		} else {
+		    InvalidateCursors();
 		}
 	}
 
@@ -4214,6 +4211,23 @@ View::CleanUpViewSyms()
   }
   DoneIterator(index);
   DetachChildren();
+}
+
+void
+View::InvalidateCursors()
+{
+#if defined(DEBUG)
+  printf("View(%s)::InvalidateCursors()\n", GetName());
+#endif
+
+  _cursorsOn = false;
+
+  int cursorIndex = _cursors->InitIterator();
+  while (_cursors->More(cursorIndex)) {
+    DeviseCursor *cursor = _cursors->Next(cursorIndex);
+    cursor->InvalidateOldDestPixels();
+  }
+  _cursors->DoneIterator(cursorIndex);
 }
 
 //******************************************************************************

@@ -1969,6 +1969,10 @@ Num Date        Status  Description
 			(rkw)
 			(Fixed by rkw, 8/30/99.)
 
+506 08/31/99	FIXED	Load Test/cursor_draw.ds, drag one cursor -> sometimes
+			the wrong cursor actually gets drawn. (rkw)
+			(Fixed by rkw, 8/31/99.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
