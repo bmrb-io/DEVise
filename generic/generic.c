@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  1996/07/21 01:15:57  jussi
+  LANDSENDDAILY schema uses the YyMmDd composite parser.
+
   Revision 1.27  1996/07/09 15:59:42  wenger
   Added master version number and compile date to C++ code (also displayed
   in the user interface); added -usage and -version command line arguments;
@@ -121,6 +124,10 @@
 #include <sys/time.h>
 #include <sys/types.h>
 
+#ifdef __GNUG__
+#pragma implementation "HashTable.h"
+#endif
+
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
 #include "Display.h"
@@ -144,6 +151,7 @@
 #include "TData.h"
 #include "CursorClassInfo.h"
 #include "ParseCat.h"
+#include "HashTable.h"
 
 static time_t GetTime(struct tm &now)
 {
@@ -406,12 +414,123 @@ private:
    a state abbreviation to latitude/longitude attributes
 */
 
+struct stateMapRec {
+  char *state;
+  float latitude;
+  float longitude;
+};
+
+static int StringHash(char *&string, int numBuckets)
+{
+  int sum = 0;
+  for(int i = 0; i < (int)strlen(string); i++)
+    sum += string[i];
+  return sum % numBuckets;
+}
+
+static int StringComp(char *&string1, char *&string2)
+{
+  return strcmp(string1, string2);
+}
+
+HashTable<char *, stateMapRec *> stateMap(50, StringHash, StringComp);
+
+static void InitStateMap()
+{
+  /*
+     Translate state name to the latitude/longitude of the state capital
+     or some other big city in state
+  */
+
+  static stateMapRec StateLatLon[] = {
+    { "AL", +32.354400, -86.284287 },  /* Montgomery */
+    { "AK", +61.178368, -149.186416 }, /* Anchorage */
+    { "AZ", +33.542550, -112.071399 }, /* Phoenix */
+    { "AR", +34.722400, -92.354076 },  /* Little Rock */
+    { "CA", +34.112101, -118.411201 }, /* Los Angeles */
+    { "CO", +39.768035, -104.872655 }, /* Denver */
+    { "CT", +41.765700, -72.683866 },  /* Hartford */
+    { "DC", +38.905050, -77.016167 },  /* Washington */
+    { "DE", +39.735572, -75.529956 },  /* Wilmington */
+    { "FL", +25.775667, -80.210845 },  /* Miami */
+    { "GA", +33.762900, -84.422592 },  /* Atlanta */
+    { "HI", +21.317250, -157.804233 }, /* Honolulu */
+    { "ID", +43.606651, -116.226100 }, /* Boise */
+    { "IL", +41.837050, -87.684965 },  /* Chicago */
+    { "IN", +39.776400, -86.146196 },  /* Indianapolis */
+    { "IA", +41.576738, -93.617405 },  /* Des Moines */
+    { "KS", +37.687350, -97.342674 },  /* Wichita */
+    { "KY", +38.224750, -85.741156 },  /* Louisville */
+    { "LA", +30.065846, -89.931355 },  /* New Orleans */
+    { "ME", +43.667134, -70.207166 },  /* Portland */
+    { "MD", +39.300800, -76.610616 },  /* Baltimore */
+    { "MA", +42.336029, -71.017892 },  /* Boston */
+    { "MI", +42.383100, -83.102198 },  /* Detroit */
+    { "MN", +44.961850, -93.266849 },  /* Minneapolis */
+    { "MO", +39.122312, -94.552009 },  /* Kansas City */
+    { "MS", +32.320500, -90.207591 },  /* Jackson */
+    { "MT", +46.596522, -112.020381 }, /* Helena */
+    { "NE", +41.263900, -96.011745 },  /* Omaha */
+    { "NJ", +40.724100, -74.173245 },  /* Newark */
+    { "NH", +42.983600, -71.444899 },  /* Manchester */
+    { "NM", +35.117218, -106.624636 }, /* Albuquerque */
+    { "NV", +36.205750, -115.222799 }, /* Las Vegas */
+    { "NY", +40.669800, -73.943849 },  /* New York */
+    { "NC", +35.197550, -80.834514 },  /* Charlotte */
+    { "ND", +46.805467, -100.767298 }, /* Bismarck */
+    { "OH", +39.988933, -82.987381 },  /* Columbus */
+    { "OK", +35.467050, -97.513491 },  /* Oklahoma City */
+    { "OR", +45.538250, -122.656496 }, /* Portland */
+    { "PA", +40.006817, -75.134678 },  /* Philadelphia */
+    { "RI", +41.821950, -71.419732 },  /* Providence */
+    { "SC", +34.039236, -80.886341 },  /* Columbia */
+    { "SD", +44.372982, -100.322483 }, /* Pierre */
+    { "TN", +35.105600, -90.006991 },  /* Memphis */
+    { "TX", +29.768700, -95.386728 },  /* Houston */
+    { "UT", +40.777267, -111.929921 }, /* Salt Lake City */
+    { "VT", +44.488093, -73.226177 },  /* Burlington */
+    { "VA", +37.531050, -77.474584 },  /* Richmond */
+    { "WA", +47.621800, -122.350326 }, /* Seattle */
+    { "WV", +38.350550, -81.630439 },  /* Charleston */
+    { "WI", +43.079800, -89.387519 },  /* Madison */
+    { "WY", +41.145450, -104.792349 }, /* Cheyenne */
+    { "PR", +18.408386, -66.064425 },  /* San Juan */
+    { 0, 0, 0 }
+  };
+
+  int i = 0;
+  while(StateLatLon[i].state) {
+    stateMapRec *rec = &StateLatLon[i];
+    int code = stateMap.insert(StateLatLon[i].state, rec);
+    DOASSERT(code >= 0, "Invalid hash table code");
+    i++;
+  }
+}
+
+static void MapStateToLatLon(char *state, float &lat, float &lon)
+{
+  static int warning = 1;
+
+  stateMapRec *rec;
+  int code = stateMap.lookup(state, rec);
+  if (code < 0) {
+    if (warning)
+      fprintf(stderr,
+              "Warning: Data has unrecognized state codes, including %s\n",
+              state);
+    warning = 0;
+    lat = lon = 0;
+  } else {
+    lat = rec->latitude;
+    lon = rec->longitude;
+  }
+}
+
 class StateLatLonComposite : public UserComposite {
 public:
 
   StateLatLonComposite() {
     _init = false;
-    _warning = true;
     attrOffset = 0;
   }
 
@@ -439,95 +558,23 @@ public:
 	}
 	attrOffset[i] = info->offset;
       }
+
+      /* initialize lat/lon hash table */
+      InitStateMap();
+
       _init = true;
     }
 
-    /*
-       Translate state name to the latitude/longitude of the state capital
-       or some other big city in state
-     */
-
-    struct {
-      char *state;
-      float latitude;
-      float longitude;
-    } StateLatLon[] = {
-      { "AL", +32.354400, -86.284287 },  /* Montgomery */
-      { "AK", +61.178368, -149.186416 }, /* Anchorage */
-      { "AZ", +33.542550, -112.071399 }, /* Phoenix */
-      { "AR", +34.722400, -92.354076 },  /* Little Rock */
-      { "CA", +34.112101, -118.411201 }, /* Los Angeles */
-      { "CO", +39.768035, -104.872655 }, /* Denver */
-      { "CT", +41.765700, -72.683866 },  /* Hartford */
-      { "DC", +38.905050, -77.016167 },  /* Washington */
-      { "DE", +39.735572, -75.529956 },  /* Wilmington */
-      { "FL", +25.775667, -80.210845 },  /* Miami */
-      { "GA", +33.762900, -84.422592 },  /* Atlanta */
-      { "HI", +21.317250, -157.804233 }, /* Honolulu */
-      { "ID", +43.606651, -116.226100 }, /* Boise */
-      { "IL", +41.837050, -87.684965 },  /* Chicago */
-      { "IN", +39.776400, -86.146196 },  /* Indianapolis */
-      { "IA", +41.576738, -93.617405 },  /* Des Moines */
-      { "KS", +37.687350, -97.342674 },  /* Wichita */
-      { "KY", +38.224750, -85.741156 },  /* Louisville */
-      { "LA", +30.065846, -89.931355 },  /* New Orleans */
-      { "ME", +43.667134, -70.207166 },  /* Portland */
-      { "MD", +39.300800, -76.610616 },  /* Baltimore */
-      { "MA", +42.336029, -71.017892 },  /* Boston */
-      { "MI", +42.383100, -83.102198 },  /* Detroit */
-      { "MN", +44.961850, -93.266849 },  /* Minneapolis */
-      { "MO", +39.122312, -94.552009 },  /* Kansas City */
-      { "MS", +32.320500, -90.207591 },  /* Jackson */
-      { "MT", +46.596522, -112.020381 }, /* Helena */
-      { "NE", +41.263900, -96.011745 },  /* Omaha */
-      { "NJ", +40.724100, -74.173245 },  /* Newark */
-      { "NH", +42.983600, -71.444899 },  /* Manchester */
-      { "NM", +35.117218, -106.624636 }, /* Albuquerque */
-      { "NV", +36.205750, -115.222799 }, /* Las Vegas */
-      { "NY", +40.669800, -73.943849 },  /* New York */
-      { "NC", +35.197550, -80.834514 },  /* Charlotte */
-      { "ND", +46.805467, -100.767298 }, /* Bismarck */
-      { "OH", +39.988933, -82.987381 },  /* Columbus */
-      { "OK", +35.467050, -97.513491 },  /* Oklahoma City */
-      { "OR", +45.538250, -122.656496 }, /* Portland */
-      { "PA", +40.006817, -75.134678 },  /* Philadelphia */
-      { "RI", +41.821950, -71.419732 },  /* Providence */
-      { "SC", +34.039236, -80.886341 },  /* Columbia */
-      { "SD", +44.372982, -100.322483 }, /* Pierre */
-      { "TN", +35.105600, -90.006991 },  /* Memphis */
-      { "TX", +29.768700, -95.386728 },  /* Houston */
-      { "UT", +40.777267, -111.929921 }, /* Salt Lake City */
-      { "VT", +44.488093, -73.226177 },  /* Burlington */
-      { "VA", +37.531050, -77.474584 },  /* Richmond */
-      { "WA", +47.621800, -122.350326 }, /* Seattle */
-      { "WV", +38.350550, -81.630439 },  /* Charleston */
-      { "WI", +43.079800, -89.387519 },  /* Madison */
-      { "WY", +41.145450, -104.792349 }, /* Cheyenne */
-      { "PR", +18.408386, -66.064425 },  /* San Juan */
-      { 0, 0, 0 }
-    };
-
     char *buf = (char *)recInterp->GetBuf();
     char *state = buf + attrOffset[0];
-    int i = 0;
-    while(StateLatLon[i].state && strcmp(StateLatLon[i].state, state))
-      i++;
-
-    if (_warning && !StateLatLon[i].state) {
-      fprintf(stderr,
-	      "Warning: Data has unrecognized state codes, including %s\n",
-	      state);
-      _warning = false;
-    }
-
     float *latPtr = (float *)(buf + attrOffset[2]);
-    *latPtr = StateLatLon[i].latitude;
     float *lonPtr = (float *)(buf + attrOffset[3]);
-    *lonPtr = StateLatLon[i].longitude;
+    MapStateToLatLon(state, *latPtr, *lonPtr);
 
     // fuzz up the picture a little by creating a cloud
 
-    float length = (rand() % 300) / 100.0;
+    float cloudRadius = 2.5;
+    float length = (rand() % 1000) / (1000 / cloudRadius);
     float dir = (rand() % 360) / 360.0 * 2 * 3.14;
     *latPtr += length * sin(dir);
     *lonPtr += length * cos(dir);
@@ -560,8 +607,6 @@ public:
 private:
   int       *attrOffset;          /* attribute offsets */
   Boolean   _init;                /* true when instance initialized */
-  Boolean   _warning;             /* true when warning should be displayed
-				     for unknown state codes */
 };
 
 /*
@@ -927,7 +972,7 @@ int main(int argc, char **argv)
   CompositeParser::Register("DOWJONES", new MmDdYyComposite);
   CompositeParser::Register("LANDSEND", new StateLatLonComposite);
   CompositeParser::Register("LANDSENDDAILY", new YyMmDdComposite);
-  CompositeParser::Register("MARKETING", new StateLatLonComposite);
+  CompositeParser::Register("SALES", new StateLatLonComposite);
   CompositeParser::Register("CENSUS_PLACES", new LatLonComposite);
   CompositeParser::Register("CENSUS_ZIP", new LatLonComposite);
   CompositeParser::Register("IBMTRACE", new IBMAddressTraceComposite);
