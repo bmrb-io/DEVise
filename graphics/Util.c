@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/05/20 18:44:42  jussi
+  Replaced PENTIUM flag with SOLARIS.
+
   Revision 1.9  1996/03/27 17:54:56  wenger
   Changes to get DEVise to compile and run on Linux.
 
@@ -79,7 +82,7 @@ static char dateBuf[21];
 
 char *DateString(time_t tm)
 {
-  char *dateStr =ctime(&tm);
+  char *dateStr = ctime(&tm);
   int i;
   for(i = 0; i < 7; i++)
     dateBuf[i] = dateStr[i + 4];
@@ -91,7 +94,8 @@ char *DateString(time_t tm)
   
   for(i = 12; i < 20; i++)
     dateBuf[i] = dateStr[i - 1];
-  dateBuf[21] = '\0';
+
+  dateBuf[20] = '\0';
 
   return dateBuf;
 }
