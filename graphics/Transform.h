@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/06/15 21:06:13  yuc
+  Clean up some more stuffs in the "view transformation" matrix.
+
   Revision 1.6  1996/06/15 14:12:21  jussi
   Added yuc's 3D functions.
 
@@ -45,10 +48,10 @@
 #include "VisualArg.h"
 #include "Geom.h"
 
-#if ! defined(M_PI) && ! defined (PI)
-# define PI 3.14159265358979323846
+#if !defined(M_PI) && !defined (PI)
+#define PI 3.14159265358979323846
 #else
-# define PI M_PI 
+#define PI M_PI 
 #endif
 
 #define rad_deg(r) ((r) / PI * 180.0) // change radian -> degree
@@ -57,12 +60,12 @@
 
 inline Coord ToRadian(Coord degree)
 {
-  return degree*2*PI/360.0;
+  return degree * 2 * PI / 360.0;
 }
 
 inline Coord ToDegree(Coord radian)
 {
-  return radian*360.0/(2*PI);
+  return radian * 360.0 / (2 * PI);
 };
 
 /* 2D transformation matrix, ala Foley et al, 1990 */
@@ -94,11 +97,15 @@ public:
   }
 
   /* Translate by dx,dy */
-  void Translate(Coord dx, Coord dy) { _a02 += dx; _a12 += dy; }
+  void Translate(Coord dx, Coord dy) {
+    _a02 += dx; _a12 += dy;
+  }
 
   /* Scale by sx, sy */
-  void Scale(Coord sx, Coord sy) { _a00 *= sx; _a01 *= sx; _a02 *= sx;
-				   _a10 *= sy; _a11 *= sy; _a12 *= sy; }
+  void Scale(Coord sx, Coord sy) {
+    _a00 *= sx; _a01 *= sx; _a02 *= sx;
+    _a10 *= sy; _a11 *= sy; _a12 *= sy;
+  }
 
   /* Rotate by theta. counter-clockwise = positive theta. */
   void Rotate(Coord theta) {
@@ -216,9 +223,7 @@ private:
   Coord _a00,_a01,_a02,_a10,_a11,_a12;  // transformation matrix
   Boolean _cartesian;                   // TRUE if cartesian transformation
                                         // (a01 == a10 == 0.0)
-}; // end of Transform 2D
-
-// #define YLC
+};
 
 // ---------------------------------------------------------- 
 // transformation matrix = T
@@ -229,6 +234,7 @@ private:
 //    new matrix = old matrix * (x, y, z, 1)^-1
 // NOTE: translation, scale, and rotate functions are used to update
 //       the transformation matrix, T_new * T_old -> T_stored_by_class
+
 class Transform3D {
 public:
   /* identity matrix */
@@ -254,23 +260,6 @@ public:
     _cartesian = t._cartesian;
   }
 
-  /* Create a duplicates of the current matrix to "newT" */
-  void duplicate(Transform3D &newT) {
-    Coord _bb00,_bb01,_bb02,_bb03,
-	     _bb10,_bb11,_bb12,_bb13,
-	     _bb20,_bb21,_bb22,_bb23,
-	     _bb30,_bb31,_bb32,_bb33;
-    GetCoords (_bb00,_bb01,_bb02,_bb03,
-			_bb10,_bb11,_bb12,_bb13,
-			_bb20,_bb21,_bb22,_bb23,
-			_bb30,_bb31,_bb32,_bb33);
-    newT.PutCoords (_bb00,_bb01,_bb02,_bb03,
-				_bb10,_bb11,_bb12,_bb13,
-				_bb20,_bb21,_bb22,_bb23,
-				_bb30,_bb31,_bb32,_bb33);
-    // _cartesian = t._cartesian;
-  }
-
   /* Clear the matrix into an identity matrix */
   void MakeIdentity() {
     _a00 = 1.0; _a01 = _a02 = _a03 = 0.0;
@@ -281,18 +270,24 @@ public:
   }
 
   /* Translate by dx,dy,dz */
-  void Translate(Coord dx, Coord dy, Coord dz)
-	{ _a03 += dx; _a13 += dy; _a23 += dz;}
+  void Translate(Coord dx, Coord dy, Coord dz) {
+    _a03 += dx; _a13 += dy; _a23 += dz;
+  }
 
   /* Scale by sx, sy, sz */
-  void Scale(Coord sx, Coord sy, Coord sz) 
-  { _a00 *= sx; _a01 *= sx; _a02 *= sx; _a03 *= sx;
+  void Scale(Coord sx, Coord sy, Coord sz) {
+    _a00 *= sx; _a01 *= sx; _a02 *= sx; _a03 *= sx;
     _a10 *= sy; _a11 *= sy; _a12 *= sy; _a13 *= sy;
-    _a20 *= sz; _a21 *= sz; _a22 *= sz; _a23 *= sz;}
+    _a20 *= sz; _a21 *= sz; _a22 *= sz; _a23 *= sz;
+  }
+
+  /* Rotate by theta. counter-clockwise = positive theta. */
+  void Rotate(Coord theta) {
+  }
 
   /* Return the transformed X,Y,Z coordinates */
   void Transform(Coord x, Coord y, Coord z, 
-	Coord &newX, Coord &newY, Coord &newZ) {
+		 Coord &newX, Coord &newY, Coord &newZ) {
     TransformX(x, y, z, newX);
     TransformY(x, y, z, newY);
     TransformZ(x, y, z, newZ);
@@ -322,13 +317,19 @@ public:
       newZ = _a20 * x + _a21 * y + _a22 * z + _a23;
   }
 
+  /* Find the original coord given transformed coordinate x,y,z. */
+  void InverseTransform(Coord x, Coord y, Coord z,
+			Coord &oldX, Coord &oldY, Coord &oldZ) {
+    oldX = x; oldY = y; oldZ = z;
+  }
+
   /* Multiply other matrix after this one matrix. Store the
      result in this */
   void PostMultiply(Transform3D *other) {
     Coord o00,o01,o02,o03,o10,o11,o12,o13,
           o20,o21,o22,o23,o30,o31,o32,o33;
-    other->GetCoords( o00,o01,o02,o03, o10,o11,o12,o13,
-                      o20,o21,o22,o23, o30,o31,o32,o33);
+    other->GetCoords(o00,o01,o02,o03, o10,o11,o12,o13,
+		     o20,o21,o22,o23, o30,o31,o32,o33);
     
     _a03 = _a00*o02+ _a01*o12 + _a02*o23 + _a03;
     Coord temp1 = _a01, temp2 = _a02;
@@ -349,18 +350,18 @@ public:
     _a20 = _a20*o00+ temp1*o10 + temp2*o20;
 
     if (_a01 == 0.0 && _a02 == 0.0 && _a10 == 0.0 && _a12 == 0.0
-		&& _a20 == 0.0 && _a22 == 0.0)
+	&& _a20 == 0.0 && _a22 == 0.0)
       _cartesian = true;
     else
       _cartesian = false;
-  } // end of PostMultiply()
+  }
 
   /* Multiply other matrix before this. Store the result in this. */
   void PreMultiply(Transform3D *other) {
     Coord o00,o01,o02,o03,o10,o11,o12,o13,
           o20,o21,o22,o23,o30,o31,o32,o33;
-    other->GetCoords( o00,o01,o02,o03, o10,o11,o12,o13,
-                      o20,o21,o22,o23, o30,o31,o32,o33);
+    other->GetCoords(o00,o01,o02,o03, o10,o11,o12,o13,
+		     o20,o21,o22,o23, o30,o31,o32,o33);
     
     Coord temp1 = _a00, temp2 = _a10;
     _a00 = o00*_a00+ o01*_a10 + o02*_a20;
@@ -414,65 +415,64 @@ public:
       _cartesian = true;
     else
       _cartesian = false;
-  } // end of PreMultiply()
+  }
 
-  void SetViewMatrix (Camera camera) {
-     double st = sin(camera._theta),
-          ct = cos(camera._theta),
-          sp = sin(camera._phi),
-          cp = cos(camera._phi);
+  void SetViewMatrix(Camera camera) {
+    double st = sin(camera._theta);
+    double ct = cos(camera._theta);
+    double sp = sin(camera._phi);
+    double cp = cos(camera._phi);
 
-	// 1st row
-     _a00 = ct; _a01 = -cp * st; _a02 = -sp * st; _a03 = 0.0;
+    // 1st row
+    _a00 = ct; _a01 = -cp * st; _a02 = -sp * st; _a03 = 0.0;
 
-	// 2nd row
-     _a10 = 0.0; _a11 = sp; _a12 = -cp; _a13 = 0.0;
+    // 2nd row
+    _a10 = 0.0; _a11 = sp; _a12 = -cp; _a13 = 0.0;
 
-	// 3rd row
-     _a20 = st; _a21 = cp * ct; _a22 = ct * sp; _a23 = 0.0;
+    // 3rd row
+    _a20 = st; _a21 = cp * ct; _a22 = ct * sp; _a23 = 0.0;
 
-	// 4th row
-	_a30 = -(camera.fx * ct) + (camera.fz * st);
-	_a31 = -((camera.fy + camera._rho * cp) * sp) + 
-		cp * (camera.fz * ct + camera._rho * sp +
-		camera.fx * st);
-	_a32 = cp * (camera.fy + camera._rho * cp) +
-		sp * (camera.fz * ct + camera._rho * sp +
-		camera.fx * st);
-	_a33 = 1.0;
+    // 4th row
+    _a30 = -(camera.fx * ct) + (camera.fz * st);
+    _a31 = -((camera.fy + camera._rho * cp) * sp) + 
+             cp * (camera.fz * ct + camera._rho * sp +
+		   camera.fx * st);
+    _a32 = cp * (camera.fy + camera._rho * cp) +
+                 sp * (camera.fz * ct + camera._rho * sp +
+		       camera.fx * st);
+    _a33 = 1.0;
 
-#ifdef YLC
-	printf ("....................rho = %f   phi = %f   theta = %f\n", 
-		camera._rho, camera._phi, camera._theta);
-	Print();
-	printf (" >>>>>>>>>>>>>> END set view matrix <<<<<<<<<\n");
+#ifdef DEBUG
+    printf ("....................rho = %f   phi = %f   theta = %f\n", 
+	    camera._rho, camera._phi, camera._theta);
+    Print();
+    printf (" >>>>>>>>>>>>>> END set view matrix <<<<<<<<<\n");
 #endif
-  } // end of SetViewMatrix
+  }
 
-  void SetVector (POINT pt) {
-	_a00 = pt.x_;
-	_a11 = pt.y_;
-	_a22 = pt.z_;
-	_a33 = 1.0; 
-  } // end of SetVector
+  void SetVector(POINT3D pt) {
+    _a00 = pt.x_;
+    _a11 = pt.y_;
+    _a22 = pt.z_;
+    _a33 = 1.0; 
+  }
 	
-  void GetVector (POINT &pt) {
-#ifdef YLC
-	printf("   OLD ------- a00 = %f a01 = %f a02 = %f \n",_a00,_a01,_a02);
+  void GetVector(POINT3D &pt) {
+#ifdef DEBUG
+    printf("   OLD ------- a00 = %f a01 = %f a02 = %f \n",_a00,_a01,_a02);
 #endif
-	pt.x_ = _a00 + _a10 + _a20 + _a30;
-	pt.y_ = _a01 + _a11 + _a21 + _a31;
-	pt.z_ = _a02 + _a12 + _a22 + _a32;
-#ifdef YLC
-	printf("   NEW +++++++ pt -> x = %f y = %f z = %f\n",pt.x_,pt.y_,pt.z_);
+    pt.x_ = _a00 + _a10 + _a20 + _a30;
+    pt.y_ = _a01 + _a11 + _a21 + _a31;
+    pt.z_ = _a02 + _a12 + _a22 + _a32;
+#ifdef DEBUG
+    printf("   NEW +++++++ pt -> x = %f y = %f z = %f\n",pt.x_,pt.y_,pt.z_);
 #endif
-  } // end of GetVector
+  }
   
   void GetCoords(Coord &a00, Coord &a01, Coord &a02, Coord &a03,
-			  Coord &a10, Coord &a11, Coord &a12, Coord &a13,
-			  Coord &a20, Coord &a21, Coord &a22, Coord &a23,
-			  Coord &a30, Coord &a31, Coord &a32, Coord &a33
-			  ) {
+		 Coord &a10, Coord &a11, Coord &a12, Coord &a13,
+		 Coord &a20, Coord &a21, Coord &a22, Coord &a23,
+		 Coord &a30, Coord &a31, Coord &a32, Coord &a33) {
     a00 = _a00; a01 = _a01; a02 = _a02; a03 = _a03;
     a10 = _a10; a11 = _a11; a12 = _a12; a13 = _a13;
     a20 = _a20; a21 = _a21; a22 = _a22; a23 = _a23;
@@ -480,17 +480,15 @@ public:
   }
   
   void PutCoords(Coord bb00, Coord bb01, Coord bb02, Coord bb03,
-			  Coord bb10, Coord bb11, Coord bb12, Coord bb13,
-			  Coord bb20, Coord bb21, Coord bb22, Coord bb23,
-			  Coord bb30, Coord bb31, Coord bb32, Coord bb33
-			  ) {
+		 Coord bb10, Coord bb11, Coord bb12, Coord bb13,
+		 Coord bb20, Coord bb21, Coord bb22, Coord bb23,
+		 Coord bb30, Coord bb31, Coord bb32, Coord bb33) {
     _a00 = bb00; _a01 = bb01; _a02 = bb02; _a03 = bb03;
     _a10 = bb10; _a11 = bb11; _a12 = bb12; _a13 = bb13;
     _a20 = bb20; _a21 = bb21; _a22 = bb22; _a23 = bb23;
     _a30 = bb30; _a31 = bb31; _a32 = bb32; _a33 = bb33;
   }
   
-
   void Print() {
     printf("\t(%.3f, %.3f, %.3f, %.3f),\n",   _a00, _a01, _a02, _a03);
     printf("\t(%.3f, %.3f, %.3f, %.3f),\n",   _a10, _a11, _a12, _a13);
@@ -501,12 +499,11 @@ public:
 
 private:
   Coord _a00,_a01,_a02,_a03,
-	   _a10,_a11,_a12,_a13,
-	   _a20,_a21,_a22,_a23,
-	   _a30,_a31,_a32,_a33;      // transformation matrix
+        _a10,_a11,_a12,_a13,
+        _a20,_a21,_a22,_a23,
+	_a30,_a31,_a32,_a33;      // transformation matrix
   Boolean _cartesian;             // TRUE if cartesian transformation
                                   // (a01 == a10 == 0.0)
-};  // end of Transform3D
+};
 
 #endif
-
