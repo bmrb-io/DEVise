@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/07/18 02:13:20  jussi
+  Added protective ifdef's for Ultrix.
+
   Revision 1.1  1996/07/12 03:52:28  jussi
   Initial revision.
 */
@@ -84,9 +87,10 @@ public:
     return num;
   }
 
-  int test(int num = 1) {               // try to acquire num units of resource
+  int test(int num = 1,
+           int sem = 0) {               // try to acquire num units of resource
     static struct sembuf sop;
-    sop.sem_num = 0;                    // semaphore 0
+    sop.sem_num = sem;                  // semaphore sem
     sop.sem_op = -num;                  // acquire/get num units (P)
     sop.sem_flg = IPC_NOWAIT;
     int result = semop(id, &sop, 1);
