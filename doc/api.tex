@@ -11,47 +11,9 @@
 %  Development Group.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 %  $Id$
-
 %  $Log$
-%  Revision 1.10  1996/07/17 00:16:10  jussi
-%  Fixed description of new TData constructor. Added description
-%  of the dataSegment command.
 %
-%  Revision 1.9  1996/07/01 19:39:15  jussi
-%  Added description of the new TData constructor interface.
-%
-%  Revision 1.8  1996/06/20 21:50:15  jussi
-%  Updated description of command get3DLocation. Added command
-%  set3DLocation.
-%
-%  Revision 1.7  1996/06/14 20:17:29  jussi
-%  Added commands setMappingLegend and get3DLocation.
-%
-%  Revision 1.6  1996/05/31 15:47:58  jussi
-%  Added setLinkMaster, resetLinkMaster, and getLinkMaster commands.
-%
-%  Revision 1.5  1996/05/15 16:35:16  jussi
-%  Added sync and SyncDone commands. Removed ExecuteScript command.
-%
-%  Revision 1.4  1996/05/13 22:23:50  jussi
-%  Added description of control commands. Removed description of
-%  some commands that no longer exist.
-%
-%  Revision 1.3  1996/04/15 15:10:53  jussi
-%  Added second version of insertMapping, one that takes a mapping
-%  label as a parameter. Added getMappingLegend.
-%
-%  Revision 1.2  1996/04/14 00:13:29  jussi
-%  Removed interpMapClassInfo and clearInterp. Replaced createInterp
-%  with createMappingClass, and moved createInterp to the obsolete
-%  section.
-%
-%  Revision 1.1  1996/04/12 22:00:07  jussi
-%  Initial revision.
-%
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentstyle[fullpage,verbatim]{article}
@@ -87,7 +49,6 @@
 \code{devise@cs.wisc.edu}
 }
 \date{\today}
-
 \maketitle
 
 \section{Introduction}
@@ -115,7 +76,7 @@ categories: Generic, Source Data, Schema, Graph Data, View, Window,
 Link and Cursor, and Miscellaneous. Commands in the Generic category
 allow the client program to create and remove objects of the other
 categories, or to query the parameters used when the objects were
-created. See Section \ref{objcreate} for a more detailed description
+created. See next section for a more detailed description
 of the object creation command.
 
 The category-specific commands control the behavior of the
@@ -143,9 +104,9 @@ The commands are described in the following format.
 \hline
 Command name & Name of the command \\
 Description  & What the command does \\
-Input \#     & Number of input parameters \\
-Input Types  & Input parameters \\
-Output       & Return value or error message \\
+Fingerprints & Command prototype \\
+Input parameters & Parameters of the command \\
+Return value & Return value or error message \\
 \hline
 \end{tabular}
 
@@ -209,1350 +170,2844 @@ The cursor type is a binary value with X (1) and Y (2) OR'ed. The bits
 that are one specify whether the cursor operates in the X-direction,
 the Y-direction, or both.
 
-\section{Generic Commands}
-
+\section{Generic Data Commands}
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt create} \\
-Description  & Create a new instance of a class \\
-Input \#     & Variable \\
-Input Types  & Category name (string), class name (string), parameter values
-               (strings) \\
-Output       & Name of the class created or empty (string) \\
+Command name &{\tt getparam }\\ 
+Description &
+Return the parameters for a class of a category
+ 	\\
+Fingerprints & strings(string,string)\\
+Input Parameters&category name, class name\\
+Return Value&class parameters\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt destroy} \\
-Description  & Destroys the given instance \\
-Input \#     & 1 \\
-Input Types  & Instance name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt create }\\ 
+Description &
+ Create a new instance of a class 
+ 	\\
+Fingerprints & string(string,string,strings)\\
+Input Parameters& Category name , class name , parameter values \\
+Return Value& Name of the class created or empty \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setDefault} \\
-Description  & Sets the default parameter values for a class \\
-Input \#     & Variable \\
-Input Types  & List of parameter values (strings) \\
-Output       & {\tt done} \\
+Command name &{\tt destroy }\\ 
+Description &
+ Destroys the given instance 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& Instance name \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getCreateParam} \\
-Description  & Get the parameters of an instance \\
-Input \#     & 3 \\
-Input Types  & Category name (string), class name (string), instance
-               name (string) \\
-Output       & List of parameter values or empty (strings) \\
+Command name &{\tt setDefault }\\ 
+Description &
+ Sets the default parameter values for a class 
+ 	\\
+Fingerprints & string(strings)\\
+Input Parameters& List of parameter values \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt changeParam} \\
-Description  & Change the parameters for the given instance \\
-Input \#     & Variable \\
-Input Types  & Instance name (string), list of parameter values (strings) \\
-Output       & {\tt done} \\
+Command name &{\tt getCreateParam }\\ 
+Description &
+ Get the parameters of an instance 
+ 	\\
+Fingerprints & strings(string,string,string)\\
+Input Parameters& Category name , class name , instance name \\
+Return Value& List of parameter values or empty \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt changeableParam} \\
-Description  & Check whether parameters of instance are changeable \\
-Input \#     & 1 \\
-Input Types  & Instance name (string) \\
-Output       & 0/1 (integer) indicating whether instance parameters are
-               changeable \\
+Command name &{\tt changeParam }\\ 
+Description &
+ Change the parameters for the given instance 
+ 	\\
+Fingerprints & string(string,strings)\\
+Input Parameters& Instance name , list of parameter values \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getInstParam} \\
-Description  & Get the current parameters of the instance \\
-Input \#     & 1 \\
-Input Types  & Instance name (string) \\
-Output       & List of parameter values or empty (strings) \\
+Command name &{\tt changeableParam }\\ 
+Description &
+ Check whether parameters of instance are changeable 
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters& Instance name \\
+Return Value& 0/1 \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt get} \\
-Description  & Get the classes corresponding to the given category \\
-Input \#     & 1 \\
-Input Types  & Category name (string) \\
-Output       & List of class names or empty (strings) \\
+Command name &{\tt getInstParam }\\ 
+Description &
+ Get the current parameters of the instance 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& Instance name \\
+Return Value& List of parameter values or empty \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt get} \\
-Description  & Get all the instances belonging to the class \\
-Input \#     & 2 \\
-Input Types  & Category name (string), class name (string) (optional) \\
-Output       & List of instance names or empty (strings) \\
+Command name &{\tt get }\\ 
+Description &
+ Get the classes corresponding to the given category 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& Category name \\
+Return Value& List of class names or empty \\
 \hline
 \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt get }\\ 
+Description &
+ Get all the instances belonging to the class 
+ 	\\
+Fingerprints & strings(string,string)\\
+Input Parameters& Category name , class name , \\
+Return Value& List of instance names or empty \\
+\hline
+\end{tabular}
+\bigskip
+
 
 \section{Source Data Commands}
-
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt dataSegment} \\
-Description  & Sets the data segment information for the next
-               'create tdata' command \\
-Input \#     & 4 \\
-Input Types  & Tdata name (string), filename (string), file offset
-               (integer) (0 for no offset), segment length (integer)
-               (0 for rest of file) \\
-Output       & {\tt done} \\
+Command name &{\tt createTData }\\ 
+Description &
+Create a TData object from a data source
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&dataSourceName\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt tdataFileName} \\
-Description  & Return the actual file name for the given tdata name \\
-Input \#     & 1 \\
-Input Types  & Tdata name (string) \\
-Output       & File name (string) \\
+Command name &{\tt checkTDataForRecLink }\\ 
+Description &
+Check the last mapping of the specified view to see whether its TData
+ 
+source agrees with that of all the slave views that belongs to the 
+ 
+same link
+ 	\\
+Fingerprints & boolean(string,string,boolean)\\
+Input Parameters&linkName, view name, isMaster\\
+Return Value&flag\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt tcheckpoint} \\
-Description  & Checkpoints all tdata \\
-Input \#     & 1 \\
-Input Types  & Tdata name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt dteCheckSQLViewEntry }\\ 
+Description &
+Check the validity of a SQL query string
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&As Clause, query string\\
+Return Value&""/Error message\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getSchema} \\
-Description  & Gets the schema for the given tdata \\
-Input \#     & 1 \\
-Input Types  & Tdata name (string) \\
-Output       & \{\{attrname type sorted highval lowval\} \ldots \}
-               where type is float, double, string, int, or date \\
+Command name &{\tt dteCreateIndex }\\ 
+Description &
+Create an index 
+ 	\\
+Fingerprints & string(string,string,string,string,string)\\
+Input Parameters&tableName,indexName,keyAttributes, dataAttributes,isStandAlone="Yes/No"\\
+Return Value&query execution results\\
 \hline
 \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteDeleteCatalogEntry }\\ 
+Description &
+Delete a catalog entry indexed by a tableName
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&tableName\\
+Return Value&""\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteDeleteIndex }\\ 
+Description &
+Delete an index defined on the table
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&tableName,indexName\\
+Return Value&""\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteImportFileType }\\ 
+Description &
+Return the type of a specific data source
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&data source name\\
+Return Value&file type\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteInsertCatalogEntry }\\ 
+Description &
+Insert an entry into the catalog 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& catalog name, catalog entry value\\
+Return Value&""\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteListAllIndexes }\\ 
+Description &
+Return all index names for a given table
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&tablename\\
+Return Value&index names\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteListAttributes }\\ 
+Description &
+Return all the attribute names for a given table
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&tablename\\
+Return Value&attribute names\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteListCatalog }\\ 
+Description &
+Return all the catalog entries for a given catalog, each entry has
+ 
+the form (name, type)
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&catalog name\\
+Return Value&entries\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteListQueryAttributes }\\ 
+Description &
+Return all the query attributes for a query
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&DTE query\\
+Return Value&attribute names\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteMaterializeCatalogEntry }\\ 
+Description &
+Materialize a given table
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&tableName\\
+Return Value&""\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteReadSQLFilter }\\ 
+Description &
+Read SQL filter from a given file, and return a SQL statement
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& SQL filter file name\\
+Return Value&SQL statement\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteShowAttrNames }\\ 
+Description &
+Return the attribute names for a given schema file and a data file
+ 	\\
+Fingerprints & strings(string,string)\\
+Input Parameters&schema file, data file\\
+Return Value&attribute names\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteShowCatalogEntry }\\ 
+Description &
+Return a catalog entry by tablename
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&table name\\
+Return Value&entry value\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dteShowIndexDesc }\\ 
+Description &
+Return the descriptor for a given table's specified index
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&tablename,indexname\\
+Return Value&descriptor\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getTDataName }\\ 
+Description &
+Lookup TData name from a given Tdata instance name
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&instance name\\
+Return Value&tdata name\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt invalidateTData }\\ 
+Description &
+Invalidate the tdata
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&tdata instance name\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt saveTdata }\\ 
+Description &
+Save TData into a file
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&tdata instance name, filename\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt dataSegment }\\ 
+Description &
+ Sets the data segment information for the next 'create tdata' command 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& Tdata name , filename , file offset \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt tdataFileName }\\ 
+Description &
+ Return the actual file name for the given tdata name 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& Tdata name \\
+Return Value& File name \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt tcheckpoint }\\ 
+Description &
+ Checkpoints all tdata 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& Tdata name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getSchema }\\ 
+Description &
+ Gets the schema for the given tdata 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& Tdata name \\
+Return Value&type,sorted,highval,lowval\\
+\hline
+\end{tabular}
+\bigskip
+
 
 \section{Schema Commands}
-
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt importFileType} \\
-Description  & Import the schema from the specified file \\
-Input \#     & 1 \\
-Input Types  & File name (string) \\
-Output       & Schema name or empty (string) \\
+Command name &{\tt parseSchema }\\ 
+Description &
+Move physical and logical schemas
+ 
+into buffers and parse a schema from buffers
+ 	\\
+Fingerprints & string(string,string,string)\\
+Input Parameters&schema name, physical schema, logical schema\\
+Return Value&schema name\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt catFiles} \\
-Description  & Get all the schemas imported \\
-Input \#     & 0 \\
-Input Types  & None \\
-Output       & List of schema names currently loaded (strings) \\
+Command name &{\tt importFileType }\\ 
+Description &
+ Import the schema from the specified file 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& File name \\
+Return Value& Schema name or empty \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getTopGroups} \\
-Description  & Returns the top level groups for the given schema \\
-Input \#     & 1 \\
-Input Types  & Schema name (string) \\
-Output       & List of top group names or empty (strings) \\
+Command name &{\tt catFiles }\\ 
+Description &
+ Get all the schemas imported 
+ 	\\
+Fingerprints & strings()\\
+Input Parameters&\\
+Return Value& List of schema names currently loaded \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getItems} \\
-Description  & Return items in a given subgroup \\
-Input \#     & 3 \\
-Input Types  & Schema name (string), top group name (string), group name
-              (string) \\
-Output       & List of items or empty (strings) \\
+Command name &{\tt getTopGroups }\\ 
+Description &
+ Returns the top level groups for the given schema 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& Schema name \\
+Return Value& List of top group names or empty \\
 \hline
 \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getItems }\\ 
+Description &
+ Return items in a given subgroup 
+ 	\\
+Fingerprints & strings(string,string,string)\\
+Input Parameters& Schema name , top group name , group name \\
+Return Value& List of items or empty \\
+\hline
+\end{tabular}
+\bigskip
+
 
 \section{Graph Data Commands}
-
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt createMappingClass} \\
-Description  & Create interpreted mapping class \\
-Input \#     & 1 \\
-Input Types  & Mapping class name (string) \\
-Output       & Mapping class name (string) \\
+Command name &{\tt checkGstat }\\ 
+Description &
+Return 1 if GDataStat is in memory, otherwise 0
+ 	\\
+Fingerprints & boolean(string)\\
+Input Parameters&view name\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getMappingTData} \\
-Description  & Get name of tdata used in mapping \\
-Input \#     & 1 \\
-Input Types  & Mapping name (string) \\
-Output       & Tdata name (string) \\
+Command name &{\tt isInterpreted }\\ 
+Description &
+Return true iff the tdata map is interpreted
+ 	\\
+Fingerprints & boolean(string)\\
+Input Parameters&tdata map instance name\\
+Return Value&0/1\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt isInterpretedGData} \\
-Description  & Check if the given GData is interpreted or not \\
-Input \#     & 1 \\
-Input Types  & Mapping name (string) \\
-Output       & 0 if false, 1 if true (integer) \\
+Command name &{\tt mapG2TAttr }\\ 
+Description &
+Get the TData attribute information for a gdata attributes, X/Y/Z/Color
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&view name, gdata attribute\\
+Return Value&TData attribute name\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt insertMapping} \\
-Description  & Inserts the mapping to a view \\
-Input \#     & 2/3 \\
-Input Types  & View name (string), mapping name (string), legend (string)
-               (optional) \\
-Output       & {\tt done} \\
+Command name &{\tt mapT2GAttr }\\ 
+Description &
+Get the GData attribute information for a tdata attributes
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&view name, TData attribute name\\
+Return Value&X/Y/Z/Color\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getMappingLegend} \\
-Description  & Returns the legend used for the mapping \\
-Input \#     & 2 \\
-Input Types  & View name (string), mapping name (string) \\
-Output       & Legend (string) \\
+Command name &{\tt createMappingClass }\\ 
+Description &
+ Create interpreted mapping class 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& Mapping class name \\
+Return Value& Mapping class name \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setMappingLegend} \\
-Description  & Sets the legend used for the mapping \\
-Input \#     & 3 \\
-Input Types  & View name (string), mapping name (string), legend (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getMappingTData }\\ 
+Description &
+ Get name of tdata used in mapping 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& Mapping name \\
+Return Value& Tdata name \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt removeMapping} \\
-Description  & Removes a mapping from a view \\
-Input \#     & 2 \\
-Input Types  & View name (string), mapping name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt isInterpretedGData }\\ 
+Description &
+ Check if the given GData is interpreted or not 
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters& Mapping name \\
+Return Value& 1 if true \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getPixelWidth} \\
-Description  & Get the current pixel width for the given mapping \\
-Input \#     & 1 \\
-Input Types  & Mapping name (string) \\
-Output       & Pixel width (integer) \\
+Command name &{\tt insertMapping }\\ 
+Description &
+ Inserts the mapping to a view 
+ 	\\
+Fingerprints & string(string,string,string)\\
+Input Parameters& View name , mapping name , legend , \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setPixelWidth} \\
-Description  & Sets the pixel width for the given view \\
-Input \#     & 2 \\
-Input Types  & Mapping name (string), width (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt getMappingLegend }\\ 
+Description &
+ Returns the legend used for the mapping 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& View name , mapping name \\
+Return Value& Legend \\
 \hline
 \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setMappingLegend }\\ 
+Description &
+ Sets the legend used for the mapping 
+ 	\\
+Fingerprints & string(string,string,string)\\
+Input Parameters& View name , mapping name , legend \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt removeMapping }\\ 
+Description &
+ Removes a mapping from a view 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& View name , mapping name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getPixelWidth }\\ 
+Description &
+ Get the current pixel width for the given mapping 
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters& Mapping name \\
+Return Value& Pixel width \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setPixelWidth }\\ 
+Description &
+ Sets the pixel width for the given view 
+ 	\\
+Fingerprints & string(string,integer)\\
+Input Parameters& Mapping name , width \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
 
 \section{View Commands}
-
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setLabel} \\
-Description  & Sets the label parameters for the given view \\
-Input \#     & 4 \\
-Input Types  & View name (string), occupyTop (integer 1/0),
-               extent (integer), label name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getViewDisplayDataValues }\\ 
+Description &
+Return 1, if data value display flag is ture; Otherwise 0. 
+ 	\\
+Fingerprints & boolean(string)\\
+Input Parameters&view name\\
+Return Value&1/0\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setFilter} \\
-Description  & Sets the current filter for the view \\
-Input \#     & 5 \\
-Input Types  & View name (string), xLow (integer), yLow (integer),
-               xHigh (integer), yHigh (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt setViewDisplayDataValues }\\ 
+Description &
+Set display data value flag to be ON or OFF
+ 	\\
+Fingerprints & string(string,boolean)\\
+Input Parameters&view name, flag\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getViewOverrideColor} \\
-Description  & Returns the override color used by a view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & "x y" where x = 0 if override not active and 1 if active,
-               y = override color (if active) \\
+Command name &{\tt getAllStats }\\ 
+Description &
+Return STAT-MAX, STAT-MEAN, STAT-MIN, 
+ 
+STAT-MIN, STAT-COUNT for a view
+ 	\\
+Fingerprints & strings()\\
+Input Parameters&view name\\
+Return Value&statistics\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setViewOverrideColor} \\
-Description  & Sets the override color used by a view \\
-Input \#     & 3 \\
-Input Types  & View name (string), active (0 if false, 1 if true),
-               override color (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getAllViews }\\ 
+Description &
+Return all view names
+ 	\\
+Fingerprints & strings()\\
+Input Parameters&\\
+Return Value&all view names\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt insertWindow} \\
-Description  & Insert the view in to the window \\
-Input \#     & 2 \\
-Input Types  & View name (string), window name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getFont }\\ 
+Description &
+Return font information for a view in the form of 4 strings. 
+ 
+All of them are integers. They are respectively font family,
+ 
+point size, bold style, italic style. The origin parameter specifies
+ 
+the title of the view, or X/Y axis of the view.
+ 	\\
+Fingerprints & strings(string,string)\\
+Input Parameters&view name, origin\\
+Return Value&font descriptions\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt swapView} \\
-Description  & Swaps the position of the two views within the window \\
-Input \#     & 3 \\
-Input Types  & Window name(string), view1 name (string), view2 name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getHistViewname }\\ 
+Description &
+Return the historgram view instance 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&view name\\
+Return Value&view instance\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setAxisDisplay} \\
-Description  & Set the axis display on/off for the given view \\
-Input \#     & 3 \\
-Input Types  & View name (string), "X"/"Y" (string) indicating axis,
-               0/1 (integer) indicating off/on \\
-Output       & {\tt done} \\
+Command name &{\tt getHistogram }\\ 
+Description &
+Return information for histogram of a given view in the form 
+ 
+of 3 strings: min(float), max(float), number of buckets(integer)
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&view name\\
+Return Value&histogram information\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt insertviewHistory} \\
-Description  & Insert history in to the view without changing the filter \\
-Input \#     & 6 \\
-Input Types  & View name (string), xLow (float), yLow (float), xHigh (float),
-               yHigh (float), marked (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt getSourceName }\\ 
+Description &
+Return data source name assoicated with a given view
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&view name\\
+Return Value&data source name\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt markViewFilter} \\
-Description  & Mark the n'th view as marked or unmarked \\
-Input \#     & 3 \\
-Input Types  & View name (string), index (integer),
-               0/1 (integer) indicating unmark/mark \\
-Output       & {\tt done} \\
+Command name &{\tt getStatBuffer }\\ 
+Description &
+General function for returning statistics for a view. The following 
+ 
+formats are supported. "Stat:view name","Hist:view name", 
+ 
+"GstatX:view name", "GstatY:viwe name". They are used to request 
+ 
+statistics for view, histogram defined on the view, Gdata 
+ 
+statistics along X/Y.
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&statistics request\\
+Return Value&statistics information\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt highlightView} \\
-Description  & Highlight/unhighlight the given view \\
-Input \#     & 2 \\
-Input Types  & View name (string), 0/1 (integer) indicating highlight
-               or unhighlight \\
-Output       & {\tt done} \\
+Command name &{\tt getViewGDS }\\ 
+Description &
+Return GData's send parameters. 6 strings will be returned:
+ 
+draw to screen flag(0/1), send to socket flag(0/1), 
+ 
+port number(integer), filename(string), send text flag(0/1), 
+ 
+seperator(string)
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&view name\\
+Return Value&GData's send parameters\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setAxis} \\
-Description  & Sets the axis label for the specified axis and view \\
-Input \#     & 3 \\
-Input Types  & View name (string), axis label name (string),
-               axis type X/Y (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getViewPileMode }\\ 
+Description &
+Return true iff the specified view is in pile mode
+ 	\\
+Fingerprints & boolean(string)\\
+Input Parameters&view name\\
+Return Value&pile flag\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getAxis} \\
-Description  & Gets the axis label for the given axis and view \\
-Input \#     & 2 \\
-Input Types  & View name (string), axis X/Y (string) \\
-Output       & Label name (string) \\
+Command name &{\tt getViewXYZoom }\\ 
+Description &
+Return true iff XYZoom flag of the view is set
+ 	\\
+Fingerprints & boolean(string)\\
+Input Parameters& view name\\
+Return Value&XYZoom flag\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setAction} \\
-Description  & Sets the action for a view \\
-Input \#     & 2 \\
-Input Types  & View name (string), action name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getWinGeometry }\\ 
+Description &
+Return the gemoetry for a specified window. The return values 
+ 
+are: abosolute origin X(integer), Y(integer), relative origin of
+ 
+the window X(integer), Y(integer), width(integer), height(integer)
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&window name\\
+Return Value&geometry information\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getAxisDisplay} \\
-Description  & Check if the given axis is turned on or off \\
-Input \#     & 2 \\
-Input Types  & View name (string), axis  X/Y (string) \\
-Output       & 1/0 (string) indicating axis is turned on/off \\
+Command name &{\tt isXDateType }\\ 
+Description &
+Return true iff X type is date type
+ 	\\
+Fingerprints & boolean(string)\\
+Input Parameters&view name\\
+Return Value&date type flag\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setViewStatistics} \\
-Description  & Set the statistical display status \\
-Input \#     & 2 \\
-Input Types  & View name (string), statistic status string (string
-               of 7 chars), each array element being '1' indicates
-               that the mean, max, min, count, confidence values 80\%,
-               85\% and 90\%, respectively \\
-Output       & {\tt done} \\
+Command name &{\tt isYDateType }\\ 
+Description &
+Return true iff Y type is date type
+ 	\\
+Fingerprints & boolean(string)\\
+Input Parameters&view name\\
+Return Value&date type\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getViewStatistics} \\
-Description  & Get the status of the statistic display for the given view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & A string of 7 chars where 0/1 represents whether the
-               statistic is to be displayed or not. The positions stand for
-               mean, max, min, count, confidence values 85\%, 90\%, and 95\%,
-               respectively \\
+Command name &{\tt setFont }\\ 
+Description &
+Set the font for the title/X/Y of a view
+ 	\\
+Fingerprints & string(string,string,integer,integer,integer,integer)\\
+Input Parameters&view name, destination, font family, point size,isBold,isItalic\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getViewDimensions} \\
-Description  & Returns the number of dimensions of the given view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & Dimensions (integer) \\
+Command name &{\tt setHistViewname }\\ 
+Description &
+Set the view instance name for a histogram of a view
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&view name,view instance\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setViewDimensions} \\
-Description  & Sets the dimensions for the view \\
-Input \#     & 2 \\
-Input Types  & View name (string), dimensions (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt setHistogram }\\ 
+Description &
+Set the histogram parameters for a view
+ 	\\
+Fingerprints & string(float,float,integer)\\
+Input Parameters&view name,min,max,buckets\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getViewSolid3D} \\
-Description  & Returns flag indicating wireframe or solid 3D objects \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & 1 (solid) or 0 (wireframe) (integer) \\
+Command name &{\tt setViewGDS }\\ 
+Description &
+Set the GData send parameters for a view
+ 	\\
+Fingerprints & string(string,integer,integer,integer,string,integer,string)\\
+Input Parameters&view name,draw to screen flag, send to socket flag, port number,gds file name, send text flag, gds separator \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setViewSolid3D} \\
-Description  & Sets 3D objects to wireframe or solid display mode \\
-Input \#     & 2 \\
-Input Types  & View name (string), 1 (solid) or 0 (wireframe) (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt setViewPileMode }\\ 
+Description &
+Set the piled mode for a view
+ 	\\
+Fingerprints & string(string,boolean)\\
+Input Parameters&view name, piled flag\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt savePixmap} \\
-Description  & Saves the view's pixmap to the given file \\
-Input \#     & 2 \\
-Input Types  & View name (string), file pointer (FILE *) (long) \\
-Output       & {\tt done} \\
+Command name &{\tt setViewXYZoom }\\ 
+Description &
+Set the XYZoom flag for a view
+ 	\\
+Fingerprints & string(string,boolean)\\
+Input Parameters&view name, XYZoom flag\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt loadPixmap} \\
-Description  & Load the view's pixmap \\
-Input \#     & 2 \\
-Input Types  & View name (string), pixelmap file pointer (FILE *) (long) \\
-Output       & {\tt done} \\
+Command name &{\tt setWinGeometry }\\ 
+Description &
+Set the gemoetry for a specified window. The parameters to be set 
+ 
+include: relative origin X(integer), Y(integer), 
+ 
+width(integer), height(integer)
+ 	\\
+Fingerprints & string(string,integer,integer,integer,integer)\\
+Input Parameters&view name, X, Y, width, height  \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt replaceView} \\
-Description  & Replaces the first view with the second \\
-Input \#     & 2 \\
-Input Types  & View name (string) (original), view name (string) (new one) \\
-Output       & {\tt done} \\
+Command name &{\tt viewGetAlign }\\ 
+Description &
+Return the alignment value of a view
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters&view name\\
+Return Value&alignment value\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getCurVisualFilter} \\
-Description  & Get the current visual filter for the given view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & 4 floats indicating the filter's xLow, xHigh, yLow and yHigh
-               with only 2 digits after the decimal point \\
+Command name &{\tt viewGetHome }\\ 
+Description &
+Return a view's home information: view home mode(integer),
+ 
+X margin(float), Y margin(float), xlow(float), ylow(float),
+ 
+xHigh(float) and yHigh(float)
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&view name\\
+Return Value&view home information\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getVisualFilters} \\
-Description  & Get all the visual filters for a view in string format \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & \{\{xLow yLow xHigh yHigh marked\} \ldots \};
-               marked is set to one if the user has marked the filter as
-               an interesting one. Note: date values are printed in the
-               Datestring format. \\
+Command name &{\tt viewGetHorPan }\\ 
+Description &
+Return a view's panel information: mode(integer), relative Pan(float),
+ 
+absolute Pan(float)
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&view name\\
+Return Value&view's pan information\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt removeView} \\
-Description  & Remove a view from it's window \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt viewSetAlign }\\ 
+Description &
+Set a view's alignment value
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&view name, alignment value\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getViewMappings} \\
-Description  & Get all the mappings connected to the given view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & List of mapping names (strings) \\
+Command name &{\tt viewSetHome }\\ 
+Description &
+Set up the view home parameters
+ 	\\
+Fingerprints & string(string,integer,float,float,float,float,float,float)\\
+Input Parameters&view name,view home mode, X margin, Y margin, xLow, yLow,\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt refreshView} \\
-Description  & Refreshes the given View \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt viewSetHorPan }\\ 
+Description &
+Set up the pan information for a viwe
+ 	\\
+Fingerprints & string(string,integer,float,float)\\
+Input Parameters&view name,mode,relative pan, absolute pan\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getAction} \\
-Description  & Get the Action for the view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & Action name (string), or "" if no action specified \\
+Command name &{\tt winGetPrint }\\ 
+Description &
+Get the print flags for a specified view window. 
+ 
+Return two flags: exclue mode, pixmap mode
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&win name\\
+Return Value&flags\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt showkgraph} \\
-Description  & Create a new Kiviat graph or use an existing one to display
-               statistics of specified views \\
-Input \#     & variable (minimum 3) \\
-Input Types  & KGraph name (string), statistic (min/max/avg/count) (string),
-               name of KGraph window; remaining parameters list the names of
-               views to be included in the KGraph (strings) \\
-Output       & {\tt done} \\
+Command name &{\tt winSetPrint }\\ 
+Description &
+Change the exclude and pixmap flags for a view win
+ 	\\
+Fingerprints & string(string,integer,integer)\\
+Input Parameters&exclude flag, pixmap flag\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt invalidatePixmap} \\
-Description  & Invalidate the cached pixelmap for the view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt setLabel }\\ 
+Description &
+ Sets the label parameters for the given view 
+ 	\\
+Fingerprints & string(string,,integer,string)\\
+Input Parameters& View name , occupyTop , extent , label name \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt isMapped} \\
-Description  & Returns 1 if the view is mapped, 0 otherwise \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & 1/0 (integer) indicating whether view is mapped or not \\
+Command name &{\tt setFilter }\\ 
+Description &
+ Sets the current filter for the view 
+ 	\\
+Fingerprints & string(string,integer,integer,integer,integer)\\
+Input Parameters& View name , xLow , yLow , xHigh , yHigh \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getLabel} \\
-Description  & Get the label parameters for the given view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & "x y z" where x = occupyTop (1/0, integer),
-               y = extent (integer), z = title (string) \\
+Command name &{\tt getViewOverrideColor }\\ 
+Description &
+ Returns the override color used by a view 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& View name \\
+Return Value& override color,if active\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getViewWin} \\
-Description  & Get the window name for this view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & Window name (string) if existing, else "" \\
+Command name &{\tt setViewOverrideColor }\\ 
+Description &
+ Sets the override color used by a view 
+ 	\\
+Fingerprints & string(string,boolean,string)\\
+Input Parameters& View name , active , override color \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt clearViewHistory} \\
-Description  & Clear the visual filter history of the specified view \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt insertWindow }\\ 
+Description &
+ Insert the view in to the window 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& View name , window name \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt raiseView} \\
-Description  & Raises the view to top of window stacking order \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt swapView }\\ 
+Description &
+ Swaps the position of the two views within the window 
+ 	\\
+Fingerprints & string(string,string,string)\\
+Input Parameters& Window name, view1 name , view2 name \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt lowerView} \\
-Description  & Lowers the view to bottom of window stacking order \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt setAxisDisplay }\\ 
+Description &
+ Set the axis display on/off for the given view 
+ 	\\
+Fingerprints & string(string,string,integer)\\
+Input Parameters& View name , "X"/"Y" , 0/1 \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt insertviewHistory }\\ 
+Description &
+ Insert history in to the view without changing the filter 
+ 	\\
+Fingerprints & string(string,float,float,float,float,integer)\\
+Input Parameters& View name , xLow , yLow , xHigh , yHigh , marked \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt markViewFilter }\\ 
+Description &
+ Mark the n'th view as marked or unmarked 
+ 	\\
+Fingerprints & string(string,integer,integer)\\
+Input Parameters& View name , index , 0/1 \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt highlightView }\\ 
+Description &
+ Highlight/unhighlight the given view 
+ 	\\
+Fingerprints & string(string,integer)\\
+Input Parameters& View name , 0/1 \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setAxis }\\ 
+Description &
+ Sets the axis label for the specified axis and view 
+ 	\\
+Fingerprints & string(string,string,string)\\
+Input Parameters& View name , axis label name , axis type X/Y \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getAxis }\\ 
+Description &
+ Gets the axis label for the given axis and view 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& View name , axis X/Y \\
+Return Value& Label name \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setAction }\\ 
+Description &
+ Sets the action for a view 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& View name , action name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getAxisDisplay }\\ 
+Description &
+ Check if the given axis is turned on or off 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& View name , axis  X/Y \\
+Return Value& 1/0 \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setViewStatistics }\\ 
+Description &
+ Set the statistical display status 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getViewStatistics }\\ 
+Description &
+ Get the status of the statistic display for the given view 
+ 	\\
+Fingerprints & void(string)\\
+Input Parameters& View name \\
+Return Value&void\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getViewDimensions }\\ 
+Description &
+ Returns the number of dimensions of the given view 
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters& View name \\
+Return Value& Dimensions \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setViewDimensions }\\ 
+Description &
+ Sets the dimensions for the view 
+ 	\\
+Fingerprints & string(string,integer)\\
+Input Parameters& View name , dimensions \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getViewSolid3D }\\ 
+Description &
+ Returns flag indicating wireframe or solid 3D objects 
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters& View name \\
+Return Value& 1:solid or 0:wireframe \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setViewSolid3D }\\ 
+Description &
+ Sets 3D objects to wireframe or solid display mode 
+ 	\\
+Fingerprints & string(string,integer)\\
+Input Parameters& View name , 1:solid or 0:wireframe\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt savePixmap }\\ 
+Description &
+ Saves the view's pixmap to the given file 
+ 	\\
+Fingerprints & string(string,long)\\
+Input Parameters& View name , file pointer FILE* \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt loadPixmap }\\ 
+Description &
+ Load the view's pixmap 
+ 	\\
+Fingerprints & string(string,long)\\
+Input Parameters& View name , pixelmap file pointer FILE* \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt replaceView }\\ 
+Description &
+ Replaces the first view with the second 
+ 	\\
+Fingerprints & string(string,,string)\\
+Input Parameters& View name , , view name , \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getCurVisualFilter }\\ 
+Description &
+ Get the current visual filter for the given view 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& View name \\
+Return Value& xHigh, yLow and yHigh with only 2 digits after the decimal point\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getVisualFilters }\\ 
+Description &
+ Get all the visual filters for a view in string format 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& View name \\
+Return Value&yLow ,High,yHigh,marked\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt removeView }\\ 
+Description &
+ Remove a view from it's window 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getViewMappings }\\ 
+Description &
+ Get all the mappings connected to the given view 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& View name \\
+Return Value& List of mapping names \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt refreshView }\\ 
+Description &
+ Refreshes the given View 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getAction }\\ 
+Description &
+ Get the Action for the view 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value& Action name \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt showkgraph }\\ 
+Description &
+ Create a new Kiviat graph or use an existing one to display statistics of specified views 
+ 	\\
+Fingerprints & string(string,,string,strings)\\
+Input Parameters& KGraph name , statistic , , views to be included in the KGraph \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt invalidatePixmap }\\ 
+Description &
+ Invalidate the cached pixelmap for the view 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt isMapped }\\ 
+Description &
+ Returns 1 if the view is mapped, 0 otherwise 
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters& View name \\
+Return Value& 1/0 \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getLabel }\\ 
+Description &
+ Get the label parameters for the given view, return "x y z" where x = occupyTop (1/0, integer),                y = extent (integer), z = title (string)
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& View name \\
+Return Value& "x y z" \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getViewWin }\\ 
+Description &
+ Get the window name for this view 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value& Window name \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt clearViewHistory }\\ 
+Description &
+ Clear the visual filter history of the specified view 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt raiseView }\\ 
+Description &
+ Raises the view to top of window stacking order 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt lowerView }\\ 
+Description &
+ Lowers the view to bottom of window stacking order 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& View name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
 
 \section{Window Commands}
-
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getWinViews} \\
-Description  & Get all the views in the given window \\
-Input \#     & 1 \\
-Input Types  & Window name (string) \\
-Output       & List of view names (strings) \\
+Command name &{\tt getWindowImageAndSize }\\ 
+Description &
+Export a GIF picture of a window to the specified port, the data file
+ 
+is prefixed with the size of the GIF file
+ 	\\
+Fingerprints & string(integer,string,string)\\
+Input Parameters&port,imageType,widowName\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt saveWindowImage} \\
-Description  & Saves the window image to a file \\
-Input \#     & 3 \\
-Input Types  & Window name (string), format (eps, gif, postscript) (string),
-               file name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getWinCount }\\ 
+Description &
+Return the total number of devise windows
+ 	\\
+Fingerprints & integer()\\
+Input Parameters&\\
+Return Value&total number of windows\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getWindowLayout} \\
-Description  & Returns the window's height and width \\
-Input \#     & 1 \\
-Input Types  & Window name (string) \\
-Output       & "x y z" where x = height (integer), y = width (integer),
-               z = 1/0 (integer) indicating stacked mode on/off \\
+Command name &{\tt getWinViews }\\ 
+Description &
+ Get all the views in the given window 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& Window name \\
+Return Value& List of view names \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setWindowLayout} \\
-Description  & Sets the preferred window layout (height, width); optionally
-               set window to stacked mode or reset normal mode \\
-Input \#     & 3/4 \\
-Input Types  & Window name (string), height (integer), width (integer),
-               stacked (1/0) (integer, optional) \\
-Output       & {\tt done} \\
+Command name &{\tt saveWindowImage }\\ 
+Description &
+ Saves the window image to a file 
+ 	\\
+Fingerprints & string(string,,string,string)\\
+Input Parameters& Window name , format , , file name \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getWindowLayout }\\ 
+Description &
+ Returns the window's height and width, "x y z" where x = height (integer),  y = width (integer), z = 1/0 (integer) indicating stacked mode on/off 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& Window name \\
+Return Value& "x y z"\\
+\hline
+\end{tabular}
+\bigskip
+
 
 \section{Link and Cursor Commands}
-
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt insertLink} \\
-Description  & Connects a view to the link \\
-Input \#     & 2 \\
-Input Types  & Link name (string), view name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getLinkType }\\ 
+Description &
+Return 1, if the link is Positive, otherwise 0. 
+ 	\\
+Fingerprints & boolean(string)\\
+Input Parameters&linkname\\
+Return Value&1/0 or Error message\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setLinkFlag} \\
-Description  & Sets the type of the link (x/y/color/etc) \\
-Input \#     & 2 \\
-Input Types  & Link name (string), flag value (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt getCursorGrid }\\ 
+Description &
+Return 3 strings, the first string is really a 0/1 indicating whether
+ 
+grid is used, the last two strings are floats giving gridX and gridY.
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters&cursor name\\
+Return Value&grid parameters\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getLinkFlag} \\
-Description  & Return the type of the link \\
-Input \#     & 1 \\
-Input Types  & Link name (string) \\
-Output       & Type of the link (integer) \\
+Command name &{\tt setCursorGrid }\\ 
+Description &
+Set cursor grid
+ 	\\
+Fingerprints & string(string,integer,float,float)\\
+Input Parameters&grid cursor name,use grid flag,cursorGridX,cursorGridY\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setLinkMaster} \\
-Description  & Sets a view to be the master of a link \\
-Input \#     & 2 \\
-Input Types  & Link name (string), view name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt setLinkType }\\ 
+Description &
+Set the record link type to be postive(0) or negative(1)
+ 	\\
+Fingerprints & string(string,boolean)\\
+Input Parameters&record link instance name,type\\
+Return Value&void/Error message\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt resetLinkMaster} \\
-Description  & Sets a link to be without a master \\
-Input \#     & 1 \\
-Input Types  & Link name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt insertLink }\\ 
+Description &
+ Connects a view to the link 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& Link name , view name \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getLinkMaster} \\
-Description  & Return name of link master \\
-Input \#     & 1 \\
-Input Types  & Link name (string) \\
-Output       & Name of master view (string) or empty string \\
+Command name &{\tt setLinkFlag }\\ 
+Description &
+ Sets the type of the link (x/y/color/etc) 
+ 	\\
+Fingerprints & string(string,integer)\\
+Input Parameters& Link name , flag value \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getLinkViews} \\
-Description  & Get all the views in the given link \\
-Input \#     & 1 \\
-Input Types  & Link name (string) \\
-Output       & List of view names (strings) \\
+Command name &{\tt getLinkFlag }\\ 
+Description &
+ Return the type of the link 
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters& Link name \\
+Return Value& Type of the link \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt viewInLink} \\
-Description  & Check if the view is in the given link \\
-Input \#     & 2 \\
-Input Types  & Link name (string), view name (string) \\
-Output       & 0/1 (integer) indicating not present/present \\
+Command name &{\tt setLinkMaster }\\ 
+Description &
+ Sets a view to be the master of a link 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& Link name , view name \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt unlinkView} \\
-Description  & Unlinks the view from the given link \\
-Input \#     & 2 \\
-Input Types  & Link name (string), view name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt resetLinkMaster }\\ 
+Description &
+ Sets a link to be without a master 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& Link name \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setCursorSrc} \\
-Description  & Sets the source view for the given cursor \\
-Input \#     & 2 \\
-Input Types  & Cursor name (string), view name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getLinkMaster }\\ 
+Description &
+ Return name of link master 
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& Link name \\
+Return Value& Name of master view \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setCursorDst} \\
-Description  & Sets the destination view for the given cursor \\
-Input \#     & 2 \\
-Input Types  & Cursor name (string), view name (string) \\
-Output       & {\tt done} \\
+Command name &{\tt getLinkViews }\\ 
+Description &
+ Get all the views in the given link 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& Link name \\
+Return Value& List of view names \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt getCursorViews} \\
-Description  & Gets the source and destination views of a cursor \\
-Input \#     & 1 \\
-Input Types  & Cursor name (string) \\
-Output       & \{source dest\} (strings) \\
+Command name &{\tt viewInLink }\\ 
+Description &
+ Check if the view is in the given link 
+ 	\\
+Fingerprints & integer(string,string)\\
+Input Parameters& Link name , view name \\
+Return Value& 0/1 \\
 \hline
 \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt unlinkView }\\ 
+Description &
+ Unlinks the view from the given link 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& Link name , view name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setCursorSrc }\\ 
+Description &
+ Sets the source view for the given cursor 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& Cursor name , view name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setCursorDst }\\ 
+Description &
+ Sets the destination view for the given cursor 
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& Cursor name , view name \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt getCursorViews }\\ 
+Description &
+ Gets the source and destination views of a cursor 
+ 	\\
+Fingerprints & strings(string)\\
+Input Parameters& Cursor name \\
+Return Value& source dest\\
+\hline
+\end{tabular}
+\bigskip
+
 
 \section{Miscellaneous Commands}
-
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt date} \\
-Description  & Returns the current date \\
-Input \#     & 0 \\
-Input Types  & None \\
-Output       & mm/dd/yy (string) \\
+Command name &{\tt getDisplayImageAndSize }\\ 
+Description &
+It generates a GIF file from
+ 
+devise's display and outputs to the specified port. The
+ 
+data file is prefixed with its size.
+ 	\\
+Fingerprints & string(integer,string)\\
+Input Parameters&port, imageType\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt clearAll} \\
-Description  & Clears all session-related data structures from memory \\
-Input \#     & 0 \\
-Input Types  & None \\
-Output       & {\tt done} \\
+Command name &{\tt serverExit }\\ 
+Description &
+If connected clients is one, this command forces the server to quits
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt setBatchMode} \\
-Description  & Sets server to batch or normal mode \\
-Input \#     & 1 \\
-Input Types  & 0/1 indicating normal or batch mode (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt setScreenSize }\\ 
+Description &
+Set the width and height of the screen
+ 	\\
+Fingerprints & string(integer,integer)\\
+Input Parameters&width, height\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt sync} \\
-Description  & Requests a SyncNotify message from the server when it has
-               processed all commands up to this point \\
-Input \#     & 0 \\
-Input Types  & None \\
-Output       & {\tt done} \\
+Command name &{\tt abortQuery }\\ 
+Description &
+Abort query on a view object
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&view name\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt parseDateFloat} \\
-Description  & Converts a date in string format to Unix time format \\
-Input \#     & 1 \\
-Input Types  & Date (string) \\
-Output       & Unix time (double, really an integer) \\
+Command name &{\tt dumpLinkCursor }\\ 
+Description &
+Dump the link info into a file
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&filename\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt changeMode} \\
-Description  & Change modes to Layout or Display \\
-Input \#     & 1 \\
-Input Types  & 0/1 (integer) indicating display mode (0) or layout mode (1) \\
-Output       & {\tt done} \\
+Command name &{\tt copyright }\\ 
+Description &
+Return the copyright string
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value&copyright string/none\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt exists} \\
-Description  & Check to see if the given instance exists \\
-Input \#     & 1 \\
-Input Types  & Instance name (string) \\
-Output       & 0/1 (integer) indicating whether instance exists or not \\
+Command name &{\tt version }\\ 
+Description &
+Return the version string
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value&version string/none\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt addReplicaServer} \\
-Description  & Adds a replica server where client commands are echoed \\
-Input \#     & 2 \\
-Input Types  & Host name (string), port number (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt compDate }\\ 
+Description &
+Return the compilation date 
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value&compilation date/none\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt removeReplicaServer} \\
-Description  & Removes a replica server \\
-Input \#     & 2 \\
-Input Types  & Host name (string), port number (integer) \\
-Output       & {\tt done} \\
+Command name &{\tt getFileHeader }\\ 
+Description &
+Get the standard devise file header for a specific file type. The file
+ 
+header contains information like file type, version, compilation date
+ 
+etc.
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&file type\\
+Return Value&file header\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt get3DLocation} \\
-Description  & Returns the 3D position of the camera and focal point \\
-Input \#     & 0 \\
-Input Types  & None \\
-Output       & 1/0 indicating radial or rectangular coordinates (int),
-	       X, Y, Z, FX, FY, FZ, Theta, Phi, Rho (floats) \\
+Command name &{\tt getStringCount }\\ 
+Description &
+Return the number strings in string storage
+ 	\\
+Fingerprints & double()\\
+Input Parameters&\\
+Return Value&string count\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt set3DLocation} \\
-Description  & Sets the 3D position of the camera \\
-Input \#     & 3 \\
-Input Types  & X, Y, Z (floats) \\
-Output       & {\tt done} \\
+Command name &{\tt insertViewHistory }\\ 
+Description &
+Insert a visual filter query into history
+ 	\\
+Fingerprints & string(string,float,float,float,float,boolean)\\
+Input Parameters&view name, xLow,yLow,xHi,yHi, filter marked flag\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt loadStringSpace }\\ 
+Description &
+Initializing string table from the given filename, it will refresh
+ 
+all views
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&file name\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt openSession }\\ 
+Description &
+Open a session file
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&file name\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt saveDisplayImageAndMap }\\ 
+Description &
+Export the display and the map file associated with the display. 
+ 
+EPS, GIF and POSTSCRIPT are currently supported formats.
+ 	\\
+Fingerprints & string(string,string,string,string,string)\\
+Input Parameters&format,gif filename, map filename, URL, default URL\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt saveDisplayView }\\ 
+Description &
+Export the view in EPS, GIF or POSTSCRIPT format
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters&format,filename \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt saveSession }\\ 
+Description &
+Save a session file as a template/export version, with/without data
+ 	\\
+Fingerprints & string(string,integer,integer,integer)\\
+Input Parameters&filename, asTemplate flag, asExport flag, withData flag\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt saveStringSpace }\\ 
+Description &
+Save all strings in the string space into a file
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&filename\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt startLayoutManager }\\ 
+Description &
+Fork a child process to run layout manager
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value&void\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt waitForQueries }\\ 
+Description &
+Activate the dispatcher to do SingleStepCurrent
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt writeDesc }\\ 
+Description &
+Write a session description file
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters&Description file name\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt date }\\ 
+Description &
+ Returns the current date 
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value& mm/dd/yy \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt clearAll }\\ 
+Description &
+ Clears all session-related data structures from memory 
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setBatchMode }\\ 
+Description &
+ Sets server to batch or normal mode 
+ 	\\
+Fingerprints & string(integer)\\
+Input Parameters& 0/1 indicating normal or batch mode \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt sync }\\ 
+Description &
+ Requests a SyncNotify message from the server when it has processed all commands up to this point 
+ 	\\
+Fingerprints & string()\\
+Input Parameters&\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt parseDateFloat }\\ 
+Description &
+ Converts a date in string format to Unix time format 
+ 	\\
+Fingerprints & double(string)\\
+Input Parameters& Date \\
+Return Value& Unix time \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt changeMode }\\ 
+Description &
+ Change modes to Layout or Display 
+ 	\\
+Fingerprints & string(integer)\\
+Input Parameters& 0/1 , indicating display mode , or layout mode \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt exists }\\ 
+Description &
+ Check to see if the given instance exists 
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters& Instance name \\
+Return Value& 0/1 \\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt addReplicaServer }\\ 
+Description &
+ Adds a replica server where client commands are echoed 
+ 	\\
+Fingerprints & string(string,integer)\\
+Input Parameters& Host name , port number \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt removeReplicaServer }\\ 
+Description &
+ Removes a replica server 
+ 	\\
+Fingerprints & string(string,integer)\\
+Input Parameters& Host name , port number \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt get3DLocation }\\ 
+Description &
+ Returns the 3D position of the camera and focal point: X, Y, Z, FX, FY, FZ, Theta, Phi, Rho (floats) 
+ 	\\
+Fingerprints & strings()\\
+Input Parameters&\\
+Return Value& 3D position of the camera\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt set3DLocation }\\ 
+Description &
+ Sets the 3D position of the camera 
+ 	\\
+Fingerprints & string()\\
+Input Parameters& Y, Z \\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
 
 \section{Obsolete Commands}
-
-Commands listed in this section are obsolete and not supported. Some
-of the functions they provide should be implemented in the client
-program internally and should not be visible to the visualization
-server.
-
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt open }\\ 
+Description &
+ Opens a specified file with the given flag 
+ 	\\
+Fingerprints & long(string,string)\\
+Input Parameters& File name , open mode \\
+Return Value& File pointer :FILE*\\
+\hline
+\end{tabular}
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt open} \\
-Description  & Opens a specified file with the given flag \\
-Input \#     & 2 \\
-Input Types  & File name (string), open mode (string) \\
-Output       & File pointer (FILE *) (long) \\
-Errors       & Cannot open file (console) \\
+Command name &{\tt writeLine }\\ 
+Description &
+ Writes a line in to the given file 
+ 	\\
+Fingerprints & string(long,string)\\
+Input Parameters& File pointer FILE* , line \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt writeLine} \\
-Description  & Writes a line in to the given file \\
-Input \#     & 2 \\
-Input Types  & File pointer (FILE *) (long), line (string) \\
-Output       & {\tt done} \\
+Command name &{\tt readLine }\\ 
+Description &
+ Reads a line from the specified file 
+ 	\\
+Fingerprints & string(long)\\
+Input Parameters& File pointer FILE* \\
+Return Value& Line read from file \\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt readLine} \\
-Description  & Reads a line from the specified file \\
-Input \#     & 1 \\
-Input Types  & File pointer (FILE *) (long) \\
-Output       & Line read from file (newline removed) \\
+Command name &{\tt close }\\ 
+Description &
+ Closes the specified file 
+ 	\\
+Fingerprints & string(long)\\
+Input Parameters& File pointer :FILE*\\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
-
 \bigskip
 
-\noindent
-\begin{tabular}{l|p{5in}}
-\hline
-Command name & {\tt close} \\
-Description  & Closes the specified file \\
-Input \#     & 1 \\
-Input Types  & File pointer (FILE *) (long) \\
-Output       & {\tt done} \\
-\hline
-\end{tabular}
 
 \section{Control Commands}
-
-Some server events are echoed back to the client as {\em control
-commands}. These commands let the server inform the client about a
-status change in the server.  For examply, when a user changes the
-size of a data window and the server starts redisplaying the data, the
-client receives a control command that instructs it of this event. The
-following list describes the control commands issued by the
-server. Note that the client does not necessarily have to take any
-action in response to these commands. That is why there is also no
-return value or error code sent in response to these commands.
-
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt ChangeStatus }\\ 
+Description &
+ The server changes to busy or idle state 
+ 	\\
+Fingerprints & void(integer)\\
+Input Parameters& 0/1 \\
+Return Value&void\\
+\hline
+\end{tabular}
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt ChangeStatus} \\
-Description  & The server changes to busy or idle state \\
-Input \#     & 1 \\
-Input Types  & 0/1 (integer) indicating idle or busy status \\
+Command name &{\tt SyncDone }\\ 
+Description &
+ An indication that the server has finished processing all commands preceding the last {\tt sync} command 
+ 	\\
+Fingerprints & void()\\
+Input Parameters&\\
+Return Value&void\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt SyncDone} \\
-Description  & An indication that the server has finished processing all
-               commands preceding the last {\tt sync} command \\
-Input \#     & 0 \\
-Input Types  & None \\
+Command name &{\tt AbortProgram }\\ 
+Description &
+ The server is aborting due to an internal error 
+ 	\\
+Fingerprints & void(string)\\
+Input Parameters& Reason \\
+Return Value&void\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt AbortProgram} \\
-Description  & The server is aborting due to an internal error \\
-Input \#     & 1 \\
-Input Types  & Reason (string) \\
+Command name &{\tt ProcessViewSelected }\\ 
+Description &
+ A view has been selected as ``current view'' 
+ 	\\
+Fingerprints & void(string)\\
+Input Parameters& View name \\
+Return Value&void\\
 \hline
 \end{tabular}
-
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt ProcessViewSelected} \\
-Description  & A view has been selected as ``current view'' \\
-Input \#     & 1 \\
-Input Types  & View name (string) \\
+Command name &{\tt ProcessViewFilterChange }\\ 
+Description &
+ The visual filter of a view has changed 
+ 	\\
+Fingerprints & void(string,boolean,string,boolean)\\
+Input Parameters& View name , flushed , xlow , marked \\
+Return Value&void\\
 \hline
 \end{tabular}
+\bigskip
 
+
+\section{User Commands}
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt setVisualFilter }\\ 
+Description &
+Pose visual query, including rubber band, zoom in/out etc.
+ 	\\
+Fingerprints & string(string,float,float,float,float)\\
+Input Parameters&view name, xLow, yLow, xHigh, yHigh\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
 \bigskip
 
 \noindent
 \begin{tabular}{l|p{5in}}
 \hline
-Command name & {\tt ProcessViewFilterChange} \\
-Description  & The visual filter of a view has changed \\
-Input \#     & 7 \\
-Input Types  & View name (string), flushed (0/1 integer), xlow (string),
-               ylow (string), xhigh (string), yhigh (string),
-               marked (0/1 integer) \\
+Command name &{\tt doPopUp }\\ 
+Description &
+Pose record-level query and display the result in the form of a small window
+ 	\\
+Fingerprints & string(string,float,float,float,float,integer,integer,strings)\\
+Input Parameters&view name,x,y, xHigh, yHigh,button, number of messages, messages \\
+Return Value&{\tt done}\\
 \hline
 \end{tabular}
+\bigskip
 
-\newpage 
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt moveCursor }\\ 
+Description &
+Move cursor to (x,y) position
+ 	\\
+Fingerprints & string(string,float,float,integer)\\
+Input Parameters&winName, x, y, mouse button\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+
+\section{Color Commands}
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt GetColor }\\ 
+Description &
+Return rgb color string specified by a color ID
+ 	\\
+Fingerprints & string(integer)\\
+Input Parameters&color ID\\
+Return Value&color string\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt GetColorID }\\ 
+Description &
+Return the color ID from a rgb string
+ 	\\
+Fingerprints & integer(string)\\
+Input Parameters&color string\\
+Return Value&color ID\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt GetForeground }\\ 
+Description &
+Return the foreground rgb string
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& view name\\
+Return Value&color string\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt GetBackground }\\ 
+Description &
+Return the background rgb string
+ 	\\
+Fingerprints & string(string)\\
+Input Parameters& view name\\
+Return Value&color string\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt SetForeground }\\ 
+Description &
+Set the foreground color for a specific view
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& view name, color string\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt SetBackground }\\ 
+Description &
+Set the background color for a specific view
+ 	\\
+Fingerprints & string(string,string)\\
+Input Parameters& view name, color string\\
+Return Value&{\tt done}\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt GetAllColors }\\ 
+Description &
+Return all current rgb strings
+ 	\\
+Fingerprints & strings()\\
+Input Parameters&\\
+Return Value&rgb string list\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt AutoColor }\\ 
+Description &
+Given background color, generate foreground color automatically
+ 	\\
+Fingerprints & integer(integer)\\
+Input Parameters&color ID\\
+Return Value&color ID\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt NewPalette }\\ 
+Description &
+Generate a new color palette and return palette id
+ 	\\
+Fingerprints & integer()\\
+Input Parameters&\\
+Return Value&palette ID or Error message\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt GetCurrentPalette }\\ 
+Description &
+Return current color palette's ID
+ 	\\
+Fingerprints & integer()\\
+Input Parameters&\\
+Return Value&palette ID\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt SetCurrentPalette }\\ 
+Description &
+This command always "succeeds", 
+ 
+failure to change the palette
+ 
+is indicated by returning the current pid after the operation.
+ 	\\
+Fingerprints & integer(integer)\\
+Input Parameters&palette ID\\
+Return Value&palette ID\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt GetPaletteColors }\\ 
+Description &
+Return all rgb color strings of a palette
+ 	\\
+Fingerprints & strings(integer)\\
+Input Parameters&palette ID\\
+Return Value&color strings\\
+\hline
+\end{tabular}
+\bigskip
+
+\noindent
+\begin{tabular}{l|p{5in}}
+\hline
+Command name &{\tt CheckColoring }\\ 
+Description &
+Return the RMS distance for a view
+ 	\\
+Fingerprints & float(string)\\
+Input Parameters&view name\\
+Return Value&distance\\
+\hline
+\end{tabular}
+\bigskip
+
+
+
+\newpage
 \section*{Copyright}
 
 \verbatiminput{Copyright}
