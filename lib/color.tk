@@ -30,6 +30,7 @@ set monochrome 0
 
 set colors(controlPanelForeground) white
 set colors(controlPanelBackground) black
+set colors(controlPanelStatus) DarkSlateGray
 
 set colors(groupFrameForeground) gold
 set colors(groupFrameAlertForeground) red

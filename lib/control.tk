@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.199  1999/07/21 18:51:25  wenger
+#	Moved alignment and data font information from view into mapping.
+#	
 #	Revision 1.198  1999/07/14 18:43:02  wenger
 #	Added the capability to have axes without ticks and tick labels.
 #	
@@ -902,7 +905,7 @@ set DEViseShapes \
 set exitmode ""
 set restoring 0
 set template 0
-set sessionName "session.tk"
+set sessionName ""
 set curView ""
 set lastView ""
 set UserMode 1
@@ -1180,7 +1183,7 @@ menu .mbar.session.menu.descMenu -tearoff 0
 .mbar.session.menu add command -label "Quit" -command {DoExit $exitmode}
 
 #.mbar.session.menu add separator
-#.mbar.session.menu add command -label "Test" -command { DEVise test }
+#.mbar.session.menu add command -label "Test" -command { puts [DEVise JAVAC_GetSessionList Condor/../..] }
 #.mbar.session.menu add command -label "Memory leaks" -command { DEVise new_leaks }
 #.mbar.session.menu add command -label "Memory in use" -command { DEVise new_inuse }
 
@@ -1801,16 +1804,14 @@ button .panel.query.button2 -text "Mapping" -width 7 -relief raised \
 
 pack .panel.query.button .panel.query.button2 -side top -padx 2m -pady 1m
 
-label .panel.center.dummy -text "" -font 5x7
-
 button .panel.center.label -text DEVise \
-        -font -*-times-medium-i-normal--*-300-*-*-*-*-*-* \
+        -font -*-times-medium-i-normal--*-240-*-*-*-*-*-* \
 		-bd 0 -highlightthickness 2  -cursor hand2 \
 		-foreground $colors(aboutFrameForeground) \
 		-background $colors(aboutFrameBackground) \
 		-activeforeground $colors(aboutFrameForeground) \
 		-activebackground $colors(aboutFrameBackground) \
-		-command { AboutDevise }
+		-command { AboutDevise } -width 8
 
 set version [DEVise version]
 set compDate [DEVise compDate]
@@ -1821,11 +1822,45 @@ set copyright [DEVise copyright]
 label .panel.center.copyright \
 		-text "$copyright DEVise Development Group" -font 5x7
 
-pack  .panel.center.dummy -side top -expand 0 -fill x
+frame .panel.center.status -background $colors(controlPanelStatus)
+
+label .panel.center.status.session1 -text "Session:" \
+	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
+	-background $colors(controlPanelStatus)
+set currSessFile ""
+label .panel.center.status.session2 -textvariable currSessFile \
+	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
+	-background $colors(controlPanelStatus)
+
+#TEMP -- provision for eventually displaying the mouse X and Y like the
+# JavaScreen does.
+label .panel.center.status.mouseX1 -text "X:" \
+	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
+	-background $colors(controlPanelStatus)
+set mouseX "123.4"
+label .panel.center.status.mouseX2 -textvariable mouseX \
+	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
+	-background $colors(controlPanelStatus)
+
+label .panel.center.status.mouseY1 -text "Y:" \
+	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
+	-background $colors(controlPanelStatus)
+set mouseY "0.8234"
+label .panel.center.status.mouseY2 -textvariable mouseY \
+	-font -*-times-medium-r-normal--*-120-*-*-*-*-*-* \
+	-background $colors(controlPanelStatus)
+
 pack  .panel.center.label -side top -expand 1 -fill both -ipadx 100 -padx 0 \
 		-pady 0
 pack  .panel.center.version -side top -expand 0 -fill x
 pack  .panel.center.copyright -side top -expand 0 -fill x
+pack  .panel.center.status -side top -expand 1 -fill x
+pack  .panel.center.status.session1 -side left -expand 0
+pack  .panel.center.status.session2 -side left -expand 0
+#TEMP pack  .panel.center.status.mouseY2 -side right -expand 0
+#TEMP pack  .panel.center.status.mouseY1 -side right -expand 0
+#TEMP pack  .panel.center.status.mouseX2 -side right -expand 0
+#TEMP pack  .panel.center.status.mouseX1 -side right -expand 0
 
 button .panel.messages.mode -text Display -width 7 -relief raised \
         -font -*-times-medium-r-normal--*-200-*-*-*-*-*-* \
@@ -2047,7 +2082,8 @@ proc DoClose {{askUser 1}} {
 
     ClearDescription
     UpdateLinkCursorInfo
-    set sessionName "session.tk"
+    set sessionName ""
+    UpdateSessionName
 
     if {$templateMode} {
 #TEMPTEMP -- this is still old-style data source code!!
@@ -2104,7 +2140,8 @@ proc DoUpdate {} {
 	return
     }
 
-    set sessionName "session.tk"
+    set sessionName ""
+    UpdateSessionName
     ClearDescription
     set restoring 1
     Puts "Restoring session from $file"
@@ -2119,6 +2156,7 @@ proc DoUpdate {} {
 
     if {!$err} {
 	set sessionName $file
+	UpdateSessionName
 
 	# "Remember" session directory.
         set tmpIndex [string last "/" $sessionName]
@@ -2475,4 +2513,13 @@ proc ShowKGraph {} {
 proc ToggleViewNames {} {
     set viewNamesOn [expr ! [DEVise getShowViewNames]]
     DEVise setShowViewNames $viewNamesOn
+}
+
+# Update the displayed session name in the status area.
+proc UpdateSessionName {} {
+    global sessionName
+    global currSessFile
+
+    set tmpIndex [string last "/" $sessionName]
+    set currSessFile [string range $sessionName [expr $tmpIndex+1] end]
 }

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4  1996/08/29 22:26:49  guangshu
+#  Changed puts to proc Puts in case the client want to be quiet.
+#
 #  Revision 1.3  1996/07/11 18:17:04  jussi
 #  Removed all non-essential code. The Tcl batch client no longer
 #  uses any Tk (X11) features.
@@ -29,7 +32,7 @@
 
 set restoring 0
 set template 0
-set sessionName "session.tk"
+set sessionName ""
 set curView ""
 set mode 0
 set libdir $env(DEVISE_LIB)

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.46  1999/05/14 21:00:03  wenger
+#  DEVise GUI now "remembers" the most recent session directory.
+#
 #  Revision 1.45  1999/04/20 14:13:12  wenger
 #  Added Refresh command (closes and re-opens current session).
 #
@@ -198,7 +201,8 @@ proc DoActualOpen { sessionFile {asTemplate 0} } {
     global restoring template sessionName errorInfo
     global sessiondir
 
-    set sessionName "session.tk"
+    set sessionName ""
+    UpdateSessionName
     ClearDescription
     set restoring 1
     if {$asTemplate} {
@@ -216,6 +220,7 @@ proc DoActualOpen { sessionFile {asTemplate 0} } {
 
     if {!$err} {
 	set sessionName $sessionFile
+	UpdateSessionName
 
 	# "Remember" session directory.
         set tmpIndex [string last "/" $sessionName]
@@ -283,7 +288,7 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
 proc DoSave {} {
     global sessionName templateMode
 
-    if {$sessionName == "session.tk"} {
+    if {$sessionName == ""} {
 	DoSaveAs 0 0 0 0
 	return
     }
@@ -336,6 +341,7 @@ proc DoSaveAs { asTemplate asExport withData asBatchScript } {
     DoActualSave $file $asTemplate $asExport $withData $asBatchScript
     if {!$asTemplate} {
 	set sessionName $file
+	UpdateSessionName
 
 	# "Remember" session directory.
         set tmpIndex [string last "/" $sessionName]
