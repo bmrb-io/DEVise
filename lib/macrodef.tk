@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.62  1996/10/15 22:01:14  guangshu
+#	Fixed Bug #051 when open text stat for views which have . in the names.
+#
 #	Revision 1.61  1996/10/15 17:49:16  wenger
 #	Fixed bug 050 (problem with record IDs in mappings).
 #
@@ -1015,8 +1018,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
     }
 
     if {$xlo == $xhi} {
-        incr xlo -1
-        incr xhi +1
+        set xlo [expr $xlo - 1]
+        set xhi [expr $xhi + 1]
     }
 
     # puts "Mapping will have xlo $xlo and xhi $xhi"
@@ -1109,8 +1112,8 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor
         }
 
         if {$ylo == $yhi} {
-            incr ylo -1
-            incr yhi +1
+            set ylo [expr $ylo - 1]
+            set yhi [expr $yhi + 1]
         }
 
         # puts "Mapping will have ylo $ylo and yhi $yhi"
