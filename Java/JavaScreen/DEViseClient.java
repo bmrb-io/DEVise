@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2001/08/21 18:37:15  wenger
+// JSPoP now responds to JAVAC_CheckPop with JAVAC_Error if no deviseds
+// are connected to it; fixed up redirection of stderr in sh scripts.
+//
 // Revision 1.43  2001/08/20 18:20:07  wenger
 // Fixes to various font problems: XDisplay calculates point sizes correctly
 // and uses screen resolution in specifying font; JS passes *its* screen
@@ -346,7 +350,7 @@ public class DEViseClient
 	} else if (cmd.startsWith(DEViseCommands.CHECK_POP)) {
 	    try {
 		if (pop.getServerCount() >= 1) {
-	            sendCmd(DEViseCommands.DONE);
+		    sendCmd(DEViseCommands.DONE);
 		} else {
 		    System.err.println("No servers connected");
 	            sendCmd(DEViseCommands.ERROR);
@@ -357,7 +361,8 @@ public class DEViseClient
 	    }
 
 	    // Close here because the client exits after getting the reply.
-	    close();
+	    // close();
+
 	} else {
             cmdBuffer.addElement(cmd);
 

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/05/11 20:36:04  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.6  2001/04/02 16:44:36  wenger
 // Minor cleanups; added cpu limit to JavaScreen checking process.
 //
@@ -67,7 +70,7 @@ public class DEViseCheckPop
     //===================================================================
     // VARIABLES
 
-    private static final int DEBUG = 1;
+    private static final int DEBUG = 3;
     private static final int DEBUG_LOG = 2;
     private static final int RECEIVE_TIMEOUT = 5000; // millisec
 
