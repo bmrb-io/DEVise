@@ -147,7 +147,7 @@ public class DEViseServer implements Runnable
 
     private void stopDEVise()
     {
-        if (isDEViseAlive()) {
+        if (!isDEViseAlive()) {
             return;
         } else {
             proc.destroy();
@@ -224,15 +224,16 @@ public class DEViseServer implements Runnable
             } catch (InterruptedException e) {
             }
 
+            time += serverStartTimestep;
+
             if (!isDEViseAlive()) {
                 // start DEVise server if it is dead
                 if (!startDEVise()) {
                     YGlobals.Ydebugpn("Can not start DEVise Server!");
-                    return false;
+                    //return false;
+                    continue;
                 }
             }
-
-            time += serverStartTimestep;
 
             try {
                 cmdSocket = new DEViseCmdSocket(hostname, cmdPort, cmdSocketTimeout);
@@ -717,11 +718,11 @@ public class DEViseServer implements Runnable
                                 } catch (InterruptedIOException e) {
                                 }
                             }
-                            
+
                             if (client.getCmd() != null && client.getCmd().startsWith("JAVAC_Abort")) {
                                 client.removeCmd();
                                 suspendClient(true);
-                                
+
                                 // need to clear up img socket
                                 try {
                                     if (imgSocket == null)
