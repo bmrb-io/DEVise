@@ -6,7 +6,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/22 21:40:15  jussi
+  Initial revision.
+*/
 
 #define MODIFIED
 
@@ -104,6 +107,11 @@ main(int argc, char *argv[])
 	    default: program_lines++;
 	    } /* end case */
 	} /* end while */
+
+      /* close file */
+      if (input_file != stdin)
+        fclose(input_file);
+
     } /* end for loop */
 
   /*
