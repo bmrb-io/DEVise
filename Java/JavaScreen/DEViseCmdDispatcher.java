@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.96  2001/05/11 20:36:05  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.95  2001/05/03 16:24:36  xuk
 // Added multiply factor for displaying mouse postion.
 // Changed viewDataArea() function to parse factor argument.
@@ -751,6 +754,48 @@ public class DEViseCmdDispatcher implements Runnable
         }
     }
 
+    // for disconnected client
+    private synchronized boolean reconnect()
+    {
+	/*
+	try {
+	    if (jsc.jsValues.connection.cgi) {
+		String response = null;
+		_commCgi = null;
+		_commCgi = new DEViseCommCgi(jsc.jsValues);
+		jsc.pn("Sending Check_PoP command...");
+		_commCgi.sendCmd(DEViseCommands.CHECK_POP);
+
+		Thread.sleep(3000);
+
+		response = _commCgi.receiveCmd(true);
+		jsc.pn("Received response: " + response);
+		if (response.equals("Connection disabled")) {
+		    return false;
+		} else {
+		    return true;
+		}
+	    }   
+	} catch (YException e) {
+	    return false;
+	} catch (InterruptedIOException e) {
+	    return false;
+	} catch (InterruptedException e) {
+	    return false;
+	}
+	*/
+
+        try {
+            commSocket = new DEViseCommSocket(jsc.jsValues.connection.hostname,
+	      jsc.jsValues.connection.cmdport, SOCK_REC_TIMEOUT,
+	      SOCK_CONST_TIMEOUT);
+	    jsc.pn("Socket connection set up!");
+            return true;
+        } catch (YException e) {
+            return false;
+        }
+    }
+
     public synchronized void disconnect()
     {
         if (commSocket != null) {
@@ -876,6 +921,8 @@ public class DEViseCmdDispatcher implements Runnable
         // sending command to server, and wait until server finish processing and
         // returned a list of commands
         String[] rsp = sendRcvCmd(command);
+
+	// if (rsp == null) return;
 
         // turn on the 'process' light
         jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, true);
@@ -1574,7 +1621,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, false);
 	} else { // for collabration JS
 	    jsc.pn("We are waiting at null command...");
-         }
+	}
 
         // turn on the counter
         jsc.viewInfo.updateCount(0);
@@ -1603,7 +1650,46 @@ public class DEViseCmdDispatcher implements Runnable
                     } else {
                         response = commSocket.receiveCmd();
                     }
+
                     jsc.pn("Receive: \"" + response + "\"");
+
+		    if (response.equals("Connection disabled")) {
+			commSocket = null;
+	
+			jsc.disconnectedMode();		
+			
+			boolean end = false;
+			while (!end) {  
+			    if (!reconnect()) {
+				jsc.pn("###### Reconnecting failed.");
+				try {
+				    Thread.sleep(10000);
+				} catch (InterruptedException e) {
+				}	
+
+			    } else {
+				end = true;
+				jsc.pn("###### Reconnecting successed.");
+				if (jsc.jsValues.connection.cgi) {
+				    jsc.cgiMode();
+				} else {
+				    jsc.socketMode();
+				}
+			    }
+			}
+
+			jsc.pn("Resending command: " + command);
+			if (jsc.jsValues.connection.cgi) {
+			    _commCgi = null;
+			    _commCgi = new DEViseCommCgi(jsc.jsValues);
+			    _commCgi.sendCmd(command);
+			} else {
+			    sockSendCmd(command);
+			}
+
+			continue;
+		    }
+
                     isFinish = true;
                 } catch (InterruptedIOException e) {
                     if (getAbortStatus()) {
@@ -1693,6 +1779,31 @@ public class DEViseCmdDispatcher implements Runnable
 	      command + ")");
         }
 
+	if ( !commSocket.isAvailable() ) {
+	    commSocket = null;
+	    jsc.disconnectedMode();
+
+	    boolean end = false;
+	    while (!end) {
+		if (!reconnect()) {
+		    jsc.pn("###### Reconnecting failed.");
+		    try {
+			Thread.sleep(10000);
+		    } catch (InterruptedException e) {
+		    }
+		} else {
+		    end = true;
+		    jsc.pn("###### Reconnecting successed.");
+		    jsc.socketMode();    
+		}
+	    }
+
+	    jsc.pn("Send command:" + command);
+
+	    commSocket.sendCmd(command, DEViseGlobals.API_JAVA, jsc.jsValues.connection.connectionID);
+	    return;
+	}
+
 	// send the command
 	if (command.startsWith(DEViseCommands.CONNECT) && jsc.specialID == -1) {
             commSocket.sendCmd(command, DEViseGlobals.API_JAVA_WID,
@@ -1704,6 +1815,30 @@ public class DEViseCmdDispatcher implements Runnable
 		commSocket.sendCmd(command, DEViseGlobals.API_JAVA,
 				   jsc.jsValues.connection.connectionID);
 	    }
+	}
+
+	if (commSocket.socket == null) {
+	    commSocket = null;
+	    jsc.disconnectedMode();
+	    boolean end = false;
+	    while (!end) {
+		if (!reconnect()) {
+		    jsc.pn("###### Reconnecting failed.");
+		    try {
+			Thread.sleep(10000);
+		    } catch (InterruptedException e) {
+		    }
+		} else {
+		    end = true;
+		    jsc.pn("###### Reconnecting successed.");
+		    jsc.socketMode();
+		}
+	    }
+
+	    jsc.pn("Send command:" + command);
+
+	    commSocket.sendCmd(command, DEViseGlobals.API_JAVA, jsc.jsValues.connection.connectionID);
+	    return;
 	}
     }
 
