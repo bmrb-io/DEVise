@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.21  1996/08/23 16:55:02  wenger
+#  First version that allows the use of Dali to display images (more work
+#  needs to be done on this); changed DevStatus to a class to make it work
+#  better; various minor bug fixes.
+#
 #  Revision 1.20  1996/08/15 19:54:50  wenger
 #  Added 'pure' targets for attrproj and devread; fixed some dynamic
 #  memory problems.  Found some bugs while demo'ing for soils science
@@ -41,8 +46,6 @@ CFLAGS = $(ARCH_FLAGS) -I../../attrproj -I../../graphics \
 	-I../../graphics.new -I../../tape \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX \
 	-DATTRPROJ -DLIBCS
-
-#LDFLAGS = $(ARCH_LDFLAGS) $(ALLTESTOBJ) -ltcl -lm $(ARCH_LDPOST)
 
 TESTSRC = aptest.c vector.c
 TESTOBJ = $(TESTSRC:.c=.o)
@@ -105,7 +108,7 @@ aptest.pure: $(ALLTESTOBJ) $(LIB)
 
 
 SHOW = $(CC) -o $@ $(ARCH_LDFLAGS) -L. $(ALLSHOWOBJ) \
-	-lattrproj -ltcl -lm $(ARCH_LDPOST)
+	-lattrproj $(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 show: $(ALLSHOWOBJ) $(LIB)
 	$(SHOW) $(ARCH_LDPOST)

@@ -17,6 +17,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1996/08/15 19:54:21  wenger
+#  Added 'pure' targets for attrproj and devread; fixed some dynamic
+#  memory problems.  Found some bugs while demo'ing for soils science
+#  people.
+#
 #  Revision 1.4  1996/08/13 17:45:16  flisakow
 #      Make consistently uses C and CC for gcc and g++, respectively.
 #
@@ -34,10 +39,17 @@
 ############################################################
 
 # Define our linker and compiler.
-LD = ld
-CC = /s/gcc-2.7.2/bin/g++
-C  = /s/gcc-2.7.2/bin/gcc
-AR = /s/binutils/bin/ar
+ifneq (, $(findstring LINUX, $(ARCH_FLAGS)))
+  LD = ld
+  CC = g++
+  C  = gcc
+  AR = ar
+else
+  LD = ld
+  CC = /s/gcc-2.7.2/bin/g++
+  C  = /s/gcc-2.7.2/bin/gcc
+  AR = /s/binutils/bin/ar
+endif
 RANLIB = ranlib
 
 # Set up for optimize or debug compiling.

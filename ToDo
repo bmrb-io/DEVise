@@ -13,6 +13,10 @@ HIGH PRIORITY
 -------------
 Update examples on Devise web page. (ml/rkw 9/6/96)
 
+Composite parsers for dates should make sure the dates being converted
+are within the legal range of Unix dates; possible also check that the
+attribute being written to is of type 'date'. (rkw 9/25/96)
+
 
 LOW PRIORITY
 ------------

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/07/29 21:40:24  wenger
+  Fixed various compile errors and warnings.
+
   Revision 1.10  1996/07/18 02:16:42  jussi
   Added support for Ultrix.
 
@@ -389,7 +392,8 @@ union semun {
   EXTERNC struct hostent *gethostbyname(char *);
 #endif
 
-#if !defined(__hpux) && !defined(__alpha) && !defined(__sgi)
+#if !defined(__hpux) && !defined(__alpha) && !defined(__sgi) && \
+    !defined(__linux)
   EXTERNC int socket(int, int, int);
   EXTERNC int bind(int, struct sockaddr *, int);
   EXTERNC int listen(int, int);

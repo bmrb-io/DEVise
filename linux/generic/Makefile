@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.3  1996/07/13 05:01:38  jussi
+#  Updated to compile on Linux.
+#
 #  Revision 1.2  1996/05/31 21:35:56  wenger
 #  Fixed core dump in SPARC/Solaris version caused by GData buffer
 #  misalignment; cleaned up generic/Makefile.base, etc., to get HP
@@ -35,8 +38,8 @@
 ############################################################
 
 ARCH_FLAGS   = -DLINUX -I/usr/include/tcl
-ARCH_LDFLAGS = -L/usr/lib -L/usr/X11/lib
-ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
+ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
+ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  =
 
 VPATH = ../../generic

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.42  1996/08/12 18:43:44  flisakow
+#    Makefiles changed to use AR and RANLIB vars from Makefile.common.
+#
 #  Revision 1.41  1996/08/06 20:11:47  wenger
 #  Set up makefiles to easily compile with -g flag; other cleanup of
 #  makefiles.
@@ -54,7 +57,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	DataSourceFileStream.c DataSourceTape.c DataSourceFileDesc.c \
 	DataSourceSegment.c DataSeg.c DataSourceWeb.c DCE.C \
         StringStorage.C PointStorage.C ExtBufMgr.C MapIntToInt.C
-	
+
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))
 QPObj = $(QPSrcc:.c=.o)
