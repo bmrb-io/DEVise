@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1999/04/29 17:36:41  wenger
+  Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
+
   Revision 1.36  1999/04/22 19:29:50  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -500,6 +503,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(switchTData)
 	REGISTER_COMMAND(getCursorFixedSize)
 	REGISTER_COMMAND(setCursorFixedSize)
+	REGISTER_COMMAND(viewGetVerPan)
+	REGISTER_COMMAND(viewSetVerPan)
 }
 
 CmdContainer::~CmdContainer()

@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1996
+# (c) Copyright 1992-1999
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -20,6 +20,12 @@
 # $Id$
 
 # $Log$
+# Revision 1.5  1999/03/16 17:10:26  wenger
+# Improved 'view home' configuration: user can select whether home changes
+# X, Y, or both parts of visual filter; added explicit option to force Y
+# min to 0 in automatic mode; fixed bug 469 (problems with 'home' in
+# record link follower views).
+#
 # Revision 1.4  1997/06/09 14:47:14  wenger
 # Added cursor grid; fixed bug 187; a few minor cleanups.
 #
@@ -228,107 +234,138 @@ proc SetViewHome {} {
 ##########################################################################
 
 proc GetViewHorPan {} {
+    global verticalPan
+    set verticalPan 0
+    EditViewPan
+}
+
+##########################################################################
+
+proc GetViewVerPan {} {
+    global verticalPan
+    set verticalPan 1
+    EditViewPan
+}
+
+##########################################################################
+
+proc EditViewPan {} {
     global curView
+    global verticalPan
 
     # If this window already exists, raise it to the top and return.
-    if {[WindowVisible .getViewHorPan]} {
+    if {[WindowVisible .getViewPan]} {
 	return
     }
 
     # Create the top level widget and the frames we'll later use for
     # positioning.
-    toplevel .getViewHorPan
-    wm title .getViewHorPan "Set View Horizontal Scroll"
+    toplevel .getViewPan
+    if {$verticalPan} {
+        wm title .getViewPan "Set View Vertical Scroll"
+    } else {
+        wm title .getViewPan "Set View Horizontal Scroll"
+    }
 
-    frame .getViewHorPan.row1
-    frame .getViewHorPan.row2
-    frame .getViewHorPan.row3
-    frame .getViewHorPan.row4
+    frame .getViewPan.row1
+    frame .getViewPan.row2
+    frame .getViewPan.row3
+    frame .getViewPan.row4
 
     # Create the various widgets.
-    button .getViewHorPan.ok -text "OK" -width 10 \
-      -command {SetViewHorPan; destroy .getViewHorPan}
-    button .getViewHorPan.cancel -text "Cancel" -width 10 \
-      -command "destroy .getViewHorPan"
+    button .getViewPan.ok -text "OK" -width 10 \
+      -command {SetViewPan; destroy .getViewPan}
+    button .getViewPan.cancel -text "Cancel" -width 10 \
+      -command "destroy .getViewPan"
 
     # See ViewGraph.h for mode values...
-    global viewHorPanMode
-    radiobutton .getViewHorPan.rel -text "Relative" -variable viewHorPanMode \
-      -value 1 -command "SwitchHorPanMode"
-    radiobutton .getViewHorPan.abs -text "Absolute" -variable viewHorPanMode \
-      -value 2 -command "SwitchHorPanMode"
+    global viewPanMode
+    radiobutton .getViewPan.rel -text "Relative" -variable viewPanMode \
+      -value 1 -command "SwitchPanMode"
+    radiobutton .getViewPan.abs -text "Absolute" -variable viewPanMode \
+      -value 2 -command "SwitchPanMode"
 
-    global viewHorPanRel viewHorPanAbs
-    label .getViewHorPan.relLab -text "Relative pan:"
-    entry .getViewHorPan.relEnt -width 20 -relief sunken \
-      -textvariable viewHorPanRel
-    label .getViewHorPan.relLab2 -text "%"
-    label .getViewHorPan.absLab -text "Absolute pan:"
-    entry .getViewHorPan.absEnt -width 20 -relief sunken \
-      -textvariable viewHorPanAbs
+    global viewPanRel viewPanAbs
+    label .getViewPan.relLab -text "Relative pan:"
+    entry .getViewPan.relEnt -width 20 -relief sunken \
+      -textvariable viewPanRel
+    label .getViewPan.relLab2 -text "%"
+    label .getViewPan.absLab -text "Absolute pan:"
+    entry .getViewPan.absEnt -width 20 -relief sunken \
+      -textvariable viewPanAbs
 
     # These frames are for spacing only.
-    frame .getViewHorPan.row2a -width 90m -height 6m
-    frame .getViewHorPan.row4a -width 10m -height 4m
+    frame .getViewPan.row2a -width 90m -height 6m
+    frame .getViewPan.row4a -width 10m -height 4m
 
     # Pack some widgets into the frames.  Other widges will be packed in
     # the SwitchHomeMode procedure.
-    pack .getViewHorPan.row1 -side bottom -pady 4m
-    pack .getViewHorPan.row2 -side top
-    pack .getViewHorPan.row2a -side top
-    pack .getViewHorPan.row4a -side top -pady 1m
+    pack .getViewPan.row1 -side bottom -pady 4m
+    pack .getViewPan.row2 -side top
+    pack .getViewPan.row2a -side top
+    pack .getViewPan.row4a -side top -pady 1m
 
-    pack .getViewHorPan.ok .getViewHorPan.cancel -in .getViewHorPan.row1 \
+    pack .getViewPan.ok .getViewPan.cancel -in .getViewPan.row1 \
       -side left -padx 3m
-    pack .getViewHorPan.rel .getViewHorPan.abs -in .getViewHorPan.row2 \
+    pack .getViewPan.rel .getViewPan.abs -in .getViewPan.row2 \
       -side top -pady 1m
-    pack .getViewHorPan.relLab .getViewHorPan.relEnt .getViewHorPan.relLab2 \
-      -in .getViewHorPan.row3 -side left
-    pack .getViewHorPan.absLab .getViewHorPan.absEnt -in .getViewHorPan.row4 \
+    pack .getViewPan.relLab .getViewPan.relEnt .getViewPan.relLab2 \
+      -in .getViewPan.row3 -side left
+    pack .getViewPan.absLab .getViewPan.absEnt -in .getViewPan.row4 \
       -side left
 
     # Get the current values from the view and set the GUI accordingly.
     # Returns: <mode> <relativePan> <absolutePan>
-    set horPan [DEVise viewGetHorPan $curView]
-    set viewHorPanMode [lindex $horPan 0]
+    if {$verticalPan} {
+        set panInfo [DEVise viewGetVerPan $curView]
+    } else {
+        set panInfo [DEVise viewGetHorPan $curView]
+    }
+    set viewPanMode [lindex $panInfo 0]
     # Convert to percent.
-    set viewHorPanRel [expr [lindex $horPan 1] * 100.0]
-    set viewHorPanAbs [lindex $horPan 2]
-    SwitchHorPanMode
+    set viewPanRel [expr [lindex $panInfo 1] * 100.0]
+    set viewPanAbs [lindex $panInfo 2]
+    SwitchPanMode
 
     # Wait for the user to make a selection from this window.
-    tkwait visibility .getViewHorPan
-    grab set .getViewHorPan
-    tkwait window .getViewHorPan
+    tkwait visibility .getViewPan
+    grab set .getViewPan
+    tkwait window .getViewPan
 }
 
 ##########################################################################
 
-proc SwitchHorPanMode {} {
-    global viewHorPanMode
+proc SwitchPanMode {} {
+    global viewPanMode
 
-    if {$viewHorPanMode == 1} {
-      pack .getViewHorPan.row3 -after .getViewHorPan.row2a -pady 1m
+    if {$viewPanMode == 1} {
+      pack .getViewPan.row3 -after .getViewPan.row2a -pady 1m
 
-      pack forget .getViewHorPan.row4
+      pack forget .getViewPan.row4
     } else {
-      pack forget .getViewHorPan.row3
+      pack forget .getViewPan.row3
 
-      pack .getViewHorPan.row4 -after .getViewHorPan.row2a -pady 1m
+      pack .getViewPan.row4 -after .getViewPan.row2a -pady 1m
     }
 }
 
 ##########################################################################
 
-proc SetViewHorPan {} {
+proc SetViewPan {} {
     global curView
-    global viewHorPanMode
-    global viewHorPanRel viewHorPanAbs
+    global verticalPan
+    global viewPanMode
+    global viewPanRel viewPanAbs
 
     # Arguments: <viewName> <mode> <relativePan> <absolutePan>
     # Convert relativePan from percent to fraction.
-    DEVise viewSetHorPan $curView $viewHorPanMode \
-      [expr $viewHorPanRel / 100.0] $viewHorPanAbs
+    if {$verticalPan} {
+        DEVise viewSetVerPan $curView $viewPanMode \
+          [expr $viewPanRel / 100.0] $viewPanAbs
+    } else {
+        DEVise viewSetHorPan $curView $viewPanMode \
+          [expr $viewPanRel / 100.0] $viewPanAbs
+    }
 }
 
 #============================================================================

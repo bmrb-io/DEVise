@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.70  1999/05/13 18:59:03  wenger
+  Removed _queryFilter member from View class to avoid confusion with
+  _queryFilter in ViewGraph.
+
   Revision 1.69  1999/04/22 19:29:54  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -580,6 +584,8 @@ public:
   }
   virtual void GetHorPanInfo(ViewPanInfo &info) { info = _horPanInfo; }
   virtual void SetHorPanInfo(const ViewPanInfo &info) { _horPanInfo = info; }
+  virtual void GetVerPanInfo(ViewPanInfo &info) { info = _verPanInfo; }
+  virtual void SetVerPanInfo(const ViewPanInfo &info) { _verPanInfo = info; }
 
   /* Toggle the value of DisplayStats */
   char *GetDisplayStats() { return _DisplayStats; }
@@ -751,6 +757,7 @@ public:
   ViewHomeInfo _homeInfo;
   ViewHomeInfo _implicitHomeInfo;
   ViewPanInfo _horPanInfo;
+  ViewPanInfo _verPanInfo;
   GDataSock *_gds;
   Boolean _drawToScreen;
   Boolean _sendToSocket;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  1999/02/01 23:13:41  wenger
+  Backspace key in a view goes back one in the visual filter history.
+
   Revision 1.30  1998/06/24 14:05:28  beyer
   changed #ifdef 0 to #if 0
 
@@ -277,40 +280,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::DOWN:
   case DeviseKey::KP_DOWN: {
     /* pan down - scroll data up */
-    if (view->GetNumDimensions() == 2) {
-      view->GetVisualFilter(filter);
-      Coord height = filter.yHigh - filter.yLow;
-      Coord halfHeight = height / 2.0;
-      filter.yLow -= halfHeight;
-      filter.yHigh = filter.yLow + height;
-	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-	{
-  		CommandObj *	cmdObj = GetCommandObj();
-		cmdObj->SetVisualFilter(view, &filter);
-	}
-	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-	{
-		view->SetVisualFilter(filter);
-	}
-    } else {
-#if 0
-      Camera camera = view->GetCamera();
-      double incr_ = 0.0;
-      if (!camera.spherical_coord) {
-	incr_ = fabs(camera.y_ / STEP_SIZE);
-	if (incr_ < 0.1)
-	  incr_ = 0.1;
-	camera.y_ -= incr_;
-	if (!camera.fix_focus)
-	  camera.fy -= incr_;
-      } else {
-	incr_ = M_PI / STEP_SIZE;
-	camera._phi += incr_;
-      }
-      view->SetCamera(camera);
-#endif
-      view->PanUpOrDown(PanDirDown);
-    }
+    view->PanUpOrDown(PanDirDown);
     break;
   }
   case '8':
@@ -318,40 +288,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   case DeviseKey::UP:
   case DeviseKey::KP_UP: {
     /* pan up - scroll data down */
-    if (view->GetNumDimensions() == 2) {
-      view->GetVisualFilter(filter);
-      Coord height = filter.yHigh - filter.yLow;
-      Coord halfHeight = height / 2.0;
-      filter.yLow += halfHeight;
-      filter.yHigh = filter.yLow + height;
-	if (cmdContainerp->getMake() == CmdContainer::CSGROUP)
-	{
-  		CommandObj *	cmdObj = GetCommandObj();
-		cmdObj->SetVisualFilter(view, &filter);
-	}
-	if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC)
-	{
-		view->SetVisualFilter(filter);
-	}
-    } else {
-#if 0
-      Camera camera = view->GetCamera();
-      double incr_ = 0.0;
-      if (!camera.spherical_coord) {
-	incr_ = fabs(camera.y_ / STEP_SIZE);
-	if (incr_ < 0.1)
-	  incr_ = 0.1;
-	camera.y_ += incr_;
-	if (!camera.fix_focus)
-	  camera.fy += incr_;
-      } else {
-	incr_ = M_PI / STEP_SIZE;
-	camera._phi -= incr_;
-      }
-      view->SetCamera(camera);
-#endif
-      view->PanUpOrDown(PanDirUp);
-    }
+    view->PanUpOrDown(PanDirUp);
     break;
   }
   case '7':

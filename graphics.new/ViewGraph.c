@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.109  1999/05/12 21:01:58  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.108  1999/05/04 17:17:09  wenger
   Merged js_viewsyms_br thru js_viewsyms_br_1 (code for new JavaScreen
   protocol that deals better with view symbols).
@@ -643,6 +646,9 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
     _horPanInfo.mode = PanModeRelative;
     _horPanInfo.relPan = 0.5;
     _horPanInfo.absPan = 1.0;
+    _verPanInfo.mode = PanModeRelative;
+    _verPanInfo.relPan = 0.5;
+    _verPanInfo.absPan = 1.0;
 
   _queryProc = qp;
   _map = 0;
@@ -1314,7 +1320,7 @@ void ViewGraph::PanLeftOrRight(PanDirection direction)
       Coord panDist;
       switch (_horPanInfo.mode) {
       case PanModeRelative:
-        panDist = (filter.xHigh - filter.xLow) * _horPanInfo.relPan;
+        panDist = width * _horPanInfo.relPan;
 	break;
 
       case PanModeAbsolute:
@@ -1348,6 +1354,10 @@ void ViewGraph::PanLeftOrRight(PanDirection direction)
 
 void ViewGraph::PanUpOrDown(PanDirection direction)
 {
+#if defined(DEBUG)
+  printf("ViewGraph(0x%p)::PanUpOrDown(%d)\n", this, (int) direction);
+#endif
+
     int panFactor;
 
     switch(direction) {
@@ -1364,7 +1374,38 @@ void ViewGraph::PanUpOrDown(PanDirection direction)
       return;
       break;
     }
-    if (GetNumDimensions() == 3) {
+
+    if (GetNumDimensions() == 2) {
+      VisualFilter filter;
+      GetVisualFilter(filter);
+      Coord height = filter.yHigh - filter.yLow;
+
+      Coord panDist;
+      switch (_verPanInfo.mode) {
+      case PanModeRelative:
+        panDist = height * _verPanInfo.relPan;
+	break;
+
+      case PanModeAbsolute:
+	panDist = _verPanInfo.absPan;
+	break;
+
+      default:
+	DOASSERT(false, "Bad pan mode");
+	return;
+	break;
+      }
+
+      filter.yLow += panFactor * panDist;
+      filter.yHigh = filter.yLow + height;
+
+      if (cmdContainerp->getMake() == CmdContainer::CSGROUP) {
+        CommandObj *    cmdObj = GetCommandObj();
+        cmdObj->SetVisualFilter(this, &filter);
+      } else if (cmdContainerp->getMake() == CmdContainer::MONOLITHIC) {
+        SetVisualFilter(filter);
+      }
+    } else { 
       Camera camera = GetCamera();
       camera.pan_up+=0.10*panFactor;
       SetCamera(camera);

@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.189  1999/05/14 14:00:55  wenger
+#	User can now control data font family, weight, and slant, on a per-view
+#	basis.
+#	
 #	Revision 1.188  1999/05/07 14:14:01  wenger
 #	Piled view symbols now working: pile name is specified in parent view's
 #	mapping, views are piled by Z specified in parent's mapping; changes
@@ -1663,6 +1667,8 @@ menu .mbar.view.menu.configmenu -tearoff false
     -command { GetViewHome }
 .mbar.view.menu.configmenu add command -label "Horiz. Scroll" \
     -command { GetViewHorPan }
+.mbar.view.menu.configmenu add command -label "Vert. Scroll" \
+    -command { GetViewVerPan }
 
 # WINDOW MENU.
 menu .mbar.window.menu -tearoff 0

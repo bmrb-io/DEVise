@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.62  1999/05/07 14:13:53  wenger
+  Piled view symbols now working: pile name is specified in parent view's
+  mapping, views are piled by Z specified in parent's mapping; changes
+  include improvements to the Dispatcher because of problems exposed by
+  piled viewsyms; for now, view symbol piles are always linked (no GUI or
+  API to change this).
+
   Revision 1.61  1999/05/03 17:43:47  wenger
   Fixed some stuff that shouldn't have been committed yet.
 
@@ -2962,6 +2969,7 @@ DeviseCommand_viewGetHome::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_viewGetHorPan::Run(int argc, char** argv)
 {
@@ -2987,6 +2995,7 @@ DeviseCommand_viewGetHorPan::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_getCursorGrid::Run(int argc, char** argv)
 {
@@ -4338,6 +4347,7 @@ DeviseCommand_dataSegment::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_viewSetHorPan::Run(int argc, char** argv)
 {
@@ -4364,6 +4374,7 @@ DeviseCommand_viewSetHorPan::Run(int argc, char** argv)
     }
     return true;
 }
+
 int
 DeviseCommand_setCursorGrid::Run(int argc, char** argv)
 {
@@ -5741,6 +5752,59 @@ IMPLEMENT_COMMAND_BEGIN(setCursorFixedSize)
 		return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in setCursorFixedSize\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewGetVerPan)
+    // Arguments: <viewName>
+    // Returns: <mode> <relativePan> <absolutePan>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+        ViewPanInfo info;
+        view->GetVerPanInfo(info);
+        char buf[100];
+        sprintf(buf, "%d %f %f", (int) info.mode, info.relPan, info.absPan);
+        ReturnVal(API_ACK, buf);
+        return 1;
+    } else {
+		fprintf(stderr, "Wrong # of arguments: %d in viewGetVerPan\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewSetVerPan)
+    // Arguments: <viewName> <mode> <relativePan> <absolutePan>
+	// Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 5) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+        ViewPanInfo info;
+        info.mode = (ViewPanMode) atoi(argv[2]);
+        info.relPan = atof(argv[3]);
+        info.absPan = atof(argv[4]);
+        view->SetVerPanInfo(info);
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in viewSetVerPan\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

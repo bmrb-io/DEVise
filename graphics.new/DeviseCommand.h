@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  1999/04/29 17:36:41  wenger
+  Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
+
   Revision 1.33  1999/04/22 19:29:52  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -1691,6 +1694,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setCursorFixedSize) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewGetVerPan) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewSetVerPan) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.51  1999/05/14 13:59:52  wenger
+  User can now control data font family, weight, and slant, on a per-view
+  basis.
+
   Revision 1.50  1999/04/29 17:36:31  wenger
   Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
 
@@ -1033,6 +1037,7 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "viewGetHome", "viewSetHome", instance);
 
   status += SaveParams(saveData, "viewGetHorPan", "viewSetHorPan", instance);
+  status += SaveParams(saveData, "viewGetVerPan", "viewSetVerPan", instance);
 
   status += SaveParams(saveData, "getViewGDS", "setViewGDS", instance);
 
