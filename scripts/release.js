@@ -19,6 +19,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2001/09/05 19:33:26  wenger
+#  Added bin2 and dyn_lib directories in JavaScreen release and install,
+#  and made corresponding changes to scripts; other distribution-related
+#  changes.
+#
 #  Revision 1.4  2001/08/30 16:47:11  wenger
 #  Various improvements to release and install scripts.
 #
@@ -149,8 +154,8 @@ pushd $src > /dev/null
 
 set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
-    DEVise_savepid js.cgi check_connect check_jsall check_jspop jspop \
-    js js_cgi restart_jspop jspop.kill kill_jsall ports+files get_stats \
+    js.cgi check_connect check_jsall check_jspop jspop \
+    js js_cgi restart_jspop jspop.kill kill_jsall ports+files \
     get_timestamp run_top run_check jspop_savepid users.cfg install_js \
     Tasvir)
 foreach file ($files)

@@ -35,7 +35,7 @@ do
   fi
 done
 
-info=`ports+files $idStr`
+info=`./ports+files $idStr`
 outfile=`echo $info | cut -d' ' -f4`
 
 if [ `hostname` = "yola" ]

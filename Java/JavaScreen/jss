@@ -12,6 +12,8 @@
 
 ############################################################
 
-set path = ( /s/java-1/bin $path )
+# The JSS can't manage to find DEVise.jspop and DEVise.kill unless
+# '.' is in our path.
+set path = ( . $path )
 
-nohup jss_savepid $* &
+nohup ./jss_savepid $* &

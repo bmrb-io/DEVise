@@ -31,7 +31,7 @@ endif
 
 
 # Get the port numbers and log file names.
-set info = `ports+files $idStr`
+set info = `./ports+files $idStr`
 set popPort = `echo $info | cut -d' ' -f2`
 set jssPort = `echo $info | cut -d' ' -f3`
 set jssFile = `echo $info | cut -d' ' -f5`
@@ -42,12 +42,12 @@ echo "Restarting jss and associated processes on `hostname`."
 
 
 # Kill the existing processes.
-jss.kill $idStr
-DEVise.kill $idStr
+./jss.kill $idStr
+./DEVise.kill $idStr
 
 
 # Rename the log files.
-set timestamp = `get_timestamp`
+set timestamp = `./get_timestamp`
 set jssFile_new = $jssFile.$timestamp
 set dFile_new = $dFile.$timestamp
 echo "Saving log files as $jssFile_new and $dFile_new"
@@ -67,4 +67,4 @@ set scriptArg = ""
 if ($idStr == "soil") then
   set scriptArg = "-devisescriptDEVise.jspop_soil"
 endif
-jss -id$idStr -server$serverCount $hostArg -jssport$jssPort -jspopport$popPort $scriptArg
+./jss -id$idStr -server$serverCount $hostArg -jssport$jssPort -jspopport$popPort $scriptArg

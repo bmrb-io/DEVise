@@ -28,6 +28,7 @@ clean:
 	-rm -rf bin2
 	-rm -rf dyn_lib
 	-rm install_info
+	-rm -rf logs
 
 bin2:
 	mkdir bin2
@@ -53,4 +54,4 @@ logs:
 
 .PHONY: install
 install: install_info
-	install_js
+	./install_js

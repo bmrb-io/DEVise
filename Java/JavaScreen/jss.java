@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2001/07/30 19:56:56  wenger
+// Removed extra argument from one invocation of the JSS_Add command in the
+// jss; corrected the corresponding documentation.
+//
 // Revision 1.15  2001/05/11 20:36:16  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -152,23 +156,28 @@ public class jss implements Runnable
             System.exit(1);
         }
 
-        System.out.println("\nTry to start jss server socket at port" + jssPort + " ...\n");
+        System.out.println("\nTry to start jss server socket at port" +
+		  jssPort + " ...\n");
         try {
             jssServerSocket = new ServerSocket(jssPort);
         } catch (IOException e) {
-            System.err.println("Can not start server socket at port " + jssPort);
+            System.err.println("Can not start server socket at port " +
+			  jssPort);
 	        System.err.println(e.getMessage());
             quit();
         }
 
-        System.out.println("Try to start " + devisedNumber + " devised server ...\n");
+        System.out.println("Trying to start " + devisedNumber +
+		  " devised server ...\n");
         try {
             devised newserver = null;
             for (int i = 0; i < devisedNumber; i++) {
                 newserver = new devised(idStr, devisedScript);
                 deviseds.addElement(newserver);
-                System.out.println("Successfully start devised no." + (i + 1) + " out of " + devisedNumber + "\n");
+                System.out.println("Successfully start devised no." +
+				  (i + 1) + " out of " + devisedNumber + "\n");
             }
+            System.out.println("  Successfully started DEVise server(s)");
         } catch (YException e) {
             System.err.println(e.getMsg());
             quit();
@@ -545,7 +554,7 @@ class devised
         //System.out.println("I am in devised-start");
         stop();
 
-        // find three free port for new devised
+        // find two free ports for new devised
         ServerSocket socket1 = null, socket3 = null;
         try {
             //System.out.println("Try to find 2 available ports ... ");
@@ -564,14 +573,16 @@ class devised
                 try {
                     socket1.close();
                 } catch (IOException e) {
-                    System.err.println("Cannot close socket at port " + cmdPort);
+                    System.err.println("Cannot close socket at port " +
+					  cmdPort);
                 }
             }
             if (socket3 != null) {
                 try {
                     socket3.close();
                 } catch (IOException e) {
-                    System.err.println("Cannot close socket at port " + switchPort);
+                    System.err.println("Cannot close socket at port " +
+					  switchPort);
                 }
             }
         }
@@ -581,13 +592,19 @@ class devised
         try {
 			String execStr = startScript;
 			if (idStr != null) execStr += " -id " + idStr;
-			execStr += " -port " + cmdPort + " -imageport " + imgPort + " -switchport " + switchPort;
+			execStr += " -port " + cmdPort + " -imageport " + imgPort +
+			  " -switchport " + switchPort;
 			System.out.println("Try to start command \"" + execStr + "\" ...");
             process = currentRT.exec(execStr);
+			System.out.println("  Sucessfully started DEVise server");
         } catch (IOException e) {
-            throw new YException("IO Error while trying to start a new devised at port " + cmdPort + "," + imgPort + "," + switchPort);
+            throw new YException("IO Error (" + e.getMessage() +
+			  ") while trying to start a new devised at port " + cmdPort +
+			  "," + imgPort + "," + switchPort);
         } catch (SecurityException e) {
-            throw new YException("Security Error while trying to start a new devised at port " + cmdPort + "," + imgPort + "," + switchPort);
+            throw new YException("Security Error (" + e.getMessage() +
+			  ") while trying to start a new devised at port " + cmdPort +
+			  "," + imgPort + "," + switchPort);
         }
     }
 
@@ -623,13 +640,18 @@ class devised
                 }
             }
         } catch (IOException e) {
-            System.err.println("IO Error while trying to kill an old devised at port " + cmdPort + "," + imgPort + "," + switchPort);
+            System.err.println("IO Error (" + e.getMessage() +
+			  ") while trying to kill an old devised at port " + cmdPort +
+			  "," + imgPort + "," + switchPort);
         } catch (SecurityException e) {
-            System.err.println("Security Error while trying to kill an old devised at port " + cmdPort + "," + imgPort + "," + switchPort);
+            System.err.println("Security Error (" + e.getMessage() +
+			  ") while trying to kill an old devised at port " + cmdPort +
+			  "," + imgPort + "," + switchPort);
         } finally {
-            kill.destroy();
+            if (kill != null) kill.destroy();
             kill = null;
         }
+
         //System.out.println("leaving stop");
         cmdPort = 0;
         imgPort = 0;

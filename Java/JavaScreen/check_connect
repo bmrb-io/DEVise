@@ -16,4 +16,4 @@ endif
 limit cputime 10
 limit coredumpsize 0
 
-java JavaScreen.DEViseCheckPop $*
+bin2/java JavaScreen.DEViseCheckPop $*

@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.26  2001/09/12 20:34:30  wenger
+#  Incremented JS version to 4.4; various fixes because of install problems
+#  on pumori.
+#
 #  Revision 1.25  2001/07/20 18:04:14  wenger
 #  Added hostname to pid files.
 #
@@ -168,10 +172,10 @@ done
 connected=0
 if [ $foundPop = 1 ]
 then
-  info=`ports+files $idStr`;
+  info=`./ports+files $idStr`;
   port=`echo $info | cut -d' ' -f1`
 
-  result=`check_connect -port$port 2>check_connect.err`
+  result=`./check_connect -port$port 2>check_connect.err`
 
   if [ "$result" = "OK" ]
   then

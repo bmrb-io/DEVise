@@ -33,7 +33,7 @@ endif
 
 
 # Get the port numbers and log file names.
-set info = `ports+files $idStr`
+set info = `./ports+files $idStr`
 set cmdPort = `echo $info | cut -d' ' -f1`
 set popPort = `echo $info | cut -d' ' -f2`
 set popFile = `echo $info | cut -d' ' -f4`
@@ -43,11 +43,11 @@ echo "Restarting jspop on `hostname`."
 
 
 # Kill the jspop if it's running.
-jspop.kill $idStr
+./jspop.kill $idStr
 
 
 # Rename jspop log file.
-set timestamp = `get_timestamp`
+set timestamp = `./get_timestamp`
 set popFile_new = $popFile.$timestamp
 echo "Saving log file as $popFile_new"
 mv $popFile $popFile_new
@@ -55,14 +55,14 @@ mv $popFile $popFile_new
 
 # Restart the jspop.
 sleep 15
-jspop -id$idStr -cmdport$cmdPort -jspopport$popPort
+./jspop -id$idStr -cmdport$cmdPort -jspopport$popPort
 
 
 # Restart the jss.
 if ($jssHost == "") then
-  restart_jss $idStr $serverCount
+  ./restart_jss $idStr $serverCount
 else
   # Note: background the whole rsh command because rsh won't return until
   # the jss started by this command dies(!).  RKW 2000-12-08.
-  rsh $jssHost "cd $jssPath; restart_jss $idStr $serverCount `hostname`" &
+  rsh $jssHost "cd $jssPath; ./restart_jss $idStr $serverCount `hostname`" &
 endif

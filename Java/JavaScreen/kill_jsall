@@ -30,12 +30,12 @@ echo -n "Are you absolutely sure you want to do this? [N] "
 set answer = $<
 if ($answer == y || $answer == Y) then
   if ($idString == "") then
-    jspop.kill
-    jss.kill
-    DEVise.kill
+    ./jspop.kill
+    ./jss.kill
+    ./DEVise.kill
   else
-    jspop.kill $idString
-    jss.kill $idString
-    DEVise.kill $idString
+    ./jspop.kill $idString
+    ./jss.kill $idString
+    ./DEVise.kill $idString
   endif
 endif

@@ -35,7 +35,7 @@ do
   fi
 done
 
-info=`ports+files $idStr`
+info=`./ports+files $idStr`
 joutfile=`echo $info | cut -d' ' -f5`
 doutfile=`echo $info | cut -d' ' -f6`
 
@@ -81,4 +81,4 @@ rm $pidfile
 # finishes rsh exits, which screws up any DEVise_savepid scripts that are
 # still running -- stupid rsh!) although it might be a good idea anyhow,
 # since if the jss dies, the deviseds don't do us any good anyhow.
-DEVise.kill $idStr
+./DEVise.kill $idStr

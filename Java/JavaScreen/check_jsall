@@ -37,7 +37,7 @@ set popCheck = `./check_jspop $idStr`
 if ($jssHost == "") then
   set jssCheck = `./check_jss $idStr`
 else
-  set jssCheck = `rsh $jssHost "cd $jssPath; check_jss $idStr"`
+  set jssCheck = `rsh $jssHost "cd $jssPath; ./check_jss $idStr"`
 endif
 
 set date = `date`

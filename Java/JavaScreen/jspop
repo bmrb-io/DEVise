@@ -14,4 +14,4 @@
 
 set path = ( /s/java-1/bin $path )
 
-nohup jspop_savepid $* &
+nohup ./jspop_savepid $* &
