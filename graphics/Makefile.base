@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.32  1996/12/11 20:36:06  wenger
+#  Added 'cslib' target to top-level makefiles; added 'lib' targets
+#  to library makefiles.
+#
 #  Revision 1.31  1996/11/26 16:47:43  ssl
 #  Added support for Stacked Opaque and Transparent views
 #
@@ -50,7 +54,7 @@
 include ../../Makefile.common
 
 CFLAGS = -gstabs $(ARCH_FLAGS)  -I../../graphics.new -I../../generic \
-	-I../../util -I../../tape \
+	-I../../util -I../../tape -I../../DTE/RTree \
 	-fexternal-templates -Wall -Wno-unused $(OPTFLAG) -DUNIX -DGRAPHICS
 
 LIBSRC = AttrList.c AxisLabelClassInfo.c \

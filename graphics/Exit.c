@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/11/26 09:29:59  beyer
+  The exit code now removes the temp directory for its process.
+  This could be more portable -- right now it just calls 'rm -fr'.
+
   Revision 1.9  1996/09/04 21:24:48  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -57,8 +61,12 @@
 #include "DaliIfc.h"
 #endif
 
+#include "RTreeCommon.h"
+
 void Exit::DoExit(int code)
 {
+	shutdown_system(VolumeName, RTreeFile, VolumeSize);
+
 #ifndef LIBCS
   if (Init::DoAbort()) {
     fflush(stdout);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1996/12/12 22:01:04  jussi
+  Moved signal() setup to Dispatcher.c.
+
   Revision 1.25  1996/12/03 20:24:08  jussi
   Removed unused command line parameters. Changed BufPolicies().
 
@@ -122,6 +125,7 @@
 #include "BufPolicy.h"
 #include "Util.h"
 #include "Version.h"
+#include "RTreeCommon.h"
 
 static char uniqueFileName[100];
 
@@ -252,6 +256,9 @@ static void Usage(char *prog)
 
 void Init::DoInit(int &argc, char **argv)
 {
+
+  initialize_system(VolumeName, RTreeFile, VolumeSize);
+
   /* Create work directory, if needed */
   char *workDir = getenv("DEVISE_WORK");
   if (!workDir)
