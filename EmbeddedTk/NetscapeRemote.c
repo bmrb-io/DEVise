@@ -160,9 +160,9 @@ mozilla_remote_find_window (Display *dpy)
     }
   else
     {
-      fprintf (stderr, "%s: Netscape? is not running on display %s\n",
+      fprintf (stderr, "%s: cannot find Netscape window on display %s\n",
 	       progname, DisplayString (dpy));
-      exit (1);
+      return NULL;
     }
 }
 
@@ -556,15 +556,19 @@ void BrowserInit()
   } else {
     mozilla_remote_check_window(dpy, window);
   }
-  XSelectInput (dpy, window, (PropertyChangeMask|StructureNotifyMask));
+  if (window) {
+    XSelectInput (dpy, window, (PropertyChangeMask|StructureNotifyMask));
+  }
 }
 
 
 int BrowserOpenURLCmd(ClientData clientData, Tcl_Interp *interp,
                       int argc, char *argv[])
 {
-  assert(dpy);
-  assert(window);
+  if (!dpy || !window) {
+    fprintf(stderr, "%s: can't communicate with browser\n", progname);
+    return TCL_ERROR;
+  }
 
   if( argc != 2 ) {
     Tcl_SetResult(interp, "Usage: BrowserOpenURL [url]", TCL_STATIC);
