@@ -46,7 +46,7 @@ typedef double Coord;
 
 /* Report error ("FYI" to user) */
 #ifdef ALWAYS_TELL_ERROR
-    #define TELL_ERROR(e) 	{fprintf(stderr, e); fprintf(stderr, "\n");}
+    #define TELL_ERROR(e) 	{printf(e); printf("\n");}
 #else
     #define TELL_ERROR(e) 	{}
 #endif
