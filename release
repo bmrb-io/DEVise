@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  1996/07/08 14:27:48  jussi
+#  Added multi/disp to the list of executables to be released.
+#
 #  Revision 1.5  1996/05/16 19:39:43  jussi
 #  Added Solaris/Sparc. Added tentative support for AIX.
 #
@@ -37,6 +40,7 @@
 
 set files = "solaris/generic/generic solsparc/generic/generic \
 	sun/generic/generic hp/generic/generic \
+	hp/generic/generic.static sun/generic/generic.static \
         solaris/multi/disp solsparc/multi/disp \
 	sun/multi/disp hp/multi/disp \
 	lib/control.tk doc/userman.ps doc/sysman.ps \
@@ -79,12 +83,20 @@ echo ""
 echo Releasing new copy of generic Devise executables...
 ls -l solaris/generic/generic $target/sunx86_54/devise
 cp -p solaris/generic/generic $target/sunx86_54/devise
+
 ls -l solsparc/generic/generic $target/sun4m_54/devise
 cp -p solsparc/generic/generic $target/sun4m_54/devise
+
 ls -l sun/generic/generic $target/sun4m_412/devise
 cp -p sun/generic/generic $target/sun4m_412/devise
+ls -l sun/generic/generic.static $target/sun4m_412/devise.static
+cp -p sun/generic/generic.static $target/sun4m_412/devise.static
+
 ls -l hp/generic/generic $target/hp700_ux90/devise
 cp -p hp/generic/generic $target/hp700_ux90/devise
+ls -l hp/generic/generic.static $target/hp700_ux90/devise.static
+cp -p hp/generic/generic.static $target/hp700_ux90/devise.static
+
 #ls -l aix/generic/generic $target/rs_aix32/devise
 #cp -p aix/generic/generic $target/rs_aix32/devise
 

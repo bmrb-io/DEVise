@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/08/07 15:15:19  guangshu
+  Add include string.h.
+
   Revision 1.21  1996/08/04 21:00:41  beyer
   Reorganized and simplified the dispatcher.  Multiple dispatchers are no
   longer allowed.  Inserting and removing callbacks uses one list.
@@ -151,7 +154,7 @@ class Selection;
 /* the one and only global dispatcher */
 extern Dispatcher dispatcher;
 
-DefinePtrDList(DeviseWindowList, DeviseWindow *);
+//DefinePtrDList(DeviseWindowList, DeviseWindow *);
 DefinePtrDList(DispatcherInfoList, DispatcherInfo *);
 
 
@@ -185,7 +188,7 @@ public:
     } 
   }
 
-  /* Register callback, all == TRUE if register with ALL dispatchers. */
+  /* Register callback */
   DispatcherID Register(DispatcherCallback *c, int priority = 10,
 			StateFlag flag = GoState, 
 			Boolean ignored = false, // parameter no longer used
@@ -230,7 +233,7 @@ public:
   /* Notify dispatcher that we need to quit program */
   static void QuitNotify();
 
-  /* Cleanup all dispatchers */
+  /* Cleanup dispatcher */
   static void Cleanup() { dispatcher.DoCleanup(); }
 
   /***********************************************************************/

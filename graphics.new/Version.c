@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/08/05 19:48:59  wenger
+  Fixed compile errors caused by some of Kevin's recent changes; changed
+  the attrproj stuff to make a .a file instead of a .o; added some more
+  TData file writing stuff; misc. cleanup.
+
   Revision 1.3  1996/07/29 21:45:08  wenger
   Fixed various compile errors and warnings.
 
@@ -46,7 +51,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.1.4";
+static const char *	version = "1.1.5";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1996";
