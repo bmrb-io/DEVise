@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/09/29 21:23:31  ravim
+  Added support for precision 6.
+
   Revision 1.5  1995/09/22 22:36:41  jussi
   Added tape block size parameter.
 
@@ -318,8 +321,8 @@ int find_rec(FILE *idxfile, char fname[], char fvalue[], int *off,
 /*-------------------------------------------------------------------*/
 
 /* This function generates data corr. to the passed year.
-   off1 represents the start of the data array for the first set of 
-   attrs (1-175) and off2 is the start of the data array for the second 
+   dat1 represents the start of the data array for the first set of 
+   attrs (1-175) and dat2 is the start of the data array for the second 
    set (176-350). */
 void generate_dat(char *dat1, char *dat2, int year,
 		  FILE *outfile)
@@ -331,25 +334,29 @@ void generate_dat(char *dat1, char *dat2, int year,
   fprintf(outfile, "%d ", year);
 
   /* output values of fields from the first data array */
+  pos = 0;
   for (i = 0; i < COMP_DAT_FIELDS_1; i++)
   {
-    pos = comp_dat_1[i*COMP_NUM_PER_DAT];
-    len = comp_dat_1[i*COMP_NUM_PER_DAT + 1];
-    pre = comp_dat_1[i*COMP_NUM_PER_DAT + 2];
+    len = comp_dat_1[i*COMP_NUM_PER_DAT];
+    pre = comp_dat_1[i*COMP_NUM_PER_DAT + 1];
 
     val = comp_get_val(dat1+pos, len, pre);
     fprintf(outfile, "%f ", val);
+    /* Increment pos based on length of this attr */
+    pos += len;
   }
 
   /* output values of fields from the second data array */
+  pos = 0;
   for (i = 0; i < COMP_DAT_FIELDS_2; i++)
   {
-    pos = comp_dat_2[i*COMP_NUM_PER_DAT];
-    len = comp_dat_2[i*COMP_NUM_PER_DAT + 1];
-    pre = comp_dat_2[i*COMP_NUM_PER_DAT + 2];
+    len = comp_dat_2[i*COMP_NUM_PER_DAT];
+    pre = comp_dat_2[i*COMP_NUM_PER_DAT + 1];
 
     val = comp_get_val(dat2+pos, len, pre);
     fprintf(outfile, "%f ", val);
+    /* Increment pos based on length of this attr */
+    pos += len;
   }
 
   /* Output new line - end of record for this year */
