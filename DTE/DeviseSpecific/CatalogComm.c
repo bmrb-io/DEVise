@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/04/19 21:48:47  wenger
+  Removed assertion in getDirAndFileNames() to not crash on unsuccessful
+  data source searches.
+
   Revision 1.27  1998/04/14 17:04:00  donjerko
   Removed command "schema", using typecheck "select * from ..." instead.
 
@@ -173,7 +177,7 @@ char* dteListCatalog(const char* catName, int& errorCode){
 }
 
 char* dteShowCatalogEntry(const char* tableName){
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
 	cout << "in dteShowCatalogEntry(" << tableName << ")\n";
 #endif
 	char* entryName;
@@ -189,20 +193,16 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 
 	string err = "Failed to show catalog entry " + string(entryName);
 
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
 	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
 #endif
 	string query = "select cat.name, cat.interf from " +
 		string(catName) + " as cat where cat.name = " +
 		addSQLQuotes(entryName, '\'');
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	Engine engine(query);
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	CHECK(engine.optimize(), err, 0);
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	string retVal;
 	const Tuple* tup = engine.getFirst();
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
 	if(!tup){
 //		cerr << "query = " << query << endl << " is empty " << endl;
 		return strdup("");
@@ -211,7 +211,7 @@ char* dteShowCatalogEntry(const char* catName, const char* entryName){
 	retVal += " ";
 	CHECK(retVal += InterfWrapper::getInterface(tup[1])->guiRepresentation(),
 		err, 0);
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
   	cerr << "Returning: " << retVal << endl;
 #endif
 	return strdup(retVal.c_str());

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  1998/04/14 21:03:13  wenger
+  TData attribute links (aka set links) are working except for actually
+  creating the join table, and some cleanup when unlinking, etc.
+
  */
 
 #include <stdio.h>
@@ -4048,19 +4052,27 @@ DeviseCommand_checkTDataForRecLink::Run(int argc, char** argv)
     if (ret_value)
     {
         {
-          RecordLink *link = (RecordLink *)classDir->FindInstance(argv[1]);
+          DeviseLink *link = (DeviseLink *)classDir->FindInstance(argv[1]);
           if (!link) {
-    	control->ReturnVal(API_NAK, "Cannot find link");
-    	return -1;
+    	    control->ReturnVal(API_NAK, "Cannot find link");
+    	    return -1;
           } 
           ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
           if (!view) {
-    	control->ReturnVal(API_NAK, "Cannot find view");
-    	return -1;
+    	    control->ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
           }
-          sprintf(result, "%d", (link->CheckTData(view, atoi(argv[3]))) ?  1 : 0);
-          control->ReturnVal(API_ACK, result);
-          return 1;
+
+	  if (link->GetFlag() & VISUAL_RECORD) {
+	    RecordLink *recLink = (RecordLink *)link;
+            sprintf(result, "%d",
+	      (recLink->CheckTData(view, atoi(argv[3]))) ?  1 : 0);
+            control->ReturnVal(API_ACK, result);
+            return 1;
+	  } else {
+            control->ReturnVal(API_ACK, "1");
+            return 1;
+	  }
         }      
     }
     return ret_value;

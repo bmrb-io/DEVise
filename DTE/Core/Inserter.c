@@ -88,7 +88,7 @@ void UniqueInserter::close()
 
 	// do duplicate elimination here
 
-	cerr << tmpFile << endl;
+	//cerr << tmpFile << endl;
 
 	int numFlds = schema.getNumFlds();
 	const TypeID* types = schema.getTypeIDs();

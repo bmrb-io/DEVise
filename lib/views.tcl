@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.48  1998/04/10 18:29:52  wenger
+#  TData attribute links (aka set links) mostly implemented through table
+#  insertion; a crude GUI for creating them is implemented; fixed some
+#  bugs in link GUI; changed order in session file for TData attribute links.
+#
 #  Revision 1.47  1998/02/26 19:05:33  beyer
 #  updated histogram dialog
 #
@@ -1078,7 +1083,6 @@ proc DeleteLink { link } {
 
 # Set current view as master
 proc DoSetLinkMaster {} {
-puts "DIAG DoSetLinkMaster"
     global curView dialogListVar
 
     if {![CurrentView]} {

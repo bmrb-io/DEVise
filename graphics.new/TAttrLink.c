@@ -29,6 +29,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/04/16 16:52:36  wenger
+  Further improvements to set/tdata attribute links, but not quite working
+  yet...
+
   Revision 1.3  1998/04/15 17:14:22  wenger
   Committed version of TAttrLink.c that exposes possible DTE wild
   pointer problem; added DEVISE_ID_FILE and DEVISE_DEF_FILE to
@@ -57,13 +61,11 @@
 #include "Init.h"
 #include "Control.h"
 #include "AttrList.h"
-#include "DataSeg.h"//TEMPTEMP
 
 #include "RelationManager.h"
 #include "types.h"
 #include "Inserter.h"
 #include "CatalogComm.h"
-#include "TDataDQLInterp.h"//TEMPTEMP?
 
 //#define DEBUG
 
@@ -71,7 +73,7 @@ class SlaveViewInfo {
 public:
   View *view;
   TDataMap *oldMap;
-  //TEMPTEMP -- need to save relation ID of new slave table
+  //TEMP -- need to save relation ID of new slave table
 };
 
 /*------------------------------------------------------------------------------
@@ -135,7 +137,7 @@ TAttrLink::SetFlag(VisualFlag flag)
 void
 TAttrLink::SetMasterView(ViewGraph *view)
 {
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
   printf("TAttrLink(%s)::SetMasterView(%s)\n", _name,
       view != NULL ? view->GetName() : "NULL");
 #endif
@@ -201,7 +203,7 @@ TAttrLink::InsertView(ViewGraph *view)
 bool
 TAttrLink::DeleteView(ViewGraph *view)
 {
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
   printf("TAttrLink(%s)::DeleteView(%s)\n", _name, view->GetName());
 #endif
 
@@ -228,9 +230,9 @@ TAttrLink::DeleteView(ViewGraph *view)
 	    classDir->DestroyInstance(map->GetName());
 	  }
 
-//TEMPTEMP -- should we delete the slave mapping and TData?
+//TEMP -- should we delete the slave mapping and TData?
 
-	  //TEMPTEMP -- maybe make a new mapping with the old TData so
+	  //TEMP -- maybe make a new mapping with the old TData so
 	  // we keep any changes made in the mapping
           view->InsertMapping(slaveInfo->oldMap, "");
 	  _slaveViewInfo.DeleteCurrent(index);
@@ -417,10 +419,15 @@ TAttrLink::Done()
   _inserter->close();
   if (currExcept) {
     cerr << currExcept->toString() << endl;
+    currExcept = NULL;
   }
 
   delete _inserter;
   _inserter = NULL;
+
+  //
+  // Create TDatas for all slave views that don't have them.
+  //
 
   //
   // Invalidate the TDatas of all slave views.
@@ -429,7 +436,7 @@ TAttrLink::Done()
   while (More(index)) {
     ViewGraph *view = Next(index);
     TData *tdata = GetTData(view);
-    //TEMPTEMP -- for some reason this also changes the slave's visual filter!
+    //TEMP -- for some reason this also changes the slave's visual filter!
     if (tdata != NULL) tdata->InvalidateTData();
   }
   DoneIterator(index);
@@ -563,7 +570,7 @@ TAttrLink::CreateTable(ViewGraph *masterView)
     return StatusFailed;
   }
 #if defined(DEBUG)
-  printf("  Created table file %s\n", _tableFile);
+  printf("  Created master table file %s\n", _tableFile);
 #endif
 
   _tableExists = true;
@@ -579,11 +586,11 @@ TAttrLink::CreateTable(ViewGraph *masterView)
 DevStatus
 TAttrLink::SetSlaveTable(ViewGraph *view)
 {
-#if defined(DEBUG) || 1 //TEMPTEMP
+#if defined(DEBUG)
   printf("TAttrLink(%s)::SetSlaveTable(%s)\n", _name, view->GetName());
 #endif
 
-//TEMPTEMP -- setting master several times causes original TData for
+//TEMP -- setting master several times causes original TData for
 //slaves to be lost
 // maybe we should always unlink slave view before calling this -- or
 // delete the slave table and mapping for it
@@ -622,70 +629,59 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
   //
   const int nameSize = 128;
   char slaveTableName[nameSize];
-  memset((void *)slaveTableName, 0, nameSize);//TEMPTEMP?
+  memset((void *)slaveTableName, 0, nameSize);
   if (result.IsComplete()) {
+
+    // Generate query for slave table.
     const int querySize = 1024;
     char query[querySize];
-    memset((void *)query, 0, querySize);//TEMPTEMP?
+    memset((void *)query, 0, querySize);
     ostrstream ost(query, querySize);
 
-#if 1 //TEMPTEMP
-//TEMPTEMP -- do we want recId in here?
     ost << "select ";
 
+    int count = 0;
     AttrList *tdAttrs = tdata->GetAttrList();
     tdAttrs->InitIterator();
     while (tdAttrs->More()) {
       AttrInfo *attr = tdAttrs->Next();
-      ost << "t1." << attr->name << ", ";
+
+      // Don't put recId into query.
+      if (strcmp(attr->name, "recId")) {
+        if (count > 0) ost << ", ";
+        ost << "t1." << attr->name;
+        count++;
+      }
     }
     tdAttrs->DoneIterator();
     ost << " from " << tdata->GetName() << " as t1, " << *_relId <<
         " as t2 where t1." << _slaveAttrName << " = t2." << _masterAttrName;
+
+#if defined(DEBUG)
+    printf("  slave table query = %s\n", query);
 #endif
 
+    // Generate attribute list for slave table.
 
-
-
-#if 0
-//TEMPTEMP -- Donko says not to use select *
-#if 0 //TEMPTEMP
-    ost << "select * from " << tdata->GetName() << " as t1, " << *_relId <<
-	" as t2 where t1." << _slaveAttrName << " = t2." << _masterAttrName;
-#else
-    ost << "select t1.\"recId\", t1.\"X\", t1.\"Y\", t1.\"Color\", t1.\"Name\" from "
-	<< tdata->GetName() << " as t1, " << *_relId <<
-	" as t2 where t1." << _slaveAttrName << " = t2." << _masterAttrName;
-#endif
-#endif
-    printf("  query = %s\n", query);//TEMPTEMP
-
-#if 0 //TEMPTEMP
-    int numFlds = 5;//TEMPTEMP
-    string *attributeNames = new string[5];
-    attributeNames[0] = "recId";
-    attributeNames[1] = "X";
-    attributeNames[2] = "Y";
-    attributeNames[3] = "Color";
-    attributeNames[4] = "Name";
-#endif
-#if 1 //TEMPTEMP
-    int numFlds = tdAttrs->NumAttrs();
+    // -1 because we don't include recId.
+    int numFlds = tdAttrs->NumAttrs() - 1;
     string *attributeNames = new string[numFlds];
 
-//TEMPTEMP -- do we want recId in here?
-    int count = 0;
+    count = 0;
     tdAttrs->InitIterator();
     while (tdAttrs->More()) {
       AttrInfo *attr = tdAttrs->Next();
-      attributeNames[count] = attr->name;
-      count++;
+
+      // Don't put recId into attribute list.
+      if (strcmp(attr->name, "recId")) {
+        attributeNames[count] = attr->name;
+        count++;
+      }
     }
     tdAttrs->DoneIterator();
-#endif
     ViewInterface vi(numFlds, attributeNames, query);
 
-#if 1 //TEMPTEMP
+    // Create the table.
     RelationId newRelId = RELATION_MNGR.registerNewRelation(vi);
     if (currExcept) {
       cerr << currExcept->toString() << endl;
@@ -695,21 +691,9 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
 
     ostrstream nost(slaveTableName, nameSize);
     nost << newRelId;
-#endif
 
-#if 0 //TEMPTEMP
-    sprintf(slaveTableName, "slave_table");//TEMPTEMP
-    char buf[1024];
-    sprintf(buf, "\"%s\" SQLView 4 X Y Color Name \"%s\"", slaveTableName, query);
-    dteInsertCatalogEntry(".", buf);
-#endif
-/*TEMPTEMP*/printf("  newRelId: <%s>\n", slaveTableName);
-#if 0 //TEMPTEMP
-    DataSeg::Set(slaveTableName, "", 0, 0);
-    char query2[1024];
-    sprintf(query2, "select * from %s as t", slaveTableName);
-    TData *newTData = new TDataDQLInterp(slaveTableName, NULL, query2);
-    printf("newTData = 0x%p\n", newTData);
+#if defined(DEBUG)
+    printf("  newRelId: %s\n", slaveTableName);
 #endif
   }
 
@@ -738,19 +722,13 @@ TAttrLink::SetSlaveTable(ViewGraph *view)
 	map->GetName(), argc, argv);
 
     // argv[0] is TData name, argv[1] is mapping name.
-#if 0 //TEMPTEMP
-    argv[0] = ".testcolors2_table";//TEMPTEMP
-#else
     argv[0] = slaveTableName;
-#endif
     char mapNameBuf[1024];
     sprintf(mapNameBuf, "%s_slave", argv[1]);
     argv[1] = mapNameBuf;
 
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
     char *newMapName = classDir->CreateWithParams(
 	classInfo->CategoryName(), classInfo->ClassName(), argc, argv);
-/*TEMPTEMP*/printf("%s: %d\n", __FILE__, __LINE__);
     if (newMapName == NULL) {
       reportErrNosys("Can't create new mapping");
       result = StatusFailed;
