@@ -16,6 +16,8 @@
   $Id$
 
   $Log$
+  Revision 1.1  1995/12/06  21:25:13  jussi
+  Initial revision.
 */
 
 #include <assert.h>
@@ -57,9 +59,6 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
 #ifdef DEBUG
   printf("TileLayout::MapChildren 0x%x mapping children\n", this);
 #endif
-
-  if (!NumChildren())
-    return;
 
   int totalWeight = TotalWeight() + extraWeight;
 
@@ -136,6 +135,11 @@ void TileLayout::MapChildren(ViewWin *single, Boolean resize,
 
 void TileLayout::ComputeLayout(unsigned int w, unsigned int h, int numViews)
 {
+  if (numViews <= 1) {
+    horViews = verViews = 1;
+    return;
+  }
+
   // if width of vertical layout is fixed, arrange accordingly
   if (horRequested >= 1) {
     horViews = (horRequested < numViews ? horRequested : numViews);
