@@ -246,7 +246,7 @@ testpage: $(LIBOBJ) testpage.o
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) genStrData strData libclient.a libsercer.a\
+	-rm $(LIBNAME) genStrData strData libclient.a libserver.a\
 		libmonolith.a
 
 mostlyclean:
