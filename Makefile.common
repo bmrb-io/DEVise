@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1996/08/06 20:10:45  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
@@ -38,3 +42,6 @@ endif
 .C.o:
 	$(CC) -c $(CFLAGS) $<
 
+# Purify
+PURIFY = purify
+PURE_OPT = -g++=yes -collector=$(ARCH_COLLECTOR)

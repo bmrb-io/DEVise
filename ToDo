@@ -18,6 +18,9 @@ Set up makefiles to easily be able to compile with debugging or Purify.
 Set up makefiles and release script to make and release statically-linked
 versions of the monolithic executable. (jpm/rkw 8/5/96)
 
+Interface to Dali.  Allow images to be shown in Devise views, using Dali
+to draw the images. (ml/rkw 8/6/96)
+
 
 LOW PRIORITY
 ------------

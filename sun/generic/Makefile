@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  1996/07/18 14:10:25  jussi
+#  We now produce dynamically linked executables.
+#
 #  Revision 1.9  1996/07/13 02:17:57  jussi
 #  Removed /usr/unsup/lib which appeared unnecessary.
 #
@@ -35,6 +38,9 @@ ARCH_FLAGS   = -DSUN -I/s/tcl/include
 ARCH_LDFLAGS =  -L/s/tcl/lib
 ARCH_SYSLIBS = -ltk -ltcl -lXmu -lXt -lXext -lX11 -lm
 ARCH_LDPOST  =
+ARCH_STATIC_LDPOST  = -static
+ARCH_COLLECTOR	= \
+	/s/gcc-2.7.1/sun4m_412/lib/gcc-lib/sparc-sun-sunos4.1.3/2.7.1/ld
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base

@@ -26,3 +26,9 @@ multi: libs
 
 attrproj:
 	cd attrproj; make all; cd ..
+
+pure: libs
+	cd generic; make pure; cd ..
+	
+static: libs
+	cd generic; make static; cd ..

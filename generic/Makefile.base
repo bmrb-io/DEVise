@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19  1996/08/06 20:11:37  wenger
+#  Set up makefiles to easily compile with -g flag; other cleanup of
+#  makefiles.
+#
 
 ############################################################
 
@@ -47,32 +51,71 @@ SERVERLIB = ../graphics.new/libserver.a
 MONOLITHLIB = ../graphics.new/libmonolith.a
 
 all: generic devise devised deviseb
+pure: generic.pure devise.pure devised.pure deviseb.pure
+static: generic.static
 
-# Note: the first line below forces CompDate.c to always be compiled when
-# we link this module.
+# Note: the line below forces CompDate.c to always be compiled.
+FORCE_DATE = $(CC) -c $(CFLAGS) ../../generic/CompDate.c
+
+
+GENERIC = $(CC) -o $@ generic.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+	-lmonolith $(LDFLAGS)
 
 generic: generic.o $(ALLLIBS) $(MONOLITHLIB)
-	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
-	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
-		-lmonolith $(LDFLAGS) $(ARCH_LDPOST)
+	$(FORCE_DATE)
+	$(GENERIC) $(ARCH_LDPOST)
+
+generic.pure: generic.o $(ALLLIBS) $(MONOLITHLIB)
+	$(FORCE_DATE)
+	$(PURIFY) $(PURE_OPT) $(GENERIC) $(ARCH_LDPOST)
+
+generic.static: generic.o $(ALLLIBS) $(MONOLITHLIB)
+	$(FORCE_DATE)
+	$(GENERIC) $(ARCH_STATIC_LDPOST)
+
+
+DEVISED = $(CC) -o $@ generic.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+	-lserver $(LDFLAGS) $(ARCH_LDPOST)
 
 devised: generic.o $(ALLLIBS) $(SERVERLIB)
-	$(CC) -c $(CFLAGS) ../../generic/CompDate.c
-	$(CC) -o $@ generic.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
-		-lserver $(LDFLAGS) $(ARCH_LDPOST)
+	$(FORCE_DATE)
+	$(DEVISED)
+
+devised.pure: generic.o $(ALLLIBS) $(SERVERLIB)
+	$(FORCE_DATE)
+	$(PURIFY) $(PURE_OPT) $(DEVISED)
+
+
+DEVISE = $(CC) -o $@ devise.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+	-lclient $(LDFLAGS) $(ARCH_LDPOST)
 
 devise: devise.o $(CLIENTLIB)
-	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
-                -lclient $(LDFLAGS) $(ARCH_LDPOST)
+	$(FORCE_DATE)
+	$(DEVISE)
+
+devise.pure: devise.o $(CLIENTLIB)
+	$(FORCE_DATE)
+	$(PURIFY) $(PURE_OPT) $(DEVISE)
+
+
+DEVISEB = $(CC) -o $@ deviseb.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
+	-lclient $(ARCH_LDPOST)
 
 deviseb: deviseb.o $(CLIENTLIB)
-	$(CC) -o $@ $@.o CompDate.o $(ARCH_LDFLAGS) -L../graphics.new \
-                -lclient $(ARCH_LDPOST)
+	$(FORCE_DATE)
+	$(DEVISEB)
+
+deviseb.pure: deviseb.o $(CLIENTLIB)
+	$(FORCE_DATE)
+	$(PURIFY) $(PURE_OPT) $(DEVISEB)
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
 	-rm generic devised devise deviseb
+	-rm generic.pure devised.pure devise.pure deviseb.pure
+	-rm generic.static
 
 mostlyclean:
 	-rm $(OBJ)
+	-rm *pure*.o
