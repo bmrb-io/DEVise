@@ -746,6 +746,8 @@ CreateViewLists()
 		} else {
 		  viewZ = 0.0;
 		}
+		// Guard against roundoff errors causing a negative Z value.
+		viewZ += viewZInc / 2.0;
 
 		Boolean isPiled = false;
 		int viewIndex = window->InitIterator();
@@ -1789,19 +1791,32 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	int viewIndex2 = _topLevelViews.InitIterator();
 	while (_topLevelViews.More(viewIndex2)) {
 		View *view = (View *)_topLevelViews.Next(viewIndex2);
+        if (view->GetGifDirty()) {
 
-		if (update) {
-			DeleteChildViews(view);
-		}
+		    if (update) {
+			    DeleteChildViews(view);
+		    }
 
-		int subViewIndex = view->InitIterator();
-		while (view->More(subViewIndex)) {
-			View *subView = (View *)view->Next(subViewIndex);
-			subView->SetZ(view->GetZ() + 1.0);
-			CreateView(subView, view);
-			SendViewDataArea(subView);
+		    int subViewIndex = view->InitIterator();
+		    while (view->More(subViewIndex)) {
+			    View *subView = (View *)view->Next(subViewIndex);
+
+			    // Force a redraw of all cursors in view symbols that have just
+			    // been created.  This ensures that the cursors will be redrawn
+			    // by the JavaScreen, even if the devised wouldn't otherwise
+			    // have to redraw them.  RKW 1999-10-14.
+	            Boolean savePostpone = _postponeCursorCmds;
+	            _postponeCursorCmds = true;
+			    subView->HideCursors();
+			    subView->DrawCursors();
+                _postponeCursorCmds = savePostpone;
+
+			    subView->SetZ(view->GetZ() + 1.0);
+			    CreateView(subView, view);
+			    SendViewDataArea(subView);
+		    }
+		    view->DoneIterator(subViewIndex);
 		}
-		view->DoneIterator(subViewIndex);
 	}
 	_topLevelViews.DoneIterator(viewIndex2);
 

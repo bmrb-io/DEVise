@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1999/08/23 21:23:31  wenger
+  Removed Shape::NumShapeAttrs() method -- not used.
+
   Revision 1.23  1999/08/10 20:15:05  wenger
   Parent views can now control the titles of view symbols.
 
@@ -515,6 +518,9 @@ FullMapping_ViewShape::SetTitle(TDataMap *map, AttrList *attrList,
       char *string;
       viewsym->GetLabelParam(occupyTop, extent, string);
       viewsym->SetLabelParam(occupyTop, extent, title);
+#if defined(DEBUG)
+  printf("  Set title of view <%s> to <%s>\n", viewsym->GetName(), title);
+#endif
     }
   }
 }
