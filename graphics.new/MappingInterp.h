@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/25  01:20:14  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.4  1995/11/22 00:34:38  jussi
   Added copyright notice and cleaned up the code a bit.
 
@@ -37,14 +43,15 @@
 #include "AttrList.h"
 
 /* structure used to store the commands for mapping */
-const int MappingCmd_X = (1<< 0);
-const int MappingCmd_Y = (1<<1);
-const int MappingCmd_Color = (1<<2);
-const int MappingCmd_Size = (1<<3);
-const int MappingCmd_Pattern = (1<<4);
-const int MappingCmd_Orientation = (1<<5);
-const int MappingCmd_Shape = (1<<6);
-const int MappingInterpAllFlags = 0xffff;
+const int MappingCmd_X           = (1 << 0);
+const int MappingCmd_Y           = (1 << 1);
+const int MappingCmd_Color       = (1 << 2);
+const int MappingCmd_Size        = (1 << 3);
+const int MappingCmd_Pattern     = (1 << 4);
+const int MappingCmd_Orientation = (1 << 5);
+const int MappingCmd_Shape       = (1 << 6);
+const int MappingInterpAllFlags  = 0xffff;
+
 struct MappingInterpCmd {
   char *xCmd, *yCmd, *colorCmd, *sizeCmd, *patternCmd,
   *shapeCmd, *orientationCmd;
@@ -68,7 +75,7 @@ struct MappingSimpleCmd {
 
 class Shape;
 class AttrList;
-const int MaxInterpShapes = 3;
+const int MaxInterpShapes = 5;
 
 class MappingInterp: public TDataMapDispatch {
 public:
@@ -166,4 +173,5 @@ private:
   /* tcl interpreter */
   static Tcl_Interp *_interp;
 };
+
 #endif
