@@ -1,0 +1,87 @@
+/*Returns the key corresponding to the next point along the contour
+  piIndexes = Indexes to positions of contour points
+  rtBoundaryPoint = Current contour point
+  iDirection = current direction
+	0 = -x,-y 
+	1 = +x,-y
+	2 = -x,+y
+	3 = +x,+y 
+  iStrideY = Distance between adjacent points along y dimension
+  iMaxKey = Maximum absolute value of key 
+*/
+static int iGetNextBoundaryPoint(
+	int* piIndexes,
+	BoundaryPoint& rtBoundaryPoint,
+	int& riDirection,
+	int iStrideY,
+	int iMaxKey)
+{
+	int iKey;
+	int iIndex = NULL_INDEX;
+	int iPos = rtBoundaryPoint.iPos;
+	int iPointDirection = rtBoundaryPoint.siDirection;
+
+	int iaKey[3],iaDirection[3];
+	int p1,p2;
+
+	/*If along y dimension ... */
+	if ( ALONGY(iPointDirection) )
+	{
+		/*If x direction is positive ...*/
+		if ( XDIR(riDirection) )
+		{
+			p1 = iPos + 1;
+			p2 = p1 - iStrideY;
+			iaKey[0] = X_TYPE(p1); iaDirection[0] = POSX_POSY; 
+			iaKey[1] = X_TYPE(p2); iaDirection[1] = POSX_NEGY; 
+			iaKey[2] = Y_TYPE(p1); iaDirection[2] = riDirection; 
+		}
+		/*else x direction is negative...*/
+		else
+		{
+			p1 = iPos - iStrideY;
+			p2 = iPos - 1;
+			iaKey[0] = X_TYPE(iPos);iaDirection[0] = NEGX_POSY;
+			iaKey[1] = X_TYPE(p1);  iaDirection[1] = NEGX_NEGY;
+			iaKey[2] = Y_TYPE(p2);  iaDirection[2] = riDirection; 
+		}
+	}
+	/*else along x dimension ... */
+	else
+	{
+		/*If y direction is positive ...*/
+		if ( YDIR(riDirection) )
+		{
+			p1 = iPos + iStrideY;
+			p2 = p1 - 1; 
+			iaKey[0] = Y_TYPE(p1); iaDirection[0] = POSX_POSY; 
+			iaKey[1] = Y_TYPE(p2); iaDirection[1] = NEGX_POSY; 
+			iaKey[2] = X_TYPE(p1); iaDirection[2] = riDirection; 
+		}
+		else
+		/*else y direction is negative ...*/
+		{
+			p1 = iPos - 1;
+			p2 = iPos - iStrideY; 
+			iaKey[0] = Y_TYPE(iPos); iaDirection[0]= POSX_NEGY; 
+			iaKey[1] = Y_TYPE(p1); iaDirection[1] = NEGX_NEGY; 
+			iaKey[2] = X_TYPE(p2); iaDirection[2] = riDirection; 
+		}
+	}
+
+	for(int j=0; j<3; j++)
+	{
+		iKey = iaKey[j];
+		iIndex = (iKey <= -iMaxKey) ? NULL_INDEX :
+			(iKey >= iMaxKey) ? NULL_INDEX : piIndexes[iKey];
+		if (iIndex != NULL_INDEX)
+		{
+			riDirection = iaDirection[j];
+			piIndexes[iKey] = NULL_INDEX;
+			break;
+		}
+	}
+
+	return iIndex;
+}
+

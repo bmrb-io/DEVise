@@ -1,0 +1,2 @@
+/*Puts a point into the felix matrix at the current cursor position*/
+void PutPoint(int fn,float x)
