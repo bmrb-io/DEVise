@@ -1151,15 +1151,24 @@ int UniData::TxtCopy_Double(char *dst, char *src, udParam *ud)
 // o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o+o
 int UniData::TxtCopy_String(char *dst, char *src, udParam *ud)
 {
-    int n;
+    int n, tmpn;
     char *str = &(dst[ud->dst_off]);
+    char *delim;
+
+    n = ud->sze()-1;
 
     if (ud->attr->whitespace()) {
       src += strspn(src, ud->attr->whitespace());
-      n = strcspn(src, ud->attr->whitespace());
-      n = (n > ud->sze()-1) ? (ud->sze()-1) : n;
-    } else
-      n = ud->sze()-1;
+      tmpn = strcspn(src, ud->attr->whitespace());
+      n = (tmpn < n) ? tmpn : n;
+    }
+
+    delim = ud->attr->delimiter();
+    if (!delim)
+        delim = "\n";
+
+    tmpn = strcspn(src,delim);
+    n = (tmpn < n) ? tmpn : n;
 
     strncpy(str,src,n);
     str[n] = '\0';
