@@ -1,25 +1,25 @@
 #include <iostream.h>
 #include <fstream.h>
 #include "DataReader.h"
-//#include <string>
 
-int main() {
+//#define TESTDATAREADER  // ifdef, no output
 
-	char* df = "../../data/strings.dat";
-	char* sf = "str.uni";
-	
-	int aa,i;
-	char* tmp;
+int main(int ARGV, char **ARGC) {
+
+	if (ARGV != 3) {
+		cerr << "Usage : testParser <datafile> <schemafile>\n" << endl ;
+		exit(1);
+	}
+	char* df = ARGC[1];
+	char* sf = ARGC[2];
+
+	int aa;
 	DataReader* myDataReader = new DataReader(df,sf);
 	if (!(myDataReader->isOk())) {
 		exit(1);
 	}
 	aa = myDataReader->mySchema->qAttr;
-	char* results = new char[1024];
-	int* offs = new int[3];
-	offs[0] = 0;
-	offs[1] = 10;
-	offs[2] = 20;
+	char* results = new char[2048];
 	Status status = OK;
 
 /**********************************************************************
@@ -42,23 +42,39 @@ int main() {
 	} 
  **********************************************************************/
 
+#ifdef TESTDATAREADER
+
 	while (true) {
-		status = myDataReader->getRecord(results,offs);
-		switch (status) {
-			case FAIL:
-				cerr << "Error Occured in DataReader" << endl ;
-				return 1;
+		status = myDataReader->getRecord(results);
+		if ((status == FAIL) || (status == FOUNDEOF)) {
+			if (status == FAIL) {
+				cerr << "Encountered Error in DataReader " << endl;
+			} else {
+				cerr << "End Of File" << endl;
+			}
+			return 1;
+		}
+	}
+
+#else
+	int i;
+	char* tmp;
+	while (true) {
+		status = myDataReader->getRecord(results);
+		if (status == FAIL) {
+			cerr << "Error Occured in DataReader" << endl ;
+			return 1;
 		}
 		for ( i = 0 ; i < aa ; i++) {
 			switch (myDataReader->mySchema->tableAttr[i]->getType()) {
 				case TYPE_INT:
-					cout << *(int*)(results+offs[i]) << " " ;
+					cout << *(int*)(results+(myDataReader->mySchema->tableAttr[i]->offset)) << " " ;
 					break;
 				case TYPE_DOUBLE:
-					cout << *(double*)(results+offs[i]) << " " ;
+					cout << *(double*)(results+(myDataReader->mySchema->tableAttr[i]->offset)) << " " ;
 					break;
 				case TYPE_STRING:
-					tmp = results + offs[i];
+					tmp = results + (myDataReader->mySchema->tableAttr[i]->offset);
 					cout << tmp << " " ;
 			}
 		}
@@ -68,6 +84,9 @@ int main() {
 			return 1;
 		}
 	}
+
+#endif
+	
 	return 1;
 }
 

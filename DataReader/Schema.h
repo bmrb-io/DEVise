@@ -41,12 +41,12 @@ private:
 	char _encoding; // What is the encoding style if this is a string field, not implemented yet
 	char* _fieldName; // Name of this field
 	char* _dateFormat; // Date format
-	int _offset; // Offset of this field in the destination buffer
 	size_t _length; // Length of field
 
 public:
 
 	int whichAttr; // index of attribute in the attribute array
+	int offset; // Offset of this field in the destination buffer
 	Attribute(char* fieldName);
 	Attribute();
 
@@ -67,14 +67,6 @@ public:
 	void setType(int type) {
 
 		_type = type;
-	}
-
-	void setOffset(int cOff) {
-		_offset = cOff;
-	}
-
-	int getOffset() {
-		return _offset;
 	}
 
 	int getMaxLen() {
@@ -168,6 +160,7 @@ private:
 public:
 	Attribute** tableAttr; // Attribute array holds info for each attribute
 	size_t qAttr; // Number of attributes in this schema
+	size_t tAttr; // Number of attributes - number of skip attributes
 
 	Schema(char* fileName) {
 		_fileName = fileName;

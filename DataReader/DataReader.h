@@ -16,8 +16,8 @@ private:
 public:
 	Schema* mySchema; // Schema Object associated with this Reader
 	DataReader(char* dataFile, char* schemaFile);
-	Status getRecord(char* dest, int* offset); // Function to read next record
-	Status getRndRec(char* dest, int* offset, int fileOffset); // Function to read a random record
+	Status getRecord(char* dest); // Function to read next record
+	Status getRndRec(char* dest,int fileOffset); // Function to read a random record
 	bool isOk() {return _uStat == OK;} // Check the Status of Reader
 };
 

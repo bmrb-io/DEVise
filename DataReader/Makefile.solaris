@@ -1,6 +1,7 @@
 
 depend:
-	makedepend -fMakefile.solaris *.c *.C *.cc
+	pwd
+	makedepend -f ../../DataReader/Makefile.solaris *.c *.C *.cc
 # DO NOT DELETE
 
 Buffer.o: Buffer.h Schema.h /usr/include/stdlib.h

@@ -62,6 +62,11 @@ Buffer::Buffer(char* fileName, Schema* mySchema) {
 	extFunc = new eFunc[mySchema->qAttr];
 	valFunc = new vFunc[mySchema->qAttr];
 
+	repeatings = new bool[mySchema->qAttr];
+	maxLens = new int[mySchema->qAttr];
+	fieldLens = new int[mySchema->qAttr];
+	quoteChars = new char[mySchema->qAttr];
+
 
 	// Initialize _separatorCheck to make faster separator comparison
 	// Also, initialize ext and val Funcs to proper extractor functions
@@ -74,7 +79,12 @@ Buffer::Buffer(char* fileName, Schema* mySchema) {
 				_separatorCheck[i][j] = 0;
 			for (j = 0; j < temArr->length; j++)
 				_separatorCheck[i][temArr->data[j]] = 1;
+			repeatings[i] = mySchema->tableAttr[i]->getSeparator()->repeating;
 		}
+
+		maxLens[i] = mySchema->tableAttr[i]->getMaxLen();
+		fieldLens[i] = mySchema->tableAttr[i]->getFieldLen();
+		quoteChars[i] = mySchema->tableAttr[i]->getQuote();
 
 		if (mySchema->tableAttr[i]->getFieldLen() != -1) {
 			switch (mySchema->tableAttr[i]->getType())	{
@@ -143,6 +153,11 @@ Buffer::~Buffer() {
 	}
 	delete [] _months;
 	delete [] _monthAbbr;
+
+	delete [] repeatings; 
+	delete [] maxLens;
+	delete [] fieldLens;
+	delete [] quoteChars;
 }
 
 Status Buffer::setBufferPos(int cPos) {
@@ -240,15 +255,52 @@ Status Buffer::checkEOL(char curChar) {
 	}
 	return OK;
 }
-				
+
 Status Buffer::checkSeparator(char curChar, Attribute* myAttr) {
 
 // checks if the next character sequence in the data file is
 // a separator or not, if separator is defined as repeating, finds several
 // matches
 
+    if (_separatorCheck[myAttr->whichAttr][curChar] == 1) {
+        if (repeatings[myAttr->whichAttr]) {
+            if ((curChar = getChar()) == 0)
+                return FOUNDEOF;
+
+            while (_separatorCheck[myAttr->whichAttr][curChar] == 1) {
+                if ((curChar = getChar()) == 0)
+                    return FOUNDEOF;
+            }
+
+            _in.putback(curChar);
+        }
+        return FOUNDSEPARATOR;
+    }
+    return OK;
+}
+				
+Status Buffer::checkAll(char curChar, Attribute* myAttr) {
+
+// Combination of Check EOL & Separator, added for decreasing 
+// time lost in function calls
+
+	if (_EOLCheck[curChar] == 1) {
+		if (_EOL->repeating) {
+			if ((curChar = getChar()) == 0) 
+				return FOUNDEOF;
+
+			while (_EOLCheck[curChar] == 1) {
+				if ((curChar = getChar()) == 0)
+				 	return FOUNDEOF;
+			}
+
+			_in.putback(curChar);
+		}
+		return FOUNDEOL;
+	}
+
 	if (_separatorCheck[myAttr->whichAttr][curChar] == 1) {
-		if (myAttr->getSeparator()->repeating) {
+		if (repeatings[myAttr->whichAttr]) {
 			if ((curChar = getChar()) == 0)
 				return FOUNDEOF;
 				
@@ -365,11 +417,7 @@ Status Buffer::getIntTo(Attribute* myAttr, char* target) {
 	}
 
 	while (true) {
-		status = checkEOL(_curChar);
-		if (status != OK) 
-			return status;
-
-		status = checkSeparator(_curChar, myAttr);
+		status = checkAll(_curChar, myAttr);
 		if (status != OK)
 			return status;
 
@@ -421,11 +469,7 @@ Status Buffer::getDoubleTo(Attribute* myAttr, char* target = NULL) {
 
 	while (true) {
 		
-		status = checkEOL(_curChar);
-		if (status != OK)
-			return status;
-
-		status = checkSeparator(_curChar,myAttr);
+		status = checkAll(_curChar,myAttr);
 		if (status != OK) 
 			return status;
 
@@ -480,7 +524,7 @@ Status Buffer::getStringTo(Attribute* myAttr, char* target) {
 // myAttr : Attribute object assigned to current field
 
 	_posTarget = 0;
-	int maxLen = myAttr->getMaxLen();
+	int maxLen = maxLens[myAttr->whichAttr];
 	int count = 0;
 	Status status;
 
@@ -493,11 +537,8 @@ Status Buffer::getStringTo(Attribute* myAttr, char* target) {
 	}
 
 	while (true) {
-		status =  checkEOL(_curChar);
-		if (status != OK)
-			return status;
 
-		status = checkSeparator(_curChar, myAttr);
+		status = checkAll(_curChar, myAttr);
 		if (status != OK) 
 			return status;
 
@@ -545,7 +586,7 @@ Status Buffer::getIntLen(Attribute* myAttr, char* target = NULL) {
 // if a non-digit value find before the separator, we ignore the rest
 	bool ignoreRest = 0;
 	
-	int fieldLen = myAttr->getFieldLen();
+	int fieldLen = fieldLens[myAttr->whichAttr];
 	Status status;
 	target++; //just to avoid compiler warning
 
@@ -613,7 +654,7 @@ Status Buffer::getDoubleLen(Attribute* myAttr, char* target = NULL) {
 // if a non-digit value find before the separator, we ignore the rest
 	bool ignoreRest = false;
 	int stage = 0;
-	int fieldLen = myAttr->getFieldLen();
+	int fieldLen = fieldLens[myAttr->whichAttr];
 	Status status;
 	target++; //just to avoid warning
 
@@ -706,7 +747,7 @@ Status Buffer::getStringLen(Attribute* myAttr, char* target) {
 // myAttr : Attribute object assigned to current field
 
 	_posTarget = 0;
-	int fieldLen = myAttr->getFieldLen();
+	int fieldLen = fieldLens[myAttr->whichAttr];
 	Status status;
 
 	if ((_curChar = getChar()) == 0) 
@@ -776,9 +817,9 @@ Status Buffer::getStringQuote(Attribute* myAttr, char* target) {
 
 	_posTarget = 0;
 	bool ignoreRest = false;
-	int maxLen = myAttr->getMaxLen();
+	int maxLen = maxLens[myAttr->whichAttr];
 	int count = 0;
-	char quoteChar = myAttr->getQuote();
+	char quoteChar = quoteChars[myAttr->whichAttr];
 	Status status;
 
 	if ((_curChar = getChar()) == 0)
@@ -800,11 +841,7 @@ Status Buffer::getStringQuote(Attribute* myAttr, char* target) {
 					if ((_curChar = getChar()) == 0)
 						return FOUNDEOF;
 
-					status = checkEOL(_curChar);
-					if (status != OK)
-						return status;
-
-					status = checkSeparator(_curChar, myAttr);
+					status = checkAll(_curChar, myAttr);
 					if (status != OK)
 						return status;
 				}

@@ -43,6 +43,7 @@ Attribute::~Attribute() {
 
 Schema::~Schema() {
 	int i;
+	tAttr = 0;
 
 	if (tableAttr != NULL) {
 		for (i = 0; i < (int)(qAttr); i++) {
@@ -108,6 +109,28 @@ Status Schema::finalizeSchema() {
 		}
 	}
 
+	if (_delimiter == NULL) { //default delimiter = [\n]+
+		char* tmpC = new char[2];
+		tmpC[0] = '\n';
+		tmpC[1] = '\0';
+		_delimiter = new Holder();
+		_delimiter->length = 1;
+		_delimiter->data = tmpC;
+		_delimiter->repeating = true;
+	}
+	
+
+	if (_separator == NULL) { //default separator = [\t ]+
+		char* tmpC = new char[2];
+		tmpC[0] = '\t';
+		tmpC[1] = ' ';
+		tmpC[2] = '\0';
+		_separator = new Holder();
+		_separator->length = 2;
+		_separator->data = tmpC;
+		_separator->repeating = true;
+	}
+	
 	for (i = 0; i < (int)(qAttr); i++) {
 		
 		switch (tableAttr[i]->getType()) {
@@ -128,9 +151,13 @@ Status Schema::finalizeSchema() {
 				break;
 		}
 
+		if (tableAttr[i]->getFieldName() != NULL) {
+			tAttr++;
+		}
+
 		// calculate record length, length of fields and offsets of fields in
 		// the destination buffer
-		tableAttr[i]->setOffset(curOff);
+		tableAttr[i]->offset = curOff;
 		curOff += fLen;
 		tableAttr[i]->setLength(fLen);
 		_recSize += fLen;
@@ -267,7 +294,7 @@ Status Schema::finalizeSchema() {
 Status Schema::normalizeDate(char*& curDate) {
 	char* tmp = curDate;
 	char* boundary = curDate + strlen(curDate) - 1;
-	ostrstream tmpString;
+	ostringstream tmpString;
 
 	while (*tmp != '\0') {
 		switch (*tmp) {

@@ -16,7 +16,7 @@ LIB_FILES = \
 	datareader.lex.C \
 	datareader.tab.C
 
-CC_FILES =
+CC_FILES = testParser.C
 
 C_FILES =
 
@@ -58,28 +58,24 @@ lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
-umain: $(OBJFILES) libdatareader.a
+testParser: $(OBJFILES) libdatareader.a
 	$(CC) -o $@ $(OBJFILES) -L. -ldatareader $(ARCH_LDPOST)
 
-umain.pure: $(OBJFILES) libdatareader.a
+dmain.pure: $(OBJFILES) libdatareader.a
 	purify $(PURE_OPTS) $(CC) -o $@ $(OBJFILES) -L. -ldatareader\
 	$(ARCH_LDPOST)
 clean:
-	/bin/rm -f *.o *.lex.C ../../DataReader/*.tab.c ../../DataReader/*.output ../../DataReader/*.tab.h *.output libdatareader.a
+	/bin/rm -f *.o *.lex.C ../../DataReader/*.tab.C ../../DataReader/*.output ../../DataReader/*.tab.h *.output libdatareader.a testParser
 
 ###############################################################################
 #
 #    Special compilation rules
 
-%.tab.C %.tab.h: %.y
+../../DataReader/datareader.tab.C ../../DataReader/datareader.tab.h: ../../DataReader/datareader.y
 	bison --verbose --defines --debug -p dr $<
 	mv ../../DataReader/datareader.tab.c ../../DataReader/datareader.tab.C
-#	mv $%.c $%.C
 	
 %.lex.C: %.l %.tab.h
 	flex -t $< > $@
-
-# %.o: %.C
-#	g++ $(CFLAGS) $(INCLUDE) -c $<
 
 ###############################################################################

@@ -55,23 +55,23 @@ DataReader::~DataReader() {
 		delete mySchema;
 }
 
-Status DataReader::getRecord(char* dest, int* offset) {
+Status DataReader::getRecord(char* dest) {
 	Status status;
 	char* tmpPoint;
 
 	for (int i = 0 ; i < (int)(mySchema->qAttr); i++) {
-		tmpPoint = dest + offset[i+1]; // +1 : for RecId
+		tmpPoint = dest + mySchema->tableAttr[i]->offset; 
 		status = myBuffer->extractField(mySchema->tableAttr[i],tmpPoint);
 		if (status != FOUNDSEPARATOR)
 			return status;
 	}
 	return FOUNDSEPARATOR;
 }
-Status DataReader::getRndRec(char* dest, int* offset, int fileOffset) {
+Status DataReader::getRndRec(char* dest, int fileOffset) {
 	Status status;
 	status = myBuffer->setBufferPos(fileOffset-1);
 	if (status != OK)
 		return status;
-	status = getRecord(dest,offset);
+	status = getRecord(dest);
 	return status;
 }

@@ -50,11 +50,16 @@ private:
 	double _exponent;
 	bool _expSign;
 	char _curChar;
+	bool* repeatings; // replicates repeating property of attributes, used for improving speed
+	int* maxLens; // replicates maxLen property of attributes, used for improving speed
+	int* fieldLens; // replicates fieldLen property of attributes, used for improving speed
+	char* quoteChars; // replicates quoteChar property of attributes, used for improving speed
 	
 	char getChar(); // Reads next character from data file
 	bool isDigit(char c); // Checks if the given character is a digit
 	Status checkEOL(char curChar); //Checks if the next character sequence is EOL
 	Status checkSeparator(char curChar, Attribute* myAttr); // Checks if the next character sequence is a Separator
+	Status checkAll(char curChar, Attribute* myAttr); // Combination of EOL & Separator
 	
 	// Reads n characters from file stream and calculates the integer value
 	Status getInt(int valLen, int& value);

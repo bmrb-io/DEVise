@@ -39,7 +39,7 @@
 
  */
 
-#include <strstream.h>
+#include "sysdep.h"
 #include "types.h"
 #include "DataReader.h"
 
@@ -52,23 +52,31 @@
 
 
 void DevRead::translateUDInfo() {
-	numFlds = ud->mySchema->qAttr + 1; //for RECID
+	numFlds = ud->mySchema->tAttr + 1; //for RECID
+	int temNum = ud->mySchema->qAttr + 1;
+	int i = 0;
 	int fType;
-	ostrstream tmp;
+	ostringstream tmp;
 	typeIDs = new TypeID[numFlds];
 	attributeNames = new string[numFlds];
 
 	typeIDs[0] = INT_TP;
 	attributeNames[0] = string("recId");
 
-	for (int i = 1; i < numFlds; i++) {
-		fType = ud->mySchema->tableAttr[i-1]->getType();
+	for (int count = 1; count < temNum; count ++) {
+
+		if ((ud->mySchema->tableAttr[count-1])->getFieldName() == NULL) { //skipping SKIP attributes
+			continue;
+		}
+		i++;
+			
+		fType = ud->mySchema->tableAttr[count-1]->getType();
 		switch (fType) {
 			case TYPE_INT:
 				typeIDs[i] = string("int");
 				break;
 			case TYPE_STRING:
-				tmp << "string" << (ud->mySchema->tableAttr[i-1]->getMaxLen() > 0 ? ud->mySchema->tableAttr[i-1]->getMaxLen() : ud->mySchema->tableAttr[i-1]->getFieldLen()) << ends;
+				tmp << "string" << (ud->mySchema->tableAttr[count-1]->getMaxLen() > 0 ? ud->mySchema->tableAttr[count-1]->getMaxLen() : ud->mySchema->tableAttr[count-1]->getFieldLen()) << ends;
 				typeIDs[i] = string(tmp.str());
 				tmp.seekp(0);
 				break;
@@ -79,10 +87,10 @@ void DevRead::translateUDInfo() {
 				typeIDs[i] = string("date");
 				break;
 			default:
-				cout <<"This type isn't handled yet: " << ud->mySchema->tableAttr[i]->getType() << endl;
+				cout <<"This type isn't handled yet: " << ud->mySchema->tableAttr[count-1]->getType() << endl;
 				typeIDs[i] = string("unknown");
 		}
-		attributeNames[i] = string(ud->mySchema->tableAttr[i-1]->getFieldName());
+		attributeNames[i] = string(ud->mySchema->tableAttr[count-1]->getFieldName());
 	}
 }
 
@@ -99,14 +107,18 @@ void DevRead::Open(char* schemaFile, char* dataFile){ // throws
 
 Iterator* DevRead::createExec(){
 	int i;
+	int count = 0;
 	UnmarshalPtr* unmarshalPtrs = new UnmarshalPtr[numFlds];
 	DestroyPtr* destroyPtrs = new DestroyPtr[numFlds];
 	size_t* currentSz = new size_t[numFlds];
 	Type** tuple = new Type*[numFlds];
 	int* offsets = new int[numFlds];
 
-	for (i = 1; i < numFlds; i++) {
-		offsets[i] = ud->mySchema->tableAttr[i-1]->getOffset();
+	for (i = 1; i < (ud->mySchema->qAttr + 1) ; i++) {
+		if (ud->mySchema->tableAttr[i-1]->getFieldName() != NULL) {
+			count++;
+			offsets[count] = ud->mySchema->tableAttr[i-1]->offset;
+		}
 	}
 
 	for(i = 0; i < numFlds; i++){
@@ -149,7 +161,7 @@ const Tuple* DevReadExec::getNext(){
 		return NULL;
 	}
 	buff[offsets[1]] = '\0';
-	stat = ud->getRecord(buff,offsets);
+	stat = ud->getRecord(buff);
 	if ((stat == FOUNDEOF) && (buff[offsets[1]] == '\0')) {
 		return NULL;
 	}
@@ -168,7 +180,7 @@ const Tuple* DevReadExec::getThis(Offset offset, RecId recId){
 	if(!ud->isOk()){	// should not happen
 		return NULL;
 	}
-	stat = ud->getRndRec(buff, offsets, offset.getOffset());
+	stat = ud->getRndRec(buff, offset.getOffset());
 	if(stat == FOUNDEOF){
 		return NULL;
 	}

@@ -46,7 +46,7 @@ class DataReaderParser
 
     int line_nr;
 
-    ostrstream myString;
+    ostringstream myString;
 
     int yylex();
 
