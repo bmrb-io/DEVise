@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/08/08 21:02:48  beyer
+  made to compile with gcc 2.6.3
+
   Revision 1.26  1996/08/07 15:26:21  guangshu
   Added DEVise commands getStatBuff and getAllStats to get the color statistics
   gstat histigram and global stats buffer.
@@ -838,6 +841,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       sprintf(buff[1], "%g", allStats->GetStatVal(STAT_MEAN));
       sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
       sprintf(buff[3], "%d", (int)allStats->GetStatVal(STAT_COUNT));
+//      printf("buff=%s %s %s %s\n", buff[0],buff[1],buff[2],buff[3]);
       control->ReturnVal(4, buff);
       for (i = 0; i < 4; i++) {
 	  delete buff[i];
@@ -1464,6 +1468,31 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	view->SetXAxisLabel(label);
       else
 	view->SetYAxisLabel(label);
+      control->ReturnVal(API_ACK, "done");
+      return 1;
+    }
+    if (!strcmp(argv[0], "connectData")) {
+      DisplayExportFormat format = GIF;
+      int port = atoi(argv[1]);
+      control->OpenDataChannel(port);
+      if (strcmp(argv[2], "gif")) {
+         control->ReturnVal(API_NAK, "Can only support gif now.");
+         return -1;
+      }
+      ViewWin *viewWin = (ViewWin *)classDir->FindInstance(argv[3]);
+      if (!viewWin) {
+        control->ReturnVal(API_NAK, "Cannot find window when return gif to client");
+        return -1;
+      }
+      int fd = control->getFd();
+      if (fd < 0) {
+        control->ReturnVal(API_NAK, "Invalid socket to write");
+        return -1;
+      }
+      FILE *fp = fdopen(control->getFd(), "wb");
+      viewWin->GetWindowRep()->ExportGIF(fp);
+      close(control->getFd());
+//      control->returnGif(viewWin);
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
