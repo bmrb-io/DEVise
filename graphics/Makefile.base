@@ -2,12 +2,10 @@ CC = g++
 
 # flags: 
 #	-DUNIX: 
-#	-DRECTX_PIXEL: set this to draw RectXShape as a single point.
-#			file affected: RectShape.h
 #	-DGRAPHICS: set this to draw grpahics. Don't set if no graphics
 #		is to be sent to xlib. file affected: XWindowRep.c
 
-CFLAGS=  $(ARCH_FLAGS) -Wall -Wno-unused -O -DUNIX -DGRAPHICS \
+CFLAGS = $(ARCH_FLAGS) -Wall -Wno-unused -O -DUNIX -DGRAPHICS \
 	-fexternal-templates
 
 LD = ld
@@ -17,7 +15,7 @@ LD = ld
 .C.o: 
 	$(CC) -c $(CFLAGS) $<
 
-LIBSRC=  Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
+LIBSRC = Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
 	ClassDir.c ColorMgr.c Compress.c Control.c Cursor.c CursorClassInfo.c \
 	DevisePixmap.c Dispatcher.c  Display.c DList.c\
 	Exit.c FilterQueue.c Geom.c \
@@ -27,7 +25,7 @@ LIBSRC=  Action.c ActionClassInfo.c AttrList.c AxisLabelClassInfo.c \
 	WindowRep.c WinClassInfo.c XBitmap.c XDisplay.c XWindowRep.c \
 	TileLayout.C
 
-LIBOBJ=  Action.o ActionClassInfo.o AttrList.o AxisLabelClassInfo.o \
+LIBOBJ = Action.o ActionClassInfo.o AttrList.o AxisLabelClassInfo.o \
 	ClassDir.o ColorMgr.o Compress.o Control.o Cursor.o CursorClassInfo.o \
 	DevisePixmap.o Dispatcher.o Display.o DList.o\
 	Exit.o FilterQueue.o Geom.o \
@@ -37,7 +35,7 @@ LIBOBJ=  Action.o ActionClassInfo.o AttrList.o AxisLabelClassInfo.o \
 	WindowRep.o WinClassInfo.o XBitmap.o XDisplay.o XWindowRep.o \
 	TileLayout.o
 
-OTHERSRC= testWindowRep.c jstat.c
+OTHERSRC = testWindowRep.c jstat.c
 
 allobj.o: $(LIBOBJ)
 	$(LD) -r -o $@ $(LIBOBJ)
@@ -45,9 +43,9 @@ allobj.o: $(LIBOBJ)
 count:
 	wc $(LIBSRC) 
 
-ALLSRC= $(LIBSRC) $(OTHERSRC)
+ALLSRC = $(LIBSRC) $(OTHERSRC)
 
-LIBNAME= libgraphics.a
+LIBNAME = libgraphics.a
 
 install: $(LIBNAME)
 	install $(LIBNAME) /u1/mcheng/lib
