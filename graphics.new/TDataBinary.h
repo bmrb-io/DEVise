@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/07/01 19:28:09  jussi
+  Added support for typed data sources (WWW and UNIXFILE). Renamed
+  'cache' references to 'index' (cache file is really an index).
+  Added support for asynchronous interface to data sources.
+
   Revision 1.8  1996/06/27 18:12:42  wenger
   Re-integrated most of the attribute projection code (most importantly,
   all of the TData code) into the main code base (reduced the number of
@@ -235,7 +240,7 @@ private:
 
   char *_recBuf;                  // record buffer
 
-  Boolean _fileOkay;              // true if file is okay
+  Boolean _fileOpen;              // true if file is okay
 
   long _initTotalRecs;            // initial # of records in cache
   int _initLastPos;               // initial last position in file

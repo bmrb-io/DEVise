@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/07/02 22:48:33  jussi
+  Removed unnecessary dispatcher call.
+
   Revision 1.12  1996/07/01 20:23:16  jussi
   Added #ifdef conditionals to exclude the Web data source from
   being compiled into the Attribute Projection executable.
@@ -190,9 +193,9 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
 
   DOASSERT(_data, "Out of memory");
 
-  _fileOkay = true;
+  _fileOpen = true;
   if (_data->Open("r") != StatusOk)
-    _fileOkay = false;
+    _fileOpen = false;
   
   DataSeg::Set(NULL, NULL, 0, 0);
 
@@ -216,6 +219,9 @@ TDataBinary::~TDataBinary()
   printf("TDataBinary destructor\n");
 #endif
 
+  if (_fileOpen)
+    _data->Close();
+
   Dispatcher::Current()->Unregister(this);
 
   delete _data;
@@ -232,14 +238,14 @@ Boolean TDataBinary::CheckFileStatus()
   // see if file is (still) okay
   if (!_data->IsOk()) {
     // if file used to be okay, close it
-    if (_fileOkay) {
+    if (_fileOpen) {
       Dispatcher::Current()->Unregister(this);
       printf("Data stream %s is no longer available\n", _name);
       _data->Close();
 #ifndef ATTRPROJ
       QueryProc::Instance()->ClearTData(this);
 #endif
-      _fileOkay = false;
+      _fileOpen = false;
     }
     if (_data->Open("r") != StatusOk) {
       // file access failure, get rid of index
@@ -252,7 +258,7 @@ Boolean TDataBinary::CheckFileStatus()
       return false;
     }
     printf("Data stream %s has become available\n", _name);
-    _fileOkay = true;
+    _fileOpen = true;
     Dispatcher::Current()->Register(this, 10, AllState,
                                     false, _data->AsyncFd());
   }
