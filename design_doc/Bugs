@@ -2613,10 +2613,11 @@ Num Date        Status  Description
 			they had a session opened before going into
 			collaboration mode, they get goofed up. (rkw)
 
-658 04/20/01	OPEN	JavaScreen: restoring pre-collaboration session
+658 04/20/01	FIXED	JavaScreen: restoring pre-collaboration session
 			only happens if JS goes out of collaboration mode
 			manually (as opposed to automatically because the
 			leader exited). (rkw)
+			(Fixed by xuk, 4/23/01)
 
 659 04/20/01	FIXED	JavaScreen: if no leaders are available for
 			collaboration, the selection dialog should not
