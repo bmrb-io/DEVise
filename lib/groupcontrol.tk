@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.2  1998/02/12 17:17:33  wenger
+#	Merged through collab_br_2; updated version number to 1.5.1.
+#
 #	Revision 1.1.2.1  1998/02/12 05:10:15  taodb
 #	Seperated GUI interface for group and normal version of DEVise
 #
@@ -1023,7 +1026,7 @@ proc displayTable {table} {
 .mbar.tdata.menu add separator
 
 .mbar.tdata.menu add cascade -label "New" \
-	-menu .mbar.tdata.menu.
+	-menu .mbar.tdata.menu.import
 
 .mbar.tdata.menu add command -label "Edit" -command {
 	
