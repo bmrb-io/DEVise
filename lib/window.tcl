@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  1996/07/01 19:32:28  jussi
+#  The 3D camera location is now duplicated in Window/Duplicate.
+#
 #  Revision 1.8  1996/05/31 19:14:30  jussi
 #  Fixed calls to DEVise removeView; there is no return value from
 #  the call.
@@ -246,7 +249,8 @@ proc DupWindow {} {
 
 	set maps [DEVise getViewMappings $view]
 	foreach map $maps {
-	    DEVise insertMapping $newView $map
+            set legend [DEVise getMappingLegend $view $map]
+	    DEVise insertMapping $newView $map $legend
 	}
     }
 }
