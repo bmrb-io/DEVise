@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/09/27 15:53:19  wenger
+  Fixed a number of memory leaks.
+
   Revision 1.5  1995/12/14 21:17:26  jussi
   Replaced 0x%x with 0x%p.
 
@@ -36,47 +39,13 @@
 #include <limits.h>
 #include <unistd.h>
 #include <errno.h>
+
 #include "Exit.h"
 #include "GDataRangeMap.h"
 #include "FileMacro.h"
 #include "TData.h"
 
-GDataRangeMapRec *GDataRangeMap::_freeList = NULL;
-int GDataRangeMap::_numInUse = 0;
-
-/*******************************************************************
-Allocate a record
-*******************************************************************/
-
-GDataRangeMapRec *GDataRangeMap::AllocRec()
-{
-  GDataRangeMapRec *rec;
-  if (_freeList != NULL) {
-    rec = _freeList;
-    _freeList = _freeList->next;
-  } else
-    rec = new GDataRangeMapRec;
-  
-  _numInUse++;
-
-  return rec;
-}
-
-/*********************************************************************
-Free a record
-*********************************************************************/
-
-void GDataRangeMap::FreeRec(GDataRangeMapRec *rec)
-{
-  if (--_numInUse < 0) {
-    fprintf(stderr,"GDataRangeMap::FreeRec: _numInUse < 0\n");
-    Exit::DoExit(2);
-  }
-  
-  rec->next = _freeList;
-  rec->prev = NULL;
-  _freeList = rec;
-}
+//#define DEBUG
 
 /*********************************************************************
 Constructor
@@ -99,8 +68,8 @@ GDataRangeMap::GDataRangeMap(int recSize, char *fname, Boolean trunc)
   _head.next = _head.prev = &_head;
 
   if (fname != NULL) {
-    _fname = new char[strlen(fname)+1];//TEMPTEMP -- leaked
-    strcpy(_fname,fname);
+    _fname = new char [strlen(fname) + 1];
+    strcpy(_fname, fname);
 #ifdef DEBUG
     printf("GDataRangeMap::GDataRangeMap() file name %s\n", _fname);
 #endif
@@ -119,20 +88,24 @@ GDataRangeMap::~GDataRangeMap()
 #ifdef DEBUG
   printf("GDataRangeMap::~GDataRangeMap(0x%p)\n", this);
 #endif
+
   if (_fname != NULL) {
 #ifdef DEBUG
-    printf("GDAtaRangeMap destructor write %s, 0x%p\n", _fname, this);
-    WriteRecords(_fname);
+    printf("GDataRangeMap destructor write %s, 0x%p\n", _fname, this);
 #endif
+    WriteRecords(_fname);
+    delete _fname;
   }
 
   // Free the list of GDataRangeMapRecs.  Note that this delete algorithm
   // only works  for deleting the whole list, since we're not updating the
   // prev pointers as we go.
+
   GDataRangeMapRec* nodeP = _head.next;
   GDataRangeMapRec* nextP = nodeP->next;
+
   while (nodeP != &_head) {
-    FreeRec(nodeP);
+    delete nodeP;
     nodeP = nextP;
     nextP = nodeP->next;
   }
@@ -154,7 +127,8 @@ void GDataRangeMap::ReadRecords(char *fname)
   GDataRangeMapRec *buf;
   GDataRangeMapRec *current = &_head;
   do {
-    buf = AllocRec();
+    buf = new GDataRangeMapRec;
+    DOASSERT(buf, "Out of memory");
     status = ReadChunkStatus(fd,(char *)buf, sizeof(GDataRangeMapRec));
     if (status) {
       /* read a valid record. Insert after current. */
@@ -167,7 +141,7 @@ void GDataRangeMap::ReadRecords(char *fname)
     }
   } while(status);
   
-  FreeRec(buf); /* free last allocated record, which was not used */
+  delete buf;
   
   close(fd);
 }
@@ -179,7 +153,7 @@ Write record out to file
 void GDataRangeMap::WriteRecords(char *fname)
 {
 #ifdef DEBUG
-  printf("GDAtaRangeMap WriteRecords %s, 0x%p\n", _fname, this);
+  printf("GDataRangeMap WriteRecords %s, 0x%p\n", _fname, this);
 #endif
 
   int fd;
@@ -315,17 +289,15 @@ exit with error if tPage overlaps with any range.
 GDataRangeMapRec *GDataRangeMap::FindNoOverlap(RecId tId)
 {
   GDataRangeMapRec *rec = FindMaxLower(tId);
-  if (rec == NULL)
+  if (!rec)
     return NULL;
   
   if (tId > rec->tHigh)
     return rec;
 
-  fprintf(stderr,"GDataRangeMap::FindNoOverlap: %ld overlaps (%ld,%ld)\n",
-	  tId, rec->tLow, rec->tHigh);
-  Exit::DoExit(2);
+  fprintf(stderr, "%ld overlaps [%ld,%ld]\n", tId, rec->tLow, rec->tHigh);
+  DOASSERT(0, "Inconsistent state");
 
-  // keep compiler happy
   return 0;
 }
 
@@ -336,49 +308,47 @@ Find next unprocessed T page with number >= tLow
 Boolean GDataRangeMap::NextUnprocessed(RecId tId, RecId &tLow, RecId &tHigh)
 {
   GDataRangeMapRec *rec = FindMaxLower(tId);
-  if (rec == NULL) {
+
+  if (!rec) {
     /* tId is smallest among all that have been processed */
     tLow = tId;
-    if (_head.next == &_head) {
+    if (_head.next == &_head)
       return true;
-    }
-    else {
-      tHigh = _head.next->tLow-1;
-      return false;
-    }
+    tHigh = _head.next->tLow-1;
+    return false;
   }
-  else if (tId > rec->tHigh) {
+
+  if (tId > rec->tHigh) {
     /* next unprocessed is just beyond this one */
     tLow = tId;
     if (rec->next == &_head) {
       /* tId is bigger than all Ids that have been procesed */
       return true;
     }
-    else {
-      tHigh = rec->next->tLow-1;
-      return false;
-    }
+    tHigh = rec->next->tLow-1;
+    return false;
   }
-  else {
-    /* tLow <= tId <= tHigh, find next higher recId range.
-       Since records with adjacent page numbers are not collapsed,
-       we need to skip consecutive records in order to find next 
-       higher page number. */
-    tId = rec->tHigh+1;
-    for ( rec = rec->next; rec != &_head; rec = rec->next) {
-      if (tId < rec->tLow) {
-	/* found */
-	tLow = tId;
-	tHigh = rec->tLow -1;
-	return false;
+
+  /* tLow <= tId <= tHigh, find next higher recId range.
+     Since records with adjacent page numbers are not collapsed,
+     we need to skip consecutive records in order to find next 
+     higher page number.
+  */
+
+  tId = rec->tHigh+1;
+  for ( rec = rec->next; rec != &_head; rec = rec->next) {
+    if (tId < rec->tLow) {
+      /* found */
+        tLow = tId;
+        tHigh = rec->tLow -1;
+        return false;
       }
-      tId = rec->tHigh+1;
-    }
-    /* end of list reached. Return page number of last element of 
-       list +1 */
-    tLow = tId;
-    return true;
+    tId = rec->tHigh+1;
   }
+
+  /* end of list reached. Return page number of last element of list + 1 */
+  tLow = tId;
+  return true;
 }
 
 /************************************************************************
@@ -432,9 +402,12 @@ void GDataRangeMap::InsertRange(RecId tLow, RecId tHigh, RecId gLow,
   }
   
   /* If we get here, create a new record after insertPt */
-  GDataRangeMapRec *newRec = AllocRec();
-  newRec->tLow = tLow; newRec->tHigh = tHigh;
-  newRec->gLow = gLow; newRec->gHigh = gHigh;
+  GDataRangeMapRec *newRec = new GDataRangeMapRec;
+  DOASSERT(newRec, "Out of memory");
+  newRec->tLow = tLow;
+  newRec->tHigh = tHigh;
+  newRec->gLow = gLow;
+  newRec->gHigh = gHigh;
   insertPt->next->prev = newRec;
   newRec->next = insertPt->next;
   newRec->prev = insertPt;
@@ -449,11 +422,11 @@ print
 
 void GDataRangeMap::Print()
 {
-  printf("GDataRaneMap\n");
-  GDataRangeMapRec *rec;
-  for (rec= _head.next; rec != &_head; rec = rec->next) {
-    printf("T: (%ld,%ld), G: (%ld,%ld)\n",
+  GDataRangeMapRec *rec = _head.next;
+  while (rec != &_head) {
+    printf("  T: (%ld,%ld), G: (%ld,%ld)\n",
 	   rec->tLow, rec->tHigh, rec->gLow, rec->gHigh);
+    rec = rec->next;
   }
 }
 
