@@ -6,14 +6,15 @@ depend:
 
 CompDate.o: CompDate.h
 generic.o: /usr/include/stdio.h /usr/include/ansi_compat.h
-generic.o: /usr/include/time.h /usr/include/string.h /usr/include/math.h
-generic.o: /usr/include/sys/time.h /usr/include/sys/types.h
-generic.o: ../graphics/DeviseTypes.h /usr/include/values.h
-generic.o: ../graphics/DevStatus.h ../graphics/Dispatcher.h
-generic.o: /usr/include/stdlib.h /usr/include/unistd.h ../graphics/DList.h
-generic.o: ../graphics/Exit.h ../graphics/Journal.h ../graphics/VisualArg.h
-generic.o: ../graphics/Color.h ../graphics/Pattern.h ../graphics/Display.h
-generic.o: ../graphics/Geom.h ../graphics/ColorMgr.h ../graphics/WindowRep.h
+generic.o: /usr/include/errno.h /usr/include/time.h /usr/include/string.h
+generic.o: /usr/include/math.h /usr/include/sys/time.h
+generic.o: /usr/include/sys/types.h ../graphics/DeviseTypes.h
+generic.o: /usr/include/values.h ../graphics/DevStatus.h
+generic.o: ../graphics/Dispatcher.h /usr/include/stdlib.h
+generic.o: /usr/include/unistd.h ../graphics/DList.h ../graphics/Exit.h
+generic.o: ../graphics/Journal.h ../graphics/VisualArg.h ../graphics/Color.h
+generic.o: ../graphics/Pattern.h ../graphics/Display.h ../graphics/Geom.h
+generic.o: ../graphics/ColorMgr.h ../graphics/WindowRep.h
 generic.o: ../graphics/Transform.h ../graphics/DevisePixmap.h
 generic.o: ../graphics/Compress.h ../graphics/Control.h
 generic.o: ../graphics/ClassDir.h ../graphics/Init.h ../graphics/BufPolicy.h

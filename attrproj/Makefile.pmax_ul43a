@@ -30,7 +30,7 @@ ApParseCat.o: /usr/include/time.h ApInit.h ../graphics/BufPolicy.h
 ApParseCat.o: ../graphics.new/TDataAsciiInterp.h ../graphics.new/TDataAscii.h
 ApParseCat.o: ../graphics/Dispatcher.h /usr/include/unistd.h
 ApParseCat.o: /usr/include/string.h ../graphics/Journal.h
-ApParseCat.o: ../graphics.new/TDataBinaryInterp.h
+ApParseCat.o: ../graphics.new/FileIndex.h ../graphics.new/TDataBinaryInterp.h
 ApParseCat.o: ../graphics.new/TDataBinary.h ../graphics/Util.h
 ApParseCat.o: /usr/include/ctype.h /usr/include/math.h
 AttrProj.o: /usr/include/stdio.h /usr/include/ansi_compat.h
