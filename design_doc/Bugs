@@ -2863,6 +2863,13 @@ Num Date        Status  Description
 			dispatcher (especially if not playing back in timed
 			mode). (rkw)
 
+716 10/18/01	OPEN	JavaScreen: the JSPoP main thread is not registered
+			with the thread checker. (rkw)
+
+717 10/19/01	OPEN	JavaScreen: needs better GUI for switching into and
+			out of collaboration mode (separate this from socket
+			vs. CGI). (elu/rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
