@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.47  1996/01/15 23:07:26  jussi
+#	Hid obsolete visualization commands from the casual user.
+#
 #	Revision 1.46  1996/01/13 23:09:13  jussi
 #	Added support for Z attribute and shape attribute 2.
 #
@@ -524,17 +527,19 @@ set knew 0
 
 menu .mbar.cursor.menu -tearoff 0
 .mbar.cursor.menu add command -label "Create" -command DoCursorCreate
-.mbar.cursor.menu add command -label "Set src" -command DoSetCursorSrc
-.mbar.cursor.menu add command -label "Set Dst" -command DoSetCursorDst
+.mbar.cursor.menu add command -label "Delete" -command DoCursorDelete
+.mbar.cursor.menu add separator
+.mbar.cursor.menu add command -label "Set source" -command DoSetCursorSrc
+.mbar.cursor.menu add command -label "Set destination" -command DoSetCursorDst
 
 menu .mbar.window.menu -tearoff 0
 .mbar.window.menu add command -label "Layout" -command {SetWindowLayout ""}
 .mbar.window.menu add command -label "Remove" -command {RemoveWindow ""}
+.mbar.window.menu add command -label "Duplicate" -command DupWindow
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Demo" -command DoDemo
 .mbar.window.menu add command -label "Help" -command DoHelp
 .mbar.window.menu add command -label "History" -command OpenHistory
-.mbar.window.menu add command -label "Duplicate" -command DupWindow
 
 menu .mbar.schema.menu -tearoff 0
 # Command to execute for browsing schema depends on whether we are in 
@@ -1318,7 +1323,6 @@ proc DoExit {} {
     }
 }
 
-
 # Process View/Create menu
 proc DoViewCreate {} {
     set ans [ DoCreateView "Select a view type" ]
@@ -1326,7 +1330,7 @@ proc DoViewCreate {} {
 
 # Destroy a view
 proc DoViewDestroy {} {
-    set answer [ dialogList .destroyView "DestroyView" \
+    set answer [ dialogList .destroyView "No Current View" \
 	    "Select a view to destroy" "" 0 { Cancel OK } [ViewSet] ]
     if { $answer == 0 } {
 	return
@@ -1340,7 +1344,7 @@ proc DoViewDestroy {} {
 proc DoViewRemove {} {
     global curView
     if {$curView == ""} {
-	dialog .removeView "Remove View" \
+	dialog .removeView "No Current View" \
 		"Select a view first by clicking in it." "" 0 { OK }
 	return
     }
@@ -1485,7 +1489,6 @@ proc SaveAllViewAxisLabel { f viewDict } {
 	}
     }
 }
-
 
 # Save info about action
 proc SaveAllViewAction { f dict} {
@@ -2299,7 +2302,7 @@ proc ProcessYOutButton {} {
 proc DoEditMapping {} {
     global dialogParamVar dialogListVar DEViseColors DEViseShapes curView
     if {$curView == ""} {
-	dialog .editMapping "Edit Mapping" \
+	dialog .editMapping "No Current View" \
 		"Select a view first by clicking in it." "" 0 { OK } 
 	return
     }
@@ -2427,17 +2430,18 @@ proc DoCursorCreate {} {
     if { $but != 1 } {
 	return ""
     }
+
     set flag $dialogCkButVar(selected)
     set name $dialogCkButVar(entry)
     if {$name == ""} {
-	set but [dialog .noName "NoName" \
-		"Error: No name for cursor specified" "" 0 {Continue }]
+	dialog .noName "No Name Specified" \
+		"Error: No name for cursor specified" "" 0 OK
 	return 
     }
 
     if { [DEVise exists $name ] } {
-	set but [dialog .linkExists "LinkExists" \
-		"Error: Cursor name $name already exists" "" 0 {Continue }]
+	dialog .linkExists "Cursor Exists" \
+		"Error: Cursor name $name already exists" "" 0 OK
 	return 
     }
 
@@ -2451,15 +2455,29 @@ proc DoCursorCreate {} {
     return $name
 }
 
-proc DoGetCursor {} {
+# Create a Cursor, return its name
+proc DoCursorDelete {} {
+    set cursorSet [CursorSet]
+    if {[llength $cursorSet] == 0} {
+	return
+    }
+
+    set cursor [DoGetCursor "Select cursor to delete"]
+    if {$cursor == ""} {
+	return
+    }
+    
+    DEVise destroy $cursor
+}
+
+proc DoGetCursor {label} {
     global curView dialogListVar
 
     set cursorSet [CursorSet]
     if { [llength $cursorSet] == 0 } {
 	set cursor [DoCursorCreate]
     } else {
-	set answer [ dialogList .getCursor "GetCursor" "Select cursor for\
-		view\n$curView" "" 0 \
+	set answer [ dialogList .getCursor "GetCursor" $label "" 0 \
 		{ New Cancel OK } $cursorSet ]
 	if { $answer == 0 } {
 	    set cursor [ DoCursorCreate ]
@@ -2473,7 +2491,6 @@ proc DoGetCursor {} {
     return $cursor
 }
 
-
 proc DoSetCursorSrc {} {
     global curView dialogListVar
 
@@ -2483,7 +2500,7 @@ proc DoSetCursorSrc {} {
 	return
     }
 
-    set cursor [DoGetCursor]
+    set cursor [DoGetCursor "Select cursor for view\n$curView"]
     if {$cursor == ""} {
 	return
     }
@@ -2500,7 +2517,7 @@ proc DoSetCursorDst {} {
 	return
     }
     
-    set cursor [DoGetCursor]
+    set cursor [DoGetCursor "Select cursor for view\n$curView"]
     if {$cursor == ""} {
 	return
     }
@@ -2618,10 +2635,10 @@ proc DoViewUnlink {} {
 
     if { [llength $viewLinks ] == 0 } {
 	set but [ dialog .removeLink "No Links" \
-		"View $curView has no established link" "" 0 OK ]
+		"View has no established link" "" 0 OK ]
     } else {
 	set answer [ dialogList .getLink "Select Link" \
-		"Select a link to unlink for view $curView" "" 0 \
+		"Select a link to unlink" "" 0 \
 		{ Cancel OK } $linkSet ]
 	if { $answer == 0 } {
 	    return
@@ -2992,61 +3009,79 @@ proc GetMapping { tdata mapClass} {
 # Switch to a different TData for current view.
 # We implement it by creating a new view and putting it it place
 # of the current one
+
 proc DoSwitchTData {} {
-    global curView
-    if { [string compare $curView ""] == 0 } {
-	dialog .switchTData "Switch TData" \
-		"Select a view by clicking in it first." "" 0 { OK } 
+    global curView sourceList dialogListVar
+
+    if {$curView == ""} {
+	dialog .switchTData "No Current View" \
+		"Select a view by clicking in it first." "" 0 OK
 	return
     }
     
-    # select TData
-    set tdata [DoSelectTData]
-    if { [string compare $tdata "" ] == 0} {
-	# no tdata
-	return
+    set tdata ""
+
+    set tdataSet [TdataSet]
+    if {[llength $tdataSet] > 1} {
+	set answer [ dialogList .selectTData "Open Data Streams"  \
+		"Select a data stream" \
+		"" 2 { Other Cancel Ok } $tdataSet ]
+	if {$answer == 1 || $dialogListVar(selected) == ""} {
+	    return
+	}
+	if {$answer == 2} { 
+	    set tdata $dialogListVar(selected)
+	} else {
+	    set tdata ""
+	}
     }
-    
+
+    if {$tdata == ""} {
+	set tdata [OpenNewDataSource]
+    }
+
+    if {$tdata == ""} { return }
+
     # Get mapping for the view
     set map [lindex [DEVise getViewMappings $curView] 0]
     
     # Compare the schema of the tdata
     set curMapClass [GetClass mapping $map]
-    puts "curMapClass $curMapClass tdata $tdata"
+    # puts "curMapClass $curMapClass tdata $tdata"
     set curMapParam [DEVise getCreateParam mapping $curMapClass $map]
     set curViewTData [lindex $curMapParam 0]
     
-    if { [string compare $curViewTData $tdata] == 0 } {
-	dialog .switchTDataErr "Switch TData" \
-		"You have selected the same tdata" "" 0 { continue }
+    if {$curViewTData == $tdata} {
+	dialog .switchTDataErr "Same Data Stream" \
+		"You have selected the same data stream." "" 0 OK
 	return
     }
     
     set viewTDataClass [GetClass tdata $curViewTData]
     set tdataClass [GetClass tdata $tdata]
-    if { [string compare $viewTDataClass $tdataClass ] != 0 } {
-	dialog .switchTDataErr "Switch TData" \
-		"The selected TData has type $tdataClass,\n\
-		incompatible with the tdata in the view" "" 0 { OK } 
+    if {$viewTDataClass != $tdataClass} {
+	dialog .switchTDataErr "Incompatible Data Stream" \
+		"The selected data stream has type $tdataClass,\n\
+		incompatible with the tdata in the view." "" 0 OK
 	return
     }
     
     # See if the new view is already created.
     set view [GetView $tdata $curMapClass [GetClass view $curView]]
-    if { [string compare $view "" ] == 0 } {
+    if {$view == ""} {
 	# need to create a new view
 	# First, see if we need to create a new GData
 	set mapName [GetMapping $tdata $curMapClass]
-	if { [string compare $mapName "" ] == 0 } { 
+	if {$mapName == ""} { 
 	    # create a new mapping.
-	    set mapName [UniqueName [format "%s#%s" $tdata $curMapClass]]
+	    set mapName [UniqueName "$tdata#$curMapClass"]
 	    set newMapParam [linsert [lrange $curMapParam 2 end] 0 $tdata \
 		    $mapName]
 	    set cmd "DEVise create mapping $curMapClass $newMapParam"
 	    set result [eval $cmd]
-	    if { [string compare $result "" ] == 0 } {
-		set but [ dialog .CreateError "Can't create mapping" \
-			"" 0 OK ]
+	    if {$result == ""} {
+		dialog .createError "Mapping Error" \
+			"Can't create mapping." "" 0 OK
 		return
 	    }
 	}
@@ -3054,20 +3089,31 @@ proc DoSwitchTData {} {
 	# Create a new view
 	set curViewClass [GetClass view $curView]
 	set curViewParam [DEVise getCreateParam view $curViewClass $curView]
-	set view [UniqueName [format "%s#%s" $mapName $curViewClass]]
+	set view [UniqueName $curView]
 	set newViewParam [linsert [lrange $curViewParam 1 end] 0 $view]
 	set cmd "DEVise create view $curViewClass $newViewParam"
-	set result [eval $cmd ]
-	if { [string compare $result "" ] == 0 } {
-	    set but [ dialog .CreateError "Can't create view" "" 0 OK ]
+	set result [eval $cmd]
+	if {$result == ""} {
+	    dialog .createError "View Error" "Can't create view." "" 0 OK
 	    return
 	}
+
+	set viewLabelParams [DEVise getLabel $curView]
+	eval DEVise setLabel {$view} $viewLabelParams
+	set viewStatParams [DEVise getViewStatistics $curView]
+	eval DEVise setViewStatistics {$view} $viewStatParams
+	set stat [DEVise getAxisDisplay $curView X]
+	eval DEVise setAxisDisplay {$view} X $stat
+	set stat [DEVise getAxisDisplay $curView Y]
+	eval DEVise setAxisDisplay {$view} Y $stat
+	
 	DEVise insertMapping $view $mapName
     } 
 
     # select new view
-    if { [string compare $view "" ] != 0 } {
+    if {$view != ""} {
 	DEVise replaceView $curView $view
+	set curView ""
 	ProcessViewSelected $view
     }
 }
@@ -3086,7 +3132,6 @@ proc DoHistoryToggle {} {
 	OpenHistory
     }
 }
-
 
 # Do history command here.
 proc OpenHistory {} {
@@ -3376,34 +3421,12 @@ proc SetWindowLayout {win} {
 proc DupWindow {} {
     global curView
     if {$curView == ""} {
-	set but [dialog .dupWinError "DupWindowError" \
+	set but [dialog .dupWinError "No Current View" \
 		"Select a window by clicking any view in it." "" 0 OK ]
 	return
     }
-    set win [DEVise getViewWin $curView]
-    set views [DEVise getWinViews $win]
-    
-    # Create mappings for views
-    set newViews ""
-    foreach view $views {
-	# Crete a new view
-	set class [GetClass  view $view]
-	set params [DEVise getCreateParam view $class $view]
-	set viewName [lindex $params 0]
-	set newName [UniqueName $viewName]
 
-	# replace name of view by name of new view
-	set newParam [linsert [lrange $params 1 end] 0 $newName]
-	# puts "DEVise create view $class $newParam"
-	eval DEVise create view $class $newParam
-	
-	lappend newViews $newName
-	
-	set maps [DEVise getViewMappings $view]
-	foreach map $maps {
-	    DEVise insertMapping $newName $map
-	}
-    }
+    set win [DEVise getViewWin $curView]
 
     # Create new window
     set class [GetClass window $win]
@@ -3411,9 +3434,36 @@ proc DupWindow {} {
     set newWin [UniqueName $win]
     set newParam [linsert [lrange $params 1 end] 0 $newWin]
     eval DEVise create window $class $newParam
+
+    set views [DEVise getWinViews $win]
     
-    foreach view $newViews {
-	DEVise insertWindow $view $newWin
+    # Create mappings for views
+    foreach view $views {
+	# Crete a new view
+	set class [GetClass view $view]
+	set params [DEVise getCreateParam view $class $view]
+	set viewName [lindex $params 0]
+	set newView [UniqueName $viewName]
+
+	# replace name of view by name of new view
+	set newParam [linsert [lrange $params 1 end] 0 $newView]
+	eval DEVise create view $class $newParam
+	
+	set viewLabelParams [DEVise getLabel $view]
+	eval DEVise setLabel {$newView} $viewLabelParams
+	set viewStatParams [DEVise getViewStatistics $view]
+	eval DEVise setViewStatistics {$newView} $viewStatParams
+	set stat [DEVise getAxisDisplay $view X]
+	eval DEVise setAxisDisplay {$newView} X $stat
+	set stat [DEVise getAxisDisplay $view Y]
+	eval DEVise setAxisDisplay {$newView} Y $stat
+	
+	DEVise insertWindow $newView $newWin
+
+	set maps [DEVise getViewMappings $view]
+	foreach map $maps {
+	    DEVise insertMapping $newView $map
+	}
     }
 }
 
