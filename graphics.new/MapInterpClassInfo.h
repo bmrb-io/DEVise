@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/04/14 00:18:15  jussi
+  Removed the extraneous data structures and methods for recording
+  new mapping class names. ClassDir records this information for
+  us already!
+
   Revision 1.3  1996/01/13 23:09:56  jussi
   Added support for Z attribute and shape attribute 2.
 
@@ -88,15 +93,16 @@ public:
 
 private:
 	void ExtractCommand(int argc, char **argv, MappingInterpCmd *cmd,
-			    int &cmdFlag, int &attrFlag,
+			    unsigned long int &cmdFlag,
+			    unsigned long int &attrFlag,
 			    VisualFlag *dimensionInfo, int &numDimensions,
 			    char *&tdataAlias, TData *&tdata, char *&name);
 
 	char *_fileAlias;
 	char *_className; /* name of this interpreted mapping class */
 	MappingInterpCmd *_cmd;
-	int _attrFlag;
-	int _cmdFlag;
+	unsigned long int _attrFlag;
+	unsigned long int _cmdFlag;
 	char *_name;
 	MappingInterp *_map;
 	TData *_tdata;

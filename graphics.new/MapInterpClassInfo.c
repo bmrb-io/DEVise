@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/05/11 21:29:20  jussi
+  Fixed problem with null valus being returned as CreateParams().
+
   Revision 1.9  1996/05/11 03:12:46  jussi
   Made this code independent of the ControlPanel variables
   like FileAlias and GDataName.
@@ -60,8 +63,8 @@
 //#define DEBUG
 
 static char *rootClassName = "interpreted";
-static char buf[14][256];
-static char *args[14];
+static char buf[11 + MAX_GDATA_ATTRS][64];
+static char *args[11 + MAX_GDATA_ATTRS];
 
 MapInterpClassInfo::MapInterpClassInfo()
 {
@@ -139,7 +142,8 @@ static Boolean NotEmpty(char *str)
 
 void MapInterpClassInfo::ExtractCommand(int argc, char **argv, 
 					MappingInterpCmd *cmd,
-					int &cmdFlag, int &attrFlag, 
+					unsigned long int &cmdFlag,
+					unsigned long int &attrFlag, 
 					VisualFlag *dimensionInfo,
 					int &numDimensions,
 					char *&tdataAlias, TData *&tdata,
@@ -147,21 +151,26 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
 {
   // we need to support both the old and the new style until
   // sufficient time has passed to make the old style really
-  // obsolete
+  // obsolete; new style created January 13th, 1996
 
   // the old style has: x, y, color, size, pattern, orientation, shape,
   // and shape attributes 0 and 1
 
   // the new style has: x, y, z, color, size, pattern, orientation, shape,
-  // and shape attributes 0, 1, and 2
+  // and shape attributes 0 through n (n >= 2)
 
-  if (argc != 12 && argc != 14) {
-    fprintf(stderr, "MapInterpClassInfo::ExtractCommand: argc != 14\n");
+  if (argc < 12) {
+    fprintf(stderr, "Invalid arguments in interpreted mapping\n");
     Exit::DoExit(2);
   }
 
-  cmd->xCmd = cmd->yCmd = cmd->zCmd = cmd->colorCmd = cmd->sizeCmd =
-    cmd->patternCmd = cmd->shapeCmd = cmd->orientationCmd = 0;
+  if (argc > 11 + MAX_GDATA_ATTRS) {
+    fprintf(stderr, "Ignoring extraneous shape attributes\n");
+    argc = 11 + MAX_GDATA_ATTRS;
+  }
+
+  cmd->xCmd = cmd->yCmd = cmd->zCmd = cmd->colorCmd = cmd->sizeCmd = 0;
+  cmd->patternCmd = cmd->shapeCmd = cmd->orientationCmd = 0;
   for(int i = 0; i < MAX_GDATA_ATTRS; i++)
     cmd->shapeAttrCmd[i] = 0;
   
@@ -193,7 +202,8 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
     cmdFlag |= MappingCmd_Y;
   }
 
-  int shift = (argc == 14 ? 1 : 0); 
+  // need to shift arguments if not old style (old style has no Z attribute)
+  int shift = (argc > 12 ? 1 : 0); 
 
   if (NotEmpty(argv[5 + shift])) {
     cmd->colorCmd = CopyString(argv[5 + shift]);
@@ -224,20 +234,28 @@ void MapInterpClassInfo::ExtractCommand(int argc, char **argv,
     attrFlag |= 2;
   }
 
-  if (argc == 14) {
+  // if new style, extract Z and remaining shape attributes
+  if (argc > 12) {
     if (NotEmpty(argv[5])) {
       cmd->zCmd = CopyString(argv[5]);
       cmdFlag |= MappingCmd_Z;
     }
-    if (NotEmpty(argv[13])) {
-      cmd->shapeAttrCmd[2] = CopyString(argv[13]);
-      attrFlag |= 4;
+    // remainder of command line is shape attributes
+    for(int i = 13; i < argc; i++) {
+      if (NotEmpty(argv[i])) {
+	cmd->shapeAttrCmd[i - 11] = CopyString(argv[i]);
+	attrFlag |= 1 << (i - 11);
+      }
     }
   }
 }
 
 void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
 {
+#ifdef DEBUG
+  printf("MapInterpClassInfo::ParamNames\n");
+#endif
+
   if (!_cmd) {
     /* no params needed for creating a new mapping class*/
     argc = 0;
@@ -247,7 +265,7 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
 
   /* params for an existing interpreted mapping */
 
-  argc = 14;
+  argc = 11 + MAX_GDATA_ATTRS;
   argv = args;
 
   if (_fileAlias)
@@ -315,23 +333,13 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
   } else
     args[10] = "Shape";
     
-  if ( _cmd->shapeAttrCmd[0]) {
-    sprintf(buf[11], "ShapeAttr0 {%s}", _cmd->shapeAttrCmd[0]);
-    args[11] = buf[11];
-  } else
-    args[11] = "ShapeAttr0";
-    
-  if (_cmd->shapeAttrCmd[1]) {
-    sprintf(buf[12], "ShapeAttr1 {%s}", _cmd->shapeAttrCmd[1]);
-    args[12] = buf[12];
-  } else
-    args[12] = "ShapeAttr1";
-    
-  if (_cmd->shapeAttrCmd[2]) {
-    sprintf(buf[13], "ShapeAttr2 {%s}", _cmd->shapeAttrCmd[2]);
-    args[13] = buf[13];
-  } else
-    args[13] = "ShapeAttr2";
+  for(int i = 0; i < MAX_GDATA_ATTRS; i++) {
+    if ( _cmd->shapeAttrCmd[i])
+      sprintf(buf[11 + i], "ShapeAttr%d {%s}", i, _cmd->shapeAttrCmd[i]);
+    else
+      sprintf(buf[11 + i], "ShapeAttr%d", i);
+    args[11 + i] = buf[11 + i];
+  }
 }
 
 void MapInterpClassInfo::ChangeParams(int argc, char**argv)
@@ -379,7 +387,8 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc, char **argv)
     
   MappingInterpCmd *cmd = new MappingInterpCmd;
   TData *tdata;
-  int cmdFlag, attrFlag;
+  unsigned long int cmdFlag;
+  unsigned long int attrFlag;
   VisualFlag *dimensionInfo = new VisualFlag;
   int numDimensions;
   char *tdataAlias, *name;
@@ -405,6 +414,7 @@ void MapInterpClassInfo::SetDefaultParams(int argc, char **argv)
 void MapInterpClassInfo::GetDefaultParams(int &argc, char **&argv)
 {
   argc = 0;
+  argv = args;
 }
 
 char *MapInterpClassInfo::InstanceName()
@@ -419,76 +429,69 @@ void *MapInterpClassInfo::GetInstance()
 
 void MapInterpClassInfo::CreateParams(int &argc, char **&argv)
 {
-  /* parameters are: fileAlias mapName  x, y, color, size, 
-     pattern, orientation, shape, and shapeAttr */
-  argc = 14;
+#ifdef DEBUG
+  printf("MapInterpClassInfo::CreateParams\n");
+#endif
+
+  DOASSERT(_name, "Invalid name of instance");
+
+  /* parameters are: fileAlias, mapName, x, y, color, size, 
+     pattern, orientation, shape, and shapeAttrs */
+  argc = 11 + MAX_GDATA_ATTRS;
   argv = args;
   
   args[0] = _fileAlias;
-  if (!_name) {
-    /* info about creating an interpreted mapping class */
-    args[1] = _className;
-  } else
-    /* creating a mapping instance */
-    args[1] = _name;
+  args[1] = _name;
 
-  if (_numDimensions == 1) {
+  if (_numDimensions == 1)
     args[2] = "X";
-  } else
+  else
     args[2] = "";
   
-  if (_cmd->xCmd) {
+  if (_cmd->xCmd)
     args[3] = _cmd->xCmd;
-  } else
+  else
     args[3] = "";
   
-  if (_cmd->yCmd) {
+  if (_cmd->yCmd)
     args[4] = _cmd->yCmd;
-  } else
+  else
     args[4] = "";
   
-  if (_cmd->zCmd) {
+  if (_cmd->zCmd)
     args[5] = _cmd->zCmd;
-  } else
+  else
     args[5] = "";
   
-  if ( _cmd->colorCmd) {
+  if ( _cmd->colorCmd)
     args[6] = _cmd->colorCmd;
-  } else
+  else
     args[6] = "";
   
-  if ( _cmd->sizeCmd) {
+  if ( _cmd->sizeCmd)
     args[7] = _cmd->sizeCmd;
-  } else
+  else
     args[7] = "";
   
-  if ( _cmd->patternCmd) {
+  if ( _cmd->patternCmd)
     args[8] = _cmd->patternCmd;
-  } else
+  else
     args[8] = "";
   
-  if ( _cmd->orientationCmd) {
+  if ( _cmd->orientationCmd)
     args[9] = _cmd->orientationCmd;
-  } else
+  else
     args[9] = "";
   
-  if ( _cmd->shapeCmd) {
+  if ( _cmd->shapeCmd)
     args[10] = _cmd->shapeCmd;
-  } else
+  else
     args[10] = "";
   
-  if ( _cmd->shapeAttrCmd[0]) {
-    args[11] = _cmd->shapeAttrCmd[0];
-  } else
-    args[11] = "";
-  
-  if ( _cmd->shapeAttrCmd[1]) {
-    args[12] = _cmd->shapeAttrCmd[1];
-  } else
-    args[12] = "";
-  
-  if ( _cmd->shapeAttrCmd[2]) {
-    args[13] = _cmd->shapeAttrCmd[2];
-  } else
-    args[13] = "";
+  for(int i = 0; i < MAX_GDATA_ATTRS; i++) {
+    if ( _cmd->shapeAttrCmd[i])
+      args[11 + i] = _cmd->shapeAttrCmd[i];
+    else
+      args[11 + i] = "";
+  }
 }
