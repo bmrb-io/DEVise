@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  1999/10/12 00:08:43  hongyu
+// *** empty log message ***
+//
 // Revision 1.37  1999/10/10 08:49:52  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -150,8 +153,9 @@ public class DEViseScreen extends Panel
                 DEViseCanvas canvas = (DEViseCanvas)allCanvas.elementAt(i);
                 Rectangle loc = canvas.getLocInScreen();
                 Point p = new Point(finalMousePosition.x - loc.x, finalMousePosition.y - loc.y);
-                if (p.x >= 0 && p.x < loc.width && p.y >= 0 && p.y < loc.height) {
+                if (p.x >= 0 && p.x <= loc.width && p.y >= 0 && p.y <= loc.height) {
                     canvas.checkMousePos(p, false, false);
+                    repaint();
                     return;
                 }
             }

@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  1999/10/10 19:59:26  hongyu
+// *** empty log message ***
+//
 // Revision 1.4  1999/10/10 08:49:54  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -54,7 +57,7 @@ public class YLogGUI extends Frame
     protected boolean isValid = false;
 
     static {
-        max = 60000;
+        max = 35000;
     }
 
     public YLogGUI(int width, int height, String title, int level, boolean isClosable, Font font, Color bg, Color fg)

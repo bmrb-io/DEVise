@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  1999/10/12 00:08:42  hongyu
+// *** empty log message ***
+//
 // Revision 1.16  1999/10/10 08:49:51  hongyu
 // Major changes to JAVAScreen have been commited in this update, including:
 // 1. restructure of JavaScreen internal structure to adapt to vast changes
@@ -704,7 +707,7 @@ public class DEViseCanvas extends Container
             if (view.viewDimension == 3) {
                 jsc.lastCursor = DEViseGlobals.rbCursor;
                 setCursor(jsc.lastCursor);
-                
+
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(sp.x), activeView.getY(sp.y));
                 if (jscreen.getCurrentView() != activeView) {
@@ -945,7 +948,7 @@ public class DEViseCanvas extends Container
 
                 jsc.lastCursor = DEViseGlobals.rbCursor;
                 setCursor(jsc.lastCursor);
-                
+
                 activeView = view;
                 jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(p.x), activeView.getY(p.y));
                 if (jscreen.getCurrentView() != activeView) {
@@ -1032,6 +1035,11 @@ public class DEViseCanvas extends Container
             jsc.viewInfo.updateInfo(activeView.viewName, activeView.getX(p.x), activeView.getY(p.y));
 
         } else { // activeView is null and all other values will be initialized value before
+            whichCursorSide = -1;
+            selectedCursor = null;
+            isInViewDataArea = false;
+            activeView = null;
+
             if (!checkDispatcher || jsc.dispatcher.getStatus() == 0) {
                 jsc.lastCursor = DEViseGlobals.defaultCursor;
             } else {
@@ -1043,7 +1051,7 @@ public class DEViseCanvas extends Container
             if (jscreen.getCurrentView() != activeView) {
                 jscreen.setCurrentView(activeView);
             }
-            
+
             jsc.viewInfo.updateInfo();
         }
     }
@@ -1054,17 +1062,17 @@ public class DEViseCanvas extends Container
             return false;
         }
 
-        //jsc.pn("true in " + v.viewName);
-
         if (!v.inViewDataArea(p)) {
-            activeView = v;
-            selectedCursor = null;
-            whichCursorSide = -1;
-            isInViewDataArea = false;
-            return true;
+            if (v.piledView != null) {
+                return false;
+            } else {
+                activeView = v;
+                selectedCursor = null;
+                whichCursorSide = -1;
+                isInViewDataArea = false;
+                return true;
+            }
         }
-
-        //jsc.pn("true in data area of " + v.viewName);
 
         for (int i = 0; i < v.viewChilds.size(); i++) {
             DEViseView vv = (DEViseView)v.viewChilds.elementAt(i);
@@ -1085,8 +1093,6 @@ public class DEViseCanvas extends Container
                 whichCursorSide = status;
                 selectedCursor = cursor;
                 isInViewDataArea = true;
-                //jsc.pn("true in cursor of " + v.viewName);
-
                 return true;
             }
         }
@@ -1101,11 +1107,15 @@ public class DEViseCanvas extends Container
             }
         }
 
-        activeView = v;
-        isInViewDataArea = true;
-        selectedCursor = null;
-        whichCursorSide = -1;
-        return true;
+        if (v.piledView != null) {
+            return false;
+        } else {
+            activeView = v;
+            isInViewDataArea = true;
+            selectedCursor = null;
+            whichCursorSide = -1;
+            return true;
+        }
     }
 
     public void createCrystal()
@@ -1117,7 +1127,7 @@ public class DEViseCanvas extends Container
         if (view.viewGDatas.size() == 0) {
             return;
         }
-        
+
         if (crystal == null) {
             StringWriter writer = new StringWriter();
             writer.write("\"Scale Factor\" 5.65 5.65 5.65\n");
@@ -1130,7 +1140,7 @@ public class DEViseCanvas extends Container
             }
 
             writer.write("\"Bond Limit\" 2.3 2.7\n");
-        
+
             writer.close();
 
             String string = writer.toString();
@@ -1146,13 +1156,13 @@ public class DEViseCanvas extends Container
                 crystal.setSelect();
                 return;
             }
-            
+
             crystal.setSelect();
             for (int i = 0; i < view.viewGDatas.size(); i++) {
                 DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
                 crystal.setSelect(gdata.x0, gdata.y0, gdata.z0);
             }
-        }        
+        }
     }
 
     private void createCrystalFromData(Reader stream) throws YException
