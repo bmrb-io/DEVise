@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.70  1999/08/24 22:01:18  wenger
+  JavaScreen support code deals with argument lists better (partly in
+  preparation for JS-side axis drawing).
+
   Revision 1.69  1999/08/19 20:46:37  wenger
   Added JAVAC_ProtocolVersion command.
 
@@ -486,17 +490,17 @@ getFileSize(const char* filename)
 }
 
 //====================================================================
-JSArgs::JSArgs(int argc)
+JSArgs::JSArgs(int maxArgs)
 {
-  _argc = argc;
-  _argv = new (const char *)[_argc];
-  _dynamic = new Boolean[_argc];
+  _maxArgs = maxArgs;
+  _argv = new (const char *)[_maxArgs];
+  _dynamic = new Boolean[_maxArgs];
 
-  for (int index = 0; index < _argc; index++) {
+  for (int index = 0; index < _maxArgs; index++) {
     _dynamic[index] = false;
   }
 
-  _pos = 0;
+  _argc = 0;
 }
 
 //====================================================================
@@ -515,32 +519,32 @@ JSArgs::~JSArgs()
 void
 JSArgs::FillString(const char *value)
 {
-  DOASSERT(_pos < _argc, "Too many arguments");
-  _argv[_pos++] = value;
+  DOASSERT(_argc < _maxArgs, "Too many arguments");
+  _argv[_argc++] = value;
 }
 
 //====================================================================
 void
 JSArgs::FillInt(int value)
 {
-  DOASSERT(_pos < _argc, "Too many arguments");
+  DOASSERT(_argc < _maxArgs, "Too many arguments");
   char buf[128];
   sprintf(buf, "%d", value);
-  _argv[_pos] = CopyString(buf);
-  _dynamic[_pos] = true;
-  _pos++;
+  _argv[_argc] = CopyString(buf);
+  _dynamic[_argc] = true;
+  _argc++;
 }
 
 //====================================================================
 void
 JSArgs::FillDouble(double value)
 {
-  DOASSERT(_pos < _argc, "Too many arguments");
+  DOASSERT(_argc < _maxArgs, "Too many arguments");
   char buf[128];
   sprintf(buf, "%.10g", value);
-  _argv[_pos] = CopyString(buf);
-  _dynamic[_pos] = true;
-  _pos++;
+  _argv[_argc] = CopyString(buf);
+  _dynamic[_argc] = true;
+  _argc++;
 }
 
 //====================================================================

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  1999/07/19 19:46:32  wenger
+  If Devise gets hung, it now detects this and kills itself (mainly for
+  the sake of JavaScreen support).
+
   Revision 1.22  1999/07/16 21:35:49  wenger
   Changes to try to reduce the chance of devised hanging, and help diagnose
   the problem if it does: select() in Server::ReadCmd() now has a timeout;
@@ -187,6 +191,12 @@ void Exit::DoAbort(char *reason, char *file, int line)
 
   fprintf(stderr, "An internal error has occurred. The reason is:\n");
   fprintf(stderr, "  %s\n", fulltext);
+
+#if !defined(LIBCS) && !defined(ATTRPROJ)
+  char errBuf[1024];
+  sprintf(errBuf, "Failed assertion: %s\n", fulltext);
+  DebugLog::DefaultLog()->Message(errBuf);
+#endif
 
 #if !defined(LIBCS) && !defined(ATTRPROJ)
   ControlPanel::Instance()->DoAbort(fulltext);

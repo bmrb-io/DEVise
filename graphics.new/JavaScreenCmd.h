@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.25  1999/08/24 22:01:19  wenger
+  JavaScreen support code deals with argument lists better (partly in
+  preparation for JS-side axis drawing).
+
   Revision 1.24  1999/08/19 20:46:37  wenger
   Added JAVAC_ProtocolVersion command.
 
@@ -261,7 +265,7 @@ class JavaScreenCmd
 
 class JSArgs {
 public:
-  JSArgs(int argc);
+  JSArgs(int maxArgs);
   ~JSArgs();
 
   void FillString(const char *value);
@@ -273,9 +277,9 @@ public:
   }
 
 private:
-  int _argc;
+  int _maxArgs;
   const char **_argv;
-  int _pos;
+  int _argc;
   Boolean *_dynamic;
 };
 
