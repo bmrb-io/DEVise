@@ -1119,7 +1119,7 @@ Num Date        Status  Description
 290 02/10/98	FIXED	Monolithic form of DEVise shouldn't show group
 			GUI. (rkw)
 
-291 02/10/98	OPEN	DEVise client/server pair can't run at all without
+291 02/10/98	FIXED	DEVise client/server pair can't run at all without
 			DEVISE_COLLABORATOR envrionment variable defined
 			(with code as of collab_br_1). (rkw)
 
@@ -1132,7 +1132,7 @@ Num Date        Status  Description
 294 02/12/98	OPEN	Sometimes symbols are not drawn that should be
 			(see test/missing_bars.ds). (rkw)
 
-295 02/16/98	OPEN	Connecting multiple clients to a single server no
+295 02/16/98	FIXED?	Connecting multiple clients to a single server no
 			longer works. (rkw)
 
 296 02/16/98	OPEN	Blanks in schema names cause problems. (ag/rkw)
@@ -1148,7 +1148,7 @@ Num Date        Status  Description
 300 02/18/98	OPEN	When printing to PostScript, views within a window
 			are printed in reversed order top-to-bottom. (rkw)
 
-301 02/19/98	OPEN	Sometimes get a 'Bad free() ignored.' error from
+301 02/19/98	FIXED?	Sometimes get a 'Bad free() ignored.' error from
 			server when you do 'kill_devised'. (rkw)
 
 302 02/20/98	OPEN	Histograms don't work in client/server form of
@@ -1165,9 +1165,9 @@ Num Date        Status  Description
 305 03/02/98	OPEN	New DeviseCommand module doesn't check argument counts.
 			(rkw)
 
-306 03/02/98	OPEN	Attempting to save a session causes a core dump. (rkw)
+306 03/02/98	FIXED	Attempting to save a session causes a core dump. (rkw)
 
-307 03/02/98	OPEN	DEVise gives 'Bad free() ignored.' messages when
+307 03/02/98	FIXED	DEVise gives 'Bad free() ignored.' messages when
 			quitting (at least on Intel/Solaris). (rkw)
 
 308 03/03/98	OPEN	devised uses lots of CPU when idle. (sm/rkw)
