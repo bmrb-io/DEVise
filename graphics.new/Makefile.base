@@ -2,26 +2,12 @@ LD = ld
 CC = g++
 
 # flags:
-#	-DSEVENLAYER: set this flag to use sevenlayer
-#	-DRECTX_PIXEL: used when RectXShape plots only rectangles.
 #	-DUSE_AMSDISKFILE: set this to use in-memory file for AMS
 #	-DUNIX: use this for Unix file
-#	-DOLDGRAPHICS: use this to NOT detect overlapping symbol X coords before
-#		drawing. file: TDataView.c
-#	-DHARDWIRE_SYM: hardwire detecting overlapping symbols in query processor
-#		file: QueryProc.c
-#	-DSYMBOL_BIN: symbol bin to return symbols
-#	-DNO_SYMBOL: returnXYDAta to TDataView: files: SymbolBin.c
 #	-DBATCH: true to batch symbols
 #		files: TDataView.c, SymbolBin.c
-#	-DINSTANTIATE_ALL: instantiate all symbols. Must be set with
-#		-DBATCH. File: SymbolBin.c
 #	-DRANDOMIZE: randomize existing pages before returning them.
 #		file: QueryProc.c
-#	-DINTERLEAVE: interleave orders in which the records are returned.
-#		-DRANDOMIZE must be set. file: QueryProc.c
-#	-DSIMPLE_MAPPING: use this to map just the x,y coords
-#		file: testAms1.c
 #	-DTRACE_GDATA: trace GDATa query, file: QueryProc.c
 
 CFLAGS = $(ARCH_FLAGS) -Wall -Wno-unused -O -DUNIX -I../../graphics \
@@ -34,20 +20,20 @@ CFLAGS = $(ARCH_FLAGS) -Wall -Wno-unused -O -DUNIX -I../../graphics \
 # Buffer manager
 
 BufMgrSrc = BufMgr.c BufMgrNull.c VoidArray.c RangeInfo.c RecRange.c \
-		RangeInfoArray.c BufferFifo.c BufferFocal.c BufferLifo.c \
-		BufferRnd.c BufMgrFull.c \
-		RangeList.c TDataRangeList.c MultiArray.c  RangeCallback.c \
-		GDataRangeSource.c TDataRangeSource.c
+	RangeInfoArray.c BufferFifo.c BufferFocal.c BufferLifo.c \
+	BufferRnd.c BufMgrFull.c \
+	RangeList.c TDataRangeList.c MultiArray.c  RangeCallback.c \
+	GDataRangeSource.c TDataRangeSource.c
 
 BufMgrObj = BufMgr.o BufMgrNull.o VoidArray.o  RangeInfo.o RecRange.o \
-		RangeInfoArray.o BufferFifo.o BufferFocal.o BufferLifo.o \
-		BufferRnd.o BufMgrFull.o \
-		RangeList.o  TDataRangeList.o MultiArray.o  RangeCallback.o \
-		GDataRangeSource.o TDataRangeSource.o
+	RangeInfoArray.o BufferFifo.o BufferFocal.o BufferLifo.o \
+	BufferRnd.o BufMgrFull.o \
+	RangeList.o  TDataRangeList.o MultiArray.o  RangeCallback.o \
+	GDataRangeSource.o TDataRangeSource.o
 
 # query processor
 
-QPSrc= CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
+QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	Bitmap.c ParseCat.c Group.C GroupDir.C ItemList.C\
 	DispQueryProc.c QueryProc.c QueryProcSimple.c QueryProcFull.c \
 	RecInterp.c TDataAsciiInterp.c TDataMap.c \
@@ -55,9 +41,9 @@ QPSrc= CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c Temp.c TData.c TDataViewX.c ViewScatter.c \
 	ViewRanges.c ViewGraph.c TkControl.c QPRange.c \
-	ViewClassInfo.c BasicStats.c KGraph.c ViewKGraph.c
+	ViewClassInfo.c
 
-QPObj=  CompositeParser.o MappingInterp.o MapInterpClassInfo.o \
+QPObj = CompositeParser.o MappingInterp.o MapInterpClassInfo.o \
 	Bitmap.o DispQueryProc.o ParseCat.o Group.o GroupDir.o ItemList.o\
 	QueryProc.o QueryProcSimple.o QueryProcFull.o \
 	RecInterp.o TDataAsciiInterp.o TDataMap.o \
@@ -65,19 +51,21 @@ QPObj=  CompositeParser.o MappingInterp.o MapInterpClassInfo.o \
 	TDataRec.o TData2DRec.o PageRange.o  RecFile.o UnixRecFile.o \
 	GDataRangeMap.o GData.o Temp.o TData.o TDataViewX.o ViewScatter.o \
 	ViewRanges.o ViewGraph.o TkControl.o QPRange.o \
-	ViewClassInfo.o BasicStats.o KGraph.o ViewKGraph.o
+	ViewClassInfo.o
 
 # View
 
-VIEWSRC = ActionDefault.c ConnectorShape.h Snapshot.c
-VIEWOBJ = ActionDefault.o ConnectorShape.o Snapshot.o
+VIEWSRC = ActionDefault.c ConnectorShape.h Snapshot.c BasicStats.c \
+	KGraph.c ViewKGraph.c Seq.C
+VIEWOBJ = ActionDefault.o ConnectorShape.o Snapshot.o BasicStats.o \
+	KGraph.o ViewKGraph.o Seq.o
 
 # Command
 
 CMDSRC =  Command.c
 CMDOBJ =  Command.o
 
-LIBSRC= $(BufMgrSrc) $(QPSrc) $(VIEWSRC) $(CMDSRC)
+LIBSRC = $(BufMgrSrc) $(QPSrc) $(VIEWSRC) $(CMDSRC)
 
 LIBOBJ = $(BufMgrObj) $(QPObj) $(VIEWOBJ) $(CMDOBJ)
 
@@ -89,11 +77,12 @@ TESTSRC = testbuf.c testpage.c testpfile.c testpfileGap.c testQueryProc.c \
 	testBufMech.c testBufMgrFull.c testRangeList.c genStrData.c testStr.c\
 	StringHash.c testViewRanges.c testXY.c
 
-ALLSRC= $(LIBSRC) $(TESTSRC) 
+ALLSRC = $(LIBSRC) $(TESTSRC) 
 
-LIBOBJS= $(VIEWOBJ) $(QPObj) $(CMDOBJ) $(BufMgrObj)
+LIBOBJS = $(VIEWOBJ) $(QPObj) $(CMDOBJ) $(BufMgrObj)
+
 libobj.o: $(LIBOBJS) ../graphics/allobj.o
-	$(LD) -r -o $@ ../graphics/allobj.o  $(LIBOBJS)
+	$(LD) -r -o $@ ../graphics/allobj.o $(LIBOBJS)
 
 BufMgrObj.o: $(BufMgrObj)
 	$(LD) -r -o $@ $(BufMgrObj)
@@ -101,7 +90,6 @@ BufMgrObj.o: $(BufMgrObj)
 testViewRanges: testViewRanges.o ViewRanges.o RangeCallback.o
 	$(CC) -o $@ $@.o ViewRanges.o RangeCallback.o \
 		../graphics/allobj.o -lXaw -lXmu -lXt -lXext -lX11 -lm -l44bsd
-
 
 testStr: $(VIEWOBJ) $(QPObj) $(CMDOBJ) BufMgrObj.o testStr.o StringHash.o
 	$(CC) -o $@ $@.o $(VIEWOBJ) BufMgrObj.o $(QPObj) \

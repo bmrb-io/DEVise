@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1995/12/28 20:01:59  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.23  1995/12/14 18:07:29  jussi
   Small fixes to get rid of g++ -Wall warnings.
 
@@ -130,6 +133,8 @@ extern int comp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 extern int crsp_extract(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
+extern int seq_extract(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 ControlPanel::Mode TkControlPanel::_mode = ControlPanel::DisplayMode;
 MapInterpClassInfo *TkControlPanel::_interpProto = NULL;
@@ -215,20 +220,20 @@ TkControlPanel::TkControlPanel()
 void TkControlPanel::StartSession()
 {
   printf("DEVise Data Visualization Software\n");
-  printf("(c) Copyright 1992-1995\n");
+  printf("(c) Copyright 1992-1996\n");
   printf("By the DEVise Development Group\n");
   printf("All Rights Reserved.\n");
   printf("\n");
 
-  Tcl_LinkVar(_interp,"fileName", (char *)&_fileName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp,"fileAlias", (char *)&_fileAlias, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp,"gdataName", (char *)&_gdataName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp,"windowName",(char *) &_winName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp,"viewName",(char *) &_viewName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp,"sessionName",(char *)&_sessionName, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp,"argv0",(char *)&_argv0, TCL_LINK_STRING);
-  Tcl_LinkVar(_interp,"restoring",(char *)&_restoring, TCL_LINK_INT);
-  Tcl_LinkVar(_interp,"template",(char *)&_template, TCL_LINK_INT);
+  Tcl_LinkVar(_interp, "fileName", (char *)&_fileName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp, "fileAlias", (char *)&_fileAlias, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp, "gdataName", (char *)&_gdataName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp, "windowName", (char *) &_winName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp, "viewName", (char *) &_viewName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp, "sessionName", (char *)&_sessionName, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp, "argv0", (char *)&_argv0, TCL_LINK_STRING);
+  Tcl_LinkVar(_interp, "restoring", (char *)&_restoring, TCL_LINK_INT);
+  Tcl_LinkVar(_interp, "template", (char *)&_template, TCL_LINK_INT);
 
   /* Create a new tcl command for control panel */
   Tcl_CreateCommand(_interp, "DEVise", ControlCmd, this, NULL);
@@ -241,6 +246,9 @@ void TkControlPanel::StartSession()
 
   /* Create a new tcl command for CRSP data */
   Tcl_CreateCommand(_interp, "crsp_extract", crsp_extract, 0, 0);
+
+  /* Create a new tcl command for SEQ data */
+  Tcl_CreateCommand(_interp, "seq_extract", seq_extract, 0, 0);
 
   char *envPath = getenv("DEVISE_LIB");
   char *control;
