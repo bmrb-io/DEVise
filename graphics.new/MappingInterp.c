@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.82  1999/03/03 18:21:56  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.81  1999/01/04 15:33:32  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -854,7 +859,8 @@ void MappingInterp::UpdateMaxSymSize(void *gdata, int numSyms)
 
 void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 				   void **gdataArray, int num,
-				   int &recordsProcessed)
+				   int &recordsProcessed,
+				   Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
   printf("MappingInterp::DrawGDataArray(%s, 0x%p, %d)\n", view->GetName(),
@@ -869,7 +875,8 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
       printf("Drawing shape %d\n", shape);
 #endif
       _shapes[shape]->DrawGDataArray(win, gdataArray, num, this,
-				     view, GetPixelWidth(), recordsProcessed);
+				     view, GetPixelWidth(), recordsProcessed,
+				     timeoutAllowed);
     } else {
       /* dynamic shape */
       recordsProcessed = 0;
@@ -890,7 +897,8 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 #endif
         int tmpRecs;
         _shapes[shape]->DrawGDataArray(win, &gdataArray[i], j - i, this,
-				       view, GetPixelWidth(), tmpRecs);
+				       view, GetPixelWidth(), tmpRecs,
+				       timeoutAllowed);
         recordsProcessed = i + tmpRecs;
         if (tmpRecs != j - i) {
 	  timedOut = true;
@@ -1198,6 +1206,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     if (_simpleCmd->colorCmd.cmdType == MappingSimpleCmdEntry::ConstCmd) {
       PColorID	pcid = (PColorID)_simpleCmd->colorCmd.cmd.num;
 
+	  // Coloring in TDataMap is apparently used to store color if constant.
       GetColoring().SetForeground(pcid);
       attrList->InsertAttr(3, "color", -1, sizeof(double),
       attrType, false, NULL, false, isSorted);
@@ -1411,6 +1420,8 @@ AttrList *MappingInterp::InitCmd(char *name)
 		{
 			PColorID	pcid = (PColorID)constVal;
 
+	        // Coloring in TDataMap is apparently used to store color if
+			// constant.
 			GetColoring().SetForeground(pcid);
 			_tclCmd->colorCmd = "";
 			attrList->InsertAttr(3, "color", -1, sizeof(double), attrType,

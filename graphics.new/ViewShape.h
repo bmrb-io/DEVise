@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/01/04 15:33:34  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
  */
 
 #ifndef VIEW_SHAPE_H
@@ -40,6 +45,6 @@ class FullMapping_ViewShape
   virtual void DrawGDataArray (WindowRep *win, void **gdataArray, 
 			       int numSyms, TDataMap *map,
 			       ViewGraph *view, int pixelSize,
-			       int &recordsProcessed);
+			       int &recordsProcessed, Boolean timeoutAllowed);
 };
 #endif

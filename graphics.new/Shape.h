@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/12/15 14:55:22  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.31  1997/11/24 23:15:16  weaver
   Changes for the new ColorManager.
 
@@ -318,7 +324,8 @@ class Shape {
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
                               int numSyms, TDataMap *map,
                               ViewGraph *view, int pixelSize,
-			      int &recordsProcessed) {}
+			      int &recordsProcessed,
+			      Boolean timeoutAllowed) {}
 
  protected:
 
@@ -326,7 +333,7 @@ class Shape {
   virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
                                 int numSyms, TDataMap *map,
                                 ViewGraph *view, int pixelSize,
-				int &recordsProcessed)
+				int &recordsProcessed, Boolean timeoutAllowed)
 				{ recordsProcessed = numSyms; }
 
   /* Draw each GData symbol as a single pixel. Used by derived classes

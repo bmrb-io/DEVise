@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.63  1999/05/14 14:00:48  wenger
+  User can now control data font family, weight, and slant, on a per-view
+  basis.
+
   Revision 1.62  1999/05/10 20:02:21  wenger
   Added error indication option (as per request from Eldon) to bar shape;
   added "Pile" to the GUI for view symbols.
@@ -350,14 +354,15 @@ int FullMapping_RectShape::NumShapeAttrs()
 
 void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
-					   ViewGraph *view, int pixelSize, int &recordsProcessed)
+					   ViewGraph *view, int pixelSize, int &recordsProcessed,
+					   Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -485,7 +490,8 @@ void FullMapping_RectShape::Draw3DGDataArray(WindowRep *win,
 											 void **gdataArray,
 											 int numSyms, TDataMap *map,
 											 ViewGraph *view, int pixelSize,
-											 int &recordsProcessed)
+											 int &recordsProcessed,
+											 Boolean timeoutAllowed)
 {
   fprintf(stderr,
     "Warning: 3D display of Rect shapes not currently implemented\n");
@@ -502,7 +508,8 @@ int FullMapping_RectXShape::NumShapeAttrs()
 
 void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						int numSyms, TDataMap *map,
-						ViewGraph *view, int pixelSize, int &recordsProcessed)
+						ViewGraph *view, int pixelSize, int &recordsProcessed,
+						Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
@@ -510,7 +517,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -624,14 +631,15 @@ void FullMapping_BarShape::MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 
 void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
-				ViewGraph *view, int pixelSize, int &recordsProcessed) 
+				ViewGraph *view, int pixelSize, int &recordsProcessed,
+				Boolean timeoutAllowed) 
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 	
@@ -708,14 +716,15 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 							 int numSyms,
 							 TDataMap *map,
 							 ViewGraph *view,
-							 int pixelSize, int &recordsProcessed) 
+							 int pixelSize, int &recordsProcessed,
+							 Boolean timeoutAllowed) 
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -806,14 +815,15 @@ int FullMapping_OvalShape::NumShapeAttrs()
 
 void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
-					   ViewGraph *view, int pixelSize, int &recordsProcessed)
+					   ViewGraph *view, int pixelSize, int &recordsProcessed,
+					   Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -881,7 +891,8 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 void FullMapping_OvalShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize,
-					   int &recordsProcessed)
+					   int &recordsProcessed,
+					   Boolean timeoutAllowed)
 {
   GDataAttrOffset *offset = map->GetGDataOffset();
   Coord x, y, z, r;
@@ -915,14 +926,15 @@ int FullMapping_VectorShape::NumShapeAttrs()
 
 void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						 int numSyms, TDataMap *map,
-						 ViewGraph *view, int pixelSize, int &recordsProcessed)
+						 ViewGraph *view, int pixelSize, int &recordsProcessed,
+						 Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -1038,14 +1050,15 @@ void FullMapping_HorLineShape::MaxSymSize(TDataMap *map, void *gdata,
 
 void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						  int numSyms, TDataMap *map,
-						  ViewGraph *view, int pixelSize, int &recordsProcessed)
+						  ViewGraph *view, int pixelSize, int &recordsProcessed,
+						  Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -1113,14 +1126,15 @@ void FullMapping_SegmentShape::MaxSymSize(TDataMap *map, void *gdata,
 
 void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						  int numSyms, TDataMap *map,
-						  ViewGraph *view, int pixelSize, int &recordsProcessed)
+						  ViewGraph *view, int pixelSize, int &recordsProcessed,
+						  Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -1187,7 +1201,8 @@ void FullMapping_SegmentShape::
 Draw3DGDataArray(WindowRep *win, void **gdataArray,
 		 int numSyms, TDataMap *map,
 		 ViewGraph *view, int pixelSize,
-		 int &recordsProcessed)
+		 int &recordsProcessed,
+		 Boolean timeoutAllowed)
 {
 	GDataAttrOffset *offset = map->GetGDataOffset();
 	
@@ -1248,14 +1263,15 @@ void FullMapping_HighLowShape::MaxSymSize(TDataMap *map, void *gdata,
 void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 						  int numSyms, TDataMap *map,
 						  ViewGraph *view, int pixelSize,
-						  int &recordsProcessed)
+						  int &recordsProcessed,
+						  Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -1394,14 +1410,15 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 						   void **gdataArray,
 						   int numSyms, TDataMap *map,
 						   ViewGraph *view, int pixelSize,
-						   int &recordsProcessed)
+						   int &recordsProcessed,
+						   Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -1503,7 +1520,8 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 					       void **gdataArray,
 					       int numSyms, TDataMap *map,
 					       ViewGraph *view, int pixelSize,
-						   int &recordsProcessed)
+						   int &recordsProcessed,
+						   Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
     printf("%s\n", __PRETTY_FUNCTION__);
@@ -1513,7 +1531,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     
     if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
     }
     
@@ -1533,7 +1551,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     for (int i = 0; i < numSyms; i++) {
 #if USE_TIMER
 	  // Always draw at least one symbol so we are sure to make progress.
-	  if ((i > 0) && DrawTimer::Expired()) {
+	  if ((i > 0) && timeoutAllowed && DrawTimer::Expired()) {
 #if defined(DEBUG)
         printf("Draw timed out\n");
 #endif
@@ -1714,14 +1732,15 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 						   void **gdataArray,
 						   int numSyms, TDataMap *map,
 						   ViewGraph *view,
-						   int pixelSize, int &recordsProcessed)
+						   int pixelSize, int &recordsProcessed,
+						   Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
 #endif
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -1969,7 +1988,8 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 						void **gdataArray,
 						int numSyms, TDataMap *map,
 						ViewGraph *view, int pixelSize,
-						int &recordsProcessed)
+						int &recordsProcessed,
+						Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
@@ -1977,7 +1997,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 
   if (view->GetNumDimensions() == 3) {
     Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
     return;
   }
 
@@ -2005,7 +2025,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
   for(int i = 0; i < numSyms; i++) {
 #if USE_TIMER
 	  // Always draw at least one symbol so we are sure to make progress.
-	  if ((i > 0) && DrawTimer::Expired()) {
+	  if ((i > 0) && timeoutAllowed && DrawTimer::Expired()) {
 #if defined(DEBUG)
         printf("Draw timed out\n");
 #endif
@@ -2131,7 +2151,8 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 						void **gdataArray,
 						int numSyms, TDataMap *map,
 						ViewGraph *view, int pixelSize,
-						int &recordsProcessed)
+						int &recordsProcessed,
+						Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
@@ -2139,7 +2160,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 
   if (view->GetNumDimensions() == 3) {
     Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
     return;
   }
 
@@ -2162,7 +2183,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
   for(int i = 0; i < numSyms; i++) {
 #if USE_TIMER
 	  // Always draw at least one symbol so we are sure to make progress.
-	  if ((i > 0) && DrawTimer::Expired()) {
+	  if ((i > 0) && timeoutAllowed && DrawTimer::Expired()) {
 #if defined(DEBUG)
         printf("Draw timed out\n");
 #endif
@@ -2261,7 +2282,8 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 						void **gdataArray,
 						int numSyms, TDataMap *map,
 						ViewGraph *view, int pixelSize,
-						int &recordsProcessed)
+						int &recordsProcessed,
+						Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
@@ -2269,7 +2291,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 
   if (view->GetNumDimensions() == 3) {
     Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
     return;
   }
 
@@ -2294,7 +2316,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
   for(int i = 0; i < numSyms; i++) {
 #if USE_TIMER
 	  // Always draw at least one symbol so we are sure to make progress.
-	  if ((i > 0) && DrawTimer::Expired()) {
+	  if ((i > 0) && timeoutAllowed && DrawTimer::Expired()) {
 #if defined(DEBUG)
         printf("Draw timed out\n");
 #endif
@@ -2370,7 +2392,8 @@ void FullMapping_LineShape::MaxSymSize(TDataMap *map, void *gdata, int numSyms,
 void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize,
-					   int &recordsProcessed)
+					   int &recordsProcessed,
+					   Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
 	printf("%s\n", __PRETTY_FUNCTION__);
@@ -2379,7 +2402,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	if (view->GetNumDimensions() == 3) {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
 	}
 
@@ -2457,7 +2480,8 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 void FullMapping_LineShape::Draw3DGDataArray(WindowRep *win, void **gdataArray,
 					   int numSyms, TDataMap *map,
 					   ViewGraph *view, int pixelSize,
-					   int &recordsProcessed)
+					   int &recordsProcessed,
+					   Boolean timeoutAllowed)
 {
   	GDataAttrOffset *offset = map->GetGDataOffset();
 

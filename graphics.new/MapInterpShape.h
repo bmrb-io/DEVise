@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.44  1998/11/04 20:33:56  wenger
+  Multiple string tables partly working -- loading and saving works, one
+  table per mapping works; need multiple tables per mapping, API and GUI,
+  saving to session, sorting.
+
   Revision 1.43  1998/04/16 21:51:38  wenger
   Committed Sanjay's text code.
 
@@ -210,14 +215,16 @@ class FullMapping_RectShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
     
   protected:
     
     virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
                                 int numSyms, TDataMap *map,
 				  ViewGraph *view, int pixelSize,
-				  int &recordsProcessed);
+				  int &recordsProcessed,
+				  Boolean timeoutAllowed);
 };
  
 // -----------------------------------------------------------------
@@ -232,7 +239,8 @@ class FullMapping_RectXShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -250,7 +258,8 @@ class FullMapping_BarShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -265,7 +274,8 @@ class FullMapping_RegularPolygonShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -280,11 +290,13 @@ class FullMapping_OvalShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
     virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
 				  int numSyms, TDataMap *map,
 				  ViewGraph *view, int pixelSize,
-				  int &recordsProcessed);
+				  int &recordsProcessed,
+				  Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -299,7 +311,8 @@ class FullMapping_VectorShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -315,7 +328,8 @@ class FullMapping_HorLineShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -333,14 +347,16 @@ class FullMapping_SegmentShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 
   protected:
 
     virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
 				  int numSyms, TDataMap *map,
 				  ViewGraph *view, int pixelSize,
-				  int &recordsProcessed);
+				  int &recordsProcessed,
+				  Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -358,7 +374,8 @@ class FullMapping_HighLowShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
  
 // -----------------------------------------------------------------
@@ -376,7 +393,8 @@ class FullMapping_PolylineShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
  
 // -----------------------------------------------------------------
@@ -394,7 +412,8 @@ class FullMapping_GifImageShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
  
 // -----------------------------------------------------------------
@@ -412,7 +431,8 @@ class FullMapping_PolylineFileShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
  
 // -----------------------------------------------------------------
@@ -430,7 +450,8 @@ class FullMapping_TextLabelShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -448,7 +469,8 @@ class FullMapping_TextDataLabelShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -466,7 +488,8 @@ class FullMapping_FixedTextLabelShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------
@@ -482,7 +505,8 @@ class FullMapping_LineShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed,
+				Boolean timeoutAllowed);
 
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
 				    Pattern pattern, int line_width,
@@ -493,7 +517,8 @@ class FullMapping_LineShape
     virtual void Draw3DGDataArray(WindowRep *win, void **gdataArray,
 				  int numSyms, TDataMap *map,
 				  ViewGraph *view, int pixelSize,
-				  int &recordsProcessed);
+				  int &recordsProcessed,
+				  Boolean timeoutAllowed);
 };
 
 // -----------------------------------------------------------------

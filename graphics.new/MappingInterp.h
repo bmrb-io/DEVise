@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.43  1999/01/19 01:25:41  beyer
+  fixed compile warning
+
   Revision 1.42  1999/01/04 15:33:33  wenger
   Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
   compiles; added code (GUI is currently disabled) to manually set view
@@ -324,7 +327,7 @@ public:
   
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num,
-			      int &recordsProcessed);
+			      int &recordsProcessed, Boolean timeoutAllowed);
 
   /* Get the AttrInfo for a GData attribute. which_attr should be
      one of the MappingCmd_??? constants defined at the top of 

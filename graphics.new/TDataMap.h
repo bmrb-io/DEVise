@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1999/03/03 18:22:01  wenger
+  Fixed bugs 426 and 432 (problems with '5' (home) key); fixed bugs 466
+  and 467 (query errors with sorted attributes); minor improvements to
+  view symbols.
+
   Revision 1.32  1998/11/06 17:59:54  wenger
   Multiple string tables fully working -- allows separate tables for the
   axes in a given view.
@@ -190,7 +195,8 @@ class StringStorage;
 
 /* Offsets for GData attributes. Not all offsets are valid (negative). */
 
-struct GDataAttrOffset {
+//TEMP -- somehow combine this with GDataRec??
+struct GDataAttrOffset { //TEMP -- change for BB
   int recidOffset;
   int xOffset;
   int yOffset;
@@ -211,7 +217,8 @@ class TDataMap
 {
 	private:
 
-		Coloring	coloring;		// Default data coloring
+		Coloring	coloring;		// Default data coloring; not used if
+									// color is non-constant
 
 	public:
 
@@ -250,12 +257,14 @@ class TDataMap
     return _numDimensions;
   }
 
+  // String tables for this mapping.
   enum TableType { TableInvalid, TableX, TableY, TableZ, TableGen };
   char **TableType2NameP(TableType type);
 
   void SetStringTable(TableType type, char *name);
   StringStorage *GetStringTable(TableType type);
 		
+
   virtual Boolean IsInterpreted() { return false; }
   virtual Boolean IsComplexShape(ShapeID shape) { return false; }
 
@@ -272,7 +281,9 @@ class TDataMap
   VisualFlag GetDynamicArgs() { return _dynamicArgs; }
 
   unsigned long GetDynamicShapeAttrs() { return _dynamicAttrs; }
+  void SetDynamicShapeAttrs(unsigned long attrs) { _dynamicAttrs = attrs; }
   
+  // Default GData values.
   void GetDefaultLocation(Coord &x, Coord &y) { x = _x; y = _y; }
   Coord GetDefaultX() { return _x; }
   Coord GetDefaultY() { return _y; }
@@ -283,8 +294,6 @@ class TDataMap
   ShapeID GetDefaultShape() { return _shapeId; }
   int GetDefaultNumShapeAttrs() { return _numShapeAttr; }
   ShapeAttr *GetDefaultShapeAttrs() { return _shapeAttrs; }
-
-  void SetDynamicShapeAttrs(unsigned long attrs) { _dynamicAttrs = attrs; }
   
   int GetPixelWidth() { return _pixelWidth; }
   void SetPixelWidth(int width) { _pixelWidth = width; }
@@ -361,7 +370,8 @@ class TDataMap
 
   virtual void DrawGDataArray(ViewGraph *view, WindowRep *win,
 			      void **gdataArray, int num,
-			      int &recordsProcessed) = 0;
+			      int &recordsProcessed,
+			      Boolean timeoutAllowed) = 0;
 
   /* Get the AttrInfo for a GData attribute. The argument should be
      one of the MappingCmd_??? constants defined in MappingInterp.h */
@@ -396,7 +406,9 @@ protected:
   void SetDefaultShape(ShapeID shapeID, int numAttr = 0, 
 		       ShapeAttr *shapeAttr = NULL);
   void SetDefaultShapeAttr(int attrNum, Coord shapeAttr);
+#if 0 // This doesn't seem to be implemented anywhere.  RKW 1999-05-18.
   void SetDefaultShapeAttr(int attrNum, char *shapeAttr);
+#endif
 
   Coord _maxSymWidth; /* bounding box for symbol */
   Coord _maxSymHeight;
@@ -417,6 +429,7 @@ private:
   char *CreateGDataPath(char *gdataName);
 
   /* default values */
+  //TEMP -- use a GDataRec here???
   Coord _x;
   Coord _y;
   Coord _z;

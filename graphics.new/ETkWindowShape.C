@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1998/11/06 17:59:48  wenger
+  Multiple string tables fully working -- allows separate tables for the
+  axes in a given view.
+
   Revision 1.14  1998/11/04 20:33:54  wenger
   Multiple string tables partly working -- loading and saving works, one
   table per mapping works; need multiple tables per mapping, API and GUI,
@@ -113,7 +117,8 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
 						int numSyms, TDataMap *map,
 						ViewGraph *view,
 						int pixelSize,
-						int &recordsProcessed)
+						int &recordsProcessed,
+						Boolean timeoutAllowed)
 {
     BEGIN_ETK_TRACE(__FUNCTION__);
     
@@ -135,7 +140,7 @@ void FullMapping_ETkWindowShape::DrawGDataArray(WindowRep *win,
     if (view->GetNumDimensions() == 3)
     {
 	Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
+	  recordsProcessed, timeoutAllowed);
 	return;
     }
     

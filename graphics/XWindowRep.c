@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.125  1999/04/20 21:25:15  wenger
+  Combined DrawText() and DrawDataText() into NewDrawText() without changing
+  functionality.
+
   Revision 1.124  1999/03/29 19:11:47  wenger
   Fixed bug 475 (problem with RectX symbols).
 
@@ -2569,7 +2573,7 @@ Handle the next X event
 void XWindowRep::HandleEvent(XEvent &event)
 {
 #if defined(DEBUG)
-  printf("XWindowRep(0x%p)::HandleEvent()\n", this);
+  printf("XWindowRep(0x%p)::HandleEvent(%d)\n", this, event.xany.type);
 #endif
 
   DOASSERT(_win, "Cannot handle events for pixmap");

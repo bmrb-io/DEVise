@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1999/05/12 21:01:57  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.18  1999/04/05 16:16:02  wenger
   Record- and set-link follower views with auto filter update enabled have
   'home' done on them after they are updated by a record link or set link.
@@ -342,6 +345,7 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	char*		ptr = (char*)gdata;
 	Boolean		timedOut = false;
 	Boolean		recsFiltered = false;
+	Boolean		timeoutAllowed = (!_dupElim) && (!_countMapping);
 
 	for (int i=0; i<numGData && !timedOut; i++)
 	{
@@ -366,7 +370,8 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 				{
 					int		tmpRecs;
 
-					mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs);
+					mapping->DrawGDataArray(this, win, recs, recIndex,
+					  tmpRecs, timeoutAllowed);
 
 					// Note: if first records are outside filter, might
 					// have _processed_ some records even if didn't draw any.
@@ -413,7 +418,8 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	{
 		int		tmpRecs;
 
-		mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs);
+		mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs,
+		  timeoutAllowed);
 		recordsProcessed = reverseIndex[tmpRecs];
 
 #if defined(DEBUG)

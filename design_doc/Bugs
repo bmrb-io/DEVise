@@ -1884,6 +1884,29 @@ Num Date        Status  Description
 489 02/16/99	OPEN	Set links don't work (because of changes to the DTE).
 			(rkw)
 
+490 05/18/99	FIXED	If a session contains piled views containing view
+			symbols, closing the session or destroying a window
+			may cause DEVise to crash (for example, in Tim
+			Wilson's FullDaily3.ds session). (tw/rkw)
+			(This is caused by a view symbol's X window being
+			a child of the X window of the first view in the
+			pile, even if the *view* is the child of a different
+			view.  The right way to fix this would probably be
+			to catch the DestroyNotify events, but that doesn't
+			seem to work.)
+
+491 05/18/99	FIXED	Duplicate elimination doesn't work properly for the
+			station names in Tim Wilson's FullDaily3.ds session.
+			(rkw)
+			(This was caused by the fact that the duplicate
+			elimination was turned on for a view that had text
+			symbols with a very large size.  The drawing of the
+			text symbols timed out, which goofed up the duplicate
+			elimination -- and would also goof up count mappings.)
+
+492 05/20/99	OPEN	Do cloud values for the Rect shape really have to
+			be constants only? (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

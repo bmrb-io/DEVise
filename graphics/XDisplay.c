@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.74  1999/02/11 19:54:41  wenger
+  Merged newpile_br through newpile_br_1 (new PileStack class controls
+  pile and stacks, allows non-linked piles; various other improvements
+  to pile-related code).
+
   Revision 1.73  1999/01/04 15:30:25  wenger
   Misc. code cleanups.
 
@@ -1070,8 +1075,10 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
 
   /* Create the window. */
 
-  if (parentRep)
-    parent = ((XWindowRep *)parentRep)->GetWinId();
+  if (parentRep) {
+    // Using _myWin here instead of GetWinId() fixes bug 490.  RKW 1999-05-19.
+    parent = ((XWindowRep *)parentRep)->_myWin;
+  }
 
   unsigned int border_width;
   if (winBoundary)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/11/18 23:26:50  wenger
+  First version of GData to socket capability; removed some extra include
+  dependencies; committed test version of TkControl::OpenDataChannel().
+
   Revision 1.4  1997/08/20 22:10:55  wenger
   Merged improve_stop_branch_1 through improve_stop_branch_5 into trunk
   (all mods for interrupted draw and user-friendly stop).
@@ -55,7 +59,7 @@ class FullMapping_ETkWindowShape
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
 				ViewGraph *view, int pixelSize,
-				int &recordsProcessed);
+				int &recordsProcessed, Boolean timeoutAllowed);
 };
 
 #endif

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/05/12 21:01:59  wenger
+  Views containing view symbols can now be piled.
+
   Revision 1.14  1999/05/07 16:09:45  wenger
   Fixed bug in the ordering of viewsym piles.
 
@@ -83,7 +86,8 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
 					   int numSyms, TDataMap *map, 
 					   ViewGraph *view, 
 					   int pixelSize,
-					   int &recordsProcessed)
+					   int &recordsProcessed,
+					   Boolean timeoutAllowed)
 {
 #if defined(DEBUG)
   printf("%s\n", __PRETTY_FUNCTION__);
@@ -91,7 +95,7 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
 
   if (view->GetNumDimensions() == 3) {
     Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-      recordsProcessed);
+      recordsProcessed, timeoutAllowed);
     return;
   }
 
