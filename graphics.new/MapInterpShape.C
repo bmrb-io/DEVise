@@ -16,7 +16,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1996/02/28 18:32:14  yuc
+  Added CVS header.
+*/
 
 
 #include "MapInterpShape.h"
@@ -91,8 +94,9 @@ void FullMapping_BlockShape::MapBlockEdges(int i)
 } // end of MapBlockEdges()
 
 void 
-FullMapping_BlockShape::DrawGDataArray(WindowRep *win, 
-	void **gdataArray, int numSyms, TDataMap *map, int pixelSize)
+FullMapping_BlockShape::DrawGDataArray(WindowRep *win, void **gdataArray,
+				       int numSyms, TDataMap *map,
+				       View *view, int pixelSize)
 {
     GDataAttrOffset *offset = map->GetGDataOffset();
 
@@ -115,7 +119,7 @@ FullMapping_BlockShape::DrawGDataArray(WindowRep *win,
 #endif
 
       if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
-         DrawPixelArray(win, gdataArray, numSyms, map, pixelSize);
+         DrawPixelArray(win, gdataArray, numSyms, map, view, pixelSize);
          return;
       }
     } // end if-then
@@ -126,7 +130,7 @@ FullMapping_BlockShape::DrawGDataArray(WindowRep *win,
 
      char *gdata = (char *)gdataArray[i];
      if (i == 0)
-          firstColor = GetColor(gdata, map, offset);
+          firstColor = GetColor(view, gdata, map, offset);
 
      _width[i]  = fabs(GetShapeAttr0(gdata, map, offset));
      _height[i] = fabs(GetShapeAttr1(gdata, map, offset));
