@@ -1,1 +1,2 @@
 * * * * * cd /bmrb/htdocs/devise/jspop; ./run_check regular 4 aden /p/devise/js.installed
+5 16 * * 1 cd /bmrb/htdocs/devise/jspop; ./get_stats | mail -s 'JavaScreen usage at BMRB' zoo eldon miron@cs.wisc.edu

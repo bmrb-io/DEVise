@@ -20,6 +20,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2  2001/01/08 20:31:55  wenger
+#  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+#  back onto the trunk.
+#
 #  Revision 1.1.2.1  2000/12/27 19:38:36  wenger
 #  Merged changes from js_restart_improvements thru zero_js_cache_check from
 #  the trunk onto the js_cgi_br branch.
@@ -61,7 +65,7 @@ foreach $file (@files) {
 
   while ($line = <DATA_IN>) {
     print "line = $line" if ($debug >= 3);
-    if ($line =~ /JAVAC_Connect/) {
+    if ($line =~ /^Client from/) {
       print "line = $line" if ($debug >= 2);
       $connectCount++;
       my $client, $date;
@@ -89,7 +93,8 @@ foreach $file (@files) {
 my $date1 = TimeToStr($time1);
 my $date2 = TimeToStr($time2);
 print "JavaScreen usage statistics for $date1 through $date2:\n";
-print "$connectCount connections\n";
+my $realConns = $connectCount-$hostList{"localhost"};
+print "$connectCount connections ($realConns excluding localhost)\n";
 print "$openCount session opens\n";
 
 print "\nClient host info (number of connections, host):\n";
@@ -99,6 +104,8 @@ foreach $host (sort { $hostList{$b} <=> $hostList{$a} } keys %hostList) {
 
 #-----------------------------------------------------------
 # Parses a jspop log file line to get the client host and date.
+# Expects a line of the form:
+#   "Client from localhost is added ... [27-Jul-01 9:02:53 AM]"
 # Argument: line
 # Returns: list of host and date.
 
@@ -107,10 +114,11 @@ sub ParseLine {
 
   my $client = "unknown";
   my $date = "unknown";
-  if ($line =~ /Received command from client\((.*)\).*\[(.*)\]/) {
+  if ($line =~ /Client from (.*) is added \.\.\. \[(.*)\]/) {
     $client = $1;
     $date = $2;
   }
+  print "client = <$client>; date = <$date>\n", if ($debug >= 2);
   @results = ($client, $date);
   return @results;
 }
