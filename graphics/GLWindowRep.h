@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.10  1998/04/13 22:24:49  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.9  1998/03/26 15:21:31  zhenhai
   The cursor drawings now use CursorStore as backup instead of using
   XOR mode for drawing and erasing.
@@ -335,7 +343,18 @@ public:
 			  Boolean skipLeadingSpaces = false,
 			  Coord orientation = 0.0);
 
+  virtual void ScaledDataText(char *text, Coord x, Coord y, Coord width,
+			  Coord height, SymbolAlignment alignment = AlignCenter,
+			  Boolean skipLeadingSpaces = false,
+			  Coord orientation = 0.0);
+
   virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
+			    Coord height,
+			    SymbolAlignment alignment = AlignCenter,
+			    Boolean skipLeadingSpaces = false,
+			    Coord orientation = 0.0);
+
+  virtual void AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
 			    Coord height,
 			    SymbolAlignment alignment = AlignCenter,
 			    Boolean skipLeadingSpaces = false,
@@ -459,6 +478,12 @@ private:
 #endif
 
   virtual void DrawText(Boolean scaled, char *text, Coord x, Coord y,
+			Coord width, Coord height,
+			SymbolAlignment alignment = AlignCenter,
+			Boolean skipLeadingSpaces = false,
+			Coord orientation = 0.0);
+
+  virtual void DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
 			Coord width, Coord height,
 			SymbolAlignment alignment = AlignCenter,
 			Boolean skipLeadingSpaces = false,

@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.36  1998/02/26 22:59:52  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
   Revision 1.35  1998/01/30 21:53:18  wenger
   Did some cleaning up of the MappingInterp and NativeExpr code
   (NativeExpr still needs a lot more); NativeExpr code can now
@@ -235,9 +240,9 @@ class CGraphicExpr;
 class Shape;
 class AttrList;
 #ifdef VIEW_SHAPE 
-const int MaxInterpShapes = 18;
+const int MaxInterpShapes = 19;
 #else 
-const int MaxInterpShapes = 17;
+const int MaxInterpShapes = 18;
 #endif
 
 

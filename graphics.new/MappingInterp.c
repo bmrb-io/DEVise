@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.70  1998/02/26 22:59:50  wenger
+  Added "count mappings" to views, except for API and GUI (waiting for
+  Dongbin to finish his mods to ParseAPI); conditionaled out unused parts
+  of VisualFilter struct; did some cleanup of MappingInterp class.
+
   Revision 1.69  1998/01/30 21:53:16  wenger
   Did some cleaning up of the MappingInterp and NativeExpr code
   (NativeExpr still needs a lot more); NativeExpr code can now
@@ -502,6 +507,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 #ifdef VIEW_SHAPE
     _shapes[17] = new FullMapping_ViewShape;
 #endif
+    _shapes[18] = new FullMapping_TextDataLabelShape;
   }
 
   _tdataFlag = new Bitmap(DEVISE_MAX_TDATA_ATTRS);

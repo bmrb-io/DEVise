@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.28  1998/04/13 22:24:53  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.27  1997/11/24 23:14:30  weaver
   Changes for the new ColorManager.
 
@@ -310,7 +318,18 @@ class PSWindowRep : public WindowRep
                       Boolean skipLeadingSpaces = false,
 		      Coord orientation = 0.0);
     
+    virtual void ScaledDataText(char *text, Coord x, Coord y, Coord width,
+                      Coord height, SymbolAlignment alignment = AlignCenter,
+                      Boolean skipLeadingSpaces = false,
+		      Coord orientation = 0.0);
+    
     virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
+                              Coord height,
+                              SymbolAlignment alignment = AlignCenter,
+                              Boolean skipLeadingSpaces = false,
+			      Coord orientation = 0.0);
+
+    virtual void AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
                               Coord height,
                               SymbolAlignment alignment = AlignCenter,
                               Boolean skipLeadingSpaces = false,
@@ -396,6 +415,12 @@ private:
     void DrawDot(FILE *printFile, Coord x1, Coord y1, Coord size = 1.0);
 
     virtual void DrawText(Boolean scaled, char *text, Coord x, Coord y,
+		      Coord width, Coord height,
+		      SymbolAlignment alignment = AlignCenter,
+                      Boolean skipLeadingSpaces = false,
+		      Coord orientation = 0.0);
+
+    virtual void DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
 		      Coord width, Coord height,
 		      SymbolAlignment alignment = AlignCenter,
                       Boolean skipLeadingSpaces = false,

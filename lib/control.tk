@@ -15,6 +15,11 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.163  1998/03/27 15:09:15  wenger
+#	Added dumping of logical session description, added GUI for dumping
+#	logical or physical description; cleaned up some of the command code
+#	a little.
+#
 #	Revision 1.162  1998/03/13 04:02:47  donjerko
 #	*** empty log message ***
 #
@@ -708,7 +713,7 @@ set DEViseShapes \
         {3 {Regular Polygon}} {4 Oval} {5 Vector} {6 HorLine} \
         {7 Segment} {8 HighLow} {9 Polyline} {10 {Image}} \
 	{11 {Polyline File}} {12 {Text Label}} {16 {Fixed Text Label}} \
-	{15 {Tcl/Tk Window}} {17 {View}} }
+	{15 {Tcl/Tk Window}} {17 {View}} {18 {Text Data Label}} }
 
 # global variables:
 # restoring: true if restoring session or template

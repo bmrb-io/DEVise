@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/05/28 15:39:28  wenger
+  Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+
   Revision 1.15.4.1  1997/05/20 16:11:15  ssl
   Added layout manager to DEVise
 
@@ -158,6 +161,11 @@ class PolylineFileShape : public Shape {};
 
 class TextLabelShape : public Shape {};
 
+/* TextLabel: draws a text label given by shape attribute 0 at (X,Y),
+ * with the font sized to the given rectangle. */
+
+// added by Sanjay
+class TextDataLabelShape : public Shape {};
 
 /* Line: connects adjacent data points, forming a line. */
 

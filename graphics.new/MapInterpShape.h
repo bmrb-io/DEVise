@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  1998/02/26 00:19:29  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.41  1997/12/16 17:57:52  zhenhai
   Added OpenGL features.
 
@@ -414,6 +417,24 @@ class FullMapping_PolylineFileShape
 
 class FullMapping_TextLabelShape
 : public TextLabelShape
+{
+  public:
+
+    virtual int NumShapeAttrs();
+
+    virtual void MaxSymSize(TDataMap *map, void *gdata, int numSyms,
+			    Coord &width, Coord &height);
+    
+    virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
+				int numSyms, TDataMap *map,
+				ViewGraph *view, int pixelSize,
+				int &recordsProcessed);
+};
+
+// -----------------------------------------------------------------
+// sanjay added here
+class FullMapping_TextDataLabelShape
+: public TextDataLabelShape
 {
   public:
 

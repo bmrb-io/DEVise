@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.108  1998/04/13 22:25:02  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.107  1998/03/13 18:10:42  wenger
   Fixed bug 327 (gaps in view background colors).
 
@@ -2713,6 +2721,22 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   DrawText(false, text, x, y, width, height, alignment,
     skipLeadingSpace, orientation);
 }
+/* Draw absolute data text */
+
+void XWindowRep::AbsoluteDataText(char *text, Coord x, Coord y,
+			      Coord width, Coord height,
+			      SymbolAlignment alignment, 
+			      Boolean skipLeadingSpace, Coord orientation)
+{
+#if defined(DEBUG)
+  printf("XWindowRep::AbsoluteDataText: <%s> at %.2f,%.2f,%.2f,%.2f, orientation %.2f\n",
+	 text, x, y, width, height, orientation);
+#endif
+
+  DrawDataText(false, text, x, y, width, height, alignment,
+    skipLeadingSpace, orientation);
+}
+
 
 /* Draw scaled text */
 
@@ -2726,6 +2750,21 @@ void XWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 #endif
 
   DrawText(true, text, x, y, width, height, alignment,
+    skipLeadingSpace, orientation);
+}
+ 
+/* Draw scaled data text */
+
+void XWindowRep::ScaledDataText(char *text, Coord x, Coord y, Coord width,
+		      Coord height, SymbolAlignment alignment,
+		      Boolean skipLeadingSpace, Coord orientation)
+{
+#if defined (DEBUG)
+  printf("XWindowRep::ScaledDataText: <%s> at %.2f, %.2f, %.2f, %.2f, orientation %.2f\n",
+	 text, x, y, width, height, orientation);
+#endif
+
+  DrawDataText(true, text, x, y, width, height, alignment,
     skipLeadingSpace, orientation);
 }
 
@@ -2951,6 +2990,140 @@ void XWindowRep::DrawText(Boolean scaled, char *text, Coord x,
 #endif
 }
 
+
+/* Draw scaled or absolute data text */
+
+void XWindowRep::DrawDataText(Boolean scaled, char *text, Coord x,
+			     Coord y, Coord width, Coord height,
+			     SymbolAlignment alignment,
+			     Boolean skipLeadingSpace, Coord orientation)
+{
+  /* transform into window coords */
+
+  Coord tx1, ty1, tx2, ty2;
+  Transform(x, y, tx1, ty1);
+  Transform(x + width, y + height, tx2, ty2);
+
+  int winX, winY, winWidth, winHeight;
+  int startwinX,startwinY;
+
+  startwinX = ROUND(int, tx1);
+  startwinY = ROUND(int, ty1);
+
+  winX = ROUND(int,MIN(tx1,tx2));
+  winY = ROUND(int,MIN(ty1,ty2));
+
+#ifdef GRAPHICS
+  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
+  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
+ 
+  if (skipLeadingSpace) {
+    /* skip leading spaces before drawing text */
+    while (*text == ' ')
+      text++;
+  }
+  
+  int textLength = strlen(text);
+  if (!textLength)
+    return;
+  
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
+#if 1
+  int direction, ascent, descent;
+  XCharStruct overall;
+  XTextExtents(fontStruct, text, textLength, &direction, &ascent, &descent,
+    &overall);
+  int textWidth = overall.width;
+  int textHeight = overall.ascent + overall.descent;
+  ascent = overall.ascent;
+#else
+  int textWidth = XTextWidth(fontStruct, text, textLength);
+  int textHeight = fontStruct->max_bounds.ascent
+                   + fontStruct->max_bounds.descent;
+  int ascent = fontStruct->max_bounds.ascent;
+#endif
+  
+  double scale = 1.0;
+  if (scaled) {
+    /* use original text to calculate scale factor 
+     * to scale text to fit in rectangle of 
+     * dimensions (winWidth, winHeight) */
+    double xscale = (double)winWidth / (double)textWidth;
+    double yscale = (double)winHeight / (double)textHeight;
+    scale = MIN(xscale, yscale);
+  } else {
+    if (textWidth > winWidth || textHeight > winHeight) {
+      DrawDataText(true, text, x, y, width, height, alignment, skipLeadingSpace,
+	orientation);
+      return;
+    }
+  }
+  
+  int startX, startY;
+  int xvtAlign = NONE;
+
+  startX = startwinX;
+  startY = startwinY;
+
+  switch(alignment) {
+  case AlignNorthWest:
+    xvtAlign = TLEFT;
+    break;
+
+  case AlignNorth:
+    xvtAlign = TCENTRE;
+    break;
+
+  case AlignNorthEast:
+    xvtAlign = TRIGHT;
+    break;
+
+  case AlignWest: 
+    xvtAlign = MLEFT;
+    break;
+
+  case AlignCenter: 
+    xvtAlign = MCENTRE;
+    break;
+
+  case AlignEast:
+    xvtAlign = MRIGHT;
+    break;
+
+  case AlignSouthWest:
+    xvtAlign = BLEFT;
+    break;
+
+  case AlignSouth:
+    xvtAlign = BCENTRE;
+    break;
+
+  case AlignSouthEast:
+    xvtAlign = BRIGHT;
+    break;
+  }
+
+#if defined(DEBUG)
+  printf("Drawing <%s> starting at %d,%d\n", text, startX, startY);
+#endif
+
+#if defined(X_DEBUG)
+  XDrawLine(_display, DRAWABLE, _gc, (int) startX - 10, (int) startY - 10,
+    (int) startX + 10, (int) startY + 10);
+  XDrawLine(_display, DRAWABLE, _gc, (int) startX + 10, (int) startY - 10,
+    (int) startX - 10, (int) startY + 10);
+#endif
+
+  
+  // currently magnifying and scaling here -- the text --
+  // want to make it independent of the whole box business --
+  
+  if (scale != 1.0) XRotSetMagnification(scale);
+  XRotDrawAlignedString(_display, fontStruct, orientation,
+    DRAWABLE, _gc, startX, startY, text, xvtAlign);
+  if (scale != 1.0) XRotSetMagnification(1.0);
+#endif
+}
 
 /**********************************************************************
 Scale and copy the rectangle (0,0,width,height) in _srcBitmap

@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.53  1998/04/13 22:25:03  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.52  1998/03/13 18:10:44  wenger
   Fixed bug 327 (gaps in view background colors).
 
@@ -491,7 +499,18 @@ class XWindowRep : public WindowRep
 			  Boolean skipLeadingSpaces = false,
 			  Coord orientation = 0.0);
 
+	virtual void ScaledDataText(char *text, Coord x, Coord y, Coord width,
+			  Coord height, SymbolAlignment alignment = AlignCenter,
+			  Boolean skipLeadingSpaces = false,
+			  Coord orientation = 0.0);
+
 	virtual void AbsoluteText(char *text, Coord x, Coord y, Coord width, 
+				  Coord height,
+				  SymbolAlignment alignment = AlignCenter,
+				  Boolean skipLeadingSpaces = false,
+				  Coord orientation = 0.0);
+
+	virtual void AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
 				  Coord height,
 				  SymbolAlignment alignment = AlignCenter,
 				  Boolean skipLeadingSpaces = false,
@@ -604,6 +623,12 @@ private:
 			      Boolean skipLeadingSpaces = false,
 			      Coord orientation = 0.0);
 
+	virtual void DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
+    			          Coord width, Coord height,
+    			          SymbolAlignment alignment = AlignCenter,
+    			          Boolean skipLeadingSpaces = false,
+    			          Coord orientation = 0.0);
+    
 	/* allocate a bitmap of the given width and height into the
 	   given info. Free old bitmap data if necessary */
 	void AllocBitmap(XBitmapInfo &info, int width, int height);

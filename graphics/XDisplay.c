@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.67  1998/02/26 00:19:09  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.66  1998/02/19 23:24:53  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -428,6 +431,7 @@ void XDisplay::SetNormalFont()
   _fontStruct = _normalFontStruct;
 }
 
+
 /* Set font and point size */
 
 void XDisplay::SetFont(char *family, char *weight, char *slant,
@@ -438,6 +442,35 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
     pointSize);
 #endif
 
+  /* figure out the required point size from the size of the 
+     display and the filter information ... do the necessary
+     pixel to point conversion depending on the resolution of the
+     screen  -  hope that works fine and everywhere .... sanj */
+
+  int screen_number  = XDefaultScreen(_display);
+  int display_height_inPixels = XDisplayHeight(_display,screen_number);
+  int display_height_inMM = XDisplayHeightMM(_display,screen_number);
+
+  int display_width_inPixels = XDisplayWidth(_display,screen_number);
+  int display_width_inMM = XDisplayWidthMM(_display,screen_number);
+
+#if defined (DEBUG)  
+  cout << "height(pixels) =" <<  display_height_inPixels << endl;
+  cout << "height(MM) =" <<   display_height_inMM << endl;
+
+  cout << "width(pixels) = " <<   display_width_inPixels << endl;
+  cout << "width(MM) = " <<   display_width_inMM << endl;
+#endif
+
+  /* 25.4 from inches to mm conversion 
+     72   point  is  1/72 of an inch  */
+ 
+  float pixeltoPoints = pointSize *
+                       ((float)(display_width_inPixels * 25.4))/
+                       ((float)(display_width_inMM * 72));
+  
+  pointSize = pixeltoPoints;
+  
     XFontStruct *oldFont = _fontStruct;
 
     /* Special case for Courier or Helvetica italic. */
@@ -452,8 +485,9 @@ void XDisplay::SetFont(char *family, char *weight, char *slant,
     */
     for(float p = pointSize; p <= pointSize + 5.0; p += 1.0) {
         char fname[128];
-        sprintf(fname, "-*-%s-%s-%s-%s-*-*-%d-*-*-*-*-*-*",
-                family, weight, slant, width, (int) (p * 10.0));
+                sprintf(fname, "-*-%s-%s-%s-%s-*-*-%d-*-*-*-*-*-*",
+                  family, weight, slant, width, (int) (p * 10.0));
+
 #if 0
         printf("  Trying font %s\n", fname);
 #endif

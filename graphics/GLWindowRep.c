@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/04/13 22:24:48  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.13  1998/03/26 15:21:30  zhenhai
   The cursor drawings now use CursorStore as backup instead of using
   XOR mode for drawing and erasing.
@@ -1714,6 +1722,21 @@ void GLWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
 #endif
 }
 
+void GLWindowRep::ScaledDataText(char *text, Coord x, Coord y, Coord width,
+			     Coord height, SymbolAlignment alignment = AlignCenter,
+			     Boolean skipLeadingSpaces = false,
+			     Coord orientation = 0.0)
+{
+#if defined (DEBUG)
+  printf("GLWindowRep(0x%p)::ScaledDataText: <%s> at %.2f, %.2f, %.2f, %.2f, orientation %.2f\n",this,
+	 text, x, y, width, height, orientation);
+#endif
+#ifdef GRAPHICS
+  DrawDataText(true, text, x, y, width, height, alignment,
+    skipLeadingSpaces, orientation);
+#endif
+}
+
 void GLWindowRep::AbsoluteText(char *text, Coord x, Coord y, Coord width, 
 			       Coord height,
 			       SymbolAlignment alignment = AlignCenter,
@@ -1729,6 +1752,22 @@ void GLWindowRep::AbsoluteText(char *text, Coord x, Coord y, Coord width,
   DrawText(false, text, x, y, width, height, alignment,
     skipLeadingSpaces, orientation);
   
+#endif
+}
+
+void GLWindowRep::AbsoluteDataText(char *text, Coord x, Coord y, Coord width, 
+			       Coord height,
+			       SymbolAlignment alignment = AlignCenter,
+			       Boolean skipLeadingSpaces = false,
+			       Coord orientation = 0.0)
+{
+#if defined(DEBUG)
+  printf("GLWindowRep(0x%p)::AbsoluteDataText: <%s> at %.2f,%.2f,%.2f,%.2f, orientation %.2f\n",this,
+	 text, x, y, width, height, orientation);
+#endif
+#ifdef GRAPHICS
+  DrawDataText(false, text, x, y, width, height, alignment,
+    skipLeadingSpaces, orientation);
 #endif
 }
 
@@ -2786,6 +2825,79 @@ void GLWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
   glCallLists(strlen(text), GL_UNSIGNED_BYTE, text);
 
   
+#endif
+}
+
+void GLWindowRep::DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
+			   Coord width, Coord height,
+			   SymbolAlignment alignment = AlignCenter,
+			   Boolean skipLeadingSpaces = false,
+			   Coord orientation=0.0)
+{
+  if (skipLeadingSpaces) {
+    /* skip leading spaces before drawing text */
+    while (*text == ' ')
+      text++;
+  }
+
+#ifdef GRAPHICS
+  MAKECURRENT();
+  DOASSERT(_currentfontstruct, "GLWindowRep::DrawDataText: called before a font is set");
+  int textwidth = XTextWidth(_currentfontstruct, text, strlen(text));
+  int textheight = _currentfontstruct->ascent + _currentfontstruct->descent;
+
+  //  glBitmap(0, 0, 0, 0,
+  //	   x / 2 - width / 2,
+  //	   y / 2 - (_current_fontstruct->ascent +
+  //	    _current_fontstruct->descent) / 2, 0);
+  GLdouble xloc, yloc;
+
+  switch(alignment) {
+  case AlignNorthWest:
+  case AlignWest:
+  case AlignSouthWest:
+    xloc=x;
+    break;
+  case AlignNorthEast:
+  case AlignEast:
+  case AlignSouthEast:
+    xloc=x+width-textwidth;
+    break;
+  case AlignNorth:
+  case AlignSouth:
+    xloc=x+(width-textwidth)/2;
+    break;
+  case AlignCenter:
+    xloc=x+(width-textwidth)/2;
+    break;
+  default:
+    DOASSERT(FALSE, "Unknow orientation passed to GLWindowRep::DrawText");
+  }
+  switch(alignment) {
+  case AlignNorth:
+  case AlignNorthWest:
+  case AlignNorthEast:
+    yloc=y+height-textheight;
+    break;
+  case AlignSouth:
+  case AlignSouthWest:
+  case AlignSouthEast:
+    yloc=y;
+    break;
+  case AlignEast:
+  case AlignWest:
+    yloc=y+(height-textheight)/2;
+    break;
+  case AlignCenter:
+    yloc=y+(height-textheight)/2;
+    break;
+  default:
+    DOASSERT(FALSE, "Unknow orientation passed to GLWindowRep::DrawText");
+  }
+
+  glRasterPos2i(0, 0);
+  glBitmap(0, 0, 0, 0, xloc, yloc, 0);
+  glCallLists(strlen(text), GL_UNSIGNED_BYTE, text);
 #endif
 }
 

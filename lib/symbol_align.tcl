@@ -20,6 +20,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.2  1998/03/12 22:57:53  wenger
+# Minor user interface improvements.
+#
 # Revision 1.1  1998/02/05 23:46:16  wenger
 # Added view-level specification of symbol alignment, API commands, simple
 # GUI for Sanjay.
@@ -57,23 +60,23 @@ proc ChooseSymbolAlignment {align} {
     -menu .chooseAlign.align.menu
 
   menu .chooseAlign.align.menu -tearoff false
-  .chooseAlign.align.menu add command -label "0 (Northwest)" \
+  .chooseAlign.align.menu add command -label "0 (NorthWest)" \
     -command { .chooseAlign.align configure -text "0" }
-  .chooseAlign.align.menu add command -label "1 (North)" \
+  .chooseAlign.align.menu add command -label "1 (West)" \
     -command { .chooseAlign.align configure -text "1" }
-  .chooseAlign.align.menu add command -label "2 (NorthEast)" \
+  .chooseAlign.align.menu add command -label "2 (SouthWest)" \
     -command { .chooseAlign.align configure -text "2" }
-  .chooseAlign.align.menu add command -label "3 (West)" \
+  .chooseAlign.align.menu add command -label "3 (North)" \
     -command { .chooseAlign.align configure -text "3" }
   .chooseAlign.align.menu add command -label "4 (Center)" \
     -command { .chooseAlign.align configure -text "4" }
-  .chooseAlign.align.menu add command -label "5 (East)" \
+  .chooseAlign.align.menu add command -label "5 (South)" \
     -command { .chooseAlign.align configure -text "5" }
-  .chooseAlign.align.menu add command -label "6 (Southwest)" \
+  .chooseAlign.align.menu add command -label "6 (NorthEast)" \
     -command { .chooseAlign.align configure -text "6" }
-  .chooseAlign.align.menu add command -label "7 (South)" \
+  .chooseAlign.align.menu add command -label "7 (East)" \
     -command { .chooseAlign.align configure -text "7" }
-  .chooseAlign.align.menu add command -label "8 (Southeast)" \
+  .chooseAlign.align.menu add command -label "8 (SouthEast)" \
     -command { .chooseAlign.align configure -text "8" }
 
   button .chooseAlign.ok -text "OK" -width 10 -command {

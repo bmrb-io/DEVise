@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.37  1998/04/13 22:24:52  zhenhai
+  Optimized 2D cursors to read and draw individual patches instead
+  of patches for the whole region. Added 3D cursors to show directions.
+  After adding a 3D cursor (same as adding 2D cursors by first
+  creating the cursor, then selecting the source and destination),
+  the direction of the cone (where its top is pointing to) in one graph shows the
+  location and direction of the camera in another graph.
+
   Revision 1.36  1998/02/26 00:18:59  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -1386,7 +1394,19 @@ void PSWindowRep::AbsoluteText(char *text, Coord x, Coord y,
     orientation);
 }
 
+void PSWindowRep::AbsoluteDataText(char *text, Coord x, Coord y,
+			      Coord width, Coord height,
+			      SymbolAlignment alignment, 
+			      Boolean skipLeadingSpace, Coord orientation)
+{
+#ifdef DEBUG
+  printf("PSWindowRep::AbsoluteDataText: %s at %.2f,%.2f,%.2f,%.2f\n",
+	 text, x, y, width, height);
+#endif
 
+  DrawDataText(false, text, x, y, width, height, alignment, skipLeadingSpace,
+    orientation);
+}
 
 /*---------------------------------------------------------------------------*/
 /* Draw scaled text */
@@ -1404,7 +1424,20 @@ void PSWindowRep::ScaledText(char *text, Coord x, Coord y, Coord width,
     orientation);
 }
 
+/* Draw scaled data text */
 
+void PSWindowRep::ScaledDataText(char *text, Coord x, Coord y, Coord width,
+		       Coord height, SymbolAlignment alignment,
+		       Boolean skipLeadingSpace, Coord orientation)
+{
+#if defined(DEBUG)
+  printf("PSWindowRep::ScaledDataText: %s at %.2f,%.2f,%.2f,%.2f\n",
+	 text, x, y, width, height);
+#endif
+
+  DrawDataText(true, text, x, y, width, height, alignment, skipLeadingSpace,
+    orientation);
+}
 
 /*---------------------------------------------------------------------------*/
 void PSWindowRep::SetXorMode()
@@ -2004,6 +2037,140 @@ void PSWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 #endif
 }
 
+
+void PSWindowRep::DrawDataText(Boolean scaled, char *text, Coord x, Coord y,
+		       Coord width, Coord height, SymbolAlignment alignment,
+		       Boolean skipLeadingSpace, Coord orientation)
+{
+  /* transform into window coords */
+  Coord tx1, ty1, tx2, ty2;
+  Transform(x, y, tx1, ty1);
+  Transform(x + width, y + height, tx2, ty2);
+  Coord winX, winY, winWidth, winHeight; /* box in window coord */
+  winX = ROUND(int, MIN(tx1, tx2));
+  winY = ROUND(int, MIN(ty1, ty2));
+  winWidth = ROUND(int, MAX(tx1, tx2)) - winX + 1;
+  winHeight = ROUND(int, MAX(ty1, ty2)) - winY + 1;
+
+  if (skipLeadingSpace) {
+    /* skip leading spaces before drawing text */
+    while (*text == ' ')
+      text++;
+  }
+  
+  int textLength = strlen(text);
+  if (textLength <= 0) return;
+
+  char *comment;
+  char *moveToWindow;
+  char *moveToText;
+
+  /* Here, instead of actually calculating the text position, we generate
+   * the correct PostScript code to calculate the position. */
+  GetAlignmentStrings(alignment, comment, moveToWindow, moveToText);
+
+#ifdef GRAPHICS
+  FILE * printFile = DeviseDisplay::GetPSDisplay()->GetPrintFile();
+
+#if defined(PS_DEBUG)
+  fprintf(printFile, "%% PSWindowRep::%s()\n", scaled ? "ScaledText" :
+    "AbsoluteText");
+#endif
+
+#if defined(PS_DEBUG)
+  /* Draw the "text window" within which the text is positioned -- for
+   * debugging purposes. */
+  fprintf(printFile, "[3] 0 setdash\n");
+  DrawLine(printFile, tx1, ty1, tx1, ty2);
+  DrawLine(printFile, tx1, ty2, tx2, ty2);
+  DrawLine(printFile, tx2, ty2, tx2, ty1);
+  DrawLine(printFile, tx2, ty1, tx1, ty1);
+  fprintf(printFile, "[] 0 setdash\n");
+#endif
+
+#if defined(PS_DEBUG)
+  /* Draw a cross at the center of the "text window". */
+  {
+    Coord centerX = winX + winWidth / 2.0;
+    Coord centerY = winY + winHeight / 2.0;
+    DrawLine(printFile, centerX + 10.0, centerY, centerX - 10.0, centerY);
+    DrawLine(printFile, centerX, centerY + 10.0, centerX, centerY - 10.0);
+  }
+#endif
+
+  fprintf(printFile, "newpath\n");
+
+  /* Get the width and height of the given string in the given font. */
+  fprintf(printFile, "(%s) DevTextExtents\n", text);
+  fprintf(printFile, "/textHeight exch def\n");
+  fprintf(printFile, "/textWidth exch def\n");
+
+  fprintf(printFile, "/winX %f def\n", winX);
+  fprintf(printFile, "/winY %f def\n", winY);
+  fprintf(printFile, "/winWidth %f def\n", winWidth);
+  fprintf(printFile, "/winHeight %f def\n", winHeight);
+
+  if (scaled) {
+    /* Now scale the text to fit the window. */
+    fprintf(printFile, "%f textWidth div\n", winWidth);
+    fprintf(printFile, "/xScale exch def\n");
+    fprintf(printFile, "%f textHeight div\n", winHeight);
+    fprintf(printFile, "/yScale exch def\n");
+    fprintf(printFile, "xScale yScale gt\n");
+    fprintf(printFile, "{/xyScale yScale def} {/xyScale xScale def} ifelse\n");
+
+    /* Adjust the text width and height values by the scale factor. */
+    fprintf(printFile, "textWidth xyScale mul\n");
+    fprintf(printFile, "/textWidth exch def\n");
+    fprintf(printFile, "textHeight xyScale mul\n");
+    fprintf(printFile, "/textHeight exch def\n");
+  }
+
+  /* Calculate some values based on the "text window" size and the size
+   * of the text. */
+  fprintf(printFile, "/widthDiff winWidth textWidth sub def\n");
+  fprintf(printFile, "/halfWidthDiff widthDiff 0.5 mul def\n");
+  fprintf(printFile, "/heightDiff winHeight textHeight sub def\n");
+  fprintf(printFile, "/halfHeightDiff heightDiff 0.5 mul def\n");
+
+#if defined(PS_DEBUG)
+  /* Print the comment if necessary to help debug the PostScript output. */
+  fprintf(printFile, "%s\n", comment);
+#endif
+
+  /* Move to the location within the "text window" specified by the
+   * text alignment. */
+  fprintf(printFile, "%s", moveToWindow);
+
+  /* Do any rotation that's necessary. */
+  if (orientation != 0.0) {
+    fprintf(printFile, "gsave\n");
+    fprintf(printFile, "%f rotate\n", orientation);
+  }
+
+  /* Now, move to the beginning of the text string. */
+  fprintf(printFile, "%s", moveToText);
+
+  /* Do any scaling that's necessary. */
+  if (scaled) {
+    /* Save the graphics state and then set the scaling so that the text
+     * will fit the window. */
+    fprintf(printFile, "gsave\n");
+    fprintf(printFile, "xyScale xyScale scale\n");
+  }
+
+  fprintf(printFile, "(%s) show\n", text);
+
+  /* Set the coordinate system back the way it was. */
+  if (scaled) {
+    fprintf(printFile, "grestore\n");
+  }
+
+  if (orientation != 0.0) {
+    fprintf(printFile, "grestore\n");
+  }
+#endif
+}
 
 /*---------------------------------------------------------------------------*/
 /* Get the correct PostScript code strings according to the alignment
