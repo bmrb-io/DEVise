@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.58  1996/02/02 21:27:35  jussi
+#	Interface to DoSetBgColor changed.
+#
 #	Revision 1.57  1996/02/02 17:53:07  jussi
 #	Added block shape to DEViseShapes.
 #
@@ -286,7 +289,7 @@ set sessiondir "."
 if { [info exists env(DEVISE_SESSION)] } {
     set sessiondir $env(DEVISE_SESSION)
 }
-set tmpdir "."
+set tmpdir "tmp"
 if { [info exists env(DEVISE_TMP)] } {
     set tmpdir $env(DEVISE_TMP)
 }
