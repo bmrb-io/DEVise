@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.40  1998/12/15 14:54:56  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.39  1998/05/14 18:21:06  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -1904,6 +1910,9 @@ void PSWindowRep::DrawDot(FILE *printFile, Coord x1, Coord y1,
 }
 
 
+//TEMP -- I think that DrawText() and DrawDataText() are about 95% the
+// same -- they should get consolidated into a single function.
+// RKW 1999-01-05.
 /*---------------------------------------------------------------------------*/
 /* Draw scaled or absolute text */
 

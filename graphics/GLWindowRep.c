@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/06/18 21:41:11  wenger
+  Client/server library related fixes and updates.
+
   Revision 1.19  1998/06/09 20:06:03  wenger
   2D OpenGL cursor now drawn as shaded outline plus every-other-point
   "mesh"; OpenGL CursorStore and GLWindowRep on SGI now use color indices
@@ -2876,6 +2879,9 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
 }
 #endif
 
+//TEMP -- I think that DrawText() and DrawDataText() are about 95% the
+// same -- they should get consolidated into a single function.
+// RKW 1999-01-05.
 void GLWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
 			   Coord width, Coord height,
 			   SymbolAlignment alignment = AlignCenter,

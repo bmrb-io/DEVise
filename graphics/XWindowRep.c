@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.119  1998/12/22 19:39:17  wenger
+  User can now change date format for axis labels; fixed bug 041 (axis
+  type not being changed between float and date when attribute is changed);
+  got dates to work semi-decently as Y axis labels; view highlight is now
+  always drawn by outlining the view; fixed some bugs in drawing the highight.
+
   Revision 1.118  1998/12/15 14:54:59  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -2892,6 +2898,9 @@ void XWindowRep::SetNormalFont()
 }
 
 
+//TEMP -- I think that DrawText() and DrawDataText() are about 95% the
+// same -- they should get consolidated into a single function.
+// RKW 1999-01-05.
 /* Draw scaled or absolute text */
 
 void XWindowRep::DrawText(Boolean scaled, char *text, Coord x,

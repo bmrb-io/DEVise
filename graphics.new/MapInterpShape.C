@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.57  1998/12/15 18:47:20  wenger
+  New option in fixed text symbol: if size is <=1, it is assumed to be a
+  fraction of the screen height, rather than the font size in points.
+
   Revision 1.56  1998/12/15 14:55:14  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -451,6 +455,8 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	}
 	}
 
+	win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
 		 
@@ -560,6 +566,8 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  DisplayDataLabel(win, x, y, y);
 	}
 
+	win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
 
@@ -644,6 +652,8 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x + width / 2, y, y);
 	}
+
+	win->SetPattern(Pattern0);
 
 	recordsProcessed = numSyms;
 }
@@ -744,6 +754,8 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	  DisplayDataLabel(win, x, y, y);
 	}
 
+	win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
 
@@ -825,6 +837,8 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x, y, y);
 	}
+
+	win->SetPattern(Pattern0);
 
 	recordsProcessed = numSyms;
 }
@@ -969,6 +983,8 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	win->PopTransform();
 	}
 
+	win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
 
@@ -1018,6 +1034,8 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, (xLow + xHigh) / 2, y, y);
 	}
+
+	win->SetPattern(Pattern0);
 
 	recordsProcessed = numSyms;
 }
@@ -1123,6 +1141,8 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x + w / 2, y + h / 2, y + h / 2);
 	}
+
+	win->SetPattern(Pattern0);
 
 	recordsProcessed = numSyms;
 }
@@ -1266,6 +1286,8 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  DisplayDataLabel(win, x, y, y);
 	}
 
+	win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
 
@@ -1401,6 +1423,8 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	}
 	}
 
+	win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
 
@@ -1461,6 +1485,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 #if defined(DEBUG)
         printf("Draw timed out\n");
 #endif
+		win->SetPattern(Pattern0);
 		recordsProcessed = i;
 		return;
 	  }
@@ -1730,6 +1755,8 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	fclose(fp);
 	}
 
+	win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
 
@@ -1751,31 +1778,12 @@ void FullMapping_TextLabelShape::MaxSymSize(TDataMap *map, void *gdata,
 	height = 0;
 }
 
-
-void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
-						void **gdataArray,
-						int numSyms, TDataMap *map,
-						ViewGraph *view, int pixelSize,
-						int &recordsProcessed)
+static void
+GetTextAttrInfo(AttrList *attrList,
+    Boolean &labelAttrValid, AttrType &labelAttrType,
+	Boolean &labelFormatValid, AttrType &labelFormatType)
 {
-#if defined(DEBUG)
-	printf("%s\n", __PRETTY_FUNCTION__);
-#endif
-
-  if (view->GetNumDimensions() == 3) {
-    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
-    return;
-  }
-
-  /* Figure out the type of the label and label format attribute. */
-  AttrList *attrList = map->GDataAttrList();
-#if defined(DEBUG)
-  attrList->Print();
-#endif
-
-  Boolean labelAttrValid;
-  AttrType labelAttrType = IntAttr;
+  labelAttrType = IntAttr;
   AttrInfo *attrInfo = attrList->Find("shapeAttr_0");
   if (attrInfo == NULL) {
     labelAttrValid = false;
@@ -1787,8 +1795,7 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
     labelAttrType = attrInfo->type;
   }
 
-  Boolean labelFormatValid;
-  AttrType labelFormatType = IntAttr;
+  labelFormatType = IntAttr;
   attrInfo = attrList->Find("shapeAttr_1");
   if (attrInfo == NULL) {
     labelFormatValid = false;
@@ -1799,55 +1806,18 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
     labelFormatValid = true;
     labelFormatType = attrInfo->type;
   }
+}
 
-  VisualFilter filter;
-  view->GetVisualFilter(filter);
-  Coord filterWidth = filter.xHigh - filter.xLow;
-  Coord filterHeight = filter.yHigh - filter.yLow;
-  
-  GDataAttrOffset *offset = map->GetGDataOffset();
-  StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
+static char *
+GetLabelText(char *gdata, TDataMap *map, 
+    Boolean labelAttrValid, AttrType labelAttrType,
+	Boolean labelFormatValid, AttrType labelFormatType, char labelBuf[])
+{
+    GDataAttrOffset *offset = map->GetGDataOffset();
+    StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
 
-  Coord oldPointSize = -9999.9;
-
-  for(int i = 0; i < numSyms; i++) {
-#if USE_TIMER
-	  // Always draw at least one symbol so we are sure to make progress.
-	  if ((i > 0) && DrawTimer::Expired()) {
-#if defined(DEBUG)
-        printf("Draw timed out\n");
-#endif
-		recordsProcessed = i;
-		return;
-	  }
-#endif
-
-    char *gdata = (char *)gdataArray[i];
-    Coord x = GetX(gdata, map, offset);
-    Coord y = GetY(gdata, map, offset);
-
-	Coord size = GetSize(gdata, map, offset);
-	size *= pixelSize;
-
-	Coord width = fabs(size * GetShapeAttr2(gdata, map, offset));
-	Coord height = fabs(size * GetShapeAttr3(gdata, map, offset));
-
-	Coord orientation = GetOrientation(gdata, map, offset);
-
-	/* Figure out a reasonable font size to use so that the amount of scaling
-	 * is as small as possible.  I'm sure this isn't perfect, but it seems
-	 * fairly close. RKW 4/25/97. */
-	Coord x0, y0, x1, y1;
-	win->Transform(0, 0, x0, y0);
-	win->Transform(1, 1, x1, y1);
-	Coord pointSize = height * fabs(y1 - y0);
-
-
-	pointSize = MIN(pointSize, 16.0);
-	pointSize = (Coord) ((int) (pointSize + 0.5));
-
-    /* Find or generate the label string. */
     char *label;
+
     if (!labelAttrValid) {
       label = "X";
     } else if (labelAttrType == StringAttr) {
@@ -1881,11 +1851,140 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
         }
       }
 
-      char labelBuf[128];
       if (labelFormat == NULL) labelFormat = "%g";
       sprintf(labelBuf, labelFormat, GetShapeAttr0(gdata, map, offset));
       label = labelBuf;
     }
+
+	return label;
+}
+
+static Boolean // true if okay
+GetAlignment(ViewGraph *view, WindowRep::SymbolAlignment &alignment)
+{
+    int align_num = view->GetAlign();
+    
+    Boolean okay = true;
+
+    switch (align_num){
+    case 0:
+       alignment = WindowRep::AlignNorthWest;
+       break;
+  
+     case 1:
+       alignment = WindowRep::AlignWest;
+       break;
+   
+    case 2:
+       alignment = WindowRep::AlignSouthWest;
+       break;
+   
+    case 3:
+       alignment = WindowRep::AlignNorth;
+       break;
+
+    case 4:
+       alignment = WindowRep::AlignCenter;
+       break;
+
+    case 5:
+       alignment = WindowRep::AlignSouth;
+       break;
+
+    case 6:
+       alignment = WindowRep::AlignNorthEast;
+       break;
+
+    case 7:
+       alignment = WindowRep::AlignEast;
+       break;
+
+    case 8:
+       alignment = WindowRep::AlignSouthEast;
+       break;
+
+    default:
+       okay = false;
+       break;
+    }
+
+	return okay;
+}
+
+void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
+						void **gdataArray,
+						int numSyms, TDataMap *map,
+						ViewGraph *view, int pixelSize,
+						int &recordsProcessed)
+{
+#if defined(DEBUG)
+	printf("%s\n", __PRETTY_FUNCTION__);
+#endif
+
+  if (view->GetNumDimensions() == 3) {
+    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
+	  recordsProcessed);
+    return;
+  }
+
+  /* Figure out the type of the label and label format attribute. */
+  AttrList *attrList = map->GDataAttrList();
+#if defined(DEBUG)
+  attrList->Print();
+#endif
+
+  Boolean labelAttrValid, labelFormatValid;
+  AttrType labelAttrType, labelFormatType;
+  GetTextAttrInfo(attrList, labelAttrValid, labelAttrType,
+	labelFormatValid, labelFormatType);
+
+  GDataAttrOffset *offset = map->GetGDataOffset();
+  StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
+
+  Coord oldPointSize = -9999.9;
+
+  for(int i = 0; i < numSyms; i++) {
+#if USE_TIMER
+	  // Always draw at least one symbol so we are sure to make progress.
+	  if ((i > 0) && DrawTimer::Expired()) {
+#if defined(DEBUG)
+        printf("Draw timed out\n");
+#endif
+		win->SetPattern(Pattern0);
+		recordsProcessed = i;
+		return;
+	  }
+#endif
+
+    char *gdata = (char *)gdataArray[i];
+    Coord x = GetX(gdata, map, offset);
+    Coord y = GetY(gdata, map, offset);
+
+	Coord size = GetSize(gdata, map, offset);
+	size *= pixelSize;
+
+	Coord width = fabs(size * GetShapeAttr2(gdata, map, offset));
+	Coord height = fabs(size * GetShapeAttr3(gdata, map, offset));
+
+	Coord orientation = GetOrientation(gdata, map, offset);
+
+	/* Figure out a reasonable font size to use so that the amount of scaling
+	 * is as small as possible.  I'm sure this isn't perfect, but it seems
+	 * fairly close. RKW 4/25/97. */
+	Coord x0, y0, x1, y1;
+	win->Transform(0, 0, x0, y0);
+	win->Transform(1, 1, x1, y1);
+	Coord pointSize = height * fabs(y1 - y0);
+
+
+	pointSize = MIN(pointSize, 16.0);
+	pointSize = (Coord) ((int) (pointSize + 0.5));
+
+    /* Find or generate the label string. */
+    char labelBuf[128];
+    char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
+	  labelFormatValid, labelFormatType, labelBuf);
+
 
     win->SetForeground(GetPColorID(gdata, map, offset));
     win->SetPattern(GetPattern(gdata, map, offset));
@@ -1897,150 +1996,29 @@ void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
 #if defined(DEBUG)
     printf("Text label: <%s>\n", label);
 #endif
-
-    // sanjay
-    int align_num = view->GetAlign();
     
-    switch (align_num){
-    
-    case 0:
-       {
-	 
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignNorthWest, orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignNorthWest, true, orientation); 
-        break;
-       }
-  
-     case 1:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height, WindowRep::AlignWest,
-		               orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignWest, true, orientation); 
-        break;
-       }
-   
-    case 2:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignSouthWest,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignSouthWest, true, orientation); 
-        break;
-       }
-   
-   case 3:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignNorth,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignNorth, true, orientation); 
-        break;
-       }
+    WindowRep::SymbolAlignment alignment;
 
-  case 4:
-       {
-	 
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignCenter,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignCenter, true, orientation); 
-        break;
-       }  
-
- case 5:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignSouth,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignSouth, true, orientation); 
-        break;
-       }  
-
- case 6:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignNorthEast,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignNorthEast, true, orientation); 
-        break;
-       }  
-
- case 7:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignEast,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignEast, true, orientation); 
-        break;
-       }  
-
- case 8:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignSouthEast,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignSouthEast, true, orientation); 
-        break;
-       }  
-    default: break;
-      
-    }
+    if (GetAlignment(view, alignment)) {
+      if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
+        Pattern oldPattern = win->GetPattern();
+        win->SetPattern((Pattern)-1);
+        win->FillRectAlign(x, y, width, height, alignment, orientation);
+        win->SetPattern(oldPattern);
+      }
+      win->ScaledDataText(label, x , y , width, height, alignment, true,
+        orientation); 
+#if 0 // For testing ScaledText() vs. ScaledDataText().
+      win->SetForeground(GetPColorID(gdata, map, offset) + 5);
+      win->ScaledText(label, x , y , width, height, alignment, true,
+        orientation); 
+      win->SetForeground(GetPColorID(gdata, map, offset));
+#endif
+     }
    }
+
+   win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
 
@@ -2095,46 +2073,10 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
   attrList->Print();
 #endif
 
-  Boolean labelAttrValid;
-  AttrType labelAttrType = IntAttr;
-  AttrInfo *attrInfo = attrList->Find("shapeAttr_0");
-  if (attrInfo == NULL) {
-    labelAttrValid = false;
-#if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for shapeAttr_0");
-#endif
-  } else {
-    labelAttrValid = true;
-    labelAttrType = attrInfo->type;
-  }
-
-  Boolean labelFormatValid;
-  AttrType labelFormatType = IntAttr;
-  attrInfo = attrList->Find("shapeAttr_1");
-  if (attrInfo == NULL) {
-    labelFormatValid = false;
-#if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for shapeAttr_1");
-#endif
-  } else {
-    labelFormatValid = true;
-    labelFormatType = attrInfo->type;
-  }
-
-  VisualFilter filter;
-  view->GetVisualFilter(filter);
-  Coord filterWidth = filter.xHigh - filter.xLow;
-  Coord filterHeight = filter.yHigh - filter.yLow;
-
-#if defined(DEBUG)
-  /* sanjay adding cout information here */
-  cout << "filterWidth = " << filterWidth << endl;
-  cout << "filter.xHigh = " << filter.xHigh << endl;  
-  cout << "filter.xLow = " << filter.xLow << endl;  
-  cout << "filterHeight = " << filterHeight << endl;
-  cout << "filter.yHigh = " << filter.yHigh << endl;  
-  cout << "filter.yLow = " << filter.yLow << endl;     
-#endif
+  Boolean labelAttrValid, labelFormatValid;
+  AttrType labelAttrType, labelFormatType;
+  GetTextAttrInfo(attrList, labelAttrValid, labelAttrType,
+	labelFormatValid, labelFormatType);
 
   GDataAttrOffset *offset = map->GetGDataOffset();
   StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
@@ -2148,6 +2090,7 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 #if defined(DEBUG)
         printf("Draw timed out\n");
 #endif
+		win->SetPattern(Pattern0);
 		recordsProcessed = i;
 		return;
 	  }
@@ -2185,45 +2128,10 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
 	pixelperUnit  = (Coord) ((int) (pixelperUnit + 0.5));
 
     /* Find or generate the label string. */
-    char *label;
-    if (!labelAttrValid) {
-      label = "X";
-    } else if (labelAttrType == StringAttr) {
-      /* Label attribute is a string.  Get the string value from the
-       * StringStorage class. */
-      int key = (int) GetShapeAttr0(gdata, map, offset);
-      int code = stringTable->Lookup(key, label);
-      if( code < 0 ) {        // key not found
-        label = "X";
-#if defined(DEBUG)
-        printf("Using default label \"%s\"\n", label);
-#endif
-      } else {
-#if defined(DEBUG)
-        printf("Key %d returns \"%s\", code %d\n", key, label, code);
-#endif
-      }
-    } else if (labelAttrType == DateAttr) {
-      /* Label attribute is a date.  Convert the UNIX date (stored as a
-       * double in the GData) to a date string. */
-      label = DateString((time_t) GetShapeAttr0(gdata, map, offset));
-    } else {
-      /* Label attribute is a numerical value (stored as a double in the
-       * GData).  Print it with the appropriate format string. */
-      char *labelFormat = NULL;
-      if (labelFormatValid && (labelFormatType == StringAttr)) {
-        int labelKey = (int) GetShapeAttr1(gdata, map, offset);
-        int labelCode = stringTable->Lookup(labelKey, labelFormat);
-        if (labelCode < 0) {	// key not found
-          labelFormat = NULL;
-        }
-      }
+    char labelBuf[128];
+    char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
+	  labelFormatValid, labelFormatType, labelBuf);
 
-      char labelBuf[128];
-      if (labelFormat == NULL) labelFormat = "%g";
-      sprintf(labelBuf, labelFormat, GetShapeAttr0(gdata, map, offset));
-      label = labelBuf;
-    }
 
     win->SetForeground(GetPColorID(gdata, map, offset));
     win->SetPattern(GetPattern(gdata, map, offset));
@@ -2236,371 +2144,21 @@ void FullMapping_TextDataLabelShape::DrawGDataArray(WindowRep *win,
     printf("Text label: <%s>\n", label);
 #endif
 
-    // sanjay
-    int align_num = view->GetAlign();
     height = pixelperUnitHeight * size;
     width  = strlen(label);
-    
-    switch (align_num){
-    
-    case 0:
-       {
-	
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignNorthWest, true, orientation); 
-        break;
-       }
-  
-     case 1:
-       {
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignWest, true, orientation); 
-        break;
-       }
-   
-    case 2:
-       {
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignSouthWest, true, orientation); 
-        break;
-       }
-   
-   case 3:
-       {
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignNorth, true, orientation); 
-        break;
-       }
 
-  case 4:
-       {
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignCenter, true, orientation); 
-        break;
-       }  
+    WindowRep::SymbolAlignment alignment;
 
- case 5:
-       {
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignSouth, true, orientation); 
-        break;
-       }  
-
- case 6:
-       {
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignNorthEast, true, orientation); 
-        break;
-       }  
-
- case 7:
-       {
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignEast, true, orientation); 
-        break;
-       }  
-
- case 8:
-       {
-        win->ScaledDataText(label, x , y , width, height,
-                        WindowRep::AlignSouthEast, true, orientation); 
-        break;
-       }  
-    default: break;
-      
+    if (GetAlignment(view, alignment)) {
+      win->ScaledDataText(label, x , y , width, height,
+                          alignment, true, orientation); 
     }
    }
+
+   win->SetPattern(Pattern0);
+
 	recordsProcessed = numSyms;
 }
-
-// -----------------------------------------------------------------
-// sanjay add here ...
- 
- /*
-void FullMapping_TextLabelShape::DrawGDataArray(WindowRep *win,
-						void **gdataArray,
-						int numSyms, TDataMap *map,
-						ViewGraph *view, int pixelSize,
-						int &recordsProcessed)
-{
-#if defined(DEBUG)
-	printf("%s\n", __PRETTY_FUNCTION__);
-#endif
-
-  if (view->GetNumDimensions() == 3) {
-    Draw3DGDataArray(win, gdataArray, numSyms, map, view, pixelSize,
-	  recordsProcessed);
-    return;
-  }
-  
-  AttrList *attrList = map->GDataAttrList();
-#if defined(DEBUG)
-  attrList->Print();
-#endif
-
-  Boolean labelAttrValid;
-  AttrType labelAttrType = IntAttr;
-  AttrInfo *attrInfo = attrList->Find("shapeAttr_0");
-  if (attrInfo == NULL) {
-    labelAttrValid = false;
-#if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for shapeAttr_0");
-#endif
-  } else {
-    labelAttrValid = true;
-    labelAttrType = attrInfo->type;
-  }
-
-  Boolean labelFormatValid;
-  AttrType labelFormatType = IntAttr;
-  attrInfo = attrList->Find("shapeAttr_1");
-  if (attrInfo == NULL) {
-    labelFormatValid = false;
-#if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for shapeAttr_1");
-#endif
-  } else {
-    labelFormatValid = true;
-    labelFormatType = attrInfo->type;
-  }
-
-  VisualFilter filter;
-  view->GetVisualFilter(filter);
-  Coord filterWidth = filter.xHigh - filter.xLow;
-  Coord filterHeight = filter.yHigh - filter.yLow;
-
-  GDataAttrOffset *offset = map->GetGDataOffset();
-
-  Coord oldPointSize = -9999.9;
-
-  for(int i = 0; i < numSyms; i++) {
-#if USE_TIMER
-	  // Always draw at least one symbol so we are sure to make progress.
-	  if ((i > 0) && DrawTimer::Expired()) {
-#if defined(DEBUG)
-        printf("Draw timed out\n");
-#endif
-		recordsProcessed = i;
-		return;
-	  }
-#endif
-
-    char *gdata = (char *)gdataArray[i];
-    Coord x = GetX(gdata, map, offset);
-    Coord y = GetY(gdata, map, offset);
-
-	Coord size = GetSize(gdata, map, offset);
-	size *= pixelSize;
-
-	Coord width = fabs(size * GetShapeAttr2(gdata, map, offset));
-	Coord height = fabs(size * GetShapeAttr3(gdata, map, offset));
-
-	Coord orientation = GetOrientation(gdata, map, offset);
-
-	Coord x0, y0, x1, y1;
-	win->Transform(0, 0, x0, y0);
-	win->Transform(1, 1, x1, y1);
-	Coord pointSize = height * fabs(y1 - y0);
-	pointSize = MIN(pointSize, 16.0);
-	pointSize = (Coord) ((int) (pointSize + 0.5));
-
-    char *label;
-    if (!labelAttrValid) {
-      label = "X";
-    } else if (labelAttrType == StringAttr) {
-      int key = (int) GetShapeAttr0(gdata, map, offset);
-      int code = stringTable->Lookup(key, label);
-      if( code < 0 ) {        // key not found
-        label = "X";
-#if defined(DEBUG)
-        printf("Using default label \"%s\"\n", label);
-#endif
-      } else {
-#if defined(DEBUG)
-        printf("Key %d returns \"%s\", code %d\n", key, label, code);
-#endif
-      }
-    } else if (labelAttrType == DateAttr) {
-      label = DateString((time_t) GetShapeAttr0(gdata, map, offset));
-    } else {
-      char *labelFormat = NULL;
-      if (labelFormatValid && (labelFormatType == StringAttr)) {
-        int labelKey = (int) GetShapeAttr1(gdata, map, offset);
-        int labelCode = stringTable->Lookup(labelKey, labelFormat);
-        if (labelCode < 0) {	// key not found
-          labelFormat = NULL;
-        }
-      }
-
-      char labelBuf[128];
-      if (labelFormat == NULL) labelFormat = "%g";
-      sprintf(labelBuf, labelFormat, GetShapeAttr0(gdata, map, offset));
-      label = labelBuf;
-    }
-
-	win->SetForeground(GetPColorID(gdata, map, offset));
-    win->SetPattern(GetPattern(gdata, map, offset));
-    if (pointSize != oldPointSize) {
-      win->SetFont("Courier", "Bold", "r", "Normal", pointSize);
-      oldPointSize = pointSize;
-    }
-  
-
-
-    // sanjay
-    int align_num = View::GetAlign();
-    
-#if defined(DEBUG)
-    printf("Text label: <%s>\n", label);
-#endif
-    // sanjay : try the changes here...
-    // win->ScaledText(label, x - width / 2, y - height / 2, width, height,
-    //   WindowRep::AlignCenter, true, orientation);
-    
-    switch (align_num){
-    
-    case 0:
-       {
-	 
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignNorthWest, orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignNorthWest, true, orientation); 
-        break;
-       }
-  
-     case 1:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height, WindowRep::AlignWest,
-		               orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignWest, true, orientation); 
-        break;
-       }
-   
-    case 2:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignSouthWest,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignSouthWest, true, orientation); 
-        break;
-       }
-   
-   case 3:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignNorth,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignNorth, true, orientation); 
-        break;
-       }
-
-  case 4:
-       {
-	 
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignCenter,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignCenter, true, orientation); 
-        break;
-       }  
-
- case 5:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignSouth,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignSouth, true, orientation); 
-        break;
-       }  
-
- case 6:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignNorthEast,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignNorthEast, true, orientation); 
-        break;
-       }  
-
- case 7:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignEast,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignEast, true, orientation); 
-        break;
-       }  
-
- case 8:
-       {
-      
-         if  ((Boolean)GetShapeAttr4(gdata, map, offset)) {
-	    Pattern oldPattern = win->GetPattern();
-	    win->SetPattern((Pattern)-1);
-            win->FillRectAlign(x, y, width, height,
-                               WindowRep::AlignSouthEast,  orientation);
-	    win->SetPattern(oldPattern);
-         }
-        win->ScaledText(label, x , y , width, height,
-                        WindowRep::AlignSouthEast, true, orientation); 
-        break;
-       }  
-    default: break;
-      
-    }
-    }
-  
-	recordsProcessed = numSyms;
-}
-*/
 
 // -----------------------------------------------------------------
 
@@ -2641,32 +2199,10 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
   /* Figure out the type of the label and label format attribute. */
   AttrList *attrList = map->GDataAttrList();
 
-  Boolean labelAttrValid;
-  AttrType labelAttrType = IntAttr;
-  AttrInfo *attrInfo = attrList->Find("shapeAttr_0");
-  if (attrInfo == NULL) {
-    labelAttrValid = false;
-#if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for shapeAttr_0");
-#endif
-  } else {
-    labelAttrValid = true;
-    labelAttrType = attrInfo->type;
-  }
-
-  Boolean labelFormatValid;
-  AttrType labelFormatType = IntAttr;
-  attrInfo = attrList->Find("shapeAttr_1");
-  if (attrInfo == NULL) {
-    labelFormatValid = false;
-#if defined(DEBUG)
-    reportErrNosys("Can't find AttrInfo for shapeAttr_1");
-#endif
-  } else {
-    labelFormatValid = true;
-    labelFormatType = attrInfo->type;
-  }
-
+  Boolean labelAttrValid, labelFormatValid;
+  AttrType labelAttrType, labelFormatType;
+  GetTextAttrInfo(attrList, labelAttrValid, labelAttrType,
+	labelFormatValid, labelFormatType);
 
   VisualFilter filter;
   view->GetVisualFilter(filter);
@@ -2685,6 +2221,7 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 #if defined(DEBUG)
         printf("Draw timed out\n");
 #endif
+		win->SetPattern(Pattern0);
 		recordsProcessed = i;
 		return;
 	  }
@@ -2704,45 +2241,10 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
 	Coord orientation = GetOrientation(gdata, map, offset);
 
     /* Find or generate the label string. */
-    char *label;
-    if (!labelAttrValid) {
-      label = "X";
-    } else if (labelAttrType == StringAttr) {
-      /* Label attribute is a string.  Get the string value from the
-       * StringStorage class. */
-      int key = (int) GetShapeAttr0(gdata, map, offset);
-      int code = stringTable->Lookup(key, label);
-      if( code < 0 ) {        // key not found
-        label = "X";
-#if defined(DEBUG)
-        printf("Using default label \"%s\"\n", label);
-#endif
-      } else {
-#if defined(DEBUG)
-        printf("Key %d returns \"%s\", code %d\n", key, label, code);
-#endif
-      }
-    } else if (labelAttrType == DateAttr) {
-      /* Label attribute is a date.  Convert the UNIX date (stored as a
-       * double in the GData) to a date string. */
-      label = DateString((time_t) GetShapeAttr0(gdata, map, offset));
-    } else {
-      /* Label attribute is a numerical value (stored as a double in the
-       * GData).  Print it with the appropriate format string. */
-      char *labelFormat = NULL;
-      if (labelFormatValid && (labelFormatType == StringAttr)) {
-        int labelKey = (int) GetShapeAttr1(gdata, map, offset);
-        int labelCode = stringTable->Lookup(labelKey, labelFormat);
-        if (labelCode < 0) {	// key not found
-          labelFormat = NULL;
-        }
-      }
+    char labelBuf[128];
+    char *label = GetLabelText(gdata, map, labelAttrValid, labelAttrType,
+	  labelFormatValid, labelFormatType, labelBuf);
 
-      char labelBuf[128];
-      if (labelFormat == NULL) labelFormat = "%g";
-      sprintf(labelBuf, labelFormat, GetShapeAttr0(gdata, map, offset));
-      label = labelBuf;
-    }
 
 	win->SetForeground(GetPColorID(gdata, map, offset));
     win->SetPattern(GetPattern(gdata, map, offset));
@@ -2751,84 +2253,21 @@ void FullMapping_FixedTextLabelShape::DrawGDataArray(WindowRep *win,
       oldPointSize = pointSize;
     }
 
-    // Pretend that there's a large box in which the text has to
-    // be drawn; this is done because we don't know the size of the
-    // the label in pixels, and if we pass a width or height that
-    // is too tight, AbsoluteText() will try to scale the text.
-    /*
-    win->AbsoluteText(label, x - filterWidth / 2, y - filterHeight / 2,
-      filterWidth, filterHeight, WindowRep::AlignCenter, true, orientation);
-      */
 
-     int align_num = view->GetAlign();
-    switch (align_num){
-    
-    case 0:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignNorthWest, true, orientation); 
-        break;
-       }
-  
-     case 1:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignWest, true, orientation); 
-        break;
-       }
-   
-    case 2:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignSouthWest, true, orientation); 
-        break;
-       }
-   
-   case 3:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignNorth, true, orientation); 
-        break;
-       }
 
-  case 4:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignCenter, true, orientation); 
-        break;
-       }  
+    WindowRep::SymbolAlignment alignment;
 
- case 5:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignSouth, true, orientation); 
-        break;
-       }  
-
- case 6:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignNorthEast, true, orientation); 
-        break;
-       }  
-
- case 7:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignEast, true, orientation); 
-        break;
-       }  
-
- case 8:
-       {
-        win->AbsoluteDataText(label, x , y , filterWidth,filterHeight,
-                        WindowRep::AlignSouthEast, true, orientation); 
-        break;
-       }  
-    default: break;
-      
+    if (GetAlignment(view, alignment)) {
+      // Pretend that there's a large box in which the text has to
+      // be drawn; this is done because we don't know the size of the
+      // the label in pixels, and if we pass a width or height that
+      // is too tight, AbsoluteText() will try to scale the text.
+      win->AbsoluteDataText(label, x , y , filterWidth, filterHeight,
+                            alignment, true, orientation); 
     }
   }
+
+  win->SetPattern(Pattern0);
 
 	recordsProcessed = numSyms;
 }
@@ -2981,6 +2420,8 @@ void FullMapping_LineShape::DrawConnectingLine(WindowRep *win, ViewGraph *view,
 
 	win->SetForeground(c1);
 	win->Line((x0 + x1) / 2, (y0 + y1) / 2, x1, y1, line_width);
+
+	win->SetPattern(Pattern0);
 }
 
 
@@ -3089,6 +2530,8 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 	*/
 	FullMapping_LineShape::DrawConnectingLine(win, view, Pattern0, line_width,
 						  x0, y0, c0, x1, y1, c1);
+
+    win->SetPattern(Pattern0);
 }
 
 //******************************************************************************

@@ -1712,10 +1712,10 @@ Num Date        Status  Description
 			if the view is not the "front" one in the pile.
 			(ml/rkw)
 
-447 12/23/98	OPEN	Setting data pattern to 1 prevents view name from
+447 12/23/98	FIXED	Setting data pattern to 1 prevents view name from
 			showing up. (rkw)
 
-448 12/23/98	OPEN	Setting data pattern to -2 affects drawing of view
+448 12/23/98	FIXED	Setting data pattern to -2 affects drawing of view
 			highlight. (rkw)
 
 449 01/04/99	OPEN	When the leader view of a record/set link is removed
