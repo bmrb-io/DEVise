@@ -4,6 +4,7 @@
 #include <time.h>  // just for the definition of struct tm
 
 class DateTime ;
+class EncodedIDT ;
 
 bool isLeap(bool L_BC,int L_Year) ;
      
@@ -30,15 +31,18 @@ class IntervalDT {
 public:
 	IntervalDT() ;
 	IntervalDT(int c_day, int c_hour, int c_min, int c_sec, int c_msec,int c_V_Plus) ;
+	IntervalDT(EncodedIDT x_IDT) ;
+	IntervalDT operator-(const IntervalDT& arg);
+	IntervalDT operator+(const IntervalDT& arg);
+	bool operator==(const IntervalDT& arg) ;
+	operator EncodedIDT() ;
      bool isValid() ;
 	DateTime Elapsed_2_Date() ;
 	long long Value_2_Sec() const ;
 	int Value_SSec() const ; 
-	IntervalDT operator-(const IntervalDT& arg);
-	IntervalDT operator+(const IntervalDT& arg);
-	bool operator==(const IntervalDT& arg) ;
 	char* Write_Data() ;
 };
+
 
 // const int JAN11 = 0x00000221;
 
@@ -145,6 +149,15 @@ public:
 	operator ==(const EncodedDTF& x) const {
 		return date == x.date && time == x.time && nanosec == x.nanosec;
 	}
+	operator <(const EncodedDTF& x) const {
+		return compare(x) < 0;
+	}
+	operator >(const EncodedDTF& x) const {
+		return compare(x) > 0;
+	}
+	EncodedIDT operator-(const EncodedDTF& x) const ;
+	EncodedDTF operator-(const EncodedIDT& x) const ;
+	EncodedDTF operator+(const EncodedIDT& x) const ;
 	int compare(const EncodedDTF& x) const {
 		if(date < x.date){
 			return -1;
@@ -168,13 +181,6 @@ public:
 			return 0;
 		}
 	}
-	operator <(const EncodedDTF& x) const {
-		return compare(x) < 0;
-	}
-	operator >(const EncodedDTF& x) const {
-		return compare(x) > 0;
-	}
-	IntervalDT operator-(const EncodedDTF& x) const;
 	operator EncodedD() {
 		return EncodedD(date);
 	}
@@ -247,6 +253,60 @@ ostream& operator <<(ostream& out, const EncodedDTF& arg);
 /*
 -- 1 is subtracted from month to supply consistency of arrays and month variable, don't forget to add 1 to month while returning actual date
 */
+
+class EncodedIDT {
+	int day ;
+	int time ;
+	int nanosec ;
+friend ostream& operator <<(ostream& our, const EncodedIDT& idt);
+public:
+	EncodedIDT() {
+		day = 0 ;
+		time = 0 ;
+		nanosec = 0 ;
+	}
+	EncodedIDT(int d, int t, int n) {
+		day = d ;
+		time = t ;
+		nanosec = n ;
+	}
+	operator EncodedDTF() const {
+		EncodedDTF ret_EDTF(day,time,nanosec) ;
+		return ret_EDTF ;
+	}
+	operator ==(const EncodedIDT& x) const {
+		return day == x.day && time == x.time && nanosec == x.nanosec ;
+	}
+	operator <(const EncodedIDT& x) const {
+		return (EncodedDTF(*this) < EncodedDTF(x)) ;
+	}
+	operator >(const EncodedIDT& x) const {
+		return ((EncodedDTF)(*this) > (EncodedDTF)(x)) ;
+	}
+	EncodedIDT operator-(const EncodedIDT& arg) ;
+	EncodedIDT operator+(const EncodedIDT& arg) ;
+	int getDay() const {
+		return (day>0 ? day : -day) ;
+	}
+	int getSec() const {
+		return (time & 0x3F) ;
+	}
+	int getMin() const {
+		int i = time >> 6 ;
+		return (i & 0x3F) ;
+	}
+	int getHour() const {
+		return time >> 12 ;
+	}
+	int getNanoSec() const {
+		return nanosec ;
+	}
+	int get_V_Plus() const {
+		return (day>=0) ;
+	}
+};
+
+ostream& operator <<(ostream& out, const IntervalDT& arg);
 
 class DateTime {
 private:

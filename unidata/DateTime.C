@@ -67,7 +67,14 @@ char* IntervalDT::Write_Data(){
 	return tmp.str();
 }
 
-IntervalDT::IntervalDT() {}
+IntervalDT::IntervalDT() {
+	day = 0;
+	hour = 0 ;
+	min = 0 ;
+	sec = 0 ;
+	msec = 0 ;
+	V_Plus = 1 ;
+}
 
 IntervalDT::IntervalDT(int c_day, int c_hour, int c_min, int c_sec, int c_msec,int c_V_Plus) {
 	day = c_day ;
@@ -76,6 +83,26 @@ IntervalDT::IntervalDT(int c_day, int c_hour, int c_min, int c_sec, int c_msec,i
 	sec = c_sec ;
 	msec = c_msec ;
 	V_Plus = c_V_Plus ;
+}
+
+IntervalDT::IntervalDT(EncodedIDT x_IDT) {
+	day = x_IDT.getDay() ;
+	V_Plus = x_IDT.get_V_Plus() ;
+	hour = x_IDT.getHour() ;
+	min = x_IDT.getMin() ;
+	sec = x_IDT.getSec() ;
+	msec = x_IDT.getNanoSec() ;
+}
+
+IntervalDT::operator EncodedIDT() {
+	int d,t=0 ;
+	d = ( V_Plus ? day : -day) ;
+	t = hour << 6 ;
+	t |= min ;
+	t = t << 6 ;
+	t |= sec ;
+	EncodedIDT ret_IDT(d, t, msec) ;
+	return ret_IDT ;
 }
 
 bool IntervalDT::isValid() {
@@ -138,7 +165,7 @@ IntervalDT IntervalDT::operator +(const IntervalDT& arg) {
 	DT2 = arg.Value_2_Sec() ;
 	DTS2 = arg.Value_SSec() ;
 	DT1 = DT1 + DT2 ;
-	DTS1 = DTS1 -DTS2 ;
+	DTS1 = DTS1 +DTS2 ;
 	if (DT1 >0) {
 		if (DTS1  < 0) {
 		 	DT1 -- ;
@@ -305,7 +332,7 @@ DateTime DateTime::operator -(const IntervalDT& arg) {
 	   	T_D1 *= -1LL ;
 	   	T_Plus = 0 ;
 	}
-	else if ( T_D1 > 0 ) {
+	else if (( T_D1 > 0 ) && (T_DM1<0)) {
 		T_D1 -- ;
 		T_DM1 = msec - T_DM1 ;
 	}
@@ -580,4 +607,52 @@ ostream& operator <<(ostream& out, const EncodedDTF& arg){
 		out << "." << nanosec;
 	}
 	return out;
+}
+
+ostream& operator <<(ostream& out, const EncodedIDT& arg) {
+	int o_day = arg.getDay() ;
+	int o_hour = arg.getHour() ;
+	int o_min = arg.getMin() ;
+	int o_sec = arg.getSec() ;
+	int o_msec = arg.getNanoSec() ;
+	int o_V_Plus = arg.get_V_Plus() ; 
+	if (!(o_V_Plus)) {
+		out << "- " ;
+	}
+	if (o_day) {
+		out << o_day << "d " ;
+	}
+	if (o_hour) {
+		out << o_hour << "h " ;
+	}
+	if (o_min) {
+		out << o_min << "m " ;
+	}
+	if (o_min) {
+		out << o_sec << "s " ;
+	}
+	if (o_sec) {
+		out << o_msec << "n " ;
+	}
+	return out ;
+}
+
+EncodedIDT EncodedDTF::operator-(const EncodedDTF& x) const {
+	return (EncodedIDT)((DateTime)(*this) - (DateTime)(x)) ;
+}
+
+EncodedDTF EncodedDTF::operator-(const EncodedIDT& x) const {
+	return (EncodedDTF)((DateTime)(*this) - (IntervalDT)(x)) ;
+}
+
+EncodedDTF EncodedDTF::operator+(const EncodedIDT& x) const {
+	return (EncodedDTF)((DateTime)(*this) + (IntervalDT)(x)) ;
+}
+
+EncodedIDT EncodedIDT::operator-(const EncodedIDT& arg) {
+	return (EncodedIDT)((IntervalDT)(*this) - (IntervalDT)(arg)) ;
+}
+
+EncodedIDT EncodedIDT::operator+(const EncodedIDT& arg) {
+	return (EncodedIDT)((IntervalDT)(*this) + (IntervalDT)(arg)) ;
 }
