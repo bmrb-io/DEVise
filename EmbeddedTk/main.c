@@ -860,7 +860,12 @@ ServiceConnectionRequest(ClientData clientData, int mask)
     
     struct sockaddr_in tempAddr;
     int done = 0;
-    int len = sizeof(struct sockaddr_in);
+#if defined(LINUX)
+    socklen_t
+#else
+    int
+#endif
+        len = sizeof(struct sockaddr_in);
 
 #ifdef DEBUG
     fprintf(g_LogFile, "\nWaiting for connection request\n");
