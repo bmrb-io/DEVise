@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.151  1999/01/04 15:33:17  wenger
+  Improved View symbol code; removed NEW_LAYOUT and VIEW_SHAPE conditional
+  compiles; added code (GUI is currently disabled) to manually set view
+  geometry (not yet saved to sessions).
+
   Revision 1.150  1998/12/22 19:39:12  wenger
   User can now change date format for axis labels; fixed bug 041 (axis
   type not being changed between float and date when attribute is changed);
@@ -999,12 +1004,10 @@ void View::SetVisualFilter(VisualFilter &filter, Boolean registerEvent)
 {
 #if defined(DEBUG)
   printf("View(%s)::SetVisualFilter()\n", GetName());
-#endif
-#if defined(DEBUG)
-  printf("%s View::SetVisualFilter %f %f %f %f; %f %f %f %f\n", GetName(),
-	 filter.xLow, filter.yLow,
-	 filter.xHigh, filter.yHigh,_filter.xLow, _filter.yLow,
-	 _filter.xHigh, _filter.yHigh);
+  printf("  Old filter: (%g, %g), (%g, %g)\n", _filter.xLow, _filter.yLow,
+      _filter.xHigh, _filter.yHigh);
+  printf("  New filter: (%g, %g), (%g, %g)\n", filter.xLow, filter.yLow,
+      filter.xHigh, filter.yHigh);
 #endif
 
   /* Just in case record links didn't get re-enabled after printing. */
@@ -3332,6 +3335,33 @@ void	View::Run(void)
 #endif
 #if defined(DEBUG_MEM)
   printf("%s: %d; end of data seg = 0x%p\n", __FILE__, __LINE__, sbrk(0));
+#endif
+
+    VisualFilter histFilter;
+	GetHistory()->Get(0, histFilter);
+    if (histFilter.xLow != _filter.xLow ||
+	    histFilter.xHigh != _filter.xHigh ||
+		histFilter.yLow != _filter.yLow ||
+		histFilter.yHigh != _filter.yHigh) {
+      _filterQueue->Enqueue(_filter, _filter.marked);
+#if defined(DEBUG)
+	  char errBuf[256];
+	  sprintf(errBuf, "(warning) view <%s> current filter does not match "
+	      "last history filter", GetName());
+	  reportErrNosys(errBuf);
+#endif
+	}
+#if 0
+	printf("  histFilter: %d, (%g, %g), (%g, %g)\n", histFilter.flag,
+	  histFilter.xLow, histFilter.yLow, histFilter.xHigh, histFilter.yHigh);
+	printf("  _filter: %d, (%g, %g), (%g, %g)\n", _filter.flag,
+	  _filter.xLow, _filter.yLow, _filter.xHigh, _filter.yHigh);
+	printf("  _queryFilter: %d, (%g, %g), (%g, %g)\n", _queryFilter.flag,
+	  _queryFilter.xLow, _queryFilter.yLow, _queryFilter.xHigh,
+	  _queryFilter.yHigh);
+	printf("  _lastFilter: %d, (%g, %g), (%g, %g)\n", _lastFilter.flag,
+	  _lastFilter.xLow, _lastFilter.yLow, _lastFilter.xHigh,
+	  _lastFilter.yHigh);
 #endif
 
 	if (_refresh)

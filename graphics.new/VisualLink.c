@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -30,6 +30,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/03/18 08:20:18  zhenhai
+  Added visual links between 3D graphics.
+
   Revision 1.10  1998/03/08 00:01:16  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -88,6 +91,10 @@
 VisualLink::VisualLink(char *name, VisualFlag linkFlag) :
   DeviseLink(name, linkFlag)
 {
+#if defined(DEBUG)
+  printf("VisualLink(0x%p)::VisualLink(%s, %d)\n", this, name, linkFlag);
+#endif
+
   _filterValid = false;
   _filterLocked = false;
   _originatingView = NULL;
@@ -97,11 +104,19 @@ VisualLink::VisualLink(char *name, VisualFlag linkFlag) :
 
 VisualLink::~VisualLink()
 {
+#if defined(DEBUG)
+  printf("VisualLink(%s)::~VisualLink()\n", GetName());
+#endif
+
   Dispatcher::Current()->Unregister(this);
 }
 
 void VisualLink::InsertView(ViewGraph *view)
 {
+#if defined(DEBUG)
+  printf("VisualLink(%s)::InsertView(%s)\n", GetName(), view->GetName());
+#endif
+
   if (_viewList->Find(view)) {
     /* view already inserted */
     return;
@@ -112,16 +127,25 @@ void VisualLink::InsertView(ViewGraph *view)
   if (_viewList->Size() > 1) {
     DOASSERT(_filterValid, "Visual link's filter is invalid");
     _filterLocked = true;
-    SetVisualFilter(view, _filter);
+    SetVisualFilter(view);
     _filterLocked = false;
   } else {
     view->GetVisualFilter(_filter);
+#if defined(DEBUG)
+    printf("  visual filter of link <%s> initialized\n", GetName());
+    printf("    filter: %d, (%g, %g), (%g, %g)\n", _filter.flag,
+      _filter.xLow, _filter.yLow, _filter.xHigh, _filter.yHigh);
+#endif
     _filterValid = true;
   }
 }
 
 void VisualLink::SetFlag(VisualFlag flag)
 {
+#if defined(DEBUG)
+  printf("VisualLink(%s)::SetFlag(%d)\n", GetName(), flag);
+#endif
+
   if (_filterLocked) {
     fprintf(stderr, "Illegal attempt to set link type with filter locked (link %s)\n",
 	GetName());
@@ -134,19 +158,19 @@ void VisualLink::SetFlag(VisualFlag flag)
 /* Called by View when its visual filter has changed.
    flushed == index if 1st element in the history that has been flushed.*/
 
-void VisualLink::FilterChanged(View *view, VisualFilter &filter,
+void VisualLink::FilterChanged(View *view, VisualFilter &newFilter,
 			       int flushed)
 {
 #if defined(DEBUG)
-  printf("VisualLink(%s)::FilterChanged(%s, ", GetName(), view->GetName());
-  filter.Print();
-  printf(")\n");
+  printf("VisualLink(%s)::FilterChanged(%s)\n", GetName(), view->GetName());
+  printf("  newFilter: %d, (%g, %g), (%g, %g)\n", newFilter.flag,
+    newFilter.xLow, newFilter.yLow, newFilter.xHigh, newFilter.yHigh);
 #endif
 
   // If the filter is locked, we don't do anything here.
   if (_filterLocked) {
 #if defined(DEBUG)
-    printf("filter for visual link %s is locked\n", GetName());
+    printf("  filter for visual link %s is locked\n", GetName());
 #endif
   } else {
   /* first, make sure that this view is under our control */
@@ -160,37 +184,41 @@ void VisualLink::FilterChanged(View *view, VisualFilter &filter,
       // X and Y.
       if (!filterDifferent) {
 	if ((_linkAttrs & VISUAL_X) &&
-	    (filter.xLow != _filter.xLow || filter.xHigh != filter.xHigh)) {
+	    (newFilter.xLow != _filter.xLow || newFilter.xHigh != _filter.xHigh)) {
 	  filterDifferent = true;
 	}
       }
       if (!filterDifferent) {
 	if ((_linkAttrs & VISUAL_Y) &&
-	    (filter.yLow != _filter.yLow || filter.yHigh != _filter.yHigh)) {
+	    (newFilter.yLow != _filter.yLow || newFilter.yHigh != _filter.yHigh)) {
 	  filterDifferent = true;
 	}
       }
       if (!filterDifferent) {
         if ((_linkAttrs & VISUAL_ORIENTATION) &&
-             !(filter.camera == _filter.camera))
+             !(newFilter.camera == _filter.camera))
          filterDifferent = true;
         }
 
 
       if (filterDifferent) {
 #if defined(DEBUG)
-        printf("changing filter for visual link %s\n", GetName());
+        printf("  changing filter for visual link %s\n", GetName());
 #endif
-	_filter = filter;
+	_filter = newFilter;
 	_filterValid = true;
 	_filterLocked = true;
 	_originatingView = view;
 	Scheduler::Current()->RequestCallback(_dispID);
       } else {
 #if defined(DEBUG)
-        printf("new filter for visual link %s is same as old filter\n", GetName());
+        printf("  new filter for visual link %s is same as old filter\n", GetName());
 #endif
       }
+    } else {
+#if defined(DEBUG)
+        printf("  view <%s> is not part of this link\n", view->GetName());
+#endif
     }
   }
 }
@@ -207,7 +235,7 @@ void VisualLink::Run()
     View *viewInList = Next(index);
     if (viewInList!= _originatingView) {
       /* Change this view */
-      SetVisualFilter(viewInList, _filter);
+      SetVisualFilter(viewInList);
     }
   }
   DoneIterator(index);
@@ -218,10 +246,12 @@ void VisualLink::Run()
 
 /* update visual filters for view views. */
 
-void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
+void VisualLink::SetVisualFilter(View *view)
 {
 #if defined(DEBUG)
-  printf("VisualLink ->%s setVF view: %s\n", GetName(), view->GetName());
+  printf("VisualLink(%s)::SetVisualFilter(%s)\n", GetName(), view->GetName());
+  printf("  _filter: %d, (%g, %g), (%g, %g)\n", _filter.flag,
+    _filter.xLow, _filter.yLow, _filter.xHigh, _filter.yHigh);
 #endif
 
   VisualFilter tempFilter;
@@ -230,67 +260,67 @@ void VisualLink::SetVisualFilter(View *view, VisualFilter &filter)
   testFlag = _linkAttrs;
   Boolean change = false;
   
-  if ((testFlag & VISUAL_X) && (tempFilter.xLow != filter.xLow 
-				|| tempFilter.xHigh != filter.xHigh)) {
-    tempFilter.xLow = filter.xLow;
-    tempFilter.xHigh = filter.xHigh;
+  if ((testFlag & VISUAL_X) && (tempFilter.xLow != _filter.xLow 
+				|| tempFilter.xHigh != _filter.xHigh)) {
+    tempFilter.xLow = _filter.xLow;
+    tempFilter.xHigh = _filter.xHigh;
     if (tempFilter.xHigh <= tempFilter.xLow)
       tempFilter.xHigh = tempFilter.xLow + 1;
     change = true;
   }
 
-  if ((testFlag & VISUAL_Y) && (tempFilter.yLow != filter.yLow 
-				|| tempFilter.yHigh != filter.yHigh)) {
-    tempFilter.yLow = filter.yLow;
-    tempFilter.yHigh = filter.yHigh;
+  if ((testFlag & VISUAL_Y) && (tempFilter.yLow != _filter.yLow 
+				|| tempFilter.yHigh != _filter.yHigh)) {
+    tempFilter.yLow = _filter.yLow;
+    tempFilter.yHigh = _filter.yHigh;
     change = true;
   }
 
 #if 0 // Not currently used.  RKW Feb. 25, 1998.
   if ((testFlag & VISUAL_COLOR) && 
-      (tempFilter.colorLow != filter.colorLow 
-       || tempFilter.colorHigh != filter.colorHigh)) {
-    tempFilter.colorLow = filter.colorLow;
-    tempFilter.colorHigh = filter.colorHigh;
+      (tempFilter.colorLow != _filter.colorLow 
+       || tempFilter.colorHigh != _filter.colorHigh)) {
+    tempFilter.colorLow = _filter.colorLow;
+    tempFilter.colorHigh = _filter.colorHigh;
     change = true;
   }
 
   if ((testFlag & VISUAL_SIZE) && 
-      (tempFilter.sizeLow != filter.sizeLow 
-       || tempFilter.sizeHigh != filter.sizeHigh)) {
-    tempFilter.sizeLow = filter.sizeLow;
-    tempFilter.sizeHigh = filter.sizeHigh;
+      (tempFilter.sizeLow != _filter.sizeLow 
+       || tempFilter.sizeHigh != _filter.sizeHigh)) {
+    tempFilter.sizeLow = _filter.sizeLow;
+    tempFilter.sizeHigh = _filter.sizeHigh;
     change = true;
   }
 
   if ((testFlag & VISUAL_PATTERN) &&
-     (tempFilter.patternLow != filter.patternLow 
-      || tempFilter.patternHigh != filter.patternHigh)) {
-    tempFilter.patternLow = filter.patternLow;
-    tempFilter.patternHigh = filter.patternHigh;
+     (tempFilter.patternLow != _filter.patternLow 
+      || tempFilter.patternHigh != _filter.patternHigh)) {
+    tempFilter.patternLow = _filter.patternLow;
+    tempFilter.patternHigh = _filter.patternHigh;
     change = true;
   }
 
   if ((testFlag & VISUAL_ORIENTATION) && 
-      (tempFilter.orientationLow != filter.orientationLow 
-       || tempFilter.orientationHigh != filter.orientationHigh)) {
-    tempFilter.orientationLow = filter.orientationLow;
-    tempFilter.orientationHigh = filter.orientationHigh;
+      (tempFilter.orientationLow != _filter.orientationLow 
+       || tempFilter.orientationHigh != _filter.orientationHigh)) {
+    tempFilter.orientationLow = _filter.orientationLow;
+    tempFilter.orientationHigh = _filter.orientationHigh;
     change = true;
   }
 
   if ((testFlag & VISUAL_SHAPE) && 
-      (tempFilter.shapeLow != filter.shapeLow 
-       || tempFilter.shapeHigh != filter.shapeHigh)) {
-    tempFilter.shapeLow = filter.shapeLow;
-    tempFilter.shapeHigh = filter.shapeHigh;
+      (tempFilter.shapeLow != _filter.shapeLow 
+       || tempFilter.shapeHigh != _filter.shapeHigh)) {
+    tempFilter.shapeLow = _filter.shapeLow;
+    tempFilter.shapeHigh = _filter.shapeHigh;
     change = true;
   }
 #endif
 
   if ((testFlag & VISUAL_ORIENTATION) &&
-      !(tempFilter.camera == filter.camera)) {
-     tempFilter.camera = filter.camera;
+      !(tempFilter.camera == _filter.camera)) {
+     tempFilter.camera = _filter.camera;
      change = true;
   }
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-1999
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/03/08 00:01:16  wenger
+  Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
+  update problems) -- major changes to visual links.
+
   Revision 1.5  1997/01/23 17:40:04  jussi
   Removed references to GetXMin().
 
@@ -63,7 +67,7 @@ public:
   /* Set/get visual flag */
   virtual void SetFlag(VisualFlag flag);
 
-  virtual void FilterChanged(View *view, VisualFilter &filter, int flushed);
+  virtual void FilterChanged(View *view, VisualFilter &newFilter, int flushed);
 
   virtual void Print();
 
@@ -72,7 +76,7 @@ public:
   virtual void Run();
   
 protected:
-  void SetVisualFilter(View *view,  VisualFilter &filter);
+  void SetVisualFilter(View *view);
 
   VisualFilter _filter;
   Boolean _filterValid;
