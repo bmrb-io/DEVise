@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1996/12/18 19:33:28  jussi
+  Re-enabled concurrent I/O.
+
   Revision 1.11  1996/12/18 16:02:23  jussi
   Temporarily disable concurrent I/O.
 
@@ -451,8 +454,6 @@ int DataSource::TerminateProc()
 #endif
 
     delete _dpipe;
-
-    _mutex->destroy();
     delete _mutex;
 
     _child = -1;

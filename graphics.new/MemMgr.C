@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/18 15:31:35  jussi
+  Improved the destructors so that IPC structures are properly destroyed.
+
   Revision 1.3  1996/12/13 22:59:39  jussi
   Added missing return statement.
 
@@ -91,7 +94,6 @@ int MemMgr::SetupSharedMemory()
       fprintf(stderr, "Cannot create semaphore\n");
       _shm->destroy();
       delete _shm;
-      _sem->destroy();
       delete _sem;
       return -1;
     }
@@ -166,12 +168,7 @@ MemMgr::~MemMgr()
         delete _buf;
     delete _shm;
 
-    if (_sem)
-        _sem->destroy();
     delete _sem;
-
-    if (_free)
-        _free->destroy();
     delete _free;
 }
 
@@ -508,16 +505,8 @@ DataPipe::~DataPipe()
         _shm->destroy();
     delete _shm;
 
-    if (_data)
-        _data->destroy();
     delete _data;
-
-    if (_free)
-        _free->destroy();
     delete _free;
-
-    if (_sem)
-        _sem->destroy();
     delete _sem;
 }
 
@@ -644,7 +633,6 @@ MultiPipe::MultiPipe(int &status) : _numPipes(0), _hint(0)
 
 MultiPipe::~MultiPipe()
 {
-    _data->destroy();
     delete _data;
 }
 
