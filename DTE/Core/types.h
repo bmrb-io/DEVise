@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/18 18:06:08  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.9  1997/02/03 04:11:38  donjerko
   Catalog management moved to DTE
 
@@ -90,6 +93,7 @@ struct Stats{
 };
 
 class Offset{
+public:
 	int offset;
 	friend ostream& operator<<(ostream& out, Offset offset);
 public:
@@ -111,6 +115,8 @@ typedef void Type;
 typedef String TypeID;
 typedef Type* Tuple;
 typedef Type* (*OperatorPtr)(Type*, Type*);
+typedef Type* (*PromotePtr)(const Type*);
+typedef Type* (*ADTCopyPtr)(const Type*);
 typedef Type* (*MemberPtr)(Type*);
 typedef Type* (*ReadPtr)(istream&);
 typedef void (*DestroyPtr)(Type*);
@@ -120,6 +126,10 @@ typedef int (*MemberSizePtr)(int);
 typedef double (*SelectyPtr)(BaseSelection* left, BaseSelection* right);
  
 void insert(String tableStr, Tuple* tuple);	// throws exception
+
+Type* intCopy(const Type* arg);
+Type* doubleCopy(const Type* arg);
+Type* stringCopy(const Type* arg);
 
 int boolSize(int a, int b);
 int sameSize(int a, int b);
@@ -177,6 +187,8 @@ Type* intDoubleLT(Type* arg1, Type* arg2);
 Type* intDoubleGT(Type* arg1, Type* arg2);
 Type* intDoubleDiv(Type *arg1,Type* arg2);
 
+Type* intToDouble(const Type* intarg);
+
 Type* doubleAdd(Type* arg1, Type* arg2);
 Type* doubleIntAdd(Type* arg1, Type* arg2);
 Type* doubleSub(Type* arg1, Type* arg2);
@@ -218,6 +230,9 @@ class IInt {
      int value;
 public:
      IInt() {}
+	IInt(const IInt& arg){
+		value = arg.value;
+	}
      IInt(int i) : value(i) {}
 	int getValue(){
 		return value;
@@ -354,6 +369,9 @@ private:
 	double value;
 public:
 	IDouble(double val = 0) : value(val){}
+	IDouble(const IDouble& arg){
+		value = arg.value;
+	}
 	double getValue(){
 		return value;
 	}
@@ -533,6 +551,9 @@ public:
      IString(const String* s){
           string = strdup(s->chars());
      }
+	IString(const IString& arg){
+		string = strdup(arg.string);
+	}
 	~IString(){
 		delete string;
 	}
@@ -618,7 +639,6 @@ public:
 };
 
 class IndexDesc {
-friend class RTreeIndex;
 	int numKeyFlds;
 	String* keyFlds;
 	int numAddFlds;
@@ -654,6 +674,9 @@ public:
 	void display(ostream& out);
 	int getNumKeyFlds(){
 		return numKeyFlds;
+	}
+	int getRootPg(){
+		return rootPg;
 	}
 	const String* getKeyFlds(){
 		return keyFlds;
@@ -756,5 +779,9 @@ Type* createPosInf(TypeID typeID);
 void destroyTuple(Tuple* tuple, int numFlds, DestroyPtr* destroyers); // throws
 
 DestroyPtr getDestroyPtr(TypeID root); // throws
+
+PromotePtr getPromotePtr(TypeID from, TypeID to); // throws
+
+ADTCopyPtr getADTCopyPtr(TypeID adt); // throws
 
 #endif

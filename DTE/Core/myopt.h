@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1997/02/21 01:38:07  donjerko
+  Fixed some problems with "group by" clause.
+
   Revision 1.15  1997/02/18 18:06:05  donjerko
   Added skeleton files for sorting.
 
@@ -98,6 +101,7 @@ public:
 	String toString(){
 		ostrstream os;
 		display(os);
+		os << ends;
 		char* tmp = os.str();
 		String retVal(tmp);
 		delete tmp;
@@ -473,8 +477,19 @@ class ConstantSelection : public BaseSelection {
 	TypeID typeID;
      Type* value;
 public:
-	ConstantSelection(TypeID typeID, Type* value) : 
-		BaseSelection(NULL), typeID(typeID), value(value) {}
+	ConstantSelection(TypeID typeID, const Type* val) : 
+		BaseSelection(NULL), typeID(typeID) {
+		value = NULL;
+		ADTCopyPtr cp = getADTCopyPtr(typeID);
+		assert(cp);
+		if(cp){
+			value = cp(val);
+		}
+	}
+	virtual ~ConstantSelection(){
+		delete value;
+	}
+	ConstantSelection* promote(TypeID typeToPromote) const; // throws
 	int toBinary(char* to){
 		marshal(value, to, typeID);
 		return packSize(value, typeID);
@@ -522,9 +537,7 @@ public:
 			return true;
 		}
 	}
-	virtual BaseSelection* duplicate(){
-		return new ConstantSelection(typeID, value);
-	}
+	virtual BaseSelection* duplicate();
 	virtual void collect(Site* s, List<BaseSelection*>* to){
 		if(nextPath){
 			nextPath->collect(s, to);

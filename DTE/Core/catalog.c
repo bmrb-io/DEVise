@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/02/18 18:06:03  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.8  1997/02/03 04:11:33  donjerko
   Catalog management moved to DTE
 
@@ -70,7 +73,7 @@ Site* DeviseInterface::getSite(){
 	char* data = strdup(dataNm.chars());
 	Iterator* unmarshal = new DevRead(schema, data);
 	if(viewNm == ""){
-		return new LocalTable("", unmarshal, &indexes);	
+		return new LocalTable("", unmarshal);	
 	}
 
 	// Need to apply view
@@ -129,7 +132,7 @@ Site* StandardInterface::getSite(){ // Throws a exception
 	LOG(iTimer.display(logFile) << endl);
 
 	delete url;
-     return new LocalTable("", unmarshal, &indexes, urlString);	
+     return new LocalTable("", unmarshal, urlString);	
 }
 
 Inserter* StandardInterface::getInserter(TableName* table){ // Throws 
@@ -232,7 +235,7 @@ Site* ViewInterface::getSite(){
 	}
 	engine->renameAttributes(attributeNames);
 	attributeNames = NULL;
-	return new LocalTable("", engine, NULL); 
+	return new LocalTable("", engine); 
 }
 
 Schema* QueryInterface::getSchema(TableName* table){	// throws exception

@@ -187,8 +187,10 @@ void Aggregates::typify(Site* inputIterator){
 							THROW(new Exception("Window hi lo values reversed"),);
 						}
 					}
-					else 
+					else{ 
+						// This is relational average, no high low
 						full = 1;
+					}
 					// Set the function ptr to be called .
 					TypeID ret = setFunctionPtr(funcPtr[i], 
 					  *(curr->getPath()->getPathName()),j,TypeIDList[j],arg1,arg2,full);
@@ -329,6 +331,10 @@ void AggWindow::fillWindow()
 
 	// First fill the last of the list and then remove the unwanted stuff.
 	if (windowFull){
+
+		// windowFull is set during typechecking and never changed!
+		// relatinonal aggregates have windowFull = true always!
+
 		if (presentPos >=  0){
 			aggregate->groupIterator->nextGroup();
 			init();

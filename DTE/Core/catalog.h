@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/18 18:06:03  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.9  1997/02/03 04:11:34  donjerko
   Catalog management moved to DTE
 
@@ -71,10 +74,6 @@ public:
 class Interface{
 public:
 	enum Type {UNKNOWN, CATALOG, QUERY};
-
-protected:
-	List<RTreeIndex*> indexes;
-public:
 	Interface() {}
 	virtual Site* getSite() = 0;
 	virtual istream& read(istream& in) = 0;
@@ -85,21 +84,6 @@ public:
 		assert(0);
 	}
 	virtual void write(ostream& out){
-		indexes.rewind();
-		while(!indexes.atEnd()){
-			out << " index ";
-			indexes.get()->write(out);
-			indexes.step();
-		}
-	}
-	istream& readIndex(istream& in){	// throws exception
-		RTreeIndex* rTreeIndex = new RTreeIndex();
-		TRY(rTreeIndex->read(in), in);
-		indexes.append(rTreeIndex);
-		return in;
-	}
-	void addIndex(RTreeIndex* index){
-		indexes.append(index);
 	}
 	virtual Type getType(){
 		return UNKNOWN;

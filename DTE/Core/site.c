@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/02/18 18:06:06  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.7  1997/02/03 04:11:36  donjerko
   Catalog management moved to DTE
 
@@ -435,7 +438,8 @@ List<Site*>* LocalTable::generateAlternatives(){ // Throws exception
 		List<BaseSelection*> indexOnlyPreds;
 		while(!myWhere->atEnd()){
 			BaseSelection* currPred = myWhere->get();
-			if(currInd->canUse(currPred)){
+			TRY(bool usable = currInd->canUse(currPred), NULL);
+			if(usable){
 				usablePredCnt++;
 			}
 			if(currPred->exclusive(allAttrNms, totNumIndFlds)){

@@ -8,29 +8,34 @@ void RTreeIndex::initialize(){
 	int querySize = queryBoxSize();
 	char* bounds = new char[querySize];
 	int offset = 0;
+	int numKeyFlds = getNumKeyFlds();
+	int numAddFlds = getNumAddFlds();
 	for(int j = 0; j < 2; j++){	// conver lower than upper bounds
-		for(int i = 0; i < numFlds; i++){
+		for(int i = 0; i < numKeyFlds; i++){
 			assert(offset < querySize);
 			offset += rTreeQuery[i].values[j]->toBinary(bounds + offset);
 		}
 	}
 	page_id_t* Root = new page_id_t;
-	Root->pid = indexDesc->rootPg;
+	Root->pid = indexDesc->getRootPg();
+	cout << "Root->pid = " << Root->pid << endl;
 	String typeEncS;
-	for(int i = 0; i < numFlds; i++){
+	for(int i = 0; i < numKeyFlds; i++){
 		typeEncS += rTreeEncode(typeIDs[i]);
 	}
 
 	char* typeEnc = strdup(typeEncS.chars());
 	queryBox = new gen_key_t(
 		(char *)bounds, 	// binary representation of the search key
-		numFlds,			// dimensionality 
+		numKeyFlds,			// dimensionality 
 		typeEnc, 			// encoded types as char*
 		0				// is point data (bool)
 	);
 
 	cout << "queryBox = ";
 	queryBox->print();
+	cout << "numKeyFlds = " << numKeyFlds << endl;
+	cout << "typeEnc = " << typeEnc << endl;
 	cursor = new gen_rt_cursor_t(*queryBox);
 	assert(cursor);
 
@@ -38,6 +43,7 @@ void RTreeIndex::initialize(){
 		printf("error in init\n");
 		assert(0);
 	}
+	TRY(dataSize = packSize(&(typeIDs[numKeyFlds]), numAddFlds), );
 
 	cout << "RTree scan initialized with:\n";
 	display(cout);
@@ -45,8 +51,9 @@ void RTreeIndex::initialize(){
 
 int RTreeIndex::queryBoxSize(){
 	int size = 0;
+	int numKeyFlds = getNumKeyFlds();
 	for(int j = 0; j < 2; j++){	// add lower than upper bounds
-		for(int i = 0; i < numFlds; i++){
+		for(int i = 0; i < numKeyFlds; i++){
 			size += rTreeQuery[i].values[j]->binarySize();
 		}
 	}
@@ -57,28 +64,37 @@ Tuple* RTreeIndex::getNext(){
 	assert(initialized);
 	gen_key_t ret_key;
 	bool eof = false;
-	Offset offset[10];
-	int offsetLen = sizeof(Offset);
+	int offsetLen;
+	char dataContent[dataSize + sizeof(Offset) + 100];
+		// This extra space is required because of some bug in RTree.
+
 	assert(cursor);
-	if (rtree_m.fetch(*cursor, ret_key, offset, offsetLen, eof) != RCOK){
+	if (rtree_m.fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
 		assert(0);
 	}
-	/*
-	if(offsetLen != sizeof(Offset)){
-		cout << offsetLen << " != " << sizeof(Offset) << endl;
-	}
-	*/
-	// assert(offsetLen == sizeof(Offset));
-	// cout << "Offset = " << offset << endl;
+	Offset offset;
+	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
 	if(!eof){
+		// ret_key.print();
 		Tuple* retVal = new Tuple[numFlds];
 		int offs = 0;
-		for(int i = 0; i < numFlds; i++){
+		int numKeyFlds = getNumKeyFlds();
+		int numAddFlds = getNumAddFlds();
+		assert(numFlds == numKeyFlds + numAddFlds);
+		for(int i = 0; i < numKeyFlds; i++){
 			char* from = ((char*) ret_key.data) + offs;
 			Type* adt = unmarshal(from, typeIDs[i]);
 			offs += packSize(adt, typeIDs[i]);
 			retVal[i] = adt;
 		}
+		offs = 0;
+		for(int i = numKeyFlds; i < numFlds; i++){
+			char* from = ((char*) dataContent) + offs;
+			Type* adt = unmarshal(from, typeIDs[i]);
+			offs += packSize(adt, typeIDs[i]);
+			retVal[i] = adt;
+		}
+		cout << "Offset = " << offset << endl;
 		return retVal;
 	}
 	else{
@@ -88,18 +104,21 @@ Tuple* RTreeIndex::getNext(){
 
 Offset RTreeIndex::getNextOffset(){
 	assert(initialized);
+	assert(!indexDesc->isStandAlone());
 	gen_key_t ret_key;
 	bool eof = false;
-	Offset offset[10];
-	int offsetLen = sizeof(Offset);
+	int offsetLen;
+	char dataContent[dataSize + sizeof(Offset) + 100];
+		// This extra space is required because of some bug in RTree.
 	assert(cursor);
-	if (rtree_m.fetch(*cursor, ret_key, offset, offsetLen, eof) != RCOK){
+	if (rtree_m.fetch(*cursor, ret_key, dataContent, offsetLen, eof) != RCOK){
 		assert(0);
 	}
-	// assert(offsetLen == sizeof(Offset));
-	// cout << "Offset = " << offset << endl;
+	Offset offset;
+	memcpy(&offset, (char*) dataContent + dataSize, sizeof(Offset));
 	if(!eof){
-		return offset[0];
+		cout << "Returning Offset = " << offset << endl;
+		return offset;
 	}
 	else{
 		return Offset();
@@ -111,13 +130,14 @@ bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 	String opName;
 	BaseSelection* constant;
 	if(predicate->isIndexable(attr, opName, constant)){
-		for(int i = 0; i < numFlds; i++){
+		int numKeyFlds = getNumKeyFlds();
+		for(int i = 0; i < numKeyFlds; i++){
 			if(attributeNames[i] == attr){
 				cout << "Updating rtree query on att " << i;
 				cout << "with: " << opName << " ";
 				constant->display(cout);
 				cout << endl;
-				rTreeQuery[i].update(opName, constant);
+				TRY(rTreeQuery[i].update(opName, constant), false);
 				return true;
 			}
 		}
@@ -125,12 +145,12 @@ bool RTreeIndex::canUse(BaseSelection* predicate){	// Throws exception
 	return false;
 }
 
+/*
 istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 	assert(catalogStr);
 	catalogStr >> numFlds;
 	stats = new Stats(numFlds);
 
-	/*
 	//	Needs to fix stats, something like this:
 
 	void setStats(){
@@ -143,8 +163,6 @@ istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 		int nf = baseIterator->getNumFlds();
 		stats = new Stats(nf, sizes, cardinality);
 	}
-
-	*/
 
 	if(!catalogStr){
 		String msg = "Number of index attributes expected";
@@ -172,3 +190,4 @@ istream& RTreeIndex::read(istream& catalogStr){	// throws exception
 	}
 	return catalogStr;
 }
+*/

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/02/18 18:06:07  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.8  1997/02/03 04:11:37  donjerko
   Catalog management moved to DTE
 
@@ -742,15 +745,9 @@ istream& CatEntry::read(istream& in){ // Throws Exception
 	String indexStr;
 	in >> indexStr;
 	while(in && indexStr != ";"){
-		if(in && indexStr == "index"){
-			TRY(interface->readIndex(in), in);
-		}
-		else {
-			String msg = 
+		String msg = 
 			"Invalid catalog format: \"index\" or \";\" expected";
-			THROW(new Exception(msg), in);
-		}
-		in >> indexStr;
+		THROW(new Exception(msg), in);
 	}
 	if(!in){
 		String msg = "Premature end of catalog";
@@ -880,3 +877,46 @@ void stringDestroy(Type* adt){
 void catEntryDestroy(Type* adt){
 	delete (CatEntry*) adt;
 }
+
+Type* intToDouble(const Type* intarg){
+	return new IDouble(((IInt*) intarg)->getValue());
+}
+
+PromotePtr getPromotePtr(TypeID from, TypeID to){ // throws
+	if(from == "int" && to == "double"){
+		return intToDouble;
+	}
+	else{
+		String msg = String("Cannot promote ") + from + " to " + to;
+		THROW(new Exception(msg), NULL);
+	}
+}
+
+Type* intCopy(const Type* arg){
+	return new IInt(*((IInt*) arg));
+}
+
+Type* doubleCopy(const Type* arg){
+	return new IDouble(*((IDouble*) arg));
+}
+
+Type* stringCopy(const Type* arg){
+	return new IString(*((IString*) arg));
+}
+
+ADTCopyPtr getADTCopyPtr(TypeID adt){ // throws
+	if(adt == "int"){
+		return intCopy;
+	}
+	else if(adt == "double"){
+		return doubleCopy;
+	}
+	else if(adt == "string"){
+		return stringCopy;
+	}
+	else{
+		String msg = String("No function to copy ") + adt;
+		THROW(new Exception(msg), NULL);
+	}
+}
+

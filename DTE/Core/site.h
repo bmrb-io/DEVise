@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/02/18 18:06:07  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.12  1997/02/03 04:11:37  donjerko
   Catalog management moved to DTE
 
@@ -177,6 +180,9 @@ public:
 		return myWhere;
 	}
 	virtual Stats* getStats(){
+		if(!stats){
+			stats = new Stats(10);
+		}
 		return stats;
 	}
 	void reset(int lowRid, int highRid){
@@ -254,7 +260,6 @@ public:
 */
 
 class LocalTable : public Site {
-	List<RTreeIndex*> indexes;
 	void setStats();
 	String fileToWrite;
 	ofstream* fout;
@@ -262,12 +267,8 @@ class LocalTable : public Site {
 protected:
 	Site* directSite;
 public:
-     LocalTable(String nm, Iterator* marsh, List<RTreeIndex*>* indx, 
-		String fileToWrite = "") : 
+     LocalTable(String nm, Iterator* marsh, String fileToWrite = "") : 
 		Site(nm), directSite(NULL) {
-		if(indx){
-			indexes.addList(indx);
-		}
 		iterator = marsh;
 		this->fileToWrite = fileToWrite;
 		fout = NULL;
@@ -284,6 +285,8 @@ public:
 		this->iterator = iterator;
 		numFlds = mySelect->cardinality();
 		directSite = new DirectSite(name, iterator);
+		fout = NULL;
+		writePtrs = NULL;
 	}
 	virtual ~LocalTable(){
 		delete fout;
@@ -396,7 +399,7 @@ class CGISite : public LocalTable {
 	String urlString;
 public:
 	CGISite(String url, Entry* entry, int entryLen) : 
-		LocalTable("", NULL, NULL), entry(entry), 
+		LocalTable("", NULL), entry(entry), 
 		entryLen(entryLen), urlString(url) {}
 	virtual ~CGISite(){
 		// do not delete entries, they are deleted in catalog

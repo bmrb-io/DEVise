@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/02/18 18:06:05  donjerko
+  Added skeleton files for sorting.
+
   Revision 1.9  1997/02/03 04:11:36  donjerko
   Catalog management moved to DTE
 
@@ -99,12 +102,12 @@ bool PrimeSelection::exclusive(Site* site){
 bool PrimeSelection::exclusive(String* attributeNames, int numFlds){
 	String me = toStringAttOnly();
 	for(int i = 0; i < numFlds; i++){
-		cout << "attr = " << attributeNames[i] << endl;
+		// cout << "attr = " << attributeNames[i] << endl;
 		if(me == attributeNames[i]){
 			return true;
 		}
 	}
-	cout << "me = " << me << endl;
+	// cout << "me = " << me << endl;
 	return false;
 }
 
@@ -383,4 +386,22 @@ Type* Path::evaluate(Type* base){
 	else{
 		return member;
 	}
+}
+
+ConstantSelection* ConstantSelection::promote(TypeID typeToPromote) const { 
+	
+	// throws
+
+	if(typeToPromote != typeID){
+		TRY(PromotePtr ptr = getPromotePtr(typeID, typeToPromote), NULL);
+		Type* newvalue = ptr(value);
+		return new ConstantSelection(typeToPromote, newvalue);
+	}
+	else {
+		return new ConstantSelection(typeID, value);
+	}
+}
+
+BaseSelection* ConstantSelection::duplicate() {
+	return new ConstantSelection(typeID, value);
 }

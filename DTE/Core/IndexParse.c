@@ -157,6 +157,8 @@ Site* IndexParse::createSite(){
 
 	close(bulk_file);
 	printf("Created index with root page: %d\n", root1.pid);
+	printf("Dump follows:\n");
+	rtree_m.olddraw(root1, stdout);
 	// note, you MUST keep root page
 
 	String* keyFlds = new String[numKeyFlds];

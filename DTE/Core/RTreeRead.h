@@ -57,10 +57,12 @@ struct RTreePred {
 		values[0] = new ConstantSelection(typeID, negInf);
 		values[1] = new ConstantSelection(typeID, posInf);
 	}
-	void update(String opName, BaseSelection* constant){
+	void update(String opName, BaseSelection* constant){ // throws
 		assert(constant->selectID() == CONST_ID);
-		assert(constant->getTypeID() == typeID);
-		RTreePred tmp(opName, (ConstantSelection*) constant);
+		ConstantSelection* cconstant = (ConstantSelection*) constant;
+		TRY(cconstant = cconstant->promote(typeID), );
+		assert(cconstant->getTypeID() == typeID);
+		RTreePred tmp(opName, cconstant);
 		intersect(tmp);
 	}
 	void intersect(const RTreePred& pred){
@@ -145,33 +147,16 @@ class RTreeIndex : public StandardRead {
 	gen_key_t* queryBox;
 	int queryBoxSize();
 	bool initialized;
+	int dataSize;
 public:
-	RTreeIndex() : StandardRead(NULL), rTreeQuery(NULL), cursor(NULL) {
-		queryBox = NULL;
-		initialized = false;
-	}
-	RTreeIndex(int numFlds, TypeID* types, String* attNms, int pageId) :
-		StandardRead(NULL) {
-		stats = new Stats(numFlds);
-		this->numFlds = numFlds;
-		this->typeIDs = types;
-		attributeNames = attNms;
-		rTreeQuery = new RTreePred[numFlds];
-		for(int i = 0; i < numFlds; i++){
-			rTreeQuery[i].setTypeID(typeIDs[i]);
-		}
-		cursor = NULL;
-		queryBox = NULL;
-		initialized = false;
-	}
 	RTreeIndex(IndexDesc* indexDesc) : 
 		StandardRead(NULL), indexDesc(indexDesc) {
 		numFlds = indexDesc->getTotNumFlds();
 		stats = new Stats(numFlds);
 		typeIDs = indexDesc->getAllTypeIDs();
 		attributeNames = indexDesc->getAllAttrNms();
-		rTreeQuery = new RTreePred[indexDesc->numKeyFlds];
-		for(int i = 0; i < indexDesc->numKeyFlds; i++){
+		rTreeQuery = new RTreePred[indexDesc->getNumKeyFlds()];
+		for(int i = 0; i < indexDesc->getNumKeyFlds(); i++){
 			rTreeQuery[i].setTypeID(typeIDs[i]);
 		}
 		cursor = NULL;
@@ -183,7 +168,6 @@ public:
 		delete cursor;
 	}
 	bool canUse(BaseSelection* predicate);	// Throws exception
-	istream& read(istream& catalogStr);	// throws exception
 	void write(ostream& out){
 		out << numFlds << " ";
 		for(int i = 0; i < numFlds; i++){
@@ -192,7 +176,8 @@ public:
 	}
      virtual ostream& display(ostream& out){
           String tmp;
-          for(int i = 0; i < numFlds; i++){
+		int numKeyFlds = getNumKeyFlds();
+          for(int i = 0; i < numKeyFlds; i++){
                tmp += "Attr " + attributeNames[i] + ": ";
                tmp += rTreeQuery[i].toString() + "\n";
           }
@@ -201,6 +186,12 @@ public:
      }
 	void setRTreeQuery(RTreePred* rTreeQuery){
 		this->rTreeQuery = rTreeQuery;
+	}
+	int getNumKeyFlds(){
+		return indexDesc->getNumKeyFlds();
+	}
+	int getNumAddFlds(){
+		return indexDesc->getNumAddFlds();
 	}
 	virtual void initialize();
 	virtual Tuple* getNext();
