@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1995/12/29 22:42:12  jussi
+  Added support for line connectors.
+
   Revision 1.10  1995/12/29 18:28:26  jussi
   Added new cursor mechanism; cursors are drawn as inverted rectangles
   which are easier to see than the old cursor lines.
@@ -69,55 +72,52 @@ DefinePtrDList(ViewList, View *)
 
 /* rectangle to store screen coordinates */
 struct ViewRect {
-	int xLow, yLow, xHigh, yHigh;
+  int xLow, yLow, xHigh, yHigh;
 };
 
 /* Use to generate the label for an axis */
 class AxisLabel {
-public:
-	AxisLabel(char *name) {_name = name; }
-	char *GetName() { return _name; }
-	virtual char *GenerateLabel(Coord val)= 0;
-	virtual char *SetFormat(char *format){return "";};
-	virtual char *GetFormat(){return "";}
-private:
-	char *_name;
+ public:
+  AxisLabel(char *name) {_name = name; }
+  char *GetName() { return _name; }
+  virtual char *GenerateLabel(Coord val) = 0;
+  virtual char *SetFormat(char *format) { return ""; }
+  virtual char *GetFormat() { return ""; }
+
+ private:
+  char *_name;
 };
 
 /* function that generates an axis label */
-class GenAxisLabel{
-public:
-	virtual AxisLabel *MakeAxisLabel(char *name)=0;
+class GenAxisLabel {
+ public:
+  virtual AxisLabel *MakeAxisLabel(char *name) = 0;
 };
 
 struct AxisInfo {
-	Boolean inUse;          /* TRUE if this axis is in use */
-	int width;            /* width (for Y axis) or height (X axis)
-							to draw label,in terms of # of pixels */
-	int fieldWidth;         /* # of characters for label */
-	int decimalPlaces;      /* # of decimal places */
-	int numTicks;           /* # of ticks to use */
-	Coord tickIncrement;    /* tick increment, if not using number of ticks */
-	Color color;            /* color for the ticks */
-	Boolean useNumTicks; /* TRUE if use numTicks to draw axis,
-							false if tickIncrement is used to draw axis */
+  Boolean inUse;          /* TRUE if this axis is in use */
+  int width;              /* width (for Y axis) or height (X axis)
+			     to draw label,in terms of # of pixels */
+  int fieldWidth;         /* # of characters for label */
+  int decimalPlaces;      /* # of decimal places */
+  int numTicks;           /* # of ticks to use */
+  Coord tickIncrement;    /* tick increment, if not using number of ticks */
+  Color color;            /* color for the ticks */
+  Boolean useNumTicks;    /* TRUE if use numTicks to draw axis,
+			     false if tickIncrement is used to draw axis */
 };
 
 struct LabelInfo {
-	char *name;	/* name used to draw label */
-	Boolean occupyTop; /* TRUE if label occupies top of view.
-						false if label occupies left of view */
-	int extent;	 /* height if label occupies top of view.
-					width if label occupies left of view */
+  char *name;	          /* name used to draw label */
+  Boolean occupyTop;      /* TRUE if label occupies top of view.
+			     false if label occupies left of view */
+  int extent;	          /* height if label occupies top of view.
+			     width if label occupies left of view */
 };
 
 class Action;
 class FilterQueue;
-/* height of area used to draw cursor */
-const int VIEW_CURSOR_HEIGHT= 3;
-const int VIEW_CURSOR_WIDTH= 3;
-/* 512K bytes before saving pixel data*/
-const int VIEW_BYTES_BEFORE_SAVE = 524288; 
+
 class View: public ViewWin, private DispatcherCallback,
 	private ControlPanelCallback {
 public:
