@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.10  1996/04/10 15:32:58  jussi
+  Switched from LIFO to FIFO so that a sequence of queries from a
+  single view (each query corresponding to one mapping in the view)
+  gets executed properly. Cleaned up some debugging statements.
+
   Revision 1.9  1996/04/09 18:08:03  jussi
   Added call to Display::Flush() when all queries have been executed,
   and added variables needed to support that.
@@ -597,12 +602,12 @@ void QueryProcFull::ProcessQuery()
 
     /*
        If all queries have been executed (system is idle) and
-       a postscript has been defined, execute postscript and
+       a batch file has been defined, execute batch file and
        then exit.
     */
-    char *postscript = Init::PostScript();
-    if (postscript) {
-      ControlPanel::Instance()->ExecuteScript(postscript);
+    char *batchFile = Init::BatchFile();
+    if (batchFile) {
+      ControlPanel::Instance()->ExecuteScript(batchFile);
       Exit::DoExit(1);
     }
 
