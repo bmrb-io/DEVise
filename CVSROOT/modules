@@ -54,4 +54,4 @@ devise		-a Makefile.common README \
 			util xvertext
 devisefull	-a devise Java/JavaScreen EmbeddedTk ImTools QCIMS
 devisebmrb	-a devisefull peptide_cgi dist bmrb
-JS		-a Java/JavaScreen lib design_docs
+JS		-a Java/JavaScreen lib design_doc
