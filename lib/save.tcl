@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.15  1996/07/01 19:36:46  jussi
+#  Made changes to reflect the new TData constructor interface.
+#
 #  Revision 1.14  1996/06/27 17:21:13  jussi
 #  Fixed minor bug in saving 3D location.
 #
@@ -375,7 +378,6 @@ proc DoSaveAs { asTemplate asExport withData } {
     }
 }
 
-
 ####################################################################
 
 # This procedure merges the schema and sourceList from an imported file,
@@ -451,8 +453,6 @@ proc DoTemplateMerge {} {
     puts "Done with merging template catalog with global catalog"
 }
 
-
-
 ############################################################
 
 # Save all schemas to the given file.
@@ -493,7 +493,6 @@ proc SaveOneSchema { fileId asExport schemaFile } {
 	puts $fileId "DEVise importFileType $schemaFile"
     }
 }
-
 
 ############################################################
 
@@ -557,7 +556,6 @@ proc SaveDataSources { fileId asExport asTemplate withData posOffRef \
     }
 }
 
-
 ############################################################
 
 # Save the commands to create the TDatas to the given file.
@@ -611,24 +609,33 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef } {
     puts $fileId  ""
 }
 
-
 ############################################################
 
 # Save mappings to the given file.
 proc SaveMappings { fileId fileDict mapDictRef } {
     upvar $mapDictRef mapDict
 
-    puts $fileId "# Create interpreted mapping classes "
-    foreach mclass [ DEVise get mapping ] {
-	# puts "mclass $mclass"
+    # build up list of class names of interpreted mappings
+    set interpretedGDataClasses ""
+    foreach m [ InterpretedGData ] {
+        set class [ GetClass mapping $m ]
+        if {[lsearch $interpretedGDataClasses $class] < 0} {
+            puts "Adding class $class"
+            lappend interpretedGDataClasses $class
+        }
+    }
+
+    puts $fileId "# Create interpreted mapping classes"
+    foreach mclass $interpretedGDataClasses {
+	puts "mclass $mclass"
 	puts $fileId "DEVise createMappingClass $mclass"
     }
     puts $fileId ""
 
-    puts $fileId "# Create mappings instance (GData)"
+    puts $fileId "# Create mapping instances (GData)"
     set mapDict ""
     set mapNum 1
-    foreach mapClass [ DEVise get mapping ] {
+    foreach mapClass [DEVise get mapping] {
 	foreach inst [DEVise get mapping $mapClass] {
 	    set params [DEVise getCreateParam mapping $mapClass $inst]
 	    set fileAlias [lindex $params 0]
@@ -651,7 +658,6 @@ proc SaveMappings { fileId fileDict mapDictRef } {
     }
     puts $fileId ""
 }
-
 
 ############################################################
 
@@ -690,7 +696,6 @@ proc SaveViews { fileId viewDictRef fileDict } {
     }
     puts $fileId ""
 }
-
 
 ############################################################
 
@@ -776,7 +781,6 @@ proc SaveMisc { fileId asTemplate asExport viewDict mapDict } {
 	puts $fileId "DEVise set3DLocation \$$viewVar $x $y $z $fx $fy $fz"
     }
 }
-
 
 ############################################################
 
@@ -888,6 +892,7 @@ proc SavePixmaps { fileId infile savedCurViewRef } {
 
     set bitF [DEVise open $bitmapFile wb]
     set date [DEVise date]
+    puts "data = \"$date\""
     DEVise writeLine $date $bitF
     set savedCurView $curView
     ProcessViewSelected ""
