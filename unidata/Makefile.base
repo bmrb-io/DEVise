@@ -4,18 +4,9 @@
 #
 ###############################################################################
 
-CC = g++
-C  = gcc 
-AR = ar
+include ../../Makefile.common
+
 RM = /bin/rm -f
-
-# Solaris machines are a little queer, leave empty for everything else.
-SOCK_LIB :=
-#SOCK_LIB := -lsocket -lnsl
-
-# Some systems need ranlib, most don't.
-#RANLIB = ranlib
-RANLIB = true
 
 LIB_FILES = \
     fast_atof.C \
@@ -53,7 +44,7 @@ PERL_INCL = -I$(PERL_CORE)
 PERL_LIB  = -L$(PERL_CORE) -lperl -lm
 
 # Note, the perl header files have mucho '/*' within comments.
-CFLAGS = -g -Wall -Wno-comment $(PERL_INCL)
+CFLAGS = $(ARCH_FLAGS) -Wall -Wno-comment $(OPTFLAG) $(PERL_INCL)
 
 .PHONY: all default clean
 
@@ -73,20 +64,6 @@ OBJFILES = \
 	$(C_FILES:.c=.o)
 
 ###############################################################################
-#
-#	General compilation rules
-#
-
-.SUFFIXES:	.C .d
-
-.C.o:
-	$(CC) -c $(CFLAGS) $<
-
-.c.o:
-	$(C) -c $(CFLAGS) $<
-
-
-###############################################################################
 
 default: all
 
@@ -98,16 +75,17 @@ libunidata.a: $(LIB_OBJS)
 	$(RANLIB) $@
 	
 umain: $(OBJFILES) libunidata.a
-	$(CC) -o $@ $(OBJFILES) -L. -lunidata $(PERL_LIB) $(SOCK_LIB)
+	$(CC) -o $@ $(OBJFILES) -L. -lunidata $(PERL_LIB) $(ARCH_LDPOST)
 
 umain.pure: $(OBJFILES) libunidata.a
-	purify $(PURE_OPTS) $(CC) -o $@ $(OBJFILES) -L. -lunidata $(PERL_LIB) $(SOCK_LIB)
+	purify $(PURE_OPTS) $(CC) -o $@ $(OBJFILES) -L. -lunidata \
+	$(PERL_LIB) $(ARCH_LDPOST)
 
 pmain.o: pmain.C
 	$(CC) -c $< $(PERL_INCL)
 
 myperl: pmain.o PerlCode.o
-	$(CC) -o $@ $< PerlCode.o $(PERL_LIB) $(SOCK_LIB)
+	$(CC) -o $@ $< PerlCode.o $(PERL_LIB) $(ARCH_LDPOST)
 
 clean:
 	/bin/rm -f *.o lex.uni_yy.c libunidata.a umain myperl

@@ -146,6 +146,11 @@ class Schema {
 
       // Parse a schema, return the offset the "data" starts at.
     off_t Parse(int fd, char *filename, ostream *err=&cerr);
+
+// SunOS apparently defines 'valid' as a macro somewhere...  RKW 4/9/97.
+#ifdef valid
+#undef valid
+#endif
     int valid() { return _valid; }
 
     char *Name() { return _name; }
