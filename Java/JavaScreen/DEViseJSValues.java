@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2001/10/10 19:28:19  xuk
+// Added display control command line argument/parameter for auto playback.
+// For JS application: command-line argument: -playbackdisplayoff to turn off display, default is turning on display;
+// For JS applet: parameter playbackdisplay = true|false to turn on|off display.
+//
 // Revision 1.6  2001/10/02 21:57:48  xuk
 // Added command-line option for command log playback.
 // Added clientLogName, for client log URL;
@@ -104,7 +109,7 @@ public final class DEViseJSValues
 
     public final class Connection {
 	public int cmdport = 0;
-	public int connectionID = DEViseGlobals.DEFAULTID; // for client
+	public long connectionID = DEViseGlobals.DEFAULTID; // for client
 	public String username = null, password = null, hostname = null;
 	public boolean helpBox = false;
 	public boolean cgi = false;  // using cgi, default false.
