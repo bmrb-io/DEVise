@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/09/05 20:01:36  jussi
+  Added support for user-specified screen size (mainly used
+  in batch mode).
+
   Revision 1.32  1996/09/05 19:11:23  jussi
   Displays containing multiple windows are now properly
   exported as GIF files.
@@ -664,8 +668,10 @@ void XDisplay::Dimensions(Coord &width, Coord &height)
 
 void XDisplay::WinDimensions(Window win, Coord &winWidth, Coord &winHeight)
 {
-  if (win == DefaultRootWindow(_display))
-    return Dimensions(winWidth, winHeight);
+  if (win == DefaultRootWindow(_display)) {
+    Dimensions(winWidth, winHeight);
+    return;
+  }
 
   Window root;
   int x, y;
