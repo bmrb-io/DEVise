@@ -63,12 +63,10 @@ int main()
     char *url = "http://www.cs.wisc.edu/~devise/devise/spie96.ps.gz";
     task[0] = new UnixWebIOTask(url, true);
     assert(task[0]);
-    status = task[0]->Initialize();
     if (status < 0) {
         fprintf(stderr, "Cannot open URL %s\n", url);
         exit(1);
     }
-    task[0]->SetBuffering(false, false, 0);
         
     gettimeofday(&start, 0);
     unsigned long int len = 0;
@@ -91,6 +89,7 @@ int main()
     printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
            len / 1048576.0 / secs);
 
+    task[0]->Terminate();
     delete task[0];
 
     printf("\nTesting Web write data access...\n");
@@ -98,12 +97,10 @@ int main()
     url = "http://cgi.cs.wisc.edu/scripts/jussi/echotest";
     task[0] = new UnixWebIOTask(url, false);
     assert(task[0]);
-    status = task[0]->Initialize();
     if (status < 0) {
         fprintf(stderr, "Cannot open URL %s\n", url);
         exit(1);
     }
-    task[0]->SetBuffering(false, false, 0);
         
     gettimeofday(&start, 0);
 
@@ -149,6 +146,7 @@ int main()
     printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
            len / 1048576.0 / secs);
 
+    task[0]->Terminate();
     delete task[0];
 
     // create files and I/O tasks
@@ -164,12 +162,10 @@ int main()
         }
         task[i] = new UnixFdIOTask(fileno(fp[i]));
         assert(task[i]);
-        int status = task[i]->Initialize();
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
             exit(1);
         }
-        task[i]->SetBuffering(true, true, buffSize * pageSize);
     }
         
     printf("\nAllocating pages...\n");
@@ -210,8 +206,6 @@ int main()
            (numFiles * fileSize * pageSize) / 1048576.0 / secs);
 
     printf("\nRandomly reading pages...\n");
-    for(f = 0; f < numFiles; f++)
-        task[f]->SetBuffering(false, false, 0);
     gettimeofday(&start, 0);
     for(iter = 0; iter < 10; iter++) {
         for(i = 0; i < bufPages; i++) {
@@ -229,9 +223,6 @@ int main()
     printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
            (10 * bufPages * pageSize) / 1048576.0 / secs);
     
-    for(f = 0; f < numFiles; f++)
-        task[f]->SetBuffering(true, true, buffSize * pageSize);
-
     printf("\nOccupying all pages...\n");
     for(i = 0; i < bufPages; i++) {
         f = i / fileSize;
@@ -302,6 +293,7 @@ int main()
     printf("\n");
 
     for(i = 0; i < numFiles; i++) {
+        task[i]->Terminate();
         delete task[i];
         fclose(fp[i]);
         char buf[64];
@@ -320,7 +312,6 @@ int main()
         }
         task[i] = new UnixFdIOTask(fileno(fp[i]));
         assert(task[i]);
-        int status = task[i]->Initialize();
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
             exit(1);
@@ -352,6 +343,7 @@ int main()
     }
 
     for(i = 0; i < numFiles; i++) {
+        task[i]->Terminate();
         delete task[i];
         fclose(fp[i]);
         char buf[64];
@@ -372,6 +364,7 @@ int main()
     printf("\nThe tests failed.\n");
 
     for(i = 0; i < numFiles; i++) {
+        task[i]->Terminate();
         delete task[i];
         fclose(fp[i]);
         char buf[64];

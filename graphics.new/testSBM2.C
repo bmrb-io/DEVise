@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/11/07 17:37:39  jussi
+  Added -d (direct) command line option.
+
   Revision 1.1  1996/11/01 20:12:22  jussi
   Initial revision.
 */
@@ -57,29 +60,48 @@ void sleepms(int ms)
 
 void WriterP(SBufMgr *bufMgr, IOTask *task, int fileSize)
 {
+    if (!bufMgr) {
+        if (task->WriteStream() < 0) {
+            perror("Writer stream");
+            exit(1);
+        }
+    }
+
     for(int i = 0; i < fileSize; i++) {
         char *page = 0;
         if (!bufMgr) {
-            if (MemPool::Instance()->Allocate(MemPool::Cache, page) < 0) {
+            if (MemPool::Instance()->Allocate(MemPool::Buffer, page) < 0) {
                 perror("Writer alloc");
                 exit(1);
             }
             assert(page);
-            if (task->Write(i * pageSize, pageSize, page) < 0) {
-                perror("Writer write");
+            if (task->Produce(page, pageSize) < 0) {
+                perror("Writer produce");
                 exit(1);
             }
-            assert(!page);
         } else {
             if (bufMgr->AllocPage(task, i, page) < 0) {
                 perror("Writer pin");
                 exit(1);
             }
             sprintf(page, "test.%d Page %d %7.1f", i, i, (float)i);
-            if (bufMgr->UnPinPage(task, i, true) < 0) {
+            if (bufMgr->UnPinPage(task, i, true, pageSize, true) < 0) {
                 perror("Writer unpin");
                 exit(1);
             }
+        }
+    }
+
+    if (!bufMgr) {
+        char *page = 0;
+        if (MemPool::Instance()->Allocate(MemPool::Buffer, page) < 0) {
+            perror("Writer alloc");
+            exit(1);
+        }
+        assert(page);
+        if (task->Produce(page, 0) < 0) {
+            perror("Writer produce");
+            exit(1);
         }
     }
 }
@@ -98,15 +120,23 @@ void *Writer(void *arg)
 
 void ReaderP(SBufMgr *bufMgr, IOTask *task, int fileSize)
 {
+    if (!bufMgr) {
+        if (task->ReadStream(fileSize * pageSize) < 0) {
+            perror("Reader stream");
+            exit(1);
+        }
+    }
+
     for(int i = 0; i < fileSize; i++) {
         char *page = 0;
         if (!bufMgr) {
-            if (task->Read(i * pageSize, pageSize, page) < 0) {
+            int bytes = task->Consume(page);
+            if (bytes < 0) {
                 perror("Reader read");
                 exit(1);
             }
             assert(page);
-            if (MemPool::Instance()->Release(MemPool::Cache, page) < 0) {
+            if (MemPool::Instance()->Release(MemPool::Buffer, page) < 0) {
                 perror("Reader dealloc");
                 exit(1);
             }
@@ -257,12 +287,10 @@ int main(int argc, char **argv)
         }
         task[i] = new UnixFdIOTask(fileno(fp[i]));
         assert(task[i]);
-        int status = task[i]->Initialize();
         if (status < 0) {
             fprintf(stderr, "Cannot create I/O task %d\n", i);
             exit(1);
         }
-        task[i]->SetBuffering(true, true, buffSize * pageSize);
     }
         
     if (!readOnly) {
@@ -294,62 +322,35 @@ int main(int argc, char **argv)
             }
 #endif
         }
+    } else {
+        printf("\nReading pages...\n");
+
+        gettimeofday(&start, 0);
 
         for(f = 0; f < numFiles; f++) {
 #ifdef PROCESS_TASK
-            int status;
-            pid_t child = wait(&status);
+            pid_t child = fork();
             if (child < 0) {
-                if (errno == EINTR)
-                    continue;
-                if (errno != ECHILD) {
-                    perror("wait");
-                    exit(1);
-                }
-            } else {
-                printf("Child completed...\n");
+                perror("fork");
+                exit(1);
+            }
+            if (!child) {
+                printf("Child %d started...\n", f);
+                ReaderP(bufMgr, task[f], fileSize);
+                exit(1);
             }
 #endif
 #ifdef THREAD_TASK
-        (void)pthread_join(child[f], 0);
-            printf("Child completed...\n");
+            FileReq *req = new FileReq;
+            req->bufMgr = bufMgr;
+            req->task = task[f];
+            req->fileSize = fileSize;
+            if (pthread_create(&child[f], 0, Reader, req)) {
+                perror("pthread_create");
+                return -1;
+            }
 #endif
         }
-        
-        gettimeofday(&stop, 0);
-        secs = stop.tv_sec - start.tv_sec
-               + (stop.tv_usec - start.tv_usec) / 1e6;
-        printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
-               (numFiles * fileSize * pageSize) / 1048576.0 / secs);
-    }
-
-    printf("\nReading pages back...\n");
-
-    gettimeofday(&start, 0);
-
-    for(f = 0; f < numFiles; f++) {
-#ifdef PROCESS_TASK
-        pid_t child = fork();
-        if (child < 0) {
-            perror("fork");
-            exit(1);
-        }
-        if (!child) {
-            printf("Child %d started...\n", f);
-            ReaderP(bufMgr, task[f], fileSize);
-            exit(1);
-        }
-#endif
-#ifdef THREAD_TASK
-        FileReq *req = new FileReq;
-        req->bufMgr = bufMgr;
-        req->task = task[f];
-        req->fileSize = fileSize;
-        if (pthread_create(&child[f], 0, Reader, req)) {
-            perror("pthread_create");
-            return -1;
-        }
-#endif
     }
 
     for(f = 0; f < numFiles; f++) {
@@ -373,13 +374,17 @@ int main(int argc, char **argv)
 #endif
     }
 
+    for(i = 0; i < numFiles; i++) {
+        task[i]->Terminate();
+        delete task[i];
+    }
+
     gettimeofday(&stop, 0);
     secs = stop.tv_sec - start.tv_sec + (stop.tv_usec - start.tv_usec) / 1e6;
     printf("Elapsed time %.2f seconds, %.2f MB/s\n", secs,
            (numFiles * fileSize * pageSize) / 1048576.0 / secs);
 
     for(i = 0; i < numFiles; i++) {
-        delete task[i];
         fclose(fp[i]);
         if (!readOnly)
             (void)unlink(files[i]);

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/11/07 17:37:13  jussi
+  Memory pool is no longer a separate process but a reentrant
+  function library.
+
   Revision 1.5  1996/11/04 20:21:00  jussi
   Improved support for parallel writes.
 
@@ -61,7 +65,6 @@
 //#define PROCESS_TASK
 //#define THREAD_TASK
 //#define SHARED_MEMORY
-//#define BUFFER
 
 #if defined(SOLARIS)
 #define THREAD_TASK
@@ -201,9 +204,11 @@ class MemPool {
 class IOTask {
   public:
     IOTask(int blockSize = -1) : _blockSize(blockSize) {}
-    virtual int Initialize() { return 0; }
     virtual int WriteEOF() { return 0; }
     virtual ~IOTask() {}
+
+    // Terminate I/O task
+    virtual void Terminate() = 0;
 
     // Read specified byte range
     virtual int Read(unsigned long long offset,
@@ -218,6 +223,10 @@ class IOTask {
         return result / _blockSize;
     }
 
+    // Read stream
+    virtual int ReadStream(unsigned long bytes = 0) = 0;
+    virtual int Consume(char *&buf) = 0;
+
     // Write specified byte range
     virtual int Write(unsigned long long offset,
                       unsigned long bytes,
@@ -231,17 +240,9 @@ class IOTask {
         return result / _blockSize;
     }
 
-    // Set buffering mode
-    virtual int SetBuffering(Boolean readAhead,
-                             Boolean writeBehind,
-                             unsigned int buffBytes) = 0;
-
-    // Set buffering mode
-    int SetBufferingP(Boolean readAhead,
-                      Boolean writeBehind,
-                      int buffBlocks) {
-        return SetBuffering(readAhead, writeBehind, buffBlocks * _blockSize);
-    }
+    // Write stream
+    virtual int WriteStream() = 0;
+    virtual int Produce(char *buf, int bytes) = 0;
 
     // Return busy/idle status
     virtual Boolean IsBusy() = 0;
@@ -252,32 +253,40 @@ class IOTask {
 
 class UnixIOTask : public IOTask {
   public:
-    // Create, initialize and destroy Unix I/O task
+    // Create and destroy Unix I/O task
     UnixIOTask(int blockSize = -1);
-    virtual int Initialize();
     virtual ~UnixIOTask();
 
+    // Terminate I/O task
+    void Terminate();
+
     // Read specified byte range from file
-    virtual int Read(unsigned long long offset,
-                     unsigned long bytes,
-                     char *&addr);
+    int Read(unsigned long long offset,
+             unsigned long bytes,
+             char *&addr);
+
+    // Read stream
+    int ReadStream(unsigned long bytes);
+    int Consume(char *&buf);
 
     // Write specified byte range to file
-    virtual int Write(unsigned long long offset,
-                      unsigned long bytes,
-                      char *&addr);
+    int Write(unsigned long long offset,
+              unsigned long bytes,
+              char *&addr);
 
-    // Set buffering mode
-    virtual int SetBuffering(Boolean readAhead,
-                             Boolean writeBehind,
-                             unsigned int buffBytes);
+    // Write stream
+    int WriteStream();
+    int Produce(char *buf, int bytes);
 
     // Return busy/idle status
-    virtual Boolean IsBusy();
+    Boolean IsBusy();
 
   protected:
+    int Initialize();
+
     // Request types
-    enum ReqType { ReadReq, WriteReq, SetBufferingReq, TerminateReq };
+    enum ReqType { ReadReq, WriteReq, ReadStreamReq,
+                   WriteStreamReq, TerminateReq };
 
     // Request structure
     struct Request {
@@ -298,43 +307,39 @@ class UnixIOTask : public IOTask {
     // Return current offset
     virtual unsigned long long Offset() = 0;
 
-    // Set fd to blocking or nonblocking mode
-    static int SetBlockMode(int fd);
-    static int SetNonBlockMode(int fd);
+    // Read stream
+    void _ReadStream(unsigned long bytes);
 
-#ifdef BUFFER
-    // Perform read-ahead/write-behind buffering
-    int Buffer();
-    int BufferFlush(int num);
-    int BufferCheck(Request &req, Request &reply);
-    int BufferConvert(char *page,
-                      MemPool::PageType oldType,
-                      MemPool::PageType &newType);
-#endif
-
-    int BufferDealloc(MemPool::PageType type, char *page);
+    // Write stream
+    void _WriteStream();
 
     // Set/clear device busy flag
     void SetDeviceBusy();
     void SetDeviceIdle();
 
+    // Acquire and release mutex
+    void AcquireMutex() { _sem->acquire(1); }
+    void ReleaseMutex() { _sem->release(1); }
+
+    // Acquire and release free semaphore
+    void AcquireFree() { _free->acquire(1); }
+    void ReleaseFree() { _free->release(1); }
+
+    // Acquire and release data semaphore
+    void AcquireData() { _data->acquire(1); }
+    void ReleaseData() { _data->release(1); }
+
     // Fd's of pipes for requests
     int _reqFd[2];
     int _replyFd[2];
 
-    Boolean _readAhead;                 // read-ahead buffering enabled
-    Boolean _writeBehind;               // write-behind buffering enabled
-    Boolean _readBuff;                  // true if buffer is for reads
-    Boolean _buffPause;                 // a pause in buffering
-    int _buffPages;                     // max # pages to buffer
-    int _buffNext;                      // next page to buffer
+    Boolean _readStream;                // read streaming enabled
+    Boolean _writeStream;               // write streaming enabled
 
     DefinePtrDList(ReqList, Request *);
     ReqList _buffer;                    // read/write buffer
 
     unsigned long int _totalCount;      // total # requests processed
-    unsigned long int _buffReadCount;   // # buffered read requests
-    unsigned long int _buffWriteCount;  // # buffered write requests
     unsigned long long int _readBytes;  // # bytes read
     unsigned long long int _writeBytes; // # bytes written
     unsigned long long int _seekBytes;  // total seek distance in bytes
@@ -346,9 +351,23 @@ class UnixIOTask : public IOTask {
     pthread_t _child;                   // thread id of child
 #endif
 
-    int _pageSize;                      // size of memory pool pages
+    const int _pageSize;                // size of memory pool pages
 
-    Semaphore *_isBusy;                 // flag indicating busy device
+    SemaphoreV *_isBusy;                // flag indicating busy device
+    SemaphoreV *_sem;                   // mutex for synchronization
+    SemaphoreV *_free;
+    SemaphoreV *_data;
+
+#ifdef SHARED_MEMORY
+    SharedMemory *_shm;                 // shared memory
+#endif
+
+    const int _maxStream = 1024;        // maximum stream length
+    char **_streamData;                 // stream data structures
+    int *_streamBytes;
+    int *_streamHead;
+    int *_streamTail;
+    int *_streamFree;
 };
 
 // I/O task for Unix file descriptors

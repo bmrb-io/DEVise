@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/11/07 17:36:58  jussi
+  Memory pool is no longer a separate process but a reentrant
+  function library.
+
   Revision 1.6  1996/11/04 20:21:00  jussi
   Improved support for parallel writes.
 
@@ -121,22 +125,71 @@ static int writen(int fd, char *buf, int nbytes)
 }
 
 UnixIOTask::UnixIOTask(int blockSize) :
-	IOTask(blockSize), _readAhead(false), _writeBehind(false),
-        _readBuff(false), _buffPause(false), _buffPages(0), _buffNext(0),
-        _totalCount(0), _buffReadCount(0), _buffWriteCount(0),
-        _readBytes(0), _writeBytes(0), _seekBytes(0)
+	IOTask(blockSize), _readStream(false), _writeStream(false),
+        _totalCount(0), _readBytes(0), _writeBytes(0), _seekBytes(0),
+        _pageSize(MemPool::Instance()->PageSize())
 {
-    _pageSize = MemPool::Instance()->PageSize();
-
-    int status;
-    _isBusy = new Semaphore(Semaphore::newKey(), status, 1);
-    DOASSERT(_isBusy, "Out of memory");
-    DOASSERT(status >= 0, "Cannot create semaphore");
-    _isBusy->setValue(1);
+    (void)Initialize();
 }
 
 int UnixIOTask::Initialize()
 {
+    int status;
+    _isBusy = new SemaphoreV(Semaphore::newKey(), status, 1);
+    DOASSERT(_isBusy, "Out of memory");
+    DOASSERT(status >= 0, "Cannot create semaphore");
+    _isBusy->setValue(1);
+
+    _sem = new SemaphoreV(Semaphore::newKey(), status, 1);
+    DOASSERT(_sem, "Out of memory");
+    DOASSERT(status >= 0, "Cannot create semaphore");
+    _sem->setValue(1);
+
+    _free = new SemaphoreV(Semaphore::newKey(), status, 1);
+    DOASSERT(_free, "Out of memory");
+    DOASSERT(status >= 0, "Cannot create semaphore");
+    _free->setValue(0);
+
+    _data = new SemaphoreV(Semaphore::newKey(), status, 1);
+    DOASSERT(_data, "Out of memory");
+    DOASSERT(status >= 0, "Cannot create semaphore");
+    _data->setValue(0);
+
+    int size = _maxStream * (sizeof(char *) + sizeof(int)) + 3 * sizeof(int);
+    char *buf = 0;
+
+#ifdef SHARED_MEMORY
+    key_t _shmKey = SharedMemory::newKey();
+    int created = 0;
+    _shm = new SharedMemory(_shmKey, size, buf, created);
+    DOASSERT(_shm, "Out of memory");
+    if (!created)
+        printf("Warning: pre-existing shared memory initialized\n");
+#if DEBUGLVL >= 1
+    printf("Created a %d-byte shared memory segment at 0x%p\n", size, buf);
+#endif
+#else
+    buf = new char [size];
+#if DEBUGLVL >= 1
+    printf("Created a %d-byte local memory area at 0x%p\n", size, buf);
+#endif
+#endif
+
+    DOASSERT(buf, "Out of memory");
+
+    _streamData = (char **)buf;
+    _streamBytes = (int *)(buf + _maxStream * sizeof(char *));
+    _streamHead = _streamBytes + _maxStream;
+    _streamTail = _streamHead + 1;
+    _streamFree = _streamTail + 1;
+
+    for(int i = 0; i < _maxStream; i++) {
+        _streamData[i] = 0;
+        _streamBytes[i] = 0;
+    }
+    *_streamHead = *_streamTail = 0;
+    *_streamFree = _maxStream;
+
     if (pipe(_reqFd) < 0) {
         perror("UnixIOTask::Initialize: pipe");
         return -1;
@@ -191,6 +244,29 @@ int UnixIOTask::Initialize()
 
 UnixIOTask::~UnixIOTask()
 {
+    DOASSERT(_reqFd[0] < 0, "Must call Terminate() first");
+
+#ifdef SHARED_MEMORY
+    delete _shm;
+#else
+    delete _streamData;
+#endif
+
+    _free->destroy();
+    delete _free;
+
+    _sem->destroy();
+    delete _sem;
+
+    _isBusy->destroy();
+    delete _isBusy;
+}
+
+void UnixIOTask::Terminate()
+{
+    if (_reqFd[0] < 0)
+        return;
+
 #if DEBUGLVL >= 1
     printf("Terminating child process/thread %ld...\n", (long int)_child);
 #endif
@@ -218,9 +294,6 @@ UnixIOTask::~UnixIOTask()
         (void)pthread_join(_child, 0);
 #endif
     }
-    
-    _isBusy->destroy();
-    delete _isBusy;
 
     close(_reqFd[0]);
     close(_reqFd[1]);
@@ -229,11 +302,13 @@ UnixIOTask::~UnixIOTask()
     close(_replyFd[1]);
 #endif
 
+    _reqFd[0] = -1;
+
 #if DEBUGLVL >= 1
     printf("Child process/thread terminated\n");
 #endif
 }
-
+    
 int UnixIOTask::Read(unsigned long long offset,
                      unsigned long bytes,
                      char *&addr)
@@ -265,6 +340,23 @@ int UnixIOTask::Read(unsigned long long offset,
     return reply.bytes;
 }
 
+int UnixIOTask::ReadStream(unsigned long bytes)
+{
+    Request req = { ReadStreamReq, 0, bytes, 0 };
+    if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
+        perror("UnixIOTask::ReadStream: write");
+        return -1;
+    }
+
+    Request reply;
+    if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
+        perror("UnixIOTask::ReadStream: read");
+        return -1;
+    }
+
+    return reply.result;
+}
+
 int UnixIOTask::Write(unsigned long long offset,
                       unsigned long bytes,
                       char *&addr)
@@ -294,33 +386,21 @@ int UnixIOTask::Write(unsigned long long offset,
     return reply.bytes;
 }
 
-int UnixIOTask::SetBuffering(Boolean readAhead,
-                             Boolean writeBehind,
-                             unsigned int buffBytes)
+int UnixIOTask::WriteStream()
 {
-    SetDeviceBusy();
-
-    Request req = { SetBufferingReq, (readAhead ? 1 : 0), buffBytes,
-                    (writeBehind ? (char *)1 : 0) };
+    Request req = { WriteStreamReq, 0, 0, 0 };
     if (writen(_reqFd[1], (char *)&req, sizeof req) < (int)sizeof req) {
-        perror("UnixIOTask::SetBuffering: write");
-        SetDeviceIdle();
+        perror("UnixIOTask::WriteStream: write");
         return -1;
     }
 
     Request reply;
     if (readn(_replyFd[0], (char *)&reply, sizeof reply) < (int)sizeof reply) {
-        perror("UnixIOTask::SetBuffering: read");
-        SetDeviceIdle();
+        perror("UnixIOTask::WriteStream: read");
         return -1;
     }
 
-    SetDeviceIdle();
-
-    if (reply.result < 0)
-        return reply.result;
-
-    return 0;
+    return reply.result;
 }
 
 void *UnixIOTask::ProcessReq(void *arg)
@@ -341,53 +421,20 @@ void *UnixIOTask::ProcessReq()
 #endif
 
     while(1) {
-#ifdef BUFFER
-        Boolean nonBlock = (_readAhead && _readBuff &&
-                            _buffer.Size() < _buffPages);
-        nonBlock = (nonBlock ||
-                    (_writeBehind && !_readBuff && _buffer.Size() > 0));
-        nonBlock = (nonBlock && !_buffPause);
-        if (nonBlock && SetNonBlockMode(_reqFd[0]) < 0)
-            return (void *)-1;
-#endif
-
         Request req;
         int status = readn(_reqFd[0], (char *)&req, sizeof req);
-
-#ifdef BUFFER
-        if (nonBlock && SetBlockMode(_reqFd[0]) < 0)
-            return (void *)-1;
-        if (!status) {
-#if DEBUGLVL >= 5
-            printf("\nNo command received, continuing buffering\n");
-#endif
-            if (Buffer() < 0)
-                return (void *)-1;
-            continue;
-        }
-#endif
-
         if (status < (int)sizeof req) {
             perror("UnixIOTask::ProcessReq: read");
             break;
         }
 
-        // A pause in buffering ends when the next request is received
-        _buffPause = false;
-
         if (req.type == TerminateReq) {
 #if DEBUGLVL >= 1
             printf("\nTask 0x%p received quit command\n", this);
 #endif
-#ifdef BUFFER
-            (void)BufferFlush(-1);
-#endif            
-            printf("I/O task: %lu requests, %.2f%% read buffered, %.2f%% write buffered\n",
-                   _totalCount, 100.0 * _buffReadCount / _totalCount,
-                   100.0 * _buffWriteCount / _totalCount);
-            printf("          read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
-                   _readBytes / 1048576.0, _writeBytes / 1048576.0,
-                   _seekBytes / 1048576.0);
+            printf("I/O task: %lu requests, read: %.2f MB, write: %.2f MB, seek: %.2f MB\n",
+                   _totalCount, _readBytes / 1048576.0,
+                   _writeBytes / 1048576.0, _seekBytes / 1048576.0);
             break;
         }
 
@@ -399,98 +446,27 @@ void *UnixIOTask::ProcessReq()
         _totalCount++;
 
         DOASSERT(req.bytes % _pageSize == 0, "Invalid page request");
-
-        if (req.type == SetBufferingReq) {
-            _readAhead = (req.offset ? true : false);
-            _writeBehind = (req.addr ? true : false);
-            _buffPages = req.bytes / _pageSize;
-#if DEBUGLVL >= 1
-            printf("Task 0x%p setting buffering to %d, %d, %d\n",
-                   this, _readAhead, _writeBehind, _buffPages);
-#endif
-            int newBuffSize = 0;
-            if ((_readBuff && _readAhead) || (!_readBuff && _writeBehind))
-                newBuffSize = _buffPages;
-            if (newBuffSize < _buffer.Size()) {
-#if DEBUGLVL >= 1
-                printf("Task 0x%p reducing buffer size from %d to %d\n",
-                       this, _buffer.Size(), newBuffSize);
-#endif
-#ifdef BUFFER
-                (void)BufferFlush(_buffer.Size() - newBuffSize);
-#endif
-            }
-            status = writen(_replyFd[1], (char *)&req, sizeof req);
-            if (status < (int)sizeof req) {
-                perror("UnixIOTask::ProcessReq: write");
-                break;
-            }
-            continue;
-        }
-
         DOASSERT(req.offset % _pageSize == 0, "Invalid page offset");
 
         Request reply;
 
-#ifdef BUFFER
-        // See if we need to switch from read buffering to write buffering
-        if (req.type == WriteReq) {
-            if (_readBuff) {
-                (void)BufferFlush(-1);
-                _readBuff = false;
-                _buffNext = req.offset / _pageSize + 1;
-#if DEBUGLVL >= 1
-                printf("Task 0x%p switches to write buffer, next is %d\n",
-                       this, _buffNext);
-#endif
-            }
-        }
-
-        // See if we need to retarget current buffering location or to
-        // switch from write buffering to read buffering
-        if (req.type == ReadReq) {
-            if (!_readBuff) {
-                (void)BufferFlush(-1);
-                _readBuff = true;
-                _buffNext = req.offset / _pageSize + 1;
-#if DEBUGLVL >= 1
-                printf("Task 0x%p switches to read buffer, next is %d\n",
-                       this, _buffNext);
-#endif
-            }
-        }
-
-#if DEBUGLVL >= 5
-        printf("Buffer: %s, %s, %s, %d total, %d next\n",
-               (_readAhead ? "ON" : "OFF"), (_writeBehind ? "ON" : "OFF"),
-               (_readBuff ? "read" : "write"), _buffPages, _buffNext);
-#endif
-
-        // See if requested page has been buffered (reads) or can be
-        // buffered (writes)
-        status = BufferCheck(req, reply);
-        if (status < 0)
-            break;
-        if (status > 0) {
-            if (_readBuff) {
-#if DEBUGLVL >= 1
-                printf("Task 0x%p read request satisfied from buffer\n", this);
-#endif
-                _buffReadCount++;
-            } else {
-#if DEBUGLVL >= 1
-                printf("Task 0x%p write request stored in buffer\n", this);
-#endif
-                _buffWriteCount++;
-            }
+        if (req.type == ReadStreamReq || req.type == WriteStreamReq) {
+            reply = req;
+            reply.result = 0;
             status = writen(_replyFd[1], (char *)&reply, sizeof reply);
             if (status < (int)sizeof reply) {
                 perror("UnixIOTask::ProcessReq: write");
                 break;
             }
+            if (req.type == ReadStreamReq)
+                _ReadStream(req.bytes);
+            else
+                _WriteStream();
+#if DEBUGLVL >= 5
+            printf("Task 0x%p request completed\n", this);
+#endif
             continue;
         }
-#endif
 
         if (!req.addr) {
 #if DEBUGLVL >= 3
@@ -509,7 +485,7 @@ void *UnixIOTask::ProcessReq()
         if (req.type == WriteReq) {
             DOASSERT(req.addr == reply.addr, "Invalid page address 1");
             // Deallocate page since it was not buffered
-            if (BufferDealloc(MemPool::Cache, req.addr) < 0)
+            if (MemPool::Instance()->Deallocate(MemPool::Cache, req.addr) < 0)
                 break;
             reply.addr = 0;
         }
@@ -525,268 +501,105 @@ void *UnixIOTask::ProcessReq()
 #endif
     }
 
-    return 0;
-}
-
-int UnixIOTask::SetBlockMode(int fd)
-{
-  int result = fcntl(fd, F_SETFL, 0);
-  if (result < 0) {
-      perror("UnixIOTask::SetBlockMode: fcntl");
-      return -1;
-  }
-  return 0;
-}
-
-int UnixIOTask::SetNonBlockMode(int fd)
-{
-#ifdef SUN
-    int result = fcntl(fd, F_SETFL, FNDELAY);
-#else
-    int result = fcntl(fd, F_SETFL, O_NDELAY);
-#endif
-    if (result < 0) {
-        perror("UnixIOTask::SetNonBlockMode: fcntl");
-        return -1;
-    }
-    return 0;
-}
-
-#ifdef BUFFER
-int UnixIOTask::Buffer()
-{
-    if (!_readBuff) {
-        DOASSERT(_buffer.Size() > 0, "Invalid buffer");
-        return BufferFlush(1);
-    }
-
-#if DEBUGLVL >= 3
-    printf("Task 0x%p allocating a page for buffering\n", this);
-#endif
-
-    char *page = 0;
-    int status = MemPool::Instance()->Allocate(MemPool::Buffer, page);
-    if (status < 0 || !page) {
-#if DEBUGLVL >= 3
-        printf("Task 0x%p pausing buffering because of lack of space\n",
-               this);
-#endif
-        _buffPause = true;
-        return 0;
-    }
-
 #if DEBUGLVL >= 5
-    printf("Task 0x%p allocated page 0x%p for buffering\n", this, page);
+    printf("Task 0x%p terminates\n", this);
 #endif
-
-    DOASSERT(_buffNext >= 0, "Invalid buffer value");
-
-    unsigned long long offset = ((unsigned long long)_buffNext) * _pageSize;
-    Request ioreq = { ReadReq, offset, _pageSize, page };
-    Request *newr = new Request(ioreq);
-    if (!newr) {
-#if DEBUGLVL >= 1
-        printf("Cannot allocate memory for request\n");
-#endif
-        _buffPause = true;
-        return -1;
-    }
-
-    Request ioreply;
-    DeviceIO(ioreq, ioreply);
-
-    // Turn buffering off if end of file reached or an error occurred
-    if (ioreply.result < _pageSize) {
-#if DEBUGLVL >= 1
-        printf("Task 0x%p turns buffering off because of %s (%d)\n",
-               this, (ioreply.result < 0 ? "error" : "EOF"),
-               ioreply.result);
-#endif
-        delete newr;
-        _buffPause = true;
-        if (BufferDealloc(MemPool::Buffer, page) < 0)
-            return -1;
-    } else {
-        _buffer.Append(newr);
-        _buffNext++;
-    }
 
     return 0;
 }
 
-int UnixIOTask::BufferFlush(int num)
+void UnixIOTask::_ReadStream(unsigned long totbytes)
 {
-#if DEBUGLVL >= 1
-    printf("Task 0x%p flushing %d buffered pages (%d)\n", this, num,
-           _buffer.Size());
-#endif
+    unsigned long long offset = 0;
 
-    int i = 0;
-    int index = _buffer.InitIterator();
-    while((num < 0 || i < num) && _buffer.More(index)) {
-        Request *req = _buffer.Next(index);
-        char *page = req->addr;
-#if DEBUGLVL >= 1
-        printf("Task 0x%p flushing buffer page of offset %llu\n",
-               this, req->offset);
-#endif
-        if (!_readBuff) {
-            DOASSERT(req->type == WriteReq, "Invalid request in buffer");
-            Request reply;
-            DeviceIO(*req, reply);
-            if (reply.result < (int)req->bytes)
-                fprintf(stderr,
-                        "Failed to write buffered page at offset %llu\n",
-                        req->offset);
+    while (!totbytes || offset < totbytes) {
+        char *page;
+        int status = MemPool::Instance()->Allocate(MemPool::Buffer, page);
+        DOASSERT(status >= 0 && page, "Failed to allocate buffer space\n");
+        unsigned long reqsize = _pageSize;
+        if (totbytes > 0 && totbytes - offset < reqsize)
+            reqsize = totbytes - offset;
+        Request req = { ReadReq, offset, reqsize, page };
+        Request reply;
+        DeviceIO(req, reply);
+        if (reply.result >= 0) {
+            if (Produce(page, reply.result) < 0)
+                break;
         }
-        if (BufferDealloc(MemPool::Buffer, page) < 0)
-            fprintf(stderr, "Cannot release buffer page 0x%p\n", page);
-        delete req;
-        _buffer.DeleteCurrent(index);
-        i++;
-    }
-    _buffer.DoneIterator(index);
-
-    if (!_buffer.Size())
-        _buffNext = 0;
-
-    return 0;
-}
-
-int UnixIOTask::BufferCheck(Request &req, Request &reply)
-{
-#if DEBUGLVL >= 5
-    printf("Task 0x%p performs buffer check for incoming request\n", this);
-#endif
-
-    if (req.type == WriteReq) {
-        if (!_writeBehind)
-            return 0;
-        DOASSERT(!_readBuff, "Wrong buffer mode");
-        if (_buffer.Size() >= _buffPages) {
-#if DEBUGLVL >= 1
-            printf("No more space for write buffering\n");
-#endif
-            return 0;
-        }
-        Request *newr = new Request(req);
-        if (!newr) {
-#if DEBUGLVL >= 1
-            printf("Cannot allocate memory for request\n");
-#endif
-            return 0;
-        }
-        char *page = req.addr;
-        // See if cache page can be converted to a buffer page
-        MemPool::PageType ntype = MemPool::Buffer;
-        if (BufferConvert(page, MemPool::Cache, ntype) < 0) {
-            delete newr;
-            return -1;
-        }
-        if (ntype != MemPool::Buffer) {
-#if DEBUGLVL >= 3
-            printf("Task 0x%p unable to convert page 0x%p to buffer page\n",
-                   this, page);
-#endif
-            delete newr;
-            return 0;
-        }
-        // Converted, now just store page information in buffer
-        _buffer.Append(newr);
-        // Tell requestor that it no longer owns the page
-        reply = req;
-        reply.addr = 0;
-        return 1;
-    }
-
-    // See if requested page is in buffer
-    DOASSERT(_readBuff, "Wrong buffer mode");
-
-    Request *oldr = 0;
-    int index = _buffer.InitIterator();
-    while(_buffer.More(index)) {
-        oldr = _buffer.Next(index);
-        _buffer.DeleteCurrent(index);
-        DOASSERT(oldr, "Invalid request in buffer");
-        DOASSERT((int)oldr->bytes == _pageSize, "Invalid buffer page");
-        if (oldr->offset == req.offset && oldr->bytes == req.bytes)
+        if (reply.result < _pageSize)
             break;
-        if (BufferDealloc(MemPool::Buffer, oldr->addr) < 0) {
-            delete oldr;
-            _buffer.DoneIterator(index);
-            return -1;
-        }
-        delete oldr;
-        oldr = 0;
+        offset += _pageSize;
     }
-    _buffer.DoneIterator(index);
-
-    if (!oldr) {
-        // Retarget next buffer page
-        _buffNext = req.offset / _pageSize + 1;
-#if DEBUGLVL >= 1
-        printf("Task 0x%p retargets read buffer, next is %d\n",
-               this, _buffNext);
-#endif
-        return 0;
-    }
-
-    // Deallocate caller's page if not needed anymore
-    if (req.addr) {
-#if DEBUGLVL >= 5
-        printf("Task 0x%p deallocating buffer manager's page 0%p\n",
-               this, req.addr);
-#endif
-        if (BufferDealloc(MemPool::Cache, req.addr) < 0)
-            return -1;
-    }
-
-#if DEBUGLVL >= 5
-    printf("Task 0x%p converting buffer page 0x%p\n", this, oldr->addr);
-#endif
-    MemPool::PageType ntype = MemPool::Cache;
-    if (BufferConvert(oldr->addr, MemPool::Buffer, ntype) < 0
-        || ntype != MemPool::Cache)
-        return -1;
-
-    reply = req;
-    reply.addr = oldr->addr;
-
-    delete oldr;
-
-    return 1;
 }
 
-int UnixIOTask::BufferConvert(char *page, MemPool::PageType oldType,
-                                MemPool::PageType &newType)
+void UnixIOTask::_WriteStream()
 {
-#if DEBUGLVL >= 5
-    printf("Task 0x%p converting page 0x%p\n", this, page);
-#endif
+    unsigned long long offset = 0;
 
-    int status = MemPool::Instance()->Convert(page, oldType, newType);
-    if (status < 0) {
-        fprintf(stderr, "Failed to communicate with buffer pool\n");
-        return -1;
+    while(1) {
+        char *page;
+        int bytes = Consume(page);
+        if (bytes <= 0)
+            break;
+        Request req = { WriteReq, offset, bytes, page };
+        Request reply;
+        DeviceIO(req, reply);
+        if (reply.result != bytes)
+            break;
+        int status = MemPool::Instance()->Deallocate(MemPool::Buffer, page);
+        DOASSERT(status >= 0 && page, "Failed to deallocate buffer space\n");
+        offset += bytes;
     }
+}
 
+int UnixIOTask::Produce(char *buf, int bytes)
+{
+    AcquireMutex();
+    while (!*_streamFree) {
+#if DEBUGLVL >= 3
+        printf("Task 0x%p has to wait for consumer's free space\n", this);
+#endif
+        ReleaseMutex();
+        AcquireFree();
+        AcquireMutex();
+    }
+    (*_streamFree)--;
+    _streamData[*_streamHead] = buf;
+    _streamBytes[*_streamHead] = bytes;
+    *_streamHead = (*_streamHead + 1) % _maxStream;
+    if (*_streamFree == _maxStream - 1) {
+#if DEBUGLVL >= 3
+        printf("Task 0x%p signaling consumer about data\n", this);
+#endif
+        ReleaseData();
+    }
+    ReleaseMutex();
     return 0;
 }
-#endif
 
-int UnixIOTask::BufferDealloc(MemPool::PageType type, char *page)
+int UnixIOTask::Consume(char *&buf)
 {
-#if DEBUGLVL >= 5
-    printf("Task 0x%p deallocating page 0x%p\n", this, page);
+    AcquireMutex();
+    while (*_streamFree == _maxStream) {
+#if DEBUGLVL >= 3
+        printf("Task 0x%p has to wait for producer's data\n", this);
 #endif
-
-    int status = MemPool::Instance()->Deallocate(type, page);
-    if (status < 0) {
-        fprintf(stderr, "Failed to communicate with buffer pool\n");
-        return -1;
+        ReleaseMutex();
+        AcquireData();
+        AcquireMutex();
     }
-
-    return 0;
+    buf = _streamData[*_streamTail];
+    int bytes = _streamBytes[*_streamTail];
+    *_streamTail = (*_streamTail + 1) % _maxStream;
+    (*_streamFree)++;
+    if (*_streamFree == 1) {
+#if DEBUGLVL >= 3
+        printf("Task 0x%p signaling producer about free space\n", this);
+#endif
+        ReleaseFree();
+    }
+    ReleaseMutex();
+    return bytes;
 }
 
 Boolean UnixIOTask::IsBusy()
@@ -870,7 +683,8 @@ void UnixFdIOTask::DeviceIO(Request &req, Request &reply)
             _writeBytes += reply.result;
         break;
 
-      case SetBufferingReq:
+      case ReadStreamReq:
+      case WriteStreamReq:
       case TerminateReq:
         break;
     }
@@ -1449,9 +1263,7 @@ SBufMgr::~SBufMgr()
 
 void SBufMgr::_DeallocMemory()
 {
-    // handle pinned pages
-
-    _UnPin(0, false);
+    AcquireMutex();
 
     // deallocate pages and frames
 
@@ -1460,6 +1272,8 @@ void SBufMgr::_DeallocMemory()
         if (frame.page)
             _pool.Deallocate(MemPool::Cache, frame.page);
     }
+
+    ReleaseMutex();
 }
 
 int SBufMgr::_PinPage(IOTask *stream, int pageNo, char *&page, Boolean read)
