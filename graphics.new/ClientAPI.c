@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1999/05/20 19:32:04  wenger
+  Minor improvement to debug output.
+
   Revision 1.20  1998/11/24 19:31:08  wenger
   Fixed problem with soil science sessions sometimes locking up the
   JavaScreen by disallowing input from file descriptors while waiting for
@@ -370,8 +373,14 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
     return -1;
   }
   ac = numElements;
-  return NetworkParse((const char*)recBuff, ac,av);
+  int result = NetworkParse((const char*)recBuff, ac,av);
+#if defined(DEBUG)
+  printf("  Message is: ");
+  PrintArgs(stdout, ac, av, true);
+#endif
+  return result;
 }
+
 //
 // now break buffer into individual elements
 int NetworkParse(const char *recBuff, int numElements, char **&av)
