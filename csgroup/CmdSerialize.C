@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/05/02 08:38:54  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.3  1998/04/14 19:36:11  taodb
   Fixed-size header version of CmdSerialize and Logging
 
@@ -36,6 +40,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream.h>
+#include "devise_varargs.h"
 #include "CmdSerialize.h"
 
 // a serializable type is

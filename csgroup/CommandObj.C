@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/05/02 08:38:55  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.4  1998/03/12 02:09:05  wenger
   Fixed dynamic memory errors in collaboration code that caused core dump
   on Linux; collaboration code now tolerates interruption of accept() and
@@ -38,11 +42,7 @@
 #include "CmdDescriptor.h"
 #include "Csprotocols.h"
 #include "codec.h"
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h>
-#else
-#include <stdarg.h>
-#endif
+#include "devise_varargs.h"
 #include "ServerAPI.h"
 #include <stdio.h>
 

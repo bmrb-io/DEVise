@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/06/23 17:51:29  wenger
+  Added client timeout to Devise -- quits if no commands from client
+  within specified period.
+
   Revision 1.13  1998/06/11 20:45:35  wenger
   Added -quit command line argument for devised to quit when client disconnects.
 
@@ -100,9 +104,13 @@
 #if defined(SGI)
 #include <stdarg.h>
 #endif
-#if defined(SGI)
+#if defined(SGI) || defined(OSF)
 #include <sys/param.h> // for MAXHOSTNAMELEN
 #endif
+#if defined(OSF)
+#   include <rpcsvc/showfh.h> // for MAXNAMELEN
+#endif
+#include "devise_varargs.h"
 #if defined(LINUX)
 #define MAXNAMELEN 1024
 #endif

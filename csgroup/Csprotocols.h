@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/02 08:38:56  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.5  1998/03/11 18:25:07  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -47,13 +51,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h>
-#else
-#include <stdarg.h>
-#endif
 
-#if !defined(LINUX)
+#if !defined(LINUX) && !defined(OSF)
 extern "C" {
 	void bzero(void *s, size_t n);
 	int gethostname(char *name, int namelen);

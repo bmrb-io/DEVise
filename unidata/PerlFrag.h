@@ -22,7 +22,11 @@
 
 //kb: took the needed perl typedefs so we don't depend on perl in devise & dte
 typedef struct interpreter PerlInterpreter;
-typedef long int I32;
+#if defined(OSF)
+    typedef int I32;
+#else
+    typedef long int I32;
+#endif
 typedef struct hv HV;
 typedef struct sv SV;
 typedef struct av AV;

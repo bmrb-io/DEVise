@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  1998/06/28 21:39:59  beyer
+  changed from gcc String to stl string
+
   Revision 1.54  1998/02/26 17:19:04  wenger
   Fixed problems with yesterday's commit.
 
@@ -1651,4 +1654,15 @@ int main(int argc, char **argv)
   Dispatcher::RunNoReturn();
 
   return 1;
+
 }
+
+// For statically linking with versions of Tcl that explicitly call these
+// functions in a static library (argh!)...  RKW July 28, 1998.
+#if 0
+extern "C" {
+  void dlopen() {}
+  void dlsym() {}
+  void dlerror() {}
+}
+#endif

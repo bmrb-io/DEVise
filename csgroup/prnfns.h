@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/04/01 05:21:49  taodb
+  Replaced types.h with CollabTypes.h, related source files were updated.
+
   Revision 1.5  1998/03/11 18:25:17  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -70,12 +73,6 @@
 */ 
 #ifndef _PRNFNS_H
 #define _PRNFNS_H
-
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h>
-#else
-#include <stdarg.h>
-#endif
 
 #ifdef __tcltk
 #include "tcl.h"

@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  1998/05/08 17:37:27  wenger
+#  *** empty log message ***
+#
 #  Revision 1.11  1998/03/25 14:55:19  wenger
 #  Added opengldum for all variations of ARCH_SYSLIBS.
 #
@@ -79,9 +82,11 @@ include ../Makefile.config
 ARCH_LDFLAGS = -L/home/zhenhai/Mesa-2.4/lib -Xlinker -rpath -Xlinker /home/zhenhai/Mesa-2.4/lib -L/usr/lib -L/usr/X11R6/lib
 #ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.0 -ltcl7.4 -lX11 -lm
 #ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
-#ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.2 -ltcl7.6 -ldl -lX11 -lm
+#ARCH_SYSLIBS = -L../graphics -lopengldum -ltk4.2 -ltcl7.6 -lX11 -lm
 ARCH_SYSLIBS =  -lMesaGLU -lMesaGL -ltk4.2 -ltcl7.6 -ldl -lXaw -lXt -lXmu -lX11 -lm
-ARCH_LDPOST  =
+ARCH_LDPOST  = 
+# to make everything statically-linked...
+#ARCH_LDPOST  = -static
 ARCH_STATIC_LDPOST  = -static
 
 VPATH = ../../generic

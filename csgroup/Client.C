@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/05/02 08:38:50  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.5  1998/03/11 18:25:05  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -55,11 +59,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h> 
-#else
-#include <stdarg.h> 
-#endif
+#include "devise_varargs.h"
 #if defined(SGI) || defined(LINUX)
 #include <sys/param.h> // for MAXHOSTNAMELEN
 #endif

@@ -89,7 +89,7 @@ void bulk_data_t::init(int       infile,
   off=offset;
   file_arr = (char *)mmap((caddr_t) 0, entry_sz*num_elem+offset, 
 		  PROT_READ|PROT_WRITE, MAP_SHARED
-#if !defined(SGI) && !defined(LINUX)
+#if !defined(SGI) && !defined(LINUX) && !defined(OSF)
 		  |MAP_NORESERVE
 #endif
 		  , infile, 0);

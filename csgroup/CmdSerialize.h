@@ -21,13 +21,10 @@
  */
 #ifndef _CMD_SERIALIZE_H
 #define _CMD_SERIALIZE_H
+
 #include <string>
 #include <vector>
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h>
-#else
-#include <stdarg.h>
-#endif
+
 class Serializable
 {
 	static	const char* intMarker;

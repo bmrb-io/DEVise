@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/03/12 02:09:08  wenger
+  Fixed dynamic memory errors in collaboration code that caused core dump
+  on Linux; collaboration code now tolerates interruption of accept() and
+  select() in some cases; fixed excessive CPU usage by collaborator
+  (select timeout now non-zero); fixed some other collaboration bugs.
+
   Revision 1.4  1998/03/11 18:25:16  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -70,6 +76,7 @@
 #include <stdarg.h>
 #endif
 
+#include "devise_varargs.h"
 #include "prnfns.h"
 #include "Csprotocols.h"
 

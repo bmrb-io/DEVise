@@ -47,14 +47,14 @@ class mdindex_t {
 
   virtual int dim() const = 0;
   virtual rc insert(const int_key_t & key, const void * elem, 
-		    unsigned int elem_size) = 0;
+		    size_t elem_size) = 0;
   virtual rc remove(const int_key_t & key) = 0;
 
   virtual rc fetch_init(cursor_t & cursor, const int_key_t& key, 
 			char * key_type_info=NULL) const = 0;
 
   virtual rc fetch(cursor_t & cursor, int_key_t * & key, void * & elem, 
-		   unsigned int& elem_size, bool& eof) const = 0;
+		   size_t& elem_size, bool& eof) const = 0;
 
   virtual rc debug(FILE * outfile) const = 0;	/* human readable */
   virtual rc devise_dump(FILE * outfile) const = 0; /* for devise */

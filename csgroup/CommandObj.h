@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/05/02 08:38:55  taodb
+  Added command logging and playing support
+  Added communication support for JAVA Screen
+
   Revision 1.3  1998/03/11 18:25:06  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -36,12 +40,6 @@
 
 #ifndef _CommandObj_h_
 #define _CommandObj_h_
-
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h>
-#else
-#include <stdarg.h>
-#endif
 
 #define MAX_ARGS 20
 

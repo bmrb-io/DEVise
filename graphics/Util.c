@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1998/06/17 17:20:33  wenger
+  Devised now sends "real" session file list to JavaScreen.
+
   Revision 1.26  1998/05/14 18:21:10  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -117,7 +120,7 @@
   #define STAT_BAVAIL f_bavail
 #endif
 
-#if defined(SOLARIS)
+#if defined(SOLARIS) || defined(OSF)
   #include <sys/statvfs.h>
   #define STAT_STRUCT statvfs
   #define STAT_FUNC statvfs

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.53  1998/06/29 17:18:09  wenger
+#  Fixed bug 372 (crashed in DataReader caused by a pointer alignment problem).
+#
 #  Revision 1.52  1998/06/10 14:59:28  wenger
 #  Added DataReader to link.
 #
@@ -267,7 +270,8 @@ devised.pure: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
 
 
 DEVISE = $(CC) -o $@ devise.o DeviseClient.o ../graphics.new/Version.o \
-	$(ARCH_LDFLAGS) -L../csgroup -L../graphics.new -lcsgroup -lclient \
+	$(ARCH_LDFLAGS) -L../csgroup -L../graphics -L../graphics.new \
+	-lcsgroup -lclient \
 	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
 devise: devise.o $(CLIENTLIB) DeviseClient.o ../csgroup/libcsgroup.a

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/06/16 18:21:19  wenger
+  Got DEVise to compile on Solaris 2.6.
+
   Revision 1.22  1998/02/27 20:47:38  wenger
   More SGI compile fixes.
 
@@ -278,6 +281,9 @@
 #if defined(__alpha) || defined(__sun)
   EXTERNC int semget(key_t, int, int);
   EXTERNC int semctl(int, int, int, ...);
+#endif
+
+#if defined(__sun)
   EXTERNC int semop(int, struct sembuf *, unsigned int);
 #endif
 

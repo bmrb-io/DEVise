@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1998/06/17 18:00:41  wenger
+  MAXNAMELEN should have been MAXPATHLEN.
+
   Revision 1.13  1998/06/17 17:20:42  wenger
   Devised now sends "real" session file list to JavaScreen.
 
@@ -71,11 +74,7 @@
  */
 #include <sys/types.h>
 #include <sys/stat.h>
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h>
-#else
-#include <stdarg.h>
-#endif
+#include "devise_varargs.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>

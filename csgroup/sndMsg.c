@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/03/11 18:25:21  wenger
+  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+  reducing include dependencies between csgroup code and the rest of
+  the code, and within the csgroup code.  (Note: running collaboration
+  doesn't work yet.)
+
   Revision 1.3  1998/02/26 18:54:12  wenger
   Got everything to compile on haha -- still have a link problem, though.
 
@@ -63,11 +69,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#if !defined(SGI) && !defined(LINUX)
-#include <sys/varargs.h>
-#else
-#include <stdarg.h>
-#endif
+#include "devise_varargs.h"
 #include <unistd.h>
 
 #include "sndMsg.h"

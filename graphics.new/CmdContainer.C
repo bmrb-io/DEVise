@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  1998/07/03 23:42:18  wenger
+  Fixed some memory leaks; added provision to print data segment size
+  at certain places in the code.
+
   Revision 1.12  1998/06/12 19:55:27  wenger
   Attribute of TAttr/set links can now be changed; GUI has menu of available
   attributes; attribute is set when master view is set instead of at link
@@ -126,7 +130,7 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	_server = server;
 
 	char	tempFileName[128];
-	sprintf(tempFileName, "%s%ld", cmdLogBase, getpid());
+	sprintf(tempFileName, "%s%ld", cmdLogBase, (long)getpid());
 	cmdLogFname = strdup(tempFileName);
 	unlink(cmdLogFname);
 	cmdLog = new CmdLogRecord(cmdLogFname);

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.6  1998/03/30 22:32:55  wenger
+  Merged fixes from collab_debug_br through collab_debug_br2 (not all
+  changes from branch were merged -- some were for debug only)
+  (committed stuff includes conditionaled-out debug code).
+
   Revision 1.5.2.2  1998/03/27 21:15:41  wenger
   Committed changes from getting collaboration running on zaphod.
 
@@ -90,7 +95,11 @@
     #include <arpa/inet.h>
   #endif
 #else
-#include <sys/filio.h>
+  #if defined(OSF)
+    #include <sys/ioctl.h>
+  #else
+    #include <sys/filio.h>
+  #endif
 #endif
 #include <sys/time.h>
 #include <netinet/in.h>

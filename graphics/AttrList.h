@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/05/28 20:01:42  andyt
+  Shape attributes for 'Tcl/Tk Window' shape can now be variables, numeric
+  constants, or string constants. Used to assume that all attributes except
+  argc were strings.
+
   Revision 1.10  1997/04/25 22:46:54  ssl
   Added a method to get attr num given its name.
 
@@ -47,6 +52,9 @@
 #ifndef AttrList_h
 #define AttrList_h
 
+#if defined(OSF)
+//#   include <pthread.h>
+#endif
 #include <sys/time.h>
 
 #include "DeviseTypes.h"
