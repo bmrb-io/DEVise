@@ -67,6 +67,18 @@ JavaScreen: need to clean up temporary session files
 
 Allow XY cursor with bottom anchored at 0 (rkw 11/20/01)
 
+JS communications protocols should probably have different versions in
+each direction. (rkw 11/30/01)
+
+Should API_CMD, etc., have "unusual" values, so other things are not so
+easily confused with them? Also, always check for a valid value when
+receiving a command? (rkw 11/14/00)
+
+The JavaScreen should probably quit after it gets a certain number of
+socket write errors. (rkw 11/14/00)
+
+
+
 (add stuff from old to-do list?)
 (add stuff from my to-do list)
 
