@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/07/22 19:44:28  wenger
+  Removed extra dependencies that broke cslib link.
+
   Revision 1.25  1997/06/04 15:50:24  wenger
   Printing windows to PostScript as pixmaps is now implemented, including
   doing so when printing the entire display.
@@ -133,11 +136,11 @@
 #include "Geom.h"
 #ifndef LIBCS
 #include "Dispatcher.h"
+#include "ViewWin.h"
 #endif
 #include "DList.h"
 #include "ColorMgr.h"
 #include "WindowRep.h"
-#include "ViewWin.h"
 
 const int InitColorMapSize = 512;
 const int AdditionalColorMapSize = 512;
@@ -203,8 +206,10 @@ public:
   virtual DevStatus OpenPrintFile(char *filename) { return StatusFailed; }
   virtual DevStatus ClosePrintFile() { return StatusFailed; }
   virtual FILE *GetPrintFile() { return NULL; }
+#ifndef LIBCS
   virtual DevStatus ImportWindow(ViewWin *window,
     DisplayExportFormat format) { return StatusFailed; }
+#endif
 
   virtual void PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
     Boolean maintainAspect = true) {}
