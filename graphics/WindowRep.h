@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.30  1996/09/04 21:24:50  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.29  1996/08/29 22:03:31  guangshu
   Changed ExportGIF argument to FILE *
 
@@ -300,6 +307,9 @@ public:
 
   virtual void SetPattern(Pattern p) { _pattern = p; }
   Pattern GetPattern(){ return _pattern; }
+
+  virtual void SetLineWidth(int w) { _line_width = w; }
+  int GetLineWidth(){ return _line_width; }
 
   virtual void FillRect(Coord xlow, Coord ylow,
 			Coord width, Coord height) = 0;
@@ -606,6 +616,7 @@ protected:
   Coord _x, _y, _width, _height;  /* location and dimensions of window */
   Color _fgndColor, _bgndColor;   /* current fg and bg colors */
   Pattern _pattern;               /* current pattern */
+  int _line_width;		  /* current border line width */
   DeviseDisplay *_display;        /* display object */
 
   static Boolean _destroyPending; /* true if window destroy is pending */

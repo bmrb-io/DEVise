@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.73  1996/09/05 22:18:12  jussi
+  Fixed problem with system hanging in batch mode.
+
   Revision 1.72  1996/08/30 18:41:04  wenger
   Fixed bug 036 (problem with piled views with client/server software).
 
@@ -912,12 +915,16 @@ void View::DrawAxesLabel(WindowRep *win, int x, int y, int w, int h)
     if (xAxis.inUse) {
       GetXAxisArea(axisX, axisY, axisWidth, axisHeight, startX);
       win->SetFgColor(GetBgColor());
+      win->SetPattern(Pattern0);
+      win->SetLineWidth(0);
       win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
       DrawXAxis(win, x, y, w, h);
     }
     if (yAxis.inUse) {
       GetYAxisArea(axisX, axisY, axisWidth, axisHeight);
       win->SetFgColor(GetBgColor());
+      win->SetPattern(Pattern0);
+      win->SetLineWidth(0);
       win->FillRect(axisX, axisY, axisWidth - 1, axisHeight - 1);
       DrawYAxis(win, x, y, w, h);
     }
@@ -935,6 +942,7 @@ void View::DrawLabel()
     int labelX, labelY, labelWidth, labelHeight;
     GetLabelArea(labelX, labelY, labelWidth, labelHeight);
     win->SetPattern(Pattern0);
+    win->SetLineWidth(0);
     win->SetFgColor(GetBgColor());
     win->FillRect(labelX, labelY, labelWidth - 1, labelHeight - 1);
     win->SetFgColor(GetFgColor());
@@ -1648,6 +1656,8 @@ void View::Run()
 #endif
     winRep->DaliFreeImages();
     winRep->SetFgColor(GetBgColor());
+    winRep->SetPattern(Pattern0);
+    winRep->SetLineWidth(0);
     winRep->FillRect(dataX, dataY, dataW - 1, dataH - 1);
   }
   
@@ -2190,6 +2200,8 @@ void View::DoDrawCursors()
 #endif
 
   WindowRep *winRep = GetWindowRep();
+  winRep->SetPattern(Pattern0);
+  winRep->SetLineWidth(0);
   winRep->SetXorMode();
   
   int index;

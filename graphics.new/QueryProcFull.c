@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/09/03 14:32:09  ssl
+  Added some optimization for Record Links. Data now gets distributed
+  simulaneously for slaves views when they have the same master and the
+  master completes.
+
   Revision 1.32  1996/08/30 15:56:10  wenger
   Modified View and QueryProcessor code to work correctly with current
   dispatcher semantics (call back forever unless cancelled).
@@ -290,8 +295,8 @@ void QueryProcFull::BatchQuery(TDataMap *map, VisualFilter &filter,
 			       QueryCallback *callback, void *userData,
 			       int priority)
 {
-#ifdef DEBUG
-  printf("batch query: map: 0x%p, filter xlow %f, xhigh %f\n",
+#if defined(DEBUG)
+  printf("batch query: map: 0x%p, filter xlow %g, xhigh %g\n",
 	 map, filter.xLow, filter.xHigh);
 #endif
 
@@ -1027,9 +1032,21 @@ Boolean QueryProcFull::UseTDataQuery(TData *tdata, VisualFilter &filter)
   }
   _queries->DoneIterator(index);
 
-  if (numMatchingQueries > 0 && totalGRecSize > tdata->RecSize())
-    return true;
+#if defined(DEBUG)
+  printf("matching queries: %d, gdata recsize: %d, tdata recsize %d\n",
+	 numMatchingQueries, totalGRecSize, tdata->RecSize() );
+#endif      
 
+  if (numMatchingQueries > 0 && totalGRecSize > tdata->RecSize()) {
+#if defined(DEBUG)
+      printf("do query on tdata\n");
+#endif      
+      return true;
+  }
+
+#if defined(DEBUG)
+  printf("do query on gdata\n");
+#endif      
   return false;
 }
 
@@ -1068,6 +1085,10 @@ Boolean QueryProcFull::DoScan(QPFullData *qData, RecId low, RecId high,
 
   while (mgr->GetRecs(isTData, startRid, numRecs, buf, recs)) {
     recsScanned += numRecs;
+#if defined(DEBUG)
+    printf("DoScan: Got recs(%d, %ld, %d, 0x%p)\n",
+	   isTData, startRid, numRecs, buf);
+#endif
     if (isTData) {
       DistributeTData(qData, startRid, numRecs, buf, recs);
       _memFetched += numRecs * tRecSize;
@@ -1160,7 +1181,7 @@ void QueryProcFull::QPRangeInserted(RecId low, RecId high)
 void QueryProcFull::DistributeTData(QPFullData *queryData, RecId startRid,
 				    int numRecs, void *buf, void **recs)
 {
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("DistributeTData map 0x%p, [%ld,%ld]\n", queryData->map,
 	 startRid, startRid + numRecs - 1);
 #endif
@@ -1199,12 +1220,12 @@ void QueryProcFull::DistributeTData(QPFullData *queryData, RecId startRid,
 	tempHigh = qData->high;
       if (tempHigh >= tempLow) {
 	_rangeQData = qData;
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("before insert range before: ");
 	qData->range->Print();
 #endif
 	qData->range->Insert(tempLow, tempHigh, this);
-#ifdef DEBUG
+#if defined(DEBUG)
 	printf("after insert: ");
 	qData->range->Print();
 #endif

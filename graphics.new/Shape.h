@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  1996/08/03 15:38:29  jussi
+  Added GetShapeAttr3() function.
+
   Revision 1.19  1996/07/25 14:24:22  jussi
   Added capability to draw labels at (X,Y) data points.
 
@@ -151,6 +154,7 @@ inline Pattern GetPattern(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   return GetAttr(ptr, patternOffset, Pattern, offset);
 }
 
+
 inline Coord GetOrientation(char *ptr, TDataMap *map, GDataAttrOffset *offset)
 {
   if (offset->orientationOffset < 0)
@@ -200,6 +204,13 @@ inline Coord GetShapeAttr3(char *ptr, TDataMap *map, GDataAttrOffset *offset)
   }
   return GetAttr(ptr, shapeAttrOffset[3], Coord, offset);
 }
+
+// hack alert: GetLineWidth really returns ShapeAttr3 (temporarily)
+inline int GetLineWidth(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
+    return int(GetShapeAttr3(ptr, map, offset)+0.5);
+}
+
 
 class WindowRep;
 class TDataMap;

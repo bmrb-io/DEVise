@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/07/14 16:52:16  jussi
+  Added handling of window destroy events from window manager.
+
   Revision 1.15  1996/07/13 17:25:58  jussi
   Moved Mapped() method to header file.
 
@@ -524,6 +527,8 @@ void ViewWin::DrawMargins()
   WindowRep *win = GetWindowRep();
   win->SetSmallFont();
   win->SetFgColor(GetFgColor());
+  win->SetPattern(Pattern0);
+  win->SetLineWidth(0);
   win->FillRect(x, y, w - 1, _topMargin - 1);
   win->SetFgColor(GetBgColor());
   win->FillRect(x + 1, y + 1, w - 1 - 2, _topMargin - 1 - 2);

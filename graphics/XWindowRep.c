@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.65  1996/09/05 19:11:44  jussi
+  Added handling of GraphicsExpose and NoExpose events.
+
   Revision 1.64  1996/09/04 21:24:51  wenger
   'Size' in mapping now controls the size of Dali images; improved Dali
   interface (prevents Dali from getting 'bad window' errors, allows Devise
@@ -483,7 +486,7 @@ void XWindowRep::Init()
   
   /* set normal font */
   SetNormalFont(); 
-  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
  
   /* create pixmaps for character manipulation */
   _srcBitmap.inUse = false;
@@ -856,7 +859,7 @@ void XWindowRep::ExportGIF(FILE *fp)
       return;
     }
     XRaiseWindow(_display, win);
-    ((XDisplay *)GetDisplay())->ConvertAndWriteGIF(win, xwa, fp);
+    GetDisplay()->ConvertAndWriteGIF(win, xwa, fp);
     return;
   }
 
@@ -882,7 +885,7 @@ void XWindowRep::ExportGIF(FILE *fp)
 
   CoalescePixmaps(this);
 
-  ((XDisplay *)GetDisplay())->ConvertAndWriteGIF(_pixmap, xwa, fp);
+  GetDisplay()->ConvertAndWriteGIF(_pixmap, xwa, fp);
 }
 
 void XWindowRep::CoalescePixmaps(XWindowRep *root)
@@ -1114,13 +1117,31 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
   for(int i = 0; i < num; i++) {
     Coord x1, y1, x2, y2;
     Coord txlow, tylow, txmax, tymax;
+#if defined(DEBUG)
+    printf("XWindowRep::FillRectArray: got (x,y,w,h)=(%g, %g, %g, %g)\n",
+	   xlow[i], ylow[i], width[i], height[i]);
+    PrintTransform();
+  printf("\n");
+#endif
+
     WindowRep::Transform(xlow[i], ylow[i] + height[i], x1, y1);
     WindowRep::Transform(xlow[i] + width[i], ylow[i], x2, y2);
     txlow = MIN(x1, x2);
     txmax = MAX(x1, x2);
     tylow = MIN(y1, y2);
     tymax = MAX(y1, y2);
-    
+
+    // possible overflow when these numbers get rounded, so clip to MAXSHORT
+    // to avoid any trouble
+    txlow = MIN(txlow, MAXSHORT);
+    txmax = MIN(txmax, MAXSHORT);
+    tylow = MIN(tylow, MAXSHORT);
+    tymax = MIN(tymax, MAXSHORT);
+    txlow = MAX(txlow, -MAXSHORT);
+    txmax = MAX(txmax, -MAXSHORT);
+    tylow = MAX(tylow, -MAXSHORT);
+    tymax = MAX(tymax, -MAXSHORT);
+
     unsigned pixelWidth = (unsigned)(txmax - txlow + 1);
     if (pixelWidth == 0) pixelWidth = 1;
     unsigned pixelHeight = unsigned(tymax - tylow + 1);
@@ -1130,6 +1151,12 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
     rectAngles[i].y = ROUND(short, tylow);
     rectAngles[i].width = ROUND(unsigned short, pixelWidth);
     rectAngles[i].height = ROUND(unsigned short, pixelHeight);
+    
+#if defined(DEBUG)
+    printf("XWindowRep::FillRectArray: draw (x,y,w,h)=(%d, %d, %d, %d)\n",
+	   rectAngles[i].x, rectAngles[i].y,
+	   rectAngles[i].width, rectAngles[i].height); 
+#endif
   }
 
 #ifdef DEBUG
@@ -1146,8 +1173,22 @@ void XWindowRep::FillRectArray(Coord *xlow, Coord *ylow, Coord *width,
 #endif
 
 #ifdef GRAPHICS
-  if (_dispGraphics)
-    XFillRectangles(_display, DRAWABLE, _gc, rectAngles, num);
+  if (_dispGraphics) {
+      // special-case the no-fill rectangle
+      bool fill = (GetPattern() != -Pattern1);
+      if( fill ) {
+	  XFillRectangles(_display, DRAWABLE, _gc, rectAngles, num);
+      }
+      // do I need to reduce the bounding boxes height & width by 1??
+      // draw bounding boxes
+      if( GetLineWidth() >= 0 || !fill ) {
+	  XGCValues gc_values;
+	  XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
+	  XSetFillStyle(_display, _gc, FillSolid);
+	  XDrawRectangles(_display, DRAWABLE, _gc, rectAngles, num);
+	  XSetFillStyle(_display, _gc, gc_values.fill_style);
+      }
+  }
 #endif
 }
 
@@ -1246,9 +1287,24 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
 #endif
 
 #ifdef GRAPHICS
-  if (_dispGraphics)
-    XFillRectangle(_display, DRAWABLE, _gc, ROUND(int, txlow),
-		   ROUND(int, tylow), pixelWidth, pixelHeight);
+  if (_dispGraphics) {
+      // special-case the no-fill rectangle
+      bool fill = (GetPattern() != -Pattern1);
+      if( fill ) {
+	  XFillRectangle(_display, DRAWABLE, _gc, ROUND(int, txlow),
+			 ROUND(int, tylow), pixelWidth, pixelHeight);
+      }
+      // do I need to reduce the bounding boxes height & width by 1??
+      // draw bounding boxes
+      if( GetLineWidth() >= 0 || !fill ) {
+	  XGCValues gc_values;
+	  XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
+	  XSetFillStyle(_display, _gc, FillSolid);
+	  XDrawRectangle(_display, DRAWABLE, _gc, ROUND(int, txlow),
+			 ROUND(int, tylow), pixelWidth, pixelHeight);
+	  XSetFillStyle(_display, _gc, gc_values.fill_style);
+      }
+  }
 #endif
 }
 
@@ -1275,9 +1331,23 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
 #endif
 
 #ifdef GRAPHICS
-  if (_dispGraphics)
-    XFillRectangle(_display, DRAWABLE, _gc, pixelX, pixelY, 
-		   pixelWidth, pixelHeight);
+  if (_dispGraphics) {
+      bool fill = (GetPattern() != -Pattern1);
+      if( fill ) {
+	  XFillRectangle(_display, DRAWABLE, _gc, pixelX, pixelY, 
+			 pixelWidth, pixelHeight);
+      }
+      // do I need to reduce the bounding boxes height & width by 1??
+      // draw bounding boxes
+      if( GetLineWidth() >= 0 || !fill ) {
+	  XGCValues gc_values;
+	  XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
+	  XSetFillStyle(_display, _gc, FillSolid);
+	  XDrawRectangle(_display, DRAWABLE, _gc, pixelX, pixelY, 
+			 pixelWidth, pixelHeight);
+	  XSetFillStyle(_display, _gc, gc_values.fill_style);
+      }
+  }
 #endif
 }
 
@@ -1330,9 +1400,23 @@ void XWindowRep::FillPoly(Point *pts, int n)
 #endif
 
 #ifdef GRAPHICS
-  if (_dispGraphics)
-    XFillPolygon(_display, DRAWABLE, _gc, points, n,
-                 Nonconvex, CoordModeOrigin);
+  if (_dispGraphics) {
+      // special-case the no-fill rectangle
+      bool fill = (GetPattern() != -Pattern1);
+      if( fill ) {
+	  XFillPolygon(_display, DRAWABLE, _gc, points, n,
+		       Nonconvex, CoordModeOrigin);
+      }
+      // do I need to reduce the bounding boxes height & width by 1??
+      // draw bounding boxes
+      if( GetLineWidth() >= 0 || !fill ) {
+	  XGCValues gc_values;
+	  XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
+	  XSetFillStyle(_display, _gc, FillSolid);
+	  XDrawLines(_display, DRAWABLE, _gc, points, n, CoordModeOrigin);
+	  XSetFillStyle(_display, _gc, gc_values.fill_style);
+      }
+  }
 #endif
 }
 
@@ -1370,9 +1454,23 @@ void XWindowRep::FillPixelPoly(Point *pts, int n)
   }
 
 #ifdef GRAPHICS
-  if (_dispGraphics)
-    XFillPolygon(_display, DRAWABLE, _gc, points, n,
-                 Nonconvex, CoordModeOrigin);
+  if (_dispGraphics) {
+      // special-case the no-fill rectangle
+      bool fill = (GetPattern() != -Pattern1);
+      if( fill ) {
+	  XFillPolygon(_display, DRAWABLE, _gc, points, n,
+		       Nonconvex, CoordModeOrigin);
+      }
+      // do I need to reduce the bounding boxes height & width by 1??
+      // draw bounding boxes
+      if( GetLineWidth() >= 0 || !fill ) {
+	  XGCValues gc_values;
+	  XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
+	  XSetFillStyle(_display, _gc, FillSolid);
+	  XDrawLines(_display, DRAWABLE, _gc, points, n, CoordModeOrigin);
+	  XSetFillStyle(_display, _gc, gc_values.fill_style);
+      }
+  }
 #endif
 }
 
@@ -1395,10 +1493,23 @@ void XWindowRep::Arc(Coord x, Coord y, Coord w, Coord h,
   int realEnd = ROUND(int, ToDegree(endAngle) * 64);
 #ifdef GRAPHICS
   if (_dispGraphics) {
-    XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinRound);
-    XDrawArc(_display, DRAWABLE, _gc, ROUND(int, tx - width / 2),
-             ROUND(int, ty - height / 2), ROUND(int, width),
-             ROUND(int, height), realStart, realEnd);
+      // now done by SetLineWidth
+      // XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinRound);
+      bool fill = (GetPattern() != -Pattern1);
+      if( fill ) {
+	  XFillArc(_display, DRAWABLE, _gc, ROUND(int, tx - width / 2),
+		   ROUND(int, ty - height / 2), ROUND(int, width),
+		   ROUND(int, height), realStart, realEnd);
+      }
+      if( GetLineWidth() >= 0 || !fill ) {
+	  XGCValues gc_values;
+	  XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
+	  XSetFillStyle(_display, _gc, FillSolid);
+	  XDrawArc(_display, DRAWABLE, _gc, ROUND(int, tx - width / 2),
+		   ROUND(int, ty - height / 2), ROUND(int, width),
+		   ROUND(int, height), realStart, realEnd);
+	  XSetFillStyle(_display, _gc, gc_values.fill_style);
+      }
   }
 #endif
 }
@@ -1415,7 +1526,7 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   Coord tx1, ty1, tx2, ty2;
   WindowRep::Transform(x1 ,y1, tx1, ty1);
   WindowRep::Transform(x2, y2, tx2, ty2);
-#if defined(GRAPHICS) || 1
+#if defined(GRAPHICS)
   if (_dispGraphics) {
     XSetLineAttributes(_display, _gc, ROUND(int, width), LineSolid, CapButt,
 		       JoinRound);
@@ -1810,7 +1921,7 @@ void XWindowRep::AbsoluteText(char *text, Coord x, Coord y,
   if (!textLength)
     return;
   
-  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   int textWidth = XTextWidth(fontStruct, text, textLength);
   int textHeight = fontStruct->max_bounds.ascent
                    + fontStruct->max_bounds.descent;
@@ -1911,7 +2022,7 @@ void XWindowRep::Text(char *text, Coord x, Coord y, Coord width, Coord height,
   int textLength = strlen(text);
   if (textLength == 0) return;
 
-  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   int textWidth = XTextWidth(fontStruct, text, textLength);
   int textHeight = fontStruct->max_bounds.ascent
                    + fontStruct->max_bounds.descent;
@@ -2017,29 +2128,29 @@ void XWindowRep::SetCopyMode()
 
 #ifdef GRAPHICS
   XSetState(_display, _gc,
-            ((XDisplay *)GetDisplay())->GetLocalColor(GetFgColor()),
-	    ((XDisplay *)GetDisplay())->GetLocalColor(GetBgColor()),
+            GetDisplay()->GetLocalColor(GetFgColor()),
+	    GetDisplay()->GetLocalColor(GetBgColor()),
             GXcopy, AllPlanes);
 #endif
 }
 
 void XWindowRep::SetNormalFont()
 {
-  ((XDisplay *)GetDisplay())->SetNormalFont();
-  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
+  GetDisplay()->SetNormalFont();
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   XSetFont(_display, _gc, fontStruct->fid);
 }
 
 void XWindowRep::SetSmallFont()
 {
-  ((XDisplay *)GetDisplay())->SetSmallFont();
-  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
+  GetDisplay()->SetSmallFont();
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   XSetFont(_display, _gc, fontStruct->fid);
 }
 
 int XWindowRep::GetSmallFontHeight()
 {
-  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetSmallFontStruct();
+  XFontStruct *fontStruct = GetDisplay()->GetSmallFontStruct();
   return fontStruct->max_bounds.ascent + fontStruct->max_bounds.descent;
 }
 
@@ -2095,24 +2206,45 @@ Set current pattern
 
 void XWindowRep::SetPattern(Pattern p)
 {
-  if (WindowRep::GetPattern() != p) {
-    WindowRep::SetPattern(p);
-    if (p == Pattern0) {
-      /* pattern0 is solid */
+    
+    if (WindowRep::GetPattern() != p) {
+	WindowRep::SetPattern(p);
 #ifdef GRAPHICS
-      if (_dispGraphics)
-	XSetFillStyle(_display, _gc, FillSolid);
-#endif
-    } else {
-#ifdef GRAPHICS
-      if (_dispGraphics) {
-	XSetFillStyle(_display, _gc, FillOpaqueStippled);
-	XSetStipple(_display, _gc,
-	     ((XDisplay *)WindowRep::GetDisplay())->GetPatternStipple(p));
-      }
+	if (_dispGraphics) {
+	    if( p == Pattern0 ) { // fill solid foreground color
+		XSetFillStyle(_display, _gc, FillSolid);
+	    } else {
+		if( p < 0 ) {	// transparent pattern
+		    XSetFillStyle(_display, _gc, FillStippled);
+		    XSetStipple(_display, _gc, 
+				GetDisplay()->GetPatternStipple(-p));
+		} else {	// opaque pattern
+		    XSetFillStyle(_display, _gc, FillOpaqueStippled);
+		    XSetStipple(_display, _gc, 
+				GetDisplay()->GetPatternStipple(p));
+		}
+	    }
+	}
 #endif
     }
-  }
+}
+
+/***************************************************************
+Set current line width (for borders)
+****************************************************************/
+
+void XWindowRep::SetLineWidth(int w)
+{
+    WindowRep::SetLineWidth(w);
+#ifdef GRAPHICS
+    if (_dispGraphics) {
+	if( w >= 0 ) {
+	    XSetLineAttributes(_display, _gc, w, LineSolid, CapButt, JoinMiter);
+	} else {
+	    XSetLineAttributes(_display, _gc, 0, LineSolid, CapButt, JoinMiter);
+	}
+#endif
+    }
 }
 
 /***********************************************************************/
@@ -2131,8 +2263,7 @@ void XWindowRep::AllocBitmap(XBitmapInfo &info, int width, int height)
   /* set foreground to 1 and background to 0 for later XCopyPlane() */
   XSetState(_display, info.gc, 1, 0, GXcopy, AllPlanes);
   
-  XSetFont(_display,info.gc,
-	   ((XDisplay *)WindowRep::GetDisplay())->GetFontStruct()->fid);
+  XSetFont(_display,info.gc, GetDisplay()->GetFontStruct()->fid);
   info.image = XGetImage(_display, info.pixmap, 0, 0, width, height,
 			 1, XYPixmap);
 }
@@ -2256,7 +2387,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
     return;
   
   /* find width and height of window */
-  XFontStruct *fontStruct = ((XDisplay *)GetDisplay())->GetFontStruct();
+  XFontStruct *fontStruct = GetDisplay()->GetFontStruct();
   int textWidth = 0;
   int textHeight = 0;
   int charAscent = fontStruct->max_bounds.ascent;

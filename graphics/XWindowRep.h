@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/09/04 21:24:52  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.26  1996/08/29 22:14:09  guangshu
   Changed arguments for ExportGIF.
 
@@ -126,6 +133,7 @@ struct XBitmapInfo {
 	int height;
 };
 
+class XDisplay;
 class Compression;
 
 class XWindowRep: public WindowRep {
@@ -204,6 +212,8 @@ public:
 
 	virtual void SetPattern(Pattern p);
 
+	virtual void SetLineWidth(int w);
+
 	virtual void FillRect(Coord xlow, Coord ylow, Coord width,
 			      Coord height);
 	/* Fill rectangles, variable width/height */
@@ -258,6 +268,10 @@ public:
 	/* Get absolute window rep origin from upper left corner
 	   of the screen */
 	virtual void AbsoluteOrigin(int &x, int &y);
+
+	  /* get display of this Window Rep */
+	XDisplay* GetDisplay() { return (XDisplay*)WindowRep::GetDisplay(); }
+
 
 	// ---------------------------------------------------------- 
 

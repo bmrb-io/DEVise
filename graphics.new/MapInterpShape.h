@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/08/08 21:01:21  beyer
+  Moved virtual functions from .h to .C file
+
   Revision 1.32  1996/07/25 14:24:21  jussi
   Added capability to draw labels at (X,Y) data points.
 
@@ -372,7 +375,7 @@ class FullMapping_LineShape
 				ViewGraph *view, int pixelSize);
 
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
-				    Pattern pattern,
+				    Pattern pattern, int line_width,
 				    Coord x0, Coord y0, Color c0,
 				    Coord x1, Coord y1, Color c1);
 };
@@ -388,7 +391,7 @@ class FullMapping_LineShadeShape
 			    Coord &width, Coord &height);
     
     virtual void DrawConnectingLine(WindowRep *win, ViewGraph *view,
-				    Pattern pattern,
+				    Pattern pattern, int line_width,
 				    Coord x0, Coord y0, Color c0,
 				    Coord x1, Coord y1, Color c1);
 };

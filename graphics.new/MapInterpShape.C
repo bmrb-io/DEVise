@@ -17,6 +17,13 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/09/04 21:25:01  wenger
+  'Size' in mapping now controls the size of Dali images; improved Dali
+  interface (prevents Dali from getting 'bad window' errors, allows Devise
+  to kill off the Dali server); added devise.dali script to automatically
+  start Dali server along with Devise; fixed bug 037 (core dump if X is
+  mapped to a constant); improved diagnostics for bad command-line arguments.
+
   Revision 1.15  1996/08/29 18:24:41  wenger
   A number of Dali-related improvements: ShapeAttr1 now specifies image
   type when shape is 'image'; added new '-bytes' flag to Dali commands
@@ -148,6 +155,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	Color firstColor = 0;
 	Pattern firstPattern = Pattern0;
+	int firstLineWidth = 0;
 
 	int count = 0;
 
@@ -164,6 +172,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	    if (count == 0) {
 		firstColor = GetColor(view, gdata, map, offset);
 		firstPattern = GetPattern(gdata, map, offset);
+		firstLineWidth = int(GetLineWidth(gdata, map, offset)+0.5);
 	    }
 
 	    _width[count] = fabs(size * GetShapeAttr0(gdata, map, offset));
@@ -183,6 +192,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	else
 	  win->SetFgColor(firstColor);
 	win->SetPattern(firstPattern);
+	win->SetLineWidth(firstLineWidth);
 
 	win->FillRectArray(_x, _y, _width, _height, count);
 
@@ -340,6 +350,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
+	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
 	win->FillPixelRect(tx, ty, width, height);
 
@@ -425,6 +436,7 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
+	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
 	win->FillRect(x, 0.0, width, y);
 
@@ -513,6 +525,7 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
+	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
 	win->FillPoly(points, segments);
 
@@ -585,6 +598,7 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
+	win->SetLineWidth(GetLineWidth(gdata, map, offset));
 
 	win->Arc(x, y, width, height, 0, 2 * PI);
 
@@ -657,7 +671,8 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
-	win->Line(x, y, x + w, y + h, 1);
+	// ksb: should we SetLineWidth() or use width param on Line()
+	win->Line(x, y, x + w, y + h, GetLineWidth(gdata, map, offset));
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x + w / 2, y + h / 2, y + h / 2);
@@ -743,7 +758,7 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
 
-	win->Line(xLow, y, xHigh, y, 2);
+	win->Line(xLow, y, xHigh, y, GetLineWidth(gdata, map, offset));
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, (xLow + xHigh) / 2, y, y);
@@ -841,7 +856,7 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
 
-	win->Line(x, y, x + w, y + h, 1);
+	win->Line(x, y, x + w, y + h, GetLineWidth(gdata, map, offset));
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x + w / 2, y + h / 2, y + h / 2);
@@ -980,11 +995,14 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
+	int line_width = GetLineWidth(gdata, map, offset);
+	win->SetLineWidth(line_width);
 
+	// ksb: should the width be applied to the rect, lines, or both?
 	win->FillRect(x - tw, low, 2 * tw, high - low);
-	win->Line(x - hw, y, x + hw, y, 1);
-	win->Line(x - hw, low, x + hw, low, 1);
-	win->Line(x - hw, high, x + hw, high, 1);
+	win->Line(x - hw, y, x + hw, y, line_width);
+	win->Line(x - hw, low, x + hw, low, line_width);
+	win->Line(x - hw, high, x + hw, high, line_width);
 
 	if (view->GetDisplayDataValues())
 	  DisplayDataLabel(win, x, y, y);
@@ -1088,6 +1106,10 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
+	// LineWidth not currently compatible with PolyLine
+	int width = 1;
+	//int width = GetLineWidth(gdata, map, offset);
+	//win->SetLineWidth(width);
 
 	win->DrawPixel(x, y);
 
@@ -1111,7 +1133,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	      continue;
 	    Coord x1 = *(Coord *)(gdata + xOff);
 	    Coord y1 = *(Coord *)(gdata + yOff);
-	    win->Line(x, y, x1, y1, 1);
+	    win->Line(x, y, x1, y1, width);
 	    x = x1;
 	    y = y1;
 	}
@@ -1355,6 +1377,8 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 	else
 	  win->SetFgColor(color);
 	win->SetPattern(GetPattern(gdata, map, offset));
+	int width = GetLineWidth(gdata, map, offset);
+	win->SetLineWidth(width);
 
 	Boolean hasPrev = false;
 	Coord x0 = 0, y0 = 0;
@@ -1376,7 +1400,7 @@ void FullMapping_PolylineFileShape::DrawGDataArray(WindowRep *win,
 		x1 += x;
 		y1 += y;
 		if (hasPrev)
-		  win->Line(x0, y0, x1, y1, 1);
+		  win->Line(x0, y0, x1, y1, width);
 		else
 		  hasPrev = true;
 		x0 = x1;
@@ -1499,6 +1523,9 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     Coord y0 = GetY(gdata, map, offset);
     Color c0 = GetColor(view, gdata, map, offset);
 
+    // How should line width be handled for line types?
+    int width = GetLineWidth(gdata, map, offset);
+
     /* draw line connecting last point of previous batch to
        first point of this batch */
 
@@ -1507,7 +1534,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
         Color cp;
         if (view->GetPointStorage()->Find(recId - 1, xp, yp, cp)) {
             DrawConnectingLine(win, view,
-                               GetPattern(gdata, map, offset),
+                               GetPattern(gdata, map, offset), width,
                                xp, yp, cp, x0, y0, c0);
             if (view->GetDisplayDataValues())
               DisplayDataLabel(win, x0, y0, y0);
@@ -1524,8 +1551,9 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
         Coord x = GetX(gdata, map, offset);
         Coord y = GetY(gdata, map, offset);
         Color color = GetColor(view, gdata, map, offset);
+	width = GetLineWidth(gdata, map, offset);
         DrawConnectingLine(win, view,
-                           GetPattern(gdata, map, offset),
+                           GetPattern(gdata, map, offset), width,
                            x0, y0, c0, x, y, color);
         if (view->GetDisplayDataValues())
           DisplayDataLabel(win, x, y, y);
@@ -1541,7 +1569,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     Color cn;
     if (view->GetPointStorage()->Find(recId + numSyms, xn, yn, cn)) {
         DrawConnectingLine(win, view,
-                           Pattern0, x0, y0, c0, xn, yn, cn);
+                           Pattern0, width, x0, y0, c0, xn, yn, cn);
         (void)view->GetPointStorage()->Remove(recId + numSyms);
     } else {
         view->GetPointStorage()->Insert(recId + numSyms - 1, x0, y0, c0);
@@ -1550,7 +1578,7 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 
 void FullMapping_LineShape::DrawConnectingLine(WindowRep *win, ViewGraph *view,
-					       Pattern pattern,
+					       Pattern pattern, int line_width,
 					       Coord x0, Coord y0, Color c0,
 					       Coord x1, Coord y1, Color c1)
 {
@@ -1561,13 +1589,13 @@ void FullMapping_LineShape::DrawConnectingLine(WindowRep *win, ViewGraph *view,
       win->SetFgColor(c0);
 
     if (c0 == c1) {
-	win->Line(x0, y0, x1, y1, 1);
+	win->Line(x0, y0, x1, y1, line_width);
 	if (c0 == XorColor)
 	  win->SetCopyMode();
 	return;
     }
 
-    win->Line(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2, 1);
+    win->Line(x0, y0, (x0 + x1) / 2, (y0 + y1) / 2, line_width);
     if (c0 == XorColor)
       win->SetCopyMode();
 
@@ -1575,7 +1603,7 @@ void FullMapping_LineShape::DrawConnectingLine(WindowRep *win, ViewGraph *view,
       win->SetXorMode();
     else
       win->SetFgColor(c1);
-    win->Line((x0 + x1) / 2, (y0 + y1) / 2, x1, y1, 1);
+    win->Line((x0 + x1) / 2, (y0 + y1) / 2, x1, y1, line_width);
     if (c1 == XorColor)
       win->SetCopyMode();
 }
@@ -1607,6 +1635,7 @@ void FullMapping_LineShadeShape::MaxSymSize(TDataMap *map,
 void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 						    ViewGraph *view,
 						    Pattern pattern,
+						    int line_width,
 						    Coord x0, Coord y0,
 						    Color c0,
 						    Coord x1, Coord y1,
@@ -1621,17 +1650,8 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
     y0 = MAX(filter.yLow, y0);
     y1 = MAX(filter.yLow, y1);
 
-    /* very slim filled polygons have the problem that depending
-       on the fill_rule (see GC description in an Xlib manual)
-       the interior might not be filled in all cases; to compensate
-       for this, we draw a 1-pixel wide line underneath the
-       polygon */
-
-    FullMapping_LineShape::DrawConnectingLine(win, view, pattern,
-					      x0, y0, c0,
-					      x1, y1, c1);
-
     win->SetPattern(pattern);
+    win->SetLineWidth(-1);	// no edge lines
     if (c0 == XorColor)
       win->SetXorMode();
     else
@@ -1645,60 +1665,75 @@ void FullMapping_LineShadeShape::DrawConnectingLine(WindowRep *win,
 	    win->FillRect(x0, 0, x1 - x0, y0);
 	    if (c0 == XorColor)
 	      win->SetCopyMode();
-	    return;
+	} else {
+	    points[0].x = x0;
+	    points[0].y = y0;
+	    points[1].x = x1;
+	    points[1].y = y1;
+	    points[2].x = x1;
+	    points[2].y = 0;
+	    points[3].x = x0;
+	    points[3].y = 0;
+	    win->FillPoly(points, 4);
+	    if (c0 == XorColor)
+	      win->SetCopyMode();
 	}
-	points[0].x = x0;
-	points[0].y = y0;
-	points[1].x = x1;
-	points[1].y = y1;
-	points[2].x = x1;
-	points[2].y = 0;
-	points[3].x = x0;
-	points[3].y = 0;
-	win->FillPoly(points, 4);
+    } else {
+
+	if (y0 == y1) {
+	    /* area is a rectangle -- optimize for speed */
+	    win->FillRect(x0, 0, (x1 - x0) / 2, y0);
+	} else {
+	    points[0].x = x0;
+	    points[0].y = y0;
+	    points[1].x = (x0 + x1) / 2;
+	    points[1].y = (y0 + y1) / 2;
+	    points[2].x = (x0 + x1) / 2;
+	    points[2].y = 0;
+	    points[3].x = x0;
+	    points[3].y = 0;
+	    win->FillPoly(points, 4);
+	}
 	if (c0 == XorColor)
 	  win->SetCopyMode();
-	return;
+
+	if (c1 == XorColor)
+	  win->SetXorMode();
+	else
+	  win->SetFgColor(c1);
+
+	if (y0 == y1) {
+	    /* area is a rectangle -- optimize for speed */
+	    win->FillRect((x0 + x1) / 2, 0, (x1 - x0) / 2, y0);
+	} else {
+	    points[0].x = (x0 + x1) / 2;
+	    points[0].y = (y0 + y1) / 2;
+	    points[1].x = x1;
+	    points[1].y = y1;
+	    points[2].x = x1;
+	    points[2].y = 0;
+	    points[3].x = (x0 + x1) / 2;
+	    points[3].y = 0;
+	    win->FillPoly(points, 4);
+	}
+	if (c1 == XorColor)
+	  win->SetCopyMode();
+
     }
 
-    if (y0 == y1) {
-	/* area is a rectangle -- optimize for speed */
-	win->FillRect(x0, 0, (x1 - x0) / 2, y0);
-    } else {
-	points[0].x = x0;
-	points[0].y = y0;
-	points[1].x = (x0 + x1) / 2;
-	points[1].y = (y0 + y1) / 2;
-	points[2].x = (x0 + x1) / 2;
-	points[2].y = 0;
-	points[3].x = x0;
-	points[3].y = 0;
-	win->FillPoly(points, 4);
-    }
-    if (c0 == XorColor)
-      win->SetCopyMode();
+    /* very slim filled polygons have the problem that depending
+       on the fill_rule (see GC description in an Xlib manual)
+       the interior might not be filled in all cases; to compensate
+       for this, we draw a 1-pixel wide line underneath the
+       polygon.
 
-    if (c1 == XorColor)
-      win->SetXorMode();
-    else
-      win->SetFgColor(c1);
+       The line is now variable width & placed on top of the fill so that
+       you get a solid line to cap the line & the fill pattern below.
+    */
 
-    if (y0 == y1) {
-	/* area is a rectangle -- optimize for speed */
-	win->FillRect((x0 + x1) / 2, 0, (x1 - x0) / 2, y0);
-    } else {
-	points[0].x = (x0 + x1) / 2;
-	points[0].y = (y0 + y1) / 2;
-	points[1].x = x1;
-	points[1].y = y1;
-	points[2].x = x1;
-	points[2].y = 0;
-	points[3].x = (x0 + x1) / 2;
-	points[3].y = 0;
-	win->FillPoly(points, 4);
-    }
-    if (c1 == XorColor)
-      win->SetCopyMode();
+    FullMapping_LineShape::DrawConnectingLine(win, view, Pattern0, line_width,
+					      x0, y0, c0,
+					      x1, y1, c1);
 }
 
 

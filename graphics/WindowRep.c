@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  1996/08/28 00:19:38  wenger
+  Improved use of Dali to correctly free images (use of Dali is now fully
+  functional with filenames in data).
+
   Revision 1.16  1996/08/04 21:05:34  beyer
   changed key handling
 
@@ -89,6 +93,7 @@ WindowRep::WindowRep(DeviseDisplay *disp, Color fgndColor, Color bgndColor,
   _bgndColor = bgndColor;
   _display = disp;
   _pattern = p;
+  _width = 0;
 }
 
 WindowRep::~WindowRep()

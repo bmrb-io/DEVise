@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1996/08/05 18:39:41  beyer
+  Fixed debugging statement
+
   Revision 1.23  1996/08/03 15:19:46  jussi
   The visual filter is not applied in 3D views.
 
@@ -204,7 +207,7 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
 {
   DOASSERT(_index >= 0, "Invalid iterator index");
 
-#ifdef DEBUG
+#if defined(DEBUG)
   printf("ViewScatter %d recs buf start 0x%p\n", numGData, gdata);
 #endif
 
@@ -240,7 +243,14 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
     Coord x = GetX(ptr, mapping, offset);
     Coord y = GetY(ptr, mapping, offset);
     ShapeID shape = GetShape(ptr, mapping, offset);
-    Coord width, height;
+#if 0
+    Coord width  = GetWidth(ptr, mapping, offset);
+    Coord height = GetHeight(ptr, mapping, offset);
+    Coord x1 = x - width/2;
+    Coord x2 = x + width/2;
+    Coord y1 = y - height/2;
+    Coord y2 = y + height/2;
+#endif
     Color color = mapping->GetDefaultColor();
     if (offset->colorOffset >= 0)
       color = *(Color *)(ptr + offset->colorOffset);
@@ -273,7 +283,17 @@ void ViewScatter::ReturnGData(TDataMap *mapping, RecId recId,
       
       ptr += gRecSize;
       continue;
-    }    
+    }
+
+#if defined(DEBUG)
+    printf("ViewScatter::ReturnGData: adding record #%ld (X+-W,Y+-H)="
+	   "(%g+-%g, %g+-%g)\n"
+	   "                          filter(X1,X2,Y1,Y2) = (%g, %g, %g, %g)\n",
+//	   recId + i, x, width, y, height,
+	   recId + i, x, maxWidth, y, maxHeight,
+	   _queryFilter.xLow, _queryFilter.xHigh,
+	   _queryFilter.yLow, _queryFilter.yHigh);
+#endif
 
     // Draw data only if window is not iconified
     if (!Iconified()) {

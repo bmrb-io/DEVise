@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/09/05 21:30:15  jussi
+  Moved user-specified screen size to Display.
+
   Revision 1.18  1996/09/05 20:01:50  jussi
   Added support for user-specified screen size (mainly used
   in batch mode).
@@ -161,7 +164,11 @@ protected:
     friend class XWindowRep;
 
     /* Get stipple for pattern */
-    Pixmap GetPatternStipple(Pattern p){ return _stipples[p]; };
+    Pixmap GetPatternStipple(int p) { // p should be of type Pattern
+	if( p < 0 ) p = -p;
+	if( p >= XNumBitmaps ) p %= XNumBitmaps;
+	return _stipples[p];
+    };
     
     /* get structure for fonts */
     XFontStruct *GetFontStruct()       { return _fontStruct; };
