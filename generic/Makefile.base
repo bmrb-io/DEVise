@@ -6,7 +6,7 @@ CC = g++
 LDFLAGS = $(ARCH_LDFLAGS) $(ALLOBJ) \
 	-ltcl -ltk -lXaw -lXmu -lXt -lXext -lX11 -lm \
 	$(ARCH_LDPOST)
-CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
+CFLAGS = $(ARCH_FLAGS)  -I../../graphics -I../../graphics.new -I../../tape \
 	-fexternal-templates -Wall -Wno-unused -O -DUNIX
 
 SRC = generic.c

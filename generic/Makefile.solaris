@@ -1,5 +1,5 @@
 depend:
-	makedepend -fMakefile.solaris -I../graphics -I../graphics.new \
+	makedepend -fMakefile.solaris  -I../graphics -I../graphics.new \
 		-I../tape *.c
 # DO NOT DELETE
 
