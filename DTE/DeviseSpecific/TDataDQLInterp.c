@@ -33,7 +33,6 @@
 
 #include "types.h"
 #include "exception.h"
-#include "TuplePtr.XPlex.h"
 #include "queue.h"
 
 // #define DEBUG

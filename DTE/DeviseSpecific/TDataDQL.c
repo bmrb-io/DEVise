@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/09/05 22:56:17  donjerko
+  *** empty log message ***
+
   Revision 1.21  1997/09/05 22:20:31  donjerko
   Made changes for port to NT.
 
@@ -72,7 +75,6 @@
 #include "Engine.h"
 #include "exception.h"
 #include "types.h"
-#include "TuplePtr.XPlex.h"
 #include "queue.h"
 #include "CatalogComm.h"
 
@@ -165,7 +167,7 @@ void TDataDQL::runQuery(){
 	}
      Tuple* tup;
 
-	engine->initialize();
+	TRY(engine->initialize(), );
 	const Tuple* firstTup = engine->getNext();
 	if(!firstTup){
 		cout << "Empty result set" << endl;
@@ -375,6 +377,15 @@ CATCH(
 )
 
   engine->initialize();
+CATCH(
+     cout << "DTE error coused by query: \n";
+     cout << "   " << query << endl;
+     currExcept->display();
+     currExcept = NULL;
+     cout << endl;
+     exit(0);
+)
+
   return req;
   } // end of recId stuff
   

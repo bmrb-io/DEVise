@@ -6,7 +6,7 @@
 	#include <netinet/in.h>
 	#include <netdb.h>
 	#include <arpa/inet.h>
-	#include <String.h>
+	#include <string>
 #endif
 
 #include <string.h>
@@ -19,7 +19,6 @@
 	#include "common.h"
 #endif
 
-#include "ApInit.h" /* for DoInit */
 #include "RTreeCommon.h"
 #include "Engine.h"
 #include "types.h"
@@ -42,7 +41,6 @@ const int DETAIL = 1;
 int main(int argc, char** argv)
 {
   
- Init::DoInit();
   char* queryString = NULL;
 
 #ifdef DTE_AS_SERVER
@@ -95,11 +93,18 @@ int main(int argc, char** argv)
 
      printf("Content-type: text/plain%c%c",10,10);
 	FILE* inputStream = stdin;
-	int cl = atoi(getenv("CONTENT_LENGTH"));
+	char* cont_len = getenv("CONTENT_LENGTH");
+	int cl = 0;
+	if(cont_len){
+		cl = atoi(cont_len);
+	}
 
 #endif //ifdef DTE_AS_SERVER
 
-       int entryCnt = post_query(cl, inputStream);
+	int entryCnt = 0;
+	if(cl > 0){
+		entryCnt = post_query(cl, inputStream);
+	}
 
 #ifdef DTE_AS_SERVER
        Cor_sockbuf *accepted;
@@ -119,6 +124,7 @@ int main(int argc, char** argv)
 	 }
        bool execute = false;
        bool profile = false;
+	  bool typecheck = false;
        char* shipping = NULL;
        char* table = NULL;
         #ifdef DTE_AS_SERVER 
@@ -126,10 +132,14 @@ int main(int argc, char** argv)
 	#endif
        for(int i = 0; i < entryCnt; i++)
 	 {
-	   String option = entries[i].name;
+	   string option = entries[i].name;
 	   if(option == "execute")
 	     {
 	       execute = true;
+	     }
+	   else if(option == "typecheck")
+	     {
+	       typecheck = true;
 	     }
 	   else if(option == "profile")
 	     {
@@ -165,7 +175,7 @@ int main(int argc, char** argv)
        if (ugly)
 	 continue;
 	#endif
-       if(execute)
+       if(execute || typecheck)
 	 {
 	 }	  
        else if(profile)
@@ -198,7 +208,7 @@ int main(int argc, char** argv)
 		#endif
 	 }
 
-        String query(queryString);
+        string query(queryString);
   
        Engine engine(query);
 	DBSERVER("before TRY")
@@ -213,7 +223,10 @@ int main(int argc, char** argv)
 		}
 	DBSERVER("after TRY")
 	#else
-	TRY(engine.optimize(), 0);
+	engine.optimize();
+	string err = "In query: " + query;
+	CHECK(err, 0);
+
 	#endif
      int numFlds = engine.getNumFlds();
 	#ifdef DTE_AS_SERVER
@@ -226,37 +239,37 @@ int main(int argc, char** argv)
 	#else
 	assert(numFlds > 0);
 	#endif
-        WritePtr* writePtrs = engine.getWritePtrs();
-     String* types = engine.getTypeIDs();
-        String* attrs = engine.getAttributeNames();
-     Tuple tup[numFlds];
 
-     out << "0 OK\n";
-     out << numFlds << endl;
-     for(int i = 0; i < numFlds; i++){
-          out << types[i] << " ";
-     }
-     out << endl;
-     for(int i = 0; i < numFlds; i++){
-                out << attrs[i] << " ";
-	      }
+     const TypeID* types = engine.getTypeIDs();
+     const string* attrs = engine.getAttributeNames();
 
-     out << endl;
-        out << ";" << endl;
+	if(typecheck){
+		ISchema schema(numFlds, types, attrs);	
+		out << "0 OK\n";
+		out << schema << endl;
+		return 0;
+	}
 
-        engine.initialize();
-     while(engine.getNext(tup)){
-          for(int i = 0; i < numFlds; i++){
-                        writePtrs[i](out, tup[i]);
-               out << '\t';
+     WritePtr* writePtrs = newWritePtrs(types, numFlds);
+
+	engine.initialize();
+	err = "In query: " + query;
+	CHECK(err, 0);
+	
+     const Tuple* tup;
+
+	out << "0 OK\n";
+
+     while((tup = engine.getNext())){
+		for(int i = 0; i < numFlds; i++){
+			writePtrs[i](out, tup[i]);
+			out << '\t';
           }
           out << endl;
      }
-        engine.finalize();
+	engine.finalize();
+
 	#ifdef DTE_AS_SERVER
 	delete accepted;
-}
 	#endif
 }
-
-

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1997/08/21 21:04:53  donjerko
+  Implemented view materialization
+
   Revision 1.10  1997/06/16 16:05:12  donjerko
   New memory management in exec phase. Unidata included.
 
@@ -63,8 +66,6 @@
 #include "ClassDir.h"
 #include "TDataDQL.h"
 #include "AttrList.h"
-
-#include "TuplePtr.XPlex.h"
 
 class TDataDQLInterpClassInfo: public ClassInfo {
 public:
