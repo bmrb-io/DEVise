@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.20  1998/11/24 19:31:08  wenger
+  Fixed problem with soil science sessions sometimes locking up the
+  JavaScreen by disallowing input from file descriptors while waiting for
+  queries to finish; JavaScreen support code now omits sending windows for
+  which the print exclusion flag is set (allows "control windows") to not
+  be displayed in the JavaScreen.
+
   Revision 1.19  1998/08/17 17:12:01  wenger
   Devised now responds to KeyAction commands from JavaScreen.
 
@@ -342,7 +349,7 @@ int NetworkReceive(int fd, int block, u_short &flag, int &ac, char **&av)
       if (res > 0)
         break;
       if (errno == EINTR) {
-#ifdef DBEUG
+#ifdef DEBUG
         printf("Call to recv interrupted, continuing\n");
 #endif
         continue;
@@ -427,7 +434,10 @@ int NetworkSend(int fd, u_short flag, u_short bracket, int argc, char **argv)
 {
 #if defined(DEBUG)
   printf("NetworkSend(%d, %d, %d, ", fd, flag, bracket);
-  PrintArgs(stdout, argc, argv, false);
+  printf("args(");
+  for (int argNum = 0; argNum < argc; argNum++) {
+    printf("<%s>, ", argv[argNum]);
+  }
   printf(")\n");
   fflush(stdout);
 #endif
