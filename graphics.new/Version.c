@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  1999/02/12 20:15:55  wenger
+  Extended copyright to 1999.
+
   Revision 1.48  1999/02/11 19:54:59  wenger
   Merged newpile_br through newpile_br_1 (new PileStack class controls
   pile and stacks, allows non-linked piles; various other improvements
@@ -279,7 +282,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.6.1";
+static const char *	version = "1.6.2";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-1999";
