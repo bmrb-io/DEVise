@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  1996/07/19 02:43:07  jussi
+  Added point storage for missing data points.
+
   Revision 1.26  1996/07/13 17:25:07  jussi
   When view is iconified, statistics are collected but data
   is not drawn.
@@ -301,6 +304,8 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   _totalGData += numGData;
   _numBatches++;
 
+  Boolean canElimRecords = true;
+
   // Collect statistics and update record links only for last mapping
   if (!MoreMapping(_index)) {
 
@@ -318,6 +323,10 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       Color color = mapping->GetDefaultColor();
       if (offset->colorOffset >= 0)
 	color = *(Color *)(tp + offset->colorOffset);
+
+      // Line and LineShade records prevent record elimination
+      if (shape == 13 || shape == 14)
+        canElimRecords = false;
 
       // Compute statistics only for records that match the filter's
       // X range and that exceed the Y low boundary
@@ -349,14 +358,14 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
   // Draw data only if window is not iconified
   if (!Iconified()) {
     if (_batchRecs) {
-      _dataBin->InsertSymbol(recId, gdata, numGData);
+      _dataBin->InsertSymbol(recId, gdata, numGData, 1, canElimRecords);
 #ifdef DEBUG
       _dataBin->PrintStat();
 #endif
     } else {
       char *ptr = (char *)gdata;
       for(int i = 0; i < numGData; i++) {
-        _dataBin->InsertSymbol(recId, ptr, 1);
+        _dataBin->InsertSymbol(recId, ptr, 1, 1, canElimRecords);
         recId++;
         ptr += gRecSize;
       }
