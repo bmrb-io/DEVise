@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.59  1997/02/25 22:16:56  donjerko
+#	Fixed some bugs in tcl - dte communication
+#
 #	Revision 1.58  1997/02/18 18:07:52  donjerko
 #	Added index deletions.
 #
@@ -255,6 +258,7 @@
 #set sourceTypes(SQL) "{SQL Query Output} $schemadir/logical/SQL"
 set "sourceTypes(SQLView)" "{SQL View} $schemadir/logical/SQL"
 set "sourceTypes(Table)" "{Table} $schemadir/logical/SQL"
+set "sourceTypes(StandardTable)" "{StandardTable} $schemadir/logical/SQL"
 set "sourceTypes(Directory)" "{Directory} $schemadir/logical/SQL"
 set sourceTypes(UNIXFILE) "{Unix File} $schemadir/logical/UNIXFILE"
 set sourceTypes(DEVise) "{Devise} $schemadir/logical/UNIXFILE"
@@ -862,6 +866,101 @@ proc defineANY {sourcetype} {
                displayTable [fullPathName $table $currentDir]
           }
 	}
+}
+
+proc defineStandardTable {content} {
+
+# these variable are used within the widgets of this procedure only
+
+	global retVal tableName sourceType schemaFile url viewFile
+	set sourcetype "StandardTable"
+	set sourceType $sourcetype
+
+# cannot display remote site
+	global displayImmediately
+	set displayImmediately 0
+
+    toplevel .srcdef
+ 	wm title .srcdef "$sourcetype Definition"
+    wm geometry .srcdef +100+100
+    selection clear .srcdef
+
+    frame .srcdef.top -relief groove -borderwidth 2
+    frame .srcdef.but
+    pack .srcdef.top -side top -pady 3m -fill both -expand 1
+    pack .srcdef.but -side top -pady 3m -fill x
+    frame .srcdef.but.row1
+    pack .srcdef.but.row1 -side top
+
+     set tableName [lindex $content 0]
+	set url [lindex $content 2]
+	
+    frame .srcdef.top.row1
+    frame .srcdef.top.row2
+    frame .srcdef.top.row3
+    frame .srcdef.top.row4 -relief groove -borderwidth 2
+    frame .srcdef.top.row5
+    pack .srcdef.top.row2 .srcdef.top.row3 .srcdef.top.row1 \
+	     .srcdef.top.row4 .srcdef.top.row5 -side top -pady 1m
+
+    label .srcdef.top.row1.l1 -text "Table Name:"
+    entry .srcdef.top.row1.e1 -relief sunken -textvariable tableName \
+	    -width 40
+    pack .srcdef.top.row1.l1 .srcdef.top.row1.e1 -side left -padx 3m \
+	    -fill x -expand 1
+
+    label .srcdef.top.row2.l1 -text "URL"
+    entry .srcdef.top.row2.e1 -relief sunken -textvariable url \
+	    -width 40 
+    button .srcdef.top.row2.b1 -text "Select..." -width 10 -command {
+     global dialogListVar
+    	if {$sourceType == "Directory"} {
+		global schemadir fsBox
+		set fsBox(path) $schemadir
+		set fsBox(pattern) *.dte
+		set file [FSBox "Select $sourceType file" newDirectory]
+		if {$file != ""} { set url $file }
+	} else {
+		set answer [dialogList .selectTData "Select DEVise Script"  \
+		              "Select DEVise Script" \
+				   "" 0 { OK New Cancel } \
+				   {http://fontina.cs.wisc.edu/cgi-fontina/donko/script} ]
+		if {$answer == 0} {
+			set url $dialogListVar(selected)
+		} elseif {$answer == 1} {
+			set url [lineEntryBox "New DEVise address" "HTTP address"]
+		} else {
+			set url ""
+		}
+	}
+	set tableName ""
+    }
+
+    pack .srcdef.top.row2.l1 .srcdef.top.row2.e1 .srcdef.top.row2.b1 \
+	    -side left -padx 2m -fill x -expand 1
+
+	button .srcdef.but.ok -text OK -width 10 -command {
+		if {$tableName == "" || $url == "" } {
+			dialog .noName "Missing Information" \
+				"Please enter all requested information." "" 0 OK
+		} else {
+			set retVal "[addQuotes $tableName] $sourceType $url"
+			destroy .srcdef
+		}
+	}
+
+	button .srcdef.but.cancel -text Cancel -width 10  -command {
+			set retVal ""
+			destroy .srcdef
+	}
+
+	pack .srcdef.but.ok \
+		.srcdef.but.cancel -in .srcdef.but.row1 -side left -padx 7m
+
+	tkwait visibility .srcdef
+	grab set .srcdef
+	tkwait window .srcdef
+	return $retVal
 }
 
 proc defineDEVise {content} {
@@ -1984,6 +2083,7 @@ proc updateSources {} {
 			$sname $source $cached]
 		.srcsel.top.list insert end $item
 	}
+	puts "listing = $listing"
 	foreach pair [lsort $listing] {
 		set sname [lindex $pair 0]
 		set source [lindex $pair 1]

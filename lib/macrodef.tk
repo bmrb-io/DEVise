@@ -15,6 +15,14 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.75  1997/03/02 00:47:27  donjerko
+#	Tdata used to be created before "Define Visualisation" window.
+#	For DTE types, it is now being created after this window because the
+#	user options can make query more restrictive and therefore cheaper to execute.
+#	This screws up the Mapping dialog because only the restricted set of
+#	attributes is passed as tdata.
+#	This needs to be fixed once we aggree how to go about it.
+#
 #	Revision 1.74  1997/02/18 18:07:50  donjerko
 #	Added index deletions.
 #
@@ -299,7 +307,7 @@
 
 proc isDTEType {type} {
 	if {$type == "SQLView" || $type == "Table" || $type == "DEVise"
-		|| $type == "Directory"} {
+		|| $type == "Directory" || $type == "StandardTable" } {
 		return 1
 	} else {
 		return 0
@@ -1042,6 +1050,9 @@ proc MacroDefAuto {tdata schemaname {is_dte_type 0}} {
     }
     label .auto.ysel.label -text $slabel -width $swidth
     pack .auto.ysel.label -side top -fill x -expand 1 -pady 2m
+
+	# clear the yvar array 
+	catch {unset yvar}
 
     frame .auto.ysel.sel
     pack .auto.ysel.sel -side top -padx 3m -pady 1m -expand 1
