@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.48  1999/01/18 18:25:13  beyer
+  fixed compile errors for egcs v 1.1.1
+
   Revision 1.47  1999/01/05 15:06:56  wenger
   Got "static" (the views displayed don't change once the session is open)
   view symbols to work in the JavaScreen.
@@ -832,11 +835,13 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
             }
             else
             {
-                fprintf(stderr, " { expected\n");
+                fprintf(stderr, " { expected\n"); // } balance braces
                 startPos = -1;
             }
         }
-        strncpy(_argv[i], argv[i]+startPos +1, endPos - startPos -1);
+		int copyLen = endPos - startPos - 1;
+        strncpy(_argv[i], argv[i]+startPos +1, copyLen);
+		_argv[i][copyLen] = '\0';
     }
 }
 

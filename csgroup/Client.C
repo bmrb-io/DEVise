@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  1999/01/18 18:11:12  beyer
+  fixed compile errors and warnings for egcs version 1.1.1
+
   Revision 1.9  1998/08/21 22:16:01  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
   linked DEVise for distribution.
@@ -660,15 +663,16 @@ Client::ServerCmd(int argc, char **argv)
 		char 	**nargv = new (char*)[argc+1];
 		int		i;
 
-		for (i=0; i< argc; ++i)
-			nargv[i+1] = argv[i];
-	
 		if (csk == NULL)
 		{
 			// new a null key
 			csk = new CSgroupKey();
 		}
 		nargv[0] = csk->toStr();		
+
+		for (i=0; i< argc; ++i) {
+			nargv[i+1] = argv[i];
+		}
 	
 		if (NetworkSend(_serverFd, API_CMD, 0, argc+1, nargv) < 0) {
 			fprintf(stderr, "Server has terminated. Client exits.\n");

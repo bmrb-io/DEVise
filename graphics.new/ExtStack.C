@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/01/18 18:24:04  beyer
+  fixed compile error for egcs v 1.1.1
+
   Revision 1.1  1998/03/03 05:21:04  taodb
   Added extendable stack to command object
 
@@ -54,6 +57,10 @@ ExtStack::setNext(ExtStack* next)
 ExtStack::ExtStack(int unitSz, ExtStack* father)
 {
 	db = new (void*)[unitSz];
+	for (int index = 0; index < unitSz; index++) {
+		db[index] = NULL;
+	}
+
 	this->unitSz = unitSz;
 	emptySz = 0;
 	next = NULL;
