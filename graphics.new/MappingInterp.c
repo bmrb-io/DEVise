@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/04/09 23:05:40  jussi
+  Added View parameter to DrawGDataArray().
+
   Revision 1.22  1996/03/26 15:34:55  wenger
   Fixed various compile warnings and errors; added 'clean' and
   'mostlyclean' targets to makefiles; changed makefiles so that
@@ -254,6 +257,8 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   _tdataFlag = new Bitmap(MAX_TDATA_ATTRS);
   
   _offsets = new GDataAttrOffset;
+  SetGDataOffset(_offsets);
+
   _cmd = cmd;
   _cmdFlag = flag;
   _cmdAttrFlag = attrFlag;
@@ -305,8 +310,6 @@ void MappingInterp::UpdateBoundingBox(int pageNum,
 void MappingInterp::DrawGDataArray(View *view, WindowRep *win,
 				   void **gdataArray, int num)
 {
-  SetGDataOffset(_offsets);
-
   if (_offsets->shapeOffset < 0) {
     /* constant shape */
     ShapeID shape = GetDefaultShape();
