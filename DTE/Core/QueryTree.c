@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  1997/11/24 23:13:15  weaver
+  Changes for the new ColorManager.
+
   Revision 1.45  1997/11/23 21:23:30  donjerko
   Added ODBC stuff.
 
@@ -165,19 +168,46 @@ void QueryTree::resolveNames(){	// throws exception
      }
 }
 
-template<class T>
-void translate(const vector<T>& vec, List<T>*& list){
-	delete list;
-	list = new List<T>;
+//****************************************
+// Getting around the template problem for now...
+//****************************************
+//template<class T>
+//void translate(const vector<T>& vec, List<T>*& list){
+//	delete list;
+//	list = new List<T>;
 
-	vector<T>::const_iterator it;
+//	vector<T>::const_iterator it;
+//	for(it = vec.begin(); it != vec.end(); ++it){
+//		list->append(*it);
+//	}
+//}
+
+//template<class T>
+//void translate(List<T>* list,  vector<T>& vec){
+//	assert(vec.empty()); 
+//	if(list){
+//		for(list->rewind(); !list->atEnd(); list->step()){
+//			vec.push_back(list->get());
+//		}
+//	}
+//}
+
+void translate(const vector<TableAlias*>& vec, List<TableAlias*>*& list);
+void translate(List<TableAlias*>* list,  vector<TableAlias*>& vec);
+void translate(const vector<BaseSelection*>& vec, List<BaseSelection*>*& list);
+void translate(List<BaseSelection*>* list,  vector<BaseSelection*>& vec);
+
+void translate(const vector<TableAlias*>& vec, List<TableAlias*>*& list){
+	delete list;
+	list = new List<TableAlias*>;
+
+	vector<TableAlias*>::const_iterator it;
 	for(it = vec.begin(); it != vec.end(); ++it){
 		list->append(*it);
 	}
 }
 
-template<class T>
-void translate(List<T>* list,  vector<T>& vec){
+void translate(List<TableAlias*>* list,  vector<TableAlias*>& vec){
 	assert(vec.empty()); 
 	if(list){
 		for(list->rewind(); !list->atEnd(); list->step()){
@@ -185,6 +215,26 @@ void translate(List<T>* list,  vector<T>& vec){
 		}
 	}
 }
+
+void translate(const vector<BaseSelection*>& vec, List<BaseSelection*>*& list){
+	delete list;
+	list = new List<BaseSelection*>;
+
+	vector<BaseSelection*>::const_iterator it;
+	for(it = vec.begin(); it != vec.end(); ++it){
+		list->append(*it);
+	}
+}
+
+void translate(List<BaseSelection*>* list,  vector<BaseSelection*>& vec){
+	assert(vec.empty()); 
+	if(list){
+		for(list->rewind(); !list->atEnd(); list->step()){
+			vec.push_back(list->get());
+		}
+	}
+}
+//****************************************
 
 Site* QueryTree::createSite(){
 	if(!namesToResolve->isEmpty()){

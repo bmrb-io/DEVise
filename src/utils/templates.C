@@ -4,7 +4,7 @@
 // DEVise Color Management
 //******************************************************************************
 // File: templates.C
-// Last modified: Thu Oct  2 16:33:05 1997 by Chris Weaver
+// Last modified: Wed Nov 26 17:17:11 1997 by Chris Weaver
 //******************************************************************************
 // Modification History:
 //
