@@ -41,6 +41,12 @@ public:
 	virtual void write(ostream& out) const {
 		out << " ;";
 	}
+	virtual string guiRepresentation() const {
+		ostringstream os;
+		write(os);
+		os << ends;
+		return os.str();
+	}
 	virtual Type getType(){
 		return UNKNOWN;
 	}
@@ -153,6 +159,7 @@ public:
 	virtual Site* getSite();
 	virtual istream& read(istream& in);
 	virtual void write(ostream& out) const;
+	virtual string guiRepresentation() const;
 	virtual const ISchema* getISchema(TableName* table);
 	virtual Type getType(){
 		return VIEW;

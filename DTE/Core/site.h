@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.37  1997/11/24 23:13:18  weaver
+  Changes for the new ColorManager.
+
   Revision 1.36  1997/11/24 06:01:27  donjerko
   Added more odbc files.
 
@@ -111,8 +114,6 @@
 #include <string>
 #include <set>
 #include <assert.h>
-
-#include <set>
 
 #ifndef __GNUG__
 using namespace std;

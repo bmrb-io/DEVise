@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  1997/11/05 00:19:41  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.13  1997/09/05 22:20:09  donjerko
   Made changes for port to NT.
 
@@ -55,11 +58,11 @@
 #include "catalog.h"
 #include "Interface.h"
 
-Site* ISchemaParse::createSite(){
+Iterator* ISchemaParse::createExec(){
 	Interface* interf;
 	TRY(interf = ROOT_CATALOG.createInterface(tableName), NULL);
 	TRY(const ISchema* schema = interf->getISchema(tableName), NULL);
-	ISchemaSite* retVal = new ISchemaSite(schema);
+	ISchemaSite tmp(schema);
 	delete interf;
-	return retVal;
+	return tmp.createExec();
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/11/12 23:17:22  donjerko
+  Improved error checking.
+
   Revision 1.18  1997/09/05 22:20:02  donjerko
   Made changes for port to NT.
 
@@ -78,55 +81,61 @@
 using namespace std;
 #endif
 
+class ParseTree;
+
 class Engine : public PlanOp {
 protected:
 	string query;
-	Site* topNode;
 	Iterator* topNodeIt;
+	const ISchema* schema;
+	ParseTree* parseTree;
 public:
-	Engine() :  topNode(NULL), topNodeIt(NULL) {}
-	Engine(string query) : query(query), topNode(NULL),
-		topNodeIt(NULL) {}
-	virtual ~Engine(){
-		delete topNode;	// should delete all the sites
-		delete topNodeIt;
-	}
-	int optimize();	// throws
+	Engine(const string& query) : query(query),
+		topNodeIt(0), schema(0), parseTree(0) {}
+	virtual ~Engine();
+	const ParseTree* parse();	// throws
+	const ISchema* typeCheck();	// throws
+	virtual int optimize();	// throws
+	/*
 	int optimize(string query){	// throws
-		delete topNode;	// should delete all the sites
+		delete topNode; // should delete all the sites
 		topNode = NULL;
 		delete topNodeIt;
 		topNodeIt = NULL;
+
 		this->query = query;
 		return optimize();
 	}
+	*/
      virtual int getNumFlds(){
-		return topNode->getNumFlds();
+		assert(schema);
+		return schema->getNumFlds();
      }
      virtual const string* getTypeIDs(){
-          return topNode->getTypeIDs();
+		assert(schema);
+          return schema->getTypeIDs();
      }
 	const Tuple* getNext(){
 		assert(topNodeIt || !"Initialize engine before calling getNext");
 		return topNodeIt->getNext();
 	}
 	virtual const string* getAttributeNames(){
-		return topNode->getAttributeNames();
+		assert(schema);
+		return schema->getAttributeNames();
 	}
      string* getOrderingAttrib(){
-		assert(topNode);
-		return topNode->getOrderingAttrib();
+		assert(!"not implemented");
+		return 0;
      }
 	virtual Stats* getStats(){
-		return topNode->getStats();
+		assert(!"not implemented");
+		return 0;
 	}
 	void reset(int lowRid, int highRid){
 		TRY(topNodeIt->reset(lowRid, highRid), NVOID );
 	}
 	void initialize(){
 		assert(getNumFlds() != 0);
-		assert(topNodeIt == NULL);
-		TRY(topNodeIt = topNode->createExec(), NVOID );
 		assert(topNodeIt);
 		topNodeIt->initialize();
 	}
@@ -135,7 +144,7 @@ public:
 	}
 	virtual Iterator* createExec(){
 		assert(0);
-		return topNode->createExec();
+		return 0;
 	}
 };
 
@@ -153,9 +162,9 @@ public:
 		if(typeIDs){
 			return typeIDs;
 		}
-		assert(topNode);
-		assert(topNode->getNumFlds() + 1 == numFlds);
-          const TypeID* inTypes = topNode->getTypeIDs();
+		assert(schema);
+		assert(schema->getNumFlds() + 1 == numFlds);
+          const TypeID* inTypes = schema->getTypeIDs();
 		typeIDs = new TypeID[numFlds];
 		typeIDs[0] = "int";
 		for(int i = 1; i < numFlds; i++){
@@ -167,14 +176,15 @@ public:
 		return attributeNames;
 	}
      int getNumFlds(){
-		assert(topNode);
-		assert(topNode->getNumFlds() + 1 == numFlds);
+		assert(schema);
+		assert(schema->getNumFlds() + 1 == numFlds);
 		return numFlds;
      }
 	virtual Stats* getStats(){
 		return new Stats(numFlds);
 	}
-	Iterator* createExec();
+	virtual int optimize();	// throws
+	virtual Iterator* createExec();
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.36  1997/11/18 19:49:21  okan
+  Made several changes for NT compilation
+
   Revision 1.35  1997/11/14 22:37:20  donjerko
   *** empty log message ***
 
@@ -86,12 +89,6 @@
   Revision 1.13  1996/12/27 16:51:50  kmurli
   Changed my.yacc to not put non-join tables in the joinLIst
 
-  Revision 1.12  1996/12/27 04:38:01  kmurli
-  Nodified joins.h to remove erros in joinprev in case of more than one table
-
-  Revision 1.11  1996/12/24 21:00:53  kmurli
-  Included FunctionRead to support joinprev and joinnext
-
   Revision 1.10  1996/12/21 22:21:49  donjerko
   Added hierarchical namespace.
 
@@ -113,28 +110,19 @@
 #include "exception.h"
 #include "queue.h"
 #include "ParseTree.h"
-#include "joins.h"
 //#include <iostream.h>    erased for sysdep
-#include <string>
 #include <assert.h>
 
 #include "sysdep.h"
 
 extern int yylex();
-extern ParseTree* parseTree;
-extern List<string*>* namesToResolve;
-extern List<JoinTable*>* joinList;
-extern JoinTable * joinTable;
-extern JoinTable * jTable;
+extern ParseTree* globalParseTree;
 int yyerror(char* msg);
 extern char* queryString;
 static int my_yyaccept();
 BaseSelection* withPredicate;
 BaseSelection* havingPredicate;
 string* sortOrdering;
-
-// #define alloca malloc
-// #define __builtin_memcpy memcpy
 
 #if defined(_WINDOWS) || defined(_CONSOLE)
 #define alloca _alloca
@@ -147,16 +135,15 @@ string* sortOrdering;
 	double real;
 	BaseSelection* sel;
 	ConstantSelection* constantSel;
-	List<BaseSelection*>* selList;
+	vector<BaseSelection*>* selList;
 	List<ConstantSelection*>* constList;
-	List<TableAlias*>* tableList;
+	vector<TableAlias*>* tableList;
 	TableAlias* tabAlias;
 	List<string*>* listOfStrings;
 	ParseTree* parseTree;
 }
 %token <integer> INTY
 %token <real> DOUBLEY
-%token TYPE_CHECK
 %token SELECT
 %token FROM
 %token AS
@@ -207,7 +194,6 @@ string* sortOrdering;
 %type <stringLit> optOrdering
 %type <tableList> listOfTables
 %type <tabAlias> tableAlias
-%type <tableList> JoinList 
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <constantSel> constant
@@ -221,41 +207,36 @@ string* sortOrdering;
 %type <parseTree> query
 %%
 input : query {
-		parseTree = $1;
-		return my_yyaccept();
-	}
-	| TYPE_CHECK query {
-		parseTree = $2;
-		parseTree->setTypeCheckOnlyFlag();
+		globalParseTree = $1;
 		return my_yyaccept();
 	}
 	| definition
 	;
 definition: CREATE optIndType INDEX index_name ON table_name 
 	'(' keyAttrs ')' optIndAdd {
-		parseTree = new IndexParse($2, $4, $6, $8, $10);
+		globalParseTree = new IndexParse($2, $4, $6, $8, $10);
 		YYACCEPT;
 		// return my_yyaccept();  
 		// this does not work unless the last argument is optional
 	}
 	| DROP INDEX table_name index_name {
-		parseTree = new DropIndexParse($3, $4);
+		globalParseTree = new DropIndexParse($3, $4);
 		YYACCEPT;
 	}
 	| INSERT INTO table_name VALUES '(' listOfConstants ')' {
-		parseTree = new InsertParse($3, $6);
+		globalParseTree = new InsertParse($3, $6);
 		YYACCEPT;
 	}
 	| DELETEY table_name AS STRING WHERE predicate {
-		parseTree = new DeleteParse($2, $4, $6);
+		globalParseTree = new DeleteParse($2, $4, $6);
 		YYACCEPT;
 	}
 	| SCHEMA table_name {
-		parseTree = new ISchemaParse($2);
+		globalParseTree = new ISchemaParse($2);
 		YYACCEPT;
 	}
 	| MATERIALIZE table_name {
-		parseTree = new MaterializeParse($2);
+		globalParseTree = new MaterializeParse($2);
 		YYACCEPT;
 	}
 	;
@@ -303,8 +284,13 @@ table_name : table_name '.' STRING {
 query : SELECT listOfSelectionsOrStar 
 		FROM listOfTables optWhereClause 
 		optGroupByClause optSequenceByClause optOrderByClause {
-		$$ = new QueryTree($2,$4,$5,$6,havingPredicate, 
-			$7,withPredicate,$8,sortOrdering,namesToResolve);
+		bool isSelectStar = false;
+		if($2 == NULL){
+			$2 = new vector<BaseSelection*>;
+			isSelectStar = true;
+		}
+		$$ = new QueryTree($2,$4,$5,$6,havingPredicate, $7,
+			withPredicate,$8,sortOrdering, isSelectStar);
 	}
 	| query UNION query {
 		$$ = new UnionParse($1, $3);
@@ -318,15 +304,15 @@ listOfSelectionsOrStar : listOfSelections {
 	}
 	;
 listOfSelections : listOfSelections ',' predicate {
-		$1->append($3);
+		$1->push_back($3);
 		$$ = $1;
 	}
 	| predicate {
-		$$ = new List<BaseSelection*>;
-		$$->append($1);
+		$$ = new vector<BaseSelection*>;
+		$$->push_back($1);
 	}
 	| {
-		$$ = new List<BaseSelection*>;
+		$$ = new vector<BaseSelection*>;
 	}
      ;
 listOfConstants : listOfConstants ',' constant {
@@ -350,28 +336,16 @@ listOfStrings : listOfStrings ',' STRING {
 		$$ = new List<string*>;
 	}
      ;
-listOfTables : 
-		listOfTables ',' JoinList{
-		$1->addList($3);
+listOfTables : listOfTables ',' tableAlias {
+		$1->push_back($3);
 		$$ = $1;
-		if (joinTable){
-			if (!joinList)
-				joinList = new List<JoinTable*>;
-			joinList->append(joinTable);
-		}
-		joinTable = NULL;
 	}
-	| JoinList {
-		$$ = new List<TableAlias*>;
-		$$->addList($1);
-		if (joinTable){
-			if (!joinList)
-				joinList = new List<JoinTable*>;
-			joinList->append(joinTable);
-		}
-		joinTable = NULL;
+	| tableAlias {
+		$$ = new vector<TableAlias*>;
+		$$->push_back($1);
 	}
 	;
+
 optWhereClause : WHERE predicate {
          $$ = $2;
 	}
@@ -388,7 +362,7 @@ optSequenceByClause :SEQUENCE BY listOfSelections optWithClause {
 		withPredicate = $4;
 	}
 	| {
-		$$ = NULL;
+		$$ = new vector<BaseSelection*>;
 		withPredicate = NULL;
 	}
 	;
@@ -404,7 +378,7 @@ optGroupByClause: GROUP BY listOfSelections optHavingClause{
 		havingPredicate = $4;
 	}
 	|{
-		$$ = new List<BaseSelection*>; 
+		$$ = new vector<BaseSelection*>; 
 		havingPredicate = NULL;
 	}
 	;
@@ -422,7 +396,7 @@ optOrderByClause: ORDER BY listOfSelections optOrdering{
 		sortOrdering = $4;
 	}
 	|{
-		$$ = new List<BaseSelection*>;
+		$$ = new vector<BaseSelection*>;
 		sortOrdering = NULL;
 	}
 	;
@@ -474,11 +448,12 @@ selection :
 	selection '.' STRING {
 		$$ = new Member($3, $1);
 	}
-	| STRING '(' listOfSelections ')' optOverClause {
+//	| STRING '(' listOfSelections ')' optOverClause {
+	| STRING '(' listOfSelections ')' {
 		assert($3);
-		if ($5 != NULL){
-			$3->addList($5);
-		}
+//		if ($5 != NULL){
+//			$3->addList($5);
+//		}
 		$$ = new Constructor($1, $3);
 	}
 	| constant {
@@ -494,24 +469,6 @@ optOverClause:
 	}
 	| {
 		$$ = NULL;
-	}
-	;
-
-JoinList: JoinList JoinString tableAlias{
-		$$ = $1;
-		$$->append($3);
-		
-		if (!joinTable)
-			joinTable = new JoinTable($1->get());
-		
-		jTable = new JoinTable($3);
-
-		joinTable = new JoinTable(joinTable,jTable,$2);
-		jTable = NULL;
-	}
-	| tableAlias {
-		$$ = new List<TableAlias*>;
-		$$->append($1);
 	}
 	;
 

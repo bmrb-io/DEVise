@@ -10,21 +10,20 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 	// Are there any aggregates in the selectClause?
 	
 
-	assert(selList);
 	assert(!filteredSelList);
 
 	isApplicableValue = false;
 
-	selList->rewind();
+	vector<BaseSelection*>::iterator it;
 	filteredSelList = new List<BaseSelection*>();
 
-	if(groupBy && !groupBy->isEmpty()){
-	  numGrpByFlds = groupBy->cardinality();
+	if(!groupBy.empty()){
+	  numGrpByFlds = groupBy.size();
 	  grpByPos = new int[numGrpByFlds];
 	}
 	
-	if (sequenceBy && !sequenceBy->isEmpty()) {
-	  numSeqByFlds = sequenceBy->cardinality();
+	if (!sequenceBy.empty()) {
+	  numSeqByFlds = sequenceBy.size();
 	  seqByPos = new int[numSeqByFlds];
 	}
 
@@ -35,9 +34,9 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 	bool hasMoving = false; //to check moving and normal aggs are not mixed
 	int i = 0;
 	numGrpByFlds = numSeqByFlds = numAggs = 0; // use them as counters
-	while(!selList->atEnd()){
+	for(it = selList.begin(); it != selList.end(); ++it){
 		
-		BaseSelection* curr = selList->get();
+		BaseSelection* curr = *it;
 		bool resolved = false;
 
 		if(curr->selectID() == CONSTRUCTOR_ID){
@@ -129,40 +128,37 @@ void Aggregates::typeCheck(TypeCheck& typeCheck){
 		else { 
 		  // must be a group by or sequence by
 
-		  if(groupBy && !groupBy->isEmpty()){
-		    groupBy->rewind();
-		    while(!groupBy->atEnd()) {
-		      if (curr->match(groupBy->get())){
+		  if(!groupBy.empty()){
+		    vector<BaseSelection*>::iterator it;
+		    for(it = groupBy.begin(); it != groupBy.end(); ++it){
+		      if (curr->match(*it)){
 			isApplicableValue = true;
-			assert(numGrpByFlds < groupBy->cardinality());
+			assert(numGrpByFlds < groupBy.size());
 			grpByPos[numGrpByFlds++] = i;
 			aggFuncs[i] = new GroupAttribute();
 			break;
 		      }
-		      groupBy->step();
 		    }
 		  }
 
-		  if (sequenceBy && !sequenceBy->isEmpty()) { 
-		    sequenceBy->rewind();
-		    while (!sequenceBy->atEnd()) {
-		      if (curr->match(sequenceBy->get())){
+		  if (!sequenceBy.empty()) { 
+		  	vector<BaseSelection*>::iterator it;
+			for(it = sequenceBy.begin(); it != sequenceBy.end(); ++it){
+		      if (curr->match(*it)){
 			isApplicableValue = true;
-			assert(numSeqByFlds < sequenceBy->cardinality());
+			assert(numSeqByFlds < sequenceBy.size());
 			seqByPos[numSeqByFlds++] = i;
 			aggFuncs[i] = new SequenceAttribute();  
 			break;
 		      }
-		      sequenceBy->step();
 		    }
 		  }
 		}
 		if(!resolved){
 			curr = typeCheck.resolve(curr);
-			selList->replace(curr);
+			*it = curr;
 		}
 		filteredSelList->append(curr);
-		selList->step();
 		i++;
 	}
 

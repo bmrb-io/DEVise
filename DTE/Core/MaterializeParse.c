@@ -7,7 +7,7 @@
 #include "Inserter.h"
 #include <string>
 
-Site* MaterializeParse::createSite(){
+Iterator* MaterializeParse::createExec(){
 	string nameStr = tableName->toString();
 	TableName dirName = tableName->dirName();
 
@@ -76,5 +76,5 @@ Site* MaterializeParse::createSite(){
 		(numFlds, typeIDs, attributeNames, materFile, query);
 	TRY(dir.replace(fileName, (const ViewInterface*) &mvi), NULL);
 
-	return new Site();
+	return NULL;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/09/17 02:35:53  donjerko
+  Fixed the broken remote DTE interface.
+
   Revision 1.7  1997/09/05 22:20:23  donjerko
   Made changes for port to NT.
 
@@ -111,7 +114,7 @@ void URL::parseURL(){	// Throws: unknown URL protocol
 		delete tmp;
 	}
 	else{
-		string msg = "Unknow protocol: " + string(url);
+		string msg = "Unknown protocol: " + string(url);
 		THROW(new Exception(msg), NVOID );
 	}
 }

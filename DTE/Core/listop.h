@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1997/11/05 00:19:45  donjerko
+  Separated typechecking from optimization.
+
   Revision 1.12  1997/09/29 02:51:57  donjerko
   Eliminated class GlobalSelect.
 
@@ -53,6 +56,7 @@
 
 #include <assert.h>
 #include <string>
+#include <vector>
 //#include <iostream.h>   erased for sysdep.h
 //#include <fstream.h>   erased for sysdep.h
 //#include <strstream.h>   erased for sysdep.h
@@ -88,6 +92,26 @@ class Site;
 class TableAlias;
 class ExecExpr;
 
+template<class T>
+void translate(const vector<T>& vec, List<T>*& list){
+	list = new List<T>;
+
+	vector<T>::const_iterator it;
+	for(it = vec.begin(); it != vec.end(); ++it){
+		list->append(*it);
+	}
+}
+
+template<class T>
+void translate(List<T>* list,  vector<T>& vec){
+	assert(vec.empty()); 
+	if(list){
+		for(list->rewind(); !list->atEnd(); list->step()){
+			vec.push_back(list->get());
+		}
+	}
+}
+
 int* findPositions(List<BaseSelection*>* list, 
 	List<BaseSelection*>* elements);	// throws
 bool exclusiveF(List<BaseSelection*>* list, Site* site);
@@ -98,6 +122,20 @@ void displayList(ostream& out, List<BaseSelection*>* list,
 	string sep = ", ", int detail = 0); 
 void displayList(ostream& out, List<Site*>* list, string sep);
 void displayList(ostream& out, List<string*>* list, string sep);
+
+template <class T>
+void displayVec(ostream& out, const vector<T>& vec, string sep = ", "){
+	vector<T>::const_iterator it;
+	for(it = vec.begin(); it != vec.end(); ){
+		(*it)->display(out);
+		++it;
+		if(it == vec.end()){
+			break;
+		}
+		out << sep;
+	}
+}
+
 void collectFrom(
 	List<BaseSelection*>* from, Site* site, List<BaseSelection*>* to);
 Array<ExecExpr*>* enumerateList(List<BaseSelection*>* list, 

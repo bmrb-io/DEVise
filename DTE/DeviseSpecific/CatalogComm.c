@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/11/23 21:23:44  donjerko
+  *** empty log message ***
+
   Revision 1.18  1997/11/12 23:17:45  donjerko
   Improved error checking.
 
@@ -68,6 +71,7 @@
 #include "Utility.h"
 #include "DevRead.h"
 #include "catalog.h"
+#include "Interface.h"
 
 // #define DEBUG
 
@@ -156,21 +160,28 @@ char* dteShowCatalogEntry(const char* tableName){
 
 char* dteShowCatalogEntry(const char* catName, const char* entryName){
 
+	string err = "Failed to show catalog entry " + string(entryName);
+
 	cout << "in dteShowCatalogEntry(" << catName << ", " << entryName << ")\n";
 	string query = "select cat.name, cat.interf from " +
 		string(catName) + " as cat where cat.name = " +
-		addQuotes(entryName);
-	char* retVal = executeQuery(query);
-	CATCH(
-		cout << "DTE error coused by query: \n";
-		cout << "   " << query << endl;
-          cout << currExcept->toString();
-		currExcept = NULL;
-		cout << endl;
-		exit(0);
-	)
-	cout << "Returning: " << retVal << endl;
-	return retVal;
+		addSQLQuotes(entryName, '\'');
+	Engine engine(query);
+	CHECK(engine.optimize(), err, 0);
+	string retVal;
+	engine.initialize();
+	const Tuple* tup = engine.getNext();
+	if(!tup){
+		return strdup("");
+	}
+	retVal += addQuotes(string(IString::getCStr(tup[0])));
+	retVal += " ";
+	CHECK(retVal += InterfWrapper::getInterface(tup[1])->guiRepresentation(),
+		err, 0);
+#if defined(DEBUG)
+  	cerr << "Returning: " << retVal << endl;
+#endif
+	return strdup(retVal.c_str());
 }
 
 void dteDeleteCatalogEntry(const char* tableName){
@@ -207,7 +218,7 @@ void dteDeleteCatalogEntry(const char* catName, const char* entryName){
 #endif
 	string query = "delete " +
 		string(catName) + " as cat where cat.name = " +
-		addQuotes(entryName);
+		addSQLQuotes(entryName, '\'');
 	char* retVal = executeQuery(query);
      CATCH(
           cout << "DTE error coused by query: \n";
@@ -225,8 +236,9 @@ int dteInsertCatalogEntry(const char* catName, const char* values){
 	cout << "in dteInsertCatalogEntry(" << catName << ", " 
 		<< values << ")\n";
 #endif
+	string tmp = string(values) + " ;";
 	string query = "insert into " + string(catName) + " values(" +
-		addQuotes(string(values) + " ;") + ")";
+		addSQLQuotes(tmp.c_str(), '\'') + ")";
 	char* retVal = executeQuery(query);
      CATCH(
           cout << "DTE error coused by query: \n";
@@ -261,9 +273,8 @@ string dteCheckSQLViewEntry(const char* asClause, const char* queryToCheck){
 		retVal = "\"reciId\" is a reserved attribute name and may not be listed in the AS clause";
 		return retVal;
 	}
-	string query = "typecheck " + string(queryToCheck);
-	Engine engine(query);
-	engine.optimize();
+	Engine engine(queryToCheck);
+	const ISchema* schema = engine.typeCheck();
      CATCH(
 		string err("Coused by query:\n");
 		err += queryToCheck;
@@ -272,12 +283,7 @@ string dteCheckSQLViewEntry(const char* asClause, const char* queryToCheck){
           currExcept = NULL;
 		return retVal;
      )
-	assert(engine.getNumFlds() == 1);
-	TRY(const TypeID* typeIDs = engine.getTypeIDs(), NULL);
-	assert(typeIDs[0] == SCHEMA_TP);
-	engine.initialize();
-	const Tuple* tup = engine.getNext();
-	int numFlds = (ISchema::getISchema(tup[0]))->getNumFlds();
+	int numFlds = schema->getNumFlds();
 	if(numFlds != asCard){
 		ostringstream out;
 		out << "Number of fields in the SELECT clause (" << numFlds << ")";
@@ -303,6 +309,21 @@ char* dteShowAttrNames(const char* schemaFile, const char* dataFile){
 	for(int i = 0; i < numFlds; i++){
 		retVal += attrs[i] + " ";
 	}
+	return strdup(retVal.c_str());
+}
+
+char* dteListQueryAttributes(const char* query){
+	Engine engine(query);
+	TRY(const ISchema* schema = engine.typeCheck(), NULL);
+	const string* attrNames = schema->getAttributeNames();
+	int numFlds = schema->getNumFlds();
+	string retVal;
+	for(int i =  0; i < numFlds; i++){
+		retVal += attrNames[i] + " ";
+	}
+#if defined(DEBUG)
+  	cerr << "dteListQueryAttributes returning: " << retVal.c_str() << endl;
+#endif
 	return strdup(retVal.c_str());
 }
 

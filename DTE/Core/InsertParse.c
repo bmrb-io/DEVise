@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/11/12 23:17:24  donjerko
+  Improved error checking.
+
   Revision 1.8  1997/09/05 22:56:08  donjerko
   *** empty log message ***
 
@@ -64,12 +67,15 @@ LOG(extern ofstream logFile;)
 
 // #define DEBUG
 
-Site* InsertParse::createSite(){
-	LOG(logFile << "Inserting into ");
-	LOG(tableName->display(logFile));
-	LOG(logFile << " (";)
-	LOG(displayList(logFile, (List<BaseSelection*>*) fieldList, ", ");)
-	LOG(logFile << ")" << endl;)
+Iterator* InsertParse::createExec(){
+
+#ifdef DEBUG
+	cerr << "Inserting into ";
+	tableName->display(cerr);
+	cerr << " (";
+	displayList(cerr, (List<BaseSelection*>*) fieldList, ", ");
+	cerr << ")" << endl;
+#endif
 
      TRY(Site* site = ROOT_CATALOG.find(tableName), NULL);
 
@@ -103,5 +109,5 @@ Site* InsertParse::createSite(){
 	site->writeClose();
 	delete site;
 	delete [] inStr;
-	return new Site();
+	return 0;
 }

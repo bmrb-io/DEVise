@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/11/12 23:17:23  donjerko
+  Improved error checking.
+
   Revision 1.21  1997/11/05 00:19:37  donjerko
   Separated typechecking from optimization.
 
@@ -92,7 +95,7 @@
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
-Site* IndexParse::createSite(){
+Iterator* IndexParse::createExec(){
 
 	LOG(logFile << "Creating ");
 	if(standAlone){
@@ -360,5 +363,5 @@ Site* IndexParse::createSite(){
 		delete minExs[i];
 		delete maxExs[i];
 	}
-	return new Site();
+	return NULL;
 }

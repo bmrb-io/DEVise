@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  1997/11/24 12:45:06  okan
+  Added record operationts to ODBC
+
   Revision 1.14  1997/11/24 05:25:37  okan
   *** empty log message ***
 
@@ -152,6 +155,6 @@ extern ITimer iTimer;
 #define TRY(A,B) A; if(currExcept){return B;}
 #define CHECK(A,B,C) A; if(currExcept){currExcept->append(B); return C;}
 #define CATCH(A) if(currExcept){A; delete currExcept; currExcept = NULL;}
-#define EXIT(A) A; if(currExcept){cerr << currExcept->toString() << endl; exit(1);}
+#define EXIT(A) A; if(currExcept){cerr << currExcept->toString() << endl; currExcept = 0; exit(1);}
 
 #endif

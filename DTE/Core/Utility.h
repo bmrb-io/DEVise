@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1997/11/12 23:17:38  donjerko
+  Improved error checking.
+
   Revision 1.8  1997/09/05 22:20:14  donjerko
   Made changes for port to NT.
 
@@ -65,6 +68,8 @@ void stripQuotes(istream& in, string& val);	// obsolete, can throw excetion
 void stripQuotes(istream& in, char* buf, size_t bufsz);// can throw excetion
 
 string addQuotes(const string& in);
+
+string addSQLQuotes(const char* inp, char quote);
 
 string* dupStrArr(const string* inp, int numFlds);
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  1997/11/24 23:13:14  weaver
+  Changes for the new ColorManager.
+
   Revision 1.21  1997/11/12 23:17:22  donjerko
   Improved error checking.
 
@@ -43,15 +46,6 @@
 
   Revision 1.13  1997/02/03 04:11:26  donjerko
   Catalog management moved to DTE
-
-  Revision 1.12  1996/12/26 03:42:00  kmurli
-  MOdified to make joinprev work right
-
-  Revision 1.11  1996/12/25 19:53:58  kmurli
-  Files to do joinprev,joinnext and function calls.
-
-  Revision 1.10  1996/12/24 21:00:51  kmurli
-  Included FunctionRead to support joinprev and joinnext
 
   Revision 1.9  1996/12/21 22:21:43  donjerko
   Added hierarchical namespace.
@@ -87,42 +81,69 @@
 #include "exception.h"
 #include "Engine.h"
 #include "ParseTree.h"
-#include "joins.h"
 #include "ExecOp.h"
 
 extern int my_yyparse();
 extern int yydebug;
 Exception* currExcept;
 
-ParseTree* parseTree = NULL;
-List<string*>* namesToResolve = NULL;
+ParseTree* globalParseTree = NULL;
 const char* queryString;
 bool rescan;
 DefaultExceptHndl defaultExceptHndl;
-List<JoinTable*>* joinList = NULL;
-JoinTable * joinTable = NULL;
-JoinTable * jTable = NULL;
 ITimer iTimer;
 
-int Engine::optimize(){
+Engine::~Engine(){
+	delete topNodeIt;
+	topNodeIt = 0;
+	delete parseTree;
+	parseTree = 0;
+	// do not delete schema
+}
+
+const ParseTree* Engine::parse(){
+	assert(globalParseTree == 0);
 	queryString = query.c_str();
 	rescan = true;
-	namesToResolve = new List<string*>;
 	TRY(int parseRet = my_yyparse(), 0);
 	if(parseRet != 0){
-		string msg = "parse error ";
+		string msg = "Failed to parse the query: " + query;
 		THROW(new Exception(msg), 0);
 		// throw Exception(msg);
 	}
-	assert(parseTree);
-	TRY(topNode = parseTree->createSite(), 0);
-	delete namesToResolve;
-	namesToResolve = NULL;
+	assert(globalParseTree);
+	parseTree = globalParseTree;
+	globalParseTree = 0;
+	return parseTree;
+}
+
+const ISchema* Engine::typeCheck(){
+	if(!parseTree){
+		TRY(parse(), 0);
+	}
+	assert(schema == 0);
+	TRY(schema = parseTree->getISchema(), 0);
+	return schema;
+}
+
+int Engine::optimize(){
+	if(!schema){
+		TRY(typeCheck(), 0);
+	}
+	TRY(topNodeIt = parseTree->createExec(), 0);
+	return 0;
+}
+
+int ViewEngine::optimize(){
+	if(!schema){
+		TRY(typeCheck(), 0);
+	}
 	return 0;
 }
 
 Iterator* ViewEngine::createExec(){
-	return new RidAdderExec(topNode->createExec(), numFlds);
+	TRY(Iterator* tmp = parseTree->createExec(), 0);
+	return new RidAdderExec(tmp, numFlds);
 }
 
 ViewEngine::ViewEngine(string query, const string* attrs, int numInpFlds) : 

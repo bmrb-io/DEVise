@@ -29,7 +29,7 @@ BaseSelection* TypeCheck::resolve(BaseSelection* curr){
 	}
 	else{
 		vector<BaseSelection*> children = curr->getChildren();	
-		resolve(children);
+		TRY(resolve(children), NULL);
 		curr->setChildren(children);
 		TRY(curr->typeCheck(), NULL);
 		symtab[selstr] = curr;

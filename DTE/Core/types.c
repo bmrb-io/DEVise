@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  1997/11/24 08:27:51  donjerko
+  *** empty log message ***
+
   Revision 1.43  1997/11/24 06:01:28  donjerko
   Added more odbc files.
 
@@ -1547,6 +1550,9 @@ Type* duplicateObject(TypeID type, Type* obj){
 }
 
 char* allocateSpace(TypeID type, size_t& size){
+
+	size = 0;	// to avoid purify warning
+
 	if(type == "int" || type == "bool"){
 		return NULL;
 	}

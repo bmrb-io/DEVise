@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.26  1997/11/12 23:17:47  donjerko
+  Improved error checking.
+
   Revision 1.25  1997/11/05 00:20:28  donjerko
   Added some error checking calls to the DTE.
 
@@ -156,11 +159,11 @@ void TDataDQL::runQuery(){
 	cerr << ".";
 #endif
 
-	if(!engine){
-		engine = new Engine;
-	}
 	Timer::StopTimer();
-     TRY(engine->optimize(_query), );
+
+	delete engine;
+	engine = new Engine(_query);
+     TRY(engine->optimize(), );
      if(_numFlds != engine->getNumFlds() / 2){
 		cerr << "_numFlds = " << _numFlds << endl;
 		cerr << "engine->getNumFlds() = " << engine->getNumFlds() << endl;
@@ -269,8 +272,10 @@ TDataDQL::TDataDQL(char* tableName, List<char*>* attrList, char* query) :
 	while(attName){
 		assert(i < MAX_NUM_ATTRS);	
 		_attributeNames[i] = string(attName);
-		minmaxQ += string("min(t.") + attName + "), max(t." + attName + ")";
-		queryHeader += string("t.") + attName;
+		string delimiAttNm = addSQLQuotes(attName, '"');
+		minmaxQ += string("min(t.") + delimiAttNm + 
+			"), max(t." + delimiAttNm + ")";
+		queryHeader += string("t.") + delimiAttNm;
 		attName = strtok(NULL, " "); 	
 		if(attName){
 			minmaxQ += ", ";
@@ -377,10 +382,9 @@ TData::TDHandle TDataDQL::InitGetRecs(Range *range,
 	cumRecs += range->High - range->Low + 1;
 #endif
 
-  if(!engine){
-  	engine = new Engine;
-  }
-  engine->optimize(query);
+	delete engine;
+	engine = new Engine(query);
+	engine->optimize();
 CATCH(
      cout << "DTE error coused by query: \n";
      cout << "   " << query << endl;

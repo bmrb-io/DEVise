@@ -7,6 +7,7 @@
 #include "Engine.h"
 #include "catalog.h"
 #include "SockStream.h"
+#include "ParseTree.h"
 #include <string>
 
 string ViewInterface::typeName = "SQLView";
@@ -34,6 +35,8 @@ static int findMaxInterfSize(){
 	max = MAX_VAL(sizeof(CatalogInterface), max);
 	max = MAX_VAL(sizeof(DeviseInterface), max);
 	max = MAX_VAL(sizeof(DummyInterface), max);
+	max = MAX_VAL(sizeof(DBServerInterface), max);
+	max = MAX_VAL(sizeof(ODBCInterface), max);
 //	cerr << "INITIAL_INTERFACE_SIZE = " << max << endl;
 	return max;
 }
@@ -266,6 +269,22 @@ void ViewInterface::write(ostream& out) const {
 	Interface::write(out);
 }
  
+string ViewInterface::guiRepresentation() const {
+	string retVal(typeName);
+	retVal += " \"";
+	assert(numFlds > 0);
+	int i = 0;
+	for(i = 0; i < numFlds - 1; i++){
+		retVal += attributeNames[i] + ", ";
+	}
+	retVal += attributeNames[i];
+	retVal += "\" ";
+	Engine engine(query);
+	TRY(const ParseTree* parseTree = engine.parse(), "");
+	TRY(retVal += parseTree->guiRepresentation(), "");
+	return retVal;
+}
+
 Site* ViewInterface::getSite(){ 
 	// Throws a exception
 	
@@ -359,12 +378,8 @@ const ISchema* ViewInterface::getISchema(TableName* table){
 
 	// typecheck the query
 
-	string tquery = "typecheck " + query;
-	Engine engine(tquery);
-	TRY(engine.optimize(), NULL);
-	engine.initialize();
-	const Tuple* tup = engine.getNext();
-	const ISchema* tmp = ISchema::getISchema(tup[0]);
+	Engine engine(query);
+	TRY(const ISchema* tmp = engine.typeCheck(), 0);
 	const TypeID* tmpTypes = tmp->getTypeIDs();
 
 	string* retVal = new string[numFlds + 1];

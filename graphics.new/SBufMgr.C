@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  1997/11/24 23:15:16  weaver
+  Changes for the new ColorManager.
+
   Revision 1.16.6.1  1997/05/21 20:40:44  weaver
   Changes for new ColorManager
 
@@ -845,7 +848,9 @@ int CacheMgr::Initialize()
     _mutex->setValue(1);
 
 #ifdef SBM_SHARED_MEMORY
+#if DEBUGLVL >= 1
     printf("Creating buffer manager frame table in shared memory\n");
+#endif
     key_t _frmShmKey = SharedMemory::newKey();
     int created = 0;
     char *buf;
@@ -864,7 +869,9 @@ int CacheMgr::Initialize()
 #endif
     _frames = (PageFrame *)buf;
 #else
+#if DEBUGLVL >= 1
     printf("Creating buffer manager frame table in local memory\n");
+#endif
     _frames = new PageFrame [_numFrames];
     if (!_frames) {
       fprintf(stderr, "Cannot create page table in local memory\n");

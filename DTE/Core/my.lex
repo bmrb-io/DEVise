@@ -1,5 +1,5 @@
 /*======================================================================== 
-	DEVise Data Visualization Software
+  DEVise Data Visualization Software
   (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  1997/11/18 19:49:20  okan
+  Made several changes for NT compilation
+
   Revision 1.23  1997/11/12 23:17:39  donjerko
   Improved error checking.
 
@@ -108,6 +111,28 @@ static int my_yyinput(char* buf, int max_size){
 #undef YY_INPUT
 #define YY_INPUT(buf, result, max_size) (result = my_yyinput(buf, max_size))
 
+string* stripSQLQuotes(const char* input){
+	string* retVal = new string;
+	char quote = input[0];
+	bool escape = false;
+	for(int i = 1; input[i] != '\0'; i++){
+		if(input[i] == quote){
+			if(!escape){
+				escape = true;
+			}
+			else{
+				*retVal += quote;
+				escape = false;
+			}
+		}
+		else{
+			assert(!escape);  // this should never fail
+			*retVal += input[i];
+		}
+	}
+	return retVal;
+}
+
 %}
 
 Digit        [0-9]
@@ -118,7 +143,6 @@ String       [A-Za-z][A-Za-z0-9_]*
 LessGreat    ">="|">"|"<="|"<"
 %%
 [ \t\n]+     {}
-[Tt][Yy][Pp][Ee][Cc][Hh][Ee][Cc][Kk]	{return TYPE_CHECK;}
 [Ss][Ee][Ll][Ee][Cc][Tt]       {return SELECT;}
 [Ff][Rr][Oo][Mm]         {return FROM;}
 [Aa][Ss]				{return AS;}
@@ -154,14 +178,14 @@ LessGreat    ">="|">"|"<="|"<"
 {DecLit}     {yylval.real = atof(yytext); return DOUBLEY;}
 {SignedIntLit}  {yylval.integer = atoi(yytext); return INTY;}
 {LessGreat}  {yylval.stringLit = new string(yytext); return LESSGREATER;}
-\"([^\"]|\\\")*\" {
-             size_t textLen = strlen(yytext) + 1;
-             char* tmp = new char[textLen];
-             stripQuotes(yytext, tmp, textLen);
-             yylval.stringLit = new string(tmp); 
-             delete [] tmp;
-		   return STRING_CONST;
-		   }
+\'([^']|\'\')*\' {
+	yylval.stringLit = stripSQLQuotes(yytext);
+	return STRING_CONST;
+}
+\"([^"]|\"\")*\" {
+	yylval.stringLit = stripSQLQuotes(yytext);
+	return STRING;
+}
 .            {return yytext[0];}
 %%
 int yywrap(){

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  1997/11/23 21:23:33  donjerko
+  Added ODBC stuff.
+
   Revision 1.29  1997/11/13 22:19:25  okan
   Changes about compilation on NT
 
@@ -126,10 +129,16 @@
 #include "ExecExpr.h"
 #include "catalog.h" 	// for root catalog
 #include "Interface.h"
+#include "listop.h"
 
 bool PrimeSelection::exclusive(Site* site){
 	assert(alias);
 	return site->have(*alias);
+}
+
+TypeID PrimeSelection::typeCheck(){
+	string msg = "Table " + *alias + " does not have field " + *fieldNm;
+	THROW(new Exception(msg), "unknown");
 }
 
 bool PrimeSelection::exclusive(string* attributeNames, int numFlds){
@@ -181,7 +190,7 @@ ExecExpr* Operator::createExec(Site* site1, Site* site2)
      TRY(l = left->createExec(site1, site2), NULL);
 	ExecExpr* r;
      TRY(r = right->createExec(site1, site2), NULL);
-	size_t objSz;
+	size_t objSz = 0;
 	TRY(Type* value = allocateSpace(typeID, objSz), NULL);
 	TRY(DestroyPtr destroyPtr = getDestroyPtr(typeID), NULL);
 	return new ExecOperator(l, r, opPtr, value, objSz, destroyPtr);
@@ -410,6 +419,13 @@ NamedTableAlias::~NamedTableAlias(){
 	delete interf;
 }
 
+Constructor::Constructor(string* name, vector<BaseSelection*>* argVec)
+	: name(name), consPtr(NULL)
+{
+	translate(*argVec, args);
+	delete argVec;
+}
+
 TypeID Constructor::typeCheck(){
 	assert(args);
 	int numFlds = args->cardinality();
@@ -510,7 +526,7 @@ TableName::TableName(const TableName& arg){
 
 TableName& TableName::operator=(const TableName& arg){
 	if(this != &arg){
-		this->~TableName();
+		delete tableName;
 		tableName = new List<string*>;
 		List<string*>* other = arg.tableName;
 		for(other->rewind(); !other->atEnd(); other->step()){

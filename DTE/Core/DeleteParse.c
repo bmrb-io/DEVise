@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1997/11/24 23:13:14  weaver
+  Changes for the new ColorManager.
+
   Revision 1.17  1997/11/23 21:23:26  donjerko
   Added ODBC stuff.
 
@@ -87,7 +90,7 @@
 static const int DETAIL = 1;
 LOG(extern ofstream logFile;)
 
-Site* DeleteParse::createSite(){
+Iterator* DeleteParse::createExec(){
 	LOG(logFile << "Deleting from ");
 	LOG(tableName->display(logFile));
 	LOG(logFile << " tuples satisfying ";)
@@ -149,5 +152,5 @@ Site* DeleteParse::createSite(){
 	site->writeClose();
 	delete site;
 	delete execPred;
-	return new Site();
+	return NULL;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.41  1997/11/24 23:13:13  weaver
+  Changes for the new ColorManager.
+
   Revision 1.18.2.1  1997/05/21 20:34:23  weaver
   Changes needed by new ColorManageR
 
@@ -913,56 +916,55 @@ protected:
 };
 
 class Aggregates : public Site {
-	List<BaseSelection*>* selList;
+	vector<BaseSelection*>& selList;
 	List<BaseSelection*>* filteredSelList;
-	List<BaseSelection*>* sequenceBy;
+	vector<BaseSelection*>& sequenceBy;
 	bool isApplicableValue;
 	bool alreadyChecked;
-  TypeID seqAttrType; // sequence by on only one attribute?
+	TypeID seqAttrType; // sequence by on only one attribute?
 	int seqAttrPos;
 	BaseSelection* withPredicate;	
 	BaseSelection* havingPredicate;	
 	Site* inputPlanOp;
 	int withPredicatePos;	
 	int havingPredicatePos;	
-	List<BaseSelection*>* groupBy;
+	vector<BaseSelection*>& groupBy;
 	int* grpByPos; // positions of groupBy fields
 	int* aggPos;		// positions of aggregate fields
 	TypeID* typeIDs;
 	Aggregate** aggFuncs;
 	int numGrpByFlds;
 	int numAggs;
-  int numSeqByFlds;
-  int* seqByPos;
-  int windowLow, windowHigh; 
-  int numFlds;
+	int numSeqByFlds;
+	int* seqByPos;
+	int windowLow, windowHigh; 
+	int numFlds;
 
 public:
 	Aggregates(
-		List<BaseSelection*>* selectClause, // queries select clause
-		List<BaseSelection*>* sequenceby,   
+		vector<BaseSelection*>& selectClause, // queries select clause
+		vector<BaseSelection*>& sequenceBy,   
 		BaseSelection* withPredicate,
-		List<BaseSelection*>* groupBy ,	
+		vector<BaseSelection*>& groupBy ,	
 		BaseSelection* havingPredicate=NULL)
-	  : Site(), selList(selectClause),sequenceBy(sequenceby),
+	  : Site(), selList(selectClause),sequenceBy(sequenceBy),
 	    withPredicate(withPredicate),groupBy(groupBy), 
 	    havingPredicate(havingPredicate) {
 		
-		if(selList){
-			numFlds = selList->cardinality();
+		numFlds = selList.size();
+		if(numFlds > 0){
 			aggFuncs = new Aggregate*[numFlds];
 			typeIDs = new TypeID[numFlds];
 			attributeNames = new TypeID[numFlds];
-			selList->rewind();
-			for(int i = 0; i < numFlds; i++){
+			vector<BaseSelection*>::const_iterator it;
+			int i = 0;
+			for(it = selList.begin(); it != selList.end(); ++it, ++i){
 			  aggFuncs[i] = NULL;
 			  typeIDs[i] = UNKN_TYPE;
-			  attributeNames[i] = selList->get()->toString();
-			  selList->step();
+			  attributeNames[i] = (*it)->toString();
 			}
 		}
 		else {
-			numFlds = 0;
 			aggFuncs = NULL;
 			typeIDs = NULL;
 			attributeNames = NULL;
@@ -991,7 +993,8 @@ public:
 	bool isApplicable();
 	void Aggregates::typeCheck(TypeCheck& typeCheck);
 	virtual List<BaseSelection*>* getSelectList(){
-	     return selList;
+		assert(0);
+	     // return selList;
 	}
 	List<BaseSelection*>* filterList(){
 		return filteredSelList;

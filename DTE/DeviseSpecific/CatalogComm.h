@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/11/23 21:23:44  donjerko
+  *** empty log message ***
+
   Revision 1.7  1997/11/12 23:17:46  donjerko
   Improved error checking.
 
@@ -64,6 +67,8 @@ char* dteImportFileType(char* name);
 char* dteShowAttrNames(const char* schemaFile, const char* dataFile);
 
 char* dteListAttributes(const char* tableName);
+
+char* dteListQueryAttributes(const char* query);
 
 char* dteReadSQLFilter(const char* fileName);
 

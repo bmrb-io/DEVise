@@ -74,7 +74,7 @@ TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo()
   if (_tdata)
     delete _tdata;
   if (_className) free (_className);
-  if (_query) free (_query);
+//  if (_query) free (_query);	// causes core-dump DD
   if (_name)  free(_name);
 #if defined(DEBUG)
 	cout << "OUT TDataDQLInterpClassInfo::~TDataDQLInterpClassInfo" << endl;

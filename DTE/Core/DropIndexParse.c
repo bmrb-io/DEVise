@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/08/21 21:04:16  donjerko
+  Implemented view materialization
+
   Revision 1.2  1997/03/28 16:07:23  wenger
   Added headers to all source files that didn't have them; updated
   solaris, solsparc, and hp dependencies.
@@ -26,11 +29,11 @@
 #include <assert.h>
 #include "Engine.h"
 
-Site* DropIndexParse::createSite(){
+Iterator* DropIndexParse::createExec(){
 	string query = string("delete .sysind as t where t.table = \"") +
 		tableName->toString() + "\" and t.name = \"" + *indexName + "\"";
 	cout << "in drop index with query:\n" << query << endl;
 	Engine engine(query);
      TRY(engine.optimize(), NULL);
-	return new Site();
+	return NULL;
 }

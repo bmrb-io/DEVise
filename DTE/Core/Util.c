@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  1997/11/12 23:17:37  donjerko
+  Improved error checking.
+
   Revision 1.11  1997/09/17 02:35:46  donjerko
   Fixed the broken remote DTE interface.
 
@@ -67,14 +70,6 @@ string selectFileName(const string& env, const string& def){
 	}
 }
 
-
-/*
-const Catalog* getRootCatalog(){
-	string catalogName;
-	catalogName = selectFileName("DEVISE_HOME_TABLE", "./catalog.dte");
-	return &ROOT_CATALOG;
-}
-*/
 
 istream* getIndexTableStream(){
 	string catalogName = DTE_ENV_VARS.indexTable;
@@ -196,5 +191,18 @@ string* dupStrArr(const string* inp, int numFlds){
 	for(int i = 0; i < numFlds; i++){
 		retVal[i] = inp[i];
 	}
+	return retVal;
+}
+
+string addSQLQuotes(const char* inp, char quote){
+	string retVal;
+	retVal += quote;
+	for(int i = 0; inp[i] != '\0'; i++){
+		if(inp[i] == quote){
+			retVal += quote;
+		}
+		retVal += inp[i];
+	}
+	retVal += quote;
 	return retVal;
 }

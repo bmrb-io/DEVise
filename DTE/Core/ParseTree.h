@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1997/11/23 21:23:29  donjerko
+  Added ODBC stuff.
+
   Revision 1.22  1997/11/12 23:17:29  donjerko
   Improved error checking.
 
@@ -71,13 +74,18 @@ using namespace std;
 
 class Catalog;
 class Site;
+class Iterator;
+
+const ISchema EMPTY_SCHEMA("0");
+const ISchema SCHEMA_SCHEMA("1 " + SCHEMA_STR + " " + SCHEMA_STR);
 
 class ParseTree {
 public:
-//	virtual const ISchema* getISchema() = 0;
-//	virtual Iterator* createExec() = 0;	// throws exception
-	virtual Site* createSite() = 0;	// throws exception
-	virtual void setTypeCheckOnlyFlag(){assert(0);}
+	virtual const ISchema* getISchema(){
+		return &EMPTY_SCHEMA;
+	}
+	virtual Iterator* createExec() = 0; // throws exception
+	virtual string guiRepresentation() const {assert(0);}	// throws
 };
 
 class Aggregates;
@@ -92,50 +100,60 @@ class QueryTree : public ParseTree {
 	BaseSelection* withPredicate;
 	List<BaseSelection*>* orderBy;
 	string* sortOrdering;
-	List<string*>* namesToResolve;
-	void resolveNames();	// throws exception
-	bool typeCheckOnly;
 	List<BaseSelection*>* grpAndSeqFields; // concat of grp and seq fields
+
+	// these new variables will eventually replace the old List style ones
+
+     vector<TableAlias*>& tableVec;
+     vector<BaseSelection*>& selectVec;
+     vector<BaseSelection*> predicateVec;
+     vector<BaseSelection*>& groupByVec;
+     vector<BaseSelection*>& sequenceByVec;
+     vector<BaseSelection*>& orderByVec;
+
+	bool isSelectStar;
+
 private:
 
 	// internally created vars
 
 	List<BaseSelection*>* predicateList;
-	TypeCheck typeCheck;
+	TypeCheck typeChecker;
 	Aggregates* aggregates;
+	ISchema* schema;
 
+private:
+	void setupSchema();
 public:	
 	QueryTree(
-		List<BaseSelection*>* selectList,
-		List<TableAlias*>* tableList,
+		vector<BaseSelection*>* selectList,
+		vector<TableAlias*>* tableList,
 		BaseSelection* predicates,
-		List<BaseSelection *>*groupBy,
+		vector<BaseSelection *>*groupBy,
 		BaseSelection* havingPredicate,
-		List<BaseSelection*>* sequenceby,
+		vector<BaseSelection*>* sequenceby,
 		BaseSelection* withPredicate,
-		List<BaseSelection*>* orderBy,
-		string* sortOrdering,
-		List<string*>* namesToResolve) :
-		selectList(selectList), tableList(tableList), 
-		predicates(predicates), groupBy(groupBy), 
+		vector<BaseSelection*>* orderBy,
+		string* sortOrdering, bool isSelectStar) :
+		selectVec(*selectList), tableVec(*tableList), 
+		predicates(predicates), groupByVec(*groupBy), 
 		havingPredicate(havingPredicate),
-		sequenceby(sequenceby), withPredicate(withPredicate), 
-		orderBy(orderBy), sortOrdering(sortOrdering),
-		namesToResolve(namesToResolve), typeCheckOnly(false),
+		sequenceByVec(*sequenceby), withPredicate(withPredicate), 
+		orderByVec(*orderBy), sortOrdering(sortOrdering),
 		grpAndSeqFields(NULL),
 		predicateList(NULL),
-		aggregates(NULL) {}
+		aggregates(NULL),
+		schema(0), isSelectStar(isSelectStar) {}
 	
-	virtual Site* createSite();	// throws exception
+	virtual Iterator* createExec(); // throws exception
 	virtual ~QueryTree(){
 		delete selectList;      // destroy list too
 		delete tableList;
 		delete grpAndSeqFields;
-		// predicates should be deleted in createSite
+		delete schema;
 	}
-	virtual void setTypeCheckOnlyFlag(){
-		typeCheckOnly = true;
-	}
+	virtual const ISchema* getISchema();
+	virtual string guiRepresentation() const;	// throws
 };
 
 class IndexParse : public ParseTree {
@@ -158,7 +176,7 @@ public:
 			standAlone = true;
 		}
 	}
-	virtual Site* createSite();	// throws exception
+	virtual Iterator* createExec();	// throws exception
 	virtual ~IndexParse(){
 		delete indexName;
 		delete tableName;	// destroy too
@@ -176,7 +194,7 @@ public:
 		List<ConstantSelection*>* fieldList) :
 		tableName(new TableName(tableName)),
 		fieldList(fieldList) {}
-	virtual Site* createSite();	// throws exception
+	virtual Iterator* createExec();	// throws exception
 	virtual ~InsertParse(){
 		delete tableName;	// destroy too
 		delete fieldList;	// destroy too
@@ -193,7 +211,7 @@ public:
 		BaseSelection* predicate) :
 		tableName(new TableName(tableName)),
 		alias(alias), predicate(predicate) {}
-	virtual Site* createSite();	// throws exception
+	virtual Iterator* createExec();	// throws exception
 	virtual ~DeleteParse(){
 		delete tableName;	// destroy too
 		delete predicate;	// destroy too
@@ -206,7 +224,7 @@ class DropIndexParse : public ParseTree {
 public:
 	DropIndexParse(List<string*>* tableName, string* indexName) :
 		tableName(new TableName(tableName)), indexName(indexName) {}
-	virtual Site* createSite();	// throws exception
+	virtual Iterator* createExec();	// throws exception
 	virtual ~DropIndexParse(){
 		delete tableName;	// destroy too
 		delete indexName;
@@ -218,9 +236,12 @@ class ISchemaParse : public ParseTree {
 public:
 	ISchemaParse(List<string*>* tableName) :
 		tableName(new TableName(tableName)) {}
-	virtual Site* createSite();	// throws exception
+	virtual Iterator* createExec();	// throws exception
 	virtual ~ISchemaParse(){
 		delete tableName;	// destroy too
+	}
+	virtual const ISchema* getISchema(){
+		return &SCHEMA_SCHEMA;
 	}
 };
 
@@ -230,7 +251,7 @@ class UnionParse : public ParseTree {
 public:
 	UnionParse(ParseTree* query1, ParseTree* query2) :
 		query1(query1), query2(query2) {}
-	virtual Site* createSite();	// throws exception
+	virtual Iterator* createExec();	// throws exception
 	virtual ~UnionParse(){
 		delete query1;
 		delete query2;
@@ -242,7 +263,7 @@ class MaterializeParse : public ParseTree {
 public:
 	MaterializeParse(List<string*>* tableName) :
 		tableName(new TableName(tableName)) {}
-	virtual Site* createSite();	// throws exception
+	virtual Iterator* createExec();	// throws exception
 	virtual ~MaterializeParse(){
 		delete tableName;	// destroy too
 	}

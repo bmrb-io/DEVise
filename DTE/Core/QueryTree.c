@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  1997/11/26 23:29:37  weaver
+  *** empty log message ***
+
   Revision 1.46  1997/11/24 23:13:15  weaver
   Changes for the new ColorManager.
 
@@ -113,7 +116,6 @@
 //#pragma implementation "queue.h"
 //#endif
 
-#define MAX_AGG 12
 #include "queue.h"
 #include "myopt.h"
 #include "site.h"
@@ -124,7 +126,6 @@
 #include "listop.h"
 #include "Aggregates.h"
 #include "ParseTree.h"
-#include "joins.h"
 #include "Sort.h"
 #include "TypeCheck.h"
 #include "MinMax.h"
@@ -143,103 +144,54 @@ class ExecExpr;
 List<ConstantSelection*>* dummy;	// Just needed for pragma implementation
 List<char*>* dummy2;	// Just needed for pragma implementation
 
-extern List<JoinTable*>*joinList;
-
 const int DETAIL = 1;
 LOG(ofstream logFile("log_file.txt");)
 
-void QueryTree::resolveNames(){	// throws exception
-     if(tableList->cardinality() > 1){
-          string msg = "cannot resolve attribute referencies";
-		THROW(new Exception(msg), NVOID );
-		// throw Exception(msg);
-     }
-     else{
-          tableList->rewind();
-          namesToResolve->rewind();
-          string* replacement = tableList->get()->getAlias();
-		assert(replacement);
-          for(int i = 0; i < namesToResolve->cardinality(); i++){
-               string* current = namesToResolve->get();
-			cout << *current << " " << *replacement << endl;
-               *current = *replacement;
-               namesToResolve->step();
-          }
-     }
+string QueryTree::guiRepresentation() const {
+	string retVal;
+	ostringstream out;
+	if(isSelectStar){
+		out << "*";
+	}
+	else{
+		displayVec(out, selectVec);
+	}
+	out << ends;
+	retVal += addQuotes(out.str()) + " ";
+	ostringstream out1;
+	displayVec(out1, tableVec);
+	out1 << ends;
+	retVal += addQuotes(out1.str()) + " ";
+	if(predicates){
+		retVal += addQuotes(predicates->toString());
+	}
+	else{
+		retVal += "\"\"";
+	}
+	retVal += " ";
+	ostringstream out2;
+	displayVec(out2, groupByVec);
+	out2 << ends;
+	retVal += addQuotes(out2.str()) + " ";
+	ostringstream out3;
+	displayVec(out3, sequenceByVec);
+	out3 << ends;
+	retVal += addQuotes(out3.str()) + " ";
+	ostringstream out4;
+	displayVec(out4, orderByVec);
+	out4 << ends;
+	retVal += addQuotes(out4.str()) + " ";
+	return retVal;
 }
 
-//****************************************
-// Getting around the template problem for now...
-//****************************************
-//template<class T>
-//void translate(const vector<T>& vec, List<T>*& list){
-//	delete list;
-//	list = new List<T>;
-
-//	vector<T>::const_iterator it;
-//	for(it = vec.begin(); it != vec.end(); ++it){
-//		list->append(*it);
-//	}
-//}
-
-//template<class T>
-//void translate(List<T>* list,  vector<T>& vec){
-//	assert(vec.empty()); 
-//	if(list){
-//		for(list->rewind(); !list->atEnd(); list->step()){
-//			vec.push_back(list->get());
-//		}
-//	}
-//}
-
-void translate(const vector<TableAlias*>& vec, List<TableAlias*>*& list);
-void translate(List<TableAlias*>* list,  vector<TableAlias*>& vec);
-void translate(const vector<BaseSelection*>& vec, List<BaseSelection*>*& list);
-void translate(List<BaseSelection*>* list,  vector<BaseSelection*>& vec);
-
-void translate(const vector<TableAlias*>& vec, List<TableAlias*>*& list){
-	delete list;
-	list = new List<TableAlias*>;
-
-	vector<TableAlias*>::const_iterator it;
-	for(it = vec.begin(); it != vec.end(); ++it){
-		list->append(*it);
+const ISchema* QueryTree::getISchema(){
+	if(schema){
+		return schema;
 	}
-}
 
-void translate(List<TableAlias*>* list,  vector<TableAlias*>& vec){
-	assert(vec.empty()); 
-	if(list){
-		for(list->rewind(); !list->atEnd(); list->step()){
-			vec.push_back(list->get());
-		}
-	}
-}
+	// type checking follows, it should be done only once.
 
-void translate(const vector<BaseSelection*>& vec, List<BaseSelection*>*& list){
-	delete list;
-	list = new List<BaseSelection*>;
-
-	vector<BaseSelection*>::const_iterator it;
-	for(it = vec.begin(); it != vec.end(); ++it){
-		list->append(*it);
-	}
-}
-
-void translate(List<BaseSelection*>* list,  vector<BaseSelection*>& vec){
-	assert(vec.empty()); 
-	if(list){
-		for(list->rewind(); !list->atEnd(); list->step()){
-			vec.push_back(list->get());
-		}
-	}
-}
-//****************************************
-
-Site* QueryTree::createSite(){
-	if(!namesToResolve->isEmpty()){
-		TRY(resolveNames(), 0);
-	}
+	assert(schema == NULL);
 	LOG(logFile << "Query was:\n";)
 	LOG(logFile << "   select ";)
 	LOG(displayList(logFile, selectList, ", ");)
@@ -268,38 +220,58 @@ Site* QueryTree::createSite(){
 
 	// typecheck the query
 
-	vector<TableAlias*> tableVec;
-	vector<BaseSelection*> selectVec;
-	vector<BaseSelection*> predicateVec;
-	vector<BaseSelection*> groupByVec;
-	vector<BaseSelection*> orderByVec;
-
-	translate(tableList, tableVec);
 	translate(predicateList, predicateVec);
-	translate(groupBy, groupByVec);
-	translate(orderBy, orderByVec);
 
-	TRY(typeCheck.initialize(tableVec), 0);
+	TRY(typeChecker.initialize(tableVec), 0);
 
-	if(!selectList){
+	if(isSelectStar){
 
 		// select *
 
-		typeCheck.setupSelList(selectVec);
+		typeChecker.setupSelList(selectVec);
 	}
 	else {
 
-		aggregates = new 
-			Aggregates(selectList,sequenceby,withPredicate,groupBy);
+		aggregates = new Aggregates(
+			selectVec, sequenceByVec, withPredicate, groupByVec);
 
-		TRY(aggregates->typeCheck(typeCheck), 0);
-		translate(selectList, selectVec);
+		TRY(aggregates->typeCheck(typeChecker), 0);
 	}
-	TRY(typeCheck.resolve(predicateVec), 0);
-	TRY(typeCheck.resolve(groupByVec), 0);
-	TRY(typeCheck.resolve(orderByVec), 0);
+	TRY(typeChecker.resolve(predicateVec), 0);
+	TRY(typeChecker.resolve(groupByVec), 0);
+	TRY(typeChecker.resolve(orderByVec), 0);
 
-	if(typeCheckOnly){
+	setupSchema();
+
+	return schema;
+}
+
+void QueryTree::setupSchema(){
+	int numFlds = selectVec.size();
+	TypeID* types = new TypeID[numFlds];
+	string* attrs = new string[numFlds];
+	vector<BaseSelection*>::const_iterator it;
+	int i = 0;
+	for(it = selectVec.begin(); it != selectVec.end(); ++it, i++){
+		types[i] = (*it)->getTypeID();
+		attrs[i] = (*it)->toString();
+	}
+	schema = new ISchema(types, attrs, numFlds);
+
+	// schema is the owner of types and attrs
+}
+
+Iterator* QueryTree::createExec(){
+
+	if(!schema){
+
+		// type checking needs to be done
+
+		TRY(getISchema(), 0);
+	}
+
+/*
+	if(typeCheckOnly){	// this is obsolete, use getISchema instead
 		int numFlds = selectVec.size();
 		TypeID* types = new TypeID[numFlds];
 		string* attrs = new string[numFlds];
@@ -311,7 +283,7 @@ Site* QueryTree::createSite(){
 		}
 		return new ISchemaSite(numFlds, types, attrs);
 	}
-
+*/
 	// check if this is the min-max query
 	// if so, lookup a min-max table to see if there exists an entry
 	// if entry for this table found, switch the table name
@@ -336,6 +308,7 @@ Site* QueryTree::createSite(){
 	translate(selectVec, selectList);
 	translate(predicateVec, predicateList);
 	translate(groupByVec, groupBy);
+	translate(sequenceByVec, sequenceby);
 	translate(orderByVec, orderBy);
 
 	tableList->rewind();
@@ -463,18 +436,6 @@ Site* QueryTree::createSite(){
 	}	
 	*/
 
-	if (joinList && !joinList->isEmpty()){
-		List<Site*>* joinGroups = new List<Site *>;
-		while(!joinList->atEnd()){
-			JoinTable * jTable = joinList->get();
-			joinList->step();
-			Site* st;
-			TRY( st = jTable->Plan(sites,selectList,predicateList),0);
-			//sites->append(st);
-			joinGroups->append(st);
-		}
-		sites->addList(joinGroups);
-	}	
 	sites->rewind();
 	Site * inner = sites->get();
 	sites->step();
@@ -498,7 +459,7 @@ Site* QueryTree::createSite(){
 		displayList(cerr, predicateList, ", ");
 	}
 	assert(predicateList->isEmpty());
-	if(selectList->cardinality() > siteGroup->getSelectList()->cardinality()){
+	if(selectList->cardinality() > siteGroup->getNumFlds()){
 
 		// Every site has taken what belongs to it.
 		// Create top site that takes everything left over 
@@ -554,5 +515,5 @@ Site* QueryTree::createSite(){
 	LOG(logFile << endl;)
 	assert(predicateList->cardinality() == 0);
 	delete predicateList;	// destroy list too
-	return siteGroup;
+	return siteGroup->createExec();
 }

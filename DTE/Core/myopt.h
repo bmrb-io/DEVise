@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  1997/11/24 23:13:17  weaver
+  Changes for the new ColorManager.
+
   Revision 1.39  1997/11/23 21:23:33  donjerko
   Added ODBC stuff.
 
@@ -571,8 +574,7 @@ class Constructor : public BaseSelection {
 	List<BaseSelection*>* args;
 	ConstructorPtr consPtr;
 public:
-	Constructor(string* name, List<BaseSelection*>* args) :
-		BaseSelection(), name(name), args(args), consPtr(NULL) {}
+	Constructor(string* name, vector<BaseSelection*>* args);
 	Constructor(const Constructor& a){
 		assert(0);
 	}
@@ -718,7 +720,7 @@ public:
 			out << *alias;
 		}
 		if(fieldNm){
-			out << "." << *fieldNm;
+			out << "." << '"' << *fieldNm << '"';
 		}
 		if(detail){
                out << "% size = " << avgSize;
@@ -735,10 +737,7 @@ public:
 	}
 	virtual void collect(Site* s, List<BaseSelection*>* to);
      virtual ExecExpr* createExec(Site* site1, Site* site2);
-	virtual TypeID typeCheck(){
-		string msg = "Table " + *alias + " does not have field " + *fieldNm;
-		THROW(new Exception(msg), "unknown");
-	}
+	virtual TypeID typeCheck();
      virtual SelectID selectID(){
           return SELECT_ID;
      }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1997/11/12 23:17:37  donjerko
+  Improved error checking.
+
   Revision 1.7  1997/10/02 02:27:29  donjerko
   Implementing moving aggregates.
 
@@ -39,11 +42,17 @@
 #include "exception.h"
 #include "site.h"
 
-Site* UnionParse::createSite(){	// throws exception;
+Iterator* UnionParse::createExec(){	// throws exception;
+
+	string msg = "UNION queries are temporarily broken";
+	THROW(new Exception(msg), NULL);
+
 	assert(query1);
 	assert(query2);
-	TRY(Site* iter1 = query1->createSite(), NULL);
-	TRY(Site* iter2 = query2->createSite(), NULL);
+	Site* iter1;
+	Site* iter2;
+//	TRY(iter1 = query1->createSite(), NULL);
+//	TRY(iter2 = query2->createSite(), NULL);
 	assert(iter1);
 	assert(iter2);
 	int numFlds1 = iter1->getNumFlds();
@@ -61,5 +70,5 @@ Site* UnionParse::createSite(){	// throws exception;
 			string msg = "Cannot do UNION because types do not match";
 		}
 	}
-	return new UnionSite(iter1, iter2);
+//	return new UnionSite(iter1, iter2);
 }
