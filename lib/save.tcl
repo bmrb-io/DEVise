@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.32  1997/03/20 20:46:08  donjerko
+#  DTE Tdata generates unique names by appending sequential numbers to the
+#  end of the table name. This way, same table can be opened multiple times.
+#
 #  Revision 1.31  1997/02/03 04:12:39  donjerko
 #  Catalog management moved to DTE
 #
@@ -610,14 +614,15 @@ proc SaveOneSchema { fileId asExport schemaFile } {
 	puts $fileId "set physSchema($sname) \"$pschema\""
 	puts $fileId "set logSchema($sname) \"$lschema\""
 	puts $fileId "DEVise parseSchema $sname \$physSchema($sname) \$logSchema($sname)"
-    } elseif {[string index $schemaFile 0] != "."} {
+    } elseif {[string index $schemaFile 0] == "." \
+    		&& [string index $schemaFile 1] != "/" } {
 
     # this is a hack to find out if dte has registered this schema
     # dte schemas are just the table names and therefore start with .
 
- 	puts $fileId "DEVise importFileType $schemaFile"
-    } else {
  	puts $fileId "DEVise dteImportFileType $schemaFile"
+    } else {
+ 	puts $fileId "DEVise importFileType $schemaFile"
     }
 }
 
@@ -763,7 +768,8 @@ proc SaveCreateTDatas { fileId asTemplate fileDictRef asBatchScript } {
 		puts $fileId "\t\treturn 0"
 		puts $fileId "\t\}"
 		puts $fileId "\} else \{"
-		if {[string index $class 0] == "."} {
+		if {[string index $class 0] == "." && \
+			[string index $class 1] != "/" } {
 
 			# this is a hack to find out if dte has registered this schema
 			# dte schemas are just the table names and therefore start with .
