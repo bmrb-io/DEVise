@@ -8,9 +8,9 @@
 #include "dte/types/DteTupleAdt.h"
 #include "dte/comm/DteAdtPage.h"
 
-/* Uniquely identify an object, within or across sessions */
-/* Given an RBMObject, there is a unique RBMObjectInfo, */
-/* which has all the informations about this object */
+/* Uniquely identify an object, within or across sessions 	*/
+/* Given an RBMObject, there is a unique RBMObjectInfo, 	*/
+/* which has all the informations about this object 		*/
 typedef int RBMObject;
 
 /* A RBMObjectInfo has all the info about an object.		*/

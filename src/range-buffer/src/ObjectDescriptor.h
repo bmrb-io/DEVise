@@ -5,6 +5,7 @@
 #include "RangeAccessMethod.h"
 #include "BBoxEntry.h"
 
+/******************************************************************************/
 /* ObjectDescriptors are used in RangeBufferManager 			      */
 /* There is one ObjectDescriptor for each object cached 		      */
 /* In addition to the object id, an ObjectDescriptor contains some other info */
@@ -13,11 +14,13 @@
 /*			pointer to head of the Bounding box list	      */
 /*			pin count					      */
 /* ObjectDescriptors are kept in (the overflow chains of) hashed buckets      */
+/******************************************************************************/
 
 class ObjectDescriptor
 {
 public:
 
+    /* Initialize with specified parameters */
     ObjectDescriptor(RBMObject newObj, RangeAccessMethod *ramOfNewObj);
 
     /* delete all bbox entries hanging off this object descriptor */

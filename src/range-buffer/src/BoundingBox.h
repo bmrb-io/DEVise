@@ -3,16 +3,21 @@
 
 #include "macros.h"
 
-/* currently 1-D bounding box only */
+/************************************************************************/
+/* One dimensional bounding box 					*/
+/************************************************************************/
 class BoundingBox
 {
 
 public:
 
+    /* construct a BoundingBox with specified low and high ends. */
     BoundingBox(Coord low, bool openLow, Coord high, bool openHigh);
+
+    /* Destructor */
     ~BoundingBox();
 
-    /* return true if this boundbox contains the point */
+    /* return true iff this boundbox contains the point */
     bool contain(Coord point);
 
     /* return true iff this BoundingBox is a super set of b */
@@ -36,8 +41,12 @@ public:
     /*_low == _high && _openLow == _openHigh == false */
     bool valid();
 
+    /* Create a new BoundingBox exactly the same as this one */
     BoundingBox *clone();
 
+    /* print out info about this instance */
+    /* be concise if verbose == 0 */
+    /* be verbose if verbose != 0 */
     void output(int verbose);
 
     friend class RangeBufferManagerAccessMethod;
@@ -47,8 +56,8 @@ public:
 
 private:
 
-    Coord _low;
-    Coord _high;
+    Coord _low;			/* low end */
+    Coord _high;		/* high end */
     bool _openLow;		/* true if low end is open */
     bool _openHigh;		/* true if high end is open */
 

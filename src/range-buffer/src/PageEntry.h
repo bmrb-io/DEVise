@@ -8,12 +8,23 @@
 #include "dte/types/DteTupleAdt.h"
 #include "dte/comm/DteAdtPage.h"
 
+/************************************************************************/
+/* An element in the linked list hanging off a BBoxEntry.		*/
+/* Keeps a page and enables the linked list.				*/
+/************************************************************************/
 class PageEntry
 {
 
 public:
 
+    /* Initialize with specified parameters */
     PageEntry(DteAdtPage *page, char *buf);
+
+    /**********************************************************************/
+    /* Do not delete _buf 						  */
+    /* Instead, let who ever that wants to delete this PageEntry to worry */
+    /* about it! 							  */
+    /**********************************************************************/
     ~PageEntry();
 
     friend class BBoxEntry;
@@ -22,11 +33,11 @@ public:
 
 private:
 
-    DteAdtPage *_page;
-    char *_buf;
+    DteAdtPage *_page;		/* pointer to DteAdtPage object */
+    char *_buf;			/* Memory location */
 
-    PageEntry *_prev;
-    PageEntry *_next;
+    PageEntry *_prev;		/* next in list 	*/
+    PageEntry *_next;		/* next in linked list 	*/
 };
 
 #endif
