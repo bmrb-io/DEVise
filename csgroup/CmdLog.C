@@ -1,6 +1,7 @@
+#include <string>
+#include <vector>
 #include <stdio.h>
 #include <ctype.h>
-#include <string>
 #include "CmdLog.h"
 #include <sys/types.h>
 #include <unistd.h>
@@ -82,7 +83,7 @@ LogMarker::Deserialize(int fd)
 	if (nbytes == 0)
 		return -1;
 
-	if (nbytes != recLeftB.length())
+	if ((unsigned)nbytes != recLeftB.length())
 	{
 		cerr << errStr<<endl;
 		return -1;
@@ -213,6 +214,7 @@ CmdLogRecord::CmdLogRecord(char* filename)
 	seekLog(LOG_END);
 }
 
+long
 CmdLogRecord::logCommand(int argc, char** argv)
 {
 	// move curlogId to the end of the log, if no log
@@ -241,6 +243,7 @@ CmdLogRecord::logCommand(int argc, char** argv)
 	cout <<"Debug String:"<<tempStr<<endl;
 #endif
 	write(fd, tempStr.c_str(), tempStr.length());
+	return curlogId;
 }
 
 // return current log Id, return -1 for empty log
@@ -326,13 +329,13 @@ CmdLogRecord::getCommand(vector<string>& command)
 
 ostream& operator << (ostream& os, const CmdLogRecord& cmdLog)
 {
-		os <<" LogId:"<<cmdLog.curlogId;
+		os <<"\n****** LogId:"<<cmdLog.curlogId;
 		os <<" Time:"<<cmdLog.ts.getTime();
 		os <<" Commands:";
 		vector <string>::const_iterator itr = cmdLog.cmd.begin();
 		while (itr != cmdLog.cmd.end())
 		{
-			cout <<*itr++;
+			cout <<*itr++ << " ";
 		}
 		os <<endl;
 		return os;
@@ -352,32 +355,18 @@ CmdLogRecord::viewLog()
 		logId = seekLog(CmdLogRecord::LOG_NEXT);
 	} while (savelogId != logId);
 }
-
 /*
 //
-// Sample driver for the command logging facility and testing routines
+// Sample log-viewer for the command logging facility and testing routines
 //
-main()
+main(int argc, char** argv)
 {
-	CmdLogRecord 	*cmdLog = new CmdLogRecord("temp_file");
-
-	char *argv[4] = {"one", "two", "three", "four"};
-
-	cmdLog->logCommand(4, &argv[0]);
-	cmdLog->logCommand(3, &argv[1]);
-	cmdLog->logCommand(2, &argv[2]);
-	cmdLog->logCommand(1, &argv[3]);
-	delete cmdLog;
-
-	CmdLogRecord 	*cmdLogTest = new CmdLogRecord("temp_file");
-
-	cmdLogTest->seekLog(CmdLogRecord::LOG_BEGIN);
-	cout << "First log :"<<*cmdLogTest<<endl;
-	cmdLogTest->seekLog(CmdLogRecord::LOG_END);
-	cout << "Last log :"<<*cmdLogTest<<endl;
-	cmdLog->logCommand(4, &argv[0]);
-	cmdLogTest->seekLog(CmdLogRecord::LOG_END);
-	cout << "Last log :"<<*cmdLogTest<<endl;
-
+	if (argc != 2)
+	{
+		cerr << "logfilename expected"<<endl;
+		exit(-1);
+	}
+	CmdLogRecord 	*cmdLog = new CmdLogRecord(argv[1]);
+	cmdLog->viewLog();
 }
 */

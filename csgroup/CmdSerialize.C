@@ -20,11 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/04/12 00:22:20  taodb
+  Added command logging facility
+
   Revision 1.1  1998/04/10 23:20:31  taodb
   Intial Revision
 
  */
 
+#include <string>
+#include <vector>
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream.h>
@@ -212,7 +217,7 @@ Serializable::deserialize(string& str, int& typeId, string& value)
 	int	length = atoi(pt);
 	pos += Serializable::INT_SIZE;
 
-	if (length != (str.length() - 2* Serializable::INT_SIZE))
+	if ((unsigned)length != (str.length() - 2* Serializable::INT_SIZE))
 	{
 		cout <<str.length() <<" "<<length<<endl;
 		cerr << "The serialized message is illegal"<<endl;
@@ -276,7 +281,7 @@ class Test:public Serializable
 			composite_deserialize(value, vals);
 
 			vector <string>::iterator valp = vals.begin();
-			for (valp; valp != vals.end(); ++ valp)
+			for (; valp != vals.end(); ++ valp)
 				cout << *valp <<endl;
 		}
 };

@@ -1,5 +1,7 @@
 #ifndef _CMD_LOG_H
 #define _CMD_LOG_H
+#include <string>
+#include <vector>
 #include "CmdSerialize.h"
 #include <ostream.h>
 
@@ -54,7 +56,8 @@ class CmdLogRecord: public Serializable
 		~CmdLogRecord();
 
 		// append at the tail, curlogId point to the last record
-		int logCommand(int argc, char** argv);
+		long logCommand(int argc, char** argv);
+		bool playCommand(long logId1, long logId2);
 
 		// manipulate pointers and update the contents for the current record 
 		long seekLog(long logId);
