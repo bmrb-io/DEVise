@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2001/02/23 17:41:41  xuk
+// Added machine name and session name on the client list sent to collaboration JS.
+//
 // Revision 1.31  2001/02/22 17:08:43  xuk
 // Close collaboration JSs when "leader" JS exits.
 // In getCmd(), process JAVAC_Exit.
@@ -178,7 +181,7 @@ public class DEViseClient
     //TEMP -- why Integer vs. int?
     public Integer ID = null;
     public String hostname = null;
-    private DEViseCommSocket socket = null;
+    public DEViseCommSocket socket = null;
 
     public boolean isSessionOpened = false;
     public boolean isClientSwitched = false;
@@ -210,6 +213,7 @@ public class DEViseClient
 
     public boolean isAbleCollab = false;
     private String collabPass = null;
+    public boolean sessionSaved = false;
 
 
     public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id,
@@ -493,6 +497,9 @@ public class DEViseClient
 		    } else if (command.startsWith(DEViseCommands.CLOSE_SESSION)) {
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.CLOSE_SESSION);
+		    } else if (command.startsWith(DEViseCommands.SAVE_CUR_SESSION)) {
+			cmdBuffer.removeAllElements();
+			cmdBuffer.addElement(DEViseCommands.SAVE_CUR_SESSION);
 		    } else if (command.startsWith(DEViseCommands.EXIT)) {
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.EXIT);
