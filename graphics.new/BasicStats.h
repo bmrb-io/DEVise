@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/20 17:10:24  guangshu
+  Added support for color statistics.
+
   Revision 1.8  1995/12/22 02:36:12  ravim
   Vertical lines for maximum and minimum.
 
@@ -78,7 +81,7 @@ class ViewKGraph;
 // Number of confidence intervals
 #define NUM_Z_VALS 3
 
-const double zval[NUM_Z_VALS] = {1.464, 1.645, 1.960};
+const double zval[NUM_Z_VALS] = { 1.464, 1.645, 1.960 };
 const int num_per_batch = 1;
 
 class BasicStats: public ViewStats
@@ -87,24 +90,13 @@ public:
   BasicStats();
   ~BasicStats();
 
-  // Initialize
   virtual void Init(ViewGraph *vw);
-
   virtual void Sample(double x, double y);
-
   virtual void Done();
-
   virtual void Report();
   
   virtual Coord GetStatVal(int statnum);
   virtual char *GetStatName(int statnum);
-
-  // A ViewKGraph registers with this object that it should be notified
-  // whenever a change in the stats occurs. This is then used to keep
-  // the KGraph up to date with the data being displayed in the views to
-  // which it is connected.
-  virtual void RegisterCallback(ViewKGraph *vkg);
-  virtual void DeleteCallback(ViewKGraph *vkg);
 
 private:
   double ysum, xsum;
@@ -113,7 +105,6 @@ private:
   double xatymax, xatymin;
   double int_x, int_y;
   int nsamples, nval;
-  VoidList vkg_list;
 
   // Stat values
   double avg, var, std;

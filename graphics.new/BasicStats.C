@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/06/20 17:10:22  guangshu
+  Added support for color statistics.
+
   Revision 1.15  1996/02/05 21:49:13  jussi
   Fixed error in computation of var and std.
 
@@ -139,14 +142,6 @@ void BasicStats::Sample(double x, double y)
 
 void BasicStats::Done()
 {
-  // Since the stats have now changed, go through the callback list and
-  // call all of them. This is needed to keep the KGraph upto date.
-  int idx = vkg_list.InitIterator();
-  while (vkg_list.More(idx))
-    ((ViewKGraph *)(vkg_list.Next(idx)))->Callback(this);
-
-  vkg_list.DoneIterator(idx);
-
   if (nsamples > 0) {
     avg = ((float)ysum) / nsamples;
 
@@ -258,16 +253,3 @@ char *BasicStats::GetStatName(int statnum)
     default:           return "NONE";
   }
 }
-
-void BasicStats::RegisterCallback(ViewKGraph *vkg)
-{
-  // Add vkg to the list of classes to be invoked when the stats change
-  vkg_list.Insert((void *)vkg);
-}
-
-void BasicStats::DeleteCallback(ViewKGraph *vkg)
-{
-  // Remove the entry from the list bcos we no longer have to notify 
-  vkg_list.Delete((void *)vkg);
-}
-

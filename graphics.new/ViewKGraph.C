@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/31 15:42:48  jussi
+  Stores a list of views, not a list of statistics objects.
+
   Revision 1.4  1995/12/28 20:07:25  jussi
   Small fixes to remove compiler warnings.
 
@@ -42,8 +45,7 @@ ViewKGraph::ViewKGraph()
 
 ViewKGraph::~ViewKGraph()
 {
-  for(int i = 0; i < _numviews; i++)
-    _view_list[i]->GetStatObj()->DeleteCallback(this);
+  View::DeleteViewCallback(this);
   delete _view_list;
   delete _kg;
   delete _name;
@@ -52,8 +54,7 @@ ViewKGraph::~ViewKGraph()
 void ViewKGraph::Init()
 {
   // Remove itself from the callback list of all these stat objects
-  for(int i = 0; i < _numviews; i++)
-    _view_list[i]->GetStatObj()->DeleteCallback(this);
+  View::DeleteViewCallback(this);
   delete _view_list;
   _view_list = 0;
   
@@ -81,8 +82,9 @@ Boolean ViewKGraph::AddViews(ViewGraph **v, int num, char *name)
   for(int i = 0; i < num; i++) {
     _view_list[i] = v[i];
     // Register to be called back when any of these stats change
-    _view_list[i]->GetStatObj()->RegisterCallback(this);
   }
+
+  View::InsertViewCallback(this);
 
   // Store window name in private member
   _name = CopyString(name);
@@ -121,10 +123,27 @@ Boolean ViewKGraph::Display(int statnum)
   return true;
 }
 
-void ViewKGraph::Callback(BasicStats *bs)
+void ViewKGraph::ViewDestroyed(View *view)
 {
-  // The statvalue corr to this stat class has changed.
-  // So call to display again.
+  // Remove view from view list and redisplay
+  for(int i = 0; i < _numviews; i++) {
+    if (_view_list[i] == view) {
+      for(int j = i; j < _numviews - 1; j++)
+        _view_list[j] = _view_list[j + 1];
+      _numviews--;
+      (void)Display(_statnum);
+      return;
+    }
+  }
+}
 
-  Display(_statnum);
+void ViewKGraph::ViewRecomputed(View *view)
+{
+  // See it view participates in this graph and redisplay
+  for(int i = 0; i < _numviews; i++) {
+    if (_view_list[i] == view) {
+      (void)Display(_statnum);
+      return;
+    }
+  }
 }
