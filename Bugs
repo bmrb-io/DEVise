@@ -13,7 +13,7 @@ Num Date        Status  Description
 003 05/14/96	FIXED	Numeric keypad keys don't always work correctly
 			on Suns running SunOS 4.x. (rkw)
 
-004 05/16/96	OPEN	Physical schema editor does not support the length
+004 05/16/96	FIXED   Physical schema editor does not support the length
 			parameter of string attribute types. (jpm)
 
 005 05/16/96	OPEN	Physical schema editor does not support multi-word
