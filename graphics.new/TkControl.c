@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.64  1996/08/04 21:29:52  beyer
+  Added Raise() to raise the control panel to the top of the stacking order.
+
   Revision 1.63  1996/07/18 01:17:47  jussi
   Added call to DestroySessionData() of base class.
 
@@ -492,16 +495,16 @@ void TkControlPanel::FilterChanged(View *view, VisualFilter &filter,
     sprintf(xLowBuf, "%s", DateString(filter.xLow));
     sprintf(xHighBuf, "%s", DateString(filter.xHigh));
   } else {
-    sprintf(xLowBuf, "%.2f", filter.xLow);
-    sprintf(xHighBuf, "%.2f", filter.xHigh);
+    sprintf(xLowBuf, "%g", filter.xLow);
+    sprintf(xHighBuf, "%g", filter.xHigh);
   }
 				
   if (view->GetYAxisAttrType() == DateAttr) {
     sprintf(yLowBuf, "%s", DateString(filter.yLow));
     sprintf(yHighBuf, "%s", DateString(filter.yHigh));
   } else {
-    sprintf(yLowBuf, "%.2f", filter.yLow);
-    sprintf(yHighBuf, "%.2f", filter.yHigh);
+    sprintf(yLowBuf, "%g", filter.yLow);
+    sprintf(yHighBuf, "%g", filter.yHigh);
   }
   
   sprintf(cmd, "ProcessViewFilterChange {%s} %d {%s} {%s} {%s} {%s} 0",
