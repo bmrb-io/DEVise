@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.124  2001/11/28 21:56:42  wenger
+  Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+
   Revision 1.123.6.1  2001/11/19 21:03:53  wenger
   Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
   Squid to be able to force DEVise to re-read all data and update the
@@ -6834,7 +6837,7 @@ IMPLEMENT_COMMAND_BEGIN(printInstances)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(setShowMouseLocation)
-    // Arguments: [view name] <enable (0 or 1)>
+    // Arguments: [view name] <show mouse loc (0 = none; 1 = xy; 2 = x; 3 = y)>
     // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
@@ -6843,7 +6846,7 @@ IMPLEMENT_COMMAND_BEGIN(setShowMouseLocation)
         Session::SetDirty();
 
 	    if (argc == 2) {
-		    Boolean show = atoi(argv[1]);
+		    int show = atoi(argv[1]);
 			View::SetGlobalShowMouseLocation(show);
 		} else {
             View *view = (View *)_classDir->FindInstance(argv[1]);
@@ -6851,7 +6854,7 @@ IMPLEMENT_COMMAND_BEGIN(setShowMouseLocation)
     	        ReturnVal(API_NAK, "Cannot find view");
     	        return -1;
             }
-		    Boolean show = atoi(argv[2]);
+		    int show = atoi(argv[2]);
 			view->SetShowMouseLocation(show);
 		}
 
@@ -6867,12 +6870,12 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(getShowMouseLocation)
     // Arguments: [view name]
-    // Returns: <enabled (0 or 1)>
+    // Returns: <show mouse loc (0 = none; 1 = xy; 2 = x; 3 = y)>
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
     if (argc == 1 || argc == 2) {
-		Boolean show;
+		int show;
 	    if (argc == 1) {
 		    show = View::GetGlobalShowMouseLocation();
 		} else {
@@ -6885,7 +6888,7 @@ IMPLEMENT_COMMAND_BEGIN(getShowMouseLocation)
 		}
 
 		char buf[100];
-		sprintf(buf, "%d", show ? 1 : 0);
+		sprintf(buf, "%d", show);
         ReturnVal(API_ACK, buf);
         return 1;
 	} else {

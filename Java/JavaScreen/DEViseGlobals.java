@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2001/11/28 21:56:19  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.60  2001/11/19 17:17:02  wenger
 // Merged changes through collab_cleanup_br_2 to trunk.
 //
@@ -265,7 +268,7 @@ public final class DEViseGlobals
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("5.0");
-    public static final String PROTOCOL_VERSION = new String("9.2");
+    public static final String PROTOCOL_VERSION = new String("9.3");
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");

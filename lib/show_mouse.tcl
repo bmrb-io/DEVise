@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 2000
+# (c) Copyright 2000-2001
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -20,6 +20,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  2000/06/20 16:57:52  wenger
+# Added commands and GUI to enable/disable the display of mouse location
+# in various views, and globally.
+#
 
 ############################################################
 
@@ -47,16 +51,20 @@ proc EditShowMouse {} {
     button .editShowMouse.cancel -text "Cancel" -width 10 \
       -command "destroy .editShowMouse"
 
-    global showMouseEnabled
-
     # Get the current value from the view and set the GUI accordingly.
-    set showMouseEnabled [DEVise getShowMouseLocation $curView]
+    # Show value meanings: 0 = none; 1 = xy; 2 = x; 3 = y;
+    # values are this way for backwards compatibility.
+    set showMouseLoc [DEVise getShowMouseLocation $curView]
+
+    global showMouseX showMouseY
+    set showMouseX [expr $showMouseLoc == 1 || $showMouseLoc == 2]
+    set showMouseY [expr $showMouseLoc == 1 || $showMouseLoc == 3]
 
     # Radio buttons to enable/disable showing of mouse location.
-    radiobutton .editShowMouse.yes -text "Enable" \
-      -variable showMouseEnabled -value 1
-    radiobutton .editShowMouse.no -text "Disable" \
-      -variable showMouseEnabled -value 0
+    checkbutton .editShowMouse.yes -text "X" \
+      -variable showMouseX
+    checkbutton .editShowMouse.no -text "Y" \
+      -variable showMouseY
 
     # These frames are for spacing only.
     frame .editShowMouse.row2a -width 80m -height 6m
@@ -82,9 +90,25 @@ proc EditShowMouse {} {
 
 proc SetShowMouse {} {
     global curView
-    global showMouseEnabled
+    global showMouseX showMouseY
 
-    DEVise setShowMouseLocation $curView $showMouseEnabled
+    # Show value meanings: 0 = none; 1 = xy; 2 = x; 3 = y;
+    # values are this way for backwards compatibility.
+    if {$showMouseX} {
+        if {$showMouseY} {
+	    set showMouseLoc 1
+	} else {
+	    set showMouseLoc 2
+	}
+    } else {
+        if {$showMouseY} {
+	    set showMouseLoc 3
+	} else {
+	    set showMouseLoc 0
+	}
+    }
+
+    DEVise setShowMouseLocation $curView $showMouseLoc
 }
 
 #============================================================================

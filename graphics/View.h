@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.118  2001/09/26 16:31:30  wenger
+  Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
+
   Revision 1.117  2001/05/03 19:39:02  wenger
   Changed negative axis flag to multiplicative factor to be more flexible;
   pass multiplicative factor to JS to correct mouse location display (mods
@@ -929,8 +932,10 @@ class View : public ViewWin
 	const char *GetViewHelp() { return _viewHelp; }
 	void SetViewHelp(const char *helpStr);
 
-	Boolean GetShowMouseLocation() { return _showMouseLocation; }
-	void SetShowMouseLocation(Boolean show) { _showMouseLocation = show; }
+	// Show value meanings: 0 = none; 1 = xy; 2 = x; 3 = y;
+	// values are this way for backwards compatibility.
+	int GetShowMouseLocation() { return _showMouseLocation; }
+	void SetShowMouseLocation(int show) { _showMouseLocation = show; }
 	static Boolean GetGlobalShowMouseLocation() {
 	    return _globalShowMouseLocation; }
 	static void SetGlobalShowMouseLocation(Boolean show) {
@@ -1143,8 +1148,8 @@ protected:
 		static Boolean _drawingEnabled;
 		
 		const char *_viewHelp;
-		Boolean _showMouseLocation;
-		static Boolean _globalShowMouseLocation;
+		int _showMouseLocation;
+		static int _globalShowMouseLocation;
 
 		Boolean _isChildView;
 

@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2001/11/28 21:56:20  wenger
+// Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+//
 // Revision 1.60.6.1  2001/11/21 23:35:36  wenger
 // Fixed bug 729 (JavaScreen problem displaying mouse location for date
 // axes).
@@ -176,7 +179,12 @@ public class DEViseView
     //ven
     public String viewInfoFormatX = null;
     public String viewInfoFormatY = null;
-    public boolean isViewInfo = true;
+
+    // Show value meanings: 0 = none; 1 = xy; 2 = x; 3 = y;
+    // values are this way for backwards compatibility.
+    private int showMouseLoc = 1;
+    private boolean showMouseLocX = true;
+    private boolean showMouseLocY = true;
 
     public String viewTitle = null;
     public int viewDTX, viewDTY; // title X and Y location
@@ -208,7 +216,10 @@ public class DEViseView
     float factorX = 1; 
     float factorY = 1;
 
-    public DEViseView(jsdevisec panel, String pn, String name, String piledname, String title, Rectangle loc, float Z, int dim, int bg, int fg, Rectangle dl, String xt, String yt, float gx, float gy, int rb, int cm, int dd, int ky)
+    public DEViseView(jsdevisec panel, String pn, String name,
+      String piledname, String title, Rectangle loc, float Z, int dim,
+      int bg, int fg, Rectangle dl, String xt, String yt, float gx, float gy,
+      int rb, int cm, int dd, int ky)
     {
         jsc = panel;
 
@@ -260,6 +271,12 @@ public class DEViseView
     public String getCurlyName()
     {
         return curlyName;
+    }
+
+    public void setShowMouseLoc(int showMouseLocVal) {
+        showMouseLoc = showMouseLocVal;
+	showMouseLocX = ((showMouseLoc == 1) || (showMouseLoc == 2));
+	showMouseLocY = ((showMouseLoc == 1) || (showMouseLoc == 3));
     }
 
     // Add a child view to this view.
@@ -538,7 +555,7 @@ public class DEViseView
 
     public String getX(int x)
     {
-	if(!isViewInfo || viewDimension == 3 ||
+	if(!showMouseLocX || viewDimension == 3 ||
 	  (viewInfoFormatX != null && viewInfoFormatX.equals("-"))){
 	   return "";
         }
@@ -585,7 +602,7 @@ public class DEViseView
     // y is relative to this view's canvas
     public String getY(int y)
     {
-	if(!isViewInfo || viewDimension == 3 ||
+	if(!showMouseLocY || viewDimension == 3 ||
 	  (viewInfoFormatY != null && viewInfoFormatY.equals("-"))){
 	   return "";
         }

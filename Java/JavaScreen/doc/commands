@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 9.2.
+version 9.3.
 
 
 For the details of the format in which commands are send on the socket,
@@ -407,16 +407,19 @@ see comments in DEViseCommSocket.java.
                               allowed in this view, 0 otherwise.
         <keys enabled>: 1 if key actions are allowed in this view, 0
                         otherwise
-        <view title>: optional. if not empty, then the following arguments
+        <view title>: optional. if not empty, then the following 6 arguments
                       are required.
-        <title x position>:
-        <title y position>:
-        <title font type>:
-        <title font size>:
-        <title font bold>:
-        <title font italic>:
-	<show mouse location>: 1 if mouse location should be displayed
-	                       when the mouse is in this view, 0 otherwise.
+        <title x position>: center of title, relative to left edge of view,
+	                    in pixels
+        <title y position>: center of title, relative to top edge of view,
+	                    in pixels
+        <title font type>: font family (0 = Courier, 1 = Times, 2 = Helvetica,
+	                   3 = Lucida, 4 = New Century Schoolbook).
+        <title font size>: size of font in points
+        <title font bold>: 1 if font is bold, 0 otherwise
+        <title font italic>: 1 if font is italic, 0 otherwise
+	<show mouse location>: whether to show mouse location, x and y
+	                       (0 = none; 1 = xy; 2 = x; 3 = y).
 
     5.7 JAVAC_DeleteChildViews
     Purpose: tells the JavaScreen to delete all child views of the given

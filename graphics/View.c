@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.239  2001/09/26 16:31:29  wenger
+  Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
+
   Revision 1.238  2001/08/03 18:13:04  wenger
   Removed all OpenGL-related code.
 
@@ -1134,7 +1137,7 @@ Boolean View::_drawCursors = true;
 Boolean View::_jsCursors = false;
 Boolean View::_showNames = false;
 Boolean View::_drawingEnabled = true;
-Boolean View::_globalShowMouseLocation = true;
+int View::_globalShowMouseLocation = 1;
 
 //******************************************************************************
 // Constructors and Destructors
@@ -1221,7 +1224,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_displaySymbol = true;
 
-	_showMouseLocation = true;
+	_showMouseLocation = 1;
 
 #if 0
 	_filter.camera.x_ = 4.6;
@@ -4811,7 +4814,7 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
   printf(")\n");
 #endif
 
-  if (!_showMouseLocation || !_globalShowMouseLocation) return;
+  if ((_showMouseLocation == 0) || (_globalShowMouseLocation == 0)) return;
 
   Coord dataX = 0.0;
   Coord dataY = 0.0;
@@ -4846,6 +4849,20 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
 
   dataX *= _xAxis.GetMultFactor();
   dataY *= _yAxis.GetMultFactor();
+
+  if ((_showMouseLocation != 1) && (_showMouseLocation != 2)) {
+    mouseX = NULL;
+  }
+  if ((_globalShowMouseLocation != 1) && (_globalShowMouseLocation != 2)) {
+    mouseX = NULL;
+  }
+
+  if ((_showMouseLocation != 1) && (_showMouseLocation != 3)) {
+    mouseY = NULL;
+  }
+  if ((_globalShowMouseLocation != 1) && (_globalShowMouseLocation != 3)) {
+    mouseY = NULL;
+  }
 
   const int mouseFieldWidth = 6;
   const int mouseFieldPrec = 4;

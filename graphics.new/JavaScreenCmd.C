@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.125  2001/11/28 21:56:43  wenger
+  Merged collab_cleanup_br_2 through collab_cleanup_br_6 to the trunk.
+
   Revision 1.124.2.1  2001/11/19 21:03:55  wenger
   Added JAVAC_RefreshData command and jsdevisec.refreshAllData method for
   Squid to be able to force DEVise to re-read all data and update the
@@ -623,7 +626,7 @@ static DeviseCursorList _drawnCursors;
 static const float viewZInc = 0.001;
 
 static const int protocolMajorVersion = 9;
-static const int protocolMinorVersion = 2;
+static const int protocolMinorVersion = 3;
 
 JavaScreenCache JavaScreenCmd::_cache;
 
@@ -3132,8 +3135,7 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	Boolean drillDownEnabled = !drillDownDisabled;
 	Boolean keysEnabled = !keysDisabled;
 
-	Boolean showMouseLocation = view->GetShowMouseLocation() &&
-	  View::GetGlobalShowMouseLocation();
+	int showMouseLocation = view->GetShowMouseLocation();
 
 	{ // limit variable scopes
 	  JSArgs args(32);

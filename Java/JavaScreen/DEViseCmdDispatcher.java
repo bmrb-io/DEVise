@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.114  2001/11/25 03:42:07  xuk
+// Sent heartbeat in collaboration mode.
+//
 // Revision 1.113  2001/11/19 22:20:38  xuk
 // Changes for String[] format socket/commands.
 //
@@ -1252,15 +1255,18 @@ public class DEViseCmdDispatcher implements Runnable
             int dtx = 0, dty = 0;
             Font dtf = null;
 
-            int dvinfo = 1; // whether to show mouse location
+            // Show value meanings: 0 = none; 1 = xy; 2 = x; 3 = y;
+	    // values are this way for backwards compatibility.
+	    int showMouseLoc = 1;
+
             if (args.length == 26) {
                 // When viewtitle is empty, then arg 25 is the show mouse
-                // location - dvinfo
+                // location - showMouseLoc
 
                 if (args[25].equals("")) {
-                    dvinfo = 1;
+                    showMouseLoc = 1;
                 } else{
-                    dvinfo = Integer.parseInt(args[25]);
+                    showMouseLoc = Integer.parseInt(args[25]);
                 }
             }
 
@@ -1305,9 +1311,9 @@ public class DEViseCmdDispatcher implements Runnable
 
                 if (args.length == 32) {
                     if(args[31].equals("")){
-                        dvinfo = 1;
+                        showMouseLoc = 1;
                     } else {
-                        dvinfo = Integer.parseInt(args[31]);
+                        showMouseLoc = Integer.parseInt(args[31]);
                     }
                 }
 
@@ -1340,7 +1346,7 @@ public class DEViseCmdDispatcher implements Runnable
                 view.viewDTFont = dtf;
                 view.viewDTX = dtx + view.viewLocInCanvas.x;
                 view.viewDTY = dty + view.viewLocInCanvas.y;
-                view.isViewInfo = (dvinfo == 1);
+		view.setShowMouseLoc(showMouseLoc);
             }
 
             jsc.jscreen.addView(view);
