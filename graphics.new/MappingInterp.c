@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.9  1995/12/14 00:28:24  jussi
+  Fixed interpretation of shape attributes; shape attributes were not
+  converted to GData at all in some cases. This resulted in width or
+  height values (shapeAttr[0] and [1]) having zero values.
+
   Revision 1.8  1995/11/30 00:36:15  jussi
   Commented out a couple of debugging output statements.
 
@@ -123,8 +128,6 @@ int MappingInterp::FindGDataSize(MappingInterpCmd *cmd, AttrList *attrList,
     size += sizeof(double);
   }
   
-  int numShapeAttrs = GetDefaultNumShapeAttrs();
-  ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
   for(int j = 0; j < MAX_GDATA_ATTRS; j++) {
     if ((attrFlag & (1 << j)) && !IsConstCmd(cmd->shapeAttrCmd[j], val) ) {
       size = WordBoundary(size, sizeof(double));
@@ -496,9 +499,7 @@ void MappingInterp::ConvertToGData(RecId startRecId,void *buf,
       *((double *)(gPtr+_offsets->orientationOffset))= _interpResult;
     }
 
-    int numShapeAttrs = GetDefaultNumShapeAttrs();
     ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
-
     for(j = 0; j <= _maxGDataShapeAttrNum; j++) {
       if (_offsets->shapeAttrOffset[j] >= 0) {
 	if (_tclCmd->yCmd == NULL) {
@@ -649,7 +650,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     }
   }
 
-  _maxGDataShapeAttrNum = 0;
+  _maxGDataShapeAttrNum = -1;
   for(j = 0; j < MAX_GDATA_ATTRS; j++) {
     if (_cmdAttrFlag & (1 << j)) {
       _maxGDataShapeAttrNum = j;
@@ -809,7 +810,7 @@ AttrList *MappingInterp::InitCmd(char *name)
     }
   }
 
-  _maxGDataShapeAttrNum = 0;
+  _maxGDataShapeAttrNum = -1;
   for(j = 0; j < MAX_GDATA_ATTRS; j++) {
     char attrName [80];
     sprintf(attrName, "shapeAttr_%d", j);
@@ -1218,36 +1219,34 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
     double *dPtr;
 
     if (_offsets->xOffset >= 0) {
-      dPtr = (double *)(gPtr+_offsets->xOffset);
+      dPtr = (double *)(gPtr + _offsets->xOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->xCmd, 1.0);
     }
     if ( _offsets->yOffset >= 0) {
-      dPtr = (double *)(gPtr+_offsets->yOffset);
+      dPtr = (double *)(gPtr + _offsets->yOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->yCmd, 1.0);
     }
     if (_offsets->colorOffset >= 0) {
-      Color *cPtr = (Color *)(gPtr+_offsets->colorOffset);
+      Color *cPtr = (Color *)(gPtr + _offsets->colorOffset);
       *cPtr= (Color)ConvertOne(tPtr, &_simpleCmd->colorCmd, 1.0);
     }
     if (_offsets->sizeOffset >= 0) {
-      dPtr = (double *)(gPtr+_offsets->sizeOffset);
+      dPtr = (double *)(gPtr + _offsets->sizeOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->sizeCmd, 1.0);
     }
     if (_offsets->shapeOffset >= 0) {
-      ShapeID *sPtr = (ShapeID *)(gPtr+_offsets->shapeOffset);
+      ShapeID *sPtr = (ShapeID *)(gPtr + _offsets->shapeOffset);
       *sPtr = (ShapeID) ConvertOne(tPtr, &_simpleCmd->shapeCmd, 1.0);
     }
     if (_offsets->patternOffset >= 0) {
-      Pattern *pPtr = (Pattern *)(gPtr+_offsets->patternOffset);
+      Pattern *pPtr = (Pattern *)(gPtr + _offsets->patternOffset);
       *pPtr = (Pattern)ConvertOne(tPtr, &_simpleCmd->patternCmd, 0.0);
     }
     if (_offsets->orientationOffset >= 0) {
-      dPtr = (double *)(gPtr+_offsets->orientationOffset);
+      dPtr = (double *)(gPtr + _offsets->orientationOffset);
       *dPtr = ConvertOne(tPtr, &_simpleCmd->orientationCmd, 0.0);
     }
 
-    int numShapeAttrs = GetDefaultNumShapeAttrs();
-    ShapeAttr *shapeAttr = GetDefaultShapeAttrs();
     for(int j = 0; j <= _maxGDataShapeAttrNum; j++) {
       if (_offsets->shapeAttrOffset[j] >= 0) {
 	double *dPtr = (double *)(gPtr + _offsets->shapeAttrOffset[j]);
