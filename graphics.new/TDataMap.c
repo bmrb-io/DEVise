@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/11/28 00:08:01  jussi
+  Replaced constant RectShapeID with 0.
+
   Revision 1.3  1995/11/21 23:19:24  jussi
   Added copyright notice and cleaned up code.
 
@@ -24,11 +27,8 @@
 */
 
 #include <stdio.h>
-#if defined(SUN)||defined(PENTIUM)
 #include <string.h>
-#else
-#include <strings.h>
-#endif
+
 #include "Config.h"
 #include "Init.h"
 #include "TDataMap.h"
@@ -37,6 +37,8 @@
 #include "Bitmap.h"
 #include "TData.h"
 #include "QueryProc.h"
+
+//#define DEBUG
 
 /* counts how many TDataMaps have been created.
    Also used in creating the name of GData */
@@ -88,8 +90,11 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
   _gdataPath = CreateGDataPath(_gdataName);
   
   if (_createGData && _gRecSize < tdata->RecSize()) {
+#ifdef DEBUG
+    printf("Creating new instance of GData with recSize %d\n", _gRecSize);
+#endif
     _gdata = new GData(_tdata, _gdataPath, _gRecSize, 
-		       maxGDataPages*DEVISE_PAGESIZE);
+		       maxGDataPages * DEVISE_PAGESIZE);
   } else {
     _gdata = NULL;
   }
@@ -313,12 +318,20 @@ void TDataMap::SetDefaultShape(ShapeID shapeID, int numAttr,
 
 void TDataMap::ResetGData(int gRecSize)
 {
+#ifdef DEBUG
+  printf("TDataMap::ResetGData with recSize %d\n", gRecSize);
+#endif
+
   if (_gdata != NULL) {
     QueryProc::Instance()->ClearGData(_gdata);
     delete _gdata;
     _gdata = NULL;
     _gRecSize = gRecSize;
+
     if (_createGData && _gRecSize < _tdata->RecSize()) {
+#ifdef DEBUG
+      printf("Creating new instance of GData with recSize %d\n", _gRecSize);
+#endif
       _gdata = new GData(_tdata, _gdataPath, _gRecSize,
 			 _maxGDataPages*DEVISE_PAGESIZE);
       QueryProc::Instance()->ResetGData(_tdata,_gdata);
