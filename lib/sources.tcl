@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.12  1995/12/12 01:46:46  ravim
+#	Physical/logical schema support.
+#
 #	Revision 1.11  1995/12/11 18:02:56  ravim
 #	Physical/logical schema distinction handled.
 #
@@ -63,15 +66,15 @@
 
 # Default values for data source types, redefined in sourcedef.tcl.
 
-set sourceTypes(COMMAND) {{Unix Command Output} /p/devise/schema/schema/logical/COMMAND}
-set sourceTypes(COMPUSTAT) {{Annual and Quarterly Company Financial Data} /p/devise/schema/schema/logical/COMPUSTAT compustat.idx}
-set sourceTypes(CRSP) {{Security Data} /p/devise/schema/schema/logical/CRSP crsp_dsm94.idx}
-set sourceTypes(ISSM) {{Historical Stock Data (Trades and Quotes} /p/devise/schema/schema/logical/ISSM-T issm.idx}
-set sourceTypes(NETWORK) {{Network Server Output} /p/devise/schema/schema/logical/NETWORK}
-set sourceTypes(SEQ) {{SEQ Query Output} /p/devise/schema/schema/logical/SEQ}
-set sourceTypes(SQL) {{SQL Query Output} /p/devise/schema/schema/logical/SQL}
-set sourceTypes(UNIXFILE) {{Unix File} /p/devise/schema/schema/logical/UNIXFILE}
-set sourceTypes(WWW) {{World Wide Web} /p/devise/schema/schema/logical/WWW}
+set sourceTypes(COMMAND) {{Unix Command Output} $schemadir/logical/COMMAND}
+set sourceTypes(COMPUSTAT) {{Annual and Quarterly Company Financial Data} $schemadir/logical/COMPUSTAT compustat.idx}
+set sourceTypes(CRSP) {{Security Data} $schemadir/logical/CRSP crsp_dsm94.idx}
+set sourceTypes(ISSM) {{Historical Stock Data (Trades and Quotes} $schemadir/logical/ISSM-T issm.idx}
+set sourceTypes(NETWORK) {{Network Server Output} $schemadir/logical/NETWORK}
+set sourceTypes(SEQ) {{SEQ Query Output} $schemadir/logical/SEQ}
+set sourceTypes(SQL) {{SQL Query Output} $schemadir/logical/SQL}
+set sourceTypes(UNIXFILE) {{Unix File} $schemadir/logical/UNIXFILE}
+set sourceTypes(WWW) {{World Wide Web} $schemadir/logical/WWW}
 
 set sourceFile $datadir/sourcedef.tcl
 if {[file exists $sourceFile]} {
