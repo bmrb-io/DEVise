@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.60  1997/03/19 19:41:50  andyt
+  Embedded Tcl/Tk windows are now sized in data units, not screen pixel
+  units. The old list of ETk window handles (WindowRep class) has been
+  replaced by a list of ETkInfo structs, each with fields for the window
+  handle, x-y coordinates, name of the Tcl script, and an "in_use"
+  flag. Added an ETk_Cleanup() procedure that gets called inside
+  View::ReportQueryDone and destroys all ETk windows that are not marked
+  as in_use.
+
   Revision 1.59  1997/03/19 18:44:41  wenger
   Disabled RTree indices in DTE, got that to compile; fixed some compile
   warnings; undid accidental(?) changes to devise run script; devise.etk
@@ -435,6 +444,62 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
     control->ReturnVal(API_ACK, "done");
     return 1;
   }
+
+  if (!strcmp(argv[0], "setBuckRefresh")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+	    control->ReturnVal(API_NAK, "Cannot find view");
+	    return -1;
+    }
+#if defined(DEBUG) || 0
+    printf("In setBuckRefresh, %s %s\n", argv[1], argv[2]);
+#endif
+    view->AbortQuery();
+    view->ResetGStatInMem();
+    view->SetHistBucks(atoi(argv[2]));
+    view->Refresh();
+//    view->PrepareStatsBuffer(view->GetFirstMap());
+    
+    control->ReturnVal(API_ACK, "done");
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "checkGstat")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+	control->ReturnVal(API_NAK, "Cannot find view");
+	return -1;
+    }
+    if(view->IsGStatInMem()) {
+	printf("GDataStat is in memory\n");
+	strcpy(result, "1");
+    } else {
+	printf("GDataStat is NOT in memory\n");
+        strcpy(result, "0");
+    }
+    control->ReturnVal(API_ACK, result);
+
+    return 1;
+  }
+
+  if (!strcmp(argv[0], "isXDateType")) {
+    ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[1]);
+    if (!view) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+    }
+    if(view->IsXDateType()) {
+	printf("X type is date\n");
+        strcpy(result, "1");
+    } else {
+	printf("X type is NOT date\n");
+        strcpy(result, "0");
+    }
+    control->ReturnVal(API_ACK, result);
+
+    return 1;
+  }
+
   if (!strcmp(argv[0], "setViewLensParams")) {
      // name mode views 
      ViewLens *lens = (ViewLens *)classDir->FindInstance(argv[1]);
@@ -472,6 +537,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
      control->ReturnVal(API_ACK, "done");
      return 1;
   }
+
   if (argc == 1) {
 
     if (!strcmp(argv[0], "date")) {
@@ -1204,7 +1270,8 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
        enum {
            STAT_TYPE,
            HIST_TYPE,
-           GSTAT_TYPE 
+           GSTATX_TYPE, 
+           GSTATY_TYPE 
 	} type;
         char* viewName = NULL;
         if(!strncmp(argv[1], "Stat:", 5)) {
@@ -1213,9 +1280,13 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
         } else if(!strncmp(argv[1], "Hist:", 5)) {
 	  type = HIST_TYPE;
 	  viewName = &argv[1][5];
-        } else if(!strncmp(argv[1], "Gstat:", 6)) {
-	  type = GSTAT_TYPE;
-	  viewName = &argv[1][6];
+        } else if(!strncmp(argv[1], "GstatX: ", 8)) {
+	  //e.g. argv[1] = GstatX: View 1
+	  type = GSTATX_TYPE;
+	  viewName = &argv[1][8];
+        } else if(!strncmp(argv[1], "GstatY: ", 8)) {
+	  type = GSTATY_TYPE;
+	  viewName = &argv[1][8];
         } else {
 	  control->ReturnVal(API_NAK, "Invalid stat type");
 	  return -1;
@@ -1238,8 +1309,11 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
           case HIST_TYPE:
             buffObj = vg->GetViewHistogram();
 	    break;
-          case GSTAT_TYPE:
-            buffObj = vg->GetGdataStatistics();
+          case GSTATX_TYPE:
+            buffObj = vg->GetGdataStatisticsX();
+	    break;
+          case GSTATY_TYPE:
+            buffObj = vg->GetGdataStatisticsY();
 	    break;
 	}
        DOASSERT(buffObj != NULL, "didn't find stats buffer\n");
@@ -1758,7 +1832,7 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	control->ReturnVal(API_NAK, "Cannot find link");
 	return -1;
       }
-      printf("insertLink %s %s\n", argv[1], argv[2]);
+//      printf("insertLink %s %s\n", argv[1], argv[2]);
       ViewGraph *view = (ViewGraph *)classDir->FindInstance(argv[2]);
       if (!view) {
 	control->ReturnVal(API_NAK, "Cannot find view");
