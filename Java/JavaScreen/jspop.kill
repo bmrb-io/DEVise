@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  2001/06/08 15:52:19  wenger
+#  Implemented non-ps-based JSPoP/JSS/DEVised checking.
+#
 #  Revision 1.5  2001/05/11 20:36:15  wenger
 #  Set up a package for the JavaScreen code.
 #
@@ -68,5 +71,4 @@ for pid in $pids
 do
   echo "Killing $pid"
   kill $pid
-  wait $pid
 done

@@ -20,6 +20,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  2001/06/08 15:52:19  wenger
+#  Implemented non-ps-based JSPoP/JSS/DEVised checking.
+#
 #  Revision 1.10  2001/01/08 20:31:50  wenger
 #  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 #  back onto the trunk.
@@ -105,5 +108,4 @@ do
   kill -INT $pid
   sleep 1
   kill -INT $pid
-  wait $pid
 done
