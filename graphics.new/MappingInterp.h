@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  2000/01/13 23:07:09  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.50  1999/09/02 17:26:05  wenger
   Took out the ifdefs around the MARGINS code, since DEVise won't compile
   without them; removed all of the TK_WINDOW code, and removed various
@@ -361,6 +364,7 @@ public:
   virtual AttrInfo *MapShapeAttr2TAttr(int i);
 
   virtual void SetParentValue(const char *value);
+  virtual const char *GetParentValue() { return _parentValue; }
 
 
 protected:	

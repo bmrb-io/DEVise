@@ -2235,6 +2235,10 @@ Num Date        Status  Description
 			a different palette has been loaded when session is
 			being opened. (rkw)
 
+572 03/09/00	FIXED	Switching stations in ASOS and AWON sessions causes
+			incorrect display until variable is switched. (rkw)
+			(Fixed by rkw, 3/10/00.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

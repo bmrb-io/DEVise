@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.137  2000/02/24 18:50:30  wenger
+  F/f ("full" cursor) in a view does home on the source views of any cursors
+  for which the selected view is the destination view.
+
   Revision 1.136  2000/02/16 18:51:47  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -3110,6 +3114,8 @@ ViewGraph::SwitchTData(const char *tdName)
 		newMapping->SetStringTable(TDataMap::TableGen, _stringGenTableName);
 
 		newMapping->SetPixelWidth(oldMapping->GetPixelWidth());
+
+		newMapping->SetParentValue(oldMapping->GetParentValue());
 	  }
 
 	  //
@@ -3149,8 +3155,11 @@ ViewGraph::SetParentValue(const char *parentVal)
 
   DevStatus result = StatusOk;
 
-  if (!_viewSymParentVal || strcmp(_viewSymParentVal, parentVal)) {
-    TDataMap *map = GetFirstMap();
+  // Note: we shouldn't really have to check against map->GetParentValue()
+  // here, but I'm doing it for extra safety.  RKW 2000-03-10.
+  TDataMap *map = GetFirstMap();
+  if (!_viewSymParentVal || strcmp(_viewSymParentVal, parentVal) ||
+      strcmp(map->GetParentValue(), parentVal)) {
     //TEMP -- what if > 1 maps?
 
     map->SetParentValue(parentVal);

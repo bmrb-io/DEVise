@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.26  2000/02/15 16:16:25  wenger
+  Cursors in child views "remember" their size and location when
+  switching TDatas or parent attributes.
+
   Revision 1.25  1999/10/14 16:48:27  wenger
   Fixed problem in the JS with cursors in view symbols sometimes getting
   erased and not redrawn when they should still be there.
@@ -354,6 +358,9 @@ void
 FullMapping_ViewShape::SetTData(TDataMap *map, AttrList *attrList,
     StringStorage *stringTable, char *gdata, ViewGraph *viewsym)
 {
+#if defined(DEBUG)
+  printf("FullMapping_ViewShape::SetTData(%s)\n", viewsym->GetName());
+#endif
   AttrInfo *info = attrList->Find(gdataShapeAttr3Name);
   if (info && info->type == StringAttr) {
     int key = (int)map->GetShapeAttr3(gdata);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.40  2000/01/13 23:07:13  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.39  1999/07/21 18:51:14  wenger
   Moved alignment and data font information from view into mapping.
 
@@ -369,6 +372,7 @@ class TDataMap
   int GDataRecordSize() { return _gRecSize; }
 
   virtual void SetParentValue(const char *value) = 0;
+  virtual const char *GetParentValue() = 0;
   
   /**************************************************************
     User provided function to return a hint of the RecId
