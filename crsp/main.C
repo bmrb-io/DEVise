@@ -15,25 +15,37 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1995/11/09 15:30:54  ravim
+  Initial revision
+*/
 
 // Tests the crsp extraction routines
+
 #include <iostream.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 
 #include "sec.h"
-
-#define FILENAME "/afs/cs.wisc.edu/p/miron/miron/DEVise/crsp/dsm94.dat"
+#include "tapedrive.h"
 
 main(int argc, char **argv)
 {
-  // Try to extract the info for the first security
+  if (argc != 2) {
+    cerr << "Usage: " << argv[0] << " <input tape device>" << endl;
+    exit(0);
+  }
 
-  int fd = open(FILENAME, O_RDONLY);
+  // Open data file
+
+  TapeDrive tape(argv[1], "r", -1, 32768);
+  if (!tape)  {
+    cerr << "Error: could not open tape device " << argv[1] << endl;
+    exit(0);
+  }
+  tape.readTarHeader();
+
+  // Try to extract the info for the first security
   
-  Security *sec = new Security(fd);
+  Security *sec = new Security(tape);
 
   sec->print_security();
 }
