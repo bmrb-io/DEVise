@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.51  1996/07/12 21:54:44  jussi
+#	Fixed minor typo.
+#
 #	Revision 1.50  1996/07/08 17:08:02  jussi
 #	Small fix in OpenDataSource.
 #
@@ -1347,8 +1350,6 @@ proc CacheMultipleDataSources {snames} {
 ############################################################
 
 proc OpenNewDataSource {derivedOnly} {
-    global sourceList derivedSourceList
-
     # select data streams to display
     if {$derivedOnly} {
 	set snames [selectDerivedStream]
@@ -1364,6 +1365,14 @@ proc OpenNewDataSource {derivedOnly} {
                 "You have selected more than one data stream.\
                 Only the first stream will be visualized." "" 0 Continue
     }
+
+    return [ OpenAndDefineDataSources $derivedOnly $snames ]
+}
+
+############################################################
+
+proc OpenAndDefineDataSources {derivedOnly snames} {
+    global sourceList derivedSourceList
 
     foreach sname $snames {
         # see if data stream already open
