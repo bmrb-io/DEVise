@@ -1,16 +1,33 @@
 /*
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1992-1996
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+*/
+
+/*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:13:43  jussi
+  Added/updated CVS header.
+*/
 
 #include <stdio.h>
-#include <libc.h>
-#include "XawControl.h"
-#include "Xdef.h"
+#include <stdlib.h>
 #include <X11/Shell.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 
+#include "XawControl.h"
+#include "Xdef.h"
 
 /*************************************************************************/
 void XawControlPanel::SubclassInsertDisplay(DeviseDisplay * /*disp*/,

@@ -16,13 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/12/14 17:02:32  jussi
+  Added copyright notice and made small fixes.
+
   Revision 1.2  1995/09/05 21:12:49  jussi
   Added/updated CVS header.
 */
 
-#include "Geom.h"
 #include <stdio.h>
-#include <libc.h>
+#include <stdlib.h>
+
+#include "Geom.h"
 
 /**************************************************************
 Return true if point (x,) intersects with line (x0,y0)

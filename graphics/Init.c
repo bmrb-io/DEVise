@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/12/28 18:47:59  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.6  1995/12/14 17:10:33  jussi
   Small fixes.
 
@@ -35,12 +38,12 @@
 */
 
 #include <stdio.h>
-#include <sys/types.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <libc.h>
+#include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <sys/types.h>
 
 #include "Dispatcher.h"
 #include "Exit.h"
