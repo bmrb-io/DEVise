@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/05/08 15:59:36  jussi
+  Replaced _display->fd, which is an illegal access, with the
+  more portable ConnectionNumber(_display) defined in Xlib.h.
+
   Revision 1.18  1996/04/20 19:52:24  kmurli
   Changed Viex.c to use a pipe mechanism to call itself if it needs to be
   done again. The view now is not called contiously by the Dispatcher,instead
@@ -111,7 +115,7 @@ Open a new X display
 XDisplay::XDisplay(char *name)
 {
   if (!(_display = XOpenDisplay(name))) {
-    (void)fprintf(stderr,"can't open display\n");
+    fprintf(stderr, "Cannot open XDisplay\n");
     Exit::DoExit(1);
   }
   
@@ -460,17 +464,18 @@ WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
    */
 
   XSetStandardProperties(_display, w, name, name, None, 0, 0, &xsh);
+#if 0
   if (ControlPanel::Instance()->Restoring() && Init::Iconify()) {
     xwmh.flags = InputHint | StateHint | IconPositionHint;
     xwmh.input = true;
     xwmh.initial_state = IconicState;
     xwmh.icon_x = (unsigned)realX;
     xwmh.icon_y = (unsigned)realY;
-  } else {
-    xwmh.flags = InputHint | StateHint;
-    xwmh.input = true;
-    xwmh.initial_state = NormalState;
   }
+#endif
+  xwmh.flags = InputHint | StateHint;
+  xwmh.input = true;
+  xwmh.initial_state = NormalState;
   XSetWMHints(_display, w, &xwmh);
   
   /* Map the window so that it appears on the display. */
