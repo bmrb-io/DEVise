@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1995/11/29 17:11:21  jussi
+  Relaxed condition which determines which GData records are included
+  in statistics computation. Bar graphs may have y values beyond
+  filter.yHigh, and the bar still appears on the screen and so should
+  be included in statistics.
+
   Revision 1.6  1995/11/28  05:23:00  ravim
   Support for statistics.
 
@@ -56,9 +62,6 @@ TDataViewX::TDataViewX(char *name,
   _cMap = NULL;
   _totalGData = _numBatches = 0;
   _batchRecs = Init::BatchRecs();
-
-  // Create the Stats class
-  _stats = new BasicStats();
 }
 
 void TDataViewX::InsertMapping(TDataMap *map)
@@ -91,7 +94,7 @@ void TDataViewX::DerivedStartQuery(VisualFilter &filter, int timestamp)
   }
   
   // Init stats class
-  _stats->Init(this);
+  _stats.Init(this);
 
   _queryFilter = filter;
   
@@ -146,7 +149,7 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
       tp += gRecSize;
       continue;
     }
-    _stats->Sample(gt->x, gt->y);
+    _stats.Sample(gt->x, gt->y);
     tp += gRecSize;
   }
   
@@ -169,8 +172,8 @@ void TDataViewX::ReturnGData(TDataMap *mapping, RecId recId,
 
 void TDataViewX::QueryDone(int bytes, void *userData)
 {
-  _stats->Done();
-  _stats->Report();
+  _stats.Done();
+  _stats.Report();
   _dataBin->Final();
   ReportQueryDone(bytes);
 }
