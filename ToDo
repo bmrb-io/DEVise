@@ -369,6 +369,8 @@ Improve user interface for selecting font properties for text labels.
 Devise should automatically launch a Tasvir server if one is needed.
 (ml/rkw 3/31/97)
 
+Allow direct importing of GData files. (ml/rkw 4/4/97)
+
 
 COMPLETED
 ---------
