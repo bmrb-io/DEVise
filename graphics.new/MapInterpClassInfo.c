@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/04/16 00:16:43  jussi
+  Added initialization of _dimensionInfo to two constructors.
+
   Revision 1.7  1996/04/14 00:19:11  jussi
   Removed the extraneous data structures and methods for recording
   new mapping class names. ClassDir records this information for
@@ -242,17 +245,14 @@ void MapInterpClassInfo::ParamNames(int &argc, char **&argv)
   argc = 14;
   argv = args;
 
-  if (_fileAlias == NULL) {
-    sprintf(buf[0], "File_Alias {%s}", ControlPanel::Instance()->FileAlias());
-  } else {
+  if (_fileAlias)
     sprintf(buf[0], "File_Alias {%s}", _fileAlias);
-  }
-    
-  if (_name == NULL) {
-    sprintf(buf[1], "Map_Name {%s}", ControlPanel::Instance()->GDataName());
-  } else {
-    sprintf(buf[1], "GData_Name {%s}", _name);
-  }
+  else
+    strcpy(buf[0], "File_Alias {foobar}");
+  if (_name)
+    sprintf(buf[1], "Map_Name {%s}", _name);
+  else
+    strcpy(buf[1], "Map_Name {foobar}");
 
   args[0] = buf[0];
   args[1] = buf[1];
