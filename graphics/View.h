@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/11/28 05:10:23  ravim
+  Support for statistics.
+
   Revision 1.5  1995/11/24 21:32:04  jussi
   Added copyright notice and cleaned up the code. Made GetDataArea
   a protected method so that TDataViewX and ViewScatter can access
@@ -33,6 +36,7 @@
 
 #ifndef View_h
 #define View_h
+
 #include "DeviseTypes.h"
 #include "Dispatcher.h"
 #include "DList.h"
@@ -104,7 +108,7 @@ public:
 	View(char *name, Action *action, VisualFilter &initFilter,
 		Color foreground= BlackColor, Color background = BlackColor,
 		AxisLabel *xAxis=NULL, AxisLabel *yAxis = NULL,
-		int weight=1, Boolean boundary = true);
+		int weight = 1, Boolean boundary = false);
 	~View();
 
 	char *GetName(){ return ViewWin::GetName();}
