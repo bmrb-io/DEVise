@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.5  1995/09/27 17:20:34  ravim
+#	Added support for groups in schemas.
+#
 #	Revision 1.4  1995/09/26 23:09:02  jussi
 #	Added color/shape/size/pattern/orientation settings to view
 #	definition.
@@ -99,11 +102,11 @@ proc MacroDefStart {} {
 	    set x [string range [lindex $params 3] 1 end]
 	    set y [string range [lindex $params 4] 1 end]
 	    set color [lindex $params 5]
+	    set size [lindex $params 6]
+	    set pattern [lindex $params 7]
+	    set orient [lindex $params 8]
 	    set shape [lindex $params 9]
-	    set size 1
-	    set pattern ""
-	    set orient ""
-	    set defn [list $x $y $color $shape $size $pattern $orient]
+	    set defn [list $x $y $color $size $pattern $orient $shape]
 	    
 	    set mappings($mapname) $defn
 	    if {[string first $mapname $maps($schema)] < 0} {
@@ -230,7 +233,10 @@ proc MacroDefNewMapping {} {
     set x [lindex $mappings($gdata) 0]
     set y [lindex $mappings($gdata) 1]
     set color [lindex $mappings($gdata) 2]
-    set shape [lindex $mappings($gdata) 3]
+    set size [lindex $mappings($gdata) 3]
+    set pattern [lindex $mappings($gdata) 4]
+    set orient [lindex $mappings($gdata) 5]
+    set shape [lindex $mappings($gdata) 6]
 
     # ask DEVise to create view instance
     set sorted SortedX
@@ -253,14 +259,14 @@ proc MacroDefNewMapping {} {
 	# ask DEVise to create interpreted mapping
 	# parameter format: x y color size pattern orientation shape
 	set result [DEVise createInterp $tdata $gdata "" \$$x \$$y \
-		$color "" "" "" $shape "" ""]
+		$color $size $pattern $orient $shape "" ""]
     }
 
     set mapinstance "$tdata#$gdata" 
     if {[lsearch [GdataSet] $mapinstance] < 0} {
 	# ask DEVise to create an instance of mapping
 	set result [DEVise create mapping $gdata $tdata $mapinstance \
-		"" \$$x \$$y $color "" "" "" $shape "" ""]
+		"" \$$x \$$y $color $size $pattern $orient $shape "" ""]
 	DEVise setPixelWidth $mapinstance 1
     }
 
@@ -578,7 +584,7 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	set mapname [format "%s_vs_%s" $name $x]
 	set err [catch {set exists $mappings($mapname)}]
 	if {$err > 0} {
-	    set defn [list $x $name $color $shape $size $pattern $orient]
+	    set defn [list $x $name $color $size $pattern $orient $shape]
 	    set mappings($mapname) $defn
 	    lappend maps($sname) $mapname
 	}
@@ -608,8 +614,6 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	    set views($viewname) $defn
 	}
 
-	puts "Here"
-
 	# ask DEVise to create view instance
 	set sorted $sortedx
 	set viewinstance "$tdata#$viewname#$x#$name"
@@ -626,52 +630,37 @@ proc MacroDefAutoActual {tdata x xtype sortedx ylist} {
 	    return
 	}
 	
-	puts "Here"
-
 	if {[lsearch [DEVise get mapping] $mapname] < 0} {
 	    # ask DEVise to create interpreted mapping
 	    # parameter format: x y color size pattern orientation shape
 	    set result [DEVise createInterp $tdata $mapname "" \$$x \$$name \
-		    $color "" "" "" $shape "" ""]
+		    $color $size $pattern $orient $shape "" ""]
 	}
-
-	puts "Here"
 
 	set mapinstance "$tdata#$mapname"
 	if {[lsearch [GdataSet] $mapinstance] < 0} {
 	    # ask DEVise to create an instance of mapping
 	    set result [DEVise create mapping $mapname $tdata $mapinstance \
-		    "" \$$x \$$name $color "" "" "" $shape "" ""]
+		    "" \$$x \$$name $color $size $pattern $orient $shape "" ""]
 	    DEVise setPixelWidth $mapinstance 1
 	} else {
 	    puts "$mapinstance exists already -- not creating"
 	}
 
-	puts "Here"
-
 	# ask DEVise to insert $viewinstance into $mapinstance
-	puts "DEVise insertMapping $viewinstance $mapinstance"
 	set result [DEVise insertMapping $viewinstance $mapinstance]
 	# seems that there's no error code returned
-
-	puts "Here"
 
 	# ask DEVise to insert $viewinstance into $window
 	set result [DEVise insertWindow $viewinstance $window]
 	# seems that there's no error code returned
 
-	puts "Here"
-
 	# ask DEVise to link $viewinstance to $linkname
 	set result [DEVise insertLink $linkname $viewinstance]
 	# seems that there's no error code returned
 
-	puts "Here"
-
 	DEVise clearViewHistory $viewinstance
 	DEVise insertViewHistory $viewinstance $xlo $ylo $xhi $yhi 0
-
-	puts "Here"
 
 	ProcessViewSelected $viewinstance
 	# DoToggleAxis X
@@ -704,7 +693,6 @@ proc MacroDefTdata {m default} {
 	    -menu $m.mbar.menu -width 20 -background $macroUnselectedColor \
 	    -activebackground $macroActiveColor
     CreateTextBitmap $m.label file.gif Source
-#    label $m.label -text "Source:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     foreach t $tdatas {
@@ -725,7 +713,7 @@ proc MacroDefTdata {m default} {
     }
 
     if {$tdata != $none} {
-	# fix: .map.but.auto s.b. a parameter
+	# fix: .map.but.auto should be a parameter
 	.map.but.auto configure -state normal
 	$m.mbar configure -background $macroSelectedColor \
 		-activebackground $macroActiveColor
@@ -737,7 +725,7 @@ proc MacroDefTdata {m default} {
 	    -command {
 	set sname [DefSource]
 	if {$sname != ""} {
-	    # fix this: .map.tdata s.b. $m
+	    # fix this: .map.tdata should be $m
 	    MacroDefTdata .map.tdata $sname
 	    MacroDefMaps .map.gdata $none
 	    set modified 1
@@ -763,7 +751,6 @@ proc MacroDefWindows {m default} {
 	    -menu $m.mbar.menu -width 20 \
 	    -background $macroUnselectedColor
     CreateTextBitmap $m.label window.gif Window
-#    label $m.label -text "Window:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     foreach win [lsort [array names windows]] {
@@ -789,7 +776,7 @@ proc MacroDefWindows {m default} {
 	    -command {
 	set winname [DefWindow]
 	if {$winname != ""} {
-	    # fix this: .map.window s.b. $m
+	    # fix this: .map.window should be $m
 	    MacroDefWindows .map.window $winname
 	    set modified 1
 	}
@@ -823,13 +810,13 @@ proc MacroDefMaps {m default} {
 	$m.mbar configure -state disabled
     }
     CreateTextBitmap $m.label chart.gif Mapping
-#    label $m.label -text "Mapping:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     if {$tdata != $none} {
 	set schema [lindex $schemas($tdata) 0]
 	foreach map [lsort $maps($schema)] {
-	    set color $devcolors([lindex $mappings($map) 2])
+	    # someday use $color to configure color of button
+	    # set color $devcolors([lindex $mappings($map) 2])
 	    $m.mbar.menu add command -label $map \
 		    -command "set gdata \"$map\""
 	    if {$gdata == $none} {
@@ -857,7 +844,7 @@ proc MacroDefMaps {m default} {
 	    set mapname [DefMapping $tdata $schema]
 	    if {$mapname != ""} {
 		lappend maps($sname) $mapname
-		# fix this: .map.gdata s.b. $m
+		# fix this: .map.gdata should be $m
 		MacroDefMaps .map.gdata $mapname
 		set modified 1
 	    }
@@ -881,7 +868,6 @@ proc MacroDefViews {m default} {
     menubutton $m.mbar -relief raised -textvariable view \
 	    -menu $m.mbar.menu -width 20 -background $macroUnselectedColor
     CreateTextBitmap $m.label view.gif View
-#    label $m.label -text "View:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     foreach v [lsort [array names views]] {
@@ -907,7 +893,7 @@ proc MacroDefViews {m default} {
 	    -command {
 	set viewname [DefView]
 	if {$viewname != ""} {
-	    # fix this: .map.view s.b. $m
+	    # fix this: .map.view should be $m
 	    MacroDefViews .map.view $viewname
 	    set modified 1
 	}
@@ -930,7 +916,6 @@ proc MacroDefLinks {m default} {
     menubutton $m.mbar -relief raised -textvariable link \
 	    -menu $m.mbar.menu -width 20 -background $macroLinkColor
     CreateTextBitmap $m.label link.gif Link
-#    label $m.label -text "Link:" -width 8
     pack $m.label $m.mbar -side left -padx 2m
     menu $m.mbar.menu -tearoff 0
     foreach l [lsort [array names links]] {
@@ -963,7 +948,7 @@ proc MacroDefLinks {m default} {
 	    -command {
 	set linkname [DefLink]
 	if {$linkname != ""} {
-	    # fix this: .map.link s.b. $m
+	    # fix this: .map.link should be $m
 	    MacroDefLinks .map.link $linkname
 	    set modified 1
 	}
@@ -1247,7 +1232,7 @@ proc DefWindow {} {
 proc DefMapping {tdata schema} {
     global DEViseColors DEViseShapes
     global mappings devcolors devshapes
-    global mapname x y color shape size pattern orient
+    global mapname x y color size pattern orient shape
 
     # see if .def window already exists; if so, just return
     set err [catch {set exists [wm state .def]}]
@@ -1275,15 +1260,15 @@ proc DefMapping {tdata schema} {
     label .def.map.left.x -text X -width 8
     label .def.map.left.y -text Y -width 8
     label .def.map.left.color -text Color -width 12
-    label .def.map.left.shape -text Shape -width 12
     label .def.map.left.size -text Size -width 12
     label .def.map.left.pattern -text Pattern -width 12
     label .def.map.left.orient -text Orientation -width 12
+    label .def.map.left.shape -text Shape -width 12
     label .def.map.left.name -text Name -width 12
     pack .def.map.left.x .def.map.left.y \
-	    .def.map.left.color .def.map.left.shape \
+	    .def.map.left.color .def.map.left.orient \
 	    .def.map.left.size .def.map.left.pattern \
-	    .def.map.left.orient -side top -pady 0.7m
+	    .def.map.left.shape -side top -pady 0.7m
     pack .def.map.left.name -side top -pady 3m
 
     menubutton .def.map.right.x -relief raised \
@@ -1292,19 +1277,19 @@ proc DefMapping {tdata schema} {
 	    -textvariable y -menu .def.map.right.y.menu -width 15
     menubutton .def.map.right.color -relief raised \
 	    -textvariable color -menu .def.map.right.color.menu -width 15
-    menubutton .def.map.right.shape -relief raised \
-	    -textvariable shape -menu .def.map.right.shape.menu -width 15
     menubutton .def.map.right.size -relief raised \
 	    -textvariable size -menu .def.map.right.size.menu -width 15
     menubutton .def.map.right.pattern -relief raised \
 	    -textvariable pattern -menu .def.map.right.pattern.menu -width 15
     menubutton .def.map.right.orient -relief raised \
 	    -textvariable orient -menu .def.map.right.orient.menu -width 15
+    menubutton .def.map.right.shape -relief raised \
+	    -textvariable shape -menu .def.map.right.shape.menu -width 15
     entry .def.map.right.name -relief sunken -width 15 -textvariable mapname
     pack .def.map.right.x .def.map.right.y \
-	    .def.map.right.color .def.map.right.shape \
+	    .def.map.right.color .def.map.right.orient \
 	    .def.map.right.size .def.map.right.pattern \
-	    .def.map.right.orient -side top
+	    .def.map.right.shape -side top
     pack .def.map.right.name -side top -pady 3m
 
     menu .def.map.right.x.menu -tearoff 0
@@ -1341,6 +1326,24 @@ proc DefMapping {tdata schema} {
     tk_menuBar .def.map.right .def.map.right.color
     set color red
 
+    menu .def.map.right.size.menu -tearoff 0
+    .def.map.right.size.menu add radiobutton -label 1 \
+	    -variable size -value 1
+    tk_menuBar .def.map.right .def.map.right.size
+    set size 1
+
+    menu .def.map.right.pattern.menu -tearoff 0
+    .def.map.right.pattern.menu add radiobutton -label 0 \
+	    -variable pattern -value 0
+    tk_menuBar .def.map.right .def.map.right.pattern
+    set pattern 0
+
+    menu .def.map.right.orient.menu -tearoff 0
+    .def.map.right.orient.menu add radiobutton -label 0 \
+	    -variable orient -value 0
+    tk_menuBar .def.map.right .def.map.right.orient
+    set orient 0
+
     menu .def.map.right.shape.menu -tearoff 0
     foreach shape $DEViseShapes {
 	set idx [lindex $shape 0]
@@ -1351,24 +1354,6 @@ proc DefMapping {tdata schema} {
     }
     tk_menuBar .def.map.right .def.map.right.shape
     set shape Bar
-
-    menu .def.map.right.size.menu -tearoff 0
-    .def.map.right.size.menu add radiobutton -label 1 \
-	    -variable size -value 1
-    tk_menuBar .def.map.right .def.map.right.size
-    set size 1
-
-    menu .def.map.right.pattern.menu -tearoff 0
-    .def.map.right.pattern.menu add radiobutton -label Normal \
-	    -variable pattern -value Normal
-    tk_menuBar .def.map.right .def.map.right.pattern
-    set pattern Normal
-
-    menu .def.map.right.orient.menu -tearoff 0
-    .def.map.right.orient.menu add radiobutton -label Normal \
-	    -variable orient -value Normal
-    tk_menuBar .def.map.right .def.map.right.orient
-    set orient Normal
 
     button .def.but.ok -text OK -width 10 \
 	    -command {
@@ -1400,10 +1385,10 @@ proc DefMapping {tdata schema} {
 
     if {$mapname != ""} {
 	set cidx $devcolors($color)
-	set sidx $devshapes($shape)
 	set pidx 0
 	set oidx 0
-	set defn [list $x $y $cidx $sidx $size $pidx $oidx]
+	set sidx $devshapes($shape)
+	set defn [list $x $y $cidx $size $pidx $oidx $sidx]
 	set mappings($mapname) $defn
     }
 
@@ -1414,7 +1399,7 @@ proc DefMapping {tdata schema} {
 
 proc DefView {} {
     global views
-    global xlo xhi ylo yhi color shape size pattern orient viewname
+    global xlo xhi ylo yhi color size pattern orient shape viewname
     global DEViseColors DEViseShapes
     global devcolors devshapes
 
@@ -1468,16 +1453,16 @@ proc DefView {} {
     label .def.view.left.ylo -text "Y low" -width 12
     label .def.view.left.yhi -text "Y high" -width 12
     label .def.view.left.color -text Color -width 12
-    label .def.view.left.shape -text Shape -width 12
     label .def.view.left.size -text Size -width 12
     label .def.view.left.pattern -text Pattern -width 12
     label .def.view.left.orient -text Orientation -width 12
+    label .def.view.left.shape -text Shape -width 12
     label .def.view.left.name -text Name -width 12
     pack .def.view.left.xlo .def.view.left.xhi \
 	    .def.view.left.ylo .def.view.left.yhi \
-	    .def.view.left.color .def.view.left.shape \
+	    .def.view.left.color .def.view.left.orient \
 	    .def.view.left.size .def.view.left.pattern \
-	    .def.view.left.orient -side top -pady 0.7m
+	    .def.view.left.shape -side top -pady 0.7m
     pack .def.view.left.name -side top -pady 3m
 
     entry .def.view.right.xlo -relief sunken -width 20 -textvariable xlo
@@ -1486,20 +1471,20 @@ proc DefView {} {
     entry .def.view.right.yhi -relief sunken -width 20 -textvariable yhi
     menubutton .def.view.right.color -relief raised \
 	    -textvariable color -menu .def.view.right.color.menu -width 20
-    menubutton .def.view.right.shape -relief raised \
-	    -textvariable shape -menu .def.view.right.shape.menu -width 20
     menubutton .def.view.right.size -relief raised \
 	    -textvariable size -menu .def.view.right.size.menu -width 20
     menubutton .def.view.right.pattern -relief raised \
 	    -textvariable pattern -menu .def.view.right.pattern.menu -width 20
     menubutton .def.view.right.orient -relief raised \
 	    -textvariable orient -menu .def.view.right.orient.menu -width 20
+    menubutton .def.view.right.shape -relief raised \
+	    -textvariable shape -menu .def.view.right.shape.menu -width 20
     entry .def.view.right.name -relief sunken -width 20 -textvariable viewname
     pack .def.view.right.xlo .def.view.right.xhi \
 	    .def.view.right.ylo .def.view.right.yhi \
-	    .def.view.right.color .def.view.right.shape \
+	    .def.view.right.color .def.view.right.orient \
 	    .def.view.right.size .def.view.right.pattern \
-	    .def.view.right.orient -side top
+	    .def.view.right.shape -side top
     pack .def.view.right.name -side top -pady 3m
 
     menu .def.view.right.color.menu -tearoff 0
@@ -1513,6 +1498,24 @@ proc DefView {} {
     tk_menuBar .def.view.right .def.view.right.color
     set color red
 
+    menu .def.view.right.size.menu -tearoff 0
+    .def.view.right.size.menu add radiobutton -label 1 \
+	    -variable size -value 1
+    tk_menuBar .def.view.right .def.view.right.size
+    set size 1
+
+    menu .def.view.right.pattern.menu -tearoff 0
+    .def.view.right.pattern.menu add radiobutton -label 0 \
+	    -variable pattern -value 0
+    tk_menuBar .def.view.right .def.view.right.pattern
+    set pattern 0
+
+    menu .def.view.right.orient.menu -tearoff 0
+    .def.view.right.orient.menu add radiobutton -label 0 \
+	    -variable orient -value 0
+    tk_menuBar .def.view.right .def.view.right.orient
+    set orient 0
+
     menu .def.view.right.shape.menu -tearoff 0
     foreach shape $DEViseShapes {
 	set idx [lindex $shape 0]
@@ -1523,24 +1526,6 @@ proc DefView {} {
     }
     tk_menuBar .def.view.right .def.view.right.shape
     set shape Bar
-
-    menu .def.view.right.size.menu -tearoff 0
-    .def.view.right.size.menu add radiobutton -label 1 \
-	    -variable size -value 1
-    tk_menuBar .def.view.right .def.view.right.size
-    set size 1
-
-    menu .def.view.right.pattern.menu -tearoff 0
-    .def.view.right.pattern.menu add radiobutton -label Normal \
-	    -variable pattern -value Normal
-    tk_menuBar .def.view.right .def.view.right.pattern
-    set pattern Normal
-
-    menu .def.view.right.orient.menu -tearoff 0
-    .def.view.right.orient.menu add radiobutton -label Normal \
-	    -variable orient -value Normal
-    tk_menuBar .def.view.right .def.view.right.orient
-    set orient Normal
 
     button .def.but.ok -text OK -width 10 \
 	    -command {
@@ -1582,7 +1567,7 @@ proc DefView {} {
 
 proc DefLink {} {
     global links
-    global x y color shape size pattern orient linkname
+    global x y color size pattern orient shape linkname
     global macroSelectColor
 
     # see if .def window already exists; if so, just return
@@ -1598,10 +1583,10 @@ proc DefLink {} {
     set x 1
     set y 0
     set color 0
-    set shape 0
     set size 0
     set pattern 0
     set orient 0
+    set shape 0
 
     label .def.label -text "Enter link parameters"
     frame .def.link
@@ -1618,8 +1603,6 @@ proc DefLink {} {
 	    -indicatoron 0 -selectcolor $macroSelectColor
     checkbutton .def.link.color -text Color -variable color -anchor w \
 	    -indicatoron 0 -selectcolor $macroSelectColor
-    checkbutton .def.link.shape -text Shape -variable shape -anchor w \
-	    -indicatoron 0 -selectcolor $macroSelectColor
     checkbutton .def.link.size -text Size -variable size -anchor w \
 	    -indicatoron 0 -selectcolor $macroSelectColor
     checkbutton .def.link.pattern -text Pattern -variable pattern -anchor w \
@@ -1627,8 +1610,10 @@ proc DefLink {} {
     checkbutton .def.link.orient -text Orientation \
 	    -variable orient -anchor w \
 	    -indicatoron 0 -selectcolor $macroSelectColor
-    pack .def.link.x .def.link.y .def.link.color .def.link.shape \
-	    .def.link.size .def.link.pattern .def.link.orient \
+    checkbutton .def.link.shape -text Shape -variable shape -anchor w \
+	    -indicatoron 0 -selectcolor $macroSelectColor
+    pack .def.link.x .def.link.y .def.link.color .def.link.orient \
+	    .def.link.size .def.link.pattern .def.link.shape \
 	    -side top -fill x -expand 1
 
     label .def.name.label -text "Name"
