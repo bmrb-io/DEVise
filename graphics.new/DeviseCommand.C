@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.80  1999/09/07 19:00:54  wenger
+  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+  duplicate entries without causing a problem (to allow us to get rid of
+  Tcl in session files); changed Condor session scripts to take out Tcl
+  control statements in data source definitions; added viewGetImplicitHome
+  and related code in Session class so this gets saved in session files
+  (still no GUI for setting this, though); removed SEQ-related code.
+
   Revision 1.79  1999/08/19 20:46:35  wenger
   Added JAVAC_ProtocolVersion command.
 
@@ -684,6 +692,7 @@ IMPLEMENT_COMMAND_END
 
 
 
+//TEMP -- all commands should check arg count
 //**********************************************************************
 // DTE Command objects
 //**********************************************************************
@@ -697,9 +706,6 @@ DeviseCommand_dteImportFileType::Run(int argc, char** argv)
 IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
 		if (argc ==2) 
         {
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
     		 char * name = dteImportFileType(argv[1]);
 #else
@@ -712,9 +718,6 @@ IMPLEMENT_COMMAND_BEGIN(dteImportFileType)
     		 ReturnVal(API_ACK, name);
     		 return 1;
     	}
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
 		return ParseAPIDTE(argc, argv, _control);
 #else
@@ -739,9 +742,6 @@ DeviseCommand_dteListAllIndexes::Run(int argc, char** argv)
     			return 1;
     		}
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -761,9 +761,6 @@ DeviseCommand_dteDeleteCatalogEntry::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -790,9 +787,6 @@ DeviseCommand_dteMaterializeCatalogEntry::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -812,9 +806,6 @@ DeviseCommand_dteReadSQLFilter::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -826,69 +817,22 @@ TAG*/
 int
 DeviseCommand_dteShowCatalogEntry::Run(int argc, char** argv)
 {
-    {
-/*TAG
-        {
-    
-    	// TEMP -- Kent, I traced the type 11 error to here...
-    
-    		char* catEntry = dteShowCatalogEntry(argv[1]);
-    		CATCH(
-    			string err = currExcept->toString();
-    			ReturnVal(API_NAK, (char*) err.c_str());
-    			return -1;
-    		)
-    		ReturnVal(API_ACK, catEntry);
-    		delete [] catEntry;
-    		return 1;
-    	}
-TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
-	char *catEntry = DataCatalog::Instance()->ShowEntry(argv[1]);
+
+	char *catEntry = Session::ShowDataSource(argv[1]);
+
 	if (catEntry != NULL) {
    	  ReturnVal(API_ACK, catEntry);
    	  delete [] catEntry;
-   	  return 1;
 	} else {
    	  ReturnVal(API_ACK, "");
-   	  return 1;
 	}
-#endif
-    }
-    return true;
+
+   	return 1;
 }
 int
 DeviseCommand_dteListCatalog::Run(int argc, char** argv)
 {
-    {
-/*TAG
-        {
-    		int errorCode;	// 0 means OK
-    		char* catListing = dteListCatalog(argv[1], errorCode);
-    		if(errorCode){
-    			ReturnVal(API_NAK, catListing);
-    			delete [] catListing;
-    			return -1;
-    		}
-    		else{
-    			ReturnVal(API_ACK, catListing);
-    			delete [] catListing;
-    			return 1;
-    		}
-    	}
-TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
-    char *catListing = DataCatalog::Instance()->ListCatalog(argv[1]);
+    char *catListing = Session::ListDataCatalog(argv[1]);
 	if (catListing != NULL) {
       ReturnVal(API_ACK, catListing);
 	  delete [] catListing;
@@ -897,9 +841,6 @@ TAG*/
       ReturnVal(API_NAK, (char *)DevError::GetLatestError());
       return -1;
 	}
-#endif
-    }
-    return true;
 }
 int
 DeviseCommand_dteListQueryAttributes::Run(int argc, char** argv)
@@ -919,9 +860,6 @@ DeviseCommand_dteListQueryAttributes::Run(int argc, char** argv)
     		return 1;
     	}
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -941,9 +879,6 @@ DeviseCommand_dteListAttributes::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -963,9 +898,6 @@ DeviseCommand_dteDeleteIndex::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -985,9 +917,6 @@ DeviseCommand_dteShowIndexDesc::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -1007,9 +936,6 @@ DeviseCommand_dteShowAttrNames::Run(int argc, char** argv)
           return 1;
         }
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -1024,7 +950,6 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
-    {
 		//
 		// Construct full name (including catalog) of new entry.
 		//
@@ -1045,12 +970,7 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 		//
 		// Try to find an entry with this name in the catalog.
 		//
-        char *oldEntry;
-#if !defined(NO_DTE)
-        oldEntry = dteShowCatalogEntry(fullName);
-#else
-        oldEntry = DataCatalog::Instance()->ShowEntry(fullName);
-#endif
+        char *oldEntry = Session::ShowDataSource(fullName);
 
         if (oldEntry && strlen(oldEntry) > 0) {
 		  //
@@ -1078,19 +998,31 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
         //
 		// Didn't find an entry -- go ahead and add the one we've got.
 		//
-#if !defined(NO_DTE)
-        return ParseAPIDTE(argc, argv, _control);
-#else
-		int result = DataCatalog::Instance()->AddEntry(argv[1], argv[2]);
-		if (result == 0) {
-          ReturnVal(API_ACK, "");
-    	  return 1;
-		} else {
-          ReturnVal(API_NAK, (char *)DevError::GetLatestError());
-    	  return -1;
-		}
+		if (Session::OpeningSession()) {
+#if defined(DEBUG)
+          printf("Adding per-session data source %s\n", fullName);
 #endif
-    }
+		  if (Session::AddDataSource(argv[1], argv[2]).IsComplete()) {
+            ReturnVal(API_ACK, "");
+    	    return 1;
+		  } else {
+            ReturnVal(API_NAK, (char *)DevError::GetLatestError());
+    	    return -1;
+		  }
+        } else {
+#if !defined(NO_DTE)
+          return ParseAPIDTE(argc, argv, _control);
+#else
+		  int result = DataCatalog::Instance()->AddEntry(argv[1], argv[2]);
+		  if (result == 0) {
+            ReturnVal(API_ACK, "");
+    	    return 1;
+		  } else {
+            ReturnVal(API_NAK, (char *)DevError::GetLatestError());
+    	    return -1;
+		  }
+#endif
+	    }
     return true;
 }
 int
@@ -1110,9 +1042,6 @@ DeviseCommand_dteCheckSQLViewEntry::Run(int argc, char** argv)
     			return 1;
     		}
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -1132,9 +1061,6 @@ DeviseCommand_dteCreateIndex::Run(int argc, char** argv)
               return 1;
          }
 TAG*/
-#if defined(DTE_WARN)
-  fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
         return ParseAPIDTE(argc, argv, _control);
 #else
@@ -3188,6 +3114,7 @@ IMPLEMENT_COMMAND_BEGIN(writeDesc)
 			return -1;
 		}
 	} else {
+//TEMP -- this should do reportErr
 		ReturnVal(API_NAK,
 		  "Wrong number of arguments for DEVise writeDesc");
 		return -1;

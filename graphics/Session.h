@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/09/08 20:56:22  wenger
+  Removed all Tcl dependencies from the devised (main changes are in the
+  Session class); changed version to 1.6.5.
+
   Revision 1.14  1999/03/04 15:10:57  wenger
   Implemented 'automatic filter update' features: views can be designated
   to have their visual filters automatically updated with the 'Update
@@ -101,6 +105,7 @@
 class ControlPanel;
 class ControlPanelSimple;
 class ArgsBuf;
+class DataCatalog;
 
 class Session {
 public:
@@ -122,6 +127,12 @@ public:
   // Whether we're currently in the middle of opening a session.
   static Boolean OpeningSession() { return _openingSession; }
 
+  static DevStatus AddDataSource(const char *catName, const char *entry);
+
+  static char *ShowDataSource(const char *sourceName);
+
+  static char *ListDataCatalog(const char *catName);
+  
 private:
   static DevStatus ReadSession(ControlPanelSimple *control, char *filename);
   static Boolean IsBlankOrComment(const char *str);
@@ -190,8 +201,15 @@ private:
       const char *&result, Boolean splitResult, ArgsBuf &args,
 	  char *arg0, char *arg1 = NULL, char *arg2 = NULL, char *arg3 = NULL);
 
+  static DataCatalog *GetDataCatalog();
+  static DevStatus SaveDataSources(FILE *fp);
+  static DevStatus DeleteDataSources();
+
   static Boolean _isJsSession;
   static Boolean _openingSession;
+
+  static DataCatalog *_dataCat;
+  static char *_catFile;
 };
 
 #endif /* _Session_h_ */

@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/09/07 19:01:14  wenger
+  dteInsertCatalogEntry command changed to tolerate an attempt to insert
+  duplicate entries without causing a problem (to allow us to get rid of
+  Tcl in session files); changed Condor session scripts to take out Tcl
+  control statements in data source definitions; added viewGetImplicitHome
+  and related code in Session class so this gets saved in session files
+  (still no GUI for setting this, though); removed SEQ-related code.
+
   Revision 1.4  1999/03/24 17:26:28  wenger
   Non-DTE data source code prevents adding duplicate data source names;
   added "nice axis" feature (sets axis limits to multiples of powers of
@@ -179,8 +187,8 @@ ParseSpaceString(const char *inBuf, char *outBuf, int outBufSize)
  * Note: buffers can be NULL if you don't need all fields.
  */
 static void
-ParseCatEntry(char *catEntry, char *nameBuf, int nameBufSize, char *typeBuf,
-  int typeBufSize, char *fileBuf, int fileBufSize)
+ParseCatEntry(const char *catEntry, char nameBuf[], int nameBufSize,
+  char typeBuf[], int typeBufSize, char fileBuf[], int fileBufSize)
 {
 #if (DEBUG >= 3)
   printf("ParseCatEntry(%s)\n", catEntry);
@@ -281,25 +289,29 @@ DataCatalog::Instance()
  * function: DataCatalog::DataCatalog
  * Constructor.
  */
-DataCatalog::DataCatalog()
+DataCatalog::DataCatalog(const char *filename)
 {
 #if (DEBUG >= 1)
-  printf("DataCatalog::DataCatalog()\n");
+  printf("DataCatalog::DataCatalog(%s)\n", filename ? filename : "NULL");
 #endif
 
   char errBuf[2 * MAXPATHLEN];
 
-  const char *defaultCatFile = "./catalog.dte";
-  const char *envVar = "DEVISE_HOME_TABLE";
-  const char *catFile = getenv(envVar);
-  if (catFile == NULL) {
-    sprintf(errBuf,
-      "Environment variable %s not defined; using %s for catalog file",
-      envVar, defaultCatFile);
-    reportErrNosys(errBuf);
-    catFile = defaultCatFile;
+  if (filename) {
+    _catFile = CopyString(filename);
+  } else {
+    const char *defaultCatFile = "./catalog.dte";
+    const char *envVar = "DEVISE_HOME_TABLE";
+    const char *catFile = getenv(envVar);
+    if (catFile == NULL) {
+      sprintf(errBuf,
+        "Environment variable %s not defined; using %s for catalog file",
+        envVar, defaultCatFile);
+      reportErrNosys(errBuf);
+      catFile = defaultCatFile;
+    }
+    _catFile = CopyString(catFile);
   }
-  _catFile = CopyString(catFile);
 }
 
 /*------------------------------------------------------------------------------
@@ -321,7 +333,7 @@ DataCatalog::~DataCatalog()
  * Show the given catalog entry.
  */
 char *
-DataCatalog::ShowEntry(char *entryName)
+DataCatalog::ShowEntry(const char *entryName)
 {
 #if (DEBUG >= 1)
   printf("DataCatalog::ShowEntry(%s)\n", entryName);
@@ -341,7 +353,7 @@ DataCatalog::ShowEntry(char *entryName)
     }
   } else {
     // Match the DTE.
-    entry = "";
+    entry = CopyString("");
   }
 
   return entry;
@@ -352,7 +364,7 @@ DataCatalog::ShowEntry(char *entryName)
  * List the given data source catalog.
  */
 char *
-DataCatalog::ListCatalog(char *catName)
+DataCatalog::ListCatalog(const char *catName)
 {
 #if (DEBUG >= 1)
   printf("DataCatalog::ListCatalog(%s)\n", catName);
@@ -460,7 +472,7 @@ DataCatalog::ListCatalog(char *catName)
  * Add an entry to the given catalog.
  */
 int
-DataCatalog::AddEntry(char *catName, char *entry)
+DataCatalog::AddEntry(const char *catName, const char *entry)
 {
 #if (DEBUG >= 1)
   printf("DataCatalog::AddEntry(%s, %s)\n", catName, entry);
@@ -516,6 +528,11 @@ DataCatalog::AddEntry(char *catName, char *entry)
     char catBuf[catBufSize];
     char *catFile = FindCatFile(catName, catBuf, catBufSize);
 
+    if (!catFile) {
+      result = -1;
+      return result;
+    }
+
     char *tmpEntry = FindEntry(nameBuf, catFile);
     if (tmpEntry != NULL) {
       char errBuf[1024];
@@ -533,6 +550,8 @@ DataCatalog::AddEntry(char *catName, char *entry)
       return result;
     }
 
+    // Note -- if file doesn't exist, this doesn't complain, but
+    // file is not created!!  RKW 1999-09-23.
     FILE *fp = fopen(catFile, "a");
     if (fp == NULL) {
       sprintf(errBuf, "Unable to open data source catalog file %s\n", catFile);
@@ -562,7 +581,7 @@ DataCatalog::AddEntry(char *catName, char *entry)
  * Delete the given entry.
  */
 int
-DataCatalog::DeleteEntry(char *entryName)
+DataCatalog::DeleteEntry(const char *entryName)
 {
 #if (DEBUG >= 1)
   printf("DataCatalog::DeleteEntry(%s)\n", entryName);
@@ -733,7 +752,7 @@ DataCatalog::GetEntryName(const char *entry, char nameBuf[], int bufSize)
  * Find the given entry in the given catalog file.
  */
 char *
-DataCatalog::FindEntry(char *entryName, char *catFile)
+DataCatalog::FindEntry(const char *entryName, const char *catFile)
 {
 #if (DEBUG >= 2)
   printf("DataCatalog::FindEntry(%s, %s)\n", entryName, catFile);
@@ -746,7 +765,7 @@ DataCatalog::FindEntry(char *entryName, char *catFile)
 
   // Get rid of leading '.'s, if any.
   {
-    char *tmpChar = entryName;
+    const char *tmpChar = entryName;
     while (*tmpChar == '.') { tmpChar++; }
     partName = CopyString(tmpChar);
   }
@@ -837,28 +856,36 @@ DataCatalog::FindEntry(char *entryName, char *catFile)
  * Find the catalog file for the given directory name.
  */
 char *
-DataCatalog::FindCatFile(char *catName, char *buf, int bufSize)
+DataCatalog::FindCatFile(const char *catName, char buf[], int bufSize)
 {
 #if (DEBUG >= 2)
   printf("DataCatalog::FindCatFile(%s)\n", catName);
 #endif
 
   char *catFile;
+  char errBuf[1024];
 
   if (!strcmp(catName, ".") || !strcmp(catName, "")) {
     catFile = _catFile;
   } else {
     char *catEntry = FindEntry(catName, _catFile);
 
-    const int typeBufSize = 1024;
-    char typeBuf[typeBufSize];
-    ParseCatEntry(catEntry, NULL, 0, typeBuf, typeBufSize, buf, bufSize);
-
-    if (strcmp(typeBuf, directoryType)) {
-      reportErrNosys("Name requested is not a directory");
+    if (!catEntry) {
+      sprintf(errBuf, "Data source directory <%s> does not exist", catName);
+      reportErrNosys(errBuf);
       catFile = NULL;
     } else {
-      catFile = buf;
+      const int typeBufSize = 1024;
+      char typeBuf[typeBufSize];
+      ParseCatEntry(catEntry, NULL, 0, typeBuf, typeBufSize, buf, bufSize);
+
+      if (strcmp(typeBuf, directoryType)) {
+        sprintf(errBuf, "Data source entry <%s> is not a directory", catName);
+        reportErrNosys(errBuf);
+        catFile = NULL;
+      } else {
+        catFile = buf;
+      }
     }
   }
 

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.61  1999/09/20 21:33:38  wenger
+  Trailing semicolons are now removed from session file lines.
+
   Revision 1.60  1999/09/08 20:56:21  wenger
   Removed all Tcl dependencies from the devised (main changes are in the
   Session class); changed version to 1.6.5.
@@ -298,6 +301,7 @@
  */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <stdlib.h>
 #include <sys/param.h>
 
@@ -441,6 +445,9 @@ static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 Boolean Session::_isJsSession = false;
 Boolean Session::_openingSession = false;
 
+DataCatalog *Session::_dataCat = NULL;
+char *Session::_catFile = NULL;
+
 /*------------------------------------------------------------------------------
  * function: Session::Open
  * Open specified session file.
@@ -498,6 +505,7 @@ Session::Close()
     status += vg->Group();
   }
   ControlPanel::Instance()->DestroySessionData();
+  DeleteDataSources();
   _isJsSession = false;
   return status;
 }
@@ -566,6 +574,8 @@ Session::Save(char *filename, Boolean asTemplate, Boolean asExport,
       }
     }
 #endif
+
+    status += SaveDataSources(saveData.fp);
 
     fprintf(saveData.fp, "\n# Create views\n");
     status += ForEachInstance("view", SaveView, &saveData);
@@ -771,18 +781,8 @@ Session::CreateTData(char *name)
     }
     // Get the DTE catalog entry for this data source.
 	// TEMP -- memory may be leaked in here
-#if defined(DTE_WARN)
-    fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
-#if !defined(NO_DTE)
-    catEntry = dteShowCatalogEntry(name);
-#else
-    catEntry = DataCatalog::Instance()->ShowEntry(name);
-#endif
+    catEntry = ShowDataSource(name);
     if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
-      char errBuf[256];
-      sprintf(errBuf, "No catalog entry for data source {%s}", name);
-      reportErrNosys(errBuf);
       status = StatusFailed;
     }
   }
@@ -848,9 +848,6 @@ Session::CreateTData(char *name)
     char *result ;
     if (isDteSource) {
 	  // TEMP -- memory may be leaked in here
-#if defined(DTE_WARN)
-      fprintf(stderr, "Warning: calling DTE at %s: %d\n", __FILE__, __LINE__);
-#endif
 #if !defined(NO_DTE)
       result = dteImportFileType(name);
 #else
@@ -916,6 +913,142 @@ Session::CreateTData(char *name)
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::AddDataSource
+ * Add a per-session data sources.
+ */
+DevStatus
+Session::AddDataSource(const char *catName, const char *entry)
+{
+#if defined(DEBUG)
+  printf("Session::AddDataSource(%s, %s)\n", catName, entry);
+#endif
+
+  DevStatus status = StatusOk;
+
+  if (strcmp(catName, ".")) {
+	reportErrNosys("Catalog name for per-session data sources must be '.'\n");
+    status += StatusFailed;
+  } else {
+    if (GetDataCatalog()->AddEntry(catName, entry) != 0) {
+      status += StatusFailed;
+    }
+  }
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::ShowDataSource
+ * Show the data source catalog entry (if any) for the given source.
+ */
+char *
+Session::ShowDataSource(const char *sourceName)
+{
+#if defined(DEBUG)
+  printf("Session::ShowDataSource(%s)\n", sourceName);
+#endif
+
+  char *catEntry;
+
+#if !defined(NO_DTE)
+  catEntry = dteShowCatalogEntry(sourceName);
+#else
+  catEntry = DataCatalog::Instance()->ShowEntry(sourceName);
+#endif
+  if (catEntry == NULL || strlen(catEntry) == 0) {
+    catEntry = GetDataCatalog()->ShowEntry(sourceName);
+  }
+
+#if defined(DEBUG)
+  printf("  catEntry = <%s>\n", catEntry ? catEntry : "NULL");
+#endif
+
+  return catEntry;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::ListDataCatalog
+ * Lists the data catalog, including per-session data sources.
+ */
+char *
+Session::ListDataCatalog(const char *catName)
+{
+#if defined(DEBUG)
+  printf("Session::ListDataCatalog(%s)\n", catName);
+#endif
+
+  char *catListMain;
+#if !defined(NO_DTE)
+  int errCode;
+  catListMain = dteListCatalog(catName, errCode);
+  if (errCode != 0) {
+	//TEMP -- get error from DTE here
+    reportErrNosys("Error in DTE");
+	catListMain = "";
+  }
+#else
+  catListMain = DataCatalog::Instance()->ListCatalog(catName);
+#endif
+
+#if defined(DEBUG)
+  printf("  catListMain = <%s>\n", catListMain);
+#endif
+
+  char *catListSess = NULL;
+  if (!strcmp(catName, ".")) {
+    catListSess = GetDataCatalog()->ListCatalog(".");
+#if defined(DEBUG)
+  printf("  catListSess = <%s>\n", catListSess);
+#endif
+  }
+
+  char *catListTotal;
+  if (catListSess && strlen(catListSess) > 0) {
+	// +2 is for space and terminator.
+    catListTotal = new char[strlen(catListMain) + strlen(catListSess) + 2];
+	sprintf(catListTotal, "%s %s", catListMain, catListSess);
+	delete [] catListMain;
+	delete [] catListSess;
+  } else {
+    catListTotal = catListMain;
+  }
+
+#if defined(DEBUG)
+  printf("  catListTotal = <%s>\n", catListTotal);
+#endif
+
+  return catListTotal;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::GetDataCatalog
+ * Get the per-session data source catalog.
+ */
+DataCatalog *
+Session::GetDataCatalog()
+{
+#if defined(DEBUG)
+  printf("Session::GetDataCatalog()\n");
+#endif
+
+  if (!_dataCat) {
+    _catFile = tempnam("/tmp", "dscat");
+
+    // Create the file.
+    FILE *fp = fopen(_catFile, "w");
+    if (!fp) {
+      reportErrSys("Can't create catalog file");
+    } else {
+      fclose(fp);
+    }
+
+    _dataCat = new DataCatalog(_catFile);
+  }
+
+  return _dataCat;
 }
 
 /*------------------------------------------------------------------------------
@@ -2059,6 +2192,111 @@ Session::ForEachInstance(char *category, InstanceFuncP function,
   FreeArgs(classArgc, classArgv);
 
   if (status.IsError()) reportErrNosys("Error or warning");
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::SaveDataSources
+ * Save all per-session data sources.
+ */
+DevStatus
+Session::SaveDataSources(FILE *fp)
+{
+#if defined(DEBUG)
+  printf("Session::SaveDataSources()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  char *sourceList = GetDataCatalog()->ListCatalog(".");
+#if defined(DEBUG)
+  printf("  sourceList = <%s>\n", sourceList);
+#endif
+
+  if (sourceList) {
+	ArgsBuf args;
+    status += ParseString(sourceList, args);
+
+	if (status.IsComplete()) {
+	  if (args._argc > 0) {
+	    fprintf(fp, "\n# Per-session data source definitions\n");
+	  }
+
+	  for (int sourceNum = 0; sourceNum < args._argc; sourceNum++) {
+#if defined(DEBUG)
+        printf("  source[%d] = <%s>\n", sourceNum, args._argv[sourceNum]);
+#endif
+		ArgsBuf args2;
+        DevStatus tmpStatus = ParseString(args._argv[sourceNum], args2);
+		status += tmpStatus;
+		if (tmpStatus.IsComplete()) {
+		  if (args2._argc != 2) {
+			reportErrNosys("Incorrect catalog listing format");
+			status += StatusFailed;
+		  } else {
+#if defined(DEBUG)
+            printf("  sourceName = <%s>\n", args2._argv[0]);
+#endif
+		    char *catEntry = GetDataCatalog()->ShowEntry(args2._argv[0]);
+			if (!catEntry || strlen(catEntry) == 0) {
+			  reportErrNosys("Can't find catalog entry");
+			  status += StatusFailed;
+			} else {
+#if defined(DEBUG)
+              printf("  catEntry = <%s>\n", catEntry);
+#endif
+
+              // Get rid of trailing semicolon and spaces so we don't gain
+			  // another semicolon each time we save.
+	          char *tmpC = &catEntry[strlen(catEntry) - 1];
+	          while (tmpC >= catEntry) {
+	            if (*tmpC == ';' || isspace(*tmpC)) {
+	              *tmpC = '\0';
+	            } else {
+	              break;
+	            }
+	            tmpC--;
+	          }
+
+			  fprintf(fp, "DEVise dteInsertCatalogEntry . {%s}\n", catEntry);
+			}
+		  }
+		}
+	  }
+	}
+
+    delete [] sourceList;
+  }
+
+  return status;
+}
+
+/*------------------------------------------------------------------------------
+ * function: Session::DeleteDataSources
+ * Delete all per-session data sources.
+ */
+DevStatus
+Session::DeleteDataSources()
+{
+#if defined(DEBUG)
+  printf("Session::DeleteDataSources()\n");
+#endif
+
+  DevStatus status = StatusOk;
+
+  if (_dataCat) {
+    delete _dataCat;
+    _dataCat = NULL;
+  }
+
+  if (_catFile) {
+    if (unlink(_catFile) != 0) {
+      reportErrSys("Can't delete session data catalog file");
+    }
+    delete [] _catFile;
+    _catFile = NULL;
+  }
+
   return status;
 }
 
