@@ -19,20 +19,20 @@ public class Operator implements Expression {
 	}
 
 	public Expression typeCheck( SymbolTable st ){
-		Expression expr = st.lookup( this.toString() );
+		Expression expr = st.get( this.toString() );
 		if ( expr != null )
 			return expr;
 
 		left = left.typeCheck( st );
 		right = right.typeCheck( st );
 
-		st.insert( this.toString(), this );
-		return st.lookup( this.toString() );
+		st.put( this );
+		return st.get( this.toString() );
 	}
 
 	public ExecExpr createExec( OptNode[] opn ){
-		ExecExpr l = left->createExec(opn); 
-		ExecExpr r = right->createExec(opn);
+		ExecExpr l = left.createExec(opn); 
+		ExecExpr r = right.createExec(opn);
 		return new ExecOperator(l, r, operator);
 }
 

@@ -1,5 +1,7 @@
 package Expressions;
 
+import Types.*;
+
 /** Constant is used to represent constants, like 1.
     It takes the type of a constant (like integer) and its value */
 

@@ -21,7 +21,7 @@ public class ExecOperator implements ExecExpr{
 	}
 
 	public DTE_Type add( DTE_Type arg1, DTE_Type arg2){
-		return new DTE_Int( arg1.val + arg2.val);
+		return new DTE_Int( 1+2);
 	}
 };
 
