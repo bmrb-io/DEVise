@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  1996/06/15 14:49:29  jussi
+  Added set3DLocation command.
+
   Revision 1.12  1996/06/15 13:50:59  jussi
   Added get3DLocation and setMappingLegend commands.
 
@@ -245,7 +248,10 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       Camera c = view->GetCamera();
-      sprintf(result, "%g %g %g", c.x_, c.y_, c.z_);
+      sprintf(result, "%d %g %g %g %g %g %g %g %g %g",
+	      c.spherical_coord,
+	      c.x_, c.y_, c.z_, c.fx, c.fy, c.fz,
+	      c._theta, c._phi, c._rho);
       control->ReturnVal(API_ACK, result);
       return 1;
     }
@@ -1285,10 +1291,17 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
 	return -1;
       }
       Camera c = view->GetCamera();
+      Boolean isSphere = c.spherical_coord;
+      c.spherical_coord = false;
       c.x_ = atof(argv[2]);
       c.y_ = atof(argv[3]);
       c.z_ = atof(argv[4]);
       view->SetCamera(c);
+      if (isSphere) {
+	c = view->GetCamera();
+	c.spherical_coord = true;
+	view->SetCamera(c);
+      }
       control->ReturnVal(API_ACK, "done");
       return 1;
     }
