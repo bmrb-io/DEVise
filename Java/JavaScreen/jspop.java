@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2001/04/06 19:32:15  wenger
+// Various cleanups of collaboration code (working on strange hang
+// that Miron has seen); added more debug output; turned heartbeat
+// back on (it somehow got turned off by accident).
+//
 // Revision 1.47  2001/03/19 23:10:31  xuk
 // Fixed bug for no available JavaScreen for collaboration.
 //
@@ -282,6 +287,8 @@ public class jspop implements Runnable
 
     private int _popCmdPort = 0;
 
+    private DEViseThreadChecker _threadChecker = null;
+
     //----------------------------------------------------------------------
 
     public static void main(String[] args)
@@ -392,6 +399,8 @@ public class jspop implements Runnable
             System.out.println(e.getMessage());
             quit(1);
         }
+
+	_threadChecker = new DEViseThreadChecker();
 	
         System.out.println("Starting client dispatcher ...\n");
         dispatcher = new DEViseClientDispatcher(this);

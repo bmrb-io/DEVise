@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2000
+// (c) Copyright 1999-2001
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2001/04/06 19:32:14  wenger
+// Various cleanups of collaboration code (working on strange hang
+// that Miron has seen); added more debug output; turned heartbeat
+// back on (it somehow got turned off by accident).
+//
 // Revision 1.9  2001/01/08 20:31:50  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -52,7 +57,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-public class DEViseClientDispatcher implements Runnable
+public class DEViseClientDispatcher implements Runnable, DEViseCheckableThread
 {
     private jspop pop = null;
 
@@ -65,6 +70,10 @@ public class DEViseClientDispatcher implements Runnable
     // status = 0, dispatcher is not running
     // status = 1, dispatcher is running
     private boolean status = false;
+
+    private long _lastRunTime;
+    public long lastRunTime() { return _lastRunTime; }
+    public void intThread() { dispatcher.interrupt(); }
 
     public DEViseClientDispatcher(jspop j)
     {
@@ -106,11 +115,16 @@ public class DEViseClientDispatcher implements Runnable
 
     public void run()
     {
+        DEViseThreadChecker.getInstance().register(this);
+
         DEViseClient client = null;
         DEViseServer server = null;
 
         // We just sit in this loop, checking for requesting clients.
         while (getStatus()) {
+            Date date = new Date();
+	    _lastRunTime = date.getTime();
+
             try {
                 Thread.sleep(timestep);
             } catch (InterruptedException e) {
@@ -130,6 +144,8 @@ public class DEViseClientDispatcher implements Runnable
 		client = null;
             }
         }
+
+        DEViseThreadChecker.getInstance().unregister(this);
 
         pop.pn("Client dispatcher thread is stopped");
     }

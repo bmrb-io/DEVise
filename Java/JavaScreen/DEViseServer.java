@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2001/04/06 19:32:14  wenger
+// Various cleanups of collaboration code (working on strange hang
+// that Miron has seen); added more debug output; turned heartbeat
+// back on (it somehow got turned off by accident).
+//
 // Revision 1.56  2001/04/01 03:53:00  xuk
 // Added JAVAC_Set3DConfig command to store 3D view configuration info. to devised.
 // Added cmdSet3DConfig(), process JAVAC_Set3DConfig command.
@@ -218,7 +223,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-public class DEViseServer implements Runnable
+public class DEViseServer implements Runnable, DEViseCheckableThread
 {
     private static final int DEBUG = 1;
 
@@ -257,6 +262,10 @@ public class DEViseServer implements Runnable
 
     private static int _nextObjectNum = 1;
     private int _objectNum = -1;
+
+    private long _lastRunTime;
+    public long lastRunTime() { return _lastRunTime; }
+    public void intThread() { serverThread.interrupt(); }
 
     // name is the name of the system that the jss and devised(s) are running
     // on; port is the jssport.
@@ -428,7 +437,9 @@ public class DEViseServer implements Runnable
     {
         while (action == ACTION_IDLE && newClient == null) {
             try {
+	        DEViseThreadChecker.getInstance().unregister(this);
                 wait();
+	        DEViseThreadChecker.getInstance().register(this);
             } catch (InterruptedException e) {
             }
         }
@@ -464,6 +475,8 @@ public class DEViseServer implements Runnable
 
     public void run()
     {
+	DEViseThreadChecker.getInstance().register(this);
+
         int todo;
         boolean isRemoveClient = false;
 
@@ -472,6 +485,9 @@ public class DEViseServer implements Runnable
 	// Get and process commands from the client.
 	//
         while (true) {
+            Date date = new Date();
+            _lastRunTime = date.getTime();
+
             todo = getAction();
 
             if (todo == ACTION_QUIT) {
@@ -492,6 +508,8 @@ public class DEViseServer implements Runnable
 		//
                 boolean isEnd = false;
                 while (!isEnd) {
+                    date = new Date();
+                    _lastRunTime = date.getTime();
                     try {
 
 			//
@@ -611,6 +629,8 @@ public class DEViseServer implements Runnable
                 }
             }
         }
+
+	DEViseThreadChecker.getInstance().unregister(this);
     }
 
 
