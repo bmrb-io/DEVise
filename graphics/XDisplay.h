@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.21  1996/09/13 23:04:52  guangshu
+  Added methods to save map files for www when save display.
+
   Revision 1.20  1996/09/06 06:59:46  beyer
   - Improved support for patterns, modified the pattern bitmaps.
   - possitive pattern numbers are used for opaque fills, while
@@ -146,8 +149,11 @@ public:
 
     /* Export display image to other graphics formats */
     virtual void ExportImage(DisplayExportFormat format, char *filename);
-    virtual void ExportImageAndMap(DisplayExportFormat format, char *gifFilename, char *mapFilename, char *url, char *defaultUrl);
-    virtual void ExportGIF(FILE *fp);
+    virtual void ExportImageAndMap(DisplayExportFormat format, 
+				   char *gifFilename, char *mapFilename, 
+				   char *url, char *defaultUrl);
+    void ExportView(DisplayExportFormat format, char *filename);
+    virtual void ExportGIF(FILE *fp, int isView = 0);
 
 #ifdef LIBCS
     /* Translate RGB colors to pixel values and back */

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/09/16 21:30:18  wenger
+  Added ExportImageAndMap() member function (needed for compatibility with
+  Guangshun's latest update).
+
   Revision 1.2  1996/09/10 20:07:09  wenger
   High-level parts of new PostScript output code are in place (conditionaled
   out for now so that the old code is used until the new code is fully
@@ -73,7 +77,8 @@ public:
     virtual void ExportImage(DisplayExportFormat format, char *filename) {}
     virtual void ExportImageAndMap(DisplayExportFormat format,
       char *gifFilename, char *mapFilename, char *url, char *defaultUrl) {}
-    virtual void ExportGIF(FILE *fp) {}
+    virtual void ExportGIF(FILE *fp, int isView = 0) {}
+    virtual void ExportView(DisplayExportFormat format, char *f) {}
 
 protected:
 #ifndef LIBCS
