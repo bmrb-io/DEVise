@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/22 17:51:59  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
   Revision 1.3  1996/05/07 22:28:19  jussi
   Reverted the changes made in the previous check-in because I
   found a better way to fix the problem where only the tail
@@ -58,6 +63,7 @@ public:
 	// conflicts with macros in some system header files that redefine
 	// symbols such as ftell, etc.
 	virtual DevStatus Open(char *mode) = 0;
+	virtual Boolean IsOk() = 0;
 	virtual DevStatus Close() = 0;
 	virtual int Fileno();
 
@@ -77,6 +83,9 @@ public:
 
 	// Append to the end of the data.
 	virtual int append(void *buf, int recSize);
+
+	// Get modification time of object.
+	virtual int GetModTime() = 0;
 
 	// Print statistics about this object.
 	virtual void printStats();

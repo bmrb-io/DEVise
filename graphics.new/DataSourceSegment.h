@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/06/04 14:21:41  wenger
+  Ascii data can now be read from session files (or other files
+  where the data is only part of the file); added some assertions
+  to check for pointer alignment in functions that rely on this;
+  Makefile changes to make compiling with debugging easier.
+
  */
 
 #ifndef _DataSourceSegment_
@@ -45,6 +51,7 @@ public:
 	virtual char *objectType() {return "DataSourceSegment";};
 
 	virtual DevStatus Open(char *mode);
+	virtual Boolean IsOk() { return TYPE::IsOk(); }
 
 	virtual int Seek(long offset, int from);
 	virtual long Tell();

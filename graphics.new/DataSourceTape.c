@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/06/04 19:58:46  wenger
+  Added the data segment option to TDataBinary; various minor cleanups.
+
   Revision 1.1  1996/05/22 17:52:06  wenger
   Extended DataSource subclasses to handle tape data; changed TDataAscii
   and TDataBinary classes to use new DataSource subclasses to hide the
@@ -93,6 +96,18 @@ DataSourceTape::Open(char *mode)
 	}
 
 	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DataSourceTape::IsOk
+ * Return true if tape file is open and in good status.
+ */
+Boolean
+DataSourceTape::IsOk()
+{
+  if (!_tapeP) return false;
+  if (Tell() < 0) return false;
+  return true;
 }
 
 /*------------------------------------------------------------------------------
@@ -224,6 +239,19 @@ DataSourceTape::append(void *buf, int recSize)
 	DOASSERT(0, "DataSourceTape::append not yet implemented");
 
 	return _tapeP->append(buf, recSize);
+}
+
+/*------------------------------------------------------------------------------
+ * function: DataSourceFileStream::GetModTime
+ * Returns the last modification time of the object.
+ */
+int
+DataSourceTape::GetModTime()
+{
+    DO_DEBUG(printf("DataSourceTape::GetModTime()\n"));
+
+    reportError("Cannot get modification time for tape data", devNoSyserr);
+    return -1;
 }
 
 /*------------------------------------------------------------------------------

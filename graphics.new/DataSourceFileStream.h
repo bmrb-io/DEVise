@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/05/22 17:52:04  wenger
+  Extended DataSource subclasses to handle tape data; changed TDataAscii
+  and TDataBinary classes to use new DataSource subclasses to hide the
+  differences between tape and disk files.
+
  */
 
 #ifndef _DataSourceFileStream_h_
@@ -38,6 +43,7 @@ public:
 	virtual char *objectType() {return "DataSourceFileStream";};
 
 	virtual DevStatus Open(char *mode);
+	virtual Boolean IsOk();
 	virtual DevStatus Close();
 	virtual int Fileno();
 
@@ -54,6 +60,8 @@ public:
 	virtual int gotoEnd();
 
 	virtual int append(void *buf, int recSize);
+
+	virtual int GetModTime();
 
 	virtual Boolean isFile() {return true;};
 

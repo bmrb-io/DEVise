@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/06/04 19:58:44  wenger
+  Added the data segment option to TDataBinary; various minor cleanups.
+
   Revision 1.2  1996/06/04 14:20:23  wenger
   Ascii data can now be read from session files (or other files
   where the data is only part of the file); added some assertions
@@ -40,8 +43,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/param.h>
 #include <unistd.h>
+#include <sys/param.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 
 #include "DataSourceFileStream.h"
 #include "Util.h"
@@ -100,6 +105,36 @@ DataSourceFileStream::Open(char *mode)
 	}
 
 	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DataSourceFileStream::IsOk
+ * Return true if file is open and in good status.
+ */
+Boolean
+DataSourceFileStream::IsOk()
+{
+    if (!_file)
+        return false;
+
+    struct stat sbuf;
+    if (stat(_filename, &sbuf) < 0)
+        return false;
+
+    // All the following checks succeed even if the file has been deleted!
+    // Stat is almost the only function that recognizes that a file
+    // has been removed. Doing an fopen/fclose would also work.
+
+#if 0
+    if (GetModTime() < 0)
+        return false;
+    if (fseek(_file, 0, SEEK_CUR) < 0)
+        return false;
+    if (Tell() < 0)
+        return false;
+#endif
+
+    return true;
 }
 
 /*------------------------------------------------------------------------------
@@ -273,6 +308,26 @@ DataSourceFileStream::append(void *buf, int recSize)
 	}
 
 	return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: DataSourceFileStream::GetModTime
+ * Returns the last modification time of the object.
+ */
+int
+DataSourceFileStream::GetModTime()
+{
+    DO_DEBUG(printf("DataSourceFileStream::GetModTime()\n"));
+
+    struct stat sbuf;
+    int status = fstat(Fileno(), &sbuf);
+    if (status < 0) {
+        reportError("Cannot get modification time for file", devNoSyserr);
+        return -1;
+    }
+    int result = (long)sbuf.st_mtime;
+    
+    return result;
 }
 
 /*============================================================================*/
