@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.35  1996/06/20 17:20:15  guangshu
+#	Fixed small bug.
+#
 #	Revision 1.34  1996/06/20 17:13:58  guangshu
 #	Added support for derived TData sets (statistics for now).
 #
@@ -183,7 +186,8 @@ set cacheSize [expr 100 * 1024 * 1024]
 # key is used to index the source; e.g. company name for stock databases
 # schematype is the name of the schema (e.g. ISSM-Trade)
 # schemafile is the name of the schemafile
-# cachefile is the name of the file where Devise caches the data
+# cachefile is the name of the file where Devise caches the data;
+#    this field is NOT used for UNIXFILE and WWW data streams
 # evaluation is number 0 to 100 indicating the urgency of materializing
 #    this data; 100 means immediately evaluation, 0 means evaluation
 #    only when data needs to be displayed
@@ -249,7 +253,7 @@ proc updateStreamDef {} {
     set cachefile [getCacheName $source $key]
     set command [string trim [.srcdef.top.row5.e1 get 1.0 end]]
 
-    if {$editonly && ($source == "SEQ" || $source == "WWW")} {
+    if {$editonly && $source == "SEQ"} {
 	set oldCommand [lindex $sourceList($oldDispName) 7]
 	if {$oldCommand != $command} {
 	    uncacheData $oldDispName "Query changed."
@@ -530,6 +534,10 @@ proc isCached {dispname startrec endrec} {
     set cachefile [lindex $sourcedef 4]
     set command [lindex $sourcedef 7]
     
+    if {$source == "WWW"} {
+        return $command
+    }
+
     if {$source == "UNIXFILE"} {
 	# first line of command specifies directory
 	set dir [lindex [split $command \n] 0]
@@ -581,8 +589,6 @@ proc cacheData {dispname startrec endrec} {
 
     if {$source == "COMMAND"} {
 	set cmd "exec $command > $cachefile"
-    } elseif {$source == "WWW"} {
-	set cmd "www_extract $command $cachefile $schemafile $schematype"
     } elseif {$source == "SEQ"} {
 	set host [lindex $sourceConfig($source) 0]
 	set port [lindex $sourceConfig($source) 1]
@@ -785,7 +791,7 @@ proc uncacheData {dispname reason} {
 proc getCacheName {source key} {
     global cachedir
 
-    if {$source == "UNIXFILE"} {
+    if {$source == "UNIXFILE" || $source == "WWW"} {
 	return ""
     }
 
@@ -1106,15 +1112,17 @@ proc updateSources {} {
     }
 
     .srcsel.top.list delete 0 end
-    foreach dispName [lsort [array names sourceList]] {
-	set source [lindex $sourceList($dispName) 0]
-	set cachefile [lindex $sourceList($dispName) 4]
+    foreach sname [lsort [array names sourceList]] {
+	set source [lindex $sourceList($sname) 0]
+	set cachefile [lindex $sourceList($sname) 4]
 	set cached ""
-	if {[isCached $dispName -1 -1] != ""} {
+	if {$source == "WWW"} {
+            set cached "Server"
+        } elseif {[isCached $sname -1 -1] != ""} {
 	    set cached "Cached"
 	}
 	set item [format "%-40.40s  %-10.10s  %-6.6s" \
-		$dispName $source $cached]
+		$sname $source $cached]
 	.srcsel.top.list insert end $item
     }
 }
@@ -1132,9 +1140,9 @@ proc scanDerivedSources {} {
     }
 
     foreach cachefile [glob -nocomplain [format "%s/*.stat" $workdir]] {
-	set dispName [file tail $cachefile]
+	set sname [file tail $cachefile]
 	set source "STAT"
-	set key $dispName
+	set key $sname
 	set schematype COLORSTAT
 	set schemafile $schemadir/physical/COLORSTAT
 	set evaluation 100
@@ -1149,7 +1157,7 @@ proc scanDerivedSources {} {
 
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
-	set "derivedSourceList($dispName)" $sourcedef
+	set "derivedSourceList($sname)" $sourcedef
     }
 }
 
@@ -1164,12 +1172,12 @@ proc updateDerivedSources {} {
 
     .srcsel.top.list delete 0 end
 
-    foreach dispName [lsort [array names derivedSourceList]] {
-	set source [lindex $derivedSourceList($dispName) 0]
-	set cachefile [lindex $derivedSourceList($dispName) 4]
+    foreach sname [lsort [array names derivedSourceList]] {
+	set source [lindex $derivedSourceList($sname) 0]
+	set cachefile [lindex $derivedSourceList($sname) 4]
 	set cached "Cached"
 	set item [format "%-40.40s  %-10.10s  %-6.6s" \
-		$dispName $source $cached]
+		$sname $source $cached]
 	.srcsel.top.list insert end $item
     }
 }

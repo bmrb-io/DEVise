@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.48  1996/06/20 17:14:09  guangshu
+#	Added support for derived TData sets (statistics for now).
+#
 #	Revision 1.47  1996/06/16 01:32:53  jussi
 #	Added handling of case where xlo == xhi or ylo == yhi.
 #
@@ -1237,38 +1240,39 @@ proc MacroDefLinks {m default} {
 
 ############################################################
 
-proc OpenDataSource {dispname} {
+proc OpenDataSource {sname} {
     global sourceList derivedSourceList
 
-    # first see if dispname is a derived source and if the
-    # cache disk file exists
-    set err [catch {set exists $derivedSourceList($dispname)}]
+    # first see if sname is a derived source
+    # and if the cache disk file exists
+    set err [catch {set exists $derivedSourceList($sname)}]
     if {!$err} {
-	set source [isCached $dispname -1 -1]
-	if {$source == ""} {
+	set fname [isCached $sname -1 -1]
+	if {$fname == ""} {
 	    dialog .noDerivedData "No Derived Data" \
-		    "Derived data \"$dispname\" does not exist." \
+		    "Derived data \"$sname\" does not exist." \
 		    "" 0 Ok
 	    return ""
 	}
-	DEVise dataSegment $dispname $source "" ""
-	return [list $dispname $source]
+        set stype [lindex $derivedSourceList($sname) 0]
+	DEVise dataSegment $sname $fname 0 0
+	return [list $sname $stype $fname]
     }
 
     # see if data source (still) defined (may be out-of-date in
     # a session file)
 
-    set err [catch {set exists $sourceList($dispname)}]
+    set err [catch {set exists $sourceList($sname)}]
     if {$err} {
 	set but [dialog .sourceNotExists "Undefined Data Stream" \
-		"Data stream \"$dispname\" does not exist." \
+		"Data stream \"$sname\" does not exist." \
 		"" 0 OK "Select Another"]
 	if {$but == 0} { return "" }
 	while {1} {
-	    set dispname [selectStream]
-	    if {$dispname == ""} { return "" }
+	    set sname [selectStream]
+	    if {$sname == ""} { return "" }
 	    # must choose a single data stream
-	    if {[llength $dispname] > 1} {
+	    if {[llength $sname] > 1} {
 		dialog .singleStream "Select Single Stream" \
 			"You have selected more than one data stream.\
 			Please select a single data stream." "" 0 Continue
@@ -1276,13 +1280,13 @@ proc OpenDataSource {dispname} {
 	    }
 	    break
 	}
-	set dispname [lindex $dispname 0]
+	set sname [lindex $sname 0]
     }
 
     # cache data to disk right now
-    if {[isCached $dispname -1 -1] == ""} {
+    if {[isCached $sname -1 -1] == ""} {
 	set but [dialog .cacheData "Caching Data" \
-		"Cache \"$dispname\" to disk now?" \
+		"Cache \"$sname\" to disk now?" \
 		"" 1 Yes No]
 	if {$but == 1} {
 	    dialog .notCached "Must Cache Data Stream" \
@@ -1292,28 +1296,27 @@ proc OpenDataSource {dispname} {
 	}
     }
 
-    set source [cacheData $dispname -1 -1]
-    if {$source == ""} {
+    set fname [cacheData $sname -1 -1]
+    if {$fname == ""} {
 	return ""
     }
 
     # Tell the C++ code whether this data is only a portion of a file.
-    set fileSeg [lindex $sourceList($dispname) 8]
-    DEVise dataSegment $dispname $source [lindex $fileSeg 0] \
-	    [lindex $fileSeg 1]
-
-    return [list $dispname $source]
+    set fileSeg [lindex $sourceList($sname) 8]
+    DEVise dataSegment $sname $fname [lindex $fileSeg 0] [lindex $fileSeg 1]
+    set stype [lindex $sourceList($sname) 0]
+    return [list $sname $fname $stype]
 }
 
 ############################################################
 
-proc CacheMultipleDataSources {dispnames} {
+proc CacheMultipleDataSources {snames} {
     global sourceList
 
     set numnotcached 0
-    foreach dispname $dispnames {
+    foreach sname $snames {
 	# see if data stream is on disk already
-	if {[isCached $dispname -1 -1] == ""} {
+	if {[isCached $sname -1 -1] == ""} {
 	    incr numnotcached
 	}
     }
@@ -1330,7 +1333,7 @@ proc CacheMultipleDataSources {dispnames} {
 	}
     }
 
-    set sources [cacheMultipleData $dispnames -1 -1]
+    set sources [cacheMultipleData $snames -1 -1]
     return $sources
 }
 
@@ -1348,23 +1351,6 @@ proc OpenNewDataSource {derivedOnly} {
 
     if {$snames == ""} { return "" }
 
-    set newsnames ""
-
-    foreach sname $snames {
-        # see if data stream already open
-        if {[lsearch [TdataSet] $sname] < 0} {
-	    # make sure data is cached on disk
-	    set sourcedef [OpenDataSource $sname]
-	    if {$sourcedef == ""} {
-		return ""
-            }
-        }
-
-        lappend newsnames $sname
-    }
-
-    set snames $newsnames
-
     # must choose a single data stream
     if {[llength $snames] > 1} {
 	dialog .singleStream "Select Single Stream" \
@@ -1372,58 +1358,65 @@ proc OpenNewDataSource {derivedOnly} {
                 Only the first stream will be visualized." "" 0 Continue
     }
 
-    # make sure data is cached on disk
-    set sname [lindex $snames 0]
-    set sourcedef [OpenDataSource $sname]
-    if {$sourcedef == ""} {
-	return ""
-    }
+    foreach sname $snames {
+        # see if data stream already open
+        if {[lsearch [TdataSet] $sname] >= 0} {
+            continue
+        }
 
-    set sname [lindex $sourcedef 0]
-    set source [lindex $sourcedef 1]
+        # make sure data is cached on disk
+        set sourcedef [OpenDataSource $sname]
+        if {$sourcedef == ""} {
+            continue ""
+        }
 
-    if {$derivedOnly} {
-	set schema [lindex $derivedSourceList($sname) 2]
-	set schemafile [lindex $derivedSourceList($sname) 3]
-    } else {
-	set schema [lindex $sourceList($sname) 2]
-	set schemafile [lindex $sourceList($sname) 3]
-    }
+        set sname [lindex $sourcedef 0]
+        set param [lindex $sourcedef 1]
+        set stype [lindex $sourcedef 2]
+        
+        if {$derivedOnly} {
+            set schema [lindex $derivedSourceList($sname) 2]
+            set schemafile [lindex $derivedSourceList($sname) 3]
+        } else {
+            set schema [lindex $sourceList($sname) 2]
+            set schemafile [lindex $sourceList($sname) 3]
+        }
 
-    # load schema file if necessary - it is not sufficient to check if
-    # the physical schema by the same name has been loaded because the same
-    # physical schema may be shared by several logical schemas - the best
-    # way of checking is to see that we have no groups defined under the 
-    # logical schema name
+        # load schema file if necessary - it is not sufficient to check if
+        # the physical schema by the same name has been loaded because the same
+        # physical schema may be shared by several logical schemas - the best
+        # way of checking is to see that we have no groups defined under the 
+        # logical schema name
     
-    set topgrps [DEVise getTopGroups [file tail $schemafile]]
-    if {[llength $topgrps] == 0} {
-	set result [DEVise importFileType $schemafile]
-	if {$result == ""} {
-	    return
-	}
-	if {$result != $schema} {
-	    puts "File $schemafile appears to contain schema $result,\
-		    not $schema"
-	    set schema $result
-	}
-    }
+        set topgrps [DEVise getTopGroups [file tail $schemafile]]
+        if {[llength $topgrps] == 0} {
+            set result [DEVise importFileType $schemafile]
+            if {$result == ""} {
+                return
+            }
+            if {$result != $schema} {
+                puts "File $schemafile appears to contain schema $result,\
+                        not $schema"
+                set schema $result
+            }
+        }
     
-    statusWindow .info "Status" \
-	    "Creating an index on \"$sname\".\n\n\This may take a while."
-    update
+        statusWindow .info "Status" \
+                "Creating an index on \"$sname\".\n\n\This may take a while."
+        update
 
-    # ask DEVise to create tdata
-    set result [DEVise create tdata $schema $source $sname]
-    catch {destroy .info}
+        # ask DEVise to create tdata
+        set result [DEVise create tdata $schema $sname $stype $param]
+        catch {destroy .info}
 
-    if {$result == ""} {
-	dialog .fileError "File Error" \
-		"Error reading file $source" "" 0 OK
-	return ""
+        if {$result == ""} {
+            dialog .tdataError "Data Stream Error" \
+                    "Cannot open data stream $sname" "" 0 OK
+            continue
+        }
     }
 
-    return $sname
+    return [lindex $snames 0]
 }
 
 ############################################################
