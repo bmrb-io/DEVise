@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.62  1997/03/18 20:42:42  donjerko
+#	Changes for GUI.
+#
 #	Revision 1.61  1997/03/14 18:37:10  donjerko
 #	*** empty log message ***
 #
@@ -271,6 +274,7 @@ set sourceTypes(DEVise) "{Devise} $schemadir/logical/UNIXFILE"
 #set sourceTypes(WWW) "{World Wide Web} $schemadir/logical/WWW"
 
 set sourceFile $datadir/sourcedef.tcl
+#set sourceFile /local.doc/oldstuff/coral/newrun/northeast/devise/sourcedef.tcl
 if {[file exists $sourceFile]} {
     Puts "Using data stream catalog $sourceFile"
     source $sourceFile
@@ -1433,7 +1437,7 @@ proc isCached {dispname startrec endrec} {
     set command [lindex $sourcedef 7]
     
     if {$source == "DQL" || $source == "WWW" || $source == "BASICSTAT" \
-			|| $source == "HISTOGRAM" || $source == "GDATASTAT"} {
+	||$source=="HISTOGRAM"||$source=="GDATASTAT_X"||$source =="GDATASTAT_Y"} {
         return $command
     }
 
@@ -1691,7 +1695,8 @@ proc getCacheName {source key} {
     global cachedir
 
     if {$source == "UNIXFILE" || $source == "WWW" || $source == "BASICSTAT" \
-		|| $source == "HISTOGRAM" || $source == "GDATASTAT"} {
+		|| $source == "HISTOGRAM" || $source == "GDATASTAT_X \
+		|| $source == "GDATASTAT_Y"} {
 	return ""
     }
 
@@ -2079,7 +2084,6 @@ proc updateSources {} {
     if {[catch {wm state .srcsel}] > 0} {
 	return
     }
-
     .srcsel.top.list delete 0 end
 	set listing [DEVise dteListCatalog [CWD]]
         puts "->>>>>$listing"
@@ -2142,11 +2146,20 @@ proc scanDerivedSources {} {
 		$cachefile $evaluation $priority $command]
 	set "derivedSourceList($sname)" $sourcedef
 
-	set sname "Gstat: $view"
-	set source "GDATASTAT"
+	set sname "GstatX: $view"
+	set source "GDATASTAT_X"
 	set schematype GDATASTAT
 	set schemafile $schemadir/physical/GDATASTAT
-	set command "Gstat:$view"
+	set command "GstatX: $view"
+	set sourcedef [list $source $key $schematype $schemafile \
+		$cachefile $evaluation $priority $command]
+	set "derivedSourceList($sname)" $sourcedef
+
+	set sname "GstatY: $view"
+	set source "GDATASTAT_Y"
+	set schematype GDATASTAT
+	set schemafile $schemadir/physical/GDATASTAT
+	set command "GstatY: $view"
 	set sourcedef [list $source $key $schematype $schemafile \
 		$cachefile $evaluation $priority $command]
 	set "derivedSourceList($sname)" $sourcedef
