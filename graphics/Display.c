@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/05/20 18:44:58  jussi
+  Merged with ClientServer library code.
+
   Revision 1.7  1996/05/09 18:12:08  kmurli
   No change to this makefile.
 
@@ -59,10 +62,6 @@ DeviseDisplay *DeviseDisplay::DefaultDisplay()
 
 DeviseDisplay::DeviseDisplay()
 {
-#ifndef LIBCS
-  _dispatcher = Dispatcher::Current();
-#endif
-
   _numColors = 0;
   _colorMapSize = InitColorMapSize;
   _colorMap = new Color[InitColorMapSize];
@@ -74,7 +73,7 @@ DeviseDisplay::DeviseDisplay()
 DeviseDisplay::~DeviseDisplay()
 {
 #ifndef LIBCS
-  _dispatcher->Unregister(this);
+  Dispatcher::Current()->Unregister(this);
 #endif
 
   delete _colorMap;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/05/20 18:44:59  jussi
+  Merged with ClientServer library code.
+
   Revision 1.8  1996/05/09 18:12:09  kmurli
   No change to this makefile.
 
@@ -109,14 +112,15 @@ public:
   static DeviseDisplay *Next(int index) { return _displays.Next(index); }
   static void DoneIterator(int index) { _displays.DoneIterator(index); }
 
+protected:
 #ifndef LIBCS
-  /* This is to force the derived classes to register themselves with the
-     dispatcher */
-
+  /*
+     This is to force the derived classes to register themselves
+     with the dispatcher
+ */
   virtual void Register() = 0;
 #endif
 
-protected:
   /* must be called from within the initializer of derived class
      to get the initial set of colors from the color manager */
   void InitializeColors() {
@@ -145,20 +149,9 @@ protected:
   /* get local color given global color. */
   Color GetLocalColor(Color globalColor);
 
-#ifndef LIBCS
- // Returns a pointer to the current dispatcher. This is necessary for 
- // registeration in XDisplay and other derived classes.
-  
-  Dispatcher * ReturnDispatcher() {
-    return _dispatcher;
-  }
-#endif
-
 private:
   virtual char *DispatchedName();
-  void Run() {
-    InternalProcessing();
-  }
+  void Run() { InternalProcessing(); }
   
   static DeviseDisplayList _displays; /* list of all displays */
   
@@ -166,10 +159,6 @@ private:
   unsigned long _colorMapSize;
   Color *_colorMap;
   static DeviseDisplay *_defaultDisplay;
-
-#ifndef LIBCS
-  Dispatcher *_dispatcher;
-#endif
 };
 
 #endif
