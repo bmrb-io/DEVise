@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  1996/08/03 15:38:15  jussi
+  Flag _solid3D now has three values.
+
   Revision 1.24  1996/07/23 20:12:59  wenger
   Preliminary version of code to save TData (schema(s) and data) to a file.
 
@@ -131,6 +134,8 @@
 #include "CompDate.h"
 #include "DevFileHeader.h"
 #include "Display.h"
+#include "TDataAscii.h"
+#include "DevError.h"
 
 //#define DEBUG
 
@@ -808,6 +813,101 @@ int ParseAPI(int argc, char **argv, ControlPanel *control)
       /* Return status of statistics display */
       control->ReturnVal(API_ACK, vg->GetDisplayStats());
       return 1;
+    }
+    if (!strcmp(argv[0], "getAllStats")) {
+      ViewGraph *vg = (ViewGraph *)classDir->FindInstance(argv[1]);
+      if (!vg) {
+        control->ReturnVal(API_NAK, "Cannot find view");
+        return -1;
+      }
+      /* Return allStats */
+      char *buff[5];
+      for(int i = 0; i < 5; i++) {
+	  buff[i] = '\0';
+      }
+      for (int i = 0; i < 4; i++) {
+          buff[i] = new char[16];  /*16 bytes is enough for double type */
+      }
+      BasicStats *allStats = vg->GetStatObj();
+      sprintf(buff[0], "%g", allStats->GetStatVal(STAT_MAX));
+      sprintf(buff[1], "%g", allStats->GetStatVal(STAT_MEAN));
+      sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
+      sprintf(buff[3], "%d", (int)allStats->GetStatVal(STAT_COUNT));
+      control->ReturnVal(4, buff);
+      for (int i = 0; i < 4; i++) {
+	  delete buff[i];
+      }
+      delete [] buff;
+      return 1;
+    }    	
+    if (!strcmp(argv[0], "getStatBuffer")) {
+       enum {
+           STAT_TYPE,
+           HIST_TYPE,
+           GSTAT_TYPE 
+	} type;
+        char* viewName = NULL;
+        if(!strncmp(argv[1], "Stat:", 5)) {
+	  type = STAT_TYPE;
+	  viewName = &argv[1][5];
+        } else if(!strncmp(argv[1], "Hist:", 5)) {
+	  type = HIST_TYPE;
+	  viewName = &argv[1][5];
+        } else if(!strncmp(argv[1], "Gstat:", 6)) {
+	  type = GSTAT_TYPE;
+	  viewName = &argv[1][6];
+        } else {
+	  control->ReturnVal(API_NAK, "Invalid stat type");
+	  return -1;
+        }
+        while( *viewName == ' ' ) {
+	   viewName++;
+	}
+        ViewGraph *vg = (ViewGraph *)classDir->FindInstance(viewName);
+        if(!vg) {
+	  control->ReturnVal(API_NAK, "Cannot find view");
+	  return -1;
+        }
+
+        /* Return statistics buffer */
+        DataSourceBuf *buffObj;
+        switch( type ) {
+          case STAT_TYPE:
+            buffObj = vg->GetViewStatistics();
+	    break;
+          case HIST_TYPE:
+            buffObj = vg->GetViewHistogram();
+	    break;
+          case GSTAT_TYPE:
+            buffObj = vg->GetGdataStatistics();
+	    break;
+         }
+      
+         if (buffObj ->Open("r") != StatusOk)
+         {
+	     reportError("Cannot open statBuffer object for read", devNoSyserr);
+	     control->ReturnVal(API_NAK, "statBuffer object");
+	     return -1;
+          }
+          int k;
+          args = new (char *) [MAX_GSTAT+1];
+          for(k=0; k < MAX_GSTAT+1; k++) {
+	      args[k]=0;
+          }
+          char statBuff[LINESIZE];
+          k = 0;
+          while(buffObj->Fgets(statBuff, LINESIZE) != NULL) {
+	      DOASSERT(k < MAX_GSTAT, "too many stats lines");
+	      int len = strlen(statBuff);
+	      args[k] = new char[len + 1];
+	      strcpy(args[k], statBuff);
+	      k++;
+           }
+           control->ReturnVal(k, args);
+           for(int j = 0; j < k; j++)
+	       delete args[j];
+           delete [] args;
+           return 1;
     }
     if (!strcmp(argv[0], "getViewDimensions")) {
       View *vg = (View *)classDir->FindInstance(argv[1]);
