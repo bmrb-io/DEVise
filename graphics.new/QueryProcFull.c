@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1995/12/28 19:44:18  jussi
+  Small fixes to remove compiler warnings.
+
   Revision 1.5  1995/12/14 21:18:17  jussi
   Replaced 0x%x with 0x%p.
 
@@ -42,10 +45,29 @@
 //#define DEBUG
 
 /* temp page to hold data for converting tdata into gdata. */
-const int GDATA_BUF_SIZE = 51200;
+static const int GDATA_BUF_SIZE = 51200;
 static char _gdataBuf[GDATA_BUF_SIZE];
-const int TDATA_BUF_SIZE = 40960;
+static const int TDATA_BUF_SIZE = 40960;
 static char _tdataBuf[TDATA_BUF_SIZE];
+
+/* max # of bytes to fetch for each iteration of the query processor.
+   After fetching this many bytes, the query processor relinquishes control
+   (coming out for air) to allow the rest of the system to check for user
+   input */
+static const int QPFULL_MAX_FETCH = 81920;
+
+/* max symbols per batch returned */
+static const int QPFULL_MAXSYMS = 4096;
+
+/* # of records to be returned before randomize is to begin */
+static const int QPFULL_RANDOM_RECS = 10240;
+
+/* # of records to be returned for each batch */
+static const int QPFULL_RANDOM_RECS_PER_BATCH = 1024;
+
+/* # of iterations to scan for data to simulation pseudo-random
+   display */
+static const int QPFULL_RANDOM_ITERATIONS = 5;
 
 /* Get X associated with a recId */
 inline void GetX(BufMgr *mgr, TData *tdata, TDataMap *map, RecId id, Coord &x)
