@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.11  1998/02/10 21:13:19  wenger
+  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+  to pass back lists of records drawn (not implemented yet); moved
+  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+
   Revision 1.10  1997/11/24 23:15:24  weaver
   Changes for the new ColorManager.
 
@@ -535,8 +540,9 @@ void	ViewLens::ReturnGData(TDataMap* mapping, RecId recId,
 //	printf("ViewLens %d recs buf start 0x%p\n", numGData, gdata);
 #endif
 
-	drawnList = NULL;
 	recordsProcessed = numGData;
+	recordsDrawn = -1;
+	drawnList = NULL;
 
 	// Cancel the draw timeout for now, so we don't have to deal with
 	// the possibility that some symbols won't be drawn.  This should

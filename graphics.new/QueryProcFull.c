@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.73  1998/02/10 21:13:11  wenger
+  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+  to pass back lists of records drawn (not implemented yet); moved
+  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+
   Revision 1.72  1997/12/23 23:35:33  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -1701,18 +1706,19 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
         printf("Returning GData [%ld,%ld], map 0x%p, buf 0x%p\n",
                low, high, _rangeQuery->map, _gdataBuf);
 #endif
-	//TEMPTEMP
 	int recordsDrawn;
 	BooleanArray *drawnList;
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, (RecId)low,
                                            ptr, (int)(high - low + 1),
 					   recordsProcessed,
-					   true/*TEMPTEMP*/, recordsDrawn, drawnList);
-        delete drawnList;//TEMPTEMP?
+					   false, recordsDrawn, drawnList);
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) low,
 	  (int) low + recordsProcessed - 1, (int) low, (int) high);
+	printf("%d records drawn\n", recordsDrawn);
+	if (drawnList != NULL) drawnList->Print();
 #endif
+        delete drawnList;
         return;
     }
 
@@ -1742,18 +1748,19 @@ void QueryProcFull::QPRangeInserted(Coord low, Coord high,
                recId, recId + numToConvert - 1, _rangeQuery->map, _gdataBuf);
 #endif
 	int tmpRecs;
-	//TEMPTEMP
 	int recordsDrawn;
 	BooleanArray *drawnList;
         _rangeQuery->callback->ReturnGData(_rangeQuery->map, recId,
                                            _gdataBuf, numToConvert,
 					   tmpRecs,
-					   true/*TEMPTEMP*/, recordsDrawn, drawnList);
-        delete drawnList;//TEMPTEMP?
+					   false, recordsDrawn, drawnList);
 #if DEBUGLVL >= 5
 	printf("Records %d - %d of %d - %d processed\n", (int) recId,
 	  (int) recId + tmpRecs - 1, (int) recId, (int) low + numToConvert - 1);
+	printf("%d records drawn\n", recordsDrawn);
+	if (drawnList != NULL) drawnList->Print();
 #endif
+        delete drawnList;
 	recordsProcessed += tmpRecs;
 	if (tmpRecs < numToConvert) break;
         recsLeft -= tmpRecs;

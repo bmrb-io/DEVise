@@ -480,6 +480,8 @@ Possibly add record id to GData sent to socket or file. (rkw 2/10/98)
 
 Possibly add view name to GData sent to socket or file. (rkw 2/10/98)
 
+Replace EmbeddedTk symbols with Java symbols. (ml/rkw 2/11/98)
+
 
 COMPLETED
 ---------

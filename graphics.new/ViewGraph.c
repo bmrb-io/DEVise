@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.67  1998/02/10 21:13:15  wenger
+  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+  to pass back lists of records drawn (not implemented yet); moved
+  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+
   Revision 1.66  1998/01/27 23:04:27  wenger
   Broke the server's view selection dependency on the client (except when
   running in collaboration mode).
@@ -309,6 +314,7 @@
 #define STEP_SIZE 20
 
 ImplementDList(GStatList, double)
+ImplementDList(BStatList, BasicStats *)
 
 //******************************************************************************
 // class ViewGraph_QueryCallback

@@ -13,14 +13,19 @@
 */
 
 /*
-  Description of module.
-  TEMPTEMP
+  Declaration of BooleanArray class (an array of Booleans with bounds
+  checking, etc.).
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/10 21:13:45  wenger
+  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+  to pass back lists of records drawn (not implemented yet); moved
+  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+
  */
 
 #ifndef _BooleanArray_h_
@@ -32,7 +37,7 @@
 
 class BooleanArray {
 public:
-  BooleanArray(int size);
+  BooleanArray(int size, int baseIndex = 0);
   ~BooleanArray();
 
   void Clear();
@@ -40,9 +45,11 @@ public:
   void Set(int index, Boolean value);
   Boolean Get(int index);
 
+  void Print();
+
 private:
   int _size;
-  //TEMPTEMP -- convert to bitmap?
+  int _baseIndex;
   Boolean *_data;
 };
 

@@ -1129,6 +1129,9 @@ Num Date        Status  Description
 293 02/12/98	OPEN	'kill_devised' doesn't work (with collaboration
 			code).  Perhaps deviseb doesn't work at all? (rkw)
 
+294 02/12/98	OPEN	Sometimes symbols are not drawn that should be
+			(see test/missing_bars.ds). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

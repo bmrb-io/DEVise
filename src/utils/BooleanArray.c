@@ -13,14 +13,20 @@
 */
 
 /*
-  Description of module.
-  TEMPTEMP
+  Implementation of BooleanArray class.  We probably want to eventually
+  change the implementation to use a bitmap instead of an array of
+  Booleans.
  */
 
 /*
   $Id$
 
   $Log$
+  Revision 1.1  1998/02/10 21:13:45  wenger
+  Changed signatures of ReturnGData() in QueryCallback and its subclasses
+  to pass back lists of records drawn (not implemented yet); moved
+  declaration of ViewGraph_QueryCallback from ViewGraph.h to ViewGraph.c.
+
  */
 
 #include <stdio.h>
@@ -28,8 +34,8 @@
 #include "BooleanArray.h"
 #include "Exit.h"
 
-#define DEBUG//TEMPTEMP
-#define BOUNDS_CHECKING 1//TEMPTEMP?
+//#define DEBUG
+#define BOUNDS_CHECKING 1
 
 #if !defined(lint) && defined(RCSID)
 static char rcsid[] = "$RCSfile$ $Revision$ $State$";
@@ -37,18 +43,19 @@ static char rcsid[] = "$RCSfile$ $Revision$ $State$";
 
 /*------------------------------------------------------------------------------
  * function: BooleanArray::BooleanArray
- * TEMPTEMP
+ * Constructor.
  */
-BooleanArray::BooleanArray(int size)
+BooleanArray::BooleanArray(int size, int baseIndex)
 {
   _size = size;
+  _baseIndex = baseIndex;
   _data = new Boolean[size];
   DOASSERT(_data, "Out of memory");
 }
 
 /*------------------------------------------------------------------------------
  * function: BooleanArray::~BooleanArray
- * TEMPTEMP
+ * Destructor.
  */
 BooleanArray::~BooleanArray()
 {
@@ -57,24 +64,25 @@ BooleanArray::~BooleanArray()
 
 /*------------------------------------------------------------------------------
  * function: BooleanArray::Clear
- * TEMPTEMP
+ * Clear the array (set everything to false).
  */
 void
 BooleanArray::Clear()
 {
   int index;
   for (index = 0; index < _size; index++) {
-    Set(index, false);
+    _data[index] = false;
   }
 }
 
 /*------------------------------------------------------------------------------
  * function: BooleanArray::Set
- * TEMPTEMP
+ * Set an array element.
  */
 void
 BooleanArray::Set(int index, Boolean value)
 {
+  index -= _baseIndex;
 
 #if BOUNDS_CHECKING
   DOASSERT(index >= 0 && index < _size, "Array bounds error");
@@ -85,17 +93,34 @@ BooleanArray::Set(int index, Boolean value)
 
 /*------------------------------------------------------------------------------
  * function: BooleanArray::Get
- * TEMPTEMP
+ * Get the value of an array element.
  */
 Boolean
 BooleanArray::Get(int index)
 {
+  index -= _baseIndex;
 
 #if BOUNDS_CHECKING
   DOASSERT(index >= 0 && index < _size, "Array bounds error");
 #endif
 
   return _data[index];
+}
+
+/*------------------------------------------------------------------------------
+ * function: BooleanArray::Print
+ * Print the array.
+ */
+void
+BooleanArray::Print()
+{
+  printf("BooleanArray:\n");
+
+  int index;
+  for (index = 0; index < _size; index++) {
+    printf("  [%d] = %s\n", index + _baseIndex,
+	_data[index] ? "true" : "false");
+  }
 }
 
 /*============================================================================*/

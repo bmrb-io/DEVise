@@ -16,164 +16,76 @@
   $Id$
 
   $Log$
-  Revision 1.1  1998/02/09 18:11:00  wenger
-  Removed ViewScatter class (totally replaced by ViewData, which is a
-  renamed version of TDataViewX); removed ViewRanges class (not used);
-  re-made Solaris dependencies.
-
 */
 
 //******************************************************************************
 
-#include <assert.h>
-#include <string.h>
-
-//#define DEBUG
-
-#include "Init.h"
 #include "ViewData.h"
 #include "TDataMap.h"
-#include "ConnectorShape.h"
 #include "Shape.h"
 #include "Util.h"
 #include "RecordLink.h"
+#include "BooleanArray.h"
 
-ImplementDList(BStatList, BasicStats *)
+//#define DEBUG
+
+struct SymbolInfo {
+  Coord x;
+  Coord y;
+  ShapeID shape;
+  Boolean inFilter;
+  Boolean isComplex;
+};
 
 //******************************************************************************
 // Constructors and Destructors
 //******************************************************************************
 
-ViewData::ViewData(char* name, VisualFilter& initFilter, QueryProc* qp, 
-					   PColorID fgid, PColorID bgid,
-					   AxisLabel* xAxis, AxisLabel* yAxis, Action* action)
-	: ViewGraph(name, initFilter, qp, xAxis, yAxis, fgid, bgid, action)
+ViewData::ViewData(char* name, VisualFilter& initFilter, QueryProc* qp,
+						 PColorID fgid, PColorID bgid, 
+						 AxisLabel* xAxis, AxisLabel* yAxis, Action* action)
+	:	ViewGraph(name, initFilter, qp, xAxis, yAxis, fgid, bgid, action)
 {
-	gDataBinCallback = new ViewData_GDataBinCallback(this);
-
-	_dataBin = new GDataBin();
-	DOASSERT(_dataBin, "Out of memory");
-
-	_totalGData = _numBatches = 0;
-	_batchRecs = Init::BatchRecs();
-
-	_dispSymbols = true;
-	_dispConnectors = false;
-	_cMap = 0;
-}
-
-ViewData::~ViewData(void)
-{
-	delete _dataBin;
-
-	delete gDataBinCallback;
 }
 
 //******************************************************************************
-// Public Methods
+// Callback Methods (QueryCallback)
 //******************************************************************************
 
-void ViewData::InsertMapping(TDataMap *map)
-{
-  ViewGraph::InsertMapping(map);
-  Refresh();
-}
-
-void ViewData::DerivedAbortQuery()
-{
-#ifdef DEBUG
-    printf("ViewData::Abort query, index = %d\n", _index);
-#endif
-
-  ViewGraph::DerivedAbortQuery();
-
-  // I think recordsProcessed is pretty meaningless at this point.
-  // RKW Aug. 15, 1997.
-  int recordsProcessed;
-  _dataBin->Final(recordsProcessed);
-}
-
-Boolean ViewData::DisplaySymbols(Boolean state)
-{ 
-#if defined(DEBUG)
-  printf("ViewData::DisplaySymbols(%d)\n", state);
-#endif
-
-  if (state == _dispSymbols)
-    return state;
-
-  Boolean oldState = _dispSymbols;
-  _dispSymbols = state;
-
-#ifdef DEBUG
-  printf("DisplaySymbols now %s\n", (_dispSymbols ? "on" : "off"));
-#endif
-
-  InvalidatePixmaps();
-  Refresh();
-
-  return oldState;
-}
-
-Boolean ViewData::DisplayConnectors(Boolean state)
-{ 
-#if defined(DEBUG)
-  printf("ViewData::DisplayConnectors(%d)\n", state);
-#endif
-
-#if !USE_CONNECTORS
-  return false;
-#endif
-
-  if (state == _dispConnectors)
-    return state;
-
-  if (!state) {
-    DOASSERT(_cMap, "No connector mapping");
-    delete _cMap;
-    _cMap = NULL;
-  } else {
-    DOASSERT(!_cMap, "Unexpected connector mapping");
-    _cMap = new TDataCMap;
-    DOASSERT(_cMap, "Could not create connector mapping");
-    _cMap->GetColoring().SetForeground(GetForeground());
-  }
-
-  Boolean oldState = _dispConnectors;
-  _dispConnectors = state;
-
-#ifdef DEBUG
-  printf("DisplayConnectors now %s\n", (_dispConnectors ? "on" : "off"));
-#endif
-
-  InvalidatePixmaps();
-  Refresh();
-
-  return oldState;
-}
-
-void ViewData::PrintStat()
-{
-  if (Init::PrintViewStat()) {
-    View::PrintStat();
-    printf("%d GData records, %d batches, %.2f per batch\n",
-	   _totalGData, _numBatches, 1.0 * _totalGData / _numBatches);
-    _dataBin->PrintStat();
-  }
-}
-
-//******************************************************************************
-// Callback Methods (GDataBinCallback)
-//******************************************************************************
-
-void	ViewData::ReturnGDataBinRecs(TDataMap* map, void** recs, int numRecs,
-									   int& recordsProcessed)
+void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
+								 void* gdata, int numGData,
+								 int& recordsProcessed,
+								 Boolean needDrawnList, int& recordsDrawn,
+								 BooleanArray*& drawnList)
 {
 #if defined(DEBUG)
-	printf("ViewData_GDataBinCallback::ReturnGDataBinRecs() %d recs buf start 0x%p\n", numRecs, recs);
+	printf("ViewData::ReturnGData(0x%p, %d)\n", gdata, numGData);
 #endif
 
+	// If window is iconified, say that we "processed" all records, even if
+	// they didn't actually get drawn.
+	recordsProcessed = numGData;
+
+	drawnList = NULL;
+	recordsDrawn = -1;
+
+	// Check whether we have a mapping iterator open.
+	if(_index < 0) {
+		return;
+	}
+  
+#if defined(DEBUG) || 0
+	printf("ViewData %d recs buf start 0x%p\n", numGData, gdata);
+#endif
+
+	void*		recs[WINDOWREP_BATCH_SIZE];
+	int			reverseIndex[WINDOWREP_BATCH_SIZE + 1];
+	Coord		maxWidth, maxHeight, maxDepth;
 	WindowRep*	win = GetWindowRep();
+
+	reverseIndex[0] = 0;
+	mapping->UpdateMaxSymSize(gdata, numGData);
+	mapping->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
 
 	if (IsInPileMode())
 	{
@@ -186,253 +98,248 @@ void	ViewData::ReturnGDataBinRecs(TDataMap* map, void** recs, int numRecs,
 			   GetName(), vw->GetName(), win);
 #endif
 	}
-
-	map->DrawGDataArray(this, win, recs, numRecs, recordsProcessed);
-
-#if defined(DEBUG)
-	printf("  %d of %d records processed\n", recordsProcessed, numRecs);
-#endif
-}
-
-void	ViewData::ReturnGDataBinConnectors(TDataCMap* cmap,
-											 Connector** connectors, int num)
-{
-#if defined(DEBUG)
-	printf("ViewData_GDataBinCallback drawing %d connectors\n", num);
-#endif
-
-	for(int i=0; i<num; i++)
-		ConnectorShapeRegistrar::DrawConnection(GetWindowRep(), connectors[i]);
-}
-
-//******************************************************************************
-// Callback Methods (QueryCallback)
-//******************************************************************************
-
-// Query data ready to be returned. Do initialization here.
-void	ViewData::QueryInit(void* userData)
-{ 
-	_dataBin->Init(_map, &_queryFilter,
-		   _dispSymbols, _dispConnectors, _cMap, gDataBinCallback);
-}
-
-void	ViewData::QueryDone(int bytes, void* userData, TDataMap* map = NULL)
-{
-#ifdef DEBUG
-	printf("ViewData::Query done, index = %d, bytes = %d\n", _index, bytes);
-#endif
-
-	ViewGraph::QueryDone(bytes, userData, map);
-
-	// I think recordsProcessed is pretty meaningless at this point.
-	// RKW Aug. 15, 1997.
-	int		recordsProcessed;
-
-	_dataBin->Final(recordsProcessed);
-}
-
-void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
-								void* gdata, int numGData,
-								int& recordsProcessed,
-								Boolean needDrawnList, int& recordsDrawn,
-								BooleanArray*& drawnList)
-{
-#if defined(DEBUG)
-	printf("ViewData::ReturnGData(%d)\n", numGData);
-#endif
-
-	drawnList = NULL;
-	VisualFilter	filter;
-
-	GetVisualFilter(filter);
-	ResetGStatInMem();
-
-	recordsProcessed = numGData;
-
-	//TEMPTEMP -- what does this mean?
-	if( _index < 0 )
-		return;
-
-	mapping->UpdateMaxSymSize(gdata, numGData);
-
-	int		gRecSize = mapping->GDataRecordSize();
-	char*	tp = (char*)gdata;
-
-	_totalGData += numGData;
-	_numBatches++;
-
+  
 	GDataAttrOffset*	offset = mapping->GetGDataOffset();
-
-	// Can do record elimination only for constant bar shape
-	Boolean		canElimRecords = false;
-
-	if ((offset->shapeOffset < 0) && (mapping->GetDefaultShape() == 2))
-		canElimRecords = true;
-
-	double	width = _allStats.GetHistWidth();
+	int					gRecSize = mapping->GDataRecordSize();
+	int					recIndex = 0;
+	int					firstRec = 0;
+	double				width = _allStats.GetHistWidth();
 
 #if defined(DEBUG) || 0
 	printf("Hist width in ViewData is %g\n", width);
 #endif
 
-	double	yMax = _allStats.GetStatVal(STAT_MAX);
-	double	yMin = _allStats.GetStatVal(STAT_MIN);
-	double	ratio = (filter.yHigh-filter.yLow)/(yMax-yMin);
+	VisualFilter		filter;
+
+	GetVisualFilter(filter);
+
+	double				yMax = _allStats.GetStatVal(STAT_MAX);
+	double				yMin = _allStats.GetStatVal(STAT_MIN);
+	double				ratio = (filter.yHigh-filter.yLow)/(yMax-yMin);
 
 	if((width == 0) || (ratio > 2))
 	{
-        double	hi = (yMax > filter.yHigh) ? yMax:filter.yHigh;
-        double	lo = (yMin > filter.yLow) ? yMin:filter.yLow;
+		double	hi = (yMax > filter.yHigh) ? yMax:filter.yHigh;
+		double	lo = (yMin > filter.yLow) ? yMin:filter.yLow;
 
 		_allStats.SetHistWidth(lo, hi);
+
 #if defined(DEBUG) || 0
-		printf("ViewData::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n", 
+		printf("ViewData::yMax=%g,yMin=%g,filter.yHigh=%g,filter.yLow=%g,width=%g\n",
 			   yMax, yMin, filter.yHigh, filter.yLow, _allStats.GetHistWidth());
 #endif
 	}
 
-	//TEMPTEMP -- what do we do for recordsDrawn if view is iconified?
-	// Draw data only if window is not iconified
-	if (!Iconified())
-	{
-		if (_batchRecs)
-		{
-			_dataBin->InsertSymbol(recId, gdata, numGData, recordsProcessed, 0,
-								   1, canElimRecords);
+    // Get info from GData records, figure out whether symbols are within
+	// visual filter.
+	char *dataP = (char *) gdata;
+	SymbolInfo *symArray = new SymbolInfo[numGData];
+	for (int recNum = 0; recNum < numGData; recNum++) {
+	  Coord x = symArray[recNum].x = ShapeGetX(dataP, mapping, offset);
+	  Coord y = symArray[recNum].y = ShapeGetY(dataP, mapping, offset);
+	  ShapeID shape = symArray[recNum].shape = GetShape(dataP, mapping, offset);
+      symArray[recNum].isComplex = mapping->IsComplexShape(shape) ||
+		  (GetNumDimensions() == 3);
 
-#ifdef DEBUG
-			_dataBin->PrintStat();
+	  // Note: here we're trying to find out whether _any part_ of the symbol
+	  // is within the visual filter.  This sometimes fails, both by including
+	  // symbols it shouldn't and by excluding symbols it shouldn't.
+	  // RKW Feb. 12, 1998.
+      // Use of maxWidth and maxHeight here is probably goofed up if symbols
+	  // are rotated.  RKW Aug. 8, 1997.
+	  symArray[recNum].inFilter = InVisualFilter(_queryFilter, x, y,
+		  maxWidth, maxHeight);
+
+	  dataP += gRecSize;
+	}
+
+	// Draw symbols
+	char*		ptr = (char*)gdata;
+	Boolean		timedOut = false;
+	Boolean		recsFiltered = false;
+
+	for (int i=0; i<numGData && !timedOut; i++)
+	{
+		// I don't know why the heck we draw a "complex" symbol here even if
+		// it falls outside the visual filter; this also goofs up record links
+		// if master view has complex symbols. RKW Aug. 8, 1997.
+		if (symArray[i].isComplex || symArray[i].inFilter)
+		{
+			// reverseIndex is set up this way because if you have some records
+			// outside the visual filter, you want to count all such records as
+			// processed if they're before the last record actually drawn.
+			reverseIndex[recIndex + 1] = i + 1;
+
+			// Draw data only if window is not iconified
+			if (!Iconified())
+			{
+				recs[recIndex++] = ptr;
+
+				if (recIndex == WINDOWREP_BATCH_SIZE)
+				{
+					int		tmpRecs;
+
+					mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs);
+
+					// Note: if first records are outside filter, might
+					// have _processed_ some records even if didn't draw any.
+					recordsProcessed = reverseIndex[tmpRecs];
+
+#if defined(DEBUG)
+					printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
+						   recordsProcessed);
 #endif
+					if (tmpRecs < recIndex)
+						timedOut = true; // Draw timed out.
+
+					recIndex = 0;
+				}
+			}
 		}
 		else
 		{
-			char*		ptr = (char*)gdata;
-			Boolean		timedOut = false;
+			recsFiltered = true;
+			reverseIndex[recIndex] = i + 1;
 
-			recordsProcessed = 0;
-
-			for(int i=0; i<numGData && !timedOut; i++)
-			{
-				int		tmpRecsProc;
-
-				_dataBin->InsertSymbol(recId, ptr, 1, tmpRecsProc, 0, 1,
-									   canElimRecords);
-
-				recordsProcessed += tmpRecsProc;
-
-				if (tmpRecsProc < 1)
-					timedOut = true;
-
-				recId++;
-				ptr += gRecSize;
-			}
-		}
-	}
-
-	// Collect statistics and update record links only for last mapping;
-	// and only for the records that actually got drawn (unless the view
-	// was iconified).
-	if (!MoreMapping(_index))
-	{
-		int		firstRec = 0;
-
-		for(int i=0; i<recordsProcessed; i++)
-		{
-			// Extract X, Y, shape, and color information from gdata record
-			Coord		x = ShapeGetX(tp, mapping, offset);
-			Coord		y = ShapeGetY(tp, mapping, offset);
-			ShapeID		shape = GetShape(tp, mapping, offset);
-			PColorID	pcid = mapping->GetPColorID(tp);
-			Boolean		complexShape = mapping->IsComplexShape(shape);
-
-			complexShape |= (GetNumDimensions() == 3);
-
-			// Compute statistics only for records that match the filter''s
-			// X range, regardless of the Y boundary
-			if ((x >= _queryFilter.xLow) && (x <= _queryFilter.xHigh))
-			{
-				// Palette size variability warning...
-				if ((pcid != nullPColorID) && (pcid < gMaxNumColors))
-					_stats[pcid].Sample(x, y);
-
-				_allStats.Sample(x, y);
-				_allStats.Histogram(y);
-
-				if(_glistX.Size() <= MAX_GSTAT)
-				{
-					double			X =  x;
-					BasicStats*		bsx;
-
-					if(_gstatX.Lookup(X, bsx))
-					{
-						bsx->Sample(x,y);
-					}
-					else
-					{
-						bsx = new BasicStats();
-						DOASSERT(bsx, "Out of memory");
-						bsx->Init(0);
-						_glistX.InsertOrderly(X, 1);
-						bsx->Sample(x, y);
-						_gstatX.Insert(X, bsx);
-						_blist.Insert(bsx);
-					} 
-				}
-				else
-				{
-					_gstatInMem = false;
-				}
-
-				if(_glistY.Size() <= MAX_GSTAT)
-				{
-					double			Y = y;
-					BasicStats*		bsy;
-
-					if(_gstatY.Lookup(Y, bsy))
-					{
-						bsy->Sample(y,x);
-					}
-					else
-					{
-						bsy = new BasicStats();
-						DOASSERT(bsy, "Out of memory");
-						bsy->Init(0);
-						_glistY.InsertOrderly(Y, 1);
-						bsy->Sample(y,x);
-						_gstatY.Insert(Y, bsy);
-						_blist.Insert(bsy);
-					} 
-				}
-				else
-				{
-					// mark gstatBuf faulse cleanup the gstat list, the group 
-					// by query will be submitted to DTE when requested
-					_gstatInMem = false;  
-				}
-			}
-
-			// Contiguous ranges which match the filter''s X *and* Y range
-			// are stored in the record link
-#ifdef DEBUG
-			printf("%s , %f < %f < %f , %f < %f < %f \n", GetName(),
-				   _queryFilter.xLow , x, _queryFilter.xHigh,
-				   _queryFilter.yLow , y, _queryFilter.yHigh);
-#endif      
-			if (!complexShape && !InVisualFilter(_queryFilter, x, y, 0.0, 0.0))
+			// Put records _outside_ the visual filter into the record link.
+			if (!MoreMapping(_index))
 			{
 				if (i > firstRec)
 					WriteMasterLink(recId + firstRec, i - firstRec);
 
-				// Next contiguous batch of record id''s starts at i+1
+				// Next contiguous batch of record ids starts at i+1
 				firstRec = i + 1;
 			}
-
-			tp += gRecSize;
 		}
 
-		if (recordsProcessed > firstRec)
-			WriteMasterLink(recId + firstRec, recordsProcessed - firstRec);
+		ptr += gRecSize;
 	}
+
+	if (!MoreMapping(_index) && (numGData > firstRec))
+		WriteMasterLink(recId + firstRec, numGData - firstRec);
+
+	if (!Iconified() && recIndex > 0 && !timedOut)
+	{
+		int		tmpRecs;
+
+		mapping->DrawGDataArray(this, win, recs, recIndex, tmpRecs);
+		recordsProcessed = reverseIndex[tmpRecs];
+
+#if defined(DEBUG)
+		printf("  tmpRecs = %d, recordsProcessed = %d\n", tmpRecs,
+			   recordsProcessed);
+#endif
+	}
+
+
+	// Update the list of records drawn.
+	if (needDrawnList) {
+	  if (!recsFiltered && recordsProcessed == numGData) {
+		recordsDrawn = numGData;
+	  } else {
+        drawnList = new BooleanArray(numGData);
+        drawnList->Clear();
+
+	    int tmpRecsDrawn = 0;
+	    for (int recNum = 0; recNum < recordsProcessed; recNum++)
+	    {
+	      if (symArray[recNum].isComplex || symArray[recNum].inFilter) {
+		    tmpRecsDrawn++;
+		    drawnList->Set(recNum, true);
+	      }
+	    }
+	    recordsDrawn = tmpRecsDrawn;
+	  }
+	}
+
+	// Do statistics only on the data corresponding to the symbols that
+	// actually got drawn (note: if the window is iconified, we do the
+	// statistics on all records).
+
+	ptr = (char*)gdata;
+
+	for (int recNum=0; recNum<recordsProcessed; recNum++)
+	{
+		// Extract X, Y, shape, and color information from gdata record
+		Coord		x = symArray[recNum].x;
+		Coord		y = symArray[recNum].y;
+		ShapeID		shape = symArray[recNum].shape;
+
+		// Note size of 0.0, 0.0 here, so it's not the same as the
+		// previous call to InVisualFilter().
+		// Do we really want the set of records we do stats on to not be
+		// the same as the set we draw?
+		if (symArray[recNum].inFilter &&
+			InVisualFilter(_queryFilter, x, y, 0.0, 0.0))
+		{
+			PColorID	pcid = mapping->GetPColorID(ptr);
+
+			// Palette size variability warning...
+			if ((pcid != nullPColorID) && (pcid < gMaxNumColors))
+				_stats[pcid].Sample(x, y);
+
+			_allStats.Sample(x, y);
+			_allStats.Histogram(y);
+
+			if(_glistX.Size() <= MAX_GSTAT)
+			{
+				double			X = x;
+				BasicStats*		bsx;
+
+				if(_gstatX.Lookup(x, bsx))
+				{
+					DOASSERT(bsx, "GData Stat look error");
+					bsx->Sample(x,y);
+				}
+				else
+				{
+					bsx = new BasicStats();
+					DOASSERT(bsx, "Out of memory");
+					bsx->Init(0);
+					_glistX.InsertOrderly(x, 1);
+					bsx->Sample(x, y);
+					_gstatX.Insert(X, bsx);
+					_blist.Insert(bsx);
+				}
+			}
+			else
+			{
+				_gstatInMem = false;	// Submit the query to DTE
+			}
+
+			if(_glistY.Size() <= MAX_GSTAT)
+			{
+				double			Y =  y;
+				BasicStats*		bsy = NULL;
+
+				if(_gstatY.Lookup(y, bsy))
+				{
+					DOASSERT(bsy, "GData Stat look error");
+					bsy->Sample(y,x);
+				}
+				else
+				{
+					bsy = new BasicStats();
+					DOASSERT(bsy, "Out of memory");
+					bsy->Init(0);
+					_glistY.InsertOrderly(y, 1);
+					bsy->Sample(y,x);
+					_gstatY.Insert(y, bsy);
+					_blist.Insert(bsy);
+				}
+			}
+			else
+			{
+				// mark gstatBuf false cleanup the gstat list, the group
+				// by query will be submitted to DTE when requested
+				_gstatInMem = false;
+			}
+		}
+
+		ptr += gRecSize;
+	}
+
+	delete [] symArray;
 }
 
 //******************************************************************************
