@@ -12,11 +12,6 @@
   Development Group.
 */
 
-/*
-
-  Revision 1.1  1997/09/25 15:13:33  zhenhai
-  Copy from GLWindowRep to GLWindowRep
-*/
 #include <unistd.h>
 #include <errno.h>
 #include <ctype.h>
@@ -337,6 +332,54 @@ void GLWindowRep::PushClip(Coord x, Coord y, Coord w, Coord h)
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::PushClip(%.2f,%.2f,%.2f,%.2f)\n",this, x, y, w, h);
 #endif
+
+  Coord xlow, ylow, xhi, yhi, width, height;
+  Coord x1, y1, x2, y2;
+
+  GLdouble model[16];
+  GLdouble proj[16];
+  GLint view[4];
+  MAKECURRENT();
+  glGetDoublev(GL_MODELVIEW_MATRIX, model);
+  glGetDoublev(GL_PROJECTION_MATRIX, proj);
+  glGetIntegerv(GL_VIEWPORT, view);
+  GLdouble objectX1, objectY1, objectZ1;
+  GLdouble objectX2, objectY2, objectZ2;
+  gluProject((GLdouble)x,(GLdouble)y, (GLdouble)0,
+	       model, proj, view, &objectX1, &objectY1, &objectZ1);
+  gluProject((GLdouble)(x + w), (GLdouble)(y + h), (GLdouble)0,
+	       model, proj, view, &objectX2, &objectY2, &objectZ2);
+
+  x1=(Coord)objectX1;
+  y1=(Coord)objectY1;
+  x2=(Coord)objectX2;
+  y2=(Coord)objectY2;
+
+  xlow=MIN(x1, x2);
+  xhi =MAX(x1, x2);
+  ylow=MIN(y1, y2);
+  yhi =MAX(y1, y2);
+  width = xhi - xlow + 1;
+  height = yhi - ylow + 1;
+
+#if defined(DEBUG)
+  printf("XwindowRep::PushClip: transformed into (%.2f,%.2f,%.2f,%.2f)\n",
+         xlow, ylow, width, height);
+#endif
+
+#ifdef GRAPHICS
+  if (_dispGraphics) {
+    glEnable(GL_SCISSOR_TEST);
+    glScissor((GLint)xlow, (GLint)ylow, (GLint)width, (GLint)height);
+    printf("Pushed. Clipping: x=%d, y=%d, w=%d, h=%d\n",
+      (GLint)xlow, (GLint)ylow, (GLint)width, (GLint)height);
+    fflush(stdout);
+  }
+#endif
+
+  WindowRep::_PushClip(xlow, ylow, width, height);
+
+  return;
 }
 
 void GLWindowRep::PopClip()
@@ -344,6 +387,28 @@ void GLWindowRep::PopClip()
 #if defined(DEBUG)
   printf("GLWindowRep(0x%p)::PopClip\n",this);
 #endif
+  WindowRep::_PopClip();
+  Coord x, y, w, h;
+
+  if (WindowRep::ClipTop(x, y, w, h)) {
+#ifdef GRAPHICS
+    if (_dispGraphics) {
+      glEnable(GL_SCISSOR_TEST);
+      glScissor((GLint)x, (GLint)y, (GLint)w, (GLint)h);
+      printf("Popped. Clipping: x=%d, y=%d, w=%d, h=%d\n",
+        (GLint)x, (GLint)y, (GLint)w, (GLint)h);
+      fflush(stdout);
+    }
+#endif
+  }
+  else {
+  /* no more clipping */
+#ifdef GRAPHICS
+    if (_dispGraphics)
+      glDisable(GL_SCISSOR_TEST);
+#endif
+  }  
+  return;
 }
 
 /* export window image to other graphics formats */
@@ -1465,13 +1530,12 @@ void GLWindowRep::DrawRubberband(int x1, int y1, int x2, int y2)
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   GLCHECKERROR();
   GLBEGIN(GL_POLYGON);
-  glVertex2f(x1, _height-y1);
-  glVertex2f(x1, _height-y2);
-  glVertex2f(x2, _height-y2);
-  glVertex2f(x2, _height-y1);
+  glVertex2f(x1, y1);
+  glVertex2f(x1, y2);
+  glVertex2f(x2, y2);
+  glVertex2f(x2, y1);
   GLEND();
   this->Flush();
-  printf("Drawn rubber band\n");
 }
 
 /* Get window rep dimensions */
@@ -1837,17 +1901,23 @@ void GLWindowRep::HandleEvent(XEvent &event)
   case ButtonPress:
   case ButtonRelease:
   case MotionNotify:
+    event.xbutton.y=_height-event.xbutton.y-1;
+    printf("HandleButton %d %d\n", event.xbutton.x, event.xbutton.y);
+    fflush(stdout);
     WindowRep::HandleButton(event.xbutton.x, event.xbutton.y,
 			    event.xbutton.button, event.xbutton.state,
 			    event.xbutton.type);
     break;
 #else
   case ButtonPress:
+    event.xbutton.y=_height-event.xbutton.y-1;
     int buttonXlow, buttonYlow, buttonXhigh, buttonYhigh;
     if (event.xbutton.button == 2) {
       /* handle popup */
       DoPopup(event.xbutton.x, event.xbutton.y, event.xbutton.button);
     } else if (event.xbutton.button <= 3) {
+      printf("DoButtonPress %d %d\n", event.xbutton.x, event.xbutton.y);
+      fflush(stdout);
       DoButtonPress(event.xbutton.x, event.xbutton.y,
 		    buttonXlow, buttonYlow, buttonXhigh, buttonYhigh,
 		    event.xbutton.button);
@@ -1855,23 +1925,28 @@ void GLWindowRep::HandleEvent(XEvent &event)
       /*
 	 if (buttonXhigh > buttonXlow && buttonYhigh > buttonYlow) {
       */
-      WindowRep::HandleButtonPress(buttonXlow, buttonYlow,
-				   buttonXhigh, buttonYhigh,
+      WindowRep::HandleButtonPress(buttonXlow, buttonYlow-1,
+				   buttonXhigh, buttonYhigh-1,
 				   event.xbutton.button);
     }
     break;
 
   case ButtonRelease:
   case MotionNotify:
+    event.xbutton.y=_height-event.xbutton.y-1;
     break;
 #endif
 
   case Expose:
-    Coord minX, minY, maxX, maxY;
+
+    Coord minX, minY, maxX, maxY, tminY, tmaxY;
     minX = (Coord)event.xexpose.x;
-    minY = (Coord)event.xexpose.y;
+    tminY = (Coord)event.xexpose.y;
     maxX = minX + (Coord)event.xexpose.width - 1;
-    maxY = minY + (Coord)event.xexpose.height - 1;
+    tmaxY = tminY + (Coord)event.xexpose.height - 1;
+    minY= _height-tmaxY-1;
+    maxY= _height-tminY;
+
 #ifdef DEBUG
     printf("GLWindowRep(0x%p) Exposed %d,%d to %d,%d\n", this,
 	   (int)minX, (int)minY, (int)maxX, (int)maxY);
@@ -2271,6 +2346,7 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
     XWindowEvent(_display, _win, ButtonReleaseMask | buttonMask, &event);
     switch(event.xany.type) {
     case ButtonRelease:
+      event.xbutton.y=_height-event.xbutton.y-1;
       if (event.xbutton.button == (unsigned int)button) {
 	/* final button position */
 	DrawRubberband(x1,y1,x2,y2);
@@ -2285,6 +2361,7 @@ void GLWindowRep::DoButtonPress(int x, int y, int &xlow, int &ylow, int &xhigh,
     
       /* get rid of all remaining motion events */
       do {
+        event.xbutton.y=_height-event.xbutton.y-1;
 	x2 = event.xmotion.x;
 	y2 = event.xmotion.y;
       } while(XCheckWindowEvent(_display,_win, buttonMask, &event));
@@ -2361,12 +2438,12 @@ void GLWindowRep::DrawText(Boolean scaled, char *text, Coord x, Coord y,
   case AlignNorth:
   case AlignNorthWest:
   case AlignNorthEast:
-    yloc=y+height;
+    yloc=y+height-textheight;
     break;
   case AlignSouth:
   case AlignSouthWest:
   case AlignSouthEast:
-    yloc=y+textheight;
+    yloc=y;
     break;
   case AlignEast:
   case AlignWest:
@@ -2851,7 +2928,8 @@ void GLWindowRep::InverseTransform(Coord x, Coord y, Coord &newX, Coord &newY)
   glGetDoublev(GL_PROJECTION_MATRIX, proj);
   glGetIntegerv(GL_VIEWPORT, view);
   GLdouble objectX, objectY, objectZ;
-  gluProject(x,y,0, model, proj, view, &objectX, &objectY, &objectZ);
+  gluUnProject((GLdouble)x,(GLdouble)y, (GLdouble)0,
+	       model, proj, view, &objectX, &objectY, &objectZ);
   newX=objectX;
   newY=objectY;
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  1997/11/24 23:14:29  weaver
+  Changes for the new ColorManager.
+
   Revision 1.32  1997/07/18 20:25:04  wenger
   Orientation now works on Rect and RectX symbols; code also includes
   some provisions for locating symbols other than at their centers.
@@ -296,7 +299,8 @@ void	PSWindowRep::SetForeground(PColorID fgid)
 	if (PM_GetRGB(fgid, rgb))
 	{
 		rgb.Get(r, g, b);
-//		fprintf(printFile, "%f %f %f setrgbcolor\n", (float)r, (float)g, (float)b);
+		if (printFile)
+		  fprintf(printFile, "%f %f %f setrgbcolor\n", (float)r, (float)g, (float)b);
 	}
 #endif
 }
@@ -1548,16 +1552,19 @@ void PSWindowRep::SetPPTrans(const Rectangle &viewGeom,
 
   _pixToPointTrans.MakeIdentity();
 
-  Coord xScale = boundingBox.width / parentGeom.width;
-  Coord yScale = -1.0 * boundingBox.height / parentGeom.height;
-  _pixToPointTrans.Scale(xScale, yScale);
+
   Coord widthAdj = (viewGeom.x - parentGeom.x) /
     parentGeom.width * boundingBox.width;
   Coord heightAdj = (viewGeom.y - parentGeom.y) /
     parentGeom.height * boundingBox.height;
-  _pixToPointTrans.Translate(widthAdj + boundingBox.x,
-    boundingBox.height - heightAdj + boundingBox.y);
-}
+  //_pixToPointTrans.Translate(widthAdj + boundingBox.x,
+  //  boundingBox.height - heightAdj + boundingBox.y);
+  _pixToPointTrans.Translate(widthAdj+boundingBox.x,
+				heightAdj+boundingBox.y);
+  Coord xScale = boundingBox.width / parentGeom.width;
+  //Coord yScale = -1.0 * boundingBox.height / parentGeom.height;
+  Coord yScale = boundingBox.height / parentGeom.height;
+  _pixToPointTrans.Scale(xScale, yScale);}
 
 
 

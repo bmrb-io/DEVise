@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.120  1998/01/23 20:37:53  zhenhai
+  Fixed a bug on transformation which was caused by inconsistency between origins
+  or XWindows (Upper left) and OpenGL (Lower left). Also fixed a bug for
+  incorrect labelling of axis.
+
   Revision 1.119  1997/12/16 17:53:51  zhenhai
   Added OpenGL features to graphics.
 
@@ -1121,11 +1126,11 @@ get area for displaying Y axis. Assumes that X axis is in use.
 area = x,y,width, height, and startX, as follows:
 
           width
-     (x,y)+--+--------+
+          +--+--------+
           |  |        |
     height|  |        |
           |  |        |
-          +--+--------+
+     (x,y)+--+--------+
           |           | 
           |           |
           +-----------+
@@ -1375,10 +1380,10 @@ void View::DrawXAxis(WindowRep *win, int x, int y, int w, int h)
   if (numTicks <= 2) {
     char buf[32];
     sprintf(buf, "%.*g", xAxis.significantDigits, _filter.xLow);
-    win->AbsoluteText(buf, startX, axisY, drawWidth / 2 - 1,
+    win->AbsoluteText(buf, startX, axisY - 2 - (axisHeight-1), drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignWest, true);
     sprintf(buf, "%.*g", xAxis.significantDigits, _filter.xHigh);
-    win->AbsoluteText(buf, startX + drawWidth / 2, axisY, drawWidth / 2 - 1,
+    win->AbsoluteText(buf, startX + drawWidth / 2, axisY - 2 - (axisHeight-1), drawWidth / 2 - 1,
 		      axisHeight - 1, WindowRep::AlignEast, true);
     return;
   }
@@ -1493,11 +1498,16 @@ void View::DrawYAxis(WindowRep *win, int x, int y, int w, int h)
   if (numTicks <= 2) {
     char buf[32];
     sprintf(buf, "%.*g", yAxis.significantDigits, _filter.yLow);
-    win->AbsoluteText(buf, axisX, startY + drawHeight / 2, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignSouth, true);
+    
+    win->AbsoluteText(buf, axisX, startY, axisWidth-1,
+		      drawHeight/2-1, WindowRep::AlignSouth, true);
+    //win->AbsoluteText(buf, axisX, startY + drawHeight / 2, axisWidth - 1,
+    //drawHeight / 2 - 1, WindowRep::AlignSouth, true);
     sprintf(buf, "%.*g", yAxis.significantDigits, _filter.yHigh);
-    win->AbsoluteText(buf, axisX, startY, axisWidth - 1,
-		      drawHeight / 2 - 1, WindowRep::AlignNorth, true);
+    win->AbsoluteText(buf, axisX, startY+drawHeight/2, axisWidth-1,
+		      drawHeight/2-1, WindowRep::AlignNorth, true);
+    //win->AbsoluteText(buf, axisX, startY, axisWidth - 1,
+    //drawHeight / 2 - 1, WindowRep::AlignNorth, true);
     return;
   }
 

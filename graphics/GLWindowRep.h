@@ -235,12 +235,12 @@ public:
      matrix as top of the stack */
   void ClearTransformStack();
   /* Drawing primitives */
-  virtual void ClearBackground(Coord xlow, Coord ylow, Coord width,
+  /*virtual void ClearBackground(Coord xlow, Coord ylow, Coord width,
                         Coord height)
   {
 	// will be inefficient to call FillRect
 	// not implemented currently
-  }
+  }*/
   virtual void FillRect(Coord xlow, Coord ylow, Coord width,
 			Coord height);
   virtual void FillRectAlign(Coord xlow, Coord ylow, Coord width,

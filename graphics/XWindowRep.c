@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.103  1998/01/31 20:02:04  wenger
+  Fixed bugs 277, 278, and 279; GData sent on socket now has <ctl-D>
+  written at the end.
+
   Revision 1.102  1998/01/30 02:16:48  wenger
   Merged cleanup_1_4_7_br_7 thru cleanup_1_4_7_br_8.
 
@@ -2507,7 +2511,7 @@ void XWindowRep::HandleEvent(XEvent &event)
   case ButtonPress:
   case ButtonRelease:
   case MotionNotify:
-    WindowRep::HandleButton(event.xbutton.x, event.xbutton.y,
+    WindowRep::HandleButton(event.xbutton.x, event.xbutton.y-1,
 			    event.xbutton.button, event.xbutton.state,
 			    event.xbutton.type);
     break;
