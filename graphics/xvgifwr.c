@@ -6,9 +6,13 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/04/17 20:32:37  jussi
+  Initial revision.
+*/
 
 #define MODIFIED
+/*#define DEBUGGING*/
 
 /*
  * xvgifwr.c  -  handles writing of GIF files.  based on flgife.c and
@@ -49,6 +53,12 @@
  
 
 #include "xv.h"
+
+#ifdef DEBUGGING
+#define DEBUG 1
+#else
+#define DEBUG 0
+#endif
 
 typedef long int        count_int;
 
@@ -149,16 +159,9 @@ int WriteGIF(fp, pic, ptype, w, h, rmap, gmap, bmap, numcols, colorstyle,
     return (1);
   }
 
-#ifdef MODIFIED
-#ifdef DEBUG
-    fprintf(stderr,"WrGIF: pic=%lx, w,h=%dx%d, numcols=%d, Bits%d,Cmap=%d\n",
-	    (u_long) pic8, w,h,numcols,BitsPerPixel,ColorMapSize);
-#endif
-#else
   if (DEBUG) 
     fprintf(stderr,"WrGIF: pic=%lx, w,h=%dx%d, numcols=%d, Bits%d,Cmap=%d\n",
 	    (u_long) pic8, w,h,numcols,BitsPerPixel,ColorMapSize);
-#endif
 
   if (comment && strlen(comment) > (size_t) 0)
     fwrite("GIF89a", (size_t) 1, (size_t) 6, fp);    /* the GIF magic number */
