@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2001/05/11 20:36:06  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.13  2001/04/21 20:53:31  xuk
 // Added functionality to disable collaboration.
 // Added JAVAC_DisableCollab command.
@@ -177,17 +180,24 @@ public final class DEViseCommands
     public static final String CLIENTS = JS_PREFIX + "Clients";
 
     public static final String GET_COLLAB_LIST = JS_PREFIX + "GetCollabList";
+
     public static final String COLLAB_STATE = JS_PREFIX + "CollabState";
 
     public static final String SET_COLLAB_PASS = JS_PREFIX + "SetCollabPass";
+
     public static final String COLLAB_EXIT = JS_PREFIX + "CollabExit";
 
     public static final String REOPEN_SESSION = JS_PREFIX + "ReopenSession";
+
     public static final String SAVE_CUR_SESSION = JS_PREFIX + "SaveCurSession";
 
     public static final String SET_3D_CONFIG = JS_PREFIX + "Set3DConfig";
+
     public static final String DISABLE_COLLAB = JS_PREFIX + "DisableCollab";
 
+    public static final String ASK_COLLAB_LEADER = JS_PREFIX + "AskCollabLeader";
+
+    public static final String COLLABORATE = JS_PREFIX + "Collaborate";
     // -------------------------------------------------------------------
     // JSS commands.
 
