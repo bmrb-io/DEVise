@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/15 06:41:10  donjerko
+  Added support for RTree indexes
+
   Revision 1.5  1996/12/07 15:14:29  donjerko
   Introduced new files to support indexes.
 
@@ -78,6 +81,15 @@ public:
 		else{
 			tables->append(tabName->table);
 		}
+	}
+	// Returns the name of the ordering attribute using the
+	// read iterator.
+	virtual String * getOrderingAttrib(){
+		
+		if(iterator)
+			return iterator->getOrderingAttrib();
+		else
+			return NULL;
 	}
 	bool have(String* tabName){
 		tables->rewind();
@@ -156,7 +168,8 @@ public:
 		return retVal;
 	}
 	virtual void initialize(){
-		iterator->initialize();
+		if(iterator)
+			iterator->initialize();
 	}
 	virtual double evaluateCost(){
 		return 1;
@@ -359,6 +372,12 @@ public:
 		firstEntry = true;
 		firstPass = true;
 		outerTup = NULL;
+	}
+	virtual void initialize(){
+		if (site1)
+			site1->initialize();
+		if(site2)
+			site2->initialize();
 	}
 	virtual ~SiteGroup(){
 //		delete sites;	// list only PROBLEm

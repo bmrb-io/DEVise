@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  1996/12/09 10:01:50  kmurli
+  Changed DTe/Core to include the moving aggregate functions. Also included
+  changes to the my.yacc and my.lex to add sequenceby clause.
+
   Revision 1.5  1996/12/07 15:14:24  donjerko
   Introduced new files to support indexes.
 
@@ -60,4 +64,10 @@ int Engine::optimize(){
 	assert(parseTree);
 	TRY(topNode = parseTree->createSite(), 0);
 	return 0;
+}
+
+void printString(String & str){
+	
+	cout << str.chars() << endl;
+
 }

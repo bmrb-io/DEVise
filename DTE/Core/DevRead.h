@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.2  1996/12/15 06:41:04  donjerko
+    Added support for RTree indexes
+
     Revision 1.1  1996/11/23 02:00:35  donjerko
     Restructered DTE directory
 
@@ -62,11 +65,13 @@ class DevRead : public Iterator
         _numAttr = 0;
         Open(schemaFile,dataFile);
     }
-
+	
    virtual ~DevRead() { Close(); }
 
     DevStatus Open(char *schemaFile, char *dataFile);
     DevStatus Close();
+	
+	virtual String *getOrderingAttrib();
 
 	virtual int getNumFlds() { return(_numAttr); }
 

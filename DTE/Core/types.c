@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/12/15 06:41:11  donjerko
+  Added support for RTree indexes
+
   Revision 1.3  1996/12/09 10:01:54  kmurli
   Changed DTe/Core to include the moving aggregate functions. Also included
   changes to the my.yacc and my.lex to add sequenceby clause.
@@ -112,6 +115,11 @@ Type* doubleSub(Type* arg1, Type* arg2){
      return new IDouble(val1 - val2);
 }
 
+Type* doubleDiv(Type* arg1, Type* arg2){
+	double val1 = ((IDouble*)arg1)->getValue();
+	double val2 = ((IDouble*)arg2)->getValue();
+     return new IDouble(val1/val2);
+}
 Type* doubleIntSub(Type* arg1, Type* arg2){
 	double val1 = ((IDouble*)arg1)->getValue();
 	int val2 = ((IInt*)arg2)->getValue();
@@ -370,6 +378,25 @@ AttrType getDeviseType(String type){
 	}
 	else{
 		cout << "Don't know DEVise type for: " << type << endl;
+		assert(0);
+	}
+}
+
+Type * getNullValue(TypeID &root){
+	if(root == "int"){
+		return new IInt(0);
+	}
+	else if(root == "string"){
+		return new IString("");
+	}
+	else if(root == "bool"){
+		return new IBool(false);
+	}
+	else if(root == "double"){
+		return new IDouble(0);
+	}
+	else{
+		cout << "No such type: " << root << endl;
 		assert(0);
 	}
 }

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:06  wenger
+  Added standard Devise file headers.
+
  */
 
 #include "url.h"
@@ -54,7 +57,7 @@ istream* URL::getInputStream(){
 		// have to GET this file
 
 		ostrstream reqStream;
-		reqStream << "GET " << file << " HTTP/1.0\r\n\r\n";
+		reqStream << "GET " << file << " HTTP/1.0\r\n\r\n" ;
 		sendRequest(reqStream);
 	}
 	retVal = new istream(sockBuf);

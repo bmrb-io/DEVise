@@ -14,7 +14,8 @@ class QueryTree : public ParseTree {
 	List<BaseSelection*>* selectList;
 	List<TableAlias*>   * tableList;
 	BaseSelection * predicates;
-	BaseSelection * sequenceby;
+	//BaseSelection * sequenceby;
+	String *sequencebyTable;
 	List<String*> * namesToResolve;
 	void resolveNames();	// throws exception
 public:	
@@ -22,10 +23,10 @@ public:
 		List<BaseSelection*>* selectList,
 		List<TableAlias*>* tableList,
 		BaseSelection* predicates,
-		BaseSelection *sequenceby,
+		String *sequencebyTable,
 		List<String*>* namesToResolve) :
 		selectList(selectList), tableList(tableList), 
-		predicates(predicates), sequenceby(sequenceby),
+		predicates(predicates), sequencebyTable(sequencebyTable),
 		namesToResolve(namesToResolve) {}
 	virtual Site* createSite();	// throws exception
 	virtual ~QueryTree(){

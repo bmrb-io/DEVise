@@ -97,11 +97,30 @@ Site* QueryTree::createSite(){
 		}
 		tableList->step();
 	}
+	// For the sequenceby clause;
+	// find the sequecing attribute..
+	BaseSelection * sequenceby = NULL;
+	if (sequencebyTable){
+		sites->rewind();
+		while(!sites->atEnd()){
+		
+			Site * check = sites->get();
+			sites->step();
+			if (check->have(sequencebyTable)){
+				String * attrib = check->getOrderingAttrib();
+				if (!attrib  || *attrib == ""){
+					String msg = "Table "+*sequencebyTable+" is not a sequence";
+					THROW(new Exception(msg),NULL);
+				} 
+				sequenceby=new PrimeSelection(sequencebyTable,new Path(attrib));
+			}	
+		}
+	}
 	Aggregates *aggregates = new Aggregates(selectList,sequenceby);
 	if(aggregates->isApplicable()){
 			   
 	   	// Change the select list
-		selectList = aggregates->filterList();
+		TRY(selectList = aggregates->filterList(),NULL);
 		LOG( logFile << " Removing aggregates from the list\n" );
 		LOG(displayList(logFile, selectList, ", "));
 		LOG(logFile << endl);
@@ -175,6 +194,23 @@ Site* QueryTree::createSite(){
 	}
 	TRY(typifyList(predicateList, sites), 0);
 	TRY(boolCheckList(predicateList), 0);
+	
+	// This is to put the sequenceby table in the front
+	// of the list making it the outer instead of the inner.
+
+	sites->rewind();
+	if (sequencebyTable){
+		while(!sites->atEnd()){
+			Site * check = sites->get();
+			if (check->have(sequencebyTable)){
+				sites->remove();
+				sites->prepend(check);
+				break;
+			}
+			sites->step();
+		}
+	}	
+	
 	sites->rewind();
 	Site* inner = sites->get();
 	sites->step();

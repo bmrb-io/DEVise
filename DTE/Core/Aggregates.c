@@ -22,7 +22,6 @@ bool Aggregates::isApplicable(){
 
 		if(curr->isGlobal() && curr->getPath()->isFunction()){
 			String* name = curr->getPath()->getPathName();
-			cout << "Detected global function: " << *name << endl;
 			isApplicableValue = true;
 		}
 		selList->step();
@@ -37,8 +36,10 @@ List<BaseSelection*>* Aggregates::getSelectList(){
 
 List<BaseSelection*>* Aggregates::filterList(){
 	
-	if (isApplicable() && !sequenceAttr)
-		assert(!"Sequenceby clause missing \n");
+	if (isApplicable() && !sequenceAttr){
+		String msg = " sequenceby clause missing ";
+		THROW(new Exception(msg),NULL);
+	}
 	
 	List <BaseSelection*> *retVal = new List<BaseSelection*>();
 	
@@ -60,7 +61,9 @@ List<BaseSelection*>* Aggregates::filterList(){
 
 			if (checkAggFunc(args)){
 				 // It is a function. So replace the list..
-			    retVal->append(curr->getPath()->getSelectList());
+			    retVal->prepend(curr->getPath()->getSelectList());
+				cout << " The select List prepended is " << 
+					curr->getPath()->getSelectList()->toString() << endl;
 			}
 			else
 		  		retVal->append(curr);
@@ -72,8 +75,8 @@ List<BaseSelection*>* Aggregates::filterList(){
 		selList->step();
 	}		
 	if (selectMatch == false){
-		selList->append(sequenceAttr);
-		retVal->append(sequenceAttr);
+		selList->prepend(sequenceAttr);
+		retVal->prepend(sequenceAttr);
 	}	
 	return retVal;
 	
@@ -94,17 +97,18 @@ void Aggregates::typify(Site* inputIterator){
 	for(int i = 0; i < numFlds; i++)
 		funcPtr[i] = NULL;
 		
-	List<BaseSelection*> * iteratorSelList = inputIterator->getSelectList();
-	
+	String *  AttribNameList = getStringsFrom(inputIterator->getSelectList());
+	TypeID * TypeIDList = inputIterator->getTypeIDs();
+	int countFlds = inputIterator->getNumFlds();
+
 	// Now get the position and type of the sequencing attribute..
-	getSeqAttrType(iterator,iteratorSelList);
+	getSeqAttrType(AttribNameList,TypeIDList,countFlds);
 
 	// Now do the work of finding all the functions and the window etc.
 	// Counts the function ptr 
 	int i = 0;
 	
 	selList->rewind();
-	iteratorSelList->rewind();
 
 	while(!selList->atEnd()){
 		
@@ -120,11 +124,11 @@ void Aggregates::typify(Site* inputIterator){
 			BaseSelection * selArgument = args->get();
 
 			// Do a quick loop of the inner checking everything..
-			iteratorSelList->rewind();
-			while(!iteratorSelList->atEnd()){
+			int j;
+			for(j = 0; j < countFlds ; j++){
 				
 				Path *newPath;
-				if (selArgument->match(iteratorSelList->get(),newPath)){
+				if (selArgument->toString() == AttribNameList[j]){
 					
 					//	Now that u have set the name..
 					args->step();
@@ -134,16 +138,17 @@ void Aggregates::typify(Site* inputIterator){
 					int arg2 = ((IInt*)(args->get()->evaluate(NULL,NULL)))
 								->getValue();
 					
+					if (arg1 > arg2){
+						THROW(new Exception("Window hi lo values reversed"),);
+					}
 					// Set the function ptr to be called .
 					TypeID ret = setFunctionPtr(funcPtr[i],
-							*(curr->getPath()->getPathName()),i,	
-							iteratorSelList->get()->getTypeID(),arg1,arg2);
-						cout << " SET THE TYPE AS " << ret << endl;
+							*(curr->getPath()->getPathName()),j,	
+							TypeIDList[j],arg1,arg2);
 					curr->setTypeID(ret);
 
 					break;
 				}			
-				iteratorSelList->step();
 			}	
 		}
 		selList->step();
@@ -151,21 +156,21 @@ void Aggregates::typify(Site* inputIterator){
 	}
 }
 
-void Aggregates::getSeqAttrType(Site * iterator,List <BaseSelection *> * iteratorSelList )
+void Aggregates::getSeqAttrType(String * AttribNameList,TypeID *TypeIDList ,int countFlds)
 {
 	seqAttrPos = 0;
 	seqAttrType = "int";
 	
 	bool found = false;
-	iteratorSelList->rewind();
-
-	while(!iteratorSelList->atEnd()){
+	
+	int i;
+	for(i = 0; i < countFlds;i++){
+		
 		Path * newPath = NULL;		
-		BaseSelection * temp = iteratorSelList->get();
-		if (sequenceAttr->match(temp,newPath)){
+		if (sequenceAttr->toString() == AttribNameList[i]){
 			
 			// Get the type ID for the ordering attribute
-			seqAttrType = temp->getTypeID();
+			seqAttrType = TypeIDList[i]; 
 			found = true;
 			break;
 		}
@@ -247,6 +252,7 @@ void AggWindow::fillWindow()
 		while(match == true){
 			
 			Tuple *nextTuple = aggregate->iterator->getNext();
+			
 			if (nextTuple && equalAttr(nextTuple,nextStoredTuple))
 				TupleList->append(nextTuple);
 			else{
@@ -366,6 +372,8 @@ void AggWindow::fillWindow()
 			}
 		}	
 	}
+
+
 }
 
 Tuple *AggWindow::getTupleAtCurrPos(){	
@@ -601,7 +609,7 @@ Type * GenFunction::avg()
 	if (count != 0.0)
 		return divPtr->opPtr(sum,& IDouble(count));
 	else 
-		return new IDouble(0);
+		return getNullValue(attribType);
 }
 
 Type * GenFunction::min()
@@ -615,8 +623,10 @@ Type * GenFunction::min()
 	
 	while(next != NULL){
 		
-		if (lessPtr->opPtr(minimum,next[pos]))
+		
+		if (((IBool * )grtrPtr->opPtr(minimum,next[pos]))->getValue()){
 			minimum = next[pos]; 
+		}
 		next = scanNext(); 
 	}
 	return minimum;
@@ -634,7 +644,7 @@ Type * GenFunction::max()
 
 	while(next != NULL){
 		
-		if (grtrPtr->opPtr(maximum ,next[pos]))
+		if (((IBool *)lessPtr->opPtr(maximum ,next[pos]))->getValue())
 			maximum = (Tuple *)next[pos];
 		next = scanNext(); 
 	}

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1996/12/05 16:06:00  wenger
+  Added standard Devise file headers.
+
  */
 
 #include <strstream.h>
@@ -42,7 +45,19 @@ void StandardRead::open(){	// Throws exception
 		assert(in->good());
 	}
 	String statsStr;
-	(*in) >> statsStr;
+	
+	(*in) >> order;
+	if (order == "order"){
+		assert(in->good());
+		(*in) >> order;
+		assert(in->good());
+		(*in) >> statsStr;
+	}
+	else{
+		statsStr = order;
+		order = "";
+		assert(in->good());
+	}
 	assert(in->good());
 	stats = new Stats(numFlds);
 	if(statsStr == "stats"){
@@ -53,7 +68,6 @@ void StandardRead::open(){	// Throws exception
 		THROW(new Exception(msg), );
 	}
 }
-
 
 void NCDCRead::open(){	// Throws exception
      char buff[100];

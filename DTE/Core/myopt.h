@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/15 06:41:09  donjerko
+  Added support for RTree indexes
+
   Revision 1.7  1996/12/09 10:01:53  kmurli
   Changed DTe/Core to include the moving aggregate functions. Also included
   changes to the my.yacc and my.lex to add sequenceby clause.
@@ -179,6 +182,7 @@ public:
 	String toString(){
 		ostrstream os;
 		display(os);
+		os << ends;
 		char* tmp = os.str();
 		String retVal(tmp);
 		delete tmp;

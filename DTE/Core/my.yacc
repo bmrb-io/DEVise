@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/12/15 06:41:09  donjerko
+  Added support for RTree indexes
+
   Revision 1.6  1996/12/09 10:01:52  kmurli
   Changed DTe/Core to include the moving aggregate functions. Also included
   changes to the my.yacc and my.lex to add sequenceby clause.
@@ -41,7 +44,8 @@
 extern int yylex();
 extern ParseTree* parseTree;
 extern List<String*>* namesToResolve;
-extern BaseSelection * sequenceby;
+/* extern BaseSelection * sequencebyTable;*/
+extern String *sequencebyTable; 
 int yyerror(char* msg);
 
 %}
@@ -81,7 +85,8 @@ int yyerror(char* msg);
 %type <sel> optWhereClause
 %type <sel> predicate
 %type <string> optString
-%type <sel> optSequenceByClause
+%type <string> optSequenceByClause
+%type <string> TableName
 %type <sel> attribute
 %type <string> index_name
 %type <string> table_name
@@ -137,7 +142,7 @@ optWhereClause : WHERE predicate {
 	}
 	;
 
-optSequenceByClause : SEQUENCEBY attribute{
+optSequenceByClause : SEQUENCEBY TableName{
         $$ = $2;
 	}
 	| {
@@ -164,6 +169,9 @@ predicate : predicate OR predicate {
 	}
 	| selection
 	;
+TableName: STRING {
+		$$ = $1;
+	}
 attribute:
 	STRING '.' expression {
 		$$ = new PrimeSelection($1, $3);

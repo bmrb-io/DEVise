@@ -4,7 +4,7 @@
 #include "types.h"
 #include "myopt.h"
 #include "site.h"
-
+#include "catalog.h"
 class GenFunction;
 class AggWindow;
 class Aggregates;
@@ -29,7 +29,7 @@ class AggWindow
 		equalOpr = compOpr = NULL;
 
 		TRY(equalOpr = getOperatorPtr("=",type,type,retType),);
-
+		assert(equalOpr);
 		windowUpdated = false;
 		TupleList =  new List<Tuple *>();
 		nextStoredTuple = NULL;
@@ -45,16 +45,17 @@ class AggWindow
 	void prepareCompOpr(){
 		TypeID retType;
 		TRY(compOpr = getOperatorPtr("compReturnInt",type,type,retType),);
+		assert(compOpr);
 		if (retType != "int")
 			assert(!" Illegal comparison operator implemented");
 	}		
 	
 	bool equalAttr(Tuple *n,Tuple *s){
-		return ((IBool *)equalOpr->opPtr(n[position],s[position]))->getValue();
+
+	  return ((IBool *)(equalOpr->opPtr)(n[position],s[position]))->getValue();
 	}
-	
 	int compareAttr(Tuple *n,Tuple *s){
-		return ((IInt *)compOpr->opPtr(n[position],s[position]))->getValue();
+		return ((IInt *)(compOpr->opPtr)(n[position],s[position]))->getValue();
 	}
 	~AggWindow(){
 		
@@ -146,8 +147,9 @@ class GenFunction{
 
 		// Find the proper function and bind it to the ptr.
 		
-		computeFuncPtr(funcName);
+		TRY(computeFuncPtr(funcName),);
 		
+		cout << " The function " << funcName << " returns " << retType << endl;
 		// This is not necessary..
 		//scanner = new Scan(fillNextFunc,wLow,wHigh,false);
 	}
@@ -160,21 +162,28 @@ class GenFunction{
 		if (funcName == "avg"){
 			funcPtr = avg;
 			
+			TypeID dumb;
 			// Get the add and division operators..
 			TRY(addPtr = getOperatorPtr("+",attribType,attribType,retType),);
 			TRY(divPtr = getOperatorPtr("/",retType,"double",retType),);
+			assert(addPtr);
+			assert(divPtr);
 		}
 		else if (funcName == "min"){
 			funcPtr = min;
 			
 			// Get the < operators..
-			TRY(lessPtr = getOperatorPtr("<",attribType,attribType,retType),);
+			TRY(grtrPtr = getOperatorPtr(">",attribType,attribType,retType),);
+			assert(grtrPtr);
+			retType = attribType;
 		}
 		else if (funcName == "max"){
 			funcPtr = max;
 			
 			// Get the > operators..
-			TRY(grtrPtr = getOperatorPtr(">",attribType,attribType,retType),);
+			TRY(lessPtr = getOperatorPtr("<",attribType,attribType,retType),);
+			assert(lessPtr);
+			retType = attribType;
 		}
 		else if (funcName == "positional_min"){
 			
@@ -185,6 +194,8 @@ class GenFunction{
 			
 			// Get the < operators..
 			TRY(lessPtr = getOperatorPtr("<",attribType,attribType,retType),);
+			assert(lessPtr);
+			retType = attribType;
 		}
 		else if (funcName == "positional_max"){
 			// THis is important to call..
@@ -193,6 +204,8 @@ class GenFunction{
 			funcPtr = max;
 			// Get the < operators..
 			TRY(grtrPtr = getOperatorPtr(">",attribType,attribType,retType),);
+			assert(grtrPtr);
+			retType = attribType;
 		}
 		else if (funcName == "count"){
 			// THis is important to call..
@@ -258,16 +271,29 @@ class Aggregates : public Site {
 public:
 	Aggregates(
 		List<BaseSelection*>* selectClause,	// queries select clause
-		BaseSelection* sequenceBy,	// queries select clause
+		BaseSelection * sequenceby,	// queries select clause
 		List<BaseSelection*>* groupBy = NULL,	// group by clause
 		BaseSelection* having = NULL			// having clause
-	) : Site(), selList(selectClause),sequenceAttr(sequenceBy) 
+	) : Site(), selList(selectClause),sequenceAttr(sequenceby)
 	{
 		
 		Site::mySelect = selList;
 		isApplicableValue = false;
 		alreadyChecked = false;
 		iterator = NULL;
+		
+		/*
+		sequenceAttr = NULL;
+		BaseSelection *sequenceby = NULL;
+    	if (sequenceByTable){
+        	Catalog::Interface *interface = catalog.find(*sequenceByTable);
+        	String *attrib = interface->getOrderingAttrib();
+        	if (attrib == "")
+              assert(!"Sequenceby clause has a table with no ordering attrib");
+        	sequenceAttr = new PrimeSelection (sequenceByTable,attrib);
+    	}
+		*/
+
 	}
 	~Aggregates(){
 		// do not delete selList;
@@ -283,9 +309,20 @@ public:
 
 		iterator->enumerate();
 	}
-
+	virtual void initialize(){
+		assert(iterator);
+		iterator->initialize();
+	}
 	Tuple* getNext();
 	
+	virtual String *getOrderingAttrib(){
+		return iterator->getOrderingAttrib();
+	}
+	// Need to check this..
+	void reset(int lowRid, int highRid){
+			TRY(iterator->reset(lowRid, highRid), );
+	}
+
 	friend class GenFunction;
 
 private:
@@ -307,7 +344,8 @@ private:
 	TypeID &setFunctionPtr(GenFunction *& functionPtr,String funcName,
 		int pos,TypeID type, int low,int high);
 	
-	void getSeqAttrType(Site * iterator,List <BaseSelection *> * );
+	void getSeqAttrType(String *,TypeID *,int);
+	//void getSeqAttrType(Site *,List<BaseSelection*>*);
 
 	// Checks if the arg corresponds to a valid signature
 	bool checkAggFunc(List<BaseSelection*>* args);

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/12/15 06:41:11  donjerko
+  Added support for RTree indexes
+
   Revision 1.4  1996/12/09 10:01:55  kmurli
   Changed DTe/Core to include the moving aggregate functions. Also included
   changes to the my.yacc and my.lex to add sequenceby clause.
@@ -131,6 +134,7 @@ Type* intDoubleDiv(Type *arg1,Type* arg2);
 Type* doubleAdd(Type* arg1, Type* arg2);
 Type* doubleIntAdd(Type* arg1, Type* arg2);
 Type* doubleSub(Type* arg1, Type* arg2);
+Type* doubleDiv(Type* arg1, Type* arg2);
 Type* doubleIntSub(Type* arg1, Type* arg2);
 Type* doubleEq(Type* arg1, Type* arg2);
 Type* doubleIntEq(Type* arg1, Type* arg2);
@@ -325,6 +329,10 @@ public:
 				retType = "bool";
 				return new GeneralPtr(doubleGT, boolSize, oneOver3);
 			}
+			else if(name == "/"){
+				retType = "double";
+				return new GeneralPtr(doubleDiv, sameSize);
+			}
 			else{
 				return NULL;
 			}
@@ -365,7 +373,9 @@ class IString {
 	char* string;
 public:
      IString() : length(0), string(NULL){}
-	IString(char* s) : length(strlen(s) + 1), string(s){}
+	IString(char* s) : length(strlen(s) + 1){
+		string = strdup(s);
+	}
 	IString(String* s){
 		length = s->length() + 1; 
 		string = strdup(s->chars());
@@ -374,10 +384,20 @@ public:
 	char* getValue(){
 		return string;
 	}
+	IString(IString & str){
+		length = str.length;
+		string = strdup(str.string);
+	}
 	void display(ostream& out){
 		assert(string);
 		out << string;
 	}
+	IString & operator=(IString & str){
+		length = str.length;
+		string = strdup(str.string);
+		return *this;
+	}
+		
 	int packSize(){
 
 		// return sizeof(int) + length;
@@ -440,6 +460,8 @@ GeneralPtr* getOperatorPtr(
 	String name, TypeID root, TypeID arg, TypeID& retType);
 
 ReadPtr getReadPtr(TypeID root);
+
+Type * getNullValue(TypeID &);
 
 AttrType getDeviseType(String type);
 

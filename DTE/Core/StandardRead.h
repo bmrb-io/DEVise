@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/12/15 06:41:07  donjerko
+  Added support for RTree indexes
+
   Revision 1.2  1996/12/05 16:06:00  wenger
   Added standard Devise file headers.
 
@@ -36,6 +39,7 @@ protected:
 	String* typeIDs;
 	String* attributeNames;
 	ReadPtr* readPtrs;
+	String order;
 	Stats* stats;
 public:
      StandardRead(istream* in) : 
@@ -50,6 +54,9 @@ public:
 	}
 	virtual String *getAttributeNames(){
 		return attributeNames;
+	}
+	virtual String * getOrderingAttrib(){
+		return &order;
 	}
 	virtual Tuple* getNext(){
 		Tuple* tuple = new Tuple[numFlds];

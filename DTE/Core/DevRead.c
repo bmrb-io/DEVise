@@ -19,6 +19,9 @@
 /*
     $Id$
     $Log$
+    Revision 1.4  1996/12/15 06:41:03  donjerko
+    Added support for RTree indexes
+
     Revision 1.3  1996/12/03 20:25:37  jussi
     Updated to reflect new TData interfaces.
 
@@ -107,6 +110,27 @@ DevRead::Open(char *schemaFile, char *dataFile)
     return(result);
 }
 
+String * DevRead::getOrderingAttrib(){
+	
+	String * result = NULL;
+    AttrList *attrListP = _tDataP->GetAttrList();
+
+    attrListP->InitIterator();
+    while (attrListP->More())
+    {
+        AttrInfo *attrInfoP = attrListP->Next();
+
+		if (attrInfoP->isSorted){
+			// Good Sorted return the result..
+			result = new String(attrInfoP->name);
+			break;
+		}
+    }
+    attrListP->DoneIterator();
+
+    return(result);
+
+}
 void DevRead::reset(int lowRid, int highRid){
 	long unsigned int first, last;
     _tDataP->HeadID(first);
