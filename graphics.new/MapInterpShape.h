@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/06/16 01:52:24  jussi
+  Added PolylineShape, PolylineFileShape, and TextLabelShape.
+  Improved handling of GifImageShape.
+
   Revision 1.18  1996/05/22 21:05:08  jussi
   Added HighLowShape. Added tentative version of GifImageShape.
 
@@ -468,11 +472,7 @@ class FullMapping_BlockShape: public BlockShape {
 public:
   virtual void DrawGDataArray(WindowRep *win, void **gdataArray, int numSyms,
 			      TDataMap *map, View *view, int pixelSize);
-
-private:
-	void MapBlockVertex(int);
-	void MapBlockEdges (int);
-}; // end of FullMapping_BlockShape
+};
 
 // -----------------------------------------------------------------
 
