@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.32  1998/04/28 18:02:50  wenger
+  Added provision for "logical" and "physical" TDatas to mappings,
+  instead of creating new mappings for slave views; other TAttrLink-
+  related improvements.
+
   Revision 1.31  1998/03/05 08:10:52  zhenhai
   Added ability to view 3D graphs from six directions. Use -gl option to run,
   and click key x,y,z and X,Y,Z to select the direction you are viewing.
@@ -158,10 +163,6 @@ ActionDefault::ActionDefault(char *name, Coord leftEdge,
 			     Boolean useRightFlag):
      Action(name)
 {
-    left = leftEdge;
-    right = rightEdge;
-    useLeft = useLeftFlag;
-    useRight = useRightFlag;
 }
 
 void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)

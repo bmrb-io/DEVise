@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/08/04 21:12:57  beyer
+  Added support for devise keys
+
   Revision 1.4  1996/05/07 16:36:33  jussi
   Changed type of view parameter from View * to ViewGraph *.
   Added handling of keypad number 5 (autoscale view).
@@ -50,13 +53,6 @@ public:
 private:
   Boolean PrintRecords(ViewGraph *view, Coord x, Coord y, Coord xHigh,
 		       Coord yHigh, char *&errorMsg);
-
-  Coord left, right;
-  Boolean useLeft, useRight;
-
-  char buf1[80];
-  char buf2[80];
-  char *msgBuf[2];
 };
 
 #endif

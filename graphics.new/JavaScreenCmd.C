@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  1998/08/03 18:38:39  wenger
+  Implemented JAVAC_ServerExit and JAVAC_SaveSession commands; partly
+  implemented several other new commands for the JavaScreen.
+
   Revision 1.15  1998/07/29 14:20:26  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -525,9 +529,28 @@ JavaScreenCmd::KeyAction()
 	fflush(stdout);
 #endif
 
-//TEMP -- add body of function
+	//TEMP -- this must be changed to give key press location
+	if (_argc != 2) {
+		errmsg = "{Usage: KeyAction <viewName> <key>}";
+		_status = ERROR;
+		return;
+	}
 
-	_status = DONE;
+	ViewGraph *view = (ViewGraph *)ControlPanel::FindInstance(_argv[0]);
+	if (view == NULL) {
+		errmsg = "{Cannot find given view}";
+		_status = ERROR;
+	} else {
+	    int key = _argv[1][0];
+
+		// TEMP -- pixels or data units?
+        Coord xLoc = 0; //TEMP
+        Coord yLoc = 0; //TEMP
+
+	    view->GetAction()->KeySelected(view, key, xLoc, yLoc);
+
+	    _status = DONE;
+	}
 	return;
 }
 
