@@ -1,5 +1,5 @@
 # import file types
-DEVise importFileType /p/miron/miron/DEVise/solaris/generic/generic.schema
+DEVise importFileType /p/devise/solaris/generic/generic.schema
 
 # layout mode
 DEVise changeMode 0
@@ -13,7 +13,7 @@ if { $template } {
 	}
 } else {
 	set tdata_1 generic.dat
-	DEVise create tdata Generic-Schema /p/miron/miron/DEVise/solaris/generic/generic.dat generic.dat
+	DEVise create tdata Generic-Schema /p/devise/solaris/generic/generic.dat generic.dat
 }
 
 # Create interpreted mapping classes 
@@ -76,7 +76,7 @@ DEVise insertViewHistory $view_1 {-15.00} {0.00} {25.00} {100.00} {0}
 DEVise insertViewHistory $view_1 {-5.00} {0.00} {15.00} {100.00} {0}
 DEVise insertViewHistory $view_1 {0.00} {0.00} {10.00} {100.00} {0}
 #load pixmaps from views
-set pixmapName /p/miron/miron/DEVise/solaris/generic/generic.tk.pixmap
+set pixmapName /p/devise/solaris/generic/generic.tk.pixmap
  if { !$template && [ file exists $pixmapName ] } {
 set pixmapFile [ DEVise open $pixmapName rb ]
 set fileDate [ DEVise readLine $pixmapFile ]

@@ -1,5 +1,5 @@
 # import file types
-DEVise importFileType /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/generic.schema
+DEVise importFileType /afs/cs.wisc.edu/p/devise/solaris/generic/generic.schema
 
 # layout mode
 DEVise changeMode 0
@@ -13,7 +13,7 @@ if { $template } {
 	}
 } else {
 	set tdata_1 generic.dat
-	DEVise create tdata Generic-Schema /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/generic.dat generic.dat
+	DEVise create tdata Generic-Schema /afs/cs.wisc.edu/p/devise/solaris/generic/generic.dat generic.dat
 }
 
 # Create interpreted mapping classes 
@@ -54,7 +54,7 @@ if { $template } {
 
 # Init history of view
 #load pixmaps from views
-set pixmapName /afs/cs.wisc.edu/p/miron/miron/DEVise/solaris/generic/test.tk.pixmap
+set pixmapName /afs/cs.wisc.edu/p/devise/solaris/generic/test.tk.pixmap
  if { !$template && [ file exists $pixmapName ] } {
 set pixmapFile [ DEVise open $pixmapName rb ]
 set fileDate [ DEVise readLine $pixmapFile ]
