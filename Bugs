@@ -1024,7 +1024,7 @@ Num Date        Status  Description
 
 259 12/16/97	FIXED	Can't save sessions. (rkw)
 
-260 12/17/97	OPEN	Mouse events seem to not get translated to the
+260 12/17/97	FIXED	Mouse events seem to not get translated to the
 			correct coordinates (since OpenGL commit). (rkw)
 
 261 12/17/97	OPEN	3d_test.ds session doesn't work (error in expression
@@ -1045,7 +1045,7 @@ Num Date        Status  Description
 266 12/19/97	OPEN	Expression evaluation fails on mappings with string
 			variables. (rkw)
 
-267 12/19/97	OPEN	Tick marks and numbers on axes are drawn at the wrong
+267 12/19/97	FIXED	Tick marks and numbers on axes are drawn at the wrong
 			place (since OpenGL commit). (rkw)
 
 268 12/29/97	OPEN	Util.c:CheckDirSpace doesn't work with more than

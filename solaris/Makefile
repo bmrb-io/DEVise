@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.30  1998/01/21 17:47:21  wenger
+# Switched csgroup back to cslib pending Dongbin's commits of csgroup.
+#
 # Revision 1.29  1998/01/15 19:45:48  taodb
 # Replaced cslib with csgroup
 #
@@ -87,7 +90,7 @@ LIBMODULES = graphics graphics.new tape issm compustat crsp \
 MODULES = $(LIBMODULES) parser generic multi
 
 .PHONY: clean mostlyclean date libs generic devise multi attrproj devread \
-	csgroup
+	cslib
 
 all: date
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
