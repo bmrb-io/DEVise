@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  1999/12/06 23:22:22  hongyu
+// *** empty log message ***
+//
 // Revision 1.24  1999/12/02 19:47:23  hongyu
 // *** empty log message ***
 //
@@ -1143,6 +1146,7 @@ public class DEViseCanvas extends Container
         }
 
         if (crystal == null) {
+            /*
             StringWriter writer = new StringWriter();
             writer.write("\"Scale Factor\" 1.0 1.0 1.0\n");
             writer.write("\"Base Vector\" 1 0 0 0 1 0 0 0 1\n");
@@ -1170,6 +1174,32 @@ public class DEViseCanvas extends Container
                 jsc.pn(e.getMessage());
                 crystal = null;
 		        return;
+            }
+            */ 
+            int size = view.viewGDatas.size();
+            double[][] atomPos = new double[size][3];
+            String[] atomName = new String[size];
+            for (int i = 0; i < size; i++) {
+                DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
+                atomName[i] = gdata.string;
+                atomPos[i][0] = gdata.x0;
+                atomPos[i][1] = gdata.y0;
+                atomPos[i][2] = gdata.z0;
+            }
+            
+            try {
+                DEVise3DLCS lcs = new DEVise3DLCS();
+                crystal = new DEViseCrystal(canvasDim.width - 10, canvasDim.height - 10, 5, lcs, -1, -1, atomName, atomPos);
+            } catch (YException e) {
+                jsc.pn(e.getMessage());
+                crystal = null;
+                return;
+            }
+
+            for (int i = 0; i < size; i++) {
+                DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
+                DEViseAtomInCrystal atom = crystal.getAtom(i);
+                atom.type.setColor(gdata.color);
             }
         }
 
