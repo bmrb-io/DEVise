@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.56  1997/06/05 21:08:41  wenger
+  User-configurability of '4', '5', and '6' keys is now completed.
+
   Revision 1.55  1997/05/30 15:41:21  wenger
   Most of the way to user-configurable '4', '5', and '6' keys -- committing
   this stuff now so it doesn't get mixed up with special stuff for printing
@@ -467,7 +470,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
 
 //    if(IsXDateType()) {
 //    	PrepareStatsBuffer(GetFirstMap());
-#if defined(DEBUG) || 1
+#if defined(DEBUG)
 //	printf("Need to re-prepare stat buffer in Insertmapping()\n");
 #endif
 //    	PrepareStatsBuffer(map);

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.90  1997/05/28 15:39:53  wenger
+#	Merged Shilpa's layout manager code through the layout_mgr_branch_2 tag.
+#
 #	Revision 1.89.2.1  1997/05/20 16:11:29  ssl
 #	Added layout manager to DEVise
 #
@@ -642,7 +645,7 @@ proc OpenAndDefineDataSources {derivedOnly snames} {
 		set topgrps [DEVise getTopGroups $sname]
    	} else {
           	set topgrps [DEVise getTopGroups [file tail $schemafile]]
-		puts "topgrps = $topgrps"
+		#puts "topgrps = $topgrps"
         	if {[llength $topgrps] == 0} {
 
             	    if {![file readable $schemafile]} {
@@ -1267,7 +1270,7 @@ proc ProcessAttrInfo { attr aname atype issorted ahi alo color whichattr \
     # always chooses attributes but the LM shows the mapping box instead
     # and hence I did this to reuse code -Shilpa.
     
-    puts "Processing attr $attr"
+    #puts "Processing attr $attr"
     if { $attr != "__Unknown__"} { 
 	set name [lindex $attr 0]
 	set type [lindex $attr 1]
@@ -1377,7 +1380,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
 	set vname  [string trim $vname]
     } 
     
-    puts "Before getSchema $tdata"
+    #puts "Before getSchema $tdata"
     
     set schema [DEVise getSchema $tdata]
 
@@ -1397,7 +1400,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
     ProcessAttrInfo $attr xname xtype sortedx  xhi xlo colorAttr \
 	    "x" $viewsel
 
-    puts "$xname $xtype $sortedx $colorAttr $xhi $xlo"
+    #puts "$xname $xtype $sortedx $colorAttr $xhi $xlo"
     if {$sortedx > 0} {
         set sortedx SortedX
     } else {
@@ -1443,7 +1446,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
 	
 	set clean_name [CleanName $name]
 	
-	puts "clean_name = $clean_name "
+	#puts "clean_name = $clean_name "
 	set is_mmm 0
 	if {[lsearch $ylist $clean_name] < 0}  {
 	    continue
@@ -1464,7 +1467,7 @@ proc MacroDefAutoActual {tdata viewsel linksel window bgcolor \
 	}
 
 	ProcessAttrInfo $attr yname type sorted yhi ylo colorY "y" $viewsel
-	puts "$yname $type $sorted $colorY $yhi $ylo"
+	#puts "$yname $type $sorted $colorY $yhi $ylo"
 	
 	if {$clean_name=="Count"} { set color 2 }
 	if {$clean_name=="Sum"} { set color 3 }

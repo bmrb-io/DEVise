@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.20  1997/05/30 15:41:16  wenger
+  Most of the way to user-configurable '4', '5', and '6' keys -- committing
+  this stuff now so it doesn't get mixed up with special stuff for printing
+  Mitre demo.
+
   Revision 1.19  1997/01/23 17:40:27  jussi
   Removed references to GetXMin().
 
@@ -492,7 +497,7 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
   }
 
   default:
-#if defined(DEBUG) || 1
+#if defined(DEBUG)
     printf("Unhandled key '%c' 0x%x\n", 
 	   (key < 0x00ff && isgraph(key)) ? char(key) : ' ', key);
 #endif

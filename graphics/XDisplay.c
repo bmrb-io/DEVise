@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.56  1997/05/21 22:10:01  andyt
+  Added EmbeddedTk and Tasvir functionality to client-server library.
+  Changed protocol between devise and ETk server: 1) devise can specify
+  that a window be "anchored" at an x-y location, with the anchor being
+  either the center of the window, or the upper-left corner. 2) devise can
+  let Tk determine the appropriate size for the new window, by sending
+  width and height values of 0 to ETk. 3) devise can send Tcl commands to
+  the Tcl interpreters running inside the ETk process.
+
   Revision 1.55  1997/05/08 00:18:07  wenger
   Kludge fix for bug 182 (crash when closing multi1.tk session).
 
@@ -468,7 +477,7 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 	      XWindowRep *winc = win->_children.Next(index2);
 	      char fn[strlen(filename) + 10];
 	      sprintf(fn,"%s.%d.gif", filename, i);
-#if defined(DEBUG)|| 1
+#if defined(DEBUG)
 	      printf("Saving the view to file %s\n", fn);
 #endif
 	      FILE *fp = fopen(fn, "wb");
@@ -514,7 +523,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
       if (p) *p = '\0';
       else fprintf(stderr, "Warning: gif file name %s is not ended with .gif\n", 
 				gifFilename);
-#if defined(DEBUG) || 1
+#if defined(DEBUG)
       printf("prename is %s\n", prename);
 #endif
      FILE *fp2 = fopen(mapFileName,"wb");

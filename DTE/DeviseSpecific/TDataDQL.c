@@ -12,6 +12,12 @@
   Development Group.
 */
 
+/*
+  $Id$
+
+  $Log$
+*/
+
 // #define DEBUG
 #include <assert.h>
 #include <iostream.h>
@@ -132,10 +138,10 @@ void TDataDQL::runQuery(){
      }
 	delete tup;
 
-#if defined(DEBUG) ||  1
+#if defined(DEBUG)
 	cout << "Done with query ----------------------------------\n";
 #endif
-#if defined(DEBUG) || 1
+#if defined(DEBUG)
      for(int j = _result.low(); j < _result.fence(); j++){
           for(int i = 0; i < _numFlds; i++){
                displayAs(cout, _result[j][i], _types[i]);
@@ -163,11 +169,11 @@ void TDataDQL::runQuery(){
 			atname = strchr(_attributeNames[i].chars(), '.') + sizeof(char);
 		}
 		assert(atname);
-#if defined(DEBUG) || 1
+#if defined(DEBUG)
 		cout << "atname = " << atname << endl;
 #endif
 		TRY(int deviseSize = packSize(_types[i]), );
-#if defined(DEBUG) || 1
+#if defined(DEBUG)
 		cout << "deviseSize = " << deviseSize << endl;
 #endif
 
