@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2001/09/10 21:18:52  xuk
+// Solve the client disconnection problem.
+// Added isAvailable() method to check whether there is something with the socket connection.
+// Changed in receiveCmd() method to indicate the socket connection is disabled.
+//
 // Revision 1.23  2001/05/11 20:36:05  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -203,7 +208,7 @@ public class DEViseCommSocket
     private byte[] dataRead = null;
     private int numberRead = 0;
 
-    public int cmdId = 0;
+    public long cmdId = 0;
 
     //TEMP -- document what this means -- -1 seems to mean collaboration
     public int flag = 0;
@@ -397,7 +402,7 @@ public class DEViseCommSocket
     // ...
 
     //-------------------------------------------------------------------
-    public synchronized void sendCmd(String cmd, short msgType, int ID)
+    public synchronized void sendCmd(String cmd, short msgType, long ID)
       throws YException
     {
         if (DEBUG >= 1) {
@@ -413,7 +418,7 @@ public class DEViseCommSocket
 
         // for invalid cmd, simply discard it
         if (cmd == null || cmd.length() == 0)
-            return;
+             return;
 
         // for invalid cmd, simply discard it
         String[] cmdBuffer = DEViseGlobals.parseString(cmd, true);
@@ -438,7 +443,7 @@ public class DEViseCommSocket
             }
 
 	    os.writeShort(msgType);
-	    os.writeShort((short)ID);
+	    os.writeLong(ID);
  	    os.writeShort(0); // not cgi
 
             // if nelem is greater than MAX_VALUE of short, if you use readUnsignedShort
@@ -498,14 +503,14 @@ public class DEViseCommSocket
             if (isControl) {
                 if (dataRead == null) {
 		    //TEMP -- 10 is 'magic constant' here!
-                    dataRead = new byte[10];
+                    dataRead = new byte[16];
                     numberRead = 0;
                 }
 
 		// TEMP -- try read(buf, offset, len) here
 		
                 int b;
-                for (int i = numberRead; i < 10; i++) {
+                for (int i = numberRead; i < 16; i++) {
                     b = is.read();
                     if (b < 0) {
                         closeSocket();
@@ -517,10 +522,10 @@ public class DEViseCommSocket
                 }
 
                 msgType = DEViseGlobals.toUshort(dataRead);
-                cmdId = DEViseGlobals.toUshort(dataRead, 2);
-                flag = DEViseGlobals.toUshort(dataRead, 4);
-                numberOfElement = DEViseGlobals.toUshort(dataRead, 6);
-                totalSize = DEViseGlobals.toUshort(dataRead, 8);
+                cmdId = DEViseGlobals.toUlong(dataRead, 2);
+                flag = DEViseGlobals.toUshort(dataRead, 10);
+                numberOfElement = DEViseGlobals.toUshort(dataRead, 12);
+                totalSize = DEViseGlobals.toUshort(dataRead, 14);
 
 		// for collabration JS
 		if (msgType == DEViseGlobals.API_JAVA_CID) {
