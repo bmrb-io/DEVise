@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2001/09/12 19:10:46  xuk
+// *** empty log message ***
+//
 // Revision 1.45  2001/09/10 21:08:11  xuk
 // Solve the client disconnection problem.
 //
@@ -217,6 +220,7 @@ package JavaScreen;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.lang.*;
 
 public class DEViseClient
 {
@@ -273,6 +277,7 @@ public class DEViseClient
     private String collabPass = null;
     public boolean sessionSaved = false;
 
+    public YLogFile logFile = null;
 
     public DEViseClient(jspop p, String host, DEViseCommSocket s, Integer id,
       boolean cgi)
@@ -296,6 +301,14 @@ public class DEViseClient
 	_objectCount++;
 
 	this.cgi = cgi;
+
+	if (pop.clientLog) {
+	    Date d = new Date();
+	    long t = d.getTime();
+	    String time = new Long(t).toString();
+	    String logName = "client.log." + host + "." + time;
+	    logFile = new YLogFile(logName);
+	}
     }
 
     protected void finalize()
@@ -368,6 +381,16 @@ public class DEViseClient
 
 	} else {
             cmdBuffer.addElement(cmd);
+	    
+	    // add command to logfile
+	    if (pop.clientLog) {
+		Date d = new Date();
+		long t = d.getTime();
+		String timestamp = new Long(t).toString();
+		logFile.pn(timestamp);
+		logFile.pn(cmd);
+	    }
+	    
 
 	    if (getStatus() != SERVE) {
 	        setStatus(REQUEST);
@@ -872,6 +895,8 @@ public class DEViseClient
             socket.closeSocket();
             socket = null;
         }
+
+	logFile.close();
     }
 
     public boolean checkPass(String requestPass)
