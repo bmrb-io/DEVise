@@ -180,7 +180,7 @@ In order to run DEVise, the following environment variables must be defined corr
 
 There are two ways to set these environment variables: you can run DEVise using the
 \code{devise} script in \code{<devisehome>/run}, or you can set them in the user's
-environment (\code{.cshrc} file, etc.).  See the \code{<devisehome>/run} script for
+environment (\code{.cshrc} file, etc.).  See the \code{<devisehome>/run/devise} script for
 examples of how these environment variables should be set.  Depending on how you
 have configured your system and installed DEVise, you may have to set some of the
 paths differently.
@@ -189,7 +189,7 @@ paths differently.
 
 If users share the same session files, etc., they can all run DEVise by changing to the
 directory \code{<devisehome>/run} and entering the command \code{devise} or \code{./devise}.
-Alternatively, you could modify the devise startup script to defined DEVISE\_ROOT as an
+Alternatively, you could modify the devise startup script to define DEVISE\_ROOT as an
 absolute, rather than a relative, path.  This allows users to run DEVise from any directory.
 For this to work properly, the schema and data file names in the data sources must be
 changed from relative to absolute paths as well.
@@ -483,7 +483,7 @@ views are manipulated. For example, when you zoom in on the X axis (using keypad
 7) in the IBM Price view, the cursor becomes smaller (as it encompasses a
 smaller range of X values).
 
-The cursor may also be moved by clicking under the X axis in the Global view
+The cursor can also be moved by clicking under the X axis in the Global view
 window. The cursor is repositioned such that it is centered at the point at
 which the mouse was clicked. Because the views are connected via the cursor, the
 displayed range of data changes in the other eight views whenever the cursor is
@@ -496,7 +496,7 @@ keypad scroll and zoom operations.
 
 \subsection{Manipulating Views}
 
-In addition to scroll and zoom, views may be manipulated in many ways from the
+In addition to scroll and zoom, views can be manipulated in many ways from the
 Control Panel. In the Control Panel, the \menu{Window} menu contains options for
 moving views and hiding/showing views. The \menu{View} menu contains options
 for adjusting view appearance.
@@ -713,8 +713,8 @@ the popup menu.
 
 To exit DEVise, use the \menu{Quit} menu option in the \menu{Session} menu.
 DEVise does not confirm whether to save any open, modified sessions. It confirms
-only that quitting is desired---be sure all sessions desired for retention have
-been saved before quitting.
+only that quitting is desired---it's up to you to be sure you don't have any
+unsaved changes that you want to save.
 
 %*******************************************************************************
 % Concepts
@@ -946,10 +946,11 @@ orientation, shape, and shape-specific attributes.
 When you visualize a data stream, you specify the initial mapping using
 the Define Visualization window
 (Figure~\ref{screen7}). (Default mappings are automatically created when a new
-data stream is imported.) The window lists the various attributes in the logical
-schema of the relation. You can choose attributes to be displayed as views,
-as well as the color, layout mode, window name and title. The plot can be done
-using a bar chart, image plot or scatter plot.
+data stream is imported.) This window lists the various attributes in the
+logical schema of the relation. You can choose attributes to be displayed as
+views, as well as the window in which the data will be displayed, background
+color, and so on.  The view(s) can be created as a bar chart, image plot or
+scatter plot.
 
 \scaleepspic[0.7\textwidth]{screen_definevis.eps}{Define Visualization Window\label{screen7}}
 
@@ -1425,7 +1426,7 @@ left undiscussed.
 This is used to copy an existing data stream definition on to a different data
 stream name. The same edit window is displayed, but with the parameters of the
 data stream to be copied. A unique name is all that is to be given to complete
-the copy phase.(Any other parameter can also be changed) This is useful for
+the copy phase (any other parameter can also be changed). This is useful for
 defining a lot of streams having same characteristic, like schema etc. This
 option is available under Stream/Copy in the data stream window.
 
@@ -1463,18 +1464,21 @@ By default, the name of the window in which all views to be defined on this
 stream will be contained is the name of the stream itself. Once specified, the
 window name cannot be modified.
 
-\subsubsection{Window Layout}
-
-The window layout determines the arrangement of views within a window. A
-vertical layout arranges views on top of each other, a horizontal layout
-arranges views side by side, and a tiled layout arranges views in a neat
-square. Tiled layouts are promoted to a vertical layout if the number
-of views is odd.
-
-The shape of the window changes with the layout. For a vertical layout the
-window is long, for a horizontal layout wide. A layout can be changed at any
-time by selecting a view in the window to alter, then choosing the \menu{Layout}
-menu option in the \menu{Window} menu.
+%Take this stuff out of here, since you can't specify a layout in the
+%'Define Visualization' window.  See whether any of this information
+%should be added to other sections.
+%\subsubsection{Window Layout}
+%
+%The window layout determines the arrangement of views within a window. A
+%vertical layout arranges views on top of each other, a horizontal layout
+%arranges views side by side, and a tiled layout arranges views in a neat
+%square. Tiled layouts are promoted to a vertical layout if the number
+%of views is odd.
+%
+%The shape of the window changes with the layout. For a vertical layout the
+%window is long, for a horizontal layout wide. A layout can be changed at any
+%time by selecting a view in the window to alter, then choosing the \menu{Layout}
+%menu option in the \menu{Window} menu.
 
 \subsubsection{X Attribute}
 
@@ -1492,11 +1496,27 @@ be toggled on and off to select/deselect Y axis attributes. For each attribute
 so selected, a view will be created with that attribute as its Y dimension. (For
 group attributes, buttons are popup menus.)
 
+\subsubsection{View Type}
+%COMPLETE ME
+
+You have a choice of viewing your data as a scatter plot, image, or bar
+chart (the default).
+
 \subsubsection{View Background Color}
 
 The background color popup menu allows choice of the background color desired
 for the views of a visualization. A color chart is presented for selection. The
 background color of a view is retained, even when migrated between windows.
+
+\subsubsection{New Mappings}
+
+If you have \code{New Mappings} selected, new mappings will always be generated
+for the new views.  If you do not have \code{New Mappings} selected, and
+you already have a mapping of the same attributes of the same TData, the
+existing mapping will be used for the new view.  In general, you should
+select \code{New Mappings}.  Note that if you have more than one view with
+the same mapping, changing a mapping parameter, such as color, in one
+view will change that parameter in all views with the same mapping.
 
 \subsubsection{View Title}
 
@@ -1542,7 +1562,8 @@ the history window. Entries are marked with an asterisk.  Because a history has
 finite size, old history entries are replaced whenever the size of the list
 exceeds its maximum. (Marked entries are preferentially retained.)
 
-The ``Back One'' option allows to go back one filter in the history.
+The ``Back One'' option allows you to go back one filter in the history
+(it toggles the current and previous filters).
 
 %*******************************************************************************
 
@@ -1567,11 +1588,11 @@ window will appear, in which the following attributes may be edited:
 		the constant value selected, a variable value maps the attribute value
 		to one of the base colors (using modulus {\em (\#colors)} An expression
 		works similarly.
+	\item[Size] Size of the object. The default value is 1.
+	\item[Pattern] The filling style for objects.
 	\item[Orientation] Rotates the objects about their centers. (Giving a
 		proper orientation for a square can make it appear as a diamond.)
 		Note that this feature is not yet implemented.
-	\item[Size] Size of the object. The default value is 1.
-	\item[Pattern] The filling style for objects.
 	\item[Shape] A shape may be any of Rect, RectX, Oval, Polygon, Bar, Block
 		or Vector. The variable and expression options map the value
 		given to one of these (using modulus {\em (\#shapes)}.
