@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2002/02/28 16:37:03  xuk
+// Keep old jsb applet instance when reloading a new HTML page.
+//
 // Revision 1.15  2001/05/11 20:36:13  wenger
 // Set up a package for the JavaScreen code.
 //
@@ -110,7 +113,6 @@ import  java.awt.*;
 import  java.io.*;
 import  java.util.*;
 
-
 public class jsb extends DEViseJSApplet
 {
     static final int DEBUG = 0;
@@ -119,6 +121,7 @@ public class jsb extends DEViseJSApplet
 
     public static jsb app = null;
 
+    private DEViseJSTimer timer = null;
 
     public void init()
     {
@@ -158,16 +161,22 @@ public class jsb extends DEViseJSApplet
 	// reloading applet instance
 	if (app == null) {
 	    app = this;
-	} else if (jsc != null && !jsValues.session.reloadApplet) 
+	} else if (jsc != null && !jsValues.session.reloadApplet) {
+	    jsc.jsValues.uiglobals.maxScreenSize.width = jsValues.uiglobals.maxScreenSize.width;
+	    jsc.jsValues.uiglobals.maxScreenSize.height = jsValues.uiglobals.maxScreenSize.height;
+	    jsc.jsValues.uiglobals.screenSize.width = jsValues.uiglobals.maxScreenSize.width;
+	    jsc.jsValues.uiglobals.screenSize.height = jsValues.uiglobals.maxScreenSize.height;
+	    jsc.jscreen.setScreenDim(jsValues.uiglobals.maxScreenSize.width,
+				     jsValues.uiglobals.maxScreenSize.height);
 	    jsc.restartSession();
+	}
     }
-
 
     public void start()
     {
         if (DEBUG >= 1) {
             System.out.println("jsb.start()");
-        }
+	}
 
         if (isInit && jsc != null && !jsc.getQuitStatus()) {
             setVisible(true);
@@ -175,13 +184,17 @@ public class jsb extends DEViseJSApplet
 	if (jsc != null) {
 	    jsc.showDebug();
 	}
+
+	if (timer != null) {
+	    timer.stopped = true;
+	}
     }
 
     public void stop()
     {
         if (DEBUG >= 1) {
             System.out.println("jsb.stop()");
-        }
+	}
 
         if (isInit && jsc != null && !jsc.getQuitStatus()) {
             setVisible(false);
@@ -189,13 +202,18 @@ public class jsb extends DEViseJSApplet
 	if (jsc != null) {
 	    jsc.hideDebug();
 	}
+
+	if (timer == null) 
+	    timer = new DEViseJSTimer(this);
+	timer.stopped = false;
+	timer.start();
     }
 
     public void destroy()
     {
         if (DEBUG >= 1) {
             System.out.println("jsb.destroy()");
-        }
+	}
 
         if (jsc != null && !jsc.getQuitStatus()) {
             jsc.destroy();
@@ -248,3 +266,67 @@ public class jsb extends DEViseJSApplet
         }
     }
 }
+
+
+class DEViseJSTimer implements Runnable
+{
+    private static final int DEBUG = 0;
+    private static final int INTERVAL = 60 * 60 * 1000; //one hour 
+    private jsb applet = null;
+    private Thread thread = null;
+    public static boolean stopped = false;
+
+    public DEViseJSTimer(jsb a) {
+        applet = a;
+
+	thread = new Thread(this);
+    }
+
+    public void start() 
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseJSTimer.start()");
+	}
+
+	thread.start();
+    }
+
+    public void run()
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseJSTimer.run()");
+	}
+
+	try {
+	    Thread.sleep(INTERVAL);
+
+	    if (stopped) {
+		stopped = false;
+		System.out.println("stop timer.");
+	    } else {
+		applet.destroy();
+		System.out.println("destroy applet.");
+	    }
+
+	    stop();
+	} catch (InterruptedException e) {
+	}
+    }
+
+    public void stop()
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("DEViseJSTimer.stop()");
+	}
+        thread.stop();
+    }
+}
+
+
+
+
+
+
+
+
+

@@ -40,7 +40,7 @@ jsa.class: *.java utils client appletclass
 	$(JAVAC) jsa.java
 
 jsb.class: *.java utils client appletclass
-	$(JAVAC) jsb.java
+	$(JAVAC) jsb.java 
 
 jspop.class: *.java
 	$(JAVAC) *.java
@@ -61,7 +61,7 @@ client: *.java
 	    DEViseHeartbeat.java DEViseJSValues.java DEViseScreen.java \
 	    DEViseTrafficLight.java DEViseUIGlobals.java DEViseView.java \
 	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
-	    jsdevisec.java DEVisePlayback.java
+	    jsdevisec.java DEVisePlayback.java 
 
 appletclass: DEViseJSApplet.java
 	$(JAVAC) DEViseJSApplet.java
@@ -104,4 +104,9 @@ setup:
 .PHONY: install
 install:
 	make -f Makefile.setup install
+
+
+
+
+
 

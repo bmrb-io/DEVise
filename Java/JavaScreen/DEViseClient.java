@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2002/03/01 19:58:53  xuk
+// Added new command DEViseCommands.UpdateJS to update JavaScreen after
+// a DEViseCommands.Open_Session or DEViseCommands.Close_Session command.
+//
 // Revision 1.60  2002/01/23 21:54:12  xuk
 // Fixed bug 738: could start collaboration when leader has no session opened.
 //
@@ -705,7 +709,7 @@ public class DEViseClient
 		    if (!command.startsWith(DEViseCommands.CONNECT) &&
 		      user == null) {
                         sendCmd(DEViseCommands.ERROR +
-			  " {No user infomation given}");
+			  " {No user information given}");
                         throw new YException(
 			  "Cannot get user information for this client");
 		    }
