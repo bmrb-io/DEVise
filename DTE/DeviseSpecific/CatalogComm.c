@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1998/03/12 18:23:45  donjerko
+  *** empty log message ***
+
   Revision 1.22  1998/01/26 23:19:49  wenger
   Conditionaled out some debug output.
 
@@ -275,7 +278,8 @@ string dteCheckSQLViewEntry(const char* asClause, const char* queryToCheck){
 		}
 	}
 	asString = string(" ") + asString + " ";
-	if(asString.find(" recId ") != string::npos){
+	     if(asString.find(" recId ") != string::npos ||
+			asString.find("\"recId\"") != string::npos){
 		retVal = "\"reciId\" is a reserved attribute name and may not be listed in the AS clause";
 		return retVal;
 	}

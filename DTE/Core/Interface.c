@@ -253,7 +253,15 @@ istream& ViewInterface::read(istream& in){ // throws
 	}
 	attributeNames = new string[numFlds];
 	for(int i = 0; i < numFlds; i++){
-		in >> attributeNames[i];
+		char tmp;
+		in >> tmp;
+		in.putback(tmp);
+		if(tmp == '"'){
+			stripQuotes(in, attributeNames[i]);
+		}
+		else{
+			in >> attributeNames[i];
+		}
 	}
 	CHECK(stripQuotes(in, query), 
 		"Incorrect ViewInterface format", in);
