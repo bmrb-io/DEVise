@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.60  1999/04/29 17:36:40  wenger
+  Implemented 'fixed cursor size' option (for the sake of the JavaScreen).
+
   Revision 1.59  1999/04/22 19:29:51  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the
@@ -82,6 +85,10 @@
 
   Revision 1.47  1999/03/01 17:47:44  wenger
   Implemented grouping/ungrouping of views to allow custom view geometries.
+
+  Revision 1.46.2.1  1999/03/15 22:13:29  wenger
+  Fixed problems with view origin and data area origin for JavaScreen
+  sessions.
 
   Revision 1.46  1999/02/23 15:35:07  wenger
   Fixed bugs 446 and 465 (problems with cursors in piles); fixed some
@@ -5329,9 +5336,12 @@ IMPLEMENT_COMMAND_BEGIN(setPileStackState)
 #endif
 
     if (argc == 3) {
-		char namebuf[128];
-		sprintf(namebuf, "%s_pile", argv[1]);
-		PileStack *ps = PileStack::FindByName(namebuf);
+        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
+        if (!window) {
+          ReturnVal(API_NAK, "Cannot find window");
+          return -1;
+        }
+		PileStack *ps = window->GetPileStack();
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
@@ -5355,9 +5365,12 @@ IMPLEMENT_COMMAND_BEGIN(getPileStackState)
 #endif
 
     if (argc == 2) {
-		char namebuf[128];
-		sprintf(namebuf, "%s_pile", argv[1]);
-		PileStack *ps = PileStack::FindByName(namebuf);
+        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
+        if (!window) {
+          ReturnVal(API_NAK, "Cannot find window");
+          return -1;
+        }
+		PileStack *ps = window->GetPileStack();
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
@@ -5382,9 +5395,12 @@ IMPLEMENT_COMMAND_BEGIN(flipPileStack)
 #endif
 
     if (argc == 2) {
-		char namebuf[128];
-		sprintf(namebuf, "%s_pile", argv[1]);
-		PileStack *ps = PileStack::FindByName(namebuf);
+        ViewWin *window = (ViewWin *)_classDir->FindInstance(argv[1]);
+        if (!window) {
+          ReturnVal(API_NAK, "Cannot find window");
+          return -1;
+        }
+		PileStack *ps = window->GetPileStack();
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
