@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/30 21:15:27  jussi
+  Changed HighlightColor.
+
   Revision 1.4  1996/01/29 23:57:28  jussi
   Added a few colors and removed duplicate ones.
 
@@ -79,6 +82,5 @@ const Color GoldColor2		= 42;
 
 const Color ForegroundColor	= BlackColor;
 const Color BackgroundColor	= AntiqueWhiteColor;
-const Color HighlightColor	= BlackColor;
 
 #endif
