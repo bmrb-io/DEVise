@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/07/25 14:24:22  jussi
+  Added capability to draw labels at (X,Y) data points.
+
   Revision 1.18  1996/07/19 02:52:33  jussi
   Added LineShape and LineShadeShape.
 
@@ -187,6 +190,15 @@ inline Coord GetShapeAttr2(char *ptr, TDataMap *map, GDataAttrOffset *offset)
     return attrs[2];
   }
   return GetAttr(ptr, shapeAttrOffset[2], Coord, offset);
+}
+
+inline Coord GetShapeAttr3(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
+  if (offset->shapeAttrOffset[3] < 0){
+    ShapeAttr *attrs = map->GetDefaultShapeAttrs();
+    return attrs[3];
+  }
+  return GetAttr(ptr, shapeAttrOffset[3], Coord, offset);
 }
 
 class WindowRep;
