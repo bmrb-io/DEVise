@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/31 15:37:22  jussi
+  Initial revision.
+*/
 
 #ifndef RecordLink_h
 #define RecordLink_h
@@ -51,15 +54,16 @@ class RecordLink : public VisualLink {
   void Abort();
 
  protected:
-  void FlushToDisk();
+  void FlushToDisk();                   // write array contents to disk
 
-  RecFile     *_file;
-  int         _lastRec;
+  RecFile     *_file;                   // record id storage
+  int         _lastRec;                 // record id of last entry in file
+  int         _prevLastRec;             // previous value of _lastRec
 
-  RecordRange *_array;
-  int         _num;
+  RecordRange *_array;                  // array of record id ranges
+  int         _num;                     // number of entries in array
 
-  ViewGraph   *_masterView;
+  ViewGraph   *_masterView;             // master of record link
 };
 
 #endif

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/23 20:53:02  jussi
+  Fixed small bug.
+
   Revision 1.3  1996/07/23 20:37:37  jussi
   Added code to handle slaves in piled views.
 
@@ -38,16 +41,7 @@
 
 //#define DEBUG
 
-// uncomment if merging of record ranges is desired; currently this
-// is disabled because the merged ranges could be too large for the
-// query processor to execute when a range is brought back into memory;
-// with merging disabled, we just store the original record ranges
-// and hope that the QP can re-execute the same record range again
-// (for a different view) without problems
-
-//#define MERGE_RANGES
-
-static const int RecordChunkSize = 4096;
+static const int RecordChunkSize = 1024;
 
 static char *MakeFileName(char *linkname)
 {
@@ -78,6 +72,7 @@ RecordLink::RecordLink(char *name, VisualFlag flag) :
 
   _file = 0;
   _lastRec = 0;
+  _prevLastRec = 0;
 
   _array = new RecordRange [RecordChunkSize];
   DOASSERT(_array, "Out of memory");
@@ -157,24 +152,22 @@ void RecordLink::InsertRecs(RecId recid, int num)
 	 recid, recid + num - 1, _num);
 #endif
 
-#ifdef MERGE_RANGES
-  // check if range can be merged with previous range
-  if (_num > 0) {
-    if (_array[_num - 1].start + _array[_num - 1].num == recid) {
+  // check if range can be merged with any previous range
+  for(int i = 0; i < _num - 1; i++) {
+    if (_array[i].start + _array[i].num == recid) {
 #ifdef DEBUG
-      printf("Record range was merged with previous range [%ld,%ld]\n",
-	     _array[_num - 1].start,
-	     _array[_num - 1].start + _array[_num - 1].num - 1);
+      printf("Record range was merged with range %d: [%ld,%ld]\n",
+	     i, _array[i].start, _array[i].start + _array[i].num - 1);
 #endif
-      _array[_num - 1].num += num;
+      _array[i].num += num;
       return;
     }
   }
-#endif
 
   _array[_num].start = recid;
   _array[_num].num = num;
   _num++;
+
   if (_num >= RecordChunkSize)
     FlushToDisk();
 }
@@ -202,6 +195,11 @@ void RecordLink::Done()
 {
   if (_num > 0)
     FlushToDisk();
+
+  if (!_prevLastRec && !_lastRec)
+    return;
+
+  _prevLastRec = _lastRec;
 
   int index = InitIterator();
   while(More(index)) {
