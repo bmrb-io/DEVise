@@ -171,7 +171,7 @@ proc MacroDef {} {
 
     toplevel .map
     wm title .map "Define Visualization"
-    wm minsize .map 600 250
+    wm minsize .map 600 320
     wm maxsize .map 800 400
     wm geometry .map =600x320+50+50
     selection clear .map
