@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  1996/09/27 15:51:51  wenger
+  Added "Memory leaks" and "Memory in use" menu selections and associated
+  Tcl "DEVise" commands (conditionaled out for commit).
+
   Revision 1.32  1996/09/18 20:18:50  guangshu
   Added API command saveDisplayView to save each view in the window.
 
@@ -174,6 +178,7 @@ extern "C" int purify_new_inuse();
 
 
 //#define DEBUG
+#define LINESIZE 1024
 
 static char result[10 * 1024];
 static ViewKGraph *vkg = 0;

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.44  1996/09/26 19:10:38  jussi
+#  Renamed ExtBufMgr -> SBufMgr.
+#
 #  Revision 1.43  1996/09/25 18:36:49  wenger
 #  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
 #
@@ -52,6 +55,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	Bitmap.c ParseCat.c ItemList.C Group.C GroupDir.C\
 	DispQueryProc.c QueryProc.c QueryProcSimple.c QueryProcFull.c \
 	RecInterp.c TDataAsciiInterp.c TDataBinaryInterp.c TDataMap.c \
+	FileIndex.c \
 	GDataBin.c TDataAscii.c TDataBinary.c GdataStat.C\
 	TDataRec.c TData2DRec.c PageRange.c  RecFile.c UnixRecFile.c \
 	GDataRangeMap.c GData.c TData.c TDataViewX.c ViewScatter.c \

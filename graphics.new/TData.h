@@ -16,6 +16,13 @@
    $Id$
 
    $Log$
+   Revision 1.6  1996/08/04 21:59:52  beyer
+   Added UpdateLinks that allow one view to be told to update by another view.
+   Changed TData so that all TData's have a DataSource (for UpdateLinks).
+   Changed all of the subclasses of TData to conform.
+   A RecFile is now a DataSource.
+   Changed the stats buffers in ViewGraph to be DataSources.
+
    Revision 1.5  1996/07/23 20:13:07  wenger
    Preliminary version of code to save TData (schema(s) and data) to a file.
 
@@ -105,6 +112,10 @@ class TData {
 
     /* convert RecId into index */
     virtual void GetIndex(RecId id, int *&indices)=0;
+
+    virtual Boolean WriteIndex(int fd) { return false; }
+    virtual Boolean ReadIndex(int fd) { return false; }
+
 
     /**** Getting record Id's ****/
 

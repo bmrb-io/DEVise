@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.16  1996/08/04 21:59:53  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.15  1996/07/12 19:39:43  jussi
   Removed _file member variable as it's not needed.
 
@@ -94,15 +101,7 @@
 #include "RecId.h"
 #include "RecOrder.h"
 #include "DataSource.h"
-
-const int INDEX_ALLOC_INC = 10000;      // allocation increment for index
-const int LINESIZE = 4096;              // maximum size of each line
-
-/* We cache the first FILE_CONTENT_COMPARE_BYTES from the file.
-   The next time we start up, this cache is compared with what's in
-   the file to determine if they are the same file. */
-
-const int FILE_CONTENT_COMPARE_BYTES = 4096;
+#include "FileIndex.h"
 
 class TDataAscii: public TData, private DispatcherCallback {
 public:
@@ -217,17 +216,13 @@ private:
 	void BuildIndex();
 	void RebuildIndex();
 
-	/* Extend index to hold more */
-	void ExtendIndex();
-
 	void ReadRec(RecId id, int numRecs, void *buf);
 
 	/* Print indices */
 	void PrintIndices();
 
 	char *_indexFileName;           // name of index file
-	long *_index;                   // index to records
-	long _indexSize;                // size of index
+	FileIndex *_indexP;
 
 	long _totalRecs;                // total number of records
 	long _lastPos;                  // position of last record in file

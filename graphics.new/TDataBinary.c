@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1996/10/02 15:23:52  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.18  1996/08/27 19:03:27  flisakow
     Added ifdef's around some informational printf's.
 
@@ -122,6 +126,14 @@
 #   include "DataSourceWeb.h"
 #endif
 
+static const int BIN_INDEX_ALLOC_INC = 25000; // allocation increment for index
+
+/* We cache the first BIN_CONTENT_COMPARE_BYTES from the file.
+   The next time we start up, this cache is compared with what's in
+   the file to determine if they are the same file. */
+
+static const int BIN_CONTENT_COMPARE_BYTES = 4096;
+
 static char fileContent[BIN_CONTENT_COMPARE_BYTES];
 static char indexFileContent[BIN_CONTENT_COMPARE_BYTES];
 static char *   srcFile = __FILE__;
@@ -157,8 +169,7 @@ TDataBinary::TDataBinary(char *name, char *type, char *param,
 
   _totalRecs = 0;
 
-  _indexSize = 0;
-  _index = 0;
+  _indexP = new FileIndex(BIN_INDEX_ALLOC_INC);
 
   Dispatcher::Current()->Register(this, 10, AllState, false, _data->AsyncFd());
 }
@@ -174,8 +185,7 @@ TDataBinary::~TDataBinary()
 
   Dispatcher::Current()->Unregister(this);
 
-  delete _index;
-  delete _file;
+  delete _indexP;
   delete _indexFileName;
 }
 
@@ -195,12 +205,10 @@ Boolean TDataBinary::CheckFileStatus()
     }
     if (_data->Open("r") != StatusOk) {
       // file access failure, get rid of index
-      delete _index;
+      _indexP->Clear();
       _initTotalRecs = _totalRecs = 0;
       _initLastPos = _lastPos = 0;
       _lastIncompleteLen = 0;
-      _indexSize = 0;
-      _index = 0;
       return false;
     }
     printf("Data stream %s has become available\n", _name);
@@ -334,90 +342,14 @@ void TDataBinary::Initialize()
   if (!CheckFileStatus())
     return;
 
-  Boolean fileOpened = false;
-  int i;
-
-  int indexFd;
-  if ((indexFd = open(_indexFileName, O_RDONLY, 0)) < 0)
-    goto error;
-
-  fileOpened = true;
- 
-  unsigned long magicNumber;
-  if (read(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    reportErrSys("read");
-    goto error;
-  }
-  if (magicNumber != 0xdeadbeef) {
-    printf("Index file incompatible\n");
-    goto error;
+  if (_data->isBuf()) {
+    BuildIndex();
+    return;
   }
 
-  /* index file exists. See if we are still working on the same
-     file, and if we are, reinitialize */
-  if (_data->Seek(0, SEEK_SET) < 0) {
-    reportErrSys("fseek");
-    goto error;
-  }
-  if (_data->Fread(fileContent, BIN_CONTENT_COMPARE_BYTES, 1) != 1) {
-    reportErrSys("fread");
-    goto error;
-  }
+  if (!_indexP->Initialize(_indexFileName, _data, this, _lastPos,
+    _totalRecs).IsComplete()) goto error;
 
-  if (read(indexFd, indexFileContent, BIN_CONTENT_COMPARE_BYTES)
-      != BIN_CONTENT_COMPARE_BYTES) {
-    reportErrSys("read");
-    goto error;
-  }
-  if (memcmp(indexFileContent, fileContent, BIN_CONTENT_COMPARE_BYTES)) {
-    printf("Index file invalid\n");
-    goto error;
-  }
-  
-  /* File has not changed since index file was built */
-
-  /* Let subclass read index */
-  if (!ReadIndex(indexFd))
-    goto error;
-  
-  /* Read last file position */
-  if (read(indexFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    reportErrSys("read");
-    goto error;
-  }
-  
-  /* Read number of records */
-  if (read(indexFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    reportErrSys("read");
-    goto error;
-  }
-
-  if (_totalRecs >= _indexSize) {
-    delete _index;
-    _indexSize = _totalRecs;
-#ifdef DEBUG
-    printf("Allocating %ld index elements\n", _indexSize);
-#endif
-    _index = new long [_indexSize];
-    DOASSERT(_index, "Out of memory");
-  }
-
-  /* read the index */
-  if (read(indexFd, _index, _totalRecs * sizeof(long))
-      != (int)(_totalRecs * sizeof(long))) {
-    reportErrSys("read");
-    goto error;
-  }
-  
-  for(i = 1; i < _totalRecs; i++) {
-    if (_index[i - 1] > _index[i]) {
-      printf("Indexed index inconsistent\n");
-      goto error;
-    }
-  }
-
-  close(indexFd);
-  
   _initTotalRecs = _totalRecs;
   _initLastPos  = _lastPos;
 
@@ -427,10 +359,6 @@ void TDataBinary::Initialize()
 
  error:
   /* recover from error by building index from scratch  */
-  if (fileOpened)
-    close(indexFd);
-  (void)unlink(_indexFileName);
-
 #ifdef DEBUG
   printf("Rebuilding index...\n");
 #endif
@@ -444,84 +372,26 @@ void TDataBinary::Checkpoint()
     return;
   }
 
+  if (_data->isBuf()) {
+    BuildIndex();
+    return;
+  }
+
   printf("Checkpointing %s: %ld total records, %ld new\n", _name,
 	 _totalRecs, _totalRecs - _initTotalRecs);
   
   if (_lastPos == _initLastPos && _totalRecs == _initTotalRecs)
     /* no need to checkpoint */
     return;
-  
-  Boolean fileOpened = false;
-  unsigned long magicNumber = 0xdeadbeef;
 
-  int indexFd;
-  if ((indexFd = open(_indexFileName, O_CREAT| O_RDWR,
-		      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP
-		      | S_IROTH | S_IWOTH)) < 0) {
-    fprintf(stderr, "Cannot create index file %s\n", _indexFileName);
-    reportErrSys("open");
-    goto error;
-  }
+  if (!_indexP->Checkpoint(_indexFileName, _data, this, _lastPos,
+    _totalRecs).IsComplete()) goto error;
 
-  fileOpened = true;
-  
-  if (write(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    reportErrSys("write");
-    goto error;
-  }
-
-  if (_data->Seek(0, SEEK_SET) < 0) {
-    reportErrSys("fseek");
-    goto error;
-  }
-  if (_data->Fread(fileContent, BIN_CONTENT_COMPARE_BYTES, 1) != 1) {
-    if (!errno)
-      fprintf(stderr, "File not checkpointed due to its small size\n");
-    else
-      reportErrSys("fread");
-    goto error;
-  }
-  
-  /* write contents of file to be compared later */
-  if (write(indexFd, fileContent, BIN_CONTENT_COMPARE_BYTES) !=
-      BIN_CONTENT_COMPARE_BYTES) {
-    reportErrSys("write");
-    goto error;
-  }
-  
-  /* let subclass write its contents */
-  if (!WriteIndex(indexFd))
-    goto error;
-  
-  /* write last position in the file */
-  if (write(indexFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    reportErrSys("write");
-    goto error;
-  }
-  
-  /* write # of records */
-  if (write(indexFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    reportErrSys("write");
-    goto error;
-  }
-    
-  /* write indices */
-  if (write(indexFd, _index, _totalRecs * sizeof(long))
-      != (int)(_totalRecs * sizeof(long))) {
-    reportErrSys("write");
-    goto error;
-  }
-
-  close(indexFd);
   _currPos = _data->Tell();
 
   return;
   
  error:
-  if (fileOpened)
-    close(indexFd);
-  (void)unlink(_indexFileName);
-
   _currPos = _data->Tell();
 }
 
@@ -557,9 +427,7 @@ void TDataBinary::BuildIndex()
 
     if (len == _physRecSize) {
       if (Decode(recBuf, _currPos / _physRecSize, physRec)) {
-	if (_totalRecs >= _indexSize)     // index buffer too small?
-	  ExtendIndex();                  // extend it
-	_index[_totalRecs++] = _currPos;
+	_indexP->Set(_totalRecs++, _currPos);
       } else {
 #ifdef DEBUG
 	printf("Ignoring invalid or non-matching record\n");
@@ -594,11 +462,10 @@ void TDataBinary::RebuildIndex()
 {
   InvalidateIndex();
 
-  delete _index;
+  _indexP->Clear();
   _initTotalRecs = _totalRecs = 0;
   _initLastPos = _lastPos = 0;
   _lastIncompleteLen = 0;
-  _indexSize = 0;
 
   BuildIndex();
 }
@@ -613,7 +480,7 @@ void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 
   for(int i = 0; i < numRecs; i++) {
 
-    long recloc = _index[id + i];
+    long recloc = _indexP->Get(id + i);
 
     // Note that if the data source is a tape, we _always_ seek, even if
     // we think we're already at the right place.  This was copied from
@@ -638,30 +505,12 @@ void TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
   }
 }
 
-void TDataBinary::ExtendIndex()
-{
-#ifdef DEBUG
-  printf("ExtendIndex:allocating %ld index elements\n",
-	 _indexSize + BIN_INDEX_ALLOC_INC);
-#endif
-
-  long *newIndex = new long [_indexSize + BIN_INDEX_ALLOC_INC];
-  DOASSERT(newIndex, "Out of memory");
-  memcpy(newIndex, _index, _indexSize * sizeof(long));
-  delete _index;
-  _index = newIndex;
-  _indexSize += BIN_INDEX_ALLOC_INC;
-}
-
 void TDataBinary::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
   DOASSERT(!_data->isTape(), "Writing to tape not supported yet");
 
   _totalRecs += numRecs;
-  if (_totalRecs >= _indexSize)         // index buffer too small?
-    ExtendIndex();                      // extend it
-
-  _index[_totalRecs - 1] = _lastPos;
+  _indexP->Set(_totalRecs - 1, _lastPos);
   int len = numRecs * _physRecSize;
 
   if (_data->append(buf, len) != len) {
@@ -701,7 +550,7 @@ void TDataBinary::PrintIndices()
 {
   int cnt = 0;
   for(long i = 0; i < _totalRecs; i++) {
-    printf("%ld ", _index[i]);
+    printf("%ld ", _indexP->Get(i));
     if (cnt++ == 10) {
       printf("\n");
       cnt = 0;

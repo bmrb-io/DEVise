@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.40  1996/10/02 15:23:50  wenger
+  Improved error handling (modified a number of places in the code to use
+  the DevError class).
+
   Revision 1.39  1996/08/27 19:03:26  flisakow
     Added ifdef's around some informational printf's.
 
@@ -196,6 +200,16 @@
 
 # define  _STREAM_COMPAT
 
+static const int INDEX_ALLOC_INC = 10000; // allocation increment for index
+static const int LINESIZE = 4096;         // maximum size of each line
+
+/* We cache the first FILE_CONTENT_COMPARE_BYTES from the file.
+   The next time we start up, this cache is compared with what's in
+   the file to determine if they are the same file. */
+
+static const int FILE_CONTENT_COMPARE_BYTES = 4096;
+
+
 static char fileContent[FILE_CONTENT_COMPARE_BYTES];
 static char indexFileContent[FILE_CONTENT_COMPARE_BYTES];
 static char *   srcFile = __FILE__;
@@ -222,8 +236,7 @@ TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 
     _totalRecs = 0;
 
-    _indexSize = 0;
-    _index = 0;
+    _indexP = new FileIndex(INDEX_ALLOC_INC);
 
     Dispatcher::Current()->Register(this, 10, AllState, 
 				    false, _data->AsyncFd());
@@ -240,7 +253,7 @@ TDataAscii::~TDataAscii()
 
   Dispatcher::Current()->Unregister(this);
 
-  delete _index;
+  delete _indexP;
   delete _indexFileName;
 }
 
@@ -260,12 +273,10 @@ Boolean TDataAscii::CheckFileStatus()
     Boolean old = DevError::SetEnabled(false);
     if (_data->Open("r") != StatusOk) {
       // file access failure, get rid of index
-      delete _index;
+      _indexP->Clear();
       _initTotalRecs = _totalRecs = 0;
       _initLastPos = _lastPos = 0;
       _lastIncompleteLen = 0;
-      _indexSize = 0;
-      _index = 0;
       (void)DevError::SetEnabled(old);
       return false;
     }
@@ -409,91 +420,9 @@ void TDataAscii::Initialize()
       return;
   }
 
-  Boolean fileOpened = false;
-  int i;
+  if (!_indexP->Initialize(_indexFileName, _data, this, _lastPos,
+    _totalRecs).IsComplete()) goto error;
 
-  int indexFd;
-  if ((indexFd = open(_indexFileName, O_RDONLY, 0)) <0)
-    goto error;
-
-  fileOpened = true;
-  
-  unsigned long magicNumber;
-  if (read(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    reportErrSys("read");
-    goto error;
-  }
-  if (magicNumber != 0xdeadbeef) {
-    printf("Index file incompatible\n");
-    goto error;
-  }
-
-  /* index file exists. See if we are still working on the same
-     file, and if we are, reinitialize */
-  if (_data->Seek(0, SEEK_SET) < 0) {
-    reportErrSys("fseek");
-    goto error;
-  }
-  if (_data->Fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1) != 1) {
-    if (errno)
-      reportErrSys("fread");
-    goto error;
-  }
-
-  if (read(indexFd, indexFileContent, FILE_CONTENT_COMPARE_BYTES)
-      != FILE_CONTENT_COMPARE_BYTES) {
-    reportErrSys("read");
-    goto error;
-  }
-  if (memcmp(indexFileContent, fileContent, FILE_CONTENT_COMPARE_BYTES)) {
-    printf("Index file invalid\n");
-    goto error;
-  }
-  
-  /* File has not changed since index file was built */
-
-  /* Let subclass read index */
-  if (!ReadIndex(indexFd))
-    goto error;
-  
-  /* Read last file position */
-  if (read(indexFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    reportErrSys("read");
-    goto error;
-  }
-  
-  /* Read number of records */
-  if (read(indexFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    reportErrSys("read");
-    goto error;
-  }
-
-  if (_totalRecs >= _indexSize) {
-    delete _index;
-    _indexSize = _totalRecs;
-#ifdef DEBUG
-    printf("Allocating %ld index elements\n", _indexSize);
-#endif
-    _index = new long [_indexSize];
-    DOASSERT(_index, "Out of memory");
-  }
-
-  /* read the index */
-  if (read(indexFd, _index, _totalRecs * sizeof(long))
-      != (int)(_totalRecs * sizeof(long))) {
-    reportErrSys("read");
-    goto error;
-  }
-  
-  for(i = 1; i < _totalRecs; i++) {
-    if (_index[i - 1] > _index[i]) {
-      printf("Indexed index inconsistent\n");
-      goto error;
-    }
-  }
-
-  close(indexFd);
-  
   _initTotalRecs = _totalRecs;
   _initLastPos  = _lastPos;
 
@@ -503,10 +432,6 @@ void TDataAscii::Initialize()
 
  error:
   /* recover from error by building index from scratch  */
-  if (fileOpened)
-    close(indexFd);
-  (void)unlink(_indexFileName);
-
 #ifdef DEBUG
   printf("Rebuilding index...\n");
 #endif
@@ -530,79 +455,14 @@ void TDataAscii::Checkpoint()
     /* no need to checkpoint */
     return;
   
-  Boolean fileOpened = false;
-  unsigned long magicNumber = 0xdeadbeef;
-
-  int indexFd;
-  if ((indexFd = open(_indexFileName, O_CREAT| O_RDWR,
-		      S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP
-		      | S_IROTH | S_IWOTH)) < 0) {
-    fprintf(stderr, "Cannot create index file %s\n", _indexFileName);
-    reportErrSys("open");
-    goto error;
-  }
-    
-  fileOpened = true;
-  
-  if (write(indexFd, &magicNumber, sizeof magicNumber) != sizeof magicNumber) {
-    reportErrSys("write");
-    goto error;
-  }
-
-  if (_data->Seek(0, SEEK_SET) < 0) {
-    reportErrSys("fseek");
-    goto error;
-  }
-
-  if (_data->Fread(fileContent, FILE_CONTENT_COMPARE_BYTES, 1) != 1) {
-    if (!errno)
-	fprintf(stderr, "File not checkpointed due to its small size\n");
-    else
-    	reportErrSys("fread");
-    goto error;
-  }
-  
-  /* write contents of file to be compared later */
-  if (write(indexFd, fileContent, FILE_CONTENT_COMPARE_BYTES) !=
-      FILE_CONTENT_COMPARE_BYTES) {
-    reportErrSys("write");
-    goto error;
-  }
-  
-  /* let subclass write its contents */
-  if (!WriteIndex(indexFd))
-    goto error;
-  
-  /* write last position in the file */
-  if (write(indexFd, &_lastPos, sizeof(_lastPos)) != sizeof _lastPos) {
-    reportErrSys("write");
-    goto error;
-  }
-  
-  /* write # of records */
-  if (write(indexFd, &_totalRecs, sizeof(_totalRecs)) != sizeof _totalRecs) {
-    reportErrSys("write");
-    goto error;
-  }
-    
-  /* write indices */
-  if (write(indexFd, _index, _totalRecs * sizeof(long))
-      != (int)(_totalRecs * sizeof(long))) {
-    reportErrSys("write");
-    goto error;
-  }
-
-  close(indexFd);
+  if (!_indexP->Checkpoint(_indexFileName, _data, this, _lastPos,
+    _totalRecs).IsComplete()) goto error;
 
   _currPos = _data->Tell();
 
   return;
   
  error:
-  if (fileOpened)
-    close(indexFd);
-  (void)unlink(_indexFileName);
-
   _currPos = _data->Tell();
 }
 
@@ -650,9 +510,7 @@ void TDataAscii::BuildIndex()
     if (len > 0 && buf[len - 1] == '\n') {
       buf[len - 1] = 0;
       if (Decode(recBuf, _currPos, buf)) {
-	if (_totalRecs >= _indexSize)     // index buffer too small?
-	  ExtendIndex();                  // extend it
-	_index[_totalRecs++] = _currPos;
+	_indexP->Set(_totalRecs++, _currPos);
       } else {
 #ifdef DEBUG
 	printf("Ignoring invalid record: \"%s\"\n", buf);
@@ -687,12 +545,10 @@ void TDataAscii::RebuildIndex()
 {
   InvalidateIndex();
 
-  delete _index;
+  _indexP->Clear();
   _initTotalRecs = _totalRecs = 0;
   _initLastPos = _lastPos = 0;
   _lastIncompleteLen = 0;
-  _indexSize = 0;
-  _index = 0;
 
   BuildIndex();
 }
@@ -710,12 +566,12 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
   for(int i = 0; i < numRecs; i++) {
 
     int len;
-    if (_currPos != _index[id + i]) {
-      if (_data->Seek(_index[id + i], SEEK_SET) < 0) {
-        reportErrSys("fseek");
+    if (_currPos != (long) _indexP->Get(id + i)) {
+      if (_data->Seek(_indexP->Get(id + i), SEEK_SET) < 0) {
+        perror("fseek");
         DOASSERT(0, "Cannot perform file seek");
       }
-      _currPos = _index[id + i];
+      _currPos = _indexP->Get(id + i);
     }
     if (_data->Fgets(line, LINESIZE) == NULL) {
       reportErrSys("fgets");
@@ -736,30 +592,13 @@ void TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
   }
 }
 
-void TDataAscii::ExtendIndex()
-{
-#ifdef DEBUG
-  printf("ExtendIndex:allocating %ld index elements\n",
-	 _indexSize + INDEX_ALLOC_INC);
-#endif
-
-  long *newIndex = new long [_indexSize + INDEX_ALLOC_INC];
-  DOASSERT(newIndex, "Out of memory");
-  memcpy(newIndex, _index, _indexSize * sizeof(long));
-  delete _index;
-  _index = newIndex;
-  _indexSize += INDEX_ALLOC_INC;
-}
-
 void TDataAscii::WriteRecs(RecId startRid, int numRecs, void *buf)
 {
   DOASSERT(!_data->isTape(), "Writing to tape not supported yet");
 
   _totalRecs += numRecs;
-  if (_totalRecs >= _indexSize)         // index buffer too small?
-    ExtendIndex();                      // extend it
 
-  _index[_totalRecs - 1] = _lastPos;
+  _indexP->Set(_totalRecs - 1, _lastPos);
   int len = strlen((char *)buf);
 
   if (_data->append(buf, len) != len) {
@@ -809,7 +648,7 @@ void TDataAscii::PrintIndices()
 {
   int cnt = 0;
   for(long i = 0; i < _totalRecs; i++) {
-    printf("%ld ", _index[i]);
+    printf("%ld ", _indexP->Get(i));
     if (cnt++ == 10) {
       printf("\n");
       cnt = 0;

@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.22  1996/09/25 18:36:10  wenger
+#  Updated again for Linux compile (Linux 2.0.6, Tcl 7.4, Tk 4.0).
+#
 #  Revision 1.21  1996/08/23 16:55:02  wenger
 #  First version that allows the use of Dali to display images (more work
 #  needs to be done on this); changed DevStatus to a class to make it work
@@ -82,6 +85,7 @@ LIBOBJ = \
 	../graphics.new/DataSourceTape.o \
 	../graphics.new/DataSourceBuf.o \
 	../graphics.new/DevFileHeader.o \
+	../graphics.new/FileIndex.o \
 	../graphics.new/Version.o \
 	../tape/tapedrive.o \
 	../generic/CompDate.o \

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/08/04 21:59:54  beyer
+  Added UpdateLinks that allow one view to be told to update by another view.
+  Changed TData so that all TData's have a DataSource (for UpdateLinks).
+  Changed all of the subclasses of TData to conform.
+  A RecFile is now a DataSource.
+  Changed the stats buffers in ViewGraph to be DataSources.
+
   Revision 1.10  1996/07/03 23:13:47  jussi
   Added call to _data->Close() in destructor. Renamed
   _fileOkay to _fileOpen which is more accurate.
@@ -83,14 +90,7 @@
 #include "RecId.h"
 #include "RecOrder.h"
 #include "DataSource.h"
-
-const int BIN_INDEX_ALLOC_INC = 25000; // allocation increment for index
-
-/* We cache the first BIN_CONTENT_COMPARE_BYTES from the file.
-   The next time we start up, this cache is compared with what's in
-   the file to determine if they are the same file. */
-
-const int BIN_CONTENT_COMPARE_BYTES = 4096;
+#include "FileIndex.h"
 
 class TDataBinary: public TData, private DispatcherCallback {
 public:
@@ -213,9 +213,6 @@ private:
   void BuildIndex();
   void RebuildIndex();
 
-  /* Extend index to hold more */
-  void ExtendIndex();
-
   void ReadRec(RecId id, int numRecs, void *buf);
 
   /* Print indices */
@@ -226,8 +223,7 @@ private:
   char *_indexFileName;           // name of index file
   int _physRecSize;               // physical record size
 
-  long *_index;                   // index to records
-  long _indexSize;                // size of index
+  FileIndex *_indexP;
 
   long _lastPos;                  // position of last record in file
   long _currPos;                  // current file position
