@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2001/03/04 22:04:27  xuk
+// Fixed bugs for JAVAC_CloseSession command in cmdCloseSession().
+//
 // Revision 1.51  2001/03/03 20:08:20  xuk
 // Restore old state if user goes into, then out of, collaboration mode.
 // 1.Added cmdSaveSession() to process JAVAC_SaveCurSession command.
@@ -730,6 +733,27 @@ public class DEViseServer implements Runnable
             serverCmds = new String[1];
             serverCmds[0] = DEViseCommands.DONE;
         }
+
+	// also close the collaboration JSs
+	for (int i = 0; i < client.collabSockets.size(); i++) {
+	    DEViseCommSocket sock = 
+		(DEViseCommSocket)client.collabSockets.elementAt(i);			
+	    if (!sock.isEmpty()) {
+		try {
+		    String clientCmd = sock.receiveCmd();
+
+		    if (clientCmd.startsWith(DEViseCommands.EXIT)) {
+			client.collabSockets.removeElement(sock);
+			sock.closeSocket();
+			sock = null;
+		    }
+		} catch (InterruptedIOException e) {}
+	    } else {
+		pop.pn("Sending command " + DEViseCommands.CLOSE_SESSION
+		       + "to collabration client" + " " + i);
+		sock.sendCmd(DEViseCommands.CLOSE_SESSION);
+	    }			    
+	}
     }
 
     private void cmdGetSessionList(String clientCmd) throws YException
