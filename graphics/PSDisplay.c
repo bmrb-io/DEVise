@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1997/06/04 15:50:26  wenger
+  Printing windows to PostScript as pixmaps is now implemented, including
+  doing so when printing the entire display.
+
   Revision 1.18  1997/05/21 22:09:55  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -258,6 +262,7 @@ PSDisplay::ClosePrintFile()
   return result;
 }
 
+#ifndef LIBCS
 /**************************************************************
 Import a DEVise window, getting pixels from the display, not
 generating PostScript directly.
@@ -292,6 +297,7 @@ DevStatus PSDisplay::ImportWindow(ViewWin *window,
 
   return result;
 }
+#endif
 
 /**************************************************************
 Import a PostScript image.

@@ -17,6 +17,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  1997/05/21 21:05:11  andyt
+#  Support for multiple clients in client-server library. Single-client mode
+#  still supported by compiling with -DSINGLE_CLIENT. Client-server library
+#  can now display EmbeddedTk windows and Tasvir images. Added a sample
+#  Embedded-Tk script and GIF image to the repository (ETkSample.tcl,
+#  earth.gif). Modified tarcslib script to include all new files.
+#
 #  Revision 1.6  1997/04/11 19:19:26  wenger
 #  Added dashed line support to the cslib versions of WindowReps; added
 #  option to not maintain aspect ratio in Tasvir images; re-added shape
@@ -89,6 +96,7 @@ LIBOBJ = \
         ../graphics/ETkClient.o \
         ../graphics/DaliPatron.o \
         ../graphics.new/MapIntToInt.o \
+	../xvertext/rotated.o \
         $(LOCALOBJ)
 
 LIB = libcs.a
