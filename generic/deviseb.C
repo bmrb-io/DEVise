@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/05/13 21:56:57  jussi
+  Removed idleScript variable. Return value of program is 1
+  if script file execution succeeded, otherwise 2.
+
   Revision 1.4  1996/05/13 20:23:51  jussi
   Added support for synchronization points.
 
@@ -207,6 +211,8 @@ void SetupConnection()
   printf("Connecting to server %s:%d.\n", _hostName, _portNum);
 
   _deviseFd = DeviseOpen(_hostName, _portNum, 0);
+  if (_deviseFd < 0)
+    exit(1);
 	
   printf("Connection established.\n\n");
 }
