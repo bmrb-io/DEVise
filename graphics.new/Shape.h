@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1995/12/28 19:30:37  jussi
+  Small fix to remove compiler warning.
+
   Revision 1.7  1995/12/22 18:06:25  jussi
   Symbol width and height are taken as an absolute value.
 
@@ -69,6 +72,17 @@ inline Coord GetY(char *ptr, TDataMap *map, GDataAttrOffset *offset)
     return map->GetDefaultY();
   else
     return GetAttr(ptr, yOffset, Coord, offset);
+}
+
+inline Coord GetZ(char *ptr, TDataMap *map, GDataAttrOffset *offset)
+{
+#if 0
+  if (offset->zOffset < 0)
+    return map->GetDefaultZ();
+  else
+    return GetAttr(ptr, zOffset, Coord, offset);
+#endif
+  return 0;
 }
 
 inline Color GetColor(char *ptr, TDataMap *map, GDataAttrOffset *offset)
