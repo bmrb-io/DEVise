@@ -92,10 +92,13 @@ Tuple * Joins::getNext()
 	
 	while(1){
 			
-		IBool * boolean = (IBool *)(comparePtr->opPtr)(leftTup[leftSeqAttrPos],rightTup[rightSeqAttrPos]);
+		IBool * boolean = (IBool *)(comparePtr->opPtr)
+					(leftTup[leftSeqAttrPos],rightTup[rightSeqAttrPos]);
 			
-			if (boolean->getValue() == true )
-				break;
+			if (boolean->getValue() == true ){
+				if (evaluateList(myWhere,rightTup,leftTup))
+					break;
+			}
 
 			if (*function == "joinnext"){
 				if (!innerFill())
@@ -113,8 +116,7 @@ Tuple * Joins::getNext()
 		innerRel.rewind();
 		outerRel.step();
 	}
-	Tuple * retVal = new Tuple[SiteGroup::getNumFlds()];
-	assert(SiteGroup::getNumFlds() == leftCountFlds+rightCountFlds);
+	Tuple * retVal = new Tuple[leftCountFlds+rightCountFlds];
 	for(int i = 0;i < leftCountFlds;i++)
 		retVal[i] = leftTup[i];
 	for(int i = 0;i < rightCountFlds;i++)

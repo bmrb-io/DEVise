@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  1996/12/24 21:00:52  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.7  1996/12/21 22:21:49  donjerko
   Added hierarchical namespace.
 
@@ -94,6 +97,7 @@ LessGreat    ">="|">"|"<="|"<"
 [Aa][Ss]				{return AS;}
 [Ww][Hh][Ee][Rr][Ee]        {return WHERE;}
 [Ss][eE][qQ][uU][Ee][Nn][cC][eE][bB][yY]  {return SEQUENCEBY;}
+[Gg][Rr][Oo][uU][Pp][bB][yY]  {return GROUPBY;}
 [Jj][Oo][Ii][Nn][Pp][Rr][Ee][Vv]  {return JOINPREV;}
 [Jj][Oo][Ii][Nn][Nn][Ee][Xx][Tt]  {return JOINNEXT;}
 [Oo][Vv][Ee][rR]         {return OVER;}

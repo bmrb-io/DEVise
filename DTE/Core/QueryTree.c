@@ -126,7 +126,8 @@ Site* QueryTree::createSite(){
 			}	
 		}
 	}
-	Aggregates *aggregates =new Aggregates(selectList,sequenceby,withPredicate);
+	Aggregates *aggregates =new Aggregates(selectList,sequenceby,withPredicate,
+		groupBy);
 	if(aggregates->isApplicable()){
 			   
 	   	// Change the select list

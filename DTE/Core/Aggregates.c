@@ -36,10 +36,6 @@ List<BaseSelection*>* Aggregates::getSelectList(){
 
 List<BaseSelection*>* Aggregates::filterList(){
 	
-	if (isApplicable() && !sequenceAttr){
-		String msg = " sequenceby clause missing ";
-		THROW(new Exception(msg),NULL);
-	}
 	
 	List <BaseSelection*> *retVal = new List<BaseSelection*>();
 	
@@ -51,8 +47,9 @@ List<BaseSelection*>* Aggregates::filterList(){
 		
 		Path * newPath;
 		BaseSelection *curr = selList->get();
-		if (curr->match(sequenceAttr,newPath) && newPath == NULL )
-			selectMatch = true;
+		if (sequenceAttr)
+			if (curr->match(sequenceAttr,newPath) && newPath == NULL )
+				selectMatch = true;
 		
 		if (curr->isGlobal() && curr->getPath()->isFunction()){
 			
@@ -68,6 +65,11 @@ List<BaseSelection*>* Aggregates::filterList(){
 			else
 		  		retVal->append(curr);
 		}
+		else if (!groupBy->isEmpty() ){
+			
+				THROW(new 
+			Exception("Cannot use non-aggregating attributes with a groupBy clause"),0);
+		}
 		else
 		  retVal->append(curr);
 
@@ -81,7 +83,29 @@ List<BaseSelection*>* Aggregates::filterList(){
 	if (withPredicate){
 		retVal->append(withPredicate);
 	}
-	if (selectMatch == false){
+	groupBy->rewind();
+	while(!groupBy->atEnd()){
+		
+		bool match = false;
+		selList->rewind();
+		while(!selList->atEnd()){
+			Path *path;
+			if (selList->get()->match(groupBy->get(),path)){
+				match = true;
+				break;
+			}
+			selList->step();
+		}	
+		if (!match){
+			retVal->prepend(groupBy->get());
+			selList->prepend(groupBy->get());
+			cout << " Appended the groupBy attribute --- ";
+			cout << groupBy->get()->toString() << endl;
+		}
+		groupBy->step();
+
+	}
+	if (selectMatch == false && sequenceAttr){
 		selList->prepend(sequenceAttr);
 		retVal->prepend(sequenceAttr);
 	}	
@@ -92,16 +116,12 @@ List<BaseSelection*>* Aggregates::filterList(){
 
 void Aggregates::typify(Site* inputIterator){
 	
-	if (isApplicable() && !sequenceAttr)
-		assert(!"Sequnceby Clause missing \n");
-
 	iterator = inputIterator;
 
 	Site::numFlds = selList->cardinality();
 	
 	// Create an array of what to do..
 	funcPtr = new (GenFunction *)[numFlds];
-	
 	for(int i = 0; i < numFlds; i++)
 		funcPtr[i] = NULL;
 		
@@ -111,11 +131,12 @@ void Aggregates::typify(Site* inputIterator){
 
 	// Now get the position and type of the sequencing attribute..
 	getSeqAttrType(AttribNameList,TypeIDList,countFlds);
-
+	
 	// Now do the work of finding all the functions and the window etc.
 	// Counts the function ptr 
 	int i = 0;
-	
+	positions = new int[groupBy->cardinality()];
+	types = new TypeID[groupBy->cardinality()];
 	selList->rewind();
 
 	while(!selList->atEnd()){
@@ -124,7 +145,6 @@ void Aggregates::typify(Site* inputIterator){
 		if(curr->isGlobal() && curr->getPath()->isFunction()){
 			
 			List <BaseSelection *> *args = curr->getPath()->getArgs();
-			
 			if (!checkAggFunc(args))
 				break;
 
@@ -140,19 +160,29 @@ void Aggregates::typify(Site* inputIterator){
 					
 					//	Now that u have set the name..
 					args->step();
-			       arg1=((IInt*)(args->get()->evaluate(NULL,NULL)))->getValue();
-					args->step();
-			       arg2=((IInt*)(args->get()->evaluate(NULL,NULL)))->getValue();
 					
-					if (arg1 > arg2){
-						THROW(new Exception("Window hi lo values reversed"),);
+					// For window size to be full
+					int full = 0;
+					if (!args->atEnd()){
+			       		
+						if (!sequenceAttr){
+								String msg = " sequenceby clause missing ";
+								THROW(new Exception(msg),);
+						}
+						arg1=((IInt*)(args->get()->evaluate(NULL,NULL)))->getValue();
+						args->step();
+			       		arg2=((IInt*)(args->get()->evaluate(NULL,NULL)))->getValue();
+					
+						if (arg1 > arg2){
+							THROW(new Exception("Window hi lo values reversed"),);
+						}
 					}
+					else 
+						full = 1;
 					// Set the function ptr to be called .
-					TypeID ret = setFunctionPtr(funcPtr[i],
-							*(curr->getPath()->getPathName()),j,	
-							TypeIDList[j],arg1,arg2);
+					TypeID ret = setFunctionPtr(funcPtr[i], 
+					  *(curr->getPath()->getPathName()),j,TypeIDList[j],arg1,arg2,full);
 					curr->setTypeID(ret);
-
 					break;
 				}			
 			}	
@@ -160,10 +190,41 @@ void Aggregates::typify(Site* inputIterator){
 		selList->step();
 		i++;
 	}
+	List<BaseSelection*>* selectList =  inputIterator->getSelectList();
+	
+	groupBy->rewind();
+	while(!groupBy->atEnd()){
+		
+		bool match = false;
+		selectList->rewind();
+		while(!selectList->atEnd()){
+			
+			Path *path;
+	    	if (selectList->get()->match(groupBy->get(),path)){
+			
+				positions[groupBy->getCurrPos()] = selectList->getCurrPos();
+				types[groupBy->getCurrPos()] = TypeIDList[selectList->getCurrPos()];
+				match = true;
+			}
+			selectList->step();
+		}
+		if (!match){
+			THROW(new Exception(" Unable to find the groupBy attribute "),);
+		}
+		groupBy->step();
+	}
+	// Now all that is done ...
+	// Form the Grouping class;;
+	groupIterator = new Grouping(iterator,positions,types,groupBy->cardinality());
 }
 
 void Aggregates::getSeqAttrType(String * AttribNameList,TypeID *TypeIDList ,int countFlds)
 {
+	if (!sequenceAttr)	{
+		fillNextFunc = new AggWindow(this,"",-1);
+		return ;
+	}
+
 	seqAttrPos = 0;
 	seqAttrType = "int";
 	
@@ -201,6 +262,8 @@ bool Aggregates::checkAggFunc(List<BaseSelection*>* args)
 		args->get()->selectID() != SELECT_ID))
 		return false;
 	args->step();
+	if (args->atEnd())
+		return true;
 	if (args->atEnd() || args->get()->selectID() != CONST_ID )
 		return false;
 	args->step();
@@ -210,21 +273,23 @@ bool Aggregates::checkAggFunc(List<BaseSelection*>* args)
 	return true;
 }
 
-TypeID &Aggregates::setFunctionPtr(GenFunction*&functionPtr,String funcName,int pos,TypeID type,int low,int high) 
+TypeID &Aggregates::setFunctionPtr(GenFunction*&functionPtr,String funcName,int pos,TypeID type,int low,int high,int full) 
 {
 	
-	fillNextFunc->updateWindow(low,high);
-	functionPtr = new GenFunction(fillNextFunc,funcName,type,pos,low,high);
+	fillNextFunc->updateWindow(low,high,full);
+	functionPtr = new GenFunction(fillNextFunc,funcName,type,pos,low,high,full);
 	return functionPtr->getTypeID();
 }
 
-Tuple* Aggregates::getNext(){
+Tuple* Aggregates::getNext()
+{
 	
 	Tuple * retVal = new (Type*)[numFlds];
 	fillNextFunc->fillWindow();
 	
 	if (fillNextFunc->getTupleAtCurrPos() == NULL)
 		return NULL;
+	
 	int i;
 	for(i = 0; i < numFlds;i++)
 		if (funcPtr[i] != NULL )
@@ -242,9 +307,20 @@ void AggWindow::fillWindow()
 {
 
 	// First fill the last of the list and then remove the unwanted stuff.
-	
+	if (windowFull){
+		if (presentPos >=  0){
+			aggregate->groupIterator->nextGroup();
+			init();
+			//TupleList->removeAll();
+		}
+		while((nextStoredTuple = aggregate->groupIterator->getNext()))
+			TupleList->append(nextStoredTuple);
+		presentPos = 0;
+		return;
+	}
+		
 	if (nextStoredTuple == NULL)
-		nextStoredTuple = aggregate->iterator->getNext();
+		nextStoredTuple = aggregate->groupIterator->getNext();
 	
 	if (!nextStoredTuple)
 		state = FINAL;
@@ -252,13 +328,11 @@ void AggWindow::fillWindow()
 	if (nextStoredTuple != NULL){
 		
 		TupleList->append(nextStoredTuple);
-	
 		bool match = true;
 		
 		while(match == true){
 			
-			Tuple *nextTuple = aggregate->iterator->getNext();
-			
+			Tuple *nextTuple = aggregate->groupIterator->getNext();
 			if (nextTuple && equalAttr(nextTuple,nextStoredTuple))
 				TupleList->append(nextTuple);
 			else{
@@ -294,7 +368,7 @@ void AggWindow::fillWindow()
 
 			while(match == true){
 			
-				Tuple *nextTuple = aggregate->iterator->getNext();
+				Tuple *nextTuple = aggregate->groupIterator->getNext();
 				if (nextTuple && equalAttr(nextTuple,nextStoredTuple)){
 					TupleList->append(nextTuple);
 				}
@@ -317,7 +391,6 @@ void AggWindow::fillWindow()
 		// go ahead and remove stuff..
 		
 		// Shift the present position
-		
 		TupleList->rewind();
 		
 		if (TupleList->setPos(presentPos) == false){
@@ -378,18 +451,31 @@ void AggWindow::fillWindow()
 			}
 		}	
 	}
-
-
 }
 
 Tuple *AggWindow::getTupleAtCurrPos(){	
 	
-	return TupleList->getVal(presentPos);
-
+	//if (windowFull && presentPos > 0 )
+	//	return NULL;
+	Tuple * next = TupleList->getVal(presentPos);
+	if (!windowFull && !next){
+		// This tells the iterator to go to the next group..
+		aggregate->groupIterator->nextGroup();
+		/*state = INITIAL;
+		TupleList->removeAll();
+		presentPos = -1;*/
+		init();
+		fillWindow();
+		next = TupleList->getVal(presentPos);
+	}
+	return next;
 }
+
 int AggWindow::getLowPos(int windowPos,bool byPosition )
 {
 	
+	if (windowFull)
+		return 0;
 	if (type != "int" && byPosition == true)
 		return -1;
 
@@ -464,6 +550,8 @@ int AggWindow::getLowPos(int windowPos,bool byPosition )
 int AggWindow::getHighPos(int windowPos,bool byPosition )
 {
 	
+	if (windowFull )
+		return TupleList->cardinality()-1;
 	if (type != "int" && byPosition == true)
 		return -1;
 
@@ -686,4 +774,95 @@ Tuple * GenFunction::scanNext()
 			currPos ++;
 	}
 	return curr;
+}
+
+void Grouping::sort(){
+	
+	lessPtrs = new (GeneralPtr *)[count];
+	equalPtrs = new (GeneralPtr *)[count];
+	int i;
+
+	for(i = 0;i < count;i++){
+		TypeID retVal;	
+		TRY(lessPtrs[i] = getOperatorPtr("<",types[i],types[i],retVal),);
+		TRY(equalPtrs[i] = getOperatorPtr("=",types[i],types[i],retVal),);
+	}
+	
+	for(i = 0; i < TupleList->cardinality(); i++){
+		
+		for(int j = i+1; j < TupleList->cardinality(); j++){
+			Tuple * left = TupleList->getVal(i);
+			Tuple * right = TupleList->getVal(j);
+			assert(left);
+			assert(right);
+			if (tupleCompare(positions,lessPtrs,equalPtrs,count,left,right)>0){
+				
+				assert(TupleList->setPos(i));
+				TupleList->replace(right);
+				assert(TupleList->setPos(j));
+				TupleList->replace(left);
+			}
+				
+		}
+	}
+}
+
+
+int Grouping::tupleCompare(int *positions,GeneralPtr **lessPtr,GeneralPtr ** equalPtr,int count,Tuple * left,Tuple * right)
+{
+	assert(right);
+	assert(left);
+	int i;
+	for(i = 0; i < count; i++){
+		
+		if (((IBool*)lessPtr[i]->opPtr(left[positions[i]],right[positions[i]]))->getValue())
+			return -1;
+		else if (((IBool*)
+		equalPtr[i]->opPtr(left[positions[i]],right[positions[i]]))->getValue() == false)
+			return 1;	
+	}
+	return 0;
+
+}
+
+Tuple *Grouping::getNext(){
+	
+	if (!count)
+		return iterator->getNext();
+
+	if (TupleList->isEmpty()){
+		
+		while((next = iterator->getNext()))
+			TupleList->append(next);
+	
+		//int count = TupleList->cardinality();
+		//TupleArray = new Tuple[count];
+		sort();;
+		TupleList->rewind();
+		next = TupleList->get();
+		TupleList->remove();
+		state = NORMAL;
+		return next;
+	}
+	else{
+		
+		if (state == GROUPEND)
+			return NULL;
+		
+		Tuple * nextInList = TupleList->get();
+		if (tupleCompare(positions,lessPtrs,equalPtrs,count,next,nextInList)== 0){
+			TupleList->remove();
+			return nextInList;
+		}
+		else{
+			state = GROUPEND;
+			next = nextInList;
+			return NULL;
+		}	
+	}
+}
+
+void Grouping::nextGroup(){
+	if (state == GROUPEND)
+		state = NORMAL;
 }

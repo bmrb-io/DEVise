@@ -9,6 +9,31 @@ class GenFunction;
 class AggWindow;
 class Aggregates;
 
+class Grouping{
+		
+	// Remeber this shares the iterator..
+	public:
+		Grouping(Site * iterator,int *positions=NULL,TypeID*types=NULL,int count=0):
+				iterator(iterator),positions(positions),types(types),count(count){
+			TupleList = new List<Tuple *>;
+			state = NORMAL;
+		}
+		Tuple * getNext();
+		void nextGroup();
+		int tupleCompare(int *,GeneralPtr **,GeneralPtr ** ,int ,Tuple * ,Tuple * );
+	private:
+		Site * iterator;
+		int *positions;	
+		TypeID *types;
+		int count;
+		enum STATE {NORMAL,GROUPEND} state;
+		List<Tuple *>*TupleList;
+		Tuple * next;		
+		
+		GeneralPtr ** lessPtrs;
+		GeneralPtr ** equalPtrs;
+		void sort();
+};
 
 class AggWindow 
 {
@@ -27,19 +52,26 @@ class AggWindow
 		// ordering type simply insert new functions here.
 		TypeID retType;
 		equalOpr = compOpr = NULL;
-
-		TRY(equalOpr = getOperatorPtr("=",type,type,retType),);
-		assert(equalOpr);
-		windowUpdated = false;
+		if (pos >= 0){
+			TRY(equalOpr = getOperatorPtr("=",type,type,retType),);
+			assert(equalOpr);
+		}
 		TupleList =  new List<Tuple *>();
-		nextStoredTuple = NULL;
-		state = INITIAL;
-		valuesBeforePresent = 0;	
-
+		windowFull = false;
+		init();
 	}	
 	
+	void init(){
+		
+		windowUpdated = false;
+		nextStoredTuple = NULL;
+		TupleList->removeAll();
+		state = INITIAL;
+		valuesBeforePresent = 0;	
+		presentPos = -1;
+	}
 	// To instruct this AggWindow to load the prepareCompOpr if it is needed
-	// Remembner this is needed only by functions  which
+	// Remember this is needed only by functions  which
 	// return 
 
 	void prepareCompOpr(){
@@ -49,7 +81,8 @@ class AggWindow
 		if (retType != "int")
 			assert(!" Illegal comparison operator implemented");
 	}		
-	
+	void sort(	int *positions,TypeID * types,int count);
+	void sortOn(int ,GeneralPtr);
 	bool equalAttr(Tuple *n,Tuple *s){
 
 	  return ((IBool *)(equalOpr->opPtr)(n[position],s[position]))->getValue();
@@ -64,9 +97,15 @@ class AggWindow
 	// To fill the window..
 	void fillWindow();
 
-	void updateWindow(int low,int high)
+	void updateWindow(int low,int high,int full)
 	{
-	
+		if (position < 0 && full != true){
+			THROW(new Exception("Aggregate function without groupby clause"),);
+		}
+		if (full == 1){
+			windowFull = true;
+			return;
+		}
 		if (windowUpdated == false){
 			windowLow = low;
 			windowHigh = high;
@@ -121,6 +160,7 @@ class AggWindow
 		// whole thing..
 		enum STATE {INITIAL,MIDDLE,FINAL} state;
 		bool windowUpdated;
+		bool windowFull;
 	
 };
 
@@ -130,8 +170,10 @@ class GenFunction{
 
 	friend class Aggregates;
 	GenFunction(AggWindow *fillNextFunc,String funcName, TypeID attribType,
-	int pos, int windowLow,int windowHigh){
+	int pos, int windowLow,int windowHigh,int full){
 		
+		if (full)
+			windowFull = true;
 		wLow = windowLow;
 		wHigh = windowHigh;
 		this->pos= pos;
@@ -273,6 +315,7 @@ class GenFunction{
 		AggWindow * filler;
 		
 		bool byPos;
+		bool windowFull;
 		int currPos;
 		int highPos;
 
@@ -287,10 +330,10 @@ public:
 		List<BaseSelection*>* selectClause,	// queries select clause
 		BaseSelection * sequenceby,	// queries select clause
 		BaseSelection* withPredicate,
-		List<BaseSelection*>* groupBy = NULL,	// group by clause
+		List<BaseSelection*>* groupBy ,	// group by clause
 		BaseSelection* having = NULL			// having clause
 	) : Site(), selList(selectClause),sequenceAttr(sequenceby),
-			withPredicate(withPredicate)
+			withPredicate(withPredicate),groupBy(groupBy)
 	{
 		
 		Site::mySelect = selList;
@@ -340,15 +383,19 @@ private:
 	int seqAttrPos;
 	BaseSelection* withPredicate;	
 	Site * iterator;
+	Grouping *groupIterator; 
 	int withPredicatePos;	
+	List<BaseSelection*>*groupBy;
 
+	int *positions;
+	TypeID *types;
 	// A list of ptrs to the GeneralFunction class to actually do the 
 	// aggregation.
 	GenFunction **funcPtr;
 	
 	// Calls GenFunction to set up apprpriate agg functions.
 	TypeID &setFunctionPtr(GenFunction *& functionPtr,String funcName,
-		int pos,TypeID type, int low,int high);
+		int pos,TypeID type, int low,int high,int full);
 	
 	void getSeqAttrType(String *,TypeID *,int);
 	//void getSeqAttrType(Site *,List<BaseSelection*>*);
@@ -366,30 +413,5 @@ private:
 	friend class AggWindow;
 
 };
-/*
-class Scan{
-	
-	Scan(AggWindow *Agg,int windowLow,int windowHigh,bool byposition)
-	{
-		this->byPosition = byPosition;
-		wLow = windowLow;
-		wHigh = windowHigh;
-		aggPtr = Agg;
-		
-		//windowPos = -1;
-		//int currPos = -1;
-	}
-	Tuple * getNext();
-	
-	private:
-		// To maintain the current position in the list
-		int currPos;
-		// To maintain the current window position chosen.
-		int windowPos;
 
-		int wLow,wHigh;
-		bool byPosition;
-		AggWindow * aggPtr;
-};
-*/
 #endif

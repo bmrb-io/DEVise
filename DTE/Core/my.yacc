@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1996/12/24 21:00:53  kmurli
+  Included FunctionRead to support joinprev and joinnext
+
   Revision 1.10  1996/12/21 22:21:49  donjerko
   Added hierarchical namespace.
 
@@ -83,6 +86,7 @@ int yyerror(char* msg);
 %token AS
 %token WHERE
 %token SEQUENCEBY 
+%token GROUPBY 
 %token JOINNEXT 
 %token JOINPREV 
 %token CREATE
@@ -107,6 +111,7 @@ int yyerror(char* msg);
 %type <selList> optOverClause
 %type <integer> optOffset 
 %type <sel> optWithClause
+%type <selList> optGroupByClause
 %type <tableList> listOfTables
 %type <tabAlias> tableAlias
 %type <tableList> JoinList 
@@ -140,12 +145,13 @@ table_name : table_name '/' STRING {
 	}
 	;
 query : SELECT listOfSelections 
-	   FROM listOfTables optWhereClause optSequenceByClause ';' {
-		parseTree = new QueryTree($2, $4, $5, $6, withPredicate,namesToResolve);
+	  FROM listOfTables optWhereClause optSequenceByClause optGroupByClause';' {
+		parseTree = new QueryTree($2,$4,$5,$6,withPredicate,$7,namesToResolve);
 		return 0;
 	}
-	| SELECT '*' FROM listOfTables optWhereClause optSequenceByClause ';' {
-	 parseTree = new QueryTree(NULL, $4, $5, $6, withPredicate,namesToResolve);
+	| SELECT '*' FROM listOfTables optWhereClause 
+			optSequenceByClause optGroupByClause ';' {
+	 parseTree = new QueryTree(NULL, $4, $5, $6, withPredicate,$7,namesToResolve);
 		return 0;
 	}
      ;
@@ -196,6 +202,15 @@ optSequenceByClause :SEQUENCEBY STRING optWithClause{
 		withPredicate= NULL;
 	}
 	;
+
+optGroupByClause: GROUPBY listOfSelections{
+		$$ = $2;
+	}
+	|{
+		$$ = new List<BaseSelection*>;
+	}
+	;
+	
 optWithClause: WITH predicate {
 		$$ = $2;
 	}
