@@ -166,7 +166,7 @@ Num Date        Status  Description
 
 051 10/15/96    FIXED	Showing statistics as text produces many errors. (rkw)
 
-052 10/16/96	OPEN	When importing a data stream (particularly when
+052 10/16/96	FIXED	When importing a data stream (particularly when
 			mapping recId to X) xlow sometimes comes up
 			greater than xhigh. (rkw)
 
@@ -281,6 +281,11 @@ Num Date        Status  Description
 			use this). (ml/rkw)
 
 082 11/25/96	FIXED	Load session test/a2.tk -> core dump. (rkw/jpm)
+
+083 11/25/96	OPEN	Printing directly to a printer doesn't work. (rkw)
+
+084 11/25/96	OPEN	Temporary print file isn't removed after printing.
+			(rkw)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
