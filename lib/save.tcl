@@ -15,6 +15,11 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.50  2000/04/19 16:16:36  wenger
+#  Found and fixed bug 579 (crash if opening session fails); found bug
+#  580; better handling of session opening errors on the Tcl side;
+#  improved WindowVisible and WindowExists procedures.
+#
 #  Revision 1.49  1999/12/02 16:26:52  wenger
 #  Fixed bug 518 (confirm before saving a session the first time); got rid
 #  of error message during normal Tasvir launch.
@@ -285,7 +290,9 @@ proc DoActualSave { infile asTemplate asExport withData asBatchScript } {
     ChangeStatus 1
 
     # rename existing file to a backup file
-    MoveFile $infile $infile.bak
+    if {[file exists $infile]} {
+        MoveFile $infile $infile.bak
+    }
 
     # checkpoint tdata
     set classes [ DEVise get "tdata" ]
