@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/08 23:45:48  ravim
+  Polygon filled. Window name and stat name displayed.
+
   Revision 1.3  1995/12/07 02:19:00  ravim
   Init() clears the display.
 
@@ -28,24 +31,32 @@
 #include "WindowRep.h"
 #include "KGraph.h"
 
+#define MAX_POPUP_LEN 30
+
 KGraph::KGraph(DeviseDisplay *dis)
 {
   _dis = dis;
 
   // Create a new window
-  _win = _dis->CreateWindowRep("Kiviat Graph", 0, 0, 0.40, 0.25,
+  _win = _dis->CreateWindowRep("Kiviat Graph", 0, 0, 0.25, 0.25,
 			       BlackColor, WhiteColor);
+  _win->RegisterCallback(this);
 
   _naxes = 0;
   _pts = NULL;
   _xyarr = NULL;
   _winame = NULL;
+  msgBuf = NULL;
 }
 
 KGraph::~KGraph()
 {
   delete [] _pts;
   delete [] _xyarr;
+  if (msgBuf)
+    for (int i = 0; i < _naxes+3; i++)
+      delete msgBuf[i];
+  delete [] msgBuf;
 }
 
 void KGraph::Init(char *winname, char *statname)
@@ -53,6 +64,10 @@ void KGraph::Init(char *winname, char *statname)
   _naxes = 0;
   delete [] _pts;
   delete [] _xyarr;
+  if (msgBuf)
+    for (int i = 0; i < _naxes+3; i++)
+      delete msgBuf[i];
+  delete [] msgBuf;
 
   // Clear up any existing display on the windowrep - is this the right way??
   // We want to reuse the window for displaying a different graph.
@@ -75,6 +90,9 @@ void KGraph::setAxes(int num)
   _xyarr = new Point[num];
   for (int i = 0; i < num; i++)
     _pts[i] = 0.0;
+  msgBuf = new (char *)[_naxes+3];
+  for (i = 0; i < _naxes+3; i++)
+    msgBuf[i] = new char[MAX_POPUP_LEN];
 }
 
 void KGraph::setPoints(Coord *pts, int num)
@@ -91,8 +109,8 @@ void KGraph::Display()
   DrawCircle();
   // Plot points
   PlotPoints();
-  // Show values
-  ShowVal();
+  // Show values - show only on button press now
+//  ShowVal();
   // Draw Axes
   DrawAxes();
 }
@@ -107,6 +125,7 @@ void KGraph::DrawCircle()
   _win->Origin(x0, y0);
   _win->Dimensions(w, h);
 
+  h = (w > h)? h : w;
   // Compute center of circle
   cy = y0 + h/2;
   cx = x0 + h/2;
@@ -213,4 +232,36 @@ void KGraph::Rotate(Coord xval, int degree, Coord &retx, Coord &rety)
 {
   retx = cx + xval * cos(ToRadian(degree));
   rety = cy + xval * sin(ToRadian(degree));
+}
+
+void KGraph::HandlePress(WindowRep *w, int xlow, int ylow, int xhigh, 
+			 int yhigh, int button)
+{
+  printf("HandlePress : button %d\n",button);
+  
+
+}
+
+Boolean KGraph::HandlePopUp(WindowRep *w, int x, int y, int button, 
+			  char **&msgs, int &numMsgs)
+{
+  // Message displayed consists of three generic lines followed by values
+  // for each of the axes.
+  msgs = msgBuf;
+  sprintf(msgBuf[0], "%s", _winame);
+  sprintf(msgBuf[1], "%s", _statname);
+  sprintf(msgBuf[2], "Values clockwise from 0");
+  
+  for (int i = 0; i < _naxes; i++)
+    sprintf(msgBuf[3+i], "%4.2f", _pts[i]);
+
+  numMsgs = _naxes+3;
+  return true;
+}
+
+void KGraph::HandleResize(WindowRep *w, int xlow, int ylow, unsigned width,
+			  unsigned height)
+{
+  Display();
+
 }
