@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.48  1996/01/16 16:49:21  jussi
+#	Added Cursor Delete. Made Switch TData work with data stream
+#	definition catalog. Made Window Duplicate be more complete
+#	(it now duplicates all view settings, including statistics,
+#	labels, and axis settings).
+#
 #	Revision 1.47  1996/01/15 23:07:26  jussi
 #	Hid obsolete visualization commands from the casual user.
 #
@@ -213,9 +219,13 @@ set DEViseShapes {{0 Rect} {1 RectX} {2 Bar} {3 Polygon} {4 Oval} \
 # global to control.tk: curView: current view selected.
 # lastView: last view selected.
 # historyOpen: true if history window has been opened.
+# UserMode: 1 for end-user mode (logical schemas), 0 for
+#           administrator mode (physical schemas)
+
 set curView ""
 set lastView ""
 set historyWinOpened false
+set UserMode 1
 
 set libdir "."
 if { [info exists env(DEVISE_LIB)] } {
