@@ -15,6 +15,14 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.120  1997/03/02 00:47:25  donjerko
+#	Tdata used to be created before "Define Visualisation" window.
+#	For DTE types, it is now being created after this window because the
+#	user options can make query more restrictive and therefore cheaper to execute.
+#	This screws up the Mapping dialog because only the restricted set of
+#	attributes is passed as tdata.
+#	This needs to be fixed once we aggree how to go about it.
+#
 #	Revision 1.119  1997/02/26 16:32:01  wenger
 #	Merged rel_1_3_1 through rel_1_3_3c changes; compiled on Intel/Solaris.
 #
@@ -616,6 +624,8 @@ source $libdir/query.tcl
 source $libdir/window.tcl
 source $libdir/tdata.tk
 source $libdir/layout.tk
+source $libdir/lens.tcl
+source $libdir/lensgui.tk
 
 set mode 0
 DEVise changeMode $mode
@@ -1024,6 +1034,7 @@ menu .mbar.gdata.menu -tearoff 0
 .mbar.gdata.menu add command -label "Edit Mapping" -command DoEditMapping
 .mbar.gdata.menu add command -label "Copy/Edit" -command DoViewCopy
 .mbar.gdata.menu add command -label "Switch TData" -command DoSwitchTData
+.mbar.gdata.menu add command -label "Flush TData" -command DoFlushTData
 
 menu .mbar.view.menu -tearoff 0
 
@@ -1175,10 +1186,10 @@ menu .mbar.window.menu -tearoff 0
 
 .mbar.window.menu add command -label "Stack Control" \
 	-command { DoWindowStackControl }
-######################MODIFIED SSL 11/3########################################
-#.mbar.window.menu add command -label "Lens Control" \
-#	-command { DoWindowLensControl }
-######################MODIFIED SSL 11/3########################################
+######################MODIFIED SSL 2/6########################################
+.mbar.window.menu add command -label "Lens Control" \
+	-command { DoLensControl }
+######################MODIFIED SSL 2/6########################################
 .mbar.window.menu add separator
 .mbar.window.menu add command -label "Swap Views" -command DoSwapView
 .mbar.window.menu add command -label "Move View" -command DoViewMove
@@ -1353,6 +1364,79 @@ proc FindDefaultXAttr { attrs } {
 
 #SSL - new mapping box implementation
 # Do editing for mapping
+proc DoEditMapping {} {
+    global curView
+
+    if {![CurrentView]} {
+	return
+    }
+    
+    if {[WindowVisible .editMapping]}  {
+	return
+    }
+
+    # Get mapping for the view (first one)
+    set map [lindex [DEVise getViewMappings $curView] 0]
+    
+    # See if map is interpreted
+    set found 0
+    foreach m [InterpretedGData] {
+	if {$m == $map} {
+	    set found 1
+	    break
+	}
+    }
+    if {!$found} {
+	dialog .editError "Mapping Not Interpreted" \
+		"View has a compiled mapping which cannot be edited." "" 0 OK
+	return
+    }
+    EditMapping $map     
+}
+
+proc EditMapping { map } {
+    global sourceList derivedSourceList
+
+    # Get parameters for the mapping
+    set params [DEVise getInstParam $map]
+    
+    if {$params == ""} {
+	dialog .editError "No Mapping Parameters" \
+		"Mapping has no parameters." "" 0 OK
+	return
+    }
+    
+    set tdata [lindex [lindex $params 0] 1]
+    
+	set catEntry [DEVise dteShowCatalogEntry $tdata]
+	set catEntry [lindex $catEntry 0]
+	set entryType [lindex $catEntry 1]
+	if {$catEntry == ""} {
+		set sfname [lindex $derivedSourceList($tdata) 3]
+		set schemaname [file tail $sfname]
+	} elseif {[isDTEType $entryType]} {
+		set schemaname $tdata
+	} else {
+		set sfname [lindex $catEntry 4]
+		set schemaname [file tail $sfname]
+	}
+
+#   set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
+#   if {$err > 0} {
+#	set sfname [lindex $derivedSourceList($tdata) 3]
+#   }
+#   set schemaname [file tail $sfname]
+
+    # set attrs [DEVise getSchema $tdata]
+    
+    dialogMapping .editMapping "Edit Mapping" \
+	    "Edit Mapping" ""   \
+	    $schemaname \
+	    $params \
+	    $map \
+	    0
+}
+
 #proc DoEditMapping {} {
 #    global curView
 #
@@ -1571,6 +1655,31 @@ proc GetMapping { tdata mapClass} {
 
     # not found
     return ""
+}
+
+#Flush TData and rebuild the index , also issue queries on any view that 
+#requires this TData
+
+proc DoFlushTData {} {
+    global dialogListVar
+    
+    set tdata ""
+    set tdataSet [TdataSet]
+    if { [llength $tdataSet] > 0 } {
+	set answer [dialogList .selectTData "Select Data Stream" \
+		"Select tdata stream to invalidate" \
+		"" 1 { OK Cancel } $tdataSet]
+	if { $answer == 1 || $dialogListVar(selected) == "" } {
+	    return
+	} 
+	if { $answer == 0 } {
+	    set tdata $dialogListVar(selected)
+	} else {
+	    return
+	}
+    }
+    puts "Invalidating $tdata"
+    DEVise invalidateTData $tdata
 }
 
 # Switch to a different TData for current view.
