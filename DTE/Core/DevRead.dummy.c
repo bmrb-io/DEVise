@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/07/02 20:51:22  beyer
+  corrected for new interface
+
   Revision 1.3  1998/01/07 19:25:56  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -53,6 +56,10 @@ Iterator* DevRead::createExec(){
 	return NULL;
 }
 
+void DevRead::Close(){
+}
+
+
 DevReadExec::~DevReadExec(){
 }
 
@@ -64,5 +71,11 @@ const Tuple* DevReadExec::getThis(Offset offset) {
 	return NULL;
 }
 
-void DevRead::Close(){
+Offset DevReadExec::getOffset()
+{
+  return -1;
+}
+
+const TypeIDList& DevReadExec::getTypes()
+{
 }
