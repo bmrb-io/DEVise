@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/01/13 23:10:02  jussi
+  Added support for Z attribute and shape attribute 2.
+
   Revision 1.6  1995/12/28 19:52:21  jussi
   Small fixes to remove compiler warnings.
 
@@ -44,7 +47,7 @@
 #include "TData.h"
 #include "QueryProc.h"
 
-//#define DEBUG
+#define DEBUG
 
 /* counts how many TDataMaps have been created.
    Also used in creating the name of GData */
@@ -93,15 +96,14 @@ TDataMap::TDataMap(char *name, TData *tdata, char *gdataName,
     _gdataName = CreateGDataName(_tdata->GetName(), name);
   
   _gdataPath = CreateGDataPath(_gdataName);
+  _gdata = NULL;
   
-  if (_createGData && _gRecSize < tdata->RecSize()) {
+  if (_createGData) {
 #ifdef DEBUG
     printf("Creating new instance of GData with recSize %d\n", _gRecSize);
 #endif
     _gdata = new GData(_tdata, _gdataPath, _gRecSize, 
 		       maxGDataPages * DEVISE_PAGESIZE);
-  } else {
-    _gdata = NULL;
   }
   
   _x = 0.0;
@@ -332,15 +334,16 @@ void TDataMap::ResetGData(int gRecSize)
     QueryProc::Instance()->ClearGData(_gdata);
     delete _gdata;
     _gdata = NULL;
-    _gRecSize = gRecSize;
+  }
 
-    if (_createGData && _gRecSize < _tdata->RecSize()) {
+  _gRecSize = gRecSize;
+
+  if (_createGData) {
 #ifdef DEBUG
-      printf("Creating new instance of GData with recSize %d\n", _gRecSize);
+    printf("Creating new instance of GData with recSize %d\n", _gRecSize);
 #endif
-      _gdata = new GData(_tdata, _gdataPath, _gRecSize,
-			 _maxGDataPages * DEVISE_PAGESIZE);
-      QueryProc::Instance()->ResetGData(_tdata,_gdata);
-    }
+    _gdata = new GData(_tdata, _gdataPath, _gRecSize,
+		       _maxGDataPages * DEVISE_PAGESIZE);
+    QueryProc::Instance()->ResetGData(_tdata,_gdata);
   }
 }
