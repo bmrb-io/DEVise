@@ -4,13 +4,26 @@
 
 ACTIVE
 ------
+Make a tested and stabilized release of Devise. (rr/rkw 1/9/97)
+
 Improve control of fonts. (ml/rkw 11/19/96)
 
 Be able to save schemas to a "TData file". (ml/rkw 6/13/96)
 
+Remove sourceList() dependencies from the front-end.  Right now, the
+front-end has to consult its catalogs to get information about streams
+that are fully defined in the back-end.  If the proper DEVise API
+commands were added, this would not be necessary.  The advantage is
+that streams can be defined without being defined at the front-end,
+but the front-end can still be used to create new views, etc. (kb 8/2/96)
+
 
 HIGH PRIORITY
 -------------
+Make automated test scripts. (rr/rkw 1/9.97)
+
+Major source code reorganization. (rkw 1/9/97)
+
 Make mapping dialog work like the query dialog in that you can select
 different views and the mapping dialog switches to the current
 mapping, and then there should be an 'apply' button to accept changes
@@ -64,8 +77,6 @@ get rid of graphics/graphics.new) and make naming consistent (.c/.C).
 Have the ability to have null values in records. (kb/rkw 7/31/96)
 
 Improvements to selection/projection, etc., as per meetings of 5/13/96.
-
-Move handling of web data to V-engine.
 
 Move handling of special format (e.g. business school) data to V-engine.
 
@@ -121,13 +132,6 @@ Make the open-file dialog box remember its last directory for each
 type of file.  Eg, there could be an SelectSession proc and an
 SelectDataSource proc that set the current directory to whatever
 the user had used the previous time.  (kb 8/2/96)
-
-Remove sourceList() dependencies from the front-end.  Right now, the
-front-end has to consult its catalogs to get information about streams
-that are fully defined in the back-end.  If the proper DEVise API
-commands were added, this would not be necessary.  The advantage is
-that streams can be defined without being defined at the front-end,
-but the front-end can still be used to create new views, etc. (kb 8/2/96)
 
 Configurable zoom magnification - Action.[ch] now has configurable
 magnification of zoom in/out, but there is no way for the user to set
@@ -234,7 +238,7 @@ Add a color palette to the mapping to allow flexibility in mapping TData
 values to colors (e.g., maybe you want value 1 to be color 10, value 2
 to be color 5, etc.). (ml/rkw 11/11/96)
 
-Add a "pattern choose" similar to the "color chooser".  Then be able to
+Add a "pattern chooser" similar to the "color chooser".  Then be able to
 change the number to pattern correspondence in the mapping (similar to
 what we want to do with the colors).  (ml/rkw 11/12/96)
 
@@ -352,6 +356,8 @@ Show name of view in mapping window. (ml/rkw 11/21/96)
 
 Improve sizing of Tasvir images so that they work like other symbols.
 (rkw 9/12/96)
+
+Move handling of web data to V-engine.
 
 
 CANCELLED
