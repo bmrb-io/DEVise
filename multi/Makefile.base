@@ -26,7 +26,8 @@ ALLOBJ= disp.o TDataMulti.o TDataHost.o TDataCycle.o Message.o \
 	CycleSuspendedMappingClassInfo.o \
 	CycleCpuTimeMappingClassInfo.o 
 
-disp: $(ALLOBJ)
+disp: $(ALLOBJ) ../graphics.new/libobj.o ../tape/tapeobj.o ../issm/issmobj.o \
+	../compustat/cstatobj.o ../crsp/crspobj.o
 	$(CC)  -o $@ $(ALLOBJ) $(LDFLAGS)
 
 map_host.h: map_host
