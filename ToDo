@@ -330,6 +330,17 @@ Perhaps add 'Edit' and 'Close' buttons to the 'Active Tables' dialog.
 
 The Help demo needs to actually do something.  (rkw 1/22/97)
 
+Improve record/RID links to allow two master views linking to one slave view,
+allowing union, intersection, etc., rather than just union as there is now.
+(rr/rkw 1/29/97)
+
+Generalize RID links to record links on any attribute. (rr/rkw 1/29/97)
+
+Allow aggregates/group by (defining bucket ranges for histograms). (rr/rkw
+1/29/97)
+
+Transition user manual from TeX/PostScript to html. (rr/rkw 1/29/97)
+
 
 COMPLETED
 ---------
