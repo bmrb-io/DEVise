@@ -1,7 +1,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.2  1995/09/05 21:12:51  jussi
+  Added/update CVS header.
+*/
 
 #ifndef Geom_h
 #define Geom_h
@@ -16,6 +19,27 @@ class Point {
 public:
 	Coord x, y;
 };
+
+typedef struct POINT_ {
+	Coord x_, y_, z_;
+} POINT;
+
+typedef struct EDGE_ {
+	int  p,  // start pt for a edge, refer to vertex num
+		q;  // end   pt for a edge, refer to vertex num
+} EDGE;
+
+typedef POINT VERTEX;
+
+// this for block only
+#define BLOCK_VERTEX 8
+#define BLOCK_EDGES  12
+
+typedef struct Block_type {
+     VERTEX vt[BLOCK_VERTEX]; // shape's vertex
+     EDGE   ed[BLOCK_EDGES];  // shape's edges
+     POINT  pt;
+} BLOCK;
 
 /* Useful Geometry functions */
 class Geom {
