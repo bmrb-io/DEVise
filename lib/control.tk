@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.173  1998/11/17 14:48:07  wenger
+#	Changed master/slave to leader/follower and fixed a few problems in GUI,
+#	session description, etc.
+#
 #	Revision 1.172  1998/11/11 14:31:12  wenger
 #	Implemented "highlight views" for record links and set links; improved
 #	ClassDir::DestroyAllInstances() by having it destroy all links before
@@ -1124,6 +1128,8 @@ proc displayTable {table} {
 	}
 }
 
+# Move is not implemented.  RKW 1998-11-19.
+if {0} {
 .mbar.tdata.menu add command -label "Move" -command {
 	set table [selectStream "Select tables to move"]
 	set destDir [selectStream "CD to destination directory"]
@@ -1145,6 +1151,7 @@ proc displayTable {table} {
 	    puts "move not implemented"
 		updateSources
      }
+}
 }
 
 .mbar.tdata.menu add command -label "Delete" -command {

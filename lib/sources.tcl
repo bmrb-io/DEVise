@@ -15,6 +15,12 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.76  1998/10/28 19:22:38  wenger
+#	Added code to check all data sources (runs through the catalog and tries
+#	to open all of them); this includes better error handling in a number of
+#	data source-related areas of the code; also fixed errors in the propagation
+#	of command results.
+#
 #	Revision 1.75  1998/07/17 15:33:55  wenger
 #	Improved link creation GUI as per request from Raghu; started on
 #	DataReader schema GUI; changed version to 1.5.4.
@@ -785,7 +791,7 @@ proc defineStream {base edit} {
      set source [lindex $sourcedef 1]
      set key [lindex $sourcedef 2]
      set schemafile [lindex $sourcedef 4]
-puts "schemafile = $schemafile"
+# puts "schemafile = $schemafile"
      set cachefile [lindex $sourcedef 5]
      set evaluation [lindex $sourcedef 6]
      set priority [lindex $sourcedef 7]
@@ -948,7 +954,7 @@ proc defineANY {sourcetype} {
 	global _cwd
 
 	set retVal [define$sourcetype ""]
- 	puts "retVal = $retVal"
+ 	# puts "retVal = $retVal"
 	set table [lindex $retVal 0]
 	if {$retVal != ""} {
 		set directory [selectStream "CD to parent directory"]
@@ -1575,7 +1581,7 @@ proc cacheData {dispname startrec endrec} {
     set key [lindex $sourcedef 1]
     set schematype [lindex $sourcedef 2]
     set schemafile [lindex $sourcedef 3]
-puts "schemafile = $schemafile"
+# puts "schemafile = $schemafile"
     set cachefile [lindex $sourcedef 4]
     set priority [lindex $sourcedef 6]
     set command [lindex $sourcedef 7]
@@ -1943,7 +1949,7 @@ proc selectStream {{title "Select Table"}} {
 
 	set tmp [getSelectedLine]
 
- 	puts "streamsSelected = $tmp"
+ 	# puts "streamsSelected = $tmp"
 
 	# check if the selected source is directory (need to change retVal)
 	# if so, update CWD, and list sources
@@ -1957,7 +1963,7 @@ proc selectStream {{title "Select Table"}} {
  	set table_type_pair [lindex $tmp 0]
 	set tableName [lindex $table_type_pair 0]
 	set typeName [lindex $table_type_pair 1]
- 	puts "tableName = $tableName; typeName = $typeName"
+ 	# puts "tableName = $tableName; typeName = $typeName"
 	if { [isDirectory $typeName] } {
 		if {$tableName == ".."} {
 			CDup
