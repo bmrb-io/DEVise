@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  1996/11/20 00:42:33  jussi
+  Added support for X,Y randomization.
+
   Revision 1.22  1996/11/13 16:57:08  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -302,14 +305,14 @@ class Shape {
       }
       
       // Randomize X,Y coordinates if shape attribute 2 or 3 contains
-      // a constant value of 0.5 or more.
+      // a constant value of 0.15 or more.
 
       if (canRandomize && offset->shapeAttrOffset[2] < 0
           && offset->shapeAttrOffset[3] < 0) {
         ShapeAttr *attrs = map->GetDefaultShapeAttrs();
         float cloudWidth = fabs(attrs[2]);
         float cloudHeight = fabs(attrs[3]);
-        if (cloudWidth > 0.1 || cloudHeight > 0.1)
+        if (cloudWidth >= 0.15 || cloudHeight >= 0.15)
           RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
       }
 

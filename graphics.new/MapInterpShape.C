@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  1996/11/20 00:43:52  jussi
+  Added support for X,Y randomization. Changed DrawPixelArray() call
+  back so that +/- is used to control pixel size.
+
   Revision 1.21  1996/11/13 16:57:04  wenger
   Color working in direct PostScript output (which is now enabled);
   improved ColorMgr so that it doesn't allocate duplicates of colors
@@ -163,6 +167,9 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
+	maxWidth *= pixelSize;
+	maxHeight *= pixelSize;
+	maxDepth *= pixelSize;
 
 	// pixelWidth is how many X units one pixel corresponds to
 	// pixelHeight is how many Y units one pixel corresponds to
@@ -180,8 +187,7 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view,
-                           pixelSize, true);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, true);
 	    return;
 	}
     }
@@ -214,8 +220,10 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		firstLineWidth = int(GetLineWidth(gdata, map, offset)+0.5);
 	    }
 
-	    _width[count] = fabs(size * GetShapeAttr0(gdata, map, offset));
-	    _height[count] = fabs(size * GetShapeAttr1(gdata, map, offset));
+	    _width[count] = fabs(pixelSize * size
+                                 * GetShapeAttr0(gdata, map, offset));
+	    _height[count] = fabs(pixelSize * size
+                                  * GetShapeAttr1(gdata, map, offset));
 	    _x[count] = GetX(gdata, map, offset);
 	    if (_width[count] > pixelWidth)
 	      _x[count] -= _width[count] / 2.0;
@@ -227,13 +235,13 @@ void FullMapping_RectShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	}
 	
         // Randomize X,Y coordinates if shape attribute 2 or 3 contains
-        // a constant value of 0.5 or more.
+        // a constant value of 0.15 or more.
 
         if (offset->shapeAttrOffset[2] < 0 && offset->shapeAttrOffset[3] < 0) {
             ShapeAttr *attrs = map->GetDefaultShapeAttrs();
             float cloudWidth = fabs(attrs[2]);
             float cloudHeight = fabs(attrs[3]);
-            if (cloudWidth > 0.1 || cloudHeight > 0.1)
+            if (cloudWidth >= 0.15 || cloudHeight >= 0.15)
               RandomizePoints(_x, _y, count, cloudWidth, cloudHeight);
         }
 
@@ -368,8 +376,7 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view,
-                           pixelSize, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
 	    return;
 	}
     }
@@ -543,6 +550,9 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
     if (fixedSymSize) {
 	Coord maxWidth, maxHeight, maxDepth;
 	map->GetMaxSymSize(maxWidth, maxHeight, maxDepth);
+	maxWidth *= pixelSize;
+	maxHeight *= pixelSize;
+	maxDepth *= pixelSize;
 
 	Coord x0, y0, x1, y1;
 	win->Transform(0, 0, x0, y0);
@@ -560,8 +570,7 @@ void FullMapping_RegularPolygonShape::DrawGDataArray(WindowRep *win,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view,
-                           pixelSize, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
 	    return;
 	}
     }
@@ -652,8 +661,7 @@ void FullMapping_OvalShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view,
-                           pixelSize, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
 	    return;
 	}
     }
@@ -733,8 +741,7 @@ void FullMapping_VectorShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view,
-                           pixelSize, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
 	    return;
 	}
     }
@@ -930,8 +937,7 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view,
-                           pixelSize, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
 	    return;
 	}
     }
@@ -1075,8 +1081,7 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view,
-                           pixelSize, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
 	    return;
 	}
     }
@@ -1200,8 +1205,7 @@ void FullMapping_PolylineShape::DrawGDataArray(WindowRep *win,
 	if (maxWidth <= pixelWidth && maxHeight <= pixelHeight) {
 	    // The requested size of the shape is less than or equal to the
 	    // size of a screen pixel.
-	    DrawPixelArray(win, gdataArray, numSyms, map, view,
-                           pixelSize, false);
+	    DrawPixelArray(win, gdataArray, numSyms, map, view, 1, false);
 	    return;
 	}
     }
