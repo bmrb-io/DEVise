@@ -19,5 +19,5 @@ sleep 10
 touch devised.out
 touch jss.out
 
-nohup java jss -debug $* >& jss.out
+nohup java jss -debug $* >& jss.out &
 setenv DISPLAY unix:0.0
