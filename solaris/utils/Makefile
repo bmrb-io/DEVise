@@ -15,10 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/12/02 17:35:55  wenger
+#  Set up src/color and src/utils to compile "normally" for solaris and
+#  solsparc.
+#
 
 ############################################################
 
-#TEMPTEMP -- do we need X11?
 ARCH_FLAGS = -DSOLARIS -I/s/X11/include
 ARCH_LDFLAGS = 
 ARCH_LDPOST  =

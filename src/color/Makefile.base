@@ -7,6 +7,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.1  1997/12/02 17:36:17  wenger
+#  Set up src/color and src/utils to compile "normally" for solaris and
+#  solsparc.
+#
 
 ##******************************************************************************
 ## File: Makefile
@@ -25,7 +29,7 @@
 
 include ../../Makefile.common
 
-COLOR_INCLUDES = -I../../src/color/ -I../../src/utils/
+COLOR_INCLUDES = -I../../src/color -I../../src/utils
 
 TEMPLATE_FLAGS = -fno-implicit-templates
 

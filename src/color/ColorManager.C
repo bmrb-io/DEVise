@@ -20,6 +20,11 @@
 // Libraries
 //******************************************************************************
 
+#if defined(SUN)
+#include <values.h>
+#  define DBL_MAX MAXDOUBLE
+#endif
+
 //#define INLINE_TRACE
 #include "debug.h"
 

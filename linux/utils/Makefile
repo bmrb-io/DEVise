@@ -15,17 +15,13 @@
 #  $Id$
 
 #  $Log$
-#  Revision 1.1  1997/12/02 17:36:09  wenger
-#  Set up src/color and src/utils to compile "normally" for solaris and
-#  solsparc.
-#
 
 ############################################################
 
-ARCH_FLAGS = -DSOLARIS -I/s/X11/include
+ARCH_FLAGS = -DLINUX -I/usr/X11R6/include
 ARCH_LDFLAGS = 
 ARCH_LDPOST  =
 
 VPATH = ../../src/utils
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.solaris
+include $(VPATH)/Makefile.linux
