@@ -23,6 +23,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  1999/07/15 19:26:42  wenger
+#  Decreased font sizes for better appearance.
+#
 #  Revision 1.4  1999/07/15 15:21:43  wenger
 #  Enabled axes w/o ticks in user data views.
 #
@@ -175,7 +178,6 @@ sub CreateViews {
   print SES_OUT "DEVise viewSetImplicitHome {UserList_view} 0 1 1 1 0.55 0.55 0.0 0.0 ",
       "100.0 100.0\n";
   print SES_OUT "DEVise setViewAutoFilter UserList_view 1\n";
-  print SES_OUT "DEVise viewSetAlign UserList_view 1\n";
   print SES_OUT "\n";
 
   print SES_OUT "DEVise create {view} {Scatter} DataParent_view 0 1 -1 -2 36 9\n";
@@ -227,7 +229,7 @@ sub CreateMappings {
       "1 1 {\$TDataName} {} {} {} {} {} {}\n";
   print SES_OUT "DEVise create {mapping} $mappingClass .$dataName ",
       "UserList#$mappingClass {} {0} {\$X} {} 37 0.9 0 360 12 {\$UserName} ",
-      "{} {-2} {0.8} {} {} {} {} {} {}\n";
+      "{} {-2} {0.8} {} {-3} {} {} {} {}\n";
 
   $dataName = ".Condor_Total";
   foreach $user (sort keys %userlist) {
