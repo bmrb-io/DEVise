@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2001/03/08 21:10:12  wenger
+// Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
+// to the trunk.
+//
+// Revision 1.1.2.2  2001/03/09 17:20:13  wenger
+// Fixed bug 643 (problem with JAVAC_Exit command in CGI mode).
+//
 // Revision 1.1.2.1  2001/02/23 19:56:42  wenger
 // Moved the details of client-side CGI communication into its own class;
 // combined separate socket and CGI code that largely duplicated each other.
@@ -141,8 +148,8 @@ public class DEViseCommCgi
     }
 
     //-------------------------------------------------------------------
-    public synchronized String receiveCmd() throws YException,
-      InterruptedIOException
+    public synchronized String receiveCmd(boolean expectResponse)
+      throws YException, InterruptedIOException
     {
         if (DEBUG >= 1) {
 	    System.out.println("DEViseCommCgi.receiveCmd()");
@@ -173,7 +180,7 @@ public class DEViseCommCgi
 		     return "cgi no response";
 		     //throw new YException(
 		     //"Abrupt end of input stream reached",
-		     //"cgi_receiveCmd()");
+		     //"DEViseCommCgi.receiveCmd()");
                  }
 
                  dataRead[numberRead] = (byte)b;
@@ -190,7 +197,8 @@ public class DEViseCommCgi
 
              if (numberOfElement <= 0 || totalSize <= 0) { 
 		 throw new YException(
-		   "Invalid control information received", "cgi_receiveCmd()");
+		   "Invalid control information received",
+		   "DEViseCommCgi.receiveCmd()");
              }
             
              if (dataRead == null) {
@@ -204,21 +212,26 @@ public class DEViseCommCgi
                 if (b < 0) {
 		    throw new YException(
 		      "Abrupt end of input stream reached",
-		      "cgi_receiveCmd()");
+		      "DEViseCommCgi.receiveCmd()");
                 }
 
                 dataRead[numberRead] = (byte)b;
                 numberRead++;
             }
         } catch (InterruptedIOException e) {
-	    System.err.println("InterruptedIOException in cgi_receiveCmd: " +
-	      e.getMessage());
+	    System.err.println("InterruptedIOException in " +
+	      "DEViseCommCgi.receiveCmd: " + e.getMessage());
             throw e;
         } catch (IOException e) {
-	    System.err.println("IOException in cgi_receiveCmd: " +
+	    System.err.println("IOException in DEViseCommCgi.receiveCmd: " +
 	      e.getMessage());
-            throw new YException("Error occurs while reading from " +
-	      "input stream in cgi_receiveCmd()", "cgi_receiveCmd()");
+	    if (expectResponse) {
+                throw new YException("Error occurs while reading from " +
+	          "input stream in DEViseCommCgi.receiveCmd()",
+		  "DEViseCommCgi.receiveCmd()");
+	    } else {
+                return DEViseCommands.DONE;
+	    }
         }
 
         int argsize = 0;
@@ -227,7 +240,7 @@ public class DEViseCommCgi
         for (int i = 0; i < numberOfElement; i++) {
             if (totalSize < pastsize + 2) {
                 throw new YException("Inconsistant data received",
-		  "cgi_receiveCmd()");
+		  "DEViseCommCgi.receiveCmd()");
             }
 
             argsize = DEViseGlobals.toUshort(dataRead, pastsize);
@@ -235,7 +248,7 @@ public class DEViseCommCgi
 
             if (totalSize < pastsize + argsize) {
                 throw new YException("Inconsistant data received",
-		  "cgi_receiveCmd()");
+		  "DEViseCommCgi.receiveCmd()");
             }
 
             // use argsize - 1 instead of argsize is to skip the string ending '\0'

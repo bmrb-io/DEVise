@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.83  2001/03/08 21:10:12  wenger
+// Merged changes from no_collab_br_2 thru no_collab_br_3 from the branch
+// to the trunk.
+//
 // Revision 1.82  2001/03/05 16:46:48  xuk
 // Clear follower's JavaScreen when leader close session.
 // Changes in processReceivedCommand() ro process JAVAC_CloseSession Command.
@@ -69,6 +73,12 @@
 //
 // Revision 1.71  2001/01/30 03:03:28  xuk
 // Add collabration function. Mainly changes are in run(), socketSendCom(), destroy().
+//
+// Revision 1.70.2.10  2001/03/09 17:20:12  wenger
+// Fixed bug 643 (problem with JAVAC_Exit command in CGI mode).
+//
+// Revision 1.70.2.9  2001/03/08 21:23:23  wenger
+// Added note about socket closing.
 //
 // Revision 1.70.2.8  2001/02/23 19:56:41  wenger
 // Moved the details of client-side CGI communication into its own class;
@@ -502,6 +512,9 @@ public class DEViseCmdDispatcher implements Runnable
 		}
 	    }
 	} else { // in cgi mode, close the socket
+	    //TEMPTEMP -- is this the right place to do this?  does
+	    // the socket get closed after replies are received, or isn't
+	    // it closed until the next command is sent????
 	    if (commSocket != null) {
 		commSocket.closeSocket();
 		commSocket = null;
@@ -1455,9 +1468,16 @@ public class DEViseCmdDispatcher implements Runnable
     // Send a command and receive any responses.
     private String[] sendRcvCmd(String command) throws YException
     {
+        return sendRcvCmd(command, true);
+    }
+
+    // Send a command and receive any responses.
+    private String[] sendRcvCmd(String command, boolean expectResponse)
+      throws YException
+    {
 	if (_debug) {
 	    System.out.println("DEViseCmdDispatcher.sendRcvCmd(" +
-	      command + ")");
+	      command + ", " + expectResponse + ")");
 	}
 
         Vector rspbuf = new Vector();
@@ -1498,18 +1518,10 @@ public class DEViseCmdDispatcher implements Runnable
 	    // command.
             boolean isFinish = false;
 
-            // Kludgey fix for bug 630.  RKW 2000-12-22.
-            if (jsc.jsValues.connection.cgi &&
-              DEViseCommands.EXIT.equals(command)) {
-                isEnd = true;
-                isFinish = true;
-                response = DEViseCommands.DONE;
-            }
-
             while (!isFinish) {
                 try {
-                    if (jsc.jsValues.connection.cgi) {
-                        response = _commCgi.receiveCmd();
+	            if (jsc.jsValues.connection.cgi) {
+                        response = _commCgi.receiveCmd(expectResponse);
                         if (response == "cgi no response") {
                             jsc.pn("CGI no response");
                             return null;
@@ -1591,8 +1603,8 @@ public class DEViseCmdDispatcher implements Runnable
 
         if (jsc.jsValues.connection.cgi) {
             // cgi routing -- we must send *and* receive for the CGI
-            // to work right.
-            sendRcvCmd(command);
+	    // to work right.
+	    sendRcvCmd(command, false);
         } else {
             sockSendCmd(command);
         }

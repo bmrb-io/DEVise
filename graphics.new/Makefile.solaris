@@ -15,6 +15,9 @@
 # $Id$
 
 # $Log$
+# Revision 1.102  2000/08/10 16:10:49  wenger
+# Phase 1 of getting rid of shared-memory-related code.
+#
 # Revision 1.101  2000/03/23 19:51:34  wenger
 # Updated dependencies for Solaris 2.7.
 #
@@ -683,8 +686,9 @@ DeviseServer.o: ../graphics/ClassDir.h ../graphics/Dispatcher.h
 DeviseServer.o: ../src/utils/ObjectValid.h ../graphics/DevError.h
 DeviseServer.o: /usr/include/sys/param.h ../graphics/Scheduler.h
 DeviseServer.o: CmdContainer.h DeviseCommand.h ExtStack.h
-DeviseServer.o: ../graphics/Session.h /s/tcl/include/tcl.h
-DeviseServer.o: /usr/include/stdarg.h /s/tcl/include/tclDecls.h DebugLog.h
+DeviseServer.o: ../graphics/DeviseHistory.h ../graphics/Session.h
+DeviseServer.o: /s/tcl/include/tcl.h /usr/include/stdarg.h
+DeviseServer.o: /s/tcl/include/tclDecls.h DebugLog.h
 DiskFile.o: UnixDiskFile.h /usr/include/errno.h /usr/include/sys/errno.h
 DiskFile.o: DiskFile.h ../graphics/DeviseTypes.h /usr/include/values.h
 DiskFile.o: /usr/include/sys/isa_defs.h ../graphics/DevStatus.h
@@ -844,9 +848,9 @@ MapInterpClassInfo.o: Bitmap.h MapInterpClassInfo.h ../graphics/Util.h
 MapInterpClassInfo.o: /usr/include/stdlib.h /usr/include/math.h
 MapInterpClassInfo.o: ../graphics/Session.h /s/tcl/include/tcl.h
 MapInterpClassInfo.o: /usr/include/stdarg.h /s/tcl/include/tclDecls.h
-MapInterpClassInfo.o: ../graphics/DevError.h /usr/include/errno.h
-MapInterpClassInfo.o: /usr/include/sys/errno.h /usr/include/sys/param.h
-MapInterpClassInfo.o: /usr/include/sys/unistd.h
+MapInterpClassInfo.o: ../graphics/DeviseHistory.h ../graphics/DevError.h
+MapInterpClassInfo.o: /usr/include/errno.h /usr/include/sys/errno.h
+MapInterpClassInfo.o: /usr/include/sys/param.h /usr/include/sys/unistd.h
 MappingInterp.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 MappingInterp.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 MappingInterp.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -1043,6 +1047,7 @@ QueryProcFull.o: ViewGraph.h Action.h PointStorage.h ../tape/HashTable.h
 QueryProcFull.o: GDataBin.h ../graphics/Control.h ../graphics/ClassDir.h
 QueryProcFull.o: RecordLink.h RecFile.h MasterSlaveLink.h DeviseLink.h
 QueryProcFull.o: ../graphics/ViewCallback.h Shape.h DrawTimer.h
+QueryProcFull.o: ../graphics/DeviseHistory.h
 RangeCallback.o: RangeCallback.h ../graphics/DeviseTypes.h
 RangeCallback.o: /usr/include/values.h /usr/include/sys/isa_defs.h
 RangeCallback.o: ../graphics/DevStatus.h /usr/include/sys/types.h
@@ -1486,11 +1491,12 @@ TkControl.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 TkControl.o: /usr/include/string.h ../graphics/ClassDir.h
 TkControl.o: ../graphics/ViewCallback.h GroupDir.h ItemList.h Group.h
 TkControl.o: MapInterpClassInfo.h QueryProc.h RecId.h ParseAPI.h
-TkControl.o: DeviseCommand.h ExtStack.h ParseCat.h ../graphics/AttrList.h
-TkControl.o: ../graphics/Init.h ../graphics/BufPolicy.h DataSourceBuf.h
-TkControl.o: DataSource.h MemMgr.h ../graphics/View.h ../graphics/Util.h
-TkControl.o: /usr/include/ctype.h /usr/include/math.h Version.h
-TkControl.o: CmdContainer.h DeviseServer.h DebugLog.h
+TkControl.o: DeviseCommand.h ExtStack.h ../graphics/DeviseHistory.h
+TkControl.o: ParseCat.h ../graphics/AttrList.h ../graphics/Init.h
+TkControl.o: ../graphics/BufPolicy.h DataSourceBuf.h DataSource.h MemMgr.h
+TkControl.o: ../graphics/View.h ../graphics/Util.h /usr/include/ctype.h
+TkControl.o: /usr/include/math.h Version.h CmdContainer.h DeviseServer.h
+TkControl.o: DebugLog.h
 UnixDiskFile.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 UnixDiskFile.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 UnixDiskFile.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2034,15 +2040,37 @@ CmdContainer.o: ../graphics/DeviseTypes.h /usr/include/values.h
 CmdContainer.o: ../graphics/DevStatus.h ../graphics/VisualArg.h
 CmdContainer.o: ../graphics/ViewDir.h /usr/include/string.h
 CmdContainer.o: ../graphics/DList.h ../graphics/Exit.h ../graphics/ClassDir.h
-CmdContainer.o: DeviseCommand.h ExtStack.h DeviseServer.h
-CmdContainer.o: ../graphics/Dispatcher.h ../src/utils/ObjectValid.h
-CmdContainer.o: ../graphics/Util.h /usr/include/stdlib.h /usr/include/math.h
+CmdContainer.o: DeviseCommand.h ExtStack.h ../graphics/DeviseHistory.h
+CmdContainer.o: DeviseServer.h ../graphics/Dispatcher.h
+CmdContainer.o: ../src/utils/ObjectValid.h ../graphics/Util.h
+CmdContainer.o: /usr/include/stdlib.h /usr/include/math.h
 CmdContainer.o: ../graphics/DevError.h /usr/include/errno.h
 CmdContainer.o: /usr/include/sys/errno.h /usr/include/sys/param.h DebugLog.h
+CmdContainer.o: ../graphics/ControlPanelSimple.h
 DCE.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DCE.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DCE.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
-DCE.o: /usr/include/assert.h
+DCE.o: /usr/include/assert.h DCE.h /usr/include/sys/types.h
+DCE.o: /usr/include/sys/machtypes.h /usr/include/sys/int_types.h
+DCE.o: /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h
+DCE.o: /usr/include/sys/ipc.h /usr/include/sys/sem.h /usr/include/sys/shm.h
+DCE.o: /usr/include/sys/unistd.h /usr/include/errno.h
+DCE.o: /usr/include/sys/errno.h /usr/include/limits.h /usr/include/sys/stat.h
+DCE.o: /usr/include/sys/time_impl.h machdep.h /usr/include/sys/param.h
+DCE.o: /usr/include/sys/wait.h /usr/include/sys/resource.h
+DCE.o: /usr/include/sys/siginfo.h /usr/include/sys/machsig.h
+DCE.o: /usr/include/vm/faultcode.h /usr/include/sys/procset.h
+DCE.o: /usr/include/sys/ioctl.h /usr/include/netdb.h
+DCE.o: /usr/include/netinet/in.h /usr/include/sys/stream.h
+DCE.o: /usr/include/sys/vnode.h /usr/include/sys/t_lock.h
+DCE.o: /usr/include/sys/machlock.h /usr/include/sys/mutex.h
+DCE.o: /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h
+DCE.o: /usr/include/sys/condvar.h /usr/include/sys/cred.h
+DCE.o: /usr/include/sys/uio.h /usr/include/vm/seg_enum.h
+DCE.o: /usr/include/sys/poll.h /usr/include/sys/strmdep.h
+DCE.o: /usr/include/sys/model.h /usr/include/sys/byteorder.h
+DCE.o: /usr/include/sys/socket.h /usr/include/sys/netconfig.h
+DCE.o: ../graphics/Exit.h
 DeviseCommand.o: /usr/include/stdio.h /usr/include/sys/feature_tests.h
 DeviseCommand.o: /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h
 DeviseCommand.o: /usr/include/stdio_tag.h /usr/include/stdio_impl.h
@@ -2058,8 +2086,9 @@ DeviseCommand.o: ../graphics/ClassDir.h ../graphics/DeviseTypes.h
 DeviseCommand.o: /usr/include/values.h ../graphics/DevStatus.h
 DeviseCommand.o: ../graphics/Control.h ../graphics/VisualArg.h
 DeviseCommand.o: ../graphics/ViewDir.h /usr/include/string.h
-DeviseCommand.o: ../graphics/DList.h ../graphics/Exit.h ExtStack.h ParseAPI.h
-DeviseCommand.o: ViewKGraph.h ViewGraph.h Action.h RecId.h PointStorage.h
+DeviseCommand.o: ../graphics/DList.h ../graphics/Exit.h ExtStack.h
+DeviseCommand.o: ../graphics/DeviseHistory.h ParseAPI.h ViewKGraph.h
+DeviseCommand.o: ViewGraph.h Action.h RecId.h PointStorage.h
 DeviseCommand.o: ../tape/HashTable.h TDataMap.h ../graphics/Pattern.h
 DeviseCommand.o: ShapeID.h GDataRec.h ../graphics/AttrList.h
 DeviseCommand.o: ../graphics/Init.h ../graphics/BufPolicy.h
@@ -2187,13 +2216,14 @@ JavaScreenCmd.o: ../graphics/VisualArg.h ../graphics/ViewDir.h
 JavaScreenCmd.o: /usr/include/string.h ../graphics/DList.h ../graphics/Exit.h
 JavaScreenCmd.o: ../graphics/ClassDir.h ../graphics/Dispatcher.h
 JavaScreenCmd.o: ../src/utils/ObjectValid.h CmdContainer.h DeviseCommand.h
-JavaScreenCmd.o: ExtStack.h ClientAPI.h ParseAPI.h ../graphics/Util.h
-JavaScreenCmd.o: /usr/include/ctype.h /usr/include/math.h
-JavaScreenCmd.o: ../graphics/Session.h /s/tcl/include/tcl.h
-JavaScreenCmd.o: /usr/include/stdarg.h /s/tcl/include/tclDecls.h
-JavaScreenCmd.o: ../graphics/WinClassInfo.h ../graphics/ViewWin.h ViewGraph.h
-JavaScreenCmd.o: Action.h RecId.h PointStorage.h ../tape/HashTable.h
-JavaScreenCmd.o: TDataMap.h ../graphics/Pattern.h ShapeID.h GDataRec.h
+JavaScreenCmd.o: ExtStack.h ../graphics/DeviseHistory.h ClientAPI.h
+JavaScreenCmd.o: ParseAPI.h ../graphics/Util.h /usr/include/ctype.h
+JavaScreenCmd.o: /usr/include/math.h ../graphics/Session.h
+JavaScreenCmd.o: /s/tcl/include/tcl.h /usr/include/stdarg.h
+JavaScreenCmd.o: /s/tcl/include/tclDecls.h ../graphics/WinClassInfo.h
+JavaScreenCmd.o: ../graphics/ViewWin.h ViewGraph.h Action.h RecId.h
+JavaScreenCmd.o: PointStorage.h ../tape/HashTable.h TDataMap.h
+JavaScreenCmd.o: ../graphics/Pattern.h ShapeID.h GDataRec.h
 JavaScreenCmd.o: ../graphics/AttrList.h ../graphics/Init.h
 JavaScreenCmd.o: ../graphics/BufPolicy.h ../graphics/Timer.h
 JavaScreenCmd.o: ../graphics/Display.h ../graphics/Geom.h

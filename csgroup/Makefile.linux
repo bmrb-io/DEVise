@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.15  2000/03/23 19:58:38  wenger
+# Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+# g++ 2.95.2).
+#
 # Revision 1.14  2000/03/14 21:56:34  wenger
 # Updated solaris and linux dependencies.
 #
@@ -381,11 +385,11 @@ server_serv.o: /usr/include/bits/fcntl.h /usr/include/unistd.h
 server_serv.o: /usr/include/bits/posix_opt.h /usr/include/bits/confname.h
 server_serv.o: /usr/include/getopt.h /usr/include/memory.h
 server_serv.o: /usr/include/sys/resource.h /usr/include/bits/resource.h
-server_serv.o: /usr/include/asm/resource.h /usr/include/bits/time.h
-server_serv.o: /usr/include/syslog.h /usr/include/sys/syslog.h
-server_serv.o: /usr/include/strings.h colbr.h /usr/include/arpa/inet.h
-server_serv.o: dbase.h htable.h bucket.h entry.h datum.h queue.h queueElem.h
-server_serv.o: ../graphics/Util.h /usr/include/ctype.h /usr/include/math.h
+server_serv.o: /usr/include/bits/time.h /usr/include/syslog.h
+server_serv.o: /usr/include/sys/syslog.h /usr/include/strings.h colbr.h
+server_serv.o: /usr/include/arpa/inet.h dbase.h htable.h bucket.h entry.h
+server_serv.o: datum.h queue.h queueElem.h ../graphics/Util.h
+server_serv.o: /usr/include/ctype.h /usr/include/math.h
 server_serv.o: /usr/include/bits/huge_val.h /usr/include/bits/mathdef.h
 server_serv.o: /usr/include/bits/mathcalls.h
 server_serv.o: /usr/lib/gcc-lib/i386-redhat-linux/egcs-2.91.66/include/float.h
