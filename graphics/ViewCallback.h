@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/07/13 17:28:14  jussi
+  Added ViewRecomputed() callback interface.
+
   Revision 1.3  1995/12/29 18:28:18  jussi
   Added FilterAboutToChange() method to facilitate the new
   cursor mechanism.
@@ -28,6 +31,8 @@
 #define ViewCallback_h
 
 class View;
+class VisualFilter;
+
 
 class ViewCallback {
 public:
