@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2000/02/16 15:16:15  wenger
+// Changed default jspophost to localhost; changed overall JS version to 3.2.
+//
 // Revision 1.32  2000/02/16 08:53:58  hongyu
 // *** empty log message ***
 //
@@ -76,7 +79,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644, JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
     public static final String VERSION = new String("3.2");
-    public static final String PROTOCOL_VERSION = new String("4.0");
+    public static final String PROTOCOL_VERSION = new String("4.1");
     public static final int DEFAULTID = -1;
     public static final String DEFAULTUSER = new String("guest");
     public static final String DEFAULTPASS = new String("guest");

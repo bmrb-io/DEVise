@@ -13,6 +13,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2000/02/16 15:15:31  wenger
+// Temporary change so that the JavaScreen accepts the current form
+// of the JAVAC_DrawCursor command.
+//
 // Revision 1.43  2000/02/16 08:53:57  hongyu
 // *** empty log message ***
 //
@@ -265,6 +269,13 @@ public class DEViseCmdDispatcher implements Runnable
                 if (getAbortStatus()) {
                     setAbortStatus(false);
                     break;
+                }
+
+                if (commands[i].length() == 0) {
+                    continue;
+                } else if (!commands[i].startsWith("JAVAC")) {
+                    jsc.pn("Invalid command: " + commands[i]);
+                    continue;
                 }
 
                 if (commands[i].startsWith("JAVAC_CloseCurrentSession")) {
@@ -670,8 +681,12 @@ public class DEViseCmdDispatcher implements Runnable
                     throw new YException("Invalid connection ID received from server", "DEViseCmdDispatcher::processCmd()", 2);
                 }
             } else if (rsp[i].startsWith("JAVAC_ShowViewHelp")) {
-                String helpmsg = rsp[i].substring(18);
-                jsc.jscreen.showHelpMsg(helpmsg);
+                cmd = DEViseGlobals.parseString(rsp[i]);
+                if (cmd == null || cmd.length != 3) {
+                    throw new YException("Ill-formated command received from server \"" + rsp[i] + "\"", "DEViseCmdDispatcher::processCmd()", 2);
+                }
+
+                jsc.jscreen.showHelpMsg(cmd[1], cmd[2]);
             } else {
                 throw new YException("Unsupported command received from server", "DEViseCmdDispatcher::processCmd()", 2);
             }

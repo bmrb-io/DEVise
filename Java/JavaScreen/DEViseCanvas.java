@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  2000/02/23 10:44:01  hongyu
+// *** empty log message ***
+//
 // Revision 1.33  2000/02/22 15:26:39  wenger
 // Commented out debug output.
 //
@@ -30,6 +33,9 @@
 // during drag; split off protocol version from "main" version.
 //
 // $Log$
+// Revision 1.34  2000/02/23 10:44:01  hongyu
+// *** empty log message ***
+//
 // Revision 1.33  2000/02/22 15:26:39  wenger
 // Commented out debug output.
 //
@@ -940,7 +946,6 @@ public class DEViseCanvas extends Container
                         helpMsgX = activeView.translateX(p.x, 2);
                         helpMsgY = activeView.translateY(p.y, 2);
                         cmd = "JAVAC_GetViewHelp " + activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY;
-                        jsc.jscreen.setLastMsgView(activeView);
                     }
                 } else {
                     DEViseCursor cursor = activeView.getFirstCursor();

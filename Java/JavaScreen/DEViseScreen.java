@@ -13,6 +13,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2000/02/23 10:44:02  hongyu
+// *** empty log message ***
+//
 // Revision 1.45  2000/02/16 08:53:58  hongyu
 // *** empty log message ***
 //
@@ -91,9 +94,8 @@ public class DEViseScreen extends Panel
     public boolean guiAction = false;
     private String lastCommand = null;
 
-    private DEViseView lastMsgView = null;
-
     boolean isDimChanged = false;
+    boolean helpclicked = false;
 
     public Image offScrImg = null;
 
@@ -225,10 +227,24 @@ public class DEViseScreen extends Panel
 
     public synchronized void showAllHelp()
     {
-        //String cmd = "";
-        //for (int i = 0; i < allCanvas.size(); i++) {
-        //    DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
-        //    "JAVAC_GetViewHelp " + activeView.getCurlyName() + " " + helpMsgX + " " + helpMsgY
+        helpclicked = !helpclicked;
+
+        if (helpclicked) {
+            String cmd = "";
+            for (int i = 0; i < allCanvas.size(); i++) {
+                DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
+                cmd = cmd + "JAVAC_GetViewHelp " + c.view.getCurlyName() + " " + 0 + " " + 0 + "\n";
+            }
+
+            jsc.dispatcher.start(cmd);
+        } else {
+            for (int i = 0; i < allCanvas.size(); i++) {
+                DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
+                c.helpMsg = null;
+            }
+
+            repaint();
+        }
     }
 
     public void addView(DEViseView view)
@@ -569,21 +585,20 @@ public class DEViseScreen extends Panel
         }
     }
 
-    public synchronized void setLastMsgView(DEViseView v)
+    public synchronized void showHelpMsg(String vn, String msg)
     {
-        lastMsgView = v;
-    }
+        DEViseView view = getView(vn);
+        if (view == null) {
+            return;
+        }
 
-    public synchronized void showHelpMsg(String msg)
-    {
         if (msg == null) {
             return;
         }
 
-        if (lastMsgView != null && lastMsgView.canvas != null) {
-            lastMsgView.canvas.helpMsg = msg;
-            lastMsgView.canvas.repaint();
-            lastMsgView = null;
+        if (view.canvas != null) {
+            view.canvas.helpMsg = msg;
+            view.canvas.repaint();
         }
     }
 
