@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/12/28 19:41:59  jussi
+  Small fix to remove compiler warnings.
+
   Revision 1.3  1995/11/18 01:53:37  ravim
   SchemaList created and groups stored with corr. schema.
 
@@ -50,8 +53,10 @@ public:
 
   void add_topgrp(char *schema, Group *gp);
   void top_level_groups(Tcl_Interp *interp, char *schema);
+  void top_level_groups(char *result, char *schema);
   
   void get_items(Tcl_Interp *interp, char *schema, char *topgname, char *gname);
+  void get_items(char *result, char *schema, char *topgname, char *gname);
   int find_entry(char *schema);
   int num_topgrp(char *schema);
 

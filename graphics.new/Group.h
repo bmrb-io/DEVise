@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1996/01/11 21:56:06  jussi
+  Replaced libc.h with stdlib.h.
+
   Revision 1.4  1995/11/18 01:57:49  ravim
   Groups associated with schema.
 
@@ -67,6 +70,7 @@ public:
   Group *insert_group(char *name);
   Group *parent_group();
   void subitems(Tcl_Interp *interp);
+  void subitems(char *);
 };
 
 #endif

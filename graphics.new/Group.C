@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1995/11/18 01:57:28  ravim
+  Groups associated with schema.
+
   Revision 1.4  1995/11/14 00:55:17  jussi
   Restricted strcpy to name to be up to sizeof name, no more.
   Some fields in compustat.schema were longer than 50 characters
@@ -117,3 +120,51 @@ void Group::subitems(Tcl_Interp *interp)
     curr = subgrps->next_item();
   }
 }
+void Group::subitems(char *result)
+{
+  char attrbuf[MAX_STR_LEN];
+  Group *curr;
+
+  /* If this is a top level group there is an additional item called
+     "recId" which is not stored in our lists */
+  if (type == TOPGRP)
+  {
+    sprintf(attrbuf, "{recId leaf} ");
+    //Tcl_AppendElement(interp, attrbuf);
+    strcat(result,attrbuf);
+  }
+
+  curr = subgrps->first_item();
+  while (curr)
+  {
+#ifdef DEBUG
+    printf("Item : %s ", curr->name);
+#endif
+ if (curr->type == SUBGRP)
+    {
+#ifdef DEBUG
+      printf(" is a GROUP item\n");
+#endif
+      sprintf(attrbuf, "{%s intr} ", curr->name);
+    }
+    else if (curr->type == ITEM)
+    {
+#ifdef DEBUG
+      printf(" is a leaf item\n");
+#endif
+      sprintf(attrbuf, "{%s leaf} ", curr->name);
+    }
+    else
+    {
+      printf("Error: top level group within group \n");
+      exit(0);
+
+ }
+
+    //Tcl_AppendElement(interp, attrbuf);
+    strcat(result, attrbuf);
+    curr = subgrps->next_item();
+  }
+}
+
+
