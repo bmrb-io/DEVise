@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-1996
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/11/25  01:20:17  jussi
+  This code now uses Transform matrix operations to convert user/world
+  coordinates to screen pixel coordinates. This is to avoid any future
+  inconsistencies in how the different code locations compute the
+  conversion. xPerPixel and yPerPixel are now obsolete coefficients.
+
   Revision 1.2  1995/09/05 22:15:57  jussi
   Added CVS header.
 */
@@ -27,7 +33,6 @@
 #include "Dispatcher.h"
 
 class TDataMapDispatch: public TDataMap, public DispatcherCallback {
-
 public:
 	
   TDataMapDispatch(char *name, TData *tdata, char *gdataName,
@@ -39,10 +44,11 @@ public:
 
   /* convert from Tdata to Gdata */
   virtual void ConvertToGData(RecId recId,void *buf, void **tRecs,int numRecs,
-			      void *gdataBuf){};
+			      void *gdataBuf) {}
 
 #if 0
-  virtual void UpdateBoundingBox(int pageNum,void **gdataArray,int numRecs){};
+  virtual void UpdateBoundingBox(int pageNum, void **gdataArray,
+				 int numRecs) {}
 #endif
 
   virtual void DrawGDataArray(WindowRep *win, void **syms, int numSyms) {}
