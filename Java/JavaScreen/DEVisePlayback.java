@@ -71,6 +71,13 @@ public class DEVisePlayback implements Runnable
 			 line.startsWith(DEViseCommands.EXIT) ) {
 			continue;
 		    } else {
+			if (line.startsWith(DEViseCommands.SET_DISPLAY_SIZE)) {
+			    line = DEViseCommands.SET_DISPLAY_SIZE + " " + 
+				_jsc.jsValues.uiglobals.screenSize.width + " " + 
+				_jsc.jsValues.uiglobals.screenSize.height + " " + 
+				_jsc.jsValues.uiglobals.screenRes + " " + 
+				_jsc.jsValues.uiglobals.screenRes;
+			}
 			_dispatcher.start(line);
 		    }   
 		}
@@ -87,6 +94,13 @@ public class DEVisePlayback implements Runnable
 			 line.startsWith(DEViseCommands.EXIT) ) {
 			continue;
 		    } else {
+			if (line.startsWith(DEViseCommands.SET_DISPLAY_SIZE)) {
+			    line = DEViseCommands.SET_DISPLAY_SIZE + " " + 
+				_jsc.jsValues.uiglobals.screenSize.width + " " + 
+				_jsc.jsValues.uiglobals.screenSize.height + " " + 
+				_jsc.jsValues.uiglobals.screenRes + " " + 
+				_jsc.jsValues.uiglobals.screenRes;
+			}
 			cmd = cmd + line + "\n"; 
 		    } 
 		}
