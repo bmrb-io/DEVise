@@ -19,6 +19,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2000/08/29 14:55:52  wenger
+// Star2Devise can now extract relaxation parameters, H exchange rates, etc.
+// from all appropriate NMR-STAR files, not just bmr4096.str (the sessions
+// are not yet fully set up to handle this); fixed an error in the CSI
+// calculations; improved test_summarize script.
+//
 
 // ========================================================================
 
@@ -48,7 +54,11 @@ public class S2DNames
     public static final String H_EXCHANGE_RATES = "H_exchange_rates";
     public static final String HEME = "HEME";
     public static final String HETERONUCLEAR_NOE = "heteronuclear_NOE";
+    public static final String MOL_POLYMER_CLASS = "_Mol_polymer_class";
+    public static final String MOL_SYSTEM = "molecular_system";
     public static final String MOL_SYSTEM_NAME = "_Mol_system_name";
+    public static final String MOL_SYS_COMP_NAME =
+      "_Mol_system_component_name";
     public static final String RESIDUE_COUNT = "_Residue_count";
     public static final String RESIDUE_LABEL = "_Residue_label";
     public static final String RESIDUE_SEQ_CODE = "_Residue_seq_code";

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2000/09/13 20:05:24  wenger
+// Star2Devise only generates chemical shift data for proteins.
+//
 // Revision 1.10  2000/08/29 15:21:20  wenger
 // Added 'No DEVise plots available' message to summary page code.
 //
@@ -449,6 +452,8 @@ public class Star2Devise {
 	    System.out.println("Star2Devise.calcChemShifts(" + acc_num + ")");
 	}
 
+	boolean result = false;
+
 	final String CHEMSHIFT_FILE = "chemshift.txt";
 	final String ERROR_LOG = "error.log";
 	
@@ -472,9 +477,6 @@ public class Star2Devise {
 	    
 	    //Find list of all occurences in the star file
 	    
-	    //Initialize a list of ASTnode;
-	    SaveFrameNode currSaveFrame;
-	    
 	    // Get an enumeration of the save frames of the specified type.
 	    Enumeration matches = aStarTree.searchForTypeByTagValue(
 	      Class.forName( StarValidity.pkgName()+".SaveFrameNode"),
@@ -482,12 +484,13 @@ public class Star2Devise {
 	
 	    //For each match only process if item is in a saveframelist node
 	    while (matches.hasMoreElements())
-	    {		
+	    {
 		//
 		// Get the next available save frame.
 		//
-		currSaveFrame = (SaveFrameNode)matches.nextElement();
-		
+		SaveFrameNode currSaveFrame = (SaveFrameNode)matches.nextElement();
+		//TEMP -- is currSaveFrame ever null??? (see check below)
+
 	        String saveFrameName = null;
 		if (currSaveFrame != null) {
 		    saveFrameName 
@@ -499,6 +502,16 @@ public class Star2Devise {
 		} else {
 		    saveFrameName = "N/A" ;
 		}
+
+                if (!isAProtein(currSaveFrame)) {
+		    if (DEBUG >= 1) {
+		        System.out.println("Chemical shifts not saved for " +
+			  "save frame " + saveFrameName + " because it is " +
+			  "not a protein");
+		    }
+		    continue;
+		}
+		
 
 	        if (DEBUG >= 2) {
 	            System.out.println("Processing save frame " +
@@ -550,10 +563,15 @@ public class Star2Devise {
 		// Write the percent assignment info.
 		//
 		writeAssignments();
+
+		result = true;
+
+		// Only write out one set of chemical shifts for now.
+		break;
 	    } // end while matches.hasMoreElements()
 	    
 	    _error.close();
-	    return true;
+	    return result;
 	} catch (ClassNotFoundException e) {
 	    System.err.println("ClassNotFoundException: " + e.getMessage() );
 	    if (DEBUG >= 1) e.printStackTrace();
@@ -1082,14 +1100,6 @@ public class Star2Devise {
 	    // new display- pages generated my make_view
 	    String display_link_base = "<br><br><a href=\"" + the_number;
 
-	    boolean doChemShifts = true;
-	    if (!isAProtein()) {
-	        summary_writer.println("<p>Entry is not a protein -- no " +
-		  "chemical shift data available.");
-	        doChemShifts = false;
-	    }
-	    
-
             //
 	    // Save the data available in this STAR file.
 	    //
@@ -1108,9 +1118,7 @@ public class Star2Devise {
 		}
 
 		if (current_tag.equals(S2DNames.ASSIGNED_CHEM_SHIFTS)) {
-		    if (doChemShifts) {
-		        savedChemShifts = calcChemShifts(null);
-		    }
+		    savedChemShifts = calcChemShifts(null);
 		    
 		} else if (current_tag.equals(S2DNames.T1_RELAX)) {
 		    try {
@@ -1780,25 +1788,125 @@ public class Star2Devise {
     }
 
     // ----------------------------------------------------------------------
-    private boolean isAProtein()
+    // Returns true iff the given save frame refers to data for a protein
+    // (at least for chemical assignments save frames).
+    private boolean isAProtein(SaveFrameNode saveFrame)
     {
-	boolean result = false;
+        if (DEBUG >= 2) {
+            System.out.println("isAProtein(" + saveFrame.getLabel() + ")");
+        }
+
+        boolean result = false;
 
 	try {
-	    // _Mol_polymer_class tells us whether this is a protein.
-	    VectorCheckType list = aStarTree.searchForTypeByName(
-	      Class.forName(StarValidity.pkgName() + ".DataItemNode"),
-	      "_Mol_polymer_class");
+	    //
+	    // Get the _Mol_system_component_name in the given save frame.
+	    //
+	    VectorCheckType list = saveFrame.searchByName(
+	      S2DNames.MOL_SYS_COMP_NAME);
+	    if (list.size() != 1) {
+	        throw new S2DException("There should be exactly one " +
+		  S2DNames.MOL_SYS_COMP_NAME + " node; got " + list.size());
+	    }
+	    DataItemNode node = (DataItemNode)list.elementAt(0);
+	    String molSysComp = node.getValue();
 
-            for (int index = 0; index < list.size(); index++) {
-		DataItemNode node = (DataItemNode)list.elementAt(index);
-	        if (node.getValue().equals("protein")) result = true;
+	    //
+	    // Find the molecular_system save frame.
+	    //
+	    list = aStarTree.searchByTagValue(S2DNames.SAVEFRAME_CATEGORY,
+	      S2DNames.MOL_SYSTEM);
+	    if (list.size() != 1) {
+	        throw new S2DException("There should be exactly one " +
+		  S2DNames.MOL_SYSTEM + " save frame; got " + list.size());
+	    }
+	    node = (DataItemNode)list.elementAt(0);
+	    SaveFrameNode molSys = (SaveFrameNode)getParentByClass(node,
+	      Class.forName(StarValidity.pkgName() + ".SaveFrameNode"));
+
+	    //
+	    // Find the loop containing _Mol_system_component_name.
+	    //
+	    list = molSys.searchByName(S2DNames.MOL_SYS_COMP_NAME);
+	    if (list.size() != 1) {
+	        throw new S2DException("There should be exactly one " +
+		  S2DNames.MOL_SYS_COMP_NAME + " loop; got " + list.size());
+	    }
+	    StarNode genNode = (StarNode)list.elementAt(0);
+	    DataLoopNode loop = (DataLoopNode)getParentByClass(genNode,
+	      Class.forName(StarValidity.pkgName() + ".DataLoopNode"));
+
+	    //
+	    // Now find the _Mol_system_component_name value in this loop.
+	    //
+	    String molLabel = null;
+            LoopTableNode ltNode = loop.getVals();
+	    for (int index = 0; index < ltNode.size(); index++) {
+	        LoopRowNode lrNode = ltNode.elementAt(index);
+	    	DataValueNode dvNode = lrNode.elementAt(0);
+                if (dvNode.getValue().equals(molSysComp)) {
+		    molLabel = lrNode.elementAt(1).getValue();
+		    // Assume for now that there will be only one match in
+		    // the loop.
+		    break;
+		}
+	    }
+	    if (molLabel == null) {
+	        throw new S2DException(
+		  S2DNames.MOL_SYS_COMP_NAME + " value not found");
 	    }
 
-	} catch (Exception ex) {
-	    System.err.println("Exception: " + ex.getMessage());
+            //
+	    // Get the corresponding save frame.
+	    //
+	    String saveFrameName = "save_" + molLabel;
+	    list = aStarTree.searchByName(saveFrameName);
+	    if (list.size() != 1) {
+	        throw new S2DException("There should be exactly one " +
+		  saveFrameName + " save frame; got " + list.size());
+	    }
+            SaveFrameNode compFrame = (SaveFrameNode)list.elementAt(0);
+
+	    //
+	    // Find the _Mol_polymer_class value.
+	    //
+	    list = compFrame.searchByName(S2DNames.MOL_POLYMER_CLASS);
+	    if (list.size() != 1) {
+	        throw new S2DException("There should be exactly one " +
+		  S2DNames.MOL_POLYMER_CLASS + " node; got " + list.size());
+	    }
+            node = (DataItemNode)list.elementAt(0);
+	    String molPolymerClass = node.getValue();
+            if (molPolymerClass.equals("protein")) result = true;
+	} catch (S2DException ex) {
+	    System.err.println("S2DException checking for protein: " +
+	      ex.getMessage());
+	    result = false;
+	} catch (ClassNotFoundException ex) {
+	    System.err.println("ClassNotFoundException checking for protein: "
+	      + ex.getMessage());
+	    result = false;
 	}
 
         return result;
+    }
+
+    // ----------------------------------------------------------------------
+    // Return the first parent, grandparent, etc. of the given node that
+    // is of the given class.
+    static StarNode getParentByClass(StarNode node, Class desiredClass)
+    {
+	StarNode result = null;
+
+	StarNode tmpNode = node;
+        while (tmpNode != null) {
+	    tmpNode = tmpNode.getParent();
+	    if (tmpNode != null && tmpNode.getClass() == desiredClass) {
+	        result = tmpNode;
+		break;
+	    }
+	}
+
+	return result;
     }
 }
