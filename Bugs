@@ -287,6 +287,11 @@ Num Date        Status  Description
 084 11/25/96	OPEN	Temporary print file isn't removed after printing.
 			(rkw)
 
+085 11/26/96	OPEN	Record links to window with map not working right in
+			session test/a2.tk (_all_ records are initially
+			drawn; then if you force a redraw, only the correct
+			ones are drawn). (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
