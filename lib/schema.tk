@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.27  1997/02/14 16:48:07  wenger
+#  Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
 #  Revision 1.26  1997/02/03 04:12:40  donjerko
 #  Catalog management moved to DTE
 #
@@ -1228,7 +1231,6 @@ proc qbrowse {_isSingle {_viewName ""} {logicalAttrlist ""}
 	set as $_as
 	set where $_where
 
-	puts "select = $select"
 	global fromCnt attrCnt
 
 	global q_retVal

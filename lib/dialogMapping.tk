@@ -15,6 +15,9 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.16  1997/02/14 16:48:02  wenger
+#       Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
+#
 #       Revision 1.15.4.7  1997/02/11 23:16:50  weaver
 #       Removed shape justification pending release...
 #
@@ -218,11 +221,26 @@ proc UpdateMappingDialog { w curView } {
 
      set tdata [lindex [lindex $params 0] 1]
 
-     set err [catch {set sfname [lindex $sourceList($tdata) 3]}]
-     if {$err > 0} {
+     set sourcedef [DEVise dteShowCatalogEntry $tdata]
+     set sourcedef [lindex $sourcedef 0]
+	set err [expr [llength $sourcedef] == 0]
+
+	if {$err == 0} {
+		
+		# file exists
+		set stype [lindex $sourcedef 1]
+		if {[isDTEType $stype]} {
+			set schemaname $tdata
+		} {
+			set sfname [lindex $sourcedef 4]
+			set schemaname [file tail $sfname]
+		}
+	} else {
+
+		# file is not found in the catalog, it must be derived one
 	   set sfname [lindex $derivedSourceList($tdata) 3]
+        set schemaname [file tail $sfname]
      }
-     set schemaname [file tail $sfname]
 
      set xParm [lindex [lindex $params 3] 1]
      set yParm [lindex [lindex $params 4] 1]

@@ -15,6 +15,9 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.58  1997/02/18 18:07:52  donjerko
+#	Added index deletions.
+#
 #	Revision 1.57  1997/02/14 16:48:08  wenger
 #	Merged 1.3 branch thru rel_1_3_1 tag back into the main CVS trunk.
 #
@@ -881,6 +884,7 @@ proc defineSQLView {content} {
 		set queryIndex 0
 	}
 	set as [lrange $content 3 [expr $queryIndex - 1]]
+	set as [join $as ", "]
 	puts "as = $as"
 	set query [lindex $content $queryIndex]
 	puts "query = $query"
@@ -892,23 +896,30 @@ proc defineSQLView {content} {
 	puts "select = $select"
 	incr beginFrom 6
 	set beginWhere [string first where $query]
-	incr beginWhere -1
-	set from [string range $query $beginFrom $beginWhere]
+	if {$beginWhere < 0} {
+		set from [string range $query $beginFrom end]
+		set where ""
+	} else {
+		incr beginWhere -1
+		set from [string range $query $beginFrom $beginWhere]
+		incr beginWhere 7
+		set where [string range $query $beginWhere end] 
+	}
 	puts "from = $from"
-	incr beginWhere 7
-	set where [string range $query $beginWhere end] 
 	puts "where = $where"
 	set retVal [qbrowse 0 $viewName "" $from $select $as $where]
 	if {$retVal != ""} {
+		puts "^^^^^^^^^^ as = $as"
+		regsub "," $as " " spaceAs
 		set as [split $as ,]
+		puts "^^^^^^^^^^ spaceAs = $spaceAs"
 		set attrCnt [llength $as]
-		set as [join $as]
 		if {$where == ""} {
 			set query "select $select from $from"
 		} else {
 			set query "select $select from $from where $where"
 		}
-		return "[addQuotes $viewName] $type $attrCnt $as [addQuotes $query]"
+		return "[addQuotes $viewName] $type $attrCnt $spaceAs [addQuotes $query]"
 	} else {
 		return
 	}
