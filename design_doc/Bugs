@@ -2805,6 +2805,18 @@ Num Date        Status  Description
 			mode, seems to get jspop and/or devised into a
 			non-responsive state. (rkw)
 
+703 10/05/01	OPEN	JavaScreen: _pid files don't get deleted correctly
+			if the machine goes down. (rkw)
+
+704 10/05/01	OPEN	JavaScreen: when restarting JSPoP, heartbeats sent
+			from an existing client can (sometimes, at least)
+			prevent the JSPoP from accepting other client
+			connections. (rkw)
+
+705 10/05/01	OPEN	JavaScreen: the JSPoP should not create client log
+			files for clients that only send a JAVAC_CheckPop'
+			command. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
