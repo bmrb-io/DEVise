@@ -9,6 +9,7 @@ public class jsdevisec extends Frame
     public DEViseCDataChannel channel = null;
     private DEViseCmdSocket cmdSocket = null;
     private DEViseImgSocket imgSocket = null;
+    private int myID = 0;
     
     private Vector allViews = new Vector();
     public Vector images = new Vector();
@@ -35,14 +36,15 @@ public class jsdevisec extends Frame
     
     public DEViseDebugInfo debugInfo = null;
 
-    public jsdevisec(DEViseCmdSocket arg1, DEViseImgSocket arg2, Vector symbol)
+    public jsdevisec(DEViseCmdSocket arg1, DEViseImgSocket arg2, Vector symbol, int arg3)
     {
         cmdSocket = arg1;
         imgSocket = arg2;
-	    images = symbol;
+	    images = symbol; 
+	    myID = arg3;
 
         debugInfo = new DEViseDebugInfo(DEViseGlobals.ISDEBUG, true, false, null);
-        DEViseDebugInfo.println("Successfully connect to DEVise command and image Server!");
+        DEViseDebugInfo.println("Successfully connect to DEVise command and image Server - ID: " + myID);
         
         channel = new DEViseCDataChannel(this, cmdSocket, imgSocket);
         
@@ -312,10 +314,14 @@ public class jsdevisec extends Frame
 
         try {
             cmdSocket.sendCmd("JAVAC_Exit", DEViseGlobals.API_JAVA);            
-            if (cmdSocket != null)
+            if (cmdSocket != null) {                
                 cmdSocket.closeSocket();        
-            if (imgSocket != null)
+                cmdSocket = null;
+            }
+            if (imgSocket != null) {
                 imgSocket.closeSocket();
+                imgSocket = null;
+            }
         } catch (DEViseNetException e) {
             //showStatus("Can not close socket connection!");
             //System.exit(1);
@@ -339,10 +345,14 @@ public class jsdevisec extends Frame
             channel.stop();
 
         try {
-            if (imgSocket != null)
+            if (imgSocket != null) {
                 imgSocket.closeSocket();
-            if (cmdSocket != null)
-                cmdSocket.closeSocket();        
+                imgSocket = null;
+            }
+            if (cmdSocket != null) {
+                cmdSocket.closeSocket(); 
+                cmdSocket = null;
+            }
         } catch (DEViseNetException e) {
             //System.exit(1);
             //showStatus("Can not close socket connection!");

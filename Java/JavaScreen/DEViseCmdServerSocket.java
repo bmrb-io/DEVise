@@ -7,6 +7,7 @@ public class DEViseCmdServerSocket extends ServerSocket implements Runnable
     private boolean isListen = true;
     public final int maxClients = 10;
     private Vector clients = new Vector();
+    private int currentID = 0;
    
     public DEViseCmdServerSocket() throws IOException
     {
@@ -16,6 +17,11 @@ public class DEViseCmdServerSocket extends ServerSocket implements Runnable
     public synchronized Vector getClients()
     {
         return clients;
+    }
+    
+    public synchronized int getID()
+    {
+        return currentID;
     }
        
     public synchronized boolean increaseCount(DEViseSDataChannel what)
@@ -35,6 +41,7 @@ public class DEViseCmdServerSocket extends ServerSocket implements Runnable
             }
         
             clients.addElement(what);
+            currentID++;
             return true;
         }    
     }

@@ -10,7 +10,8 @@ public class DEViseSDataChannel implements Runnable
     String hostName = null;
     boolean isExit = true;
     boolean isError = false;
-    Random rand = new Random();    
+    Random rand = new Random();  
+    int myID = 0;  
 
     public DEViseSDataChannel(DEViseCmdServerSocket what, Socket socket) throws IOException
     {        
@@ -23,12 +24,17 @@ public class DEViseSDataChannel implements Runnable
     {
         setStatus(true);
         cmdServer.decreaseCount(this);
+        myID = 0;
            
         try {
-            if (imgSocket != null)
+            if (imgSocket != null) {
                 imgSocket.closeSocket();
-            if (cmdSocket != null)
+                imgSocket = null;
+            }
+            if (cmdSocket != null) {
                 cmdSocket.closeSocket();        
+                cmdSocket = null;
+            }
         } catch (DEViseNetException e) {
             // do nothing now
         }
@@ -56,9 +62,17 @@ public class DEViseSDataChannel implements Runnable
     {   
         try  {
             imgSocket = new DEViseImgSocket(what);
+            int id = imgSocket.receiveInt();
+            if (id != myID) {
+                System.out.println("Something is wrong!");                
+                isError = true;
+            }
         } catch (IOException e) {
             System.out.println("Can not establish image socket connection to " + hostName);
             isError = true;            
+        } catch (DEViseNetException e) {
+            System.out.println("Communication Error while receiving data from " + hostName);
+            isError = true;
         }
         
         //notifyAll();
@@ -69,15 +83,17 @@ public class DEViseSDataChannel implements Runnable
         if (!cmdServer.increaseCount(this)) {
             try {
                 setStatus(true);
-                cmdSocket.sendCmd("JAVAC_Fail", DEViseGlobals.API_JAVA);  
+                myID = 0;
+                cmdSocket.sendInt(myID);  
                 close();
             } catch (DEViseNetException e) {
                 System.out.println("Communication Error with " + hostName +" : " + e.getMessage());
             }
         } else {
-            try {
+            try {            
                 setStatus(false);
-                cmdSocket.sendCmd("JAVAC_Done", DEViseGlobals.API_JAVA);
+                myID = cmdServer.getID();
+                cmdSocket.sendInt(myID);
 
                 //wait for image socket, might be deadlock?
                 while (imgSocket == null && !isError) {

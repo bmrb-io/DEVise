@@ -36,43 +36,46 @@ public class jsa extends Applet
             images.addElement(image);
         }
         
-	    showStatus("Successfully get symbols of DEVise1");
-
+	    showStatus("Successfully get symbols of DEVise");
+        
+        int myID = 0;
         try  {
             cmdSocket = new DEViseCmdSocket(DEViseGlobals.DEVISEHOST, DEViseGlobals.CMDPORT);
-            try {
-                String rsp = cmdSocket.receiveRsp(false);
-                if (rsp.equals("JAVAC_Fail")) {
-                    showStatus("Connection to DEVise Server is rejected!");
-		            return;
+            try {   
+                myID = cmdSocket.receiveInt();
+                
+                if (myID == 0) {
+                    System.out.println("Connection to DEVise Server is rejected!");
+                    System.exit(0);
                 }
             } catch (DEViseNetException e) {
-                showStatus("Communication error: " + e.getMessage());
-                return;
+                System.out.println(e.getMessage());
+                System.exit(1);
             }
             
             imgSocket = new DEViseImgSocket(DEViseGlobals.DEVISEHOST, DEViseGlobals.IMGPORT);
             try {
+                imgSocket.sendInt(myID);
                 String rsp = cmdSocket.receiveRsp(false);
-                if (rsp.equals("JAVAC_Fail")) {
-                    showStatus("Can not connect to DEVise Image Server!");
-                    return;
+                if (!rsp.equals("JAVAC_Done")) {
+                    System.out.println("Can not connect to DEVise Image Server!");
+                    System.exit(0);
                 }
             } catch (DEViseNetException e) {
-                showStatus("Communication error: " + e.getMessage());
-                return;
+                System.out.println("Communication error: " + e.getMessage());
+                System.exit(1);
             }
         }  catch (UnknownHostException e)  {
-            showStatus("Can not find " + DEViseGlobals.DEVISEHOST);
-            return;
+            System.out.println("Can not find " + DEViseGlobals.DEVISEHOST);
+            System.exit(1);
         }  catch (IOException e)  {
-            showStatus("Can not open connection to DEVise server at " + DEViseGlobals.DEVISEHOST);
-            return;
+            System.out.println("Can not open connection to DEVise server at " + DEViseGlobals.DEVISEHOST);
+            System.exit(1);
         }
         
         showStatus("Successfully connect to Server command and image socket!");
 
-        client = new jsdevisec(cmdSocket, imgSocket, images); 
+        client = new jsdevisec(cmdSocket, imgSocket, images, myID); 
     }
 
     public void destroy()

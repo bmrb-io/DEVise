@@ -1,7 +1,7 @@
 Basic Assumption:
 
 1. API Communication is build on top of DEVise low level socket communication
-   protocol.
+   protocol (networkSend or networkReceive, use flag: API_JAVA = 5).
 2. Client intercept user's action (Mouse, Key and other) and send
    corresponding events to server, Server take whatever action need to be done
    and then send command or list of commands to client to instruct client to
@@ -22,6 +22,34 @@ Basic Assumption:
    through command Socket.
 8. Client ensure no command will send to Server until the execution of current
    received commands is completely finished.
+9. Start-up Protocol:
+          Client                                Server
+    attempt command port
+    connection.              
+                                        accept socket, check client host and 
+                                        maximum allowed clients, then decide
+                                        whether reject it or accept it. If 
+                                        reject it, send back 4-byte integer 0,
+                                        if accept it, send back 4-byte nozero
+                                        integer as ID.
+    receive 4-byte integer from
+    command socket, if zero, quit,
+    otherwise, attempt image port
+    connection.            
+                                        accept socket
+    send received ID through image
+    port to identify itself            
+                                        receive 4-byte integer from image
+                                        socket. If this integer matchs new
+                                        clients ID, send 'JAVAC_Done' 
+                                        through command socket, otherwise,
+                                        send 'JAVAC_Fail', and kill the new
+                                        client.
+    receive control command from
+    command socket, if 'JAVAC_Done',
+    connection finally established.
+    Otherwise, quit.
+                                                       
 
 API commands(Implemented in current version of JavaScreen and Dummy Server):
 

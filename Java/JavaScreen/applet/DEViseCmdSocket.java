@@ -36,7 +36,53 @@ public class DEViseCmdSocket
         
         return response; 
     }
-*/    
+*/
+    public void sendBytes(byte[] data) throws DEViseNetException
+    {
+        if (data == null)
+            return; 
+            
+        try {
+            os.write(data, 0, data.length);    
+            os.flush();
+        } catch (IOException e) {
+            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while sending data!");
+        }
+    }
+    
+    public byte[] receiveBytes(int howMany) throws DEViseNetException
+    {
+        if (howMany < 1)
+            return null;
+        
+        byte[] data = new byte[howMany];
+        try {
+            is.readFully(data);
+            return data;
+        } catch (IOException e) {
+            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while receiving data!");
+        }
+    }
+    
+    public void sendInt(int data) throws DEViseNetException
+    {
+        try {
+            os.writeInt(data);
+            os.flush();
+        } catch (IOException e) {
+            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while sending integer data!");
+        }        
+    }
+    
+    public int receiveInt() throws DEViseNetException
+    {
+        try {
+            return is.readInt();
+        } catch (IOException e) {
+            throw new DEViseNetException("DEVise Command Socket Error: Communication Error occured while receiving integer data!");
+        }            
+    }
+    
     public void sendCmd(String cmd, short flag) throws DEViseNetException
     {
         short nelem = 0, size = 0;

@@ -9,6 +9,7 @@ public class jsdevisec extends Frame
     public DEViseCDataChannel channel = null;
     private DEViseCmdSocket cmdSocket = null;
     private DEViseImgSocket imgSocket = null;
+    private int myID = 0;
     
     private Vector allViews = new Vector();
     private DEViseImageView currentView = null;
@@ -34,13 +35,14 @@ public class jsdevisec extends Frame
     
     public DEViseDebugInfo debugInfo = null;
 
-    public jsdevisec(DEViseCmdSocket arg1, DEViseImgSocket arg2)
+    public jsdevisec(DEViseCmdSocket arg1, DEViseImgSocket arg2, int arg3)
     {
         cmdSocket = arg1;
         imgSocket = arg2;
+        myID = arg3;
                 
         debugInfo = new DEViseDebugInfo(DEViseGlobals.ISDEBUG, true, DEViseGlobals.ISLOG, null);
-        DEViseDebugInfo.println("Successfully connect to DEVise command and image Server!");
+        DEViseDebugInfo.println("Successfully connect to DEVise command and image Server - ID: " + myID);
         
         channel = new DEViseCDataChannel(this, cmdSocket, imgSocket);
         
@@ -328,10 +330,14 @@ public class jsdevisec extends Frame
 
         try {
             cmdSocket.sendCmd("JAVAC_Exit", DEViseGlobals.API_JAVA);            
-            if (cmdSocket != null)
-                cmdSocket.closeSocket();        
-            if (imgSocket != null)
+            if (imgSocket != null) {
                 imgSocket.closeSocket();
+                imgSocket = null;
+            }
+            if (cmdSocket != null) {
+                cmdSocket.closeSocket(); 
+                cmdSocket = null;
+            }
         } catch (DEViseNetException e) {
             System.exit(1);
         }
@@ -353,10 +359,15 @@ public class jsdevisec extends Frame
             channel.stop();
 
         try {
-            if (imgSocket != null)
+            if (imgSocket != null) {
                 imgSocket.closeSocket();
-            if (cmdSocket != null)
-                cmdSocket.closeSocket();        
+                imgSocket = null;
+            }
+            if (cmdSocket != null) {
+                cmdSocket.closeSocket(); 
+                cmdSocket = null;
+            }
+                   
         } catch (DEViseNetException e) {
             System.exit(1);
         }
@@ -438,24 +449,27 @@ public class jsdevisec extends Frame
 
         DEViseCmdSocket cmdSocket = null;
         DEViseImgSocket imgSocket = null;
+        int myID = 0;
         String hostname = "localhost";                            
         try  {
             cmdSocket = new DEViseCmdSocket(DEViseGlobals.DEVISEHOST, DEViseGlobals.CMDPORT);
-            try {
-                String rsp = cmdSocket.receiveRsp(false);
-                if (rsp.equals("JAVAC_Fail")) {
+            try {   
+                myID = cmdSocket.receiveInt();
+                
+                if (myID == 0) {
                     System.out.println("Connection to DEVise Server is rejected!");
                     System.exit(0);
                 }
             } catch (DEViseNetException e) {
-                System.out.println("Communication error: " + e.getMessage());
+                System.out.println(e.getMessage());
                 System.exit(1);
             }
             
             imgSocket = new DEViseImgSocket(DEViseGlobals.DEVISEHOST, DEViseGlobals.IMGPORT);
             try {
+                imgSocket.sendInt(myID);
                 String rsp = cmdSocket.receiveRsp(false);
-                if (rsp.equals("JAVAC_Fail")) {
+                if (!rsp.equals("JAVAC_Done")) {
                     System.out.println("Can not connect to DEVise Image Server!");
                     System.exit(0);
                 }
@@ -471,7 +485,7 @@ public class jsdevisec extends Frame
             System.exit(1);
         }
                 
-        jsdevisec newclient = new jsdevisec(cmdSocket, imgSocket); 
+        jsdevisec newclient = new jsdevisec(cmdSocket, imgSocket, myID); 
     }
 }
 
