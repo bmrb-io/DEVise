@@ -5,11 +5,19 @@
 # DEVise date: Jul 20 2000
 # DEVise endHeader
 
+# Order session template.
+
+###################################################################
+
+# $Id$
+
+###################################################################
+
 # Session description
 DEVise setSessionDesc {}
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel $DEVISE_SCHEMA/physical/bmrb:AxisLabel "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {SortedX} {View 1} 0.000000 148.000000 0.100000 1.200000 37 0

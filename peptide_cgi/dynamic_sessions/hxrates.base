@@ -5,12 +5,20 @@
 # DEVise date: Aug 15 2000
 # DEVise endHeader
 
+# Hydrogen exchange rate session template.
+
+###################################################################
+
+# $Id$
+
+###################################################################
+
 # Session description
 DEVise setSessionDesc {}
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4096r" UNIXFILE 4096r.dat HXRates /p/devise/demo/schema/schema/physical/bmrb:HXRatesLog "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4096r" UNIXFILE 4096r.dat HXRates $DEVISE_SCHEMA/physical/bmrb:HXRatesLog "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel $DEVISE_SCHEMA/physical/bmrb:AxisLabel "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {SortedX} {View 1} 2.000000 147.000000 -6.410000 0.000000 37 0

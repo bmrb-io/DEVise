@@ -5,12 +5,20 @@
 # DEVise date: Jul 20 2000
 # DEVise endHeader
 
+# Chemical shift delta session template.
+
+###################################################################
+
+# $Id$
+
+###################################################################
+
 # Session description
 DEVise setSessionDesc {}
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4081d1" UNIXFILE 4081d1.dat DeltaShift /p/devise/demo/schema/schema/physical/bmrb:DeltaShift "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4081d1" UNIXFILE 4081d1.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb:DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel $DEVISE_SCHEMA/physical/bmrb:AxisLabel "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {SortedX} {View 1} 1.000000 147.000000 -2.440000 1.000000 37 0

@@ -5,6 +5,14 @@
 # DEVise date: May  8 2001
 # DEVise endHeader
 
+# All chemical shifts session template.
+
+###################################################################
+
+# $Id$
+
+###################################################################
+
 # Session description
 DEVise setSessionDesc {}
 
@@ -53,9 +61,9 @@ DEVise color SessionPalette {#000000000000                         black
 }
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4267as1" UNIXFILE 4267as1.dat AllShift /p/devise/demo/schema/schema/physical/bmrb:AllShift "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267rc1" UNIXFILE 4267rc1.dat ResCount /p/devise/demo/schema/schema/physical/bmrb:ResCount "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4267as1" UNIXFILE 4267as1.dat AllShift $DEVISE_SCHEMA/physical/bmrb:AllShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4267rc1" UNIXFILE 4267rc1.dat ResCount $DEVISE_SCHEMA/physical/bmrb:ResCount "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel $DEVISE_SCHEMA/physical/bmrb:AxisLabel "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {SortedX} {View 1} -181.460001 -11.700000 -0.500000 19.500000 37 0

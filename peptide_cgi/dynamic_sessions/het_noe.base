@@ -5,12 +5,20 @@
 # DEVise date: Sep 27 2000
 # DEVise endHeader
 
+# Heteronuclear NOE session template.
+
+###################################################################
+
+# $Id$
+
+###################################################################
+
 # Session description
 DEVise setSessionDesc {}
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4267n1" UNIXFILE 4267n1.dat NOE /p/devise/demo/schema/schema/physical/bmrb:NOE "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel /p/devise/demo/schema/schema/physical/bmrb:AxisLabel "" 100 50 "/p/devise/demo/dat/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4267n1" UNIXFILE 4267n1.dat NOE $DEVISE_SCHEMA/physical/bmrb:NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb:AxisLabel $DEVISE_SCHEMA/physical/bmrb:AxisLabel "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 
 # Create views
 DEVise create {view} {SortedX} {View 1} 3.000000 179.000000 0.000000 1.950000 37 0
