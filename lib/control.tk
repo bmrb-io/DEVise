@@ -15,6 +15,9 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.29  1995/11/29 17:49:48  jussi
+#	Added RemoveWindow command.
+#
 #	Revision 1.28  1995/11/28 05:34:48  ravim
 #	Support for statistics.
 #
@@ -1062,7 +1065,7 @@ proc DoCreateWindow { message } {
 }
 
 # Get a window 
-proc DoGetWindow {prompt createnew} {
+proc DoGetWindow {} {
     global dialogListVar
 
     set winSet [ WinSet ]
@@ -1071,17 +1074,11 @@ proc DoGetWindow {prompt createnew} {
 	return [ DoCreateWindow "Select window type" ]
     }
 
-    set answer 0
-
-    if {$createnew} {
-	set answer [ dialogList .window "Select Window" $prompt "" "" \
+    set answer [ dialogList .window "Select Window" \
+	    "Select a window to display view in" "" "" \
 	    { Cancel New Ok } $winSet ]
-	if { $answer == 1 } {
-	    return [ DoCreateWindow "Select window type" ]
-	}
-    } else {
-	set answer [ dialogList .window "Select Window" $prompt "" "" \
-	    { Cancel Ok } $winSet ]
+    if { $answer == 1 } {
+	return [ DoCreateWindow "Select window type" ]
     }
 
     if {$answer == 0  || $dialogListVar(selected) == ""} {
@@ -1123,7 +1120,7 @@ proc DoActualVisualizeTData { tdata } {
     set res [DEVise insertMapping $view $gdata ]
 
     # Find a window for view
-    set window [ DoGetWindow "Select a window to display view in" 1 ]
+    set window [ DoGetWindow ]
     if {$window == ""}  { 
 	return
     }
@@ -1146,7 +1143,7 @@ proc DoVisualizeGData {} {
     set res [DEVise insertMapping $view $gdata ]
     
     # Find a window for view
-    set window [ DoGetWindow "Select a window to display view in" 1 ]
+    set window [ DoGetWindow ]
     if {$window == ""}  { 
 	return
     }
@@ -1218,7 +1215,7 @@ proc DoViewMove {} {
 	set viewName $curView
     }    
 
-    set winName [ DoGetWindow "Select a window to display view in" 1 ]
+    set winName [ DoGetWindow ]
     if {$winName == ""} {
 	return
     }
@@ -1238,7 +1235,7 @@ proc DoBringView {} {
     }
     set viewName $dialogListVar(selected)
     
-    set winName [ DoGetWindow "Select a window to display view in" 1 ]
+    set winName [ DoGetWindow ]
     if {$winName == ""} {
 	return
     }
@@ -3050,10 +3047,19 @@ proc DoGoBackOne {} {
 
 # remove window
 proc RemoveWindow {} {
-    set win [ DoGetWindow "Select window to remove" 0 ]
-    if {$win == ""} {
-	return
+    global dialogListVar
+
+    set winSet [ WinSet ]
+
+    set answer [ dialogList .window "Select Window" \
+	    "Select window to remove" "" "" \
+	    { Cancel Ok } $winSet ]
+
+    if {$answer == 0  || $dialogListVar(selected) == ""} {
+	return 
     }
+
+    set win $dialogListVar(selected)
 
     set views [DEVise getWinViews $win]
     if {$views != ""} {
