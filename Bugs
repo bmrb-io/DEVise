@@ -1189,6 +1189,30 @@ Num Date        Status  Description
 314 03/09/98	OPEN	Record links don't show up in the list of links when you
 			select View->Links->Unlink. (rkw)
 
+315 03/11/98	OPEN	When printing the entire display to PostScript, windows
+			are printed in reversed order top-to-bottom. (rkw)
+
+316 03/11/98	OPEN	When you display a data source as a scatter plot,
+			the mapping should have width and height set to 1.
+			(rkw)
+
+317 03/11/98	OPEN	Trying to materialize a data source that's not a
+			view causes DEVise to crash. (rkw)
+
+318 03/11/98	OPEN	SQLFilter->New dialog doesn't have any place to set
+			the 'from' clause. (rkw)
+
+319 03/11/98	OPEN	It is possible to create data sources with duplicate
+			names. (rkw)
+
+320 03/11/98	OPEN	SQLViews don't work. (rkw)
+
+321 03/11/98	OPEN	Rubberband line on Linux client/server form causes
+			crash. (rkw)
+
+322 03/11/98	OPEN	Can't run client/server form on Linux without
+			collaborator. (rkw)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
