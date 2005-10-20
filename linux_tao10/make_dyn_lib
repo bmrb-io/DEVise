@@ -1,0 +1,21 @@
+#! /bin/csh -f
+
+# $Id$
+
+# Copy dynamic libraries for Tao Linux 1.0.
+
+if (!-e dyn_lib) then
+  mkdir dyn_lib
+endif
+
+cp /usr/lib/libtk8.3.so dyn_lib
+cp /usr/lib/libtcl8.3.so dyn_lib
+cp /usr/X11R6/lib/libX11.so.6 dyn_lib
+cp /lib/libdl.so.2 dyn_lib
+cp /usr/lib/libstdc++.so.5 dyn_lib
+cp /lib/tls/libm.so.6 dyn_lib
+cp /lib/libgcc_s.so.1 dyn_lib
+cp /lib/tls/libc.so.6 dyn_lib
+cp /lib/ld-linux.so.2 dyn_lib
+
+chmod 644 dyn_lib/*.so*
