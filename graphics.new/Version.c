@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.69  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.68  2003/01/13 19:25:28  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -439,7 +443,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.20x1";
+static const char *	version = "1.9.0x1";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2004";

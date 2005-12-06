@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2005/12/06 20:00:19  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.70  2003/01/13 19:23:43  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -426,7 +430,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.5.3x1");
+    public static final String VERSION = new String("5.7.0x1");
 
     public static final String PROTOCOL_VERSION = new String("15.0");
 
