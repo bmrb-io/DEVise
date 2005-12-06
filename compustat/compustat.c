@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.13.46.1  2005/09/12 19:41:51  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.13  1996/04/16 20:57:23  jussi
+  Replaced assert() calls with DOASSERT macro.
+
   Revision 1.12  1995/12/28 18:30:34  jussi
   Removed warnings related to for loop variable scope.
 
@@ -72,11 +79,17 @@ static Tcl_Interp *globalInterp = 0;
 /* This function interfaces the Compustat extraction routines to
    TCL/TK. The path name for output files is taken from TCL. */
 
-int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
-		char *tapeBsize, char *idxFile, char **, int);
-int create_comp_dat(TapeDrive &tape, unsigned long int offset, char *file);
+int comp_create(const char *tapeDrive, const char *tapeFile,
+		const char *tapeOff, const char *tapeBsize,
+		const char *idxFile, const char **, int);
+int create_comp_dat(TapeDrive &tape, unsigned long int offset,
+		const char *file);
 
-int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
+int comp_extract(ClientData cd, Tcl_Interp *interp, int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+		const
+#endif
+		char **argv)
 {
   /* Allow other functions to UPDATE_TCL */
 
@@ -86,11 +99,11 @@ int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   /* Get parameter values from TCL script */
 
-  char *tapeDrive = argv[1];
-  char *tapeFile = argv[2];
-  char *tapeOff = argv[3];
-  char *tapeBsize = argv[4];
-  char *idxFile = argv[5];
+  const char *tapeDrive = argv[1];
+  const char *tapeFile = argv[2];
+  const char *tapeOff = argv[3];
+  const char *tapeBsize = argv[4];
+  const char *idxFile = argv[5];
 
   printf("Reading from %s:%s:%s (%s)\n",
 	 tapeDrive, tapeFile, tapeOff, tapeBsize);
@@ -98,6 +111,9 @@ int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
   /* do not pass argv[0] (name of TCL command) */
 
   return comp_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile,
+#if TCL_MAJOR_VERSION < 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <= 3)
+		     (const char**)
+#endif
 		     &argv[6], argc - 6);
 }
 
@@ -110,8 +126,9 @@ int comp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
    of the corresponding records (since the records are on tape) and calls
    create_comp_dat for every successive symbol. */
 
-int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
-		char *tapeBsize, char *idxFile, char **argv, int argc)
+int comp_create(const char *tapeDrive, const char *tapeFile,
+		const char *tapeOff, const char *tapeBsize,
+		const char *idxFile, const char **argv, int argc)
 {
   FILE *idxfile;
 
@@ -180,7 +197,8 @@ int comp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
 /* This function extracts the fields in the data and outputs them into
    a DeVise style file.
 */
-int create_comp_dat(TapeDrive &tape, unsigned long int recoffset, char *file)
+int create_comp_dat(TapeDrive &tape, unsigned long int recoffset,
+		const char *file)
 {
   FILE *outfile;
   int i, j;
@@ -242,7 +260,7 @@ int create_comp_dat(TapeDrive &tape, unsigned long int recoffset, char *file)
    passed cusip number.
    In that record, return the OFFSET field. */
 
-unsigned long int find_rec(FILE *idxfile, char cval[])
+unsigned long int find_rec(FILE *idxfile, const char cval[])
 {
   int tmpval;
   char tmpbuf[200];     // large enough to hold one line of index file

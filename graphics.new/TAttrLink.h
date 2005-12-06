@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -24,6 +24,12 @@
   $Id$
 
   $Log$
+  Revision 1.9.14.1  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.9  2000/02/16 18:51:44  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.8  1998/06/15 19:55:21  wenger
   Fixed bugs 338 and 363 (problems with special cases of set links).
 
@@ -91,7 +97,7 @@ public:
   virtual void InsertView(ViewGraph *view);
   virtual bool DeleteView(ViewGraph *view);
 
-  virtual char *GetFileName() { return "none"; }
+  virtual const char *GetFileName() { return "none"; }
   virtual void Initialize();
   virtual void InsertRecs(RecId recid, int num) {}
   virtual int  FetchRecs(RecId recid, RecId &rec, int &num) { return 0; }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.18.28.2  2003/04/18 17:07:41  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.18.28.1.2.1  2003/04/18 15:26:03  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.18.28.1  2003/04/17 17:59:17  wenger
+  Now compiles with no warnings with gcc 2.95, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.18  1998/02/26 17:19:13  wenger
+  Fixed problems with yesterday's commit.
+
   Revision 1.17  1998/02/26 00:18:53  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -105,45 +120,16 @@ typedef struct
 
 }Interval;
 
-#if defined(HPUX) || defined(SUN) || defined(SOLARIS) || defined(LINUX)
-inline int trunc(float num) {
-  return (int)num;
-}
-inline int trunc(double num) {
-  return (int)num;
-}
-#endif
-
-#ifndef MIN
-#define MIN(a,b) ((a) < (b) ? (a) : (b))
-#endif
-
-#ifndef MIN3
-#define MIN3(a,b,c) ((a) < (b) ? MIN(a,c) : MIN(b,c))
-#endif
-
-#ifndef MAX
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-#endif
-
-#ifndef MAX3
-#define MAX3(a,b,c) ((a) > (b) ? MAX(a,c) : MAX(b,c))
-#endif
-
-#ifndef ABS
-#define ABS(x) ((x) >= 0 ? (x) : -(x))
-#endif  //ABS
-
-
+#include "MinMax.h"
 
 #include "DevStatus.h"
-
 
 #ifndef NULL
 #define NULL 0
 #endif
 
 
+// Make sure the value isn't NaN, INFINITY, etc.
 inline bool is_safe(double x)
 {
   return x < MAXDOUBLE && x > -MAXDOUBLE;

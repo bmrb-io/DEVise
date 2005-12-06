@@ -1,9 +1,8 @@
 #! /bin/csh -f
-#TEMPTEMP -- link dev, devcs, devise_ext_script where appropriate
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -18,6 +17,52 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.4.2.9  2005/10/20 17:28:10  wenger
+#  More Tao 1.0 fixes.
+#
+#  Revision 1.4.2.8  2005/10/20 16:47:50  wenger
+#  Started setting things up to compile somewhat better on the various
+#  Linuxes we have to build on, and deal with dynamic libraries better
+#  -- some of the framework in place, set up for Tao 1.0 and
+#  SPARC/Solaris.
+#
+#  Revision 1.4.2.7  2005/06/08 15:15:44  wenger
+#  Oops -- should have committed this with other JS-config-related mods
+#  yesterday.
+#
+#  Revision 1.4.2.6  2005/04/12 19:03:53  wenger
+#  Added public link in Java.
+#
+#  Revision 1.4.2.5  2004/08/26 21:28:15  wenger
+#  Updated setup and release scripts for current Linux versions,
+#  removed unneeded run stuff from setup script.
+#
+#  Revision 1.4.2.4  2004/05/24 18:11:02  wenger
+#  Set things up to compile and release separately for RH 7.2 and RH 9.
+#
+#  Revision 1.4.2.3  2003/12/19 18:10:11  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.4.2.2.2.1  2003/12/18 19:25:30  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.4.2.2  2003/06/06 20:48:24  wenger
+#  Implemented provision for automatic testing of DEVise, including
+#  running Tcl test scripts within DEVise itself.
+#
+#  Revision 1.4.2.1  2003/05/13 18:06:27  wenger
+#  Added command-line argument to disable external-process capability
+#  (for security), defaults to being disabled in JavaScreen support;
+#  a little fixing up of the external-process stuff.
+#
+#  Revision 1.4  2002/02/21 21:06:25  wenger
+#  Fixed up release scripts to release for "linux" (RedHat 7.2) and
+#  "linux_rh62" (RedHat 6.2).
+#
 #  Revision 1.3  2001/07/10 22:24:06  wenger
 #  Changed distribution setup from tar file in CVS to regular directories
 #  and scripts.
@@ -67,54 +112,12 @@
 
 ############################################################
 
-if (-d run) then
-  cd run
-
-  if (! -d bin) then
-    ln -s '@sys' bin
-  endif
-
-  if (! -d sunx86_55) then
-    ln -s ../solaris sunx86_55
-  endif
-
-  if (! -d sunx86_54) then
-    ln -s ../solaris sunx86_54
-  endif
-
-  if (! -d sun4m_54) then
-    ln -s ../solsparc sun4m_54
-  endif
-
-  if (! -d sun4m_412) then
-    ln -s ../sun sun4m_412
-  endif
-
-  if (! -d hp700_ux90) then
-    ln -s ../hp hp700_ux90
-  endif
-
-  if (! -d rs_aix32) then
-    ln -s ../aix rs_aix32
-  endif
-
-  if (! -d alpha_osf20) then
-    ln -s ../alpha_osf20 .
-  endif
-
-  if (! -d pmax_ul43a) then
-    ln -s ../pmax_ul43a .
-  endif
-
-  ln -fs /p/devise/dat/*.idx . >& /dev/null
-  ln -fs /p/devise/dat/dsi94.dat . >& /dev/null
-
-  cd ..
-endif
-
 if (-d solaris) then
   cd solaris
   ln -s dev mul
+  ln -s ../test/test_devise . >& /dev/null
+  chmod 755 make_dyn_lib
+  chmod 755 clean_dyn_lib
   cd ..
 endif
 
@@ -123,6 +126,10 @@ if (-d solsparc) then
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
+  ln -s ../solaris/devcs . >& /dev/null
+  ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../test/test_devise . >& /dev/null
+  chmod 755 make_dyn_lib
   cd ..
 endif
 
@@ -131,6 +138,9 @@ if (-d sun) then
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
+  ln -s ../solaris/devcs . >& /dev/null
+  ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
 
@@ -139,6 +149,9 @@ if (-d hp) then
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
+  ln -s ../solaris/devcs . >& /dev/null
+  ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
 
@@ -147,6 +160,9 @@ if (-d sgi) then
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
+  ln -s ../solaris/devcs . >& /dev/null
+  ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
 
@@ -155,14 +171,9 @@ if (-d linux) then
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
-  cd ..
-endif
-
-if (-d linux_rh62) then
-  cd linux_rh62
-  ln -s ../solaris/Makefile . >& /dev/null
-  ln -s ../solaris/dev . >& /dev/null
-  ln -s ../solaris/dev mul >& /dev/null
+  ln -s ../solaris/devcs . >& /dev/null
+  ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
 
@@ -171,6 +182,9 @@ if (-d aix) then
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
+  ln -s ../solaris/devcs . >& /dev/null
+  ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
 
@@ -179,6 +193,9 @@ if (-d alpha_osf20) then
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
+  ln -s ../solaris/devcs . >& /dev/null
+  ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
 
@@ -187,6 +204,9 @@ if (-d pmax_ul43a) then
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
+  ln -s ../solaris/devcs . >& /dev/null
+  ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
 
@@ -264,6 +284,18 @@ endif
 
 if (-d inquery) then
   cd inquery
+  setup
+  cd ..
+endif
+
+if (-d Java) then
+  cd Java
+  ln -s ../public .
+  cd ..
+endif
+
+if (-d dist/demo) then
+  cd dist/demo
   setup
   cd ..
 endif

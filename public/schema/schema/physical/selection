@@ -1,0 +1,11 @@
+type selection ascii
+comment #
+
+# Whitespace is tab only so we can have company names with spaces.
+whitespace '	'
+
+attr company_name string 20
+attr param_name string 10
+attr data_source string 12
+attr data_variable string 10
+attr title string 25

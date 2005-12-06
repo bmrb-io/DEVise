@@ -19,5 +19,5 @@ endif
 # All this garbage because Sun's current crond on Intel/Solaris won't
 # send mail correctly.
 if (-e $outfile && ! -z $outfile) then
-    /s/std/bin/cat $outfile | /usr/ucb/mail -s "ASOS update from cron" `/s/std/bin/whoami`
+    /s/std/bin/cat $outfile | /usr/ucb/mail -s "ASOS update from cron" `/s/std/bin/id -un`
 endif

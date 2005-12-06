@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,14 @@
   $Id$
 
   $Log$
+  Revision 1.3.14.1  2003/07/31 15:38:27  wenger
+  Added initial value option to count mapping, also GUI for it; more
+  buffer length checks (still many more needed) in DeviseCommand.C.
+
+  Revision 1.3  1999/05/21 14:52:22  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.2  1998/10/20 19:46:13  wenger
   Mapping dialog now displays the view's TData name; "Next in Pile" button
   in mapping dialog allows user to edit the mappings of all views in a pile
@@ -60,10 +68,12 @@ public:
   };
 
   // Constructor and destructor.
-  CountMapping(Attr countAttr, Attr putAttr);
+  CountMapping(Attr countAttr, Attr putAttr, int initialValue);
   ~CountMapping();
 
   void GetAttrs(Attr &countAttr, Attr &putAttr);
+
+  int GetInitialValue() { return _initialValue; }
 
   // Initializer -- must be called each time the view is drawn, before
   // any GData records are processed.
@@ -75,6 +85,7 @@ public:
 private:
   Attr _countAttr; // attribute to count
   Attr _putAttr; // attribute to put count into
+  int _initialValue; // initial value for bins (normally zero)
 
   int _xOffset; // offset into GData record of X value
   int _yOffset; // offset into GData record of Y value

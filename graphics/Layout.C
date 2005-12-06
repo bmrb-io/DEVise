@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.14.14.1  2003/04/18 17:07:41  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.14.30.1  2003/04/18 15:26:03  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.14  2000/03/14 17:05:07  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.13  1999/12/01 00:09:35  wenger
   Disabled extra debug logging for tracking down Omer's crash.
 
@@ -461,7 +473,7 @@ void Layout::ComputeLayout(unsigned int w, unsigned int h,
   // rows and columns; also try to make sure whole window is used
   // efficiently (no unused blocks)
 
-  for(horViews = (int)sqrt(numViews); horViews >= 1; horViews--) {
+  for(horViews = (int)sqrt((double)numViews); horViews >= 1; horViews--) {
     if (numViews % horViews == 0)
       break;
   }

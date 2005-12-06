@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002
+// (c) Copyright 2002-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,8 +20,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.3  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.2.2.7  2003/05/02 17:16:16  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
+//
+// Revision 1.2.2.6  2003/03/28 17:21:29  wenger
+// Made JS invisibility destruction timeout configurable; fixed some other
+// problems with loading and re-loading the applet.
 //
 // Revision 1.2.2.5  2002/12/17 23:15:01  wenger
 // Fixed bug 843 (still too many java processes after many reloads);
@@ -59,12 +71,16 @@ package JavaScreen;
 public class DEViseJSTimer implements Runnable
 {
     private static final int DEBUG = 0;
-    private static final int INTERVAL = 60 * 60 * 1000; //one hour 
+    private int _timeout;
     private DEViseJSApplet applet = null;
     private Thread thread = null;
 
-    public DEViseJSTimer(DEViseJSApplet a) {
+    // Timeout is in minutes.
+    public DEViseJSTimer(DEViseJSApplet a, int visTimeout) {
         applet = a;
+
+	// Convert timeout to milliseconds.
+	_timeout = visTimeout * 60 * 1000;
     }
 
     public void start() 
@@ -76,7 +92,7 @@ public class DEViseJSTimer implements Runnable
 
 	if (thread != null) {
 	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-		jsdevisec.printAllThreads("Stopping thread " + thread);
+		DEViseUtils.printAllThreads("Stopping thread " + thread);
 	    }
 	    thread.stop();
 	}
@@ -85,7 +101,7 @@ public class DEViseJSTimer implements Runnable
 	thread.setName("Visibility timer");
 	thread.start();
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Starting thread " + thread);
+	    DEViseUtils.printAllThreads("Starting thread " + thread);
 	}
     }
 
@@ -97,20 +113,25 @@ public class DEViseJSTimer implements Runnable
 	}
 
 	try {
-	    Thread.sleep(INTERVAL);
+	    if (_timeout > 0) {
+	        Thread.sleep(_timeout);
+	    }
 
 	    System.out.println("Destroying applet " +
 	      applet.getInstanceNum() + " because of visibility timeout");
-	    applet.destroy();
+	    applet.destroyFromTimer();
 	} catch (InterruptedException e) {
 	    if (DEBUG >= 1) {
-		System.out.println("Visibility timer sleep interrupted, " +
+		System.err.println("Visibility timer sleep interrupted, " +
 		  "instance " + applet.getInstanceNum());
 	    }
+	} catch (Exception ex) {
+	    System.err.println("Exception destroying applet instance: " +
+	      ex);
 	}
 
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Thread " + thread + " ending");
+	    DEViseUtils.printAllThreads("Thread " + thread + " ending");
 	}
     }
 
@@ -121,7 +142,7 @@ public class DEViseJSTimer implements Runnable
 	      applet.getInstanceNum() + ")");
 	}
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Stopping thread " + thread);
+	    DEViseUtils.printAllThreads("Stopping thread " + thread);
 	}
         thread.interrupt();
         thread.stop();

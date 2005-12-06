@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.224  2003/01/13 19:25:43  wenger
+#	Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+#	
+#	Revision 1.223.10.2  2004/04/23 21:57:27  wenger
+#	Added new 'select next view in pile' feature.
+#	
 #	Revision 1.223.10.1  2002/09/17 18:50:54  wenger
 #	Added GUI for GAttr links.
 #	
@@ -1657,6 +1663,8 @@ menu .mbar.gdata.menu -tearoff 0
 # VIEW MENU.
 menu .mbar.view.menu -tearoff 0
 
+.mbar.view.menu add command -label "Select Next in Pile" \
+	-command { DEVise selectNextInPile }
 .mbar.view.menu add command -label "Toggle X Axis" \
 	-command { DoToggleAxis X }
 .mbar.view.menu add command -label "Toggle Y Axis" \

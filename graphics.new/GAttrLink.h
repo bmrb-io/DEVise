@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2002
+  (c) Copyright 2002-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -24,6 +24,15 @@
   $Id$
 
   $Log$
+  Revision 1.2  2003/01/13 19:25:22  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.1.2.3  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
+  Revision 1.1.2.2  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
   Revision 1.1.2.1  2002/09/05 19:14:03  wenger
   Implemented GData attribute value links (but not GUI for creating
   them).
@@ -58,7 +67,7 @@ public:
   virtual void InsertView(ViewGraph *view);
   virtual bool DeleteView(ViewGraph *view);
 
-  virtual char *GetFileName() { return "none"; }
+  virtual const char *GetFileName() { return "none"; }
   virtual void Initialize();
   virtual void InsertRecs(RecId recid, int num) {}
   virtual int  FetchRecs(RecId recid, RecId &rec, int &num) { return 0; }
@@ -88,7 +97,7 @@ private:
   static bool GetAttrValue(TDataMap *tdMap, const char *gDataRec,
     const char *attrName, Coord &value);
 
-  static int CoordHash(Coord &value, int numBuckets);
+  static int CoordHash(const Coord &value, int numBuckets);
 
   HashTable<Coord, int> *_selectionValues;
  

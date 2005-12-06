@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2001
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,24 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.66.10.2  2005/09/15 19:23:27  wenger
+#  ClientAPI code now logs errors via the DevError class (added
+#  DebugLogDummy to the client library so this works for devise
+#  and collaborator, which don't link the full graphics.new lib).
+#
+#  Revision 1.66.10.1  2003/12/19 18:07:21  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.66.28.1  2003/12/18 19:23:07  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.66  2001/10/17 17:36:53  wenger
+#  Linux devised now statically linked to make distributions work.
+#
 #  Revision 1.65  2001/08/03 18:12:53  wenger
 #  Removed all OpenGL-related code.
 #
@@ -310,19 +328,23 @@ devised.pure: generic.o StateMap.o $(ALLLIBS) $(SERVERLIB)
 	$(PURIFY) $(PURE_OPT) $(DEVISED)
 
 DEVISE = $(CC) -o $@ devise.o DeviseClient.o ../graphics.new/Version.o \
+	../graphics/DevError.o \
 	$(ARCH_LDFLAGS) -L../csgroup -L../graphics -L../graphics.new \
 	-lcsgroup -lclient \
 	$(ARCH_SYSLIBS) $(ARCH_LDPOST)
 
-devise: devise.o $(CLIENTLIB) DeviseClient.o ../csgroup/libcsgroup.a
+devise: devise.o $(CLIENTLIB) DeviseClient.o ../csgroup/libcsgroup.a \
+	../graphics/DevError.o
 	$(FORCE_DATE)
 	$(DEVISE)
 
-devise.pure: devise.o $(CLIENTLIB) DeviseClient.o
+devise.pure: devise.o $(CLIENTLIB) DeviseClient.o ../csgroup/libcsgroup.a \
+	../graphics/DevError.o
 	$(FORCE_DATE)
 	$(PURIFY) $(PURE_OPT) $(DEVISE)
 
-COLLABORATOR = $(CC) -o $@ -D __tcltk collaborator.o $(ARCH_LDFLAGS) \
+COLLABORATOR = $(CC) -o $@ -D __tcltk collaborator.o ../graphics/DevError.o \
+	$(ARCH_LDFLAGS) \
 	-L../csgroup -L../graphics.new -L../graphics $(ARCH_SYSLIBS) \
 	-lcsgroup -lclient $(ARCH_LDPOST) 
 
@@ -333,6 +355,7 @@ collaborator.pure: collaborator.o $(SERVERLIB)
 	$(PURIFY) $(PURE_OPT) $(COLLABORATOR)
 
 DEVISEB = $(CC) -o $@ deviseb.o DeviseBatchClient.o ../graphics.new/Version.o \
+	../graphics/DevError.o \
 	$(ARCH_LDFLAGS) -L../csgroup -L../graphics.new -lcsgroup $(ARCH_LDPOST)\
 	-lclient
 
@@ -358,13 +381,18 @@ testWindowSpeed: testWindowSpeed.o $(ALLLIBS) $(MONOLITHLIB)
 	$(FORCE_DATE)
 	$(TESTWS) $(ARCH_LDPOST)
 
+depend: Makefile.depend
+
+Makefile.depend:
+	-rm Makefile.depend
+	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
 
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
 	-rm generic devised devise deviseb testWindowSpeed collaborator
 	-rm generic.pure devised.pure devise.pure deviseb.pure collaborator.pure
-	-rm generic.static
+	-rm generic.static Makefile.depend
 
 mostlyclean:
 	-rm $(OBJ) collaborator.o

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2005
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.69  2003/01/13 19:23:41  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.68  2002/07/19 17:06:47  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
@@ -32,6 +35,62 @@
 //
 // Revision 1.66  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.65.2.24  2005/11/07 21:25:04  wenger
+// Added timestamps to many more items in the JSPoP debug output.
+//
+// Revision 1.65.2.23  2004/09/29 19:08:33  wenger
+// Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
+// V1_7b0_br branch.
+//
+// Revision 1.65.2.22  2004/05/12 21:43:55  wenger
+// Merged the jspop_debug_0405_br thru jspop_debug_0405_br_2 to the
+// V1_7b0_br branch.
+//
+// Revision 1.65.2.21.4.4  2004/09/21 19:38:10  wenger
+// Misc. cleanup before merging back into 1.7 (DEViseClientSocket.java
+// still needs some changes).
+//
+// Revision 1.65.2.21.4.3  2004/09/03 17:27:24  wenger
+// Added minor debugging comment.
+//
+// Revision 1.65.2.21.4.2  2004/07/01 15:15:48  wenger
+// Improved circular log (now always has "-END-" at the temporal end
+// of the log); various other debug logging improvements; put the
+// sequence of operations in DEViseClientSocket.closeSocket() back
+// the way it was.
+//
+// Revision 1.65.2.21.4.1  2004/05/12 21:27:25  wenger
+// Added more debug code and comments about possible causes of
+// hung JSPoPs.
+//
+// Revision 1.65.2.21  2003/10/28 20:41:37  wenger
+// Added debug code (including that used to find bug 889).
+//
+// Revision 1.65.2.20  2003/10/15 21:55:09  wenger
+// Added new JAVAC_StopCollab command to fix ambiguity with
+// JAVAC_CollabExit; minor improvements to collaboration-related stuff
+// in the auto test scripts.
+//
+// Revision 1.65.2.19  2003/10/15 19:59:31  wenger
+// Fixed a problem with JAVAC_CollabExit commands from clients sometimes
+// getting processed incorrectly in DEViseClient in the JSPoP, and
+// therefore getting sent to the devised (causing an error); also
+// changed client_log.1 test script to reduce the chance of a collaboration
+// failure because of the race between the leader and follower clients.
+//
+// Revision 1.65.2.18  2003/09/23 21:55:08  wenger
+// "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+//
+// Revision 1.65.2.17  2003/04/29 18:38:54  wenger
+// Fixed bug 870 (JS follower crash goofs up leader also).
+//
+// Revision 1.65.2.16  2003/04/25 20:26:59  wenger
+// Eliminated or reduced "Abrupt end of input stream reached" errors in
+// the JSPoP on normal client exit.
+//
+// Revision 1.65.2.15  2003/03/13 19:40:23  wenger
+// Fixed bug 866 (JSPoP fails on bad collaboration name from follower).
 //
 // Revision 1.65.2.14  2002/12/05 20:38:18  wenger
 // Removed a bunch of unused (mostly already-commented-out) code to
@@ -399,7 +458,7 @@ import java.text.*;
 
 public class DEViseClient
 {
-    private static final int DEBUG = 0;
+    private static int _debugLvl = 1;
 
     jspop pop = null;
 
@@ -463,15 +522,23 @@ public class DEViseClient
 
     public YLogFile logFile = null;
 
+    public static void setDebugLvl(int level)
+    {
+        _debugLvl = level;
+    }
+
+
     public DEViseClient(jspop p, String host, DEViseClientSocket cs, int id,
       boolean cgi)
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient.DEViseClient(" +
-	      id + ") in thread " + Thread.currentThread());
+        pop = p;
+
+	if (_debugLvl >= 2) {
+	    pop.pn("DEViseClient.DEViseClient(" +
+	      id + ", " + cs.getObjectNum() + ") in thread " +
+	      Thread.currentThread());
 	}
 
-        pop = p;
         hostname = host;
         clientSock = cs;
         ID = id;
@@ -489,8 +556,8 @@ public class DEViseClient
 
     protected void finalize()
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID +
+	if (_debugLvl >= 2) {
+	    pop.pn("DEViseClient(" + ID +
 	      ").finalize() in thread " + Thread.currentThread());
 	}
 
@@ -513,24 +580,31 @@ public class DEViseClient
 	}
     }
 
-    public void addCollabClients(DEViseClient client, String hostname) {
+    public void addCollabClient(DEViseClient client, String hostname) {
+        if (_debugLvl >= 2) {
+            pop.pn("DEViseClient.addCollabClient(" + client.ID +
+	      ", " + hostname + ")");
+        }
 	collabClients.addElement(client);
         collabInit = true;
     }
     
     public void removeCollabClient(DEViseClient client) {
-	int i = collabClients.indexOf(client);
+        if (_debugLvl >= 2) {
+            pop.pn("DEViseClient.removeCollabClient(" +
+	      client.ID + ")");
+        }
 
 	collabClients.removeElement(client);
 
-	pop.pn("Collaborating JS: " + i + " is removed.");
+	pop.pn("Collaborating JS: " + client.ID + " is removed.");
 	// client.closeSocket();
     }
 
 
     public void addNewCmd(String cmd) {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID +
+	if (_debugLvl >= 2) {
+	    pop.pn("DEViseClient(" + ID +
 	      ").addNewCmd(" + cmd + ") in thread " + Thread.currentThread());
 	}
 
@@ -548,7 +622,7 @@ public class DEViseClient
 		    try {
 		        Thread.sleep(3 * 1000);
 		    } catch (InterruptedException ex) {
-		        System.out.println("Sleep interrupted: " +
+		        pop.pn("Sleep interrupted: " +
 			  ex.getMessage());
 		    }
 		}
@@ -568,7 +642,8 @@ public class DEViseClient
 		if (pop.getServerCount() >= 1) {
 		    sendCmd(DEViseCommands.DONE);
 		} else {
-		    System.err.println("No servers connected");
+		    System.err.println(DEViseCommands.CHECK_POP +
+		      " fails because no servers are connected");
 	            sendCmd(DEViseCommands.ERROR);
 		}
 	    } catch (YException ex) {
@@ -609,25 +684,14 @@ public class DEViseClient
 	    }
 	    addLogFile(cmd);
         } else if (cmd.startsWith(DEViseCommands.SET_3D_CONFIG)) {
-	    try {
-	        sendCmdToCollaborators(cmd);
-	    } catch(YException ex) {
-	        System.err.println("Error sending command to collaborator: " +
-		  ex.getMessage());
-	    }
+	    sendCmdToCollaborators(cmd);
             newCommandStd(cmd);
         } else if (cmd.startsWith(DEViseCommands.CLOSE_COLLAB_DLG)) {
-	    try {
-	        sendCmdToCollaborators(cmd);
-		sendCmdToCollaborators(DEViseCommands.DONE);
-	    } catch(YException ex) {
-	        System.err.println("Error sending command to collaborator: " +
-		  ex.getMessage());
-	    }
+	    sendCmdToCollaborators(cmd);
+	    sendCmdToCollaborators(DEViseCommands.DONE);
         } else if (cmd.startsWith(DEViseCommands.HIDE_ALL_VIEW_HELP)) {
 	    try {
 	        sendCmdToCollaborators(cmd);
-		sendCmdToCollaborators(DEViseCommands.DONE);
 		sendCmd(DEViseCommands.DONE);
 	    } catch(YException ex) {
 	        System.err.println("Error sending command to collaborator: " +
@@ -758,8 +822,8 @@ public class DEViseClient
     // command the state becomes REQUEST).
     public synchronized int getStatus()
     {
-	if (DEBUG >= 2) {
-	    System.out.println("DEViseClient(" + ID +
+	if (_debugLvl >= 4) {
+	    pop.pn("DEViseClient(" + ID +
 	      ").getStatus() in thread " + Thread.currentThread());
 	}
 
@@ -787,15 +851,15 @@ public class DEViseClient
     
     public void updateHeartbeat()
     {
-        if (DEBUG >= 1) {
-	    System.out.println("Updating heartbeat for client " + ID);
+        if (_debugLvl >= 2) {
+	    pop.pn("Updating heartbeat for client " + ID);
 	}
 
         Date date = new Date();
 	heartBeat = date.getTime();
 
-	if (DEBUG >= 2) {
-	    System.out.println("Client " + ID + " heartbeat updated to " +
+	if (_debugLvl >= 4) {
+	    pop.pn("Client " + ID + " heartbeat updated to " +
 	      heartBeat + " (" + date + ")");
         }
     }
@@ -808,8 +872,8 @@ public class DEViseClient
 
     public void removeLastCmd()
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID +
+	if (_debugLvl >= 2) {
+	    pop.pn("DEViseClient(" + ID +
 	      ").removeLastCmd() in thread " + Thread.currentThread());
 	}
 
@@ -833,29 +897,29 @@ public class DEViseClient
 
     public String getCmd() throws YException, InterruptedIOException
     {
-        if (DEBUG >= 2) {
-	    System.out.println("DEViseClient(" + ID + ").getCmd()");
+        if (_debugLvl >= 4) {
+	    pop.pn("DEViseClient(" + ID + ").getCmd()");
 	}
 
         if (getStatus() != CLOSE) {
 
 	    if (cmdBuffer.size() == 0) {
-		if (DEBUG >= 2) {
-		    System.out.println("Got null command");
+		if (_debugLvl >= 4) {
+		    pop.pn("Got null command");
 	        }
 		return null;
 	    }
 
             try {
-		if (DEBUG >= 3) {
-		    System.out.println("DIAG before getting cmdBuffer " +
+		if (_debugLvl >= 6) {
+		    pop.pn("DIAG before getting cmdBuffer " +
 		      "element 0");
 		}
 
 		String command = (String)cmdBuffer.elementAt(0);
 
-		if (DEBUG >= 3) {
-		    System.out.println("DIAG before after cmdBuffer " +
+		if (_debugLvl >= 6) {
+		    pop.pn("DIAG before after cmdBuffer " +
 		      "element 0");
 		}
 
@@ -887,38 +951,41 @@ public class DEViseClient
 			cmdBuffer.removeElement(command);
 			cmdBuffer.addElement(DEViseCommands.SAVE_CUR_SESSION);
 			sendCmd(DEViseCommands.DONE);
+
 		    } else if (command.startsWith(DEViseCommands.EXIT)) {
 			cmdBuffer.removeAllElements();
 			cmdBuffer.addElement(DEViseCommands.EXIT);
-			
+
 			// remove collab name from jspop
 			boolean f = pop.collabNames.removeElement(collabName);
 			pop.pn("Remove collab-name " + collabName + ": " + f);
-			try {
-			    sendCmdToCollaborators(DEViseCommands.COLLAB_EXIT);
-			    sendCmdToCollaborators(DEViseCommands.DONE);
-			} catch (YException e) {
-			    System.err.println("YException " + e.getMessage() +
-			      " in DEViseClient.getCmd()");
-			}
+			sendCmdToCollaborators(DEViseCommands.COLLAB_EXIT);
+			sendCmdToCollaborators(DEViseCommands.DONE);
+			// Note: if we don't remove *all* elements here,
+			// we sometimes end up with an extra JAVAC_CollabExit,
+			// which goofs things up because it gets passed to
+			// the devised, which doesn't know what to do with
+			// it.  RKW 2003-10-15.
 			collabClients.removeAllElements();
+
+			// Close the socket right away to prevent "Abrupt
+			// end of input stream" errors on normal client
+			// exit.
+			closeSocket();
 	
 		    } else if (command.startsWith(DEViseCommands.GET_SERVER_STATE)) {
 			//TEMP -- move to addNewCmd()?
 			String state = DEViseCommands.UPDATE_SERVER_STATE + " " + pop.getServerState();
 			sendCmd(new String[] {state, DEViseCommands.DONE});
 			cmdBuffer.removeAllElements();
+
 		    } else if (command.startsWith(DEViseCommands.DISABLE_COLLAB)) {
 			//TEMP -- move to addNewCmd()?
 			isAbleCollab = false;
 
-			try {
-			    sendCmdToCollaborators(DEViseCommands.COLLAB_EXIT);
-			    sendCmdToCollaborators(DEViseCommands.DONE);
-			} catch (YException e) {
-			    System.err.println("YException " + e.getMessage() +
-			      " in DEViseClient.getCmd()");
-			}
+			sendCmdToCollaborators(DEViseCommands.COLLAB_EXIT);
+			sendCmdToCollaborators(DEViseCommands.DONE);
+
 			collabClients.removeAllElements();
 			sendCmd(DEViseCommands.DONE);
 			cmdBuffer.removeAllElements();
@@ -927,10 +994,22 @@ public class DEViseClient
 			boolean f = pop.collabNames.removeElement(collabName);
 			pop.pn("Remove collab-name: " + f);
 
-		    } else if (command.startsWith(DEViseCommands.COLLAB_EXIT)) {
+		    } else if (command.startsWith(DEViseCommands.STOP_COLLAB)) {
 			//TEMP -- move to addNewCmd()?
-			collabLeader.removeCollabClient(this);
-			cmdBuffer.removeElement(command);
+			if (collabLeader != null) {
+			    collabLeader.removeCollabClient(this);
+			    collabLeader = null;
+			}
+			cmdBuffer.removeAllElements();
+
+		    } else if (command.startsWith(DEViseCommands.GET_POP_VERSION)) {
+			//TEMP -- move to addNewCmd()?
+			String version = DEViseCommands.POP_VERSION + " " +
+			  DEViseGlobals.VERSION + " " + pop.getPopId() +
+			  "{" + DEViseServer.getDeviseVersion() + "}";
+			sendCmd(new String[] {version, DEViseCommands.DONE});
+			cmdBuffer.removeAllElements();
+
 		    } else {
 			//
 			// Send an ACK immediately so that the client
@@ -941,8 +1020,8 @@ public class DEViseClient
 		    }
 		}
                     
-                if (DEBUG >= 1 && cmdBuffer.size() > 0) {
-		    System.out.println("  got command: " +
+                if (_debugLvl >= 2 && cmdBuffer.size() > 0) {
+		    pop.pn("  got command: " +
 		      (String)cmdBuffer.elementAt(0));
 	        }
 		if (cmdBuffer.size() > 0) {
@@ -977,8 +1056,8 @@ public class DEViseClient
     public synchronized void sendCmd(String cmd, boolean sendToFollowers)
       throws YException
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID + ").sendCmd(" +
+	if (_debugLvl >= 2) {
+	    pop.pn("DEViseClient(" + ID + ").sendCmd(" +
 	      cmd + ", " + sendToFollowers + ")");
 	}
 
@@ -1092,8 +1171,8 @@ public class DEViseClient
     // on active clients.
     public synchronized void close()
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClient(" + ID + ").close()");
+	if (_debugLvl >= 2) {
+	    pop.pn("DEViseClient(" + ID + ").close()");
 	}
 
         if (status == CLOSE) {
@@ -1147,10 +1226,7 @@ public class DEViseClient
             user = null;
         }
 
-        if (clientSock != null) {
-            clientSock.closeSocket();
-            clientSock = null;
-        }
+	closeSocket();
 
 	if (logFile != null) { 
 	    logFile.close();
@@ -1297,16 +1373,21 @@ public class DEViseClient
 	cmdBuffer.removeAllElements();
     }
 
-    private void sendCmdToCollaborators(String cmd) throws YException
+    private void sendCmdToCollaborators(String cmd)
     {
         for (int index = 0; index < collabClients.size(); index++) {
 	    DEViseClient client = (DEViseClient)collabClients.elementAt(index);
 	    pop.pn("Sending command to collabration client " + index);
-	    client.sendCmd(cmd);
+	    try {
+	        client.sendCmd(cmd);
+	    } catch (YException ex) {
+	        System.err.println("Error " + ex +
+		  " sending command to follower");
+	    }
 	}
     }
 
-    private void sendDataToCollaborators(byte[] data) throws YException
+    private void sendDataToCollaborators(byte[] data)
     {
         for (int index = 0; index < collabClients.size(); index++) {
 	    DEViseClient client = (DEViseClient)collabClients.elementAt(index);
@@ -1314,7 +1395,13 @@ public class DEViseClient
 	      " (" + data.length + " bytes)");
 	    pop.pn("  First: " + data[0] + "; middle: " +
 	      data[data.length/2] + "; last: " + data[data.length-1]);
-	    client.clientSock.sendData(data);
+	    try {
+	        client.clientSock.sendData(data);
+	    } catch (YException ex) {
+	        System.err.println("Error " + ex +
+		  " sending data to follower");
+	    }
+
 	    pop.pn("Done sending data");
 	}
     }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.156  2003/01/13 19:25:28  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.155  2002/07/19 17:07:26  wenger
   Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 
@@ -24,6 +27,47 @@
 
   Revision 1.153  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.152.4.20  2005/03/17 17:25:12  wenger
+  Added a bunch of debug code while working on bug 915.
+
+  Revision 1.152.4.19  2005/02/16 18:04:40  wenger
+  Fixed bug 913 (shape attrs 11-14 get cleared by apply in mapping
+  dialog).
+
+  Revision 1.152.4.18  2004/05/07 15:21:01  wenger
+  Slightly improved home debug info.
+
+  Revision 1.152.4.17  2004/02/25 21:15:38  wenger
+  Added more "home debug" output.
+
+  Revision 1.152.4.16  2003/11/24 18:35:59  wenger
+  Fixed bug 894 (drill-down fails in bottom edge of some views); also
+  we now show a dialog with a warning message when drill-down is attempted
+  in views where it is not allowed.
+
+  Revision 1.152.4.15  2003/08/01 21:59:37  wenger
+  Fixed bug 885 (Y min zero on automatic home doesn't work).
+
+  Revision 1.152.4.14  2003/07/31 15:38:29  wenger
+  Added initial value option to count mapping, also GUI for it; more
+  buffer length checks (still many more needed) in DeviseCommand.C.
+
+  Revision 1.152.4.13  2003/06/16 16:42:04  wenger
+  Fixed bug 879 (a problem with the home code) -- made pretty significant
+  improvements to how we deal with the data ranges.
+
+  Revision 1.152.4.12  2003/06/06 17:10:15  wenger
+  Refactored the View::GetHome2D code so that the actual calculation is
+  done in the new HomeCalc class, and there's only one chunk of code
+  instead of four almost-identical chunks (xlo, xhi, ylo, yhi).
+
+  Revision 1.152.4.11  2003/05/22 14:20:34  wenger
+  Fixed bug 874 (home problem if X is recId).
+
+  Revision 1.152.4.10  2003/04/24 15:37:45  wenger
+  Changing a child view's parent value now activates automatic visual
+  filter updates; also fixed a minor problem with visual links.
 
   Revision 1.152.4.9  2002/11/15 22:44:36  wenger
   Views with no TData records don't contribute to filter values on 'home'
@@ -739,6 +783,7 @@
 //******************************************************************************
 
 //#define DEBUG
+//#define DEBUG_HOME
 #define DEBUG_LOG
 //#define REPORT_QUERY_TIME
 
@@ -769,6 +814,7 @@
 #include "ArgList.h"
 #include "CmdContainer.h"
 #include "DeviseKey.h"
+#include "HomeCalc.h"
 
 #define STEP_SIZE 20
 
@@ -939,7 +985,10 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _stringZTableName = NULL;
   _stringGenTableName = NULL;
 
-  _dataRangesValid = false;
+  // Note: we have to initialize these values here so that they are set
+  // correctly if a query is not run on this view.  (If a query is run
+  // they are also set in ViewData::QueryInit().
+  InvalidateDataRanges();
 
   _niceXAxis = false;
   _niceYAxis = false;
@@ -1231,6 +1280,7 @@ void ViewGraph::InsertMapping(TDataMap *map, char *label)
         }
       }
     } else {
+      //TEMP -- should this be an ASSERT?
       printf("Warning: inserting multiple mappings into view {%s}\n",
 	GetName());
     }
@@ -1373,7 +1423,7 @@ void
 ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-#if defined(DEBUG)
+#if defined(DEBUG) || defined(DEBUG_HOME)
     printf("ViewGraph(%s)::GetHome2D(%d)\n", GetName(), explicitRequest);
     printf("  Filter is: (%g, %g), (%g, %g)\n", filter.xLow, filter.yLow,
 	    filter.xHigh, filter.yHigh);
@@ -1386,7 +1436,7 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 	  homeInfo = &_implicitHomeInfo;
 	}
 
-#if 0
+#if defined(DEBUG_HOME)
     printf("  homeInfo->homeX = %d\n", homeInfo->homeX);
     printf("  homeInfo->homeY = %d\n", homeInfo->homeY);
     printf("  homeInfo->mode = %d\n", homeInfo->mode);
@@ -1410,7 +1460,7 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 	// or the TData has no records.
 	//
 	if (!HasTDataRecords()) {
-#if defined(DEBUG)
+#if defined(DEBUG) || defined(DEBUG_HOME)
       printf("ViewGraph %s has no TData records; GetHome2D() returns\n",
 	      GetName());
 #endif
@@ -1421,17 +1471,11 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
     const AttrInfo *xAttr = tdMap->MapGAttr2TAttr(MappingCmd_X);
     const AttrInfo *yAttr = tdMap->MapGAttr2TAttr(MappingCmd_Y);
 
-    Boolean hasFirstRec, hasLastRec;
-    RecId firstRec, lastRec;
-    if ((xAttr && !strcmp(xAttr->name, REC_ID_NAME)) ||
-      (yAttr && !strcmp(yAttr->name, REC_ID_NAME))) {
-        TData *tdata = tdMap->GetPhysTData();
-        hasFirstRec = tdata->HeadID(firstRec);
-        hasLastRec = tdata->LastID(lastRec);
-    }
-
-    GetVisualFilter(filter);
-
+	// Intentionally put in invalid X and Y values.
+    filter.xLow = MAXFLOAT;
+    filter.xHigh = -MAXFLOAT;
+    filter.yLow = MAXFLOAT;
+    filter.yHigh = -MAXFLOAT;
 
 	// Note: data ranges are invalid if either the query for this view
 	// didn't run to completion, or the X attribute of the query is sorted
@@ -1440,138 +1484,50 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
 
     switch (homeInfo->mode) {
     case HomeAuto: {
+#if defined(DEBUG_HOME)
+        printf("Home: auto mode\n");
+#endif
+
+		//
+		// -------------------------------------------------------------
+		// X home.
+		//
         if (homeInfo->homeX) {
-            Boolean setXLow = false;
-            Boolean setXHigh = false;
-
-            // Check data ranges first (fixes bug 469).
-            if (_dataRangesValid) {
-                if (!setXLow) {
-                    filter.xLow = _dataXMin - homeInfo->autoXMargin;
-                    setXLow = true;
-                }
-                if (!setXHigh) {
-                    filter.xHigh = _dataXMax + homeInfo->autoXMargin;
-                    setXHigh = true;
-                }
-            } else {
-				// This is kind of a kludgey partial fix for bug 485.
-				// RKW 2002-04-30.
-                if (!setXLow) {
-                    filter.xLow = MIN(filter.xLow,
-					  _dataXMin - homeInfo->autoXMargin);
-                }
-                if (!setXHigh) {
-                    filter.xHigh = MAX(filter.xHigh,
-					  _dataXMax + homeInfo->autoXMargin);
-                }
-			}
-
-            if (xAttr) {
-                if (!setXLow) {
-                    if (xAttr->hasLoVal) {
-                        filter.xLow = AttrList::GetVal(&xAttr->loVal,
-                          xAttr->type) - homeInfo->autoXMargin;
-                        setXLow = true;
-                    } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
-                        if (hasFirstRec) {
-                            filter.xLow = (Coord)firstRec;
-                            setXLow = true;
-                        }
-                    }
-                }
-
-                if (!setXHigh) {
-                    if (xAttr->hasHiVal) {
-                        filter.xHigh = AttrList::GetVal(&xAttr->hiVal,
-                          xAttr->type) + homeInfo->autoXMargin;
-                        setXHigh = true;
-                    } else if (!strcmp(xAttr->name, REC_ID_NAME)) {
-                        if (hasLastRec) {
-                            filter.xHigh = (Coord)lastRec;
-                            setXHigh = true;
-                        }
-                    }
-                }
-            }
-
-            if (filter.xHigh == filter.xLow) {
-                //filter.xLow -= 1.0;
-                filter.xHigh += 1.0;
-            }
+			HomeCalcLow low("X low", tdMap, homeInfo->autoXMargin, xAttr,
+			  filter.xLow);
+			HomeCalcHigh high("X high", tdMap, homeInfo->autoXMargin, xAttr,
+			  filter.xHigh);
+			low.Calculate(_dataRangesValid, _dataXMin);
+			high.Calculate(_dataRangesValid, _dataXMax);
         }
 
 
+		//
+		// -------------------------------------------------------------
+		// Y home.
+		//
         if (homeInfo->homeY) {
-            Boolean setYLow = false;
-            Boolean setYHigh = false;
+			HomeCalcLow low("Y low", tdMap, homeInfo->autoYMargin, yAttr,
+			  filter.yLow);
+			HomeCalcHigh high("Y high", tdMap, homeInfo->autoYMargin, yAttr,
+			  filter.yHigh);
+			low.Calculate(_dataRangesValid, _dataYMin);
+			high.Calculate(_dataRangesValid, _dataYMax);
 
-            // Check data ranges first (fixes bug 469).
-            if (_dataRangesValid) {
-                if (!setYLow) {
-                    filter.yLow = _dataYMin - homeInfo->autoYMargin;
-                    setYLow = true;
-                }
-                if (!setYHigh) {
-                    filter.yHigh = _dataYMax + homeInfo->autoYMargin;
-                    setYHigh = true;
-                }
-            } else {
-				// This is kind of a kludgey partial fix for bug 485.
-				// RKW 2002-04-30.
-                if (!setYLow) {
-                    filter.yLow = MIN(filter.yLow,
-		              _dataYMin - homeInfo->autoYMargin);
-                }
-                if (!setYHigh) {
-                    filter.yHigh = MAX(filter.yHigh,
-					  _dataYMax + homeInfo->autoYMargin);
-                }
+			if (homeInfo->autoYMinZero) {
+			    filter.yLow = MIN(filter.yLow, 0.0);
 			}
-
-            if (yAttr) {
-                if (!setYLow) {
-                    if (yAttr->hasLoVal) {
-                        filter.yLow = AttrList::GetVal(&yAttr->loVal,
-                          yAttr->type) - homeInfo->autoYMargin;
-                        setYLow = true;
-                    } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
-                        if (hasFirstRec) {
-                            filter.yLow = (Coord)firstRec;
-                            setYLow = true;
-                        }
-                    }
-                }
-
-                if (!setYHigh) {
-                    if (yAttr->hasHiVal) {
-                        filter.yHigh = AttrList::GetVal(&yAttr->hiVal,
-                          yAttr->type) + homeInfo->autoYMargin;
-                        setYHigh = true;
-                    } else if (!strcmp(yAttr->name, REC_ID_NAME)) {
-                        if (hasLastRec) {
-                            filter.yHigh = (Coord)lastRec;
-                            setYHigh = true;
-                        }
-                    }
-                }
-            }
-
-            if (filter.yHigh == filter.yLow) {
-                //filter.yLow -= 1.0;
-                filter.yHigh += 1.0;
-            }
-
-            if (homeInfo->autoYMinZero) {
-                filter.yLow = MIN(filter.yLow, 0.0);
-            }
         }
+
         if (_niceXAxis) NiceAxisRange(filter.xLow, filter.xHigh);
         if (_niceYAxis) NiceAxisRange(filter.yLow, filter.yHigh);
         break;
     }
 
     case HomeManual: {
+#if defined(DEBUG_HOME)
+        printf("Home: manual mode\n");
+#endif
         if (homeInfo->homeX) {
             filter.xLow = homeInfo->manXLo;
             filter.xHigh = homeInfo->manXHi;
@@ -1588,9 +1544,9 @@ ViewGraph::GetHome2D(Boolean explicitRequest, VisualFilter &filter)
         return;
         break;
     }
-#if defined(DEBUG)
-    printf("  Returning filter: (%g, %g), (%g, %g)\n", filter.xLow,
-	  filter.yLow, filter.xHigh, filter.yHigh);
+#if defined(DEBUG) || defined(DEBUG_HOME)
+    printf("  GetHome2D returning view %s filter: (%g, %g), (%g, %g)\n",
+          GetName(), filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
 #endif
 }
 
@@ -1630,12 +1586,7 @@ void ViewGraph::GoHome(Boolean explicitRequest)
 
     if (GetNumDimensions() == 2) {
         VisualFilter filter;
-	GetVisualFilter(filter);
-	// Intentionally put in invalid X and Y values.
-	filter.xLow = MAXFLOAT;
-	filter.xHigh = -MAXFLOAT;
-	filter.yLow = MAXFLOAT;
-	filter.yHigh = -MAXFLOAT;
+	GetVisualFilter(filter); // for filter.flag
 
 	//
 	// Get home for this view.
@@ -1666,6 +1617,10 @@ void ViewGraph::GoHome(Boolean explicitRequest)
 	    filter.yHigh = currFilter.yHigh;
 	}
 
+#if defined(DEBUG_HOME)
+        printf("Setting view %s visual filter to: (%g, %g), (%g, %g)\n",
+	  GetName(), filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
+#endif
 	SetVisualFilter(filter);
     } else {
         Camera c=GetCamera();
@@ -2971,32 +2926,32 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 	SelectView();
 
 	if (GetDrillDownDisabled()) {
-      printf("Drill down disabled in view <%s>\n", GetName());
-      return false;
+        printf("Drill down disabled in view <%s>\n", GetName());
+
+		buf[0] = "Drill down disabled in this view";
+		msgs = buf;
+		numMsgs = 1;
+		return true;
+	  
+        return false;
 	}
 
-	GetLabelArea(labelX, labelY, labelW, labelH);
+    // Convert from screen to world (data) coordinates.
+	Coord	worldXLow, worldYLow, worldXHigh, worldYHigh;
+	FindWorld(x, y, x + 1, y - 1,
+	  worldXLow, worldYLow, worldXHigh, worldYHigh);
 
-	if ((x >= labelX) && (x <= labelX + labelW - 1) &&
-		(y >= labelY) && (y <= labelY + labelH - 1))
-	{
+	VisualFilter filter;
+	GetVisualFilter(filter);
+    if (_action && InVisualFilter(filter, worldXLow, worldYLow)) {
+		return _action->PopUp(this, worldXLow, worldYLow, worldXHigh,
+							  worldYHigh, button, msgs, numMsgs);
+	} else {
 		buf[0] = GetName();
 		msgs = buf;
 		numMsgs = 1;
 		return true;
 	}
-
-	if (_action)				// Convert from screen to world coordinates
-	{
-		Coord	worldXLow, worldYLow, worldXHigh, worldYHigh;
-
-		FindWorld(x, y, x + 1, y - 1,
-				  worldXLow, worldYLow, worldXHigh, worldYHigh);
-		return _action->PopUp(this, worldXLow, worldYLow, worldXHigh,
-							  worldYHigh, button, msgs, numMsgs);
-	}
-
-	return false;
 }
 
 static char *
@@ -3040,7 +2995,8 @@ StrToCountMapAttr(char *attr)
 }
 
 void
-ViewGraph::GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr)
+ViewGraph::GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr,
+  int &initialValue)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
@@ -3053,20 +3009,23 @@ ViewGraph::GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr)
 	_countMapping->GetAttrs(count, put);
 	countAttr = CountMapAttrToStr(count);
 	putAttr = CountMapAttrToStr(put);
+	initialValue = _countMapping->GetInitialValue();
   } else {
 	enabled = false;
 	countAttr = "";
 	putAttr = "";
+	initialValue = 0;
   }
 }
 
 DevStatus
-ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr)
+ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr,
+  int initialValue)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("ViewGraph(%s)::SetCountMapping(%d, %s, %s)\n", GetName(), enabled,
-	countAttr, putAttr);
+  printf("ViewGraph(%s)::SetCountMapping(%d, %s, %s, %d)\n", GetName(),
+    enabled, countAttr, putAttr, initialValue);
 #endif
 
   DevStatus status = StatusOk;
@@ -3091,9 +3050,10 @@ ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr)
 	  if (_countMapping != NULL) {
 	    CountMapping::Attr oldCount, oldPut;
 	    _countMapping->GetAttrs(oldCount, oldPut);
-	    if (newCount != oldCount || newPut != oldPut) {
+	    if (newCount != oldCount || newPut != oldPut ||
+		    initialValue != _countMapping->GetInitialValue()) {
 		  //
-		  // Both enabled, attributes differ.
+		  // Both enabled, attributes or initial value differ.
 		  //
 		  deleteOld = true;
 		  createNew = true;
@@ -3122,7 +3082,7 @@ ViewGraph::SetCountMapping(Boolean enabled, char *countAttr, char *putAttr)
     _countMapping = NULL;
   }
   if (createNew) {
-    _countMapping = new CountMapping(newCount, newPut);
+    _countMapping = new CountMapping(newCount, newPut, initialValue);
   }
   if (refresh) {
     Refresh();
@@ -3468,6 +3428,7 @@ ViewGraph::SwitchTData(const char *tdName)
       if (result.IsComplete()) {
         RemoveMapping(oldMapping);
         InsertMapping(newMapping);
+		InvalidateDataRanges();
         if (AutoUpdateFilter()) {
           RefreshAndHome();
         } else {
@@ -3510,6 +3471,10 @@ ViewGraph::SetParentValue(const char *parentVal)
 
     if (_viewSymParentVal) FreeString(_viewSymParentVal);
 	_viewSymParentVal = CopyString(parentVal);
+
+    if (AutoUpdateFilter()) {
+	  RefreshAndHome();
+	}
   }
 
   return result;
@@ -3625,6 +3590,10 @@ ViewGraph::GetDoHomeOnVisLink()
 
   if (result) {
     if (!HasTDataRecords()) {
+#if defined(DEBUG)
+      printf("View %s excluded from home on vis link because it has "
+	      "no TData records\n", GetName());
+#endif
 	  result = false;
 	}
   }
@@ -3654,6 +3623,20 @@ ViewGraph::HasTDataRecords()
   }
 
   return result;
+}
+
+void
+ViewGraph::InvalidateDataRanges()
+{
+#if defined(DEBUG)
+  printf("ViewGraph(%s)::InvalidateDataRanges()\n", GetName());
+#endif
+
+  _dataRangesValid = false;
+  _dataXMin = MAXFLOAT;
+  _dataXMax = -MAXFLOAT;
+  _dataYMin = MAXFLOAT;
+  _dataYMax = -MAXFLOAT;
 }
 
 //******************************************************************************

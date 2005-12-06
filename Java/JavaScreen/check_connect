@@ -11,27 +11,15 @@
 #TEMP? limit cputime 1
 #TEMP? limit coredumpsize 0
 
-
-# Kill off any previous DEViseCheckPop processes (because of weird
-# problems with java on SGIs at BMRB).
-host=`hostname`
-pidfile="check_pid:$host:*"
-
-pids=`ls $pidfile 2> /dev/null | cut -d':' -f3`
-
-for pid in $pids
-do
-  kill -9 $pid
-done
-
-
 # Now run a new process to test connecting to the JSPoP.
+unset CLASSPATH
 javaexec=`cat bin2/java`
-$javaexec JavaScreen.DEViseCheckPop $* &
+$javaexec -Xmx256m JavaScreen.DEViseCheckPop $* &
+checkpid=$!
 
 #TEMP -- do something with port number, id string, etc.
 host=`hostname`
-pidfile="check_pid:$host:$!"
+pidfile="check_pid:$host:$checkpid"
 touch $pidfile
-wait $!
+wait $checkpid
 rm $pidfile

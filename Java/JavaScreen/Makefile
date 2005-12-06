@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2002
+# (c) Copyright 1992-2005
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -21,9 +21,11 @@
 
 include Makefile.config
 
+# For compiling with java 1.5.
+# JAVAC = $(JAVA_BIN3)/javac -d . -source 1.3 -target 1.3
 JAVAC = $(JAVA_BIN3)/javac -d .
 
-all: js jsa jspop jss
+all: js jsa jspop jss circ_log
 js: js.class
 
 jsa: jsa.class
@@ -32,6 +34,8 @@ jsb: jsb.class
 jspop: jspop.class
 
 jss: jss.class
+
+circ_log: CircularLog.class
 
 js.class: *.java utils client
 	$(JAVAC) js.java
@@ -48,9 +52,12 @@ jspop.class: *.java
 jss.class: *.java utils
 	$(JAVAC) jss.java
 
+CircularLog.class: CircularLog.java
+	$(JAVAC) CircularLog.java
+
 utils: *.java
 	$(JAVAC) DEViseCommands.java DEViseGlobals.java YError.java \
-	    YException.java YGlobals.java
+	    YException.java YGlobals.java DEViseUtils.java
 
 client: *.java
 	$(JAVAC) DEVise3DLCS.java DEViseAnimPanel.java \
@@ -61,7 +68,8 @@ client: *.java
 	    DEViseHeartbeat.java DEViseJSValues.java DEViseScreen.java \
 	    DEViseTrafficLight.java DEViseUIGlobals.java DEViseView.java \
 	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
-	    jsdevisec.java DEVisePlayback.java DEViseCollabDlg.java
+	    jsdevisec.java DEVisePlayback.java DEViseCollabDlg.java \
+	    DEViseMainButtons.java
 
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
@@ -70,10 +78,10 @@ loader: *.java
 	$(JAVAC) jsb.java DEViseJSLoader.java
 
 jar:
-	make jara jarb
+	make jara jarb jarjs
 
 jara:
-	-rm JavaScreen/*.class
+	make classclean
 	-rm jsa1.jar jsa2.jar
 	make jsa
 	make loader
@@ -83,7 +91,7 @@ jara:
 	jar cf jsa2.jar JavaScreen/*.class  JavaScreen/*.gif
 
 jarb:
-	-rm JavaScreen/*.class
+	make classclean
 	-rm jsb1.jar jsb2.jar
 	make jsb
 	make loader
@@ -92,9 +100,19 @@ jarb:
 	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
 	jar cf jsb2.jar JavaScreen/*.class  JavaScreen/*.gif
 
-clean:
+jarjs:
+	make classclean
+	-rm js.jar
+	make js
+	cp *.gif JavaScreen
+	jar cf js.jar JavaScreen/*.class  JavaScreen/*.gif
 
-	-rm JavaScreen/*.class JavaScreen/*.gif *.jar
+clean: classclean
+	-rm JavaScreen/*.gif *.jar
+
+classclean:
+	-rm JavaScreen/*.class
+
 
 .PHONY: setup
 setup:
@@ -104,9 +122,3 @@ setup:
 .PHONY: install
 install:
 	make -f Makefile.setup install
-
-
-
-
-
-

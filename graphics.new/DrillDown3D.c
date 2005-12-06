@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001
+  (c) Copyright 2001-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -24,6 +24,18 @@
   $Id$
 
   $Log$
+  Revision 1.4.10.2  2003/11/21 23:05:11  wenger
+  Drill-down now works properly on views that are GAttr link followers
+  (fixed bug 893).
+
+  Revision 1.4.10.1  2003/04/24 17:31:16  wenger
+  Fixed bug in drill-down code; axis date formats now also apply to
+  drill-down coordinates; we now check for buffer overruns in
+  DateString().
+
+  Revision 1.4  2001/05/27 18:51:16  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.3  2001/05/24 18:42:02  wenger
   Fixed bug 674 (drill-down doesn't work correctly on record link follower
   views).
@@ -41,7 +53,7 @@
 #include <stdio.h>
 
 #include "DrillDown3D.h"
-#include "ViewGraph.h"
+#include "ViewData.h"
 #include "TDataMap.h"
 #include "TData.h"
 #include "QueryProc.h"
@@ -81,7 +93,7 @@ DrillDown3D::~DrillDown3D()
 //-----------------------------------------------------------------------------
 // Run the appropriate query and generate the TData information.
 DevStatus
-DrillDown3D::RunQuery(ViewGraph *view, int count, Point3D coords[])
+DrillDown3D::RunQuery(ViewData *view, int count, Point3D coords[])
 {
 #if (DEBUG >= 1)
     printf("DrillDown3D::GetRecords(%s, ", view->GetName());
@@ -104,7 +116,7 @@ DrillDown3D::RunQuery(ViewGraph *view, int count, Point3D coords[])
         GetMapping(view);
 	_callback = view->GetQueryCallback();
         SetVisualFilter();
-        ExecuteQuery();
+        ExecuteQuery(view);
     }
 
 #if (DEBUG >= 1)
@@ -135,7 +147,7 @@ DrillDown3D::GetResults(int &count, const char *const *& messages)
 //-----------------------------------------------------------------------------
 // Get the TDataMap and related info for the view.
 void
-DrillDown3D::GetMapping(ViewGraph *view)
+DrillDown3D::GetMapping(ViewData *view)
 {
 #if (DEBUG >= 2)
     printf("DrillDown3D::GetMapping()\n");
@@ -200,7 +212,7 @@ DrillDown3D::SetVisualFilter()
 //-----------------------------------------------------------------------------
 // Execute the actual query and get the results.
 void
-DrillDown3D::ExecuteQuery()
+DrillDown3D::ExecuteQuery(ViewData *view)
 {
 #if (DEBUG >= 2)
     printf("DrillDown3D::ExecuteQuery()\n");
@@ -223,12 +235,17 @@ DrillDown3D::ExecuteQuery()
 	    // too small.
 	    _tdMap->ConvertToGData(startRid, tdBuf, numRecs,
 	      (void *)_gdataBuf, GDATA_BUF_SIZE);
-	    RecId rid = startRid;
+
+	    // Check records against any GAttr links that the view is a
+	    // follower of.
+	    ViewData::SymbolInfo symInfo[WINDOWREP_BATCH_SIZE];
+	    view->GAttrLinkFollower(_tdMap, _gdataBuf, numRecs,
+	      _tdMap->GDataRecordSize(), symInfo);
+
 	    char *tdPtr = tdBuf;
 	    char *gdPtr = _gdataBuf;
 	    for (int index = 0; index < numRecs; index++) {
 	        ProcessRecord(tdPtr, gdPtr);
-		rid++;
 		tdPtr += _tdMap->TDataRecordSize();
 		gdPtr += _tdMap->GDataRecordSize();
 	    }
@@ -292,7 +309,7 @@ DrillDown3D::PrintTData(Coord gdX, Coord gdY, Coord gdZ, char *tData)
     _results.AddArg(attrBuf);
 
     for (int index = 0; index < _attrs->NumAttrs(); index++) {
-	_recInterp->PrintAttr(attrBuf, index, true);
+	_recInterp->PrintAttr(attrBuf, bufSize, index, true);
 	_results.AddArg(attrBuf);
     }
 

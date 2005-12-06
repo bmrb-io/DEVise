@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1995
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,22 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8.26.1  2003/12/19 18:11:32  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.8.44.1  2003/12/18 19:26:24  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.8  1998/03/04 18:41:26  wenger
+#  Added <arch>/Makefile.config files that now hold stuff like the
+#  PERL_CORE definitions so those don't have to be repeated in all
+#  of the lower level makefiles; various other compile fixes; changed
+#  version to 1.5.2.
+#
 #  Revision 1.7  1997/02/03 04:14:33  donjerko
 #  Catalog management moved to DTE
 #
@@ -40,9 +56,9 @@
 
 include ../Makefile.config
 
-ARCH_LDFLAGS = -L/usr/unsup/lib -L/s/tcl/lib
+ARCH_LDFLAGS = -L/usr/unsup/lib $(TCL_TK_LIBDIR)
 ARCH_LDPOST  =
 
 VPATH = ../../attrproj:../../graphics:../../graphics.new:../../DTE/RTree
 include ../../attrproj/Makefile.base
-include ../../attrproj/Makefile.solaris
+include Makefile.depend

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.41.12.1  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.41  2001/01/08 20:32:41  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.39.2.1  2000/10/18 20:31:52  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -213,6 +220,7 @@
 
 class DispatcherCallback {
 public:
+  virtual ~DispatcherCallback() {}
   virtual char *DispatchedName() = 0;
   virtual void Run() {}
   virtual void Cleanup() {}

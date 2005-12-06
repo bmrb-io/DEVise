@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.41.14.1  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.41  1999/12/01 00:09:38  wenger
+  Disabled extra debug logging for tracking down Omer's crash.
+
   Revision 1.40  1999/11/30 22:28:07  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -400,7 +406,7 @@ void WindowRep::HandleWindowDestroy()
   // Copy the callback list to a separate array, so that the
   // HandleWindowDestroy() function(s) can delete from the callback list.
   int callbackCount = _callbackList->Size();
-  WindowRepCallback **callbacks = new (WindowRepCallback *)[callbackCount];
+  WindowRepCallback **callbacks = new WindowRepCallback *[callbackCount];
 
   int callbackNum = 0;
   int index = InitIterator();

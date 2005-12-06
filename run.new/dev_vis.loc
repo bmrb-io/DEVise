@@ -7,6 +7,6 @@
 
 ############################################################
 
-setenv DEVISE_VIS    ../public
+setenv DEVISE_VIS    `dirname $0`/../public
 
-source dev_vis.gen
+source $DEVISE_PROG/run/dev_vis.gen

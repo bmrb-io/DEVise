@@ -15,6 +15,20 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.19.4.1  2003/12/19 18:09:20  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.19.22.1  2003/12/18 19:24:33  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.19  2002/02/04 16:37:36  wenger
+#  Compiler is explicitly set to gcc 2.95.3, updated dependencies, using
+#  Tcl and Tk 8.3 so DEVise will compile and link on RedHat 7.2.
+#
 #  Revision 1.18  2001/12/27 15:26:26  wenger
 #  Got rid of static linking on devised.
 #
@@ -97,10 +111,9 @@
 
 include ../Makefile.config
 
-ARCH_LDFLAGS = -L/usr/lib -L/usr/X11R6/lib
+ARCH_LDFLAGS = $(TCL_TK_LIBDIR) $(XLIB_LIBDIR)
 ARCH_D_SYSLIBS = -lX11 -lm -ldl
-# ARCH_SYSLIBS = -ltk8.0 -ltcl8.0 $(ARCH_D_SYSLIBS)
-ARCH_SYSLIBS = -ltk8.3 -ltcl8.3 $(ARCH_D_SYSLIBS)
+ARCH_SYSLIBS = $(TCL_TK_LIBS) $(ARCH_D_SYSLIBS)
 ARCH_LDPOST  = 
 ARCH_D_LDPOST  = $(ARCH_LDPOST)
 # to make everything statically-linked...
@@ -109,4 +122,4 @@ ARCH_STATIC_LDPOST  = -static
 
 VPATH = ../../generic
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.linux
+include Makefile.depend

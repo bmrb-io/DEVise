@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.22.14.1  2005/09/28 17:14:50  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.22  2000/02/16 18:51:43  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.21  2000/01/13 23:07:11  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -212,10 +221,10 @@ private:
     return _server->SendControl(flag, result);
   }
 
-  virtual int SendControl(int argc, char **argv, bool grp_enable) {
+  virtual int SendControl(int argc, const char * const *argv, bool grp_enable) {
 	if (grp_enable)
 	{
-		_server->ServerClientCmd(API_CTL,argc, argv);
+		_server->ServerClientCmd(API_CTL, argc, argv);
 	}
     return _server->SendControl(API_CTL, argc, argv);
   }

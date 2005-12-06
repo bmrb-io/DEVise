@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2002
+// (c) Copyright 2000-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,8 +19,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2002/06/17 19:40:14  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
 // Revision 1.20  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.19.2.7  2003/12/22 22:47:14  wenger
+// JavaScreen support for print color modes is now in place.
+//
+// Revision 1.19.2.6  2003/10/15 21:55:10  wenger
+// Added new JAVAC_StopCollab command to fix ambiguity with
+// JAVAC_CollabExit; minor improvements to collaboration-related stuff
+// in the auto test scripts.
+//
+// Revision 1.19.2.5  2003/09/23 21:55:11  wenger
+// "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
 //
 // Revision 1.19.2.4  2002/05/20 21:21:33  wenger
 // Fixed bug 779 (client switching problem with multiple DEViseds).
@@ -210,6 +224,8 @@ public final class DEViseCommands
 
     public static final String DELETE_VIEW = JS_PREFIX + "DeleteView";
 
+    public static final String DEVISE_VERSION = JS_PREFIX + "DeviseVersion";
+
     public static final String DISABLE_COLLAB = JS_PREFIX + "DisableCollab";
 
     public static final String DONE = JS_PREFIX + "Done";
@@ -225,6 +241,11 @@ public final class DEViseCommands
     public static final String FAIL = JS_PREFIX + "Fail";
 
     public static final String GET_COLLAB_LIST = JS_PREFIX + "GetCollabList";
+
+    public static final String GET_DEVISE_VERSION =
+      JS_PREFIX + "GetDeviseVersion";
+
+    public static final String GET_POP_VERSION = JS_PREFIX + "GetPopVersion";
 
     public static final String GET_SERVER_STATE = JS_PREFIX + "GetServerState";
 
@@ -248,6 +269,8 @@ public final class DEViseCommands
 
     public static final String OPEN_TMP_SESSION = JS_PREFIX + "OpenTmpSession";
 
+    public static final String POP_VERSION = JS_PREFIX + "PopVersion";
+
     public static final String PROTOCOL_VERSION = JS_PREFIX + "ProtocolVersion";
 
     public static final String REFRESH_DATA = JS_PREFIX + "RefreshData";
@@ -267,16 +290,23 @@ public final class DEViseCommands
 
     public static final String SET_COLLAB_PASS = JS_PREFIX + "SetCollabPass";
 
+    public static final String SET_DISPLAY_MODE = JS_PREFIX + "SetDisplayMode";
+
     public static final String SET_DISPLAY_SIZE = JS_PREFIX + "SetDisplaySize";
 
     public static final String SET_TMP_SESSION_DIR = JS_PREFIX +
         "SetTmpSessionDir";
+
+    public static final String SET_VIEW_COLORS = JS_PREFIX +
+        "SetViewColors";
 
     public static final String SHOW_RECORDS = JS_PREFIX + "ShowRecords";
 
     public static final String SHOW_RECORDS3D = JS_PREFIX + "ShowRecords3D";
 
     public static final String SHOW_VIEW_HELP = JS_PREFIX + "ShowViewHelp";
+
+    public static final String STOP_COLLAB = JS_PREFIX + "StopCollab";
 
     public static final String UPDATE_GDATA = JS_PREFIX + "UpdateGData";
 

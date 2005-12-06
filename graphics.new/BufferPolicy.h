@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5.14.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.5  1999/06/01 17:37:38  wenger
+  Fixed various compiler warnings.
+
   Revision 1.4  1997/10/07 17:05:59  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -39,6 +45,8 @@ class GData;
 
 class BufferPolicy {
   public:
+    virtual ~BufferPolicy() {}
+
     /* flags for policy */
     static const int ReportVictim = 1;
     static const int ReportPlacement = 0x2;

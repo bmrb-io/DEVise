@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2004
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.68  2003/01/13 19:25:28  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.67  2002/07/19 17:07:26  wenger
   Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 
@@ -28,6 +31,37 @@
 
   Revision 1.65  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.64.2.20  2005/11/01 18:53:59  wenger
+  Changed DEVise version to 1.7.20x1, JavaScreen version to 5.5.3x1.
+
+  Revision 1.64.2.19  2004/05/28 15:53:51  wenger
+  Changed version back to 1.7.19.
+
+  Revision 1.64.2.18  2004/05/24 18:31:42  wenger
+  Argh -- changed version back to 1.7.18 for new distribution that
+  works for RH 7.2.
+
+  Revision 1.64.2.17  2004/05/24 14:40:24  wenger
+  Changed version to 1.7.19.
+
+  Revision 1.64.2.16  2004/01/05 20:41:56  wenger
+  Changed overall copyright message to include 2004.
+
+  Revision 1.64.2.15  2003/10/27 16:52:47  wenger
+  DEVise version is now 1.7.18.
+
+  Revision 1.64.2.14  2003/07/29 18:22:20  wenger
+  Version is now 1.7.17, since we've released 1.7.16 to the outside world.
+
+  Revision 1.64.2.13  2003/07/02 15:22:46  wenger
+  Updated version to 1.7.16, because 1.7.15 is now going out.
+
+  Revision 1.64.2.12  2003/04/16 17:44:29  wenger
+  Changed version to 1.7.15.
+
+  Revision 1.64.2.11  2003/02/07 17:44:17  wenger
+  Changed copyrights to 2003.
 
   Revision 1.64.2.10  2003/01/09 22:21:59  wenger
   Added "link multiplication factor" feature; changed version to 1.7.14.
@@ -405,13 +439,13 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.7.14";
+static const char *	version = "1.7.20x1";
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-2002";
+static const char *	copyright = "Copyright (c) 1992-2004";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 2002";
+static const char *	winLogo = "Visualization by DEVise (tm) 2004";
 
 
 #if !defined(lint) && defined(RCSID)

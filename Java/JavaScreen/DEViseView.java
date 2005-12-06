@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,11 +24,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.73  2003/01/13 19:23:44  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.72  2002/06/17 19:40:15  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
 // Revision 1.71  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.70.2.10  2003/12/22 22:47:15  wenger
+// JavaScreen support for print color modes is now in place.
+//
+// Revision 1.70.2.9  2003/02/27 21:52:24  wenger
+// Fixed bug 865 (axis problem with negative multiplication factors).
+//
+// Revision 1.70.2.8  2003/01/16 16:27:08  wenger
+// Fixed bugs 860 and 861 (problems with axis labels if multiplication
+// factor != 1).
 //
 // Revision 1.70.2.7  2003/01/07 22:47:10  wenger
 // Fixed bugs 851, 853, and 854 (more view transform/axis drawing bugs).
@@ -240,7 +253,7 @@ public class DEViseView
 
     public float viewZ = 0.0f; // for piled views
     public int viewDimension = 0; // number of dimensions
-    public int viewBg, viewFg;
+    public int viewBg, viewFg; // background and foreground colors
 
     // The location of the view's data area relative to the view.
     public Rectangle viewDataLoc = null;
@@ -539,6 +552,13 @@ public class DEViseView
         viewChilds.removeAllElements();
     }
 
+    // Set view foreground and background colors.
+    public void setColors(int foreground, int background)
+    {
+    	viewFg = foreground;
+	viewBg = background;
+    }
+
     // Paint the axis labels for this view.
     public void paintAxisLabels(Graphics gc, boolean isChildView)
     {
@@ -564,8 +584,9 @@ public class DEViseView
 	        tickSpacing = 60;
 	    }
 	    if ((viewDataYType.toLowerCase()).equals("real")) {
-	        double[] ticks = calculateTickLocs(viewDataYMin,
-		  viewDataYMax, viewDataLoc.height, tickSpacing * dataYStep);
+	        double[] ticks = calculateTickLocs(viewDataYMin * factorY,
+		  viewDataYMax * factorY, viewDataLoc.height,
+		  tickSpacing * dataYStep * factorY);
 		for (int index = 0; index < ticks.length; index++) {
 		    drawYAxisTick(gc, ticks[index]);
 		}
@@ -602,8 +623,9 @@ TEMP*/
 		} else if (viewDataLoc.width > 1000) {
 		    tickSpacing = 150;
 		}
-	        double ticks[] = calculateTickLocs(viewDataXMin,
-		    viewDataXMax, viewDataLoc.width, tickSpacing * dataXStep);
+	        double ticks[] = calculateTickLocs(viewDataXMin * factorX,
+		    viewDataXMax * factorX, viewDataLoc.width,
+		    tickSpacing * dataXStep * factorX);
 		for (int index = 0; index < ticks.length; index++) {
 		    drawXAxisTick(gc, ticks[index]);
 		}
@@ -642,7 +664,18 @@ TEMP*/
 	      ", " + dataMax + ",\n  " + pixels + ", " + dataStepSize + ")");
 	}
 
-	dataStepSize = Math.abs(dataStepSize);
+	// Note: the code below doesn't really work very well for negative
+	// step sizes, so this seems to be the easiest way to handle it.
+	// wenger, 2003-02-27.
+        if (dataStepSize < 0.0) {
+	    double[] ticks = calculateTickLocs(-dataMin, -dataMax, pixels,
+	      -dataStepSize);
+	    for (int index = 0; index < ticks.length; index++) {
+	        ticks[index] = -ticks[index];
+	    }
+	    return ticks;
+	}
+
 	dataStepSize = round2Nice(dataStepSize);
         if (DEBUG >= 2) {
 	    System.out.println("Rounded step size: " + dataStepSize);
@@ -691,11 +724,11 @@ TEMP*/
         }
 
 	// Get the string for labeling this tick.
-	String label = formatXValue(value * factorX);
+	String label = formatXValue(value);
 
 	// Convert the tick's data value to pixels, relative to the
 	// view origin.
-	int pixelX = data2PixelX(value, false);
+	int pixelX = data2PixelX(value / factorX, false);
 
 	drawXAxisTick(gc, pixelX, label);
     }
@@ -783,11 +816,11 @@ TEMP*/
         }
 
 	// Get the string for labeling this tick.
-	String label = formatYValue(value * factorY);
+	String label = formatYValue(value);
 
 	// Convert the tick's data value to pixels, relative to the
 	// view origin.
-	int pixelY = data2PixelY(value, false);
+	int pixelY = data2PixelY(value / factorY, false);
 
 	drawYAxisTick(gc, pixelY, label);
     }
@@ -1240,6 +1273,10 @@ TEMP*/
         if (DEBUG >= 3) {
             System.out.println("round2Nice(" + value + ")");
         }
+	
+	if (value < 0.0) {
+	    return -1.0 * round2Nice(-value);
+	}
 
 	double log = Math.floor(Math.log(value) / Math.log(10) + 0.0001);
         if (DEBUG >= 3) {

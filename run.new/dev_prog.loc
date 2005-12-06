@@ -7,7 +7,6 @@
 
 ############################################################
 
-#TEMP -- make this not dependent on running this script in a particular
-setenv DEVISE_PROG    ..
+setenv DEVISE_PROG    `dirname $0`/..
 
-source dev_prog.gen
+source $DEVISE_PROG/run/dev_prog.gen

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.2.42.1  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
+  Revision 1.2  1997/03/28 16:10:23  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
  */
 
 #ifndef _MAPINTTOINT_H_
@@ -23,7 +30,7 @@
 
 #include "HashTable.h"
 
-extern int IntHash(int& i, int buckets);
+extern int IntHash(const int& i, int buckets);
 
 
 class MapIntToInt

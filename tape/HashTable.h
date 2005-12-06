@@ -1,5 +1,5 @@
 /*
-  Copyright 1993-1996 by Jussi Myllymaki
+  Copyright 1993-2005 by Jussi Myllymaki
   
   Permission to use, copy, modify, and distribute this software and its
   documentation for any purpose and without fee is hereby granted,
@@ -19,8 +19,14 @@
   $Id$
 
   $Log$
+  Revision 1.15  2003/01/13 19:26:37  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.14  2002/06/17 19:42:06  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.13.22.4  2005/09/06 22:05:02  wenger
+  Added proper const-ness to HashTable.
 
   Revision 1.13.22.3  2002/09/21 23:24:43  wenger
   Fixed a few more special-case memory leaks.
@@ -99,17 +105,17 @@ template <class Index, class Value>
 class HashTable {
  public:
   HashTable(int tableSize,
-	    int (*hashfcn)(Index &index,
+	    int (*hashfcn)(const Index &index,
 			   int numBuckets),
-            int (*compfcn)(Index &index1,
-                           Index &index2) = 0);
+            int (*compfcn)(const Index &index1,
+                           const Index &index2) = 0);
   ~HashTable();
 
-  int insert(Index &index, Value &value);
-  int lookup(Index &index, Value &value);
-  int getNext(Index &index, void *current, Value &value,
+  int insert(const Index &index, const Value &value);
+  int lookup(const Index &index, Value &value);
+  int getNext(const Index &index, void *current, Value &value,
 	      void *&next);
-  int remove(Index &index);  
+  int remove(const Index &index);
   int clear();
   void InitRetrieveEntries(int &buckIdx, void *&next);
   int RetrieveEntries(int &buckIdx, void *&next, Index &index, Value &value);
@@ -126,10 +132,10 @@ class HashTable {
   int _num;                                  // number of entries in table
 
   HashBucket<Index, Value> **ht;             // actual hash table
-  int (*hashfcn)(Index &index,
+  int (*hashfcn)(const Index &index,
 		 int numBuckets);            // hash function
-  int (*compfcn)(Index &index1,
-                 Index &index2);             // comparison function
+  int (*compfcn)(const Index &index1,
+                 const Index &index2);       // comparison function
 };
 
 // Construct hash table. Allocate memory for hash table and
@@ -137,10 +143,10 @@ class HashTable {
 
 template <class Index, class Value>
 HashTable<Index,Value>::HashTable(int tableSz,
-				  int (*hashF)(Index &index,
+				  int (*hashF)(const Index &index,
 					       int numBuckets),
-                                  int (*compF)(Index &index1,
-                                               Index &index2)) :
+                                  int (*compF)(const Index &index1,
+                                               const Index &index2)) :
 	tableSize(tableSz), hashfcn(hashF), compfcn(compF)
 {
 #if defined(DEBUG)
@@ -199,7 +205,7 @@ int HashTable<Index,Value>::RetrieveEntries(int &buckIdx, void *&next,
 // Returns 0 if OK, an error code otherwise.
 
 template <class Index, class Value>
-int HashTable<Index,Value>::insert(Index &index, Value &value)
+int HashTable<Index,Value>::insert(const Index &index, const Value &value)
 {
   int idx = hashfcn(index, tableSize);
 
@@ -227,7 +233,7 @@ int HashTable<Index,Value>::insert(Index &index, Value &value)
 // corresponding value and OK status (0). Otherwise return -1.
 
 template <class Index, class Value>
-int HashTable<Index,Value>::lookup(Index &index, Value &value)
+int HashTable<Index,Value>::lookup(const Index &index, Value &value)
 { 
   int idx = hashfcn(index, tableSize);
 //  printf("lookup in hashTable, index=%f, idx=%d\n", index, idx);
@@ -255,7 +261,7 @@ int HashTable<Index,Value>::lookup(Index &index, Value &value)
 // returns -1.
 
 template <class Index, class Value>
-int HashTable<Index,Value>::getNext(Index &index, void *current,
+int HashTable<Index,Value>::getNext(const Index &index, void *current,
 				    Value &value, void *&next)
 {
   HashBucket<Index, Value> *bucket;
@@ -289,7 +295,7 @@ int HashTable<Index,Value>::getNext(Index &index, void *current,
 // Else return -1.
 
 template <class Index, class Value>
-int HashTable<Index,Value>::remove(Index &index)
+int HashTable<Index,Value>::remove(const Index &index)
 {
   int idx = hashfcn(index, tableSize);
 

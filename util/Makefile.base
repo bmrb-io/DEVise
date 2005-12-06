@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,23 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16.28.2  2003/12/19 18:13:15  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.16.28.1.4.1  2003/12/18 19:28:07  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.16.28.1  2003/04/17 18:00:10  wenger
+#  Now compiles with no warnings with gcc 2.95, except for warnings about
+#  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+#
+#  Revision 1.16  1997/11/24 23:16:28  weaver
+#  Changes for the new ColorManager.
+#
 #  Revision 1.15.10.1  1997/05/21 20:42:38  weaver
 #  Changes for new ColorManager
 #
@@ -39,6 +56,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics.new -I../../graphics \
+	-I../../src/utils/export \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG)
 
 LDFLAGS = $(ARCH_LDFLAGS) $(ARCH_LDPOST)
@@ -92,10 +110,16 @@ tardump: tardump.o
 lc: lc.o
 	$(CC) -o $@ $@.o $(LDFLAGS)
 
+depend: Makefile.depend
+
+Makefile.depend:
+	-rm Makefile.depend
+	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
+
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(TARGET)
+	-rm $(TARGET) Makefile.depend
 
 mostlyclean:
 	-rm $(OBJ)

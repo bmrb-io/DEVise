@@ -41,7 +41,14 @@ JAR_DIR = ~/tst/jspop_install/www
 CGI_DIR = ~/tst/jspop_install/cgi-bin
 IDSTR = "test"
 
+# Where the DEVise sessions, schemas, etc., are installed.
+DEVISE_VIS = /p/devise/demo
+
 # This is who gets email about any errors.
 ERROR_EMAIL = wenger
 
 INSTALL_HOST = ""
+
+# You should probably set this to 0 if you're running more than one JSS
+# on the same machine.
+KILL_XVFB = 1

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2002
+#  (c) Copyright 2001-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,8 +19,41 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  2002/07/19 17:07:54  wenger
+#  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+#
 #  Revision 1.11  2002/06/17 19:41:46  wenger
 #  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+#
+#  Revision 1.10.2.9  2005/12/05 21:47:09  wenger
+#  Added CentOS support to the release script.
+#
+#  Revision 1.10.2.8  2005/10/22 18:53:28  wenger
+#  Oops -- a typo in the release script -- installed dynamic libraries
+#  in the wrong place.
+#
+#  Revision 1.10.2.7  2005/10/20 22:36:05  wenger
+#  Mods for new dynamic library scheme.
+#
+#  Revision 1.10.2.6  2005/06/09 15:03:38  wenger
+#  i386_rh9 now has i386_tao10 for 'otherarches'.
+#
+#  Revision 1.10.2.5  2004/08/26 21:28:15  wenger
+#  Updated setup and release scripts for current Linux versions,
+#  removed unneeded run stuff from setup script.
+#
+#  Revision 1.10.2.4  2004/05/24 18:11:02  wenger
+#  Set things up to compile and release separately for RH 7.2 and RH 9.
+#
+#  Revision 1.10.2.3  2003/12/19 18:10:11  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.10.2.2.6.1  2003/12/18 19:25:30  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
 #
 #  Revision 1.10.2.2  2002/06/27 18:29:51  wenger
 #  Fixed this so it doesn't clobber stuff already in the bin directory
@@ -68,26 +101,14 @@ if ($#argv < 2) then
   echo "  Available architectures:"
   echo "    solaris (Solaris/Intel),"
   echo "    solsparc (Solaris/SPARC),"
-  echo "    linux (Linux/Intel)"
-  echo "    linux_rh62 (Linux (RedHat 6.2)/Intel)"
+  echo "    linux_rh72 (Linux (RedHat 7.2)/Intel)"
+  echo "    linux_rh9 (Linux (RedHat 9)/Intel)"
+  echo "    linux_centos (Linux (CentOS)/Intel)"
   exit 1
 endif
 
 set dest = $1/release
 set arches = ($argv[2-$#argv])
-
-#-----------------------------------------------------------
-# Check that we're doing this on trigger.
-
-if (`hostname` != trigger.cs.wisc.edu) then
-  echo "Release should be done on trigger (or another Intel/RedHat 7.2 machine)"
-  echo -n "Are you SURE you want to continue? [N] "
-  set answer = $<
-  if ($answer != y && $answer != Y) then
-    echo Aborted.
-    exit 1
-  endif
-endif
 
 #-----------------------------------------------------------
 # Make sure we have the files we need to do the release.
@@ -103,11 +124,11 @@ foreach file ($files)
 end
 
 set archfiles = (generic/generic generic/devise generic/deviseb \
-    generic/devised)
+    generic/devised dyn_lib)
 
 foreach arch ($arches)
   foreach file ($archfiles)
-    if (! -f $arch/$file) then
+    if (! -e $arch/$file) then
       echo "File $arch/$file missing."
       echo "Cannot proceed with release procedure."
       exit 1
@@ -173,9 +194,15 @@ foreach arch ($arches)
   if ($arch == linux_rh62) then
     set mainarch = i386_linux
     set otherarches = (i386_linux22 i386_rh61 i386_rh62)
-  else if ($arch == linux) then
+  else if ($arch == linux_rh72) then
     set mainarch = i386_rh72
     set otherarches = (i386_rh71)
+  else if ($arch == linux_rh9) then
+    set mainarch = i386_rh9
+    set otherarches = i386_tao10
+  else if ($arch == linux_centos) then
+    set mainarch = i386_cent40
+    set otherarches = 
   else if ($arch == solaris) then
     set mainarch = sunx86_54
     set otherarches = (sunx86_55 sunx86_56 sunx86_57 sunx86_58)
@@ -206,27 +233,20 @@ foreach arch ($arches)
 end
 
 #-----------------------------------------------------------
-# Copy libraries to dyn_lib directories.
-cd scripts/release_scripts
-
-foreach arch ($arches)
-  echo "Releasing $arch dynamic libraries"
-
-  ./dyn_lib_$arch'1' $dest/dyn_lib
-end
-
-cd ../..
-
-#-----------------------------------------------------------
-# Copy executables to bin directories.
+# Copy executables to bin directories and libraries to
+# dyn_lib directories.
 
 foreach arch ($arches)
   echo "Releasing DEVise $arch executables"
 
   if ($arch == linux_rh62) then
     set mainarch = i386_linux
-  else if ($arch == linux) then
+  else if ($arch == linux_rh72) then
     set mainarch = i386_rh72
+  else if ($arch == linux_rh9) then
+    set mainarch = i386_rh9
+  else if ($arch == linux_centos) then
+    set mainarch = i386_cent40
   else if ($arch == solaris) then
     set mainarch = sunx86_54
   else if ($arch == solsparc) then
@@ -238,6 +258,9 @@ foreach arch ($arches)
   cp -p $arch/generic/deviseb $dest/bin_arch/$mainarch
   cp -p $arch/generic/devised $dest/bin_arch/$mainarch
   chmod a+rx $dest/bin_arch/$mainarch/*
+
+  cp -p $arch/dyn_lib/* $dest/dyn_lib_arch/$mainarch
+  chmod a+rx $dest/dyn_lib_arch/$mainarch/*
 end
 
 #-----------------------------------------------------------

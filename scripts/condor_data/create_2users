@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2002
+#  (c) Copyright 1999-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -23,6 +23,15 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.23  2003/01/13 19:25:52  wenger
+#  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+#
+#  Revision 1.22.10.6  2005/03/16 21:57:38  wenger
+#  More fixes to Condor session creation.
+#
+#  Revision 1.22.10.5  2005/03/16 19:43:45  wenger
+#  Workaround for DEVise bug 915 (problem with home/links/piles).
+#
 #  Revision 1.22.10.4  2002/11/26 21:55:02  wenger
 #  Made cursors to control users lists look more like scrollbars.
 #
@@ -250,13 +259,15 @@ sub CreateSession {
   CreateWindows();
 
   # Force the visual filters to get updated when this session is opened.
-  print SES_OUT "DEVise updateFilters\n";
+  print SES_OUT "DEVise sessionPost updateFilters\n";
 
   # Initialize views to show the full X range of data.
-  print SES_OUT "DEVise viewGoHome Total_viewsymA\n";
-  print SES_OUT "DEVise waitForQueries\n";
-  print SES_OUT "DEVise viewGoHome User1_viewsymA\n";
-  print SES_OUT "DEVise viewGoHome Total_viewsymA\n";
+  print SES_OUT "DEVise sessionPost viewGoHome Total_viewsymA\n";
+  print SES_OUT "DEVise sessionPost waitForQueries\n";
+  print SES_OUT "DEVise sessionPost viewGoHome Total_viewsymA\n";
+  print SES_OUT "DEVise sessionPost waitForQueries\n";
+  print SES_OUT "DEVise sessionPost viewGoHome TotalLinked_viewsymA\n";
+  print SES_OUT "DEVise sessionPost waitForQueries\n";
 
   close(SES_OUT);
 }
@@ -664,8 +675,11 @@ sub CreateLinksCursors {
   # Link the X axis (time) of all of the views that actually display data.
   print SES_OUT "DEVise create {link} {Visual_Link} TimeLink 1\n";
   print SES_OUT "DEVise insertLink {TimeLink} {User1_viewsymA}\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {User1_viewsymB}\n";
   print SES_OUT "DEVise insertLink {TimeLink} {User2_viewsymA}\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {User2_viewsymB}\n";
   print SES_OUT "DEVise insertLink {TimeLink} {TotalLinked_viewsymA}\n";
+  print SES_OUT "DEVise insertLink {TimeLink} {TotalLinked_viewsymB}\n";
 
   # Cursor to select time range for user data.
   print SES_OUT "DEVise create {cursor} {Cursor} TimeCursor 1 0 1.000000 ",

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2004
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,11 +20,46 @@
   $Id$
 
   $Log$
+  Revision 1.73  2003/01/13 19:25:22  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.72  2002/06/17 19:41:06  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
   Revision 1.71  2002/05/01 21:30:12  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.70.4.13  2005/09/28 17:14:50  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.70.4.12  2004/04/23 21:57:15  wenger
+  Added new 'select next view in pile' feature.
+
+  Revision 1.70.4.11  2003/12/22 22:47:30  wenger
+  JavaScreen support for print color modes is now in place.
+
+  Revision 1.70.4.10  2003/11/19 19:40:20  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
+  Revision 1.70.4.9  2003/11/05 17:01:52  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.70.4.8  2003/09/23 21:55:23  wenger
+  "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+
+  Revision 1.70.4.7  2003/06/06 20:48:43  wenger
+  Implemented provision for automatic testing of DEVise, including
+  running Tcl test scripts within DEVise itself.
+
+  Revision 1.70.4.6  2003/02/04 19:41:16  wenger
+  Added union capability for multiple GData attribute links (will help
+  with restraint visualizations for BMRB).
 
   Revision 1.70.4.5  2003/01/09 22:21:59  wenger
   Added "link multiplication factor" feature; changed version to 1.7.14.
@@ -462,6 +497,7 @@ class DeviseCommand
 		virtual int ReturnVal(int argc, char **argv);
 	protected:
         char		*_result;
+		int			_resultCapacity;
 		ClassDir	*_classDir;
 
 	public:
@@ -615,6 +651,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_SetTmpSessionDir)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_GetDeviseVersion)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_SetDisplayMode)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------
@@ -2262,6 +2310,60 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getLinkMultFact) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setGAttrLinkMode) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getGAttrLinkMode) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(testExit) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(keyToView) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setDisplayMode) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getDisplayMode) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setMappingColors) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getMappingColors) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(selectNextInPile) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

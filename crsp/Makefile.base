@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,23 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13.28.2  2003/12/19 18:06:59  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.13.28.1.4.1  2003/12/18 19:22:46  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.13.28.1  2003/04/17 17:58:17  wenger
+#  Now compiles with no warnings with gcc 2.95, except for warnings about
+#  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+#
+#  Revision 1.13  1997/12/11 04:47:45  beyer
+#  .o files that are placed into libraries (.a) are now removed.
+#
 #  Revision 1.12  1997/11/24 23:13:53  weaver
 #  Changes for the new ColorManager.
 #
@@ -40,7 +57,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
-	-I../../tape \
+	-I../../tape -I../../src/utils/export \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG)
 
 LDFLAGS = $(ARCH_LDFLAGS) -L. -lcrsp -L../tape -ltape $(ARCH_LDPOST)
@@ -68,10 +85,16 @@ main:	main.o $(LIBNAME) ../tape/libtape.a
 crsp_index: crsp_index.o $(LIBNAME) ../tape/libtape.a
 	$(CC) -o $@ $@.o ../graphics/ExitClean.o $(LDFLAGS)
 
+depend: Makefile.depend
+
+Makefile.depend:
+	-rm Makefile.depend
+	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
+
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME) main crsp_index
+	-rm $(LIBNAME) main crsp_index Makefile.depend
 
 mostlyclean:
 	-rm $(LIBOBJ) $(TESTOBJ)

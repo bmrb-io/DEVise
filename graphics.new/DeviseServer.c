@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.19  2003/01/13 19:25:22  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.18.10.2  2005/09/28 17:14:50  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
   Revision 1.18.10.1  2002/09/02 21:29:33  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -376,12 +385,12 @@ DeviseServer::WriteImagePort(const void* buf, int nsize)
 
 	if (_currentClient == CLIENT_INVALID)
 	{
-		fprintf(stderr, "No client was specified\n");
+		reportErrNosys("No client was specified");
 		return -1;
 	}
 	if (_clients[_currentClient].ctype != ClientInfo::JAVA_SCREEN)
 	{
-		fprintf(stderr, "Not JAVA_SCREEN client\n");
+		reportErrNosys("Not JAVA_SCREEN client");
 		return -1;
 	}
 

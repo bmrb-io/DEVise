@@ -6,7 +6,7 @@
 
 ############################################################
 
-limit coredumpsize 0
+# limit coredumpsize 0
 limit descriptors 256
 
 setenv DEVISE_TMP		/tmp/$USER-devise-tmp

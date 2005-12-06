@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,8 +16,26 @@
   $Id$
 
   $Log$
+  Revision 1.90  2003/01/13 19:25:28  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.89  2002/06/17 19:41:08  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.88.4.6  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.88.4.5  2003/07/31 15:38:29  wenger
+  Added initial value option to count mapping, also GUI for it; more
+  buffer length checks (still many more needed) in DeviseCommand.C.
+
+  Revision 1.88.4.4  2003/06/16 16:42:06  wenger
+  Fixed bug 879 (a problem with the home code) -- made pretty significant
+  improvements to how we deal with the data ranges.
+
+  Revision 1.88.4.3  2003/06/06 20:48:43  wenger
+  Implemented provision for automatic testing of DEVise, including
+  running Tcl test scripts within DEVise itself.
 
   Revision 1.88.4.2  2002/11/15 22:44:36  wenger
   Views with no TData records don't contribute to filter values on 'home'
@@ -571,12 +589,15 @@ class DupElim;
 // class ViewGraph
 //******************************************************************************
 
+class ViewGraph_QueryCallback;
+
 class ViewGraph : public View
 {
 		friend class ViewGraph_QueryCallback;
 		friend class SlaveTable;
 		friend class JavaScreenCmd; // for HandlePopUp
 		friend class PileStack;
+		friend class DeviseCommand_keyToView; // for HandlePopUp
 
 	private:
 
@@ -615,6 +636,8 @@ protected:
 
   virtual void AddVisualLink(VisualLink *link);
   virtual void DeleteVisualLink(VisualLink *link);
+
+  virtual void InvalidateDataRanges();
 
 
 public:
@@ -785,8 +808,10 @@ public:
 
   virtual void TAttrLinkChanged();
 
-  void GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr);
-  DevStatus SetCountMapping(Boolean enabled, char *countAttr, char *putAttr);
+  void GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr,
+    int &initialValue);
+  DevStatus SetCountMapping(Boolean enabled, char *countAttr, char *putAttr,
+    int initialValue);
 
   Boolean GetDupElim();
   void SetDupElim(Boolean enable);

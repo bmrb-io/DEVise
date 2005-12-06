@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.10.14.1  2005/09/12 19:41:57  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.10  1999/09/02 17:25:20  wenger
+  Took out the ifdefs around the MARGINS code, since DEVise won't compile
+  without them; removed all of the TK_WINDOW code, and removed various
+  unnecessary includes of tcl.h, etc.
+
   Revision 1.9  1996/05/11 03:23:23  jussi
   Minor improvements for robustness.
 
@@ -69,7 +78,7 @@ static Tcl_Interp *globalInterp = 0;
    CUSIP number. Then, returns the tape offset for this security.
 */
 
-static long int find_offset(FILE *idxfile, char cval[])
+static long int find_offset(FILE *idxfile, const char cval[])
 {
   unsigned long int offval;
   char fval[10];	// stores CUSIP in this
@@ -94,8 +103,9 @@ static long int find_offset(FILE *idxfile, char cval[])
    every security in turn.
 */
 
-static int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
-		       char *tapeBsize, char *idxFile, char **argv, int argc)
+static int crsp_create(const char *tapeDrive, const char *tapeFile,
+		const char *tapeOff, const char *tapeBsize,
+		const char *idxFile, const char **argv, int argc)
 {
   DOASSERT(argc % 2 == 0, "Invalid parameters");
   int num = argc / 2;
@@ -181,7 +191,11 @@ static int crsp_create(char *tapeDrive, char *tapeFile, char *tapeOff,
    This function interfaces the CRSP extraction routines to TCL/TK.
 */
 
-int crsp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
+int crsp_extract(ClientData cd, Tcl_Interp *interp, int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+		const
+#endif
+		char **argv)
 {
   // Allow other functions to UPDATE_TCL
 
@@ -191,11 +205,11 @@ int crsp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   // Get parameter values from TCL script
 
-  char *tapeDrive = argv[1];
-  char *tapeFile = argv[2];
-  char *tapeOff = argv[3];
-  char *tapeBsize = argv[4];
-  char *idxFile = argv[5];
+  const char *tapeDrive = argv[1];
+  const char *tapeFile = argv[2];
+  const char *tapeOff = argv[3];
+  const char *tapeBsize = argv[4];
+  const char *idxFile = argv[5];
 
   printf("Reading from %s:%s:%s (%s)\n",
 	 tapeDrive, tapeFile, tapeOff, tapeBsize);
@@ -203,5 +217,8 @@ int crsp_extract(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
   // pass pairs of <CUSIP, cachefilename> to extraction routine
 
   return crsp_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile,
+#if TCL_MAJOR_VERSION < 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <= 3)
+		     (const char **)
+#endif
 		     &argv[6], argc - 6);
 }

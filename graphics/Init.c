@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.69.10.2  2003/06/06 20:48:37  wenger
+  Implemented provision for automatic testing of DEVise, including
+  running Tcl test scripts within DEVise itself.
+
+  Revision 1.69.10.1  2003/05/13 18:05:59  wenger
+  Added command-line argument to disable external-process capability
+  (for security), defaults to being disabled in JavaScreen support;
+  a little fixing up of the external-process stuff.
+
+  Revision 1.69  2001/08/28 18:30:11  wenger
+  Added 'robustOpen' option (default is true) -- this allows a session
+  open to succeed even if there are unrecognized commands (useful for
+  opening a newer session file with an older version of DEVise); if a
+  session open fails, we now clean things up.
+
   Revision 1.68  2001/08/03 18:13:03  wenger
   Removed all OpenGL-related code.
 
@@ -389,6 +404,8 @@ Boolean Init::_doHangCheck = true;
 Boolean Init::_useJSCache = true;
 Boolean Init::_fontKludge = false;
 Boolean Init::_robustOpen = true;
+Boolean Init::_allowExtProc = true;
+const char *Init::_tclScript = NULL;
 
 Boolean Init::_quitOnDisconnect = false;
 int Init::_clientTimeout = 0;
@@ -465,6 +482,8 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-fontkludge 0|1: use SPARC/Solaris Xvfb font kludge or not\n");
   fprintf(stderr, "\t-robustOpen 0|1: ignore unrecognized commands when"
     "opening a session, or not\n");
+  fprintf(stderr, "\t-allowExtProc 0|1: allow external process or not\n");
+  fprintf(stderr, "\t-tclScript <file>: Tcl script to run\n");
 
   Exit::DoExit(1);
 }
@@ -954,6 +973,24 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_robustOpen = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "allowExtProc") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_allowExtProc = !(atoi(argv[i+1]) == 0);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "tclScript") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_tclScript = CopyString(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 

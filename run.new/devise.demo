@@ -7,11 +7,10 @@
 
 ############################################################
 
-limit coredumpsize 0
+# limit coredumpsize 0
 limit descriptors 256
 
-#TEMP -- get rid of hard-coded path eventually
-set devise_run = /p/devise/release/run
+set devise_run = `dirname $0`
 
 source $devise_run/dev_prog.std
 source $devise_run/dev_vis.demo

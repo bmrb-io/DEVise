@@ -1,179 +1,203 @@
 ETkCommands.o: ETkCommands.c TkWindowRep.h EmbeddedTk.h \
- /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/bits/types.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/stdio_lim.h \
- /usr/include/tcl.h /usr/X11R6/include/X11/X.h \
- /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h \
- /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h /usr/include/tk.h \
- /usr/include/assert.h ETkCommands.h
+ /usr/include/stdio.h /usr/include/iso/stdio_iso.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h \
+ /usr/include/sys/va_list.h /usr/include/stdio_tag.h \
+ /usr/include/stdio_impl.h /s/tcl/include/tcl.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stdarg.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/va-sparc.h \
+ /s/tcl/include/tclDecls.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xlib.h /usr/include/sys/types.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+ /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h \
+ /usr/include/iso/time_iso.h /usr/include/sys/time_impl.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/tcl/include/tkDecls.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../sparc-sun-solaris2.8/include/assert.h \
+ ETkCommands.h
 ETkCompDate.o: ETkCompDate.c ETkCompDate.h
-ETkPatron.o: ETkPatron.c /usr/include/stdio.h /usr/include/features.h \
- /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/bits/types.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/stdio_lim.h \
- /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h \
- /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/include/alloca.h /usr/include/string.h /usr/include/sys/socket.h \
- /usr/include/bits/socket.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/limits.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/syslimits.h \
- /usr/include/limits.h /usr/include/bits/posix1_lim.h \
- /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
- /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h \
- /usr/include/asm/socket.h /usr/include/asm/sockios.h \
- /usr/include/netinet/in.h /usr/include/stdint.h \
- /usr/include/bits/wordsize.h /usr/include/bits/in.h \
- /usr/include/bits/byteswap.h /usr/include/arpa/inet.h \
- /usr/include/netdb.h /usr/include/rpc/netdb.h /usr/include/unistd.h \
- /usr/include/bits/posix_opt.h /usr/include/bits/confname.h \
- /usr/include/getopt.h /usr/include/errno.h /usr/include/bits/errno.h \
- /usr/include/linux/errno.h /usr/include/asm/errno.h ETkPatron.h
+ETkPatron.o: ETkPatron.c /usr/include/stdio.h \
+ /usr/include/iso/stdio_iso.h /usr/include/sys/feature_tests.h \
+ /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h \
+ /usr/include/stdio_tag.h /usr/include/stdio_impl.h \
+ /usr/include/stdlib.h /usr/include/iso/stdlib_iso.h \
+ /usr/include/string.h /usr/include/iso/string_iso.h \
+ /usr/include/sys/types.h /usr/include/sys/machtypes.h \
+ /usr/include/sys/int_types.h /usr/include/sys/select.h \
+ /usr/include/sys/time.h /usr/include/time.h \
+ /usr/include/iso/time_iso.h /usr/include/sys/time_impl.h \
+ /usr/include/sys/socket.h /usr/include/sys/uio.h \
+ /usr/include/sys/netconfig.h /usr/include/netinet/in.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/sys/stream.h \
+ /usr/include/sys/stream.h /usr/include/sys/vnode.h \
+ /usr/include/sys/t_lock.h /usr/include/sys/machlock.h \
+ /usr/include/sys/param.h /usr/include/sys/unistd.h \
+ /usr/include/sys/mutex.h /usr/include/sys/rwlock.h \
+ /usr/include/sys/semaphore.h /usr/include/sys/condvar.h \
+ /usr/include/sys/rwstlock.h /usr/include/sys/ksynch.h \
+ /usr/include/sys/cred.h /usr/include/sys/resource.h \
+ /usr/include/vm/seg_enum.h /usr/include/sys/poll.h \
+ /usr/include/sys/strmdep.h /usr/include/sys/model.h \
+ /usr/include/sys/strft.h /usr/include/sys/byteorder.h \
+ /usr/include/sys/un.h /usr/include/net/if_dl.h \
+ /usr/include/arpa/inet.h /usr/include/netdb.h /usr/include/unistd.h \
+ /usr/include/errno.h /usr/include/sys/errno.h ETkPatron.h
 ETk_DeviseClient.o: ETk_DeviseClient.c ETk_DeviseClient.h EmbeddedTk.h \
- /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/bits/types.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/stdio_lim.h \
- /usr/include/tcl.h /usr/X11R6/include/X11/X.h \
- /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h \
- /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h /usr/include/sys/time.h \
- /usr/include/bits/time.h
+ /usr/include/stdio.h /usr/include/iso/stdio_iso.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h \
+ /usr/include/sys/va_list.h /usr/include/stdio_tag.h \
+ /usr/include/stdio_impl.h /s/tcl/include/tcl.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stdarg.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/va-sparc.h \
+ /s/tcl/include/tclDecls.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xlib.h /usr/include/sys/types.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+ /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h \
+ /usr/include/iso/time_iso.h /usr/include/sys/time_impl.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h
 EmbeddedTk.o: EmbeddedTk.c EmbeddedTk.h /usr/include/stdio.h \
- /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/bits/types.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/stdio_lim.h \
- /usr/include/tcl.h /usr/X11R6/include/X11/X.h \
- /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h \
- /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h TkWindowRep.h /usr/include/tk.h \
- /usr/include/assert.h /usr/include/errno.h /usr/include/bits/errno.h \
- /usr/include/linux/errno.h /usr/include/asm/errno.h \
- /usr/include/string.h
+ /usr/include/iso/stdio_iso.h /usr/include/sys/feature_tests.h \
+ /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h \
+ /usr/include/stdio_tag.h /usr/include/stdio_impl.h \
+ /s/tcl/include/tcl.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stdarg.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/va-sparc.h \
+ /s/tcl/include/tclDecls.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xlib.h /usr/include/sys/types.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+ /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h \
+ /usr/include/iso/time_iso.h /usr/include/sys/time_impl.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h TkWindowRep.h /s/tcl/include/tk.h \
+ /s/tcl/include/tkDecls.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../sparc-sun-solaris2.8/include/assert.h \
+ /usr/include/errno.h /usr/include/sys/errno.h /usr/include/string.h \
+ /usr/include/iso/string_iso.h
 NetscapeRemote.o: NetscapeRemote.c /usr/include/stdio.h \
- /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/bits/types.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/stdio_lim.h \
- /usr/include/stdlib.h /usr/include/sys/types.h /usr/include/time.h \
- /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/include/alloca.h /usr/include/unistd.h \
- /usr/include/bits/posix_opt.h /usr/include/bits/confname.h \
- /usr/include/getopt.h /usr/include/string.h /usr/include/assert.h \
- /usr/X11R6/include/X11/Xlib.h /usr/X11R6/include/X11/X.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/X11R6/include/X11/Xatom.h /usr/X11R6/include/X11/Xmu/WinUtil.h \
- /usr/X11R6/include/X11/Xutil.h vroot.h BrowserCommands.h \
- /usr/include/tcl.h
+ /usr/include/iso/stdio_iso.h /usr/include/sys/feature_tests.h \
+ /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h \
+ /usr/include/stdio_tag.h /usr/include/stdio_impl.h \
+ /usr/include/stdlib.h /usr/include/iso/stdlib_iso.h \
+ /usr/include/unistd.h /usr/include/sys/types.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+ /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h \
+ /usr/include/iso/time_iso.h /usr/include/sys/time_impl.h \
+ /usr/include/sys/unistd.h /usr/include/string.h \
+ /usr/include/iso/string_iso.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../sparc-sun-solaris2.8/include/assert.h \
+ /s/X11/include/X11/Xlib.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stddef.h \
+ /s/X11/include/X11/Xatom.h /s/X11/include/X11/Xmu/WinUtil.h \
+ /s/X11/include/X11/Xutil.h vroot.h BrowserCommands.h \
+ /s/tcl/include/tcl.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stdarg.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/va-sparc.h \
+ /s/tcl/include/tclDecls.h
 SampleClient.o: SampleClient.c \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/../../../../include/g++-3/iostream.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/../../../../include/g++-3/streambuf.h \
- /usr/include/libio.h /usr/include/_G_config.h \
- /usr/include/bits/types.h /usr/include/features.h \
- /usr/include/sys/cdefs.h /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/ctype.h /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/unistd.h /usr/include/bits/posix_opt.h \
- /usr/include/bits/confname.h /usr/include/getopt.h \
- /usr/include/string.h EmbeddedTk.h /usr/include/stdio.h \
- /usr/include/bits/stdio_lim.h /usr/include/tcl.h \
- /usr/X11R6/include/X11/X.h /usr/X11R6/include/X11/Xlib.h \
- /usr/include/sys/types.h /usr/include/time.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h ETkPatron.h ETkCompDate.h
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../include/g++-3/iostream.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../include/g++-3/streambuf.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../include/g++-3/libio.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../sparc-sun-solaris2.8/include/_G_config.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stddef.h \
+ /usr/include/ctype.h /usr/include/iso/ctype_iso.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h \
+ /usr/include/unistd.h /usr/include/sys/types.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+ /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h \
+ /usr/include/iso/time_iso.h /usr/include/sys/time_impl.h \
+ /usr/include/sys/unistd.h /usr/include/string.h \
+ /usr/include/iso/string_iso.h EmbeddedTk.h /usr/include/stdio.h \
+ /usr/include/iso/stdio_iso.h /usr/include/sys/va_list.h \
+ /usr/include/stdio_tag.h /usr/include/stdio_impl.h \
+ /s/tcl/include/tcl.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stdarg.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/va-sparc.h \
+ /s/tcl/include/tclDecls.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xlib.h /s/X11/include/X11/Xfuncproto.h \
+ /s/X11/include/X11/Xosdefs.h /s/X11/include/X11/Xutil.h \
+ /s/X11/include/X11/keysym.h /s/X11/include/X11/keysymdef.h \
+ ETkPatron.h ETkCompDate.h
 TkWindowRep.o: TkWindowRep.c TkWindowRep.h EmbeddedTk.h \
- /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/bits/types.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/stdio_lim.h \
- /usr/include/tcl.h /usr/X11R6/include/X11/X.h \
- /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h \
- /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h /usr/include/tk.h \
- /usr/include/assert.h ETkCommands.h BrowserCommands.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/../../../../include/g++-3/iostream.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/../../../../include/g++-3/streambuf.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/../../../../include/g++-3/strstream.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/../../../../include/g++-3/strfile.h \
- /usr/include/stdlib.h /usr/include/alloca.h /usr/include/unistd.h \
- /usr/include/bits/posix_opt.h /usr/include/bits/confname.h \
- /usr/include/getopt.h /usr/include/string.h
-ZooCommands.o: ZooCommands.c ZooCommands.h /usr/include/tcl.h \
- /usr/include/stdio.h /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/bits/types.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/stdio_lim.h \
- /usr/include/string.h
+ /usr/include/stdio.h /usr/include/iso/stdio_iso.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h \
+ /usr/include/sys/va_list.h /usr/include/stdio_tag.h \
+ /usr/include/stdio_impl.h /s/tcl/include/tcl.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stdarg.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/va-sparc.h \
+ /s/tcl/include/tclDecls.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xlib.h /usr/include/sys/types.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+ /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h \
+ /usr/include/iso/time_iso.h /usr/include/sys/time_impl.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/tcl/include/tkDecls.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../sparc-sun-solaris2.8/include/assert.h \
+ ETkCommands.h BrowserCommands.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../include/g++-3/iostream.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../include/g++-3/streambuf.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../include/g++-3/libio.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../sparc-sun-solaris2.8/include/_G_config.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../include/g++-3/strstream.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../include/g++-3/strfile.h \
+ /usr/include/stdlib.h /usr/include/iso/stdlib_iso.h \
+ /usr/include/unistd.h /usr/include/sys/unistd.h /usr/include/string.h \
+ /usr/include/iso/string_iso.h
+ZooCommands.o: ZooCommands.c ZooCommands.h /s/tcl/include/tcl.h \
+ /usr/include/stdio.h /usr/include/iso/stdio_iso.h \
+ /usr/include/sys/feature_tests.h /usr/include/sys/isa_defs.h \
+ /usr/include/sys/va_list.h /usr/include/stdio_tag.h \
+ /usr/include/stdio_impl.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stdarg.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/va-sparc.h \
+ /s/tcl/include/tclDecls.h /usr/include/string.h \
+ /usr/include/iso/string_iso.h
 main.o: main.c TkWindowRep.h EmbeddedTk.h /usr/include/stdio.h \
- /usr/include/features.h /usr/include/sys/cdefs.h \
- /usr/include/gnu/stubs.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stddef.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/stdarg.h \
- /usr/include/bits/types.h /usr/include/libio.h \
- /usr/include/_G_config.h /usr/include/bits/stdio_lim.h \
- /usr/include/tcl.h /usr/X11R6/include/X11/X.h \
- /usr/X11R6/include/X11/Xlib.h /usr/include/sys/types.h \
- /usr/include/time.h /usr/include/endian.h /usr/include/bits/endian.h \
- /usr/include/sys/select.h /usr/include/bits/select.h \
- /usr/include/bits/sigset.h /usr/include/sys/sysmacros.h \
- /usr/X11R6/include/X11/Xfuncproto.h /usr/X11R6/include/X11/Xosdefs.h \
- /usr/X11R6/include/X11/Xutil.h /usr/X11R6/include/X11/keysym.h \
- /usr/X11R6/include/X11/keysymdef.h /usr/include/tk.h \
- /usr/include/assert.h ETkCompDate.h BrowserCommands.h \
- /usr/include/stdlib.h /usr/include/alloca.h /usr/include/fcntl.h \
- /usr/include/bits/fcntl.h /usr/include/unistd.h \
- /usr/include/bits/posix_opt.h /usr/include/bits/confname.h \
- /usr/include/getopt.h /usr/include/string.h /usr/include/errno.h \
- /usr/include/bits/errno.h /usr/include/linux/errno.h \
- /usr/include/asm/errno.h /usr/include/sys/socket.h \
- /usr/include/bits/socket.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/limits.h \
- /s/gcc-2.95.3/i386_rh62/lib/gcc-lib/i686-pc-linux-gnu/2.95.3/include/syslimits.h \
- /usr/include/limits.h /usr/include/bits/posix1_lim.h \
- /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
- /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h \
- /usr/include/asm/socket.h /usr/include/asm/sockios.h \
- /usr/include/netdb.h /usr/include/rpc/netdb.h \
- /usr/include/netinet/in.h /usr/include/stdint.h \
- /usr/include/bits/wordsize.h /usr/include/bits/in.h \
- /usr/include/bits/byteswap.h /usr/include/arpa/inet.h
+ /usr/include/iso/stdio_iso.h /usr/include/sys/feature_tests.h \
+ /usr/include/sys/isa_defs.h /usr/include/sys/va_list.h \
+ /usr/include/stdio_tag.h /usr/include/stdio_impl.h \
+ /s/tcl/include/tcl.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stdarg.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/va-sparc.h \
+ /s/tcl/include/tclDecls.h /s/X11/include/X11/X.h \
+ /s/X11/include/X11/Xlib.h /usr/include/sys/types.h \
+ /usr/include/sys/machtypes.h /usr/include/sys/int_types.h \
+ /usr/include/sys/select.h /usr/include/sys/time.h /usr/include/time.h \
+ /usr/include/iso/time_iso.h /usr/include/sys/time_impl.h \
+ /s/X11/include/X11/Xfuncproto.h /s/X11/include/X11/Xosdefs.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/stddef.h \
+ /s/X11/include/X11/Xutil.h /s/X11/include/X11/keysym.h \
+ /s/X11/include/X11/keysymdef.h /s/tcl/include/tk.h \
+ /s/tcl/include/tkDecls.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/../../../../sparc-sun-solaris2.8/include/assert.h \
+ ETkCompDate.h BrowserCommands.h /usr/include/stdlib.h \
+ /usr/include/iso/stdlib_iso.h /usr/include/fcntl.h \
+ /usr/include/sys/fcntl.h /usr/include/unistd.h \
+ /usr/include/sys/unistd.h /usr/include/string.h \
+ /usr/include/iso/string_iso.h /usr/include/errno.h \
+ /usr/include/sys/errno.h /usr/include/sys/socket.h \
+ /usr/include/sys/uio.h /usr/include/sys/netconfig.h \
+ /usr/include/netinet/in.h \
+ /s/gcc-2.95.3/sun4x_58/lib/gcc-lib/sparc-sun-solaris2.8/2.95.3/include/sys/stream.h \
+ /usr/include/sys/stream.h /usr/include/sys/vnode.h \
+ /usr/include/sys/t_lock.h /usr/include/sys/machlock.h \
+ /usr/include/sys/param.h /usr/include/sys/mutex.h \
+ /usr/include/sys/rwlock.h /usr/include/sys/semaphore.h \
+ /usr/include/sys/condvar.h /usr/include/sys/rwstlock.h \
+ /usr/include/sys/ksynch.h /usr/include/sys/cred.h \
+ /usr/include/sys/resource.h /usr/include/vm/seg_enum.h \
+ /usr/include/sys/poll.h /usr/include/sys/strmdep.h \
+ /usr/include/sys/model.h /usr/include/sys/strft.h \
+ /usr/include/sys/byteorder.h /usr/include/sys/un.h \
+ /usr/include/net/if_dl.h /usr/include/netdb.h \
+ /usr/include/arpa/inet.h

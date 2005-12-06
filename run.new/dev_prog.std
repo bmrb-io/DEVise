@@ -1,12 +1,12 @@
 ############################################################
 
 # Define the environment variables needed to run the "standard"
-# version of DEVise (released in /p/devise).
+# version of DEVise.
 
 # $Id$
 
 ############################################################
 
-setenv DEVISE_PROG    /p/devise/release
+setenv DEVISE_PROG    `dirname $0`/..
 
-source $devise_run/dev_prog.gen
+source $DEVISE_PROG/run/dev_prog.gen

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-2001
+  (c) Copyright 1997-2004
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,25 @@
   $Id$
 
   $Log$
+  Revision 1.8  2002/06/17 19:41:59  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.7.10.3  2004/08/23 22:53:39  wenger
+  Fixed bug 890 (problems with drill-down dialog caused by
+  some color palettes not having a pure white color).
+
+  Revision 1.7.10.2  2003/12/19 18:12:49  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.7.10.1.6.1  2003/12/17 00:18:40  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.7.10.1.4.1  2003/04/18 16:11:00  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
   Revision 1.7.10.1  2002/05/16 17:16:11  wenger
   Changed default foreground color to black.
 
@@ -63,7 +82,7 @@
 // Libraries
 //******************************************************************************
 
-#include <iostream.h>
+#include <iostream>
 
 #include "ColorManager.h"
 #include "XColorManager.h"
@@ -81,6 +100,8 @@
 static const ColorID	gNumCoreColors	= 6;
 static const ColorID	gNumDefColors	= 38;
 
+// WARNING!!  Do not change these colors without making corresponding
+// changes to SetupColors().
 static const string		gCoreColors[gNumCoreColors] =
 {
 	"#000000000000 black",
@@ -199,6 +220,11 @@ bool	InitColor(Display * d, int depth, int nmap, Colormap *map)
 		palette->NewColor(pc);
 	}
 
+	if (palette->EnsureBlackWhite()) {
+		cerr << "Core palette MUST contain black and white\n";
+		return false;
+	}
+
 	if (!AllocPalette(pid)) {
 		cerr << "AllocPalette() failed at " << __FILE__ << ": " <<
 		  __LINE__ << "\n";
@@ -218,6 +244,11 @@ bool	InitColor(Display * d, int depth, int nmap, Colormap *map)
 
 		pc.FromString(gDefColors[i]);
 		palette->NewColor(pc);
+	}
+
+	if (palette->EnsureBlackWhite()) {
+		cerr << "Default palette MUST contain black and white\n";
+		return false;
 	}
 
 	if (!AllocPalette(pid)) {
@@ -259,6 +290,9 @@ void	SetupColors(void)
 
 	RGB			rgb;
 	ColorID		cid;
+
+	// WARNING!!  Indices passed to gCorePalette->GetColor() rely on
+	// corresponding values in gCoreColors.
 
 	// Alloc black
 	rgb = gCorePalette->GetColor(0)->GetColor();
@@ -351,15 +385,17 @@ PColorID	GetPColorID(GlobalColor color)
 	RGB			rgb;
 	PColorID	pcid;
 
-	if (gColorManager == NULL)
+	if (gColorManager == NULL) {
 		return nullPColorID;
+	}
 
 	gColorManager->GetRGB(cid, rgb);
 
-	if (PM_GetPColorID(rgb, pcid))
+	if (PM_GetPColorID(rgb, pcid)) {
 		return pcid;
-	else
+	} else {
 		return nullPColorID;
+    }
 }
 
 void		SetPColorID(GlobalColor color, PColorID pcid)
@@ -457,17 +493,7 @@ RGBList		PM_GetRGBList(void)
 bool		PM_GetPColorID(const RGB& rgb, PColorID& pcid)
 {
 	Trace("PM_GetPColorID()");
-
-	for (PColorID i=0; i<gCurrentPalette->GetSize(); i++)
-	{
-		if (gCurrentPalette->GetColor(i)->GetColor() == rgb)
-		{
-			pcid = i;
-			return true;
-		}
-	}
-
-	return false;
+	return gCurrentPalette->GetPColorID(rgb, pcid);
 }
 
 ColorID		PM_GetColorID(PColorID pcid)
@@ -552,6 +578,7 @@ PaletteID	PM_NewPalette(const string& s)
 		gPaletteManager->DeletePalette(pid);
 		return nullPaletteID;
 	}
+	palette->EnsureBlackWhite();
 
 	return pid;
 }

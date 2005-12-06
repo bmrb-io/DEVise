@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.2  2003/01/13 19:25:22  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.1.2.3  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
+  Revision 1.1.2.2  2003/09/08 20:53:20  wenger
+  Fixed a bug in that the intersection of multiple GAttr links was
+  not being computed correctly.
+
   Revision 1.1.2.1  2002/09/05 19:14:03  wenger
   Implemented GData attribute value links (but not GUI for creating
   them).
@@ -331,6 +341,10 @@ GAttrLink::TestRecord(TDataMap *tdMap, const char *gDataRec)
     }
   }
 
+#if (DEBUG >= 3)
+  printf("  GAttrLink()::TestRecord() returns %d\n", result);
+#endif
+
   return result;
 }
 
@@ -591,7 +605,7 @@ GAttrLink::GetAttrValue(TDataMap *tdMap, const char *gDataRec,
  * Hash function on Coord value.
  */
 int
-GAttrLink::CoordHash(Coord &value, int numBuckets)
+GAttrLink::CoordHash(const Coord &value, int numBuckets)
 {
   union {
     Coord in;

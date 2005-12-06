@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.2.14.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.2  2000/01/13 23:07:03  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.1  1996/07/01 19:21:26  jussi
   Initial revision.
 */
@@ -35,7 +41,7 @@ public:
     DataSourceFileDesc(int fd, const char *label);
     virtual ~DataSourceFileDesc();
 
-    virtual char *objectType() {return "DataSourceFileDesc";};
+    virtual const char *objectType() {return "DataSourceFileDesc";};
 
     virtual DevStatus Open(const char *mode);
     virtual Boolean IsOk();

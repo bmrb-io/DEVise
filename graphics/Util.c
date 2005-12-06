@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,54 @@
   $Id$
 
   $Log$
+  Revision 1.43.10.8  2005/09/28 17:14:42  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.43.10.7  2005/04/12 18:24:12  wenger
+  Better error messages in CheckAndMakeDirectory(); provision
+  in Exit::DoExit() to avoid recursion.
+
+  Revision 1.43.10.6  2005/01/03 21:08:22  wenger
+  Fixed bug 911 (DEVise can't open DOS-format session files).
+
+  Revision 1.43.10.5  2004/08/25 17:30:18  wenger
+  We now print TCL_LIBRARY and TK_LIBRARY environment variable
+  values when Tcl or Tk initialization fails.
+
+  Revision 1.43.10.4  2003/12/19 18:07:29  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.43.10.3.2.2  2003/12/17 17:13:00  wenger
+  Got things to compile and run RH 7.2 and Solaris 2.8 (using gcc 2.95.3
+  for Solaris because of dynamic library problems).
+
+  Revision 1.43.10.3.2.1  2003/12/17 00:17:59  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.43.10.3  2003/11/05 19:09:10  wenger
+  Changed all sprintfs in Session.c to snprintfs.
+
+  Revision 1.43.10.2  2003/04/24 17:31:08  wenger
+  Fixed bug in drill-down code; axis date formats now also apply to
+  drill-down coordinates; we now check for buffer overruns in
+  DateString().
+
+  Revision 1.43.10.1.2.1  2003/12/16 16:08:16  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.43.10.1  2003/04/17 17:59:18  wenger
+  Now compiles with no warnings with gcc 2.95, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.43  2001/05/27 18:51:08  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.42  2001/05/18 19:25:22  wenger
   Implemented the DEVise end of 3D drill-down; changed DEVise version to
   1.7.3.
@@ -349,8 +397,9 @@ RemoveEnvFromPath(const char *path)
 	}
       } else {
 	char errBuf[1024];
-	sprintf(errBuf, "Error getting value for environment variable %s",
-	    envVar);
+	int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+	    "Error getting value for environment variable %s", envVar);
+	(void) checkAndTermBuf2(errBuf, formatted);
         reportErrSys(errBuf);
       }
     } else {
@@ -373,8 +422,10 @@ AddEnvToPath(const char *envVar, const char *path)
   const char *envVal = getenv(envVar);
   if (!envVal) {
     char errBuf[1024];
-    sprintf(errBuf, "Error getting value for environment variable %s",
-        envVar);
+    int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+        "Error getting value for environment variable %s", envVar);
+    (void) checkAndTermBuf2(errBuf, formatted);
+    reportErrSys(errBuf);
   }
 
   char *match = NULL;
@@ -407,6 +458,14 @@ AddEnvToPath(const char *envVar, const char *path)
   return result;
 }
 
+void
+PrintEnv(FILE *file, const char *envVar)
+{
+  const char *value = getenv(envVar);
+  if (!value) value = "(NULL)";
+  fprintf(file, "Environment variable %s: <%s>\n", envVar, value);
+}
+
 // Note: ParseFloatDate() depends on this format.
 static const char *_defaultDateFormat = "%b %d %Y %T";
 
@@ -421,24 +480,34 @@ const char *DateString(time_t tm, const char *format)
 #if 0
   if (tm < 0) {
     char errBuf[1024];
-    sprintf(errBuf, "Illegal time value %ld\n", tm);
+    int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+        "Illegal time value %ld\n", tm);
+    (void) checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
   }
 #endif
 
-  static char dateBuf[32];
+  const int bufLen = 32;
+  static char dateBuf[bufLen];
+
+  char *result = dateBuf;
 
   if (format == NULL || strlen(format) == 0) format = _defaultDateFormat;
 
   // Note: second arg. of cftime() should be declared const in system header
   // files.
-#if defined(LINUX)
-  strftime(dateBuf, 32, format, localtime(&tm));
+#if defined(LINUX) || defined(SOLARIS)
+  int count = strftime(dateBuf, bufLen, format, localtime(&tm));
 #else
-  cftime(dateBuf, (char *)format, &tm);
+  int count = cftime(dateBuf, (char *)format, &tm);
 #endif
 
-  return dateBuf;
+  if (count == 0 || count > bufLen) {
+    fprintf(stderr, "Date buffer overflow!!\n");
+    result = "buffer overflow";
+  }
+
+  return result;
 }
 
 void ClearDir(char *dir)
@@ -462,8 +531,10 @@ void ClearDir(char *dir)
 #endif
       if (strcmp(realdp->d_name,".") != 0 &&
 	  strcmp(realdp->d_name,"..") != 0 ){
-	char buf[512];
-	sprintf(buf,"%s/%s",dir,realdp->d_name);
+	char buf[MAXPATHLEN];
+	int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+	    "%s/%s", dir, realdp->d_name);
+	(void) checkAndTermBuf2(buf, formatted);
 	/*
 	   printf("unlinking %s\n", buf);
 	*/
@@ -477,27 +548,41 @@ void ClearDir(char *dir)
 /* Check if directory exists. Make directory if not already exists
    Clear directory if clear == true*/
 
-void CheckAndMakeDirectory(char *dir, int clear )
+void CheckAndMakeDirectory(char *dir, Boolean clear, Boolean errorIsFatal)
 {
+  const char *fatalMsg = "";
+  if (errorIsFatal) fatalMsg = "Fatal error: ";
+
   struct stat sbuf;
-  int ret = stat(dir,&sbuf);
-  if (ret >=  0 ) {
+  int ret = stat(dir, &sbuf);
+  if (ret >=  0) {
+	/* path exists... */
     if (!(sbuf.st_mode & S_IFDIR)){
-      fprintf(stderr,"Init:: %s not a directory\n", dir);
-      reportErrNosys("Fatal error");//TEMP -- replace with better message
-      Exit::DoExit(1);
-    }
-    if (clear){
-      ClearDir(dir);
-    }
+	  /* ...but not a directory. */
+	  char errBuf[1024];
+	  int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+	  		"%s%s is not a directory", fatalMsg, dir);
+	  (void) checkAndTermBuf2(errBuf, formatted);
+	  reportErrNosys(errBuf);
+      if (errorIsFatal) Exit::DoExit(1);
+    } else {
+	  /* ...and is a directory; clear it. */
+      if (clear) {
+        ClearDir(dir);
+      }
+	}
   } else {
-    /* make new directory */
-    int code = mkdir(dir,0777);
+    /* path does not exist; make new directory */
+    /* note: it would be really nice if this did the equivalent of
+     * 'mkdir -p' on the command line */
+    int code = mkdir(dir, 0777);
     if (code < 0 ){
-      printf("Init::can't make directory %s\n",dir);
-      perror("");
-      reportErrNosys("Fatal error");//TEMP -- replace with better message
-      Exit::DoExit(1);
+	  char errBuf[1024];
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	  		"%sCan't create directory %s", fatalMsg, dir);
+	  (void) checkAndTermBuf2(errBuf, formatted);
+	  reportErrSys(errBuf);
+      if (errorIsFatal) Exit::DoExit(1);
     }
   }
 }
@@ -524,9 +609,11 @@ void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
     if (((int)stats.STAT_BAVAIL) < minBlocksFree)
     {
       char errBuf[1024];
-      sprintf(errBuf, "%s directory (%s) has less than %d bytes free\n",
-	envVar, dirname, exitSize);
-      reportErrNosys("Fatal error");//TEMP -- replace with better message
+      int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+          "Fatal error: %s directory (%s) has less than %d bytes free\n",
+	  envVar, dirname, exitSize);
+      (void) checkAndTermBuf2(errBuf, formatted);
+      reportErrNosys(errBuf);
       Exit::DoAbort(errBuf, __FILE__, __LINE__);
     }
     else if (((int)stats.STAT_BAVAIL) < warnBlocksFree)
@@ -644,11 +731,36 @@ nice_strncpy(char *dest, const char *src, size_t destSize)
 
     if (src[index] != '\0') {
       reportErrNosys("Dest buffer too short");
-      status += StatusWarn;
+      status += StatusFailed;
     }
   }
 
   return status;
+}
+
+DevStatus nice_strncat(char *dest, const char *src, size_t destSize)
+{
+  DevStatus result(StatusOk);
+
+  if (dest == NULL) {
+    reportErrNosys("NULL dest buffer");
+    result += StatusFailed;
+  } else {
+    int len = strlen(dest);
+    int newSize = destSize - len;
+    result += nice_strncpy(&dest[len], src, newSize);
+  }
+
+  return result;
+}
+
+void
+dos2unix(char *buf)
+{
+  int last = strlen(buf) - 1;
+  if (buf[last] == '\r') {
+    buf[last] = '\0';
+  }
 }
 
 void
@@ -722,11 +834,11 @@ CheckAndTermBuf(char buf[], int bufSize, int formatted, const char *file,
 
     DevStatus result(StatusOk);
 
-    if (formatted >= bufSize) {
+    if (formatted >= bufSize || formatted < 0) {
 	DevError::ReportError("Warning: buffer is too short", file, line,
 	  devNoSyserr);
 
-	result += StatusWarn;
+	result += StatusFailed;
 
 	if (bufSize > 0) {
 

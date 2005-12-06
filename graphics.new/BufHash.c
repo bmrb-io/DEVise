@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.46.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  1996/01/12 15:15:18  jussi
+  Replaced libc.h with stdlib.h. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:14:06  jussi
   Added CVS header.
 */
@@ -116,7 +122,7 @@ void BufHash::Print()
   for(int i = 0;i < HASH_TABLE_SIZE; i++) {
     for(BufPage *entry = _hashTable[i]; entry != NULL;
 	entry = entry->nextHash) {
-      printf("%x\t\t%x\t\t%d\n", entry,
+      printf("%p\t\t%p\t\t%d\n", entry,
 	     entry->GetDiskFile(), entry->PageNum());
     }
   }

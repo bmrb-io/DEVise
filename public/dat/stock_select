@@ -1,0 +1,9 @@
+# Company	Parameter	Data source	Variable (note $)	Title
+Sun Microsystems	Price	SUN_Stock	$Close	Sun Microsystems Price
+Sun Microsystems	Volume	SUN_Stock	$Volume	Sun Microsystems Volume
+Digital Equipment	Price	DEC_Stock	$Close	DEC Price
+Digital Equipment	Volume	DEC_Stock	$Volume	DEC Volume
+Hewlett-Packard		Price	HWP_Stock	$Close	HP Price
+Hewlett-Packard		Volume	HWP_Stock	$Volume	HP Volume
+IBM			Price	IBM_Stock	$Close	IBM Price
+IBM			Volume	IBM_Stock	$Volume	IBM Volume

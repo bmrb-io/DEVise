@@ -4,10 +4,11 @@
 
 # Copy dynamic libraries for Tao Linux 1.0.
 
-if (!-e dyn_lib) then
+if (! -e dyn_lib) then
   mkdir dyn_lib
 endif
 
+# On trigger, 2005-10-20.
 cp /usr/lib/libtk8.3.so dyn_lib
 cp /usr/lib/libtcl8.3.so dyn_lib
 cp /usr/X11R6/lib/libX11.so.6 dyn_lib

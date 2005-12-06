@@ -1,0 +1,15 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+# Note: specific port number must NOT be specified in this script.
+
+# Run the JS client from a jar file.
+
+############################################################
+
+setenv CLASSPATH ./js.jar
+set javaexec = `cat bin2/java`
+$javaexec JavaScreen.js -cgiurl/cgi-bin/js.cgi $*

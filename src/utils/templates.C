@@ -61,7 +61,7 @@
 #include "Color.h"
 #include "../ColorManager.h"//TEMPTEMP -- this should be private to color
 
-#include <stl.h>
+#include <stl.h>//TEMPTEMPBASSLET -- do we need this??
 #include <string>
 
 //******************************************************************************
@@ -82,7 +82,7 @@ template class HashTable<int, BasicStats*>;
 template class HashTable<int, int>;
 
 // graphics.new/PointStorage.C
-#include "PointStorage.h"
+// #include "PointStorage.h"
 template class HashTable<RecId, PointStorage::PointRec>;
 
 // graphics.new/StringStorage.C

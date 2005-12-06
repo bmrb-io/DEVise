@@ -62,6 +62,9 @@ if { [info exists env(DEVISE_PALETTE)] } {
 }
 set curPaletteDir $paletteDir
 
+# Normal, color print, or b/w print.
+set displayColorMode 0
+
 ##******************************************************************************
 ## Methods (Initialization)
 ##******************************************************************************
@@ -94,6 +97,8 @@ proc InitColorMenu { m } {
 	menubutton $m.color -text Color -underline 0 \
 			-menu $m.color.menu -state normal
 
+    set displayColorMode [DEVise getDisplayMode]
+
 	menu $m.color.menu -tearoff 0
 
 	$m.color.menu add command -label "Global Foreground..." -state normal \
@@ -116,6 +121,21 @@ proc InitColorMenu { m } {
 	$m.color.menu add separator
 	$m.color.menu add command -label "Palette..." -state normal \
 			-command DoPaletteDialog
+	$m.color.menu add separator
+	$m.color.menu add cascade -label "Display Mode" \
+		-command {puts "DIAG Display Mode selected"} \
+		-menu $m.color.menu.dmode
+
+	# Menu for selecting display color mode.  We have radiobuttons here
+	# instead of just plan command buttons so we can see what mode we're
+	# currently in.
+	menu $m.color.menu.dmode -tearoff 0
+	$m.color.menu.dmode add radiobutton -label "Normal/Display" \
+		-variable displayColorMode -value 0 -command {DEVise setDisplayMode 0}
+	$m.color.menu.dmode add radiobutton -label "Color Print" \
+		-variable displayColorMode -value 1 -command {DEVise setDisplayMode 1}
+	$m.color.menu.dmode add radiobutton -label "B/w Print" \
+		-variable displayColorMode -value 2 -command {DEVise setDisplayMode 2}
 }
 
 ##******************************************************************************

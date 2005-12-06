@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.21.14.1  2003/11/05 17:01:53  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.21  2000/03/14 17:05:35  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.20  2000/02/16 18:51:47  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -130,8 +138,10 @@
 // available, and the easiest way to do this is to still have both
 // ViewXInfo and ViewScatterInfo.  RKW Mar. 5, 1998.
 
-static char buf[7][64];
-static const char *args[7];
+static const int MAX_ARGC = 11;
+static const int BUFLEN = 64;
+static char buf[MAX_ARGC][BUFLEN];
+static const char *args[MAX_ARGC];
 
 QueryProc *GetQueryProc()
 {
@@ -145,28 +155,55 @@ QueryProc *GetQueryProc()
 void SetViewColors(ViewGraph *view, int argc, const char * const *argv)
 {
   // Note: the only vintage of session files for which this will end up
-  // setting anything is 1.5 session files saved since this fix was put
-  // in place.  Pre-fix 1.5 session files have only 5 arguments; 1.3
+  // setting anything is 1.5 or later session files saved since this fix was
+  // put in place.  Pre-fix 1.5 session files have only 5 arguments; 1.3
   // and 1.4 session files have color names instead of numbers, so the
   // sscanf's will fail; and there is supposedly some kind of "old"
-  // session fil that had 6 arguments because it specified background
+  // session file that had 6 arguments because it specified background
   // color but not foreground color; however we don't have to deal with
   // that because the color would be specified in terms of name anyhow.
 
   PColorID foreColor = GetPColorID(defForeColor);
   PColorID backColor = GetPColorID(defBackColor);
 
-  if (argc == 7) {
+  if (argc >= 7) {
+    // Normal mode foreground.
     if (sscanf(argv[5], "%ld", &foreColor) == 0) {
       foreColor = GetPColorID(defForeColor);
     }
 
+    // Normal mode background.
     if (sscanf(argv[6], "%ld", &backColor) == 0) {
       backColor = GetPColorID(defBackColor);
     }
   }
   
-  view->SetColors(foreColor, backColor);
+  view->SetForeground(foreColor, DisplayMode::ModeNormal);
+  view->SetBackground(backColor, DisplayMode::ModeNormal);
+
+  if (argc >= 11) {
+    PColorID color;
+
+    // Color print mode foreground.
+    if (sscanf(argv[7], "%ld", &color) == 1) {
+      view->SetForeground(color, DisplayMode::ModeColorPrint);
+    }
+
+    // Color print mode background.
+    if (sscanf(argv[8], "%ld", &color) == 1) {
+      view->SetBackground(color, DisplayMode::ModeColorPrint);
+    }
+
+    // Black/white print mode foreground.
+    if (sscanf(argv[9], "%ld", &color) == 1) {
+      view->SetForeground(color, DisplayMode::ModeBWPrint);
+    }
+
+    // Black/white print mode background.
+    if (sscanf(argv[10], "%ld", &color) == 1) {
+      view->SetBackground(color, DisplayMode::ModeBWPrint);
+    }
+  }
 }
 
 ViewClassInfo::ViewClassInfo()
@@ -197,63 +234,123 @@ void ViewClassInfo::ParamNames(int &argc, const char **&argv)
   const char **defaults;
   GetDefaultParams(numDefaults, defaults);
 
-  argc = 7;
+  argc = MAX_ARGC;
   argv = args;
 
-  for(int i = 0; i < argc; i++)
+  for(int i = 0; i < argc; i++) {
     args[i] = buf[i];
-
-  strcpy(buf[0], "name {foobar}");
-
-  if (numDefaults == 4) {
-    sprintf(buf[1], "xlow {%s}", defaults[0]);;
-    sprintf(buf[2], "xhigh {%s}", defaults[1]);
-    sprintf(buf[3], "ylow {%s}", defaults[2]);
-    sprintf(buf[4], "yhigh {%s}", defaults[3]);
-  } else {
-    strcpy(buf[1], "xlow -10.0");
-    strcpy(buf[2], "xhigh 10.0");
-    strcpy(buf[3], "ylow -10.0");
-    strcpy(buf[4], "yhigh 10.0");
   }
 
-  sprintf(buf[5], "fgcolor {%ld}", GetPColorID(defForeColor));
-  sprintf(buf[6], "bgcolor {%ld}", GetPColorID(defBackColor));
+  nice_strncpy(buf[0], "name {foobar}", BUFLEN);
+
+  int formatted;
+
+  if (numDefaults == 4) {
+    formatted = snprintf(buf[1], BUFLEN, "xlow {%s}", defaults[0]);
+    checkAndTermBuf(buf[1], BUFLEN, formatted);
+
+    formatted = snprintf(buf[2], BUFLEN, "xhigh {%s}", defaults[1]);
+    checkAndTermBuf(buf[2], BUFLEN, formatted);
+
+    formatted = snprintf(buf[3], BUFLEN, "ylow {%s}", defaults[2]);
+    checkAndTermBuf(buf[3], BUFLEN, formatted);
+
+    formatted = snprintf(buf[4], BUFLEN, "yhigh {%s}", defaults[3]);
+    checkAndTermBuf(buf[4], BUFLEN, formatted);
+  } else {
+    nice_strncpy(buf[1], "xlow -10.0", BUFLEN);
+    nice_strncpy(buf[2], "xhigh 10.0", BUFLEN);
+    nice_strncpy(buf[3], "ylow -10.0", BUFLEN);
+    nice_strncpy(buf[4], "yhigh 10.0", BUFLEN);
+  }
+
+  formatted = snprintf(buf[5], BUFLEN, "{fgcolor (normal)} {%ld}",
+      GetPColorID(defForeColor));
+  checkAndTermBuf(buf[5], BUFLEN, formatted);
+  formatted = snprintf(buf[6], BUFLEN, "{bgcolor (normal)} {%ld}",
+      GetPColorID(defBackColor));
+  checkAndTermBuf(buf[6], BUFLEN, formatted);
+
+  //TEMP -- defaults aren't correct here -- wenger 2003-11-03
+  formatted = snprintf(buf[7], BUFLEN, "{fgcolor (color print)} {%ld}",
+      GetPColorID(defForeColor));
+  checkAndTermBuf(buf[7], BUFLEN, formatted);
+  formatted = snprintf(buf[8], BUFLEN, "{bgcolor (color print)} {%ld}",
+      GetPColorID(defBackColor));
+  checkAndTermBuf(buf[8], BUFLEN, formatted);
+
+  //TEMP -- defaults aren't correct here -- wenger 2003-11-03
+  formatted = snprintf(buf[9], BUFLEN, "{fgcolor (b/w print)} {%ld}",
+      GetPColorID(defForeColor));
+  checkAndTermBuf(buf[9], BUFLEN, formatted);
+  formatted = snprintf(buf[10], BUFLEN, "{bgcolor (b/w print)} {%ld}",
+      GetPColorID(defBackColor));
+  checkAndTermBuf(buf[10], BUFLEN, formatted);
 }
 
 void ViewClassInfo::CreateParams(int &argc, const char **&argv)
 {
-  argc = 7;
+  argc = MAX_ARGC;
   argv = args;
 
-  for(int i = 0; i < argc; i++)
+  for(int i = 0; i < argc; i++) {
     args[i] = buf[i];
+  }
 
-  strcpy(buf[0], _name);
+  nice_strncpy(buf[0], _name, BUFLEN);
 
   VisualFilter *filter = _view->GetVisualFilter();
+
+  int formatted;
   
   if (_view->GetXAxisAttrType() == DateAttr) {
-    sprintf(buf[1], "%s", DateString(filter->xLow));
-    sprintf(buf[2], "%s", DateString(filter->xHigh));
+    formatted = snprintf(buf[1], BUFLEN, "%s", DateString(filter->xLow));
+    checkAndTermBuf(buf[1], BUFLEN, formatted);
+    formatted = snprintf(buf[2], BUFLEN, "%s", DateString(filter->xHigh));
+    checkAndTermBuf(buf[2], BUFLEN, formatted);
   } else {
-    sprintf(buf[1], "%f", filter->xLow);;
-    sprintf(buf[2], "%f", filter->xHigh);
+    formatted = snprintf(buf[1], BUFLEN, "%f", filter->xLow);;
+    checkAndTermBuf(buf[1], BUFLEN, formatted);
+    formatted = snprintf(buf[2], BUFLEN, "%f", filter->xHigh);
+    checkAndTermBuf(buf[2], BUFLEN, formatted);
   }
 
   if (_view->GetYAxisAttrType() == DateAttr){
-    sprintf(buf[3], "%s", DateString(filter->yLow));
-    sprintf(buf[4], "%s", DateString(filter->yHigh));
+    formatted = snprintf(buf[3], BUFLEN, "%s", DateString(filter->yLow));
+    checkAndTermBuf(buf[3], BUFLEN, formatted);
+    formatted = snprintf(buf[4], BUFLEN, "%s", DateString(filter->yHigh));
+    checkAndTermBuf(buf[4], BUFLEN, formatted);
   } else {
-    sprintf(buf[3], "%f", filter->yLow);
-    sprintf(buf[4], "%f", filter->yHigh);
+    formatted = snprintf(buf[3], BUFLEN, "%f", filter->yLow);
+    checkAndTermBuf(buf[3], BUFLEN, formatted);
+    formatted = snprintf(buf[4], BUFLEN, "%f", filter->yHigh);
+    checkAndTermBuf(buf[4], BUFLEN, formatted);
   }
 
-  PColorID foreColor = _view->GetForeground();
-  sprintf(buf[5], "%ld", foreColor);
+  PColorID foreColor = _view->GetForeground(DisplayMode::ModeNormal);
+  formatted = snprintf(buf[5], BUFLEN, "%ld", foreColor);
+  checkAndTermBuf(buf[5], BUFLEN, formatted);
 
-  PColorID backColor = _view->GetBackground();
-  sprintf(buf[6], "%ld", backColor);
+  PColorID backColor = _view->GetBackground(DisplayMode::ModeNormal);
+  formatted = snprintf(buf[6], BUFLEN, "%ld", backColor);
+  checkAndTermBuf(buf[6], BUFLEN, formatted);
+
+  PColorID color;
+  color = _view->GetForeground(DisplayMode::ModeColorPrint);
+  formatted = snprintf(buf[7], BUFLEN, "%ld", color);
+  checkAndTermBuf(buf[7], BUFLEN, formatted);
+
+  color = _view->GetBackground(DisplayMode::ModeColorPrint);
+  formatted = snprintf(buf[8], BUFLEN, "%ld", color);
+  checkAndTermBuf(buf[8], BUFLEN, formatted);
+
+  color = _view->GetForeground(DisplayMode::ModeBWPrint);
+  formatted = snprintf(buf[9], BUFLEN, "%ld", color);
+  checkAndTermBuf(buf[9], BUFLEN, formatted);
+
+  color = _view->GetBackground(DisplayMode::ModeBWPrint);
+  formatted = snprintf(buf[10], BUFLEN, "%ld", color);
+  checkAndTermBuf(buf[10], BUFLEN, formatted);
 }
 
 ViewXInfo::ViewXInfo(const char *name, ViewData *view)
@@ -263,7 +360,7 @@ ViewXInfo::ViewXInfo(const char *name, ViewData *view)
 
 ClassInfo *ViewXInfo::CreateWithParams(int argc, const char * const *argv)
 {
-  if (argc != 4 && argc != 5 && argc != 6 && argc != 7) {
+  if (argc != 4 && argc != 5 && argc != 6 && argc != 7 && argc != 11) {
     fprintf(stderr, "ViewXInfo::CreateWithParams: wrong args\n");
     return NULL;
   }
@@ -291,7 +388,7 @@ ViewScatterInfo::ViewScatterInfo(char *name, ViewGraph *view)
 ClassInfo *ViewScatterInfo::CreateWithParams(int argc,
     const char * const *argv)
 {
-  if (argc != 4 && argc != 5 && argc != 6 && argc != 7) {
+  if (argc != 4 && argc != 5 && argc != 6 && argc != 7 && argc != 11) {
     fprintf(stderr, "ViewScatterInfo::CreateWithParams: wrong args\n");
     return NULL;
   }

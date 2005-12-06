@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.3.48.1  2005/10/20 20:29:35  wenger
+  Some errno-related fixes; added RH 7.3 stuff; clarifying note
+  in linux setup script.
+
+  Revision 1.3  1996/12/30 23:51:05  andyt
+  First version with support for Embedded Tcl/Tk windows. WindowRep classes
+  now have member functions for creating and destroying Tk windows.
+  Interface to the EmbeddedTk server is in ETkIfc.h
+
   Revision 1.2  1996/11/21 19:13:46  wenger
   Fixed more compile warnings; updated devise.dali to match current
   command-line flags.
@@ -33,8 +42,6 @@
 #include <errno.h>
 
 #include "Dali.h"
-
-extern int errno;
 
 int DaliPatron(char *servName, char *errmsg, int port)
 {

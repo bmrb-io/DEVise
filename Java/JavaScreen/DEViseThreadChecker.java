@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001
+// (c) Copyright 2001-2004
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2002/07/19 17:06:48  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.5.2.2  2004/05/12 21:43:58  wenger
+// Merged the jspop_debug_0405_br thru jspop_debug_0405_br_2 to the
+// V1_7b0_br branch.
+//
+// Revision 1.5.2.1.10.3  2004/05/12 21:27:26  wenger
+// Added more debug code and comments about possible causes of
+// hung JSPoPs.
+//
+// Revision 1.5.2.1.10.2  2004/05/10 22:28:52  wenger
+// Set things up so that much JSPoP debug code (both new and old)
+// can be turned on and off on the fly.
+//
+// Revision 1.5.2.1.10.1  2004/05/10 19:39:00  wenger
+// Lots of new debug code, turned on at compile time; no significant
+// functional changes; also has comments about where we might be
+// getting hung, based on debug logs.
+//
 // Revision 1.5.2.1  2002/07/19 16:05:21  wenger
 // Changed command dispatcher so that an incoming command during a pending
 // heartbeat is postponed, rather than rejected (needed some special-case
@@ -54,10 +74,11 @@
 package JavaScreen;
 
 import  java.util.*;
+import  java.text.*;
 
 public class DEViseThreadChecker implements Runnable
 {
-    private static final int DEBUG = 0;
+    private static int _debugLvl = 0;
     private static final int CHECK_INTERVAL = 10 * 1000; // millisec
     private static final int HUNG_INTERVAL = 600 * 1000; // millisec
 
@@ -70,6 +91,11 @@ public class DEViseThreadChecker implements Runnable
     public static DEViseThreadChecker getInstance()
     {
         return _instance;
+    }
+
+    public static void setDebugLvl(int level)
+    {
+        _debugLvl = level;
     }
 
     public DEViseThreadChecker()
@@ -85,7 +111,7 @@ public class DEViseThreadChecker implements Runnable
 
     public void register(DEViseCheckableThread thread)
     {
-        if (DEBUG >= 1) {
+        if (_debugLvl >= 2) {
 	    System.out.println("DEViseThreadChecker.register(" +
 	      thread.thread2Str() + ")");
 	}
@@ -94,7 +120,7 @@ public class DEViseThreadChecker implements Runnable
 
     public void unregister(DEViseCheckableThread thread)
     {
-        if (DEBUG >= 1) {
+        if (_debugLvl >= 2) {
 	    System.out.println("DEViseThreadChecker.unregister(" +
 	      thread.thread2Str() + ")");
 	}
@@ -109,7 +135,7 @@ public class DEViseThreadChecker implements Runnable
 	    } catch (InterruptedException ex) {
 	    }
 
-            if (DEBUG >= 1) {
+            if (_debugLvl >= 4) {
 	        System.out.println("Checking threads");
 	    }
 
@@ -121,7 +147,12 @@ public class DEViseThreadChecker implements Runnable
 		  _threadList.elementAt(index);
 	        long lastRun = thread.lastRunTime();
 		if (currentTime - lastRun > HUNG_INTERVAL) {
-		    System.err.println(thread.thread2Str() + " may be hung");
+		    DateFormat dtf = DateFormat.getDateTimeInstance(
+		      DateFormat.MEDIUM, DateFormat.MEDIUM);
+		    System.err.println(thread.thread2Str() +
+		      " may be hung at " + dtf.format(date));
+		    System.err.println("  " + thread.thread2Str() +
+		      " is alive?: " + thread.isAlive());
 		    //TEMP -- force a stack track of the thread if possible
 		    thread.intThread();
 		}

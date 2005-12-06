@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.26.1  2005/09/28 22:29:34  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.3  1998/02/12 17:15:38  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.2.2.1  1998/01/28 22:43:16  taodb
   Added support for group communicatoin
 
@@ -55,7 +61,8 @@ public:
   virtual void MainLoop();
 
   virtual int EvalCmd(char *cmd) { return Tcl_Eval(_interp, cmd); }
-  virtual void ControlCmd(int argc, char **argv); // process server command
+  	// process server command
+  virtual void ControlCmd(int argc, const char * const *argv);
 
   virtual Tcl_Interp *Interp() { return _interp; }
   virtual int ServerFd() { return _serverFd; }

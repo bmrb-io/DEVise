@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1998-2001
+#  (c) Copyright 1998-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13.8.1  2004/01/25 23:35:48  wenger
+#  JavaScreen kill scripts kill things with SIGKILL after trying
+#  a "softer" kill (because of problems on RedHat 9 with processes
+#  refusing to be killed).
+#
+#  Revision 1.13  2001/07/20 18:04:14  wenger
+#  Added hostname to pid files.
+#
 #  Revision 1.12  2001/06/08 16:49:18  wenger
 #  Can't use wait the way I was trying to.
 #
@@ -112,4 +120,10 @@ do
   kill -INT $pid
   sleep 1
   kill -INT $pid
+
+  # Note: I've run into problems on RedHat 9 with processes refusing to
+  # be killed unless you use SIGKILL, so I'm doing this at least until
+  # I get things figured out.  wenger 2004-01-25.
+  echo "Killing $pid with SIGKILL"
+  kill -9 $pid
 done

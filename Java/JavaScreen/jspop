@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#! /bin/sh
 
 ############################################################
 
@@ -12,6 +12,44 @@
 
 ############################################################
 
-set path = ( /s/java-1/bin $path )
+#
+# Set log file name according to ID string (if any).
+#
+idStr=""
+for arg in $*
+do
+  if [ $arg = "-idregular" ]
+  then
+    idStr="regular"
+  elif [ $arg = "-idsoil" ]
+  then
+    idStr="soil"
+  elif [ $arg = "-idtest" ]
+  then
+    idStr="test"
+  elif [ $arg = "-idtst2" ]
+  then
+    idStr="tst2"
+  elif [ $arg = "-idwave" ]
+  then
+    idStr="wave"
+  fi
+done
 
-nohup ./jspop_savepid $* &
+export idStr
+
+info=`./ports+files $idStr`
+outfile=`echo $info | cut -d' ' -f4`
+
+if [ `hostname` = "yola" ]
+then
+  unset DISPLAY
+  unset LD_LIBRARY_PATH
+fi
+
+#
+# Re-initialize the log file.
+#
+\rm -f $outfile
+
+nohup ./jspop_savepid $* | scripts/circ_log -file $outfile -max 10000000 &

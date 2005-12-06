@@ -12,20 +12,22 @@
 
 ############################################################
 
+set start_time = `date`
 
-# For CS.
-set path = ( /s/std/bin /usr/ucb /bin /p/devise/run . $path )
-
-# For yola.
-set path = ( $path /usr/people/zoo/bin /usr/local/zoobin /usr/freeware/bin /usr/people/zoo/zoobin /usr/sbin /usr/bsd /sbin /usr/bin /usr/bin/X11 /usr/freeware/bin /bmrb/bin /bmrb/irix/bin /usr/java/bin /usr/local/bin /usr/people/zoo/perl /usr1/local/share /usr1/local/bin /usr/bin/X11 )
-
+set idstr = regular
 if ($#argv > 0) then
-  set idstr = $1
-else
-  set idstr = regular
+  if (xx$1 == xx-dev) then
+    sleep 5
+    if ($#argv > 1) then
+      set idstr = $2
+    endif
+  else
+    set idstr = $1
+  endif
 endif
 
-set outfile = /tmp/run_check.out.$idstr
+set outfile = /tmp/run_check.out:`./get_timestamp`:$idstr
+set outfile2 = /tmp/run_check.out2:`./get_timestamp`:$idstr
 
 if (-e $outfile) then
     rm $outfile
@@ -36,21 +38,29 @@ endif
 # All this garbage because Sun's current crond on Intel/Solaris won't
 # send mail correctly.
 if (-e $outfile && ! -z $outfile) then
-    set tmpfile = tmp.$idstr
-    if (-e $tmpfile) then
-        rm $tmpfile
+    if (-e $outfile2) then
+        rm $outfile2
     endif
     set header = "Error message from check_jsall ($idstr) on `hostname`"
-    echo $header > $tmpfile
-    cat $outfile >> $tmpfile
+    echo $header > $outfile2
+    echo "run_check started at $start_time" >> $outfile2
+    echo "" >> $outfile2
+    cat $outfile >> $outfile2
     if (`hostname` == "yola") then
         # Note: stupid mail on SGI doesn't take -s argument!
-        cat $tmpfile | mail `cat scripts/error_email`
+        cat $outfile2 | mail `cat scripts/error_email`
     else
-        cat $tmpfile | mail -s "$header" `cat scripts/error_email`
+        cat $outfile2 | mail -s "$header" `cat scripts/error_email`
     endif
-    mv $tmpfile $outfile
+    mv $outfile2 logs
 endif
 
-touch /tmp/js_check
-touch ./js_check
+rm $outfile
+
+set tdir = /tmp/.X11-unix
+set tfile = js_check.$idstr
+if (-d $tdir) then
+  touch $tdir/$tfile
+else
+  touch /tmp/$tfile
+endif

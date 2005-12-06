@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.14.14.1  2003/04/17 18:56:09  wenger
+  Now compiles with no warnings with gcc 2.96, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.14  2000/08/30 20:08:56  wenger
+  Added the option of forcing a cursor to be entirely within its destination
+  view; added control for whether a cursor must be at least partially within
+  its destination view; generally improved implementation of cursor
+  constraints.
+
   Revision 1.13  2000/03/14 17:05:05  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -160,7 +170,7 @@ ClassInfo *CursorClassInfo::CreateWithParams(int argc,
   Boolean useGrid = false;
   Coord gridX = 1.0;
   Coord gridY = 1.0;
-  Coord edgeGrid = false;
+  Boolean edgeGrid = false;
   if (argc >= 3) useGrid = atoi(argv[2]);
   if (argc >= 4) gridX = atof(argv[3]);
   if (argc >= 5) gridY = atof(argv[4]);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-2001
+  (c) Copyright 1997-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -34,6 +34,21 @@
   $Id$
 
   $Log$
+  Revision 1.3.10.1  2003/12/19 18:12:56  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.3.28.1  2003/12/17 00:18:46  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.3.26.1  2003/04/18 16:11:07  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
+  Revision 1.3  2001/06/12 15:30:00  wenger
+  Implemented a choice of modulus (default) or truncate color modes.
+
   Revision 1.2  1998/03/04 19:12:08  wenger
   Removed PM_GetOrAllocColor() which somehow got into here even though
   it was never implemented.
@@ -83,6 +98,8 @@
 //#include "TriColor.h"
 //#include "RGBColor.h"
 //#include "HSVColor.h"
+
+using namespace std;
 
 // Coloring.h should probably be included here, but that causes problems
 // because of circular dependencies.  RKW Feb. 17, 1998.

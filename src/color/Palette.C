@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-2001
+  (c) Copyright 1997-2004
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.4.10.1  2004/08/23 22:53:39  wenger
+  Fixed bug 890 (problems with drill-down dialog caused by
+  some color palettes not having a pure white color).
+
+  Revision 1.4  2001/06/12 15:29:52  wenger
+  Implemented a choice of modulus (default) or truncate color modes.
+
   Revision 1.3  1998/02/19 23:26:06  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -67,6 +74,27 @@
 // Utility Functions
 //******************************************************************************
 
+bool	Palette::EnsureBlackWhite()
+{
+	bool	missing = false;
+
+	PColorID pcid;
+
+	PaletteColor black(RGB::black, "black");
+	if (!GetPColorID(black.GetColor(), pcid)) {
+		NewColor(black);
+		missing = true;
+	}
+
+	PaletteColor white(RGB::white, "white");
+	if (!GetPColorID(white.GetColor(), pcid)) {
+		NewColor(white);
+		missing = true;
+	}
+
+	return missing;
+}
+
 PaletteColor*	Palette::GetColor(PColorID pcid)
 {
 	return &(colors[PColorID2Index(pcid, colors.size())]);
@@ -75,6 +103,21 @@ PaletteColor*	Palette::GetColor(PColorID pcid)
 const PaletteColor*	Palette::GetColor(PColorID pcid) const
 {
     return (const PaletteColor*)GetColor(pcid);
+}
+
+bool	Palette::GetPColorID(const RGB& rgb, PColorID& pcid)
+{
+	for (PColorID id = 0; id < GetSize(); ++id) {
+		if (GetColor(id)->GetColor() == rgb) {
+			pcid = id;
+			return true;
+		}
+	}
+
+	cerr << "Palette::GetPColorID unable to find requested color " <<
+	  rgb << endl;
+
+	return false;
 }
 
 PColorID	Palette::NewColor(const PaletteColor& color)

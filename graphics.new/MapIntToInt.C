@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.28.1  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
+  Revision 1.3  1997/11/24 23:15:06  weaver
+  Changes for the new ColorManager.
+
   Revision 1.2.6.1  1997/05/21 20:40:36  weaver
   Changes for new ColorManager
 
@@ -38,7 +44,7 @@
 
 
 
-int IntHash(int& i, int buckets)
+int IntHash(const int& i, int buckets)
 {
     return i % buckets;
 }

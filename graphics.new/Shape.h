@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.39.4.1  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.39  2001/12/28 18:34:39  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.38  2001/04/03 19:57:40  wenger
   Cleaned up code dealing with GData attributes in preparation for
   "external process" implementation.
@@ -201,6 +207,8 @@ class TDataMap;
 
 class Shape {
  public:
+  virtual ~Shape() {}
+
   virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
     Boolean result = false;
     // This is the most common case...

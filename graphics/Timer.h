@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.8.48.1  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.8  1996/08/02 00:38:12  jussi
+  Added variable _nexthop where the length of the next hop
+  is stored.
+
   Revision 1.7  1996/08/01 23:56:19  jussi
   Interval timer is now set for just one interval/interrupt at a
   time. There were occasional problems (SIGALRM's not caught properly)
@@ -47,6 +54,7 @@
 
 class TimerCallback {
 public:
+  virtual ~TimerCallback() {}
   virtual void TimerWake(int arg) = 0;
 };
 

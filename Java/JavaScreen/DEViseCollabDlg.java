@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2002
+// (c) Copyright 2000-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -12,18 +12,33 @@
 
 // ------------------------------------------------------------------------
 
-// TEMP -- I don't know yet what this class is for.  RKW 2002-05-10.
+// This class is used for displaying dialogs in collaboration follower
+// mode or auto playback mode.  It's used to destroy the dialog automatically
+// rather than by the user clicking the OK button.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.5  2003/01/13 19:23:42  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.4  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
 // Revision 1.3  2002/06/17 19:40:14  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.1.2.11  2003/05/02 17:16:16  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
+//
+// Revision 1.1.2.10  2003/04/02 16:19:37  wenger
+// Possible fix for hard-to-reproduce null pointer exception in
+// DEViseCanvas.checkMousePos(); a little bit of clean up of ugly
+// DEViseCollabDlg class.
 //
 // Revision 1.1.2.9  2002/12/17 23:15:01  wenger
 // Fixed bug 843 (still too many java processes after many reloads);
@@ -59,6 +74,10 @@ public class DEViseCollabDlg implements Runnable
     private String arg;
     private Thread thread = null;
 
+    public static final int DLG_RECORD = 1;
+    public static final int DLG_SERVER_STATE = 2;
+    public static final int DLG_COLLAB_STATE = 3;
+
     public DEViseCollabDlg(jsdevisec j, int d, String[] msgs) {
         jsc = j;
 	dlg = d;
@@ -68,7 +87,7 @@ public class DEViseCollabDlg implements Runnable
 	thread.setName("Collab dialog 1");
 	thread.start();
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Starting thread " + thread);
+	    DEViseUtils.printAllThreads("Starting thread " + thread);
 	}
     }
 
@@ -81,49 +100,53 @@ public class DEViseCollabDlg implements Runnable
 	thread.setName("Collab dialog 2");
 	thread.start();
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Starting thread " + thread);
+	    DEViseUtils.printAllThreads("Starting thread " + thread);
 	}
     }
 
     public void run()
     {
 	switch (dlg) {
-	case 1: // showRecordDlg()
+	case DLG_RECORD: // showRecordDlg()
 	    jsc.showRecord(args);
 	    break;
-	case 2: // showServerState()
+	case DLG_SERVER_STATE: // showServerState()
 	    jsc.showServerState(args[1]);
 	    break;
-	case 3: // showCollabState()
+	case DLG_COLLAB_STATE: // showCollabState()
 	    jsc.showCollabState(arg);
 	    break;
+	default:
+	    System.err.println("Illegal dialog type: " + dlg);
 	}
 
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Thread " + thread + " ending");
+	    DEViseUtils.printAllThreads("Thread " + thread + " ending");
 	}
     }
 
     public void stop()
     {
 	switch (dlg) {
-	case 1: // showRecordDlg()
+	case DLG_RECORD: // showRecordDlg()
 	    jsc.recorddlg.close();
 	    if (jsc.recorddlg != null)
 		jsc.recorddlg = null;
 	    break;
-	case 2: // showServerState()
+	case DLG_SERVER_STATE: // showServerState()
 	    jsc.statedlg.close();
 	    jsc.statedlg = null;
 	    break;  
-	case 3: // showCollabState()
+	case DLG_COLLAB_STATE: // showCollabState()
 	    jsc.collabstatedlg.close();
 	    jsc.collabstatedlg = null;
 	    break;   
+	default:
+	    System.err.println("Illegal dialog type: " + dlg);
 	}
 
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Stopping thread " + thread);
+	    DEViseUtils.printAllThreads("Stopping thread " + thread);
 	}
         thread.stop();
     }

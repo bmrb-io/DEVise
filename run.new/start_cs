@@ -7,9 +7,12 @@
 ############################################################
 
 if (! -f $DEVISE_CLIENT_EXEC || ! -f $DEVISE_SERVER_EXEC) then
-  echo "Cannot find Devise executable. Perhaps this platform is not supported?"
+  echo "Cannot find Devise executable ($DEVISE_CLIENT_EXEC or $DEVISE_SERVER_EXEC)."
+  echo "Perhaps this platform is not supported?"
   exit 1
 endif
+
+$DEVISE_PROG/run/make_dev_dirs
 
 $DEVISE_SERVER_EXEC -port 6102 -quit 1 $* &
 

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.124  2003/01/13 19:23:42  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.123  2002/07/19 17:06:47  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
@@ -31,6 +34,31 @@
 //
 // Revision 1.121  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.120.2.24  2003/12/22 22:47:14  wenger
+// JavaScreen support for print color modes is now in place.
+//
+// Revision 1.120.2.23  2003/10/15 21:55:10  wenger
+// Added new JAVAC_StopCollab command to fix ambiguity with
+// JAVAC_CollabExit; minor improvements to collaboration-related stuff
+// in the auto test scripts.
+//
+// Revision 1.120.2.22  2003/09/23 21:55:11  wenger
+// "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+//
+// Revision 1.120.2.21  2003/05/02 17:16:15  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
+//
+// Revision 1.120.2.20  2003/04/25 20:27:00  wenger
+// Eliminated or reduced "Abrupt end of input stream reached" errors in
+// the JSPoP on normal client exit.
+//
+// Revision 1.120.2.19  2003/04/02 16:19:37  wenger
+// Possible fix for hard-to-reproduce null pointer exception in
+// DEViseCanvas.checkMousePos(); a little bit of clean up of ugly
+// DEViseCollabDlg class.
 //
 // Revision 1.120.2.18  2002/12/17 23:15:01  wenger
 // Fixed bug 843 (still too many java processes after many reloads);
@@ -683,6 +711,11 @@ public class DEViseCmdDispatcher implements Runnable
 
     private boolean _cmdWaiting = false;
 
+    // Version information about the software we're connected to.
+    private String _popVersion = "unknown";
+    private String _deviseVersion = "unknown";
+    private String _popID = "unknown";
+
     //---------------------------------------------------------------------
     public DEViseCmdDispatcher(jsdevisec what)
     {
@@ -744,6 +777,24 @@ public class DEViseCmdDispatcher implements Runnable
     public synchronized void setAbortStatus(boolean flag)
     {
         isAbort = flag;
+    }
+
+    //---------------------------------------------------------------------
+    public String getPopVersion()
+    {
+        return _popVersion;
+    }
+
+    //---------------------------------------------------------------------
+    public String getDeviseVersion()
+    {
+        return _deviseVersion;
+    }
+
+    //---------------------------------------------------------------------
+    public String getPopID()
+    {
+        return _popID;
     }
 
     //---------------------------------------------------------------------
@@ -890,7 +941,7 @@ public class DEViseCmdDispatcher implements Runnable
         dispatcherThread.setName("Command thread for " + cmd);
         dispatcherThread.start();
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Starting thread " + dispatcherThread);
+	    DEViseUtils.printAllThreads("Starting thread " + dispatcherThread);
 	}
 
         if (_debug) {
@@ -923,7 +974,7 @@ public class DEViseCmdDispatcher implements Runnable
                 } else {
                     if (dispatcherThread != null) {
 			if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	                    jsdevisec.printAllThreads("Stopping thread " +
+	                    DEViseUtils.printAllThreads("Stopping thread " +
 			      dispatcherThread);
 			}
                         dispatcherThread.stop();
@@ -971,9 +1022,10 @@ public class DEViseCmdDispatcher implements Runnable
 
 	// send a Java_Collab_Exit if we are collaborating.
 	if (jsc.specialID != -1) {
+	    // We are a collaboration follower.
 	    try {
-                jsc.pn("Sending: \"" + DEViseCommands.COLLAB_EXIT +"\"");
-		commSocket.sendCmd(DEViseCommands.COLLAB_EXIT, 
+                jsc.pn("Sending: \"" + DEViseCommands.STOP_COLLAB +"\"");
+		commSocket.sendCmd(DEViseCommands.STOP_COLLAB, 
 				   DEViseGlobals.API_JAVA, 
 				   jsc.jsValues.connection.connectionID);
 		jsc.restoreDisplaySize();
@@ -995,7 +1047,9 @@ public class DEViseCmdDispatcher implements Runnable
                 jsc.pn("Sending: \"" + DEViseCommands.EXIT +"\"");
                 sendCmd(DEViseCommands.EXIT);
 		// Try to prevent "Abrupt end of input stream" errors at
-		// the JSPoP.
+		// the JSPoP.  We need this so the JSPoP has some time
+		// to shut things down before we close the client end of
+		// the socket.
 		Thread.sleep(2000);
 	    } catch (InterruptedException ex) {
 	        System.err.println("Sleep interrupted: " + ex.getMessage());
@@ -1009,7 +1063,7 @@ public class DEViseCmdDispatcher implements Runnable
 	//
 	if (getStatus() != STATUS_IDLE && dispatcherThread != null) {
 	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	        jsdevisec.printAllThreads("Stopping thread " +
+	        DEViseUtils.printAllThreads("Stopping thread " +
 		  dispatcherThread);
 	    }
 	    dispatcherThread.stop();
@@ -1191,7 +1245,7 @@ public class DEViseCmdDispatcher implements Runnable
 	  " and getting replies");
 
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Thread " + dispatcherThread +
+	    DEViseUtils.printAllThreads("Thread " + dispatcherThread +
 	      " ending");
 	}
     }
@@ -1341,7 +1395,8 @@ public class DEViseCmdDispatcher implements Runnable
 		    jsc.showCollabState(response);
 		} else {
 		    // for auto playback and auto test
-		    collabdlg = new DEViseCollabDlg(jsc, 3, response);
+		    collabdlg = new DEViseCollabDlg(jsc,
+		      DEViseCollabDlg.DLG_COLLAB_STATE, response);
 		    // close dialog after 5 sec.
 
 		    try {
@@ -1362,7 +1417,8 @@ public class DEViseCmdDispatcher implements Runnable
 		    }
 		}	
             } else { // for collaboration followers
-		collabdlg = new DEViseCollabDlg(jsc, 3, response);
+		collabdlg = new DEViseCollabDlg(jsc,
+		  DEViseCollabDlg.DLG_COLLAB_STATE, response);
 	    } 
         } else if (args[0].equals(DEViseCommands.UPDATE_SERVER_STATE)) {
             if (args.length != 2) {
@@ -1376,7 +1432,8 @@ public class DEViseCmdDispatcher implements Runnable
 		    jsc.showServerState(args[1]);
 		} else {
 		    // for auto playback and auto test
-		    collabdlg = new DEViseCollabDlg(jsc, 2, args);
+		    collabdlg = new DEViseCollabDlg(jsc,
+		      DEViseCollabDlg.DLG_SERVER_STATE, args);
 		    // close dialog after 5 sec.
 
 		    try {
@@ -1397,7 +1454,8 @@ public class DEViseCmdDispatcher implements Runnable
 		    }
 		}	
             } else { // for collaboration followers
-		collabdlg = new DEViseCollabDlg(jsc, 2, args);
+		collabdlg = new DEViseCollabDlg(jsc,
+		  DEViseCollabDlg.DLG_SERVER_STATE, args);
 	    } 
 
         } else if (args[0].equals(DEViseCommands.CREATE_VIEW)) {
@@ -1434,7 +1492,8 @@ public class DEViseCmdDispatcher implements Runnable
 		    jsc.showRecord(args);
 		} else {
 		    // for auto playback and auto test
-		    collabdlg = new DEViseCollabDlg(jsc, 1, args);
+		    collabdlg = new DEViseCollabDlg(jsc,
+		      DEViseCollabDlg.DLG_RECORD, args);
 		    // close dialog after 5 sec.
 
 		    try {
@@ -1455,7 +1514,8 @@ public class DEViseCmdDispatcher implements Runnable
 		    }
 		}	
             } else { // for collaboration followers
-		collabdlg = new DEViseCollabDlg(jsc, 1, args);
+		collabdlg = new DEViseCollabDlg(jsc,
+		  DEViseCollabDlg.DLG_RECORD, args);
 	    } 
 
         } else if (args[0].equals(DEViseCommands.CLOSE_COLLAB_DLG)) {
@@ -1528,6 +1588,37 @@ public class DEViseCmdDispatcher implements Runnable
 			jsc.jsValues.session.collabLeaderName + 
 			"\". Please choose another one.");
 	    jsc.showCollabPass();
+
+        } else if (args[0].equals(DEViseCommands.POP_VERSION)) {
+            _popVersion = args[1];
+            _popID = args[2];
+            _deviseVersion = args[3];
+
+        } else if (args[0].equals(DEViseCommands.SET_VIEW_COLORS)) {
+            String viewname = args[1];
+            DEViseView view = jsc.jscreen.getView(viewname);
+
+	    if (view != null) {
+	        int background, foreground;
+
+                Color color = DEViseUIGlobals.convertColor(args[2]);
+                if (color != null) {
+                    foreground = color.getRGB();
+                } else {
+                    throw new NumberFormatException();
+                }
+
+                color = DEViseUIGlobals.convertColor(args[3]);
+                if (color != null) {
+                    background = color.getRGB();
+                } else {
+                    throw new NumberFormatException();
+                }
+
+	        view.setColors(foreground, background);
+	    } else {
+		throw new YException("View " + viewname + " not found");
+	    }
 
         } else {
             throw new YException("Unsupported command (" + response +
@@ -2127,10 +2218,10 @@ public class DEViseCmdDispatcher implements Runnable
                 } catch (InterruptedIOException e) {
 		    if (jsc.collabinterrupted) {
 			jsc.collabinterrupted = false;
-			commSocket.sendCmd(DEViseCommands.COLLAB_EXIT, 
+			commSocket.sendCmd(DEViseCommands.STOP_COLLAB, 
 					   DEViseGlobals.API_JAVA, 
 					   jsc.jsValues.connection.connectionID);
-			jsc.pn("Sent out Collab_Exit command after interrupt.");
+			jsc.pn("Sent out StopCollab command after interrupt.");
 			jsc.restoreDisplaySize();
 			return null;
 		    }
@@ -2226,6 +2317,10 @@ public class DEViseCmdDispatcher implements Runnable
             System.out.println("DEViseCmdDispatcher.sockSendCmd(" +
 	      command + ")");
         }
+
+	if (commSocket == null) {
+	    throw new YException("Command socket is not available");
+	}
 
 	if ( !commSocket.isAvailable() ) {
 	    commSocket = null;

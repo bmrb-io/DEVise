@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,21 @@
   $Id$
 
   $Log$
+  Revision 1.2.22.1  2003/12/19 18:12:57  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.2.40.1  2003/12/17 00:18:46  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.2.38.1  2003/04/18 16:11:09  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
+  Revision 1.2  1998/05/05 15:16:31  zhenhai
+  *** empty log message ***
+
   Revision 1.1  1998/02/20 20:44:08  wenger
   Changed color and utils libraries to new export directory scheme for
   dealing with include files (email with complete explanation forthcoming).
@@ -41,6 +56,8 @@ extern "C" {
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 }
+
+using namespace std;
 
 //******************************************************************************
 // Types and Constants

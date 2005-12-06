@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.48.10.3  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.48.10.2  2003/11/19 19:40:14  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
+  Revision 1.48.10.1  2003/11/05 17:01:45  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.48  2001/09/26 16:31:30  wenger
+  Fixed bug 693 (DEVise rubberband line now reflects X-only zoom).
+
   Revision 1.47  2000/03/14 21:51:39  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -260,6 +275,7 @@
 
 #include "Color.h"
 #include "Coloring.h"
+#include "DisplayMode.h"
 
 class WindowRep;
 class ViewWin;
@@ -272,6 +288,8 @@ DefinePtrDList(ViewWinList, ViewWin *);
 //******************************************************************************
 // class ViewWin
 //******************************************************************************
+
+class ViewWin_WindowRepCallback;
 
 class ViewWin : public Coloring
 {
@@ -306,8 +324,18 @@ class ViewWin : public Coloring
 		// changed since the last time it was dumped as a gif.
 		Boolean GetGifDirty();
 
+		virtual void		SetForeground(PColorID fgid);
+		virtual void		SetForeground(PColorID fgid,
+		                      DisplayMode::Mode mode);
 		virtual void		SetBackground(PColorID bgid);
-		
+		virtual void		SetBackground(PColorID bgid,
+		                      DisplayMode::Mode mode);
+
+		virtual PColorID	GetForeground(void) const;
+		virtual PColorID	GetForeground(DisplayMode::Mode mode) const;
+		virtual PColorID	GetBackground(void) const;
+		virtual PColorID	GetBackground(DisplayMode::Mode mode) const;
+
     /* Iconify window, if top level. Not guaranteed to succeed */
     void Iconify();
 
@@ -323,9 +351,9 @@ class ViewWin : public Coloring
     virtual void Unmap();
     virtual void Iconify(Boolean iconified) = 0;
 
-    Boolean Mapped() { return _mapped; }
-    char *GetName(){ return _name; }
-    int GetWeight() { return _weight; }
+    Boolean Mapped() const { return _mapped; }
+    char *GetName() const { return _name; }
+    int GetWeight() const { return _weight; }
 
     virtual void Raise();
     virtual void Lower();
@@ -521,6 +549,8 @@ private:
 
     private:
         ObjectValid _objectValid;
+		DisplayModeViewBG _bgColors;
+		DisplayModeViewFG _fgColors;
 };
 
 //******************************************************************************
@@ -537,6 +567,7 @@ class ViewWin_WindowRepCallback : public WindowRepCallback
 
 		ViewWin_WindowRepCallback(ViewWin* parent)
 			: _parent(parent) {}
+		virtual ~ViewWin_WindowRepCallback() {}
 
 		virtual void	HandleExpose(WindowRep* w, int x, int y, 
 									 unsigned width, unsigned height)

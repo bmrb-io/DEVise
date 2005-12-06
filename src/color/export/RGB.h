@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-1998
+  (c) Copyright 1997-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -22,6 +22,25 @@
   $Id$
 
   $Log$
+  Revision 1.1.26.2  2005/09/06 21:20:31  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.1.26.1  2003/12/19 18:12:56  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.1.44.1  2003/12/17 00:18:46  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.1.42.1  2003/04/18 16:11:09  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
+  Revision 1.1  1998/02/20 20:44:08  wenger
+  Changed color and utils libraries to new export directory scheme for
+  dealing with include files (email with complete explanation forthcoming).
+
   Revision 1.4  1998/02/19 23:26:09  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -53,9 +72,11 @@
 // Libraries
 //******************************************************************************
 
-#include <iostream.h>
+#include <iostream>
 #include <cmath>
 #include <string>
+
+using namespace std;
 
 //******************************************************************************
 // Types and Constants
@@ -88,6 +109,7 @@ class RGB
 		// Constructors and Destructors
 		RGB(RGBValue rr = 0, RGBValue gg = 0, RGBValue bb = 0);
 		RGB(double rr, double gg, double bb);
+		virtual ~RGB() {}
 		
 		// Utility Functions
 		void	Get(double& rr, double& gg, double& bb) const;

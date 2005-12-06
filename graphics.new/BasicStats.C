@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.35.26.1  2003/04/18 17:07:51  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.35.42.1  2003/04/18 15:26:13  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.35  1998/02/26 17:19:24  wenger
+  Fixed problems with yesterday's commit.
+
   Revision 1.34  1998/02/26 00:19:20  zhenhai
   Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -253,8 +264,8 @@ void BasicStats::Done()
     // Compute confidence intervals for the true mean, mu.
     // (for now use z85, z90 and z95)
     for(int i = 0; i < NUM_Z_VALS; i++) {
-      clow[i] = avg - (zval[i] * std) / (sqrt(nsamples));
-      chigh[i] = avg + (zval[i] * std) / (sqrt(nsamples)); 
+      clow[i] = avg - (zval[i] * std) / (sqrt((double)nsamples));
+      chigh[i] = avg + (zval[i] * std) / (sqrt((double)nsamples)); 
     }
 
   } else {                      // no samples!

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4.14.1  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.4  2000/01/13 23:07:04  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.3  1996/07/14 20:34:16  jussi
   Rewrote class to fork a process that does all data transfers
   from the Web site.
@@ -44,7 +50,7 @@ public:
     DataSourceWeb(char *url, const char *label, char *cache);
     virtual ~DataSourceWeb();
 
-    virtual char *objectType() { return "DataSourceWeb"; }
+    virtual const char *objectType() { return "DataSourceWeb"; }
     
     virtual DevStatus Open(const char *mode);
     virtual DevStatus Close();

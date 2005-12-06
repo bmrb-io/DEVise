@@ -20,6 +20,28 @@
   $Id$
 
   $Log$
+  Revision 1.9.22.2  2005/09/28 17:14:21  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.9.22.1  2003/12/19 18:07:06  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.9.40.1  2003/12/17 00:17:41  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.9.38.1  2003/12/16 16:07:56  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.9  1998/08/21 22:16:03  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.8  1998/08/17 21:03:38  wenger
   Changed deviseb and devisec to work properly with current devised
   (clients don't expect to be sent slot number at startup).
@@ -66,7 +88,7 @@
 							 // by API.txt (server sends slot number to
 							 // client, etc.).
 
-#if !defined(LINUX) && !defined(OSF)
+#if !defined(LINUX) && !defined(OSF) && !defined(SOLARIS)
 extern "C" {
 	void bzero(void *s, size_t n);
 	int gethostname(char *name, int namelen);
@@ -121,11 +143,11 @@ class ServerServerProt
 			SSC_CMD = 0x01,
 			CSS_CMD = 0x02
 		};
-		ServerServerProt( int argc, char** argv);
+		ServerServerProt( int argc, const char* const * argv);
 		ServerServerProt(int msize, char* msg);
 
-		int setServerName(char* sname);
-		int setClientName(char* cname);
+		int setServerName(const char* sname);
+		int setClientName(const char* cname);
 		int setControl(int argc, ...);
 
 		char* getServerName();

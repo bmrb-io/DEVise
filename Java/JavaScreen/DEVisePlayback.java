@@ -20,11 +20,24 @@
 // $Id$
 //
 // $Log$
+// Revision 1.16  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.15  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
 // Revision 1.14  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.13.2.7  2003/10/15 21:55:10  wenger
+// Added new JAVAC_StopCollab command to fix ambiguity with
+// JAVAC_CollabExit; minor improvements to collaboration-related stuff
+// in the auto test scripts.
+//
+// Revision 1.13.2.6  2003/05/02 17:16:17  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
 //
 // Revision 1.13.2.5  2002/12/17 23:15:01  wenger
 // Fixed bug 843 (still too many java processes after many reloads);
@@ -122,7 +135,7 @@ public class DEVisePlayback implements Runnable
 	_thread.setName("Playback");
 	_thread.start();
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Starting thread " + _thread);
+	    DEViseUtils.printAllThreads("Starting thread " + _thread);
 	}
     }
 
@@ -199,7 +212,8 @@ public class DEVisePlayback implements Runnable
 		    // Special case -- don't execute these commands.
 		    //
 		    continue;
-		} else if ( cmd.command.startsWith(DEViseCommands.COLLAB_EXIT) ) {
+
+		} else if ( cmd.command.startsWith(DEViseCommands.STOP_COLLAB) ) {
 		    //
 		    // Special case -- clear the JS for reopening at
 		    // client side.
@@ -220,8 +234,8 @@ public class DEVisePlayback implements Runnable
 		    }
 		    
 		    try {
-			_jsc.pn("Sending: \"" + DEViseCommands.COLLAB_EXIT +"\"");
-			_dispatcher.sockSendCmd(DEViseCommands.COLLAB_EXIT);
+			_jsc.pn("Sending: \"" + DEViseCommands.STOP_COLLAB +"\"");
+			_dispatcher.sockSendCmd(DEViseCommands.STOP_COLLAB);
 			_jsc.restoreDisplaySize();
 		    } catch (YException e) {
 			_jsc.showMsg(e.getMsg());
@@ -319,14 +333,14 @@ public class DEVisePlayback implements Runnable
 	}
 
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Thread " + _thread + " ending");
+	    DEViseUtils.printAllThreads("Thread " + _thread + " ending");
 	}
     }
 
     public void stop()
     {
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Stopping thread " + _thread);
+	    DEViseUtils.printAllThreads("Stopping thread " + _thread);
 	}
         _thread.stop();
     }

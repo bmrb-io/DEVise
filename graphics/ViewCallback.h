@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.6.14.1  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.6  2000/02/16 18:51:25  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.5  1996/08/04 21:04:52  beyer
   Needed a forward declaration
 
@@ -39,6 +45,8 @@ class VisualFilter;
 
 class ViewCallback {
 public:
+  virtual ~ViewCallback() {}
+
   /* Called by View when view is created. */
   virtual void ViewCreated(View *view) {}
 

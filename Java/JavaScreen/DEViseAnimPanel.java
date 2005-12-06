@@ -21,8 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2003/01/13 19:23:41  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.43  2002/07/19 17:06:46  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.42.8.4  2003/05/02 17:16:12  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
 //
 // Revision 1.42.8.3  2002/12/17 23:15:00  wenger
 // Fixed bug 843 (still too many java processes after many reloads);
@@ -191,7 +199,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
         }
 
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Thread " + animator + " ending");
+	    DEViseUtils.printAllThreads("Thread " + animator + " ending");
 	}
     }
 
@@ -229,7 +237,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
             animator.start();
             
 	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-		jsdevisec.printAllThreads("Starting thread " + animator);
+		DEViseUtils.printAllThreads("Starting thread " + animator);
 	    }
         }
     }
@@ -244,7 +252,7 @@ public class DEViseAnimPanel extends Canvas implements Runnable
 
         if (animator.isAlive()) {
 	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-		jsdevisec.printAllThreads("Stopping thread " + animator);
+		DEViseUtils.printAllThreads("Stopping thread " + animator);
 	    }
             animator.stop();
         }

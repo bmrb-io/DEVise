@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1997
+# (c) Copyright 1992-2005
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -15,6 +15,22 @@
 # $Id$
 
 # $Log$
+# Revision 1.52.14.3  2005/10/22 19:11:15  wenger
+# Added 'release' target to makefiles to copy executables to the
+# "right" names.
+#
+# Revision 1.52.14.2  2005/10/20 18:52:37  wenger
+# Fixed problems on linux_amd64 (basslet).
+#
+# Revision 1.52.14.1  2005/10/20 16:48:05  wenger
+# Started setting things up to compile somewhat better on the various
+# Linuxes we have to build on, and deal with dynamic libraries better
+# -- some of the framework in place, set up for Tao 1.0 and
+# SPARC/Solaris.
+#
+# Revision 1.52  2000/05/09 16:33:36  wenger
+# Removed cslib from list of things to build.
+#
 # Revision 1.51  1999/11/16 17:01:51  wenger
 # Removed all DTE-related conditional compiles; changed version number to
 # 1.7.0 because of removing DTE; removed DTE-related schema editing and
@@ -249,6 +265,19 @@ static: libs
 collaborator:
 	cd csgroup; make lib; cd ..
 	cd generic; make collaborator; cd ..
+
+dyn_lib:
+	./make_dyn_lib
+
+dyn_lib_clean:
+	./clean_dyn_lib
+
+release:
+	mkdir release_dir
+	cp -p generic/generic release_dir/devise
+	cp -p generic/devise release_dir/devisec
+	cp -p generic/deviseb release_dir
+	cp -p generic/devised release_dir
 
 strip:
 	- strip generic/generic generic/generic.static

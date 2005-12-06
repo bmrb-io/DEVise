@@ -1,0 +1,54 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001-2004
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile with configuration info for JavaScreen.
+
+#  Edit this makefile according to your system configuration.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+#-----------------------------------------------------------
+# Directories for executables we need.
+
+# BIN2 is for JSS and devised.
+JAVA_BIN2 = /s/std/bin
+PERL_BIN2 = /s/std/bin
+XVFB_BIN2 = /s/std/bin
+
+# BIN2P is for JSPoP.
+JAVA_BIN2P = /s/std/bin
+PERL_BIN2P = /s/std/bin
+
+# BIN3 is for compiling (Java 1.1).
+JAVA_BIN3 = /s/java-1/bin
+
+POP_DIR = /scratch/wenger/js_test/jspop
+SERV_DIR = /scratch/wenger/js_test/jspop
+JAR_DIR = /scratch/wenger/js_test/jar
+CGI_DIR = /scratch/wenger/js_test/cgi
+IDSTR = regular
+
+# Where the DEVise sessions, schemas, etc., are installed.
+DEVISE_VIS = /p/devise/demo
+
+# This is who gets email about any errors.
+ERROR_EMAIL = wenger@cs.wisc.edu
+
+INSTALL_HOST = trigger.cs.wisc.edu
+
+# You should probably set this to 0 if you're running more than one JSS
+# on the same machine.
+KILL_XVFB = 0

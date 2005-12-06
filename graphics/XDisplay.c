@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.90  2003/01/13 19:25:12  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.89.4.3  2005/09/28 17:14:43  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.89.4.2  2003/04/18 17:07:44  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.89.4.1.4.1  2003/04/18 15:26:04  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
   Revision 1.89.4.1  2002/09/17 18:58:27  wenger
   Limited warning about horizontal and vertical points per pixel
   mismatch to one time; DEVise version is now 1.7.11.
@@ -466,6 +483,9 @@ public:
 /* The maximum intensity of red, green, and blue. */
 const int MaxColorIntensity = 65535;
 
+static const int errBufSize = 1024;
+static char errBuf[errBufSize];
+
 /*******************************************************************
 Open a new X display
 ********************************************************************/
@@ -617,7 +637,10 @@ void XDisplay::SetFont(const char *family, const char *weight, const char *slant
             return;
         }
     }
-    fprintf(stderr, "Warning: could not find font %s %f\n", family, pointSize);
+    int formatted = snprintf(errBuf, errBufSize,
+      "Warning: could not find font %s %f\n", family, pointSize);
+    checkAndTermBuf2(errBuf, formatted);
+    reportErrNosys(errBuf);
     _fontStruct = _normalFontStruct;
 }
 
@@ -634,7 +657,10 @@ void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
     FILE *fp = fopen(filename, "wb");
     if (!fp) {
 	reportErrSys("open");
-        fprintf(stderr, "Cannot open file %s for writing\n", filename);
+        int formatted = snprintf(errBuf, errBufSize,
+	  "Cannot open file %s for writing\n", filename);
+        checkAndTermBuf2(errBuf, formatted);
+        reportErrNosys(errBuf);
         return;
     }
     ExportGIF(fp);
@@ -645,7 +671,7 @@ void XDisplay::ExportImage(DisplayExportFormat format, char *filename)
 #ifndef LIBCS
     ExportToPS(format, filename);
 #else
-    fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
+    reportErrNosys("Cannot export display image in PS/EPS yet\n");
 #endif
   }
 }
@@ -677,7 +703,10 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 	      FILE *fp = fopen(fn, "wb");
 	      if (!fp) {
 	         reportErrSys("open");
-		 fprintf(stderr, "Cannot open file %s for writing.\n", fn);
+		 int formatted = snprintf(errBuf, errBufSize,
+		   "Cannot open file %s for writing.\n", fn);
+                 checkAndTermBuf2(errBuf, formatted);
+                 reportErrNosys(errBuf);
 		 return;
 	      }
 	      winc->ExportGIF(fp, 1);
@@ -689,7 +718,7 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 	_winList.DoneIterator(index1);
 	return;
   } else {
-    fprintf(stderr, "Cannot export all views in PS/EPS yet\n");
+    reportErrNosys("Cannot export all views in PS/EPS yet\n");
   }
 }
 
@@ -706,7 +735,10 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
      FILE *fp1 = fopen(gifFilename,"wb");
      if (!fp1) {
 	reportErrSys("open");
-	fprintf(stderr, "Cannot open file %s for writing\n", gifFilename);
+	int formatted = snprintf(errBuf, errBufSize,
+	  "Cannot open file %s for writing\n", gifFilename);
+        checkAndTermBuf2(errBuf, formatted);
+        reportErrNosys(errBuf);
 	return;
       }
 
@@ -716,16 +748,25 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
       char *p_start = strrchr(prename, '/');
       if (p_start) p_start++;
       else p_start = prename;
-      if (p) *p = '\0';
-      else fprintf(stderr, "Warning: gif file name %s is not ended with .gif\n", 
-				gifFilename);
+      if (p) {
+          *p = '\0';
+      } else {
+          int formatted = snprintf(errBuf, errBufSize,
+	    "Warning: gif file name %s is not ended with .gif\n", 
+            gifFilename);
+          checkAndTermBuf2(errBuf, formatted);
+          reportErrNosys(errBuf);
+      }
 #if defined(DEBUG)
       printf("prename is %s\n", prename);
 #endif
      FILE *fp2 = fopen(mapFileName,"wb");
      if (!fp2) {
 	reportErrSys("open");
-        fprintf(stderr, "Cannot open file %s for writing\n", mapFileName);
+        int formatted = snprintf(errBuf, errBufSize,
+	  "Cannot open file %s for writing\n", mapFileName);
+        checkAndTermBuf2(errBuf, formatted);
+        reportErrNosys(errBuf);
         return;
       }
       int x = 0 ,y = 0;
@@ -743,8 +784,8 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
 	 win->GetRootGeometry(wx, wy, ww, wh);
 
 #if defined(DEBUG) || 0
-            printf("The geometry of this window: wx = %d, wy = %d, 
-                        ww = %u, wh = %u\n", wx, wy, ww, wh);
+            printf("The geometry of this window: wx = %d, wy = %d, "
+                        "ww = %u, wh = %u\n", wx, wy, ww, wh);
 #endif
 
 	 if (!w && !h) {
@@ -754,8 +795,8 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
             w = ww;
             h = wh;
 #if defined(DEBUG) || 0
-    	    printf("In the first window: x = %d, y = %d, 
-			w = %u, h = %u\n", x, y, w, h);
+    	    printf("In the first window: x = %d, y = %d, "
+			"w = %u, h = %u\n", x, y, w, h);
 #endif
     	 } else {
       	    /* compute combined area */
@@ -769,8 +810,8 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
       }
       _winList.DoneIterator(index1);
 #if defined(DEBUG) || 0
-      printf("The display has: x = %d, y = %d,
-			w = %u, h = %u\n", x, y, w, h);
+      printf("The display has: x = %d, y = %d, "
+			"w = %u, h = %u\n", x, y, w, h);
 #endif
 
       index1 = _winList.InitIterator();
@@ -809,7 +850,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
       *p = '.';
       return;
   } else {
-    fprintf(stderr, "Cannot export display image in PS/EPS yet\n");
+    reportErrNosys("Cannot export display image in PS/EPS yet\n");
   } 
 }
 
@@ -885,7 +926,10 @@ void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
   Window parent = DefaultRootWindow(_display);
   Pixmap pixmap = XCreatePixmap(_display, parent, w, h, depth);
   if (!pixmap) {
-    fprintf(stderr, "Cannot create %ux%d pixmap\n", w, h);
+    int formatted = snprintf(errBuf, errBufSize,
+      "Cannot create %ux%d pixmap\n", w, h);
+    checkAndTermBuf2(errBuf, formatted);
+    reportErrNosys(errBuf);
     return;
   }
 
@@ -941,7 +985,7 @@ void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
       XImage *image = XGetImage(_display, src, 0, 0, ww, wh, AllPlanes,
 	ZPixmap);
       if (!image || !image->data) {
-        fprintf(stderr, "Cannot get image of window or pixmap\n");
+        reportErrNosys("Cannot get image of window or pixmap\n");
         continue;
       }
       XPutImage(_display, pixmap, gc, image, 0, 0, dx, dy, ww, wh);
@@ -960,7 +1004,7 @@ void XDisplay::MakeAndWriteGif(FILE *fp, int x, int y, int w, int h)
 
   XWindowAttributes xwa;
   if (!XGetWindowAttributes(_display, DefaultRootWindow(_display), &xwa)) {
-    fprintf(stderr, "Cannot get window attributes\n");
+    reportErrNosys("Cannot get window attributes\n");
     return;
   }
   xwa.x = x;
@@ -988,7 +1032,7 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
   XImage *image = XGetImage(_display, drawable, 0, 0, xwa.width, xwa.height,
 			    AllPlanes, ZPixmap);
   if (!image || !image->data) {
-    fprintf(stderr, "Cannot get image of window or pixmap\n");
+    reportErrNosys("Cannot get image of window or pixmap\n");
     return;
   }
 
@@ -1001,7 +1045,7 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
     free(colors);
 
   if (code != 1 || !grabPic) {
-    fprintf(stderr, "Cannot convert image\n");
+    reportErrNosys("Cannot convert image\n");
     return;
   }
 
@@ -1013,7 +1057,7 @@ void XDisplay::ConvertAndWriteGIF(Drawable drawable,
 			grabmapR, grabmapG, grabmapB, ncolors,
 			colorstyle, (char *) comment);
   if (status)
-    fprintf(stderr, "Cannot write GIF image\n");
+    reportErrNosys("Cannot write GIF image\n");
 
   free(grabPic);
   grabPic = 0;
@@ -1289,7 +1333,7 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
 
   XWindowRep *xwin = (XWindowRep *)win;
   if (!_winList.Delete(xwin)) {
-    fprintf(stderr, "XDisplay:Window to be deleted not found\n");
+    reportErrNosys("XDisplay:Window to be deleted not found\n");
     reportErrNosys("Fatal error");//TEMP -- replace with better message
     Exit::DoExit(1);
   }
@@ -1423,9 +1467,11 @@ Coord XDisplay::PointsPerPixel()
   static Boolean gavePixelWarning = false;
   if (fabs(pointsPerPixelHor - pointsPerPixelVert) > 0.01 &&
       !gavePixelWarning) {
-    fprintf(stderr,
+    int formatted = snprintf(errBuf, errBufSize,
       "Warning: horizontal (%f) and vertical (%f) points per pixel differ!\n",
         pointsPerPixelHor, pointsPerPixelVert);
+    checkAndTermBuf2(errBuf, formatted);
+    reportErrNosys(errBuf);
     gavePixelWarning = true;
   }
 
@@ -1497,7 +1543,7 @@ XDisplay::SetDefaultFont()
   SetFont("Courier", "Medium", "r", "Normal", 12.0);
   _normalFontStruct = _fontStruct;
   if (!_normalFontStruct) {
-      fprintf(stderr, "Cannot load 12-point Courier font\n");
+      reportErrNosys("Cannot load 12-point Courier font\n");
       reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoExit(1);
   }

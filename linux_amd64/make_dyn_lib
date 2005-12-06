@@ -1,0 +1,22 @@
+#! /bin/csh -f
+
+# $Id$
+
+# Copy dynamic libraries for AMD 64/Linux.
+
+if (! -e dyn_lib) then
+  mkdir dyn_lib
+endif
+
+#On basslet.bmrb.wisc.edu, 2005-10-20.
+cp /usr/lib64/libtk8.4.so dyn_lib
+cp /usr/lib64/libtcl8.4.so dyn_lib
+cp /usr/X11R6/lib64/libX11.so.6 dyn_lib
+cp /lib64/libdl.so.2 dyn_lib
+cp /usr/lib64/libstdc++.so.6 dyn_lib
+cp /lib64/libm.so.6 dyn_lib
+cp /lib64/libgcc_s.so.1 dyn_lib
+cp /lib64/libc.so.6 dyn_lib
+cp /lib64/ld-linux-x86-64.so.2 dyn_lib
+
+chmod 644 dyn_lib/*.so*

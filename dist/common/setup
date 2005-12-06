@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -24,6 +24,9 @@ ln -s ../dist_sw/public .
 ln -s ../dist_sw/doc .
 ln -s ../dist_sw/lib .
 
+if (! -e run) then
+  mkdir run
+endif
 cd run
 ln -s ../../dist_sw/run/* .
 cd ..

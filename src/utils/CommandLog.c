@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999
+  (c) Copyright 1999-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.2.14.1  2003/06/25 19:57:11  wenger
+  Various improvments to debug logging; moved command logs from /tmp
+  to work directory.
+
+  Revision 1.2  1999/12/15 20:04:14  wenger
+  Command log now includes information about how many times we went through
+  the dispatcher, to try to allow reproducing timing-dependent bugs.
+
   Revision 1.1  1999/12/06 18:41:22  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -37,6 +45,7 @@
 #include "ArgList.h"
 #include "ControlPanelSimple.h"
 #include "Dispatcher.h"
+#include "Init.h"
 
 //#define DEBUG
 
@@ -57,7 +66,7 @@ CommandLog::Init(const char *logFile)
   if (!_initialized) {
     char filename[MAXPATHLEN];
     if (!logFile) {
-      sprintf(filename, "/tmp/cmdLog.%d", (int)getpid());
+      sprintf(filename, "%s/cmdLog.%d", Init::WorkDir(), (int)getpid());
       logFile = filename;
     }
 

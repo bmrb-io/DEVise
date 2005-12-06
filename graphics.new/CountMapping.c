@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2001
+  (c) Copyright 1998-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -28,6 +28,14 @@
   $Id$
 
   $Log$
+  Revision 1.5.10.1  2003/07/31 15:38:27  wenger
+  Added initial value option to count mapping, also GUI for it; more
+  buffer length checks (still many more needed) in DeviseCommand.C.
+
+  Revision 1.5  2001/04/03 19:57:38  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.4  1999/05/21 14:52:20  wenger
   Cleaned up GData-related code in preparation for including bounding box
   info.
@@ -63,7 +71,7 @@
 
 /*----------------------------------------------------------------------------*/
 CountMapping::CountMapping(CountMapping::Attr countAttr,
-    CountMapping::Attr putAttr)
+    CountMapping::Attr putAttr, int initialValue)
 {
 #if defined(DEBUG)
   printf("CountMapping(0x%p)::CountMapping(%d, %d)\n", this,
@@ -71,8 +79,11 @@ CountMapping::CountMapping(CountMapping::Attr countAttr,
 #endif
 
   _valid = false;
+
   _countAttr = countAttr;
   _putAttr = putAttr;
+  _initialValue = initialValue;
+
   _binCount = 0;
   _bins = NULL;
 
@@ -193,7 +204,7 @@ CountMapping::Init(ViewGraph *view)
 
     int index;
     for (index = 0; index < _binCount; index++) {
-      _bins[index] = 0;
+      _bins[index] = _initialValue;
     }
   }
 
@@ -237,8 +248,12 @@ CountMapping::ProcessRecord(void *gdataRec)
     printf("  oldX = %g, oldY = %g\n", oldX, oldY);
 #endif
 
-    // Find out if this record is within the visual filter (force the attribute
-    // that's getting the count to the center of the visual filter).
+    // Find out if this record is within the visual filter (we stick in a
+    // dummy "center of the filter" value for the attribute that will get
+    // the count put into it, so that we don't reject a record based on
+    // that value).  Note that this function is called by
+    // ViewData::GetGDataValues() *before* the record is tested against
+    // the visual filter.
     Boolean inFilter;
     switch (_putAttr) {
     case AttrX: {

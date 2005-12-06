@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.29.14.1  2003/06/18 17:51:03  wenger
+  Fixed (I think) bug 875 -- invalid TData record problem seen by
+  Wavelet-IDR.
+
+  Revision 1.29  2000/02/16 18:51:44  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.28  2000/01/11 22:28:33  wenger
   TData indices are now saved when they are built, rather than only when a
   session is saved; other improvements to indexing; indexing info added
@@ -172,21 +179,25 @@ public:
 	/* Write a line into the file, but don't make it into a record */
 	void WriteLine(void *line);
 
+	/* From DispatcherCallback */
+	virtual char *DispatchedName() { return "TDataAscii"; }
+
 protected:
 	/* Decode a record and put data into buffer. Return false if
 	this line is not valid. */
 	virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
 
-private:
-	/* From DispatcherCallback */
-	char *DispatchedName() { return "TDataAscii"; }
-
 	/* Build index */
 	virtual void BuildIndex();
 
-	TD_Status ReadRec(RecId id, int numRecs, void *buf);
-	TD_Status ReadRecAsync(TDataRequest *req, RecId id,
+	virtual TD_Status ReadRec(RecId id, int numRecs, void *buf);
+	virtual TD_Status ReadRecAsync(TDataRequest *req, RecId id,
                                int numRecs, void *buf);
+
+private:
+
+	virtual TD_Status DoReadRec(RecId id, int numRecs, void *buf,
+	  int iteration);
 };
 
 #endif

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,22 @@
   $Id$
 
   $Log$
+  Revision 1.32  2003/01/13 19:25:09  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.31.14.5  2005/09/28 17:14:42  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.31.14.4  2005/09/06 21:20:09  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.31.14.3  2003/11/05 17:01:41  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
   Revision 1.31.14.2  2002/09/17 23:34:11  wenger
   Fixed a bunch of memory leaks -- especially in DevError::ReportError()!
 
@@ -252,6 +268,8 @@ public:
   /* Miscellaneous Event Handlers to report events to front end*/
   /* Given a script which the frond end can execute -in our case 
    * a Tcl/Tk procedure
+   * Note: sending multiple commands separated by newlines in a single
+   * call works for monolithic but not client/server! wenger 2003-11-05.
    */
   virtual void NotifyFrontEnd(const char *script) = 0;
 
@@ -392,16 +410,11 @@ private:
   static ClassDir *_classDir; 
 
   ControlPanelCallbackList *_callbacks;
-
-protected:
-  friend class DeviseCommand;
-  //TEMP -- it seems like this could be an automatic variable in
-  // DeviseCommand::Run().  RKW 1999-09-08.
-  char resultBuf[10*1024];
 };
 
 class ControlPanelCallback {
 public:
+  virtual ~ControlPanelCallback() {}
   virtual void ModeChange(ControlPanel::Mode mode) = 0;
 };
 

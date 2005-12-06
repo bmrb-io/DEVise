@@ -1,56 +1,60 @@
 # DEVise startHeader
 # file type: session
-# file date: May 02 2001 16:59:33
-# DEVise version: 1.7.2
-# DEVise date: Apr  2 2001
+# file date: Aug 26 2004 15:57:47
+# DEVise version: 1.7.18
+# DEVise date: May 24 2004
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {}
+DEVise setSessionDesc {This session is basically a demo of the Segment symbol type.}
 
 # Load color palette
-DEVise color SessionPalette {#000000000000  black
-#000000008b00  DarkBlue
-#00000000cd00  MediumBlue
-#00000000ff00  blue
-#000064000000  DarkGreen
-#00008b000000  green4
-#0000bf00ff00  DeepSkyBlue1
-#0000ff000000  green
-#0000ff00ff00  cyan
-#190019007000  MidnightBlue
-#1e009000ff00  DodgerBlue
-#1f001f001f00  gray12
-#22008b002200  ForestGreen
-#400040004000  gray25
-#610061006100  gray38
-#7f007f007f00  gray50
-#8b0000000000  DarkRed
-#8b0045001300  SaddleBrown
-#99003200cc00  DarkOrchid
-#a100a100a100  gray63
-#b20022002200  firebrick
-#b4005200cd00  MediumOrchid3
-#bf00bf00bf00  gray75
-#c000ff003e00  OliveDrab
-#e000e000e000  gray88
-#ee00ad000e00  Goldenrod2
-#ee00e800aa00  PaleGoldenrod
-#f000e6008c00  khaki
-#f500de00b300  wheat
-#fa00fa00d200  LightGoldenrodYellow
-#fd00f500e600  OldLace
-#ff0000000000  red
-#ff000000ff00  magenta
-#ff007f000000  DarkOrange1
-#ff00a5000000  orange
-#ff00d7000000  gold
-#ff00ff000000  yellow
-#ffffffffffff  white
+DEVise color SessionPalette {#000000000000 black
+#000000008b00 DarkBlue
+#00000000cd00 MediumBlue
+#00000000ff00 blue
+#000064000000 DarkGreen
+#00008b000000 green4
+#0000bf00ff00 DeepSkyBlue1
+#0000ff000000 green
+#0000ff00ff00 cyan
+#190019007000 MidnightBlue
+#1e009000ff00 DodgerBlue
+#1f001f001f00 gray12
+#22008b002200 ForestGreen
+#400040004000 gray25
+#610061006100 gray38
+#7f007f007f00 gray50
+#8b0000000000 DarkRed
+#8b0045001300 SaddleBrown
+#99003200cc00 DarkOrchid
+#a100a100a100 gray63
+#b20022002200 firebrick
+#b4005200cd00 MediumOrchid3
+#bf00bf00bf00 gray75
+#c000ff003e00 OliveDrab
+#e000e000e000 gray88
+#ee00ad000e00 Goldenrod2
+#ee00e800aa00 PaleGoldenrod
+#f000e6008c00 khaki
+#f500de00b300 wheat
+#fa00fa00d200 LightGoldenrodYellow
+#fd00f500e600 OldLace
+#ff0000000000 red
+#ff000000ff00 magenta
+#ff007f000000 DarkOrange1
+#ff00a5000000 orange
+#ff00d7000000 gold
+#ff00ff000000 yellow
+#ffffffffffff white
 }
 
+# Set color mode (modulus or truncation)
+DEVise setColorMode 0
+
 # Create views
-DEVise create {view} {Scatter} {Data View} -179.870000 179.450000 -85.400000 100.000000 4 37
+
+DEVise create {view} {Scatter} {Data View} -179.870000 179.450000 -85.400000 100.000000 4 37 0 37 0 37
 DEVise setLabel {Data View} 0 12 {}
 DEVise setViewStatistics {Data View} 0000000
 DEVise setViewDimensions {Data View} 2
@@ -67,7 +71,7 @@ DEVise viewSetVerPan {Data View} 1 0.500000 1.000000
 DEVise setViewGDS {Data View} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {Data View} 1 0 0 "" 1 " " 1
 DEVise setHistogram {Data View} -84.89 83.24 10
-DEVise setCountMapping {Data View} 0 {} {}
+DEVise setCountMapping {Data View} 0 {} {} 0
 DEVise viewSetIsHighlight {Data View} 0
 DEVise setXAxisDateFormat {Data View} {%b %d %Y %T}
 DEVise setYAxisDateFormat {Data View} {%b %d %Y %T}
@@ -78,18 +82,25 @@ DEVise setDupElim {Data View} {0}
 DEVise setNiceAxes {Data View} 0 0
 DEVise viewSetDisabledActions {Data View} 0 0 0 0
 DEVise setShowMouseLocation {Data View} {1}
+DEVise setLinkMultFact {Data View} {X} 1
+DEVise setLinkMultFact {Data View} {Y} 1
+DEVise setGAttrLinkMode {Data View} 0
+DEVise setDoHomeOnVisLink {Data View} {1}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Y_vs_X}
 
 # Create mapping instances (GData)
+
 DEVise create {mapping} {Y_vs_X} .World_Outline .World_Outline#Y_vs_X {} {$X} {$Y} {} 3 1 0 0 7 {$DX} {$DY} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.World_Outline#Y_vs_X} 1
+DEVise setMappingColors {.World_Outline#Y_vs_X} {3} {3} {0}
 
 # Create windows
-DEVise create {window} {TileLayout} {Map of the World} 0.118750 0.193359 0.500000 0.500000 0 0
+DEVise create {window} {TileLayout} {Map of the World} 0.117969 0.192383 0.500000 0.500000 0 0
 
 # Set up window layouts
+
 DEVise setWindowLayout {Map of the World} -1 -1 0
 
 # Create links
@@ -101,10 +112,13 @@ DEVise setWindowLayout {Map of the World} -1 -1 0
 # Create actions
 
 # Put labels into views
+
 DEVise setAxisDisplay {Data View} {X} 1
 DEVise setAxisDisplay {Data View} {Y} 1
 DEVise setAxisTicks {Data View} {X} 1
 DEVise setAxisTicks {Data View} {Y} 1
+DEVise setAxisMultFact {Data View} {X} 1
+DEVise setAxisMultFact {Data View} {Y} 1
 
 # Put action into view
 
@@ -124,10 +138,13 @@ DEVise insertWindow {Data View} {Map of the World}
 DEVise setPileStackState {Map of the World} 1
 
 # Init history of view
+
 DEVise clearViewHistory {Data View}
-DEVise insertViewHistory {Data View} {-179.87} {-85.40} {179.45} {100.00} 0
+DEVise insertViewHistory {Data View} {-179.87} {-85.4} {179.45} {100} 0
 
 # Set camera location for each view
-DEVise set3DLocation {Data View} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {Data View} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 
 # Set string tables for each view
+
+# Session postscript

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2002
+// (c) Copyright 2001-2005
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -28,8 +28,70 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2003/01/13 19:23:42  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.5  2002/07/19 17:06:47  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.4.2.10  2005/11/07 21:25:04  wenger
+// Added timestamps to many more items in the JSPoP debug output.
+//
+// Revision 1.4.2.9  2004/09/29 19:08:34  wenger
+// Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
+// V1_7b0_br branch.
+//
+// Revision 1.4.2.8  2004/05/12 21:59:58  wenger
+// Removed a bunch of temporary stuff from the jspop_debug_0405_br
+// branch.
+//
+// Revision 1.4.2.7  2004/05/12 21:43:57  wenger
+// Merged the jspop_debug_0405_br thru jspop_debug_0405_br_2 to the
+// V1_7b0_br branch.
+//
+// Revision 1.4.2.6.4.8  2004/09/29 18:16:45  wenger
+// (Hopefully) final cleanup of the jspop_debug_0405_br branch -- some
+// changes to DEViseClientSocket, and a little more debug output in
+// jspop.
+//
+// Revision 1.4.2.6.4.7  2004/09/21 19:38:12  wenger
+// Misc. cleanup before merging back into 1.7 (DEViseClientSocket.java
+// still needs some changes).
+//
+// Revision 1.4.2.6.4.6  2004/09/08 16:52:32  wenger
+// More diagnostics -- committing basically the code that reproduced
+// the hanging problem on 2004-09-08 (just some comments added).
+//
+// Revision 1.4.2.6.4.5  2004/09/03 19:00:51  wenger
+// More diagnostic output and debug comments; version is now 5.2.2x3.
+//
+// Revision 1.4.2.6.4.4  2004/09/03 17:25:16  wenger
+// We now generate a fatal error if we time out on the sleep waiting
+// for a command to be processed; added timestamps and object numbers
+// to a bunch of the diagnostic messages.
+//
+// Revision 1.4.2.6.4.3  2004/07/01 15:15:48  wenger
+// Improved circular log (now always has "-END-" at the temporal end
+// of the log); various other debug logging improvements; put the
+// sequence of operations in DEViseClientSocket.closeSocket() back
+// the way it was.
+//
+// Revision 1.4.2.6.4.2  2004/05/10 22:28:51  wenger
+// Set things up so that much JSPoP debug code (both new and old)
+// can be turned on and off on the fly.
+//
+// Revision 1.4.2.6.4.1  2004/05/10 19:38:59  wenger
+// Lots of new debug code, turned on at compile time; no significant
+// functional changes; also has comments about where we might be
+// getting hung, based on debug logs.
+//
+// Revision 1.4.2.6  2003/10/28 21:56:31  wenger
+// Moved determination of JSPoP client hostname to DEViseClientSocket
+// thread (out of main jspop thread).
+//
+// Revision 1.4.2.5  2003/04/25 20:26:59  wenger
+// Eliminated or reduced "Abrupt end of input stream reached" errors in
+// the JSPoP on normal client exit.
 //
 // Revision 1.4.2.4  2002/12/05 20:38:19  wenger
 // Removed a bunch of unused (mostly already-commented-out) code to
@@ -85,7 +147,7 @@ public class DEViseClientSocket implements Runnable
 {
     //===================================================================
     // VARIABLES
-    private static final int DEBUG = 0;
+    private static int _debugLvl = 0;
 
     private DEViseCommSocket _socket = null;
     
@@ -95,39 +157,64 @@ public class DEViseClientSocket implements Runnable
 
     private boolean _isFirstCmd = true;
 
-    private String _hostname = null;
+    private String _hostname = "unknown";
 
     private Thread _thread = null;
     private volatile boolean _shutdown = false;
     private static int _objectCount = 0;
 
+    private int _objectNum = -1;
+
     // For mutex on writing.
     private Boolean _writeSync = new Boolean(false);
+
+    private jspop _pop;
 
     //===================================================================
     // PUBLIC METHODS
 
     // ------------------------------------------------------------------
-    // Constructor.
-    public DEViseClientSocket(Socket sock, int timeout) throws YException
+    // Set the debug level for this class.
+    public static void setDebugLvl(int level)
     {
+        _debugLvl = level;
+    }
+
+    // ------------------------------------------------------------------
+    // Get the object number of this object.
+    public int getObjectNum()
+    {
+        return _objectNum;
+    }
+
+    // ------------------------------------------------------------------
+    // Constructor.
+    public DEViseClientSocket(Socket sock, int timeout, jspop pop)
+      throws YException
+    {
+	_pop = pop;
+
+	if (_debugLvl >= 4) {
+            _pop.pn("DEViseClientSocket(" + _objectCount +
+	      ").DEViseClientSocket()");
+        }
+
         _socket = new DEViseCommSocket(sock, timeout);
 
 	_thread = new Thread(this);
-	_thread.setName("DEViseClientSocket" + _objectCount++);
+	_objectNum = _objectCount++;
+	_thread.setName("DEViseClientSocket" + _objectNum);
 	_thread.start();
     }
 
     // ------------------------------------------------------------------
     protected void finalize()
     {
+	if (_debugLvl >= 4) {
+            _pop.pn("DEViseClientSocket(" + _objectNum +
+	      ").finalize()");
+        }
         closeSocket();
-    }
-
-    // ------------------------------------------------------------------
-    public void setHostname(String name)
-    {
-        _hostname = name;
     }
 
     // ------------------------------------------------------------------
@@ -157,9 +244,10 @@ public class DEViseClientSocket implements Runnable
     // rid of it. RKW 2001-10-22.
     public boolean isFirstCommand()
     {
-	if (DEBUG >= 2) {
-	    System.out.println(
-	      "DEViseClientSocket.isFirstCommand() returning " + _isFirstCmd);
+	if (_debugLvl >= 4) {
+	    _pop.pn(
+	      "DEViseClientSocket.isFirstCommand(" + _objectNum +
+	      ") returning " + _isFirstCmd);
 	}
 
         return _isFirstCmd;
@@ -169,10 +257,10 @@ public class DEViseClientSocket implements Runnable
     // Get the pending command, if any.
     public String getCommand()
     {
-        if (DEBUG >= 2) {
-	    System.out.println(
-	      "DEViseClientSocket.getCommand() returning command <" +
-	      _command + ">");
+        if (_debugLvl >= 4) {
+	    _pop.pn(
+	      "DEViseClientSocket(" + _objectNum +
+	      ").getCommand() returning command <" + _command + ">");
 	}
 
 	return _command;
@@ -200,8 +288,9 @@ public class DEViseClientSocket implements Runnable
     // Clear the pending command, if any.
     public synchronized void clearCommand()
     {
-	if (DEBUG >= 2) {
-	    System.out.println("DEViseClientSocket.clearCommand()");
+	if (_debugLvl >= 4) {
+	    _pop.pn("DEViseClientSocket(" + _objectNum +
+	      ").clearCommand()");
 	}
 
 	_command = null;
@@ -221,17 +310,17 @@ public class DEViseClientSocket implements Runnable
     public void sendCommand(String cmd, short msgType, int id)
       throws YException
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClientCommand.sendCommand(<" + cmd +
-	      ">, " + msgType + ", " + id + ")");
+	if (_debugLvl >= 2) {
+	    _pop.pn("DEViseClientSocket(" + _objectNum +
+	      ").sendCommand(<" + cmd + ">, " + msgType + ", " + id + ")");
 	}
 
 	synchronized (_writeSync) {
             _socket.sendCmd(cmd, msgType, id);
 	}
 
-        if (DEBUG >= 2) {
-            System.out.println("  Done sending command");
+        if (_debugLvl >= 4) {
+            _pop.pn("  Done sending command");
         }
     }
 
@@ -239,8 +328,9 @@ public class DEViseClientSocket implements Runnable
     // Send the given data to the client.
     public void sendData(byte[] data) throws YException
     {
-	if (DEBUG >= 1) {
-	    System.out.println("DEViseClientCommand.sendData()");
+	if (_debugLvl >= 2) {
+	    _pop.pn("DEViseClientSocket(" + _objectNum +
+	      ").sendData()");
 	}
 
 	synchronized (_writeSync) {
@@ -252,21 +342,32 @@ public class DEViseClientSocket implements Runnable
     // Shut down the reading thread and close the socket.
     public void closeSocket()
     {
-        if (DEBUG >= 1) {
-            System.out.println("DEViseClientSocket.closeSocket()");
+        if (_debugLvl >= 2) {
+            _pop.pn("DEViseClientSocket(" + _objectNum +
+	      ").closeSocket()");
         }
 
-	_shutdown = true;
-	_thread.interrupt();
+	if (isOpen()) {
+	    _shutdown = true;
+	    _thread.interrupt();
+	    _socket.closeSocket();
+        }
     }
 
     // ------------------------------------------------------------------
     // Read commands from the client on the socket.
     public void run()
     {
-        if (DEBUG >= 1) {
-	    System.out.println("DEViseClientSocket.run()");
+        if (_debugLvl >= 2) {
+	    _pop.pn("DEViseClientSocket(" + _objectNum + ").run()");
 	}
+
+	//
+	// Get the hostname for this socket.
+	//
+        _hostname = _socket.getHostName();
+        _pop.pn("Client connection request from host " + _hostname +
+	  " is received ...");
 
 	String partCmd = "";
 
@@ -283,14 +384,35 @@ public class DEViseClientSocket implements Runnable
 		    _id = _socket.getCmdId();
 		    _cgiFlag = _socket.getFlag();
 
-		    if (DEBUG >= 2) {
-		        System.out.println("Got command <" + _command +
-		          "> in DEViseClientSocket.run()");
+		    if (_debugLvl >= 4) {
+		        _pop.pn("Got command <" + _command +
+		          "> in DEViseClientSocket(" + _objectNum +
+			  ").run()");
 		    }
 		} else {
+		    if (_debugLvl >= 4) {
+		        _pop.pn("DIAG sleeping in " +
+			  "DEViseClientSocket(" + _objectNum + ").run() [" +
+			  CircularLog.currentTimeStringShort() + "]");
+		    }
+
 		    // Sleep will be interrupted when current command is
 		    // cleared.  (Had problems with wait/notify.)
-		    Thread.sleep(1000000); // a long time
+		    Thread.sleep(1000 * 1000); // 16.7 minutes (more or less arbitrary)
+		    if (_socket.isOpen()) {
+		        _pop.pn("Fatal error: sleep in " +
+			  "DEViseClientSocket(" + _objectNum + ").run() " +
+		          "was not interrupted and _socket is open");
+		        _pop.pn("JSPoP exiting");
+			System.exit(1);
+		    } else {
+		        if (_debugLvl >= 1) {
+		            _pop.pn("Warning: sleep in " +
+			      "DEViseClientSocket(" + _objectNum + ").run() " +
+		              "was not interrupted; _socket is closed");
+			}
+		        closeSocket();
+		    }
 		}
 
 	    } catch (YException ex) {
@@ -310,8 +432,9 @@ public class DEViseClientSocket implements Runnable
 
 	_socket.closeSocket();
 
-        if (DEBUG >= 1) {
-	    System.out.println("  Done with DEViseClientSocket.run()");
+        if (_debugLvl >= 2) {
+	    _pop.pn("  Done with DEViseClientSocket(" +
+	      _objectNum + ").run()");
 	}
     }
 }

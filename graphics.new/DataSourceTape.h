@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.6.14.1  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.6  2000/08/10 16:10:49  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.5  2000/01/13 23:07:04  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -59,7 +65,7 @@ public:
 	DataSourceTape(char *name, const char *label, char *param = 0);
 	virtual ~DataSourceTape();
 
-	virtual char *objectType() {return "DataSourceTape";};
+	virtual const char *objectType() {return "DataSourceTape";};
 
 	virtual DevStatus Open(const char *mode);
 	virtual Boolean IsOk();

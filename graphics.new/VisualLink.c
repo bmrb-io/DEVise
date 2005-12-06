@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -30,6 +30,9 @@
   $Id$
 
   $Log$
+  Revision 1.27  2003/01/13 19:25:29  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.26  2002/07/19 17:07:27  wenger
   Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 
@@ -38,6 +41,9 @@
 
   Revision 1.24  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.23.4.6  2005/03/17 17:25:12  wenger
+  Added a bunch of debug code while working on bug 915.
 
   Revision 1.23.4.5  2003/01/09 22:21:59  wenger
   Added "link multiplication factor" feature; changed version to 1.7.14.
@@ -343,7 +349,9 @@ void VisualLink::FilterChanged(View *view, const VisualFilter &newFilter,
 
       if (filterDifferent) {
 #if defined(DEBUG)
-        printf("  changing filter for visual link %s\n", GetName());
+        printf("  changing filter for visual link %s to ", GetName());
+        printf("(%g, %g), (%g, %g) %d\n", _filter.xLow,
+            _filter.yLow, _filter.xHigh, _filter.yHigh, _filter.flag);
 #endif
 	_filter = adjustedFilter;
 
@@ -366,6 +374,8 @@ void VisualLink::FilterChanged(View *view, const VisualFilter &newFilter,
 #if defined(DEBUG)
   printf("  Done with VisualLink(%s)::FilterChanged(%s)\n", GetName(),
     view->GetName());
+  printf("    Filter is: (%g, %g), (%g, %g) %d\n", _filter.xLow,
+      _filter.yLow, _filter.xHigh, _filter.yHigh, _filter.flag);
 #endif
 }
 
@@ -375,6 +385,8 @@ void VisualLink::Run()
 {
 #if defined(DEBUG)
   printf("VisualLink(%s)::Run()\n", GetName());
+  printf("  Filter is: (%g, %g), (%g, %g) %d\n", _filter.xLow,
+      _filter.yLow, _filter.xHigh, _filter.yHigh, _filter.flag);
 #endif
 
   int index;
@@ -388,6 +400,10 @@ void VisualLink::Run()
   DoneIterator(index);
 
   _filterLocked = false;
+
+#if defined(DEBUG)
+  printf("Done with VisualLink(%s)::Run()\n", GetName());
+#endif
 }
 
 // ---------------------------------------------------------------------
@@ -466,11 +482,12 @@ VisualLink::GetHome2D(ViewGraph *view, VisualFilter &filter,
   filter.yHigh /= yFactor;
 
 #if (DEBUG >= 4)
-  printf("  Filter is: (%g, %g), (%g, %g) after Link(%s)::GetHome2D()\n",
-      filter.xLow, filter.yLow, filter.xHigh, filter.yHigh, GetName());
+  printf("Done with VisualLink(%s)::GetHome2D(%s, %d)\n", GetName(),
+      view->GetName(), explicitRequest);
+  printf("  Filter is: (%g, %g), (%g, %g)\n",
+      filter.xLow, filter.yLow, filter.xHigh, filter.yHigh);
 #endif
 }
-
 
 // ---------------------------------------------------------------------
 /* update visual filters for view views. */

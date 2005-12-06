@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-2001
+  (c) Copyright 1997-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,26 @@
   $Id$
 
   $Log$
+  Revision 1.5.10.1  2003/12/19 18:12:49  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.5.28.1  2003/12/17 00:18:40  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.5.26.2  2003/12/16 16:09:00  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.5.26.1  2003/04/18 16:10:59  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
+  Revision 1.5  2001/06/12 15:29:52  wenger
+  Implemented a choice of modulus (default) or truncate color modes.
+
   Revision 1.4  1998/06/24 14:44:02  beyer
   added destructor
 
@@ -57,7 +77,6 @@
 //******************************************************************************
 
 #include <string>
-#include <stl.h>
 
 #include "Palette.h"
 #include "ColorManager.h"

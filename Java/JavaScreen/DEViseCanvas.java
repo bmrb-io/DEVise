@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2005
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.95  2003/01/13 19:23:41  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.94  2002/07/19 17:06:46  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
@@ -35,6 +38,19 @@
 //
 // Revision 1.92  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.91.2.17  2005/11/01 19:30:23  wenger
+// JS now sends 3D coordinate updates only when it really needs to
+// (when it's a collaboration leader).
+//
+// Revision 1.91.2.16  2003/04/25 20:26:59  wenger
+// Eliminated or reduced "Abrupt end of input stream reached" errors in
+// the JSPoP on normal client exit.
+//
+// Revision 1.91.2.15  2003/04/02 16:19:35  wenger
+// Possible fix for hard-to-reproduce null pointer exception in
+// DEViseCanvas.checkMousePos(); a little bit of clean up of ugly
+// DEViseCollabDlg class.
 //
 // Revision 1.91.2.14  2002/12/17 18:08:22  wenger
 // Fixed bug 844 (slow rubberband line drawing in child views).
@@ -1300,8 +1316,9 @@ public class DEViseCanvas extends Container
 	    crystal.resetAll(true);
 	    repaint();
 
-            // send command to collaborations if necessary
-	    if (jsc.specialID == -1) {
+            // send command to collaborations if necessary (only if we're
+	    // a leader!)
+	    if (jsc.specialID == -1 && jsc.isCollab) {
 	        String cmd = DEViseCommands.SET_3D_CONFIG + " "
 		  + activeView.getCurlyName();
 			
@@ -1563,8 +1580,9 @@ public class DEViseCanvas extends Container
 
             jsc.jsValues.canvas.isInteractive = false;
             if (view.viewDimension == 3) {
-		// send command to collaborations if necessary
-		if (jsc.specialID == -1) {
+		// send command to collaborations if necessary (only if
+		// we're a leader!)
+		if (jsc.specialID == -1 && jsc.isCollab) {
 		    // for 3D drill-down
 		    if ((jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) 
 			&& (activeView.isDrillDown) && (!isMouseDragged) 
@@ -1909,12 +1927,12 @@ public class DEViseCanvas extends Container
 
     // Update the shape of the mouse cursor based on whether the mouse
     // is on a DEVise cursor, etc.
-    public synchronized void checkMousePos(Point p, boolean checkDispatcher)
-      throws YError
+    public synchronized void checkMousePos(Point mouseLoc,
+      boolean checkDispatcher) throws YError
     {
         if (DEBUG >= 3) {
             System.out.println("DEViseCanvas(" + view.viewName +
-	      ").checkMousePos(" + p.x + ", " + p.y + ")");
+	      ").checkMousePos(" + mouseLoc.x + ", " + mouseLoc.y + ")");
         }
 
         // initialize value
@@ -1923,7 +1941,7 @@ public class DEViseCanvas extends Container
         isInViewDataArea = false;
         activeView = null;
 
-        if (checkMousePos(p, view)) { // activeView will not be null
+        if (checkMousePos(mouseLoc, view)) { // activeView will not be null
 	    Cursor tmpCursor = null;
             if (checkDispatcher && jsc.dispatcher.getStatus() ==
 	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
@@ -2029,10 +2047,24 @@ public class DEViseCanvas extends Container
             }
 
             // show the data at current mouse position
+
 	    if (activeView != null && jsc.viewInfo != null) {
-		if(isInViewDataArea) {
+
+	        // Added check here for mouseLoc being null, because sometimes
+	        // (infrequently) we get null pointers in the line calling
+	        // jsc.viewInfo.updateInfo below.  The problem is, I have never
+	        // been able to reproduce it reliably, and I can't *really*
+	        // understand how we could get here with mouseLoc equal to null.
+	        // But I can't see what else could be the proble, either.
+	        // wenger, 2003-04-01.  *Not* April Fool's!!
+
+		// Note: the extra checks still didn't fix the problem.
+		// Could it be that another thread occasionally sets something
+		// to null between the check and the updateInfo call below?
+		// wenger, 2003-04-25.
+		if (mouseLoc != null && isInViewDataArea) {
 		    jsc.viewInfo.updateInfo(activeView.viewName,
-		      activeView.getX(p.x), activeView.getY(p.y));
+		      activeView.getX(mouseLoc.x), activeView.getY(mouseLoc.y));
 		} else {
 		    jsc.viewInfo.updateInfo();
 		}

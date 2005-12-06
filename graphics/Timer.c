@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.17.14.2  2005/10/07 19:40:54  wenger
+  Oops -- got committed with debug logging turned on...
+
+  Revision 1.17.14.1  2005/10/02 16:00:08  wenger
+  Got DEVise/JavaScreen to work on basslet by turning off hangCheck.
+
+  Revision 1.17  1999/10/05 17:55:38  wenger
+  Added debug log level.
+
   Revision 1.16  1998/03/25 14:51:50  wenger
   Added standard headers to all graphics sources.
 
@@ -340,7 +349,7 @@ void Timer::StartTimer()
 
     if (_nexthop < 0) {
 #if defined(DEBUG)
-	printf("_nexthop is negative\n");
+	reportErrNosys("_nexthop is negative\n");
 #endif
 	_nexthop = 1;
     }

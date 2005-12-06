@@ -20,6 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.2.28.1  2005/09/28 17:14:28  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.2  1998/01/07 19:27:52  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.1.2.3  1998/01/07 15:58:59  wenger
   Removed replica cababilities (since this will be replaced by collaboration
   library); integrated cslib into DEVise server; commented out references to
@@ -77,7 +88,8 @@ class Server {
 	    return SendControl(flag, 1, &command, false); }
 
     virtual int SendControl(		  // send command to all clients
-	u_short flag, int argc, char **argv, int addBraces = true);
+	u_short flag, int argc, const char * const *argv,
+	  int addBraces = true);
 
   protected:
     virtual void DoAbort(char *reason);   // print error message and abort

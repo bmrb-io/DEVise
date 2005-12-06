@@ -21,6 +21,14 @@
   $Id$
 
   $Log$
+  Revision 1.3.10.1  2003/11/21 23:05:11  wenger
+  Drill-down now works properly on views that are GAttr link followers
+  (fixed bug 893).
+
+  Revision 1.3  2001/05/24 18:42:02  wenger
+  Fixed bug 674 (drill-down doesn't work correctly on record link follower
+  views).
+
   Revision 1.2  2001/05/18 21:14:59  wenger
   Fixed bug 671 (potential GData buffer overflow).
 
@@ -40,7 +48,7 @@
 #include "ArgList.h"
 #include "VisualArg.h"
 
-class ViewGraph;
+class ViewData;
 class TDataMap;
 class QueryCallback;
 class AttrList;
@@ -53,14 +61,14 @@ public:
 
     // Coords is the set of GData x, y, z triplets for which we need
     // TData info.
-    DevStatus RunQuery(ViewGraph *view, int count, Point3D coords[]);
+    DevStatus RunQuery(ViewData *view, int count, Point3D coords[]);
 
     void GetResults(int &count, const char *const *& messages);
 
 private:
-    void GetMapping(ViewGraph *view);
+    void GetMapping(ViewData *view);
     void SetVisualFilter();
-    void ExecuteQuery();
+    void ExecuteQuery(ViewData *view);
     void ProcessRecord(char *tData, char *gData);
     void PrintTData(Coord gdX, Coord gdY, Coord gdZ, char *tData);
 

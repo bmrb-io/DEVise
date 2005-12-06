@@ -16,6 +16,32 @@
   $Id$
 
   $Log$
+  Revision 1.23.12.3  2005/09/28 17:14:36  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.23.12.2  2005/09/12 19:42:02  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.23.12.1  2003/12/19 18:07:22  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.23.30.1  2003/12/17 00:17:54  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.23.28.1  2003/12/16 16:08:10  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.23  2001/01/08 20:32:34  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.21.2.1  2000/09/01 18:26:34  wenger
   Merged changes from js_cgi_base to fixed_bug_616 onto the branch.
 
@@ -185,7 +211,11 @@ static void DoAbort(char *reason)
 }
 
 int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
-	      int argc, char *argv[])
+	      int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+	      const
+#endif
+	      char *argv[])
 {
 #ifdef DEBUG	
     printf("Function %s, %d args\n", argv[1], argc - 1);
@@ -196,7 +226,11 @@ int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
 }
 
 int SetGetImage(ClientData clientData, Tcl_Interp *interp,
-                int argc, char *argv[]) 
+                int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+		const
+#endif
+		char *argv[]) 
 { 
    _dataFd = socket(AF_INET, SOCK_STREAM, 0);
    if(_dataFd < 0) 
@@ -233,7 +267,7 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
    printf("\nData client waiting for server to connect\n");
 #endif
 
-   char *mArgv[3] = { "getDisplayImage", "0", argv[1] };
+   const char *mArgv[3] = { "getDisplayImage", "0", argv[1] };
    // Note: this bypasses the client/server library.  RKW Jan. 6, 1998.
    if (NetworkSend(_client->ServerFd(), API_CMD, 0, 3, mArgv) < 0) {
        fprintf(stderr, "Server has terminated. Client exits.\n");
@@ -243,7 +277,7 @@ int SetGetImage(ClientData clientData, Tcl_Interp *interp,
 
    struct sockaddr_in servAddr;
    memset(&servAddr, 0, sizeof(struct sockaddr));
-#if defined(LINUX)
+#if defined(LINUX) || defined(SOLARIS)
    socklen_t
 #else
    int

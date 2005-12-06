@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2005
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,11 +27,74 @@
 // $Id$
 
 // $Log$
+// Revision 1.80  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.79  2002/06/17 19:40:15  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
 // Revision 1.78  2002/05/01 21:28:59  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.77.2.14  2005/11/07 21:25:04  wenger
+// Added timestamps to many more items in the JSPoP debug output.
+//
+// Revision 1.77.2.13  2004/09/29 19:08:35  wenger
+// Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
+// V1_7b0_br branch.
+//
+// Revision 1.77.2.12  2004/05/12 21:59:59  wenger
+// Removed a bunch of temporary stuff from the jspop_debug_0405_br
+// branch.
+//
+// Revision 1.77.2.11  2004/05/12 21:43:58  wenger
+// Merged the jspop_debug_0405_br thru jspop_debug_0405_br_2 to the
+// V1_7b0_br branch.
+//
+// Revision 1.77.2.10.4.6  2004/09/21 19:38:12  wenger
+// Misc. cleanup before merging back into 1.7 (DEViseClientSocket.java
+// still needs some changes).
+//
+// Revision 1.77.2.10.4.5  2004/09/10 23:04:23  wenger
+// Seem to have fixed the problem of the JSPoP hanging on RedHat 9
+// (changed synchronization in the jspop class); still more diagnostic
+// output; added config file for local install on trigger (for testing).
+//
+// Revision 1.77.2.10.4.4  2004/07/01 15:15:49  wenger
+// Improved circular log (now always has "-END-" at the temporal end
+// of the log); various other debug logging improvements; put the
+// sequence of operations in DEViseClientSocket.closeSocket() back
+// the way it was.
+//
+// Revision 1.77.2.10.4.3  2004/05/12 21:27:26  wenger
+// Added more debug code and comments about possible causes of
+// hung JSPoPs.
+//
+// Revision 1.77.2.10.4.2  2004/05/10 22:28:51  wenger
+// Set things up so that much JSPoP debug code (both new and old)
+// can be turned on and off on the fly.
+//
+// Revision 1.77.2.10.4.1  2004/05/10 19:38:59  wenger
+// Lots of new debug code, turned on at compile time; no significant
+// functional changes; also has comments about where we might be
+// getting hung, based on debug logs.
+//
+// Revision 1.77.2.10  2003/10/15 21:55:11  wenger
+// Added new JAVAC_StopCollab command to fix ambiguity with
+// JAVAC_CollabExit; minor improvements to collaboration-related stuff
+// in the auto test scripts.
+//
+// Revision 1.77.2.9  2003/09/23 21:55:12  wenger
+// "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+//
+// Revision 1.77.2.8  2003/06/25 21:34:09  wenger
+// JSPoP debug log improvements to try to track down the cause of some
+// DEVised restarts.
+//
+// Revision 1.77.2.7  2003/06/17 22:44:39  wenger
+// Session opens are now logged in a separate JS usage log; the code
+// that generates the usage summary emails is not yet updated to
+// use that log.
 //
 // Revision 1.77.2.6  2002/12/05 21:12:00  wenger
 // Added diagnostic output for the number of commands run at each client
@@ -375,7 +438,7 @@ import java.util.*;
 
 public class DEViseServer implements Runnable, DEViseCheckableThread
 {
-    private static final int DEBUG = 1;
+    private static int _debugLvl = 1;
 
     private jspop pop = null;
 
@@ -421,16 +484,29 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     // (this is for diagnostics only).
     private int _cmdsSinceSwitch = 0;
 
+    private static String deviseVersion = null;
 
     public long lastRunTime() { return _lastRunTime; }
     public void intThread() { serverThread.interrupt(); }
     public String thread2Str() { return serverThread.toString(); }
+    public boolean isAlive() { return serverThread.isAlive(); }
+    public static String getDeviseVersion() { return deviseVersion; }
+
+    public static void setDebugLvl(int level)
+    {
+        _debugLvl = level;
+    }
 
     // name is the name of the system that the jss and devised(s) are running
     // on; port is the jssport.
     public DEViseServer(jspop j, String name, int port, int cmdport,
       int imgport)
     {
+        if (_debugLvl >= 4) {
+            System.out.println("DEViseServer(" + _nextObjectNum +
+	      ") constructor");
+        }
+
         pop = j;
         if (name != null) {
             hostname = new String(name);
@@ -446,6 +522,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
     protected void finalize()
     {
+        if (_debugLvl >= 2) {
+            System.out.println("DEViseServer(" + _objectNum + ").finalize()");
+        }
+
         // In case this somehow didn't get unregistered before (e.g.,
         // we got stop() call).
         DEViseThreadChecker.getInstance().unregister(this);
@@ -474,6 +554,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
             closeSocket();
 
+	    pop.pn("Removing server in DEViseServer.stop()");
             stopDEVise();
         }
     }
@@ -500,6 +581,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	// devised.
 	processClientCmd(DEViseCommands.PROTOCOL_VERSION + " " +
 	  DEViseGlobals.PROTOCOL_VERSION);
+
+	// Get the DEVise version (so we can report it to the client
+	// if they request it).
+	processClientCmd(DEViseCommands.GET_DEVISE_VERSION);
 
         pop.pn("Successfully started a DEViseServer ...");
 
@@ -540,8 +625,9 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     // Connect a socket to the devised.
     private synchronized boolean startSocket()
     {
-        if (DEBUG >= 1) {
-            System.out.println("DEViseServer.startSocket()");
+        if (_debugLvl >= 1) {
+            System.out.println("DEViseServer(" + _objectNum +
+	      ").startSocket()");
         }
 
         // close previous connection first if any
@@ -580,6 +666,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
         // can not connect within timeout
         closeSocket();
+	pop.pn("Removing server because we can't connect within the timeout");
         stopDEVise();
 
         pop.pn("Can not connect to devised within timeout");
@@ -615,8 +702,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     // Set the client to switch to the next time we switch clients.
     public synchronized void setCurrentClient(DEViseClient c)
     {
-        if (DEBUG >= 1) {
-            System.out.println("DEViseServer(" + _objectNum +
+        if (_debugLvl >= 1) {
+            pop.pn("DEViseServer(" + _objectNum +
 	      ").setCurrentClient(" + c.getConnectionID() + ") in thread " +
 	      Thread.currentThread());
 	    System.out.println("  current client is: " +
@@ -645,7 +732,15 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
         while (action == ACTION_IDLE && newClient == null) {
             try {
 	        DEViseThreadChecker.getInstance().unregister(this);
+		if (_debugLvl >= 4) {
+                    pop.pn("DEViseServer(" + _objectNum +
+		      ").getAction() before wait()");
+		}
                 wait();
+		if (_debugLvl >= 4) {
+                    pop.pn("DEViseServer(" + _objectNum +
+		      ").getAction() after wait()");
+		}
 	        DEViseThreadChecker.getInstance().register(this);
             } catch (InterruptedException e) {
             }
@@ -682,8 +777,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
     public void run()
     {
-	if (DEBUG >= 2) {
-	    System.out.println("DEViseServer.run()");
+	if (_debugLvl >= 2) {
+	    pop.pn("DEViseServer(" + _objectNum + ").run()");
 	}
 
 	DEViseThreadChecker.getInstance().register(this);
@@ -708,6 +803,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                 // while DEViseServer thread reach here, there is no way to
 		// interrupt it until some error happened or it finish
 		// processing one client's request
+		if (_debugLvl >= 4) {
+                    pop.pn("DEViseServer(" + _objectNum +
+		      ").run() starting work on a command");
+                }
 
                 serverCmds = null;
 
@@ -734,24 +833,25 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 			// Get a command from the client.
                         // This method will not block, if no command it just
 			// returns null.
-			if (DEBUG >= 3) {
-                            System.out.println("DIAG before " +
+			if (_debugLvl >= 4) {
+                            pop.pn("DIAG before " +
 			      "client.getCmd() in " + serverThread);
 			}
 
 			clientCmd = client.getCmd();
 
-			if (DEBUG >= 3) {
-                            System.out.println("DIAG after " +
+			if (_debugLvl >= 4) {
+                            pop.pn("DIAG after " +
 			      "client.getCmd() in " + serverThread);
 			}
                         isEnd = true;
                     } catch (InterruptedIOException e) {
                         // since client.getCmd() will not block, this is
 			// meaningless
-			if (DEBUG >= 1) {
+			if (_debugLvl >= 1) {
 		            System.err.println("InterruptedIOException " +
-			      e.getMessage() + " in DEViseServer.run()");
+			      e.getMessage() + " in DEViseServer(" +
+			      _objectNum + ").run()");
 		        }
                     } catch (YException e) {
                         pop.pn("Client communication error1: " + e.getMsg());
@@ -762,11 +862,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     }
                 }
 
-		if (clientCmd != null && DEBUG >= 1) {
-		    System.out.println("Server on " + hostname +
-		      " got command " + clientCmd + " from client " +
-		      client.getConnectionID() + " in thread " +
-		      Thread.currentThread());
+		if (clientCmd != null && _debugLvl >= 1) {
+		    pop.pn("Server (" + _objectNum + ") on " +
+		      hostname + " got command " + clientCmd +
+		      " from client " + client.getConnectionID() +
+		      " in thread " + Thread.currentThread());
 		}
 
 		if (clientCmd != null) {
@@ -829,6 +929,13 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     continue;
                 }
 
+		if (clientCmd != null && _debugLvl >= 1) {
+		    pop.pn("Devised on " + hostname +
+		      " is done processsing command " + clientCmd +
+		      " from client " + client.getConnectionID() +
+		      " in thread " + Thread.currentThread());
+		}
+
 		//
 		// Send response from server back to the client.
 		//
@@ -846,17 +953,25 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     pop.pn("Client communication error3: " + e.getMsg());
                     removeCurrentClient();
 		}
+		if (_debugLvl >= 4) {
+                    pop.pn("DEViseServer(" + _objectNum +
+		      ").run() finished work on a command");
+                }
             }
         }
 
+        if (_debugLvl >= 2) {
+            pop.pn("DEViseServer(" + _objectNum + ").run() end");
+	}
 	DEViseThreadChecker.getInstance().unregister(this);
     }
 
     // Send a command that does not rely on client state.
     public void sendStatelessCmd(String cmd) throws YException
     {
-        if (DEBUG >= 2) {
-            System.out.println("DEViseServer.sendStatelessCmd(" + cmd + ")");
+        if (_debugLvl >= 2) {
+            pop.pn("DEViseServer(" + _objectNum +
+	      ").sendStatelessCmd(" + cmd + ")");
         }
 
 	//
@@ -883,13 +998,16 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     private boolean processClientCmd(String clientCmd)
       throws YException
     {
-	if (DEBUG >= 2) {
-	    System.out.println("DEViseServer.processClientCmd(" +
-	      clientCmd + ")");
+	if (_debugLvl >= 2) {
+	    pop.pn("DEViseServer(" + _objectNum +
+	      ").processClientCmd(" + clientCmd + ")");
 	}
 
         if (clientCmd.startsWith(DEViseCommands.PROTOCOL_VERSION)) {
 	    cmdProtocolVersion(clientCmd);
+
+        } else if (clientCmd.startsWith(DEViseCommands.GET_DEVISE_VERSION)) {
+	    cmdGetDeviseVersion(clientCmd);
 
         } else if (clientCmd.startsWith(DEViseCommands.EXIT)) {
 	    cmdExit();
@@ -972,6 +1090,37 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 	      "mismatch with devised!!");
 	    System.exit(1);
         }
+    }
+
+    private void cmdGetDeviseVersion(String clientCmd)
+      throws YException
+    {
+        if (sendCmd(clientCmd)) {
+	    String[] args = DEViseGlobals.parseString(serverCmds[0]);
+	    if (args == null || args.length < 1) {
+		throw new YException(
+		  "Ill-formated command received from server \"" +
+		  serverCmds[0]);
+	    } else {
+		if (args[0].equals(DEViseCommands.DEVISE_VERSION)) {
+	            if (deviseVersion == null) {
+		        deviseVersion = args[1];
+		    } else {
+		        if (!deviseVersion.equals(args[1])) {
+		            System.err.println(
+			      "Warning: version of latest DEVised (" + args[1] +
+			      ") is not the same as version of first DEVised (" +
+			      deviseVersion + ")");
+		        }
+		    }
+		} else {
+		    throw new YException("Unexepected command " +
+		      serverCmds[0] + " received in response to " + clientCmd);
+		}
+	    }
+        } else {
+	    throw new YException("Unable to send command: " + clientCmd);
+	}
     }
 
     public void cmdSaveSession() throws YException
@@ -1110,6 +1259,9 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
             client.sessionName = p;
 
+	    // Log session open to the usage log.
+            pop.logUsage(client.hostname + ": " + clientCmd);
+
             boolean error = false;
             if (client.screenDimX > 0 && client.screenDimY > 0 &&
 	      client.screenResX > 0 && client.screenResY > 0) {
@@ -1136,6 +1288,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     }
                     socket.clearSocket(count);
                 }
+		//System.out.println("Closing socket for test");//TEMPTEMP
+		//closeSocket();//TEMPTEMP -- for testing only!!!
             }
         }
 
@@ -1169,9 +1323,9 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
     private void cmdClientDefault(String clientCmd) throws YException
     {
-	if (DEBUG >= 2) {
-	    System.out.println("DEViseServer.cmdClientDefault(" +
-	      clientCmd + ")");
+	if (_debugLvl >= 2) {
+	    System.out.println("DEViseServer(" + _objectNum +
+	      ").cmdClientDefault(" + clientCmd + ")");
 	}
 
         if (client.isClientSwitched) {
@@ -1298,6 +1452,7 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     {
         closeSocket();
 
+	pop.pn("Removing server in DEViseServer.quit()");
         stopDEVise();
 
         setStatus(STATUS_STOPPED);
@@ -1344,14 +1499,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
     // example, if the client crashes).
     private synchronized void switchClient(boolean startNewClient)
     {
-        if (DEBUG >= 1) {
-            System.out.println("DEViseServer(" + _objectNum +
+        if (_debugLvl >= 1) {
+            pop.pn("DEViseServer(" + _objectNum +
 	      ").switchClient(" + startNewClient + ") in thread " +
 	      Thread.currentThread());
 	}
 
         if (client != null) {
-            if (DEBUG >= 1) {
+            if (_debugLvl >= 1) {
 	        System.out.println("  Current client is: " + client.ID);
 	    }
 
@@ -1390,16 +1545,17 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
             pop.suspendClient(client);
 
-	    if (DEBUG >= 1) {
-	        System.out.println("Server on " + hostname + " ran " +
-		  _cmdsSinceSwitch + " commands for client " +
-		  client.getConnectionID() + " since the last client switch");
+	    if (_debugLvl >= 1) {
+	        System.out.println("Server (" + _objectNum + ") on " +
+		  hostname + " ran " + _cmdsSinceSwitch +
+		  " commands for client " + client.getConnectionID() +
+		  " since the last client switch");
 	    }
 	    _cmdsSinceSwitch = 0;
 
             client = null;
         } else {
-            if (DEBUG >= 1) {
+            if (_debugLvl >= 1) {
 	        System.out.println("  No current client");
 	    }
 	}
@@ -1408,8 +1564,8 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             client = newClient;
             newClient = null;
             if (client != null) {
-                if (DEBUG >= 1) {
-                    System.out.println("DEViseServer(" + _objectNum +
+                if (_debugLvl >= 1) {
+                    pop.pn("DEViseServer(" + _objectNum +
 		      ") actually switched to client " +
 		      client.getConnectionID());
 	        }
@@ -1481,6 +1637,11 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 		      " at " + cmdPort + ") :  \"" + response + "\"");
                     isFinish = true;
                 } catch (InterruptedIOException e) {
+		    if (_debugLvl >= 1) {
+		        System.err.println("socket.receiveCmd() " +
+			  "interrupted in DEViseServer(" + _objectNum +
+			  ").sendCmd()");
+		    }
                     time += socketTimeout;
                     if (time > devisedTimeout) {
                         throw new YException("Cannot receive response " +
@@ -1492,7 +1653,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
             if (response == null || response.length() == 0) {
                 throw new YException("Invalid response received from devised");
             } else {
+	        if (_debugLvl >= 4) {
+                    pop.pn("DIAG Parsing response from devised");
+		}
                 String[] cmds = DEViseGlobals.parseString(response);
+	        if (_debugLvl >= 4) {
+                    pop.pn("DIAG Done parsing response from " +
+		      "devised");
+		}
                 if (cmds == null || cmds.length == 0) {
                     throw new YException("Ill-formated response \"" +
 		      response + "\" received from devised");
@@ -1506,6 +1674,9 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     for (int j = 1; j < cmds.length; j++) {
                         cmd = cmd + " {" + cmds[j] + "}";
                     }
+	            if (_debugLvl >= 4) {
+                        pop.pn("DIAG Done removing(?) braces");
+		    }
 
                     if (cmd.startsWith(DEViseCommands.DONE)) {
                         isEnd = true;
@@ -1517,7 +1688,14 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                         rspbuf.removeAllElements();
                     }
 
+	            if (_debugLvl >= 4) {
+                        pop.pn("DIAG Adding command to rspbuf");
+		    }
                     rspbuf.addElement(cmd);
+	            if (_debugLvl >= 4) {
+                        pop.pn("DIAG Done adding command " +
+			  "to rspbuf");
+		    }
                 }
             }
         }
@@ -1578,9 +1756,10 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
 
     private void initializeCollaborator() throws YException
     {
-        if (DEBUG >= 1) {
-	    System.out.println("DEViseServer.initializeCollaborator()" +
-	      " in thread " + Thread.currentThread());
+        if (_debugLvl >= 1) {
+	    pop.pn("DEViseServer(" + _objectNum +
+	      ").initializeCollaborator()" + " in thread " +
+	      Thread.currentThread());
 	}
 
 	//

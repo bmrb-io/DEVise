@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13.10.1  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
+  Revision 1.13  2001/04/10 17:13:31  wenger
+  Minor cleanups and additions of debug code to string table-related stuff.
+
   Revision 1.12  2000/01/13 23:07:11  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -118,13 +124,13 @@ class StringStorage {
     const char *GetName() { return _tableName; }
 
   protected:
-    static int StringHash(char *&string, int numBuckets);
+    static int StringHash(char * const &string, int numBuckets);
 
-    static int StringComp(char *&string1, char *&string2) {
+    static int StringComp(char * const &string1, char * const &string2) {
         return strcmp(string1, string2);
     }
 
-    static int KeyHash(int &key, int numBuckets) {
+    static int KeyHash(const int &key, int numBuckets) {
         return key % numBuckets;
     }
 

@@ -48,7 +48,7 @@ set success = 1
 if ($argv[1] == "all" || $argv[1] == "test1") then
     ./test1
     if ($? != 0) then
-        success = 0
+        set success = 0
     endif
 endif
 
@@ -59,8 +59,32 @@ endif
 if ($argv[1] == "all" || $argv[1] == "test2") then
     ./test2
     if ($? != 0) then
-        success = 0
+        set success = 0
     endif
+endif
+
+if ($success == 1) then
+    echo "\nTested JavaScreen-Related Commands:\n"
+    echo "1. JavaScreen to JSPoP"
+    echo "   JAVAC_Connect\t JAVAC_GetServerState\t JAVAC_GetCollabList"
+    echo "   JAVAC_SetCollabPass\t JAVAC_Collaborate\t JAVAC_DisableCollab"
+    echo "   JAVAC_SaveCurSession\t JAVAC_ReOpenSession\t \n"
+    echo "2. JSPoP to JavaScreen"
+    echo "   JAVAC_User\t JAVAC_Ack\t JAVAC_UpdateServerState"
+    echo "   JAVAC_CollabState\t JAVAC_InitCollaboration\t JAVAC_UpdateJS"
+    echo "   JAVAC_CloseCollabDlg\t JAVAC_CollabExit\t JAVAC_Set3DConfig"
+    echo "   JAVAC_Hide_All_View_Help\t \n"
+    echo "3. JavaScreen to devised (via JSPoP)"
+    echo "   JAVAC_GetSessionList\t JAVAC_Exit\t JAVAC_CloseCurrentSession"
+    echo "   JAVAC_OpenSession\t JAVAC_ShowRecords\t JAVAC_MouseAction_RubberBand"
+    echo "   JAVAC_SetDisplaySize\t JAVAC_CursorChanged\t JAVAC_ProtocolVersion"
+    echo "   JAVAC_KeyAction\t JAVAC_GetViewHelp\t JAVAC_ResetFilters\n"
+    echo "4. Devised to JavaScreen (via JSPoP)"
+    echo "   JAVAC_UpdateSessionLise\t JAVAC_UpdateRecordValue\t JAVAC_CreateView"
+    echo "   JAVAC_DrawCursor\t JAVAC_ViewDataArea\t JAVAC_UpdateViewImage"
+    echo "   JAVAC_UpdateGData\t JAVAC_DeleteChildViews\t JAVAC_DeleteView\n"
+    echo "5. Status report"
+    echo "   JAVAC_Done\t JAVAC_Error\t JAVAC_Fail\n"
 endif
 
 
@@ -95,6 +119,9 @@ if ($success == 1) then
     set jspop = `grep -i error logs/jspop.out.regular  | wc -l`
     set jss = `grep -i error logs/jss.out.regular  | wc -l`
 
+    # Note: I think we're testing for jspop errors > 1 rather than 0 here
+    # to try to skip an "Abrupt end of input stream reached" error.
+    # RKW 2003-10-15.
     if ($jspop > 1) then
 	echo "Error found in jspop log. Please check logs/jspop.out.regular."
 	set success = 0
@@ -111,30 +138,4 @@ if ($success == 1) then
 
 endif
 
-if ($success == 1) then
-    echo "\nTested JavaScreen-Related Commands:\n"
-    echo "1. JavaScreen to JSPoP"
-    echo "   JAVAC_Connect\t JAVAC_GetServerState\t JAVAC_GetCollabList"
-    echo "   JAVAC_SetCollabPass\t JAVAC_Collaborate\t JAVAC_DisableCollab"
-    echo "   JAVAC_SaveCurSession\t JAVAC_ReOpenSession\t \n"
-    echo "2. JSPoP to JavaScreen"
-    echo "   JAVAC_User\t JAVAC_Ack\t JAVAC_UpdateServerState"
-    echo "   JAVAC_CollabState\t JAVAC_InitCollaboration\t JAVAC_UpdateJS"
-    echo "   JAVAC_CloseCollabDlg\t JAVAC_CollabExit\t JAVAC_Set3DConfig"
-    echo "   JAVAC_Hide_All_View_Help\t \n"
-    echo "3. JavaScreen to devised (via JSPoP)"
-    echo "   JAVAC_GetSessionList\t JAVAC_Exit\t JAVAC_CloseCurrentSession"
-    echo "   JAVAC_OpenSession\t JAVAC_ShowRecords\t JAVAC_MouseAction_RubberBand"
-    echo "   JAVAC_SetDisplaySize\t JAVAC_CursorChanged\t JAVAC_ProtocolVersion"
-    echo "   JAVAC_KeyAction\t JAVAC_GetViewHelp\t JAVAC_ResetFilters\n"
-    echo "4. Devised to JavaScreen (via JSPoP)"
-    echo "   JAVAC_UpdateSessionLise\t JAVAC_UpdateRecordValue\t JAVAC_CreateView"
-    echo "   JAVAC_DrawCursor\t JAVAC_ViewDataArea\t JAVAC_UpdateViewImage"
-    echo "   JAVAC_UpdateGData\t JAVAC_DeleteChildViews\t JAVAC_DeleteView\n"
-    echo "5. Status report"
-    echo "   JAVAC_Done\t JAVAC_Error\t JAVAC_Fail\n"
-endif
-
 exit(0)
-
-

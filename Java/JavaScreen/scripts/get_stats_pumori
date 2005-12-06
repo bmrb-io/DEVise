@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -21,4 +21,4 @@
 
 ############################################################
 
-scripts/get_stats | mail -s 'JavaScreen usage on pumori' devise miron amos
+scripts/get_stats | mail -s 'JavaScreen usage on pumori' devise wenger miron amos

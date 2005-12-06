@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.6.46.2  2003/04/24 17:31:16  wenger
+  Fixed bug in drill-down code; axis date formats now also apply to
+  drill-down coordinates; we now check for buffer overruns in
+  DateString().
+
+  Revision 1.6.46.1  2003/04/17 17:59:25  wenger
+  Now compiles with no warnings with gcc 2.95, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.6  1996/05/07 16:37:14  jussi
+  Added _recPos variable and methods for it.
+
   Revision 1.5  1996/01/19 20:03:17  jussi
   Remove redundant Print().
 
@@ -112,7 +124,8 @@ void RecInterp::PrintAttrHeading()
   }
 }
 
-void RecInterp::PrintAttr(char *buf, int attrNum, Boolean printAttrName)
+void RecInterp::PrintAttr(char *buf, int bufLen, int attrNum,
+    Boolean printAttrName)
 {
   if (_attrs == NULL || _buf == NULL) {
     buf[0] = '\0';
@@ -120,51 +133,80 @@ void RecInterp::PrintAttr(char *buf, int attrNum, Boolean printAttrName)
   }
   
   AttrInfo *info = _attrs->Get(attrNum);
-  int *intVal;
-  float *floatVal;
-  double *doubleVal;
-  char *strVal;
-  time_t *tm;
+
+  int formatted = 0;
 
   switch(info->type) {
   case IntAttr:
-    intVal = (int *)(((char *)_buf) + info->offset);
-    if (printAttrName)
-      sprintf(buf, "%s: %d", info->name, *intVal);
-    else
-      sprintf(buf, "%d ", *intVal);
+    {
+      int *intVal = (int *)(((char *)_buf) + info->offset);
+      if (printAttrName) {
+        formatted = snprintf(buf, bufLen, "%s: %d", info->name, *intVal);
+      } else {
+        formatted = snprintf(buf, bufLen, "%d ", *intVal);
+      }
+    }
     break;
 
   case FloatAttr:
-    floatVal = (float *)(((char *)_buf) + info->offset);
-    if (printAttrName)
-      sprintf(buf, "%s: %.2f", info->name, *floatVal);
-    else
-      sprintf(buf, "%f", *floatVal);
+    {
+      float *floatVal = (float *)(((char *)_buf) + info->offset);
+      if (printAttrName) {
+        formatted = snprintf(buf, bufLen, "%s: %.2f", info->name, *floatVal);
+      } else {
+        formatted = snprintf(buf, bufLen, "%f", *floatVal);
+      }
+    }
     break;
 
   case DoubleAttr:
-    doubleVal = (double *)(((char *)_buf) + info->offset);
-    if (printAttrName)
-      sprintf(buf, "%s: %.2f", info->name, *doubleVal);
-    else
-      sprintf(buf, "%f", *doubleVal);
+    {
+      double *doubleVal = (double *)(((char *)_buf) + info->offset);
+      if (printAttrName) {
+        formatted = snprintf(buf, bufLen, "%s: %.2f", info->name, *doubleVal);
+      } else {
+        formatted = snprintf(buf, bufLen, "%f", *doubleVal);
+      }
+    }
     break;
 
   case StringAttr:
-    strVal = ((char *)_buf) + info->offset;
-    if (printAttrName)
-      sprintf(buf, "%s: %s", info->name, strVal);
-    else
-      sprintf(buf, "%s", strVal);
+    {
+      char *strVal = ((char *)_buf) + info->offset;
+      if (printAttrName) {
+        formatted = snprintf(buf, bufLen, "%s: %s", info->name, strVal);
+      } else {
+        formatted = snprintf(buf, bufLen, "%s", strVal);
+      }
+    }
     break;
 
   case DateAttr:
-    tm = (time_t *)(((char *)_buf) + info->offset);
-    if (printAttrName)
-      sprintf(buf, "%s: '%s'", info->name, DateString(*tm));
-    else
-      sprintf(buf, "'%s'", DateString(*tm));
+    {
+      time_t *tm = (time_t *)(((char *)_buf) + info->offset);
+      if (printAttrName) {
+        formatted = snprintf(buf, bufLen, "%s: '%s'", info->name,
+	    DateString(*tm));
+      } else {
+        formatted = snprintf(buf, bufLen, "'%s'", DateString(*tm));
+      }
+    }
+    break;
+
+  case InvalidAttr:
+    {
+      if (printAttrName) {
+        formatted = snprintf(buf, bufLen, "%s: InvalidAttr", info->name);
+      } else {
+        formatted = snprintf(buf, bufLen, "InvalidAttr");
+      }
+    }
+    break;
+
+  default:
+    DOASSERT(false, "Illegal attribute type");
     break;
   }
+
+  checkAndTermBuf(buf, bufLen, formatted);
 }

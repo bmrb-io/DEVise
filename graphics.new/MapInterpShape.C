@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -17,6 +17,22 @@
   $Id$
 
   $Log$
+  Revision 1.79  2003/01/13 19:25:24  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.78.4.6  2003/06/25 20:50:55  wenger
+  Fixed bug 880 (RectX symbols always cause external process call).
+
+  Revision 1.78.4.5  2003/05/21 20:16:59  wenger
+  Fixed bug 873 (error bars misaligned).
+
+  Revision 1.78.4.4  2003/04/17 18:56:14  wenger
+  Now compiles with no warnings with gcc 2.96, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.78.4.3  2003/02/06 18:07:50  wenger
+  Fixed bug 859 (equal-width bars sometimes show up with unequal widths).
+
   Revision 1.78.4.2  2002/09/10 17:13:21  wenger
   Fixed bug 821 (GAttr links fail when follower has "complex" symbols)
   (this involved splitting up ViewData::ReturnGData() into smaller
@@ -672,7 +688,9 @@ void FullMapping_RectXShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  //
 	  // Run an external process to generate data if necessary.
 	  //
-	  ExtProc::GetInstance()->Run(map, (const char *)gdataArray[i]);
+	  if (map->HasShapeAttr(5)) {
+	    ExtProc::GetInstance()->Run(map, (const char *)gdataArray[i]);
+	  }
 	}
 
 	win->SetPattern(Pattern0);
@@ -786,9 +804,6 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	if (width < 2 * pixelWidth)
 	  width = 2 * pixelWidth;
 #endif
-	if (width > pixelWidth) {
-	  x -= width / 2.0;
-    }
 
     Boolean hasError = false;
 	Coord error;
@@ -797,7 +812,7 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  error = map->GetShapeAttr1(gdata);
 	}
 
-	Coord lineWidth = map->GetLineWidth(gdata);
+	int lineWidth = map->GetLineWidth(gdata);
 
 	win->SetForeground(map->GetColor(gdata));
 	win->SetPattern(map->GetPattern(gdata));
@@ -808,14 +823,14 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	// to be in the code here than in the FillRect() code, since that
 	// also gets used for drawing other things.  RKW 2002-08-22.
 	if (y >= 0.0) {
-	  win->FillRect(x, 0.0, width, y);
+	  win->FillRectAlign(x, 0.0, width, y, WindowRep::AlignSouth);
 	} else {
-	  win->FillRect(x, y, width, -y);
+	  win->FillRectAlign(x, 0.0, width, -y, WindowRep::AlignNorth);
 	}
 
 	if (hasError) {
-	  win->Line(x + width / 2.0, 0.0, x + width / 2.0, error, lineWidth);
-	  win->Line(x, error, x + width, error, lineWidth);
+	  win->Line(x, 0.0, x, error, lineWidth);
+	  win->Line(x - width / 2.0, error, x + width / 2.0, error, lineWidth);
 	}
 
 	if (view->GetDisplayDataValues())

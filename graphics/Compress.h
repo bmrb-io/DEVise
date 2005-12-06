@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.48.1  2005/09/06 21:20:09  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  1995/12/05 20:19:34  jussi
+  Added copyright notice and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 21:12:30  jussi
   Added/updated CVS header.
 */
@@ -25,6 +31,8 @@
 
 class CompressIO {
 public:
+  virtual ~CompressIO() {}
+
   /* beginning/ending of encoding */
   virtual void Begin() = 0;
   virtual void End() = 0;
@@ -38,6 +46,8 @@ public:
 
 class Compression {
 public:
+  virtual ~Compression() {}
+
   /* These are for whole image compression using cio */
   virtual void Compress(CompressIO *cio ) = 0;
   virtual void Decompress(CompressIO *cio) = 0;
@@ -50,6 +60,8 @@ public:
 class SimpleCompress: public Compression {
 public:
   SimpleCompress();
+  virtual ~SimpleCompress() {}
+
   virtual void Compress(CompressIO *cio );
   virtual void Decompress(CompressIO *cio);
   

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,8 +20,53 @@
   $Id$
 
   $Log$
+  Revision 1.105  2003/01/13 19:25:11  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.104  2002/06/17 19:41:00  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.103.4.14  2005/02/15 22:49:30  wenger
+  Added comment to session file (in the view section) that tells what
+  mapping a view uses.
+
+  Revision 1.103.4.13  2005/01/03 21:08:21  wenger
+  Fixed bug 911 (DEVise can't open DOS-format session files).
+
+  Revision 1.103.4.12  2004/02/25 21:48:01  wenger
+  Cleaned up session files by putting blank lines between objects.
+
+  Revision 1.103.4.11  2003/11/26 18:50:44  wenger
+  Improved error reporting in Session::CreateTData().
+
+  Revision 1.103.4.10  2003/11/19 19:40:14  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
+  Revision 1.103.4.9  2003/11/05 19:09:08  wenger
+  Changed all sprintfs in Session.c to snprintfs.
+
+  Revision 1.103.4.8  2003/11/05 17:01:43  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.103.4.7  2003/06/26 16:53:00  wenger
+  Index file names for per-session data sources now include the session
+  name (to reduce collisions); fixed a few memory problems relating to
+  the data source catalogs.
+
+  Revision 1.103.4.6  2003/04/18 17:07:42  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.103.4.5.2.1  2003/04/18 15:26:03  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.103.4.5  2003/02/04 19:41:10  wenger
+  Added union capability for multiple GData attribute links (will help
+  with restraint visualizations for BMRB).
 
   Revision 1.103.4.4  2003/01/09 22:21:51  wenger
   Added "link multiplication factor" feature; changed version to 1.7.14.
@@ -672,18 +717,31 @@ Session::Close()
 	char cmdBuf[1024];
     control->NotifyFrontEnd("global curpalette palettes pids");
 
-	sprintf(cmdBuf, "set curpalette %s", _defaultPaletteName);
-    control->NotifyFrontEnd(cmdBuf);
+	int formatted;
+	formatted = snprintf(cmdBuf, sizeof(cmdBuf), "set curpalette %s",
+	    _defaultPaletteName);
+	if (checkAndTermBuf2(cmdBuf, formatted).IsComplete()) {
+      control->NotifyFrontEnd(cmdBuf);
+	}
 
-	sprintf(cmdBuf, "unset pids(%s)", _sessionPaletteName);
-    control->NotifyFrontEnd(cmdBuf);
+	formatted = snprintf(cmdBuf, sizeof(cmdBuf), "unset pids(%s)",
+	    _sessionPaletteName);
+	if (checkAndTermBuf2(cmdBuf, formatted).IsComplete()) {
+      control->NotifyFrontEnd(cmdBuf);
+	}
 
-	sprintf(cmdBuf, "unset palettes(%s)", _sessionPaletteName);
-    control->NotifyFrontEnd(cmdBuf);
+	formatted = snprintf(cmdBuf, sizeof(cmdBuf), "unset palettes(%s)",
+	    _sessionPaletteName);
+	if (checkAndTermBuf2(cmdBuf, formatted).IsComplete()) {
+      control->NotifyFrontEnd(cmdBuf);
+	}
   }
 
   // Reset the color mode to the default.
   SetColorMode(ColorModeModulus);
+
+  // Reset the display mode to the default.
+  DisplayMode::SetMode(DisplayMode::ModeNormal);
 
   if (_description) {
     FreeString(_description);
@@ -750,7 +808,9 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
     saveData.fp = fopen(filename, "w");
     if (!saveData.fp) {
 	  char errBuf[MAXPATHLEN + 100];
-	  sprintf(errBuf, "Can't open session file (%s) for save", filename);
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Can't open session file (%s) for save", filename);
+	  checkAndTermBuf2(errBuf, formatted);
       reportErrSys(errBuf);
       status += StatusFailed;
     }
@@ -1014,7 +1074,19 @@ Session::CreateTData(const char *name)
     argvIn[1] = schemaName;
     argvIn[2] = "";
     ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-    classDir->CreateWithParams("tdata", schemaName, 3, (char **)argvIn);
+    const char * name = classDir->CreateWithParams("tdata", schemaName,
+	    3, (char **)argvIn);
+    if (name == NULL) {
+	  reportErrArgs("Unable to create TData", 3, argvIn, 0);
+	  status += StatusFailed;
+	} else {
+#if defined(DEBUG)
+	  printf("  Created data source <%s>\n", name);
+#endif
+	}
+
+    if (status.IsError()) reportErrNosys(
+	    "Error or warning while opening session");
     return status;
   }
 
@@ -1028,13 +1100,19 @@ Session::CreateTData(const char *name)
   } else {
     if (name[0] != '.') {
       // DTE goes nuts if first char of TData name isn't '.'.
-      sprintf(namebuf, ".%s", name);
+      int formatted = snprintf(namebuf, sizeof(namebuf), ".%s", name);
+	  checkAndTermBuf2(namebuf, formatted);
       name = namebuf;
     }
     // Get the DTE catalog entry for this data source.
 	// TEMP -- memory may be leaked in here
     catEntry = ShowDataSource(name);
     if ((catEntry == NULL) || (strlen(catEntry) == 0)) {
+      char buf[1024];
+      int formatted = snprintf(buf, sizeof(buf),
+          "Data catalog entry for %s not found!", name);
+      checkAndTermBuf2(buf, formatted);
+      reportErrNosys(buf);
       status = StatusFailed;
     }
   }
@@ -1047,7 +1125,7 @@ Session::CreateTData(const char *name)
   if (status.IsComplete()) {
     if (catEntry[0] == '{') catEntry[0] = ' ';
     int length = strlen(catEntry);
-    if (catEntry[length - 1] == '}') {
+    if (catEntry[length - 1] == '}') { // { so braces match
       catEntry[length - 1] = '\0';
     } else if (catEntry[length - 1] == ' ' && catEntry[length - 2] == '}') {
       catEntry[length - 2] = '\0';
@@ -1083,12 +1161,23 @@ Session::CreateTData(const char *name)
 	  ArgList args;
 
 	  DevStatus tmpStatus = args.ParseString(catEntry);
+	  if (tmpStatus != StatusOk) {
+		char buf[1024];
+		int formatted = snprintf(buf, sizeof(buf),
+		    "Unable to parse catalog entry <%s>", catEntry);
+		checkAndTermBuf2(buf, formatted);
+	    reportErrNosys(buf);
+	  }
+
 	  status += tmpStatus;
+
 	  if (tmpStatus.IsComplete()) {
-        strcpy(schema, args.GetArgs()[3]);
-        strcpy(schemaFile, args.GetArgs()[4]);
-        strcpy(sourceType, args.GetArgs()[1]);
-        sprintf(param, "%s/%s", args.GetArgs()[8], args.GetArgs()[2]);
+        strcpy(schema, args.GetArgs()[3]);//TEMP -- not safe!
+        strcpy(schemaFile, args.GetArgs()[4]);//TEMP -- not safe!
+        strcpy(sourceType, args.GetArgs()[1]);//TEMP -- not safe!
+        int formatted = snprintf(param, sizeof(param), "%s/%s",
+		    args.GetArgs()[8], args.GetArgs()[2]);
+		status += checkAndTermBuf2(param, formatted);
       }
     }
   }
@@ -1102,20 +1191,33 @@ Session::CreateTData(const char *name)
 	  // TEMP -- memory may be leaked in here
       result = NULL;
       if (result == NULL) {
-	char buf[2048];
-	sprintf(buf, "Error parsing schema %s", name);
-	reportErrNosys(buf);
-	status = StatusFailed;
+	    char buf[2048];
+	    int formatted = snprintf(buf, sizeof(buf),
+		    "Error parsing schema <%s>", name);
+	    checkAndTermBuf2(buf, formatted);
+	    reportErrNosys(buf);
+	    status = StatusFailed;
       }
     } else {
       result = ParseCat(schemaFile);
       if (result == NULL) {
-	status = StatusFailed;
+		char buf[1024];
+		int formatted = snprintf(buf, sizeof(buf),
+		    "Unable to parse schema file %s", schemaFile);
+		checkAndTermBuf2(buf, formatted);
+		reportErrNosys(buf);
+	    status = StatusFailed;
       } else {
         if (strcmp(schema, result)) {
-          printf("File %s appears to contain schema %s, not %s\n", schemaFile,
-	      result, schema);
-          strcpy(schema, result);
+		  char buf[1024];
+          int formatted = snprintf(buf, sizeof(buf),
+		      "Warning: file %s appears to contain schema %s, not %s\n",
+			  schemaFile, result, schema);
+		  checkAndTermBuf2(buf, formatted);
+		  reportErrNosys(buf);
+		  status += StatusWarn;
+
+          strcpy(schema, result);//TEMP -- not safe!
         }
       }
     }
@@ -1148,24 +1250,36 @@ Session::CreateTData(const char *name)
       argvIn[2] = param;
     }
     ClassDir *classDir = ControlPanel::Instance()->GetClassDir();
-    classDir->CreateWithParams("tdata", (char *)arg2, 3, (char **)argvIn);
+    const char *name = classDir->CreateWithParams("tdata",
+	    (char *)arg2, 3, (char **)argvIn);
+    if (name == NULL) {
+	  reportErrArgs("Unable to create TData", 3, argvIn, 0);
+	  status += StatusFailed;
+	} else {
+#if defined(DEBUG)
+	  printf("  Created data source <%s>\n", name);
+#endif
+	}
   }
 
   if (catEntry != NULL) FreeString(catEntry);
 
 #if defined(SESSION_TIMER)
   char timeBuf[256];
-  sprintf(timeBuf, "Creating TData <%s>", name);
+  int formatted = snprintf(timeBuf, sizeof(timeBuf), "Creating TData <%s>",
+      name);
+  checkAndTermBuf2(timeBuf, formatted);
   et.ReportTime(timeBuf);
 #endif
 
-  if (status.IsError()) reportErrNosys("Error or warning");
+  if (status.IsError()) reportErrNosys(
+      "Error or warning while opening session");
   return status;
 }
 
 /*------------------------------------------------------------------------------
  * function: Session::AddDataSource
- * Add a per-session data sources.
+ * Add a per-session data source.
  */
 DevStatus
 Session::AddDataSource(const char *catName, const char *entry)
@@ -1242,8 +1356,11 @@ Session::ListDataCatalog(const char *catName)
   char *catListTotal;
   if (catListSess && strlen(catListSess) > 0) {
 	// +2 is for space and terminator.
-    catListTotal = new char[strlen(catListMain) + strlen(catListSess) + 2];
-	sprintf(catListTotal, "%s %s", catListMain, catListSess);
+	int bufLen = strlen(catListMain) + strlen(catListSess) + 2;
+    catListTotal = new char[bufLen];
+	int formatted = snprintf(catListTotal, bufLen, "%s %s", catListMain,
+	    catListSess);
+	checkAndTermBuf(catListTotal, bufLen, formatted);
 	FreeString(catListMain);
 	FreeString(catListSess);
   } else {
@@ -1255,6 +1372,32 @@ Session::ListDataCatalog(const char *catName)
 #endif
 
   return catListTotal;
+}
+
+
+/*------------------------------------------------------------------------------
+ * function: Session::IsSessionDataSource
+ * Returns true iff the given data source is defined in the session data
+ * catalog as opposed to the system one.
+ */
+Boolean
+Session::IsSessionDataSource(const char *sourceName)
+{
+#if defined(DEBUG)
+  printf("Session::IsSessionDataSource(%s)\n", sourceName);
+#endif
+
+  Boolean result = false;
+
+  char *catEntry = GetDataCatalog()->ShowEntry(sourceName);
+  if (catEntry && (strlen(catEntry) > 0)) result = true;
+  FreeString(catEntry);
+
+#if defined(DEBUG)
+  printf("  Session::IsSessionDataSource() returns %d\n", result);
+#endif
+
+  return result;
 }
 
 /*------------------------------------------------------------------------------
@@ -1367,12 +1510,18 @@ Session::CreateSessionPalette(const char *colors)
     ControlPanel *control = ControlPanel::Instance();
 
     control->NotifyFrontEnd("global curpalette palettes pids");
-    sprintf(cmdBuf, "set curpalette %s", _sessionPaletteName);
-    control->NotifyFrontEnd(cmdBuf);
+    int formatted = snprintf(cmdBuf, sizeof(cmdBuf), "set curpalette %s",
+	  _sessionPaletteName);
+	if (checkAndTermBuf2(cmdBuf, formatted).IsComplete()) {
+      control->NotifyFrontEnd(cmdBuf);
+	}
 
     PaletteID pid = PM_GetCurrentPalette();
-    sprintf(cmdBuf, "set pids(%s) %d", _sessionPaletteName, (int)pid);
-    control->NotifyFrontEnd(cmdBuf);
+    formatted = snprintf(cmdBuf, sizeof(cmdBuf), "set pids(%s) %d",
+	    _sessionPaletteName, (int)pid);
+	if (checkAndTermBuf2(cmdBuf, formatted).IsComplete()) {
+      control->NotifyFrontEnd(cmdBuf);
+	}
 
     Palette* palette = PM_GetPalette(pid);
 	if (palette == nullPaletteID) {
@@ -1382,9 +1531,11 @@ Session::CreateSessionPalette(const char *colors)
       // Note: pColors *should* be the same as colors, but get it from
       // the palette to be safe.  RKW 2001-03-22.
       string pColors = palette->ToString();
-      sprintf(cmdBuf, "set palettes(%s) {%s}", _sessionPaletteName,
-	      pColors.c_str());
-      control->NotifyFrontEnd(cmdBuf);
+      formatted = snprintf(cmdBuf, sizeof(cmdBuf), "set palettes(%s) {%s}",
+	    _sessionPaletteName, pColors.c_str());
+	  if (checkAndTermBuf2(cmdBuf, formatted).IsComplete()) {
+        control->NotifyFrontEnd(cmdBuf);
+	  }
     }
 
 	DOASSERT(cmdBuf[bufSize - 1] == '\0', "Command buffer overflow");
@@ -1438,7 +1589,9 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename,
   FILE *fp = fopen(filename, "r");
   if (!fp) {
 	char errBuf[MAXPATHLEN * 2];
-	sprintf(errBuf, "Unable to open session file <%s>", filename);
+	int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Unable to open session file <%s>", filename);
+	checkAndTermBuf2(errBuf, formatted);
     reportErrSys(errBuf);
 	result += StatusFailed;
   } else {
@@ -1446,7 +1599,9 @@ Session::ReadSession(ControlPanelSimple *control, const char *filename,
 
     if (fclose(fp) != 0) {
 	  char errBuf[MAXPATHLEN * 2];
-	  sprintf("Error closing session file <%s>", filename);
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	      "Error closing session file <%s>", filename);
+	  checkAndTermBuf2(errBuf, formatted);
       reportErrSys(errBuf);
 	}
   }
@@ -1476,7 +1631,7 @@ Session::ReadSession(ControlPanelSimple *control, FILE *fp, CommandProc cp)
 
     while (ReadCommand(fp, lineBuf, bufSize, result) && result.IsComplete()) {
 #if defined(DEBUG)
-      printf("  read line: %s\n", lineBuf);
+      printf("  read line: <%s>\n", lineBuf);
 #endif
 
       RemoveTrailingSemicolons(lineBuf);
@@ -1526,11 +1681,10 @@ Session::CheckHeader(FILE *fp)
   DevStatus tmpResult = DevFileHeader::Read(fp, info);
   if (tmpResult.IsComplete()) {
     if (strcmp(info.fileType, FILE_TYPE_SESSION)) {
-	  const int bufLen = 256;
-	  char buf[bufLen];
-	  int formatted = snprintf(buf, bufLen, "File is type %s, not %s",
+	  char buf[256];
+	  int formatted = snprintf(buf, sizeof(buf), "File is type %s, not %s",
 	      info.fileType, FILE_TYPE_SESSION);
-	  checkAndTermBuf(buf, bufLen, formatted);
+	  checkAndTermBuf2(buf, formatted);
 	  reportErrNosys(buf);
 	  result += StatusFailed;
 	}
@@ -1572,9 +1726,9 @@ Session::ReadCommand(FILE *fp, char buf[], int bufSize, DevStatus &status)
 	  if (leftBraces != rightBraces) {
 		const int errBufLen = 1024 * 4;
 		char errBuf[errBufLen];
-		int formatted = snprintf(errBuf, errBufLen,
+		int formatted = snprintf(errBuf, sizeof(errBuf),
 		    "Incomplete command: <%s>", buf);
-		checkAndTermBuf(errBuf, errBufLen, formatted);
+		checkAndTermBuf2(errBuf, formatted);
 	    reportErrNosys(errBuf);
 		status += StatusFailed;
 	  }
@@ -1609,6 +1763,8 @@ Session::ReadCommand(FILE *fp, char buf[], int bufSize, DevStatus &status)
   }
 
   *ptr = '\0';
+
+  dos2unix(buf);
 
   return result;
 }
@@ -1694,7 +1850,9 @@ Session::RunCommand(ControlPanelSimple *control, int argc, char *argv[])
   } else if (!strcmp(argv[0], "SetDescription")) {
 	result += SetDescriptionCmd(control, argc, argv);
   } else {
-    sprintf(errBuf, "Unrecognized command: <%s>", argv[0]);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Unrecognized command: <%s>", argv[0]);
+	checkAndTermBuf2(errBuf, formatted);
 	reportErrNosys(errBuf);
     result = StatusFailed;
   }
@@ -1848,15 +2006,20 @@ Session::OpenDataSourceCmd(ControlPanel *control, int argc, char *argv[])
   char *result;
   char newName[1024];
   if (argv[1][0] != '.') {
-    sprintf(newName, ".%s", argv[1]);
-    char *current = &newName[1];
-    while (*current != '\0') {
-      if (*current == '.' || *current == ' ' || *current == ',') {
-	*current = '_';
+    int formatted = snprintf(newName, sizeof(newName), ".%s", argv[1]);
+	if (checkAndTermBuf2(newName, formatted).IsComplete()) {
+      char *current = &newName[1];
+      while (*current != '\0') {
+        if (*current == '.' || *current == ' ' || *current == ',') {
+	      *current = '_';
+        }
+        current++;
       }
-      current++;
-    }
-    result = newName;
+      result = newName;
+	} else {
+	  status = StatusFailed;
+	  result = "";
+	}
   } else {
     result = argv[1];
   }
@@ -1921,7 +2084,17 @@ Session::SaveView(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
-  FILE *fp = saveData->fp;
+  fprintf(saveData->fp, "\n");
+
+  ViewGraph *view = (ViewGraph *)View::FindViewByName(instance);
+  if (view) {
+    TDataMap *map = view->GetFirstMap();
+    if (map) {
+      const char *mapName = map->GetName();
+      fprintf(saveData->fp, "# View {%s} uses mapping {%s}\n",
+          instance, mapName);
+    }
+  }
 
   status += SaveParams(saveData, "getCreateParam", "create", "view",
       devClass, instance);
@@ -1998,7 +2171,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
   status += SaveParams(saveData, "getLinkMultFact", "setLinkMultFact",
       instance, "Y");
 
-  View *view = View::FindViewByName(instance);
+  status += SaveParams(saveData, "getGAttrLinkMode", "setGAttrLinkMode",
+      instance);
+
   if (view != NULL && view->JS3dConfigValid()) {
     status += SaveParams(saveData, "getJS3dConfig",
         "setJS3dConfig", instance, NULL, NULL, false);
@@ -2030,25 +2205,29 @@ Session::SaveInterpMapping(char *category, char *devClass, char *instance,
   // instances of the same class, so this function may get called multiple
   // times with identical class names).
   char buf[256];
-  sprintf(buf, "{%s}", devClass);
-  if (strstr(classNameList, buf) == NULL) {
-    if (strlen(classNameList) + strlen(buf) < classNameListLen) {
-      strcat(classNameList, buf);
-    } else {
-      reportErrNosys("Ran out of room in class name list; saved session file"
-	" may have errors");
-    }
+  int formatted = snprintf(buf, sizeof(buf), "{%s}", devClass);
+  if (checkAndTermBuf2(buf, formatted).IsComplete()) {
+    if (strstr(classNameList, buf) == NULL) {
+      if (strlen(classNameList) + strlen(buf) < classNameListLen) {
+        strcat(classNameList, buf);
+      } else {
+        reportErrNosys("Ran out of room in class name list; saved session file"
+	  " may have errors");
+      }
 
-    const char *result;
-	ArgList args;
-    status += CallParseAPI(saveData->control, result, false, args,
-	    "isInterpretedGData", instance);
-    if (status.IsComplete()) {
-      int isInterpreted = atoi(result);
-      if (isInterpreted) {
-        fprintf(saveData->fp, "DEVise createMappingClass {%s}\n", devClass);
+      const char *result;
+	  ArgList args;
+      status += CallParseAPI(saveData->control, result, false, args,
+	      "isInterpretedGData", instance);
+      if (status.IsComplete()) {
+        int isInterpreted = atoi(result);
+        if (isInterpreted) {
+          fprintf(saveData->fp, "DEVise createMappingClass {%s}\n", devClass);
+        }
       }
     }
+  } else {
+    status = StatusFailed;
   }
 
   if (status.IsError()) reportErrNosys("Error or warning");
@@ -2070,9 +2249,16 @@ Session::SaveGData(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
+  fprintf(saveData->fp, "\n");
+
   status += SaveParams(saveData, "getCreateParam", "create", "mapping",
       devClass, instance);
   status += SaveParams(saveData, "getPixelWidth", "setPixelWidth", instance);
+  // Note: the "create mapping" command will save the color command for
+  // whatever display mode we're currently in; that will be overridden
+  // by the colors in the setMappingColors command.
+  status += SaveParams(saveData, "getMappingColors", "setMappingColors",
+      instance);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
@@ -2090,6 +2276,8 @@ Session::SaveWindowLayout(char *category, char *devClass, char *instance,
   printf("Session::SaveWindowLayout({%s} {%s} {%s})\n", category, devClass,
       instance);
 #endif
+
+  fprintf(saveData->fp, "\n");
 
   DevStatus status = SaveParams(saveData, "getWindowLayout",
       "setWindowLayout", instance);
@@ -2112,6 +2300,8 @@ Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
+
+  fprintf(saveData->fp, "\n");
 
   status += SaveParams(saveData, "getAxisDisplay", "setAxisDisplay",
       instance, "X");
@@ -2165,6 +2355,8 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
 #endif
 
   DevStatus status = StatusOk;
+
+  fprintf(saveData->fp, "\n");
 
   const char *result;
   ArgList args;
@@ -2348,6 +2540,8 @@ Session::SaveViewHistory(char *category, char *devClass, char *instance,
 
   DevStatus status = StatusOk;
 
+  fprintf(saveData->fp, "\n");
+
   fprintf(saveData->fp, "DEVise clearViewHistory {%s}\n", instance);
 
   const char *result;
@@ -2511,7 +2705,7 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
 DevStatus
 Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
     Boolean splitResult, ArgList &args, const char *arg0,
-	const char *arg1 = NULL, const char *arg2 = NULL, const char *arg3 = NULL)
+	const char *arg1, const char *arg2, const char *arg3)
 {
 #if defined(DEBUG)
   printf("Session::CallParseAPI(%s)\n", arg0);
@@ -2840,8 +3034,10 @@ Session::CheckWindowLocations()
       if (relX < 0.0 || relX + relWidth > 1.0 || relY < 0.0 ||
           relY + relHeight > 1.0) {
 	    char errBuf[256];
-	    sprintf(errBuf, "Warning: window <%s> extends outside of screen",
-	    window->GetName());
+	    int formatted = snprintf(errBuf, sizeof(errBuf),
+		    "Warning: window <%s> extends outside of screen",
+	        window->GetName());
+		checkAndTermBuf2(errBuf, formatted);
         reportErrNosys(errBuf);
 		status += StatusWarn;
       }

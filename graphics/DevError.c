@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,20 @@
   $Id$
 
   $Log$
+  Revision 1.12  2003/01/13 19:25:09  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.11.10.4  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.11.10.3  2003/11/19 19:40:14  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
+  Revision 1.11.10.2  2003/06/25 20:24:43  wenger
+  Added timestamps to devise error info printed to stderr.
+
   Revision 1.11.10.1  2002/09/17 23:34:12  wenger
   Fixed a bunch of memory leaks -- especially in DevError::ReportError()!
 
@@ -73,8 +87,7 @@
 #define _DevError_c_
 
 #include <sys/time.h>
-#include <string.h>
-#include <strstream.h>
+#include <strstream>
 
 #include "DevError.h"
 #include "Util.h"
@@ -128,11 +141,11 @@ DevError::ReportError(const char *message, int argc, const char * const *argv,
     // its buffer.  RKW 2002-09-17.
     const int bufSize = MAXPATHLEN * 2;
     char buf[bufSize];
-    ostrstream errStr(buf, bufSize);
+    std::strstream errStr(buf, bufSize);
 
-    errStr << endl << progName << " error: " << message;
+    errStr << progName << " error: " << message;
     for (int count = 0; count < argc; count++) {
-        errStr << argv[count] << " ";
+        errStr << "<" << argv[count] << "> ";
     }
     errStr << endl;
     if (errnum != devNoSyserr) {
@@ -143,20 +156,20 @@ DevError::ReportError(const char *message, int argc, const char * const *argv,
 	}
 	errStr << endl;
     }
-    errStr << "  at " << file << ": " << line;
+    errStr << "  at " << file << ": " << line << endl << ends;
 
-#if 0 // Timestamp is already added by DebugLog class.
+
+    // Add timestamp to what we print out.  (We don't want to add it to
+    // what we log, because the DebugLog class already adds a timestamp.)
+    const char *timeStr;
     struct timeval errTime;
     if (gettimeofday(&errTime, NULL) >= 0) {
-        errStr << " (" << DateString(errTime.tv_sec) << ")\n";
+        timeStr = DateString(errTime.tv_sec);
+    } else {
+        timeStr = "";
     }
-#else
-    errStr << endl;
-#endif
 
-    errStr << ends;
-
-    fprintf(stderr, "%s", errStr.str());
+    fprintf(stderr, "\n%s  [%s]\n", errStr.str(), timeStr);
 #if defined(DEBUG_LOG)
     DebugLog::DefaultLog()->Message(DebugLog::LevelError, errStr.str());
 #endif

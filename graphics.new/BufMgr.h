@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11.22.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.11  1998/06/24 15:09:16  beyer
+  added default constructor and destructor to BufMgr
+
   Revision 1.10  1997/12/23 23:35:12  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -70,6 +76,8 @@
 /* Report info about what has been inserted/delete from the buffer manager */
 class BufMgrCallback {
 public:
+    virtual ~BufMgrCallback() {}
+
     virtual void Inserted(TData *tdata, Coord low, Coord high) = 0;
     virtual void Deleted(TData *tdata, Coord low, Coord high) = 0;
 };

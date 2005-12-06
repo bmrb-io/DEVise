@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2001
+#  (c) Copyright 2000-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,20 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.8.8.2  2004/01/25 23:35:49  wenger
+#  JavaScreen kill scripts kill things with SIGKILL after trying
+#  a "softer" kill (because of problems on RedHat 9 with processes
+#  refusing to be killed).
+#
+#  Revision 1.8.8.1  2003/06/18 18:06:54  wenger
+#  There is now a configuration option to kill Xvfb when killing the
+#  JSS (to deal with the problem that once in a while Xvfb gets itself
+#  goofed up and you cannot successfully restart the DEViseds unless you
+#  kill Xvfb first).
+#
+#  Revision 1.8  2001/07/20 18:04:15  wenger
+#  Added hostname to pid files.
+#
 #  Revision 1.7  2001/06/08 16:49:18  wenger
 #  Can't use wait the way I was trying to.
 #
@@ -80,4 +94,12 @@ for pid in $pids
 do
   echo "Killing $pid"
   kill $pid
+  
+  # Note: I've run into problems on RedHat 9 with processes refusing to
+  # be killed unless you use SIGKILL, so I'm doing this at least until
+  # I get things figured out.  wenger 2004-01-25.
+  echo "Killing $pid with SIGKILL"
+  kill -9 $pid
 done
+
+scripts/kill_Xvfb

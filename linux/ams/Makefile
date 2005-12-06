@@ -15,6 +15,22 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7.26.1  2003/12/19 18:08:43  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.7.44.1  2003/12/18 19:23:51  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.7  1998/03/11 18:26:08  wenger
+#  Got DEVise 1.5.2 to compile and link on Linux; includes drastically
+#  reducing include dependencies between csgroup code and the rest of
+#  the code, and within the csgroup code.  (Note: running collaboration
+#  doesn't work yet.)
+#
 #  Revision 1.6  1997/11/12 15:48:06  wenger
 #  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
 #  into the trunk.
@@ -55,11 +71,9 @@
 
 include ../Makefile.config
 
-ARCH_LDFLAGS = -L/usr/lib -L/usr/X11/lib
-#ARCH_SYSLIBS = -ltk4.0 -ltcl7.4 -lX11 -lm
-#ARCH_SYSLIBS = -ltk4.1 -ltcl7.5 -ldl -lX11 -lm
-ARCH_SYSLIBS = -ltk4.2 -ltcl7.6 -ldl -lX11 -lm
+ARCH_LDFLAGS = $(TCL_TK_LIBDIR) $(XLIB_LIBDIR)
+ARCH_SYSLIBS = $(TCL_TK_LIBS) -ldl -lX11 -lm
 
 VPATH = ../../ams
 include $(VPATH)/Makefile.base
-include $(VPATH)/Makefile.linux
+include Makefile.depend

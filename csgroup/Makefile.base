@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13.10.1  2003/04/17 17:58:25  wenger
+#  Now compiles with no warnings with gcc 2.95, except for warnings about
+#  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+#
+#  Revision 1.13  2001/08/03 18:12:34  wenger
+#  Removed all OpenGL-related code.
+#
 #  Revision 1.12  1999/12/06 18:40:39  wenger
 #  Simplified and improved command logging (includes fixing bug 537, command
 #  logs are now human-readable); added standard header to debug logs.

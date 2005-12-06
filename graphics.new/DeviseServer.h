@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -25,6 +25,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  2003/01/13 19:25:22  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.10.14.2  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
   Revision 1.10.14.1  2002/09/02 21:29:33  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -92,6 +98,8 @@
 #include "Dispatcher.h"
 #include "CmdDescriptor.h"
 
+
+class CmdContainer;
 
 class DeviseServer : public Server {
 public:

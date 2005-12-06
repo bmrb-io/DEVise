@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14.28.1  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.14  1997/11/24 23:14:52  weaver
+  Changes for the new ColorManager.
+
   Revision 1.13.10.1  1997/05/21 20:40:27  weaver
   Changes for new ColorManager
 
@@ -140,7 +146,7 @@ void KGraph::SetAxes(int num)
   int i;
   for(i = 0; i < num; i++)
     _pts[i] = 0.0;
-  _msgBuf = new (char *)[_naxes + 3];
+  _msgBuf = new char *[_naxes + 3];
   for(i = 0; i < _naxes + 3; i++)
     _msgBuf[i] = new char[MAX_POPUP_LEN];
 }

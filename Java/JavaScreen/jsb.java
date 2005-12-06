@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,8 +21,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2003/01/13 19:23:45  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.19  2002/06/17 19:40:16  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.18.2.7  2003/06/26 20:18:04  wenger
+// Added closeSession() and openSession() methods to the JS applet for
+// Wavelet-IDR.
+//
+// Revision 1.18.2.6  2003/03/28 17:21:30  wenger
+// Made JS invisibility destruction timeout configurable; fixed some other
+// problems with loading and re-loading the applet.
+//
+// Revision 1.18.2.5  2003/01/28 15:29:29  wenger
+// Made refreshAllData() and restartSession() methods in DEViseJSLoader,
+// so that the Wavelet-IDR JavaScript code can call them.
 //
 // Revision 1.18.2.4  2002/10/03 17:59:18  wenger
 // JS applet instance re-use now reloads the session -- that's what
@@ -146,8 +161,6 @@ public class jsb extends DEViseJSApplet
 
     jsdevisec jsc = null;
 
-    private DEViseJSTimer timer = null;
-
     public void init()
     {
 	super.init();
@@ -261,6 +274,16 @@ public class jsb extends DEViseJSApplet
         }
     }
 
+    public void refreshAllData(boolean doHome)
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jsb.refreshAllData(" + doHome + ")");
+	}
+
+	jsc.refreshAllData(doHome);
+    }
+
+
     public void restartSession()
     {
         if (DEBUG >= 1) {
@@ -269,8 +292,22 @@ public class jsb extends DEViseJSApplet
 
 	jsc.restartSession();
     }
+
+    public void closeSession()
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jsb.closeSession()");
+	}
+
+	jsc.closeSession();
+    }
+
+    public void openSession(String fullSessionName)
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jsb.openSession(" + fullSessionName + ")");
+	}
+
+	jsc.openSession(fullSessionName);
+    }
 }
-
-
-
-

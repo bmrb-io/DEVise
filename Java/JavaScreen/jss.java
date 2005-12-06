@@ -19,6 +19,29 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2002/07/19 17:06:49  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.20.2.3  2005/11/15 17:13:58  wenger
+// A bunch of changes to improve restart logging, etc.:
+// - Better error messages in jss.java.
+// - Set maximum memory for all production Java server processes to
+//   256 MB (because of weird problems on marlin.bmrb.wisc.edu).
+// - DEVise.jspop and DEVise.jspop.loc send all start_devised output to
+//   a log file instead of to /dev/null.
+// - check_jspop now puts check_connect.err.* in logs and doesn't
+//   delete it when there's an error.
+// - run_check puts *starting* timestamp at beginning of output, saves
+//   output from failed tests to logs.
+// - start_devised generates more output, now that it's being saved.
+// - Better error messages from check_jsall, check_jspop, and check_jss.
+//
+// Revision 1.20.2.2  2003/06/17 21:04:57  wenger
+// Major improvements to command-line argument processing of all JavaScreen
+// programs; we now save the -id value in the JSPoP to use for the usage
+// log file; some minor cleanups of the auto test scripts; slight
+// clarification of command documentation.
+//
 // Revision 1.20.2.1  2002/07/19 16:05:22  wenger
 // Changed command dispatcher so that an incoming command during a pending
 // heartbeat is postponed, rather than rejected (needed some special-case
@@ -153,12 +176,13 @@ public class jss implements Runnable
     private int debugLevel = 0;
     private Vector deviseds = new Vector();
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws YException
     {
         String version = System.getProperty("java.version");
         if (version.compareTo("1.1") < 0)  {
-            System.err.println("Error: Java version 1.1 or greater is needed to run this program\n"
-                               + "The version you used is " + version + "\n");
+            System.err.println("Error: Java version 1.1 or greater is " +
+	      "needed to run this program\n" + "The version you used is " +
+	      version + "\n");
             System.exit(0);
         }
 
@@ -168,7 +192,7 @@ public class jss implements Runnable
         thread.start();
     }
 
-    public jss(String[] args)
+    public jss(String[] args) throws YException
     {
         System.out.println("\nChecking command line arguments ...\n");
         checkArguments(args);
@@ -177,8 +201,8 @@ public class jss implements Runnable
             InetAddress address = InetAddress.getLocalHost();
             localHostname = address.getHostName();
         } catch (UnknownHostException e) {
-            System.err.println("Can not start jss - unknown local host!");
-            System.exit(1);
+            throw new YException("Can not start jss - unknown local host! (" +
+	      e + ")");
         }
 
         System.out.println("\nTry to start jss server socket at port" +
@@ -187,8 +211,7 @@ public class jss implements Runnable
             jssServerSocket = new ServerSocket(jssPort);
         } catch (IOException e) {
             System.err.println("Can not start server socket at port " +
-			  jssPort);
-	        System.err.println(e.getMessage());
+	      jssPort + "(" + e + ")");
             quit();
         }
 
@@ -204,7 +227,7 @@ public class jss implements Runnable
             }
             System.out.println("  Successfully started DEVise server(s)");
         } catch (YException e) {
-            System.err.println(e.getMsg());
+            System.err.println("Error starting devised: " + e);
             quit();
         }
 
@@ -257,7 +280,7 @@ public class jss implements Runnable
                 disconnectFromJSPOP();
             }
         } catch (YException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Error connecting to JSPoP: " + e);
             isListen = false;
         }
 
@@ -279,16 +302,19 @@ public class jss implements Runnable
                         try {
                             isQuit = processRequest(msg);
                         } catch (YException exp) {
-                            System.err.println("Failed to process request from jspop");
-                            System.err.println(exp.getMessage());
+                            System.err.println("Failed to process request " + 
+			      "from jspop (" + exp + ")");
                             disconnectFromJSPOP();
                         }
 
                         isListen = !isQuit;
                     } catch (IOException ex) {
-                        System.err.println("IO Error while open connection to jspop host " + jspopHost);
+                        System.err.println("IO Error (" + ex +
+			  ") while open connection to jspop host " +
+			  jspopHost);
                     } catch (YException ex) {
-                        System.err.println(ex.getMessage());
+                        System.err.println(
+			  "Error while opening JSPoP connection: " + ex);
                     }
 
                     if (jspopIS != null) {
@@ -314,7 +340,8 @@ public class jss implements Runnable
                     }
                 }
             } catch (IOException e) {
-                System.err.println("jss server cannot listen on jss socket so it is aborting!");
+                System.err.println("jss server cannot listen on jss " + 
+		  "socket so it is aborting! (" + e + ")");
                 break;
             }
         }
@@ -351,13 +378,17 @@ public class jss implements Runnable
             }
 
             jspopSocket = new Socket(jspopAddress, jspopPort);
-            jspopOS = new DataOutputStream(new BufferedOutputStream(jspopSocket.getOutputStream()));
+            jspopOS = new DataOutputStream(new BufferedOutputStream(
+	      jspopSocket.getOutputStream()));
         } catch (UnknownHostException e) {
-            throw new YException("Can not find jspop host " + jspopHost);
+            throw new YException("Can not find jspop host " + jspopHost +
+	      "(" + e + ")");
         } catch (NoRouteToHostException e) {
-            throw new YException("Can not find route to jspop host, may caused by an internal firewall");
+            throw new YException("Can not find route to jspop host, "
+	      + "may caused by an internal firewall (" + e + ")");
         } catch (IOException e) {
-            throw new YException("IO Error while connecting to jspop host " + jspopHost);
+            throw new YException("IO Error (" + e +
+	      ") while connecting to jspop host " + jspopHost);
         }
     }
 
@@ -464,13 +495,17 @@ public class jss implements Runnable
         return false;
     }
 
-    private void checkArguments(String[] args)
+    private void checkArguments(String[] args) throws YException
     {
         for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-quit")) {
+	    StringBuffer argValue = new StringBuffer();
+
+	    if (DEViseGlobals.checkArgument(args[i], "-quit", false,
+	      argValue)) {
                 try {
                     Socket socket = new Socket("localhost", jssPort);
-                    DataOutputStream os = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+                    DataOutputStream os = new DataOutputStream(
+		      new BufferedOutputStream(socket.getOutputStream()));
                     String msg = DEViseCommands.S_QUIT;
                     os.writeInt(msg.length());
                     os.writeBytes(msg);
@@ -486,75 +521,79 @@ public class jss implements Runnable
                 }
 
                 System.exit(0);
-            } else if (args[i].startsWith("-server")) {
-                if (!args[i].substring(7).equals("")) {
-                    try {
-                        devisedNumber = Integer.parseInt(args[i].substring(7));
-                        if (devisedNumber < 1 || devisedNumber > 100) {
-			// For testing no devised 
-			// if (devisedNumber < 0 || devisedNumber > 10) {
-                            throw new NumberFormatException();
-                        }
-                    } catch (NumberFormatException e) {
-                        System.err.println("Please use a positive integer number between 1 and 10 as the number of devised servers you want to started");
-                        System.exit(1);
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-server", true,
+	      argValue)) {
+                try {
+                    devisedNumber = Integer.parseInt(argValue.toString());
+                    if (devisedNumber < 1 || devisedNumber > 100) {
+                        throw new NumberFormatException();
                     }
+                } catch (NumberFormatException e) {
+                    throw new YException("Please use a positive integer " +
+		      "between 1 and 100 as the number of devised servers " +
+		      "you want to started");
                 }
-            } else if (args[i].startsWith("-jssport")) {
-                if (!args[i].substring(8).equals("")) {
-                    try {
-                        jssPort = Integer.parseInt(args[i].substring(8));
-                        if (jssPort < 1024 || jssPort > 65535) {
-                            throw new NumberFormatException();
-                        }
-                    } catch (NumberFormatException e) {
-                        System.err.println("Please use a positive integer number between 1024 and 65535 as the port number for JSS Server");
-                        System.exit(1);
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-jssport", true,
+	      argValue)) {
+                try {
+                    jssPort = Integer.parseInt(argValue.toString());
+                    if (jssPort < 1024 || jssPort > 65535) {
+                        throw new NumberFormatException();
                     }
+                } catch (NumberFormatException e) {
+                    throw new YException("Please use a positive integer " +
+		      "between 1024 and 65535 as the port number for " +
+		      "the JSS");
                 }
-            } else if (args[i].startsWith("-jspopport")) {
-                if (!args[i].substring(10).equals("")) {
-                    try {
-                        jspopPort = Integer.parseInt(args[i].substring(10));
-                        if (jspopPort < 1024 || jspopPort > 65535) {
-                            throw new NumberFormatException();
-                        }
-                    } catch (NumberFormatException e) {
-                        System.err.println("Please use a positive integer number between 1024 and 65535 as the port number of jspop");
-                        System.exit(1);
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-jspopport",
+	      true, argValue)) {
+                try {
+                    jspopPort = Integer.parseInt(argValue.toString());
+                    if (jspopPort < 1024 || jspopPort > 65535) {
+                        throw new NumberFormatException();
                     }
+                } catch (NumberFormatException e) {
+                    throw new YException("Please use a positive integer " +
+		      "between 1024 and 65535 as the port number of jspop");
                 }
-            } else if (args[i].startsWith("-debug")) {
-                if (!args[i].substring(6).equals("")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-debug", false,
+	      argValue)) {
+                if (!argValue.toString().equals("")) {
                     try {
-                        debugLevel = Integer.parseInt(args[i].substring(6));
+                        debugLevel = Integer.parseInt(argValue.toString());
                     } catch (NumberFormatException e) {
-                        System.err.println("Please use an integer number as the debug level!");
-                        System.exit(1);
+                        throw new YException("Please use an integer as " +
+			  "the debug level!");
                     }
                 } else {
                     debugLevel = 1;
                 }
-            } else if (args[i].startsWith("-jspophost")) {
-                if (!args[i].substring(10).equals("")) {
-                    jspopHost = args[i].substring(10);
-                    System.out.println("JSPOP host is " + jspopHost);
-                }
-			} else if (args[i].startsWith("-id")) {
-                if (!args[i].substring(3).equals("")) {
-				    idStr = args[i].substring(3);
-				}
-			} else if (args[i].startsWith("-devisescript")) {
-                if (!args[i].substring(13).equals("")) {
-				    devisedScript = args[i].substring(13);
-				}
-			} else if (args[i].startsWith("-usage")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-jspophost",
+	      true, argValue)) {
+                jspopHost = argValue.toString();
+                System.out.println("JSPOP host is " + jspopHost);
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-id", true,
+	      argValue)) {
+	        idStr = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-devisescript",
+	      true, argValue)) {
+	        devisedScript = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-usage", false,
+	      argValue)) {
                 System.out.println(usage);
                 System.exit(0);
+
             } else {
-                System.err.println("Invalid jss option \"" + args[i] + "\"!");
-                System.out.println(usage);
-                System.exit(1);
+                throw new YException("Invalid jss option \"" + args[i] +
+		  "\"!\n" + usage);
             }
         }
     }

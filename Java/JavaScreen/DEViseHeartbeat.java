@@ -20,8 +20,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.6  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.5.2.5  2003/05/02 17:16:16  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
 //
 // Revision 1.5.2.4  2002/12/17 23:15:01  wenger
 // Fixed bug 843 (still too many java processes after many reloads);
@@ -93,7 +101,7 @@ public class DEViseHeartbeat implements Runnable
 	_hbThread.setName("Heartbeat");
 	_hbThread.start();
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Starting thread " + _hbThread);
+	    DEViseUtils.printAllThreads("Starting thread " + _hbThread);
 	}
     }
 
@@ -143,7 +151,7 @@ public class DEViseHeartbeat implements Runnable
 	    System.out.println("DEViseHeartBeat.stop()");
 	}
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Stopping thread " + _hbThread);
+	    DEViseUtils.printAllThreads("Stopping thread " + _hbThread);
 	}
         _hbThread.stop();
     }

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,21 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7.10.4  2004/08/30 21:17:41  wenger
+#  Got set_up_user to work even if run with a relative path.
+#
+#  Revision 1.7.10.3  2004/08/30 18:48:02  wenger
+#  Many changes to remove dependencies on /p/devise directory.
+#
+#  Revision 1.7.10.2  2003/04/23 17:49:46  wenger
+#  Removed debug output I forgot.
+#
+#  Revision 1.7.10.1  2003/04/16 20:21:41  wenger
+#  Reduced hard-coded path problems in startup files, etc.
+#
+#  Revision 1.7  2001/09/19 20:45:01  wenger
+#  Set up public scripts, etc., to work with new release directory setup.
+#
 #  Revision 1.6  1999/08/20 15:04:03  wenger
 #  Added Condor user week session to distribution sessions.
 #
@@ -54,24 +69,31 @@ echo "Setting you up to run DEVise with your own data, schemas, session"
 echo "files, and cache."
 
 set dir = devise
-set source = /p/devise/release/public
+set source = `dirname $0`
+
+# Force source to be absolute
+set dirnow = `pwd`
+cd $source
+set source = `pwd`
+cd $dirnow
 
 if (! -d $dir) then
   mkdir $dir
 endif
 
-cd $dir
-mkdir cache
-cp -r $source/schema .
-cp -r $source/session .
-cp -r $source/dat .
-cp -r $source/run .
-cp -r $source/palette .
+mkdir $dir/cache
+cp -r $source/schema $dir
+cp -r $source/session $dir
+cp -r $source/dat $dir
+cp -r $source/run $dir
+cp -r $source/palette $dir
+
+rm $dir/run/devise_prog
+echo '#/bin/csh -f' > $dir/run/devise_prog
+echo "echo $source/.." >> $dir/run/devise_prog
+chmod 755 $dir/run/devise_prog
 
 echo ""
 echo "To be able to run DEVise from any directory, you must perform the"
-echo "following additional steps:"
+echo "following additional step:"
 echo "  o Add the 'devise/run' directory to your path."
-echo "  o Uncomment the 'cd ...' line near the beginning of the devise"
-echo "    startup script, and edit it to cd to the appropriate directory"
-echo "    (the directory in which the startup script is installed)."

@@ -17,7 +17,7 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
 - Build/test DEVise.
     - Build DEVise on all release architectures (linux/solsparc as of
-      2002-09-24).  (Build solsparc on cardinal.)
+      2002-09-24).  (Build solsparc on sparc1.)
 
     - Make strip after building.
 

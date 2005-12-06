@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2003/01/13 19:23:45  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
+// Revision 1.46.2.4  2003/06/26 20:18:04  wenger
+// Added closeSession() and openSession() methods to the JS applet for
+// Wavelet-IDR.
+//
+// Revision 1.46.2.3  2003/01/28 15:29:29  wenger
+// Made refreshAllData() and restartSession() methods in DEViseJSLoader,
+// so that the Wavelet-IDR JavaScript code can call them.
+//
 // Revision 1.46.2.2  2002/10/03 17:59:18  wenger
 // JS applet instance re-use now reloads the session -- that's what
 // Wavelet-IDR needs for their web page to work right.
@@ -267,6 +278,15 @@ public class jsa extends DEViseJSApplet
         }
     }
 
+    public void refreshAllData(boolean doHome)
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jsa.refreshAllData(" + doHome + ")");
+	}
+
+	jsf.jsc.refreshAllData(doHome);
+    }
+
     public void restartSession()
     {
         if (DEBUG >= 1) {
@@ -274,6 +294,24 @@ public class jsa extends DEViseJSApplet
 	}
 
 	jsf.jsc.restartSession();
+    }
+
+    public void closeSession()
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jsa.closeSession()");
+	}
+
+	jsf.jsc.closeSession();
+    }
+
+    public void openSession(String fullSessionName)
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("jsa.openSession(" + fullSessionName + ")");
+	}
+
+	jsf.jsc.openSession(fullSessionName);
     }
 }
 

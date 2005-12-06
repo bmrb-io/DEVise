@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,22 @@
   $Id$
 
   $Log$
+  Revision 1.31  2003/01/13 19:25:21  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.30.14.3  2003/06/26 19:10:55  wenger
+  Improvement to bad file index fix: we now invalidate the TData instead
+  of just rebuilding the index, so the query processor knows things
+  have changed.
+
+  Revision 1.30.14.2  2003/04/18 17:07:51  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.30.14.1.4.1  2003/04/18 15:26:13  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
   Revision 1.30.14.1  2002/09/04 13:58:00  wenger
   More Purifying -- fixed some leaks and mismatched frees.
 
@@ -738,8 +754,9 @@ BufMgr::BMHandle BufMgrFull::InitGetRecs(TData *tdata, GData *gdata,
                                          Boolean asyncAllowed)
 {
 #if DEBUGLVL >= 3
-    printf("BufMgrFull::InitGetRecs [%ld,%ld] with tdata 0x%p, gdata 0x%p\n",
-           interval->Low, interval->High, tdata, (tdataOnly ? 0 : gdata));
+    printf("BufMgrFull::InitGetRecs [%g,%g]", interval->Low, interval->High);
+    printf(" with tdata 0x%p", tdata);
+    printf(", gdata 0x%p\n", (tdataOnly ? 0 : gdata));
 #endif
 
     DOASSERT(tdata->RecSize() >= 0, "Cannot handle variable records");
@@ -1312,7 +1329,7 @@ void BufMgrFull::Clear()
 */
 
 void BufMgrFull::ClearData(TData *data, 
-			   char *attrName = "recId", Coord granularity = 1)
+			   char *attrName, Coord granularity)
 {
     int numArrays = _memoryRanges->NumArrays();
     for(int i = 0; i < numArrays; i++) {

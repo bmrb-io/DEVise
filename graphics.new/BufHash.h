@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.3.42.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  1997/03/28 16:09:40  wenger
+  Added headers to all source files that didn't have them; updated
+  solaris, solsparc, and hp dependencies.
+
   Revision 1.2  1995/09/05 22:14:07  jussi
   Added CVS header.
 */
@@ -26,6 +33,7 @@
 #define BufHash_h
 #include "DeviseTypes.h"
 #include "BufMgr.h"
+#include "BufPage.h"
 
 const int HASH_TABLE_SIZE = 2001;
 class BufHash {

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.8.28.1  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.8  1997/12/23 23:35:31  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.7  1997/10/07 17:06:02  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -62,6 +74,8 @@ struct QPRangeRec {
 
 class QPRangeCallback {
 public:
+    virtual ~QPRangeCallback() {}
+
     /* Info that IDs from low to high have just been inserted
        into the range */
     virtual void QPRangeInserted(Coord low, Coord high,

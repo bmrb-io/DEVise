@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7.14.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.7  2000/01/13 23:07:02  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.6  1999/10/26 16:29:40  wenger
   Fixed bug 519 (problems with opening various sequences of soil science
   sessions, caused by stupid composite parsers not getting reset when a
@@ -51,6 +57,8 @@ class AttrInfo;
 
 class UserComposite {
 public:
+  virtual ~UserComposite() {}
+
   /* This is called by the Composite parser to parse composite attributes */
   virtual void Decode(RecInterp *recInterp) = 0;
 

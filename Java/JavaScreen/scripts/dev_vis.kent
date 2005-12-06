@@ -1,0 +1,12 @@
+############################################################
+
+# Define the environment variables needed to run DEVise with
+# the JavaScreen demo data, sessions, etc.
+
+# $Id$
+
+############################################################
+
+setenv DEVISE_VIS    /p/devise/wenger
+
+source scripts/dev_vis.gen

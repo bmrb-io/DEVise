@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,32 @@
   $Id$
 
   $Log$
+  Revision 1.148  2003/01/13 19:25:12  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.147.4.8  2005/01/03 20:17:20  wenger
+  Fixed bug 902 (zooming in too far makes lines disappear).
+
+  Revision 1.147.4.7  2003/04/18 17:07:44  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.147.4.6.2.1  2003/04/18 15:26:05  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.147.4.6  2003/02/07 23:39:33  wenger
+  Fixed bugs 858 and 864 (more drawing bugs).
+
+  Revision 1.147.4.5  2003/02/06 18:07:42  wenger
+  Fixed bug 859 (equal-width bars sometimes show up with unequal widths).
+
+  Revision 1.147.4.4  2003/01/28 21:37:39  wenger
+  Fixed bug 862 (missing data in antares session) -- the problem was
+  that XDrawRectangle() with width and height of 0 doesn't draw anything
+  when drawing to an Xvfb pixmap; when drawing to a window, it makes a
+  one-pixel point.  Argh!
+
   Revision 1.147.4.3  2003/01/07 22:47:23  wenger
   Fixed bugs 851, 853, and 854 (more view transform/axis drawing bugs).
 
@@ -851,8 +877,8 @@ XWindowRep::XWindowRep(Display* display, Window window, XDisplay* DVDisp,
 	:	WindowRep(DVDisp), _parent(parent)
 {
 #if defined(DEBUG)
-  printf("XWindowRep::XWindowRep(this = 0x%p, parent = %p,
-    window = 0x%lx)\n", this, parent, window);
+  printf("XWindowRep::XWindowRep(this = 0x%p, parent = %p, "
+    "window = 0x%lx)\n", this, parent, window);
 #endif
 
 	_display = display;
@@ -869,8 +895,8 @@ XWindowRep::XWindowRep(Display* display, Pixmap pixmap, XDisplay* DVDisp,
 	:	WindowRep(DVDisp), _x(x), _y(y), _parent(parent)
 {
 #if defined(DEBUG)
-  printf("XWindowRep::XWindowRep(this = 0x%p, parent = %p,
-    pixmap = 0x%lx)\n", this, parent, pixmap);
+  printf("XWindowRep::XWindowRep(this = 0x%p, parent = %p, "
+    "pixmap = 0x%lx)\n", this, parent, pixmap);
 #endif
 
   _display = display;
@@ -2003,7 +2029,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 #if defined(DEBUG)
   printf("XWindowRep::DrawPixelArray: %d points, width = %d\n", num, width);
 
-  printf("Transformation matrix: ");
+  printf("  Transformation matrix: ");
   WindowRep::PrintTransform();
   printf("\n");
 
@@ -2035,7 +2061,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 #ifdef DEBUG
 #if MAXPIXELDUMP > 0
     printf("\nAfter transformation:\n\n");
-    for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
+    for(int k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
       if ((k + 1) % 10 == 0)
 	printf("\n");
       printf("(%d,%d)",points[k].x, points[k].y);
@@ -2067,7 +2093,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 #ifdef DEBUG
 #if MAXPIXELDUMP > 0
   printf("\nAfter transformation 2:\n\n");
-  for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
+  for(int k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
     if ((k + 1) % 10 == 0)
       printf("\n");
     printf("(%d,%d)", rectAngles[k].x, rectAngles[k].y);
@@ -2095,8 +2121,7 @@ void XWindowRep::DrawPixelArray(Coord *x, Coord *y, int num, int width)
 inline void
 XWindowRep::TransformRect(SymbolAlignment alignmentIn, Coord dataX,
     Coord dataY, Coord dataWidth, Coord dataHeight,
-    SymbolAlignment alignmentOut, short &pixX, short &pixY,
-    unsigned short &pixWidth, unsigned short &pixHeight)
+    SymbolAlignment alignmentOut, CoordRect &pixRect)
 {
 #if defined(DEBUG)
   printf("XWindowRep::TransformRect(alignIn,x,y,w,h,alignOut)=(%d, %g, %g, %g, %g, %d)\n",
@@ -2159,76 +2184,72 @@ XWindowRep::TransformRect(SymbolAlignment alignmentIn, Coord dataX,
   // corner coordinates here, because otherwise the truncation below
   // doesn't work right (see bug 800).  RKW 2002-07-24.
   //
-  Coord xLL, yLL, xUR, yUR; // coordinates in pixels
-  Transform(dataX, dataY, xLL, yLL);
+  Coord pixXReal, pixYReal;
+  Coord xUR, yUR;
+  Transform(dataX, dataY, pixXReal, pixYReal);
   Transform(dataX + dataWidth, dataY + dataHeight, xUR, yUR);
 
   //
   // Possible overflow when these numbers get truncated, so clip to MAXSHORT
   // to avoid any trouble.
   //
-  xLL = MIN(MAX(xLL, -MAXSHORT), MAXSHORT);
-  yLL = MIN(MAX(yLL, -MAXSHORT), MAXSHORT);
+  pixXReal = MIN(MAX(pixXReal, -MAXSHORT), MAXSHORT);
+  pixYReal = MIN(MAX(pixYReal, -MAXSHORT), MAXSHORT);
   xUR = MIN(MAX(xUR, -MAXSHORT), MAXSHORT);
   yUR = MIN(MAX(yUR, -MAXSHORT), MAXSHORT);
 
+  Coord pixWdReal = xUR - pixXReal;
+  Coord pixHtReal = pixYReal - yUR;
+
 #if defined(DEBUG)
-  printf("  xLL, yLL, xUR, yUR = %g, %g, %g, %g\n", xLL, yLL, xUR, yUR);
+  printf("  pixXReal, pixYReal, xUR, yUR = %g, %g, %g, %g\n", pixXReal,
+      pixYReal, xUR, yUR);
+  printf("  pixWdReal, pixHtReal = %g, %g\n", pixWdReal, pixHtReal);
 #endif
 
-  // Note: calculating from the upper rather than the lower corner here
-  // seems to fix an off-by-one-pixel problem.
-  pixX = ROUND(short, xLL);
-  short pixXMax = ROUND(short, xUR);
-  pixWidth = pixXMax - pixX;
-
-  pixY = ROUND(short, yUR);
-  short pixYMax = ROUND(short, yLL);
-  pixHeight = pixYMax - pixY;
-
   //
-  // Translate the pixel values from the upper left corner back to the
+  // Translate the pixel values from the lower left corner back to the
   // proper location, according to alignment.
   //
   switch (alignmentOut) {
   case AlignNorthWest:
-	// No change needed.
+	pixYReal -= pixHtReal;
     break;
 
   case AlignNorth:
-    pixX += pixWidth / 2;
+    pixXReal += pixWdReal / 2.0;
+	pixYReal -= pixHtReal;
     break;
 
   case AlignNorthEast:
-    pixX += pixWidth;
+    pixXReal += pixWdReal;
+	pixYReal -= pixHtReal;
     break;
 
   case AlignWest:
-	pixY += pixHeight / 2;
+	pixYReal -= pixHtReal / 2.0;
     break;
 
   case AlignCenter:
-    pixX += pixWidth / 2;
-	pixY += pixHeight / 2;
+    pixXReal += pixWdReal / 2.0;
+	pixYReal -= pixHtReal / 2.0;
     break;
 
   case AlignEast:
-    pixX += pixWidth;
-	pixY += pixHeight / 2;
+    pixXReal += pixWdReal;
+	pixYReal -= pixHtReal / 2.0;
     break;
 
   case AlignSouthWest:
-	pixY += pixHeight;
+	// No change needed.
     break;
 
   case AlignSouth:
-    pixX += pixWidth / 2;
-	pixY += pixHeight;
+    pixXReal += pixWdReal / 2.0;
     break;
 
   case AlignSouthEast:
-    pixX += pixWidth;
-	pixY += pixHeight;
+    pixXReal += pixWdReal;
     break;
 
   default:
@@ -2236,9 +2257,14 @@ XWindowRep::TransformRect(SymbolAlignment alignmentIn, Coord dataX,
     break;
   }
 
+  pixRect.x = pixXReal;
+  pixRect.y = pixYReal;
+  pixRect.width = pixWdReal;
+  pixRect.height = pixHtReal;
+
 #if defined(DEBUG)
-  printf("  XWindowRep::TransformRect: draw (x,y,w,h)=(%d, %d, %d, %d)\n",
-      pixX, pixY, pixWidth, pixHeight);
+  printf("  XWindowRep::TransformRect: draw (x,y,w,h)=(%g, %g, %g, %g)\n",
+      pixRect.x, pixRect.y, pixRect.width, pixRect.height);
 #endif
 }
 
@@ -2253,7 +2279,7 @@ void XWindowRep::FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width,
 #if defined(DEBUG)
   printf("XWindowRep::FillRectArray: %d points\n", num);
 
-  printf("Transformation matrix: ");
+  printf("  Transformation matrix: ");
   WindowRep::PrintTransform();
   printf("\n");
 
@@ -2274,7 +2300,7 @@ void XWindowRep::FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width,
 #endif
 
   DOASSERT(num <= WINDOWREP_BATCH_SIZE, "rectAngles array will overflow");
-  XRectangle rectAngles[WINDOWREP_BATCH_SIZE];
+  CoordRect rectangles[WINDOWREP_BATCH_SIZE];
   for(int i = 0; i < num; i++) {
 #if defined(DEBUG)
     printf("  XWindowRep::FillRectArray: got (x,y,w,h)=(%g, %g, %g, %g)\n",
@@ -2282,8 +2308,7 @@ void XWindowRep::FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width,
 #endif
 
     TransformRect(alignment, symbolX[i], symbolY[i], width[i], height[i],
-	    alignment, rectAngles[i].x, rectAngles[i].y, rectAngles[i].width,
-	    rectAngles[i].height);
+	    alignment, rectangles[i]);
   }
 
 #if defined(DEBUG)
@@ -2294,8 +2319,8 @@ void XWindowRep::FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width,
     for(k = 0; k < (num > MAXPIXELDUMP ? MAXPIXELDUMP : num); k++) {
       if ((k + 1) % 6 == 0)
         printf("\n");
-      printf("(%d,%d,%d,%d)", rectAngles[k].x, rectAngles[k].y,
-	     rectAngles[k].width, rectAngles[k].height);
+      printf("(%g,%g,%g,%g)", rectangles[k].x, rectangles[k].y,
+	     rectangles[k].width, rectangles[k].height);
     }
     printf("\n");
   }
@@ -2306,7 +2331,7 @@ void XWindowRep::FillRectArray(Coord *symbolX, Coord *symbolY, Coord *width,
   if (_dispGraphics) {
       // special-case the no-fill rectangle
       bool fill = (GetPattern() != -Pattern1);
-      DrawRectangles(rectAngles, num, fill, alignment, orientation);
+      DrawRectangles(rectangles, num, fill, alignment, orientation);
   }
 #endif
 }
@@ -2317,26 +2342,30 @@ void XWindowRep::FillRect(Coord xlow, Coord ylow, Coord width,
 #if defined(DEBUG)
   printf("XWindowRep::FillRect: x %.2f, y %.2f, width %.2f, height %.2f\n",
          xlow, ylow, width, height);
+
+  printf("  Transformation matrix: ");
+  WindowRep::PrintTransform();
+  printf("\n");
 #endif
 
   /* XXX: need to clip rect against window dimensions */
 
   short pixelX, pixelY;
   unsigned short pixelWidth, pixelHeight;
+  CoordRect pixRect;
   TransformRect(AlignSouthWest, xlow, ylow, width, height, AlignNorthWest,
-      pixelX, pixelY, pixelWidth, pixelHeight);
+      pixRect);
 
 #if defined(DEBUG)
-  printf("After transformation: x %d, y %d, width %d, height %d\n",
-	 pixelX, pixelY, pixelWidth, pixelHeight);
+  printf("After transformation: x %g, y %g, width %g, height %g\n",
+	 pixRect.x, pixRect.y, pixRect.width, pixRect.height);
 #endif
 
 #ifdef GRAPHICS
   if (_dispGraphics) {
       // special-case the no-fill rectangle
       bool fill = (GetPattern() != -Pattern1);
-      DrawRectangle(pixelX, pixelY, pixelWidth, pixelHeight, fill,
-	      AlignNorthWest, 0.0);
+      DrawRectangle(pixRect, fill, AlignNorthWest, 0.0);
   }
 #endif
 }
@@ -2347,27 +2376,27 @@ void XWindowRep::FillRectAlign(Coord dataX, Coord ylow, Coord width,
 			       SymbolAlignment alignment, Coord orientation)
 {
 #if defined(DEBUG)
-  printf("XWindowRep::FillRectAlign: x %.2f, y %.2f, width %.2f, height %.2f\n",
+  printf("XWindowRep::FillRectAlign: x %g, y %g, width %g, height %g\n",
          dataX, ylow, width, height);
   printf("  alignment %d, orientation %g\n", alignment, orientation);
 #endif
 
   short pixelX, pixelY;
   unsigned short pixelWidth, pixelHeight;
+  CoordRect pixRect;
   TransformRect(alignment, dataX, ylow, width, height, alignment,
-      pixelX, pixelY, pixelWidth, pixelHeight);
+	  pixRect);
 
-#ifdef DEBUG
-  printf("After transformation: x %d, y %d, width %d, height %d\n",
-         pixelX, pixelY, pixelWidth, pixelHeight);
+#if defined(DEBUG)
+  printf("After transformation: x %g, y %g, width %g, height %g\n",
+	 pixRect.x, pixRect.y, pixRect.width, pixRect.height);
 #endif
 
 #ifdef GRAPHICS
   if (_dispGraphics) {
       // special-case the no-fill rectangle
       bool fill = (GetPattern() != -Pattern1);
-      DrawRectangle(pixelX, pixelY, pixelWidth,
-		    pixelHeight, fill, alignment, orientation);
+      DrawRectangle(pixRect, fill, alignment, orientation);
   }
 #endif
 }
@@ -2385,19 +2414,17 @@ void XWindowRep::FillPixelRect(Coord x, Coord y, Coord width, Coord height,
   printf("  alignment: %d, orientation: %f\n", (int) alignment, orientation);
 #endif
 
-  unsigned pixelWidth = (unsigned)MAX(minWidth, width);
-  unsigned pixelHeight = (unsigned)MAX(minHeight, height);
-
-#if defined(DEBUG)
-  printf("After transformation: x %d, y %d, width %d, height %d\n",
-         ROUND(int, x), ROUND(int, y), pixelWidth, pixelHeight);
-#endif
-
 #ifdef GRAPHICS
   if (_dispGraphics) {
       bool fill = (GetPattern() != -Pattern1);
-      DrawRectangle(ROUND(int, x), ROUND(int, y), pixelWidth,
-		    pixelHeight, fill, alignment, orientation);
+
+      CoordRect rect;
+	  rect.x = x;
+	  rect.y = y;
+	  rect.width = width;
+	  rect.height = height;
+
+      DrawRectangle(rect, fill, alignment, orientation);
   }
 #endif
 }
@@ -2443,7 +2470,7 @@ void XWindowRep::FillPoly(Point *pts, int n)
 #ifdef DEBUG
 #if MAXPIXELDUMP > 0
   printf("\nAfter transformation:\n\n");
-  for(k = 0; k < (n > MAXPIXELDUMP ? MAXPIXELDUMP : n); k++) {
+  for(int k = 0; k < (n > MAXPIXELDUMP ? MAXPIXELDUMP : n); k++) {
     if ((k + 1) % 10 == 0)
       printf("\n");
     printf("(%d,%d)", points[k].x, points[k].y);
@@ -2582,12 +2609,46 @@ void XWindowRep::Line(Coord x1, Coord y1, Coord x2, Coord y2,
   Transform(x1 ,y1, tx1, ty1);
   Transform(x2, y2, tx2, ty2);
 
-  // Kludgey fix for bug 023.  This probably eliminates some "legitimate"
-  // lines, but it also fixes the worst cases of the bug.  RKW 1999-11-12.
-  if (tx1 > MAXSHORT || tx1 < -MAXSHORT) return;
-  if (tx2 > MAXSHORT || tx2 < -MAXSHORT) return;
-  if (ty1 > MAXSHORT || ty1 < -MAXSHORT) return;
-  if (ty2 > MAXSHORT || ty2 < -MAXSHORT) return;
+  if ((tx1 > MAXSHORT || tx1 < -MAXSHORT) ||
+      (tx2 > MAXSHORT || tx2 < -MAXSHORT) ||
+      (ty1 > MAXSHORT || ty1 < -MAXSHORT) ||
+      (ty2 > MAXSHORT || ty2 < -MAXSHORT)) {
+#if defined(DEBUG)
+    printf("XWindowRep::Line calculating new line because line is out "
+        "of range\n");
+#endif
+
+    // This is kind of a kludgey way to get a clip rectangle, since the
+    // WindowRep doesn't know the visual filter.
+    Coord minX, minY, maxX, maxY;
+    // Assume we'll never have a window bigger than 10,000 pixels in X
+    // or Y.
+    InverseTransform(-10000, 10000, minX, minY);
+    InverseTransform(10000, -10000, maxX, maxY);
+	if (minX > maxX) {
+	  Coord tmp = minX;
+	  minX = maxX;
+	  maxX = tmp;
+	}
+	if (minY > maxY) {
+	  Coord tmp = minY;
+	  minY = maxY;
+	  maxY = tmp;
+	}
+
+    Coord newX1, newY1, newX2, newY2;
+    if (Geom::LineRectClip(minX, minY, maxX, maxY, x1, y1, x2, y2,
+        newX1, newY1, newX2, newY2)) {
+      Line(newX1, newY1, newX2, newY2, width, cstore);
+      return;
+    } else {
+#if defined(DEBUG)
+      printf("XWindowRep::Line returning because line doesn't "
+          "intersect view\n");
+#endif
+      return;
+    }
+  }
 
 #if defined(GRAPHICS)
   if (_dispGraphics) {
@@ -4076,14 +4137,13 @@ void XWindowRep::FreePixmap(DevisePixmap *pixmap)
 }
 
 // Draw a rectangle; location and size are specified in pixels.
-// Note: meaning of symbolX and symbolY depends on alignment value.
-void XWindowRep::DrawRectangle(int symbolX, int symbolY, int width,
-			       int height, Boolean filled,
+// Note: meaning of rect.x and rect.y depends on alignment value.
+void XWindowRep::DrawRectangle(CoordRect rect, Boolean filled,
 			       SymbolAlignment alignment, Coord orientation)
 {
 #if defined(DEBUG)
-  printf("XWindowRep::DrawRectangle(%d %d %d %d)\n", symbolX, symbolY,
-    width, height);
+  printf("XWindowRep::DrawRectangle(%g %g %g %g)\n", rect.x, rect.y,
+    rect.width, rect.height);
 #endif
 
 #if 0
@@ -4094,42 +4154,47 @@ void XWindowRep::DrawRectangle(int symbolX, int symbolY, int width,
     symbolY + 5);
 #endif
 
-  if (orientation != 0.0) {
-    XPoint points[5];
-
-    CalculateLocation(symbolX, symbolY, width, height, alignment,
-      orientation, points);
-
-    if (filled) {
-      XFillPolygon(_display, DRAWABLE, _gc, points, 5, Convex,
-	CoordModeOrigin);
-    }
-
-    if( GetLineWidth() >= 0 || !filled) {
-      XGCValues gc_values;
-      XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
-      XSetFillStyle(_display, _gc, FillSolid);
-      XDrawLines(_display, DRAWABLE, _gc, points, 5, CoordModeOrigin);
-      XSetFillStyle(_display, _gc, gc_values.fill_style);
-    }
+  if ((rect.width < 0.5) && (rect.height < 0.5)) {
+    XDrawPoint(_display, DRAWABLE, _gc, ROUND(int, rect.x),
+	    ROUND(int, rect.y));
   } else {
-    CalculateLocation(symbolX, symbolY, width, height, alignment,
-      orientation);
+    if (orientation != 0.0) {
+      XPoint points[5];
 
-    if (filled) {
-      XFillRectangle(_display, DRAWABLE, _gc, symbolX,
-        symbolY, width, height);
-    }
+	  XRectangle rectFinal;
+      CalculateLocation(rect, rectFinal, alignment, orientation, points);
 
-    // do I need to reduce the bounding boxes height & width by 1??
-    // draw bounding boxes
-    if( GetLineWidth() >= 0 || !filled) {
-      XGCValues gc_values;
-      XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
-      XSetFillStyle(_display, _gc, FillSolid);
-      XDrawRectangle(_display, DRAWABLE, _gc, symbolX,
-        symbolY, width, height);
-      XSetFillStyle(_display, _gc, gc_values.fill_style);
+      if (filled) {
+        XFillPolygon(_display, DRAWABLE, _gc, points, 5, Convex,
+	  CoordModeOrigin);
+      }
+
+      if( GetLineWidth() >= 0 || !filled) {
+        XGCValues gc_values;
+        XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
+        XSetFillStyle(_display, _gc, FillSolid);
+        XDrawLines(_display, DRAWABLE, _gc, points, 5, CoordModeOrigin);
+        XSetFillStyle(_display, _gc, gc_values.fill_style);
+      }
+    } else {
+	  XRectangle rectFinal;
+      CalculateLocation(rect, rectFinal, alignment, orientation);
+
+      if (filled) {
+        XFillRectangle(_display, DRAWABLE, _gc, rectFinal.x,
+          rectFinal.y, rectFinal.width, rectFinal.height);
+      }
+
+      // do I need to reduce the bounding boxes height & width by 1??
+      // draw bounding boxes
+      if( GetLineWidth() >= 0 || !filled) {
+        XGCValues gc_values;
+        XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
+        XSetFillStyle(_display, _gc, FillSolid);
+        XDrawRectangle(_display, DRAWABLE, _gc, rectFinal.x,
+          rectFinal.y, rectFinal.width, rectFinal.height);
+        XSetFillStyle(_display, _gc, gc_values.fill_style);
+      }
     }
   }
 }
@@ -4137,7 +4202,7 @@ void XWindowRep::DrawRectangle(int symbolX, int symbolY, int width,
 // Draw an array of rectangles; location and size are specified in pixels.
 // Note: meaning of rectangles[?].x and rectangles[?].y depend on alignment
 // value.
-void XWindowRep::DrawRectangles(XRectangle rectangles[], int rectCount,
+void XWindowRep::DrawRectangles(CoordRect rectangles[], int rectCount,
 		    Boolean filled, SymbolAlignment alignment,
 		    Coord orientation)
 {
@@ -4145,27 +4210,34 @@ void XWindowRep::DrawRectangles(XRectangle rectangles[], int rectCount,
   printf("XWindowRep::DrawRectangles(%d)\n", rectCount);
 #endif
 
-  if (orientation != 0.0) {
-    int rectNum;
-    for (rectNum = 0; rectNum < rectCount; rectNum++) {
-      DrawRectangle(rectangles[rectNum].x, rectangles[rectNum].y,
-	rectangles[rectNum].width, rectangles[rectNum].height, filled,
-	alignment, orientation);
+  //
+  // When drawing to an Xvfb pixmap, drawing a zero-width, zero-height
+  // rectangle doesn't work, so figure out whether we have to explicitly
+  // draw any points.
+  //
+  Boolean hasPoints = false;
+  for (int rectNum = 0; rectNum < rectCount; rectNum++) {
+    if ((rectangles[rectNum].width < 0.5) &&
+        (rectangles[rectNum].height < 0.5)) {
+      hasPoints = true;
+      break;
+    }
+  }
+
+  if (orientation != 0.0 || hasPoints) {
+    for (int rectNum = 0; rectNum < rectCount; rectNum++) {
+      DrawRectangle(rectangles[rectNum], filled, alignment, orientation);
     }
   } else {
-    int symbolX, symbolY;
+    XRectangle pixRects[WINDOWREP_BATCH_SIZE];
     int rectNum;
     for (rectNum = 0; rectNum < rectCount; rectNum++) {
-      symbolX = rectangles[rectNum].x;
-      symbolY = rectangles[rectNum].y;
-      CalculateLocation(symbolX, symbolY, rectangles[rectNum].width,
-	rectangles[rectNum].height, alignment, orientation);
-      rectangles[rectNum].x = symbolX;
-      rectangles[rectNum].y = symbolY;
+      CalculateLocation(rectangles[rectNum], pixRects[rectNum], alignment,
+	      orientation);
     }
 
     if (filled) {
-      XFillRectangles(_display, DRAWABLE, _gc, rectangles, rectCount);
+      XFillRectangles(_display, DRAWABLE, _gc, pixRects, rectCount);
     }
 
     // do I need to reduce the bounding boxes height & width by 1??
@@ -4174,7 +4246,7 @@ void XWindowRep::DrawRectangles(XRectangle rectangles[], int rectCount,
       XGCValues gc_values;
       XGetGCValues(_display, _gc, GCFillStyle, &gc_values);
       XSetFillStyle(_display, _gc, FillSolid);
-      XDrawRectangles(_display, DRAWABLE, _gc, rectangles, rectCount);
+      XDrawRectangles(_display, DRAWABLE, _gc, pixRects, rectCount);
       XSetFillStyle(_display, _gc, gc_values.fill_style);
     }
   }
@@ -4186,12 +4258,19 @@ void XWindowRep::DrawRectangles(XRectangle rectangles[], int rectCount,
  * orientation is non-zero, symbolX and symbolY are pretty much meaningless
  * on output, and points will contain the points needed to draw the
  * symbol. */
-void XWindowRep::CalculateLocation(int &symbolX, int &symbolY, int width,
-			     int height, SymbolAlignment alignment,
-			     Coord orientation, XPoint *points)
+void XWindowRep::CalculateLocation(CoordRect rectIn, XRectangle &rectOut,
+				 SymbolAlignment alignment, Coord orientation, XPoint *points)
 {
+#if defined(DEBUG)
+  printf("XWindowRep::CalculateLocation(%g, %g, %g, %g, %d, %g)\n", rectIn.x,
+      rectIn.y, rectIn.width, rectIn.height, alignment, orientation);
+#endif
+
   Coord sine, cosine;
   if (orientation != 0.0) {
+	//
+	// Rectangle is rotated.
+	//
     DOASSERT(points != NULL, "points array needed for non-zero orientation");
     /* Minus sign is needed to preserve positive rotation being counter-
      * clockwise in X's upside-down coordinate system. */
@@ -4206,87 +4285,87 @@ void XWindowRep::CalculateLocation(int &symbolX, int &symbolY, int width,
       relativePoints[0].x = 0.0;
       relativePoints[0].y = 0.0;
       relativePoints[1].x = 0.0;
-      relativePoints[1].y = height;
-      relativePoints[2].x = width;
-      relativePoints[2].y = height;
-      relativePoints[3].x = width;
+      relativePoints[1].y = rectIn.height;
+      relativePoints[2].x = rectIn.width;
+      relativePoints[2].y = rectIn.height;
+      relativePoints[3].x = rectIn.width;
       relativePoints[3].y = 0.0;
       break;
 
     case AlignNorth:
-      relativePoints[0].x = -width / 2.0;
+      relativePoints[0].x = -rectIn.width / 2.0;
       relativePoints[0].y = 0.0;
-      relativePoints[1].x = -width / 2.0;
-      relativePoints[1].y = height;
-      relativePoints[2].x = width / 2.0;
-      relativePoints[2].y = height;
-      relativePoints[3].x = width / 2.0;
+      relativePoints[1].x = -rectIn.width / 2.0;
+      relativePoints[1].y = rectIn.height;
+      relativePoints[2].x = rectIn.width / 2.0;
+      relativePoints[2].y = rectIn.height;
+      relativePoints[3].x = rectIn.width / 2.0;
       relativePoints[3].y = 0.0;
       break;
 
     case AlignNorthEast:
       relativePoints[0].x = 0.0;
       relativePoints[0].y = 0.0;
-      relativePoints[1].x = -width;
+      relativePoints[1].x = -rectIn.width;
       relativePoints[1].y = 0.0;
-      relativePoints[2].x = -width;
-      relativePoints[2].y = height;
+      relativePoints[2].x = -rectIn.width;
+      relativePoints[2].y = rectIn.height;
       relativePoints[3].x = 0.0;
-      relativePoints[3].y = height;
+      relativePoints[3].y = rectIn.height;
       break;
 
     case AlignWest:
       relativePoints[0].x = 0.0;
-      relativePoints[0].y = height / 2.0;
-      relativePoints[1].x = width;
-      relativePoints[1].y = height / 2.0;
-      relativePoints[2].x = width;
-      relativePoints[2].y = -height / 2.0;
+      relativePoints[0].y = rectIn.height / 2.0;
+      relativePoints[1].x = rectIn.width;
+      relativePoints[1].y = rectIn.height / 2.0;
+      relativePoints[2].x = rectIn.width;
+      relativePoints[2].y = -rectIn.height / 2.0;
       relativePoints[3].x = 0.0;
-      relativePoints[3].y = -height / 2.0;
+      relativePoints[3].y = -rectIn.height / 2.0;
       break;
 
     case AlignCenter:
-      relativePoints[0].x = width / 2.0;
-      relativePoints[0].y = height / 2.0;
-      relativePoints[1].x = -width / 2.0;
-      relativePoints[1].y = height / 2.0;
-      relativePoints[2].x = -width / 2.0;
-      relativePoints[2].y = -height / 2.0;
-      relativePoints[3].x = width / 2.0;
-      relativePoints[3].y = -height / 2.0;
+      relativePoints[0].x = rectIn.width / 2.0;
+      relativePoints[0].y = rectIn.height / 2.0;
+      relativePoints[1].x = -rectIn.width / 2.0;
+      relativePoints[1].y = rectIn.height / 2.0;
+      relativePoints[2].x = -rectIn.width / 2.0;
+      relativePoints[2].y = -rectIn.height / 2.0;
+      relativePoints[3].x = rectIn.width / 2.0;
+      relativePoints[3].y = -rectIn.height / 2.0;
       break;
 
     case AlignEast:
       relativePoints[0].x = 0.0;
-      relativePoints[0].y = -height / 2.0;
-      relativePoints[1].x = -width;
-      relativePoints[1].y = -height / 2.0;
-      relativePoints[2].x = -width;
-      relativePoints[2].y = height / 2.0;
+      relativePoints[0].y = -rectIn.height / 2.0;
+      relativePoints[1].x = -rectIn.width;
+      relativePoints[1].y = -rectIn.height / 2.0;
+      relativePoints[2].x = -rectIn.width;
+      relativePoints[2].y = rectIn.height / 2.0;
       relativePoints[3].x = 0.0;
-      relativePoints[3].y = height / 2.0;
+      relativePoints[3].y = rectIn.height / 2.0;
       break;
 
     case AlignSouthWest:
       relativePoints[0].x = 0.0;
       relativePoints[0].y = 0.0;
-      relativePoints[1].x = width;
+      relativePoints[1].x = rectIn.width;
       relativePoints[1].y = 0.0;
-      relativePoints[2].x = width;
-      relativePoints[2].y = -height;
+      relativePoints[2].x = rectIn.width;
+      relativePoints[2].y = -rectIn.height;
       relativePoints[3].x = 0.0;
-      relativePoints[3].y = -height;
+      relativePoints[3].y = -rectIn.height;
       break;
 
     case AlignSouth:
-      relativePoints[0].x = width / 2.0;
+      relativePoints[0].x = rectIn.width / 2.0;
       relativePoints[0].y = 0.0;
-      relativePoints[1].x = width / 2.0;
-      relativePoints[1].y = -height;
-      relativePoints[2].x = -width / 2.0;
-      relativePoints[2].y = -height;
-      relativePoints[3].x = -width / 2.0;
+      relativePoints[1].x = rectIn.width / 2.0;
+      relativePoints[1].y = -rectIn.height;
+      relativePoints[2].x = -rectIn.width / 2.0;
+      relativePoints[2].y = -rectIn.height;
+      relativePoints[3].x = -rectIn.width / 2.0;
       relativePoints[3].y = 0.0;
       break;
 
@@ -4294,10 +4373,10 @@ void XWindowRep::CalculateLocation(int &symbolX, int &symbolY, int width,
       relativePoints[0].x = 0.0;
       relativePoints[0].y = 0.0;
       relativePoints[1].x = 0.0;
-      relativePoints[1].y = -height;
-      relativePoints[2].x = -width;
-      relativePoints[2].y = -height;
-      relativePoints[3].x = -width;
+      relativePoints[1].y = -rectIn.height;
+      relativePoints[2].x = -rectIn.width;
+      relativePoints[2].y = -rectIn.height;
+      relativePoints[3].x = -rectIn.width;
       relativePoints[3].y = 0.0;
       break;
 
@@ -4306,69 +4385,135 @@ void XWindowRep::CalculateLocation(int &symbolX, int &symbolY, int width,
       break;
     }
 
-    points[0].x = points[4].x = ROUND(int,
-      symbolX + relativePoints[0].x * cosine - relativePoints[0].y * sine);
-    points[0].y = points[4].y = ROUND(int,
-      symbolY + relativePoints[0].y * cosine + relativePoints[0].x * sine);
-    points[1].x = symbolX + ROUND(int, relativePoints[1].x * cosine -
+    points[0].x = ROUND(int, rectIn.x + relativePoints[0].x * cosine -
+	  relativePoints[0].y * sine);
+    points[0].y = ROUND(int, rectIn.y + relativePoints[0].y * cosine +
+	  relativePoints[0].x * sine);
+    points[1].x = ROUND(int, rectIn.x + relativePoints[1].x * cosine -
       relativePoints[1].y * sine);
-    points[1].y = symbolY + ROUND(int, relativePoints[1].y * cosine +
+    points[1].y = ROUND(int, rectIn.y + relativePoints[1].y * cosine +
       relativePoints[1].x * sine);
-    points[2].x = symbolX + ROUND(int, relativePoints[2].x * cosine -
+    points[2].x = ROUND(int, rectIn.x + relativePoints[2].x * cosine -
       relativePoints[2].y * sine);
-    points[2].y = symbolY + ROUND(int, relativePoints[2].y * cosine +
+    points[2].y = ROUND(int, rectIn.y + relativePoints[2].y * cosine +
       relativePoints[2].x * sine);
-    points[3].x = symbolX + ROUND(int, relativePoints[3].x * cosine -
+    points[3].x = ROUND(int, rectIn.x + relativePoints[3].x * cosine -
       relativePoints[3].y * sine);
-    points[3].y = symbolY + ROUND(int, relativePoints[3].y * cosine +
+    points[3].y = ROUND(int, rectIn.y + relativePoints[3].y * cosine +
       relativePoints[3].x * sine);
+    points[4].x = points[0].x;
+    points[4].y = points[0].y;
+
+  } else {
+    //
+	// Rectangle is not rotated.
+	//
+    switch (alignment) {
+    case AlignNorthWest:
+      // Symbol x and y values stay the same.
+      break;
+
+    case AlignNorth:
+      rectIn.x -= rectIn.width / 2.0;
+      break;
+
+    case AlignNorthEast:
+      rectIn.x -= rectIn.width;
+      break;
+
+    case AlignWest:
+      rectIn.y -= rectIn.height / 2.0;
+      break;
+
+    case AlignCenter:
+      rectIn.x -= rectIn.width / 2.0;
+      rectIn.y -= rectIn.height / 2.0;
+      break;
+
+    case AlignEast:
+      rectIn.x -=  rectIn.width;
+      rectIn.y -=  rectIn.height / 2.0;
+      break;
+
+    case AlignSouthWest:
+      rectIn.y -= rectIn.height;
+      break;
+
+    case AlignSouth:
+      rectIn.x -= rectIn.width / 2.0;
+      rectIn.y -= rectIn.height;
+      break;
+
+    case AlignSouthEast:
+      rectIn.x -= rectIn.width;
+      rectIn.y -= rectIn.height;
+      break;
+
+    default:
+      DOASSERT(false, "Illegal alignment value");
+      break;
+    }
+
+	rectOut.x = ROUND(short, rectIn.x);
+	rectOut.y = ROUND(short, rectIn.y);
+
+	//
+	// Note: because of the rounding from real values to integer pixels,
+	// there is an inherent conflict between preserving the most accurate
+	// possible width and height of a symbol, and preserving the most accurate
+	// location for the edges.  I find that with fairly small, closely-spaced
+	// symbols, the variation in width or height is most noticeable and
+	// bothersome (for large numbers of bars, for example).  With larger
+	// symbols, it's harder to notice a one-pixel difference in width and
+	// height.  Because of that, I've somewhat arbitrarily chosen 10 as
+	// a demarcation between preserving width or height, and preserving
+	// edge locations.  That seems to give a pretty decent appearance
+	// (although, of course, the spaces *between* evenly-spaced, equal-size
+	// symbols don't turn out equal).  RKW 2003-02-06.
+	//
+	// See bugs 851, 853, 858, 859.
+	//
+	const Coord edgeThreshold = 10.0;
+	if (rectIn.width > edgeThreshold) {
+	  // Preserve edge locations.
+      int x2 = ROUND(int, rectIn.x + rectIn.width);
+	  rectOut.width = x2 - rectOut.x;
+	} else {
+	  // Preserve width.
+	  rectOut.width = ROUND(unsigned short, rectIn.width);
+
+	  // Fix bug 864.  This puts the middle as close to the right location
+	  // as possible.  It would probably be even better to adjust so that
+	  // the alignment point is correct.
+      rectOut.x = ROUND(int, rectIn.x + rectIn.width / 2.0 -
+	      rectOut.width / 2.0);
+	}
+
+	if (rectIn.height > edgeThreshold) {
+	  // Preserve edge locations.
+	  int y2 = ROUND(int, rectIn.y + rectIn.height);
+	  rectOut.height = y2 - rectOut.y;
+	} else {
+	  // Preserve height.
+	  rectOut.height = ROUND(unsigned short, rectIn.height);
+
+	  // Fix bug 864.  This puts the middle as close to the right location
+	  // as possible.  It would probably be even better to adjust so that
+	  // the alignment point is correct.
+      rectOut.y = ROUND(int, rectIn.y + rectIn.height / 2.0 -
+	      rectOut.height / 2.0);
+	}
+
+	// Kludgey fix for bug 858.  For some reason, zero-width rects with
+	// wide lines draw weirdly.
+    if (GetLineWidth() > 1 && rectOut.width < 1) {
+	  rectOut.height++;
+	}
   }
-
-  switch (alignment) {
-  case AlignNorthWest:
-    // Symbol x and y values stay the same.
-    break;
-
-  case AlignNorth:
-    symbolX -= width / 2;
-    break;
-
-  case AlignNorthEast:
-    symbolX -= width;
-    break;
-
-  case AlignWest:
-    symbolY -= height / 2;
-    break;
-
-  case AlignCenter:
-    symbolX -= width / 2;
-    symbolY -= height / 2;
-    break;
-
-  case AlignEast:
-    symbolX -=  width;
-    symbolY -=  height / 2;
-    break;
-
-  case AlignSouthWest:
-    symbolY -= height;
-    break;
-
-  case AlignSouth:
-    symbolX -= width / 2;
-    symbolY -= height;
-    break;
-
-  case AlignSouthEast:
-    symbolX -= width;
-    symbolY -= height;
-    break;
-
-  default:
-    DOASSERT(false, "Illegal alignment value");
-    break;
-  }
+#if defined(DEBUG)
+  printf("XWindowRep::CalculateLocation() returns %d, %d, %d, %d\n",
+      rectOut.x, rectOut.y, rectOut.width, rectOut.height);
+#endif
 }
 
 void

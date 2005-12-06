@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.46.2.2  2003/10/24 23:45:08  wenger
+// Non-applet JS now continues without dialog if it can't get the animation
+// symbols.
+//
+// Revision 1.46.2.1  2003/06/17 21:04:57  wenger
+// Major improvements to command-line argument processing of all JavaScreen
+// programs; we now save the -id value in the JSPoP to use for the usage
+// log file; some minor cleanups of the auto test scripts; slight
+// clarification of command documentation.
+//
+// Revision 1.46  2002/03/20 22:04:53  xuk
+// Added automatic collaboration functionality.
+// Four new parameters:
+// collableadername: for collaboration leader to define a collaboration name
+// collableaderpass: for collaboration leader to define the password
+// collabname: for collab follower to specify the collaboration name
+// collabpass: for collab follower to specify the collaboration passwd.
+//
 // Revision 1.45  2001/10/16 22:14:28  wenger
 // Major cleanup of command playback code; fixed bug 711 (problem with
 // command log playback).
@@ -237,6 +255,7 @@ public class js extends Frame
             }
 
             if (tracker.isErrorID(0)) {
+	      if (false) {//TEMP
                 YMsgBox box = new YMsgBox(this, true, true, "Cannot get JavaScreen "
                     + "animation symbols!\nDo you wish to continue without "
                     + "animation effects?", "Confirm", YMsgBox.YMBXYESNO, null,
@@ -249,6 +268,10 @@ public class js extends Frame
                 } else {
                     System.exit(1);
                 }
+	      } else {//TEMP
+	    	    System.err.println("Cannot get JavaScreen animation " +
+		      "symbols; continuing without them");
+	      }//TEMP
             }
 
             images.addElement(image);
@@ -291,7 +314,7 @@ public class js extends Frame
         super.processEvent(event);
     }
 
-    public static void main(String[] args)
+    public static void main(String[] args) throws YException
     {
         String version = System.getProperty("java.version");
         if (version.compareTo("1.1") < 0)  {
@@ -321,191 +344,213 @@ public class js extends Frame
     }
 
     private static void checkArguments(String[] args, DEViseJSValues jsValues)
+      throws YException
     {
         for (int i = 0; i < args.length; i++) {
-            if (args[i].startsWith("-host")) {
-                if (!args[i].substring(5).equals("")) {
-                    jsValues.connection.hostname = args[i].substring(5);
-                }
-            } else if (args[i].startsWith("-cmdport")) {
-                if (!args[i].substring(8).equals("")) {
-                    try {
-                        int port = Integer.parseInt(args[i].substring(8));
-                        if (port < 1024 || port > 65535) {
-                            throw new NumberFormatException();
-                        }
-                        jsValues.connection.cmdport = port;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid command port number "
-                            + args[i].substring(8) + " in arguments!\n"
-                            + "Command port number must larger than 1023"
-                            + " and smaller than 65536!\n");
-                        System.exit(1);
+	    StringBuffer argValue = new StringBuffer();
+
+	    if (DEViseGlobals.checkArgument(args[i], "-host", true, argValue)) {
+	        jsValues.connection.hostname = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-cmdport", true,
+	      argValue)) {
+                try {
+                    int port = Integer.parseInt(argValue.toString());
+                    if (port < 1024 || port > 65535) {
+                        throw new NumberFormatException();
                     }
+                    jsValues.connection.cmdport = port;
+                } catch (NumberFormatException e) {
+                    throw new YException("Invalid command port number "
+                        + argValue.toString() + " in arguments!\n"
+                        + "Command port number must larger than 1023"
+                        + " and smaller than 65536!\n");
                 }
-            } else if (args[i].startsWith("-bgcolor")) {
-                if (!args[i].substring(8).equals("")) {
-                    try {
-                        String[] str = DEViseGlobals.parseStr(args[i].substring(8), "+");
-                        if (str == null || str.length != 3) {
-                            throw new NumberFormatException();
-                        }
 
-                        int r = Integer.parseInt(str[0]);
-                        int g = Integer.parseInt(str[1]);
-                        int b = Integer.parseInt(str[2]);
-
-                        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                            throw new NumberFormatException();
-                        }
-
-                        Color c = new Color(r, g, b);
-                        jsValues.uiglobals.bg = c;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid RGB values specified for"
-                            + " bgcolor \"" + args[i].substring(8) + "\"!\n"
-                            + " Please use format \"R+G+B\" where R,G,B must"
-                            + " be non-negative integer and smaller than 256!\n");
-                        System.exit(1);
+	    } else if (DEViseGlobals.checkArgument(args[i], "-bgcolor", true,
+	      argValue)) {
+                try {
+                    String[] str = DEViseGlobals.parseStr(
+		      argValue.toString(), "+");
+                    if (str == null || str.length != 3) {
+                        throw new NumberFormatException();
                     }
-                }
-            } else if (args[i].startsWith("-fgcolor")) {
-                if (!args[i].substring(8).equals("")) {
-                    try {
-                        String[] str = DEViseGlobals.parseStr(args[i].substring(8), "+");
-                        if (str == null || str.length != 3) {
-                            throw new NumberFormatException();
-                        }
 
-                        int r = Integer.parseInt(str[0]);
-                        int g = Integer.parseInt(str[1]);
-                        int b = Integer.parseInt(str[2]);
+                    int r = Integer.parseInt(str[0]);
+                    int g = Integer.parseInt(str[1]);
+                    int b = Integer.parseInt(str[2]);
 
-                        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                            throw new NumberFormatException();
-                        }
-
-                        Color c = new Color(r, g, b);
-                        jsValues.uiglobals.fg = c;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid RGB values specified for"
-                            + " fgcolor \"" + args[i].substring(8) + "\"!\n"
-                            + " Please use format \"R+G+B\" where R,G,B must"
-                            + " be non-negative integer and smaller than 256!\n");
-                        System.exit(1);
+                    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 ||
+		      b > 255) {
+                        throw new NumberFormatException();
                     }
+
+                    Color c = new Color(r, g, b);
+                    jsValues.uiglobals.bg = c;
+                } catch (NumberFormatException e) {
+		    throw new YException("Invalid RGB values specified for"
+                        + " bgcolor \"" + argValue.toString() + "\"!\n"
+                        + " Please use format \"R+G+B\" where R,G,B must"
+                        + " be non-negative integer and smaller than 256!\n");
                 }
-            } else if (args[i].startsWith("-rubberbandlimit")) {
-                if (!args[i].substring(16).equals("")) {
-                    try {
-                        String[] str = DEViseGlobals.parseStr(args[i].substring(16), "x");
-                        if (str == null || str.length != 2) {
-                            throw new NumberFormatException();
-                        }
 
-                        int width = Integer.parseInt(str[0]);
-                        int height = Integer.parseInt(str[1]);
-
-                        if (width < 0 || height < 0) {
-                            throw new NumberFormatException();
-                        }
-
-                        jsValues.uiglobals.rubberBandLimit.width = width;
-                        jsValues.uiglobals.rubberBandLimit.height = height;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid width or height values"
-                            + " specified for rubberbandlimit: \""
-                            + args[i].substring(16) + "\"!\n"
-                            + "Please use format \"WxH\" where W, H must be"
-                            + " positive integer!\n");
-                        System.exit(1);
+	    } else if (DEViseGlobals.checkArgument(args[i], "-fgcolor",
+	      true, argValue)) {
+                try {
+                    String[] str = DEViseGlobals.parseStr(
+		      argValue.toString(), "+");
+                    if (str == null || str.length != 3) {
+                        throw new NumberFormatException();
                     }
-                }
-            } else if (args[i].startsWith("-screensize")) {
-                if (!args[i].substring(11).equals("")) {
-                    try {
-                        String[] str = DEViseGlobals.parseStr(args[i].substring(11), "x");
-                        if (str == null || str.length != 2) {
-                            throw new NumberFormatException();
-                        }
 
-                        int width = Integer.parseInt(str[0]);
-                        int height = Integer.parseInt(str[1]);
+                    int r = Integer.parseInt(str[0]);
+                    int g = Integer.parseInt(str[1]);
+                    int b = Integer.parseInt(str[2]);
 
-                        if (width < 1 || height < 1) {
-                            throw new NumberFormatException();
-                        }
-
-                        jsValues.uiglobals.screenSize.width = width;
-                        jsValues.uiglobals.screenSize.height = height;
-                    } catch (NumberFormatException e) {
-                        System.out.println("Invalid width or height values "
-                            + "specified for screen size: \""
-                            + args[i].substring(11) + "\"!\n"
-                            + "Please use format \"WxH\" where W, H must be"
-                            + " positive integer!\n");
-                        System.out.println(usage);
-                        System.exit(1);
+                    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 ||
+		      b > 255) {
+                        throw new NumberFormatException();
                     }
+
+                    Color c = new Color(r, g, b);
+                    jsValues.uiglobals.fg = c;
+                } catch (NumberFormatException e) {
+                    throw new YException("Invalid RGB values specified for"
+                        + " fgcolor \"" + argValue.toString() + "\"!\n"
+                        + " Please use format \"R+G+B\" where R,G,B must"
+                        + " be non-negative integer and smaller than 256!\n");
                 }
-            } else if (args[i].startsWith("-user")) {
-                if (!args[i].substring(5).equals("")) {
-                    jsValues.connection.username = args[i].substring(5);
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-rubberbandlimit",
+	      true, argValue)) {
+                try {
+                    String[] str = DEViseGlobals.parseStr(
+		      argValue.toString(), "x");
+                    if (str == null || str.length != 2) {
+                        throw new NumberFormatException();
+                    }
+
+                    int width = Integer.parseInt(str[0]);
+                    int height = Integer.parseInt(str[1]);
+
+                    if (width < 0 || height < 0) {
+                        throw new NumberFormatException();
+                    }
+
+                    jsValues.uiglobals.rubberBandLimit.width = width;
+                    jsValues.uiglobals.rubberBandLimit.height = height;
+                } catch (NumberFormatException e) {
+                    throw new YException("Invalid width or height values"
+                        + " specified for rubberbandlimit: \""
+                        + argValue.toString() + "\"!\n"
+                        + "Please use format \"WxH\" where W, H must be"
+                        + " positive integer!\n");
                 }
-            } else if (args[i].startsWith("-pass")) {
-                if (!args[i].substring(5).equals("")) {
-                    jsValues.connection.password = args[i].substring(5);
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-screensize",
+	      true, argValue)) {
+                try {
+                    String[] str = DEViseGlobals.parseStr(
+		      argValue.toString(), "x");
+                    if (str == null || str.length != 2) {
+                        throw new NumberFormatException();
+                    }
+
+                    int width = Integer.parseInt(str[0]);
+                    int height = Integer.parseInt(str[1]);
+
+                    if (width < 1 || height < 1) {
+                        throw new NumberFormatException();
+                    }
+
+                    jsValues.uiglobals.screenSize.width = width;
+                    jsValues.uiglobals.screenSize.height = height;
+                } catch (NumberFormatException e) {
+                    throw new YException("Invalid width or height values "
+                        + "specified for screen size: \""
+                        + argValue.toString() + "\"!\n"
+                        + "Please use format \"WxH\" where W, H must be"
+                        + " positive integer!\n");
                 }
-            } else if (args[i].startsWith("-session")) {
-                if (!args[i].substring(8).equals("")) {
-		    jsValues.session.defaultName = args[i].substring(8);
-                }
-            } else if (args[i].startsWith("-debug")) {
-                if (!args[i].substring(6).equals("")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-user", true,
+	      argValue)) {
+	        jsValues.connection.username = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-pass", true,
+	      argValue)) {
+                jsValues.connection.password = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-session", true,
+	      argValue)) {
+                jsValues.session.defaultName = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-debug", false,
+	      argValue)) {
+                if (!argValue.toString().equals("")) {
                     try {
-                        jsValues.debug._debugLevel = Integer.parseInt(args[i].substring(6));
+                        jsValues.debug._debugLevel = Integer.parseInt(
+			  argValue.toString());
                     } catch (NumberFormatException e) {
-                        System.out.println("Invalid debug level \""
-                            + args[i].substring(6) + "\" in arguments!\n");
-                        System.exit(1);
+                        throw new YException("Invalid debug level \""
+                            + argValue.toString() + "\" in arguments!\n");
                     }
                 } else {
                     jsValues.debug._debugLevel = 1;
                 }
-            } else if (args[i].startsWith("-usage")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-usage", false,
+	      argValue)) {
                 System.out.println(usage);
                 System.exit(0);
-            } else if (args[i].startsWith("-log")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-log", false,
+	      argValue)) {
 	        jsValues.debug._logEnabled = true;
-            } else if (args[i].startsWith("-usecgi")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-usecgi", false,
+	      argValue)) {
 	        jsValues.connection.cgi = true;
-            } else if (args[i].startsWith("-cgiurl")) {
-		jsValues.connection.cgiURL = args[i].substring(7);
-	    } else if (args[i].startsWith("-clientlog")) {
-		jsValues.session.clientLogName = args[i].substring(10);
-	    } else if (args[i].startsWith("-autoplayback")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-cgiurl", true,
+	      argValue)) {
+		jsValues.connection.cgiURL = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-clientlog",
+	      true, argValue)) {
+		jsValues.session.clientLogName = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-autoplayback",
+	      false, argValue)) {
 		jsValues.session.autoPlayback = true;
-	    } else if (args[i].startsWith("-playbackoriginal")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i],
+	      "-playbackoriginal", false, argValue)) {
 		jsValues.session.playbackOriginal = true;
-	    } else if (args[i].startsWith("-playbackdisplayoff")) {
+
+	    } else if (DEViseGlobals.checkArgument(args[i],
+	      "-playbackdisplayoff", false, argValue)) {
 		jsValues.session.playbackDisplay = false;
-	    } else if (args[i].startsWith("-collableadername")) {
-		jsValues.session.collabLeaderName = 
-		    args[i].substring(17);
-	    } else if (args[i].startsWith("-collableaderpass")) {
-		jsValues.session.collabLeaderPass = 
-		    args[i].substring(17);
-	    } else if (args[i].startsWith("-collabname")) {
-		jsValues.session.collabName = 
-		    args[i].substring(11);
-	    } else if (args[i].startsWith("-collabpass")) {
-		jsValues.session.collabPass = 
-		    args[i].substring(11);
+
+	    } else if (DEViseGlobals.checkArgument(args[i],
+	      "-collableadername", true, argValue)) {
+		jsValues.session.collabLeaderName = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i],
+	      "-collableaderpass", true, argValue)) {
+		jsValues.session.collabLeaderPass = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-collabname",
+	      true, argValue)) {
+		jsValues.session.collabName = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-collabpass",
+	      true, argValue)) {
+		jsValues.session.collabPass = argValue.toString();
+
             } else {
-                System.out.println("Invalid js option \"" + args[i]
-                    + "\" is given!\n");
-                System.out.println(usage);
-                System.exit(1);
+		throw new YException("Invalid js option \"" + args[i]
+                    + "\" is given!\n" + usage);
             }
         }
     }

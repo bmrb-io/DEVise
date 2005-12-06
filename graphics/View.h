@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.120  2003/01/13 19:25:12  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.119.4.6  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.119.4.5  2004/04/23 21:57:08  wenger
+  Added new 'select next view in pile' feature.
+
+  Revision 1.119.4.4  2003/11/05 17:01:44  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
   Revision 1.119.4.3  2003/01/09 22:21:52  wenger
   Added "link multiplication factor" feature; changed version to 1.7.14.
 
@@ -607,6 +620,9 @@ class FilterQueue;
 // class View
 //******************************************************************************
 
+class View_ControlPanelCallback;
+class View_DispatcherCallback;
+
 class View : public ViewWin
 {
 		friend class View_ControlPanelCallback;
@@ -656,7 +672,11 @@ class View : public ViewWin
 
 		// Getters and Setters
 		virtual void    SetForeground(PColorID fgid);
+		virtual void    SetForeground(PColorID fgid,
+		                  DisplayMode::Mode mode);
 		virtual void    SetBackground(PColorID bgid);
+		virtual void    SetBackground(PColorID bgid,
+		                  DisplayMode::Mode mode);
 
 		virtual void    SetColors(PColorID fgid, PColorID bgid);
 
@@ -700,6 +720,7 @@ class View : public ViewWin
 
 	static View *FindSelectedView();
 	void SelectView(Boolean calledFromPile = false);
+	static void SelectNextInPile();
 
 	/* Set axes callback */
 	void SetXAxisAttrType(AttrType type);

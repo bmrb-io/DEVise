@@ -1,0 +1,11 @@
+#! /bin/csh -f
+
+############################################################
+
+# $Id$
+
+############################################################
+
+unsetenv CLASSPATH
+set javaexec = `cat bin2/java`
+$javaexec -Xmx256m JavaScreen.CircularLog $*

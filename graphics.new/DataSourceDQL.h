@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.14.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  2000/01/13 23:07:03  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.2  1996/11/13 16:49:14  wenger
   Fixed error in Seek declaration.
 
@@ -52,7 +58,7 @@ public:
     DataSourceDQL(char *url, char *name);
     virtual ~DataSourceDQL();
 
-    virtual char *objectType() { return "DataSourceDQL"; }
+    virtual const char *objectType() { return "DataSourceDQL"; }
     
     virtual DevStatus Open(const char *mode);
     virtual DevStatus Close();

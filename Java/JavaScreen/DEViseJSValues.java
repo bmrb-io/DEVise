@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2002/06/17 19:40:14  wenger
+// Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.12.2.2  2003/03/28 17:21:30  wenger
+// Made JS invisibility destruction timeout configurable; fixed some other
+// problems with loading and re-loading the applet.
+//
 // Revision 1.12.2.1  2002/05/08 21:16:51  wenger
 // Changed some collaboration GUI for more clarity, updated instructions
 // accordingly; default collaboration password is now "" as workaround
@@ -169,6 +176,9 @@ public final class DEViseJSValues
 	public Color textBg = new Color(255, 240, 230);
 	public Color textFg = Color.black;
 	public Font textFont = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);
+
+	// Timeout (in minutes) for killing the client if it's invisible.
+	public int visTimeout = 60;
     }
 
     public final class Session {

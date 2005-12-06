@@ -5,12 +5,12 @@
 "SUN_Stock" UNIXFILE sun.dat MIT_STOCK $DEVISE_SCHEMA/physical/STOCK "" 100 50 "$DEVISE_DAT" "" ;
 "HWP_Stock" UNIXFILE hp.dat MIT_STOCK $DEVISE_SCHEMA/physical/STOCK "" 100 50 "$DEVISE_DAT" "" ;
 "WordCount" UNIXFILE WordCount.dat WordCount $DEVISE_SCHEMA/physical/WordCount.schema "" 100 50  "$DEVISE_DAT" "" ;
-"BAA_map"UNIXFILE BAA.map BaaMap $DEVISE_SCHEMA/logical/BaaMap "" 100 50 "$DEVISE_DAT" "" ;
-"BAA_visit1"UNIXFILE BAA.visit1 BaaVist $DEVISE_SCHEMA/logical/BaaVist "" 100 50 "$DEVISE_DAT" "" ;
-"BAA_visit2"UNIXFILE BAA.visit2 BaaVist $DEVISE_SCHEMA/logical/BaaVist "" 100 50 "$DEVISE_DAT" "" ;
-"BAA_visit3"UNIXFILE BAA.visit3 BaaVist $DEVISE_SCHEMA/logical/BaaVist "" 100 50 "$DEVISE_DAT" "" ;
-"BAA_plan"UNIXFILE BAA.plan BaaPlan $DEVISE_SCHEMA/logical/BaaPlan "" 100 50 "$DEVISE_DAT" "" ;
-"BAA_amm"UNIXFILE BAA.amm BaaAmm $DEVISE_SCHEMA/logical/BaaAmm "" 100 50 "$DEVISE_DAT" "" ;
+"BAA_map" UNIXFILE BAA.map BaaMap $DEVISE_SCHEMA/logical/BaaMap "" 100 50 "$DEVISE_DAT" "" ;
+"BAA_visit1" UNIXFILE BAA.visit1 BaaVist $DEVISE_SCHEMA/logical/BaaVist "" 100 50 "$DEVISE_DAT" "" ;
+"BAA_visit2" UNIXFILE BAA.visit2 BaaVist $DEVISE_SCHEMA/logical/BaaVist "" 100 50 "$DEVISE_DAT" "" ;
+"BAA_visit3" UNIXFILE BAA.visit3 BaaVist $DEVISE_SCHEMA/logical/BaaVist "" 100 50 "$DEVISE_DAT" "" ;
+"BAA_plan" UNIXFILE BAA.plan BaaPlan $DEVISE_SCHEMA/logical/BaaPlan "" 100 50 "$DEVISE_DAT" "" ;
+"BAA_amm" UNIXFILE BAA.amm BaaAmm $DEVISE_SCHEMA/logical/BaaAmm "" 100 50 "$DEVISE_DAT" "" ;
 
 "Condor_UserList" UNIXFILE UserList CondorUserList $DEVISE_SCHEMA/physical/Condor:userlist "" 100 50 "$DEVISE_DAT/userdat" "" ;
 "Condor_Total" UNIXFILE Total.dat CondorUser $DEVISE_SCHEMA/physical/Condor:user1 "" 100 50 "$DEVISE_DAT/userdat" "" ;
@@ -36,3 +36,11 @@
 "Condor_yoderme@cs_wisc_edu" UNIXFILE yoderme@cs_wisc_edu.dat CondorUser $DEVISE_SCHEMA/physical/Condor:user1 "" 100 50 "$DEVISE_DAT/userdat" "" ;
 "Condor_zhaohua@cs_wisc_edu" UNIXFILE zhaohua@cs_wisc_edu.dat CondorUser $DEVISE_SCHEMA/physical/Condor:user1 "" 100 50 "$DEVISE_DAT/userdat" "" ;
 "Condor_zilles@cs_wisc_edu" UNIXFILE zilles@cs_wisc_edu.dat CondorUser $DEVISE_SCHEMA/physical/Condor:user1 "" 100 50 "$DEVISE_DAT/userdat" "" ;
+"stock_layout" UNIXFILE stock_layout layout  $DEVISE_SCHEMA/physical/layout "" 100 50  "$DEVISE_DAT" "" ; 
+"single_record" UNIXFILE single_record layout  $DEVISE_SCHEMA/physical/layout "" 100 50  "$DEVISE_DAT" "" ; 
+"stock_select" UNIXFILE stock_select selection  $DEVISE_SCHEMA/physical/selection "" 100 50  "$DEVISE_DAT" "" ; 
+"gattr_link1" UNIXFILE gattr_link1 color  $DEVISE_SCHEMA/physical/color "" 100 50  "$DEVISE_DAT" "" ; 
+"gattr_link2" UNIXFILE gattr_link2 color  $DEVISE_SCHEMA/physical/color "" 100 50  "$DEVISE_DAT" "" ; 
+"color1" UNIXFILE color1 color  $DEVISE_SCHEMA/physical/color "" 100 50  "$DEVISE_DAT" "" ; 
+"color2" UNIXFILE color2 color  $DEVISE_SCHEMA/physical/color "" 100 50  "$DEVISE_DAT" "" ; 
+"count_mapping" UNIXFILE count_mapping color  $DEVISE_SCHEMA/physical/color "" 100 50  "$DEVISE_DAT" "" ; 

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2001
+#  (c) Copyright 1992-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -69,24 +69,35 @@ if (-f $logfile) then
   rm $logfile
 endif
 set src = solaris-sparc
-set dest = $target/solaris-sparc.tar.gz
+set dest = $target/Devise-$version-solaris-sparc.tar.gz
 cd $src
 tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
 cd $dist_home
 
 # set src = sunos-sparc
-# set dest = $target/sunos-sparc.tar.gz
+# set dest = $target/Devise-$version-sunos-sparc.tar.gz
 # cd $src
 # tar cvfzhX $dest $dist_home/scripts/tar_exclude .
 # cd $dist_home
 
-echo "Generating linux-intel distribution"
-set logfile = $dist_home/linux-intel.log
+echo "Generating linux-intel_rh72 distribution"
+set logfile = $dist_home/linux-intel_rh72.log
+if (-f $logfile) then
+  rm $logfile
+endif
+set src = linux-intel_rh72
+set dest = $target/Devise-$version-linux-intel_rh72.tar.gz
+cd $src
+tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+cd $dist_home
+
+echo "Generating linux-intel_rh9 distribution"
+set logfile = $dist_home/linux-intel_rh9.log
 if (-f $logfile) then
   rm $logfile
 endif
 set src = linux-intel
-set dest = $target/linux-intel.tar.gz
+set dest = $target/Devise-$version-linux-intel_rh9.tar.gz
 cd $src
 tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
 cd $dist_home
@@ -97,7 +108,7 @@ if (-f $logfile) then
   rm $logfile
 endif
 set src = html/devise
-set dest = $target/quick_intro.tar.gz
+set dest = $target/Devise-$version-quick_intro.tar.gz
 cd $src
 tar cvfzhX $dest $dist_home/scripts/tar_exclude quick_intro > $logfile
 cd $dist_home
@@ -108,7 +119,7 @@ if (-f $logfile) then
   rm $logfile
 endif
 set src = JavaScreen
-set dest = $target/JavaScreen.tar.gz
+set dest = $target/Devise-$version-JavaScreen.tar.gz
 tar cvfz $dest $src > $logfile
 
 echo "Generating demo distribution"
@@ -117,8 +128,11 @@ if (-f $logfile) then
   rm $logfile
 endif
 set src = demo
-set dest = $target/demo.tar.gz
+set dest = $target/Devise-$version-demo.tar.gz
 tar cvfzX $dest scripts/tar_exclude $src > $logfile
+
+echo "Copying BMRB mirror site instructions"
+cp bmrb_mirror_instructions $target
 
 echo ""
 echo Done!

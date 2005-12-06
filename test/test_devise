@@ -1,0 +1,31 @@
+#! /bin/sh
+
+############################################################
+
+# Main test script for DEVise.
+
+# $Id$
+
+############################################################
+
+# Note: probably need to change how we define what DEVise
+# we run, so we can use this to test a variety of executables.
+
+devise_exec="dev"
+
+okay=1
+
+../test/test_devise_home $devise_exec
+if [ $? != 0 ]
+then
+    okay=0
+fi
+
+
+if [ $okay != 0 ]
+then
+    echo "DEVise passed all tests"
+else
+    echo "DEVise FAILED some tests!"
+    exit 1
+fi

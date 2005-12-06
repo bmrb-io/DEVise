@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1997-1998
+  (c) Copyright 1997-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -24,6 +24,21 @@
   $Id$
 
   $Log$
+  Revision 1.3.22.1  2003/12/19 18:12:56  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.3.40.1  2003/12/17 00:18:46  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.3.38.1  2003/04/18 16:11:08  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
+  Revision 1.3  1998/06/24 14:45:41  beyer
+  fixed booboo in destructor
+
   Revision 1.2  1998/06/24 14:44:47  beyer
   added destructor
 
@@ -59,10 +74,12 @@
 // Libraries
 //******************************************************************************
 
-#include <iostream.h>
+#include <iostream>
 #include <string>
 
 #include "RGB.h"
+
+using namespace std;
 
 //******************************************************************************
 // Types and Constants

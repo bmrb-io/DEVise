@@ -5,8 +5,6 @@ Xvfb :1 -screen 0 1024x768x8 &
 
 setenv DISPLAY unix:1.0
 
-rmmem
-
 # For Tasvir and EmbeddedTk.
 set path = ( $path /p/qclic/Code/Qclic/bin.common )
 set path = ( $path /p/devise/public/bin )
@@ -78,5 +76,3 @@ if (! -f $DEVISE_EXEC) then
   exit 1
 endif
 $DEVISE_EXEC $*
-
-rmmem

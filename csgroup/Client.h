@@ -19,6 +19,12 @@
 /*
   $Id$
   $Log$
+  Revision 1.5.14.1  2005/09/28 22:29:21  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.5  2000/01/13 23:06:43  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.4  1998/05/02 08:38:51  taodb
   Added command logging and playing support
   Added communication support for JAVA Screen
@@ -70,7 +76,8 @@ public:
 		MAX_ERRORS
 	};
 	// constructor/destrutors etc.
-  	Client(char *name, char *hostname, int port, char* initStr);
+  	Client(const char *name, const char *hostname, int port,
+	  const char* initStr);
 	virtual ~Client();
 	virtual void MainLoop() = 0;        // main loop of client
 	CSgroupKey	*csk;					// key to the group
@@ -80,10 +87,10 @@ public:
 	virtual int RequestRelinquish();	// client clback-request msg
 
 	// interface for group-communication
-	int CreateGroup(char *grpname, 		// create a group
-		char* passwd, const char*&);
-	int JoinGroup(char *grpname, 		// join a group with sync
-		char*passwd, const char*&);
+	int CreateGroup(const char *grpname,// create a group
+		const char* passwd, const char*&);
+	int JoinGroup(const char *grpname, 	// join a group with sync
+		const char*passwd, const char*&);
 	int LeadGroup(const char*&);		// request leadership
 	int ListenGroup(const char*&);		// giveup leadership
 	int LeaveGroup(const char*&);		// leave a group w/o leadership
@@ -92,21 +99,21 @@ public:
 protected:
 	// functions for communcating with the server
 	virtual void DoAbort(char *reason);	// print error message and abort
-	virtual int ServerCmd(int argc,
-		char **argv);					// send command to server
+	virtual int ServerCmd(int argc,		// send command to server
+		const char * const *argv);
 	virtual int  SendServerCmd			// another way to send cmds to server
 		(int args, ...);
 	virtual void ReadServer();          // receive command from server
-	virtual void ControlCmd(int argc,
-		char **argv); 					// process server control command
+	virtual void ControlCmd(int argc,	// process server control command
+		const char * const *argv);
 	virtual void GeneralServerCmd(u_short flag, int argc,
-			  char **argv){};			// process server general command
+	    const char * const *argv){};	// process server general command
   
 	virtual void SendPanelCmd();		// send command to the panel
 	virtual void SendPanelErr(const char* msg);
-	virtual void SetPanelMajorCmd(char* cmd);
-	virtual void SetPanelSubCmd(char* cmd);
-	virtual void SetPanelInfo(char* cmd);
+	virtual void SetPanelMajorCmd(const char* cmd);
+	virtual void SetPanelSubCmd(const char* cmd);
+	virtual void SetPanelInfo(const char* cmd);
 	int		readInteger(int,int&);
 	char*   panelMajorCmd;
 	char*	panelSubCmd;

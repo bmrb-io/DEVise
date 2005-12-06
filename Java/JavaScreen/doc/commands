@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 12.0.
+version 15.0.
 
 
 For the details of the format in which commands are send on the socket,
@@ -58,7 +58,7 @@ see comments in DEViseCommSocket.java.
     Arguments: 0
 
     2.6 JAVAC_SetCollabPass
-    Purpose: Set collaboration password.
+    Purpose: Set collaboration password (done by leader).
     Arguments: 2
 	<name>: the collaboration name.
 	<passwd>: the collaboration password.
@@ -74,7 +74,7 @@ see comments in DEViseCommSocket.java.
     Arguments: 0
 
     2.9 JAVAC_Collaborate
-    Purpose: Client starts to collaborate.
+    Purpose: Client starts to collaborate (sent by follower).
     Arguments: 4
 	<flag>: use id or collaboration name to identify leader
         <ID>: id of leader client
@@ -94,7 +94,17 @@ see comments in DEViseCommSocket.java.
 	           views
 
     2.12 JAVAC_DisableCollab
-    Purpose: Collaboration leader decides to exit from collaboration status.
+    Purpose: Collaboration leader decides to exit from collaboration status
+             (sent by leader).
+    Arguments: 0
+
+    2.13 JAVAC_GetPopVersion
+    Purpose: Get the JSPoP version information (including DEVised version).
+    Arguments: 0
+
+    2.14 JAVAC_StopCollab
+    Purpose: Collaboration follower decides to stop following (sent by
+             follower).
     Arguments: 0
 
 3. JSPoP to JavaScreen
@@ -137,14 +147,16 @@ see comments in DEViseCommSocket.java.
 	...
 
     3.6 JAVAC_CollabExit
-    Purpose: Close the collaboration JavaScreens, when the "leader" exits
+    Purpose: tells collaboration followers to stop following (normally
+             sent when the leader exited or disabled collaboration).
     Arguments: 0
 
     3.7 JAVAC_Set3DConfig (see section 2.9).
 
     3.8 JAVAC_InitCollaboration
     Purpose: confirms that collaboration has been correctly set up in the
-             JSPoP, and puts the JS client in to collaboration mode
+             JSPoP, and puts the JS client in to collaboration mode (sent
+	     to follower).
     Arguments:
         <leader ID>: client ID of the leader of this collaborator
 
@@ -155,8 +167,9 @@ see comments in DEViseCommSocket.java.
     Arguments: 0
 
     3.10 JAVAC_Reset_Collab_Name
-    Purpose: notify the user to reset collaboration name, due to
-	     same name has already existed.
+    Purpose: notify the user to reset collaboration name, because a
+             collaboration with the same name already exists (sent to
+	     attempted leader).
     Arguments: 0
 
     3.11 JAVAC_Hide_All_View_Help
@@ -166,6 +179,13 @@ see comments in DEViseCommSocket.java.
     3.11 JAVAC_Close_Collab_Dlg
     Purpose: notify the collaboration followers to close dialog.
     Arguments: 0
+
+    3.12 JAVAC_PopVersion
+    Purpose: notify the collaboration followers to close dialog.
+    Arguments: 3
+        <pop version>: version of JSPoP
+	<pop id>: ID of JSPoP ("regular", etc.)
+	<devised version>: version of DEVised (includes compile date)
 
 
 4. JavaScreen to devised (via JSPoP)
@@ -361,6 +381,12 @@ see comments in DEViseCommSocket.java.
 	<JSPoP cmd port>: command port of the JSPoP.
 
 
+    4.23 JAVAC_SetDisplayMode
+    Purpose: Set the display mode of the visualization (normal, color print,
+             or black and white print).
+    Arguments: 1
+        <display mode>: 0 = normal; 1 = color print; 2 = b/w print
+
 5. Devised to JavaScreen (via JSPoP)
 
     5.1 JAVAC_UpdateSessionList
@@ -540,6 +566,17 @@ see comments in DEViseCommSocket.java.
 
     5.12 JAVAC_Set3DConfig (see section 4.19).
 
+    5.13 JAVAC_SetViewColors
+    Purpose: sets the foreground and background colors of a view (used
+             for print color mode support).
+    Arguments: 3
+        <view name>: name of view for which the colors are to be set
+        <foreground color>: view foreground color (the color of the title,
+                            axes, etc.) in the form "#rrrrggggbbbb", where r,
+                            g, and b are hexadecimal digits.
+        <background color>: view background color in the form "#rrrrggggbbbb",
+                            where r, g, and b are hexadecimal digits.
+
 
 6. JSPoP to JSS
 
@@ -568,7 +605,20 @@ see comments in DEViseCommSocket.java.
         <timestamp>: used to uniquely identify a particular check on
 	  both ends
 
-9. Other
+9. JSPoP to DEVised
+
+    9.1 JAVAC_GetDeviseVersion
+    Purpose: gets the version string from the DEVised
+    Arguments: 0
+
+10. DEVised to JSPoP
+
+    10.1 JAVAC_DeviseVersion
+    Purpose: reports the DEVised version string
+    Arguments: 1
+        <version string>: the version and compile date of the DEVised
+
+11. Other
 
 Some of the information exchanged in setting up a collaboration is not
 included in these commands, but is apparently exchanged at a lower level

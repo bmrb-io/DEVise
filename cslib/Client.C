@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5.26.1  2005/09/28 22:29:28  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.5  1998/02/26 20:37:13  taodb
+  Removed dependency on Exit.h
+
   Revision 1.4  1998/02/19 23:24:18  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -62,11 +68,6 @@
 
 #include "Client.h"
 #include "ClientAPI.h"
-#define DOASSERT(cond, str)\
-	if ((cond))\
-	{\
-		fprintf(stderr,str);\
-	}
 //#include "Exit.h"
 //#define DEBUG
 
@@ -111,7 +112,7 @@ void Client::DoAbort(char *reason)
   exit(1);
 }
 
-int Client::ServerCmd(int argc, char **argv)
+int Client::ServerCmd(int argc, const char * const *argv)
 {
 #ifdef DEBUG	
   printf("Function %s, %d args\n", argv[0], argc);
@@ -169,7 +170,7 @@ void Client::ReadServer()
   ControlCmd(argc, argv);
 }
 
-void Client::ControlCmd(int argc, char **argv)
+void Client::ControlCmd(int argc, const char * const *argv)
 {
   delete _cmd;
   _cmd = NetworkPaste(argc, argv);

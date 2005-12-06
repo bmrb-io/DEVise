@@ -23,6 +23,7 @@
 # host, if specified.
 
 if (! -f install_info) then
+  echo ""
   echo "You must create the install_info file before doing an installation."
   echo "Edit Makefile.config as appropriate, and then do"
   echo "'make -f Makefile.setup'."
@@ -31,7 +32,11 @@ endif
 
 source install_info
 
+#-----------------------------------------------------------
+# Make sure we're on the right host.
+
 if ($install_host != "" && `hostname` != $install_host) then
+  echo ""
   echo "Installation is normally done on $install_host."
   echo -n "Are you sure you want to continue? [n] "
 
@@ -57,6 +62,14 @@ foreach file ($files)
     exit 1
   endif
 end
+
+#-----------------------------------------------------------
+# Make sure we know which ID we're installing for.
+
+echo ""
+echo "***********************************"
+echo "Installing JavaScreen for ID $idstr"
+echo "***********************************"
 
 #-----------------------------------------------------------
 # Make sure we've sent an appropriate warning email.

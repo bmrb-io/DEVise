@@ -6,6 +6,20 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.7.42.2  2003/12/19 18:08:07  wenger
+#	Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#	
+#	Revision 1.7.42.1.2.1  2003/12/17 19:08:03  wenger
+#	Got it to run on RH 9; slight mods to file selection dialog to get
+#	that to work right.
+#	
+#	Revision 1.7.42.1  2003/07/23 18:24:48  wenger
+#	Changed things so the GUI doesn't get so screwed up if we can't run
+#	'ls' (this happened because of AFS problems).
+#	
+#	Revision 1.7  1997/02/03 04:12:35  donjerko
+#	Catalog management moved to DTE
+#	
 #	Revision 1.6  1997/01/06 19:12:02  wenger
 #	Fixed the relative positions of 'OK' and 'Cancel' buttons on a number of
 #	windows; view names now start with 'View 1' instead of 'View'; removed
@@ -822,12 +836,14 @@ proc FSBoxFSShow {fsBoxPath fsBoxPattern fsBoxAll} {# xf ignore me 6
     .fsBox.files.files delete 0 end
   }
   if {$fsBoxAll} {
-    if {[catch "exec ls -F -a $fsBoxPath" fsBoxResult]} {
+    if {[catch "exec ls -p -a $fsBoxPath" fsBoxResult]} {
       puts stderr "$fsBoxResult"
+      return
     }
   } {
-    if {[catch "exec ls -F $fsBoxPath" fsBoxResult]} {
+    if {[catch "exec ls -p $fsBoxPath" fsBoxResult]} {
       puts stderr "$fsBoxResult"
+      return
     }
   }
   set fsBoxElementList [lsort $fsBoxResult]

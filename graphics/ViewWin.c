@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.71.14.2  2003/11/05 17:01:44  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.71.14.1  2003/04/23 21:31:01  wenger
+  Trying to make a view its own parent now asserts.
+
+  Revision 1.71  2000/03/15 22:53:59  wenger
+  Found and fixed bug 574 (invalid object access).
+
   Revision 1.70  2000/03/14 21:51:39  wenger
   Added more invalid object checking; had to take some memory checking
   out of client-side stuff for linking reasons.
@@ -384,7 +394,7 @@
 
 ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 				 int weight, Boolean boundary)
-	: Coloring(fgid, bgid)
+	: Coloring(fgid, bgid), _name(name), _bgColors(this), _fgColors(this)
 {
 #if defined(DEBUG)
 	printf("ViewWin::ViewWin(%s, this = %p)\n", name, this);
@@ -392,7 +402,6 @@ ViewWin::ViewWin(char* name, PColorID fgid, PColorID bgid,
 
 	windowRepCallback = new ViewWin_WindowRepCallback(this);
 
-	_name = name;
 	_parent = NULL;
 	_mapped = false;
 	_weight = weight;
@@ -454,14 +463,103 @@ ViewWin::GetGifDirty()
   }
 }
 
-void	ViewWin::SetBackground(PColorID bgid)
+void
+ViewWin::SetForeground(PColorID fgid)
 {
-  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 
-	if (GetWindowRep())
-		GetWindowRep()->SetBackground(bgid);
+	SetForeground(fgid, DisplayMode::GetMode());
+}
 
-	Coloring::SetBackground(bgid);
+void
+ViewWin::SetForeground(PColorID fgid, DisplayMode::Mode mode)
+{
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+#if defined(DEBUG)
+    printf("ViewWin(%s)::SetForeground(%d, %d)\n", GetName(), (int)fgid,
+	  (int)mode);
+#endif
+
+	_fgColors.SetColor(fgid, mode);
+
+	if (mode == DisplayMode::GetMode()) {
+	    Coloring::SetForeground(fgid);
+	}
+}
+
+void
+ViewWin::SetBackground(PColorID bgid)
+{
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+	SetBackground(bgid, DisplayMode::GetMode());
+}
+
+void
+ViewWin::SetBackground(PColorID bgid, DisplayMode::Mode mode)
+{
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+#if defined(DEBUG)
+    printf("ViewWin(%s)::SetBackground(%d, %d)\n", GetName(), (int)bgid,
+	  (int)mode);
+#endif
+
+	_bgColors.SetColor(bgid, mode);
+
+	if (mode == DisplayMode::GetMode()) {
+	    if (GetWindowRep()) {
+		    GetWindowRep()->SetBackground(bgid);
+        }
+
+	    Coloring::SetBackground(bgid);
+	}
+}
+
+PColorID
+ViewWin::GetForeground(void) const
+{
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+	return GetForeground(DisplayMode::GetMode());
+}
+
+PColorID
+ViewWin:: GetForeground(DisplayMode::Mode mode) const
+{
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+    int fgid = _fgColors.GetColor(mode);
+
+#if defined(DEBUG)
+    printf("ViewWin(%s)::GetForeground(%d) returns %d\n", GetName(),
+	  (int)mode, (int) fgid);
+#endif
+
+    return fgid;
+}
+
+PColorID
+ViewWin:: GetBackground(void) const
+{
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+	return GetBackground(DisplayMode::GetMode());
+}
+
+PColorID
+ViewWin:: GetBackground(DisplayMode::Mode mode) const
+{
+    DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+	int bgid = _bgColors.GetColor(mode);
+
+#if defined(DEBUG)
+    printf("ViewWin(%s)::GetBackground(%d) returns %d\n", GetName(),
+	  (int)mode, (int) bgid);
+#endif
+
+    return bgid;
 }
 
 //******************************************************************************
@@ -568,6 +666,15 @@ void ViewWin::AppendToParent(ViewWin *parent)
 #if defined(DEBUG)
   printf("ViewWin(%s)::AppendToParent(%s)\n", GetName(), parent->GetName());
 #endif
+
+  if (parent == this) {
+    int bufLen = 256;
+	char buf[bufLen];
+	int formatted = snprintf(buf, bufLen,
+	    "Attempting to append view %s to itself", GetName());
+	checkAndTermBuf(buf, bufLen, formatted);
+	DOASSERT(false, buf);
+  }
 
   if ( _parent) {
     _parent->Delete(this);

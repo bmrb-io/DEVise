@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2003
+  (c) Copyright 1998-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.129  2003/01/13 19:25:21  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.128  2002/07/19 17:07:26  wenger
   Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 
@@ -28,6 +31,53 @@
 
   Revision 1.126  2002/05/01 21:30:12  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.125.4.22  2005/09/28 17:14:50  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.125.4.21  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.125.4.20  2004/08/26 21:46:53  wenger
+  Better error messages if we can't find a TData.
+
+  Revision 1.125.4.19  2004/04/23 21:57:15  wenger
+  Added new 'select next view in pile' feature.
+
+  Revision 1.125.4.18  2003/12/22 22:47:30  wenger
+  JavaScreen support for print color modes is now in place.
+
+  Revision 1.125.4.17  2003/11/19 19:40:20  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
+  Revision 1.125.4.16  2003/11/05 17:01:52  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.125.4.15  2003/09/23 21:55:20  wenger
+  "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+
+  Revision 1.125.4.14  2003/07/31 15:38:27  wenger
+  Added initial value option to count mapping, also GUI for it; more
+  buffer length checks (still many more needed) in DeviseCommand.C.
+
+  Revision 1.125.4.13  2003/06/26 16:53:11  wenger
+  Index file names for per-session data sources now include the session
+  name (to reduce collisions); fixed a few memory problems relating to
+  the data source catalogs.
+
+  Revision 1.125.4.12  2003/06/06 20:48:42  wenger
+  Implemented provision for automatic testing of DEVise, including
+  running Tcl test scripts within DEVise itself.
+
+  Revision 1.125.4.11  2003/02/04 19:41:15  wenger
+  Added union capability for multiple GData attribute links (will help
+  with restraint visualizations for BMRB).
 
   Revision 1.125.4.10  2003/01/09 22:21:58  wenger
   Added "link multiplication factor" feature; changed version to 1.7.14.
@@ -703,6 +753,8 @@
 #include "DebugLog.h"
 #include "CommandLog.h"
 #include "MetaVisDesc.h"
+#include "ViewData.h"
+#include "DisplayMode.h"
 
 #include "Color.h"
 //#define INLINE_TRACE
@@ -783,6 +835,9 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	  "Starting command ", argc, argv);
 #endif
 
+	const int resultBufSize = 10*1024;
+	char resultBuf[resultBufSize];
+
 	int	retval;
 
 	DevError::ResetError();
@@ -799,24 +854,27 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 	}
 
 	_classDir = _control->GetClassDir();
-    if (_result == _control->resultBuf) {
+    if (_result == resultBuf) {
 	  reportErrNosys("Warning: command result buffer conflict; command "
 	      "result may get overwritten");
 	}
-	_result = _control->resultBuf;
+	_result = resultBuf;
+	_resultCapacity = resultBufSize;
 	_result[0] = '\0';
 
 	_control->SetValueReturned(false);
 	retval = Run(argc, argv);
 	if (!_control->GetValueReturned()) {
 		char errBuf[1024];
-		sprintf(errBuf, "No command value returned from command %s\n",
-		  argv[0]);
+		int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+		  "No command value returned from command %s\n", argv[0]);
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
     	ReturnVal(API_NAK, "No command value returned");
 	}
 
 	_result = NULL;
+	_resultCapacity = 0;
 
 	// restore the orignal value to control
 	_cmdDepth--;
@@ -830,7 +888,9 @@ DeviseCommand::Run(int argc, char** argv, ControlPanel* cntl)
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[256];
-    sprintf(logBuf, "  Done with command <%s>\n", argv[0]);
+    int formatted = snprintf(logBuf, sizeof(logBuf)/sizeof(char),
+	    "  Done with command <%s>\n", argv[0]);
+    checkAndTermBuf2(logBuf, formatted);
 	DebugLog::DefaultLog()->Message(DebugLog::LevelCommand, logBuf);
 #endif
 
@@ -1023,6 +1083,18 @@ IMPLEMENT_COMMAND_BEGIN(JAVAC_SetTmpSessionDir)
 	return jc.Run();
 IMPLEMENT_COMMAND_END
 
+IMPLEMENT_COMMAND_BEGIN(JAVAC_GetDeviseVersion)
+	JavaScreenCmd jc(_control,JavaScreenCmd::GET_DEVISE_VERSION,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(JAVAC_SetDisplayMode)
+	JavaScreenCmd jc(_control,JavaScreenCmd::SET_DISPLAY_MODE,
+		argc-1, &argv[1]);
+	return jc.Run();
+IMPLEMENT_COMMAND_END
+
 
 //TEMP -- all commands should check arg count
 //**********************************************************************
@@ -1125,12 +1197,11 @@ TAG*/
 int
 DeviseCommand_dteShowCatalogEntry::Run(int argc, char** argv)
 {
-
-	const char *catEntry = Session::ShowDataSource(argv[1]);
+	char *catEntry = Session::ShowDataSource(argv[1]);
 
 	if (catEntry != NULL) {
    	  ReturnVal(API_ACK, catEntry);
-   	  delete [] catEntry;
+	  FreeString(catEntry);
 	} else {
    	  ReturnVal(API_ACK, "");
 	}
@@ -1247,7 +1318,12 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 		if (DataCatalog::GetEntryName(argv[2], entryName, nameSize)) {
 			char *catName = argv[1];
 			if (!strcmp(catName, ".")) catName = "";
-			sprintf(fullName, "%s.%s", catName, entryName);
+			int formatted = snprintf(fullName, sizeof(fullName)/sizeof(char),
+			    "%s.%s", catName, entryName);
+			if (checkAndTermBuf2(fullName, formatted) != StatusOk) {
+         	  ReturnVal(API_NAK, "buffer overflow");
+              return -1;
+			}
 		} else {
 		  char *errMsg = "Error parsing new data catalog entry";
 		  reportErrNosys(errMsg);
@@ -1258,7 +1334,7 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 		//
 		// Try to find an entry with this name in the catalog.
 		//
-        const char *oldEntry = Session::ShowDataSource(fullName);
+        char *oldEntry = Session::ShowDataSource(fullName);
 
         if (oldEntry && strlen(oldEntry) > 0) {
 		  //
@@ -1270,15 +1346,25 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
 #endif
 
 		  char buf[1024];
-		  sprintf(buf, "%s ;", argv[2]);
+		  int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		      "%s ;", argv[2]);
+	      if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
 		  if (strcmp(oldEntry, buf)) {
 			char errBuf[1024];
-		    sprintf(errBuf,
+		    int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
 			    "Warning: existing entry and new entry for <%s> differ\n"
 			    "  Old entry: <%s>\n  New entry: <%s>",
 			    fullName, oldEntry, buf);
+	        if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+              ReturnVal(API_NAK, "buffer overflow");
+              return -1;
+	        }
 		    reportErrNosys(errBuf);
 		  }
+		  FreeString(oldEntry);
           ReturnVal(API_ACK, "");
     	  return 1;
 		}
@@ -1366,9 +1452,15 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
     		{
     			View*	view = View::NextView(index);
     
-    			strcat(_result, "{");
-    			strcat(_result, view->GetName());
-    			strcat(_result, "} ");
+				DevStatus result(StatusOk);
+    			result += nice_strncat(_result, "{", _resultCapacity);
+    			result += nice_strncat(_result, view->GetName(),
+				    _resultCapacity);
+    			result += nice_strncat(_result, "} ", _resultCapacity);
+	            if (result != StatusOk) {
+                  ReturnVal(API_NAK, "buffer overflow");
+                  return -1;
+	            }
     		}
     
     		View::DoneViewIterator(index);
@@ -1380,6 +1472,8 @@ DeviseCommand_getAllViews::Run(int argc, char** argv)
     return true;
 }
 
+// Note: this command seems to be used *only* to change mappings.
+// wenger 2003-11-19.
 int
 DeviseCommand_changeParam::Run(int argc, char** argv)
 {
@@ -1446,7 +1540,11 @@ DeviseCommand_getTDataName::Run(int argc, char** argv)
         {
         TData *tdata = (TData *)_classDir->FindInstance(argv[1]);
         if (!tdata) {
-            ReturnVal(API_NAK, "Cannot find TData");
+	    char buf[256];
+	    int formatted = snprintf(buf, sizeof(buf), "Cannot find TData %s",
+	        argv[1]);
+	    checkAndTermBuf(buf, sizeof(buf), formatted);
+    	    ReturnVal(API_NAK, buf);
             return -1;
         }
         const char *tname = tdata->GetName();
@@ -1474,7 +1572,7 @@ DeviseCommand_showkgraph::Run(int argc, char** argv)
         }
         /* Number of views */
         int nview = argc - 4;
-        ViewGraph **vlist = new (ViewGraph *) [nview];
+        ViewGraph **vlist = new ViewGraph *[nview];
         DOASSERT(vlist, "Out of memory");
         for(int i = 0; i < nview; i++) {
           vlist[i] = (ViewGraph *)_classDir->FindInstance(argv[4 + i]);
@@ -1561,7 +1659,13 @@ DeviseCommand_setHistogram::Run(int argc, char** argv)
           return -1;
         }
         if( buckets > MAX_HISTOGRAM_BUCKETS ) {
-          sprintf(_result, "buckets > %d", MAX_HISTOGRAM_BUCKETS);
+          int formatted = snprintf(_result, _resultCapacity,
+		      "buckets > %d", MAX_HISTOGRAM_BUCKETS);
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_NAK, _result);
           return -1;
         }
@@ -1587,8 +1691,13 @@ DeviseCommand_getHistogram::Run(int argc, char** argv)
           ReturnVal(API_NAK, "Cannot find view");
           return -1;
         }
-        sprintf(_result, "%g %g %d", view->GetHistogramMin(),
-                view->GetHistogramMax(), view->GetHistogramBuckets());
+        int formatted = snprintf(_result, _resultCapacity,
+		    "%g %g %d", view->GetHistogramMin(), view->GetHistogramMax(),
+			view->GetHistogramBuckets());
+	    if (checkAndTermBuf(_result, _resultCapacity, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, _result);
         return 1;
       }
@@ -1998,7 +2107,12 @@ DeviseCommand_getWinCount::Run(int argc, char** argv)
     {
         {
           char buf[100];
-          sprintf(buf, "%d", DevWindow::GetCount());
+          int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		      "%d", DevWindow::GetCount());
+	      if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -2013,7 +2127,12 @@ DeviseCommand_getStringCount::Run(int argc, char** argv)
         {
           // Returns: <stringCount>
           char buf[100];
-          sprintf(buf, "%d", StringStorage::GetTotalCount());
+          int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		      "%d", StringStorage::GetTotalCount());
+	      if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -2050,6 +2169,7 @@ DeviseCommand_serverExit::Run(int argc, char** argv)
     		return 1; // We never get to here.
           } else {
     		char *_result = "Server won't exit with more than one client connected.";
+			_resultCapacity = 0;
     		printf("%s\n", _result);
             ReturnVal(API_NAK, _result);
     		return -1;
@@ -2154,10 +2274,16 @@ DeviseCommand_get3DLocation::Run(int argc, char** argv)
     	return -1;
           }
           Camera c = view->GetCamera();
-          sprintf(_result, "%s %g %g %g %g %g %g %g %g",
+          int formatted = snprintf(_result, _resultCapacity,
+		    "%s %g %g %g %g %g %g %g %g",
             ViewDir2Char(c.view_dir),
             c.min_x, c.max_x, c.min_y, c.max_y, c.near, c.far,
             c.pan_right, c.pan_up);
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
 
           ReturnVal(API_ACK, _result);
           return 1;
@@ -2227,8 +2353,12 @@ DeviseCommand_invalidateTData::Run(int argc, char** argv)
         {
           TData *tdata = (TData *)_classDir->FindInstance(argv[1]);
           if (!tdata) {
-    	ReturnVal(API_NAK, "Cannot find TData");
-    	return -1;
+	    char buf[256];
+	    int formatted = snprintf(buf, sizeof(buf), "Cannot find TData %s",
+	        argv[1]);
+	    checkAndTermBuf(buf, sizeof(buf), formatted);
+    	    ReturnVal(API_NAK, buf);
+    	    return -1;
           }
           tdata->InvalidateTData();
           ReturnVal(API_ACK, "Done");
@@ -2299,7 +2429,13 @@ DeviseCommand_isMapped::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find view");
     	return -1;
           }
-          sprintf(_result, "%d", (vg->Mapped() ? 1 : 0 ));
+          int formatted = snprintf(_result, _resultCapacity, "%d",
+		      (vg->Mapped() ? 1 : 0 ));
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -2321,8 +2457,13 @@ DeviseCommand_getLabel::Run(int argc, char** argv)
           int extent;
           char *name;
           vg->GetLabelParam(occupyTop, extent, name);
-          sprintf(_result, "%d %d {%s}", (occupyTop ? 1 : 0), extent,
-    	      (name ? name : ""));
+          int formatted = snprintf(_result, _resultCapacity, "%d %d {%s}",
+		      (occupyTop ? 1 : 0), extent, (name ? name : ""));
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -2337,8 +2478,12 @@ DeviseCommand_tdataFileName::Run(int argc, char** argv)
         {
           TData *tdata = (TData *)_classDir->FindInstance(argv[1]);
           if (!tdata) {
-    	ReturnVal(API_NAK, "Cannot find tdata");
-    	return -1;
+	    char buf[256];
+	    int formatted = snprintf(buf, sizeof(buf), "Cannot find TData %s",
+	        argv[1]);
+	    checkAndTermBuf(buf, sizeof(buf), formatted);
+    	    ReturnVal(API_NAK, buf);
+    	    return -1;
           }
           ReturnVal(API_ACK, tdata->GetName());
           return 1;
@@ -2461,7 +2606,12 @@ DeviseCommand_parseDateFloat::Run(int argc, char** argv)
         {
           double val;
           (void)ParseFloatDate(argv[1], val);
-          sprintf(_result, "%f", val);
+          int formatted = snprintf(_result, _resultCapacity, "%f", val);
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -2516,7 +2666,13 @@ DeviseCommand_getPixelWidth::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find mapping");
     	return -1;
           }
-          sprintf(_result, "%d", map->GetPixelWidth());
+          int formatted = snprintf(_result, _resultCapacity, "%d",
+		      map->GetPixelWidth());
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -2552,7 +2708,13 @@ DeviseCommand_getWindowLayout::Run(int argc, char** argv)
 		  // Set stacked to false here because we no longer stack windows
 		  // this way (it's now done via the PileStack class).  RKW 1999-02-11.
 		  stacked = false;
-          sprintf(_result, "%d %d %d", v, h, (stacked ? 1 : 0));
+          int formatted = snprintf(_result, _resultCapacity, "%d %d %d",
+		      v, h, (stacked ? 1 : 0));
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -2568,7 +2730,14 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
         	
           TData *tdata = (TData *)_classDir->FindInstance(argv[1]);
           if (!tdata) {
-    	ReturnVal(API_NAK, "Cannot find Tdata");
+	char buf[256];
+	int formatted = snprintf(buf, sizeof(buf), "Cannot find TData %s",
+	    argv[1]);
+	if (checkAndTermBuf(buf, sizeof(buf), formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	}
+    	ReturnVal(API_NAK, buf);
     	return -1;
           }
           AttrList *attrList = tdata->GetAttrList();
@@ -2582,7 +2751,7 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
           attrList->Print();
     #endif
           int numAttrs = attrList->NumAttrs();
-		  char **tmpArgv = new (char *) [numAttrs];
+		  char **tmpArgv = new char *[numAttrs];
           int i;
           for(i = 0; i < numAttrs; i++) {
     	char attrBuf[160];
@@ -2590,9 +2759,11 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
     #ifdef DEBUG
     	printf("inserting %s\n", info->name);
     #endif
+		int formatted;
     	switch(info->type) {
     	case FloatAttr:
-    	  sprintf(attrBuf, "%s float %d %d %g %d %g",
+    	  formatted = snprintf(attrBuf, sizeof(attrBuf)/sizeof(char),
+		    "%s float %d %d %g %d %g",
     		  info->name, info->isSorted,
     		  info->hasHiVal,
     		  (info->hasHiVal ? info->hiVal.floatVal : 100),
@@ -2600,7 +2771,8 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
     		  (info->hasLoVal ? info->loVal.floatVal : 0));
     	  break;
     	case DoubleAttr:
-    	  sprintf(attrBuf, "%s double %d %d %g %d %g",
+    	  formatted = snprintf(attrBuf, sizeof(attrBuf)/sizeof(char),
+		    "%s double %d %d %g %d %g",
     		  info->name, info->isSorted,
     		  info->hasHiVal,
     		  (info->hasHiVal ? info->hiVal.doubleVal : 100),
@@ -2608,11 +2780,13 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
     		  (info->hasLoVal ? info->loVal.doubleVal : 0));
     	  break;
     	case StringAttr:
-    	  sprintf(attrBuf, "%s string %d 0 0 0 0", info->name,
+    	  formatted = snprintf(attrBuf, sizeof(attrBuf)/sizeof(char),
+		    "%s string %d 0 0 0 0", info->name,
     		  info->isSorted);
     	  break;
     	case IntAttr:
-    	  sprintf(attrBuf, "%s int %d %d %ld %d %ld",
+    	  formatted = snprintf(attrBuf, sizeof(attrBuf)/sizeof(char),
+		    "%s int %d %d %ld %d %ld",
     		  info->name, info->isSorted,
     		  info->hasHiVal,
     		  (long)(info->hasHiVal ? info->hiVal.intVal : 100),
@@ -2620,7 +2794,8 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
     		  (long)(info->hasLoVal ? info->loVal.intVal : 0));
     	  break;
     	case DateAttr:
-    	  sprintf(attrBuf, "%s date %d %d %ld %d %ld",
+    	  formatted = snprintf(attrBuf, sizeof(attrBuf)/sizeof(char),
+		    "%s date %d %d %ld %d %ld",
     		  info->name, info->isSorted,
     		  info->hasHiVal,
     		  (long)(info->hasHiVal ? info->hiVal.dateVal : 100),
@@ -2632,6 +2807,11 @@ DeviseCommand_getSchema::Run(int argc, char** argv)
           reportErrNosys("Fatal error");//TEMP -- replace with better message
     	  Exit::DoExit(1);
     	}
+	    if (checkAndTermBuf2(attrBuf, formatted) != StatusOk) {
+              ReturnVal(API_NAK, "buffer overflow");
+              return -1;
+	    }
+
       	tmpArgv[i] = new char [strlen(attrBuf) + 1];//TEMPTEMP -- leaked??
     	assert(tmpArgv[i]);
     	strcpy(tmpArgv[i], attrBuf);
@@ -2677,7 +2857,13 @@ DeviseCommand_getLinkFlag::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot find link");
     	return -1;
           }
-          sprintf(_result, "%d", link->GetFlag());
+          int formatted = snprintf(_result, _resultCapacity, "%d",
+		      link->GetFlag());
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -2856,9 +3042,14 @@ DeviseCommand_getViewMappings::Run(int argc, char** argv)
           int index = view->InitMappingIterator();
           while(view->MoreMapping(index)) {
     	TDataMap *map = view->NextMapping(index)->map;
-    	strcat(_result, "{");
-    	strcat(_result, map->GetGDataName());
-    	strcat(_result, "} ");
+		DevStatus result(StatusOk);
+    	result += nice_strncat(_result, "{", _resultCapacity);
+    	result += nice_strncat(_result, map->GetGDataName(), _resultCapacity);
+    	result += nice_strncat(_result, "} ", _resultCapacity);
+        if (result != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+        }
           }
           view->DoneMappingIterator(index);
           ReturnVal(API_ACK, _result);
@@ -2901,7 +3092,13 @@ DeviseCommand_getWinGeometry::Run(int argc, char** argv)
           int x0, y0;
           win->Geometry(x, y, w, h);
           win->AbsoluteOrigin(x0,y0);
-          sprintf (_result, "{ %d %d %d %d %u %u }" , x0, y0, x, y, w, h);
+          int formatted = snprintf(_result, _resultCapacity,
+		      "{ %d %d %d %d %u %u }" , x0, y0, x, y, w, h);
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;	      
         }
@@ -2922,9 +3119,14 @@ DeviseCommand_getWinViews::Run(int argc, char** argv)
           int index;
           for(index = win->InitIterator(); win->More(index); ) {
     	ViewWin *view = (ViewWin *)win->Next(index);
-    	strcat(_result, "{");
-    	strcat(_result, view->GetName());
-    	strcat(_result, "} ");
+		DevStatus result(StatusOk);
+    	result += nice_strncat(_result, "{", _resultCapacity);
+    	result += nice_strncat(_result, view->GetName(), _resultCapacity);
+    	result += nice_strncat(_result, "} ", _resultCapacity);
+        if (result != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+        }
           }
           win->DoneIterator(index);
           ReturnVal(API_ACK, _result);
@@ -2948,9 +3150,14 @@ DeviseCommand_getLinkViews::Run(int argc, char** argv)
           int index;
           for(index = link->InitIterator(); link->More(index); ) {
     	ViewGraph *view = (ViewGraph *)link->Next(index);
-    	strcat(_result, "{");
-    	strcat(_result, view->GetName());
-    	strcat(_result, "} ");
+		DevStatus result(StatusOk);
+    	result += nice_strncat(_result, "{", _resultCapacity);
+    	result += nice_strncat(_result, view->GetName(), _resultCapacity);
+    	result += nice_strncat(_result, "} ", _resultCapacity);
+	    if (result != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
           }
           link->DoneIterator(index);
           ReturnVal(API_ACK, _result);
@@ -2971,8 +3178,14 @@ DeviseCommand_getCurVisualFilter::Run(int argc, char** argv)
     	return -1;
           }
           VisualFilter *filter = view->GetVisualFilter();
-          sprintf(_result, "%.2f %.2f %.2f %.2f", filter->xLow, filter->yLow,
+          int formatted = snprintf(_result, _resultCapacity,
+		      "%.2f %.2f %.2f %.2f", filter->xLow, filter->yLow,
     	      filter->xHigh, filter->yHigh);
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -2998,24 +3211,45 @@ DeviseCommand_getVisualFilters::Run(int argc, char** argv)
     	queue->Get(i,filter);
     	char buf[256];
     	char xLowBuf[40], xHighBuf[40], yLowBuf[40], yHighBuf[40];
+		int formatted1, formatted2;
     	if (view->GetXAxisAttrType() == DateAttr) {
-    	  sprintf(xLowBuf, "%s",DateString(filter.xLow));
-    	  sprintf(xHighBuf, "%s",DateString(filter.xHigh));
+    	  formatted1 = snprintf(xLowBuf, sizeof(xLowBuf)/sizeof(char),
+		      "%s",DateString(filter.xLow));
+    	  formatted2 = snprintf(xHighBuf, sizeof(xHighBuf)/sizeof(char),
+		      "%s",DateString(filter.xHigh));
     	} else {
-    	  sprintf(xLowBuf, "%g",filter.xLow);
-    	  sprintf(xHighBuf, "%g",filter.xHigh);
+    	  formatted1 = snprintf(xLowBuf, sizeof(xLowBuf)/sizeof(char),
+		      "%g",filter.xLow);
+    	  formatted2 = snprintf(xHighBuf, sizeof(xHighBuf)/sizeof(char),
+		      "%g",filter.xHigh);
     	}
+		DevStatus status = checkAndTermBuf2(xLowBuf, formatted1);
+		status = checkAndTermBuf2(xHighBuf, formatted2);
     	
     	if (view->GetYAxisAttrType() == DateAttr) {
-    	  sprintf(yLowBuf, "%s",DateString(filter.yLow));
-    	  sprintf(yHighBuf, "%s",DateString(filter.yHigh));
+    	  formatted1 = snprintf(yLowBuf, sizeof(yLowBuf)/sizeof(char),
+		      "%s",DateString(filter.yLow));
+    	  formatted2 = snprintf(yHighBuf, sizeof(yHighBuf)/sizeof(char),
+		      "%s",DateString(filter.yHigh));
     	} else {
-    	  sprintf(yLowBuf, "%g",filter.yLow);
-    	  sprintf(yHighBuf, "%g",filter.yHigh);
+    	  formatted1 = snprintf(yLowBuf, sizeof(yLowBuf)/sizeof(char),
+		      "%g",filter.yLow);
+    	  formatted2 = snprintf(yHighBuf, sizeof(yHighBuf)/sizeof(char),
+		      "%g",filter.yHigh);
     	}
-    	sprintf(buf, "{{%s} {%s} {%s} {%s} %d} ",xLowBuf, yLowBuf,
+		status = checkAndTermBuf2(yLowBuf, formatted1);
+		status = checkAndTermBuf2(yHighBuf, formatted2);
+
+    	formatted1 = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "{{%s} {%s} {%s} {%s} %d} ",xLowBuf, yLowBuf,
     		xHighBuf, yHighBuf, filter.marked);
-    	strcat(_result, buf);
+		status = checkAndTermBuf2(buf, formatted1);
+
+    	status += nice_strncat(_result, buf, _resultCapacity);
+	    if (status != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
           }
           ReturnVal(API_ACK, _result);
           return 1;
@@ -3055,17 +3289,33 @@ DeviseCommand_getAllStats::Run(int argc, char** argv)
           /* Return allStats */
           char *buff[4];
           int i;
-          for(i = 0; i < 4; i++) {
-    	  buff[i] = '\0';
-          }
+		  const int bufSize = 64; // 64 bytes is enough for double type
           for (i = 0; i < 4; i++) {
-              buff[i] = new char[64];  /*64 bytes is enough for double type */
+              buff[i] = new char[bufSize];
           }
           BasicStats *allStats = vg->GetStatObj();
-          sprintf(buff[0], "%g", allStats->GetStatVal(STAT_MAX));
-          sprintf(buff[1], "%g", allStats->GetStatVal(STAT_MEAN));
-          sprintf(buff[2], "%g", allStats->GetStatVal(STAT_MIN));
-          sprintf(buff[3], "%d", (int)allStats->GetStatVal(STAT_COUNT));
+
+          int formatted = snprintf(buff[0], bufSize,
+		    "%g", allStats->GetStatVal(STAT_MAX));
+		  DevStatus status = checkAndTermBuf(buff[0], bufSize, formatted);
+
+          formatted = snprintf(buff[1], bufSize,
+		    "%g", allStats->GetStatVal(STAT_MEAN));
+		  status = checkAndTermBuf(buff[1], bufSize, formatted);
+
+          formatted = snprintf(buff[2], bufSize,
+		    "%g", allStats->GetStatVal(STAT_MIN));
+		  status = checkAndTermBuf(buff[2], bufSize, formatted);
+
+          formatted = snprintf(buff[3], bufSize,
+		    "%d", (int)allStats->GetStatVal(STAT_COUNT));
+		  status = checkAndTermBuf(buff[3], bufSize, formatted);
+
+	      if (status != StatusOk) {
+                ReturnVal(API_NAK, "buffer overflow");
+                return -1;
+	      }
+
     #if defined(DEBUG) || 0
           printf("buff=%s %s %s %s\n", buff[0],buff[1],buff[2],buff[3]);
     #endif
@@ -3142,7 +3392,7 @@ DeviseCommand_getStatBuffer::Run(int argc, char** argv)
     	       return -1;
              }
               int k;
-			  char **tmpArgv = new (char *) [MAX_GSTAT+1];
+			  char **tmpArgv = new char *[MAX_GSTAT+1];
               for(k=0; k < MAX_GSTAT+1; k++) {
     	        tmpArgv[k]=0;
               }
@@ -3177,7 +3427,13 @@ DeviseCommand_getViewDimensions::Run(int argc, char** argv)
     	return -1;
           }
           /* Return number of dimensions in view */
-          sprintf(_result, "%d", vg->GetNumDimensions());
+          int formatted = snprintf(_result, _resultCapacity, "%d",
+		      vg->GetNumDimensions());
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -3196,7 +3452,13 @@ DeviseCommand_getViewSolid3D::Run(int argc, char** argv)
     	return -1;
           }
           /* Return setting of solid/wireframe 3D objects */
-          sprintf(_result, "%d", vg->GetSolid3D());
+          int formatted = snprintf(_result, _resultCapacity, "%d",
+		      vg->GetSolid3D());
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -3215,7 +3477,13 @@ DeviseCommand_getViewXYZoom::Run(int argc, char** argv)
     	return -1;
           }
           /* Return setting of XY or X/Y zoom */
-          sprintf(_result, "%d", (vg->IsXYZoom() ? 1 : 0));
+          int formatted = snprintf(_result, _resultCapacity, "%d",
+		      (vg->IsXYZoom() ? 1 : 0));
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -3234,7 +3502,13 @@ DeviseCommand_getViewDisplayDataValues::Run(int argc, char** argv)
     	return -1;
           }
           /* Return setting of data value display */
-          sprintf(_result, "%d", (vg->GetDisplayDataValues() ? 1 : 0));
+          int formatted = snprintf(_result, _resultCapacity, "%d",
+		      (vg->GetDisplayDataValues() ? 1 : 0));
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -3253,7 +3527,13 @@ DeviseCommand_getViewPileMode::Run(int argc, char** argv)
     	return -1;
           }
           /* Return pile mode flag */
-          sprintf(_result, "%d", (vg->IsInPileMode() ? 1 : 0));
+          int formatted = snprintf(_result, _resultCapacity, "%d",
+		      (vg->IsInPileMode() ? 1 : 0));
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -3323,7 +3603,12 @@ DeviseCommand_winGetPrint::Run(int argc, char** argv)
           exclude = win->GetPrintExclude();
           pixmap = win->GetPrintPixmap();
           char buf[100];
-          sprintf(buf, "%d %d", exclude, pixmap);
+          int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%d %d", exclude, pixmap);
+	      if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -3350,10 +3635,15 @@ DeviseCommand_viewGetHome::Run(int argc, char** argv)
           ViewHomeInfo info;
           view->GetHomeInfo(info);
           char buf[100];
-          sprintf(buf, "%d %d %d %d %f %f %f %f %f %f", info.homeX, info.homeY,
+          int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%d %d %d %d %f %f %f %f %f %f", info.homeX, info.homeY,
 		    (int)info.mode, info.autoYMinZero,
 			info.autoXMargin, info.autoYMargin, info.manXLo,
 			info.manYLo, info.manXHi, info.manYHi);
+	        if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+              ReturnVal(API_NAK, "buffer overflow");
+              return -1;
+	        }
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -3379,7 +3669,12 @@ DeviseCommand_viewGetHorPan::Run(int argc, char** argv)
           ViewPanInfo info;
           view->GetHorPanInfo(info);
           char buf[100];
-          sprintf(buf, "%d %f %f", (int) info.mode, info.relPan, info.absPan);
+          int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%d %f %f", (int) info.mode, info.relPan, info.absPan);
+	      if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -3409,7 +3704,12 @@ DeviseCommand_getCursorGrid::Run(int argc, char** argv)
         Boolean edgeGrid;
         cursor->GetGrid(useGrid, gridX, gridY, edgeGrid);
         char buf[100];
-        sprintf(buf, "%d %f %f %d", useGrid, gridX, gridY, edgeGrid);
+        int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %f %f %d", useGrid, gridX, gridY, edgeGrid);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
         return 1;
     } else {
@@ -3586,9 +3886,14 @@ DeviseCommand_getViewGDS::Run(int argc, char** argv)
           view->GetSendParams(params);
           if (params.file == NULL) params.file = "";
           char buf[1024];
-          sprintf(buf, "%d %d %d \"%s\" %d \"%c\" %d", drawToScreen,
+          int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		      "%d %d %d \"%s\" %d \"%c\" %d", drawToScreen,
 		      sendToSocket, params.portNum, params.file, params.sendText,
 			  params.separator, params.rgbColor);
+	      if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, buf);
           return 1;
         }
@@ -3730,7 +4035,13 @@ DeviseCommand_open::Run(int argc, char** argv)
     	ReturnVal(API_NAK, "Cannot open file");
     	return -1;
           }
-          sprintf(_result, "%ld", (long)file);
+          int formatted = snprintf(_result, _resultCapacity, "%ld",
+		      (long)file);
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
           ReturnVal(API_ACK, _result);
           return 1;
         }
@@ -4315,8 +4626,12 @@ DeviseCommand_saveTdata::Run(int argc, char** argv)
         {
           TData *tdata = (TData *)_classDir->FindInstance(argv[1]);
           if (!tdata) {
-    	ReturnVal(API_NAK, "Cannot find tdata");
-    	return -1;
+	    char buf[256];
+	    int formatted = snprintf(buf, sizeof(buf), "Cannot find TData %s",
+	        argv[1]);
+	    checkAndTermBuf(buf, sizeof(buf), formatted);
+    	    ReturnVal(API_NAK, buf);
+    	    return -1;
           }
           if (!(tdata->Save(argv[2]) == StatusFailed)) {
             ReturnVal(API_ACK, "done");
@@ -4393,7 +4708,13 @@ DeviseCommand_getFont::Run(int argc, char** argv)
           Boolean bold;
           Boolean italic;
           view->GetFont(argv[2], family, pointSize, bold, italic);
-          sprintf(_result, "%d %d %d %d", family, (int) pointSize, bold, italic);
+          int formatted = snprintf(_result, _resultCapacity, "%d %d %d %d",
+		      family, (int) pointSize, bold, italic);
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
     
           ReturnVal(API_ACK, _result);
           return 1;
@@ -4441,8 +4762,13 @@ DeviseCommand_checkTDataForRecLink::Run(int argc, char** argv)
 
 	  if (link->GetFlag() & VISUAL_RECORD) {
 	    RecordLink *recLink = (RecordLink *)link;
-            sprintf(_result, "%d",
+            int formatted = snprintf(_result, _resultCapacity, "%d",
 	      (recLink->CheckTData(view, atoi(argv[3]))) ?  1 : 0);
+	      if (checkAndTermBuf(_result, _resultCapacity, formatted) !=
+		      StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
             ReturnVal(API_ACK, _result);
             return 1;
 	  } else {
@@ -5214,9 +5540,14 @@ DeviseCommand_viewGetImplicitHome::Run(int argc, char** argv)
 	    ViewHomeInfo info;
 		view->GetImplicitHomeInfo(info);
 		char buf[256];
-		sprintf(buf, "%d %d %d %d %g %g %g %g %g %g", info.homeX, info.homeY,
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %d %d %d %g %g %g %g %g %g", info.homeX, info.homeY,
 		  info.mode, info.autoYMinZero, info.autoXMargin, info.autoYMargin,
 		  info.manXLo, info.manYLo, info.manXHi, info.manYHi);
+	      if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	      }
         ReturnVal(API_ACK, buf);
         return 1;
 	} else {
@@ -5444,7 +5775,12 @@ IMPLEMENT_COMMAND_BEGIN(getShowViewNames)
 
     if (argc == 1) {
 		char buf[128];
-		sprintf(buf, "%d", View::GetShowNames());
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d", View::GetShowNames());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -5456,7 +5792,7 @@ IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(getCountMapping)
     // Arguments: <view name>
-    // Returns: <enabled> <count attr> <put attr>
+    // Returns: <enabled> <count attr> <put attr> <initial value>
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
@@ -5471,10 +5807,17 @@ IMPLEMENT_COMMAND_BEGIN(getCountMapping)
 		Boolean enabled;
 		char *countAttr;
 		char *putAttr;
-		view->GetCountMapping(enabled, countAttr, putAttr);
+		int initialValue;
+		view->GetCountMapping(enabled, countAttr, putAttr, initialValue);
 
-		char buf[128];
-		sprintf(buf, "%d {%s} {%s}", enabled, countAttr, putAttr);
+		const int bufSize = 256;
+		char buf[bufSize];
+		int formatted = snprintf(buf, bufSize, "%d {%s} {%s} %d",
+		    enabled, countAttr, putAttr, initialValue);
+		if (checkAndTermBuf(buf, bufSize, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -5485,13 +5828,13 @@ IMPLEMENT_COMMAND_BEGIN(getCountMapping)
 IMPLEMENT_COMMAND_END
 
 IMPLEMENT_COMMAND_BEGIN(setCountMapping)
-    // Arguments: <view name> <enabled> <count attr> <put attr>
+    // Arguments: <view name> <enabled> <count attr> <put attr> [initial value]
     // Returns: "done"
 #if defined(DEBUG)
     PrintArgs(stdout, argc, argv);
 #endif
 
-    if (argc == 5) {
+    if (argc == 5 || argc == 6) {
         ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
         if (!view) {
           ReturnVal(API_NAK, "Cannot find view");
@@ -5501,7 +5844,12 @@ IMPLEMENT_COMMAND_BEGIN(setCountMapping)
         Session::SetDirty();
 
 		Boolean enabled = atoi(argv[2]);
-		if (view->SetCountMapping(enabled, argv[3], argv[4]).IsComplete()) {
+		int initialValue = 0;
+		if (argc == 6) {
+		  initialValue = atoi(argv[5]);
+		}
+		if (view->SetCountMapping(enabled, argv[3], argv[4], initialValue).
+		    IsComplete()) {
           ReturnVal(API_ACK, "done");
 	      return 1;
 		} else {
@@ -5532,15 +5880,20 @@ IMPLEMENT_COMMAND_BEGIN(getCursorType)
 		VisualFlag flag = cursor->GetFlag();
 
 		char buf[128];
+		int formatted;
 		if (flag == VISUAL_X) {
-			sprintf(buf, "VisualX");
+			formatted = snprintf(buf, sizeof(buf)/sizeof(char), "VisualX");
 		} else if (flag == VISUAL_Y) {
-			sprintf(buf, "VisualY");
+			formatted = snprintf(buf, sizeof(buf)/sizeof(char), "VisualY");
 		} else if (flag == (VISUAL_X | VISUAL_Y)) {
-			sprintf(buf, "VisualXY");
+			formatted = snprintf(buf, sizeof(buf)/sizeof(char), "VisualXY");
 		} else {
-			sprintf(buf, "unknown");
+			formatted = snprintf(buf, sizeof(buf)/sizeof(char), "unknown");
 		}
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
 
         ReturnVal(API_ACK, buf);
 	    return 1;
@@ -5731,7 +6084,12 @@ IMPLEMENT_COMMAND_BEGIN(viewGetIsHighlight)
           return -1;
         }
 		char buf[128];
-		sprintf(buf, "%d", view->IsHighlightView());
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%d", view->IsHighlightView());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -5905,8 +6263,13 @@ IMPLEMENT_COMMAND_BEGIN(getViewGeometry)
 		Coord relViewWidth = (Coord)viewWidth / (Coord)winWidth;
 		Coord relViewHeight = (Coord)viewHeight / (Coord)winHeight;
 		char buf[128];
-		sprintf(buf, "%g %g %g %g", relViewX, relViewY, relViewWidth,
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%g %g %g %g", relViewX, relViewY, relViewWidth,
 		    relViewHeight);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -5974,7 +6337,12 @@ IMPLEMENT_COMMAND_BEGIN(setPileStackState)
 
     if (argc == 3) {
 		char namebuf[128];
-		sprintf(namebuf, "%s_pile", argv[1]);
+		int formatted = snprintf(namebuf, sizeof(namebuf)/sizeof(char),
+		    "%s_pile", argv[1]);
+	    if (checkAndTermBuf2(namebuf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
 		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
@@ -6004,14 +6372,24 @@ IMPLEMENT_COMMAND_BEGIN(getPileStackState)
 
     if (argc == 2) {
 		char namebuf[128];
-		sprintf(namebuf, "%s_pile", argv[1]);
+		int formatted = snprintf(namebuf, sizeof(namebuf)/sizeof(char),
+		    "%s_pile", argv[1]);
+	    if (checkAndTermBuf2(namebuf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
 		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
           return -1;
 		}
 		char buf[128];
-		sprintf(buf, "%d", ps->GetState());
+		formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d", ps->GetState());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -6031,7 +6409,12 @@ IMPLEMENT_COMMAND_BEGIN(flipPileStack)
 
     if (argc == 2) {
 		char namebuf[128];
-		sprintf(namebuf, "%s_pile", argv[1]);
+		int formatted = snprintf(namebuf, sizeof(namebuf)/sizeof(char),
+		    "%s_pile", argv[1]);
+	    if (checkAndTermBuf2(namebuf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
 		PileStack *ps = PileStack::FindByName(namebuf);
 		if (!ps) {
           ReturnVal(API_NAK, "Cannot find pile/stack object");
@@ -6112,7 +6495,12 @@ IMPLEMENT_COMMAND_BEGIN(getViewAutoFilter)
           return -1;
         }
 		char buf[128];
-		sprintf(buf, "%d", view->AutoUpdateFilter());
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%d", view->AutoUpdateFilter());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -6209,7 +6597,12 @@ IMPLEMENT_COMMAND_BEGIN(getDupElim)
 		}
 
 		char buf[256];
-		sprintf(buf, "%d", view->GetDupElim());
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d", view->GetDupElim());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
        	ReturnVal(API_ACK, buf);
 		return 1;
 	} else {
@@ -6288,7 +6681,12 @@ IMPLEMENT_COMMAND_BEGIN(getNiceAxes)
 		view->GetNiceAxes(niceX, niceY);
 
 		char buf[128];
-		sprintf(buf, "%d %d", niceX, niceY);
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %d", niceX, niceY);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
        	ReturnVal(API_ACK, buf);
 		return 1;
 	} else {
@@ -6368,7 +6766,12 @@ IMPLEMENT_COMMAND_BEGIN(getCursorFixedSize)
 		}
 
 		char buf[32];
-		sprintf(buf, "%d", cursor->GetFixedSize());
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%d", cursor->GetFixedSize());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
        	ReturnVal(API_ACK, buf);
 		return 1;
 	} else {
@@ -6421,7 +6824,12 @@ IMPLEMENT_COMMAND_BEGIN(viewGetVerPan)
         ViewPanInfo info;
         view->GetVerPanInfo(info);
         char buf[100];
-        sprintf(buf, "%d %f %f", (int) info.mode, info.relPan, info.absPan);
+        int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %f %f", (int) info.mode, info.relPan, info.absPan);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
         return 1;
     } else {
@@ -6483,9 +6891,14 @@ IMPLEMENT_COMMAND_BEGIN(viewGetJSSendP)
         view->GetJSSendP(drawToScreen, sendToSocket, params);
         if (params.file == NULL) params.file = "";
         char buf[1024];
-        sprintf(buf, "%d %d %d \"%s\" %d \"%c\" %d", drawToScreen,
+        int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%d %d %d \"%s\" %d \"%c\" %d", drawToScreen,
 		    sendToSocket, params.portNum, params.file, params.sendText,
 			params.separator, params.rgbColor);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
         return 1;
 	} else {
@@ -6555,8 +6968,13 @@ IMPLEMENT_COMMAND_BEGIN(viewGetDisabledActions)
 		view->GetDisabledActions(rubberbandDisabled, cursorMoveDisabled,
 		  drillDownDisabled, keysDisabled);
         char buf[1024];
-		sprintf(buf, "%d %d %d %d", rubberbandDisabled, cursorMoveDisabled,
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %d %d %d", rubberbandDisabled, cursorMoveDisabled,
 		  drillDownDisabled, keysDisabled);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
         return 1;
 	} else {
@@ -6718,14 +7136,19 @@ IMPLEMENT_COMMAND_BEGIN(getAxisTicks)
     	    return -1;
         }
 		Boolean xTicks, yTicks;
-		char buf[100];
 		view->TicksEnabled(xTicks, yTicks);
+		char buf[100];
+		int formatted;
         if (!strcmp(argv[2], "X")) {
-		  sprintf(buf, "%d", xTicks);
+		  formatted = snprintf(buf, sizeof(buf)/sizeof(char), "%d", xTicks);
         } else if (!strcmp(argv[2], "Y")) {
-		  sprintf(buf, "%d", yTicks);
+		  formatted = snprintf(buf, sizeof(buf)/sizeof(char), "%d", yTicks);
         } else {
           ReturnVal(API_NAK, "Bad axis selection");
+          return -1;
+	    }
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
           return -1;
 	    }
         ReturnVal(API_ACK, buf);
@@ -7020,7 +7443,11 @@ IMPLEMENT_COMMAND_BEGIN(getShowMouseLocation)
 		}
 
 		char buf[100];
-		sprintf(buf, "%d", show);
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char), "%d", show);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
         return 1;
 	} else {
@@ -7188,7 +7615,12 @@ IMPLEMENT_COMMAND_BEGIN(getCursorConstraints)
 		Boolean allInDest = cursor->GetAllInDest();
 
 		char buf[128];
-		sprintf(buf, "%d %d %d", fixedSize, partInDest, allInDest);
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %d %d", fixedSize, partInDest, allInDest);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
 	    return 1;
 	} else {
@@ -7248,7 +7680,12 @@ IMPLEMENT_COMMAND_BEGIN(getCursorFlag)
         }
 
 		char buf[128];
-		sprintf(buf, "%d", cursor->GetFlag());
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d", cursor->GetFlag());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
 
         ReturnVal(API_ACK, buf);
 	    return 1;
@@ -7373,7 +7810,12 @@ IMPLEMENT_COMMAND_BEGIN(getJS3dValid)
         }
 
 		char buf[256];
-		sprintf(buf, "%d", view->JS3dConfigValid());
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		    "%d", view->JS3dConfigValid());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+	    }
         ReturnVal(API_ACK, buf);
         return 1;
     } else {
@@ -7405,10 +7847,15 @@ IMPLEMENT_COMMAND_BEGIN(getJS3dConfig)
 	    float shiftedX, shiftedY;
 	    if (view->GetJS3dConfig(data, origin, shiftedX, shiftedY)) {
             char buf[1024];
-            sprintf(buf, "%g %g %g %g %g %g %g %g %g %g %g %g %g %g", 
+            int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+			  "%g %g %g %g %g %g %g %g %g %g %g %g %g %g", 
 	          data[0][0], data[0][1], data[0][2], data[1][0], data[1][1],
 	          data[1][2], data[2][0], data[2][1], data[2][2], origin[0],
 	          origin[1], origin[2], shiftedX, shiftedY);
+	        if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+              ReturnVal(API_NAK, "buffer overflow");
+              return -1;
+	        }
             ReturnVal(API_ACK, buf);
             return 1;
 	    } else {
@@ -7570,7 +8017,10 @@ IMPLEMENT_COMMAND_BEGIN(getAxisMultFact)
 		const int bufSize = 32;
 		char buf[bufSize];
 		int formatted = snprintf(buf, bufSize, "%g", factor);
-		checkAndTermBuf(buf, bufSize, formatted);
+		if (checkAndTermBuf(buf, bufSize, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
         ReturnVal(API_ACK, buf);
         return 1;
     } else {
@@ -7698,7 +8148,10 @@ IMPLEMENT_COMMAND_BEGIN(getDoHomeOnVisLink)
 		const int bufLen = 128;
 		char buf[bufLen];
 		int formatted = snprintf(buf, bufLen, "%d", doHome);
-		checkAndTermBuf(buf, bufLen, formatted);
+		if (checkAndTermBuf(buf, bufLen, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
         ReturnVal(API_ACK, buf);
         return 1;
 	} else {
@@ -7793,11 +8246,260 @@ IMPLEMENT_COMMAND_BEGIN(getLinkMultFact)
 		const int bufSize = 32;
 		char buf[bufSize];
 		int formatted = snprintf(buf, bufSize, "%g", factor);
-		checkAndTermBuf(buf, bufSize, formatted);
+		if (checkAndTermBuf(buf, bufSize, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
         ReturnVal(API_ACK, buf);
         return 1;
     } else {
 		fprintf(stderr, "Wrong # of arguments: %d in getLinkMultFact\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setGAttrLinkMode)
+    // Arguments: <view name> <GData attribute link mode (0 = intersection,
+	//   1 = union)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        Session::SetDirty();
+
+        ViewData *view = (ViewData *)View::FindViewByName(argv[1]);
+        if (!view) {
+   	        ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+		ViewData::GAttrLinkMode mode = (ViewData::GAttrLinkMode)atoi(argv[2]);
+		view->SetGAttrLinkMode(mode);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in setGAttrLinkMode\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getGAttrLinkMode)
+    // Arguments: <view name>
+    // Returns: <GData attribute link mode (0 = intersection, 1 = union)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewData *view = (ViewData *)View::FindViewByName(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+		ViewData::GAttrLinkMode mode = view->GetGAttrLinkMode();
+
+		const int bufLen = 128;
+		char buf[bufLen];
+		int formatted = snprintf(buf, bufLen, "%d", mode);
+		if (checkAndTermBuf(buf, bufLen, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in getGAttrLinkMode\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(testExit)
+    // Arguments: <exit value>
+    // Returns: nothing
+	// Note: this command is for test scripts to use, so that they can
+	// exit with an appropriate exit code that a higher-level test script
+	// can check.
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+		int exitVal = atoi(argv[1]);
+		Exit::DoExit(exitVal);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in testExit\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(keyToView)
+    // Arguments: <view name> <key (int)> <xpix> <ypix>
+    // Returns: "done"
+	// Note: this command is for test scripts to use, to pass a keystroke
+	// to a view.
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 5) {
+        ViewGraph *view = (ViewGraph *)View::FindViewByName(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		int key = atoi(argv[2]);
+		int xPix = atoi(argv[3]);
+		int yPix = atoi(argv[4]);
+
+		view->HandleKey(NULL, key, xPix, yPix);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in keyToView\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setDisplayMode)
+    // Arguments: <display mode> (0 = normal, 1 = color print, 2 = b/w print)
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+		int mode = atoi(argv[1]);
+		DisplayMode::SetMode((DisplayMode::Mode)mode);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in setDisplayMode\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getDisplayMode)
+    // Arguments: none
+    // Returns: <display mode> (0 = normal, 1 = color print, 2 = b/w print)
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		DisplayMode::Mode mode = DisplayMode::GetMode();
+
+		const int bufLen = 128;
+		char buf[bufLen];
+		int formatted = snprintf(buf, bufLen, "%d", (int)mode);
+		if (checkAndTermBuf(buf, bufLen, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in getDisplayMode\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setMappingColors)
+    // Arguments: <mapping name> <normal color> <color print color>
+	//   <black/white print color>
+    // Returns: "done"
+
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 5) {
+	    // Note: dangerous cast here!!
+        MappingInterp *mapping =
+		  (MappingInterp *)_classDir->FindInstance(argv[1]);
+        if (!mapping) {
+   	        ReturnVal(API_NAK, "Cannot find mapping");
+    	    return -1;
+        }
+
+        Session::SetDirty();
+		mapping->SetColors(argv[2], argv[3], argv[4]);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in setMappingColors\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getMappingColors)
+    // Arguments: <mapping name>
+    // Returns: <normal color> <color print color> <black/white print color>
+
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+
+    if (argc == 2) {
+	    // Note: dangerous cast here!!
+        MappingInterp *mapping =
+		  (MappingInterp *)_classDir->FindInstance(argv[1]);
+        if (!mapping) {
+   	        ReturnVal(API_NAK, "Cannot find mapping");
+    	    return -1;
+        }
+
+		const char *normalColor;
+		const char *colorPrintColor;
+		const char *bwPrintColor;
+		mapping->GetColors(normalColor, colorPrintColor, bwPrintColor);
+
+		char buf[1024];
+		int formatted = snprintf(buf, sizeof(buf), "{%s} {%s} {%s}",
+		  normalColor, colorPrintColor, bwPrintColor);
+		if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in getMappingColors\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(selectNextInPile)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		View::SelectNextInPile();
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in selectNextInPile\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

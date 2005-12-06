@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.4.28.1  2005/09/12 19:42:15  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.4  1997/12/23 23:35:41  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.3  1996/11/23 21:15:21  jussi
   Minor improvements.
 
@@ -58,7 +71,7 @@ private:
     TDataRangeListEntry *Find(TData *tdata, char *attr_name, Coord granularity);
 
     int Hash(TData *tdata) {
-        return ((unsigned)tdata) % TDataRangeListHashSize;
+        return ((unsigned long)tdata) % TDataRangeListHashSize;
     }
 
     TDataRangeListEntry *_hashTbl[TDataRangeListHashSize];

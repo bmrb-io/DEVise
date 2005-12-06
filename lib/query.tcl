@@ -15,6 +15,13 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16.14.1  2004/04/23 21:57:28  wenger
+#  Added new 'select next view in pile' feature.
+#
+#  Revision 1.16  1999/06/16 18:28:41  wenger
+#  Fixed bug 499 (problem with 'Next in Pile' not working for piled view
+#  symbols).
+#
 #  Revision 1.15  1999/02/17 15:10:06  wenger
 #  Added "Next in Pile" button to query dialog; more pile fixes; fixed bug
 #  in mapping dialog updating when a view is selected.
@@ -103,7 +110,7 @@ proc SetQuery {} {
     pack .query.title.spacer -side left
 
     button .query.next -text "Next in Pile" -state disabled \
-        -command { QueryNextInPile }
+        -command { DEVise selectNextInPile }
     pack .query.next -in .query.title -side right
 
     label .query.title.text -text "No View Selected"
@@ -622,12 +629,4 @@ proc Query_ViewSelected {} {
     }
     
     set curQueryView $curView
-}
-
-proc QueryNextInPile {} {
-    global curQueryView
-
-    set curQueryView [DEVise nextViewInPile $curQueryView]
-    Update2DQueryWindow
-    Update3DLocation
 }

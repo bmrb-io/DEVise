@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.70  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.69  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
@@ -28,6 +31,71 @@
 //
 // Revision 1.67  2002/05/01 21:28:58  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.66.2.24  2005/11/01 18:53:52  wenger
+// Changed DEVise version to 1.7.20x1, JavaScreen version to 5.5.3x1.
+//
+// Revision 1.66.2.23  2004/09/29 19:57:25  wenger
+// Changed version to 5.5.2 (from 5.5.2x4 on the jspop_debug_0405_br branch).
+//
+// Revision 1.66.2.22  2004/09/29 19:08:35  wenger
+// Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
+// V1_7b0_br branch.
+//
+// Revision 1.66.2.21  2004/05/12 21:43:57  wenger
+// Merged the jspop_debug_0405_br thru jspop_debug_0405_br_2 to the
+// V1_7b0_br branch.
+//
+// Revision 1.66.2.20.4.5  2004/09/29 18:16:48  wenger
+// (Hopefully) final cleanup of the jspop_debug_0405_br branch -- some
+// changes to DEViseClientSocket, and a little more debug output in
+// jspop.
+//
+// Revision 1.66.2.20.4.4  2004/09/03 19:00:52  wenger
+// More diagnostic output and debug comments; version is now 5.2.2x3.
+//
+// Revision 1.66.2.20.4.3  2004/07/01 17:56:19  wenger
+// Updated version.
+//
+// Revision 1.66.2.20.4.2  2004/06/29 15:16:20  wenger
+// Fixed some problems with the JSPoP debug code.
+//
+// Revision 1.66.2.20.4.1  2004/05/10 22:28:51  wenger
+// Set things up so that much JSPoP debug code (both new and old)
+// can be turned on and off on the fly.
+//
+// Revision 1.66.2.20  2003/12/22 22:47:14  wenger
+// JavaScreen support for print color modes is now in place.
+//
+// Revision 1.66.2.19  2003/12/03 19:31:07  wenger
+// Changed most buttons in the JavaScreen GUI to menus (to save space
+// in preparation for adding new functionality).
+//
+// Revision 1.66.2.18  2003/10/28 20:41:37  wenger
+// Added debug code (including that used to find bug 889).
+//
+// Revision 1.66.2.17  2003/10/24 23:46:08  wenger
+// Non-applet JS now continues without dialog if it can't get the animation
+// symbols.
+//
+// Revision 1.66.2.16  2003/10/15 21:55:10  wenger
+// Added new JAVAC_StopCollab command to fix ambiguity with
+// JAVAC_CollabExit; minor improvements to collaboration-related stuff
+// in the auto test scripts.
+//
+// Revision 1.66.2.15  2003/09/23 21:55:11  wenger
+// "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+//
+// Revision 1.66.2.14  2003/06/17 21:04:56  wenger
+// Major improvements to command-line argument processing of all JavaScreen
+// programs; we now save the -id value in the JSPoP to use for the usage
+// log file; some minor cleanups of the auto test scripts; slight
+// clarification of command documentation.
+//
+// Revision 1.66.2.13  2003/05/02 17:16:16  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
 //
 // Revision 1.66.2.12  2002/12/17 18:08:22  wenger
 // Fixed bug 844 (slow rubberband line drawing in child views).
@@ -358,9 +426,9 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.2.2");
+    public static final String VERSION = new String("5.5.3x1");
 
-    public static final String PROTOCOL_VERSION = new String("12.0");
+    public static final String PROTOCOL_VERSION = new String("15.0");
 
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");
@@ -574,6 +642,34 @@ public final class DEViseGlobals
 	    result = version.substring(0, dotIndex);
 	} else {
 	    result = version;
+	}
+
+	return result;
+    }
+
+    /**
+     * Find whether the input string is an instance of the given argument; if
+     * so, get the argument value (if any) in the JavaScreen "all one word"
+     * format.
+     * @param The input string.
+     * @param The argument name we're checking for.
+     * @param Whether an value is required for this argument.
+     * @param A place to stick the argument value.
+     * @return True iff the input string is an instance of the given argument.
+     */
+    public static boolean checkArgument(String input, String argName,
+      boolean mustHaveVal, StringBuffer value) throws YException
+    {
+	boolean result = false;
+
+        if (input.startsWith(argName)) {
+	    result = true;
+	    String tmpVal = input.substring(argName.length());
+	    value.insert(0, tmpVal);
+	    if (mustHaveVal && tmpVal.equals("")) {
+		throw new YException("Argument " + argName +
+		  " must have a value");
+	    }
 	}
 
 	return result;

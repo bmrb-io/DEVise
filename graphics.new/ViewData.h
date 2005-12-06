@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.10  2003/01/13 19:25:28  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.9.4.4  2003/11/21 23:05:12  wenger
+  Drill-down now works properly on views that are GAttr link followers
+  (fixed bug 893).
+
+  Revision 1.9.4.3  2003/08/01 22:04:27  wenger
+  Fixed bug 871 (home doesn't work right on GAttribute link followers).
+
+  Revision 1.9.4.2  2003/02/04 19:41:16  wenger
+  Added union capability for multiple GData attribute links (will help
+  with restraint visualizations for BMRB).
+
   Revision 1.9.4.1  2002/09/10 17:13:21  wenger
   Fixed bug 821 (GAttr links fail when follower has "complex" symbols)
   (this involved splitting up ViewData::ReturnGData() into smaller
@@ -76,7 +90,6 @@
 
 class BooleanArray;
 class DerivedTable;
-class SymbolInfo;
 
 DefinePtrDList(DerivedTableList, DerivedTable *);
 
@@ -143,6 +156,15 @@ class ViewData : public ViewGraph
 		virtual void DestroyDerivedTable(char *tableName);
 		virtual DerivedTable *GetDerivedTable(char *tableName);
 
+		//
+		// Allow multiple GData attribute links to result in either union
+		// or intersection.
+		//
+		enum GAttrLinkMode { LinkIntersection = 0, LinkUnion };
+        virtual void SetGAttrLinkMode(GAttrLinkMode mode) {
+		  _gAttrLinkMode = mode; }
+		virtual GAttrLinkMode GetGAttrLinkMode() { return _gAttrLinkMode; }
+
 	protected:
 
 		// Callback methods (QueryCallback)
@@ -163,14 +185,42 @@ class ViewData : public ViewGraph
 
 		DerivedTableList _derivedTables;
 
+	protected:
+		friend class DrillDown;
+		friend class DrillDown3D;
+
+        class SymbolInfo {
+        public:
+            SymbolInfo() {
+                inGAttrLink = true; // until proven otherwise...
+            }
+        
+            Boolean Passes() { return inFilter && inGAttrLink; }
+            Boolean InFilterOrComplex() { return inFilter || isComplex; }
+            Boolean ShouldDraw() { return (inFilter || isComplex) &&
+	      inGAttrLink; }
+        
+            Coord x;
+            Coord y;
+            ShapeID shape;
+            Boolean inFilter;
+            Boolean isComplex;
+            Boolean inGAttrLink;
+
+            // Symbol bounding box.
+            Coord bBULx, bBULy, bBLRx, bBLRy;
+        };
+
+        void GAttrLinkFollower(TDataMap *mapping, void *gdata, int numGData,
+		  int gRecSize, SymbolInfo symArray[]);
+
     private:
 	    ObjectValid _objectValid;
 		
 		void GetGDataValues(TDataMap *mapping, void *gdata, int numGData,
 		  int gRecSize, SymbolInfo symArray[], Boolean &abort);
 
-        void GAttrLinkFollower(TDataMap *mapping, void *gdata, int numGData,
-		  int gRecSize, SymbolInfo symArray[]);
+        void UpdateDataRanges(int numGData, SymbolInfo symArray[]);
 
         void GAttrLinkLeader(TDataMap *mapping, void *gdata, int numGData,
 		  int gRecSize, SymbolInfo symArray[]);
@@ -195,6 +245,8 @@ class ViewData : public ViewGraph
 
 		int _totalRecordsProcessed;
 		int _totalRecordsDrawn;
+
+		GAttrLinkMode _gAttrLinkMode;
 };
 
 //******************************************************************************

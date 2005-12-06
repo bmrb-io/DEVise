@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.2.28.1  2005/09/28 22:29:28  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.2  1998/01/07 19:27:52  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.1.2.1  1997/12/09 19:03:25  wenger
   deviseb now uses client/server library.
 
@@ -48,7 +56,7 @@ TclClient::~TclClient()
   Tcl_DeleteInterp(_interp);
 }
 
-int TclClient::ServerCmd(int argc, char **argv)
+int TclClient::ServerCmd(int argc, const char * const *argv)
 {
 #ifdef DEBUG	
   printf("Function %s, %d args\n", argv[0], argc);
@@ -72,7 +80,7 @@ void TclClient::ReadServer()
   Client::ReadServer();
 }
 
-void TclClient::ControlCmd(int argc, char **argv)
+void TclClient::ControlCmd(int argc, const char * const *argv)
 {
   Client::ControlCmd(argc, argv);
 #ifdef DEBUG

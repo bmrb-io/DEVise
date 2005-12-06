@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.2.26.1  2005/09/06 21:20:00  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.2  1998/02/12 17:15:06  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:08  liping
   Added CVS header
 
@@ -106,7 +112,7 @@ querygroup_1(int fd, GroupKey *arg1, ConnectInfo arg2, char*& msg)
 		char* buf;
 		int nbytes;
 
-		buf = new (char)[clnt_res+1];
+		buf = new char[clnt_res+1];
 		msg = buf;
 		XferMsg(fd, MSG_DECODE, 1, TYP_STRING, &nbytes, buf);
 	}

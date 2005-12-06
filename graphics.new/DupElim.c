@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2002
+  (c) Copyright 1999-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.4  2003/01/13 19:25:22  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.3.10.5  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
+  Revision 1.3.10.4  2003/06/20 17:52:42  wenger
+  Fixed bug 876 (pixel overflow errors in duplicate elimination code).
+
   Revision 1.3.10.3  2002/09/05 19:25:21  wenger
   Forgot to remove temporary comment.
 
@@ -67,7 +76,7 @@ union HashObj {
   char c[4];
 };
 
-static int DupHash(int &value, int numBuckets)
+static int DupHash(const int &value, int numBuckets)
 {
   HashObj ho;
   ho.i = value;
@@ -109,6 +118,8 @@ DupElim::~DupElim()
 #endif
 
   delete _hashT;
+
+  _viewName = NULL;
 }
 
 /*------------------------------------------------------------------------------
@@ -148,6 +159,8 @@ DupElim::Init(ViewGraph *view)
     result += StatusFailed;
   }
 
+  _viewName = view->GetName();
+
   if (result.IsComplete()) _initialized = true;
 
   return result;
@@ -177,8 +190,16 @@ DupElim::DrawSymbol(void *gdataRec)
     Coord pixX, pixY;
     _transform->Transform(*xP, *yP, pixX, pixY);
 
-    if (pixX < 0.0 || pixX > MAXSHORT || pixY < 0.0 || pixY > MAXSHORT) {
-      reportErrNosys("Pixel value overflow");
+    if (pixX < -MAXSHORT || pixX > MAXSHORT || pixY < -MAXSHORT ||
+        pixY > MAXSHORT) {
+      const int bufLen = 1024;
+      char buf[bufLen];
+      int formatted = snprintf(buf, bufLen,
+          "Warning: pixel value overflow (%g or %g) in view: %s "
+	  "(duplicate symbols may be drawn)", pixX, pixY,
+	  _viewName);
+      checkAndTermBuf(buf, bufLen, formatted);
+      reportErrNosys(buf);
     } else {
       HashObj ho;
 

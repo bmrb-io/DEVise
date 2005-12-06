@@ -20,6 +20,27 @@
   $Id$
 
   $Log$
+  Revision 1.13  2003/01/13 19:25:09  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.12.2.6  2003/04/18 17:07:40  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.12.2.5.2.1  2003/04/18 15:26:03  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.12.2.5  2003/02/27 21:52:32  wenger
+  Fixed bug 865 (axis problem with negative multiplication factors).
+
+  Revision 1.12.2.4  2003/01/16 16:57:20  wenger
+  Oops!  Forgot to make Y axis change for bug 860!
+
+  Revision 1.12.2.3  2003/01/16 16:26:55  wenger
+  Fixed bugs 860 and 861 (problems with axis labels if multiplication
+  factor != 1).
+
   Revision 1.12.2.2  2003/01/04 21:38:26  wenger
   Fixed bugs 852, 855, and 856 (all related to view geometry and transforms
   and axis drawing).
@@ -247,7 +268,7 @@ DevAxis::DrawAxis(WindowRep *win, int x, int y, int w, int h)
   SetInfo(info);
 
   // Fix for bug 737.
-  if (info._lowValue >= info._highValue) {
+  if (info._lowValue == info._highValue) {
     reportErrNosys("Illegal axis values");
 	return;
   }
@@ -301,8 +322,8 @@ DevAxis::SetInfo(AxisInfo &info)
 	info._axisLength = axisWidth - (startX - axisX);
 	info._axisAcross = axisHeight;
 
-	info._lowValue = filter.xLow;
-	info._highValue = filter.xHigh;
+	info._lowValue = filter.xLow * _multFactor;
+	info._highValue = filter.xHigh * _multFactor;
 
     info._tickPixVar = &info._tickX;
     info._labelPixVar = &info._labelX;
@@ -337,8 +358,8 @@ DevAxis::SetInfo(AxisInfo &info)
 	info._axisLength = axisHeight;
 	info._axisAcross = axisWidth;
 
-	info._lowValue = filter.yLow;
-	info._highValue = filter.yHigh;
+	info._lowValue = filter.yLow * _multFactor;
+	info._highValue = filter.yHigh * _multFactor;
 
     info._tickPixVar = &info._tickY;
 	info._labelPixVar = &info._labelY;
@@ -414,12 +435,12 @@ DevAxis::DrawDateTicks(WindowRep *win, AxisInfo &info)
   // Draw the labels (date values).
 
   *info._labelPixVar = info._varLoc1;
-  const char *label = DateString((time_t)info._lowValue, _dateFormat);
+  const char *label = DateString(info._lowValue, _dateFormat);
   win->AbsoluteText(label, info._labelX, info._labelY, info._dateWidth,
 	    info._dateHeight, _dateAlignment1, true, _dateOrientation);
 
   *info._labelPixVar = info._varLoc1 + (info._axisLength / 2);
-  label = DateString((time_t)info._highValue, _dateFormat);
+  label = DateString(info._highValue, _dateFormat);
   win->AbsoluteText(label, info._labelX, info._labelY, info._dateWidth,
 	   info._dateHeight, _dateAlignment2, true, _dateOrientation);
 
@@ -469,7 +490,7 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
       strcpy(buf, "");
 	} else {
 	  Coord labelValue = tickMark;
-	  labelValue = _multFactor * tickMark;
+	  labelValue = tickMark;
 	  if (labelValue == -0.0) labelValue = 0.0;
 	  if (labelValue != 0.0) {
 	    // Check whether labelValue is "very close" to zero.  Note: test
@@ -539,6 +560,15 @@ DevAxis::OptimizeTickMarks(Coord low, Coord high, int numTicks,
   numTicks = MAX(numTicks, 2);
   Coord tickIncrement = (high - low) / (numTicks - 1);
 
+  if (tickIncrement < 0.0) {
+	// This seems like the easiest way to get things to work for negative
+	// multiplication factors (fix bug 865).  wenger 2003-02-27.
+    OptimizeTickMarks(-low, -high, numTicks, start, num, inc);
+	start = -start;
+	inc = -inc;
+	return;
+  }
+
   /* adjust tick increment so that we get nice tick values */
   double exponent = log10(tickIncrement);
 
@@ -566,6 +596,7 @@ DevAxis::OptimizeTickMarks(Coord low, Coord high, int numTicks,
   }
 
   inc = mantissa * pow(10.0, tickpow);
+
 #if defined(DEBUG)
   printf("Old tickIncrement %g, new %g\n", tickIncrement, inc);
 #endif

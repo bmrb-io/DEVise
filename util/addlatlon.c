@@ -15,9 +15,21 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1.46.1  2003/04/18 17:08:04  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.1.62.1  2003/04/18 15:26:22  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.1  1996/07/18 20:53:45  jussi
+  Initial revision.
+*/
 
 #include <stdio.h>
+#include <string.h>
 
 int main(int argc, char **argv)
 {

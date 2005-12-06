@@ -7,10 +7,12 @@
 
 ############################################################
 
-limit coredumpsize 0
+# limit coredumpsize 0
 limit descriptors 256
 
-source dev_prog.loc
-source dev_vis.demo
+set devise_run = `dirname $0`
 
-source start_mono
+source $devise_run/dev_prog.loc
+source $devise_run/dev_vis.demo
+
+source $devise_run/start_mono

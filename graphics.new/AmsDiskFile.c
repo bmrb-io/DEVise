@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,11 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.3.46.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  1996/01/12 15:11:08  jussi
+  Replaced libc.h with stdlib.h. Added copyright statement.
+
   Revision 1.2  1995/09/05 22:14:03  jussi
   Added CVS header.
 */
 
 #include <stdlib.h>
+#include <string.h>
 
 #include "AmsDiskFile.h"
 #include "TDataAppend.h"

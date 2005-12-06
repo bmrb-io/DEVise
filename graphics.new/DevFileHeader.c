@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.9.14.1  2005/01/03 21:08:27  wenger
+  Fixed bug 911 (DEVise can't open DOS-format session files).
+
+  Revision 1.9  2000/07/12 20:49:26  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.8  2000/04/26 19:39:00  wenger
   JavaScreen caching code is largely implemented except for checking
   the validity of the cache files; committing with caching disabled
@@ -204,6 +211,7 @@ DevFileHeader::GetInfo(FILE *file, const char *prefix, char *infoBuf,
 	Boolean foundInfo = false;
 	while (!foundInfo &&
 	  (nice_fgets(lineBuf, lineBufSize, file) == fgets_ok)) {
+		dos2unix(lineBuf);
 	    if (!strncmp(prefix, lineBuf, prefixLen)) {
 			if (infoBuf && infoBufSize > 0) {
 			    result += nice_strncpy(infoBuf, &lineBuf[prefixLen],

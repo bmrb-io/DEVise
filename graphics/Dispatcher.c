@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,8 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.66  2003/01/13 19:25:10  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.65  2002/06/17 19:40:59  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.64.14.4  2005/09/28 17:14:42  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.64.14.3  2003/06/25 19:56:57  wenger
+  Various improvments to debug logging; moved command logs from /tmp
+  to work directory.
 
   Revision 1.64.14.2  2002/08/27 21:14:23  wenger
   Fixed bug 817 (view not draw because of single-view pile); improved
@@ -332,6 +345,7 @@
 #include "Timer.h"
 #include "QueryProc.h"
 #include "Session.h"
+#include "Util.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -348,6 +362,7 @@
 // The global dispatcher
 static Dispatcher dispatcher;
 
+static int _formatted;
 static char _logBuf[MAXPATHLEN*2];
 
 Dispatcher::Dispatcher(StateFlag state)
@@ -357,7 +372,9 @@ Dispatcher::Dispatcher(StateFlag state)
 #endif
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher(0x%p)::Dispatcher()\n", this);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "Dispatcher(0x%p)::Dispatcher()\n", this);
+  checkAndTermBuf2(_logBuf, _formatted);
   LogMessage(_logBuf);
 #endif
 
@@ -402,7 +419,9 @@ Dispatcher::~Dispatcher()
 #endif
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher(0x%p)::~Dispatcher()\n", this);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "Dispatcher(0x%p)::~Dispatcher()\n", this);
+  checkAndTermBuf2(_logBuf, _formatted);
   LogMessage(_logBuf);
 #endif
 
@@ -442,16 +461,22 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 #endif
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher(0x%p)::Register: %s: 0x%p, fd %d, p %d\n",
-	 this, c->DispatchedName(), c, fd, priority);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "Dispatcher(0x%p)::Register: %s: 0x%p, fd %d, p %d\n",
+      this, c->DispatchedName(), c, fd, priority);
+  checkAndTermBuf2(_logBuf, _formatted);
   LogMessage(_logBuf);
-  sprintf(_logBuf, "  _callback_requests = %d\n", _callback_requests);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "  _callback_requests = %d\n",
+      _callback_requests);
+  checkAndTermBuf2(_logBuf, _formatted);
   LogMessage(_logBuf);
 #endif
 
   if (flag == 0) {
-    sprintf(_logBuf, "DispatcherCallback %s registers with flag == 0", 
-        c->DispatchedName());
+    _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+        "DispatcherCallback %s registers with flag == 0", c->DispatchedName());
+    checkAndTermBuf2(_logBuf, _formatted);
     LogMessage(_logBuf);
     reportErrNosys(_logBuf);
     return NULL;
@@ -506,7 +531,9 @@ DispatcherID Dispatcher::Register(DispatcherCallback *c, int priority,
 #endif
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "  DispatcherID is 0x%p\n", info);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "  DispatcherID is 0x%p\n", info);
+  checkAndTermBuf2(_logBuf, _formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
   return info;
@@ -574,19 +601,22 @@ void Dispatcher::Terminate(int sig)
     // in case we're hung in a loop somewhere.
     printf("\nReceived interrupt. Terminating program immediately.\n");
 #if defined(DEBUG_LOG)
-    LogMessage("Received interrupt. Terminating program immediately.\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo0,
+        "Received interrupt. Terminating program immediately.\n");
 #endif
     CheckUserInterrupt();
   } else if (dispatcher._firstIntr) {
     printf("\nReceived interrupt. Terminating program.\n");
 #if defined(DEBUG_LOG)
-    LogMessage("Received interrupt. Terminating program.\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo0,
+        "Received interrupt. Terminating program.\n");
 #endif
     dispatcher._quit = true;
   } else {
     printf("\nReceived interrupt. Hit interrupt once more to quit.\n");
 #if defined(DEBUG_LOG)
-    LogMessage("Received interrupt. Hit interrupt once more to quit.\n");
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo0,
+        "Received interrupt. Hit interrupt once more to quit.\n");
 #endif
     dispatcher._firstIntr = true;
   }
@@ -606,8 +636,9 @@ void Dispatcher::ImmediateTerminate(int sig)
 
   const int bufSize = 1024;
   char buf[bufSize];
-  int formatted = snprintf(buf, bufSize, "Dispatcher::ImmediateTerminate(%d)",
+  _formatted = snprintf(buf, bufSize, "Dispatcher::ImmediateTerminate(%d)",
     sig);
+  checkAndTermBuf2(buf, _formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelError, buf);
 
   fprintf(stderr, "\n");
@@ -651,8 +682,10 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
   gettimeofday(&tv, &tz);
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
-    _callback_requests);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
+      _callback_requests);
+  checkAndTermBuf2(_logBuf, _formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
@@ -667,12 +700,17 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
       // callback has been unregistered - remove it 
       // note: info->callBack could very well be an invalid pointer!
 #if defined(DEBUG) || defined(DEBUG_LOG)
-      sprintf(_logBuf, "deleting callback 0x%p\n", info->callBack);
+      _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+          "deleting callback 0x%p\n",
+          info->callBack);
+      checkAndTermBuf2(_logBuf, _formatted);
       LogMessage(_logBuf);
 #endif
       if (info->callback_requested) {
-        sprintf(_logBuf, "Dispatcher internal error: callback to delete"
-          " requests callback\n");
+        _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+	    "Dispatcher internal error: callback to delete"
+            " requests callback\n");
+        checkAndTermBuf2(_logBuf, _formatted);
         LogMessage(_logBuf);
 		reportErrNosys(_logBuf);
 		CancelCallback(info);
@@ -689,10 +727,11 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
 			(info->delay <= tv.tv_sec))
 		{
 #if defined(DEBUG) || defined(DEBUG_LOG)
-	sprintf(_logBuf,
+        _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
                "Calling callback 0x%p (%s): called fd = %d  req = %d\n", 
 	       info->callBack, info->callBack->DispatchedName(),
 	       info->fd, info->callback_requested); 
+        checkAndTermBuf2(_logBuf, _formatted);
         LogMessage(_logBuf);
 #endif
 		  CancelCallback(info);
@@ -748,9 +787,10 @@ long Dispatcher::ProcessCallbacks(fd_set& fdread, fd_set& fdexc)
   }
   _callbacks.DoneIterator(index);
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf,
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
     "done with Dispatcher::ProcessCallbacks(); _callback_requests = %d\n",
     _callback_requests);
+  checkAndTermBuf2(_logBuf, _formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
@@ -768,9 +808,14 @@ void Dispatcher::Run1()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher::Run1(); _runCount = %d\n", _runCount);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "Dispatcher::Run1(); _runCount = %d\n", _runCount);
+  checkAndTermBuf2(_logBuf, _formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
-  sprintf(_logBuf, "  _callback_requests = %d\n", _callback_requests);
+
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "  _callback_requests = %d\n", _callback_requests);
+  checkAndTermBuf2(_logBuf, _formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
@@ -923,21 +968,35 @@ void Dispatcher::Print()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 
-  int index;
-  sprintf(_logBuf, "\nDispatcher: callbacks\n");
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "\nDispatcher: callbacks\n");
+  checkAndTermBuf2(_logBuf, _formatted);
   LogMessage(_logBuf);
+
+  int index;
   for(index = _callbacks.InitIterator(); _callbacks.More(index);) {
     DispatcherInfo *info = _callbacks.Next(index);
     if (info->flag) {
-      sprintf(_logBuf, "%s: 0x%p\n", info->callBack->DispatchedName(),
+      _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+	      "%s: 0x%p\n", info->callBack->DispatchedName(),
           info->callBack);
+      checkAndTermBuf2(_logBuf, _formatted);
       LogMessage(_logBuf);
-      sprintf(_logBuf, "  fd: %d\n", info->fd);
+
+      _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+          "  fd: %d\n", info->fd);
+      checkAndTermBuf2(_logBuf, _formatted);
       LogMessage(_logBuf);
-      sprintf(_logBuf, "  callback_requested: %d\n", info->callback_requested);
+
+      _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+          "  callback_requested: %d\n",
+	      info->callback_requested);
+      checkAndTermBuf2(_logBuf, _formatted);
       LogMessage(_logBuf);
     } else {
-      sprintf(_logBuf, "deleted: 0x%p\n", info->callBack);
+      _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+          "deleted: 0x%p\n", info->callBack);
+      checkAndTermBuf2(_logBuf, _formatted);
       LogMessage(_logBuf);
     }
   }
@@ -961,8 +1020,10 @@ Boolean Dispatcher::CallbacksOk()
   _callbacks.DoneIterator(index);
 
   if (reqCount != _callback_requests) {
-    sprintf(_logBuf, "Dispatcher internal error: _callback_requests is %d;"
-      "  should be %d!!\n", _callback_requests, reqCount);
+    _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+	    "Dispatcher internal error: _callback_requests is %d;"
+        "  should be %d!!\n", _callback_requests, reqCount);
+    checkAndTermBuf2(_logBuf, _formatted);
     LogMessage(_logBuf);
     Print();
     result = false;
@@ -1075,16 +1136,19 @@ void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
   Timer::StopTimer();
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher::RequestCallback(0x%p %s)\n", info,
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+    "Dispatcher::RequestCallback(0x%p %s)\n", info,
     info->callBack->DispatchedName());
+  checkAndTermBuf2(_logBuf, _formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
   DOASSERT(info, "bad dispatcher id");
   if (info->flag == 0) {
-    sprintf(_logBuf,
+    _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
 	  "Owner of DispatcherID 0x%p has unregistered but requests callback!",
 	  info);
+    checkAndTermBuf2(_logBuf, _formatted);
     LogMessage(_logBuf);
 	reportErrNosys(_logBuf);
 	return;
@@ -1110,17 +1174,20 @@ void Dispatcher::RequestTimedCallback(DispatcherID info, long time)
 	}
 
 #if defined(DEBUG_LOG)
-    sprintf(_logBuf, "  After increment, _callback_requests = %d\n",
+    _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+	    "  After increment, _callback_requests = %d\n",
         _callback_requests);
+    checkAndTermBuf2(_logBuf, _formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
   }
 
 #if defined(DEBUG_CALLBACK_LIST)
   if (!CallbacksOk()) {
-    sprintf(_logBuf,
+    _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
         "Callback list error in Dispatcher::RequestCallback(%s)\n",
-	info->callBack->DispatchedName());
+	    info->callBack->DispatchedName());
+    checkAndTermBuf2(_logBuf, _formatted);
     LogMessage(_logBuf);
     Exit::DoExit(1);
   }
@@ -1140,8 +1207,10 @@ void Dispatcher::CancelCallback(DispatcherID info)
   Timer::StopTimer();
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher::CancelCallback(0x%p %s)\n", info,
-    info->callBack->DispatchedName());
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "Dispatcher::CancelCallback(0x%p %s)\n",
+      info, info->callBack->DispatchedName());
+  checkAndTermBuf2(_logBuf, _formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
 
@@ -1151,16 +1220,19 @@ void Dispatcher::CancelCallback(DispatcherID info)
     _callback_requests--;
 	info->delay = 0;
 #if defined(DEBUG_LOG)
-    sprintf(_logBuf, "  After decrement, _callback_requests = %d\n",
-	_callback_requests);
+    _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+	    "  After decrement, _callback_requests = %d\n",
+	    _callback_requests);
+    checkAndTermBuf2(_logBuf, _formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelDispatcher, _logBuf);
 #endif
       
 #if defined(DEBUG)
     if (_callback_requests < 0) {
-      sprintf(_logBuf,
+      _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
 	  "callback request count too low in Dispatcher::CancelCallback(%s)\n",
           info->callBack->DispatchedName());
+      checkAndTermBuf2(_logBuf, _formatted);
       LogMessage(_logBuf);
       Print();
       Exit::DoExit(1);
@@ -1171,9 +1243,10 @@ void Dispatcher::CancelCallback(DispatcherID info)
 
 #if defined(DEBUG_CALLBACK_LIST)
   if (!CallbacksOk()) {
-    sprintf(_logBuf,
+    _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
 	"Callback list error in Dispatcher::CancelCallback(%s)\n",
 	info->callBack->DispatchedName());
+    checkAndTermBuf2(_logBuf, _formatted);
     LogMessage(_logBuf);
     Exit::DoExit(1);
   }
@@ -1205,22 +1278,32 @@ void Dispatcher::Cleanup()
 void Dispatcher::Unregister(DispatcherCallback *c, DispatcherID id)
 {
 #if defined(DEBUG) || defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher(0x%p)::Unregister\n", this);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "Dispatcher(0x%p)::Unregister\n", this);
+  checkAndTermBuf2(_logBuf, _formatted);
   LogMessage(_logBuf);
+
   if (c != NULL) {
-    sprintf(_logBuf, "  unregister by object: %s: 0x%p\n",
-	    c->DispatchedName(), c);
+    _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+        "  unregister by object: %s: 0x%p\n",
+	c->DispatchedName(), c);
+    checkAndTermBuf2(_logBuf, _formatted);
     LogMessage(_logBuf);
   }
   if (id != NULL) {
-    sprintf(_logBuf, "  unregister by DispatcherID: %s: 0x%p\n",
-	    id->callBack->DispatchedName(), id);
+    int _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+        "  unregister by DispatcherID: %s: 0x%p\n",
+        id->callBack->DispatchedName(), id);
+    checkAndTermBuf2(_logBuf, _formatted);
     LogMessage(_logBuf);
   }
 #endif
 
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "  _callback_requests = %d\n", _callback_requests);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "  _callback_requests = %d\n",
+      _callback_requests);
+  checkAndTermBuf2(_logBuf, _formatted);
   LogMessage(_logBuf);
 #endif
 
@@ -1250,8 +1333,9 @@ void Dispatcher::Unregister(DispatcherCallback *c, DispatcherID id)
 void
 Dispatcher::SetMaxRunCount(int maxRunCount){
 #if defined(DEBUG_LOG)
-  sprintf(_logBuf, "Dispatcher(0x%p)::SetMaxRunCount(%d)\n", this,
-      maxRunCount);
+  _formatted = snprintf(_logBuf, sizeof(_logBuf)/sizeof(char),
+      "Dispatcher(0x%p)::SetMaxRunCount(%d)\n", this, maxRunCount);
+  checkAndTermBuf2(_logBuf, _formatted);
   LogMessage(_logBuf);
 #endif
 

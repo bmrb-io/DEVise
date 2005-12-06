@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 
+using namespace std;
+
 class Serializable
 {
 	static	const char* intMarker;

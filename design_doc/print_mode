@@ -1,0 +1,98 @@
+			DEVise/JavaScreen Print Mode
+		$Id$
+
+* Motivation:
+
+We want to make it easier for users to print DEVise visualizations,
+especially in the JavaScreen.  A significant obstacle to doing is is that
+the colors we use for visualizations are often not suitable for printing
+(black backgrounds, etc.).  We want to allow the user to switch to a
+"print-friendly mode" in which the colors will be automatically changed
+to ones that are suitable for printing.
+
+
+* General plan:
+
+We will have three "display modes": normal, color print, and black and
+white print.  In a given session, at each place where one color is
+currently defined, three colors will be defined, one for each mode.
+
+Hmm -- do we also need a *grayscale* print mode?  That almost certainly
+would mean switching to a different color palette, though.  I think I
+will postpone that for now.
+
+
+* Specific plans/questions:
+
+- Where should we store the mode information?
+
+- Where do all the different colors get stored?  Should I actually go down
+  into Chris Weaver's color stuff and change each structure so that it
+  actually stores three colors?  Or maybe put a new "three-way" color
+  structure on top of what's there now?  That might be cleaner than
+  trying to add it at a higher level.  Especially in the GData -- that's
+  going to be the hard part.  Hmm -- I might have to add another level
+  of indirection for the GData colors?  (That's something that I think
+  Kevin, at least, talked about doing a long time ago.)
+
+  I don't think the view background, foreground, etc., will be too hard.
+  HOWEVER, one question is, if you're in, say, b/w print mode and you
+  change the colors in GData, how will that work?  What if the color selection
+  in the GData is not a constant??
+
+- What about switching to a special color palette?  That would require less
+  fundamental change to DEVise, but how would you make the GUI to set up
+  the palette the way you wanted?  Hmm -- switching palettes *alone* wouldn't
+  be enough to make the colors right, anyhow.  Maybe switch palettes *and*
+  do something else??  What if palettes are different sizes??
+
+- Maybe the first step is to just switch the foreground and background
+  colors.  That could be handled fairly easily, just with changes in the
+  View and/or ViewWin classes.  Think about this before doing it, though...
+
+- GData will be a lot harder, especially if colors are not constant.
+
+- View symbols will be a problem, since if we default GData to black the
+  view symbol backgrounds will become black.  (I'm thinking that the
+  simplest thing to do for phase 1 of b/w print would be to basically
+  default all GData to black.)
+
+- Hmm -- do we need to store 3 colors in the View class (views only) or
+  the ViewWin class (windows and views)?
+
+- I think we should probably always revert to normal mode when closing
+  a session.
+
+- Make sure everything we need gets saved in the session.
+
+
+* Notes:
+
+- The ViewWin class is derived from the Coloring class in Chris's code.
+  WindowReps *contain* a Coloring object.
+
+- GData colors are handled by MapInterpShape calling WindowRep::SetForeground().
+
+- Thought about and rejected switching palettes to implement display modes,
+  at least for anything other than potential grayscale mode.
+
+- Thought about and rejected doing something in the WindowRep classes.
+
+- It might make sense for DisplayMode objects to know whether they're
+  foreground or background colors (so they can call the right View or
+  ViewWin method when the mode changes).
+
+- Make sure that if the user switches palettes that things don't get
+  too goofed up, especially things like foreground and background palettes.
+
+
+* Proposals:
+
+1. Views or ViewWins and MappingInterps all have some kind of DisplayMode
+   object.  This object stores three colors, and also knows which display
+   mode we're in (that could be a static attribute of the class).  Whenever
+   you switch display mode, the views will switch their background and
+   foreground colors (hmm -- maybe the DisplayMode object should have
+   a pointer to the View/Coloring object to do that?).  For mappings with
+   constant colors, there will be a corresponding switch.  For mappings
+   with non-constant colors, the GData colors will be unaffected.

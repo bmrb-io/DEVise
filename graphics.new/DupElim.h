@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999
+  (c) Copyright 1999-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.1.16.1  2003/06/20 17:52:42  wenger
+  Fixed bug 876 (pixel overflow errors in duplicate elimination code).
+
+  Revision 1.1  1999/03/12 18:46:04  wenger
+  Implemented duplicate symbol elimination.
+
  */
 
 #ifndef _DupElim_h_
@@ -55,6 +61,8 @@ private:
   Transform2D *_transform;
 
   HashTable<int, int> *_hashT;
+
+  const char *_viewName; // we *don't* own this object
 };
 
 #endif // _DupElim_h_

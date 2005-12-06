@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.7.14.1  2005/09/28 17:14:28  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.7  2000/05/09 16:19:30  wenger
+  Fixed compile on Linux.
+
   Revision 1.6  1998/02/12 17:15:28  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -94,6 +103,9 @@
 #include "Server.h"
 #include "machdep.h"
 #include "Exit.h"
+#include "DevError.h"
+#include "Util.h"
+#include "DebugLog.h"
 
 //#define DEBUG
 
@@ -122,10 +134,10 @@ Server::~Server()
 
 void Server::DoAbort(char *reason)
 {
-    fprintf(stderr, "%s\n", reason);
+    reportErrNosys(reason);
     char *args[] = { "AbortProgram", reason };
     SendControl(API_CTL, 2, args);
-    fprintf(stderr, "Server aborts.\n");
+    reportErrNosys("Server aborts.");
     exit(0);
 }
 
@@ -191,6 +203,8 @@ void Server::InitializeListenFd()
     }
     DOASSERT(result >= 0, "Cannot listen");
     
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+      "Listening fd has been initialized");
     printf("Listening fd has been initialized\n");
 }
 
@@ -213,8 +227,12 @@ void Server::WaitForConnection()
     {
 	InitializeListenFd();
     }
-    printf("%s server waiting for client connection on port %d\n",
-      _name, _port);
+    char msgBuf[256];
+    int formatted = snprintf(msgBuf, sizeof(msgBuf)/sizeof(char),
+      "%s server waiting for client connection on port %d", _name, _port);
+    checkAndTermBuf2(msgBuf, formatted);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, msgBuf);
+    printf("%s\n", msgBuf);
     struct sockaddr_in tempaddr;
 #if defined(LINUX)
     socklen_t
@@ -225,28 +243,38 @@ void Server::WaitForConnection()
     clientfd = accept(_listenFd, (struct sockaddr *)&tempaddr, &len);
     if (clientfd < 0)
     {
-	fprintf(stderr, "Warning: ");
-	perror("accept() failed");
+	reportErrSys("Warning: ");
         return;
     }
     int slot = FindIdleClientSlot();
     if (slot < 0)
     {
-	fprintf(stderr, "WARNING: Too many clients. Connection denied\n");
+	reportErrNosys("WARNING: Too many clients. Connection denied\n");
 	close(clientfd);
 	return;
     }
     _clients[slot].valid = true;
     _clients[slot].fd = clientfd;
     _numClients++;
-    printf("Connection established to client %d\n", slot);
+
+    formatted = snprintf(msgBuf, sizeof(msgBuf)/sizeof(char),
+      "Connection established to client %d", slot);
+    checkAndTermBuf2(msgBuf, formatted);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, msgBuf);
+    printf("%s\n", msgBuf);
+
     BeginConnection(slot);
 }
 
 void Server::ProcessCmd(ClientID clientID, int argc, char **argv)
 {
     GetCmd(argc, argv);
-    printf("Received command from client: \"%s\"\n", _cmd);
+    char msgBuf[1024];
+    int formatted = snprintf(msgBuf, sizeof(msgBuf)/sizeof(char),
+      "Received command from client: \"%s\"", _cmd);
+    checkAndTermBuf2(msgBuf, formatted);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelCommand, msgBuf);
+    printf("%s\n", msgBuf);
     delete _cmd;
 
     bool doClose = false;
@@ -276,7 +304,11 @@ void Server::CloseClient(ClientID clientID)
     if (_clients[clientID].fd >= 0)
     {
 	EndConnection(clientID);
-	printf("Closing client %d connection.\n", clientID);
+	char msgBuf[256];
+	int formatted = snprintf(msgBuf, sizeof(msgBuf)/sizeof(char),
+	  "Closing client %d connection.", clientID);
+	DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, msgBuf);
+        printf("%s\n", msgBuf);
 	(void)NetworkClose(_clients[clientID].fd);
     }
     _clients[clientID].fd = -1;
@@ -323,9 +355,10 @@ void Server::ReadCmd()
     if (numFds < 0)
     {
 	char errBuf[MAXPATHLEN + 256];
-	sprintf(errBuf, "select() failed at %s: %d", __FILE__, __LINE__);
-	fprintf(stderr, "Warning: ");
-	perror(errBuf);
+	int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+	  "Warning: select() failed at %s: %d", __FILE__, __LINE__);
+	checkAndTermBuf2(errBuf, formatted);
+	reportErrSys(errBuf);
 	return;
     }
 
@@ -362,22 +395,32 @@ void Server::ExecClientCmds(fd_set *fdset)
 	else if (!result)
 	{
 #ifdef DEBUG
-	    printf("End of client data.\n");
+	    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	      "End of client data.");
+            printf("End of client data.\n");
 #endif
 	    CloseClient(i);
 	}
 	else if (flag != API_CMD)
 	{
-	    fprintf(stderr, "Received unexpected type of message: %u\n", flag);
+	    char errBuf[256];
+	    int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+	      "Received unexpected type of message: %u\n", flag);
+	    checkAndTermBuf2(errBuf, formatted);
+	    reportErrNosys(errBuf);
 	    CloseClient(i);
 	}
 	else
 	{
 #ifdef DEBUG
+	    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	      "Executing command");
 	    printf("Executing command\n");
 #endif
 	    ProcessCmd(i, argc, argv);
 #ifdef DEBUG
+	    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	      "Done executing command");
 	    printf("Done executing command\n");
 #endif
 	}
@@ -391,7 +434,12 @@ Server::GetCmd(int argc, char **argv)
     _cmd = NetworkPaste(argc, argv);
     DOASSERT(_cmd, "Out of memory");
 #if defined(DEBUG)
-    printf("Received command from client: \"%s\"\n", _cmd);
+    char msgBuf[1024];
+    int formatted = snprintf(msgBuf, sizeof(msgBuf)/sizeof(char),
+      "Received command from client: \"%s\"", _cmd);
+    checkAndTermBuf2(msgBuf, formatted);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelCommand, msgBuf);
+    printf("%s\n", msgBuf);
 #endif
 }
 
@@ -400,21 +448,22 @@ Server::ReturnVal(ClientID clientID, u_short flag, int argc, char **argv,
     int addBraces)
 {
     if (flag != API_ACK && flag != API_NAK) {
-        fprintf(stderr, "Is this really a return value?\n");
+        reportErrNosys("Is this really a return value?\n");
     }
 
     int status = NetworkSend(_clients[clientID].fd, flag, addBraces, argc,
       argv);
 
     if (status < 0) {
-	fprintf(stderr, "Client error.\n");
+	reportErrNosys("Client error.\n");
     }
 
     return status;
 }
 
 int
-Server::SendControl(u_short flag, int argc, char **argv, int addBraces)
+Server::SendControl(u_short flag, int argc, const char * const *argv,
+  int addBraces)
 {
 #if defined(DEBUG)
     printf("SendControl(");
@@ -428,7 +477,7 @@ Server::SendControl(u_short flag, int argc, char **argv, int addBraces)
     int status = 1;
 
     if (flag != API_CMD && flag != API_CTL) {
-        fprintf(stderr, "Is this really a command?\n");
+        reportErrNosys("Is this really a command?\n");
     }
 
     ClientID clientID;
@@ -440,7 +489,7 @@ Server::SendControl(u_short flag, int argc, char **argv, int addBraces)
             int tmpStatus = NetworkSend(_clients[clientID].fd, flag, addBraces,
 	        argc, argv);
             if (tmpStatus < 0) {
-	        fprintf(stderr, "Client error.\n");
+	        reportErrNosys("Client error.\n");
 	        status = -1;
             }
 	}

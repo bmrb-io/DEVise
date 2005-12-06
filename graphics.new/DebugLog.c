@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,31 @@
   $Id$
 
   $Log$
+  Revision 1.17.2.4  2005/09/28 17:14:50  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.17.2.3  2003/06/25 19:57:04  wenger
+  Various improvments to debug logging; moved command logs from /tmp
+  to work directory.
+
+  Revision 1.17.2.2  2003/06/16 17:43:09  wenger
+  Minor improvements to the debug logs.
+
+  Revision 1.17.2.1  2003/04/18 17:07:52  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.17.18.1  2003/04/18 15:26:14  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.17  2002/03/14 19:11:34  wenger
+  Fixed bug 734 (devise creates debug log in /tmp if specified directory
+  doesn't work).
+
   Revision 1.16  2001/10/03 19:09:56  wenger
   Various improvements to error logging; fixed problem with return value
   from JavaScreenCmd::Run().
@@ -108,6 +133,8 @@
 static DebugLog *_defaultLog = NULL;
 static int _headerBytes = 2000;
 
+//TEMP -- check return values from writes here
+
 /*------------------------------------------------------------------------------
  * function: DebugLog::DebugLog
  * Constructor.
@@ -132,10 +159,16 @@ DebugLog::DebugLog(Level logLevel, const char *filename, long maxSize)
       char *header = DevFileHeader::Get(FILE_TYPE_DEBUGLOG);
       write(_fd, header, strlen(header));
 
-      char logBuf[1024];
-      sprintf(logBuf, "BEGINNING OF DEVISE DEBUG LOG (%s)\n", GetTimeString());
+      const int bufLen = 1024;
+      char logBuf[bufLen];
+      int formatted = snprintf(logBuf, bufLen,
+        "--------------- BEGINNING OF DEVISE DEBUG LOG (%s) ---------------\n",
+	GetTimeString());
+      checkAndTermBuf(logBuf, bufLen, formatted);
       write(_fd, logBuf, strlen(logBuf));
-      sprintf(logBuf, "Log level is: %d\n", logLevel);
+
+      formatted = snprintf(logBuf, bufLen, "Log level is: %d\n", logLevel);
+      checkAndTermBuf(logBuf, bufLen, formatted);
       write(_fd, logBuf, strlen(logBuf));
 
       _filename = CopyString(filename);
@@ -155,15 +188,19 @@ DebugLog::DebugLog(Level logLevel, const char *filename, long maxSize)
 DebugLog::~DebugLog()
 {
   if (_fd != -1) {
-    char logBuf[1024];
-    sprintf(logBuf, "\nEND OF DEVISE DEBUG LOG (%s)\n", GetTimeString());
+    const int bufLen = 1024;
+    char logBuf[bufLen];
+    int formatted = snprintf(logBuf, bufLen,
+      "\n--------------- END OF DEVISE DEBUG LOG (%s) ---------------\n",
+      GetTimeString());
+    checkAndTermBuf(logBuf, bufLen, formatted);
     write(_fd, logBuf, strlen(logBuf));
     if (close(_fd) != 0) {
       fprintf(stderr, "Error (%d) closing debug log file\n", errno);
     }
 
     if (_filename) {
-      printf("DEVise debug log file is: %s\n", _filename);
+      printf("Ending DEVise debug log file: %s\n", _filename);
       FreeString(_filename);
     }
   }
@@ -177,8 +214,10 @@ void
 DebugLog::SetLogLevel(Level logLevel)
 {
   _logLevel = logLevel;
-  char logBuf[1024];
-  sprintf(logBuf, "Log level set to: %d\n", _logLevel);
+  const int bufLen = 1024;
+  char logBuf[bufLen];
+  int formatted = snprintf(logBuf, bufLen, "Log level set to: %d\n", _logLevel);
+  checkAndTermBuf(logBuf, bufLen, formatted);
   write(_fd, logBuf, strlen(logBuf));
 }
 
@@ -189,8 +228,10 @@ DebugLog::SetLogLevel(Level logLevel)
 void
 DebugLog::Message(Level level, const char *msg1, int value)
 {
-  char buf[32];
-  sprintf(buf, ": %d", value);
+  const int bufLen = 32;
+  char buf[bufLen];
+  int formatted = snprintf(buf, bufLen, ": %d", value);
+  checkAndTermBuf(buf, bufLen, formatted);
   Message(level, msg1, buf);
 }
 
@@ -199,8 +240,8 @@ DebugLog::Message(Level level, const char *msg1, int value)
  * Log a message.
  */
 void
-DebugLog::Message(Level level, const char *msg1, const char *msg2 = NULL, 
-    const char *msg3 = NULL)
+DebugLog::Message(Level level, const char *msg1, const char *msg2, 
+    const char *msg3)
 {
   if (_fd != -1 && ((int)level <= (int)_logLevel)) {
     const int bufSize = 1024;
@@ -265,15 +306,20 @@ DebugLog::DefaultLog()
     if (!logDir) {
       logDir = ".";
     }
-    char filename[MAXPATHLEN];
-    sprintf(filename, "%s/devise_debug_log_%ld", logDir, (long)getpid());
+    const int bufLen = MAXPATHLEN + 128;
+    char filename[bufLen];
+    int formatted = snprintf(filename, bufLen, "%s/devise_debug_log_%ld",
+      logDir, (long)getpid());
+    checkAndTermBuf(filename, bufLen, formatted);
     _defaultLog = new DebugLog((Level)Init::LogLevel(), filename);
 
     if (_defaultLog->LogFile() == NULL) {
       const char *defaultLogDir = "/tmp";
       if (strcmp(logDir, defaultLogDir)) {
         logDir = defaultLogDir;
-        sprintf(filename, "%s/devise_debug_log_%ld", logDir, (long)getpid());
+        formatted = snprintf(filename, bufLen, "%s/devise_debug_log_%ld",
+	  logDir, (long)getpid());
+	checkAndTermBuf(filename, bufLen, formatted);
         _defaultLog = new DebugLog((Level)Init::LogLevel(), filename);
       }
     }
@@ -323,8 +369,12 @@ DebugLog::CheckSize()
       fprintf(stderr, "lseek() failed at %s: %d\n", __FILE__, __LINE__);
     }
 
-    char *msg = "\n\n---------------------------------------";
-    write(_fd, msg, strlen(msg));
+    const int bufLen = 1024;
+    char logBuf[bufLen];
+    int formatted = snprintf(logBuf, bufLen,
+        "--------------- LOG REWOUND (%s) ---------------\n", GetTimeString());
+    checkAndTermBuf(logBuf, bufLen, formatted);
+    write(_fd, logBuf, strlen(logBuf));
   }
 }
 

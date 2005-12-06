@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2002
+  (c) Copyright 1998-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,8 +21,32 @@
   $Id$
 
   $Log$
+  Revision 1.47  2002/06/17 19:41:07  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.46  2002/05/01 21:30:12  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.45.4.6  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.45.4.5  2003/12/22 22:47:31  wenger
+  JavaScreen support for print color modes is now in place.
+
+  Revision 1.45.4.4  2003/12/19 18:07:50  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.45.4.3.2.1  2003/12/17 00:18:06  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.45.4.3  2003/09/23 21:55:24  wenger
+  "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+
+  Revision 1.45.4.2.4.1  2003/04/18 16:10:40  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
 
   Revision 1.45.4.2  2002/05/20 21:21:49  wenger
   Fixed bug 779 (client switching problem with multiple DEViseds).
@@ -264,15 +288,16 @@
 #include "DeviseTypes.h"
 #include "JavaScreenCache.h"
 
+using namespace std;
+
 typedef double TDataVal;
 typedef string GDataVal;
 
 class DeviseServer;
 class ControlPanel;
 class ViewGraph;
-
 class DeviseCursor;
-
+class View;
 
 class JavaScreenCmd
 {
@@ -307,6 +332,9 @@ class JavaScreenCmd
 			OPEN_TMP_SESSION,
 			DELETE_TMP_SESSION,
 			SET_TMP_SESSION_DIR,
+			GET_DEVISE_VERSION,
+			SET_DISPLAY_MODE,
+
 			NULL_SVC_CMD
 		} ServiceCmdType;
 
@@ -322,6 +350,8 @@ class JavaScreenCmd
 			VIEWDATAAREA,
 			UPDATEVIEWIMAGE,
 			SHOW_VIEW_HELP,
+			DEVISE_VERSION,
+			SET_VIEW_COLORS,
 
 			DONE,
 			ERROR,
@@ -388,6 +418,8 @@ class JavaScreenCmd
 		void CreateTmpSessionDir();
 		void DeleteTmpSession();
 		void SetTmpSessionDir();
+		void GetDeviseVersion();
+		void SetDisplayMode();
 
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,11 +16,46 @@
   $Id$
 
   $Log$
+  Revision 1.82  2003/01/13 19:25:21  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.81  2002/06/17 19:41:06  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
   Revision 1.80  2002/05/01 21:30:11  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.79.4.16  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
+  Revision 1.79.4.15  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.79.4.14  2004/04/23 21:57:15  wenger
+  Added new 'select next view in pile' feature.
+
+  Revision 1.79.4.13  2003/12/22 22:47:29  wenger
+  JavaScreen support for print color modes is now in place.
+
+  Revision 1.79.4.12  2003/11/19 19:40:20  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
+  Revision 1.79.4.11  2003/11/05 17:01:52  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.79.4.10  2003/09/23 21:55:20  wenger
+  "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+
+  Revision 1.79.4.9  2003/06/06 20:48:42  wenger
+  Implemented provision for automatic testing of DEVise, including
+  running Tcl test scripts within DEVise itself.
+
+  Revision 1.79.4.8  2003/02/04 19:41:15  wenger
+  Added union capability for multiple GData attribute links (will help
+  with restraint visualizations for BMRB).
 
   Revision 1.79.4.7  2003/01/09 22:21:58  wenger
   Added "link multiplication factor" feature; changed version to 1.7.14.
@@ -547,6 +582,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(JAVAC_OpenTmpSession)
 	REGISTER_COMMAND(JAVAC_DeleteTmpSession)
 	REGISTER_COMMAND(JAVAC_SetTmpSessionDir)
+	REGISTER_COMMAND(JAVAC_GetDeviseVersion)
+	REGISTER_COMMAND(JAVAC_SetDisplayMode)
 
 	REGISTER_COMMAND(dteImportFileType)
 	REGISTER_COMMAND(dteListAllIndexes)
@@ -822,6 +859,15 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(cursorHome)
 	REGISTER_COMMAND(setLinkMultFact)
 	REGISTER_COMMAND(getLinkMultFact)
+	REGISTER_COMMAND(setGAttrLinkMode)
+	REGISTER_COMMAND(getGAttrLinkMode)
+	REGISTER_COMMAND(testExit)
+	REGISTER_COMMAND(keyToView)
+	REGISTER_COMMAND(setDisplayMode)
+	REGISTER_COMMAND(getDisplayMode)
+	REGISTER_COMMAND(setMappingColors)
+	REGISTER_COMMAND(getMappingColors)
+	REGISTER_COMMAND(selectNextInPile)
 }
 
 CmdContainer::~CmdContainer()
@@ -1022,7 +1068,8 @@ DeviseCommand*
 CmdContainer::lookupCmd(const char* cmdName)
 {
 	DeviseCommand* 	cmdp = NULL;
-	if (_commands->lookup((char *)cmdName, cmdp) != 0) {
+	char *tmpName = (char *)cmdName;
+	if (_commands->lookup(tmpName, cmdp) != 0) {
 	    cmdp = NULL;
 	}
 
@@ -1047,9 +1094,9 @@ operator <<(ostream&os, const CmdContainer& cc)
 
 // Note that this is a bad hash function if there are more than 256 buckets.
 int
-CmdContainer::CmdHash(char *&index, int numBuckets)
+CmdContainer::CmdHash(char * const &index, int numBuckets)
 {
-	char *cp = index;
+	const char *cp = index;
     unsigned char hash = 0;
 	while (*cp != '\0') {
 		hash ^= *cp;
@@ -1060,7 +1107,7 @@ CmdContainer::CmdHash(char *&index, int numBuckets)
 }
 
 int
-CmdContainer::CmdComp(char *&index1, char *&index2)
+CmdContainer::CmdComp(char * const &index1, char * const &index2)
 {
     return strcmp(index1, index2);
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.13.28.1  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.13  1997/12/16 17:57:49  zhenhai
+  Added OpenGL features.
+
 
   Revision 1.13 1997/10/16 zhenhai
   Removed _transform. It was used to optimize drawing on the same pixel.
@@ -112,6 +118,7 @@ const int GDATA_BIN_MAX_PIXELS = 2048;
 
 class GDataBinCallback {
 public:
+  virtual ~GDataBinCallback() {}
   virtual void ReturnGDataBinRecs(TDataMap *map, void **recs, int numRecs,
 				  int &recordsProcessed) {}
   virtual void ReturnGDataBinConnectors(TDataCMap *cmap,

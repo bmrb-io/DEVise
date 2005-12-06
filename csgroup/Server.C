@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,38 @@
   $Id$
 
   $Log$
+  Revision 1.33  2002/06/17 19:40:39  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.32.10.5  2005/09/28 17:14:21  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.32.10.4  2005/09/06 21:20:00  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.32.10.3  2003/12/19 18:07:07  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.32.10.2.2.1  2003/12/17 00:17:41  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.32.10.2  2003/04/18 17:07:33  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.32.10.1.4.2  2003/12/16 16:07:57  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.32.10.1.4.1  2003/04/18 15:25:54  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
   Revision 1.32.10.1  2002/05/29 22:26:47  wenger
   Better error testing and diagnostics in Server.C and TkControl.c
   (related to RedHat cross-version problems).
@@ -302,7 +334,7 @@ Server::Server(char *name, int image_port,
 
 	switchname = CopyString(swtname);
 									   
-	bzero((char *) &switchaddr, sizeof(switchaddr));
+	memset((char *) &switchaddr, 0, sizeof(switchaddr));
 	if (gethostname(hostname, MAXNAMELEN) != 0) {
 	    reportErrSys("Error in gethostname()");
 		Exit::DoExit(1);
@@ -341,13 +373,14 @@ Server::Server(char *name, int image_port,
 	_port = clnt_port;                   // port for switch, _port for clients
 	_imageport = image_port;             // port for switch, _port for clients
 								   
-	CBakInstall((int)ceil(log(CTRL_RELINQUISH)/log(2)),
+	// Note: what the hell is going on with logs here?!?  wenger 2003-04-18.
+	CBakInstall((int)ceil(log((double)CTRL_RELINQUISH)/log((double)2)),
 		(CallBackHandler)&RequestRelinquish);
-	CBakInstall((int)ceil(log(CTRL_GRABBED)/log(2)),
+	CBakInstall((int)ceil(log((double)CTRL_GRABBED)/log((double)2)),
 		(CallBackHandler)&NotifyGrabbed);
-	CBakInstall((int)ceil(log(CTRL_EXECCKPT)/log(2)),
+	CBakInstall((int)ceil(log((double)CTRL_EXECCKPT)/log((double)2)),
 		(CallBackHandler)&ExecCheckpoint);
-	CBakInstall((int)ceil(log(CTRL_CKPTSERVER)/log(2)),
+	CBakInstall((int)ceil(log((double)CTRL_CKPTSERVER)/log((double)2)),
 		(CallBackHandler)&RequestCheckpoint);
 
 	// register the listening fd for the switch
@@ -593,7 +626,7 @@ void Server::WaitForConnection()
 	}
 
     struct sockaddr_in tempaddr;
-#if defined(LINUX)
+#if defined(LINUX) || defined(SOLARIS)
     socklen_t
 #else
     int
@@ -707,7 +740,7 @@ Server::WaitForImageportConnection()
 
 	int		imagefd;
     struct 	sockaddr_in tempaddr;
-#if defined(LINUX)
+#if defined(LINUX) || defined(SOLARIS)
     socklen_t
 #else
     int
@@ -996,7 +1029,7 @@ int Server::SendClientCmd(int fd,int flag, int args, ...)
 	int		i;
 
 	DO_ASSERT((args>=1), "Insufficient parameters to SendClientCmd");
-	argv = new (char*)[args];
+	argv = new char*[args];
 	va_start(pvar, args);
 	for (i=0; i< args; ++i)
 	{
@@ -1299,7 +1332,7 @@ void Server::ExecClientCmds(fd_set *fdset)
 
 bool 
 Server::GroupCast(GroupKey* gname, char* cname, char* control,
-	int argc, char** argv, char*&errmsg)
+	int argc, const char* const * argv, char*&errmsg)
 {
 	char		*recBuffer;
 	int         msgsize;
@@ -1381,7 +1414,7 @@ Server::ReturnVal(ClientID clientID, u_short flag, int argc, const char * const 
 }
 
 bool
-Server::ServerClientCmd(u_short flag, int argc, char** argv)
+Server::ServerClientCmd(u_short flag, int argc, const char* const * argv)
 {
 #if defined(DEBUG)
     printf("Server::ServerClientCmd(");
@@ -1407,7 +1440,8 @@ Server::ServerClientCmd(u_short flag, int argc, char** argv)
 }
 
 int
-Server::SendControl(u_short flag, int argc, char **argv, int addBraces)
+Server::SendControl(u_short flag, int argc, const char * const *argv,
+  int addBraces)
 {
 #if defined(DEBUG)
     printf("Server::SendControl(");
@@ -1455,7 +1489,7 @@ Server::GetControlChannelFd()
 ControlChannel::ControlChannel()
 {
 	int	mode;
-	_hostname = new (char)[MAXNAMELEN];
+	_hostname = new char[MAXNAMELEN];
 	char	buf[MAXNAMELEN];
 	_key = NULL;
 	pid_t	pid;

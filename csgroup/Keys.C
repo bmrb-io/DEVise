@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.4.18.1  2005/09/28 22:29:21  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.4  1999/01/18 18:11:13  beyer
+  fixed compile errors and warnings for egcs version 1.1.1
+
   Revision 1.3  1998/02/19 23:24:07  wenger
   Improved color library and got client/server test code to work
   (except for setting colors by RGB): reduced compile interdependencies,
@@ -81,13 +87,13 @@ CSgroupKey::CSgroupKey(GroupKey *gkp)
 		sprintf(_cskey,"%s%c%s",_gkp->grpName,seperator,_gkp->grpPwd);
 	}
 }
-CSgroupKey::CSgroupKey(char* grpname, char* passwd)
+CSgroupKey::CSgroupKey(const char* grpname, const char* passwd)
 {
 	analyse2Str(grpname, passwd);
 }
 
 void
-CSgroupKey::analyse2Str(char*grpname, char* passwd)
+CSgroupKey::analyse2Str(const char*grpname, const char* passwd)
 {
 	char	*temp;
 	temp = new char[strlen(grpname)+strlen(passwd)+2];
@@ -95,12 +101,12 @@ CSgroupKey::analyse2Str(char*grpname, char* passwd)
 	analyseStr(temp);
 	delete temp;
 }	
-CSgroupKey::CSgroupKey(char* cskey)
+CSgroupKey::CSgroupKey(const char* cskey)
 {
 	analyseStr(cskey);
 }
 void
-CSgroupKey::analyseStr(char* cskey)
+CSgroupKey::analyseStr(const char* cskey)
 {
 	_cskey = NULL;
 	_gkp = NULL;
@@ -109,20 +115,25 @@ CSgroupKey::analyseStr(char* cskey)
 		int keysize;
 		keysize = sizeof(GroupKey);
 		_cskey = strdup(cskey);
+			//TEMP -- using cskeyTmp hasn't really been tested --
+			// wenger, 2005-09-28.
+		char *cskeyTmp = strdup(cskey);
 		_gkp = new GroupKey;
 		if (((int) strlen(_cskey)) < keysize)
 		{
 			int	i = 0;
-			while ((i<keysize)&&(cskey[i++]!=seperator));
+			while ((i<keysize)&&(cskeyTmp[i++]!=seperator));
 			if (i<keysize)
 			{
-				cskey[i-1] = 0;
-				strcpy(_gkp->grpName, cskey);
-				strcpy(_gkp->grpPwd, cskey+i);
-				cskey[i-1] = seperator;
+				cskeyTmp[i-1] = 0;
+				strcpy(_gkp->grpName, cskeyTmp);
+				strcpy(_gkp->grpPwd, cskeyTmp+i);
+				cskeyTmp[i-1] = seperator;
+				delete cskeyTmp;
 				return;
 			}
 		}
+		delete cskeyTmp;
 		delete _gkp;
 		delete _cskey;
 		_cskey = NULL;

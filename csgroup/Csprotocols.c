@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,20 @@
   $Id$
 
   $Log$
+  Revision 1.8.8.2  2005/09/28 17:14:19  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.8.8.1  2005/09/06 21:20:00  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.8  2001/10/12 18:30:32  wenger
+  Fixed problems with network header reading/writing code (old code
+  assumed that the NetworkHeader struct would never contain any extra
+  space for alignment, other problems).
+
   Revision 1.7  1999/01/18 18:11:13  beyer
   fixed compile errors and warnings for egcs version 1.1.1
 
@@ -68,12 +82,12 @@ ServerServerProt::~ServerServerProt()
 	}
 }
 
-ServerServerProt::ServerServerProt(int argc, char** argv)
+ServerServerProt::ServerServerProt(int argc, const char* const * argv)
 {
 	// fill in the defaults
 	int		i;
 	dynamicStructure = true;
-	newargv = new (char*)[argc+ getHeaderLength()];
+	newargv = new char*[argc+ getHeaderLength()];
 	for (i=0; i < getHeaderLength(); ++i)
 		newargv[i] = DefaultStr;
 
@@ -93,11 +107,11 @@ ServerServerProt::ServerServerProt(int msize, char* msg)
 	msgsize = msize;
 	recBuffer = msg;
 
-	NetworkAnalyzeHeader((const char *)msg, newargc, tsize);
-	NetworkParse((const char *)(msg + NetworkHeaderSize), newargc, newargv);
+	NetworkAnalyzeHeader(msg, newargc, tsize);
+	NetworkParse((msg + NetworkHeaderSize), newargc, newargv);
 }
 int
-ServerServerProt::setServerName(char* sname)
+ServerServerProt::setServerName(const char* sname)
 {
 	if (dynamicStructure)
 	{
@@ -113,7 +127,7 @@ ServerServerProt::setServerName(char* sname)
 }
 
 int
-ServerServerProt::setClientName(char* cname)
+ServerServerProt::setClientName(const char* cname)
 {
 	if (dynamicStructure)
 	{
@@ -235,7 +249,7 @@ TokenList::TokenList(char* list)
 {
 	if (list != NULL)
 	{
-		listbuf = new (char) [strlen(list)+1];
+		listbuf = new char[strlen(list)+1];
 		strcpy(listbuf, list);
 		getNumber();
 	}
@@ -269,7 +283,7 @@ TokenList::appendToken(char* token)
 		char*	oldstr = listbuf;
 		if (listbuf == NULL)
 			return -1;
-		listbuf = new (char) [strlen(listbuf)+1+strlen(token)+1];
+		listbuf = new char[strlen(listbuf)+1+strlen(token)+1];
 		strcpy(listbuf, oldstr);
 		strcat(listbuf," ");
 		strcat(listbuf,token);
@@ -283,7 +297,7 @@ TokenList::TokenList(int args, ...)
 {
 	if (args >0)
 	{
-		char**	argv = new (char*)[args];
+		char**	argv = new char*[args];
 		va_list	pvar;
 		int	i;
 		va_start(pvar,args);
@@ -297,7 +311,7 @@ TokenList::TokenList(int args, ...)
 	else
 	{
 		listargs = 0;
-		listbuf = new (char)[4];
+		listbuf = new char[4];
 		sprintf(listbuf,"%-3d",0);
 	}
 }
@@ -347,7 +361,7 @@ TokenList::toTclList(char*& buf)
 	}
 	else
 	{
-		buf = new (char)[strlen(listbuf)];
+		buf = new char[strlen(listbuf)];
 		sprintf(buf,"{%s}",listbuf+3);
 	}
 	return buf;

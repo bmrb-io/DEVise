@@ -1,0 +1,7 @@
+type color ascii
+comment #
+whitespace '	'
+
+attr x float
+attr y float
+attr color int

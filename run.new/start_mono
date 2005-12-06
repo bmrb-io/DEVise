@@ -7,8 +7,11 @@
 ############################################################
 
 if (! -f $DEVISE_MONO_EXEC) then
-  echo "Cannot find Devise executable. Perhaps this platform is not supported?"
+  echo "Cannot find Devise executable ($DEVISE_MONO_EXEC)."
+  echo "Perhaps this platform is not supported?"
   exit 1
 endif
+
+$DEVISE_PROG/run/make_dev_dirs
 
 $DEVISE_MONO_EXEC $*

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.21.10.2  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.21.10.1  2003/04/17 17:59:25  wenger
+  Now compiles with no warnings with gcc 2.95, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.21  2001/04/03 19:57:39  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.20  1999/08/23 21:23:29  wenger
   Removed Shape::NumShapeAttrs() method -- not used.
 
@@ -97,7 +108,7 @@
  */
 
 #include <sys/param.h>
-#include <strstream.h>
+#include <strstream>
 
 #include "ETkWindowShape.h"
 #include "ETk.h"
@@ -434,11 +445,19 @@ GetShapeAttrString(int i,
 	returnValue = os.str();
 	caller_should_free = true;
 	break;
-      
+
+      case InvalidAttr:
+	os << "InvalidAttr" << ends;
+	returnValue = os.str();
+	caller_should_free = true;
+        break;
+
+      default:
+	DOASSERT(false, "Illegal attribute type");
+        break;
     }
     
     return returnValue;
-    
 }
 
 //******************************************************************************

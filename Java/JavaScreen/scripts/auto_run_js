@@ -1,0 +1,35 @@
+#! /bin/sh
+
+# Automatically run a JavaScreen client (for putting load on the
+# system with cron jobs, etc.).
+
+sleep 5
+
+log="client_log.1"
+if [ $# -ge 1 ]
+then
+  log=$1
+fi
+
+# Use Xvfb so we can run this with cron.
+DISPLAY=unix:1.0
+export DISPLAY
+
+# Note: the next three lines are basically a copy of the js script.
+# We're doing this here so we can get the PID of the JS itself, not
+# the script, so we can actually kill it.
+unset CLASSPATH
+javaexec=`cat bin2/java`
+$javaexec JavaScreen.js -cgiurl/cgi-bin/js.cgi -autoplayback -clientlog$log -screensize600x400 &
+
+mypid=$!
+
+# Make sure the JS process doesn't hang around forever
+# (if things work, the JS should have already exited by
+# itself, but that doesn't always happen for some reason).
+sleep 300
+kill $mypid >& /dev/null
+if [ $? -ne 1 ]
+then
+  echo "JavaScreen client in auto_run_js did NOT exit normally"
+fi

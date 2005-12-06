@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,11 +16,48 @@
   $Id$
 
   $Log$
+  Revision 1.244  2003/01/13 19:25:11  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.243  2002/06/17 19:41:00  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
   Revision 1.242  2002/05/01 21:30:03  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.241.4.18  2005/04/12 18:25:39  wenger
+  Fixed bug 914 ('Select Next in Pile' doesn't work on 3D views).
+
+  Revision 1.241.4.17  2005/03/17 17:25:04  wenger
+  Added a bunch of debug code while working on bug 915.
+
+  Revision 1.241.4.16  2004/04/23 21:57:07  wenger
+  Added new 'select next view in pile' feature.
+
+  Revision 1.241.4.15  2004/01/05 16:25:19  wenger
+  "Current filter does not match last history filter" warning is now
+  only shown if DEBUG is turned on in View.c.
+
+  Revision 1.241.4.14  2003/11/05 17:01:44  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.241.4.13  2003/08/01 18:31:03  wenger
+  Fixed bug 886 (home problem); found bug 887 (another home problem).
+
+  Revision 1.241.4.12  2003/04/18 17:07:42  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.241.4.11.2.1  2003/04/18 15:26:04  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.241.4.11  2003/01/28 21:37:38  wenger
+  Fixed bug 862 (missing data in antares session) -- the problem was
+  that XDrawRectangle() with width and height of 0 doesn't draw anything
+  when drawing to an Xvfb pixmap; when drawing to a window, it makes a
+  one-pixel point.  Argh!
 
   Revision 1.241.4.10  2003/01/09 22:21:52  wenger
   Added "link multiplication factor" feature; changed version to 1.7.14.
@@ -1265,6 +1302,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_hasLastFilter = false;
 	_updateTransform = true;
+	_updateNumDim = false;
 	_refresh = true;
 
 	_pixmap = NULL;
@@ -1381,18 +1419,36 @@ View::~View(void)
 // Getters and Setters
 //******************************************************************************
 
-void    View::SetForeground(PColorID fgid)
+void
+View::SetForeground(PColorID fgid)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-	ViewWin::SetForeground(fgid);
-	Refresh();
+  ViewWin::SetForeground(fgid);
+  Refresh();
 }
 
-void    View::SetBackground(PColorID bgid)
+void
+View::SetForeground(PColorID fgid, DisplayMode::Mode mode)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
-	ViewWin::SetBackground(bgid);
-	Refresh();
+  ViewWin::SetForeground(fgid, mode);
+  Refresh();
+}
+
+void
+View::SetBackground(PColorID bgid)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+  ViewWin::SetBackground(bgid);
+  Refresh();
+}
+
+void
+View::SetBackground(PColorID bgid, DisplayMode::Mode mode)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+  ViewWin::SetBackground(bgid, mode);
+  Refresh();
 }
 
 // Exists to avoid refreshing a view twice when both foreground and
@@ -1499,12 +1555,15 @@ void View::SetVisualFilterCommand(const VisualFilter &filter,
 void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+  VisualFilter newFilter = filter;
+
 #if defined(DEBUG)
   printf("View(%s)::SetVisualFilter()\n", GetName());
   printf("  Old filter: (%g, %g), (%g, %g) %d\n", _filter.xLow, _filter.yLow,
       _filter.xHigh, _filter.yHigh, _filter.flag);
-  printf("  New filter: (%g, %g), (%g, %g) %d\n", filter.xLow, filter.yLow,
-      filter.xHigh, filter.yHigh, filter.flag);
+  printf("  New filter: (%g, %g), (%g, %g) %d\n", newFilter.xLow,
+      newFilter.yLow, newFilter.xHigh, newFilter.yHigh, newFilter.flag);
 #endif
 #if defined(DEBUG_LOG)
   {
@@ -1513,8 +1572,8 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
         "  Old filter: (%g, %g), (%g, %g) %d\n"
         "  New filter: (%g, %g), (%g, %g) %d\n",
         GetName(), _filter.xLow, _filter.yLow, _filter.xHigh, _filter.yHigh,
-	_filter.flag, filter.xLow, filter.yLow, filter.xHigh, filter.yHigh,
-	filter.flag);
+	_filter.flag, newFilter.xLow, newFilter.yLow, newFilter.xHigh,
+	newFilter.yHigh, newFilter.flag);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
@@ -1523,26 +1582,46 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
   RecordLink::EnableUpdates();
 
   // check the new filter for safety & sanity
-  if (is_safe(filter.xLow) && is_safe(filter.xHigh) &&
-      is_safe(filter.yLow) && is_safe(filter.yHigh) &&
-      filter.xLow < filter.xHigh && filter.yLow < filter.yHigh) {
+  if (is_safe(newFilter.xLow) && is_safe(newFilter.xHigh) &&
+      is_safe(newFilter.yLow) && is_safe(newFilter.yHigh)) {
+
+    if (newFilter.xLow >= newFilter.xHigh) {
+#if defined(DEBUG)
+      printf("Using old filter X values because new ones are bad\n");
+#endif
+	  newFilter.xLow = _filter.xLow;
+	  newFilter.xHigh = _filter.xHigh;
+	}
+
+    if (newFilter.yLow >= newFilter.yHigh) {
+#if defined(DEBUG)
+      printf("Using old filter Y values because new ones are bad\n");
+#endif
+	  newFilter.yLow = _filter.yLow;
+	  newFilter.yHigh = _filter.yHigh;
+	}
 
     /* ignore new filter if same as current one */
-    if (!(_filter==filter)) {
+    if (!(_filter == newFilter)) {
 
 #if defined(DEBUG)
       printf("filter changed\n");
 #endif
 
-      if (filter.xLow > _filter.xHigh || filter.xHigh < _filter.xLow) {
+      //TEMP -- what is this stuff for? wenger 2003-08-01.
+      if (newFilter.xLow > _filter.xHigh || newFilter.xHigh < _filter.xLow) {
 	_jump++;
-      } else if (filter.xLow < _filter.xLow && filter.xHigh > _filter.xHigh) {
+      } else if (newFilter.xLow < _filter.xLow &&
+	      newFilter.xHigh > _filter.xHigh) {
 	_zoomOut++;
-      } else if (filter.xLow > _filter.xLow && filter.xHigh < _filter.xHigh) {
+      } else if (newFilter.xLow > _filter.xLow &&
+	      newFilter.xHigh < _filter.xHigh) {
 	_zoomIn++;
-      } else if (filter.xLow < _filter.xLow && filter.xHigh < _filter.xHigh) {
+      } else if (newFilter.xLow < _filter.xLow &&
+	      newFilter.xHigh < _filter.xHigh) {
 	_scrollLeft++;
-      } else if (filter.xLow > _filter.xLow && filter.xHigh > _filter.xHigh) {
+      } else if (newFilter.xLow > _filter.xLow &&
+	      newFilter.xHigh > _filter.xHigh) {
 	_scrollRight++;
       } else {
 	_unknown++;
@@ -1558,14 +1637,14 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
 	_hasTimestamp = true;
       }
       _updateTransform = true;
-      _filter = filter;
+      _filter = newFilter;
 
-      int flushed = _filterQueue->Enqueue(filter);
+      int flushed = _filterQueue->Enqueue(newFilter);
 	  // Note: it is VERY important that we call ReportFilterChanged with
-	  // _filter, not filter (this fixes bug 818).  The reason is that
+	  // _filter, not newFilter (this fixes bug 818).  The reason is that
 	  // ReportFilterChanged calls DeviseCursor()::SatisfyConstraints(),
 	  // which may call SetVisualFilter with a new filter.  If we call
-	  // ReportFilterChanged with filter, the pre-cursor-constraints filter
+	  // ReportFilterChanged with newFilter, the pre-cursor-constraints filter
 	  // gets reported *after* the post-cursor-constraints filter, and
 	  // therefore becomes the value for any links on this view.
 	  // RKW 2002-08-23.
@@ -1575,11 +1654,16 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
     }
   } else {
 #if defined(DEBUG)
-    printf("  Bad filter: (%g, %g), (%g, %g) %d ignored\n", filter.xLow,
-        filter.yLow, filter.xHigh, filter.yHigh, filter.flag);
+    printf("  Bad filter: (%g, %g), (%g, %g) %d ignored\n", newFilter.xLow,
+        newFilter.yLow, newFilter.xHigh, newFilter.yHigh, newFilter.flag);
 #endif
   }
 
+#if defined(DEBUG)
+  printf("View(%s)::SetVisualFilter() ", GetName());
+  printf(" final filter: (%g, %g), (%g, %g) %d\n", _filter.xLow, _filter.yLow,
+      _filter.xHigh, _filter.yHigh, _filter.flag);
+#endif
 #if defined(DEBUG)
   _filterQueue->Print(stdout);
 #endif
@@ -1674,7 +1758,7 @@ Boolean View::CheckCursorOp(int x, int y)
 
 /* set dimensionality */
 
-void View::SetNumDimensions(int d, Boolean notifyPile = true)
+void View::SetNumDimensions(int d, Boolean notifyPile)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (d != 2 && d != 3) {
@@ -2907,13 +2991,25 @@ void View::DoSelect(Boolean flag)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("Highlight view %s %d\n", GetName(), flag);
+  printf("View(%s)::DoSelect(%d)\n", GetName(), flag);
 #endif
 
+  // I'm not sure why this code was here, but I don't think we need it
+  // anymore -- removing it fixes bug 914.  wenger 2005-02-16.
+#if 0
   if (_numDimensions == 3)
     return;
+#endif
   if (_selected == flag)
     return;
+
+#if defined(DEBUG)
+  if (flag) {
+    printf("Drawing highlight for view <%s>\n", GetName());
+  } else {
+    printf("Erasing highlight for view <%s>\n", GetName());
+  }
+#endif
 
   _selected = flag;
 
@@ -4034,9 +4130,11 @@ void	View::Run(void)
 		!dequal(histFilter.yHigh, _filter.yHigh, absTol, relTol)) {
       _filterQueue->Enqueue(_filter, _filter.marked);
 	  char errBuf[256];
+#if defined(DEBUG)
 	  sprintf(errBuf, "(warning) view <%s> current filter does not match "
 	      "last history filter", GetName());
 	  reportErrNosys(errBuf);
+#endif
 	}
 #if 0
 	printf("  histFilter: %d, (%g, %g), (%g, %g)\n", histFilter.flag,
@@ -4206,6 +4304,7 @@ void	View::Run(void)
 	  winRep->SetNumDim(_numDimensions);
 	  UpdateTransform(GetWindowRep());
 	  _updateTransform = false;
+	  _updateNumDim = false;
 	}
     
 	if (!Iconified() && !_pileMode && (_numDimensions == 2) &&
@@ -4807,7 +4906,7 @@ View::SelectView(Boolean calledFromPile)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("View(%s)::SelectView()\n", GetName());
+  printf("View(%s)::SelectView(%d)\n", GetName(), calledFromPile);
 #endif
 
   if (IsInPileMode() && !calledFromPile) {
@@ -4823,6 +4922,53 @@ View::SelectView(Boolean calledFromPile)
     DoSelect(true);
   }
   ControlPanel::Instance()->SelectView(this);
+}
+
+// Select the next view in the pile that the currently-selected view
+// belongs to (if the currently-selected view is not in a pile, do
+// nothing; if there is no currently-selected view, do nothing).
+void
+View::SelectNextInPile()
+{
+#if defined(DEBUG)
+  printf("View::SelectNextInPile()\n");
+#endif
+
+  View *selView = FindSelectedView();
+
+#if defined(DEBUG)
+  printf("  Currently-selected view is %s\n",
+      selView ? selView->GetName() : "none");
+#endif
+
+  if (selView) {
+    PileStack *ps = selView->GetParentPileStack();
+	if (ps && ps->IsPiled()) {
+	  ViewWin *nextView = NULL;
+
+	  int it = ps->InitIterator();
+	  while (ps->More(it) && nextView == NULL) {
+	    ViewWin *tmpView = ps->Next(it);
+	    if (tmpView == selView) {
+		  if (ps->More(it)) {
+		    nextView = ps->Next(it);
+		  } else {
+		    nextView = ps->GetFirstView();
+		  }
+	    }
+	  }
+	  ps->DoneIterator(it);
+
+#if defined(DEBUG)
+  printf("  View to select next is %s\n",
+      nextView ? nextView->GetName() : "none");
+#endif
+
+	  // Note: must pass in true here to keep from selecting the first
+	  // view in the pile.
+	  ((View *)nextView)->SelectView(true);
+	}
+  }
 }
 
 void

@@ -1,6 +1,6 @@
 //******************************************************************************
 // template manager
-// Copyright (c) 1996-1997 Christopher E. Weaver
+// Copyright (c) 1996-2005 Christopher E. Weaver
 //
 // Permission to use, copy, modify, and distribute this software and its
 // documentation for any purpose and without fee is hereby granted, provided
@@ -89,8 +89,10 @@
 // Libraries
 //******************************************************************************
 
-#include <stl.h>
 //#include <synch.h>
+#include <map>
+
+using namespace std;
 
 //******************************************************************************
 // template manager
@@ -102,8 +104,8 @@ class manager
 	public:
 
 		typedef map<Key, T, Compare>	Heap;
-		typedef Heap::iterator			iterator;
-		typedef Heap::const_iterator	const_iterator;
+		typedef typename Heap::iterator			iterator;
+		typedef typename Heap::const_iterator	const_iterator;
 
 	private:
 

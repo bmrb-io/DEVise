@@ -12,7 +12,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  This script runs get_stats on yola and mails the results to the
+#  This script runs get_stats on tuna and mails the results to the
 #  appropriate people.
 
 ############################################################

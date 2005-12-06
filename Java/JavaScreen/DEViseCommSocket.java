@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2004
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,11 +20,61 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2003/01/13 19:23:42  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.40  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
 // Revision 1.39  2002/06/17 19:40:14  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.38.2.13  2004/09/29 19:08:35  wenger
+// Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
+// V1_7b0_br branch.
+//
+// Revision 1.38.2.12  2004/05/12 21:59:59  wenger
+// Removed a bunch of temporary stuff from the jspop_debug_0405_br
+// branch.
+//
+// Revision 1.38.2.11  2004/05/12 21:43:57  wenger
+// Merged the jspop_debug_0405_br thru jspop_debug_0405_br_2 to the
+// V1_7b0_br branch.
+//
+// Revision 1.38.2.10.4.4  2004/09/21 19:38:12  wenger
+// Misc. cleanup before merging back into 1.7 (DEViseClientSocket.java
+// still needs some changes).
+//
+// Revision 1.38.2.10.4.3  2004/07/01 15:15:49  wenger
+// Improved circular log (now always has "-END-" at the temporal end
+// of the log); various other debug logging improvements; put the
+// sequence of operations in DEViseClientSocket.closeSocket() back
+// the way it was.
+//
+// Revision 1.38.2.10.4.2  2004/05/10 22:28:51  wenger
+// Set things up so that much JSPoP debug code (both new and old)
+// can be turned on and off on the fly.
+//
+// Revision 1.38.2.10.4.1  2004/05/10 19:38:59  wenger
+// Lots of new debug code, turned on at compile time; no significant
+// functional changes; also has comments about where we might be
+// getting hung, based on debug logs.
+//
+// Revision 1.38.2.10  2003/10/28 22:51:26  wenger
+// Attempt to get host name now times out after 5 seconds.
+//
+// Revision 1.38.2.9  2003/10/28 21:56:32  wenger
+// Moved determination of JSPoP client hostname to DEViseClientSocket
+// thread (out of main jspop thread).
+//
+// Revision 1.38.2.8  2003/05/02 17:16:16  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
+//
+// Revision 1.38.2.7  2003/04/25 20:27:00  wenger
+// Eliminated or reduced "Abrupt end of input stream reached" errors in
+// the JSPoP on normal client exit.
 //
 // Revision 1.38.2.6  2002/12/17 23:15:01  wenger
 // Fixed bug 843 (still too many java processes after many reloads);
@@ -399,7 +449,8 @@ public class DEViseCommSocket
     public synchronized void closeSocket()
     {
 	if (DEBUG >= 1) {
-	    System.out.println("DEViseCommSocket.closeSocket()");
+	    // Turning on this output causes check_connect to always fail.
+	    // System.out.println("DEViseCommSocket.closeSocket()");
 	}
 
         try {
@@ -699,6 +750,16 @@ public class DEViseCommSocket
 	}
     }
 
+    //-------------------------------------------------------------------
+    // Return the host name associated with this socket.
+    public String getHostName()
+    {
+	GetHostName get = new GetHostName(socket);
+	String hostname = get.getName();
+
+	return hostname;
+    }
+
     //===================================================================
     // PRIVATE METHODS
 
@@ -863,7 +924,8 @@ public class DEViseCommSocket
       throws YException, InterruptedIOException
     {
 	if (DEBUG >= 1) {
-	    System.out.println("DEViseCommSocket.doReceiveCmd()");
+	    // Turning on this output causes check_connect to always fail.
+	    // System.out.println("DEViseCommSocket.doReceiveCmd()");
 	}
 
         if (is == null) {
@@ -935,9 +997,12 @@ public class DEViseCommSocket
         } catch (IOException e) {
             closeSocket();
 	    System.err.println(e.getMessage() +
-	      "in DEViseCommSocket:receiveCmd()");
+	      " in DEViseCommSocket:receiveCmd()\n");
+	    // Note: this is a stupid way to signal that something unusual
+	    // has happened; however, I'm kind of afraid to change it
+	    // right now.  wenger 2003-04-25.
 	    return(new String[] {"Connection disabled"});
-            //throw new YException("Error occurs while reading from input stream", "DEViseCommSocket:receiveCmd()");
+            //throw new YException("Error occurs while reading from input stream", "DEViseCommSocket.receiveCmd()");
         }
 
         int argsize = 0;
@@ -1118,7 +1183,7 @@ public class DEViseCommSocket
 	    _thread.setName("Socket creator");
 	    _thread.start();
 	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	        jsdevisec.printAllThreads("Starting thread " + _thread);
+	        DEViseUtils.printAllThreads("Starting thread " + _thread);
 	    }
 	    _threadRunning = true;
 
@@ -1170,7 +1235,7 @@ public class DEViseCommSocket
 		  "  End of DEViseCommSocket.SocketCreator.run()");
 	    }
 	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	        jsdevisec.printAllThreads("Thread " + _thread + " ending");
+	        DEViseUtils.printAllThreads("Thread " + _thread + " ending");
 	    }
 	}
 
@@ -1203,6 +1268,65 @@ public class DEViseCommSocket
 		    System.err.println("Warning: " + ex.getMessage());
 		}
 	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // This class is used to get the host name, with a short timeout.
+    class GetHostName implements Runnable
+    {
+	private int MAX_TIME = 5 * 1000; // milliseconds
+	private Socket _socket;
+	private String _hostname = "unknown";
+	private Thread _thread;
+	private Thread _mainThread;
+
+    	public GetHostName(Socket socket)
+	{
+	    if (DEBUG >= 3) {
+	        System.out.println("DEViseCommSocket.GetHostName.GetHostName()");
+	    }
+
+	    _socket = socket;
+	    _thread = new Thread(this);
+	}
+
+	public String getName()
+	{
+	    if (DEBUG >= 3) {
+	        System.out.println("DEViseCommSocket.GetHostName.getName()");
+	    }
+	    _mainThread = Thread.currentThread();
+	    _thread.start();
+
+	    try {
+	    	Thread.sleep(MAX_TIME);
+	    } catch (InterruptedException ex) {
+	    	if (DEBUG >= 2) {
+		    System.out.println("Sleep was interrupted in " +
+		      "GetHostName.getName()");
+		}
+	    }
+
+	    // I'd like to destroy the new thread here, but Thread.destroy()
+	    // isn't implemented and Thread.stop() is deprecated.  I guess
+	    // we'll just leave it alone and figure it will eventually
+	    // end.  wenger 2003-10-28.
+
+	    return _hostname;
+	}
+
+	public void run()
+	{
+	    if (DEBUG >= 3) {
+	        System.out.println("DEViseCommSocket.GetHostName.run()");
+	    }
+
+	    InetAddress addr = socket.getInetAddress();
+	    // In case getHostName fails.
+	    _hostname = addr.toString();
+	    _hostname = addr.getHostName();
+	    _mainThread.interrupt();
 	}
     }
 }

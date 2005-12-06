@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,25 @@
   $Id$
 
   $Log$
+  Revision 1.18.20.2  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.18.20.1  2003/12/19 18:07:51  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.18.38.1  2003/12/17 00:18:06  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.18.36.1  2003/04/18 16:10:41  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
+  Revision 1.18  1998/11/16 18:58:47  wenger
+  Added options to compile without DTE code (NO_DTE), and to warn whenever
+  the DTE is called (DTE_WARN).
+
   Revision 1.17  1998/09/08 16:07:00  wenger
   Fixed bug 386 -- problem with duplicate class names.  Devise now prevents
   the creation of multiple classes with the same name; fixed session file.
@@ -88,6 +107,8 @@
 #include "DataSourceBuf.h"
 //#define NO_GEN_CLASS_INFO
 
+using namespace std;
+
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
 extern char *ParseCat(char *fileType,char *catFile,char *dataFile);
@@ -111,6 +132,7 @@ extern char *ParseSchema(char *schemaName, char *physSchema, char *logSchema);
 class AttrList;
 class GenClassInfo {
 public:
+  virtual ~GenClassInfo() {}
   /* Generate a new TData interpreter */
   virtual ClassInfo *Gen(char *source, Boolean isAscii, char *className,
 			 AttrList *attrList, int recSize, char *separators,

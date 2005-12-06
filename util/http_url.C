@@ -6,10 +6,16 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1.46.1  2005/09/06 21:20:49  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.1  1996/01/13 02:25:54  jussi
+  Initial revision.
+*/
 
 /* 
-** Copyright 1995 by Miron Livny and Jim Pruyne
+** Copyright 1995-2005 by Miron Livny and Jim Pruyne
 ** 
 ** Permission to use, copy, modify, and distribute this software and its
 ** documentation for any purpose and without fee is hereby granted,
@@ -256,7 +262,7 @@ int open_http( const char *name, int * bytes_in_body)
 	return sock_fd;
 }
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   char url_data[BUF_LENGTH];
   int fd, len;
@@ -277,4 +283,6 @@ main(int argc, char *argv[])
   while ((len = read(fd,url_data,BUF_LENGTH)) > 0)
 	  write(1,url_data,len);
   close(fd);
+
+  return 0;
 }

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.89  2003/01/13 19:25:12  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.88.4.2  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
   Revision 1.88.4.1  2002/07/25 19:29:21  wenger
   Fixed bug 800 (symbols disappear at extreme zoom) and other drawing-
   related problems; removed unused WindowRep method (FillRectArray with
@@ -467,6 +473,8 @@ class WindowRep;
 
 class WindowRepCallback {
 public:
+  virtual ~WindowRepCallback() {}
+
   /* draw in the exposed area */
   virtual void HandleExpose(WindowRep *w, int x, int y, 
 			    unsigned width, unsigned height) {}

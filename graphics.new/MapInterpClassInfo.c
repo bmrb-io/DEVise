@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.31  2003/01/13 19:25:24  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.30.10.3  2005/02/16 18:04:40  wenger
+  Fixed bug 913 (shape attrs 11-14 get cleared by apply in mapping
+  dialog).
+
+  Revision 1.30.10.2  2003/11/19 19:40:21  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
   Revision 1.30.10.1  2002/09/20 17:16:23  wenger
   Fixed memory leaks in MapInterpClassInfo.
 
@@ -531,6 +543,11 @@ void MapInterpClassInfo::ParamNames(int &argc, const char **&argv)
   }
 }
 
+// Note: if this gets called without the full complement of ShapeAttr
+// values, things get goofed up (see bug 913).  I tried to fix the
+// problem in here, but that caused other problems.  So I'm going to
+// just have the mapping GUI always give all of the ShapeAttr values
+// because that seems easier and safer.  wenger 2005-02-16.
 void MapInterpClassInfo::ChangeParams(int argc, const char* const *argv)
 {
 #if defined(DEBUG)
@@ -546,6 +563,8 @@ void MapInterpClassInfo::ChangeParams(int argc, const char* const *argv)
   char *name;
   TData *tdata;
   VisualFlag *dimensionInfo = new VisualFlag;
+  // Note that _cmd here belongs to *this* object, not the
+  // actual MappingInterp object.
   if (ExtractCommand(argc, argv, _cmd, _cmdFlag, _attrFlag,
 		 dimensionInfo, _numDimensions, tdataAlias, tdata,
 		 name).IsComplete()) {
@@ -602,6 +621,8 @@ ClassInfo *MapInterpClassInfo::CreateWithParams(int argc,
   int numDimensions;
   char *tdataAlias, *name;
 
+  // Note that _cmd here belongs to *this* object, not the
+  // actual MappingInterp object.
   if (ExtractCommand(argc, argv, cmd, cmdFlag, attrFlag,
 		 dimensionInfo, numDimensions, tdataAlias, tdata,
 		 name).IsComplete()) {

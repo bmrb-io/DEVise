@@ -1,56 +1,66 @@
 # DEVise startHeader
 # file type: session
-# file date: May 02 2001 16:58:56
-# DEVise version: 1.7.2
-# DEVise date: Apr  2 2001
+# file date: Aug 26 2004 15:28:51
+# DEVise version: 1.7.18
+# DEVise date: May 24 2004
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {}
+DEVise setSessionDesc {This is a fairly advanced session that makes use of DEVise features such as cursors and view symbols (a view symbol is a view that is drawn as a symbol within a parent view).
+
+The views that display the actual data are child views.  You can select the parent view by clicking near the edge of the window (the parent and child views are intentionally made the same color so the edges of the child views are not visible).  View symbols are sometimes used for layout reasons; in this session they are used to allow selection of which data is shown.  If you view the parent views' mappings, you will see that the GData attribute "TData" has the value "$TDataName".  This means that the value of the "TDataName" attribute in the relevant TData record of the *parent* is used as the name of the TData for the child.  Therefore, displaying a different record in the parent changes the child's TData.  This is how the cursors on the left select which data is shown.
+
+Note that the parent views are piled, and the child views within the parents are piled (see the "Pile" attribute in the parent mappings).  This is how we get the orange and yellow data to show up.
+
+The cursor in the bottom view simply controls the X-axis range of the three views above it.}
 
 # Load color palette
-DEVise color SessionPalette {#000000000000  black
-#000000008b00  DarkBlue
-#00000000cd00  MediumBlue
-#00000000ff00  blue
-#000064000000  DarkGreen
-#00008b000000  green4
-#0000bf00ff00  DeepSkyBlue1
-#0000ff000000  green
-#0000ff00ff00  cyan
-#190019007000  MidnightBlue
-#1e009000ff00  DodgerBlue
-#1f001f001f00  gray12
-#22008b002200  ForestGreen
-#400040004000  gray25
-#610061006100  gray38
-#7f007f007f00  gray50
-#8b0000000000  DarkRed
-#8b0045001300  SaddleBrown
-#99003200cc00  DarkOrchid
-#a100a100a100  gray63
-#b20022002200  firebrick
-#b4005200cd00  MediumOrchid3
-#bf00bf00bf00  gray75
-#c000ff003e00  OliveDrab
-#e000e000e000  gray88
-#ee00ad000e00  Goldenrod2
-#ee00e800aa00  PaleGoldenrod
-#f000e6008c00  khaki
-#f500de00b300  wheat
-#fa00fa00d200  LightGoldenrodYellow
-#fd00f500e600  OldLace
-#ff0000000000  red
-#ff000000ff00  magenta
-#ff007f000000  DarkOrange1
-#ff00a5000000  orange
-#ff00d7000000  gold
-#ff00ff000000  yellow
-#ffffffffffff  white
+DEVise color SessionPalette {#000000000000 black
+#000000008b00 DarkBlue
+#00000000cd00 MediumBlue
+#00000000ff00 blue
+#000064000000 DarkGreen
+#00008b000000 green4
+#0000bf00ff00 DeepSkyBlue1
+#0000ff000000 green
+#0000ff00ff00 cyan
+#190019007000 MidnightBlue
+#1e009000ff00 DodgerBlue
+#1f001f001f00 gray12
+#22008b002200 ForestGreen
+#400040004000 gray25
+#610061006100 gray38
+#7f007f007f00 gray50
+#8b0000000000 DarkRed
+#8b0045001300 SaddleBrown
+#99003200cc00 DarkOrchid
+#a100a100a100 gray63
+#b20022002200 firebrick
+#b4005200cd00 MediumOrchid3
+#bf00bf00bf00 gray75
+#c000ff003e00 OliveDrab
+#e000e000e000 gray88
+#ee00ad000e00 Goldenrod2
+#ee00e800aa00 PaleGoldenrod
+#f000e6008c00 khaki
+#f500de00b300 wheat
+#fa00fa00d200 LightGoldenrodYellow
+#fd00f500e600 OldLace
+#ff0000000000 red
+#ff000000ff00 magenta
+#ff007f000000 DarkOrange1
+#ff00a5000000 orange
+#ff00d7000000 gold
+#ff00ff000000 yellow
+#ffffffffffff white
 }
 
+# Set color mode (modulus or truncation)
+DEVise setColorMode 0
+
 # Create views
-DEVise create {view} {Scatter} UserList_view -0.050000 1.050000 -0.550000 22.550000 36 9
+
+DEVise create {view} {Scatter} UserList_view -0.050000 1.050000 -0.550000 22.550000 36 9 0 37 0 37
 DEVise setLabel {UserList_view} 0 12 {}
 DEVise setViewStatistics {UserList_view} 00000000
 DEVise setViewDimensions {UserList_view} 2
@@ -67,7 +77,7 @@ DEVise viewSetVerPan {UserList_view} 1 0.500000 1.000000
 DEVise setViewGDS {UserList_view} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {UserList_view} 0 1 0 "" 1 " " 1
 DEVise setHistogram {UserList_view} 0 22 10
-DEVise setCountMapping {UserList_view} 0 {} {}
+DEVise setCountMapping {UserList_view} 0 {} {} 0
 DEVise viewSetIsHighlight {UserList_view} 0
 DEVise setXAxisDateFormat {UserList_view} {%b %d %Y %T}
 DEVise setYAxisDateFormat {UserList_view} {%b %d %Y %T}
@@ -78,7 +88,12 @@ DEVise setDupElim {UserList_view} {0}
 DEVise setNiceAxes {UserList_view} 0 0
 DEVise viewSetDisabledActions {UserList_view} 1 0 0 1
 DEVise setShowMouseLocation {UserList_view} {1}
-DEVise create {view} {Scatter} Select1_view -0.550000 0.550000 -0.550000 22.550000 36 2
+DEVise setLinkMultFact {UserList_view} {X} 1
+DEVise setLinkMultFact {UserList_view} {Y} 1
+DEVise setGAttrLinkMode {UserList_view} 0
+DEVise setDoHomeOnVisLink {UserList_view} {1}
+
+DEVise create {view} {Scatter} Select1_view -0.550000 0.550000 -0.550000 22.550000 36 2 0 37 0 37
 DEVise setLabel {Select1_view} 0 12 {}
 DEVise setViewStatistics {Select1_view} 00000000
 DEVise setViewDimensions {Select1_view} 2
@@ -95,7 +110,7 @@ DEVise viewSetVerPan {Select1_view} 1 0.500000 1.000000
 DEVise setViewGDS {Select1_view} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {Select1_view} 1 0 0 "" 1 " " 1
 DEVise setHistogram {Select1_view} 0 22 10
-DEVise setCountMapping {Select1_view} 0 {} {}
+DEVise setCountMapping {Select1_view} 0 {} {} 0
 DEVise viewSetIsHighlight {Select1_view} 0
 DEVise setXAxisDateFormat {Select1_view} {%b %d %Y %T}
 DEVise setYAxisDateFormat {Select1_view} {%b %d %Y %T}
@@ -106,7 +121,12 @@ DEVise setDupElim {Select1_view} {0}
 DEVise setNiceAxes {Select1_view} 0 0
 DEVise viewSetDisabledActions {Select1_view} 1 0 0 1
 DEVise setShowMouseLocation {Select1_view} {1}
-DEVise create {view} {Scatter} Select2_view -0.550000 0.550000 -0.550000 22.550000 36 9
+DEVise setLinkMultFact {Select1_view} {X} 1
+DEVise setLinkMultFact {Select1_view} {Y} 1
+DEVise setGAttrLinkMode {Select1_view} 0
+DEVise setDoHomeOnVisLink {Select1_view} {1}
+
+DEVise create {view} {Scatter} Select2_view -0.550000 0.550000 -0.550000 22.550000 36 9 0 37 0 37
 DEVise setLabel {Select2_view} 0 12 {}
 DEVise setViewStatistics {Select2_view} 00000000
 DEVise setViewDimensions {Select2_view} 2
@@ -123,7 +143,7 @@ DEVise viewSetVerPan {Select2_view} 1 0.500000 1.000000
 DEVise setViewGDS {Select2_view} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {Select2_view} 1 0 0 "" 1 " " 1
 DEVise setHistogram {Select2_view} 0 22 10
-DEVise setCountMapping {Select2_view} 0 {} {}
+DEVise setCountMapping {Select2_view} 0 {} {} 0
 DEVise viewSetIsHighlight {Select2_view} 0
 DEVise setXAxisDateFormat {Select2_view} {%b %d %Y %T}
 DEVise setYAxisDateFormat {Select2_view} {%b %d %Y %T}
@@ -134,7 +154,12 @@ DEVise setDupElim {Select2_view} {0}
 DEVise setNiceAxes {Select2_view} 0 0
 DEVise viewSetDisabledActions {Select2_view} 1 0 0 1
 DEVise setShowMouseLocation {Select2_view} {1}
-DEVise create {view} {Scatter} User1_viewA -0.500000 0.500000 21.500000 22.500000 36 2
+DEVise setLinkMultFact {Select2_view} {X} 1
+DEVise setLinkMultFact {Select2_view} {Y} 1
+DEVise setGAttrLinkMode {Select2_view} 0
+DEVise setDoHomeOnVisLink {Select2_view} {1}
+
+DEVise create {view} {Scatter} User1_viewA -0.500000 0.500000 21.500000 22.500000 36 2 0 37 0 37
 DEVise setLabel {User1_viewA} 0 12 {}
 DEVise setViewStatistics {User1_viewA} 00000000
 DEVise setViewDimensions {User1_viewA} 2
@@ -151,7 +176,7 @@ DEVise viewSetVerPan {User1_viewA} 1 0.500000 1.000000
 DEVise setViewGDS {User1_viewA} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {User1_viewA} 1 0 0 "" 1 " " 1
 DEVise setHistogram {User1_viewA} 0 22 10
-DEVise setCountMapping {User1_viewA} 0 {} {}
+DEVise setCountMapping {User1_viewA} 0 {} {} 0
 DEVise viewSetIsHighlight {User1_viewA} 0
 DEVise setXAxisDateFormat {User1_viewA} {%b %d %Y %T}
 DEVise setYAxisDateFormat {User1_viewA} {%b %d %Y %T}
@@ -162,7 +187,12 @@ DEVise setDupElim {User1_viewA} {0}
 DEVise setNiceAxes {User1_viewA} 0 0
 DEVise viewSetDisabledActions {User1_viewA} 1 1 1 1
 DEVise setShowMouseLocation {User1_viewA} {1}
-DEVise create {view} {Scatter} User1_viewB -0.500000 0.500000 21.500000 22.500000 36 2
+DEVise setLinkMultFact {User1_viewA} {X} 1
+DEVise setLinkMultFact {User1_viewA} {Y} 1
+DEVise setGAttrLinkMode {User1_viewA} 0
+DEVise setDoHomeOnVisLink {User1_viewA} {1}
+
+DEVise create {view} {Scatter} User1_viewB -0.500000 0.500000 21.500000 22.500000 36 2 0 37 0 37
 DEVise setLabel {User1_viewB} 0 12 {}
 DEVise setViewStatistics {User1_viewB} 00000000
 DEVise setViewDimensions {User1_viewB} 2
@@ -179,7 +209,7 @@ DEVise viewSetVerPan {User1_viewB} 1 0.500000 1.000000
 DEVise setViewGDS {User1_viewB} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {User1_viewB} 1 0 0 "" 1 " " 1
 DEVise setHistogram {User1_viewB} 0 22 10
-DEVise setCountMapping {User1_viewB} 0 {} {}
+DEVise setCountMapping {User1_viewB} 0 {} {} 0
 DEVise viewSetIsHighlight {User1_viewB} 0
 DEVise setXAxisDateFormat {User1_viewB} {%b %d %Y %T}
 DEVise setYAxisDateFormat {User1_viewB} {%b %d %Y %T}
@@ -190,7 +220,12 @@ DEVise setDupElim {User1_viewB} {0}
 DEVise setNiceAxes {User1_viewB} 0 0
 DEVise viewSetDisabledActions {User1_viewB} 1 1 1 1
 DEVise setShowMouseLocation {User1_viewB} {1}
-DEVise create {view} {Scatter} User2_viewA -0.500000 0.500000 20.500000 21.500000 36 9
+DEVise setLinkMultFact {User1_viewB} {X} 1
+DEVise setLinkMultFact {User1_viewB} {Y} 1
+DEVise setGAttrLinkMode {User1_viewB} 0
+DEVise setDoHomeOnVisLink {User1_viewB} {1}
+
+DEVise create {view} {Scatter} User2_viewA -0.500000 0.500000 20.500000 21.500000 36 9 0 37 0 37
 DEVise setLabel {User2_viewA} 0 12 {}
 DEVise setViewStatistics {User2_viewA} 00000000
 DEVise setViewDimensions {User2_viewA} 2
@@ -207,7 +242,7 @@ DEVise viewSetVerPan {User2_viewA} 1 0.500000 1.000000
 DEVise setViewGDS {User2_viewA} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {User2_viewA} 1 0 0 "" 1 " " 1
 DEVise setHistogram {User2_viewA} 0 22 10
-DEVise setCountMapping {User2_viewA} 0 {} {}
+DEVise setCountMapping {User2_viewA} 0 {} {} 0
 DEVise viewSetIsHighlight {User2_viewA} 0
 DEVise setXAxisDateFormat {User2_viewA} {%b %d %Y %T}
 DEVise setYAxisDateFormat {User2_viewA} {%b %d %Y %T}
@@ -218,7 +253,12 @@ DEVise setDupElim {User2_viewA} {0}
 DEVise setNiceAxes {User2_viewA} 0 0
 DEVise viewSetDisabledActions {User2_viewA} 1 1 1 1
 DEVise setShowMouseLocation {User2_viewA} {1}
-DEVise create {view} {Scatter} User2_viewB -0.500000 0.500000 20.500000 21.500000 36 9
+DEVise setLinkMultFact {User2_viewA} {X} 1
+DEVise setLinkMultFact {User2_viewA} {Y} 1
+DEVise setGAttrLinkMode {User2_viewA} 0
+DEVise setDoHomeOnVisLink {User2_viewA} {1}
+
+DEVise create {view} {Scatter} User2_viewB -0.500000 0.500000 20.500000 21.500000 36 9 0 37 0 37
 DEVise setLabel {User2_viewB} 0 12 {}
 DEVise setViewStatistics {User2_viewB} 00000000
 DEVise setViewDimensions {User2_viewB} 2
@@ -235,7 +275,7 @@ DEVise viewSetVerPan {User2_viewB} 1 0.500000 1.000000
 DEVise setViewGDS {User2_viewB} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {User2_viewB} 1 0 0 "" 1 " " 1
 DEVise setHistogram {User2_viewB} 0 22 10
-DEVise setCountMapping {User2_viewB} 0 {} {}
+DEVise setCountMapping {User2_viewB} 0 {} {} 0
 DEVise viewSetIsHighlight {User2_viewB} 0
 DEVise setXAxisDateFormat {User2_viewB} {%b %d %Y %T}
 DEVise setYAxisDateFormat {User2_viewB} {%b %d %Y %T}
@@ -246,7 +286,12 @@ DEVise setDupElim {User2_viewB} {0}
 DEVise setNiceAxes {User2_viewB} 0 0
 DEVise viewSetDisabledActions {User2_viewB} 1 1 1 1
 DEVise setShowMouseLocation {User2_viewB} {1}
-DEVise create {view} {Scatter} TotalLinked_viewA -0.500000 0.500000 -0.500000 0.500000 36 9
+DEVise setLinkMultFact {User2_viewB} {X} 1
+DEVise setLinkMultFact {User2_viewB} {Y} 1
+DEVise setGAttrLinkMode {User2_viewB} 0
+DEVise setDoHomeOnVisLink {User2_viewB} {1}
+
+DEVise create {view} {Scatter} TotalLinked_viewA -0.500000 0.500000 -0.500000 0.500000 36 9 0 37 0 37
 DEVise setLabel {TotalLinked_viewA} 0 12 {}
 DEVise setViewStatistics {TotalLinked_viewA} 00000000
 DEVise setViewDimensions {TotalLinked_viewA} 2
@@ -263,7 +308,7 @@ DEVise viewSetVerPan {TotalLinked_viewA} 1 0.500000 1.000000
 DEVise setViewGDS {TotalLinked_viewA} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {TotalLinked_viewA} 1 0 0 "" 1 " " 1
 DEVise setHistogram {TotalLinked_viewA} 0 22 10
-DEVise setCountMapping {TotalLinked_viewA} 0 {} {}
+DEVise setCountMapping {TotalLinked_viewA} 0 {} {} 0
 DEVise viewSetIsHighlight {TotalLinked_viewA} 0
 DEVise setXAxisDateFormat {TotalLinked_viewA} {%b %d %Y %T}
 DEVise setYAxisDateFormat {TotalLinked_viewA} {%b %d %Y %T}
@@ -274,7 +319,12 @@ DEVise setDupElim {TotalLinked_viewA} {0}
 DEVise setNiceAxes {TotalLinked_viewA} 0 0
 DEVise viewSetDisabledActions {TotalLinked_viewA} 1 1 1 1
 DEVise setShowMouseLocation {TotalLinked_viewA} {1}
-DEVise create {view} {Scatter} TotalLinked_viewB -0.500000 0.500000 -0.500000 0.500000 36 9
+DEVise setLinkMultFact {TotalLinked_viewA} {X} 1
+DEVise setLinkMultFact {TotalLinked_viewA} {Y} 1
+DEVise setGAttrLinkMode {TotalLinked_viewA} 0
+DEVise setDoHomeOnVisLink {TotalLinked_viewA} {1}
+
+DEVise create {view} {Scatter} TotalLinked_viewB -0.500000 0.500000 -0.500000 0.500000 36 9 0 37 0 37
 DEVise setLabel {TotalLinked_viewB} 0 12 {}
 DEVise setViewStatistics {TotalLinked_viewB} 00000000
 DEVise setViewDimensions {TotalLinked_viewB} 2
@@ -291,7 +341,7 @@ DEVise viewSetVerPan {TotalLinked_viewB} 1 0.500000 1.000000
 DEVise setViewGDS {TotalLinked_viewB} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {TotalLinked_viewB} 1 0 0 "" 1 " " 1
 DEVise setHistogram {TotalLinked_viewB} 0 22 10
-DEVise setCountMapping {TotalLinked_viewB} 0 {} {}
+DEVise setCountMapping {TotalLinked_viewB} 0 {} {} 0
 DEVise viewSetIsHighlight {TotalLinked_viewB} 0
 DEVise setXAxisDateFormat {TotalLinked_viewB} {%b %d %Y %T}
 DEVise setYAxisDateFormat {TotalLinked_viewB} {%b %d %Y %T}
@@ -302,7 +352,12 @@ DEVise setDupElim {TotalLinked_viewB} {0}
 DEVise setNiceAxes {TotalLinked_viewB} 0 0
 DEVise viewSetDisabledActions {TotalLinked_viewB} 1 1 1 1
 DEVise setShowMouseLocation {TotalLinked_viewB} {1}
-DEVise create {view} {Scatter} Total_viewA -0.500000 0.500000 -0.500000 0.500000 36 9
+DEVise setLinkMultFact {TotalLinked_viewB} {X} 1
+DEVise setLinkMultFact {TotalLinked_viewB} {Y} 1
+DEVise setGAttrLinkMode {TotalLinked_viewB} 0
+DEVise setDoHomeOnVisLink {TotalLinked_viewB} {1}
+
+DEVise create {view} {Scatter} Total_viewA -0.500000 0.500000 -0.500000 0.500000 36 9 0 37 0 37
 DEVise setLabel {Total_viewA} 0 12 {}
 DEVise setViewStatistics {Total_viewA} 00000000
 DEVise setViewDimensions {Total_viewA} 2
@@ -319,7 +374,7 @@ DEVise viewSetVerPan {Total_viewA} 1 0.500000 1.000000
 DEVise setViewGDS {Total_viewA} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {Total_viewA} 1 0 0 "" 1 " " 1
 DEVise setHistogram {Total_viewA} 0 22 10
-DEVise setCountMapping {Total_viewA} 0 {} {}
+DEVise setCountMapping {Total_viewA} 0 {} {} 0
 DEVise viewSetIsHighlight {Total_viewA} 0
 DEVise setXAxisDateFormat {Total_viewA} {%b %d %Y %T}
 DEVise setYAxisDateFormat {Total_viewA} {%b %d %Y %T}
@@ -330,7 +385,12 @@ DEVise setDupElim {Total_viewA} {0}
 DEVise setNiceAxes {Total_viewA} 0 0
 DEVise viewSetDisabledActions {Total_viewA} 1 1 1 1
 DEVise setShowMouseLocation {Total_viewA} {1}
-DEVise create {view} {Scatter} Total_viewB -0.500000 0.500000 -0.500000 0.500000 36 9
+DEVise setLinkMultFact {Total_viewA} {X} 1
+DEVise setLinkMultFact {Total_viewA} {Y} 1
+DEVise setGAttrLinkMode {Total_viewA} 0
+DEVise setDoHomeOnVisLink {Total_viewA} {1}
+
+DEVise create {view} {Scatter} Total_viewB -0.500000 0.500000 -0.500000 0.500000 36 9 0 37 0 37
 DEVise setLabel {Total_viewB} 0 12 {}
 DEVise setViewStatistics {Total_viewB} 00000000
 DEVise setViewDimensions {Total_viewB} 2
@@ -347,7 +407,7 @@ DEVise viewSetVerPan {Total_viewB} 1 0.500000 1.000000
 DEVise setViewGDS {Total_viewB} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {Total_viewB} 1 0 0 "" 1 " " 1
 DEVise setHistogram {Total_viewB} 0 22 10
-DEVise setCountMapping {Total_viewB} 0 {} {}
+DEVise setCountMapping {Total_viewB} 0 {} {} 0
 DEVise viewSetIsHighlight {Total_viewB} 0
 DEVise setXAxisDateFormat {Total_viewB} {%b %d %Y %T}
 DEVise setYAxisDateFormat {Total_viewB} {%b %d %Y %T}
@@ -358,7 +418,12 @@ DEVise setDupElim {Total_viewB} {0}
 DEVise setNiceAxes {Total_viewB} 0 0
 DEVise viewSetDisabledActions {Total_viewB} 1 1 1 1
 DEVise setShowMouseLocation {Total_viewB} {1}
-DEVise create {view} {Scatter} User1_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 2
+DEVise setLinkMultFact {Total_viewB} {X} 1
+DEVise setLinkMultFact {Total_viewB} {Y} 1
+DEVise setGAttrLinkMode {Total_viewB} 0
+DEVise setDoHomeOnVisLink {Total_viewB} {1}
+
+DEVise create {view} {Scatter} User1_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 2 0 37 0 37
 DEVise setLabel {User1_viewsymA} 0 12 {}
 DEVise setViewStatistics {User1_viewsymA} 00000000
 DEVise setViewDimensions {User1_viewsymA} 2
@@ -375,7 +440,7 @@ DEVise viewSetVerPan {User1_viewsymA} 1 0.500000 1.000000
 DEVise setViewGDS {User1_viewsymA} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {User1_viewsymA} 1 0 0 "" 1 " " 1
 DEVise setHistogram {User1_viewsymA} 21 987 10
-DEVise setCountMapping {User1_viewsymA} 0 {} {}
+DEVise setCountMapping {User1_viewsymA} 0 {} {} 0
 DEVise viewSetIsHighlight {User1_viewsymA} 0
 DEVise setXAxisDateFormat {User1_viewsymA} {%b %d %H:%M}
 DEVise setYAxisDateFormat {User1_viewsymA} {%b %d %Y %T}
@@ -386,7 +451,12 @@ DEVise setDupElim {User1_viewsymA} {0}
 DEVise setNiceAxes {User1_viewsymA} 0 0
 DEVise viewSetDisabledActions {User1_viewsymA} 0 0 0 0
 DEVise setShowMouseLocation {User1_viewsymA} {1}
-DEVise create {view} {Scatter} User1_viewsymB {Dec 28 1969 06:02:35} {Jan 04 1970 05:57:26} 0.000000 987.000000 36 2
+DEVise setLinkMultFact {User1_viewsymA} {X} 1
+DEVise setLinkMultFact {User1_viewsymA} {Y} 1
+DEVise setGAttrLinkMode {User1_viewsymA} 0
+DEVise setDoHomeOnVisLink {User1_viewsymA} {1}
+
+DEVise create {view} {Scatter} User1_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 2 0 37 0 37
 DEVise setLabel {User1_viewsymB} 0 12 {}
 DEVise setViewStatistics {User1_viewsymB} 00000000
 DEVise setViewDimensions {User1_viewsymB} 2
@@ -403,7 +473,7 @@ DEVise viewSetVerPan {User1_viewsymB} 1 0.500000 1.000000
 DEVise setViewGDS {User1_viewsymB} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {User1_viewsymB} 1 0 0 "" 1 " " 1
 DEVise setHistogram {User1_viewsymB} 0 304 10
-DEVise setCountMapping {User1_viewsymB} 0 {} {}
+DEVise setCountMapping {User1_viewsymB} 0 {} {} 0
 DEVise viewSetIsHighlight {User1_viewsymB} 0
 DEVise setXAxisDateFormat {User1_viewsymB} {%b %d %H:%M}
 DEVise setYAxisDateFormat {User1_viewsymB} {%b %d %Y %T}
@@ -414,7 +484,12 @@ DEVise setDupElim {User1_viewsymB} {0}
 DEVise setNiceAxes {User1_viewsymB} 0 0
 DEVise viewSetDisabledActions {User1_viewsymB} 0 0 0 0
 DEVise setShowMouseLocation {User1_viewsymB} {1}
-DEVise create {view} {Scatter} User2_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 4.000000 36 9
+DEVise setLinkMultFact {User1_viewsymB} {X} 1
+DEVise setLinkMultFact {User1_viewsymB} {Y} 1
+DEVise setGAttrLinkMode {User1_viewsymB} 0
+DEVise setDoHomeOnVisLink {User1_viewsymB} {1}
+
+DEVise create {view} {Scatter} User2_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 4.000000 36 9 0 37 0 37
 DEVise setLabel {User2_viewsymA} 0 12 {}
 DEVise setViewStatistics {User2_viewsymA} 00000000
 DEVise setViewDimensions {User2_viewsymA} 2
@@ -430,8 +505,8 @@ DEVise viewSetHorPan {User2_viewsymA} 1 0.500000 1.000000
 DEVise viewSetVerPan {User2_viewsymA} 1 0.500000 1.000000
 DEVise setViewGDS {User2_viewsymA} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {User2_viewsymA} 1 0 0 "" 1 " " 1
-DEVise setHistogram {User2_viewsymA} 21 987 10
-DEVise setCountMapping {User2_viewsymA} 0 {} {}
+DEVise setHistogram {User2_viewsymA} 1 4 10
+DEVise setCountMapping {User2_viewsymA} 0 {} {} 0
 DEVise viewSetIsHighlight {User2_viewsymA} 0
 DEVise setXAxisDateFormat {User2_viewsymA} {%b %d %H:%M}
 DEVise setYAxisDateFormat {User2_viewsymA} {%b %d %Y %T}
@@ -442,7 +517,12 @@ DEVise setDupElim {User2_viewsymA} {0}
 DEVise setNiceAxes {User2_viewsymA} 0 0
 DEVise viewSetDisabledActions {User2_viewsymA} 0 0 0 0
 DEVise setShowMouseLocation {User2_viewsymA} {1}
-DEVise create {view} {Scatter} User2_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 4.000000 36 9
+DEVise setLinkMultFact {User2_viewsymA} {X} 1
+DEVise setLinkMultFact {User2_viewsymA} {Y} 1
+DEVise setGAttrLinkMode {User2_viewsymA} 0
+DEVise setDoHomeOnVisLink {User2_viewsymA} {1}
+
+DEVise create {view} {Scatter} User2_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 4.000000 36 9 0 37 0 37
 DEVise setLabel {User2_viewsymB} 0 12 {}
 DEVise setViewStatistics {User2_viewsymB} 00000000
 DEVise setViewDimensions {User2_viewsymB} 2
@@ -458,8 +538,8 @@ DEVise viewSetHorPan {User2_viewsymB} 1 0.500000 1.000000
 DEVise viewSetVerPan {User2_viewsymB} 1 0.500000 1.000000
 DEVise setViewGDS {User2_viewsymB} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {User2_viewsymB} 1 0 0 "" 1 " " 1
-DEVise setHistogram {User2_viewsymB} 0 304 10
-DEVise setCountMapping {User2_viewsymB} 0 {} {}
+DEVise setHistogram {User2_viewsymB} 0 1 10
+DEVise setCountMapping {User2_viewsymB} 0 {} {} 0
 DEVise viewSetIsHighlight {User2_viewsymB} 0
 DEVise setXAxisDateFormat {User2_viewsymB} {%b %d %H:%M}
 DEVise setYAxisDateFormat {User2_viewsymB} {%b %d %Y %T}
@@ -470,7 +550,12 @@ DEVise setDupElim {User2_viewsymB} {0}
 DEVise setNiceAxes {User2_viewsymB} 0 0
 DEVise viewSetDisabledActions {User2_viewsymB} 0 0 0 0
 DEVise setShowMouseLocation {User2_viewsymB} {1}
-DEVise create {view} {Scatter} TotalLinked_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9
+DEVise setLinkMultFact {User2_viewsymB} {X} 1
+DEVise setLinkMultFact {User2_viewsymB} {Y} 1
+DEVise setGAttrLinkMode {User2_viewsymB} 0
+DEVise setDoHomeOnVisLink {User2_viewsymB} {1}
+
+DEVise create {view} {Scatter} TotalLinked_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9 0 37 0 37
 DEVise setLabel {TotalLinked_viewsymA} 0 12 {}
 DEVise setViewStatistics {TotalLinked_viewsymA} 00000000
 DEVise setViewDimensions {TotalLinked_viewsymA} 2
@@ -487,7 +572,7 @@ DEVise viewSetVerPan {TotalLinked_viewsymA} 1 0.500000 1.000000
 DEVise setViewGDS {TotalLinked_viewsymA} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {TotalLinked_viewsymA} 1 0 0 "" 1 " " 1
 DEVise setHistogram {TotalLinked_viewsymA} 21 987 10
-DEVise setCountMapping {TotalLinked_viewsymA} 0 {} {}
+DEVise setCountMapping {TotalLinked_viewsymA} 0 {} {} 0
 DEVise viewSetIsHighlight {TotalLinked_viewsymA} 0
 DEVise setXAxisDateFormat {TotalLinked_viewsymA} {%b %d %H:%M}
 DEVise setYAxisDateFormat {TotalLinked_viewsymA} {%b %d %Y %T}
@@ -498,7 +583,12 @@ DEVise setDupElim {TotalLinked_viewsymA} {0}
 DEVise setNiceAxes {TotalLinked_viewsymA} 0 0
 DEVise viewSetDisabledActions {TotalLinked_viewsymA} 0 0 0 0
 DEVise setShowMouseLocation {TotalLinked_viewsymA} {1}
-DEVise create {view} {Scatter} TotalLinked_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9
+DEVise setLinkMultFact {TotalLinked_viewsymA} {X} 1
+DEVise setLinkMultFact {TotalLinked_viewsymA} {Y} 1
+DEVise setGAttrLinkMode {TotalLinked_viewsymA} 0
+DEVise setDoHomeOnVisLink {TotalLinked_viewsymA} {1}
+
+DEVise create {view} {Scatter} TotalLinked_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9 0 37 0 37
 DEVise setLabel {TotalLinked_viewsymB} 0 12 {}
 DEVise setViewStatistics {TotalLinked_viewsymB} 00000000
 DEVise setViewDimensions {TotalLinked_viewsymB} 2
@@ -515,7 +605,7 @@ DEVise viewSetVerPan {TotalLinked_viewsymB} 1 0.500000 1.000000
 DEVise setViewGDS {TotalLinked_viewsymB} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {TotalLinked_viewsymB} 1 0 0 "" 1 " " 1
 DEVise setHistogram {TotalLinked_viewsymB} 0 304 10
-DEVise setCountMapping {TotalLinked_viewsymB} 0 {} {}
+DEVise setCountMapping {TotalLinked_viewsymB} 0 {} {} 0
 DEVise viewSetIsHighlight {TotalLinked_viewsymB} 0
 DEVise setXAxisDateFormat {TotalLinked_viewsymB} {%b %d %H:%M}
 DEVise setYAxisDateFormat {TotalLinked_viewsymB} {%b %d %Y %T}
@@ -526,7 +616,12 @@ DEVise setDupElim {TotalLinked_viewsymB} {0}
 DEVise setNiceAxes {TotalLinked_viewsymB} 0 0
 DEVise viewSetDisabledActions {TotalLinked_viewsymB} 0 0 0 0
 DEVise setShowMouseLocation {TotalLinked_viewsymB} {1}
-DEVise create {view} {Scatter} Total_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9
+DEVise setLinkMultFact {TotalLinked_viewsymB} {X} 1
+DEVise setLinkMultFact {TotalLinked_viewsymB} {Y} 1
+DEVise setGAttrLinkMode {TotalLinked_viewsymB} 0
+DEVise setDoHomeOnVisLink {TotalLinked_viewsymB} {1}
+
+DEVise create {view} {Scatter} Total_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9 0 37 0 37
 DEVise setLabel {Total_viewsymA} 0 12 {}
 DEVise setViewStatistics {Total_viewsymA} 00000000
 DEVise setViewDimensions {Total_viewsymA} 2
@@ -543,7 +638,7 @@ DEVise viewSetVerPan {Total_viewsymA} 1 0.500000 1.000000
 DEVise setViewGDS {Total_viewsymA} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {Total_viewsymA} 1 0 0 "" 1 " " 1
 DEVise setHistogram {Total_viewsymA} 21 987 10
-DEVise setCountMapping {Total_viewsymA} 0 {} {}
+DEVise setCountMapping {Total_viewsymA} 0 {} {} 0
 DEVise viewSetIsHighlight {Total_viewsymA} 0
 DEVise setXAxisDateFormat {Total_viewsymA} {%b %d %H:%M}
 DEVise setYAxisDateFormat {Total_viewsymA} {%b %d %Y %T}
@@ -554,7 +649,12 @@ DEVise setDupElim {Total_viewsymA} {0}
 DEVise setNiceAxes {Total_viewsymA} 0 0
 DEVise viewSetDisabledActions {Total_viewsymA} 1 0 0 1
 DEVise setShowMouseLocation {Total_viewsymA} {1}
-DEVise create {view} {Scatter} Total_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9
+DEVise setLinkMultFact {Total_viewsymA} {X} 1
+DEVise setLinkMultFact {Total_viewsymA} {Y} 1
+DEVise setGAttrLinkMode {Total_viewsymA} 0
+DEVise setDoHomeOnVisLink {Total_viewsymA} {1}
+
+DEVise create {view} {Scatter} Total_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9 0 37 0 37
 DEVise setLabel {Total_viewsymB} 0 12 {}
 DEVise setViewStatistics {Total_viewsymB} 00000000
 DEVise setViewDimensions {Total_viewsymB} 2
@@ -571,7 +671,7 @@ DEVise viewSetVerPan {Total_viewsymB} 1 0.500000 1.000000
 DEVise setViewGDS {Total_viewsymB} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {Total_viewsymB} 1 0 0 "" 1 " " 1
 DEVise setHistogram {Total_viewsymB} 0 304 10
-DEVise setCountMapping {Total_viewsymB} 0 {} {}
+DEVise setCountMapping {Total_viewsymB} 0 {} {} 0
 DEVise viewSetIsHighlight {Total_viewsymB} 0
 DEVise setXAxisDateFormat {Total_viewsymB} {%b %d %H:%M}
 DEVise setYAxisDateFormat {Total_viewsymB} {%b %d %Y %T}
@@ -582,68 +682,119 @@ DEVise setDupElim {Total_viewsymB} {0}
 DEVise setNiceAxes {Total_viewsymB} 0 0
 DEVise viewSetDisabledActions {Total_viewsymB} 1 0 0 1
 DEVise setShowMouseLocation {Total_viewsymB} {1}
+DEVise setLinkMultFact {Total_viewsymB} {X} 1
+DEVise setLinkMultFact {Total_viewsymB} {Y} 1
+DEVise setGAttrLinkMode {Total_viewsymB} 0
+DEVise setDoHomeOnVisLink {Total_viewsymB} {1}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {condor_user_mc}
 
 # Create mapping instances (GData)
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList AllUser#condor_user_mc {} 0 {$X} {} 8 0.9 0 0 17 {$ViewName} 1 1 {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {AllUser#condor_user_mc} 1
+DEVise setMappingColors {AllUser#condor_user_mc} {8} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList UserList#condor_user_mc {} 0 {$X} {} 37 0.9 0 360 12 {$UserName} {} -2 0.6 {} -3 4 {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {UserList#condor_user_mc} 1
+DEVise setMappingColors {UserList#condor_user_mc} {37} {37} {0}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList Select1#condor_user_mc {} 0 {$X} {} 8 0.5 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {Select1#condor_user_mc} 1
+DEVise setMappingColors {Select1#condor_user_mc} {8} {8} {0}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList Select2#condor_user_mc {} 0 {$X} {} 8 0.5 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {Select2#condor_user_mc} 1
+DEVise setMappingColors {Select2#condor_user_mc} {8} {8} {0}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList User1A#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"User1_viewsymA"} 1 1 {$TDataName} {"User1Pile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {User1A#condor_user_mc} 1
+DEVise setMappingColors {User1A#condor_user_mc} {} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList User1B#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"User1_viewsymB"} 1 1 {$TDataName} {"User1Pile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {User1B#condor_user_mc} 1
+DEVise setMappingColors {User1B#condor_user_mc} {} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList User2A#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"User2_viewsymA"} 1 1 {$TDataName} {"User2Pile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {User2A#condor_user_mc} 1
+DEVise setMappingColors {User2A#condor_user_mc} {} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList User2B#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"User2_viewsymB"} 1 1 {$TDataName} {"User2Pile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {User2B#condor_user_mc} 1
+DEVise setMappingColors {User2B#condor_user_mc} {} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList TotalA#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"Total_viewsymA"} 1 1 {} {"TotalPile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalA#condor_user_mc} 1
+DEVise setMappingColors {TotalA#condor_user_mc} {} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList TotalB#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"Total_viewsymB"} 1 1 {} {"TotalPile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalB#condor_user_mc} 1
+DEVise setMappingColors {TotalB#condor_user_mc} {} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList TotalLinkedA#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"TotalLinked_viewsymA"} 1 1 {} {"TotalLinkedPile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalLinkedA#condor_user_mc} 1
+DEVise setMappingColors {TotalLinkedA#condor_user_mc} {} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} .Condor_UserList TotalLinkedB#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"TotalLinked_viewsymB"} 1 1 {} {"TotalLinkedPile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalLinkedB#condor_user_mc} 1
+DEVise setMappingColors {TotalLinkedB#condor_user_mc} {} {37} {37}
+
 DEVise create {mapping} {condor_user_mc} ..Condor_Total TotalsymA#condor_user_mc {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalsymA#condor_user_mc} 1
+DEVise setMappingColors {TotalsymA#condor_user_mc} {36} {36} {0}
+
 DEVise create {mapping} {condor_user_mc} ..Condor_Total TotalsymB#condor_user_mc {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalsymB#condor_user_mc} 1
+DEVise setMappingColors {TotalsymB#condor_user_mc} {31} {31} {0}
+
 DEVise create {mapping} {condor_user_mc} ..Condor_Total TotalLinkedsymA#condor_user_mc {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalLinkedsymA#condor_user_mc} 1
+DEVise setMappingColors {TotalLinkedsymA#condor_user_mc} {36} {36} {0}
+
 DEVise create {mapping} {condor_user_mc} ..Condor_Total TotalLinkedsymB#condor_user_mc {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalLinkedsymB#condor_user_mc} 1
+DEVise setMappingColors {TotalLinkedsymB#condor_user_mc} {31} {31} {0}
+
 DEVise create {mapping} {condor_user_mc} .Condor_Total .Condor_Total#User1_viewsymA {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.Condor_Total#User1_viewsymA} 1
+DEVise setMappingColors {.Condor_Total#User1_viewsymA} {36} {36} {0}
+
 DEVise create {mapping} {condor_user_mc} .Condor_dman@cs_wisc_edu .Condor_dman@cs_wisc_edu#User2_viewsymA {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.Condor_dman@cs_wisc_edu#User2_viewsymA} 1
+DEVise setMappingColors {.Condor_dman@cs_wisc_edu#User2_viewsymA} {36} {36} {0}
+
 DEVise create {mapping} {condor_user_mc} .Condor_Total .Condor_Total#User1_viewsymB {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.Condor_Total#User1_viewsymB} 1
+DEVise setMappingColors {.Condor_Total#User1_viewsymB} {31} {31} {0}
+
 DEVise create {mapping} {condor_user_mc} .Condor_dman@cs_wisc_edu .Condor_dman@cs_wisc_edu#User2_viewsymB {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.Condor_dman@cs_wisc_edu#User2_viewsymB} 1
+DEVise setMappingColors {.Condor_dman@cs_wisc_edu#User2_viewsymB} {31} {31} {0}
 
 # Create windows
 DEVise create {window} {TileLayout} UserList 0.100000 0.199219 0.149219 0.739258 0 0
 DEVise create {window} {TileLayout} Total 0.250000 0.869141 0.729688 0.069336 0 0
-DEVise create {window} {TileLayout} Select1 0.019531 0.199219 0.039844 0.739258 0 0
-DEVise create {window} {TileLayout} Select2 0.059375 0.199219 0.039844 0.739258 0 0
+DEVise create {window} {TileLayout} Select1 0.017969 0.199219 0.039844 0.739258 0 0
+DEVise create {window} {TileLayout} Select2 0.058594 0.199219 0.039844 0.739258 0 0
 DEVise create {window} {TileLayout} User1 0.250000 0.199219 0.729688 0.219727 0 0
 DEVise create {window} {TileLayout} User2 0.250000 0.419922 0.729688 0.219727 0 0
-DEVise create {window} {TileLayout} TotalLinked 0.250000 0.639648 0.729688 0.229492 0 0
+DEVise create {window} {TileLayout} TotalLinked 0.250000 0.638672 0.729688 0.228516 0 0
 
 # Set up window layouts
+
 DEVise setWindowLayout {UserList} -1 -1 0
+
 DEVise setWindowLayout {Total} -1 -1 0
+
 DEVise setWindowLayout {Select1} -1 -1 0
+
 DEVise setWindowLayout {Select2} -1 -1 0
+
 DEVise setWindowLayout {User1} -1 -1 0
+
 DEVise setWindowLayout {User2} -1 -1 0
+
 DEVise setWindowLayout {TotalLinked} -1 -1 0
 
 # Create links
@@ -659,82 +810,139 @@ DEVise create {cursor} {Cursor} TimeCursor 1 0 1.000000 1.000000 0
 # Create actions
 
 # Put labels into views
+
 DEVise setAxisDisplay {UserList_view} {X} 0
 DEVise setAxisDisplay {UserList_view} {Y} 0
 DEVise setAxisTicks {UserList_view} {X} 1
 DEVise setAxisTicks {UserList_view} {Y} 1
+DEVise setAxisMultFact {UserList_view} {X} 1
+DEVise setAxisMultFact {UserList_view} {Y} 1
+
 DEVise setAxisDisplay {Select1_view} {X} 0
 DEVise setAxisDisplay {Select1_view} {Y} 0
 DEVise setAxisTicks {Select1_view} {X} 1
 DEVise setAxisTicks {Select1_view} {Y} 1
+DEVise setAxisMultFact {Select1_view} {X} 1
+DEVise setAxisMultFact {Select1_view} {Y} 1
+
 DEVise setAxisDisplay {Select2_view} {X} 0
 DEVise setAxisDisplay {Select2_view} {Y} 0
 DEVise setAxisTicks {Select2_view} {X} 1
 DEVise setAxisTicks {Select2_view} {Y} 1
+DEVise setAxisMultFact {Select2_view} {X} 1
+DEVise setAxisMultFact {Select2_view} {Y} 1
+
 DEVise setAxisDisplay {User1_viewA} {X} 0
 DEVise setAxisDisplay {User1_viewA} {Y} 0
 DEVise setAxisTicks {User1_viewA} {X} 1
 DEVise setAxisTicks {User1_viewA} {Y} 1
+DEVise setAxisMultFact {User1_viewA} {X} 1
+DEVise setAxisMultFact {User1_viewA} {Y} 1
+
 DEVise setAxisDisplay {User1_viewB} {X} 0
 DEVise setAxisDisplay {User1_viewB} {Y} 0
 DEVise setAxisTicks {User1_viewB} {X} 1
 DEVise setAxisTicks {User1_viewB} {Y} 1
+DEVise setAxisMultFact {User1_viewB} {X} 1
+DEVise setAxisMultFact {User1_viewB} {Y} 1
+
 DEVise setAxisDisplay {User2_viewA} {X} 0
 DEVise setAxisDisplay {User2_viewA} {Y} 0
 DEVise setAxisTicks {User2_viewA} {X} 1
 DEVise setAxisTicks {User2_viewA} {Y} 1
+DEVise setAxisMultFact {User2_viewA} {X} 1
+DEVise setAxisMultFact {User2_viewA} {Y} 1
+
 DEVise setAxisDisplay {User2_viewB} {X} 0
 DEVise setAxisDisplay {User2_viewB} {Y} 0
 DEVise setAxisTicks {User2_viewB} {X} 1
 DEVise setAxisTicks {User2_viewB} {Y} 1
+DEVise setAxisMultFact {User2_viewB} {X} 1
+DEVise setAxisMultFact {User2_viewB} {Y} 1
+
 DEVise setAxisDisplay {TotalLinked_viewA} {X} 0
 DEVise setAxisDisplay {TotalLinked_viewA} {Y} 0
 DEVise setAxisTicks {TotalLinked_viewA} {X} 1
 DEVise setAxisTicks {TotalLinked_viewA} {Y} 1
+DEVise setAxisMultFact {TotalLinked_viewA} {X} 1
+DEVise setAxisMultFact {TotalLinked_viewA} {Y} 1
+
 DEVise setAxisDisplay {TotalLinked_viewB} {X} 0
 DEVise setAxisDisplay {TotalLinked_viewB} {Y} 0
 DEVise setAxisTicks {TotalLinked_viewB} {X} 1
 DEVise setAxisTicks {TotalLinked_viewB} {Y} 1
+DEVise setAxisMultFact {TotalLinked_viewB} {X} 1
+DEVise setAxisMultFact {TotalLinked_viewB} {Y} 1
+
 DEVise setAxisDisplay {Total_viewA} {X} 0
 DEVise setAxisDisplay {Total_viewA} {Y} 0
 DEVise setAxisTicks {Total_viewA} {X} 1
 DEVise setAxisTicks {Total_viewA} {Y} 1
+DEVise setAxisMultFact {Total_viewA} {X} 1
+DEVise setAxisMultFact {Total_viewA} {Y} 1
+
 DEVise setAxisDisplay {Total_viewB} {X} 0
 DEVise setAxisDisplay {Total_viewB} {Y} 0
 DEVise setAxisTicks {Total_viewB} {X} 1
 DEVise setAxisTicks {Total_viewB} {Y} 1
+DEVise setAxisMultFact {Total_viewB} {X} 1
+DEVise setAxisMultFact {Total_viewB} {Y} 1
+
 DEVise setAxisDisplay {User1_viewsymA} {X} 0
 DEVise setAxisDisplay {User1_viewsymA} {Y} 1
 DEVise setAxisTicks {User1_viewsymA} {X} 1
 DEVise setAxisTicks {User1_viewsymA} {Y} 1
+DEVise setAxisMultFact {User1_viewsymA} {X} 1
+DEVise setAxisMultFact {User1_viewsymA} {Y} 1
+
 DEVise setAxisDisplay {User1_viewsymB} {X} 0
 DEVise setAxisDisplay {User1_viewsymB} {Y} 1
 DEVise setAxisTicks {User1_viewsymB} {X} 1
 DEVise setAxisTicks {User1_viewsymB} {Y} 1
+DEVise setAxisMultFact {User1_viewsymB} {X} 1
+DEVise setAxisMultFact {User1_viewsymB} {Y} 1
+
 DEVise setAxisDisplay {User2_viewsymA} {X} 0
 DEVise setAxisDisplay {User2_viewsymA} {Y} 1
 DEVise setAxisTicks {User2_viewsymA} {X} 1
 DEVise setAxisTicks {User2_viewsymA} {Y} 1
+DEVise setAxisMultFact {User2_viewsymA} {X} 1
+DEVise setAxisMultFact {User2_viewsymA} {Y} 1
+
 DEVise setAxisDisplay {User2_viewsymB} {X} 0
 DEVise setAxisDisplay {User2_viewsymB} {Y} 1
 DEVise setAxisTicks {User2_viewsymB} {X} 1
 DEVise setAxisTicks {User2_viewsymB} {Y} 1
+DEVise setAxisMultFact {User2_viewsymB} {X} 1
+DEVise setAxisMultFact {User2_viewsymB} {Y} 1
+
 DEVise setAxisDisplay {TotalLinked_viewsymA} {X} 1
 DEVise setAxisDisplay {TotalLinked_viewsymA} {Y} 1
 DEVise setAxisTicks {TotalLinked_viewsymA} {X} 1
 DEVise setAxisTicks {TotalLinked_viewsymA} {Y} 1
+DEVise setAxisMultFact {TotalLinked_viewsymA} {X} 1
+DEVise setAxisMultFact {TotalLinked_viewsymA} {Y} 1
+
 DEVise setAxisDisplay {TotalLinked_viewsymB} {X} 1
 DEVise setAxisDisplay {TotalLinked_viewsymB} {Y} 1
 DEVise setAxisTicks {TotalLinked_viewsymB} {X} 1
 DEVise setAxisTicks {TotalLinked_viewsymB} {Y} 1
+DEVise setAxisMultFact {TotalLinked_viewsymB} {X} 1
+DEVise setAxisMultFact {TotalLinked_viewsymB} {Y} 1
+
 DEVise setAxisDisplay {Total_viewsymA} {X} 1
 DEVise setAxisDisplay {Total_viewsymA} {Y} 1
 DEVise setAxisTicks {Total_viewsymA} {X} 1
 DEVise setAxisTicks {Total_viewsymA} {Y} 1
+DEVise setAxisMultFact {Total_viewsymA} {X} 1
+DEVise setAxisMultFact {Total_viewsymA} {Y} 1
+
 DEVise setAxisDisplay {Total_viewsymB} {X} 1
 DEVise setAxisDisplay {Total_viewsymB} {Y} 1
 DEVise setAxisTicks {Total_viewsymB} {X} 1
 DEVise setAxisTicks {Total_viewsymB} {Y} 1
+DEVise setAxisMultFact {Total_viewsymB} {X} 1
+DEVise setAxisMultFact {Total_viewsymB} {Y} 1
 
 # Put action into view
 
@@ -776,6 +984,7 @@ DEVise insertMapping {Total_viewsymA} {TotalsymA#condor_user_mc}
 DEVise insertMapping {Total_viewsymB} {TotalsymB#condor_user_mc}
 
 # Link views
+
 DEVise insertLink {TimeLink} {User1_viewsymA}
 DEVise insertLink {TimeLink} {User2_viewsymA}
 DEVise insertLink {TimeLink} {TotalLinked_viewsymA}
@@ -803,98 +1012,120 @@ DEVise setPileStackState {User2} 4
 DEVise setPileStackState {TotalLinked} 4
 
 # Init history of view
+
 DEVise clearViewHistory {UserList_view}
-DEVise insertViewHistory {UserList_view} {-0.05} {0.00} {1.05} {1.00} 0
+DEVise insertViewHistory {UserList_view} {-0.05} {0} {1.05} {1} 0
 DEVise insertViewHistory {UserList_view} {-0.05} {-0.55} {1.05} {22.55} 0
+
 DEVise clearViewHistory {Select1_view}
-DEVise insertViewHistory {Select1_view} {0.00} {0.00} {1.00} {1.00} 0
+DEVise insertViewHistory {Select1_view} {0} {0} {1} {1} 0
 DEVise insertViewHistory {Select1_view} {-0.55} {-0.55} {0.55} {22.55} 0
+
 DEVise clearViewHistory {Select2_view}
-DEVise insertViewHistory {Select2_view} {0.00} {0.00} {1.00} {1.00} 0
+DEVise insertViewHistory {Select2_view} {0} {0} {1} {1} 0
 DEVise insertViewHistory {Select2_view} {-0.55} {-0.55} {0.55} {22.55} 0
+
 DEVise clearViewHistory {User1_viewA}
-DEVise insertViewHistory {User1_viewA} {0.00} {-1.00} {1.00} {-2.00} 0
-DEVise insertViewHistory {User1_viewA} {0.00} {-2.00} {1.00} {-1.00} -110
-DEVise insertViewHistory {User1_viewA} {0.00} {10.50} {1.00} {11.50} 0
-DEVise insertViewHistory {User1_viewA} {-0.50} {21.50} {0.50} {22.50} 0
+DEVise insertViewHistory {User1_viewA} {0} {-1} {1} {-2} 0
+DEVise insertViewHistory {User1_viewA} {0} {-2} {1} {-1} -110
+DEVise insertViewHistory {User1_viewA} {0} {10.5} {1} {11.5} 0
+DEVise insertViewHistory {User1_viewA} {-0.5} {21.5} {0.5} {22.5} 0
+
 DEVise clearViewHistory {User1_viewB}
-DEVise insertViewHistory {User1_viewB} {0.00} {-1.00} {1.00} {-2.00} 0
-DEVise insertViewHistory {User1_viewB} {0.00} {-2.00} {1.00} {-1.00} -110
-DEVise insertViewHistory {User1_viewB} {-0.50} {21.50} {0.50} {22.50} 0
+DEVise insertViewHistory {User1_viewB} {0} {-1} {1} {-2} 0
+DEVise insertViewHistory {User1_viewB} {0} {-2} {1} {-1} -110
+DEVise insertViewHistory {User1_viewB} {-0.5} {21.5} {0.5} {22.5} 0
+
 DEVise clearViewHistory {User2_viewA}
-DEVise insertViewHistory {User2_viewA} {0.00} {-1.00} {1.00} {-2.00} 0
-DEVise insertViewHistory {User2_viewA} {0.00} {-2.00} {1.00} {-1.00} -110
-DEVise insertViewHistory {User2_viewA} {0.00} {10.50} {1.00} {11.50} 0
-DEVise insertViewHistory {User2_viewA} {-0.50} {20.50} {0.50} {21.50} 0
+DEVise insertViewHistory {User2_viewA} {0} {-1} {1} {-2} 0
+DEVise insertViewHistory {User2_viewA} {0} {-2} {1} {-1} -110
+DEVise insertViewHistory {User2_viewA} {0} {10.5} {1} {11.5} 0
+DEVise insertViewHistory {User2_viewA} {-0.5} {20.5} {0.5} {21.5} 0
+
 DEVise clearViewHistory {User2_viewB}
-DEVise insertViewHistory {User2_viewB} {0.00} {-1.00} {1.00} {-2.00} 0
-DEVise insertViewHistory {User2_viewB} {0.00} {-2.00} {1.00} {-1.00} -110
-DEVise insertViewHistory {User2_viewB} {-0.50} {20.50} {0.50} {21.50} 0
+DEVise insertViewHistory {User2_viewB} {0} {-1} {1} {-2} 0
+DEVise insertViewHistory {User2_viewB} {0} {-2} {1} {-1} -110
+DEVise insertViewHistory {User2_viewB} {-0.5} {20.5} {0.5} {21.5} 0
+
 DEVise clearViewHistory {TotalLinked_viewA}
-DEVise insertViewHistory {TotalLinked_viewA} {-0.50} {-0.50} {0.50} {0.50} 0
+DEVise insertViewHistory {TotalLinked_viewA} {-0.5} {-0.5} {0.5} {0.5} 0
+
 DEVise clearViewHistory {TotalLinked_viewB}
-DEVise insertViewHistory {TotalLinked_viewB} {-0.50} {-0.50} {0.50} {0.50} 0
+DEVise insertViewHistory {TotalLinked_viewB} {-0.5} {-0.5} {0.5} {0.5} 0
+
 DEVise clearViewHistory {Total_viewA}
-DEVise insertViewHistory {Total_viewA} {-0.50} {-0.50} {0.50} {0.50} 0
+DEVise insertViewHistory {Total_viewA} {-0.5} {-0.5} {0.5} {0.5} 0
+
 DEVise clearViewHistory {Total_viewB}
-DEVise insertViewHistory {Total_viewB} {-0.50} {-0.50} {0.50} {0.50} 0
+DEVise insertViewHistory {Total_viewB} {-0.5} {-0.5} {0.5} {0.5} 0
+
 DEVise clearViewHistory {User1_viewsymA}
-DEVise insertViewHistory {User1_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {1.00} 0
-DEVise insertViewHistory {User1_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {987.00} 0
-DEVise insertViewHistory {User1_viewsymA} {Aug 13 1999 01:38:32} {0.00} {Aug 20 1999 01:33:24} {987.00} 0
-DEVise insertViewHistory {User1_viewsymA} {Dec 28 1969 06:02:35} {0.00} {Jan 04 1970 05:57:26} {987.00} 0
-DEVise insertViewHistory {User1_viewsymA} {Aug 13 1999 01:38:32} {0.00} {Aug 20 1999 01:33:24} {987.00} 0
+DEVise insertViewHistory {User1_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {1} 0
+DEVise insertViewHistory {User1_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {987} 0
+DEVise insertViewHistory {User1_viewsymA} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {987} 0
+DEVise insertViewHistory {User1_viewsymA} {Dec 31 1969 17:59:59} {0} {Jan 04 1970 05:57:26} {987} 0
+DEVise insertViewHistory {User1_viewsymA} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {987} 0
+
 DEVise clearViewHistory {User1_viewsymB}
-DEVise insertViewHistory {User1_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {1.00} 0
-DEVise insertViewHistory {User1_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {304.00} 0
-DEVise insertViewHistory {User1_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {987.00} 0
-DEVise insertViewHistory {User1_viewsymB} {Dec 28 1969 06:02:35} {0.00} {Jan 04 1970 05:57:26} {987.00} 0
+DEVise insertViewHistory {User1_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {1} 0
+DEVise insertViewHistory {User1_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {304} 0
+DEVise insertViewHistory {User1_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {987} 0
+DEVise insertViewHistory {User1_viewsymB} {Dec 31 1969 17:59:59} {0} {Jan 04 1970 05:57:26} {987} 0
+DEVise insertViewHistory {User1_viewsymB} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {987} 0
+
 DEVise clearViewHistory {User2_viewsymA}
-DEVise insertViewHistory {User2_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {1.00} 0
-DEVise insertViewHistory {User2_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {987.00} 0
-DEVise insertViewHistory {User2_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {4.00} 0
-DEVise insertViewHistory {User2_viewsymA} {Aug 13 1999 01:38:32} {0.00} {Aug 20 1999 01:33:24} {4.00} 0
+DEVise insertViewHistory {User2_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {1} 0
+DEVise insertViewHistory {User2_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {987} 0
+DEVise insertViewHistory {User2_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {4} 0
+DEVise insertViewHistory {User2_viewsymA} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {4} 0
+
 DEVise clearViewHistory {User2_viewsymB}
-DEVise insertViewHistory {User2_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {1.00} 0
-DEVise insertViewHistory {User2_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {304.00} 0
-DEVise insertViewHistory {User2_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {4.00} 0
-DEVise insertViewHistory {User2_viewsymB} {Aug 13 1999 01:38:32} {0.00} {Aug 20 1999 01:33:24} {4.00} 0
+DEVise insertViewHistory {User2_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {1} 0
+DEVise insertViewHistory {User2_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {304} 0
+DEVise insertViewHistory {User2_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {4} 0
+DEVise insertViewHistory {User2_viewsymB} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {4} 0
+
 DEVise clearViewHistory {TotalLinked_viewsymA}
-DEVise insertViewHistory {TotalLinked_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {1.00} 0
-DEVise insertViewHistory {TotalLinked_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {987.00} 0
-DEVise insertViewHistory {TotalLinked_viewsymA} {Aug 13 1999 01:38:32} {0.00} {Aug 20 1999 01:33:24} {987.00} 0
+DEVise insertViewHistory {TotalLinked_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {1} 0
+DEVise insertViewHistory {TotalLinked_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {987} 0
+DEVise insertViewHistory {TotalLinked_viewsymA} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {987} 0
+
 DEVise clearViewHistory {TotalLinked_viewsymB}
-DEVise insertViewHistory {TotalLinked_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {1.00} 0
-DEVise insertViewHistory {TotalLinked_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {987.00} 0
-DEVise insertViewHistory {TotalLinked_viewsymB} {Aug 13 1999 01:38:32} {0.00} {Aug 20 1999 01:33:24} {987.00} 0
+DEVise insertViewHistory {TotalLinked_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {1} 0
+DEVise insertViewHistory {TotalLinked_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {987} 0
+DEVise insertViewHistory {TotalLinked_viewsymB} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {987} 0
+
 DEVise clearViewHistory {Total_viewsymA}
-DEVise insertViewHistory {Total_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {1.00} 0
-DEVise insertViewHistory {Total_viewsymA} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {987.00} 0
-DEVise insertViewHistory {Total_viewsymA} {Aug 13 1999 01:38:32} {0.00} {Aug 20 1999 01:33:24} {987.00} 0
+DEVise insertViewHistory {Total_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {1} 0
+DEVise insertViewHistory {Total_viewsymA} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {987} 0
+DEVise insertViewHistory {Total_viewsymA} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {987} 0
+
 DEVise clearViewHistory {Total_viewsymB}
-DEVise insertViewHistory {Total_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {1.00} 0
-DEVise insertViewHistory {Total_viewsymB} {Dec 31 1969 18:00:00} {0.00} {Dec 31 1969 18:00:01} {987.00} 0
-DEVise insertViewHistory {Total_viewsymB} {Aug 13 1999 01:38:32} {0.00} {Aug 20 1999 01:33:24} {987.00} 0
+DEVise insertViewHistory {Total_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {1} 0
+DEVise insertViewHistory {Total_viewsymB} {Dec 31 1969 18:00:00} {0} {Dec 31 1969 18:00:01} {987} 0
+DEVise insertViewHistory {Total_viewsymB} {Aug 13 1999 01:38:32} {0} {Aug 20 1999 01:33:24} {987} 0
 
 # Set camera location for each view
-DEVise set3DLocation {UserList_view} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {Select1_view} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {Select2_view} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {User1_viewA} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {User1_viewB} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {User2_viewA} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {User2_viewB} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {TotalLinked_viewA} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {TotalLinked_viewB} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {Total_viewA} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {Total_viewB} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {User1_viewsymA} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {User1_viewsymB} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {User2_viewsymA} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {User2_viewsymB} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {TotalLinked_viewsymA} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {TotalLinked_viewsymB} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {Total_viewsymA} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
-DEVise set3DLocation {Total_viewsymB} <NegZ>, <-2.5>, <2.5>, <-2.5>, <2.5>, <-2.5>, <2.5>, <0>, <0>
+DEVise set3DLocation {UserList_view} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {Select1_view} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {Select2_view} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {User1_viewA} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {User1_viewB} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {User2_viewA} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {User2_viewB} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {TotalLinked_viewA} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {TotalLinked_viewB} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {Total_viewA} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {Total_viewB} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {User1_viewsymA} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {User1_viewsymB} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {User2_viewsymA} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {User2_viewsymB} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {TotalLinked_viewsymA} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {TotalLinked_viewsymB} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {Total_viewsymA} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {Total_viewsymB} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 
 # Set string tables for each view
+
+# Session postscript

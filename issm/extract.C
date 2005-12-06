@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,39 @@
   $Id$
 
   $Log$
+  Revision 1.12.20.4  2005/09/28 18:38:06  wenger
+  Got rid of a few typecasts.
+
+  Revision 1.12.20.3  2005/09/12 19:42:20  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.12.20.2  2005/09/06 21:20:24  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.12.20.1  2003/12/19 18:08:00  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.12.38.1  2003/12/17 00:18:13  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.12.36.2  2003/12/16 16:08:28  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.12.36.1  2003/04/18 16:10:51  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
+  Revision 1.12  1998/12/15 14:55:35  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.11  1998/08/17 18:52:03  wenger
   Updated solaris dependencies for egcs; fixed most compile warnings;
   bumped version to 1.5.4.
@@ -56,12 +89,13 @@
   Initial revision of archive.
 */
 
-#include <iostream.h>
-#include <strstream.h>
-#include <fstream.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <fstream>
+#include <iostream>
+#include <strstream>
+using namespace std;
 
 #define X
 
@@ -92,7 +126,7 @@ static Tcl_Interp *globalInterp = 0;
 #ifndef X
 static int tapePos = 0;
 
-static int symbolMatch(char *str, int argc, char **argv)
+static int symbolMatch(const char *str, int argc, char **argv)
 {
   for(argc--; argc >= 0; argc--, argv++) {
     char *pattern = argv[0];
@@ -201,7 +235,7 @@ static void genListInfo()
 }
 #endif
 
-static void genExtractData(char *file)
+static void genExtractData(const char *file)
 {
   ofstream trade(file, ios::out);
   if (!trade) {
@@ -686,7 +720,7 @@ int main(int argc, char **argv)
     else if (extractCmd && symbolMatch(header1.symbol, argc - 2, &argv[2])) {
       cout << "Extracting " << header1.symbol << " ("
 	   << header1.n << " trades/quotes)" << endl;
-      ostrstream fileName;
+      strstream fileName;
       fileName << header1.symbol << ".dat" << ends;
       char *file = fileName.str();
       genExtractData(file);
@@ -703,9 +737,10 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef X
-static int extract(RecTape &tape, char *stock, long offset, char *file)
+static int extract(RecTape &tape, const char *stock, long offset,
+		const char *file)
 {
-  ostrstream note;
+  std::strstream note;
   note << "Reading " << stock << " from tape..." << ends;
   char *notestr = note.str();
   Tcl_SetVar(globalInterp, "issm_status", notestr, TCL_GLOBAL_ONLY);
@@ -727,7 +762,7 @@ static int extract(RecTape &tape, char *stock, long offset, char *file)
     return -1;
   }
 
-  ostrstream note2;
+  std::strstream note2;
   note2 << "Writing " << stock << " to disk..." << ends;
   notestr = note2.str();
   Tcl_SetVar(globalInterp, "issm_status", notestr, TCL_GLOBAL_ONLY);
@@ -744,7 +779,7 @@ static int extract(RecTape &tape, char *stock, long offset, char *file)
 // Searches through the index file and finds the entry for the given 
 // key. Then, returns the tape offset for this security.
 
-static long int find_issm_offset(FILE *idxfile, char *key)
+static long int find_issm_offset(FILE *idxfile, const char *key)
 {
   unsigned long int offval;
   char symbol[12];
@@ -758,8 +793,9 @@ static long int find_issm_offset(FILE *idxfile, char *key)
   return -1;
 }
 
-static int issm_create(char *tapeDrive, char *tapeFile, char *tapeOff,
-		       char *tapeBsize, char *idxFile, char **argv, int argc)
+static int issm_create(const char *tapeDrive, const char *tapeFile,
+		const char *tapeOff, const char *tapeBsize,
+		const char *idxFile, const char **argv, int argc)
 {
   DOASSERT(argc % 2 == 0, "Invalid parameters");
   int num = argc / 2;
@@ -813,7 +849,7 @@ static int issm_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   for(i = 0; i < num; i++) {
     if (offset_arr[i] < atol(tapeOff))
       continue;
-    if (extract(tape, argv[spos_arr[i]], (unsigned long int)offset_arr[i],
+    if (extract(tape, argv[spos_arr[i]], (long)offset_arr[i],
 		argv[spos_arr[i] + 1]) <= 0)
       ++errors;
   }
@@ -827,7 +863,11 @@ static int issm_create(char *tapeDrive, char *tapeFile, char *tapeOff,
   return TCL_OK;
 }
 
-int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
+int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+  const
+#endif
+  char **argv)
 {
   // Allow other functions to UPDATE_TCL
 
@@ -837,11 +877,11 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
 
   // Get parameter values from TCL script
 
-  char *tapeDrive = argv[1];
-  char *tapeFile = argv[2];
-  char *tapeOff = argv[3];
-  char *tapeBsize = argv[4];
-  char *idxFile = argv[5];
+  const char *tapeDrive = argv[1];
+  const char *tapeFile = argv[2];
+  const char *tapeOff = argv[3];
+  const char *tapeBsize = argv[4];
+  const char *idxFile = argv[5];
 
   printf("Reading from %s:%s:%s (%s)\n",
 	 tapeDrive, tapeFile, tapeOff, tapeBsize);
@@ -849,6 +889,9 @@ int extractStocksCmd(ClientData cd, Tcl_Interp *interp, int argc, char **argv)
   // pass pairs of <key, cachefilename> to extraction routine
 
   return issm_create(tapeDrive, tapeFile, tapeOff, tapeBsize, idxFile,
+#if TCL_MAJOR_VERSION < 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION <= 3)
+		     (const char**)
+#endif
 		     &argv[6], argc - 6);
 }
 #endif

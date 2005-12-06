@@ -1,6 +1,6 @@
 "4096_bonds_vars" UNIXFILE 4096_bonds_vars star_bonds+vars.schema  $DEVISE_SCHEMA/physical/star_bonds+vars "" 100 50  "$DEVISE_DAT/bmrb" "" ;
 "4096_total" UNIXFILE 4096_total.dat star_atom.schema  $DEVISE_SCHEMA/physical/star_backbone_total "" 100 50  "$DEVISE_DAT/bmrb" "" ;
-"bmrb:var_select_total" UNIXFILE var_select_total bmrb:var_select  $DEVISE_SCHEMA/physical/bmrb:var_select "" 100 50  "$DEVISE_DAT/bmrb" "" ;
+"bmrb:var_select_total" UNIXFILE var_select_total bmrb-var_select  $DEVISE_SCHEMA/physical/bmrb-var_select "" 100 50  "$DEVISE_DAT/bmrb" "" ;
 "zone1" UNIXFILE zone1 ZONE $DEVISE_SCHEMA/physical/COD1:ZONE "" 100 50 "$DEVISE_DAT/COD1" "" ;
 "zone2" UNIXFILE zone2 ZONE $DEVISE_SCHEMA/physical/COD1:ZONE "" 100 50 "$DEVISE_DAT/COD1" "" ;
 "zone3" UNIXFILE zone3 ZONE $DEVISE_SCHEMA/physical/COD1:ZONE "" 100 50 "$DEVISE_DAT/COD1" "" ;

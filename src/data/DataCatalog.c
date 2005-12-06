@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2001
+  (c) Copyright 1998-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.11  2003/01/13 19:26:30  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.10.10.2  2003/06/26 16:53:18  wenger
+  Index file names for per-session data sources now include the session
+  name (to reduce collisions); fixed a few memory problems relating to
+  the data source catalogs.
+
   Revision 1.10.10.1  2002/09/02 21:29:40  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -319,7 +327,7 @@ DataCatalog::Instance()
 #endif
 
  if (catInstance == NULL) {
-   catInstance = new DataCatalog;
+   catInstance = new DataCatalog();
    DOASSERT(catInstance, "Out of memory");
  }
  return catInstance;
@@ -608,7 +616,7 @@ DataCatalog::AddEntry(const char *catName, const char *entry)
 	sprintf(errBuf, "Data source %s already exists", nameBuf);
 	reportErrNosys(errBuf);
       }
-      delete [] tmpEntry;
+      FreeString(tmpEntry);
       return result;
     }
 

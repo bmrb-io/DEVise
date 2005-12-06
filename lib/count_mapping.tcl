@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-1998
+# (c) Copyright 1992-2003
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -19,6 +19,17 @@
 # $Id$
 
 # $Log$
+# Revision 1.1.20.1  2003/07/31 15:38:38  wenger
+# Added initial value option to count mapping, also GUI for it; more
+# buffer length checks (still many more needed) in DeviseCommand.C.
+#
+# Revision 1.1  1998/10/20 19:46:30  wenger
+# Mapping dialog now displays the view's TData name; "Next in Pile" button
+# in mapping dialog allows user to edit the mappings of all views in a pile
+# without actually flipping them; user has the option to show all view names;
+# new GUI to display info about all links and cursors; added API and GUI for
+# count mappings.
+#
 
 ############################################################
 
@@ -39,6 +50,7 @@ proc EditCountMapping {} {
     frame .editCountMapping.row2
     frame .editCountMapping.row3
     frame .editCountMapping.row4
+    frame .editCountMapping.row5
 
     # Create the various widgets.
     button .editCountMapping.ok -text "OK" -width 10 \
@@ -79,6 +91,12 @@ proc EditCountMapping {} {
       -command { .editCountMapping.putAttr configure -text "Y";
       .editCountMapping.countAttr configure -text "X" }
 
+    # Label and entry for initial count
+    global initValue
+    label .editCountMapping.initLab -text "Initial value:"
+    entry .editCountMapping.initEnt -width 10 -relief sunken \
+      -textvariable initValue
+
     # These frames are for spacing only.
     frame .editCountMapping.row2a -width 80m -height 6m
     frame .editCountMapping.row4a -width 10m -height 4m
@@ -95,8 +113,10 @@ proc EditCountMapping {} {
       -side top -pady 1m
     pack .editCountMapping.countLab .editCountMapping.countAttr \
       -in .editCountMapping.row3 -side left
-    pack .editCountMapping.putLab .editCountMapping.putAttr -in .editCountMapping.row4 \
-      -side left
+    pack .editCountMapping.putLab .editCountMapping.putAttr \
+      -in .editCountMapping.row4 -side left
+    pack .editCountMapping.initLab .editCountMapping.initEnt \
+      -in .editCountMapping.row5 -side left
 
     # Get the current values from the cursor and set the GUI accordingly.
     # Returns: <enabled> <countAttr> <putAttr>
@@ -104,6 +124,7 @@ proc EditCountMapping {} {
     set countMapEnabled [lindex $countMapping 0]
     .editCountMapping.countAttr configure -text [lindex $countMapping 1]
     .editCountMapping.putAttr configure -text [lindex $countMapping 2]
+    set initValue [lindex $countMapping 3]
     ToggleCountMapGUI
 
     # Wait for the user to make a selection from this window.
@@ -120,11 +141,13 @@ proc ToggleCountMapGUI {} {
     if {$countMapEnabled} {
       pack .editCountMapping.row3 -after .editCountMapping.row2a -pady 1m
       pack .editCountMapping.row4 -after .editCountMapping.row3 -pady 1m
-      pack .editCountMapping.row4a -after .editCountMapping.row4 -pady 1m
+      pack .editCountMapping.row5 -after .editCountMapping.row4 -pady 1m
+      pack .editCountMapping.row4a -after .editCountMapping.row5 -pady 1m
     } else {
       pack forget .editCountMapping.row3
       pack forget .editCountMapping.row4
       pack forget .editCountMapping.row4a
+      pack forget .editCountMapping.row5
     }
 }
 
@@ -133,6 +156,7 @@ proc ToggleCountMapGUI {} {
 proc SetCountMapping {} {
     global curView
     global countMapEnabled
+    global initValue
 
     set countMapCountAttr [lindex [.editCountMapping.countAttr \
       configure -text] 4]
@@ -141,7 +165,7 @@ proc SetCountMapping {} {
 
     # Arguments: <viewName> <enabled> <countAttr> <putAttr>
     DEVise setCountMapping $curView $countMapEnabled $countMapCountAttr \
-      $countMapPutAttr
+      $countMapPutAttr $initValue
 }
 
 #============================================================================

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2000
+  (c) Copyright 1999-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.3.14.1  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  2000/03/14 17:05:14  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.2  1999/05/07 14:13:45  wenger
   Piled view symbols now working: pile name is specified in parent view's
   mapping, views are piled by Z specified in parent's mapping; changes
@@ -255,8 +262,8 @@ ViewGeom::SplitWindow(ViewWin *window)
   info->_window = window;
 
   int viewCount = window->NumChildren();
-  ViewWin **views = new (ViewWin *)[viewCount];
-  ViewWin **newWindows = new (ViewWin *)[viewCount];
+  ViewWin **views = new ViewWin *[viewCount];
+  ViewWin **newWindows = new ViewWin *[viewCount];
 
   //
   // We need to make a separate list of the views here because we can't

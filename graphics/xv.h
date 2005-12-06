@@ -9,6 +9,13 @@
   $Id$
 
   $Log$
+  Revision 1.4.14.1  2005/10/20 20:29:35  wenger
+  Some errno-related fixes; added RH 7.3 stuff; clarifying note
+  in linux setup script.
+
+  Revision 1.4  1999/07/12 19:02:04  wenger
+  Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
+
   Revision 1.3  1998/03/25 14:51:51  wenger
   Added standard headers to all graphics sources.
 
@@ -142,7 +149,7 @@
 
 #ifndef VMS
 #  include <errno.h>
-   extern int   errno;             /* SHOULD be in errno.h, but often isn't */
+   // extern int   errno;             /* SHOULD be in errno.h, but often isn't */
 #  ifndef __NetBSD__
 #    ifndef LINUX
        extern char *sys_errlist[];     /* this too... */

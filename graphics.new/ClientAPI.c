@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,25 @@
   $Id$
 
   $Log$
+  Revision 1.25.8.3  2005/09/28 22:29:47  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.25.8.2  2005/09/28 17:14:49  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.25.8.1  2005/09/15 19:23:33  wenger
+  ClientAPI code now logs errors via the DevError class (added
+  DebugLogDummy to the client library so this works for devise
+  and collaborator, which don't link the full graphics.new lib).
+
+  Revision 1.25  2001/10/12 18:30:21  wenger
+  Fixed problems with network header reading/writing code (old code
+  assumed that the NetworkHeader struct would never contain any extra
+  space for alignment, other problems).
+
   Revision 1.24  2001/01/08 20:32:52  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -135,13 +154,9 @@
 
 #include "ClientAPI.h"
 #include "Util.h"
+#include "DevError.h"
 
 //#define DEBUG
-
-// Note: we are not using the regular DevError stuff here because that
-// isn't linked into the DEVise client.  RKW 2000-09-01.
-#define reportErr(message) \
-  fprintf(stderr, "Error at %s, %d: %s\n", __FILE__, __LINE__, message);
 
 // Convert a NetworkHeader to the corresponding buffer.
 static void Header2Buf(const NetworkHeader &hdr, NetworkHeaderBuf &buf);
@@ -173,8 +188,7 @@ int NetworkNonBlockMode(int fd)
   int result = fcntl(fd, F_SETFL, O_NDELAY);
 #endif
   if (result < 0) {
-	reportErr("Error setting non-blocking mode");
-	perror("fcntl()");
+	reportErrSys("Error setting non-blocking mode");
     return -1;
   }
 
@@ -185,15 +199,14 @@ int NetworkBlockMode(int fd)
 {
   int result = fcntl(fd, F_SETFL, 0);
   if (result < 0) {
-	reportErr("Error setting blocking mode");
-	perror("fcntl()");
+	reportErrSys("Error setting blocking mode");
     return -1;
   }
 
   return 1;
 }
 
-char *NetworkPaste(int argc, char **argv)
+char *NetworkPaste(int argc, const char * const *argv)
 {
   if (argc < 1) {
     return strdup("");
@@ -213,7 +226,7 @@ char *NetworkPaste(int argc, char **argv)
 
   char *cmd = new char [size];
   if (!cmd) {
-    reportErr("Out of memory\n");
+    reportErrNosys("Out of memory\n");
     return NULL;
   }
 
@@ -230,7 +243,7 @@ char *NetworkPaste(int argc, char **argv)
   }
 
   if (ptr - cmd != size - 1) {
-    reportErr("Internal error.");
+    reportErrNosys("Internal error.");
     return NULL;
   }
 
@@ -246,21 +259,19 @@ int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
 {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
   if (fd < 0) {
-	reportErr("Cannot create socket");
-	perror("socket()");
+	reportErrSys("Cannot create socket");
     return -1;
   }
 
   struct hostent *servEnt = gethostbyname(servName);
   if (!servEnt) {
-    reportErr("Cannot translate server name");
-	perror("gethostbyname()");
+    reportErrSys("Cannot translate server name");
     close(fd);
     return -1;
   }
 
   if (servEnt->h_addrtype != AF_INET) {
-    reportErr("Unsupported address type");
+    reportErrNosys("Unsupported address type");
     close(fd);
     return -1;
   }
@@ -284,8 +295,7 @@ int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
   	if (result < 0) {
 		if (mode == CONNECT_ONCE)
 		{
-    		reportErr("Cannot connect to server");
-			perror("connect()");
+    		reportErrSys("Cannot connect to server");
     		close(fd);
     		return -1;
 		}
@@ -298,8 +308,7 @@ int NetworkModedOpen(char *servName, int portNum, ConnectMode mode, int seconds)
 		close(fd);
   		fd = socket(AF_INET, SOCK_STREAM, 0);
   		if (fd < 0){
-    		reportErr("Cannot create socket");
-			perror("socket()");
+    		reportErrSys("Cannot create socket");
     		return -1;
   		}
   	}
@@ -385,7 +394,7 @@ int NetworkReceive(int fd, int block, u_short &msgType, int &ac, char **&av,
 #endif
     recBuff = new char [recBuffSize];
     if (!recBuff) {
-      reportErr("Out of memory\n");
+      reportErrNosys("Out of memory\n");
       return -1;
     }
   }
@@ -417,8 +426,7 @@ int NetworkReceive(int fd, int block, u_short &msgType, int &ac, char **&av,
       }
 
 	  // An error other than EINTR.
-	  reportErr("Error receiving message body from socket");
-	  perror("recv()");
+	  reportErrSys("Error receiving message body from socket");
       return -1;
     }
     ptr += res;
@@ -429,7 +437,7 @@ int NetworkReceive(int fd, int block, u_short &msgType, int &ac, char **&av,
   }
 
   if (totrem != 0) {
-    reportErr("Invalid protocol message.");
+    reportErrNosys("Invalid protocol message.");
     return -1;
   }
 
@@ -472,7 +480,7 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
 #endif
     argv = new char * [argc];
     if (!argv) {
-      reportErr("Out of memory");
+      reportErrNosys("Out of memory");
       return -1;
     }
   }
@@ -496,7 +504,7 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
       // argument must be terminated with NULL
 	  printf(" proper values = %c %c %c \n", ptr[size-2], ptr[size-1],
 	      ptr[size]);
-      reportErr("Invalid procotol argument");
+      reportErrNosys("Invalid procotol argument");
       return -1;
     }
 
@@ -519,7 +527,7 @@ int NetworkParse(const char *recBuff, int numElements, char **&av)
 }
 
 int NetworkSend(int fd, u_short msgType, u_short bracket, int argc,
-    char **argv)
+    const char * const *argv)
 {
 #if defined(DEBUG)
   printf("NetworkSend(%d, %d, %d, ", fd, msgType, bracket);
@@ -543,8 +551,7 @@ int NetworkSend(int fd, u_short msgType, u_short bracket, int argc,
   {
     int result = send(fd, recBuffer, msgsize, 0);
     if (result != msgsize) {
-	  reportErr("Error sending message");
-	  perror("send()");
+	  reportErrSys("Error sending message");
       return -1;
     }
   }
@@ -557,7 +564,7 @@ int NetworkSend(int fd, u_short msgType, u_short bracket, int argc,
 }
 
 int NetworkPrepareMsg(u_short msgType, 
-    u_short bracket, int argc, char **argv, char** recBufferp)
+    u_short bracket, int argc, const char * const *argv, char** recBufferp)
 {
   static int recBuffSize = 0;
   static char *recBuff = 0;
@@ -608,7 +615,7 @@ int NetworkPrepareMsg(u_short msgType,
 #endif
     recBuff = new char [recBuffSize];
     if (!recBuff) {
-      reportErr("Out of memory");
+      reportErrNosys("Out of memory");
       return -1;
     }
   }
@@ -756,7 +763,7 @@ ReadWithRetries(int fd, char *buf, int bufSize, int block, int maxRetries)
 		// Note: if select() reported the fd is ready for reading, but there
 		// is no data, that probably means that the process on the other
 		// end of the socket died without closing the socket.  RKW 2000-09-01.
-	    reportErr("No data available on socket");
+	    reportErrNosys("No data available on socket");
 	    return -1;
 	  } else {
 		tries++;
@@ -775,9 +782,7 @@ ReadWithRetries(int fd, char *buf, int bufSize, int block, int maxRetries)
 
 	// An error other than EINTR, or got part of the buffer.
     if (block) {
-	  printf("Error at %s: %d: ", __FILE__, __LINE__);
-	  reportErr("Error receiving message from socket");
-      perror("recv()");
+	  reportErrSys("Error receiving message from socket");
 #if defined(DEBUG)
       printf("errno = %d\n", errno);
       printf("res = %d\n", res);

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,13 @@
 #	$Id$
 
 #	$Log$
+#	Revision 1.82  2003/01/13 19:25:45  wenger
+#	Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+#	
+#	Revision 1.81.14.2  2004/08/26 19:19:18  wenger
+#	Fixed bug 578/741 (can't display a data source from the "Edit
+#	Data Source" dialog).
+#	
 #	Revision 1.81.14.1  2002/08/15 21:36:30  wenger
 #	Fixed bug 755 (schema selection GUI now defaults to physical
 #	schema directory).
@@ -498,6 +505,7 @@ proc saveSources {} {
 
 ############################################################
 
+# Note: this only displays the data source; it doesn't update the catalog.
 proc updateStreamDef_and_display {dispname} {
 
 # 	updateStreamDef
@@ -509,6 +517,7 @@ proc updateStreamDef_and_display {dispname} {
 # 	set tdata [lindex $tdata_schema_pair 0]
 # 	set schemaname [lindex $tdata_schema_pair 1]
 #	MacroDefAuto $tdata $schemaname
+
 	OpenDataSource $dispname
 	MacroDefAuto $dispname [GetSchema $dispname]
 }
@@ -756,7 +765,12 @@ proc defineStream {base edit} {
     global dispname source key schemafile evaluation priority command
 
     if {[WindowVisible .srcdef]} {
-	return
+	# Note: we CANNOT just return here, because certain global varibles
+	# have already been set; if we return, the dialog itself and some
+	# of the global variables will be inconsistent.  It would be nice
+	# to update the dialog without destroying it, but this is a lot
+	# easer.  wenger 2004-08-26.
+	destroy .srcdef
     }
 
     toplevel .srcdef
@@ -909,7 +923,7 @@ proc defineStream {base edit} {
 
     button .srcdef.but.ok -text OK -width 10 -command updateStreamDef
     button .srcdef.but.display -text Display -width 10 \
-    		-command {updateStreamDef_and_display $dispname}
+    		-command {updateStreamDef_and_display [fullPathName $dispname]}
     button .srcdef.but.cancel -text Cancel -width 10 \
 	    -command { destroy .srcdef }
     pack .srcdef.but.display .srcdef.but.ok .srcdef.but.cancel -in .srcdef.but.row1 \

@@ -11,9 +11,12 @@
 ############################################################
 
 source scripts/dev_prog.std
-source scripts/dev_vis.jsdemo
+source scripts/dev_vis.js
+
+mkdir -p $DEVISE_TMP_SESSION
 
 # Note: for some reason, nohup is needed for this to work
 # when the jss is launched via rsh (pid files don't get removed
 # otherwise).
-nohup scripts/start_devised $* >& /dev/null &
+touch logs/start_devised.log
+nohup scripts/start_devised $* >>& logs/start_devised.log &

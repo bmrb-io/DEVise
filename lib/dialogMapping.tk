@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2002
+#  (c) Copyright 1992-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,29 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.58.4.5  2005/02/16 18:21:10  wenger
+#       Mapping dialog prints out mapping name (to help with manual session
+#       editing).
+#
+#       Revision 1.58.4.4  2005/02/16 18:04:48  wenger
+#       Fixed bug 913 (shape attrs 11-14 get cleared by apply in mapping
+#       dialog).
+#
+#       Revision 1.58.4.3  2004/04/23 21:57:27  wenger
+#       Added new 'select next view in pile' feature.
+#
+#       Revision 1.58.4.2  2003/11/19 19:40:07  wenger
+#       Display modes now work for symbol colors; also added some missing
+#       commands to the (horrible) Tcl code for copying views; minor
+#       improvement to error reporting.
+#
+#       Revision 1.58.4.1  2003/02/07 19:33:44  wenger
+#       Fixed typo in GUI.
+#
+#       Revision 1.58  2002/01/02 21:57:58  wenger
+#       Fixed bug 682 (problem with piled child view refresh when mapping
+#       is changed).
+#
 #       Revision 1.57  2001/07/19 20:08:34  wenger
 #       Added X Offset attribute to Line shape (for NRG examples).
 #
@@ -286,7 +309,7 @@ proc BringUpMappingDialog { w curview } {
 			-command { FlipStackedView }
     
     button $w.message2.next -text "Next in Pile" -state disabled \
-	-command { MappingNextInPile }
+	-command { DEVise selectNextInPile }
 
     frame $w.mapping
     frame $w.mapping.label
@@ -446,6 +469,12 @@ proc BringUpMappingDialog { w curview } {
     
 }
 
+proc UpdateMappingDialogCurrent {} {
+    global curView
+
+    UpdateMappingDialog .editMapping $curView
+}
+
 proc UpdateMappingDialog { w curView {goToTop 1} } {
 	global DEViseShapes
 	global curMappingView
@@ -495,6 +524,7 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 
 	# Get mapping for the view (first one)
 	set map [lindex [DEVise getViewMappings $curView] 0]
+	puts "Note: view '$curView' mapping is '$map'"
 	#See if map is interpreted
     set found [DEVise isInterpretedGData $map]
 
@@ -546,6 +576,14 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 	set shapeAttr8 [lindex [lindex $params 19] 1]
 	set shapeAttr9 [lindex [lindex $params 20] 1]
 	set shapeAttr10 [lindex [lindex $params 21] 1]
+
+	# Save shapeAttr11-14 -- not implemented in the GUI, but we need to
+	# save the values so they don't get cleared.  (See bug 913.)
+    global shapeAttr11 shapeAttr12 shapeAttr13 shapeAttr14
+	set shapeAttr11 [lindex [lindex $params 22] 1]
+	set shapeAttr12 [lindex [lindex $params 23] 1]
+	set shapeAttr13 [lindex [lindex $params 24] 1]
+	set shapeAttr14 [lindex [lindex $params 25] 1]
 
 	set mappings [list \
 			[list X $xParm] \
@@ -706,6 +744,8 @@ proc ChangeParams { map oldparams newmap } {
 	# For now, map RGB "name" into constant color index
 #	set color [DEVise color GetColorID [lindex $newmap 3]]
 
+	global shapeAttr11 shapeAttr12 shapeAttr13 shapeAttr14
+
     # extract parameters
     set newparams [list [lindex [lindex $oldparams 0] 1] \
 			[lindex [lindex $oldparams 1] 1] \
@@ -727,8 +767,11 @@ proc ChangeParams { map oldparams newmap } {
 			[lindex $newmap 16] \
 			[lindex $newmap 17] \
 			[lindex $newmap 18] \
+			$shapeAttr11 \
+			$shapeAttr12 \
+			$shapeAttr13 \
+			$shapeAttr14 \
 			]
-    
     # Change parameter
     set cmd "DEVise changeParam \{$map\} $newparams"
     eval $cmd
@@ -786,7 +829,7 @@ set DEViseShapeAttrNames { \
 	{"Line Shade" "" "" "" "" ""} \
 	{"Regular Polygon" Width Height Segments "" "Line Width"} \
 	{Oval Width Height "" "" "Line Width"} \
-	{Vector "X Length (Height)" "Y Length (Width)" "" "" "Line Width"} \
+	{Vector "X Length (Width)" "Y Length (Height)" "" "" "Line Width"} \
 	{HorLine "" "" "" "" "Line Width"} \
 	{Segment Width Height "" "" "Line Width"} \
 	{HighLow Width "Mid" "Low (Y min)" "Color increment" \
@@ -1015,17 +1058,6 @@ proc DoShapeHelp {} {
 	pack $w.body.scroll -side right -fill y
 	pack $w.body.text -side left -fill both -expand true
 	pack $w.cntl.ok -side right -fill x -expand 1
-}
-
-#*******************************************************************************
-# Edit the mapping of the next view in a pile (or stack) *without actually
-# flipping* the pile or stack.
-
-proc MappingNextInPile {} {
-	global curMappingView
-
-	set view [DEVise nextViewInPile $curMappingView]
-	UpdateMappingDialog .editMapping $view 0
 }
 
 #*******************************************************************************

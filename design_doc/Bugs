@@ -75,7 +75,7 @@ Num Date        Status  Description
 022 08/06/96	FIXED?	Records missing from view when many views or 
 			datasources are open. (kb)
 
-023 08/04/96	FIXED?	Doing an extreme zoom in causes extra records to 
+023 08/04/96	FIXED	Doing an extreme zoom in causes extra records to 
 			suddenly appear. (kb)
 			9/6/96: cause of problem found:
 			Overflow problem when converting from devise
@@ -85,6 +85,7 @@ Num Date        Status  Description
 			quite right work for other types (eg lines).
 			(Possible fix by rkw, 11/12/99 -- see
 			XWindowRep::Line().)
+			(Better fix by wenger, 1/3/05.)
 
 024 08/06/96	OPEN	Zooming as far as you can in or out can cause 
 			DEVise to fail an assertion. (kb)
@@ -2270,9 +2271,10 @@ Num Date        Status  Description
 			size. (rkw)
 			(Fixed by rkw, 4/6/00.)
 
-578 04/18/00	OPEN	Displaying a data source from the 'Edit Data Stream
+578 04/18/00	FIXED	Displaying a data source from the 'Edit Data Stream
 			Definition' dialog doesn't work. (rkw)
 			(See 741.)
+			(Fixed by wenger, 8/24/04.)
 
 579 04/19/00	FIXED	Do 'refresh' with no session open -> DEVise crashes.
 			(rkw)
@@ -3013,9 +3015,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			main data source catalog. (rkw)
 			(Fixed by rkw, 12/12/01.)
 
-741 12/13/01	DUP	Displaying a TData from the Edit dialog does not
+741 12/13/01	FIXED	Displaying a TData from the Edit dialog does not
 			work. (gk/rkw)
 			(See 578.)
+			(Fixed by wenger, 8/24/04.)
 
 742 12/18/01	FIXED	JavaScreen: change of mouse location causes
 			irritating flickering of the mouse location display
@@ -3044,6 +3047,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 
 748 1/11/02	OPEN	Y-only home sets Y axis based on all data, not just
 			the data within the current X range. (rkw)
+			(See Bug 748.ds, Bug748b.ds.)
 
 749 1/17/02	FIXED	Y-only link on a view prevents home from happening
 			in the X direction, even if home configuration
@@ -3427,9 +3431,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			even being created. (rkw)
 			(Workaround by rkw, 8/27/02.)
 
-820 8/30/02	OPEN	Shift-click (drill-down) on lines is awfully
+820 8/30/02	FIXED	Shift-click (drill-down) on lines is awfully
 			picky about the location of the click to actually
 			find a record. (rkw)
+			(Fixed by wenger, 11/21/03.)
 
 821 9/9/02	FIXED	GAttr links don't work right when the follower view
 			has "complex" symbols (including 3D). (rkw)
@@ -3460,8 +3465,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 
 828 10/28/02	OPEN	JavaScreen: dialogs show up tiny in Mozilla. (sp/rkw)
 
-829 10/28/02	OPEN	JavaScreen: if two restart_jspops overlap, the jspop
+829 10/28/02	FIXED	JavaScreen: if two restart_jspops overlap, the jspop
 			log file can get goofed up. (rkw)
+			(Fixed by wenger, 1/27/03.)
 
 830 11/1/02	OPEN	When switching data types in the BMRB 3D visualizations,
 			the mapping reports errors because of mismatching
@@ -3499,6 +3505,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the VisualLink may get run before it really becomes
 			a problem.) (rkw)
 
+#TEMPTEMP -- should be fixed by changes that are in progress
 835 11/15/02	OPEN	DevAxis::OptimizeTickMarks() can get into an
 			infinite recursion. (rkw)
 
@@ -3568,7 +3575,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 
 848 12/16/02	OPEN	JavaScreen: in collaboration mode, when the leader
 			zooms, follower(s) should get some visual indication
-			of which regoin is being zoomed on. (ks/rkw)
+			of which region is being zoomed on. (ks/rkw)
 
 849 12/17/02	OPEN	JavaScreen: dragging cursors should also not repaint
 			the whole canvas. (rkw)  (See also bug 844.)
@@ -3610,8 +3617,299 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 857 01/07/03	OPEN	The bottommost pixel of the Y axis line is sometimes
 			not drawn. (wenger)
 
-858 01/07/03	OPEN	Bars in the CondorTest/UserWeek.ds session miss the
+858 01/07/03	FIXED	Bars in the CondorTest/UserWeek.ds session miss the
 			X axis by one pixel. (wenger)
+			(Fixed by wenger, 2/7/03.)
+
+859 01/14/03	FIXED	Equal-width (in data units) bars and rects sometimes
+			end up unequal width in pixels.  (Whether this is a
+			bug or not really is kind of an aesthetic judgement,
+			since there are unavoidable rounding problems.)
+			(wenger)
+			(Fixed by wenger, 2/6/03.)
+
+860 01/15/03	FIXED	Axis labeling may not be the same in views with
+			different axis multiplication factors but the same
+			"apparent" filter range. (parker/wenger)
+
+861 01/15/03	FIXED	JavaScreen: axis labeling may not be the same in
+			views with different axis multiplication factors but
+			the same "apparent" filter range. (parker/wenger)
+
+862 01/28/03	FIXED	JavaScreen: main view in antares/aart1_EmEn.ds shows
+			no data (see also test/antares_data_missing4.ds).
+			(sjlong/wenger)
+			(Fixed by wenger, 1/28/03.)
+
+863 02/05/03	OPEN	Home does not work right on views with Vector symbols.
+			(wenger)
+
+864 02/07/03	FIXED	Single-pixel wide bar isn't correctly lined up with
+			axis ticks (at least sometimes). (See Test/Bug864.ds.)
+			(wenger)
+			(Fixed by wenger, 2/7/03.)
+
+865 02/25/03	FIXED	Latest axis labeling code doesn't work for negative
+			axis multiplication factors. (wenger)
+			(Fixed by wenger, 2/27/03.)
+
+866 03/13/03	FIXED	JSPoP gets null pointer if a client requests
+			collaboration with a bad collaboration name.
+			(parker/wenger)
+			(Fixed by wenger, 3/13/03.)
+
+867 03/28/03	OPEN	JavaScreen: if you run the embedded JS in Netscape,
+			do back and then forward, the JS shows up at the
+			wrong position in the Netscape, and not all of it
+			is shown. (Seems to work okay in Mozilla.) (wenger)
+
+868 04/18/03	OPEN	Physical schema GUI allows duplicate attribute names.
+			(wenger)
+
+869 04/24/03	OPEN	Home doesn't work right on single-record views with
+			zero-size symbols (just keeps current visual filter,
+			even if the symbol is outside it). (wenger)
+
+870 04/25/03	FIXED	JavaScreen: if a follower crashes or loses its
+			network connection, the leader gets an "Abrupt end
+			of input stream" error the next time it tries to
+			do something. (parker/wenger)
+			(Fixed by wenger, 4/29/03.)
+
+871 05/08/03	FIXED	Home (5 key) doesn't work right in views that are
+			GAttr link followers (symbols excluded by the link
+			are still used in determining home). (wenger)
+			(Fixed by wenger, 8/1/03.)
+
+872 05/21/03	FIXED	JavaScreen: if you double-click *twice* quickly
+			enough in the session opening dialog, the item
+			you click on gets appended to the path twice.
+			(dmaziuk/wenger)
+			(Fixed by wenger, 5/21/03.)
+
+873 05/21/03	FIXED	Error bars on bar shapes are not properly aligned
+			horizontally (see Bug873.ds). (wenger)
+			(Fixed by wenger, 5/21/03.)
+
+874 05/21/03	FIXED	Home on view with bars sometimes takes two tries
+			to set Y Min to 0.0 (see Bug874.ds). (wenger)
+			(Note: part of the problem is that X is recId --
+			that causes ViewData to not process all records;
+			therefore the data limits are invalid.)
+			(Fixed by wenger, 5/22/03.)
+
+875 05/29/03	WORK?	Wavelet-IDR is getting quite a few "Inconsistent
+			validity flag" errors in TDataAscii. (parker/wenger)
+			(Fixes failed; hopefully have a workaround figured
+			out. wenger 7/1/03.)
+
+876 05/30/03	FIXED	We sometimes get "pixel value overflow" errors in
+			the duplicate elimination code with the
+			restraint_proto4.ds session. (wenger)
+			(Open session, change main views to 2D, maximize
+			residues cursor, maximize bottom cursor, maximize
+			constraints cursor.)  (See also Test/Bug876.ds.)
+			(Fixed by wenger, 6/20/03.)
+
+877 06/06/03	FIXED	Error indicators on bars (or is it home margins??)
+			seem to really goof up home -- takes two tries to
+			set Y to anything reasonable (see Bug877.ds). (wenger)
+			(Seems to have gotten fixed somewhere along the
+			line -- wenger 6/16/03.)
+
+878 06/06/03	OPEN	Y-only home fails on view with recId for X (see
+			Bug878.ds). (wenger)
+
+879 06/13/03	FIXED	Initial visual filters are wrong (and home doesn't
+			work right) in JS session Condor/UserThumb.ds. (wenger)
+			(See also Test/Bug879.ds.)
+			(Fixed by wenger, 6/15/03.)
+
+880 06/25/03	FIXED	A view with RectX symbols *always* tries to call the
+			external process code. (wenger)
+			(Fixed by wenger, 6/25/03.)
+
+881 06/26/03	OPEN	Invalidating TData on bad record doesn't work exactly
+			right (open Test/index_test_big.ds, append spaces
+			to line 50000 of dat/index_test, zoom -> you get
+			duplicates of the last few records).  (If you re-
+			open the session from scratch, things are okay.)
+			(wenger)
+
+882 05/16/03	OPEN	JavaScreen crash on Mac (see ~/Mail/wavelet/js_errors).
+			(kline/wenger)
+
+#TEMPTEMP -- should be fixed by changes that are in progress
+883 07/29/03	OPEN	Small views sometimes have awfully few axis ticks.
+			(wenger)
+
+884 07/30/03	OPEN	Home doesn't work right on views with bar symbols and
+			count mappings (the bounding boxes are not calculated
+			correctly).  (Note that the bounding boxes depend on
+			the value given for the put attribute in the mapping,
+			which is actually ignored otherwise.) (wenger)
+
+885 07/31/03	FIXED	"Y Min Zero" on home doesn't work at all! (wenger)
+			(Fixed by wenger, 8/1/03.)
+
+886 08/01/03	FIXED	Home (5 key) does nothing at all in the main view
+			of JS demo session bmrb/chem_shift_ref/home_bug.ds
+			if no symbols are currently shown! (wenger)
+			(Fixed by wenger, 8/1/03.)
+
+887 08/01/03	OPEN	Home on a view with count mapping takes two tries
+			to get it right (one for X, one for Y). (wenger)
+
+888 08/01/03	NB	A piled view set to X-only home still contributes to
+			Y home on its pile (X-only home seems to work
+			correctly if the view is not piled). (wenger)
+			(Oops -- I had another view in the pile that was
+			giving the Y home value. wenger)
+
+889 10/28/03	FIXED	If hostname lookup in the JSPoP in
+			socket1.getInetAddress().getHostName() takes a long
+			time, the JSPoP gets goofed up because it cannot
+			accept any more connections until the call returns.
+			(One host took four minutes at BMRB). (wenger)
+			(Fixed by wenger, 10/28/03.)
+
+890 11/19/03	FIXED	Drill-down dialog on demo session antares/aart1_2d.ds
+			shows up totally black. (wenger)
+			(Fixed by rkw, 8/23/04.)
+
+891 11/19/03	FIXED	Drill-down dialog doesn't seem to properly limit
+			how much it displays (see Test/Bug890.ds). (wenger)
+			(Fixed by wenger, 11/21/03.)
+
+892 11/19/03	FIXED	Drill-down is often way too fussy about *exactly*
+			hitting a symbol. (wenger/et al)
+			(Fixed by wenger, 11/21/03.)
+
+893 11/20/03	FIXED	Drill-down doesn't work right on views that are
+			GAttr link followers (filtered records still show
+			up). (wenger)
+			(Fixed by wenger, 11/21/03.)
+
+894 11/21/03	FIXED	Drill-down doesn't work right on *orange* bars in
+			the top view of the JS demo session Condor/UserWeek.ds
+			(it reports the child view name instead of the actual
+			data).  It works okay on the yellow bars, in all
+			of the other views(!). (wenger)
+			(Fixed by wenger, 11/24/03.)
+
+895 11/21/03	OPEN	Drill-down still doesn't work real well on lines --
+			it only works when you're near one of the inter-
+			segment points. (wenger)
+
+896 11/24/03	FIXED	Drill-down doesn't work right on views with count
+			mappings (see JS demo session bmrb/chem_shift_ref/
+			bad_drill_down.ds). (wenger)
+			(Fixed by wenger, 11/26/03.)
+
+897 1/5/04	OPEN	JavaScreen: the embedded applet sometimes comes up
+			half-size in Netscape on Windows; the "Please wait --
+			Loading Applet for DEVise JavaScreen" message doesn't
+			get totally covered up. (elu/wenger)
+
+898 1/5/04	OPEN	At least some keypad commands (e.g., 'c') don't work
+			when num lock is on (in "regular" DEVise -- things
+			seem to work okay in the JavaScreen). (wenger)
+
+899 1/7/04	FIXED	Copying a view fails. (wenger)  (If the view has
+			a link.)
+			(Fixed by wenger, 1/7/04.)
+
+900 4/23/04	OPEN	When a non-top view in a pile is selected, the
+			selection outline is not drawn. (wenger)
+
+901 9/2/04	OPEN	'Flip' button in mapping dialog flips the views but
+			doesn't update the info in the dialog (!). (wenger)
+
+902 9/10/04	FIXED	Setting the width and height of a segment to 1000
+			makes it disappear from the view (see Test/bug902.ds).
+			(wenger)
+			(Fixed by wenger, 1/3/05.)
+
+903 9/13/04	OPEN	If you have an unlinked pile with axes turned on,
+			and the two views have different visual filters,
+			the axes shown doen't correspond to the view that's
+			on top (see Test/bug903.ds). (wenger)  (Also happens
+			in the JavaScreen.)
+
+904 9/25/04	OPEN	JavaScreen: cursor display/axis label formats display
+			incorrect # of characters -- %.ng seems to display n
+			digits after the decimal point, not n significant
+			digits; %.nf *doesn't* always display n digits after
+			the decimal point. (wenger)
+
+905 10/11/04	FIXED	JavaScreen: text redrawing problem in child views.
+			Open the session test/bug905.ds (in the JS demo
+			area, move the cursor -> text drawn in the JS
+			disappears! (wenger)
+			(Fixed by wenger, 1/4/05.)
+
+906 10/13/04	OPEN	Line color for average, etc, seems to *not* be the
+			view foreground color -- it seems to have some
+			automatic dependence on the view background color
+			(e.g., if background is black stats lines are white
+			no matter what the foreground is).  (The stats stuff
+			should have its own color anyhow.) (wenger)
+
+907 10/13/04	OPEN	JavaScreen: If you have a view with a cursor, and
+			that view is sitting on top of another view (but
+			not piled), you can't move the cursor in the JS.
+			(This is from the CSR2 vis.) (wenger)
+
+908 10/25/04	OPEN	JavaScreen: in a session with 3D view(s) with
+			segments, for some reason rotating the object
+			is slower with fewer segments(!!).  (See
+			bmrb/4096_side3h.ds for example -- select fewer
+			residues and then rotate.) (wenger)
+
+909 11/8/04	OPEN	JavaScreen: axis label text overwrites view help if
+			they overlap. (wenger)
+
+910 12/17/04	OPEN	JavaScreen: entering screen size sometimes doesn't
+			work (with JSB?).  It should either work or be
+			clearer that it's not changeable. (miron/wenger)
+
+911 1/3/05	FIXED	DEVise fails kind of mysteriously to open a session
+			file if it's DOS-format text. (wenger)
+			(Fixed by wenger, 1/3/05.)
+
+912 1/3/05	OPEN	DEVise (at least sometimes) treats a socket write
+			that writes fewer than the requested bytes as a
+			total failure (this may be goofing up the JavaScreen
+			sometimes). (wenger)
+
+913 2/15/05	FIXED	Applying in the mapping GUI erases GData attributes
+			10-14 (outside the GUI) in the mapping. (wenger)
+			(Fixed by wenger, 2/16/05.)
+
+914 2/16/05	FIXED	'Select Next in Pile' doesn't work on 3D views.
+			(wenger)
+			(Fixed by wenger, 2/16/05.)
+
+915 3/16/05	WORK	Condor weekly view session comes up with incorrect
+			visual filters (piled views have different filters,
+			etc.).  (See the demo session test/bug915.ds.)
+			(Note: workaround now in the script that generates
+			the session.) (wenger)
+
+916 10/19/05	FIXED	There are still problems with segments disappearing
+			when you zoom in too far (see Test/bug916.ds, also
+			see bug 902). (wenger)
+			(Hmm -- this is fixed in the code in CVS, but not
+			in the 1.7.19 that's currently released.)
+
+917 11/2/05	OPEN	Drill-down doesn't seem to work right on text labels
+			(at least when piled).  (See Test/bug917.ds -- you
+			seem to have to hit the text symbol to the exact
+			pixel to get it instead of one of the lines.)
+			(wenger)
+
+918 11/28/05	NB	Axis tick and data don't always match up when they
+			should (see Test/bug918.ds). (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

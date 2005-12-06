@@ -54,7 +54,7 @@ class GdataStat {
 
 
   protected:
-     static int hashFun(double &index, int numOfBucks) { return abs((int)index)%numOfBucks; }
+     static int hashFun(const double &index, int numOfBucks) { return abs((int)index)%numOfBucks; }
 
 //     HashTable<int, BasicStats *> _hashTable;
      HashTable<double, BasicStats *> _hashTable;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.31  2003/01/13 19:25:28  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.30.14.3  2005/09/12 19:42:15  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.30.14.2  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
   Revision 1.30.14.1  2002/09/02 21:29:34  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -168,6 +178,7 @@
 
 class View;
 class MapInterpClassInfo;
+class CmdContainer;
 
 extern GroupDir *gdir;
 
@@ -238,7 +249,11 @@ private:
   static MapInterpClassInfo *_interpProto;
 
   static int DEViseCmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
+		       int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+		       const
+#endif
+		       char *argv[]);
 
   Tcl_Interp *_interp;
   Tk_Window _mainWindow;

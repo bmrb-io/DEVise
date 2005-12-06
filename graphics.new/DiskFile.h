@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.46.1  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  1996/05/31 15:40:36  jussi
+  Cleaned up a bit. Added copyright notice.
+
   Revision 1.2  1995/09/05 22:14:43  jussi
   Added CVS header.
 */
@@ -29,6 +35,8 @@
 
 class DiskFile {
 public:
+  virtual ~DiskFile() {}
+
   /* Create a new file. Return NULL if file already exists */
   static DiskFile *CreateFile(char *name);
 

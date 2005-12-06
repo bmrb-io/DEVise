@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.33  2002/06/17 19:40:59  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.32.10.3  2003/06/06 20:48:37  wenger
+  Implemented provision for automatic testing of DEVise, including
+  running Tcl test scripts within DEVise itself.
+
+  Revision 1.32.10.2  2003/05/13 18:05:59  wenger
+  Added command-line argument to disable external-process capability
+  (for security), defaults to being disabled in JavaScreen support;
+  a little fixing up of the external-process stuff.
+
   Revision 1.32.10.1  2002/05/28 17:15:20  wenger
   Dispatcher::ImmediateTerminate() now logs signal, requests core dump.
 
@@ -258,6 +270,13 @@ class Init {
     // opens to fail.
     static Boolean RobustOpen() { return _robustOpen; }
 
+    // Whether to allow the external process stuff (we may want to turn
+	// it off for security reasons).
+	static Boolean AllowExtProc() { return _allowExtProc; }
+
+	// Tcl script to run at startup (if any).
+	static const char *TclScript() { return _tclScript; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -326,6 +345,8 @@ protected:
 	static Boolean _useJSCache;
 	static Boolean _fontKludge;
 	static Boolean _robustOpen;
+	static Boolean _allowExtProc;
+	static const char *_tclScript;
 };
 
 #endif

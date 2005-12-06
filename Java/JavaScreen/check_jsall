@@ -12,8 +12,14 @@
 ############################################################
 
 # Check the arguments.
+set dev = ""
+if (xx$1 == "xx-dev") then
+  set dev = "-dev"
+  shift
+endif
+
 if ($#argv == 1 || $#argv == 3 || $#argv > 4) then
-  echo "Usage: check_jsall [id_string server_count [jss_host jss_path]]"
+  echo "Usage: check_jsall [-dev] [id_string server_count [jss_host jss_path]]"
   exit
 endif
 
@@ -33,7 +39,7 @@ endif
 
 
 # Check whether all of the processes are running.
-set popCheck = `./check_jspop $idStr`
+set popCheck = `./check_jspop $dev $idStr`
 if ($jssHost == "") then
   set jssCheck = `./check_jss $idStr`
 else
@@ -42,13 +48,18 @@ endif
 
 set date = `date`
 if ($popCheck != "OK") then
-  echo "No jspop process found (at $date)"
+  echo "check_jsall:  no jspop process found (at $date)"
 endif
 
 if ($jssCheck != "OK") then
-  echo "No jss/devised processes found (at $date)"
+  echo "check_jsall:  no jss/devised processes found (at $date)"
 endif
 
 if ($popCheck != "OK" || $jssCheck != "OK") then
+  echo ""
+  echo -n "Uptime: "
+  uptime
+  echo ""
+
   ./restart_jspop $idStr $serverCount $jssHost $jssPath
 endif

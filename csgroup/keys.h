@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.24.1  2005/09/28 22:29:21  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.3  1998/04/01 05:21:49  taodb
+  Replaced types.h with CollabTypes.h, related source files were updated.
+
   Revision 1.2  1998/02/12 17:14:54  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -37,13 +43,13 @@ class CSgroupKey
 		static 	const int seperator = 127;
 		char*	_cskey;
 		GroupKey *_gkp;
-		void	analyseStr(char* cskey);
-		void	analyse2Str(char* grpname, char* passwd);
+		void	analyseStr(const char* cskey);
+		void	analyse2Str(const char* grpname, const char* passwd);
 	public:
 		CSgroupKey();
 		CSgroupKey(GroupKey* gkp);
-		CSgroupKey(char* cskey);
-		CSgroupKey(char* grpname, char* passwd);
+		CSgroupKey(const char* cskey);
+		CSgroupKey(const char* grpname, const char* passwd);
 		~CSgroupKey();
 		bool isNull();
 		bool containName(char* grpname);

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2000
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,36 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.39.4.2  2005/06/08 19:00:28  wenger
+#  Changed DEVise makefiles to compile with the g++ and gcc from
+#  my path, instead of specifying specific paths (to make it easier
+#  to compile DEVise on NMI).
+#
+#  Revision 1.39.4.1  2003/12/19 18:06:42  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.39.22.2  2003/12/17 17:12:38  wenger
+#  Got things to compile and run RH 7.2 and Solaris 2.8 (using gcc 2.95.3
+#  for Solaris because of dynamic library problems).
+#
+#  Revision 1.39.22.1  2003/12/17 00:17:21  wenger
+#  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+#  didn't actually get it to work).
+#
+#  Revision 1.39.20.2  2003/12/16 16:07:29  wenger
+#  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+#  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+#  of dynamic library problem).
+#
+#  Revision 1.39.20.1  2003/04/18 16:10:16  wenger
+#  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+#  but some code is commented out; also may need fixes to be backwards-
+#  compatible with older gcc versions.
+#
+#  Revision 1.39  2002/02/04 16:36:17  wenger
+#  Compiler is explicitly set to gcc 2.95.3, updated dependencies, using
+#  Tcl and Tk 8.3 so DEVise will compile and link on RedHat 7.2.
+#
 #  Revision 1.38  2000/03/08 21:22:11  wenger
 #  Added paths to old compiler for Purify'ing.
 #
@@ -164,15 +194,19 @@
 
 LD = ld
 
-#TEMP -- Until we get things working with gcc 3.0.3
-CC = /s/gcc-2.95.3/bin/g++
-# For Purify.
-#CC = /s/egcs/bin/g++
+# Allow architecture-specific makefiles to specify commands for CC and
+# C if necessary.
+ifeq ($(CC),)
+  #CC = /s/gcc-2.95.3/bin/g++
+  CC = g++
+  # For Purify.
+  #CC = /s/egcs/bin/g++
 
-#TEMP -- Until we get things working with gcc 3.0.3
-C  = /s/gcc-2.95.3/bin/gcc
-# For Purify.
-#C  = /s/egcs/bin/gcc
+  #C  = /s/gcc-2.95.3/bin/gcc
+  C  = gcc
+  # For Purify.
+  #C  = /s/egcs/bin/gcc
+endif
 
 # Allow architecture-specific makefiles to specify commands for AR if necessary.
 ifeq ($(AR),)

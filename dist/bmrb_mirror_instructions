@@ -1,17 +1,30 @@
 	Instructions for DEVise/JavaScreen/Peptide-CGI Installation
 	$Id$
 
-* CONTENTS
+* INTRODUCTION
 
 This file contains instructions for installing the DEVise-related software
-at BMRB web sites.
+at BMRB mirror sites.
+
+Note:  the DEVise/JavaScreen software is designed to be untarred into a
+directory that you use for configuration and testing, and then installed
+into other directories for the "production" system once the configuration
+is correct.  This way, when you need to install a new version, you can
+untar the new version in a new directory, copy over the configuration
+settings from your previous version, test that everything is okay, and
+then install over the top of the existing "production" version.  This
+allows upgrades with the minimum change of taking down the "production"
+system.
 
 
 * OVERALL INSTALLATION
 
-Installation of the DEVise-related software should be done after installing
-the rest of the web site mirror, so that you can test the software after
-it is installed.
+You can install DEVise separately from the rest of the BMRB mirror site;
+however, some of the DEVise-related configuration depends on where you
+will be installing the BMRB mirror files.  Whether you install DEVise
+before or after the rest of the mirror site, it's best to test the
+DEVise-related software by itself, and then in combination with the
+NMR Browser.
 
 There are four main parts to the DEVise-related mirror installation:
 - Demo area skeleton
@@ -30,33 +43,29 @@ To get the distribution files, go to:
 
 Then go to the directory containing the most recent DEVise distribution.
 The directory is of the form Devise-x.x.x, where x.x.x is the DEVise version.
-(At the time of writing, the most recent version is 1.7.4.)
+(At the time of writing, the most recent version is 1.7.18.)
 
 You should get the following files:
-- demo.tar.gz
-- JavaScreen.tar.gz
-- linux-intel.tar.gz, solaris-intel.tar.gz, or solaris-sparc.tar.gz, depending
-  on your machine architecture
+- Devise-x.x.x-demo.tar.gz
+- Devise-x.x.x-JavaScreen.tar.gz
+- Devise-x.x.x-linux-intel*.tar.gz or Devise-x.x.x-solaris-sparc.tar.gz,
+  depending on your machine architecture
 - peptide-cgi_x.x.tgz (where x.x is the peptide-cgi version)
 
 
 * USERS
 
 You should have to do very little, if any, of the installation process
-as root.  Because the current schema requires that some files be in the
-/p/devise directory, you will probably have to create that directory
-as root.  There may be a few things you'll have to do as root, simply
-because of file and directory permissions.  However, none of the installation
-inherently requires root permissions.  It's probably best if you create
-a "normal" user to do all of the installation, and if you run into
-places that need root permission, simply manually create the required
-directories as root (you may want to do a chown on them, to the user
-doing the installation).
+as root.  It's probably best if you create a "normal" user to do all
+of the installation, and if you run into places that need root permission,
+simply manually create the required directories as root (you may want to
+do a chown on them, to the user doing the installation).
 
 The JavaScreen processes do *not* have to run as root, and in fact
 should not, for security.  Basically, the DEVised processes run to
-support the JavaScreen need read permissions in /p/devise and its
-subdirectories, and write permission in /p/devise/session/.tmp.
+support the JavaScreen need read permissions in the demo area,
+and write permission in the .tmp directory within the demo area
+session directory.
 
 The web server user needs write permission in the peptide-cgi
 dynamic_data and dynamic_sessions directories.
@@ -64,29 +73,27 @@ dynamic_data and dynamic_sessions directories.
 
 * DEMO AREA INSTALLATION
 
-At the present time, the demo area skeleton must be installed in /p/devise.
-(We hope to fix that limitation soon.)
-
-To install the demo area skeleton, simply create a /p/devise directory.
-Then go to that directory and untar the demo.tar.gz file.
+To install the demo area skeleton, simply untar the Devise-x.x.x-demo.tar.gz
+file in an appropriate directory.
 
 
 * DEVISE INSTALLATION
 
-Note: the linux-intel distribution may not work on versions of Linux other
-than RedHat 6.2.  If you have a different version of Linux, and experience
-problems, please contact the DEVise Development group (devise-sup@cs.wisc.edu).
-We are working on a fix for this problem.
+First, untar the appropriate Devise-x.x.x-<platform>.tar.gz file.
 
-First, untar the linux-intel.tar.gz, solaris-intel.tar.gz, or
-solaris-sparc.tar.gz file.
+If you're not sure which Devise file is appropriate for your platform,
+please contact the DEVise Development group (devise-sup@cs.wisc.edu).
 
 To make sure that DEVise itself runs properly, go to the run directory,
-and run the script devise.loc.  When DEVise starts up, select Open from
+and run the script devise.  When DEVise starts up, select Open from
 the Session menu, and then select one of the DEVise session (*.ds) files.
 When you open the session file, one or more windows with graphs should
 be displayed.  You should also run the script devise.ldemo to make sure
 that the demo area skeleton works correctly.
+
+If DEVise core dumps on startup, especially on Linux, try getting
+rid of the dyn_lib directory.  Sometimes having it helps, sometimes
+it doesn't.
 
 Note: in the current form of the distribution, DEVise itself is not
 configured to be installed other that as part of the JavaScreen installation.
@@ -112,27 +119,36 @@ needs.
 
 * JAVASCREEN INSTALLATION
 
-First, untar the JavaScreen.tar.gz file.  You MUST untar this file in the
-same directory where you untarred the DEVise distribution file (because
-the JavaScreen distribution relies on relative links to some of the DEVise
-files).
+First, untar the Devise-x.x.x-JavaScreen.tar.gz file.  You MUST untar
+this file in the same directory where you untarred the DEVise
+distribution file (because the JavaScreen distribution relies on
+relative links to some of the DEVise files).
 
-Then copy the appropriate Makefile.config.* file to Makefile.config,
-and edit Makefile.config appropriately.  After doing this, run the
-command 'make -f Makefile.setup clean setup'.
+Change to the JavaScreen directory, then copy the appropriate
+Makefile.config.* file to Makefile.config, and edit Makefile.config
+appropriately.  CONFIG.txt has detailed explanations of all of the
+configuration parameters.  Note that you will have to change the
+INSTALL_HOST variable.
 
-If you are running on a SPARC/Solaris system, edit scripts/start_devised,
-and replace '-fontkludge 0' with '-fontkludge 1'.  (This is a workaround
-for a limitation in Xvfb on SPARC/Solaris).
+Make sure that your Makefile.config defines ERROR_EMAIL (for example,
+'ERROR_EMAIL = zoo@bmrb.wisc.edu').  (This is the user who will get email
+warnings in the case of JSPoP errors being detected.)
+
+Once you've finished editing Makefile.config, run the command
+'make -f Makefile.setup clean setup'.
 
 You can test the JavaScreen as follows:
-- Run the command 'restart_jspop'.
+- Run the command 'restart_jspop test 1'.  (Note that running the JSPoP
+  with the ID 'test' avoids conflict with any production JSPoP running
+  as 'regular' on the same machine.)
 - This should start the following processes:
     - java jspop
     - java jss
     - Xvfb
     - devised
-- Then run js.  You should be able to open a session file in the JavaScreen.
+- Then run 'js -cmdport6266' (you need to specify a cmdport of 6266 to
+  connect with a JSPoP running as test.  You should be able to open a
+  session file in the JavaScreen.
 - Run 'kill_jsall' to kill off the JavaScreen processes before doing the
   actual install.
 
@@ -165,10 +181,21 @@ To do the actual installation, perform the following steps:
   This will do the actual installation into your selected directory.
 
 - Edit your crontab file to create a cron job that automatically checks
-  the JSPop.  Look at the supplied cron_entry.* files for examples.  After
-  installing the cron job, you should get an email stating that no jspop
-  process was found; after that, the JavaScreen-related processes should be
-  running (see the list of processes above).
+  the JSPop.  Look at the supplied cron_entry.* files, especially
+  cron_entry.tuna, for examples.  The cron job should cd to the directory
+  where the JavaScreen is installed, and then run "./run_check regular 4".
+  
+  After installing the cron job, you should get an email stating that no
+  jspop process was found; after that, the JavaScreen-related processes
+  should be running (see the list of processes above).
+
+  Note that you may need to edit the paths in run_check according to the
+  details of your installation.
+
+- Edit your crontab file to create a cron job that generates JavaScreen
+  usage statistics once a week, by cding to the directory where the
+  JavaScreen is installed and running scripts/get_stats_bmrb.  Look at
+  cron_entry.tuna for an example.
 
 - Once you've installed the JavaScreen, make sure that the servers have
   restarted correctly.  You MUST have a jspop process, a jss process, and
@@ -185,7 +212,9 @@ To do the actual installation, perform the following steps:
 
 * PEPTIDE-CGI INSTALLATION
 
-See the INSTALL file in the peptide-cgi directory for installation instructions.
+Untar the peptide-cgi_x.x.tgz in an appropriate directory.  Then see the
+INSTALL file in the peptide-cgi directory for configuration and
+installation instructions.
 
 
 * CONCLUSION

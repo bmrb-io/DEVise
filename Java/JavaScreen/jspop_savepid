@@ -15,52 +15,12 @@
 ############################################################
 
 #
-# Set log file name according to ID string (if any).
-#
-idStr=""
-for arg in $*
-do
-  if [ $arg = "-idregular" ]
-  then
-    idStr="regular"
-  elif [ $arg = "-idsoil" ]
-  then
-    idStr="soil"
-  elif [ $arg = "-idtest" ]
-  then
-    idStr="test"
-  elif [ $arg = "-idtst2" ]
-  then
-    idStr="tst2"
-  elif [ $arg = "-idwave" ]
-  then
-    idStr="wave"
-  fi
-done
-
-info=`./ports+files $idStr`
-outfile=`echo $info | cut -d' ' -f4`
-
-if [ `hostname` = "yola" ]
-then
-  unset DISPLAY
-  unset LD_LIBRARY_PATH
-fi
-
-
-#
-# Re-initialize the log file.
-#
-\rm -f $outfile
-touch $outfile
-
-
-#
 # Fire up the jspop, creating the appropriate pid file, and
 # deleting the pid file when the jspop exits.
 #
+unset CLASSPATH
 javaexec=`cat bin2/java`
-$javaexec JavaScreen.jspop -debug $* >> $outfile 2>&1 &
+$javaexec -Xmx256m JavaScreen.jspop $* 2>&1 &
 
 host=`hostname`
 pidfile="jspop_pid:$idStr:$host:$!"

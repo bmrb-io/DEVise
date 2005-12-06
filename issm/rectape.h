@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.5.46.1  2005/09/28 18:38:06  wenger
+  Got rid of a few typecasts.
+
+  Revision 1.5  1996/09/26 19:10:58  jussi
+  Added support for 64-bit file offsets.
+
   Revision 1.4  1996/04/16 20:56:38  jussi
   Replaced assert() calls with DOASSERT macro.
 
@@ -38,7 +44,7 @@
 
 class RecTape : protected TapeDrive {
 public:
-  RecTape(char *name, char *mode, int fileno = -1,
+  RecTape(const char *name, const char *mode, int fileno = -1,
 	  int blockSize = TAPE_BLOCKSIZE) :
 	TapeDrive(name, mode, fileno, blockSize) {}
   

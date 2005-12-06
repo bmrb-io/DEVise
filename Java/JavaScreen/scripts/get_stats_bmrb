@@ -1,0 +1,30 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2002-2003
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script runs get_stats and mails the results to the
+#  appropriate people for the BMRB site or one of its mirrors.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+if (`uname` == SunOS) then
+  set mail_prog = rmail
+else
+  set mail_prog = mail
+endif
+
+scripts/get_stats | $mail_prog wenger@cs.wisc.edu elu@bmrb.wisc.edu miron@cs.wisc.edu `cat scripts/error_email`

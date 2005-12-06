@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.9.14.1  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.9  2000/01/13 23:07:04  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.8  1997/11/24 23:14:50  weaver
   Changes for the new ColorManager.
 
@@ -87,7 +93,7 @@ public:
 		      long dataOffset, long dataLength);
     ~DataSourceSegment();
 
-    virtual char *objectType();
+    virtual const char *objectType();
 
     virtual DevStatus Open(const char *mode);
     virtual char IsOk();

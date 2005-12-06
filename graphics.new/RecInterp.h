@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.5.46.1  2003/04/17 17:59:26  wenger
+  Now compiles with no warnings with gcc 2.95, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.5  1996/05/07 16:37:15  jussi
+  Added _recPos variable and methods for it.
+
   Revision 1.4  1996/01/19 20:03:19  jussi
   Remove redundant Print().
 
@@ -62,7 +69,8 @@ public:
   void PrintAttrHeading(); 
   
   /* Print info about ith attribute into buffer. */
-  void PrintAttr(char *buf, int attrNum, Boolean printAttrName = false);
+  void PrintAttr(char *buf, int bufLen, int attrNum,
+      Boolean printAttrName = false);
 
 private:
   AttrList *_attrs;                     /* attributes in record */

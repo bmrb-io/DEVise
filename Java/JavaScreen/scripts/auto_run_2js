@@ -1,0 +1,4 @@
+#! /bin/csh -f
+scripts/auto_run_js &
+sleep 10
+scripts/auto_run_js client_log.2 &

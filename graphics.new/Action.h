@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.2.46.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.2  1996/08/04 21:12:42  beyer
+  Added support for devise keys.
+  Added 'h' key that changes histogram width.
+
   Revision 1.1  1996/05/07 16:35:14  jussi
   Moved files from graphics directory.
 
@@ -47,6 +54,7 @@ public:
       _name = name;
       _magnification = 2.0; 
   }
+  virtual ~Action() {}
 
   char *GetName() { return _name; }
 
@@ -86,6 +94,7 @@ protected:
 
 class GenAction {
 public:
+  virtual ~GenAction() {}
   virtual Action *MakeAction(char *name) = 0;
 };
 

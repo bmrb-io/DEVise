@@ -16,6 +16,27 @@
   $Id$
 
   $Log$
+  Revision 1.48.14.2  2005/09/28 17:14:50  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.48.14.1  2003/12/19 18:07:51  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.48.32.1  2003/12/17 00:18:06  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.48.30.1  2003/12/16 16:08:22  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.48  2000/08/10 16:10:53  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.47  2000/03/23 19:58:41  wenger
   Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
   g++ 2.95.2).
@@ -327,7 +348,12 @@ void ServerAPI::DoAbort(const char *reason)
   printf("ServerAPI(0x%p)::DoAbort()\n", this);
 #endif
 
-  fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
+  char errBuf[1024];
+  int formatted = snprintf(errBuf, sizeof(errBuf)/sizeof(char),
+    "An internal error has occurred. Reason:\n  %s\n", reason);
+  checkAndTermBuf2(errBuf, formatted);
+  reportErrNosys(errBuf);
+
   char *args[] = { "AbortProgram", (char *)reason };
   SendControl(2, args, false);
   fprintf(stderr, "Server aborts.\n");
@@ -371,7 +397,7 @@ void ServerAPI::OpenDataChannel(int port)
 
   // Get address of the current client.
   struct sockaddr_in tmpaddr;
-#if defined(LINUX)
+#if defined(LINUX) || defined(SOLARIS)
   socklen_t
 #else
   int
@@ -439,31 +465,47 @@ void ServerAPI::FilterChanged(View *view, const VisualFilter &filter,
   printf("ServerAPI(0x%p)::FilterChanged(%s)\n", this, view->GetName());
 #endif
 
-  char xLowBuf[80], yLowBuf[80], xHighBuf[80], yHighBuf[80];
+  DevStatus status(StatusOk);
+  int formatted;
+
+  const int bufSize = 80;
+  char xLowBuf[bufSize], yLowBuf[bufSize], xHighBuf[bufSize],
+      yHighBuf[bufSize];
   if (view->GetXAxisAttrType() == DateAttr) {
-    sprintf(xLowBuf, "%s", DateString(filter.xLow));
-    sprintf(xHighBuf, "%s", DateString(filter.xHigh));
+    formatted = snprintf(xLowBuf, bufSize, "%s", DateString(filter.xLow));
+    status += checkAndTermBuf2(xLowBuf, formatted);
+    formatted = snprintf(xHighBuf, bufSize, "%s", DateString(filter.xHigh));
+    status += checkAndTermBuf2(xHighBuf, formatted);
   } else {
-    sprintf(xLowBuf, "%.2f", filter.xLow);
-    sprintf(xHighBuf, "%.2f", filter.xHigh);
+    formatted = snprintf(xLowBuf, bufSize, "%.2f", filter.xLow);
+    status += checkAndTermBuf2(xLowBuf, formatted);
+    formatted = snprintf(xHighBuf, bufSize, "%.2f", filter.xHigh);
+    status += checkAndTermBuf2(xHighBuf, formatted);
   }
 				
   if (view->GetYAxisAttrType() == DateAttr) {
-    sprintf(yLowBuf, "%s", DateString(filter.yLow));
-    sprintf(yHighBuf, "%s", DateString(filter.yHigh));
+    formatted = snprintf(yLowBuf, bufSize, "%s", DateString(filter.yLow));
+    status += checkAndTermBuf2(yLowBuf, formatted);
+    formatted = snprintf(yHighBuf, bufSize, "%s", DateString(filter.yHigh));
+    status += checkAndTermBuf2(yHighBuf, formatted);
   } else {
-    sprintf(yLowBuf, "%.2f", filter.yLow);
-    sprintf(yHighBuf, "%.2f", filter.yHigh);
+    formatted = snprintf(yLowBuf, bufSize, "%.2f", filter.yLow);
+    status += checkAndTermBuf2(yLowBuf, formatted);
+    formatted = snprintf(yHighBuf, bufSize, "%.2f", filter.yHigh);
+    status += checkAndTermBuf2(yHighBuf, formatted);
   }
   
+  if (!status.IsComplete()) {
+    reportErrNosys("Aborting ServerAPI::FilterChanged() because of "
+        "insufficient buffer size!!!!!!");
+    return;
+  }
+
   const char *args[] = { "ProcessViewFilterChange", view->GetName(),
 		   (flushed ? "1" : "0"), xLowBuf, yLowBuf,
 		   xHighBuf, yHighBuf, "0" };
   //TEMP -- typecast here should be removed.  RKW 2000-01-13.
-  SendControl(8, (char **)args, true);
-
-  char *rep[] = { "setFilter", view->GetName(), xLowBuf,
-		  yLowBuf, xHighBuf, yHighBuf };
+  SendControl(8, args, true);
 }
 
 void ServerAPI::SelectView(View *view)

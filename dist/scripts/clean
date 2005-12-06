@@ -44,6 +44,10 @@ cd linux-intel
 clean
 cd ..
 
+cd linux-intel_rh72
+clean
+cd ..
+
 \rm -r JavaScreen
 
 cd demo

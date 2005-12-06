@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2002
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,17 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.65  2003/01/13 19:25:45  wenger
+#  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+#
+#  Revision 1.64.10.3  2004/01/07 19:28:00  wenger
+#  Fixed bug 899 (problem with copying views).
+#
+#  Revision 1.64.10.2  2003/11/19 19:40:07  wenger
+#  Display modes now work for symbol colors; also added some missing
+#  commands to the (horrible) Tcl code for copying views; minor
+#  improvement to error reporting.
+#
 #  Revision 1.64.10.1  2002/09/17 18:50:55  wenger
 #  Added GUI for GAttr links.
 #
@@ -421,6 +432,7 @@ proc DoViewCopy {} {
 
     set gdata [lindex [DEVise getViewMappings $view] 0]
     set gdataClass [GetClass mapping $gdata]
+    # Do we even *do* anything with gdataParam????
     set gdataParam [DEVise getCreateParam mapping $gdataClass $gdata]
     set tdata [lindex [DEVise getCreateParam mapping $gdataClass $gdata] 0]
     set window [DEVise getViewWin $view]
@@ -563,6 +575,16 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
 		    "Cannot create mapping." "" 0 OK
 	    return
 	}
+
+	# Copy pixel width.
+	set pixWidth [DEVise getPixelWidth $gdata]
+	set cmd "DEVise setPixelWidth {$newGdata} $pixWidth"
+	eval $cmd
+
+	# Copy colors.
+	set colors [DEVise getMappingColors $gdata]
+	set cmd "DEVise setMappingColors {$newGdata} $colors"
+	eval $cmd
     }
 
     set class [GetClass view $view]
@@ -642,12 +664,19 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     # insert links of $view into $newView
     foreach link [LinkSet] {
         if {[DEVise viewInLink $link $view]} {
-	    DEVise insertLink $link $newView
+	    eval DEVise insertLink {$link} {$newView}
 	}
     }
 
-    DEVise insertWindow $newView $window
-    DEVise insertMapping $newView $newGdata
+    eval DEVise setLinkMultFact {$newView} {X} {[DEVise getLinkMultFact \
+      $view {X}]}
+    eval DEVise setLinkMultFact {$newView} {Y} {[DEVise getLinkMultFact \
+      $view {Y}]}
+    eval DEVise setGAttrLinkMode {$newView} {[DEVise getGAttrLinkMode $view]}
+    eval DEVise setDoHomeOnVisLink {$newView} {[DEVise getDoHomeOnVisLink $view]}
+
+    eval DEVise insertWindow {$newView} {$window}
+    eval DEVise insertMapping {$newView} {$newGdata}
 }
 
 ############################################################

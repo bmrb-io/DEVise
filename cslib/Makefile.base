@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,23 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.17.10.2  2003/12/19 18:07:14  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.17.10.1.4.1  2003/12/18 19:22:59  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.17.10.1  2003/04/17 17:59:01  wenger
+#  Now compiles with no warnings with gcc 2.95, except for warnings about
+#  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+#
+#  Revision 1.17  2001/08/03 18:12:41  wenger
+#  Removed all OpenGL-related code.
+#
 #  Revision 1.16  1998/06/16 16:18:12  wenger
 #  Got devise to compile again on Linux (fixed problems with DataReader
 #  code).
@@ -114,6 +131,7 @@ include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new \
 	-I../../tape -I../../cslib -I../../src/color/export \
+	-I../../src/utils/export \
 	-Wall -Wno-unused -O $(TEMPLATE_FLAGS) $(OPTFLAG) \
 	-DGRAPHICS -DLIBCS -DUNIX -DRAWMOUSEEVENTS
 
@@ -227,10 +245,16 @@ PSWindowRep.o: ../../graphics/PSWindowRep.c
 DualWindowRep.o: ../../graphics/DualWindowRep.c
 	$(CC) -c $(CFLAGS) ../../graphics/DualWindowRep.c
 
+depend: Makefile.depend
+
+Makefile.depend:
+	-rm Makefile.depend
+	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
+
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm -f client client.pure server server.pure TestClient
+	-rm -f client client.pure server server.pure TestClient Makefile.depend
 
 mostlyclean:
 	-rm -f $(TESTOBJ) $(LOCALCSOBJ) $(LOCALWINOBJ) $(LIBCS) $(LIBWIN)

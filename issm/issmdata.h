@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.4.20.1  2005/09/06 21:20:24  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.4  1998/12/15 14:55:35  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.3  1995/11/02 16:52:44  jussi
   Updated copyright message.
 
@@ -29,7 +38,7 @@
 #ifndef ISSMDATA_H
 #define ISSMDATA_H
 
-struct {
+typedef struct {
   char  symbol[12];
   char  cusip[8];
   char  pexch;
@@ -54,18 +63,22 @@ struct {
   int   hdr3;
   float avgpri;
   float lowpri;
-} header1;
+} Header1Type;
+
+Header1Type header1;
 
 int map1[] = { 28, 3, 12, 3, 8, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2 };
 
-struct {
+typedef struct {
   char name[30];
   char xcusip[8];
   char mof;
   char issued[15];
   char sic[4];
-} header2;
+} Header2Type;
+
+Header2Type header2;
 
 int map2[] = { 11, 3, 30, 3, 8, 3, 1, 3, 15, 3, 4 };
 

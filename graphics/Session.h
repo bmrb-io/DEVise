@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.31  2003/01/13 19:25:11  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.30.2.2  2003/06/26 16:53:01  wenger
+  Index file names for per-session data sources now include the session
+  name (to reduce collisions); fixed a few memory problems relating to
+  the data source catalogs.
+
   Revision 1.30.2.1  2002/12/03 23:58:18  wenger
   *** empty log message ***
 
@@ -210,13 +218,25 @@ public:
   // Whether we're currently in the middle of opening a session.
   static Boolean OpeningSession() { return _openingSession; }
 
+  // Get the name of the current session (if any).  Note that the
+  // returned string must NOT be freed by the caller.
   static const char *GetCurrentSession() { return _sessionFile; }
 
+  // Add a per-session data source.
   static DevStatus AddDataSource(const char *catName, const char *entry);
 
+  // Show the data source catalog entry (if any) for the given source.
+  // Note that the returned string must be freed with FreeString()
+  // by the caller.
   static char *ShowDataSource(const char *sourceName);
 
+  // Lists the data catalog, including per-session data sources.
+  // Note that the returned string must be freed with delete [] by the caller.
   static char *ListDataCatalog(const char *catName);
+
+  // Returns true iff the given data source is defined in the session data
+  // catalog as opposed to the system one.
+  static Boolean IsSessionDataSource(const char *sourceName);
 
   // Session description.
   static void SetDescription(const char *description);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2002
+  (c) Copyright 1998-2004
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,12 @@
   $Id$
 
   $Log$
+  Revision 1.30  2003/01/13 19:25:11  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.29.10.2  2004/04/23 21:57:07  wenger
+  Added new 'select next view in pile' feature.
+
   Revision 1.29.10.1  2002/08/27 21:14:23  wenger
   Fixed bug 817 (view not draw because of single-view pile); improved
   debug code in View and Dispatcher classes.
@@ -447,6 +453,7 @@ PileStack::Flip()
   if (_state != PSNormal && GetViewCount() > 1) {
     _disablePileRefresh = true;
 
+#if 0 // Disabled for new 'select next in pile' feature. wenger 2004-04-23.
     //
     // If a view is selected, deselect it, then reselect the first view at
     // the end, so that we maintain the state of the first view being selected.
@@ -455,6 +462,7 @@ PileStack::Flip()
     if (isSelected) {
       ((View *)GetFirstView())->DoSelect(false);
     }
+#endif
 
     //
     // Move the first child view to the end of the list.
@@ -502,9 +510,11 @@ PileStack::Flip()
       if (GetFirstView()) GetFirstView()->Refresh(false);
     }
 
+#if 0 // Disabled for new 'select next in pile' feature. wenger 2004-04-23.
     if (isSelected) {
       SelectView();
     }
+#endif
 
     _disablePileRefresh = false;
   }
@@ -616,11 +626,13 @@ PileStack::InsertView(ViewWin *view)
     GetViewList()->Append(view);
   }
 
+#if 0 // Disabled for new 'select next in pile' feature. wenger 2004-04-23.
   //
   // If any view in the pile is selected, make sure we select the first
   // view.
   //
   if (ViewIsSelected()) SelectView();
+#endif
 
   (void) PileOk();
 
@@ -835,11 +847,13 @@ PileStack::SetPiled(Boolean doLink)
       _state = PSPiledNoLink;
     }
 
+#if 0 // Disabled for new 'select next in pile' feature. wenger 2004-04-23.
     //
     // If any view in the pile is selected, make sure we select the first
     // view.
     //
     if (ViewIsSelected()) SelectView();
+#endif
 
     CancelAllRefreshes();
     if (GetFirstView()) GetFirstView()->Refresh(false);
@@ -1753,6 +1767,7 @@ PileStack::PileOk()
   }
   GetViewList()->DoneIterator(index);
 
+#if 0 // Disabled for new 'select next in pile' feature. wenger 2004-04-23.
   if (ViewIsSelected()) {
     View *view = (View *)GetFirstView();
     if (!view->IsSelected()) {
@@ -1761,6 +1776,7 @@ PileStack::PileOk()
       reportErrNosys(errBuf);
     }
   }
+#endif
 
   return result;
 }

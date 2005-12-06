@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -18,16 +18,28 @@
 
 ############################################################
 
+# Default is to kill Xvfb when killing JSS; some config files change
+# this.
+KILL_XVFB = 1
+
+DEVISE_VIS = /p/devise/demo
+DEVISE_SESSION = $$DEVISE_VIS/session.js
+DEVISE_TMP_SESSION = $$DEVISE_SESSION/.tmp
+DEVISE_HOME_TABLE = $$DEVISE_SCHEMA/catalog.js.dte
+
 include Makefile.config
 
 setup: do_setup
-do_setup: bin2 bin2p dyn_lib install_info logs
+do_setup: bin2 bin2p dyn_lib install_info logs xvfb error_email vis_setup
 
 clean:
 	-rm -rf bin2 bin2p
 	-rm -rf dyn_lib
 	-rm install_info
 	-rm -rf logs
+	-rm scripts/error_email
+	-rm scripts/dev_vis.js
+	-rm demo public
 
 # Note: bin2 is for JSS and devised area.
 bin2:
@@ -62,8 +74,24 @@ error_email:
 	-rm scripts/error_email
 	echo $(ERROR_EMAIL) > scripts/error_email
 
+vis_setup:
+	-rm scripts/dev_vis.js
+	touch scripts/dev_vis.js
+	echo 'setenv DEVISE_VIS		$(DEVISE_VIS)' >> scripts/dev_vis.js
+	echo 'source scripts/dev_vis.gen' >> scripts/dev_vis.js
+	echo 'setenv DEVISE_SESSION		$(DEVISE_SESSION)' \
+		>> scripts/dev_vis.js
+	echo 'setenv DEVISE_TMP_SESSION	$(DEVISE_TMP_SESSION)' \
+		>> scripts/dev_vis.js
+	echo 'setenv DEVISE_HOME_TABLE	$(DEVISE_HOME_TABLE)' \
+		>> scripts/dev_vis.js
+	scripts/setup_test_vis
+
 logs:
 	mkdir logs
 
-install: install_info error_email
+xvfb:
+	scripts/Xvfb_setup $(KILL_XVFB)
+
+install: install_info error_email xvfb
 	./install_js

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1999
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.24.10.1  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.24  2001/05/24 18:42:02  wenger
+  Fixed bug 674 (drill-down doesn't work correctly on record link follower
+  views).
+
   Revision 1.23  1999/11/19 21:29:25  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -138,6 +145,7 @@ class BooleanArray;
 class QueryCallback
 {
 	public:
+		virtual ~QueryCallback() {}
 
 		// Query data ready to be returned. Do initialization here.
 		virtual void	QueryInit(void* userData) = 0;
@@ -172,6 +180,8 @@ class QueryCallback
 class QueryProc {
 
   public:
+	virtual ~QueryProc() {}
+
     /* get one and only instance of query processor */
     static QueryProc *Instance();
 

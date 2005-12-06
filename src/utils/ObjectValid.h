@@ -25,6 +25,13 @@
   $Id$
 
   $Log$
+  Revision 1.2.18.1  2003/11/05 17:02:09  wenger
+  First part of display modes for printing is implemented (view foreground
+  and background colors work, haven't done anything for symbol colors yet).
+
+  Revision 1.2  1999/01/18 18:14:55  beyer
+  fixed compile warnings and errors for egcs v 1.1.1
+
   Revision 1.1  1998/05/07 15:18:22  wenger
   This damn file somehow didn't get committed.
 
@@ -41,7 +48,7 @@ public:
   ObjectValid() { Clear(); }
   ~ObjectValid() { Clear(); }
 
-  int IsValid() { return _status == _valid; }
+  int IsValid() const { return _status == _valid; }
   void Set() { _status =  _valid; }
   void Clear() { _status = 0; }
 

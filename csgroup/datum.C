@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.6.14.1  2005/09/06 21:20:00  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.6  1999/11/19 17:17:18  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.5  1998/07/03 23:41:48  wenger
   Fixed some memory leaks; added provision to print data segment size
   at certain places in the code.
@@ -84,7 +91,7 @@ Datum::Datum() {
 Datum::Datum(const char *bytearray, int size) {
 	
 	datasize = size;
-	dataval = new(char) [size];
+	dataval = new char[size];
 	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, bytearray, size);
 }
@@ -92,7 +99,7 @@ Datum::Datum(const char *bytearray, int size) {
 Datum::Datum(const Datum& d) {
 		
 	datasize = d.datasize;
-	dataval = new(char) [datasize];
+	dataval = new char[datasize];
 	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, d.dataval, datasize);
 }
@@ -122,7 +129,7 @@ Datum::set(char *bytearray, int size) {
 	delete [] dataval;
 
 	datasize = size;
-	dataval = new(char) [size];
+	dataval = new char[size];
 	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, bytearray, size);
 }
@@ -145,7 +152,7 @@ Datum::operator=(const Datum& d) {
 	delete [] dataval;
 
 	datasize = d.datasize;
-	dataval = new(char) [datasize];
+	dataval = new char[datasize];
 	if (dataval == NULL) { ERROR(FATAL, strerror(errno)); }
 	memmove(dataval, d.dataval, datasize);
 	return *this;

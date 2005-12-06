@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.24.14.1  2003/06/18 17:51:03  wenger
+  Fixed (I think) bug 875 -- invalid TData record problem seen by
+  Wavelet-IDR.
+
+  Revision 1.24  2000/01/11 22:28:34  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.23  1998/10/13 19:40:46  wenger
   Added SetAttrs() function to TData and its subclasses to allow Liping to
   push projection down to the DTE.
@@ -174,20 +184,24 @@ public:
   /* Write a line into the file, but don't make it into a record */
   void WriteLine(void *line);
 
+  /* From DispatcherCallback */
+  virtual char *DispatchedName() { return "TDataBinary"; }
+
 protected:
   /* Copy record into buffer. Return false if invalid record. */
   virtual Boolean Decode(void *recordBuf, int recPos, char *line) = 0;
 
-private:
-  /* From DispatcherCallback */
-  char *DispatchedName() { return "TDataBinary"; }
-
   /* Build index */
   virtual void BuildIndex();
 
-  TD_Status ReadRec(RecId id, int numRecs, void *buf);
-  TD_Status ReadRecAsync(TDataRequest *req, RecId id,
+  virtual TD_Status ReadRec(RecId id, int numRecs, void *buf);
+  virtual TD_Status ReadRecAsync(TDataRequest *req, RecId id,
                          int numRecs, void *buf);
+
+private: 
+
+  virtual TD_Status DoReadRec(RecId id, int numRecs, void *buf,
+    int iteration);
 
   char *_file;                    // name of (cache) file
   int _physRecSize;               // physical record size

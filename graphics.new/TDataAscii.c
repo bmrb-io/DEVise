@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.68.10.2  2003/06/26 19:10:55  wenger
+  Improvement to bad file index fix: we now invalidate the TData instead
+  of just rebuilding the index, so the query processor knows things
+  have changed.
+
+  Revision 1.68.10.1  2003/06/18 17:51:03  wenger
+  Fixed (I think) bug 875 -- invalid TData record problem seen by
+  Wavelet-IDR.
+
+  Revision 1.68  2001/04/12 20:15:13  wenger
+  First phase of external process dynamic data generation is in place
+  for RectX symbols (needs GUI and some cleanup); added the ability to
+  specify format for dates and ints in GData; various improvements to
+  diagnostic output.
+
   Revision 1.67  2000/01/11 22:28:33  wenger
   TData indices are now saved when they are built, rather than only when a
   session is saved; other improvements to indexing; indexing info added
@@ -506,12 +521,20 @@ void TDataAscii::BuildIndex()
   _data->Seek(0, SEEK_SET);
 }
 
+
+
 TD_Status TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
 {
 #if DEBUGLVL >= 3
-  printf("TDataAscii::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
+  printf("TDataAscii::ReadRec(%ld, %d, %p)\n", id, numRecs, buf);
 #endif
 
+  return DoReadRec(id, numRecs, buf, 1);
+}
+
+TD_Status TDataAscii::DoReadRec(RecId id, int numRecs, void *buf,
+    int iteration)
+{
   char line[LINESIZE];
   
   char *ptr = (char *)buf;
@@ -545,7 +568,26 @@ TD_Status TDataAscii::ReadRec(RecId id, int numRecs, void *buf)
     }
 
     Boolean valid = Decode(ptr, currPos, line);
-    DOASSERT(valid, "Inconsistent validity flag");
+
+    if (!valid) {
+      if (iteration == 1) {
+	reportErrNosys("Warning: invalid TData record; rebuilding index");
+	// Note: this rebuilds the index and also notifies the QP that
+	// things have changed, etc.
+	InvalidateTData();
+
+        return DoReadRec(id, numRecs, buf, iteration + 1);
+      } else {
+
+	// Note: ideally, I'd like to do something other than failing
+	// an assertion here -- something like causing the current command
+	// to fail and closing the session.  However, there's not a
+	// simple way to do that, so I'm just asserting for now.
+	// wenger 2003-06-18.
+	DOASSERT(false, "Rebuilt index, still have invalid TData record");
+      }
+    }
+
     ptr += _recSize;
 
     currPos += len;

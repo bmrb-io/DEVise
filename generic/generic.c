@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,38 @@
   $Id$
 
   $Log$
+  Revision 1.67  2003/01/13 19:25:00  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.66.10.5  2003/12/19 18:07:22  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.66.10.4.2.1  2003/12/17 00:17:54  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.66.10.4  2003/06/25 19:56:51  wenger
+  Various improvments to debug logging; moved command logs from /tmp
+  to work directory.
+
+  Revision 1.66.10.3  2003/06/06 20:48:30  wenger
+  Implemented provision for automatic testing of DEVise, including
+  running Tcl test scripts within DEVise itself.
+
+  Revision 1.66.10.2  2003/05/27 17:48:43  wenger
+  Greatly improved the error message when DEVise can't read
+  composite.ini.
+
+  Revision 1.66.10.1.2.2  2003/12/16 16:08:10  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.66.10.1.2.1  2003/04/18 16:10:32  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
   Revision 1.66.10.1  2002/12/04 21:13:08  wenger
   Fixed a problem with the composite parsers that was causing the
   DEVised to run away when we tried to kill it.
@@ -289,6 +321,7 @@
 #include <time.h>
 #include <string.h>
 #include <math.h>
+#include <iostream>
 
 #include <sys/time.h>
 #include <sys/types.h>
@@ -1712,7 +1745,13 @@ int main(int argc, char **argv)
 
   Init::DoInit(argc,argv);
 
-  printf("DEVise debug log file is: %s\n", DebugLog::DefaultLog()->LogFile());
+  struct timeval startTime;
+  if (gettimeofday(&startTime, NULL) >= 0) {
+    printf("\nStarting DEVise at %s\n", DateString(startTime.tv_sec));
+  }
+
+  printf("Starting DEVise debug log file: %s\n",
+      DebugLog::DefaultLog()->LogFile());
 
   HangCheck::CreateDefault();
 	
@@ -1725,9 +1764,12 @@ int main(int argc, char **argv)
  	
   ifstream fin(env.c_str());
   if(!fin) {
-	fprintf(stderr, "Cannot open %s for read: %s\n", 
-			env.c_str(), strerror(errno));
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+	// TEMP -- think about whether this should really be a fatal error.
+	// (If it's not, what happens with data sources that try to use
+	// the composite parser.)  wenger, 2003-05-27.
+	string errMsg = "Fatal error: cannot read composite.ini file "
+	  "(trying to read " + env + ")";
+    reportErrSys(errMsg.c_str());
 	exit(1);
   }
   fprintf(stderr, "\nReading composite file %s\n", env.c_str());
@@ -1735,7 +1777,10 @@ int main(int argc, char **argv)
   string schemaStr, parserName;
 
   while(fin){
-	fin.ipfx(0);            // skip ws
+	// Skip whitespace.
+	while (isspace(fin.get())) {}
+	fin.unget();
+
 	if( fin.peek() == '#' ){ // comment
           fin.ignore(999999, '\n'); // Read line and ignore
           continue;
@@ -1795,6 +1840,16 @@ int main(int argc, char **argv)
 
   /* Start session (possibly restoring an old one */
   ctrl->StartSession();
+
+  if (Init::TclScript()) {
+      const char *header = "source ";
+      int bufLen = strlen(header) + strlen(Init::TclScript()) + 1;
+      char *buf = new char[bufLen];
+      int formatted = snprintf(buf, bufLen, "%s%s", header, Init::TclScript());
+      checkAndTermBuf(buf, bufLen, formatted);
+      ctrl->NotifyFrontEnd(buf);
+      delete [] buf;
+  }
 
   Dispatcher::RunNoReturn();
 

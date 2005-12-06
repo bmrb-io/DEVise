@@ -1,92 +1,192 @@
 			DEVise/JavaScreen To-Do List
 				$Revision$
 
-TEMPTEMP -- should I break this up into categories? (e.g., JavaScreen,
-links, etc.?  what should categories be?) (how would numbering work then?
-maybe x.y?)
+...........................................................................
+SECTION 01 (DEVise, GUI)
+Number Date	Status  Pri
+------ --------	------	---
+01.001 09/10/01	OPEN	?
+Grids on zoom boxes. (wavelet)
 
-Possible categories:
-JavaScreen, GUI
-JavaScreen, communication
-JavaScreen, misc.
-DEVise, GUI
-DEVise, links
-DEVise, cursors
-DEVise, piles and stacks
-DEVise, data sources
-DEVise, misc.
-Release/distribution
+01.002 ?	DONE?	?
+Warn when closing session if there are changes other than cursor moves.
 
-Num Date	Status  Pri	Description
---- --------	------	---	-----------------------------------------------
-001 09/10/01	ACTIVE	1	JavaScreen: recovery from network
-disconnection. (ml)
+01.003 10/1/02	OPEN	?
+The print dialog should remember previous values. (kola/wenger)
 
-002 09/10/01	OPEN	?	JavaScreen: X-only zoom. (various)
+...........................................................................
+SECTION 02 (DEVise, links)
+Number Date	Status  Pri
+------ --------	------	---
+02.001 ?	DONE?	?
+Allow multiplicative factor (and offset?) for visual links (specify for
+each view).
 
-003 09/10/01	OPEN	?	JavaScreen: toolbars. (ar/rkw)
+...........................................................................
+SECTION 03 (DEVise, cursors)
+Number Date	Status  Pri
+------ --------	------	---
+03.001 11/20/01	OPEN	?
+Allow XY cursor with bottom anchored at 0. (wenger)
 
-004 09/10/01	OPEN	?	JavaScreen: integrated keyboard help. (rkw)
 
-005 09/10/01	OPEN	?	JavaScreen: visual filter dialog. (rkw)
+...........................................................................
+SECTION 04 (DEVise, piles and stacks)
+Number Date	Status  Pri
+------ --------	------	---
 
-006 09/10/01	OPEN	?	JavaScreen: session-programmable buttons. (rkw)
+...........................................................................
+SECTION 05 (DEVise, views)
+Number Date	Status  Pri
+------ --------	------	---
+05.001 9/10/01	OPEN	?
+Allow 2 X axes per view (top and bottom). (wavelet)
 
-007 09/10/01	OPEN	?	Allow 2 X axes per view (top and bottom).
-(wavelet)
+...........................................................................
+SECTION 06 (DEVise, data sources)
+Number Date	Status  Pri
+------ --------	------	---
 
-008 09/10/01	OPEN	?	Grids on zoom boxes. (wavelet)
+...........................................................................
+SECTION 07 (DEVise, JavaScreen support)
+Number Date	Status  Pri
+------ --------	------	---
+07.001 ?	DONE?	?
+JavaScreen: need to clean up temporary session files.
 
-009 09/10/01	OPEN	?	JavaScreen: more advanced session selection.
-(ml)
+...........................................................................
+SECTION 08 (DEVise, misc.)
+Number Date	Status  Pri
+------ --------	------	---
+08.001 11/14/00	OPEN	?
+Should API_CMD, etc., have "unusual" values, so other things are not so
+easily confused with them? Also, always check for a valid value when
+receiving a command? (wenger)
 
-010 09/10/01	OPEN	?	JavaScreen: change some buttons to menus. (rkw)
+08.002 10/1/02	OPEN	?
+When printing to GIFs, we should either deal correctly with parts
+of windows being obscured, or at least warn the user that they should
+raise all of the windows before printing. (wenger)
 
-Allow multiplicative factor (and offset?) for visual links
-          (specify for each view).
+08.003 5/28/03	OPEN	3
+Eliminate all dependencies on having /p/devise for a DEVise installation.
+(wenger)
 
-Have an option to force the session's aspect ratio to be
-          preserved in the JavaScreen.
+...........................................................................
+SECTION 09 (JavaScreen, GUI)
+Number Date	Status  Pri
+------ --------	------	---
+09.001 09/10/01	DONE	?
+JavaScreen: X-only zoom. (various)
 
-warn when closing session if there are changes other than cursor moves
+09.002 09/10/01	OPEN	?
+JavaScreen: toolbars. (amos/wenger)
 
-JavaScreen:Time out and exit on the client side if the user has gone out
-          of the appropriate web page for a given amount of time (so we
-	            don't have loads of extra JS clients in the browser).
+09.003 09/10/01	OPEN	?
+JavaScreen: integrated keyboard help. (wenger)
 
-JavaScreen: Allow multiple levels of child views.
+09.004 09/10/01	OPEN	?
+JavaScreen: visual filter dialog. (wenger)
 
-?combine bin_arch and dyn_lib_arch in release/distribution??
+09.005 09/10/01	OPEN	?
+JavaScreen: session-programmable buttons. (wenger)
 
+09.006 09/10/01	OPEN	?
+JavaScreen: more advanced session selection.  (miron)
+
+09.007 09/10/01	OPEN	?
+JavaScreen: change some buttons to menus. (wenger)
+
+09.008 12/19/01	OPEN	?
+The JavaScreen should have an option to display the Y value of the bar
+the mouse is on, rather than the actual Y location of the mouse, as
+the mouse location. (jm/wenger)
+
+09.009 5/29/03	DONE	1
+Add a link to email to devise-support to all JS pages and, especially,
+help pages. (wenger)
+(Done by wenger, 5/29/03.)
+
+09.010 5/4/02	OPEN	3
+Be able to save data from the drill-down dialog. (BMRB advisory board)
+Maybe generate a saveable html page. (miron)
+
+09.011 5/4/02	ACTIVE	3
+Be able to print from the JavaScreen.  We probably need to generate
+a printer-friendly page, with three options: 1. colors as-is; 2.
+white background, colored data; 3. white background, black data.
+(BMRB advisory board)
+
+09.012 6/9/04	OPEN	3
+Be able to click on multiple places, and get a single drill-down dialog
+showing the results of all of them. (elu/wenger)
+
+...........................................................................
+SECTION 10 (JavaScreen, JSPoP)
+Number Date	Status  Pri
+------ --------	------	---
+10.001 ?	DONE?	?
 Change the JSPoP so that collaboration clients have a DEViseClient object.
 
+10.002 ?	DONE?	?
 JavaScreen: initiate collaboration with explicit commands, not reconnection
 with "magic" flag values.
 
-JavaScreen: need to clean up temporary session files
+10.003 7/2/02	ACTIVE	2
+Allow switching of collaboration leaders, collaboration entity still exists
+if leader goes away, etc.
 
-Allow XY cursor with bottom anchored at 0 (rkw 11/20/01)
+10.004 7/2/02	ACTIVE	2
+Preserve JSPoP status (including collaboration) across restarts. (miron)
 
+10.005 2/8/02	DONE?	?
+Automatic enabling/initiation of collaboration. (miron)
+
+10.006 6/9/04	OPEN	?
+Allow switching of collaboration leaders. (bmrb/wenger)
+
+...........................................................................
+SECTION 11 (JavaScreen, JSS)
+Number Date	Status  Pri
+------ --------	------	---
+
+...........................................................................
+SECTION 12 (JavaScreen, communication)
+Number Date	Status  Pri
+------ --------	------	---
+12.001 09/10/01	DONE?	1
+JavaScreen: recovery from network disconnection. (miron)
+
+12.002 11/30/01	OPEN	?
 JS communications protocols should probably have different versions in
-each direction. (rkw 11/30/01)
+each direction. (wenger)
 
-Should API_CMD, etc., have "unusual" values, so other things are not so
-easily confused with them? Also, always check for a valid value when
-receiving a command? (rkw 11/14/00)
-
+12.003 11/14/00	OPEN	?
 The JavaScreen should probably quit after it gets a certain number of
-socket write errors. (rkw 11/14/00)
+socket write errors. (wenger)
 
-The JavaScreen should have an option to display the Y value of the bar
-the mouse is on, rather than the actual Y location of the mouse, as
-the mouse location. (jm/rkw 12/19/01)
+...........................................................................
+SECTION 13 (JavaScreen, misc.)
+Number Date	Status  Pri
+------ --------	------	---
+13.001 ?	OPEN	?
+Have an option to force the session's aspect ratio to be preserved in
+the JavaScreen.
 
-The print dialog should remember previous values. (gk/rkw 10/1/02)
+13.002 ?	DONE	?
+JavaScreen:Time out and exit on the client side if the user has gone out
+of the appropriate web page for a given amount of time (so we don't have
+loads of extra JS clients in the browser).
 
-When printing to GIFs, we should either deal correctly with parts
-of windows being obscured, or at least warn the user that they should
-raise all of the windows before printing. (rkw 10/1/02)
+13.003 ?	OPEN?	?
+JavaScreen: Allow multiple levels of child views.
 
+...........................................................................
+SECTION 14 (release/distribution)
+Number Date	Status  Pri
+------ --------	------	---
+14.001 ?	OPEN	5
+Combine bin_arch and dyn_lib_arch in release/distribution.
 
 
 (add stuff from old to-do list?)
@@ -96,9 +196,10 @@ raise all of the windows before printing. (rkw 10/1/02)
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
 DONE = item has been fully addressed
-WORK = workaround for bug in place
+WORK = workaround for in place
 DUP = duplicate of another item
 NLR = no longer relevant
+POST = postponed
 
 * Priority:
 ? = not yet prioritized

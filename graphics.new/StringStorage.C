@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  2003/01/13 19:25:26  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.13.14.2  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
   Revision 1.13.14.1  2002/09/21 23:24:37  wenger
   Fixed a few more special-case memory leaks.
 
@@ -267,7 +273,7 @@ StringStorage::ClearAll()
 }
 
 int
-StringStorage::StringHash(char *&string, int numBuckets)
+StringStorage::StringHash(char *const &string, int numBuckets)
 {
   unsigned int sum = 0;
   for(int i = 0; i < (int)strlen(string); i++)

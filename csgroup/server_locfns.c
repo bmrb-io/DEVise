@@ -20,6 +20,22 @@
   $Id$
 
   $Log$
+  Revision 1.8.14.1  2003/12/19 18:07:08  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.8.32.1  2003/12/17 00:17:42  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.8.30.1  2003/12/16 16:07:57  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.8  2000/03/23 19:58:40  wenger
+  Updated dependencies, got everything to compile on pumori (Linux 2.2.12,
+  g++ 2.95.2).
+
   Revision 1.7  1998/08/21 22:16:11  wenger
   Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
   linked DEVise for distribution.
@@ -140,7 +156,7 @@ AcptSwitchConnection(int sockfd, struct sockaddr *Address, int *size) {
 	int acptfd;
 	int flag;
 	int retval;
-#if defined(LINUX)
+#if defined(LINUX) || defined(SOLARIS)
         socklen_t
 #else
 	int
@@ -155,7 +171,7 @@ AcptSwitchConnection(int sockfd, struct sockaddr *Address, int *size) {
 		printf("SO_KEEPALIVE is set\n");
 	else
 		printf("SO_KEEPALIVE is unset\n"); 
-#if defined(LINUX)
+#if defined(LINUX) || defined(SOLARIS)
         socklen_t
 #else
 	int

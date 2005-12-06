@@ -1,0 +1,22 @@
+#! /bin/csh -f
+
+# $Id$
+
+# Copy dynamic libraries for RedHat 7.2.
+
+if (! -e dyn_lib) then 
+  mkdir dyn_lib
+endif
+
+# On nmi-build15, 2005-10-20.
+cp /usr/lib/libtk.so.0 dyn_lib
+cp /usr/lib/libtcl.so.0 dyn_lib
+cp /usr/X11R6/lib/libX11.so.6 dyn_lib
+cp /lib/libdl.so.2 dyn_lib
+cp /usr/lib/libstdc++-libc6.2-2.so.3 dyn_lib
+cp /lib/i686/libm.so.6 dyn_lib
+cp /lib/i686/libc.so.6 dyn_lib
+cp /lib/ld-linux.so.2 dyn_lib
+
+chmod 644 dyn_lib/*.so*
+

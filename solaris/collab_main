@@ -32,8 +32,6 @@ generic/collaborator &
 
 sleep 5
 
-rmmem
-
 generic/devised -port 6105 -switchport 6205 &
 sleep 5
 generic/devise -p 6105 &

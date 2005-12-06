@@ -20,6 +20,12 @@
 	$Id$
 
 	$Log$
+	Revision 1.2.26.1  2005/09/28 22:29:21  wenger
+	Various const-ifying to make things compile better on basslet.
+	
+	Revision 1.2  1998/02/12 17:14:41  wenger
+	Merged through collab_br_2; updated version number to 1.5.1.
+	
 	Revision 1.1.2.2  1998/02/02 07:47:44  liping
 	Fixed bugs related to: queue algorithms, bucket expansion, iterator reset
 
@@ -61,7 +67,7 @@ TclClient::~TclClient()
 }
 
 // process all DEVise commands
-int TclClient::ServerCmd(int argc, char **argv)
+int TclClient::ServerCmd(int argc, const char * const *argv)
 {
 #ifdef DEBUG	
 	printf("Function %s, %d args\n", argv[0], argc);
@@ -88,7 +94,7 @@ void TclClient::ReadServer()
 	Client::ReadServer();
 }
 
-void TclClient::ControlCmd(int argc, char **argv)
+void TclClient::ControlCmd(int argc, const char * const *argv)
 {
 	// paste the commands
 	Client::ControlCmd(argc, argv);

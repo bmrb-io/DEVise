@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.2.28.1  2005/09/28 22:29:34  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.2  1998/01/07 19:28:12  wenger
+  Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
+  server library into Devise); updated solaris, sun, linux, and hp
+  dependencies.
+
   Revision 1.1.2.1  1997/12/09 19:03:35  wenger
   deviseb now uses client/server library.
 
@@ -38,10 +46,12 @@ public:
 
   virtual void MainLoop() {}
 
-  virtual int ServerCmd(int argc, char **argv) {
+  virtual int ServerCmd(int argc, const char * const *argv) {
     return Client::ServerCmd(argc, argv); }
   virtual void ReadServer() { Client::ReadServer(); }
-  virtual void ControlCmd(int argc, char **argv); // process server command
+
+  	// process server command
+  virtual void ControlCmd(int argc, const char * const *argv);
 
   virtual void SetSyncDone(Boolean syncDone) { _syncDone = syncDone; }
   virtual Boolean SyncDone() { return _syncDone; }

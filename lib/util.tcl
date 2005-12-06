@@ -15,6 +15,12 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.71  2003/01/13 19:25:45  wenger
+#  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+#
+#  Revision 1.70.10.3  2003/07/31 15:45:24  wenger
+#  Changed print defaults to file and GIF (instead of printer and PostScript).
+#
 #  Revision 1.70.10.2  2002/09/17 18:50:55  wenger
 #  Added GUI for GAttr links.
 #
@@ -783,7 +789,7 @@ proc PrintViewSetUp {} {
     wm geometry .printdef +150+150
     selection clear .printdef
     
-    set toprinter 1
+    set toprinter 0
     set printcmd "lpr "
     set filename "/tmp/devise"
     set printsrc 0 
@@ -826,7 +832,7 @@ proc PrintViewSetUp {} {
 	    -variable formatsel -value EPS
     .printdef.top.row2.m1.menu add radiobutton -label GIF \
 	    -variable formatsel -value GIF
-    set formatsel Postscript
+    set formatsel GIF
 
     label .printdef.top.row3.l1 -text "Print Views:"
     radiobutton .printdef.top.row3.r1 -text "Display" \

@@ -113,15 +113,19 @@ COMMITTING AND MERGING
 
     * Check out a fresh copy of the trunk sources, merging the branch changes:
 
-	% cvs checkout -j <name>_br_1 world
+	% cvs checkout -j <name>_br_0 -j <name>_br_1 world
 
       It's best to dump the output of this command into a file, to make
       the next step easier.
 
-      If this is not the first merge from the branch, you need to do
-      something like:
+      Note: even if this is the first merge from the branch, you should do
+      the above command with the <name>_br_0 tag, as opposed to the following
+      command:
 
-	% cvs checkout -j <name>_br_1 -j <name>_br_2 world
+	% cvs checkout -j <name>_br_1 world
+
+      The command above doesn't seem to deal correctly with files deleted
+      on the branch.
 
       THE ORDER OF THE -J OPTIONS IS IMPORTANT.  You generally need to put
       the older branch tag first.  If you put the new branch tag first, you
@@ -155,7 +159,8 @@ COMMITTING AND MERGING
   from a branch to the trunk; you just need to need a -r with the tag of
   the branch you're merging to:
 
-	% cvs checkout -j <from_branch_tag> -r <to_branch_tag>
+	% cvs checkout -j <from_branch_tag> -j <from_branch_tag2> \
+	  -r <to_branch_tag>
 
 
 GETTING OFF OF THE BRANCH
@@ -164,6 +169,19 @@ GETTING OFF OF THE BRANCH
 
   will get you back to the trunk.  It's best to have all of your branch
   code committed before you do this.
+
+
+THE END OF A BRANCH
+
+  When no more commits should be made to a branch, tag it with an "end"
+  tag:
+
+    % cvs tag <name>_br_end
+
+  This won't actually prevent commits to the branch, but it's at least
+  a signal that the branch is abandoned.  (We really should set things
+  up to prevent commits to abandoned branches, but I haven't done that
+  yet.)
 
 
 QUESTIONS

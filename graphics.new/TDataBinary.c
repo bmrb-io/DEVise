@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.40  2003/01/13 19:25:27  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.39.14.5  2003/06/26 19:10:56  wenger
+  Improvement to bad file index fix: we now invalidate the TData instead
+  of just rebuilding the index, so the query processor knows things
+  have changed.
+
+  Revision 1.39.14.4  2003/06/18 17:51:03  wenger
+  Fixed (I think) bug 875 -- invalid TData record problem seen by
+  Wavelet-IDR.
+
   Revision 1.39.14.3  2002/09/20 20:49:03  wenger
   More Purifying -- there are now NO leaks when you open and close
   a session!!
@@ -396,6 +408,12 @@ TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
   printf("TDataBinary::ReadRec %ld,%d,0x%p\n", id, numRecs, buf);
 #endif
 
+  return DoReadRec(id, numRecs, buf, 1);
+}
+
+TD_Status TDataBinary::DoReadRec(RecId id, int numRecs, void *buf,
+    int iteration)
+{
   char *ptr = (char *)buf;
   long currPos = -1;
 
@@ -429,7 +447,25 @@ TD_Status TDataBinary::ReadRec(RecId id, int numRecs, void *buf)
 #endif
 
     Boolean valid = Decode(ptr, currPos / _physRecSize, physRec);
-    DOASSERT(valid, "Inconsistent validity flag");
+
+    if (!valid) {
+      if (iteration == 1) {
+	reportErrNosys("Warning: invalid TData record; rebuilding index");
+	// Note: this rebuilds the index and also notifies the QP that
+	// things have changed, etc.
+	InvalidateTData();
+
+        return DoReadRec(id, numRecs, buf, iteration + 1);
+      } else {
+
+	// Note: ideally, I'd like to do something other than failing
+	// an assertion here -- something like causing the current command
+	// to fail and closing the session.  However, there's not a
+	// simple way to do that, so I'm just asserting for now.
+	// wenger 2003-06-18.
+	DOASSERT(false, "Rebuilt index, still have invalid TData record");
+      }
+    }
 
     ptr += _recSize;
     currPos += _physRecSize;

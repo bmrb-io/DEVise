@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.3.46.1  2005/09/06 21:20:16  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  1995/12/29 22:43:16  jussi
+  Added the copyright message and cleaned up the code a bit.
+
   Revision 1.2  1995/09/05 22:14:39  jussi
   Added CVS header.
 */
@@ -40,6 +46,8 @@ class Connector;
 
 class ConnectorShape {
 public:
+  virtual ~ConnectorShape() {}
+
   /* Draw the shape for the symbol */
   virtual void DrawConnection(WindowRep *win, Connector *connector) = 0;
 };

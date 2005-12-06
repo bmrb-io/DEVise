@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2001
+  (c) Copyright 1998-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.7.10.1  2005/09/06 21:20:37  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.7  2001/05/27 18:51:22  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.6  2001/04/12 20:15:29  wenger
   First phase of external process dynamic data generation is in place
   for RectX symbols (needs GUI and some cleanup); added the ability to
@@ -75,7 +81,7 @@ ArgList::ArgList(int size)
   _argc = 0;
 
   size = MAX(0, size);
-  _argv = new (char *)[size];
+  _argv = new char *[size];
   if (_argv == NULL) {
     reportErrSys("Out of memory!!");
   } else {
@@ -236,7 +242,7 @@ ArgList::Enlarge()
   DevStatus result = StatusOk;
 
   int newSize = MAX(10, _argvSize * 2);
-  char **newArgv = new (char *)[newSize];
+  char **newArgv = new char *[newSize];
   if (newArgv == NULL) {
     reportErrSys("Out of memory!!");
     result = StatusFailed;
@@ -272,7 +278,7 @@ ArgList::ParseString(const char *str)
     reportErrNosys("Can't do ParseString() after AddArg()");
 	result = StatusFailed;
   } else {
-    _buf = new (char)[strlen(str) + 1];
+    _buf = new char[strlen(str) + 1];
 	if (_buf == NULL) {
       reportErrSys("Out of memory!!");
 	  result = StatusFailed;

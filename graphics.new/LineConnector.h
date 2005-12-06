@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4.28.1  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.4  1997/11/24 23:14:52  weaver
+  Changes for the new ColorManager.
+
   Revision 1.3.10.1  1997/05/21 20:40:27  weaver
   Changes for new ColorManager
 
@@ -44,6 +50,8 @@ A Discrete line connector that plots the following:
 
 class DiscLineConnector: public ConnectorShape {
 public:
+  virtual ~DiscLineConnector(){}
+
   /* draw connection between two symbols */
   virtual void DrawConnection(WindowRep *win, Connector *con) {
     win->SetForeground(con->color);
@@ -65,6 +73,8 @@ A discrete line connector that plots the following:
 
 class DiscLineConnector2: public ConnectorShape {
 public:
+  virtual ~DiscLineConnector2() {}
+
   /* draw connection between two symbols */
   virtual void DrawConnection(WindowRep *win, Connector *con) {
     win->SetForeground(con->color);
@@ -83,6 +93,8 @@ Continuous connector
 
 class ContLineConnector : public ConnectorShape {
 public:
+  virtual ~ContLineConnector() {}
+
   virtual void DrawConnection(WindowRep *win,Connector *con) {
     win->SetForeground(con->color);
     win->SetPattern(con->pattern);
@@ -99,6 +111,8 @@ bar connector
 
 class BarConnector : public ConnectorShape {
 public:
+  virtual ~BarConnector() {}
+
   virtual void DrawConnection(WindowRep *win,Connector *con) {
     win->SetForeground(con->color);
     win->SetPattern(con->pattern);

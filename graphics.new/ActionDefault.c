@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,24 @@
   $Id$
 
   $Log$
+  Revision 1.50.10.3  2003/11/21 23:05:11  wenger
+  Drill-down now works properly on views that are GAttr link followers
+  (fixed bug 893).
+
+  Revision 1.50.10.2  2003/11/21 18:45:07  wenger
+  Totally restructured 2D drill-down code into new DrillDown class;
+  increased the tolerance for not being *exactly* on a symbol with
+  the mouse.
+
+  Revision 1.50.10.1  2003/04/24 17:31:15  wenger
+  Fixed bug in drill-down code; axis date formats now also apply to
+  drill-down coordinates; we now check for buffer overruns in
+  DateString().
+
+  Revision 1.50  2001/05/24 18:41:58  wenger
+  Fixed bug 674 (drill-down doesn't work correctly on record link follower
+  views).
+
   Revision 1.49  2001/05/23 19:51:35  wenger
   Fixed bug 675 (axis multiplication factor bug).
 
@@ -228,15 +246,10 @@
 #include <ctype.h>
 
 #include "ActionDefault.h"
-#include "TDataMap.h"
 #include "ViewGraph.h"
-#include "RecInterp.h"
-#include "QueryProc.h"
-#include "TData.h"
 #include "DeviseKey.h"
 #include "DepMgr.h"
-#include "PileStack.h"
-#include "Session.h"
+#include "DrillDown.h"
 
 //#define DEBUG
 
@@ -319,104 +332,6 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
     } // end switch
 }
 
-static const int MAX_MSGS = 128;
-static const int MSG_BUF_SIZE = 4096;
-static char msgBuf[MSG_BUF_SIZE]; // this does need to be static.  RKW 1998-12-14.
-static int msgIndex;
-static char *msgPtr[MAX_MSGS];
-static int numMsgs;
-
-static Boolean CheckParams()
-{
-    if (numMsgs >= MAX_MSGS || msgIndex >= MSG_BUF_SIZE) {
-      return false;
-    } else {
-      return true;
-    }
-}
-
-static Boolean PutMessage(char *msg)
-{
-#if defined(DEBUG)
-    printf("PutMessage(%s)\n", msg);
-#endif
-
-    if (!CheckParams())
-      return false;
-
-    int len = strlen(msg) + 1;
-    if (msgIndex + len > MSG_BUF_SIZE)
-      return false;
-    sprintf(&msgBuf[msgIndex], "%s", msg);
-    msgPtr[numMsgs++] = &msgBuf[msgIndex];
-    msgIndex += len;
-    return true;
-}
-
-static void
-PutTooMuchMsg()
-{
-  char buf[128];
-  sprintf(buf, "%s%s", "(more data than buffer can hold)",
-      Session::GetIsJsSession() ? "" : " (see text window)");
-  int length = strlen(buf) + 1;
-
-  while(numMsgs >= MAX_MSGS || msgIndex + length >= MSG_BUF_SIZE) {
-    numMsgs--;
-    msgIndex = msgPtr[numMsgs] - msgBuf;
-  }
-
-  PutMessage(buf);
-}
-
-static Boolean InitPutMessage(double x, AttrType xAttr,
-			      double y, AttrType yAttr)
-{
-#if defined(DEBUG)
-    printf("InitPutMessage(%g, %g)\n", x, y);
-#endif
-
-    msgIndex = 0;
-    numMsgs = 0;
-    char buf[128];
-    
-    if (xAttr == DateAttr) {
-        time_t clock = (time_t)x;
-        sprintf(buf,"x: %s", DateString(clock));
-    } else {
-        sprintf(buf,"x: %.2f", x);
-    }
-    if (!PutMessage(buf))
-      return false;
-    
-    if (yAttr == DateAttr) {
-        time_t clock = (time_t)y;
-        sprintf(buf,"y: %s", DateString(clock));
-    } else {
-        sprintf(buf,"y: %.2f", y);
-    }
-
-    return PutMessage(buf);
-}
-
-static void EndPutMessage(int &numMessages, char **&msgs)
-{
-#if defined(DEBUG)
-    printf("EndPutMessage()\n");
-#endif
-
-    numMessages = numMsgs;
-    msgs = msgPtr;
-}
-
-/* print contents of message buffer */
-
-static void PrintMsgBuf()
-{
-    for(int i = 0; i < numMsgs; i++)
-      puts(msgPtr[i]);
-}
-
 Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
 			     Coord yHigh, int button, char **& msgs,
 			     int &numMsgs)
@@ -428,230 +343,10 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
       xHigh, yHigh, button);
 #endif
 
-    view->SelectView();
-    
-    AttrType xAttr = view->GetXAxisAttrType();
-    AttrType yAttr = view->GetYAxisAttrType();
-
-    Coord msgX = ((x + xHigh) / 2.0) * view->GetXAxisMultFact();
-    Coord msgY = ((y + yHigh) / 2.0) * view->GetYAxisMultFact();
-    InitPutMessage(msgX, xAttr, msgY, yAttr);
-    
-    if (view->GetNumDimensions() != 2) {
-        PutMessage("");
-        PutMessage("Record query not supported yet");
-        PutMessage("for this type of view.");
-        EndPutMessage(numMsgs, msgs);
-        return true;
-    }
-
-    char *errorMsg = "";
-    Boolean printedRecords = false;
-    if (view->IsInPileMode()) {
-        PileStack *ps = view->GetParentPileStack();
-	if (ps) {
-	    int index = ps->InitIterator();
-	    while (ps->More(index)) {
-	        ViewGraph *tmpView = (ViewGraph *)ps->Next(index);
-		if (PrintRecords(tmpView, x, y, xHigh, yHigh, errorMsg)) {
-		    printedRecords = true;
-		}
-	    }
-	    ps->DoneIterator(index);
-	}
-    } else if (PrintRecords(view, x, y, xHigh, yHigh, errorMsg)) {
-        printedRecords = true;
-    }
-
-    if (!printedRecords) {
-        PutTooMuchMsg();
-    }
-
-    EndPutMessage(numMsgs, msgs);
+    DrillDown *dd = DrillDown::GetInstance();
+    Coord pixelX = fabs(xHigh - x);
+    Coord pixelY = fabs(yHigh - y);
+    dd->GetData((ViewData *)view, x, y, pixelX, pixelY, numMsgs, msgs);
 
     return true;
-}
-
-Boolean ActionDefault::PrintRecords(ViewGraph *view, Coord x, Coord y, 
-				    Coord xHigh, Coord yHigh, char *&errorMsg)
-{
-#if defined(DEBUG)
-    printf("ActionDefault::PrintRecords <%s> %.2f %.2f %.2f %.2f\n",
-           view->GetName(), x, y, xHigh, yHigh);
-#endif
-
-    static RecInterp *recInterp = NULL;
-    
-    if (!recInterp) {
-      recInterp = new RecInterp;
-    }
-    
-    /* get mapping */
-    TDataMap *map = view->GetFirstMap();
-    if (!map) {
-        errorMsg = "No mapping found!";
-        return false;
-    }
-
-    int numRecs;
-    QueryProc *qp = QueryProc::Instance();
-
-#if defined(DEBUG)
-    printf("ActionDefault::PrintRecords: getting TData\n");
-#endif
-
-    int numDimensions;
-    VisualFlag *dimensionInfo;
-    numDimensions = map->DimensionInfo(dimensionInfo);
-
-    // Note: changed approxFlag to always be false here, because having it
-    // be true means that the Y axis attribute will be ignored in the query.
-    // RKW 1998-11-09.
-    Boolean approxFlag = false;
-    
-    TData *tdata = map->GetPhysTData();
-    AttrList *attrs = tdata->GetAttrList();
-    if (!attrs) {
-        errorMsg = "No attribute info!";
-        return false;
-    }
-
-    recInterp->SetAttrs(attrs);
-#if 0
-    recInterp->PrintAttrHeading();
-#endif
-
-    VisualFilter filter;
-    filter.flag = VISUAL_X;
-    filter.xLow = x;
-    filter.xHigh = xHigh;
-    filter.yLow = y;
-    filter.yHigh = yHigh;
-
-    if (!approxFlag) {
-        // for scatter plot, we filter using Y coordinates as well;
-        // allow user inaccuracy that is five times larger than for
-        // sortedX views (where approximation is used anyway), that is,
-        // roughly five pixels in each direction
-	// Note: changed the factor -- RKW 1999-08-11.
-        filter.flag = VISUAL_X | VISUAL_Y;
-        float xDiff = 2.0 * fabs(xHigh - x);
-        float yDiff = 2.0 * fabs(yHigh - y);
-        filter.xLow  = x - xDiff / 2;
-        filter.xHigh = x + xDiff / 2;
-        filter.yLow  = y - yDiff / 2;
-        filter.yHigh = y + yDiff / 2;
-    }
-
-#if defined(DEBUG)
-    printf("running query: %d x:(%f,%f) y:(%f,%f)\n",
-           approxFlag, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
-#endif
-
-    qp->InitTDataQuery(map, filter, view->GetQueryCallback(), approxFlag);
-    Boolean tooMuch = GetRecords(qp, recInterp, tdata, errorMsg, numRecs);
-    qp->DoneTDataQuery();
-
-    if (approxFlag || numRecs) {
-        return(!tooMuch);
-    }
-
-#if defined(DEBUG)
-    printf("Didn't get any records on the first try.\n");
-#endif
-
-    //
-    // Continue only if we have a constant Fixed Text Label symbol type
-    // (bounding boxes for that symbol type don't work).
-    //
-    TDataMap *tdMap = view->GetFirstMap();
-    const GDataAttrOffset *gdOffsets = tdMap->GetGDataOffset();
-    if (gdOffsets->_shapeOffset >= 0) {
-      // symbol type isn't constant
-      return(!tooMuch);
-    } else if (tdMap->GetShape(NULL) != 16) {
-      // symbol type isn't Fixed Text Label
-      return(!tooMuch);
-    }
-
-//~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-
-    // Try it again, with a larger visual filter to try to find
-    // records.
-
-    // for scatter plot, we filter using Y coordinates as well;
-    // allow user inaccuracy that is five times larger than for
-    // sortedX views (where approximation is used anyway), that is,
-    // roughly five pixels in each direction
-    filter.flag = VISUAL_X | VISUAL_Y;
-
-    // Make the visual filter 20% of the view's width and 20% of the
-    // view's height (values chosen fairly arbitrarily).
-    const VisualFilter *viewVisFilterP = view->GetVisualFilter();
-    Coord width = (viewVisFilterP->xHigh - viewVisFilterP->xLow) * 0.2;
-    Coord height = (viewVisFilterP->yHigh - viewVisFilterP->yLow) * 0.1;
-
-    filter.xLow  = x - width / 2;
-    filter.xHigh = x + width / 2;
-    filter.yLow  = y - height / 2;
-    filter.yHigh = y + height / 2;
-
-#if defined(DEBUG)
-    printf("running query: %d x:(%f,%f) y:(%f,%f)\n",
-           approxFlag, filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
-#endif
-
-    qp->InitTDataQuery(map, filter, view->GetQueryCallback(), approxFlag);
-    tooMuch = GetRecords(qp, recInterp, tdata, errorMsg, numRecs);
-    qp->DoneTDataQuery();
-
-    return(!tooMuch);
-}
-
-Boolean
-ActionDefault::GetRecords(QueryProc *qp, RecInterp *recInterp, TData *tdata,
-    char *&errorMsg, int &numRecs)
-{
-    numRecs = 0;
-
-    Boolean tooMuch = false;
-    RecId startRid;
-    char *tdBuf;
-    AttrList *attrs = tdata->GetAttrList();
-
-    while (qp->GetTData(startRid, numRecs, tdBuf)) {
-        char *ptr = tdBuf;
-        for(int i = 0; i < numRecs; i++) {
-            recInterp->SetBuf(ptr);
-            ptr += tdata->RecSize();
-            
-            if (!tooMuch) {
-              PutMessage("");
-            } else if (Session::GetIsJsSession()) {
-              puts("");
-	    }
-
-            // set up for display inside the window
-
-            for(int j = 0; j < attrs->NumAttrs(); j++) {
-                char attrBuf[128];
-                recInterp->PrintAttr(attrBuf, j, true);
-                if (!tooMuch) {
-                    if (!PutMessage(attrBuf)) {
-			if (Session::GetIsJsSession()) {
-                          errorMsg = "Too much data to show.";
-			} else {
-                          errorMsg = "See text window.";
-                          PrintMsgBuf();
-			}
-                        tooMuch = true;
-                    }
-                } else if (!Session::GetIsJsSession()) {
-                    puts(attrBuf);
-                }
-            }
-        }
-    }
-
-    return tooMuch;
 }

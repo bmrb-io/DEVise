@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.30  2003/01/13 19:25:26  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.29.10.3  2003/06/26 19:10:55  wenger
+  Improvement to bad file index fix: we now invalidate the TData instead
+  of just rebuilding the index, so the query processor knows things
+  have changed.
+
+  Revision 1.29.10.2  2003/06/26 16:53:12  wenger
+  Index file names for per-session data sources now include the session
+  name (to reduce collisions); fixed a few memory problems relating to
+  the data source catalogs.
+
   Revision 1.29.10.1  2002/09/02 21:29:34  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -144,6 +157,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <string>
 
 #include "TData.h"
 #include "Exit.h"
@@ -160,6 +174,7 @@
 #include "DataSeg.h"
 #include "FileIndex.h"
 #include "DepMgr.h"
+#include "Session.h"
 
 #ifndef ATTRPROJ
 #include "ViewGraph.h"
@@ -624,7 +639,7 @@ WriteString(int fd, char *string)
 void
 TData::InvalidateTData()
 {
-    DO_DEBUG(printf("invaliding tdata version %d for %d\n",
+    DO_DEBUG(printf("Invalidating tdata version %d for %d\n",
 		    _version, _data->Version()));
 
     if (_data->IsOk()) {
@@ -738,9 +753,12 @@ char *
 TData::MakeIndexFileName(char *name, char *type)
 {
   const char *fname = StripPath(name);
-  int nameLen = strlen(Init::WorkDir()) + 1 + strlen(fname) + 1;
-  char *fn = new char[nameLen];
-  sprintf(fn, "%s/%s", Init::WorkDir(), fname);
+  string tmpFile = string(Init::WorkDir()) + string("/") + string(fname);
+  if (Session::IsSessionDataSource(name)) {
+    tmpFile += string(".") + string(StripPath(Session::GetCurrentSession()));
+  }
+  char *fn = CopyString(tmpFile.c_str());
+
   return fn;
 }
 

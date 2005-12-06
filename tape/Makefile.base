@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,26 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.16.26.2  2003/12/19 18:13:09  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.16.26.1.4.1  2003/12/18 19:28:00  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.16.26.1  2003/04/17 18:00:03  wenger
+#  Now compiles with no warnings with gcc 2.95, except for warnings about
+#  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+#
+#  Revision 1.16  1998/03/02 22:34:03  wenger
+#  Got DEVise to link on SGI (haha) -- had to change things so that all
+#  templates are implicit (they are still not implicit on other
+#  architectures, to save space), had to use GNU's ar instead of SGI's,
+#  various other kludges.
+#
 #  Revision 1.15  1998/02/20 20:44:36  wenger
 #  Changed color and utils libraries to new export directory scheme for
 #  dealing with include files (email with complete explanation forthcoming).
@@ -58,7 +78,7 @@
 include ../../Makefile.common
 
 CFLAGS = $(ARCH_FLAGS) -I../../graphics -I../../graphics.new -I../../tape \
-	-I../../src/color/export \
+	-I../../src/color/export -I../../src/utils/export \
 	-Wall -Wno-unused $(TEMPLATE_FLAGS) $(OPTFLAG) -DUNIX
 
 LIBSRC = tapedrive.C
@@ -72,10 +92,16 @@ lib: $(LIBNAME)
 
 $(LIBNAME): $(LIBNAME)($(LIBOBJ))
 
+depend: Makefile.depend
+
+Makefile.depend:
+	-rm Makefile.depend
+	-$(CC) -MM $(CFLAGS) $(VPATH)/*.[cC] > Makefile.depend
+
 .PHONY: clean mostlyclean
 
 clean: mostlyclean
-	-rm $(LIBNAME)
+	-rm $(LIBNAME) Makefile.depend
 
 mostlyclean:
 	-rm $(LIBOBJ)

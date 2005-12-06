@@ -1,0 +1,11 @@
+type layout ascii
+comment #
+
+# Whitespace is tab only so we can have view names with spaces.
+whitespace '	'
+
+attr view_name string 20
+attr view_x float
+attr view_y float
+attr view_width float
+attr view_height float

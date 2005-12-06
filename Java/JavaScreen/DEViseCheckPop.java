@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2002
+// (c) Copyright 2001-2004
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,8 +20,28 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2002/07/19 17:06:47  wenger
+// Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
 // Revision 1.13  2002/06/17 19:40:14  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+//
+// Revision 1.12.2.4  2004/09/29 19:08:33  wenger
+// Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
+// V1_7b0_br branch.
+//
+// Revision 1.12.2.3.4.2  2004/09/03 17:24:41  wenger
+// We now write out failure info correctly if we fail by timing out.
+//
+// Revision 1.12.2.3.4.1  2004/06/30 18:32:05  wenger
+// Added -dev flag to JSPoP checks to actually contact the devised
+// during the check.
+//
+// Revision 1.12.2.3  2003/06/17 21:04:56  wenger
+// Major improvements to command-line argument processing of all JavaScreen
+// programs; we now save the -id value in the JSPoP to use for the usage
+// log file; some minor cleanups of the auto test scripts; slight
+// clarification of command documentation.
 //
 // Revision 1.12.2.2  2002/06/25 17:37:01  wenger
 // (Hopefully) fixed DEViseCheckPop timeout problems that sometimes led to
@@ -119,6 +139,10 @@ public class DEViseCheckPop
     private static int _bytesWritten = 0;
     private static Log _log = null;
 
+    private DEViseCommSocket _sock = null;
+    private int _id = DEViseGlobals.DEFAULTID;
+    private boolean _contactDEVise = false;
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -135,18 +159,7 @@ public class DEViseCheckPop
 		    _log.deleteFile();
 		}
 	    } else {
-	        System.out.println("FAIL");
-                if (DEBUG_LOG >= 1) {
-		    _log.write("FAIL\n");
-		}
-	        System.err.println("DEViseCheckPop fails for " +
-		  _date.getTime());
-                if (DEBUG >= 1) {
-		    System.err.println("Wrote " + _bytesWritten + " bytes");
-		}
-                if (DEBUG_LOG >= 1) {
-		    _log.write("Wrote " + _bytesWritten + " bytes\n");
-		}
+		writeFailureInfo();
 	    }
 	} catch (YException ex) {
 	    System.err.println(ex.getMessage());
@@ -155,6 +168,23 @@ public class DEViseCheckPop
 
 	// Do System.exit() here to kill off the TimeLimit thread.
 	System.exit(0);
+    }
+
+    //-------------------------------------------------------------------
+    // Write out all the necessary info if the check failed.
+    public static void writeFailureInfo()
+    {
+        System.out.println("FAIL");
+	if (DEBUG_LOG >= 1) {
+            _log.write("FAIL\n");
+        }
+        System.err.println("DEViseCheckPop fails for " + _date.getTime());
+        if (DEBUG >= 1) {
+            System.err.println("Wrote " + _bytesWritten + " bytes");
+        }
+        if (DEBUG_LOG >= 1) {
+            _log.write("Wrote " + _bytesWritten + " bytes\n");
+        }
     }
 
     //-------------------------------------------------------------------
@@ -193,27 +223,33 @@ public class DEViseCheckPop
 	}
 
 	final String usage = "Usage: java JavaScreen.DEViseCheckPop [-port<port>] " +
-	  "[-host<hostname>]\n";
-
-        if (args.length > 2) {
-	    throw new YException("Too many arguments");
-	}
+	  "[-host<hostname>] [-dev]\n";
 
 	for (int index = 0; index < args.length; index++) {
-	    if (args[index].startsWith("-port")) {
+	    StringBuffer argValue = new StringBuffer();
+
+	    if (DEViseGlobals.checkArgument(args[index], "-port", true,
+	      argValue)) {
 		try {
-	        _port = Integer.parseInt(args[index].substring(5));
+	            _port = Integer.parseInt(argValue.toString());
 		} catch (NumberFormatException ex) {
 		    throw new YException("Error parsing port number " +
 		      ex.getMessage());
 		}
 
-	    } else if (args[index].startsWith("-host")) {
-	        _host = args[index].substring(5);
+	    } else if (DEViseGlobals.checkArgument(args[index], "-host", true,
+	      argValue)) {
+	        _host = argValue.toString();
 
-	    } else if (args[index].startsWith("-usage")) {
+	    } else if (DEViseGlobals.checkArgument(args[index], "-usage",
+	      false, argValue)) {
 	        System.out.print(usage);
 		System.exit(0);
+
+
+	    } else if (DEViseGlobals.checkArgument(args[index], "-dev",
+	      false, argValue)) {
+	        _contactDEVise = true;
 
 	    } else {
 	        System.out.print(usage);
@@ -244,47 +280,20 @@ public class DEViseCheckPop
 
 	boolean result = true;
 
-	DEViseCommSocket sock = null;
 	boolean connected = false;
         try {
-	    sock = new DEViseCommSocket(_host, _port, RECEIVE_TIMEOUT);
+	    _sock = new DEViseCommSocket(_host, _port, RECEIVE_TIMEOUT);
 	    if (DEBUG_LOG >= 2) {
 	        _log.write("  Connected socket\n");
             }
 	    connected = true;
 
-	    //
-	    // Send JAVAC_Connect and receive the response.
-	    //
-	    sock.sendCmd(DEViseCommands.CHECK_POP + " " + _date.getTime());
-	    if (DEBUG_LOG >= 2) {
-	        _log.write("  Sent command\n");
-            }
-            _bytesWritten = sock.bytesWritten();
-
-	    String answer = "";
-	    while (true) {
-		try {
-	            answer += sock.receiveCmd();
-		    // If we get here, we've received the whole command.
-		    break;
-	        } catch(InterruptedIOException ex) {
-	            if (DEBUG >= 3) {
-		    System.out.println("InterruptedIOException receiving " +
-		      "command: " + ex.getMessage());
-		    }
-		}
+	    if (_contactDEVise) {
+	    	doSessionListCheck();
+	    } else {
+	        doConnectCheck();
 	    }
 
-	    if (DEBUG >= 3) {
-	        System.out.println("Received from jspop: <" + answer + ">");
-	    }
-	    if (DEBUG_LOG >= 2) {
-	        _log.write("  Received from jspop: <" + answer + ">\n");
-            }
-	    if (!answer.startsWith(DEViseCommands.DONE)) {
-	        throw new YException("Unexpected response: " + answer);
-	    }
 	} catch (YException ex) {
             if (DEBUG >= 1) {
 	        System.err.println(ex.getMessage());
@@ -296,7 +305,7 @@ public class DEViseCheckPop
 	}
 
 	if (connected) {
-	    sock.closeSocket();
+	    _sock.closeSocket();
 	}
 
 	if (DEBUG_LOG >= 2) {
@@ -306,12 +315,121 @@ public class DEViseCheckPop
 	return result;
     }
 
+    //-------------------------------------------------------------------
+    // Do the JAVAC_CheckPop check -- connects to the JSPoP but doesn't
+    // test the devised(s).
+    public void doConnectCheck() throws YException
+    {
+        //
+	// Send JAVAC_Connect and receive the response.
+	//
+	sendCmd(DEViseCommands.CHECK_POP + " " + _date.getTime());
+
+	String answer = rcvCmd();
+	if (!answer.startsWith(DEViseCommands.DONE)) {
+	    throw new YException("Unexpected response: " + answer +
+	      " (expected " + DEViseCommands.DONE + ")");
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Do the JAVAC_GetSessionList check -- connects to the JSPoP and
+    // tests a devised.
+    public void doSessionListCheck() throws YException
+    {
+	//
+	// Connect to the JSPoP and get the resulting ID.
+	//
+	sendCmd(DEViseCommands.CONNECT + " {" + DEViseGlobals.DEFAULTUSER +
+	  "} {" + DEViseGlobals.DEFAULTPASS + "} {" +
+	  DEViseGlobals.PROTOCOL_VERSION + "}");
+
+	String answer = rcvCmd();
+	String[] args = DEViseGlobals.parseString(answer);
+	if (!args[0].equals(DEViseCommands.USER)) {
+	    throw new YException("Unexpected response: " + answer +
+	      " (expected " + DEViseCommands.USER + ")");
+	}
+
+	try {
+	    _id = Integer.parseInt(args[1]);
+        } catch (NumberFormatException ex) {
+	    throw new YException("Can't parse returned ID: " + ex);
+	}
+
+	answer = rcvCmd();
+	if (!answer.startsWith(DEViseCommands.DONE)) {
+	    throw new YException("Unexpected response: " + answer +
+	      " (expected " + DEViseCommands.DONE + ")");
+	}
+
+	//
+	// Attempt to get a list of available sessions from the JSPoP.
+	// If this works, it means that at least one devised works.
+	//
+	sendCmd(DEViseCommands.GET_SESSION_LIST + " {DEViseSession}");
+	answer = rcvCmd();
+	if (!answer.startsWith(DEViseCommands.ACK)) {
+	    throw new YException("Unexpected response: " + answer +
+	      " (expected " + DEViseCommands.ACK + ")");
+	}
+
+	answer = rcvCmd();
+	if (!answer.startsWith(DEViseCommands.UPDATE_SESSION_LIST)) {
+	    throw new YException("Unexpected response: " + answer +
+	      " (expected " + DEViseCommands.UPDATE_SESSION_LIST + ")");
+	}
+
+	sendCmd(DEViseCommands.EXIT);
+    }
+
+    //-------------------------------------------------------------------
+    // Send a command to the JSPoP, logging the number of bytes sent.
+    public void sendCmd(String cmd) throws YException
+    {
+	_sock.sendCmd(cmd, DEViseGlobals.API_JAVA, _id);
+	if (DEBUG_LOG >= 2) {
+	    _log.write("  Sent command " + cmd + "\n");
+	}
+	_bytesWritten = _sock.bytesWritten();
+    }
+
+    //-------------------------------------------------------------------
+    // Receive a command from the JSPoP.
+    public String rcvCmd() throws YException
+    {
+        String answer = "";
+	while (true) {
+	    try {
+	        answer += _sock.receiveCmd();
+	        // If we get here, we've received the whole command.
+	        break;
+	    } catch(InterruptedIOException ex) {
+	        if (DEBUG >= 3) {
+	            System.out.println("InterruptedIOException receiving " +
+	              "command: " + ex.getMessage());
+	        }
+	    }
+	}
+
+        if (DEBUG >= 3) {
+	    System.out.println("Received from jspop: <" + answer + ">");
+	}
+	if (DEBUG_LOG >= 2) {
+	    _log.write("  Received from jspop: <" + answer + ">\n");
+	}
+
+	return answer;
+    }
+
+    //-------------------------------------------------------------------
     class Log
     {
 	private String _filename = null;
 	private FileWriter _fw = null;
 	private DateFormat _dtf = null;
 
+        //---------------------------------------------------------------
 	public Log(String logFile) {
 	    try {
 	        _fw = new FileWriter(logFile);
@@ -323,10 +441,12 @@ public class DEViseCheckPop
 	    }
 	}
 
+        //---------------------------------------------------------------
         protected void finalize() {
 	    close();
 	}
 
+        //---------------------------------------------------------------
         public void write(String str)
 	{
 	    if (_fw != null) {
@@ -348,6 +468,7 @@ public class DEViseCheckPop
 	    }
 	}
 
+        //---------------------------------------------------------------
 	public void deleteFile()
 	{
 	    close();
@@ -360,6 +481,7 @@ public class DEViseCheckPop
 	    }
 	}
 
+        //---------------------------------------------------------------
         private void close()
 	{
             if (_fw != null) {
@@ -373,6 +495,7 @@ public class DEViseCheckPop
 	}
     }
 
+    //-------------------------------------------------------------------
     // This class is used to force the checking process to quit after a
     // certain amount of time, since these processes sometimes hang around
     // for a long time on yola, for some unknown reason.  (Things should
@@ -384,12 +507,14 @@ public class DEViseCheckPop
 
 	private Thread _thread = null;
 
+        //---------------------------------------------------------------
         public TimeLimit()
 	{
 	    _thread = new Thread(this);
 	    _thread.start();
 	}
 
+        //---------------------------------------------------------------
         public void run()
 	{
 //TEMPTEMP -- should I have this sleep twice before failing, in case
@@ -405,7 +530,7 @@ public class DEViseCheckPop
 
 	    _log.write("DEViseCheckPop timed out\n");
 
-	    System.out.println("FAIL");
+	    writeFailureInfo();
 
 	    System.exit(1);
 	}

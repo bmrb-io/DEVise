@@ -1,0 +1,28 @@
+#! /bin/csh -f
+
+# $Id$
+
+# Copy dynamic libraries for Solaris 2.7.
+
+if (! -e dyn_lib) then
+  mkdir dyn_lib
+endif
+
+cp /s/X11/lib/libX11.so.6.2 dyn_lib
+cp /usr/lib/libsocket.so.1 dyn_lib
+cp /usr/lib/libnsl.so.1 dyn_lib
+cp /s/gcc-2.95.3/lib/libstdc++.so.2.10.0 dyn_lib
+cp /usr/lib/libm.so.1 dyn_lib
+cp /usr/lib/libc.so.1 dyn_lib
+cp /usr/lib/libdl.so.1 dyn_lib
+cp /usr/lib/libmp.so.2 dyn_lib
+
+cp /s/X11/lib/libX11.so.6.2 dyn_lib
+cp /s/X11/lib/libXmu.so.6.2 dyn_lib
+cp /s/XFree86-4.0.3/@sys/lib/libXt.so.6.0 dyn_lib
+cp /s/XFree86-4.0.3/@sys/lib/libSM.so.6.0 dyn_lib
+cp /s/XFree86-4.0.3/@sys/lib/libICE.so.6.3 dyn_lib
+cp /s/XFree86-4.0.3/@sys/lib/libXext.so.6.4 dyn_lib
+
+chmod 644 dyn_lib/*.so*
+

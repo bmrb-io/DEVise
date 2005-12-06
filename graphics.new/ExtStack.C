@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.3.18.1  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.3  1999/01/29 15:18:15  wenger
+  Fixed egcs 1.1.1 fixes -- taking out array constructor arguments caused
+  problems in some places.
+
   Revision 1.2  1999/01/18 18:24:04  beyer
   fixed compile error for egcs v 1.1.1
 
@@ -56,7 +63,7 @@ ExtStack::setNext(ExtStack* next)
 
 ExtStack::ExtStack(int unitSz, ExtStack* father)
 {
-	db = new (void*)[unitSz];
+	db = new void*[unitSz];
 	for (int index = 0; index < unitSz; index++) {
 		db[index] = NULL;
 	}

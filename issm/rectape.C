@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.5.14.1  2005/09/12 19:42:20  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.5  1999/11/30 22:28:45  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.4  1995/12/28 17:33:52  jussi
   Fixed comparisons between signed and unsigned integers.
 
@@ -75,8 +86,8 @@ int RecTape::getrecm(char *varptr, int *map)
     case 0:		                // 0 means int*4
       varsiz = 4;	
 #ifdef NEED_WORD_ALIGNED
-      if ((int) varptr % varsiz)
-	varptr += (varsiz - ((int) varptr % varsiz));
+      if ((long) varptr % varsiz)
+	varptr += (varsiz - ((long) varptr % varsiz));
 #endif
       memcpy(varptr, bufptr, varsiz);
       BinaryConversion::fourbyte(varptr, 1);
@@ -87,8 +98,8 @@ int RecTape::getrecm(char *varptr, int *map)
     case 1:		                // 1 means int*2
       varsiz = 2;
 #ifdef NEED_WORD_ALIGNED
-      if ((int) varptr % varsiz)
-	varptr += (varsiz - ((int) varptr % varsiz));
+      if ((long) varptr % varsiz)
+	varptr += (varsiz - ((long) varptr % varsiz));
 #endif
       BinaryConversion::twobyte(varptr, 1);
       memcpy(varptr, bufptr, varsiz);
@@ -99,8 +110,8 @@ int RecTape::getrecm(char *varptr, int *map)
     case 2:		                // 2 means float*4
       varsiz = 4;	
 #ifdef NEED_WORD_ALIGNED
-      if ((int) varptr % varsiz)
-	varptr += (varsiz - ((int) varptr % varsiz));
+      if ((long) varptr % varsiz)
+	varptr += (varsiz - ((long) varptr % varsiz));
 #endif
       memcpy(varptr, bufptr, varsiz);
       BinaryConversion::real(varptr, 1);

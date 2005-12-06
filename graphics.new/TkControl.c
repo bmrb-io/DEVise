@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2004
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,8 +16,25 @@
   $Id$
 
   $Log$
+  Revision 1.100  2003/01/13 19:25:27  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.99  2002/06/17 19:41:07  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.98.14.6  2005/09/12 19:42:15  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.98.14.5  2004/09/02 18:10:18  wenger
+  More error message improvements.
+
+  Revision 1.98.14.4  2004/09/02 17:56:51  wenger
+  Improved error messages if Tcl or Tk initialization fails.
+
+  Revision 1.98.14.3  2004/08/25 17:30:24  wenger
+  We now print TCL_LIBRARY and TK_LIBRARY environment variable
+  values when Tcl or Tk initialization fails.
 
   Revision 1.98.14.2  2002/09/02 21:29:34  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
@@ -432,16 +449,29 @@
 #include "Version.h"
 #include "CmdContainer.h"
 #include "DebugLog.h"
+#include "Util.h"
 
 //#define DEBUG
 #define DEBUG_LOG
 
 extern int extractStocksCmd(ClientData clientData, Tcl_Interp *interp,
-			    int argc, char *argv[]);
+			    int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+			    const
+#endif
+			    char *argv[]);
 extern int comp_extract(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+			int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+			const
+#endif
+			char *argv[]);
 extern int crsp_extract(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+			int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+			const
+#endif
+			char *argv[]);
 
 MapInterpClassInfo *TkControlPanel::_interpProto = 0;
 
@@ -471,7 +501,8 @@ TkControlPanel::TkControlPanel()
   if (Tcl_Init(_interp) == TCL_ERROR) {
     fprintf(stderr, "Cannot initialize Tcl. Is TCL_LIBRARY pointing to\n");
     fprintf(stderr, "the directory with the Tcl initialization files?\n");
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+    PrintEnv(stdout, "TCL_LIBRARY");
+    reportErrSys("Fatal error in Tcl_Init()");
     Exit::DoExit(1);
   }
 
@@ -485,7 +516,7 @@ TkControlPanel::TkControlPanel()
   _mainWindow = Tk_CreateMainWindow(_interp, 0, "DEVise", "DEVise");
   if (!_mainWindow) {
     fprintf(stderr, "%s\n", _interp->result);
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+    reportErrSys("Fatal error in Tk_CreateMainWindow()");
     exit(1);
   }
   Tk_MoveWindow(_mainWindow, 0, 0);
@@ -495,7 +526,8 @@ TkControlPanel::TkControlPanel()
   if (Tk_Init(_interp) == TCL_ERROR) {
     fprintf(stderr, "Cannot initialize Tk. Is TK_LIBRARY pointing to\n");
     fprintf(stderr, "the directory with the Tk initialization files?\n");
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+    PrintEnv(stdout, "TK_LIBRARY");
+    reportErrSys("Fatal error in Tk_Init()");
     Exit::DoExit(1);
   }
 
@@ -572,7 +604,7 @@ void TkControlPanel::StartSession()
   int code = Tcl_EvalFile(_interp, control);
   if (code != TCL_OK) {
     fprintf(stderr,"%s\n", _interp->result);
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+    reportErrSys("Fatal error in Tcl_EvalFile()");
     Exit::DoExit(1);
   }
 
@@ -585,7 +617,7 @@ void TkControlPanel::StartSession()
     if (code != TCL_OK) {
       fprintf(stderr, "Can't restore session file %s\n", sessionName);
       fprintf(stderr, "%s\n", _interp->result);
-      reportErrNosys("Fatal error");//TEMP -- replace with better message
+      reportErrSys("Fatal error in Tcl_Eval()");
       Exit::DoExit(1);
     }
   }
@@ -605,7 +637,11 @@ void TkControlPanel::DoAbort(const char *reason)
 }
 
 int TkControlPanel::DEViseCmd(ClientData clientData, Tcl_Interp *interp,
-			       int argc, char *argv[])
+			       int argc,
+#if TCL_MAJOR_VERSION > 8 || (TCL_MAJOR_VERSION == 8 && TCL_MINOR_VERSION > 3)
+			       const
+#endif
+			       char *argv[])
 {
 #if defined(DEBUG)
   printf("Receiving command from client: ");
@@ -725,7 +761,7 @@ void TkControlPanel::SyncNotify()
   if (code != TCL_OK) {
     fprintf(stderr, "Cannot execute batch file %s\n", batchFile);
     fprintf(stderr,"%s\n", _interp->result);
-    reportErrNosys("Fatal error");//TEMP -- replace with better message
+    reportErrSys("Fatal error in Tcl_EvalFile()");
     Exit::DoExit(1);
   }
 

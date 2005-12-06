@@ -1,0 +1,24 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001-2005
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  This script runs get_stats on the Wavelet-IDR JavaScreen on teal and
+#  mails the results to the appropriate people.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+scripts/get_stats | mail -s 'Wavelet-IDR JavaScreen usage on framenet' devise wenger miron framenet@waveletidr.org

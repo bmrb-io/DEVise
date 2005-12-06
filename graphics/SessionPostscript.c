@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2002
+  (c) Copyright 2002-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.1.4.1  2005/09/06 21:20:10  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.1  2002/01/15 21:49:41  wenger
+  Added session postscript capability needed for the latest peptide-cgi
+  improvements.
+
  */
 
 #include <stdio.h>
@@ -79,7 +86,7 @@ SessionPostscript::AddCommand(int argc, const char * const *argv)
     Command *cmd = new Command;
     
     cmd->_argc = argc;
-    cmd->_argv = new (char *)[argc];
+    cmd->_argv = new char *[argc];
     for (int argNum = 0; argNum < argc; argNum++) {
         cmd->_argv[argNum] = CopyString(argv[argNum]);
     }

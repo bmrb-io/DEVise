@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.8.14.1  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.8  2000/03/14 17:05:37  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.7  1996/07/14 04:04:31  jussi
   ViewKGraph is now derived from KGraph instead of declaring
   KGraph as its member variable. This allows ViewKGraph to
@@ -80,7 +87,7 @@ Boolean ViewKGraph::AddViews(ViewGraph **v, int num, char *name)
   _numviews = num;
 
   // Create _view_list
-  _view_list = new (ViewGraph *) [num];
+  _view_list = new ViewGraph *[num];
   DOASSERT(_view_list, "Out of memory");
 
   for(int i = 0; i < num; i++) {

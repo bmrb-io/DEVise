@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -43,6 +43,17 @@
   $Id$
 
   $Log$
+  Revision 1.12.14.2  2003/06/25 19:57:04  wenger
+  Various improvments to debug logging; moved command logs from /tmp
+  to work directory.
+
+  Revision 1.12.14.1  2003/06/18 17:51:01  wenger
+  Fixed (I think) bug 875 -- invalid TData record problem seen by
+  Wavelet-IDR.
+
+  Revision 1.12  2000/05/16 15:30:14  wenger
+  Improved error messages.
+
   Revision 1.11  2000/05/10 17:22:51  wenger
   Oops -- forgot to put in explicit check for file too small to checkpoint.
 
@@ -309,6 +320,12 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
     }
   }
 
+#if 0
+  // Special code to repeatable reproduce bug 875.  Do NOT!! commit with
+  // this enabled!!!!  wenger 2003-06-18.
+  _indexArray[10] += 10;
+#endif
+
   _highestValidIndex = totalRecs - 1;
 
 /*
@@ -343,7 +360,8 @@ FileIndex::Initialize(char *indexFileName, DataSource *dataP, TData *tdataP,
 
   if (result.IsError()) {
     char errBuf[MAXPATHLEN + 256];
-    sprintf(errBuf, "Error initializing index for TData %s from file %s",
+    sprintf(errBuf,
+        "Warning: error initializing index for TData %s from file %s",
         tdataP->GetName(), indexFileName);
     reportErrNosys(errBuf);
   }
@@ -707,7 +725,7 @@ FileIndex::NewInitialize(DataSource *dataP, int indexFd, TData *tdataP,
 	// assume that the existing part of the file got changed and the
 	// index is invalid.
 	if (dataP->gotoEnd() <= lastPos) {
-	  reportErrNosys("Data and index modification times disagree");
+	  reportErrNosys("Warning: data and index modification times disagree");
           result += StatusFailed;
 	}
       }
@@ -787,7 +805,7 @@ FileIndex::ReadAndCompareBytes(DataSource *dataP, int indexFd, long offset,
     }
     else if (memcmp(buffer1, buffer2, length))
     {
-      reportErrNosys("Index file invalid");
+      reportErrNosys("Warning: index file invalid");
       result += StatusFailed;
     }
   }

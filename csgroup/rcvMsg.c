@@ -20,6 +20,21 @@
   $Id$
 
   $Log$
+  Revision 1.8  2002/06/17 19:40:40  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.7.14.2  2003/12/19 18:07:07  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.7.14.1.6.1  2003/12/17 00:17:42  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.7.14.1.4.1  2003/12/16 16:07:57  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
   Revision 1.7.14.1  2002/05/27 18:15:37  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -121,7 +136,7 @@ TransferCkpt(int sockfd) {
 	int ckptfd;
 	int netfd;
 	struct sockaddr Address;
-#if defined(LINUX)
+#if defined(LINUX) || defined(SOLARIS)
         socklen_t
 #else
 	int

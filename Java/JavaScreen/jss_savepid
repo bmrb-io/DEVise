@@ -44,17 +44,20 @@ doutfile=`echo $info | cut -d' ' -f6`
 
 
 #
-# Fire up Xvfb and set DISPLAY accordingly.
+# Fire up Xvfb and set DISPLAY accordingly.  Note that this now *always*
+# attempts to fire up Xvfb, in case the file in /tmp/.X11-unix is there
+# but a corresponding Xvfb is not running.  This shouldn't cause any
+# problems -- if there is already an Xvfb running, the new one just exits.
 #
-if [ ! -f /tmp/.X11-unix/X1 ]
-then
-    nohup bin2/Xvfb :1 -screen 0 1280x1024x8 &
+echo "Attempting to start Xvfb"
 
-  # Make sure Xvfb gets going before starting the jss.
-  sleep 10
-fi
+display=1
+nohup scripts/Xvfb_savepid :$display -screen 0 1280x1024x8 &
 
-DISPLAY="unix:1.0"
+# Make sure Xvfb gets going before starting the jss.
+sleep 10
+
+DISPLAY="unix:$display.0"
 export DISPLAY
 
 
@@ -70,9 +73,9 @@ touch $doutfile
 # Fire up the jss, creating the appropriate pid file, and deleting the
 # pid file when the jss exits.
 #
-
+unset CLASSPATH
 javaexec=`cat bin2/java`
-$javaexec JavaScreen.jss -debug $* >> $joutfile 2>&1 &
+$javaexec -Xmx256m JavaScreen.jss -debug $* >> $joutfile 2>&1 &
 
 host=`hostname`
 pidfile="jss_pid:$idStr:$host:$!"

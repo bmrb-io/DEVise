@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,41 @@
   $Id$
 
   $Log$
+  Revision 1.32.10.7  2005/09/28 17:14:42  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.32.10.6  2005/04/12 18:24:12  wenger
+  Better error messages in CheckAndMakeDirectory(); provision
+  in Exit::DoExit() to avoid recursion.
+
+  Revision 1.32.10.5  2005/01/03 21:08:22  wenger
+  Fixed bug 911 (DEVise can't open DOS-format session files).
+
+  Revision 1.32.10.4  2004/08/25 17:30:18  wenger
+  We now print TCL_LIBRARY and TK_LIBRARY environment variable
+  values when Tcl or Tk initialization fails.
+
+  Revision 1.32.10.3  2003/11/05 19:09:10  wenger
+  Changed all sprintfs in Session.c to snprintfs.
+
+  Revision 1.32.10.2  2003/04/24 15:57:47  wenger
+  Fixed DateString() problem -- messed up axis date formats.
+
+  Revision 1.32.10.1  2003/04/18 17:07:42  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.32.26.1  2003/04/18 15:26:04  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
+  Revision 1.32  2001/10/04 19:03:41  wenger
+  JavaScreen support allows session files without .ds extension; various
+  improvements to session file processing.
+
   Revision 1.31  2001/05/27 18:51:08  wenger
   Improved buffer checking with snprintfs.
 
@@ -179,6 +214,10 @@ extern char *RemoveEnvFromPath(const char *path);
 // The result should be freed with FreeString().
 extern char *AddEnvToPath(const char *envVar, const char *path);
 
+// Print (nicely) the value of the given environment variable to the
+// given file.
+extern void PrintEnv(FILE *file, const char *envVar);
+
 #ifdef ULTRIX
 #define strdup(s) CopyString(s)
 #endif
@@ -197,13 +236,23 @@ enum fgets_result { fgets_invalid, fgets_ok, fgets_eof, fgets_bufoverflow,
 fgets_result nice_fgets(char *buf, int bufSize, FILE *fp);
 
 // "Friendly" wrapper around strncpy -- ensures that the destination
-// string is always null-terminated.  Returns StatusWarn if dest buffer
-// is too short to hold entire src string, StatusFailed if other problems.
+// string is always null-terminated.  Returns StatusFailed if dest buffer
+// is too short to hold entire src string or other problems.
 DevStatus nice_strncpy(char *dest, const char *src, size_t destSize);
+
+// "Friendly" wrapper around strncat.  Note that destSize is the 
+// size of the entire destination buffer, NOT the max number of characters
+// to copy.
+DevStatus nice_strncat(char *dest, const char *src, size_t destSize);
+
+// Convert the given buffer from DOS-style line (CR/LF) to unix-style
+// (LF only).
+void dos2unix(char *buf);
 
 /* Clear contents of directory */
 extern void ClearDir(char *dir);
-extern void CheckAndMakeDirectory(char *dir, int clear = 0);
+extern void CheckAndMakeDirectory(char *dir, Boolean clear = false,
+			Boolean errorIsFatal = true);
 
 /* Check space available in a directory. */
 extern void CheckDirSpace(char *dirname, char *envVar,
@@ -270,8 +319,8 @@ const char *GetDefaultDateFormat();
 /* convert double to string */
 const char *DateString(time_t tm, const char *format = NULL);
 
-inline const char *DateString(double d, char *format = NULL) {
-  return DateString((time_t)d);
+inline const char *DateString(double d, const char *format = NULL) {
+  return DateString((time_t)d, format);
 }
 
 /* Return true if a number, set num to the converted number.
@@ -443,6 +492,8 @@ Boolean dequal(double d1, double d2, double zeroTol = 1.0e-5,
 // snprintf();
 #define checkAndTermBuf(buf, bufSize, formatted) CheckAndTermBuf((buf), \
   (bufSize), (formatted), __FILE__, __LINE__)
+#define checkAndTermBuf2(buf, formatted) CheckAndTermBuf((buf), \
+  sizeof(buf)/sizeof(char), (formatted), __FILE__, __LINE__)
 DevStatus CheckAndTermBuf(char buf[], int bufSize, int formatted,
   const char *file, int line);
 

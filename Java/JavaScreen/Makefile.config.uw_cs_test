@@ -42,7 +42,14 @@ JAR_DIR = /var/home/www/public/test
 CGI_DIR = /var/home/www/cgi-bin/js.test
 IDSTR = test
 
+# Where the DEVise sessions, schemas, etc., are installed.
+DEVISE_VIS = /p/devise/demo
+
 # This is who gets email about any errors.
 ERROR_EMAIL = devise@cs.wisc.edu
 
 INSTALL_HOST = pumori.cs.wisc.edu
+
+# You should probably set this to 0 if you're running more than one JSS
+# on the same machine.
+KILL_XVFB = 0

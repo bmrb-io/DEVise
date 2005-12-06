@@ -1,2 +1,4 @@
 *.out*
 devise_debug_log*
+Makefile.config
+install_info

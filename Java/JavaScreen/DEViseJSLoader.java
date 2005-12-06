@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -16,13 +16,36 @@
 // string. Used to print a short message that Java Screen is 
 // loading, when the network connection is slow.
 
+// Note: we seem to need all of the threads to get the "loading" message
+// to show up properly.  wenger 2003-03-27.
+
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.7  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.6  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+//
+// Revision 1.5.2.11  2003/07/23 21:00:10  wenger
+// Oops!  Needed closeSession() and openSession() wrapper methods in
+// DEViseJSLoader.
+//
+// Revision 1.5.2.10  2003/05/02 17:16:16  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
+//
+// Revision 1.5.2.9  2003/03/28 17:21:29  wenger
+// Made JS invisibility destruction timeout configurable; fixed some other
+// problems with loading and re-loading the applet.
+//
+// Revision 1.5.2.8  2003/01/28 15:29:28  wenger
+// Made refreshAllData() and restartSession() methods in DEViseJSLoader,
+// so that the Wavelet-IDR JavaScript code can call them.
 //
 // Revision 1.5.2.7  2002/12/18 15:19:04  wenger
 // Disabled (at least temporarily) the applet no-reload feature in the
@@ -112,8 +135,8 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
     static final int DEBUG = 0;
 
     String appletToLoad;
-    Label label;
-    Thread appletThread;
+    protected Label label;
+    Thread _loaderThread;
     DEViseJSApplet realApplet;
 
     boolean _reload = true;
@@ -125,6 +148,9 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
         if (DEBUG >= 1) {
             System.out.println("DEViseJSLoader.init()");
         }
+
+	ShowLoadingMessage show = new ShowLoadingMessage(this);
+	show.start();
 
 	// Get "real applet" name from applet parameters.
 	appletToLoad = getParameter("applet");
@@ -146,14 +172,6 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 	}
         TEMP?*/
 	_reload = true;//TEMP?
-	
-        label = new Label(
-	  " *** Please wait - Loading Applet for DEVise JavaScreen. ***  ");
-        label.setFont(new Font("Helvetica", Font.BOLD, 16));
-        label.setForeground(new Color(0.4f, 0.3f, 0.6f));
-        label.setBackground(new Color(0.9f, 0.9f, 0.9f));
-
-        add(label);
     }
 
     public void run()
@@ -172,33 +190,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
             } catch (InterruptedException e) {
             }
 
-	    //
-	    // Figure out whether there's an existing instance of the applet
-	    // that we may be able to re-use.
-	    // Note: this assumes that the actual HTML code referenced
-	    // by the URL hasn't changed since we loaded the associated
-	    // applet (or at least hasn't changed in a way such as
-	    // referencing a different version of the applet).  RKW
-	    // 2002-08-19.
-	    //
-	    DEViseJSApplet tmpAppl = DEViseJSApplet.getInstance(url);
-
-	    if (_reload || tmpAppl == null) {
-	        Class appletClass = Class.forName(appletToLoad);
-		realApplet = (DEViseJSApplet)appletClass.newInstance();
-
-		System.out.println("New instance (" +
-		  realApplet.getInstanceNum() + ")");
-	    } else {
-		realApplet = tmpAppl;
-
-		System.out.println("Old instance (" +
-		  realApplet.getInstanceNum() + ")");
-
-		// Force the old applet to reload the session (this
-		// behavior is needed for Wavelet-IDR).
-	        realApplet.restartSession();
-	    }
+	    realApplet = getAppletInstance(appletToLoad, url, _reload);
 
 	    realApplet.setStub(this);
 
@@ -217,7 +209,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
         validate();
 
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    jsdevisec.printAllThreads("Thread " + appletThread + " ending");
+	    DEViseUtils.printAllThreads("Thread " + _loaderThread + " ending");
 	}
     }
 
@@ -227,17 +219,16 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
             System.out.println("DEViseJSLoader.start()");
         }
 
-        if (appletThread == null) {
-            appletThread = new Thread(this);
-            appletThread.setName("JS loader");
-            appletThread.start();
+        if (_loaderThread == null || realApplet == null ||
+	  realApplet.wasDestroyed()) {
+            _loaderThread = new Thread(this);
+            _loaderThread.setName("JS loader");
+            _loaderThread.start();
 	    if (DEViseGlobals.DEBUG_THREADS >= 1) {
-		jsdevisec.printAllThreads("Starting thread " + appletThread);
+		DEViseUtils.printAllThreads("Starting thread " + _loaderThread);
 	    }
         } else {
-	    if (!realApplet.wasDestroyed()) {
-	        realApplet.start();
-	    }
+	    realApplet.start();
 	}
     }
 
@@ -263,6 +254,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 	// instances cluttering things up.  RKW 2002-11-25.
 	if (_reload) {
 	    realApplet.destroy();
+	    realApplet = null;
 	}
 
 	super.destroy();
@@ -275,5 +267,94 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
         }
 
         resize(width, height);
+    }
+
+    // Force the applet to refresh all data in its current session.
+    public void refreshAllData(boolean doHome)
+    {
+        realApplet.refreshAllData(doHome);
+    }
+
+    // Force the applet to reload its current session.
+    public void restartSession()
+    {
+        realApplet.restartSession();
+    }
+
+    // Close the current session.
+    public void closeSession()
+    {
+        realApplet.closeSession();
+    }
+
+    // Open the given session.
+    public void openSession(String fullSessionName)
+    {
+        realApplet.openSession(fullSessionName);
+    }
+
+    //
+    // Figure out whether there's an existing instance of the applet
+    // that we may be able to re-use.
+    // Note: this assumes that the actual HTML code referenced
+    // by the URL hasn't changed since we loaded the associated
+    // applet (or at least hasn't changed in a way such as
+    // referencing a different version of the applet).  RKW
+    // 2002-08-19.
+    //
+    private static DEViseJSApplet getAppletInstance(String appletName,
+      String url, boolean reload) throws ClassNotFoundException,
+      InstantiationException, IllegalAccessException
+    {
+        DEViseJSApplet applet = null;
+
+	DEViseJSApplet tmpAppl = DEViseJSApplet.getInstance(url);
+
+        if (reload || tmpAppl == null) {
+	    Class appletClass = Class.forName(appletName);
+	    applet = (DEViseJSApplet)appletClass.newInstance();
+
+	    System.out.println("New instance (" + applet.getInstanceNum() + ")");
+	} else {
+	    applet = tmpAppl;
+
+	    System.out.println("Old instance (" +
+	      applet.getInstanceNum() + ")");
+
+	    // Force the old applet to reload the session (this
+	    // behavior is needed for Wavelet-IDR).
+	    applet.restartSession();
+	}
+
+	return applet;
+    }
+
+    class ShowLoadingMessage implements Runnable
+    {
+	DEViseJSLoader _loader;
+	Thread _thread;
+
+        public ShowLoadingMessage(DEViseJSLoader loader)
+        {
+	    _loader = loader;
+        }
+
+        public void start()
+        {
+	    _thread = new Thread(this);
+	    _thread.setName("ShowLoadingMessage");
+	    _thread.start();
+        }
+
+        public void run()
+        {
+            _loader.label = new Label(
+	      " *** Please wait - Loading Applet for DEVise JavaScreen. ***  ");
+            _loader.label.setFont(new Font("Helvetica", Font.BOLD, 16));
+            _loader.label.setForeground(new Color(0.4f, 0.3f, 0.6f));
+            _loader.label.setBackground(new Color(0.9f, 0.9f, 0.9f));
+ 
+            _loader.add(_loader.label);
+        }
     }
 }

@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.5  2002/06/17 19:40:52  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.4.22.2  2005/09/28 22:29:34  wenger
+  Various const-ifying to make things compile better on basslet.
+
   Revision 1.4.22.1  2002/05/27 18:15:47  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -117,7 +123,7 @@ DeviseClient::MainLoop()
  * Executes a command from the server.
  */
 void
-DeviseClient::ControlCmd(int argc, char **argv)
+DeviseClient::ControlCmd(int argc, const char * const *argv)
 {
 #if defined(DEBUG)
   printf("DeviseClient(0x%p)::ControlCmd(%s)\n", this, argv[0]);

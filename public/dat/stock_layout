@@ -1,0 +1,15 @@
+# view_name view_x view_y view_width view_height
+Sun_Price	0.0	1.0	0.8	0.8
+Sun_Volume	1.0	1.0	0.8	0.8
+DEC_Price	0.0	0.0	0.8	0.8
+DEC_Volume	1.0	0.0	0.8	0.8
+
+View 2		0.0	0.57	0.8	0.07
+View 3		1.0	0.57	0.8	0.07
+View 4		0.0	-0.43	0.8	0.07
+View 5		1.0	-0.43	0.8	0.07
+
+View 6		-0.43	1.0	0.07	0.8
+View 7		0.57	1.0	0.07	0.8
+View 8		-0.43	0.0	0.07	0.8
+View 9		0.57	0.0	0.07	0.8

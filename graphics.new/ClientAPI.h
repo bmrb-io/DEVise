@@ -16,6 +16,18 @@
    $Id$
 
    $Log$
+   Revision 1.20  2002/06/17 19:41:06  wenger
+   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+   Revision 1.19.6.3  2005/09/28 22:29:47  wenger
+   Various const-ifying to make things compile better on basslet.
+
+   Revision 1.19.6.2  2005/09/28 17:14:50  wenger
+   Fixed a bunch of possible buffer overflows (sprintfs and
+   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+   of fprintfs() to reportErr*() so the messages go into the
+   debug log; various const-ifying of function arguments.
+
    Revision 1.19.6.1  2002/05/27 18:15:59  wenger
    Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -142,7 +154,7 @@ extern int NetworkClose(int fd);
 // If bracket is non-zero, curly brackets are added around each argument.
 // Returns 1 on success, -1 on failure.
 extern int NetworkSend(int fd, u_short flag, u_short bracket,
-		       int argc, char **argv);
+		       int argc, const char * const *argv);
 
 // Receive a message.  Returns 1 on success, -1 on failure, 0 if no message
 // is available.  argv points into a static buffer.
@@ -152,7 +164,7 @@ extern int NetworkReceive(int fd, int block, u_short &flag,
 
 // Returns a dynamically-allocated string containing all of the specified
 // arguments, separated with spaces.  Returns NULL on failure.
-extern char *NetworkPaste(int argc, char **argv);
+extern char *NetworkPaste(int argc, const char * const *argv);
 
 // Set the given connection to non-blocking mode.  Returns 1 on success,
 // -1 on failure.
@@ -175,7 +187,7 @@ extern int NetworkParse(const char *recBuff, int numElements, char **&av);
 // will contain a pointer to a *static* buffer containing the formatted
 // bytes.  Returns the number of messages bytes on success, -1 on failure.
 extern int NetworkPrepareMsg(u_short flag, u_short bracket,
-		       int argc, char **argv, char** recBufferp);
+		       int argc, const char * const *argv, char** recBufferp);
 
 //
 // Dataport is for one-time connection

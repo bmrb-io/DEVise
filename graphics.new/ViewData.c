@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,8 +16,33 @@
   $Id$
 
   $Log$
+  Revision 1.31  2003/01/13 19:25:28  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.30  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.29.4.9  2005/09/06 21:20:18  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.29.4.8  2003/11/21 23:05:12  wenger
+  Drill-down now works properly on views that are GAttr link followers
+  (fixed bug 893).
+
+  Revision 1.29.4.7  2003/09/08 20:53:22  wenger
+  Fixed a bug in that the intersection of multiple GAttr links was
+  not being computed correctly.
+
+  Revision 1.29.4.6  2003/08/01 22:04:27  wenger
+  Fixed bug 871 (home doesn't work right on GAttribute link followers).
+
+  Revision 1.29.4.5  2003/06/16 16:42:06  wenger
+  Fixed bug 879 (a problem with the home code) -- made pretty significant
+  improvements to how we deal with the data ranges.
+
+  Revision 1.29.4.4  2003/02/04 19:41:16  wenger
+  Added union capability for multiple GData attribute links (will help
+  with restraint visualizations for BMRB).
 
   Revision 1.29.4.3  2002/09/10 17:13:21  wenger
   Fixed bug 821 (GAttr links fail when follower has "complex" symbols)
@@ -177,23 +202,6 @@
 //#define DEBUG 0
 //#define TEST_FILTER_LINK // TEMP -- remove later. RKW 1998-10-29.
 
-class SymbolInfo {
-public:
-  SymbolInfo() {
-    inGAttrLink = true; // until proven otherwise...
-  }
-
-  Boolean Passes() { return inFilter && inGAttrLink; }
-  Boolean ShouldDraw() { return (inFilter || isComplex) && inGAttrLink; }
-
-  Coord x;
-  Coord y;
-  ShapeID shape;
-  Boolean inFilter;
-  Boolean isComplex;
-  Boolean inGAttrLink;
-};
-
 #if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
 inline Coord GetShapeAttr(int shapeAttrNum, char *ptr, TDataMap *map,
   const GDataAttrOffset *offset)
@@ -221,6 +229,7 @@ ViewData::ViewData(char* name, VisualFilter& initFilter, QueryProc* qp,
 
     _objectValid.Set();
 	_passTwoGData = NULL;
+	_gAttrLinkMode = LinkIntersection;
 }
 
 //******************************************************************************
@@ -268,7 +277,8 @@ ViewData::QueryInit(void* userData)
   }
   _derivedTables.DoneIterator(index);
 
-  _dataRangesValid = false;
+  InvalidateDataRanges();
+
   _dataRangeFirst = true;
   _twoPass = false;
 
@@ -385,6 +395,12 @@ void	ViewData::ReturnGData(TDataMap* mapping, RecId recId,
 	// Test records against GAttr links we're a follower of.
 	//
 	GAttrLinkFollower(mapping, gdata, numGData, gRecSize, symArray);
+
+	//
+	// Update the data ranges based on the bounding boxes of symbols that
+	// passed link filters.
+	//
+    UpdateDataRanges(numGData, symArray);
 
 	//
 	// Insert records into GAttr links we're a leader of.
@@ -585,49 +601,37 @@ ViewData::GetGDataValues(TDataMap *mapping, void *gdata, int numGData,
 	    DevStatus result = _countMapping->ProcessRecord(dataP);
 	  }
 
-	  Coord x = symArray[recNum].x = mapping->GetX(dataP);
-	  Coord y = symArray[recNum].y = mapping->GetY(dataP);
+	  SymbolInfo &symbol = symArray[recNum];
+
+	  Coord x = symbol.x = mapping->GetX(dataP);
+	  Coord y = symbol.y = mapping->GetY(dataP);
 
 	  //
 	  // Get the bounding box for this symbol.
 	  //
-	  Coord ULx, ULy, LRx, LRy; // bounding box
-	  mapping->GetBoundingBox(dataP, ULx, ULy, LRx, LRy);
+	  mapping->GetBoundingBox(dataP, symbol.bBULx, symbol.bBULy,
+	      symbol.bBLRx, symbol.bBLRy);
 
 	  // Adjust the bounding box for "pixel size" (+/- key).
-      ULx *= mapping->GetPixelWidth();
-      ULy *= mapping->GetPixelWidth();
-      LRx *= mapping->GetPixelWidth();
-      LRy *= mapping->GetPixelWidth();
+      symbol.bBULx *= mapping->GetPixelWidth();
+      symbol.bBULy *= mapping->GetPixelWidth();
+      symbol.bBLRx *= mapping->GetPixelWidth();
+      symbol.bBLRy *= mapping->GetPixelWidth();
 
 	  // Make the bounding box absolute instead of relative to symbol
 	  // position.
-      ULx += x;
-      ULy += y;
-	  LRx += x;
-	  LRy += y;
+      symbol.bBULx += x;
+      symbol.bBULy += y;
+	  symbol.bBLRx += x;
+	  symbol.bBLRy += y;
 
 #if (DEBUG >= 3)
       printf("  Record bounding box: UL: %g, %g; LR: %g, %g\n",
-	    ULx, ULy, LRx, LRy);
+	    symbol.bBULx, symbol.bBULy, symbol.bBLRx, symbol.bBLRy);
 #endif
 
-
-      if (_dataRangeFirst) {
-	    _dataXMin = ULx;
-		_dataXMax = LRx;
-		_dataYMin = LRy;
-		_dataYMax = ULy;
-	    _dataRangeFirst = false;
-	  } else {
-	    _dataXMin = MIN(_dataXMin, ULx);
-		_dataXMax = MAX(_dataXMax, LRx);
-		_dataYMin = MIN(_dataYMin, LRy);
-		_dataYMax = MAX(_dataYMax, ULy);
-	  }
-
-	  ShapeID shape = symArray[recNum].shape = mapping->GetShape(dataP);
-      symArray[recNum].isComplex = mapping->IsComplexShape(shape) ||
+	  ShapeID shape = symbol.shape = mapping->GetShape(dataP);
+      symbol.isComplex = mapping->IsComplexShape(shape) ||
 		  (GetNumDimensions() == 3);
 
 	  //
@@ -638,13 +642,14 @@ ViewData::GetGDataValues(TDataMap *mapping, void *gdata, int numGData,
       // Use of maxWidth and maxHeight here is probably goofed up if symbols
 	  // are rotated.  RKW Aug. 8, 1997.
 	  //
-	  symArray[recNum].inFilter = InVisualFilter2(ULx, ULy, LRx, LRy);
+	  symbol.inFilter = InVisualFilter2(symbol.bBULx, symbol.bBULy,
+	      symbol.bBLRx, symbol.bBLRy);
 
 #if defined(TEST_FILTER_LINK) // TEMP -- remove later. RKW 1998-10-29.
 	  if (!strcmp(GetName(), "FilterSlaveView")) {
 	    Coord linkX = GetShapeAttr(5, dataP, mapping, offset);
 	    Coord linkY = GetShapeAttr(6, dataP, mapping, offset);
-        symArray[recNum].inFilter &= InVisualFilter(linkFilter, linkX, linkY,
+        symbol.inFilter &= InVisualFilter(linkFilter, linkX, linkY,
 		  0.0, 0.0);
       }
 #endif
@@ -658,6 +663,7 @@ void
 ViewData::GAttrLinkFollower(TDataMap *mapping, void *gdata, int numGData,
   int gRecSize, SymbolInfo symArray[])
 {
+	Boolean firstLink = true;
 	int index = _slaveLink.InitIterator();
 	while (_slaveLink.More(index)) {
 	  MasterSlaveLink *msLink = _slaveLink.Next(index);
@@ -671,17 +677,59 @@ ViewData::GAttrLinkFollower(TDataMap *mapping, void *gdata, int numGData,
 	    char *gDataRec = (char *) gdata;
 
 	    for (int recNum = 0; recNum < numGData; recNum++) {
-		  // Don't bother to test this record if we already know we're
-		  // not going to draw it.
-		  if (symArray[recNum].ShouldDraw()) {
+		  // Note: we used to not test records against the GAttribute link(s)
+		  // if we already knew we weren't going to draw them; however, this
+		  // goofs up the data ranges for home, so now we always test against
+		  // the GAttribute link(s).  wenger 2003-08-01.
+		  if (firstLink) {
 		    symArray[recNum].inGAttrLink =
 		        gaLink->TestRecord(mapping, (char *)gDataRec);
+		  } else {
+		    if (_gAttrLinkMode == LinkIntersection) {
+		      symArray[recNum].inGAttrLink = symArray[recNum].inGAttrLink &&
+		          gaLink->TestRecord(mapping, (char *)gDataRec);
+		    } else if (_gAttrLinkMode == LinkUnion) {
+		      symArray[recNum].inGAttrLink = symArray[recNum].inGAttrLink ||
+		          gaLink->TestRecord(mapping, (char *)gDataRec);
+		    } else {
+		      DOASSERT(false, "Illegal link mode");
+		    }
 		  }
+
 	      gDataRec += gRecSize;
 		}
 	  }
+
+	  firstLink = false;
 	}
 	_slaveLink.DoneIterator(index);
+}
+
+//******************************************************************************
+void
+ViewData::UpdateDataRanges(int numGData, SymbolInfo symArray[])
+{
+  for (int recNum = 0; recNum < numGData; recNum++) {
+	SymbolInfo &symbol = symArray[recNum];
+    if (symbol.inGAttrLink) {
+#if (DEBUG >= 2)
+      printf("  Updating data ranges with (%g, %g), (%g, %g)\n", symbol.bBULx,
+	      symbol.bBULy, symbol.bBLRx, symbol.bBLRy);
+#endif
+      if (_dataRangeFirst) {
+	    _dataXMin = symbol.bBULx;
+		_dataXMax = symbol.bBLRx;
+		_dataYMin = symbol.bBLRy;
+		_dataYMax = symbol.bBULy;
+	    _dataRangeFirst = false;
+	  } else {
+	    _dataXMin = MIN(_dataXMin, symbol.bBULx);
+		_dataXMax = MAX(_dataXMax, symbol.bBLRx);
+		_dataYMin = MIN(_dataYMin, symbol.bBLRy);
+		_dataYMax = MAX(_dataYMax, symbol.bBULy);
+	  }
+	}
+  }
 }
 
 //******************************************************************************
@@ -1085,7 +1133,7 @@ GDataStore::GetGData()
   // Now make a new array of pointers to the GData records (without the
   // X values) in sorted order.
   //
-  _gdata = new (void *)[_recordCount];
+  _gdata = new void *[_recordCount];
   for (int index = 0; index < _recordCount; index++) {
     _gdata[index] = recs[index]._gdataRec;
   }

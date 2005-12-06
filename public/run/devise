@@ -7,18 +7,16 @@
 
 ############################################################
 
-# Edit and uncomment the following line to be able to run DEVise from
-# any directory.
-#cd .../devise/run
-
-limit coredumpsize 0
+# limit coredumpsize 0
 limit descriptors 256
 
-#TEMP -- get rid of hard-coded path eventually
-set devise_run = /p/devise/release/run
+set dir = `dirname $0`
 
-source $devise_run/dev_prog.std
-setenv DEVISE_VIS ..
+setenv DEVISE_PROG	`$dir/devise_prog`
+set devise_run = $DEVISE_PROG/run
+
+source $devise_run/dev_prog.gen
+setenv DEVISE_VIS `dirname $0`/..
 source $devise_run/dev_vis.gen
 
 source $devise_run/start_mono

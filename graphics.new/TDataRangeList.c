@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.5  2002/06/17 19:41:07  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.4.28.2  2003/04/18 17:07:55  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.4.28.1.4.1  2003/04/18 15:26:14  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
   Revision 1.4.28.1  2002/05/27 18:16:00  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -57,7 +68,7 @@ TDataRangeListEntry *TDataRangeList::Find(TData *tdata, char *attr_name, Coord g
     return cur;
 }
 
-RangeList *TDataRangeList::Get(TData *tdata, char *attr_name="recId", Coord granularity=1)
+RangeList *TDataRangeList::Get(TData *tdata, char *attr_name, Coord granularity)
 {
     TDataRangeListEntry *cur = Find(tdata, attr_name, granularity);
     if (cur == NULL) {

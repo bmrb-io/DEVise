@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-1996
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -13,6 +13,22 @@
 ############################################################
 
 #  $Log$
+#  Revision 1.12.18.1  2003/12/19 18:10:36  wenger
+#  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+#
+#  Revision 1.12.36.1  2003/12/18 19:25:55  wenger
+#  Major cleanup of makefiles (got rid of all Makefile.linux
+#  Makefile.solaris dependency files); executables compiled on RH 7.2
+#  now have dynamic library dependencies that work on RH 9; updated
+#  release scripts for new dynamic library dependencies; startup scripts
+#  now work on RH 9.
+#
+#  Revision 1.12  1999/01/20 22:47:35  beyer
+#  Major changes to the DTE.
+#  * Added a new type system.
+#  * Rewrote expression evaluation and parsing
+#  * And many other changes...
+#
 #  Revision 1.11  1998/03/04 18:41:22  wenger
 #  Added <arch>/Makefile.config files that now hold stuff like the
 #  PERL_CORE definitions so those don't have to be repeated in all
@@ -63,9 +79,9 @@
 include ../Makefile.config
 
 ARCH_LDFLAGS =
-ARCH_GUILDFLAGS = -L/s/X11/lib -L/s/tcl/lib
+ARCH_GUILDFLAGS = $(XLIB_LIBDIR) $(TCL_TK_LIBDIR)
 ARCH_SYSLIBS = -lm
-ARCH_GUISYSLIBS = -ltk -ltcl -lX11 -lm
+ARCH_GUISYSLIBS = $(TCL_TK_LIBS) -lX11 -lm
 ARCH_LDPOST = -lsocket -lnsl
 
 DTE_DIR = ../../DTE

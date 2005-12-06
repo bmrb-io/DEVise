@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2000
+#  (c) Copyright 2000-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,30 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2.8.5  2005/06/02 21:01:52  wenger
+#  We now exlude any host name *starting* with localhost from the
+#  "real" session opens.
+#
+#  Revision 1.2.8.4  2005/01/05 18:06:29  wenger
+#  Improvements to JS usage statistics script: now deals with the fact
+#  that the logs seem to be in local time instead of GMT; error messages
+#  if parsing time fails; prints a warning if there's no JSPoP pid file.
+#
+#  Revision 1.2.8.3  2003/10/07 21:19:59  wenger
+#  Get_stats and get_stats_old now accept curTime command-line argument
+#  to get statistics from the past.
+#
+#  Revision 1.2.8.2  2003/09/25 18:25:21  wenger
+#  New version of JavaScreen usage stats script gets info from
+#  jspop.usage.* files, gives non-UW counts.
+#
+#  Revision 1.2.8.1  2003/06/20 16:18:14  wenger
+#  Added id, directory, and hostname header to usage stats.
+#
+#  Revision 1.2  2001/09/24 17:36:37  wenger
+#  Moved all JS log files to "logs" subdirectory; fixed omission of Tasvir
+#  script from intall.
+#
 #  Revision 1.1  2001/09/17 22:03:26  wenger
 #  Improved JavaScreen usage statistics: stats are now incremental (last
 #  day or week), session opening counts are included.
@@ -50,17 +74,22 @@ use strict;
 use Time::Local;
 
 my $debug = 0; # 0-3
-my $version = "2.0";
+my $version = "3.2.0";
 
-my $usage = "Usage: get_stats [idStr] [period]
+my $usage = "Usage: get_stats [idStr [period [curTime]]] | -usage | -version
   (Get JavaScreen usage statistics.)
   idStr can be all (default), regular, soil, test, or tst2
-  period can be week (default), day, or all\n";
+  period can be week (default), day, or all
+  curTime should be of the form 'dd-mmm-yy hh:mm:ss ap' or
+    'mmm dd, yyyy hh:mm:ss ap' (e.g., 'Sep 26, 2003 00:00:00 AM').\n";
+
+my @saveArgs = @ARGV;
+
 
 #
 # Process command-line arguments.
 #
-die "$usage" if ($#ARGV < -1 or $#ARGV > 1);
+die "$usage" if ($#ARGV < -1 or $#ARGV > 2);
 
 if ($#ARGV >= 0) {
   if ($ARGV[0] eq "-usage") {
@@ -86,11 +115,19 @@ if ($#ARGV >= 0) {
   $period = "week";
 }
 
+
+# Get the 'current' time -- can be specified on the command line to
+# get statistics from a period earlier than the current one.
+my $curTime;
+if ($#ARGV >= 0) {
+  $curTime = StrToTime(@ARGV);
+} else {
+  $curTime = time();
+}
+
 # Figure out the earliest time that is within the specified period of
 # the current time.
-my $curTime = time();
-
-my $timeInterval = 60 * 60 * 24;
+my $timeInterval = 60 * 60 * 24; # seconds in a day
 my $earliestTime;
 if ($period eq "day") {
   $earliestTime = $curTime - $timeInterval;
@@ -104,11 +141,32 @@ if ($period eq "day") {
   exit 1;
 }
 
+
+#
+# See if we have a JSPoP pid file corresponding to the id string specified
+# (if any).  If not, print a warning.
+#
+my $pidPattern;
+if ($idStr eq "all") {
+  $pidPattern = "jspop_pid:*";
+} else {
+  $pidPattern = "jspop_pid:$idStr:*";
+}
+
+my @pidFiles = glob($pidPattern);
+if ($#pidFiles < 0) {
+  print "\nWARNING: no $pidPattern file found; are you sure this script " .
+      "is being run in the directory that the JSPoP is actually run in?\n\n";
+}
+
+
 #
 # Initialize various counts and lists.
 #
-my $connectCount = 0;
 my $openCount = 0;
+# realOpenCount is the number of session opens from hosts other than
+# localhost, *.cs.wisc.edu and *.bmrb.wisc.edu.
+my $realOpenCount = 0;
 my %hostList = ();
 my %sessionList = ();
 my $time1 = -1; # Earliest time of data.
@@ -120,28 +178,32 @@ my $time2 = -1; # Latest time of data.
 #
 my $filename;
 if ($idStr eq "all") {
-  $filename = "logs/jspop.out*";
+  $filename = "logs/jspop.usage*";
 } else {
-  $filename = "logs/jspop.out.$idStr*";
+  $filename = "logs/jspop.usage.$idStr*";
 }
 my @files = glob($filename);
 print "Files: @files\n" if ($debug >= 1);
+
+# If we didn't find any appropriate jspop.usage* files, call the old version
+# of this script that gets info from the jspop.out* files.
+if ($#files <= -1) {
+  print "No appropriate jspop.usage* files found -- running old version\n";
+  print "of script that gets data from jspop.out* files\n\n";
+  exec "scripts/get_stats_old @saveArgs";
+}
 
 #
 # Now process each log file.
 #
 my $file;
 foreach $file (@files) {
+  print "Opening $file\n" if ($debug >= 3);
   open(DATA_IN, $file) or die "Couldn't open log file $file: $!\n";
 
   my $line;
   while ($line = <DATA_IN>) {
     print "line = $line" if ($debug >= 3);
-
-    #
-    # Process client connection lines.
-    #
-    ProcessConnect($line);
 
     #
     # Process session open lines.
@@ -155,70 +217,53 @@ foreach $file (@files) {
 PrintResults();
 
 #-----------------------------------------------------------
-# Processes a line if that line contains client connection information.
-# Client connection lines are of the form:
-#   "Client from localhost is added ... [27-Jul-01 9:02:53 AM]"
-# Argument: line
-# Returns: (nothing)
-
-sub ProcessConnect {
-  my $line = shift(@_);
-
-  if ($line =~ /Client from (.*) is added \.\.\. \[(.*)\]/) {
-    print "line = $line" if ($debug >= 2);
-
-    my $client = $1;
-    my $time = $2;
-
-    my $connTime = StrToTime($time);
-
-    if ($connTime >= $earliestTime) {
-      if ($connTime >= 0) {
-        if ($time1 == -1 || $connTime < $time1) {
-          $time1 = $connTime;
-        } elsif ($time2 == -1 || $connTime > $time2) {
-          $time2 = $connTime;
-        }
-      }
-
-      $connectCount++;
-      $hostList{$client}++;
-    }
-  }
-}
-
-#-----------------------------------------------------------
 # Processes a line if that line contains session open information.
 # Client connection lines are of the form:
-# Received command from client(1) :  "JAVAC_OpenSession {DEViseSession/nrg/vis+aud_example.ds} " [13-Sep-01 4:29:57 PM]
+# pumori.cs.wisc.edu: JAVAC_OpenSession {DEViseSession/Demo/Bmrb3dPeptide}  [Sep 25, 2003 12:28:00 PM]
 # Argument: line
 # Returns: (nothing)
 
 sub ProcessOpen {
   my $line = shift(@_);
 
-  if ($line =~ /Received.*JAVAC_OpenSession {(.*)}.*\[(.*)\]/) {
+  if ($line =~ /(.*): JAVAC_OpenSession {(.*)}.*\[(.*)\]/) {
     print "line = $line" if ($debug >= 2);
 
-    my $session = $1;
-    my $time = $2;
+    my $host = $1;
+    my $session = $2;
+    my $time = $3;
 
+    print "host = $host\n" if ($debug >= 1);
     print "session = $session\n" if ($debug >= 1);
     print "time = $time\n" if ($debug >= 1);
 
     my $openTime = StrToTime($time);
+    print "openTime = $openTime\n" if ($debug >= 1);
 
-    if ($openTime >= $earliestTime) {
+    if ($openTime >= $earliestTime && $openTime <= $curTime) {
       if ($openTime >= 0) {
         if ($time1 == -1 || $openTime < $time1) {
           $time1 = $openTime;
-        } elsif ($time2 == -1 || $openTime > $time2) {
+        }
+	if ($time2 == -1 || $openTime > $time2) {
           $time2 = $openTime;
         }
       }
 
       $openCount++;
       $sessionList{$session}++;
+
+      $hostList{$host}++;
+
+      if ($host =~ /localhost.*/) {
+        # Intentional no-op.
+      } elsif ($host =~ /.*\.cs\.wisc\.edu/) {
+        # Intentional no-op.
+      } elsif ($host =~ /.*\.bmrb\.wisc\.edu/) {
+        # Intentional no-op.
+      } else {
+        $realOpenCount++;
+      }
     }
   }
 }
@@ -248,8 +293,8 @@ sub ParseLine {
 #-----------------------------------------------------------
 # Converts a string date of the form "dd-mmm-yy hh:mm:ss ap" or
 # "mmm dd, yyyy hh:mm:ss ap" to time (seconds since the epoch).
-# Note: this assumes the input string time is in GMT, since the JSPoP
-# logs seem to be in GMT.
+# Note: this assumes the input string time is in local time, since
+# the JSPoP logs now seem to be in local time (they were in GMT).
 # Argument: date string
 # Returns: time; -1 if error
 
@@ -322,7 +367,10 @@ sub StrToTime {
       $hour = 0;
     }
 
-    $cmdTime = timegm($second, $minute, $hour, $day, $month, $year);
+    $cmdTime = timelocal($second, $minute, $hour, $day, $month, $year);
+  } else {
+    print "Error: unable to convert date string <$datestr> to seconds " .
+        "since the epoch.  Format error in date string?\n";
   }
 
   return $cmdTime;
@@ -361,13 +409,19 @@ sub PrintResults {
   my $date1 = TimeToStr($time1);
   my $date2 = TimeToStr($time2);
 
+  # Added info here so we know where we're getting stats from, especially
+  # if we don't have a subject line on the email.
+  my $hostname = `hostname`;
+  chomp $hostname;
+  my $dir = `pwd`;
+  chomp $dir;
+  print "JavaScreen usage for $idStr in $dir on $hostname\n\n";
+
   print "JavaScreen usage statistics for $dateEarly through $dateCur\n";
   print "  (Data actually found for $date1 through $date2):\n\n";
-  my $realConns = $connectCount-$hostList{"localhost"};
-  print "$connectCount connections ($realConns excluding localhost)\n";
-  print "$openCount session opens\n";
+  print "$openCount session opens ($realOpenCount \"real\")\n";
 
-  print "\nClient host info (number of connections, host):\n";
+  print "\nClient host info (number of session opens, host):\n";
   my $host;
   foreach $host (sort { $hostList{$b} <=> $hostList{$a} } keys %hostList) {
     printf "%4d %s\n", $hostList{$host}, $host;

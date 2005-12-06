@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.30  2003/01/13 19:25:10  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.29.14.2  2005/04/12 18:24:12  wenger
+  Better error messages in CheckAndMakeDirectory(); provision
+  in Exit::DoExit() to avoid recursion.
+
   Revision 1.29.14.1  2002/09/02 21:29:24  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -171,6 +178,14 @@ void Exit::DoExit(int code)
     printf("Exit::DoExit(%d)\n", code);
 #endif
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, "Exit::DoExit()\n");
+
+    // Avoid accidental loops if something goes wrong in this method.
+    static Boolean inDoExit = false;
+    if (inDoExit) {
+      fprintf(stderr, "Recursive call of Exit::DoExit(); cleanup aborted\n");
+      exit(1);
+    }
+    inDoExit = true;
 
 #if !defined(LIBCS)
     /* Clean out temp directory.  This code was moved here from Control.c,

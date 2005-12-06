@@ -28,17 +28,36 @@ do
   fi
 done
 
+timestamp=`date`
+echo "$timestamp: starting devised for $idStr"
+
 info=`ports+files $idStr`
 outfile=`echo $info | cut -d' ' -f6`
+
+# Figure out whether whether we need fontkludge turned on (needed on
+# Solaris).
+if [ `uname` = "SunOS" ]
+then
+  fontkludge=1
+else
+  fontkludge=0
+fi
 
 #
 # Fire up the DEVise executable, creating the appropriate pid file, and
 # deleting the pid file when DEVise exits.
 #
-$DEVISE_EXEC $* -logLevel 4 -jscache 1 -fontkludge 0 >> $outfile 2>&1 &
+#TEMPTEMPBASSLET -- make hangCheck configurable here
+$DEVISE_EXEC $* -logLevel 4 -jscache 1 -fontkludge $fontkludge \
+  -allowExtProc 0 -hangCheck 0 >> $outfile 2>&1 &
+devpid=$!
+timestamp=`date`
+echo "  $timestamp: $idStr devised PID is $devpid"
 
 host=`hostname`
-pidfile="devised_pid:$idStr:$host:$!"
+pidfile="devised_pid:$idStr:$host:$devpid"
 touch $pidfile
 wait $!
 rm $pidfile
+timestamp=`date`
+echo "$timestamp: devised $devpid exited"

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,32 @@
   $Id$
 
   $Log$
+  Revision 1.9.14.2  2005/09/28 17:14:21  wenger
+  Fixed a bunch of possible buffer overflows (sprintfs and
+  strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+  of fprintfs() to reportErr*() so the messages go into the
+  debug log; various const-ifying of function arguments.
+
+  Revision 1.9.14.1  2003/12/19 18:07:07  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.9.32.1  2003/12/17 00:17:42  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.9.30.2  2003/12/16 16:07:57  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.9.30.1  2003/04/18 16:10:25  wenger
+  Got things to compile and link with gcc 3.2.2 (with lots of warnings),
+  but some code is commented out; also may need fixes to be backwards-
+  compatible with older gcc versions.
+
+  Revision 1.9  2000/01/13 23:06:43  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.8  1999/11/24 15:44:07  wenger
   Removed (unnecessary) CommandObj class; commands are now logged for the
   monolithic form, not just the client/server form; other command-related
@@ -60,10 +86,14 @@
 #ifndef _Server_h_
 #define _Server_h_
 
+#include <iostream>
+
 #include "ClientAPI.h"
 #include "CollabTypes.h"
 #include "Dispatcher.h"
 #include "CmdDescriptor.h"
+
+using namespace std;
 
 class CSgroupKey;
 
@@ -145,9 +175,10 @@ public:
 	}
 
     virtual int SendControl(		  // send command to all clients
-		u_short flag, int argc, char **argv, int addBraces = true);
+		u_short flag, int argc, const char * const *argv,
+	    int addBraces = true);
 	virtual void RunCmd(int argc, char** argv, CmdDescriptor& cmdDes)
-		{ cerr <<"***base class shouldnot be reached"<<endl;};
+		{ cerr << "***base class should not be reached" << endl; }
 	virtual ClientInfo* getClientInfo(ClientID cid)
 	{
 		return &_clients[cid];
@@ -215,7 +246,7 @@ protected:
 				char* cname, 
 				char* control,
 				int argc, 
-				char** argv, 
+				const char* const * argv, 
 				char*&errmsg);
     virtual void ProcessCmd(ClientID,
 			    int argc,
@@ -240,7 +271,8 @@ public:
 	{
 		return ServerClientCmd(flag, 1,&result);
 	}
-	virtual bool ServerClientCmd(u_short flag, int argc, char** argv);
+	virtual bool ServerClientCmd(u_short flag, int argc,
+	  const char* const * argv);
 										// propagate commands from active
 										// server to the passive server and
 										// then to the client

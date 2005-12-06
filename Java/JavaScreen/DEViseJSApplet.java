@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2002
+// (c) Copyright 2000-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
+// Revision 1.10.2.10  2003/06/26 20:18:04  wenger
+// Added closeSession() and openSession() methods to the JS applet for
+// Wavelet-IDR.
+//
+// Revision 1.10.2.9  2003/03/28 17:21:29  wenger
+// Made JS invisibility destruction timeout configurable; fixed some other
+// problems with loading and re-loading the applet.
+//
+// Revision 1.10.2.8  2003/01/28 15:29:28  wenger
+// Made refreshAllData() and restartSession() methods in DEViseJSLoader,
+// so that the Wavelet-IDR JavaScript code can call them.
+//
 // Revision 1.10.2.7  2002/12/18 15:19:03  wenger
 // Disabled (at least temporarily) the applet no-reload feature in the
 // JavaScreen code (because it just causes problems on Mozilla).
@@ -208,15 +223,29 @@ public abstract class DEViseJSApplet extends Applet
     public void stop()
     {
         if (timer == null) {
-	    timer = new DEViseJSTimer(this);
+	    timer = new DEViseJSTimer(this, jsValues.uiglobals.visTimeout);
 	}
 	timer.start();
+    }
+
+    // This method is used to destroy the applet from the DEViseJSTimer
+    // thread.  If we don't go through here, destroy() deadlocks when it
+    // tries to destroy the timer thread.
+    public void destroyFromTimer()
+    {
+	// Note: we need to set destroyed to true here so that if we do
+	// back/forward quickly in the browser, DEViseJSLoader realizes
+	// that it can't just restart the existing applet. wenger 2003-03-28.
+	_destroyed = true;
+        timer = null;
+	destroy();
     }
 
     public void destroy()
     {
         if (DEBUG >= 1) {
-	    System.out.println("DEViseJSApplet.destroy()");
+	    System.out.println("DEViseJSApplet(" + _instanceNum +
+	      ").destroy()");
 	}
 	
 	if (timer != null) {
@@ -494,6 +523,11 @@ public abstract class DEViseJSApplet extends Applet
         } else {
             jsValues.session.collabPass = null;
         }
+
+	String visTimeout = getParameter("vis_timeout");
+	if (visTimeout != null) {
+	    jsValues.uiglobals.visTimeout = Integer.parseInt(visTimeout);
+	}
     }
 
     public void loadImages()
@@ -588,6 +622,15 @@ public abstract class DEViseJSApplet extends Applet
 	return url;
     }
 
+    // Force the applet to refresh all data in its current session.
+    public abstract void refreshAllData(boolean doHome);
+
     // Force the applet to reload its current session.
     public abstract void restartSession();
+
+    // Close the current session.
+    public abstract void closeSession();
+
+    // Open the given session.
+    public abstract void openSession(String fullSessionName);
 }

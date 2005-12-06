@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2003
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.145  2003/01/13 19:23:45  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.144  2002/07/19 17:06:49  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
@@ -30,6 +33,32 @@
 //
 // Revision 1.142  2002/05/01 21:29:00  wenger
 // Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+//
+// Revision 1.141.2.25  2003/12/22 22:47:15  wenger
+// JavaScreen support for print color modes is now in place.
+//
+// Revision 1.141.2.24  2003/12/03 19:31:09  wenger
+// Changed most buttons in the JavaScreen GUI to menus (to save space
+// in preparation for adding new functionality).
+//
+// Revision 1.141.2.23  2003/12/02 23:12:52  wenger
+// Added FUNKY_COLORS flag to jsdevisec so we can see which GUI element
+// is which.
+//
+// Revision 1.141.2.22  2003/09/23 21:55:12  wenger
+// "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+//
+// Revision 1.141.2.21  2003/06/26 20:18:04  wenger
+// Added closeSession() and openSession() methods to the JS applet for
+// Wavelet-IDR.
+//
+// Revision 1.141.2.20  2003/05/21 16:11:19  wenger
+// Fixed bug 872 (double append to path in JS open session dialog).
+//
+// Revision 1.141.2.19  2003/05/02 17:16:17  wenger
+// Kludgily set things up to make a js jar file (I was going to also
+// make jar files for the jspop, etc., but it turned out to be a real
+// pain until we organize the whole JS source tree better).
 //
 // Revision 1.141.2.18  2002/12/17 23:15:02  wenger
 // Fixed bug 843 (still too many java processes after many reloads);
@@ -557,21 +586,11 @@ public class jsdevisec extends Panel
     private Panel topPanel = null;
     private Panel mainPanel = null;
 
-    private Button openButton = new Button("Open");
-    private Button closeButton = new Button("Close");
-    public  Button stopButton = new Button("Stop");
-    private Button restartButton = new Button("Restart");
-    private Button setButton = new Button("Option");
-    private Button exitButton = new Button("Exit");
-    private Button filterButton = new Button("Filter");
-    private Button helpButton = new Button("Help");
+    private DEViseMainButtons _mainButtons = null;
+
+    public  Button stopButton = null;
+
     private Label commMode = new Label("");
-    private Button modeButton = new Button("Mode");
-    private Button collabButton = new Button("Collaborate");
-    private Button playbackButton = new Button("Playback");
-    private final String displayLogStr = "Show Log";
-    private final String closeLogStr = "Hide Log";
-    private Button logButton = new Button(displayLogStr);
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -643,13 +662,17 @@ public class jsdevisec extends Panel
     private int oldScreenHeight = -1;
     private int oldScreenRes = -1;
 
+    // Turning this on sets various GUI components to different colors
+    // so we can see what is what.
+    private boolean FUNKY_COLORS = false;
+
     // images[0-9] are the gears; 10 and 11 are "traffic lights"
     //   (devise[0-10].gif).
     public jsdevisec(Applet parentApplet, Frame frame, Vector images,
       DEViseJSValues jv)
     {
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    printAllThreads("In jsdevisec constructor");
+	    DEViseUtils.printAllThreads("In jsdevisec constructor");
 	}
 
 	// create the DEViseJSValues object
@@ -729,40 +752,11 @@ public class jsdevisec extends Panel
             mainPanel.add(light);
         }
 
-		//
-		// Add buttons to the panel (only add a subset if we're running
-		// in a browser).  Note that we have created all of the buttons
-		// even if only some of them will get used.
-		//
-        Component[] button = null;
-        if (jsValues.uiglobals.inBrowser) {
-            button = new Component[9];
-            button[0] = restartButton;
-            button[1] = stopButton;
-            button[2] = setButton;
-            button[3] = filterButton;
-            button[4] = modeButton;
-	    button[5] = collabButton;
-	    button[6] = playbackButton;
-            button[7] = logButton;
-            button[8] = helpButton;
-        } else {
-            button = new Component[12];
-            button[0] = openButton;
-            button[1] = closeButton;
-            button[2] = stopButton;
-            button[3] = restartButton;
-            button[4] = setButton;
-            button[5] = filterButton;
-            button[6] = modeButton;
-	    button[7] = collabButton;
-	    button[8] = playbackButton;
-	    button[9] = logButton;
-            button[10] = helpButton;
-            button[11] = exitButton;
-        }
+	_mainButtons = new DEViseMainButtons(this);
+	stopButton = _mainButtons.getStopButton();
+        Component[] buttons = _mainButtons.getButtons();
 
-        DEViseComponentPanel buttonPanel = new DEViseComponentPanel(button,
+        DEViseComponentPanel buttonPanel = new DEViseComponentPanel(buttons,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
 	  DEViseComponentPanel.ALIGN_LEFT, this);
 	if (jsValues.connection.cgi) {
@@ -841,159 +835,14 @@ public class jsdevisec extends Panel
         Toolkit kit = Toolkit.getDefaultToolkit();
 	jsValues.uiglobals.screenRes = kit.getScreenResolution();
 
-        jscreen = new DEViseScreen(this);
         Panel screenPanel = new Panel(new FlowLayout(FlowLayout.CENTER, 3, 3));
         screenPanel.setBackground(jsValues.uiglobals.screenBg);
+
+        jscreen = new DEViseScreen(this);
         screenPanel.add(jscreen);
 
         add(topPanel, BorderLayout.NORTH);
         add(screenPanel, BorderLayout.CENTER);
-
-		//
-        // Define event handlers for buttons.
-		//
-        openButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (isSessionOpened) {
-                            showMsg("You already have a session opened!\nPlease close current session first!");
-                            return;
-                        }
-
-			// If we are a follower in collaboration mode
-			if (specialID != -1) {
-			    showMsg("Cannot 'Open' while following.");
-			    return;
-			}
-			
-			dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" + currentDir + "}");
-                    }
-                });
-
-        closeButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (!isSessionOpened) {
-                            showMsg("You do not have any opened session!");
-                            return;
-                        }
-                        dispatcher.start(DEViseCommands.CLOSE_SESSION);
-                    }
-                });
-
-        stopButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			// If we are a follower in collaboration mode
-			if (specialID != -1) {
-			    showMsg("Cannot 'Stop' while following.\n" +
-                                     "To stop, choose 'Quit Following' from 'Collaborate'.");
-			    return;
-			}
-
-                        if (dispatcher.getStatus() !=
-			  DEViseCmdDispatcher.STATUS_IDLE) {
-                            stopNumber++;
-                            if (stopNumber > 1) {
-                                dispatcher.stop(true);
-                            } else {
-                                dispatcher.stop();
-                            }
-                        }
-                    }
-                });
-
-        restartButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			restartSession();
-                    }
-                });
-
-        setButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        showSetting();
-                    }
-                });
-
-        exitButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        checkQuit();
-                    }
-                });
-
-        modeButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			setMode();
-                    }
-                });
-
-        collabButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			showCollab();
-                    }
-                });	
-
-        playbackButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			setLogFile();
-                    }
-                });	
-
-        logButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			setLog();
-                    }
-                });
-
-        filterButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        if (!isSessionOpened) {
-                            showMsg("You do not have any opened session!");
-                            return;
-                        }
-
-                        dispatcher.start(DEViseCommands.RESET_FILTERS);
-                    }
-                });
-
-        helpButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			if (!isSessionOpened) {
-			    showMsg("You do not have any opened session!");
-			    return;
-			}
-
-			// Don't call showAllHelp() until we know that the dispatcher is not busy.
-			// This is to avoid lock-ups caused by calling showAllHelp() twice before
-			// getting a response
-			while(dispatcher.getStatus() !=
-			  DEViseCmdDispatcher.STATUS_IDLE) {}
-
-			jscreen.showAllHelp();
-                    }
-                });
-
 
         isSessionOpened = false;
 
@@ -1065,6 +914,17 @@ public class jsdevisec extends Panel
 	    isDisplay = jv.session.playbackDisplay;
 	    logPlayBack();
 	}
+
+	if (FUNKY_COLORS) {
+            setBackground(Color.gray);
+	    topPanel.setBackground(Color.magenta);
+            mainPanel.setBackground(Color.blue);
+            animPanel.setBackground(Color.green);
+            light.setBackground(Color.yellow);
+            viewInfo.setBackground(Color.black);
+            screenPanel.setBackground(Color.cyan);
+            jscreen.setBackground(Color.orange);
+	}
     } // end of constructor
 
     public void refreshAllData(boolean doHome)
@@ -1076,12 +936,93 @@ public class jsdevisec extends Panel
 
     public void restartSession()
     {
-        if (!isSessionOpened && !jsValues.uiglobals.inBrowser) {
-	    showMsg("You do not have any opened session!");
+        if (currentSession == null && !jsValues.uiglobals.inBrowser) {
+	    showMsg("You do not have any current session!");
 	    return;
 	}
 	dispatcher.start(DEViseCommands.OPEN_SESSION + " {" +
 	  currentDir + "/" + currentSession + "}");
+    }
+
+    public void closeSession()
+    {
+        if (!isSessionOpened) {
+            showMsg("You do not have any open session!");
+            return;
+        }
+        dispatcher.start(DEViseCommands.CLOSE_SESSION);
+    }
+
+    public void getSessionList()
+    {
+        if (isSessionOpened) {
+            showMsg("You already have a session opened!\n" +
+	      "Please close current session first!");
+            return;
+        }
+
+        // If we are a follower in collaboration mode
+        if (specialID != -1) {
+            showMsg("Cannot 'Open' while following.");
+            return;
+	}
+
+        dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" +
+	  currentDir + "}");
+    }
+
+    public void openSession(String fullSessionName)
+    {
+        dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " +
+	  jsValues.uiglobals.screenSize.width + " " +
+	  jsValues.uiglobals.screenSize.height + " " +
+	  jsValues.uiglobals.screenRes + " " +
+	  jsValues.uiglobals.screenRes + "\n" +
+	  DEViseCommands.OPEN_SESSION + " {" +
+	  fullSessionName + "}");
+    }
+
+    public void resetFilters()
+    {
+        if (!isSessionOpened) {
+            showMsg("You do not have any open session!");
+            return;
+        }
+        dispatcher.start(DEViseCommands.RESET_FILTERS);
+    }
+
+    public void stopCommand()
+    {
+        // If we are a follower in collaboration mode
+        if (specialID != -1) {
+            showMsg("Cannot 'Stop' while following.\n" +
+            "To stop, choose 'Quit Following' from 'Collaborate'.");
+            return;
+        }
+
+        if (dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {
+            stopNumber++;
+            if (stopNumber > 1) {
+                dispatcher.stop(true);
+            } else {
+                dispatcher.stop();
+            }
+        }
+    }
+
+    public void viewHelp()
+    {
+        if (!isSessionOpened) {
+            showMsg("You do not have any open session!");
+            return;
+        }
+
+        // Don't call showAllHelp() until we know that the dispatcher is
+	// not busy.  This is to avoid lock-ups caused by calling
+	// showAllHelp() twice before getting a response
+        while(dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {}
+
+        jscreen.showAllHelp();
     }
 
     public void hideDebug() {
@@ -1124,11 +1065,11 @@ public class jsdevisec extends Panel
         p(msg, 1);
     }
 
-    public void setLog()
+    public void setLog(MenuItem logMenuItem)
     {
-	String label = logButton.getLabel();
+	String label = logMenuItem.getLabel();
 	
-	if (label.equals(displayLogStr)) {
+	if (label.equals(DEViseMainButtons.displayLogStr)) {
 	    jsValues.debug._debugLevel = 1;
 	    debugWindow = new YLogGUI(jsValues.debug._debugLevel);
 	    showDebug();
@@ -1139,13 +1080,13 @@ public class jsdevisec extends Panel
 	    }
 	    
 	    msgBuffer.removeAllElements();
-	    logButton.setLabel(closeLogStr);
+	    logMenuItem.setLabel(DEViseMainButtons.closeLogStr);
 	
 	} else {
 	    jsValues.debug._debugLevel = 0;
 	    hideDebug();
 	    debugWindow = null;
-	    logButton.setLabel(displayLogStr);
+	    logMenuItem.setLabel(DEViseMainButtons.displayLogStr);
 	}
 
     }
@@ -1404,7 +1345,7 @@ public class jsdevisec extends Panel
         }
 
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
-	    printAllThreads("After jsdevisec.destroy()");
+	    DEViseUtils.printAllThreads("After jsdevisec.destroy()");
 	}
 
         if (!jsValues.uiglobals.isApplet) {
@@ -1416,6 +1357,11 @@ public class jsdevisec extends Panel
     {
 	commMode.setForeground(Color.white);
         commMode.setText("Socket");
+    }
+
+    public void setDisplayMode(int mode)
+    {
+	dispatcher.start(DEViseCommands.SET_DISPLAY_MODE + " " + mode);
     }
 
     // Go out of collaboration leader mode.  (This is called with isLeader
@@ -1528,17 +1474,6 @@ public class jsdevisec extends Panel
 	jsValues.uiglobals.screenSize.width = oldScreenWidth;
 	jsValues.uiglobals.screenSize.height = oldScreenHeight; 
 	jsValues.uiglobals.screenRes = oldScreenRes;
-    }
-    
-    public static void printAllThreads(String msg)
-    {
-	int count = Thread.activeCount();
-	System.out.println(count + " Threads (" + msg + "):");
-        Thread[] threads = new Thread[count];
-	int count2 = Thread.enumerate(threads);
-	for (int index = 0; index < count2; index++) {
-	    System.out.println("  " + threads[index]);
-	}
     }
 }
 
@@ -1737,7 +1672,9 @@ class SessionDlg extends Frame
     private boolean[] sessionTypes = null;
     private String[] sessionNames = null;
 
-    private boolean status = false; // true means this dialog is showing
+    private boolean isShowing = false; // whether this dialog is showing
+
+    private boolean selectionMade = false;
 
     public SessionDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String[] data)
     {
@@ -1850,54 +1787,51 @@ class SessionDlg extends Frame
 
     private void dirOrFileSelected()
     {
-        int idx;
-        if ((fileList.getItemCount() > 0) &&
-          ((idx = fileList.getSelectedIndex()) != -1)) {
-            sessionName = fileList.getItem(idx);
+	if (!selectionMade) {
+	    selectionMade = true;
+            int idx;
+            if ((fileList.getItemCount() > 0) &&
+              ((idx = fileList.getSelectedIndex()) != -1)) {
+                sessionName = fileList.getItem(idx);
 
-            if (sessionName.startsWith("[")) { // a directory
-                String[] name = DEViseGlobals.parseString(sessionName,
-		  '[', ']');
-	        if (name[0].equals("..")) { // go up a directory
-                    jsc.previousDir = jsc.currentDir;
-	            if (jsc.currentDir.equals(jsc.rootDir)) {
-	                jsc.showMsg("You do not have access to this directory!");
-		        return;
-                    }
+                if (sessionName.startsWith("[")) { // a directory
+                    String[] name = DEViseGlobals.parseString(sessionName,
+		      '[', ']');
+	            if (name[0].equals("..")) { // go up a directory
+                        jsc.previousDir = jsc.currentDir;
+	                if (jsc.currentDir.equals(jsc.rootDir)) {
+	                    jsc.showMsg("You do not have access to this directory!");
+		            return;
+                        }
 
-	            // Remove the last element from the currentDir string.
-                    int index = jsc.currentDir.lastIndexOf('/');
-	            if (index > 0) {
-	                jsc.previousDir = jsc.currentDir;
-		        jsc.currentDir = jsc.currentDir.substring(0, index);
+	                // Remove the last element from the currentDir string.
+                        int index = jsc.currentDir.lastIndexOf('/');
+	                if (index > 0) {
+	                    jsc.previousDir = jsc.currentDir;
+		            jsc.currentDir = jsc.currentDir.substring(0, index);
+                        } else {
+	                    jsc.showMsg("Invalid current directory \"" +
+		              jsc.currentDir + "\"!");
+		            jsc.previousDir = jsc.currentDir;
+		            jsc.currentDir = jsc.rootDir;
+		            close();
+                        }
                     } else {
-	                jsc.showMsg("Invalid current directory \"" +
-		          jsc.currentDir + "\"!");
-		        jsc.previousDir = jsc.currentDir;
-		        jsc.currentDir = jsc.rootDir;
-		        close();
-                    }
-                } else {
-	            jsc.previousDir = jsc.currentDir;
-	            jsc.currentDir = jsc.currentDir + "/" + name[0];
-	        }
+	                jsc.previousDir = jsc.currentDir;
+	                jsc.currentDir = jsc.currentDir + "/" + name[0];
+	            }
 
-                directory.setText("/" + jsc.currentDir);
-	        validate();
-	        jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST + " {" +
-	          jsc.currentDir + "}");
-            } else { // a file
-                jsc.currentSession = sessionName;
-	        jsc.dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " +
-	          jsc.jsValues.uiglobals.screenSize.width + " " +
-	          jsc.jsValues.uiglobals.screenSize.height + " " +
-	          jsc.jsValues.uiglobals.screenRes + " " +
-	          jsc.jsValues.uiglobals.screenRes + "\n" +
-	          DEViseCommands.OPEN_SESSION + " {" +
-	          jsc.currentDir + "/" + sessionName + "}");
-                close();
+                    directory.setText("/" + jsc.currentDir);
+	            validate();
+	            jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST +
+		      " {" + jsc.currentDir + "}");
+                } else { // a file
+                    jsc.currentSession = sessionName;
+		    jsc.openSession(jsc.currentDir + "/" + sessionName);
+                    close();
+                }
             }
-        }
+	}
     }
 
     public void setSessionList(String[] data)
@@ -1938,6 +1872,8 @@ class SessionDlg extends Frame
         }
 
         validate();
+
+	selectionMade = false;
     }
 
     protected void processEvent(AWTEvent event)
@@ -1959,26 +1895,20 @@ class SessionDlg extends Frame
     public void open()
     {
 	jsc.jsValues.debug.log("Opening SessionDlg");
-        status = true;
+        isShowing = true;
         setVisible(true);
     }
 
     public synchronized void close()
     {
-        if (status) {
+        if (isShowing) {
             dispose();
 
-            status = false;
+            isShowing = false;
 
             jsc.sessiondlg = null;
         }
 	jsc.jsValues.debug.log("Closed SessionDlg");
-    }
-
-    // true means this dialog is showing
-    public synchronized boolean getStatus()
-    {
-        return status;
     }
 
     public void setDirectory()
@@ -2011,6 +1941,19 @@ class SettingDlg extends Dialog
 	what.jsValues.debug.log("Creating SettingDlg");
 
         jsc = what;
+
+	//
+	// Get the version info from the JSPoP (send the command, and
+	// wait for it to finish or fail).
+	//
+	jsc.dispatcher.start(DEViseCommands.GET_POP_VERSION);
+	while (jsc.dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {
+	    try {
+	        Thread.sleep(100);
+	    } catch (InterruptedException ex) {
+	        System.err.println("InterruptedException: " + ex);
+	    }
+	}
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
@@ -2087,6 +2030,42 @@ class SettingDlg extends Dialog
         Label version = new Label(DEViseGlobals.VERSION);
         gridbag.setConstraints(version, c);
         add(version);
+
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label labelPopVer = new Label("JSPoP Version:");
+        gridbag.setConstraints(labelPopVer, c);
+        add(labelPopVer);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        Label labelPopVerValue = new Label(jsc.dispatcher.getPopVersion());
+        gridbag.setConstraints(labelPopVerValue, c);
+        add(labelPopVerValue);
+
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label labelDevVer = new Label("DEVise Version:");
+        gridbag.setConstraints(labelDevVer, c);
+        add(labelDevVer);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        Label labelDevVerValue = new Label(jsc.dispatcher.getDeviseVersion());
+        gridbag.setConstraints(labelDevVerValue, c);
+        add(labelDevVerValue);
+
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label labelPopID = new Label("JSPoP ID:");
+        gridbag.setConstraints(labelPopID, c);
+        add(labelPopID);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        Label labelPopIDValue = new Label(jsc.dispatcher.getPopID());
+        gridbag.setConstraints(labelPopIDValue, c);
+        add(labelPopIDValue);
 
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;

@@ -19,8 +19,20 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9  2002/07/19 17:07:54  wenger
+#  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+#
 #  Revision 1.8  2002/06/17 19:41:46  wenger
 #  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+#
+#  Revision 1.7.4.5  2005/06/10 21:22:45  wenger
+#  More configuration and install doc updates.
+#
+#  Revision 1.7.4.4  2003/09/23 22:31:24  wenger
+#  Modification dates of class files are now preserved.
+#
+#  Revision 1.7.4.3  2003/06/20 18:06:55  wenger
+#  Fixed this to release the new Xvfb scripts.
 #
 #  Revision 1.7.4.2  2002/06/26 17:29:42  wenger
 #  Improved various error messages and client debug log messages; very
@@ -119,7 +131,7 @@ set classdir = $dest/JavaScreen
 if (! -d $classdir) then
   mkdir $classdir
 endif
-cp $src/JavaScreen/*.class $classdir
+cp -p $src/JavaScreen/*.class $classdir
 
 #-----------------------------------------------------------
 # Release the jar files.
@@ -196,12 +208,14 @@ if (! -e $dest/scripts) then
   mkdir $dest/scripts
 endif
 cp -p $src/scripts/[a-z]* $dest/scripts
+cp -p $src/scripts/X* $dest/scripts
 chmod 755 $dest/scripts/*
 
 
 cp -p $src/Makefile.config.* $dest
 cp -p $src/Makefile.setup $dest
 chmod 644 $dest/Makefile*
+cp -p $src/CONFIG.txt $dest
 
 #-----------------------------------------------------------
 # Release the GIFs.

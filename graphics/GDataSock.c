@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.18.10.1  2003/04/17 17:59:17  wenger
+  Now compiles with no warnings with gcc 2.95, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.18  2001/04/03 19:57:32  wenger
+  Cleaned up code dealing with GData attributes in preparation for
+  "external process" implementation.
+
   Revision 1.17  2001/01/08 20:32:41  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -477,11 +485,7 @@ GDataSock::PrintRecordVals(const RecordVals &vals)
   // through.  RKW Nov. 18, 1997.
   if (result.IsComplete()) {
     size_t byteCount = (size_t) offset;
-    if (write(_fd, buf, byteCount) !=
-#if defined(SOLARIS)
-        (ssize_t)
-#endif // SOLARIS
-        byteCount) {
+    if (write(_fd, buf, byteCount) != (ssize_t) byteCount) {
       reportErrSys("Error writing to data channel");
       result = StatusFailed;
     }

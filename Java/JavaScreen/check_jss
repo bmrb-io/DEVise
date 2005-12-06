@@ -20,6 +20,23 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10.8.1  2005/11/15 17:13:58  wenger
+#  A bunch of changes to improve restart logging, etc.:
+#  - Better error messages in jss.java.
+#  - Set maximum memory for all production Java server processes to
+#    256 MB (because of weird problems on marlin.bmrb.wisc.edu).
+#  - DEVise.jspop and DEVise.jspop.loc send all start_devised output to
+#    a log file instead of to /dev/null.
+#  - check_jspop now puts check_connect.err.* in logs and doesn't
+#    delete it when there's an error.
+#  - run_check puts *starting* timestamp at beginning of output, saves
+#    output from failed tests to logs.
+#  - start_devised generates more output, now that it's being saved.
+#  - Better error messages from check_jsall, check_jspop, and check_jss.
+#
+#  Revision 1.10  2001/07/20 18:04:15  wenger
+#  Added hostname to pid files.
+#
 #  Revision 1.9  2001/06/08 17:38:01  wenger
 #  Sh on pumori didn't like previous versions.
 #
@@ -117,12 +134,12 @@ done
 curTime=`date`
 if [ $foundJss != 1 ]
 then
-  echo "No JSS process found (at $curTime)" 1>&2
+  echo "check_jss:  no JSS process found (at $curTime)" 1>&2
 fi
 
 if [ $foundDevised != 1 ]
 then
-  echo "No DEVised process found (at $curTime)" 1>&2
+  echo "check_jss:  no DEVised process found (at $curTime)" 1>&2
 fi
 
 if [ $foundJss = 1 -a $foundDevised = 1 ]

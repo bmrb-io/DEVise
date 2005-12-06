@@ -24,6 +24,42 @@ if ($#argv >= 1) then
   set serverCount = $argv[2]
 endif
 
+
+# Check for bin2 directory, etc., to make sure setup has happened.
+if (! -e bin2 || ! -e bin2/java) then
+  echo "There is no bin2 directory, or files are missing in that directory."
+  echo "You need to copy one of the Makefile.config.* files to Makefile.config,"
+  echo "edit it appropriately, and then run the command"
+  echo "'make -f Makefile.setup clean setup'."
+  exit 1
+endif
+
+
+#
+# Check for the restart lock file so we don't get two restarts overlapping
+# (goofs up log file, may cause extra restarts).
+#
+set lockFile = jspop_restart_lock:`hostname`:$idStr
+set host = ":`hostname`:*"
+set pidFile = "jspop_pid:$idStr$host"
+
+if (-e $lockFile) then
+  echo "restart_jspop sleeping because of lock file"
+  sleep 300
+
+  # Here we check for a JSPoP pid file; this is in case a restart crashed
+  # or something, and left a bad lock file hanging around.
+  if ("" == `glob $pidFile`) then
+    echo "Apparent JSPoP restart failure; potential overlap"
+  else
+    echo "JSPoP already restarted -- restart_jspop exits"
+    exit
+  endif
+endif
+
+touch $lockFile
+
+
 set jssHost = ""
 set jssPath = ""
 if ($#argv >= 3) then
@@ -40,17 +76,24 @@ set popFile = `echo $info | cut -d' ' -f4`
 
 
 echo "Restarting jspop on `hostname`."
+echo ""
 
 
 # Kill the jspop if it's running.
 ./jspop.kill $idStr
 
 
-# Rename jspop log file.
+# Rename jspop debug log file.
 set timestamp = `./get_timestamp`
 set popFile_new = $popFile.$timestamp
-echo "Saving log file as $popFile_new"
+echo "Saving debug log file as $popFile_new"
 mv $popFile $popFile_new
+
+# Rename jspop usage log file.
+set usageFile = logs/jspop.usage.$idStr
+set usageFile_new = $usageFile.$timestamp
+echo "Saving usage log file as $usageFile_new"
+mv $usageFile $usageFile_new
 
 
 # Restart the jspop.
@@ -67,3 +110,10 @@ else
   # the jss started by this command dies(!).  RKW 2000-12-08.
   rsh $jssHost "cd $jssPath; ./restart_jss $idStr $serverCount `hostname`" &
 endif
+
+# Give the JSPoP time to get ready to accept connections before we remove
+# the lock file.
+sleep 20
+
+# Remove the restart lock file.
+rm $lockFile

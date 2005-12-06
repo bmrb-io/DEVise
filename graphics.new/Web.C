@@ -7,6 +7,14 @@
   $Id$
 
   $Log$
+  Revision 1.14.46.1  2005/10/20 20:29:41  wenger
+  Some errno-related fixes; added RH 7.3 stuff; clarifying note
+  in linux setup script.
+
+  Revision 1.14  1996/12/20 16:55:13  jussi
+  Fixed readline() to handle extraneous carriage returns \r returned
+  by some broken Web servers (Dow Jones file, for instance).
+
   Revision 1.13  1996/11/21 19:14:08  wenger
   Fixed more compile warnings; updated devise.dali to match current
   command-line flags.
@@ -92,8 +100,6 @@
 #include "machdep.h"
 
 //#define DEBUG
-
-extern int errno;
 
 #define HTTP_PORT	80
 

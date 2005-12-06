@@ -1,0 +1,30 @@
+#! /bin/sh
+
+############################################################
+
+# Script for testing home functions of DEVise.
+
+# $Id$
+
+############################################################
+
+okay=1
+
+devise_exec=$1
+
+$devise_exec p -tclScript ../test/home1.tcl
+if [ $? != 0 ]
+then
+    okay=0
+fi
+
+
+
+if [ $okay != 0 ]
+then
+    echo "DEVise passed home tests"
+    exit 0
+else
+    echo "DEVise FAILED home tests"
+    exit 1
+fi

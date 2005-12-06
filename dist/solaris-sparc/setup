@@ -29,10 +29,10 @@ ln -s ../common/run .
 
 set here = `pwd`
 mkdir tcl
-ssh cardinal "cp -p /s/tcl7.4/lib/tcl7.4/* $here/tcl"
+ssh sparc1 "cp -p /s/tcl/lib/tcl8.3/* $here/tcl"
 
 mkdir tk
-ssh cardinal "cp -p /s/tcl7.4/lib/tk4.0/* $here/tk"
+ssh sparc1 "cp -p /s/tcl/lib/tk8.3/* $here/tk"
 
 mkdir bin
 cd bin

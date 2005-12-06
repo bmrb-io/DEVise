@@ -20,6 +20,24 @@
   $Id$
 
   $Log$
+  Revision 1.7.20.1  2003/12/19 18:07:07  wenger
+  Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
+
+  Revision 1.7.38.1  2003/12/17 00:17:42  wenger
+  Merged gcc3_br_1 thru gcc3_br_2 to redhat9_br (just fixed conflicts,
+  didn't actually get it to work).
+
+  Revision 1.7.36.1  2003/12/16 16:07:57  wenger
+  Got DEVise to compile with gcc 3.2.3 (with lots of deprecated-header
+  warnings).  It runs on RedHat 7.2, but not on Solaris 2.8 (some kind
+  of dynamic library problem).
+
+  Revision 1.7  1998/12/15 14:54:35  wenger
+  Reduced DEVise memory usage in initialization by about 6 MB: eliminated
+  Temp.c (had huge global arrays); eliminated Object3D class and greatly
+  simplified Map3D; removed ViewLens class (unused); got rid of large static
+  buffers in a number of other source files.
+
   Revision 1.6  1998/07/29 14:19:44  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -138,7 +156,7 @@ prnBuf(int type, char *format, ...) {
 	va_list pvar;
 	int code;
 
-	bzero(command, 2000);
+	memset(command, 0, 2000);
 #ifdef __tcltk
 	switch(type) {
 		case PRN_HDG:

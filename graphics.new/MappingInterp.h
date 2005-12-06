@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.56.4.1  2003/11/19 19:40:21  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
+  Revision 1.56  2001/12/28 18:34:37  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.55  2001/05/18 21:14:59  wenger
   Fixed bug 671 (potential GData buffer overflow).
 
@@ -265,6 +273,7 @@
 #include "GDataRec.h"
 #include "AttrList.h"
 #include "ObjectValid.h"
+#include "DisplayMode.h"
 
 class TData;
 class StringStorage;
@@ -405,6 +414,12 @@ public:
   virtual void SetParentValue(const char *value);
   virtual const char *GetParentValue() { return _parentValue; }
 
+  virtual void SetColors(const char *normalColor, const char *colorPrintColor,
+    const char *bwPrintColor);
+  virtual void GetColors(const char *&normalColor,
+    const char *&colorPrintColor,  const char *&bwPrintColor);
+  virtual void SetCurrentColor(const char *color);
+
 
 protected:	
   /* convert from Tdata to Gdata. buf contains buffer for data. */
@@ -511,6 +526,8 @@ private:
   TData *_tdata;
 
   char *_parentValue;
+
+  DisplayModeMapping _colors;
 
 private:
   ObjectValid _objectValid;

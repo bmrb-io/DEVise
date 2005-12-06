@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.14  2003/01/13 19:25:21  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.13.10.2  2005/09/06 22:04:55  wenger
+  Added proper const-ness to HashTable.
+
   Revision 1.13.10.1  2002/09/02 21:29:33  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -121,8 +127,8 @@ class CmdContainer
 		long	logCommand(int argc, char** argv, CmdDescriptor& cmdDes);
 		//bool	playCommand(long logId1, long logId2);
 
-		static int CmdHash(char *&index, int numBuckets);
-		static int CmdComp(char *&index1, char *&index2);
+		static int CmdHash(char * const &index, int numBuckets);
+		static int CmdComp(char * const &index1, char * const &index2);
 
 		Make	make;
 		DeviseServer*	_server;

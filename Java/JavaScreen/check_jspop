@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2002
+#  (c) Copyright 1999-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,6 +20,43 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.28  2002/06/17 19:40:15  wenger
+#  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+#
+#  Revision 1.27.8.5  2005/11/15 17:13:58  wenger
+#  A bunch of changes to improve restart logging, etc.:
+#  - Better error messages in jss.java.
+#  - Set maximum memory for all production Java server processes to
+#    256 MB (because of weird problems on marlin.bmrb.wisc.edu).
+#  - DEVise.jspop and DEVise.jspop.loc send all start_devised output to
+#    a log file instead of to /dev/null.
+#  - check_jspop now puts check_connect.err.* in logs and doesn't
+#    delete it when there's an error.
+#  - run_check puts *starting* timestamp at beginning of output, saves
+#    output from failed tests to logs.
+#  - start_devised generates more output, now that it's being saved.
+#  - Better error messages from check_jsall, check_jspop, and check_jss.
+#
+#  Revision 1.27.8.4  2004/11/09 16:02:35  wenger
+#  Check_jspop now always deletes the check_connect.err.* file.
+#
+#  Revision 1.27.8.3  2004/09/29 19:08:36  wenger
+#  Merged jspop_debug_0405_br_2 thru jspop_debug_0405_br_4 to the
+#  V1_7b0_br branch.
+#
+#  Revision 1.27.8.2.10.3  2004/09/03 17:26:32  wenger
+#  Fixed problems with possible output file name conflicts.
+#
+#  Revision 1.27.8.2.10.2  2004/07/01 17:54:25  wenger
+#  Check_jspop now re-tries check_connect once if the first
+#  one fails, just in case we're generating some restarts when
+#  we don't really need to; fixed bug that run_check emails
+#  had the wrong subject line if -dev was specified.
+#
+#  Revision 1.27.8.2.10.1  2004/06/30 18:32:07  wenger
+#  Added -dev flag to JSPoP checks to actually contact the devised
+#  during the check.
+#
 #  Revision 1.27.8.2  2002/05/16 17:12:53  wenger
 #  Changed '==' in if to '='.
 #
@@ -157,21 +194,30 @@
 
 ############################################################
 
-if [ $# -gt 1 ]
+if [ $# -gt 2 ]
 then
-  echo "Usage: check_jspop [id_string]"
+  echo "Usage: check_jspop [-dev] [<id_string>]"
   exit 1
+fi
+
+dev=""
+if [ $# -ge 1 ]
+then
+  if [ $1 = "-dev" ]
+  then
+    dev="-dev"
+    shift
+  fi
 fi
 
 idStr=""
 host=`hostname`
 pidfile="jspop_pid:*:$host:*"
-if [ $# = 1 ]
+if [ $# -ge 1 ]
 then
   idStr=$1
   pidfile="jspop_pid:$1:$host:*"
 fi
-
 
 # Check for appropriate pid file to see if a jspop process exists.
 pids=`ls $pidfile 2> /dev/null`
@@ -182,6 +228,11 @@ do
   foundPop=1
 done
 
+if [ $foundPop = 0 ]
+then
+  echo "check_jspop:  no JSPoP process found" 1>&2
+fi
+
 
 # Make sure we can connect to the jspop.
 connected=0
@@ -190,8 +241,15 @@ then
   info=`./ports+files $idStr`;
   port=`echo $info | cut -d' ' -f1`
 
-  #TEMP -- conflict with file names here!
-  result=`./check_connect -port$port 2>check_connect.err`
+  outfile="logs/check_connect.err.`./get_timestamp`"
+  if [ -e $outfile ]
+  then
+    rm -f $outfile
+  fi
+  touch $outfile
+
+  cmd="./check_connect -port$port"
+  result=`$cmd $dev 2>>$outfile`
 
   # Note: we allow "" as a result here in case the DEViseCheckPop process
   # is killed -- we don't want that to count as the check failing.
@@ -200,9 +258,23 @@ then
   then
     connected=1
   else
-    echo "Cannot connect to JSPoP" 1>&2
-    cat check_connect.err 1>&2
-    rm -f check_connect.err
+    # Try again -- we're going to be a little more conservative and require
+    # two connectiion failures for a restart.
+
+    result=`$cmd $dev 2>>$outfile`
+
+    # Note: we allow "" as a result here in case the DEViseCheckPop process
+    # is killed -- we don't want that to count as the check failing.
+    # RKW 2002-05-06.
+    if [ "$result" = "OK" ] || [ "$result" = "" ]
+    then
+      connected=1
+    else
+      echo "" 1>&2
+      echo "check_jspop:  cannot connect to JSPoP:" 1>&2
+      cat $outfile 1>&2
+      echo "" 1>&2
+    fi
   fi
 fi
 
@@ -210,8 +282,9 @@ fi
 if [ $foundPop = 1 -a $connected = 1 ]
 then
   echo "OK"
+  rm -f $outfile
 else
   curTime=`date`
-  echo "No JSPoP process found or cannot connect (at $curTime)" 1>&2
+  echo "check_jspop:  failure (at $curTime)" 1>&2
   echo "FAIL"
 fi

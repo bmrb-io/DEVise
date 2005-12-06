@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2002
+  (c) Copyright 1998-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,11 +21,43 @@
   $Id$
 
   $Log$
+  Revision 1.134  2003/01/13 19:25:23  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.133  2002/06/17 19:41:07  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
   Revision 1.132  2002/05/01 21:30:12  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
+  Revision 1.131.2.11  2005/09/06 21:20:17  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.131.2.10  2005/01/04 20:26:31  wenger
+  Fixed bug 905 (problem redrawing child views that send GData to the
+  JavaScreen).
+
+  Revision 1.131.2.9  2003/12/22 22:47:30  wenger
+  JavaScreen support for print color modes is now in place.
+
+  Revision 1.131.2.8  2003/11/21 23:05:11  wenger
+  Drill-down now works properly on views that are GAttr link followers
+  (fixed bug 893).
+
+  Revision 1.131.2.7  2003/10/15 21:55:26  wenger
+  Added new JAVAC_StopCollab command to fix ambiguity with
+  JAVAC_CollabExit; minor improvements to collaboration-related stuff
+  in the auto test scripts.
+
+  Revision 1.131.2.6  2003/09/23 21:55:24  wenger
+  "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+
+  Revision 1.131.2.5  2003/05/21 15:38:23  wenger
+  All sessions with any hidden directories in their paths are now
+  hidden in the session lists returned to the JavaScreen (for  (for BMRB
+  visualization server -- allows a session in a hidden directory to
+  be opened by passing in the name, but then the user can't see any
+  other sessions in that directory).
 
   Revision 1.131.2.4  2002/12/03 23:58:04  wenger
   Fixed bug 841 (session postscripts goof up JS collaboration).
@@ -661,6 +693,8 @@
 #include "DrillDown3D.h"
 #include "TData.h"
 #include "Util.h"
+#include "Version.h"
+#include "CompDate.h"
 
 //#define DEBUG
 #define DEBUG_LOG
@@ -693,7 +727,7 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 12;
+static const int protocolMajorVersion = 15;
 static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
@@ -729,6 +763,8 @@ char *JavaScreenCmd::_serviceCmdName[] =
     "JAVAC_OpenTmpSession",
     "JAVAC_DeleteTmpSession",
     "JAVAC_SetTmpSessionDir",
+    "JAVAC_GetDeviseVersion",
+    "JAVAC_SetDisplayMode",
     "null_svc_cmd"
 };
 
@@ -745,6 +781,8 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_ViewDataArea",
 	"JAVAC_UpdateViewImage",
 	"JAVAC_ShowViewHelp",
+	"JAVAC_DeviseVersion",
+	"JAVAC_SetViewColors",
 
 	"JAVAC_Done",
 	"JAVAC_Error",
@@ -836,7 +874,7 @@ JSArgs::JSArgs(int maxArgs)
 #endif
 
   _maxArgs = maxArgs;
-  _argv = new (const char *)[_maxArgs];
+  _argv = new const char *[_maxArgs];
   _dynamic = new Boolean[_maxArgs];
 
   for (int index = 0; index < _maxArgs; index++) {
@@ -1174,7 +1212,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	_control  = control;
 	_ctype = ctype;
 	_argc = argc;
-	_argv = new (char*)[argc];
+	_argv = new char*[argc];
 	errmsg = NULL;
 
     for (i=0; i< _argc; ++i)
@@ -1185,7 +1223,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
  
         startPos = -1;
         endPos = arglen;
-        _argv[i] = new (char)[arglen+1];
+        _argv[i] = new char[arglen+1];
         while (argv[i][j]&&(
             (argv[i][j]==' ')||
             (argv[i][j]=='\t')&&
@@ -1348,6 +1386,12 @@ JavaScreenCmd::Run()
 			break;
 		case SET_TMP_SESSION_DIR:
 			SetTmpSessionDir();
+			break;
+		case GET_DEVISE_VERSION:
+			GetDeviseVersion();
+			break;
+		case SET_DISPLAY_MODE:
+			SetDisplayMode();
 			break;
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
@@ -1750,7 +1794,7 @@ JavaScreenCmd::ShowRecords3D()
 	int msgCount;
 	const char *const *messages;
 	DrillDown3D drill;
-	if (drill.RunQuery(view, count, coords).IsComplete()) {
+	if (drill.RunQuery((ViewData *)view, count, coords).IsComplete()) {
 	    drill.GetResults(msgCount, messages);
 
 	    if (msgCount > 0) {
@@ -2409,13 +2453,58 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 
     JavaScreenCmd::ControlCmdType result = DONE;
 
+    //
+	// For each "dirty" top-level view, make sure all child views that
+	// send GData to the JS have been redrawn; force them to redraw
+	// if necessary.  (Because if we don't do this, the GData child
+	// views show up blank in the JS, since we're deleting *all* child
+	// views of a dirty parent view.)
+	//
+	Boolean forcedRedraw = false;
+	int viewIndex = _topLevelViews.InitIterator();
+	while (_topLevelViews.More(viewIndex)) {
+		View *view = (View *)_topLevelViews.Next(viewIndex);
+        if (view->GetGifDirty()) {
+		    int subViewIndex = view->InitIterator();
+		    while (view->More(subViewIndex)) {
+			    ViewGraph *subView = (ViewGraph *)view->Next(subViewIndex);
+		        GDataSock::Params gdParams;
+		        subView->GetSendParams(gdParams);
+
+				if (subView->Mapped() && subView->GetSendToSocket() &&
+				    (access(gdParams.file, F_OK) != 0)) {
+			      char errBuf[256];
+			      int formatted = snprintf(errBuf, sizeof(errBuf),
+				      "Warning: child view %s (JS GData view) should be "
+					  "dirty but is not -- forcing redraw",
+					  subView->GetName());
+			      checkAndTermBuf2(errBuf, formatted);
+				  reportErrNosys(errBuf);
+				  subView->Refresh(false);
+				  forcedRedraw = true;
+				}
+		    }
+		    view->DoneIterator(subViewIndex);
+		}
+    }
+	_topLevelViews.DoneIterator(viewIndex);
+
+    if (forcedRedraw) {
+	    // Note: I am calling SendChangedViews() recursively here instead
+	    // of just continuing in case forcing the redraws of any GData views
+	    // also makes any new top-level views dirty.  wenger 2005-01-04.
+	    Dispatcher::Current()->WaitForQueries();
+        return SendChangedViews(update);
+	}
+
+
 	//
 	// For each "dirty" top-level view, delete and re-create all child
 	// views, and set child view Z values.
 	//
-	int viewIndex2 = _topLevelViews.InitIterator();
-	while (_topLevelViews.More(viewIndex2)) {
-		View *view = (View *)_topLevelViews.Next(viewIndex2);
+	viewIndex = _topLevelViews.InitIterator();
+	while (_topLevelViews.More(viewIndex)) {
+		View *view = (View *)_topLevelViews.Next(viewIndex);
 #if defined(DEBUG_LOG)
         sprintf(logBuf, "Checking view <%s>; GetGifDirty() = %d\n",
 		  view->GetName(), view->GetGifDirty());
@@ -2431,8 +2520,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 
 		    int subViewIndex = view->InitIterator();
 		    while (view->More(subViewIndex)) {
-			    View *subView = (View *)view->Next(subViewIndex);
-
+			    ViewGraph *subView = (ViewGraph *)view->Next(subViewIndex);
 			    subView->SetZ(view->GetZ() + 1.0);
 			    if (CreateView(subView, view) < 0) {
 				    result = ERROR;
@@ -2443,7 +2531,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		    view->DoneIterator(subViewIndex);
 		}
 	}
-	_topLevelViews.DoneIterator(viewIndex2);
+	_topLevelViews.DoneIterator(viewIndex);
 
 
 	//
@@ -2455,7 +2543,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	int dirtyGifCount = 0;
 	ViewWinList dirtyGifList;
 
-	int viewIndex = _gifViews.InitIterator();
+	viewIndex = _gifViews.InitIterator();
 	while (_gifViews.More(viewIndex)) {
 		View *view = (View *)_gifViews.Next(viewIndex);
         if (view->GetGifDirty()) {
@@ -2829,6 +2917,13 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	RGB rgb;
 	if (PM_GetRGB(pColor, rgb)) {
 		colorStr = rgb.ToString();
+	} else {
+		char errBuf[128];
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "Couldn't find RGB for color ID %d", (int)pColor);
+		checkAndTermBuf2(errBuf, formatted);
+	    reportErrNosys(errBuf);
+		colorStr = "#000000000000";
 	}
 
 	//
@@ -2961,6 +3056,18 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		return;
 	}
 
+	//
+	// Figure out whether any part of the path below the base session
+	// directory is hidden; if so, we are going to return an empty
+	// list.
+	//
+	Boolean hidden = false;
+	if (dirName != NULL) {
+	    if (dirName[0] == '.' || (strstr(dirName, "/.") != NULL)) {
+		    hidden = true;
+		}
+	}
+
 	const char *sessionDir = newPath;
 
 	//
@@ -2968,37 +3075,42 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	//
 	ArgList files;
 
-	DIR *directory = opendir(sessionDir);
-	if (directory == NULL) {
-	    char errBuf[MAXPATHLEN * 2];
-		sprintf(errBuf, "Can't open session directory (%s)", sessionDir);
-		reportErrSys(errBuf);
+	if (!hidden) {
+		DIR *directory = opendir(sessionDir);
+		if (directory == NULL) {
+	    	char errBuf[MAXPATHLEN * 2];
+			sprintf(errBuf, "Can't open session directory (%s)", sessionDir);
+			reportErrSys(errBuf);
 
-	    // Reset things to the "base" session directory and try again.
-		sessionDir = _baseSessionDir;
-	    directory = opendir(sessionDir);
-	}
-	if (directory == NULL) {
-	    char errBuf[MAXPATHLEN * 2];
-		sprintf(errBuf, "Can't open session directory (%s)", sessionDir);
-		reportErrSys(errBuf);
-		errmsg = "Can't open session directory";
-		_status = ERROR;
-		return;
-	} else {
-		while (true) {
-		    struct dirent *entry = readdir(directory);
-			if (entry == NULL) break;
-			if (strcmp(entry->d_name, ".") &&
-			  (!strcmp(entry->d_name, "..") || entry->d_name[0] != '.')) {
-				files.AddArg(entry->d_name);
+	    	// Reset things to the "base" session directory and try again.
+			// Note: this will actually goof things up, because the client
+			// won't know that we changed directories.  Maybe this command
+			// should send back the directory, too.  wenger 2003-05-21.
+			sessionDir = _baseSessionDir;
+	    	directory = opendir(sessionDir);
+		}
+		if (directory == NULL) {
+	    	char errBuf[MAXPATHLEN * 2];
+			sprintf(errBuf, "Can't open session directory (%s)", sessionDir);
+			reportErrSys(errBuf);
+			errmsg = "Can't open session directory";
+			_status = ERROR;
+			return;
+		} else {
+			while (true) {
+		    	struct dirent *entry = readdir(directory);
+				if (entry == NULL) break;
+				if (strcmp(entry->d_name, ".") &&
+			  	(!strcmp(entry->d_name, "..") || entry->d_name[0] != '.')) {
+					files.AddArg(entry->d_name);
+				}
 			}
-		}
-		files.Sort();
-		if (closedir(directory) < 0) {
-			reportErrSys("Error closing directory");
-		}
-    }
+			files.Sort();
+			if (closedir(directory) < 0) {
+				reportErrSys("Error closing directory");
+			}
+    	}
+	}
 
 	ArgList args(files.GetCount() * 3 + 1);
 	args.AddArg(_controlCmdName[UPDATESESSIONLIST]);
@@ -3258,11 +3370,25 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	RGB rgb;
 	if (PM_GetRGB(pColor, rgb)) {
 		fgColorStr = rgb.ToString();
+	} else {
+		char errBuf[128];
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "Couldn't find RGB for color ID %d", (int)pColor);
+		checkAndTermBuf2(errBuf, formatted);
+	    reportErrNosys(errBuf);
+		fgColorStr = "#000000000000";
 	}
 
 	pColor = view->GetBackground();
 	if (PM_GetRGB(pColor, rgb)) {
 		bgColorStr = rgb.ToString();
+	} else {
+		char errBuf[128];
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "Couldn't find RGB for color ID %d", (int)pColor);
+		checkAndTermBuf2(errBuf, formatted);
+	    reportErrNosys(errBuf);
+		bgColorStr = "#000000000000";
 	}
 
 	//
@@ -3778,6 +3904,100 @@ JavaScreenCmd::DeleteTmpSession()
 	        reportErrSys(errmsg);
 	    }
 	}
+}
+
+//====================================================================
+// Process a JAVAC_GetDeviseVersion command that we received.
+void
+JavaScreenCmd::GetDeviseVersion()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::GetDeviseVersion(", _argc, _argv, ")\n");
+#endif
+
+    //TEMP -- check argc here?
+
+    const int bufLen = 128;
+	char buf[bufLen];
+	int formatted = snprintf(buf, bufLen, "%s %s", Version::Get(),
+	  CompDate::Get());
+    checkAndTermBuf(buf, bufLen, formatted);
+
+	JSArgs args(2);
+	args.FillString(_controlCmdName[DEVISE_VERSION]);
+	args.FillString(buf);
+	args.ReturnVal(this);
+
+	_status = DONE;
+}
+
+//====================================================================
+// Process a JAVAC_SetDisplayMode command that we received.
+void
+JavaScreenCmd::SetDisplayMode()
+{
+#if defined (DEBUG_LOG)
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	  "JavaScreenCmd::SetDisplayMode(", _argc, _argv, ")\n");
+#endif
+
+	if (_argc != 1) {
+		errmsg = "Usage: JAVAC_SetDisplayMode <mode>";
+		_status = ERROR;
+		return;
+	}
+
+	PreRedraw();
+
+	int mode = atoi(_argv[0]);
+	DisplayMode::SetMode((DisplayMode::Mode)mode);
+
+	// Update view foreground and background colors.  Note: child views
+	// will get re-created, so we don't need to change them.
+    int viewIndex = _gifViews.InitIterator();
+	while (_gifViews.More(viewIndex)) {
+        ViewGraph *view = (ViewGraph *)_gifViews.Next(viewIndex);
+
+		if (!view->IsChildView()) {
+	        string fgColorStr, bgColorStr;
+	        PColorID pColor = view->GetForeground();
+	        RGB rgb;
+	        if (PM_GetRGB(pColor, rgb)) {
+		        fgColorStr = rgb.ToString();
+	        } else {
+		        char errBuf[128];
+		        int formatted = snprintf(errBuf, sizeof(errBuf),
+		          "Couldn't find RGB for color ID %d", (int)pColor);
+		        checkAndTermBuf2(errBuf, formatted);
+	            reportErrNosys(errBuf);
+		        fgColorStr = "#000000000000";
+	        }
+
+	        pColor = view->GetBackground();
+	        if (PM_GetRGB(pColor, rgb)) {
+		        bgColorStr = rgb.ToString();
+	        } else {
+		        char errBuf[128];
+		        int formatted = snprintf(errBuf, sizeof(errBuf),
+		          "Couldn't find RGB for color ID %d", (int)pColor);
+		        checkAndTermBuf2(errBuf, formatted);
+	            reportErrNosys(errBuf);
+		        bgColorStr = "#000000000000";
+	        }
+
+	        JSArgs args(4);
+	        args.FillString(_controlCmdName[SET_VIEW_COLORS]);
+	        args.FillString(view->GetName());
+	        args.FillString(fgColorStr.c_str());
+	        args.FillString(bgColorStr.c_str());
+
+	        args.ReturnVal(this);
+		}
+	}
+    _gifViews.DoneIterator(viewIndex);
+
+	PostRedraw();
 }
 
 //====================================================================

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.4  2002/06/17 19:40:52  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.3.22.2  2005/09/06 22:04:48  wenger
+  Added proper const-ness to HashTable.
+
   Revision 1.3.22.1  2002/05/27 18:15:47  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -40,7 +46,7 @@
 
 #include "StateMap.h"
 
-int GenStringHash(char *&string, int numBuckets)
+int GenStringHash(char * const &string, int numBuckets)
 {
   int sum = 0;
   for(int i = 0; i < (int)strlen(string); i++)
@@ -48,7 +54,7 @@ int GenStringHash(char *&string, int numBuckets)
   return sum % numBuckets;
 }
 
-int GenStringComp(char *&string1, char *&string2)
+int GenStringComp(char * const &string1, char * const &string2)
 {
   return strcmp(string1, string2);
 }

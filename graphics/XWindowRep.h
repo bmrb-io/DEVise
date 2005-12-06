@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.67  2003/01/13 19:25:12  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.66.14.4  2003/02/07 23:39:33  wenger
+  Fixed bugs 858 and 864 (more drawing bugs).
+
+  Revision 1.66.14.3  2003/02/06 18:07:42  wenger
+  Fixed bug 859 (equal-width bars sometimes show up with unequal widths).
+
   Revision 1.66.14.2  2003/01/07 22:47:24  wenger
   Fixed bugs 851, 853, and 854 (more view transform/axis drawing bugs).
 
@@ -648,6 +657,10 @@ protected:
 	void DeleteInputWR(XWindowRep *winRep);
 
 private:
+	struct CoordRect {
+	  Coord x, y, width, height;
+	};
+
 	/* Update window dimensions; globals: _x, _y, _width, _height */
 	void UpdateWinDimensions();
 
@@ -685,15 +698,14 @@ private:
 
     inline void TransformRect(SymbolAlignment alignmentIn, Coord dataX,
         Coord dataY, Coord dataWidth, Coord dataHeight,
-	SymbolAlignment alignmentOut, short &pixX, short &pixY,
-	unsigned short &pixWidth, unsigned short &pixHeight);
+	    SymbolAlignment alignmentOut, CoordRect &pixRect);
 
-	void DrawRectangle(int symbolX, int symbolY, int width, int height,
+	void DrawRectangle(CoordRect rect,
 			   Boolean filled = true,
 			   SymbolAlignment alignment = AlignCenter,
 			   Coord orientation = 0.0);
 
-	void DrawRectangles(XRectangle rectangles[], int rectCount,
+	void DrawRectangles(CoordRect rectangles[], int rectCount,
 			   Boolean filled = true,
 			   SymbolAlignment alignment = AlignCenter,
 			   Coord orientation = 0.0);
@@ -702,10 +714,8 @@ private:
 	 * based on the alignment and orientation.  points array is only
 	 * needed if orientation is non-zero.  If used, it must have a
 	 * size of 5 (NOT 4!). */
-        static void CalculateLocation(int &symbolX, int &symbolY, int width,
-				      int height, SymbolAlignment alignment,
-				      Coord orientation,
-				      XPoint *points = NULL);
+    void CalculateLocation(CoordRect rectIn, XRectangle &rectOut,
+	  SymbolAlignment alignment, Coord orientation, XPoint *points = NULL);
 
 	virtual void UpdateCursorHit();
     void SetMouseCursor(CursorHit::HitType cursorHit);

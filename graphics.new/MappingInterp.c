@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,22 @@
   $Id$
 
   $Log$
+  Revision 1.102  2003/01/13 19:25:25  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.101.4.4  2005/09/12 19:42:15  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.101.4.3  2003/12/22 23:45:19  wenger
+  Print mode symbol colors default to white instead of black for mappings
+  whose only symbol type is 'view' (so child view backgrounds are white).
+
+  Revision 1.101.4.2  2003/11/19 19:40:21  wenger
+  Display modes now work for symbol colors; also added some missing
+  commands to the (horrible) Tcl code for copying views; minor
+  improvement to error reporting.
+
   Revision 1.101.4.1  2002/09/02 21:29:33  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -531,7 +547,7 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
 				 0,
                  MappingInterpAllFlags, attrFlag,
 		 Init::MaxGDataPages(),
-                 dimensionInfo, numDimensions, false)
+                 dimensionInfo, numDimensions, false), _colors(this)
 {
 #if defined(DEBUG)
   printf("MappingInterp::MappingInterp(0x%p, %d dimensions, cmdFlag 0x%lx, "
@@ -581,6 +597,33 @@ MappingInterp::MappingInterp(char *name, TData *tdata,
   _objectValid.Set();
 
   ChangeCmd(cmd, cmdFlag, attrFlag, dimensionInfo, numDimensions);
+
+  // We have the colors for normal display mode and color print display
+  // mode *default* to the same thing.  (This will only make any difference
+  // when creating a view or opening an old session that doesn't have
+  // colors specified for all modes.)
+  if (DisplayMode::GetMode() == DisplayMode::ModeNormal) {
+    _colors.SetColor(cmd->colorCmd, DisplayMode::ModeColorPrint);
+  } else if (DisplayMode::GetMode() == DisplayMode::ModeColorPrint) {
+    _colors.SetColor(cmd->colorCmd, DisplayMode::ModeNormal);
+  }
+
+  // Set the print mode colors to white if this mapping contains view
+  // symbols as the only symbol type.
+  if (_offsets->_shapeOffset < 0) {
+    /* constant shape */
+    ShapeID shape = GetDefaultShape();
+#if defined(DEBUG)
+    printf("Mapping has shape %d\n", shape);
+#endif
+    if (shape == SHAPE_VIEW &&
+        DisplayMode::GetMode() == DisplayMode::ModeNormal) {
+      _colors.SetColor(DisplayMode::WhiteColorCmd().c_str(),
+          DisplayMode::ModeColorPrint);
+      _colors.SetColor(DisplayMode::WhiteColorCmd().c_str(),
+          DisplayMode::ModeBWPrint);
+    }
+  }
 }
 
 //--------------------------------------------------------------------------
@@ -631,6 +674,9 @@ void MappingInterp::ChangeCmd(MappingInterpCmd *cmd,
   _cmd = cmd; // Note: cmd is allocated in MapInterpClassInfo.
   _cmdFlag = flag;
   _cmdAttrFlag = attrFlag;
+
+  // Update the current display mode's color.
+  _colors.SetColor(cmd->colorCmd);
   
   /* Need to keep the flags in the TDataMap object consistent */
   SetDynamicShapeAttrs(_cmdAttrFlag);
@@ -931,6 +977,66 @@ MappingInterp::SetParentValue(const char *value)
   _parentValue = CopyString(value);
 
   ChangeCmd(_cmd, _cmdFlag, _cmdAttrFlag, NULL, 0);
+}
+
+void
+MappingInterp::SetColors(const char *normalColor, const char *colorPrintColor, 
+    const char *bwPrintColor)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("MappingInterp(%s)::SetColors(%s, %s, %s)\n", GetName(), normalColor,
+      colorPrintColor, bwPrintColor);
+#endif
+
+  _colors.SetColor(normalColor, DisplayMode::ModeNormal);
+  _colors.SetColor(colorPrintColor, DisplayMode::ModeColorPrint);
+  _colors.SetColor(bwPrintColor, DisplayMode::ModeBWPrint);
+
+  // Make sure the current color correctly reflects the color commands we
+  // just got.
+  SetCurrentColor(_colors.GetColor());
+}
+
+void
+MappingInterp::
+GetColors(const char *&normalColor, 
+    const char *&colorPrintColor,  const char *&bwPrintColor)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("MappingInterp(%s)::GetColors()\n", GetName());
+#endif
+
+  normalColor = _colors.GetColor(DisplayMode::ModeNormal);
+  colorPrintColor = _colors.GetColor(DisplayMode::ModeColorPrint);
+  bwPrintColor = _colors.GetColor(DisplayMode::ModeBWPrint);
+
+#if defined(DEBUG)
+  printf("MappingInterp(%s)::GetColors() returns %s, %s, %s\n", GetName(),
+      normalColor, colorPrintColor, bwPrintColor);
+#endif
+}
+
+void
+MappingInterp::SetCurrentColor(const char *color)
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+#if defined(DEBUG)
+  printf("MappingInterp(%s)::SetCurrentColor(%s)\n", GetName(), color);
+#endif
+
+  FreeString(_cmd->colorCmd);
+  _cmd->colorCmd = CopyString(color);
+
+  int cmdFlag = _cmdFlag;
+  if (!color || !strcmp(color, "")) {
+    cmdFlag &= ~MappingCmd_Color;
+  } else {
+    cmdFlag |= MappingCmd_Color;
+  }
+
+  ChangeCmd(_cmd, cmdFlag, _cmdAttrFlag, NULL, 0);
 }
 
 //--------------------------------------------------------------------------
@@ -1943,7 +2049,7 @@ void MappingInterp::ConvertToGDataSimple(RecId startRecId, void *buf,
 #endif
 
   for(int i = 0; i < numRecs; i++) {
-    DOASSERT((int)gPtr % sizeof(double) == 0, "Unaligned GData record");
+    DOASSERT((long)gPtr % sizeof(double) == 0, "Unaligned GData record");
 
     /* Store ID of current record */
     *((RecId *)(gPtr + _offsets->_recIdOffset)) = startRecId + i;
@@ -2046,7 +2152,7 @@ void MappingInterp::ConvertToGDataComplex(RecId startRecId, void *buf,
 #endif
 
   for(int i = 0; i < numRecs; i++) {
-    DOASSERT((int)gPtr % sizeof(double) == 0, "Unaligned GData record");
+    DOASSERT((long)gPtr % sizeof(double) == 0, "Unaligned GData record");
 
     /* Store ID of current record */
     *((RecId *)(gPtr + _offsets->_recIdOffset)) = startRecId + i;

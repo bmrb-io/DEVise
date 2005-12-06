@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.9.46.1  2005/09/12 19:41:51  wenger
+  Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
+  4.0.1).
+
+  Revision 1.9  1995/11/20 22:39:42  jussi
+  Changed type of file offset to unsigned long int.
+
   Revision 1.8  1995/11/17 04:05:07  ravim
   New form of index file.
 
@@ -481,7 +488,7 @@ int comp_dat_2[COMP_DAT_FIELDS_2 * COMP_NUM_PER_DAT] = {
 #define COMP_MAX_STR_LEN  50
 
 /* Function prototypes */
-unsigned long int find_rec(FILE *idxfile, char cval[]);
+unsigned long int find_rec(FILE *idxfile, const char cval[]);
 void generate_dat(char *dat1, char *dat2, int year,
 		  FILE *outfile);
 double comp_get_val(char *str, int len, int pre);

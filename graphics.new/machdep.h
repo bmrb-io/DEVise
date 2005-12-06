@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.27  2002/06/17 19:41:08  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
+  Revision 1.26.14.2  2003/04/17 17:59:26  wenger
+  Now compiles with no warnings with gcc 2.95, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
   Revision 1.26.14.1  2002/05/27 18:16:00  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -210,23 +217,7 @@
 #include <limits.h>
 #include <sys/types.h>
 
-#ifdef SGI
-  #ifdef MIN
-    #undef MIN
-  #endif
-  #ifdef MAX
-    #undef MAX
-  #endif
-#endif
-#include <sys/param.h>
-
-#ifndef MIN
-  #define MIN(a,b) ((a) < (b) ? (a) : (b))
-#endif
-  
-#ifndef MAX
-  #define MAX(a,b) ((a) > (b) ? (a) : (b))
-#endif
+#include "MinMax.h"
 
 #ifdef __cplusplus
   #define EXTERNC extern "C"

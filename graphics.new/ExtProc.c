@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001
+  (c) Copyright 2001-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,14 @@
   $Id$
 
   $Log$
+  Revision 1.3.10.1  2003/05/13 18:06:06  wenger
+  Added command-line argument to disable external-process capability
+  (for security), defaults to being disabled in JavaScreen support;
+  a little fixing up of the external-process stuff.
+
+  Revision 1.3  2001/05/27 18:51:16  wenger
+  Improved buffer checking with snprintfs.
+
   Revision 1.2  2001/04/27 17:09:43  wenger
   Made various cleanups to external process dynamic data generation and
   added most GUI (still need special GUI for creating the data source);
@@ -45,6 +53,7 @@
 #include "ArgList.h"
 #include "Util.h"
 #include "DevError.h"
+#include "Init.h"
 
 #define DEBUG 0
 
@@ -88,7 +97,10 @@ ExtProc::Run(TDataMap *map, const char *gdataRecP)
 
   const int firstArgIndex = 5;
 
-  if (map->HasShapeAttr(firstArgIndex)) {
+  if (!Init::AllowExtProc()) {
+    reportErrNosys("Warning: external process capability is disabled");
+    result = StatusCancel;
+  } else if (map->HasShapeAttr(firstArgIndex)) {
 
     //
     // Find out how many external process-related shape attributes we have,
@@ -171,10 +183,11 @@ ExtProc::Run(TDataMap *map, const char *gdataRecP)
         // Child.
         execvp(args.GetArgs()[0], (char * const*)args.GetArgs());
         // execvp doesn't return if it works.
-        reportErrSys("execvp() failed");
+        reportErrArgs("execvp() failed for: ", args.GetCount(),
+	    args.GetArgs(), errno);
         _exit(1);
       } else {
-        //Parent.
+        // Parent.
         int status;
         int waitVal = waitpid(pid, &status, 0);
         if (pid != waitVal || WEXITSTATUS(status)) {

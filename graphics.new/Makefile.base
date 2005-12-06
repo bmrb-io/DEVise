@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2001
+#  (c) Copyright 1992-2003
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,24 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.104  2003/01/13 19:25:23  wenger
+#  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+#
+#  Revision 1.103.4.4  2005/09/15 19:23:33  wenger
+#  ClientAPI code now logs errors via the DevError class (added
+#  DebugLogDummy to the client library so this works for devise
+#  and collaborator, which don't link the full graphics.new lib).
+#
+#  Revision 1.103.4.3  2003/11/21 18:45:08  wenger
+#  Totally restructured 2D drill-down code into new DrillDown class;
+#  increased the tolerance for not being *exactly* on a symbol with
+#  the mouse.
+#
+#  Revision 1.103.4.2  2003/06/06 17:10:15  wenger
+#  Refactored the View::GetHome2D code so that the actual calculation is
+#  done in the new HomeCalc class, and there's only one chunk of code
+#  instead of four almost-identical chunks (xlo, xhi, ylo, yhi).
+#
 #  Revision 1.103.4.1  2002/09/05 19:14:03  wenger
 #  Implemented GData attribute value links (but not GUI for creating
 #  them).
@@ -361,7 +379,8 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
         StringStorage.C MapIntToInt.C MemMgr.C \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
 	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
-	JavaScreenCmd.C JavaScreenCache.c DRUtils.c DupElim.c DrillDown3D.c
+	JavaScreenCmd.C JavaScreenCache.c DRUtils.c DupElim.c DrillDown3D.c \
+	DrillDown.c
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))
@@ -374,7 +393,7 @@ VIEWSRC = ActionDefault.c ConnectorShape.h BasicStats.c \
 	KGraph.c ViewKGraph.c Web.C Action.c ActionClassInfo.c \
 	VisualLinkClassInfo.c VisualLink.c RecordLink.C UpdateLink.C \
 	MapIntToInt.C MasterSlaveLink.c TAttrLink.c DerivedTable.c \
-	SlaveTable.c ExtProc.c ExtDataLink.c GAttrLink.c
+	SlaveTable.c ExtProc.c ExtDataLink.c GAttrLink.c HomeCalc.c
 
 VIEWSRCc = $(filter %.c,$(VIEWSRC))
 VIEWSRCC = $(filter %.C,$(VIEWSRC))
@@ -408,8 +427,8 @@ libmonolith.a: TkControl.o
 	$(AR) cr $@ TkControl.o
 	$(RANLIB) $@
 
-libclient.a: ClientAPI.o Version.o
-	$(AR) cr $@ ClientAPI.o Version.o
+libclient.a: ClientAPI.o Version.o DebugLogDummy.o
+	$(AR) cr $@ ClientAPI.o Version.o DebugLogDummy.o
 	$(RANLIB) $@
 
 libserver.a: ServerAPI.o ClientAPI.o DeviseServer.o

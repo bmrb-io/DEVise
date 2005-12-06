@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2005
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,20 @@
   $Id$
 
   $Log$
+  Revision 1.16.12.3  2005/09/28 22:29:21  wenger
+  Various const-ifying to make things compile better on basslet.
+
+  Revision 1.16.12.2  2005/09/06 21:20:00  wenger
+  Got DEVise to compile with gcc 4.0.1.
+
+  Revision 1.16.12.1  2003/04/17 17:58:25  wenger
+  Now compiles with no warnings with gcc 2.95, except for warnings about
+  tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
+
+  Revision 1.16  2001/01/08 20:32:19  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.14.2.1  2000/09/01 18:26:10  wenger
   Merged changes from js_cgi_base to fixed_bug_616 onto the branch.
 
@@ -109,7 +123,12 @@
 
 //#define DEBUG
 #undef DEBUG
+
+#if defined(DOASSERT)
+  #undef DOASSERT
+#endif
 #define DOASSERT(c,r) {if (!(c)) DoAbort(r); }
+
 static char* errBase[Client::MAX_ERRORS]=
 {
 	"Try to specify more than one group",
@@ -129,7 +148,8 @@ char *CompDate::Get()
   return __DATE__;
 }
 
-Client::Client(char *name, char *hostname, int port, char* initStr)
+Client::Client(const char *name, const char *hostname, int port,
+  const char* initStr)
 {
 	int retval;
 	
@@ -239,7 +259,7 @@ Client::SendPanelCmd()
 	ControlCmd(8, panelArgv);
 }
 void
-Client::SetPanelMajorCmd(char* cmd)
+Client::SetPanelMajorCmd(const char* cmd)
 {
 	DOASSERT((cmd!=NULL), "SetPanelMajorCmd has a NULL parameter");
 	if (panelMajorCmd != NULL)
@@ -247,7 +267,7 @@ Client::SetPanelMajorCmd(char* cmd)
 	panelMajorCmd = strdup(cmd);
 }
 void
-Client::SetPanelSubCmd(char* cmd)
+Client::SetPanelSubCmd(const char* cmd)
 {
 	DOASSERT((cmd!=NULL), "SetPanelSubCmd has a NULL parameter");
 	if (panelSubCmd != NULL)
@@ -255,7 +275,7 @@ Client::SetPanelSubCmd(char* cmd)
 	panelSubCmd = strdup(cmd);
 }
 void
-Client::SetPanelInfo(char* cmd)
+Client::SetPanelInfo(const char* cmd)
 {
 	DOASSERT((cmd!=NULL), "SetPanelInfo has a NULL parameter");
 	if (panelInfo != NULL)
@@ -315,7 +335,8 @@ void Client::DoAbort(char *reason)
 }
 
 // the following four functions are blocking and require one-time handshake
-int Client::CreateGroup(char *groupname, char* passwd, const char*& errmsg)
+int Client::CreateGroup(const char *groupname, const char* passwd,
+  const char*& errmsg)
 {
 	int retval;
 	errmsg = NULL;
@@ -349,7 +370,8 @@ int Client::CreateGroup(char *groupname, char* passwd, const char*& errmsg)
 	return retval;
 }
 
-int Client::JoinGroup(char *groupname,char* passwd, const char*& errmsg)
+int Client::JoinGroup(const char *groupname, const char* passwd,
+  const char*& errmsg)
 {
 	int retval;
 	errmsg = NULL;
@@ -490,7 +512,7 @@ Client::SendServerCmd(int args, ...)
 	int		i;
 	char	**argv;
 
-	argv = new (char*)[args];
+	argv = new char*[args];
 	va_start(pvar, args);
 	for (i=0; i<args; ++i)
 	{
@@ -544,7 +566,7 @@ Client::SendServerCmd(int args, ...)
 }
 
 int 
-Client::ServerCmd(int argc, char **argv)
+Client::ServerCmd(int argc, const char * const *argv)
 {
 	// filtering commands realted to group control
 	int		retval = 0;
@@ -683,7 +705,7 @@ Client::ServerCmd(int argc, char **argv)
 	else
 	{
 		// other DEVise commands
-		char 	**nargv = new (char*)[argc+1];
+		const char 	**nargv = new const char*[argc+1];
 		int		i;
 
 		if (csk == NULL)
@@ -765,7 +787,7 @@ void Client::ReadServer()
 		this->GeneralServerCmd(flag, argc, argv);
 	}
 }
-void Client::ControlCmd(int argc, char **argv)
+void Client::ControlCmd(int argc, const char * const *argv)
 {
   delete _cmd;
   _cmd = NetworkPaste(argc, argv);

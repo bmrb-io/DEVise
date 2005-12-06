@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2003
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.14  2003/01/13 19:25:12  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
+  Revision 1.13.10.2  2003/04/18 17:07:43  wenger
+  Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
+
+  Revision 1.13.10.1.4.1  2003/04/18 15:26:04  wenger
+  Committing *some* of the fixes to get things to compile with gcc
+  3.2.2; these fixes should be safe for earlier versions of the
+  comiler.
+
   Revision 1.13.10.1  2002/09/05 19:13:54  wenger
   Implemented GData attribute value links (but not GUI for creating
   them).
@@ -193,10 +204,15 @@ struct VisualFilter {
   
   Boolean marked;                  /* TRUE if this is marked in the
 				      control panel list box */
-  friend unsigned char operator ==
+  friend Boolean operator ==
     (VisualFilter const &a, VisualFilter const &b) {
     return a.flag==b.flag && a.xLow==b.xLow && a.xHigh==b.xHigh
            && a.yLow==b.yLow && a.yHigh==b.yHigh && a.camera == b.camera;
+  }
+
+  friend Boolean operator !=
+    (VisualFilter const &a, VisualFilter const &b) {
+    return !(a == b);
   }
 };
 

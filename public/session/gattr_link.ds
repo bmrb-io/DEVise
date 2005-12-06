@@ -1,0 +1,288 @@
+# DEVise startHeader
+# file type: session
+# file date: Aug 27 2004 17:13:09
+# DEVise version: 1.7.18
+# DEVise date: May 24 2004
+# DEVise endHeader
+
+# Session description
+DEVise setSessionDesc {This session is an example of a GData attribute link.  The link is actually from the view on the right (View 3) to the view on the bottom (View 2).  The cursor in View 1 controls the visual filter of View 3.  (Note that when using a cursor like this, both views connected to the cursor should have the same mappings for the X and Y attributes.)
+
+In this case, the GData attribute link is linked on the color attribute in both the leader and follower views.  This means that, which ever symbols are inside the cursor in View 1, only the symbols with the same color are shown in View 2.  Note that View 1 and View 2 show different TDatas -- the link is on the *value* of the appropriate GData attribute, so it is independent of a particular TData (unlike record links, which should only be done on views with the same TData).}
+
+# Load color palette
+DEVise color SessionPalette {#000000000000 black
+#000000008b00 DarkBlue
+#00000000cd00 MediumBlue
+#00000000ff00 blue
+#000064000000 DarkGreen
+#00008b000000 green4
+#0000bf00ff00 DeepSkyBlue1
+#0000ff000000 green
+#0000ff00ff00 cyan
+#190019007000 MidnightBlue
+#1e009000ff00 DodgerBlue
+#1f001f001f00 gray12
+#22008b002200 ForestGreen
+#400040004000 gray25
+#610061006100 gray38
+#7f007f007f00 gray50
+#8b0000000000 DarkRed
+#8b0045001300 SaddleBrown
+#99003200cc00 DarkOrchid
+#a100a100a100 gray63
+#b20022002200 firebrick
+#b4005200cd00 MediumOrchid3
+#bf00bf00bf00 gray75
+#c000ff003e00 OliveDrab
+#e000e000e000 gray88
+#ee00ad000e00 Goldenrod2
+#ee00e800aa00 PaleGoldenrod
+#f000e6008c00 khaki
+#f500de00b300 wheat
+#fa00fa00d200 LightGoldenrodYellow
+#fd00f500e600 OldLace
+#ff0000000000 red
+#ff000000ff00 magenta
+#ff007f000000 DarkOrange1
+#ff00a5000000 orange
+#ff00d7000000 gold
+#ff00ff000000 yellow
+#ffffffffffff white
+}
+
+# Set color mode (modulus or truncation)
+DEVise setColorMode 0
+
+# Create views
+
+DEVise create {view} {Scatter} {View 1} 0.700000 10.600000 1.100000 10.000000 0 37 0 37 0 37
+DEVise setLabel {View 1} 1 16 {View 1: cursor destination view}
+DEVise setViewStatistics {View 1} 00000000
+DEVise setViewDimensions {View 1} 2
+DEVise setViewSolid3D {View 1} 2
+DEVise setViewXYZoom {View 1} 1
+DEVise setViewDisplayDataValues {View 1} 0
+DEVise setFont {View 1} {title} 0 12 0 0
+DEVise setFont {View 1} {x axis} 0 12 0 0
+DEVise setFont {View 1} {y axis} 0 12 0 0
+DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 1} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
+DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 1} 1.6 9.5 10
+DEVise setCountMapping {View 1} 0 {} {} 0
+DEVise viewSetIsHighlight {View 1} 0
+DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 1} {%.4g}
+DEVise setYAxisFloatFormat {View 1} {%.4g}
+DEVise setViewAutoFilter {View 1} {0}
+DEVise setDupElim {View 1} {0}
+DEVise setNiceAxes {View 1} 0 0
+DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setShowMouseLocation {View 1} {1}
+DEVise setLinkMultFact {View 1} {X} 1
+DEVise setLinkMultFact {View 1} {Y} 1
+DEVise setGAttrLinkMode {View 1} 0
+DEVise setDoHomeOnVisLink {View 1} {1}
+
+DEVise create {view} {Scatter} {View 2} 0.700000 10.600000 1.200000 9.600000 0 37 0 37 0 37
+DEVise setLabel {View 2} 1 16 {View 2: GAttr link follower view}
+DEVise setViewStatistics {View 2} 00000000
+DEVise setViewDimensions {View 2} 2
+DEVise setViewSolid3D {View 2} 2
+DEVise setViewXYZoom {View 2} 1
+DEVise setViewDisplayDataValues {View 2} 0
+DEVise setFont {View 2} {title} 0 12 0 0
+DEVise setFont {View 2} {x axis} 0 12 0 0
+DEVise setFont {View 2} {y axis} 0 12 0 0
+DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
+DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 2} 1.7 9.1 10
+DEVise setCountMapping {View 2} 0 {} {} 0
+DEVise viewSetIsHighlight {View 2} 0
+DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 2} {%.4g}
+DEVise setYAxisFloatFormat {View 2} {%.4g}
+DEVise setViewAutoFilter {View 2} {0}
+DEVise setDupElim {View 2} {0}
+DEVise setNiceAxes {View 2} 0 0
+DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise setShowMouseLocation {View 2} {1}
+DEVise setLinkMultFact {View 2} {X} 1
+DEVise setLinkMultFact {View 2} {Y} 1
+DEVise setGAttrLinkMode {View 2} 0
+DEVise setDoHomeOnVisLink {View 2} {1}
+
+DEVise create {view} {Scatter} {View 3} 4.270769 8.010770 2.639098 7.390226 0 37 0 37 0 37
+DEVise setLabel {View 3} 1 16 {View 3: GAttr link leader view}
+DEVise setViewStatistics {View 3} 00000000
+DEVise setViewDimensions {View 3} 2
+DEVise setViewSolid3D {View 3} 2
+DEVise setViewXYZoom {View 3} 1
+DEVise setViewDisplayDataValues {View 3} 0
+DEVise setFont {View 3} {title} 0 12 0 0
+DEVise setFont {View 3} {x axis} 0 12 0 0
+DEVise setFont {View 3} {y axis} 0 12 0 0
+DEVise viewSetHome {View 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 3} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
+DEVise setViewGDS {View 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 3} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 3} 1.6 9.5 10
+DEVise setCountMapping {View 3} 0 {} {} 0
+DEVise viewSetIsHighlight {View 3} 0
+DEVise setXAxisDateFormat {View 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 3} {%.4g}
+DEVise setYAxisFloatFormat {View 3} {%.4g}
+DEVise setViewAutoFilter {View 3} {0}
+DEVise setDupElim {View 3} {0}
+DEVise setNiceAxes {View 3} 0 0
+DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise setShowMouseLocation {View 3} {1}
+DEVise setLinkMultFact {View 3} {X} 1
+DEVise setLinkMultFact {View 3} {Y} 1
+DEVise setGAttrLinkMode {View 3} 0
+DEVise setDoHomeOnVisLink {View 3} {1}
+
+# Create interpreted mapping classes
+DEVise createMappingClass {y_vs_x}
+
+# Create mapping instances (GData)
+
+DEVise create {mapping} {y_vs_x} .gattr_link1 .gattr_link1#y_vs_x {} {$x} {$y} {} {$color} 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.gattr_link1#y_vs_x} 1
+DEVise setMappingColors {.gattr_link1#y_vs_x} {$color} {0} {0}
+
+DEVise create {mapping} {y_vs_x} .gattr_link2 .gattr_link2#y_vs_x {} {$x} {$y} {} {$color} 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.gattr_link2#y_vs_x} 1
+DEVise setMappingColors {.gattr_link2#y_vs_x} {$color} {0} {0}
+
+DEVise create {mapping} {y_vs_x} .gattr_link1 {.gattr_link1#y_vs_x 2} {} {$x} {$y} {} {$color} 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.gattr_link1#y_vs_x 2} 1
+DEVise setMappingColors {.gattr_link1#y_vs_x 2} {$color} {0} {0}
+
+# Create windows
+DEVise create {window} {TileLayout} DEViseWn0 0.127344 0.221680 0.500000 0.589844 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.661719 0.357422 0.217188 0.294922 0 0
+
+# Set up window layouts
+
+DEVise setWindowLayout {DEViseWn0} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn1} -1 -1 0
+
+# Create links
+DEVise create {link} {Visual_Link} {x Link} 1
+DEVise create {link} {Visual_Link} color_link 4096 color color
+
+# Create cursors
+DEVise create {cursor} {Cursor} selection_cursor 3 0 1.000000 1.000000 0
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+
+DEVise setAxisDisplay {View 1} {X} 1
+DEVise setAxisDisplay {View 1} {Y} 1
+DEVise setAxisTicks {View 1} {X} 1
+DEVise setAxisTicks {View 1} {Y} 1
+DEVise setAxisMultFact {View 1} {X} 1
+DEVise setAxisMultFact {View 1} {Y} 1
+
+DEVise setAxisDisplay {View 2} {X} 1
+DEVise setAxisDisplay {View 2} {Y} 1
+DEVise setAxisTicks {View 2} {X} 1
+DEVise setAxisTicks {View 2} {Y} 1
+DEVise setAxisMultFact {View 2} {X} 1
+DEVise setAxisMultFact {View 2} {Y} 1
+
+DEVise setAxisDisplay {View 3} {X} 1
+DEVise setAxisDisplay {View 3} {Y} 1
+DEVise setAxisTicks {View 3} {X} 1
+DEVise setAxisTicks {View 3} {Y} 1
+DEVise setAxisMultFact {View 3} {X} 1
+DEVise setAxisMultFact {View 3} {Y} 1
+
+# Put action into view
+
+# Put views in cursors
+DEVise setCursorSrc {selection_cursor} {View 3}
+DEVise setCursorDst {selection_cursor} {View 1}
+DEVise color SetCursorColor {selection_cursor} #ffffffffffff
+DEVise setCursorConstraints {selection_cursor} 0 1 0
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {View 1} {.gattr_link1#y_vs_x}
+DEVise insertMapping {View 2} {.gattr_link2#y_vs_x}
+DEVise insertMapping {View 3} {.gattr_link1#y_vs_x 2}
+
+# Link views
+
+DEVise insertLink {x Link} {View 1}
+DEVise insertLink {x Link} {View 2}
+
+DEVise insertLink {color_link} {View 2}
+DEVise setLinkMaster {color_link} {View 3}
+
+# Insert views into windows
+DEVise insertWindow {View 1} {DEViseWn0}
+DEVise insertWindow {View 2} {DEViseWn0}
+DEVise insertWindow {View 3} {DEViseWn1}
+
+# Set window pile/stack state
+DEVise setPileStackState {DEViseWn0} 1
+DEVise setPileStackState {DEViseWn1} 1
+
+# Init history of view
+
+DEVise clearViewHistory {View 1}
+DEVise insertViewHistory {View 1} {1.2} {1.6} {10.1} {9.5} 0
+DEVise insertViewHistory {View 1} {0.7} {1.1} {10.6} {10} 0
+DEVise insertViewHistory {View 1} {3.61077} {1.1} {10.6} {10} 0
+DEVise insertViewHistory {View 1} {0.7} {1.1} {10.6} {10} 0
+DEVise insertViewHistory {View 1} {3.59385} {1.1} {5.38769} {10} 0
+DEVise insertViewHistory {View 1} {0.7} {1.1} {10.6} {10} 0
+
+DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {1.2} {1.7} {10.1} {9.1} 0
+DEVise insertViewHistory {View 2} {0.7} {1.7} {10.6} {9.1} -80
+DEVise insertViewHistory {View 2} {0.7} {1.2} {10.6} {9.6} 0
+DEVise insertViewHistory {View 2} {3.61077} {1.2} {10.6} {9.6} 0
+DEVise insertViewHistory {View 2} {0.7} {1.2} {10.6} {9.6} 0
+DEVise insertViewHistory {View 2} {3.59385} {1.2} {5.38769} {9.6} 0
+DEVise insertViewHistory {View 2} {0.7} {1.2} {10.6} {9.6} 0
+
+DEVise clearViewHistory {View 3}
+DEVise insertViewHistory {View 3} {0.7} {1.1} {10.6} {10} 0
+DEVise insertViewHistory {View 3} {0.7} {1.1} {10.6} {10} 0
+DEVise insertViewHistory {View 3} {3.61077} {1.1} {10.6} {10} 0
+DEVise insertViewHistory {View 3} {0.7} {1.1} {10.6} {10} 0
+DEVise insertViewHistory {View 3} {4.96462} {1.1} {10.6} {10} 0
+DEVise insertViewHistory {View 3} {4.96462} {1.1} {8.70462} {10} 0
+DEVise insertViewHistory {View 3} {4.96462} {5.24887} {8.70462} {10} 0
+DEVise insertViewHistory {View 3} {3.06923} {5.68383} {6.80923} {10.435} 0
+DEVise insertViewHistory {View 3} {4.27077} {2.6391} {8.01077} {7.39023} 0
+
+# Set camera location for each view
+DEVise set3DLocation {View 1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 3} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+
+# Set string tables for each view
+
+# Session postscript

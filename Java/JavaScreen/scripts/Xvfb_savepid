@@ -1,0 +1,23 @@
+#! /bin/sh
+
+############################################################
+
+# Start Xvfb and save its PID.
+
+#-----------------------------------------------------------
+
+# $Id$
+
+############################################################
+
+#
+# Fire up Xvfb, creating the appropriate pid file, and
+# deleting the pid file when Xvfb exits.
+#
+bin2/Xvfb $* &
+
+host=`hostname`
+pidfile="Xvfb_pid:$idStr:$host:$!"
+touch $pidfile
+wait $!
+rm $pidfile
