@@ -1,0 +1,1170 @@
+data_5153
+
+#######################
+#  Entry information  #
+#######################
+
+save_entry_information
+   _Saveframe_category      entry_information
+
+   _Entry_title            
+;
+Backbone dynamics of the N-TIMP-1 bound to MMP-3 catalytic domain 
+;
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+       1   Gao         Guanghua        .   . 
+       2   Arumugam    Sengodagounder  .   . 
+       3  "Van Doren"  Steven          R.  . 
+
+   stop_
+
+   _BMRB_accession_number   5153
+   _BMRB_flat_file_name     bmr5153.str
+   _Entry_type              new
+   _Submission_date         2001-09-16
+   _Accession_date          2001-09-17
+   _Entry_origination       author
+   _NMR_STAR_version        2.1.1
+   _Experimental_method     NMR
+
+   loop_
+      _Saveframe_category_type
+      _Saveframe_category_type_count
+
+       T1_relaxation      1  
+       T2_relaxation      1  
+       heteronuclear_NOE  1  
+       S2_parameters      1  
+
+   stop_
+
+   loop_
+      _Data_type
+      _Data_type_count
+
+      'T1_relaxation'      85  
+      'T2_relaxation'      85  
+      'heteronuclear_NOE'  85  
+      'S2_parameters'      86  
+
+   stop_
+
+   loop_
+      _Revision_date
+      _Revision_keyword
+      _Revision_author
+      _Revision_detail
+
+       2003-01-29  update    author "update of the S2 and rex values" 
+       2002-02-04  original  author "original release"                
+
+   stop_
+
+   loop_
+      _Related_BMRB_accession_number
+      _Relationship
+
+       5154  "N-terminal domain of Tissue Inhibitor of Metalloproteinases-1" 
+
+   stop_
+
+save_
+
+
+#############################
+#  Citation for this entry  #
+#############################
+
+save_entry_citation
+   _Saveframe_category     entry_citation
+
+   _Citation_title        
+;
+Binding of the MMP-3 catalytic domain to N-TIMP-1 is driven by a large gain in 
+entropy that includes modest contributions from the hydrophobic effect and the 
+TIMP-1 backbone
+;
+   _Citation_status       'in press'
+   _Citation_type          journal
+   _MEDLINE_UI_code        .
+   _PubMed_ID              .
+
+   loop_
+      _Author_ordinal
+      _Author_family_name
+      _Author_given_name
+      _Author_middle_initials
+      _Author_family_title
+
+       1   Gao          Guanghua        .   . 
+       2   Arumugam     Sengodagounder  .   . 
+       3   Patton       Brian           .   . 
+       4   Semenchenko  Valentyna       .   . 
+       5   Brew         Keith           .   . 
+       6  "Van Doren"   Steven          R.  . 
+
+   stop_
+
+   _Journal_abbreviation  "J. Mol. Biol."
+   _Journal_volume         ?
+   _Journal_issue          ?
+   _Page_first             ?
+   _Page_last              ?
+   _Year                   ?
+
+save_
+
+
+##################################
+#  Molecular system description  #
+##################################
+
+save_system_N-TIMP-1/MMP-3(deltaC)_complex
+   _Saveframe_category         molecular_system
+
+   _Mol_system_name           "N-terminal domain of Tissue Inhibitor of Metalloproteinases-1/MatrixMetalloProteinase-3(E202Q)(deltaC) complex"
+   _Abbreviation_common       "N-TIMP-1/MMP-3(deltaC) complex"
+   _Enzyme_commission_number   .
+
+   loop_
+      _Mol_system_component_name
+      _Mol_label
+
+      "N-TIMP-1, inhibitor"      $N-TIMP-1 
+      "MMP-3, metalloproteinase" $MMP-3    
+      "CALCIUM (II) ION, I"      $CA_2+    
+      "CALCIUM (II) ION, II"     $CA_2+    
+      "CALCIUM (II) ION, III"    $CA_2+    
+      "ZINC (II) ION, I"         $ZN_2+    
+      "ZINC (II) ION, II"        $ZN_2+    
+
+   stop_
+
+   _System_physical_state      native
+   _System_oligomer_state      monomer
+   _System_paramagnetic        no
+   _System_thiol_state        'all disulfide bound'
+
+   loop_
+      _Biological_function
+
+      "N-TIMP-1 inhibits the enzymatic activity of matrix metalloproteinases-1,-2, &-3 with Ki values less than 2.0 nM" 
+
+   stop_
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Database_entry_details
+
+       PDB  1UEA  ?  . 
+
+   stop_
+
+   _Details                   
+;
+Present system is contains only the N-terminal domain of the Tissue Inhibitor
+of Metalloproteinase where as the related system in the X-ray structure (PDB
+entry 1UEA) has a full length. In addtion, the present system has been studied
+in solution as a complex with a mutant matrix metalloproteinase-3(E202Q).
+;
+
+save_
+
+
+    ########################
+    #  Monomeric polymers  #
+    ########################
+
+save_N-TIMP-1
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                "N-terminal domain of Tissue Inhibitor of Metalloproteinases-1"
+   _Name_variant                                .
+   _Abbreviation_common                         N-TIMP-1
+   _Mol_thiol_state                            'all disulfide bound'
+   
+   	##############################
+   	#  Polymer residue sequence  #
+   	##############################
+   
+   _Residue_count                               126
+   _Mol_residue_sequence                       
+;
+CTCVPPHPQTAFCNSDLVIR
+AKFVGTPEVNQTTLYQRYEI
+KMTKMYKGFQALGDAADIRF
+VYTPAMESVCGYFHRSHNRS
+EEFLIAGKLQDGLLHITTCS
+FVAPWNSLSLAQRRGFTKTY
+TVGCEE
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+
+         1   CYS     2   THR     3   CYS     4   VAL     5   PRO 
+         6   PRO     7   HIS     8   PRO     9   GLN    10   THR 
+        11   ALA    12   PHE    13   CYS    14   ASN    15   SER 
+        16   ASP    17   LEU    18   VAL    19   ILE    20   ARG 
+        21   ALA    22   LYS    23   PHE    24   VAL    25   GLY 
+        26   THR    27   PRO    28   GLU    29   VAL    30   ASN 
+        31   GLN    32   THR    33   THR    34   LEU    35   TYR 
+        36   GLN    37   ARG    38   TYR    39   GLU    40   ILE 
+        41   LYS    42   MET    43   THR    44   LYS    45   MET 
+        46   TYR    47   LYS    48   GLY    49   PHE    50   GLN 
+        51   ALA    52   LEU    53   GLY    54   ASP    55   ALA 
+        56   ALA    57   ASP    58   ILE    59   ARG    60   PHE 
+        61   VAL    62   TYR    63   THR    64   PRO    65   ALA 
+        66   MET    67   GLU    68   SER    69   VAL    70   CYS 
+        71   GLY    72   TYR    73   PHE    74   HIS    75   ARG 
+        76   SER    77   HIS    78   ASN    79   ARG    80   SER 
+        81   GLU    82   GLU    83   PHE    84   LEU    85   ILE 
+        86   ALA    87   GLY    88   LYS    89   LEU    90   GLN 
+        91   ASP    92   GLY    93   LEU    94   LEU    95   HIS 
+        96   ILE    97   THR    98   THR    99   CYS   100   SER 
+       101   PHE   102   VAL   103   ALA   104   PRO   105   TRP 
+       106   ASN   107   SER   108   LEU   109   SER   110   LEU 
+       111   ALA   112   GLN   113   ARG   114   ARG   115   GLY 
+       116   PHE   117   THR   118   LYS   119   THR   120   TYR 
+       121   THR   122   VAL   123   GLY   124   CYS   125   GLU 
+       126   GLU 
+
+   stop_
+
+   _Sequence_homology_query_date                2005-05-05
+   _Sequence_homology_query_revised_last_date   2005-04-07
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Sequence_query_to_submitted_percentage
+      _Sequence_subject_length
+      _Sequence_identity
+      _Sequence_positive
+      _Sequence_homology_expectation_value
+
+       PDB         1D2B        "A Chain A, The Mmp-Inhibitory, N-TerminalDomain Of Human Tissue Inhibitor Of Metalloproteinases-1(N-Timp-1), Solution Nmr, 29 Structures"                                                              100.00  126   100   100   5e-71 
+       PDB         1OO9        "B Chain B, Orientation In Solution Of Mmp-3Catalytic Domain And N- Timp-1 From Residual DipolarCouplings"                                                                                              100.00  126   100   100   5e-71 
+       PDB         1UEA        "B Chain B, Mmp-3TIMP-1 Complex"                                                                                                                                                                         68.48  184    98    98   3e-69 
+       DBJ         BAA01913.1  "tissue inhibitor of metalloproteinases[Homo sapiens]"                                                                                                                                                   75.90  166    99    99   8e-58 
+       EMBL        CAA26902.1  "unnamed protein product [Homo sapiens]"                                                                                                                                                                 60.87  207   100   100   5e-71 
+       EMBL        CAG28566.1  "TIMP1 [Homo sapiens]"                                                                                                                                                                                   60.87  207   100   100   5e-71 
+       EMBL        CAG46779.1  "TIMP1 [Homo sapiens]"                                                                                                                                                                                   60.87  207   100   100   5e-71 
+       EMBL        CAH90650.1  "hypothetical protein [Pongo pygmaeus]"                                                                                                                                                                  60.87  207   100   100   5e-71 
+       EMBL        CAI42465.1  "tissue inhibitor of metalloproteinase 1(erythroid potentiating activity, collagenase inhibitor)[Homo sapiens]"                                                                                          60.87  207   100   100   5e-71 
+       GenBank     AAH07097.1  "TIMP1 protein [Homo sapiens]"                                                                                                                                                                           74.56  169   100   100   5e-71 
+       GenBank     AAA63234.1  "collagenase inhibitor [Homo sapiens]"                                                                                                                                                                   60.87  207   100   100   5e-71 
+       GenBank     AAA99943.1  "metalloprotease-1 tissue inhibitor"                                                                                                                                                                     60.87  207   100   100   5e-71 
+       GenBank     AAH00866.1  "Tissue inhibitor of metalloproteinase 1,precursor [Homo sapiens]"                                                                                                                                       60.87  207   100   100   5e-71 
+       GenBank     AAX36674.1  "tissue inhibitor of metalloproteinase 1[synthetic construct]"                                                                                                                                           60.87  207   100   100   5e-71 
+       PIR         JC4303      "matrix metalloproteinase-1 tissue inhibitor- baboon"                                                                                                                                                    60.87  207   100   100   5e-71 
+       PRF         1107278A    "erythroid potentiating activity"                                                                                                                                                                        60.87  207   100   100   5e-71 
+       PRF         1308125A    "metalloproteinase inhibitor"                                                                                                                                                                            60.87  207   100   100   5e-71 
+       REF         NP_003245.1 "tissue inhibitor of metalloproteinase 1precursor [Homo sapiens]"                                                                                                                                        60.87  207   100   100   5e-71 
+       SWISS-PROT  P01033      "TIMP1_HUMAN Metalloproteinase inhibitor 1precursor (TIMP-1) (Erythroid potentiating activity)(EPA) (Tissue inhibitor of metalloproteinases)(Fibroblast collagenase inhibitor) (Collagenaseinhibitor)"   60.87  207   100   100   5e-71 
+       SWISS-PROT  P49061      "TIMP1_PAPCY Metalloproteinase inhibitor 1precursor (TIMP-1)"                                                                                                                                            60.87  207   100   100   5e-71 
+       SWISS-PROT  Q95KL9      "TIMP1_MACMU Metalloproteinase inhibitor 1precursor (TIMP-1)"                                                                                                                                            60.87  207    99    99   7e-70 
+
+   stop_
+
+save_
+
+
+save_MMP-3
+   _Saveframe_category                          monomeric_polymer
+
+   _Mol_type                                    polymer
+   _Mol_polymer_class                           protein
+   _Name_common                                "MatrixMetalloProteinases-3(catalytic domain)"
+   _Name_variant                                .
+   _Abbreviation_common                        "MMP-3(deltaC)"
+   _Mol_thiol_state                            'not present'
+   _Residue_count                               173
+   _Mol_residue_sequence                       
+;
+FRTFPGIPKWRKTHLTYRIV
+NYTPDLPKDAVDSAVEKALK
+VWEEVTPLTFSRLYEGEADI
+MISFAVREHGDFYPFDGPGN
+VLAHAYAPGPGINGDAHFDD
+DEQWTKDTTGTNLFLVAAHQ
+IGHSLGLFHSANTEALMYPL
+YHSLTDLTRFRLSQDDINGI
+QSLYGPPPDSPET
+;
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+
+         1   PHE     2   ARG     3   THR     4   PHE     5   PRO 
+         6   GLY     7   ILE     8   PRO     9   LYS    10   TRP 
+        11   ARG    12   LYS    13   THR    14   HIS    15   LEU 
+        16   THR    17   TYR    18   ARG    19   ILE    20   VAL 
+        21   ASN    22   TYR    23   THR    24   PRO    25   ASP 
+        26   LEU    27   PRO    28   LYS    29   ASP    30   ALA 
+        31   VAL    32   ASP    33   SER    34   ALA    35   VAL 
+        36   GLU    37   LYS    38   ALA    39   LEU    40   LYS 
+        41   VAL    42   TRP    43   GLU    44   GLU    45   VAL 
+        46   THR    47   PRO    48   LEU    49   THR    50   PHE 
+        51   SER    52   ARG    53   LEU    54   TYR    55   GLU 
+        56   GLY    57   GLU    58   ALA    59   ASP    60   ILE 
+        61   MET    62   ILE    63   SER    64   PHE    65   ALA 
+        66   VAL    67   ARG    68   GLU    69   HIS    70   GLY 
+        71   ASP    72   PHE    73   TYR    74   PRO    75   PHE 
+        76   ASP    77   GLY    78   PRO    79   GLY    80   ASN 
+        81   VAL    82   LEU    83   ALA    84   HIS    85   ALA 
+        86   TYR    87   ALA    88   PRO    89   GLY    90   PRO 
+        91   GLY    92   ILE    93   ASN    94   GLY    95   ASP 
+        96   ALA    97   HIS    98   PHE    99   ASP   100   ASP 
+       101   ASP   102   GLU   103   GLN   104   TRP   105   THR 
+       106   LYS   107   ASP   108   THR   109   THR   110   GLY 
+       111   THR   112   ASN   113   LEU   114   PHE   115   LEU 
+       116   VAL   117   ALA   118   ALA   119   HIS   120   GLN 
+       121   ILE   122   GLY   123   HIS   124   SER   125   LEU 
+       126   GLY   127   LEU   128   PHE   129   HIS   130   SER 
+       131   ALA   132   ASN   133   THR   134   GLU   135   ALA 
+       136   LEU   137   MET   138   TYR   139   PRO   140   LEU 
+       141   TYR   142   HIS   143   SER   144   LEU   145   THR 
+       146   ASP   147   LEU   148   THR   149   ARG   150   PHE 
+       151   ARG   152   LEU   153   SER   154   GLN   155   ASP 
+       156   ASP   157   ILE   158   ASN   159   GLY   160   ILE 
+       161   GLN   162   SER   163   LEU   164   TYR   165   GLY 
+       166   PRO   167   PRO   168   PRO   169   ASP   170   SER 
+       171   PRO   172   GLU   173   THR 
+
+   stop_
+
+   _Sequence_homology_query_date                2005-05-05
+   _Sequence_homology_query_revised_last_date   2005-04-07
+
+   loop_
+      _Database_name
+      _Database_accession_code
+      _Database_entry_mol_name
+      _Sequence_query_to_submitted_percentage
+      _Sequence_subject_length
+      _Sequence_identity
+      _Sequence_positive
+      _Sequence_homology_expectation_value
+
+       PDB         1HFS        "Crystal Structure Of The Catalytic Domain OfHuman Fibroblast Stromelysin-1 Inhibited With TheN-Carboxy-Alkyl Inhibitor L-764,004"                                              108.13  160    99   100   2e-91   
+       PDB         1QIC        "A Chain A, Crystal Structure Of StromelysinCatalytic Domain"                                                                                                                   107.45  161    99   100   2e-92   
+       PDB         1QIA        "A Chain A, Crystal Structure Of StromelysinCatalytic Domain"                                                                                                                   106.79  162    99   100   3e-93   
+       PDB         1USN        "Crystal Structure Of The Catalytic Domain OfHuman Fibroblast Stromelysin-1 Inhibited WithThiadiazole Inhibitor Pnu-142372"                                                     104.85  165    99   100   7e-95   
+       PDB         2USN        "Crystal Structure Of The Catalytic Domain OfHuman Fibroblast Stromelysin-1 Inhibited WithThiadiazole Inhibitor Pnu-141803"                                                     104.85  165    99   100   7e-95   
+       PDB         1C8T        "A Chain A, Human Stromelysin-1 (E202q)Catalytic Domain Complexed With Ro-26-2812"                                                                                              103.59  167   100   100   2e-96   
+       PDB         1B8Y        "A Chain A, X-Ray Structure Of Human StromelysinCatalytic Domain Complexed With Non-Peptide Inhibitors:Implications For Inhibitor Selectivity"                                  103.59  167    99   100   2e-96   
+       PDB         1CAQ        "A Chain A, X-Ray Structure Of Human StromelysinCatalytic Domain Complexes With Non-Peptide Inhibitors:Implication For Inhibitor Selectivity"                                   102.98  168    99   100   3e-97   
+       PDB         1CIZ        "A Chain A, X-Ray Structure Of Human StromelysinCatalytic Domain Complexes With Non-Peptide Inhibitors:Implication For Inhibitor Selectivity"                                   102.98  168    99   100   3e-97   
+       PDB         1G4K        "A Chain A, X-Ray Structure Of A Novel MatrixMetalloproteinase Inhibitor Complexed To Stromelysin"                                                                              102.98  168    99   100   3e-97   
+       PDB         1OO9        "A Chain A, Orientation In Solution Of Mmp-3Catalytic Domain And N- Timp-1 From Residual DipolarCouplings"                                                                      102.98  168    99   100   3e-97   
+       PDB         3USN        "Structure Of The Catalytic Domain Of HumanFibroblast Stromelysin-1 Inhibited With The ThiadiazoleInhibitor Ipnu-107859, Nmr, 1 Structure"                                      102.98  168    99   100   3e-97   
+# Note: _Sequence_identity value changed in the line below for test27.
+       PDB         1B3D        "A Chain A, Stromelysin-1"                                                                                                                                                      100.00  173   100   100   10e-101 
+       PDB         1BIW        "A Chain A, Design And Synthesis OfConformationally-Constrained Mmp Inhibitors"                                                                                                 100.00  173    99   100   10e-101 
+       PDB         1BM6        "Solution Structure Of The Catalytic Domain OfHuman Stromelysin-1 Complexed To A Potent Non-PeptidicInhibitor, Nmr, 20 Structures"                                              100.00  173    99   100   10e-101 
+       PDB         1BQO        "A Chain A, Discovery Of Potent, Achiral MatrixMetalloproteinase Inhibitors"                                                                                                    100.00  173    99   100   10e-101 
+       PDB         1C3I        "A Chain A, Human Stromelysin-1 Catalytic DomainComplexed With Ro-26- 2812"                                                                                                     100.00  173    99   100   10e-101 
+       PDB         1CQR        "A Chain A, Crystal Structure Of The StromelysinCatalytic Domain At 2.0 A Resolution"                                                                                           100.00  173    99   100   10e-101 
+       PDB         1D5J        "A Chain A, Crystal Structure Of Mmp3 ComplexedWith A Thiazepine Based Inhibitor."                                                                                              100.00  173    99   100   10e-101 
+       PDB         1D7X        "A Chain A, Crystal Structure Of Mmp3 ComplexedWith A Modified Proline Scaffold Based Inhibitor."                                                                               100.00  173    99   100   10e-101 
+       PDB         1D8F        "A Chain A, Crystal Structure Of Mmp3 ComplexedWith A Piperazine Based Inhibitor."                                                                                              100.00  173    99   100   10e-101 
+       PDB         1D8M        "A Chain A, Crystal Structure Of Mmp3 ComplexedWith A Heterocycle- Based Inhibitor"                                                                                             100.00  173    99   100   10e-101 
+       PDB         1G05        "A Chain A, Heterocycle-Based Mmp InhibitorWith P2'substituents"                                                                                                                100.00  173    99   100   10e-101 
+       PDB         1G49        "A Chain A, A Carboxylic Acid Based InhibitorIn Complex With Mmp3"                                                                                                              100.00  173    99   100   10e-101 
+       PDB         1HY7        "A Chain A, A Carboxylic Acid Based InhibitorIn Complex With Mmp3"                                                                                                              100.00  173    99   100   10e-101 
+       PDB         1SLN        "Crystal Structure Of The Catalytic Domain OfHuman Fibroblast Stromelysin-1 Inhibited With TheN-Carboxy-Alkyl Inhibitor L-702,842"                                              100.00  173    99   100   10e-101 
+       PDB         2SRT        "Catalytic Domain Of Human Stromelysin-1 At Ph5.5 And 40oc Complexed With Inhibitor"                                                                                            100.00  173    99   100   10e-101 
+       PDB         1UEA        "A Chain A, Mmp-3TIMP-1 Complex"                                                                                                                                                100.00  173    98    99   5e-99   
+       PDB         1UMS        "A Chain A, Stromelysin-1 Catalytic Domain WithHydrophobic Inhibitor Bound, Ph 7.0, 32oc, 20 Mm Cacl2,15% Acetonitrile; Nmr Ensemble Of 20 Structures"                           99.43  174    99   100   10e-101 
+       PDB         1UMT        "A Chain A, Stromelysin-1 Catalytic Domain WithHydrophobic Inhibitor Bound, Ph 7.0, 32oc, 20 Mm Cacl2,15% Acetonitrile; Nmr Average Of 20 Structures MinimizedWith Restraints"   99.43  174    99   100   10e-101 
+       PDB         1SLM        "Crystal Structure Of FibroblastStromelysin-1: The C-Truncated Human Proenzyme"                                                                                                  67.84  255    99   100   10e-101 
+       EMBL        CAA28859.1  "preprostromelysin [Homo sapiens]"                                                                                                                                               36.27  477    99   100   10e-101 
+       GenBank     AAH69676.1  "Matrix metalloproteinase 3,preproprotein [Homo sapiens]"                                                                                                                        36.27  477    99   100   10e-101 
+       GenBank     AAH69716.1  "Matrix metalloproteinase 3,preproprotein [Homo sapiens]"                                                                                                                        36.27  477    99   100   10e-101 
+       GenBank     AAH74815.1  "Matrix metalloproteinase 3,preproprotein [Homo sapiens]"                                                                                                                        36.27  477    99   100   10e-101 
+       GenBank     AAH74869.1  "Matrix metalloproteinase 3,preproprotein [Homo sapiens]"                                                                                                                        36.27  477    99   100   10e-101 
+       GenBank     AAK95247.1  "matrix metalloproteinase 3 (stromelysin1, progelatinase) [Homo sapiens]"                                                                                                        36.27  477    99   100   10e-101 
+       REF         XP_508723.1 "PREDICTED: similar to matrixmetalloproteinase-3 [Pan troglodytes]"                                                                                                              36.89  469    98    99   5e-99   
+       REF         NP_002413.1 "matrix metalloproteinase 3preproprotein [Homo sapiens]"                                                                                                                         36.27  477    99   100   10e-101 
+       SWISS-PROT  P08254      "MMP3_HUMAN Stromelysin-1 precursor (Matrixmetalloproteinase-3) (MMP-3) (Transin-1) (SL-1)"                                                                                      36.27  477    99   100   10e-101 
+
+   stop_
+
+save_
+
+
+    #############
+    #  Ligands  #
+    #############
+
+save_CA_2+
+   _Saveframe_category      ligand
+
+   _Mol_type                non-polymer
+   _Name_common            'CALCIUM (II) ION'
+   _Abbreviation_common     Ca
+   _Name_IUPAC              .
+   _BMRB_code               CA_2+
+   _PDB_code                CA
+   _Mol_empirical_formula   CA1
+   _Mol_charge              2+
+   _Mol_paramagnetic        no
+   _Mol_aromatic            no
+   _Details                 .
+
+   loop_
+      _Atom_name
+      _PDB_atom_name
+      _Atom_type
+      _Atom_chirality
+      _Atom_charge
+      _Atom_oxidation_number
+      _Atom_unpaired_electrons
+
+       CA  CA  CA  ?  2+  ?  ? 
+
+   stop_
+
+save_
+
+
+save_ZN_2+
+   _Saveframe_category      ligand
+
+   _Mol_type                non-polymer
+   _Name_common            'ZINC (II) ION'
+   _Abbreviation_common     Zn
+   _Name_IUPAC              .
+   _BMRB_code               ZN_2+
+   _PDB_code                ZN
+   _Mol_empirical_formula   Zn1
+   _Mol_charge              2+
+   _Mol_paramagnetic        no
+   _Mol_aromatic            no
+   _Details                 .
+
+   loop_
+      _Atom_name
+      _PDB_atom_name
+      _Atom_type
+      _Atom_chirality
+      _Atom_charge
+      _Atom_oxidation_number
+      _Atom_unpaired_electrons
+
+       ZN  ZN  ZN  ?  2+  ?  ? 
+
+   stop_
+
+save_
+
+
+    ########################################
+    #  Molecular bond linkage definitions  #
+    ########################################
+
+save_crosslink_bond_definitions
+   _Saveframe_category   crosslink_bonds
+
+
+   loop_
+      _Bond_order
+      _Bond_type
+      _Atom_one_mol_system_component_name
+      _Atom_one_residue_seq_code
+      _Atom_one_residue_label
+      _Atom_one_atom_name
+      _Atom_two_mol_system_component_name
+      _Atom_two_residue_seq_code
+      _Atom_two_residue_label
+      _Atom_two_atom_name
+
+       single  disulfide "N-TIMP-1, inhibitor"   1   CYS  SG "N-TIMP-1, inhibitor"   70   CYS  SG 
+       single  disulfide "N-TIMP-1, inhibitor"   3   CYS  SG "N-TIMP-1, inhibitor"   99   CYS  SG 
+       single  disulfide "N-TIMP-1, inhibitor"  13   CYS  SG "N-TIMP-1, inhibitor"  124   CYS  SG 
+
+   stop_
+
+save_
+
+
+    ####################
+    #  Natural source  #
+    ####################
+
+save_natural_source
+   _Saveframe_category   natural_source
+
+
+   loop_
+      _Mol_label
+      _Organism_name_common
+      _NCBI_taxonomy_ID
+      _Superkingdom
+      _Kingdom
+      _Genus
+      _Species
+
+      $N-TIMP-1  Human  9606   Eukaryota  Metazoa  Homo  sapiens 
+      $MMP-3     Human  9606   Eukaryota  Metazoa  Homo  sapiens 
+
+   stop_
+
+save_
+
+
+    #########################
+    #  Experimental source  #
+    #########################
+
+save_experimental_source
+   _Saveframe_category   experimental_source
+
+
+   loop_
+      _Mol_label
+      _Production_method
+      _Host_organism_name_common
+      _Genus
+      _Species
+      _Strain
+      _Vector_name
+
+      $N-TIMP-1 'recombinant technology'  .  .  .  .  . 
+      $MMP-3    'recombinant technology'  .  .  .  .  . 
+
+   stop_
+
+save_
+
+
+#####################################
+#  Sample contents and methodology  #
+#####################################
+	 
+    ########################
+    #  Sample description  #
+    ########################
+
+save_sample_1
+   _Saveframe_category   sample
+
+   _Sample_type          solution
+
+   loop_
+      _Mol_label
+      _Concentration_value
+      _Concentration_value_units
+      _Isotopic_labeling
+
+      $N-TIMP-1    0.3  mM "[U-98% 15N; U-98% 2H]" 
+      $MMP-3       0.3  mM "[U-98% 15N; U-98% 2H]" 
+       Tris       20    mM "[U-2H]"                
+       NaCl      125    mM  .                      
+       CaCl2      10    mM  .                      
+       NaN3        1    mM  .                      
+       ZnCl2      50    mM  .                      
+       H2O        93    %   .                      
+       D2O         7    %   .                      
+
+   stop_
+
+save_
+
+
+############################
+#  Computer software used  #
+############################
+
+save_Sybyl_TRIAD
+   _Saveframe_category   software
+
+   _Name                "Sybyl TRIAD"
+   _Version              6.3
+
+save_
+
+
+save_ModelFree
+   _Saveframe_category   software
+
+   _Name                 ModelFree
+   _Version              4.1
+
+save_
+
+
+#########################
+#  Experimental detail  #
+#########################
+
+    ##################################
+    #  NMR Spectrometer definitions  #
+    ##################################
+
+save_NMR_spectrometer
+   _Saveframe_category   NMR_spectrometer
+
+   _Manufacturer         Varian
+   _Model                Inova
+   _Field_strength       600
+
+save_
+
+
+    #############################
+    #  NMR applied experiments  #
+    #############################
+
+save_NMR_applied_experiment
+   _Saveframe_category   NMR_applied_experiment
+
+   _Experiment_name     
+;
+15N T1 relaxation
+15N T2 relaxation
+heteronuclear 1H-15N NOE
+;
+
+save_
+
+
+#######################
+#  Sample conditions  #
+#######################
+
+save_condition_1
+   _Saveframe_category   sample_conditions
+
+
+   loop_
+      _Variable_type
+      _Variable_value
+      _Variable_value_error
+      _Variable_value_units
+
+       pH             6.22  0.05  n/a 
+       temperature  307     0.5   K   
+
+   stop_
+
+save_
+
+
+####################
+#  NMR parameters  #
+####################
+
+    ##############################
+    #  Assigned chemical shifts  #
+    ##############################
+
+	################################
+	#  Chemical shift referencing  #
+	################################
+
+save_chemical_shift_reference
+   _Saveframe_category   chemical_shift_reference
+
+
+   loop_
+      _Mol_common_name
+      _Atom_type
+      _Atom_isotope_number
+      _Atom_group
+      _Chem_shift_units
+      _Chem_shift_value
+      _Reference_method
+      _Reference_type
+      _External_reference_sample_geometry
+      _External_reference_location
+      _External_reference_axis
+      _Indirect_shift_ratio
+
+       DSS  H  1  'methyl protons'  ppm  0.0  internal  direct  .  .  .  1.0 
+
+   stop_
+
+save_
+
+
+save_T1_relaxation_label
+   _Saveframe_category          T1_relaxation
+
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label    $condition_1
+   _Spectrometer_frequency_1H   600
+   _T1_coherence_type           Nz
+   _T1_value_units              s
+   _Mol_system_component_name  "N-TIMP-1, inhibitor"
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _T1_value
+      _T1_value_error
+
+         2   THR  N  1.0190  0.036 
+         3   CYS  N  0.9191  0.027 
+         4   VAL  N  0.9345  0.037 
+         9   GLN  N  0.8176  0.039 
+        10   THR  N  0.8097  0.042 
+        11   ALA  N  0.7158  0.037 
+        12   PHE  N  0.8077  0.040 
+        13   CYS  N  0.7627  0.027 
+        15   SER  N  0.8038  0.033 
+        16   ASP  N  0.7262  0.067 
+        17   LEU  N  1.1918  0.121 
+        19   ILE  N  0.9661  0.077 
+        20   ARG  N  0.7593  0.027 
+        21   ALA  N  0.8554  0.044 
+        22   LYS  N  0.8802  0.036 
+        23   PHE  N  0.8143  0.030 
+        24   VAL  N  0.7861  0.021 
+        25   GLY  N  0.5770  0.016 
+        28   GLU  N  0.8912  0.043 
+        29   VAL  N  0.7230  0.073 
+        30   ASN  N  0.7843  0.039 
+        35   TYR  N  0.7246  0.045 
+        36   GLN  N  0.8445  0.039 
+        37   ARG  N  0.8841  0.068 
+        38   TYR  N  0.8169  0.040 
+        39   GLU  N  0.9208  0.026 
+        40   ILE  N  0.8665  0.026 
+        41   LYS  N  0.9276  0.019 
+        42   MET  N  0.8291  0.033 
+        43   THR  N  0.7547  0.046 
+        44   LYS  N  1.0030  0.055 
+        45   MET  N  0.8196  0.025 
+        48   GLY  N  0.6968  0.051 
+        49   PHE  N  0.6027  0.029 
+        54   ASP  N  0.6199  0.034 
+        56   ALA  N  0.7645  0.043 
+        58   ILE  N  0.6317  0.029 
+        59   ARG  N  0.7936  0.025 
+        61   VAL  N  0.9541  0.041 
+        62   TYR  N  0.8726  0.045 
+        63   THR  N  0.8250  0.040 
+        70   CYS  N  0.8936  0.033 
+        71   GLY  N  0.8382  0.054 
+        73   PHE  N  0.7662  0.030 
+        74   HIS  N  0.8658  0.028 
+        80   SER  N  0.6680  0.051 
+        81   GLU  N  0.7733  0.026 
+        82   GLU  N  0.8403  0.036 
+        83   PHE  N  0.7980  0.046 
+        84   LEU  N  0.7782  0.052 
+        85   ILE  N  0.9689  0.048 
+        86   ALA  N  0.9276  0.074 
+        87   GLY  N  1.0224  0.052 
+        88   LYS  N  0.8857  0.040 
+        90   GLN  N  0.9891  0.076 
+        91   ASP  N  0.7961  0.063 
+        92   GLY  N  0.8032  0.031 
+        95   HIS  N  0.8718  0.046 
+        96   ILE  N  0.8620  0.025 
+        97   THR  N  0.8090  0.037 
+        98   THR  N  0.8488  0.032 
+        99   CYS  N  0.7581  0.041 
+       100   SER  N  0.7980  0.029 
+       101   PHE  N  0.8488  0.016 
+       102   VAL  N  0.9699  0.032 
+       103   ALA  N  0.9699  0.032 
+       105   TRP  N  0.7473  0.041 
+       106   ASN  N  0.7479  0.025 
+       107   SER  N  0.7892  0.023 
+       108   LEU  N  0.6973  0.056 
+       109   SER  N  0.8058  0.033 
+       110   LEU  N  0.8130  0.050 
+       112   GLN  N  0.7710  0.030 
+       113   ARG  N  0.8110  0.024 
+       115   GLY  N  0.8077  0.033 
+       116   PHE  N  0.7215  0.020 
+       117   THR  N  0.7446  0.045 
+       118   LYS  N  0.7158  0.036 
+       119   THR  N  0.7002  0.021 
+       120   TYR  N  0.7501  0.034 
+       121   THR  N  0.6930  0.027 
+       122   VAL  N  0.8857  0.046 
+       124   CYS  N  0.7788  0.029 
+       125   GLU  N  0.5364  0.017 
+       126   GLU  N  0.7698  0.044 
+
+   stop_
+
+save_
+
+
+save_T2_relaxation_label
+   _Saveframe_category          T2_relaxation
+
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label    $condition_1
+   _Spectrometer_frequency_1H   600
+   _T2_coherence_type           Nx
+   _T2_value_units              s
+   _Mol_system_component_name  "N-TIMP-1, inhibitor"
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _T2_value
+      _T2_value_error
+      _Rex_value
+      _Rex_error
+
+         2   THR  N  0.048239  0.0025   5.6  1.2 
+         3   CYS  N  0.048828  0.0034   4.3  1.4 
+         4   VAL  N  0.050454  0.0026    .    .  
+         9   GLN  N  0.050838  0.0028    .    .  
+        10   THR  N  0.046040  0.0021   2.7  1.3 
+        11   ALA  N  0.047755  0.0020   3.4  1.1 
+        12   PHE  N  0.048123  0.0015   3.4  0.8 
+        13   CYS  N  0.049019  0.0011   2.2  0.6 
+        15   SER  N  0.053879  0.0030    .    .  
+        17   LEU  N  0.046490  0.0079   6.9  3.7 
+        18   VAL  N  0.042808  0.0047   8.5  3.5 
+        19   ILE  N  0.041017  0.0013   8.3  1.4 
+        20   ARG  N  0.047258  0.0023    .    .  
+        21   ALA  N  0.046040  0.0014   2.8  1.0 
+        22   LYS  N  0.049358  0.0017   2.4  0.9 
+        23   PHE  N  0.047483  0.0016   3.1  0.9 
+        24   VAL  N  0.047393  0.0022   4.1  1.0 
+        25   GLY  N  0.081833  0.0064    .    .  
+        28   GLU  N  0.053879  0.0014   1.6  0.8 
+        29   VAL  N  0.036818  0.0013  11.2  1.7 
+        30   ASN  N  0.043478  0.0009   5.6  0.8 
+        35   TYR  N  0.042808  0.0025   5.8  1.7 
+        36   GLN  N  0.049188  0.0028   2.5  1.2 
+        37   ARG  N  0.036630  0.0023  11.2  2.0 
+        38   TYR  N  0.044682  0.0011   5.0  0.8 
+        39   GLU  N  0.048053  0.0018   4.7  1.0 
+        40   ILE  N  0.046040  0.0015   3.6  0.8 
+        41   LYS  N  0.046382  0.0012   2.3  0.6 
+        42   MET  N  0.046816  0.0008   4.4  0.7 
+        43   THR  N  0.048169  0.0017   1.7  1.1 
+        44   LYS  N  0.050761  0.0028   2.2  1.4 
+        45   MET  N  0.042301  0.0032   5.9  1.8 
+        48   GLY  N  0.044247  0.0021   5.5  1.5 
+        49   PHE  N  0.096246  0.0032    .    .  
+        54   ASP  N  0.107492  0.0035    .    .  
+        56   ALA  N  0.058309  0.0027    .    .  
+        58   ILE  N  0.078247  0.0094    .    .  
+        59   ARG  N  0.048449  0.0026   4.2  1.1 
+        61   VAL  N  0.043327  0.0020   6.6  1.3 
+        62   TYR  N  0.044822  0.0021   4.6  1.1 
+        63   THR  N  0.044444  0.0016   5.2  1.0 
+        70   CYS  N  0.038372  0.0028   7.5  2.1 
+        71   GLY  N  0.037893  0.0024   8.8  2.0 
+        73   PHE  N  0.045850  0.0012   4.9  0.8 
+        74   HIS  N  0.048923  0.0032   3.2  1.3 
+        80   SER  N  0.048780  0.0022   3.8  1.4 
+        81   GLU  N  0.046794  0.0027    .    .  
+        82   GLU  N  0.046232  0.0025   5.4  1.3 
+        83   PHE  N  0.045766  0.0031    .    .  
+        84   LEU  N  0.046168  0.0029    .    .  
+        85   ILE  N  0.044563  0.0025   4.7  1.5 
+        86   ALA  N  0.042069  0.0018   5.8  1.4 
+        87   GLY  N  0.044883  0.0017   5.5  0.8 
+        88   LYS  N  0.044091  0.0016   4.4  1.0 
+        90   GLN  N  0.047641  0.0012   5.2  1.3 
+        91   ASP  N  0.046554  0.0042   4.8  2.2 
+        92   GLY  N  0.052029  0.0020   2.6  0.8 
+        95   HIS  N  0.043649  0.0018   5.8  1.2 
+        96   ILE  N  0.045475  0.0015   4.8  0.9 
+        97   THR  N  0.042087  0.0017   6.4  1.1 
+        98   THR  N  0.042607  0.0027   6.5  1.6 
+        99   CYS  N  0.044722  0.0021   4.6  1.2 
+       100   SER  N  0.043440  0.0020   5.7  1.1 
+       101   PHE  N  0.048285  0.0012   2.5  0.6 
+       102   VAL  N  0.044483  0.0011   4.3  0.7 
+       103   ALA  N  0.044424  0.0028   3.8  1.5 
+       105   TRP  N  0.043687  0.0010   5.6  0.9 
+       106   ASN  N  0.048590  0.0023   3.8  1.0 
+       107   SER  N  0.050530  0.0012   2.8  0.7 
+       108   LEU  N  0.046882  0.0019   3.9  1.4 
+       109   SER  N  0.047281  0.0014   4.4  0.8 
+       110   LEU  N  0.045787  0.0027   3.5  1.6 
+       112   GLN  N  0.047664  0.0029    .    .  
+       113   ARG  N  0.048100  0.0019    .    .  
+       115   GLY  N  0.042337  0.0034    .    .  
+       116   PHE  N  0.048614  0.0016    .    .  
+       117   THR  N  0.047778  0.0021   3.2  1.3 
+       118   LYS  N  0.050709  0.0016    .    .  
+       119   THR  N  0.048285  0.0042    .    .  
+       120   TYR  N  0.045065  0.0024   5.6  1.3 
+       121   THR  N  0.048520  0.0025    .    .  
+       122   VAL  N  0.050942  0.0022   3.9  1.1 
+       124   CYS  N  0.057803  0.0039    .    .  
+       125   GLU  N  0.125992  0.0069    .    .  
+       126   GLU  N  0.190114  0.0243    .    .  
+
+   stop_
+
+save_
+
+
+save_heteronuclear_NOE
+   _Saveframe_category             heteronuclear_NOE
+
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label       $condition_1
+   _Spectrometer_frequency_1H      600
+   _Mol_system_component_name     "N-TIMP-1, inhibitor"
+   _Atom_one_atom_name             N
+   _Atom_two_atom_name             H
+   _Heteronuclear_NOE_value_type  'relative intensities'
+   _NOE_reference_value            .
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+      _Heteronuclear_NOE_value
+      _Heteronuclear_NOE_value_error
+
+         2   THR   0.78988  0.0461  
+         3   CYS   0.72767  0.00117 
+         4   VAL   0.7034   0.00316 
+         9   GLN   0.62824  0.07397 
+        10   THR   0.82976  0.05307 
+        11   ALA   0.71282  0.05718 
+        12   PHE   0.63577  0.03363 
+        13   CYS   0.71925  0.03559 
+        15   SER   0.6635   0.05561 
+        16   ASP   0.76289  0.04428 
+        17   LEU   0.83455  0.03023 
+        18   VAL   0.45049  0.04109 
+        19   ILE   0.76894  0.03385 
+        20   ARG   0.76886  0.09079 
+        21   ALA   0.77777  0.05225 
+        22   LYS   0.71659  0.01431 
+        23   PHE   0.74083  0.05912 
+        24   VAL   0.65351  0.03895 
+        25   GLY   0.51599  0.02791 
+        28   GLU   0.71808  0.03552 
+        29   VAL   0.58445  0.0537  
+        30   ASN   0.82765  0.06686 
+        35   TYR   0.73737  0.02509 
+        36   GLN   0.79827  0.13211 
+        37   ARG   0.72997  0.06675 
+        38   TYR   0.8264   0.03071 
+        39   GLU   0.52371  0.07463 
+        40   ILE   0.71854  0.05589 
+        41   LYS   0.74496  0.06298 
+        42   MET   0.61142  0.11438 
+        43   THR   0.76142  0.06857 
+        44   LYS   0.67879  0.03523 
+        45   MET   0.62283  0.0463  
+        48   GLY   0.81073  0.11882 
+        49   PHE   0.52792  0.07276 
+        54   ASP  -0.2344   0.04075 
+        56   ALA   0.69326  0.02575 
+        59   ARG   0.57419  0.02857 
+        61   VAL   0.71894  0.08581 
+        62   TYR   0.73965  0.05917 
+        63   THR   0.83377  0.04118 
+        70   CYS   0.784    0.00375 
+        71   GLY   0.83031  0.10691 
+        73   PHE   0.6538   0.08179 
+        74   HIS   0.64035  0.0356  
+        80   SER   0.61472  0.03469 
+        81   GLU   0.72049  0.07103 
+        82   GLU   0.58992  0.04211 
+        83   PHE   0.74753  0.01209 
+        84   LEU   0.79494  0.04217 
+        85   ILE   0.76752  0.03809 
+        86   ALA   0.76983  0.03978 
+        87   GLY   0.77216  0.00312 
+        88   LYS   0.75851  0.04555 
+        90   GLN   0.72569  0.02192 
+        91   ASP   0.69118  0.03561 
+        92   GLY   0.67448  0.04432 
+        95   HIS   0.83652  0.04606 
+        96   ILE   0.79271  0.08429 
+        97   THR   0.74918  0.04205 
+        98   THR   0.76717  0.02232 
+        99   CYS   0.79926  0.09606 
+       100   SER   0.79217  0.04508 
+       101   PHE   0.8199   0.0869  
+       102   VAL   0.70846  0.01488 
+       103   ALA   0.80891  0.04619 
+       105   TRP   0.74565  0.01926 
+       106   ASN   0.71372  0.02755 
+       107   SER   0.67158  0.08608 
+       108   LEU   0.8136   0.01977 
+       109   SER   0.65062  0.02722 
+       110   LEU   0.8268   0.0422  
+       112   GLN   0.68597  0.00814 
+       113   ARG   0.75768  0.01853 
+       115   GLY   0.76224  0.06427 
+       116   PHE   0.77639  0.05065 
+       117   THR   0.7223   0.11009 
+       118   LYS   0.64717  0.04579 
+       119   THR   0.71255  0.04128 
+       120   TYR   0.70066  0.05841 
+       121   THR   0.59259  0.01309 
+       122   VAL   0.57919  0.03625 
+       124   CYS   0.5416   0.02923 
+       125   GLU   0.23194  0.01252 
+       126   GLU  -1.0948   0.1182  
+
+   stop_
+
+save_
+
+
+save_S2_parameters_label
+   _Saveframe_category          S2_parameters
+
+
+   loop_
+      _Sample_label
+
+      $sample_1 
+
+   stop_
+
+   _Sample_conditions_label    $condition_1
+   _Mol_system_component_name  "N-TIMP-1, inhibitor"
+   _Tau_e_value_units           ps
+   _Tau_s_value_units           .
+
+   loop_
+      _Residue_seq_code
+      _Residue_label
+      _Atom_name
+      _Model_fit
+      _S2_value
+      _S2_value_fit_error
+      _Tau_e_value
+      _Tau_e_value_fit_error
+
+         2   THR  N  .  0.847  0.031      .       .  
+         3   CYS  N  .  0.893  0.009    41.6     3.7 
+         4   VAL  N  .  0.951  0.003   149.5    15.9 
+         9   GLN  N  .  0.939  0.027   260.9   142.5 
+        10   THR  N  .  0.969  0.040    19.3    44.5 
+        11   ALA  N  .  0.939  0.037   211.1   156.1 
+        12   PHE  N  .  0.934  0.026   252.2   129.8 
+        13   CYS  N  .  0.952  0.020   251.7   147.6 
+        15   SER  N  .  0.932  0.026   859.9  1071.4 
+        16   ASP  N  .  0.838  0.110  3018.4  2419.2 
+        17   LEU  N  .  0.767  0.077      .       .  
+        18   VAL  N  .  0.765  0.131   123.6   107.0 
+        19   ILE  N  .  0.886  0.061    34.7    36.2 
+        20   ARG  N  .  0.864  0.042  5485.3  3372.0 
+        21   ALA  N  .  0.978  0.033      .       .  
+        22   LYS  N  .  0.937  0.025    97.7    32.8 
+        23   PHE  N  .  0.956  0.028   218.8   162.1 
+        24   VAL  N  .  0.937  0.016   308.5   110.2 
+        25   GLY  N  .  0.581  0.030  1516.8    84.0 
+        28   GLU  N  .  0.935  0.030   139.9   114.5 
+        29   VAL  N  .  0.858  0.073   152.3   120.2 
+        30   ASN  N  .  0.980  0.031      .       .  
+        35   TYR  N  .  0.924  0.041    97.3    64.3 
+        36   GLN  N  .  0.982  0.028      .       .  
+        37   ARG  N  .  0.919  0.053   113.2   127.8 
+        38   TYR  N  .  0.980  0.029      .       .  
+        39   GLU  N  .  0.878  0.028   149.7    61.8 
+        40   ILE  N  .  0.957  0.023   253.3   152.7 
+        41   LYS  N  .  0.991  0.012      .       .  
+        42   MET  N  .  0.919  0.036   288.1   137.6 
+        43   THR  N  .  0.964  0.043    28.5    74.8 
+        44   LYS  N  .  0.898  0.044    95.5    79.3 
+        45   MET  N  .  0.929  0.018   324.2   103.4 
+        48   GLY  N  .  0.961  0.054      .       .  
+        49   PHE  N  .  0.502  0.023  1641.6   296.1 
+        54   ASP  N  .  0.453  0.020   673.7    32.4 
+        56   ALA  N  .  0.882  0.033  1330.9   328.4 
+        58   ILE  N  .  0.640  0.076  2614.6  2683.1 
+        59   ARG  N  .  0.911  0.013   307.0   109.3 
+        61   VAL  N  .  0.911  0.038      .       .  
+        62   TYR  N  .  0.980  0.028      .       .  
+        63   THR  N  .  0.981  0.027      .       .  
+        70   CYS  N  .  0.938  0.022    39.2    10.6 
+        71   GLY  N  .  0.974  0.037      .       .  
+        73   PHE  N  .  0.929  0.032   282.3   138.0 
+        74   HIS  N  .  0.936  0.016   315.6   109.9 
+        80   SER  N  .  0.913  0.050   189.0   131.5 
+        81   GLU  N  .  0.912  0.033  5164.7  3677.1 
+        82   GLU  N  .  0.885  0.032   156.3    97.4 
+        83   PHE  N  .  0.925  0.028  1400.5   439.8 
+        84   LEU  N  .  0.906  0.054  4685.1  3729.2 
+        85   ILE  N  .  0.927  0.041    48.9    48.4 
+        86   ALA  N  .  0.922  0.053    57.3    54.3 
+        87   GLY  N  .  0.884  0.017    21.5     5.6 
+        88   LYS  N  .  0.982  0.026      .       .  
+        90   GLN  N  .  0.866  0.065    50.2    40.7 
+        91   ASP  N  .  0.920  0.044   197.9   132.3 
+        92   GLY  N  .  0.940  0.021   274.8   133.5 
+        95   HIS  N  .  0.966  0.038      .       .  
+        96   ILE  N  .  0.978  0.023      .       .  
+        97   THR  N  .  0.983  0.025      .       .  
+        98   THR  N  .  0.942  0.024    62.6    32.4 
+        99   CYS  N  .  0.978  0.032      .       .  
+       100   SER  N  .  0.985  0.022      .       .  
+       101   PHE  N  .  0.992  0.012      .       .  
+       102   VAL  N  .  0.933  0.023    98.1    36.3 
+       103   ALA  N  .  0.964  0.029      .       .  
+       105   TRP  N  .  0.929  0.036    74.5    33.7 
+       106   ASN  N  .  0.950  0.016   235.0   138.6 
+       107   SER  N  .  0.935  0.030   278.1   139.0 
+       108   LEU  N  .  0.958  0.054     6.0    11.9 
+       109   SER  N  .  0.938  0.021   253.5   124.8 
+       110   LEU  N  .  0.972  0.041      .       .  
+       112   GLN  N  .  0.868  0.026  1371.5   207.4 
+       113   ARG  N  .  0.941  0.018  1503.0   654.4 
+       115   GLY  N  .  0.904  0.067  4936.3  3714.9 
+       116   PHE  N  .  0.865  0.037  5853.8  3166.0 
+       117   THR  N  .  0.936  0.045   190.9   170.2 
+       118   LYS  N  .  0.886  0.030  1841.7  1508.5 
+       119   THR  N  .  0.825  0.032  2556.3  1755.6 
+       120   TYR  N  .  0.944  0.029   244.0   153.4 
+       121   THR  N  .  0.834  0.031  1048.7   170.8 
+       122   VAL  N  .  0.884  0.032   151.2    88.1 
+       124   CYS  N  .  0.838  0.029   872.3   146.4 
+       125   GLU  N  .  0.336  0.025  1181.9    24.3 
+       126   GLU  N  .  0.245  0.039   453.3    40.6 
+
+   stop_
+
+save_
+

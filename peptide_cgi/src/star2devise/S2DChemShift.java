@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:10  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.14.8.1  2006/01/24 19:34:24  wenger
+// Fixed bug 049 (pending confirmation from Eldon):
+// errors in the chemical shift index calculation
+// (use individual CSI values instead of deltashifts, take
+// ambiguity codes into account for GLY special case).
+//
 // Revision 1.1.2.14  2005/02/23 17:45:56  wenger
 // Added TRP side chain HE1/NE1 to "Simulated 1H-15N backbone HSQC
 // spectrum" visualization.
@@ -180,6 +190,7 @@ public class S2DChemShift {
     private String[] _atomNames;
     private String[] _atomTypes;
     private double[] _chemShiftVals;
+    private int[] _ambiguityVals;
 
     private final String CHEMSHIFT_FILE = "chem_info" + File.separator +
       "chemshift.txt";
@@ -205,7 +216,7 @@ public class S2DChemShift {
     public S2DChemShift(String name, String longName, String dataDir,
       String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
       String[] residueLabels, String[] atomNames, String[] atomTypes,
-      double[] chemShiftVals) throws S2DException
+      double[] chemShiftVals, int[] ambiguityVals) throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("S2DChemShift.S2DChemShift(" + name +
@@ -223,6 +234,7 @@ public class S2DChemShift {
 	_atomNames = atomNames;
 	_atomTypes = atomTypes;
 	_chemShiftVals = chemShiftVals;
+	_ambiguityVals = ambiguityVals;
 
 	_refTable = new ShiftDataManager(CHEMSHIFT_FILE);
 
@@ -350,6 +362,8 @@ public class S2DChemShift {
 
 		    int haCsi;
 		    if (resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
+			// Note: _haDeltaShifts value has already been
+			// calculated appropriately.
 		        haCsi = calculateCSI(resLabel,
 		          S2DNames.ATOM_HA2, _haDeltaShifts[index]);
 		    } else {
@@ -365,6 +379,7 @@ public class S2DChemShift {
 
 		    int cbCsi;
 		    if (resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
+			// Note: _cbDeltaShifts value has already been
 		        cbCsi = calculateCSI(resLabel, 
 			  S2DNames.ATOM_HA3, _cbDeltaShifts[index]);
 		    } else {
@@ -372,14 +387,11 @@ public class S2DChemShift {
 			  S2DNames.ATOM_CB, _cbDeltaShifts[index]);
 		    }
 
-		    int consCsi = (int)_haDeltaShifts[index] -
-		      (int)_cDeltaShifts[index] - (int)_caDeltaShifts[index];
+		    int consCsi = haCsi - cCsi - caCsi;
 		    if (consCsi < 0) {
 		    	consCsi = -1;
 		    } else if (consCsi > 0) {
 		    	consCsi = 1;
-		    } else {
-		    	consCsi = 0;
 		    }
 
 		    csiWriter.write(index + " " + haCsi + " " +
@@ -859,6 +871,12 @@ public class S2DChemShift {
 	_caDeltaShifts = new float[lastResidue + 1];
 	_cbDeltaShifts = new float[lastResidue + 1];
 
+	float[] ha2DeltaShifts = new float[lastResidue + 1];
+	float[] ha3DeltaShifts = new float[lastResidue + 1];
+
+    	int[] ha2Ambiguities = new int[lastResidue + 1];
+    	int[] ha3Ambiguities = new int[lastResidue + 1];
+
 	_hasRealCBShifts = false;
 
 	for (int index = 0; index <= lastResidue; ++index) {
@@ -888,17 +906,18 @@ public class S2DChemShift {
 		float deltashift = (float)(chemShift -
 		  standardValue.chemshift);
 
-		// Special cases of combining HA2 with HA and HA3 with
-		// CB as per algorithm.
 		//TEMP -- need alg reference here
 		//TEMP -- should we make sure the resLabel is *not* GLY for HA?
 	        if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA)) {
 		    _haDeltaShifts[currResSeqCode] = deltashift;
 
-		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA2) &&
-		  resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
-		    // Special case for GLY as per info from Eldon.
-		    _haDeltaShifts[currResSeqCode] = deltashift;
+		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA2)) {
+		    ha2DeltaShifts[currResSeqCode] = deltashift;
+		    ha2Ambiguities[currResSeqCode] = _ambiguityVals[index];
+
+		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA3)) {
+		    ha3DeltaShifts[currResSeqCode] = deltashift;
+		    ha3Ambiguities[currResSeqCode] = _ambiguityVals[index];
 
 	        } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_C)) {
 		    _cDeltaShifts[currResSeqCode] = deltashift;
@@ -924,6 +943,28 @@ public class S2DChemShift {
 	        }
 	    } catch(S2DException ex) {
 	        System.err.println(ex.toString());
+	    }
+	}
+
+	// Special-case calculations for GLY because it has no CB.
+	// As per Wishart papers, discussions with Eldon, etc.
+        for (int index = 0; index < _deltaShiftResLabels.length; ++index) {
+	     if (_deltaShiftResLabels[index].equalsIgnoreCase(
+	       S2DNames.ACID_GLY)) {
+		if ((ha2Ambiguities[index] == 1) &&
+		  (ha3Ambiguities[index] == 1)) {
+		    _haDeltaShifts[index] = ha2DeltaShifts[index];
+		    _cbDeltaShifts[index] = ha3DeltaShifts[index];
+		} else if ((ha2Ambiguities[index] == 2) &&
+		  (ha3Ambiguities[index] == 2)) {
+		    _haDeltaShifts[index] = (ha2DeltaShifts[index] +
+		      ha3DeltaShifts[index]) / (float)2;
+		    _cbDeltaShifts[index] = (float)0.0;
+		} else {
+		    _haDeltaShifts[index] = (float)0.0;
+		    _cbDeltaShifts[index] = (float)0.0;
+		}
+
 	    }
 	}
     }

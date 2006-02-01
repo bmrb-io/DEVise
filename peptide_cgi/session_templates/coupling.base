@@ -6,7 +6,8 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {Coupling constants}
+DEVise setSessionDesc {Coupling constants
+$Id$}
 
 # Load color palette
 DEVise color SessionPalette {#000000000000 black

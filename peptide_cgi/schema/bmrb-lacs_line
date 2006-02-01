@@ -1,0 +1,20 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# Schema for lines for LACS visualizations.
+
+# $Id$
+
+type bmrb_lacs_line ascii
+comment #
+whitespace ' ''	'
+
+attr line_center_x float
+attr line_center_y float
+attr line_size_x float
+attr line_size_y float
+attr line_type int

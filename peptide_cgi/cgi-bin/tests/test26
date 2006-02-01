@@ -1,0 +1,78 @@
+#! /bin/csh -f
+
+# Tests non-numeric BMRB ID.
+# This also tests that the cache checking code at least doesn't crash.
+
+set result = 0
+
+ln -s test_data/bmr4267.str bmrabcd.str
+ln -s test_data/1dfv.cif.gz .
+
+rm -f */abcd*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid abcd -local -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+echo -n "Processing mmCIF: "
+./s2d -nomail -pdbid 1dfv -bmrbid abcd -do_pdb 2 -coord_index 1 -local \
+  -check_res_list
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+rm bmrabcd.str
+rm 1dfv.cif.gz
+
+
+echo "Checking output files"
+
+set files = (data_dir/abcdac1.dat data_dir/abcdas1.dat data_dir/abcdc1.dat \
+	data_dir/abcdd1.dat data_dir/abcdg1.dat data_dir/abcdhn1.dat \
+	data_dir/abcdmd.dat data_dir/abcdn1.dat data_dir/abcdn2.dat \
+	data_dir/abcdn3.dat data_dir/abcdn4.dat data_dir/abcdn5.dat \
+	data_dir/abcdn6.dat data_dir/abcdn7.dat data_dir/abcdn8.dat \
+	data_dir/abcdn9.dat data_dir/abcdp1.dat data_dir/abcdrc1.dat \
+	data_dir/abcdrl1.dat data_dir/abcdt11.dat data_dir/abcdt12.dat \
+	data_dir/abcdt13.dat data_dir/abcdt21.dat data_dir/abcdt22.dat \
+	data_dir/abcdt23.dat html_dir/abcdac1.html html_dir/abcdas1.html \
+	html_dir/abcdc1.html html_dir/abcdd1.html html_dir/abcdg1.html \
+	html_dir/abcdhn1.html html_dir/abcdn1.html html_dir/abcdn2.html \
+	html_dir/abcdn3.html html_dir/abcdn4.html html_dir/abcdn5.html \
+	html_dir/abcdn6.html html_dir/abcdn7.html html_dir/abcdn8.html \
+	html_dir/abcdn9.html html_dir/abcdp1.html html_dir/abcdt11.html \
+	html_dir/abcdt12.html html_dir/abcdt13.html html_dir/abcdt21.html \
+	html_dir/abcdt22.html html_dir/abcdt23.html \
+	html_dir/abcdy.html session_dir/abcdac1.ds session_dir/abcdacdd \
+	session_dir/abcdas1.ds session_dir/abcdc1.ds session_dir/abcdd1.ds \
+	session_dir/abcdg1.ds session_dir/abcdhn1.ds session_dir/abcdn1.ds \
+	session_dir/abcdn2.ds session_dir/abcdn3.ds session_dir/abcdn4.ds \
+	session_dir/abcdn5.ds session_dir/abcdn6.ds session_dir/abcdn7.ds \
+	session_dir/abcdn8.ds session_dir/abcdn9.ds session_dir/abcdp1.ds \
+	session_dir/abcdt11.ds session_dir/abcdt12.ds session_dir/abcdt13.ds \
+	session_dir/abcdt21.ds session_dir/abcdt22.ds session_dir/abcdt23.ds \
+	data_dir/abcdam1.dat \
+	data_dir/abcdamac1.dat \
+	html_dir/abcdam1.html \
+	session_dir/abcdam1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test26 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

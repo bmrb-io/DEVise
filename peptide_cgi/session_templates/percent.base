@@ -6,7 +6,8 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {Percent assigned atoms}
+DEVise setSessionDesc {Percent assigned atoms
+$Id$}
 
 # Load color palette
 DEVise color SessionPalette {#000000000000 black

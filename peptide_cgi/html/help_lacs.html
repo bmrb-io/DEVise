@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>LACS Help Page</title>
+</head>
+<body bgcolor = white>
+
+<h2>LACS Data</h2>
+
+<p>
+1. The Y-axis represents the secondary chemical shifts of the nuclei:
+CA for alpha carbon, CB for beta carbon, HA for alpha proton and CO
+for carbonyl carbon. Secondary chemical shifts are calculated by
+subtracting random coil chemical shifts[1] from experimental observed
+values.
+</p>
+
+<p>
+2. The X-axis represents the secondary chemical shift difference
+between CA and CB.
+</p>
+
+<p>
+3. LACS shows the secondary chemical shift relationship between
+CA (or CB, HA, CO) and CA-CB for a single protein.
+</p>
+
+<p>
+4. Points with a positive CA-CB value are fitted to get one line
+corresponding to the transition from random coil to alpha helix;
+points with a negative CA-CB value are fitted to get another line
+corresponding to the transition from random coil to beta sheet.
+</p>
+
+<p>
+5. The vertical line is located at the position of CA-CB = 0. Considering 
+the referencing independence of CA-CB, this is the position where an amino 
+acid in random coil state will fall with the highest probability (in 
+the X-dimension).
+</p>
+
+<p>
+6. The intersection between the vertical line and the fitted line gives us 
+the position where an amino acid in random coil state will fall with the 
+highest probability in Y-dimension.
+</p>
+
+<p>
+7. The existing of two intersection points (with two fitted lines) is due to 
+the limitation of experimental data as well as using a rough linear model. To 
+compensate for these limitations, the random coil highest probability 
+position in the Y-dimension is estimated as the average of the Y-axis of these 
+two intersection points. At this average position, a horizontal line is 
+drawn.
+</p>
+
+<p>
+8. An individual nucleus (CA, CB, HA, CO) has the highest probability of being 
+in the random coil state when its secondary chemical shift is zero. Thus the 
+horizontal line represents the possible referencing adjustment needed for 
+the investigated protein.
+</p>
+
+<p>
+[1] Wishart, D. S. and D. A. Case (2001). Methods Enzymol., 338: 3-34
+</p>
+    
+<!-- $Id$ -->
+
+<br><a href="javascript:history.back()">Go back.</a>
+
+</body>
+</html>

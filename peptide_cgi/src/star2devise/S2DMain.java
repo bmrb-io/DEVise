@@ -1,8 +1,3 @@
-//TEMPTEMP -- entry_information saveframe is goofed up in 3.0
-//TEMPTEMP -- go thru this whole thing and check what may fail in 3.0
-//TEMPTEMP -- make sure 3D data has all the selections for things with > 1 set of chem shifts
-//TEMPTEMP -- add entity name to summary page stuff?
-//TEMPTEMP -- hmm -- maybe indexing by entity should be higher level than indexing by save frame??
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2000-2005
@@ -26,6 +21,134 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:11  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.121.2.27  2006/01/24 22:27:01  wenger
+// Verified fix of bug 049 with Eldon.
+//
+// Revision 1.1.2.121.2.26  2006/01/24 19:34:24  wenger
+// Fixed bug 049 (pending confirmation from Eldon):
+// errors in the chemical shift index calculation
+// (use individual CSI values instead of deltashifts, take
+// ambiguity codes into account for GLY special case).
+//
+// Revision 1.1.2.121.2.25  2005/11/23 21:07:24  wenger
+// A bunch of changes to the Pistachio visualization:
+// - Added titles to more views to clarify things;
+// - Changed JS background color so inter-view borders show up
+//   (also for ambiguity visualization);
+// - H -> "backbone proton" in data select view;
+// - Changed color select view and color legend view;
+// - Unknown -> unassigned in color legend;
+// - Moved unassigned to right in color legend;
+// - Y axis label in data view.
+//
+// Revision 1.1.2.121.2.24  2005/11/04 18:57:54  wenger
+// Added LACS stuff to config doc; version is now 10.9.0.
+//
+// Revision 1.1.2.121.2.23  2005/11/04 17:56:26  wenger
+// Added command-line arguments, config, properties, etc., to
+// specify LACS processing level, LACS filename template, and
+// LACS URL -- so now we have the option to have the software
+// automatically try to process the appropriate LACS file;
+// updated some tests accordingly.  Test_all now names failed
+// tests at the end.
+//
+// Revision 1.1.2.121.2.22  2005/11/03 17:52:51  wenger
+// Added the capability to select large (1024x768 pixel) or
+// small (800x600 pixel) visualizations.
+//
+// Revision 1.1.2.121.2.21  2005/11/02 23:21:30  wenger
+// Changed LACS-related STAR file tags to be properly defined;
+// horizontal line in LACS visualizations is at *minus* y offset.
+//
+// Revision 1.1.2.121.2.20  2005/11/02 21:13:24  wenger
+// Changed ovals to text Os in LACs visualization so they stay the
+// same size in *pixels*; fixed up titles for LACS stuff in summary
+// html page, specific html pages, and sessions.
+//
+// Revision 1.1.2.121.2.19  2005/11/02 20:33:18  wenger
+// LACS visualization now has correct axis labels.
+//
+// Revision 1.1.2.121.2.18  2005/11/02 17:00:38  wenger
+// Changed LACS visualization to have horizontal and vertical reference
+// lines, as requested by Hamid and Eldon; added visualization info view.
+//
+// Revision 1.1.2.121.2.17  2005/10/14 21:19:28  wenger
+// Most LACS processing now in place -- still needs lots of cleanup,
+// though.
+//
+// Revision 1.1.2.121.2.16  2005/10/10 16:57:17  wenger
+// Changed version to 10.8.3.
+//
+// Revision 1.1.2.121.2.15  2005/10/07 21:13:27  wenger
+// Fixed bug 047 (home on data value views in coordinate and
+// similar sessions messes up filters):  added data_pile_supplement
+// link and set setDoHomeOnVisLink for ViewUnselectedDataChild views
+// to 1 in the relevant sessions.
+//
+// Revision 1.1.2.121.2.14  2005/10/07 20:52:56  wenger
+// Fixed bug 045 (moving data_value_cursor sometimes changes data
+// view Y axis range); found bug 047.
+//
+// Revision 1.1.2.121.2.13  2005/10/07 20:21:26  wenger
+// More minor cleanups because of problems on basslet, including
+// increasing maximum java memory to 128 MB.
+//
+// Revision 1.1.2.121.2.12  2005/10/05 18:02:40  wenger
+// Finalized configuration for basslet.
+//
+// Revision 1.1.2.121.2.11  2005/09/14 17:50:59  wenger
+// Better error messages if we retry because of running out of
+// memory (this happened a lot (but not always) with test14 on
+// basslet).
+//
+// Revision 1.1.2.121.2.10  2005/09/14 15:14:22  wenger
+// Config changes for Osaka, and for manatee and basslet at BMRB;
+// new Pistachio test file; fixed test23 to work on non-CS machines;
+// better Pistachio error message.
+//
+// Revision 1.1.2.121.2.9  2005/08/10 18:58:20  wenger
+// Added BMRB config for viewing unreleased entries; documented
+// config for viewing unreleased entries; more fixes to the
+// installation script; minor changes to vur (removed unneeded
+// args).
+//
+// Revision 1.1.2.121.2.8  2005/07/27 15:58:29  wenger
+// Fixed S2DNmrStarIfc.getPdbIdsFromMolSys() to work for NMR-STAR 3.0,
+// added test34 which tests that; better error handling in
+// S2DUtils.arrayStr2Double().
+//
+// Revision 1.1.2.121.2.7  2005/07/15 16:54:04  wenger
+// Updated NMR-STAR version test for latest 3.0 version string format;
+// added test33 with corresponding data (latest 3.0 format).
+//
+// Revision 1.1.2.121.2.6  2005/06/29 18:37:19  wenger
+// Fixed some errors in the new 2D ambiguity and figure of merit
+// visualizations.
+//
+// Revision 1.1.2.121.2.5  2005/06/28 17:08:22  wenger
+// Ambiguity code and figure of merit visualizations now use 2D main
+// views; changed "Pistachio" to "assignment figure of merit" in
+// visualizations, etc.
+//
+// Revision 1.1.2.121.2.4  2005/05/25 15:04:59  wenger
+// Added test30 (minimum possible save frames/tags for Pistachio
+// processing).
+//
+// Revision 1.1.2.121.2.3  2005/05/19 16:33:52  wenger
+// Changed version to 10.8.0.
+//
+// Revision 1.1.2.121.2.2  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.121.2.1  2005/05/18 19:44:51  wenger
+// Some cleanup of the NMR-STAR 3.0 multi-entity code.
+//
 // Revision 1.1.2.121  2005/04/22 21:41:10  wenger
 // Okay, chemical shift data now pretty much works with NMR-STAR
 // 3.0 (although a lot of cleanup is still needed).  The other
@@ -35,6 +158,38 @@
 // Revision 1.1.2.120  2005/04/20 15:55:00  wenger
 // Added -dev_version flag that gives the minimum required DEVise
 // version for the current version of Peptide-CGI.
+//
+// Revision 1.1.2.119.4.5  2005/05/18 18:08:14  wenger
+// Changed Pisatchio percentage calculation to be relative to the number
+// of atoms that actually exist in each amino acid, not just the number
+// we have figures of merit for; the Pistachio visualization now comes
+// up with "Color by figure of merit" selected; minor improvements to
+// ambiguity debug/error messages.
+//
+// Revision 1.1.2.119.4.4  2005/05/13 20:07:10  wenger
+// Changed version to 10.7.1.
+//
+// Revision 1.1.2.119.4.3  2005/05/13 19:57:49  wenger
+// Fixed bug 042 (unrecognized amino acid abbreviation prevents
+// generation of ambiguity visualization); added related test.
+//
+// Revision 1.1.2.119.4.2  2005/05/13 18:27:21  wenger
+// Fixed bug 040 (processing totally fails for entries that have 2 or
+// more entities and no chem shifts); added a bunch of related tests.
+//
+// Revision 1.1.2.119.4.1  2005/05/12 19:07:40  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.119.2.2  2005/05/12 17:40:33  wenger
+// The format of the input file name (e.g., bmrXXXX.str, or whatever)
+// and the comment email for the web pages are now configurable.
+//
+// Revision 1.1.2.119.2.1  2005/05/12 14:10:12  wenger
+// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
+// sure cache is used when it should be; added test26 to test non-
+// numeric BMRB ID.
 //
 // Revision 1.1.2.119  2005/04/07 17:22:37  wenger
 // Changed version to 10.7.0.
@@ -955,13 +1110,14 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "10.8.0x1"/*TEMPTEMP*/;
+    public static final String PEP_CGI_VERSION = "10.9.1";
     public static final String DEVISE_MIN_VERSION = "1.7.18";
 
-    private int _masterAccNum = -1; // accession number the user requested
+    private String _masterBmrbId = ""; // accession number the user requested
 
-    // A list of all accession numbers we need to access for this entry.
-    private Vector _accNums = new Vector();
+    // A list of all BMRB IDs (now stored as Strings) we need to access
+    // for this entry.
+    private Vector _bmrbIds = new Vector();
 
     // A list of all local files to process.
     private Vector _localFiles = new Vector();
@@ -995,6 +1151,13 @@ public class S2DMain {
     private static final int CSR_LEVEL_PROCESS = 2;
     private int _csrLevel = CSR_LEVEL_NONE;
 
+    // LACS-related info.
+    private static final int LACS_LEVEL_NONE = 0;
+    private static final int LACS_LEVEL_TRY = 1;
+    private static final int LACS_LEVEL_MANDATORY = 2;
+    private int _lacsLevel = LACS_LEVEL_NONE;
+    private String _lacsFile = null;
+
     private boolean _haveCoords = false;
 
     private S2DSummaryHtml _summary;
@@ -1010,7 +1173,6 @@ public class S2DMain {
     private int _cmdFrameIndex = -1;
     private int _currentFrameIndex = -1;
 
-    //TEMPTEMP -- document what this is!
     private Vector _dataSets = new Vector();
 
     private boolean _doProteinCheck = true;
@@ -1063,6 +1225,7 @@ public class S2DMain {
 	if (_retrying) {
 	    s2d._pdbLevel = PDB_LEVEL_NONE;
 	    s2d._csrLevel = CSR_LEVEL_NONE;
+	    s2d._lacsLevel = LACS_LEVEL_NONE;
 	}
 
 	try {
@@ -1074,17 +1237,15 @@ public class S2DMain {
 		}
 	    }
         } catch (OutOfMemoryError mem) {
+	    System.err.println("OutOfMemoryError: " + mem.toString());
 	    if (s2d._pdbLevel == PDB_LEVEL_PROCESS) {
-	        if (DEBUG >= 1) {
-		    System.out.println("Retrying without accessing PDB");
-		}
+	        System.out.println("Retrying without accessing PDB");
 
 		s2d = null;
 		System.gc();
 	        _retrying = true;
 		run(args);
 	    } else {
-	        System.err.println("OutOfMemoryError: " + mem.toString());
 	        throw new S2DError("NMR-Star to DEVise conversion failed " +
 		  "because of insufficient memory");
 	    }
@@ -1178,6 +1339,16 @@ public class S2DMain {
 	      "bmrb_mirror.cgi_url property");
 	}
 
+	S2DNames.STAR_NAME_TEMPLATE = props.getProperty(
+	  "bmrb_mirror.star_name_template");
+	if (S2DNames.STAR_NAME_TEMPLATE == null) {
+	    if (DEBUG >= 1) {
+	        System.out.println("bmrb_mirror.star_name_template " +
+		  "property value not defined; using default");
+	    }
+	    S2DNames.STAR_NAME_TEMPLATE = "bmr*.str";
+	}
+
 	String csrTmp = props.getProperty("bmrb_mirror.do_csr_default");
 	if (csrTmp == null) {
 	    System.err.println(new S2DWarning("Unable to get value for " +
@@ -1187,7 +1358,50 @@ public class S2DMain {
 	        _csrLevel = Integer.parseInt(csrTmp);
 	    } catch(NumberFormatException ex) {
 	        System.err.println(new S2DWarning("Error parsing " +
-		  "do_csr_default value " + ex.toString()));
+		  "do_csr_default value " + ex.toString() +
+		  "; using default"));
+	    }
+	}
+
+	S2DNames.COMMENT_EMAIL = props.getProperty(
+	  "bmrb_mirror.comment_email");
+	if (S2DNames.CGI_URL == null) {
+	    throw new S2DError("Unable to get value for " +
+	      "bmrb_mirror.comment_email property");
+	}
+
+	String lacsTmp = props.getProperty("bmrb_mirror.lacs_level_default");
+	if (lacsTmp == null) {
+	    System.err.println(new S2DWarning("Unable to get value for " +
+	      "bmrb_mirror.lacs_level_default property; using default"));
+	} else {
+	    try {
+	        _lacsLevel = Integer.parseInt(lacsTmp);
+	    } catch(NumberFormatException ex) {
+	        System.err.println(new S2DWarning("Error parsing " +
+		  "lacs_level_default value " + ex.toString() +
+		  "; using default"));
+	    }
+	}
+
+	S2DNames.LACS_NAME_TEMPLATE = props.getProperty(
+	  "bmrb_mirror.lacs_name_template");
+	if (S2DNames.LACS_NAME_TEMPLATE == null) {
+	    if (DEBUG >= 1) {
+	        System.out.println("bmrb_mirror.lacs_name_template " +
+		  "property value not defined; using default");
+	    }
+	    S2DNames.LACS_NAME_TEMPLATE = "bmr*_LACS.out";
+	}
+
+	S2DNames.LACS_URL = props.getProperty("bmrb_mirror.lacs_url");
+	if (S2DNames.LACS_URL == null) {
+	    S2DError err = new S2DError("Unable to get value for " +
+	      "bmrb_mirror.lacs_url property");
+	    if (_lacsLevel > LACS_LEVEL_NONE) {
+	        throw err;
+	    } else {
+	        System.err.println(err + "; using default");
 	    }
 	}
     }
@@ -1242,6 +1456,11 @@ public class S2DMain {
           "        1: create link in summary file but don't do the calculation;\n" +
           "        2: do chem shift reference calculations\n" +
           "        (default is " + _csrLevel + ")\n" +
+          "    -do_lacs <0|1|2>\n" +
+          "        0: don't attempt LACS processing\n" +
+          "        1: attempt LACS processing, failure is not an error\n" +
+          "        2: attempt LACS processing, failure is an error\n" +
+          "        (default is " + _lacsLevel + " unless -lacs_file is set)\n" +
           "    -do_pdb <0|1|2>\n" +
           "        0: ignore PDB references;\n" +
           "        1: create links in summary file but don't process;\n" +
@@ -1260,6 +1479,10 @@ public class S2DMain {
 	  "    -local\n" + 
 	  "        use local files for BMRB and PDB data (for testing without\n" +
 	  "        connecting to web sites)\n" +
+	  "    -lacs_file <filename>\n" +
+	  "        file containing LACS data to process\n" +
+	  "    -lacs_url <url>\n" +
+	  "        URL of directory containing LACS files\n" +
 	  "    -name <string>\n" + 
 	  "        the name of the data set being processed (used only when\n" +
 	  "        a bmrbid is not specified)\n" +
@@ -1330,23 +1553,16 @@ public class S2DMain {
 		if (index >= args.length) {
 		    throw new S2DError("-bmrbid argument needs value");
 		}
-		try {
-		    _name = args[index];
-		    S2DException.setName(_name);
-		    _longName = "BMRB " + args[index];
-	            _masterAccNum = Integer.parseInt(args[index]);
-		    addAccNum(_masterAccNum);
-		    if (_masterAccNum == 4038) {
-		        _longName += "/4096";
-		    } else if (_masterAccNum == 4096) {
-		        _longName += "/4038";
-		    }
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing BMRB ID: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing BMRB ID " +
-		      ex.toString());
-	        }
+		_name = args[index];
+		S2DException.setName(_name);
+		_longName = "BMRB " + args[index];
+	        _masterBmrbId = args[index];
+		addBmrbId(_masterBmrbId);
+		if (_masterBmrbId.equals("4038")) {
+		    _longName += "/4096";
+		} else if (_masterBmrbId.equals("4096")) {
+		    _longName += "/4038";
+		}
 
 	    } else if ("-check_res_list".equals(args[index])) {
 	    	_checkResList = true;
@@ -1428,6 +1644,20 @@ public class S2DMain {
 		      ex.toString());
 	        }
 
+	    } else if ("-do_lacs".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-do_lacs argument needs value");
+		}
+		try {
+	            _lacsLevel = Integer.parseInt(args[index]);
+	        } catch(NumberFormatException ex) {
+	            System.err.println("Error parsing do_lacs value: " +
+		      ex.toString());
+	            throw new S2DError("Error parsing do_lacs value " +
+		      ex.toString());
+	        }
+
 	    } else if ("-do_pdb".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -1465,6 +1695,21 @@ public class S2DMain {
 		    throw new S2DError("-js_data_dir argument needs value");
 		}
 	        S2DSession.setJSDataDir(args[index]);
+
+	    } else if ("-lacs_file".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-lacs_file argument needs value");
+		}
+		_lacsFile = args[index];
+		_lacsLevel = LACS_LEVEL_MANDATORY;
+
+	    } else if ("-lacs_url".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-lacs_url argument needs value");
+		}
+		S2DNames.LACS_URL = args[index];
 
 	    } else if ("-local".equals(args[index])) {
 		_useLocalFiles = true;
@@ -1512,13 +1757,13 @@ public class S2DMain {
 	// TEMP: can bmrbid and local file *both* be specified?  If not,
 	// we should give an error if they both are.
 	//
-	if (_masterAccNum == -1 && _cmdPdbId == null &&
+	if (_masterBmrbId.equals("") && _cmdPdbId == null &&
 	  _localFiles.size() == 0) {
 	    throw new S2DError(
 	      "bmrbid, pdbid, or local file must be specified");
 	}
 
-	if (_masterAccNum == -1 && _cmdPdbId != null) {
+	if (_masterBmrbId.equals("") && _cmdPdbId != null) {
 	    throw new S2DError(
 	      "bmrbid must be specified when pdbid is specified");
 	}
@@ -1557,6 +1802,12 @@ public class S2DMain {
 	    throw new S2DError("illegal do_csr value (must be between " +
 	      CSR_LEVEL_NONE + " and " + CSR_LEVEL_PROCESS + ")");
 	}
+
+	if (_lacsLevel < LACS_LEVEL_NONE ||
+	  _lacsLevel > LACS_LEVEL_MANDATORY) {
+	    throw new S2DError("illegal do_lacs value (must be between " +
+	      LACS_LEVEL_NONE + " and " + LACS_LEVEL_MANDATORY + ")");
+	}
 	
 	//
 	// Set some defaults.
@@ -1568,7 +1819,7 @@ public class S2DMain {
         if (DEBUG >= 1) {
 	    System.out.println("_name = <" + _name + ">");
 	    System.out.println("_longName = <" + _longName + ">");
-	    System.out.println("_masterAccNum/BMRB ID = " + _masterAccNum);
+	    System.out.println("_masterBmrbId/BMRB ID = " + _masterBmrbId);
 	    System.out.println("_cmdPdbId = " + _cmdPdbId);
 	    System.out.println("_connectionFile = <" + _connectionFile + ">");
 	    System.out.println("_cmdFrameIndex = " + _cmdFrameIndex);
@@ -1577,6 +1828,8 @@ public class S2DMain {
 	    System.out.println("_dataDir = <" + _dataDir + ">");
 	    System.out.println("_csrLevel = " + _csrLevel);
 	    System.out.println("_pdbLevel = " + _pdbLevel);
+	    System.out.println("_lacsLevel = " + _lacsLevel);
+	    System.out.println("_lacsFile = " + _lacsFile);
 	    if (_localFiles.size() > 0) {
 	        System.out.println("localFile = <" +
 		  _localFiles.elementAt(0) + ".");
@@ -1621,7 +1874,7 @@ public class S2DMain {
 	    //
 	    S2DSummaryFileData summaryData = new S2DSummaryFileData();
 	    boolean summaryFileOk = summaryData.getSummaryData(_name,
-	      _htmlDir, _masterAccNum);
+	      _htmlDir, _masterBmrbId);
             if (!summaryFileOk) {
 	        break check;
 	    }
@@ -1645,9 +1898,9 @@ public class S2DMain {
 	    // modification date for all related NMR-STAR file(s).
 	    //
 	    for (int index = 0; index < summaryData.bmrbIds.size(); index++) {
-	        Integer id = (Integer)summaryData.bmrbIds.elementAt(index);
-		if (id.intValue() > 0) {
-	            Date starModDate = S2DNmrStarIfc.getModDate(id.intValue());
+	        String id = (String)summaryData.bmrbIds.elementAt(index);
+		if (!id.equals("")) {
+	            Date starModDate = S2DNmrStarIfc.getModDate(id, false);
 	            if (starModDate == null ||
 		      starModDate.after(summaryData.fileDate)) {
 		        if (DEBUG >= 1) {
@@ -1776,20 +2029,14 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Add an accession number to the list to be processed (avoiding
     // duplicates).
-    private void addAccNum(int accNum)
+    private void addBmrbId(String bmrbId)
     {
         if (DEBUG >= 2) {
-            System.out.println("addAccNum(" + accNum + ")");
+            System.out.println("addBmrbId(" + bmrbId + ")");
         }
 
-	boolean found = false;
-        for (int index = 0; index < _accNums.size(); index++) {
-	    Integer entry = (Integer)_accNums.elementAt(index);
-	    if (entry.intValue() == accNum) found = true;
-	}
-
-	if (!found) {
-	    _accNums.insertElementAt(new Integer(accNum), _accNums.size());
+        if (!_bmrbIds.contains(bmrbId)) {
+	    _bmrbIds.add(bmrbId);
 	}
     }
 
@@ -1862,7 +2109,7 @@ public class S2DMain {
 	    // stuff without writing to a summary file.  wenger 2003-09-12.
 	    String tmpSummaryFile = _name + "tmp" + _cmdFrameIndex;
 	    _summary = new S2DSummaryHtml(tmpSummaryFile, _longName,
-	      _masterAccNum, _htmlDir, "starFileName", "systemName",
+	      _masterBmrbId, _htmlDir, "starFileName", "systemName",
 	      "frameTitle");
 
 	    //
@@ -1876,10 +2123,9 @@ public class S2DMain {
 	    //
 	    // Do the chem shift reference processing.
 	    //
-//TEMPTEMP -- hmm -- check whether the chemShift program itself will be goofed up by NMR-STAR 3.0 -- argh -- I'll bet it will be
 	    if (_csrLevel == CSR_LEVEL_PROCESS) {
 	        S2DChemShiftRef csr = new S2DChemShiftRef(_name, _longName,
-		  _dataDir, _csrDataDir, _sessionDir, _masterAccNum,
+		  _dataDir, _csrDataDir, _sessionDir, _masterBmrbId,
 		  _localFiles, _cmdPdbId, _summary, _cmdFrameIndex,
 		  _csrTimeout);
 	        csr.run();
@@ -1899,7 +2145,6 @@ public class S2DMain {
 
 	    return;
 	}
-//TEMPTEMP -- should this be an else here?  might make things more clear
 
         _currentFrameIndex = 1;
 
@@ -1907,14 +2152,15 @@ public class S2DMain {
 	// Create the summary HTML file.
 	//
 	S2DNmrStarIfc masterStar = null;
-	if (_masterAccNum != -1) {
-            masterStar = S2DNmrStarIfc.create(_masterAccNum, _useLocalFiles);
+	if (!_masterBmrbId.equals("")) {
+            masterStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
+	      _useLocalFiles, false);
 
-	    _summary = new S2DSummaryHtml(_name, _longName, _masterAccNum,
+	    _summary = new S2DSummaryHtml(_name, _longName, _masterBmrbId,
 	      _htmlDir, masterStar.getFileName(),
 	      masterStar.getSystemName(), masterStar.getEntryTitle());
 	} else {
-	    _summary = new S2DSummaryHtml(_name, _longName, 99999, _htmlDir,
+	    _summary = new S2DSummaryHtml(_name, _longName, "99999", _htmlDir,
 	      _name, ""/*TEMP?*/, ""/*TEMP?*/);
 	}
 
@@ -1924,7 +2170,7 @@ public class S2DMain {
 	S2DChemShiftRef csr = null;
 	if (_csrPdbIds.size() != 0 && _csrLevel == CSR_LEVEL_PROCESS) {
 	    csr = new S2DChemShiftRef(_name, _longName, _dataDir, _csrDataDir,
-	      _sessionDir, _masterAccNum, _localFiles,
+	      _sessionDir, _masterBmrbId, _localFiles,
 	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout);
 	    csr.run();
 	}
@@ -1937,7 +2183,7 @@ public class S2DMain {
 	// which we need for processing PDB entries later on.
         S2DStarIfc star = null;
 
-	if (_masterAccNum != -1) {
+	if (!_masterBmrbId.equals("")) {
 	    star = processAllBMRBs(masterStar);
 	}
 
@@ -1955,7 +2201,7 @@ public class S2DMain {
 	if (csr == null && _csrPdbIds.size() != 0 &&
 	  _csrLevel == CSR_LEVEL_PROCESS) {
 	    csr = new S2DChemShiftRef(_name, _longName, _dataDir, _csrDataDir,
-	      _sessionDir, _masterAccNum, _localFiles,
+	      _sessionDir, _masterBmrbId, _localFiles,
 	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout);
 	    csr.run();
 	}
@@ -2001,7 +2247,7 @@ public class S2DMain {
 		  ++csrIndex) {
 		    String csrPdb = (String)_csrPdbIds.elementAt(csrIndex);
 	            csr = new S2DChemShiftRef(_name, _longName, _dataDir,
-		      _csrDataDir, _sessionDir, _masterAccNum, _localFiles,
+		      _csrDataDir, _sessionDir, _masterBmrbId, _localFiles,
 	              csrPdb, _summary, csrIndex + 1, _csrTimeout);
 	            csr.run();
 	            csr.postProcess(_doProteinCheck);
@@ -2034,7 +2280,9 @@ public class S2DMain {
 	    }
 	}
 
-	_summary.close(_accNums, _pdbIds);
+	processLACS();
+
+	_summary.close(_bmrbIds, _pdbIds);
 	_summary = null;
 
 	runSetModes();
@@ -2047,23 +2295,23 @@ public class S2DMain {
     {
         S2DNmrStarIfc star = masterStar;
 
-        for (int index = 0; index < _accNums.size(); index++) {
-            Integer entry = (Integer)_accNums.elementAt(index);
-	    int accNum = entry.intValue();
+        for (int index = 0; index < _bmrbIds.size(); index++) {
+	    String bmrbId = (String)_bmrbIds.elementAt(index);
 
 	    // TEMP -- remove hard-coded links once we establish some
 	    // kind of convention for the _Related_BMRB_accession_number
 	    // info.
 
 	    // Note: 4038 has chem shifts for 4096.
-            if (accNum == 4038) {
-	        addAccNum(4096);
-	    } else if (accNum == 4096) {
-	        addAccNum(4038);
+            if (bmrbId.equals("4038")) {
+	        addBmrbId("4096");
+	    } else if (bmrbId.equals("4096")) {
+	        addBmrbId("4038");
 	    }
 
 	    if (index > 0) { // avoid parsing the "master" file twice
-                star = S2DNmrStarIfc.create(accNum, _useLocalFiles);
+                star = S2DNmrStarIfc.createFromID(bmrbId, _useLocalFiles,
+		  false);
 	    }
 
             process1NmrStar(star);
@@ -2081,7 +2329,8 @@ public class S2DMain {
 	S2DNmrStarIfc star = null;
 
         for (int index = 0; index < _localFiles.size(); index++) {
-	    star = S2DNmrStarIfc.create((String)_localFiles.elementAt(index));
+	    star = S2DNmrStarIfc.createFromFile(
+	      (String)_localFiles.elementAt(index), false);
 
 	    process1NmrStar(star);
 	}
@@ -2122,6 +2371,37 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Process the LACS file (if any).
+    private void processLACS() throws S2DException
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("processLACS()");
+	}
+
+	if (_lacsLevel >= LACS_LEVEL_TRY) {
+	    try {
+	        S2DNmrStarIfc lacsStar;
+	        if (_lacsFile != null) {
+	            lacsStar = S2DNmrStarIfc.createFromFile(_lacsFile, true);
+	        } else {
+	            lacsStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
+		      _useLocalFiles, true);
+	        }
+
+		saveLACS(lacsStar);
+	    } catch(S2DException ex) {
+	        System.err.println("Error processing LACS data: " + ex);
+		S2DError err = new S2DError("LACS processing failed");
+	        if (_lacsLevel >= LACS_LEVEL_MANDATORY) {
+		    throw err;
+		} else {
+		    System.err.println("Warning: " + err);
+		}
+	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
     // Make sure that all of the files that we generated are world-readable.
     private void runSetModes()
     {
@@ -2151,6 +2431,7 @@ public class S2DMain {
         addPDB(ids);
 
         //TEMP -- do I really want to skip stuff if I get an error?
+
         saveChemShifts(star);
         saveT1Relaxation(star);
         saveT2Relaxation(star);
@@ -2159,10 +2440,15 @@ public class S2DMain {
         saveCoupling(star);
         saveHExchangeProtFact(star);
         saveS2Params(star);
+
         save3DDataSources();
         saveAtomicCoords(star);
 
-	ensureResidueList(star);
+	try {
+	    ensureResidueList(star);
+	} catch (S2DException ex) {
+	    System.err.println("Exception in ensureResidueList(): " + ex);
+	}
     }
 
     //-------------------------------------------------------------------
@@ -2199,7 +2485,6 @@ public class S2DMain {
 		    try {
 	                S2DResidues residues = saveFrameResCounts(star, frame,
 		          entityID, frameIndex);
-//TEMPTEMP -- think about catching exceptions individually here...
 	                saveFrameChemShifts(star, frame, entityID, frameIndex);
 	                saveFramePistachio(star, frame, entityID, residues,
 		          frameIndex);
@@ -2227,6 +2512,7 @@ public class S2DMain {
 	}
 
 	if (!_savedResList) {
+	    //TEMP -- this fails if there is more than one entity
             saveResList (star, null, 1);
 	}
     }
@@ -2234,7 +2520,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save all T1 relaxation data for this entry.
     // Note: this can be tested with 4267.
-    private void saveT1Relaxation(S2DStarIfc star) throws S2DException
+    private void saveT1Relaxation(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveT1Relaxation()");
@@ -2260,7 +2546,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save all T2 relaxation data for this entry.
     // Note: this can be tested with 4267.
-    private void saveT2Relaxation(S2DStarIfc star) throws S2DException
+    private void saveT2Relaxation(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveT2Relaxation()");
@@ -2286,7 +2572,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save all heteronuclear NOE values for this entry.
     // Note: this can be tested with 4267.
-    private void saveHetNOE(S2DStarIfc star) throws S2DException
+    private void saveHetNOE(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveHetNOE()");
@@ -2322,7 +2608,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save all coupling constants for this entry.
     // Note: this can be tested with 4297.
-    private void saveCoupling(S2DStarIfc star) throws S2DException
+    private void saveCoupling(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveCoupling()");
@@ -2385,7 +2671,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    private void saveAtomicCoords(S2DStarIfc star) throws S2DException
+    private void saveAtomicCoords(S2DStarIfc star)
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DMain.saveAtomicCoords()");
@@ -2397,7 +2683,8 @@ public class S2DMain {
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
 	    try {
-	        saveFrameAtomicCoords(star, frame, _currentFrameIndex, null);
+	        saveFrameAtomicCoords(star, frame, _currentFrameIndex, null,
+		  false);
 
 		_haveCoords = true;
 	    } catch(S2DException ex) {
@@ -2407,6 +2694,25 @@ public class S2DMain {
 	    }
 	    _currentFrameIndex++;
         }
+    }
+
+    //-------------------------------------------------------------------
+    private void saveLACS(S2DStarIfc star) throws S2DException
+    {
+        if (DEBUG >= 2) {
+	    System.out.println("  S2DMain.saveLACS()");
+	}
+
+        Enumeration frameList = star.getDataFramesByCat(
+	  star.LACS_PLOT_SF_CAT, star.LACS_OUTPUT);
+
+	int frameIndex = 1;
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+
+	    saveFrameLACS(star, frame, frameIndex);
+	    frameIndex++;
+	}
     }
 
     //-------------------------------------------------------------------
@@ -2498,7 +2804,6 @@ public class S2DMain {
 	}
 
         if (monoPolyFrame == null) {
-	    //TEMPTEMP -- shit!  this is going to run into problems for NMR-STAR 3.0!!
 	    monoPolyFrame = star.getEntityFrame();
         }
 
@@ -2578,12 +2883,34 @@ public class S2DMain {
         double[] chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp);
 	chemShiftsTmp = null;
 
+	int[] ambiguityVals;
+	try {
+	    String[] ambiguityTmp = star.getFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE);
+
+	    if (!entityID.equals("")) {
+	      ambiguityTmp = S2DUtils.selectMatches(entityIDs,
+	        ambiguityTmp, entityID);
+	    }
+	    ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp);
+	    ambiguityTmp = null;
+	} catch (S2DException ex) {
+            if (DEBUG >= 3) {
+	        System.out.println("No ambiguity values in this save frame (" +
+		  star.getFrameName(frame) + ")");
+	    }
+	    ambiguityVals = new int[entityIDs.length];
+	    for (int index = 0; index < ambiguityVals.length; ++index) {
+	    	ambiguityVals[index] = 9;
+	    }
+	}
+
 	//
 	// Create an S2DChemShift object with the values we just got.
 	//
         S2DChemShift chemShift = new S2DChemShift(_name, _longName, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
-	  atomTypes, chemShiftVals);
+	  atomTypes, chemShiftVals, ambiguityVals);
 
 
 	//
@@ -2843,6 +3170,7 @@ public class S2DMain {
 	// TEMP -- NMR-STAR 3.0 has two residues for each heternuclear
 	// NOE, so we should probably deal with that eventually.
 	//
+//TEMPTEMP -- convert these to numerical values?
 	String[] resSeqCodes = star.getFrameValues(frame,
 	  star.HET_NOE_VALUE, star.HET_NOE_RES_SEQ_CODE);
 
@@ -2882,7 +3210,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save atomic coordinates for one save frame.
     private void saveFrameAtomicCoords(S2DStarIfc star, SaveFrameNode frame,
-      int frameIndex, S2DAtomDataTable pt)
+      int frameIndex, S2DAtomDataTable pt, boolean for2DView)
       throws S2DException
     {
         if (DEBUG >= 3) {
@@ -2958,7 +3286,7 @@ public class S2DMain {
 	}
 
 	try {
-	    atomicCoords.writeBonds(frameIndex, pt);
+	    atomicCoords.writeBonds(frameIndex, pt, for2DView);
 	} finally {
 	    if (pt == null) {
 	        _summary.endFrame();
@@ -2966,14 +3294,13 @@ public class S2DMain {
 	}
     }
 
-//TEMPTEMP -- needs to check EntityIDs
     //-------------------------------------------------------------------
     // Save Pistachio data for one save frame.
-    //TEMPTEMP -- needs entity argument
+    //TEMP -- needs entity argument
     private void saveFramePistachio(S2DStarIfc star, SaveFrameNode frame,
       String entityID, S2DResidues residues, int frameIndex) throws S2DException
     {
-        if (DEBUG >= 3 || true/*TEMPTEMP*/) {
+        if (DEBUG >= 3) {
 	    System.out.println("    S2DMain.saveFramePistachio(" +
 	      star.getFrameName(frame) + " (" + entityID + "), " +
 	      frameIndex + ")");
@@ -2987,6 +3314,7 @@ public class S2DMain {
 	    return;
 	}
 
+//TEMPTEMP -- change CHEM_SHIFT_VALUE to FIGURE_OF_MERIT in all here
 	String[] entityIDs = null;
 	if (!entityID.equals("")) {
 	    entityIDs = star.getFrameValues(frame, star.CHEM_SHIFT_VALUE,
@@ -3004,7 +3332,6 @@ public class S2DMain {
 	    }
 	    return;
 	}
-	//TEMPTEMP -- check for all "." or "?" here
 	if (!entityID.equals("")) {
 	  meritValsTmp = S2DUtils.selectMatches(entityIDs, meritValsTmp,
 	    entityID);
@@ -3021,6 +3348,9 @@ public class S2DMain {
 	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
 	resSeqCodesTmp = null;
 
+	String[] residueLabels = star.getFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL);
+
 	String[] atomNames = star.getFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME);
 	if (!entityID.equals("")) {
@@ -3032,7 +3362,8 @@ public class S2DMain {
 	// Create an S2DPistachio object with the values we just got.
 	//
         S2DPistachio pistachio = new S2DPistachio(_name, _dataDir,
-	  _sessionDir, _summary, resSeqCodes, atomNames, meritVals);
+	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
+	  meritVals);
 
 	//
 	// The S2DPistachioTable object holds the figures of merit for
@@ -3053,7 +3384,7 @@ public class S2DMain {
 	dCoords.writeCoords(residues, tmpFile, PISTACHIO_WRAP_LENGTH);
 
 	S2DmmCifIfc cif = new S2DmmCifIfc(tmpFile);
-	saveFrameAtomicCoords(cif, null, frameIndex, pt);
+	saveFrameAtomicCoords(cif, null, frameIndex, pt, true);
 
 	try {
 	    S2DUtils.deleteFile(tmpFile);
@@ -3065,7 +3396,7 @@ public class S2DMain {
 	//
 	// Now go ahead and write out the Pistachio values.
 	//
-	_summary.startFrame("Pistachio data");
+	_summary.startFrame("Assignment figure of merit data");
 
 	try {
 	    pistachio.writePistachio(frameIndex);
@@ -3086,6 +3417,7 @@ public class S2DMain {
 	      frameIndex + ")");
 	}
 
+//TEMPTEMP -- change CHEM_SHIFT_VALUE here?
 	//
 	// Get the values we need from the Star file.
 	//
@@ -3106,7 +3438,6 @@ public class S2DMain {
 	    }
 	    return;
 	}
-//TEMPTEMP -- check for all "." and "?" here
 	if (!entityID.equals("")) {
 	  ambiguityTmp = S2DUtils.selectMatches(entityIDs,
 	    ambiguityTmp, entityID);
@@ -3162,7 +3493,7 @@ public class S2DMain {
 	dCoords.writeCoords(residues, tmpFile, AMBIGUITY_WRAP_LENGTH);
 
 	S2DmmCifIfc cif = new S2DmmCifIfc(tmpFile);
-	saveFrameAtomicCoords(cif, null, frameIndex, at);
+	saveFrameAtomicCoords(cif, null, frameIndex, at, true);
 
 	try {
 	    S2DUtils.deleteFile(tmpFile);
@@ -3178,6 +3509,84 @@ public class S2DMain {
 
 	try {
 	    ambiguity.writeAmbiguity(frameIndex);
+	} finally {
+	    _summary.endFrame();
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Save LACS data for one save frame.
+    private void saveFrameLACS(S2DStarIfc star, SaveFrameNode frame,
+      int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 3) {
+	    System.out.println("    S2DMain.saveFrameLACS(" +
+	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	}
+
+	S2DLacs lacs = new S2DLacs(_name, _longName, _dataDir,
+	  _sessionDir, _summary);
+
+        //
+        // Get the values we need from the Star file.
+        //
+
+	lacs._xCoordName = star.getTagValue(frame, star.LACS_X_NAME);
+	lacs._yCoordName = star.getTagValue(frame, star.LACS_Y_NAME);
+
+	lacs._line1._point1._x = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE1_X1));
+	lacs._line1._point1._y = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE1_Y1));
+	lacs._line1._point2._x = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE1_X2));
+	lacs._line1._point2._y = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE1_Y2));
+
+	lacs._line2._point1._x = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE2_X1));
+	lacs._line2._point1._y = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE2_Y1));
+	lacs._line2._point2._x = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE2_X2));
+	lacs._line2._point2._y = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE2_Y2));
+
+	lacs._yOffset = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_Y_OFFSET));
+
+	lacs.calculateLines();
+
+        String[] resSeqCodesTmp = star.getFrameValues(frame,
+          star.LACS_RES_NUM, star.LACS_RES_NUM);
+	lacs._resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	resSeqCodesTmp = null;
+
+        lacs._resLabels = star.getFrameValues(frame,
+          star.LACS_RES_NUM, star.LACS_RES_LABEL);
+
+        String[] xCoordsTmp = star.getFrameValues(frame,
+	  star.LACS_RES_NUM, star.LACS_X_VALUE);
+	lacs._xCoords = S2DUtils.arrayStr2Double(xCoordsTmp);
+	xCoordsTmp = null;
+
+        String[] yCoordsTmp = star.getFrameValues(frame,
+	  star.LACS_RES_NUM, star.LACS_Y_VALUE);
+	lacs._yCoords = S2DUtils.arrayStr2Double(yCoordsTmp);
+	yCoordsTmp = null;
+
+        String[] desigsTmp = star.getFrameValues(frame,
+	  star.LACS_RES_NUM, star.LACS_DESIGNATOR);
+	lacs._desigs = S2DUtils.arrayStr2Int(desigsTmp);
+	desigsTmp = null;
+
+	//
+	// Now go ahead and calculate and write out the LACS values.
+	//
+	_summary.startFrame(star.getFrameDetails(frame));
+
+	try {
+	    lacs.writeLACS(frameIndex);
 	} finally {
 	    _summary.endFrame();
 	}
@@ -3228,7 +3637,7 @@ public class S2DMain {
 	    }
 	} else {
 	    S2DmmCifIfc cif = new S2DmmCifIfc(pdbId, _useLocalFiles);
-	    saveFrameAtomicCoords(cif, null, _currentFrameIndex, null);
+	    saveFrameAtomicCoords(cif, null, _currentFrameIndex, null, false);
 	}
 	_currentFrameIndex++;
 

@@ -20,6 +20,43 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.9.6.4  2005/11/23 21:07:25  wenger
+// A bunch of changes to the Pistachio visualization:
+// - Added titles to more views to clarify things;
+// - Changed JS background color so inter-view borders show up
+//   (also for ambiguity visualization);
+// - H -> "backbone proton" in data select view;
+// - Changed color select view and color legend view;
+// - Unknown -> unassigned in color legend;
+// - Moved unassigned to right in color legend;
+// - Y axis label in data view.
+//
+// Revision 1.1.2.9.6.3  2005/11/03 17:52:52  wenger
+// Added the capability to select large (1024x768 pixel) or
+// small (800x600 pixel) visualizations.
+//
+// Revision 1.1.2.9.6.2  2005/10/14 21:19:31  wenger
+// Most LACS processing now in place -- still needs lots of cleanup,
+// though.
+//
+// Revision 1.1.2.9.6.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.9.4.1  2005/05/12 19:07:41  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.9.2.1  2005/05/12 17:40:33  wenger
+// The format of the input file name (e.g., bmrXXXX.str, or whatever)
+// and the comment email for the web pages are now configurable.
+//
 // Revision 1.1.2.9  2005/03/22 20:34:38  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
 //
@@ -151,8 +188,25 @@ public class S2DSpecificHtml {
 	      dataType + ", " + name + ", " + frameIndex + ")");
 	}
 
-	String baseName = "html_templates" + File.separator +
+	// Write the "normal size" file.
+	String templateFile = "html_templates" + File.separator +
 	  "specific_html.base";
+        writeOne(templateFile, htmlDir, "", dataType, name, frameIndex,
+	  title);
+
+	// Write the "large size" file.
+	templateFile = "html_templates" + File.separator +
+	  "specific_html_large.base";
+        writeOne(templateFile, htmlDir, "_large", dataType, name,
+	  frameIndex, title);
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+    static void writeOne(String templateFile, String htmlDir,
+      String sizeSuffix, int dataType, String name, int frameIndex,
+      String title) throws S2DException
+    {
 	String dataSuffix;
 	String searchString1 = "4264d1";
 	String searchString2 = "4264";
@@ -231,17 +285,21 @@ TEMP*/
 	    dataSuffix = S2DNames.AMBIGUITY_SUFFIX;
 	    break;
 
+	case S2DUtils.TYPE_LACS:
+	    dataSuffix = S2DNames.LACS_SUFFIX;
+	    break;
+
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);
 	}
 
         String outFileName = htmlDir + File.separator + name + dataSuffix +
-	  frameIndex + ".html";
+	  frameIndex + sizeSuffix + ".html";
 
 	try {
             FileWriter writer = S2DFileWriter.create(outFileName);
 	    BufferedReader reader = new BufferedReader(
-	      new FileReader(baseName));
+	      new FileReader(templateFile));
 
             String replaceString1 = name + dataSuffix + frameIndex;
             String replaceString2 = name;
@@ -258,11 +316,15 @@ TEMP*/
 		  replaceString3);
 		line4 = S2DUtils.replace(line4, searchString4,
 		  replaceString4);
-		if (dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
+		if (dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
+		  dataType == S2DUtils.TYPE_PISTACHIO ||
+		  dataType == S2DUtils.TYPE_AMBIGUITY) {
 		    // Change JS background color so gaps between views
 		    // show up.
 		    line4 = S2DUtils.replace(line4, "0+0+0", "64+96+0");
 		}
+		line4 = S2DUtils.replace(line4, "COMMENT_EMAIL",
+		  S2DNames.COMMENT_EMAIL);
 	        writer.write(line4 + "\n");
 	    }
 

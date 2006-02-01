@@ -6,7 +6,8 @@ Num Date        Status  Description
 001 01/17/01	OPEN	4264 has two residue counts in different save frames;
 			we don't deal with that correctly. (rkw)
 
-002 01/17/01	OPEN	Need help for coupling constants. (rkw)
+002 01/17/01	FIXED	Need help for coupling constants. (rkw)
+			(Fixed some time...)
 
 003 09/21/01	OPEN	hxrates.base and order.base should be working
 			session files. (rkw)
@@ -153,6 +154,72 @@ Num Date        Status  Description
 
 036 4/22/05	OPEN	4103 and 4104 fail -- fix them and add them to automated
 			test script. (wenger)
+
+037 5/12/05	OPEN	ensureResidueList() fails for entries that have
+			2 or more entities and no chem shifts (try entry
+			4970 or 5153 to reproduce). (wenger)
+
+038 5/12/05	OPEN	Coordinate visualizations may not be correct for
+			entries with 2 or more entities (try entry
+			4177 to reproduce, also try 5246/1K3M). (wenger)
+			(At least part of the problem is getting the
+			correct residue list hooked into the coordinate
+			visualization.)
+
+039 5/13/05	OPEN	4835 fails because what's expected to be three-
+			letter residue list has one-letter codes. (wenger)
+
+040 5/13/05	FIXED	Processing totally fails for entries that have
+			2 or more entities and no chem shifts (try entry
+			4970 or 5153 to reproduce). (wenger)
+			(See also 037.)
+			(Fixed by wenger, 5/13/05.)
+
+041 5/13/05	OPEN	Checking PDB residue counts may not work for
+			multiple entities (see TEMP note in
+			S2DNmrStarIfc.getPdbIdsFromMonoPoly(). (wenger)
+
+042 5/13/05	FIXED	Unrecognized amino acid abbreviation prevents
+			generation of ambiguity visualization. (wenger)
+			(See test29.)
+			(Fixed by wenger, 3/3/04.)
+
+043 7/26/05	OPEN	If the same PDB ID is listed in both upper- and
+			lower-case, both versions appear separately in
+			the list of coordinate visualizations.  (jurgenfd/
+			wenger)
+
+044 9/14/05	OPEN	If we retry processing because of insufficient memory,
+			the error and warning files don't get properly updated
+			because the writers need to create them from scratch,
+			and they don't get deleted. (wenger)
+
+045 9/20/05	FIXED	In 3D visualizations (and probably Pistachio and
+			ambiguity), moving the cursor in the data view
+			should not change that view's Y axis range (which
+			it sometimes does).  (elu/wenger)
+			(Fixed by wenger, 10/7/05.)
+
+046 10/5/05	OPEN	Test33 and test34 don't work with an *installed*
+			peptide-cgi (because we don't have
+			session_dir/.unreleased and html_unreleased).
+			(wenger)
+
+047 10/7/05	FIXED	Do 'home' (5) on data value views in 3D (or ambiguity
+			or Pistachio) visualization, you cycle through three
+			different filter settings (and in one the piled views
+			don't all have the same filters!!!!). (wenger)
+			(Fixed by wenger, 10/7/05.)
+
+048 1/18/06	NB	If LACS level is 1, Peptide-CGI produces LACS links
+			in the summary page even if it wasn't able to
+			get the LACS data. (wenger)
+			(I was wrong about this.)
+
+049 1/18/06	FIXED	Consensus CSI calculations are incorrect -- based
+			on HA, C, CA deltashifts instead of CSIs (see
+			Eldon's email of 060113). (wenger)
+			(Fixed by wenger, 1/24/06.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

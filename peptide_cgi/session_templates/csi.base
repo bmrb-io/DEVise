@@ -6,7 +6,8 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {Chemical shift indices}
+DEVise setSessionDesc {Chemical shift indices
+$Id$}
 
 # Load color palette
 DEVise color SessionPalette {#000000000000 black

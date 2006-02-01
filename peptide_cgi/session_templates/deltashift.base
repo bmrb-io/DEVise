@@ -7,7 +7,8 @@
 
 # Session description
 DEVise setSessionDesc {Chemical shift deltas
-Note that the "ppm" axis labels have to be drawn by the devised, not the JS, because the JS can't draw rotated text.}
+Note that the "ppm" axis labels have to be drawn by the devised, not the JS, because the JS can't draw rotated text.
+$Id$}
 
 # Load color palette
 DEVise color SessionPalette {#000000000000 black

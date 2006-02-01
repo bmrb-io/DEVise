@@ -19,6 +19,39 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:11  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.9.6.4  2005/11/04 17:56:27  wenger
+// Added command-line arguments, config, properties, etc., to
+// specify LACS processing level, LACS filename template, and
+// LACS URL -- so now we have the option to have the software
+// automatically try to process the appropriate LACS file;
+// updated some tests accordingly.  Test_all now names failed
+// tests at the end.
+//
+// Revision 1.1.2.9.6.3  2005/11/02 20:33:18  wenger
+// LACS visualization now has correct axis labels.
+//
+// Revision 1.1.2.9.6.2  2005/10/14 21:19:29  wenger
+// Most LACS processing now in place -- still needs lots of cleanup,
+// though.
+//
+// Revision 1.1.2.9.6.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.9.4.1  2005/05/12 19:07:40  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.9.2.1  2005/05/12 17:40:33  wenger
+// The format of the input file name (e.g., bmrXXXX.str, or whatever)
+// and the comment email for the web pages are now configurable.
+//
 // Revision 1.1.2.9  2005/03/22 20:34:38  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
 //
@@ -213,6 +246,12 @@ public class S2DNames
     public static String BMRB_STAR_URL = null;
 
     //
+    // URL for getting NMR-STAR files from BMRB.  Note: this will be
+    // set according to the s2d.props file value.
+    //
+    public static String LACS_URL = null;
+
+    //
     // URL for getting mmCIF files from PDB.  Note: this will be
     // set according to the s2d.props file value.
     //
@@ -231,10 +270,27 @@ public class S2DNames
     public static String CGI_URL = null;
 
     //
-    // NMR-Star file name components.
+    // Template for the "main" input STAR file.  This should be a
+    // string of the form "x*x" where x is any number of legal file
+    // name characters; the "*" will be replaced with the BMRB ID.
+    // Note: this will be set according to the s2d.props file value.
     //
-    public static final String NMR_STAR_PREFIX = "bmr";
-    public static final String NMR_STAR_SUFFIX = ".str";
+    public static String STAR_NAME_TEMPLATE = null;
+
+    //
+    // Template for the LACS input STAR file.  This should be a
+    // string of the form "x*x" where x is any number of legal file
+    // name characters; the "*" will be replaced with the BMRB ID.
+    // Note: this will be set according to the s2d.props file value.
+    //
+    public static String LACS_NAME_TEMPLATE = null;
+
+    //
+    // Email address for comment email to be put into the visualization
+    // html pages.  Note: this will be set according to the s2d.props
+    // file value.
+    //
+    public static String COMMENT_EMAIL = null;
 
     //
     // Data type suffixes.
@@ -256,6 +312,10 @@ public class S2DNames
     public static final String HVSN_CHEM_SHIFT_SUFFIX = "hn";
     public static final String HX_PROT_FACTOR_SUFFIX = "f";
     public static final String HX_RATE_SUFFIX = "r";
+    public static final String LACS_SUFFIX = "lacs";
+    public static final String LACS_COORD_SUFFIX = LACS_SUFFIX + "c";
+    public static final String LACS_LINE_SUFFIX = LACS_SUFFIX + "l";
+    public static final String LACS_POINT_SUFFIX = LACS_SUFFIX + "p";
     public static final String PERCENT_ASSIGN_SUFFIX = "p";
     public static final String PISTACHIO_ATOMIC_COORD_SUFFIX = "psac";
     public static final String PISTACHIO_SUMMARY_DATA_SUFFIX = "psmd";

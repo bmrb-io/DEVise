@@ -152,6 +152,14 @@ Atom type colors
   </tr>
   <tr>
     <td>
+      Hydrogen
+    </td>
+    <td>
+      White
+    </td>
+  </tr>
+  <tr>
+    <td>
       Oxygen
     </td>
     <td>
@@ -182,28 +190,17 @@ Atom type colors
       Pink
     </td>
   </tr>
-  <tr>
-    <td>
-      Hydrogen
-    </td>
-    <td>
-      White
-    </td>
-  </tr>
 </table>
-
-
-
-
-
-
-
-
 
 <p>
 The default is to have the atoms colored by ambiguity code value, but
 this can be changed to coloring by atom type by dragging the cursor
 in the <strong>color select view</strong>.
+</p>
+
+<p>
+Note that H, HA, HA2, and HA3 atoms are treated as part of the backbone
+in this visualization.
 </p>
 
 <p>
@@ -215,7 +212,7 @@ by atom type is selected).
 <p>
 The <strong>data view</strong> shows the fraction of atoms in each
 residue having the selected ambiguity code, relative to the total
-number of C, H, and H atoms in the appropriate amino acid.  For
+number of C, H, and N atoms in the appropriate amino acid.  For
 example, if five atoms have the selected ambiguity code in a 
 residue that is a histidine, the value displayed in the graph for that
 residue will be 0.294.
@@ -265,6 +262,12 @@ The <strong>residue select view</strong> selects which residues are
 shown in the structure view -- all residues within the cursor are
 shown.  This cursor is a variable-size cursor.  The default is to
 show all residues.
+</p>
+
+<p>
+The <strong>info view</strong> shows the BMRB accession number and
+generation date of the visualization; show the view help (F1 key)
+to see the Peptide-CGI version and exact generation timestamp.
 </p>
 
 <!-- $Id$ -->

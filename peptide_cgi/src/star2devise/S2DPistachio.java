@@ -21,6 +21,32 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.4.3.6.3  2005/09/14 15:14:22  wenger
+// Config changes for Osaka, and for manatee and basslet at BMRB;
+// new Pistachio test file; fixed test23 to work on non-CS machines;
+// better Pistachio error message.
+//
+// Revision 1.1.4.3.6.2  2005/06/28 17:08:22  wenger
+// Ambiguity code and figure of merit visualizations now use 2D main
+// views; changed "Pistachio" to "assignment figure of merit" in
+// visualizations, etc.
+//
+// Revision 1.1.4.3.6.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.4.3.4.1  2005/05/18 18:08:14  wenger
+// Changed Pisatchio percentage calculation to be relative to the number
+// of atoms that actually exist in each amino acid, not just the number
+// we have figures of merit for; the Pistachio visualization now comes
+// up with "Color by figure of merit" selected; minor improvements to
+// ambiguity debug/error messages.
+//
 // Revision 1.1.4.3  2005/03/22 20:34:38  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
 //
@@ -92,6 +118,7 @@ public class S2DPistachio {
     private S2DSummaryHtml _summary;
 
     private int[] _resSeqCodes;
+    private String[] _residueLabels;
     private String[] _atomNames;
     private double[] _meritVals;
 
@@ -109,7 +136,7 @@ public class S2DPistachio {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DPistachio(String name, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, int[] resSeqCodes, 
+      S2DSummaryHtml summary, int[] resSeqCodes, String[] residueLabels,
       String[] atomNames, double[] meritVals)
       throws S2DException
     {
@@ -124,6 +151,7 @@ public class S2DPistachio {
 	_summary = summary;
 
 	_resSeqCodes = resSeqCodes;
+	_residueLabels = residueLabels;
 	_atomNames = atomNames;
 	_meritVals = meritVals;
 
@@ -146,8 +174,8 @@ public class S2DPistachio {
             pistachioWriter = S2DFileWriter.create(_dataDir + File.separator +
 	      _name + S2DNames.PISTACHIO_SUFFIX + frameIndex +
 	      S2DNames.DAT_SUFFIX);
-	    pistachioWriter.write("# Data: Pistachio values for " +
-	      _name + "\n");
+	    pistachioWriter.write("# Data: Assignment figure of merit " +
+	      "values for " + _name + "\n");
 	    pistachioWriter.write("# Schema: bmrb-Pistachio\n");
 	    pistachioWriter.write("# Attributes: Residue_seq_code; " +
 	      "backbone >= 95%; backbone < 95%; side chain >= 95%; " +
@@ -180,7 +208,8 @@ public class S2DPistachio {
 	    //
 	    // Write the session file
 	    //
-	    String info = "Visualization of " + _name + " Pistachio data";
+	    String info = "Visualization of " + _name +
+	      " assignment figure of merit data";
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_PISTACHIO,
 	      _name, frameIndex, info);
 
@@ -188,7 +217,8 @@ public class S2DPistachio {
 	    // Write the session-specific html file.
 	    //
 	    S2DSpecificHtml.write(_summary.getHtmlDir(),
-	      S2DUtils.TYPE_PISTACHIO, _name, frameIndex, "Pistachio Data");
+	      S2DUtils.TYPE_PISTACHIO, _name, frameIndex,
+	      "Assignment figure of merit data");
 
 	    //
 	    // Write the link in the summary html file.
@@ -246,6 +276,7 @@ public class S2DPistachio {
 
 	int currResSeqCode = -1; // invalid value
 	int prevResSeqCode = -1; // invalid value
+	String residueLabel = null;
 	for (int index = 0; index < _resSeqCodes.length; ++index) {
 
 	    currResSeqCode = _resSeqCodes[index];
@@ -253,14 +284,17 @@ public class S2DPistachio {
 	    if (currResSeqCode != prevResSeqCode) {
 		if (currResSeqCode < prevResSeqCode) {
 		    throw new S2DError("Residue numbers must be " +
-		      "monotonically increasing for Pistachio data");
+		      "monotonically increasing for Pistachio data " +
+		      "(" + currResSeqCode + " after " + prevResSeqCode +
+		      ")");
 		}
 
 		if (prevResSeqCode != -1) {
-		    td.save(prevResSeqCode);
+		    td.save(prevResSeqCode, residueLabel);
 		}
 
 		td.reset();
+		residueLabel = _residueLabels[index];
 
 		prevResSeqCode = currResSeqCode;
 	    }
@@ -268,7 +302,7 @@ public class S2DPistachio {
 	    td.addAnAtom(_atomNames[index], _meritVals[index]);
 	}
 
-	td.save(currResSeqCode);
+	td.save(currResSeqCode, residueLabel);
     }
 
     // ========================================================================
@@ -276,28 +310,28 @@ public class S2DPistachio {
     // This class holds the data for one residue as we work our way
     // through the data for that residue.
     class TempData {
-	public int _backboneCount = 0;
+	public int _backboneTotalCount = 0;
 	public int _backboneGE95Count = 0;
-	public int _sideChainCount = 0;
+	public int _sideChainTotalCount = 0;
 	public int _sideChainGE95Count = 0;
-	public int _hCount = 0;
+	public int _hTotalCount = 0;
 	public int _hGE95Count = 0;
 
 	public void reset()
 	{
-	    _backboneCount = 0;
+	    _backboneTotalCount = 0;
 	    _backboneGE95Count = 0;
-	    _sideChainCount = 0;
+	    _sideChainTotalCount = 0;
 	    _sideChainGE95Count = 0;
-	    _hCount = 0;
+	    _hTotalCount = 0;
 	    _hGE95Count = 0;
 	}
 
 	public void addAnAtom(String atomName, double meritVal)
 	{
 	    if (S2DNames.ATOM_H.equals(atomName)) {
-		++_hCount;
-		++_backboneCount;
+		++_hTotalCount;
+		++_backboneTotalCount;
 	        if (meritVal >= 0.95) {
 		    ++_hGE95Count;
 		    ++_backboneGE95Count;
@@ -306,47 +340,65 @@ public class S2DPistachio {
 	    } else if (S2DNames.ATOM_C.equals(atomName) ||
 	      S2DNames.ATOM_CA.equals(atomName) ||
 	      S2DNames.ATOM_N.equals(atomName)) {
-		++_backboneCount;
+		++_backboneTotalCount;
 	        if (meritVal >= 0.95) {
 		    ++_backboneGE95Count;
 		}
 
 	    } else {
-		++_sideChainCount;
+		++_sideChainTotalCount;
 	        if (meritVal >= 0.95) {
 		    ++_sideChainGE95Count;
 		}
 	    }
 	}
 
-	public void save(int resSeqCode)
+	public void save(int resSeqCode, String residueLabel)
 	{
+	    if (DEBUG >= 3) {
+	        System.out.println("S2DPistachio.TempData.save(" +
+	          resSeqCode + ", " + residueLabel + ")");
+	    }
+
             _residueHasData[resSeqCode] = true;
 
-	    if (_backboneCount > 0) {
-	        _backboneGE95[resSeqCode] =
-		  (float)_backboneGE95Count / (float)_backboneCount;
-	        _backboneLT95[resSeqCode] = 1.0f - _backboneGE95[resSeqCode];
-	    } else {
-	        _backboneGE95[resSeqCode] = 0.0f;
-	        _backboneLT95[resSeqCode] = 0.0f;
-	    }
+	    try {
+	        S2DAtomCounts counts = S2DAtomCounts.getInstance();
 
-	    if (_sideChainCount > 0) {
-	        _sideChainGE95[resSeqCode] =
-		  (float)_sideChainGE95Count / (float)_sideChainCount;
-	        _sideChainLT95[resSeqCode] = 1.0f - _sideChainGE95[resSeqCode];
-	    } else {
-	        _sideChainGE95[resSeqCode] = 0.0f;
-	        _sideChainLT95[resSeqCode] = 0.0f;
-	    }
+		int idealBackboneCount = counts.getPistBackCount(residueLabel);
+	        if (idealBackboneCount > 0 && _backboneTotalCount > 0) {
+	            _backboneGE95[resSeqCode] = (float)_backboneGE95Count /
+		        (float)idealBackboneCount;
+	            _backboneLT95[resSeqCode] = (float)(_backboneTotalCount -
+		      _backboneGE95Count) / (float)idealBackboneCount;
+	        } else {
+	            _backboneGE95[resSeqCode] = 0.0f;
+	            _backboneLT95[resSeqCode] = 0.0f;
+	        }
 
-	    if (_hCount > 0) {
-	        _hGE95[resSeqCode] = (float)_hGE95Count / (float)_hCount;
-	        _hLT95[resSeqCode] = 1.0f - _hGE95[resSeqCode];
-	    } else {
-	        _hGE95[resSeqCode] = 0.0f;
-	        _hLT95[resSeqCode] = 0.0f;
+		int idealSideChainCount = counts.getPistSideCount(residueLabel);
+	        if (idealSideChainCount > 0 && _sideChainTotalCount > 0) {
+	            _sideChainGE95[resSeqCode] = (float)_sideChainGE95Count /
+		      (float)idealSideChainCount;
+	            _sideChainLT95[resSeqCode] = (float)(_sideChainTotalCount -
+		      _sideChainGE95Count) / (float)idealSideChainCount;
+	        } else {
+	            _sideChainGE95[resSeqCode] = 0.0f;
+	            _sideChainLT95[resSeqCode] = 0.0f;
+	        }
+
+		int idealHCount = counts.getPistHCount(residueLabel);
+	        if (idealHCount > 0 && _hTotalCount > 0) {
+	            _hGE95[resSeqCode] = (float)_hGE95Count /
+		      (float)idealHCount;
+	            _hLT95[resSeqCode] = (float)(_hTotalCount - _hGE95Count) /
+		      (float)idealHCount;
+	        } else {
+	            _hGE95[resSeqCode] = 0.0f;
+	            _hLT95[resSeqCode] = 0.0f;
+	        }
+	    } catch (S2DException ex) {
+	        System.err.println("Exception saving Pistachio values" + ex);
 	    }
 	}
     }

@@ -21,6 +21,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:13  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.9.10.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.9.8.1  2005/05/12 19:07:41  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.9.6.1  2005/05/12 14:10:12  wenger
+// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
+// sure cache is used when it should be; added test26 to test non-
+// numeric BMRB ID.
+//
 // Revision 1.1.2.9  2005/01/31 23:02:55  wenger
 // Merged pistachio_vis_br_0 thru pistachio_vis_br_1a to V2_1b4_br.
 //
@@ -161,6 +180,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
     // Get the modification date/time of the appropriate PDB file.
     // Note: this doesn't seem to work so far -- always returns a
     // timestamp of 0.  RKW 2002-08-06.
+
     public static Date getModDate(String pdbId)
     {
 	Date date = null;

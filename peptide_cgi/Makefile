@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2003
+#  (c) Copyright 2001-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,31 +19,40 @@
 ############################################################
 
 # Defaults -- can be overridden in Makefile.config.
+STAR_NAME_TEMPLATE = "bmr*.str"
 ERROR_EMAIL = devise@cs.wisc.edu
+COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
 JAR_HOME = null
 DO_CSR_DEFAULT = 0
+LACS_LEVEL_DEFAULT = 0
+LACS_NAME_TEMPLATE = bmr*_LACS.out
+LACS_URL = null
 
 include Makefile.config
 
 S2D_PROPS_FILE = cgi-bin/s2d.props
 ERROR_EMAIL_FILE = cgi-bin/error_email
 SELECT_HTML_FILE = bmrb_select.html
+VUR_CONFIG_FILE = cgi-bin/vur_config
 
-setup: s2d_props bin select_html error_email tmp
+setup: s2d_props bin select_html error_email tmp vur_config
 
 testsetup:
 	mkdir test_html; cd test_html; ln -s ../html/* .
 	mkdir test_data; cd test_data; ln -s ../data/* .
 	mkdir test_session; cd test_session; ln -s ../dynamic_sessions/* .
+	mkdir test_html_unreleased
 	cd cgi-bin; ln -s ../test_html html_dir
 	cd cgi-bin; ln -s ../test_data data_dir
 	cd cgi-bin; ln -s ../test_session session_dir
+	cd cgi-bin; ln -s ../test_html_unreleased html_unreleased
 	cd cgi-bin; ln -s ../chem_info .
 	cd cgi-bin; ln -s ../session_templates .
 	cd cgi-bin; ln -s ../html_templates .
 	cd cgi-bin; ln -s ../src/s2d.jar .
 	mkdir test_data/vis_server
 	mkdir test_session/vis_server
+	mkdir test_session/.unreleased
 
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
 install: do_install
@@ -52,15 +61,22 @@ do_install:
 	  $(PEP_SESSION_HOME) $(PEP_DATA_HOME) $(PEP_HTML_HOME) \
 	  $(JAR_HOME) $(INSTALL_MACHINE)
 
+vur_install:
+	./install -vur $(DEV_DEMO_HOME) /dev/null $(VUR_FRONTEND_DIR) \
+	  $(VUR_CGI_HOME) $(VUR_SESSION_HOME) $(VUR_DATA_HOME) \
+	  $(VUR_HTML_HOME) null $(VUR_INSTALL_MACHINE)
+
 clean:
 	-rm $(S2D_PROPS_FILE)
 	-rm -rf cgi-bin/bin
 	-rm -rf cgi-bin/tmp
 	-rm $(SELECT_HTML_FILE)
 	-rm $(ERROR_EMAIL_FILE)
+	-rm $(VUR_CONFIG_FILE)
+	-rm vur_config
 
 testclean:
-	-rm -rf test_data test_session test_html
+	-rm -rf test_data test_session test_html test_html_unreleased
 	-rm cgi-bin/data_dir cgi-bin/session_dir cgi-bin/s2d.jar
 	-rm cgi-bin/html_dir
 	-rm cgi-bin/session_templates cgi-bin/chem_info cgi-bin/html_templates
@@ -72,12 +88,20 @@ s2d_props:
 	-rm -f $(S2D_PROPS_FILE)
 	echo "# Configuration-specific s2d properties" > $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.star_url=$(STAR_URL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.star_name_template=$(STAR_NAME_TEMPLATE)" >> \
+	  $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.pdb_file_url=$(PDB_FILE_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.3d_url=$(3D_EXAMPLE_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.summary_page_dir=$(SUMMARY_PAGE_DIR)" >> \
 	  $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.cgi_url=$(CGI_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.do_csr_default=$(DO_CSR_DEFAULT)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.comment_email=$(COMMENT_EMAIL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.lacs_level_default=$(LACS_LEVEL_DEFAULT)" >> \
+	  $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.lacs_name_template=$(LACS_NAME_TEMPLATE)" >> \
+	  $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.lacs_url=$(LACS_URL)" >> $(S2D_PROPS_FILE)
 
 error_email:
 	-rm -f $(ERROR_EMAIL_FILE)
@@ -93,6 +117,16 @@ cgi-bin/bin:
 tmp: cgi-bin/tmp
 cgi-bin/tmp:
 	mkdir cgi-bin/tmp
+
+vur_config:
+	-rm -f $(VUR_CONFIG_FILE)
+	echo "# Configuration for viewing unreleased entries" > $(VUR_CONFIG_FILE)
+	echo "set js_dir = $(VUR_JS_DIR)" >> $(VUR_CONFIG_FILE)
+	echo "set input_dir = $(VUR_INPUT_DIR)" >> $(VUR_CONFIG_FILE)
+	echo "set csr_lev = $(VUR_CSR_LEVEL)" >> $(VUR_CONFIG_FILE)
+	echo "set vur_login = $(VUR_LOGIN)" >> $(VUR_CONFIG_FILE)
+	echo "set vur_script = $(VUR_SCRIPT)" >> $(VUR_CONFIG_FILE)
+	ln -s $(VUR_CONFIG_FILE) .
 
 select_html: $(SELECT_HTML_FILE)
 $(SELECT_HTML_FILE): bmrb_select.tmpl

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2004
+#  (c) Copyright 2001-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -31,6 +31,7 @@ INPUT_WEB_DOMAIN = manatee.bmrb.wisc.edu
 OUTPUT_WEB_DOMAIN = manatee.bmrb.wisc.edu
 
 STAR_URL = http://$(INPUT_WEB_DOMAIN)/data_library/files/
+STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = ftp://beta.rcsb.org/pub/pdb/uniformity/data/mmCIF.gz/all/
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
@@ -64,10 +65,64 @@ PEP_HTML_HOME = $(PEP_HOME)/html_dir
 INSTALL_MACHINE = manatee
 
 #-----------------------------------------------------------
+# Configuration for viewing unreleased entries.
+
+#...........................................................
+# This first subsection is installation parameters.
+
+# Where to install the main scripts, jar file, etc.
+VUR_CGI_HOME = /export/home/web/vur/peptide-cgi/cgi-bin
+
+# Where to store the session files for viewing unreleased
+# entries (the session files will actually be stored in
+# a .unreleased directory underneath this, so that they are
+# confidential).
+VUR_SESSION_HOME = $(PEP_SESSION_HOME)
+
+# Where to store the data files for viewing unreleased
+# entries.
+VUR_DATA_HOME = $(PEP_DATA_HOME)
+
+# Where to store the html files for viewing unreleased
+# entries.  We don't use them at this point, but we need
+# a place for the Java code to put them, or it will fail.
+# WARNING:  to maintain the confidentiality of the unreleased
+# data, this directory must NOT be accessible via the web.
+VUR_HTML_HOME = /tmp/vur/html_unreleased
+
+VUR_FRONTEND_DIR = null
+
+# Machine installation should be done on (optional).
+VUR_INSTALL_MACHINE = manatee
+
+#...........................................................
+# This subsection is parameters we actually use when runing
+# the view_entry script, etc.
+
+# The directory in which the JavaScreen client is installed.
+VUR_JS_DIR = /p/devise/js.installed
+
+# The "base" directory from which to get the NMR-STAR file.
+VUR_INPUT_DIR = web@yellowtail:/share/subedit/Third.Ed
+
+# The level of chemical shift reference processing to do.
+VUR_CSR_LEVEL = 2
+
+# The user that the "front-end" script will log into the "main"
+# machine as.
+VUR_LOGIN = web@manatee
+
+# The "main" script to run.
+VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
+
+#-----------------------------------------------------------
 # Other.
 
 # User to send email to on errors.
 ERROR_EMAIL = devise@cs.wisc.edu
+
+# Email for sending comments in web pages.
+COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
 
 # Script for uncompressing PDB mmCIF files.
 MY_UNCOMPRESS = my_uncompress_unix

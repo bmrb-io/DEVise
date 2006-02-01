@@ -20,6 +20,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.14.6.3  2005/11/04 17:56:27  wenger
+// Added command-line arguments, config, properties, etc., to
+// specify LACS processing level, LACS filename template, and
+// LACS URL -- so now we have the option to have the software
+// automatically try to process the appropriate LACS file;
+// updated some tests accordingly.  Test_all now names failed
+// tests at the end.
+//
+// Revision 1.1.2.14.6.2  2005/11/02 20:33:18  wenger
+// LACS visualization now has correct axis labels.
+//
+// Revision 1.1.2.14.6.1  2005/10/14 21:19:31  wenger
+// Most LACS processing now in place -- still needs lots of cleanup,
+// though.
+//
 // Revision 1.1.2.14  2005/03/22 20:34:38  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
 //
@@ -220,6 +239,9 @@ public class S2DSession {
 	// The "main" data source in the base file.
 	String searchString1 = null;
 
+	// The "main" data source in the file we're writing.
+        String replaceString1 = null;
+
 	// The residue count data source in the base file.
 	String searchString2 = null;
 
@@ -384,6 +406,18 @@ TEMP*/
 	    replaceString3 = name + S2DNames.RES_LIST_SUFFIX + frameIndex;
 	    break;
 
+	case S2DUtils.TYPE_LACS:
+	    baseName = "lacs.base";
+	    dataSuffix = S2DNames.LACS_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "4081lacsl1";
+	    replaceString1 = name + S2DNames.LACS_LINE_SUFFIX + frameIndex;
+	    searchString2 = "4081lacsp1";
+	    replaceString2 = name + S2DNames.LACS_POINT_SUFFIX + frameIndex;
+	    searchString3 = "4081lacsc1";
+	    replaceString3 = name + S2DNames.LACS_COORD_SUFFIX + frameIndex;
+	    break;
+
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);
 	}
@@ -403,7 +437,9 @@ TEMP*/
 	      S2DMain.getTimestamp() + "}\n\n");
 
 	    // The "main" data source for the file we're writing.
-            String replaceString1 = name + dataSuffix + frameIndex;
+	    if (replaceString1 == null) {
+                replaceString1 = name + dataSuffix + frameIndex;
+	    }
 
 	    boolean printSummaryData = false;
 	    boolean printedSummaryData = false;

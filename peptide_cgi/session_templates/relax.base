@@ -6,7 +6,8 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {Relaxation values}
+DEVise setSessionDesc {Relaxation values
+$Id$}
 
 # Load color palette
 DEVise color SessionPalette {#000000000000 black

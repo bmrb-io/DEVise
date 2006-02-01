@@ -1,0 +1,142 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001-2005
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile with configuration info for peptide-cgi setup.
+
+#  Edit this makefile according to your system configuration.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+#-----------------------------------------------------------
+# Directories for executables we need.
+JAVA_BIN = /usr/j2se/bin
+PERL_BIN = /usr/local/bin
+
+#-----------------------------------------------------------
+# Where to find stuff on the web.
+INPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
+OUTPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
+
+STAR_URL = http://$(INPUT_WEB_DOMAIN)/data_library/files/
+STAR_NAME_TEMPLATE = "bmr*.str"
+PDB_FILE_URL = ftp://beta.rcsb.org/pub/pdb/uniformity/data/mmCIF.gz/all/
+
+3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
+SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/peptide-cgi/html
+CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi/make_view
+
+#-----------------------------------------------------------
+# Places to install stuff.
+
+# The base of the DEVise demo setup.
+DEV_DEMO_HOME = /p/devise/demo
+
+WWW_HOME = /export/home/bmrb/htdocs
+
+# The directory where the "front-end" file will be put.
+PEP_HOME = $(WWW_HOME)/devise/peptide-cgi
+
+# The directory where the CGI script and related stuff will be put.
+CGI_HOME = $(WWW_HOME)/cgi-bin/peptide-cgi
+
+# The "real" directory (not symlink) for peptide-cgi sessions.
+PEP_SESSION_HOME = $(PEP_HOME)/session_dir
+
+# The "real" directory (not symlink) for peptide-cgi data.
+PEP_DATA_HOME = $(PEP_HOME)/data_dir
+
+# The "real" directory (not symlink) for peptide-cgi html files.
+PEP_HTML_HOME = $(PEP_HOME)/html_dir
+
+# Machine installation should be done on (optional).
+INSTALL_MACHINE = bmrbsun
+
+#-----------------------------------------------------------
+# Configuration for viewing unreleased entries.
+
+#...........................................................
+# This first subsection is installation parameters.
+
+# Where to install the main scripts, jar file, etc.
+VUR_CGI_HOME = /export/home/web/vur/peptide-cgi/cgi-bin
+
+# Where to store the session files for viewing unreleased
+# entries (the session files will actually be stored in
+# a .unreleased directory underneath this, so that they are
+# confidential).
+VUR_SESSION_HOME = $(PEP_SESSION_HOME)
+
+# Where to store the data files for viewing unreleased
+# entries.
+VUR_DATA_HOME = $(PEP_DATA_HOME)
+
+# Where to store the html files for viewing unreleased
+# entries.  We don't use them at this point, but we need
+# a place for the Java code to put them, or it will fail.
+# WARNING:  to maintain the confidentiality of the unreleased
+# data, this directory must NOT be accessible via the web.
+VUR_HTML_HOME = /tmp/vur/html_unreleased
+
+VUR_FRONTEND_DIR = null
+
+# Machine installation should be done on (optional).
+VUR_INSTALL_MACHINE = bmrbsun
+
+#...........................................................
+# This subsection is parameters we actually use when runing
+# the view_entry script, etc.
+
+# The directory in which the JavaScreen client is installed.
+VUR_JS_DIR = /p/devise/js.installed
+
+# The "base" directory from which to get the NMR-STAR file.
+# VUR_INPUT_DIR = web@yellowtail:/share/subedit/Third.Ed
+VUR_INPUT_DIR = bmrb@172.16.161.141:/cvsdep
+
+# The level of chemical shift reference processing to do.
+VUR_CSR_LEVEL = 2
+
+# The user that the "front-end" script will log into the "main"
+# machine as.
+# VUR_LOGIN = web@manatee
+VUR_LOGIN = web@bmrbsun
+
+# The "main" script to run.
+VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
+
+#-----------------------------------------------------------
+# LACS-related configuration
+
+# The default level of LACS processing to do
+LACS_LEVEL_DEFAULT = 1
+
+# The URL of directory containing LACS files (must end with "/").
+LACS_URL = file:/export/home/bmrb/ftp/pub/data/LACS/
+
+#-----------------------------------------------------------
+# Other.
+
+# User to send email to on errors.
+ERROR_EMAIL = devise@cs.wisc.edu
+
+# Email for sending comments in web pages.
+COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
+
+# Script for uncompressing PDB mmCIF files.
+MY_UNCOMPRESS = my_uncompress_unix
+
+# Default for whether to do the chem shift reference calculation.
+DO_CSR_DEFAULT = 1

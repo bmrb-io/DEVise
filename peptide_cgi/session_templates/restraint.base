@@ -6,7 +6,8 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {Atomic coordinates}
+DEVise setSessionDesc {Atomic coordinates
+$Id$}
 
 # Load strings table
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/restraint.str

@@ -6,7 +6,8 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {All chemical shifts by amino acid}
+DEVise setSessionDesc {All chemical shifts by amino acid
+$Id$}
 
 # Load strings table
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/amino+atom_color.str

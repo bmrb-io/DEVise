@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2004
+#  (c) Copyright 2000-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -16,15 +16,15 @@
 
 #  Install the peptide-cgi setup.  Note: some of the installation is
 #  specific to a certain machine; this script is configured to do
-#  the installation on either pumori (cs) or tuna (bmrb).  Changes
+#  the installation on either teal (cs) or tuna (bmrb).  Changes
 #  may be needed to do the installation on other machines.
 
-#  Note: CS install must be done on pumori; BMRB on tuna.
+#  Note: CS install must be done on teal; BMRB on tuna.
 
 #  To use the installed software, go to:
 #  http://bmrb.wisc.edu/devise/peptide-cgi/bmrb_select.html
 #    or
-#  http://pumori.cs.wisc.edu/bmrb/bmrb_select.html.
+#  http://teal.cs.wisc.edu/bmrb/bmrb_select.html.
 
 ############################################################
 
@@ -35,11 +35,17 @@
 #-----------------------------------------------------------
 # Check and get the arguments.
 
-if ($#argv < 8 || $#argv > 9) then
-  echo "Usage: install <dev_demo_home> <www_home> <pep_home> <cgi_home>"
+if ($#argv < 8 || $#argv > 10) then
+  echo "Usage: install [-vur] <dev_demo_home> <www_home> <pep_home> <cgi_home>"
   echo "  <pep_session_home> <pep_data_home> <pep_html_home> <jar_home>"
   echo "  [install_machine]"
   exit 1;
+endif
+
+set is_vur = 0
+if ($1 == -vur) then
+  set is_vur = 1
+  shift
 endif
 
 set demohome = $1
@@ -95,17 +101,25 @@ if (! -d $demohome) then
   echo "$demohome directory doesn't exist; aborting."
   exit 1
 endif
-if (! -d $wwwhome) then
-  echo "$wwwhome directory doesn't exist; aborting."
-  exit 1
+if (! $is_vur) then
+  if (! -d $wwwhome) then
+    echo "$wwwhome directory doesn't exist; aborting."
+    exit 1
+  endif
 endif
 
 
 # Make sure the user really wants to do this.
 
-echo You are about to install the peptide-cgi setup.  This
-echo will install files in $demohome, $wwwhome,
-echo and $pephome.
+if ($is_vur) then
+  echo You are about to install the peptide-cgi setup for
+  echo viewing unreleased entries.  This will install files
+  echo in $demohome and $pephome.
+else
+  echo You are about to install the peptide-cgi setup.  This
+  echo will install files in $demohome, $wwwhome,
+  echo and $pephome.
+endif
 echo ""
 echo -n "Are you absolutely sure you want to do this? [n] "
 
@@ -120,14 +134,21 @@ endif
 
 # Create and set up the directory containing the "front-end" html file.
 
-echo "Creating the "front-end" directory ($pephome)"
-set targetdir = $pephome
-if (! -e $targetdir) then
-  mkdir -p $targetdir
+if ($pephome != null) then
+  echo "Creating the "front-end" directory ($pephome)"
+  set targetdir = $pephome
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rx $targetdir
+  if ($is_vur) then
+    cp -p view_entry vur_config $targetdir
+    chmod a+r $targetdir/view_entry $targetdir/vur_config
+  else
+    cp -p bmrb_select.html $targetdir
+    chmod a+r $targetdir/bmrb_select.html
+  endif
 endif
-chmod a+rx $targetdir
-cp -p bmrb_select.html $targetdir
-chmod a+r $targetdir/bmrb_select.html
 
 
 # Create and set up the dynamic sessions directory.
@@ -139,11 +160,19 @@ if (! -e $targetdir) then
 endif
 chmod a+rwx $targetdir
 
-set targetdir = $sessionhome/vis_server
-if (! -e $targetdir) then
-  mkdir -p $targetdir
+if (! $is_vur) then
+  set targetdir = $sessionhome/vis_server
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rwx $targetdir
+else
+  set targetdir = $sessionhome/.unreleased
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rwx $targetdir
 endif
-chmod a+rwx $targetdir
 
 set targetdir = $demohome/session.js/bmrb
 if (! -e $targetdir) then
@@ -171,11 +200,13 @@ if (! -e $targetdir) then
 endif
 chmod a+rwx $targetdir
 
-set targetdir = $datahome/vis_server
-if (! -e $targetdir) then
-  mkdir -p $targetdir
+if (! $is_vur) then
+  set targetdir = $datahome/vis_server
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rwx $targetdir
 endif
-chmod a+rwx $targetdir
 
 
 # Create and set up the html directory.
@@ -197,14 +228,16 @@ chmod a+r $targetdir/*.txt
 
 # Create the link that we use to have the browser find the summary page.
 
-echo "Creating html link ($pephome/html)"
-set targetdir = $pephome/html
-if (-e $targetdir) then
-  # Need to change any previous installation.
-  rm $targetdir
-endif
-if (! -e $targetdir) then
-  ln -s $htmlhome $targetdir
+if (! $is_vur) then
+  echo "Creating html link ($pephome/html)"
+  set targetdir = $pephome/html
+  if (-e $targetdir) then
+    # Need to change any previous installation.
+    rm $targetdir
+  endif
+  if (! -e $targetdir) then
+    ln -s $htmlhome $targetdir
+  endif
 endif
 
 
@@ -218,13 +251,13 @@ endif
 chmod a+rx $targetdir
 
 set executables = (make_view get_version get_version_cgi s2d vsc set_modes \
-	test_all)
+	test_all vur view_unreleased)
 foreach exec ($executables)
   cp -p cgi-bin/$exec $targetdir
   chmod a+rx $targetdir/$exec
 end
 
-set files = (s2d.props error_email s2d.jar)
+set files = (s2d.props error_email s2d.jar vur_config)
 
 foreach file ($files)
   cp -p cgi-bin/$file $targetdir
@@ -313,7 +346,11 @@ endif
 # Link html directory to CGI directory.
 
 echo "Linking html directory to CGI directory"
-set targetdir = $cgihome/html_dir
+if ($is_vur) then
+  set targetdir = $cgihome/html_unreleased
+else
+  set targetdir = $cgihome/html_dir
+endif
 if (! -e $targetdir) then
   ln -s $htmlhome $targetdir
 endif

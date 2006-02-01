@@ -1,0 +1,12 @@
+# $Id$
+# Attributes: view; x; y; z; width; height; pile
+
+ViewHeader	-0.03	0.53	1.0	1.06	0.06	none
+
+# ViewPointsDD is a workaround for DEVise bug 917.
+ViewPointsDD	0.0	0.0	0.0	1.0	1.0	main
+ViewLines	0.0	0.0	0.0	1.0	1.0	main
+ViewPoints	0.0	0.0	0.0	1.0	1.0	main
+
+ViewXLabel	0.0	-0.53	0.0	1.0	0.06	none
+ViewYLabel	-0.52	0.0	0.0	0.06	1.0	none

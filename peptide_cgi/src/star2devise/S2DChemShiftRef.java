@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2004
+// (c) Copyright 2003-2005
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:10  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.30.10.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.30.8.1  2005/05/12 19:07:40  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.30.6.1  2005/05/12 14:10:12  wenger
+// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
+// sure cache is used when it should be; added test26 to test non-
+// numeric BMRB ID.
+//
 // Revision 1.1.2.30  2004/12/21 22:59:11  wenger
 // Fixed bug where I was using data_dir instead of csr_data_dir at
 // one point in the chem shift ref stuff; changed dummy_csr_server
@@ -193,7 +212,7 @@ public class S2DChemShiftRef
     private String _dataDir;
     private String _csrDataDir;
     private String _sessionDir;
-    private int _bmrbId;
+    private String _bmrbId;
     private Vector _localFiles;
     private String _pdbId;
     private S2DSummaryHtml _summary;
@@ -209,7 +228,7 @@ public class S2DChemShiftRef
     // PUBLIC METHODS
 
     public S2DChemShiftRef(String name, String longName, String dataDir,
-	  String csrDataDir, String sessionDir, int bmrbId, Vector localFiles,
+	  String csrDataDir, String sessionDir, String bmrbId, Vector localFiles,
 	  String pdbId, S2DSummaryHtml summary, int frameIndex, int timeout)
     {
         if (DEBUG >= 1) {
@@ -269,8 +288,8 @@ public class S2DChemShiftRef
 	    String inputFile = null; // input file name, no directory info
 	    String inputPath = null; // full path of input file
 	    String localArg = null;
-	    if (_bmrbId != -1) {
-	    	csrInput = (new Integer(_bmrbId)).toString();
+	    if (!_bmrbId.equals("")) {
+	    	csrInput = _bmrbId;
 		localArg = "";
 	    } else if (_localFiles.size() > 0) {
 		inputPath = (String)_localFiles.elementAt(0);
@@ -294,7 +313,7 @@ public class S2DChemShiftRef
 	    //
 	    // If local mode, copy input file into _data_dir.
 	    //
-	    if (_bmrbId == -1) {
+	    if (_bmrbId.equals("")) {
 	    	S2DUtils.copyFile(inputPath, _dataDir + File.separator +
 		  inputFile);
 	    }
@@ -344,7 +363,7 @@ public class S2DChemShiftRef
 	    //
 	    Writer srcWriter = S2DFileWriter.create(_s2dFileName + "src.dat");
 	    String bmrbMsg;
-	    if (_bmrbId != -1) {
+	    if (!_bmrbId.equals("")) {
                 bmrbMsg = "Observed chem shifts from BMRB accession " + _bmrbId;
 	    } else {
                 bmrbMsg = "Observed chem shifts from " + _longName;

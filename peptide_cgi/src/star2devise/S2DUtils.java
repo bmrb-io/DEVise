@@ -19,11 +19,38 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:13  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.12.2.3  2005/10/14 21:19:31  wenger
+// Most LACS processing now in place -- still needs lots of cleanup,
+// though.
+//
+// Revision 1.1.2.12.2.2  2005/07/27 15:58:30  wenger
+// Fixed S2DNmrStarIfc.getPdbIdsFromMolSys() to work for NMR-STAR 3.0,
+// added test34 which tests that; better error handling in
+// S2DUtils.arrayStr2Double().
+//
+// Revision 1.1.2.12.2.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
 // Revision 1.1.2.12  2005/04/22 21:41:10  wenger
 // Okay, chemical shift data now pretty much works with NMR-STAR
 // 3.0 (although a lot of cleanup is still needed).  The other
 // types of data still need to be adapted to work with the
 // "multiple entities per loop" model of 3.0.
+//
+// Revision 1.1.2.11.4.1  2005/05/12 19:07:41  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.11.2.1  2005/05/12 17:40:33  wenger
+// The format of the input file name (e.g., bmrXXXX.str, or whatever)
+// and the comment email for the web pages are now configurable.
 //
 // Revision 1.1.2.11  2005/03/22 20:34:38  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
@@ -158,34 +185,10 @@ public class S2DUtils
       TYPE_HETNOE = 9, TYPE_ALL_CHEM_SHIFTS = 10, TYPE_HVSN_CHEM_SHIFTS = 11,
       TYPE_ATOMIC_COORDS = 12, TYPE_CHEM_SHIFT_REF1 = 13,
       TYPE_CHEM_SHIFT_REF2 = 14, TYPE_CHEM_SHIFT_REF3 = 15,
-      TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17;
-
-    public static final String starPrefix = "bmr";
-    public static final String starSuffix = ".str";
+      TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18;
 
     //===================================================================
     // PUBLIC METHODS
-
-    //-------------------------------------------------------------------
-    // Convert a Star file name to the accession number.
-    public static String starName2Num(String fileName)
-      throws S2DException
-    {
-	String result = null;
-
-	int prefInd = fileName.indexOf(starPrefix);
-	int suffInd = fileName.indexOf(starSuffix);
-	int numInd = prefInd + starPrefix.length();
-
-	if (prefInd != 0 || suffInd == -1 || (numInd >= suffInd)) {
-	    throw new S2DError("File name (" + fileName +
-	      ") may not be a valid BMRB Star file name");
-	} else {
-	    result = fileName.substring(numInd, suffInd);
-        }
-
-	return result;
-    }
 
     //-------------------------------------------------------------------
     public static double[] arrayStr2Double(String[] values)
@@ -197,8 +200,10 @@ public class S2DUtils
 	    try {
 	        results[index] = new Double(values[index]).doubleValue();
 	    } catch(NumberFormatException ex) {
-	        System.err.println("Exception parsing double: " +
-		  ex.toString());
+		// Note: the S2DWarning object below is *not* supposed to be
+		// thrown...
+		System.err.println(new S2DWarning(
+		  "Exception parsing double: " + ex.toString()));
 	        results[index] = Double.NaN;
 	    }
 	}

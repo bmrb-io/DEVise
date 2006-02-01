@@ -3,13 +3,16 @@
 # Pretty much "normal" processing except that we're doing both the BMRB
 # file and the PDB file in a single step (both from the web).
 # This tests bug 028.
+# Note: we're also testing that with do_lacs 1 we don't fail overall
+# even when we can't find the LACS file.
 
 set result = 0
 
 rm -f */4867*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -nomail -bmrbid 4867 -do_pdb 2 -force -check_res_list
+./s2d -nomail -bmrbid 4867 -do_pdb 2 -force -check_res_list \
+  -do_lacs 1 -lacs_url file:test_data/
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

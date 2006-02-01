@@ -25,6 +25,39 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:13  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.22.6.4  2005/11/02 21:13:24  wenger
+// Changed ovals to text Os in LACs visualization so they stay the
+// same size in *pixels*; fixed up titles for LACS stuff in summary
+// html page, specific html pages, and sessions.
+//
+// Revision 1.1.2.22.6.3  2005/10/14 21:19:31  wenger
+// Most LACS processing now in place -- still needs lots of cleanup,
+// though.
+//
+// Revision 1.1.2.22.6.2  2005/06/28 17:08:22  wenger
+// Ambiguity code and figure of merit visualizations now use 2D main
+// views; changed "Pistachio" to "assignment figure of merit" in
+// visualizations, etc.
+//
+// Revision 1.1.2.22.6.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.22.4.1  2005/05/12 19:07:41  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.22.2.1  2005/05/12 14:10:12  wenger
+// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
+// sure cache is used when it should be; added test26 to test non-
+// numeric BMRB ID.
+//
 // Revision 1.1.2.22  2005/04/05 19:06:53  wenger
 // More ambiguity vis changes: "color by ambiguity code" is initially
 // selected; changes to some of the ambiguity-related strings.
@@ -273,7 +306,7 @@ public class S2DSummaryHtml {
     public static final String BMRB_ID_LABEL = "Related_BMRB_ID";
     public static final String PDB_ID_LABEL = "Related_PDB_ID";
 
-    private int _accNum;
+    private String _bmrbId;
     private String _htmlDir = null;
     private String _name;
     private String _longName;
@@ -302,7 +335,7 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
-    public S2DSummaryHtml(String name, String longName, int accessionNum,
+    public S2DSummaryHtml(String name, String longName, String accessionNum,
       String htmlDir, String starFileName, String systemName,
       String frameTitle) throws S2DException
     {
@@ -313,7 +346,7 @@ public class S2DSummaryHtml {
 
 	_name = name;
 	_longName = longName;
-        _accNum = accessionNum;
+        _bmrbId = accessionNum;
 	_htmlDir = htmlDir;
 
 	try {
@@ -375,8 +408,8 @@ public class S2DSummaryHtml {
 		if (bmrbIds != null) {
 	            _writer.write("\n");
 		    for (int index = 0; index < bmrbIds.size(); index++) {
-		        Integer id = (Integer)bmrbIds.elementAt(index);
-			if (id.intValue() != _accNum) {
+		        String id = (String)bmrbIds.elementAt(index);
+			if (!id.equals(_bmrbId)) {
 	                    _writer.write("<!-- " + BMRB_ID_LABEL + ": {" +
 			      id + "} -->\n");
 			}
@@ -702,7 +735,7 @@ public class S2DSummaryHtml {
 
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.PISTACHIO_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Pistachio data</a>\n");
+	  "\">Assignment figure of merit data</a>\n");
 
         _wroteLink = true;
     }
@@ -718,6 +751,22 @@ public class S2DSummaryHtml {
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.AMBIGUITY_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Assigned chemical shift ambiguity code data</a>\n");
+
+        _wroteLink = true;
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the LACS link.
+    public void writeLACS(String title, int frameIndex)
+      throws IOException
+    {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DSummaryHtml.writeLACS()");
+	}
+
+        _writer.write("<li><a href=\"" + _name +
+	  S2DNames.LACS_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">" + title + "</a>\n");
 
         _wroteLink = true;
     }

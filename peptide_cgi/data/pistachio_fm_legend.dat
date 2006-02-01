@@ -1,7 +1,6 @@
 # $Id$
 # Attributes: color string, explanation
 
-FMU	Unknown
 FM1	>=99%
 FM2	>=96%
 FM3	>=90%
@@ -9,3 +8,4 @@ FM4	>=70%
 FM5	>=50%
 FM6	>=10%
 FM7	<10%
+FMU	Unassigned

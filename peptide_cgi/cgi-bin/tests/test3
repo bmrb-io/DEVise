@@ -8,12 +8,12 @@ set result = 0
 rm -f */4081*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -nomail -bmrbid 4081 -do_pdb 2 -force -check_res_list
+./s2d -nomail -bmrbid 4081 -do_pdb 2 -force -check_res_list \
+  -do_lacs 1 -lacs_url file:test_data/
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
 endif
-
 
 echo "Checking output files"
 
@@ -27,7 +27,27 @@ set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
 	session_dir/4081hn1.ds session_dir/4081p1.ds \
 	data_dir/4081am1.dat \
 	html_dir/4081am1.html \
-	session_dir/4081am1.ds) 
+	session_dir/4081am1.ds \
+	data_dir/4081lacsc1.dat \
+	data_dir/4081lacsc2.dat \
+	data_dir/4081lacsc3.dat \
+	data_dir/4081lacsc4.dat \
+	data_dir/4081lacsl1.dat \
+	data_dir/4081lacsl2.dat \
+	data_dir/4081lacsl3.dat \
+	data_dir/4081lacsl4.dat \
+	data_dir/4081lacsp1.dat \
+	data_dir/4081lacsp2.dat \
+	data_dir/4081lacsp3.dat \
+	data_dir/4081lacsp4.dat \
+	html_dir/4081lacs1.html \
+	html_dir/4081lacs2.html \
+	html_dir/4081lacs3.html \
+	html_dir/4081lacs4.html \
+	session_dir/4081lacs1.ds \
+	session_dir/4081lacs2.ds \
+	session_dir/4081lacs3.ds \
+	session_dir/4081lacs4.ds)
 
 foreach file ($files)
   if (! -f $file) then
@@ -36,6 +56,20 @@ foreach file ($files)
   endif
 end
 
+# Now make sure we use the cache.
+rm data_dir/4081d1.dat
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -bmrbid 4081 -do_pdb 2 -check_res_list
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+if (-f data_dir/4081d1.dat) then
+  echo "Cache was not used when it should have been!"
+  set result = 1
+endif
 
 echo -n "Test3 result: "
 if ($result == 0) then

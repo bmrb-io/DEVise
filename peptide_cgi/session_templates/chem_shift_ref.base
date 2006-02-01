@@ -6,7 +6,8 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {TEMPTEMP -- average data is only for helix right now -- needs changes to the chemShift program?  NOTE: vis info text must be drawn by DEVise, not the JS, until DEVise/JS 1.7.19 is released.}
+DEVise setSessionDesc {TEMPTEMP -- average data is only for helix right now -- needs changes to the chemShift program?  NOTE: vis info text must be drawn by DEVise, not the JS, until DEVise/JS 1.7.19 is released.
+$Id$}
 
 # Load strings table
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/csr1.str

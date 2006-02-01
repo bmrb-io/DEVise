@@ -21,6 +21,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:09  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.4.3.6.1  2005/05/19 16:07:42  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.4.3.4.1  2005/05/18 18:08:14  wenger
+// Changed Pisatchio percentage calculation to be relative to the number
+// of atoms that actually exist in each amino acid, not just the number
+// we have figures of merit for; the Pistachio visualization now comes
+// up with "Color by figure of merit" selected; minor improvements to
+// ambiguity debug/error messages.
+//
 // Revision 1.1.4.3  2005/04/05 19:06:53  wenger
 // More ambiguity vis changes: "color by ambiguity code" is initially
 // selected; changes to some of the ambiguity-related strings.
@@ -311,7 +327,7 @@ public class S2DAmbiguity {
 	public void save(int resSeqCode, String residueLabel)
 	{
             if (DEBUG >= 3) {
-	        System.out.println("S2DAmbiguity.tempData.save(" +
+	        System.out.println("S2DAmbiguity.TempData.save(" +
 		  resSeqCode + ", " + residueLabel + ")");
 	    }
 	    try {
@@ -328,7 +344,7 @@ public class S2DAmbiguity {
 	    	_percent9[resSeqCode] = (float)_ambig9Count / atomCount;
 
 	    } catch (S2DException ex) {
-		System.err.println(ex);
+		System.err.println("Exception saving ambiguity values" + ex);
 	    }
 	}
     }

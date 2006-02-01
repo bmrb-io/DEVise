@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:11  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.8.2.1  2005/07/27 15:58:29  wenger
+// Fixed S2DNmrStarIfc.getPdbIdsFromMolSys() to work for NMR-STAR 3.0,
+// added test34 which tests that; better error handling in
+// S2DUtils.arrayStr2Double().
+//
 // Revision 1.1.2.8  2005/04/22 21:41:10  wenger
 // Okay, chemical shift data now pretty much works with NMR-STAR
 // 3.0 (although a lot of cleanup is still needed).  The other
@@ -307,6 +316,8 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
+	ASSEMBLY_DB_ACC_CODE = "_Database_accession_code";
+	ASSEMBLY_DB_NAME = "_Database_name";
         ATOM_COORD_ATOM_NAME = "_Atom_name";
         ATOM_COORD_ATOM_TYPE = "_Atom_type";
         ATOM_COORD_RES_LABEL = "_Residue_label";
@@ -336,10 +347,10 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         COUPLING_RES_SEQ_CODE_2 = "_Atom_two_residue_seq_code";
         COUPLING_SF_CAT = "_Saveframe_category";
 
-	DB_ACC_CODE = "_Database_accession_code";
-	DB_NAME = "_Database_name";
 	DEFAULT_SAVEFRAME_CATEGORY = "_Saveframe_category";
 
+	ENTITY_DB_ACC_CODE = "_Database_accession_code";
+	ENTITY_DB_NAME = "_Database_name";
 	ENTITY_POLYMER_TYPE = "_Mol_polymer_class";
 	ENTITY_RESIDUE_COUNT = "_Residue_count";
 	ENTITY_SEQ_1LETTER = "_Mol_residue_sequence";
@@ -361,6 +372,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	MOL_LABEL = "_Mol_label";
 	MOL_SYSTEM = "molecular_system";
 	MOL_SYSTEM_NAME = "_Mol_system_name";
+	MOL_SYSTEM_SF_CAT = "_Saveframe_category";
 	MOL_SYS_COMP_NAME = "_Mol_system_component_name";
 	MONOMERIC_POLYMER_SF_CAT = "_Saveframe_category";
 	MONOMERIC_POLYMER = "monomeric_polymer";

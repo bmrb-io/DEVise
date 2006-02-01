@@ -6,7 +6,8 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {Simulated 1H-15N backbone HSQC spectrum}
+DEVise setSessionDesc {Simulated 1H-15N backbone HSQC spectrum
+$Id$}
 
 # Load strings table
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/amino.str

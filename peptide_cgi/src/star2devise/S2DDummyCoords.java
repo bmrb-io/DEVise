@@ -24,6 +24,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:10  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.4.1.6.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.4.1.4.1  2005/05/13 19:57:49  wenger
+// Fixed bug 042 (unrecognized amino acid abbreviation prevents
+// generation of ambiguity visualization); added related test.
+//
 // Revision 1.1.4.1  2005/03/22 20:34:37  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
 //
@@ -136,35 +149,40 @@ public class S2DDummyCoords
 	        String aminoAcid = residues._resLabels[resIndex];
 	        Vector residueCoords = (Vector)_coordList.get(aminoAcid);
 	        if (residueCoords == null) {
-	            throw new S2DError("No dummy template coordinates " +
-		      "for amino acid " + aminoAcid);
-	        }
-	        for (int atomIndex = 0; atomIndex < residueCoords.size();
-	          atomIndex++) {
-		    AtomInfo info = (AtomInfo)residueCoords.elementAt(atomIndex);
-		    // Note: this relies on us having only one-letter atom
-		    // types; I think that's true for everything in the
-		    // dummy coordinates template.  wenger 2005-01-20.
-		    String atomType = info._atomName.substring(0, 1);
+		    // Note: this is *not* thrown, just created to log
+		    // the warning.
+	            new S2DWarning("No dummy template coordinates " +
+		      "for amino acid " + aminoAcid + "; skipping it");
+	        } else {
+	            for (int atomIndex = 0; atomIndex < residueCoords.size();
+	              atomIndex++) {
+		        AtomInfo info =
+			  (AtomInfo)residueCoords.elementAt(atomIndex);
 
-		    int residueNum = resIndex + 1;
-		    float atomX = xLoc + (info._x * direction);
-		    float atomY = yLoc + info._y;
-		    float atomZ = 0.0f;
-		    int modelNum = 1;
+		        // Note: this relies on us having only one-letter atom
+		        // types; I think that's true for everything in the
+		        // dummy coordinates template.  wenger 2005-01-20.
+		        String atomType = info._atomName.substring(0, 1);
 
-		    if (lastInRow && info._atomName.equals("C")) {
-		        atomX += 0.5 * direction;
-		    }
-		    if (firstInRow && info._atomName.equals("N")) {
-		    	atomX -= 0.5 * direction;
-		    }
+		        int residueNum = resIndex + 1;
+		        float atomX = xLoc + (info._x * direction);
+		        float atomY = yLoc + info._y;
+		        float atomZ = 0.0f;
+		        int modelNum = 1;
 
-		    writer.write(atomType + "\t" + info._atomName + "\t" +
-		      aminoAcid + "\t" + residueNum + "\t" +
-		      atomX + "\t" + atomY + "\t" + atomZ + "\t" +
-		      modelNum + "\n");
-	        }
+		        if (lastInRow && info._atomName.equals("C")) {
+		            atomX += 0.5 * direction;
+		        }
+		        if (firstInRow && info._atomName.equals("N")) {
+		    	    atomX -= 0.5 * direction;
+		        }
+
+		        writer.write(atomType + "\t" + info._atomName + "\t" +
+		          aminoAcid + "\t" + residueNum + "\t" +
+		          atomX + "\t" + atomY + "\t" + atomZ + "\t" +
+		          modelNum + "\n");
+	            }
+		}
 
 		if (lastInRow) {
 		    direction = -direction;

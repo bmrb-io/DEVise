@@ -11,7 +11,8 @@ rm -f */test2_out*
 rm -f */*/test2_out*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./vsc -file bmr4267.str -name test2_out -force -check_res_list
+./vsc -file bmr4267.str -name test2_out -force -check_res_list \
+  -lacs_file test_data/bmr4267_LACS.out
 if ($status != 0) then
   echo "First invocation of vsc failed!"
   set result = 1
@@ -98,7 +99,27 @@ set files = (data_dir/vis_server/test2_outac1.dat \
 	session_dir/vis_server/test2_outt23.ds \
 	html_dir/test2_outam1.html \
 	data_dir/vis_server/test2_outam1.dat \
-	session_dir/vis_server/test2_outam1.ds)
+	session_dir/vis_server/test2_outam1.ds \
+	data_dir/vis_server/test2_outlacsc1.dat \
+	data_dir/vis_server/test2_outlacsc2.dat \
+	data_dir/vis_server/test2_outlacsc3.dat \
+	data_dir/vis_server/test2_outlacsc4.dat \
+	data_dir/vis_server/test2_outlacsl1.dat \
+	data_dir/vis_server/test2_outlacsl2.dat \
+	data_dir/vis_server/test2_outlacsl3.dat \
+	data_dir/vis_server/test2_outlacsl4.dat \
+	data_dir/vis_server/test2_outlacsp1.dat \
+	data_dir/vis_server/test2_outlacsp2.dat \
+	data_dir/vis_server/test2_outlacsp3.dat \
+	data_dir/vis_server/test2_outlacsp4.dat \
+	html_dir/test2_outlacs1.html \
+	html_dir/test2_outlacs2.html \
+	html_dir/test2_outlacs3.html \
+	html_dir/test2_outlacs4.html \
+	session_dir/vis_server/test2_outlacs1.ds \
+	session_dir/vis_server/test2_outlacs2.ds \
+	session_dir/vis_server/test2_outlacs3.ds \
+	session_dir/vis_server/test2_outlacs4.ds)
 	
 foreach file ($files)
   if (! -f $file) then

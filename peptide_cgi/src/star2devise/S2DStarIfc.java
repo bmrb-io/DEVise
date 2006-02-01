@@ -25,11 +25,50 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.10.2.5  2005/11/02 23:21:31  wenger
+// Changed LACS-related STAR file tags to be properly defined;
+// horizontal line in LACS visualizations is at *minus* y offset.
+//
+// Revision 1.1.2.10.2.4  2005/10/14 21:19:31  wenger
+// Most LACS processing now in place -- still needs lots of cleanup,
+// though.
+//
+// Revision 1.1.2.10.2.3  2005/07/27 15:58:30  wenger
+// Fixed S2DNmrStarIfc.getPdbIdsFromMolSys() to work for NMR-STAR 3.0,
+// added test34 which tests that; better error handling in
+// S2DUtils.arrayStr2Double().
+//
+// Revision 1.1.2.10.2.2  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.10.2.1  2005/05/18 19:44:52  wenger
+// Some cleanup of the NMR-STAR 3.0 multi-entity code.
+//
 // Revision 1.1.2.10  2005/04/22 21:41:10  wenger
 // Okay, chemical shift data now pretty much works with NMR-STAR
 // 3.0 (although a lot of cleanup is still needed).  The other
 // types of data still need to be adapted to work with the
 // "multiple entities per loop" model of 3.0.
+//
+// Revision 1.1.2.9.4.2  2005/05/13 18:27:21  wenger
+// Fixed bug 040 (processing totally fails for entries that have 2 or
+// more entities and no chem shifts); added a bunch of related tests.
+//
+// Revision 1.1.2.9.4.1  2005/05/12 19:07:41  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.9.2.1  2005/05/12 14:10:12  wenger
+// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
+// sure cache is used when it should be; added test26 to test non-
+// numeric BMRB ID.
 //
 // Revision 1.1.2.9  2005/03/22 20:34:38  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
@@ -136,6 +175,7 @@ package star2devise;
 import EDU.bmrb.starlibj.*;
 import java.io.*;
 import java.util.*;
+import java.net.*;
 
 public class S2DStarIfc {
     //===================================================================
@@ -147,6 +187,8 @@ public class S2DStarIfc {
     //
     public String ASSIGNED_CHEM_SHIFTS = "";
 
+    public String ASSEMBLY_DB_ACC_CODE = "";
+    public String ASSEMBLY_DB_NAME = "";
     public String ATOM_COORD_ATOM_NAME = "";
     public String ATOM_COORD_ATOM_TYPE = "";
     public String ATOM_COORD_MODEL_NUM = "";
@@ -182,12 +224,12 @@ public class S2DStarIfc {
     public String COUPLING_SF_CAT = "";
 
     public String DEFAULT_SAVEFRAME_CATEGORY = "";
-    public String DB_ACC_CODE = "";
-    public String DB_NAME = "";
     public String DETAILS = "";
     public String ENTRY_INFO = "";
     public String ENTRY_TITLE = "";
 
+    public String ENTITY_DB_ACC_CODE = "";
+    public String ENTITY_DB_NAME = "";
     public String ENTITY_POLYMER_TYPE = "";
     public String ENTITY_RESIDUE_COUNT = "";
     public String ENTITY_SEQ_1LETTER = "";
@@ -215,9 +257,29 @@ public class S2DStarIfc {
     public String HET_NOE_VALUE = "";
     public String HET_NOE_VALUE_ERR = "";
 
+    public String LACS_DESIGNATOR = "";
+    public String LACS_LINE1_X1 = "";
+    public String LACS_LINE1_X2 = "";
+    public String LACS_LINE1_Y1 = "";
+    public String LACS_LINE1_Y2 = "";
+    public String LACS_LINE2_X1 = "";
+    public String LACS_LINE2_X2 = "";
+    public String LACS_LINE2_Y1 = "";
+    public String LACS_LINE2_Y2 = "";
+    public String LACS_OUTPUT = "";
+    public String LACS_PLOT_SF_CAT = "";
+    public String LACS_RES_LABEL = "";
+    public String LACS_RES_NUM = "";
+    public String LACS_X_NAME = "";
+    public String LACS_X_VALUE = "";
+    public String LACS_Y_NAME = "";
+    public String LACS_Y_VALUE = "";
+    public String LACS_Y_OFFSET = "";
+
     public String MOL_LABEL = "";
     public String MOL_SYSTEM = "";
     public String MOL_SYSTEM_NAME = "";
+    public String MOL_SYSTEM_SF_CAT = "";
     public String MOL_SYS_COMP_NAME = "";
     public String MONOMERIC_POLYMER = "";
     public String MONOMERIC_POLYMER_SF_CAT = "";
@@ -266,26 +328,6 @@ public class S2DStarIfc {
     //===================================================================
     // PUBLIC METHODS
 
-    public static String getFileName(int accessionNum)
-    {
-        return null;
-    }
-
-    public static String getURLName(String fileName)
-    {
-        return null;
-    }
-
-    public static Date getModDate(int accessionNum)
-    {
-        return null;
-    }
-
-    public static Date getModDate(String pdbId)
-    {
-        return null;
-    }
-
     public String getFileName()
     {
         return _fileName;
@@ -316,13 +358,12 @@ public class S2DStarIfc {
         return -1;
     }
 
-    public Enumeration getDataFramesByCat(String category) throws S2DException
+    public Enumeration getDataFramesByCat(String category)
     {
         return null;
     }
 
     public Enumeration getDataFramesByCat(String tagName, String category)
-      throws S2DException
     {
         return null;
     }
@@ -347,6 +388,7 @@ public class S2DStarIfc {
 	      tagName + ", " + category + ")");
 	}
 
+//TEMPTEMP -- should implementation be moved to S2DNmrStarIfc, since mmCIF files don't have save frames??
 	VectorCheckType frameList;
 
 	final String dataValue = category;
@@ -363,6 +405,7 @@ public class S2DStarIfc {
     }
 
     public boolean refersToProtein(SaveFrameNode frame, String entityID)
+      throws S2DException
     {
         return false;
     }
@@ -393,6 +436,7 @@ public class S2DStarIfc {
     public String getTagValue(SaveFrameNode frame, String name)
       throws S2DException
     {
+//TEMPTEMP -- should implementation be moved to S2DNmrStarIfc, since mmCIF files don't have save frames?? -- or does this work on mmCIF files with frame == null?
         String result = "";
 
         VectorCheckType list = frame.searchByName(name);
@@ -440,6 +484,7 @@ public class S2DStarIfc {
 	      maxVals + ")");
         }
 
+//TEMPTEMP -- should implementation be moved to S2DNmrStarIfc, since mmCIF files don't have save frames??
 	DataLoopNode loop = null;
 	if (frame != null) {
 	    loop = S2DStarUtil.findLoop(frame, loopId);
@@ -498,8 +543,6 @@ public class S2DStarIfc {
         return result;
     }
 
-    //TEMPTEMP -- is "name" a tag name??
-    //TEMPTEMP -- there sure isn't much difference between this and getTagValue()!!
     public String getOneFrameValueStrict(SaveFrameNode frame, String name)
       throws S2DException
     {
@@ -553,6 +596,7 @@ public class S2DStarIfc {
      * contains Strings).
      */
     public Vector getChemShiftEntityIDs(SaveFrameNode frame)
+      throws S2DException
     {
         return null;
     }

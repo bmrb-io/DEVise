@@ -4,42 +4,60 @@
 * NOTES
 
 Before installing the peptide-cgi software, you should install DEVise
-and the DEVise JavaScreen.  You must also have access to the BMRB web
+and the DEVise JavaScreen.  You must also have web access to the BMRB web
 site or a mirror of that site.
 
+Note:  the Peptide-CGI software is designed to be untarred into a
+directory that you use for configuration and testing, and then installed
+into other directories for the "production" system once the configuration
+is correct.  This way, when you need to install a new version, you can
+untar the new version in a new directory, copy over the configuration
+settings from your previous version, test that everything is okay, and
+then install over the top of the existing "production" version.  This
+allows upgrades with the minimum change of taking down the "production"
+system.
 
-* BASIC INSTALLATION
+
+* CONFIGURATION
 
 - Pick the Makefile.config.* file that most closely matches your situation,
 and copy it to Makefile.config.  (If you are a BMRB mirror site, you should
 most likely pick Makefile.config.bmrb.)
 
 - Edit Makefile.config as necessary, to account for any differences in
-your setup, compared to what is specified in the config file.
+your setup, compared to what is specified in the config file.  CONFIG.txt
+has detailed explanations of all of the configuration parameters.
 
 - Run the command 'make setup'.
 
-- At this point, you may want to do some testing before you do the actual
-installation (see TESTING below).
 
-- Once you are ready to go ahead, run the command 'make install'.
-
-
-* TESTING
-
-Pre-installation testing:
+* PRE-INSTALLATION TESTING
 
 You can test the peptide-cgi code before doing an actual installation by
 doing the following:
 
 - In the top-level directory, run the command 'make testsetup'.
 
-- Then go into the cgi-bin directory and run test1, test2, and test3.
-  Test1 should print "OK" twice; test2 and test3 should print "OK"
-  once.  If this doesn't happen, see DEBUGGING below.
+- Then go into the cgi-bin directory and run the test_all script.
+  This runs a number of tests; they should all work.  If all tests pass,
+  the last line of out put is "Test_all result: OK".
+
+  If test_all does not pass, you need to debug things before continuing.
+  The best way to proceed is to see which specific tests fail, and debug
+  them one at a time.  You should look at the s2d.out and vsc.out files
+  in tmp, and also all of the *.err and *.warn files.  (Note that some
+  warnings are normal.)  If you can't get test_all to pass, email
+  devise@cs.wisc.edu or wenger@cs.wisc.edu.
 
 
-Post-installation testing:
+* INSTALLATION
+
+- Once you are ready to go ahead, run the command 'make install'.
+  (Note that the $WWW_HOME directory has to exist already for
+  the install to work.)
+
+
+* POST-INSTALLATION TESTING
 
 The simplest way to do post-installation testing is to go to the
 bmrb_select.html file in your web browser (the full URL obviously
@@ -71,11 +89,11 @@ There are several areas where problems can occur:
 4. Opening the appropriate session.
 
 In case 1, the best thing to do is to take a look at the s2d.out file,
-which is in the cgi-bin directory.  If there are any errors in the
-actually running of the peptide-cgi code, they should be in here, unless
+which is in the cgi-bin/tmp directory.  If there are any errors in the
+actual running of the peptide-cgi code, they should be in here, unless
 it's a problem with the CGI setup itself, causing the peptide-cgi code
 to not be run at all.  Note that s2d.out gets overwritten with each request
-for data, so you may want to reproduce the error and then copy it.
+for data, so you may want to reproduce the error and then copy s2d.out.
 
 In case 2 or case 3, this isn't really a peptide-cgi problem, so please
 refer to the DEVise JavaScreen documentation.

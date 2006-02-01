@@ -11,7 +11,8 @@ ln -s test_data/1dfv.cif.gz .
 rm -f */4267*
 
 echo -n "Processing NMR-STAR: "
-./s2d -nomail -bmrbid 4267 -local -force -check_res_list
+./s2d -nomail -bmrbid 4267 -local -force -check_res_list \
+  -lacs_file test_data/bmr4267_LACS.out
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
@@ -58,7 +59,27 @@ set files = (data_dir/4267ac1.dat data_dir/4267as1.dat data_dir/4267c1.dat \
 	data_dir/4267am1.dat \
 	data_dir/4267amac1.dat \
 	html_dir/4267am1.html \
-	session_dir/4267am1.ds )
+	session_dir/4267am1.ds \
+	data_dir/4267lacsc1.dat \
+	data_dir/4267lacsc2.dat \
+	data_dir/4267lacsc3.dat \
+	data_dir/4267lacsc4.dat \
+	data_dir/4267lacsl1.dat \
+	data_dir/4267lacsl2.dat \
+	data_dir/4267lacsl3.dat \
+	data_dir/4267lacsl4.dat \
+	data_dir/4267lacsp1.dat \
+	data_dir/4267lacsp2.dat \
+	data_dir/4267lacsp3.dat \
+	data_dir/4267lacsp4.dat \
+	html_dir/4267lacs1.html \
+	html_dir/4267lacs2.html \
+	html_dir/4267lacs3.html \
+	html_dir/4267lacs4.html \
+	session_dir/4267lacs1.ds \
+	session_dir/4267lacs2.ds \
+	session_dir/4267lacs3.ds \
+	session_dir/4267lacs4.ds)
 
 foreach file ($files)
   if (! -f $file) then

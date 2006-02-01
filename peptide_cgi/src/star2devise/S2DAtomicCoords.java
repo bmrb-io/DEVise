@@ -21,6 +21,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:09  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.15.6.2  2005/06/29 18:37:17  wenger
+// Fixed some errors in the new 2D ambiguity and figure of merit
+// visualizations.
+//
+// Revision 1.1.2.15.6.1  2005/06/28 17:08:22  wenger
+// Ambiguity code and figure of merit visualizations now use 2D main
+// views; changed "Pistachio" to "assignment figure of merit" in
+// visualizations, etc.
+//
 // Revision 1.1.2.15  2005/03/22 20:34:37  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
 //
@@ -256,8 +269,8 @@ public class S2DAtomicCoords {
 
     //-------------------------------------------------------------------
     // Write the bonds (including coordinates) for this data.
-    public void writeBonds(int frameIndex, S2DAtomDataTable adt)
-      throws S2DException
+    public void writeBonds(int frameIndex, S2DAtomDataTable adt,
+      boolean for2DView) throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("S2DAtomicCoords.writeBonds()");
@@ -322,9 +335,9 @@ public class S2DAtomicCoords {
 		    if (lastC != null) {
 		        Atom thisN = (Atom)residue._atoms.get("N");
 		        connectAtoms(coordWriter, lastRes, lastC, thisN,
-			  coordFmt, adt);
+			  coordFmt, adt, for2DView);
 		        connectAtoms(coordWriter, residue, thisN, lastC,
-			  coordFmt, adt);
+			  coordFmt, adt, for2DView);
 		    }
 
 		    lastC = (Atom)residue._atoms.get("C");
@@ -341,7 +354,7 @@ public class S2DAtomicCoords {
 		        Atom atom2 = (Atom)residue._atoms.get(bond._atom2);
 
 		        connectAtoms(coordWriter, residue, atom1, atom2,
-			  coordFmt, adt);
+			  coordFmt, adt, for2DView);
 		    }
 		} catch (S2DException ex) {
     		    System.err.println(
@@ -458,7 +471,8 @@ public class S2DAtomicCoords {
     // Write out a record representing a half-bond from atom1 to the
     // midpoint between atom1 and atom2.
     private void connectAtoms(Writer coordWriter, Residue residue,
-      Atom atom1, Atom atom2, NumberFormat coordFmt, S2DAtomDataTable adt)
+      Atom atom1, Atom atom2, NumberFormat coordFmt, S2DAtomDataTable adt,
+      boolean for2DView)
       throws IOException
     {
         if ((atom1 != null) && (atom2 != null)) {
@@ -512,13 +526,31 @@ public class S2DAtomicCoords {
 		    structType = "side_chains";
 		}
 
-	        coordWriter.write(residue._resSeqCode + " " +
-	          residue._resLabel + " " + atom1._atomName + " " +
-	          atom1._atomType + " " + coordFmt.format(atom1._coordX) +
-		  " " + coordFmt.format(atom1._coordY) + " " +
-	          coordFmt.format(atom1._coordZ) + " " +
-	          coordFmt.format(midX) + " " + coordFmt.format(midY) +
-		  " " + coordFmt.format(midZ) + " " + structType);
+		// Note: we need the different outputs here because 
+		// the JS and DEVise treat segments differently -- the
+		// JS treats X, Y as one end, while DEVise treats X, Y
+		// as the middle.
+		if (for2DView) {
+	            coordWriter.write(residue._resSeqCode + " " +
+	              residue._resLabel + " " + atom1._atomName + " " +
+	              atom1._atomType + " " +
+		      coordFmt.format(atom1._coordX + midX/2) + " " +
+		      coordFmt.format(-(atom1._coordY + midY/2)) + " " +
+		      coordFmt.format(atom1._coordZ + midZ/2) + " " +
+	              coordFmt.format(midX) + " " +
+		      coordFmt.format(-midY) + " " +
+		      coordFmt.format(midZ) + " " + structType);
+		} else {
+	            coordWriter.write(residue._resSeqCode + " " +
+	              residue._resLabel + " " + atom1._atomName + " " +
+	              atom1._atomType + " " +
+		      coordFmt.format(atom1._coordX) + " " +
+		      coordFmt.format(atom1._coordY) + " " +
+	              coordFmt.format(atom1._coordZ) + " " +
+	              coordFmt.format(midX) + " " +
+		      coordFmt.format(midY) + " " +
+		      coordFmt.format(midZ) + " " + structType);
+		}
 		if (adt != null) {
                     coordWriter.write(" " + adt.getCoordDataStr(
 		      residue._resSeqCode, atom1._atomName));

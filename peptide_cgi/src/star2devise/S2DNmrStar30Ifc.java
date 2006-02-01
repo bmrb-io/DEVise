@@ -20,6 +20,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:11  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.9.2.3  2005/07/27 15:58:30  wenger
+// Fixed S2DNmrStarIfc.getPdbIdsFromMolSys() to work for NMR-STAR 3.0,
+// added test34 which tests that; better error handling in
+// S2DUtils.arrayStr2Double().
+//
+// Revision 1.1.2.9.2.2  2005/07/15 16:54:04  wenger
+// Updated NMR-STAR version test for latest 3.0 version string format;
+// added test33 with corresponding data (latest 3.0 format).
+//
+// Revision 1.1.2.9.2.1  2005/05/18 19:44:52  wenger
+// Some cleanup of the NMR-STAR 3.0 multi-entity code.
+//
 // Revision 1.1.2.9  2005/04/22 21:41:10  wenger
 // Okay, chemical shift data now pretty much works with NMR-STAR
 // 3.0 (although a lot of cleanup is still needed).  The other
@@ -129,7 +145,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
 	    String version = getTagValue(frame, NMR_STAR_VERSION);
 
-            if (version.startsWith("3.0")) {
+            if (version.startsWith("3.0") ||
+	      version.startsWith("production.3.0")) {
 	        result = true;
 	    }
 
@@ -186,6 +203,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
      * @return True iff the entity is a protein.
      */
     public boolean refersToProtein(SaveFrameNode frame, String entityID)
+      throws S2DException
     {
         if (DEBUG >= 2) {
 	    System.out.println("  S2DNmrStar30Ifc.refersToProtein(" +
@@ -198,7 +216,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	if (isProt != null) {
 	    result = isProt.booleanValue();
 	} else {
-	    System.err.println("TEMPTEMP -- fatal error? (missing entityID)");
+	    throw new S2DError("Entity ID " + entityID + " not found!");
 	}
 
 	return result;
@@ -239,7 +257,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     {
         if (DEBUG >= 2) {
             System.out.println("  S2DNmrStar30.getEntityFrame(" +
-	      frame.getLabel() + ")");
+	      getFrameName(frame) + ")");
         }
 
         SaveFrameNode result = null;
@@ -255,7 +273,10 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	    }
 	}
 
-//TEMPTEMP -- throw an exception if result is null here
+        if (result == null) {
+	    throw new S2DError("No entity frame found corresponding to " +
+	      "frame " + getFrameName(frame));
+	}
 
         if (DEBUG >= 2) {
 	    System.out.println(
@@ -266,7 +287,6 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         return result;
     }
 
-//TEMPTEMP -- shit! -- what should this do?? -- is it used?? -- yes -> problems!!
     // ----------------------------------------------------------------------
     // Get the "monomeric polymer" save frame for this NMR-STAR file
     // (the same frame containing entity information for a polymer).
@@ -283,10 +303,12 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	Enumeration frameList = getDataFramesByCat(
 	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
 
+        //TEMP -- if there is more than one entity save frame, this
+	// just returns the first one -- that's wrong!!
+
         while (frameList.hasMoreElements() && result == null) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
 	    String entityType = getOneFrameValueStrict(frame, ENTITY_TYPE);
-//TEMPTEMP -- this is wrong!!!!
 	    if (entityType.equals(POLYMER)) {
 	    	result = frame;
 	    }
@@ -307,7 +329,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
     // ----------------------------------------------------------------------
     /**
-     * Get all entity IDs reference in the chemical shift loop of the given
+     * Get all entity IDs referenced in the chemical shift loop of the given
      * save frame.
      * @param The save frame (note that this should be an
      * assigned_chemical_shifts save frame).
@@ -315,6 +337,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
      * contains Strings).
      */
     public Vector getChemShiftEntityIDs(SaveFrameNode frame)
+      throws S2DException
     {
 	Vector result = new Vector();
 
@@ -323,15 +346,12 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	      frame + ")");
 	}
 
-	try {
-	    String[] entityIDs = getFrameValues(frame,
-	      CHEM_SHIFT_VALUE, CHEM_SHIFT_ENTITY_ID);
-	    for (int index = 0; index < entityIDs.length; index++) {
-	        if (!result.contains(entityIDs[index])) result.add(entityIDs[index]);
-	    }
-	} catch (Exception ex) {
-	    System.err.println("TEMPTEMP -- exception in getChemShiftEntityIDs(): " + ex);
-	}
+        String[] entityIDs = getFrameValues(frame,
+          CHEM_SHIFT_VALUE, CHEM_SHIFT_ENTITY_ID);
+        for (int index = 0; index < entityIDs.length; index++) {
+            if (!result.contains(entityIDs[index])) result.add(
+	      entityIDs[index]);
+        }
 
         if (DEBUG >= 2) {
 	    System.out.print("S2DNmrStar30Ifc.getChemShiftEntityIDs() returns ");
@@ -373,6 +393,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
+	ASSEMBLY_DB_ACC_CODE = "_Assembly_db_link.Accession_code";
+	ASSEMBLY_DB_NAME = "_Assembly_db_link.Database_code";
         ATOM_COORD_ATOM_NAME = "_Rep_conf.Atom_ID";
         ATOM_COORD_ATOM_TYPE = "_Rep_conf.Atom_type";
         ATOM_COORD_RES_LABEL = "_Rep_conf.Comp_ID";
@@ -403,9 +425,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         COUPLING_RES_SEQ_CODE_2 = "_Coupling_constant.Seq_ID_2";
 	COUPLING_SF_CAT = "_Coupling_constant_list.Sf_category";
 
-	DB_ACC_CODE = "_Entity_db_link.Accession_code";
-	DB_NAME = "_Entity_db_link.Database_code";
-
+	ENTITY_DB_ACC_CODE = "_Entity_db_link.Accession_code";
+	ENTITY_DB_NAME = "_Entity_db_link.Database_code";
 	ENTITY_POLYMER_TYPE = "_Entity.Polymer_type";
 	ENTITY_RESIDUE_COUNT = "_Entity.Number_of_monomers";
 	ENTITY_SEQ_1LETTER = "_Entity.Polymer_seq_one_letter_code";
@@ -426,6 +447,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         HET_NOE_VALUE = "_Heteronucl_NOE.Heteronucl_NOE_val";
         HET_NOE_VALUE_ERR = "_Heteronucl_NOE.Heteronucl_NOE_val_err";
 
+	MOL_SYSTEM = "assembly";
+	MOL_SYSTEM_SF_CAT = "_Assembly.Sf_category";
 	MONOMERIC_POLYMER = "entity";
 	MONOMERIC_POLYMER_SF_CAT = "_Entity.Sf_category";
         NMR_STAR_VERSION = "_Entry.NMR_STAR_version";
@@ -485,7 +508,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
 		// Add the "is a protein" info into the hash table.
 		if (_frameIsProtein.containsKey(entityID)) {
-		    System.err.println("TEMPTEMP -- fatal error??? (duplicate entityID)");
+		    throw new S2DError("Duplicate entity ID " +
+		      entityID + "!!");
 		} else {
 		    Boolean isProt = new Boolean(frameIsProtein);
 		    _frameIsProtein.put(entityID, isProt);

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004
+// (c) Copyright 2004-2005
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.1.10.1  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.1.8.1  2005/05/12 19:07:41  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.1.6.1  2005/05/12 14:10:12  wenger
+// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
+// sure cache is used when it should be; added test26 to test non-
+// numeric BMRB ID.
+//
 // Revision 1.1.2.1  2004/11/18 19:10:35  wenger
 // Peptide-CGI now checks the version of the ChemShift software, since
 // the current version of Peptide-CGI needs at least ChemShift 1.4.0.
@@ -56,18 +75,18 @@ public class S2DSummaryFileData extends S2DFileData
      * @return True iff the data was gotten successfully.
      */
     public boolean getSummaryData(String name, String htmlDir,
-      int masterAccNum)
+      String masterBmrbId)
     {
     	if (DEBUG >= 1) {
 	    System.out.println("S2DSummaryFileData.getSummaryData(" +
-	      name + ", " + htmlDir + ", " + masterAccNum + ")");
+	      name + ", " + htmlDir + ", " + masterBmrbId + ")");
 	}
 
 	fileVersion = null;
 	fileDate = null;
 
 	bmrbIds = new Vector();
-	bmrbIds.addElement(new Integer(masterAccNum));
+	bmrbIds.addElement(masterBmrbId);
 
 	pdbIds = new Vector();
 
@@ -81,7 +100,7 @@ public class S2DSummaryFileData extends S2DFileData
 
 	    System.out.print("Related BMRB IDs: ");
 	    for (int index = 0; index < bmrbIds.size(); ++index) {
-	        System.out.print((Integer)bmrbIds.elementAt(index) + ", ");
+	        System.out.print((String)bmrbIds.elementAt(index) + ", ");
 	    }
 	    System.out.println("");
 
@@ -133,7 +152,7 @@ public class S2DSummaryFileData extends S2DFileData
 	    if (DEBUG >= 3) {
 	        System.out.println("Related BMRB ID: " + tmpValue);
 	    }
-            bmrbIds.addElement(new Integer(tmpValue));
+            bmrbIds.addElement(tmpValue);
 	}
 
 	// Get any related PDB IDs.

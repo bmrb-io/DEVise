@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2002
+#  (c) Copyright 2001-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -31,6 +31,7 @@ INPUT_WEB_DOMAIN = www.bmrb.wisc.edu
 OUTPUT_WEB_DOMAIN = www.bmrb.wisc.edu
 
 STAR_URL = http://$(INPUT_WEB_DOMAIN)/data_library/files/
+STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = ftp://beta.rcsb.org/pub/pdb/uniformity/data/mmCIF.gz/all/
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
@@ -68,6 +69,9 @@ INSTALL_MACHINE = tuna
 
 # User to send email to on errors.
 ERROR_EMAIL = devise@cs.wisc.edu
+
+# Email for sending comments in web pages.
+COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
 
 # Script for uncompressing PDB mmCIF files.
 MY_UNCOMPRESS = my_uncompress_unix

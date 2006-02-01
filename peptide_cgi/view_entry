@@ -1,0 +1,13 @@
+#! /bin/csh -f
+
+if ($#argv < 1 || $#argv > 3 || xx$1 == xx-usage) then
+  echo "Usage: view_entry [-np] <accession number> [input file]"
+  echo "File path, if specified, must be relative to the Third.Ed directory"
+  exit
+endif
+
+set mydir = `dirname $0`
+
+source $mydir/vur_config
+
+ssh -X $vur_login $vur_script $*

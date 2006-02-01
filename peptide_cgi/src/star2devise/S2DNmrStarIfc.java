@@ -21,11 +21,58 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:11  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
+// Revision 1.1.2.16.2.5  2005/11/04 17:56:27  wenger
+// Added command-line arguments, config, properties, etc., to
+// specify LACS processing level, LACS filename template, and
+// LACS URL -- so now we have the option to have the software
+// automatically try to process the appropriate LACS file;
+// updated some tests accordingly.  Test_all now names failed
+// tests at the end.
+//
+// Revision 1.1.2.16.2.4  2005/10/14 21:19:30  wenger
+// Most LACS processing now in place -- still needs lots of cleanup,
+// though.
+//
+// Revision 1.1.2.16.2.3  2005/07/27 15:58:30  wenger
+// Fixed S2DNmrStarIfc.getPdbIdsFromMolSys() to work for NMR-STAR 3.0,
+// added test34 which tests that; better error handling in
+// S2DUtils.arrayStr2Double().
+//
+// Revision 1.1.2.16.2.2  2005/05/19 16:07:43  wenger
+// Merged nmrfam_mods2_br (argh -- must have forgotten to make
+// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
+// peptide_cgi_10_8_0_br.
+//
+// Revision 1.1.2.16.2.1  2005/05/18 19:44:52  wenger
+// Some cleanup of the NMR-STAR 3.0 multi-entity code.
+//
 // Revision 1.1.2.16  2005/04/22 21:41:10  wenger
 // Okay, chemical shift data now pretty much works with NMR-STAR
 // 3.0 (although a lot of cleanup is still needed).  The other
 // types of data still need to be adapted to work with the
 // "multiple entities per loop" model of 3.0.
+//
+// Revision 1.1.2.15.8.2  2005/05/13 18:27:21  wenger
+// Fixed bug 040 (processing totally fails for entries that have 2 or
+// more entities and no chem shifts); added a bunch of related tests.
+//
+// Revision 1.1.2.15.8.1  2005/05/12 19:07:40  wenger
+// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
+// nmrfam_mods2_br (created to get ambiguity visualization help
+// and fix to coordinate visualization help).
+//
+// Revision 1.1.2.15.6.2  2005/05/12 17:40:33  wenger
+// The format of the input file name (e.g., bmrXXXX.str, or whatever)
+// and the comment email for the web pages are now configurable.
+//
+// Revision 1.1.2.15.6.1  2005/05/12 14:10:12  wenger
+// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
+// sure cache is used when it should be; added test26 to test non-
+// numeric BMRB ID.
 //
 // Revision 1.1.2.15  2005/02/01 21:37:23  wenger
 // More cleanups, especially to the Pistachio code.
@@ -250,29 +297,42 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     //===================================================================
     // PUBLIC METHODS
 
-    //TEMP -- maybe make accessionNum a String (so accessionNum and pdbId
-    // are the same type); then getModDate could be moved to parent class
-
     //-------------------------------------------------------------------
-    public static String getFileName(int accessionNum)
+    public static String getFileName(String bmrbId, boolean isLacs)
     {
-        return S2DNames.NMR_STAR_PREFIX + accessionNum +
-	  S2DNames.NMR_STAR_SUFFIX;
+	String name;
+	if (isLacs) {
+	    name = S2DUtils.replace(S2DNames.LACS_NAME_TEMPLATE, "*",
+	      bmrbId);
+	} else {
+	    name = S2DUtils.replace(S2DNames.STAR_NAME_TEMPLATE, "*",
+	      bmrbId);
+	}
+
+	return name;
     }
 
     //-------------------------------------------------------------------
-    public static String getURLName(String fileName)
+    public static String getURLName(String fileName, boolean isLacs)
     {
-        return S2DNames.BMRB_STAR_URL + fileName;
+	String url;
+	if (isLacs) {
+            url = S2DNames.LACS_URL + fileName;
+	} else {
+            url = S2DNames.BMRB_STAR_URL + fileName;
+	}
+
+	return url;
     }
 
     //-------------------------------------------------------------------
     // Get the modification date/time of the appropriate NMR-Star file.
-    public static Date getModDate(int accessionNum)
+    public static Date getModDate(String bmrbId, boolean isLacs)
     {
 	Date date = null;
 	try {
-	    URL starfile = new URL(getURLName(getFileName(accessionNum)));
+	    URL starfile = new URL(getURLName(getFileName(bmrbId, isLacs),
+	      isLacs));
 	    URLConnection connection = starfile.openConnection();
 
 	    long timestamp = connection.getLastModified();
@@ -289,15 +349,15 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     //-------------------------------------------------------------------
     // Factory method to create an S2DNmrStarIfc object based on accession
     // number.
-    public static S2DNmrStarIfc create(int accessionNum, boolean useLocalFile)
-      throws S2DException
+    public static S2DNmrStarIfc createFromID(String accessionNum,
+      boolean useLocalFile, boolean isLacs) throws S2DException
     {
         if (DEBUG >= 1) {
-	    System.out.println("S2DNmrStarIfc.create(" +
-	      accessionNum + ", " + useLocalFile + ")");
+	    System.out.println("S2DNmrStarIfc.createFromID(" +
+	      accessionNum + ", " + useLocalFile + ", " + isLacs + ")");
 	}
 
-	String fileName = getFileName(accessionNum);
+	String fileName = getFileName(accessionNum, isLacs);
 
 	S2DNmrStarIfc ifc;
 
@@ -307,11 +367,11 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 		System.out.println("Note: using local copy of star file");
 	        is = new FileInputStream(fileName);
 	    } else {
-                URL starfile = new URL(getURLName(fileName));
+                URL starfile = new URL(getURLName(fileName, isLacs));
 	        is = starfile.openStream();
 	    }
 
-	    ifc = create(is);
+	    ifc = create(is, isLacs);
 	    is.close();
 
 	    ifc._fileName = fileName;
@@ -329,11 +389,12 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 
     //-------------------------------------------------------------------
     // Factory method to create an S2DNmrStarIfc object based on file name.
-    public static S2DNmrStarIfc create(String fileName) throws S2DException
+    public static S2DNmrStarIfc createFromFile(String fileName,
+      boolean isLacs) throws S2DException
     {
         if (DEBUG >= 1) {
-	    System.out.println("S2DNmrStarIfc.create(" +
-	      fileName + ")");
+	    System.out.println("S2DNmrStarIfc.createFromFile(" +
+	      fileName + ", " + isLacs + ")");
 	}
 
 	S2DNmrStarIfc ifc;
@@ -341,7 +402,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
         try {
 	    InputStream is = new FileInputStream(fileName);
 
-	    ifc = create(is);
+	    ifc = create(is, isLacs);
 	    is.close();
 
 	    ifc._fileName = fileName;
@@ -551,7 +612,6 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     //-------------------------------------------------------------------
     // Returns a list of the save frames of the given category.
     public Enumeration getDataFramesByCat(String category)
-      throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("S2DNmrStarIfc.getDataFramesByCat(" +
@@ -564,7 +624,6 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     //-------------------------------------------------------------------
     // Returns a list of the save frames of the given category.
     public Enumeration getDataFramesByCat(String tagName, String category)
-      throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("S2DNmrStarIfc.getDataFramesByCat(" +
@@ -730,33 +789,38 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // Create an S2DNmrStarIfc object from the given InputStream.
     // This method decides what version of NMR-STAR file the InputStream
     // corresponds to, and constructs an object appropriately.
-    private static S2DNmrStarIfc create(InputStream is) throws S2DException
+    private static S2DNmrStarIfc create(InputStream is, boolean isLacs)
+      throws S2DException
     {
         if (DEBUG >= 1) {
-	    System.out.println("S2DNmrStarIfc.create()");
+	    System.out.println("S2DNmrStarIfc.create(" + isLacs + ")");
 	}
 
 	StarNode starTree = parseStar(is);
 
 	S2DNmrStarIfc ifc = null;
 
-	S2DNmrStar21Ifc ifc21 = new S2DNmrStar21Ifc(starTree);
-	S2DNmrStar30Ifc ifc30 = new S2DNmrStar30Ifc(starTree);
-
-	if (ifc21.isNmrStar21()) {
-            if (DEBUG >= 1) {
-	        System.out.println("File is NMR-STAR 2.1");
-	    }
-	    ifc = ifc21;
-	} else if (ifc30.isNmrStar30()) {
-            if (DEBUG >= 1) {
-	        System.out.println("File is NMR-STAR 3.0");
-	    }
-	    ifc = ifc30;
+	if (isLacs) {
+	    ifc = new S2DNmrStarLacsIfc(starTree);
 	} else {
-	    System.err.println("Warning: possibly unknown or unsupported " +
-	      "NMR-STAR version; trying NMR-STAR 2.1");
-	    ifc = ifc21;
+	    S2DNmrStar21Ifc ifc21 = new S2DNmrStar21Ifc(starTree);
+	    S2DNmrStar30Ifc ifc30 = new S2DNmrStar30Ifc(starTree);
+
+	    if (ifc21.isNmrStar21()) {
+                if (DEBUG >= 1) {
+	            System.out.println("File is NMR-STAR 2.1");
+	        }
+	        ifc = ifc21;
+	    } else if (ifc30.isNmrStar30()) {
+                if (DEBUG >= 1) {
+	            System.out.println("File is NMR-STAR 3.0");
+	        }
+	        ifc = ifc30;
+	    } else {
+	        System.err.println("Warning: possibly unknown or unsupported " +
+	          "NMR-STAR version; trying NMR-STAR 2.1");
+	        ifc = ifc21;
+	    }
 	}
 
 	return ifc;
@@ -890,8 +954,6 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	return residueCount;
     }
 
-//TEMPTEMP -- make sure this works right!
-//TEMPTEMP -- change name to something like getPdbIdsFromEntity?
     // ----------------------------------------------------------------------
     /**
      * Get PDB IDs from monomeric_polymer save frame.
@@ -927,19 +989,21 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    if (!doProteinCheck || isAProtein(frame)) {
 	        int residueCount = getResCountVal(frame);
 
-                String[] dbNames = getFrameValues(frame, DB_NAME,
-	          DB_NAME);
-                String[] dbAccCodes = getFrameValues(frame, DB_NAME,
-	          DB_ACC_CODE);
+                String[] dbNames = getFrameValues(frame, ENTITY_DB_NAME,
+	          ENTITY_DB_NAME);
+                String[] dbAccCodes = getFrameValues(frame, ENTITY_DB_NAME,
+	          ENTITY_DB_ACC_CODE);
 
 		int[] seqLengths = null;
                 String[] seqIdents = null;
-                String[] tmpSeqLengths = getFrameValues(frame, DB_NAME,
+                String[] tmpSeqLengths = getFrameValues(frame, ENTITY_DB_NAME,
 		  SEQ_SUBJ_LENGTH);
 		seqLengths = S2DUtils.arrayStr2Int(tmpSeqLengths);
-                seqIdents = getFrameValues(frame, DB_NAME,
+                seqIdents = getFrameValues(frame, ENTITY_DB_NAME,
 		  SEQ_IDENTITY);
 
+                //TEMP -- when we have 2 entities, what residue count
+		// are we checking against?
                 for (int index = 0; index < dbAccCodes.length; index++) {
 		    if (dbNames[index].equals("PDB")) {
 			if (checkDBEntry(residueCount, dbNames[index],
@@ -972,15 +1036,16 @@ public class S2DNmrStarIfc extends S2DStarIfc {
      */
     private void getPdbIdsFromMolSys(Vector ids) throws S2DException
     {
-        Enumeration frameList = getDataFramesByCat(MOL_SYSTEM);
+	Enumeration frameList = getDataFramesByCat(MOL_SYSTEM_SF_CAT,
+	  MOL_SYSTEM);
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame =
 	      (SaveFrameNode)frameList.nextElement();
 
-            String[] dbNames = getFrameValues(frame, DB_NAME,
-	      DB_NAME);
-            String[] dbAccCodes = getFrameValues(frame, DB_NAME,
-	      DB_ACC_CODE);
+            String[] dbNames = getFrameValues(frame, ASSEMBLY_DB_NAME,
+	      ASSEMBLY_DB_NAME);
+            String[] dbAccCodes = getFrameValues(frame, ASSEMBLY_DB_NAME,
+	      ASSEMBLY_DB_ACC_CODE);
 
             for (int index = 0; index < dbAccCodes.length; index++) {
 
@@ -992,7 +1057,6 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	}
     }
 
-//TEMPTEMP -- should this get moved into S2DNmrStar21Ifc?
     // ----------------------------------------------------------------------
     /**
      * Get the _Mol_polymer_class value from a save frame.

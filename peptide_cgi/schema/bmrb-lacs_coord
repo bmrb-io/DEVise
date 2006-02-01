@@ -1,0 +1,17 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# Schema for coordinate names for LACS visualizations.
+
+# $Id$
+
+type bmrb_lacs_coord ascii
+comment #
+whitespace ' ''	'
+
+attr x_coord_name string 8
+attr y_coord_name string 8

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2004
+#  (c) Copyright 2001-2005
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -36,10 +36,12 @@ dist: peptide-cgi
 .PHONEY : peptide-cgi-setup
 peptide-cgi-setup:
 	ln -s ../../INSTALL_NOTES.txt .
+	ln -s ../../CONFIG.txt .
 	ln -s ../../Makefile .
 	ln -s ../../Makefile.config.* .
 	ln -s ../../bmrb_select.tmpl .
 	ln -s ../../win_tar .
+	ln -s ../../view_entry .
 	mkdir cgi-bin; cd cgi-bin; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist cgi-bin-setup; rm Makefile.dist
 	mkdir chem_info; cd chem_info; ln -s ../Makefile.dist .; \
@@ -68,6 +70,8 @@ cgi-bin-setup:
 	ln -s ../../../cgi-bin/make_view .
 	ln -s ../../../cgi-bin/s2d .
 	ln -s ../../../cgi-bin/vsc .
+	ln -s ../../../cgi-bin/vur .
+	ln -s ../../../cgi-bin/view_unreleased .
 	ln -s ../../../cgi-bin/set_modes .
 	ln -s ../../../cgi-bin/java_tmpl .
 	ln -s ../../../cgi-bin/test_all .
