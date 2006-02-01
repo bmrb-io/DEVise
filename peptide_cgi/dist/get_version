@@ -1,3 +1,5 @@
-cd peptide-cgi/java_classes
-java S2DMain -version
+#! /bin/csh -f
+cd peptide-cgi/src
+setenv CLASSPATH ./s2d.jar
+java star2devise.S2DMain -version
 cd ../..

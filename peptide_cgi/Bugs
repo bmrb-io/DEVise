@@ -30,6 +30,130 @@ Num Date        Status  Description
 			update properly. (ks/rkw)
 			(Tested by rkw, 6/24/02.)
 
+008 8/13/02	OPEN	For 4001, the structure from PDB 1QLK claims to have
+			184 residues, but only 92 show up in the 3D
+			visualization. (rkw)
+
+009 8/20/02	OPEN	4001 has multiple save frames of chem shifts --
+			causes problems with summary data for 4096-type
+			3D visualizations. (rkw)
+
+010 8/22/02	OPEN	Give a better error message if a garbage accession
+			number is entered. (rkw)
+
+011 10/31/02	WORK	On yola at BMRB, a Perl system() call totally
+			fails if the Perl script is being run as a
+			CGI.
+			(Workaround by rkw, 10/31/02.)
+
+012 10/31/02	FIXED	Errors in the s2d script -- it removes s2d.out
+			rather than data_dir/s2d.out. (rkw)
+			(Fixed by rkw, 10/31/02.)
+
+013 10/31/02	FIXED	S2d fails if output files exist without write
+			permission (even if we have write permission in
+			the directory). (rkw)
+			(Fixed by rkw, 11/1/02.)
+
+014 10/31/02	OPEN	Doing a 'bmrb_test' installation overwrite the
+			same schema files that are used by the 'real'
+			installation. (rkw)
+
+015 11/1/02	FIXED	CSI values aren't displayed correctly in 3D
+			visualizations. (rkw)
+			(Fixed by rkw, 11/1/02.)
+
+016 11/1/02	OPEN	We end up with duplicate data source definitions in
+			the 3D sessions (the same data source is redefined
+			for all data types that use it).  This doesn't really
+			seem to hurt anything, but it's not ideal. (rkw)
+
+017 11/1/02	OPEN	We should disallow having both the -pdbid and the
+			-do_pdb arguments specified. (rkw)
+
+018 3/18/03	OPEN	Atomic coordinate sessions all reference some 4096
+			data sources(!). (wenger)
+
+019 3/18/03	FIXED	Atomic coordinate sessions fail for all entries other
+			than 4096 because they reference the 4096rl1 data
+			source. (wenger)
+			(Fixed by wenger, 3/19/03.)
+
+020 4/9/03	FIXED?	Peptide-cgi specific html files don't work for Dimitri
+			in Konquerer (may be JavaScript problems). (wenger/
+			dmaziuk)
+			(Check after install of new version.)
+
+021 9/11/03	FIXED	Processing PDB files erases summary HTML file!
+			(wenger)
+			(Fixed by wenger, 9/12/03.)
+
+022 9/12/03	FIXED	S2d tries to process all associated DB files as
+			PDB files, even if they aren't PDB files (at least
+			in vis server mode). (wenger)
+			(Fixed by wenger, 9/12/03.)
+
+023 9/17/03	NB	Decision of whether to use cache doesn't work right
+			for visualization server mode. (wenger)
+
+024 10/30/03	OPEN	Set_modes times out if do_csr.bat times out(!).
+			(wenger)
+
+025 11/26/03	FIXED	Processing bmr4096.str in visualization server mode
+			doesn't work because the 3D session file references
+			*rl1.dat, which is not generated (see test7).
+			(wenger)
+			(Fixed by wenger, 1/28/04.)
+
+026 11/26/03	FIXED	Processing bmr4081.str in visualization server mode
+			causes errors because the *ac2.dat file is empty
+			but the corresponding entry still appears in the
+			summary html file (see test8). (wenger)
+			(Fixed by wenger, 12/12/03.)
+
+027 1/23/04	KLUDGED	Set_modes doesn't work for vsc script (output
+			files in vis_server subdirectories). (wenger)
+
+028 3/1/04	FIXED	Unrecognized amino acid abbreviation in PDB file
+			prevents generation of atomic coordinate
+			visualization. (dmaziuk/wenger)
+			(See test14.)
+			(Fixed by wenger, 3/3/04.)
+
+029 3/2/04	OPEN	Atomic coordinate processing needs to deal correctly
+			with entries that contain things like RNA in addition
+			to a protein (see BMRB 4867/PDB 1fje). (wenger)
+
+030 3/3/04	FIXED	In Jafar, the error and warning files do not work
+			right.  All messages get appended to a single file,
+			instead of a separate file for each run (because
+			of static variables).  (zsolt/wenger)
+			(Fixed by wenger, 3/4/04.)
+
+031 3/3/04	OPEN	In Jafar (both at NMRFAM and BMRB), files generated
+			by s2d have timestamps about 15 minutes in the
+			past. (zsolt/wenger)
+
+032 6/3/04	OPEN	S2DWarning.removeLogFile() and S2DError.removeLogFile()
+			should actually *rename* the old log file if anything
+			has been written to it, so we don't lose messages that
+			happened before the name or bmrb id was set. (wenger)
+
+033 10/20/04	OPEN	If you run s2d with the -file flag instead of -bmrbid,
+			and do_pdb of 1, the link to generate the 3D
+			structure doesn't work.  (For example, run test17
+			and try to follow the link for 1NGL.) (wenger)
+
+034 2/9/05	OPEN	H's don't show up in color print mode (white on a
+			white background). (wenger)
+
+035 3/11/05	OPEN	4081 residue 3 has HD1 and HD2, but not the individual
+			atoms within those groups.  The Peptide-CGI code
+			doesn't really handle that -- should it? (wenger)
+
+036 4/22/05	OPEN	4103 and 4104 fail -- fix them and add them to automated
+			test script. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

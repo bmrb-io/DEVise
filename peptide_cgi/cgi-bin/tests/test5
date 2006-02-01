@@ -1,0 +1,62 @@
+#! /bin/csh -f
+
+# Tests chem shift reference processing, but not in the same mode that
+# Jafar actually does it.
+
+set result = 0
+
+rm */4974* >& /dev/null
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4974 -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+echo -n "Processing chem shift ref: "
+#TEMP -- I'm not sure about coord_index here -- it seems like it should
+# be possible to do the csr stuff without processing the coordinates for the
+# 3D visualization
+./s2d -nomail -bmrbid 4974 -pdbid 2CI2 -coord_index 1 -do_csr 2 -force \
+  -check_res_list
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMP -- csr2.html, etc??
+set files = (data_dir/4974ac1.dat data_dir/4974as1.dat data_dir/4974c1.dat \
+	data_dir/4974csr1_1.dat data_dir/4974csr1_2.dat data_dir/4974csr1_3.dat \
+	data_dir/4974csr1_4.dat \
+	data_dir/4974d1.dat data_dir/4974hn1.dat data_dir/4974md.dat \
+	data_dir/4974p1.dat data_dir/4974rc1.dat data_dir/4974rl1.dat \
+	html_dir/4974ac1.html html_dir/4974as1.html html_dir/4974c1.html \
+	html_dir/4974csr1.html html_dir/4974d1.html html_dir/4974hn1.html \
+	html_dir/4974p1.html html_dir/4974tmp1y.html html_dir/4974y.html \
+	session_dir/4974ac1.ds session_dir/4974acdd session_dir/4974as1.ds \
+	session_dir/4974c1.ds session_dir/4974csr1.ds session_dir/4974d1.ds \
+	session_dir/4974hn1.ds session_dir/4974p1.ds \
+	data_dir/4974am1.dat \
+	html_dir/4974am1.html \
+	session_dir/4974am1.ds)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test5 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

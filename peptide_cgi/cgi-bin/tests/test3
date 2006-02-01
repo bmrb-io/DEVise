@@ -1,0 +1,47 @@
+#! /bin/csh -f
+
+# Pretty much "normal" processing except that we're doing both the BMRB
+# file and the PDB file in a single step (both from the web).
+
+set result = 0
+
+rm -f */4081*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -bmrbid 4081 -do_pdb 2 -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
+	data_dir/4081d1.dat data_dir/4081hn1.dat data_dir/4081md.dat \
+	data_dir/4081p1.dat data_dir/4081rc1.dat data_dir/4081rl1.dat \
+	html_dir/4081ac1.html html_dir/4081as1.html html_dir/4081c1.html \
+	html_dir/4081d1.html html_dir/4081hn1.html html_dir/4081p1.html \
+	html_dir/4081y.html session_dir/4081ac1.ds session_dir/4081acdd \
+	session_dir/4081as1.ds session_dir/4081c1.ds session_dir/4081d1.ds \
+	session_dir/4081hn1.ds session_dir/4081p1.ds \
+	data_dir/4081am1.dat \
+	html_dir/4081am1.html \
+	session_dir/4081am1.ds) 
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

@@ -1,0 +1,155 @@
+#! /bin/csh -f
+
+#TEMPTEMP -- add a test with something that's *not* a protein, to make sure the protein check works right -- hmm -- should probably test both for 2.1 and 3.0 -- 4028 is RNA and protein, 4103 and 4104 are DNA
+# hmm -- 4028 doesn't have chem shifts for the RNA, so it's not a good test
+#TEMPTEMP -- 4103 and 4104 fail -- should fix them and add to tests
+
+set result = 0
+
+echo ""
+echo -n "Peptide-CGI version: "
+./get_version
+
+echo ""
+echo "Running test1..."
+tests/test1
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test2..."
+tests/test2
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test3..."
+tests/test3
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test4..."
+tests/test4
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test6..."
+tests/test6 -noleech
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test7..."
+tests/test7
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test9..."
+tests/test9
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test10..."
+tests/test10
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test11..."
+tests/test11
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test13..."
+tests/test13
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test14..."
+tests/test14
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test15..."
+tests/test15 -noleech
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test16..."
+tests/test16 -noleech
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test17..."
+tests/test17
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test18..."
+tests/test18
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test19..."
+tests/test19
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test22..."
+tests/test22 -noleech
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test23..."
+tests/test23 -noleech
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo "Running test24..."
+tests/test24
+if ($status != 0) then
+  set result = 1
+endif
+
+echo ""
+echo -n "Test_all result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
+

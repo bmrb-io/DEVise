@@ -1,0 +1,46 @@
+#! /bin/csh -f
+
+# This is to test NMR-STAR 3.0 processing.
+
+set result = 0
+
+rm -f */4845*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -file test_data/bmr4845.str.nmrstr -name 4845 -do_pdb 2 -force \
+  -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMPTEMP -- I think this should generate an ambiguity visualization!!
+set files = (data_dir/4845ac1.dat data_dir/4845as1.dat data_dir/4845c1.dat \
+	data_dir/4845d1.dat data_dir/4845g1.dat data_dir/4845hn1.dat \
+	data_dir/4845md.dat data_dir/4845p1.dat data_dir/4845rc1.dat \
+	data_dir/4845rl1.dat html_dir/4845ac1.html html_dir/4845as1.html \
+	html_dir/4845c1.html html_dir/4845d1.html html_dir/4845g1.html \
+	html_dir/4845p1.html html_dir/4845y.html \
+	session_dir/4845ac1.ds session_dir/4845acdd session_dir/4845as1.ds \
+	session_dir/4845c1.ds session_dir/4845d1.ds session_dir/4845g1.ds \
+	session_dir/4845p1.ds)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test9 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

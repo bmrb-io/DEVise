@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -35,34 +35,60 @@ dist: peptide-cgi
 
 .PHONEY : peptide-cgi-setup
 peptide-cgi-setup:
-	ln -s ../../INSTALL .
+	ln -s ../../INSTALL_NOTES.txt .
 	ln -s ../../Makefile .
 	ln -s ../../Makefile.config.* .
 	ln -s ../../bmrb_select.tmpl .
+	ln -s ../../win_tar .
 	mkdir cgi-bin; cd cgi-bin; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist cgi-bin-setup; rm Makefile.dist
+	mkdir chem_info; cd chem_info; ln -s ../Makefile.dist .; \
+	  make -f Makefile.dist chem_info-setup; rm Makefile.dist
+	mkdir data; cd data; ln -s ../Makefile.dist .; \
+	  make -f Makefile.dist data-setup; rm Makefile.dist
 	mkdir dynamic_sessions; cd dynamic_sessions; \
 	  ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist dynamic_sessions-setup; rm Makefile.dist
 	mkdir html; cd html; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist html-setup; rm Makefile.dist
+	mkdir html_templates; cd html_templates; ln -s ../Makefile.dist .; \
+	  make -f Makefile.dist html_templates-setup; rm Makefile.dist
 	ln -s ../../install .
-	mkdir java_classes; cd java_classes; ln -s ../Makefile.dist .; \
-	  make -f Makefile.dist java_classes-setup; rm Makefile.dist
+	mkdir session_templates; cd session_templates; \
+	  ln -s ../Makefile.dist .; \
+	  make -f Makefile.dist session_templates-setup; rm Makefile.dist
+	mkdir src; cd src; ln -s ../Makefile.dist .; \
+	  make -f Makefile.dist src-setup; rm Makefile.dist
 	mkdir schema; cd schema; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist schema-setup; rm Makefile.dist
+	find . -name CVS -exec \rm -rf {} \;
 
 .PHONEY : cgi-bin-setup
 cgi-bin-setup:
 	ln -s ../../../cgi-bin/make_view .
 	ln -s ../../../cgi-bin/s2d .
+	ln -s ../../../cgi-bin/vsc .
 	ln -s ../../../cgi-bin/set_modes .
 	ln -s ../../../cgi-bin/java_tmpl .
-	ln -s ../../../cgi-bin/connections .
+	ln -s ../../../cgi-bin/test_all .
+	ln -s ../../../cgi-bin/usage .
+	ln -s ../../../cgi-bin/get_version .
+	ln -s ../../../cgi-bin/get_version_cgi .
+	mkdir tests
+	cd tests; ln -s ../../../../cgi-bin/tests/* .
+	mkdir test_data
+	cd test_data; ln -s ../../../../cgi-bin/test_data/* .
+
+.PHONEY : chem_info-setup
+chem_info-setup:
+	ln -s ../../../chem_info/* .
+
+.PHONEY : data-setup
+data-setup:
+	ln -s ../../../data/* .
 
 .PHONEY : dynamic_sessions-setup
 dynamic_sessions-setup:
-	ln -s ../../../dynamic_sessions/*.base .
 	ln -s ../../../dynamic_sessions/*.str .
 
 .PHONEY : html-setup
@@ -71,17 +97,21 @@ html-setup:
 	ln -s ../../../html/*.gif .
 	ln -s ../../../html/*.jpg .
 	ln -s ../../../html/*.js .
-	ln -s ../../../html/*.base .
-	ln -s ../../../html/*.dat .
-	ln -s ../../../html/assignments.txt .
-	ln -s ../../../html/chemshift.txt .
+	ln -s ../../../html/*.txt .
 
-#TEMP -- make sure .class files exist
-.PHONEY : java_classes-setup
-java_classes-setup:
-	ln -s ../../../java_classes/*.class .
-	ln -s ../../../java_classes/*.jar .
+.PHONEY : html_templates-setup
+html_templates-setup:
+	ln -s ../../../html_templates/* .
+
+.PHONEY : session_templates-setup
+session_templates-setup:
+	ln -s ../../../session_templates/* .
+
+#TEMP -- make sure .jar file exists
+.PHONEY : src-setup
+src-setup:
+	ln -s ../../../src/s2d.jar .
 
 .PHONEY : schema-setup
 schema-setup:
-	ln -s ../../../schema/bmrb:* .
+	ln -s ../../../schema/bmrb-* .

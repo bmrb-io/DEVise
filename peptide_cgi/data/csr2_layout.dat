@@ -1,0 +1,41 @@
+# $Id$
+# Attributes: view; x; y; z; width; height; pile
+
+View 18	-0.045	1.65	0.0	1.09	0.1	none
+View 119	-0.045	1.55	0.0	1.09	0.1	none
+
+View 3	-0.535	1.0	0.0	0.1	1.0	none
+
+View 112	-0.46	1.04	0.0	0.05	0.92	none
+
+View 116	0.03	1.04	-1.0	0.94	0.92	BlackPile
+View 1	0.03	1.04	0.0	0.94	0.92	BlackPile
+View 7	0.03	1.04	1.0	0.94	0.92	BlackPile
+View 8	0.03	1.04	2.0	0.94	0.92	BlackPile
+View 115	0.03	1.04	3.0	0.94	0.92	BlackPile
+
+View 110	0.03	0.54	0.0	0.94	0.08	none
+
+
+#Note: View 114 is only to fill in the background color around
+# views 4, 113, 2, 9, 10, 111, and 117.
+# Argh!  This goofs up the cursor in the JS (see DEVise bug 907).
+#View 114	-0.05	0.0	-1.0	1.1	1.01	none
+# Okay, I changed things around so we just have to fill in a little
+# gap.
+View 114	-0.465	-0.455	-1.0	0.1	0.1	none
+
+View 4	-0.535	0.0	0.0	0.1	1.0	none
+
+View 113	-0.46	0.04	0.0	0.05	0.92	none
+
+View 118	0.03	0.04	-1.0	0.94	0.92	BluePile
+View 2	0.03	0.04	0.0	0.94	0.92	BluePile
+View 9	0.03	0.04	1.0	0.94	0.92	BluePile
+View 10	0.03	0.04	2.0	0.94	0.92	BluePile
+View 117	0.03	0.04	3.0	0.94	0.92	BluePile
+
+View 111	0.03	-0.46	0.0	0.94	0.08	none
+
+View 1110	-0.05	-0.55	0.0	1.1	0.1	LegendPile
+View 1111	-0.05	-0.55	0.0	1.1	0.1	LegendPile

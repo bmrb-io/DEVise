@@ -1,0 +1,235 @@
+			Peptide-CGI Ad Viewer To-Do List
+			$Revision$
+
+Num Date        Status  Pri     Description
+--- --------    ------  ---     -----------------------------------------------
+001 08/05/02	DONE	1	Get atomic coords from PDB.
+				(Done by wenger, 08/05/02.)
+
+002 08/05/02	DONE	1	Automatically generate full 4096-type
+				visualization with atomic coordinates.
+
+003 08/05/02	POST	1	Properly check for out-of-dateness relative
+				to PDB files and related BMRB files.
+
+004 08/05/02	ACTIVE	1	Deal with NMR-STAR version 3.0 files.
+
+005 08/05/02	OPEN	4	If some source files have changed, and
+				others haven't, reprocess only the changed
+				ones (for example, if the PDB file has changed
+				but the BMRB file has not).
+
+006 08/05/02	OPEN	4	Put some kind of timeout on getting PDB
+				files.
+
+007 08/05/02	DONE	1	Try again without PDB file if PDB file
+				causes out-of-memory error.  (Can test with
+				4001.)
+				(Done by wenger, 08/06/02.)
+
+008 08/05/02	DONE	4	Put a limit on the maximum number of atoms
+				in a structure (at least until DEVise/JS
+				can handle large structures better).  (Can
+				test with 4081.)
+				(Done by wenger, 08/05/02.)
+
+009 08/06/02	OPEN	3	Check PDB mirror sites for beta stuff, set up
+				peptide-cgi to try them if they have it and
+				main site fails. (el/rkw)
+
+010 08/06/02	OPEN	3	Use starlib feature to only parse part of the
+				star file (especially for PDB files). (rkw)
+
+011 08/06/02	DONE	1	Make sure we're only getting the first model
+				from a PDB entry. (elu/rkw)
+				(Done by rkw, 08/07/02.)
+
+012 08/06/02	DONE	1	Make sure we're getting the PDB IDs from
+				the right place in the BMRB file. (elu/rkw)
+				(Done by rkw, 08/08/02.)
+
+013 08/06/02	DONE	1	Show PDB ID on summary page. (elu/rkw)
+				(Done by rkw, 08/07/02.)
+
+014 08/08/02	DONE	1	Show structures from more than one PDB ID
+				if the BMRB entry references more than one.
+				(rkw)
+				Note: this may require that processing
+				continue asynchronously after the CGI script
+				returns.
+				(Done by rkw, 11/4/02.)
+
+015 08/12/02	OPEN	4	Remove port specification from html files.
+				(rkw)
+
+016 08/13/02	OPEN	4	For 4038 and 4096, display PDB structure(s)
+				in addition to structure from BMRB file. (rkw)
+
+017 10/15/02	DONE	4	Make peptide-cgi run from a jar file. (rkw)
+				(Done by wenger, ?/?/?.)
+
+018 11/1/02	DONE	1	Make peptide-cgi used cached data from PDB.
+				(rkw)
+				(Done by rkw, 11/7/02.)
+
+019 11/7/02	OPEN	3	Put generation date and peptide-cgi version
+				into the specific html files instead of the
+				atomic coordinate session files. (rkw)
+
+020 11/7/02	DONE	3	Replace "/" with generic separator character
+				in all file paths (so this could work on
+				Windows). (rkw)
+				(Done by wenger, 1/22/04.)
+
+021 4/9/03	DONE	1	Visualization server prototype. (wenger)
+
+022 4/9/03	DONE	1	Make sure protein checks still work in
+				"normal" mode after vis server mods. (wenger)
+				(Done by wenger, 1/22/04.)
+
+023 4/9/03	OPEN	1	Cleanup visualization server code (see
+				TEMP comments in code). (wenger)
+
+024 4/9/03	DONE	2	Make a separate directory or directories
+				(from the data dir and session dir) that hold
+				all templates, chemshift.txt, etc. (wenger)
+				(Done by wenger, 5/14/03.)
+
+025 4/9/03	DONE	2	Split out data files from html files
+				(put them in separate directories). (wenger)
+				(Done by wenger, 5/14/03.)
+
+026 4/9/03	DONE	2	Make visualization server mode work correctly
+				when we try to put output files in
+				subdirectories. (wenger)
+				(Done by wenger, ?/?/03.)
+
+027 4/9/03	OPEN	4	Output a separate session list file for
+				the visualization server stuff. (wenger)
+
+028 4/9/03	OPEN	2	Production version of restraint/constraint
+				code. (wenger)
+
+029 4/9/03	OPEN	2	Fix systemName and frameName in visualization
+				server mode. (wenger)
+
+030 4/9/03	DONE	2	Productionize visualization server code.
+				(wenger)
+				(Done by wenger, ?/?/03.)
+
+031 4/9/03	DONE	3	Put everything into a single jar file instead
+				of distributing separate class files. (wenger)
+				(Done by wenger, 4/22/03.)
+
+032 5/4/02	OPEN	5	Add a place to email DEVise on every web page
+				related to the JS.  (BMRB advisory board)
+				(There's already a BMRB mailto.)
+
+033 7/4/03	DONE	1	Get uncompression of PDB mmCIF files working
+				on Windows (for vis server). (zsolt)
+				(Done by wenger ?/?/03.)
+
+034 5/15/03	DONE	1	Replace "mkdir" with "mkdir -p" as appropriate
+				in install script. (dmaziuk)
+				(Done by wenger, 1/22/04.)
+
+035 7/4/03	OPEN	2	Get animation symbols loaded into the jar file
+				(for visualization server). (wenger)
+
+036 9/12/03	OPEN	2	Re-run s2d on the BMRB entry if necessary when
+				called to process a related PDB entry. (wenger)
+
+037 11/10/03	OPEN	2	Check sequence in PDB file, compare against
+				sequence from BMRB file (if we don't do this
+				already). (elu/wenger)
+
+038 11/10/03	DONE	1	Chem shift ref integration. (elu/wenger)
+				(Done by wenger, 12/10/03.)
+
+039 11/10/03	DONE	1	Make sure output of Dan's code has been
+				tested by Gabriel. (elu/wenger)
+				(Done by wenger ?/?/?.)
+
+040 11/10/03	DONE?	1	Resolve problems with DC hanging for some
+				chem shift ref combos. (wenger)
+
+041 11/10/03	OPEN	3	Set up a set_modes.bat like my_uncompress.bat
+				(wenger)
+
+042 11/11/03	OPEN	2	Jafar should report errors to the user.
+				(wenger)
+
+043 1/22/04	DONE	1	Add Eldon's chem shift reference visualization.
+				(elu/wenger)
+				(Done by wenger ?/?/?.)
+
+044 6/3/04	OPEN	4	Set things up so that the chem shift reference
+				calculation doesn't have to have its data
+				in the main data directory or a subdirectory
+				of it. (wenger)
+
+045 6/3/04	OPEN	4	Set things up so that s2d actually calls
+				chemShift via RPC or something, as opposed
+				to the file business we have now. (wenger)
+
+046 6/7/04	DONE	1	In Jafar, use only PDB IDs with >=97%
+				identity; still require 100% in NMR Browser.
+				(I think this is for both structures and
+				chem shift reference).  (elu/wenger)
+				(Done by wenger, 10/20/04.)
+
+047 6/9/04	OPEN	2	Incorporate more data from NMR-STAR files
+				(such as hydrogen exchange rates, hydrogen
+				exchange protection factor and S2 parameters).
+				(bmrb/wenger)
+
+048 6/9/04	OPEN	2	Visualization of data from nucleic acids.
+				(bmrb/wenger)
+
+049 3/22/05	OPEN	1	Calculate Pistachio percentages based on
+				all C, H, N atoms in a given residue, not
+				just the ones we have chem shifts for.
+				(hamid/wenger)
+
+050 10/20/04	OPEN	3	Make a test case with a file that has more
+				than one polymer (e.g., 4264). (wenger)
+
+051 12/7/04	OPEN	3	Find *and document* an entry that can be
+				used to test the "no real CB" features.
+				(wenger)
+
+052 12/27/04	OPEN	4	Put -nomail flagi in CSR-only links generated
+				by do_csr 1. (wenger)
+
+053 12/30/04	OPEN	4	Add a warning to the summary page about not
+				all CSR stuff working. (wenger)
+
+054 1/19/05	OPEN	3	Test scripts should save output, etc., if
+				they fail. (wenger)
+
+055 1/19/05	OPEN	4	Put a pretty short timeout on contacting PDB
+				to check cache -- if the site is down, we
+				should re-use the cached files, maybe with a
+				warning. (miron/wenger)
+
+056 3/11/05	DONE	4	Constrain X selection cursor to be with
+				the destination view in all 3D visualizations.
+				(wenger)
+				(Done by wenger, 3/22/05.)
+
+* Status:
+OPEN = item has not yet been addressed
+ACTIVE = item is being addressed
+DONE = item has been fully addressed
+WORK = workaround for item in place
+DUP = duplicate of another item
+NLR = no longer relevant
+POST = postponed
+
+* Priority:
+? = not yet prioritized
+1 = must be done soon
+2 = must be done
+3 = should be done
+4 = maybe should be done
+5 = should not be done

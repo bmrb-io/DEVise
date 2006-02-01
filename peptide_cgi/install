@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2001
+#  (c) Copyright 2000-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -16,10 +16,10 @@
 
 #  Install the peptide-cgi setup.  Note: some of the installation is
 #  specific to a certain machine; this script is configured to do
-#  the installation on either pumori (cs) or aden (bmrb).  Changes
+#  the installation on either pumori (cs) or tuna (bmrb).  Changes
 #  may be needed to do the installation on other machines.
 
-#  Note: CS install must be done on pumori; BMRB on aden.
+#  Note: CS install must be done on pumori; BMRB on tuna.
 
 #  To use the installed software, go to:
 #  http://bmrb.wisc.edu/devise/peptide-cgi/bmrb_select.html
@@ -35,9 +35,10 @@
 #-----------------------------------------------------------
 # Check and get the arguments.
 
-if ($#argv < 6 || $#argv > 7) then
+if ($#argv < 8 || $#argv > 9) then
   echo "Usage: install <dev_demo_home> <www_home> <pep_home> <cgi_home>"
-  echo "  <pep_session_home> <pep_data_home> [install_machine]"
+  echo "  <pep_session_home> <pep_data_home> <pep_html_home> <jar_home>"
+  echo "  [install_machine]"
   exit 1;
 endif
 
@@ -47,15 +48,18 @@ set pephome = $3
 set cgihome = $4
 set sessionhome = $5
 set datahome = $6
+set htmlhome = $7
+set jarhome = $8
 
 #-----------------------------------------------------------
 # Perform various checks before we actually do anything.
 
-if ($#argv == 7) then
+if ($#argv == 9) then
   # Check whether we're on the appropriate machine.
 
-  if (`hostname` != $7) then
-    echo "Installation is normally done on $7."
+  if (`hostname` != $9) then
+    echo ""
+    echo "Installation is normally done on $9."
     echo -n "Are you sure you want to continue? [n] "
 
     set answer = $<
@@ -63,13 +67,14 @@ if ($#argv == 7) then
       echo Aborted.
       exit 1
     endif
+    echo ""
   endif
 endif
 
 
 # Check that the Java code is compiled.
 
-set file = "java_classes/S2DMain.class"
+set file = "src/s2d.jar"
 if (! -f $file) then
   echo "Please compile the Java code before installing."
   exit 1
@@ -118,7 +123,7 @@ endif
 echo "Creating the "front-end" directory ($pephome)"
 set targetdir = $pephome
 if (! -e $targetdir) then
-  mkdir $targetdir
+  mkdir -p $targetdir
 endif
 chmod a+rx $targetdir
 cp -p bmrb_select.html $targetdir
@@ -130,31 +135,63 @@ chmod a+r $targetdir/bmrb_select.html
 echo "Creating the dynamic sessions directory ($sessionhome)"
 set targetdir = $sessionhome
 if (! -e $targetdir) then
-  mkdir $targetdir
+  mkdir -p $targetdir
 endif
 chmod a+rwx $targetdir
-cp -p dynamic_sessions/*.base $targetdir
-chmod a+r $targetdir/*.base
 
-cp -p dynamic_sessions/*.str $demohome/session.js/bmrb
-chmod a+r $demohome/session.js/bmrb/*.str
+set targetdir = $sessionhome/vis_server
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+
+set targetdir = $demohome/session.js/bmrb
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+cp -p dynamic_sessions/*.str $targetdir
+chmod a+r $targetdir/*.str
 
 
-# Create and set up the data/html directory.
+# Create and set up the data directory.
 
-echo "Creating the data/html directory ($datahome)"
+set targetdir = $demohome/dat/bmrb
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+cp -p data/[a-z]* $targetdir
+chmod a+r $targetdir/*[a-z]
+
+echo "Creating the data directory ($datahome)"
 set targetdir = $datahome
 if (! -e $targetdir) then
-  mkdir $targetdir
+  mkdir -p $targetdir
 endif
 chmod a+rwx $targetdir
-cp -p html/* $targetdir
+
+set targetdir = $datahome/vis_server
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+
+
+# Create and set up the html directory.
+
+echo "Creating the html directory ($htmlhome)"
+set targetdir = $htmlhome
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+
+cp -p html/[a-z]* $targetdir
 chmod a+r $targetdir/help*
 chmod a+r $targetdir/*.jpg
 chmod a+r $targetdir/*.gif
 chmod a+r $targetdir/*.txt
-chmod a+r $targetdir/label.dat
-chmod a+r $targetdir/*.base
 #find $targetdir -name \* -type f -exec chmod a+r {} \;
 
 
@@ -162,8 +199,12 @@ chmod a+r $targetdir/*.base
 
 echo "Creating html link ($pephome/html)"
 set targetdir = $pephome/html
+if (-e $targetdir) then
+  # Need to change any previous installation.
+  rm $targetdir
+endif
 if (! -e $targetdir) then
-  ln -s $datahome $targetdir
+  ln -s $htmlhome $targetdir
 endif
 
 
@@ -172,19 +213,45 @@ endif
 echo "Creating CGI directory ($cgihome)"
 set targetdir = $cgihome
 if (! -e $targetdir) then
-  mkdir $targetdir
+  mkdir -p $targetdir
 endif
 chmod a+rx $targetdir
-cp -p cgi-bin/make_view $targetdir
-chmod a+rx $targetdir/make_view
-cp -p cgi-bin/s2d $targetdir
-chmod a+rx $targetdir/s2d
-cp -p cgi-bin/set_modes $targetdir
-chmod a+rx $targetdir/set_modes
-cp -p cgi-bin/s2d.props $targetdir
-chmod a+rx $targetdir/s2d.props
-cp -p cgi-bin/connections $targetdir
-chmod a+rx $targetdir/connections
+
+set executables = (make_view get_version get_version_cgi s2d vsc set_modes \
+	test_all)
+foreach exec ($executables)
+  cp -p cgi-bin/$exec $targetdir
+  chmod a+rx $targetdir/$exec
+end
+
+set files = (s2d.props error_email s2d.jar)
+
+foreach file ($files)
+  cp -p cgi-bin/$file $targetdir
+  chmod a+r $targetdir/$file
+end
+
+set dirs = (chem_info html_templates session_templates)
+foreach dir ($dirs)
+  cp -p -r $dir $targetdir
+  chmod a+rx $targetdir/$dir
+  chmod a+r $targetdir/$dir/*
+end
+
+cd cgi-bin
+set dirs = (test_data tests)
+foreach dir ($dirs)
+  cp -p -r $dir $targetdir
+  chmod a+rx $targetdir/$dir
+  chmod a+r $targetdir/$dir/*
+end
+chmod a+rx $targetdir/tests/*
+cd ..
+
+if (! -e $targetdir/tmp) then
+  mkdir -p $targetdir/tmp
+endif
+chmod a+rwx $targetdir/tmp
 
 cd cgi-bin
 # Line below only works with GNU tar.
@@ -194,12 +261,36 @@ tar cvf bin.tar bin
 set curdir = `pwd`
 cd $targetdir
 tar xvf $curdir/bin.tar
+
+find . -name CVS -exec \rm -rf {} \;
+
 cd $curdir
 rm bin.tar
 
 cd ..
 chmod a+rx $targetdir/bin
 chmod a+rx $targetdir/bin/java
+
+
+# For Jafar, the jar file actually needs to reside in a different
+# directory.  I'm also leaving it in the "cgi" directory so that
+# tests can be run there.
+
+if ($jarhome != "null") then
+  echo "Linking jar file into $jarhome (for Jafar)"
+
+  set targetdir = $jarhome
+  if (! -e $targetdir) then
+    mkdir -p $targetdir
+  endif
+  chmod a+rx $targetdir
+
+  if (-e $targetdir/s2d.jar) then
+    rm $targetdir/s2d.jar
+  endif
+
+  ln -s $cgihome/s2d.jar $targetdir
+endif
 
 
 # Link data directory to CGI directory.
@@ -219,6 +310,14 @@ if (! -e $targetdir) then
   ln -s $sessionhome $targetdir
 endif
 
+# Link html directory to CGI directory.
+
+echo "Linking html directory to CGI directory"
+set targetdir = $cgihome/html_dir
+if (! -e $targetdir) then
+  ln -s $htmlhome $targetdir
+endif
+
 
 # Link data directory to the DEVise demo area.
 
@@ -229,29 +328,24 @@ if (! -e $targetdir) then
 endif
 
 
-# Link session directory to the DEVise demo area.
+# Link session directory to the DEVise demo area.  (Not if Jafar!
+# jarhome is non-null for Jafar.)
 
-echo "Linking session directory to DEVise demo area"
-set targetdir = $demohome/session.js/bmrb/dynamic_sessions
-if (! -e $targetdir) then
-  ln -s $sessionhome $targetdir
+if ($jarhome == "null") then
+  echo "Linking session directory to DEVise demo area"
+  set targetdir = $demohome/session.js/bmrb/dynamic_sessions
+  if (! -e $targetdir) then
+    ln -s $sessionhome $targetdir
+  endif
 endif
-
-
-# Create and set up the java classes directory.
-
-echo "Creating java classes directory for CGI ($cgihome/java_classes)"
-set targetdir = $cgihome/java_classes
-if (! -e $targetdir) then
-  mkdir $targetdir
-endif
-chmod a+rx $targetdir
-cp java_classes/*.class $targetdir
-cp java_classes/*.jar $targetdir
-chmod a+r $targetdir/*.*
 
 
 # Copy the schemas to the demo area.
 
 echo "Copying schemas to the DEVise demo area"
-cp schema/bmrb* $demohome/schema/schema/physical
+set targetdir = $demohome/schema/schema/physical
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rx $targetdir
+cp -p schema/bmrb-* $targetdir

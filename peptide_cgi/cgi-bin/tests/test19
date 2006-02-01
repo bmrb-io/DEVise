@@ -1,0 +1,90 @@
+#! /bin/csh -f
+
+# Tests generating Pistachio visualization from Eldon's sample
+# NMR-STAR (3.0) file.
+
+set result = 0
+
+# Whether to generate the "normal" coordinate visualization.
+set doCoords = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-coords) then
+    set doCoords = 1
+  endif
+endif
+
+rm -f */6318*
+
+# Process the sample Pistachio data.
+echo -n "Processing NMR-STAR for Pistachio data: "
+./s2d -nomail -file test_data/bmr6318_pistachio.str.nmrstr -name 6318 -force \
+  -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+if ($doCoords) then
+  # Generate the "normal" structure visualization, so we can make sure
+  # that it doesn't conflict with the Pistachio visualization.
+  echo -n "Processing NMR-STAR and PDB for coordinate data: "
+  ./s2d -nomail -bmrbid 6318 -pdbid 1xfl -coord_index 1 -do_pdb 2 -force \
+    -check_res_list
+  if ($status != 0) then
+    echo "Second invocation of s2d failed!"
+    set result = 1
+  endif
+endif
+
+
+echo "Checking output files"
+
+set files = (data_dir/6318as1.dat \
+	data_dir/6318d1.dat \
+	data_dir/6318hn1.dat \
+	data_dir/6318md.dat \
+	data_dir/6318p1.dat \
+	data_dir/6318ps1.dat \
+	data_dir/6318psac1.dat \
+	data_dir/6318rc1.dat \
+	data_dir/6318rl1.dat \
+	html_dir/6318as1.html \
+	html_dir/6318d1.html \
+	html_dir/6318hn1.html \
+	html_dir/6318p1.html \
+	html_dir/6318ps1.html \
+	html_dir/6318y.html \
+	session_dir/6318acdd \
+	session_dir/6318as1.ds \
+	session_dir/6318d1.ds \
+	session_dir/6318hn1.ds \
+	session_dir/6318p1.ds \
+	session_dir/6318ps1.ds \
+	data_dir/6318am1.dat \
+	html_dir/6318am1.html \
+	session_dir/6318am1.ds)
+
+if ($doCoords) then
+  set files = ($files \
+	data_dir/6318ac1.dat \
+	html_dir/6318ac1.html \
+	session_dir/6318ac1.ds)
+endif
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test19 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

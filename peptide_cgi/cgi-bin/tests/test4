@@ -1,0 +1,51 @@
+#! /bin/csh -f
+
+# Tests BMRB 4096 (a special case because it has coordinates).
+
+set result = 0
+
+rm -f */4096*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4096 -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = (data_dir/4096ac1.dat data_dir/4096as1.dat data_dir/4096c1.dat \
+	data_dir/4096d1.dat data_dir/4096g1.dat data_dir/4096hn1.dat \
+	data_dir/4096md.dat data_dir/4096n1.dat data_dir/4096p1.dat \
+	data_dir/4096rc1.dat data_dir/4096rl1.dat data_dir/4096t11.dat \
+	data_dir/4096t21.dat data_dir/4096t22.dat html_dir/4096ac1.html \
+	html_dir/4096as1.html html_dir/4096c1.html html_dir/4096d1.html \
+	html_dir/4096g1.html html_dir/4096hn1.html html_dir/4096n1.html \
+	html_dir/4096p1.html html_dir/4096t11.html html_dir/4096t21.html \
+	html_dir/4096t22.html html_dir/4096y.html session_dir/4096ac1.ds \
+	session_dir/4096acdd session_dir/4096as1.ds session_dir/4096c1.ds \
+	session_dir/4096d1.ds session_dir/4096g1.ds session_dir/4096hn1.ds \
+	session_dir/4096n1.ds session_dir/4096p1.ds session_dir/4096t11.ds \
+	session_dir/4096t21.ds session_dir/4096t22.ds \
+	data_dir/4096am1.dat \
+	html_dir/4096am1.html \
+	session_dir/4096am1.ds)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test4 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

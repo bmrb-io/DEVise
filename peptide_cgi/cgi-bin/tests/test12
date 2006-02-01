@@ -1,0 +1,69 @@
+#! /bin/csh -f
+
+# Tests chem shift reference processing (needs stuff on leech at BMRB
+# to work right).
+
+set result = 0
+
+rm -f */test12_out*
+rm -f */*/test12_out*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./vsc -file test_data/bmr4081.str -name test12_out -do_csr 2 \
+  -csr_data_dir data_dir -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of vsc failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = (data_dir/vis_server/test12_outac1.dat \
+	data_dir/vis_server/test12_outas1.dat \
+	data_dir/vis_server/test12_outc1.dat \
+	data_dir/vis_server/test12_outcsr1_1.dat \
+	data_dir/vis_server/test12_outcsr1_2.dat \
+	data_dir/vis_server/test12_outcsr1_3.dat \
+	data_dir/vis_server/test12_outcsr1_4.dat \
+	data_dir/vis_server/test12_outd1.dat \
+	data_dir/vis_server/test12_outhn1.dat \
+	data_dir/vis_server/test12_outmd.dat \
+	data_dir/vis_server/test12_outp1.dat \
+	data_dir/vis_server/test12_outrc1.dat \
+	data_dir/vis_server/test12_outrl1.dat \
+	html_dir/test12_outac1.html \
+	html_dir/test12_outas1.html \
+	html_dir/test12_outc1.html \
+	html_dir/test12_outcsr11.html \
+	html_dir/test12_outcsr21.html \
+	html_dir/test12_outd1.html \
+	html_dir/test12_outhn1.html \
+	html_dir/test12_outp1.html \
+	html_dir/test12_outy.html \
+	session_dir/vis_server/test12_outac1.ds \
+	session_dir/vis_server/test12_outacdd \
+	session_dir/vis_server/test12_outas1.ds \
+	session_dir/vis_server/test12_outc1.ds \
+	session_dir/vis_server/test12_outcsr11.ds \
+	session_dir/vis_server/test12_outcsr21.ds \
+	session_dir/vis_server/test12_outd1.ds \
+	session_dir/vis_server/test12_outhn1.ds \
+	session_dir/vis_server/test12_outp1.ds)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test12 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

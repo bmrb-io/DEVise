@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2004
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -23,6 +23,13 @@
 
 use strict;
 
+my($show_warnings) = 0;
+my($save_warning_output) = 0;
+
+mkdir "session_dir/bad_sessions";
+mkdir "data_dir/bad_data";
+mkdir "html_dir/bad_html";
+
 my($err_file);
 $err_file = "error_summary";
 unlink $err_file;
@@ -30,12 +37,12 @@ open(ERRFILE, ">$err_file") or die "Can't open error summary file: $!\n";
 
 #TEMP -- arg for file name??
 my($input_file);
-$input_file = "star_file_list.html";
+$input_file = "star_file_list.txt";
 open(INPUT, $input_file) or die "Can't open $input_file: $!\n";
 
 my($line);
 while ($line = <INPUT>) {
-  if ($line =~ m/".*(bmr.*\.str)"/) {
+  if ($line =~ m/bmrbId=(.{1,4})>/) {
     my($star_file);
     $star_file = $1;
     test_star($star_file);
@@ -63,30 +70,41 @@ sub test_star {
   $dat_names = $star_num . '*.dat';
   $html_names = $star_num . '*.html';
   $sess_names = $star_num . '*.ds';
-  if (system("./s2d $star_num")) {
+
+  my $cmd = "./s2d -nomail -bmrbid $star_num -do_pdb 1";
+  my $result = `$cmd`;
+  chomp $result;
+
+  if ($result ne "OK") {
     print STDERR "ERROR processing star file $star_name\n";
     print ERRFILE "-----------------\n";
     print ERRFILE "ERROR processing star file $star_name\n\n";
     copy_resfile();
 
-    system("mv s2d.out s2d.out.$star_num");
+    system("mv tmp/s2d.out tmp/s2d.out.$star_num");
     system("mv data_dir/$dat_names data_dir/bad_data");
     system("mv data_dir/$html_names data_dir/bad_data");
     system("mv session_dir/$sess_names session_dir/bad_sessions");
-  } elsif (-s "s2d.out") {
+  } elsif ($show_warnings && -s "tmp/s2d.out") {
     print STDERR "Possible error or warning processing star file $star_name\n";
     print ERRFILE "-----------------\n";
     print ERRFILE "Possible error or warning processing star file $star_name\n\n";
     copy_resfile();
 
-    system("mv s2d.out s2d.out.$star_num");
-    system("mv data_dir/$dat_names data_dir/bad_data");
-    system("mv data_dir/$html_names data_dir/bad_data");
-    system("mv session_dir/$sess_names session_dir/bad_sessions");
+    system("mv tmp/s2d.out tmp/s2d.out.$star_num");
+    if ($save_warning_output) {
+      system("mv data_dir/$dat_names data_dir/bad_data");
+      system("mv html_dir/$html_names html_dir/bad_html");
+      system("mv session_dir/$sess_names session_dir/bad_sessions");
+    } else {
+      system("rm data_dir/$dat_names");
+      system("rm html_dir/$html_names");
+      system("rm session_dir/$sess_names");
+    }
   } else {
     print "Successfully processed star file $star_name\n";
     system("rm data_dir/$dat_names");
-    system("rm data_dir/$html_names");
+    system("rm html_dir/$html_names");
     system("rm session_dir/$sess_names");
   }
 }
@@ -99,7 +117,7 @@ sub test_star {
 
 sub copy_resfile {
   my($resfile);
-  $resfile = "s2d.out";
+  $resfile = "tmp/s2d.out";
   open(RESULT, $resfile) or die "Can't open $resfile: $!\n";
 
 

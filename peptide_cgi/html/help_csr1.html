@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Chemical Shift Difference Histograms Help Page</title>
+</head>
+<body bgcolor = white>
+
+<h2>Observed vs. Predicted Chemical Shift Difference Histograms</h2>
+
+<p>
+The main plot shows a histogram of the differences between the
+actual and predicted chemical shift values, for the type of atom
+selected by the cursor in the bottom plot.  For CA and CB,
+values from all residues are shown; for other atoms, only
+values from residues with helix and sheet secondary structures
+are shown.
+</p>
+
+<p>
+The average and tolerance for CA and CB include values from all
+residues; the average and tolerance for all of the other atoms
+include only values from residues belonging to helices or beta strands.
+</p>
+
+<p>
+All GLY HA2 and HA3 assignments are excluded from the plots and
+calculations.  All shifts from residues with large backbone 
+B-factors (1.6 larger than the average) in the corresponding 
+X-ray structure are excluded from the plots and calculations.
+</p>
+
+<p>
+The N predicted shifts of SER, THR and GLY are excluded from all
+calculations.
+</p>
+
+<p>
+All chemical shift referencing correction calculations exclude large
+outliers, i.e.
+<ul>
+<li>CA, CB, C shifts that differ by more than 6.0 ppm from predicted
+values
+<li>N shifts that differ by more than 13.0 ppm from predicted values
+<li>HA shifts that differ by more than 1.0 ppm from predicted values
+</ul>
+</p>
+
+<p>
+For all atoms a chemical shift referencing correction is
+needed (advised) if the average deviation is larger than
+
+<pre>
+    3*rmsd(atom)/sqrt(N(atom))
+</pre>
+
+i.e., only if the average deviation exceeds by more than a factor
+of three the expected random variation in this average. The width
+of the brown area represents this maximum expected average deviation
+and the suggested correction corresponds ONLY to cases when
+the origin of the chemical shift difference axis lies outside
+the brown area.  Only in these cases is there a need for a
+referencing correction in the amount (in ppm) indicated by the
+position of the thick orange line (the average deviation).
+</p>
+
+<p>
+The chemical shift referencing correction method uses chemical
+shift values simulated by the DC program included in the
+NMRPipe package (<a href="http://spin.niddk.nih.gov/NMRPipe/dynamo/">
+http://spin.niddk.nih.gov/NMRPipe/dynamo/</a>).
+</p>
+
+<!-- $Id$ -->
+
+<br><a href="javascript:history.back()">Go back.</a>
+
+</body>
+</html>

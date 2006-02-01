@@ -1,13 +1,93 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html><head><title>Atomic Coordinates Help Page</title></head><body
-bgcolor = white>
+<html>
+<head>
+<title>Atomic Coordinates Help Page</title>
+</head>
+<body bgcolor = white>
 
 <h2>Atomic Coordinates</h2>
 
-<p>TEMPTEMP
-<p>Help information is not yet available for chemical shift distributions
-by amino acid.
+<p>
+This visualization shows the 3D structure of the relevant molecule,
+in combination with all of the other data available for this entry.
+</p>
 
-<!-- $Id -->
+<p>
+The visualization is laid out as shown below; the view names are
+referred to in the text.
+</p>
 
-<br><br><a href="javascript:history.back()">Go back.</a></body></html>
+<p>
+<center>
+<img src="coordinate_vis.gif">
+</center>
+</p>
+
+<p>
+The <strong>structure (main) view</strong> shows the 3D structure.
+The sections of the structure belonging to residues selected in the
+data view are highlighted in green.  All other atoms are colored as
+follows:
+</p>
+<ul>
+<li>Carbon: gray
+<li>Oxygen: red
+<li>Nitrogen: blue
+<li>Sulfur: orange
+<li>Phosphorus: pink
+<li>Hydrogen: white
+</ul>
+
+<p>
+The <strong>data view</strong> shows one of the data sets available
+for this entry.  The cursor in this view selects residues according
+to the data values -- residues for which the red tip of the bar are
+enclosed in the cursor are selected.
+</p>
+
+<p>
+The <strong>data scroll view</strong> scrolls the X axis of the data
+view.  The cursor selects the range of residues shown in the data view
+-- you can drag the entire cursor, or drag the left or right edge to
+change its size.
+</p>
+
+<p>
+The <strong>data select view</strong> selects which data set is shown
+in the data view.  All available data sets for the current entry are
+shown in this view; by dragging the cursor you select which data set
+is shown.
+</p>
+
+<p>
+The <strong>atom select view</strong> selects which atoms are shown
+the structure view (backbone, backbone and side chains, or backbone,
+side chains, and hydrogens).
+</p>
+
+<p>
+The <strong>residue list view</strong> lists the residue number
+and amino acid for each residue.  Residues selected in the data
+view are highlighted in green in this view.  The cursor (which
+is linked to the cursor in the residue select view) selects which
+residues are shown in the structure view.
+</p>
+
+<p>
+The <strong>residue list scroll view</strong> scrolls the residue
+list view.  The cursor can be dragged to select the range of residues
+shown (note that this cursor is fixed-size).
+</p>
+
+<p>
+The <strong>residue select view</strong> selects which residues are
+shown in the structure view -- all residues within the cursor are
+shown.  This cursor is a variable-size cursor.
+</p>
+
+<!-- $Id$ -->
+
+<br><a href="javascript:history.back()">Go back.</a>
+
+</body>
+</html>

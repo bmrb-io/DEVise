@@ -1,0 +1,11 @@
+# Data: summary of available datasets for Pistachio visualizations
+# Schema: bmrb-summary
+# Attributes: name; data_source; y_attribute
+# $Id$
+#
+H < 95%		-	$hnLT95
+H >= 95%		-	$hnGE95
+Side chain < 95%	-	$sideChainLT95
+Side chain >= 95%	-	$sideChainGE95
+Backbone < 95%		-	$backboneLT95
+Backbone >= 95%		-	$backboneGE95

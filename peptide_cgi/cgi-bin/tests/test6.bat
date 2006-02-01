@@ -1,0 +1,3 @@
+java -classpath s2d.jar -mx50000000 star2devise.S2DMain -file csr_sample.dat -name test6_out -do_csr 2 -force -data_dir data_dir\vis_server -js_data_dir bmrb\dynamic_data\vis_server -session_dir session_dir\vis_server -html_dir html_dir -conn_file chem_info\connections -no_protein_check -do_pdb 2 -csr_data_dir data_dir -no_scripts -check_res_list
+
+REM for kamba: d:\jdk1.3.1\bin\java -classpath s2d.jar -mx50000000 star2devise.S2DMain -file csr_sample.dat -name test6_out -do_csr 2 -force -data_dir N:\jafardev\data_dir -js_data_dir .jafardev -session_dir session_dir -html_dir html_dir -conn_file chem_info\connections -no_protein_check -do_pdb 2 -csr_data_dir data_dir -no_scripts -check_res_list

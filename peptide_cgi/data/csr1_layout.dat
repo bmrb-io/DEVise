@@ -1,0 +1,90 @@
+# $Id$
+# Attributes: view; x; y; z; width; height; pile
+
+# Note: View 1 and View 3 display the "main" data; View 1 has a helix/sheet
+# record link, View 3 does not.
+
+#-----------------------------------------------
+# For C.
+View 8	0.0	1.025	0.0	1.0	0.05	none
+View 13	0.0	0.975	0.0	1.0	0.05	none
+
+View 14	-0.465	0.52	0.0	0.03	0.86	none
+
+View 9	0.025	0.52	0.0	0.95	0.86	Helix and Sheet
+# Note: view 10 is only there to have outline in b/w print mode.
+View 10	0.025	0.52	0.1	0.95	0.86	Helix and Sheet
+View 16	0.025	0.52	0.5	0.95	0.86	Helix and Sheet
+View 1	0.025	0.52	1.0	0.95	0.86	Helix and Sheet
+
+View 12	0.025	0.08	0.0	0.95	0.05	none
+
+View 7	0.0	0.025	0.0	1.0	0.05	none
+
+#-----------------------------------------------
+# For CA.
+View 8	1.0	1.025	0.0	1.0	0.05	none
+View 13	1.0	0.975	0.0	1.0	0.05	none
+
+View 14	0.535	0.52	0.0	0.03	0.86	none
+
+View 9	1.025	0.52	0.0	0.95	0.86	All Residues
+# Note: view 10 is only there to have outline in b/w print mode.
+View 10	1.025	0.52	0.1	0.95	0.86	All Residues
+View 16	1.025	0.52	0.5	0.95	0.86	All Residues
+View 3	1.025	0.52	1.0	0.95	0.86	All Residues
+
+View 12	1.025	0.08	0.0	0.95	0.05	none
+
+View 7	1.0	0.025	0.0	1.0	0.05	none
+
+#-----------------------------------------------
+# For CB.
+View 8	2.0	1.025	0.0	1.0	0.05	none
+View 13	2.0	0.975	0.0	1.0	0.05	none
+
+View 14	1.535	0.52	0.0	0.03	0.86	none
+
+View 9	2.025	0.52	0.0	0.95	0.86	All Residues
+# Note: view 10 is only there to have outline in b/w print mode.
+View 10	2.025	0.52	0.1	0.95	0.86	All Residues
+View 16	2.025	0.52	0.5	0.95	0.86	All Residues
+View 3	2.025	0.52	1.0	0.95	0.86	All Residues
+
+View 12	2.025	0.08	0.0	0.95	0.05	none
+
+View 7	2.0	0.025	0.0	1.0	0.05	none
+
+#-----------------------------------------------
+# For N.
+View 8	3.0	1.025	0.0	1.0	0.05	none
+View 13	3.0	0.975	0.0	1.0	0.05	none
+
+View 14	2.535	0.52	0.0	0.03	0.86	none
+
+View 9	3.025	0.52	0.0	0.95	0.86	Helix and Sheet
+# Note: view 10 is only there to have outline in b/w print mode.
+View 10	3.025	0.52	0.1	0.95	0.86	Helix and Sheet
+View 16	3.025	0.52	0.5	0.95	0.86	Helix and Sheet
+View 1	3.025	0.52	1.0	0.95	0.86	Helix and Sheet
+
+View 12	3.025	0.08	0.0	0.95	0.05	none
+
+View 7	3.0	0.025	0.0	1.0	0.05	none
+
+#-----------------------------------------------
+# For HA.
+View 8	4.0	1.025	0.0	1.0	0.05	none
+View 13	4.0	0.975	0.0	1.0	0.05	none
+
+View 14	3.535	0.52	0.0	0.03	0.86	none
+
+View 9	4.025	0.52	0.0	0.95	0.86	Helix and Sheet
+# Note: view 10 is only there to have outline in b/w print mode.
+View 10	4.025	0.52	0.1	0.95	0.86	Helix and Sheet
+View 16	4.025	0.52	0.5	0.95	0.86	Helix and Sheet
+View 1	4.025	0.52	1.0	0.95	0.86	Helix and Sheet
+
+View 12	4.025	0.08	0.0	0.95	0.05	none
+
+View 7	4.0	0.025	0.0	1.0	0.05	none

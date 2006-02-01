@@ -1,0 +1,65 @@
+#! /bin/csh -f
+
+set result = 0
+
+rm */test5c_out* >& /dev/null
+rm */*/test5c_out* >& /dev/null
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./vsc -file vis_server_sample.dat -name test5c_out -do_csr 2 -force
+  -check_res_list
+if ($status != 0) then
+  echo "First invocation of vsc failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMP -- csr2.html, etc?
+set files = (data_dir/vis_server/test5c_outac1.dat \
+	data_dir/vis_server/test5c_outas1.dat \
+	data_dir/vis_server/test5c_outc1.dat \
+	data_dir/vis_server/test5c_outcsr1_1.dat \
+	data_dir/vis_server/test5c_outcsr1_2.dat \
+	data_dir/vis_server/test5c_outcsr1_3.dat \
+	data_dir/vis_server/test5c_outcsr1_4.dat \
+	data_dir/vis_server/test5c_outd1.dat \
+	data_dir/vis_server/test5c_outhn1.dat \
+	data_dir/vis_server/test5c_outmd.dat \
+	data_dir/vis_server/test5c_outp1.dat \
+	data_dir/vis_server/test5c_outrc1.dat \
+	data_dir/vis_server/test5c_outrl1.dat \
+	html_dir/test5c_outac1.html \
+	html_dir/test5c_outas1.html \
+	html_dir/test5c_outc1.html \
+	html_dir/test5c_outcsr1.html \
+	html_dir/test5c_outd1.html \
+	html_dir/test5c_outhn1.html \
+	html_dir/test5c_outp1.html \
+	html_dir/test5c_outy.html \
+	session_dir/vis_server/test5c_outac1.ds \
+	session_dir/vis_server/test5c_outacdd \
+	session_dir/vis_server/test5c_outas1.ds \
+	session_dir/vis_server/test5c_outc1.ds \
+	session_dir/vis_server/test5c_outcsr1.ds \
+	session_dir/vis_server/test5c_outd1.ds \
+	session_dir/vis_server/test5c_outhn1.ds \
+	session_dir/vis_server/test5c_outp1.ds)
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test5c result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

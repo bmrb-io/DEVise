@@ -1,0 +1,20 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# Schema for third set of chemical shift reference data.
+
+# $Id$
+
+type bmrb_csr3 ascii
+comment #
+whitespace ' '
+
+attr helixSheet string 6
+attr atomName string 4
+attr calcAvg float
+attr dbAvg float
+attr stdDev float

@@ -1,15 +1,57 @@
 #! /bin/csh -f
 
-limit filesize 1000
+set domail = 1
+
+if (xx$1 == "xx-nomail") then
+  set domail = 0
+  shift
+endif
+
+
+limit filesize 30000
 # We need a big cpu time limit for 4096.
 limit cputime 1000
 limit coredumpsize 0
 
 unsetenv LD_LIBRARY_PATH
 
-rm -f s2d.out
-rm -f error.log
+set outbase = tmp/s2d.out
+set outfile = $outbase.p$$
+rm -f $outfile
 
-setenv CLASSPATH ./java_classes:./java_classes/starlibj.jar
-bin/java S2DMain $* data_dir session_dir connections >& data_dir/s2d.out
-chmod 644 data_dir/s2d.out
+set path = ($path .)
+# Note: csr_timeout is in front of the args passed in so whatever calls
+# this script can override the value set here.
+bin/java -classpath ./s2d.jar -mx50000000 star2devise.S2DMain \
+  -csr_timeout 120 $* \
+  -data_dir data_dir -session_dir session_dir -html_dir html_dir \
+  -conn_file chem_info/connections >& $outfile
+set failed = $status
+
+chmod 644 $outfile
+
+if ($failed && $domail) then
+  set header = "Error message from s2d on `hostname`"
+
+  set errfile = data_dir/s2d_err.p$$
+  echo $header > $errfile
+  echo "" >> $errfile
+  echo "Arguments: $*" >> $errfile
+  echo "" >> $errfile
+  bin/java star2devise.S2DMain -version >> $errfile
+  echo "" >> $errfile
+  cat $outfile >> $errfile
+
+  cat $errfile | mail -s "$header" `cat error_email`
+  rm -f $errfile
+endif
+
+rm -f $outbase
+mv $outfile $outbase
+
+if ($failed) then
+  echo FAILED
+  exit 1
+else
+  echo OK
+endif

@@ -1,0 +1,51 @@
+<html>
+<head>
+  <title>BMRB Data Viewer for bmr4264.str</title>
+</head>
+
+<body bgcolor="white">
+  <table cellspacing=10>
+    <tr>
+      <td><a target = "_blank" href="../../keyboard.html">JavaScreen
+        keyboard shortcuts</a></td>
+      <td><a target = "_blank" href="../../collab.html">JavaScreen
+        collaboration</a></td>
+    </tr>
+    <tr>
+      <td><a href="http://www.cs.wisc.edu/~devise">DEVise home page</a></td>
+    </tr>
+  </table>
+
+  <hr>
+
+  <center> <h2>
+  Dummy title
+  </h2> </center>
+
+  <h3>
+  <p><a target= "nmr_vis_help" href="help_d.html">Help on this visualization</a>
+  </h3>
+
+  <applet code=JavaScreen.jsb.class archive=../../jsb1.jar,../../jsb2.jar width=1024 height=768>
+    <param name="applet" value="JavaScreen.jsb">
+    <param name="debug" value="0">
+    <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
+    <param name="cmdport" value="6666">
+    <param name="imgport" value="6644">
+    <param name="cgiurl" value="/cgi-bin/js.cgi">
+    <param name="rubberbandlimit" value="4x4">
+    <!-- old bgcolor     <param name="bgcolor" value="64+96+0"> -->
+    <param name="bgcolor" value="0+0+0">
+    <param name="screensize" value="1024x768">
+  </applet>
+    
+  <br><br>
+  <center>
+  <h6>Comments?  Contact <a
+    href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
+  </h6>
+  <h6>Problems with the visualization software?  Contact <a
+    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+  </h6>
+  </center>
+</body></html>

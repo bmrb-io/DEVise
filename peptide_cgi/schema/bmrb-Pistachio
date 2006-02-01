@@ -1,0 +1,22 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:56:00
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# $Id$
+
+type bmrb-Pistachio ascii
+comment #
+whitespace ' '
+sorted attr Residue_seq_code int
+
+attr backboneGE95 float
+attr backboneLT95 float
+
+attr sideChainGE95 float
+attr sideChainLT95 float
+
+attr hnGE95 float
+attr hnLT95 float

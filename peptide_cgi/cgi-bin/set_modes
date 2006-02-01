@@ -30,10 +30,11 @@ else
   exit
 endif
 
-set outfile = "data_dir/set_modes.out"
+set outfile = "tmp/set_modes.out"
 if (-e $outfile) then
   rm $outfile
 endif
-touch $outfile
+echo set_modes arguments: $* > $outfile
 
-chmod 644 data_dir/$accNum* session_dir/$accNum* >>& $outfile
+chmod 644 data_dir/$accNum* session_dir/$accNum* html_dir/$accNum* \
+  data_dir/vis_server/$accNum* session_dir/vis_server/$accNum* >>& $outfile

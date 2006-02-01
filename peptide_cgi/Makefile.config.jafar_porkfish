@@ -1,0 +1,86 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001-2004
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile with configuration info for peptide-cgi setup.
+
+#  Edit this makefile according to your system configuration.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+#-----------------------------------------------------------
+
+#-----------------------------------------------------------
+# Directories for executables we need.
+JAVA_BIN = /bin
+PERL_BIN = /bin
+
+#-----------------------------------------------------------
+# Where to find stuff on the web.
+INPUT_WEB_DOMAIN = www.bmrb.wisc.edu
+OUTPUT_WEB_DOMAIN = www.bmrb.wisc.edu
+
+STAR_URL = http://$(INPUT_WEB_DOMAIN)/data_library/files/
+PDB_FILE_URL = ftp://beta.rcsb.org/pub/pdb/uniformity/data/mmCIF.gz/all/
+
+3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
+SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/peptide-cgi/html
+CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi/make_view
+
+#-----------------------------------------------------------
+# Places to install stuff.
+
+# The base of the Sesame setup.
+SESAME_HOME = /usr/local/sesame
+
+# The base of the DEVise demo setup.
+DEV_DEMO_HOME = /p/devise/demo
+
+# For Jafar, we don't actually need any of the stuff that goes
+# in here.
+WWW_HOME = $(DEV_DEMO_HOME)/.junk
+
+# The directory where the "front-end" file will be put.
+PEP_HOME = $(WWW_HOME)/html
+
+# The directory where the CGI script and related stuff will be put.
+CGI_HOME = $(SESAME_HOME)/Tier2/SesameServer
+
+# A directory that the jar file should also appear in (for Jafar).
+JAR_HOME = $(SESAME_HOME)/Tier2/Thirdparty
+
+# The "real" directory (not symlink) for peptide-cgi sessions.
+PEP_SESSION_HOME = $(DEV_DEMO_HOME)/session.js/.jafarbmrb
+
+# The "real" directory (not symlink) for peptide-cgi data.
+PEP_DATA_HOME = $(DEV_DEMO_HOME)/dat/.jafarbmrb
+
+# The "real" directory (not symlink) for peptide-cgi html files.
+PEP_HTML_HOME = $(SESAME_HOME)/Tier2/SesameServer/html_dir
+
+# Machine installation should be done on (optional).
+INSTALL_MACHINE = porkfish
+
+#-----------------------------------------------------------
+# Other.
+
+# User to send email to on errors.
+ERROR_EMAIL = devise@cs.wisc.edu
+
+# Script for uncompressing PDB mmCIF files.
+MY_UNCOMPRESS = my_uncompress_unix
+
+# Default for whether to do the chem shift reference calculation.
+DO_CSR_DEFAULT = 2

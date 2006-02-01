@@ -27,13 +27,15 @@ PERL_BIN = /usr/freeware/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
-WEB_DOMAIN = www.bmrb.wisc.edu
-STAR_URL = http://$(WEB_DOMAIN)/data_library/files/
-PDB_FILE_URL = ftp://beta.rcsb.org/pub/pdb/uniformity/data/mmCIF/all/
-3D_EXAMPLE_URL = http://$(WEB_DOMAIN)/devise/4096_side3h.html
+INPUT_WEB_DOMAIN = www.bmrb.wisc.edu
+OUTPUT_WEB_DOMAIN = www.bmrb.wisc.edu
 
-SUMMARY_PAGE_DIR = http://bmrb.wisc.edu/devise.test/peptide-cgi/html
-CGI_URL = http://bmrb.wisc.edu/cgi-bin/peptide-cgi.test/make_view
+STAR_URL = http://$(INPUT_WEB_DOMAIN)/data_library/files/
+PDB_FILE_URL = ftp://beta.rcsb.org/pub/pdb/uniformity/data/mmCIF.gz/all/
+
+3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
+SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise.test/peptide-cgi/html
+CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi.test/make_view
 
 #-----------------------------------------------------------
 # Places to install stuff.
@@ -49,13 +51,23 @@ PEP_HOME = $(WWW_HOME)/devise.test/peptide-cgi
 # The directory where the CGI script and related stuff will be put.
 CGI_HOME = $(WWW_HOME)/cgi-bin/peptide-cgi.test
 
-# The "real" directory (not symlink) where peptide-cgi sessions will
-# be put.
+# The "real" directory (not symlink) for peptide-cgi sessions.
 PEP_SESSION_HOME = $(PEP_HOME)/session_dir
 
-# The "real" directory (not symlink) where peptide-cgi data (and html
-# files) will be put.
+# The "real" directory (not symlink) for peptide-cgi data.
 PEP_DATA_HOME = $(PEP_HOME)/data_dir
+
+# The "real" directory (not symlink) for peptide-cgi html files.
+PEP_HTML_HOME = $(PEP_HOME)/html_dir
 
 # Machine installation should be done on (optional).
 INSTALL_MACHINE = aden.bmrb.wisc.edu
+
+#-----------------------------------------------------------
+# Other.
+
+# User to send email to on errors.
+ERROR_EMAIL = devise@cs.wisc.edu
+
+# Script for uncompressing PDB mmCIF files.
+MY_UNCOMPRESS = my_uncompress_unix

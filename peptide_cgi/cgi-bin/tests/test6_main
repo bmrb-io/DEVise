@@ -1,0 +1,12 @@
+#! /bin/csh -f
+
+# Tests chem shift reference processing (needs stuff on leech at BMRB
+# to work right).
+
+echo -n "Processing NMR-STAR and chemical shift reference: "
+./vsc -file test_data/csr_sample.dat -name test6_out -do_csr 2 \
+  -csr_data_dir data_dir -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of vsc failed!"
+  exit 1
+endif

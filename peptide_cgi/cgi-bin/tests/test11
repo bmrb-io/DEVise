@@ -1,0 +1,45 @@
+#! /bin/csh -f
+
+# Tests BMRB 4096 (a special case because it has coordinates), NMR-STAR
+# 3.0 version.
+
+set result = 0
+
+rm -f */4096*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -file test_data/bmr4096.str.nmrstr -name 4096 -force \
+  -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/4096ac1.dat data_dir/4096g1.dat \
+	data_dir/4096rl1.dat data_dir/4096md.dat \
+	data_dir/4096n1.dat data_dir/4096t11.dat data_dir/4096t21.dat \
+	data_dir/4096t22.dat html_dir/4096ac1.html html_dir/4096g1.html \
+	html_dir/4096n1.html html_dir/4096t11.html html_dir/4096t21.html \
+	html_dir/4096t22.html html_dir/4096y.html session_dir/4096ac1.ds \
+	session_dir/4096acdd session_dir/4096g1.ds session_dir/4096n1.ds \
+	session_dir/4096t11.ds session_dir/4096t21.ds session_dir/4096t22.ds)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test11 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

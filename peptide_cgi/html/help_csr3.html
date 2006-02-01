@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Chemical Shift Difference by Residues Help Page</title>
+</head>
+<body bgcolor = white>
+
+<h2>Observed vs. Predicted Chemical Shift Values</h2>
+
+<p>
+The main plot graphs all selected chemical shift values by the
+observed value (Y axis) versus the predicted value (X axis).
+The cursor on the left selects which atom type is displayed,
+and the cursor on the bottom selects the secondary structures
+for which data is displayed; the secondary structure is also
+indicated by the color code.  The diagonal white line is the
+line x=y, for reference.
+</p>
+
+<p>
+All GLY HA2 and HA3 assignments are excluded from the plots and
+calculations.  All shifts from residues with large backbone
+B-factors (1.6 larger than the average) in the corresponding
+X-ray structure are excluded from the plots and calculations.
+</p>
+
+<p>
+The N predicted shifts of SER, THR and GLY are excluded from all
+calculations.
+</p>
+
+<p>
+All chemical shift referencing correction calculations exclude large
+outliers, i.e.
+<ul>
+<li>CA, CB, C shifts that differ by more than 6.0 ppm from predicted
+values
+<li>N shifts that differ by more than 13.0 ppm from predicted values
+<li>HA shifts that differ by more than 1.0 ppm from predicted values
+</ul>
+</p>
+
+<p>
+The chemical shift referencing correction method uses chemical
+shift values simulated by the DC program included in the
+NMRPipe package (<a href="http://spin.niddk.nih.gov/NMRPipe/dynamo/">
+http://spin.niddk.nih.gov/NMRPipe/dynamo/</a>).
+</p>
+
+<!-- $Id$ -->
+
+<br><a href="javascript:history.back()">Go back.</a>
+
+</body>
+</html>
