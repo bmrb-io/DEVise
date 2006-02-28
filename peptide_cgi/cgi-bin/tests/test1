@@ -12,7 +12,7 @@ rm -f */4267*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4267 -local -force -check_res_list \
-  -lacs_file test_data/bmr4267_LACS.out
+  -lacs_file test_data/bmr4267_LACS.str
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
