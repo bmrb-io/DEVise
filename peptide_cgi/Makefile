@@ -25,7 +25,7 @@ COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
 JAR_HOME = null
 DO_CSR_DEFAULT = 0
 LACS_LEVEL_DEFAULT = 0
-LACS_NAME_TEMPLATE = bmr*_LACS.out
+LACS_NAME_TEMPLATE = bmr*_LACS.str
 LACS_URL = null
 
 include Makefile.config
