@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:09  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -273,7 +277,8 @@ public class S2DAtomicCoords {
       boolean for2DView) throws S2DException
     {
         if (DEBUG >= 1) {
-	    System.out.println("S2DAtomicCoords.writeBonds()");
+	    System.out.println("S2DAtomicCoords.writeBonds(" +
+	      frameIndex + ")");
 	}
 
 	try {
