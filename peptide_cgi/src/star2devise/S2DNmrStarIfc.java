@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:11  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -712,10 +716,14 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	}
 	if (residueCount != -1) {
 	    if (resList1 != null && residueCount != resList1._resCount) {
-	        throw new S2DError("Residue count disagrees with residue list");
+	        throw new S2DError("Residue count (" + residueCount +
+		  ") disagrees with residue list (" + resList1._resCount +
+		  " residues)");
 	    }
 	    if (resList2 != null && residueCount != resList2._resCount) {
-	        throw new S2DError("Residue count disagrees with residue list");
+		throw new S2DError("Residue count (" + residueCount +
+		  ") disagrees with residue list (" + resList2._resCount +
+		  " residues)");
 	    }
 	}
 

@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:11  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -310,7 +314,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     }
 
     //===================================================================
-    // PROTECTED METHODS
+    // PRIVATE METHODS
 
     // ----------------------------------------------------------------------
     // Set the tag names and values to work for NMR-Star files.

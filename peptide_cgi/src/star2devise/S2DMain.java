@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2006/02/28 15:54:30  wenger
+// Changed version string, slight debug output improvements.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -2669,7 +2672,7 @@ public class S2DMain {
 	    S2DSession.write3DDataSources(writer, _dataSets);
 	    writer.close();
 	} catch (IOException ex) {
-	    throw new S2DError("Unable to save 3D data sources" +
+	    throw new S2DError("Unable to save 3D data sources: " +
 	      ex.toString());
 	}
     }
