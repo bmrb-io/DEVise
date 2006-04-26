@@ -34,7 +34,7 @@ OUTPUT_WEB_DOMAIN = www.bmrb.wisc.edu
 
 STAR_URL = http://$(INPUT_WEB_DOMAIN)/data_library/files/
 STAR_NAME_TEMPLATE = "bmr*.str"
-PDB_FILE_URL = ftp://beta.rcsb.org/pub/pdb/uniformity/data/mmCIF.gz/all/
+PDB_FILE_URL = http://www.rcsb.org/pdb/files/
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
 SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/peptide-cgi/html
