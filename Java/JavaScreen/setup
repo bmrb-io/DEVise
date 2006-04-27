@@ -33,7 +33,7 @@ if (-e bin/devised) then
 endif
 
 cd bin
-ln -s ../../../linux_tao10/generic/devised .
+ln -s ../../../linux_centos/generic/devised .
 if (! -e Tasvir) then
   ln -s /p/devise/public/bin/Tasvir .
 endif

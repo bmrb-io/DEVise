@@ -36,10 +36,10 @@ PERL_BIN2P = /s/std/bin
 # BIN3 is for compiling (Java 1.1).
 JAVA_BIN3 = /s/java-1/bin
 
-POP_DIR = /local.pumori.1/devise/js.test
-SERV_DIR = /local.pumori.1/devise/js.test
-JAR_DIR = /var/home/www/public/test
-CGI_DIR = /var/home/www/cgi-bin/js.test
+POP_DIR = /scratch/devise/js.test
+SERV_DIR = /scratch/devise/js.test
+JAR_DIR = /var/home/www/public/html/devise/test
+CGI_DIR = /var/home/www/public/cgi-bin/js_test
 IDSTR = test
 
 # Where the DEVise sessions, schemas, etc., are installed.
@@ -48,7 +48,7 @@ DEVISE_VIS = /p/devise/demo
 # This is who gets email about any errors.
 ERROR_EMAIL = devise@cs.wisc.edu
 
-INSTALL_HOST = pumori.cs.wisc.edu
+INSTALL_HOST = teal.cs.wisc.edu
 
 # You should probably set this to 0 if you're running more than one JSS
 # on the same machine.
