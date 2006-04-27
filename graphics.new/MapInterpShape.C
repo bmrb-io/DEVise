@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.80  2005/12/06 20:04:07  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.79  2003/01/13 19:25:24  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -754,7 +758,13 @@ FullMapping_BarShape::FindBoundingBoxes(void *gdataArray, int numRecs,
 	tmpMaxW = MAX(tmpMaxW, symWidth);
 	tmpMaxH = MAX(tmpMaxH, ULy - LRy);
 
-    tdMap->SetBoundingBox(dataP, -symWidth / 2.0, ULy, symWidth / 2.0, LRy);
+	Coord xOffset = 0.0;
+	if (tdMap->HasShapeAttr(3)) { // X Offset
+	    xOffset = tdMap->GetShapeAttr(dataP, 3);
+	}
+
+    tdMap->SetBoundingBox(dataP, xOffset - symWidth/2.0, ULy,
+	  xOffset + symWidth/2.0, LRy);
 
     dataP += recSize;
   }
@@ -794,6 +804,9 @@ void FullMapping_BarShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	for(int i = 0; i < numSyms; i++) {
 	char *gdata = (char *)gdataArray[i];
 	Coord x = map->GetX(gdata);
+    if (map->HasShapeAttr(3)) { // X Offset
+	    x += map->GetShapeAttr(gdata, 3);
+	}
 	Coord y = map->GetY(gdata);
 	Coord width = fabs(map->GetSize(gdata)
 			   * map->GetShapeAttr0(gdata));
@@ -1236,6 +1249,59 @@ void FullMapping_HorLineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	recordsProcessed = numSyms;
 }
 
+// -----------------------------------------------------------------
+void FullMapping_SegmentShape::FindBoundingBoxes(void *gdataArray,
+		int numRecs, TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight)
+{
+#if defined(DEBUG)
+    printf("FullMapping_SegmentShape::FindBoundingBoxes(%d)\n", numRecs);
+#endif
+
+    const GDataAttrOffset *offsets = tdMap->GetGDataOffset();
+
+    if (offsets->_bbULxOffset < 0 && offsets->_bbULyOffset < 0 &&
+        offsets->_bbLRxOffset < 0 && offsets->_bbLRyOffset < 0) {
+#if defined(DEBUG)
+	  printf("  Bounding box is constant\n");
+#endif
+	  // Just do one record, since they're all the same.
+      numRecs = 1;
+	  gdataArray = NULL; // because accessing GData is an error here
+    } else {
+#if defined(DEBUG)
+	  printf("  Bounding box is variable\n");
+#endif
+    }
+
+    char *dataP = (char *)gdataArray; // char * for ptr arithmetic
+    int recSize = tdMap->GDataRecordSize();
+    Coord tmpMaxW = 0.0;
+    Coord tmpMaxH = 0.0;
+    for (int recNum = 0; recNum < numRecs; recNum++) {
+      Coord symSize = tdMap->GetSize(dataP);
+      Coord symWidth = symSize * tdMap->GetShapeAttr0(dataP);
+      Coord symHeight = symSize * tdMap->GetShapeAttr1(dataP);
+
+      tmpMaxW = MAX(tmpMaxW, symWidth);
+      tmpMaxH = MAX(tmpMaxH, symHeight);
+
+	  Coord halfWidth = symWidth / 2.0;
+	  Coord halfHeight = symHeight / 2.0;
+
+	  Coord xOffset = 0.0;
+	  if (tdMap->HasShapeAttr(3)) { // X Offset
+	    xOffset = tdMap->GetShapeAttr(dataP, 3);
+	  }
+
+      tdMap->SetBoundingBox(dataP, xOffset - halfWidth, halfHeight,
+	      xOffset + halfWidth, -halfHeight);
+
+      dataP += recSize;
+    }
+
+    maxWidth = tmpMaxW;
+    maxHeight = tmpMaxH;
+}
 
 // -----------------------------------------------------------------
 
@@ -1267,7 +1333,7 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	Boolean fixedSymSize = (offset->_shapeAttrOffset[0] < 0 &&
 				offset->_shapeAttrOffset[1] < 0 ? true : false);
 
-	if (fixedSymSize) {
+	if (fixedSymSize && !map->HasShapeAttr(3)) {
 	Coord maxWidth = map->GetShapeAttr0(NULL);
 	Coord maxHeight = map->GetShapeAttr1(NULL);
 
@@ -1296,6 +1362,9 @@ void FullMapping_SegmentShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	  * map->GetShapeAttr1(gdata);
 	h *= pixelSize;
 	Coord x = map->GetX(gdata) - w / 2;
+    if (map->HasShapeAttr(3)) { // X Offset
+	    x += map->GetShapeAttr(gdata, 3);
+	}
 	Coord y = map->GetY(gdata) - h / 2;
 
 	win->SetForeground(map->GetColor(gdata));
@@ -2843,11 +2912,11 @@ FullMapping_LineShape::FindBoundingBoxes(void *gdataArray,
   char *dataP = (char *)gdataArray; // char * for ptr arithmetic
   int recSize = tdMap->GDataRecordSize();
   for (int recNum = 0; recNum < numRecs; recNum++) {
-	Coord x = 0.0;
-	if (tdMap->HasShapeAttr(3)) {
-		x = tdMap->GetShapeAttr(dataP, 3);
+	Coord xOffset = 0.0;
+	if (tdMap->HasShapeAttr(3)) { // X Offset
+		xOffset = tdMap->GetShapeAttr(dataP, 3);
 	}
-    tdMap->SetBoundingBox(dataP, x, 0.0, x, 0.0);
+    tdMap->SetBoundingBox(dataP, xOffset, 0.0, xOffset, 0.0);
     dataP += recSize;
   }
 
@@ -2886,12 +2955,12 @@ void FullMapping_LineShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 		// Get values for this point.
 		char* gdata = (char *)gdataArray[index];
 		Coord ptX = map->GetX(gdata);
+	    if (map->HasShapeAttr(3)) { // X Offset
+		    ptX += map->GetShapeAttr(gdata, 3);
+	    }
 		Coord ptY = map->GetY(gdata);
 		PColorID color = map->GetColor(gdata);
 		Pattern pattern = map->GetPattern(gdata);
-	    if (map->HasShapeAttr(3)) {
-		    ptX += map->GetShapeAttr(gdata, 3);
-	    }
 
 	    if (_drawDotsOnly) {
 			// First pass (unordered data) -- we just draw a dot at

@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.59  2005/12/06 20:04:51  wenger
+#       Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#       be the end of the V1_7b0_br branch.)
+#
 #       Revision 1.58.4.5  2005/02/16 18:21:10  wenger
 #       Mapping dialog prints out mapping name (to help with manual session
 #       editing).
@@ -824,14 +828,14 @@ proc UpdateMappings { map params mappings } {
 set DEViseShapeAttrNames { \
 	{Rect Width Height "Cloud Width" "Cloud Height" "Line Width"} \
 	{RectX "Relative Width" "Relative Height" "" "" "Line Width"} \
-	{Bar Width Error "" "" "Line Width"} \
+	{Bar Width Error "" "X Offset" "Line Width"} \
 	{Line "" "" "" "X Offset" "Line Width"} \
 	{"Line Shade" "" "" "" "" ""} \
 	{"Regular Polygon" Width Height Segments "" "Line Width"} \
 	{Oval Width Height "" "" "Line Width"} \
 	{Vector "X Length (Width)" "Y Length (Height)" "" "" "Line Width"} \
 	{HorLine "" "" "" "" "Line Width"} \
-	{Segment Width Height "" "" "Line Width"} \
+	{Segment Width Height "" "X Offset" "Line Width"} \
 	{HighLow Width "Mid" "Low (Y min)" "Color increment" \
 	  "Line Width"} \
 	{Polyline "" "" "" "" ""} \

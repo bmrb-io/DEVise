@@ -25,13 +25,14 @@ BAR - vertical bar (as in a bar graph)
     Attrs:
         0) width
         1) (optional) error (absolute, not relative to bar Y value)
-        4) line width
+        3) (optional) x offset
+        4) (optional) line width
 
 LINE - line (straight, infinite length)
     Shape value: 13
     Attrs:
-        3) x offset
-        4) line width
+        3) (optional) x offset
+        4) (optional) line width
 
 LINESHADE - line (as LINE, but shaded (filled to 0 Y value))
     Shape value: 14
@@ -70,7 +71,8 @@ SEGMENT - line segment (straight, finite length)
         0) x length (width)
         1) y length (height)
         2) z length (depth) (3D only)
-        4) line width
+        3) (optional) x offset
+        4) (optional) line width
 
 HIGHLOW - vertical bar (as in bar graph with the bottoms
 of the bars not at 0)

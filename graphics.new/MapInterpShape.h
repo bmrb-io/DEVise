@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  2001/12/28 18:34:37  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.50  2001/07/19 20:08:26  wenger
   Added X Offset attribute to Line shape (for NRG examples).
 
@@ -279,7 +282,8 @@ class FullMapping_BarShape
       if (offsets->_yOffset >= 0 ||
           offsets->_sizeOffset >= 0 ||
 	  offsets->_shapeAttrOffset[0] >= 0 ||
-	  offsets->_shapeAttrOffset[1] >= 0) {
+	  offsets->_shapeAttrOffset[1] >= 0 ||
+	  offsets->_shapeAttrOffset[3] >= 0) {
         result = true;
       }
       return result;
@@ -370,6 +374,20 @@ class FullMapping_SegmentShape
 : public SegmentShape
 {
   public:
+
+    virtual Boolean BBIsVariable(GDataAttrOffset *offsets) {
+      Boolean result = false;
+      if (offsets->_sizeOffset >= 0 ||
+	  offsets->_shapeAttrOffset[0] >= 0 ||
+	  offsets->_shapeAttrOffset[1] >= 0 ||
+	  offsets->_shapeAttrOffset[3] >= 0) {
+        result = true;
+      }
+      return result;
+    }
+
+    virtual void FindBoundingBoxes(void *gdataArray, int numRecs,
+        TDataMap *tdMap, Coord &maxWidth, Coord &maxHeight);
 
     virtual void DrawGDataArray(WindowRep *win, void **gdataArray,
 				int numSyms, TDataMap *map,
