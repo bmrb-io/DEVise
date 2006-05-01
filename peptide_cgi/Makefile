@@ -82,6 +82,24 @@ testclean:
 	-rm cgi-bin/session_templates cgi-bin/chem_info cgi-bin/html_templates
 	-rm -rf test_data/vis_server
 
+dev_test:
+	mkdir dev_test
+	mkdir dev_test/dat
+	mkdir dev_test/dat/bmrb
+	cd dev_test/dat/bmrb; ln -s ../../../data/* .
+	cd dev_test/dat/bmrb; ln -s ../../../test_data dynamic_data
+	mkdir dev_test/schema
+	touch dev_test/schema/catalog.dte
+	cp /p/devise/demo/schema/schema/catalog.tcl dev_test/schema
+	cp /p/devise/demo/schema/schema/Querycatalog.tcl dev_test/schema
+	mkdir dev_test/schema/physical
+	cd dev_test/schema/physical; ln -s ../../../schema/* .
+	mkdir dev_test/session
+	cd dev_test/session; ln -s ../../test_session bmrb
+
+dev_testclean:
+	-rm -rf dev_test
+
 #  ========================================================================
 
 s2d_props:
