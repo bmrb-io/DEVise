@@ -96,6 +96,7 @@ dev_test:
 	cd dev_test/schema/physical; ln -s ../../../schema/* .
 	mkdir dev_test/session
 	cd dev_test/session; ln -s ../../test_session bmrb
+	cd dev_test/session; ln -s ../../session_templates .
 
 dev_testclean:
 	-rm -rf dev_test

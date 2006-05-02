@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2005
+// (c) Copyright 2000-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2006/05/02 14:31:00  wenger
+// Version changed to 10.9.2 for release.
+//
 // Revision 1.6  2006/04/26 19:12:42  wenger
 // Peptide-CGI now gets mmCIF files from the production PDB http site
 // as opposed to the beta ftp site.
@@ -1124,7 +1127,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "10.9.2";
+    public static final String PEP_CGI_VERSION = "10.9.3x1"/*TEMPTEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.7.18";
 
     private String _masterBmrbId = ""; // accession number the user requested
