@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2006/04/26 19:12:42  wenger
+// Peptide-CGI now gets mmCIF files from the production PDB http site
+// as opposed to the beta ftp site.
+//
 // Revision 1.5  2006/04/12 15:55:48  wenger
 // Improved some error messages, fixed a comment.
 //
@@ -1120,7 +1124,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "10.9.2x2"/*TEMPTEMP*/;
+    public static final String PEP_CGI_VERSION = "10.9.2";
     public static final String DEVISE_MIN_VERSION = "1.7.18";
 
     private String _masterBmrbId = ""; // accession number the user requested
