@@ -1,13 +1,12 @@
 # DEVise startHeader
 # file type: session
-# file date: Dec 03 2004 13:56:20
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: May 03 2006 13:20:58
+# DEVise version: 1.7.19
+# DEVise date: Dec  5 2005
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {NOTE: vis info text must be drawn by DEVise, not the JS, until DEVise/JS 1.7.19 is released.
-$Id$}
+DEVise setSessionDesc {$Id$}
 
 # Load strings table
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/csr1.str
@@ -67,6 +66,7 @@ DEVise dteInsertCatalogEntry . {"csr2_legend" UNIXFILE csr2_legend.dat bmrb-lege
 
 # Create views
 
+# View {View 1} uses mapping {4974csr1_1#diff_vs_resID}
 DEVise create {view} {Scatter} {View 1} 3.250000 63.750000 -4.208000 2.398000 37 0 0 37 0 37
 DEVise setLabel {View 1} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 1} 00000000
@@ -100,6 +100,7 @@ DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
 
+# View {View 2} uses mapping {4974csr1_1#diff_vs_resID 2}
 DEVise create {view} {Scatter} {View 2} 3.250000 63.750000 -2.042000 3.207000 37 9 0 37 0 37
 DEVise setLabel {View 2} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 2} 00000000
@@ -133,6 +134,7 @@ DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
 
+# View {View 3} uses mapping {4974csr1_1#diff_vs_resID 3}
 DEVise create {view} {Scatter} {View 3} -32.100000 32.000000 -4.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {View 3} 0 12 {fdsfsd}
 DEVise setViewStatistics {View 3} 00000000
@@ -166,6 +168,7 @@ DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
 
+# View {View 4} uses mapping {4974csr1_1#diff_vs_resID 4}
 DEVise create {view} {Scatter} {View 4} -32.100000 32.000000 -4.500000 0.500000 37 9 0 37 0 37
 DEVise setLabel {View 4} 0 12 {Chem shift ref diff vs. residue}
 DEVise setViewStatistics {View 4} 00000000
@@ -199,6 +202,7 @@ DEVise setLinkMultFact {View 4} {Y} 1
 DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
 
+# View {View 5} uses mapping {4974csr1_1#diff_vs_resID 5}
 DEVise create {view} {Scatter} {View 5} -32.100000 32.000000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {View 5} 0 12 {fdsfsd}
 DEVise setViewStatistics {View 5} 00000000
@@ -232,6 +236,7 @@ DEVise setLinkMultFact {View 5} {Y} 1
 DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
 
+# View {View 6} uses mapping {4974csr1_1#diff_vs_resID 6}
 DEVise create {view} {Scatter} {View 6} -32.100000 32.000000 -1.500000 -0.500000 37 0 0 37 0 37
 DEVise setLabel {View 6} 0 12 {Chem shift ref diff vs. residue}
 DEVise setViewStatistics {View 6} 00000000
@@ -265,6 +270,7 @@ DEVise setLinkMultFact {View 6} {Y} 1
 DEVise setGAttrLinkMode {View 6} 0
 DEVise setDoHomeOnVisLink {View 6} {1}
 
+# View {View 7} uses mapping {.4974csr1_1#diff_vs_resID}
 DEVise create {view} {Scatter} {View 7} 3.250000 63.750000 -4.208000 2.398000 37 0 0 37 0 37
 DEVise setLabel {View 7} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 7} 00000000
@@ -298,6 +304,7 @@ DEVise setLinkMultFact {View 7} {Y} 1
 DEVise setGAttrLinkMode {View 7} 0
 DEVise setDoHomeOnVisLink {View 7} {1}
 
+# View {View 8} uses mapping {.4974csr1_1#diff_vs_resID 2}
 DEVise create {view} {Scatter} {View 8} 3.250000 63.750000 -4.208000 2.398000 37 0 0 37 0 37
 DEVise setLabel {View 8} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 8} 00000000
@@ -331,6 +338,7 @@ DEVise setLinkMultFact {View 8} {Y} 1
 DEVise setGAttrLinkMode {View 8} 0
 DEVise setDoHomeOnVisLink {View 8} {1}
 
+# View {View 9} uses mapping {.4974csr1_1#diff_vs_resID 3}
 DEVise create {view} {Scatter} {View 9} 3.250000 63.750000 -2.042000 3.207000 37 9 0 37 0 37
 DEVise setLabel {View 9} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 9} 00000000
@@ -364,6 +372,7 @@ DEVise setLinkMultFact {View 9} {Y} 1
 DEVise setGAttrLinkMode {View 9} 0
 DEVise setDoHomeOnVisLink {View 9} {1}
 
+# View {View 10} uses mapping {.4974csr1_1#diff_vs_resID 4}
 DEVise create {view} {Scatter} {View 10} 3.250000 63.750000 -2.042000 3.207000 37 9 0 37 0 37
 DEVise setLabel {View 10} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 10} 00000000
@@ -397,6 +406,7 @@ DEVise setLinkMultFact {View 10} {Y} 1
 DEVise setGAttrLinkMode {View 10} 0
 DEVise setDoHomeOnVisLink {View 10} {1}
 
+# View {View 11} uses mapping {.4974csr1_1#diff_vs_resID 8}
 DEVise create {view} {Scatter} {View 11} -0.500000 0.500000 7.500000 8.500000 37 0 0 37 0 37
 DEVise setLabel {View 11} 1 16 {Chem shift diff vs. residue}
 DEVise setViewStatistics {View 11} 00000000
@@ -430,6 +440,7 @@ DEVise setLinkMultFact {View 11} {Y} 1
 DEVise setGAttrLinkMode {View 11} 0
 DEVise setDoHomeOnVisLink {View 11} {1}
 
+# View {View 12} uses mapping {.4974csr1_1#diff_vs_resID 9}
 DEVise create {view} {Scatter} {View 12} -0.500000 0.500000 6.500000 7.500000 37 0 0 37 0 37
 DEVise setLabel {View 12} 1 16 {Chem shift diff vs. residue}
 DEVise setViewStatistics {View 12} 00000000
@@ -463,6 +474,7 @@ DEVise setLinkMultFact {View 12} {Y} 1
 DEVise setGAttrLinkMode {View 12} 0
 DEVise setDoHomeOnVisLink {View 12} {1}
 
+# View {View 16} uses mapping {.4974csr1_1#diff_vs_resID 10}
 DEVise create {view} {Scatter} {View 16} -0.500000 0.500000 7.500000 8.500000 37 9 0 37 0 37
 DEVise setLabel {View 16} 1 16 {Chem shift diff vs. residue}
 DEVise setViewStatistics {View 16} 00000000
@@ -496,6 +508,7 @@ DEVise setLinkMultFact {View 16} {Y} 1
 DEVise setGAttrLinkMode {View 16} 0
 DEVise setDoHomeOnVisLink {View 16} {1}
 
+# View {View 17} uses mapping {.4974csr1_1#diff_vs_resID 11}
 DEVise create {view} {Scatter} {View 17} -0.500000 0.500000 6.500000 7.500000 37 9 0 37 0 37
 DEVise setLabel {View 17} 1 16 {Chem shift diff vs. residue}
 DEVise setViewStatistics {View 17} 00000000
@@ -529,6 +542,7 @@ DEVise setLinkMultFact {View 17} {Y} 1
 DEVise setGAttrLinkMode {View 17} 0
 DEVise setDoHomeOnVisLink {View 17} {1}
 
+# View {View 18} uses mapping {.4974csr1src#Source_vs_recId}
 DEVise create {view} {Scatter} {View 18} -50.000000 50.000000 -50.000000 50.000000 37 13 0 37 0 37
 DEVise setLabel {View 18} 0 12 {Source() vs. recId}
 DEVise setViewStatistics {View 18} 00000000
@@ -544,7 +558,7 @@ DEVise viewSetImplicitHome {View 18} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 18} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 18} 1 0.500000 1.000000
 DEVise setViewGDS {View 18} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 18} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 18} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View 18} -50 50 10
 DEVise setCountMapping {View 18} 0 {} {} 0
 DEVise viewSetIsHighlight {View 18} 0
@@ -562,6 +576,7 @@ DEVise setLinkMultFact {View 18} {Y} 1
 DEVise setGAttrLinkMode {View 18} 0
 DEVise setDoHomeOnVisLink {View 18} {1}
 
+# View {View 19} uses mapping {.csr2_layout#y_vs_x}
 DEVise create {view} {Scatter} {View 19} -0.600000 0.510000 -0.600000 1.700000 0 0 0 37 0 37
 DEVise setLabel {View 19} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 19} 00000000
@@ -595,6 +610,7 @@ DEVise setLinkMultFact {View 19} {Y} 1
 DEVise setGAttrLinkMode {View 19} 0
 DEVise setDoHomeOnVisLink {View 19} {1}
 
+# View {View 110} uses mapping {.label#Label_text_vs_recId 4}
 DEVise create {view} {Scatter} {View 110} -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
 DEVise setLabel {View 110} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 110} 00000000
@@ -628,6 +644,7 @@ DEVise setLinkMultFact {View 110} {Y} 1
 DEVise setGAttrLinkMode {View 110} 0
 DEVise setDoHomeOnVisLink {View 110} {1}
 
+# View {View 111} uses mapping {.label#Label_text_vs_recId 5}
 DEVise create {view} {Scatter} {View 111} -1.000000 1.000000 -1.000000 1.000000 0 9 0 37 0 37
 DEVise setLabel {View 111} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 111} 00000000
@@ -661,6 +678,7 @@ DEVise setLinkMultFact {View 111} {Y} 1
 DEVise setGAttrLinkMode {View 111} 0
 DEVise setDoHomeOnVisLink {View 111} {1}
 
+# View {View 112} uses mapping {.label#Label_text_vs_recId 6}
 DEVise create {view} {Scatter} {View 112} -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
 DEVise setLabel {View 112} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 112} 00000000
@@ -694,6 +712,7 @@ DEVise setLinkMultFact {View 112} {Y} 1
 DEVise setGAttrLinkMode {View 112} 0
 DEVise setDoHomeOnVisLink {View 112} {1}
 
+# View {View 113} uses mapping {.label#Label_text_vs_recId 7}
 DEVise create {view} {Scatter} {View 113} -1.000000 1.000000 -1.000000 1.000000 0 9 0 37 0 37
 DEVise setLabel {View 113} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 113} 00000000
@@ -727,6 +746,7 @@ DEVise setLinkMultFact {View 113} {Y} 1
 DEVise setGAttrLinkMode {View 113} 0
 DEVise setDoHomeOnVisLink {View 113} {1}
 
+# View {View 114} uses mapping {.label#Label_text_vs_recId 8}
 DEVise create {view} {Scatter} {View 114} -1.000000 1.000000 -1.000000 1.000000 0 9 0 37 0 37
 DEVise setLabel {View 114} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 114} 00000000
@@ -760,6 +780,7 @@ DEVise setLinkMultFact {View 114} {Y} 1
 DEVise setGAttrLinkMode {View 114} 0
 DEVise setDoHomeOnVisLink {View 114} {1}
 
+# View {View 115} uses mapping {.4974csr1_5#View 115}
 DEVise create {view} {Scatter} {View 115} 3.250000 63.750000 -4.208000 2.398000 37 0 0 37 0 37
 DEVise setLabel {View 115} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 115} 00000000
@@ -793,6 +814,7 @@ DEVise setLinkMultFact {View 115} {Y} 1
 DEVise setGAttrLinkMode {View 115} 0
 DEVise setDoHomeOnVisLink {View 115} {0}
 
+# View {View 117} uses mapping {.4974csr1_5#View 117}
 DEVise create {view} {Scatter} {View 117} 3.250000 63.750000 -2.042000 3.207000 37 0 0 37 0 37
 DEVise setLabel {View 117} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 117} 00000000
@@ -826,6 +848,7 @@ DEVise setLinkMultFact {View 117} {Y} 1
 DEVise setGAttrLinkMode {View 117} 0
 DEVise setDoHomeOnVisLink {View 117} {0}
 
+# View {View 116} uses mapping {.label#Label_text_vs_recId 9}
 DEVise create {view} {Scatter} {View 116} 3.250000 63.750000 -4.208000 2.398000 37 0 0 37 0 37
 DEVise setLabel {View 116} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 116} 00000000
@@ -859,6 +882,7 @@ DEVise setLinkMultFact {View 116} {Y} 1
 DEVise setGAttrLinkMode {View 116} 0
 DEVise setDoHomeOnVisLink {View 116} {0}
 
+# View {View 118} uses mapping {.label#Label_text_vs_recId 10}
 DEVise create {view} {Scatter} {View 118} 3.250000 63.750000 -2.042000 3.207000 37 9 0 37 0 37
 DEVise setLabel {View 118} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 118} 00000000
@@ -892,6 +916,7 @@ DEVise setLinkMultFact {View 118} {Y} 1
 DEVise setGAttrLinkMode {View 118} 0
 DEVise setDoHomeOnVisLink {View 118} {0}
 
+# View {View 1110} uses mapping {.csr2_legend#y_vs_x}
 DEVise create {view} {Scatter} {View 1110} -0.500000 3.500000 -1.000000 1.000000 37 0 0 37 0 37
 DEVise setLabel {View 1110} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 1110} 00000000
@@ -925,6 +950,7 @@ DEVise setLinkMultFact {View 1110} {Y} 1
 DEVise setGAttrLinkMode {View 1110} 0
 DEVise setDoHomeOnVisLink {View 1110} {1}
 
+# View {View 1111} uses mapping {.csr2_legend#y_vs_x 2}
 DEVise create {view} {Scatter} {View 1111} -0.500000 3.500000 -1.000000 1.000000 37 0 0 37 0 37
 DEVise setLabel {View 1111} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 1111} 00000000
@@ -958,6 +984,7 @@ DEVise setLinkMultFact {View 1111} {Y} 1
 DEVise setGAttrLinkMode {View 1111} 0
 DEVise setDoHomeOnVisLink {View 1111} {1}
 
+# View {View 119} uses mapping {.4974csr1src#Source_vs_recId 2}
 DEVise create {view} {Scatter} {View 119} -50.000000 50.000000 -50.000000 50.000000 37 13 0 37 0 37
 DEVise setLabel {View 119} 0 12 {Source() vs. recId}
 DEVise setViewStatistics {View 119} 00000000
@@ -973,7 +1000,7 @@ DEVise viewSetImplicitHome {View 119} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 119} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 119} 1 0.500000 1.000000
 DEVise setViewGDS {View 119} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 119} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 119} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View 119} -50 50 10
 DEVise setCountMapping {View 119} 0 {} {} 0
 DEVise viewSetIsHighlight {View 119} 0
@@ -1503,10 +1530,6 @@ DEVise setPileStackState {DEViseWn9} 1
 # Init history of view
 
 DEVise clearViewHistory {View 1}
-DEVise insertViewHistory {View 1} {3.25} {-4.208} {63.75} {2.398} 0
-DEVise insertViewHistory {View 1} {3.5} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 1} {3.25} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 1} {3.25} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 1} {3.5} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 1} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 1} {3.25} {-7.584} {63.75} {8.813} 0
@@ -1523,12 +1546,13 @@ DEVise insertViewHistory {View 1} {3.25} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 1} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 1} {3.25} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 1} {3.25} {-4.208} {63.75} {2.398} 0
+DEVise insertViewHistory {View 1} {3.5} {-4.208} {63.75} {2.398} 0
+DEVise insertViewHistory {View 1} {3.5} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 1} {3.25} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 1} {3.25} {-4.208} {63.75} {2.398} 0
 
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {3.25} {-2.042} {63.75} {3.207} 0
-DEVise insertViewHistory {View 2} {3.5} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 2} {3.25} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 2} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 2} {3.5} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 2} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 2} {3.25} {-7.584} {63.75} {8.813} 0
@@ -1542,6 +1566,9 @@ DEVise insertViewHistory {View 2} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 2} {3.25} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 2} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 2} {3.5} {-2.042} {63.75} {3.207} 0
+DEVise insertViewHistory {View 2} {3.5} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 2} {3.25} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 2} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 2} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 2} {3.25} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 2} {3.25} {-2.042} {63.75} {3.207} 0
@@ -1656,10 +1683,10 @@ DEVise insertViewHistory {View 9} {3.25} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 9} {3.25} {-2.042} {63.75} {3.207} 0
 
 DEVise clearViewHistory {View 10}
-DEVise insertViewHistory {View 10} {3.5} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 10} {3.25} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 10} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 10} {3.25} {-2.042} {63.75} {2.812} 0
+DEVise insertViewHistory {View 10} {3.25} {-2.042} {63.75} {3.207} 0
+DEVise insertViewHistory {View 10} {3.5} {-2.042} {63.75} {3.207} 0
+DEVise insertViewHistory {View 10} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 10} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 10} {3.5} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 10} {3.5} {-7.584} {63.75} {8.813} 0
@@ -1767,10 +1794,6 @@ DEVise clearViewHistory {View 114}
 DEVise insertViewHistory {View 114} {-1} {-1} {1} {1} 0
 
 DEVise clearViewHistory {View 115}
-DEVise insertViewHistory {View 115} {3.25} {-4.208} {63.75} {2.398} 0
-DEVise insertViewHistory {View 115} {3.5} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 115} {3.25} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 115} {3.25} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 115} {3.5} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 115} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 115} {3.25} {-7.584} {63.75} {8.813} 0
@@ -1787,10 +1810,12 @@ DEVise insertViewHistory {View 115} {3.25} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 115} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 115} {3.25} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 115} {3.25} {-4.208} {63.75} {2.398} 0
+DEVise insertViewHistory {View 115} {3.5} {-4.208} {63.75} {2.398} 0
+DEVise insertViewHistory {View 115} {3.5} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 115} {3.25} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 115} {3.25} {-4.208} {63.75} {2.398} 0
 
 DEVise clearViewHistory {View 117}
-DEVise insertViewHistory {View 117} {3.5} {-2.042} {63.75} {3.207} 0
-DEVise insertViewHistory {View 117} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 117} {3.25} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 117} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 117} {3.25} {-2.042} {63.75} {2.812} 0
@@ -1809,12 +1834,10 @@ DEVise insertViewHistory {View 117} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 117} {3.5} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 117} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 117} {3.25} {-2.042} {63.75} {3.207} 0
+DEVise insertViewHistory {View 117} {3.5} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 117} {3.25} {-2.042} {63.75} {3.207} 0
 
 DEVise clearViewHistory {View 116}
-DEVise insertViewHistory {View 116} {3.25} {-4.208} {63.75} {2.398} 0
-DEVise insertViewHistory {View 116} {3.5} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 116} {3.25} {-7.584} {63.75} {8.813} 0
-DEVise insertViewHistory {View 116} {3.25} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 116} {3.5} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 116} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 116} {3.25} {-7.584} {63.75} {8.813} 0
@@ -1831,10 +1854,12 @@ DEVise insertViewHistory {View 116} {3.25} {-4.208} {63.75} {2.398} 0
 DEVise insertViewHistory {View 116} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 116} {3.25} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 116} {3.25} {-4.208} {63.75} {2.398} 0
+DEVise insertViewHistory {View 116} {3.5} {-4.208} {63.75} {2.398} 0
+DEVise insertViewHistory {View 116} {3.5} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 116} {3.25} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 116} {3.25} {-4.208} {63.75} {2.398} 0
 
 DEVise clearViewHistory {View 118}
-DEVise insertViewHistory {View 118} {3.5} {-2.042} {63.75} {3.207} 0
-DEVise insertViewHistory {View 118} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 118} {3.25} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 118} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 118} {3.25} {-2.042} {63.75} {2.812} 0
@@ -1851,6 +1876,8 @@ DEVise insertViewHistory {View 118} {3.5} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 118} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 118} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 118} {3.5} {-2.042} {63.75} {3.207} 0
+DEVise insertViewHistory {View 118} {3.5} {-7.584} {63.75} {8.813} 0
+DEVise insertViewHistory {View 118} {3.25} {-2.042} {63.75} {3.207} 0
 DEVise insertViewHistory {View 118} {3.5} {-7.584} {63.75} {8.813} 0
 DEVise insertViewHistory {View 118} {3.25} {-2.042} {63.75} {3.207} 0
 
