@@ -84,6 +84,7 @@ testclean:
 
 dev_test:
 	mkdir dev_test
+	cd dev_test; ln -s ../scripts/*.pep .
 	mkdir dev_test/dat
 	mkdir dev_test/dat/bmrb
 	cd dev_test/dat/bmrb; ln -s ../../../data/* .

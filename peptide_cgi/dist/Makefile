@@ -42,6 +42,7 @@ peptide-cgi-setup:
 	ln -s ../../bmrb_select.tmpl .
 	ln -s ../../win_tar .
 	ln -s ../../view_entry .
+	ln -s ../../scripts .
 	mkdir cgi-bin; cd cgi-bin; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist cgi-bin-setup; rm Makefile.dist
 	mkdir chem_info; cd chem_info; ln -s ../Makefile.dist .; \
