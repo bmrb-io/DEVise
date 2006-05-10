@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.91  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.90  2003/01/13 19:25:28  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -736,11 +740,26 @@ public:
   virtual void GetVerPanInfo(ViewPanInfo &info) { info = _verPanInfo; }
   virtual void SetVerPanInfo(const ViewPanInfo &info) { _verPanInfo = info; }
 
+  // Whether this view actually should contribute to home on a visual
+  // link *at the current time*.  The result of this method is a combination
+  // of the _doHomeOnVisLink and _doHomeOnVisLinkIfInvisible settings,
+  // and other calculations.
+  Boolean ShouldDoHomeOnVisLink();
+
   // Whether this view should contribute its home when home is done on
   // another view that has a visual link to this view.  (This is a fix
   // for bug 753.  RKW 2002-06-11.)
-  Boolean GetDoHomeOnVisLink();
+  Boolean GetDoHomeOnVisLink() { return _doHomeOnVisLink; }
   void SetDoHomeOnVisLink(Boolean doHome) { _doHomeOnVisLink = doHome; }
+
+  // Whether this view should contribute its home when home is done on
+  // another view that has a visual link to this view, *and this view is
+  // not visible*.  Added to fix a problem with the NRG example for Luis
+  // Populin.  wenger 2006-05-10.
+  Boolean GetDoHomeOnVisLinkIfInvisible() {
+    return _doHomeOnVisLinkIfInvisible; }
+  void SetDoHomeOnVisLinkIfInvisible(Boolean doHome) {
+    _doHomeOnVisLinkIfInvisible = doHome; }
 
   // Returns true iff we have a TData in this view and the TData has valid
   // records.
@@ -957,6 +976,7 @@ public:
   Boolean _inDerivedStartQuery;
 
   Boolean _doHomeOnVisLink;
+  Boolean _doHomeOnVisLinkIfInvisible;
 
 	protected:
 

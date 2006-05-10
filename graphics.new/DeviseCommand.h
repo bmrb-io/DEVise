@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.74  2005/12/06 20:03:50  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.73  2003/01/13 19:25:22  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -2292,6 +2296,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(getDoHomeOnVisLink) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setDoHomeOnVisLinkIfInvisible) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getDoHomeOnVisLinkIfInvisible) 
 DECLARE_CLASS_END
 
 //

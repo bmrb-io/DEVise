@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2005
+  (c) Copyright 1998-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.130  2005/12/06 20:03:50  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.129  2003/01/13 19:25:21  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -8157,6 +8161,66 @@ IMPLEMENT_COMMAND_BEGIN(getDoHomeOnVisLink)
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in getDoHomeOnVisLink\n",
 		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setDoHomeOnVisLinkIfInvisible)
+    // Arguments: <view name> <do home on visual link if view is not visible
+	//   (0 = no; 1 = yes)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        Session::SetDirty();
+
+        ViewGraph *view = (ViewGraph *)View::FindViewByName(argv[1]);
+        if (!view) {
+   	        ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+	    Boolean doHome = (atoi(argv[2]) != 0);
+		view->SetDoHomeOnVisLinkIfInvisible(doHome);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		  "setDoHomeOnVisLinkIfInvisible\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getDoHomeOnVisLinkIfInvisible)
+    // Arguments: <view name>
+    // Returns: <do home on visual link if view is not visible
+	//   (0 = no; 1 = yes)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)View::FindViewByName(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+		Boolean doHome = view->GetDoHomeOnVisLinkIfInvisible();
+
+		const int bufLen = 128;
+		char buf[bufLen];
+		int formatted = snprintf(buf, bufLen, "%d", doHome);
+		if (checkAndTermBuf(buf, bufLen, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		  "getDoHomeOnVisLinkIfInvisible\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

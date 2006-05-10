@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.83  2005/12/06 20:03:43  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.82  2003/01/13 19:25:21  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -856,6 +860,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(sessionIsDirty)
 	REGISTER_COMMAND(setDoHomeOnVisLink)
 	REGISTER_COMMAND(getDoHomeOnVisLink)
+	REGISTER_COMMAND(setDoHomeOnVisLinkIfInvisible)
+	REGISTER_COMMAND(getDoHomeOnVisLinkIfInvisible)
 	REGISTER_COMMAND(cursorHome)
 	REGISTER_COMMAND(setLinkMultFact)
 	REGISTER_COMMAND(getLinkMultFact)

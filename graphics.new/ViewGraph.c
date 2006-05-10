@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.157  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.156  2003/01/13 19:25:28  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -999,6 +1003,7 @@ ViewGraph::ViewGraph(char* name, VisualFilter& initFilter, QueryProc* qp,
   _viewSymParentVal = NULL;
 
   _doHomeOnVisLink = true;
+  _doHomeOnVisLinkIfInvisible = true; // keep existing default
 
   _objectValid.Set();
 }
@@ -3578,9 +3583,11 @@ ViewGraph::SetJSSendP(Boolean drawToScreen, Boolean sendToSocket,
 // Determine whether to contribute this view's home parameters when doing
 // home on a visual link that it's linked to.  Originally, we just returned
 // the _doHomeOnVisLink value, but now we also check if the view's TData
-// has any records.  If not, we always return false.
+// has any records.  If not, we always return false.  We also now check
+// whether the view is visible, and if not whether it should still
+// contribute to the home filter.
 Boolean
-ViewGraph::GetDoHomeOnVisLink()
+ViewGraph::ShouldDoHomeOnVisLink()
 {
 #if defined(DEBUG)
   printf("ViewGraph(%s)::GetDoHomeOnVisLink()\n", GetName());
@@ -3593,6 +3600,14 @@ ViewGraph::GetDoHomeOnVisLink()
 #if defined(DEBUG)
       printf("View %s excluded from home on vis link because it has "
 	      "no TData records\n", GetName());
+#endif
+	  result = false;
+	}
+
+    if (!GetDoHomeOnVisLinkIfInvisible() && !Mapped()) {
+#if defined(DEBUG)
+      printf("View %s excluded from home on vis link because it is "
+	      "not visible\n", GetName());
 #endif
 	  result = false;
 	}
