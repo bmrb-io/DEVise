@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:12  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -209,7 +213,7 @@ public class S2DSpecificHtml {
     {
 	String dataSuffix;
 	String searchString1 = "4264d1";
-	String searchString2 = "4264";
+	String searchString2 = "bmr4264.str";
 	String searchString3 = "help_d.html";
 	String searchString4 = "Dummy title";
 
