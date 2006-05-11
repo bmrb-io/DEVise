@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: May 08 2006 15:46:56
+# file date: May 11 2006 14:42:33
 # DEVise version: 1.7.19
 # DEVise date: Dec  5 2005
 # DEVise endHeader
@@ -1047,7 +1047,7 @@ DEVise viewSetImplicitHome {View 7} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 7} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 7} 1 0.500000 1.000000
 DEVise setViewGDS {View 7} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 7} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 7} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View 7} -1 1 10
 DEVise setCountMapping {View 7} 0 {} {} 0
 DEVise viewSetIsHighlight {View 7} 0
@@ -1619,7 +1619,6 @@ DEVise setPileStackState {DEViseWn14} 1
 # Init history of view
 
 DEVise clearViewHistory {ViewUnselectedDataChild}
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {165.5} {0.666667} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.95} {0} {165.05} {0.9} 0
@@ -1639,9 +1638,9 @@ DEVise insertViewHistory {ViewUnselectedDataChild} {1.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {1.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {165.5} {0.9} 0
+DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {165.5} {0.9} 0
 
 DEVise clearViewHistory {ViewSelectedDataChild}
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {165.5} {0.666667} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0.172222} {165.5} {0.95} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {165.5} {0.666667} 0
@@ -1659,11 +1658,11 @@ DEVise insertViewHistory {ViewSelectedDataChild} {37.95} {0} {45.05} {0.666667} 
 DEVise insertViewHistory {ViewSelectedDataChild} {1} {0} {165} {0.9} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {1.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {1.5} {0} {165.5} {0.9} 0
+DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {165.5} {0.9} 0
 
 DEVise clearViewHistory {ViewDataDotsChild}
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0.172222} {165.5} {0.95} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {165.5} {0.666667} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {165.5} {0.666667} 0
@@ -1681,6 +1680,7 @@ DEVise insertViewHistory {ViewDataDotsChild} {37.95} {0} {45.05} {0.666667} 0
 DEVise insertViewHistory {ViewDataDotsChild} {1} {0.222222} {165} {0.9} 0
 DEVise insertViewHistory {ViewDataDotsChild} {1.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewDataDotsChild} {1.5} {0} {165.5} {0.9} 0
+DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {165.5} {0.9} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {165.5} {0.9} 0
 
@@ -1908,6 +1908,7 @@ DEVise insertViewHistory {View3DHighlight} {-1.6} {-37.1} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DHighlight} {-1.6} {-37.1} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DHighlight} {-1.6} {-37.1} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DHighlight} {-1.6} {-37.1} {19.6} {0.8} 0
+DEVise insertViewHistory {View3DHighlight} {-1.6} {-37.1} {19.6} {0.8} 0
 
 DEVise clearViewHistory {ViewResidueHighlight}
 DEVise insertViewHistory {ViewResidueHighlight} {-1.5} {-40.5} {3} {-0.5} 0
@@ -1921,6 +1922,7 @@ DEVise insertViewHistory {View3DMain_FMCol} {-1.1} {-0.3} {19.1} {36.6} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-0.8} {19.6} {37.1} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-0.8} {19.6} {37.1} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-0.8} {19.6} {37.1} 0
+DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-37.1} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-37.1} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-37.1} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-37.1} {19.6} {0.8} 0

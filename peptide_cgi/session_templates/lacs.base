@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Nov 23 2005 11:35:10
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: May 11 2006 14:52:44
+# DEVise version: 1.7.19
+# DEVise date: Dec  5 2005
 # DEVise endHeader
 
 # Session description
@@ -61,6 +61,7 @@ DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVIS
 
 # Create views
 
+# View {ViewLines} uses mapping {.4081lacs1#line_y1_vs_recId}
 DEVise create {view} {Scatter} ViewLines -7.960000 8.500000 -4.140000 6.590000 37 0 0 37 0 37
 DEVise setLabel {ViewLines} 1 16 {dummy title}
 DEVise setViewStatistics {ViewLines} 00000000
@@ -94,6 +95,7 @@ DEVise setLinkMultFact {ViewLines} {Y} 1
 DEVise setGAttrLinkMode {ViewLines} 0
 DEVise setDoHomeOnVisLink {ViewLines} {0}
 
+# View {ViewPoints} uses mapping {.4081lacs2#Y_coord_val_vs_X_coord_val}
 DEVise create {view} {Scatter} ViewPoints -7.960000 8.500000 -4.140000 6.590000 37 0 0 37 0 37
 DEVise setLabel {ViewPoints} 1 16 {dummy title}
 DEVise setViewStatistics {ViewPoints} 00000000
@@ -127,6 +129,7 @@ DEVise setLinkMultFact {ViewPoints} {Y} 1
 DEVise setGAttrLinkMode {ViewPoints} 0
 DEVise setDoHomeOnVisLink {ViewPoints} {0}
 
+# View {View 3} uses mapping {.lacs_layout1#y_vs_x}
 DEVise create {view} {Scatter} {View 3} -0.550000 0.500000 -0.550000 0.560000 0 0 0 37 0 37
 DEVise setLabel {View 3} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 3} 00000000
@@ -160,6 +163,7 @@ DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
 
+# View {ViewXLabel} uses mapping {.4081lacsc1#ViewXLabel}
 DEVise create {view} {Scatter} ViewXLabel -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
 DEVise setLabel {ViewXLabel} 0 12 {foo() vs. recId}
 DEVise setViewStatistics {ViewXLabel} 00000000
@@ -193,6 +197,7 @@ DEVise setLinkMultFact {ViewXLabel} {Y} 1
 DEVise setGAttrLinkMode {ViewXLabel} 0
 DEVise setDoHomeOnVisLink {ViewXLabel} {1}
 
+# View {ViewYLabel} uses mapping {.4081lacsc1#ViewYLabel}
 DEVise create {view} {Scatter} ViewYLabel -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
 DEVise setLabel {ViewYLabel} 0 12 {foo() vs. recId}
 DEVise setViewStatistics {ViewYLabel} 00000000
@@ -226,6 +231,7 @@ DEVise setLinkMultFact {ViewYLabel} {Y} 1
 DEVise setGAttrLinkMode {ViewYLabel} 0
 DEVise setDoHomeOnVisLink {ViewYLabel} {1}
 
+# View {ViewHeader} uses mapping {.label#ViewHeader}
 DEVise create {view} {Scatter} ViewHeader -1.000000 1.000000 -1.000000 1.000000 0 13 0 37 0 37
 DEVise setLabel {ViewHeader} 0 12 {foo() vs. recId}
 DEVise setViewStatistics {ViewHeader} 00000000
@@ -241,7 +247,7 @@ DEVise viewSetImplicitHome {ViewHeader} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {ViewHeader} 1 0.500000 1.000000
 DEVise viewSetVerPan {ViewHeader} 1 0.500000 1.000000
 DEVise setViewGDS {ViewHeader} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {ViewHeader} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewHeader} 0 1 0 "" 1 " " 1
 DEVise setHistogram {ViewHeader} -1 1 10
 DEVise setCountMapping {ViewHeader} 0 {} {} 0
 DEVise viewSetIsHighlight {ViewHeader} 0
@@ -260,6 +266,7 @@ DEVise setLinkMultFact {ViewHeader} {Y} 1
 DEVise setGAttrLinkMode {ViewHeader} 0
 DEVise setDoHomeOnVisLink {ViewHeader} {1}
 
+# View {ViewPointsDD} uses mapping {.4081lacsp1#Y_coord_val_vs_X_coord_val}
 DEVise create {view} {Scatter} ViewPointsDD -7.960000 8.500000 -4.140000 6.590000 37 0 0 37 0 37
 DEVise setLabel {ViewPointsDD} 1 16 {dummy title}
 DEVise setViewStatistics {ViewPointsDD} 00000000
@@ -298,7 +305,6 @@ DEVise createMappingClass {line_y1_vs_recId}
 DEVise createMappingClass {Y_coord_val_vs_X_coord_val}
 DEVise createMappingClass {y_vs_x}
 DEVise createMappingClass {foo_vs_recId}
-DEVise createMappingClass {bar_vs_foo}
 
 # Create mapping instances (GData)
 
@@ -448,6 +454,7 @@ DEVise insertViewHistory {ViewLines} {-0.029273} {-4.14} {0.868545} {6.59} 0
 DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 
 DEVise clearViewHistory {ViewPoints}
 DEVise insertViewHistory {ViewPoints} {-7.86} {-4.04} {8.4} {6.49} 0
@@ -465,6 +472,7 @@ DEVise insertViewHistory {ViewPoints} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPoints} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPoints} {-0.029273} {-4.14} {0.868545} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
@@ -495,6 +503,7 @@ DEVise insertViewHistory {ViewPointsDD} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPointsDD} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPointsDD} {-0.029273} {-4.14} {0.868545} {6.59} 0
+DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0

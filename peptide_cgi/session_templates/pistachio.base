@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: May 08 2006 16:17:34
+# file date: May 11 2006 14:54:04
 # DEVise version: 1.7.19
 # DEVise date: Dec  5 2005
 # DEVise endHeader
@@ -1047,7 +1047,7 @@ DEVise viewSetImplicitHome {View 7} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 7} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 7} 1 0.500000 1.000000
 DEVise setViewGDS {View 7} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 7} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 7} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View 7} -1 1 10
 DEVise setCountMapping {View 7} 0 {} {} 0
 DEVise viewSetIsHighlight {View 7} 0
@@ -1280,7 +1280,7 @@ DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.219727 0.140625 0.46484
 DEVise create {window} {TileLayout} DEViseWn9 0.164844 0.725586 0.533594 0.127930 0 0
 DEVise create {window} {TileLayout} DEViseWn8 0.156250 0.855469 0.542188 0.022461 0 0
 DEVise create {window} {TileLayout} DEViseWn11 0.849219 0.782227 0.092188 0.123047 1 0
-DEVise create {window} {TileLayout} DEViseWn10 0.012500 0.881836 0.819531 0.072266 0 0
+DEVise create {window} {TileLayout} DEViseWn10 0.012500 0.881836 0.818750 0.072266 0 0
 DEVise create {window} {TileLayout} DEViseWn12 0.437500 0.129883 0.500000 0.047852 1 0
 DEVise create {window} {TileLayout} DEViseWn14 0.011719 0.187500 0.821094 0.027344 0 0
 DEVise create {window} {TileLayout} DEViseWn15 0.156250 0.725586 0.040625 0.127930 0 0
@@ -2029,8 +2029,8 @@ DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.2} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.2} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.2} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.2} {19.6} {0.8} 0
-DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.2} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.4} {19.6} {0.8} 0
+DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.2} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.2} {19.6} {0.8} 0
 DEVise insertViewHistory {View3DMain_FMCol} {-1.6} {-28.2} {19.6} {0.8} 0
 

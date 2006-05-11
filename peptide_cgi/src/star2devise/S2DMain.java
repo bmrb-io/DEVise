@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2006/05/11 19:39:58  wenger
+// Disabled appropriate actions in various views that should have already
+// had this done.
+//
 // Revision 1.9  2006/05/03 18:54:01  wenger
 // Got rid of kludges in chemical shift reference sessions required
 // for pre-1.7.19 DEVise versions.
@@ -1135,7 +1139,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "10.9.3x2"/*TEMPTEMP*/;
+    public static final String PEP_CGI_VERSION = "10.9.3x3"/*TEMPTEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.7.19";
 
     private String _masterBmrbId = ""; // accession number the user requested
