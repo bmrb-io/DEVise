@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Feb 23 2005 11:17:19
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: May 08 2006 16:10:55
+# DEVise version: 1.7.19
+# DEVise date: Dec  5 2005
 # DEVise endHeader
 
 # Session description
@@ -64,6 +64,7 @@ DEVise dteInsertCatalogEntry . {"h_vs_n_legend" UNIXFILE h_vs_n_legend.dat bmrb-
 
 # Create views
 
+# View {View 3} uses mapping {.4267rc1#View 3}
 DEVise create {view} {SortedX} {View 3} -0.500000 1.500000 -0.500000 19.500000 4 0 0 37 0 37
 DEVise setLabel {View 3} 0 12 {AcidName() vs. ResNum}
 DEVise setViewStatistics {View 3} 00000000
@@ -97,6 +98,7 @@ DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
 
+# View {View 4} uses mapping {.4267hn1#AcidName_vs_ResNum 2}
 DEVise create {view} {SortedX} {View 4} -0.500000 1.500000 18.500000 19.500000 4 0 0 37 0 37
 DEVise setLabel {View 4} 0 12 {AcidName() vs. ResNum}
 DEVise setViewStatistics {View 4} 00000000
@@ -130,6 +132,7 @@ DEVise setLinkMultFact {View 4} {Y} 1
 DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
 
+# View {View 5} uses mapping {.4267rc1#AcidName_vs_ResNum}
 DEVise create {view} {SortedX} {View 5} -0.500000 1.500000 -0.500000 19.500000 4 0 0 37 0 37
 DEVise setLabel {View 5} 0 12 {AcidName() vs. ResNum}
 DEVise setViewStatistics {View 5} 00000000
@@ -163,6 +166,7 @@ DEVise setLinkMultFact {View 5} {Y} 1
 DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
 
+# View {View 1} uses mapping {.4267hn1#Hshift_vs_Nshift}
 DEVise create {view} {Scatter} {View 1} -10.305000 -6.285000 -133.210007 -104.180000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {N chem shift vs. H chem shift}
 DEVise setViewStatistics {View 1} 00000000
@@ -196,6 +200,7 @@ DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
 
+# View {View 2} uses mapping {.4267hn1#Hshift_vs_Nshift 2}
 DEVise create {view} {Scatter} {View 2} -10.305000 -6.285000 -133.210007 -104.180000 37 0 0 37 0 37
 DEVise setLabel {View 2} 1 16 {N chem shift vs. H chem shift}
 DEVise setViewStatistics {View 2} 00000000
@@ -229,6 +234,7 @@ DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
 
+# View {View 6} uses mapping {.label#Label_text_vs_recId}
 DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 0 13 0 37 0 37
 DEVise setLabel {View 6} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 6} 00000000
@@ -255,7 +261,7 @@ DEVise setYAxisFloatFormat {View 6} {%.4g}
 DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {0}
 DEVise setNiceAxes {View 6} 0 0
-DEVise viewSetDisabledActions {View 6} 0 0 0 0
+DEVise viewSetDisabledActions {View 6} 1 1 1 0
 DEVise setViewHelp {View 6} {Visualization info}
 DEVise setShowMouseLocation {View 6} {1}
 DEVise setLinkMultFact {View 6} {X} 1
@@ -263,6 +269,7 @@ DEVise setLinkMultFact {View 6} {Y} 1
 DEVise setGAttrLinkMode {View 6} 0
 DEVise setDoHomeOnVisLink {View 6} {1}
 
+# View {View 7} uses mapping {.h_vs_n_legend#y_vs_x}
 DEVise create {view} {Scatter} {View 7} -0.300000 1.500000 -0.300000 0.300000 0 0 0 37 0 37
 DEVise setLabel {View 7} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 7} 00000000
@@ -289,13 +296,14 @@ DEVise setYAxisFloatFormat {View 7} {%.4g}
 DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
-DEVise viewSetDisabledActions {View 7} 0 0 0 0
+DEVise viewSetDisabledActions {View 7} 1 1 1 1
 DEVise setShowMouseLocation {View 7} {1}
 DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
 DEVise setGAttrLinkMode {View 7} 0
 DEVise setDoHomeOnVisLink {View 7} {1}
 
+# View {View 8} uses mapping {.h_vs_n_legend#y_vs_x 2}
 DEVise create {view} {Scatter} {View 8} -0.300000 1.500000 -0.300000 0.300000 0 0 0 37 0 37
 DEVise setLabel {View 8} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 8} 00000000
@@ -322,7 +330,7 @@ DEVise setYAxisFloatFormat {View 8} {%.4g}
 DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
-DEVise viewSetDisabledActions {View 8} 0 0 0 0
+DEVise viewSetDisabledActions {View 8} 1 1 1 1
 DEVise setShowMouseLocation {View 8} {1}
 DEVise setLinkMultFact {View 8} {X} 1
 DEVise setLinkMultFact {View 8} {Y} 1
@@ -535,6 +543,7 @@ DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
+DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
@@ -543,6 +552,7 @@ DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} -25
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 0
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
 DEVise insertViewHistory {View 2} {-10.22} {-133.21} {-6.28} {-104.18} 0
+DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0

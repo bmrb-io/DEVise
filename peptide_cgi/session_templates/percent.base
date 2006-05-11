@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Dec 03 2004 13:59:07
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: May 08 2006 16:16:01
+# DEVise version: 1.7.19
+# DEVise date: Dec  5 2005
 # DEVise endHeader
 
 # Session description
@@ -59,6 +59,7 @@ DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVIS
 
 # Create views
 
+# View {View 1} uses mapping {.4081p1#assigForH_vs_CurrSeqNum}
 DEVise create {view} {SortedX} {View 1} 0.400000 165.600000 0.000000 100.000000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {Percent Assigned Protons}
 DEVise setViewStatistics {View 1} 00000000
@@ -92,6 +93,7 @@ DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
 
+# View {View 2} uses mapping {.4081p1#assigForC_vs_CurrSeqNum}
 DEVise create {view} {SortedX} {View 2} 0.400000 165.600000 0.000000 100.000000 37 0 0 37 0 37
 DEVise setLabel {View 2} 1 16 {Percent Assigned Carbons}
 DEVise setViewStatistics {View 2} 00000000
@@ -125,6 +127,7 @@ DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
 
+# View {View 3} uses mapping {.4081p1#assigForN_vs_CurrSeqNum}
 DEVise create {view} {SortedX} {View 3} 0.400000 165.600000 0.000000 100.000000 37 0 0 37 0 37
 DEVise setLabel {View 3} 1 16 {Percent Assigned Nitrogens}
 DEVise setViewStatistics {View 3} 00000000
@@ -158,6 +161,7 @@ DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
 
+# View {View 4} uses mapping {.label#Label_text_vs_recId}
 DEVise create {view} {Scatter} {View 4} -1.000000 1.000000 -1.000000 1.000000 4 0 0 37 0 37
 DEVise setLabel {View 4} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 4} 00000000
@@ -184,13 +188,14 @@ DEVise setYAxisFloatFormat {View 4} {%.4g}
 DEVise setViewAutoFilter {View 4} {0}
 DEVise setDupElim {View 4} {0}
 DEVise setNiceAxes {View 4} 0 0
-DEVise viewSetDisabledActions {View 4} 0 0 0 0
+DEVise viewSetDisabledActions {View 4} 1 1 1 1
 DEVise setShowMouseLocation {View 4} {0}
 DEVise setLinkMultFact {View 4} {X} 1
 DEVise setLinkMultFact {View 4} {Y} 1
 DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
 
+# View {View 5} uses mapping {.label#Label_text_vs_recId 2}
 DEVise create {view} {Scatter} {View 5} -1.000000 1.000000 -1.000000 1.000000 4 0 0 37 0 37
 DEVise setLabel {View 5} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 5} 00000000
@@ -217,13 +222,14 @@ DEVise setYAxisFloatFormat {View 5} {%.4g}
 DEVise setViewAutoFilter {View 5} {0}
 DEVise setDupElim {View 5} {0}
 DEVise setNiceAxes {View 5} 0 0
-DEVise viewSetDisabledActions {View 5} 0 0 0 0
+DEVise viewSetDisabledActions {View 5} 1 1 1 1
 DEVise setShowMouseLocation {View 5} {0}
 DEVise setLinkMultFact {View 5} {X} 1
 DEVise setLinkMultFact {View 5} {Y} 1
 DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
 
+# View {View 6} uses mapping {.label#Label_text_vs_recId 3}
 DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 4 0 0 37 0 37
 DEVise setLabel {View 6} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 6} 00000000
@@ -250,13 +256,14 @@ DEVise setYAxisFloatFormat {View 6} {%.4g}
 DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {0}
 DEVise setNiceAxes {View 6} 0 0
-DEVise viewSetDisabledActions {View 6} 0 0 0 0
+DEVise viewSetDisabledActions {View 6} 1 1 1 1
 DEVise setShowMouseLocation {View 6} {0}
 DEVise setLinkMultFact {View 6} {X} 1
 DEVise setLinkMultFact {View 6} {Y} 1
 DEVise setGAttrLinkMode {View 6} 0
 DEVise setDoHomeOnVisLink {View 6} {1}
 
+# View {View 7} uses mapping {.label#Label_text_vs_recId 4}
 DEVise create {view} {Scatter} {View 7} -1.000000 1.000000 -1.000000 1.000000 4 0 0 37 0 37
 DEVise setLabel {View 7} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 7} 00000000
@@ -283,13 +290,14 @@ DEVise setYAxisFloatFormat {View 7} {%.4g}
 DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
-DEVise viewSetDisabledActions {View 7} 0 0 0 0
+DEVise viewSetDisabledActions {View 7} 1 1 1 1
 DEVise setShowMouseLocation {View 7} {0}
 DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
 DEVise setGAttrLinkMode {View 7} 0
 DEVise setDoHomeOnVisLink {View 7} {1}
 
+# View {View 8} uses mapping {.label#Label_text_vs_recId 6}
 DEVise create {view} {Scatter} {View 8} -1.000000 1.000000 -1.000000 1.000000 4 13 0 37 0 37
 DEVise setLabel {View 8} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 8} 00000000
@@ -316,7 +324,7 @@ DEVise setYAxisFloatFormat {View 8} {%.4g}
 DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
-DEVise viewSetDisabledActions {View 8} 0 0 0 0
+DEVise viewSetDisabledActions {View 8} 1 1 1 0
 DEVise setViewHelp {View 8} {Visualization info}
 DEVise setShowMouseLocation {View 8} {0}
 DEVise setLinkMultFact {View 8} {X} 1

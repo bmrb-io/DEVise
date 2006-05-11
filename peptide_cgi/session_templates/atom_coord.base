@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Oct 07 2005 16:02:01
+# file date: May 08 2006 15:46:37
 # DEVise version: 1.7.19
-# DEVise date: Oct  5 2004
+# DEVise date: Dec  5 2005
 # DEVise endHeader
 
 # Session description
@@ -76,6 +76,7 @@ DEVise dteInsertCatalogEntry . {"pistachio_at_legend" UNIXFILE pistachio_at_lege
 
 # Create views
 
+# View {ViewUnselectedDataChild} uses mapping {.4096g1#ViewUnselectedDataChild}
 DEVise create {view} {SortedX} ViewUnselectedDataChild 0.500000 147.500000 0.000000 9.300000 37 0 0 37 0 37
 DEVise setLabel {ViewUnselectedDataChild} 1 16 {3JHNHA coupling const}
 DEVise setViewStatistics {ViewUnselectedDataChild} 00000000
@@ -92,7 +93,7 @@ DEVise viewSetHorPan {ViewUnselectedDataChild} 1 0.500000 1.000000
 DEVise viewSetVerPan {ViewUnselectedDataChild} 1 0.500000 1.000000
 DEVise setViewGDS {ViewUnselectedDataChild} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {ViewUnselectedDataChild} 1 0 0 "" 1 " " 1
-DEVise setHistogram {ViewUnselectedDataChild} 0 6.58 10
+DEVise setHistogram {ViewUnselectedDataChild} 0 9.3 10
 DEVise setCountMapping {ViewUnselectedDataChild} 0 {} {} 0
 DEVise viewSetIsHighlight {ViewUnselectedDataChild} 0
 DEVise setXAxisDateFormat {ViewUnselectedDataChild} {%b %d %Y %T}
@@ -109,6 +110,7 @@ DEVise setLinkMultFact {ViewUnselectedDataChild} {Y} 1
 DEVise setGAttrLinkMode {ViewUnselectedDataChild} 0
 DEVise setDoHomeOnVisLink {ViewUnselectedDataChild} {1}
 
+# View {ViewSelectedDataChild} uses mapping {.4096g1#ViewSelectedDataChild}
 DEVise create {view} {SortedX} ViewSelectedDataChild 0.500000 147.500000 0.000000 9.300000 37 0 0 37 0 37
 DEVise setLabel {ViewSelectedDataChild} 1 16 {3JHNHA coupling const}
 DEVise setViewStatistics {ViewSelectedDataChild} 00000000
@@ -125,7 +127,7 @@ DEVise viewSetHorPan {ViewSelectedDataChild} 1 0.500000 1.000000
 DEVise viewSetVerPan {ViewSelectedDataChild} 1 0.500000 1.000000
 DEVise setViewGDS {ViewSelectedDataChild} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {ViewSelectedDataChild} 1 0 0 "" 1 " " 1
-DEVise setHistogram {ViewSelectedDataChild} 0 6.58 10
+DEVise setHistogram {ViewSelectedDataChild} 0 9.3 10
 DEVise setCountMapping {ViewSelectedDataChild} 0 {} {} 0
 DEVise viewSetIsHighlight {ViewSelectedDataChild} 0
 DEVise setXAxisDateFormat {ViewSelectedDataChild} {%b %d %Y %T}
@@ -142,6 +144,7 @@ DEVise setLinkMultFact {ViewSelectedDataChild} {Y} 1
 DEVise setGAttrLinkMode {ViewSelectedDataChild} 0
 DEVise setDoHomeOnVisLink {ViewSelectedDataChild} {0}
 
+# View {ViewDataDotsChild} uses mapping {.4096g1#ViewDataDotsChild}
 DEVise create {view} {SortedX} ViewDataDotsChild 0.500000 147.500000 0.000000 9.300000 37 0 0 37 0 37
 DEVise setLabel {ViewDataDotsChild} 1 16 {3JHNHA coupling const}
 DEVise setViewStatistics {ViewDataDotsChild} 00000000
@@ -158,7 +161,7 @@ DEVise viewSetHorPan {ViewDataDotsChild} 1 0.500000 1.000000
 DEVise viewSetVerPan {ViewDataDotsChild} 1 0.500000 1.000000
 DEVise setViewGDS {ViewDataDotsChild} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {ViewDataDotsChild} 1 0 0 "" 1 " " 1
-DEVise setHistogram {ViewDataDotsChild} 0 6.58 10
+DEVise setHistogram {ViewDataDotsChild} 0 9.3 10
 DEVise setCountMapping {ViewDataDotsChild} 0 {} {} 0
 DEVise viewSetIsHighlight {ViewDataDotsChild} 0
 DEVise setXAxisDateFormat {ViewDataDotsChild} {%b %d %Y %T}
@@ -175,6 +178,7 @@ DEVise setLinkMultFact {ViewDataDotsChild} {Y} 1
 DEVise setGAttrLinkMode {ViewDataDotsChild} 0
 DEVise setDoHomeOnVisLink {ViewDataDotsChild} {0}
 
+# View {ViewDataValueSelectChild} uses mapping {.4096g1#ViewDataValueSelectChild}
 DEVise create {view} {SortedX} ViewDataValueSelectChild 7.369010 13.630990 3.765000 6.875000 37 0 0 37 0 37
 DEVise setLabel {ViewDataValueSelectChild} 1 16 {3JHNHA coupling const}
 DEVise setViewStatistics {ViewDataValueSelectChild} 00000000
@@ -208,6 +212,7 @@ DEVise setLinkMultFact {ViewDataValueSelectChild} {Y} 1
 DEVise setGAttrLinkMode {ViewDataValueSelectChild} 0
 DEVise setDoHomeOnVisLink {ViewDataValueSelectChild} {0}
 
+# View {View3DMain} uses mapping {.4096ac1#Atom_coord_y_vs_Atom_coord_x}
 DEVise create {view} {Scatter} View3DMain -21.955000 21.927999 -17.695000 20.226999 4 0 0 37 0 37
 DEVise setLabel {View3DMain} 0 12 {Atom_coord_y() vs. Atom_coord_x}
 DEVise setViewStatistics {View3DMain} 00000000
@@ -251,6 +256,7 @@ DEVise setLinkMultFact {View3DMain} {Y} 1
 DEVise setGAttrLinkMode {View3DMain} 0
 DEVise setDoHomeOnVisLink {View3DMain} {0}
 
+# View {ViewStructSelect} uses mapping {.4096ac1#Struct_type_vs_recId}
 DEVise create {view} {Scatter} ViewStructSelect -0.500000 0.500000 39.500000 42.500000 37 0 0 37 0 37
 DEVise setLabel {ViewStructSelect} 0 12 {Structure Types}
 DEVise setViewStatistics {ViewStructSelect} 00000000
@@ -277,7 +283,7 @@ DEVise setYAxisFloatFormat {ViewStructSelect} {%.4g}
 DEVise setViewAutoFilter {ViewStructSelect} {0}
 DEVise setDupElim {ViewStructSelect} {1}
 DEVise setNiceAxes {ViewStructSelect} 0 0
-DEVise viewSetDisabledActions {ViewStructSelect} 0 0 0 0
+DEVise viewSetDisabledActions {ViewStructSelect} 1 0 1 0
 DEVise setViewHelp {ViewStructSelect} {Atom select view: use the cursor to select which types
 of atoms are shown in the structure view.}
 DEVise setShowMouseLocation {ViewStructSelect} {0}
@@ -286,6 +292,7 @@ DEVise setLinkMultFact {ViewStructSelect} {Y} 1
 DEVise setGAttrLinkMode {ViewStructSelect} 0
 DEVise setDoHomeOnVisLink {ViewStructSelect} {0}
 
+# View {ViewStructSelectSource} uses mapping {.4096ac1#Struct_type_vs_recId 2}
 DEVise create {view} {Scatter} ViewStructSelectSource -0.500000 0.500000 40.500000 42.500000 4 0 0 37 0 37
 DEVise setLabel {ViewStructSelectSource} 0 12 {Struct_type() vs. recId}
 DEVise setViewStatistics {ViewStructSelectSource} 00000000
@@ -319,6 +326,7 @@ DEVise setLinkMultFact {ViewStructSelectSource} {Y} 1
 DEVise setGAttrLinkMode {ViewStructSelectSource} 0
 DEVise setDoHomeOnVisLink {ViewStructSelectSource} {0}
 
+# View {ViewResidueSelect1} uses mapping {.4096rl1#ViewResidueSelect1}
 DEVise create {view} {Scatter} ViewResidueSelect1 -0.500000 0.500000 -147.250000 -0.750000 37 0 0 37 0 37
 DEVise setLabel {ViewResidueSelect1} 0 12 {Residues}
 DEVise setViewStatistics {ViewResidueSelect1} 00000000
@@ -355,6 +363,7 @@ DEVise setLinkMultFact {ViewResidueSelect1} {Y} 1
 DEVise setGAttrLinkMode {ViewResidueSelect1} 0
 DEVise setDoHomeOnVisLink {ViewResidueSelect1} {0}
 
+# View {ViewResidueSelect1Source} uses mapping {.4096ac1#Residue_seq_code_vs_recId 2}
 DEVise create {view} {Scatter} ViewResidueSelect1Source -0.500000 0.500000 -147.500000 -0.500000 37 0 0 37 0 37
 DEVise setLabel {ViewResidueSelect1Source} 0 12 {}
 DEVise setViewStatistics {ViewResidueSelect1Source} 00000000
@@ -388,6 +397,7 @@ DEVise setLinkMultFact {ViewResidueSelect1Source} {Y} 1
 DEVise setGAttrLinkMode {ViewResidueSelect1Source} 0
 DEVise setDoHomeOnVisLink {ViewResidueSelect1Source} {0}
 
+# View {ViewResidueSelect2} uses mapping {.4096rl1#ViewResidueSelect2}
 DEVise create {view} {Scatter} ViewResidueSelect2 -0.500000 0.500000 -147.250000 -0.750000 37 0 0 37 0 37
 DEVise setLabel {ViewResidueSelect2} 0 12 {Residues}
 DEVise setViewStatistics {ViewResidueSelect2} 00000000
@@ -424,6 +434,7 @@ DEVise setLinkMultFact {ViewResidueSelect2} {Y} 1
 DEVise setGAttrLinkMode {ViewResidueSelect2} 0
 DEVise setDoHomeOnVisLink {ViewResidueSelect2} {0}
 
+# View {ViewResidueName} uses mapping {.4096rl1#ViewResidueName}
 DEVise create {view} {Scatter} ViewResidueName -1.500000 3.000000 -40.500000 -0.500000 37 0 0 37 0 37
 DEVise setLabel {ViewResidueName} 0 12 {Residues}
 DEVise setViewStatistics {ViewResidueName} 00000000
@@ -458,6 +469,7 @@ DEVise setLinkMultFact {ViewResidueName} {Y} 1
 DEVise setGAttrLinkMode {ViewResidueName} 0
 DEVise setDoHomeOnVisLink {ViewResidueName} {0}
 
+# View {ViewResidueNumber} uses mapping {.4096rl1#ViewResidueNumber}
 DEVise create {view} {Scatter} ViewResidueNumber -1.500000 3.000000 -40.500000 -0.500000 37 0 0 37 0 37
 DEVise setLabel {ViewResidueNumber} 0 12 {Residues}
 DEVise setViewStatistics {ViewResidueNumber} 00000000
@@ -491,6 +503,7 @@ DEVise setLinkMultFact {ViewResidueNumber} {Y} 1
 DEVise setGAttrLinkMode {ViewResidueNumber} 0
 DEVise setDoHomeOnVisLink {ViewResidueNumber} {0}
 
+# View {ViewDataTypeSelect} uses mapping {.4096md#name_vs_recId}
 DEVise create {view} {Scatter} ViewDataTypeSelect -0.500000 0.500000 -0.500000 4.500000 37 0 0 37 0 37
 DEVise setLabel {ViewDataTypeSelect} 0 12 {name() vs. recId}
 DEVise setViewStatistics {ViewDataTypeSelect} 00000000
@@ -517,7 +530,7 @@ DEVise setYAxisFloatFormat {ViewDataTypeSelect} {%.4g}
 DEVise setViewAutoFilter {ViewDataTypeSelect} {1}
 DEVise setDupElim {ViewDataTypeSelect} {0}
 DEVise setNiceAxes {ViewDataTypeSelect} 0 0
-DEVise viewSetDisabledActions {ViewDataTypeSelect} 0 0 0 0
+DEVise viewSetDisabledActions {ViewDataTypeSelect} 1 0 1 1
 DEVise setViewHelp {ViewDataTypeSelect} {Data select view: use the cursor to select which variable
 is shown in the data view}
 DEVise setShowMouseLocation {ViewDataTypeSelect} {1}
@@ -526,6 +539,7 @@ DEVise setLinkMultFact {ViewDataTypeSelect} {Y} 1
 DEVise setGAttrLinkMode {ViewDataTypeSelect} 0
 DEVise setDoHomeOnVisLink {ViewDataTypeSelect} {0}
 
+# View {ViewDataDotsParent} uses mapping {.4096md#name_vs_recId 2}
 DEVise create {view} {Scatter} ViewDataDotsParent -0.500000 0.500000 3.500000 4.500000 37 0 0 37 0 37
 DEVise setLabel {ViewDataDotsParent} 0 12 {}
 DEVise setViewStatistics {ViewDataDotsParent} 00000000
@@ -559,6 +573,7 @@ DEVise setLinkMultFact {ViewDataDotsParent} {Y} 1
 DEVise setGAttrLinkMode {ViewDataDotsParent} 0
 DEVise setDoHomeOnVisLink {ViewDataDotsParent} {0}
 
+# View {ViewDataXControl} uses mapping {.4096ac1#ViewDataXControl}
 DEVise create {view} {Scatter} ViewDataXControl 0.625000 147.375000 -0.300000 0.300000 37 0 0 37 0 37
 DEVise setLabel {ViewDataXControl} 0 12 {Residues}
 DEVise setViewStatistics {ViewDataXControl} 00000000
@@ -594,6 +609,7 @@ DEVise setLinkMultFact {ViewDataXControl} {Y} 1
 DEVise setGAttrLinkMode {ViewDataXControl} 0
 DEVise setDoHomeOnVisLink {ViewDataXControl} {0}
 
+# View {ViewSelectedDataParent} uses mapping {.4096md#name_vs_recId 3}
 DEVise create {view} {Scatter} ViewSelectedDataParent -0.500000 0.500000 3.500000 4.500000 37 0 0 37 0 37
 DEVise setLabel {ViewSelectedDataParent} 0 12 {}
 DEVise setViewStatistics {ViewSelectedDataParent} 00000000
@@ -627,6 +643,7 @@ DEVise setLinkMultFact {ViewSelectedDataParent} {Y} 1
 DEVise setGAttrLinkMode {ViewSelectedDataParent} 0
 DEVise setDoHomeOnVisLink {ViewSelectedDataParent} {0}
 
+# View {ViewUnselectedDataParent} uses mapping {.4096md#name_vs_recId 4}
 DEVise create {view} {Scatter} ViewUnselectedDataParent -0.500000 0.500000 3.500000 4.500000 37 0 0 37 0 37
 DEVise setLabel {ViewUnselectedDataParent} 0 12 {}
 DEVise setViewStatistics {ViewUnselectedDataParent} 00000000
@@ -663,6 +680,7 @@ DEVise setLinkMultFact {ViewUnselectedDataParent} {Y} 1
 DEVise setGAttrLinkMode {ViewUnselectedDataParent} 0
 DEVise setDoHomeOnVisLink {ViewUnselectedDataParent} {0}
 
+# View {ViewDataValueSelectParent} uses mapping {.4096md#name_vs_recId 5}
 DEVise create {view} {Scatter} ViewDataValueSelectParent -0.500000 0.500000 3.500000 4.500000 37 0 0 37 0 37
 DEVise setLabel {ViewDataValueSelectParent} 0 12 {name() vs. recId}
 DEVise setViewStatistics {ViewDataValueSelectParent} 00000000
@@ -696,6 +714,7 @@ DEVise setLinkMultFact {ViewDataValueSelectParent} {Y} 1
 DEVise setGAttrLinkMode {ViewDataValueSelectParent} 0
 DEVise setDoHomeOnVisLink {ViewDataValueSelectParent} {0}
 
+# View {View3DHighlight} uses mapping {.4096ac1#Atom_coord_y_vs_Atom_coord_x 2}
 DEVise create {view} {Scatter} View3DHighlight -21.955000 21.927999 -17.695000 20.226999 4 0 0 37 0 37
 DEVise setLabel {View3DHighlight} 0 12 {Atom_coord_y() vs. Atom_coord_x}
 DEVise setViewStatistics {View3DHighlight} 00000000
@@ -729,6 +748,7 @@ DEVise setLinkMultFact {View3DHighlight} {Y} 1
 DEVise setGAttrLinkMode {View3DHighlight} 0
 DEVise setDoHomeOnVisLink {View3DHighlight} {0}
 
+# View {ViewResidueHighlight} uses mapping {.4096ac1#Residue_seq_code_vs_recId 7}
 DEVise create {view} {Scatter} ViewResidueHighlight -1.500000 3.000000 -40.500000 -0.500000 37 0 0 37 0 37
 DEVise setLabel {ViewResidueHighlight} 0 12 {Residues}
 DEVise setViewStatistics {ViewResidueHighlight} 00000000
@@ -769,6 +789,7 @@ DEVise setLinkMultFact {ViewResidueHighlight} {Y} 1
 DEVise setGAttrLinkMode {ViewResidueHighlight} 0
 DEVise setDoHomeOnVisLink {ViewResidueHighlight} {0}
 
+# View {View 1} uses mapping {.label#Label_text_vs_recId}
 DEVise create {view} {Scatter} {View 1} -1.000000 1.000000 -1.000000 1.000000 0 13 0 37 0 37
 DEVise setLabel {View 1} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 1} 00000000
@@ -795,7 +816,7 @@ DEVise setYAxisFloatFormat {View 1} {%.4g}
 DEVise setViewAutoFilter {View 1} {0}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
-DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise viewSetDisabledActions {View 1} 1 1 1 0
 DEVise setViewHelp {View 1} {Visualization info}
 DEVise setShowMouseLocation {View 1} {1}
 DEVise setLinkMultFact {View 1} {X} 1
@@ -803,6 +824,7 @@ DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
 
+# View {View 2} uses mapping {.pistachio_at_legend#color_str_vs_recId}
 DEVise create {view} {Scatter} {View 2} -0.500000 5.500000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {View 2} 0 12 {color_str() vs. recId}
 DEVise setViewStatistics {View 2} 00000000
@@ -829,7 +851,7 @@ DEVise setYAxisFloatFormat {View 2} {%.4g}
 DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
-DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise viewSetDisabledActions {View 2} 1 1 1 1
 DEVise setShowMouseLocation {View 2} {1}
 DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
@@ -1279,7 +1301,6 @@ DEVise setPileStackState {DEViseWn12} 1
 # Init history of view
 
 DEVise clearViewHistory {ViewUnselectedDataChild}
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {1.29} {20.5} {9.35} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {20.5} {9.3} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {20.5} {6.58} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {20.5} {9.3} 0
@@ -1298,10 +1319,10 @@ DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {147.5} {6.58} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {1.29} {147.5} {9.35} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {147.5} {9.3} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {147.5} {6.58} 0
+DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {147.5} {9.3} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {147.5} {9.3} 0
 
 DEVise clearViewHistory {ViewSelectedDataChild}
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {1.29} {20.5} {9.35} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {20.5} {6.58} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {20.5} {9.3} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {20.5} {6.58} 0
@@ -1320,10 +1341,10 @@ DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {147.5} {9.3} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {147.5} {6.58} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {1.29} {147.5} {9.35} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {147.5} {6.58} 0
+DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {147.5} {9.3} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {147.5} {9.3} 0
 
 DEVise clearViewHistory {ViewDataDotsChild}
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {1.29} {20.5} {9.35} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {20.5} {6.58} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {20.5} {9.3} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {20.5} {6.58} 0
@@ -1342,6 +1363,7 @@ DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {147.5} {9.3} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {147.5} {6.58} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {1.29} {147.5} {9.35} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {147.5} {6.58} 0
+DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {147.5} {9.3} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {147.5} {9.3} 0
 
 DEVise clearViewHistory {ViewDataValueSelectChild}

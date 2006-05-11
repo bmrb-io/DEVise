@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Dec 03 2004 13:58:47
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: May 08 2006 16:11:18
+# DEVise version: 1.7.19
+# DEVise date: Dec  5 2005
 # DEVise endHeader
 
 # Session description
@@ -59,6 +59,7 @@ DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVIS
 
 # Create views
 
+# View {View 1} uses mapping {.4267n1#NOE_value_vs_Residue_seq_code}
 DEVise create {view} {SortedX} {View 1} 31.450000 80.550000 0.000000 0.890000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {dummy title}
 DEVise setViewStatistics {View 1} 00000000
@@ -92,6 +93,7 @@ DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
 
+# View {View 2} uses mapping {.label#Label_text_vs_recId}
 DEVise create {view} {Scatter} {View 2} 0.000000 100.000000 0.000000 100.000000 37 0 0 37 0 37
 DEVise setLabel {View 2} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 2} 00000000
@@ -118,13 +120,14 @@ DEVise setYAxisFloatFormat {View 2} {%.4g}
 DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
-DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise viewSetDisabledActions {View 2} 1 1 1 1
 DEVise setShowMouseLocation {View 2} {0}
 DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
 
+# View {View 3} uses mapping {.label#Label_text_vs_recId 2}
 DEVise create {view} {Scatter} {View 3} 0.000000 100.000000 0.000000 100.000000 37 13 0 37 0 37
 DEVise setLabel {View 3} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 3} 00000000
@@ -151,7 +154,7 @@ DEVise setYAxisFloatFormat {View 3} {%.4g}
 DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
-DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise viewSetDisabledActions {View 3} 1 1 1 0
 DEVise setViewHelp {View 3} {Visualization info}
 DEVise setShowMouseLocation {View 3} {0}
 DEVise setLinkMultFact {View 3} {X} 1
@@ -253,6 +256,7 @@ DEVise insertViewHistory {View 1} {3} {0} {179} {2} 0
 DEVise insertViewHistory {View 1} {3} {0} {179} {1.95} 0
 DEVise insertViewHistory {View 1} {31.5} {0} {80.5} {0.84} 0
 DEVise insertViewHistory {View 1} {31.45} {0} {80.55} {0.84} 0
+DEVise insertViewHistory {View 1} {31.45} {0} {80.55} {0.89} 0
 DEVise insertViewHistory {View 1} {31.45} {0} {80.55} {0.89} 0
 DEVise insertViewHistory {View 1} {31.45} {0} {80.55} {0.89} 0
 DEVise insertViewHistory {View 1} {31.45} {0} {80.55} {0.89} 0

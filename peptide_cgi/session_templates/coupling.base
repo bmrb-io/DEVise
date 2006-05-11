@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Dec 03 2004 13:57:36
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: May 08 2006 16:09:33
+# DEVise version: 1.7.19
+# DEVise date: Dec  5 2005
 # DEVise endHeader
 
 # Session description
@@ -59,6 +59,7 @@ DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVIS
 
 # Create views
 
+# View {View 1} uses mapping {.4096g1#Coupling_constant_value_vs_Atom_one_residue_seq_code}
 DEVise create {view} {SortedX} {View 1} 1.400000 147.600000 0.000000 9.300000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {Coupling constants}
 DEVise setViewStatistics {View 1} 00000000
@@ -92,6 +93,7 @@ DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
 
+# View {View 2} uses mapping {.4096g1#Coupling_constant_value_vs_Atom_two_residue_seq_code}
 DEVise create {view} {Scatter} {View 2} 2.000000 147.000000 1.340000 9.300000 37 0 0 37 0 37
 DEVise setLabel {View 2} 1 16 {Coupling constant  vs. Atom two residue seq code}
 DEVise setViewStatistics {View 2} 00000000
@@ -125,6 +127,7 @@ DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
 
+# View {View 3} uses mapping {.label#Label_text_vs_recId}
 DEVise create {view} {Scatter} {View 3} -1.000000 1.000000 -1.000000 1.000000 4 0 0 37 0 37
 DEVise setLabel {View 3} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 3} 00000000
@@ -151,13 +154,14 @@ DEVise setYAxisFloatFormat {View 3} {%.4g}
 DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
-DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise viewSetDisabledActions {View 3} 1 1 1 1
 DEVise setShowMouseLocation {View 3} {0}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
 
+# View {View 4} uses mapping {.label#Label_text_vs_recId 2}
 DEVise create {view} {Scatter} {View 4} -1.000000 1.000000 -1.000000 1.000000 4 13 0 37 0 37
 DEVise setLabel {View 4} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 4} 00000000
@@ -184,7 +188,7 @@ DEVise setYAxisFloatFormat {View 4} {%.4g}
 DEVise setViewAutoFilter {View 4} {0}
 DEVise setDupElim {View 4} {0}
 DEVise setNiceAxes {View 4} 0 0
-DEVise viewSetDisabledActions {View 4} 0 0 0 0
+DEVise viewSetDisabledActions {View 4} 1 1 1 0
 DEVise setViewHelp {View 4} {Visualization info}
 DEVise setShowMouseLocation {View 4} {0}
 DEVise setLinkMultFact {View 4} {X} 1
@@ -304,6 +308,7 @@ DEVise insertViewHistory {View 1} {28.16} {1} {109.8} {10} 0
 DEVise insertViewHistory {View 1} {2} {1} {147} {10} 0
 DEVise insertViewHistory {View 1} {1.4} {0} {147.6} {9.3} 0
 DEVise insertViewHistory {View 1} {-0.6} {1.34} {147.6} {9.3} 0
+DEVise insertViewHistory {View 1} {1.4} {0} {147.6} {9.3} 0
 DEVise insertViewHistory {View 1} {1.4} {0} {147.6} {9.3} 0
 DEVise insertViewHistory {View 1} {1.4} {0} {147.6} {9.3} 0
 DEVise insertViewHistory {View 1} {1.4} {0} {147.6} {9.3} 0

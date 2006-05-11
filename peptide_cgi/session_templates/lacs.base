@@ -252,7 +252,7 @@ DEVise setYAxisFloatFormat {ViewHeader} {%.4g}
 DEVise setViewAutoFilter {ViewHeader} {0}
 DEVise setDupElim {ViewHeader} {0}
 DEVise setNiceAxes {ViewHeader} 0 0
-DEVise viewSetDisabledActions {ViewHeader} 1 0 1 1
+DEVise viewSetDisabledActions {ViewHeader} 1 1 1 0
 DEVise setViewHelp {ViewHeader} {Visualization info}
 DEVise setShowMouseLocation {ViewHeader} {1}
 DEVise setLinkMultFact {ViewHeader} {X} 1
