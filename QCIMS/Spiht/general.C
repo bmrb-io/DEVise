@@ -69,11 +69,11 @@ void Warning(char * s)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-void Test_Pointer(void * p, char * or)
+void Test_Pointer(void * p, char * origin)
 {
   if (p == NULL) {
     fputs("\n\n\a -> Error: insufficient memory.", stderr);
-    if (or != NULL) fprintf(stderr, "\nOrigin = %s\n", or);
+    if (origin != NULL) fprintf(stderr, "\nOrigin = %s\n", origin);
     fputs("\n Execution terminated!\n", stderr);
     exit(1); }
 }

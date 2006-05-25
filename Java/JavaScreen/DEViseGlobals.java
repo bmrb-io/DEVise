@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.72  2005/12/06 22:53:00  wenger
+// Updated DEVise and JavaScreen versions for the trunk (now 1.9).
+//
+// Revision 1.71.2.1  2005/12/06 22:49:33  wenger
+// Updated DEVise and JavaScreen versions for the 1.8 branch.
+//
 // Revision 1.71  2005/12/06 20:00:19  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 // be the end of the V1_7b0_br branch.)
@@ -430,7 +436,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.0x1");
+    public static final String VERSION = new String("5.7.0x2");
 
     public static final String PROTOCOL_VERSION = new String("15.0");
 

@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -20,6 +20,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.9.2.1  2006/05/03 16:48:23  wenger
+#  Changed JavaScreen scripts from sh to bash because of problems
+#  at Osaka -- their sh didn't accept the -e test.
+#
+#  Revision 1.9  2005/12/06 20:00:24  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.8.8.2  2004/01/25 23:35:49  wenger
 #  JavaScreen kill scripts kill things with SIGKILL after trying
 #  a "softer" kill (because of problems on RedHat 9 with processes

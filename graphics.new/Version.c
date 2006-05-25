@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2004
+  (c) Copyright 1992-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.70  2005/12/06 22:53:05  wenger
+  Updated DEVise and JavaScreen versions for the trunk (now 1.9).
+
+  Revision 1.69.2.1  2005/12/06 22:49:41  wenger
+  Updated DEVise and JavaScreen versions for the 1.8 branch.
+
   Revision 1.69  2005/12/06 20:04:15  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -443,7 +449,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.0x1";
+static const char *	version = "1.9.0x2";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2004";

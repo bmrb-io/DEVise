@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 #  ========================================================================
 #  DEVise Data Visualization Software
@@ -19,6 +19,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.2.2.1  2006/05/03 16:48:38  wenger
+#  Changed JavaScreen scripts from sh to bash because of problems
+#  at Osaka -- their sh didn't accept the -e test.
+#
+#  Revision 1.2  2005/12/06 20:00:43  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.1.2.1  2003/06/18 18:07:04  wenger
 #  There is now a configuration option to kill Xvfb when killing the
 #  JSS (to deal with the problem that once in a while Xvfb gets itself

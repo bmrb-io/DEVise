@@ -41,7 +41,7 @@ if (-e $outfile && ! -z $outfile) then
     if (-e $outfile2) then
         rm $outfile2
     endif
-    set header = "Error message from check_jsall ($idstr) on `hostname`"
+    set header = "Check_jsall ($idstr/`hostname`) error"
     echo $header > $outfile2
     echo "run_check started at $start_time" >> $outfile2
     echo "" >> $outfile2

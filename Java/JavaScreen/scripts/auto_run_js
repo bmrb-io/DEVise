@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # Automatically run a JavaScreen client (for putting load on the
 # system with cron jobs, etc.).

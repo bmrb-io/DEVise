@@ -51,4 +51,4 @@ INSTALL_HOST = pumori.cs.wisc.edu
 
 # You should probably set this to 0 if you're running more than one JSS
 # on the same machine.
-KILL_XVFB = 0
+KILL_XVFB = 1

@@ -3902,7 +3902,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			(Hmm -- this is fixed in the code in CVS, but not
 			in the 1.7.19 that's currently released.)
 
-917 11/2/05	OPEN	Drill-down doesn't seem to work right on text labels
+917 11/2/05	~FIXED	Drill-down doesn't seem to work right on text labels
 			(at least when piled).  (See Test/bug917.ds -- you
 			seem to have to hit the text symbol to the exact
 			pixel to get it instead of one of the lines.)
@@ -3910,6 +3910,17 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 
 918 11/28/05	NB	Axis tick and data don't always match up when they
 			should (see Test/bug918.ds). (wenger)
+
+919 12/19/05	DUP	Drill-down works really poorly on text (seems like
+			DEVise treats it as a one-pixel-sized symbol in
+			terms of hitting the right place).  For example,
+			drill down on the text residue list in the Pistachio
+			visualization template.  (wenger)
+			(Duplicate of 917.)
+
+920 4/3/06	OPEN	3D drill-down only works for collaboration leaders
+			(bug in previous fix to avoid sending extra commands
+			if you're not a collaboration leader). (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.2.2.1  2005/12/27 22:51:50  wenger
+  Somewhat kludgily fixed DEVise bug 917/919 (drill-down works
+  poorly on fixed text symbols) -- expanded visual filter for
+  query because we don't know the bounding box of the symbols.
+
+  Revision 1.2  2005/12/06 20:03:55  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.1.2.3  2003/11/26 17:02:12  wenger
   Fixed bug 896 (drill-down fails on views with count mappings).
 
@@ -44,6 +53,7 @@
 #include "RecInterp.h"
 #include "WindowRep.h"
 #include "DevError.h"
+#include "MappingInterp.h"
 
 static const int DEBUG = 0;
 
@@ -189,6 +199,24 @@ DrillDown::RunQuery(ViewData *view, Coord drillX, Coord drillY, Coord pixelX,
     DevStatus result(StatusOk);
     gotData = false;
 
+    // Figure out whether this view has fixed text labels as its
+    // symbols.  If so, increase the size of the visual filter for
+    // our query.  (Fixed text symbols are a special case because their
+    // size is not defined in data units.  When we run the query, we
+    // don't know what view our records will be drawn to, so we treat
+    // the symbols as having a size of 0.)  This is kind of a kludgey
+    // way to try to fix bug 917/919.  wenger 2005-12-27.
+    TDataMap *map = view->GetFirstMap();
+    const GDataAttrOffset *offset = map->GetGDataOffset();
+    if (offset->_shapeOffset < 0) {
+    	// Shape/symbol type is constant.
+        ShapeID shape = map->GetDefaultShape();
+	if (shape == SHAPE_FIXED_TEXT) {
+	    pixelTol += FIXED_TEXT_EXTRA_TOL;
+	    pixelX *= FIXED_TEXT_X_FACTOR;
+	}
+    }
+
     // Set up the visual filter to use for the query.
     VisualFilter filter;
     filter.flag = VISUAL_X | VISUAL_Y;
@@ -220,7 +248,6 @@ DrillDown::RunQuery(ViewData *view, Coord drillX, Coord drillY, Coord pixelX,
 	  filter.xLow, filter.xHigh, filter.yLow, filter.yHigh);
     }
 
-    TDataMap *map = view->GetFirstMap();
     if (!map) {
 	reportErrNosys("No mapping found for view!");
         result += StatusFailed;

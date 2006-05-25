@@ -21,6 +21,15 @@
   $Id$
 
   $Log$
+  Revision 1.2.2.1  2005/12/27 22:51:51  wenger
+  Somewhat kludgily fixed DEVise bug 917/919 (drill-down works
+  poorly on fixed text symbols) -- expanded visual filter for
+  query because we don't know the bounding box of the symbols.
+
+  Revision 1.2  2005/12/06 20:03:55  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.1.2.2  2003/11/21 23:05:11  wenger
   Drill-down now works properly on views that are GAttr link followers
   (fixed bug 893).
@@ -215,6 +224,9 @@ private:
 
     static const int PIXEL_TOL_MAX = 5;
     static const int PIXEL_TOL_INC = 5;
+
+    static const int FIXED_TEXT_EXTRA_TOL = 5;
+    static const int FIXED_TEXT_X_FACTOR = 2;
 
     RecInterp *_recInterp;
 };
