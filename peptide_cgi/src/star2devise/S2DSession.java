@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2005
+// (c) Copyright 2001-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.2.1  2006/02/20 21:57:40  wenger
+// Peptide-CGI now generates data, sessions, etc., that use
+// Jmol for 3D molecule visualization.
+//
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:12  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -353,7 +361,7 @@ TEMP*/
 	    break;
 
         case S2DUtils.TYPE_ATOMIC_COORDS:
-	    baseName = "atom_coord.base";
+	    baseName = "atom_coord_jmol.base";
 	    dataSuffix = S2DNames.ATOMIC_COORD_SUFFIX;
 	    sessionSuffix = dataSuffix;
 	    searchString1 = "4096ac1";

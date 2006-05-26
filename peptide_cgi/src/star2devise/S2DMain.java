@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2006/05/11 21:10:25  wenger
+// Fixed problems with some html page titles being based on the BMRB
+// ID rather than the name, etc.  Fixed test36 to work with new LACS
+// file names.
+//
 // Revision 1.11  2006/05/11 20:03:16  wenger
 // Visualization info in ambiguity code, Pistachio, and LACS sessions
 // now rendered on the client side (I think rendering it on the server
@@ -50,6 +55,32 @@
 //
 // Revision 1.4  2006/02/28 15:54:30  wenger
 // Changed version string, slight debug output improvements.
+//
+// Revision 1.3.2.7  2006/05/18 20:48:16  wenger
+// Added $Struct_type to 3D mapping to enable backbone/side chains/
+// protons selection tree in the JavaScreen; default in DEVise session
+// is to show all structure types, since selection is now in the JS.
+//
+// Revision 1.3.2.6  2006/03/17 19:27:09  wenger
+// Added Jmol link to coordinate visualization pages.
+//
+// Revision 1.3.2.5  2006/03/01 16:36:58  wenger
+// Fixed DEVISE_MIN_VERSION.
+//
+// Revision 1.3.2.4  2006/02/28 22:40:09  wenger
+// Changed atom_coord_jmol.base to match implementation of Jmol
+// highlighting in the JavaScreen.
+//
+// Revision 1.3.2.3  2006/02/23 22:07:24  wenger
+// Added flag for whether or not 3D views should use Jmol.
+//
+// Revision 1.3.2.2  2006/02/21 19:20:20  wenger
+// Peptide-CGI now translates atom names such as HH11 to
+// 1HH1 in the output form Jmol.
+//
+// Revision 1.3.2.1  2006/02/20 21:57:40  wenger
+// Peptide-CGI now generates data, sessions, etc., that use
+// Jmol for 3D molecule visualization.
 //
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
@@ -1144,8 +1175,8 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "10.9.3x4"/*TEMPTEMP*/;
-    public static final String DEVISE_MIN_VERSION = "1.7.19";
+    public static final String PEP_CGI_VERSION = "11.0.0x8"/*TEMP*/;
+    public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
 
@@ -3320,7 +3351,11 @@ public class S2DMain {
 	}
 
 	try {
-	    atomicCoords.writeBonds(frameIndex, pt, for2DView);
+	    if (for2DView) {
+	        atomicCoords.writeBonds(frameIndex, pt, for2DView);
+	    } else {
+	        atomicCoords.writeAtoms(frameIndex);
+	    }
 	} finally {
 	    if (pt == null) {
 	        _summary.endFrame();

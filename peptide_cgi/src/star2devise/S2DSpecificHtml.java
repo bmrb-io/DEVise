@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2005
+// (c) Copyright 2001-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2006/05/11 21:10:25  wenger
+// Fixed problems with some html page titles being based on the BMRB
+// ID rather than the name, etc.  Fixed test36 to work with new LACS
+// file names.
+//
+// Revision 1.3.2.1  2006/02/20 21:57:40  wenger
+// Peptide-CGI now generates data, sessions, etc., that use
+// Jmol for 3D molecule visualization.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -193,14 +202,22 @@ public class S2DSpecificHtml {
 	}
 
 	// Write the "normal size" file.
-	String templateFile = "html_templates" + File.separator +
-	  "specific_html.base";
+	String templateFile = "html_templates" + File.separator;
+	if (dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
+	    templateFile += "specific_html_jmol.base";
+	} else {
+	    templateFile += "specific_html.base";
+	}
         writeOne(templateFile, htmlDir, "", dataType, name, frameIndex,
 	  title);
 
 	// Write the "large size" file.
-	templateFile = "html_templates" + File.separator +
-	  "specific_html_large.base";
+	templateFile = "html_templates" + File.separator;
+	if (dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
+	    templateFile += "specific_html_large_jmol.base";
+	} else {
+	    templateFile += "specific_html_large.base";
+	}
         writeOne(templateFile, htmlDir, "_large", dataType, name,
 	  frameIndex, title);
     }

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2005
+// (c) Copyright 2001-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2006/02/28 15:54:30  wenger
+// Changed version string, slight debug output improvements.
+//
+// Revision 1.3.2.2  2006/02/21 19:20:18  wenger
+// Peptide-CGI now translates atom names such as HH11 to
+// 1HH1 in the output form Jmol.
+//
+// Revision 1.3.2.1  2006/02/20 21:57:39  wenger
+// Peptide-CGI now generates data, sessions, etc., that use
+// Jmol for 3D molecule visualization.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -227,6 +238,14 @@ public class S2DAtomicCoords {
 
     private Vector _dataSets;
 
+    private String[] _resSeqCodes;
+    private String[] _resLabels;
+    private String[] _atomNames;
+    private String[] _atomTypes;
+    private double[] _atomCoordX;
+    private double[] _atomCoordY;
+    private double[] _atomCoordZ;
+
     private String _pdbId; // may be null
 
     private String _outputFile;
@@ -236,6 +255,8 @@ public class S2DAtomicCoords {
 
     //TEMPTEMP -- what units? Angstroms?
     private static final double MAX_BOND_LENGTH = 4.0;
+
+    private Hashtable _atomNameTrans;
 
     //===================================================================
     // PUBLIC METHODS
@@ -259,16 +280,23 @@ public class S2DAtomicCoords {
         _sessionDir = sessionDir;
         _summary = summary;
 
-	resLabels = S2DUtils.arrayToUpper(resLabels);
+	_resSeqCodes = resSeqCodes;
+	_resLabels = S2DUtils.arrayToUpper(resLabels);
+	_atomNames = atomNames;
+	_atomTypes = atomTypes;
+	_atomCoordX = atomCoordX;
+	_atomCoordY = atomCoordY;
+	_atomCoordZ = atomCoordZ;
 
-	buildStructure(resSeqCodes, resLabels, atomNames, atomTypes,
-	  atomCoordX, atomCoordY, atomCoordZ);
+	buildStructure();
 
         _connections = new S2DConnections(connectionFile);
 
 	_dataSets = dataSets;
 
 	_pdbId = pdbId;
+
+	setUpTranslation();
     }
 
     //-------------------------------------------------------------------
@@ -413,14 +441,110 @@ public class S2DAtomicCoords {
 	}
     }
 
+    //-------------------------------------------------------------------
+    // Write the atoms (including coordinates) for this data.  This
+    // output is designed to be transferred to Jmol for visualization.
+    // 
+    public void writeAtoms(int frameIndex) throws S2DException
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DJmolAtomicCoords.writeAtoms()");
+	}
+
+	try {
+	    String suffix = S2DNames.ATOMIC_COORD_SUFFIX;
+	    _outputFile = _dataDir + File.separator + _name +
+	      suffix + frameIndex + S2DNames.DAT_SUFFIX;
+            FileWriter coordWriter = S2DFileWriter.create(_outputFile);
+
+	    //
+	    // Write the file header.
+	    //
+	    coordWriter.write("# Data: Jmol atomic coordinates for " +
+	      _name + "\n");
+	    coordWriter.write("# Schema: bmrb-jmol-atom_coord\n");
+	    coordWriter.write("# Attributes: Atom_number; " +
+	      "Residue_seq_code; Residue_label; Atom_name; Atom_type; " +
+	      "Atom_coord_x; Atom_coord_y; Atom_coord_z; Struct_type");
+	    coordWriter.write("\n");
+            coordWriter.write("# Peptide-CGI version: " +
+	      S2DMain.PEP_CGI_VERSION + "\n");
+            coordWriter.write("# Generation date: " +
+	      S2DMain.getTimestamp() + "\n");
+	    coordWriter.write("#\n");
+
+	    //
+	    // Write the atoms (with coordinates) to the data file.
+	    //
+            for (int index = 0; index < _resSeqCodes.length; index++) {
+		int atomNum = index + 1;
+
+		String atomName = _atomNames[index];
+		String atomType = _atomTypes[index];
+		Atom atom = new Atom();
+		atom._atomName = atomName;
+		atom._atomType = atomType;
+		String structType = "backbone";
+		if (atomName.equals(S2DNames.ATOM_H) ||
+		  atomName.startsWith(S2DNames.ATOM_HA)) {
+		    // Stays as backbone
+		} else if (atomType.equals(S2DNames.ATOM_H)) {
+		    structType = "all_hydrogens";
+		} else if (!isBackbone(atom)) {
+		    structType = "side_chains";
+		}
+
+	        coordWriter.write(atomNum + " ");
+	        coordWriter.write(_resSeqCodes[index] + " ");
+	        coordWriter.write(_resLabels[index] + " ");
+	        coordWriter.write(translateAtomName(atomName) + " ");
+	        coordWriter.write(_atomTypes[index] + " ");
+	        coordWriter.write(_atomCoordX[index] + " ");
+	        coordWriter.write(_atomCoordY[index] + " ");
+	        coordWriter.write(_atomCoordZ[index] + " ");
+	        coordWriter.write(structType);
+	        coordWriter.write("\n");
+	    }
+
+	    coordWriter.close();
+
+	    //
+	    // Write the session file.
+	    //
+	    String info = "Visualization of " + _longName;
+	    if (_pdbId != null) {
+	        info += " and PDB " + _pdbId;
+	    }
+	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ATOMIC_COORDS,
+	      _name, frameIndex, info, null);
+
+	    //
+	    // Write the session-specific html file.
+	    //
+	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	      S2DUtils.TYPE_ATOMIC_COORDS, _name, frameIndex,
+	      "3D structure");
+
+	    //
+	    // Write the link in the summary html file.
+	    //
+	    _summary.writeAtomicCoords(_pdbId, frameIndex,
+	      _structure._residues.size(), _atomCount);
+
+        } catch(IOException ex) {
+	    System.err.println(
+	      "IOException writing atomic coordinates: " +
+	      ex.toString());
+	    throw new S2DError("Can't write atomic coordinates");
+	}
+    }
+
     //===================================================================
     // PRIVATE METHODS
 
     //-------------------------------------------------------------------
     // Fill in the _structure variable from the list of atoms.
-    private void buildStructure(String[] resSeqCodes, String[] resLabels,
-      String[] atomNames, String[] atomTypes, double[] atomCoordX,
-      double[] atomCoordY, double[] atomCoordZ)
+    private void buildStructure()
     {
         if (DEBUG >= 2) {
 	    System.out.println("S2DAtomicCoords.buildStructure()");
@@ -433,10 +557,10 @@ public class S2DAtomicCoords {
 	int prevResNum = -1;
 	Residue residue = null;
 
-        for (int index = 0; index < resSeqCodes.length; index++) {
-	    if (!resSeqCodes[index].equals(".")) {
+        for (int index = 0; index < _resSeqCodes.length; index++) {
+	    if (!_resSeqCodes[index].equals(".")) {
 		try {
-	            int currResNum = Integer.parseInt(resSeqCodes[index]);
+	            int currResNum = Integer.parseInt(_resSeqCodes[index]);
 
 		    if (currResNum != prevResNum) {
 
@@ -446,7 +570,7 @@ public class S2DAtomicCoords {
 		        residue = new Residue();
 
 			residue._resSeqCode = currResNum;
-			residue._resLabel = resLabels[index];
+			residue._resLabel = _resLabels[index];
 			residue._atoms = new Hashtable();
 
 		        _structure._residues.insertElementAt(
@@ -455,11 +579,11 @@ public class S2DAtomicCoords {
 
 		    Atom atom = new Atom();
 
-		    atom._atomName = atomNames[index];
-		    atom._atomType = atomTypes[index];
-		    atom._coordX = atomCoordX[index];
-		    atom._coordY = atomCoordY[index];
-		    atom._coordZ = atomCoordZ[index];
+		    atom._atomName = _atomNames[index];
+		    atom._atomType = _atomTypes[index];
+		    atom._coordX = _atomCoordX[index];
+		    atom._coordY = _atomCoordY[index];
+		    atom._coordZ = _atomCoordZ[index];
 
 		    residue._atoms.put(atom._atomName, atom);
 		    _atomCount++;
@@ -583,6 +707,52 @@ public class S2DAtomicCoords {
 	} else {
 	    return false;
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Set up hash table to translate four-character atom names to Jmol-
+    // friendly values.
+    private void setUpTranslation()
+    {
+    	_atomNameTrans = new Hashtable();
+	_atomNameTrans.put("HD11", "1HD1");
+	_atomNameTrans.put("HD12", "2HD1");
+	_atomNameTrans.put("HD13", "3HD1");
+	_atomNameTrans.put("HD21", "1HD2");
+	_atomNameTrans.put("HD22", "2HD2");
+	_atomNameTrans.put("HD23", "3HD2");
+	_atomNameTrans.put("HE21", "1HE2");
+	_atomNameTrans.put("HE22", "2HE2");
+	_atomNameTrans.put("HG11", "1HG1");
+	_atomNameTrans.put("HG12", "2HG1");
+	_atomNameTrans.put("HG13", "3HG1");
+	_atomNameTrans.put("HG21", "1HG2");
+	_atomNameTrans.put("HG22", "2HG2");
+	_atomNameTrans.put("HG23", "3HG2");
+	_atomNameTrans.put("HH11", "1HH1");
+	_atomNameTrans.put("HH12", "2HH1");
+	_atomNameTrans.put("HH21", "1HH2");
+	_atomNameTrans.put("HH22", "2HH2");
+    }
+
+    //-------------------------------------------------------------------
+    // Translate four-character atom names (e.g., HE21) to the form
+    // needed for Jmol (e.g., 1HE2).
+    private String translateAtomName(String name)
+    {
+	if (DEBUG >= 2) {
+	    System.out.print("translateAtomName(" + name + "): ");
+	}
+
+    	if (_atomNameTrans.containsKey(name)) {
+	    name = (String)_atomNameTrans.get(name);
+	}
+
+	if (DEBUG >= 2) {
+	    System.out.println(name);
+	}
+
+	return name;
     }
 }
 
