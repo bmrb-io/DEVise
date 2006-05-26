@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.121.4.1  2006/02/23 22:08:58  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
+  Revision 1.121  2005/12/06 20:03:11  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.120  2003/01/13 19:25:12  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -814,6 +821,11 @@ class View : public ViewWin
 	int GetSolid3D() { return _solid3D; }
 	void SetSolid3D(int solid);
 
+	/* Whether to use Jmol for this view in the JavaScreen (applies
+	 * only if view is 3D; must be the same for all views in a pile). */
+	Boolean GetUseJmol() { return _useJmol; }
+	void SetUseJmol(Boolean newValue) { _useJmol = newValue; }
+
 	/* Get/set XY zoom or X/Y zoom */
 	Boolean IsXYZoom() { return _xyZoom; }
 	void SetXYZoom(Boolean xyZoom) { _xyZoom = xyZoom; }
@@ -1131,6 +1143,10 @@ protected:
 
 	int _numDimensions;             /* number of dimensions */
         Boolean _solid3D;               /* true if solid 3D objects */
+
+	    // Whether to use Jmol for this view in the JavaScreen --
+	    // applies only if view is 3D.
+	Boolean _useJmol;
 
         Boolean _xyZoom;                /* true if XY zooms */
         Boolean _dispDataValues;        /* true if data values display

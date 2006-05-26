@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.71  2006/05/25 20:15:32  wenger
+  Merged V1_8b0_br_0 thru V1_8b0_br_1 to the trunk.
+
+  Revision 1.70.2.1  2006/05/02 16:51:40  wenger
+  Added "J" to versions so we know it's the Jmol branch.
+
   Revision 1.70  2005/12/06 22:53:05  wenger
   Updated DEVise and JavaScreen versions for the trunk (now 1.9).
 
@@ -449,7 +455,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.0x2";
+static const char *	version = "1.9.0x3";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2004";

@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.131  2006/05/10 19:04:43  wenger
+  Added the new setDoHomeOnVisLinkIfInvisible and
+  getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
+  example session for Luis Populin), and fixed a bug in
+  getDoHomeOnVisLink.
+
+  Revision 1.130.4.1  2006/02/23 22:09:06  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
   Revision 1.130  2005/12/06 20:03:50  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -8564,6 +8573,63 @@ IMPLEMENT_COMMAND_BEGIN(selectNextInPile)
         return 1;
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in selectNextInPile\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewGetUseJmol)
+    // Arguments: <view name> 
+    // Returns: <whether view uses Jmol>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        View *view = View::FindViewByName(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		Boolean useJmol = view->GetUseJmol();
+		char buf[128];
+		int formatted = snprintf(buf, sizeof(buf), "%d", useJmol);
+		if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+          ReturnVal(API_NAK, "buffer overflow");
+          return -1;
+		}
+
+        ReturnVal(API_ACK, buf);
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in viewGetUseJmol\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(viewSetUseJmol)
+    // Arguments: <view name> <whether view uses Jmol>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        View *view = View::FindViewByName(argv[1]);
+        if (!view) {
+    	    ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+        }
+
+		Boolean useJmol = atoi(argv[2]);
+		view->SetUseJmol(useJmol);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in viewSetUseJmol\n",
 		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;

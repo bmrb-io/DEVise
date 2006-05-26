@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2003
+// (c) Copyright 2000-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.4.1  2006/02/23 22:08:39  wenger
+// Added flag for whether or not 3D views should use Jmol.
+//
+// Revision 1.22  2005/12/06 20:00:19  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.21  2002/06/17 19:40:14  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
@@ -296,6 +303,8 @@ public final class DEViseCommands
 
     public static final String SET_TMP_SESSION_DIR = JS_PREFIX +
         "SetTmpSessionDir";
+
+    public static final String SET_USE_JMOL = JS_PREFIX + "SetUseJmol";
 
     public static final String SET_VIEW_COLORS = JS_PREFIX +
         "SetViewColors";

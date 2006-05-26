@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,40 @@
 // $Id$
 
 // $Log$
+// Revision 1.73  2006/05/25 20:14:48  wenger
+// Merged V1_8b0_br_0 thru V1_8b0_br_1 to the trunk.
+//
+// Revision 1.72.2.8  2006/05/22 18:59:56  wenger
+// We now handle destruction of the Jmol tree window much better.
+//
+// Revision 1.72.2.7  2006/05/16 15:02:40  wenger
+// Fixed (I think) tree GUI problems on Mozilla (really, pre-1.5 JVMs)
+// (the tree GUI window was not showing up).
+//
+// Revision 1.72.2.6  2006/05/12 20:15:39  wenger
+// Both structure trees are now in a single window.
+//
+// Revision 1.72.2.5  2006/05/02 16:51:33  wenger
+// Added "J" to versions so we know it's the Jmol branch.
+//
+// Revision 1.72.2.4  2006/04/14 15:27:17  wenger
+// Atom selection GUI now feeds back into Jmol; default selection
+// from DEVise data view is now fed into the atom selection GUI;
+// selecting entire molecule works.  We still need a few more
+// features.
+//
+// Revision 1.72.2.3  2006/04/12 14:08:29  wenger
+// Changed JS version string.
+//
+// Revision 1.72.2.2  2006/02/23 22:08:40  wenger
+// Added flag for whether or not 3D views should use Jmol.
+//
+// Revision 1.72.2.1  2005/12/29 21:19:20  wenger
+// Improved Jmol integration into the JavaScreen -- the Jmol
+// viewer isn't constantly destroyed and constructed; also a
+// bunch of other improvements in the Jmol-related DEViseCanvas
+// code.
+//
 // Revision 1.72  2005/12/06 22:53:00  wenger
 // Updated DEVise and JavaScreen versions for the trunk (now 1.9).
 //
@@ -436,9 +470,9 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.0x2");
+    public static final String VERSION = new String("5.7.0x7");
 
-    public static final String PROTOCOL_VERSION = new String("15.0");
+    public static final String PROTOCOL_VERSION = new String("16.0");
 
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");

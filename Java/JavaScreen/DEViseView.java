@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2003
+// (c) Copyright 1999-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.74.4.3  2006/02/23 22:08:40  wenger
+// Added flag for whether or not 3D views should use Jmol.
+//
+// Revision 1.74.4.2  2005/12/29 21:19:21  wenger
+// Improved Jmol integration into the JavaScreen -- the Jmol
+// viewer isn't constantly destroyed and constructed; also a
+// bunch of other improvements in the Jmol-related DEViseCanvas
+// code.
+//
+// Revision 1.74.4.1  2005/12/09 20:58:54  wenger
+// Got Jmol to show up in the JavaScreen! (not yet connected to a
+// visualization); added a bunch of debug code to help understand
+// things for Jmol.
+//
+// Revision 1.74  2005/12/06 20:00:20  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.73  2003/01/13 19:23:44  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -298,23 +316,25 @@ public class DEViseView
 
     public boolean isFirstTime = true;
 
+    private boolean _useJmol = false;
+
     private static final boolean _debug = false;
     
     // mouse position multiply factors
-    float factorX = 1.0f; 
-    float factorY = 1.0f;
+    private float factorX = 1.0f; 
+    private float factorY = 1.0f;
 
     // label drawing info.
-    int labelXDraw = 0;
-    int labelYDraw = 0;
-    int fontTypeX = 0;
-    int fontTypeY = 0;
-    int fontSizeX = 0;
-    int fontSizeY = 0;
-    int fontBoldX = 0;
-    int fontBoldY = 0;
-    int fontItalicX = 0;
-    int fontItalicY = 0;
+    private int labelXDraw = 0;
+    private int labelYDraw = 0;
+    private int fontTypeX = 0;
+    private int fontTypeY = 0;
+    private int fontSizeX = 0;
+    private int fontSizeY = 0;
+    private int fontBoldX = 0;
+    private int fontBoldY = 0;
+    private int fontItalicX = 0;
+    private int fontItalicY = 0;
 
     // Smallest size to which we'll shrink font if axis labels don't fit.
     private static int FONT_SHRINK_LIMIT = 8;
@@ -380,6 +400,22 @@ public class DEViseView
         showMouseLoc = showMouseLocVal;
 	showMouseLocX = ((showMouseLoc == 1) || (showMouseLoc == 2));
 	showMouseLocY = ((showMouseLoc == 1) || (showMouseLoc == 3));
+    }
+
+    public boolean getUseJmol() { return _useJmol; }
+
+    public void setUseJmol(boolean useJmol) {
+	// Make sure the use of Jmol is consistent within a pile.
+	if (pileBaseView != null) {
+	    if (pileBaseView.getUseJmol() != useJmol) {
+		System.err.println("ERROR: View " + viewName +
+		  " useJmol value inconsistent with pile base view " +
+		  pileBaseView.viewName);
+	    	return;
+	    }
+	}
+
+        _useJmol = useJmol;
     }
 
     // Add a child view to this view.

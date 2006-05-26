@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.107  2006/05/10 19:04:36  wenger
+  Added the new setDoHomeOnVisLinkIfInvisible and
+  getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
+  example session for Luis Populin), and fixed a bug in
+  getDoHomeOnVisLink.
+
+  Revision 1.106.4.1  2006/02/23 22:08:57  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
   Revision 1.106  2005/12/06 20:03:07  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -2187,6 +2196,9 @@ Session::SaveView(char *category, char *devClass, char *instance,
       "setDoHomeOnVisLink", instance, NULL, NULL, true);
   status += SaveParams(saveData, "getDoHomeOnVisLinkIfInvisible",
       "setDoHomeOnVisLinkIfInvisible", instance, NULL, NULL, true);
+
+  status += SaveParams(saveData, "viewGetUseJmol",
+      "viewSetUseJmol", instance, NULL, NULL, true);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

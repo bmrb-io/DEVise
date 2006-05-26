@@ -27,6 +27,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.14.4.1  2006/03/31 22:41:15  wenger
+// Finished splitting up DEViseCanvas class.
+//
+// Revision 1.14  2005/12/06 20:00:19  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.13  2002/06/17 19:40:14  wenger
 // Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 //
@@ -120,6 +127,7 @@ import java.applet.*;
 
 public final class DEViseJSValues
 {
+    //TEMPTEMP - this stupid class should get renamed to avoid confusion with the Java Canvas class
     public final class Canvas {
 	public int lastKey = KeyEvent.VK_UNDEFINED;
 	public DEViseCanvas sourceCanvas = null;

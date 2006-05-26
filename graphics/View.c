@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.245.4.1  2006/02/23 22:08:58  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
+  Revision 1.245  2005/12/06 20:03:10  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.244  2003/01/13 19:25:11  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -1310,6 +1317,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_cursorsOn = false;
 	_numDimensions = 2;
 	_solid3D = 2;
+	_useJmol = false;
 
 	_xyZoom = true;
 	_dispDataValues = false;

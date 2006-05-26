@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2003
+// (c) Copyright 1999-2005
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,33 @@
 // $Id$
 
 // $Log$
+// Revision 1.146.4.5  2006/05/23 18:17:50  wenger
+// Added initial Jmol menu with a menu item to show the tree selection
+// window; destroying and re-creating the window currently doesn't
+// preserve the existing selection, although I started on provision for
+// that.
+//
+// Revision 1.146.4.4  2005/12/15 19:28:09  wenger
+// JmolPanel is now sized to match 3D DEViseCanvas; removed
+// Jmol stuff from DEViseScreen and jsdevisec.
+//
+// Revision 1.146.4.3  2005/12/15 19:04:06  wenger
+// Jmol is now in the DEViseScreen and DEViseCanvas (test
+// version only).
+//
+// Revision 1.146.4.2  2005/12/13 22:50:55  wenger
+// Jmol is now in the jsdevised; it loads a PDB file so it displays
+// an actual protein.
+//
+// Revision 1.146.4.1  2005/12/09 20:58:54  wenger
+// Got Jmol to show up in the JavaScreen! (not yet connected to a
+// visualization); added a bunch of debug code to help understand
+// things for Jmol.
+//
+// Revision 1.146  2005/12/06 20:00:24  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.145  2003/01/13 19:23:45  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -613,6 +640,8 @@ public class jsdevisec extends Panel
     public EnterCollabPassDlg entercollabpassdlg = null;
     public CollabStateDlg collabstatedlg = null;
 
+    private DEViseJmolMenuButton jmolButton;
+
     public boolean isSessionOpened = false; 
 
     // This variable will tell us if a CollabIdDlg is open (only 1 should be open at a time)
@@ -765,6 +794,10 @@ public class jsdevisec extends Panel
 	    socketMode();
 	}
 	buttonPanel.add(commMode);
+
+        jmolButton = new DEViseJmolMenuButton();
+	buttonPanel.add(jmolButton);
+	jmolButton.hide();
 
 	if (! jsValues.session.disableButtons) {
 	    mainPanel.add(buttonPanel);
@@ -1035,6 +1068,16 @@ public class jsdevisec extends Panel
 	if (debugWindow != null) {
             debugWindow.setVisible(true);
 	}
+    }
+
+    public void showJmol(DEViseCanvas3DJmol canvas)
+    {
+        jmolButton.show(canvas);
+    }
+
+    public void hideJmol()
+    {
+        jmolButton.hide();
     }
 
     // print out message to debug window

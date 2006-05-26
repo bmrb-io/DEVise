@@ -2,8 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 15.0.
-
+version 16.0.
 
 For the details of the format in which commands are send on the socket,
 see comments in DEViseCommSocket.java.
@@ -151,7 +150,7 @@ see comments in DEViseCommSocket.java.
              sent when the leader exited or disabled collaboration).
     Arguments: 0
 
-    3.7 JAVAC_Set3DConfig (see section 2.9).
+    3.7 JAVAC_Set3DConfig (see section 4.18).
 
     3.8 JAVAC_InitCollaboration
     Purpose: confirms that collaboration has been correctly set up in the
@@ -564,7 +563,7 @@ see comments in DEViseCommSocket.java.
     Arguments: 1
         <view name>: name of view be deleted.
 
-    5.12 JAVAC_Set3DConfig (see section 4.19).
+    5.12 JAVAC_Set3DConfig (see section 4.18).
 
     5.13 JAVAC_SetViewColors
     Purpose: sets the foreground and background colors of a view (used
@@ -577,6 +576,13 @@ see comments in DEViseCommSocket.java.
         <background color>: view background color in the form "#rrrrggggbbbb",
                             where r, g, and b are hexadecimal digits.
 
+    5.14 JAVAC_SetUseJmol
+    Purpose: sets whether a given view should use the Jmol viewer instead
+             of the internal JavaScreen 3D code.
+    Arguments: 2
+        <view name>: name of view for which whether to use Jmol is to be
+	             set
+        <use Jmol>: whether to use Jmol (0 or 1)
 
 6. JSPoP to JSS
 

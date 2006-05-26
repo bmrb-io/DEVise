@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -32,6 +32,42 @@
 // $Id$
 
 // $Log$
+// Revision 1.75.6.8  2006/05/12 14:50:26  wenger
+// Now have two trees for a Jmol view: the first one selects which
+// atoms are shown in the Jmol view and in the second tree; the
+// second tree selects which atoms are highlighted in the Jmol view.
+//
+// Revision 1.75.6.7  2006/03/30 20:51:26  wenger
+// Partially done splitting up the DEViseCanvas class.
+//
+// Revision 1.75.6.6  2006/02/28 22:31:47  wenger
+// Implemented highlighting in Jmol views.
+//
+// Revision 1.75.6.5  2006/02/23 22:08:40  wenger
+// Added flag for whether or not 3D views should use Jmol.
+//
+// Revision 1.75.6.4  2005/12/29 21:19:20  wenger
+// Improved Jmol integration into the JavaScreen -- the Jmol
+// viewer isn't constantly destroyed and constructed; also a
+// bunch of other improvements in the Jmol-related DEViseCanvas
+// code.
+//
+// Revision 1.75.6.3  2005/12/15 19:28:09  wenger
+// JmolPanel is now sized to match 3D DEViseCanvas; removed
+// Jmol stuff from DEViseScreen and jsdevisec.
+//
+// Revision 1.75.6.2  2005/12/15 19:04:06  wenger
+// Jmol is now in the DEViseScreen and DEViseCanvas (test
+// version only).
+//
+// Revision 1.75.6.1  2005/12/09 20:58:53  wenger
+// Got Jmol to show up in the JavaScreen! (not yet connected to a
+// visualization); added a bunch of debug code to help understand
+// things for Jmol.
+//
+// Revision 1.75  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.74  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
@@ -495,7 +531,19 @@ public class DEViseScreen extends Panel
             return;
 
         if (view.canvas == null) {
-            DEViseCanvas canvas = new DEViseCanvas(view, image);
+	    DEViseCanvas canvas = null;
+	    if (view.viewDimension == 2) {
+            	canvas = new DEViseCanvas2D(view, image);
+	    } else if (view.viewDimension == 3) {
+	        if (view.getUseJmol()) {
+            	    canvas = new DEViseCanvas3DJmol(view, image);
+		} else {
+            	    canvas = new DEViseCanvas3DPlain(view, image);
+		}
+	    } else {
+		System.err.println("Illegal number of dimensions: " +
+		  view.viewDimension);
+	    }
             view.canvas = canvas;
 
             int i;
@@ -672,7 +720,7 @@ public class DEViseScreen extends Panel
 
     // Remove the given view's current GData and add the new GData;
     // force a repaint.
-    public synchronized void updateGData(String viewName, Vector gdList)
+    public synchronized void updateViewGData(String viewName, Vector gdList)
     {
         DEViseView view = getView(viewName);
 
@@ -705,6 +753,7 @@ public class DEViseScreen extends Panel
             }
         }
 
+	//TEMP -- this could really stand to get cleaned up
         if (view.viewDimension == 3 && view.canvas != null) {
 	    DEVise3DLCS oldLcs = null;
 	    int oldSX = 0, oldSY = 0, oldTSX = 0, oldTSY = 0;
@@ -715,8 +764,8 @@ public class DEViseScreen extends Panel
 		oldTSX = view.canvas.crystal.totalShiftedX;
 		oldTSY = view.canvas.crystal.totalShiftedY;
 	    }
-	    view.canvas.crystal = null;
-	    view.canvas.createCrystal();
+	    view.canvas.clear3DViewer();
+	    view.canvas.create3DViewer();
 	    if (oldLcs != null) {
 	        view.canvas.crystal.lcs = oldLcs;
 		view.canvas.crystal.shiftedX = oldSX;
@@ -736,7 +785,7 @@ public class DEViseScreen extends Panel
 		oldTSX = view.pileBaseView.canvas.crystal.totalShiftedX;
 		oldTSY = view.pileBaseView.canvas.crystal.totalShiftedY;
 	    }
-            view.pileBaseView.canvas.createCrystal();
+            view.pileBaseView.canvas.create3DViewer();
 	    if (oldLcs != null) {
 	        view.pileBaseView.canvas.crystal.lcs = oldLcs;
 		view.pileBaseView.canvas.crystal.shiftedX = oldSX;
@@ -826,6 +875,13 @@ public class DEViseScreen extends Panel
 	        tmpView.removeAllGData();
 	    }
 
+	    // Call close() on all DEViseCanvases (needed to get rid of tree windows
+	    // in Jmol canvases, at least for now).
+	    for (int index = 0; index < allCanvas.size(); index++) {
+	        DEViseCanvas canvas = (DEViseCanvas)allCanvas.elementAt(index);
+		canvas.close();
+	    }
+
             removeAll();
 
             allCanvas = new Vector();
@@ -897,6 +953,7 @@ public class DEViseScreen extends Panel
     }
 
     // Enable double-buffering
+    //TEMPTEMP -- hmm -- does this goof up Jmol?
     public synchronized void update(Graphics gc)
     {
 	if (offScrImg == null) {

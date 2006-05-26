@@ -1,3 +1,4 @@
+#TEMPTEMP -- Makefile needs lots of changes to properly incorporate Jmol stuff
 # ========================================================================
 # DEVise Data Visualization Software
 # (c) Copyright 1992-2005
@@ -21,9 +22,7 @@
 
 include Makefile.config
 
-# For compiling with java 1.5.
-# JAVAC = $(JAVA_BIN3)/javac -d . -source 1.3 -target 1.3
-JAVAC = $(JAVA_BIN3)/javac -d .
+JAVAC = $(JAVA_BIN3)/javac -d . -classpath .:Jmol.jar -source 1.3 -target 1.3
 
 all: js jsa jspop jss circ_log
 js: js.class
@@ -69,7 +68,11 @@ client: *.java
 	    DEViseTrafficLight.java DEViseUIGlobals.java DEViseView.java \
 	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
 	    jsdevisec.java DEVisePlayback.java DEViseCollabDlg.java \
-	    DEViseMainButtons.java
+	    DEViseMainButtons.java DEViseJmolData.java DEViseCanvas2D.java \
+	    DEViseCanvas3D.java DEViseCanvas3DJmol.java \
+	    DEViseCanvas3DPlain.java DEViseGenericTree.java \
+	    DEViseGenericTreeNode.java \
+	    DEViseGenericTreeSelectionCallback.java DEViseJmolMenuButton.java
 
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
@@ -107,8 +110,20 @@ jarjs:
 	cp *.gif JavaScreen
 	jar cf js.jar JavaScreen/*.class  JavaScreen/*.gif
 
+#TEMPTEMP
+jmol1:
+	javac -classpath .:Jmol.jar Integration.java
+
+jmol1_run:
+	java -cp .:Jmol.jar Integration
+
+jmol2:
+	#TEMPTEMP $(JAVAC) -classpath .:Jmol.jar js.java
+	javac -classpath .:Jmol.jar js.java
+
 clean: classclean
-	-rm JavaScreen/*.gif *.jar
+	#TEMPTEMP? -rm JavaScreen/*.gif *.jar
+	-rm JavaScreen/*.gif jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar
 
 classclean:
 	-rm JavaScreen/*.class

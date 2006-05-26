@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2004
+  (c) Copyright 1998-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,7 +16,7 @@
   Implementation of PileStack class.
 
   Note: I am preserving the current fact that the "top" views in a pile and
-  stack are the opposite.  This occures because the views are drawn in the
+  stack are the opposite.  This occurs because the views are drawn in the
   order that they appear in the window's child list.  In the case of a stack,
   the drawing simply stops after the first view in the list; in a pile,
   subsequent views are drawn on top of the first view.
@@ -26,6 +26,13 @@
   $Id$
 
   $Log$
+  Revision 1.31.4.1  2006/02/23 22:08:56  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
+  Revision 1.31  2005/12/06 20:03:07  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.30  2003/01/13 19:25:11  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -574,6 +581,22 @@ PileStack::InsertView(ViewWin *view)
       return;
     }
   }
+
+#if 0 //TEMP
+  if (IsPiled()) {
+    // Make sure this view is consistent with other views in the pile
+    // in terms of using or not using Jmol.
+    if (GetFirstView()->GetUseJmol() != view->GetUseJmol()) {
+      sprintf(errBuf, "Inserting view <%s> into PileStack <%s>; but its "
+          "use of Jmol is inconsistent with the rest of the pile",
+	  view->GetName(), GetName());
+      reportErrNosys(errBuf);
+      _disablePileRefresh = false;
+      return;
+
+    }
+  }
+#endif //TEMP
 
   view->SetParentPileStack(this);
 

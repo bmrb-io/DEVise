@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.75  2006/05/10 19:04:44  wenger
+  Added the new setDoHomeOnVisLinkIfInvisible and
+  getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
+  example session for Luis Populin), and fixed a bug in
+  getDoHomeOnVisLink.
+
+  Revision 1.74.4.1  2006/02/23 22:09:06  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
   Revision 1.74  2005/12/06 20:03:50  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -2380,6 +2389,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(selectNextInPile) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewGetUseJmol) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(viewSetUseJmol) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

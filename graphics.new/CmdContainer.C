@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.84  2006/05/10 19:04:43  wenger
+  Added the new setDoHomeOnVisLinkIfInvisible and
+  getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
+  example session for Luis Populin), and fixed a bug in
+  getDoHomeOnVisLink.
+
+  Revision 1.83.4.1  2006/02/23 22:09:05  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
   Revision 1.83  2005/12/06 20:03:43  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -874,6 +883,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setMappingColors)
 	REGISTER_COMMAND(getMappingColors)
 	REGISTER_COMMAND(selectNextInPile)
+	REGISTER_COMMAND(viewGetUseJmol)
+	REGISTER_COMMAND(viewSetUseJmol)
 }
 
 CmdContainer::~CmdContainer()

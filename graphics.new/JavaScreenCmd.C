@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.135.4.1  2006/02/23 22:09:07  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
+  Revision 1.135  2005/12/06 20:04:05  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.134  2003/01/13 19:25:23  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -727,7 +734,7 @@ static DeviseCursorList _drawnCursors;
 // Assume no more than 1000 views in a pile...
 static const float viewZInc = 0.001;
 
-static const int protocolMajorVersion = 15;
+static const int protocolMajorVersion = 16;
 static const int protocolMinorVersion = 0;
 
 JavaScreenCache JavaScreenCmd::_cache;
@@ -783,6 +790,7 @@ char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_ShowViewHelp",
 	"JAVAC_DeviseVersion",
 	"JAVAC_SetViewColors",
+	"JAVAC_SetUseJmol",
 
 	"JAVAC_Done",
 	"JAVAC_Error",
@@ -3498,6 +3506,15 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	  }
 
 	  args.FillInt(showMouseLocation);
+
+	  if (args.ReturnVal(this) < 0) status = -1;
+	}
+
+	{ // limit variable scopes
+	  JSArgs args(3);
+	  args.FillString(_controlCmdName[SET_USE_JMOL]);
+	  args.FillString(view->GetName());
+	  args.FillInt(view->GetUseJmol());
 
 	  if (args.ReturnVal(this) < 0) status = -1;
 	}

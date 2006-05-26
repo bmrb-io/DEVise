@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2003
+// (c) Copyright 1999-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.125.4.1  2006/02/23 22:08:39  wenger
+// Added flag for whether or not 3D views should use Jmol.
+//
+// Revision 1.125  2005/12/06 20:00:17  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.124  2003/01/13 19:23:42  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -1620,6 +1627,17 @@ public class DEViseCmdDispatcher implements Runnable
 		throw new YException("View " + viewname + " not found");
 	    }
 
+        } else if (args[0].equals(DEViseCommands.SET_USE_JMOL)) {
+            String viewname = args[1];
+            DEViseView view = jsc.jscreen.getView(viewname);
+
+	    if (view != null) {
+		int tmpVal = Integer.parseInt(args[2]);
+		view.setUseJmol(tmpVal != 0);
+	    } else {
+		throw new YException("View " + viewname + " not found");
+	    }
+
         } else {
             throw new YException("Unsupported command (" + response +
               ")received from server", "DEViseCmdDispatcher::processCmd()", 2);
@@ -1891,7 +1909,7 @@ public class DEViseCmdDispatcher implements Runnable
 
         String gdataStr = new String(gdata);
         if (gdataStr.equals("\u0004")) {
-            jsc.jscreen.updateGData(viewname, null);
+            jsc.jscreen.updateViewGData(viewname, null);
         } else {
             // This is used to handle the case when JSPoP sending
             // all the GData in one command (I know currently devised
@@ -1943,7 +1961,7 @@ public class DEViseCmdDispatcher implements Runnable
                       results.length);
                 }
 
-                jsc.jscreen.updateGData(viewname, gdList);
+                jsc.jscreen.updateViewGData(viewname, gdList);
                 results = null;
                 gdList = null;
             }

@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.48.4.1  2006/02/23 22:09:08  wenger
+  Added flag for whether or not 3D views should use Jmol.
+
+  Revision 1.48  2005/12/06 20:04:06  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.47  2002/06/17 19:41:07  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
@@ -352,6 +359,7 @@ class JavaScreenCmd
 			SHOW_VIEW_HELP,
 			DEVISE_VERSION,
 			SET_VIEW_COLORS,
+			SET_USE_JMOL,
 
 			DONE,
 			ERROR,

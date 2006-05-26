@@ -3922,6 +3922,8 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			(bug in previous fix to avoid sending extra commands
 			if you're not a collaboration leader). (wenger)
 
+921 4/3/06	OPEN	View help doesn't work in Jmol views. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -12,16 +12,36 @@
 
 // ------------------------------------------------------------------------
 
-// ADD COMMENT: overall description of the function of this class
-
 // There is once instance of this class for each GData record the
 // JavaScreen is handling.
+
+// An object in this class corresponds to a "decoded" GData record
+// -- in other words, the values from the GData record have been pulled
+// out and  put in the object according to the object type.
+
+// Note: this is pretty bad design -- there really should be a subclass
+// for each type of symbol, instead of this one class with a bunch of
+// members that only apply to some symbol types.  However, I don't want
+// to deal with that right now.  wenger 2006-02-21.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.39.36.3  2006/05/18 20:49:00  wenger
+// Added backbone/side chains/protons selection tree.
+//
+// Revision 1.39.36.2  2006/02/23 22:08:39  wenger
+// Added flag for whether or not 3D views should use Jmol.
+//
+// Revision 1.39.36.1  2006/02/23 16:57:42  wenger
+// Cleaned up JavaScreen code that sends data to Jmol, including
+// adding new DEViseJmolData class.
+//
+// Revision 1.39  2001/05/11 20:36:06  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.38  2001/05/07 21:53:25  wenger
 // Found and fixed bug 670; jss checks for /tmp.X1-lock before starting
 // Xvfb.
@@ -172,10 +192,22 @@ public class DEViseGData
     public Font font = null;
     public int outline = 0;
 
+    // Values for Jmol
+    public int atomNum;
+    public String atomName;
+    public String residueLabel; // amino acid
+    public int residueNum;
+    public String atomType;
+    public String structType;
+
     private static final boolean _debug = false;
 
     // GData format: <x> <y> <z> <color> <size> <pattern> <orientation>
     // <symbol type> <shape attr 0> ... <shape attr 14>
+    // xm is x multiplier (GData to pixel conversion)
+    // xo is x offset (GData to pixel conversion)
+    // ym is y multiplier (GData to pixel conversion)
+    // yo is y offset (GData to pixel conversion)
     public DEViseGData(jsdevisec panel, DEViseView view, String gdata, float xm,
       float xo, float ym, float yo) throws YException
     {
@@ -236,7 +268,11 @@ public class DEViseGData
 	    FixedTextLabel(data, size);
 
         } else if (symbolType == _symOval) {
-	    Oval(data, size, xm, ym);
+	    if (view.getUseJmol() && view.viewDimension == 3) {
+	        JmolOval(data, size, xm, ym);
+	    } else {
+	    	Oval(data, size, xm, ym);
+	    }
 
 	} else if (symbolType == _symSegment) {
             Segment(data, size, xm, ym);
@@ -500,6 +536,27 @@ public class DEViseGData
 
 	// ADD COMMENT -- is this the name of the element??
         string = data[10];
+    }
+
+    protected void JmolOval(String[] data, float size, float xm, float ym)
+    {
+        isJavaSymbol = false;
+
+        width = (int)(size * xm);
+        height = (int)(size * ym);
+        if (width < 0)
+            width = -width;
+        if (height < 0)
+            height = -height;
+
+        color = DEViseUIGlobals.convertColor(data[3]);
+
+	atomNum = (Integer.valueOf(data[10])).intValue();
+	atomName = data[11];
+	residueLabel = data[14];
+	residueNum = (Integer.valueOf(data[13])).intValue();
+	atomType = data[15];
+	structType = data[16];
     }
 
     protected void Segment(String[] data, float size, float xm, float ym)

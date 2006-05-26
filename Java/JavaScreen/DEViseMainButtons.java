@@ -22,6 +22,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.1  2006/05/23 18:17:50  wenger
+// Added initial Jmol menu with a menu item to show the tree selection
+// window; destroying and re-creating the window currently doesn't
+// preserve the existing selection, although I started on provision for
+// that.
+//
+// Revision 1.2  2005/12/06 20:00:19  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.1.2.2  2003/12/22 22:47:15  wenger
 // JavaScreen support for print color modes is now in place.
 //
@@ -46,8 +56,8 @@ public class DEViseMainButtons
 
     private static int DEBUG = 0;
 
-    private static int MENU_X_OFFSET = 10;
-    private static int MENU_Y_OFFSET = 10;
+    public static int MENU_X_OFFSET = 10;
+    public static int MENU_Y_OFFSET = 10;
 
     private jsdevisec _js = null;
     

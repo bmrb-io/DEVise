@@ -1,6 +1,9 @@
+//TEMPTEMP -- still some problems with the JS mouse cursor not being the correct one
+//TEMPTEMP Look at the interfaces in org.jmol.api
+//TEMP -- why is DEViseCanvas a Container instead of a Canvas???
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2005
+// (c) Copyright 1999-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +30,53 @@
 // $Id$
 
 // $Log$
+// Revision 1.96.4.11  2006/05/12 14:50:25  wenger
+// Now have two trees for a Jmol view: the first one selects which
+// atoms are shown in the Jmol view and in the second tree; the
+// second tree selects which atoms are highlighted in the Jmol view.
+//
+// Revision 1.96.4.10  2006/03/31 22:41:13  wenger
+// Finished splitting up DEViseCanvas class.
+//
+// Revision 1.96.4.9  2006/03/30 20:51:25  wenger
+// Partially done splitting up the DEViseCanvas class.
+//
+// Revision 1.96.4.8  2006/02/28 22:31:47  wenger
+// Implemented highlighting in Jmol views.
+//
+// Revision 1.96.4.7  2006/02/23 22:08:38  wenger
+// Added flag for whether or not 3D views should use Jmol.
+//
+// Revision 1.96.4.6  2006/02/23 16:57:42  wenger
+// Cleaned up JavaScreen code that sends data to Jmol, including
+// adding new DEViseJmolData class.
+//
+// Revision 1.96.4.5  2006/02/02 22:41:48  wenger
+// New tests for loading PDB files and selecting and coloring atoms.
+//
+// Revision 1.96.4.4  2005/12/29 21:19:19  wenger
+// Improved Jmol integration into the JavaScreen -- the Jmol
+// viewer isn't constantly destroyed and constructed; also a
+// bunch of other improvements in the Jmol-related DEViseCanvas
+// code.
+//
+// Revision 1.96.4.3  2005/12/15 19:28:09  wenger
+// JmolPanel is now sized to match 3D DEViseCanvas; removed
+// Jmol stuff from DEViseScreen and jsdevisec.
+//
+// Revision 1.96.4.2  2005/12/15 19:04:02  wenger
+// Jmol is now in the DEViseScreen and DEViseCanvas (test
+// version only).
+//
+// Revision 1.96.4.1  2005/12/09 20:58:52  wenger
+// Got Jmol to show up in the JavaScreen! (not yet connected to a
+// visualization); added a bunch of debug code to help understand
+// things for Jmol.
+//
+// Revision 1.96  2005/12/06 20:00:15  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.95  2003/01/13 19:23:41  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -436,23 +486,19 @@
 package JavaScreen;
 
 import  java.awt.*;
-import  java.applet.*;
 import  java.awt.event.*;
 import  java.awt.image.*;
 import  java.util.*;
-import  java.net.*;
-import  java.io.*;
-import  java.lang.*;
-import  java.text.*;
 
 public class DEViseCanvas extends Container
 {
-    private jsdevisec jsc = null;
-    private DEViseScreen jscreen = null;
-    private DEViseCmdDispatcher dispatcher = null;
+    protected jsdevisec jsc = null;
+    protected DEViseScreen jscreen = null;
+    protected DEViseCmdDispatcher dispatcher = null;
     public int posZ = 0;
 
     public int oldHighlightAtomIndex = -1, highlightAtomIndex = -1;
+    //TEMP -- what is point *for*?
     public Point point = new Point();
     public DEViseCrystal crystal = null;
 
@@ -464,7 +510,7 @@ public class DEViseCanvas extends Container
     // necessarily get set to null when the active view becomes inactive.
     public DEViseView activeView = null;
 
-    private Dimension canvasDim = null;
+    protected Dimension canvasDim = null;
 
     private Image image = null;
     private Image offScrImg = null;
@@ -472,10 +518,10 @@ public class DEViseCanvas extends Container
 
     public boolean isMouseDragged = false, isInViewDataArea = false,
       isInDataArea = false;
-    private DEViseCursor selectedCursor = null;
+    protected DEViseCursor selectedCursor = null;
 
     // See DEViseCursor.side* for values.
-    private int whichCursorSide = DEViseCursor.sideNone;
+    protected int whichCursorSide = DEViseCursor.sideNone;
 
     // Keep track of whether the mouse is actually in this canvas (part of
     // the fix for the "missing keystrokes" bugs.
@@ -488,8 +534,6 @@ public class DEViseCanvas extends Container
 
     //TEMP -- what are these? op is old point???
     Point sp = new Point(), ep = new Point(), op = new Point();
-
-    private int mouseDragCount = 0;
 
     //
     // This is a fix to a problem that seems to be in the JVM itself:
@@ -505,20 +549,20 @@ public class DEViseCanvas extends Container
 
     // Various zoom modes.  Note that _zoomMode is only valid while the
     // mouse button is down or has just been released.
-    private static final int ZOOM_MODE_NONE = 0;
-    private static final int ZOOM_MODE_X = 1;
-    private static final int ZOOM_MODE_Y = 2;
-    private static final int ZOOM_MODE_XY = 3;
-    private static int _zoomMode = ZOOM_MODE_NONE;
+    protected static final int ZOOM_MODE_NONE = 0;
+    protected static final int ZOOM_MODE_X = 1;
+    protected static final int ZOOM_MODE_Y = 2;
+    protected static final int ZOOM_MODE_XY = 3;
+    protected static int _zoomMode = ZOOM_MODE_NONE;
 
     // This is used to paint only rubberband lines (in XOR mode) while
     // we are dragging the rubberband line.  (In other words, we don't
     // actually repaint all of the other stuff on the canvas.)
-    private boolean _paintRubberbandOnly = false;
+    protected boolean _paintRubberbandOnly = false;
 
     // Set this to true to draw rubberband lines in XOR mode (so we can
     // just redraw the rubberband line itself on each mouse drag).
-    private static final boolean DRAW_XOR_RUBBER_BAND = true;
+    protected static final boolean DRAW_XOR_RUBBER_BAND = true;
 
     // v is base view if there is a pile in this canvas.
     public DEViseCanvas(DEViseView v, Image img)
@@ -546,6 +590,9 @@ public class DEViseCanvas extends Container
         addKeyListener(new ViewKeyListener());
         addFocusListener(new ViewFocusListener());
     }
+
+    // Called when a session is closed.
+    public void close() {}
 
     public Dimension getPreferredSize()
     {
@@ -645,6 +692,9 @@ public class DEViseCanvas extends Container
 	paintCanvas(og);
 	gc.drawImage(offScrImg, 0, 0, this);
 	og.dispose();
+
+	// Needed for Jmol.
+	super.paint(gc);
     }
 
     public void paintCanvas(Graphics gc)
@@ -660,6 +710,7 @@ public class DEViseCanvas extends Container
             }
         }
 
+//TEMPTEMP -- check whether help works in Jmol views -- no, it doesn't
         if (!_paintRubberbandOnly) {
             // draw 3D molecular view
             if (paintCrystal(gc)) {
@@ -691,13 +742,12 @@ public class DEViseCanvas extends Container
 
             paintHelpMsg(gc);
 
-	    
-	    // draw sxis lables
+	    // draw sxis labels
 	    paintAxisLabel(gc);
         }
     }
 
-    private synchronized void paintBackground(Graphics gc)
+    protected synchronized void paintBackground(Graphics gc)
     {
         if (image != null) {
             gc.drawImage(image, 0, 0, canvasDim.width, canvasDim.height, this);
@@ -861,32 +911,33 @@ public class DEViseCanvas extends Container
        return res;
    }
 
-	   
-          
-
-    private synchronized boolean paintCrystal(Graphics gc)
+    protected synchronized boolean paintCrystal(Graphics gc)
     {
-        if (view.viewDimension != 3) {
-            return false;
-        }
+        return false;
+    }
 
-	if (jsc.jsValues.debug._debugLevel >= 2) {
-            jsc.pn("Crystals have been painted " +
-	      jsc.jsValues.canvas.crystalPaintCount++ + " times");
-        }
+    protected void resetCrystal()
+    {
+    }
 
-        if (crystal == null) {
-            createCrystal();
-            if (crystal == null) {
-                paintBackground(gc);
-                return true;
-            }
-        }
+    protected void doMousePressed()
+    {
+    }
 
-        paintBackground(gc);
-        crystal.paint(this, gc, isMouseDragged);
+    protected void doMouseReleased(MouseEvent event)
+    {
+    }
 
-        return true;
+    protected void doMouseClicked(MouseEvent event)
+    {
+    }
+
+    protected void doMouseDragged(Point p)
+    {
+    }
+
+    protected void doMouseMoved(Point p)
+    {
     }
 
     private synchronized void paintBorder(Graphics gc)
@@ -1194,6 +1245,7 @@ public class DEViseCanvas extends Container
         super.processMouseMotionEvent(event);
     }
 
+    //TEMP -- move to DEViseCanvas2D?
     protected void processKeyEvent(KeyEvent event)
     {
         if (view.viewDimension != 3) {
@@ -1250,7 +1302,7 @@ public class DEViseCanvas extends Container
             }
 
             if (view.viewDimension == 3) {
-		if ((keyChar == 'r' || keyChar == 'R') && crystal != null) {
+		if (keyChar == 'r' || keyChar == 'R') {
 		    resetCrystal();
 		}
                 return;
@@ -1301,50 +1353,6 @@ public class DEViseCanvas extends Container
 	      activeView.getCurlyName() + " " + 0 + " " + 0;
 	    // jscreen.guiAction = true;
      	    dispatcher.start(cmd);
-	}
-
-	private void resetCrystal()
-	{
-	    crystal.totalShiftedX = 0;
-	    crystal.totalShiftedY = 0;
-	    crystal.totalX = 0.0f;
-	    crystal.totalY = 0.0f;
-	    crystal.totalZ = 0.0f;
-	    crystal.totalXRotation = 0.0f;
-	    crystal.totalYRotation = 0.0f;
-	    crystal.totalScaleFactor = 1.0f;
-	    crystal.resetAll(true);
-	    repaint();
-
-            // send command to collaborations if necessary (only if we're
-	    // a leader!)
-	    if (jsc.specialID == -1 && jsc.isCollab) {
-	        String cmd = DEViseCommands.SET_3D_CONFIG + " "
-		  + activeView.getCurlyName();
-			
-		float[][] data = crystal.lcs.getData();
-		float[] origin = crystal.lcs.getOrigin();
-		Float f = null;
-			
-		for (int i=0; i<3; i++) 
-		    for (int j=0; j<3; j++) {
-			f = new Float(data[i][j]);
-			cmd = cmd + " {" + f.toString() + "}";
-		    }
-			
-		for (int i=0; i<3; i++) {
-		    f = new Float(origin[i]);
-		    cmd = cmd + " {" + f.toString() + "}";
-		}
-
-		cmd = cmd + " {" + crystal.shiftedX + "}" +
-		  " {" + crystal.shiftedY + "}";
-			
-
-		if (jsc.dispatcher.getStatus() ==
-		  DEViseCmdDispatcher.STATUS_IDLE)
-		    dispatcher.start(cmd);	
-	    }	
 	}
 
 	private int translateKey(char keyChar, int keyCode)
@@ -1527,35 +1535,7 @@ public class DEViseCanvas extends Container
             ep.x = op.x = sp.x = p.x;
             ep.y = op.y = sp.y = p.y;
 
-            if (view.viewDimension == 3) {
-                // setCursor(DEViseUIGlobals.rbCursor);  - Ven modified
-		   setCursor(DEViseUIGlobals.hdCursor);
-
-                activeView = view;
-                jsc.viewInfo.updateInfo(activeView.viewName,
-		  activeView.getX(sp.x), activeView.getY(sp.y));
-                if (jscreen.getCurrentView() != activeView) {
-                    jscreen.setCurrentView(activeView);
-                }
-
-                return;
-            }
-
-            checkMousePos(sp, true);
-
-	    // Control-drag is X-only zoom.
-            if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
-	        _zoomMode = ZOOM_MODE_X;
-	    } else {
-	        _zoomMode = ZOOM_MODE_XY;
-	    }
-
-            if (isInViewDataArea && selectedCursor == null &&
-	      activeView.isRubberBand) {
-                // We can only draw just the rubberband line if we're
-		// drawing it in XOR mode.
-                _paintRubberbandOnly = DRAW_XOR_RUBBER_BAND;
-            }
+            doMousePressed();
         }
 
         public void mouseReleased(MouseEvent event)
@@ -1579,137 +1559,8 @@ public class DEViseCanvas extends Container
 	    // reported.
 
             jsc.jsValues.canvas.isInteractive = false;
-            if (view.viewDimension == 3) {
-		// send command to collaborations if necessary (only if
-		// we're a leader!)
-		if (jsc.specialID == -1 && jsc.isCollab) {
-		    // for 3D drill-down
-		    if ((jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) 
-			&& (activeView.isDrillDown) && (!isMouseDragged) 
-			&& (isInViewDataArea)) {
-			Point p = event.getPoint();			
-			drillDown3D(p);
-			return;
-		    }
 
-		    String cmd = DEViseCommands.SET_3D_CONFIG + " "
-			+ activeView.getCurlyName();
-		    
-		    float[][] data = crystal.lcs.getData();
-		    float[] origin = crystal.lcs.getOrigin();
-		    Float f = null;
-		    
-		    for (int i=0; i<3; i++) 
-			for (int j=0; j<3; j++) {
-			    f = new Float(data[i][j]);
-			    cmd = cmd + " {" + f.toString() + "}";
-			}
-
-		    for (int i=0; i<3; i++) {
-			f = new Float(origin[i]);
-			cmd = cmd + " {" + f.toString() + "}";
-		    }
-
-		    cmd = cmd + " {" + crystal.shiftedX + "}" +
-			" {" + crystal.shiftedY + "}";
-
-		    dispatcher.start(cmd);	
-		}
-
-                isMouseDragged = false;
-                repaint();		
-
-                return;
-            }
-
-            if (isMouseDragged && isInViewDataArea) {
-                Point p = event.getPoint();
-                String cmd = "";
-
-                if (selectedCursor != null) { // move or resize cursor
-                    ep.x = activeView.translateX(p.x, 1);
-                    ep.y = activeView.translateY(p.y, 1);
-
-                    jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-		      activeView.getY(ep.y));
-
-                    int dx = ep.x - sp.x, dy = ep.y - sp.y;
-                    DEViseCursor cursor = selectedCursor;
-
-                    cursor.updateCursorLoc(dx, dy, whichCursorSide, true);
-
-                    cursor.image = null;
-
-                    cmd = cmd + DEViseCommands.CURSOR_CHANGED + " {" +
-		      cursor.name + "} " + cursor.x + " " + cursor.y +
-		      " " + cursor.width + " " + cursor.height;
-
-                    jscreen.guiAction = true;
-                    dispatcher.start(cmd);
-                } else if (activeView.isRubberBand) { // rubber band (zoom)
-                    ep.x = activeView.translateX(p.x, 1);
-                    ep.y = activeView.translateY(p.y, 1);
-
-                    jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-		      activeView.getY(ep.y));
-
-                    int w = ep.x - sp.x, h = ep.y - sp.y;
-                    if (w < 0)
-                        w = -w;
-                    if (h < 0)
-                        h = -h;
-
-                    if (w > jsc.jsValues.uiglobals.rubberBandLimit.width ||
-		      h > jsc.jsValues.uiglobals.rubberBandLimit.height) {
-			try {
-                            cmd = cmd + DEViseCommands.MOUSE_RUBBERBAND +
-			      " " + activeView.getCurlyName() + " " +
-			      activeView.translateX(sp.x, 2) + " " +
-			      activeView.translateY(sp.y, 2) + " " +
-			      activeView.translateX(ep.x, 2) + " " +
-			      activeView.translateY(ep.y, 2);
-
-			    // Alt-drag zooms out.
-                            if (jsc.jsValues.canvas.lastKey == 
-				KeyEvent.VK_ALT || 
-				jsc.jsValues.canvas.lastKey == 
-				KeyEvent.VK_SHIFT) {
-                                cmd = cmd + " 1";
-                            } else {
-                                cmd = cmd + " 0";
-                            }
-
-			    if (_zoomMode == ZOOM_MODE_X) {
-                                cmd = cmd + " 1";
-                            } else if (_zoomMode == ZOOM_MODE_XY) {
-                                cmd = cmd + " 0";
-                            } else {
-			        throw new YError("Illegal zoom mode (" +
-			          _zoomMode + ")");
-			    }
-
-                            jscreen.guiAction = true;
-                            dispatcher.start(cmd);
-			} catch (YError err) {
-			    System.err.println(err.getMessage());
-			}
-			_zoomMode = ZOOM_MODE_NONE;
-                    }
-                }
-
-                isInViewDataArea = false;
-                selectedCursor = null;
-                whichCursorSide = DEViseCursor.sideNone;
-                isMouseDragged = false;
-
-                repaint();
-
-		// Workaround for bug 607.  Note that this means that things
-		// will *not* work correctly if you do two consecutive drags
-		// while holding down the control key the whole time.
-		// RKW 2000-08-07.
-		jsc.jsValues.canvas.lastKey = KeyEvent.VK_UNDEFINED;
-            }
+	    doMouseReleased(event);
         }
 
         public void mouseClicked(MouseEvent event)
@@ -1720,54 +1571,7 @@ public class DEViseCanvas extends Container
 		    ").ViewMouseListener.mouseClicked()");
             }
 
-            if (view.viewDimension == 3) {
-		return;
-            }
-
-            if (!isMouseDragged && isInViewDataArea) {
-                String cmd = null;
-                Point p = event.getPoint();
-
-                if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) {
-		    if (activeView.isDrillDown) {
-                        cmd = DEViseCommands.SHOW_RECORDS + " " +
-			  activeView.getCurlyName() + " " +
-			  activeView.translateX(p.x, 2) + " " +
-			  activeView.translateY(p.y, 2);
-		    }
-                } else if (activeView.isCursorMove) {
-                    DEViseCursor cursor = activeView.getFirstCursor();
-
-                    if (cursor != null && (cursor.isXMovable ||
-		      cursor.isYMovable)) {
-                        Rectangle loc = cursor.cursorLocInCanvas;
-
-                        int dx = p.x - loc.x - loc.width / 2;
-                        int dy = p.y - loc.y - loc.height / 2;
-
-                        cursor.updateCursorLoc(dx, dy, whichCursorSide,
-			  true);
-
-                        cmd = DEViseCommands.CURSOR_CHANGED + " {" +
-			  cursor.name + "} " + cursor.x + " " + cursor.y + " "
-			  + cursor.width + " " + cursor.height;
-
-                        cursor.image = null;
-                    }
-                }
-
-                if (cmd != null) {
-                    jscreen.guiAction = true;
-                    dispatcher.start(cmd);
-                }
-
-                isInViewDataArea = false;
-                selectedCursor = null;
-                whichCursorSide = DEViseCursor.sideNone;
-                isMouseDragged = false;
-
-                repaint();
-            }
+	    doMouseClicked(event);
         }
 
         public void mouseEntered(MouseEvent event)
@@ -1806,50 +1610,7 @@ public class DEViseCanvas extends Container
             Point p = event.getPoint();
             isMouseDragged = true;
 
-            if (view.viewDimension == 3 && crystal != null) {
-                int dx = p.x - op.x, dy = p.y - op.y;
-                op.x = p.x;
-                op.y = p.y;
-
-                jsc.viewInfo.updateInfo(activeView.getX(p.x),
-		  activeView.getY(p.y));
-
-                if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT || 
-		    jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) {
-                    crystal.translate(dx, dy);
-                } else if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
-                    crystal.scale(dx, dy);
-                } else {
-                    crystal.rotate(dx, dy);
-                }
-
-                jsc.jsValues.canvas.isInteractive = true;
-                jsc.jsValues.canvas.sourceCanvas = DEViseCanvas.this;
-                repaint();
-
-                return;
-            }
-
-            if (isInViewDataArea) {
-                ep.x = activeView.translateX(p.x, 1);
-                ep.y = activeView.translateY(p.y, 1);
-
-                jsc.viewInfo.updateInfo(activeView.getX(ep.x),
-		  activeView.getY(ep.y));
-
-                if (selectedCursor != null) {
-
-                    DEViseCursor cursor = selectedCursor;
-
-                    int dx = ep.x - sp.x, dy = ep.y - sp.y;
-
-                    cursor.updateCursorLoc(dx, dy, whichCursorSide, false);
-                }
-
-                jsc.jsValues.canvas.isInteractive = true;
-                jsc.jsValues.canvas.sourceCanvas = DEViseCanvas.this;
-                repaint();
-            }
+	    doMouseDragged(p);
         }
 
         public void mouseMoved(MouseEvent event)
@@ -1873,24 +1634,7 @@ public class DEViseCanvas extends Container
 
             Point p = event.getPoint();
 
-            if (view.viewDimension == 3 && crystal != null) {
-                point.x = p.x;
-                point.y = p.y;
-
-               //  setCursor(DEViseUIGlobals.rbCursor); - Ven modified
-		   setCursor(DEViseUIGlobals.hdCursor);
-
-                activeView = view;
-                jsc.viewInfo.updateInfo(activeView.viewName,
-		  activeView.getX(p.x), activeView.getY(p.y));
-                if (jscreen.getCurrentView() != activeView) {
-                    jscreen.setCurrentView(activeView);
-                }
-
-		return;
-            }
-
-            checkMousePos(p, true);
+            doMouseMoved(p);
         }
     }
     // end of class ViewMouseMotionListener
@@ -2165,155 +1909,19 @@ public class DEViseCanvas extends Container
         }
     }
 
-    // Create "crystal" (used for drawing in 3D views/piles).  Note that
-    // in a 3D pile there is only one crystal for the entire pile.
-    public void createCrystal()
+    public void create3DViewer()
     {
-        if (view.viewDimension != 3) {
-            return;
-        }
-
-        if (view.viewGDatas.size() == 0) {
-            return;
-        }
-
-        if (crystal == null) {
-            int size = view.viewGDatas.size();
-            //float[][] atomPos = new float[size][3];
-            //float[][][] bondPos = new float[size][
-            //String[] atomName = new String[size];
-            Vector aPos = new Vector(size), aName = new Vector(size),
-			  aColor = new Vector(size), bPos = new Vector(size),
-			  bColor = new Vector(size);
-            for (int i = 0; i < size; i++) {
-                DEViseGData gdata = (DEViseGData)view.viewGDatas.elementAt(i);
-		if (gdata.symbolType == gdata._symSegment) {
-                    float[][] pos = new float[2][3];
-                    pos[0][0] = gdata.x0;
-                    pos[0][1] = gdata.y0;
-                    pos[0][2] = gdata.z0;
-                    pos[1][0] = gdata.x1;
-                    pos[1][1] = gdata.y1;
-                    pos[1][2] = gdata.z1;
-                    bPos.addElement(pos);
-                    bColor.addElement(gdata.color);
-                } else {
-                    aName.addElement(gdata.string);
-                    float[] pos = new float[3];
-                    pos[0] = gdata.x0;
-                    pos[1] = gdata.y0;
-                    pos[2] = gdata.z0;
-                    aPos.addElement(pos);
-                    aColor.addElement(gdata.color);
-                }
-            }
-
-            String[] atomName = null;
-            float[][] atomPos = null;
-            float[][][] bondPos = null;
-            Color[] bondColor = null;
-            Color[] atomColor = null;
-            if (aName.size() > 0) {
-                atomName = new String[aName.size()];
-                for (int i = 0; i < atomName.length; i++) {
-                    atomName[i] = (String)aName.elementAt(i);
-                }
-            }
-
-            if (aPos.size() > 0) {
-                atomPos = new float[aPos.size()][3];
-                for (int i = 0; i < atomPos.length; i++) {
-                    atomPos[i] = (float[])aPos.elementAt(i);
-                }
-            }
-
-            if (aColor.size() > 0) {
-                atomColor = new Color[aColor.size()];
-                for (int i = 0; i < atomColor.length; i++) {
-                    atomColor[i] = (Color)aColor.elementAt(i);
-                }
-            }
-
-            if (bPos.size() > 0) {
-                bondPos = new float[bPos.size()][2][3];
-                for (int i = 0; i < bondPos.length; i++) {
-                    bondPos[i] = (float[][])bPos.elementAt(i);
-                }
-            }
-
-            if (bColor.size() > 0) {
-                bondColor = new Color[bColor.size()];
-                for (int i = 0; i < bondColor.length; i++) {
-                    bondColor[i] = (Color)bColor.elementAt(i);
-                }
-            }
-
-            try {
-                DEVise3DLCS lcs = new DEVise3DLCS();
-                crystal = new DEViseCrystal(canvasDim.width - 10, canvasDim.height - 10, 5, lcs, -1, -1, atomName, atomPos, atomColor, bondPos, bondColor);
-            } catch (YException e) {
-                jsc.pn(e.getMessage());
-                crystal = null;
-                return;
-            }
-        }
-
-        if (view.viewPiledViews.size() > 0) {
-            crystal.setSelect();
-
-            for (int i = 0; i < view.viewPiledViews.size(); i++) {
-	        DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
-		for (int j = 0; j < v.viewGDatas.size(); j++) {
-		    DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
-		    if (gdata.symbolType == gdata._symSegment) {
-		        crystal.setSelect(gdata.x0, gdata.y0, gdata.z0,
-			  gdata.color, true);
-                        crystal.setSelect(gdata.x1, gdata.y1, gdata.z1,
-			  gdata.color, true);
-                    } else {
-                        crystal.setSelect(gdata.x0, gdata.y0, gdata.z0,
-			  gdata.color, false);
-                    }
-                }
-            }
-        }
+        return;
+    }
+    
+    //TEMP -- document this
+    public void clear3DViewer()
+    {
     }
 
     // 3D drill-down
     public void drillDown3D(Point p)
     {
-	jsc.pn("Mouse point: " + p.x + " " + p.y);
-	Vector atomList = new Vector();
-	Float f;
-	String s = null;
-
-	s = crystal.drillDown3D(p, atomList);
-	if (atomList.size() > 0)
-	    jsc.pn(s);
-	else 
-	    jsc.pn("No atom.");
-
-	if (atomList.size() > 0) {
-	    String cmd = DEViseCommands.SHOW_RECORDS3D + " " + 
-	    activeView.getCurlyName() + " " + atomList.size();
-	    
-	    for (int i=0; i<atomList.size(); i++) {
-		DEViseAtomInCrystal atom = (DEViseAtomInCrystal) atomList.elementAt(i);
-		for (int j=0; j<3; j++) {
-		    f = new Float(atom.pos[j]);
-		    cmd = cmd + " " + f.toString();
-		}
-	    }
-
-	    jscreen.guiAction = true;
-	    dispatcher.start(cmd);
-	}
-	
-	isInViewDataArea = true;
-	selectedCursor = null;
-	whichCursorSide = DEViseCursor.sideNone;
-	isMouseDragged = false;
-	repaint();
     }
 
     private static String fitStringToWidth(String str, int width,
