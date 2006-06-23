@@ -21,6 +21,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.45.4.2  2006/06/07 15:15:37  wenger
+// Removed ThreadDeath fixes from 26 May 2006 because for some reason
+// they prevent the JavaScreen from being able to be run more than
+// once in the same browser session (at least in Mozilla and Firefox).
+//
+// Revision 1.45.4.1  2006/05/26 19:18:09  wenger
+// Catching a few ThreadDeath exceptions in places where we need
+// to; cleaned up js script.
+//
+// Revision 1.45  2005/12/06 20:00:15  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.44  2003/01/13 19:23:41  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //

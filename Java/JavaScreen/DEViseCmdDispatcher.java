@@ -23,6 +23,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.126  2006/05/26 16:22:15  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
+// Revision 1.125.4.3  2006/06/07 15:15:37  wenger
+// Removed ThreadDeath fixes from 26 May 2006 because for some reason
+// they prevent the JavaScreen from being able to be run more than
+// once in the same browser session (at least in Mozilla and Firefox).
+//
+// Revision 1.125.4.2  2006/05/26 19:18:09  wenger
+// Catching a few ThreadDeath exceptions in places where we need
+// to; cleaned up js script.
+//
 // Revision 1.125.4.1  2006/02/23 22:08:39  wenger
 // Added flag for whether or not 3D views should use Jmol.
 //

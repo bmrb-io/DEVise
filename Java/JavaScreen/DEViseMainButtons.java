@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003
+// (c) Copyright 2003-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/05/26 16:22:16  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
+// Revision 1.2.4.2  2006/06/14 16:32:02  wenger
+// Added new DEViseButton class to force the colors and font we want
+// for buttons; cleaned up things in jsdevisec (made public members
+// private, etc.); started on getting more of the Jmol menus actually
+// working.
+//
 // Revision 1.2.4.1  2006/05/23 18:17:50  wenger
 // Added initial Jmol menu with a menu item to show the tree selection
 // window; destroying and re-creating the window currently doesn't
@@ -64,10 +73,10 @@ public class DEViseMainButtons
     private Component[] _buttons = null;
 
     // Buttons that bring up menus.
-    private Button sessionMenuButton = new Button("Session");
+    private Button sessionMenuButton;
     //TEMP private Button sessionMenuButton = new Button("Cursor Mode");
-    private Button viewMenuButton = new Button("View");
-    private Button helpMenuButton = new Button("Help");
+    private Button viewMenuButton;
+    private Button helpMenuButton;
 
     // Menus.
     private PopupMenu sessionPM = new PopupMenu();
@@ -77,7 +86,7 @@ public class DEViseMainButtons
     private Menu displayModeMenu = new PopupMenu("Display Mode");
 
     // Buttons that don't bring up menus.
-    public  Button stopButton = new Button("Stop");
+    public  Button stopButton;
 
     // Menu items.
     private MenuItem openMenuItem = new MenuItem("Open...");
@@ -165,6 +174,11 @@ public class DEViseMainButtons
 	    System.out.println("DEViseMainButtons.createButtons()");
 	}
 
+        sessionMenuButton = new DEViseButton("Session", _js.jsValues);
+        viewMenuButton = new DEViseButton("View", _js.jsValues);
+        helpMenuButton = new DEViseButton("Help", _js.jsValues);
+        stopButton = new DEViseButton("Stop", _js.jsValues);
+
         _buttons = new Component[4];
         _buttons[0] = sessionMenuButton;
         _buttons[1] = viewMenuButton;
@@ -202,7 +216,6 @@ public class DEViseMainButtons
 	helpPM.add(viewHelpMenuItem);
 	//TEMP helpPM.add(aboutMenuItem);
 	helpMenuButton.add(helpPM);
-
     }
 
     //-------------------------------------------------------------------

@@ -1,4 +1,3 @@
-//TEMPTEMP -- question -- should structDisplayTree feed into atomDisplayTree and then Jmol (like it does now), or should structDisplayTree and atomDisplayTree be in parallel?
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 1999-2006
@@ -27,6 +26,54 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/05/26 16:22:15  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
+// Revision 1.1.2.23  2006/06/23 18:13:07  wenger
+// Minor Jmol-related cleanups.
+//
+// Revision 1.1.2.22  2006/06/23 17:08:01  wenger
+// Implemented setting Jmol menu checkboxes to the right state;
+// tried help stuff, but both the HelpDialog and AboutDialog
+// generate security violations when running as an applet.
+//
+// Revision 1.1.2.21  2006/06/19 22:10:02  wenger
+// Got Jmol vibration menu items working (committing with a *temporary*
+// change to load a molecule that does something when you turn on
+// vibration).
+//
+// Revision 1.1.2.20  2006/06/19 20:32:43  wenger
+// Got Jmol animation menu items working (committing with a *temporary*
+// change to load a molecule that does something when you run animations).
+//
+// Revision 1.1.2.19  2006/06/15 19:54:29  wenger
+// Most (but not all) Jmol menus in the JS now working; still need to
+// update the JS's Jmol menus as the state of Jmol changes, etc.;
+// fixed a null pointer exception if closing coordinate session after
+// destroying the tree dialog.
+//
+// Revision 1.1.2.18  2006/06/14 16:32:02  wenger
+// Added new DEViseButton class to force the colors and font we want
+// for buttons; cleaned up things in jsdevisec (made public members
+// private, etc.); started on getting more of the Jmol menus actually
+// working.
+//
+// Revision 1.1.2.17  2006/06/09 19:22:17  wenger
+// Went back to using a JmolPanel embedded in the JavaScreen, instead of
+// a top-level Jmol object in its own frame (doesn't work in browser because
+// of security restrictions).
+//
+// Revision 1.1.2.16  2006/06/08 19:52:58  wenger
+// Initial phase of having Jmol in its own window, mainly so we get the
+// menus for free.  Still needs lots of cleanup.
+//
+// Revision 1.1.2.15  2006/06/06 21:48:19  wenger
+// Added Jmol menus to the JavaScreen Jmol menu button (only the View
+// menu is functional at this time).
+//
+// Revision 1.1.2.14  2006/05/26 21:19:23  wenger
+// Jmol popup menus now working.
+//
 // Revision 1.1.2.13  2006/05/24 18:30:32  wenger
 // Added button to reset highlight to default (based on data from
 // DEVise); improved layout of tree GUI window.
@@ -105,10 +152,13 @@ import javax.swing.BoxLayout;
 import javax.swing.Box;
 
 // Import the Jmol stuff we need.
+import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
-//import org.jmol.app.Jmol;
+import org.openscience.jmol.ui.JmolPopup;
+import org.jmol.viewer.JmolConstants;
+import org.openscience.jmol.app.Jmol;
 
 public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
   DEViseGenericTreeSelectionCallback
@@ -139,6 +189,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     private boolean highlightUpdated = false;
     private Vector highlightNodes = null;
 
+    private JmolViewer viewer;
+    private MyStatusListener myStatusListener;
+    private JmolPopup jmolPopup;
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -168,7 +222,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    highlightUpdated = false;
 	}
 
-        //TEMPTEMP? jsc.parentFrame.setCursor(DEViseUIGlobals.defaultCursor);
+        //TEMP? jsc.parentFrame.setCursor(DEViseUIGlobals.defaultCursor);
         if (treeFrame != null)
 	  treeFrame.setCursor(DEViseUIGlobals.defaultCursor);
 
@@ -179,7 +233,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // Called when a session is closed.
     public void close()
     {
-	treeFrame.dispose();
+	if (treeFrame != null) treeFrame.dispose();
 	treeFrame = null;
 	jsc.hideJmol();
     }
@@ -198,6 +252,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     //-------------------------------------------------------------------
     public void clear3DViewer()
     {
+    }
+
+    //-------------------------------------------------------------------
+    public JmolViewer get3DViewer()
+    {
+        return viewer;
     }
 
     //-------------------------------------------------------------------
@@ -227,7 +287,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    }
 	}
 
-	//TEMPTEMP? jsc.parentFrame.setCursor(DEViseUIGlobals.waitCursor);
+	//TEMP? jsc.parentFrame.setCursor(DEViseUIGlobals.waitCursor);
 	treeFrame.setCursor(DEViseUIGlobals.waitCursor);
 
 	if (name.equals(HIGHLIGHT_TREE_NAME)) {
@@ -257,11 +317,69 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	setHighlightFromData();
     }
 
+    //-------------------------------------------------------------------
+    public void showPrefs()
+    {
+    }
+
+    //-------------------------------------------------------------------
+    public void front()
+    {
+    	viewer.rotateFront();
+    }
+
+    //-------------------------------------------------------------------
+    public void top()
+    {
+    	viewer.rotateToX(90);
+    }
+
+    //-------------------------------------------------------------------
+    public void bottom()
+    {
+    	viewer.rotateToX(-90);
+    }
+
+    //-------------------------------------------------------------------
+    public void right()
+    {
+	viewer.rotateToY(90);
+    }
+
+    //-------------------------------------------------------------------
+    public void left()
+    {
+	viewer.rotateToY(-90);
+    }
+
+    //-------------------------------------------------------------------
+    public void defineCenter()
+    {
+	viewer.setCenterSelected();
+	viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
+	viewer.setSelectionHaloEnabled(false);
+    }
+
+    //-------------------------------------------------------------------
+    public static void jmolEvalStringErr(JmolViewer viewer, String script)
+    {
+	if (DEBUG >= 2) {
+	    System.out.println("DEViseCanvas3DJmol.jmolEvalStringErr(" +
+	      script + ")");
+	}
+        String errStr = viewer.evalString(script);
+	if (errStr != null) {
+	    System.err.println("ERROR: Jmol error evaluating script <" +
+	      script + ">: " + errStr);
+	}
+    }
+
     //===================================================================
     // PROTECTED METHODS
 
     //-------------------------------------------------------------------
-    //TEMP -- document this
+    // Create the trees for selecting which atoms are displayed, and
+    // which atoms are highlighted, in Jmol.
     protected void createTrees()
     {
 	//TEMP -- the whole tree window should probably be its own class
@@ -341,6 +459,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    dispHighSplit.setRightComponent(highlightPanel);
 
 	    treeFrame = new JFrame("Structure Selection");
+	    treeFrame.setLocation(100, 100);
 	    treeFrame.addWindowListener(new WindowAdapter() {
 	    	public void windowClosing(WindowEvent we) {
 		    treeFrame = null;
@@ -353,7 +472,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
-    //TEMP -- document this
+    // Create the Jmol viewer and its enclosing panel.
     protected void createJmol()
     {
         if (jmolPanel == null) {
@@ -361,8 +480,6 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    // Create the actual Jmol panel.
 	    //
             jmolPanel = new JmolPanel();
-    	        // TEMP Jmol seems like it may have the menus
-            //JmolPanel jmolPanel = new Jmol();//TEMP?
             add(jmolPanel);
             jmolPanel.setSize(canvasDim.width, canvasDim.height);
             jmolPanel.setVisible(true);
@@ -452,20 +569,6 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	if (errStr != null) {
 	    System.err.println("ERROR: Jmol error opening data string: " +
 	      errStr);
-	}
-    }
-
-    //-------------------------------------------------------------------
-    private static void jmolEvalStringErr(JmolViewer viewer, String script)
-    {
-	if (DEBUG >= 2) {
-	    System.out.println("DEViseCanvas3DJmol.jmolEvalStringErr(" +
-	      script + ")");
-	}
-        String errStr = viewer.evalString(script);
-	if (errStr != null) {
-	    System.err.println("ERROR: Jmol error evaluating script <" +
-	      script + ">: " + errStr);
 	}
     }
 
@@ -604,7 +707,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    }
         }
 
-        JmolViewer viewer = jmolPanel.getViewer();
+        viewer = jmolPanel.getViewer();
+	loadPopupMenuAsBackgroundTask();
+	myStatusListener = new MyStatusListener();
+	viewer.setJmolStatusListener(myStatusListener);
         jmolEvalStringErr(viewer, selectCmd);
 
 	viewer.setColorSelection(Color.GREEN);
@@ -618,7 +724,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    System.out.println("DEViseCanvas3DJmol.displaySelected()");
 	}
 
-//TEMPTEMP -- set busy cursor here?
+	//TEMP -- set busy cursor here?
 	Vector gDatasToDisplay = new Vector();
 
 	for (int index = 0; index < nodes.size(); index++) {
@@ -629,6 +735,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
 	String jmolData = DEViseJmolData.createJmolData(gDatasToDisplay);
 	if (!jmolData.equals("")) {
+	    // Note: we *cannot* use the class member viewer here.
             JmolViewer viewer = jmolPanel.getViewer();
 	    viewer.setSelectionHaloEnabled(false);
 	    jmolOpenStringErr(viewer, jmolData);
@@ -722,7 +829,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    System.out.println("DEViseCanvas3DJmol.setHighlightFromData()");
 	}
 
-//TEMP -- if 3D highlight view is not a DEVise highlight view, this stuff should probably within the if above
+	//TEMP -- if 3D highlight view is not a DEVise highlight view,
+	// this stuff should probably within the if above
 	// Piled views are used to highlight atoms that were created in
 	// the "base" view.
 	// Right now the JavaScreen expects the 3D highlight views to
@@ -750,6 +858,16 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
 	    highlightTree.tree.setSelection(selectedDevNodes);
         }
+    }
+
+    //-------------------------------------------------------------------
+    void loadPopupMenuAsBackgroundTask() {
+    	// no popup on MacOS 9 NetScape
+	if (viewer.getOperatingSystemName().equals("Mac OS") && 
+	  viewer.getJavaVersion().equals("1.1.5")) {
+	    return; 
+	}
+	new Thread(new LoadPopupThread()).start();
     }
 
     //===================================================================
@@ -780,4 +898,73 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
             viewer.renderScreenImage(g, currentSize, rectClip);
         }
     }
+
+    //===================================================================
+
+  class LoadPopupThread implements Runnable {
+
+    public void run() {
+      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+      // long beginTime = System.currentTimeMillis();
+      // System.out.println("LoadPopupThread starting ");
+      // this is a background task
+      JmolPopup popup;
+      try {
+        popup = JmolPopup.newJmolPopup(viewer);
+      } catch (Exception e) {
+        System.out.println("JmolPopup not loaded");
+        return;
+      }
+      if (viewer.haveFrame())
+        popup.updateComputedMenus();
+      jmolPopup = popup;
+      // long runTime = System.currentTimeMillis() - beginTime;
+      // System.out.println("LoadPopupThread finished " + runTime + " ms");
+    }
+  }
+
+    //===================================================================
+  class MyStatusListener implements JmolStatusListener {
+    public void notifyFileLoaded(String fullPathName, String fileName,
+                                 String modelName, Object clientFile,
+                                 String errorMsg) {
+    }
+
+    public void setStatusMessage(String statusMessage) {
+    }
+
+    public void scriptEcho(String strEcho) {
+    }
+
+    public void scriptStatus(String strStatus) {
+    }
+
+    public void notifyScriptTermination(String errorMessage, int msWalltime) {
+    }
+
+    public void handlePopupMenu(int x, int y) {
+      if (jmolPopup != null) {
+        jmolPopup.show(x, y);
+      }
+    }
+
+    public void measureSelection(int atomIndex) {
+    }
+
+    public void notifyMeasurementsChanged() {
+    }
+
+    public void notifyFrameChanged(int frameNo) {
+    }
+
+    public void notifyAtomPicked(int atomIndex, String strInfo) {
+        //TEMP -- use this for drill-down
+    }
+
+    public void showUrl(String urlString) {
+    }
+
+    public void showConsole(boolean showConsole) {
+    }
+  }
 }

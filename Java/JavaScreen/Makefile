@@ -1,4 +1,3 @@
-#TEMPTEMP -- Makefile needs lots of changes to properly incorporate Jmol stuff
 # ========================================================================
 # DEVise Data Visualization Software
 # (c) Copyright 1992-2005
@@ -72,7 +71,8 @@ client: *.java
 	    DEViseCanvas3D.java DEViseCanvas3DJmol.java \
 	    DEViseCanvas3DPlain.java DEViseGenericTree.java \
 	    DEViseGenericTreeNode.java \
-	    DEViseGenericTreeSelectionCallback.java DEViseJmolMenuButton.java
+	    DEViseGenericTreeSelectionCallback.java DEViseJmolMenuButton.java \
+	    DEViseButton.java
 
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java

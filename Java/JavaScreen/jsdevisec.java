@@ -22,6 +22,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.147  2006/05/26 16:22:18  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
+// Revision 1.146.4.7  2006/06/14 16:32:02  wenger
+// Added new DEViseButton class to force the colors and font we want
+// for buttons; cleaned up things in jsdevisec (made public members
+// private, etc.); started on getting more of the Jmol menus actually
+// working.
+//
+// Revision 1.146.4.6  2006/06/12 22:05:03  wenger
+// Improved fonts -- larger, buttons/menus are now sans-serif.
+//
 // Revision 1.146.4.5  2006/05/23 18:17:50  wenger
 // Added initial Jmol menu with a menu item to show the tree selection
 // window; destroying and re-creating the window currently doesn't
@@ -731,26 +743,26 @@ public class jsdevisec extends Panel
         int width = jsValues.uiglobals.maxScreenSize.width;
         int height = jsValues.uiglobals.maxScreenSize.height;
 
-        if (width > 800 ) {
-            jsValues.uiglobals.font = DEViseFonts.getFont(12,
+        if (width > 800) {
+            jsValues.uiglobals.font = DEViseFonts.getFont(14,
+	      DEViseFonts.SANS_SERIF, 1, 0);
+            jsValues.uiglobals.font2 = DEViseFonts.getFont(14,
+	      DEViseFonts.SANS_SERIF, 0, 0);
+            jsValues.uiglobals.textFont = DEViseFonts.getFont(14,
 	      DEViseFonts.SERIF, 0, 0);
+        } else if (width > 640) {
+            jsValues.uiglobals.font = DEViseFonts.getFont(12,
+	      DEViseFonts.SANS_SERIF, 1, 0);
             jsValues.uiglobals.font2 = DEViseFonts.getFont(12,
 	      DEViseFonts.SANS_SERIF, 0, 0);
             jsValues.uiglobals.textFont = DEViseFonts.getFont(12,
 	      DEViseFonts.SERIF, 0, 0);
-        } else if (width > 640) {
+        } else {
             jsValues.uiglobals.font = DEViseFonts.getFont(10,
-	      DEViseFonts.SERIF, 0, 0);
+	      DEViseFonts.SANS_SERIF, 1, 0);
             jsValues.uiglobals.font2 = DEViseFonts.getFont(10,
 	      DEViseFonts.SANS_SERIF, 0, 0);
             jsValues.uiglobals.textFont = DEViseFonts.getFont(10,
-	      DEViseFonts.SERIF, 0, 0);
-        } else {
-            jsValues.uiglobals.font = DEViseFonts.getFont(8,
-	      DEViseFonts.SERIF, 0, 0);
-            jsValues.uiglobals.font2 = DEViseFonts.getFont(8,
-	      DEViseFonts.SANS_SERIF, 0, 0);
-            jsValues.uiglobals.textFont = DEViseFonts.getFont(8,
 	      DEViseFonts.SERIF, 0, 0);
         }
 
@@ -795,7 +807,7 @@ public class jsdevisec extends Panel
 	}
 	buttonPanel.add(commMode);
 
-        jmolButton = new DEViseJmolMenuButton();
+        jmolButton = new DEViseJmolMenuButton(jsValues);
 	buttonPanel.add(jmolButton);
 	jmolButton.hide();
 
@@ -1527,8 +1539,8 @@ class RecordDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    String[] attrs = null;
-    Button okButton = new Button("  OK  ");
+    private String[] attrs = null;
+    private Button okButton;
     private boolean status = false; // true means this dialog is showing
 
     public RecordDlg(Frame owner, boolean isCenterScreen, String[] data, jsdevisec what)
@@ -1536,6 +1548,8 @@ class RecordDlg extends Dialog
         super(owner, true);
 	
 	jsc = what;
+
+	okButton = new DEViseButton("  OK  ", jsc.jsValues);
 
         jsc.jsValues.debug.log("Creating RecordDlg");
 
@@ -1546,10 +1560,6 @@ class RecordDlg extends Dialog
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Record Attributes");
-
-        okButton.setBackground(jsc.jsValues.uiglobals.bg);
-        okButton.setForeground(jsc.jsValues.uiglobals.fg);
-        okButton.setFont(jsc.jsValues.uiglobals.font);
 
         int size = attrs.length - 1;
         Label[] label = null;
@@ -1709,8 +1719,8 @@ class SessionDlg extends Frame
     private java.awt.List fileList = null;
     private Label label = new Label("Current available sessions in directory    ");
     private Label directory = new Label("");
-    private Button okButton = new Button("OK");
-    private Button cancelButton = new Button("Cancel");
+    private Button okButton;
+    private Button cancelButton;
     private String[] sessions = null;
     private boolean[] sessionTypes = null;
     private String[] sessionNames = null;
@@ -1724,6 +1734,9 @@ class SessionDlg extends Frame
 	what.jsValues.debug.log("Creating SessionDlg");
 
         jsc = what;
+
+        okButton = new DEViseButton("OK", jsc.jsValues);
+        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
@@ -1968,13 +1981,13 @@ class SettingDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    public TextField screenX = new TextField(4);
-    public TextField screenY = new TextField(4);
-    public Button setButton = new Button("   Set   ");
-    public Button statButton = new Button("Request");
-    public Button meButton = new Button("Request");
-    public Button collabButton = new Button("Request");
-    public Button cancelButton = new Button("Cancel");
+    private TextField screenX = new TextField(4);
+    private TextField screenY = new TextField(4);
+    private Button setButton;
+    private Button statButton;
+    private Button meButton;
+    private Button collabButton;
+    private Button cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SettingDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -1984,6 +1997,12 @@ class SettingDlg extends Dialog
 	what.jsValues.debug.log("Creating SettingDlg");
 
         jsc = what;
+
+        setButton = new DEViseButton("   Set   ", jsc.jsValues);
+        statButton = new DEViseButton("Request", jsc.jsValues);
+        meButton = new DEViseButton("Request", jsc.jsValues);
+        collabButton = new DEViseButton("Request", jsc.jsValues);
+        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
 
 	//
 	// Get the version info from the JSPoP (send the command, and
@@ -2004,10 +2023,6 @@ class SettingDlg extends Dialog
 
         setTitle("JavaScreen Setting");
 
-        setButton.setBackground(jsc.jsValues.uiglobals.bg);
-        setButton.setForeground(jsc.jsValues.uiglobals.fg);
-        setButton.setFont(jsc.jsValues.uiglobals.font);
-
         screenX.setBackground(jsc.jsValues.uiglobals.textBg);
         screenX.setForeground(jsc.jsValues.uiglobals.textFg);
         screenX.setFont(jsc.jsValues.uiglobals.textFont);
@@ -2025,26 +2040,12 @@ class SettingDlg extends Dialog
 	    statButton.setBackground(Color.red);
 	}
 
-        statButton.setForeground(jsc.jsValues.uiglobals.fg);
-        statButton.setFont(jsc.jsValues.uiglobals.font);
-
-        meButton.setBackground(jsc.jsValues.uiglobals.bg);
-        meButton.setForeground(jsc.jsValues.uiglobals.fg);
-        meButton.setFont(jsc.jsValues.uiglobals.font);
-
 	if (jsc.specialID == -1) {
 	    collabButton.setBackground(jsc.jsValues.uiglobals.bg);
 	} else {
 	    collabButton.setBackground(Color.red);
 	}
 	    
-        collabButton.setForeground(jsc.jsValues.uiglobals.fg);
-        collabButton.setFont(jsc.jsValues.uiglobals.font);
-
-        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
-        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
-        cancelButton.setFont(jsc.jsValues.uiglobals.font);
-
         if (jsc.jsValues.uiglobals.inBrowser) {
             screenX.setEditable(false);
             screenY.setEditable(false);
@@ -2313,7 +2314,7 @@ class ServerStateDlg extends Dialog
     private Label label1 = new Label("Current active server:");
     private Label label2 = new Label("Current active client:");
     private Label label3 = new Label("Current suspended client:");
-    private Button okButton = new Button("   OK   ");
+    private Button okButton;
 
     private boolean status = false; // true means this dialog is showing
 
@@ -2323,6 +2324,8 @@ class ServerStateDlg extends Dialog
         super(owner, true);
 
 	jsc = what;
+
+        okButton = new DEViseButton("   OK   ", jsc.jsValues);
 
 	jsc.jsValues.debug.log("Creating ServerStateDlg");
 
@@ -2405,10 +2408,6 @@ class ServerStateDlg extends Dialog
                 suspendClientList.add(suspClientInfo[i]);
             }
         }
-
-        okButton.setBackground(jsc.jsValues.uiglobals.bg);
-        okButton.setForeground(jsc.jsValues.uiglobals.fg);
-        okButton.setFont(jsc.jsValues.uiglobals.font);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -2531,9 +2530,9 @@ class ServerStateDlg extends Dialog
 class SetCgiUrlDlg extends Dialog
 {
     jsdevisec jsc = null;
-    public TextField url = new TextField(20);
-    public Button setButton = new Button("   Set   ");
-    public Button cancelButton = new Button("  Cancel ");    
+    private TextField url = new TextField(20);
+    private Button setButton;
+    private Button cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetCgiUrlDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -2544,19 +2543,14 @@ class SetCgiUrlDlg extends Dialog
 
         jsc = what;
 
+        setButton = new DEViseButton("   Set   ", jsc.jsValues);
+        cancelButton = new DEViseButton("  Cancel ", jsc.jsValues);    
+
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Setting CGI URL");
-
-        setButton.setBackground(jsc.jsValues.uiglobals.bg);
-        setButton.setForeground(jsc.jsValues.uiglobals.fg);
-        setButton.setFont(jsc.jsValues.uiglobals.font);
-
-        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
-        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
-        cancelButton.setFont(jsc.jsValues.uiglobals.font);
 
         url.setBackground(jsc.jsValues.uiglobals.textBg);
 	url.setForeground(jsc.jsValues.uiglobals.textFg);
@@ -2681,12 +2675,12 @@ class SetCgiUrlDlg extends Dialog
 // Dialog for setting logfile name for playback.
 class SetLogFileDlg extends Dialog
 {
-    jsdevisec jsc = null;
-    public TextField file = new TextField(30);
-    public Checkbox display = new Checkbox("Display", true);
-    public Checkbox original = new Checkbox("Original Rate", true);
-    public Button setButton = new Button("   Play   ");
-    public Button cancelButton = new Button("  Cancel ");    
+    private jsdevisec jsc = null;
+    private TextField file = new TextField(30);
+    private Checkbox display = new Checkbox("Display", true);
+    private Checkbox original = new Checkbox("Original Rate", true);
+    private Button setButton;
+    private Button cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetLogFileDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -2697,19 +2691,14 @@ class SetLogFileDlg extends Dialog
 
         jsc = what;
 
+        setButton = new DEViseButton("   Play   ", jsc.jsValues);
+        cancelButton = new DEViseButton("  Cancel ", jsc.jsValues);    
+
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Setting Logfile Name");
-
-        setButton.setBackground(jsc.jsValues.uiglobals.bg);
-        setButton.setForeground(jsc.jsValues.uiglobals.fg);
-        setButton.setFont(jsc.jsValues.uiglobals.font);
-
-        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
-        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
-        cancelButton.setFont(jsc.jsValues.uiglobals.font);
 
         file.setBackground(jsc.jsValues.uiglobals.textBg);
 	file.setForeground(jsc.jsValues.uiglobals.textFg);
@@ -2853,10 +2842,10 @@ class SetLogFileDlg extends Dialog
 // Dialog for setting socket/cgi mode.
 class SetModeDlg extends Dialog
 {
-    jsdevisec jsc = null;
-    public Button socketButton = new Button("Socket");
-    public Button cgiButton = new Button("CGI");
-    public Button cancelButton = new Button("Cancel");
+    private jsdevisec jsc = null;
+    private Button socketButton;
+    private Button cgiButton;
+    private Button cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetModeDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -2867,27 +2856,21 @@ class SetModeDlg extends Dialog
 
         jsc = what;
 
+        socketButton = new DEViseButton("Socket", jsc.jsValues);
+        cgiButton = new DEViseButton("CGI", jsc.jsValues);
+        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
+
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Setting JavaScreen Mode");
 
-        socketButton.setBackground(jsc.jsValues.uiglobals.bg);
-        socketButton.setForeground(jsc.jsValues.uiglobals.fg);
-        socketButton.setFont(jsc.jsValues.uiglobals.font);
-
 	if (jsc.specialID == -1) {
 	    cgiButton.setBackground(jsc.jsValues.uiglobals.bg);
 	} else {
 	    cgiButton.setBackground(Color.red);
 	}
-        cgiButton.setForeground(jsc.jsValues.uiglobals.fg);
-        cgiButton.setFont(jsc.jsValues.uiglobals.font);
-
-        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
-        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
-        cancelButton.setFont(jsc.jsValues.uiglobals.font);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -3017,11 +3000,11 @@ class CollabSelectDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    public Button collabButton = new Button("Become Follower");
-    public Button endButton = new Button("Quit Following");
-    public Button enCollabButton = new Button("Become Leader");
-    public Button disCollabButton = new Button("Quit Leading");
-    public Button cancelButton = new Button("Cancel");
+    private Button collabButton;
+    private Button endButton;
+    private Button enCollabButton;
+    private Button disCollabButton;
+    private Button cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public CollabSelectDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3031,6 +3014,12 @@ class CollabSelectDlg extends Dialog
 	what.jsValues.debug.log("Creating CollabSelectDlg");
 
         jsc = what;
+
+        collabButton = new DEViseButton("Become Follower", jsc.jsValues);
+        endButton = new DEViseButton("Quit Following", jsc.jsValues);
+        enCollabButton = new DEViseButton("Become Leader", jsc.jsValues);
+        disCollabButton = new DEViseButton("Quit Leading", jsc.jsValues);
+        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
@@ -3043,36 +3032,24 @@ class CollabSelectDlg extends Dialog
 	} else {
 	    collabButton.setBackground(Color.red);
 	}
-        collabButton.setForeground(jsc.jsValues.uiglobals.fg);
-        collabButton.setFont(jsc.jsValues.uiglobals.font);
 
 	if (jsc.specialID != -1) {
 	    endButton.setBackground(jsc.jsValues.uiglobals.bg);
 	} else {
 	    endButton.setBackground(Color.red);
 	}
-        endButton.setForeground(jsc.jsValues.uiglobals.fg);
-        endButton.setFont(jsc.jsValues.uiglobals.font);
 
 	if ((jsc.specialID == -1) && (!jsc.isCollab)) {
 	    enCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
 	} else {
 	    enCollabButton.setBackground(Color.red);
 	}
-        enCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
-        enCollabButton.setFont(jsc.jsValues.uiglobals.font);
 
 	if ((jsc.specialID == -1) && (jsc.isCollab)) {
 	    disCollabButton.setBackground(jsc.jsValues.uiglobals.bg);
 	} else {
 	    disCollabButton.setBackground(Color.red);
 	}
-        disCollabButton.setForeground(jsc.jsValues.uiglobals.fg);
-        disCollabButton.setFont(jsc.jsValues.uiglobals.font);
-
-        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
-        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
-        cancelButton.setFont(jsc.jsValues.uiglobals.font);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -3269,8 +3246,8 @@ class CollabIdDlg extends Frame
 
     private java.awt.List clientList = null;
     private Label label = new Label("Current active clients: ");
-    private Button okButton = new Button("OK");
-    private Button cancelButton = new Button("Cancel");
+    private Button okButton;
+    private Button cancelButton;
     private String[] clients = null;
     private boolean emptyList = false;
 
@@ -3282,6 +3259,9 @@ class CollabIdDlg extends Frame
 	what.jsValues.debug.log("Creating CollabIdDlg");
 
         jsc = what;
+
+        okButton = new DEViseButton("OK", jsc.jsValues);
+        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
@@ -3459,12 +3439,12 @@ class CollabIdDlg extends Frame
 // Dialog for setting password for collaboration (the *leader* does this).
 class CollabPassDlg extends Dialog
 {
-    jsdevisec jsc = null;
+    private jsdevisec jsc = null;
 
-    public TextField pass = new TextField(20);
-    public TextField name = new TextField(20);
-    public Button setButton = new Button("Set");
-    public Button cancelButton = new Button("Cancel");
+    private TextField pass = new TextField(20);
+    private TextField name = new TextField(20);
+    private Button setButton;
+    private Button cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public CollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3475,19 +3455,14 @@ class CollabPassDlg extends Dialog
 
         jsc = what;
 
+        setButton = new DEViseButton("Set", jsc.jsValues);
+        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
+
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Setting Collaboration Name & Password");
-
-        setButton.setBackground(jsc.jsValues.uiglobals.bg);
-        setButton.setForeground(jsc.jsValues.uiglobals.fg);
-        setButton.setFont(jsc.jsValues.uiglobals.font);
-
-        cancelButton.setBackground(jsc.jsValues.uiglobals.bg);
-        cancelButton.setForeground(jsc.jsValues.uiglobals.fg);
-        cancelButton.setFont(jsc.jsValues.uiglobals.font);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -3623,11 +3598,11 @@ class CollabPassDlg extends Dialog
 // Dialog for setting password for collaboration (the *follower* does this).
 class EnterCollabPassDlg extends Dialog
 {
-    jsdevisec jsc = null;
+    private jsdevisec jsc = null;
 
-    public TextField pass = new TextField(20);
-    public Button setButton = new Button("Set");
-    //public Button cancelButton = new Button("Cancel");
+    private TextField pass = new TextField(20);
+    private Button setButton;
+    //public Button cancelButton = new DEViseButton("Cancel", jsValues);
     private boolean status = false; // true means this dialog is showing
 
     public EnterCollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3638,15 +3613,13 @@ class EnterCollabPassDlg extends Dialog
 
         jsc = what;
 
+        setButton = new DEViseButton("Set", jsc.jsValues);
+
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Reading Collaboration Password");
-
-        setButton.setBackground(jsc.jsValues.uiglobals.bg);
-        setButton.setForeground(jsc.jsValues.uiglobals.fg);
-        setButton.setFont(jsc.jsValues.uiglobals.font);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -3763,7 +3736,7 @@ class CollabStateDlg extends Dialog
 
     private java.awt.List collabList = null;
     private Label label = new Label("Current collaborating followers: ");
-    private Button closeButton = new Button("Close");
+    private Button closeButton;
     private String[] followers = null;
 
     private boolean status = false; // true means this dialog is showing
@@ -3774,6 +3747,8 @@ class CollabStateDlg extends Dialog
 	what.jsValues.debug.log("Creating CollabStateDlg");
 
         jsc = what;
+
+        closeButton = new DEViseButton("Close", jsc.jsValues);
 
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);

@@ -20,8 +20,48 @@
 // $Id$
 
 // $Log$
+// Revision 1.74  2006/05/26 16:22:16  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.73  2006/05/25 20:14:48  wenger
 // Merged V1_8b0_br_0 thru V1_8b0_br_1 to the trunk.
+//
+// Revision 1.72.2.16  2006/06/23 17:08:02  wenger
+// Implemented setting Jmol menu checkboxes to the right state;
+// tried help stuff, but both the HelpDialog and AboutDialog
+// generate security violations when running as an applet.
+//
+// Revision 1.72.2.15  2006/06/15 19:54:30  wenger
+// Most (but not all) Jmol menus in the JS now working; still need to
+// update the JS's Jmol menus as the state of Jmol changes, etc.;
+// fixed a null pointer exception if closing coordinate session after
+// destroying the tree dialog.
+//
+// Revision 1.72.2.14  2006/06/14 18:35:28  wenger
+// Changed Jmol menus to use string constants so subsequent comparisons
+// are safe (don't have to worry about typos causing mismatches).
+//
+// Revision 1.72.2.13  2006/06/14 16:32:02  wenger
+// Added new DEViseButton class to force the colors and font we want
+// for buttons; cleaned up things in jsdevisec (made public members
+// private, etc.); started on getting more of the Jmol menus actually
+// working.
+//
+// Revision 1.72.2.12  2006/06/09 19:22:18  wenger
+// Went back to using a JmolPanel embedded in the JavaScreen, instead of
+// a top-level Jmol object in its own frame (doesn't work in browser because
+// of security restrictions).
+//
+// Revision 1.72.2.11  2006/06/08 19:52:58  wenger
+// Initial phase of having Jmol in its own window, mainly so we get the
+// menus for free.  Still needs lots of cleanup.
+//
+// Revision 1.72.2.10  2006/06/06 21:48:21  wenger
+// Added Jmol menus to the JavaScreen Jmol menu button (only the View
+// menu is functional at this time).
+//
+// Revision 1.72.2.9  2006/05/26 21:19:23  wenger
+// Jmol popup menus now working.
 //
 // Revision 1.72.2.8  2006/05/22 18:59:56  wenger
 // We now handle destruction of the Jmol tree window much better.
@@ -470,7 +510,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.0x7");
+    public static final String VERSION = new String("5.7.0x8");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
