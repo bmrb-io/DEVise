@@ -24,6 +24,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.75  2006/05/26 16:22:16  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
+// Revision 1.74.4.4  2006/06/29 18:10:13  wenger
+// Fixed the bug that moving the data selection cursor reset
+// what was *displayed* in Jmol, not just what was highlighted.
+//
 // Revision 1.74.4.3  2006/02/23 22:08:40  wenger
 // Added flag for whether or not 3D views should use Jmol.
 //
@@ -318,6 +325,10 @@ public class DEViseView
 
     private boolean _useJmol = false;
 
+    // Used by DEViseCanvas3DJmol to determine whether just the highlight
+    // data, or *all* of the data, has changed.
+    public boolean _gdataIsDirty = false;
+
     private static final boolean _debug = false;
     
     // mouse position multiply factors
@@ -504,6 +515,7 @@ public class DEViseView
 	// RKW 2000-05-3.
         if (gdata != null) {
             viewGDatas.addElement(gdata);
+	    _gdataIsDirty = true;
         }
     }
 

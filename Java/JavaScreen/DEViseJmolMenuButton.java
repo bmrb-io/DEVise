@@ -19,8 +19,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/06/23 19:52:41  wenger
+// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
+//
 // Revision 1.2  2006/05/26 16:22:16  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
+// Revision 1.1.2.11  2006/06/27 20:49:30  wenger
+// Added menu option to highlight by color instead of selection
+// halo; slight cleanup of how the Jmol popup menu is generated;
+// other minor cleanups.
 //
 // Revision 1.1.2.10  2006/06/23 17:08:02  wenger
 // Implemented setting Jmol menu checkboxes to the right state;
@@ -120,6 +128,7 @@ public class DEViseJmolMenuButton extends DEViseButton
     private static final String STR_BOND = "Bond";
     private static final String STR_BOTTOM = "Bottom";
     private static final String STR_BOUND_BOX = "Bounding Box";
+    private static final String STR_BY_COLOR = "By Color";
     private static final String STR_CARBON = "Carbon";
     private static final String STR_CENTERED = "Centered";
     private static final String STR_DEFINE_CTR = "Define Center";
@@ -132,6 +141,7 @@ public class DEViseJmolMenuButton extends DEViseButton
     private static final String STR_GO_TO_PREV = "Go to previous frame";
     private static final String STR_HELP = "Help";
     private static final String STR_HETERO = "Hetero";
+    private static final String STR_HIGHLIGHT = "Highlight";
     private static final String STR_HYDROGEN = "Hydrogen";
     private static final String STR_HYDROGENS = "Hydrogens";
     private static final String STR_JMOL = "Jmol";
@@ -192,6 +202,7 @@ public class DEViseJmolMenuButton extends DEViseButton
     private static final String STR_VIEW = "View";
     private static final String STR_WATER = "Water";
     private static final String STR_WIREFRAME = "Wireframe";
+    private static final String STR_WITH_HALOS = "With Halos";
     private static final String STR_ZOOM = "Zoom";
 
     //===================================================================
@@ -305,6 +316,12 @@ public class DEViseJmolMenuButton extends DEViseButton
 	jmolMenu.add(viewMenu);
 
 	addMenuItem(viewMenu, STR_SEL_TREES);
+
+	PopupMenu highlightMenu = new PopupMenu(STR_HIGHLIGHT);
+	viewMenu.add(highlightMenu);
+	addMenuItem(highlightMenu, STR_WITH_HALOS);
+	addMenuItem(highlightMenu, STR_BY_COLOR);
+
 	addMenuItem(viewMenu, STR_FRONT);
 	addMenuItem(viewMenu, STR_TOP);
 	addMenuItem(viewMenu, STR_BOTTOM);
@@ -416,6 +433,9 @@ public class DEViseJmolMenuButton extends DEViseButton
 
 	} else if (event.getActionCommand().equals(STR_BOTTOM)) {
 	    jmolCanvas.bottom();
+
+	} else if (event.getActionCommand().equals(STR_BY_COLOR)) {
+	    jmolCanvas.setHighlightWithHalos(false);
 
 	} else if (event.getActionCommand().equals(STR_CARBON)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "select carbon");
@@ -593,6 +613,9 @@ public class DEViseJmolMenuButton extends DEViseButton
 
 	} else if (event.getActionCommand().equals(STR_WIREFRAME)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "wireframe on");
+
+	} else if (event.getActionCommand().equals(STR_WITH_HALOS)) {
+	    jmolCanvas.setHighlightWithHalos(true);
 
 	} else {
 	    System.err.println("Unknown action: " + event.getActionCommand());

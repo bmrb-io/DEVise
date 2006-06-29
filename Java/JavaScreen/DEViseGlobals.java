@@ -20,11 +20,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.75  2006/06/23 19:52:41  wenger
+// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
+//
 // Revision 1.74  2006/05/26 16:22:16  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
 // Revision 1.73  2006/05/25 20:14:48  wenger
 // Merged V1_8b0_br_0 thru V1_8b0_br_1 to the trunk.
+//
+// Revision 1.72.2.18  2006/06/29 18:10:13  wenger
+// Fixed the bug that moving the data selection cursor reset
+// what was *displayed* in Jmol, not just what was highlighted.
+//
+// Revision 1.72.2.17  2006/06/27 20:49:29  wenger
+// Added menu option to highlight by color instead of selection
+// halo; slight cleanup of how the Jmol popup menu is generated;
+// other minor cleanups.
 //
 // Revision 1.72.2.16  2006/06/23 17:08:02  wenger
 // Implemented setting Jmol menu checkboxes to the right state;
@@ -510,7 +522,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.0x8");
+    public static final String VERSION = new String("5.7.0x9"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

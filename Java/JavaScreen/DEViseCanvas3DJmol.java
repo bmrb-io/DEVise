@@ -26,8 +26,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/06/23 19:52:40  wenger
+// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
+//
 // Revision 1.2  2006/05/26 16:22:15  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
+// Revision 1.1.2.25  2006/06/29 18:10:12  wenger
+// Fixed the bug that moving the data selection cursor reset
+// what was *displayed* in Jmol, not just what was highlighted.
+//
+// Revision 1.1.2.24  2006/06/27 20:49:28  wenger
+// Added menu option to highlight by color instead of selection
+// halo; slight cleanup of how the Jmol popup menu is generated;
+// other minor cleanups.
 //
 // Revision 1.1.2.23  2006/06/23 18:13:07  wenger
 // Minor Jmol-related cleanups.
@@ -193,6 +205,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     private MyStatusListener myStatusListener;
     private JmolPopup jmolPopup;
 
+    private boolean highlightWithHalos = true;
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -318,11 +332,6 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
-    public void showPrefs()
-    {
-    }
-
-    //-------------------------------------------------------------------
     public void front()
     {
     	viewer.rotateFront();
@@ -358,6 +367,29 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	viewer.setCenterSelected();
 	viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
 	viewer.setSelectionHaloEnabled(false);
+    }
+
+    //-------------------------------------------------------------------
+    public void setHighlightWithHalos(boolean halosOn)
+    {
+	if (DEBUG >= 2) {
+	    System.out.println("DEViseCanvas3DJmol.setHighlightWithHalos("
+	      + halosOn + ")");
+	}
+
+        if (halosOn != highlightWithHalos) {
+	    if (halosOn) {
+	        viewer.setSelectionHaloEnabled(true);
+		// Note: we're assuming here that the "normal" color is
+		// CPK; that may not always be true, but I don't know
+		// what else to do for now.  wenger 2006-06027.
+                jmolEvalStringErr(viewer, "color atoms CPK");
+	    } else {
+	    	viewer.setSelectionHaloEnabled(false);
+                jmolEvalStringErr(viewer, "color atoms lime");
+	    }
+	    highlightWithHalos = halosOn;
+	}
     }
 
     //-------------------------------------------------------------------
@@ -483,9 +515,23 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
             add(jmolPanel);
             jmolPanel.setSize(canvasDim.width, canvasDim.height);
             jmolPanel.setVisible(true);
-        }
 
-	updateStructTree();
+            viewer = jmolPanel.getViewer();
+	    myStatusListener = new MyStatusListener();
+	    viewer.setJmolStatusListener(myStatusListener);
+	}
+
+	// Doing updateStructTree() only when the base view's GData is
+	// dirty fixes the problem of moving the data cursor resetting
+	// what's displayed, not just what is highlighted.  We're ignoring
+	// the dirty flag of the highlight view because we shouldn't even
+	// get here if at least that GData isn't dirty.
+	if (view._gdataIsDirty) {
+	    updateStructTree();
+	    view._gdataIsDirty = false;
+	} else {
+	    setHighlightFromData();
+	}
     }
 
     //===================================================================
@@ -707,14 +753,26 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    }
         }
 
-        viewer = jmolPanel.getViewer();
-	loadPopupMenuAsBackgroundTask();
-	myStatusListener = new MyStatusListener();
-	viewer.setJmolStatusListener(myStatusListener);
+	if (!highlightWithHalos) {
+	    // Note: combining everything into one big command here, because
+	    // somehow it seems like only one command can be given to the
+	    // JmolViewer between repaints or something -- otherwise, only
+	    // the last command of any set seems to have any effect.
+	    // wenger 2006-06-27.
+
+	    // Unhighlight the currently-highlighted stuff.
+	    selectCmd = "color atoms CPK; " + selectCmd;
+
+	    // Now highlight what we are selecting this time.
+	    selectCmd += " color atoms lime;";
+	}
+
         jmolEvalStringErr(viewer, selectCmd);
 
-	viewer.setColorSelection(Color.GREEN);
-	viewer.setSelectionHaloEnabled(true);
+	if (highlightWithHalos) {
+	    viewer.setColorSelection(Color.GREEN);
+	    viewer.setSelectionHaloEnabled(true);
+	}
     }
 
     //-------------------------------------------------------------------
@@ -735,8 +793,6 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
 	String jmolData = DEViseJmolData.createJmolData(gDatasToDisplay);
 	if (!jmolData.equals("")) {
-	    // Note: we *cannot* use the class member viewer here.
-            JmolViewer viewer = jmolPanel.getViewer();
 	    viewer.setSelectionHaloEnabled(false);
 	    jmolOpenStringErr(viewer, jmolData);
             viewer.setShowHydrogens(true);
@@ -746,6 +802,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	updateTreeData(highlightTree, gDatasToDisplay);
 
 	setHighlightFromData();
+
+	// Load this here so it knows how many atoms and bonds there are.
+	loadPopupMenuAsBackgroundTask();
     }
 
     //-------------------------------------------------------------------
@@ -829,8 +888,6 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    System.out.println("DEViseCanvas3DJmol.setHighlightFromData()");
 	}
 
-	//TEMP -- if 3D highlight view is not a DEVise highlight view,
-	// this stuff should probably within the if above
 	// Piled views are used to highlight atoms that were created in
 	// the "base" view.
 	// Right now the JavaScreen expects the 3D highlight views to
