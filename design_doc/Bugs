@@ -3505,7 +3505,6 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the VisualLink may get run before it really becomes
 			a problem.) (rkw)
 
-#TEMPTEMP -- should be fixed by changes that are in progress
 835 11/15/02	OPEN	DevAxis::OptimizeTickMarks() can get into an
 			infinite recursion. (rkw)
 
@@ -3739,7 +3738,6 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 882 05/16/03	OPEN	JavaScreen crash on Mac (see ~/Mail/wavelet/js_errors).
 			(kline/wenger)
 
-#TEMPTEMP -- should be fixed by changes that are in progress
 883 07/29/03	OPEN	Small views sometimes have awfully few axis ticks.
 			(wenger)
 

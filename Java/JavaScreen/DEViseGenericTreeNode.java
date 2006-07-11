@@ -12,7 +12,7 @@
 
 // ------------------------------------------------------------------------
 
-//TEMPTEMP 
+// Nodes for generic tree GUI.
 
 // ------------------------------------------------------------------------
 
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/05/26 16:22:16  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.1.2.1  2006/05/08 20:19:47  wenger
 // Made the JavaScreen tree code itself generic (although the Jmol-
 // related code that calls it is not).
@@ -37,7 +40,6 @@ import java.util.*;
 
 public class DEViseGenericTreeNode
 {
-//TEMPTEMP -- maybe add a selection flag here and have selection communicated that way (both directions)
     public String name;
     public Vector children; // Vector of DEViseGenericTreeNodes
     public Object treeInfo;

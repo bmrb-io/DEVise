@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003
+// (c) Copyright 2003-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -12,15 +12,17 @@
 
 // ------------------------------------------------------------------------
 
-//TEMPTEMP
-// This class handles the command socket/image socket pairs that
-// connect the devised to the jspop, and the jspop to the js.
+// Utility class.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.2  2005/12/06 20:00:20  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.1.2.1  2003/05/02 17:16:17  wenger
 // Kludgily set things up to make a js jar file (I was going to also
 // make jar files for the jspop, etc., but it turned out to be a real

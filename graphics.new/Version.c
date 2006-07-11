@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.72  2006/05/26 16:23:05  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.71  2006/05/25 20:15:32  wenger
   Merged V1_8b0_br_0 thru V1_8b0_br_1 to the trunk.
 
@@ -455,13 +458,13 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.0x3";
+static const char *	version = "1.9.0";
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-2004";
+static const char *	copyright = "Copyright (c) 1992-2006";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 2004";
+static const char *	winLogo = "Visualization by DEVise (tm) 2006";
 
 
 #if !defined(lint) && defined(RCSID)

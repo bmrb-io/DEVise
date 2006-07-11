@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2005
+# (c) Copyright 1992-2006
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -110,19 +110,7 @@ jarjs:
 	cp *.gif JavaScreen
 	jar cf js.jar JavaScreen/*.class  JavaScreen/*.gif
 
-#TEMPTEMP
-jmol1:
-	javac -classpath .:Jmol.jar Integration.java
-
-jmol1_run:
-	java -cp .:Jmol.jar Integration
-
-jmol2:
-	#TEMPTEMP $(JAVAC) -classpath .:Jmol.jar js.java
-	javac -classpath .:Jmol.jar js.java
-
 clean: classclean
-	#TEMPTEMP? -rm JavaScreen/*.gif *.jar
 	-rm JavaScreen/*.gif jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar
 
 classclean:

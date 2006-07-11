@@ -12,7 +12,8 @@
 
 // ------------------------------------------------------------------------
 
-//TEMPTEMP 
+// Callback interface for generic tree GUI -- nodesSelected() is called
+// when the user changes the selection in the tree.
 
 // ------------------------------------------------------------------------
 
@@ -21,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/05/26 16:22:16  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.1.2.1  2006/05/08 20:19:47  wenger
 // Made the JavaScreen tree code itself generic (although the Jmol-
 // related code that calls it is not).

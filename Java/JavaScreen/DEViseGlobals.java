@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.76  2006/06/29 21:01:20  wenger
+// Merged devise_jmol_br_2 thru devise_jmol_br_3 to the trunk.
+//
 // Revision 1.75  2006/06/23 19:52:41  wenger
 // Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
 //
@@ -522,7 +525,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.0x9"/*TEMP*/);
+    public static final String VERSION = new String("5.7.0");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

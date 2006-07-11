@@ -39,7 +39,6 @@ POP_DIR = /scratch/devise/js.wave
 SERV_DIR = /scratch/devise/js.wave
 WWW_DIR = /p/waveletidr/software/fnhost/public
 JAR_DIR = $(WWW_DIR)/html/devise
-#TEMPTEMP CGI_DIR = $(WWW_DIR)/cgi-bin/js_wave
 CGI_DIR = $(WWW_DIR)/html/devise/cgi-bin/js_wave
 IDSTR = wave
 
