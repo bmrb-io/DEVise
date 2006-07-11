@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 26 2004 15:19:45
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:32:52
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -56,6 +56,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {View} uses mapping {.BAA_plan#Unit_vs_StartTime}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} View 0.000000 40.000000 0.000000 12.000000 4 37 0 37 0 37
 DEVise setLabel {View} 1 16 {SCHEDULE}
 DEVise setViewStatistics {View} 00000000
@@ -88,7 +92,13 @@ DEVise setLinkMultFact {View} {X} 1
 DEVise setLinkMultFact {View} {Y} 1
 DEVise setGAttrLinkMode {View} 0
 DEVise setDoHomeOnVisLink {View} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View} {1}
+DEVise viewSetUseJmol {View} {0}
 
+# View {View 2} uses mapping {.BAA_map#image_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {View 2} -1.500000 3.500000 -2.000000 4.000000 4 37 0 37 0 37
 DEVise setLabel {View 2} 1 16 {image vs. recId}
 DEVise setViewStatistics {View 2} 00000000
@@ -121,7 +131,13 @@ DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
 
+# View {View 3} uses mapping {.BAA_visit1#number_vs_time}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {View 3} 0.000000 990.000000 0.000000 6.000000 4 37 0 37 0 37
 DEVise setLabel {View 3} 1 16 {Location 1 Visits}
 DEVise setViewStatistics {View 3} 00000000
@@ -154,7 +170,13 @@ DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
 
+# View {View 4} uses mapping {.BAA_visit1#number_vs_time 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {View 4} 0.000000 990.000000 0.000000 6.000000 4 37 0 37 0 37
 DEVise setLabel {View 4} 1 16 {number vs. time}
 DEVise setViewStatistics {View 4} 00000000
@@ -187,7 +209,13 @@ DEVise setLinkMultFact {View 4} {X} 1
 DEVise setLinkMultFact {View 4} {Y} 1
 DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 4} {1}
+DEVise viewSetUseJmol {View 4} {0}
 
+# View {View 5} uses mapping {.BAA_visit2#number_vs_time}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {View 5} 0.000000 970.000000 0.000000 10.000000 4 37 0 37 0 37
 DEVise setLabel {View 5} 1 16 {Location 2 Visits}
 DEVise setViewStatistics {View 5} 00000000
@@ -220,7 +248,13 @@ DEVise setLinkMultFact {View 5} {X} 1
 DEVise setLinkMultFact {View 5} {Y} 1
 DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 5} {1}
+DEVise viewSetUseJmol {View 5} {0}
 
+# View {View 6} uses mapping {.BAA_visit3#number_vs_time}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {View 6} 0.000000 990.000000 0.000000 10.000000 4 37 0 37 0 37
 DEVise setLabel {View 6} 1 16 {Location 3 Visits}
 DEVise setViewStatistics {View 6} 00000000
@@ -253,7 +287,13 @@ DEVise setLinkMultFact {View 6} {X} 1
 DEVise setLinkMultFact {View 6} {Y} 1
 DEVise setGAttrLinkMode {View 6} 0
 DEVise setDoHomeOnVisLink {View 6} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 6} {1}
+DEVise viewSetUseJmol {View 6} {0}
 
+# View {View 7} uses mapping {.BAA_amm#y_vs_X}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 7} -1.000000 2.000000 -2.000000 2.000000 4 37 0 37 0 37
 DEVise setLabel {View 7} 1 16 {BAA.amm}
 DEVise setViewStatistics {View 7} 00000000
@@ -286,6 +326,8 @@ DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
 DEVise setGAttrLinkMode {View 7} 0
 DEVise setDoHomeOnVisLink {View 7} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 7} {1}
+DEVise viewSetUseJmol {View 7} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Unit_vs_StartTime}
@@ -295,35 +337,51 @@ DEVise createMappingClass {y_vs_X}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Unit_vs_StartTime} .BAA_plan .BAA_plan#Unit_vs_StartTime {} {$StartTime} {$Unit} {} 19 1 {$Activity} 0 0 {$Duration} 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.BAA_plan#Unit_vs_StartTime} 1
 DEVise setMappingColors {.BAA_plan#Unit_vs_StartTime} {19} {19} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {image_vs_recId} .BAA_map .BAA_map#image_vs_recId {} 1 1 {} 2 6 0 0 10 {$image} 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.BAA_map#image_vs_recId} 1
 DEVise setMappingColors {.BAA_map#image_vs_recId} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {number_vs_time} .BAA_visit1 .BAA_visit1#number_vs_time {} {$time} {$number} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.BAA_visit1#number_vs_time} 1
 DEVise setMappingColors {.BAA_visit1#number_vs_time} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {number_vs_time} .BAA_visit1 {.BAA_visit1#number_vs_time 2} {} {$time} {$number} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.BAA_visit1#number_vs_time 2} 1
 DEVise setMappingColors {.BAA_visit1#number_vs_time 2} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {number_vs_time} .BAA_visit2 .BAA_visit2#number_vs_time {} {$time} {$number} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.BAA_visit2#number_vs_time} 1
 DEVise setMappingColors {.BAA_visit2#number_vs_time} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {number_vs_time} .BAA_visit3 .BAA_visit3#number_vs_time {} {$time} {$number} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.BAA_visit3#number_vs_time} 1
 DEVise setMappingColors {.BAA_visit3#number_vs_time} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_X} .BAA_amm .BAA_amm#y_vs_X {} {$X} {$y} {} 2 0.05 0 0 1 {$Amount} {$Amount} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.BAA_amm#y_vs_X} 1
 DEVise setMappingColors {.BAA_amm#y_vs_X} {2} {2} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.105469 0.096680 0.808594 0.203125 0 0
 DEVise create {window} {TileLayout} DEViseWn1 0.105469 0.331055 0.398438 0.544922 0 0
 DEVise create {window} {TileLayout} DEViseWn2 0.509375 0.331055 0.406250 0.546875 0 0

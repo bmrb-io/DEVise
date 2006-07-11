@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 26 2004 15:28:51
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:33:00
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -60,6 +60,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {UserList_view} uses mapping {UserList#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} UserList_view -0.050000 1.050000 -0.550000 22.550000 36 9 0 37 0 37
 DEVise setLabel {UserList_view} 0 12 {}
 DEVise setViewStatistics {UserList_view} 00000000
@@ -92,7 +96,13 @@ DEVise setLinkMultFact {UserList_view} {X} 1
 DEVise setLinkMultFact {UserList_view} {Y} 1
 DEVise setGAttrLinkMode {UserList_view} 0
 DEVise setDoHomeOnVisLink {UserList_view} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {UserList_view} {1}
+DEVise viewSetUseJmol {UserList_view} {0}
 
+# View {Select1_view} uses mapping {Select1#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} Select1_view -0.550000 0.550000 -0.550000 22.550000 36 2 0 37 0 37
 DEVise setLabel {Select1_view} 0 12 {}
 DEVise setViewStatistics {Select1_view} 00000000
@@ -125,7 +135,13 @@ DEVise setLinkMultFact {Select1_view} {X} 1
 DEVise setLinkMultFact {Select1_view} {Y} 1
 DEVise setGAttrLinkMode {Select1_view} 0
 DEVise setDoHomeOnVisLink {Select1_view} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Select1_view} {1}
+DEVise viewSetUseJmol {Select1_view} {0}
 
+# View {Select2_view} uses mapping {Select2#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} Select2_view -0.550000 0.550000 -0.550000 22.550000 36 9 0 37 0 37
 DEVise setLabel {Select2_view} 0 12 {}
 DEVise setViewStatistics {Select2_view} 00000000
@@ -158,7 +174,13 @@ DEVise setLinkMultFact {Select2_view} {X} 1
 DEVise setLinkMultFact {Select2_view} {Y} 1
 DEVise setGAttrLinkMode {Select2_view} 0
 DEVise setDoHomeOnVisLink {Select2_view} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Select2_view} {1}
+DEVise viewSetUseJmol {Select2_view} {0}
 
+# View {User1_viewA} uses mapping {User1A#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} User1_viewA -0.500000 0.500000 21.500000 22.500000 36 2 0 37 0 37
 DEVise setLabel {User1_viewA} 0 12 {}
 DEVise setViewStatistics {User1_viewA} 00000000
@@ -191,7 +213,13 @@ DEVise setLinkMultFact {User1_viewA} {X} 1
 DEVise setLinkMultFact {User1_viewA} {Y} 1
 DEVise setGAttrLinkMode {User1_viewA} 0
 DEVise setDoHomeOnVisLink {User1_viewA} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {User1_viewA} {1}
+DEVise viewSetUseJmol {User1_viewA} {0}
 
+# View {User1_viewB} uses mapping {User1B#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} User1_viewB -0.500000 0.500000 21.500000 22.500000 36 2 0 37 0 37
 DEVise setLabel {User1_viewB} 0 12 {}
 DEVise setViewStatistics {User1_viewB} 00000000
@@ -224,7 +252,13 @@ DEVise setLinkMultFact {User1_viewB} {X} 1
 DEVise setLinkMultFact {User1_viewB} {Y} 1
 DEVise setGAttrLinkMode {User1_viewB} 0
 DEVise setDoHomeOnVisLink {User1_viewB} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {User1_viewB} {1}
+DEVise viewSetUseJmol {User1_viewB} {0}
 
+# View {User2_viewA} uses mapping {User2A#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} User2_viewA -0.500000 0.500000 20.500000 21.500000 36 9 0 37 0 37
 DEVise setLabel {User2_viewA} 0 12 {}
 DEVise setViewStatistics {User2_viewA} 00000000
@@ -257,7 +291,13 @@ DEVise setLinkMultFact {User2_viewA} {X} 1
 DEVise setLinkMultFact {User2_viewA} {Y} 1
 DEVise setGAttrLinkMode {User2_viewA} 0
 DEVise setDoHomeOnVisLink {User2_viewA} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {User2_viewA} {1}
+DEVise viewSetUseJmol {User2_viewA} {0}
 
+# View {User2_viewB} uses mapping {User2B#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} User2_viewB -0.500000 0.500000 20.500000 21.500000 36 9 0 37 0 37
 DEVise setLabel {User2_viewB} 0 12 {}
 DEVise setViewStatistics {User2_viewB} 00000000
@@ -290,7 +330,13 @@ DEVise setLinkMultFact {User2_viewB} {X} 1
 DEVise setLinkMultFact {User2_viewB} {Y} 1
 DEVise setGAttrLinkMode {User2_viewB} 0
 DEVise setDoHomeOnVisLink {User2_viewB} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {User2_viewB} {1}
+DEVise viewSetUseJmol {User2_viewB} {0}
 
+# View {TotalLinked_viewA} uses mapping {TotalLinkedA#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} TotalLinked_viewA -0.500000 0.500000 -0.500000 0.500000 36 9 0 37 0 37
 DEVise setLabel {TotalLinked_viewA} 0 12 {}
 DEVise setViewStatistics {TotalLinked_viewA} 00000000
@@ -323,7 +369,13 @@ DEVise setLinkMultFact {TotalLinked_viewA} {X} 1
 DEVise setLinkMultFact {TotalLinked_viewA} {Y} 1
 DEVise setGAttrLinkMode {TotalLinked_viewA} 0
 DEVise setDoHomeOnVisLink {TotalLinked_viewA} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {TotalLinked_viewA} {1}
+DEVise viewSetUseJmol {TotalLinked_viewA} {0}
 
+# View {TotalLinked_viewB} uses mapping {TotalLinkedB#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} TotalLinked_viewB -0.500000 0.500000 -0.500000 0.500000 36 9 0 37 0 37
 DEVise setLabel {TotalLinked_viewB} 0 12 {}
 DEVise setViewStatistics {TotalLinked_viewB} 00000000
@@ -356,7 +408,13 @@ DEVise setLinkMultFact {TotalLinked_viewB} {X} 1
 DEVise setLinkMultFact {TotalLinked_viewB} {Y} 1
 DEVise setGAttrLinkMode {TotalLinked_viewB} 0
 DEVise setDoHomeOnVisLink {TotalLinked_viewB} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {TotalLinked_viewB} {1}
+DEVise viewSetUseJmol {TotalLinked_viewB} {0}
 
+# View {Total_viewA} uses mapping {TotalA#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} Total_viewA -0.500000 0.500000 -0.500000 0.500000 36 9 0 37 0 37
 DEVise setLabel {Total_viewA} 0 12 {}
 DEVise setViewStatistics {Total_viewA} 00000000
@@ -389,7 +447,13 @@ DEVise setLinkMultFact {Total_viewA} {X} 1
 DEVise setLinkMultFact {Total_viewA} {Y} 1
 DEVise setGAttrLinkMode {Total_viewA} 0
 DEVise setDoHomeOnVisLink {Total_viewA} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Total_viewA} {1}
+DEVise viewSetUseJmol {Total_viewA} {0}
 
+# View {Total_viewB} uses mapping {TotalB#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} Total_viewB -0.500000 0.500000 -0.500000 0.500000 36 9 0 37 0 37
 DEVise setLabel {Total_viewB} 0 12 {}
 DEVise setViewStatistics {Total_viewB} 00000000
@@ -422,7 +486,13 @@ DEVise setLinkMultFact {Total_viewB} {X} 1
 DEVise setLinkMultFact {Total_viewB} {Y} 1
 DEVise setGAttrLinkMode {Total_viewB} 0
 DEVise setDoHomeOnVisLink {Total_viewB} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Total_viewB} {1}
+DEVise viewSetUseJmol {Total_viewB} {0}
 
+# View {User1_viewsymA} uses mapping {.Condor_Total#User1_viewsymA}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} User1_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 2 0 37 0 37
 DEVise setLabel {User1_viewsymA} 0 12 {}
 DEVise setViewStatistics {User1_viewsymA} 00000000
@@ -455,7 +525,13 @@ DEVise setLinkMultFact {User1_viewsymA} {X} 1
 DEVise setLinkMultFact {User1_viewsymA} {Y} 1
 DEVise setGAttrLinkMode {User1_viewsymA} 0
 DEVise setDoHomeOnVisLink {User1_viewsymA} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {User1_viewsymA} {1}
+DEVise viewSetUseJmol {User1_viewsymA} {0}
 
+# View {User1_viewsymB} uses mapping {.Condor_Total#User1_viewsymB}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} User1_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 2 0 37 0 37
 DEVise setLabel {User1_viewsymB} 0 12 {}
 DEVise setViewStatistics {User1_viewsymB} 00000000
@@ -488,7 +564,13 @@ DEVise setLinkMultFact {User1_viewsymB} {X} 1
 DEVise setLinkMultFact {User1_viewsymB} {Y} 1
 DEVise setGAttrLinkMode {User1_viewsymB} 0
 DEVise setDoHomeOnVisLink {User1_viewsymB} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {User1_viewsymB} {1}
+DEVise viewSetUseJmol {User1_viewsymB} {0}
 
+# View {User2_viewsymA} uses mapping {.Condor_dman@cs_wisc_edu#User2_viewsymA}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} User2_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 4.000000 36 9 0 37 0 37
 DEVise setLabel {User2_viewsymA} 0 12 {}
 DEVise setViewStatistics {User2_viewsymA} 00000000
@@ -521,7 +603,13 @@ DEVise setLinkMultFact {User2_viewsymA} {X} 1
 DEVise setLinkMultFact {User2_viewsymA} {Y} 1
 DEVise setGAttrLinkMode {User2_viewsymA} 0
 DEVise setDoHomeOnVisLink {User2_viewsymA} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {User2_viewsymA} {1}
+DEVise viewSetUseJmol {User2_viewsymA} {0}
 
+# View {User2_viewsymB} uses mapping {.Condor_dman@cs_wisc_edu#User2_viewsymB}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} User2_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 4.000000 36 9 0 37 0 37
 DEVise setLabel {User2_viewsymB} 0 12 {}
 DEVise setViewStatistics {User2_viewsymB} 00000000
@@ -554,7 +642,13 @@ DEVise setLinkMultFact {User2_viewsymB} {X} 1
 DEVise setLinkMultFact {User2_viewsymB} {Y} 1
 DEVise setGAttrLinkMode {User2_viewsymB} 0
 DEVise setDoHomeOnVisLink {User2_viewsymB} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {User2_viewsymB} {1}
+DEVise viewSetUseJmol {User2_viewsymB} {0}
 
+# View {TotalLinked_viewsymA} uses mapping {TotalLinkedsymA#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} TotalLinked_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9 0 37 0 37
 DEVise setLabel {TotalLinked_viewsymA} 0 12 {}
 DEVise setViewStatistics {TotalLinked_viewsymA} 00000000
@@ -587,7 +681,13 @@ DEVise setLinkMultFact {TotalLinked_viewsymA} {X} 1
 DEVise setLinkMultFact {TotalLinked_viewsymA} {Y} 1
 DEVise setGAttrLinkMode {TotalLinked_viewsymA} 0
 DEVise setDoHomeOnVisLink {TotalLinked_viewsymA} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {TotalLinked_viewsymA} {1}
+DEVise viewSetUseJmol {TotalLinked_viewsymA} {0}
 
+# View {TotalLinked_viewsymB} uses mapping {TotalLinkedsymB#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} TotalLinked_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9 0 37 0 37
 DEVise setLabel {TotalLinked_viewsymB} 0 12 {}
 DEVise setViewStatistics {TotalLinked_viewsymB} 00000000
@@ -620,7 +720,13 @@ DEVise setLinkMultFact {TotalLinked_viewsymB} {X} 1
 DEVise setLinkMultFact {TotalLinked_viewsymB} {Y} 1
 DEVise setGAttrLinkMode {TotalLinked_viewsymB} 0
 DEVise setDoHomeOnVisLink {TotalLinked_viewsymB} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {TotalLinked_viewsymB} {1}
+DEVise viewSetUseJmol {TotalLinked_viewsymB} {0}
 
+# View {Total_viewsymA} uses mapping {TotalsymA#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} Total_viewsymA {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9 0 37 0 37
 DEVise setLabel {Total_viewsymA} 0 12 {}
 DEVise setViewStatistics {Total_viewsymA} 00000000
@@ -653,7 +759,13 @@ DEVise setLinkMultFact {Total_viewsymA} {X} 1
 DEVise setLinkMultFact {Total_viewsymA} {Y} 1
 DEVise setGAttrLinkMode {Total_viewsymA} 0
 DEVise setDoHomeOnVisLink {Total_viewsymA} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Total_viewsymA} {1}
+DEVise viewSetUseJmol {Total_viewsymA} {0}
 
+# View {Total_viewsymB} uses mapping {TotalsymB#condor_user_mc}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} Total_viewsymB {Aug 13 1999 01:38:32} {Aug 20 1999 01:33:24} 0.000000 987.000000 36 9 0 37 0 37
 DEVise setLabel {Total_viewsymB} 0 12 {}
 DEVise setViewStatistics {Total_viewsymB} 00000000
@@ -686,93 +798,137 @@ DEVise setLinkMultFact {Total_viewsymB} {X} 1
 DEVise setLinkMultFact {Total_viewsymB} {Y} 1
 DEVise setGAttrLinkMode {Total_viewsymB} 0
 DEVise setDoHomeOnVisLink {Total_viewsymB} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Total_viewsymB} {1}
+DEVise viewSetUseJmol {Total_viewsymB} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {condor_user_mc}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList AllUser#condor_user_mc {} 0 {$X} {} 8 0.9 0 0 17 {$ViewName} 1 1 {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {AllUser#condor_user_mc} 1
 DEVise setMappingColors {AllUser#condor_user_mc} {8} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList UserList#condor_user_mc {} 0 {$X} {} 37 0.9 0 360 12 {$UserName} {} -2 0.6 {} -3 4 {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {UserList#condor_user_mc} 1
 DEVise setMappingColors {UserList#condor_user_mc} {37} {37} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList Select1#condor_user_mc {} 0 {$X} {} 8 0.5 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {Select1#condor_user_mc} 1
 DEVise setMappingColors {Select1#condor_user_mc} {8} {8} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList Select2#condor_user_mc {} 0 {$X} {} 8 0.5 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {Select2#condor_user_mc} 1
 DEVise setMappingColors {Select2#condor_user_mc} {8} {8} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList User1A#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"User1_viewsymA"} 1 1 {$TDataName} {"User1Pile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {User1A#condor_user_mc} 1
 DEVise setMappingColors {User1A#condor_user_mc} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList User1B#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"User1_viewsymB"} 1 1 {$TDataName} {"User1Pile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {User1B#condor_user_mc} 1
 DEVise setMappingColors {User1B#condor_user_mc} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList User2A#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"User2_viewsymA"} 1 1 {$TDataName} {"User2Pile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {User2A#condor_user_mc} 1
 DEVise setMappingColors {User2A#condor_user_mc} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList User2B#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"User2_viewsymB"} 1 1 {$TDataName} {"User2Pile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {User2B#condor_user_mc} 1
 DEVise setMappingColors {User2B#condor_user_mc} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList TotalA#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"Total_viewsymA"} 1 1 {} {"TotalPile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalA#condor_user_mc} 1
 DEVise setMappingColors {TotalA#condor_user_mc} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList TotalB#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"Total_viewsymB"} 1 1 {} {"TotalPile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalB#condor_user_mc} 1
 DEVise setMappingColors {TotalB#condor_user_mc} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList TotalLinkedA#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"TotalLinked_viewsymA"} 1 1 {} {"TotalLinkedPile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalLinkedA#condor_user_mc} 1
 DEVise setMappingColors {TotalLinkedA#condor_user_mc} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_UserList TotalLinkedB#condor_user_mc {} 0 {$X} {} {} 0.98 0 0 17 {"TotalLinked_viewsymB"} 1 1 {} {"TotalLinkedPile"} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalLinkedB#condor_user_mc} 1
 DEVise setMappingColors {TotalLinkedB#condor_user_mc} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} ..Condor_Total TotalsymA#condor_user_mc {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalsymA#condor_user_mc} 1
 DEVise setMappingColors {TotalsymA#condor_user_mc} {36} {36} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} ..Condor_Total TotalsymB#condor_user_mc {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalsymB#condor_user_mc} 1
 DEVise setMappingColors {TotalsymB#condor_user_mc} {31} {31} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} ..Condor_Total TotalLinkedsymA#condor_user_mc {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalLinkedsymA#condor_user_mc} 1
 DEVise setMappingColors {TotalLinkedsymA#condor_user_mc} {36} {36} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} ..Condor_Total TotalLinkedsymB#condor_user_mc {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {TotalLinkedsymB#condor_user_mc} 1
 DEVise setMappingColors {TotalLinkedsymB#condor_user_mc} {31} {31} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_Total .Condor_Total#User1_viewsymA {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.Condor_Total#User1_viewsymA} 1
 DEVise setMappingColors {.Condor_Total#User1_viewsymA} {36} {36} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_dman@cs_wisc_edu .Condor_dman@cs_wisc_edu#User2_viewsymA {} {$time} {$total_jobs} {} 36 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.Condor_dman@cs_wisc_edu#User2_viewsymA} 1
 DEVise setMappingColors {.Condor_dman@cs_wisc_edu#User2_viewsymA} {36} {36} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_Total .Condor_Total#User1_viewsymB {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.Condor_Total#User1_viewsymB} 1
 DEVise setMappingColors {.Condor_Total#User1_viewsymB} {31} {31} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {condor_user_mc} .Condor_dman@cs_wisc_edu .Condor_dman@cs_wisc_edu#User2_viewsymB {} {$time} {$jobs_running} {} 31 1 0 0 2 1 {} {} {} 3 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.Condor_dman@cs_wisc_edu#User2_viewsymB} 1
 DEVise setMappingColors {.Condor_dman@cs_wisc_edu#User2_viewsymB} {31} {31} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} UserList 0.100000 0.199219 0.149219 0.739258 0 0
 DEVise create {window} {TileLayout} Total 0.250000 0.869141 0.729688 0.069336 0 0
 DEVise create {window} {TileLayout} Select1 0.017969 0.199219 0.039844 0.739258 0 0

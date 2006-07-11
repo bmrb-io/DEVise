@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 26 2004 15:32:20
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:40:53
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -54,6 +54,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {Close vs. DATE} uses mapping {.SUN_Stock#Close_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Close vs. DATE} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 4 37 0 37 0 37
 DEVise setLabel {Close vs. DATE} 1 16 {Sun Microsystems Price}
 DEVise setViewStatistics {Close vs. DATE} 1000000
@@ -86,7 +90,13 @@ DEVise setLinkMultFact {Close vs. DATE} {X} 1
 DEVise setLinkMultFact {Close vs. DATE} {Y} 1
 DEVise setGAttrLinkMode {Close vs. DATE} 0
 DEVise setDoHomeOnVisLink {Close vs. DATE} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Close vs. DATE} {1}
+DEVise viewSetUseJmol {Close vs. DATE} {0}
 
+# View {Volume vs. DATE} uses mapping {.SUN_Stock#Volume_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Volume vs. DATE} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 4 37 0 37 0 37
 DEVise setLabel {Volume vs. DATE} 1 16 {Sun Microsystems Volume}
 DEVise setViewStatistics {Volume vs. DATE} 1000000
@@ -119,7 +129,13 @@ DEVise setLinkMultFact {Volume vs. DATE} {X} 1
 DEVise setLinkMultFact {Volume vs. DATE} {Y} 1
 DEVise setGAttrLinkMode {Volume vs. DATE} 0
 DEVise setDoHomeOnVisLink {Volume vs. DATE} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Volume vs. DATE} {1}
+DEVise viewSetUseJmol {Volume vs. DATE} {0}
 
+# View {Close vs. DATE 2} uses mapping {.DEC_Stock#Close_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Close vs. DATE 2} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 4 37 0 37 0 37
 DEVise setLabel {Close vs. DATE 2} 1 16 {Digital Equipment Price}
 DEVise setViewStatistics {Close vs. DATE 2} 1000000
@@ -152,7 +168,13 @@ DEVise setLinkMultFact {Close vs. DATE 2} {X} 1
 DEVise setLinkMultFact {Close vs. DATE 2} {Y} 1
 DEVise setGAttrLinkMode {Close vs. DATE 2} 0
 DEVise setDoHomeOnVisLink {Close vs. DATE 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Close vs. DATE 2} {1}
+DEVise viewSetUseJmol {Close vs. DATE 2} {0}
 
+# View {Volume vs. DATE 2} uses mapping {.DEC_Stock#Volume_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Volume vs. DATE 2} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 4 37 0 37 0 37
 DEVise setLabel {Volume vs. DATE 2} 1 16 {Digital Equipment Volume}
 DEVise setViewStatistics {Volume vs. DATE 2} 1000000
@@ -185,7 +207,13 @@ DEVise setLinkMultFact {Volume vs. DATE 2} {X} 1
 DEVise setLinkMultFact {Volume vs. DATE 2} {Y} 1
 DEVise setGAttrLinkMode {Volume vs. DATE 2} 0
 DEVise setDoHomeOnVisLink {Volume vs. DATE 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Volume vs. DATE 2} {1}
+DEVise viewSetUseJmol {Volume vs. DATE 2} {0}
 
+# View {Close vs. DATE 3} uses mapping {.HWP_Stock#Close_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Close vs. DATE 3} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 4 37 0 37 0 37
 DEVise setLabel {Close vs. DATE 3} 1 16 {Hewlett-Packard Price}
 DEVise setViewStatistics {Close vs. DATE 3} 1000000
@@ -218,7 +246,13 @@ DEVise setLinkMultFact {Close vs. DATE 3} {X} 1
 DEVise setLinkMultFact {Close vs. DATE 3} {Y} 1
 DEVise setGAttrLinkMode {Close vs. DATE 3} 0
 DEVise setDoHomeOnVisLink {Close vs. DATE 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Close vs. DATE 3} {1}
+DEVise viewSetUseJmol {Close vs. DATE 3} {0}
 
+# View {Volume vs. DATE 3} uses mapping {.HWP_Stock#Volume_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Volume vs. DATE 3} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 4 37 0 37 0 37
 DEVise setLabel {Volume vs. DATE 3} 1 16 {Hewlett-Packard Volume}
 DEVise setViewStatistics {Volume vs. DATE 3} 1000000
@@ -251,7 +285,13 @@ DEVise setLinkMultFact {Volume vs. DATE 3} {X} 1
 DEVise setLinkMultFact {Volume vs. DATE 3} {Y} 1
 DEVise setGAttrLinkMode {Volume vs. DATE 3} 0
 DEVise setDoHomeOnVisLink {Volume vs. DATE 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Volume vs. DATE 3} {1}
+DEVise viewSetUseJmol {Volume vs. DATE 3} {0}
 
+# View {Close vs. DATE 4} uses mapping {.IBM_Stock#Close_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Close vs. DATE 4} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 4 37 0 37 0 37
 DEVise setLabel {Close vs. DATE 4} 1 16 {IBM Price}
 DEVise setViewStatistics {Close vs. DATE 4} 1000000
@@ -284,7 +324,13 @@ DEVise setLinkMultFact {Close vs. DATE 4} {X} 1
 DEVise setLinkMultFact {Close vs. DATE 4} {Y} 1
 DEVise setGAttrLinkMode {Close vs. DATE 4} 0
 DEVise setDoHomeOnVisLink {Close vs. DATE 4} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Close vs. DATE 4} {1}
+DEVise viewSetUseJmol {Close vs. DATE 4} {0}
 
+# View {Volume vs. DATE 4} uses mapping {.IBM_Stock#Volume_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Volume vs. DATE 4} {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 4 37 0 37 0 37
 DEVise setLabel {Volume vs. DATE 4} 1 16 {IBM Volume}
 DEVise setViewStatistics {Volume vs. DATE 4} 1000000
@@ -317,7 +363,13 @@ DEVise setLinkMultFact {Volume vs. DATE 4} {X} 1
 DEVise setLinkMultFact {Volume vs. DATE 4} {Y} 1
 DEVise setGAttrLinkMode {Volume vs. DATE 4} 0
 DEVise setDoHomeOnVisLink {Volume vs. DATE 4} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Volume vs. DATE 4} {1}
+DEVise viewSetUseJmol {Volume vs. DATE 4} {0}
 
+# View {Close vs. DATE 5} uses mapping {.IBM_Stock#Close_vs_DATE 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {Close vs. DATE 5} {Aug 30 1993 00:00:00} {Feb 04 1996 00:00:00} 0.000000 120.000000 4 37 0 37 0 37
 DEVise setLabel {Close vs. DATE 5} 1 16 {}
 DEVise setViewStatistics {Close vs. DATE 5} 0000000
@@ -350,6 +402,8 @@ DEVise setLinkMultFact {Close vs. DATE 5} {X} 1
 DEVise setLinkMultFact {Close vs. DATE 5} {Y} 1
 DEVise setGAttrLinkMode {Close vs. DATE 5} 0
 DEVise setDoHomeOnVisLink {Close vs. DATE 5} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Close vs. DATE 5} {1}
+DEVise viewSetUseJmol {Close vs. DATE 5} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Close_vs_DATE}
@@ -357,43 +411,63 @@ DEVise createMappingClass {Volume_vs_DATE}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .SUN_Stock .SUN_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.SUN_Stock#Close_vs_DATE} 1
 DEVise setMappingColors {.SUN_Stock#Close_vs_DATE} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .DEC_Stock .DEC_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.DEC_Stock#Close_vs_DATE} 1
 DEVise setMappingColors {.DEC_Stock#Close_vs_DATE} {3} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .HWP_Stock .HWP_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 6 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.HWP_Stock#Close_vs_DATE} 1
 DEVise setMappingColors {.HWP_Stock#Close_vs_DATE} {6} {6} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .IBM_Stock .IBM_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Close_vs_DATE} 1
 DEVise setMappingColors {.IBM_Stock#Close_vs_DATE} {4} {4} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .IBM_Stock {.IBM_Stock#Close_vs_DATE 2} {} {$DATE} {$Close} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Close_vs_DATE 2} 1
 DEVise setMappingColors {.IBM_Stock#Close_vs_DATE 2} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Volume_vs_DATE} .SUN_Stock .SUN_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.SUN_Stock#Volume_vs_DATE} 1
 DEVise setMappingColors {.SUN_Stock#Volume_vs_DATE} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Volume_vs_DATE} .DEC_Stock .DEC_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.DEC_Stock#Volume_vs_DATE} 1
 DEVise setMappingColors {.DEC_Stock#Volume_vs_DATE} {3} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Volume_vs_DATE} .HWP_Stock .HWP_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 36 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.HWP_Stock#Volume_vs_DATE} 1
 DEVise setMappingColors {.HWP_Stock#Volume_vs_DATE} {36} {36} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Volume_vs_DATE} .IBM_Stock .IBM_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Volume_vs_DATE} 1
 DEVise setMappingColors {.IBM_Stock#Volume_vs_DATE} {4} {4} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} {Trade Price} 0.089844 0.230469 0.398438 0.636719 0 0
 DEVise create {window} {TileLayout} {Trade Volume} 0.496094 0.230469 0.398438 0.636719 0 0
 DEVise create {window} {TileLayout} {Global View} 0.089844 0.065430 0.804688 0.125000 0 0

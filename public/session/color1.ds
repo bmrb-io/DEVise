@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 27 2004 17:26:02
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:40:31
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -54,6 +54,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {View 1} uses mapping {.color1#View 1}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 1} -0.500000 9.500000 -3.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 1} 1 16 {Colors in the default color palette}
 DEVise setViewStatistics {View 1} 00000000
@@ -70,7 +74,7 @@ DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
 DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 1} -6.3 0.3 10
+DEVise setHistogram {View 1} -3.5 0.5 10
 DEVise setCountMapping {View 1} 0 {} {} 0
 DEVise viewSetIsHighlight {View 1} 0
 DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
@@ -86,7 +90,13 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
 
+# View {View 2} uses mapping {.color1#View 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 2} -0.500000 9.500000 -3.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 2} 1 16 {Colors in the default color palette}
 DEVise setViewStatistics {View 2} 00000000
@@ -103,7 +113,7 @@ DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
 DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 2} -6.3 0.3 10
+DEVise setHistogram {View 2} -3.5 0.5 10
 DEVise setCountMapping {View 2} 0 {} {} 0
 DEVise viewSetIsHighlight {View 2} 0
 DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
@@ -119,21 +129,29 @@ DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {y_vs_x}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .color1 {.color1#View 1} {} {$x} {-$y} {} {$color} 0.6 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.color1#View 1} 1
 DEVise setMappingColors {.color1#View 1} {$color} {$color} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .color1 {.color1#View 2} {} {$x} {-$y-0.37} {} 0 12 0 0 16 {$color} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.color1#View 2} 1
 DEVise setMappingColors {.color1#View 2} {0} {0} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.192969 0.369141 0.500000 0.500000 0 0
 
 # Set up window layouts

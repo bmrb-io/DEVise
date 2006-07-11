@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 26 2004 15:32:50
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:41:53
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -54,6 +54,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {View 1} uses mapping {.WordCount#Count_vs_FirstLine}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 1} 2.000000 632.000000 1.000000 500.000000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {Count vs. FirstLine}
 DEVise setViewStatistics {View 1} 00000000
@@ -86,17 +90,23 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Count_vs_FirstLine}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Count_vs_FirstLine} .WordCount .WordCount#Count_vs_FirstLine {} {$FirstLine} {$Count} {} 36 0.8 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.WordCount#Count_vs_FirstLine} 1
 DEVise setMappingColors {.WordCount#Count_vs_FirstLine} {36} {36} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.221094 0.176758 0.500000 0.500000 0 0
 
 # Set up window layouts

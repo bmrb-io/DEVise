@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 27 2004 17:13:09
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:40:59
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -56,6 +56,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {View 1} uses mapping {.gattr_link1#y_vs_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 1} 0.700000 10.600000 1.100000 10.000000 0 37 0 37 0 37
 DEVise setLabel {View 1} 1 16 {View 1: cursor destination view}
 DEVise setViewStatistics {View 1} 00000000
@@ -88,7 +92,13 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
 
+# View {View 2} uses mapping {.gattr_link2#y_vs_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 2} 0.700000 10.600000 1.200000 9.600000 0 37 0 37 0 37
 DEVise setLabel {View 2} 1 16 {View 2: GAttr link follower view}
 DEVise setViewStatistics {View 2} 00000000
@@ -121,7 +131,13 @@ DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
 
+# View {View 3} uses mapping {.gattr_link1#y_vs_x 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 3} 4.270769 8.010770 2.639098 7.390226 0 37 0 37 0 37
 DEVise setLabel {View 3} 1 16 {View 3: GAttr link leader view}
 DEVise setViewStatistics {View 3} 00000000
@@ -154,25 +170,35 @@ DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {y_vs_x}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .gattr_link1 .gattr_link1#y_vs_x {} {$x} {$y} {} {$color} 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.gattr_link1#y_vs_x} 1
 DEVise setMappingColors {.gattr_link1#y_vs_x} {$color} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .gattr_link2 .gattr_link2#y_vs_x {} {$x} {$y} {} {$color} 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.gattr_link2#y_vs_x} 1
 DEVise setMappingColors {.gattr_link2#y_vs_x} {$color} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .gattr_link1 {.gattr_link1#y_vs_x 2} {} {$x} {$y} {} {$color} 1 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.gattr_link1#y_vs_x 2} 1
 DEVise setMappingColors {.gattr_link1#y_vs_x 2} {$color} {0} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.127344 0.221680 0.500000 0.589844 0 0
 DEVise create {window} {TileLayout} DEViseWn1 0.661719 0.357422 0.217188 0.294922 0 0
 

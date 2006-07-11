@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 26 2004 15:57:47
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:42:22
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -54,6 +54,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {Data View} uses mapping {.World_Outline#Y_vs_X}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {Data View} -179.870000 179.450000 -85.400000 100.000000 4 37 0 37 0 37
 DEVise setLabel {Data View} 0 12 {}
 DEVise setViewStatistics {Data View} 0000000
@@ -86,17 +90,23 @@ DEVise setLinkMultFact {Data View} {X} 1
 DEVise setLinkMultFact {Data View} {Y} 1
 DEVise setGAttrLinkMode {Data View} 0
 DEVise setDoHomeOnVisLink {Data View} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Data View} {1}
+DEVise viewSetUseJmol {Data View} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Y_vs_X}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Y_vs_X} .World_Outline .World_Outline#Y_vs_X {} {$X} {$Y} {} 3 1 0 0 7 {$DX} {$DY} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.World_Outline#Y_vs_X} 1
 DEVise setMappingColors {.World_Outline#Y_vs_X} {3} {3} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} {Map of the World} 0.117969 0.192383 0.500000 0.500000 0 0
 
 # Set up window layouts

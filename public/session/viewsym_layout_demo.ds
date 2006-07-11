@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 26 2004 15:34:50
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:42:01
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -56,6 +56,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {Sun_Price} uses mapping {.SUN_Stock#Close_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} Sun_Price {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 0 37 0 37 0 37
 DEVise setLabel {Sun_Price} 1 16 {Sun Microsystems Price}
 DEVise setViewStatistics {Sun_Price} 10000000
@@ -88,7 +92,13 @@ DEVise setLinkMultFact {Sun_Price} {X} 1
 DEVise setLinkMultFact {Sun_Price} {Y} 1
 DEVise setGAttrLinkMode {Sun_Price} 0
 DEVise setDoHomeOnVisLink {Sun_Price} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Sun_Price} {1}
+DEVise viewSetUseJmol {Sun_Price} {0}
 
+# View {Sun_Volume} uses mapping {.SUN_Stock#Volume_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} Sun_Volume {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 0 37 0 37 0 37
 DEVise setLabel {Sun_Volume} 1 16 {Sun Microsystems Volume}
 DEVise setViewStatistics {Sun_Volume} 1000000
@@ -121,7 +131,13 @@ DEVise setLinkMultFact {Sun_Volume} {X} 1
 DEVise setLinkMultFact {Sun_Volume} {Y} 1
 DEVise setGAttrLinkMode {Sun_Volume} 0
 DEVise setDoHomeOnVisLink {Sun_Volume} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {Sun_Volume} {1}
+DEVise viewSetUseJmol {Sun_Volume} {0}
 
+# View {DEC_Price} uses mapping {.DEC_Stock#Close_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} DEC_Price {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 100.000000 0 37 0 37 0 37
 DEVise setLabel {DEC_Price} 1 16 {Digital Equipment Price}
 DEVise setViewStatistics {DEC_Price} 1000000
@@ -154,7 +170,13 @@ DEVise setLinkMultFact {DEC_Price} {X} 1
 DEVise setLinkMultFact {DEC_Price} {Y} 1
 DEVise setGAttrLinkMode {DEC_Price} 0
 DEVise setDoHomeOnVisLink {DEC_Price} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {DEC_Price} {1}
+DEVise viewSetUseJmol {DEC_Price} {0}
 
+# View {DEC_Volume} uses mapping {.DEC_Stock#Volume_vs_DATE}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} DEC_Volume {Jul 25 1994 22:02:27} {Mar 03 1995 12:01:07} 0.000000 6400.000000 0 37 0 37 0 37
 DEVise setLabel {DEC_Volume} 1 16 {Digital Equipment Volume}
 DEVise setViewStatistics {DEC_Volume} 1000000
@@ -187,7 +209,13 @@ DEVise setLinkMultFact {DEC_Volume} {X} 1
 DEVise setLinkMultFact {DEC_Volume} {Y} 1
 DEVise setGAttrLinkMode {DEC_Volume} 0
 DEVise setDoHomeOnVisLink {DEC_Volume} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {DEC_Volume} {1}
+DEVise viewSetUseJmol {DEC_Volume} {0}
 
+# View {View 1} uses mapping {.stock_layout#view_y_vs_view_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 1} -0.465000 1.400000 -0.465000 1.400000 0 37 0 37 0 37
 DEVise setLabel {View 1} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 1} 00000000
@@ -220,7 +248,13 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
 
+# View {View 2} uses mapping {.single_record#view_y_vs_view_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 2} -0.500000 0.500000 -0.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 2} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 2} 00000000
@@ -253,7 +287,13 @@ DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
 
+# View {View 3} uses mapping {.single_record#view_y_vs_view_x 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 3} -0.500000 0.500000 -0.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 3} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 3} 00000000
@@ -286,7 +326,13 @@ DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
 
+# View {View 4} uses mapping {.single_record#view_y_vs_view_x 3}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -0.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 4} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 4} 00000000
@@ -319,7 +365,13 @@ DEVise setLinkMultFact {View 4} {X} 1
 DEVise setLinkMultFact {View 4} {Y} 1
 DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 4} {1}
+DEVise viewSetUseJmol {View 4} {0}
 
+# View {View 5} uses mapping {.single_record#view_y_vs_view_x 4}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 5} -0.500000 0.500000 -0.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 5} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 5} 00000000
@@ -352,7 +404,13 @@ DEVise setLinkMultFact {View 5} {X} 1
 DEVise setLinkMultFact {View 5} {Y} 1
 DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 5} {1}
+DEVise viewSetUseJmol {View 5} {0}
 
+# View {View 6} uses mapping {.single_record#view_y_vs_view_x 5}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 6} -0.500000 0.500000 -0.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 6} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 6} 00000000
@@ -385,7 +443,13 @@ DEVise setLinkMultFact {View 6} {X} 1
 DEVise setLinkMultFact {View 6} {Y} 1
 DEVise setGAttrLinkMode {View 6} 0
 DEVise setDoHomeOnVisLink {View 6} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 6} {1}
+DEVise viewSetUseJmol {View 6} {0}
 
+# View {View 7} uses mapping {.single_record#view_y_vs_view_x 6}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 7} -0.500000 0.500000 -0.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 7} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 7} 00000000
@@ -418,7 +482,13 @@ DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
 DEVise setGAttrLinkMode {View 7} 0
 DEVise setDoHomeOnVisLink {View 7} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 7} {1}
+DEVise viewSetUseJmol {View 7} {0}
 
+# View {View 8} uses mapping {.single_record#view_y_vs_view_x 7}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 8} -0.500000 0.500000 -0.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 8} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 8} 00000000
@@ -451,7 +521,13 @@ DEVise setLinkMultFact {View 8} {X} 1
 DEVise setLinkMultFact {View 8} {Y} 1
 DEVise setGAttrLinkMode {View 8} 0
 DEVise setDoHomeOnVisLink {View 8} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 8} {1}
+DEVise viewSetUseJmol {View 8} {0}
 
+# View {View 9} uses mapping {.single_record#view_y_vs_view_x 8}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 9} -0.500000 0.500000 -0.500000 0.500000 0 37 0 37 0 37
 DEVise setLabel {View 9} 0 12 {view_y() vs. view_x}
 DEVise setViewStatistics {View 9} 00000000
@@ -484,6 +560,8 @@ DEVise setLinkMultFact {View 9} {X} 1
 DEVise setLinkMultFact {View 9} {Y} 1
 DEVise setGAttrLinkMode {View 9} 0
 DEVise setDoHomeOnVisLink {View 9} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 9} {1}
+DEVise viewSetUseJmol {View 9} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Close_vs_DATE}
@@ -492,79 +570,117 @@ DEVise createMappingClass {view_y_vs_view_x}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .SUN_Stock .SUN_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.SUN_Stock#Close_vs_DATE} 1
 DEVise setMappingColors {.SUN_Stock#Close_vs_DATE} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .DEC_Stock .DEC_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.DEC_Stock#Close_vs_DATE} 1
 DEVise setMappingColors {.DEC_Stock#Close_vs_DATE} {3} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .HWP_Stock .HWP_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 6 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.HWP_Stock#Close_vs_DATE} 1
 DEVise setMappingColors {.HWP_Stock#Close_vs_DATE} {6} {6} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .IBM_Stock .IBM_Stock#Close_vs_DATE {} {$DATE} {$Close} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Close_vs_DATE} 1
 DEVise setMappingColors {.IBM_Stock#Close_vs_DATE} {4} {4} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Close_vs_DATE} .IBM_Stock {.IBM_Stock#Close_vs_DATE 2} {} {$DATE} {$Close} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Close_vs_DATE 2} 1
 DEVise setMappingColors {.IBM_Stock#Close_vs_DATE 2} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Volume_vs_DATE} .SUN_Stock .SUN_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 2 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.SUN_Stock#Volume_vs_DATE} 1
 DEVise setMappingColors {.SUN_Stock#Volume_vs_DATE} {2} {2} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Volume_vs_DATE} .DEC_Stock .DEC_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 3 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.DEC_Stock#Volume_vs_DATE} 1
 DEVise setMappingColors {.DEC_Stock#Volume_vs_DATE} {3} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Volume_vs_DATE} .HWP_Stock .HWP_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 36 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.HWP_Stock#Volume_vs_DATE} 1
 DEVise setMappingColors {.HWP_Stock#Volume_vs_DATE} {36} {36} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Volume_vs_DATE} .IBM_Stock .IBM_Stock#Volume_vs_DATE {} {$DATE} {$Volume} {} 4 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.IBM_Stock#Volume_vs_DATE} 1
 DEVise setMappingColors {.IBM_Stock#Volume_vs_DATE} {4} {4} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .stock_layout .stock_layout#view_y_vs_view_x {} {$view_x} {$view_y} {} 37 1 0 0 17 {$view_name} {$view_width} {$view_height} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.stock_layout#view_y_vs_view_x} 1
 DEVise setMappingColors {.stock_layout#view_y_vs_view_x} {37} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .single_record .single_record#view_y_vs_view_x {} 0 0 {} 0 12 0 0 16 {"Date"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.single_record#view_y_vs_view_x} 1
 DEVise setMappingColors {.single_record#view_y_vs_view_x} {0} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .single_record {.single_record#view_y_vs_view_x 2} {} 0 0 {} 0 12 0 0 16 {"Date"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.single_record#view_y_vs_view_x 2} 1
 DEVise setMappingColors {.single_record#view_y_vs_view_x 2} {0} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .single_record {.single_record#view_y_vs_view_x 3} {} 0 0 {} 0 12 0 0 16 {"Date"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.single_record#view_y_vs_view_x 3} 1
 DEVise setMappingColors {.single_record#view_y_vs_view_x 3} {0} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .single_record {.single_record#view_y_vs_view_x 4} {} 0 0 {} 0 12 0 0 16 {"Date"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.single_record#view_y_vs_view_x 4} 1
 DEVise setMappingColors {.single_record#view_y_vs_view_x 4} {0} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .single_record {.single_record#view_y_vs_view_x 5} {} 0 0 {} 0 12 0 90 16 {"Price, $ per Share"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.single_record#view_y_vs_view_x 5} 1
 DEVise setMappingColors {.single_record#view_y_vs_view_x 5} {0} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .single_record {.single_record#view_y_vs_view_x 6} {} 0 0 {} 0 12 0 90 16 {"Price, $ per Share"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.single_record#view_y_vs_view_x 6} 1
 DEVise setMappingColors {.single_record#view_y_vs_view_x 6} {0} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .single_record {.single_record#view_y_vs_view_x 7} {} 0 0 {} 0 12 0 90 16 {"Volume"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.single_record#view_y_vs_view_x 7} 1
 DEVise setMappingColors {.single_record#view_y_vs_view_x 7} {0} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {view_y_vs_view_x} .single_record {.single_record#view_y_vs_view_x 8} {} 0 0 {} 0 12 0 90 16 {"Volume"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.single_record#view_y_vs_view_x 8} 1
 DEVise setMappingColors {.single_record#view_y_vs_view_x 8} {0} {0} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.236719 0.362305 0.565625 0.563477 0 0
 
 # Set up window layouts

@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 31 2004 10:19:59
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:41:47
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -64,6 +64,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {View 1} uses mapping {.color2#y_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 1} -0.700000 0.700000 2.500000 13.500000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {}
 DEVise setViewStatistics {View 1} 00000000
@@ -96,7 +100,13 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
 
+# View {View 2} uses mapping {.color2#y_vs_recId 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 2} -0.700000 0.700000 -0.500000 64.500000 37 0 0 37 0 37
 DEVise setLabel {View 2} 1 16 {}
 DEVise setViewStatistics {View 2} 00000000
@@ -129,7 +139,13 @@ DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
 
+# View {View 3} uses mapping {.color2#y_vs_recId 3}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 3} -0.700000 0.700000 2.500000 13.500000 37 0 0 37 0 37
 DEVise setLabel {View 3} 1 16 {}
 DEVise setViewStatistics {View 3} 00000000
@@ -162,25 +178,35 @@ DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {y_vs_recId}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_recId} .color2 .color2#y_vs_recId {} 0 {$recId} {} {$color} 1 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.color2#y_vs_recId} 1
 DEVise setMappingColors {.color2#y_vs_recId} {$color} {$color} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_recId} .color2 {.color2#y_vs_recId 2} {} 0 {$recId} {} {$color} 1 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.color2#y_vs_recId 2} 1
 DEVise setMappingColors {.color2#y_vs_recId 2} {$color} {$color} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_recId} .color2 {.color2#y_vs_recId 3} {} 0 {$recId} {} {$color+10} 18 0 0 16 {$color} {"%.1f"} {} 2 1 {} 2 {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.color2#y_vs_recId 3} 1
 DEVise setMappingColors {.color2#y_vs_recId 3} {$color+10} {$color+10} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.455469 0.203125 0.330469 0.500000 0 0
 DEVise create {window} {TileLayout} DEViseWn1 0.418750 0.203125 0.034375 0.500000 0 0
 

@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 27 2004 17:43:35
-# DEVise version: 1.7.18
-# DEVise date: May 24 2004
+# file date: Jul 11 2006 15:40:43
+# DEVise version: 1.9.0
+# DEVise date: Jul 11 2006
 # DEVise endHeader
 
 # Session description
@@ -56,6 +56,10 @@ DEVise setColorMode 0
 
 # Create views
 
+# View {View 1} uses mapping {.count_mapping#y_vs_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 1} -0.500000 10.500000 -0.500000 3.500000 0 37 0 37 0 37
 DEVise setLabel {View 1} 1 16 {count mapping demonstration}
 DEVise setViewStatistics {View 1} 00000000
@@ -88,17 +92,23 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {y_vs_x}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .count_mapping .count_mapping#y_vs_x {} 0 {$y} {} {$color} 0.7 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.count_mapping#y_vs_x} 1
 DEVise setMappingColors {.count_mapping#y_vs_x} {$color} {0} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.177344 0.199219 0.500000 0.500000 0 0
 
 # Set up window layouts

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.108  2006/05/26 16:22:57  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.107  2006/05/10 19:04:36  wenger
   Added the new setDoHomeOnVisLinkIfInvisible and
   getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
@@ -879,6 +882,9 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
     status += ForEachInstance("mapping", SaveGData, &saveData);
 
     fprintf(saveData.fp, "\n# Create windows\n");
+    // Note: we should really get this info from WinClassInfo.
+    fprintf(saveData.fp, "# Params: <category> <class> <name> <x> <y> "
+        "<width> <height>\n#   <exclude from print> <print pixmap>\n");
     SaveCategory(&saveData, "window");
 
     fprintf(saveData.fp, "\n# Set up window layouts\n");
@@ -2109,6 +2115,12 @@ Session::SaveView(char *category, char *devClass, char *instance,
     }
   }
 
+  // Note: we should really get this info from ViewClassInfo.
+  fprintf(saveData->fp, "# Params: <category> <class> <name> <xlow> "
+      "<xhigh> <ylow> <yhigh>\n#   <fgcolor (normal)> <bgcolor (normal)> "
+      "<fgcolor (color print)>\n#   <bgcolor (color print)> "
+      "<fgcolor (b/w print)> <bgcolor (b/w print)>\n");
+
   status += SaveParams(saveData, "getCreateParam", "create", "view",
       devClass, instance);
 
@@ -2268,6 +2280,11 @@ Session::SaveGData(char *category, char *devClass, char *instance,
   DevStatus status = StatusOk;
 
   fprintf(saveData->fp, "\n");
+
+  // Note: we should really get this info from MapInterpClassInfo.
+  fprintf(saveData->fp, "# Params: <category> <class> <TData> <name> "
+      "<?> <x> <y> <z> <color> <size>\n#   <pattern> <orientation> <shape> "
+      "<shape attr 0> ... <shape attr 14>\n");
 
   status += SaveParams(saveData, "getCreateParam", "create", "mapping",
       devClass, instance);
