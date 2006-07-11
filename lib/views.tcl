@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.66  2005/12/06 20:04:52  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.65  2003/01/13 19:25:45  wenger
 #  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 #
@@ -660,7 +664,6 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setShowMouseLocation {$newView} \
       [DEVise getShowMouseLocation $view]
 
-
     # insert links of $view into $newView
     foreach link [LinkSet] {
         if {[DEVise viewInLink $link $view]} {
@@ -674,6 +677,9 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
       $view {Y}]}
     eval DEVise setGAttrLinkMode {$newView} {[DEVise getGAttrLinkMode $view]}
     eval DEVise setDoHomeOnVisLink {$newView} {[DEVise getDoHomeOnVisLink $view]}
+    eval DEVise setDoHomeOnVisLinkIfInvisible {$newView} \
+      {[DEVise getDoHomeOnVisLinkIfInvisible $view]}
+    eval DEVise viewSetUseJmol {$newView} {[DEVise viewGetUseJmol $view]}
 
     eval DEVise insertWindow {$newView} {$window}
     eval DEVise insertMapping {$newView} {$newGdata}
