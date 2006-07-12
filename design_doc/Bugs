@@ -3922,6 +3922,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 
 921 4/3/06	OPEN	View help doesn't work in Jmol views. (wenger)
 
+922 7/12/06	OPEN	When you set a link multiplication factor in the
+			GUI, it doesn't immediately take effect (you have
+			to change the visual filter of one of the views first).
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

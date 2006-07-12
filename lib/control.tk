@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.225  2005/12/06 20:04:50  wenger
+#	Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#	be the end of the V1_7b0_br branch.)
+#	
 #	Revision 1.224  2003/01/13 19:25:43  wenger
 #	Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 #	
@@ -1146,6 +1150,7 @@ source $libdir/view_help.tcl
 source $libdir/show_mouse.tcl
 source $libdir/cursor_constraints.tcl
 source $libdir/cursor_type.tcl
+source $libdir/view_misc.tcl
 
 set mode 0
 DEVise changeMode $mode
@@ -1741,6 +1746,9 @@ menu .mbar.view.menu.cursorMenu -tearoff 0
 #.mbar.view.menu.cursorMenu add separator
 #.mbar.view.menu.cursorMenu add command -label "Set Record Cursor..." \
 #	-command DoSetRecordCursor
+
+.mbar.view.menu add separator
+.mbar.view.menu add command -label "Misc. Properties..." -command EditViewMisc
 
 .mbar.view.menu add separator
 #.mbar.view.menu add command -label "Statistics" -command { DoStat }
