@@ -1,0 +1,221 @@
+			DEVise Version History
+
+DEVise 1.9.0
+------------
+
+* Added support for Jmol in the JavaScreen -- added a flag for whether or
+not 3D views should use Jmol.
+
+* Added X Offset to Bar and Segment shapes (for NRG visualization for
+Luis Populin).
+
+* Added the new setDoHomeOnVisLinkIfInvisible and
+getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the example
+ session for Luis Populin), and fixed a bug in getDoHomeOnVisLink.
+
+* Added info about mapping, view, and window creation parameters
+to saving of session files; updated all example sessions accordingly.
+
+* Added "Misc. View Properties" dialog to control things we haven't
+had a GUI for previously.
+
+
+DEVise 1.8.0
+------------
+
+* Somewhat kludgily fixed DEVise bug 917/919 (drill-down works
+poorly on fixed text symbols) -- expanded visual filter for
+query because we don't know the bounding box of the symbols.
+
+* Got DEVise to build and run on Centos Linux.
+
+* Got Tasvir to build and run on CentOS.
+
+* Added CentOS support to the release script.
+
+
+DEVise 1.7.19
+-------------
+
+* Fixed bug 902 (zooming in too far makes lines disappear).
+
+* Fixed bug 911 (DEVise can't open DOS-format session files).
+
+* Fixed bug 905 (problem redrawing child views that send GData to the
+JavaScreen).
+
+* Added new color palette for "figure of merit" colors for Pistachio
+visualization.
+
+* Added comment to session file (in the view section) that tells what
+mapping a view uses.
+
+* Fixed bug 913 (shape attrs 11-14 get cleared by apply in mapping
+dialog).
+
+* Mapping dialog prints out mapping name (to help with manual session
+editing).
+
+* Workaround for DEVise bug 915 (problem with home/links/piles).
+
+* Better error messages in CheckAndMakeDirectory(); provision
+in Exit::DoExit() to avoid recursion.
+
+* Fixed bug 914 ('Select Next in Pile' doesn't work on 3D views).
+
+* ClientAPI code now logs errors via the DevError class (added
+DebugLogDummy to the client library so this works for devise
+and collaborator, which don't link the full graphics.new lib).
+
+* Fixed a bunch of possible buffer overflows (sprintfs and
+strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
+of fprintfs() to reportErr*() so the messages go into the
+debug log; various const-ifying of function arguments.
+
+* Removed all fixed dependencies on having a /p/devise directory.
+
+* Fixed bug 890 (problems with drill-down dialog caused by
+some color palettes not having a pure white color).
+
+* Fixed bug 578/741 (can't display a data source from the "Edit
+Data Source" dialog).
+
+* Better error messages if we can't find a TData.
+
+* Improved error messages if Tcl or Tk initialization fails.
+
+* Many improvements to example sessions.
+
+
+DEVise 1.7.18
+-------------
+
+* Fixed bug 899 (problem with copying views).
+
+* "Current filter does not match last history filter" warning is now
+only shown if DEBUG is turned on in View.c.
+
+* Added more "home debug" output.
+
+* Cleaned up session files by putting blank lines between objects.
+
+* Added new 'select next view in pile' feature.
+
+* Removed 'whoami' and 'rmmem' from DEVise startup scripts, etc.
+
+* Added separate compilation and release for RedHat 7.2 and RedHat 9.
+
+* RedHat 9 support.
+
+* Major drill-down improvements: hitting a symbol is more forgiving; drill-
+down now works properly on views that are GAttr link followers; drill-
+down works better on views with count mappings; other drill-down bug fixes.
+
+* Support for alternate colors for printing.
+
+* Improvements to view copying (added in a few properties that were
+previously missing).
+
+* JavaScreen support for print color modes is now in place.
+
+* Print mode symbol colors default to white instead of black for mappings
+whose only symbol type is 'view' (so child view backgrounds are white).
+
+
+DEVise 1.7.17
+-------------
+
+* Added initial value option to count mapping, also GUI for it (this is
+needed for chem shift reference visualizations).
+
+* More buffer length checks (still many more needed) in DeviseCommand.C.
+
+* Changed print defaults to file and GIF (instead of printer and
+PostScript).
+
+* Fixed bug 886 (home problem).
+
+* Fixed bug 885 (Y min zero on automatic home doesn't work).
+
+* Fixed bug 871 (home doesn't work right on GAttribute link followers).
+
+* Fixed a bug in that the intersection of multiple GAttr links was
+not being computed correctly.
+
+
+
+DEVise 1.7.16
+-------------
+
+* SPARC/Solaris version now compiled on Solaris 2.8 (to hopefully fix
+dynamic library problems the Japan BMRB mirror was having).
+
+* Changed things so the GUI doesn't get so screwed up if we can't run
+'ls' (this happened because of AFS problems).
+
+
+DEVise 1.7.15
+-------------
+
+* Many improvements to "sandbox" examples.
+
+* Changing a child view's parent value now activates automatic visual
+filter updates.
+
+* Various minor bug fixes.
+
+* Fixed (I think) bug 875 -- invalid TData record problem seen by
+Wavelet-IDR.
+
+* Significant improvements to the "view home" code.
+
+* Fixed a problem with error bars being drawn incorrectly.
+
+* Added a command-line argument to disable external-process capability
+(for security), defaults to being disabled in JavaScreen support;
+a little fixing up of the external-process stuff.
+
+* Greatly improved the error message when DEVise can't read
+composite.ini.
+
+* Minor improvements to the debug logs.
+
+* More changes to try to fix bug 875 (invalid TData record problem seen by
+Wavelet-IDR).
+
+* Index file names for per-session data sources now include the session
+name (to reduce collisions); fixed a few memory problems relating to
+the data source catalogs.
+
+* Fixed bug 876 (pixel overflow errors in duplicate elimination code).
+
+* Various improvments to debug logging; moved command logs from /tmp
+to work directory.
+
+* Added timestamps to devise error info printed to stderr.
+
+* Fixed bug 880 (RectX symbols always cause external process call).
+
+
+DEVise 1.7.14
+-------------
+
+* Fixed a number of bugs related to view geometry, transforms, and axis
+drawing.
+
+* Added "link multiplication factor" feature.
+
+* Fixed bugs relating to axis drawing with axis multiplication factors
+other than 1.
+
+* Fixed bug 862 (single-pixel rectangles don't work in JavaScreen support
+mode).
+
+* Added union capability for multiple GData attribute links (will help
+with restraint visualizations for BMRB).
+
+* Fixed bug 859 (equal-width bars sometimes show up with unequal widths).
+
+* Fixed bugs 858 and 864 (more drawing bugs).
+
+* Fixed bug 865 (axis problem with negative multiplication factors).

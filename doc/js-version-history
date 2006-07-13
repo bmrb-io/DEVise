@@ -1,0 +1,248 @@
+			JavaScreen Version History
+
+JavaScreen 5.7.0
+----------------
+(With DEVise 1.9.0.)
+
+* Added the option to render 3D molecules with Jmol:
+- Jmol is embedded within the JavaScreen.
+- Added Jmol menus to the JavaScreen menu bar.
+- Added trees to select which atoms are shown and highlighted within
+  Jmol.
+
+* Improved fonts -- larger, buttons/menus are now sans-serif.
+
+* A number of improvements to debug logging and restarts.
+
+* Added timestamps to many more items in the JSPoP debug output.
+
+* A bunch of changes to improve restart logging, etc.:
+- Better error messages in jss.java.
+- Set maximum memory for all production Java server processes to
+  256 MB (because of weird problems on marlin.bmrb.wisc.edu).
+- DEVise.jspop and DEVise.jspop.loc send all start_devised output to
+  a log file instead of to /dev/null.
+- check_jspop now puts check_connect.err.* in logs and doesn't
+  delete it when there's an error.
+- run_check puts *starting* timestamp at beginning of output, saves
+  output from failed tests to logs.
+- start_devised generates more output, now that it's being saved.
+- Better error messages from check_jsall, check_jspop, and check_jss.
+
+
+JavaScreen 5.6.0
+----------------
+(With DEVise 1.8.0.)
+
+* JS now sends 3D coordinate updates only when it really needs to
+(when it's a collaboration leader).
+
+* Changed configuration for "regular" and "wavelet" JavaScreens
+to kill Xvfb (since most of the JSPoP restarts these days seem
+to be because Xvfb gets goofed up).
+
+* Changed the subject of error emails from run_check to put the
+JS ID and machine name closer to the beginning, so they show up
+better.
+
+* Changed JavaScreen scripts from sh to bash because of problems
+at Osaka -- their sh didn't accept the -e test.
+
+
+JavaScreen 5.5.2
+----------------
+(With DEVise 1.7.19.)
+
+* Check_jspop now always deletes the check_connect.err.* file.
+
+* Improvements to JS usage statistics script: now deals with the fact
+that the logs seem to be in local time instead of GMT; error messages
+if parsing time fails; prints a warning if there's no JSPoP pid file.
+
+* Changed JavaScreen config files to work on teal instead of pumori.
+
+* Run_check now touches a file in /tmp/.X11-unix to make sure that
+directory stays "fresh" and doesn't get deleted.
+
+* Added dev_vis.loc for JS to use local sessions, etc., that
+come with standard DEVise distribution; DEVise.jspop script
+makes the "base" session temp directory.
+
+* Added config file for BMRB Italy mirror.
+
+* Added DEVise.jspop.loc that runs with the "local" sessions, etc.
+
+* Added scripts to report JS usage on teal.
+
+* We now exlude any host name *starting* with localhost from the
+"real" session open statistics.
+
+* Added new options to JavaScreen configuration so we don't have
+to rely on there being a /p/devise.
+
+* New config file for framenet.cs.wisc.edu (new server).
+
+* Added JS usage script for framenet.
+
+* Got DEVise/JavaScreen to work on basslet by turning off hangCheck.
+
+* More improvements to the JSPoP debug logging.
+
+* A possible fix to some of the JSPoP hangs we've been experiencing.
+
+* More fixes relating to the JSPoP hanging problems on pumori.
+
+* More diagnostic output.
+
+* More JSPoP reliability improvements.
+
+* JSPoP reliability improvements (no longer experimental).
+
+
+JavaScreen 5.5.1
+----------------
+(With DEVise 1.7.18?)
+
+* Much-improved JSPoP debug logging capabilities.
+
+* Removed DEViseJSLoader references from html files, jsa or jsb is now
+loaded directly (fixes "half-screen" problem seen on Windows).
+
+
+JavaScreen 5.5.0
+----------------
+
+* Restart_jspop gives an explicit error message if there's no bin2
+directory.
+
+* "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+
+* JSPoP prints version and arguments to log file at startup.
+
+* New version of JavaScreen usage stats script gets info from
+jspop.usage.* files, gives non-UW counts.
+
+* Fixed a collaboration bug (race condition could cause a wrong command
+to get sent to the devised).
+
+* Support for alternate colors for printing.
+
+* Changed most buttons in the JavaScreen GUI to menus (to save space
+in preparation for adding new functionality).
+
+* We now report the system's uptime on a JSPoP restart, so we can tell
+when restarts are triggered by system reboots.
+
+* Non-applet JS now continues without dialog if it can't get the animation
+symbols.
+
+* Fixed bug 889 (erroneous JSPoP restarts seen at BMRB because hostname
+lookup took an extremely long time).
+
+* (Temporary) Extra debug output to try to track down recent JSPoP
+restarts.
+
+
+JavaScreen 5.4.2
+----------------
+
+* Non-applet JS now continues without dialog if it can't get the animation
+symbols.
+
+* Fixed bug 889 (erroneous JSPoP restarts seen at BMRB because hostname
+lookup took an extremely long time).
+
+
+JavaScreen 5.4.0
+----------------
+
+* Restart_jspop gives an explicit error message if there's no bin2
+directory.
+
+* "Option" dialog now displays JSPoP and DEVise version, and JSPoP ID.
+
+* JSPoP prints version and arguments to log file at startup.
+
+* New version of JavaScreen usage stats script gets info from
+jspop.usage.* files, gives non-UW counts.
+
+* Fixed a collaboration bug (race condition could cause a wrong command
+to get sent to the devised).
+
+
+JavaScreen 5.3.0
+----------------
+(With DEVise 1.7.15?)
+
+* JSPoP (but not JSS or DEVised) now use a new CircularLog class, so the
+log file doesn't grow out of control.
+
+* Session opens are now logged in a separate JS usage log.
+
+* All sessions with any hidden directories in their paths are now
+hidden in the session lists returned to the JavaScreen (for  (for BMRB
+visualization server -- allows a session in a hidden directory to
+be opened by passing in the name, but then the user can't see any
+other sessions in that directory).
+
+* There is now a configuration option to kill Xvfb when killing the
+JSS (to deal with the problem that once in a while Xvfb gets itself
+goofed up and you cannot successfully restart the DEViseds unless you
+kill Xvfb first).
+
+* Fixed bug 872 (double append to path in JS open session dialog).
+
+* Minor improvements to the debug logs.
+
+* Added closeSession() and openSession() methods to the JS applet for
+Wavelet-IDR.
+
+* Added id, directory, and hostname header to JS usage stats.
+
+* JSPoP debug log improvements to try to track down the cause of some
+DEVised restarts.
+
+* JSPoP (but not JSS or DEVised) now use a new CircularLog class, so the
+log file doesn't grow out of control.
+
+* Session opens are now logged in a separate JS usage log.
+
+* Changed JavaScreen scripts so things work even if the user has
+CLASSPATH defined; restart_jspop gives warning if sleeping because
+of lock file.
+
+* jss_savepid *always* tries to start Xvfb, in case the file in
+/tmp/.X11-unix is there in error; got rid of path stuff in run_check.
+
+* Added closeSession() and openSession() wrapper methods to
+DEViseJSLoader (should have done that before).
+
+
+JavaScreen 5.2.2
+----------------
+
+* Fixed bugs relating to axis drawing with axis multiplication factors
+other than 1.
+
+* Made refreshAllData() and restartSession() methods in DEViseJSLoader,
+so that the Wavelet-IDR JavaScript code can call them.
+
+* Fixed problems with JSPoP restarts overlapping.
+
+* Script fixes so BMRB mirror sites can generate JS usage stats.
+
+* Various updates to the BMRB mirror site installation instructions,
+including info on setting up the JS usage statistics.
+
+* Fixed bug 866 (JSPoP hangs on bad collaboration name from follower).
+
+* Fixed bug 870 (JS follower crash goofs up leader also).
+
+* Made JS invisibility destruction timeout configurable; fixed some other
+problems with loading and re-loading the applet.
+
+* JavaScreen startup scripts now set DEVised fontkludge argument
+automatically.
+
+* Eliminated or reduced "Abrupt end of input stream reached" errors in
+the JSPoP on normal client exit.
