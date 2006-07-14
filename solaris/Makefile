@@ -15,6 +15,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.53  2005/12/06 20:09:17  wenger
+# Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+# be the end of the V1_7b0_br branch.)
+#
 # Revision 1.52.14.3  2005/10/22 19:11:15  wenger
 # Added 'release' target to makefiles to copy executables to the
 # "right" names.
@@ -215,6 +219,8 @@ all: date
 
 clean mostlyclean:
 	for i in $(MODULES); do echo -- $$i; cd $$i; make $@; cd ..; done
+	make dyn_lib_clean
+	make release_clean
 
 date:
 	cd generic; make CompDate.o
@@ -278,6 +284,9 @@ release:
 	cp -p generic/devise release_dir/devisec
 	cp -p generic/deviseb release_dir
 	cp -p generic/devised release_dir
+
+release_clean:
+	./clean_release
 
 strip:
 	- strip generic/generic generic/generic.static

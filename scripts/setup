@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.6  2006/07/14 14:45:10  wenger
+#  Changed release_std script to release to solsparc, linux_centos,
+#  and linux_tao10; fixed some paths in setup script.
+#
 #  Revision 1.5  2005/12/06 20:08:45  wenger
 #  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 #  be the end of the V1_7b0_br branch.)
@@ -122,6 +126,7 @@ if (-d solaris) then
   ln -s ../test/test_devise . >& /dev/null
   chmod 755 make_dyn_lib
   chmod 755 clean_dyn_lib
+  chmod 755 clean_release
   cd ..
 endif
 
@@ -132,6 +137,7 @@ if (-d solsparc) then
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../solaris/clean_release . >& /dev/null
   ln -s ../test/test_devise . >& /dev/null
   chmod 755 make_dyn_lib
   cd ..
@@ -144,6 +150,7 @@ if (-d sun) then
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../solaris/clean_release . >& /dev/null
   ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
@@ -155,6 +162,7 @@ if (-d hp) then
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../solaris/clean_release . >& /dev/null
   ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
@@ -166,6 +174,7 @@ if (-d sgi) then
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../solaris/clean_release . >& /dev/null
   ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
@@ -177,6 +186,7 @@ if (-d linux) then
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../solaris/clean_release . >& /dev/null
   ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
@@ -188,6 +198,7 @@ if (-d aix) then
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../solaris/clean_release . >& /dev/null
   ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
@@ -199,6 +210,7 @@ if (-d alpha_osf20) then
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../solaris/clean_release . >& /dev/null
   ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
@@ -210,6 +222,7 @@ if (-d pmax_ul43a) then
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
+  ln -s ../solaris/clean_release . >& /dev/null
   ln -s ../test/test_devise . >& /dev/null
   cd ..
 endif
