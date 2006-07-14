@@ -17,6 +17,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2005/12/06 20:08:45  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.4.2.9  2005/10/20 17:28:10  wenger
 #  More Tao 1.0 fixes.
 #
@@ -284,7 +288,7 @@ endif
 
 if (-d inquery) then
   cd inquery
-  setup
+  ./setup
   cd ..
 endif
 
@@ -296,6 +300,6 @@ endif
 
 if (-d dist/demo) then
   cd dist/demo
-  setup
+  ./setup
   cd ..
 endif

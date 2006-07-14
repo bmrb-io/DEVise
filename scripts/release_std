@@ -20,4 +20,4 @@
 
 ############################################################
 
-scripts/release /p/devise solsparc linux_rh72 linux_rh9
+scripts/release /p/devise solsparc linux_centos linux_tao10
