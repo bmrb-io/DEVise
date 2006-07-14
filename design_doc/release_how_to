@@ -16,25 +16,23 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
       if that's necessary).
 
 - Build/test DEVise.
-    - Build DEVise on all release architectures (linux/solsparc as of
-      2002-09-24).  (Build solsparc on sparc1.)
+    - Build DEVise on all release architectures (see scripts/release_std).
 
     - Make strip after building.
 
     - Test run the monolithic and client-server DEVise (dev, devcs) on all
       relevant architectures.
 
+    - Make the 'release' and 'dyn_lib' targets.
+
 - Build/test JavaScreen:
     - Build the JavaScreen (including jar files).
 
     - Run "autotest all" in the JS directory.
 
-- Make sure things are ready to go:
-    - Test run the DEVise release script (scripts/release_std) (ANSWER NO
-      WHEN ASKED IF YOU REALLY WANT TO DO IT).
-
-    - Test run the JavaScreen release script (scripts/release.js_std) (ANSWER
-      NO WHEN ASKED IF YOU REALLY WANT TO DO IT).
+- Test release:
+    - Run scripts/release_tst and scripts/release.js_tst and make sure
+      the software in the test release area works correctly.
 
 - Actual release:
     - Send email warning of the release.
@@ -47,19 +45,13 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
     - Send an email with the details of what changed since the last release.
 
-- JavaScreen install on pumori:
-    - Go to /p/devise/release/JavaScreen *on pumori*.
+- JavaScreen install on teal:
+    - Go to /p/devise/release/JavaScreen *on teal*, as the devise user.
 
     - Make sure Makefile.config points to the appropriate configuration file
       for the setup you want to install.
 
     - Run the jspop, etc., as test or tst2 and make sure things work.
-
-    - Also log onto pumori as devise, and to go
-      /local.pumori.1/devise/js.regular (assuming you want install the
-      "regular" setup).  (Go to /local.pumori.1/devise/js.wave for a
-      Wavelet-IDR installation or /local.pumori.1/devise/js.soil for
-      a soil science installation.)
 
     - Test run "make -f Makefile.setup install" in
       /p/devise/release/JavaScreen (ANSWER NO WHEN ASKED IF YOU REALLY WANT
@@ -75,18 +67,12 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 	  (kill_jsall).
 
 	- Possibly move the installed JavaScreen directory
-	  (/local.pumori.1/devise/js.regular or whatever) to a backup
+	  (/scratch/devise/js.regular or whatever) to a backup
 	  directory (so you can easily back out the installation if
 	  necessary).
 
-	- As devise, change the mode in the js.regular directory (or other
-	  appropriate directory) to 777.
-
         - In /p/devise/release/JavaScreen, run "make -f Makefile.setup install"
 	  for real.
-
-	- As devise, change the mode of js.regular (or other appropriate
-	  directory) back to 755.
 
 	- If doing a Wavelet-IDR install, edit the html files in
 	  /var/home/www/public/waveletidr on pumori, and change the cmdport
