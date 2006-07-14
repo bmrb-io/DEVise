@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2006
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  2005/12/06 20:08:44  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.12  2002/07/19 17:07:54  wenger
 #  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 #
@@ -103,6 +107,7 @@ if ($#argv < 2) then
   echo "    solsparc (Solaris/SPARC),"
   echo "    linux_rh72 (Linux (RedHat 7.2)/Intel)"
   echo "    linux_rh9 (Linux (RedHat 9)/Intel)"
+  echo "    linux_tao10 (Linux (Tao 1.0)/Intel)"
   echo "    linux_centos (Linux (CentOS)/Intel)"
   exit 1
 endif
@@ -123,8 +128,7 @@ foreach file ($files)
   endif
 end
 
-set archfiles = (generic/generic generic/devise generic/deviseb \
-    generic/devised dyn_lib)
+set archfiles = (release_dir dyn_lib)
 
 foreach arch ($arches)
   foreach file ($archfiles)
@@ -200,6 +204,9 @@ foreach arch ($arches)
   else if ($arch == linux_rh9) then
     set mainarch = i386_rh9
     set otherarches = i386_tao10
+  else if ($arch == linux_tao10) then
+    set mainarch = i386_tao10
+    set otherarches = 
   else if ($arch == linux_centos) then
     set mainarch = i386_cent40
     set otherarches = 
@@ -245,6 +252,8 @@ foreach arch ($arches)
     set mainarch = i386_rh72
   else if ($arch == linux_rh9) then
     set mainarch = i386_rh9
+  else if ($arch == linux_tao10) then
+    set mainarch = i386_tao10
   else if ($arch == linux_centos) then
     set mainarch = i386_cent40
   else if ($arch == solaris) then
@@ -253,10 +262,7 @@ foreach arch ($arches)
     set mainarch = sun4m_54
   endif
 
-  cp -p $arch/generic/generic $dest/bin_arch/$mainarch/devise
-  cp -p $arch/generic/devise $dest/bin_arch/$mainarch/devisec
-  cp -p $arch/generic/deviseb $dest/bin_arch/$mainarch
-  cp -p $arch/generic/devised $dest/bin_arch/$mainarch
+  cp -p $arch/release_dir/* $dest/bin_arch/$mainarch
   chmod a+rx $dest/bin_arch/$mainarch/*
 
   cp -p $arch/dyn_lib/* $dest/dyn_lib_arch/$mainarch
