@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2005
+#  (c) Copyright 1992-2006
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -80,24 +80,46 @@ cd $dist_home
 # tar cvfzhX $dest $dist_home/scripts/tar_exclude .
 # cd $dist_home
 
-echo "Generating linux-intel_rh72 distribution"
-set logfile = $dist_home/linux-intel_rh72.log
+# echo "Generating linux-intel_rh72 distribution"
+# set logfile = $dist_home/linux-intel_rh72.log
+# if (-f $logfile) then
+#  rm $logfile
+# endif
+# set src = linux-intel_rh72
+# set dest = $target/Devise-$version-linux-intel_rh72.tar.gz
+# cd $src
+# tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+# cd $dist_home
+
+# echo "Generating linux-intel_rh9 distribution"
+# set logfile = $dist_home/linux-intel_rh9.log
+# if (-f $logfile) then
+#  rm $logfile
+# endif
+# set src = linux-intel
+# set dest = $target/Devise-$version-linux-intel_rh9.tar.gz
+# cd $src
+# tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+# cd $dist_home
+
+echo "Generating linux-intel_tao10 distribution"
+set logfile = $dist_home/linux-intel_tao10.log
 if (-f $logfile) then
   rm $logfile
 endif
-set src = linux-intel_rh72
-set dest = $target/Devise-$version-linux-intel_rh72.tar.gz
+set src = linux-intel_tao10
+set dest = $target/Devise-$version-linux-intel_tao10.tar.gz
 cd $src
 tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
 cd $dist_home
 
-echo "Generating linux-intel_rh9 distribution"
-set logfile = $dist_home/linux-intel_rh9.log
+echo "Generating linux-intel_centos distribution"
+set logfile = $dist_home/linux-intel_centos.log
 if (-f $logfile) then
   rm $logfile
 endif
-set src = linux-intel
-set dest = $target/Devise-$version-linux-intel_rh9.tar.gz
+set src = linux-intel_centos
+set dest = $target/Devise-$version-linux-intel_centos.tar.gz
 cd $src
 tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
 cd $dist_home

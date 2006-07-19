@@ -12,8 +12,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the linux-intel architecture-specific
-#  subdirectory.
+#  Run this script to set up the distribution area.
 
 ############################################################
 
@@ -21,26 +20,13 @@
 
 ############################################################
 
-ln -s ../common/README .
-ln -s ../common/public .
-ln -s ../common/doc .
-ln -s ../common/lib .
-ln -s ../common/run .
-
-mkdir tcl
-cp -p -r /s/tcl/lib/tcl8.3/* tcl
-rm -rf tcl/encoding
-mkdir tk
-cp -p -r /s/tcl/lib/tk8.3/* tk
-rm -rf tk/demos tk/images
-
-mkdir bin
-cd bin
-../../scripts/setup.bin
-cd ..
-
-cd dyn_lib
-./setup
-cd ..
-
-mkdir cache
+\rm README
+\rm -rf bin/
+\rm -rf cache/
+\rm public
+\rm doc
+\rm lib
+\rm run
+\rm -rf tcl
+\rm -rf tk
+\rm dyn_lib/*.so*

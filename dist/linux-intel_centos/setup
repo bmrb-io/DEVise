@@ -12,7 +12,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the linux-intel architecture-specific
+#  Run this script to set up the linux-intel_centos architecture-specific
 #  subdirectory.
 
 ############################################################
