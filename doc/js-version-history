@@ -34,6 +34,8 @@ JavaScreen 5.6.0
 ----------------
 (With DEVise 1.8.0.)
 
+(Entries below here also included in 5.7.0.)
+
 * JS now sends 3D coordinate updates only when it really needs to
 (when it's a collaboration leader).
 

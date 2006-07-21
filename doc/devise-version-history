@@ -23,6 +23,8 @@ had a GUI for previously.
 DEVise 1.8.0
 ------------
 
+(Entries below here also included in 1.9.0.)
+
 * Somewhat kludgily fixed DEVise bug 917/919 (drill-down works
 poorly on fixed text symbols) -- expanded visual filter for
 query because we don't know the bounding box of the symbols.
