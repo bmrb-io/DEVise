@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.73  2006/07/11 18:32:59  wenger
+  Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
+
   Revision 1.72  2006/05/26 16:23:05  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -458,7 +461,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.0";
+static const char *	version = "1.9.1x1"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2006";
