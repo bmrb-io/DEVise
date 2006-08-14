@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.148  2006/06/23 19:52:42  wenger
+// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
+//
 // Revision 1.147  2006/05/26 16:22:18  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -607,6 +610,7 @@ import  java.net.*;
 import  java.awt.event.*;
 import  java.util.*;
 import  java.lang.*;
+import	org.jmol.viewer.JmolConstants;
 
 public class jsdevisec extends Panel
 {
@@ -2074,6 +2078,18 @@ class SettingDlg extends Dialog
         Label version = new Label(DEViseGlobals.VERSION);
         gridbag.setConstraints(version, c);
         add(version);
+
+        c.insets = new Insets(10, 10, 0, 0);
+        c.gridwidth = 1;
+        Label labelJmol1 = new Label("Jmol Version:");
+        gridbag.setConstraints(labelJmol1, c);
+        add(labelJmol1);
+
+        c.insets = new Insets(10, 0, 0, 5);
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        Label labelJmol2 = new Label(JmolConstants.version);
+        gridbag.setConstraints(labelJmol2, c);
+        add(labelJmol2);
 
         c.insets = new Insets(10, 10, 0, 0);
         c.gridwidth = 1;
