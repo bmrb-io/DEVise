@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2006/07/11 18:33:06  wenger
+// Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
+//
 // Revision 1.13  2006/05/26 16:50:55  wenger
 // Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
 // to the trunk.
@@ -1179,7 +1182,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.0.0";
+    public static final String PEP_CGI_VERSION = "11.0.1x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

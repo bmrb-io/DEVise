@@ -12,6 +12,8 @@ This visualization shows the 3D structure of the relevant molecule,
 in combination with all of the other data available for this entry.
 </p>
 
+<h3>Main Visualization Window</h3>
+
 <p>
 The visualization is laid out as shown below; the view names are
 referred to in the text.
@@ -24,10 +26,18 @@ referred to in the text.
 </p>
 
 <p>
-The <strong>structure (main) view</strong> shows the 3D structure.
-The sections of the structure belonging to residues selected in the
-data view are highlighted in green.  All other atoms are colored as
-follows:
+The <strong>structure (main) view</strong> shows the 3D structure
+(rendered by <a href="http://jmol.sourceforge.net/">Jmol</a>).
+Note that you can control many options in the structure view with the
+popup menus in that view and the Jmol menu in the JavaScreen menu bar.
+</p>
+
+<p>
+The residues and atoms selected in the <a href="#atom_select_tree">
+atom select tree</a> are highlighted in green.  You have the option
+of highlighting the atoms with a "selection halo" or by coloring the
+atoms themselves (Jmol->View->Highlight in the menu bar).
+Atoms not colored for highlighting are colored as follows:
 </p>
 
 <table border="1">
@@ -99,11 +109,15 @@ The <strong>atom color legend</strong> shows the colors for the
 the elements.
 </p>
 
+<a name="data_view"></a>
 <p>
 The <strong>data view</strong> shows one of the data sets available
-for this entry.  The cursor in this view selects residues according
-to the data values -- residues for which the red tip of the bar are
-enclosed in the cursor are selected.
+for this entry (selected by the <a href="#data_select_view">
+data select view</a>).  The cursor in this view selects residues according
+to the data values -- residues for which the red tip of the bar is
+enclosed in the cursor are selected.  By default, residues selected
+in this view are selected in the <a href="#atom_select_tree">
+atom select tree</a>.
 </p>
 
 <p>
@@ -113,37 +127,12 @@ view.  The cursor selects the range of residues shown in the data view
 change its size.
 </p>
 
+<a name="data_select_view"></a>
 <p>
 The <strong>data select view</strong> selects which data set is shown
 in the data view.  All available data sets for the current entry are
-shown in this view; by dragging the cursor you select which data set
-is shown.
-</p>
-
-<p>
-The <strong>atom select view</strong> selects which atoms are shown
-the structure view (backbone, backbone and side chains, or backbone,
-side chains, and hydrogens).
-</p>
-
-<p>
-The <strong>residue list view</strong> lists the residue number
-and amino acid for each residue.  Residues selected in the data
-view are highlighted in green in this view.  The cursor (which
-is linked to the cursor in the residue select view) selects which
-residues are shown in the structure view.
-</p>
-
-<p>
-The <strong>residue list scroll view</strong> scrolls the residue
-list view.  The cursor can be dragged to select the range of residues
-shown (note that this cursor is fixed-size).
-</p>
-
-<p>
-The <strong>residue select view</strong> selects which residues are
-shown in the structure view -- all residues within the cursor are
-shown.  This cursor is a variable-size cursor.
+listed in this view; by dragging the cursor you select which data set
+is shown in the data view.
 </p>
 
 <p>
@@ -151,6 +140,49 @@ The <strong>info view</strong> shows the BMRB accession number (and
 PDB ID, if relevant) and generation date of the visualization; show
 the view help (F1 key) to see the Peptide-CGI version and exact
 generation timestamp.
+</p>
+
+<h3>Structure Selection Window</h3>
+
+<p>
+Selection of which atoms to display and highlight is now done in a
+separate window, to allow more space in the main window to be used for
+the structure view and data view.
+</p>
+
+<p>
+<center>
+<img src="coordinate_vis_select.gif">
+</center>
+</p>
+
+<p>
+The <strong>structure type tree</strong> selects which atoms are shown
+the structure view by structure type (backbone, backbone and side chains,
+or backbone, side chains, and hydrogens).  Changing what's selected in
+this tree also changes what is displayed in the atom display tree and
+the atom select tree.
+</p>
+
+<p>
+The <strong>atom display tree</strong> selects which atoms are displayed
+in the structure view.  The atom display tree allows selection of the entire
+molecule, or parts of the molecule by residue and individual atom.
+Changing what's selected in this tree also changes what is displayed
+in the atom select tree.
+</p>
+
+<a name="atom_select_tree"></a>
+<p>
+The <strong>atom select tree</strong> selects which atoms are highlighted
+in the structure view.  The atom select tree allows selection of the entire
+molecule, or parts of the molecule by residue and individual atom.
+By default, the residues selected in the <a href="#data_view">
+data view</a> are also selected in the atom select tree.  You can change
+which residues and atoms are selected by manipulating the tree.  The
+Reset button sets the selection in the tree back to the residues selected
+in the
+data view.
 </p>
 
 <!-- $Id$ -->
