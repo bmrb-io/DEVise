@@ -1,5 +1,13 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.0.1
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Updated coordinate visualization help to match new version with
+Jmol and selection trees.
+
+
 Peptide-CGI 11.0.0
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
