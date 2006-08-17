@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2006
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -22,14 +22,16 @@
 setup peptide-cgi:
 	mkdir peptide-cgi; cd peptide-cgi; ln -s ../Makefile Makefile.dist; \
 	  make -f Makefile.dist peptide-cgi-setup; rm Makefile.dist
+	ln -s peptide-cgi peptide-cgi_`get_version`
 
 .PHONY : clean
 clean:
+	rm peptide-cgi_`get_version`
 	rm -rf peptide-cgi
 
 .PHONY : dist
 dist: peptide-cgi
-	tar cvfzh peptide-cgi_`get_version`.tgz peptide-cgi
+	tar cvfzh peptide-cgi_`get_version`.tgz peptide-cgi_`get_version`
 
 #  ========================================================================
 
@@ -43,6 +45,7 @@ peptide-cgi-setup:
 	ln -s ../../win_tar .
 	ln -s ../../view_entry .
 	ln -s ../../scripts .
+	ln -s ../../pep-version-history .
 	mkdir cgi-bin; cd cgi-bin; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist cgi-bin-setup; rm Makefile.dist
 	mkdir chem_info; cd chem_info; ln -s ../Makefile.dist .; \
