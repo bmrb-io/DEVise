@@ -7,6 +7,9 @@ Peptide-CGI 11.0.1
 * Updated coordinate visualization help to match new version with
 Jmol and selection trees.
 
+* Added a second summary HTML page that has direct links to all of
+the large-size visualizations.
+
 * Peptide-CGI version history is now included in the distribution
 tarball.
 

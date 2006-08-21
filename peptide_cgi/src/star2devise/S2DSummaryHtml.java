@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2005
+// (c) Copyright 2000-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -12,19 +12,25 @@
 
 // ------------------------------------------------------------------------
 
-// This class is used to generate the summary html file used to access
-// NMR-Star data with the JavaScreen.  The summary html file contains
+// This class is used to generate the summary html files used to access
+// NMR-Star data with the JavaScreen.  The summary html files contain
 // links to the individual html files for the data that's available for
 // a given entry.
 
-// Note: we may want to eventually change this class to use some kind of
-// template file to define most of the output html.
+// Most of the code that used to be in here got moved to S2DSummaryGen
+// to make it easier to generate two summary files (one for the "normal"
+// visualizations, one for the large visualizations).
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.4  2006/05/11 21:10:25  wenger
+// Fixed problems with some html page titles being based on the BMRB
+// ID rather than the name, etc.  Fixed test36 to work with new LACS
+// file names.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -310,12 +316,10 @@ public class S2DSummaryHtml {
     public static final String BMRB_ID_LABEL = "Related_BMRB_ID";
     public static final String PDB_ID_LABEL = "Related_PDB_ID";
 
-    private String _bmrbId;
     private String _htmlDir = null;
-    private String _name;
-    private String _longName;
 
-    private FileWriter _writer = null;
+    S2DSummaryHtmlNormal _normal;
+    S2DSummaryHtmlLarge _large;
 
     // This is set to true if any link is written to the summary html file;
     // if we don't write any links, a note is inserted that no data is
@@ -328,7 +332,21 @@ public class S2DSummaryHtml {
     //-------------------------------------------------------------------
     public static String fileName(String htmlDir, String name)
     {
-        return htmlDir + File.separator + name + S2DNames.SUMMARY_HTML_SUFFIX;
+	return fileName(htmlDir, name, "");
+    }
+
+    //-------------------------------------------------------------------
+    public static String fileName(String htmlDir, String name,
+      String sizeString)
+    {
+	return htmlDir + File.separator + fileNameShort(name, sizeString);
+    }
+
+    //-------------------------------------------------------------------
+    public static String fileNameShort(String name, String sizeString)
+    {
+	return name + S2DNames.SUMMARY_HTML_SUFFIX + sizeString +
+	  S2DNames.HTML_SUFFIX;
     }
 
     //-------------------------------------------------------------------
@@ -348,28 +366,18 @@ public class S2DSummaryHtml {
 	      name + ", " + accessionNum + ")");
 	}
 
-	_name = name;
-	_longName = longName;
-        _bmrbId = accessionNum;
 	_htmlDir = htmlDir;
 
-	try {
-	    _writer = S2DFileWriter.create(fileName(_htmlDir, _name));
+	_normal = new S2DSummaryHtmlNormal(name, longName, accessionNum,
+	  htmlDir, starFileName, systemName, frameTitle);
+	_large = new S2DSummaryHtmlLarge(name, longName, accessionNum,
+	  htmlDir, starFileName, systemName, frameTitle);
 
-	    _writer.write("<html>\n<head>\n<title>Summary for " +
-	      longName + "</title>\n</head>\n" +
-	      "<body bgcolor = white>\n\n");
+	_normal.setSibling(_large);
+	_large.setSibling(_normal);
 
-	    _writer.write("<h3>DEVise plots for " + longName + ":\n");
-	    _writer.write(systemName + "</h3>\n");
-	    _writer.write("Title: <tt>" + frameTitle + "</tt>\n");
-
-	} catch(IOException ex) {
-	    System.err.println("IOException opening or writing to summary " +
-	      "html file: " + ex.toString());
-	    throw new S2DError("Cannot create summary html file");
-	}
-
+	_normal.initialize(systemName, frameTitle);
+	_large.initialize(systemName, frameTitle);
     }
 
     //-------------------------------------------------------------------
@@ -394,54 +402,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.close()");
 	}
 
-	if (_writer != null) {
-	    try {
-		if (!_wroteLink) {
-		    _writer.write("<hr>\n");
-		    _writer.write("<p>No chemical shift data available " +
-		      "for this entry.\n");
-		}
-
-		_writer.write("<hr>\n");
-	        _writer.write("\n<p>" + VERSION_LABEL + ": {" +
-	          S2DMain.PEP_CGI_VERSION + "}</p>\n");
-	        _writer.write("<p>" + GEN_DATE_LABEL + ": {" +
-	          S2DMain.getTimestamp() + "}</p>\n\n");
-
-		// Save any related BMRB accession numbers.
-		if (bmrbIds != null) {
-	            _writer.write("\n");
-		    for (int index = 0; index < bmrbIds.size(); index++) {
-		        String id = (String)bmrbIds.elementAt(index);
-			if (!id.equals(_bmrbId)) {
-	                    _writer.write("<!-- " + BMRB_ID_LABEL + ": {" +
-			      id + "} -->\n");
-			}
-		    }
-		}
-
-		// Save any related PDB IDs.
-		if (pdbIds != null) {
-	            _writer.write("\n");
-		    for (int index = 0; index < pdbIds.size(); index++) {
-		        String id = (String)pdbIds.elementAt(index);
-	                _writer.write("<!-- " + PDB_ID_LABEL + ": {" + id +
-			  "} -->\n");
-		    }
-		}
-
-	        _writer.write("\n</body>\n");
-	        _writer.write("</html>\n");
-
-                _writer.close();
-	    } catch (IOException ex) {
-	        System.err.println("IOException writing to or closing " +
-		  "summary html file: " + ex.toString());
-	        throw new S2DError("Exception closing summary file");
-	    }
-
-	    _writer = null;
-        }
+	_normal.close(bmrbIds, pdbIds);
+	_large.close(bmrbIds, pdbIds);
     }
 
     //-------------------------------------------------------------------
@@ -453,17 +415,8 @@ public class S2DSummaryHtml {
 	      frameDetails + ")");
 	}
 
-	try {
-            _writer.write("\n<hr>\n");
-	    if (frameDetails != null) {
-	        _writer.write("<p><b>" + frameDetails + "</b>\n");
-	    }
-	    _writer.write("<ul>\n");
-	} catch (IOException ex) {
-	    System.err.println("IOException writing to summary file: " +
-	      ex.toString());
-	    throw new S2DError("Error writing to summary file");
-	}
+    	_normal.startFrame(frameDetails);
+    	_large.startFrame(frameDetails);
     }
 
     //-------------------------------------------------------------------
@@ -474,13 +427,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.endFrame()");
 	}
 
-	try {
-	    _writer.write("</ul>\n");
-	} catch (IOException ex) {
-	    System.err.println("IOException writing to summary file: " +
-	      ex.toString());
-	    throw new S2DError("Error writing to summary file");
-	}
+    	_normal.endFrame();
+    	_large.endFrame();
     }
 
     //-------------------------------------------------------------------
@@ -491,11 +439,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeDeltashift()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.DELTASHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Chemical Shift Delta</a> (" + count + " residues)\n");
-
-        _wroteLink = true;
+    	_normal.writeDeltashift(frameIndex, count);
+    	_large.writeDeltashift(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -506,11 +451,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeCSI()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.CSI_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Chemical Shift Index</a> (" + count + " residues)\n");
-
-        _wroteLink = true;
+    	_normal.writeCSI(frameIndex, count);
+    	_large.writeCSI(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -521,11 +463,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writePctAssign()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Percent Assigned Atoms</a> (" + count + " residues)\n");
-
-        _wroteLink = true;
+    	_normal.writePctAssign(frameIndex, count);
+    	_large.writePctAssign(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -536,11 +475,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeCoupling()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.COUPLING_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Coupling Constants</a> (" + count + " values)\n");
-
-        _wroteLink = true;
+	_normal.writeCoupling(frameIndex, count);
+	_large.writeCoupling(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -552,11 +488,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeRelax()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  suffix + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">" + name + "</a> (" + count + " values)\n");
-
-        _wroteLink = true;
+	_normal.writeRelax(suffix, name, frameIndex, count);
+	_large.writeRelax(suffix, name, frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -568,12 +501,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeHetNOE()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + name + "</a> (" + count +
-	  " values)\n");
-
-        _wroteLink = true;
+	_normal.writeHetNOE(name, frameIndex, count);
+	_large.writeHetNOE(name, frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -585,12 +514,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeAllShifts()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Chemical shift distributions by amino acid</a> (" + count +
-	  " shifts)\n");
-
-        _wroteLink = true;
+	_normal.writeAllShifts(frameIndex, count);
+	_large.writeAllShifts(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -602,12 +527,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeHvsNShifts()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Simulated 1H-15N backbone HSQC spectrum</a> (" + count +
-	  " peaks)\n");
-
-        _wroteLink = true;
+	_normal.writeHvsNShifts(frameIndex, count);
+	_large.writeHvsNShifts(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -619,17 +540,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeAtomicCoords()");
 	}
 
-	String linkStr = "3D structure";
-	if (pdbId != null) {
-	    linkStr += " from PDB ID " + pdbId;
-	}
-
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.ATOMIC_COORD_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">" + linkStr + "</a> (" + resCount + " residues, "
-	  + atomCount + " atoms)\n");
-
-        _wroteLink = true;
+	_normal.writeAtomicCoords(pdbId, frameIndex, resCount, atomCount);
+	_large.writeAtomicCoords(pdbId, frameIndex, resCount, atomCount);
     }
 
     //-------------------------------------------------------------------
@@ -643,28 +555,16 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeAtomicCoordsCGI()");
 	}
 
-        String path = S2DNames.CGI_URL;
-
-	String linkStr = "3D structure";
-	if (pdbId != null) {
-	    linkStr += " from PDB ID " + pdbId;
-	}
-
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  "&number=" + _name + "&do_pdb=2&coord_index=" + frameIndex +
-	  "\">" + linkStr +
-	  "</a> (note: processing may take several minutes)\n");
-
-        _wroteLink = true;
+	_normal.writeAtomicCoordsCGI(pdbId, frameIndex);
+	_large.writeAtomicCoordsCGI(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------
     public void writeTooManyAtoms(int atomCount, int maxAtoms)
       throws IOException
     {
-        _writer.write("<li>Structure has too many atoms (" + atomCount +
-	  ") for the software to handle at the present time (maximum is " +
-	  maxAtoms + ")\n");
+	_normal.writeTooManyAtoms(atomCount, maxAtoms);
+	_large.writeTooManyAtoms(atomCount, maxAtoms);
     }
 
     //-------------------------------------------------------------------
@@ -676,26 +576,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeChemShiftRef()");
 	}
 
-	// For Jafar we want more descriptive strings, since the section
-	// header info doesn't appear in the GUI.
-	String optStr = "";
-	if (fullNames) {
-	    optStr = "Chemical Shift Reference ";
-	}
-
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.CSR1_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">" + optStr + "Difference Histograms</a>\n");
-
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.CSR2_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">" + optStr + "Differences by Residue</a>\n");
-
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.CSR3_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Observed vs. Calculated Chemical Shift Values</a>\n");
-
-        _wroteLink = true;
+	_normal.writeChemShiftRef(frameIndex, fullNames);
+	_large.writeChemShiftRef(frameIndex, fullNames);
     }
 
     //-------------------------------------------------------------------
@@ -709,24 +591,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeChemShiftRefCGI()");
 	}
 
-        String path = S2DNames.CGI_URL;
-
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  "&number=" + _name + "&do_csr=2&coord_index=" + frameIndex +
-	  "&csr_index=1\">Difference Histograms</a> " +
-	  "(note: processing may take several minutes)\n");
-
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  "&number=" + _name + "&do_csr=2&coord_index=" + frameIndex +
-	  "&csr_index=2\">Differences by Residue</a> " +
-	  "(note: processing may take several minutes)\n");
-
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  "&number=" + _name + "&do_csr=2&coord_index=" + frameIndex +
-	  "&csr_index=3\">Observed vs. Calculated Chemical Shift Values</a> " +
-	  "(note: processing may take several minutes)\n");
-
-        _wroteLink = true;
+	_normal.writeChemShiftRefCGI(pdbId, frameIndex);
+	_large.writeChemShiftRefCGI(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -737,11 +603,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writePistachio()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.PISTACHIO_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Assignment figure of merit data</a>\n");
-
-        _wroteLink = true;
+	_normal.writePistachio(frameIndex);
+	_large.writePistachio(frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -752,11 +615,8 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeAmbiguity()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.AMBIGUITY_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Assigned chemical shift ambiguity code data</a>\n");
-
-        _wroteLink = true;
+	_normal.writeAmbiguity(frameIndex);
+	_large.writeAmbiguity(frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -768,28 +628,17 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.writeLACS()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.LACS_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">" + title + "</a>\n");
-
-        _wroteLink = true;
+	_normal.writeLACS(title, frameIndex);
+	_large.writeLACS(title, frameIndex);
     }
 
     //-------------------------------------------------------------------
     // Write a message to the summary html file.
     public void writeMessage(String msg, boolean horRule)
     {
-	try {
-	    if (horRule) {
-            	_writer.write("\n<hr>\n");
-	    }
-            _writer.write("<p><b>" + msg + "</b>\n");
-	} catch(IOException ex) {}
+	_normal.writeMessage(msg, horRule);
+	_large.writeMessage(msg, horRule);
     }
-
-    //===================================================================
-    // PRIVATE METHODS
-
 }
 
 // ========================================================================

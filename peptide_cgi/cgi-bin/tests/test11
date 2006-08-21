@@ -23,9 +23,16 @@ set files = ( data_dir/4096ac1.dat data_dir/4096g1.dat \
 	data_dir/4096n1.dat data_dir/4096t11.dat data_dir/4096t21.dat \
 	data_dir/4096t22.dat html_dir/4096ac1.html html_dir/4096g1.html \
 	html_dir/4096n1.html html_dir/4096t11.html html_dir/4096t21.html \
-	html_dir/4096t22.html html_dir/4096y.html session_dir/4096ac1.ds \
+	html_dir/4096t22.html html_dir/4096y.html html_dir/4096y_large.html \
+	session_dir/4096ac1.ds \
 	session_dir/4096acdd session_dir/4096g1.ds session_dir/4096n1.ds \
-	session_dir/4096t11.ds session_dir/4096t21.ds session_dir/4096t22.ds)
+	session_dir/4096t11.ds session_dir/4096t21.ds session_dir/4096t22.ds \
+	html_dir/4096ac1_large.html \
+	html_dir/4096g1_large.html \
+	html_dir/4096n1_large.html \
+	html_dir/4096t11_large.html \
+	html_dir/4096t21_large.html \
+	html_dir/4096t22_large.html )
 
 foreach file ($files)
   if (! -f $file) then

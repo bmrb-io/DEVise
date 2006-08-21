@@ -33,13 +33,20 @@ set files = (data_dir/vis_server/test7_outac1.dat \
 	html_dir/test7_outt21.html \
 	html_dir/test7_outt22.html \
 	html_dir/test7_outy.html \
+	html_dir/test7_outy_large.html \
 	session_dir/vis_server/test7_outac1.ds \
 	session_dir/vis_server/test7_outacdd \
 	session_dir/vis_server/test7_outg1.ds \
 	session_dir/vis_server/test7_outn1.ds \
 	session_dir/vis_server/test7_outt11.ds \
 	session_dir/vis_server/test7_outt21.ds \
-	session_dir/vis_server/test7_outt22.ds)
+	session_dir/vis_server/test7_outt22.ds \
+	html_dir/test7_outac1_large.html \
+	html_dir/test7_outg1_large.html \
+	html_dir/test7_outn1_large.html \
+	html_dir/test7_outt11_large.html \
+	html_dir/test7_outt21_large.html \
+	html_dir/test7_outt22_large.html)
 	
 foreach file ($files)
   if (! -f $file) then

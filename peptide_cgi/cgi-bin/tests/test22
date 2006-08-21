@@ -53,6 +53,7 @@ set files = (data_dir/4336as1.dat \
 	html_dir/4336hn1.html \
 	html_dir/4336p1.html \
 	html_dir/4336y.html \
+	html_dir/4336y_large.html \
 	session_dir/4336acdd \
 	session_dir/4336as1.ds \
 	session_dir/4336c1.ds \
@@ -64,7 +65,16 @@ set files = (data_dir/4336as1.dat \
 	session_dir/4336p1.ds \
 	data_dir/4336am1.dat \
 	html_dir/4336am1.html \
-	session_dir/4336am1.ds)
+	session_dir/4336am1.ds \
+	html_dir/4336am1_large.html \
+	html_dir/4336as1_large.html \
+	html_dir/4336c1_large.html \
+	html_dir/4336csr12_large.html \
+	html_dir/4336csr22_large.html \
+	html_dir/4336csr32_large.html \
+	html_dir/4336d1_large.html \
+	html_dir/4336hn1_large.html \
+	html_dir/4336p1_large.html)
 
 foreach file ($files)
   if (! -f $file) then

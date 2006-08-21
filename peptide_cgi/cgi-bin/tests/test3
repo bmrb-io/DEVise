@@ -22,7 +22,8 @@ set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
 	data_dir/4081p1.dat data_dir/4081rc1.dat data_dir/4081rl1.dat \
 	html_dir/4081ac1.html html_dir/4081as1.html html_dir/4081c1.html \
 	html_dir/4081d1.html html_dir/4081hn1.html html_dir/4081p1.html \
-	html_dir/4081y.html session_dir/4081ac1.ds session_dir/4081acdd \
+	html_dir/4081y.html html_dir/4081y_large.html \
+	session_dir/4081ac1.ds session_dir/4081acdd \
 	session_dir/4081as1.ds session_dir/4081c1.ds session_dir/4081d1.ds \
 	session_dir/4081hn1.ds session_dir/4081p1.ds \
 	data_dir/4081am1.dat \
@@ -47,7 +48,19 @@ set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
 	session_dir/4081lacs1.ds \
 	session_dir/4081lacs2.ds \
 	session_dir/4081lacs3.ds \
-	session_dir/4081lacs4.ds)
+	session_dir/4081lacs4.ds \
+	html_dir/4081ac1_large.html \
+	html_dir/4081ac2_large.html \
+	html_dir/4081am1_large.html \
+	html_dir/4081as1_large.html \
+	html_dir/4081c1_large.html \
+	html_dir/4081d1_large.html \
+	html_dir/4081hn1_large.html \
+	html_dir/4081lacs1_large.html \
+	html_dir/4081lacs2_large.html \
+	html_dir/4081lacs3_large.html \
+	html_dir/4081lacs4_large.html \
+	html_dir/4081p1_large.html)
 
 foreach file ($files)
   if (! -f $file) then

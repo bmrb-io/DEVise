@@ -33,12 +33,19 @@ set files = (data_dir/simple_pistachioas1.dat \
 	html_dir/simple_pistachiop1.html \
 	html_dir/simple_pistachiops1.html \
 	html_dir/simple_pistachioy.html \
+	html_dir/simple_pistachioy_large.html \
 	session_dir/simple_pistachioacdd \
 	session_dir/simple_pistachioas1.ds \
 	session_dir/simple_pistachiod1.ds \
 	session_dir/simple_pistachiohn1.ds \
 	session_dir/simple_pistachiop1.ds \
-	session_dir/simple_pistachiops1.ds)
+	session_dir/simple_pistachiops1.ds \
+	html_dir/simple_pistachioas1_large.html \
+	html_dir/simple_pistachioc1_large.html \
+	html_dir/simple_pistachiod1_large.html \
+	html_dir/simple_pistachiohn1_large.html \
+	html_dir/simple_pistachiop1_large.html \
+	html_dir/simple_pistachiops1_large.html)
 
 foreach file ($files)
   if (! -f $file) then

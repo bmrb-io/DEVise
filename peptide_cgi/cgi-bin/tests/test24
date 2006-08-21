@@ -55,6 +55,7 @@ set files = ( data_dir/6502am1.dat \
 	html_dir/6502ps1.html \
 	html_dir/6502ps2.html \
 	html_dir/6502y.html \
+	html_dir/6502y_large.html \
 	session_dir/6502acdd \
 	session_dir/6502am1.ds \
 	session_dir/6502am2.ds \
@@ -69,7 +70,21 @@ set files = ( data_dir/6502am1.dat \
 	session_dir/6502p1.ds \
 	session_dir/6502p2.ds \
 	session_dir/6502ps1.ds \
-	session_dir/6502ps2.ds )
+	session_dir/6502ps2.ds \
+	html_dir/6502am1_large.html \
+	html_dir/6502am2_large.html \
+	html_dir/6502as1_large.html \
+	html_dir/6502as2_large.html \
+	html_dir/6502c1_large.html \
+	html_dir/6502c2_large.html \
+	html_dir/6502d1_large.html \
+	html_dir/6502d2_large.html \
+	html_dir/6502hn1_large.html \
+	html_dir/6502hn2_large.html \
+	html_dir/6502p1_large.html \
+	html_dir/6502p2_large.html \
+	html_dir/6502ps1_large.html \
+	html_dir/6502ps2_large.html )
 
 foreach file ($files)
   if (! -f $file) then
