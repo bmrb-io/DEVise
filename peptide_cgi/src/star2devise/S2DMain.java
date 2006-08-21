@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2006/08/16 16:04:21  wenger
+// Updated coordinate visualization help to match new version with
+// Jmol and selection trees.
+//
 // Revision 1.14  2006/07/11 18:33:06  wenger
 // Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
 //
@@ -1182,7 +1186,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.0.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.0.1";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
