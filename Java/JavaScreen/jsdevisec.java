@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2005
+// (c) Copyright 1999-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.149  2006/08/14 18:04:50  wenger
+// Added Jmol version to the JavaScreen Option dialog.
+//
 // Revision 1.148  2006/06/23 19:52:42  wenger
 // Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
 //
@@ -66,6 +69,8 @@
 //
 // Revision 1.145  2003/01/13 19:23:45  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+// Revision 1.144.2.2  2002/07/26 16:46:21  sjlong
+// Added JTable formatting to the data that appears when the user shift clicks.
 //
 // Revision 1.144  2002/07/19 17:06:49  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
@@ -611,6 +616,8 @@ import  java.awt.event.*;
 import  java.util.*;
 import  java.lang.*;
 import	org.jmol.viewer.JmolConstants;
+import  javax.swing.*;
+import  javax.swing.table.*;
 
 public class jsdevisec extends Panel
 {
@@ -1543,11 +1550,11 @@ class RecordDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    private String[] attrs = null;
     private Button okButton;
     private boolean status = false; // true means this dialog is showing
 
-    public RecordDlg(Frame owner, boolean isCenterScreen, String[] data, jsdevisec what)
+    public RecordDlg(Frame owner, boolean isCenterScreen, String[] data,
+      jsdevisec what)
     {
         super(owner, true);
 	
@@ -1557,80 +1564,93 @@ class RecordDlg extends Dialog
 
         jsc.jsValues.debug.log("Creating RecordDlg");
 
-        attrs = data;
-
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Record Attributes");
 
-        int size = attrs.length - 1;
-        Label[] label = null;
-        if (size == 0) {
-            label = new Label[1];
-            label[0] = new Label("");
-        } else {
-            label = new Label[size];
-            for (int i = 0; i < size; i++) {
-                label[i] = new Label(attrs[i + 1]);
-            }
+	// -1 here because first item in data is the command name.
+        int attrCount = data.length - 1;
+	String[][] swingData = null;
+        if (attrCount > 0) {
+	    swingData = new String[attrCount][2];
+            for (int i = 0; i < attrCount; i++) {
+
+		// Split strings from DEVise into attribute and value.
+		String delimiter = ": ";
+		int tempIndex = data[i+1].indexOf(delimiter);
+		    
+		if (tempIndex != -1) {
+		    swingData[i][0] = new String(
+		      data[i+1].substring(0, tempIndex));
+		    swingData[i][1] = new String(
+		      data[i+1].substring(tempIndex + delimiter.length(),
+		      data[i+1].length()));
+		} else {
+		    swingData[i][0] = new String(data[i+1]);
+		    swingData[i][1] = new String("");
+		}
+	    }
         }
 
-        DEViseComponentPanel panel = new DEViseComponentPanel(label,
-	  DEViseComponentPanel.LAYOUT_VERTICAL, 0, jsc);
-        panel.setBackground(jsc.jsValues.uiglobals.textBg);
-        for (int i = 0; i < size; i++) {
-            label[i].setAlignment(Label.LEFT);
-            label[i].setBackground(jsc.jsValues.uiglobals.textBg);
-            label[i].setForeground(jsc.jsValues.uiglobals.textFg);
-	}
+	DEViseComponentPanel panel = null;
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
         GridBagConstraints  c = new GridBagConstraints();
         setLayout(gridbag);
-        //c.gridx = GridBagConstraints.RELATIVE;
-        //c.gridy = GridBagConstraints.RELATIVE;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        //c.gridheight = 1;
         c.fill = GridBagConstraints.NONE;
         c.insets = new Insets(10, 10, 10, 10);
-        //c.ipadx = 0;
-        //c.ipady = 0;
         c.anchor = GridBagConstraints.CENTER;
         c.weightx = 1.0;
         c.weighty = 1.0;
 
-        gridbag.setConstraints(panel, c);
-        add(panel);
         gridbag.setConstraints(okButton, c);
         add(okButton);
 
         pack();
 
-        Dimension panesize = panel.getPreferredSize();
-        if (panesize.width > (jsc.jsValues.uiglobals.maxScreenSize.width - 120) || panesize.height > (jsc.jsValues.uiglobals.maxScreenSize.height - 80)) {
-            if (panesize.width > (jsc.jsValues.uiglobals.maxScreenSize.width - 120)) {
-                panesize.width = jsc.jsValues.uiglobals.maxScreenSize.width - 120;
-            }
+	Dimension panesize;
 
-            if (panesize.height > (jsc.jsValues.uiglobals.maxScreenSize.height - 80)) {
-                panesize.height = jsc.jsValues.uiglobals.maxScreenSize.height - 80;
-            }
+        String[] columnNames = {"Attribute", "Value"};
+        JTable table = new JTable(swingData, columnNames);
 
-            ScrollPane pane = new ScrollPane();
-            pane.setSize(panesize);
-            pane.add(panel);
-
-            removeAll();
-            gridbag.setConstraints(pane, c);
-            add(pane);
-            gridbag.setConstraints(okButton, c);
-            add(okButton);
-
-            pack();
+        // Disable auto resizing
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+   
+        // Pack the second column of the table
+        int margin = 2;
+   
+        for (int column = 0; column < table.getColumnCount(); column++) {
+    	    packColumn(table, column, 2);
         }
+
+        panesize = table.getPreferredSize();
+        removeAll();
+	    
+        if(panesize.height > 600 || panesize.width > 800) {
+	    JScrollPane pane = new JScrollPane(table);
+	    if(panesize.height > 600) panesize.height = 600;
+	    if(panesize.width > 800) panesize.width = 800;
+	    pane.setPreferredSize(panesize);
+	    
+	    gridbag.setConstraints(pane, c);
+	    add(pane);
+        } else {
+	    JPanel jpanel = new JPanel(new BorderLayout());
+	    jpanel.add(table.getTableHeader(), BorderLayout.NORTH);
+	    jpanel.add(table, BorderLayout.CENTER);
+
+	    gridbag.setConstraints(jpanel, c);
+	    add(jpanel);
+        }
+
+        gridbag.setConstraints(okButton, c);
+        add(okButton);
+
+        pack();
 
         // reposition the window
         Point parentLoc = null;
@@ -1669,7 +1689,43 @@ class RecordDlg extends Dialog
 			}
                     }
                 });
+    }
 
+	    
+    
+    // Sets the preferred width of the visible column specified
+    // by vColIndex. The column will be just wide enough
+    // to show the column head and the widest cell in the column.
+    // margin pixels are added to the left and right
+    // (resulting in an additional width of 2*margin pixels).
+    private void packColumn(JTable table, int vColIndex, int margin) {
+        TableModel model = table.getModel();
+        DefaultTableColumnModel colModel = (DefaultTableColumnModel)table.getColumnModel();
+        TableColumn col = colModel.getColumn(vColIndex);
+        int width = 0;
+    
+        // Get width of column header
+        TableCellRenderer renderer = col.getHeaderRenderer();
+        if (renderer == null) {
+            renderer = table.getTableHeader().getDefaultRenderer();
+        }
+        Component comp = renderer.getTableCellRendererComponent(
+            table, col.getHeaderValue(), false, false, 0, 0);
+        width = comp.getPreferredSize().width;
+    
+        // Get maximum width of column data
+        for (int r=0; r<table.getRowCount(); r++) {
+            renderer = table.getCellRenderer(r, vColIndex);
+            comp = renderer.getTableCellRendererComponent(
+                table, table.getValueAt(r, vColIndex), false, false, r, vColIndex);
+            width = Math.max(width, comp.getPreferredSize().width);
+        }
+    
+        // Add margin
+        width += 2*margin;
+    
+        // Set the width
+        col.setPreferredWidth(width);
     }
 
     protected void processEvent(AWTEvent event)
