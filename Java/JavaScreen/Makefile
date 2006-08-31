@@ -72,7 +72,7 @@ client: *.java
 	    DEViseCanvas3DPlain.java DEViseGenericTree.java \
 	    DEViseGenericTreeNode.java \
 	    DEViseGenericTreeSelectionCallback.java DEViseJmolMenuButton.java \
-	    DEViseButton.java
+	    DEViseButton.java DEViseJSApplet.java DEViseJSTimer.java
 
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java

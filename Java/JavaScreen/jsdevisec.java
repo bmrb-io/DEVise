@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.150  2006/08/30 18:02:58  wenger
+// Merged in the "drill-down dialog uses JTable" changes from the 2.1
+// branch (1.144.2.1->1.144.2.2), with some cleanup.
+//
 // Revision 1.149  2006/08/14 18:04:50  wenger
 // Added Jmol version to the JavaScreen Option dialog.
 //
@@ -618,6 +622,8 @@ import  java.lang.*;
 import	org.jmol.viewer.JmolConstants;
 import  javax.swing.*;
 import  javax.swing.table.*;
+import  javax.swing.event.ListSelectionListener;
+import  javax.swing.event.ListSelectionEvent;
 
 public class jsdevisec extends Panel
 {
@@ -629,7 +635,7 @@ public class jsdevisec extends Panel
 
     public Frame parentFrame = null;
     private boolean isCenterScreen = false;
-    public Applet _parentApplet = null;
+    public DEViseJSApplet _parentApplet = null;
 
     public DEViseScreen jscreen = null;
 
@@ -736,7 +742,7 @@ public class jsdevisec extends Panel
 	    jsValues.debug._logger = new DEViseDebugLog(jsValues);
 	}
 
-	_parentApplet = parentApplet;
+	_parentApplet = (DEViseJSApplet)parentApplet;
 
         // frame might be null if JavaScreen is running inside a browser
         parentFrame = frame;
@@ -1101,6 +1107,16 @@ public class jsdevisec extends Panel
     public void hideJmol()
     {
         jmolButton.hide();
+    }
+
+    public void showDocument(String url)
+    {
+    	if (_parentApplet != null) {
+	     _parentApplet.showDocument(url, "_blank");
+	} else {
+	     System.out.println("Can't show document " + url +
+	       " because not an applet");
+	}
     }
 
     // print out message to debug window
@@ -1545,13 +1561,15 @@ public class jsdevisec extends Panel
 
 // ------------------------------------------------------------------------
 
-// Dialog to show record values.
+// Dialog to show record values (drill-down).
 class RecordDlg extends Dialog
 {
     jsdevisec jsc = null;
 
     private Button okButton;
     private boolean status = false; // true means this dialog is showing
+    private JTable table;
+    String[] urls;
 
     public RecordDlg(Frame owner, boolean isCenterScreen, String[] data,
       jsdevisec what)
@@ -1575,18 +1593,29 @@ class RecordDlg extends Dialog
 	String[][] swingData = null;
         if (attrCount > 0) {
 	    swingData = new String[attrCount][2];
+	    urls = new String[attrCount];
             for (int i = 0; i < attrCount; i++) {
 
 		// Split strings from DEVise into attribute and value.
 		String delimiter = ": ";
 		int tempIndex = data[i+1].indexOf(delimiter);
-		    
 		if (tempIndex != -1) {
 		    swingData[i][0] = new String(
 		      data[i+1].substring(0, tempIndex));
 		    swingData[i][1] = new String(
 		      data[i+1].substring(tempIndex + delimiter.length(),
 		      data[i+1].length()));
+
+		    // Figure out if this is a URL, save the "plain" URL
+		    // string if so.
+		    String urlMarker = "_url: ";
+		    if (data[i+1].indexOf(urlMarker) != -1) {
+		    	urls[i] = swingData[i][1];
+		    	swingData[i][1] = "<html><u>" + swingData[i][1] +
+			  "</u></html>";
+		    } else {
+		    	urls[i] = null;
+		    }
 		} else {
 		    swingData[i][0] = new String(data[i+1]);
 		    swingData[i][1] = new String("");
@@ -1615,10 +1644,22 @@ class RecordDlg extends Dialog
 	Dimension panesize;
 
         String[] columnNames = {"Attribute", "Value"};
-        JTable table = new JTable(swingData, columnNames);
+        table = new JTable(swingData, columnNames);
 
         // Disable auto resizing
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+
+	table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	table.setCellSelectionEnabled(true);
+
+	table.addMouseListener(new MouseAdapter() {
+	    public void mouseClicked(MouseEvent me) {
+		if (table.getSelectedColumn() == 1 &&
+		  urls[table.getSelectedRow()] != null) {
+		    jsc.showDocument(urls[table.getSelectedRow()]);
+		}
+	    }
+	});
    
         // Pack the second column of the table
         int margin = 2;

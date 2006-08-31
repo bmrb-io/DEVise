@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2005/12/06 20:00:19  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.11  2003/01/13 19:23:43  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -133,6 +137,7 @@ import  java.awt.*;
 import  java.net.*;
 import  java.io.*;
 import  java.util.*;
+import	java.applet.AppletContext;
 
 public abstract class DEViseJSApplet extends Applet
 {
@@ -212,6 +217,16 @@ public abstract class DEViseJSApplet extends Applet
             return;
         }
     }
+
+    public void showDocument(String url, String targetWindow)
+    {
+        try {
+            getAppletContext().showDocument(new URL(url), targetWindow);
+        } catch (MalformedURLException ex) {
+            System.err.println("Bad URL: " + ex);
+        }
+    }
+
 
     public void start()
     {
