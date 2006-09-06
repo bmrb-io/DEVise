@@ -22,7 +22,7 @@ rm -f $outfile
 set path = ($path .)
 # Note: csr_timeout is in front of the args passed in so whatever calls
 # this script can override the value set here.
-bin/java -Xmx128m -classpath ./s2d.jar -mx50000000 star2devise.S2DMain \
+bin/java -Xmx512m -classpath ./s2d.jar -mx50000000 star2devise.S2DMain \
   -csr_timeout 120 $* \
   -data_dir data_dir -session_dir session_dir -html_dir html_dir \
   -conn_file chem_info/connections >& $outfile

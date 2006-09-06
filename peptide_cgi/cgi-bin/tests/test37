@@ -1,0 +1,71 @@
+#! /bin/csh -f
+
+# Test 6011, because coordinate visualization seems to really use a lot
+# of memory (failed at BMRB when -Xmx was 128m).
+
+set result = 0
+
+rm -f */6011*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -bmrbid 6011 -do_pdb 2 -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMPTEMP
+set files = ( data_dir/6011ac1.dat \
+	data_dir/6011am1.dat \
+	data_dir/6011amac1.dat \
+	data_dir/6011as1.dat \
+	data_dir/6011c1.dat \
+	data_dir/6011d1.dat \
+	data_dir/6011hn1.dat \
+	data_dir/6011md.dat \
+	data_dir/6011p1.dat \
+	data_dir/6011rc1.dat \
+	data_dir/6011rl1.dat \
+	html_dir/6011ac1.html \
+	html_dir/6011ac1_large.html \
+	html_dir/6011am1.html \
+	html_dir/6011am1_large.html \
+	html_dir/6011as1.html \
+	html_dir/6011as1_large.html \
+	html_dir/6011c1.html \
+	html_dir/6011c1_large.html \
+	html_dir/6011d1.html \
+	html_dir/6011d1_large.html \
+	html_dir/6011hn1.html \
+	html_dir/6011hn1_large.html \
+	html_dir/6011p1.html \
+	html_dir/6011p1_large.html \
+	html_dir/6011y.html \
+	session_dir/6011ac1.ds \
+	session_dir/6011acdd \
+	session_dir/6011am1.ds \
+	session_dir/6011as1.ds \
+	session_dir/6011c1.ds \
+	session_dir/6011d1.ds \
+	session_dir/6011hn1.ds \
+	session_dir/6011p1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test37 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
