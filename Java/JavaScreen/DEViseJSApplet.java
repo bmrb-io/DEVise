@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2003
+// (c) Copyright 2000-2006
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2006/08/31 19:03:36  wenger
+// Added "clickable URL in JavaScreen drill-down dialog" feature -- if
+// attribute name ends in "_url" the JS considers it a URL.
+//
 // Revision 1.12  2005/12/06 20:00:19  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 // be the end of the V1_7b0_br branch.)
@@ -221,7 +225,17 @@ public abstract class DEViseJSApplet extends Applet
     public void showDocument(String url, String targetWindow)
     {
         try {
-            getAppletContext().showDocument(new URL(url), targetWindow);
+	    String newUrl = null;
+	    if (url.indexOf(":/") >= 0) {
+	    	// URL is absolute
+		newUrl = url;
+	    } else {
+	    	// URL is relative
+		String tmpBase = getDocumentBase().toString();
+		int lastSlash = tmpBase.lastIndexOf("/");
+		newUrl = tmpBase.substring(0, lastSlash) + "/" + url;
+	    }
+            getAppletContext().showDocument(new URL(newUrl), targetWindow);
         } catch (MalformedURLException ex) {
             System.err.println("Bad URL: " + ex);
         }
