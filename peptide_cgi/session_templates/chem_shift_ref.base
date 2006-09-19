@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: May 08 2006 15:48:08
-# DEVise version: 1.7.19
-# DEVise date: Dec  5 2005
+# file date: Sep 19 2006 10:36:32
+# DEVise version: 1.9.0
+# DEVise date: Jul 13 2006
 # DEVise endHeader
 
 # Session description
@@ -65,6 +65,9 @@ DEVise dteInsertCatalogEntry . {"csr1_layout" UNIXFILE csr1_layout.dat bmrb-layo
 
 # Create views
 
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {View 2} 0.000000 100.000000 0.000000 100.000000 37 0 0 37 0 37
 DEVise setLabel {View 2} 1 16 {Value() vs. Bucket}
 DEVise setViewStatistics {View 2} 00000000
@@ -81,7 +84,7 @@ DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
 DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 2} 0 0.9 0
+DEVise setHistogram {View 2} 7.5 8.5 0
 DEVise setCountMapping {View 2} 0 {} {} 0
 DEVise viewSetIsHighlight {View 2} 0
 DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
@@ -97,9 +100,14 @@ DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
 
 # View {View 1} uses mapping {4974csr1_1#csObs_vs_resID}
-DEVise create {view} {Scatter} {View 1} -2.167000 2.453000 0.000000 3.500000 37 0 0 37 0 37
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 1} -2.167000 30.284552 0.000000 3.500000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {Helix and Sheet}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -131,8 +139,13 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
 
 # View {View 4} uses mapping {4974csr1_1#atomName_vs_atomName}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {View 4} 1 16 {atom_name_link leader}
 DEVise setViewStatistics {View 4} 00000000
@@ -165,8 +178,13 @@ DEVise setLinkMultFact {View 4} {X} 1
 DEVise setLinkMultFact {View 4} {Y} 1
 DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 4} {1}
+DEVise viewSetUseJmol {View 4} {0}
 
 # View {View 5} uses mapping {4974csr1_1#atomName_vs_atomName 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 5} -1.000000 1.000000 6.500000 8.500000 37 0 0 37 0 37
 DEVise setLabel {View 5} 1 16 {helix_link leader}
 DEVise setViewStatistics {View 5} 00000000
@@ -199,8 +217,13 @@ DEVise setLinkMultFact {View 5} {X} 1
 DEVise setLinkMultFact {View 5} {Y} 1
 DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 5} {1}
+DEVise viewSetUseJmol {View 5} {0}
 
 # View {View 7} uses mapping {4974csr1_1#atomName_vs_atomName 4}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 7} -0.500000 4.500000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {View 7} 0 12 {none}
 DEVise setViewStatistics {View 7} 00000000
@@ -233,8 +256,13 @@ DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
 DEVise setGAttrLinkMode {View 7} 0
 DEVise setDoHomeOnVisLink {View 7} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 7} {1}
+DEVise viewSetUseJmol {View 7} {0}
 
 # View {View 8} uses mapping {.4974csr1src#Source_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 8} -50.000000 50.000000 -50.000000 50.000000 37 13 0 37 0 37
 DEVise setLabel {View 8} 0 12 {none}
 DEVise setViewStatistics {View 8} 00000000
@@ -267,9 +295,14 @@ DEVise setLinkMultFact {View 8} {X} 1
 DEVise setLinkMultFact {View 8} {Y} 1
 DEVise setGAttrLinkMode {View 8} 0
 DEVise setDoHomeOnVisLink {View 8} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 8} {1}
+DEVise viewSetUseJmol {View 8} {0}
 
 # View {View 9} uses mapping {.4974csr1_4#tolerance_vs_avgDiff}
-DEVise create {view} {Scatter} {View 9} -2.167000 2.453000 0.000000 3.500000 37 0 0 37 0 37
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 9} -2.167000 30.284552 0.000000 3.500000 37 0 0 37 0 37
 DEVise setLabel {View 9} 1 16 {Helix and Sheet}
 DEVise setViewStatistics {View 9} 00000000
 DEVise setViewDimensions {View 9} 2
@@ -301,8 +334,13 @@ DEVise setLinkMultFact {View 9} {X} 1
 DEVise setLinkMultFact {View 9} {Y} 1
 DEVise setGAttrLinkMode {View 9} 0
 DEVise setDoHomeOnVisLink {View 9} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 9} {1}
+DEVise viewSetUseJmol {View 9} {0}
 
 # View {View 11} uses mapping {.csr1_layout#y_vs_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 11} -0.500000 0.500000 0.000000 1.050000 0 0 0 37 0 37
 DEVise setLabel {View 11} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 11} 00000000
@@ -335,8 +373,13 @@ DEVise setLinkMultFact {View 11} {X} 1
 DEVise setLinkMultFact {View 11} {Y} 1
 DEVise setGAttrLinkMode {View 11} 0
 DEVise setDoHomeOnVisLink {View 11} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 11} {1}
+DEVise viewSetUseJmol {View 11} {0}
 
 # View {View 12} uses mapping {.label#Label_text_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 12} -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
 DEVise setLabel {View 12} 0 12 {none}
 DEVise setViewStatistics {View 12} 00000000
@@ -369,8 +412,13 @@ DEVise setLinkMultFact {View 12} {X} 1
 DEVise setLinkMultFact {View 12} {Y} 1
 DEVise setGAttrLinkMode {View 12} 0
 DEVise setDoHomeOnVisLink {View 12} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 12} {1}
+DEVise viewSetUseJmol {View 12} {0}
 
 # View {View 14} uses mapping {.label#Label_text_vs_recId 3}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 14} -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
 DEVise setLabel {View 14} 0 12 {none}
 DEVise setViewStatistics {View 14} 00000000
@@ -403,9 +451,14 @@ DEVise setLinkMultFact {View 14} {X} 1
 DEVise setLinkMultFact {View 14} {Y} 1
 DEVise setGAttrLinkMode {View 14} 0
 DEVise setDoHomeOnVisLink {View 14} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 14} {1}
+DEVise viewSetUseJmol {View 14} {0}
 
 # View {View 16} uses mapping {.4974csr1_4#tolerance_vs_avgDiff 3}
-DEVise create {view} {Scatter} {View 16} -2.167000 2.453000 0.000000 3.500000 37 0 0 37 0 37
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 16} -2.167000 30.284552 0.000000 3.500000 37 0 0 37 0 37
 DEVise setLabel {View 16} 1 16 {Helix and Sheet}
 DEVise setViewStatistics {View 16} 00000000
 DEVise setViewDimensions {View 16} 2
@@ -437,9 +490,14 @@ DEVise setLinkMultFact {View 16} {X} 1
 DEVise setLinkMultFact {View 16} {Y} 1
 DEVise setGAttrLinkMode {View 16} 0
 DEVise setDoHomeOnVisLink {View 16} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 16} {1}
+DEVise viewSetUseJmol {View 16} {0}
 
 # View {View 10} uses mapping {.4974csr1_4#tolerance_vs_avgDiff 5}
-DEVise create {view} {Scatter} {View 10} -2.167000 2.453000 0.000000 3.500000 37 0 0 37 0 37
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 10} -2.167000 30.284552 0.000000 3.500000 37 0 0 37 0 37
 DEVise setLabel {View 10} 1 16 {Helix and Sheet}
 DEVise setViewStatistics {View 10} 00000000
 DEVise setViewDimensions {View 10} 2
@@ -471,8 +529,13 @@ DEVise setLinkMultFact {View 10} {X} 1
 DEVise setLinkMultFact {View 10} {Y} 1
 DEVise setGAttrLinkMode {View 10} 0
 DEVise setDoHomeOnVisLink {View 10} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 10} {1}
+DEVise viewSetUseJmol {View 10} {0}
 
 # View {View 3} uses mapping {.4974csr1_1#csObs_vs_resID 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 3} -7.684000 8.913000 0.000000 3.500000 37 0 0 37 0 37
 DEVise setLabel {View 3} 1 16 {All Residues}
 DEVise setViewStatistics {View 3} 00000000
@@ -505,8 +568,13 @@ DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
 
 # View {View 13} uses mapping {.4974csr1src#Source_vs_recId 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 13} -50.000000 50.000000 -50.000000 50.000000 37 13 0 37 0 37
 DEVise setLabel {View 13} 0 12 {none}
 DEVise setViewStatistics {View 13} 00000000
@@ -540,6 +608,8 @@ DEVise setLinkMultFact {View 13} {X} 1
 DEVise setLinkMultFact {View 13} {Y} 1
 DEVise setGAttrLinkMode {View 13} 0
 DEVise setDoHomeOnVisLink {View 13} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 13} {1}
+DEVise viewSetUseJmol {View 13} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {csObs_vs_resID}
@@ -551,87 +621,129 @@ DEVise createMappingClass {Label_text_vs_recId}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 4974csr1_1#csObs_vs_resID {} {$diff} 0 {} 6 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#csObs_vs_resID} 1
 DEVise setMappingColors {4974csr1_1#csObs_vs_resID} {6} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 {4974csr1_1#csObs_vs_resID 2} {} {$diff} 0 {} 6 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#csObs_vs_resID 2} 1
 DEVise setMappingColors {4974csr1_1#csObs_vs_resID 2} {6} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 .4974csr1_1#csObs_vs_resID {} {$diff} 0 {} 6 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#csObs_vs_resID} 1
 DEVise setMappingColors {.4974csr1_1#csObs_vs_resID} {6} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 {.4974csr1_1#csObs_vs_resID 2} {} {$diff} 0 {} 6 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#csObs_vs_resID 2} 1
 DEVise setMappingColors {.4974csr1_1#csObs_vs_resID 2} {6} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 4974csr1_1#atomName_vs_atomName {} {$atomName} 0 {} 8 12 0 0 16 {$atomName} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName} 1
 DEVise setMappingColors {4974csr1_1#atomName_vs_atomName} {8} {8} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 {4974csr1_1#atomName_vs_atomName 2} {} 0 {$secondary} {} 8 12 0 0 16 {$secondary} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName 2} 1
 DEVise setMappingColors {4974csr1_1#atomName_vs_atomName 2} {8} {8} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 {4974csr1_1#atomName_vs_atomName 3} {} 0 {$secondary} {} 8 12 0 0 16 {$secondary} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName 3} 1
 DEVise setMappingColors {4974csr1_1#atomName_vs_atomName 3} {8} {8} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 {4974csr1_1#atomName_vs_atomName 4} {} {$atomName} 0 {} 36 12 0 0 16 {$atomName} {} 0 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName 4} 1
 DEVise setMappingColors {4974csr1_1#atomName_vs_atomName 4} {36} {9} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Source_vs_recId} .4974csr1src .4974csr1src#Source_vs_recId {} 0 0 {} 37 12 0 0 16 {$Source} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1src#Source_vs_recId} 1
 DEVise setMappingColors {.4974csr1src#Source_vs_recId} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Source_vs_recId} .4974csr1src {.4974csr1src#Source_vs_recId 2} {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1src#Source_vs_recId 2} 1
 DEVise setMappingColors {.4974csr1src#Source_vs_recId 2} {37} {0} {0}
 
-DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 .4974csr1_4#tolerance_vs_avgDiff {} {$avgDiff} 0.5 {} 17 1 0 0 2 {$tolerance*2} {} {$atomName} {$secondary} {} {} {} {} {} {} {} {} {} {} {}
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 .4974csr1_4#tolerance_vs_avgDiff {} {$avgDiff} 0.5 {} 17 1 0 0 2 {$tolerance*2} {} {$atomName} 0 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_4#tolerance_vs_avgDiff} 1
 DEVise setMappingColors {.4974csr1_4#tolerance_vs_avgDiff} {17} {25} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 {.4974csr1_4#tolerance_vs_avgDiff 2} {} {$avgDiff} 100 {} 17 1 0 0 2 {$tolerance*2} {} {$atomName} {$secondary} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_4#tolerance_vs_avgDiff 2} 1
 DEVise setMappingColors {.4974csr1_4#tolerance_vs_avgDiff 2} {17} {25} {37}
 
-DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 {.4974csr1_4#tolerance_vs_avgDiff 3} {} {$avgDiff} 0.5 {} 33 1 0 0 2 0 {} {$atomName} {$secondary} 4 {} {} {} {} {} {} {} {} {} {}
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 {.4974csr1_4#tolerance_vs_avgDiff 3} {} {$avgDiff} 0.5 {} 33 1 0 0 2 0 {} {$atomName} 0 4 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_4#tolerance_vs_avgDiff 3} 1
 DEVise setMappingColors {.4974csr1_4#tolerance_vs_avgDiff 3} {33} {33} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 {.4974csr1_4#tolerance_vs_avgDiff 4} {} {$avgDiff} 100 {} 33 1 0 0 2 0 {} {$atomName} {$secondary} 4 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_4#tolerance_vs_avgDiff 4} 1
 DEVise setMappingColors {.4974csr1_4#tolerance_vs_avgDiff 4} {33} {33} {0}
 
-DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 {.4974csr1_4#tolerance_vs_avgDiff 5} {} {$avgDiff} 0.5 {} 17 1 -1 0 2 {$tolerance*2} {} {$atomName} {$secondary} 0 {} {} {} {} {} {} {} {} {} {}
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 {.4974csr1_4#tolerance_vs_avgDiff 5} {} {$avgDiff} 0.5 {} 17 1 -1 0 2 {$tolerance*2} {} {$atomName} 0 0 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_4#tolerance_vs_avgDiff 5} 1
 DEVise setMappingColors {.4974csr1_4#tolerance_vs_avgDiff 5} {17} {25} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .csr1_layout .csr1_layout#y_vs_x {} {$x} {$y} {$z} {} 0.99 0 0 17 {$view} {$width} {$height} {} {$pile} {} {} {} {} {} {$pile} {} {} {} {}
 DEVise setPixelWidth {.csr1_layout#y_vs_x} 1
 DEVise setMappingColors {.csr1_layout#y_vs_x} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Chem shift difference, ppm"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 37 12 0 0 16 {"Chem shift difference, ppm"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 2} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 3} {} 0 0 {} 37 12 0 90 16 {"Frequency"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 3} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 3} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 4} {} 0 0 {} 37 12 0 90 16 {"Frequency"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 4} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 4} {37} {0} {0}
 
 # Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn1 0.746094 0.502930 0.168750 0.284180 1 0
 DEVise create {window} {TileLayout} DEViseWn5 0.093750 0.204102 0.500000 0.596680 0 0
 
@@ -813,7 +925,6 @@ DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {0} {0} {100} {100} 0
 
 DEVise clearViewHistory {View 1}
-DEVise insertViewHistory {View 1} {-7.684} {0} {5.639} {3} 0
 DEVise insertViewHistory {View 1} {-0.925} {0} {0.876} {3} 0
 DEVise insertViewHistory {View 1} {-0.925} {0} {0.876} {3.5} 0
 DEVise insertViewHistory {View 1} {-0.925} {0} {0.876} {3.5} 0
@@ -833,6 +944,7 @@ DEVise insertViewHistory {View 1} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 1} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 1} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 1} {-2.167} {0} {2.453} {3.5} 0
+DEVise insertViewHistory {View 1} {-2.167} {0} {30.2846} {3.5} 0
 
 DEVise clearViewHistory {View 4}
 DEVise insertViewHistory {View 4} {2.5} {-0.5} {3.5} {0.5} 0
@@ -881,7 +993,6 @@ DEVise insertViewHistory {View 8} {-50} {0} {50} {100} 0
 DEVise insertViewHistory {View 8} {-50} {-50} {50} {50} 0
 
 DEVise clearViewHistory {View 9}
-DEVise insertViewHistory {View 9} {-0.925} {0} {0.876} {3} 0
 DEVise insertViewHistory {View 9} {-0.925} {0} {0.876} {3.5} 0
 DEVise insertViewHistory {View 9} {-0.925} {0} {0.876} {3.5} 0
 DEVise insertViewHistory {View 9} {-2.167} {0} {2.453} {3.5} 0
@@ -901,6 +1012,7 @@ DEVise insertViewHistory {View 9} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 9} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 9} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 9} {-2.167} {0} {2.453} {3.5} 0
+DEVise insertViewHistory {View 9} {-2.167} {0} {30.2846} {3.5} 0
 
 DEVise clearViewHistory {View 11}
 DEVise insertViewHistory {View 11} {0} {0} {1} {1} 0
@@ -934,7 +1046,6 @@ DEVise clearViewHistory {View 14}
 DEVise insertViewHistory {View 14} {-1} {-1} {1} {1} 0
 
 DEVise clearViewHistory {View 16}
-DEVise insertViewHistory {View 16} {-0.925} {0} {0.876} {3} 0
 DEVise insertViewHistory {View 16} {-0.925} {0} {0.876} {3.5} 0
 DEVise insertViewHistory {View 16} {-0.925} {0} {0.876} {3.5} 0
 DEVise insertViewHistory {View 16} {-2.167} {0} {2.453} {3.5} 0
@@ -954,9 +1065,9 @@ DEVise insertViewHistory {View 16} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 16} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 16} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 16} {-2.167} {0} {2.453} {3.5} 0
+DEVise insertViewHistory {View 16} {-2.167} {0} {30.2846} {3.5} 0
 
 DEVise clearViewHistory {View 10}
-DEVise insertViewHistory {View 10} {-0.925} {0} {0.876} {3} 0
 DEVise insertViewHistory {View 10} {-0.925} {0} {0.876} {3.5} 0
 DEVise insertViewHistory {View 10} {-0.925} {0} {0.876} {3.5} 0
 DEVise insertViewHistory {View 10} {-2.167} {0} {2.453} {3.5} 0
@@ -976,6 +1087,7 @@ DEVise insertViewHistory {View 10} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 10} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 10} {-2.167} {0} {2.453} {3.5} 0
 DEVise insertViewHistory {View 10} {-2.167} {0} {2.453} {3.5} 0
+DEVise insertViewHistory {View 10} {-2.167} {0} {30.2846} {3.5} 0
 
 DEVise clearViewHistory {View 3}
 DEVise insertViewHistory {View 3} {-2.167} {0} {2.453} {3.5} 0
@@ -983,6 +1095,7 @@ DEVise insertViewHistory {View 3} {-4.308} {0} {2.498} {3.5} 0
 DEVise insertViewHistory {View 3} {-2.142} {0} {3.307} {3.5} 0
 DEVise insertViewHistory {View 3} {-7.684} {0} {5.639} {3.5} 0
 DEVise insertViewHistory {View 3} {-4.308} {0} {2.498} {3.5} 0
+DEVise insertViewHistory {View 3} {-7.684} {0} {8.913} {3.5} 0
 DEVise insertViewHistory {View 3} {-7.684} {0} {8.913} {3.5} 0
 DEVise insertViewHistory {View 3} {-7.684} {0} {8.913} {3.5} 0
 

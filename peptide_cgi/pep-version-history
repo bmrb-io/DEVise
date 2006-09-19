@@ -1,5 +1,17 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.0.2
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Fixed a bug in the chem shift reference 1 visualization that caused
+the average and tolerance bars to be drawn at the wrong location.
+
+* Increased JVM memory to 512m because that's what it took to get 6011/
+1RJJ coordinate vis processing to work at BMRB (marlin); added test37,
+which tests 6011.
+
+
 Peptide-CGI 11.0.1
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)

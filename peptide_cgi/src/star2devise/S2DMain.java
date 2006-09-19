@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2006/09/06 16:55:00  wenger
+// Increased JVM memory to 512m because that's what it took to get 6011/
+// 1RJJ coordinate vis processing to work at BMRB (marlin); added test37,
+// which tests 6011.
+//
 // Revision 1.16  2006/08/21 21:21:16  wenger
 // Changed version to 11.0.1.
 //
@@ -1189,7 +1194,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.0.2x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.0.2x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
