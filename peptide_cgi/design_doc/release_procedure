@@ -1,0 +1,28 @@
+		Peptide-CGI Release Procedure
+	$Id$
+
+Note: this is pretty preliminary right now.
+
+- Go through the testing procedure in "testing".
+
+- Get rid of "x" part of version and recompile.
+
+- Install on teal, run test_all.
+
+- Check at least one visualization on teal.
+
+- Tag the sources.
+
+- Archive the sources.
+
+- Make the distribution tarball.
+
+- Untar the distribution tarball, link the right Makefile.config.*, do
+  a 'make setup testsetup', and finally do a test_all in cgi-bin.
+
+- Put the distribution tarball into the appropriate /p/devise/ftp/Devise-*
+  directory.
+
+- Announce the release to BMRB and mirrors.
+
+- Update /scratch/wenger/peptide_cgi_test and recompile.
