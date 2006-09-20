@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2006/09/19 22:05:07  wenger
+// Fixed a bug in the chem shift reference 1 visualization -- some of
+// the views had 'shape attr 3'/'X Offset' set to a non-zero value
+// (I think because of an old GAttr link) -- this caused the average
+// and tolerance bars to be drawn at the wrong location when run with
+// DEVise 1.9.x.  (I think in previous DEVise versions 'shape attr 3'
+// had no effect on drawing Bars.)
+//
 // Revision 1.17  2006/09/06 16:55:00  wenger
 // Increased JVM memory to 512m because that's what it took to get 6011/
 // 1RJJ coordinate vis processing to work at BMRB (marlin); added test37,
@@ -1194,7 +1202,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.0.2x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.0.2x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

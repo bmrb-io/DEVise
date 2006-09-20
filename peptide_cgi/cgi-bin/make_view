@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2002
+#  (c) Copyright 1999-2006
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -55,7 +55,7 @@ $coord_index = $query->param('coord_index');
 $do_pdb = $query->param('do_pdb');
 $do_csr = $query->param('do_csr');
 $csr_index = $query->param('csr_index');
-my $size_str = $query->param('size_str');
+my $size_str = $query->param('size_str') || '';
 
 print "  acc_num = $acc_num\n" if ($debug);
 print "  pdbid = $pdbid\n" if ($debug);
@@ -94,8 +94,8 @@ my $result = `$cmd`;
 chomp $result;
 if ($result ne "OK") {
   my ($tmpmsg);
-  $tmpmsg = "Unable to process data for accession number " . $acc_num .
-    ".\n<pre>\n" . `cat tmp/s2d.out` . "</pre>\n";
+  $tmpmsg = "<p>Unable to process data for accession number " . $acc_num .
+    ".</p>\n<pre>\n" . `cat tmp/s2d.out` . "</pre>\n";
   dienice($tmpmsg);
 }
 
@@ -112,7 +112,7 @@ sub dienice {
   print $query->header;
   print $query->start_html;
   print "<h2>CGI Error</h2>\n";
-  print "$errmsg<p>\n";
+  print "$errmsg\n";
   print $query->end_html;
   exit;
 }
