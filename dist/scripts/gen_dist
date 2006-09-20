@@ -34,9 +34,16 @@ else
   set version = $<
 endif
 
+set tested_suffix = "_not_tested"
+echo -n "Have you tested the BMRB visualizations as documented in peptide-cgi/design_doc/testing? (y/n) "
+set answer = $<
+if ($answer == y || $answer == Y) then
+  set tested_suffix = ""
+endif
+
 set dist_home = `pwd`
 
-set target = $ftp_dir/Devise-$version
+set target = $ftp_dir/Devise-$version$tested_suffix
 
 if ( -d $target) then
   echo "Distribution for DEVise version $version already exists."

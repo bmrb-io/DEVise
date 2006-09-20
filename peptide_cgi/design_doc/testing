@@ -1,0 +1,70 @@
+			Testing Peptide-CGI
+		$Id$
+
+This testing must be done before any release of Peptide-CGI or DEVise/
+JavaScreen.
+
+The following testing steps must be done:
+
+- Run make_view manually in cgi-bin.  Make sure it doesn't generate any
+  error messages.
+
+- Run test_all in cgi-bin.  Make sure all tests succeed.
+
+- Install the relevant software on teal.
+
+- Run test_all in /var/home/www/public/cgi-bin/bmrb on teal.  All tests
+  except for test32 and test34 must succeed.  (Test32 and test34 can fail
+  because they test for viewing unreleased entries, and the CGI directory
+  on teal isn't set up for that.)
+
+- Access the visualizations on teal via the following URL:
+    http://devise.cs.wisc.edu/devise/bmrb/bmrb_select.html
+
+- View the following visualizations for the entry 4267 and MAKE SURE THEY
+  ARE CORRECT:
+    - Chemical Shift Delta
+    - Chemical Shift Index
+    - Percent Assigned Atoms
+    - Chemical shift distributions by amino acid
+    - Simulated 1H-15N backbone HSQC spectrum
+    - Assigned chemical shift ambiguity code data
+    - T1 Relaxation (750 MHz)
+    - Heteronuclear NOE (750 MHz) NE HE
+    - Coupling constants
+    - 3D structure from PDB ID 1NGL
+
+- Run 'tests/test15 -noleech' in /var/home/www/public/cgi-bin/bmrb on teal.
+
+- View the following visualizations for the entry 4317 and MAKE SURE THEY
+  ARE CORRECT:
+    - Difference Histograms
+    - Differences by Residue
+    - Observed vs. Calculated Chemical Shift Values
+
+- Run tests/test3 in /var/home/www/public/cgi-bin/bmrb on teal.
+
+- View the following visualizations for the entry 4081 and MAKE SURE THEY
+  ARE CORRECT:
+    - LACS Data (CA vs. CA-CB)
+    - LACS Data (CB vs. CA-CB)
+    - LACS Data (HA vs. CA-CB)
+    - LACS Data (CO vs. CA-CB)
+
+- View the following visualizations for the entry 4096 and MAKE SURE THEY
+  ARE CORRECT:
+    - 3D structure
+
+- Run tests/test19 in /var/home/www/public/cgi-bin/bmrb on teal.
+
+- View the following visualizations for the entry 6318 and MAKE SURE THEY
+  ARE CORRECT:
+    - Assignment figure of merit data
+    - Follow the "Larger view" link and make sure it shows up correctly.
+
+- View the following visualizations for the entry 4001 USING THE LARGE
+  VISUALIZATIONS SUMMARY PAGE and MAKE SURE THEY ARE CORRECT:
+    - 3D structure from PDB ID 1DT7 [also make sure this shows up in
+      the large size]
+    - Chemical shift distributions by amino acid (from the first save
+      frame) [also make sure this shows up in the large size]

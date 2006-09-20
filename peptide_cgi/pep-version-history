@@ -11,6 +11,8 @@ the average and tolerance bars to be drawn at the wrong location.
 1RJJ coordinate vis processing to work at BMRB (marlin); added test37,
 which tests 6011.
 
+* Added testing document, and reminders to distribution script.
+
 
 Peptide-CGI 11.0.1
 ------------------
