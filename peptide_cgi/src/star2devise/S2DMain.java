@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2006/09/20 14:50:45  wenger
+// Made some minor fixes to make_view.
+//
 // Revision 1.18  2006/09/19 22:05:07  wenger
 // Fixed a bug in the chem shift reference 1 visualization -- some of
 // the views had 'shape attr 3'/'X Offset' set to a non-zero value
@@ -1202,7 +1205,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.0.2x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.0.2";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

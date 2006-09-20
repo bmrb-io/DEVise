@@ -64,7 +64,16 @@ The following testing steps must be done:
 
 - View the following visualizations for the entry 4001 USING THE LARGE
   VISUALIZATIONS SUMMARY PAGE and MAKE SURE THEY ARE CORRECT:
-    - 3D structure from PDB ID 1DT7 [also make sure this shows up in
+    - 3D structure from PDB ID 1QLK [also make sure this shows up in
       the large size]
     - Chemical shift distributions by amino acid (from the first save
       frame) [also make sure this shows up in the large size]
+
+
+* Things to do to this document:
+
+- Find an ambiguity code visualization that has more interesting values
+  than 4267 does.
+
+- Find a chem shift reference test that has all secondary structures (helix,
+  sheet, and other).
