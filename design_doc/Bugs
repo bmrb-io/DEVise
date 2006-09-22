@@ -3927,6 +3927,15 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			to change the visual filter of one of the views first).
 			(wenger)
 
+923 9/22/06	OPEN	If a view is excluded from printing, but has "send
+			GData to JS" set to true, DEVise still sends the
+			associated GData, which of course confuses the JS.
+			(wenger)
+
+924 9/22/06	OPEN	If a view is excluded from printing, but has a
+			cursor in it, DEVise still tells the JS to draw
+			the cursor, which of course confuses it. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
