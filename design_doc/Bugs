@@ -3936,6 +3936,8 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			cursor in it, DEVise still tells the JS to draw
 			the cursor, which of course confuses it. (wenger)
 
+925 9/22/06	OPEN	Print modes don't work for Jmol view. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
