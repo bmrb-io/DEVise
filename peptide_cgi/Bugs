@@ -221,6 +221,11 @@ Num Date        Status  Description
 			Eldon's email of 060113). (wenger)
 			(Fixed by wenger, 1/24/06.)
 
+050 9/22/06	OPEN	The title of specific html pages should be based
+			on the *long* name instead of the short/regular
+			name (e.g., for 4096 it should be 4096/4038 instead
+			of just 4096). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
