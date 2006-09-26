@@ -4,7 +4,16 @@ JavaScreen 5.7.1
 ----------------
 (With DEVise 1.9.0?)
 
-* Added "clickable URL in JavaScreen drill-down dialog" feature.
+* Added the capability to have a description that's different from
+the associated URL in the JavaScreen drill-down dialog (the value
+must be of the form "{description}{url}".
+
+* Added the capability to have attributes that don't show up in
+the JavaScreen drill-down dialog (the attribute name must end with
+"_nodd").
+
+* Added "clickable URL in JavaScreen drill-down dialog" feature
+(attribute name must end with "_url").
 
 * Added Jmol version to the JavaScreen Option dialog.
 

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2006/07/21 16:26:47  wenger
+// Updated versions to reflect 1.9.0 release.
+//
 // Revision 1.77  2006/07/11 18:32:43  wenger
 // Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
 //
@@ -528,7 +531,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.1x1"/*TEMP*/);
+    public static final String VERSION = new String("5.7.1x2"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

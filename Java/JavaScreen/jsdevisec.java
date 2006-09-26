@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.151  2006/08/31 19:03:37  wenger
+// Added "clickable URL in JavaScreen drill-down dialog" feature -- if
+// attribute name ends in "_url" the JS considers it a URL.
+//
 // Revision 1.150  2006/08/30 18:02:58  wenger
 // Merged in the "drill-down dialog uses JTable" changes from the 2.1
 // branch (1.144.2.1->1.144.2.2), with some cleanup.
@@ -1590,35 +1594,59 @@ class RecordDlg extends Dialog
 
 	// -1 here because first item in data is the command name.
         int attrCount = data.length - 1;
-	String[][] swingData = null;
-        if (attrCount > 0) {
-	    swingData = new String[attrCount][2];
-	    urls = new String[attrCount];
-            for (int i = 0; i < attrCount; i++) {
 
-		// Split strings from DEVise into attribute and value.
-		String delimiter = ": ";
-		int tempIndex = data[i+1].indexOf(delimiter);
-		if (tempIndex != -1) {
-		    swingData[i][0] = new String(
-		      data[i+1].substring(0, tempIndex));
-		    swingData[i][1] = new String(
-		      data[i+1].substring(tempIndex + delimiter.length(),
-		      data[i+1].length()));
+	//
+	// Split strings from DEVise into attribute and value.
+	//
+	String[] attributes = new String[attrCount];
+	String[] values = new String[attrCount];
+        for (int i = 0; i < attrCount; i++) {
+	    String delimiter = ": ";
+	    int tempIndex = data[i+1].indexOf(delimiter);
+	    if (tempIndex != -1) {
+	        attributes[i] = new String(data[i+1].substring(0, tempIndex));
+	        values[i] = new String(data[i+1].substring(tempIndex +
+		  delimiter.length(), data[i+1].length()));
+	    } else {
+	        attributes[i] = new String(data[i+1]);
+	        values[i] = new String("");
+	    }
+	}
+
+	//
+	// Figure out how many attributes to show.
+	//
+	int attrsToShow = 0;
+        String noDDMarker = "_nodd";
+        for (int i = 0; i < attrCount; i++) {
+	    if (!attributes[i].endsWith(noDDMarker)) {
+	        attrsToShow++;
+	    }
+	}
+
+	//
+	// Generate the array of data for the JTable.
+	//
+	String[][] swingData = null;
+	int attrNum = 0;
+        if (attrsToShow > 0) {
+	    swingData = new String[attrsToShow][2];
+	    urls = new String[attrsToShow];
+            for (int i = 0; i < attrCount; i++) {
+	        if (!attributes[i].endsWith(noDDMarker)) {
+	            swingData[attrNum][0] = attributes[i];
+	            swingData[attrNum][1] = values[i];
 
 		    // Figure out if this is a URL, save the "plain" URL
 		    // string if so.
-		    String urlMarker = "_url: ";
-		    if (data[i+1].indexOf(urlMarker) != -1) {
-		    	urls[i] = swingData[i][1];
-		    	swingData[i][1] = "<html><u>" + swingData[i][1] +
-			  "</u></html>";
+		    String urlMarker = "_url";
+		    if (attributes[i].endsWith(urlMarker)) {
+		        swingData[attrNum][1] = str2Description(values[i]);
+		        urls[attrNum] = str2Url(values[i]);
 		    } else {
-		    	urls[i] = null;
+		        urls[attrNum] = null;
 		    }
-		} else {
-		    swingData[i][0] = new String(data[i+1]);
-		    swingData[i][1] = new String("");
+		    attrNum++;
 		}
 	    }
         }
@@ -1732,7 +1760,38 @@ class RecordDlg extends Dialog
                 });
     }
 
-	    
+    //
+    // The next two methods split up a string of the form "{description}{url}".
+    // If the braces aren't there, both methods return the whole string.
+    //
+
+    private String str2Description(String value) {
+	String desc = value;
+	if (value.startsWith("{")) {
+	    int end = value.indexOf('}', 1);
+	    if (end > 0) {
+	    	desc = value.substring(1, end);
+	    }
+	}
+        return "<html><u>" + desc + "</u></html>";
+    }
+
+    private String str2Url(String value) {
+	String url = value;
+	if (value.startsWith("{")) {
+	    // Skip past the first {...} section (the description).
+	    int end = value.indexOf('}', 1);
+	    int beginning = value.indexOf('{', end);
+	    if (beginning > 0) {
+		beginning++; // skip over '{'
+	        end = value.indexOf('}', beginning);
+		if (end > 0) {
+		    url = value.substring(beginning, end);
+		}
+	    }
+	}
+	return url;
+    }
     
     // Sets the preferred width of the visible column specified
     // by vColIndex. The column will be just wide enough
