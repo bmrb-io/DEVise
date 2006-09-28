@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.152  2006/09/26 22:55:52  wenger
+// Improvements to the JavaScreen drill-down dialog: added the capability
+// to have a description that's different from the associated URL; also
+// added the capability to have attributes that don't show up in the
+// drill-down dialog (attribute name must end with "_nodd").
+//
 // Revision 1.151  2006/08/31 19:03:37  wenger
 // Added "clickable URL in JavaScreen drill-down dialog" feature -- if
 // attribute name ends in "_url" the JS considers it a URL.
@@ -1634,16 +1640,20 @@ class RecordDlg extends Dialog
 	    urls = new String[attrsToShow];
             for (int i = 0; i < attrCount; i++) {
 	        if (!attributes[i].endsWith(noDDMarker)) {
-	            swingData[attrNum][0] = attributes[i];
-	            swingData[attrNum][1] = values[i];
 
 		    // Figure out if this is a URL, save the "plain" URL
 		    // string if so.
 		    String urlMarker = "_url";
 		    if (attributes[i].endsWith(urlMarker)) {
+			// Strip off "_url" from the attribute name.
+			int suffix = attributes[i].indexOf(urlMarker);
+			swingData[attrNum][0] = attributes[i].substring(0,
+			  suffix);
 		        swingData[attrNum][1] = str2Description(values[i]);
 		        urls[attrNum] = str2Url(values[i]);
 		    } else {
+	                swingData[attrNum][0] = attributes[i];
+	                swingData[attrNum][1] = values[i];
 		        urls[attrNum] = null;
 		    }
 		    attrNum++;
