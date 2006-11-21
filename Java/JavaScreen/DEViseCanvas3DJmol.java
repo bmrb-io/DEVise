@@ -26,6 +26,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2006/06/29 21:01:20  wenger
+// Merged devise_jmol_br_2 thru devise_jmol_br_3 to the trunk.
+//
 // Revision 1.3  2006/06/23 19:52:40  wenger
 // Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
 //
@@ -206,6 +209,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     private JmolPopup jmolPopup;
 
     private boolean highlightWithHalos = true;
+
+    private Vector gDatasToDisplay;
 
     //===================================================================
     // PUBLIC METHODS
@@ -783,7 +788,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	}
 
 	//TEMP -- set busy cursor here?
-	Vector gDatasToDisplay = new Vector();
+	gDatasToDisplay = new Vector();
 
 	for (int index = 0; index < nodes.size(); index++) {
 	    DEViseGenericTreeNode node =
@@ -1014,8 +1019,22 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     public void notifyFrameChanged(int frameNo) {
     }
 
+    //TEMPTEMP -- this gets called even on a plain old single-click on an atom -- need to figure out if it's possible to just call it on a shift-click
     public void notifyAtomPicked(int atomIndex, String strInfo) {
-        //TEMP -- use this for drill-down
+    	if (DEBUG >= 1) {
+	    System.out.println(
+	      "DEViseCanvas3DJmol.MyStatusListener.notifyAtomPicked(" +
+	      atomIndex + ", " + strInfo + ")");
+	}
+
+	DEViseGData gData = (DEViseGData)gDatasToDisplay.elementAt(atomIndex);
+
+	String cmd = DEViseCommands.SHOW_RECORDS3D + " " +
+	  view.getCurlyName() + " 1 ";//TEMPTEMP? -- is view the right thing here?
+	cmd += gData.x0 + " " + gData.y0 + " " + gData.z0;
+
+	jscreen.guiAction = true;
+	dispatcher.start(cmd);
     }
 
     public void showUrl(String urlString) {
