@@ -4,6 +4,8 @@ JavaScreen 5.7.1
 ----------------
 (With DEVise 1.9.0?)
 
+* Added drill-down capability in Jmol views.
+
 * Added the capability to have a description that's different from
 the associated URL in the JavaScreen drill-down dialog (the value
 must be of the form "{description}{url}".
