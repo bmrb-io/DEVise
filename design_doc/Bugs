@@ -3938,6 +3938,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 
 925 9/22/06	OPEN	Print modes don't work for Jmol view. (wenger)
 
+926 11/22/06	OPEN	JS: hiding and re-showing the Jmol selection tree
+			window resets the selection to the defaults. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
