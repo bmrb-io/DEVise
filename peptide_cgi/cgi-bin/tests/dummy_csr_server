@@ -133,7 +133,7 @@ sub DoSim() {
 
   } else {
     # We can't handle the request.
-    print "dummy_csr_server error\n";
+    print "dummy_csr_server error ($bmrbId $pdbId)\n";
     system("touch", $name . ".error");
     system("touch", $name . ".done");
   }

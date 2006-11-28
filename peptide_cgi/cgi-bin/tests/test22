@@ -32,12 +32,12 @@ echo "Checking output files"
 
 set files = (data_dir/4336as1.dat \
 	data_dir/4336c1.dat \
-	data_dir/4336csr2_1.dat \
-	data_dir/4336csr2_2.dat \
-	data_dir/4336csr2_3.dat \
-	data_dir/4336csr2_4.dat \
-	data_dir/4336csr2_5.dat \
-	data_dir/4336csr2src.dat \
+	data_dir/4336csr3_1.dat \
+	data_dir/4336csr3_2.dat \
+	data_dir/4336csr3_3.dat \
+	data_dir/4336csr3_4.dat \
+	data_dir/4336csr3_5.dat \
+	data_dir/4336csr3src.dat \
 	data_dir/4336d1.dat \
 	data_dir/4336hn1.dat \
 	data_dir/4336md.dat \
@@ -46,9 +46,9 @@ set files = (data_dir/4336as1.dat \
 	data_dir/4336rl1.dat \
 	html_dir/4336as1.html \
 	html_dir/4336c1.html \
-	html_dir/4336csr12.html \
-	html_dir/4336csr22.html \
-	html_dir/4336csr32.html \
+	html_dir/4336csr13.html \
+	html_dir/4336csr23.html \
+	html_dir/4336csr33.html \
 	html_dir/4336d1.html \
 	html_dir/4336hn1.html \
 	html_dir/4336p1.html \
@@ -57,9 +57,9 @@ set files = (data_dir/4336as1.dat \
 	session_dir/4336acdd \
 	session_dir/4336as1.ds \
 	session_dir/4336c1.ds \
-	session_dir/4336csr12.ds \
-	session_dir/4336csr22.ds \
-	session_dir/4336csr32.ds \
+	session_dir/4336csr13.ds \
+	session_dir/4336csr23.ds \
+	session_dir/4336csr33.ds \
 	session_dir/4336d1.ds \
 	session_dir/4336hn1.ds \
 	session_dir/4336p1.ds \
@@ -69,9 +69,9 @@ set files = (data_dir/4336as1.dat \
 	html_dir/4336am1_large.html \
 	html_dir/4336as1_large.html \
 	html_dir/4336c1_large.html \
-	html_dir/4336csr12_large.html \
-	html_dir/4336csr22_large.html \
-	html_dir/4336csr32_large.html \
+	html_dir/4336csr13_large.html \
+	html_dir/4336csr23_large.html \
+	html_dir/4336csr33_large.html \
 	html_dir/4336d1_large.html \
 	html_dir/4336hn1_large.html \
 	html_dir/4336p1_large.html)
