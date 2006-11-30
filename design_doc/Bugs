@@ -3945,6 +3945,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			measurement mode also drills down. (wenger)
 			(Fixed by wenger, 11/30/06.)
 
+928 11/30/06	OPEN	JS/Jmol: ideally, drill-down should happen only on
+			shift-click, to match the rest of the JS. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
