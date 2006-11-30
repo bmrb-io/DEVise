@@ -26,6 +26,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2006/11/21 21:24:27  wenger
+// Jmol drill-down in the JavaScreen mostly implemented (works on single
+// click as opposed to shift-click).
+//
 // Revision 1.4  2006/06/29 21:01:20  wenger
 // Merged devise_jmol_br_2 thru devise_jmol_br_3 to the trunk.
 //
@@ -987,6 +991,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
     //===================================================================
   class MyStatusListener implements JmolStatusListener {
+    private DoDrillDown _ddd;
+
     public void notifyFileLoaded(String fullPathName, String fileName,
                                  String modelName, Object clientFile,
                                  String errorMsg) {
@@ -1014,12 +1020,14 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     public void notifyMeasurementsChanged() {
+	// Cancel drill-down (notifyAtomPicked gets called on the first
+	// click of a double-click).
+    	if (_ddd != null) _ddd.cancel();
     }
 
     public void notifyFrameChanged(int frameNo) {
     }
 
-    //TEMPTEMP -- this gets called even on a plain old single-click on an atom -- need to figure out if it's possible to just call it on a shift-click
     public void notifyAtomPicked(int atomIndex, String strInfo) {
     	if (DEBUG >= 1) {
 	    System.out.println(
@@ -1029,18 +1037,70 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
 	DEViseGData gData = (DEViseGData)gDatasToDisplay.elementAt(atomIndex);
 
-	String cmd = DEViseCommands.SHOW_RECORDS3D + " " +
-	  view.getCurlyName() + " 1 ";//TEMPTEMP? -- is view the right thing here?
-	cmd += gData.x0 + " " + gData.y0 + " " + gData.z0;
-
-	jscreen.guiAction = true;
-	dispatcher.start(cmd);
+	_ddd = new DoDrillDown(view.getCurlyName(), gData.x0,
+	  gData.y0, gData.z0);
     }
 
     public void showUrl(String urlString) {
     }
 
     public void showConsole(boolean showConsole) {
+    }
+
+    private class DoDrillDown implements Runnable
+    {
+	private String _viewName;
+	private float _x;
+	private float _y;
+	private float _z;
+	private Thread _ddThread;
+	private boolean _cancelled;
+
+	// How fast the second click has to come to consider it a double-
+	// click and cancel the drill-down.
+	private static final int DOUBLE_CLICK_TIME = 500;
+
+        public DoDrillDown(String viewName, float x, float y, float z) {
+	    _viewName = viewName;
+	    _x = x;
+	    _y = y;
+	    _z = z;
+	    _cancelled = false;
+
+	    _ddThread = new Thread(this);
+	    _ddThread.setName("3D Jmol drill down");
+	    _ddThread.start();
+	}
+
+	public void run() {
+	    try {
+	        Thread.sleep(DOUBLE_CLICK_TIME);
+	    } catch (InterruptedException e)  {
+	    }
+
+	    if (_cancelled) {
+		if (DEBUG >= 2) {
+	            System.out.println("Drill-down cancelled by double-click");
+		}
+	    } else {
+		if (DEBUG >= 2) {
+	            System.out.println("Doing 3D drill-down");
+		}
+	        String cmd = DEViseCommands.SHOW_RECORDS3D + " " +
+	          _viewName + " 1 ";
+	        cmd += _x + " " + _y + " " + _z;
+
+	        jscreen.guiAction = true;
+	        dispatcher.start(cmd);
+	    }
+	}
+
+	public void stop() {
+	}
+
+	public void cancel() {
+	    _cancelled = true;
+	}
     }
   }
 }

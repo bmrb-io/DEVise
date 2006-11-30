@@ -3941,8 +3941,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 926 11/22/06	OPEN	JS: hiding and re-showing the Jmol selection tree
 			window resets the selection to the defaults. (wenger)
 
-927 11/29/06	OPEN	JS/Jmol: double-clicking on an atom to enter distance
+927 11/29/06	FIXED	JS/Jmol: double-clicking on an atom to enter distance
 			measurement mode also drills down. (wenger)
+			(Fixed by wenger, 11/30/06.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
