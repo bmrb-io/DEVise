@@ -10,6 +10,7 @@
 
 type bmrb-Link ascii
 comment #
+# *Don't have space here because strings have spaces in them!
 whitespace '	'
 attr ChemShiftVal_nodd float
 attr BMRB_entry_url string 120

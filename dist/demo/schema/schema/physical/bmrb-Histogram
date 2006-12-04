@@ -9,7 +9,7 @@
 
 type Histogram ascii
 comment #
-whitespace ' '
+whitespace ' ''	'
 attr ChemShiftVal float
 attr Frequency int
 attr MinChemShift float
