@@ -62,6 +62,17 @@ if ($#argv > 0) then
     setenv DEVISE_PALETTE	../public/palette
     shift
 
+  else if ("$1" == "dist") then
+    # Use distribution data, sessions, etc., as in this CVS tree (stuff
+    # that will go into the demo area distribution)
+    setenv DEVISE_DAT		../dist/demo/dat
+    setenv DEVISE_HOME_TABLE	../dist/demo/schema/schema/catalog.dte
+    #setenv DEVISE_CACHE   	$DEVISE_ROOT/cache
+    setenv DEVISE_SCHEMA  	../dist/demo/schema/schema
+    setenv DEVISE_SESSION 	../dist/demo/session
+    setenv DEVISE_PALETTE	../public/palette
+    shift
+
   else if ("$1" == "u") then
     echo "Usage: dev|mul [p|d|j|l|u] [DEVise args]"
     exit 1

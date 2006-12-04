@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2006
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -24,3 +24,10 @@ ln -s session session.js
 
 cd schema/schema
 ln -s catalog.dte catalog.js.dte
+cd ../..
+
+cd dat/bmrb
+# Note: this is for testing only; it will get removed from the demo
+# tar file.
+ln -s /p/condor/workspaces/shared/wenger/devise/bmrb_histogram_data .
+cd ../..

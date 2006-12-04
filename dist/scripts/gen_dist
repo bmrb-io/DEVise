@@ -157,8 +157,10 @@ if (-f $logfile) then
   rm $logfile
 endif
 set src = demo
-set dest = $target/Devise-$version-demo.tar.gz
-tar cvfzX $dest scripts/tar_exclude $src > $logfile
+set dest = $target/Devise-$version-demo.tar
+tar cvfX $dest scripts/tar_exclude $src > $logfile
+tar --delete --file=$dest demo/dat/bmrb/bmrb_histogram_data
+gzip $dest
 
 echo "Copying BMRB mirror site instructions"
 cp bmrb_mirror_instructions $target
