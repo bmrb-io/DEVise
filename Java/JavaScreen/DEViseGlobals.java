@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2006/09/26 22:55:28  wenger
+// Improvements to the JavaScreen drill-down dialog: added the capability
+// to have a description that's different from the associated URL; also
+// added the capability to have attributes that don't show up in the
+// drill-down dialog (attribute name must end with "_nodd").
+//
 // Revision 1.78  2006/07/21 16:26:47  wenger
 // Updated versions to reflect 1.9.0 release.
 //
@@ -531,7 +537,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.1x2"/*TEMP*/);
+    public static final String VERSION = new String("5.7.1");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
