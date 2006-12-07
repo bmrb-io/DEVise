@@ -3952,6 +3952,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the file is empty or non-existant causes a core
 			dump. (See BMRB histogram sessions, Bug929*.ds.)
 			(wenger)
+			(Fixed in V1_8b0_br by wenger, 12/7/06.)
 
 930 12/7/06	OPEN	JS: drill-down on the BMRB histogram sessions only
 			shows data from one view in the pile; when drilling
