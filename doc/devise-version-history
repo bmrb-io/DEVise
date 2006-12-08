@@ -1,5 +1,9 @@
 			DEVise Version History
 
+DEVise 1.9.1
+------------
+
+
 DEVise 1.9.0
 ------------
 
@@ -18,6 +22,12 @@ to saving of session files; updated all example sessions accordingly.
 
 * Added "Misc. View Properties" dialog to control things we haven't
 had a GUI for previously.
+
+
+DEVise 1.8.1
+------------
+
+* Fixed bug 929 (drill-down on empty data source crashes DEVise).
 
 
 DEVise 1.8.0

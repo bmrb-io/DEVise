@@ -1,8 +1,12 @@
 			JavaScreen Version History
 
+JavaScreen 5.7.2
+----------------
+
+
 JavaScreen 5.7.1
 ----------------
-(With DEVise 1.9.0?)
+(With DEVise 1.9.0)
 
 * Added drill-down capability in Jmol views.
 
@@ -48,6 +52,13 @@ JavaScreen 5.7.0
   output from failed tests to logs.
 - start_devised generates more output, now that it's being saved.
 - Better error messages from check_jsall, check_jspop, and check_jss.
+
+
+JavaScreen 5.6.1
+----------------
+
+* Fixed JavaScreen client problems related to bug 992 (drill-down on
+empty data source crashes DEVise).
 
 
 JavaScreen 5.6.0
