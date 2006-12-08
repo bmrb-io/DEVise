@@ -3954,10 +3954,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			(wenger)
 			(Fixed in V1_8b0_br by wenger, 12/7/06.)
 
-930 12/7/06	OPEN	JS: drill-down on the BMRB histogram sessions only
+930 12/7/06	CD	JS: drill-down on the BMRB histogram sessions only
 			shows data from one view in the pile; when drilling
 			down in DEVise itself, data from both views is shown.
 			(wenger)
+			(Tried to reproduce this on 12/8/06, unable to.)
 
 931 12/7/06	OPEN	JS/Jmol: change selection trees; close the selection
 			tree window; re-show the selection trees->the
