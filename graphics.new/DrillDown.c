@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2003
+  (c) Copyright 2003-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.3  2006/05/25 20:15:27  wenger
+  Merged V1_8b0_br_0 thru V1_8b0_br_1 to the trunk.
+
+  Revision 1.2.2.2  2006/12/07 22:09:13  wenger
+  Fixed bug 929 (drill-down on view with empty data source causes crash)
+  and associated bugs in the JavaScreen client.
+
   Revision 1.2.2.1  2005/12/27 22:51:50  wenger
   Somewhat kludgily fixed DEVise bug 917/919 (drill-down works
   poorly on fixed text symbols) -- expanded visual filter for
@@ -130,6 +137,29 @@ DrillDown::GetData(ViewData *view, Coord drillX, Coord drillY,
     return result;
 }
 
+//-----------------------------------------------------------------------------
+Boolean
+DrillDown::EmptyTData(ViewGraph *view)
+{
+    Boolean result = false;
+
+    // I'm not sure that we need to get the *logical* TData here, but
+    // it seems safer (than getting the physical TData).  wenger 2006-12-07.
+    TDataMap *map = view->GetFirstMap();
+    TData *td = map->GetLogTData();
+    RecId rid;
+    Boolean tmpResult = td->LastID(rid);
+    if (!tmpResult) {
+        if (DEBUG >= 1) {
+            printf("Note: aborting view %s drill-down query because data "
+                "source %s has no records\n", view->GetName(), td->GetName());
+        }
+        result = true;
+    }
+
+    return result;
+}
+
 /*===========================================================================*/
 
 //-----------------------------------------------------------------------------
@@ -215,6 +245,15 @@ DrillDown::RunQuery(ViewData *view, Coord drillX, Coord drillY, Coord pixelX,
 	    pixelTol += FIXED_TEXT_EXTRA_TOL;
 	    pixelX *= FIXED_TEXT_X_FACTOR;
 	}
+    }
+
+    // Abort the drill-down query if there are no records in the relevant
+    // TData (this fixes bug 929).
+    if (EmptyTData(view)) {
+        // It might make sense to return StatusCancel here, but I'm
+        // worried that that might goof things up at a higher level
+        // somewhere.  wenger 2006-12-07.
+        return result;
     }
 
     // Set up the visual filter to use for the query.

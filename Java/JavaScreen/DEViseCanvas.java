@@ -30,6 +30,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.97  2006/05/26 16:22:13  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.96.4.11  2006/05/12 14:50:25  wenger
 // Now have two trees for a Jmol view: the first one selects which
 // atoms are shown in the Jmol view and in the second tree; the
@@ -72,6 +75,10 @@
 // Got Jmol to show up in the JavaScreen! (not yet connected to a
 // visualization); added a bunch of debug code to help understand
 // things for Jmol.
+//
+// Revision 1.96.2.1  2006/12/07 22:09:06  wenger
+// Fixed bug 929 (drill-down on view with empty data source causes crash)
+// and associated bugs in the JavaScreen client.
 //
 // Revision 1.96  2005/12/06 20:00:15  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should

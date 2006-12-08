@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.158  2006/05/10 19:04:44  wenger
+  Added the new setDoHomeOnVisLinkIfInvisible and
+  getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
+  example session for Luis Populin), and fixed a bug in
+  getDoHomeOnVisLink.
+
+  Revision 1.157.2.1  2006/12/07 22:09:14  wenger
+  Fixed bug 929 (drill-down on view with empty data source causes crash)
+  and associated bugs in the JavaScreen client.
+
   Revision 1.157  2005/12/06 20:04:15  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -2926,7 +2936,7 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 #endif
 
 	int 			labelX, labelY, labelW, labelH;
-	static char*	buf[10];
+	static char*	buf[1];
 
 	SelectView();
 
@@ -2937,8 +2947,6 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 		msgs = buf;
 		numMsgs = 1;
 		return true;
-	  
-        return false;
 	}
 
     // Convert from screen to world (data) coordinates.
@@ -2948,6 +2956,7 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 
 	VisualFilter filter;
 	GetVisualFilter(filter);
+
     if (_action && InVisualFilter(filter, worldXLow, worldYLow)) {
 		return _action->PopUp(this, worldXLow, worldYLow, worldXHigh,
 							  worldYHigh, button, msgs, numMsgs);

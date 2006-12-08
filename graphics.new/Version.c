@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.74  2006/07/21 16:26:40  wenger
+  Updated versions to reflect 1.9.0 release.
+
   Revision 1.73  2006/07/11 18:32:59  wenger
   Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
 
@@ -34,6 +37,11 @@
 
   Revision 1.70  2005/12/06 22:53:05  wenger
   Updated DEVise and JavaScreen versions for the trunk (now 1.9).
+
+  Revision 1.69.2.2  2006/07/13 21:48:21  wenger
+  Changed DEVise and JavaScreen versions to 1.8.1x1 and 5.6.1x1
+  so that all 1.8.0 and 5.6.0 stuff is included in 1.9.0 and
+  5.7.0.
 
   Revision 1.69.2.1  2005/12/06 22:49:41  wenger
   Updated DEVise and JavaScreen versions for the 1.8 branch.

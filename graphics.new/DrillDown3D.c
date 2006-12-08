@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001-2003
+  (c) Copyright 2001-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -24,6 +24,14 @@
   $Id$
 
   $Log$
+  Revision 1.5.2.1  2006/12/07 22:09:14  wenger
+  Fixed bug 929 (drill-down on view with empty data source causes crash)
+  and associated bugs in the JavaScreen client.
+
+  Revision 1.5  2005/12/06 20:03:56  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.4.10.2  2003/11/21 23:05:11  wenger
   Drill-down now works properly on views that are GAttr link followers
   (fixed bug 893).
@@ -59,6 +67,7 @@
 #include "QueryProc.h"
 #include "AttrList.h"
 #include "RecInterp.h"
+#include "DrillDown.h"
 
 #define DEBUG 0
 
@@ -96,7 +105,7 @@ DevStatus
 DrillDown3D::RunQuery(ViewData *view, int count, Point3D coords[])
 {
 #if (DEBUG >= 1)
-    printf("DrillDown3D::GetRecords(%s, ", view->GetName());
+    printf("DrillDown3D::RunQuery(%s, ", view->GetName());
     for (int index = 0; index < count; index++) {
         printf("(%g, %g, %g) ", coords[index].x_, coords[index].y_,
 	  coords[index].z_);
@@ -104,9 +113,19 @@ DrillDown3D::RunQuery(ViewData *view, int count, Point3D coords[])
     printf(")\n");
 #endif
 
+    // This check is needed because the JS 3D drill-down doesn't
+    // call any of the View-level methods.
     if (view->GetDrillDownDisabled()) {
         printf("Drill down disabled in view <%s>\n", view->GetName());
 	_status += StatusCancel;
+	return _status;
+    }
+
+    // Abort the drill-down query if there are no records in the relevant
+    // TData (this fixes bug 929).
+    if (DrillDown::EmptyTData(view)) {
+        _status += StatusCancel;
+        return _status;
     }
 
     if (count > 0) {

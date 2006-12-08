@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2003
+  (c) Copyright 2003-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.3  2006/05/25 20:15:27  wenger
+  Merged V1_8b0_br_0 thru V1_8b0_br_1 to the trunk.
+
+  Revision 1.2.2.2  2006/12/07 22:09:14  wenger
+  Fixed bug 929 (drill-down on view with empty data source causes crash)
+  and associated bugs in the JavaScreen client.
+
   Revision 1.2.2.1  2005/12/27 22:51:51  wenger
   Somewhat kludgily fixed DEVise bug 917/919 (drill-down works
   poorly on fixed text symbols) -- expanded visual filter for
@@ -79,6 +86,13 @@ public:
      */
     DevStatus GetData(ViewData *view, Coord drillX, Coord drillY,
       Coord pixelX, Coord pixelY, int &numMsgs, char **&msgs);
+
+    /**
+     * Find out whether the given view has a TData with no valid records.
+     * @param The view
+     * @return True iff the view has no valid records.
+     */
+    static Boolean EmptyTData(ViewGraph *view);
 
 private:
     /**

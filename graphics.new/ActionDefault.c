@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.51.2.1  2006/12/07 22:09:13  wenger
+  Fixed bug 929 (drill-down on view with empty data source causes crash)
+  and associated bugs in the JavaScreen client.
+
+  Revision 1.51  2005/12/06 20:03:38  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.50.10.3  2003/11/21 23:05:11  wenger
   Drill-down now works properly on views that are GAttr link followers
   (fixed bug 893).
@@ -346,6 +354,7 @@ Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
     DrillDown *dd = DrillDown::GetInstance();
     Coord pixelX = fabs(xHigh - x);
     Coord pixelY = fabs(yHigh - y);
+    //TEMP -- check return value here
     dd->GetData((ViewData *)view, x, y, pixelX, pixelY, numMsgs, msgs);
 
     return true;

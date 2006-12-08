@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/05/26 16:22:15  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.1.2.2  2006/03/31 22:41:15  wenger
 // Finished splitting up DEViseCanvas class.
 //
@@ -174,6 +177,10 @@ public class DEViseCanvas3DPlain extends DEViseCanvas3D
 
     protected void doMouseReleased(MouseEvent event)
     {
+	// Return here fixes empty data problems related to bug
+	// 929.
+	if (crystal == null) return;
+
 	// send command to collaborations if necessary (only if
 	// we're a leader!)
 	//TEMP -- if this is the bug, it should get fixed on the 1.8 branch!!

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.80  2006/12/05 18:43:57  wenger
+// Set JS version to 5.7.1 (ready for release).
+//
 // Revision 1.79  2006/09/26 22:55:28  wenger
 // Improvements to the JavaScreen drill-down dialog: added the capability
 // to have a description that's different from the associated URL; also
@@ -123,6 +126,11 @@
 //
 // Revision 1.72  2005/12/06 22:53:00  wenger
 // Updated DEVise and JavaScreen versions for the trunk (now 1.9).
+//
+// Revision 1.71.2.2  2006/07/13 21:48:15  wenger
+// Changed DEVise and JavaScreen versions to 1.8.1x1 and 5.6.1x1
+// so that all 1.8.0 and 5.6.0 stuff is included in 1.9.0 and
+// 5.7.0.
 //
 // Revision 1.71.2.1  2005/12/06 22:49:33  wenger
 // Updated DEVise and JavaScreen versions for the 1.8 branch.
@@ -537,7 +545,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.1");
+    public static final String VERSION = new String("5.7.2x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
