@@ -3948,7 +3948,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 928 11/30/06	OPEN	JS/Jmol: ideally, drill-down should happen only on
 			shift-click, to match the rest of the JS. (wenger)
 
-929 12/4/06	OPEN	Drill-down on a view having a data source for which
+929 12/4/06	FIXED	Drill-down on a view having a data source for which
 			the file is empty or non-existant causes a core
 			dump. (See BMRB histogram sessions, Bug929*.ds.)
 			(wenger)
