@@ -3964,9 +3964,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			tree window; re-show the selection trees->the
 			selection is reset to the default. (wenger)
 
-932 12/7/06	OPEN	Axis multiplication factor doesn't get copied when
+932 12/7/06	FIXED	Axis multiplication factor doesn't get copied when
 			copying a view (DEVise 1.9.0) (maybe fixed in 1.9.1?).
 			(wenger)
+			(Fixed by wenger, 12/8/06.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

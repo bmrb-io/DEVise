@@ -15,6 +15,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.67  2006/07/11 21:33:49  wenger
+#  The tcl view copying code now copies setDoHomeOnVisLinkIfInvisible
+#  and viewSetUseJmol.
+#
 #  Revision 1.66  2005/12/06 20:04:52  wenger
 #  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 #  be the end of the V1_7b0_br branch.)
@@ -680,6 +684,13 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setDoHomeOnVisLinkIfInvisible {$newView} \
       {[DEVise getDoHomeOnVisLinkIfInvisible $view]}
     eval DEVise viewSetUseJmol {$newView} {[DEVise viewGetUseJmol $view]}
+
+    eval DEVise setAxisMultFact {$newView} {X} {[DEVise getAxisMultFact \
+      $view {X}]}
+    eval DEVise setAxisMultFact {$newView} {Y} {[DEVise getAxisMultFact \
+      $view {Y}]}
+
+    eval DEVise set3DLocation {$newView} [DEVise get3DLocation $view]
 
     eval DEVise insertWindow {$newView} {$window}
     eval DEVise insertMapping {$newView} {$newGdata}
