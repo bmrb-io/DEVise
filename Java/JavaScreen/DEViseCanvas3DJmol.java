@@ -26,6 +26,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2006/11/30 17:28:34  wenger
+// Fixed bug 927 (Jmol double-click also drills down).
+//
 // Revision 1.5  2006/11/21 21:24:27  wenger
 // Jmol drill-down in the JavaScreen mostly implemented (works on single
 // click as opposed to shift-click).
@@ -215,6 +218,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     private boolean highlightWithHalos = true;
 
     private Vector gDatasToDisplay;
+
+    private boolean drillDownEnabled = true;
 
     //===================================================================
     // PUBLIC METHODS
@@ -413,6 +418,18 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    System.err.println("ERROR: Jmol error evaluating script <" +
 	      script + ">: " + errStr);
 	}
+    }
+
+    //-------------------------------------------------------------------
+    public void enableDrillDown()
+    {
+    	drillDownEnabled = true;
+    }
+
+    //-------------------------------------------------------------------
+    public void disableDrillDown()
+    {
+    	drillDownEnabled = false;
     }
 
     //===================================================================
@@ -1035,10 +1052,13 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	      atomIndex + ", " + strInfo + ")");
 	}
 
-	DEViseGData gData = (DEViseGData)gDatasToDisplay.elementAt(atomIndex);
+	if (drillDownEnabled) {
+	    DEViseGData gData = (DEViseGData)gDatasToDisplay.elementAt(
+	      atomIndex);
 
-	_ddd = new DoDrillDown(view.getCurlyName(), gData.x0,
-	  gData.y0, gData.z0);
+	    _ddd = new DoDrillDown(view.getCurlyName(), gData.x0,
+	      gData.y0, gData.z0);
+        }
     }
 
     public void showUrl(String urlString) {

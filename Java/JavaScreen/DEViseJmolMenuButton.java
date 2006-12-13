@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2006/06/29 21:01:20  wenger
+// Merged devise_jmol_br_2 thru devise_jmol_br_3 to the trunk.
+//
 // Revision 1.3  2006/06/23 19:52:41  wenger
 // Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
 //
@@ -132,9 +135,11 @@ public class DEViseJmolMenuButton extends DEViseButton
     private static final String STR_CARBON = "Carbon";
     private static final String STR_CENTERED = "Centered";
     private static final String STR_DEFINE_CTR = "Define Center";
+    private static final String STR_DISABLE_DRILL_DOWN = "Disable drill-down";
     private static final String STR_DISPLAY = "Display";
     private static final String STR_DISTANCE = "Distance";
     private static final String STR_EDIT = "Edit";
+    private static final String STR_ENABLE_DRILL_DOWN = "Enable drill-down";
     private static final String STR_FIRST_FREQ = "First frequency";
     private static final String STR_FRONT = "Front";
     private static final String STR_GO_TO_NEXT = "Go to next frame";
@@ -335,6 +340,9 @@ public class DEViseJmolMenuButton extends DEViseButton
 	PopupMenu toolsMenu = new PopupMenu(STR_TOOLS);
 	jmolMenu.add(toolsMenu);
 
+	addMenuItem(toolsMenu, STR_ENABLE_DRILL_DOWN);
+	addMenuItem(toolsMenu, STR_DISABLE_DRILL_DOWN);
+
 	PopupMenu distanceMenu = new PopupMenu(STR_DISTANCE);
 	toolsMenu.add(distanceMenu);
 
@@ -445,6 +453,12 @@ public class DEViseJmolMenuButton extends DEViseButton
 
 	} else if (event.getActionCommand().equals(STR_DEFINE_CTR)) {
 	    jmolCanvas.defineCenter();
+
+	} else if (event.getActionCommand().equals(STR_DISABLE_DRILL_DOWN)) {
+	    jmolCanvas.disableDrillDown();
+
+	} else if (event.getActionCommand().equals(STR_ENABLE_DRILL_DOWN)) {
+	    jmolCanvas.enableDrillDown();
 
 	} else if (event.getActionCommand().equals(STR_FIRST_FREQ)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "frame 1");

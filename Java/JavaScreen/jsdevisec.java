@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.153  2006/09/28 16:28:24  wenger
+// JavaScreen drill-down dialog now does not display the "_url" suffix
+// on URL attribute names.
+//
 // Revision 1.152  2006/09/26 22:55:52  wenger
 // Improvements to the JavaScreen drill-down dialog: added the capability
 // to have a description that's different from the associated URL; also
@@ -2172,7 +2176,7 @@ class SettingDlg extends Dialog
         statButton = new DEViseButton("Request", jsc.jsValues);
         meButton = new DEViseButton("Request", jsc.jsValues);
         collabButton = new DEViseButton("Request", jsc.jsValues);
-        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
+        cancelButton = new DEViseButton("Close", jsc.jsValues);
 
 	//
 	// Get the version info from the JSPoP (send the command, and

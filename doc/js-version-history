@@ -3,6 +3,9 @@
 JavaScreen 5.7.2
 ----------------
 
+* Added the capability to disable drill-down in Jmol views (to avoid
+accidental drill-down).
+
 
 JavaScreen 5.7.1
 ----------------
