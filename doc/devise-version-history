@@ -3,6 +3,8 @@
 DEVise 1.9.1
 ------------
 
+* Fixed bug 932 (axis multiplication factor not copied in view copy).
+
 
 DEVise 1.9.0
 ------------
