@@ -1,0 +1,17 @@
+# Check regular JSPoP, etc., and restart if necessary.
+* * * * * cd /scratch/devise/js.regular; ./run_check regular 2
+#5,20,35,50 * * * * cd /scratch/devise/js.regular; ./run_check -dev regular 1
+19 * * * * cd /scratch/devise/js.regular; sleep 20; ./run_check -dev regular 2
+
+# Get usage stats for regular JavaScreen.
+1 16 * * 1 cd /scratch/devise/js.regular; scripts/get_stats_teal
+
+# Check Wavelet-IDR JSPoP, etc., and restart if necessary.
+* * * * * cd /scratch/devise/js.wave; ./run_check wave 4
+20 * * * * cd /scratch/devise/js.wave; sleep 20; ./run_check -dev wave 4
+
+# Get usage stats for Wavelet-IDR JavaScreen.
+2 16 * * 1 cd /scratch/devise/js.wave; scripts/get_stats_wave_teal
+
+# Check test JSPoP, etc., and restart if necessary.
+# 5,15,25,35,45,55 * * * * cd /scratch/devise/js.test; ./run_check test 1

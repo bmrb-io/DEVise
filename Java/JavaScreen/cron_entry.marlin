@@ -1,0 +1,15 @@
+#
+# DEVise
+#
+# see if devise is up
+#TEMPTEMP? * * * * * (cd /p/devise/js.installed && ./run_check regular 4)
+1,11,21,31,41,51 * * * * (cd /p/devise/js.installed && ./run_check regular 4)
+#
+# generate the devise/javascreen usage info
+5 16 * * 1 (cd /p/devise/js.installed && scripts/get_stats_bmrb)
+#
+# check the size of the jspop log file
+20 15 * * * (cd /p/devise/js.installed && scripts/check_log_size)
+#
+# Check the ChemShift server
+* * * * * cd /p/devise/ChemShift && ./check_server

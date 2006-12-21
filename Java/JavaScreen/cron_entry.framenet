@@ -1,0 +1,6 @@
+# Check Wavelet-IDR JSPoP, etc., and restart if necessary.
+* * * * * cd /scratch/devise/js.wave; ./run_check wave 4
+20 * * * * cd /scratch/devise/js.wave; sleep 20; ./run_check -dev wave 4
+
+# Get usage stats for Wavelet-IDR JavaScreen.
+2 16 * * 1 cd /scratch/devise/js.wave; scripts/get_stats_framenet
