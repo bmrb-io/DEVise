@@ -7,7 +7,6 @@
 
 ############################################################
 
-#TEMP -- this should be configurable
 setenv DEVISE_VIS    /p/devise/demo
 
 source scripts/dev_vis.gen
