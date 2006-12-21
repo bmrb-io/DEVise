@@ -50,5 +50,7 @@ INSTALL_HOST = miranda.nmrfam.wisc.edu
 # on the same machine.
 KILL_XVFB = 1
 
+XVFB_ARGS = '\'-fp unix/:7100\''
+
 # Directory where the DEVise sessions, schemas, etc., live.
 DEVISE_VIS = /home/mani/devise

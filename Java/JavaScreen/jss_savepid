@@ -15,6 +15,11 @@
 ############################################################
 
 #
+# Get any "special" arguments we need for Xvfb (font paths, etc).
+#
+source scripts/Xvfb_args
+
+#
 # Set log file names according to ID string (if any).
 #
 idStr=""
@@ -52,7 +57,7 @@ doutfile=`echo $info | cut -d' ' -f6`
 echo "Attempting to start Xvfb"
 
 display=1
-nohup scripts/Xvfb_savepid :$display -screen 0 1280x1024x8 &
+nohup scripts/Xvfb_savepid :$display $XVFB_ARGS -screen 0 1280x1024x8 &
 
 # Make sure Xvfb gets going before starting the jss.
 sleep 10

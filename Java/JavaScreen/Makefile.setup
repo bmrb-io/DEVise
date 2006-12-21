@@ -27,6 +27,8 @@ DEVISE_SESSION = $$DEVISE_VIS/session.js
 DEVISE_TMP_SESSION = $$DEVISE_SESSION/.tmp
 DEVISE_HOME_TABLE = $$DEVISE_SCHEMA/catalog.js.dte
 
+XVFB_ARGS =
+
 include Makefile.config
 
 setup: do_setup
@@ -39,6 +41,7 @@ clean:
 	-rm -rf logs
 	-rm scripts/error_email
 	-rm scripts/dev_vis.js
+	-rm scripts/Xvfb_args
 	-rm demo public
 
 # Note: bin2 is for JSS and devised area.
@@ -92,6 +95,7 @@ logs:
 
 xvfb:
 	scripts/Xvfb_setup $(KILL_XVFB)
+	echo 'setenv XVFB_ARGS $(XVFB_ARGS)' > scripts/Xvfb_args
 
 install: install_info error_email xvfb
 	./install_js
