@@ -35,10 +35,10 @@ PERL_BIN2P = /usr/bin
 # BIN3 is for compiling.
 JAVA_BIN3 = /usr/bin
 
-#TEMPTEMP POP_DIR = /home/mani/devise.installed
-#TEMPTEMP SERV_DIR = /home/mani/devise.installed
-#TEMPTEMP JAR_DIR = /home/mani/webserver/devise
-#TEMPTEMP CGI_DIR = /home/mani/webserver/cgi-bin
+POP_DIR = /home/mani/devise.installed
+SERV_DIR = /home/mani/devise.installed
+JAR_DIR = /home/mani/webserver/devise
+CGI_DIR = /home/mani/webserver/cgi-bin
 IDSTR = regular
 
 # This is who gets email about any errors.
@@ -53,4 +53,4 @@ KILL_XVFB = 1
 XVFB_ARGS = '\'-fp unix/:7100\''
 
 # Directory where the DEVise sessions, schemas, etc., live.
-DEVISE_VIS = /home/mani/devise
+DEVISE_VIS = /home/mani/devise/demo
