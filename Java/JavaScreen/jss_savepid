@@ -15,11 +15,6 @@
 ############################################################
 
 #
-# Get any "special" arguments we need for Xvfb (font paths, etc).
-#
-source scripts/Xvfb_args
-
-#
 # Set log file names according to ID string (if any).
 #
 idStr=""

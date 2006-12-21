@@ -16,4 +16,9 @@
 # '.' is in our path.
 set path = ( . $path )
 
+#
+# Get any "special" arguments we need for Xvfb (font paths, etc).
+#
+source scripts/Xvfb_args
+
 nohup ./jss_savepid $* &
