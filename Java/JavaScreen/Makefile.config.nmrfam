@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2002
+#  (c) Copyright 2001-2006
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -26,7 +26,7 @@
 # BIN2 is for JSS and devised.
 JAVA_BIN2 = /usr/bin
 PERL_BIN2 = /usr/bin
-XVFB_BIN2 = /usr/openwin/bin
+XVFB_BIN2 = /usr/X11R6/bin
 
 # BIN2P is for JSPoP.
 JAVA_BIN2P = /usr/bin
@@ -35,17 +35,20 @@ PERL_BIN2P = /usr/bin
 # BIN3 is for compiling.
 JAVA_BIN3 = /usr/bin
 
-POP_DIR = /home/mani/devise.installed
-SERV_DIR = /home/mani/devise.installed
-JAR_DIR = /home/mani/webserver/devise
-CGI_DIR = /home/mani/webserver/cgi-bin
+#TEMPTEMP POP_DIR = /home/mani/devise.installed
+#TEMPTEMP SERV_DIR = /home/mani/devise.installed
+#TEMPTEMP JAR_DIR = /home/mani/webserver/devise
+#TEMPTEMP CGI_DIR = /home/mani/webserver/cgi-bin
 IDSTR = regular
 
 # This is who gets email about any errors.
 ERROR_EMAIL = mani@nmrfam.wisc.edu
 
-INSTALL_HOST = bija.nmrfam.wisc.edu
+INSTALL_HOST = miranda.nmrfam.wisc.edu
 
 # You should probably set this to 0 if you're running more than one JSS
 # on the same machine.
 KILL_XVFB = 1
+
+# Directory where the DEVise sessions, schemas, etc., live.
+DEVISE_VIS = /home/mani/devise
