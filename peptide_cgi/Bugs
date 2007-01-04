@@ -226,6 +226,10 @@ Num Date        Status  Description
 			name (e.g., for 4096 it should be 4096/4038 instead
 			of just 4096). (wenger)
 
+051 1/4/07	OPEN	Chemical shift reference links show up even if
+			an entry has no chemical shifts(!) (see entry
+			5153). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
