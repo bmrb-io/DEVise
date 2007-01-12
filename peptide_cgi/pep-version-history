@@ -1,5 +1,20 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.1.0
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Modified Peptide-CGI so that ChemShift can use various S2D classes
+to correctly parse NMR-STAR files.
+
+* Updated Peptide-CGI to work with NMR-STAR 3.1 files and added
+corresponding tests.
+
+* Improved various tests.
+
+* Added testing and release documents.
+
+
 Peptide-CGI 11.0.2
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
@@ -43,7 +58,7 @@ a tree GUI in a separate window, rather than by cursors in the DEVise
 visualization itself.
 
 * There is also a tree GUI that can override the DEVise cursor selection
-of which residues are highlighed in the 3D view.
+of which residues are highlighted in the 3D view.
 
 * Visualization info in ambiguity code, Pistachio, and LACS sessions
 now rendered on the client side.

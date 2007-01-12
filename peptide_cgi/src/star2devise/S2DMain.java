@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2007/01/12 18:41:06  wenger
+// Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
+//
 // Revision 1.20.2.6  2007/01/09 22:48:19  wenger
 // Peptide-CGI now works with all data types in 4267, at least (see
 // test41) -- this includes capability to specially deal with optional
@@ -1236,7 +1239,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.0x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.0";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

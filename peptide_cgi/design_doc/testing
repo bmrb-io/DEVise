@@ -21,6 +21,8 @@ The following testing steps must be done:
 - Access the visualizations on teal via the following URL:
     http://devise.cs.wisc.edu/devise/bmrb/bmrb_select.html
 
+- Run 's2d -bmrbid 4267 -force' in /var/home/www/public/cgi-bin/bmrb on teal.
+
 - View the following visualizations for the entry 4267 and MAKE SURE THEY
   ARE CORRECT:
     - Chemical Shift Delta
@@ -30,7 +32,7 @@ The following testing steps must be done:
     - Simulated 1H-15N backbone HSQC spectrum
     - Assigned chemical shift ambiguity code data
     - T1 Relaxation (750 MHz)
-    - Heteronuclear NOE (750 MHz) NE HE
+    - Heteronuclear NOE (750 MHz) N H
     - Coupling constants
     - 3D structure from PDB ID 1NGL
 
