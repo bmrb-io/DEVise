@@ -26,8 +26,8 @@ setup peptide-cgi:
 
 .PHONY : clean
 clean:
-	rm peptide-cgi_`get_version`
-	rm -rf peptide-cgi
+	-rm peptide-cgi_`get_version`
+	-rm -rf peptide-cgi
 
 .PHONY : dist
 dist: peptide-cgi

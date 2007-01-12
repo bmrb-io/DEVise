@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2007/01/12 21:13:35  wenger
+// Changed version to 11.1.0 for release; updated release and testing
+// documents; updated version history.
+//
 // Revision 1.21  2007/01/12 18:41:06  wenger
 // Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
 //
@@ -1239,7 +1243,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.0";
+    public static final String PEP_CGI_VERSION = "11.1.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

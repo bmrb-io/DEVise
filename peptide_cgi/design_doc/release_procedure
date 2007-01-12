@@ -30,3 +30,5 @@ Note: this is pretty preliminary right now.
 - Update /scratch/wenger/peptide_cgi_test and recompile.
 
 - Increment the version in the sources (11.0.2 -> 11.0.3x1, for example).
+
+- Commit the sources.
