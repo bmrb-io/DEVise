@@ -1,0 +1,104 @@
+#! /bin/csh -f
+
+# This is to test NMR-STAR 3.1 processing.
+
+set result = 0
+
+rm -f */15028*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -file test_data/bmr15028_3.str -name 15028 -do_pdb 2 \
+  -do_csr 1 -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/15028am1.dat \
+	data_dir/15028am2.dat \
+	data_dir/15028amac1.dat \
+	data_dir/15028amac2.dat \
+	data_dir/15028as1.dat \
+	data_dir/15028as2.dat \
+	data_dir/15028c1.dat \
+	data_dir/15028c2.dat \
+	data_dir/15028d1.dat \
+	data_dir/15028d2.dat \
+	data_dir/15028hn1.dat \
+	data_dir/15028hn2.dat \
+	data_dir/15028md.dat \
+	data_dir/15028p1.dat \
+	data_dir/15028p2.dat \
+	data_dir/15028ps1.dat \
+	data_dir/15028ps2.dat \
+	data_dir/15028psac1.dat \
+	data_dir/15028psac2.dat \
+	data_dir/15028rc1.dat \
+	data_dir/15028rc2.dat \
+	data_dir/15028rl1.dat \
+	data_dir/15028rl2.dat \
+	html_dir/15028am1.html \
+	html_dir/15028am1_large.html \
+	html_dir/15028am2.html \
+	html_dir/15028am2_large.html \
+	html_dir/15028as1.html \
+	html_dir/15028as1_large.html \
+	html_dir/15028as2.html \
+	html_dir/15028as2_large.html \
+	html_dir/15028c1.html \
+	html_dir/15028c1_large.html \
+	html_dir/15028c2.html \
+	html_dir/15028c2_large.html \
+	html_dir/15028d1.html \
+	html_dir/15028d1_large.html \
+	html_dir/15028d2.html \
+	html_dir/15028d2_large.html \
+	html_dir/15028hn1.html \
+	html_dir/15028hn1_large.html \
+	html_dir/15028hn2.html \
+	html_dir/15028hn2_large.html \
+	html_dir/15028p1.html \
+	html_dir/15028p1_large.html \
+	html_dir/15028p2.html \
+	html_dir/15028p2_large.html \
+	html_dir/15028ps1.html \
+	html_dir/15028ps1_large.html \
+	html_dir/15028ps2.html \
+	html_dir/15028ps2_large.html \
+	html_dir/15028y.html \
+	html_dir/15028y_large.html \
+	session_dir/15028acdd \
+	session_dir/15028am1.ds \
+	session_dir/15028am2.ds \
+	session_dir/15028as1.ds \
+	session_dir/15028as2.ds \
+	session_dir/15028c1.ds \
+	session_dir/15028c2.ds \
+	session_dir/15028d1.ds \
+	session_dir/15028d2.ds \
+	session_dir/15028hn1.ds \
+	session_dir/15028hn2.ds \
+	session_dir/15028p1.ds \
+	session_dir/15028p2.ds \
+	session_dir/15028ps1.ds \
+	session_dir/15028ps2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test40 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

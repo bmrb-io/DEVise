@@ -3,6 +3,8 @@
 # Test for still generating ambiguity visualization when there's one
 # bad amino acid in the data.  Also test residue list/coordinate
 # visualization combos for multiple entities (test not yet in place).
+#TEMP -- also add a test for chem shift ref visualizations with
+# multiple entities, and add a corresponding ChemShift test
 
 set result = 0
 

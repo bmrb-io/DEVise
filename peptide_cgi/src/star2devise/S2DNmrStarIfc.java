@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2005
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.2.2  2007/01/09 22:48:20  wenger
+// Peptide-CGI now works with all data types in 4267, at least (see
+// test41) -- this includes capability to specially deal with optional
+// values that are "?" in the file.  Still need to find out how to deal
+// with Heternonuclear NOE labels.
+//
+// Revision 1.4.2.1  2007/01/08 21:59:22  wenger
+// First version of NMR-STAR 3.1 capability -- added test38 to test
+// this.
+//
+// Revision 1.4  2006/04/12 15:55:49  wenger
+// Improved some error messages, fixed a comment.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -759,6 +772,12 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 
         try {
 	    result = getFrameValues(frame, loopId, name);
+
+	    // Change "?" to the default value (fixes problems with
+	    // bmr4267_3.str).
+	    for (int index = 0; index < result.length; index++) {
+	        if (result[index].equals("?")) result[index] = defaultValue;
+	    }
 	} catch (S2DError ex) {
 	    System.err.println("Warning: " + ex.toString());
 
@@ -813,17 +832,28 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	} else {
 	    S2DNmrStar21Ifc ifc21 = new S2DNmrStar21Ifc(starTree);
 	    S2DNmrStar30Ifc ifc30 = new S2DNmrStar30Ifc(starTree);
+	    S2DNmrStar31Ifc ifc31 = new S2DNmrStar31Ifc(starTree);
 
 	    if (ifc21.isNmrStar21()) {
                 if (DEBUG >= 1) {
 	            System.out.println("File is NMR-STAR 2.1");
 	        }
 	        ifc = ifc21;
+
+	    } else if (ifc31.isNmrStar31()) {
+                if (DEBUG >= 1) {
+	            System.out.println("File is NMR-STAR 3.1");
+	        }
+		ifc31.checkForProteins();
+	        ifc = ifc31;
+
 	    } else if (ifc30.isNmrStar30()) {
                 if (DEBUG >= 1) {
 	            System.out.println("File is NMR-STAR 3.0");
 	        }
+		ifc30.checkForProteins();
 	        ifc = ifc30;
+
 	    } else {
 	        System.err.println("Warning: possibly unknown or unsupported " +
 	          "NMR-STAR version; trying NMR-STAR 2.1");

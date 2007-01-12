@@ -1,0 +1,76 @@
+#! /bin/csh -f
+
+# This is to test NMR-STAR 3.1 processing.
+
+set result = 0
+
+rm -f */15011*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -file test_data/bmr15011_3.str -name 15011 -do_pdb 2 \
+  -do_csr 1 -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/15011ac1.dat \
+	data_dir/15011am1.dat \
+	data_dir/15011amac1.dat \
+	data_dir/15011as1.dat \
+	data_dir/15011c1.dat \
+	data_dir/15011d1.dat \
+	data_dir/15011hn1.dat \
+	data_dir/15011md.dat \
+	data_dir/15011p1.dat \
+	data_dir/15011ps1.dat \
+	data_dir/15011psac1.dat \
+	data_dir/15011rc1.dat \
+	data_dir/15011rl1.dat \
+	html_dir/15011ac1.html \
+	html_dir/15011ac1_large.html \
+	html_dir/15011am1.html \
+	html_dir/15011am1_large.html \
+	html_dir/15011as1.html \
+	html_dir/15011as1_large.html \
+	html_dir/15011c1.html \
+	html_dir/15011c1_large.html \
+	html_dir/15011d1.html \
+	html_dir/15011d1_large.html \
+	html_dir/15011hn1.html \
+	html_dir/15011hn1_large.html \
+	html_dir/15011p1.html \
+	html_dir/15011p1_large.html \
+	html_dir/15011ps1.html \
+	html_dir/15011ps1_large.html \
+	html_dir/15011y.html \
+	html_dir/15011y_large.html \
+	session_dir/15011ac1.ds \
+	session_dir/15011acdd \
+	session_dir/15011am1.ds \
+	session_dir/15011as1.ds \
+	session_dir/15011c1.ds \
+	session_dir/15011d1.ds \
+	session_dir/15011hn1.ds \
+	session_dir/15011p1.ds \
+	session_dir/15011ps1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test38 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

@@ -1,0 +1,1547 @@
+data_5246
+
+save_entry_information
+   _Entry.Sf_category           entry_information
+   _Entry.Sf_framecode          entry_information
+   _Entry.ID                    5246
+   _Entry.Title                
+;
+Chiral Mutagenesis of Insulin's Hidden Receptor-Binding Surface: Structure of an
+ Allo-isoleucine A2 Analogue 
+;
+   _Entry.Version_type          new
+   _Entry.Submission_date       2001-12-27
+   _Entry.Accession_date        2001-12-27
+   _Entry.Origination           author
+   _Entry.NMR_STAR_version     "3.1"
+   _Entry.Experimental_method   NMR
+
+   loop_
+      _Entry_author.Ordinal
+      _Entry_author.Given_name
+      _Entry_author.Family_name
+      _Entry_author.Middle_initials
+      _Entry_author.Family_title
+      _Entry_author.Entry_ID
+
+      1 Bin       Xu          .  . 5246 
+      2 Qing-xin  Hua         .  . 5246 
+      3 Satoe     Nakagawa    H. . 5246 
+      4 Wenhua    Jia         .  . 5246 
+      5 Ying-Chi  Chu         .  . 5246 
+      6 Panayotis Katsoyannis G. . 5246 
+      7 Michael   Weiss       A. . 5246 
+
+   stop_
+
+   loop_
+      _Data_set.Type
+      _Data_set.Count
+      _Data_set.Entry_ID
+
+      assigned_chemical_shifts 4 5246 
+
+   stop_
+
+   loop_
+      _Datum.Type
+      _Datum.Count
+      _Datum.Entry_ID
+
+      '1H chemical shifts' 475 5246 
+
+   stop_
+
+save_
+
+
+save_entry_citation
+   _Citation.Sf_category       citations
+   _Citation.Sf_framecode      entry_citation
+   _Citation.Entry_ID          5246
+   _Citation.ID                1
+   _Citation.Class            "entry citation"
+   _Citation.MEDLINE_UI_code   21856752
+   _Citation.PubMed_ID         11866509
+   _Citation.Title            
+;
+Chiral Mutagenesis of Insulin's Hidden Receptor-binding Surface: Structure of an
+Allo-isoleucine(A2) Analogue 
+;
+   _Citation.Status            published
+   _Citation.Type              journal
+   _Citation.Journal_abbrev   "J. Mol. Biol."
+   _Citation.Journal_volume    316
+   _Citation.Journal_issue     3
+   _Citation.Page_first        435
+   _Citation.Page_last         441
+   _Citation.Year              2002
+
+   loop_
+      _Citation_author.Ordinal
+      _Citation_author.Given_name
+      _Citation_author.Family_name
+      _Citation_author.Middle_initials
+      _Citation_author.Family_title
+      _Citation_author.Entry_ID
+      _Citation_author.Citation_ID
+
+      1 Bin       Xu          .  . 5246 1 
+      2 Qing-xin  Hua         .  . 5246 1 
+      3 Satoe     Nakagawa    H. . 5246 1 
+      4 Wenhua    Jia         .  . 5246 1 
+      5 Ying-Chi  Chu         .  . 5246 1 
+      6 Panayotis Katsoyannis G. . 5246 1 
+      7 Michael   Weiss       A. . 5246 1 
+
+   stop_
+
+   loop_
+      _Citation_keyword.Keyword
+      _Citation_keyword.Entry_ID
+      _Citation_keyword.Citation_ID
+
+      "protein folding"           5246 1 
+      "insulin"                   5246 1 
+      "insulin analogues"         5246 1 
+      "insulin receptor"          5246 1 
+      "insulin chain combination" 5246 1 
+
+   stop_
+
+save_
+
+
+save_system_HI
+   _Assembly.Sf_category                assembly
+   _Assembly.Sf_framecode               system_HI
+   _Assembly.Entry_ID                   5246
+   _Assembly.ID                         1
+   _Assembly.Name                      "Human insulin mutant"
+   _Assembly.Paramagnetic               no
+   _Assembly.Thiol_state               'all disulfide bound'
+   _Assembly.Enzyme_commission_number   .
+
+   loop_
+      _Assembly_type.Type
+      _Assembly_type.Entry_ID
+      _Assembly_type.Assembly_ID
+
+      dimer 5246 1 
+
+   stop_
+
+   loop_
+      _Entity_assembly.ID
+      _Entity_assembly.Entity_assembly_name
+      _Entity_assembly.Entity_ID
+      _Entity_assembly.Entity_label
+      _Entity_assembly.Physical_state
+      _Entity_assembly.Magnetic_equivalence_group_code
+      _Entity_assembly.Entry_ID
+      _Entity_assembly.Assembly_ID
+
+      1 "allo-IleA2-DKP-insulin, chain A" 1 $entity_HI_A native ? 5246 1 
+      2 "allo-IleA2-DKP-insulin, chain B" 2 $entity_HI_B native ? 5246 1 
+
+   stop_
+
+   loop_
+      _Bond.ID
+      _Bond.Type
+      _Bond.Order
+      _Bond.Entity_assembly_ID_1
+      _Bond.Entity_ID_1
+      _Bond.Comp_ID_1
+      _Bond.Comp_index_ID_1
+      _Bond.Seq_ID_1
+      _Bond.Atom_ID_1
+      _Bond.Entity_assembly_ID_2
+      _Bond.Entity_ID_2
+      _Bond.Comp_ID_2
+      _Bond.Comp_index_ID_2
+      _Bond.Seq_ID_2
+      _Bond.Atom_ID_2
+      _Bond.Entry_ID
+      _Bond.Assembly_ID
+      _Bond.Entity_label_1
+      _Bond.Entity_label_2
+
+      1 disulfide single 1 1 CYS 20 20 SG 2 2 CYS 19 19 SG 5246 1 $allo-IleA2-DKP-insulin,_chain_A $allo-IleA2-DKP-insulin,_chain_B 
+      2 disulfide single 1 1 CYS  7  7 SG 2 2 CYS  7  7 SG 5246 1 $allo-IleA2-DKP-insulin,_chain_A $allo-IleA2-DKP-insulin,_chain_B 
+      3 disulfide single 1 1 CYS  6  6 SG 1 1 CYS 11 11 SG 5246 1 $allo-IleA2-DKP-insulin,_chain_A $allo-IleA2-DKP-insulin,_chain_A 
+
+   stop_
+
+   loop_
+      _Assembly_db_link.Database_code
+      _Assembly_db_link.Accession_code
+      _Assembly_db_link.Entry_mol_name
+      _Assembly_db_link.Entry_relation_type
+      _Assembly_db_link.Entry_details
+      _Assembly_db_link.Entry_ID
+      _Assembly_db_link.Assembly_ID
+
+      PDB 1KMF ? ? . 5246 1 
+
+   stop_
+
+   loop_
+      _Assembly_common_name.Name
+      _Assembly_common_name.Entry_ID
+      _Assembly_common_name.Assembly_ID
+
+      "Human insulin mutant" 5246 1 
+       HI                    5246 1 
+
+   stop_
+
+   loop_
+      _PDBX_poly_seq_scheme.Asym_ID
+      _PDBX_poly_seq_scheme.Entity_ID
+      _PDBX_poly_seq_scheme.Mon_ID
+      _PDBX_poly_seq_scheme.PDB_seq_num
+      _PDBX_poly_seq_scheme.Entry_ID
+
+      1 1 GLY  1 5246 
+      1 1 IIL  2 5246 
+      1 1 VAL  3 5246 
+      1 1 GLU  4 5246 
+      1 1 GLN  5 5246 
+      1 1 CYS  6 5246 
+      1 1 CYS  7 5246 
+      1 1 THR  8 5246 
+      1 1 SER  9 5246 
+      1 1 ILE 10 5246 
+      1 1 CYS 11 5246 
+      1 1 SER 12 5246 
+      1 1 LEU 13 5246 
+      1 1 TYR 14 5246 
+      1 1 GLN 15 5246 
+      1 1 LEU 16 5246 
+      1 1 GLU 17 5246 
+      1 1 ASN 18 5246 
+      1 1 TYR 19 5246 
+      1 1 CYS 20 5246 
+      1 1 ASN 21 5246 
+      2 2 PHE  1 5246 
+      2 2 VAL  2 5246 
+      2 2 ASN  3 5246 
+      2 2 GLN  4 5246 
+      2 2 HIS  5 5246 
+      2 2 LEU  6 5246 
+      2 2 CYS  7 5246 
+      2 2 GLY  8 5246 
+      2 2 SER  9 5246 
+      2 2 ASP 10 5246 
+      2 2 LEU 11 5246 
+      2 2 VAL 12 5246 
+      2 2 GLU 13 5246 
+      2 2 ALA 14 5246 
+      2 2 LEU 15 5246 
+      2 2 TYR 16 5246 
+      2 2 LEU 17 5246 
+      2 2 VAL 18 5246 
+      2 2 CYS 19 5246 
+      2 2 GLY 20 5246 
+      2 2 GLU 21 5246 
+      2 2 ARG 22 5246 
+      2 2 GLY 23 5246 
+      2 2 PHE 24 5246 
+      2 2 PHE 25 5246 
+      2 2 TYR 26 5246 
+      2 2 THR 27 5246 
+      2 2 LYS 28 5246 
+      2 2 PRO 29 5246 
+      2 2 THR 30 5246 
+
+   stop_
+
+   loop_
+      _Assembly_bio_function.Biological_function
+      _Assembly_bio_function.Entry_ID
+      _Assembly_bio_function.Assembly_ID
+
+      "hormone"            5246 1 
+      "glucose metabolism" 5246 1 
+      "disease mutation"   5246 1 
+      "diabetes"           5246 1 
+
+   stop_
+
+save_
+
+
+save_entity_HI_A
+   _Entity.Sf_category                       entity
+   _Entity.Sf_framecode                      entity_HI_A
+   _Entity.Entry_ID                          5246
+   _Entity.ID                                1
+   _Entity.Name                             "human insulin"
+   _Entity.Type                              polymer
+   _Entity.Polymer_type                     "polypeptide(L)"
+   _Entity.Polymer_seq_one_letter_code_can  
+;
+GXVEQCCTSICSLYQLENYC
+N
+;
+   _Entity.Polymer_seq_one_letter_code      
+;
+GXVEQCCTSICSLYQLENYC
+N
+;
+   _Entity.Number_of_monomers                21
+   _Entity.Thiol_state                      'all disulfide bound'
+   _Entity.DB_query_date                     2006-12-14
+   _Entity.DB_query_revised_last_date        2006-07-20
+
+   loop_
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Seq_query_to_submitted_percent
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+      _Entity_db_link.Seq_positive
+      _Entity_db_link.Seq_homology_expectation_val
+      _Entity_db_link.Seq_difference_details
+      _Entity_db_link.Seq_alignment_details
+      _Entity_db_link.Entry_ID
+      _Entity_db_link.Entity_ID
+
+      BMRB 1585 "insulin A chain"                                                                                                           105.00 20 100 100 2e-04 ? ? 5246 1 
+      BMRB 1587 "insulin A chain"                                                                                                           105.00 20 100 100 2e-04 ? ? 5246 1 
+      BMRB 1023 "insulin B chain"                                                                                                            50.00 42 100 100 2e-04 ? ? 5246 1 
+      PDB  1KMF  "A Chain A, Nmr Structure Of Human InsulinMutant Ile-A2-Allo-Ile, His- B10-Asp, Pro-B28-Lys,Lys-B29-Pro, 15 Structures"     100.00 21 100 100 5e-05 ? ? 5246 1 
+      PDB  1MHI  "A Chain A, Mol_id: 1; Molecule: Insulin;Chain: A, B; Engineered: Yes Mutation: S(B 9)d;"                                   100.00 21 100 100 2e-04 ? ? 5246 1 
+      PDB  1Q4V  "A Chain A, Crystal Structure OfAllo-Ilea2-Insulin, An Inactive Chiral Analogue:Implications For The Mechanism Of Receptor" 100.00 21 100 100 5e-05 ? ? 5246 1 
+
+   stop_
+
+   loop_
+      _Entity_common_name.Name
+      _Entity_common_name.Type
+      _Entity_common_name.Entry_ID
+      _Entity_common_name.Entity_ID
+
+      "human insulin"                                          common       5246 1 
+      "Ile-A2-allo-Ile, His-B10-Asp, Pro-B28-Lys, Lys-B29-Pro" variant      5246 1 
+       HI                                                      abbreviation 5246 1 
+
+   stop_
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+       1 ? GLY 5246 1 
+       2 ? IIL 5246 1 
+       3 ? VAL 5246 1 
+       4 ? GLU 5246 1 
+       5 ? GLN 5246 1 
+       6 ? CYS 5246 1 
+       7 ? CYS 5246 1 
+       8 ? THR 5246 1 
+       9 ? SER 5246 1 
+      10 ? ILE 5246 1 
+      11 ? CYS 5246 1 
+      12 ? SER 5246 1 
+      13 ? LEU 5246 1 
+      14 ? TYR 5246 1 
+      15 ? GLN 5246 1 
+      16 ? LEU 5246 1 
+      17 ? GLU 5246 1 
+      18 ? ASN 5246 1 
+      19 ? TYR 5246 1 
+      20 ? CYS 5246 1 
+      21 ? ASN 5246 1 
+
+   stop_
+
+save_
+
+
+save_entity_HI_B
+   _Entity.Sf_category                       entity
+   _Entity.Sf_framecode                      entity_HI_B
+   _Entity.Entry_ID                          5246
+   _Entity.ID                                2
+   _Entity.Name                             "human insulin"
+   _Entity.Type                              polymer
+   _Entity.Polymer_type                     "polypeptide(L)"
+   _Entity.Polymer_seq_one_letter_code_can  
+;
+FVNQHLCGSDLVEALYLVCG
+ERGFFYTKPT
+;
+   _Entity.Polymer_seq_one_letter_code      
+;
+FVNQHLCGSDLVEALYLVCG
+ERGFFYTKPT
+;
+   _Entity.Number_of_monomers                30
+   _Entity.Thiol_state                      'all disulfide bound'
+   _Entity.DB_query_date                     2006-12-14
+   _Entity.DB_query_revised_last_date        2006-10-05
+
+   loop_
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Seq_query_to_submitted_percent
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+      _Entity_db_link.Seq_positive
+      _Entity_db_link.Seq_homology_expectation_val
+      _Entity_db_link.Seq_difference_details
+      _Entity_db_link.Seq_alignment_details
+      _Entity_db_link.Entry_ID
+      _Entity_db_link.Entity_ID
+
+      BMRB 1760 "insulin B chain"                                                                                                                                                  100.00 30 100 100 8e-11 ? ? 5246 2 
+      BMRB 1762 "insulin B chain"                                                                                                                                                  100.00 30 100 100 8e-11 ? ? 5246 2 
+      PDB  1SJT  "B Chain B, Mini-Proinsulin, Two Chain InsulinAnalog Mutant: Des B30, His(B 10)asp, Pro(B 28)asp,Nmr, 20 Structures"                                               103.45 29 100 100 7e-09 ? ? 5246 2 
+      PDB  1K3M  "B Chain B, Nmr Structure Of Human InsulinMutant Ile-A2-Ala, His-B10- Asp, Pro-B28-Lys,Lys-B29-Pro, 15 Structures"                                                 100.00 30 100 100 8e-11 ? ? 5246 2 
+      PDB  1KMF  "B Chain B, Nmr Structure Of Human InsulinMutant Ile-A2-Allo-Ile, His- B10-Asp, Pro-B28-Lys,Lys-B29-Pro, 15 Structures"                                            100.00 30 100 100 8e-11 ? ? 5246 2 
+      PDB  1LKQ  "B Chain B, Nmr Structure Of Human InsulinMutant Ile-A2-Gly, Val-A3- Gly, His-B10-Asp,Pro-B28-Lys, Lys-B29-Pro, 20 Structures"                                     100.00 30 100 100 8e-11 ? ? 5246 2 
+      PDB  1LNP  "B Chain B, Nmr Structure Of Human InsulinMutant His-B10-Asp, Pro-B28- Lys, Lys-B29-Pro, 20Structures"                                                             100.00 30 100 100 8e-11 ? ? 5246 2 
+      PDB  1VKT  "B Chain B, Human Insulin Two Disulfide Model,Nmr, 10 Structures"                                                                                                  100.00 30 100 100 8e-11 ? ? 5246 2 
+      PDB  1SJU  "Chain  , Mini-Proinsulin, Single ChainInsulin Analog Mutant: Des B30, His(B 10)asp, Pro(B28)asp And Peptide Bond Between Lys B 29 And Gly A 1,Nmr, 20 Structures"  60.00 50 100 100 7e-09 ? ? 5246 2 
+
+   stop_
+
+   loop_
+      _Entity_common_name.Name
+      _Entity_common_name.Type
+      _Entity_common_name.Entry_ID
+      _Entity_common_name.Entity_ID
+
+      "human insulin"                                          common       5246 2 
+      "Ile-A2-allo-Ile, His-B10-Asp, Pro-B28-Lys, Lys-B29-Pro" variant      5246 2 
+       HI                                                      abbreviation 5246 2 
+
+   stop_
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+       1 ? PHE 5246 2 
+       2 ? VAL 5246 2 
+       3 ? ASN 5246 2 
+       4 ? GLN 5246 2 
+       5 ? HIS 5246 2 
+       6 ? LEU 5246 2 
+       7 ? CYS 5246 2 
+       8 ? GLY 5246 2 
+       9 ? SER 5246 2 
+      10 ? ASP 5246 2 
+      11 ? LEU 5246 2 
+      12 ? VAL 5246 2 
+      13 ? GLU 5246 2 
+      14 ? ALA 5246 2 
+      15 ? LEU 5246 2 
+      16 ? TYR 5246 2 
+      17 ? LEU 5246 2 
+      18 ? VAL 5246 2 
+      19 ? CYS 5246 2 
+      20 ? GLY 5246 2 
+      21 ? GLU 5246 2 
+      22 ? ARG 5246 2 
+      23 ? GLY 5246 2 
+      24 ? PHE 5246 2 
+      25 ? PHE 5246 2 
+      26 ? TYR 5246 2 
+      27 ? THR 5246 2 
+      28 ? LYS 5246 2 
+      29 ? PRO 5246 2 
+      30 ? THR 5246 2 
+
+   stop_
+
+save_
+
+
+save_natural_source
+   _Entity_natural_src_list.Sf_category    natural_source
+   _Entity_natural_src_list.Sf_framecode   natural_source
+   _Entity_natural_src_list.Entry_ID       5246
+   _Entity_natural_src_list.ID             1
+
+   loop_
+      _Entity_natural_src.ID
+      _Entity_natural_src.Entity_ID
+      _Entity_natural_src.Entity_label
+      _Entity_natural_src.NCBI_taxonomy_ID
+      _Entity_natural_src.Organism_name_scientific
+      _Entity_natural_src.Organism_name_common
+      _Entity_natural_src.Organism_acronym
+      _Entity_natural_src.ICTVdb_decimal_code
+      _Entity_natural_src.Superkingdom
+      _Entity_natural_src.Kingdom
+      _Entity_natural_src.Genus
+      _Entity_natural_src.Species
+      _Entity_natural_src.Strain
+      _Entity_natural_src.Variant
+      _Entity_natural_src.Subvariant
+      _Entity_natural_src.Organ
+      _Entity_natural_src.Tissue
+      _Entity_natural_src.Cell_line
+      _Entity_natural_src.Cell_type
+      _Entity_natural_src.ATCC_number
+      _Entity_natural_src.Organelle
+      _Entity_natural_src.Fraction
+      _Entity_natural_src.Secretion
+      _Entity_natural_src.Plasmid
+      _Entity_natural_src.Gene_mnemonic
+      _Entity_natural_src.Details
+      _Entity_natural_src.Entry_ID
+      _Entity_natural_src.Entity_natural_src_list_ID
+
+      1 1 $entity_HI_A 9606 "Homo sapiens" Human ? ? Eukaryota Metazoa Homo sapiens ? ? ? ? ? ? ? ? ? ? ? ? ? ? 5246 1 
+      2 2 $entity_HI_B 9606 "Homo sapiens" Human ? ? Eukaryota Metazoa Homo sapiens ? ? ? ? ? ? ? ? ? ? ? ? ? ? 5246 1 
+
+   stop_
+
+save_
+
+
+save_experimental_source
+   _Entity_experimental_src_list.Sf_category    experimental_source
+   _Entity_experimental_src_list.Sf_framecode   experimental_source
+   _Entity_experimental_src_list.Entry_ID       5246
+   _Entity_experimental_src_list.ID             1
+
+   loop_
+      _Entity_experimental_src.Entity_ID
+      _Entity_experimental_src.Entity_label
+      _Entity_experimental_src.Production_method
+      _Entity_experimental_src.Host_org_scientific_name
+      _Entity_experimental_src.Host_org_name_common
+      _Entity_experimental_src.Host_org_genus
+      _Entity_experimental_src.Host_org_species
+      _Entity_experimental_src.Host_org_strain
+      _Entity_experimental_src.Host_org_variant
+      _Entity_experimental_src.Host_org_organ
+      _Entity_experimental_src.Host_org_tissue
+      _Entity_experimental_src.Host_org_cell_line
+      _Entity_experimental_src.Host_org_cell_type
+      _Entity_experimental_src.Host_org_ATCC_number
+      _Entity_experimental_src.Vector_type
+      _Entity_experimental_src.Vector_name
+      _Entity_experimental_src.Vendor_name
+      _Entity_experimental_src.Details
+      _Entity_experimental_src.Entry_ID
+      _Entity_experimental_src.Entity_experimental_src_list_ID
+
+      1 $entity_HI_A 'chemical synthesis' " " . . . . ? ? ? ? ? ? ? . ? ? 5246 1 
+      2 $entity_HI_B 'chemical synthesis' " " . . . . ? ? ? ? ? ? ? . ? ? 5246 1 
+
+   stop_
+
+save_
+
+
+save_IIL
+   _Chem_comp.Sf_category                   chem_comp
+   _Chem_comp.Sf_framecode                  IIL
+   _Chem_comp.Entry_ID                      5246
+   _Chem_comp.ID                            IIL
+   _Chem_comp.Name                          allo-ISOLEUCINE
+   _Chem_comp.BMRB_code                     IIL
+   _Chem_comp.PDB_code                      IIL
+   _Chem_comp.Type                          complete
+   _Chem_comp.Std_deriv_three_letter_code   ILE
+   _Chem_comp.Paramagnetic                  no
+   _Chem_comp.Empirical_formula            'C6 H11 N1 O1'
+   _Chem_comp.Details                       .
+
+   loop_
+      _Chem_comp_common_name.Name
+      _Chem_comp_common_name.Entry_ID
+      _Chem_comp_common_name.Comp_ID
+
+      allo-ISOLEUCINE 5246 IIL 
+      IIL             5246 IIL 
+
+   stop_
+
+   loop_
+      _Chem_comp_systematic_name.Entry_ID
+      _Chem_comp_systematic_name.Comp_ID
+
+      . IIL 
+
+   stop_
+
+   loop_
+      _Chem_comp_atom.Atom_ID
+      _Chem_comp_atom.Type_symbol
+      _Chem_comp_atom.Chirality
+      _Chem_comp_atom.Charge
+      _Chem_comp_atom.Oxidation_number
+      _Chem_comp_atom.Unpaired_electrons
+      _Chem_comp_atom.Entry_ID
+      _Chem_comp_atom.Comp_ID
+      _Chem_comp_atom.PDB_ID
+
+      N    N ? 0 ? ? 5246 IIL N    
+      CA   C ? 0 ? ? 5246 IIL CA   
+      C    C ? 0 ? ? 5246 IIL C    
+      O    O ? 0 ? ? 5246 IIL O    
+      CB   C ? 0 ? ? 5246 IIL CB   
+      CG1  C ? 0 ? ? 5246 IIL CG1  
+      CG2  C ? 0 ? ? 5246 IIL CG2  
+      CD1  C ? 0 ? ? 5246 IIL CD1  
+      H    H ? 0 ? ? 5246 IIL H    
+      HA   H ? 0 ? ? 5246 IIL HA   
+      HB   H ? 0 ? ? 5246 IIL HB   
+      HG12 H ? 0 ? ? 5246 IIL 1HG1 
+      HG13 H ? 0 ? ? 5246 IIL 2HG1 
+      HG21 H ? 0 ? ? 5246 IIL 1HG2 
+      HG22 H ? 0 ? ? 5246 IIL 2HG2 
+      HG23 H ? 0 ? ? 5246 IIL 3HG2 
+      HD11 H ? 0 ? ? 5246 IIL 1HD1 
+      HD12 H ? 0 ? ? 5246 IIL 2HD1 
+      HD13 H ? 0 ? ? 5246 IIL 3HD1 
+
+   stop_
+
+   loop_
+      _Atom_nomenclature.Atom_name
+      _Atom_nomenclature.Entry_ID
+      _Atom_nomenclature.Comp_ID
+
+      N    5246 IIL 
+      CA   5246 IIL 
+      C    5246 IIL 
+      O    5246 IIL 
+      CB   5246 IIL 
+      CG1  5246 IIL 
+      CG2  5246 IIL 
+      CD1  5246 IIL 
+      H    5246 IIL 
+      HA   5246 IIL 
+      HB   5246 IIL 
+      HG12 5246 IIL 
+      HG13 5246 IIL 
+      HG21 5246 IIL 
+      HG22 5246 IIL 
+      HG23 5246 IIL 
+      HD11 5246 IIL 
+      HD12 5246 IIL 
+      HD13 5246 IIL 
+
+   stop_
+
+   loop_
+      _Chem_comp_bond.ID
+      _Chem_comp_bond.Value_order
+      _Chem_comp_bond.Atom_ID_1
+      _Chem_comp_bond.Atom_ID_2
+      _Chem_comp_bond.Entry_ID
+      _Chem_comp_bond.Comp_ID
+
+       1 SING N   CA   5246 IIL 
+       2 SING N   H    5246 IIL 
+       3 SING CA  C    5246 IIL 
+       4 SING CA  CB   5246 IIL 
+       5 SING CA  HA   5246 IIL 
+       6 DOUB C   O    5246 IIL 
+       7 SING CB  CG1  5246 IIL 
+       8 SING CB  CG2  5246 IIL 
+       9 SING CB  HB   5246 IIL 
+      10 SING CG1 CD1  5246 IIL 
+      11 SING CG1 HG12 5246 IIL 
+      12 SING CG1 HG13 5246 IIL 
+      13 SING CG2 HG21 5246 IIL 
+      14 SING CG2 HG22 5246 IIL 
+      15 SING CG2 HG23 5246 IIL 
+      16 SING CD1 HD11 5246 IIL 
+      17 SING CD1 HD12 5246 IIL 
+      18 SING CD1 HD13 5246 IIL 
+
+   stop_
+
+save_
+
+
+save_sample_1
+   _Sample.Sf_category    sample
+   _Sample.Sf_framecode   sample_1
+   _Sample.Entry_ID       5246
+   _Sample.ID             1
+   _Sample.Type           solution
+
+   loop_
+      _Sample_component.ID
+      _Sample_component.Mol_common_name
+      _Sample_component.Isotopic_labeling
+      _Sample_component.Assembly_ID
+      _Sample_component.Assembly_label
+      _Sample_component.Entity_ID
+      _Sample_component.Entity_label
+      _Sample_component.Concentration_val
+      _Sample_component.Concentration_val_min
+      _Sample_component.Concentration_val_max
+      _Sample_component.Concentration_val_units
+      _Sample_component.Entry_ID
+      _Sample_component.Sample_ID
+
+      1 "human insulin" . . . 1 $entity_HI_A 1.2 1.0 3.0 mM 5246 1 
+      2 "human insulin" . . . 2 $entity_HI_B 1.2 1.0 3.0 mM 5246 1 
+
+   stop_
+
+save_
+
+
+save_cond_1
+   _Sample_condition_list.Sf_category    sample_conditions
+   _Sample_condition_list.Sf_framecode   cond_1
+   _Sample_condition_list.Entry_ID       5246
+   _Sample_condition_list.ID             1
+
+   loop_
+      _Sample_condition_variable.Type
+      _Sample_condition_variable.Val
+      _Sample_condition_variable.Val_err
+      _Sample_condition_variable.Val_units
+      _Sample_condition_variable.Entry_ID
+      _Sample_condition_variable.Sample_condition_list_ID
+
+      pH            7.0 0.1 n/a 5246 1 
+      temperature 298   1   K   5246 1 
+
+   stop_
+
+save_
+
+
+save_cond_2
+   _Sample_condition_list.Sf_category    sample_conditions
+   _Sample_condition_list.Sf_framecode   cond_2
+   _Sample_condition_list.Entry_ID       5246
+   _Sample_condition_list.ID             2
+
+   loop_
+      _Sample_condition_variable.Type
+      _Sample_condition_variable.Val
+      _Sample_condition_variable.Val_err
+      _Sample_condition_variable.Val_units
+      _Sample_condition_variable.Entry_ID
+      _Sample_condition_variable.Sample_condition_list_ID
+
+      pD            7.6 0.1 n/a 5246 2 
+      temperature 305   1   K   5246 2 
+
+   stop_
+
+save_
+
+
+save_VNMR
+   _Software.Sf_category    software
+   _Software.Sf_framecode   VNMR
+   _Software.Entry_ID       5246
+   _Software.ID             1
+   _Software.Name           VNMR
+   _Software.Version        6.1B
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      "NMR data processing" 5246 1 
+
+   stop_
+
+save_
+
+
+save_NMR_spectrometer
+   _NMR_spectrometer.Sf_category      NMR_spectrometer
+   _NMR_spectrometer.Sf_framecode     NMR_spectrometer
+   _NMR_spectrometer.Entry_ID         5246
+   _NMR_spectrometer.ID               1
+   _NMR_spectrometer.Manufacturer     Varian
+   _NMR_spectrometer.Model            INOVA
+   _NMR_spectrometer.Field_strength   600
+
+save_
+
+
+save_spectrometer_list
+   _NMR_spectrometer_list.Sf_category  'NMR_spectrometer_list'
+   _NMR_spectrometer_list.Entry_ID      5246
+   _NMR_spectrometer_list.Sf_ID         -24
+   _NMR_spectrometer_list.ID            1
+
+   loop_
+      _NMR_spectrometer_view.Name
+      _NMR_spectrometer_view.Manufacturer
+      _NMR_spectrometer_view.Model
+      _NMR_spectrometer_view.Serial_number
+      _NMR_spectrometer_view.Field_strength
+      _NMR_spectrometer_view.Details
+      _NMR_spectrometer_view.Sf_ID
+      _NMR_spectrometer_view.Entry_ID
+      _NMR_spectrometer_view.NMR_spectrometer_list_ID
+
+      NMR_spectrometer Varian INOVA ? 600 ? -24 5246 1 
+
+   stop_
+
+save_
+
+
+save_experiment_list
+   _Experiment_list.Sf_category   experiment_list
+   _Experiment_list.Entry_ID      5246
+   _Experiment_list.Sf_ID         -19
+   _Experiment_list.ID            1
+
+   loop_
+      _Experiment.Name
+      _Experiment.Sample_ID
+      _Experiment.Sample_label
+      _Experiment.Entry_ID
+      _Experiment.Experiment_list_ID
+
+      "2D 1H-1H NOESY"    . ? 5246 1 
+      "2D 1H-1H TOCSY"    . ? 5246 1 
+      "2D 1H-1H DQF-COSY" . ? 5246 1 
+
+   stop_
+
+save_
+
+
+save_NMR_applied_experiment
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_applied_experiment
+   _NMR_spec_expt.Entry_ID       5246
+   _NMR_spec_expt.ID             1
+
+save_
+
+
+save_NMR_spec_expt__0_1
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_1
+   _NMR_spec_expt.Entry_ID       5246
+   _NMR_spec_expt.ID             2
+   _NMR_spec_expt.Name          "2D 1H-1H NOESY"
+
+save_
+
+
+save_NMR_spec_expt__0_2
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_2
+   _NMR_spec_expt.Entry_ID       5246
+   _NMR_spec_expt.ID             3
+   _NMR_spec_expt.Name          "2D 1H-1H TOCSY"
+
+save_
+
+
+save_NMR_spec_expt__0_3
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_3
+   _NMR_spec_expt.Entry_ID       5246
+   _NMR_spec_expt.ID             4
+   _NMR_spec_expt.Name          "2D 1H-1H DQF-COSY"
+
+save_
+
+
+save_chemical_shift_reference
+   _Chem_shift_reference.Sf_category          chem_shift_reference
+   _Chem_shift_reference.Sf_framecode         chemical_shift_reference
+   _Chem_shift_reference.Entry_ID             5246
+   _Chem_shift_reference.ID                   1
+   _Chem_shift_reference.Proton_shifts_flag  "yes"
+
+   loop_
+      _Chem_shift_ref.Atom_type
+      _Chem_shift_ref.Atom_isotope_number
+      _Chem_shift_ref.Mol_common_name
+      _Chem_shift_ref.Atom_group
+      _Chem_shift_ref.Chem_shift_units
+      _Chem_shift_ref.Chem_shift_val
+      _Chem_shift_ref.Ref_method
+      _Chem_shift_ref.Ref_type
+      _Chem_shift_ref.Indirect_shift_ratio
+      _Chem_shift_ref.External_ref_loc
+      _Chem_shift_ref.External_ref_sample_geometry
+      _Chem_shift_ref.External_ref_axis
+      _Chem_shift_ref.Indirect_shift_ratio_cit_ID
+      _Chem_shift_ref.Indirect_shift_ratio_cit_label
+      _Chem_shift_ref.Ref_correction_type
+      _Chem_shift_ref.Correction_val
+      _Chem_shift_ref.Correction_val_cit_ID
+      _Chem_shift_ref.Correction_val_cit_label
+      _Chem_shift_ref.Entry_ID
+      _Chem_shift_ref.Chem_shift_reference_ID
+
+      H 1 DSS 'methyl protons' ppm 0.0 internal direct 1.0 . . . . ? ? ? . ? 5246 1 
+
+   stop_
+
+save_
+
+
+save_shift_set_1
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  shift_set_1
+   _Assigned_chem_shift_list.Entry_ID                      5246
+   _Assigned_chem_shift_list.ID                            1
+   _Assigned_chem_shift_list.Sample_condition_list_ID      1
+   _Assigned_chem_shift_list.Sample_condition_list_label  $cond_1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label   $chemical_shift_reference
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Entry_ID
+
+      . ? 1 $sample_1 5246 
+
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+        1 1 1  2  2 IIL H    H 8.39 0.02 1 5246 1 
+        2 1 1  2  2 IIL HA   H 3.83 0.02 1 5246 1 
+        3 1 1  2  2 IIL HB   H 1.98 0.02 1 5246 1 
+        4 1 1  2  2 IIL HG12 H 1.02 0.02 1 5246 1 
+        5 1 1  2  2 IIL HG13 H 1.02 0.02 1 5246 1 
+        6 1 1  2  2 IIL HG2  H 0.64 0.02 1 5246 1 
+        7 1 1  2  2 IIL HD1  H 0.51 0.02 1 5246 1 
+        8 1 1  3  3 VAL H    H 8.33 0.02 1 5246 1 
+        9 1 1  3  3 VAL HA   H 3.54 0.02 1 5246 1 
+       10 1 1  3  3 VAL HB   H 1.98 0.02 1 5246 1 
+       11 1 1  3  3 VAL HG1  H 1.02 0.02 2 5246 1 
+       12 1 1  3  3 VAL HG2  H 0.91 0.02 2 5246 1 
+       13 1 1  4  4 GLU H    H 8.40 0.02 1 5246 1 
+       14 1 1  4  4 GLU HA   H 4.11 0.02 1 5246 1 
+       15 1 1  4  4 GLU HB2  H 2.19 0.02 2 5246 1 
+       16 1 1  4  4 GLU HB3  H 2.02 0.02 2 5246 1 
+       17 1 1  4  4 GLU HG2  H 2.52 0.02 2 5246 1 
+       18 1 1  4  4 GLU HG3  H 2.31 0.02 2 5246 1 
+       19 1 1  5  5 GLN H    H 8.40 0.02 1 5246 1 
+       20 1 1  5  5 GLN HA   H 4.11 0.02 1 5246 1 
+       21 1 1  5  5 GLN HB2  H 2.19 0.02 2 5246 1 
+       22 1 1  5  5 GLN HB3  H 2.02 0.02 2 5246 1 
+       23 1 1  5  5 GLN HG2  H 2.52 0.02 2 5246 1 
+       24 1 1  5  5 GLN HG3  H 2.29 0.02 2 5246 1 
+       25 1 1  6  6 CYS H    H 8.32 0.02 1 5246 1 
+       26 1 1  6  6 CYS HA   H 4.98 0.02 1 5246 1 
+       27 1 1  6  6 CYS HB2  H 3.19 0.02 2 5246 1 
+       28 1 1  6  6 CYS HB3  H 2.90 0.02 2 5246 1 
+       29 1 1  7  7 CYS H    H 8.37 0.02 1 5246 1 
+       30 1 1  7  7 CYS HA   H 4.90 0.02 1 5246 1 
+       31 1 1  7  7 CYS HB2  H 3.88 0.02 2 5246 1 
+       32 1 1  7  7 CYS HB3  H 3.46 0.02 2 5246 1 
+       33 1 1  8  8 THR H    H 8.28 0.02 1 5246 1 
+       34 1 1  8  8 THR HA   H 4.00 0.02 1 5246 1 
+       35 1 1  8  8 THR HB   H 4.49 0.02 1 5246 1 
+       36 1 1  8  8 THR HG2  H 1.28 0.02 1 5246 1 
+       37 1 1  9  9 SER HA   H 4.76 0.02 1 5246 1 
+       38 1 1  9  9 SER HB2  H 4.07 0.02 2 5246 1 
+       39 1 1  9  9 SER HB3  H 3.86 0.02 2 5246 1 
+       40 1 1 10 10 ILE H    H 7.77 0.02 1 5246 1 
+       41 1 1 10 10 ILE HA   H 4.38 0.02 1 5246 1 
+       42 1 1 10 10 ILE HB   H 1.50 0.02 1 5246 1 
+       43 1 1 10 10 ILE HG12 H 1.23 0.02 2 5246 1 
+       44 1 1 10 10 ILE HG13 H 0.32 0.02 2 5246 1 
+       45 1 1 10 10 ILE HG2  H 0.63 0.02 1 5246 1 
+       46 1 1 10 10 ILE HD1  H 0.50 0.02 1 5246 1 
+       47 1 1 11 11 CYS H    H 9.92 0.02 1 5246 1 
+       48 1 1 11 11 CYS HA   H 5.13 0.02 1 5246 1 
+       49 1 1 11 11 CYS HB2  H 3.10 0.02 2 5246 1 
+       50 1 1 11 11 CYS HB3  H 2.90 0.02 2 5246 1 
+       51 1 1 12 12 SER H    H 8.55 0.02 1 5246 1 
+       52 1 1 12 12 SER HA   H 4.63 0.02 1 5246 1 
+       53 1 1 12 12 SER HB2  H 4.15 0.02 2 5246 1 
+       54 1 1 12 12 SER HB3  H 3.97 0.02 2 5246 1 
+       55 1 1 13 13 LEU H    H 8.75 0.02 1 5246 1 
+       56 1 1 13 13 LEU HA   H 3.90 0.02 1 5246 1 
+       57 1 1 13 13 LEU HB2  H 1.56 0.02 2 5246 1 
+       58 1 1 13 13 LEU HB3  H 1.44 0.02 2 5246 1 
+       59 1 1 13 13 LEU HG   H 1.39 0.02 1 5246 1 
+       60 1 1 13 13 LEU HD1  H 0.82 0.02 1 5246 1 
+       61 1 1 13 13 LEU HD2  H 0.71 0.02 1 5246 1 
+       62 1 1 14 14 TYR H    H 7.63 0.02 1 5246 1 
+       63 1 1 14 14 TYR HA   H 4.31 0.02 1 5246 1 
+       64 1 1 14 14 TYR HB2  H 3.00 0.02 1 5246 1 
+       65 1 1 14 14 TYR HB3  H 3.00 0.02 1 5246 1 
+       66 1 1 14 14 TYR HD1  H 7.11 0.02 1 5246 1 
+       67 1 1 14 14 TYR HE1  H 6.85 0.02 1 5246 1 
+       68 1 1 15 15 GLN H    H 7.54 0.02 1 5246 1 
+       69 1 1 15 15 GLN HA   H 3.99 0.02 1 5246 1 
+       70 1 1 15 15 GLN HB2  H 2.05 0.02 2 5246 1 
+       71 1 1 15 15 GLN HB3  H 1.95 0.02 2 5246 1 
+       72 1 1 15 15 GLN HG2  H 2.41 0.02 2 5246 1 
+       73 1 1 15 15 GLN HG3  H 2.24 0.02 2 5246 1 
+       74 1 1 16 16 LEU H    H 7.89 0.02 1 5246 1 
+       75 1 1 16 16 LEU HA   H 4.11 0.02 1 5246 1 
+       76 1 1 16 16 LEU HB2  H 1.95 0.02 2 5246 1 
+       77 1 1 16 16 LEU HB3  H 1.51 0.02 2 5246 1 
+       78 1 1 16 16 LEU HG   H 1.71 0.02 1 5246 1 
+       79 1 1 16 16 LEU HD1  H 0.78 0.02 1 5246 1 
+       80 1 1 16 16 LEU HD2  H 0.71 0.02 1 5246 1 
+       81 1 1 17 17 GLU H    H 7.90 0.02 1 5246 1 
+       82 1 1 17 17 GLU HA   H 4.20 0.02 1 5246 1 
+       83 1 1 17 17 GLU HB2  H 2.02 0.02 2 5246 1 
+       84 1 1 17 17 GLU HB3  H 1.95 0.02 2 5246 1 
+       85 1 1 17 17 GLU HG2  H 2.36 0.02 2 5246 1 
+       86 1 1 17 17 GLU HG3  H 2.28 0.02 2 5246 1 
+       87 1 1 18 18 ASN H    H 7.32 0.02 1 5246 1 
+       88 1 1 18 18 ASN HA   H 4.44 0.02 1 5246 1 
+       89 1 1 18 18 ASN HB2  H 2.60 0.02 2 5246 1 
+       90 1 1 18 18 ASN HB3  H 2.47 0.02 2 5246 1 
+       91 1 1 19 19 TYR H    H 7.90 0.02 1 5246 1 
+       92 1 1 19 19 TYR HA   H 4.19 0.02 1 5246 1 
+       93 1 1 19 19 TYR HB2  H 3.52 0.02 2 5246 1 
+       94 1 1 19 19 TYR HB3  H 2.65 0.02 2 5246 1 
+       95 1 1 19 19 TYR HD1  H 7.25 0.02 1 5246 1 
+       96 1 1 19 19 TYR HE1  H 6.74 0.02 1 5246 1 
+       97 1 1 20 20 CYS H    H 7.22 0.02 1 5246 1 
+       98 1 1 20 20 CYS HA   H 5.13 0.02 1 5246 1 
+       99 1 1 20 20 CYS HB2  H 3.33 0.02 2 5246 1 
+      100 1 1 20 20 CYS HB3  H 2.82 0.02 2 5246 1 
+      101 1 1 21 21 ASN H    H 8.06 0.02 1 5246 1 
+      102 1 1 21 21 ASN HA   H 4.52 0.02 1 5246 1 
+      103 1 1 21 21 ASN HB2  H 2.79 0.02 2 5246 1 
+      104 1 1 21 21 ASN HB3  H 2.61 0.02 2 5246 1 
+      105 1 1 21 21 ASN HD21 H 7.54 0.02 1 5246 1 
+
+   stop_
+
+save_
+
+
+save_shift_set_2
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  shift_set_2
+   _Assigned_chem_shift_list.Entry_ID                      5246
+   _Assigned_chem_shift_list.ID                            2
+   _Assigned_chem_shift_list.Sample_condition_list_ID      1
+   _Assigned_chem_shift_list.Sample_condition_list_label  $cond_1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label   $chemical_shift_reference
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Entry_ID
+
+      . ? 1 $sample_1 5246 
+
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+        1 2 2  1  1 PHE HA  H  4.15 0.02 1 5246 2 
+        2 2 2  1  1 PHE HB2 H  3.75 0.02 2 5246 2 
+        3 2 2  1  1 PHE HB3 H  3.15 0.02 2 5246 2 
+        4 2 2  1  1 PHE HD1 H  7.23 0.02 1 5246 2 
+        5 2 2  1  1 PHE HE1 H  7.32 0.02 1 5246 2 
+        6 2 2  2  2 VAL H   H  8.24 0.02 1 5246 2 
+        7 2 2  2  2 VAL HA  H  4.07 0.02 1 5246 2 
+        8 2 2  2  2 VAL HB  H  2.06 0.02 1 5246 2 
+        9 2 2  2  2 VAL HG1 H  0.86 0.02 1 5246 2 
+       10 2 2  3  3 ASN H   H  8.55 0.02 1 5246 2 
+       11 2 2  3  3 ASN HA  H  4.63 0.02 1 5246 2 
+       12 2 2  3  3 ASN HB2 H  2.82 0.02 2 5246 2 
+       13 2 2  3  3 ASN HB3 H  2.71 0.02 2 5246 2 
+       14 2 2  4  4 GLN H   H  8.23 0.02 1 5246 2 
+       15 2 2  4  4 GLN HA  H  4.49 0.02 1 5246 2 
+       16 2 2  4  4 GLN HB2 H  2.10 0.02 2 5246 2 
+       17 2 2  4  4 GLN HB3 H  1.93 0.02 2 5246 2 
+       18 2 2  4  4 GLN HG2 H  2.18 0.02 2 5246 2 
+       19 2 2  4  4 GLN HG3 H  2.08 0.02 2 5246 2 
+       20 2 2  5  5 HIS H   H  8.55 0.02 1 5246 2 
+       21 2 2  5  5 HIS HA  H  4.38 0.02 1 5246 2 
+       22 2 2  5  5 HIS HB2 H  3.52 0.02 2 5246 2 
+       23 2 2  5  5 HIS HB3 H  3.18 0.02 2 5246 2 
+       24 2 2  6  6 LEU H   H  9.07 0.02 1 5246 2 
+       25 2 2  6  6 LEU HA  H  4.59 0.02 1 5246 2 
+       26 2 2  6  6 LEU HB2 H  1.71 0.02 2 5246 2 
+       27 2 2  6  6 LEU HB3 H  0.72 0.02 2 5246 2 
+       28 2 2  6  6 LEU HG  H  1.59 0.02 1 5246 2 
+       29 2 2  6  6 LEU HD1 H  0.80 0.02 2 5246 2 
+       30 2 2  6  6 LEU HD2 H  0.72 0.02 2 5246 2 
+       31 2 2  7  7 CYS H   H  8.71 0.02 1 5246 2 
+       32 2 2  7  7 CYS HA  H  5.00 0.02 1 5246 2 
+       33 2 2  7  7 CYS HB2 H  3.22 0.02 2 5246 2 
+       34 2 2  7  7 CYS HB3 H  2.92 0.02 2 5246 2 
+       35 2 2  8  8 GLY H   H  9.44 0.02 1 5246 2 
+       36 2 2  8  8 GLY HA2 H  3.99 0.02 2 5246 2 
+       37 2 2  8  8 GLY HA3 H  3.89 0.02 2 5246 2 
+       38 2 2  9  9 SER H   H  9.10 0.02 1 5246 2 
+       39 2 2  9  9 SER HA  H  4.20 0.02 1 5246 2 
+       40 2 2  9  9 SER HB2 H  3.83 0.02 1 5246 2 
+       41 2 2  9  9 SER HB3 H  3.83 0.02 1 5246 2 
+       42 2 2 10 10 ASP H   H  7.97 0.02 1 5246 2 
+       43 2 2 10 10 ASP HA  H  4.41 0.02 1 5246 2 
+       44 2 2 10 10 ASP HB2 H  3.06 0.02 2 5246 2 
+       45 2 2 10 10 ASP HB3 H  2.65 0.02 2 5246 2 
+       46 2 2 11 11 LEU H   H  6.84 0.02 1 5246 2 
+       47 2 2 11 11 LEU HA  H  3.89 0.02 1 5246 2 
+       48 2 2 11 11 LEU HB2 H  1.88 0.02 2 5246 2 
+       49 2 2 11 11 LEU HB3 H  1.17 0.02 2 5246 2 
+       50 2 2 11 11 LEU HG  H  1.24 0.02 1 5246 2 
+       51 2 2 11 11 LEU HD1 H  0.79 0.02 2 5246 2 
+       52 2 2 11 11 LEU HD2 H  0.73 0.02 2 5246 2 
+       53 2 2 12 12 VAL H   H  6.82 0.02 1 5246 2 
+       54 2 2 12 12 VAL HA  H  3.32 0.02 1 5246 2 
+       55 2 2 12 12 VAL HB  H  2.09 0.02 1 5246 2 
+       56 2 2 12 12 VAL HG1 H  0.99 0.02 1 5246 2 
+       57 2 2 13 13 GLU H   H  8.06 0.02 1 5246 2 
+       58 2 2 13 13 GLU HA  H  4.05 0.02 1 5246 2 
+       59 2 2 13 13 GLU HB2 H  2.13 0.02 2 5246 2 
+       60 2 2 13 13 GLU HB3 H  2.09 0.02 2 5246 2 
+       61 2 2 13 13 GLU HG2 H  2.60 0.02 2 5246 2 
+       62 2 2 13 13 GLU HG3 H  2.43 0.02 2 5246 2 
+       63 2 2 14 14 ALA H   H  7.67 0.02 1 5246 2 
+       64 2 2 14 14 ALA HA  H  4.05 0.02 1 5246 2 
+       65 2 2 14 14 ALA HB  H  1.37 0.02 1 5246 2 
+       66 2 2 15 15 LEU H   H  8.07 0.02 1 5246 2 
+       67 2 2 15 15 LEU HA  H  3.71 0.02 1 5246 2 
+       68 2 2 15 15 LEU HB2 H  1.06 0.02 2 5246 2 
+       69 2 2 15 15 LEU HB3 H  0.27 0.02 2 5246 2 
+       70 2 2 15 15 LEU HG  H  1.23 0.02 1 5246 2 
+       71 2 2 15 15 LEU HD1 H  0.52 0.02 2 5246 2 
+       72 2 2 15 15 LEU HD2 H -0.02 0.02 2 5246 2 
+       73 2 2 16 16 TYR H   H  8.29 0.02 1 5246 2 
+       74 2 2 16 16 TYR HA  H  4.38 0.02 1 5246 2 
+       75 2 2 16 16 TYR HB2 H  3.17 0.02 2 5246 2 
+       76 2 2 16 16 TYR HB3 H  3.13 0.02 2 5246 2 
+       77 2 2 16 16 TYR HD1 H  7.21 0.02 1 5246 2 
+       78 2 2 16 16 TYR HE1 H  6.80 0.02 1 5246 2 
+       79 2 2 17 17 LEU H   H  7.72 0.02 1 5246 2 
+       80 2 2 17 17 LEU HA  H  4.07 0.02 1 5246 2 
+       81 2 2 17 17 LEU HB2 H  1.90 0.02 2 5246 2 
+       82 2 2 17 17 LEU HB3 H  1.76 0.02 2 5246 2 
+       83 2 2 17 17 LEU HG  H  1.78 0.02 1 5246 2 
+       84 2 2 17 17 LEU HD1 H  0.93 0.02 2 5246 2 
+       85 2 2 17 17 LEU HD2 H  0.90 0.02 2 5246 2 
+       86 2 2 18 18 VAL H   H  8.34 0.02 1 5246 2 
+       87 2 2 18 18 VAL HA  H  3.77 0.02 1 5246 2 
+       88 2 2 18 18 VAL HB  H  1.98 0.02 1 5246 2 
+       89 2 2 18 18 VAL HG1 H  1.01 0.02 2 5246 2 
+       90 2 2 18 18 VAL HG2 H  0.89 0.02 2 5246 2 
+       91 2 2 19 19 CYS H   H  8.84 0.02 1 5246 2 
+       92 2 2 19 19 CYS HA  H  4.84 0.02 1 5246 2 
+       93 2 2 19 19 CYS HB2 H  3.32 0.02 2 5246 2 
+       94 2 2 19 19 CYS HB3 H  2.88 0.02 2 5246 2 
+       95 2 2 20 20 GLY H   H  7.79 0.02 1 5246 2 
+       96 2 2 20 20 GLY HA2 H  3.99 0.02 2 5246 2 
+       97 2 2 20 20 GLY HA3 H  3.83 0.02 2 5246 2 
+       98 2 2 21 21 GLU H   H  9.11 0.02 1 5246 2 
+       99 2 2 21 21 GLU HA  H  4.20 0.02 1 5246 2 
+      100 2 2 21 21 GLU HB2 H  2.21 0.02 2 5246 2 
+      101 2 2 21 21 GLU HB3 H  2.06 0.02 2 5246 2 
+      102 2 2 21 21 GLU HG2 H  2.38 0.02 1 5246 2 
+      103 2 2 22 22 ARG H   H  8.12 0.02 1 5246 2 
+      104 2 2 22 22 ARG HA  H  4.19 0.02 1 5246 2 
+      105 2 2 22 22 ARG HB2 H  2.16 0.02 2 5246 2 
+      106 2 2 22 22 ARG HB3 H  2.06 0.02 2 5246 2 
+      107 2 2 22 22 ARG HG2 H  1.90 0.02 2 5246 2 
+      108 2 2 22 22 ARG HG3 H  1.85 0.02 2 5246 2 
+      109 2 2 22 22 ARG HD2 H  3.39 0.02 2 5246 2 
+      110 2 2 22 22 ARG HD3 H  3.32 0.02 2 5246 2 
+      111 2 2 23 23 GLY H   H  7.37 0.02 1 5246 2 
+      112 2 2 23 23 GLY HA2 H  4.13 0.02 2 5246 2 
+      113 2 2 23 23 GLY HA3 H  3.80 0.02 2 5246 2 
+      114 2 2 24 24 PHE H   H  7.55 0.02 1 5246 2 
+      115 2 2 24 24 PHE HA  H  5.31 0.02 1 5246 2 
+      116 2 2 24 24 PHE HB2 H  3.07 0.02 2 5246 2 
+      117 2 2 24 24 PHE HB3 H  2.87 0.02 2 5246 2 
+      118 2 2 24 24 PHE HD1 H  6.66 0.02 1 5246 2 
+      119 2 2 24 24 PHE HE1 H  6.82 0.02 1 5246 2 
+      120 2 2 25 25 PHE H   H  8.56 0.02 1 5246 2 
+      121 2 2 25 25 PHE HA  H  4.94 0.02 1 5246 2 
+      122 2 2 25 25 PHE HB2 H  3.19 0.02 2 5246 2 
+      123 2 2 25 25 PHE HB3 H  3.04 0.02 2 5246 2 
+      124 2 2 25 25 PHE HD1 H  7.19 0.02 1 5246 2 
+      125 2 2 25 25 PHE HE1 H  7.26 0.02 1 5246 2 
+      126 2 2 26 26 TYR H   H  8.31 0.02 1 5246 2 
+      127 2 2 26 26 TYR HA  H  4.57 0.02 1 5246 2 
+      128 2 2 26 26 TYR HB2 H  2.89 0.02 1 5246 2 
+      129 2 2 26 26 TYR HD1 H  7.10 0.02 1 5246 2 
+      130 2 2 26 26 TYR HE1 H  6.76 0.02 1 5246 2 
+      131 2 2 27 27 THR H   H  7.80 0.02 1 5246 2 
+      132 2 2 27 27 THR HA  H  4.59 0.02 1 5246 2 
+      133 2 2 27 27 THR HB  H  4.13 0.02 1 5246 2 
+      134 2 2 27 27 THR HG2 H  1.20 0.02 1 5246 2 
+      135 2 2 28 28 LYS H   H  8.54 0.02 1 5246 2 
+      136 2 2 28 28 LYS HA  H  4.38 0.02 1 5246 2 
+      137 2 2 28 28 LYS HB2 H  1.80 0.02 2 5246 2 
+      138 2 2 28 28 LYS HB3 H  1.70 0.02 2 5246 2 
+      139 2 2 28 28 LYS HG2 H  1.42 0.02 1 5246 2 
+      140 2 2 28 28 LYS HD2 H  1.62 0.02 1 5246 2 
+      141 2 2 28 28 LYS HE2 H  2.89 0.02 1 5246 2 
+      142 2 2 29 29 PRO HA  H  4.47 0.02 1 5246 2 
+      143 2 2 29 29 PRO HB2 H  2.29 0.02 2 5246 2 
+      144 2 2 29 29 PRO HB3 H  1.97 0.02 2 5246 2 
+      145 2 2 29 29 PRO HG2 H  1.97 0.02 1 5246 2 
+      146 2 2 29 29 PRO HD2 H  3.63 0.02 2 5246 2 
+      147 2 2 29 29 PRO HD3 H  3.53 0.02 2 5246 2 
+      148 2 2 30 30 THR H   H  7.80 0.02 1 5246 2 
+      149 2 2 30 30 THR HA  H  4.13 0.02 1 5246 2 
+      150 2 2 30 30 THR HB  H  4.23 0.02 1 5246 2 
+      151 2 2 30 30 THR HG2 H  1.20 0.02 1 5246 2 
+
+   stop_
+
+save_
+
+
+save_shift_set_3
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  shift_set_3
+   _Assigned_chem_shift_list.Entry_ID                      5246
+   _Assigned_chem_shift_list.ID                            3
+   _Assigned_chem_shift_list.Sample_condition_list_ID      2
+   _Assigned_chem_shift_list.Sample_condition_list_label  $cond_2
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label   $chemical_shift_reference
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Entry_ID
+
+      . ? 1 $sample_1 5246 
+
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+       1 1 1  2  2 IIL HA   H 3.90 0.02 1 5246 3 
+       2 1 1  2  2 IIL HB   H 1.47 0.02 1 5246 3 
+       3 1 1  2  2 IIL HG12 H 1.50 0.02 2 5246 3 
+       4 1 1  2  2 IIL HG13 H 1.03 0.02 2 5246 3 
+       5 1 1  2  2 IIL HG2  H 0.68 0.02 1 5246 3 
+       6 1 1  2  2 IIL HD1  H 0.50 0.02 1 5246 3 
+       7 1 1  3  3 VAL HA   H 3.57 0.02 1 5246 3 
+       8 1 1  3  3 VAL HB   H 1.96 0.02 1 5246 3 
+       9 1 1  3  3 VAL HG1  H 1.02 0.02 2 5246 3 
+      10 1 1  3  3 VAL HG2  H 0.89 0.02 2 5246 3 
+      11 1 1  5  5 GLN HA   H 4.10 0.02 1 5246 3 
+      12 1 1  5  5 GLN HB2  H 2.14 0.02 2 5246 3 
+      13 1 1  5  5 GLN HB3  H 2.00 0.02 2 5246 3 
+      14 1 1  5  5 GLN HG2  H 2.23 0.02 1 5246 3 
+      15 1 1  6  6 CYS H    H 8.26 0.02 1 5246 3 
+      16 1 1  6  6 CYS HA   H 4.95 0.02 1 5246 3 
+      17 1 1  6  6 CYS HB2  H 3.20 0.02 2 5246 3 
+      18 1 1  6  6 CYS HB3  H 2.86 0.02 2 5246 3 
+      19 1 1  7  7 CYS HA   H 4.88 0.02 1 5246 3 
+      20 1 1  7  7 CYS HB2  H 3.83 0.02 2 5246 3 
+      21 1 1  7  7 CYS HB3  H 3.40 0.02 2 5246 3 
+      22 1 1  8  8 THR HA   H 4.07 0.02 1 5246 3 
+      23 1 1  8  8 THR HB   H 4.66 0.02 1 5246 3 
+      24 1 1  8  8 THR HG2  H 1.25 0.02 1 5246 3 
+      25 1 1  9  9 SER HA   H 4.70 0.02 1 5246 3 
+      26 1 1  9  9 SER HB2  H 3.95 0.02 2 5246 3 
+      27 1 1  9  9 SER HB3  H 3.80 0.02 2 5246 3 
+      28 1 1 10 10 ILE HA   H 4.33 0.02 1 5246 3 
+      29 1 1 10 10 ILE HB   H 1.51 0.02 1 5246 3 
+      30 1 1 10 10 ILE HG11 H 1.12 0.02 1 5246 3 
+      31 1 1 10 10 ILE HG12 H 1.12 0.02 1 5246 3 
+      32 1 1 10 10 ILE HG2  H 0.62 0.02 1 5246 3 
+      33 1 1 10 10 ILE HD1  H 0.50 0.02 1 5246 3 
+      34 1 1 12 12 SER HA   H 4.62 0.02 1 5246 3 
+      35 1 1 12 12 SER HB2  H 4.07 0.02 2 5246 3 
+      36 1 1 12 12 SER HB3  H 3.94 0.02 2 5246 3 
+      37 1 1 13 13 LEU H    H 8.73 0.02 1 5246 3 
+      38 1 1 13 13 LEU HA   H 3.97 0.02 1 5246 3 
+      39 1 1 13 13 LEU HB2  H 1.53 0.02 2 5246 3 
+      40 1 1 13 13 LEU HB3  H 1.48 0.02 2 5246 3 
+      41 1 1 13 13 LEU HG   H 1.53 0.02 1 5246 3 
+      42 1 1 13 13 LEU HD1  H 0.90 0.02 1 5246 3 
+      43 1 1 13 13 LEU HD2  H 0.82 0.02 1 5246 3 
+      44 1 1 14 14 TYR H    H 7.57 0.02 1 5246 3 
+      45 1 1 14 14 TYR HA   H 4.36 0.02 1 5246 3 
+      46 1 1 14 14 TYR HB2  H 3.01 0.02 1 5246 3 
+      47 1 1 14 14 TYR HB3  H 3.01 0.02 1 5246 3 
+      48 1 1 14 14 TYR HD1  H 7.12 0.02 1 5246 3 
+      49 1 1 14 14 TYR HE1  H 6.85 0.02 1 5246 3 
+      50 1 1 15 15 GLN H    H 7.53 0.02 1 5246 3 
+      51 1 1 15 15 GLN HA   H 4.00 0.02 1 5246 3 
+      52 1 1 15 15 GLN HG2  H 2.37 0.02 2 5246 3 
+      53 1 1 15 15 GLN HG3  H 2.19 0.02 2 5246 3 
+      54 1 1 16 16 LEU H    H 7.85 0.02 1 5246 3 
+      55 1 1 16 16 LEU HA   H 4.10 0.02 1 5246 3 
+      56 1 1 16 16 LEU HB2  H 1.96 0.02 2 5246 3 
+      57 1 1 16 16 LEU HB3  H 1.48 0.02 2 5246 3 
+      58 1 1 16 16 LEU HG   H 1.71 0.02 1 5246 3 
+      59 1 1 16 16 LEU HD1  H 0.74 0.02 1 5246 3 
+      60 1 1 16 16 LEU HD2  H 0.68 0.02 1 5246 3 
+      61 1 1 17 17 GLU H    H 7.87 0.02 1 5246 3 
+      62 1 1 17 17 GLU HA   H 4.18 0.02 1 5246 3 
+      63 1 1 17 17 GLU HB2  H 1.99 0.02 1 5246 3 
+      64 1 1 17 17 GLU HB3  H 1.99 0.02 1 5246 3 
+      65 1 1 17 17 GLU HG2  H 2.36 0.02 2 5246 3 
+      66 1 1 17 17 GLU HG3  H 2.20 0.02 2 5246 3 
+      67 1 1 18 18 ASN H    H 7.32 0.02 1 5246 3 
+      68 1 1 18 18 ASN HA   H 4.43 0.02 1 5246 3 
+      69 1 1 18 18 ASN HB2  H 2.57 0.02 2 5246 3 
+      70 1 1 18 18 ASN HB3  H 2.47 0.02 2 5246 3 
+      71 1 1 19 19 TYR H    H 7.87 0.02 1 5246 3 
+      72 1 1 19 19 TYR HA   H 4.20 0.02 1 5246 3 
+      73 1 1 19 19 TYR HB2  H 3.52 0.02 2 5246 3 
+      74 1 1 19 19 TYR HB3  H 2.63 0.02 2 5246 3 
+      75 1 1 19 19 TYR HD1  H 7.23 0.02 1 5246 3 
+      76 1 1 19 19 TYR HE1  H 6.74 0.02 1 5246 3 
+      77 1 1 20 20 CYS H    H 7.17 0.02 1 5246 3 
+      78 1 1 20 20 CYS HA   H 5.12 0.02 1 5246 3 
+      79 1 1 20 20 CYS HB2  H 3.30 0.02 2 5246 3 
+      80 1 1 20 20 CYS HB3  H 2.78 0.02 2 5246 3 
+      81 1 1 21 21 ASN H    H 8.02 0.02 1 5246 3 
+      82 1 1 21 21 ASN HA   H 4.50 0.02 1 5246 3 
+      83 1 1 21 21 ASN HB2  H 2.77 0.02 2 5246 3 
+      84 1 1 21 21 ASN HB3  H 2.58 0.02 2 5246 3 
+      85 1 1 21 21 ASN HD21 H 7.47 0.02 2 5246 3 
+      86 1 1 21 21 ASN HD22 H 6.38 0.02 2 5246 3 
+
+   stop_
+
+save_
+
+
+save_shift_set_4
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  shift_set_4
+   _Assigned_chem_shift_list.Entry_ID                      5246
+   _Assigned_chem_shift_list.ID                            4
+   _Assigned_chem_shift_list.Sample_condition_list_ID      2
+   _Assigned_chem_shift_list.Sample_condition_list_label  $cond_2
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label   $chemical_shift_reference
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Entry_ID
+
+      . ? 1 $sample_1 5246 
+
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+        1 2 2  1  1 PHE HA  H  3.94 0.02 1 5246 4 
+        2 2 2  1  1 PHE HB2 H  3.20 0.02 2 5246 4 
+        3 2 2  1  1 PHE HB3 H  3.03 0.02 2 5246 4 
+        4 2 2  3  3 ASN HA  H  4.57 0.02 1 5246 4 
+        5 2 2  3  3 ASN HB2 H  2.83 0.02 2 5246 4 
+        6 2 2  3  3 ASN HB3 H  2.73 0.02 2 5246 4 
+        7 2 2  4  4 GLN HA  H  4.47 0.02 1 5246 4 
+        8 2 2  4  4 GLN HB2 H  1.92 0.02 1 5246 4 
+        9 2 2  4  4 GLN HG2 H  2.10 0.02 1 5246 4 
+       10 2 2  5  5 HIS HA  H  4.34 0.02 1 5246 4 
+       11 2 2  5  5 HIS HB2 H  3.44 0.02 2 5246 4 
+       12 2 2  5  5 HIS HB3 H  3.08 0.02 2 5246 4 
+       13 2 2  6  6 LEU H   H  8.92 0.02 1 5246 4 
+       14 2 2  6  6 LEU HA  H  4.57 0.02 1 5246 4 
+       15 2 2  6  6 LEU HB2 H  1.70 0.02 2 5246 4 
+       16 2 2  6  6 LEU HB3 H  0.80 0.02 2 5246 4 
+       17 2 2  6  6 LEU HG  H  1.54 0.02 1 5246 4 
+       18 2 2  6  6 LEU HD1 H  0.90 0.02 2 5246 4 
+       19 2 2  6  6 LEU HD2 H  0.80 0.02 2 5246 4 
+       20 2 2  7  7 CYS H   H  8.63 0.02 1 5246 4 
+       21 2 2  7  7 CYS HA  H  4.98 0.02 1 5246 4 
+       22 2 2  7  7 CYS HB2 H  3.22 0.02 2 5246 4 
+       23 2 2  7  7 CYS HB3 H  2.93 0.02 2 5246 4 
+       24 2 2  8  8 GLY HA2 H  4.00 0.02 2 5246 4 
+       25 2 2  8  8 GLY HA3 H  3.86 0.02 2 5246 4 
+       26 2 2  9  9 SER HA  H  4.15 0.02 1 5246 4 
+       27 2 2  9  9 SER HB2 H  4.02 0.02 2 5246 4 
+       28 2 2  9  9 SER HB3 H  3.92 0.02 2 5246 4 
+       29 2 2 10 10 ASP H   H  7.98 0.02 1 5246 4 
+       30 2 2 10 10 ASP HA  H  4.38 0.02 1 5246 4 
+       31 2 2 10 10 ASP HB2 H  3.00 0.02 2 5246 4 
+       32 2 2 10 10 ASP HB3 H  2.65 0.02 2 5246 4 
+       33 2 2 11 11 LEU H   H  6.93 0.02 1 5246 4 
+       34 2 2 11 11 LEU HA  H  3.88 0.02 1 5246 4 
+       35 2 2 11 11 LEU HB2 H  1.85 0.02 2 5246 4 
+       36 2 2 11 11 LEU HB3 H  1.16 0.02 2 5246 4 
+       37 2 2 11 11 LEU HG  H  1.23 0.02 1 5246 4 
+       38 2 2 11 11 LEU HD1 H  0.75 0.02 2 5246 4 
+       39 2 2 11 11 LEU HD2 H  0.63 0.02 2 5246 4 
+       40 2 2 12 12 VAL H   H  7.13 0.02 1 5246 4 
+       41 2 2 12 12 VAL HA  H  3.20 0.02 1 5246 4 
+       42 2 2 12 12 VAL HB  H  2.09 0.02 1 5246 4 
+       43 2 2 12 12 VAL HG1 H  1.06 0.02 2 5246 4 
+       44 2 2 12 12 VAL HG2 H  0.98 0.02 2 5246 4 
+       45 2 2 13 13 GLU HA  H  4.06 0.02 1 5246 4 
+       46 2 2 13 13 GLU HB2 H  2.13 0.02 2 5246 4 
+       47 2 2 13 13 GLU HB3 H  2.07 0.02 2 5246 4 
+       48 2 2 13 13 GLU HG2 H  2.54 0.02 1 5246 4 
+       49 2 2 14 14 ALA H   H  7.56 0.02 1 5246 4 
+       50 2 2 14 14 ALA HA  H  4.13 0.02 1 5246 4 
+       51 2 2 14 14 ALA HB  H  1.40 0.02 1 5246 4 
+       52 2 2 15 15 LEU H   H  8.03 0.02 1 5246 4 
+       53 2 2 15 15 LEU HA  H  3.72 0.02 1 5246 4 
+       54 2 2 15 15 LEU HB2 H  1.07 0.02 2 5246 4 
+       55 2 2 15 15 LEU HB3 H  0.28 0.02 2 5246 4 
+       56 2 2 15 15 LEU HG  H  1.20 0.02 1 5246 4 
+       57 2 2 15 15 LEU HD1 H  0.50 0.02 2 5246 4 
+       58 2 2 15 15 LEU HD2 H -0.02 0.02 2 5246 4 
+       59 2 2 16 16 TYR H   H  8.23 0.02 1 5246 4 
+       60 2 2 16 16 TYR HA  H  4.38 0.02 1 5246 4 
+       61 2 2 16 16 TYR HB2 H  3.15 0.02 1 5246 4 
+       62 2 2 16 16 TYR HB3 H  3.15 0.02 1 5246 4 
+       63 2 2 16 16 TYR HD1 H  7.23 0.02 1 5246 4 
+       64 2 2 16 16 TYR HE1 H  6.78 0.02 1 5246 4 
+       65 2 2 17 17 LEU H   H  7.63 0.02 1 5246 4 
+       66 2 2 17 17 LEU HA  H  4.08 0.02 1 5246 4 
+       67 2 2 17 17 LEU HB2 H  1.90 0.02 2 5246 4 
+       68 2 2 17 17 LEU HB3 H  1.77 0.02 2 5246 4 
+       69 2 2 17 17 LEU HG  H  1.77 0.02 1 5246 4 
+       70 2 2 17 17 LEU HD1 H  0.94 0.02 1 5246 4 
+       71 2 2 17 17 LEU HD2 H  0.94 0.02 1 5246 4 
+       72 2 2 18 18 VAL H   H  8.17 0.02 1 5246 4 
+       73 2 2 18 18 VAL HA  H  3.82 0.02 1 5246 4 
+       74 2 2 18 18 VAL HB  H  1.97 0.02 1 5246 4 
+       75 2 2 18 18 VAL HG1 H  1.04 0.02 2 5246 4 
+       76 2 2 18 18 VAL HG2 H  0.89 0.02 2 5246 4 
+       77 2 2 19 19 CYS H   H  8.82 0.02 1 5246 4 
+       78 2 2 19 19 CYS HA  H  4.80 0.02 1 5246 4 
+       79 2 2 19 19 CYS HB2 H  3.30 0.02 2 5246 4 
+       80 2 2 19 19 CYS HB3 H  2.83 0.02 2 5246 4 
+       81 2 2 20 20 GLY H   H  7.78 0.02 1 5246 4 
+       82 2 2 20 20 GLY HA2 H  4.03 0.02 2 5246 4 
+       83 2 2 20 20 GLY HA3 H  3.93 0.02 2 5246 4 
+       84 2 2 21 21 GLU HA  H  4.10 0.02 1 5246 4 
+       85 2 2 21 21 GLU HB2 H  2.16 0.02 1 5246 4 
+       86 2 2 21 21 GLU HG2 H  2.26 0.02 1 5246 4 
+       87 2 2 22 22 ARG H   H  8.07 0.02 1 5246 4 
+       88 2 2 22 22 ARG HA  H  4.15 0.02 1 5246 4 
+       89 2 2 22 22 ARG HB2 H  2.13 0.02 2 5246 4 
+       90 2 2 22 22 ARG HB3 H  2.07 0.02 2 5246 4 
+       91 2 2 22 22 ARG HG2 H  1.85 0.02 1 5246 4 
+       92 2 2 22 22 ARG HG3 H  1.85 0.02 1 5246 4 
+       93 2 2 22 22 ARG HD2 H  3.37 0.02 2 5246 4 
+       94 2 2 22 22 ARG HD3 H  3.30 0.02 2 5246 4 
+       95 2 2 23 23 GLY H   H  7.34 0.02 1 5246 4 
+       96 2 2 23 23 GLY HA2 H  4.15 0.02 2 5246 4 
+       97 2 2 23 23 GLY HA3 H  3.80 0.02 2 5246 4 
+       98 2 2 24 24 PHE H   H  7.53 0.02 1 5246 4 
+       99 2 2 24 24 PHE HA  H  5.30 0.02 1 5246 4 
+      100 2 2 24 24 PHE HB2 H  3.08 0.02 2 5246 4 
+      101 2 2 24 24 PHE HB3 H  2.86 0.02 2 5246 4 
+      102 2 2 24 24 PHE HD1 H  6.63 0.02 1 5246 4 
+      103 2 2 24 24 PHE HE1 H  6.79 0.02 1 5246 4 
+      104 2 2 25 25 PHE H   H  8.53 0.02 1 5246 4 
+      105 2 2 25 25 PHE HA  H  4.80 0.02 1 5246 4 
+      106 2 2 25 25 PHE HB2 H  3.27 0.02 2 5246 4 
+      107 2 2 25 25 PHE HB3 H  3.18 0.02 2 5246 4 
+      108 2 2 25 25 PHE HD1 H  7.19 0.02 1 5246 4 
+      109 2 2 25 25 PHE HE1 H  7.27 0.02 1 5246 4 
+      110 2 2 26 26 TYR H   H  8.26 0.02 1 5246 4 
+      111 2 2 26 26 TYR HA  H  4.55 0.02 1 5246 4 
+      112 2 2 26 26 TYR HB2 H  3.01 0.02 1 5246 4 
+      113 2 2 26 26 TYR HD1 H  7.13 0.02 1 5246 4 
+      114 2 2 26 26 TYR HE1 H  6.74 0.02 1 5246 4 
+      115 2 2 27 27 THR H   H  7.73 0.02 1 5246 4 
+      116 2 2 27 27 THR HA  H  4.57 0.02 1 5246 4 
+      117 2 2 27 27 THR HB  H  4.13 0.02 1 5246 4 
+      118 2 2 28 28 LYS HA  H  4.38 0.02 1 5246 4 
+      119 2 2 28 28 LYS HB2 H  1.78 0.02 2 5246 4 
+      120 2 2 28 28 LYS HB3 H  1.70 0.02 2 5246 4 
+      121 2 2 28 28 LYS HG2 H  1.40 0.02 1 5246 4 
+      122 2 2 28 28 LYS HD2 H  1.63 0.02 1 5246 4 
+      123 2 2 28 28 LYS HE2 H  2.90 0.02 1 5246 4 
+      124 2 2 29 29 PRO HA  H  4.46 0.02 1 5246 4 
+      125 2 2 29 29 PRO HB2 H  2.27 0.02 2 5246 4 
+      126 2 2 29 29 PRO HB3 H  2.00 0.02 2 5246 4 
+      127 2 2 29 29 PRO HG2 H  1.96 0.02 1 5246 4 
+      128 2 2 29 29 PRO HD2 H  3.66 0.02 2 5246 4 
+      129 2 2 29 29 PRO HD3 H  3.54 0.02 2 5246 4 
+      130 2 2 30 30 THR H   H  7.73 0.02 1 5246 4 
+      131 2 2 30 30 THR HA  H  4.12 0.02 1 5246 4 
+      132 2 2 30 30 THR HB  H  4.22 0.02 1 5246 4 
+      133 2 2 30 30 THR HG2 H  1.19 0.02 1 5246 4 
+
+   stop_
+
+save_
+

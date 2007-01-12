@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2005
+// (c) Copyright 2002-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.4.2  2007/01/04 21:09:50  wenger
+// Added the S2DStarIfc.getAndFilterFrameValues() method (partly to
+// simplify ChemShift), used that where appropriate (probably fixes
+// a bug in that residue labels were not filtered in
+// S2DMain.saveFramePistachio()).
+//
+// Revision 1.3.4.1  2007/01/03 23:17:37  wenger
+// Added ABBREV_COMMON for ChemShift.
+//
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:12  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -187,6 +200,7 @@ public class S2DStarIfc {
     //
     public String ASSIGNED_CHEM_SHIFTS = "";
 
+    public String ABBREV_COMMON = "";
     public String ASSEMBLY_DB_ACC_CODE = "";
     public String ASSEMBLY_DB_NAME = "";
     public String ATOM_COORD_ATOM_NAME = "";
@@ -484,7 +498,6 @@ public class S2DStarIfc {
 	      maxVals + ")");
         }
 
-//TEMPTEMP -- should implementation be moved to S2DNmrStarIfc, since mmCIF files don't have save frames??
 	DataLoopNode loop = null;
 	if (frame != null) {
 	    loop = S2DStarUtil.findLoop(frame, loopId);
@@ -514,6 +527,31 @@ public class S2DStarIfc {
       String name, int size, String defaultValue) throws S2DException
     {
         return null;
+    }
+
+    /**
+     * Get the given values from a save frame and filter them, keeping
+     * only the ones that match the given entity ID (no filtering takes
+     * place if the entity ID is "").
+     * @param The save frame (can be null).
+     * @param The loop ID (tag name to use to find the right loop).
+     * @param The tag name for the values to get.
+     * @param The entity ID to match.
+     * @param An array containing the entity ID values corresponding
+     *   to the values we're getting (used for filtering).
+     * @return An array containing the values.
+     */
+    public String[] getAndFilterFrameValues(SaveFrameNode frame,
+      String loopId, String name, String entityID, String[] entityIDList)
+      throws S2DException
+    {
+    	String[] values = getFrameValues(frame, loopId, name);
+
+	if (!entityID.equals("")) {
+	    values = S2DUtils.selectMatches(entityIDList, values, entityID);
+	}
+
+	return values;
     }
 
     public String getFrameName(SaveFrameNode frame)

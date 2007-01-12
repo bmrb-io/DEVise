@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2006
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,37 @@
 // $Id$
 
 // $Log$
+// Revision 1.20.2.6  2007/01/09 22:48:19  wenger
+// Peptide-CGI now works with all data types in 4267, at least (see
+// test41) -- this includes capability to specially deal with optional
+// values that are "?" in the file.  Still need to find out how to deal
+// with Heternonuclear NOE labels.
+//
+// Revision 1.20.2.5  2007/01/08 21:59:21  wenger
+// First version of NMR-STAR 3.1 capability -- added test38 to test
+// this.
+//
+// Revision 1.20.2.4  2007/01/04 21:09:49  wenger
+// Added the S2DStarIfc.getAndFilterFrameValues() method (partly to
+// simplify ChemShift), used that where appropriate (probably fixes
+// a bug in that residue labels were not filtered in
+// S2DMain.saveFramePistachio()).
+//
+// Revision 1.20.2.3  2007/01/03 23:17:35  wenger
+// Added ABBREV_COMMON for ChemShift.
+//
+// Revision 1.20.2.2  2006/12/29 18:11:47  wenger
+// Fixed Peptide-CGI to work properly both stand-alone and as a part
+// of ChemShift.
+//
+// Revision 1.20.2.1  2006/12/28 17:24:06  wenger
+// Temporary mods for ChemShift to be able to use s2d.jar to parse
+// NMR-STAR files (needs a bunch of changes before being released).
+//
+// Revision 1.20  2006/09/20 18:27:30  wenger
+// Made a few changes to the testing document; changed the version to
+// 11.0.2 for release.
+//
 // Revision 1.19  2006/09/20 14:50:45  wenger
 // Made some minor fixes to make_view.
 //
@@ -1205,7 +1236,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.0.2";
+    public static final String PEP_CGI_VERSION = "11.1.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1374,7 +1405,8 @@ public class S2DMain {
 
 	// getProperties must come before checkArgs, so command-line args
 	// can override defaults in properties.
-	getProperties();
+	Properties props = getProperties();
+	getPropertiesDynamic(props);
 
 	checkArgs(args);
     }
@@ -1396,7 +1428,7 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Get configuration-specific properties and set variables accordingly.
-    private void getProperties() throws S2DException
+    public static Properties getProperties() throws S2DException
     {
         Properties props = new Properties();
 	try {
@@ -1444,6 +1476,31 @@ public class S2DMain {
 	    S2DNames.STAR_NAME_TEMPLATE = "bmr*.str";
 	}
 
+	S2DNames.COMMENT_EMAIL = props.getProperty(
+	  "bmrb_mirror.comment_email");
+	if (S2DNames.CGI_URL == null) {
+	    throw new S2DError("Unable to get value for " +
+	      "bmrb_mirror.comment_email property");
+	}
+
+	S2DNames.LACS_NAME_TEMPLATE = props.getProperty(
+	  "bmrb_mirror.lacs_name_template");
+	if (S2DNames.LACS_NAME_TEMPLATE == null) {
+	    if (DEBUG >= 1) {
+	        System.out.println("bmrb_mirror.lacs_name_template " +
+		  "property value not defined; using default");
+	    }
+	    S2DNames.LACS_NAME_TEMPLATE = "bmr*_LACS.out";
+	}
+
+        return props;
+    }
+
+    //-------------------------------------------------------------------
+    // Get configuration-specific properties and set variables
+    // accordingly, for things that can't be static.
+    private void getPropertiesDynamic(Properties props) throws S2DException
+    {
 	String csrTmp = props.getProperty("bmrb_mirror.do_csr_default");
 	if (csrTmp == null) {
 	    System.err.println(new S2DWarning("Unable to get value for " +
@@ -1458,13 +1515,6 @@ public class S2DMain {
 	    }
 	}
 
-	S2DNames.COMMENT_EMAIL = props.getProperty(
-	  "bmrb_mirror.comment_email");
-	if (S2DNames.CGI_URL == null) {
-	    throw new S2DError("Unable to get value for " +
-	      "bmrb_mirror.comment_email property");
-	}
-
 	String lacsTmp = props.getProperty("bmrb_mirror.lacs_level_default");
 	if (lacsTmp == null) {
 	    System.err.println(new S2DWarning("Unable to get value for " +
@@ -1477,16 +1527,6 @@ public class S2DMain {
 		  "lacs_level_default value " + ex.toString() +
 		  "; using default"));
 	    }
-	}
-
-	S2DNames.LACS_NAME_TEMPLATE = props.getProperty(
-	  "bmrb_mirror.lacs_name_template");
-	if (S2DNames.LACS_NAME_TEMPLATE == null) {
-	    if (DEBUG >= 1) {
-	        System.out.println("bmrb_mirror.lacs_name_template " +
-		  "property value not defined; using default");
-	    }
-	    S2DNames.LACS_NAME_TEMPLATE = "bmr*_LACS.out";
 	}
 
 	S2DNames.LACS_URL = props.getProperty("bmrb_mirror.lacs_url");
@@ -2852,21 +2892,15 @@ public class S2DMain {
 		  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ENTITY_ID);
 	    }
 
-	    String[] resSeqCodesTmp = star.getFrameValues(chemShiftFrame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE);
-	    if (!entityID.equals("")) {
-	      resSeqCodesTmp = S2DUtils.selectMatches(entityIDs,
-	        resSeqCodesTmp, entityID);
-	    }
+	    String[] resSeqCodesTmp = star.getAndFilterFrameValues(
+	      chemShiftFrame, star.CHEM_SHIFT_VALUE,
+	      star.CHEM_SHIFT_RES_SEQ_CODE, entityID, entityIDs);
 	    int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
 	    resSeqCodesTmp = null;
 
-	    String[] residueLabels = star.getFrameValues(chemShiftFrame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL);
-	    if (!entityID.equals("")) {
-	      residueLabels = S2DUtils.selectMatches(entityIDs,
-	        residueLabels, entityID);
-	    }
+	    String[] residueLabels = star.getAndFilterFrameValues(
+	      chemShiftFrame, star.CHEM_SHIFT_VALUE,
+	      star.CHEM_SHIFT_RES_LABEL, entityID, entityIDs);
 
             for (int index = 0; index < resSeqCodes.length; ++index) {
 	        int resNum = resSeqCodes[index];
@@ -2939,54 +2973,35 @@ public class S2DMain {
 	      star.CHEM_SHIFT_ENTITY_ID);
 	}
 
-	String[] resSeqCodesTmp = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE);
-	if (!entityID.equals("")) {
-	  resSeqCodesTmp = S2DUtils.selectMatches(entityIDs,
-	    resSeqCodesTmp, entityID);
-	}
+	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
+	  entityIDs);
 	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
 	resSeqCodesTmp = null;
 
-	String[] residueLabels = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL);
-	if (!entityID.equals("")) {
-	  residueLabels = S2DUtils.selectMatches(entityIDs,
-	    residueLabels, entityID);
-	}
+	String[] residueLabels = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
+	  entityIDs);
 
-	String[] atomNames = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME);
-	if (!entityID.equals("")) {
-	  atomNames = S2DUtils.selectMatches(entityIDs, atomNames,
-	    entityID);
-	}
+	String[] atomNames = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
+	  entityIDs);
 
-	String[] atomTypes = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE);
-	if (!entityID.equals("")) {
-	  atomTypes = S2DUtils.selectMatches(entityIDs, atomTypes,
-	    entityID);
-	}
+	String[] atomTypes = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE, entityID,
+	  entityIDs);
 
-	String[] chemShiftsTmp = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE);
-	if (!entityID.equals("")) {
-	  chemShiftsTmp = S2DUtils.selectMatches(entityIDs,
-	    chemShiftsTmp, entityID);
-	}
+	String[] chemShiftsTmp = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityID,
+	  entityIDs);
         double[] chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp);
 	chemShiftsTmp = null;
 
 	int[] ambiguityVals;
 	try {
-	    String[] ambiguityTmp = star.getFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE);
-
-	    if (!entityID.equals("")) {
-	      ambiguityTmp = S2DUtils.selectMatches(entityIDs,
-	        ambiguityTmp, entityID);
-	    }
+	    String[] ambiguityTmp = star.getAndFilterFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE, entityID,
+	      entityIDs);
 	    ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp);
 	    ambiguityTmp = null;
 	} catch (S2DException ex) {
@@ -3422,8 +3437,9 @@ public class S2DMain {
 
 	String[] meritValsTmp;
 	try {
-	    meritValsTmp = star.getFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.FIGURE_OF_MERIT);
+	    meritValsTmp = star.getAndFilterFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.FIGURE_OF_MERIT, entityID,
+	      entityIDs);
 	} catch (S2DException ex) {
             if (DEBUG >= 3) {
 	        System.out.println("No Pistachio values in this save frame (" +
@@ -3431,31 +3447,22 @@ public class S2DMain {
 	    }
 	    return;
 	}
-	if (!entityID.equals("")) {
-	  meritValsTmp = S2DUtils.selectMatches(entityIDs, meritValsTmp,
-	    entityID);
-	}
 	double[] meritVals = S2DUtils.arrayStr2Double(meritValsTmp);
 	meritValsTmp = null;
 
-	String[] resSeqCodesTmp = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE);
-	if (!entityID.equals("")) {
-	  resSeqCodesTmp = S2DUtils.selectMatches(entityIDs,
-	    resSeqCodesTmp, entityID);
-	}
+	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
+	  entityIDs);
 	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
 	resSeqCodesTmp = null;
 
-	String[] residueLabels = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL);
+	String[] residueLabels = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
+	  entityIDs);
 
-	String[] atomNames = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME);
-	if (!entityID.equals("")) {
-	  atomNames = S2DUtils.selectMatches(entityIDs, atomNames,
-	    entityID);
-	}
+	String[] atomNames = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
+	  entityIDs);
 
 	//
 	// Create an S2DPistachio object with the values we just got.
@@ -3528,8 +3535,9 @@ public class S2DMain {
 
 	String[] ambiguityTmp;
 	try {
-	    ambiguityTmp = star.getFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE);
+	    ambiguityTmp = star.getAndFilterFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE, entityID,
+	      entityIDs);
 	} catch (S2DException ex) {
             if (DEBUG >= 3) {
 	        System.out.println("No ambiguity values in this save frame (" +
@@ -3537,35 +3545,22 @@ public class S2DMain {
 	    }
 	    return;
 	}
-	if (!entityID.equals("")) {
-	  ambiguityTmp = S2DUtils.selectMatches(entityIDs,
-	    ambiguityTmp, entityID);
-	}
 	int[] ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp);
 	ambiguityTmp = null;
 
-	String[] resSeqCodesTmp = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE);
-	if (!entityID.equals("")) {
-	  resSeqCodesTmp = S2DUtils.selectMatches(entityIDs,
-	    resSeqCodesTmp, entityID);
-	}
+	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
+	  entityIDs);
 	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
 	resSeqCodesTmp = null;
 
-	String[] residueLabels = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL);
-	if (!entityID.equals("")) {
-	  residueLabels = S2DUtils.selectMatches(entityIDs,
-	    residueLabels, entityID);
-	}
+	String[] residueLabels = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
+	  entityIDs);
 
-	String[] atomNames = star.getFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME);
-	if (!entityID.equals("")) {
-	  atomNames = S2DUtils.selectMatches(entityIDs, atomNames,
-	    entityID);
-	}
+	String[] atomNames = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
+	  entityIDs);
 
 	//
 	// Create an S2DAmbiguity object with the values we just got.

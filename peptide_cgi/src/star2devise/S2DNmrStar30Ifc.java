@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2005
+// (c) Copyright 2004-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -13,13 +13,25 @@
 // ------------------------------------------------------------------------
 
 // This class contains NMR-Star access methods, etc., specific to NMR-STAR
-// version 3.0 files.
+// version 3.0 files.  (Actually, a lot of this is NMR-STAR 3 in general,
+// and some is specific to NMR-STAR 3.0 vs. NMR-STAR 3.1.)
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.3.4.2  2007/01/08 21:59:21  wenger
+// First version of NMR-STAR 3.1 capability -- added test38 to test
+// this.
+//
+// Revision 1.3.4.1  2007/01/03 23:17:36  wenger
+// Added ABBREV_COMMON for ChemShift.
+//
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:11  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -123,8 +135,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
     private static final int DEBUG = 0;
 
-    private String ENTITY_ID = "_Entity.ID";
-    private String ENTRY_SF_CAT = "_Entry.Sf_category";
+    protected String ENTITY_ID = "_Entity.ID";
+    protected String ENTRY_SF_CAT = "_Entry.Sf_category";
 
     // Maps EntityID (String) to isAProtein (Boolean).
     private Hashtable _frameIsProtein = new Hashtable();
@@ -370,7 +382,6 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     //-------------------------------------------------------------------
     // Constructor.  Constructs an S2DNmrStar30Ifc object corresponding to
     // the STAR file represented by starTree.
-
     protected S2DNmrStar30Ifc(StarNode starTree) throws S2DException
     {
         super(starTree);
@@ -380,9 +391,51 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	}
 
 	setStarNames();
+    }
 
-	if (isNmrStar30()) {
-	    checkForProteins();
+    // ----------------------------------------------------------------------
+    // Go through the entity save frames, and build up a list of which are
+    // and are not proteins, indexed by EntityID.
+    protected void checkForProteins()
+    {
+        if (DEBUG >= 1) {
+	    System.out.println("S2DNmrStar30Ifc.checkForProteins()");
+	}
+
+	try {
+	    // Get all of the "entity" save frames.
+	    Enumeration frameList = getDataFramesByCat(MONOMERIC_POLYMER_SF_CAT,
+	      MONOMERIC_POLYMER);
+
+    	    while (frameList.hasMoreElements()) {
+	        SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	        if (DEBUG >= 3) {
+	            System.out.print("Checking save frame " +
+		      getFrameName(frame) + "...");
+	        }
+
+	        String entityID = getOneFrameValue(frame, ENTITY_ID);
+                boolean frameIsProtein = isAProtein(frame);
+
+	        if (DEBUG >= 3) {
+		    if (frameIsProtein) {
+		        System.out.println("is a protein");
+		    } else {
+		        System.out.println("is not a protein");
+		    }
+	        }
+
+		// Add the "is a protein" info into the hash table.
+		if (_frameIsProtein.containsKey(entityID)) {
+		    throw new S2DError("Duplicate entity ID " +
+		      entityID + "!!");
+		} else {
+		    Boolean isProt = new Boolean(frameIsProtein);
+		    _frameIsProtein.put(entityID, isProt);
+		}
+	    }
+	} catch (Exception ex) {
+	    System.err.println("Exception checking for proteins: " + ex);
 	}
     }
 
@@ -393,6 +446,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
+	ABBREV_COMMON = "_Assembly.Name";
 	ASSEMBLY_DB_ACC_CODE = "_Assembly_db_link.Accession_code";
 	ASSEMBLY_DB_NAME = "_Assembly_db_link.Database_code";
         ATOM_COORD_ATOM_NAME = "_Rep_conf.Atom_ID";
@@ -472,52 +526,6 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	T2_SPEC_FREQ_1H = "_Heteronucl_T2_list.Spectrometer_frequency_1H";
         T2_VALUE = "_T2.T2_val";
         T2_VALUE_ERR = "_T2.T2_val_err";
-    }
-
-    // ----------------------------------------------------------------------
-    // Go through the entity save frames, and build up a list of which are
-    // and are not proteins, indexed by EntityID.
-    private void checkForProteins()
-    {
-        if (DEBUG >= 1) {
-	    System.out.println("S2DNmrStar30Ifc.checkForProteins()");
-	}
-
-	try {
-	    // Get all of the "entity" save frames.
-	    Enumeration frameList = getDataFramesByCat(MONOMERIC_POLYMER_SF_CAT,
-	      MONOMERIC_POLYMER);
-
-    	    while (frameList.hasMoreElements()) {
-	        SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	        if (DEBUG >= 3) {
-	            System.out.print("Checking save frame " +
-		      getFrameName(frame) + "...");
-	        }
-
-	        String entityID = getOneFrameValue(frame, ENTITY_ID);
-                boolean frameIsProtein = isAProtein(frame);
-
-	        if (DEBUG >= 3) {
-		    if (frameIsProtein) {
-		        System.out.println("is a protein");
-		    } else {
-		        System.out.println("is not a protein");
-		    }
-	        }
-
-		// Add the "is a protein" info into the hash table.
-		if (_frameIsProtein.containsKey(entityID)) {
-		    throw new S2DError("Duplicate entity ID " +
-		      entityID + "!!");
-		} else {
-		    Boolean isProt = new Boolean(frameIsProtein);
-		    _frameIsProtein.put(entityID, isProt);
-		}
-	    }
-	} catch (Exception ex) {
-	    System.err.println("Exception checking for proteins: " + ex);
-	}
     }
 }
 

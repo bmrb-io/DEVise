@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.2.1  2007/01/03 23:17:36  wenger
+// Added ABBREV_COMMON for ChemShift.
+//
+// Revision 1.4  2006/04/12 15:55:49  wenger
+// Improved some error messages, fixed a comment.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -320,6 +326,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
+	ABBREV_COMMON = "_Abbreviation_common";
 	ASSEMBLY_DB_ACC_CODE = "_Database_accession_code";
 	ASSEMBLY_DB_NAME = "_Database_name";
         ATOM_COORD_ATOM_NAME = "_Atom_name";
