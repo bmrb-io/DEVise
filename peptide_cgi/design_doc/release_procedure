@@ -7,11 +7,11 @@ Note: this is pretty preliminary right now.
 
 - Get rid of "x" part of version and recompile.
 
+- Commit the sources.
+
 - Install on teal, run test_all.
 
 - Check at least one visualization on teal.
-
-- Commit the sources.
 
 - Tag the sources.
 
