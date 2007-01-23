@@ -3966,14 +3966,41 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			click on the bar, you don't see the data for the
 			bar itself, just the link data.)
 
-931 12/7/06	OPEN	JS/Jmol: change selection trees; close the selection
+931 12/7/06	DUP	JS/Jmol: change selection trees; close the selection
 			tree window; re-show the selection trees->the
 			selection is reset to the default. (wenger)
+			(See also 926.)
 
 932 12/7/06	FIXED	Axis multiplication factor doesn't get copied when
 			copying a view (DEVise 1.9.0) (maybe fixed in 1.9.1?).
 			(wenger)
 			(Fixed by wenger, 12/8/06.)
+
+933 1/30/06	OPEN	JS/DEVise: JS shows 4096acdd as a session file.
+			(wenger)
+
+934 2/23/06	OPEN	JS/Jmol: the Jmol view sometimes shows the "busy"
+			mouse cursor when it shouldn't. (wenger)
+
+935 3/30/06	OPEN	JS: (non-Jmol) 3D drill down doesn't do anything
+			unless you're a collaboration leader (my fix for
+			that was wrong).  Also, if you *are* a collaboration
+			leader, I don't see how you ever send a command to
+			the followers for a 3D drill-down, because there's
+			a return statement right after the drillDown3D() call.
+			(wenger) (fix on 1.8 branch)
+
+936 5/11/06	OPEN	JS: F1 key to see view help doesn't work consistently
+			in Firefox. (wenger)
+
+937 1/17/07	OPEN	In the BMRB 3D visualization, the cursor in the data
+			view *sometimes* changes its X range when you change
+			to a different data set. (wenger).
+
+938 6/27/06	OPEN	JS/Jmol: things like whether you are showing the
+			bounding box get reset if you select a different
+			set of atoms to *display*.  (Changing what's
+			*highlighted* is okay.) (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

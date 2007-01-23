@@ -230,6 +230,11 @@ Num Date        Status  Description
 			an entry has no chemical shifts(!) (see entry
 			5153). (wenger)
 
+052 7/26/06	OPEN	X axis label in csr3 session comes up poor quality
+			(at least at BMRB); probably needs different size,
+			or to be drawn on the client side, or something like
+			that. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
