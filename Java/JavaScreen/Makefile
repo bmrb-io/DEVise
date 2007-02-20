@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2006
+# (c) Copyright 1992-2007
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -82,6 +82,7 @@ loader: *.java
 
 jar:
 	make jara jarb jarjs
+	./js -version > js_version
 
 jara:
 	make classclean
@@ -112,6 +113,7 @@ jarjs:
 
 clean: classclean
 	-rm JavaScreen/*.gif jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar
+	-rm js_version
 
 classclean:
 	-rm JavaScreen/*.class

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.10  2005/12/06 20:08:44  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.9  2002/07/19 17:07:54  wenger
 #  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 #
@@ -82,7 +86,7 @@ set dest = $desttop/JavaScreen
 # Make sure we have the files we need to do the release.
 
 set files = ($src/jsa1.jar $src/JavaScreen/jspop.class \
-    $src/JavaScreen/jss.class $src/bin2/java)
+    $src/JavaScreen/jss.class $src/bin2/java $src/js_version)
 foreach file ($files)
   if (! -f $file) then
     echo "File $file missing."
@@ -189,7 +193,7 @@ set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     js.cgi check_connect check_jsall check_jspop jspop \
     js js_cgi restart_jspop jspop.kill kill_jsall ports+files \
     get_timestamp run_top run_check jspop_savepid users.cfg install_js \
-    Tasvir js_log)
+    Tasvir js_log js_version)
 foreach file ($files)
   cp -p $file $dest
   chmod 755 $dest/$file

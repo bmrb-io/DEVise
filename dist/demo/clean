@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -24,4 +24,7 @@
 
 cd schema/schema
 \rm catalog.js.dte
+cd ../../
+cd dat/bmrb
+\rm bmrb_histogram_data
 cd ../../

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2003
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2005/12/06 20:00:22  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.46.2.2  2003/10/24 23:45:08  wenger
 // Non-applet JS now continues without dialog if it can't get the animation
 // symbols.
@@ -178,7 +182,8 @@ public class js extends Frame
 	"  -playbackoriginal: play back client log file at original speed\n" +
 	  "    (default: false)\n" +
 	"  -playbackdisplayoff: turn off display during command log playback\n" +
-	"  -usage: print this message");
+	"  -version: print the version and exit\n" +
+	"  -usage: print this message and exit");
 
     // -host[hostname]:
     //      hostname: The IP address of the machine where jspop or DEVise Server
@@ -502,6 +507,11 @@ public class js extends Frame
 	    } else if (DEViseGlobals.checkArgument(args[i], "-usage", false,
 	      argValue)) {
                 System.out.println(usage);
+                System.exit(0);
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-version", false,
+	      argValue)) {
+                System.out.println(DEViseGlobals.VERSION);
                 System.exit(0);
 
 	    } else if (DEViseGlobals.checkArgument(args[i], "-log", false,

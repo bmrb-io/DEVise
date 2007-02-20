@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2006
+#  (c) Copyright 1992-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -148,7 +148,8 @@ if (-f $logfile) then
   rm $logfile
 endif
 set src = JavaScreen
-set dest = $target/Devise-$version-JavaScreen.tar.gz
+set js_version = `cat JavaScreen/js_version`
+set dest = $target/Devise-JavaScreen-$js_version.tar.gz
 tar cvfz $dest $src > $logfile
 
 echo "Generating demo distribution"
