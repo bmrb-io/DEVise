@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.154.2.3  2007/02/22 18:14:31  wenger
+// Changed communiation mode label to gray so it's visible against
+// the new background color.
+//
+// Revision 1.154.2.2  2007/02/13 18:35:15  adayton
+// Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
+//
+// Revision 1.154.2.1  2007/01/25 22:07:08  adayton
+// added Makefile.config.adayton
+//
+// Revision 1.154  2006/12/13 22:42:18  wenger
+// Added option to disable Jmol drill down (to avoid accidental drill-
+// down); changed "Cancel" to "Close" in the Option dialog.
+//
 // Revision 1.153  2006/09/28 16:28:24  wenger
 // JavaScreen drill-down dialog now does not display the "_url" suffix
 // on URL attribute names.
@@ -647,7 +661,7 @@ public class jsdevisec extends Panel
 
     public DEViseCmdDispatcher dispatcher = null;
 
-    public Frame parentFrame = null;
+    public JFrame parentFrame = null;
     private boolean isCenterScreen = false;
     public DEViseJSApplet _parentApplet = null;
 
@@ -661,6 +675,7 @@ public class jsdevisec extends Panel
     public  Button stopButton = null;
 
     private Label commMode = new Label("");
+    private Color commModeNormalColor = Color.gray;
 
     public DEViseAnimPanel animPanel = null;
     public DEViseViewInfo viewInfo = null;
@@ -740,7 +755,7 @@ public class jsdevisec extends Panel
 
     // images[0-9] are the gears; 10 and 11 are "traffic lights"
     //   (devise[0-10].gif).
-    public jsdevisec(Applet parentApplet, Frame frame, Vector images,
+    public jsdevisec(Applet parentApplet, JFrame frame, Vector images,
       DEViseJSValues jv)
     {
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
@@ -761,7 +776,7 @@ public class jsdevisec extends Panel
         // frame might be null if JavaScreen is running inside a browser
         parentFrame = frame;
         if (parentFrame == null) {
-            parentFrame = new Frame();
+            parentFrame = new JFrame();
             isCenterScreen = true;
         }
 
@@ -1451,7 +1466,7 @@ public class jsdevisec extends Panel
     
     public void socketMode()
     {
-	commMode.setForeground(Color.white);
+	commMode.setForeground(commModeNormalColor);
         commMode.setText("Socket");
     }
 
@@ -1477,20 +1492,20 @@ public class jsdevisec extends Panel
     // Go into collaboration leader mode.
     public void collabModeL()
     {
-	commMode.setForeground(Color.white);
+	commMode.setForeground(commModeNormalColor);
         commMode.setText("Collab (L)");
     }
 
     // Go into collaboration follower mode.
     public void collabModeF()
     {
-	commMode.setForeground(Color.white);
+	commMode.setForeground(commModeNormalColor);
         commMode.setText("Collab (F)");
     }
 
     public void cgiMode()
     {
-	commMode.setForeground(Color.white);
+	commMode.setForeground(commModeNormalColor);
         commMode.setText("CGI");
     }
 
@@ -1502,7 +1517,7 @@ public class jsdevisec extends Panel
 
     public void playbackMode()
     {
-	commMode.setForeground(Color.white);
+	commMode.setForeground(commModeNormalColor);
         commMode.setText("Playback");
     }
 

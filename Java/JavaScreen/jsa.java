@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.48.6.1  2007/02/13 18:35:15  adayton
+// Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
+//
+// Revision 1.48  2005/12/06 20:00:22  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.47  2003/01/13 19:23:45  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -143,6 +150,7 @@ import  java.awt.*;
 import  java.awt.event.*;
 import  java.io.*;
 import  java.util.*;
+import	javax.swing.*;
 
 public class jsa extends DEViseJSApplet
 {
@@ -315,7 +323,7 @@ public class jsa extends DEViseJSApplet
     }
 }
 
-class jscframe extends Frame
+class jscframe extends JFrame
 {
     static final int DEBUG = 0;
 

@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.81.2.1  2007/02/20 19:04:24  wenger
+// Changed JavaScreen version to 5.8.0x1_new_gui -- 5.8 because I think
+// the GUI changes are big enough for a new minor version, and I added
+// the new_gui part just for this branch.
+//
+// Revision 1.81  2006/12/08 16:24:36  wenger
+// Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
+// changes to merge the DEViseCanvas.java stuff correctly).
+//
 // Revision 1.80  2006/12/05 18:43:57  wenger
 // Set JS version to 5.7.1 (ready for release).
 //
@@ -545,7 +554,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.7.2x1"/*TEMP*/);
+    public static final String VERSION = new String("5.8.0x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

@@ -127,3 +127,7 @@ setup:
 .PHONY: install
 install:
 	make -f Makefile.setup install
+
+.PHONY: client_install
+client_install:
+	make -f Makefile.setup client_install

@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.38.1  2007/02/13 18:35:12  adayton
+// Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
+//
+// Revision 1.10  2001/05/11 20:36:09  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.9  2001/01/08 20:31:53  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -107,13 +113,13 @@ public class DEViseTrafficLight extends Panel
             align = "RIGHT";
         }
 
-        setFont(DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 1, 0));
+        setFont(DEViseFonts.getFont(12, DEViseFonts.SANS_SERIF, 1, 0));
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
 
         Panel panel = new Panel();
         panel.setLayout(new GridLayout(2, 4));
-        panel.setFont(DEViseFonts.getFont(14, DEViseFonts.MONOSPACED, 1, 0));
+        panel.setFont(DEViseFonts.getFont(12, DEViseFonts.SANS_SERIF, 1, 0));
         panel.setBackground(jsc.jsValues.uiglobals.bg);
         panel.setForeground(jsc.jsValues.uiglobals.fg);
 

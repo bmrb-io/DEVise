@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.59.8.1  2007/02/13 18:35:12  adayton
+// Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
+//
+// Revision 1.59  2003/01/13 19:23:44  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.58  2002/07/19 17:06:48  wenger
 // Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
 //
@@ -150,6 +156,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.math.*;
 import java.text.*;
+import javax.swing.*;
 
 public class DEViseViewInfo extends Panel
 {
@@ -157,9 +164,11 @@ public class DEViseViewInfo extends Panel
 
     private jsdevisec jsc = null;
     Vector images = null;
+	// viewName doesn't appear tu be used anywhere
+    // JTextField viewName = new JTextField(16);
 
-    TextField viewName = new TextField(16);
-    TextField mouseX = new TextField(12), mouseY = new TextField(12);
+    JTextField mouseX = new JTextField(12);
+	JTextField mouseY = new JTextField(12);
     //DEViseTrafficLight light = null;
 
     public DEViseViewInfo(jsdevisec what, Vector array)
@@ -171,17 +180,17 @@ public class DEViseViewInfo extends Panel
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
-        viewName.setBackground(jsc.jsValues.uiglobals.textBg);
-        viewName.setForeground(jsc.jsValues.uiglobals.textFg);
-        viewName.setFont(jsc.jsValues.uiglobals.textFont);
+        // viewName.setBackground(jsc.jsValues.uiglobals.textBg);
+        // viewName.setForeground(jsc.jsValues.uiglobals.textFg);
+        // viewName.setFont(jsc.jsValues.uiglobals.textFont);
 
         mouseX.setBackground(jsc.jsValues.uiglobals.textBg);
         mouseX.setForeground(jsc.jsValues.uiglobals.textFg);
-        mouseX.setFont(jsc.jsValues.uiglobals.textFont);
+        mouseX.setFont(DEViseFonts.getFont(12, DEViseFonts.MONOSPACED, 0, 0));
 
         mouseY.setBackground(jsc.jsValues.uiglobals.textBg);
         mouseY.setForeground(jsc.jsValues.uiglobals.textFg);
-        mouseY.setFont(jsc.jsValues.uiglobals.textFont);
+        mouseY.setFont(DEViseFonts.getFont(12, DEViseFonts.MONOSPACED, 0, 0));
 
         setLayout(new FlowLayout(FlowLayout.LEFT, 2, 12));
 

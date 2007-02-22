@@ -1,0 +1,99 @@
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001-2005
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Makefile with configuration info for JavaScreen.
+
+#  Edit this makefile according to your system configuration.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+amd_make:
+	make all	
+
+amd_install:
+	make jar
+	cp *.jar gui_build
+	rsync -Cavuzb ./gui_build/ -e ssh adayton@dewey.cs.wisc.edu:/p/devise/ext13/andy_d_example
+
+amd:
+	make amd_make amd_gui
+	
+
+#custom make commands
+amd_get:
+	rsync -avuzb \
+	--exclude '*~' \
+	--exclude 'Makefile.config' \
+	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/ \
+	.
+	
+amd_put: 
+	rsync -Cavuzb \
+	--exclude 'Makefile.config' \
+	./ \
+	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/
+
+amd_sync:
+	make amd_get amd_put
+
+#test commands	
+amd_test_get:
+	rsync -avuzbn \
+	--exclude '*~' \
+	--exclude 'Makefile.config' \
+	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/ \
+	.
+	
+amd_test_put:
+	rsync -Cavuzbn \
+	--exclude 'Makefile.config' \
+	./ \
+	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/
+	
+amd_test_sync:
+	make amd_test_get amd_test_put	
+#-----------------------------------------------------------
+# Directories for executables we need.
+
+# BIN2 is for JSS and devised.
+JAVA_BIN2 = /usr/bin
+PERL_BIN2 = /usr/bin # probably don't need this
+XVFB_BIN2 = /s/std/bin # don't need this
+
+# BIN2P is for JSPoP.
+JAVA_BIN2P = /usr/bin
+PERL_BIN2P = /usr/bin # probably don't need this
+
+# BIN3 is for compiling.
+JAVA_BIN3 = /usr/bin
+
+POP_DIR = /scratch/devise/js.regular # don't need this
+SERV_DIR = /scratch/devise/js.regular # don't need this
+JAR_DIR = /var/home/www/public/html/devise # don't need this
+CGI_DIR = /var/home/www/public/cgi-bin # don't need this
+IDSTR = regular
+
+# Where the DEVise sessions, schemas, etc., are installed.
+DEVISE_VIS = /p/devise/demo # don't need this
+
+# This is who gets email about any errors.
+ERROR_EMAIL = devise@cs.wisc.edu
+
+INSTALL_HOST = teal.cs.wisc.edu
+
+# You should probably set this to 0 if you're running more than one JSS
+# on the same machine.
+KILL_XVFB = 1 # don't need this

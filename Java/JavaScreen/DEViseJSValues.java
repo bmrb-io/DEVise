@@ -27,6 +27,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.2.1  2007/02/13 18:35:10  adayton
+// Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
+//
+// Revision 1.15  2006/05/26 16:22:16  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.14.4.1  2006/03/31 22:41:15  wenger
 // Finished splitting up DEViseCanvas class.
 //
@@ -175,15 +181,20 @@ public final class DEViseJSValues
 	public Dimension screenSize = new Dimension(0, 0);
 	public int screenRes = -1;
 	public Dimension rubberBandLimit = new Dimension(4, 4);
-	public Color bg = new Color(64, 96, 0);
+/*	public Color bg = new Color(64, 96, 0);*/
+	public Color bg = new Color(247, 246, 220);
 	public Color bg_warn = new Color(255, 0, 0);
-	public Color fg = Color.white;
-	public Color screenBg = new Color(64, 192, 0);
-	public Font font = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);
+/*	public Color fg = Color.white;*/
+	public Color fg = Color.black;
+/*	public Color screenBg = new Color(64, 192, 0);*/
+	public Color screenBg = new Color(229, 227, 207);
+/*	public Font font = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);*/
+	public Font font = DEViseFonts.getFont(14, DEViseFonts.SANS_SERIF, 0, 0);
 	public Font font2 = DEViseFonts.getFont(12, DEViseFonts.SANS_SERIF, 0, 0);
 	public Color textBg = new Color(255, 240, 230);
 	public Color textFg = Color.black;
-	public Font textFont = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);
+/*	public Font textFont = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);*/
+	public Font textFont = DEViseFonts.getFont(12, DEViseFonts.MONOSPACED, 0, 0);
 
 	// Timeout (in minutes) for killing the client if it's invisible.
 	public int visTimeout = 60;

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -99,3 +99,6 @@ xvfb:
 
 install: install_info error_email xvfb
 	./install_js
+
+client_install: install_info error_email xvfb
+	./install_js -client

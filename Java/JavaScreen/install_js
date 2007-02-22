@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,21 @@
 #  $Id$
 
 ############################################################
+
+#-----------------------------------------------------------
+# Check for the -client flag (client-only install).
+
+set usage = "Usage: js_install [-client]"
+
+set client_only = 0
+
+if ($#argv == 1 && xx$1 == xx-client) then
+  set client_only = 1
+else if ($#argv != 0) then
+  echo "Illegal argument"
+  echo "$usage"
+  exit
+endif 
 
 #-----------------------------------------------------------
 # Get the install info and make sure we're on the right
@@ -53,9 +68,12 @@ endif
 #TEMP -- bin2p/perl should be in this list, but -e test doesn't work for
 # a symlink that points to nothing (needed for BMRB install on yola/aden).
 # RKW 2001-11-01.
-set files = (JavaScreen/jspop.class JavaScreen/jss.class JavaScreen/js.class \
-    jsa1.jar jsa2.jar jsb1.jar jsb2.jar bin/devised bin/Tasvir bin2/java \
+set files = ( jsa1.jar jsa2.jar jsb1.jar jsb2.jar )
+if (! $client_only) then
+  set files = ($files JavaScreen/jspop.class JavaScreen/jss.class \
+    JavaScreen/js.class bin/devised bin/Tasvir bin2/java \
     bin2/perl bin2/Xvfb bin2p/java)
+endif
 foreach file ($files)
   if (! -e $file) then
     echo "File $file missing.  Cannot proceed with install."
@@ -74,32 +92,38 @@ echo "***********************************"
 #-----------------------------------------------------------
 # Make sure we've sent an appropriate warning email.
 
-echo ""
-echo -n "Have you send an appropriate email warning? [n] "
-set answer = $<
-if ($answer != y && $answer != Y) then
-  echo "Please send a warning before continuing"
-  exit 1
-endif
+if (! $client_only) then
+  echo ""
+  echo -n "Have you send an appropriate email warning? [n] "
+  set answer = $<
+  if ($answer != y && $answer != Y) then
+    echo "Please send a warning before continuing"
+    exit 1
+  endif
+endif 
 
 #-----------------------------------------------------------
 # Make sure the jspop has been killed.
 
-echo ""
-echo -n "Have you killed the appropriate jspop and associated processes? [n] "
-set answer = $<
-if ($answer != y && $answer != Y) then
-  echo "Please kill these processes before continuing"
-  exit 1
+if (! $client_only) then
+  echo ""
+  echo -n "Have you killed the appropriate jspop and associated processes? [n] "
+  set answer = $<
+  if ($answer != y && $answer != Y) then
+    echo "Please kill these processes before continuing"
+    exit 1
+  endif
 endif
 
 #-----------------------------------------------------------
 # Final confirmation.
 
 echo ""
-echo "This process will install files to $popdir,"
-echo "  $servdir, $jardir,"
-echo "  and $cgidir for the $idstr JavaScreen"
+echo "This process will install files to $jardir,"
+if (! $client_only) then
+  echo "$popdir $servdir, $jardir, and $cgidir"
+endif
+echo "for the $idstr JavaScreen"
 echo -n "Are you sure you want to continue? [n] "
 set answer = $<
 if ($answer != y && $answer != Y) then
@@ -112,11 +136,13 @@ endif
 # in the middle of the install (note that this will cause an error message
 # if the cron job happens to run before the new jspop is installed).
 
-echo ""
-echo "Temporarily disabling cron checking during installation"
+if (! $client_only) then
+  echo ""
+  echo "Temporarily disabling cron checking during installation"
 
-if (-f $popdir/run_check) then
-  rm $popdir/run_check
+  if (-f $popdir/run_check) then
+    rm $popdir/run_check
+  endif
 endif
 
 #-----------------------------------------------------------
@@ -139,6 +165,10 @@ cp -p collabf.html $jardir
 chmod 644 $jardir/*.html
 cp -p logo_background.gif $jardir
 chmod 644 $jardir/logo_background.gif
+
+if ($client_only) then
+  exit
+endif
 
 #-----------------------------------------------------------
 # Install the cgi file.
