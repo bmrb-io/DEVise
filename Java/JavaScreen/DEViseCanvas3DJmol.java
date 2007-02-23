@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -26,6 +26,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2006/12/13 22:42:17  wenger
+// Added option to disable Jmol drill down (to avoid accidental drill-
+// down); changed "Cancel" to "Close" in the Option dialog.
+//
 // Revision 1.6  2006/11/30 17:28:34  wenger
 // Fixed bug 927 (Jmol double-click also drills down).
 //
@@ -517,7 +521,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    dispHighSplit.setRightComponent(highlightPanel);
 
 	    treeFrame = new JFrame("Structure Selection");
-	    treeFrame.setLocation(100, 100);
+	    treeFrame.setLocation(10, 30);
 	    treeFrame.addWindowListener(new WindowAdapter() {
 	    	public void windowClosing(WindowEvent we) {
 		    treeFrame = null;
