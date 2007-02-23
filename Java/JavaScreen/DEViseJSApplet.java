@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2006/09/18 17:01:39  wenger
+// Made relative URLs work in the "clickable links in drill-down dialog"
+// feature in the JavaScreen -- the JavaScreen now turns relative URLs
+// into absolute ones before passing them to AppletContext.showDocument().
+//
 // Revision 1.13  2006/08/31 19:03:36  wenger
 // Added "clickable URL in JavaScreen drill-down dialog" feature -- if
 // attribute name ends in "_url" the JS considers it a URL.
@@ -340,7 +345,7 @@ public abstract class DEViseJSApplet extends Applet
             jsValues.connection.cmdport = DEViseGlobals.DEFAULTCMDPORT;
         }
 
-        String bg = getParameter("bgcolor");
+        String bg = getParameter("bgcolor2");
         if (bg != null) {
             try {
                 String[] str = DEViseGlobals.parseStr(bg, "+");
@@ -363,7 +368,7 @@ public abstract class DEViseJSApplet extends Applet
             }
         }
 
-        String fg = getParameter("fgcolor");
+        String fg = getParameter("fgcolor2");
         if (fg != null) {
             try {
                 String[] str = DEViseGlobals.parseStr(fg, "+");
@@ -618,8 +623,8 @@ public abstract class DEViseJSApplet extends Applet
         String [][] info = {
 	  // Parameter Name   Type of Value      Description
 	  {"cmdport",         "int",         "jspop command port"},
-	  {"bgcolor",         "String",      "RGB values for bgcolor"},
-	  {"fgcolor",         "String",      "RGB values for fgcolor"},
+	  {"bgcolor2",        "String",      "RGB values for bgcolor"},
+	  {"fgcolor2",        "String",      "RGB values for fgcolor"},
 	  {"rubberbandlimit", "String",      "Minimum dimension for a rubberband"},
 	  {"screensize",      "String",      "assumed java screen dimension"},
 	  {"session",         "String",      "session file name"},
