@@ -119,10 +119,11 @@ needs.
 
 * JAVASCREEN INSTALLATION
 
-First, untar the Devise-x.x.x-JavaScreen.tar.gz file.  You MUST untar
+First, untar the Devise-JavaScreen-x.x.x.tar.gz file.  You MUST untar
 this file in the same directory where you untarred the DEVise
 distribution file (because the JavaScreen distribution relies on
-relative links to some of the DEVise files).
+relative links to some of the DEVise files).  (Note that the JavaScreen
+version no longer matches the DEVise version.)
 
 Change to the JavaScreen directory, then copy the appropriate
 Makefile.config.* file to Makefile.config, and edit Makefile.config
@@ -193,7 +194,7 @@ To do the actual installation, perform the following steps:
   details of your installation.
 
 - Edit your crontab file to create a cron job that generates JavaScreen
-  usage statistics once a week, by cding to the directory where the
+  usage statistics once a week, by cd'ing to the directory where the
   JavaScreen is installed and running scripts/get_stats_bmrb.  Look at
   cron_entry.tuna for an example.
 
@@ -203,11 +204,31 @@ To do the actual installation, perform the following steps:
 
   You should also run the 'check_connect' command.  If all of the necessary
   processes are running, this will output 'OK'.  Any other output means
-  that soemthing is not working correctly.
+  that something is not working correctly.
 
   The final check is to actually run the JavaScreen applet on your web
   site.  You can do this via the NMR Data Browser or the jsa.html web
   page.
+
+
+* JAVASCREEN CLIENT-ONLY INSTALLATION
+
+It is now possible to do a JavaScreen client-only installation for
+cases where only the client software has been updated since the last
+installation.
+
+First, perform the steps in the previous section through "you can test the
+JavaScreen as follows".
+
+To do the actual client-only installation, perform the following steps:
+
+- Run the command:
+
+    make -f Makefile.setup client_install
+
+  This will do the actual installation into your selected directory.
+
+That's it!
 
 
 * PEPTIDE-CGI INSTALLATION
