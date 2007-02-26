@@ -26,6 +26,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/02/23 19:21:59  wenger
+// Structure selection tree window now comes up closer to the upper
+// left corner of the screen.
+//
 // Revision 1.7  2006/12/13 22:42:17  wenger
 // Added option to disable Jmol drill down (to avoid accidental drill-
 // down); changed "Cancel" to "Close" in the Option dialog.
@@ -450,9 +454,13 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    // Create the tree GUI.
 	    //
 	    JLabel displayLabel = new JLabel(DISPLAY_TREE_NAME);
+	    displayLabel.setBackground(jsc.jsValues.uiglobals.bg);
+	    displayLabel.setForeground(jsc.jsValues.uiglobals.fg);
 	    displayLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 	    JLabel highlightLabel = new JLabel(HIGHLIGHT_TREE_NAME);
+	    highlightLabel.setBackground(jsc.jsValues.uiglobals.bg);
+	    highlightLabel.setForeground(jsc.jsValues.uiglobals.fg);
 	    highlightLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 	    structDisplayTree = new JmolTree(STRUCTURE_TREE_NAME, this);
@@ -485,6 +493,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    structAtomSplit.setBottomComponent(atomDispPanel);
 
 	    JPanel displayPanel = new JPanel();
+	    displayPanel.setBackground(jsc.jsValues.uiglobals.bg);
+	    displayPanel.setForeground(jsc.jsValues.uiglobals.fg);
 	    displayPanel.setLayout(new BoxLayout(displayPanel,
 	      BoxLayout.Y_AXIS));
 	    displayPanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -495,6 +505,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
 	    //TEMP -- think of a clearer name for this button?
 	    JButton highlightResetButton = new JButton("Reset");
+	    highlightResetButton.setBackground(jsc.jsValues.uiglobals.bg);
+	    highlightResetButton.setForeground(jsc.jsValues.uiglobals.fg);
 	    highlightResetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 	    highlightResetButton.addActionListener(new ActionListener()
 	        {
@@ -507,6 +519,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    JPanel highlightPanel = new JPanel();
 	    highlightPanel.setLayout(new BoxLayout(highlightPanel,
 	      BoxLayout.Y_AXIS));
+	    highlightPanel.setBackground(jsc.jsValues.uiglobals.bg);
+	    highlightPanel.setForeground(jsc.jsValues.uiglobals.fg);
 	    highlightPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 	    highlightPanel.add(highlightLabel);
 	    highlightPanel.add(Box.createRigidArea(new Dimension(0, 5)));
@@ -521,6 +535,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    dispHighSplit.setRightComponent(highlightPanel);
 
 	    treeFrame = new JFrame("Structure Selection");
+	    treeFrame.setBackground(jsc.jsValues.uiglobals.bg);
+	    treeFrame.setForeground(jsc.jsValues.uiglobals.fg);
 	    treeFrame.setLocation(10, 30);
 	    treeFrame.addWindowListener(new WindowAdapter() {
 	    	public void windowClosing(WindowEvent we) {
