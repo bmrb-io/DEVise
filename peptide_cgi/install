@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2005
+#  (c) Copyright 2000-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -251,7 +251,7 @@ endif
 chmod a+rx $targetdir
 
 set executables = (make_view get_version get_version_cgi s2d vsc set_modes \
-	test_all vur view_unreleased)
+	test_all vur view_unreleased uvd)
 foreach exec ($executables)
   cp -p cgi-bin/$exec $targetdir
   chmod a+rx $targetdir/$exec

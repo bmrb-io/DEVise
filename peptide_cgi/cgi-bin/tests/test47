@@ -1,0 +1,92 @@
+#! /bin/csh -f
+
+#TEMPTEMP -- what about CSR???
+
+# Tests "upload and visualize" mode.
+
+set result = 0
+
+rm -f */test47_out*
+rm -f */*/test47_out*
+
+echo -n "Processing NMR-STAR: "
+./uvd -file test_data/20070228.28103.str -name test47_out -force
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./uvd -file test_data/20070228.28103.str -name test47_out -force -pdbid 1FSP -do_pdb 2 -coord_index 1
+if ($status != 0) then
+  echo "Second invocation of uvd failed!"
+  set result = 1
+endif
+
+echo "Checking output files"
+
+#TEMPTEMP -- make sure this is complete
+set files = ( data_dir/uvd/test47_outac1.dat \
+	data_dir/uvd/test47_outam1.dat \
+	data_dir/uvd/test47_outamac1.dat \
+	data_dir/uvd/test47_outas1.dat \
+	data_dir/uvd/test47_outc1.dat \
+	data_dir/uvd/test47_outd1.dat \
+	data_dir/uvd/test47_outhn1.dat \
+	data_dir/uvd/test47_outmd.dat \
+	data_dir/uvd/test47_outp1.dat \
+	data_dir/uvd/test47_outps1.dat \
+	data_dir/uvd/test47_outpsac1.dat \
+	data_dir/uvd/test47_outrc1.dat \
+	data_dir/uvd/test47_outrl1.dat \
+	html_dir/uvd/test47_outac1.html \
+	html_dir/uvd/test47_outac1_large.html \
+	html_dir/uvd/test47_outam1.html \
+	html_dir/uvd/test47_outam1_large.html \
+	html_dir/uvd/test47_outas1.html \
+	html_dir/uvd/test47_outas1_large.html \
+	html_dir/uvd/test47_outc1.html \
+	html_dir/uvd/test47_outc1_large.html \
+	html_dir/uvd/test47_outd1.html \
+	html_dir/uvd/test47_outd1_large.html \
+	html_dir/uvd/test47_outhn1.html \
+	html_dir/uvd/test47_outhn1_large.html \
+	html_dir/uvd/test47_outp1.html \
+	html_dir/uvd/test47_outp1_large.html \
+	html_dir/uvd/test47_outps1.html \
+	html_dir/uvd/test47_outps1_large.html \
+	html_dir/uvd/test47_outtmp1y.html \
+	html_dir/uvd/test47_outtmp1y_large.html \
+	html_dir/uvd/test47_outy.html \
+	html_dir/uvd/test47_outy_large.html \
+	session_dir/.uvd/test47_outac1.ds \
+	session_dir/.uvd/test47_outacdd \
+	session_dir/.uvd/test47_outam1.ds \
+	session_dir/.uvd/test47_outas1.ds \
+	session_dir/.uvd/test47_outc1.ds \
+	session_dir/.uvd/test47_outd1.ds \
+	session_dir/.uvd/test47_outhn1.ds \
+	session_dir/.uvd/test47_outp1.ds \
+	session_dir/.uvd/test47_outps1.ds )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+# Check for correct structure link in summary html file.
+if (`grep -l 'make_view?pdbid=1FSP&number=test47_out&do_pdb=2&coord_index=1' html_dir/uvd/test47_outy.html` == "") then
+  echo "1FSP structure link missing"
+  set result = 1
+endif
+
+echo -n "Test47 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

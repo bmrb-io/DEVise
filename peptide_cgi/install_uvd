@@ -1,0 +1,55 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2007
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#  Install the "upload and visualize data" part of the
+#  peptide-cgi setup.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+#-----------------------------------------------------------
+# Check and get the arguments.
+
+if ($#argv != 4) then
+  echo "Usage: install_uvd <pep_home> <uvd_session_home> <pep_data_home>"
+  echo "  <pep_html_home>"
+  exit 1
+endif
+
+#TEMPTEMP -- get rid of pephome arg?
+set pephome = $1
+set sessionhome = $2
+set datahome = $3
+set htmlhome = $4
+
+#-----------------------------------------------------------
+
+# Make the UVD session, data, and html directories.
+mkdir -p $sessionhome
+mkdir -p $datahome
+mkdir -p $htmlhome
+
+#TEMPTEMP -- put index.html file into $htmlhome
+
+# Link various files so that the references from the UVD html
+# pages work right.
+#TEMPTEMP? cd $pephome
+#TEMPTEMP? ln -s ../*.jar .
+#TEMPTEMP? ln -s ../keyboard.html .
+#TEMPTEMP? ln -s ../collab.html .

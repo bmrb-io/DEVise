@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2006
+// (c) Copyright 2001-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2006/05/26 16:50:55  wenger
+// Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
+// to the trunk.
+//
 // Revision 1.4  2006/05/11 21:10:25  wenger
 // Fixed problems with some html page titles being based on the BMRB
 // ID rather than the name, etc.  Fixed test36 to work with new LACS
@@ -191,8 +195,18 @@ public class S2DSpecificHtml {
 
     private static final int DEBUG = 0;
 
+    // Whether we're processing for "upload and visualize data".
+    private static boolean _isUvd = false;
+
     //===================================================================
     // PUBLIC METHODS
+
+    // Set whether this is UVD processing.
+    static void setIsUvd(boolean isUvd)
+    {
+        _isUvd = isUvd;
+    }
+
     static void write(String htmlDir, int dataType, String name,
       int frameIndex, String title) throws S2DException
     {
@@ -346,6 +360,11 @@ TEMP*/
 		}
 		line4 = S2DUtils.replace(line4, "COMMENT_EMAIL",
 		  S2DNames.COMMENT_EMAIL);
+		if (_isUvd) {
+		    line4 = S2DUtils.replace(line4, "../..", "../../..");
+		    line4 = S2DUtils.replace(line4, "dynamic_sessions",
+		      "dynamic_sessions/.uvd");
+		}
 	        writer.write(line4 + "\n");
 	    }
 

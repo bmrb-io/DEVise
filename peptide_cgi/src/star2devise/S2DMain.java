@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2007/01/12 21:57:32  wenger
+// Changed version to 11.1.1x1; minor fix to distribution makefile;
+// minor change to release doc.
+//
 // Revision 1.22  2007/01/12 21:13:35  wenger
 // Changed version to 11.1.0 for release; updated release and testing
 // documents; updated version history.
@@ -1638,6 +1642,9 @@ public class S2DMain {
           "        the directory in which to store the session files (mandatory)\n" +
           "    -usage\n" +
           "        show this message\n" +
+	  "    -uvd\n" + 
+	  "        indicates that this is \"upload and visualize data\" " +
+	  "processing\n" + 
           "    -version\n" +
           "        show the version number\n" +
           "\n" +
@@ -1887,6 +1894,9 @@ public class S2DMain {
 		}
 	        _sessionDir = args[index];
 
+	    } else if ("-uvd".equals(args[index])) {
+	        S2DSpecificHtml.setIsUvd(true);
+
 	    } else {
 	        throw new S2DError("Unrecognized command-line argument: " +
 		  args[index]);
@@ -1905,9 +1915,10 @@ public class S2DMain {
 	      "bmrbid, pdbid, or local file must be specified");
 	}
 
-	if (_masterBmrbId.equals("") && _cmdPdbId != null) {
+	if (_masterBmrbId.equals("") && _name.equals("") &&
+	  _cmdPdbId != null) {
 	    throw new S2DError(
-	      "bmrbid must be specified when pdbid is specified");
+	      "bmrbid or name must be specified when pdbid is specified");
 	}
 
 	if (_cmdPdbId == null && _cmdFrameIndex != -1) {

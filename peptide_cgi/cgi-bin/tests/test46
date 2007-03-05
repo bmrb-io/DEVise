@@ -1,0 +1,105 @@
+#! /bin/csh -f
+
+#TEMPTEMP -- test UVD
+
+#TEMPTEMP -- should test PDB processing as separate step
+
+#TEMPTEMP -- what about CSR???
+
+#TEMPTEMP -- change this...
+# Tests visualization-server mode -- local NMR-STAR file, but will try
+# to get and process data from PDB.  Note: this NMR-STAR file is one
+# assembled by Jafar from various uploaded pieces.
+
+set result = 0
+
+rm -f */test46_out*
+rm -f */*/test46_out*
+
+echo -n "Processing NMR-STAR: "
+./uvd -file test_data/20070227.50906.str -name test46_out -force
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMPTEMP -- make sure list is correct/complete
+set files = ( data_dir/uvd/test46_outam1.dat \
+	data_dir/uvd/test46_outamac1.dat \
+	data_dir/uvd/test46_outas1.dat \
+	data_dir/uvd/test46_outc1.dat \
+	data_dir/uvd/test46_outd1.dat \
+	data_dir/uvd/test46_outg1.dat \
+	data_dir/uvd/test46_outhn1.dat \
+	data_dir/uvd/test46_outmd.dat \
+	data_dir/uvd/test46_outp1.dat \
+	data_dir/uvd/test46_outrc1.dat \
+	data_dir/uvd/test46_outrl1.dat \
+	data_dir/uvd/test46_outt11.dat \
+	data_dir/uvd/test46_outt12.dat \
+	data_dir/uvd/test46_outt13.dat \
+	data_dir/uvd/test46_outt21.dat \
+	data_dir/uvd/test46_outt22.dat \
+	data_dir/uvd/test46_outt23.dat \
+	html_dir/uvd/test46_outam1.html \
+	html_dir/uvd/test46_outam1_large.html \
+	html_dir/uvd/test46_outas1.html \
+	html_dir/uvd/test46_outas1_large.html \
+	html_dir/uvd/test46_outc1.html \
+	html_dir/uvd/test46_outc1_large.html \
+	html_dir/uvd/test46_outd1.html \
+	html_dir/uvd/test46_outd1_large.html \
+	html_dir/uvd/test46_outg1.html \
+	html_dir/uvd/test46_outg1_large.html \
+	html_dir/uvd/test46_outhn1.html \
+	html_dir/uvd/test46_outhn1_large.html \
+	html_dir/uvd/test46_outp1.html \
+	html_dir/uvd/test46_outp1_large.html \
+	html_dir/uvd/test46_outt11.html \
+	html_dir/uvd/test46_outt11_large.html \
+	html_dir/uvd/test46_outt12.html \
+	html_dir/uvd/test46_outt12_large.html \
+	html_dir/uvd/test46_outt13.html \
+	html_dir/uvd/test46_outt13_large.html \
+	html_dir/uvd/test46_outt21.html \
+	html_dir/uvd/test46_outt21_large.html \
+	html_dir/uvd/test46_outt22.html \
+	html_dir/uvd/test46_outt22_large.html \
+	html_dir/uvd/test46_outt23.html \
+	html_dir/uvd/test46_outt23_large.html \
+	html_dir/uvd/test46_outy.html \
+	html_dir/uvd/test46_outy_large.html \
+	session_dir/.uvd/test46_outacdd \
+	session_dir/.uvd/test46_outam1.ds \
+	session_dir/.uvd/test46_outas1.ds \
+	session_dir/.uvd/test46_outc1.ds \
+	session_dir/.uvd/test46_outd1.ds \
+	session_dir/.uvd/test46_outg1.ds \
+	session_dir/.uvd/test46_outhn1.ds \
+	session_dir/.uvd/test46_outp1.ds \
+	session_dir/.uvd/test46_outt11.ds \
+	session_dir/.uvd/test46_outt12.ds \
+	session_dir/.uvd/test46_outt13.ds \
+	session_dir/.uvd/test46_outt21.ds \
+	session_dir/.uvd/test46_outt22.ds \
+	session_dir/.uvd/test46_outt23.ds )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test46 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

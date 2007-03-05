@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -30,6 +30,18 @@ LACS_URL = null
 
 include Makefile.config
 
+# The "real" directory (not symlink) for UVD sessions (must be
+# a subdirectory of $(PEP_SESSION_HOME)).
+UVD_SESSION_HOME = $(PEP_SESSION_HOME)/.uvd
+
+# The "real" directory (not symlink) for UVD data (must be a
+# subdirectory of $(PEP_DATA_HOME)).
+UVD_DATA_HOME = /scratch/devise/bmrb/dynamic_data/uvd
+
+# The "real" directory (not symlink) for UVD html files (must be a
+# subdirectory of $(PEP_HTML_HOME).
+UVD_HTML_HOME = /scratch/devise/bmrb/dynamic_html/uvd
+
 S2D_PROPS_FILE = cgi-bin/s2d.props
 ERROR_EMAIL_FILE = cgi-bin/error_email
 SELECT_HTML_FILE = bmrb_select.html
@@ -53,6 +65,9 @@ testsetup:
 	mkdir test_data/vis_server
 	mkdir test_session/vis_server
 	mkdir test_session/.unreleased
+	mkdir test_data/uvd
+	mkdir test_session/.uvd
+	mkdir test_html/uvd
 
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
 install: do_install
@@ -65,6 +80,10 @@ vur_install:
 	./install -vur $(DEV_DEMO_HOME) /dev/null $(VUR_FRONTEND_DIR) \
 	  $(VUR_CGI_HOME) $(VUR_SESSION_HOME) $(VUR_DATA_HOME) \
 	  $(VUR_HTML_HOME) null $(VUR_INSTALL_MACHINE)
+
+uvd_install: do_install
+	install_uvd $(PEP_HOME) $(UVD_SESSION_HOME) $(UVD_DATA_HOME) \
+	  $(UVD_HTML_HOME)
 
 clean:
 	-rm $(S2D_PROPS_FILE)
