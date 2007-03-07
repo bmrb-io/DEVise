@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -115,6 +115,10 @@ VUR_LOGIN = devise@teal
 
 # The "main" script to run.
 VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
+
+#-----------------------------------------------------------
+# "Upload and visualize data" configuration
+UVD_DATA_UPLOAD = /scratch/devise/bmrb/upload_data
 
 #-----------------------------------------------------------
 # LACS-related configuration

@@ -117,6 +117,10 @@ VUR_LOGIN = web@manatee
 VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
 
 #-----------------------------------------------------------
+# "Upload and visualize data" configuration
+UVD_DATA_UPLOAD = TEMPTEMP
+
+#-----------------------------------------------------------
 # Other.
 
 # User to send email to on errors.

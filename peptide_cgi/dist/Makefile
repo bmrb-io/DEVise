@@ -60,6 +60,7 @@ peptide-cgi-setup:
 	mkdir html_templates; cd html_templates; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist html_templates-setup; rm Makefile.dist
 	ln -s ../../install .
+	ln -s ../../install_uvd .
 	mkdir session_templates; cd session_templates; \
 	  ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist session_templates-setup; rm Makefile.dist
@@ -72,9 +73,11 @@ peptide-cgi-setup:
 .PHONEY : cgi-bin-setup
 cgi-bin-setup:
 	ln -s ../../../cgi-bin/make_view .
+	ln -s ../../../cgi-bin/make_uvd .
 	ln -s ../../../cgi-bin/s2d .
 	ln -s ../../../cgi-bin/vsc .
 	ln -s ../../../cgi-bin/vur .
+	ln -s ../../../cgi-bin/uvd .
 	ln -s ../../../cgi-bin/view_unreleased .
 	ln -s ../../../cgi-bin/set_modes .
 	ln -s ../../../cgi-bin/java_tmpl .

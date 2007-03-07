@@ -117,6 +117,10 @@ VUR_LOGIN = web@manatee
 VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
 
 #-----------------------------------------------------------
+# "Upload and visualize data" configuration
+UVD_DATA_UPLOAD = TEMPTEMP
+
+#-----------------------------------------------------------
 # LACS-related configuration
 
 # The default level of LACS processing to do

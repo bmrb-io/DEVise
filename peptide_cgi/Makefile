@@ -37,11 +37,11 @@ UVD_SESSION_HOME = $(PEP_SESSION_HOME)/.uvd
 
 # The "real" directory (not symlink) for UVD data (must be a
 # subdirectory of $(PEP_DATA_HOME)).
-UVD_DATA_HOME = /scratch/devise/bmrb/dynamic_data/uvd
+UVD_DATA_HOME = $(PEP_DATA_HOME)/uvd
 
 # The "real" directory (not symlink) for UVD html files (must be a
 # subdirectory of $(PEP_HTML_HOME).
-UVD_HTML_HOME = /scratch/devise/bmrb/dynamic_html/uvd
+UVD_HTML_HOME = $(PEP_HTML_HOME)/uvd
 
 S2D_PROPS_FILE = cgi-bin/s2d.props
 ERROR_EMAIL_FILE = cgi-bin/error_email
@@ -83,7 +83,8 @@ vur_install:
 	  $(VUR_HTML_HOME) null $(VUR_INSTALL_MACHINE)
 
 uvd_install: do_install
-	install_uvd $(UVD_SESSION_HOME) $(UVD_DATA_HOME) $(UVD_HTML_HOME)
+	./install_uvd $(UVD_SESSION_HOME) $(UVD_DATA_HOME) $(UVD_HTML_HOME) \
+	  $(UVD_DATA_UPLOAD) $(CGI_HOME)
 
 clean:
 	-rm $(S2D_PROPS_FILE)

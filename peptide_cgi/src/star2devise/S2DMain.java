@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2007/03/07 16:37:57  wenger
+// Phase 2 of "upload and visualize data" -- mostly working, I think,
+// but still needs chem shift reference capability and hasn't been
+// hooked up to Dimitri's upload scripts yet.
+//
 // Revision 1.24  2007/03/05 18:14:27  wenger
 // First phase of support for "upload and visualize data" setup -- still
 // needs quite a few changes.
@@ -1251,7 +1256,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
