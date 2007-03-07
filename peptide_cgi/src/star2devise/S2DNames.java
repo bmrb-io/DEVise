@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2006/08/21 21:01:11  wenger
+// Added second summary page for direct access to all large-size
+// visualizations; updated all tests accordingly.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -272,6 +276,12 @@ public class S2DNames
     // s2d.props file value.
     //
     public static String CGI_URL = null;
+
+    //
+    // URL for CGI script for "upload and visualize data" setup.  Note:
+    // this will be set according to the s2d.props file value.
+    //
+    public static String UVD_CGI_URL = null;
 
     //
     // Template for the "main" input STAR file.  This should be a

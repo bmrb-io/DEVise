@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006
+// (c) Copyright 2006-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -29,6 +29,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2006/08/21 21:01:11  wenger
+// Added second summary page for direct access to all large-size
+// visualizations; updated all tests accordingly.
+//
 
 // ========================================================================
 
@@ -52,6 +56,7 @@ public abstract class S2DSummaryHtmlGen {
     private String _htmlDir = null;
     private String _name;
     private String _longName;
+    private Vector _localFiles;
 
     private FileWriter _writer = null;
 
@@ -62,8 +67,18 @@ public abstract class S2DSummaryHtmlGen {
     // available.
     private boolean _wroteLink = false;
 
+    // Whether we're processing for "upload and visualize data".
+    private static boolean _isUvd = false;
+
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    // Set whether this is UVD processing.
+    static void setIsUvd(boolean isUvd)
+    {
+        _isUvd = isUvd;
+    }
 
     //-------------------------------------------------------------------
     public abstract String sizeString();
@@ -82,7 +97,8 @@ public abstract class S2DSummaryHtmlGen {
 
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
-    public S2DSummaryHtmlGen(String name, String longName, String accessionNum,
+    public S2DSummaryHtmlGen(String name, String longName,
+      String accessionNum, Vector localFiles,
       String htmlDir, String starFileName, String systemName,
       String frameTitle) throws S2DException
     {
@@ -94,6 +110,7 @@ public abstract class S2DSummaryHtmlGen {
 	_name = name;
 	_longName = longName;
         _bmrbId = accessionNum;
+	_localFiles = localFiles;
 	_htmlDir = htmlDir;
     }
 
@@ -425,15 +442,21 @@ public abstract class S2DSummaryHtmlGen {
 	      "S2DSummaryHtmlGen.writeAtomicCoordsCGI()");
 	}
 
-        String path = S2DNames.CGI_URL;
+        String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
 	String linkStr = "3D structure";
 	if (pdbId != null) {
 	    linkStr += " from PDB ID " + pdbId;
 	}
 
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  "&number=" + _name + "&do_pdb=2&coord_index=" + frameIndex +
+        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId);
+	if (_isUvd) {
+            _writer.write("&file=" + (String)_localFiles.elementAt(0) +
+	      "&name=" + _name);
+	} else {
+            _writer.write("&number=" + _name);
+	}
+	_writer.write("&do_pdb=2&coord_index=" + frameIndex +
 	  "&size_str=" + sizeString() +
 	  "\">" + linkStr +
 	  "</a> (note: processing may take several minutes)\n");
@@ -495,7 +518,7 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeChemShiftRefCGI()");
 	}
 
-        String path = S2DNames.CGI_URL;
+        String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
         _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
 	  "&number=" + _name + "&do_csr=2&coord_index=" + frameIndex +

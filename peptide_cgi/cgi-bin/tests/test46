@@ -1,15 +1,6 @@
 #! /bin/csh -f
 
-#TEMPTEMP -- test UVD
-
-#TEMPTEMP -- should test PDB processing as separate step
-
-#TEMPTEMP -- what about CSR???
-
-#TEMPTEMP -- change this...
-# Tests visualization-server mode -- local NMR-STAR file, but will try
-# to get and process data from PDB.  Note: this NMR-STAR file is one
-# assembled by Jafar from various uploaded pieces.
+# Tests "upload and visualize" mode.
 
 set result = 0
 
@@ -26,7 +17,6 @@ endif
 
 echo "Checking output files"
 
-#TEMPTEMP -- make sure list is correct/complete
 set files = ( data_dir/uvd/test46_outam1.dat \
 	data_dir/uvd/test46_outamac1.dat \
 	data_dir/uvd/test46_outas1.dat \

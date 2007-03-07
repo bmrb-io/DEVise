@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006
+// (c) Copyright 2006-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2006/08/21 21:01:11  wenger
+// Added second summary page for direct access to all large-size
+// visualizations; updated all tests accordingly.
+//
 
 // ========================================================================
 
@@ -48,11 +52,12 @@ public class S2DSummaryHtmlLarge extends S2DSummaryHtmlGen {
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
     public S2DSummaryHtmlLarge(String name, String longName,
-      String accessionNum, String htmlDir, String starFileName,
-      String systemName, String frameTitle) throws S2DException
+      String accessionNum, Vector localFiles, String htmlDir,
+      String starFileName, String systemName, String frameTitle)
+      throws S2DException
     {
-	super(name, longName, accessionNum, htmlDir, starFileName,
-	  systemName, frameTitle);
+	super(name, longName, accessionNum, localFiles, htmlDir,
+	  starFileName, systemName, frameTitle);
 
         if (DEBUG >= 1) {
 	    System.out.println("S2DSummaryHtmlLarge.S2DSummaryHtmlLarge(" +

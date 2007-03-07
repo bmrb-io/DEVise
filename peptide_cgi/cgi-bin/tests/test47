@@ -1,8 +1,8 @@
 #! /bin/csh -f
 
-#TEMPTEMP -- what about CSR???
-
 # Tests "upload and visualize" mode.
+
+#TEMPTEMP -- should probably also test chemical shift reference
 
 set result = 0
 
@@ -16,8 +16,11 @@ if ($status != 0) then
   set result = 1
 endif
 
+mv tmp/uvd.out tmp/uvd.out1
+
 echo -n "Processing NMR-STAR and mmCIF: "
-./uvd -file test_data/20070228.28103.str -name test47_out -force -pdbid 1FSP -do_pdb 2 -coord_index 1
+#TEMPTEMP -- have this call make_uvd?
+./uvd -file test_data/20070228.28103.str -name test47_out -force -pdbid 1FSP -do_pdb 2 -coord_index 1 -do_csr 1
 if ($status != 0) then
   echo "Second invocation of uvd failed!"
   set result = 1
@@ -25,7 +28,6 @@ endif
 
 echo "Checking output files"
 
-#TEMPTEMP -- make sure this is complete
 set files = ( data_dir/uvd/test47_outac1.dat \
 	data_dir/uvd/test47_outam1.dat \
 	data_dir/uvd/test47_outamac1.dat \
@@ -77,7 +79,7 @@ foreach file ($files)
 end
 
 # Check for correct structure link in summary html file.
-if (`grep -l 'make_view?pdbid=1FSP&number=test47_out&do_pdb=2&coord_index=1' html_dir/uvd/test47_outy.html` == "") then
+if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_pdb=2&coord_index=1' html_dir/uvd/test47_outy.html` == "") then
   echo "1FSP structure link missing"
   set result = 1
 endif

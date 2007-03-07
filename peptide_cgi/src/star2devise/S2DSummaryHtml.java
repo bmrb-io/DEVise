@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2006
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -26,6 +26,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2006/08/21 21:01:11  wenger
+// Added second summary page for direct access to all large-size
+// visualizations; updated all tests accordingly.
+//
 // Revision 1.4  2006/05/11 21:10:25  wenger
 // Fixed problems with some html page titles being based on the BMRB
 // ID rather than the name, etc.  Fixed test36 to work with new LACS
@@ -358,8 +362,8 @@ public class S2DSummaryHtml {
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
     public S2DSummaryHtml(String name, String longName, String accessionNum,
-      String htmlDir, String starFileName, String systemName,
-      String frameTitle) throws S2DException
+      Vector localFiles, String htmlDir, String starFileName,
+      String systemName, String frameTitle) throws S2DException
     {
         if (DEBUG >= 1) {
 	    System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
@@ -369,9 +373,9 @@ public class S2DSummaryHtml {
 	_htmlDir = htmlDir;
 
 	_normal = new S2DSummaryHtmlNormal(name, longName, accessionNum,
-	  htmlDir, starFileName, systemName, frameTitle);
+	  localFiles, htmlDir, starFileName, systemName, frameTitle);
 	_large = new S2DSummaryHtmlLarge(name, longName, accessionNum,
-	  htmlDir, starFileName, systemName, frameTitle);
+	  localFiles, htmlDir, starFileName, systemName, frameTitle);
 
 	_normal.setSibling(_large);
 	_large.setSibling(_normal);

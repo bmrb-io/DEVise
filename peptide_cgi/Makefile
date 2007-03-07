@@ -27,6 +27,7 @@ DO_CSR_DEFAULT = 0
 LACS_LEVEL_DEFAULT = 0
 LACS_NAME_TEMPLATE = bmr*_LACS.str
 LACS_URL = null
+UVD_CGI_URL = undefined
 
 include Makefile.config
 
@@ -82,8 +83,7 @@ vur_install:
 	  $(VUR_HTML_HOME) null $(VUR_INSTALL_MACHINE)
 
 uvd_install: do_install
-	install_uvd $(PEP_HOME) $(UVD_SESSION_HOME) $(UVD_DATA_HOME) \
-	  $(UVD_HTML_HOME)
+	install_uvd $(UVD_SESSION_HOME) $(UVD_DATA_HOME) $(UVD_HTML_HOME)
 
 clean:
 	-rm $(S2D_PROPS_FILE)
@@ -134,6 +134,7 @@ s2d_props:
 	echo "bmrb_mirror.summary_page_dir=$(SUMMARY_PAGE_DIR)" >> \
 	  $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.cgi_url=$(CGI_URL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.uvd_cgi_url=$(UVD_CGI_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.do_csr_default=$(DO_CSR_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.comment_email=$(COMMENT_EMAIL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.lacs_level_default=$(LACS_LEVEL_DEFAULT)" >> \

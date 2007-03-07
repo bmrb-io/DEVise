@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2007/03/05 18:14:27  wenger
+// First phase of support for "upload and visualize data" setup -- still
+// needs quite a few changes.
+//
 // Revision 1.23  2007/01/12 21:57:32  wenger
 // Changed version to 11.1.1x1; minor fix to distribution makefile;
 // minor change to release doc.
@@ -1247,7 +1251,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.1x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.1x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1317,6 +1321,8 @@ public class S2DMain {
     private boolean _runScripts = true;
 
     private boolean _savedResList = false;
+
+    private boolean _isUvd = false;
 
     private static final int CSR_TIMEOUT_DEFAULT = 120;
     private int _csrTimeout = CSR_TIMEOUT_DEFAULT;
@@ -1477,6 +1483,8 @@ public class S2DMain {
 	      "bmrb_mirror.cgi_url property");
 	}
 
+	S2DNames.UVD_CGI_URL = props.getProperty("bmrb_mirror.uvd_cgi_url");
+
 	S2DNames.STAR_NAME_TEMPLATE = props.getProperty(
 	  "bmrb_mirror.star_name_template");
 	if (S2DNames.STAR_NAME_TEMPLATE == null) {
@@ -1489,7 +1497,7 @@ public class S2DMain {
 
 	S2DNames.COMMENT_EMAIL = props.getProperty(
 	  "bmrb_mirror.comment_email");
-	if (S2DNames.CGI_URL == null) {
+	if (S2DNames.COMMENT_EMAIL == null) {
 	    throw new S2DError("Unable to get value for " +
 	      "bmrb_mirror.comment_email property");
 	}
@@ -1895,7 +1903,15 @@ public class S2DMain {
 	        _sessionDir = args[index];
 
 	    } else if ("-uvd".equals(args[index])) {
+	        if (S2DNames.UVD_CGI_URL == null) {
+	            throw new S2DError("Unable to get value for " +
+	              "bmrb_mirror.uvd_cgi_url property");
+	        }
+		_isUvd = true;
 	        S2DSpecificHtml.setIsUvd(true);
+	        S2DSummaryHtmlGen.setIsUvd(true);
+		//TEMPTEMP -- do_csr should probably default to 1 here?
+		//TEMPTEMP -- make sure it can get overridden
 
 	    } else {
 	        throw new S2DError("Unrecognized command-line argument: " +
@@ -2262,8 +2278,8 @@ public class S2DMain {
 	    // stuff without writing to a summary file.  wenger 2003-09-12.
 	    String tmpSummaryFile = _name + "tmp" + _cmdFrameIndex;
 	    _summary = new S2DSummaryHtml(tmpSummaryFile, _longName,
-	      _masterBmrbId, _htmlDir, "starFileName", "systemName",
-	      "frameTitle");
+	      _masterBmrbId, _localFiles, _htmlDir, "starFileName",
+	      "systemName", "frameTitle");
 
 	    //
 	    // Do the coordinate processing.
@@ -2310,11 +2326,11 @@ public class S2DMain {
 	      _useLocalFiles, false);
 
 	    _summary = new S2DSummaryHtml(_name, _longName, _masterBmrbId,
-	      _htmlDir, masterStar.getFileName(),
+	      _localFiles, _htmlDir, masterStar.getFileName(),
 	      masterStar.getSystemName(), masterStar.getEntryTitle());
 	} else {
-	    _summary = new S2DSummaryHtml(_name, _longName, "99999", _htmlDir,
-	      _name, ""/*TEMP?*/, ""/*TEMP?*/);
+	    _summary = new S2DSummaryHtml(_name, _longName, "99999",
+	      _localFiles, _htmlDir, _name, ""/*TEMP?*/, ""/*TEMP?*/);
 	}
 
 	//
@@ -2561,8 +2577,9 @@ public class S2DMain {
 	if (_runScripts) {
 	    try {
 	        Runtime currentRT = Runtime.getRuntime();
+		String directory = _isUvd ? "uvd/" : "";
 	        Process ps = currentRT.exec("." + File.separator +
-		  "set_modes " + _name);
+		  "set_modes " + directory + _name);
 	        ps.waitFor();
 	        int result = ps.exitValue();
 	        if (result != 0) {

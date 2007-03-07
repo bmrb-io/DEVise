@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/03/05 18:14:27  wenger
+// First phase of support for "upload and visualize data" setup -- still
+// needs quite a few changes.
+//
 // Revision 1.5  2006/05/26 16:50:55  wenger
 // Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
 // to the trunk.
@@ -201,12 +205,14 @@ public class S2DSpecificHtml {
     //===================================================================
     // PUBLIC METHODS
 
+    //-------------------------------------------------------------------
     // Set whether this is UVD processing.
     static void setIsUvd(boolean isUvd)
     {
         _isUvd = isUvd;
     }
 
+    //-------------------------------------------------------------------
     static void write(String htmlDir, int dataType, String name,
       int frameIndex, String title) throws S2DException
     {
@@ -238,6 +244,8 @@ public class S2DSpecificHtml {
 
     //===================================================================
     // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
     static void writeOne(String templateFile, String htmlDir,
       String sizeSuffix, int dataType, String name, int frameIndex,
       String title) throws S2DException

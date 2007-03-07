@@ -26,17 +26,14 @@
 #-----------------------------------------------------------
 # Check and get the arguments.
 
-if ($#argv != 4) then
-  echo "Usage: install_uvd <pep_home> <uvd_session_home> <pep_data_home>"
-  echo "  <pep_html_home>"
+if ($#argv != 3) then
+  echo "Usage: install_uvd <uvd_session_home> <pep_data_home> <pep_html_home>"
   exit 1
 endif
 
-#TEMPTEMP -- get rid of pephome arg?
-set pephome = $1
-set sessionhome = $2
-set datahome = $3
-set htmlhome = $4
+set sessionhome = $1
+set datahome = $2
+set htmlhome = $3
 
 #-----------------------------------------------------------
 
@@ -45,11 +42,5 @@ mkdir -p $sessionhome
 mkdir -p $datahome
 mkdir -p $htmlhome
 
-#TEMPTEMP -- put index.html file into $htmlhome
-
-# Link various files so that the references from the UVD html
-# pages work right.
-#TEMPTEMP? cd $pephome
-#TEMPTEMP? ln -s ../*.jar .
-#TEMPTEMP? ln -s ../keyboard.html .
-#TEMPTEMP? ln -s ../collab.html .
+# Make sure the UVD html directory cannot be listed.
+cp html/no_list.html $htmlhome/index.html

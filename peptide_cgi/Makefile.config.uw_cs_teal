@@ -37,6 +37,7 @@ PDB_FILE_URL = http://www.rcsb.org/pdb/files/
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/bmrb/4096_side3h.html
 SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/bmrb/html
 CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/bmrb/make_view
+UVD_CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/bmrb/make_uvd
 
 #-----------------------------------------------------------
 # Places to install stuff.
