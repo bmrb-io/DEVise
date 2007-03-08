@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2007/03/07 19:32:28  wenger
+// More "upload and visualize data" improvements, as a result of
+// testing on tuna.bmrb.wisc.edu.
+//
 // Revision 1.25  2007/03/07 16:37:57  wenger
 // Phase 2 of "upload and visualize data" -- mostly working, I think,
 // but still needs chem shift reference capability and hasn't been
@@ -1256,7 +1260,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.1x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.1x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1967,20 +1971,31 @@ public class S2DMain {
 	    throw new S2DError("name must be specified if bmrbid is not");
 	}
 
+	// Name cannot contain a dot because that will end up in the
+	// data source names and goof up DEVise when it tries to open
+	// the session.
+	if (_name.indexOf(".") >= 0) {
+	    throw new S2DError("illegal name: " + _name +
+	      " (cannot contain a dot ('.'))");
+	}
+
 	if (_pdbLevel < PDB_LEVEL_NONE || _pdbLevel > PDB_LEVEL_PROCESS) {
-	    throw new S2DError("illegal do_pdb value (must be between " +
-	      PDB_LEVEL_NONE + " and " + PDB_LEVEL_PROCESS + ")");
+	    throw new S2DError("illegal do_pdb value: " + _pdbLevel +
+	      " (must be between " + PDB_LEVEL_NONE + " and " +
+	      PDB_LEVEL_PROCESS + ")");
 	}
 
 	if (_csrLevel < CSR_LEVEL_NONE || _csrLevel > CSR_LEVEL_PROCESS) {
-	    throw new S2DError("illegal do_csr value (must be between " +
-	      CSR_LEVEL_NONE + " and " + CSR_LEVEL_PROCESS + ")");
+	    throw new S2DError("illegal do_csr value: " + _csrLevel +
+	      " (must be between " + CSR_LEVEL_NONE + " and " +
+	      CSR_LEVEL_PROCESS + ")");
 	}
 
 	if (_lacsLevel < LACS_LEVEL_NONE ||
 	  _lacsLevel > LACS_LEVEL_MANDATORY) {
-	    throw new S2DError("illegal do_lacs value (must be between " +
-	      LACS_LEVEL_NONE + " and " + LACS_LEVEL_MANDATORY + ")");
+	    throw new S2DError("illegal do_lacs value: " + _lacsLevel +
+	      " (must be between " + LACS_LEVEL_NONE + " and " +
+	      LACS_LEVEL_MANDATORY + ")");
 	}
 	
 	//
