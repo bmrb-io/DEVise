@@ -29,6 +29,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2007/03/07 16:37:58  wenger
+// Phase 2 of "upload and visualize data" -- mostly working, I think,
+// but still needs chem shift reference capability and hasn't been
+// hooked up to Dimitri's upload scripts yet.
+//
 // Revision 1.1  2006/08/21 21:01:11  wenger
 // Added second summary page for direct access to all large-size
 // visualizations; updated all tests accordingly.
@@ -520,20 +525,28 @@ public abstract class S2DSummaryHtmlGen {
 
         String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
+	String dataId;
+	if (_isUvd) {
+	    dataId = "&file=" + (String)_localFiles.elementAt(0) +
+	      "&name=" + _name;
+	} else {
+	    dataId = "&number=" + _name;
+	}
+
         _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  "&number=" + _name + "&do_csr=2&coord_index=" + frameIndex +
+	  dataId + "&do_csr=2&coord_index=" + frameIndex +
 	  "&csr_index=1" + "&size_str=" + sizeString() +
 	  "\">Difference Histograms</a> " +
 	  "(note: processing may take several minutes)\n");
 
         _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  "&number=" + _name + "&do_csr=2&coord_index=" + frameIndex +
+	  dataId + "&do_csr=2&coord_index=" + frameIndex +
 	  "&csr_index=2" + "&size_str=" + sizeString() +
 	  "\">Differences by Residue</a> " +
 	  "(note: processing may take several minutes)\n");
 
         _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  "&number=" + _name + "&do_csr=2&coord_index=" + frameIndex +
+	  dataId + "&do_csr=2&coord_index=" + frameIndex +
 	  "&csr_index=3" + "&size_str=" + sizeString() +
 	  "\">Observed vs. Calculated Chemical Shift Values</a> " +
 	  "(note: processing may take several minutes)\n");

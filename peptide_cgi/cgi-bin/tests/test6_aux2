@@ -1,9 +1,0 @@
-#! /bin/csh -f
-
-# This simulates Dan Sinclair's chemShift software for running test6
-# on a machine where we don't have access to the cross-mounted directories
-# set up for chemShift on leech.
-
-rm -f data_dir/vis_server/csr.run
-touch data_dir/vis_server/test6_out.error
-touch data_dir/vis_server/test6_out.done

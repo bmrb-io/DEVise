@@ -42,8 +42,11 @@ set cgihome = $5
 
 # Make the UVD session, data, and html directories.
 mkdir -p $sessionhome
+chmod a+rwx $sessionhome
 mkdir -p $datahome
+chmod a+rwx $datahome
 mkdir -p $htmlhome
+chmod a+rwx $htmlhome
 
 # Make sure the UVD html directory cannot be listed.
 cp html/no_list.html $htmlhome/index.html
@@ -53,4 +56,13 @@ cp html/no_list.html $htmlhome/index.html
 # Make the directory into which the data will actually be uploaded,
 # and link it into the CGI directory
 mkdir -p $uploadhome
-cd $cgihome; ln -s $uploadhome .
+chmod a+rwx $uploadhome
+
+# Make sure the upload directory cannot be listed.
+cp html/no_list.html $uploadhome/index.html
+
+set uploadbase = `basename $uploadhome`
+set uploadlink = $cgihome/$uploadbase
+if (! -e $uploadlink) then
+  ln -s $uploadhome $cgihome
+endif

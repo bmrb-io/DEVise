@@ -53,6 +53,11 @@ while (1) {
   if (-e $runFile) {
     ProcessRunFile($runFile);
   }
+
+  $runFile = "data_dir/uvd/csr.run";
+  if (-e $runFile) {
+    ProcessRunFile($runFile);
+  }
 }
 
 #-----------------------------------------------------------
@@ -122,6 +127,16 @@ sub DoSim() {
 
   } elsif ($bmrbId eq "4336" && $pdbId eq "1HTP") {
     # Test 22, test 23
+    system("cp", "test_data/csr4336.1", $name . "_1.dat");
+    system("cp", "test_data/csr4336.2", $name . "_2.dat");
+    system("cp", "test_data/csr4336.3", $name . "_3.dat");
+    system("cp", "test_data/csr4336.4", $name . "_4.dat");
+    system("cp", "test_data/csr4336.5", $name . "_5.dat");
+    system("chmod", "644", glob($name . "_?.dat"));
+    system("touch", $name . ".done");
+    if ($exitOnSuccess) { exit(0) };
+
+  } elsif ($bmrbId eq "data_dir/uvd/20070228.28103.str" && $pdbId eq "1FSP") {
     system("cp", "test_data/csr4336.1", $name . "_1.dat");
     system("cp", "test_data/csr4336.2", $name . "_2.dat");
     system("cp", "test_data/csr4336.3", $name . "_3.dat");

@@ -2,9 +2,15 @@
 
 # Tests "upload and visualize" mode.
 
-#TEMPTEMP -- should probably also test chemical shift reference
-
 set result = 0
+
+set noleech = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-noleech) then
+    set noleech = 1
+  endif
+endif
 
 rm -f */test47_out*
 rm -f */*/test47_out*
@@ -15,15 +21,29 @@ if ($status != 0) then
   echo "First invocation of uvd failed!"
   set result = 1
 endif
-
 mv tmp/uvd.out tmp/uvd.out1
 
 echo -n "Processing NMR-STAR and mmCIF: "
-#TEMPTEMP -- have this call make_uvd?
-./uvd -file test_data/20070228.28103.str -name test47_out -force -pdbid 1FSP -do_pdb 2 -coord_index 1 -do_csr 1
+#TEMP -- have this call make_uvd?
+./uvd -file test_data/20070228.28103.str -name test47_out -force -pdbid 1FSP -do_pdb 2 -coord_index 1
 if ($status != 0) then
   echo "Second invocation of uvd failed!"
   set result = 1
+endif
+mv tmp/uvd.out tmp/uvd.out2
+
+echo -n "Processing NMR-STAR and chemical shift reference: "
+#TEMP -- have this call make_uvd?
+if ($noleech) then
+  tests/test47_noleech
+  if ($status) then
+    set result = 1
+  endif
+else
+  tests/test47_main
+  if ($status) then
+    set result = 1
+  endif
 endif
 
 echo "Checking output files"
@@ -69,7 +89,22 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	session_dir/.uvd/test47_outd1.ds \
 	session_dir/.uvd/test47_outhn1.ds \
 	session_dir/.uvd/test47_outp1.ds \
-	session_dir/.uvd/test47_outps1.ds )
+	session_dir/.uvd/test47_outps1.ds \
+	data_dir/uvd/test47_outcsr1_1.dat \
+	data_dir/uvd/test47_outcsr1_2.dat \
+	data_dir/uvd/test47_outcsr1_3.dat \
+	data_dir/uvd/test47_outcsr1_4.dat \
+	data_dir/uvd/test47_outcsr1_5.dat \
+	data_dir/uvd/test47_outcsr1src.dat \
+	html_dir/uvd/test47_outcsr11.html \
+	html_dir/uvd/test47_outcsr11_large.html \
+	html_dir/uvd/test47_outcsr21.html \
+	html_dir/uvd/test47_outcsr21_large.html \
+	html_dir/uvd/test47_outcsr31.html \
+	html_dir/uvd/test47_outcsr31_large.html \
+	session_dir/.uvd/test47_outcsr11.ds \
+	session_dir/.uvd/test47_outcsr21.ds \
+	session_dir/.uvd/test47_outcsr31.ds )
 	
 foreach file ($files)
   if (! -f $file) then

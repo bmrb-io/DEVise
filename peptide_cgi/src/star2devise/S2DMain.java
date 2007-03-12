@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2007/03/08 18:00:00  wenger
+// Peptide-CGI reports an error if the name contains a dot, because
+// this will goof up DEVise when it gets into the data source names.
+//
 // Revision 1.26  2007/03/07 19:32:28  wenger
 // More "upload and visualize data" improvements, as a result of
 // testing on tuna.bmrb.wisc.edu.
@@ -1260,7 +1264,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.1x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.1x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1919,8 +1923,7 @@ public class S2DMain {
 		_isUvd = true;
 	        S2DSpecificHtml.setIsUvd(true);
 	        S2DSummaryHtmlGen.setIsUvd(true);
-		//TEMPTEMP -- do_csr should probably default to 1 here?
-		//TEMPTEMP -- make sure it can get overridden
+		_csrLevel = CSR_LEVEL_LINK;
 
 	    } else {
 	        throw new S2DError("Unrecognized command-line argument: " +
