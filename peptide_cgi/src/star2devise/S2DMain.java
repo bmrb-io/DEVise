@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2007/03/12 21:05:42  wenger
+// Last-minute change -- fixed "source file" timestamp comparison
+// to work with local files, not just URLs.
+//
 // Revision 1.29  2007/03/12 19:28:52  wenger
 // Changed version to 11.1.1.
 //
@@ -1272,7 +1276,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.1";
+    public static final String PEP_CGI_VERSION = "11.1.2x1"/*TEMPTEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
