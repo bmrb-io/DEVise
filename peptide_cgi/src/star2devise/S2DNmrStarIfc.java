@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/01/12 18:41:06  wenger
+// Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
+//
 // Revision 1.4.2.2  2007/01/09 22:48:20  wenger
 // Peptide-CGI now works with all data types in 4267, at least (see
 // test41) -- this includes capability to specially deal with optional
@@ -346,6 +349,11 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // Get the modification date/time of the appropriate NMR-Star file.
     public static Date getModDate(String bmrbId, boolean isLacs)
     {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DNmrStarIfc.getModDate(" + bmrbId +
+	      ", " + isLacs + ")");
+	}
+
 	Date date = null;
 	try {
 	    URL starfile = new URL(getURLName(getFileName(bmrbId, isLacs),
@@ -358,6 +366,31 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    System.err.println("MalformedURLException: " + ex.toString());
         } catch (IOException ex) {
 	    System.err.println("IOException: " + ex.toString());
+	}
+
+        if (DEBUG >= 2) {
+	    System.out.println("  Mod date is : " + date);
+	}
+
+	return date;
+    }
+
+    //-------------------------------------------------------------------
+    // Get the modification date/time of the appropriate file.
+    public static Date getModDateFile(String filename)
+    {
+        if (DEBUG >= 2) {
+	    System.out.println("S2DNmrStarIfc.getModDateFile(" +
+	      filename + ")");
+	}
+
+	Date date = null;
+	File tmpFile = new File(filename);
+	long timestamp = tmpFile.lastModified();
+	date = new Date(timestamp);
+
+        if (DEBUG >= 2) {
+	    System.out.println("  Mod date is : " + date);
 	}
 
 	return date;

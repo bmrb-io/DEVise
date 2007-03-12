@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2007/03/12 19:28:52  wenger
+// Changed version to 11.1.1.
+//
 // Revision 1.28  2007/03/12 18:37:40  wenger
 // Got Peptide-CGI end of chem shift reference working for the "upload
 // and visualize data" setup, changed test47 accordingly; install_uvd
@@ -2098,6 +2101,22 @@ public class S2DMain {
 	        String id = (String)summaryData.bmrbIds.elementAt(index);
 		if (!id.equals("")) {
 	            Date starModDate = S2DNmrStarIfc.getModDate(id, false);
+	            if (starModDate == null ||
+		      starModDate.after(summaryData.fileDate)) {
+		        if (DEBUG >= 1) {
+		            System.out.println("Existing summary html file " +
+		              "is older than NMR-STAR file; cache not used");
+		        }
+	                break check;
+	            }
+		}
+	    }
+
+	    for (int index = 0; index < _localFiles.size(); index++) {
+	        String filename = (String)_localFiles.elementAt(index);
+		if (!filename.equals("")) {
+	            Date starModDate =
+		      S2DNmrStarIfc.getModDateFile(filename);
 	            if (starModDate == null ||
 		      starModDate.after(summaryData.fileDate)) {
 		        if (DEBUG >= 1) {
