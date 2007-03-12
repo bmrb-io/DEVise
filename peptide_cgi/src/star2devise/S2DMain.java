@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2007/03/12 18:37:40  wenger
+// Got Peptide-CGI end of chem shift reference working for the "upload
+// and visualize data" setup, changed test47 accordingly; install_uvd
+// now copies the no list file into the data upload directory, too.
+//
 // Revision 1.27  2007/03/08 18:00:00  wenger
 // Peptide-CGI reports an error if the name contains a dot, because
 // this will goof up DEVise when it gets into the data source names.
@@ -1264,7 +1269,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.1x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.1";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
