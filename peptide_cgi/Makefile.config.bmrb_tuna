@@ -54,13 +54,13 @@ PEP_HOME = $(WWW_HOME)/devise/peptide-cgi
 CGI_HOME = $(WWW_HOME)/cgi-bin/peptide-cgi
 
 # The "real" directory (not symlink) for peptide-cgi sessions.
-PEP_SESSION_HOME = /bmrb/htdocs/cgi-bin/peptide-cgi/session_dir
+PEP_SESSION_HOME = $(WWW_HOME)/cgi-bin/peptide-cgi/session_dir
 
 # The "real" directory (not symlink) for peptide-cgi data.
-PEP_DATA_HOME = /bmrb/htdocs/cgi-bin/peptide-cgi/data_dir/
+PEP_DATA_HOME = $(WWW_HOME)/cgi-bin/peptide-cgi/data_dir/
 
 # The "real" directory (not symlink) for peptide-cgi html files.
-PEP_HTML_HOME = /bmrb/htdocs/devise/peptide-cgi/html_dir
+PEP_HTML_HOME = $(WWW_HOME)/devise/peptide-cgi/html_dir
 
 # Machine installation should be done on (optional).
 INSTALL_MACHINE = tuna
@@ -118,7 +118,7 @@ VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
 
 #-----------------------------------------------------------
 # "Upload and visualize data" configuration
-UVD_DATA_UPLOAD = /bmrb/htdocs/vis_serv/upload_data
+UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
 
 #-----------------------------------------------------------
 # LACS-related configuration

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -118,7 +118,7 @@ VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
 
 #-----------------------------------------------------------
 # "Upload and visualize data" configuration
-UVD_DATA_UPLOAD = TEMPTEMP
+UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
 
 #-----------------------------------------------------------
 # LACS-related configuration
