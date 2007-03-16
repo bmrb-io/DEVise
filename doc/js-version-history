@@ -1,5 +1,21 @@
 			JavaScreen Version History
 
+JavaScreen 5.8.0
+----------------
+
+* Completely changed the JavaScreen color scheme and some other
+aspects of its appearance, to a more clean, modern look.
+
+* Changed applet parameter names for colors from "fgcolor" and "bgcolor"
+to "fgcolor2" and "bgcolor2" so existing web pages don't override
+the colors.
+
+* Structure selection tree window now comes up closer to the upper
+left corner of the screen in Jmol visualizations.
+
+* Added client-only install option.
+
+
 JavaScreen 5.7.2
 ----------------
 
@@ -7,6 +23,9 @@ JavaScreen 5.7.2
 accidental drill-down).
 
 * Updated configuration for NMRFAM.
+
+* Set things up so that "special" arguments (e.g., font path) to
+Xvfb are configurable.
 
 
 JavaScreen 5.7.1
