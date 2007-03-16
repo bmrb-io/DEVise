@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.82  2007/02/22 23:20:18  wenger
+// Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
 // Revision 1.81.2.1  2007/02/20 19:04:24  wenger
 // Changed JavaScreen version to 5.8.0x1_new_gui -- 5.8 because I think
 // the GUI changes are big enough for a new minor version, and I added
@@ -554,7 +557,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.0x1"/*TEMP*/);
+    public static final String VERSION = new String("5.8.0");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
