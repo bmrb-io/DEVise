@@ -34,7 +34,8 @@ The following testing steps must be done:
     - T1 Relaxation (750 MHz)
     - Heteronuclear NOE (750 MHz) N H
     - Coupling constants
-    - 3D structure from PDB ID 1NGL
+    - 3D structure from PDB ID 1NGL (make sure the Jmol menu button shows
+      up in the JavaScreen)
 
 - Run 'tests/test15 -noleech' in /var/home/www/public/cgi-bin/bmrb on teal.
 
