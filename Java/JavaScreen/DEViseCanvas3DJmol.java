@@ -26,6 +26,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2007/02/26 20:50:16  wenger
+// Structure selection tree window colors now partially match the overall
+// JavaScreen colors (I need to figure out how to get them to fully match).
+//
 // Revision 1.8  2007/02/23 19:21:59  wenger
 // Structure selection tree window now comes up closer to the upper
 // left corner of the screen.
@@ -269,7 +273,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // Called when a session is closed.
     public void close()
     {
-	if (treeFrame != null) treeFrame.dispose();
+	// For some reason, calling dispose() here causes things to hang
+	// in 5.8.x when closing a Jmol session.  I *hope* that calling
+	// hide() eventually frees the resources of the window...
+	// wenger 2007-03-29.
+	//if (treeFrame != null) treeFrame.dispose();
+	if (treeFrame != null) treeFrame.setVisible(false);
 	treeFrame = null;
 	jsc.hideJmol();
     }

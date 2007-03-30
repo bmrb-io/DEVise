@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -32,6 +32,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.76  2006/05/26 16:22:16  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.75.6.8  2006/05/12 14:50:26  wenger
 // Now have two trees for a Jmol view: the first one selects which
 // atoms are shown in the Jmol view and in the second tree; the
@@ -644,6 +647,7 @@ public class DEViseScreen extends Panel
         viewTable.remove(view.viewName);
 
         repaint();
+
     }
 
     // remove the child views only
@@ -977,6 +981,8 @@ public class DEViseScreen extends Panel
             setSize(screenDim);
 
             if (jsc.jsValues.uiglobals.inBrowser) {
+		//TEMP  AWT uses validate to cause a container to lay out its subcomponents again after the components it contains have been added to or modified
+		//TEMP -- do we really need to call validate here?
                 jsc.validate();
             } else {
                 jsc.parentFrame.pack();
@@ -1150,7 +1156,13 @@ public class DEViseScreen extends Panel
 	canvas.repaint();
 	repaint();
     }
-    
+
+    private void debugOut(String msg)
+    {
+	//jsc.jsValues.debug.log(msg);
+	//jsc.pn(msg);
+	//System.out.println(msg);
+    }
 }
 
 

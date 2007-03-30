@@ -191,6 +191,12 @@ endif
 cp js_log $logdir
 chmod 755 $logdir/js_log
 
+set logdir = $cgidir/devise/js_debug_log
+if (! -d $logdir) then
+  mkdir $logdir
+  chmod 777 $logdir
+endif
+
 #-----------------------------------------------------------
 # Install the jss, devised, and Tasvir.
 

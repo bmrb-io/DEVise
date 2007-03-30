@@ -1,5 +1,11 @@
 			JavaScreen Version History
 
+JavaScreen 5.8.1
+----------------
+
+* Fixed (or at least reduced) the lockup problems seen in 5.8.0.
+
+
 JavaScreen 5.8.0
 ----------------
 

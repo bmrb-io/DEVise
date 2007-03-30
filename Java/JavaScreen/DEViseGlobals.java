@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.83  2007/03/16 16:43:23  wenger
+// Changed version to 5.8.0.
+//
 // Revision 1.82  2007/02/22 23:20:18  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
 //
@@ -557,7 +560,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.0");
+    public static final String VERSION = new String("5.8.1x1");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2002
+#  (c) Copyright 2000-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.5  2002/07/19 17:06:49  wenger
+#  Merged V1_7b0_br_2 thru V1_7b0_br_3 to trunk.
+#
 #  Revision 1.4.8.1  2002/06/26 17:29:33  wenger
 #  Improved various error messages and client debug log messages; very
 #  minor bug fixes; js_log script is now part of installation.
@@ -71,6 +74,13 @@ foreach $pair (@pairs)
 if ($js_id >= 0 && $command ne "") {
     open(OUT, ">>js_debug_log/js_log.$js_id") or die "Can't open file";
     print OUT "$command\n";
+    close(OUT);
+} else {
+    open(OUT, ">>js_debug_log/js_log.error") or die "Can't open file";
+    my $timestamp = time();
+    my $timestr = localtime($timestamp);
+    print OUT "$timestr: Got bad js_id or command\n";
+    close(OUT);
 }
 
 print "Logged\n";

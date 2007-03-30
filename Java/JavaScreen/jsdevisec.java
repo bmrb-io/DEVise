@@ -1,3 +1,4 @@
+//TEMPTEMP -- replace validate() calls with doLayout()????
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 1999-2007
@@ -22,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.155  2007/02/22 23:20:23  wenger
+// Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
 // Revision 1.154.2.3  2007/02/22 18:14:31  wenger
 // Changed communiation mode label to gray so it's visible against
 // the new background color.
@@ -855,7 +859,8 @@ public class jsdevisec extends Panel
 
         jmolButton = new DEViseJmolMenuButton(jsValues);
 	buttonPanel.add(jmolButton);
-	jmolButton.hide();
+	jmolButton.show();
+        jmolButton.setEnabled(false);
 
 	if (! jsValues.session.disableButtons) {
 	    mainPanel.add(buttonPanel);
@@ -1135,7 +1140,7 @@ public class jsdevisec extends Panel
 
     public void hideJmol()
     {
-        jmolButton.hide();
+        jmolButton.setEnabled(false);
     }
 
     public void showDocument(String url)

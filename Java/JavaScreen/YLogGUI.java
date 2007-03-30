@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2003/01/13 19:23:44  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.10.8.1  2002/11/22 21:55:10  wenger
 // More fixes for stupid scrollbar warnings.
 //
@@ -211,6 +214,7 @@ public class YLogGUI extends Frame
         pn(msg, 1);
     }
 
+    //TEMP -- what does this do?
     public synchronized void addNumber(int num)
     {
         number += num;

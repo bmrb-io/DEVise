@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.127  2006/06/23 19:52:40  wenger
+// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
+//
 // Revision 1.126  2006/05/26 16:22:15  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -693,6 +696,9 @@ public class DEViseCmdDispatcher implements Runnable
     private static final int SOCK_REC_TIMEOUT = 5000; // milliseconds
     private static final int SOCK_CONST_TIMEOUT = 5000; // milliseconds
 
+    // This is for testing of the lockup problem experienced in JS 5.8.0.
+    private static final boolean UPDATE_VIEW_INFO = true;
+
     public jsdevisec jsc = null;
 
     public Thread dispatcherThread = null;
@@ -1207,8 +1213,11 @@ public class DEViseCmdDispatcher implements Runnable
 		jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 		
 		// turn off the counter and the traffic light
-		jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE, false);
-		jsc.viewInfo.updateCount(0);
+	        if (UPDATE_VIEW_INFO) {
+		    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE,
+		      false);
+		    jsc.viewInfo.updateCount(0);
+	        }
 		
 		// user pressed the stop button
 		switch (e.getID()) {
@@ -1284,12 +1293,17 @@ public class DEViseCmdDispatcher implements Runnable
         String[] rsp = sendRcvCmd(command);
 
         // turn on the 'process' light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, true);
+	if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING,
+	      true);
+	}
 
-	if (rsp != null) // rsp == null means interrupted from collaboration mode 
+	if (rsp != null) { // rsp == null means interrupted from collaboration mode 
 	    for (int i = 0; i < rsp.length; i++) {
 		// adjust the counter
-		jsc.viewInfo.updateCount(rsp.length - 1 - i);
+	        if (UPDATE_VIEW_INFO) {
+		    jsc.viewInfo.updateCount(rsp.length - 1 - i);
+	        }
 		
 		jsc.pn("Processing command (" + (rsp.length - 1 - i) + ") " +
 		       rsp[i]);
@@ -1303,11 +1317,15 @@ public class DEViseCmdDispatcher implements Runnable
 		       " Total mem: " + Runtime.getRuntime().totalMemory());
 		jsc.jsValues.debug.log("  Done with command " + rsp[i]);
 	    }
+	}
 	
 	_commCgi = null;
 
         // turn off the 'process' light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING, false);
+	if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_PROCESSING,
+	      false);
+	}
 
         System.gc();
 
@@ -2107,7 +2125,9 @@ public class DEViseCmdDispatcher implements Runnable
         byte[] imgData = null;
 
         // turn on the receive light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
+	if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
+	}
 
         jsc.pn("Trying to receive data (" + size + ") from socket ...");
 	jsc.pn("  Bytes available: " + commSocket.dataAvailable());
@@ -2127,7 +2147,10 @@ public class DEViseCmdDispatcher implements Runnable
 	  imgData[imgData.length/2] + "; last: " + imgData[imgData.length-1]);
 
         // turn off the receive light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);
+	if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING,
+	      false);
+	}
 
         if (imgData == null) {
             throw new YException("Invalid response received from server",
@@ -2159,7 +2182,10 @@ public class DEViseCmdDispatcher implements Runnable
         if ( (jsc.specialID == -1 && command != null) || 
 	     command != null ) { 
 	    // turn on the 'send' light
-	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, true);
+	    if (UPDATE_VIEW_INFO) {
+	        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING,
+		  true);
+	    }
 	    // sending command to server, and expect an immediate response
             // of "JAVAC_Ack"
 	    jsc.pn("Sending: \"" + command + "\"");
@@ -2172,16 +2198,23 @@ public class DEViseCmdDispatcher implements Runnable
             }
 
 	    // turn off the 'send' light
-	    jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING, false);
+	    if (UPDATE_VIEW_INFO) {
+	        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_SENDING,
+		  false);
+	    }
 	} else { // for collabration JS
 	    jsc.pn("Waiting for commands in collaboration...");
 	}
 
         // turn on the counter
-        jsc.viewInfo.updateCount(0);
+	if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateCount(0);
+	}
 
         // turn on the 'receive' light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
+	if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, true);
+	}
 
         // wait to receive the response from server
         String response = null;
@@ -2297,7 +2330,9 @@ public class DEViseCmdDispatcher implements Runnable
 
                             rspbuf.addElement(cmd);
 
-                            jsc.viewInfo.updateCount(rspbuf.size());
+	                    if (UPDATE_VIEW_INFO) {
+                                jsc.viewInfo.updateCount(rspbuf.size());
+	                    }
                         }
                     } else {
                 	throw new YException("Unsupported command (" +
@@ -2313,7 +2348,10 @@ public class DEViseCmdDispatcher implements Runnable
             rspstr[i] = (String)rspbuf.elementAt(i);
 
         // turn off the 'receive' light
-        jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING, false);
+	if (UPDATE_VIEW_INFO) {
+            jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_RECEIVING,
+	      false);
+	}
 
         return rspstr;
     }

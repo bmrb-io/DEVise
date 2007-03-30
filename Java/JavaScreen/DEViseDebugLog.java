@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2001
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2001/05/11 20:36:06  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.3  2001/01/08 20:31:51  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -70,7 +73,7 @@ public class DEViseDebugLog
     void send(String msg)
     {
         if (DEBUG) {
-            System.out.println(msg);
+            System.out.println("DEViseDebugLog: " + msg);
         }
 
 	try {
@@ -84,7 +87,7 @@ public class DEViseDebugLog
 
 	    //TEMP -- eliminate hard-coded machine name.
             URL url = new URL(
-	      "http://pumori.cs.wisc.edu/cgi-bin/devise/js_log");
+	      "http://devise.cs.wisc.edu/cgi-bin/devise/js_log");
 	    URLConnection connection = url.openConnection();
 	    connection.setDoOutput(true);
 

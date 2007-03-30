@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2002
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2007/02/22 23:20:19  wenger
+// Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
 // Revision 1.59.8.1  2007/02/13 18:35:12  adayton
 // Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
 //
@@ -241,7 +244,9 @@ public class DEViseViewInfo extends Panel
             mouseY.setText(y);
         }
 
-        validate();
+	// Getting rid of validate here seems to fix the lockup we've
+	// been getting with JS 5.8.0.
+        //validate();
     }
 
 
@@ -260,7 +265,9 @@ public class DEViseViewInfo extends Panel
         mouseX.setText("");
         mouseY.setText("");
 
-        validate();
+	// Getting rid of validate here seems to fix the lockup we've
+	// been getting with JS 5.8.0.
+        //validate();
     }
 
     // status is DEViseTrafficLight.STATUS_*.
@@ -268,7 +275,9 @@ public class DEViseViewInfo extends Panel
     {
         if (jsc.light != null) {
             jsc.light.updateImage(status, isOn);
-            jsc.validate();
+	    // Getting rid of validate here seems to fix the lockup we've
+	    // been getting with JS 5.8.0.
+            //jsc.validate();
         }
     }
 
@@ -278,7 +287,9 @@ public class DEViseViewInfo extends Panel
             return;
 
         jsc.light.updateCount("" + number);
-        jsc.validate();
+	// Getting rid of validate here seems to fix the lockup we've
+	// been getting with JS 5.8.0.
+        //jsc.validate();
     }
 
     public static String viewParser(float x, String format)

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2006
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2006/12/13 22:42:17  wenger
+// Added option to disable Jmol drill down (to avoid accidental drill-
+// down); changed "Cancel" to "Close" in the Option dialog.
+//
 // Revision 1.4  2006/06/29 21:01:20  wenger
 // Merged devise_jmol_br_2 thru devise_jmol_br_3 to the trunk.
 //
@@ -386,6 +390,7 @@ public class DEViseJmolMenuButton extends DEViseButton
     {
 	jmolCanvas = canvas;
         super.show();
+        super.setEnabled(true);
     }
 
     //-------------------------------------------------------------------
