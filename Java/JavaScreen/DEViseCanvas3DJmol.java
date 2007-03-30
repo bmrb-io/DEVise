@@ -26,6 +26,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2007/03/30 15:43:08  wenger
+// (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+// a bunch of calls to validate() in the GUI); fixed up the client logging
+// functionality somewhat; various improvements to debug output.
+//
 // Revision 1.9  2007/02/26 20:50:16  wenger
 // Structure selection tree window colors now partially match the overall
 // JavaScreen colors (I need to figure out how to get them to fully match).
@@ -184,6 +189,7 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
+import javax.swing.SwingUtilities;
 
 // Import the Jmol stuff we need.
 import org.jmol.api.*;
@@ -273,14 +279,15 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // Called when a session is closed.
     public void close()
     {
-	// For some reason, calling dispose() here causes things to hang
-	// in 5.8.x when closing a Jmol session.  I *hope* that calling
-	// hide() eventually frees the resources of the window...
-	// wenger 2007-03-29.
-	//if (treeFrame != null) treeFrame.dispose();
-	if (treeFrame != null) treeFrame.setVisible(false);
-	treeFrame = null;
-	jsc.hideJmol();
+    	Runnable doClose = new Runnable() {
+	    public void run() {
+	        if (treeFrame != null) treeFrame.dispose();
+	        treeFrame = null;
+	        jsc.hideJmol();
+	    }
+	};
+
+	SwingUtilities.invokeLater(doClose);
     }
 
     //-------------------------------------------------------------------

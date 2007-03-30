@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/03/30 15:43:09  wenger
+// (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+// a bunch of calls to validate() in the GUI); fixed up the client logging
+// functionality somewhat; various improvements to debug output.
+//
 // Revision 1.5  2006/12/13 22:42:17  wenger
 // Added option to disable Jmol drill down (to avoid accidental drill-
 // down); changed "Cancel" to "Close" in the Option dialog.
@@ -390,7 +395,6 @@ public class DEViseJmolMenuButton extends DEViseButton
     {
 	jmolCanvas = canvas;
         super.show();
-        super.setEnabled(true);
     }
 
     //-------------------------------------------------------------------

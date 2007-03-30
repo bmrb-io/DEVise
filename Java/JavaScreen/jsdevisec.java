@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.156  2007/03/30 15:43:10  wenger
+// (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+// a bunch of calls to validate() in the GUI); fixed up the client logging
+// functionality somewhat; various improvements to debug output.
+//
 // Revision 1.155  2007/02/22 23:20:23  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
 //
@@ -859,8 +864,7 @@ public class jsdevisec extends Panel
 
         jmolButton = new DEViseJmolMenuButton(jsValues);
 	buttonPanel.add(jmolButton);
-	jmolButton.show();
-        jmolButton.setEnabled(false);
+	jmolButton.hide();
 
 	if (! jsValues.session.disableButtons) {
 	    mainPanel.add(buttonPanel);
@@ -1135,12 +1139,33 @@ public class jsdevisec extends Panel
 
     public void showJmol(DEViseCanvas3DJmol canvas)
     {
-        jmolButton.show(canvas);
+	Runnable doShowJmol = new DoShowJmol(canvas);
+	SwingUtilities.invokeLater(doShowJmol);
+    }
+
+    private class DoShowJmol implements Runnable {
+        private DEViseCanvas3DJmol _canvas;
+
+	DoShowJmol(DEViseCanvas3DJmol canvas) {
+	    _canvas = canvas;
+	}
+
+	public void run() {
+            jmolButton.show(_canvas);
+	    validate();
+	}
     }
 
     public void hideJmol()
     {
-        jmolButton.setEnabled(false);
+        Runnable doHideJmol = new Runnable() {
+	    public void run() {
+                jmolButton.hide();
+	        validate();
+	    }
+	};
+
+	SwingUtilities.invokeLater(doHideJmol);
     }
 
     public void showDocument(String url)

@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2007/03/30 15:43:09  wenger
+// (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+// a bunch of calls to validate() in the GUI); fixed up the client logging
+// functionality somewhat; various improvements to debug output.
+//
 // Revision 1.60  2007/02/22 23:20:19  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
 //
@@ -274,11 +279,23 @@ public class DEViseViewInfo extends Panel
     public void updateImage(int status, boolean isOn)
     {
         if (jsc.light != null) {
-            jsc.light.updateImage(status, isOn);
-	    // Getting rid of validate here seems to fix the lockup we've
-	    // been getting with JS 5.8.0.
-            //jsc.validate();
-        }
+	    Runnable doUpdateImage = new DoUpdateImage(status, isOn);
+	    SwingUtilities.invokeLater(doUpdateImage);
+	}
+    }
+    
+    private class DoUpdateImage implements Runnable {
+	private int _status;
+	private boolean _isOn;
+
+        DoUpdateImage(int status, boolean isOn) {
+	    _status = status;
+	    _isOn = isOn;
+	}
+
+	public void run() {
+            jsc.light.updateImage(_status, _isOn);
+	}
     }
 
     public void updateCount(int number)
@@ -286,10 +303,21 @@ public class DEViseViewInfo extends Panel
         if (number < 0 || number > 99 || jsc.light == null)
             return;
 
-        jsc.light.updateCount("" + number);
-	// Getting rid of validate here seems to fix the lockup we've
-	// been getting with JS 5.8.0.
-        //jsc.validate();
+	Runnable doUpdateCount = new DoUpdateCount(number);
+	SwingUtilities.invokeLater(doUpdateCount);
+    }
+
+    private class DoUpdateCount implements Runnable {
+        private int _number;
+
+	DoUpdateCount(int number) {
+	    _number = number;
+
+	}
+
+	public void run() {
+            jsc.light.updateCount("" + _number);
+	}
     }
 
     public static String viewParser(float x, String format)
