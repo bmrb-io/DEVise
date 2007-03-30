@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.85  2007/03/30 17:29:55  wenger
+// Moved some GUI functions to the AWT-EventQueue thread (which is where
+// they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
+// (Note: there are probably many more that should be fixed.)
+//
 // Revision 1.84  2007/03/30 15:43:09  wenger
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
@@ -565,7 +570,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.1x2");//TEMPTEMP
+    public static final String VERSION = new String("5.8.1");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
