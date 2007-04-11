@@ -78,8 +78,6 @@ if ($do_pdb) {
     '.html';
 }
 
-#TEMPTEMP -- should the uploaded data go into its own directory?
-#TEMPTEMP -- okay, I think data file and name need to be split up in the args to make_uvd; that could probably take care of the data directory issue, too
 my $cmd;
 if ($do_pdb) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_pdb $do_pdb -coord_index $coord_index";
@@ -93,7 +91,7 @@ chomp $result;
 if ($result ne "OK") {
   my ($tmpmsg);
   $tmpmsg = "<p>Unable to process data for " . $name .
-    ".</p>\n<pre>\n" . `cat tmp/s2d.out` . "</pre>\n";
+    ".</p>\n<pre>\n" . `cat tmp/uvd.out` . "</pre>\n";
   dienice($tmpmsg);
 }
 

@@ -118,7 +118,7 @@ VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
 
 #-----------------------------------------------------------
 # "Upload and visualize data" configuration
-UVD_DATA_UPLOAD = /scratch/devise/bmrb/upload_data
+UVD_DATA_UPLOAD = $(WWW_HOME)/html/devise/bmrb/vis_serv/upload_data
 
 #-----------------------------------------------------------
 # LACS-related configuration
