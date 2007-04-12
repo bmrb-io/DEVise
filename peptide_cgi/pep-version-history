@@ -4,6 +4,8 @@ Peptide-CGI 11.1.2
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Incorporated a new version of starlibj.
+
 * Fixed a bug in the make_uvd script that prevented errors in the
 "upload and visualize data" processing from getting correctly sent
 back to the web browser.
