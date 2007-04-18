@@ -4005,6 +4005,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 939 2/21/07	OPEN	JavaScreen: if you're doing a rubberband line to
 			zoom in, and the mouse goes into the axis area of
 			the view, you end up zooming out slightly. (wenger)
+			(Actually, this happens in non-JS DEVise, too.)
 
 940 4/10/07	OPEN	JS/Jmol: open Jmol session; close tree selection
 			window; move the cursor in the data view -> JS
