@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.2.1  2007/03/16 17:12:46  adayton
+// Add UI package
+//
+// Revision 1.4  2006/06/23 19:52:41  wenger
+// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
+//
 // Revision 1.3  2006/05/26 16:22:16  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -57,6 +63,8 @@ package JavaScreen;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.*;
 
 public class DEViseMainButtons
 {
@@ -72,11 +80,11 @@ public class DEViseMainButtons
     
     private Component[] _buttons = null;
 
-    // Buttons that bring up menus.
-    private Button sessionMenuButton;
-    //TEMP private Button sessionMenuButton = new Button("Cursor Mode");
-    private Button viewMenuButton;
-    private Button helpMenuButton;
+    // JButtons that bring up menus.
+    private JButton sessionMenuButton;
+    //TEMP private JButton sessionMenuButton = new JButton("Cursor Mode");
+    private JButton viewMenuButton;
+    private JButton helpMenuButton;
 
     // Menus.
     private PopupMenu sessionPM = new PopupMenu();
@@ -85,8 +93,8 @@ public class DEViseMainButtons
     private PopupMenu helpPM = new PopupMenu();
     private Menu displayModeMenu = new PopupMenu("Display Mode");
 
-    // Buttons that don't bring up menus.
-    public  Button stopButton;
+    // JButtons that don't bring up menus.
+    public  JButton stopButton;
 
     // Menu items.
     private MenuItem openMenuItem = new MenuItem("Open...");
@@ -152,7 +160,7 @@ public class DEViseMainButtons
      * parts of the code to change its color).
      * @return The stop button.
      */
-    public Button getStopButton()
+    public JButton getStopButton()
     {
         if (DEBUG >= 1) {
 	    System.out.println("DEViseMainButtons.getStopButton()");

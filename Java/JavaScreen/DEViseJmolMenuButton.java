@@ -19,10 +19,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/03/30 17:29:56  wenger
+// Moved some GUI functions to the AWT-EventQueue thread (which is where
+// they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
+// (Note: there are probably many more that should be fixed.)
+//
 // Revision 1.6  2007/03/30 15:43:09  wenger
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
 // functionality somewhat; various improvements to debug output.
+//
+// Revision 1.5.2.1  2007/03/16 17:12:46  adayton
+// Add UI package
 //
 // Revision 1.5  2006/12/13 22:42:17  wenger
 // Added option to disable Jmol drill down (to avoid accidental drill-
@@ -99,6 +107,7 @@ import  java.util.*;
 import  java.text.*;
 import  java.awt.*;
 import  java.awt.event.*;
+import	javax.swing.*;
 
 
 import org.jmol.api.JmolViewer;
@@ -108,7 +117,7 @@ public class DEViseJmolMenuButton extends DEViseButton
 {
     private static final int DEBUG = 0;
 
-    private Button thisButton;
+    private JButton thisButton;
     private DEViseCanvas3DJmol jmolCanvas;
     private PopupMenu jmolMenu;
 

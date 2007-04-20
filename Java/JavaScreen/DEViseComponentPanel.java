@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.38.2  2007/04/20 16:59:58  wenger
+// Fixed the problem with the JavaScreen buttons showing up with the
+// wrong font; improved handling of color arguments.
+//
+// Revision 1.10.38.1  2007/03/16 17:12:46  adayton
+// Add UI package
+//
+// Revision 1.10  2001/05/11 20:36:06  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.9  2001/04/18 16:04:52  wenger
 // Changed the JSA version of the JavaScreen to have two rows of buttons
 // because we're running out of space; changed JS version to 4.1.
@@ -94,7 +104,8 @@ public class DEViseComponentPanel extends Panel
         // building the panel that display components
         Panel panel = new Panel();
         if (style.equals(LAYOUT_VERTICAL))  {
-            panel.setLayout(new GridLayout(0, 1, 0, gap));
+            // panel.setLayout(new GridLayout(0, 1, 0, gap));
+            panel.setLayout(new GridLayout(0, 0, 0, gap));
         }  else if (style.equals(LAYOUT_HORIZONTAL))  {
 	    int rows = component.length > 5 ? 2 : 1;
             panel.setLayout(new GridLayout(rows, 0, gap, 0));
@@ -104,18 +115,12 @@ public class DEViseComponentPanel extends Panel
 
         int i;
         for (i = 0; i < component.length; i++) {
-            if (component[i] instanceof Button) {
-                component[i].setBackground(jsc.jsValues.uiglobals.bg);
-                component[i].setForeground(jsc.jsValues.uiglobals.fg);
-                component[i].setFont(jsc.jsValues.uiglobals.font);
-                ((Button)component[i]).setActionCommand(
-		  ((Button)component[i]).getLabel());
-            } else if ((component[i] instanceof TextField) ||
+            if ((component[i] instanceof TextField) ||
 	      (component[i] instanceof TextArea)) {
                 component[i].setBackground(jsc.jsValues.uiglobals.textBg);
                 component[i].setForeground(jsc.jsValues.uiglobals.textFg);
                 component[i].setFont(jsc.jsValues.uiglobals.textFont);
-            } else {
+            } else if (!(component[i] instanceof DEViseButton)) {
                 component[i].setBackground(jsc.jsValues.uiglobals.bg);
                 component[i].setForeground(jsc.jsValues.uiglobals.fg);
 		// font2 for drill-down dialog.  RKW 2000-06-22.

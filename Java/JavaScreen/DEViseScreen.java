@@ -32,6 +32,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.77  2007/03/30 15:43:09  wenger
+// (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+// a bunch of calls to validate() in the GUI); fixed up the client logging
+// functionality somewhat; various improvements to debug output.
+//
+// Revision 1.76.2.1  2007/04/19 21:16:08  wenger
+// Fixed the problem with component layout in the jsb; got rid of
+// jsdevisec screenPanel, since it caused problem with the fix and only
+// was there for color; added the sbgcolor applet parameter to set
+// the "screen background" color, since this is now more prominent.
+//
 // Revision 1.76  2006/05/26 16:22:16  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -322,7 +333,7 @@ public class DEViseScreen extends Panel
 	  jsc.jsValues.uiglobals.screenSize.height);
 
         setLayout(null);
-        setBackground(jsc.jsValues.uiglobals.bg);
+        setBackground(jsc.jsValues.uiglobals.screenBg);
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
@@ -424,7 +435,11 @@ public class DEViseScreen extends Panel
 
     public Dimension getMinimumSize()
     {
-        return screenDim;
+	// Give the layout manager some room to work!!
+	int width = Math.max(100, screenDim.width - 200);
+	int height = Math.max(100, screenDim.height - 200);
+	Dimension minSize = new Dimension (width, height);
+	return minSize;
     }
 
     // At this time, you can not change the size of the screen after a session

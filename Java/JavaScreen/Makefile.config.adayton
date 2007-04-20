@@ -21,50 +21,67 @@
 ############################################################
 
 amd_make:
-	make all	
+	make all
+	
+amd_setup:
+	make setup
+	cp js.cgi /Library/WebServer/CGI-Executables/js.cgi
 
-amd_install:
+install_remote:
 	make jar
-	cp *.jar gui_build
+	cp jsb*.jar gui_build/jar
+	cp Jmol.jar gui_build/jar
+	make upload_gui_build
+
+upload_gui_build:
 	rsync -Cavuzb ./gui_build/ -e ssh adayton@dewey.cs.wisc.edu:/p/devise/ext13/andy_d_example
 
-amd:
-	make amd_make amd_gui
+install_local:
+	make jar
+	cp jsb*.jar gui_build/jar
+	cp Jmol.jar gui_build/jar
+	make sync_web_local
 	
+sync_web_local:
+	rsync -Cavuzb ./gui_build/ /Users/amdayton/Sites/devise
+	
+test:
+	make amd_make
+	./js -hostteal.cs.wisc.edu
 
 #custom make commands
-amd_get:
+get:
 	rsync -avuzb \
 	--exclude '*~' \
 	--exclude 'Makefile.config' \
 	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/ \
 	.
 	
-amd_put: 
+put: 
 	rsync -Cavuzb \
 	--exclude 'Makefile.config' \
 	./ \
 	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/
 
-amd_sync:
-	make amd_get amd_put
+sync:
+	make get put
 
 #test commands	
-amd_test_get:
+dry_get:
 	rsync -avuzbn \
 	--exclude '*~' \
 	--exclude 'Makefile.config' \
 	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/ \
 	.
 	
-amd_test_put:
+dry_put:
 	rsync -Cavuzbn \
 	--exclude 'Makefile.config' \
 	./ \
 	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/
 	
-amd_test_sync:
-	make amd_test_get amd_test_put	
+dry_sync:
+	make dry_get dry_put	
 #-----------------------------------------------------------
 # Directories for executables we need.
 

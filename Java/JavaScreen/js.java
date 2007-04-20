@@ -21,9 +21,29 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2007/02/22 23:20:22  wenger
+// Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
 // Revision 1.48  2007/02/20 00:00:19  wenger
 // Changed JavaScreen distribution tarfile to have JavaScreen version
 // instead of DEVise version; minor cleanup to distribution scripts.
+//
+// Revision 1.47.6.5  2007/04/20 17:00:00  wenger
+// Fixed the problem with the JavaScreen buttons showing up with the
+// wrong font; improved handling of color arguments.
+//
+// Revision 1.47.6.4  2007/04/19 21:16:08  wenger
+// Fixed the problem with component layout in the jsb; got rid of
+// jsdevisec screenPanel, since it caused problem with the fix and only
+// was there for color; added the sbgcolor applet parameter to set
+// the "screen background" color, since this is now more prominent.
+//
+// Revision 1.47.6.3  2007/04/10 22:50:27  wenger
+// Undid a bunch of formatting changes to make subsequent merges to the
+// trunk easier.
+//
+// Revision 1.47.6.2  2007/03/16 17:12:47  adayton
+// Add UI package
 //
 // Revision 1.47.6.1  2007/02/13 18:35:15  adayton
 // Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
@@ -173,9 +193,11 @@ public class js extends JFrame
 	  DEViseGlobals.DEFAULTPASS + ")\n" +
 	"  -session[filename]: session to load at startup (default: none)\n" +
 	"  -fgcolor[number+number+number]: RGB for JavaScreen foreground\n" +
-	  "    (default: 255+255+255)\n" +
+	  "    (default: 0+0+0)\n" +
 	"  -bgcolor[number+number+number]: RGB for JavaScreen background\n" +
-	  "    (default: 64+96+0)\n" +
+	  "    (default: 247+246+220)\n" +
+	"  -sbgcolor[number+number+number]: RGB for JavaScreen screen background\n" +
+	  "    (default: 229+227+207)\n" +
 	"  -rubberbandlimit[widthxheight]: minimum size for rubberband to " +
 	  "have any effect\n    (default: 4x4)\n" +
 	"  -screensize[widthxheight]: window size in pixels\n" +
@@ -222,12 +244,16 @@ public class js extends JFrame
     //      example: "-debug0"
     // -bgcolor[number+number+number]
     //      number: RGB values, from 0 to 255 in r,g,b order
-    //      default: 64+96+0
+    //      default: 247+246+220
     //      example: "-bgcolor64+96+0
     // -fgcolor[number+number+number]
     //      number: RGB values, from 0 to 255 in r,g,b order
-    //      default: 255+255+255
+    //      default: 0+0+0
     //      example: "-bgcolor255+255+255
+    // -sbgcolor[number+number+number]
+    //      number: RGB values, from 0 to 255 in r,g,b order
+    //      default: 229+227+207
+    //      example: "-sbgcolor255+255+255
     // -rubberbandlimit[widthxheight]
     //      width, height: positive integer, rubber band dimension must larger
     //                     than these values before it is actually be considered
@@ -269,7 +295,8 @@ public class js extends JFrame
 
             if (tracker.isErrorID(0)) {
 	      if (false) {//TEMP
-                YMsgBox box = new YMsgBox(this, true, true, "Cannot get JavaScreen "
+                YMsgBox box = new YMsgBox(this, true, true,
+		    "Cannot get JavaScreen "
                     + "animation symbols!\nDo you wish to continue without "
                     + "animation effects?", "Confirm", YMsgBox.YMBXYESNO, null,
                     null, null);
@@ -295,16 +322,19 @@ public class js extends JFrame
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
+	jsc.start();
 
         // reposition JavaScreen so it is in the center of the screen
         Point loc = new Point(0, 0);
         Dimension size = getSize();
         loc.y = loc.y + dim.height / 2 - size.height / 2;
         loc.x = loc.x + dim.width / 2 - size.width / 2;
-        if (loc.y < 0)
+        if (loc.y < 0) {
             loc.y = 0;
-        if (loc.x < 0)
+        }
+        if (loc.x < 0) {
             loc.x = 0;
+        }
 
         setLocation(loc);
 
@@ -331,7 +361,9 @@ public class js extends JFrame
     {
         String version = System.getProperty("java.version");
         if (version.compareTo("1.1") < 0)  {
-            System.out.println("Error: Java version 1.1 or greater is needed to run this program\nThe version you used is " + version);
+            System.out.println("Error: Java version 1.1 or greater " +
+	      "is needed to run this program\nThe version you used is " +
+	      version);
             System.exit(1);
         }
 
@@ -343,14 +375,18 @@ public class js extends JFrame
 	jv.uiglobals.inBrowser = false;
         jv.connection.connectionID = DEViseGlobals.DEFAULTID;
 
-        if (jv.connection.hostname == null)
+        if (jv.connection.hostname == null) {
 	  jv.connection.hostname = DEViseGlobals.DEFAULTHOST;
-        if (jv.connection.username == null)
+        }
+        if (jv.connection.username == null) {
 	   jv.connection.username = DEViseGlobals.DEFAULTUSER;
-        if (jv.connection.password == null)
+        }
+        if (jv.connection.password == null) {
 	   jv.connection.password = DEViseGlobals.DEFAULTPASS;
-        if (jv.connection.cmdport < 1024)
+        }
+        if (jv.connection.cmdport < 1024) {
 	  jv.connection.cmdport = DEViseGlobals.DEFAULTCMDPORT;
+        }
 
         js frame = new js(jv);
         frame.show();
@@ -383,23 +419,8 @@ public class js extends JFrame
 	    } else if (DEViseGlobals.checkArgument(args[i], "-bgcolor", true,
 	      argValue)) {
                 try {
-                    String[] str = DEViseGlobals.parseStr(
-		      argValue.toString(), "+");
-                    if (str == null || str.length != 3) {
-                        throw new NumberFormatException();
-                    }
-
-                    int r = Integer.parseInt(str[0]);
-                    int g = Integer.parseInt(str[1]);
-                    int b = Integer.parseInt(str[2]);
-
-                    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 ||
-		      b > 255) {
-                        throw new NumberFormatException();
-                    }
-
-                    Color c = new Color(r, g, b);
-                    jsValues.uiglobals.bg = c;
+                    jsValues.uiglobals.bg = DEViseGlobals.str2Color(
+		      argValue.toString());
                 } catch (NumberFormatException e) {
 		    throw new YException("Invalid RGB values specified for"
                         + " bgcolor \"" + argValue.toString() + "\"!\n"
@@ -410,29 +431,27 @@ public class js extends JFrame
 	    } else if (DEViseGlobals.checkArgument(args[i], "-fgcolor",
 	      true, argValue)) {
                 try {
-                    String[] str = DEViseGlobals.parseStr(
-		      argValue.toString(), "+");
-                    if (str == null || str.length != 3) {
-                        throw new NumberFormatException();
-                    }
-
-                    int r = Integer.parseInt(str[0]);
-                    int g = Integer.parseInt(str[1]);
-                    int b = Integer.parseInt(str[2]);
-
-                    if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 ||
-		      b > 255) {
-                        throw new NumberFormatException();
-                    }
-
-                    Color c = new Color(r, g, b);
-                    jsValues.uiglobals.fg = c;
+                    jsValues.uiglobals.fg = DEViseGlobals.str2Color(
+		      argValue.toString());
                 } catch (NumberFormatException e) {
                     throw new YException("Invalid RGB values specified for"
                         + " fgcolor \"" + argValue.toString() + "\"!\n"
                         + " Please use format \"R+G+B\" where R,G,B must"
                         + " be non-negative integer and smaller than 256!\n");
                 }
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-sbgcolor", true,
+	      argValue)) {
+                try {
+                    jsValues.uiglobals.screenBg = DEViseGlobals.str2Color(
+		      argValue.toString());
+                } catch (NumberFormatException e) {
+		    throw new YException("Invalid RGB values specified for"
+                        + " sbgcolor \"" + argValue.toString() + "\"!\n"
+                        + " Please use format \"R+G+B\" where R,G,B must"
+                        + " be non-negative integer and smaller than 256!\n");
+                }
+
 
 	    } else if (DEViseGlobals.checkArgument(args[i], "-rubberbandlimit",
 	      true, argValue)) {

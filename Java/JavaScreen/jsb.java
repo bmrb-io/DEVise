@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2003
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.21.6.1  2007/04/19 21:16:09  wenger
+// Fixed the problem with component layout in the jsb; got rid of
+// jsdevisec screenPanel, since it caused problem with the fix and only
+// was there for color; added the sbgcolor applet parameter to set
+// the "screen background" color, since this is now more prominent.
+//
+// Revision 1.21  2005/12/06 20:00:23  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.20  2003/01/13 19:23:45  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -190,6 +200,8 @@ public class jsb extends DEViseJSApplet
         if (DEBUG >= 1) {
             System.out.println("jsb.start()");
 	}
+
+	jsc.start();
 
         if (isInit && jsc != null && !jsc.getQuitStatus()) {
             setVisible(true);

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2003
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2007/02/22 23:20:22  wenger
+// Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.48.6.2  2007/04/19 21:16:09  wenger
+// Fixed the problem with component layout in the jsb; got rid of
+// jsdevisec screenPanel, since it caused problem with the fix and only
+// was there for color; added the sbgcolor applet parameter to set
+// the "screen background" color, since this is now more prominent.
+//
 // Revision 1.48.6.1  2007/02/13 18:35:15  adayton
 // Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
 //
@@ -347,6 +356,7 @@ class jscframe extends JFrame
         add(jsc);
         setTitle(DEViseUIGlobals.javaScreenTitle);
         pack();
+	jsc.start();
 
         Point loc = new Point(0, 0);
         Dimension size = getSize();

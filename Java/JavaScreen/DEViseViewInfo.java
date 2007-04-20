@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2007/03/30 17:29:56  wenger
+// Moved some GUI functions to the AWT-EventQueue thread (which is where
+// they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
+// (Note: there are probably many more that should be fixed.)
+//
 // Revision 1.61  2007/03/30 15:43:09  wenger
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
@@ -29,6 +34,9 @@
 //
 // Revision 1.60  2007/02/22 23:20:19  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.59.8.2  2007/03/16 17:12:47  adayton
+// Add UI package
 //
 // Revision 1.59.8.1  2007/02/13 18:35:12  adayton
 // Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
@@ -200,7 +208,7 @@ public class DEViseViewInfo extends Panel
         mouseY.setForeground(jsc.jsValues.uiglobals.textFg);
         mouseY.setFont(DEViseFonts.getFont(12, DEViseFonts.MONOSPACED, 0, 0));
 
-        setLayout(new FlowLayout(FlowLayout.LEFT, 2, 12));
+        setLayout(new FlowLayout(FlowLayout.LEFT, 2, 1));
 
         //if (images != null && images.size() == 11) {
         //    try {

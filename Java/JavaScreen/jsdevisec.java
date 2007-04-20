@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.157  2007/03/30 17:29:57  wenger
+// Moved some GUI functions to the AWT-EventQueue thread (which is where
+// they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
+// (Note: there are probably many more that should be fixed.)
+//
 // Revision 1.156  2007/03/30 15:43:10  wenger
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
@@ -30,6 +35,31 @@
 //
 // Revision 1.155  2007/02/22 23:20:23  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.154.2.9  2007/04/20 17:00:00  wenger
+// Fixed the problem with the JavaScreen buttons showing up with the
+// wrong font; improved handling of color arguments.
+//
+// Revision 1.154.2.8  2007/04/19 21:16:09  wenger
+// Fixed the problem with component layout in the jsb; got rid of
+// jsdevisec screenPanel, since it caused problem with the fix and only
+// was there for color; added the sbgcolor applet parameter to set
+// the "screen background" color, since this is now more prominent.
+//
+// Revision 1.154.2.7  2007/04/13 15:51:33  wenger
+// Fixed a problem with Andy's changes that prevented the JavaScreen
+// from working when embedded in a browser.
+//
+// Revision 1.154.2.6  2007/04/10 22:50:27  wenger
+// Undid a bunch of formatting changes to make subsequent merges to the
+// trunk easier.
+//
+// Revision 1.154.2.5  2007/04/06 16:18:48  wenger
+// Re-did fixing the communication mode color (this seems to have
+// gotten lost somehow).
+//
+// Revision 1.154.2.4  2007/03/16 17:12:47  adayton
+// Add UI package
 //
 // Revision 1.154.2.3  2007/02/22 18:14:31  wenger
 // Changed communiation mode label to gray so it's visible against
@@ -397,7 +427,7 @@
 // because we're running out of space; changed JS version to 4.1.
 //
 // Revision 1.102  2001/04/17 17:49:17  wenger
-// Button to show or hide debug log is now also in the JSB version.
+// JButton to show or hide debug log is now also in the JSB version.
 //
 // Revision 1.101  2001/04/17 15:51:36  xuk
 // Added the functionality of close debug window.
@@ -661,8 +691,9 @@ import  javax.swing.*;
 import  javax.swing.table.*;
 import  javax.swing.event.ListSelectionListener;
 import  javax.swing.event.ListSelectionEvent;
+import	JavaScreen.UI.*;
 
-public class jsdevisec extends Panel
+public class jsdevisec extends JPanel
 {
     static final int DEBUG = 0;
 
@@ -676,12 +707,15 @@ public class jsdevisec extends Panel
 
     public DEViseScreen jscreen = null;
 
-    private Panel topPanel = null;
-    private Panel mainPanel = null;
+    // These are the beginnings of restructuring the UI into a UI branch
+    private DEViseUIManager uiManager;
+    private DEViseMenuPanel menuPanel = null;
+    private DEViseStatusPanel statusPanel;
+    private DEViseStatusMessage statusMessage;
 
     private DEViseMainButtons _mainButtons = null;
 
-    public  Button stopButton = null;
+    public  JButton stopButton = null;
 
     private Label commMode = new Label("");
     private Color commModeNormalColor = Color.gray;
@@ -690,8 +724,8 @@ public class jsdevisec extends Panel
     public DEViseViewInfo viewInfo = null;
     public DEViseTrafficLight light = null;
 
-	// Box for displaying messages -- apparently kept as an object member
-	// so we can know whether we're displaying a message.
+    // Box for displaying messages -- apparently kept as an object member
+    // so we can know whether we're displaying a message.
     private YMsgBox msgbox = null;
 
     public SessionDlg sessiondlg = null;
@@ -711,7 +745,8 @@ public class jsdevisec extends Panel
 
     public boolean isSessionOpened = false; 
 
-    // This variable will tell us if a CollabIdDlg is open (only 1 should be open at a time)
+    // This variable will tell us if a CollabIdDlg is open (only 1
+    // should be open at a time)
     public boolean isCollabIdDlgOpened = false;
 
     // This seems to be true if we are in the process of quitting -- avoids
@@ -774,25 +809,24 @@ public class jsdevisec extends Panel
 	// create the DEViseJSValues object
 	jsValues = jv;
 
-	String sessionName = jv.session.defaultName;
-
 	if (jsValues.debug._logEnabled) {
 	    jsValues.debug._logger = new DEViseDebugLog(jsValues);
 	}
 
 	_parentApplet = (DEViseJSApplet)parentApplet;
 
-        // frame might be null if JavaScreen is running inside a browser
-        parentFrame = frame;
-        if (parentFrame == null) {
-            parentFrame = new JFrame();
-            isCenterScreen = true;
-        }
+	// frame might be null if JavaScreen is running inside a browser
+	if (frame != null) {
+	    parentFrame = frame;
+	} else {
+	    parentFrame = new JFrame();
+	    isCenterScreen = true;
+	}
 
         if (jv.debug._debugLevel > 0) {
 	    System.out.println("Creating new debug window");
             debugWindow = new YLogGUI(jv.debug._debugLevel);
-        }
+	}
 
         // determine the font size according to JavaScreen size
         int width = jsValues.uiglobals.maxScreenSize.width;
@@ -819,39 +853,21 @@ public class jsdevisec extends Panel
 	      DEViseFonts.SANS_SERIF, 0, 0);
             jsValues.uiglobals.textFont = DEViseFonts.getFont(10,
 	      DEViseFonts.SERIF, 0, 0);
-        }
+	}
 
+	// set attributes for the main frame
         setBackground(jsValues.uiglobals.bg);
         setForeground(jsValues.uiglobals.fg);
         setFont(jsValues.uiglobals.font);
-        setLayout(new BorderLayout(2, 2));
+        setLayout(new BorderLayout(1, 1));
 
-        topPanel = new Panel(new BorderLayout(2, 2));
-        mainPanel = new Panel(new FlowLayout(FlowLayout.LEFT, 2, 2));
-
-        animPanel = new DEViseAnimPanel(this, images, 100);
-
-        mainPanel.add(animPanel);
-
-		// Note: we're just relying on the file names of the images,
-		// and the code that reads them in, to assume that image 9
-		// and image 10 are what we need for the traffic light.
-        if (images != null && images.size() == 11) {
-            try {
-                light = new DEViseTrafficLight((Image)images.elementAt(9), (Image)images.elementAt(10), "0", this);
-            } catch (YException e) {
-                light = null;
-            }
-        }
-
-        if (light != null) {
-            mainPanel.add(light);
-        }
-
+	// throbber
+	animPanel = new DEViseAnimPanel(this, images, 100);
+		
+	// main menu buttons
 	_mainButtons = new DEViseMainButtons(this);
 	stopButton = _mainButtons.getStopButton();
         Component[] buttons = _mainButtons.getButtons();
-
         DEViseComponentPanel buttonPanel = new DEViseComponentPanel(buttons,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
 	  DEViseComponentPanel.ALIGN_LEFT, this);
@@ -866,20 +882,8 @@ public class jsdevisec extends Panel
 	buttonPanel.add(jmolButton);
 	jmolButton.hide();
 
-	if (! jsValues.session.disableButtons) {
-	    mainPanel.add(buttonPanel);
-        }
-
-        viewInfo = new DEViseViewInfo(this, images);
-
-        topPanel.add(mainPanel, BorderLayout.WEST);
-        topPanel.add(viewInfo, BorderLayout.EAST);
-
-        if (jsValues.uiglobals.inBrowser) {
-            topPanel.setFont(DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0));
-            //topPanel.add(new Label("      " +
-	    //     DEViseUIGlobals.javaScreenTitle), BorderLayout.CENTER);
-        }
+	// viewInfo contains the process counter
+	viewInfo = new DEViseViewInfo(this, images);
 
 	//
 	// Constrain the screen width to be within the min and max width,
@@ -887,22 +891,21 @@ public class jsdevisec extends Panel
 	//
         if (jsValues.uiglobals.screenSize.width <= 0) {
 
-            jsValues.uiglobals.screenSize.width =
-			  jsValues.uiglobals.maxScreenSize.width;
+	    jsValues.uiglobals.screenSize.width =
+	      jsValues.uiglobals.maxScreenSize.width;
 
         } else if (jsValues.uiglobals.screenSize.width <
-		  jsValues.uiglobals.minScreenSize.width &&
-		  jsValues.uiglobals.screenSize.width > 0) {
+	  jsValues.uiglobals.minScreenSize.width &&
+	    jsValues.uiglobals.screenSize.width > 0) {
 
-            jsValues.uiglobals.screenSize.width =
-			  jsValues.uiglobals.minScreenSize.width;
+	    jsValues.uiglobals.screenSize.width =
+	      jsValues.uiglobals.minScreenSize.width;
 
         } else if (jsValues.uiglobals.screenSize.width >
-		  jsValues.uiglobals.maxScreenSize.width) {
+	  jsValues.uiglobals.maxScreenSize.width) {
 
-            jsValues.uiglobals.screenSize.width =
-			  jsValues.uiglobals.maxScreenSize.width;
-
+	    jsValues.uiglobals.screenSize.width =
+	      jsValues.uiglobals.maxScreenSize.width;
         }
 
 	//
@@ -911,22 +914,21 @@ public class jsdevisec extends Panel
 	//
         if (jsValues.uiglobals.screenSize.height <= 0) {
 
-            jsValues.uiglobals.screenSize.height =
-			  jsValues.uiglobals.maxScreenSize.height;
+	    jsValues.uiglobals.screenSize.height =
+	      jsValues.uiglobals.maxScreenSize.height;
 
         } else if (jsValues.uiglobals.screenSize.height <
-		  jsValues.uiglobals.minScreenSize.height &&
-		  jsValues.uiglobals.screenSize.height > 0) {
+	  jsValues.uiglobals.minScreenSize.height &&
+	  jsValues.uiglobals.screenSize.height > 0) {
 
-            jsValues.uiglobals.screenSize.height =
-			  jsValues.uiglobals.minScreenSize.height;
+	    jsValues.uiglobals.screenSize.height =
+	      jsValues.uiglobals.minScreenSize.height;
 
         } else if (jsValues.uiglobals.screenSize.height >
-		  jsValues.uiglobals.maxScreenSize.height) {
+	  jsValues.uiglobals.maxScreenSize.height) {
 
-            jsValues.uiglobals.screenSize.height =
-			  jsValues.uiglobals.maxScreenSize.height;
-
+	    jsValues.uiglobals.screenSize.height =
+	      jsValues.uiglobals.maxScreenSize.height;
         }
 
 	//
@@ -935,25 +937,98 @@ public class jsdevisec extends Panel
         Toolkit kit = Toolkit.getDefaultToolkit();
 	jsValues.uiglobals.screenRes = kit.getScreenResolution();
 
-        Panel screenPanel = new Panel(new FlowLayout(FlowLayout.CENTER, 3, 3));
-        screenPanel.setBackground(jsValues.uiglobals.screenBg);
-
         jscreen = new DEViseScreen(this);
-        screenPanel.add(jscreen);
 
-        add(topPanel, BorderLayout.NORTH);
-        add(screenPanel, BorderLayout.CENTER);
+		// Note: we're just relying on the file names of the images,
+		// and the code that reads them in, to assume that image 9
+		// and image 10 are what we need for the traffic light.
+        if (images != null && images.size() == 11) {
+            try {
+	        light = new DEViseTrafficLight((Image)images.elementAt(9),
+		  (Image)images.elementAt(10), "0", this);
+	    } catch (YException e) {
+		light = null;
+	    }
+        }
+		
+	// Right now the DEViseStatusMessage class isn't implemented. Eventually
+	// it will contain text-based status info about communication mode,
+	// loading status, etc.
+	statusMessage = new DEViseStatusMessage();
+		
+		
+	// The menuPanel contains the throbber and main application menus.
+	// Right now the background color is manually set using a value
+	// from jsValues. Eventually this will hopefully be set using
+	// Java Swing Look and Feel.
+        menuPanel = new DEViseMenuPanel(animPanel, buttonPanel,
+	  jsValues.session.disableButtons);
+	menuPanel.setBackground(jsValues.uiglobals.bg);
+	menuPanel.inheritBackground(); // causes children to inherit bg color
+        if (jsValues.uiglobals.inBrowser) {
+	    menuPanel.setFont(DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0));
+        }
+		
+	// The statusPanel is at the bottom of the interface and holds status
+	// information. Right now the background color is manually set using a
+	// value from jsValues. Eventually this will hopefully be set using
+	// Java Swing Look and Feel.
+	statusPanel = new DEViseStatusPanel(light, statusMessage, viewInfo);
+	statusPanel.setBackground(jsValues.uiglobals.bg);
+	statusPanel.inheritBackground(); // causes children to inherit bg color
+		
+	// Add the main panels to the parent JPanel (this)
+	add(menuPanel, BorderLayout.NORTH);
+	add(statusPanel, BorderLayout.SOUTH);
+
+	// Note: leftPanel and rightPanel exist only to carry the background
+	// color around the sides of the jscreen, for a more unified look.
+	// I got rid of the screenPanel partly because that goofed up
+	// the fix for the jsb layout problem I just ran into.  wenger
+	// 2007-04-19
+	JPanel leftPanel = new JPanel();
+	leftPanel.setPreferredSize(new Dimension(3, 3));
+	leftPanel.setBackground(jsValues.uiglobals.bg);
+	add(leftPanel, BorderLayout.WEST);
+	JPanel rightPanel = new JPanel();
+	rightPanel.setPreferredSize(new Dimension(3, 3));
+	rightPanel.setBackground(jsValues.uiglobals.bg);
+	add(rightPanel, BorderLayout.EAST);
+
+	add(jscreen, BorderLayout.CENTER);
 
         isSessionOpened = false;
 
-	//
+        //
 	// Create the one DEViseCmdDispatcher instance we will have.
 	//
         dispatcher = new DEViseCmdDispatcher(this);
 
+        if (FUNKY_COLORS) {
+            setBackground(Color.gray);
+	    // topPanel.setBackground(Color.magenta);
+            // mainPanel.setBackground(Color.blue);
+            animPanel.setBackground(Color.green);
+            light.setBackground(Color.yellow);
+            viewInfo.setBackground(Color.black);
+            jscreen.setBackground(Color.orange);
+	}
+    } // end of constructor
+
+// ------------------------------------------------------------------------
+// public methods
+// ------------------------------------------------------------------------
+
+    // Note: this method must be called after the sizes of the GUI
+    // components have been established.
+    public void start()
+    {
+	jscreen.setScreenDim(jscreen.getWidth(), jscreen.getHeight());
+
 	//
 	// Open the session if a session name was specified.
 	//
+	String sessionName = jsValues.session.defaultName;
         if (sessionName != null) {
             int index = sessionName.lastIndexOf('/');
             if (index > 0) {
@@ -962,70 +1037,57 @@ public class jsdevisec extends Panel
             } else {
                 currentSession = sessionName;
             }
-	    
+
 	    String cmd = DEViseCommands.SET_DISPLAY_SIZE + " " +
-		jsValues.uiglobals.screenSize.width + " " +
-		jsValues.uiglobals.screenSize.height + " " +
-		jsValues.uiglobals.screenRes + " " +
-		jsValues.uiglobals.screenRes + "\n" +
-		DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" +
-		currentSession + "}";
+	      jsValues.uiglobals.screenSize.width + " " +
+	      jsValues.uiglobals.screenSize.height + " " +
+	      jsValues.uiglobals.screenRes + " " +
+	      jsValues.uiglobals.screenRes + "\n" +
+	      DEViseCommands.OPEN_SESSION + " {" + currentDir + "/" +
+	      currentSession + "}";
 	    
 	    // For collaboration leader, set collaboration name
 	    if (jsValues.session.collabLeaderName != null) {
-		cmd = cmd + "\n" + DEViseCommands.SET_COLLAB_PASS +
-		    " {" + jsValues.session.collabLeaderName + 
-		    "} {" + jsValues.session.collabLeaderPass +
-		    "}";
+	        cmd = cmd + "\n" + DEViseCommands.SET_COLLAB_PASS +
+		  " {" + jsValues.session.collabLeaderName + 
+		  "} {" + jsValues.session.collabLeaderPass + "}";
 		isCollab = true;
 		collabModeL();
 	    }
-	    
-            dispatcher.start(cmd);
-        } else {
+
+	    dispatcher.start(cmd);
+	} else {
 	    // for collaboration leader, set collaboration name
 	    if (jsValues.session.collabLeaderName != null) {
-		String cmd = DEViseCommands.SET_COLLAB_PASS +
-		    " {" + jsValues.session.collabLeaderName + 
-		    "} {" + jsValues.session.collabLeaderPass +
-		    "}";
-		dispatcher.start(cmd);
-		isCollab = true; 
-		collabModeL();
-	    }
+	        String cmd = DEViseCommands.SET_COLLAB_PASS +
+		  " {" + jsValues.session.collabLeaderName + 
+		  "} {" + jsValues.session.collabLeaderPass + "}";
+				dispatcher.start(cmd);
+				isCollab = true; 
+				collabModeL();
+			}
 	    
 	    // for automatic collaboration
 	    if (jsValues.session.collabName != null) {
 		String flag = new Integer(2).toString();
 		String id = new Integer(0).toString();
 		String cmd = DEViseCommands.COLLABORATE + 
-		    " {" + flag + "} {" + id + "} {" + 
-		    jsValues.session.collabName + "} {" + 
-		    jsValues.session.collabPass + "}";
+	          " {" + flag + "} {" + id + "} {" + 
+	          jsValues.session.collabName + "} {" + 
+	          jsValues.session.collabPass + "}";
 		// temp specialID 
 		specialID = 0;
 		dispatcher.start(cmd);
 	    }
 	}
 
-	if (jv.session.autoPlayback) {
-	    logFileName = jv.session.clientLogName;
-	    isOriginal = jv.session.playbackOriginal;
-	    isDisplay = jv.session.playbackDisplay;
+	if (jsValues.session.autoPlayback) {
+	    logFileName = jsValues.session.clientLogName;
+	    isOriginal = jsValues.session.playbackOriginal;
+	    isDisplay = jsValues.session.playbackDisplay;
 	    logPlayBack();
 	}
-
-	if (FUNKY_COLORS) {
-            setBackground(Color.gray);
-	    topPanel.setBackground(Color.magenta);
-            mainPanel.setBackground(Color.blue);
-            animPanel.setBackground(Color.green);
-            light.setBackground(Color.yellow);
-            viewInfo.setBackground(Color.black);
-            screenPanel.setBackground(Color.cyan);
-            jscreen.setBackground(Color.orange);
-	}
-    } // end of constructor
+    }
 
     public void refreshAllData(boolean doHome)
     {
@@ -1073,6 +1135,8 @@ public class jsdevisec extends Panel
 
     public void openSession(String fullSessionName)
     {
+	jscreen.setScreenDim(jscreen.getWidth(), jscreen.getHeight());
+
         dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " +
 	  jsValues.uiglobals.screenSize.width + " " +
 	  jsValues.uiglobals.screenSize.height + " " +
@@ -1236,7 +1300,7 @@ public class jsdevisec extends Panel
     public String showMsg(String msg, String title, int style)
     {
 	jsValues.debug.log("Showing message box: " + msg); 
-	mainPanel.setBackground(jsValues.uiglobals.bg_warn);
+/*	mainPanel.setBackground(jsValues.uiglobals.bg_warn);*/
 
 	// Note: we have two cases here to make things work in the case
 	// where we have more than one message box shown at once.  msgbox
@@ -1247,7 +1311,7 @@ public class jsdevisec extends Panel
             msgbox.open();
             String result = msgbox.getResult();
             msgbox = null;
-	    mainPanel.setBackground(jsValues.uiglobals.bg);
+/*	    mainPanel.setBackground(jsValues.uiglobals.bg);*/
 	    jsValues.debug.log("Done with message box");
 
             return result;
@@ -1258,7 +1322,7 @@ public class jsdevisec extends Panel
             box.open();
             String result = box.getResult();
             box = null;
-	    mainPanel.setBackground(jsValues.uiglobals.bg);
+/*	    mainPanel.setBackground(jsValues.uiglobals.bg);*/
 	    jsValues.debug.log("Done with message box");
             return result;
         }
@@ -1625,7 +1689,7 @@ class RecordDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    private Button okButton;
+    private JButton okButton;
     private boolean status = false; // true means this dialog is showing
     private JTable table;
     String[] urls;
@@ -1938,8 +2002,8 @@ class SessionDlg extends Frame
     private java.awt.List fileList = null;
     private Label label = new Label("Current available sessions in directory    ");
     private Label directory = new Label("");
-    private Button okButton;
-    private Button cancelButton;
+    private JButton okButton;
+    private JButton cancelButton;
     private String[] sessions = null;
     private boolean[] sessionTypes = null;
     private String[] sessionNames = null;
@@ -1976,7 +2040,7 @@ class SessionDlg extends Frame
 
         setSessionList(data);
 
-        Button [] button = new Button[2];
+        JButton [] button = new JButton[2];
         button[0] = okButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
@@ -2202,11 +2266,11 @@ class SettingDlg extends Dialog
 
     private TextField screenX = new TextField(4);
     private TextField screenY = new TextField(4);
-    private Button setButton;
-    private Button statButton;
-    private Button meButton;
-    private Button collabButton;
-    private Button cancelButton;
+    private JButton setButton;
+    private JButton statButton;
+    private JButton meButton;
+    private JButton collabButton;
+    private JButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SettingDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -2545,7 +2609,7 @@ class ServerStateDlg extends Dialog
     private Label label1 = new Label("Current active server:");
     private Label label2 = new Label("Current active client:");
     private Label label3 = new Label("Current suspended client:");
-    private Button okButton;
+    private JButton okButton;
 
     private boolean status = false; // true means this dialog is showing
 
@@ -2762,8 +2826,8 @@ class SetCgiUrlDlg extends Dialog
 {
     jsdevisec jsc = null;
     private TextField url = new TextField(20);
-    private Button setButton;
-    private Button cancelButton;
+    private JButton setButton;
+    private JButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetCgiUrlDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -2809,7 +2873,7 @@ class SetCgiUrlDlg extends Dialog
         gridbag.setConstraints(url, c);
         add(url);
 
-        Button [] button = new Button[2];
+        JButton [] button = new JButton[2];
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
@@ -2910,8 +2974,8 @@ class SetLogFileDlg extends Dialog
     private TextField file = new TextField(30);
     private Checkbox display = new Checkbox("Display", true);
     private Checkbox original = new Checkbox("Original Rate", true);
-    private Button setButton;
-    private Button cancelButton;
+    private JButton setButton;
+    private JButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetLogFileDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -2972,7 +3036,7 @@ class SetLogFileDlg extends Dialog
         gridbag.setConstraints(panel1, c);
         add(panel1);
 
-        Button [] button = new Button[2];
+        JButton [] button = new JButton[2];
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
@@ -3074,9 +3138,9 @@ class SetLogFileDlg extends Dialog
 class SetModeDlg extends Dialog
 {
     private jsdevisec jsc = null;
-    private Button socketButton;
-    private Button cgiButton;
-    private Button cancelButton;
+    private JButton socketButton;
+    private JButton cgiButton;
+    private JButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetModeDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3231,11 +3295,11 @@ class CollabSelectDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    private Button collabButton;
-    private Button endButton;
-    private Button enCollabButton;
-    private Button disCollabButton;
-    private Button cancelButton;
+    private JButton collabButton;
+    private JButton endButton;
+    private JButton enCollabButton;
+    private JButton disCollabButton;
+    private JButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public CollabSelectDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3477,8 +3541,8 @@ class CollabIdDlg extends Frame
 
     private java.awt.List clientList = null;
     private Label label = new Label("Current active clients: ");
-    private Button okButton;
-    private Button cancelButton;
+    private JButton okButton;
+    private JButton cancelButton;
     private String[] clients = null;
     private boolean emptyList = false;
 
@@ -3507,7 +3571,7 @@ class CollabIdDlg extends Frame
         clientList.setForeground(jsc.jsValues.uiglobals.textFg);
         clientList.setFont(jsc.jsValues.uiglobals.textFont);
 
-        Button [] button = new Button[2];
+        JButton [] button = new JButton[2];
         button[0] = okButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
@@ -3674,8 +3738,8 @@ class CollabPassDlg extends Dialog
 
     private TextField pass = new TextField(20);
     private TextField name = new TextField(20);
-    private Button setButton;
-    private Button cancelButton;
+    private JButton setButton;
+    private JButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public CollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3709,7 +3773,7 @@ class CollabPassDlg extends Dialog
 
 	pass.setText(jsc.jsValues.session.collabLeaderPass);
 
-        Button [] button = new Button[2];
+        JButton [] button = new JButton[2];
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
@@ -3832,8 +3896,8 @@ class EnterCollabPassDlg extends Dialog
     private jsdevisec jsc = null;
 
     private TextField pass = new TextField(20);
-    private Button setButton;
-    //public Button cancelButton = new DEViseButton("Cancel", jsValues);
+    private JButton setButton;
+    //public JButton cancelButton = new DEViseButton("Cancel", jsValues);
     private boolean status = false; // true means this dialog is showing
 
     public EnterCollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3866,7 +3930,7 @@ class EnterCollabPassDlg extends Dialog
 
 	pass.setText(DEViseGlobals.DEFAULT_COLLAB_PASS);
 
-        Button [] button = new Button[1];
+        JButton [] button = new JButton[1];
         button[0] = setButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
@@ -3967,7 +4031,7 @@ class CollabStateDlg extends Dialog
 
     private java.awt.List collabList = null;
     private Label label = new Label("Current collaborating followers: ");
-    private Button closeButton;
+    private JButton closeButton;
     private String[] followers = null;
 
     private boolean status = false; // true means this dialog is showing
@@ -3994,7 +4058,7 @@ class CollabStateDlg extends Dialog
         collabList.setForeground(jsc.jsValues.uiglobals.textFg);
         collabList.setFont(jsc.jsValues.uiglobals.textFont);
 
-        Button [] button = new Button[1];
+        JButton [] button = new JButton[1];
         button[0] = closeButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);

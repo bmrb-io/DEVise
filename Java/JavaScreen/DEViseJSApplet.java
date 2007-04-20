@@ -20,6 +20,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2007/02/23 16:57:41  wenger
+// Changed applet parameter names for colors from "fgcolor" and "bgcolor"
+// to "fgcolor2" and "bgcolor2" so existing web pages don't override
+// the colors.
+//
+// Revision 1.14.2.1  2007/04/19 21:16:08  wenger
+// Fixed the problem with component layout in the jsb; got rid of
+// jsdevisec screenPanel, since it caused problem with the fix and only
+// was there for color; added the sbgcolor applet parameter to set
+// the "screen background" color, since this is now more prominent.
+//
 // Revision 1.14  2006/09/18 17:01:39  wenger
 // Made relative URLs work in the "clickable links in drill-down dialog"
 // feature in the JavaScreen -- the JavaScreen now turns relative URLs
@@ -348,22 +359,9 @@ public abstract class DEViseJSApplet extends Applet
         String bg = getParameter("bgcolor2");
         if (bg != null) {
             try {
-                String[] str = DEViseGlobals.parseStr(bg, "+");
-                if (str == null || str.length != 3) {
-                    throw new NumberFormatException();
-                }
-
-                int r = Integer.parseInt(str[0]);
-                int g = Integer.parseInt(str[1]);
-                int b = Integer.parseInt(str[2]);
-                if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                    throw new NumberFormatException();
-                }
-
-                Color c = new Color(r, g, b);
-                jsValues.uiglobals.bg = c;
-                startInfo.append("Parameter bgcolor (" + r + ", " + g +
-		  ", " + b + ") is used\n");
+                jsValues.uiglobals.bg = DEViseGlobals.str2Color(bg);
+                startInfo.append("Parameter bgcolor (" +
+		  jsValues.uiglobals.bg + ") is used\n");
             } catch (NumberFormatException e) {
             }
         }
@@ -371,22 +369,19 @@ public abstract class DEViseJSApplet extends Applet
         String fg = getParameter("fgcolor2");
         if (fg != null) {
             try {
-                String[] str = DEViseGlobals.parseStr(fg, "+");
-                if (str == null || str.length != 3) {
-                    throw new NumberFormatException();
-                }
+                jsValues.uiglobals.fg = DEViseGlobals.str2Color(bg);
+                startInfo.append("Parameter fgcolor (" +
+		  jsValues.uiglobals.fg + ") is used\n");
+            } catch (NumberFormatException e) {
+            }
+        }
 
-                int r = Integer.parseInt(str[0]);
-                int g = Integer.parseInt(str[1]);
-                int b = Integer.parseInt(str[2]);
-                if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
-                    throw new NumberFormatException();
-                }
-
-                Color c = new Color(r, g, b);
-                jsValues.uiglobals.fg = c;
-                startInfo.append("Parameter fgcolor (" + r + ", " + g +
-		  ", " + b + ") is used\n");
+        String sbg = getParameter("sbgcolor");
+        if (sbg != null) {
+            try {
+                jsValues.uiglobals.screenBg = DEViseGlobals.str2Color(sbg);
+                startInfo.append("Parameter sbgcolor (" +
+		  jsValues.uiglobals.screenBg + ") is used\n");
             } catch (NumberFormatException e) {
             }
         }
@@ -625,6 +620,7 @@ public abstract class DEViseJSApplet extends Applet
 	  {"cmdport",         "int",         "jspop command port"},
 	  {"bgcolor2",        "String",      "RGB values for bgcolor"},
 	  {"fgcolor2",        "String",      "RGB values for fgcolor"},
+	  {"sbgcolor",        "String",      "RGB values for screen bgcolor"},
 	  {"rubberbandlimit", "String",      "Minimum dimension for a rubberband"},
 	  {"screensize",      "String",      "assumed java screen dimension"},
 	  {"session",         "String",      "session file name"},

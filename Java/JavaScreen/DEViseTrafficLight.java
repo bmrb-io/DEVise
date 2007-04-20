@@ -22,6 +22,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2007/02/22 23:20:18  wenger
+// Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.10.38.3  2007/04/10 22:50:26  wenger
+// Undid a bunch of formatting changes to make subsequent merges to the
+// trunk easier.
+//
+// Revision 1.10.38.2  2007/03/16 17:12:47  adayton
+// Add UI package
+//
 // Revision 1.10.38.1  2007/02/13 18:35:12  adayton
 // Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
 //
@@ -63,8 +73,9 @@ package JavaScreen;
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
-public class DEViseTrafficLight extends Panel
+public class DEViseTrafficLight extends JPanel
 {
     public static final String ALIGN_TOP = "TOP";
     public static final String ALIGN_BOTTOM = "BOTTOM";
@@ -78,9 +89,9 @@ public class DEViseTrafficLight extends Panel
 
     Image onImage = null, offImage = null;
     YImageCanvas [] canvas = new YImageCanvas[4];
-    YImageCanvas [] label = new YImageCanvas[3];
+    // YImageCanvas [] label = new YImageCanvas[3];
     String[] c = {"S", "R", "P"};
-    String string = null;
+    String counterString = null;
 
     public jsdevisec jsc;
 
@@ -90,11 +101,10 @@ public class DEViseTrafficLight extends Panel
         this(offi, oni, s, null, js);
     }
 
-    public DEViseTrafficLight(Image offi, Image oni, String s, String align, jsdevisec js)
-      throws YException
+    public DEViseTrafficLight(Image offi, Image oni, String s,
+      String align, jsdevisec js) throws YException
     {
 	jsc = js;
-	
         onImage = oni;
         offImage = offi;
 
@@ -103,11 +113,11 @@ public class DEViseTrafficLight extends Panel
             if (!canvas[i].setImage(offImage)) {
                 throw new YException("Invalid Image!");
 	    }
-            label[i] = new YImageCanvas(c[i], null, jsc.jsValues.uiglobals.bg,
-	      jsc.jsValues.uiglobals.fg, 12, 12, 1, 1);
+            // label[i] = new YImageCanvas(c[i], null, jsc.jsValues.uiglobals.bg,
+            // jsc.jsValues.uiglobals.fg, 12, 12, 1, 1);
         }
-        string = s;
-        canvas[3] = new YImageCanvas(string);
+	counterString = s;
+	canvas[3] = new YImageCanvas(counterString);
 
         if (align == null) {
             align = "RIGHT";
@@ -117,19 +127,26 @@ public class DEViseTrafficLight extends Panel
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
 
-        Panel panel = new Panel();
-        panel.setLayout(new GridLayout(2, 4));
-        panel.setFont(DEViseFonts.getFont(12, DEViseFonts.SANS_SERIF, 1, 0));
-        panel.setBackground(jsc.jsValues.uiglobals.bg);
-        panel.setForeground(jsc.jsValues.uiglobals.fg);
+        JPanel lightPanel = new JPanel();
+        // lightPanel.setLayout(new GridLayout(2, 4));
+        lightPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        lightPanel.setFont(DEViseFonts.getFont(12, DEViseFonts.SANS_SERIF, 1, 0));
+        lightPanel.setBackground(jsc.jsValues.uiglobals.bg);
+        lightPanel.setForeground(jsc.jsValues.uiglobals.fg);
 
+        // for (int i = 0; i < 3; i++) {
+        //   lightPanel.add(label[i]);
+	// }
+			
         for (int i = 0; i < 3; i++) {
-            panel.add(label[i]);
-	}
-        for (int i = 0; i < 3; i++) {
-            panel.add(canvas[i]);
+	    lightPanel.add(canvas[i]);
 	}
 
+	setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+	add(lightPanel); // add the stoplights
+	add(canvas[3]); // add the counter
+
+/* Removed by Andy Dayton
 	if (align.equals(ALIGN_TOP) || align.equals(ALIGN_BOTTOM)) {
             // set new gridbag layout
             GridBagLayout gridbag = new GridBagLayout();
@@ -147,33 +164,35 @@ public class DEViseTrafficLight extends Panel
             //c.weighty = 1.0;
 
             setLayout(gridbag);
-
 	    if (align.equals(ALIGN_TOP)) {
                 gridbag.setConstraints(canvas[3], c);
                 add(canvas[3]);
                 gridbag.setConstraints(panel, c);
-                add(panel);
+                add(lightPanel);
             } else {
                 gridbag.setConstraints(panel, c);
-                add(panel);
+                add(lightPanel);
                 gridbag.setConstraints(canvas[3], c);
                 add(canvas[3]);
             }
         } else if (align.equals(ALIGN_LEFT)) {
             add(canvas[3]);
-            add(panel);
+            add(lightPanel);
         } else if (align.equals(ALIGN_RIGHT)) {
-            add(panel);
+            add(lightPanel);
             add(canvas[3]);
         } else {
 	    throw new YException("Illegal align value: " + align);
         }
+*/
+
     }
 
     public void updateImage(int status, boolean isOn)
     {
-        if (status < STATUS_IDLE || status > STATUS_PROCESSING)
+        if (status < STATUS_IDLE || status > STATUS_PROCESSING) {
             return;
+        }
 
         if (status == STATUS_IDLE) {
             for (int i = 0; i < 3; i++) {
@@ -190,8 +209,8 @@ public class DEViseTrafficLight extends Panel
 
     public void updateCount(String s)
     {
-        string = s;
-        canvas[3].setString(string);
+        counterString = s;
+        canvas[3].setString(counterString);
     }
 }
 

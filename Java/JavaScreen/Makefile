@@ -92,7 +92,8 @@ jara:
 	cp *.gif JavaScreen
 	jar cf jsa1.jar JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
 	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
-	jar cf jsa2.jar JavaScreen/*.class  JavaScreen/*.gif
+	jar cf jsa2.jar JavaScreen/*.class JavaScreen/UI/*.class \
+	    JavaScreen/*.gif
 
 jarb:
 	make classclean
@@ -102,14 +103,15 @@ jarb:
 	cp *.gif JavaScreen
 	jar cf jsb1.jar JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
 	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
-	jar cf jsb2.jar JavaScreen/*.class  JavaScreen/*.gif
+	jar cf jsb2.jar JavaScreen/*.class JavaScreen/UI/*.class \
+	    JavaScreen/*.gif
 
 jarjs:
 	make classclean
 	-rm js.jar
 	make js
 	cp *.gif JavaScreen
-	jar cf js.jar JavaScreen/*.class  JavaScreen/*.gif
+	jar cf js.jar JavaScreen/*.class JavaScreen/UI/*.class JavaScreen/*.gif
 
 clean: classclean
 	-rm JavaScreen/*.gif jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar

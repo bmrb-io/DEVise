@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.86  2007/03/30 18:34:45  wenger
+// Changed version to 5.8.1.
+//
 // Revision 1.85  2007/03/30 17:29:55  wenger
 // Moved some GUI functions to the AWT-EventQueue thread (which is where
 // they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
@@ -35,6 +38,16 @@
 //
 // Revision 1.82  2007/02/22 23:20:18  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.81.2.3  2007/04/19 21:16:08  wenger
+// Fixed the problem with component layout in the jsb; got rid of
+// jsdevisec screenPanel, since it caused problem with the fix and only
+// was there for color; added the sbgcolor applet parameter to set
+// the "screen background" color, since this is now more prominent.
+//
+// Revision 1.81.2.2  2007/04/05 21:11:38  wenger
+// Got the Makefile to work right with Andy's new UI directory; added
+// copyright notices to UI code.
 //
 // Revision 1.81.2.1  2007/02/20 19:04:24  wenger
 // Changed JavaScreen version to 5.8.0x1_new_gui -- 5.8 because I think
@@ -555,6 +568,7 @@
 package JavaScreen;
 
 import java.util.*;
+import java.awt.Color;
 
 public final class DEViseGlobals
 {
@@ -570,7 +584,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.1");
+    public static final String VERSION = new String("5.8.2x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
@@ -819,5 +833,24 @@ public final class DEViseGlobals
 	return result;
     }
 
+    public static Color str2Color(String colorStr)
+      throws NumberFormatException
+    {
+        String[] strings = DEViseGlobals.parseStr(colorStr, "+");
+	if (strings == null || strings.length != 3) {
+	    throw new NumberFormatException();
+	}
+
+        int r = Integer.parseInt(strings[0]);
+	int g = Integer.parseInt(strings[1]);
+	int b = Integer.parseInt(strings[2]);
+	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+	    throw new NumberFormatException();
+	}
+
+        Color c = new Color(r, g, b);
+
+	return c;
+    }
 }
 
