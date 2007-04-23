@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.158  2007/04/20 19:42:36  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.157  2007/03/30 17:29:57  wenger
 // Moved some GUI functions to the AWT-EventQueue thread (which is where
 // they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
@@ -1176,6 +1180,12 @@ public class jsdevisec extends JPanel
 
     public void viewHelp()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.viewHelp()");
+	}
         if (!isSessionOpened) {
             showMsg("You do not have any open session!");
             return;
@@ -1190,12 +1200,24 @@ public class jsdevisec extends JPanel
     }
 
     public void hideDebug() {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.hideDebug()");
+	}
 	if (debugWindow != null) {
             debugWindow.setVisible(false);
 	}
     }
 
     public void showDebug() {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showDebug()");
+	}
 	if (debugWindow != null) {
             debugWindow.setVisible(true);
 	}
@@ -1203,6 +1225,12 @@ public class jsdevisec extends JPanel
 
     public void showJmol(DEViseCanvas3DJmol canvas)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showJmol()");
+	}
 	Runnable doShowJmol = new DoShowJmol(canvas);
 	SwingUtilities.invokeLater(doShowJmol);
     }
@@ -1222,6 +1250,12 @@ public class jsdevisec extends JPanel
 
     public void hideJmol()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.hideJmol()");
+	}
         Runnable doHideJmol = new Runnable() {
 	    public void run() {
                 jmolButton.hide();
@@ -1234,6 +1268,12 @@ public class jsdevisec extends JPanel
 
     public void showDocument(String url)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showDocument()");
+	}
     	if (_parentApplet != null) {
 	     _parentApplet.showDocument(url, "_blank");
 	} else {
@@ -1270,8 +1310,15 @@ public class jsdevisec extends JPanel
         p(msg, 1);
     }
 
+    //TEMP -- what does this do?  show the log window??
     public void setLog(MenuItem logMenuItem)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.setLog()");
+	}
 	String label = logMenuItem.getLabel();
 	
 	if (label.equals(DEViseMainButtons.displayLogStr)) {
@@ -1299,6 +1346,13 @@ public class jsdevisec extends JPanel
     // show message in message box
     public String showMsg(String msg, String title, int style)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 3 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 2 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showMsg()");
+	}
+
 	jsValues.debug.log("Showing message box: " + msg); 
 /*	mainPanel.setBackground(jsValues.uiglobals.bg_warn);*/
 
@@ -1341,6 +1395,12 @@ public class jsdevisec extends JPanel
 	// flag is apparently set to false if there is an error
     public void showSession(String[] msg, boolean flag)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showSession()");
+	}
         if (flag) {
             if (sessiondlg != null) {
                 sessiondlg.setSessionList(msg);
@@ -1361,6 +1421,12 @@ public class jsdevisec extends JPanel
 
     public void showClientList(String msg)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showClientList()");
+	}
 	if(isCollabIdDlgOpened == false) {
 	    try {
 		collabIdDlg = new CollabIdDlg(this, parentFrame,
@@ -1375,6 +1441,12 @@ public class jsdevisec extends JPanel
 
     public void showCollabPass()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showCollabPass()");
+	}
         collabpassdlg = new CollabPassDlg(this, parentFrame, isCenterScreen);
         collabpassdlg.open();
 	collabpassdlg = null;
@@ -1382,12 +1454,24 @@ public class jsdevisec extends JPanel
 
     public void displayID()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.displayID()");
+	}
 	String idstr = new Integer(jsValues.connection.connectionID).toString();
 	showMsg("My client ID is:  " + idstr);
     }
 
     public void disableCollab()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.disableCollab()");
+	}
 	String command = new String();
 	command = DEViseCommands.DISABLE_COLLAB;
 	dispatcher.start(command);
@@ -1395,6 +1479,12 @@ public class jsdevisec extends JPanel
 
     public void enterCollabPass()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.enterCollabPass()");
+	}
         entercollabpassdlg = new EnterCollabPassDlg(this, parentFrame, isCenterScreen);
         entercollabpassdlg.open();
 	entercollabpassdlg = null;
@@ -1402,6 +1492,12 @@ public class jsdevisec extends JPanel
 
     public void showCollabState(String msg)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showCollabState()");
+	}
         collabstatedlg = new CollabStateDlg(this, parentFrame, isCenterScreen, msg);
         collabstatedlg.open();
         if (specialID == -1 && ! jsValues.session.autoPlayback)	
@@ -1410,6 +1506,12 @@ public class jsdevisec extends JPanel
 
     public void showRecord(String[] msg)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showRecord()");
+	}
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
         recorddlg.open();
         if (specialID == -1 && ! jsValues.session.autoPlayback)
@@ -1417,6 +1519,12 @@ public class jsdevisec extends JPanel
     }
 
     public String showViewDialogHelp(String msg){
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showViewDialogHelp()");
+	}
        
 	if(msg == null) {
 	   System.out.println("conflict 1");
@@ -1428,6 +1536,12 @@ public class jsdevisec extends JPanel
 
     public void showServerState(String msg)
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showServerState()");
+	}
         statedlg = new ServerStateDlg(parentFrame, isCenterScreen, msg, this);
         statedlg.open();
         if (specialID == -1 && ! jsValues.session.autoPlayback) 
@@ -1436,6 +1550,12 @@ public class jsdevisec extends JPanel
 
     public void showSetting()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showSetting()");
+	}
         settingdlg = new SettingDlg(this, parentFrame, isCenterScreen);
         settingdlg.open();
         settingdlg = null;
@@ -1443,6 +1563,12 @@ public class jsdevisec extends JPanel
 
     public void setCgiUrl()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.setCgiUrl()");
+	}
         setcgiurldlg = new SetCgiUrlDlg(this, parentFrame, isCenterScreen);
         setcgiurldlg.open();
         setcgiurldlg = null;
@@ -1451,6 +1577,12 @@ public class jsdevisec extends JPanel
     // set the logfile name for command log playback
     public void setLogFile()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.setLogFile()");
+	}
         setlogfiledlg = new SetLogFileDlg(this, parentFrame, isCenterScreen);
         setlogfiledlg.open();
         setlogfiledlg = null;
@@ -1465,6 +1597,12 @@ public class jsdevisec extends JPanel
 
     public void setMode()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.setMode()");
+	}
         setmodedlg = new SetModeDlg(this, parentFrame, isCenterScreen);
         setmodedlg.open();
         setmodedlg = null;
@@ -1472,6 +1610,12 @@ public class jsdevisec extends JPanel
 
     public void showCollab()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showCollab()");
+	}
         collabSelectDlg = new CollabSelectDlg(this, parentFrame, isCenterScreen);
         collabSelectDlg.open();
         collabSelectDlg = null;
@@ -1518,6 +1662,12 @@ public class jsdevisec extends JPanel
     {
 	if (DEBUG >= 1) {
 	    System.out.println("jsdevisec.destroy()");
+	}
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.destroy()");
 	}
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
 	    System.out.println("Thread count before jsdevisec.destroy(): " +
@@ -1586,6 +1736,12 @@ public class jsdevisec extends JPanel
     // Go into collaboration leader mode.
     public void collabModeL()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.collabModeL()");
+	}
 	commMode.setForeground(commModeNormalColor);
         commMode.setText("Collab (L)");
     }
@@ -1593,24 +1749,48 @@ public class jsdevisec extends JPanel
     // Go into collaboration follower mode.
     public void collabModeF()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.collabModeF()");
+	}
 	commMode.setForeground(commModeNormalColor);
         commMode.setText("Collab (F)");
     }
 
     public void cgiMode()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.cgiMode()");
+	}
 	commMode.setForeground(commModeNormalColor);
         commMode.setText("CGI");
     }
 
     public void disconnectedMode()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.disconnectedMode()");
+	}
 	commMode.setForeground(Color.red);
         commMode.setText("Disconnected");
     }
 
     public void playbackMode()
     {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.playbackMode()");
+	}
 	commMode.setForeground(commModeNormalColor);
         commMode.setText("Playback");
     }

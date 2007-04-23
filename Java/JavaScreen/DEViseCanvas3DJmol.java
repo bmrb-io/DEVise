@@ -26,6 +26,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2007/03/30 17:29:55  wenger
+// Moved some GUI functions to the AWT-EventQueue thread (which is where
+// they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
+// (Note: there are probably many more that should be fixed.)
+//
 // Revision 1.10  2007/03/30 15:43:08  wenger
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
@@ -293,6 +298,13 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     //-------------------------------------------------------------------
     public void create3DViewer()
     {
+        if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	    " calls DEViseCanvas3DJmol.create3DViewer()");
+	}
+
         if (view.viewGDatas.size() == 0) {
             return;
         }
@@ -317,6 +329,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     {
     	if (DEBUG >= 2) {
 	    System.out.println("DEViseCanvas3DJmol.showTrees()");
+	}
+        if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	    " calls DEViseCanvas3DJmol.showTrees()");
 	}
 
 	if (treeFrame == null) {
@@ -364,6 +382,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     {
     	if (DEBUG >= 2) {
 	    System.out.println("DEViseCanvas3DJmol.resetSelection()");
+	}
+        if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	    " calls DEViseCanvas3DJmol.resetSelection()");
 	}
 
 	setHighlightFromData();
@@ -464,6 +488,13 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // which atoms are highlighted, in Jmol.
     protected void createTrees()
     {
+        if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	    " calls DEViseCanvas3DJmol.createTrees()");
+	}
+
 	//TEMP -- the whole tree window should probably be its own class
         if (treeFrame == null) {
 	    //
@@ -569,6 +600,13 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // Create the Jmol viewer and its enclosing panel.
     protected void createJmol()
     {
+        if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	    " calls DEViseCanvas3DJmol.createJmol()");
+	}
+
         if (jmolPanel == null) {
 	    //
 	    // Create the actual Jmol panel.
@@ -948,6 +986,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     {
     	if (DEBUG >= 3) {
 	    System.out.println("DEViseCanvas3DJmol.setHighlightFromData()");
+	}
+        if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	    " calls DEViseCanvas3DJmol.setHighlightFromData()");
 	}
 
 	// Piled views are used to highlight atoms that were created in

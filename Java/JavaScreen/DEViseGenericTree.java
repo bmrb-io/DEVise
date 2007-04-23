@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/05/26 16:22:15  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.1.2.5  2006/05/23 18:17:50  wenger
 // Added initial Jmol menu with a menu item to show the tree selection
 // window; destroying and re-creating the window currently doesn't
@@ -119,6 +122,12 @@ public class DEViseGenericTree
             System.out.println("DEViseGenericTree(" + treeName +
 	      ".updateTree()");
         }
+        if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	    " calls DEViseGenericTree.updateTree()");
+	}
 
 	top.removeAllChildren();
 	createNodes(top, topDevNode);
@@ -139,6 +148,12 @@ public class DEViseGenericTree
 	        System.out.println("  " + selectedDevNodes);
 	    }
         }
+        if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	    " calls DEViseGenericTree.setSelection()");
+	}
 
 	tree.clearSelection();
 

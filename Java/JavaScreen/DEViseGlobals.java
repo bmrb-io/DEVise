@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.87  2007/04/20 19:42:34  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.86  2007/03/30 18:34:45  wenger
 // Changed version to 5.8.1.
 //
@@ -601,6 +605,7 @@ public final class DEViseGlobals
     public static final int KILLINTERVAL = 24 * 60 * 60 * 1000;
 
     public static final int DEBUG_THREADS = 0;
+    public static final int DEBUG_GUI_THREADS = 0;
 
     // The default value for the maximum number of clients we allow (once we
     // reach that value, we kill off the oldest client each time a new
