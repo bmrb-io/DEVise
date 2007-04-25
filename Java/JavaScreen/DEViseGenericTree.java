@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/04/23 19:41:46  wenger
+// Added some extra GUI-thread-related diagnostic output.
+//
 // Revision 1.2  2006/05/26 16:22:15  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -120,7 +123,7 @@ public class DEViseGenericTree
     {
     	if (DEBUG >= 1) {
             System.out.println("DEViseGenericTree(" + treeName +
-	      ".updateTree()");
+	      ").updateTree()");
         }
         if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
 	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&

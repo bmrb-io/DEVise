@@ -16,11 +16,12 @@
 
 // ------------------------------------------------------------------------
 
-// ------------------------------------------------------------------------
-
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/07/11 18:32:42  wenger
+// Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
+//
 // Revision 1.2  2006/05/26 16:22:16  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //

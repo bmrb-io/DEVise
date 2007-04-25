@@ -19,13 +19,32 @@
 // Note that this version of the 3D stuff is somewhat molecular-
 // biology specific, because that's what Jmol is oriented towards.
 
-// ------------------------------------------------------------------------
+// There are three trees (shown in a separate window) that control what
+// is displayed and what is highlighted in the Jmol viewer.  These are
+// as follows:
+// - The Structure Display tree (selects what secondary structure(s) to
+//   display)
+// - The Atom Display tree (selects what specific atoms to display;
+//   selection can occur by residue or by specific atom)
+// - The Atom Selection tree (selects what specific atoms to highlight;
+//   selection can occur by residue or by specific atom)
+// Note that selection "trickles down" through the trees -- the Structure
+// Display tree controls what is shown in the Atom Display tree.  The
+// Atom Display tree controls what is shown in the Jmol viewer and
+// the Atom Selection tree.  The Atom Selection tree only controls what
+// is selected/highlighted in the Jmol viewer.
+// The Atom Selection tree defaults to selecting the atoms that are
+// selected in the DEVise highlight view of the 3D pile.  This selection
+// can be overridden by the user.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.12  2007/04/23 19:41:46  wenger
+// Added some extra GUI-thread-related diagnostic output.
+//
 // Revision 1.11  2007/03/30 17:29:55  wenger
 // Moved some GUI functions to the AWT-EventQueue thread (which is where
 // they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
@@ -208,8 +227,10 @@ import org.openscience.jmol.app.Jmol;
 public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
   DEViseGenericTreeSelectionCallback
 {
+    // The panel holding the actual Jmol viewer.
     private JmolPanel jmolPanel = null;
 
+    // The frame holding the Atom Display and Atom Selection trees.
     private JFrame treeFrame;
 
     private JmolTree structDisplayTree; // select what structure(s) to display
@@ -227,27 +248,48 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     private static final String SIDE_CHAINS_STR = "side chains";
     private static final String PROTONS_STR = "protons";
 
+    // Whether the secondary structure (molecule, backbone, side chains,
+    // protons) to display has been updated since the last repaint.
     private boolean structUpdated = false;
+
+    // The secondary structure(s) to display.
     private Vector structDisplayNodes = null;
+
+    // Whether the atoms to display have been updated since the last repaint.
     private boolean atomUpdated = false;
+
+    // The atoms to display.
     private Vector atomDisplayNodes = null;
+
+    // Whether the atoms to highlight have bee updated since the last repaint.
     private boolean highlightUpdated = false;
+
+    // The atoms to highlight.
     private Vector highlightNodes = null;
 
     private JmolViewer viewer;
     private MyStatusListener myStatusListener;
     private JmolPopup jmolPopup;
 
+    // True if atoms should be highlighted with halos, false if they
+    // should be updated by changing color.
     private boolean highlightWithHalos = true;
 
+    // The atoms to display, in the form of DEViseGData.
     private Vector gDatasToDisplay;
 
+    // True if drill-down is enabled in Jmol, false otherwise.
     private boolean drillDownEnabled = true;
 
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
+    /**
+     * Constructor.
+     * @param v: the base view for this canvas.
+     * @param img: the background image for this canvas.
+     */
     // v is base view if there is a pile in this canvas.
     public DEViseCanvas3DJmol (DEViseView v, Image img)
     {
@@ -256,6 +298,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Paint this canvas.
+     * @param gc: the graphics context to paint on.
+     */
     public void paint(Graphics gc)
     {
 	if (structUpdated) {
@@ -274,14 +320,18 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	}
 
         //TEMP? jsc.parentFrame.setCursor(DEViseUIGlobals.defaultCursor);
-        if (treeFrame != null)
-	  treeFrame.setCursor(DEViseUIGlobals.defaultCursor);
+        if (treeFrame != null) {
+	    treeFrame.setCursor(DEViseUIGlobals.defaultCursor);
+        }
 
     	super.paint(gc);
     }
 
     //-------------------------------------------------------------------
-    // Called when a session is closed.
+    /**
+     * Called when a session is closed -- destroys the tree selection
+     * window.
+     */
     public void close()
     {
     	Runnable doClose = new Runnable() {
@@ -296,6 +346,11 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Actually creates the Jmol viewer and tree selection window.
+     * There's some reason this isn't done in the constructor, but I
+     * don't remember exactly what it is.  wenger 2007-04-24.
+     */
     public void create3DViewer()
     {
         if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
@@ -325,6 +380,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Force the window containing the selection trees to be shown.
+     */
     public void showTrees()
     {
     	if (DEBUG >= 2) {
@@ -347,6 +405,13 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Deal with selection in one of the trees controlling this canvas.
+     * This method is called whenever the user selects a node in one
+     * of the selection trees controlling this canvas.
+     * @param name: the name of the tree in which the selection occurred.
+     * @param nodes: the list of selected nodes
+     */
     public void nodesSelected(String name, Vector nodes)
     {
     	if (DEBUG >= 2) {
@@ -378,6 +443,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Reset the highlighted atoms to those selected by the data, as
+     * opposed to those selected in the highlight tree.
+     */
     public void resetSelection()
     {
     	if (DEBUG >= 2) {
@@ -432,6 +501,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Controls whether atoms are highlighted by surrounding them with
+     * a halo or by changing their color.
+     * @param halosOn: true turns on halos, false turns on highlighting
+     * by changing atom color
+     */
     public void setHighlightWithHalos(boolean halosOn)
     {
 	if (DEBUG >= 2) {
@@ -455,6 +530,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Evaluate the given string with the given Jmol viewer, and report
+     * any error that results.
+     * @param viewer: the Jmol viewer
+     * @param dataStr: the string to open
+     */
     public static void jmolEvalStringErr(JmolViewer viewer, String script)
     {
 	if (DEBUG >= 2) {
@@ -469,12 +550,18 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Enable drill-down in the Jmol viewer.
+     */
     public void enableDrillDown()
     {
     	drillDownEnabled = true;
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Disable drill-down in the Jmol viewer.
+     */
     public void disableDrillDown()
     {
     	drillDownEnabled = false;
@@ -484,8 +571,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // PROTECTED METHODS
 
     //-------------------------------------------------------------------
-    // Create the trees for selecting which atoms are displayed, and
-    // which atoms are highlighted, in Jmol.
+    /**
+     * Create the trees for selecting which atoms are displayed, and
+     * which atoms are highlighted, in Jmol.
+     */
     protected void createTrees()
     {
         if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
@@ -597,7 +686,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
-    // Create the Jmol viewer and its enclosing panel.
+    /**
+     * Create the Jmol viewer and its enclosing panel.
+     */
     protected void createJmol()
     {
         if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
@@ -638,6 +729,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // PRIVATE METHODS
 
     //-------------------------------------------------------------------
+    // This class adapts a DEViseGenericTree to the specific requirements
+    // of controlling this canvas.
     private class JmolTree
     {
         public final String name;
@@ -653,6 +746,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    // Specializes a DEViseGenericTreeNode to represent a molecule.
     private class TreeMoleculeNode extends DEViseGenericTreeNode
     {
 	public TreeMoleculeNode()
@@ -662,6 +756,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    // Specializes a DEViseGenericTreeNode to represent a residue.
     private class TreeResidueNode extends DEViseGenericTreeNode
     {
 	public int residueNumber;
@@ -681,6 +776,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    // Specializes a DEViseGenericTreeNode to represent an atom.
     private class TreeAtomNode extends DEViseGenericTreeNode
     {
 	public int atomNumber;
@@ -702,6 +798,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Open the given string with the given Jmol viewer, and report
+     * any error that results.
+     * @param viewer: the Jmol viewer
+     * @param dataStr: the string to open
+     */
     private static void jmolOpenStringErr(JmolViewer viewer, String dataStr)
     {
 	if (DEBUG >= 3) {
@@ -719,6 +821,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Update what's shown in the Structure Display tree.  (This shows
+     * a fixed list of the different secondary structures.)
+     */
     void updateStructTree()
     {
 	if (DEBUG >= 2) {
@@ -748,6 +854,16 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Update the given JmolTree by replacing its nodes with nodes
+     * generated from the given GData.  Note that the input GData
+     * is "flat" -- it's simply a list of all atoms, no matter which
+     * residue they're in.  We generate a hierarchical structure of
+     * residues containing atoms in this method.
+     * @param jmTree: the tree to update
+     * @param gDatas: the GData to use to generate the new nodes;
+     *   each GData record must represent an atom
+     */
     void updateTreeData(JmolTree jmTree, Vector gDatas)
     {
 	if (DEBUG >= 2) {
@@ -794,6 +910,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    residueNode.addChild(atomNode);
 	}
 
+	// Now add the residue nodes to the tree.
 	for (int residueNum = 1; residueNum <= maxResidueNum; residueNum++) {
 	    Integer resNum = new Integer(residueNum);
 	    TreeResidueNode residueNode =
@@ -807,6 +924,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Visually highlight the selected atoms in the Jmol viewer.
+     * (This is called from the paint() method.)
+     * @param nodes: a Vector describing what to highlight -- it can be
+     *   the entire molecule or a combination of residues and atoms.
+     */
     private void highlightSelected(Vector nodes)
     {
     	if (DEBUG >= 2) {
@@ -876,6 +999,15 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Display the data selected by the Structure Display and Atom
+     * Display trees.  (This method is called from paint() when the
+     * atoms to display have changed since the last repaint.)  This method
+     * updates both what's shown in the Jmol viewer and what's shown
+     * in the Atom Selection tree.
+     * @param nodes: a Vector of DEViseGenericTreeNodes that represent
+     *   the data to display
+     */
     private void displaySelected(Vector nodes)
     {
     	if (DEBUG >= 2) {
@@ -883,6 +1015,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	}
 
 	//TEMP -- set busy cursor here?
+	// Turn the list of nodes into a list of GData to display.
 	gDatasToDisplay = new Vector();
 
 	for (int index = 0; index < nodes.size(); index++) {
@@ -891,6 +1024,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    addNodeGData(node, gDatasToDisplay);
 	}
 
+	// Update what's shown in Jmol.
 	String jmolData = DEViseJmolData.createJmolData(gDatasToDisplay);
 	if (!jmolData.equals("")) {
 	    viewer.setSelectionHaloEnabled(false);
@@ -899,8 +1033,11 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
             viewer.setShowAxes(true);
 	}
 
+	// Update what's shown in the Atom Selection tree.
 	updateTreeData(highlightTree, gDatasToDisplay);
 
+	// Set what's selected in the Atom Selection tree according
+	// to the highlight data we got from DEVise.
 	setHighlightFromData();
 
 	// Load this here so it knows how many atoms and bonds there are.
@@ -908,6 +1045,15 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Deal with a change to the secondary structure(s) to display.  (This
+     * method is called from paint() when the secondary structure(s) to
+     * display have changed since the last repaint.)  This method updates
+     * what's shown in the Atom Display tree according to the secondary
+     * structure(s) we want to show.
+     * @param nodes: a Vector of DEViseGenericTreeNodes that represent
+     *   the secondary structure(s) to show
+     */
     private void structureSelected(Vector nodes)
     {
     	if (DEBUG >= 2) {
@@ -956,6 +1102,14 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Add the data represented by node to the given GData.  Note that
+     * if node does not represent an atom, we will recursively call this
+     * method until we get down to the atom level.
+     * @param node: the tree node representing the data that we want
+     *   to add to the GData
+     * @param gDatas: the GData to add to
+     */
     private void addNodeGData(DEViseGenericTreeNode node, Vector gDatas)
     {
     	if (DEBUG >= 3) {
@@ -979,12 +1133,14 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
-    // Set what is highlighted in Jmol and the highlight tree according
-    // to the data sent by DEVise to the views that are piled "behind"
-    // the main view in this pile.
+    /**
+     * Set what is highlighted in Jmol and the highlight tree according
+     * to the data sent by DEVise to the views that are piled "behind"
+     * the main view in this pile.
+     */
     private void setHighlightFromData()
     {
-    	if (DEBUG >= 3) {
+    	if (DEBUG >= 2) {
 	    System.out.println("DEViseCanvas3DJmol.setHighlightFromData()");
 	}
         if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
@@ -1024,6 +1180,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Load the Jmol popup menu.  (This code is copied from the Jmol
+     * source.)
+     */
     void loadPopupMenuAsBackgroundTask() {
     	// no popup on MacOS 9 NetScape
 	if (viewer.getOperatingSystemName().equals("Mac OS") && 
@@ -1064,6 +1224,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
     //===================================================================
 
+    //-------------------------------------------------------------------
+    // This class exists just to load the Jmol popup menu.
   class LoadPopupThread implements Runnable {
 
     public void run() {
@@ -1078,8 +1240,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
         System.out.println("JmolPopup not loaded");
         return;
       }
-      if (viewer.haveFrame())
+      if (viewer.haveFrame()) {
         popup.updateComputedMenus();
+      }
       jmolPopup = popup;
       // long runTime = System.currentTimeMillis() - beginTime;
       // System.out.println("LoadPopupThread finished " + runTime + " ms");
@@ -1087,6 +1250,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
   }
 
     //===================================================================
+    // This class gets notified of various events in the Jmol viewer.
+    // We use is for drill down, bringing up the popup menu, etc.
   class MyStatusListener implements JmolStatusListener {
     private DoDrillDown _ddd;
 
@@ -1147,6 +1312,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     public void showConsole(boolean showConsole) {
     }
 
+    // This class does drill-down in a Jmol view.  The main reason for
+    // this class is to create the thread that allows us to differentiate
+    // between single and double clicks (a double-click cancels the
+    // drill-down).
     private class DoDrillDown implements Runnable
     {
 	private String _viewName;
