@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -30,7 +30,7 @@ PERL_BIN = /usr/local/bin
 INPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 OUTPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 
-STAR_URL = http://$(INPUT_WEB_DOMAIN)/data_library/files/
+STAR_URL = file:/export/home/bmrb/htdocs/data_library/files
 STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = http://www.rcsb.org/pdb/files/
 
@@ -120,7 +120,7 @@ VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
 
 #-----------------------------------------------------------
 # "Upload and visualize data" configuration
-UVD_DATA_UPLOAD = TEMPTEMP
+UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
 
 #-----------------------------------------------------------
 # LACS-related configuration

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -30,7 +30,7 @@ PERL_BIN = /usr/bin
 INPUT_WEB_DOMAIN = bmrb.postgenomicnmr.net
 OUTPUT_WEB_DOMAIN = bmrb.postgenomicnmr.net
 
-STAR_URL = file:/bmrb/ftp/pub/data/nmr-star/
+STAR_URL = file:/bmrb/htdocs/data_library/files
 STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = http://www.rcsb.org/pdb/files/
 
@@ -118,7 +118,16 @@ VUR_SCRIPT = $(VUR_CGI_HOME)/view_unreleased
 
 #-----------------------------------------------------------
 # "Upload and visualize data" configuration
-UVD_DATA_UPLOAD = TEMPTEMP
+UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
+
+#-----------------------------------------------------------
+# LACS-related configuration
+
+# The default level of LACS processing to do
+LACS_LEVEL_DEFAULT = 1
+
+# The URL of directory containing LACS files (must end with "/").
+LACS_URL = file:/bmrb/ftp/pub/data/LACS/
 
 #-----------------------------------------------------------
 # Other.
