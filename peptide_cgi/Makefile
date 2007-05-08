@@ -71,7 +71,7 @@ testsetup:
 	mkdir test_html/uvd
 
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
-install: do_install
+install: uvd_install
 do_install: 
 	./install $(DEV_DEMO_HOME) $(WWW_HOME) $(PEP_HOME) $(CGI_HOME) \
 	  $(PEP_SESSION_HOME) $(PEP_DATA_HOME) $(PEP_HTML_HOME) \
