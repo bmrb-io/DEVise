@@ -217,6 +217,12 @@ Num Date        Status  Pri     Description
 				(wenger)
 				(Done by wenger, 3/22/05.)
 
+057 4/24/07	DONE	1	Simplify UVD/vis_serv error messages (just
+				say something like "file cannot be parsed) --
+				at least until the error messages are more
+				understandable. (elu/wenger)
+				(Done by wenger, 5/9/07.)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

@@ -16,6 +16,7 @@ rm -f */test47_out*
 rm -f */*/test47_out*
 
 echo -n "Processing NMR-STAR: "
+# This is 15011.
 ./uvd -file test_data/20070228.28103.str -name test47_out -force
 if ($status != 0) then
   echo "First invocation of uvd failed!"

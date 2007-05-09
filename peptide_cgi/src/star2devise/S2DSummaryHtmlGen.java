@@ -29,6 +29,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/03/12 18:37:41  wenger
+// Got Peptide-CGI end of chem shift reference working for the "upload
+// and visualize data" setup, changed test47 accordingly; install_uvd
+// now copies the no list file into the data upload directory, too.
+//
 // Revision 1.2  2007/03/07 16:37:58  wenger
 // Phase 2 of "upload and visualize data" -- mostly working, I think,
 // but still needs chem shift reference capability and hasn't been
@@ -154,7 +159,9 @@ public abstract class S2DSummaryHtmlGen {
 
 	    _writer.write("<h3>DEVise plots for " + _longName + ":\n");
 	    _writer.write(systemName + "</h3>\n");
-	    _writer.write("Title: <tt>" + frameTitle + "</tt>\n");
+	    if (!frameTitle.equals("")) {
+	        _writer.write("Title: <tt>" + frameTitle + "</tt>\n");
+	    }
 
 	    _writer.write("\n<p>\n");
 	    if (sizeString().equals("")) {

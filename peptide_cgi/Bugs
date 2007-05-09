@@ -235,9 +235,14 @@ Num Date        Status  Description
 			or to be drawn on the client side, or something like
 			that. (wenger)
 
-053 5/9/07	OPEN	Angle brackets in Peptide-CGI output seem to goof
+053 5/9/07	FIXED	Angle brackets in Peptide-CGI output seem to goof
 			up display of error messages in Firefox (at least),
 			even though we're using the <pre> tag. (wenger)
+			(Fixed by wenger, 5/9/07.)
+
+054 5/9/07	FIXED	In UVD mode, summary html page has "Title:" line
+			with blank title. (maziuk/wenger)
+			(Fixed by wenger, 5/9/07.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

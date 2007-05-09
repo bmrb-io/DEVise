@@ -8,25 +8,19 @@
 #  All Rights Reserved.
 #  ========================================================================
 #
-#TEMPTEMP -- lots of updates for uvd
 #  Under no circumstances is this software to be copied, distributed,
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
 #  This script generates the data, session files, and html files for a
-#  given BMRB entry (accession number).
+#  given uploaded data file (for the BMRB visualization server).
 
 #  Parameters:
-#TEMPTEMP -- change number to restart ID
-#   number - the accession number of the file, ie 4101
-#   pdbid - the PDB ID to process
-#   coord_index - the index of this coordinate frame in the parent
-#   do_pdb - the level of PDB (structure) processing
-#   do_csr - the level of chemical shift reference processing
+#   file - the name of the uploaded file
+#   name - the name to use for the base of the generated files
 
 #  can call using
-#  http://bmrb.wisc.edu/cgi-bin/peptide-cgi/make_view?number=4101
-#  http://bmrb.wisc.edu/cgi-bin/peptide-cgi/make_view?pdbid=1CEX&number=4101&coord_index=1
+#  http://bmrb.wisc.edu/cgi-bin/peptide-cgi/make_uvd?file=test_data/20070430_12345.str&name=20070430_12345
 
 ############################################################
 
@@ -45,7 +39,7 @@ print "Content-type: text/plain\n\n" if ($debug);
 my ($file, $name, $summary_page, $query);
 $query = new CGI;
 
-# BMRB accession number.TEMPTEMP
+# Get file and name parameters.
 $file = $query->param('file');
 $name = $query->param('name');
 
@@ -90,8 +84,7 @@ my $result = `$cmd`;
 chomp $result;
 if ($result ne "OK") {
   my ($tmpmsg);
-  $tmpmsg = "<p>Unable to process data for " . $name .
-    ".</p>\n<pre>\n" . `cat tmp/uvd.out` . "</pre>\n";
+  $tmpmsg = "<p>Unable to process data for " . $name;
   dienice($tmpmsg);
 }
 

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2007/04/12 15:07:03  wenger
+// Changed version to 11.1.2x2.
+//
 // Revision 1.31  2007/03/12 23:26:18  wenger
 // Changed version to 11.1.2x1.
 //
@@ -1279,7 +1282,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.2x2"/*TEMPTEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.2x3"/*TEMPTEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1302,7 +1305,7 @@ public class S2DMain {
 
     // The name of this data set -- all output files generated will consist
     // of the name plus various suffixes.
-    private String _name = null;
+    private String _name = "";
     private String _longName = null;
     
     private boolean _force = false;
@@ -1717,7 +1720,7 @@ public class S2DMain {
         if (DEBUG >= 1) {
 	    System.out.println("Arguments: ");
 	    for (int index = 0; index < args.length; index++) {
-	        System.out.println("  <" + args[index] + ">");
+	        System.out.println("  {" + args[index] + "}");
 	    }
 	}
 
@@ -1939,6 +1942,7 @@ public class S2DMain {
 	        S2DSpecificHtml.setIsUvd(true);
 	        S2DSummaryHtmlGen.setIsUvd(true);
 		_csrLevel = CSR_LEVEL_LINK;
+                _lacsLevel = LACS_LEVEL_TRY;
 
 	    } else {
 	        throw new S2DError("Unrecognized command-line argument: " +
@@ -1985,7 +1989,7 @@ public class S2DMain {
 	    throw new S2DError("html_dir must be specified");
 	}
 	
-	if (_name == null) {
+	if (_name.equals("")) {
 	    throw new S2DError("name must be specified if bmrbid is not");
 	}
 
@@ -2023,30 +2027,37 @@ public class S2DMain {
 	    _csrDataDir = _dataDir;
 	}
 
+	if (_isUvd && _lacsFile == null) {
+	    //TEMP -- we probably want to make this more general, but
+	    // the real simple case should do for now.
+	    _lacsFile = S2DUtils.replace((String)_localFiles.elementAt(0),
+	      ".str", ".LACS.str");
+	}
+
         if (DEBUG >= 1) {
-	    System.out.println("_name = <" + _name + ">");
-	    System.out.println("_longName = <" + _longName + ">");
+	    System.out.println("_name = {" + _name + "}");
+	    System.out.println("_longName = {" + _longName + "}");
 	    System.out.println("_masterBmrbId/BMRB ID = " + _masterBmrbId);
 	    System.out.println("_cmdPdbId = " + _cmdPdbId);
-	    System.out.println("_connectionFile = <" + _connectionFile + ">");
+	    System.out.println("_connectionFile = {" + _connectionFile + "}");
 	    System.out.println("_cmdFrameIndex = " + _cmdFrameIndex);
-	    System.out.println("_csrDataDir = <" + _csrDataDir + ">");
+	    System.out.println("_csrDataDir = {" + _csrDataDir + "}");
 	    System.out.println("_csrTimeout = " + _csrTimeout);
-	    System.out.println("_dataDir = <" + _dataDir + ">");
+	    System.out.println("_dataDir = {" + _dataDir + "}");
 	    System.out.println("_csrLevel = " + _csrLevel);
 	    System.out.println("_pdbLevel = " + _pdbLevel);
 	    System.out.println("_lacsLevel = " + _lacsLevel);
 	    System.out.println("_lacsFile = " + _lacsFile);
 	    if (_localFiles.size() > 0) {
-	        System.out.println("localFile = <" +
-		  _localFiles.elementAt(0) + ".");
+	        System.out.println("localFile = {" +
+		  _localFiles.elementAt(0) + "}");
 	    }
 	    System.out.println("_force = " + _force);
-	    System.out.println("_htmlDir = <" + _htmlDir + ">");
+	    System.out.println("_htmlDir = {" + _htmlDir + "}");
 	    System.out.println("_useLocalFiles = " + _useLocalFiles);
 	    System.out.println("_doProteinCheck = " + _doProteinCheck);
 	    System.out.println("_runScripts = " + _runScripts);
-	    System.out.println("_sessionDir = <" + _sessionDir + ">");
+	    System.out.println("_sessionDir = {" + _sessionDir + "}");
 	}
     }
 
@@ -2599,6 +2610,7 @@ public class S2DMain {
     {
         if (DEBUG >= 1) {
 	    System.out.println("processLACS()");
+	    System.out.println("_lacsFile = " + _lacsFile);
 	}
 
 	if (_lacsLevel >= LACS_LEVEL_TRY) {
