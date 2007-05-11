@@ -51,6 +51,14 @@ chmod a+rwx $htmlhome
 # Make sure the UVD html directory cannot be listed.
 cp html/no_list.html $htmlhome/index.html
 
+# Link the help files into the uvd directory.
+pushd $htmlhome
+ln -s ../help* .
+ln -s ../*.jpg .
+ln -s ../*.gif .
+ln -s ../*.txt .
+popd
+
 #-----------------------------------------------------------
 
 # Make the directory into which the data will actually be uploaded,
