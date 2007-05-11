@@ -53,10 +53,10 @@ cp html/no_list.html $htmlhome/index.html
 
 # Link the help files into the uvd directory.
 pushd $htmlhome
-ln -s ../help* .
-ln -s ../*.jpg .
-ln -s ../*.gif .
-ln -s ../*.txt .
+ln -s -f ../help* .
+ln -s -f ../*.jpg .
+ln -s -f ../*.gif .
+ln -s -f ../*.txt .
 popd
 
 #-----------------------------------------------------------
