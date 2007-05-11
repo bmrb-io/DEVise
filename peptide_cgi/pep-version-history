@@ -4,13 +4,25 @@ Peptide-CGI 11.1.2
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Added LACS capability to visualization server support.
+
 * Incorporated a new version of starlibj.
+
+* Simplified visualization server error messages.
+
+* Regular installation now also does visualization server installation.
+
+* Got rid of blank title in visualization server summary page.
+
+* Removed angle brackets from diagnostic output to avoid problems in html.
 
 * Fixed a bug in the make_uvd script that prevented errors in the
 "upload and visualize data" processing from getting correctly sent
 back to the web browser.
 
 * Fixed "upload and visualize data" configuration for BMRB and mirrors.
+
+* Various other configuration fixes.
 
 * Added more tests for the "upload and visualize data" feature.
 
