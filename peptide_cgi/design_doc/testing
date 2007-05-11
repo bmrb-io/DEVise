@@ -72,6 +72,10 @@ The following testing steps must be done:
     - Chemical shift distributions by amino acid (from the first save
       frame) [also make sure this shows up in the large size]
 
+- Go to http://devise.cs.wisc.edu/devise/bmrb/uvd/uvd_works.html and click
+  the "Test" link.  Make sure the summary page is correct and some of
+  the visualizations work.
+
 
 * Things to do to this document:
 
@@ -80,3 +84,5 @@ The following testing steps must be done:
 
 - Find a chem shift reference test that has all secondary structures (helix,
   sheet, and other).
+
+- Maybe specifically list visualizations to test for UVD.
