@@ -19,6 +19,10 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.11  2007/02/20 00:00:37  wenger
+#  Changed JavaScreen distribution tarfile to have JavaScreen version
+#  instead of DEVise version; minor cleanup to distribution scripts.
+#
 #  Revision 1.10  2005/12/06 20:08:44  wenger
 #  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 #  be the end of the V1_7b0_br branch.)
@@ -135,7 +139,11 @@ set classdir = $dest/JavaScreen
 if (! -d $classdir) then
   mkdir $classdir
 endif
+if (! -d $classdir/UI) then
+  mkdir $classdir/UI
+endif
 cp -p $src/JavaScreen/*.class $classdir
+cp -p $src/JavaScreen/UI/*.class $classdir/UI
 
 #-----------------------------------------------------------
 # Release the jar files.
