@@ -63,7 +63,7 @@ PEP_DATA_HOME = $(DEV_DEMO_HOME)/peptide-cgi/data_dir
 PEP_HTML_HOME = $(PEP_HOME)/html_dir
 
 # Machine installation should be done on (optional).
-INSTALL_MACHINE = icnm
+INSTALL_MACHINE = newicnm
 
 #-----------------------------------------------------------
 # Configuration for viewing unreleased entries.

@@ -30,7 +30,7 @@ PERL_BIN = /usr/local/bin
 INPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 OUTPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 
-STAR_URL = file:/export/home/bmrb/htdocs/data_library/files
+STAR_URL = file:/export/home/bmrb/htdocs/data_library/files/
 STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = http://www.rcsb.org/pdb/files/
 
