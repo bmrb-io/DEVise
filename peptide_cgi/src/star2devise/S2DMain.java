@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.34  2007/05/11 19:50:43  wenger
+// Changed version to 11.1.2 for release.
+//
 // Revision 1.33  2007/05/09 19:22:50  wenger
 // LACS now works for UVD/vis server mode, pending live testing;
 // found and fixed bug 053 (problems with angle brackets in output);
@@ -1288,7 +1291,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.2";
+    public static final String PEP_CGI_VERSION = "11.1.3x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
