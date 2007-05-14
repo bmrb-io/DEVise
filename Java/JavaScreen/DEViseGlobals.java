@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.89  2007/05/14 16:55:46  wenger
+// Updated JavaScreen version history; changed JavaScreen version to 5.8.2
+// for release.
+//
 // Revision 1.88  2007/04/23 19:41:46  wenger
 // Added some extra GUI-thread-related diagnostic output.
 //
@@ -591,7 +595,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.2");
+    public static final String VERSION = new String("5.8.3x1"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2002
+#  (c) Copyright 2001-2007
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -47,7 +47,7 @@ DEVISE_VIS = /p/devise/demo
 # This is who gets email about any errors.
 ERROR_EMAIL = devise@cs.wisc.edu
 
-INSTALL_HOST = icnm
+INSTALL_HOST = newicnm
 
 # You should probably set this to 0 if you're running more than one JSS
 # on the same machine.
