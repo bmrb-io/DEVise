@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.88  2007/04/23 19:41:46  wenger
+// Added some extra GUI-thread-related diagnostic output.
+//
 // Revision 1.87  2007/04/20 19:42:34  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -588,7 +591,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.2x1"/*TEMP*/);
+    public static final String VERSION = new String("5.8.2");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

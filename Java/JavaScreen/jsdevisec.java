@@ -1,4 +1,3 @@
-//TEMPTEMP -- replace validate() calls with doLayout()????
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 1999-2007
@@ -23,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.159  2007/04/23 19:41:47  wenger
+// Added some extra GUI-thread-related diagnostic output.
+//
 // Revision 1.158  2007/04/20 19:42:36  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk

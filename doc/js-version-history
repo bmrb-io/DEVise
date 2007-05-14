@@ -1,5 +1,20 @@
 			JavaScreen Version History
 
+JavaScreen 5.8.2
+----------------
+
+* Moved status lights and mouse location info to the bottom of the window
+for cleaner appearance.
+
+* The background color of the entire view area (the "screen background"
+color) is slightly contrasting.
+
+* Added the sbgcolor applet parameter to set the "screen background" color,
+since this is now more prominent.
+
+* Added some extra GUI-thread-related diagnostic output.
+
+
 JavaScreen 5.8.1
 ----------------
 
