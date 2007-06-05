@@ -15,7 +15,7 @@ setenv DEVISE_LIB		lib
 setenv DEVISE_EXEC		bin/devised
 setenv DEVISE_LOG_DIR		./logs
 
-setenv LD_LIBRARY_PATH dyn_lib:/s/gcc/lib
+setenv LD_LIBRARY_PATH dyn_lib
 
 setenv HOSTNAME `hostname | sed -e s/\\..\*//`
 

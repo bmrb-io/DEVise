@@ -9,6 +9,8 @@
 
 ############################################################
 
+echo "Starting start_devised"
+
 #
 # Set output file name according to ID string (if any).
 #
