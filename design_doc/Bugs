@@ -4011,6 +4011,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			window; move the cursor in the data view -> JS
 			locks up. (elu)
 
+941 6/7/07	OPEN	JavaScreen:  apparently has problems on Windows Visa
+			and/or Java 1.6.  (See notes from talking with Eiichi,
+			also email to devise-sup from Manoj Kumar.)  (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
