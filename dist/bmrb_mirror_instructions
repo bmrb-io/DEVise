@@ -75,10 +75,46 @@ The web server user needs write permission in the peptide-cgi
 dynamic_data and dynamic_sessions directories.
 
 
+* DEVISE DIRECTORY
+
+It's probably best, but not totally necessary, to create a top-level
+devise directory to hold all of the installation files.  (Note that
+DEVise no longer has to be installed in the specific /p/devise directory.)
+
+When you're done untarring the tarballs, , you should get a directory
+structure that looks something like this:
+
+- devise
+    - bin
+    - ChemShift (optional)
+    - doc
+    - JavaScreen
+    - peptide-cgi_x.x.x
+    - README
+    - tcl
+    - cache
+    - demo
+    - dyn_lib
+    - lib
+    - public
+    - run
+    - tk
+
+The actual installation scripts will then install a separate "production"
+copy of the software.  (The demo area you create by untarring the demo
+tarball is the "production" demo area, though.)
+
+
 * DEMO AREA INSTALLATION
 
+The DEVise demo area contains DEVise session, schema, and data files.
+There are a few sessions already set up that you can use for testing;
+Peptide-CGI will eventually create new sessions and data in directories
+that are linked into the demo area.
+
 To install the demo area skeleton, simply untar the Devise-x.x.x-demo.tar.gz
-file in an appropriate directory.
+file in an appropriate directory.  Note that this file untars simply
+as demo/..., not devise/demo/...
 
 
 * DEVISE INSTALLATION
@@ -239,7 +275,7 @@ That's it!
 * PEPTIDE-CGI INSTALLATION
 
 Untar the peptide-cgi_x.x.tgz in an appropriate directory.  Then see the
-INSTALL file in the peptide-cgi directory for configuration and
+INSTALL_NOTES.txt file in the peptide-cgi directory for configuration and
 installation instructions.
 
 
@@ -249,8 +285,9 @@ If you are going to support the chemical shift reference visualizations,
 you need to install ChemShift.  (Note that this is optional -- Peptide-CGI
 will work, and will generate the other visualizations, without ChemShift.)
 
-To install ChemShift, untar the ChemShift_x.x.x.tgz file into an
-appropriate directory.  Them follow the instructions in INSTALL_NOTES.txt.
+To install ChemShift, create a ChemShift directory, cd to that directory,
+and untar the ChemShift_x.x.x.tgz file.  Then follow the instructions in
+INSTALL_NOTES.txt.
 
 
 * CONCLUSION
