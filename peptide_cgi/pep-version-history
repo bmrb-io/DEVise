@@ -14,6 +14,8 @@ Peptide-CGI 11.1.2
 
 * Got rid of blank title in visualization server summary page.
 
+* Fixed help file links in visualization server pages.
+
 * Removed angle brackets from diagnostic output to avoid problems in html.
 
 * Fixed a bug in the make_uvd script that prevented errors in the
