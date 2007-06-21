@@ -26,11 +26,12 @@ before or after the rest of the mirror site, it's best to test the
 DEVise-related software by itself, and then in combination with the
 NMR Browser.
 
-There are four main parts to the DEVise-related mirror installation:
+There are five main parts to the DEVise-related mirror installation:
 - Demo area skeleton
 - DEVise itself
 - JavaScreen
 - Peptide-cgi
+- ChemShift
 
 The parts should be installed in that order.
 
@@ -43,14 +44,17 @@ To get the distribution files, go to:
 
 Then go to the directory containing the most recent DEVise distribution.
 The directory is of the form Devise-x.x.x, where x.x.x is the DEVise version.
-(At the time of writing, the most recent version is 1.7.18.)
+(At the time of writing, the most recent version is 1.9.0.1.)
 
 You should get the following files:
 - Devise-x.x.x-demo.tar.gz
-- Devise-x.x.x-JavaScreen.tar.gz
 - Devise-x.x.x-linux-intel*.tar.gz or Devise-x.x.x-solaris-sparc.tar.gz,
   depending on your machine architecture
+- Devise-JavaScreen-x.x.x.tar.gz (note that the JavaScreen version is
+  different from the corresponding DEVise version; DEVise and JavaScreen
+  tar files located in the same ftp directory are compatible)
 - peptide-cgi_x.x.tgz (where x.x is the peptide-cgi version)
+- Optionally, ChemShift_x.x.x.tgz
 
 
 * USERS
@@ -93,7 +97,8 @@ that the demo area skeleton works correctly.
 
 If DEVise core dumps on startup, especially on Linux, try getting
 rid of the dyn_lib directory.  Sometimes having it helps, sometimes
-it doesn't.
+it doesn't.  You may also want to try linking in different versions
+of the libraries in the dyn_lib directory.
 
 Note: in the current form of the distribution, DEVise itself is not
 configured to be installed other that as part of the JavaScreen installation.
@@ -114,7 +119,7 @@ system:
 
 On some systems (especially some Linux systems) you may have to add
 the arguments '-fp "unix/:-1"' to enable Xvfb to find the fonts it
-needs.
+needs.  On Fedora Core 6, this should be '-fp "unix/:7100"'.
 
 
 * JAVASCREEN INSTALLATION
@@ -236,6 +241,16 @@ That's it!
 Untar the peptide-cgi_x.x.tgz in an appropriate directory.  Then see the
 INSTALL file in the peptide-cgi directory for configuration and
 installation instructions.
+
+
+* CHEM_SHIFT INSTALLATION
+
+If you are going to support the chemical shift reference visualizations,
+you need to install ChemShift.  (Note that this is optional -- Peptide-CGI
+will work, and will generate the other visualizations, without ChemShift.)
+
+To install ChemShift, untar the ChemShift_x.x.x.tgz file into an
+appropriate directory.  Them follow the instructions in INSTALL_NOTES.txt.
 
 
 * CONCLUSION
