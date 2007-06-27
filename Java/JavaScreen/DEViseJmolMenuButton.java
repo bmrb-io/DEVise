@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/04/20 19:42:35  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.7  2007/03/30 17:29:56  wenger
 // Moved some GUI functions to the AWT-EventQueue thread (which is where
 // they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
@@ -28,6 +32,12 @@
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
 // functionality somewhat; various improvements to debug output.
+//
+// Revision 1.5.2.2  2007/06/18 19:57:21  wenger
+// Toolbar works for drill-down (including Jmol); we go back to "normal"
+// mode after drilling down; drill-down in Jmol is now disabled by
+// default; removed Jmol menu options to enable/disable drill-down;
+// removed unneeded utils stuff from 'make clean' target.
 //
 // Revision 1.5.2.1  2007/03/16 17:12:46  adayton
 // Add UI package
@@ -358,8 +368,10 @@ public class DEViseJmolMenuButton extends DEViseButton
 	PopupMenu toolsMenu = new PopupMenu(STR_TOOLS);
 	jmolMenu.add(toolsMenu);
 
+/* No longer needed because of toolbar.
 	addMenuItem(toolsMenu, STR_ENABLE_DRILL_DOWN);
 	addMenuItem(toolsMenu, STR_DISABLE_DRILL_DOWN);
+*/
 
 	PopupMenu distanceMenu = new PopupMenu(STR_DISTANCE);
 	toolsMenu.add(distanceMenu);

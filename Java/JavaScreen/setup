@@ -49,7 +49,12 @@ if (! -e lib/composite.ini) then
   cd ..
 endif
 
+if (! -e JavaScreen) then
+  mkdir JavaScreen
+endif
 cd JavaScreen
+ln -s ../*.gif .
+ln -s ../resources .
 if (! -e UI) then
   mkdir UI
 endif

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2006
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,10 +20,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2007/04/20 19:42:35  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.15  2007/02/23 16:57:41  wenger
 // Changed applet parameter names for colors from "fgcolor" and "bgcolor"
 // to "fgcolor2" and "bgcolor2" so existing web pages don't override
 // the colors.
+//
+// Revision 1.14.2.3  2007/06/15 20:46:09  wenger
+// Fixed problems with how DEViseJSValues was used in the toolbar code;
+// got rid of static members for loading images in jsdevisec, because
+// they might cause problems; made some changes to the toolbar constructor
+// to move towards actually making it functional.
+//
+// Revision 1.14.2.2  2007/06/15 16:34:42  wenger
+// Got JavaScreen toolbar icon images to load correctly from jar files (and
+// significantly cleaned up the image loading in general, getting rid of a
+// bunch of duplicate code).
 //
 // Revision 1.14.2.1  2007/04/19 21:16:08  wenger
 // Fixed the problem with component layout in the jsb; got rid of
@@ -561,56 +576,22 @@ public abstract class DEViseJSApplet extends Applet
 
     public void loadImages()
     {
-        if (images == null) {
-            images = new Vector();
-
-            startInfo.append("Trying to load DEVise animation symbol ...\n");
-            MediaTracker tracker = new MediaTracker(this);
-            Image image = null;
-            String imageName = null;
-	    final int MAX_IMAGE_SIZE = 2000;
-            byte[] imageData = new byte[MAX_IMAGE_SIZE];
-            for (int i = 0; i < 11; i++)  {
-                // get image from JAR file
-                try {
-                    imageName = "devise" + i + ".gif";
-                    InputStream is = getClass().getResourceAsStream(imageName);
-                    BufferedInputStream bis = new BufferedInputStream(is);
-                    int count = bis.read(imageData, 0, MAX_IMAGE_SIZE);
-		    if (count >= MAX_IMAGE_SIZE) {
-		        //TEMP -- we could read more here, but I'm just
-			// failing now because it's simpler.  RKW 2000-11-29.
-			throw new IOException("Image is too large");
-		    }
-                    image = Toolkit.getDefaultToolkit().createImage(imageData, 0, count);
-                } catch (IOException e) {
-                    startInfo.append("Cannot load DEVise animation symbol!\nStarting Java Screen without animation effect!\n");
-                    images = null;
-                    break;
-                }
-
-                tracker.addImage(image, 0);
-                try  {
-                    tracker.waitForID(0);
-                }  catch (InterruptedException e)  {
-                }
-
-                if (tracker.isErrorID(0)) {
-                    startInfo.append("Cannot load DEVise animation symbol!\nStarting Java Screen without animation effect!\n");
-                    images = null;
-                    break;
-                }
-
+        // get the animation symbol images 
+	jsValues._imageLoadComp = this;
+        images = new Vector();
+	try {
+            for (int i = 0; i < 11; i++) {
+                Image image = jsdevisec.loadImage("devise" + i + ".gif",
+		  jsValues);
                 images.addElement(image);
             }
 
-            if (images != null) {
-                startInfo.append("DEVise animation symbol successfully loaded\n");
-            } else {
-                isInit = false;
-                return;
-            }
-        }
+            startInfo.append("DEVise animation symbol successfully loaded\n");
+
+	} catch (Exception ex) {
+	    System.err.println("Error loading images: " + ex);
+            isInit = false;
+	}
     }
 
     public String[][] getParameterInfo()

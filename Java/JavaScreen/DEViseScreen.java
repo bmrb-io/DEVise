@@ -32,10 +32,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2007/04/20 19:42:35  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.77  2007/03/30 15:43:09  wenger
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
 // functionality somewhat; various improvements to debug output.
+//
+// Revision 1.76.2.2  2007/06/21 14:41:16  wenger
+// Tried changing the DEViseScreen to extend a JPanel instead of a Panel
+// (this fixed the problem with toolbar tooltips being obscured, but
+// caused the JS to lock up really a lot, so I have temporarily changed
+// it back); changed some of the tooltip text; put code into
+// DEViseToolBar.java to make sure graphics code is getting called from
+// the AWT Event thread.
 //
 // Revision 1.76.2.1  2007/04/19 21:16:08  wenger
 // Fixed the problem with component layout in the jsb; got rid of
@@ -288,8 +300,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.lang.*;
+import javax.swing.*;
 
-public class DEViseScreen extends Panel
+//TEMPTOOLBAR: changing this to extend a JPanel instead of a panel fixes the problem with the toolbar tooltips being obscured, but it gives me really bad lockup problems...
+//TEMPTOOLBAR public class DEViseScreen extends JPanel
+public class DEViseScreen extends Panel//TEMPTOOLBAR
 {
     jsdevisec jsc = null;
 

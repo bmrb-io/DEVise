@@ -21,12 +21,27 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2007/04/20 19:42:36  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.49  2007/02/22 23:20:22  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
 //
 // Revision 1.48  2007/02/20 00:00:19  wenger
 // Changed JavaScreen distribution tarfile to have JavaScreen version
 // instead of DEVise version; minor cleanup to distribution scripts.
+//
+// Revision 1.47.6.7  2007/06/15 20:46:09  wenger
+// Fixed problems with how DEViseJSValues was used in the toolbar code;
+// got rid of static members for loading images in jsdevisec, because
+// they might cause problems; made some changes to the toolbar constructor
+// to move towards actually making it functional.
+//
+// Revision 1.47.6.6  2007/06/15 16:34:42  wenger
+// Got JavaScreen toolbar icon images to load correctly from jar files (and
+// significantly cleaned up the image loading in general, getting rid of a
+// bunch of duplicate code).
 //
 // Revision 1.47.6.5  2007/04/20 17:00:00  wenger
 // Fixed the problem with the JavaScreen buttons showing up with the
@@ -280,42 +295,18 @@ public class js extends JFrame
         jsValues.uiglobals.minScreenSize.width = 300;
         jsValues.uiglobals.minScreenSize.height = 240;
 
-        // get the animation symbol images from server
-        MediaTracker tracker = new MediaTracker(this);
-        Toolkit toolkit = this.getToolkit();
+        // get the animation symbol images
+	jsValues._imageLoadComp = this;
         Vector images = new Vector();
-        Image image = null;
-        for (int i = 0; i < 11; i++) {
-            image = toolkit.getImage("devise" + i + ".gif");
-            tracker.addImage(image, 0);
-            try  {
-                tracker.waitForID(0);
-            }  catch (InterruptedException e)  {
-            }
-
-            if (tracker.isErrorID(0)) {
-	      if (false) {//TEMP
-                YMsgBox box = new YMsgBox(this, true, true,
-		    "Cannot get JavaScreen "
-                    + "animation symbols!\nDo you wish to continue without "
-                    + "animation effects?", "Confirm", YMsgBox.YMBXYESNO, null,
-                    null, null);
-                box.open();
-                String result = box.getResult();
-                if (result.equals(YMsgBox.YIDYES)) {
-                    images = null;
-                    break;
-                } else {
-                    System.exit(1);
-                }
-	      } else {//TEMP
-	    	    System.err.println("Cannot get JavaScreen animation " +
-		      "symbols; continuing without them");
-	      }//TEMP
-            }
-
-            images.addElement(image);
-        }
+	try {
+            for (int i = 0; i < 11; i++) {
+	        Image image = jsdevisec.loadImage("devise" + i + ".gif",
+		  jsValues);
+                images.addElement(image);
+	    }
+	} catch (Exception ex) {
+	    System.out.println("Error loading throbber images: " + ex);
+	}
 
         // start JavaScreen
         jsc = new jsdevisec(null, this, images, jsValues);

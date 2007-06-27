@@ -16,6 +16,16 @@
 
 // ------------------------------------------------------------------------
 
+// $Id$
+
+// $Log$
+// Revision 1.1.2.3  2007/06/06 14:13:14  wenger
+// Got JavaScreen Makefile to work with Andy's latest changes; added
+// headers to the UI java files.
+//
+
+// ------------------------------------------------------------------------
+
 package JavaScreen.UI;
 
 import java.io.*;

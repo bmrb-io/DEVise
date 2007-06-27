@@ -51,7 +51,7 @@ test:
 
 #custom make commands
 get:
-	rsync -avuzb \
+	rsync -Cavuzb \
 	--exclude '*~' \
 	--exclude 'Makefile.config' \
 	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/ \
@@ -60,6 +60,7 @@ get:
 put: 
 	rsync -Cavuzb \
 	--exclude 'Makefile.config' \
+	--exclude '.DS_Store' \
 	./ \
 	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/
 
@@ -68,7 +69,7 @@ sync:
 
 #test commands	
 dry_get:
-	rsync -avuzbn \
+	rsync -Cavuzbn \
 	--exclude '*~' \
 	--exclude 'Makefile.config' \
 	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/ \
@@ -77,6 +78,7 @@ dry_get:
 dry_put:
 	rsync -Cavuzbn \
 	--exclude 'Makefile.config' \
+	--exclude '.DS_Store' \
 	./ \
 	-e ssh adayton@dewey.cs.wisc.edu:private/devise/JavaScreen/
 	

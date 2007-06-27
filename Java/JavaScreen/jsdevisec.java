@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.160  2007/05/14 16:55:46  wenger
+// Updated JavaScreen version history; changed JavaScreen version to 5.8.2
+// for release.
+//
 // Revision 1.159  2007/04/23 19:41:47  wenger
 // Added some extra GUI-thread-related diagnostic output.
 //
@@ -41,6 +45,34 @@
 //
 // Revision 1.155  2007/02/22 23:20:23  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.154.2.14  2007/06/21 14:41:20  wenger
+// Tried changing the DEViseScreen to extend a JPanel instead of a Panel
+// (this fixed the problem with toolbar tooltips being obscured, but
+// caused the JS to lock up really a lot, so I have temporarily changed
+// it back); changed some of the tooltip text; put code into
+// DEViseToolBar.java to make sure graphics code is getting called from
+// the AWT Event thread.
+//
+// Revision 1.154.2.13  2007/06/18 19:57:22  wenger
+// Toolbar works for drill-down (including Jmol); we go back to "normal"
+// mode after drilling down; drill-down in Jmol is now disabled by
+// default; removed Jmol menu options to enable/disable drill-down;
+// removed unneeded utils stuff from 'make clean' target.
+//
+// Revision 1.154.2.12  2007/06/15 20:46:09  wenger
+// Fixed problems with how DEViseJSValues was used in the toolbar code;
+// got rid of static members for loading images in jsdevisec, because
+// they might cause problems; made some changes to the toolbar constructor
+// to move towards actually making it functional.
+//
+// Revision 1.154.2.11  2007/06/15 16:34:43  wenger
+// Got JavaScreen toolbar icon images to load correctly from jar files (and
+// significantly cleaned up the image loading in general, getting rid of a
+// bunch of duplicate code).
+//
+// Revision 1.154.2.10  2007/06/01 09:45:46  adayton
+// Added toolbar UI elements, although none of the buttons are working yet.
 //
 // Revision 1.154.2.9  2007/04/20 17:00:00  wenger
 // Fixed the problem with the JavaScreen buttons showing up with the
@@ -718,6 +750,7 @@ public class jsdevisec extends JPanel
     private DEViseMenuPanel menuPanel = null;
     private DEViseStatusPanel statusPanel;
     private DEViseStatusMessage statusMessage;
+    public DEViseToolBar toolBar;
 
     private DEViseMainButtons _mainButtons = null;
 
@@ -829,9 +862,9 @@ public class jsdevisec extends JPanel
 	    isCenterScreen = true;
 	}
 
-        if (jv.debug._debugLevel > 0) {
-	    System.out.println("Creating new debug window");
-            debugWindow = new YLogGUI(jv.debug._debugLevel);
+  if (jv.debug._debugLevel > 0) {
+		System.out.println("Creating new debug window");
+		debugWindow = new YLogGUI(jv.debug._debugLevel);
 	}
 
         // determine the font size according to JavaScreen size
@@ -873,18 +906,17 @@ public class jsdevisec extends JPanel
 	// main menu buttons
 	_mainButtons = new DEViseMainButtons(this);
 	stopButton = _mainButtons.getStopButton();
-        Component[] buttons = _mainButtons.getButtons();
-        DEViseComponentPanel buttonPanel = new DEViseComponentPanel(buttons,
-	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
-	  DEViseComponentPanel.ALIGN_LEFT, this);
+  Component[] buttons = _mainButtons.getButtons();
+  DEViseComponentPanel buttonPanel = new DEViseComponentPanel(buttons,
+  	DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
+  	DEViseComponentPanel.ALIGN_LEFT, this);
 	if (jsValues.connection.cgi) {
 	    cgiMode();
 	} else {
 	    socketMode();
 	}
 	buttonPanel.add(commMode);
-
-        jmolButton = new DEViseJmolMenuButton(jsValues);
+  jmolButton = new DEViseJmolMenuButton(jsValues);
 	buttonPanel.add(jmolButton);
 	jmolButton.hide();
 
@@ -982,7 +1014,12 @@ public class jsdevisec extends JPanel
 	statusPanel = new DEViseStatusPanel(light, statusMessage, viewInfo);
 	statusPanel.setBackground(jsValues.uiglobals.bg);
 	statusPanel.inheritBackground(); // causes children to inherit bg color
-		
+
+	// ToolBar
+	toolBar = new DEViseToolBar(jsValues);
+	toolBar.setBackground(jsValues.uiglobals.bg);
+	
+
 	// Add the main panels to the parent JPanel (this)
 	add(menuPanel, BorderLayout.NORTH);
 	add(statusPanel, BorderLayout.SOUTH);
@@ -993,16 +1030,18 @@ public class jsdevisec extends JPanel
 	// the fix for the jsb layout problem I just ran into.  wenger
 	// 2007-04-19
 	JPanel leftPanel = new JPanel();
-	leftPanel.setPreferredSize(new Dimension(3, 3));
 	leftPanel.setBackground(jsValues.uiglobals.bg);
 	add(leftPanel, BorderLayout.WEST);
+	
+	leftPanel.add(toolBar);
+	
 	JPanel rightPanel = new JPanel();
 	rightPanel.setPreferredSize(new Dimension(3, 3));
 	rightPanel.setBackground(jsValues.uiglobals.bg);
 	add(rightPanel, BorderLayout.EAST);
 
 	add(jscreen, BorderLayout.CENTER);
-
+	
         isSessionOpened = false;
 
         //
@@ -1246,6 +1285,7 @@ public class jsdevisec extends JPanel
 
 	public void run() {
             jmolButton.show(_canvas);
+	    toolBar.setJmolCanvas(_canvas);
 	    validate();
 	}
     }
@@ -1261,6 +1301,7 @@ public class jsdevisec extends JPanel
         Runnable doHideJmol = new Runnable() {
 	    public void run() {
                 jmolButton.hide();
+	        toolBar.setJmolCanvas(null);
 	        validate();
 	    }
 	};
@@ -1514,6 +1555,10 @@ public class jsdevisec extends JPanel
 	    System.out.println(Thread.currentThread() +
 	      " calls jsdevisec.showRecord()");
 	}
+
+	// Don't drill-down twice w/o user re-selecting drill-down mode.
+	toolBar.setNormal();
+
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
         recorddlg.open();
         if (specialID == -1 && ! jsValues.session.autoPlayback)
@@ -1861,6 +1906,58 @@ public class jsdevisec extends JPanel
 	jsValues.uiglobals.screenSize.width = oldScreenWidth;
 	jsValues.uiglobals.screenSize.height = oldScreenHeight; 
 	jsValues.uiglobals.screenRes = oldScreenRes;
+    }
+
+    public static Image loadImage(String imagePath, DEViseJSValues jsValues)
+      throws YException, IOException
+    {
+	if (DEBUG >= 1) {
+    	    System.out.println("jsdevisec.loadImage(" + imagePath + ")");
+	}
+
+	// Seems like we need the MediaTracker stuff in here to wait
+	// for images to load -- if we don't do that, the images don't
+	// seem to work right.  wenger 2007-06-15.
+	if (jsValues._tracker == null) {
+	    jsValues._tracker = new MediaTracker(jsValues._imageLoadComp);
+	}
+
+	Image image = null;
+
+	Toolkit tk = jsValues._imageLoadComp.getToolkit();
+
+        InputStream is = jsValues._imageLoadComp.getClass().
+	  getResourceAsStream(imagePath);
+        BufferedInputStream bis = new BufferedInputStream(is);
+        final int MAX_IMAGE_SIZE = 2000;
+        byte[] imageData = new byte[MAX_IMAGE_SIZE];
+        int count = bis.read(imageData, 0, MAX_IMAGE_SIZE);
+        if (count >= MAX_IMAGE_SIZE) {
+            //TEMP -- we could read more here, but I'm just
+            // failing now because it's simpler.  RKW 2000-11-29.
+            throw new IOException("Image is too large");
+        }
+
+        image = tk.createImage(imageData, 0, count);
+        jsValues._tracker.addImage(image, 0);
+
+        try  {
+            jsValues._tracker.waitForID(0);
+        }  catch (InterruptedException e)  {
+	    YException ex =  new YException("MediaTracker interrupted " +
+	      "while waiting for image " + imagePath);
+	    System.err.println(ex);
+	    throw ex;
+        }
+
+	if (jsValues._tracker.isErrorID(0)) {
+	    YException ex =  new YException("MediaTracker error " +
+	      "on image " + imagePath);
+	    System.err.println(ex);
+	    throw ex;
+	}
+
+	return image;
     }
 }
 

@@ -21,6 +21,33 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.5  2007/06/21 15:07:06  wenger
+// Toolbar help mode now resets to normal after one click.
+//
+// Revision 1.2.2.4  2007/06/19 20:49:48  wenger
+// Toolbar now works for the various zoom modes and for enlarging/reducing
+// symbol size; removed buttons for Y-only zoom modes (not supported right
+// now).
+//
+// Revision 1.2.2.3  2007/06/19 19:32:34  wenger
+// Toolbar now works for help, home, cursor fill, and toggling visual
+// filters; increased the spacing between the "sections" of icons.
+//
+// Revision 1.2.2.2  2007/06/18 19:57:20  wenger
+// Toolbar works for drill-down (including Jmol); we go back to "normal"
+// mode after drilling down; drill-down in Jmol is now disabled by
+// default; removed Jmol menu options to enable/disable drill-down;
+// removed unneeded utils stuff from 'make clean' target.
+//
+// Revision 1.2.2.1  2007/06/15 20:46:08  wenger
+// Fixed problems with how DEViseJSValues was used in the toolbar code;
+// got rid of static members for loading images in jsdevisec, because
+// they might cause problems; made some changes to the toolbar constructor
+// to move towards actually making it functional.
+//
+// Revision 1.2  2006/05/26 16:22:15  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.1.2.2  2006/03/31 22:41:14  wenger
 // Finished splitting up DEViseCanvas class.
 //
@@ -57,7 +84,8 @@ public class DEViseCanvas2D extends DEViseCanvas
         checkMousePos(sp, true);
 
         // Control-drag is X-only zoom.
-        if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL) {
+        if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL ||
+	  jsc.toolBar.doZoomX()) {
             _zoomMode = ZOOM_MODE_X;
         } else {
             _zoomMode = ZOOM_MODE_XY;
@@ -124,7 +152,8 @@ public class DEViseCanvas2D extends DEViseCanvas
                         if (jsc.jsValues.canvas.lastKey == 
 			    KeyEvent.VK_ALT || 
 			    jsc.jsValues.canvas.lastKey == 
-			    KeyEvent.VK_SHIFT) {
+			    KeyEvent.VK_SHIFT ||
+			    jsc.toolBar.doZoomOut()) {
                             cmd = cmd + " 1";
                         } else {
                             cmd = cmd + " 0";
@@ -145,6 +174,7 @@ public class DEViseCanvas2D extends DEViseCanvas
 		        System.err.println(err.getMessage());
 		    }
 		    _zoomMode = ZOOM_MODE_NONE;
+		    jsc.toolBar.setNormal();
                 }
             }
 
@@ -169,13 +199,48 @@ public class DEViseCanvas2D extends DEViseCanvas
             String cmd = null;
             Point p = event.getPoint();
 
-            if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) {
+            if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT ||
+	      jsc.toolBar.doDrillDown()) {
+		//TEMPTOOLBAR -- should we turn off drill-down mode here??
                 if (activeView.isDrillDown) {
                     cmd = DEViseCommands.SHOW_RECORDS + " " +
                       activeView.getCurlyName() + " " +
 		      activeView.translateX(p.x, 2) + " " +
 		      activeView.translateY(p.y, 2);
 	        }
+
+	    } else if (jsc.toolBar.doCursorFill()) {
+		cmd = DEViseCommands.KEY_ACTION + " " +
+		  activeView.getCurlyName() + " " + DEVISE_KEY_CURSOR_FILL;
+		jsc.toolBar.setNormal();
+
+//TEMPTOOLBAR -- need to get view help to work on Jmol and "plain" 3D views
+	    } else if (jsc.toolBar.doViewHelp()) {
+		jsc.toolBar.setNormal();
+		showHideHelp();
+
+	    } else if (jsc.toolBar.doHome()) {
+		cmd = DEViseCommands.KEY_ACTION + " " +
+		  activeView.getCurlyName() + " " + DEVISE_KEY_HOME;
+		jsc.toolBar.setNormal();
+
+	    } else if (jsc.toolBar.doToggleFilter()) {
+		cmd = DEViseCommands.KEY_ACTION + " " +
+		  activeView.getCurlyName() + " " + DEVISE_KEY_TOGGLE_FILTER;
+		jsc.toolBar.setNormal();
+
+	    } else if (jsc.toolBar.doIncreaseSymSize()) {
+		cmd = DEViseCommands.KEY_ACTION + " " +
+		  activeView.getCurlyName() + " " +
+		  DEVISE_KEY_INCREASE_SYM_SIZE;
+		jsc.toolBar.setNormal();
+
+	    } else if (jsc.toolBar.doDecreaseSymSize()) {
+		cmd = DEViseCommands.KEY_ACTION + " " +
+		  activeView.getCurlyName() + " " +
+		  DEVISE_KEY_DECREASE_SYM_SIZE;
+		jsc.toolBar.setNormal();
+
             } else if (activeView.isCursorMove) {
                 DEViseCursor cursor = activeView.getFirstCursor();
 

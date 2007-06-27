@@ -42,6 +42,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2007/04/25 20:43:50  wenger
+// Greatly improved the documentation of the DEViseCanvas3DJmol class;
+// minor improvements to other classes.
+//
 // Revision 1.12  2007/04/23 19:41:46  wenger
 // Added some extra GUI-thread-related diagnostic output.
 //
@@ -62,6 +66,12 @@
 // Revision 1.8  2007/02/23 19:21:59  wenger
 // Structure selection tree window now comes up closer to the upper
 // left corner of the screen.
+//
+// Revision 1.7.2.1  2007/06/18 19:57:21  wenger
+// Toolbar works for drill-down (including Jmol); we go back to "normal"
+// mode after drilling down; drill-down in Jmol is now disabled by
+// default; removed Jmol menu options to enable/disable drill-down;
+// removed unneeded utils stuff from 'make clean' target.
 //
 // Revision 1.7  2006/12/13 22:42:17  wenger
 // Added option to disable Jmol drill down (to avoid accidental drill-
@@ -279,7 +289,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     private Vector gDatasToDisplay;
 
     // True if drill-down is enabled in Jmol, false otherwise.
-    private boolean drillDownEnabled = true;
+    private boolean drillDownEnabled = false;
 
     //===================================================================
     // PUBLIC METHODS

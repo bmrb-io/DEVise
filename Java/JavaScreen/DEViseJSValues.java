@@ -27,6 +27,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2007/02/22 23:20:18  wenger
+// Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.15.2.2  2007/06/15 20:46:09  wenger
+// Fixed problems with how DEViseJSValues was used in the toolbar code;
+// got rid of static members for loading images in jsdevisec, because
+// they might cause problems; made some changes to the toolbar constructor
+// to move towards actually making it functional.
+//
 // Revision 1.15.2.1  2007/02/13 18:35:10  adayton
 // Updated basic colors, as well as images for 'traffic light' and throbber. Also started updating some components to use Swing, including the main application frame. Additional changes to my makefile as well.
 //
@@ -133,6 +142,7 @@ import java.applet.*;
 
 public final class DEViseJSValues
 {
+//TEMPTOOLBAR -- add something in here to save what toolbar mode we're in?
     //TEMPTEMP - this stupid class should get renamed to avoid confusion with the Java Canvas class
     public final class Canvas {
 	public int lastKey = KeyEvent.VK_UNDEFINED;
@@ -221,4 +231,8 @@ public final class DEViseJSValues
     public Connection connection = new Connection(); 
     public UIGlobals uiglobals = new UIGlobals();
     public Session session = new Session();
+
+    // for loading images for icons, etc.
+    public Component _imageLoadComp = null;
+    public MediaTracker _tracker = null;
 }

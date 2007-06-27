@@ -30,6 +30,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.98.2.2  2007/06/19 20:49:47  wenger
+// Toolbar now works for the various zoom modes and for enlarging/reducing
+// symbol size; removed buttons for Y-only zoom modes (not supported right
+// now).
+//
+// Revision 1.98.2.1  2007/06/19 19:32:33  wenger
+// Toolbar now works for help, home, cursor fill, and toggling visual
+// filters; increased the spacing between the "sections" of icons.
+//
+// Revision 1.98  2006/12/08 16:24:36  wenger
+// Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
+// changes to merge the DEViseCanvas.java stuff correctly).
+//
 // Revision 1.97  2006/05/26 16:22:13  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -561,6 +574,14 @@ public class DEViseCanvas extends Container
     protected static final int ZOOM_MODE_Y = 2;
     protected static final int ZOOM_MODE_XY = 3;
     protected static int _zoomMode = ZOOM_MODE_NONE;
+
+    // ASCII codes for keys that we have to send to DEVise (we have to
+    // send the actual ASCII integer value as opposed to the character).
+    protected static int DEVISE_KEY_TOGGLE_FILTER = 8; // (backspace)
+    protected static int DEVISE_KEY_INCREASE_SYM_SIZE = 43; // '+'
+    protected static int DEVISE_KEY_DECREASE_SYM_SIZE = 45; // '-'
+    protected static int DEVISE_KEY_HOME = 53; // '5'
+    protected static int DEVISE_KEY_CURSOR_FILL = 67; // 'C'
 
     // This is used to paint only rubberband lines (in XOR mode) while
     // we are dragging the rubberband line.  (In other words, we don't
@@ -1269,6 +1290,35 @@ public class DEViseCanvas extends Container
         super.processKeyEvent(event);
     }
 
+    // This function will do one of two things.  If the help button has
+    // been pushed, and a tan box is showing the help in this view, this
+    // function will hide that help box.  If there is not currently a
+    // help box displayed, this function will show the view's help in a
+    // dialog box.
+    protected void showHideHelp()
+    {
+        // Check to see if a help box is being displayed.
+        if(helpMsg != null) {
+	    // Hide the help for this view and any of its children
+	    helpMsg = null;
+	
+	    for(int i = 0; i < childViewHelpMsgs.size(); i++) {
+	        childViewHelpMsgs.setElementAt(null, i);
+	    }
+	    repaint();
+	    return;
+        }
+    
+        //
+        // Show this view's help within a dialog box.
+        //
+        jsc.jsValues.connection.helpBox = true;
+        String cmd = DEViseCommands.GET_VIEW_HELP + " " +
+          activeView.getCurlyName() + " " + 0 + " " + 0;
+        // jscreen.guiAction = true;
+        dispatcher.start(cmd);
+    }
+
     // start of class ViewKeyListener
     class ViewKeyListener extends KeyAdapter
     {
@@ -1334,33 +1384,6 @@ public class DEViseCanvas extends Container
 		}
             }
         }
-
-	// This function will do one of two things.  If the help button has been pushed, and a tan
-	// box is showing the help in this view, this function will hide that help box.  If there is not
-	// currently a help box displayed, this function will show the view's help in a dialog box.
-	private void showHideHelp()
-	{
-	    // Check to see if a help box is being displayed.
-	    if(helpMsg != null) {
-		// Hide the help for this view and any of its children
-		helpMsg = null;
-		
-		for(int i = 0; i < childViewHelpMsgs.size(); i++) {
-		    childViewHelpMsgs.setElementAt(null, i);
-		}
-		repaint();
-		return;
-	    }
-	    
-	    //
-	    // Show this view's help within a dialog box.
-	    //
-	    jsc.jsValues.connection.helpBox = true;
-	    String cmd = DEViseCommands.GET_VIEW_HELP + " " +
-	      activeView.getCurlyName() + " " + 0 + " " + 0;
-	    // jscreen.guiAction = true;
-     	    dispatcher.start(cmd);
-	}
 
 	private int translateKey(char keyChar, int keyCode)
 	{

@@ -59,20 +59,23 @@ utils: *.java
 
 client: *.java
 	$(JAVAC) DEVise3DLCS.java DEViseAnimPanel.java \
-	    DEViseAtomInCrystal.java DEViseAtomType.java DEViseCanvas.java \
-	    DEViseCmdDispatcher.java DEViseCommCgi.java DEViseCommSocket.java \
-	    DEViseComponentPanel.java DEViseCrystal.java DEViseCursor.java \
-	    DEViseDebugLog.java DEViseFonts.java DEViseGData.java \
-	    DEViseHeartbeat.java DEViseJSValues.java DEViseScreen.java \
-	    DEViseTrafficLight.java DEViseUIGlobals.java DEViseView.java \
-	    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
-	    jsdevisec.java DEVisePlayback.java DEViseCollabDlg.java \
-	    DEViseMainButtons.java DEViseJmolData.java DEViseCanvas2D.java \
-	    DEViseCanvas3D.java DEViseCanvas3DJmol.java \
-	    DEViseCanvas3DPlain.java DEViseGenericTree.java \
-	    DEViseGenericTreeNode.java \
-	    DEViseGenericTreeSelectionCallback.java DEViseJmolMenuButton.java \
-	    DEViseButton.java DEViseJSApplet.java DEViseJSTimer.java
+    DEViseAtomInCrystal.java DEViseAtomType.java DEViseCanvas.java \
+    DEViseCmdDispatcher.java DEViseCommCgi.java DEViseCommSocket.java \
+    DEViseComponentPanel.java DEViseCrystal.java DEViseCursor.java \
+    DEViseDebugLog.java DEViseFonts.java DEViseGData.java \
+    DEViseHeartbeat.java DEViseJSValues.java DEViseScreen.java \
+    DEViseTrafficLight.java DEViseUIGlobals.java DEViseView.java \
+    DEViseViewInfo.java YImageCanvas.java YLogGUI.java YMsgBox.java \
+    jsdevisec.java DEVisePlayback.java DEViseCollabDlg.java \
+    DEViseMainButtons.java DEViseJmolData.java DEViseCanvas2D.java \
+    DEViseCanvas3D.java DEViseCanvas3DJmol.java \
+    DEViseCanvas3DPlain.java DEViseGenericTree.java \
+    DEViseGenericTreeNode.java \
+    DEViseGenericTreeSelectionCallback.java DEViseJmolMenuButton.java \
+    DEViseButton.java DEViseJSApplet.java DEViseJSTimer.java \
+		UI/DEViseUIManager.java UI/DEViseStatusPanel.java \
+		UI/DEViseMenuPanel.java UI/DEViseStatusMessage.java UI/DEViseToolBar.java \
+		UI/DEViseToolBarButton.java UI/DEViseToolBarButtonAction.java 
 
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
@@ -89,37 +92,35 @@ jara:
 	-rm jsa1.jar jsa2.jar
 	make jsa
 	make loader
-	cp *.gif JavaScreen
 	jar cf jsa1.jar JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
 	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
 	jar cf jsa2.jar JavaScreen/*.class JavaScreen/UI/*.class \
-	    JavaScreen/*.gif
+ 	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png
 
 jarb:
 	make classclean
 	-rm jsb1.jar jsb2.jar
 	make jsb
 	make loader
-	cp *.gif JavaScreen
 	jar cf jsb1.jar JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
 	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
 	jar cf jsb2.jar JavaScreen/*.class JavaScreen/UI/*.class \
-	    JavaScreen/*.gif
+	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png
 
 jarjs:
 	make classclean
 	-rm js.jar
 	make js
-	cp *.gif JavaScreen
-	jar cf js.jar JavaScreen/*.class JavaScreen/UI/*.class JavaScreen/*.gif
+	jar cf js.jar JavaScreen/*.class JavaScreen/UI/*.class \
+	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png
 
 clean: classclean
-	-rm JavaScreen/*.gif jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar
+	-rm jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar
 	-rm js_version
 
 classclean:
 	-rm JavaScreen/*.class
-
+	-rm JavaScreen/UI/*.class
 
 .PHONY: setup
 setup:
