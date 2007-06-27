@@ -32,6 +32,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2007/06/27 17:47:59  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
 // Revision 1.78  2007/04/20 19:42:35  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -302,9 +307,7 @@ import java.util.*;
 import java.lang.*;
 import javax.swing.*;
 
-//TEMPTOOLBAR: changing this to extend a JPanel instead of a panel fixes the problem with the toolbar tooltips being obscured, but it gives me really bad lockup problems...
-//TEMPTOOLBAR public class DEViseScreen extends JPanel
-public class DEViseScreen extends Panel//TEMPTOOLBAR
+public class DEViseScreen extends JPanel
 {
     jsdevisec jsc = null;
 
@@ -403,44 +406,55 @@ public class DEViseScreen extends Panel//TEMPTOOLBAR
         super.processMouseMotionEvent(event);
     }
 
-    // Hongyu says that this code has something to do with fixing a
-    // case where Java does things wrong.
+    //TEMP -- what does this actually do?  Disabling it doesn't seem
+    // to make any obvious difference...  wenger 2007-06-25
     public void reEvaluateMousePosition()
     {
-        if (finalMousePosition.x < 0) {
-            if (currentView != null) {
-                jsc.viewInfo.updateInfo();
-                setCurrentView(null);
-            }
+    	Runnable doReEvaluateMosePosition = new DoReEvaluateMousePosition();
+	SwingUtilities.invokeLater(doReEvaluateMosePosition);
+    }
 
-            return;
-        }
-
-        //if (!DEViseUIGlobals.isApplet) {
-        //    MouseEvent finishEvent = new MouseEvent(this, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, finalMousePosition.x, finalMousePosition.y, 0, false);
-        //    Toolkit tk = getToolkit();
-        //    //EventQueue queue = new EventQueue();
-        //    EventQueue queue = tk.getSystemEventQueue();
-        //    queue.postEvent(finishEvent);
-        //} else {
-            for (int i = 0; i < allCanvas.size(); i++) {
-                DEViseCanvas canvas = (DEViseCanvas)allCanvas.elementAt(i);
-                Rectangle loc = canvas.getLocInScreen();
-                Point p = new Point(finalMousePosition.x - loc.x, finalMousePosition.y - loc.y);
-                if (p.x >= 0 && p.x <= loc.width && p.y >= 0 && p.y <= loc.height) {
-                    canvas.checkMousePos(p, false);
-                    repaint();
-                    return;
+    // Hongyu says that this code has something to do with fixing a
+    // case where Java does things wrong.
+    private class DoReEvaluateMousePosition implements Runnable {
+    	public void run() {
+            if (finalMousePosition.x < 0) {
+                if (currentView != null) {
+                    jsc.viewInfo.updateInfo();
+                    setCurrentView(null);
                 }
+
+                return;
             }
 
-            if (currentView != null) {
-                jsc.viewInfo.updateInfo();
-                setCurrentView(null);
-            }
+            //if (!DEViseUIGlobals.isApplet) {
+            //    MouseEvent finishEvent = new MouseEvent(this, MouseEvent.MOUSE_MOVED, DEViseGlobals.getCurrentTime(), 0, finalMousePosition.x, finalMousePosition.y, 0, false);
+            //    Toolkit tk = getToolkit();
+            //    //EventQueue queue = new EventQueue();
+            //    EventQueue queue = tk.getSystemEventQueue();
+            //    queue.postEvent(finishEvent);
+            //} else {
+                for (int i = 0; i < allCanvas.size(); i++) {
+                    DEViseCanvas canvas = (DEViseCanvas)allCanvas.elementAt(i);
+                    Rectangle loc = canvas.getLocInScreen();
+                    Point p = new Point(finalMousePosition.x - loc.x,
+                    finalMousePosition.y - loc.y);
+                    if (p.x >= 0 && p.x <= loc.width && p.y >= 0 &&
+                        p.y <= loc.height) {
+                        canvas.checkMousePos(p, false);
+                        repaint();
+                        return;
+                    }
+                }
 
-            setCursor(DEViseUIGlobals.defaultCursor);
-        //}
+                if (currentView != null) {
+                    jsc.viewInfo.updateInfo();
+                    setCurrentView(null);
+                }
+
+                setCursor(DEViseUIGlobals.defaultCursor);
+            //}
+	}
     }
 
     public Dimension getPreferredSize()

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.90  2007/05/14 23:37:43  wenger
+// Changed version to 5.8.3x1; updated Florence mirror configuration.
+//
 // Revision 1.89  2007/05/14 16:55:46  wenger
 // Updated JavaScreen version history; changed JavaScreen version to 5.8.2
 // for release.
@@ -595,7 +598,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.3x1"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.8.3x2"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
