@@ -4034,6 +4034,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			toolbar mode.
 			(wenger)
 
+946 6/28/07	OPEN	JS:  when in one of the toolbar zoom modes, the
+			JS should still zoom (as opposed to moving resizing
+			the cursor) even if you're on a cursor.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
