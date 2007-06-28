@@ -4015,6 +4015,25 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			and/or Java 1.6.  (See notes from talking with Eiichi,
 			also email to devise-sup from Manoj Kumar.)  (wenger)
 
+942 6/28/07	FIXED?	JS:  in JSA and stand-alone application, toolbar
+			tooltips are obscured by the DEViseScreen panel.
+			(The fix is changing the DEViseScreen to a JPanel;
+			the only question at this point is whether the
+			resulting lockups are fixed.)
+			(wenger)
+
+943 6/28/07	OPEN	JS/Jmol:  toolbar modes (e.g., show help) don't work
+			yet in Jmol views (except for drill-down).
+			(wenger)
+
+944 6/28/07	OPEN	JS:  3D toolbar modes don't work yet (for either
+			Jmol or "old" 3D views).
+			(wenger)
+		
+945 6/28/07	OPEN	JS:  mouse cursor is not yet changed according to
+			toolbar mode.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
