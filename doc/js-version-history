@@ -1,5 +1,22 @@
 			JavaScreen Version History
 
+JavaScreen 5.8.3
+----------------
+
+* The JavaScreen now has a toolbar that provides an alternate way of
+performing a number of functions that previously could only be performed
+by key actions.
+
+* The code for loading icon images, etc., has now been improved and
+works universally for running from both jar files and individual
+class and image files.
+
+* Configuration for the Florence mirror has been updated.
+
+* Fixed JavaScreen startup scripts to deal with new dynamic libraries
+in CentOS.
+
+
 JavaScreen 5.8.2
 ----------------
 
@@ -152,7 +169,7 @@ makes the "base" session temp directory.
 
 * Added scripts to report JS usage on teal.
 
-* We now exlude any host name *starting* with localhost from the
+* We now exclude any host name *starting* with localhost from the
 "real" session open statistics.
 
 * Added new options to JavaScreen configuration so we don't have
