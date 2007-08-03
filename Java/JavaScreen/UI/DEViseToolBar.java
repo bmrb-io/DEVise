@@ -19,6 +19,41 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2007/06/27 17:48:11  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
+// Revision 1.1.2.18  2007/08/03 19:21:24  wenger
+// Mouse cursor now changes according to toolbar mode; fixed existing
+// problems with mouse cursor being crosshairs cursor when it should be
+// the default cursor; fixed problems with actions sometimes happening
+// in the wrong toolbar mode; added "XY zoom in" button.
+//
+// Revision 1.1.2.17  2007/07/27 18:25:35  wenger
+// "Toggle text display" and "move cursor" toolbar icons are temporarily
+// hidden (until they're functional).
+//
+// Revision 1.1.2.16  2007/07/26 19:18:21  adayton
+// Added toolbar buttons for move cursor and toggle text display
+//
+// Revision 1.1.2.15  2007/07/25 18:25:26  wenger
+// Moved cursor handling from DEViseUIGlobals to the new
+// UI/DEViseMouseCursor class, in preparation for changing the cursor
+// according to the toolbar mode.
+//
+// Revision 1.1.2.14  2007/07/24 21:50:38  wenger
+// We now create (but don't use yet) mouse cursors corresponding to the
+// various toolbar states.
+//
+// Revision 1.1.2.13  2007/07/20 21:21:52  wenger
+// Changed the "Fill selected view with cursor" tooltip to "Expand DEVise
+// cursor to fill view".
+//
+// Revision 1.1.2.12  2007/07/20 20:56:01  wenger
+// 3D toolbar buttons are temporarily not shown because they are not
+// yet functional.
+//
 // Revision 1.1.2.11  2007/06/22 21:49:44  wenger
 // Added disabled images for toolbar buttons; 3D buttons now stay
 // disabled even when we have a 3D view because they don't actually
@@ -89,9 +124,11 @@ public final class DEViseToolBar extends JToolBar {
 	
 	private DEViseToolBarButton drillDownButton = null;
 	private DEViseToolBarButton helpButton = null;
+	private DEViseToolBarButton toggleTextDisplayButton = null;
 	private DEViseToolBarButton[] infoButtonSet = null;
 
 	private DEViseToolBarButton normalButton = null;
+	private DEViseToolBarButton moveCursorButton = null;
 	private DEViseToolBarButton cursorFillButton = null;
 	private DEViseToolBarButton increaseSymSizeButton = null;
 	private DEViseToolBarButton decreaseSymSizeButton = null;
@@ -106,6 +143,7 @@ public final class DEViseToolBar extends JToolBar {
 	private DEViseToolBarButton toggleFilterButton = null;
 	private DEViseToolBarButton[] filterToolsButtonSet = null;
 
+	private DEViseToolBarButton zoomInXYButton = null;
 	private DEViseToolBarButton zoomInXButton = null;
 	private DEViseToolBarButton zoomInYButton = null;
 	private DEViseToolBarButton zoomOutXYButton = null;
@@ -113,27 +151,38 @@ public final class DEViseToolBar extends JToolBar {
 	private DEViseToolBarButton zoomOutYButton = null;
 	private DEViseToolBarButton[] zoomButtonSet = null;
 	
-	private boolean infoButtonSetEnabled = true;
-	private boolean viewButtonSetEnabled = true;
-	private boolean threeDButtonSetEnabled = true;
-	private boolean filterToolsButtonSetEnabled = true;
-	private boolean zoomButtonSetEnabled = true;
-	
-    public DEViseToolBar(DEViseJSValues jsValues) {
+	private boolean showInfoButtonSet = true;
+	private boolean showViewButtonSet = true;
+	private boolean showThreeDButtonSet = false;
+	private boolean showFilterToolsButtonSet = true;
+	private boolean showZoomButtonSet = true;
 
-		drillDownButton = new DEViseToolBarButton(
-		  "Drill down (show data records)", "drill-down", jsValues);
-		helpButton = new DEViseToolBarButton("Show help for selected view",
-		  "show_view_help", jsValues);
+	private DEViseMouseCursor mouseCursor;
+	
+    public DEViseToolBar(DEViseJSValues jsValues, DEViseMouseCursor mc) {
+
+	    mouseCursor = mc;
+
+			drillDownButton = new DEViseToolBarButton(
+			  "Drill down (show data records)", "drill-down", jsValues);
+			helpButton = new DEViseToolBarButton("Show help for selected view",
+			  "show_view_help", jsValues);
+			toggleTextDisplayButton = new DEViseToolBarButton(
+				"Toggle text display for selected view",
+				"toggle_text_display", jsValues);
 	    infoButtonSet = new DEViseToolBarButton[] {
 		    drillDownButton,
-			helpButton,
+				helpButton,
+				// Temporarily hidden until it's functional.
+				// toggleTextDisplayButton,
 	    };
 
 		normalButton = new DEViseToolBarButton(
 		  "Select cursor/zoom in XY/3D rotate", "crosshairs", jsValues);
+		moveCursorButton = new DEViseToolBarButton(
+			"Move cursor without zooming", "move_cursor", jsValues);
 		cursorFillButton = new DEViseToolBarButton(
-		  "Fill selected view with cursor", "full_screen_filter",
+		  "Expand DEVise cursor to fill view", "full_screen_filter",
 		  jsValues);
 		increaseSymSizeButton = new DEViseToolBarButton("Increase symbol size",
 		  "increase_symbol_size", jsValues);
@@ -141,6 +190,8 @@ public final class DEViseToolBar extends JToolBar {
 		  "decrease_symbol_size", jsValues);
 	    viewButtonSet = new DEViseToolBarButton[] {
 			normalButton,
+			// Temporarily hidden until it's functional.
+			// moveCursorButton,
 			cursorFillButton,
 			increaseSymSizeButton,
 			decreaseSymSizeButton,
@@ -170,6 +221,8 @@ public final class DEViseToolBar extends JToolBar {
 			toggleFilterButton
 	    };
 
+		zoomInXYButton = new DEViseToolBarButton("Zoom in XY",
+		  "zoom_in-all", jsValues);
 		zoomInXButton = new DEViseToolBarButton("Zoom in X",
 		  "zoom_in-x", jsValues);
 		zoomInYButton = new DEViseToolBarButton("Zoom in Y",
@@ -181,6 +234,7 @@ public final class DEViseToolBar extends JToolBar {
 		zoomOutYButton = new DEViseToolBarButton("Zoom out Y",
 		  "zoom_out-y", jsValues);
 	    zoomButtonSet = new DEViseToolBarButton[] {
+			zoomInXYButton,
 			zoomInXButton,
 /* Not yet supported by DEVise.
 			zoomInYButton,
@@ -208,19 +262,19 @@ public final class DEViseToolBar extends JToolBar {
 	}
 	
 	private void addDefaultButtons() {
-		if(infoButtonSetEnabled) {
+		if(showInfoButtonSet) {
 		    addButtonSet( infoButtonSet );
 		}
-		if(viewButtonSetEnabled) {
+		if(showViewButtonSet) {
 			addButtonSet( viewButtonSet );
 		}
-		if(threeDButtonSetEnabled) {
+		if(showThreeDButtonSet) {
 		    addButtonSet( threeDButtonSet );
 		}
-		if(filterToolsButtonSetEnabled) {
+		if(showFilterToolsButtonSet) {
 		    addButtonSet( filterToolsButtonSet );
 		}
-		if(zoomButtonSetEnabled) {
+		if(showZoomButtonSet) {
 		    addButtonSet( zoomButtonSet );
 		}		
 	}
@@ -257,6 +311,10 @@ public final class DEViseToolBar extends JToolBar {
 	    return selectedButton;
 	}
 
+	public boolean doNormal() {
+		return selectedButton == normalButton;
+	}
+
 	public boolean doCursorFill() {
 		return selectedButton == cursorFillButton;
 	}
@@ -287,30 +345,42 @@ public final class DEViseToolBar extends JToolBar {
 
 	public boolean doZoomXY() {
 		return (selectedButton == normalButton) ||
+		  (selectedButton == zoomInXYButton) ||
 		  (selectedButton == zoomOutXYButton) ||
-		  (selectedButton == threeDRotateButton);
+		  (selectedButton == threeDRotateButton);//TEMPTOOLBAR -- do we want this??????
 	}
 
-	public boolean doZoomX() {
+	public boolean doZoomXOnly() {
 		return (selectedButton == zoomInXButton) ||
 		  (selectedButton == zoomOutXButton);
 	}
-	public boolean doZoomY() {
+
+	public boolean doZoomYOnly() {
 		return (selectedButton == zoomInYButton) ||
 		  (selectedButton == zoomOutYButton);
 	}
 
 	public boolean doZoomIn() {
 		return (selectedButton == normalButton) ||
+		  (selectedButton == zoomInXYButton) ||
 		  (selectedButton == zoomInXButton) ||
 		  (selectedButton == zoomInYButton) ||
-		  (selectedButton == threeDRotateButton);
+		  (selectedButton == threeDRotateButton);//TEMPTOOLBAR -- do we want this?
 	}
 
 	public boolean doZoomOut() {
 		return (selectedButton == zoomOutXYButton) ||
 		  (selectedButton == zoomOutXButton) ||
 		  (selectedButton == zoomOutYButton);
+	}
+
+	public boolean doRubberband() {
+		return (doZoomIn() || doZoomOut());
+	}
+
+	public boolean doCursorOps() {
+		return selectedButton == normalButton;
+		//TEMPTOOLBAR -- may need more stuff here eventually -- buttons for doing cursor stuff w/o zooming
 	}
 
 	public void setNormal() {
@@ -331,6 +401,63 @@ public final class DEViseToolBar extends JToolBar {
 
 		selectedButton = button;
 		button.setSelected(true);
+
+		// Set the mouse cursor according to the toolbar mode.
+		if (button == drillDownButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.drillDownCursor, null);
+
+		} else if (button == helpButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.helpCursor, null);
+
+		} else if (button == normalButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.defaultCursor, null);
+
+		} else if (button == cursorFillButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.fillViewCursor, null);
+
+		} else if (button == increaseSymSizeButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.incSymSizeCursor, null);
+
+		} else if (button == decreaseSymSizeButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.decSymSizeCursor, null);
+
+		} else if (button == threeDRotateButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.jmRotCursor, null);
+
+		} else if (button == threeDTranslateButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.jmTransCursor, null);
+
+		} else if (button == threeDZoomButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.jmZoomCursor, null);
+
+		} else if (button == homeButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.homeCursor, null);
+
+		} else if (button == toggleFilterButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.togFiltCursor, null);
+
+		} else if (button == zoomInXYButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.zoomInCursor, null);
+
+		} else if (button == zoomInXButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.zoomInCursor, null);
+
+		} else if (button == zoomInYButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.zoomInCursor, null);
+
+		} else if (button == zoomOutXYButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.zoomOutCursor, null);
+
+		} else if (button == zoomOutXButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.zoomOutCursor, null);
+
+		} else if (button == zoomOutYButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.zoomOutCursor, null);
+
+		} else {
+			System.err.println("Warning: unrecognized toolbar button");
+			mouseCursor.setPermanentCursor(mouseCursor.defaultCursor, null);
+		}
 
 		if (button == drillDownButton) {
 			if (jmolCanvas != null) {

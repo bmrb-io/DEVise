@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.161  2007/06/27 17:48:00  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
 // Revision 1.160  2007/05/14 16:55:46  wenger
 // Updated JavaScreen version history; changed JavaScreen version to 5.8.2
 // for release.
@@ -45,6 +50,15 @@
 //
 // Revision 1.155  2007/02/22 23:20:23  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.154.2.16  2007/07/25 18:25:18  wenger
+// Moved cursor handling from DEViseUIGlobals to the new
+// UI/DEViseMouseCursor class, in preparation for changing the cursor
+// according to the toolbar mode.
+//
+// Revision 1.154.2.15  2007/07/24 21:50:29  wenger
+// We now create (but don't use yet) mouse cursors corresponding to the
+// various toolbar states.
 //
 // Revision 1.154.2.14  2007/06/21 14:41:20  wenger
 // Tried changing the DEViseScreen to extend a JPanel instead of a Panel
@@ -745,6 +759,8 @@ public class jsdevisec extends JPanel
 
     public DEViseScreen jscreen = null;
 
+    public DEViseMouseCursor mouseCursor = null;
+
     // These are the beginnings of restructuring the UI into a UI branch
     private DEViseUIManager uiManager;
     private DEViseMenuPanel menuPanel = null;
@@ -900,9 +916,12 @@ public class jsdevisec extends JPanel
         setFont(jsValues.uiglobals.font);
         setLayout(new BorderLayout(1, 1));
 
+	// mouse cursors
+	mouseCursor = new DEViseMouseCursor(jsValues);
+
 	// throbber
 	animPanel = new DEViseAnimPanel(this, images, 100);
-		
+
 	// main menu buttons
 	_mainButtons = new DEViseMainButtons(this);
 	stopButton = _mainButtons.getStopButton();
@@ -1016,7 +1035,7 @@ public class jsdevisec extends JPanel
 	statusPanel.inheritBackground(); // causes children to inherit bg color
 
 	// ToolBar
-	toolBar = new DEViseToolBar(jsValues);
+	toolBar = new DEViseToolBar(jsValues, mouseCursor);
 	toolBar.setBackground(jsValues.uiglobals.bg);
 	
 

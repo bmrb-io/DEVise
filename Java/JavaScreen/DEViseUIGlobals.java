@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.38.2  2007/07/25 18:25:17  wenger
+// Moved cursor handling from DEViseUIGlobals to the new
+// UI/DEViseMouseCursor class, in preparation for changing the cursor
+// according to the toolbar mode.
+//
+// Revision 1.12.38.1  2007/07/24 21:50:28  wenger
+// We now create (but don't use yet) mouse cursors corresponding to the
+// various toolbar states.
+//
+// Revision 1.12  2001/05/11 20:36:09  wenger
+// Set up a package for the JavaScreen code.
+//
 // Revision 1.11  2001/01/08 20:31:53  wenger
 // Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
 // back onto the trunk.
@@ -98,21 +110,6 @@ public final class DEViseUIGlobals
     // DEVise font name
     public static final String[] DEViseFont = {"Monospaced", "Serif",
       "SanSerif"};
-
-    public static final Cursor defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
-    public static final Cursor waitCursor = new Cursor(Cursor.WAIT_CURSOR);
-    public static final Cursor rbCursor = new Cursor(Cursor.CROSSHAIR_CURSOR);
-    public static final Cursor moveCursor = new Cursor(Cursor.MOVE_CURSOR);
-    public static final Cursor lrsCursor = new Cursor(Cursor.W_RESIZE_CURSOR);
-    public static final Cursor rrsCursor = new Cursor(Cursor.E_RESIZE_CURSOR);
-    public static final Cursor trsCursor = new Cursor(Cursor.N_RESIZE_CURSOR);
-    public static final Cursor brsCursor = new Cursor(Cursor.S_RESIZE_CURSOR);
-    public static final Cursor tlrsCursor = new Cursor(Cursor.NW_RESIZE_CURSOR);
-    public static final Cursor blrsCursor = new Cursor(Cursor.SW_RESIZE_CURSOR);
-    public static final Cursor trrsCursor = new Cursor(Cursor.NE_RESIZE_CURSOR);
-    public static final Cursor brrsCursor = new Cursor(Cursor.SE_RESIZE_CURSOR);
-    public static final Cursor hdCursor = new Cursor(Cursor.HAND_CURSOR);
-    public static final Cursor txtCursor = new Cursor(Cursor.TEXT_CURSOR);
 
     public static Color convertColor(String str)
     {

@@ -24,6 +24,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.2.1  2007/07/25 18:25:17  wenger
+// Moved cursor handling from DEViseUIGlobals to the new
+// UI/DEViseMouseCursor class, in preparation for changing the cursor
+// according to the toolbar mode.
+//
+// Revision 1.3  2006/12/08 16:24:36  wenger
+// Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
+// changes to merge the DEViseCanvas.java stuff correctly).
+//
 // Revision 1.2  2006/05/26 16:22:15  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -257,8 +266,8 @@ public class DEViseCanvas3DPlain extends DEViseCanvas3D
             point.x = p.x;
             point.y = p.y;
 
-            //  setCursor(DEViseUIGlobals.rbCursor); - Ven modified
-            setCursor(DEViseUIGlobals.hdCursor);
+            //  setCursor(jsc.mouseCursor.rbCursor); - Ven modified
+            setCursor(jsc.mouseCursor.hdCursor);
 
             activeView = view;
             jsc.viewInfo.updateInfo(activeView.viewName,

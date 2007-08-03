@@ -32,6 +32,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.80  2007/06/27 21:28:21  wenger
+// Fixed the "obscured tooltips" problem by changing the DEViseScreen
+// to extend a JPanel rather than a Panel; made other changes to
+// DEViseScreen to (at least apparently) fix the resulting deadlock
+// problems (still needs more testing).
+//
 // Revision 1.79  2007/06/27 17:47:59  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
@@ -45,6 +51,17 @@
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
 // functionality somewhat; various improvements to debug output.
+//
+// Revision 1.76.2.4  2007/08/03 19:21:16  wenger
+// Mouse cursor now changes according to toolbar mode; fixed existing
+// problems with mouse cursor being crosshairs cursor when it should be
+// the default cursor; fixed problems with actions sometimes happening
+// in the wrong toolbar mode; added "XY zoom in" button.
+//
+// Revision 1.76.2.3  2007/07/25 18:25:17  wenger
+// Moved cursor handling from DEViseUIGlobals to the new
+// UI/DEViseMouseCursor class, in preparation for changing the cursor
+// according to the toolbar mode.
 //
 // Revision 1.76.2.2  2007/06/21 14:41:16  wenger
 // Tried changing the DEViseScreen to extend a JPanel instead of a Panel
@@ -366,9 +383,9 @@ public class DEViseScreen extends JPanel
 
                     if (jsc.dispatcher.getStatus() ==
 		      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
-                        setCursor(DEViseUIGlobals.waitCursor);
+                        setTemporaryCursor(jsc.mouseCursor.waitCursor);
                     } else {
-                        setCursor(DEViseUIGlobals.defaultCursor);
+			setToPermanentCursor();
                     }
 
                     if (currentView != null) {
@@ -380,6 +397,16 @@ public class DEViseScreen extends JPanel
             });
         addFocusListener(new DSFocusListener());
 	addKeyListener(new DSKeyListener());
+    }
+
+    protected void setToPermanentCursor()
+    {
+        jsc.mouseCursor.setToPermanentCursor(this);
+    }
+
+    protected void setTemporaryCursor(Cursor cursor)
+    {
+        jsc.mouseCursor.setTemporaryCursor(cursor, this);
     }
 
     protected void processMouseEvent(MouseEvent event)
@@ -452,9 +479,9 @@ public class DEViseScreen extends JPanel
                     setCurrentView(null);
                 }
 
-                setCursor(DEViseUIGlobals.defaultCursor);
+	        setToPermanentCursor();
             //}
-	}
+        }
     }
 
     public Dimension getPreferredSize()
@@ -953,7 +980,7 @@ public class DEViseScreen extends JPanel
             jsc.viewInfo.updateImage(DEViseTrafficLight.STATUS_IDLE, false);
             jsc.viewInfo.updateCount(0);
 
-            setCursor(DEViseUIGlobals.defaultCursor);
+	    setToPermanentCursor();
 
             offScrImg = null;
 

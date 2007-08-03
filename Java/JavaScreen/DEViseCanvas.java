@@ -1,9 +1,8 @@
-//TEMPTEMP -- still some problems with the JS mouse cursor not being the correct one
 //TEMPTEMP Look at the interfaces in org.jmol.api
 //TEMP -- why is DEViseCanvas a Container instead of a Canvas???
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -30,6 +29,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.99  2007/06/27 17:47:58  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
+// Revision 1.98.2.4  2007/08/03 19:21:13  wenger
+// Mouse cursor now changes according to toolbar mode; fixed existing
+// problems with mouse cursor being crosshairs cursor when it should be
+// the default cursor; fixed problems with actions sometimes happening
+// in the wrong toolbar mode; added "XY zoom in" button.
+//
+// Revision 1.98.2.3  2007/07/25 18:25:16  wenger
+// Moved cursor handling from DEViseUIGlobals to the new
+// UI/DEViseMouseCursor class, in preparation for changing the cursor
+// according to the toolbar mode.
+//
 // Revision 1.98.2.2  2007/06/19 20:49:47  wenger
 // Toolbar now works for the various zoom modes and for enlarging/reducing
 // symbol size; removed buttons for Y-only zoom modes (not supported right
@@ -1144,7 +1159,7 @@ public class DEViseCanvas extends Container
     private synchronized void paintRubberBand(Graphics gc)
     {
         if (isInViewDataArea && isMouseDragged && selectedCursor == null &&
-	  activeView.isRubberBand) {
+	  activeView.isRubberBand && jsc.toolBar.doRubberband()) {
             int x0, y0, w, h;
 
             if (sp.x > ep.x)  {
@@ -1716,101 +1731,32 @@ public class DEViseCanvas extends Container
         activeView = null;
 
         if (checkMousePos(mouseLoc, view)) { // activeView will not be null
-	    Cursor tmpCursor = null;
+
+	    // Set mouse cursor according to the toolbar state, whether
+	    // we're on a DEVise cursor, etc.
             if (checkDispatcher && jsc.dispatcher.getStatus() ==
 	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
                 // dispatcher still busy
-                tmpCursor = DEViseUIGlobals.waitCursor;
-            } else if (isInViewDataArea && selectedCursor == null) {
-                // inside the data area but not within any cursor, you
-		// can draw rubber band or get the records at that data point
-                 tmpCursor = DEViseUIGlobals.rbCursor; 
-            } else if (isInViewDataArea && view.viewDimension == 3) {
-		 tmpCursor = DEViseUIGlobals.defaultCursor;
-	    } else if (isInViewDataArea && selectedCursor != null) {
-                switch (whichCursorSide) {
-                case DEViseCursor.sideNone:
-		    // Not on a cursor, do nothing.
-		    break;
+		jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.waitCursor, this);
 
-                case DEViseCursor.sideMiddle:
-		    // Inside a cursor, you can move this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideMiddle");
-                    tmpCursor = DEViseUIGlobals.moveCursor;
-                    break;
+            } else if (!isInViewDataArea) {
+                // inside the view but not within the data area of that view
+		jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.defaultCursor, this);
 
-                case DEViseCursor.sideLeft:
-		    // On left side of a cursor, you can resize this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideLeft");
-                    tmpCursor = DEViseUIGlobals.lrsCursor;
-                    break;
+	    } else if (selectedCursor != null && jsc.toolBar.doCursorOps()) {
+	        setMouseCursorByDEViseCursor();
 
-                case DEViseCursor.sideRight:
-		    // On right side of a cursor, you can resize this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideRight");
-                    tmpCursor = DEViseUIGlobals.rrsCursor;
-                    break;
+	    } else if (selectedCursor == null && jsc.toolBar.doNormal() &&
+	      activeView.isRubberBand) {
+                jsc.mouseCursor.setTemporaryCursor(
+                  jsc.mouseCursor.rbCursor, this);
 
-                case DEViseCursor.sideTop:
-		    // On top side of a cursor, you can resize this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideTop");
-                    tmpCursor = DEViseUIGlobals.trsCursor;
-                    break;
+	    } else {
+                jsc.mouseCursor.setToPermanentCursor(this);
+	    }
 
-                case DEViseCursor.sideBottom:
-		    // On bottom side of a cursor, you can resize this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideBottom");
-                    tmpCursor = DEViseUIGlobals.brsCursor;
-                    break;
-
-                case DEViseCursor.sideTopLeft:
-		    // On left-top corner of a cursor, you can resize
-		    // this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideTopLeft");
-                    tmpCursor = DEViseUIGlobals.tlrsCursor;
-                    break;
-
-                case DEViseCursor.sideBottomLeft:
-		    // On left-bottom corner of a cursor, you can resize
-		    // this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideBottomLeft");
-                    tmpCursor = DEViseUIGlobals.blrsCursor;
-                    break;
-
-                case DEViseCursor.sideTopRight:
-		    // On right-top corner of a cursor, you can resize
-		    // this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideTopRight");
-                    tmpCursor = DEViseUIGlobals.trrsCursor;
-                    break;
-
-                case DEViseCursor.sideBottomRight:
-		    // 0n right-bottom corner of a cursor, you can resize
-		    // this cursor.
-                    if (DEBUG >= 3) System.out.println(
-		      "whichCursorSide = DEViseCursor.sideBottomRight");
-                    tmpCursor = DEViseUIGlobals.brrsCursor;
-                    break;
-
-		default:
-		    throw new YError("Illegal whichCursorSide value: " +
-		      whichCursorSide);
-                }
-            } else { // inside the view but not within the data area of that view
-                tmpCursor = DEViseUIGlobals.defaultCursor;
-            }
-
-	    //TEMP -- should we only do this if the current cursor is
-	    // different than the one required???
-            setCursor(tmpCursor);
 
             if (activeView != null && activeView.pileBaseView != null) {
                 activeView = activeView.pileBaseView;
@@ -1845,6 +1791,7 @@ public class DEViseCanvas extends Container
 	    }
 
         } else { // activeView is null and all other values will be initialized value before
+	    // I don't think we ever get here...  wenger 2007-08-03.
             whichCursorSide = DEViseCursor.sideNone;
             selectedCursor = null;
             isInViewDataArea = false;
@@ -1853,20 +1800,108 @@ public class DEViseCanvas extends Container
 	    Cursor tmpCursor = null;
             if (!checkDispatcher || jsc.dispatcher.getStatus() ==
 	      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
-                tmpCursor = DEViseUIGlobals.waitCursor;
+		jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.waitCursor, this);
             } else {
-                tmpCursor = DEViseUIGlobals.defaultCursor;
+		jsc.mouseCursor.setToPermanentCursor(this);
             }
-
-	    //TEMP -- should we only do this if the current cursor is
-	    // different than the one required???
-            setCursor(tmpCursor);
 
             if (jscreen.getCurrentView() != activeView) {
                 jscreen.setCurrentView(activeView);
             }
 
             jsc.viewInfo.updateInfo();
+        }
+    }
+
+    private void setMouseCursorByDEViseCursor()
+    {
+        switch (whichCursorSide) {
+        case DEViseCursor.sideNone:
+            // Not on a cursor
+            jsc.mouseCursor.setTemporaryCursor(
+              jsc.mouseCursor.rbCursor, this);
+            break;
+
+         case DEViseCursor.sideMiddle:
+            // Inside a cursor, you can move this cursor.
+            if (DEBUG >= 3) System.out.println(
+              "whichCursorSide = DEViseCursor.sideMiddle");
+            jsc.mouseCursor.setTemporaryCursor(
+            jsc.mouseCursor.moveCursor, this);
+            break;
+
+        case DEViseCursor.sideLeft:
+            // On left side of a cursor, you can resize this cursor.
+           if (DEBUG >= 3) System.out.println(
+             "whichCursorSide = DEViseCursor.sideLeft");
+           jsc.mouseCursor.setTemporaryCursor(
+             jsc.mouseCursor.lrsCursor, this);
+           break;
+
+        case DEViseCursor.sideRight:
+            // On right side of a cursor, you can resize this cursor.
+            if (DEBUG >= 3) System.out.println(
+              "whichCursorSide = DEViseCursor.sideRight");
+            jsc.mouseCursor.setTemporaryCursor(
+              jsc.mouseCursor.rrsCursor, this);
+           break;
+
+        case DEViseCursor.sideTop:
+            // On top side of a cursor, you can resize this cursor.
+            if (DEBUG >= 3) System.out.println(
+              "whichCursorSide = DEViseCursor.sideTop");
+            jsc.mouseCursor.setTemporaryCursor(
+              jsc.mouseCursor.trsCursor, this);
+           break;
+
+        case DEViseCursor.sideBottom:
+            // On bottom side of a cursor, you can resize this cursor.
+            if (DEBUG >= 3) System.out.println(
+              "whichCursorSide = DEViseCursor.sideBottom");
+            jsc.mouseCursor.setTemporaryCursor(
+              jsc.mouseCursor.brsCursor, this);
+           break;
+
+        case DEViseCursor.sideTopLeft:
+            // On left-top corner of a cursor, you can resize
+            // this cursor.
+            if (DEBUG >= 3) System.out.println(
+              "whichCursorSide = DEViseCursor.sideTopLeft");
+            jsc.mouseCursor.setTemporaryCursor(
+              jsc.mouseCursor.tlrsCursor, this);
+           break;
+
+        case DEViseCursor.sideBottomLeft:
+            // On left-bottom corner of a cursor, you can resize
+            // this cursor.
+           if (DEBUG >= 3) System.out.println(
+             "whichCursorSide = DEViseCursor.sideBottomLeft");
+           jsc.mouseCursor.setTemporaryCursor(
+             jsc.mouseCursor.blrsCursor, this);
+           break;
+
+        case DEViseCursor.sideTopRight:
+           // On right-top corner of a cursor, you can resize
+           // this cursor.
+           if (DEBUG >= 3) System.out.println(
+             "whichCursorSide = DEViseCursor.sideTopRight");
+           jsc.mouseCursor.setTemporaryCursor(
+             jsc.mouseCursor.trrsCursor, this);
+           break;
+
+        case DEViseCursor.sideBottomRight:
+           // 0n right-bottom corner of a cursor, you can resize
+           // this cursor.
+           if (DEBUG >= 3) System.out.println(
+             "whichCursorSide = DEViseCursor.sideBottomRight");
+           jsc.mouseCursor.setTemporaryCursor(
+             jsc.mouseCursor.brrsCursor, this);
+           break;
+
+        default:
+           throw new YError("Illegal whichCursorSide value: " +
+             whichCursorSide);
         }
     }
 
@@ -1903,7 +1938,7 @@ public class DEViseCanvas extends Container
             }
         }
 
-	if (v.isCursorMove) {
+	if (v.isCursorMove && jsc.toolBar.doCursorOps()) {
             for (int i = 0; i < v.viewCursors.size(); i++) {
                 DEViseCursor cursor = (DEViseCursor)v.viewCursors.elementAt(i);
                 int cursorSide = cursor.inCursor(p);

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/06/27 17:47:58  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
+// Revision 1.2.2.6  2007/08/03 19:21:15  wenger
+// Mouse cursor now changes according to toolbar mode; fixed existing
+// problems with mouse cursor being crosshairs cursor when it should be
+// the default cursor; fixed problems with actions sometimes happening
+// in the wrong toolbar mode; added "XY zoom in" button.
+//
 // Revision 1.2.2.5  2007/06/21 15:07:06  wenger
 // Toolbar help mode now resets to normal after one click.
 //
@@ -83,16 +94,22 @@ public class DEViseCanvas2D extends DEViseCanvas
     {
         checkMousePos(sp, true);
 
+	// Note:  some of the checks of the toolbar state here don't seem
+	// to be totally necessary, but I'm still doing them, partly for
+	// clarity and partly in case other things change and make them
+	// necessary.  wenger 2007-08-03.
+
         // Control-drag is X-only zoom.
-        if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL ||
-	  jsc.toolBar.doZoomX()) {
+        if ((jsc.toolBar.doNormal() &&
+	  jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL)
+	  || jsc.toolBar.doZoomXOnly()) {
             _zoomMode = ZOOM_MODE_X;
         } else {
             _zoomMode = ZOOM_MODE_XY;
         }
 
         if (isInViewDataArea && selectedCursor == null &&
-          activeView.isRubberBand) {
+          activeView.isRubberBand && jsc.toolBar.doRubberband()) {
             // We can only draw just the rubberband line if we're
             // drawing it in XOR mode.
             _paintRubberbandOnly = DRAW_XOR_RUBBER_BAND;
@@ -105,7 +122,13 @@ public class DEViseCanvas2D extends DEViseCanvas
             Point p = event.getPoint();
             String cmd = "";
 
-            if (selectedCursor != null) { // move or resize cursor
+	    // Note:  some of the checks of the toolbar state here don't seem
+	    // to be totally necessary, but I'm still doing them, partly for
+	    // clarity and partly in case other things change and make them
+	    // necessary.  wenger 2007-08-03.
+
+            if (selectedCursor != null && jsc.toolBar.doCursorOps()) {
+	        // move or resize cursor
                 ep.x = activeView.translateX(p.x, 1);
                 ep.y = activeView.translateY(p.y, 1);
 
@@ -125,7 +148,9 @@ public class DEViseCanvas2D extends DEViseCanvas
 
                 jscreen.guiAction = true;
                 dispatcher.start(cmd);
-            } else if (activeView.isRubberBand) { // rubber band (zoom)
+
+            } else if (activeView.isRubberBand && jsc.toolBar.doRubberband()) {
+	        // rubber band (zoom)
                 ep.x = activeView.translateX(p.x, 1);
                 ep.y = activeView.translateY(p.y, 1);
 
@@ -199,7 +224,8 @@ public class DEViseCanvas2D extends DEViseCanvas
             String cmd = null;
             Point p = event.getPoint();
 
-            if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT ||
+            if (( jsc.toolBar.doNormal() &&
+	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
 	      jsc.toolBar.doDrillDown()) {
 		//TEMPTOOLBAR -- should we turn off drill-down mode here??
                 if (activeView.isDrillDown) {
@@ -241,7 +267,7 @@ public class DEViseCanvas2D extends DEViseCanvas
 		  DEVISE_KEY_DECREASE_SYM_SIZE;
 		jsc.toolBar.setNormal();
 
-            } else if (activeView.isCursorMove) {
+            } else if (activeView.isCursorMove && jsc.toolBar.doCursorOps()) {
                 DEViseCursor cursor = activeView.getFirstCursor();
 
                 if (cursor != null && (cursor.isXMovable ||

@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.91  2007/06/27 21:28:21  wenger
+// Fixed the "obscured tooltips" problem by changing the DEViseScreen
+// to extend a JPanel rather than a Panel; made other changes to
+// DEViseScreen to (at least apparently) fix the resulting deadlock
+// problems (still needs more testing).
+//
 // Revision 1.90  2007/05/14 23:37:43  wenger
 // Changed version to 5.8.3x1; updated Florence mirror configuration.
 //
@@ -52,6 +58,12 @@
 //
 // Revision 1.82  2007/02/22 23:20:18  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.81.2.4  2007/08/03 19:21:16  wenger
+// Mouse cursor now changes according to toolbar mode; fixed existing
+// problems with mouse cursor being crosshairs cursor when it should be
+// the default cursor; fixed problems with actions sometimes happening
+// in the wrong toolbar mode; added "XY zoom in" button.
 //
 // Revision 1.81.2.3  2007/04/19 21:16:08  wenger
 // Fixed the problem with component layout in the jsb; got rid of
@@ -598,7 +610,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.3x2"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.8.3x3"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

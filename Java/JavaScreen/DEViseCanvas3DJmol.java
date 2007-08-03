@@ -42,6 +42,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2007/06/27 17:47:58  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
 // Revision 1.13  2007/04/25 20:43:50  wenger
 // Greatly improved the documentation of the DEViseCanvas3DJmol class;
 // minor improvements to other classes.
@@ -66,6 +71,17 @@
 // Revision 1.8  2007/02/23 19:21:59  wenger
 // Structure selection tree window now comes up closer to the upper
 // left corner of the screen.
+//
+// Revision 1.7.2.3  2007/08/03 19:21:15  wenger
+// Mouse cursor now changes according to toolbar mode; fixed existing
+// problems with mouse cursor being crosshairs cursor when it should be
+// the default cursor; fixed problems with actions sometimes happening
+// in the wrong toolbar mode; added "XY zoom in" button.
+//
+// Revision 1.7.2.2  2007/07/25 18:25:17  wenger
+// Moved cursor handling from DEViseUIGlobals to the new
+// UI/DEViseMouseCursor class, in preparation for changing the cursor
+// according to the toolbar mode.
 //
 // Revision 1.7.2.1  2007/06/18 19:57:21  wenger
 // Toolbar works for drill-down (including Jmol); we go back to "normal"
@@ -329,9 +345,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    highlightUpdated = false;
 	}
 
-        //TEMP? jsc.parentFrame.setCursor(DEViseUIGlobals.defaultCursor);
+        //TEMP? jsc.parentFrame.setCursor(jsc.mouseCursor.defaultCursor);
         if (treeFrame != null) {
-	    treeFrame.setCursor(DEViseUIGlobals.defaultCursor);
+	    treeFrame.setCursor(jsc.mouseCursor.defaultCursor);
         }
 
     	super.paint(gc);
@@ -432,8 +448,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    }
 	}
 
-	//TEMP? jsc.parentFrame.setCursor(DEViseUIGlobals.waitCursor);
-	treeFrame.setCursor(DEViseUIGlobals.waitCursor);
+	//TEMP? jsc.parentFrame.setCursor(jsc.mouseCursor.waitCursor);
+	treeFrame.setCursor(jsc.mouseCursor.waitCursor);
 
 	if (name.equals(HIGHLIGHT_TREE_NAME)) {
 	    highlightNodes = nodes;
