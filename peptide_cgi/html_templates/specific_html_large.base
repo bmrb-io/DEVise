@@ -30,7 +30,7 @@
   <p><a href="4264d1.html">Smaller view</a></p>
   </h3>
 
-  <applet code=JavaScreen.jsb.class archive=../../jsb1.jar,../../jsb2.jar width=1024 height=768>
+  <applet code=JavaScreen.jsb.class archive=../../jsb1.jar,../../jsb2.jar,../../Jmol.jar width=1024 height=768>
     <param name="applet" value="JavaScreen.jsb">
     <param name="debug" value="0">
     <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">

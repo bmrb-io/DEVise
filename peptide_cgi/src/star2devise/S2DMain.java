@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  2007/05/14 23:45:25  wenger
+// Updated Florence and Osaka configuration files; changed version to
+// 11.1.3x1.
+//
 // Revision 1.34  2007/05/11 19:50:43  wenger
 // Changed version to 11.1.2 for release.
 //
@@ -1291,7 +1295,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.3x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.3x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
