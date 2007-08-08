@@ -1,7 +1,7 @@
 <!--
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2002
+  (c) Copyright 1999-2006
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -18,22 +18,64 @@
 
 <html>
 <head>
-<title>DEVise JavaScreen: entry 4096 peptide 1</title>
+<title>DEVise JavaScreen: Chemical Shift Distribution Histograms</title>
 </head>
 <body>
 
-<p><a target="new" href="keyboard.html">Help on keyboard shortcuts</a>
-<p>
+<table cellspacing=10>
+  <tr>
+    <td><a target =" _blank" href="keyboard.html">JavaScreen
+      keyboard shortcuts</a></td>
+    <td><a target =" _blank" href="collab.html">JavaScreen
+      collaboration</a></td>
 
-<applet code=JavaScreen.DEViseJSLoader.class archive=jsb1.jar,jsb2.jar width=800 height=600>
+  </tr>
+  <tr>
+    <td><a href="http://www.cs.wisc.edu/~devise">DEVise home page</a></td>
+  </tr>
+</table>
+
+<hr>
+
+<center> <h2>
+  Chemical Shift Distribution Histograms
+</h2> </center>
+
+<p>
+Note: you can drill down (shift click) on a histogram bar to view a
+dialog that, among other information, has links to the entries contributing
+to that histogram bucket.  <strong>For these links to work, you may have to
+turn off popup blocking in your web browser.</strong>
+</p>
+
+<p>
+Normal-size visualization on this page;
+  <a href="histogram2_small.html">small</a> visualization;
+  <a href="histogram2_large.html">large</a> visualization
+</p>
+
+<applet code=JavaScreen.jsb.class archive=jsb1.jar,jsb2.jar width=800 height=600>
 <param name="applet" value="JavaScreen.jsb">
 <param name="debug" value="0">
 <param name="session" value="bmrb/histogram2.ds">
+<param name="cmdport" value="6666">
 <param name="cgiurl" value="/cgi-bin/js.cgi">
 <param name="rubberbandlimit" value="4x4">
 <param name="bgcolor" value="64+96+0">
 <param name="screensize" value="800x600">
 </applet>
+
+<br><br>
+<center>
+<h6>Comments?  Contact <a
+  href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
+
+</h6>
+<h6>Problems with the visualization software?  Contact <a
+  href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+</h6>
+</center>
+
 </body>
 </html>
 
