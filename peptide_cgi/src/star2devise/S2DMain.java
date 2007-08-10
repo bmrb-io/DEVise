@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2007/08/08 17:16:56  wenger
+// Changed all JavaScreen html files (including Peptide-CGI templates)
+// to include Jmol.jar, because some JVMs now seem to require it.
+//
 // Revision 1.35  2007/05/14 23:45:25  wenger
 // Updated Florence and Osaka configuration files; changed version to
 // 11.1.3x1.
@@ -1295,7 +1299,7 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.3x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.3";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
