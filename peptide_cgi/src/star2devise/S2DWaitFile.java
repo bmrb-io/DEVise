@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2005
+// (c) Copyright 2003-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:13  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.3  2005/01/31 21:35:44  wenger
 // Slight mods to atomic coordinates template for better highlight
 // selection; s2d chem shift ref timeout increased to 120 sec., added
@@ -63,7 +67,7 @@ public class S2DWaitFile implements Runnable
     // @param The name of the "done file" to wait on.
     public S2DWaitFile(String filename) throws S2DException
     {
-	if (DEBUG >= 1) {
+	if (doDebugOutput(11)) {
 	    System.out.println("S2DWaitFile.S2DWaitFile(" + filename + ")");
 	}
 
@@ -84,7 +88,7 @@ public class S2DWaitFile implements Runnable
     // even if the "done file" doesn't exist.
     public void wait(int delay, int timeout) throws InterruptedException
     {
-	if (DEBUG >= 1) {
+	if (doDebugOutput(11)) {
             System.out.println("S2DWaitFile(" + _file.getName() +
 	      ").wait(" + delay + ", " + timeout + ")");
         }
@@ -111,7 +115,7 @@ public class S2DWaitFile implements Runnable
 
     public void run()
     {
-	if (DEBUG >= 1) {
+	if (doDebugOutput(11)) {
             System.out.println("S2DWaitFile(" + _file.getName() + ").run()");
         }
 
@@ -121,13 +125,13 @@ public class S2DWaitFile implements Runnable
 	    } catch (InterruptedException ex) {
 	    	// No op.
 	    }
-            if (DEBUG >= 2) {
+            if (doDebugOutput(12)) {
 	        System.out.println("Checking for done file");
 	    }
 	    _found = _file.exists();
 	}
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    if (_found) {
 	        System.out.println("Done file " + _file.getName() +
 		  " was found");
@@ -145,6 +149,22 @@ public class S2DWaitFile implements Runnable
 	}
 
 	_mainThread.interrupt();
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

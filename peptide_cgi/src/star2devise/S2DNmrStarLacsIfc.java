@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005
+// (c) Copyright 2005-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.1.2.2  2005/11/02 23:21:31  wenger
 // Changed LACS-related STAR file tags to be properly defined;
 // horizontal line in LACS visualizations is at *minus* y offset.
@@ -58,7 +62,7 @@ public class S2DNmrStarLacsIfc extends S2DNmrStarIfc {
     {
         super(starTree);
 
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarLacsIfc.S2DNmrStarLacsIfc()");
 	}
 
@@ -90,6 +94,19 @@ public class S2DNmrStarLacsIfc extends S2DNmrStarIfc {
         LACS_Y_NAME = "_LACS_plot.Y_coord_name";
         LACS_Y_VALUE = "_LACS.Y_coord_val";
         LACS_Y_OFFSET = "_LACS_plot.Y_axis_chem_shift_offset";
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

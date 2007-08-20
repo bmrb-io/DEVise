@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/01/12 18:41:07  wenger
+// Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
+//
 // Revision 1.3.4.2  2007/01/04 21:09:50  wenger
 // Added the S2DStarIfc.getAndFilterFrameValues() method (partly to
 // simplify ChemShift), used that where appropriate (probably fixes
@@ -386,7 +389,7 @@ public class S2DStarIfc {
     public SaveFrameNode getOneDataFrameByCat(String category)
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.getOneDataFrameByCat(" +
 	      category + ")");
 	}
@@ -397,7 +400,7 @@ public class S2DStarIfc {
     public SaveFrameNode getOneDataFrameByCat(String tagName, String category)
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.getOneDataFrameByCat(" +
 	      tagName + ", " + category + ")");
 	}
@@ -492,7 +495,7 @@ public class S2DStarIfc {
     public String[] getFrameValues(SaveFrameNode frame, String loopId,
       String name, int maxVals) throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("  S2DStarIfc.getFrameValues(" +
 	      getFrameName(frame) + ", " + loopId + ", " + name +  ", " +
 	      maxVals + ")");
@@ -660,11 +663,27 @@ public class S2DStarIfc {
 
         } catch(ParseException ex) {
 	    System.err.println("Star file parse error: " + ex.toString());
-            if (DEBUG >= 1) ex.printStackTrace();
+            if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to parse star file");
 	}
 
 	return starTree;
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

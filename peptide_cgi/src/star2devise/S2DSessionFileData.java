@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004
+// (c) Copyright 2004-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.1  2004/11/18 19:10:35  wenger
 // Peptide-CGI now checks the version of the ChemShift software, since
 // the current version of Peptide-CGI needs at least ChemShift 1.4.0.
@@ -56,7 +60,7 @@ public class S2DSessionFileData extends S2DFileData
     public boolean getSessionData(String name, String suffix,
       String sessionDir)
     {
-    	if (DEBUG >= 1) {
+    	if (doDebugOutput(11)) {
 	    System.out.println("S2DSessionFileData.getSessionData(" +
 	      name + ", " + suffix + ", " + sessionDir);
 	}
@@ -69,7 +73,7 @@ public class S2DSessionFileData extends S2DFileData
 
 	boolean result = getData(filename);
 
-	if (DEBUG >= 2) {
+	if (doDebugOutput(12)) {
 	    System.out.println("fileVersion: " + fileVersion);
 	    System.out.println("fileDate: " + fileDate);
 	}
@@ -93,7 +97,7 @@ public class S2DSessionFileData extends S2DFileData
 	  S2DSummaryHtml.VERSION_LABEL);
 	if (tmpValue != null) {
 	    fileVersion = tmpValue;
-	    if (DEBUG >= 3) {
+	    if (doDebugOutput(13)) {
 	        System.out.println("File version: " + fileVersion);
 	    }
 	}
@@ -103,11 +107,27 @@ public class S2DSessionFileData extends S2DFileData
 	  S2DSummaryHtml.GEN_DATE_LABEL);
 	if (tmpValue != null) {
 	    fileDate = DateFormat.getDateTimeInstance().parse(tmpValue);
-	    if (DEBUG >= 3) {
+	    if (doDebugOutput(13)) {
 	        System.out.println("Date string: " + tmpValue);
 	        System.out.println("File date: " + fileDate);
 	    }
 	}
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

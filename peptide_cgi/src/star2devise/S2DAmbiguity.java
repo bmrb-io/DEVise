@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005
+// (c) Copyright 2005-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:09  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -97,7 +101,7 @@ public class S2DAmbiguity {
       int[] ambiguityVals)
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DAmbiguity.S2DAmbiguity(" + name +
 	      ")");
 	}
@@ -118,7 +122,7 @@ public class S2DAmbiguity {
     // Write the ambiguity values for this data.
     public void writeAmbiguity(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DAmbiguity.writeAmbiguity()");
 	}
 
@@ -202,7 +206,7 @@ public class S2DAmbiguity {
     // data set.
     private void calculateAmbiguityValues() throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DAmbiguity.calculateAmbiguityValues()");
 	}
 
@@ -283,7 +287,7 @@ public class S2DAmbiguity {
 
 	public void addAnAtom(int ambiguityVal)
 	{
-	    if (DEBUG >= 5) {
+	    if (doDebugOutput(15)) {
 	        System.out.println("S2DAmbiguity.TempData.addAnAtom(" +
 		  ambiguityVal + ")");
 	    }
@@ -326,7 +330,7 @@ public class S2DAmbiguity {
 
 	public void save(int resSeqCode, String residueLabel)
 	{
-            if (DEBUG >= 3) {
+            if (doDebugOutput(13)) {
 	        System.out.println("S2DAmbiguity.TempData.save(" +
 		  resSeqCode + ", " + residueLabel + ")");
 	    }
@@ -347,6 +351,19 @@ public class S2DAmbiguity {
 		System.err.println("Exception saving ambiguity values" + ex);
 	    }
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

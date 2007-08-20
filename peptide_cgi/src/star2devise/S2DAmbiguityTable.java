@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005
+// (c) Copyright 2005-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:09  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.4.1  2005/03/22 20:34:37  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
 //
@@ -55,7 +59,7 @@ public class S2DAmbiguityTable implements S2DAtomDataTable {
     public S2DAmbiguityTable(int[] resSeqCodes, String[] atomNames,
       int[] ambiguityVals) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DAmbiguityTable.S2DAmbiguityTable()");
 	}
 
@@ -122,7 +126,7 @@ public class S2DAmbiguityTable implements S2DAtomDataTable {
             }
         }
 
-	if (DEBUG >= 3) {
+	if (doDebugOutput(13)) {
 	    System.out.println("S2DAmbiguityTable.getAmbiguityVal(" +
 	      key + ", " + atomName + ") returns " + result);
 	}
@@ -169,6 +173,19 @@ public class S2DAmbiguityTable implements S2DAtomDataTable {
 	}
 
 	return result;
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

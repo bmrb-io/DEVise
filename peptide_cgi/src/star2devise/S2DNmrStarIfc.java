@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/03/12 21:05:42  wenger
+// Last-minute change -- fixed "source file" timestamp comparison
+// to work with local files, not just URLs.
+//
 // Revision 1.5  2007/01/12 18:41:06  wenger
 // Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
 //
@@ -349,7 +353,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // Get the modification date/time of the appropriate NMR-Star file.
     public static Date getModDate(String bmrbId, boolean isLacs)
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DNmrStarIfc.getModDate(" + bmrbId +
 	      ", " + isLacs + ")");
 	}
@@ -368,7 +372,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    System.err.println("IOException: " + ex.toString());
 	}
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("  Mod date is : " + date);
 	}
 
@@ -379,7 +383,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // Get the modification date/time of the appropriate file.
     public static Date getModDateFile(String filename)
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DNmrStarIfc.getModDateFile(" +
 	      filename + ")");
 	}
@@ -389,7 +393,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	long timestamp = tmpFile.lastModified();
 	date = new Date(timestamp);
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("  Mod date is : " + date);
 	}
 
@@ -402,7 +406,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     public static S2DNmrStarIfc createFromID(String accessionNum,
       boolean useLocalFile, boolean isLacs) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.createFromID(" +
 	      accessionNum + ", " + useLocalFile + ", " + isLacs + ")");
 	}
@@ -429,7 +433,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 
         } catch(java.io.IOException ex) {
             System.err.println("Unable to open or read " + ex.toString());
-            if (DEBUG >= 1) ex.printStackTrace();
+            if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
               fileName);
 	}
@@ -442,7 +446,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     public static S2DNmrStarIfc createFromFile(String fileName,
       boolean isLacs) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.createFromFile(" +
 	      fileName + ", " + isLacs + ")");
 	}
@@ -459,7 +463,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 
         } catch(java.io.IOException ex) {
             System.err.println("Unable to open or read " + ex.toString());
-            if (DEBUG >= 1) ex.printStackTrace();
+            if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
               fileName);
 	}
@@ -525,7 +529,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // be empty.)
     public Vector getPdbIds(boolean doProteinCheck)
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DNmrStarIfc.getPdbIds(" +
 	      doProteinCheck + ")");
 	}
@@ -541,7 +545,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    System.err.println("Error getting PDB IDs: " + ex.toString());
 	}
 
-	if (DEBUG >= 2) {
+	if (doDebugOutput(12)) {
 	    System.out.print("  PDB IDs from molecular_system save frame: ");
 	    for (int index = 0; index < ids.size(); index++) {
 	        System.out.print(" " +  (String)ids.elementAt(index));
@@ -559,7 +563,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    System.err.println("Error getting PDB IDs: " + ex.toString());
 	}
 
-	if (DEBUG >= 2) {
+	if (doDebugOutput(12)) {
 	    System.out.print("  getPdbIds returning:");
 	    for (int index = 0; index < ids.size(); index++) {
 	        System.out.print(" " +  (String)ids.elementAt(index));
@@ -575,7 +579,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     private boolean checkDBEntry(int residueCount, String dbName,
       int seqLength, String seqIdent)
     {
-        if (DEBUG >= 3) {
+        if (doDebugOutput(13)) {
 	    System.out.println("S2DNmrStarIfc.checkDBEntry(" +
 	      residueCount + ", " + dbName + ", " + seqLength + ", " +
 	      seqIdent + ")");
@@ -599,7 +603,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 
                 seqIdentVal = Double.valueOf(seqIdentStr).floatValue();
             } catch (NumberFormatException ex) {
-                if (DEBUG >= 3) {
+                if (doDebugOutput(13)) {
                     System.err.println(
 		      "NumberFormatExeption in sequence identity: " + ex);
 	        }
@@ -620,7 +624,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // Returns the number of HA chem shifts in the given save frame.
     public int getHAChemShiftCount(SaveFrameNode frame)
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("  S2DNmrStarIfc.getHAChemShiftCount()");
 	}
 
@@ -652,7 +656,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    // Note: value returned will be 0.
 	}
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("    haCsCount = " + haCsCount);
         }
 
@@ -663,7 +667,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // Returns a list of the save frames of the given category.
     public Enumeration getDataFramesByCat(String category)
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.getDataFramesByCat(" +
 	      category + ")");
 	}
@@ -675,7 +679,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // Returns a list of the save frames of the given category.
     public Enumeration getDataFramesByCat(String tagName, String category)
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.getDataFramesByCat(" +
 	      tagName + ", " + category + ")");
 	}
@@ -699,7 +703,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // the residue list(s).
     public S2DResidues getResidues(SaveFrameNode frame) throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStarIfc.getResidues(" +
 	      frame.getLabel() + ")");
         }
@@ -719,13 +723,13 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	      ENTITY_RES_SEQ_CODE, ENTITY_RES_LABEL);
 
 	    resList1 = new S2DResidues(resSeqCodes, resLabels);
-            if (DEBUG >= 3) {
+            if (doDebugOutput(13)) {
 	        System.out.println("Got three-letter residue list");
 	    }
 
         } catch (S2DException ex) {
 	    resList1 = null;
-            if (DEBUG >= 3) {
+            if (doDebugOutput(13)) {
 	        System.out.println("Did not get three-letter residue list");
 	    }
 	}
@@ -739,13 +743,13 @@ public class S2DNmrStarIfc extends S2DStarIfc {
             String molResSeq = getTagValue(frame, ENTITY_SEQ_1LETTER);
 
 	    resList2 = new S2DResidues(molResSeq);
-            if (DEBUG >= 3) {
+            if (doDebugOutput(13)) {
 	        System.out.println("Got one-letter residue list");
 	    }
 
 	} catch (S2DException ex) {
 	    resList2 = null;
-            if (DEBUG >= 3) {
+            if (doDebugOutput(13)) {
 	        System.out.println("Did not get one-letter residue list");
 	    }
 	}
@@ -795,7 +799,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     public String[] getOptionalFrameValues(SaveFrameNode frame, String loopId,
       String name, int size, String defaultValue) throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStarIfc.getOptionalFrameValues(" +
 	      frame.getLabel() + ", " + loopId + ", " + name + ", " +
 	      size + ", " + defaultValue + ")");
@@ -852,7 +856,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     private static S2DNmrStarIfc create(InputStream is, boolean isLacs)
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.create(" + isLacs + ")");
 	}
 
@@ -868,20 +872,20 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    S2DNmrStar31Ifc ifc31 = new S2DNmrStar31Ifc(starTree);
 
 	    if (ifc21.isNmrStar21()) {
-                if (DEBUG >= 1) {
+                if (doDebugOutput(11)) {
 	            System.out.println("File is NMR-STAR 2.1");
 	        }
 	        ifc = ifc21;
 
 	    } else if (ifc31.isNmrStar31()) {
-                if (DEBUG >= 1) {
+                if (doDebugOutput(11)) {
 	            System.out.println("File is NMR-STAR 3.1");
 	        }
 		ifc31.checkForProteins();
 	        ifc = ifc31;
 
 	    } else if (ifc30.isNmrStar30()) {
-                if (DEBUG >= 1) {
+                if (doDebugOutput(11)) {
 	            System.out.println("File is NMR-STAR 3.0");
 	        }
 		ifc30.checkForProteins();
@@ -902,7 +906,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // the STAR file represented by starTree.
     protected S2DNmrStarIfc(StarNode starTree) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.S2DNmrStarIfc()");
 	}
 
@@ -922,7 +926,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // constructors.)
     private void initialize(InputStream is) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.S2DNmrStarIfc(InputStream)");
 	}
 
@@ -945,13 +949,13 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 
         } catch(java.io.IOException ex) {
             System.err.println("Unable to open or read " + ex.toString());
-            if (DEBUG >= 1) ex.printStackTrace();
+            if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
               _fileName);
 
         } catch(ParseException ex) {
 	    System.err.println("Star file parse error: " + ex.toString());
-            if (DEBUG >= 1) ex.printStackTrace();
+            if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to parse star file " + _fileName);
 	}
     }
@@ -999,7 +1003,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // save frame.
     private int getResidueCount(SaveFrameNode frame, String entityID)
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("  S2DNmrStarIfc.getResidueCount(" +
 	      getFrameName(frame) + ")");
 	}
@@ -1018,7 +1022,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	      ex.toString());
 	}
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("    residueCount = " + residueCount);
         }
 
@@ -1034,7 +1038,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     private void getPdbIdsFromMonoPoly(boolean doProteinCheck, Vector ids)
       throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DNmrStarIfc.getPdbIdsFromMonoPoly(" +
 	      doProteinCheck + ")");
 	}
@@ -1081,7 +1085,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 			  seqLengths[index], seqIdents[index])) {
 			    ids.addElement(dbAccCodes[index]);
 		        } else {
-            		    if (DEBUG >= 1) {
+            		    if (doDebugOutput(11)) {
 			        System.out.println("PDB entry " +
 			          dbAccCodes[index] + " rejected because " +
 			          "of residue count mismatch or sequence " +
@@ -1091,7 +1095,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 		    }
 	        }
 	    } else {
-                if (DEBUG >= 1) {
+                if (doDebugOutput(11)) {
 		    System.out.println("PDB IDs in save frame " +
 		      getFrameName(frame) +
 		      " ignored because of protein check");
@@ -1161,7 +1165,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // lists if the actual residue count tag is missing
     private int getResCountVal(SaveFrameNode frame)
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("  S2DNmrStarIfc.getResCountVal(" +
 	      getFrameName(frame) + ")");
 	}
@@ -1193,11 +1197,24 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	      ex.toString());
 	}
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("    residueCount = " + residueCount);
         }
 
 	return residueCount;
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

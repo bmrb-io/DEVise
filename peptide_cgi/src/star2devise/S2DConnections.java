@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2005
+// (c) Copyright 2001-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:10  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.3  2005/01/31 21:35:44  wenger
 // Slight mods to atomic coordinates template for better highlight
 // selection; s2d chem shift ref timeout increased to 120 sec., added
@@ -88,7 +92,7 @@ public class S2DConnections {
     // Constructor.
     public S2DConnections(String connectionsFile) throws S2DException
     {
-    	if (DEBUG >= 1) {
+    	if (doDebugOutput(11)) {
 	    System.out.println("S2DConnections.S2DConnections(" +
 	      connectionsFile + ")");
 	}
@@ -157,7 +161,7 @@ public class S2DConnections {
 	while (acidList.hasMoreElements()) {
 	    AminoAcid acid = (AminoAcid)acidList.nextElement();
 
-	    if (DEBUG >= 2) {
+	    if (doDebugOutput(12)) {
 		System.out.println("Amino acid " + acid._name);
 	        for (int index = 0; index < acid._bonds.size(); index++) {
 		    Bond bond = (Bond)acid._bonds.elementAt(index);
@@ -202,7 +206,7 @@ public class S2DConnections {
     // Constructor.
     public Vector getBonds(String acidName) throws S2DException
     {
-	if (DEBUG >= 2) {
+	if (doDebugOutput(12)) {
 	    System.out.println("S2DConnections.getBonds(" + acidName + ")");
 	}
 
@@ -225,6 +229,22 @@ public class S2DConnections {
 	}
 
 	return acid._bonds;
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

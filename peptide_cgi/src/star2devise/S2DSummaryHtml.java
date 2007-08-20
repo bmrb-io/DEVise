@@ -26,6 +26,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/03/07 16:37:58  wenger
+// Phase 2 of "upload and visualize data" -- mostly working, I think,
+// but still needs chem shift reference capability and hasn't been
+// hooked up to Dimitri's upload scripts yet.
+//
 // Revision 1.5  2006/08/21 21:01:11  wenger
 // Added second summary page for direct access to all large-size
 // visualizations; updated all tests accordingly.
@@ -365,7 +370,7 @@ public class S2DSummaryHtml {
       Vector localFiles, String htmlDir, String starFileName,
       String systemName, String frameTitle) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
 	      name + ", " + accessionNum + ")");
 	}
@@ -388,7 +393,7 @@ public class S2DSummaryHtml {
     // Finalizer.
     protected void finalize() throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.finalize()");
 	}
 
@@ -402,7 +407,7 @@ public class S2DSummaryHtml {
     // BMRB file.
     public void close(Vector bmrbIds, Vector pdbIds) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.close()");
 	}
 
@@ -414,7 +419,7 @@ public class S2DSummaryHtml {
     // Writes the info for the start of a save frame.
     public void startFrame(String frameDetails) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.startFrame(" +
 	      frameDetails + ")");
 	}
@@ -427,7 +432,7 @@ public class S2DSummaryHtml {
     // Writes the info for the end of a save frame.
     public void endFrame() throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.endFrame()");
 	}
 
@@ -439,7 +444,7 @@ public class S2DSummaryHtml {
     // Writes the deltashift link.
     public void writeDeltashift(int frameIndex, int count) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeDeltashift()");
 	}
 
@@ -451,7 +456,7 @@ public class S2DSummaryHtml {
     // Writes the CSI link.
     public void writeCSI(int frameIndex, int count) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeCSI()");
 	}
 
@@ -463,7 +468,7 @@ public class S2DSummaryHtml {
     // Writes the percent assignment link.
     public void writePctAssign(int frameIndex, int count) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writePctAssign()");
 	}
 
@@ -475,7 +480,7 @@ public class S2DSummaryHtml {
     // Writes the coupling constant link.
     public void writeCoupling(int frameIndex, int count) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeCoupling()");
 	}
 
@@ -488,7 +493,7 @@ public class S2DSummaryHtml {
     public void writeRelax(String suffix, String name, int frameIndex,
       int count) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeRelax()");
 	}
 
@@ -501,7 +506,7 @@ public class S2DSummaryHtml {
     public void writeHetNOE(String name, int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeHetNOE()");
 	}
 
@@ -514,7 +519,7 @@ public class S2DSummaryHtml {
     public void writeAllShifts(int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeAllShifts()");
 	}
 
@@ -527,7 +532,7 @@ public class S2DSummaryHtml {
     public void writeHvsNShifts(int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeHvsNShifts()");
 	}
 
@@ -540,7 +545,7 @@ public class S2DSummaryHtml {
     public void writeAtomicCoords(String pdbId, int frameIndex,
       int resCount, int atomCount) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeAtomicCoords()");
 	}
 
@@ -555,7 +560,7 @@ public class S2DSummaryHtml {
     public void writeAtomicCoordsCGI(String pdbId, int frameIndex)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeAtomicCoordsCGI()");
 	}
 
@@ -576,7 +581,7 @@ public class S2DSummaryHtml {
     public void writeChemShiftRef(int frameIndex, boolean fullNames)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeChemShiftRef()");
 	}
 
@@ -591,7 +596,7 @@ public class S2DSummaryHtml {
     public void writeChemShiftRefCGI(String pdbId, int frameIndex)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeChemShiftRefCGI()");
 	}
 
@@ -603,7 +608,7 @@ public class S2DSummaryHtml {
     // Writes the Pistachio link.
     public void writePistachio(int frameIndex) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writePistachio()");
 	}
 
@@ -615,7 +620,7 @@ public class S2DSummaryHtml {
     // Writes the ambiguity link.
     public void writeAmbiguity(int frameIndex) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeAmbiguity()");
 	}
 
@@ -628,7 +633,7 @@ public class S2DSummaryHtml {
     public void writeLACS(String title, int frameIndex)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeLACS()");
 	}
 
@@ -642,6 +647,22 @@ public class S2DSummaryHtml {
     {
 	_normal.writeMessage(msg, horRule);
 	_large.writeMessage(msg, horRule);
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

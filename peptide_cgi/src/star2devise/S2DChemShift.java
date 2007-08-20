@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2005
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:10  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -218,7 +222,7 @@ public class S2DChemShift {
       String[] residueLabels, String[] atomNames, String[] atomTypes,
       double[] chemShiftVals, int[] ambiguityVals) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.S2DChemShift(" + name +
 	      ")");
 	}
@@ -247,7 +251,7 @@ public class S2DChemShift {
     // Write the deltashifts for this data.
     public void writeDeltashifts(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.writeDeltashifts()");
 	}
 
@@ -325,7 +329,7 @@ public class S2DChemShift {
     // Write the CSI info for this data.
     public void writeCSI(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.writeCSI()");
 	}
 
@@ -435,7 +439,7 @@ public class S2DChemShift {
     // Write the percent assignments for this data.
     public void writePctAssign(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.writePctAssign()");
 	}
 
@@ -508,7 +512,7 @@ public class S2DChemShift {
 		    paCount++;
 		} catch (S2DWarning ex) {
 		    index++;
-		    if (DEBUG >= 1) {
+		    if (doDebugOutput(11)) {
 		        System.err.println(ex.toString());
 		    }
 		} catch (S2DException ex) {
@@ -553,7 +557,7 @@ public class S2DChemShift {
     // Write all chem shifts for this data.
     public void writeAllShifts(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.writeAllShifts()");
 	}
 
@@ -626,7 +630,7 @@ public class S2DChemShift {
     // TEMP -- this could probably get restructured, too.
     public void writeHvsNShifts(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.writeHvsNShifts()");
 	}
 
@@ -852,7 +856,7 @@ public class S2DChemShift {
     // Calculate all delta shifts for this data set.
     private void calculateDeltaShifts()
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.calculateDeltaShifts()");
 	}
 
@@ -938,7 +942,7 @@ public class S2DChemShift {
 	            //TEMP -- should we ever get here????
 	        }
 	    } catch(S2DWarning ex) {
-	        if (DEBUG >= 1) {
+	        if (doDebugOutput(11)) {
 	            System.err.println(ex.toString());
 	        }
 	    } catch(S2DException ex) {
@@ -986,7 +990,7 @@ public class S2DChemShift {
 	        csi = -1;
 	    }
 	} catch(S2DWarning ex) {
-	    if (DEBUG >= 1) {
+	    if (doDebugOutput(11)) {
 	        System.err.println(ex.toString());
 	    }
 	} catch (S2DException ex) {
@@ -994,6 +998,19 @@ public class S2DChemShift {
 	}
 
 	return csi;
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

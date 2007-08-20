@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004
+// (c) Copyright 2004-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:10  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.1  2004/11/18 19:10:34  wenger
 // Peptide-CGI now checks the version of the ChemShift software, since
 // the current version of Peptide-CGI needs at least ChemShift 1.4.0.
@@ -50,7 +54,7 @@ public abstract class S2DFileData
      */
     public boolean getData(String filename)
     {
-    	if (DEBUG >= 1) {
+    	if (doDebugOutput(11)) {
 	    System.out.println("S2DFileData.getData(" + filename + ")");
 	}
 
@@ -68,7 +72,7 @@ public abstract class S2DFileData
 	    }
 
 	} catch (FileNotFoundException ex) {
-	    if (DEBUG >= 1) {
+	    if (doDebugOutput(11)) {
 	        System.out.println(
 		  "File not found in S2DFileData.getData()" + ex);
 	    }
@@ -134,6 +138,22 @@ public abstract class S2DFileData
 	}
 
         return value;
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

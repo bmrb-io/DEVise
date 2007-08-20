@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2004
+// (c) Copyright 2001-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.8  2004/12/08 23:07:18  wenger
 // Oops -- re-fixed deltashift session template; added titles to
 // specific html pages; enlarges the JavaScreen.
@@ -130,7 +134,7 @@ public class S2DRelaxation {
       String[] atomNames, String[] relaxationValues,
       String[] relaxationErrors) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DRelaxation.S2DRelaxation(" + name + ")");
 	}
         _name = name;
@@ -169,7 +173,7 @@ public class S2DRelaxation {
     // Write the relaxation values for this data.
     public void writeRelaxation(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DRelaxation.writeRelaxation()");
 	}
 
@@ -237,6 +241,22 @@ public class S2DRelaxation {
 	String dataSource = _name + _suffix + frameIndex;
 	dataSets.addElement(new S2DDatasetInfo(_shortName,
 	  dataSource, "relax_value", "bmrb-relax", "relax"));
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

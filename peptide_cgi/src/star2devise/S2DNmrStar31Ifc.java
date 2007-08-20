@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2007/01/12 18:41:06  wenger
+// Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
+//
 // Revision 1.1.2.2  2007/01/09 22:48:20  wenger
 // Peptide-CGI now works with all data types in 4267, at least (see
 // test41) -- this includes capability to specially deal with optional
@@ -77,7 +80,7 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
 	      ex.toString());
 	}
 
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStar31Ifc.isNmrStar31() returns " +
 	      result);
 	}
@@ -96,7 +99,7 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
     {
         super(starTree);
 
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStar31Ifc.S2DNmrStar31Ifc()");
 	}
 
@@ -128,6 +131,19 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
         T1_VALUE_ERR = "_T1.Val_err";
 
 	T2_ATOM_NAME = "_T2.Atom_ID";
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2005
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:13  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -301,7 +305,7 @@ public class S2DUtils
     //-------------------------------------------------------------------
     static void copyFile(String inFile, String outFile) throws IOException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DUtils.copyFile(" + inFile + ", " +
 	      outFile + ")");
 	}
@@ -318,13 +322,13 @@ public class S2DUtils
 	    writer.write(buffer, 0, tmpCount);
 	    totalBytes += tmpCount;
 
-	    if (DEBUG >= 2) {
+	    if (doDebugOutput(12)) {
 	        System.out.println("  Copied " + totalBytes +
 		  " bytes so far");
 	    }
 	}
 
-	if (DEBUG >= 1) {
+	if (doDebugOutput(11)) {
 	    System.out.println("  Copied " + totalBytes + " bytes total");
 	}
 
@@ -406,6 +410,19 @@ public class S2DUtils
 	    minor = Integer.parseInt(substrs[1]);
 	    rev = Integer.parseInt(substrs[2]);
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

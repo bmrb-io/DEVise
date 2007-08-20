@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2004
+// (c) Copyright 2002-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:11  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.2  2004/01/30 18:20:41  wenger
 // S2D errors and warnings are now saved to files (the files are
 // named according to the data name).
@@ -48,7 +52,7 @@ public class S2DFileWriter extends FileWriter {
     //===================================================================
     // VARIABLES
 
-    private static final int DEBUG = 1;
+    private static final int DEBUG = 0;
 
     //===================================================================
     // PUBLIC METHODS
@@ -69,6 +73,19 @@ public class S2DFileWriter extends FileWriter {
     private S2DFileWriter(File file) throws IOException
     {
         super(file);
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

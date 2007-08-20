@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2006
+// (c) Copyright 2001-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2006/05/26 16:50:55  wenger
+// Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
+// to the trunk.
+//
 // Revision 1.3.2.1  2006/02/20 21:57:40  wenger
 // Peptide-CGI now generates data, sessions, etc., that use
 // Jmol for 3D molecule visualization.
@@ -235,7 +239,7 @@ public class S2DSession {
       int frameIndex, String info, String title, boolean hasRealCBShifts)
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSession.write(" + sessionDir + ", " +
 	      dataType + ", " + name + ", " + frameIndex + ")");
 	}
@@ -454,7 +458,7 @@ TEMP*/
             String line;
 	    while ((line = reader.readLine()) != null) {
 
-		if (DEBUG >= 3) {
+		if (doDebugOutput(13)) {
 		    System.out.println("Input line: " + line);
 		}
 
@@ -520,7 +524,7 @@ TEMP*/
 
 	        writer.write(line + "\n");
 
-		if (DEBUG >= 3) {
+		if (doDebugOutput(13)) {
 		    System.out.println("  Output line: " + line);
 		}
 
@@ -565,7 +569,7 @@ TEMP*/
     public static void write3DDataSources(Writer writer, Vector dataSets)
       throws IOException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSession.write3DDataSources()");
 	}
 	for (int index = 0; index < dataSets.size(); index++) {
@@ -597,7 +601,7 @@ TEMP*/
     public static void copy3DDataSources(String name,
       String sessionDir, Writer writer) throws IOException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSession.copy3DDataSources()");
 	}
 
@@ -609,6 +613,19 @@ TEMP*/
 	 while ((line = reader.readLine()) != null) {
 	    writer.write(line + "\n");
 	 }
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

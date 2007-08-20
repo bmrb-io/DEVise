@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2004
+// (c) Copyright 2003-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.5  2004/12/03 17:18:34  wenger
 // Added BMRB accession number, PDB ID (if relevant), timestamp and
 // Peptide-CGI version number to Peptide-CGI visualizations.
@@ -79,7 +83,7 @@ public class S2DResList {
     public S2DResList(String name, String dataDir, int[] resSeqCodes,
       String[] residueLabels)
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DResList.S2DResList()");
 	}
 
@@ -102,7 +106,7 @@ public class S2DResList {
 
     public void write(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DResList.write(" + frameIndex + ")");
 	}
 
@@ -113,7 +117,7 @@ public class S2DResList {
 
     public void write(String filename) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DResList.write(" + filename + ")");
 	}
 
@@ -148,7 +152,7 @@ public class S2DResList {
     //TEMPTEMP -- must change this!!!!
     public void write(Writer writer) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DResList.write()");
 	}
 
@@ -203,6 +207,19 @@ public class S2DResList {
             tmpInt = new Integer(1);
         }
         _ht.put(residueLabel, tmpInt);
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

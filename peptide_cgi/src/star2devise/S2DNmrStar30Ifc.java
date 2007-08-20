@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/01/12 18:41:06  wenger
+// Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
+//
 // Revision 1.3.4.2  2007/01/08 21:59:21  wenger
 // First version of NMR-STAR 3.1 capability -- added test38 to test
 // this.
@@ -167,7 +170,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	      ex.toString());
 	}
 
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStar30Ifc.isNmrStar30() returns " +
 	      result);
 	}
@@ -217,7 +220,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     public boolean refersToProtein(SaveFrameNode frame, String entityID)
       throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("  S2DNmrStar30Ifc.refersToProtein(" +
 	      frame.getLabel() + " (" + entityID + "))");
         }
@@ -267,7 +270,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     public SaveFrameNode getEntityFrame(SaveFrameNode frame, String entityID)
       throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar30.getEntityFrame(" +
 	      getFrameName(frame) + ")");
         }
@@ -290,7 +293,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	      "frame " + getFrameName(frame));
 	}
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println(
 	      "  S2DNmrStar30Ifc.getEntityFrame() returns " +
 	      result.getLabel());
@@ -306,7 +309,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     // one monomeric polymer save frame.
     public SaveFrameNode getEntityFrame() throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar30.getEntityFrame()");
         }
 
@@ -330,7 +333,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	    throw new S2DError("No monomeric polymer save frame found");
 	}
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println(
 	      "  S2DNmrStar30Ifc.getEntityFrame() returns " +
 	      result.getLabel());
@@ -353,7 +356,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     {
 	Vector result = new Vector();
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DNmrStar30Ifc.getChemShiftEntityIDs(" +
 	      frame + ")");
 	}
@@ -365,7 +368,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	      entityIDs[index]);
         }
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.print("S2DNmrStar30Ifc.getChemShiftEntityIDs() returns ");
 	    for (int index = 0; index < result.size(); index++) {
 	        System.out.print((String)result.get(index) + " ");
@@ -386,7 +389,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     {
         super(starTree);
 
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStar30Ifc.S2DNmrStar30Ifc()");
 	}
 
@@ -398,7 +401,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     // and are not proteins, indexed by EntityID.
     protected void checkForProteins()
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStar30Ifc.checkForProteins()");
 	}
 
@@ -409,7 +412,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
     	    while (frameList.hasMoreElements()) {
 	        SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	        if (DEBUG >= 3) {
+	        if (doDebugOutput(13)) {
 	            System.out.print("Checking save frame " +
 		      getFrameName(frame) + "...");
 	        }
@@ -417,7 +420,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	        String entityID = getOneFrameValue(frame, ENTITY_ID);
                 boolean frameIsProtein = isAProtein(frame);
 
-	        if (DEBUG >= 3) {
+	        if (doDebugOutput(13)) {
 		    if (frameIsProtein) {
 		        System.out.println("is a protein");
 		    } else {
@@ -526,6 +529,19 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	T2_SPEC_FREQ_1H = "_Heteronucl_T2_list.Spectrometer_frequency_1H";
         T2_VALUE = "_T2.T2_val";
         T2_VALUE_ERR = "_T2.T2_val_err";
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

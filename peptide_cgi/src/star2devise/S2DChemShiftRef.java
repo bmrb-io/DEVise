@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2005
+// (c) Copyright 2003-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:10  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -231,7 +235,7 @@ public class S2DChemShiftRef
 	  String csrDataDir, String sessionDir, String bmrbId, Vector localFiles,
 	  String pdbId, S2DSummaryHtml summary, int frameIndex, int timeout)
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShiftRef.S2DChemShiftRef(" + name +
 	    ", " + dataDir + ", " + csrDataDir + ", " + sessionDir + ", " +
 	    bmrbId + ", " + pdbId + ", " + frameIndex + ", " + timeout + ")");
@@ -264,7 +268,7 @@ public class S2DChemShiftRef
 
     public void run() throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShiftRef.run()");
 	}
 
@@ -306,7 +310,7 @@ public class S2DChemShiftRef
 	    // least for now.)  (Man, this multi-platform stuff is a pain...)
 	    // wenger 2003-11-12.
 	    _cmdStr = localArg + csrInput + " " + _pdbId + " " + _csFileName;
-            if (DEBUG >= 2) {
+            if (doDebugOutput(12)) {
 	    	System.out.println("ChemShiftRef cmdStr = <" + _cmdStr + ">");
 	    }
 
@@ -336,7 +340,7 @@ public class S2DChemShiftRef
 
     public void postProcess(boolean doProteinCheck) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShiftRef.postProcess()");
 	}
 
@@ -434,7 +438,7 @@ public class S2DChemShiftRef
     // PRIVATE METHODS
     private void checkFileVersions() throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShiftRef.checkFileVersions()");
         }
 
@@ -451,6 +455,19 @@ public class S2DChemShiftRef
 	        throw new S2DError("Unable to get ChemShift version");
 	    }
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

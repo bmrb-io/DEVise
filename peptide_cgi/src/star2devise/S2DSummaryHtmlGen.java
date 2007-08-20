@@ -29,6 +29,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/05/09 19:22:50  wenger
+// LACS now works for UVD/vis server mode, pending live testing;
+// found and fixed bug 053 (problems with angle brackets in output);
+// fixed bug 054 (blank "Title:" in UVD); did to-do 057 (simplify
+// UVD error messages).
+//
 // Revision 1.3  2007/03/12 18:37:41  wenger
 // Got Peptide-CGI end of chem shift reference working for the "upload
 // and visualize data" setup, changed test47 accordingly; install_uvd
@@ -112,7 +118,7 @@ public abstract class S2DSummaryHtmlGen {
       String htmlDir, String starFileName, String systemName,
       String frameTitle) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlGen.S2DSummaryHtmlGen(" +
 	      name + ", " + accessionNum + ")");
 	}
@@ -139,7 +145,7 @@ public abstract class S2DSummaryHtmlGen {
     // Finalizer.
     protected void finalize() throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.finalize()");
 	}
 
@@ -190,7 +196,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void close(Vector bmrbIds, Vector pdbIds)
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlGen.close()");
 	}
 
@@ -248,7 +254,7 @@ public abstract class S2DSummaryHtmlGen {
     // Writes the info for the start of a save frame.
     protected void startFrame(String frameDetails) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlGen.startFrame(" +
 	      frameDetails + ")");
 	}
@@ -270,7 +276,7 @@ public abstract class S2DSummaryHtmlGen {
     // Writes the info for the end of a save frame.
     protected void endFrame() throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlGen.endFrame()");
 	}
 
@@ -288,7 +294,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeDeltashift(int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeDeltashift()");
 	}
 
@@ -305,7 +311,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeCSI(int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeCSI()");
 	}
 
@@ -322,7 +328,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writePctAssign(int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writePctAssign()");
 	}
 
@@ -339,7 +345,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeCoupling(int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeCoupling()");
 	}
 
@@ -356,7 +362,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeRelax(String suffix, String name,
       int frameIndex, int count) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeRelax()");
 	}
 
@@ -372,7 +378,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeHetNOE(String name, int frameIndex,
       int count) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeHetNOE()");
 	}
 
@@ -389,7 +395,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeAllShifts(int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeAllShifts()");
 	}
 
@@ -407,7 +413,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeHvsNShifts(int frameIndex, int count)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeHvsNShifts()");
 	}
 
@@ -425,7 +431,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeAtomicCoords(String pdbId, int frameIndex,
       int resCount, int atomCount) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeAtomicCoords()");
 	}
 
@@ -449,7 +455,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeAtomicCoordsCGI(String pdbId, int frameIndex)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println(
 	      "S2DSummaryHtmlGen.writeAtomicCoordsCGI()");
 	}
@@ -490,7 +496,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeChemShiftRef(int frameIndex,
       boolean fullNames) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeChemShiftRef()");
 	}
 
@@ -526,7 +532,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeChemShiftRefCGI(String pdbId, int frameIndex)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeChemShiftRefCGI()");
 	}
 
@@ -565,7 +571,7 @@ public abstract class S2DSummaryHtmlGen {
     // Writes the Pistachio link.
     protected void writePistachio(int frameIndex) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writePistachio()");
 	}
 
@@ -581,7 +587,7 @@ public abstract class S2DSummaryHtmlGen {
     // Writes the ambiguity link.
     protected void writeAmbiguity(int frameIndex) throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeAmbiguity()");
 	}
 
@@ -598,7 +604,7 @@ public abstract class S2DSummaryHtmlGen {
     protected void writeLACS(String title, int frameIndex)
       throws IOException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeLACS()");
 	}
 
@@ -619,6 +625,22 @@ public abstract class S2DSummaryHtmlGen {
 	    }
             _writer.write("<p><b>" + msg + "</b>\n");
 	} catch(IOException ex) {}
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

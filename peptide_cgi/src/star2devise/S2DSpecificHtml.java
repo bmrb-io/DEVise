@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/03/07 16:37:58  wenger
+// Phase 2 of "upload and visualize data" -- mostly working, I think,
+// but still needs chem shift reference capability and hasn't been
+// hooked up to Dimitri's upload scripts yet.
+//
 // Revision 1.6  2007/03/05 18:14:27  wenger
 // First phase of support for "upload and visualize data" setup -- still
 // needs quite a few changes.
@@ -216,7 +221,7 @@ public class S2DSpecificHtml {
     static void write(String htmlDir, int dataType, String name,
       int frameIndex, String title) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSpecificHtml.write(" + htmlDir + ", " +
 	      dataType + ", " + name + ", " + frameIndex + ")");
 	}
@@ -246,7 +251,7 @@ public class S2DSpecificHtml {
     // PRIVATE METHODS
 
     //-------------------------------------------------------------------
-    static void writeOne(String templateFile, String htmlDir,
+    private static void writeOne(String templateFile, String htmlDir,
       String sizeSuffix, int dataType, String name, int frameIndex,
       String title) throws S2DException
     {
@@ -384,6 +389,19 @@ TEMP*/
 	    throw new S2DError("Can't write specific html file: " +
 	      outFileName);
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

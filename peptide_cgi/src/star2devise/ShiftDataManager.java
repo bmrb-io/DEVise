@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2005
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:14  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.4  2005/01/31 21:35:44  wenger
 // Slight mods to atomic coordinates template for better highlight
 // selection; s2d chem shift ref timeout increased to 120 sec., added
@@ -104,7 +108,7 @@ public class ShiftDataManager
     ShiftDataManager( String filename )
       throws S2DException
     {
-	if (DEBUG >= 1) {
+	if (doDebugOutput(11)) {
 	    System.out.println("ShiftDataManager(" + filename + ")");
 	}
 
@@ -147,7 +151,7 @@ public class ShiftDataManager
     public Pair returnValues(String in_aminoAcidType, String in_atomName)
       throws S2DException
     {
-	if (DEBUG >= 1) {
+	if (doDebugOutput(11)) {
 	    System.out.println("ShiftDataManager.returnValues(" +
 	      in_aminoAcidType + ", " + in_atomName + ")");
 	}
@@ -183,7 +187,7 @@ public class ShiftDataManager
 	    }
 		
 	    if(!foundAtomName) {
-		if (DEBUG >= 1) {
+		if (doDebugOutput(11)) {
 		    throw new S2DWarning("Warning: atom " +
 		      in_atomName + " corresponding to amino acid " +
 		      in_aminoAcidType + " not found in chemical " +
@@ -200,4 +204,17 @@ public class ShiftDataManager
 	retValues.offset  = range[position];
 	return retValues;
     } // end function returnValues
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
+    }
 }

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2005
+// (c) Copyright 2004-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:12  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -77,7 +81,7 @@ public class S2DSummaryFileData extends S2DFileData
     public boolean getSummaryData(String name, String htmlDir,
       String masterBmrbId)
     {
-    	if (DEBUG >= 1) {
+    	if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryFileData.getSummaryData(" +
 	      name + ", " + htmlDir + ", " + masterBmrbId + ")");
 	}
@@ -94,7 +98,7 @@ public class S2DSummaryFileData extends S2DFileData
 
 	boolean result = getData(filename);
 
-	if (DEBUG >= 2) {
+	if (doDebugOutput(12)) {
 	    System.out.println("fileVersion: " + fileVersion);
 	    System.out.println("fileDate: " + fileDate);
 
@@ -130,7 +134,7 @@ public class S2DSummaryFileData extends S2DFileData
 	  S2DSummaryHtml.VERSION_LABEL);
 	if (tmpValue != null) {
 	    fileVersion = tmpValue;
-	    if (DEBUG >= 3) {
+	    if (doDebugOutput(13)) {
 	        System.out.println("File version: " + fileVersion);
 	    }
 	}
@@ -140,7 +144,7 @@ public class S2DSummaryFileData extends S2DFileData
 	  S2DSummaryHtml.GEN_DATE_LABEL);
 	if (tmpValue != null) {
 	    fileDate = DateFormat.getDateTimeInstance().parse(tmpValue);
-	    if (DEBUG >= 3) {
+	    if (doDebugOutput(13)) {
 	        System.out.println("Date string: " + tmpValue);
 	        System.out.println("File date: " + fileDate);
 	    }
@@ -149,7 +153,7 @@ public class S2DSummaryFileData extends S2DFileData
 	// Get any related BMRB IDs.
 	tmpValue = getLabeledValue(line, S2DSummaryHtml.BMRB_ID_LABEL);
 	if (tmpValue != null) {
-	    if (DEBUG >= 3) {
+	    if (doDebugOutput(13)) {
 	        System.out.println("Related BMRB ID: " + tmpValue);
 	    }
             bmrbIds.addElement(tmpValue);
@@ -158,11 +162,27 @@ public class S2DSummaryFileData extends S2DFileData
 	// Get any related PDB IDs.
 	tmpValue = getLabeledValue(line, S2DSummaryHtml.PDB_ID_LABEL);
 	if (tmpValue != null) {
-	    if (DEBUG >= 3) {
+	    if (doDebugOutput(13)) {
 	        System.out.println("Related PDB ID: " + tmpValue);
 	    }
             pdbIds.addElement(tmpValue);
 	}
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

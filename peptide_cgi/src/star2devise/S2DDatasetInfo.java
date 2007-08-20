@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2003
+// (c) Copyright 2002-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:10  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.1  2003/04/22 21:58:14  wenger
 // Added package name to peptide-cgi java code and put everything into
 // a single jar file; version is now 6.0.
@@ -65,7 +69,7 @@ public class S2DDatasetInfo
     public S2DDatasetInfo(String name, String dataSourceName,
       String yAttribute, String schemaFile, String schemaType)
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DDatasetInfo.S2DDataSetInfo(" + name +
 	      ", " + dataSourceName + ", " + yAttribute);
         }
@@ -91,6 +95,22 @@ public class S2DDatasetInfo
 
     //-------------------------------------------------------------------
     public String getSchemaType() { return _schemaType; }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
+    }
 }
 
 // ========================================================================

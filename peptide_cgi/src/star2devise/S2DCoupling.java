@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2004
+// (c) Copyright 2001-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:10  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.7  2004/12/08 23:07:17  wenger
 // Oops -- re-fixed deltashift session template; added titles to
 // specific html pages; enlarges the JavaScreen.
@@ -129,7 +133,7 @@ public class S2DCoupling {
       String[] couplingConstValues, String[] couplingConstErrors)
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DCoupling.S2DCoupling(" + name +
 	      ")");
 	}
@@ -154,7 +158,7 @@ public class S2DCoupling {
     // Write the coupling constansts for this data.
     public void writeCoupling(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DCoupling.writeCoupling()");
 	}
 
@@ -231,6 +235,22 @@ public class S2DCoupling {
         dataSets.addElement(new S2DDatasetInfo("3JHNHA coupling const",
 	  dataSource, "Coupling_constant_value", "bmrb-CouplingConstant",
 	  "CouplingConstant"));
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

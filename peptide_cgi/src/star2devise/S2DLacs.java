@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005
+// (c) Copyright 2005-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.1.2.5  2005/11/02 23:21:29  wenger
 // Changed LACS-related STAR file tags to be properly defined;
 // horizontal line in LACS visualizations is at *minus* y offset.
@@ -122,7 +126,7 @@ public class S2DLacs {
     public S2DLacs(String name, String longName, String dataDir,
       String sessionDir, S2DSummaryHtml summary)
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DLacs.S2DLacs(" + name + ")");
 	}
         _name = name;
@@ -142,7 +146,7 @@ public class S2DLacs {
     // size" form that DEVise understands.
     public void calculateLines()
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DLacs.calculateLines()");
 	}
 
@@ -154,7 +158,7 @@ public class S2DLacs {
     // Write the LACS values for this data.
     public void writeLACS(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DLacs.writeLACS()");
 	}
 
@@ -274,6 +278,22 @@ public class S2DLacs {
 	      ex.toString());
 	    throw new S2DError("Can't write LACS values");
 	}
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

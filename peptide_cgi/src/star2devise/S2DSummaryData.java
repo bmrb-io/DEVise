@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2005
+// (c) Copyright 2003-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.5  2005/01/31 23:02:55  wenger
 // Merged pistachio_vis_br_0 thru pistachio_vis_br_1a to V2_1b4_br.
 //
@@ -105,7 +109,7 @@ public class S2DSummaryData
      */
     public S2DSummaryData(String name, String dataDir, Vector dataSets)
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryData.S2DSummaryData(" +
 	      name + " " + dataDir + ")");
         }
@@ -121,7 +125,7 @@ public class S2DSummaryData
      */
     public void writeSummaryData() throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryData.writeSummaryData()");
             System.out.println("Data sets: ");
             for (int index = 0; index < _dataSets.size(); index++) {
@@ -162,6 +166,22 @@ public class S2DSummaryData
 	    throw new S2DError("Can't write summary data values");
 
 	}
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

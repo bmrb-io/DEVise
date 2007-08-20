@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2005
+// (c) Copyright 2002-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/02/01 21:34:32  wenger
+// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
+// to the trunk.
+//
 // Revision 1.2  2006/02/01 20:23:13  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -204,7 +208,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
     // with the given PDB ID.
     public S2DmmCifIfc(String pdbId, boolean useLocalFile) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DmmCifIfc.S2DmmCifIfc(" + pdbId + ", " +
 	      useLocalFile + ")");
 	}
@@ -246,7 +250,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
     // with the given name.
     public S2DmmCifIfc(String filename) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DmmCifIfc.S2DmmCifIfc(" + filename + ")");
 	}
 
@@ -312,7 +316,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	// Constructor.
         public Pdb2Bmrb() throws S2DException
 	{
-	    if (DEBUG >= 2) {
+	    if (doDebugOutput(12)) {
 	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.Pdb2Bmrb()");
 	    }
 
@@ -361,7 +365,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	// translation).
         public String[] translate(String[] resLabels, String[] atomNames)
 	{
-	    if (DEBUG >= 2) {
+	    if (doDebugOutput(12)) {
 	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.translate()");
 	    }
 
@@ -377,7 +381,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 		if (bmrbAtomName != null) {
 		    newAtomNames[index] = bmrbAtomName;
 		} else {
-		    if (DEBUG >= 1) {
+		    if (doDebugOutput(11)) {
 		        System.err.println("Warning: no translation " +
 			  "available for atom " + pdbAtomName +
 			  " in amino acid " + acidName);
@@ -393,7 +397,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	private void addEntry(String acidName, String bmrbAtomName,
 	  String pdbAtomName)
 	{
-	    if (DEBUG >= 3) {
+	    if (doDebugOutput(13)) {
 	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.addEntry(" +
 		  acidName + ", " + bmrbAtomName + ", " + pdbAtomName + ")");
 	    }
@@ -416,7 +420,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	// Returns the BMRB atom name for a given residue and PDB atom name.
 	private String lookUpEntry(String acidName, String pdbAtomName)
 	{
-	    if (DEBUG >= 3) {
+	    if (doDebugOutput(13)) {
 	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.lookUpEntry(" +
 		  acidName + ", " + pdbAtomName + ")");
 	    }
@@ -429,6 +433,19 @@ public class S2DmmCifIfc extends S2DStarIfc {
 
 	    return bmrbAtomName;
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

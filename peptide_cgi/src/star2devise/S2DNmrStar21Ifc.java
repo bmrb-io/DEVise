@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2005
+// (c) Copyright 2004-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/01/12 18:41:06  wenger
+// Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
+//
 // Revision 1.4.2.1  2007/01/03 23:17:36  wenger
 // Added ABBREV_COMMON for ChemShift.
 //
@@ -125,7 +128,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	      ex.toString());
 	}
 
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.isNmrStar21() returns " + result);
 	}
 
@@ -152,7 +155,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // entityID is ignored -- needed for NMR-STAR 3.0 only.
     public boolean refersToProtein(SaveFrameNode frame, String entityID)
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar21Ifc.refersToProtein(" +
 	      frame.getLabel() + " (" + entityID + "))");
         }
@@ -170,7 +173,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	    }
 
 	} catch (S2DException ex) {
-	    if (DEBUG >= 1) {
+	    if (doDebugOutput(11)) {
 	        System.err.println("S2DException checking for protein: " +
 	          ex.toString());
 	    }
@@ -210,7 +213,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     public SaveFrameNode getEntityFrame(SaveFrameNode frame, String entityID)
       throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar21Ifc.getEntityFrame(" +
 	      frame.getLabel() + " (" + entityID + "))");
         }
@@ -258,7 +261,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 
 	result = compFrame;
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println(
 	      "  S2DNmrStar21Ifc.getEntityFrame() returns " +
 	      result.getLabel());
@@ -273,14 +276,14 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // one monomeric polymer save frame.
     public SaveFrameNode getEntityFrame() throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar21Ifc.getEntityFrame()");
         }
 
         SaveFrameNode result = getOneDataFrameByCat(
 	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
 
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
             System.out.println(
 	      "  S2DNmrStar21Ifc.getEntityFrame() returns " +
 	      result.getLabel());
@@ -408,6 +411,19 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	T2_SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
         T2_VALUE = "_T2_value";
         T2_VALUE_ERR = "_T2_value_error";
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

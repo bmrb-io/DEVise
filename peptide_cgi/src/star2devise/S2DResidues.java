@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2005
+// (c) Copyright 2003-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.4  2005/03/22 20:34:38  wenger
 // Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
 //
@@ -85,7 +89,7 @@ public class S2DResidues {
     // Constructor.  Contruct a residue list from one-letter info.
     public S2DResidues(String resSeq) throws S2DException
     {
-        if (DEBUG >= 2) {
+        if (doDebugOutput(12)) {
 	    System.out.println("S2DResidues.S2DResidues(" + resSeq + ")");
 	}
 
@@ -128,7 +132,7 @@ public class S2DResidues {
 		    result = false;
 		} else if (!other._resLabels[index].equals(
 		  _resLabels[index])) {
-		    if (DEBUG >= 0) {
+		    if (doDebugOutput(0)) {
 		        System.err.println("Amino acid mismatch at residue " +
 			  (index + 1) + "; " + other._resLabels[index] +
 			  " vs. " + _resLabels[index]);
@@ -205,6 +209,19 @@ public class S2DResidues {
 	}
 
 	return acidOut;
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

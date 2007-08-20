@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2004
+// (c) Copyright 2001-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:11  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.8  2004/12/08 23:07:17  wenger
 // Oops -- re-fixed deltashift session template; added titles to
 // specific html pages; enlarges the JavaScreen.
@@ -127,7 +131,7 @@ public class S2DHetNOE {
       String[] resLabels, String[] hetNOEValues, String[] hetNOEErrors)
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DHetNOE.S2DHetNOE(" + name + ")");
 	}
         _name = name;
@@ -151,7 +155,7 @@ public class S2DHetNOE {
     // Write the heteronuclear NOE values for this data.
     public void writeHetNOE(int frameIndex) throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("S2DHetNOE.writeHetNOE()");
 	}
 
@@ -220,6 +224,22 @@ public class S2DHetNOE {
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex;
         dataSets.addElement(new S2DDatasetInfo(_shortName, dataSource,
 	  "NOE_value", "bmrb-NOE", "NOE"));
+    }
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
 

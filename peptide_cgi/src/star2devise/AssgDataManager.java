@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2005
+// (c) Copyright 2000-2007
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:09  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.3  2005/01/31 21:35:44  wenger
 // Slight mods to atomic coordinates template for better highlight
 // selection; s2d chem shift ref timeout increased to 120 sec., added
@@ -83,7 +87,7 @@ public class AssgDataManager
     public AssgDataManager( String filename )
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("AssgDataManager(" + filename + ")");
 	}
 
@@ -136,7 +140,7 @@ public class AssgDataManager
     public AssgEntry returnAssg(String residueLabel) 
       throws S2DException
     {
-        if (DEBUG >= 1) {
+        if (doDebugOutput(11)) {
 	    System.out.println("AssgDataManager.returnAssg(" +
 	      residueLabel + ")");
 	}
@@ -168,5 +172,18 @@ public class AssgDataManager
 	}
 
 	return totalAssignments;
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level)
+    {
+    	if (DEBUG >= level || S2DMain._verbosity >= level) {
+	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    return true;
+	}
+
+	return false;
     }
 }
