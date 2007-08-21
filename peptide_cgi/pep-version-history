@@ -1,5 +1,13 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.1.4
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Added -verb command-line flag and verbosity property, and debug_level
+property.
+
+
 Peptide-CGI 11.1.3
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
