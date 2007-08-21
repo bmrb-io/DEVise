@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/20 20:26:05  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 20:23:09  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -140,7 +145,7 @@ public class AssgDataManager
     public AssgEntry returnAssg(String residueLabel) 
       throws S2DException
     {
-        if (doDebugOutput(11)) {
+        if (doDebugOutput(15)) {
 	    System.out.println("AssgDataManager.returnAssg(" +
 	      residueLabel + ")");
 	}

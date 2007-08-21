@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/08/20 20:26:08  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.4  2007/01/12 18:41:06  wenger
 // Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
 //
@@ -420,7 +425,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	        String entityID = getOneFrameValue(frame, ENTITY_ID);
                 boolean frameIsProtein = isAProtein(frame);
 
-	        if (doDebugOutput(13)) {
+	        if (doDebugOutput(13, false)) {
 		    if (frameIsProtein) {
 		        System.out.println("is a protein");
 		    } else {
@@ -536,8 +541,16 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level)
     {
+    	return doDebugOutput(level, true);
+    }
+
+    // Determine whether to do debug output based on the current debug
+    // level settings and the debug level of the output.
+    private static boolean doDebugOutput(int level, boolean doPrint)
+    {
     	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    if (level > 0 && doPrint)
+	      System.out.print("DEBUG " + level + ": ");
 	    return true;
 	}
 

@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/08/20 20:26:06  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.5  2006/05/26 16:50:55  wenger
 // Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
 // to the trunk.
@@ -274,7 +279,7 @@ public class S2DAtomicCoords {
       String connectionFile, Vector dataSets, String pdbId)
       throws S2DException
     {
-        if (doDebugOutput(11)) {
+        if (doDebugOutput(11, true)) {
 	    System.out.println("S2DAtomicCoords.S2DAtomicCoords(" +
 	      name + ")");
 	}
@@ -308,14 +313,14 @@ public class S2DAtomicCoords {
     public void writeBonds(int frameIndex, S2DAtomDataTable adt,
       boolean for2DView) throws S2DException
     {
-        if (doDebugOutput(11)) {
+        if (doDebugOutput(11, true)) {
 	    System.out.println("S2DAtomicCoords.writeBonds(" +
 	      frameIndex + ")");
 	}
 
 	try {
 	    if (MAX_ATOMS >= 0 && _atomCount > MAX_ATOMS) {
-                if (doDebugOutput(12)) {
+                if (doDebugOutput(12, true)) {
 	            System.out.println("Atom count exceeds maximum");
 	        }
 
@@ -451,7 +456,7 @@ public class S2DAtomicCoords {
     // 
     public void writeAtoms(int frameIndex) throws S2DException
     {
-        if (doDebugOutput(11)) {
+        if (doDebugOutput(11, true)) {
 	    System.out.println("S2DJmolAtomicCoords.writeAtoms()");
 	}
 
@@ -550,7 +555,7 @@ public class S2DAtomicCoords {
     // Fill in the _structure variable from the list of atoms.
     private void buildStructure()
     {
-        if (doDebugOutput(12)) {
+        if (doDebugOutput(12, true)) {
 	    System.out.println("S2DAtomicCoords.buildStructure()");
 	}
 
@@ -744,7 +749,7 @@ public class S2DAtomicCoords {
     // needed for Jmol (e.g., 1HE2).
     private String translateAtomName(String name)
     {
-	if (doDebugOutput(12)) {
+	if (doDebugOutput(14, true)) {
 	    System.out.print("translateAtomName(" + name + "): ");
 	}
 
@@ -752,7 +757,7 @@ public class S2DAtomicCoords {
 	    name = (String)_atomNameTrans.get(name);
 	}
 
-	if (doDebugOutput(12)) {
+	if (doDebugOutput(14, false)) {
 	    System.out.println(name);
 	}
 
@@ -762,10 +767,11 @@ public class S2DAtomicCoords {
     //-------------------------------------------------------------------
     // Determine whether to do debug output based on the current debug
     // level settings and the debug level of the output.
-    private static boolean doDebugOutput(int level)
+    private static boolean doDebugOutput(int level, boolean doPrint)
     {
     	if (DEBUG >= level || S2DMain._verbosity >= level) {
-	    if (level > 0) System.out.print("DEBUG " + level + ": ");
+	    if (level > 0 && doPrint)
+	      System.out.print("DEBUG " + level + ": ");
 	    return true;
 	}
 

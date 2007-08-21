@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/08/20 20:26:09  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.4  2006/05/26 16:50:55  wenger
 // Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
 // to the trunk.
@@ -458,7 +463,7 @@ TEMP*/
             String line;
 	    while ((line = reader.readLine()) != null) {
 
-		if (doDebugOutput(13)) {
+		if (doDebugOutput(15)) {
 		    System.out.println("Input line: " + line);
 		}
 
@@ -524,7 +529,7 @@ TEMP*/
 
 	        writer.write(line + "\n");
 
-		if (doDebugOutput(13)) {
+		if (doDebugOutput(15)) {
 		    System.out.println("  Output line: " + line);
 		}
 

@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/08/20 20:26:10  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -420,7 +425,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	// Returns the BMRB atom name for a given residue and PDB atom name.
 	private String lookUpEntry(String acidName, String pdbAtomName)
 	{
-	    if (doDebugOutput(13)) {
+	    if (doDebugOutput(15)) {
 	        System.out.println("S2DmmCifIfc.Pdb2Bmrb.lookUpEntry(" +
 		  acidName + ", " + pdbAtomName + ")");
 	    }
