@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2007/08/22 18:51:52  wenger
+// Removed java memory specifications from scripts which seems to make
+// Peptide-CGI work properly on marlin; fixed florence config file.
+//
 // Revision 1.38  2007/08/20 20:26:08  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -1308,7 +1312,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.4x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.4";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
