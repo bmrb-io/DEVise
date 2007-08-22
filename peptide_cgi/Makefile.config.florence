@@ -30,7 +30,7 @@ PERL_BIN = /usr/bin
 INPUT_WEB_DOMAIN = bmrb.postgenomicnmr.net
 OUTPUT_WEB_DOMAIN = bmrb.postgenomicnmr.net
 
-STAR_URL = file:/bmrb/htdocs/data_library/files
+STAR_URL = file:/bmrb/htdocs/data_library/files/
 STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = http://www.rcsb.org/pdb/files/
 

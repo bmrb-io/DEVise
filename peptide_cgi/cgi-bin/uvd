@@ -12,7 +12,7 @@ set outfile = tmp/uvd.out
 rm -f $outfile
 
 set path = ($path .)
-bin/java -Xmx512m -classpath ./s2d.jar -mx50000000 star2devise.S2DMain \
+bin/java -classpath ./s2d.jar star2devise.S2DMain \
   -data_dir data_dir/uvd -js_data_dir bmrb/dynamic_data/uvd \
   -session_dir session_dir/.uvd -html_dir html_dir/uvd \
   -conn_file chem_info/connections -no_protein_check -uvd $* >& $outfile

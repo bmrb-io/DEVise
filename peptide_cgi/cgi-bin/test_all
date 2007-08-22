@@ -281,7 +281,7 @@ endif
 
 echo ""
 echo "Running test49..."
-tests/test49 -noleech
+tests/test49
 if ($status != 0) then
   set result = 1
   set failed_list = "$failed_list test49"

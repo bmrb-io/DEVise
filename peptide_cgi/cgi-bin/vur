@@ -12,7 +12,7 @@ set outfile = tmp/vur.out
 rm -f $outfile
 
 set path = ($path .)
-bin/java -Xmx512m -classpath ./s2d.jar -mx50000000 star2devise.S2DMain \
+bin/java -classpath ./s2d.jar star2devise.S2DMain \
   -force -no_protein_check -data_dir data_dir \
   -session_dir session_dir/.unreleased -html_dir html_unreleased \
   -conn_file chem_info/connections -do_pdb 2 $* >& $outfile

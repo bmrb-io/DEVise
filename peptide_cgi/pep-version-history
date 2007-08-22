@@ -4,6 +4,11 @@ Peptide-CGI 11.1.4
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Removed java memory specifications from scripts which seems to make
+Peptide-CGI work properly on marlin.
+
+* Fixed an error in the florence configuration file.
+
 * Added -verb command-line flag and verbosity property, and debug_level
 property.
 
