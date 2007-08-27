@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.163  2007/08/27 19:16:40  wenger
+// Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
+//
 // Revision 1.162  2007/08/03 20:17:28  wenger
 // Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
 //
@@ -1245,7 +1248,7 @@ public class jsdevisec extends JPanel
         }
     }
 
-    public void viewHelp()
+    public void showViewHelp()
     {
 	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
 	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
@@ -1264,6 +1267,18 @@ public class jsdevisec extends JPanel
         while(dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {}
 
         jscreen.showAllHelp();
+    }
+
+    public void hideViewHelp()
+    {
+	jscreen.hideAllHelp();
+
+        // Don't call hideAllHelp() until we know that the dispatcher is
+	// not busy.  This is to avoid lock-ups caused by calling
+	// showAllHelp() twice before getting a response
+        while(dispatcher.getStatus() != DEViseCmdDispatcher.STATUS_IDLE) {}
+
+	dispatcher.start(DEViseCommands.HIDE_ALL_VIEW_HELP);
     }
 
     public void hideDebug() {

@@ -32,6 +32,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.81  2007/08/03 20:17:27  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.80  2007/06/27 21:28:21  wenger
 // Fixed the "obscured tooltips" problem by changing the DEViseScreen
 // to extend a JPanel rather than a Panel; made other changes to
@@ -521,36 +524,20 @@ public class DEViseScreen extends JPanel
     // Show help messages in all views.
     public synchronized void showAllHelp()
     {
-        helpclicked = !helpclicked;
-
-        if (helpclicked) {
-            String cmd = "";
-            for (int i = 0; i < allCanvas.size(); i++) {
-                DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
-                cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " +
-		  c.view.getCurlyName() + " " + 0 + " " + 0 + "\n";
-		// If this view has children, send a command to show their help as well.
-		for(int j = 0; j < c.view.viewChilds.size(); j++) {
-		    DEViseView v = (DEViseView)c.view.viewChilds.elementAt(j);
-		    cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " +
-			v.getCurlyName() + " " + 0 + " " + 0 + "\n";
-		}
-            }
-
-            jsc.dispatcher.start(cmd);
-        } else {
-            for (int i = 0; i < allCanvas.size(); i++) {
-                DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
-                c.helpMsg = null;
-
-		for(int j = 0; j < c.childViewHelpMsgs.size(); j++) {
-		    c.childViewHelpMsgs.setElementAt(null, j);
-		}
-            }
-            repaint();
-
-	    jsc.dispatcher.start(DEViseCommands.HIDE_ALL_VIEW_HELP);
+        String cmd = "";
+        for (int i = 0; i < allCanvas.size(); i++) {
+            DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
+            cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " +
+	      c.view.getCurlyName() + " " + 0 + " " + 0 + "\n";
+	    // If this view has children, send a command to show their help as well.
+	    for(int j = 0; j < c.view.viewChilds.size(); j++) {
+	        DEViseView v = (DEViseView)c.view.viewChilds.elementAt(j);
+	        cmd = cmd + DEViseCommands.GET_VIEW_HELP + " " +
+		  v.getCurlyName() + " " + 0 + " " + 0 + "\n";
+	    }
         }
+
+        jsc.dispatcher.start(cmd);
     }
 
     // Hide help messages in all views.
@@ -559,6 +546,10 @@ public class DEViseScreen extends JPanel
 	for (int i = 0; i < allCanvas.size(); i++) {
 	    DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
 	    c.helpMsg = null;
+
+	    for(int j = 0; j < c.childViewHelpMsgs.size(); j++) {
+	        c.childViewHelpMsgs.setElementAt(null, j);
+	    }
 	}
 	
 	repaint();

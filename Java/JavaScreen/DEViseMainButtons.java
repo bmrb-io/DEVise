@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/08/27 19:16:39  wenger
+// Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
+//
 // Revision 1.5  2007/04/20 19:42:35  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -125,8 +128,8 @@ public class DEViseMainButtons
     private MenuItem logMenuItem = new MenuItem(displayLogStr);
 
     private MenuItem jsHelpMenuItem = new MenuItem("JavaScreen Help...");
-    //TEMPTEMP -- make a separate item to hide view help
-    private MenuItem viewHelpMenuItem = new MenuItem("View Help");
+    private MenuItem showViewHelpMenuItem = new MenuItem("Show View Help");
+    private MenuItem hideViewHelpMenuItem = new MenuItem("Hide View Help");
     private MenuItem aboutMenuItem = new MenuItem("About JavaScreen...");
 
     //===================================================================
@@ -230,7 +233,8 @@ public class DEViseMainButtons
 
 	// Set up help menu.
 	//TEMP helpPM.add(jsHelpMenuItem);
-	helpPM.add(viewHelpMenuItem);
+	helpPM.add(showViewHelpMenuItem);
+	helpPM.add(hideViewHelpMenuItem);
 	//TEMP helpPM.add(aboutMenuItem);
 	helpMenuButton.add(helpPM);
     }
@@ -385,11 +389,19 @@ public class DEViseMainButtons
                 }
             });
 
-        viewHelpMenuItem.addActionListener(new ActionListener()
+        showViewHelpMenuItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
                 {
-		    _js.viewHelp();
+		    _js.showViewHelp();
+                }
+            });
+
+        hideViewHelpMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    _js.hideViewHelp();
                 }
             });
     }
