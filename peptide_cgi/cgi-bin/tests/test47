@@ -120,6 +120,8 @@ if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_
   set result = 1
 endif
 
+#TEMP -- test for CSR links in summary file, too
+
 echo -n "Test47 result: "
 if ($result == 0) then
   echo "OK"
