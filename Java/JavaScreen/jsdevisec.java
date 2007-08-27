@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.162  2007/08/03 20:17:28  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.161  2007/06/27 17:48:00  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
@@ -50,6 +53,10 @@
 //
 // Revision 1.155  2007/02/22 23:20:23  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.154.2.17  2007/08/10 15:27:27  wenger
+// Toolbar now stays in the same mode after an action as opposed to
+// resetting to the default mode.
 //
 // Revision 1.154.2.16  2007/07/25 18:25:18  wenger
 // Moved cursor handling from DEViseUIGlobals to the new
@@ -1576,7 +1583,7 @@ public class jsdevisec extends JPanel
 	}
 
 	// Don't drill-down twice w/o user re-selecting drill-down mode.
-	toolBar.setNormal();
+	// toolBar.setNormal();
 
         recorddlg = new RecordDlg(parentFrame, isCenterScreen, msg, this);
         recorddlg.open();

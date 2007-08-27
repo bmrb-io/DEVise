@@ -22,6 +22,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/04/20 19:42:35  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
+// Revision 1.4.2.2  2007/08/24 16:51:42  wenger
+// Removed elipses from "View Help" menu item; renamed "Toggle visual
+// filter" tooltip to "Toggle axis ranges" (hopefully clearer).
+//
 // Revision 1.4.2.1  2007/03/16 17:12:46  adayton
 // Add UI package
 //
@@ -117,7 +125,8 @@ public class DEViseMainButtons
     private MenuItem logMenuItem = new MenuItem(displayLogStr);
 
     private MenuItem jsHelpMenuItem = new MenuItem("JavaScreen Help...");
-    private MenuItem viewHelpMenuItem = new MenuItem("View Help...");
+    //TEMPTEMP -- make a separate item to hide view help
+    private MenuItem viewHelpMenuItem = new MenuItem("View Help");
     private MenuItem aboutMenuItem = new MenuItem("About JavaScreen...");
 
     //===================================================================

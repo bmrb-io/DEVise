@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.92  2007/08/03 20:17:27  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.91  2007/06/27 21:28:21  wenger
 // Fixed the "obscured tooltips" problem by changing the DEViseScreen
 // to extend a JPanel rather than a Panel; made other changes to
@@ -58,6 +61,20 @@
 //
 // Revision 1.82  2007/02/22 23:20:18  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
+//
+// Revision 1.81.2.8  2007/08/27 18:35:32  wenger
+// Implemented "click to zoom" feature in toolbar zoom modes (zooms in or
+// out 50% and re-centers).
+//
+// Revision 1.81.2.7  2007/08/10 15:27:27  wenger
+// Toolbar now stays in the same mode after an action as opposed to
+// resetting to the default mode.
+//
+// Revision 1.81.2.6  2007/08/08 21:02:42  wenger
+// Changed version string.
+//
+// Revision 1.81.2.5  2007/08/03 20:50:47  wenger
+// Updated version string.
 //
 // Revision 1.81.2.4  2007/08/03 19:21:16  wenger
 // Mouse cursor now changes according to toolbar mode; fixed existing
@@ -610,7 +627,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.3x3"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.8.3x4"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

@@ -21,10 +21,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/08/03 20:17:27  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.3  2007/06/27 17:47:58  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
 // problem, which are still in progress).
+//
+// Revision 1.2.2.8  2007/08/27 18:35:31  wenger
+// Implemented "click to zoom" feature in toolbar zoom modes (zooms in or
+// out 50% and re-centers).
+//
+// Revision 1.2.2.7  2007/08/10 15:27:27  wenger
+// Toolbar now stays in the same mode after an action as opposed to
+// resetting to the default mode.
 //
 // Revision 1.2.2.6  2007/08/03 19:21:15  wenger
 // Mouse cursor now changes according to toolbar mode; fixed existing
@@ -78,6 +89,8 @@ import  java.awt.event.*;
 
 public class DEViseCanvas2D extends DEViseCanvas
 {
+    private static final int DEBUG = 0; // 0 - 3
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -99,14 +112,18 @@ public class DEViseCanvas2D extends DEViseCanvas
 	// clarity and partly in case other things change and make them
 	// necessary.  wenger 2007-08-03.
 
-        // Control-drag is X-only zoom.
-        if ((jsc.toolBar.doNormal() &&
-	  jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL)
-	  || jsc.toolBar.doZoomXOnly()) {
-            _zoomMode = ZOOM_MODE_X;
-        } else {
-            _zoomMode = ZOOM_MODE_XY;
-        }
+	if (activeView.isRubberBand) {
+            // Control-drag is X-only zoom.
+            if ((jsc.toolBar.doNormal() &&
+	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_CONTROL)
+	      || jsc.toolBar.doZoomXOnly()) {
+                _zoomMode = ZOOM_MODE_X;
+            } else if (jsc.toolBar.doNormal() || jsc.toolBar.doZoomXY()) {
+                _zoomMode = ZOOM_MODE_XY;
+            } else {
+                _zoomMode = ZOOM_MODE_NONE;
+            }
+	}
 
         if (isInViewDataArea && selectedCursor == null &&
           activeView.isRubberBand && jsc.toolBar.doRubberband()) {
@@ -165,41 +182,9 @@ public class DEViseCanvas2D extends DEViseCanvas
 
                 if (w > jsc.jsValues.uiglobals.rubberBandLimit.width ||
 		  h > jsc.jsValues.uiglobals.rubberBandLimit.height) {
-		    try {
-                        cmd = cmd + DEViseCommands.MOUSE_RUBBERBAND +
-		          " " + activeView.getCurlyName() + " " +
-			  activeView.translateX(sp.x, 2) + " " +
-			  activeView.translateY(sp.y, 2) + " " +
-			  activeView.translateX(ep.x, 2) + " " +
-			  activeView.translateY(ep.y, 2);
-
-			// Alt-drag zooms out.
-                        if (jsc.jsValues.canvas.lastKey == 
-			    KeyEvent.VK_ALT || 
-			    jsc.jsValues.canvas.lastKey == 
-			    KeyEvent.VK_SHIFT ||
-			    jsc.toolBar.doZoomOut()) {
-                            cmd = cmd + " 1";
-                        } else {
-                            cmd = cmd + " 0";
-                        }
-
-			if (_zoomMode == ZOOM_MODE_X) {
-                            cmd = cmd + " 1";
-                        } else if (_zoomMode == ZOOM_MODE_XY) {
-                            cmd = cmd + " 0";
-                        } else {
-			    throw new YError("Illegal zoom mode (" +
-			      _zoomMode + ")");
-			}
-
-                        jscreen.guiAction = true;
-                        dispatcher.start(cmd);
-                    } catch (YError err) {
-		        System.err.println(err.getMessage());
-		    }
+		    doRubberbandZoom(sp.x, sp.y, ep.x, ep.y);
 		    _zoomMode = ZOOM_MODE_NONE;
-		    jsc.toolBar.setNormal();
+		    // jsc.toolBar.setNormal();
                 }
             }
 
@@ -238,34 +223,34 @@ public class DEViseCanvas2D extends DEViseCanvas
 	    } else if (jsc.toolBar.doCursorFill()) {
 		cmd = DEViseCommands.KEY_ACTION + " " +
 		  activeView.getCurlyName() + " " + DEVISE_KEY_CURSOR_FILL;
-		jsc.toolBar.setNormal();
+		// jsc.toolBar.setNormal();
 
 //TEMPTOOLBAR -- need to get view help to work on Jmol and "plain" 3D views
 	    } else if (jsc.toolBar.doViewHelp()) {
-		jsc.toolBar.setNormal();
+		// jsc.toolBar.setNormal();
 		showHideHelp();
 
 	    } else if (jsc.toolBar.doHome()) {
 		cmd = DEViseCommands.KEY_ACTION + " " +
 		  activeView.getCurlyName() + " " + DEVISE_KEY_HOME;
-		jsc.toolBar.setNormal();
+		// jsc.toolBar.setNormal();
 
 	    } else if (jsc.toolBar.doToggleFilter()) {
 		cmd = DEViseCommands.KEY_ACTION + " " +
 		  activeView.getCurlyName() + " " + DEVISE_KEY_TOGGLE_FILTER;
-		jsc.toolBar.setNormal();
+		// jsc.toolBar.setNormal();
 
 	    } else if (jsc.toolBar.doIncreaseSymSize()) {
 		cmd = DEViseCommands.KEY_ACTION + " " +
 		  activeView.getCurlyName() + " " +
 		  DEVISE_KEY_INCREASE_SYM_SIZE;
-		jsc.toolBar.setNormal();
+		// jsc.toolBar.setNormal();
 
 	    } else if (jsc.toolBar.doDecreaseSymSize()) {
 		cmd = DEViseCommands.KEY_ACTION + " " +
 		  activeView.getCurlyName() + " " +
 		  DEVISE_KEY_DECREASE_SYM_SIZE;
-		jsc.toolBar.setNormal();
+		// jsc.toolBar.setNormal();
 
             } else if (activeView.isCursorMove && jsc.toolBar.doCursorOps()) {
                 DEViseCursor cursor = activeView.getFirstCursor();
@@ -286,7 +271,9 @@ public class DEViseCanvas2D extends DEViseCanvas
 
                     cursor.image = null;
                 }
-            }
+            } else if (activeView.isRubberBand && jsc.toolBar.doZoomMode()) {
+		doClickZoom(p.x, p.y);
+	    }
 
             if (cmd != null) {
                 jscreen.guiAction = true;
@@ -329,5 +316,67 @@ public class DEViseCanvas2D extends DEViseCanvas
     protected void doMouseMoved(Point p)
     {
         checkMousePos(p, true);
+    }
+
+    //===================================================================
+    // PROTECTED METHODS
+
+    // Do a zoom resulting from a single mouse click (in one of the zoom-
+    // only toolbar modes).
+    private void doClickZoom(int x1, int y1)
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("doClickZoom(" + x1 + ", " + y1 + ")");
+	}
+
+	final double ZOOM_FACTOR = 0.5;
+	int xMargin = (int)(activeView.viewLoc.width * ZOOM_FACTOR / 2);
+	int yMargin = (int)(activeView.viewLoc.height * ZOOM_FACTOR / 2);
+
+        doRubberbandZoom(x1 - xMargin, y1 - yMargin, x1 + xMargin,
+	  y1 + yMargin);
+    }
+
+    // Do a zoom resulting from dragging out a rubberband line.
+    private void doRubberbandZoom(int x1, int y1, int x2, int y2)
+    {
+	if (DEBUG >= 1) {
+	    System.out.println("doRubberbandZoom(" + x1 + ", " + y1 +
+	      ", " + x2 + ", " + y2 + ")");
+	}
+
+        try {
+            String cmd = DEViseCommands.MOUSE_RUBBERBAND + " " +
+	      activeView.getCurlyName() + " " +
+	      activeView.translateX(x1, 2) + " " +
+	      activeView.translateY(y1, 2) + " " +
+	      activeView.translateX(x2, 2) + " " +
+	      activeView.translateY(y2, 2);
+
+            // Alt-drag zooms out.
+            if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT || 
+              jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT ||
+              jsc.toolBar.doZoomOut()) {
+                cmd = cmd + " 1";
+            } else if (jsc.toolBar.doZoomIn()) {
+                cmd = cmd + " 0";
+            } else {
+                throw new YError("Illegal zoom mode -- neither in or out!");
+            }
+
+            if (_zoomMode == ZOOM_MODE_X) {
+                cmd = cmd + " 1";
+            } else if (_zoomMode == ZOOM_MODE_XY) {
+                cmd = cmd + " 0";
+            } else {
+                throw new YError("Illegal zoom mode (" + _zoomMode + ")");
+            }
+
+            jscreen.guiAction = true;
+            dispatcher.start(cmd);
+    
+        } catch (YError err) {
+            System.err.println(err.getMessage());
+        }
     }
 }

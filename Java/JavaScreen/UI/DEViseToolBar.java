@@ -19,10 +19,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/03 20:17:35  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.2  2007/06/27 17:48:11  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
 // problem, which are still in progress).
+//
+// Revision 1.1.2.20  2007/08/27 18:35:40  wenger
+// Implemented "click to zoom" feature in toolbar zoom modes (zooms in or
+// out 50% and re-centers).
+//
+// Revision 1.1.2.19  2007/08/24 16:51:52  wenger
+// Removed elipses from "View Help" menu item; renamed "Toggle visual
+// filter" tooltip to "Toggle axis ranges" (hopefully clearer).
 //
 // Revision 1.1.2.18  2007/08/03 19:21:24  wenger
 // Mouse cursor now changes according to toolbar mode; fixed existing
@@ -214,7 +225,7 @@ public final class DEViseToolBar extends JToolBar {
 
 		homeButton = new DEViseToolBarButton(
 		  "Home (show all data)", "home_filter", jsValues);
-		toggleFilterButton = new DEViseToolBarButton("Toggle visual filter",
+		toggleFilterButton = new DEViseToolBarButton("Toggle axis ranges",
 		  "toggle_filter", jsValues);
 	    filterToolsButtonSet = new DEViseToolBarButton[] {
 			homeButton,
@@ -370,6 +381,16 @@ public final class DEViseToolBar extends JToolBar {
 
 	public boolean doZoomOut() {
 		return (selectedButton == zoomOutXYButton) ||
+		  (selectedButton == zoomOutXButton) ||
+		  (selectedButton == zoomOutYButton);
+	}
+
+	// Modes where zoom is the only allowed action.
+	public boolean doZoomMode() {
+		return (selectedButton == zoomInXYButton) ||
+		  (selectedButton == zoomInXButton) ||
+		  (selectedButton == zoomInYButton) ||
+		  (selectedButton == zoomOutXYButton) ||
 		  (selectedButton == zoomOutXButton) ||
 		  (selectedButton == zoomOutYButton);
 	}

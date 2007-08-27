@@ -19,6 +19,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2007/06/27 17:48:11  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
+// Revision 1.1.2.8  2007/08/08 21:01:56  wenger
+// Changed toolbar buttons to have the selected icon for both the
+// "pressed" and "rollover selected" states.
+//
 // Revision 1.1.2.7  2007/06/22 21:49:45  wenger
 // Added disabled images for toolbar buttons; 3D buttons now stay
 // disabled even when we have a 3D view because they don't actually
@@ -60,7 +69,7 @@ public final class DEViseToolBarButton extends JButton {
 	static final String IMAGES_DIR = "resources/toolbar_icons/";
 	static final String IMAGE_EXTENSION = "png";
 	static final String DEFAULT_STATE = "default";
-	static final String PRESSED_STATE = "pressed";
+	// static final String PRESSED_STATE = "pressed";
 	static final String SELECTED_STATE = "selected";
 	static final String DISABLED_STATE = "disabled";
 	static final int WIDTH = 22;
@@ -84,7 +93,7 @@ public final class DEViseToolBarButton extends JButton {
 		imageNameBase = new String(nameBase);
 		
 		String defaultIconFilePath = constructIconFilePath(DEFAULT_STATE);
-		String pressedIconFilePath = constructIconFilePath(PRESSED_STATE);
+		// String pressedIconFilePath = constructIconFilePath(PRESSED_STATE);
 		String selectedIconFilePath = constructIconFilePath(SELECTED_STATE);
 		String disabledIconFilePath = constructIconFilePath(DISABLED_STATE);
 		
@@ -98,8 +107,11 @@ public final class DEViseToolBarButton extends JButton {
 		    setIcon(new ImageIcon(jsdevisec.loadImage(defaultIconFilePath,
 			  jsValues)));
 		    setPressedIcon(new ImageIcon(jsdevisec.loadImage(
-			  pressedIconFilePath, jsValues)));
+			  selectedIconFilePath, jsValues)));
+			  // pressedIconFilePath, jsValues)));
 		    setSelectedIcon(new ImageIcon(jsdevisec.loadImage(
+			  selectedIconFilePath, jsValues)));
+		    setRolloverSelectedIcon(new ImageIcon(jsdevisec.loadImage(
 			  selectedIconFilePath, jsValues)));
 		    setDisabledIcon(new ImageIcon(jsdevisec.loadImage(
 			  disabledIconFilePath, jsValues)));
