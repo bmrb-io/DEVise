@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2007/08/22 21:52:18  wenger
+// Changed version to 11.1.4 for release.
+//
 // Revision 1.39  2007/08/22 18:51:52  wenger
 // Removed java memory specifications from scripts which seems to make
 // Peptide-CGI work properly on marlin; fixed florence config file.
@@ -1312,7 +1315,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.4";
+    public static final String PEP_CGI_VERSION = "11.1.5x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -2001,7 +2004,9 @@ public class S2DMain {
 		_isUvd = true;
 	        S2DSpecificHtml.setIsUvd(true);
 	        S2DSummaryHtmlGen.setIsUvd(true);
+//TEMPTEMP -- why do this?  needs to be documented...
 		_csrLevel = CSR_LEVEL_LINK;
+//TEMPTEMP -- why do this?  needs to be documented...
                 _lacsLevel = LACS_LEVEL_TRY;
 
 	    } else if ("-verb".equals(args[index])) {
