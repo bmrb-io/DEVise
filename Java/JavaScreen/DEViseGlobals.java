@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.93  2007/08/27 19:16:39  wenger
+// Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
+//
 // Revision 1.92  2007/08/03 20:17:27  wenger
 // Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
 //
@@ -627,7 +630,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.3x4"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.8.3x5"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

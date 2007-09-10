@@ -32,6 +32,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.82  2007/08/27 20:53:46  wenger
+// Made separate menu items for showing and hiding view help, as requested
+// by Chris Schulte.
+//
 // Revision 1.81  2007/08/03 20:17:27  wenger
 // Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
 //
@@ -388,7 +392,7 @@ public class DEViseScreen extends JPanel
 		      DEViseCmdDispatcher.STATUS_RUNNING_NON_HB) {
                         setTemporaryCursor(jsc.mouseCursor.waitCursor);
                     } else {
-			setToPermanentCursor();
+                        setTemporaryCursor(jsc.mouseCursor.defaultCursor);
                     }
 
                     if (currentView != null) {

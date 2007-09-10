@@ -29,6 +29,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.100  2007/08/03 20:17:27  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.99  2007/06/27 17:47:58  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
@@ -1746,15 +1749,52 @@ public class DEViseCanvas extends Container
 		  jsc.mouseCursor.defaultCursor, this);
 
 	    } else if (selectedCursor != null && jsc.toolBar.doCursorOps()) {
+		// on a DEVise cursor -- set mouse cursor according to
+		// where we are on the DEVise cursor
 	        setMouseCursorByDEViseCursor();
 
 	    } else if (selectedCursor == null && jsc.toolBar.doNormal() &&
 	      activeView.isRubberBand) {
+		// we can draw a rubberband line to zoom
                 jsc.mouseCursor.setTemporaryCursor(
                   jsc.mouseCursor.rbCursor, this);
 
-	    } else {
-                jsc.mouseCursor.setToPermanentCursor(this);
+	    } else if (jsc.toolBar.doZoomMode() && !activeView.isRubberBand) {
+	        jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.disabledCursor, this);
+
+            } else if (jsc.toolBar.doCursorFill() && !activeView.isCursorMove) {
+	        jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.disabledCursor, this);
+
+            } else if (jsc.toolBar.doDrillDown() && !activeView.isDrillDown) {
+	        jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.disabledCursor, this);
+
+            } else if (jsc.toolBar.doHome() && !activeView.isKey) {
+	        jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.disabledCursor, this);
+
+            } else if (jsc.toolBar.doToggleFilter() && !activeView.isKey) {
+	        jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.disabledCursor, this);
+
+            } else if (jsc.toolBar.doIncreaseSymSize() && !activeView.isKey) {
+	        jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.disabledCursor, this);
+
+            } else if (jsc.toolBar.doDecreaseSymSize() && !activeView.isKey) {
+	        jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.disabledCursor, this);
+
+            } else if (jsc.toolBar.doNormal() &&
+	      (!activeView.isCursorMove || view.getFirstCursor() == null) &&
+	      !activeView.isRubberBand) {
+	        jsc.mouseCursor.setTemporaryCursor(
+		  jsc.mouseCursor.disabledCursor, this);
+
+            } else {
+	        jsc.mouseCursor.setToPermanentCursor(this);
 	    }
 
 

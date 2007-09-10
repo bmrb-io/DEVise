@@ -42,6 +42,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2007/08/03 20:17:27  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.14  2007/06/27 17:47:58  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
@@ -591,6 +594,20 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     public void disableDrillDown()
     {
     	drillDownEnabled = false;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Override DEViseCanvas so we don't get non-Jmol-applicable mouse
+     * cursors here (behavior depends on JVM).
+     */
+    public synchronized void checkMousePos(Point mouseLoc,
+      boolean checkDispatcher) throws YError
+    {
+        if (DEBUG >= 3) {
+            System.out.println("DEViseCanvas(" + view.viewName +
+	      ").checkMousePos(" + mouseLoc.x + ", " + mouseLoc.y + ")");
+        }
     }
 
     //===================================================================
