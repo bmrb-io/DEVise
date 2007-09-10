@@ -29,6 +29,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/08/20 20:26:10  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.4  2007/05/09 19:22:50  wenger
 // LACS now works for UVD/vis server mode, pending live testing;
 // found and fixed bug 053 (problems with angle brackets in output);
@@ -159,9 +164,13 @@ public abstract class S2DSummaryHtmlGen {
 	try {
 	    _writer = S2DFileWriter.create(fileName());
 
-	    _writer.write("<html>\n<head>\n<title>Summary for " +
-	      _longName + "</title>\n</head>\n" +
-	      "<body bgcolor = white>\n\n");
+	    _writer.write("<html>\n<head>\n" +
+	      "<title>Summary for " + _longName + "</title>\n" +
+	      "<link REL=\"stylesheet\" TYPE=\"text/css\" " +
+	      "HREF=\"/stylesheets/main.css\" TITLE=\"main stylesheet\">\n" + 
+	      "</head>\n" +
+	      "<body bgcolor = #FFFFCC>\n" +
+	      "<font color = #660000>\n\n");
 
 	    _writer.write("<h3>DEVise plots for " + _longName + ":\n");
 	    _writer.write(systemName + "</h3>\n");

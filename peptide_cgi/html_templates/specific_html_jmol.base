@@ -1,9 +1,11 @@
 <html>
 <head>
   <title>BMRB Data Viewer for bmr4264.str</title>
+  <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
 </head>
 
-<body bgcolor="white">
+<body bgcolor = #FFFFCC>
+<font color = #660000>
   <table cellspacing=10>
     <tr>
       <td><a target = "_blank" href="../../keyboard.html">JavaScreen
