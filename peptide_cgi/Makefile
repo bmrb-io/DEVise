@@ -143,6 +143,8 @@ s2d_props:
 	echo "bmrb_mirror.lacs_name_template=$(LACS_NAME_TEMPLATE)" >> \
 	  $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.lacs_url=$(LACS_URL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.verbosity=0" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.debug_level=0" >> $(S2D_PROPS_FILE)
 
 error_email:
 	-rm -f $(ERROR_EMAIL_FILE)
