@@ -101,7 +101,8 @@ sub DoSim() {
     system("touch", $name . ".done");
     if ($exitOnSuccess) { exit(0) };
 
-  } elsif ($bmrbId eq "4317" && $pdbId eq "1AIL") {
+  } elsif (($bmrbId eq "4317" || $bmrbId eq "data_dir/bmr4317_3.str") &&
+      $pdbId eq "1AIL") {
     # Test 15
     system("cp", "test_data/csr4317.1", $name . "_1.dat");
     system("cp", "test_data/csr4317.2", $name . "_2.dat");

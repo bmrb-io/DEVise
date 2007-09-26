@@ -16,6 +16,14 @@ if ($status != 0) then
 endif
 
 echo ""
+echo "Running test1_3..."
+tests/test1_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test1_3"
+endif
+
+echo ""
 echo "Running test2..."
 tests/test2
 if ($status != 0) then
@@ -37,6 +45,14 @@ tests/test4
 if ($status != 0) then
   set result = 1
   set failed_list = "$failed_list test4"
+endif
+
+echo ""
+echo "Running test4_3..."
+tests/test4_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test4_3"
 endif
 
 echo ""
@@ -96,11 +112,27 @@ if ($status != 0) then
 endif
 
 echo ""
+echo "Running test14_3..."
+tests/test14_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test14_3"
+endif
+
+echo ""
 echo "Running test15..."
 tests/test15 -noleech
 if ($status != 0) then
   set result = 1
   set failed_list = "$failed_list test15"
+endif
+
+echo ""
+echo "Running test15_3..."
+tests/test15_3 -noleech
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test15_3"
 endif
 
 echo ""
@@ -173,6 +205,14 @@ tests/test27
 if ($status != 0) then
   set result = 1
   set failed_list = "$failed_list test27"
+endif
+
+echo ""
+echo "Running test27_3..."
+tests/test27_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test27_3"
 endif
 
 echo ""

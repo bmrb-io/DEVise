@@ -1,0 +1,83 @@
+#! /bin/csh -f
+
+# This is the same as test27, except on an NMR-STAR v3 file.
+
+# Test not failing on an entry that has two entities but no
+# chemical shifts.  Also test correctly assigning residue lists for
+# atomic coordinate visualizations in an entry that has two entities
+# (second test is not yet implemented).
+
+set result = 0
+
+rm -f */5153*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 5153 -file test_data/bmr5153_3.str -local -do_pdb 1 \
+  -force -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+echo -n "Processing mmCIF: "
+./s2d -nomail -pdbid 1UEA -name 5153 -file test_data/bmr5153_3.str \
+  -do_pdb 2 -coord_index 1 -force -check_res_list
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+echo -n "Processing mmCIF: "
+./s2d -nomail -pdbid 1B3D -name 5153 -file test_data/bmr5153_3.str \
+  -do_pdb 2 -coord_index 4 -force -check_res_list
+if ($status != 0) then
+  echo "Third invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMP -- This *should* generate residue lists -- see bug 037.
+set files = (data_dir/5153ac1.dat \
+	data_dir/5153ac4.dat \
+	data_dir/5153md.dat \
+	data_dir/5153n1.dat \
+	data_dir/5153t11.dat \
+	data_dir/5153t21.dat \
+	html_dir/5153ac1.html \
+	html_dir/5153ac4.html \
+	html_dir/5153n1.html \
+	html_dir/5153t11.html \
+	html_dir/5153t21.html \
+	html_dir/5153tmp1y.html \
+	html_dir/5153tmp4y.html \
+	html_dir/5153y.html \
+	html_dir/5153y_large.html \
+	session_dir/5153ac1.ds \
+	session_dir/5153ac4.ds \
+	session_dir/5153acdd \
+	session_dir/5153n1.ds \
+	session_dir/5153t11.ds \
+	session_dir/5153t21.ds \
+	html_dir/5153ac1_large.html \
+	html_dir/5153ac4_large.html \
+	html_dir/5153n1_large.html \
+	html_dir/5153t11_large.html \
+	html_dir/5153t21_large.html)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+echo -n "Test27_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

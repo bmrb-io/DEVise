@@ -1,0 +1,17 @@
+#! /bin/sh -f
+
+# Tests chem shift reference processing (special version that simulates
+# what chemShift on leech does).
+
+result=0
+
+rm -f data_dir/csr.run >& /dev/null
+rm -f data_dir/vis_server/csr.run >& /dev/null
+
+tests/test15_3_main &
+
+tests/dummy_csr_server -exit -time_limit 60
+
+wait $!
+result=$? 
+exit $result

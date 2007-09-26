@@ -1,0 +1,78 @@
+#! /bin/csh -f
+
+# This is the same as test14, except on an NMR-STAR v3 file.
+
+# Pretty much "normal" processing except that we're doing both the BMRB
+# file and the PDB file in a single step (both from the web).
+# This tests bug 028.
+# Note: we're also testing that with do_lacs 1 we don't fail overall
+# even when we can't find the LACS file.
+
+set result = 0
+
+rm -f */4867*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -name 4867 -file test_data/bmr4867_3.str -do_pdb 2 -force \
+  -check_res_list -do_lacs 1 -lacs_url file:test_data/
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = (data_dir/4867ac1.dat \
+	data_dir/4867as1.dat \
+	data_dir/4867c1.dat \
+	data_dir/4867d1.dat \
+	data_dir/4867hn1.dat \
+	data_dir/4867md.dat \
+	data_dir/4867p1.dat \
+	data_dir/4867rc1.dat \
+	data_dir/4867rl1.dat \
+	html_dir/4867ac1.html \
+	html_dir/4867as1.html \
+	html_dir/4867c1.html \
+	html_dir/4867d1.html \
+	html_dir/4867hn1.html \
+	html_dir/4867p1.html \
+	html_dir/4867y.html \
+	html_dir/4867y_large.html \
+	session_dir/4867ac1.ds \
+	session_dir/4867acdd \
+	session_dir/4867as1.ds \
+	session_dir/4867c1.ds \
+	session_dir/4867d1.ds \
+	session_dir/4867hn1.ds \
+	session_dir/4867p1.ds \
+	data_dir/4867am1.dat \
+	data_dir/4867amac1.dat \
+	html_dir/4867am1.html \
+	session_dir/4867am1.ds \
+	html_dir/4867ac1_large.html \
+	html_dir/4867ac2_large.html \
+	html_dir/4867am1_large.html \
+	html_dir/4867as1_large.html \
+	html_dir/4867c1_large.html \
+	html_dir/4867d1_large.html \
+	html_dir/4867hn1_large.html \
+	html_dir/4867p1_large.html)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test14_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

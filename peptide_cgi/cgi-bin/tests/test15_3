@@ -1,0 +1,96 @@
+#! /bin/csh -f
+
+# This is the same as test15, except on an NMR-STAR v3 file.
+
+# Tests chem shift reference processing (needs stuff on leech at BMRB
+# to work right, unless -noleech argument is given -- then it does
+# a "dummy" chemShift calculation).
+
+set result = 0
+
+set noleech = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-noleech) then
+    set noleech = 1
+  endif
+endif
+
+rm -f */4317*
+
+if ($noleech) then
+  tests/test15_3_noleech
+  if ($status) then
+    set result = 1
+  endif
+else
+  tests/test15_3_main
+  if ($status) then
+    set result = 1
+  endif
+endif
+
+echo "Checking output files"
+
+set files = ( data_dir/4317as1.dat \
+	data_dir/4317c1.dat \
+	data_dir/4317csr1_1.dat \
+	data_dir/4317csr1_2.dat \
+	data_dir/4317csr1_3.dat \
+	data_dir/4317csr1_4.dat \
+	data_dir/4317csr1_5.dat \
+	data_dir/4317csr1src.dat \
+	data_dir/4317d1.dat \
+	data_dir/4317hn1.dat \
+	data_dir/4317md.dat \
+	data_dir/4317p1.dat \
+	data_dir/4317rc1.dat \
+	data_dir/4317rl1.dat \
+	html_dir/4317as1.html \
+	html_dir/4317c1.html \
+	html_dir/4317csr11.html \
+	html_dir/4317csr21.html \
+	html_dir/4317csr31.html \
+	html_dir/4317d1.html \
+	html_dir/4317hn1.html \
+	html_dir/4317p1.html \
+	html_dir/4317y.html \
+	html_dir/4317y_large.html \
+	session_dir/4317acdd \
+	session_dir/4317as1.ds \
+	session_dir/4317c1.ds \
+	session_dir/4317csr11.ds \
+	session_dir/4317csr21.ds \
+	session_dir/4317csr31.ds \
+	session_dir/4317d1.ds \
+	session_dir/4317hn1.ds \
+	session_dir/4317p1.ds \
+	data_dir/4317am1.dat \
+	html_dir/4317am1.html \
+	session_dir/4317am1.ds \
+	html_dir/4317am1_large.html \
+	html_dir/4317as1_large.html \
+	html_dir/4317c1_large.html \
+	html_dir/4317csr11_large.html \
+	html_dir/4317csr21_large.html \
+	html_dir/4317csr31_large.html \
+	html_dir/4317d1_large.html \
+	html_dir/4317hn1_large.html \
+	html_dir/4317p1_large.html )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test15_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
