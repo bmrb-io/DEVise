@@ -1,5 +1,21 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.1.5
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Peptide-CGI-generated html files now use the standard BMRB stylesheet;
+also specified matching background and font colors for use at CS where
+the stylesheet is not available.
+
+* Got rid of "marlin" system name in BMRB configuration -- CGI script
+will now redirect to www.bmrb.wisc.edu.
+
+* Added bmrb_mirror.verbosity and bmrb_mirror.debug_level settings to
+the props file so S2DMain doesn't complain about not finding them, and
+it's obvious what to change if you want to turn them on.
+
+
 Peptide-CGI 11.1.4
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
