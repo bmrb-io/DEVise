@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/08/20 20:26:08  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.6  2007/03/12 21:05:42  wenger
 // Last-minute change -- fixed "source file" timestamp comparison
 // to work with local files, not just URLs.
@@ -1032,6 +1037,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // ----------------------------------------------------------------------
     /**
      * Get PDB IDs from monomeric_polymer save frame.
+
      * @param Whether to do the protein check.
      * @param The Vector in which to put the PDB IDs.
      */
@@ -1059,6 +1065,10 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
 	while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+            if (doDebugOutput(12)) {
+                System.out.println("  Checking save frame " +
+		  getFrameName(frame));
+            }
 
 	    // Make sure this is a protein.
 	    if (!doProteinCheck || isAProtein(frame)) {
@@ -1084,6 +1094,10 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 			if (checkDBEntry(residueCount, dbNames[index],
 			  seqLengths[index], seqIdents[index])) {
 			    ids.addElement(dbAccCodes[index]);
+                            if (doDebugOutput(12)) {
+			        System.out.println("  Got PDB ID " +
+				  dbAccCodes[index]);
+			    }
 		        } else {
             		    if (doDebugOutput(11)) {
 			        System.out.println("PDB entry " +
@@ -1111,6 +1125,10 @@ public class S2DNmrStarIfc extends S2DStarIfc {
      */
     private void getPdbIdsFromMolSys(Vector ids) throws S2DException
     {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DNmrStarIfc.getPdbIdsFromMolSys()");
+	}
+
 	Enumeration frameList = getDataFramesByCat(MOL_SYSTEM_SF_CAT,
 	  MOL_SYSTEM);
         while (frameList.hasMoreElements()) {
@@ -1127,6 +1145,10 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	        // Make sure the database is PDB.
 	        if (dbNames[index].equals("PDB")) {
 	            ids.addElement(dbAccCodes[index]);
+                    if (doDebugOutput(12)) {
+                        System.out.println("  Got PDB ID " +
+			  dbAccCodes[index]);
+		    }
 	        }
 	    }
 	}

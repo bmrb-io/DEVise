@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/20 20:26:08  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2007/01/12 18:41:06  wenger
 // Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
 //
@@ -113,24 +118,29 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
+	ATOM_COORD_RES_SEQ_CODE = "_Rep_conf.Comp_index_ID";
+
 	CHEM_SHIFT_AMBIG_CODE = "_Atom_chem_shift.Ambiguity_code";
-
+	CHEM_SHIFT_RES_SEQ_CODE = "_Atom_chem_shift.Comp_index_ID";
 	CHEM_SHIFT_VALUE = "_Atom_chem_shift.Val";
-
-	ENTITY_DB_ACC_CODE = "_Assembly_db_link.Accession_code";
-	ENTITY_DB_NAME = "_Assembly_db_link.Database_code";
+	COUPLING_RES_SEQ_CODE_1 = "_Coupling_constant.Comp_index_ID_1";
+	COUPLING_RES_SEQ_CODE_2 = "_Coupling_constant.Comp_index_ID_2";
 
 	FIGURE_OF_MERIT = "_Atom_chem_shift.Assign_fig_of_merit";
 
 	HETERONUCLEAR_NOE = "heteronucl_NOEs";
+	HET_NOE_RES_SEQ_CODE = "_Heteronucl_NOE.Comp_index_ID_1";
 	HET_NOE_VALUE = "_Heteronucl_NOE.Val";
 	HET_NOE_VALUE_ERR = "_Heteronucl_NOE.Val_err";
 
 	T1_ATOM_NAME = "_T1.Atom_ID";
+	T1_RES_SEQ_CODE = "_T1.Comp_index_ID";
         T1_VALUE = "_T1.Val";
         T1_VALUE_ERR = "_T1.Val_err";
-
+	// Note: for some reason the T1 tags got changed between 3.0 and
+	// 3.1 but the some of the T2 tags didn't.  wenger 2007-09-26.
 	T2_ATOM_NAME = "_T2.Atom_ID";
+	T2_RES_SEQ_CODE = "_T2.Comp_index_ID";
     }
 
     //-------------------------------------------------------------------

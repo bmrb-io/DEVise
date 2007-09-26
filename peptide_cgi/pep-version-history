@@ -8,12 +8,20 @@ Peptide-CGI 11.1.5
 also specified matching background and font colors for use at CS where
 the stylesheet is not available.
 
+* Peptide-CGI now looks for Comp_index_ID tags instead of Seq_ID tags
+in NMR-STAR v3.1 files.
+
+* Added more tests to make sure that NMR-STAR v3.1 files are processed
+correctly.
+
 * Got rid of "marlin" system name in BMRB configuration -- CGI script
 will now redirect to www.bmrb.wisc.edu.
 
 * Added bmrb_mirror.verbosity and bmrb_mirror.debug_level settings to
 the props file so S2DMain doesn't complain about not finding them, and
 it's obvious what to change if you want to turn them on.
+
+* Added more debug output.
 
 
 Peptide-CGI 11.1.4

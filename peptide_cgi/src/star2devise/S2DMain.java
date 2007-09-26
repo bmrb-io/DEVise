@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2007/08/28 21:39:39  wenger
+// Incremented version to 11.1.5x1.
+//
 // Revision 1.40  2007/08/22 21:52:18  wenger
 // Changed version to 11.1.4 for release.
 //
@@ -1315,7 +1318,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.5x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.5x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
