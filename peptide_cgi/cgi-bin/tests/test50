@@ -1,0 +1,63 @@
+#! /bin/csh -f
+
+# Tests "upload and visualize" mode.
+
+set result = 0
+
+rm -f */test50_out*
+rm -f */*/test50_out*
+
+echo -n "Processing NMR-STAR: "
+./uvd -file test_data/20070921_30450.str -name test50_out -force
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMPTEMP -- make sure this list has everything it should
+set files = ( data_dir/uvd/test50_outam1.dat \
+	data_dir/uvd/test50_outamac1.dat \
+	data_dir/uvd/test50_outas1.dat \
+	data_dir/uvd/test50_outc1.dat \
+	data_dir/uvd/test50_outd1.dat \
+	data_dir/uvd/test50_outhn1.dat \
+	data_dir/uvd/test50_outmd.dat \
+	data_dir/uvd/test50_outp1.dat \
+	data_dir/uvd/test50_outps1.dat \
+	data_dir/uvd/test50_outpsac1.dat \
+	data_dir/uvd/test50_outrc1.dat \
+	data_dir/uvd/test50_outrl1.dat \
+	html_dir/uvd/test50_outam1.html \
+	html_dir/uvd/test50_outam1_large.html \
+	html_dir/uvd/test50_outas1.html \
+	html_dir/uvd/test50_outas1_large.html \
+	html_dir/uvd/test50_outc1.html \
+	html_dir/uvd/test50_outc1_large.html \
+	html_dir/uvd/test50_outd1.html \
+	html_dir/uvd/test50_outd1_large.html \
+	html_dir/uvd/test50_outp1.html \
+	html_dir/uvd/test50_outp1_large.html \
+	html_dir/uvd/test50_outps1.html \
+	html_dir/uvd/test50_outps1_large.html \
+	html_dir/uvd/test50_outy.html \
+	html_dir/uvd/test50_outy_large.html )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test50 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

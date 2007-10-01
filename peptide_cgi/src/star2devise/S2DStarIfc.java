@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/08/20 20:26:09  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.4  2007/01/12 18:41:07  wenger
 // Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
 //
@@ -220,6 +225,7 @@ public class S2DStarIfc {
     public String CHEM_SHIFT_AMBIG_CODE = "";
     public String CHEM_SHIFT_ATOM_NAME = "";
     public String CHEM_SHIFT_ATOM_TYPE = "";
+    public String CHEM_SHIFT_ENTITY_ASSEMBLY_ID = "";
     public String CHEM_SHIFT_ENTITY_ID = "";
     public String CHEM_SHIFT_RES_LABEL = "";
     public String CHEM_SHIFT_RES_SEQ_CODE = "";
@@ -554,6 +560,11 @@ public class S2DStarIfc {
 	    values = S2DUtils.selectMatches(entityIDList, values, entityID);
 	}
 
+	if (values.length == 0) {
+	    System.err.println("Warning: " + new S2DWarning("all " + name +
+	      " values rejected by entityID " + entityID));
+	}
+
 	return values;
     }
 
@@ -629,17 +640,49 @@ public class S2DStarIfc {
     }
 
     /**
-     * Get all entity IDs reference in the chemical shift loop of the given
-     * save frame.
+     * Get a list of unique entity IDs referenced in the chemical shift
+     * loop of the given save frame.
      * @param The save frame (note that this should be an
      * assigned_chemical_shifts save frame).
      * @return A Vector containing all relevant entity IDs (the Vector
      * contains Strings).
      */
-    public Vector getChemShiftEntityIDs(SaveFrameNode frame)
+    public Vector getUniqueChemShiftEntityIDs(SaveFrameNode frame)
       throws S2DException
     {
         return null;
+    }
+
+    /**
+     * Get all atom chemical shift entity IDs for the given save
+     * frame.  First we try the "normal" "_Atom_chem_shift.Entity_ID"
+     * tag; if that fails, we try "_Atom_chem_shift.Entity_assembly_ID".
+     * Also, values of "?" are converted to "1".
+     * (Note that this method will return null if called on an NMR-STAR
+     * 2.1 file.)
+     * @param The save frame from which to get the values.
+     * @return An array of the values.
+     */
+    public String[] getAllChemShiftEntityIDs(SaveFrameNode frame)
+      throws S2DException
+    {
+	String[] result = null;
+
+    	if (!CHEM_SHIFT_ENTITY_ID.equals("")) {
+	    try {
+	        result = getFrameValues(frame, CHEM_SHIFT_VALUE,
+	          CHEM_SHIFT_ENTITY_ID);
+            } catch(Exception ex) {
+	        result = getFrameValues(frame, CHEM_SHIFT_VALUE,
+	          CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
+	    }
+	}
+
+	for (int index = 0; index < result.length; index++) {
+	    if (result[index].equals("?")) result[index] = "1";
+	}
+
+	return result;
     }
 
     //===================================================================

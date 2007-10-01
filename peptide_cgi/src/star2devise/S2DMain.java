@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2007/10/01 16:49:49  wenger
+// Got tests/test4_3 to work.
+//
 // Revision 1.42  2007/09/26 20:47:14  wenger
 // Changed x.Seq_ID to x.Comp_index_ID for NMR-STAR 3.1 processing as
 // per Eldon's request; added some more debug output.
@@ -2789,7 +2792,7 @@ public class S2DMain {
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
 
-	    Vector entityIDList = star.getChemShiftEntityIDs(frame);
+	    Vector entityIDList = star.getUniqueChemShiftEntityIDs(frame);
 	    for (int index = 0; index < entityIDList.size(); index++) {
 	        String entityID = (String)entityIDList.get(index);
 
@@ -3075,8 +3078,7 @@ public class S2DMain {
 	    //
 	    String[] entityIDs = null;
 	    if (!entityID.equals("")) {
-	        entityIDs = star.getFrameValues(chemShiftFrame,
-		  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ENTITY_ID);
+	        entityIDs = star.getAllChemShiftEntityIDs(chemShiftFrame);
 	    }
 
 	    String[] resSeqCodesTmp = star.getAndFilterFrameValues(
@@ -3156,8 +3158,7 @@ public class S2DMain {
 	//
 	String[] entityIDs = null;
 	if (!entityID.equals("")) {
-	    entityIDs = star.getFrameValues(frame, star.CHEM_SHIFT_VALUE,
-	      star.CHEM_SHIFT_ENTITY_ID);
+	    entityIDs = star.getAllChemShiftEntityIDs(frame);
 	}
 
 	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
@@ -3618,8 +3619,7 @@ public class S2DMain {
 //TEMPTEMP -- change CHEM_SHIFT_VALUE to FIGURE_OF_MERIT in all here
 	String[] entityIDs = null;
 	if (!entityID.equals("")) {
-	    entityIDs = star.getFrameValues(frame, star.CHEM_SHIFT_VALUE,
-	      star.CHEM_SHIFT_ENTITY_ID);
+	    entityIDs = star.getAllChemShiftEntityIDs(frame);
 	}
 
 	String[] meritValsTmp;
@@ -3716,8 +3716,7 @@ public class S2DMain {
 	//
 	String[] entityIDs = null;
 	if (!entityID.equals("")) {
-	    entityIDs = star.getFrameValues(frame, star.CHEM_SHIFT_VALUE,
-	      star.CHEM_SHIFT_ENTITY_ID);
+	    entityIDs = star.getAllChemShiftEntityIDs(frame);
 	}
 
 	String[] ambiguityTmp;

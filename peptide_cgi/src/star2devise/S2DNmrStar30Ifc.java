@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/08/21 18:56:29  wenger
+// Improved debug output -- better verbosity levels, etc.
+//
 // Revision 1.5  2007/08/20 20:26:08  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -349,32 +352,32 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
     // ----------------------------------------------------------------------
     /**
-     * Get all entity IDs referenced in the chemical shift loop of the given
-     * save frame.
+     * Get a list of unique entity IDs referenced in the chemical shift
+     * loop of the given save frame.
      * @param The save frame (note that this should be an
      * assigned_chemical_shifts save frame).
      * @return A Vector containing all relevant entity IDs (the Vector
      * contains Strings).
      */
-    public Vector getChemShiftEntityIDs(SaveFrameNode frame)
+    public Vector getUniqueChemShiftEntityIDs(SaveFrameNode frame)
       throws S2DException
     {
 	Vector result = new Vector();
 
         if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStar30Ifc.getChemShiftEntityIDs(" +
+	    System.out.println("S2DNmrStar30Ifc.getUniqueChemShiftEntityIDs(" +
 	      frame + ")");
 	}
 
-        String[] entityIDs = getFrameValues(frame,
-          CHEM_SHIFT_VALUE, CHEM_SHIFT_ENTITY_ID);
+        String[] entityIDs = getAllChemShiftEntityIDs(frame);
         for (int index = 0; index < entityIDs.length; index++) {
             if (!result.contains(entityIDs[index])) result.add(
 	      entityIDs[index]);
         }
 
         if (doDebugOutput(12)) {
-	    System.out.print("S2DNmrStar30Ifc.getChemShiftEntityIDs() returns ");
+	    System.out.print(
+	      "S2DNmrStar30Ifc.getUniqueChemShiftEntityIDs() returns ");
 	    for (int index = 0; index < result.size(); index++) {
 	        System.out.print((String)result.get(index) + " ");
 	    }
@@ -470,6 +473,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	CHEM_SHIFT_AMBIG_CODE = "_Atom_chem_shift.Chem_shift_ambiguity_code";
         CHEM_SHIFT_ATOM_NAME = "_Atom_chem_shift.Atom_ID";
         CHEM_SHIFT_ATOM_TYPE = "_Atom_chem_shift.Atom_type";
+	CHEM_SHIFT_ENTITY_ASSEMBLY_ID = "_Atom_chem_shift.Entity_assembly_ID";
 	CHEM_SHIFT_ENTITY_ID = "_Atom_chem_shift.Entity_ID";
         CHEM_SHIFT_RES_LABEL = "_Atom_chem_shift.Comp_ID";
         CHEM_SHIFT_RES_SEQ_CODE = "_Atom_chem_shift.Seq_ID";

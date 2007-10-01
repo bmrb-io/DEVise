@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/08/20 20:26:08  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -274,6 +279,14 @@ public class S2DPistachio {
 
 	for (int index = 0; index < _residueHasData.length; ++index) {
 	    _residueHasData[index] = false;
+	}
+
+	if (_resSeqCodes.length < 1) {
+	    if (doDebugOutput(0)) {
+	        System.out.println("No Pistachio values calculated because " +
+	          "we have no residue sequence codes");
+	    }
+	    return;
 	}
 
 	TempData td = new TempData();

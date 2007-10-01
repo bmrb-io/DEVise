@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/08/20 20:26:08  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.5  2007/01/12 18:41:06  wenger
 // Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
 //
@@ -293,14 +298,14 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     }
 
     /**
-     * Get all entity IDs reference in the chemical shift loop of the given
-     * save frame.
+     * Get a list of unique entity IDs reference in the chemical shift
+     * loop of the given save frame.
      * @param The save frame (note that this should be an
      * assigned_chemical_shifts save frame).
      * @return A Vector containing all relevant entity IDs (the Vector
      * contains Strings).
      */
-    public Vector getChemShiftEntityIDs(SaveFrameNode frame)
+    public Vector getUniqueChemShiftEntityIDs(SaveFrameNode frame)
     {
         Vector result = new Vector();
 	result.add("");

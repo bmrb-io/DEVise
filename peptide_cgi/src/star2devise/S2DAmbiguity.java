@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/08/21 18:56:29  wenger
+// Improved debug output -- better verbosity levels, etc.
+//
 // Revision 1.4  2007/08/20 20:26:06  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -234,6 +237,14 @@ public class S2DAmbiguity {
 
 	for (int index = 0; index < _residueHasData.length; ++index) {
 	    _residueHasData[index] = false;
+	}
+
+        if (_resSeqCodes.length < 1) {
+	    if (doDebugOutput(0)) {
+	        System.out.println("No ambiguity values calculated because " +
+	          "we have no residue sequence codes");
+	    }
+	    return;
 	}
 
 	TempData td = new TempData();
