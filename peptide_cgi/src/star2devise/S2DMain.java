@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2007/09/26 20:47:14  wenger
+// Changed x.Seq_ID to x.Comp_index_ID for NMR-STAR 3.1 processing as
+// per Eldon's request; added some more debug output.
+//
 // Revision 1.41  2007/08/28 21:39:39  wenger
 // Incremented version to 11.1.5x1.
 //
@@ -1318,7 +1322,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.5x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.5x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
