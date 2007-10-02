@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/10/01 21:32:29  wenger
+// Changes to how we get chemical shift entity ID values: added check for
+// _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
+// not found; change "?" to "1" in values.  This makes the new test50 work
+// at least somewhat, but that still needs more checking.  Also added
+// some more error checking for problems I found while working on this.
+//
 // Revision 1.4  2007/08/20 20:26:08  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -282,7 +289,7 @@ public class S2DPistachio {
 	}
 
 	if (_resSeqCodes.length < 1) {
-	    if (doDebugOutput(0)) {
+	    if (doDebugOutput(1)) {
 	        System.out.println("No Pistachio values calculated because " +
 	          "we have no residue sequence codes");
 	    }
@@ -415,7 +422,11 @@ public class S2DPistachio {
 	            _hLT95[resSeqCode] = 0.0f;
 	        }
 	    } catch (S2DException ex) {
-	        System.err.println("Exception saving Pistachio values" + ex);
+		S2DWarning warning = new S2DWarning(
+		  "Exception saving Pistachio values " + ex);
+		if (doDebugOutput(1)) {
+	            System.err.println(warning);
+		}
 	    }
 	}
     }

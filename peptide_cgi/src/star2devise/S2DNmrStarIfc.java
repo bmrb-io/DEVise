@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/09/26 20:47:15  wenger
+// Changed x.Seq_ID to x.Comp_index_ID for NMR-STAR 3.1 processing as
+// per Eldon's request; added some more debug output.
+//
 // Revision 1.7  2007/08/20 20:26:08  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -721,7 +725,8 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	try {
 	    String[] resSeqCodesTmp = getFrameValues(frame,
 	      ENTITY_RES_SEQ_CODE, ENTITY_RES_SEQ_CODE);
-	    int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	    int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	      ENTITY_RES_SEQ_CODE);
 	    resSeqCodesTmp = null;
 
 	    String[] resLabels = getFrameValues(frame,
@@ -1083,7 +1088,8 @@ public class S2DNmrStarIfc extends S2DStarIfc {
                 String[] seqIdents = null;
                 String[] tmpSeqLengths = getFrameValues(frame, ENTITY_DB_NAME,
 		  SEQ_SUBJ_LENGTH);
-		seqLengths = S2DUtils.arrayStr2Int(tmpSeqLengths);
+		seqLengths = S2DUtils.arrayStr2Int(tmpSeqLengths,
+		  SEQ_SUBJ_LENGTH);
                 seqIdents = getFrameValues(frame, ENTITY_DB_NAME,
 		  SEQ_IDENTITY);
 

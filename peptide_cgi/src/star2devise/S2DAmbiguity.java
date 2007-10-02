@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/10/02 17:39:53  wenger
+// More debug output; updated the version history with changes from last
+// commit.
+//
 // Revision 1.6  2007/10/01 21:32:29  wenger
 // Changes to how we get chemical shift entity ID values: added check for
 // _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
@@ -371,7 +375,11 @@ public class S2DAmbiguity {
 	    	_percent9[resSeqCode] = (float)_ambig9Count / atomCount;
 
 	    } catch (S2DException ex) {
-		System.err.println("Exception saving ambiguity values " + ex);
+		S2DWarning warning = new S2DWarning(
+		  "Exception saving ambiguity values " + ex);
+		if (doDebugOutput(1)) {
+		    System.err.println(warning);
+		}
 	    }
 	}
     }

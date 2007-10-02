@@ -25,7 +25,7 @@ will now redirect to www.bmrb.wisc.edu.
 the props file so S2DMain doesn't complain about not finding them, and
 it's obvious what to change if you want to turn them on.
 
-* Added more debug output.
+* Added more debug output, better control of what is printed.
 
 
 Peptide-CGI 11.1.4

@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/10/02 17:39:53  wenger
+// More debug output; updated the version history with changes from last
+// commit.
+//
 // Revision 1.4  2007/08/20 20:26:10  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -211,9 +215,12 @@ public class S2DUtils
 	    } catch(NumberFormatException ex) {
 		// Note: the S2DWarning object below is *not* supposed to be
 		// thrown...
-		System.err.println(new S2DWarning(
+		S2DWarning warning = new S2DWarning(
 		  "Exception parsing double (" + name + "[" + index +
-		    "]): " + ex.toString()));
+		  "]): " + ex.toString());
+		if (doDebugOutput(1)) {
+		    System.err.println(warning);
+		}
 	        results[index] = Double.NaN;
 	    }
 	}
@@ -222,7 +229,7 @@ public class S2DUtils
     }
 
     //-------------------------------------------------------------------
-    public static int[] arrayStr2Int(String[] values)
+    public static int[] arrayStr2Int(String[] values, String name)
     {
 	int count = values.length;
 	int[] results = new int[count];
@@ -231,8 +238,12 @@ public class S2DUtils
 	    try {
 	        results[index] = Integer.parseInt(values[index]);
 	    } catch(NumberFormatException ex) {
-	        System.err.println("Exception parsing int: " +
-		  ex.toString());
+		S2DWarning warning = new S2DWarning(
+		  "Exception parsing int (" + name + "[" + index +
+		  "]): " + ex.toString());
+		if (doDebugOutput(1)) {
+		    System.err.println(warning);
+		}
 	        results[index] = 0;
 	    }
 	}

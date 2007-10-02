@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2007/10/02 17:39:53  wenger
+// More debug output; updated the version history with changes from last
+// commit.
+//
 // Revision 1.44  2007/10/01 21:32:29  wenger
 // Changes to how we get chemical shift entity ID values: added check for
 // _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
@@ -1489,7 +1493,7 @@ public class S2DMain {
     // Constructor.
     public S2DMain(String args[]) throws S2DException
     {
-        if (doDebugOutput(1)) {
+        if (doDebugOutput(2)) {
 	    String sep = "";
 	    System.out.print("S2DMain.S2DMain(");
 	    for (int index = 0; index < args.length; index++) {
@@ -1569,7 +1573,7 @@ public class S2DMain {
 	S2DNames.STAR_NAME_TEMPLATE = props.getProperty(
 	  "bmrb_mirror.star_name_template");
 	if (S2DNames.STAR_NAME_TEMPLATE == null) {
-	    if (doDebugOutput(1)) {
+	    if (doDebugOutput(2)) {
 	        System.out.println("bmrb_mirror.star_name_template " +
 		  "property value not defined; using default");
 	    }
@@ -1586,7 +1590,7 @@ public class S2DMain {
 	S2DNames.LACS_NAME_TEMPLATE = props.getProperty(
 	  "bmrb_mirror.lacs_name_template");
 	if (S2DNames.LACS_NAME_TEMPLATE == null) {
-	    if (doDebugOutput(1)) {
+	    if (doDebugOutput(2)) {
 	        System.out.println("bmrb_mirror.lacs_name_template " +
 		  "property value not defined; using default");
 	    }
@@ -1797,7 +1801,7 @@ public class S2DMain {
     // Check arguments to constructor, set member variables accordingly.
     private void checkArgs(String args[]) throws S2DException
     {
-        if (doDebugOutput(1)) {
+        if (doDebugOutput(2)) {
 	    System.out.println("Arguments: ");
 	    for (int index = 0; index < args.length; index++) {
 	        System.out.println("  {" + args[index] + "}");
@@ -2130,7 +2134,7 @@ public class S2DMain {
 	      ".str", ".LACS.str");
 	}
 
-        if (doDebugOutput(1)) {
+        if (doDebugOutput(2)) {
 	    System.out.println("_name = {" + _name + "}");
 	    System.out.println("_longName = {" + _longName + "}");
 	    System.out.println("_masterBmrbId/BMRB ID = " + _masterBmrbId);
@@ -2174,7 +2178,7 @@ public class S2DMain {
     // Decide whether to use cached versions of the relevant output files.
     private boolean useCache()
     {
-	if (doDebugOutput(1)) {
+	if (doDebugOutput(2)) {
 	    System.out.println("S2DMain.useCache()");
 	}
 
@@ -2198,7 +2202,7 @@ public class S2DMain {
 	    // version.
 	    //
 	    if (!PEP_CGI_VERSION.equals(summaryData.fileVersion)) {
-		if (doDebugOutput(1)) {
+		if (doDebugOutput(2)) {
 		    System.out.println("Existing summary html file version (" +
 		      summaryData.fileVersion + ") does not " +
 		      "match current software version (" + PEP_CGI_VERSION +
@@ -2217,7 +2221,7 @@ public class S2DMain {
 	            Date starModDate = S2DNmrStarIfc.getModDate(id, false);
 	            if (starModDate == null ||
 		      starModDate.after(summaryData.fileDate)) {
-		        if (doDebugOutput(1)) {
+		        if (doDebugOutput(2)) {
 		            System.out.println("Existing summary html file " +
 		              "is older than NMR-STAR file; cache not used");
 		        }
@@ -2233,7 +2237,7 @@ public class S2DMain {
 		      S2DNmrStarIfc.getModDateFile(filename);
 	            if (starModDate == null ||
 		      starModDate.after(summaryData.fileDate)) {
-		        if (doDebugOutput(1)) {
+		        if (doDebugOutput(2)) {
 		            System.out.println("Existing summary html file " +
 		              "is older than NMR-STAR file; cache not used");
 		        }
@@ -2261,7 +2265,7 @@ public class S2DMain {
 
 	        for (int index = 0; index < pdbIds2Check.size(); index++) {
 	            String id = (String)pdbIds2Check.elementAt(index);
-		    if (doDebugOutput(1)) {
+		    if (doDebugOutput(2)) {
                         System.out.println("  Checking PDB ID " + id);
 		    }
 	            Date pdbModDate = S2DmmCifIfc.getModDate(id);
@@ -2272,7 +2276,7 @@ public class S2DMain {
 			// leaving it for now.  wenger 2004-11-03.
 	            if (pdbModDate == null ||
 		      pdbModDate.after(summaryData.fileDate)) {
-		        if (doDebugOutput(1)) {
+		        if (doDebugOutput(2)) {
 		            System.out.println("Existing summary html file " +
 			      "is older than PDB file; cache not used");
 		        }
@@ -2302,7 +2306,7 @@ public class S2DMain {
 	    result = true;
 	}
 
-	if (doDebugOutput(1)) {
+	if (doDebugOutput(2)) {
 	    System.out.println("S2DMain.useCache() returns " + result);
 	}
 
@@ -2332,7 +2336,7 @@ public class S2DMain {
 	// version.
 	//
 	if (!PEP_CGI_VERSION.equals(sessionData.fileVersion)) {
-	    if (doDebugOutput(1)) {
+	    if (doDebugOutput(2)) {
 	        System.out.println("Existing session file version (" +
 	          sessionData.fileVersion + ") does not " +
 	          "match current software version (" + PEP_CGI_VERSION +
@@ -2346,7 +2350,7 @@ public class S2DMain {
 	// don't use the cached coordinate data.
 	//
 	if (!sessionData.fileDate.after(summaryData.fileDate)) {
-	    if (doDebugOutput(1)) {
+	    if (doDebugOutput(2)) {
 	        System.out.println("Existing session is not newer " +
 		  "than summary file; cache not used");
 	    }
@@ -2361,7 +2365,7 @@ public class S2DMain {
     // duplicates).
     private void addBmrbId(String bmrbId)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
             System.out.println("addBmrbId(" + bmrbId + ")");
         }
 
@@ -2374,7 +2378,7 @@ public class S2DMain {
     // Add PDB IDs to the list of PDB files to be processed.
     private void addPDB(Vector ids)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
             System.out.println("addPDB()");
         }
 
@@ -2400,7 +2404,7 @@ public class S2DMain {
 	    }
 	}
 	
-	if (doDebugOutput(1)) {
+	if (doDebugOutput(2)) {
 	    System.out.print("Coordinate PDB IDs: ");
 	    for (int index = 0; index < _pdbIds.size(); index++) {
 	        System.out.print((String)_pdbIds.elementAt(index) + ", ");
@@ -2422,7 +2426,7 @@ public class S2DMain {
     // BMRB, PDB coordinates, chem shift reference).
     private void process() throws S2DException
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
             System.out.println("process()");
         }
 
@@ -2672,7 +2676,7 @@ public class S2DMain {
     // Process all specified PDB entries.
     private void processAllPDBs(S2DStarIfc star)
     {
-        if (doDebugOutput(1)) {
+        if (doDebugOutput(2)) {
 	    System.out.println("processAllPDBs()");
 	}
 
@@ -2704,7 +2708,7 @@ public class S2DMain {
     // Process the LACS file (if any).
     private void processLACS() throws S2DException
     {
-        if (doDebugOutput(1)) {
+        if (doDebugOutput(2)) {
 	    System.out.println("processLACS()");
 	    System.out.println("_lacsFile = " + _lacsFile);
 	}
@@ -2788,7 +2792,7 @@ public class S2DMain {
     // Note: this can be tested with 4264.
     private void saveChemShifts(S2DStarIfc star) throws S2DException
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveChemShifts()");
 	}
 
@@ -2806,7 +2810,7 @@ public class S2DMain {
 	        // We only want to output chemical shifts corresponding to a
 	        // protein.  (This can be tested with bmr4038.str and bmr4056.str.)
 	        if (_doProteinCheck && !star.refersToProtein(frame, entityID)) {
-                    if (doDebugOutput(1)) {
+                    if (doDebugOutput(2)) {
                         System.out.println("Chemical shifts not saved for " +
                           "save frame " + frame.getLabel() + " (" + entityID +
 			  ") because it is not a protein");
@@ -2839,7 +2843,7 @@ public class S2DMain {
     // this method is called, but if not we try to save one now.
     private void ensureResidueList(S2DStarIfc star) throws S2DException
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.ensureResidueList()");
 	}
 
@@ -2854,7 +2858,7 @@ public class S2DMain {
     // Note: this can be tested with 4267.
     private void saveT1Relaxation(S2DStarIfc star)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveT1Relaxation()");
 	}
 
@@ -2880,7 +2884,7 @@ public class S2DMain {
     // Note: this can be tested with 4267.
     private void saveT2Relaxation(S2DStarIfc star)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveT2Relaxation()");
 	}
 
@@ -2906,7 +2910,7 @@ public class S2DMain {
     // Note: this can be tested with 4267.
     private void saveHetNOE(S2DStarIfc star)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveHetNOE()");
 	}
 
@@ -2930,7 +2934,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     private void saveHExchangeRate(S2DStarIfc star)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveHExchangeRate()");
 	}
 
@@ -2942,7 +2946,7 @@ public class S2DMain {
     // Note: this can be tested with 4297.
     private void saveCoupling(S2DStarIfc star)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveCoupling()");
 	}
 
@@ -2966,7 +2970,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     private void saveHExchangeProtFact(S2DStarIfc star)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveHExchangeProtFact()");
 	}
 
@@ -2976,7 +2980,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     private void saveS2Params(S2DStarIfc star)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveS2Params()");
 	}
 
@@ -2987,7 +2991,7 @@ public class S2DMain {
     // Write the data source definitions needed for 3D data.
     private void save3DDataSources() throws S2DException
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.save3DDataSources()");
 	}
 
@@ -3005,7 +3009,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     private void saveAtomicCoords(S2DStarIfc star)
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveAtomicCoords()");
 	}
 
@@ -3031,7 +3035,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     private void saveLACS(S2DStarIfc star) throws S2DException
     {
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveLACS()");
 	}
 
@@ -3055,7 +3059,7 @@ public class S2DMain {
       SaveFrameNode chemShiftFrame, String entityID, int frameIndex)
       throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameResCounts(" +
 	      star.getFrameName(chemShiftFrame) + " (" + entityID +
 	      "), " + frameIndex + ")");
@@ -3091,7 +3095,8 @@ public class S2DMain {
 	    String[] resSeqCodesTmp = star.getAndFilterFrameValues(
 	      chemShiftFrame, star.CHEM_SHIFT_VALUE,
 	      star.CHEM_SHIFT_RES_SEQ_CODE, entityID, entityIDs);
-	    int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	    int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	      star.CHEM_SHIFT_RES_SEQ_CODE);
 	    resSeqCodesTmp = null;
 
 	    String[] residueLabels = star.getAndFilterFrameValues(
@@ -3123,7 +3128,7 @@ public class S2DMain {
     private S2DResidues saveResList(S2DStarIfc star,
       SaveFrameNode monoPolyFrame, int frameIndex) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveResList(" +
 	      star.getFrameName(monoPolyFrame) + ", " + frameIndex + ")");
 	}
@@ -3154,7 +3159,7 @@ public class S2DMain {
     private void saveFrameChemShifts(S2DStarIfc star, SaveFrameNode frame,
       String entityID, int frameIndex) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameChemShifts(" +
 	      star.getFrameName(frame) + " (" + entityID + "), " +
 	      frameIndex + ")");
@@ -3171,7 +3176,8 @@ public class S2DMain {
 	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
 	  entityIDs);
-	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	  star.CHEM_SHIFT_RES_SEQ_CODE);
 	resSeqCodesTmp = null;
 
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
@@ -3198,10 +3204,11 @@ public class S2DMain {
 	    String[] ambiguityTmp = star.getAndFilterFrameValues(frame,
 	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE, entityID,
 	      entityIDs);
-	    ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp);
+	    ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp,
+	      star.CHEM_SHIFT_AMBIG_CODE);
 	    ambiguityTmp = null;
 	} catch (S2DException ex) {
-            if (doDebugOutput(3)) {
+            if (doDebugOutput(4)) {
 	        System.out.println("No ambiguity values in this save frame (" +
 		  star.getFrameName(frame) + ")");
 	    }
@@ -3256,7 +3263,7 @@ public class S2DMain {
 	        System.err.println(ex.toString());
 	    }
 	} else {
-	    if (doDebugOutput(1)) {
+	    if (doDebugOutput(2)) {
 	        System.out.println("CSI values not saved for " +
 		  "save frame " + frame.getLabel() + " because HA " +
 		    "chem shifts are not available for 80% of the residues");
@@ -3299,7 +3306,7 @@ public class S2DMain {
     private void saveFrameT1Relax(S2DStarIfc star, SaveFrameNode frame,
       int frameIndex) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameT1Relax(" +
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
@@ -3349,7 +3356,7 @@ public class S2DMain {
     private void saveFrameT2Relax(S2DStarIfc star, SaveFrameNode frame,
       int frameIndex) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameT2Relax(" +
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
@@ -3399,7 +3406,7 @@ public class S2DMain {
     private void saveFrameCoupling(S2DStarIfc star, SaveFrameNode frame,
       int frameIndex) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameCoupling(" +
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
@@ -3466,7 +3473,7 @@ public class S2DMain {
     private void saveFrameHetNOE(S2DStarIfc star, SaveFrameNode frame,
       int frameIndex) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameHetNOE(" +
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
@@ -3519,7 +3526,7 @@ public class S2DMain {
       int frameIndex, S2DAtomDataTable pt, boolean for2DView)
       throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameAtomicCoords(" +
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
@@ -3539,7 +3546,7 @@ public class S2DMain {
 		}
 	    }
 
-	    if (doDebugOutput(1)) {
+	    if (doDebugOutput(2)) {
 	        System.out.println("Model 1 atom count = " + model1AtomCount);
 	    }
 	}
@@ -3613,7 +3620,7 @@ public class S2DMain {
     private void saveFramePistachio(S2DStarIfc star, SaveFrameNode frame,
       String entityID, S2DResidues residues, int frameIndex) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFramePistachio(" +
 	      star.getFrameName(frame) + " (" + entityID + "), " +
 	      frameIndex + ")");
@@ -3639,7 +3646,7 @@ public class S2DMain {
 	      star.CHEM_SHIFT_VALUE, star.FIGURE_OF_MERIT, entityID,
 	      entityIDs);
 	} catch (S2DException ex) {
-            if (doDebugOutput(3)) {
+            if (doDebugOutput(4)) {
 	        System.out.println("No Pistachio values in this save frame (" +
 		  star.getFrameName(frame) + ")");
 	    }
@@ -3652,7 +3659,8 @@ public class S2DMain {
 	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
 	  entityIDs);
-	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	  star.CHEM_SHIFT_RES_SEQ_CODE);
 	resSeqCodesTmp = null;
 
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
@@ -3716,7 +3724,7 @@ public class S2DMain {
       String entityID, S2DResidues residues, int frameIndex)
       throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameAmbiguity(" +
 	      star.getFrameName(frame) + " (" + entityID + "), " +
 	      frameIndex + ")");
@@ -3737,19 +3745,21 @@ public class S2DMain {
 	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE, entityID,
 	      entityIDs);
 	} catch (S2DException ex) {
-            if (doDebugOutput(3)) {
+            if (doDebugOutput(4)) {
 	        System.out.println("No ambiguity values in this save frame (" +
 		  star.getFrameName(frame) + ")");
 	    }
 	    return;
 	}
-	int[] ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp);
+	int[] ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp,
+	  star.CHEM_SHIFT_AMBIG_CODE);
 	ambiguityTmp = null;
 
 	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
 	  entityIDs);
-	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	  star.CHEM_SHIFT_RES_SEQ_CODE);
 	resSeqCodesTmp = null;
 
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
@@ -3811,7 +3821,7 @@ public class S2DMain {
     private void saveFrameLACS(S2DStarIfc star, SaveFrameNode frame,
       int frameIndex) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameLACS(" +
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
@@ -3851,7 +3861,8 @@ public class S2DMain {
 
         String[] resSeqCodesTmp = star.getFrameValues(frame,
           star.LACS_RES_NUM, star.LACS_RES_NUM);
-	lacs._resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp);
+	lacs._resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	  star.LACS_RES_NUM);
 	resSeqCodesTmp = null;
 
         lacs._resLabels = star.getFrameValues(frame,
@@ -3871,7 +3882,7 @@ public class S2DMain {
 
         String[] desigsTmp = star.getFrameValues(frame,
 	  star.LACS_RES_NUM, star.LACS_DESIGNATOR);
-	lacs._desigs = S2DUtils.arrayStr2Int(desigsTmp);
+	lacs._desigs = S2DUtils.arrayStr2Int(desigsTmp, star.LACS_DESIGNATOR);
 	desigsTmp = null;
 
 	//
@@ -3891,7 +3902,7 @@ public class S2DMain {
     private void AtomicCoordSummaryPre(S2DStarIfc star,
       SaveFrameNode frame) throws S2DException
     {
-        if (doDebugOutput(3)) {
+        if (doDebugOutput(4)) {
             System.out.println("AtomicCoordSummaryPre(" + star + ", " +
 	      frame + ")");
         }
@@ -3910,7 +3921,7 @@ public class S2DMain {
     // Process a PDB entry (get the atomic coordinates).
     private void process1PDB(S2DStarIfc star, String pdbId) throws S2DException
     {
-        if (doDebugOutput(1)) {
+        if (doDebugOutput(2)) {
 	    System.out.println("process1PDB(" + pdbId + ")");
 	}
 
