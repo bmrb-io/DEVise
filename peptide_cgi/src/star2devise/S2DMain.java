@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2007/10/01 21:32:29  wenger
+// Changes to how we get chemical shift entity ID values: added check for
+// _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
+// not found; change "?" to "1" in values.  This makes the new test50 work
+// at least somewhat, but that still needs more checking.  Also added
+// some more error checking for problems I found while working on this.
+//
 // Revision 1.43  2007/10/01 16:49:49  wenger
 // Got tests/test4_3 to work.
 //
@@ -1325,7 +1332,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.5x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.5x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -3182,7 +3189,8 @@ public class S2DMain {
 	String[] chemShiftsTmp = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityID,
 	  entityIDs);
-        double[] chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp);
+        double[] chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp,
+	  star.CHEM_SHIFT_VALUE);
 	chemShiftsTmp = null;
 
 	int[] ambiguityVals;
@@ -3555,17 +3563,20 @@ public class S2DMain {
 
 	String[] atomCoordXTmp = star.getFrameValues(frame,
 	  star.ATOM_COORD_X, star.ATOM_COORD_X, model1AtomCount);
-        double[] atomCoordX = S2DUtils.arrayStr2Double(atomCoordXTmp);
+        double[] atomCoordX = S2DUtils.arrayStr2Double(atomCoordXTmp,
+	  star.ATOM_COORD_X);
         atomCoordXTmp = null;
 
 	String[] atomCoordYTmp = star.getFrameValues(frame,
 	  star.ATOM_COORD_Y, star.ATOM_COORD_Y, model1AtomCount);
-        double[] atomCoordY = S2DUtils.arrayStr2Double(atomCoordYTmp);
+        double[] atomCoordY = S2DUtils.arrayStr2Double(atomCoordYTmp,
+	  star.ATOM_COORD_Y);
         atomCoordYTmp = null;
 
 	String[] atomCoordZTmp = star.getFrameValues(frame,
 	  star.ATOM_COORD_Z, star.ATOM_COORD_Z, model1AtomCount);
-        double[] atomCoordZ = S2DUtils.arrayStr2Double(atomCoordZTmp);
+        double[] atomCoordZ = S2DUtils.arrayStr2Double(atomCoordZTmp,
+	  star.ATOM_COORD_Z);
         atomCoordZTmp = null;
 
 	//
@@ -3634,7 +3645,8 @@ public class S2DMain {
 	    }
 	    return;
 	}
-	double[] meritVals = S2DUtils.arrayStr2Double(meritValsTmp);
+	double[] meritVals = S2DUtils.arrayStr2Double(meritValsTmp,
+	  star.FIGURE_OF_MERIT);
 	meritValsTmp = null;
 
 	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
@@ -3847,12 +3859,14 @@ public class S2DMain {
 
         String[] xCoordsTmp = star.getFrameValues(frame,
 	  star.LACS_RES_NUM, star.LACS_X_VALUE);
-	lacs._xCoords = S2DUtils.arrayStr2Double(xCoordsTmp);
+	lacs._xCoords = S2DUtils.arrayStr2Double(xCoordsTmp,
+	  star.LACS_X_VALUE);
 	xCoordsTmp = null;
 
         String[] yCoordsTmp = star.getFrameValues(frame,
 	  star.LACS_RES_NUM, star.LACS_Y_VALUE);
-	lacs._yCoords = S2DUtils.arrayStr2Double(yCoordsTmp);
+	lacs._yCoords = S2DUtils.arrayStr2Double(yCoordsTmp,
+	  star.LACS_Y_VALUE);
 	yCoordsTmp = null;
 
         String[] desigsTmp = star.getFrameValues(frame,

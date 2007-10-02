@@ -11,6 +11,10 @@ the stylesheet is not available.
 * Peptide-CGI now looks for Comp_index_ID tags instead of Seq_ID tags
 in NMR-STAR v3.1 files.
 
+* More flexibility in getting chem shift entity ID values: we look for
+_Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
+not found and change "?" to "1" in the values.
+
 * Added more tests to make sure that NMR-STAR v3.1 files are processed
 correctly.
 

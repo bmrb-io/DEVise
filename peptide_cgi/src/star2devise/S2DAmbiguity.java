@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/10/01 21:32:29  wenger
+// Changes to how we get chemical shift entity ID values: added check for
+// _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
+// not found; change "?" to "1" in values.  This makes the new test50 work
+// at least somewhat, but that still needs more checking.  Also added
+// some more error checking for problems I found while working on this.
+//
 // Revision 1.5  2007/08/21 18:56:29  wenger
 // Improved debug output -- better verbosity levels, etc.
 //
@@ -364,7 +371,7 @@ public class S2DAmbiguity {
 	    	_percent9[resSeqCode] = (float)_ambig9Count / atomCount;
 
 	    } catch (S2DException ex) {
-		System.err.println("Exception saving ambiguity values" + ex);
+		System.err.println("Exception saving ambiguity values " + ex);
 	    }
 	}
     }

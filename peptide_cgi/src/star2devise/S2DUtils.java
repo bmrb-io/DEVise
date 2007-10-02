@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/08/20 20:26:10  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -195,7 +200,7 @@ public class S2DUtils
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    public static double[] arrayStr2Double(String[] values)
+    public static double[] arrayStr2Double(String[] values, String name)
     {
 	int count = values.length;
 	double[] results = new double[count];
@@ -207,7 +212,8 @@ public class S2DUtils
 		// Note: the S2DWarning object below is *not* supposed to be
 		// thrown...
 		System.err.println(new S2DWarning(
-		  "Exception parsing double: " + ex.toString()));
+		  "Exception parsing double (" + name + "[" + index +
+		    "]): " + ex.toString()));
 	        results[index] = Double.NaN;
 	    }
 	}
