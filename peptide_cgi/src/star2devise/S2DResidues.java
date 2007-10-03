@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/10/02 18:54:24  wenger
+// More improvements to error and warning messages, including printing
+// fewer at the default verbosity setting.
+//
 // Revision 1.3  2007/08/20 20:26:09  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -74,7 +78,7 @@ public class S2DResidues {
 
     private static final int DEBUG = 0;
 
-    private Hashtable _acidTrans = null;
+    private static Hashtable _acidTrans = null;
 
     //===================================================================
     // PUBLIC METHODS
@@ -159,6 +163,37 @@ public class S2DResidues {
         return _resLabels[resSeqCode-1];
     }
 
+    //-------------------------------------------------------------------
+    // Change any one-letter residue labels in the array to three-letter
+    // labels.
+    public static void make3Letter(String[] residueLabels)
+    { 
+        initializeTranslation();
+	
+	for (int index = 0; index < residueLabels.length; index++) {
+	    String label = residueLabels[index];
+	    if (label.length() == 1) {
+	        try {
+	            residueLabels[index] = translate(label.charAt(0));
+		} catch (Exception ex) {
+		    // Don't about processing the whole entry if we get
+		    // one bad residue code...
+		    if (doDebugOutput(0)) {
+		        System.err.println(ex);
+		    }
+		}
+	    } else {
+	        if (!_acidTrans.containsValue(label)) {
+		    S2DError error = new S2DError(
+		      "Illegal residue label " + label);
+		    if (doDebugOutput(0)) {
+		        System.err.println(error);
+		    }
+		}
+	    }
+	}
+    }
+
     //===================================================================
     // PRIVATE METHODS
     //-------------------------------------------------------------------
@@ -175,36 +210,38 @@ public class S2DResidues {
 
     //-------------------------------------------------------------------
     // Initialize the one-letter to three-letter translation table.
-    private void initializeTranslation()
+    private static void initializeTranslation()
     {
-	_acidTrans = new Hashtable();
+	if (_acidTrans == null) {
+	    _acidTrans = new Hashtable();
 
-	_acidTrans.put(new Character('A'), "ALA");
-	_acidTrans.put(new Character('R'), "ARG");
-	_acidTrans.put(new Character('N'), "ASN");
-	_acidTrans.put(new Character('D'), "ASP");
-	_acidTrans.put(new Character('C'), "CYS");
-	_acidTrans.put(new Character('E'), "GLU");
-	_acidTrans.put(new Character('Q'), "GLN");
-	_acidTrans.put(new Character('G'), "GLY");
-	_acidTrans.put(new Character('H'), "HIS");
-	_acidTrans.put(new Character('I'), "ILE");
-	_acidTrans.put(new Character('L'), "LEU");
-	_acidTrans.put(new Character('K'), "LYS");
-	_acidTrans.put(new Character('M'), "MET");
-	_acidTrans.put(new Character('F'), "PHE");
-	_acidTrans.put(new Character('P'), "PRO");
-	_acidTrans.put(new Character('S'), "SER");
-	_acidTrans.put(new Character('T'), "THR");
-	_acidTrans.put(new Character('W'), "TRP");
-	_acidTrans.put(new Character('Y'), "TYR");
-	_acidTrans.put(new Character('V'), "VAL");
+	    _acidTrans.put(new Character('A'), "ALA");
+	    _acidTrans.put(new Character('R'), "ARG");
+	    _acidTrans.put(new Character('N'), "ASN");
+	    _acidTrans.put(new Character('D'), "ASP");
+	    _acidTrans.put(new Character('C'), "CYS");
+	    _acidTrans.put(new Character('E'), "GLU");
+	    _acidTrans.put(new Character('Q'), "GLN");
+	    _acidTrans.put(new Character('G'), "GLY");
+	    _acidTrans.put(new Character('H'), "HIS");
+	    _acidTrans.put(new Character('I'), "ILE");
+	    _acidTrans.put(new Character('L'), "LEU");
+	    _acidTrans.put(new Character('K'), "LYS");
+	    _acidTrans.put(new Character('M'), "MET");
+	    _acidTrans.put(new Character('F'), "PHE");
+	    _acidTrans.put(new Character('P'), "PRO");
+	    _acidTrans.put(new Character('S'), "SER");
+	    _acidTrans.put(new Character('T'), "THR");
+	    _acidTrans.put(new Character('W'), "TRP");
+	    _acidTrans.put(new Character('Y'), "TYR");
+	    _acidTrans.put(new Character('V'), "VAL");
+	}
     }
 
     //-------------------------------------------------------------------
     // Translate a one-letter residue code to a three-letter residue
     // code.
-    private String translate(char acidIn) throws S2DException
+    private static String translate(char acidIn) throws S2DException
     {
         String acidOut = (String)_acidTrans.get(new Character(acidIn));
 

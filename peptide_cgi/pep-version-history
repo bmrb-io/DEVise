@@ -15,6 +15,9 @@ in NMR-STAR v3.1 files.
 _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
 not found and change "?" to "1" in the values.
 
+* We now allow single-letter residue codes in chemical shift loops,
+etc.
+
 * Added more tests to make sure that NMR-STAR v3.1 files are processed
 correctly.
 

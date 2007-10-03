@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2007/10/02 18:54:23  wenger
+// More improvements to error and warning messages, including printing
+// fewer at the default verbosity setting.
+//
 // Revision 1.45  2007/10/02 17:39:53  wenger
 // More debug output; updated the version history with changes from last
 // commit.
@@ -1336,7 +1340,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.5x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.5x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -3102,6 +3106,7 @@ public class S2DMain {
 	    String[] residueLabels = star.getAndFilterFrameValues(
 	      chemShiftFrame, star.CHEM_SHIFT_VALUE,
 	      star.CHEM_SHIFT_RES_LABEL, entityID, entityIDs);
+	    S2DResidues.make3Letter(residueLabels);
 
             for (int index = 0; index < resSeqCodes.length; ++index) {
 	        int resNum = resSeqCodes[index];
@@ -3183,6 +3188,7 @@ public class S2DMain {
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
 	  entityIDs);
+	S2DResidues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
@@ -3666,6 +3672,7 @@ public class S2DMain {
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
 	  entityIDs);
+	S2DResidues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
@@ -3765,6 +3772,7 @@ public class S2DMain {
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
 	  entityIDs);
+	S2DResidues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
