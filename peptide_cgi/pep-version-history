@@ -18,6 +18,10 @@ not found and change "?" to "1" in the values.
 * We now allow single-letter residue codes in chemical shift loops,
 etc.
 
+* Removed automatic setting of CSR level and LACS level in uvd 
+(visualization server) mode, so we don't get non-working CSR
+links at Florence.
+
 * Added more tests to make sure that NMR-STAR v3.1 files are processed
 correctly.
 

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2007/10/03 15:38:40  wenger
+// We now allow single-letter residue codes in chemical shift loops,
+// etc.
+//
 // Revision 1.46  2007/10/02 18:54:23  wenger
 // More improvements to error and warning messages, including printing
 // fewer at the default verbosity setting.
@@ -2029,10 +2033,6 @@ public class S2DMain {
 		_isUvd = true;
 	        S2DSpecificHtml.setIsUvd(true);
 	        S2DSummaryHtmlGen.setIsUvd(true);
-//TEMPTEMP -- why do this?  needs to be documented...
-		_csrLevel = CSR_LEVEL_LINK;
-//TEMPTEMP -- why do this?  needs to be documented...
-                _lacsLevel = LACS_LEVEL_TRY;
 
 	    } else if ("-verb".equals(args[index])) {
 	        index++;
