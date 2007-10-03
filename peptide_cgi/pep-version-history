@@ -34,6 +34,8 @@ it's obvious what to change if you want to turn them on.
 
 * Added more debug output, better control of what is printed.
 
+* Install script won't run if you haven't done 'make setup' first.
+
 
 Peptide-CGI 11.1.4
 ------------------
