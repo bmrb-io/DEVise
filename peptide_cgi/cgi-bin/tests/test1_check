@@ -1,0 +1,133 @@
+echo "Checking output files"
+
+set files = (data_dir/4267ac1.dat data_dir/4267as1.dat data_dir/4267c1.dat \
+	data_dir/4267d1.dat data_dir/4267g1.dat data_dir/4267hn1.dat \
+	data_dir/4267md.dat data_dir/4267n1.dat data_dir/4267n2.dat \
+	data_dir/4267n3.dat data_dir/4267n4.dat data_dir/4267n5.dat \
+	data_dir/4267n6.dat data_dir/4267n7.dat data_dir/4267n8.dat \
+	data_dir/4267n9.dat data_dir/4267p1.dat data_dir/4267rc1.dat \
+	data_dir/4267rl1.dat data_dir/4267t11.dat data_dir/4267t12.dat \
+	data_dir/4267t13.dat data_dir/4267t21.dat data_dir/4267t22.dat \
+	data_dir/4267t23.dat html_dir/4267ac1.html html_dir/4267as1.html \
+	html_dir/4267c1.html html_dir/4267d1.html html_dir/4267g1.html \
+	html_dir/4267hn1.html html_dir/4267n1.html html_dir/4267n2.html \
+	html_dir/4267n3.html html_dir/4267n4.html html_dir/4267n5.html \
+	html_dir/4267n6.html html_dir/4267n7.html html_dir/4267n8.html \
+	html_dir/4267n9.html html_dir/4267p1.html html_dir/4267t11.html \
+	html_dir/4267t12.html html_dir/4267t13.html html_dir/4267t21.html \
+	html_dir/4267t22.html html_dir/4267t23.html \
+	html_dir/4267y.html html_dir/4267y_large.html \
+	session_dir/4267ac1.ds session_dir/4267acdd \
+	session_dir/4267as1.ds session_dir/4267c1.ds session_dir/4267d1.ds \
+	session_dir/4267g1.ds session_dir/4267hn1.ds session_dir/4267n1.ds \
+	session_dir/4267n2.ds session_dir/4267n3.ds session_dir/4267n4.ds \
+	session_dir/4267n5.ds session_dir/4267n6.ds session_dir/4267n7.ds \
+	session_dir/4267n8.ds session_dir/4267n9.ds session_dir/4267p1.ds \
+	session_dir/4267t11.ds session_dir/4267t12.ds session_dir/4267t13.ds \
+	session_dir/4267t21.ds session_dir/4267t22.ds session_dir/4267t23.ds \
+	data_dir/4267am1.dat \
+	data_dir/4267amac1.dat \
+	html_dir/4267am1.html \
+	session_dir/4267am1.ds \
+	data_dir/4267lacsc1.dat \
+	data_dir/4267lacsc2.dat \
+	data_dir/4267lacsc3.dat \
+	data_dir/4267lacsc4.dat \
+	data_dir/4267lacsl1.dat \
+	data_dir/4267lacsl2.dat \
+	data_dir/4267lacsl3.dat \
+	data_dir/4267lacsl4.dat \
+	data_dir/4267lacsp1.dat \
+	data_dir/4267lacsp2.dat \
+	data_dir/4267lacsp3.dat \
+	data_dir/4267lacsp4.dat \
+	html_dir/4267lacs1.html \
+	html_dir/4267lacs2.html \
+	html_dir/4267lacs3.html \
+	html_dir/4267lacs4.html \
+	session_dir/4267lacs1.ds \
+	session_dir/4267lacs2.ds \
+	session_dir/4267lacs3.ds \
+	session_dir/4267lacs4.ds \
+	html_dir/4267ac1_large.html \
+	html_dir/4267am1_large.html \
+	html_dir/4267as1_large.html \
+	html_dir/4267c1_large.html \
+	html_dir/4267d1_large.html \
+	html_dir/4267g1_large.html \
+	html_dir/4267hn1_large.html \
+	html_dir/4267lacs1_large.html \
+	html_dir/4267lacs2_large.html \
+	html_dir/4267lacs3_large.html \
+	html_dir/4267lacs4_large.html \
+	html_dir/4267n1_large.html \
+	html_dir/4267n2_large.html \
+	html_dir/4267n3_large.html \
+	html_dir/4267n4_large.html \
+	html_dir/4267n5_large.html \
+	html_dir/4267n6_large.html \
+	html_dir/4267n7_large.html \
+	html_dir/4267n8_large.html \
+	html_dir/4267n9_large.html \
+	html_dir/4267p1_large.html \
+	html_dir/4267t11_large.html \
+	html_dir/4267t12_large.html \
+	html_dir/4267t13_large.html \
+	html_dir/4267t21_large.html \
+	html_dir/4267t22_large.html \
+	html_dir/4267t23_large.html)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/4267as1.dat"
+set line = "2 GLN HA H 4.41"
+source tests/check4line
+set line = "179 GLY N N 114.48"
+source tests/check4line
+
+set file = "data_dir/4267c1.dat"
+set line = "2 0 1 0 0 -1"
+source tests/check4line
+set line = "179 -1 1 1 0 -1"
+source tests/check4line
+
+set file = "data_dir/4267d1.dat"
+set line = "2 0.04 1.81 -0.49 -0.57"
+source tests/check4line
+set line = "179 -0.215 3.48 1.06 0.0"
+source tests/check4line
+
+set file = "data_dir/4267g1.dat"
+set line = "3JHNHA 9 ILE H 9 ILE HA 4.3 0"
+source tests/check4line
+set line = "3JHNHA 178 ASP H 178 ASP HA 9.5 0"
+source tests/check4line
+
+set file = "data_dir/4267n3.dat"
+set line = "3 ASP -0.256 0.050"
+source tests/check4line
+set line = "179 GLY 0.234 0.050"
+source tests/check4line
+
+set file = "data_dir/4267p1.dat"
+set line = "2 GLN 62.5 60.0 0.0"
+source tests/check4line
+set line = "179 GLY 100.0 100.0 100.0"
+source tests/check4line
+
+set file = "data_dir/4267rl1.dat"
+set line = "1	MET"
+source tests/check4line
+set line = "179	GLY"
+source tests/check4line
+
+set file = "data_dir/4267t11.dat"
+set line = "3 ASP N 1.030 0.031"
+source tests/check4line
+set line = "155 ARG NE 1.830 0.110"
+source tests/check4line

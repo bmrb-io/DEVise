@@ -28,60 +28,8 @@ else
   endif
 endif
 
-echo "Checking output files"
 
-set files = ( data_dir/4317as1.dat \
-	data_dir/4317c1.dat \
-	data_dir/4317csr1_1.dat \
-	data_dir/4317csr1_2.dat \
-	data_dir/4317csr1_3.dat \
-	data_dir/4317csr1_4.dat \
-	data_dir/4317csr1_5.dat \
-	data_dir/4317csr1src.dat \
-	data_dir/4317d1.dat \
-	data_dir/4317hn1.dat \
-	data_dir/4317md.dat \
-	data_dir/4317p1.dat \
-	data_dir/4317rc1.dat \
-	data_dir/4317rl1.dat \
-	html_dir/4317as1.html \
-	html_dir/4317c1.html \
-	html_dir/4317csr11.html \
-	html_dir/4317csr21.html \
-	html_dir/4317csr31.html \
-	html_dir/4317d1.html \
-	html_dir/4317hn1.html \
-	html_dir/4317p1.html \
-	html_dir/4317y.html \
-	html_dir/4317y_large.html \
-	session_dir/4317acdd \
-	session_dir/4317as1.ds \
-	session_dir/4317c1.ds \
-	session_dir/4317csr11.ds \
-	session_dir/4317csr21.ds \
-	session_dir/4317csr31.ds \
-	session_dir/4317d1.ds \
-	session_dir/4317hn1.ds \
-	session_dir/4317p1.ds \
-	data_dir/4317am1.dat \
-	html_dir/4317am1.html \
-	session_dir/4317am1.ds \
-	html_dir/4317am1_large.html \
-	html_dir/4317as1_large.html \
-	html_dir/4317c1_large.html \
-	html_dir/4317csr11_large.html \
-	html_dir/4317csr21_large.html \
-	html_dir/4317csr31_large.html \
-	html_dir/4317d1_large.html \
-	html_dir/4317hn1_large.html \
-	html_dir/4317p1_large.html )
-
-foreach file ($files)
-  if (! -f $file) then
-    echo "  Output file $file is missing"
-    set result = 1
-  endif
-end
+source tests/test15_check
 
 
 echo -n "Test15 result: "

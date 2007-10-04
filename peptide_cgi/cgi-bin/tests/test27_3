@@ -36,42 +36,8 @@ if ($status != 0) then
 endif
 
 
-echo "Checking output files"
+source tests/test27_check
 
-#TEMP -- This *should* generate residue lists -- see bug 037.
-set files = (data_dir/5153ac1.dat \
-	data_dir/5153ac4.dat \
-	data_dir/5153md.dat \
-	data_dir/5153n1.dat \
-	data_dir/5153t11.dat \
-	data_dir/5153t21.dat \
-	html_dir/5153ac1.html \
-	html_dir/5153ac4.html \
-	html_dir/5153n1.html \
-	html_dir/5153t11.html \
-	html_dir/5153t21.html \
-	html_dir/5153tmp1y.html \
-	html_dir/5153tmp4y.html \
-	html_dir/5153y.html \
-	html_dir/5153y_large.html \
-	session_dir/5153ac1.ds \
-	session_dir/5153ac4.ds \
-	session_dir/5153acdd \
-	session_dir/5153n1.ds \
-	session_dir/5153t11.ds \
-	session_dir/5153t21.ds \
-	html_dir/5153ac1_large.html \
-	html_dir/5153ac4_large.html \
-	html_dir/5153n1_large.html \
-	html_dir/5153t11_large.html \
-	html_dir/5153t21_large.html)
-
-foreach file ($files)
-  if (! -f $file) then
-    echo "  Output file $file is missing"
-    set result = 1
-  endif
-end
 
 echo -n "Test27_3 result: "
 if ($result == 0) then

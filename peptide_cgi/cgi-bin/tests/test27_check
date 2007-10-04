@@ -1,0 +1,54 @@
+echo "Checking output files"
+
+#TEMP -- This *should* generate residue lists -- see bug 037.
+set files = (data_dir/5153ac1.dat \
+	data_dir/5153ac4.dat \
+	data_dir/5153md.dat \
+	data_dir/5153n1.dat \
+	data_dir/5153t11.dat \
+	data_dir/5153t21.dat \
+	html_dir/5153ac1.html \
+	html_dir/5153ac4.html \
+	html_dir/5153n1.html \
+	html_dir/5153t11.html \
+	html_dir/5153t21.html \
+	html_dir/5153tmp1y.html \
+	html_dir/5153tmp4y.html \
+	html_dir/5153y.html \
+	html_dir/5153y_large.html \
+	session_dir/5153ac1.ds \
+	session_dir/5153ac4.ds \
+	session_dir/5153acdd \
+	session_dir/5153n1.ds \
+	session_dir/5153t11.ds \
+	session_dir/5153t21.ds \
+	html_dir/5153ac1_large.html \
+	html_dir/5153ac4_large.html \
+	html_dir/5153n1_large.html \
+	html_dir/5153t11_large.html \
+	html_dir/5153t21_large.html)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/5153ac1.dat"
+set line = "1 1 PHE N N 57.676 84.393 21.624 backbone"
+source tests/check4line
+set line = "6039 . HOH O O 53.253 9.478 42.866 backbone"
+source tests/check4line
+
+set file = "data_dir/5153n1.dat"
+set line = "2 THR 0.78988 0.0461"
+source tests/check4line
+set line = "126 GLU -1.0948 0.1182"
+source tests/check4line
+
+set file = "data_dir/5153t21.dat"
+set line = "2 THR N 0.048239 0.0025"
+source tests/check4line
+set line = "126 GLU N 0.190114 0.0243"
+source tests/check4line

@@ -1,0 +1,71 @@
+echo "Checking output files"
+
+set files = (data_dir/4867ac1.dat \
+	data_dir/4867ac2.dat \
+	data_dir/4867as1.dat \
+	data_dir/4867c1.dat \
+	data_dir/4867d1.dat \
+	data_dir/4867hn1.dat \
+	data_dir/4867md.dat \
+	data_dir/4867p1.dat \
+	data_dir/4867rc1.dat \
+	data_dir/4867rl1.dat \
+	html_dir/4867ac1.html \
+	html_dir/4867as1.html \
+	html_dir/4867c1.html \
+	html_dir/4867d1.html \
+	html_dir/4867hn1.html \
+	html_dir/4867p1.html \
+	html_dir/4867y.html \
+	html_dir/4867y_large.html \
+	session_dir/4867ac1.ds \
+	session_dir/4867ac2.ds \
+	session_dir/4867acdd \
+	session_dir/4867as1.ds \
+	session_dir/4867c1.ds \
+	session_dir/4867d1.ds \
+	session_dir/4867hn1.ds \
+	session_dir/4867p1.ds \
+	data_dir/4867am1.dat \
+	data_dir/4867amac1.dat \
+	html_dir/4867am1.html \
+	session_dir/4867am1.ds \
+	html_dir/4867ac1_large.html \
+	html_dir/4867ac2_large.html \
+	html_dir/4867am1_large.html \
+	html_dir/4867as1_large.html \
+	html_dir/4867c1_large.html \
+	html_dir/4867d1_large.html \
+	html_dir/4867hn1_large.html \
+	html_dir/4867p1_large.html)
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/4867ac1.dat"
+set line = "1 1 G O5' O 118.098 -36.722 1.395 side_chains"
+source tests/check4line
+set line = "3444 175 GLY HA3 H 123.371 1.993 19.454 backbone"
+source tests/check4line
+
+set file = "data_dir/4867as1.dat"
+set line = "5 VAL H H 8.09"
+source tests/check4line
+set line = "175 GLY N N 114.9"
+source tests/check4line
+
+set file = "data_dir/4867d1.dat"
+set line = "5 0.1 0.0 -3.4 -1.8"
+source tests/check4line
+set line = "175 -0.26 0.0 -1.0 0.0"
+source tests/check4line
+
+set file = "data_dir/4867md.dat"
+set line = 'HA delta chem shift	4867d1	$HA_DeltaShift'
+source tests/check4line
+set line = '% 15N assign per res	4867p1	\$assigForN'
+source tests/check4line
