@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2007/10/02 18:54:24  wenger
+// More improvements to error and warning messages, including printing
+// fewer at the default verbosity setting.
+//
 // Revision 1.8  2007/09/26 20:47:15  wenger
 // Changed x.Seq_ID to x.Comp_index_ID for NMR-STAR 3.1 processing as
 // per Eldon's request; added some more debug output.
@@ -882,20 +886,20 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    S2DNmrStar31Ifc ifc31 = new S2DNmrStar31Ifc(starTree);
 
 	    if (ifc21.isNmrStar21()) {
-                if (doDebugOutput(11)) {
+                if (doDebugOutput(1)) {
 	            System.out.println("File is NMR-STAR 2.1");
 	        }
 	        ifc = ifc21;
 
 	    } else if (ifc31.isNmrStar31()) {
-                if (doDebugOutput(11)) {
+                if (doDebugOutput(1)) {
 	            System.out.println("File is NMR-STAR 3.1");
 	        }
 		ifc31.checkForProteins();
 	        ifc = ifc31;
 
 	    } else if (ifc30.isNmrStar30()) {
-                if (doDebugOutput(11)) {
+                if (doDebugOutput(1)) {
 	            System.out.println("File is NMR-STAR 3.0");
 	        }
 		ifc30.checkForProteins();

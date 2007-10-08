@@ -226,6 +226,10 @@ Num Date        Status  Pri     Description
 058 10/3/07	OPEN	4	Have Osaka config set up to get PDB files
 				from pdbj. (wenger)
 
+059 10/8/07	OPEN	1	Figure out NMR-STAR 3.1 problems -- files
+				are broken or Peptide-CGI code is wrong?
+				(See test1_3, test27_3, test49.) (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

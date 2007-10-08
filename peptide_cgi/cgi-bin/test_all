@@ -323,15 +323,13 @@ if ($status != 0) then
   set failed_list = "$failed_list test47"
 endif
 
-#TEMP -- commented out until Comp_index_ID errors in many NMR-STAR 3.1 files
-# are fixed.  wenger 2007-10-04
-#echo ""
-#echo "Running test49..."
-#tests/test49
-#if ($status != 0) then
-#  set result = 1
-#  set failed_list = "$failed_list test49"
-#endif
+echo ""
+echo "Running test49..."
+tests/test49
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test49"
+endif
 
 echo ""
 echo "Running test50..."

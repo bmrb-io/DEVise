@@ -1,5 +1,7 @@
 data_4267
 
+# Kluged Comp_index_ID and Seq_ID to make test49 work.  wenger 2007-10-08.
+
 save_entry_information
    _Entry.Sf_category           entry_information
    _Entry.Sf_framecode          entry_information
@@ -3295,16 +3297,18 @@ save_heteronuclear_NOE_750_TRP_NE1
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
       _Heteronucl_NOE.Comp_index_ID_2
-      _Heteronucl_NOE.Seq_ID_2
+      #TEMP _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
       _Heteronucl_NOE.Atom_type_2
@@ -3355,15 +3359,17 @@ save_heteronuclear_NOE_750_ARG_NE
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
-      _Heteronucl_NOE.Comp_index_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
+      #TEMP _Heteronucl_NOE.Comp_index_ID_2
       _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
@@ -3414,16 +3420,18 @@ save_heteronuclear_NOE_750_other
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
       _Heteronucl_NOE.Comp_index_ID_2
-      _Heteronucl_NOE.Seq_ID_2
+      #TEMP _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
       _Heteronucl_NOE.Atom_type_2
@@ -3616,16 +3624,18 @@ save_heteronuclear_NOE_600_TRP_NE1
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
       _Heteronucl_NOE.Comp_index_ID_2
-      _Heteronucl_NOE.Seq_ID_2
+      #TEMP _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
       _Heteronucl_NOE.Atom_type_2
@@ -3675,16 +3685,18 @@ save_heteronuclear_NOE_600_ARG_NE
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
       _Heteronucl_NOE.Comp_index_ID_2
-      _Heteronucl_NOE.Seq_ID_2
+      #TEMP _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
       _Heteronucl_NOE.Atom_type_2
@@ -3735,16 +3747,18 @@ save_heteronuclear_NOE_600
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
       _Heteronucl_NOE.Comp_index_ID_2
-      _Heteronucl_NOE.Seq_ID_2
+      #TEMP _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
       _Heteronucl_NOE.Atom_type_2
@@ -3937,16 +3951,18 @@ save_heteronuclear_NOE_500_TRP_NE1
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
       _Heteronucl_NOE.Comp_index_ID_2
-      _Heteronucl_NOE.Seq_ID_2
+      #TEMP _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
       _Heteronucl_NOE.Atom_type_2
@@ -3995,16 +4011,18 @@ save_heteronuclear_NOE_500_ARG_NE
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
       _Heteronucl_NOE.Comp_index_ID_2
-      _Heteronucl_NOE.Seq_ID_2
+      #TEMP _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
       _Heteronucl_NOE.Atom_type_2
@@ -4053,16 +4071,18 @@ save_heteronuclear_NOE_500
       _Heteronucl_NOE.Assembly_atom_ID_1
       _Heteronucl_NOE.Entity_assembly_ID_1
       _Heteronucl_NOE.Entity_ID_1
+      _Heteronucl_NOE.Seq_ID_1 #TEMP
       _Heteronucl_NOE.Comp_index_ID_1
-      _Heteronucl_NOE.Seq_ID_1
+      #TEMP _Heteronucl_NOE.Seq_ID_1
       _Heteronucl_NOE.Comp_ID_1
       _Heteronucl_NOE.Atom_ID_1
       _Heteronucl_NOE.Atom_type_1
       _Heteronucl_NOE.Assembly_atom_ID_2
       _Heteronucl_NOE.Entity_assembly_ID_2
       _Heteronucl_NOE.Entity_ID_2
+      _Heteronucl_NOE.Seq_ID_2 #TEMP
       _Heteronucl_NOE.Comp_index_ID_2
-      _Heteronucl_NOE.Seq_ID_2
+      #TEMP _Heteronucl_NOE.Seq_ID_2
       _Heteronucl_NOE.Comp_ID_2
       _Heteronucl_NOE.Atom_ID_2
       _Heteronucl_NOE.Atom_type_2
@@ -4245,8 +4265,9 @@ save_T1_relaxation_750
       _T1.Assembly_atom_ID
       _T1.Entity_assembly_ID
       _T1.Entity_ID
+      _T1.Seq_ID #TEMP
       _T1.Comp_index_ID
-      _T1.Seq_ID
+      #TEMP _T1.Seq_ID
       _T1.Comp_ID
       _T1.Atom_ID
       _T1.Atom_type
@@ -4440,8 +4461,9 @@ save_T1_relaxation_600
       _T1.Assembly_atom_ID
       _T1.Entity_assembly_ID
       _T1.Entity_ID
+      _T1.Seq_ID #TEMP
       _T1.Comp_index_ID
-      _T1.Seq_ID
+      #TEMP _T1.Seq_ID
       _T1.Comp_ID
       _T1.Atom_ID
       _T1.Atom_type
@@ -4635,8 +4657,9 @@ save_T1_relaxation_500
       _T1.Assembly_atom_ID
       _T1.Entity_assembly_ID
       _T1.Entity_ID
+      _T1.Seq_ID #TEMP
       _T1.Comp_index_ID
-      _T1.Seq_ID
+      #TEMP _T1.Seq_ID
       _T1.Comp_ID
       _T1.Atom_ID
       _T1.Atom_type
@@ -4820,8 +4843,9 @@ save_T2_relaxation_750
       _T2.Assembly_atom_ID
       _T2.Entity_assembly_ID
       _T2.Entity_ID
+      _T2.Seq_ID #TEMP
       _T2.Comp_index_ID
-      _T2.Seq_ID
+      #TEMP _T2.Seq_ID
       _T2.Comp_ID
       _T2.Atom_ID
       _T2.Atom_type
@@ -5018,8 +5042,9 @@ save_T2_relaxation_600
       _T2.Assembly_atom_ID
       _T2.Entity_assembly_ID
       _T2.Entity_ID
+      _T2.Seq_ID #TEMP
       _T2.Comp_index_ID
-      _T2.Seq_ID
+      #TEMP _T2.Seq_ID
       _T2.Comp_ID
       _T2.Atom_ID
       _T2.Atom_type
@@ -5214,8 +5239,9 @@ save_T2_relaxation_500
       _T2.Assembly_atom_ID
       _T2.Entity_assembly_ID
       _T2.Entity_ID
+      _T2.Seq_ID #TEMP
       _T2.Comp_index_ID
-      _T2.Seq_ID
+      #TEMP _T2.Seq_ID
       _T2.Comp_ID
       _T2.Atom_ID
       _T2.Atom_type

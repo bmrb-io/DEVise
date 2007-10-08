@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2007/10/03 16:52:26  wenger
+// Removed automatic setting of CSR level and LACS level in uvd
+// (visualization server) mode, so we don't get non-working CSR
+// links at Florence.
+//
 // Revision 1.47  2007/10/03 15:38:40  wenger
 // We now allow single-letter residue codes in chemical shift loops,
 // etc.
@@ -1344,7 +1349,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.5x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.5x6"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

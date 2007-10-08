@@ -124,7 +124,7 @@ UVD_DATA_UPLOAD = $(WWW_HOME)/html/devise/bmrb/vis_serv/upload_data
 # LACS-related configuration
 
 # The default level of LACS processing to do
-LACS_LEVEL_DEFAULT = 0
+LACS_LEVEL_DEFAULT = 1
 
 # The URL of directory containing LACS files (must end with "/").
 LACS_URL = file:test_data/
