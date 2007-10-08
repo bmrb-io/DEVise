@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2007/10/08 18:57:40  wenger
+// Ready for release -- removed 'x' part of version.
+//
 // Revision 1.49  2007/10/08 17:36:51  wenger
 // Temporarily(?) changed some of the Peptide-CGI NMR-STAR 3.1 tests so they
 // work with the current code; changed LACS_LEVEL_DEFAULT in teal config to 1
@@ -1354,7 +1357,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.5";
+    public static final String PEP_CGI_VERSION = "11.1.6x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

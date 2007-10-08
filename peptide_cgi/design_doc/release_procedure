@@ -31,4 +31,6 @@ Note: this is pretty preliminary right now.
 
 - Increment the version in the sources (11.0.2 -> 11.0.3x1, for example).
 
+- Add a new section to pep-version-history.
+
 - Commit the sources.
