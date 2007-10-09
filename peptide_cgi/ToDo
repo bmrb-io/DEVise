@@ -156,7 +156,7 @@ Num Date        Status  Pri     Description
 041 11/10/03	OPEN	3	Set up a set_modes.bat like my_uncompress.bat
 				(wenger)
 
-042 11/11/03	OPEN	2	Jafar should report errors to the user.
+042 11/11/03	NLR	2	Jafar should report errors to the user.
 				(wenger)
 
 043 1/22/04	DONE	1	Add Eldon's chem shift reference visualization.
