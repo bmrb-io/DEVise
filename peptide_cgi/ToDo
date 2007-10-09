@@ -230,6 +230,9 @@ Num Date        Status  Pri     Description
 				are broken or Peptide-CGI code is wrong?
 				(See test1_3, test27_3, test49.) (wenger)
 
+060 10/9/07	OPEN	3	Improve error messages from chemical shift
+				reference calcuations. (schulte/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
