@@ -42,6 +42,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2007/09/10 22:10:36  wenger
+// Mouse cursor now changes to the disabled cursor if the selected
+// toolbar mode is not applicable in the current view; mouse cursor
+// is default on non-view areas; changed Jmol views to not show the
+// non-applicable mouse cursors (this only happened in some JVMs).
+//
 // Revision 1.15  2007/08/03 20:17:27  wenger
 // Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
 //
@@ -1069,7 +1075,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
 	// Update what's shown in Jmol.
 	String jmolData = DEViseJmolData.createJmolData(gDatasToDisplay);
-	if (!jmolData.equals("")) {
+	if (!jmolData.equals("") && viewer != null) {
 	    viewer.setSelectionHaloEnabled(false);
 	    jmolOpenStringErr(viewer, jmolData);
             viewer.setShowHydrogens(true);
