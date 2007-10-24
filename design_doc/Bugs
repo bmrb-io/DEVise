@@ -4049,7 +4049,8 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 
 949 10/23/07	OPEN	JS:  only allows one level of parent/child views
 			(DEVise itself allows an arbitrary number of layers.)
-			(wenger)
+			(wenger)  (See JS sessions test/parent_child_3.ds
+			and test/parent_child_4.ds.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
