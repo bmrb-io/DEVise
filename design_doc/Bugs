@@ -4047,6 +4047,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			cursors should probably expand all of the cursors.
 			(wenger)
 
+949 10/23/07	OPEN	JS:  only allows one level of parent/child views
+			(DEVise itself allows an arbitrary number of layers.)
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
