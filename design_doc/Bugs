@@ -4030,12 +4030,14 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			Jmol or "old" 3D views).
 			(wenger)
 		
-945 6/28/07	OPEN	JS:  mouse cursor is not yet changed according to
+945 6/28/07	FIXED	JS:  mouse cursor is not yet changed according to
 			toolbar mode.  (wenger)
+			(Fixed by wenger, 8/3/07.)
 
-946 6/28/07	OPEN	JS:  when in one of the toolbar zoom modes, the
+946 6/28/07	FIXED	JS:  when in one of the toolbar zoom modes, the
 			JS should still zoom (as opposed to moving resizing
 			the cursor) even if you're on a cursor.  (wenger)
+			(Fixed by wenger, ?/?/07.)
 
 947 10/22/07	OPEN	JS:  open the JS demo session test/2cursors.ds,
 			do "expand cursor" in the main view -- only one
