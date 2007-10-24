@@ -4011,7 +4011,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			window; move the cursor in the data view -> JS
 			locks up. (elu)
 
-941 6/7/07	OPEN	JavaScreen:  apparently has problems on Windows Visa
+941 6/7/07	OPEN	JavaScreen:  apparently has problems on Windows Vista
 			and/or Java 1.6.  (See notes from talking with Eiichi,
 			also email to devise-sup from Manoj Kumar.)  (wenger)
 
@@ -4031,12 +4031,18 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			(wenger)
 		
 945 6/28/07	OPEN	JS:  mouse cursor is not yet changed according to
-			toolbar mode.
-			(wenger)
+			toolbar mode.  (wenger)
 
 946 6/28/07	OPEN	JS:  when in one of the toolbar zoom modes, the
 			JS should still zoom (as opposed to moving resizing
-			the cursor) even if you're on a cursor.
+			the cursor) even if you're on a cursor.  (wenger)
+
+947 10/22/07	OPEN	JS:  open the JS demo session test/2cursors.ds,
+			do "expand cursor" in the main view -- only one
+			cursor is correctly drawn. (wenger)
+
+948 10/22/07	OPEN	Doing "C"/"expand cursor" in a view with multiple
+			cursors should probably expand all of the cursors.
 			(wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
