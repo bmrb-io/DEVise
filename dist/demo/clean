@@ -25,6 +25,3 @@
 cd schema/schema
 \rm catalog.js.dte
 cd ../../
-cd dat/bmrb
-\rm bmrb_histogram_data
-cd ../../

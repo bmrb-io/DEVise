@@ -130,6 +130,15 @@ LACS_LEVEL_DEFAULT = 1
 LACS_URL = file:test_data/
 
 #-----------------------------------------------------------
+# Histogram-related configuration
+
+# The directory where the histogram html files will be put.
+HISTOGRAM_HTML_HOME = $(WWW_HOME)/html/devise/bmrb/histograms
+
+# The directory containing the "real" histogram data.
+HISTOGRAM_DATA_HOME = /p/condor/workspaces/shared/wenger/devise/bmrb_histogram_data
+
+#-----------------------------------------------------------
 # Other.
 
 # User to send email to on errors.

@@ -4,6 +4,7 @@ Peptide-CGI 11.1.6
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Moved the histogram html pages, sessions, and schemas into Peptide-CGI.
 
 
 Peptide-CGI 11.1.5

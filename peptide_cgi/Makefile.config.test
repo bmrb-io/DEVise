@@ -43,9 +43,9 @@ UVD_CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/bmrb/make_uvd
 # Places to install stuff.
 
 # The base of the DEVise demo setup.
-DEV_DEMO_HOME = ~/tst/peptide-cgi_install
+DEV_DEMO_HOME = ~/tst/demo_install/demo
 
-WWW_HOME = $(DEV_DEMO_HOME)/www
+WWW_HOME = ~/tst/demo_install/www
 
 # The directory where the "front-end" file will be put.
 PEP_HOME = $(WWW_HOME)/html/devise/bmrb
@@ -128,6 +128,15 @@ LACS_LEVEL_DEFAULT = 0
 
 # The URL of directory containing LACS files (must end with "/").
 LACS_URL = file:test_data/
+
+#-----------------------------------------------------------
+# Histogram-related configuration
+
+# The directory where the histogram html files will be put.
+HISTOGRAM_HTML_HOME = $(PEP_HOME)/histograms
+
+# The directory containing the "real" histogram data.
+HISTOGRAM_DATA_HOME = /p/condor/workspaces/shared/wenger/devise/bmrb_histogram_data
 
 #-----------------------------------------------------------
 # Other.

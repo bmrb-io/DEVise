@@ -197,7 +197,7 @@ if (! -e $targetdir) then
 endif
 chmod a+rwx $targetdir
 cp -p data/[a-z]* $targetdir
-chmod a+r $targetdir/*[a-z]
+chmod a+r $targetdir/[a-z]*
 
 echo "Creating the data directory ($datahome)"
 set targetdir = $datahome

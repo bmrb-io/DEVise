@@ -132,6 +132,15 @@ LACS_LEVEL_DEFAULT = 1
 LACS_URL = file:/export/home/bmrb/ftp/pub/data/LACS/
 
 #-----------------------------------------------------------
+# Histogram-related configuration
+
+# The directory where the histogram html files will be put.
+HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
+
+# The directory containing the "real" histogram data.
+HISTOGRAM_DATA_HOME = /export/home/bmrb/ftp/pub/data/stats/chem_shifts/full/devise
+
+#-----------------------------------------------------------
 # Other.
 
 # User to send email to on errors.

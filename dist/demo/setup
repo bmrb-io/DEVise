@@ -25,9 +25,3 @@ ln -s session session.js
 cd schema/schema
 ln -s catalog.dte catalog.js.dte
 cd ../..
-
-cd dat/bmrb
-# Note: this is for testing only; it will get removed from the demo
-# tar file.
-ln -s /p/condor/workspaces/shared/wenger/devise/bmrb_histogram_data .
-cd ../..
