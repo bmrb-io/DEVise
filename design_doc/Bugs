@@ -4052,6 +4052,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			(wenger)  (See JS sessions test/parent_child_3.ds
 			and test/parent_child_4.ds.)
 
+950 10/29/07	OPEN	Saving a session to a file that's a symlink breaks
+			the link. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
