@@ -112,16 +112,25 @@ dev_test:
 	mkdir dev_test/dat
 	mkdir dev_test/dat/bmrb
 	cd dev_test/dat/bmrb; ln -s ../../../data/* .
+	rm dev_test/dat/bmrb/CVS
+	cd dev_test/dat/bmrb; ln -s ../../../histograms/dat/* .
+	rm dev_test/dat/bmrb/CVS
 	cd dev_test/dat/bmrb; ln -s ../../../test_data dynamic_data
+	cd dev_test/dat/bmrb; ln -s $(HISTOGRAM_DATA_HOME) bmrb_histogram_data
 	mkdir dev_test/schema
 	touch dev_test/schema/catalog.dte
 	cp /p/devise/demo/schema/schema/catalog.tcl dev_test/schema
 	cp /p/devise/demo/schema/schema/Querycatalog.tcl dev_test/schema
 	mkdir dev_test/schema/physical
 	cd dev_test/schema/physical; ln -s ../../../schema/* .
+	rm dev_test/schema/physical/CVS
+	cd dev_test/schema/physical; ln -s ../../../histograms/schema/* .
+	rm dev_test/schema/physical/CVS
 	mkdir dev_test/session
 	cd dev_test/session; ln -s ../../test_session bmrb
 	cd dev_test/session; ln -s ../../session_templates .
+	cd dev_test/session; ln -s ../../histograms/session/* .
+	rm dev_test/session/CVS
 
 dev_testclean:
 	-rm -rf dev_test
