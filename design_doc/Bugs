@@ -4072,6 +4072,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			color modes, although I doubt that has anything to
 			do with it). (madings/wenger)
 
+953 10/31/07	OPEN	Destroying a view does not destroy the corresponding
+			mapping. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
