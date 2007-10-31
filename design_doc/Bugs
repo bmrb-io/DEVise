@@ -4055,6 +4055,23 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 950 10/29/07	OPEN	Saving a session to a file that's a symlink breaks
 			the link. (wenger)
 
+951 10/31/07	OPEN	Black/white mode problems with BMRB histogram sessions:
+			use the View->Display menu option to change mode to
+			black-and-white; exercise the screen so it has to
+			draw something (e.g., move one of the cursors); use 
+			the View->Display menu option to change mode from
+			black-and-white back to normal -> now the whole graph
+			is black and you can't see a thing.
+			(madings/wenger)
+			(I'm not sure whether this is something that can
+			be fixed in the sessions or whether it will take
+			a fix to DEVise itself -- wenger 071031.)
+
+952 10/31/07	OPEN	JS: eventually locked up browser with
+			Linux/Firefox/JRE1.5.1 setup (playing around with
+			color modes, although I doubt that has anything to
+			do with it). (madings/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
