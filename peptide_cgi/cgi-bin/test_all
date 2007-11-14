@@ -40,6 +40,14 @@ if ($status != 0) then
 endif
 
 echo ""
+echo "Running test3_3..."
+tests/test3_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test3_3"
+endif
+
+echo ""
 echo "Running test4..."
 tests/test4
 if ($status != 0) then

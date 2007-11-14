@@ -8,8 +8,8 @@ set result = 0
 rm -f */4081*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -nomail -bmrbid 4081 -do_pdb 2 -force -check_res_list \
-  -do_lacs 1 -lacs_url file:test_data/
+./s2d -nomail -name 4081 -file test_data/bmr4081_3.str -do_pdb 2 -force \
+  -check_res_list -lacs_file test_data/bmr4081_LACS.str
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
@@ -22,7 +22,7 @@ source tests/test3_check
 rm data_dir/4081d1.dat
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -nomail -bmrbid 4081 -do_pdb 2 -check_res_list
+./s2d -nomail -name 4081 -file tests/bmr4081_3.str -do_pdb 2 -check_res_list
 if ($status != 0) then
   echo "Second invocation of s2d failed!"
   set result = 1
@@ -33,7 +33,7 @@ if (-f data_dir/4081d1.dat) then
   set result = 1
 endif
 
-echo -n "Test3 result: "
+echo -n "Test3_3 result: "
 if ($result == 0) then
   echo "OK"
   exit 0

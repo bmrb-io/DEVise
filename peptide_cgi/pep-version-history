@@ -13,6 +13,8 @@ changed test_all accordingly (because this fixes earlier problems).
 
 * We now print all input parameters at verbosity level 1 instead of 2.
 
+* Added more 3.1 vs. 2.1 tests.
+
 
 Peptide-CGI 11.1.5
 ------------------
