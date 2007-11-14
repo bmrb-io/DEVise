@@ -6,6 +6,9 @@ Peptide-CGI 11.1.6
 
 * Moved the histogram html pages, sessions, and schemas into Peptide-CGI.
 
+* Replaced all test NMR-STAR 3.1 files with the latest versions,
+changed test_all accordingly (because this fixes earlier problems).
+
 
 Peptide-CGI 11.1.5
 ------------------
