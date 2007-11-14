@@ -9,6 +9,10 @@ Peptide-CGI 11.1.6
 * Replaced all test NMR-STAR 3.1 files with the latest versions,
 changed test_all accordingly (because this fixes earlier problems).
 
+* Improved some other tests.
+
+* We now print all input parameters at verbosity level 1 instead of 2.
+
 
 Peptide-CGI 11.1.5
 ------------------

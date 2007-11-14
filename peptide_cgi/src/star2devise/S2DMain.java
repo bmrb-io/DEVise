@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2007/11/14 18:49:02  wenger
+// Replaced all test NMR-STAR 3.1 files with the latest versions,
+// changed test_all accordingly (because this fixes earlier problems).
+//
 // Revision 1.51  2007/10/08 19:52:50  wenger
 // Version string is now 11.1.6x1 because 11.1.5 has been released.
 //
@@ -1360,7 +1364,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.6x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.1.6x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -2154,7 +2158,7 @@ public class S2DMain {
 	      ".str", ".LACS.str");
 	}
 
-        if (doDebugOutput(2)) {
+        if (doDebugOutput(1)) {
 	    System.out.println("_name = {" + _name + "}");
 	    System.out.println("_longName = {" + _longName + "}");
 	    System.out.println("_masterBmrbId/BMRB ID = " + _masterBmrbId);

@@ -17,7 +17,6 @@ endif
 
 echo "Checking output files"
 
-#TEMPTEMP
 set files = ( data_dir/6011ac1.dat \
 	data_dir/6011am1.dat \
 	data_dir/6011amac1.dat \
@@ -44,6 +43,7 @@ set files = ( data_dir/6011ac1.dat \
 	html_dir/6011p1.html \
 	html_dir/6011p1_large.html \
 	html_dir/6011y.html \
+	html_dir/6011y_large.html \
 	session_dir/6011ac1.ds \
 	session_dir/6011acdd \
 	session_dir/6011am1.ds \
