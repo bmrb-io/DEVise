@@ -248,6 +248,9 @@ Num Date        Status  Description
 			(maziuk/wenger)
 			(Fixed by wenger, 5/11/07.)
 
+056 11/15/07	OPEN	Could file name collision happen in CSR files if
+			there are over 9 sets of CSR data? (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
