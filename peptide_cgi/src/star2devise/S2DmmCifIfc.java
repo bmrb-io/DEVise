@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/08/21 18:56:30  wenger
+// Improved debug output -- better verbosity levels, etc.
+//
 // Revision 1.4  2007/08/20 20:26:10  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -34,122 +37,7 @@
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
 //
-// Revision 1.1.2.9.10.1  2005/05/19 16:07:43  wenger
-// Merged nmrfam_mods2_br (argh -- must have forgotten to make
-// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
-// peptide_cgi_10_8_0_br.
-//
-// Revision 1.1.2.9.8.1  2005/05/12 19:07:41  wenger
-// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
-// nmrfam_mods2_br (created to get ambiguity visualization help
-// and fix to coordinate visualization help).
-//
-// Revision 1.1.2.9.6.1  2005/05/12 14:10:12  wenger
-// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
-// sure cache is used when it should be; added test26 to test non-
-// numeric BMRB ID.
-//
-// Revision 1.1.2.9  2005/01/31 23:02:55  wenger
-// Merged pistachio_vis_br_0 thru pistachio_vis_br_1a to V2_1b4_br.
-//
-// Revision 1.1.2.8  2005/01/31 21:35:44  wenger
-// Slight mods to atomic coordinates template for better highlight
-// selection; s2d chem shift ref timeout increased to 120 sec., added
-// try-again message if timed out; cleaned up warning/error messages
-// somewhat.
-//
-// Revision 1.1.2.7.2.1  2005/01/12 20:46:42  wenger
-// Pistachio processing is now integrated into the normal Peptide-CGI
-// processing -- the Pistachio visualization is generated autmatically
-// if the Pistachio data exists.  (Still needs some cleanup, though.)
-// (We generate the Pistachio visualization by generating a temporary
-// mmCIF file with coordinates -- that is then run through the normal
-// coordinate processing to generate the DEVise file with Pistachio
-// coordinates.)
-//
-// Revision 1.1.2.7  2004/01/22 16:43:49  wenger
-// Finished to-do item 020 (replace "/" with File.separator), other
-// minor cleanups.
-//
-// Revision 1.1.2.6  2004/01/16 22:26:00  wenger
-// NMR-STAR 3.0 support is now working except for saving residue
-// counts, etc and protein check for chem shifts; haven't tested
-// processing related PDB entries for 3.0 yet.
-//
-// Revision 1.1.2.5  2004/01/12 21:57:30  wenger
-// Part way to implementing NMR-STAR 3.0 support -- S2DNmrStarIfc has
-// framework in place, but not all details.
-//
-// Revision 1.1.2.4  2003/10/08 18:44:20  wenger
-// Peptide-cgi now uses gzipped mmCIF files instead of compressed ones.
-//
-// Revision 1.1.2.3  2003/10/01 16:57:04  wenger
-// Added the capability to test s2d without actually connecting to
-// BMRB and PDB web sites; also added some Windows testing capability
-// (not tested yet).
-//
-// Revision 1.1.2.2  2003/05/14 20:10:48  wenger
-// Split generated html and data files into separate directories (for
-// better security); moved html and session templates out of main
-// html and session directories.
-//
-// Revision 1.1.2.1  2003/04/22 21:58:17  wenger
-// Added package name to peptide-cgi java code and put everything into
-// a single jar file; version is now 6.0.
-//
-// Revision 1.1.10.1  2003/01/14 16:51:50  wenger
-// Merged V2_1b3_br_0 thru V2_1b3_br_end to V2_1b4_br.
-//
-// Revision 1.1.8.6  2002/10/31 22:17:36  wenger
-// Changed Exception output to use toString() instead of getMessage()
-// because that (at least sometimes) produces more complete information.
-//
-// Revision 1.1.8.5  2002/10/07 18:09:37  wenger
-// Got peptide-cgi to work on a version 1.1 JVM.
-//
-// Revision 1.1.8.4  2002/08/08 18:50:55  wenger
-// Did to-do item 012 (now getting PDB IDs from the monomeric_polymer
-// save frame instead of the molecular_system save frame; checking the
-// database name, sequence length, and sequence identity of PDB entries.
-//
-// Revision 1.1.8.3  2002/08/07 18:04:35  wenger
-// Did to-do items 011 and 013 (get only first model from PDB file, show
-// PDB ID on summary page).
-//
-// Revision 1.1.8.2  2002/08/06 21:45:37  wenger
-// Provision for checking whether summary file out of date relative
-// to PDB file(s) (not fully working yet).
-//
-// Revision 1.1.8.1  2002/07/19 18:38:12  wenger
-// Merged V2_1b2_br_0 thru V2_1b2_br_end to V2_1b3_br.
-//
-// Revision 1.1.6.2  2002/07/01 20:07:37  wenger
-// Getting coordinates from PDB works in stand-alone mode, but still has
-// problems running as a CGI script; needs provisions to check up-to-
-// dateness vs. PDB files, provision for various error conditions.
-//
-// Revision 1.1.6.1  2002/06/20 20:59:47  wenger
-// Merged V2_1b1_br thru V2_1b1_br_end2 to V2_1b2_br.
-//
-// Revision 1.1.4.1  2002/05/01 22:26:46  wenger
-// Merged V2_1b0_br thru V2_1b0_br_end to V2_1b1_br.
-//
-// Revision 1.1.2.4  2002/04/04 15:40:41  wenger
-// The basic grabbing of atomic coordinates from mmCIF files at PDB is
-// now working; still needs cleanup, more testing, better error handling,
-// etc.
-//
-// Revision 1.1.2.3  2002/04/01 19:56:48  wenger
-// S2DNmrStarIfc and S2DmmCifIfc are now fully subclasses of S2DStarIfc;
-// split off S2DStarUtil into a totally separate class.
-//
-// Revision 1.1.2.2  2002/03/30 01:10:05  wenger
-// First phase of making both S2DNmrStarIfc and S2DmmCifIfc subclasses
-// of S2DStarIfc.
-//
-// Revision 1.1.2.1  2002/03/30 00:09:47  wenger
-// Oops!  Forgot to commit S2DmmCifIfc stuff before (renamed from S2DCifIfc).
-//
+// ...
 
 // ========================================================================
 

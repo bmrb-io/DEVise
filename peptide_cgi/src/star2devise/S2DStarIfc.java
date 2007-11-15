@@ -25,6 +25,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/10/01 21:32:30  wenger
+// Changes to how we get chemical shift entity ID values: added check for
+// _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
+// not found; change "?" to "1" in values.  This makes the new test50 work
+// at least somewhat, but that still needs more checking.  Also added
+// some more error checking for problems I found while working on this.
+//
 // Revision 1.5  2007/08/20 20:26:09  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -39,155 +46,7 @@
 // a bug in that residue labels were not filtered in
 // S2DMain.saveFramePistachio()).
 //
-// Revision 1.3.4.1  2007/01/03 23:17:37  wenger
-// Added ABBREV_COMMON for ChemShift.
-//
-// Revision 1.3  2006/02/01 21:34:32  wenger
-// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
-// to the trunk.
-//
-// Revision 1.2  2006/02/01 20:23:12  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
-//
-// Revision 1.1.2.10.2.5  2005/11/02 23:21:31  wenger
-// Changed LACS-related STAR file tags to be properly defined;
-// horizontal line in LACS visualizations is at *minus* y offset.
-//
-// Revision 1.1.2.10.2.4  2005/10/14 21:19:31  wenger
-// Most LACS processing now in place -- still needs lots of cleanup,
-// though.
-//
-// Revision 1.1.2.10.2.3  2005/07/27 15:58:30  wenger
-// Fixed S2DNmrStarIfc.getPdbIdsFromMolSys() to work for NMR-STAR 3.0,
-// added test34 which tests that; better error handling in
-// S2DUtils.arrayStr2Double().
-//
-// Revision 1.1.2.10.2.2  2005/05/19 16:07:43  wenger
-// Merged nmrfam_mods2_br (argh -- must have forgotten to make
-// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
-// peptide_cgi_10_8_0_br.
-//
-// Revision 1.1.2.10.2.1  2005/05/18 19:44:52  wenger
-// Some cleanup of the NMR-STAR 3.0 multi-entity code.
-//
-// Revision 1.1.2.10  2005/04/22 21:41:10  wenger
-// Okay, chemical shift data now pretty much works with NMR-STAR
-// 3.0 (although a lot of cleanup is still needed).  The other
-// types of data still need to be adapted to work with the
-// "multiple entities per loop" model of 3.0.
-//
-// Revision 1.1.2.9.4.2  2005/05/13 18:27:21  wenger
-// Fixed bug 040 (processing totally fails for entries that have 2 or
-// more entities and no chem shifts); added a bunch of related tests.
-//
-// Revision 1.1.2.9.4.1  2005/05/12 19:07:41  wenger
-// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
-// nmrfam_mods2_br (created to get ambiguity visualization help
-// and fix to coordinate visualization help).
-//
-// Revision 1.1.2.9.2.1  2005/05/12 14:10:12  wenger
-// Peptide-CGI now allows non-numeric BMRB IDs; changed test3 to make
-// sure cache is used when it should be; added test26 to test non-
-// numeric BMRB ID.
-//
-// Revision 1.1.2.9  2005/03/22 20:34:38  wenger
-// Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
-//
-// Revision 1.1.2.8.4.1  2005/03/10 19:27:36  wenger
-// Merged ambiguity_vis_br_0 thru ambiguity_vis_br_end to
-// ambiguity_vis2_br.
-//
-// Revision 1.1.2.8.2.1  2005/03/10 18:34:07  wenger
-// I need to commit the ambiguity stuff I've done so far so I can make
-// a new ambiguity branch that has the latest Pistachio changes.
-//
-// Revision 1.1.2.8  2005/01/31 23:02:55  wenger
-// Merged pistachio_vis_br_0 thru pistachio_vis_br_1a to V2_1b4_br.
-//
-// Revision 1.1.2.7.2.1  2005/01/12 20:46:42  wenger
-// Pistachio processing is now integrated into the normal Peptide-CGI
-// processing -- the Pistachio visualization is generated autmatically
-// if the Pistachio data exists.  (Still needs some cleanup, though.)
-// (We generate the Pistachio visualization by generating a temporary
-// mmCIF file with coordinates -- that is then run through the normal
-// coordinate processing to generate the DEVise file with Pistachio
-// coordinates.)
-//
-// Revision 1.1.2.7  2004/01/28 20:26:07  wenger
-// Fixed bug 025 (problem with missing residue list); note that
-// bmr4096.str as committed has fix to the residue list that's
-// not in the real entry yet.
-//
-// Revision 1.1.2.6  2004/01/17 20:15:36  wenger
-// PDB processing works for NMR-STAR 3.0 except for part of the protein
-// checking (S2DNmrStar30.getMonoPolyFrame(), waiting for more info
-// from Eldon and Steve), and some problems with 4096.
-//
-// Revision 1.1.2.5  2004/01/16 23:09:05  wenger
-// PDB processing works for NMR-STAR 3.0 except for protein checking.
-//
-// Revision 1.1.2.4  2004/01/16 22:26:00  wenger
-// NMR-STAR 3.0 support is now working except for saving residue
-// counts, etc and protein check for chem shifts; haven't tested
-// processing related PDB entries for 3.0 yet.
-//
-// Revision 1.1.2.3  2004/01/14 18:00:22  wenger
-// NMR-STAR version detection (2.1 vs. 3.0) is now working.
-//
-// Revision 1.1.2.2  2004/01/12 21:57:30  wenger
-// Part way to implementing NMR-STAR 3.0 support -- S2DNmrStarIfc has
-// framework in place, but not all details.
-//
-// Revision 1.1.2.1  2003/04/22 21:58:16  wenger
-// Added package name to peptide-cgi java code and put everything into
-// a single jar file; version is now 6.0.
-//
-// Revision 1.13.12.3  2003/04/09 18:02:13  wenger
-// First version of visualization-server capability now in place; still
-// needs some fixes.
-//
-// Revision 1.13.12.2  2003/03/11 18:09:41  wenger
-// Removed entry_information saveframe dependency from s2d.
-//
-// Revision 1.13.12.1  2003/01/14 16:51:49  wenger
-// Merged V2_1b3_br_0 thru V2_1b3_br_end to V2_1b4_br.
-//
-// Revision 1.13.10.4  2002/08/08 18:50:54  wenger
-// Did to-do item 012 (now getting PDB IDs from the monomeric_polymer
-// save frame instead of the molecular_system save frame; checking the
-// database name, sequence length, and sequence identity of PDB entries.
-//
-// Revision 1.13.10.3  2002/08/07 18:04:35  wenger
-// Did to-do items 011 and 013 (get only first model from PDB file, show
-// PDB ID on summary page).
-//
-// Revision 1.13.10.2  2002/08/06 21:45:37  wenger
-// Provision for checking whether summary file out of date relative
-// to PDB file(s) (not fully working yet).
-//
-// Revision 1.13.10.1  2002/07/19 18:38:12  wenger
-// Merged V2_1b2_br_0 thru V2_1b2_br_end to V2_1b3_br.
-//
-// Revision 1.13.8.1  2002/06/20 20:59:47  wenger
-// Merged V2_1b1_br thru V2_1b1_br_end2 to V2_1b2_br.
-//
-// Revision 1.13.6.1  2002/05/01 22:26:46  wenger
-// Merged V2_1b0_br thru V2_1b0_br_end to V2_1b1_br.
-//
-// Revision 1.13.4.3  2002/04/04 15:40:41  wenger
-// The basic grabbing of atomic coordinates from mmCIF files at PDB is
-// now working; still needs cleanup, more testing, better error handling,
-// etc.
-//
-// Revision 1.13.4.2  2002/04/01 19:56:48  wenger
-// S2DNmrStarIfc and S2DmmCifIfc are now fully subclasses of S2DStarIfc;
-// split off S2DStarUtil into a totally separate class.
-//
-// Revision 1.13.4.1  2002/03/30 01:10:05  wenger
-// First phase of making both S2DNmrStarIfc and S2DmmCifIfc subclasses
-// of S2DStarIfc.
-//
+// ...
 
 // ========================================================================
 

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/10/02 18:54:24  wenger
+// More improvements to error and warning messages, including printing
+// fewer at the default verbosity setting.
+//
 // Revision 1.5  2007/10/01 21:32:29  wenger
 // Changes to how we get chemical shift entity ID values: added check for
 // _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
@@ -37,83 +41,7 @@
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
 //
-// Revision 1.2  2006/02/01 20:23:12  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
-//
-// Revision 1.1.4.3.6.3  2005/09/14 15:14:22  wenger
-// Config changes for Osaka, and for manatee and basslet at BMRB;
-// new Pistachio test file; fixed test23 to work on non-CS machines;
-// better Pistachio error message.
-//
-// Revision 1.1.4.3.6.2  2005/06/28 17:08:22  wenger
-// Ambiguity code and figure of merit visualizations now use 2D main
-// views; changed "Pistachio" to "assignment figure of merit" in
-// visualizations, etc.
-//
-// Revision 1.1.4.3.6.1  2005/05/19 16:07:43  wenger
-// Merged nmrfam_mods2_br (argh -- must have forgotten to make
-// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
-// peptide_cgi_10_8_0_br.
-//
-// Revision 1.1.4.3.4.1  2005/05/18 18:08:14  wenger
-// Changed Pisatchio percentage calculation to be relative to the number
-// of atoms that actually exist in each amino acid, not just the number
-// we have figures of merit for; the Pistachio visualization now comes
-// up with "Color by figure of merit" selected; minor improvements to
-// ambiguity debug/error messages.
-//
-// Revision 1.1.4.3  2005/03/22 20:34:38  wenger
-// Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
-//
-// Revision 1.1.4.2.4.3  2005/03/22 16:38:33  wenger
-// Minor cleanup.
-//
-// Revision 1.1.4.2.4.2  2005/03/11 23:33:20  wenger
-// Ambiguity visualization is mostly working (incorporating some feedback
-// from Eldon); still needs some cleanup to the calculations, though.
-//
-// Revision 1.1.4.2.4.1  2005/03/10 19:27:36  wenger
-// Merged ambiguity_vis_br_0 thru ambiguity_vis_br_end to
-// ambiguity_vis2_br.
-//
-// Revision 1.1.4.2.2.1  2005/03/10 18:34:07  wenger
-// I need to commit the ambiguity stuff I've done so far so I can make
-// a new ambiguity branch that has the latest Pistachio changes.
-//
-// Revision 1.1.4.2  2005/02/01 21:37:23  wenger
-// More cleanups, especially to the Pistachio code.
-//
-// Revision 1.1.4.1  2005/01/31 23:02:54  wenger
-// Merged pistachio_vis_br_0 thru pistachio_vis_br_1a to V2_1b4_br.
-//
-// Revision 1.1.2.5  2005/01/28 18:49:01  wenger
-// Added "color by figure of merit" option to the Pistachio visualization.
-//
-// Revision 1.1.2.4  2005/01/12 20:46:41  wenger
-// Pistachio processing is now integrated into the normal Peptide-CGI
-// processing -- the Pistachio visualization is generated autmatically
-// if the Pistachio data exists.  (Still needs some cleanup, though.)
-// (We generate the Pistachio visualization by generating a temporary
-// mmCIF file with coordinates -- that is then run through the normal
-// coordinate processing to generate the DEVise file with Pistachio
-// coordinates.)
-//
-// Revision 1.1.2.3  2004/12/20 22:46:16  wenger
-// Improved "last residue" calculation so out-of-order residues don't
-// cause array bounds exception; fixed NMR-STAR 3.0 problem with tag
-// names for 3-letter residue lists (bmr4096.str.nmrstr has inconsistent
-// 1-letter and 3-letter residue lists -- kludged it so tests work,
-// removed the 1-letter residue list I added to bmr6318_pistachio.str.nmrstr).
-//
-// Revision 1.1.2.2  2004/12/01 21:56:25  wenger
-// Changed "HN"s to "H"s in Pistachio code because BMRB files have "H"
-// where Hamid expected "HN".
-//
-// Revision 1.1.2.1  2004/11/11 23:13:03  wenger
-// Early prototype of Pistachio calculations and visualization;
-// session, etc., are not automatically generated yet.
-//
+// ...
 
 // ========================================================================
 

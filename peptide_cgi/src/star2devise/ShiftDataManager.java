@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/08/21 18:56:30  wenger
+// Improved debug output -- better verbosity levels, etc.
+//
 // Revision 1.3  2007/08/20 20:26:10  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -34,42 +37,7 @@
 // try-again message if timed out; cleaned up warning/error messages
 // somewhat.
 //
-// Revision 1.1.2.3  2004/03/04 18:26:42  wenger
-// Fixed bug 030 (static variable problems in Jafar); removed
-// S2DTmpFile (no longer used).
-//
-// Revision 1.1.2.2  2004/01/22 16:43:49  wenger
-// Finished to-do item 020 (replace "/" with File.separator), other
-// minor cleanups.
-//
-// Revision 1.1.2.1  2003/04/22 21:58:17  wenger
-// Added package name to peptide-cgi java code and put everything into
-// a single jar file; version is now 6.0.
-//
-// Revision 1.6.20.1  2003/01/14 16:51:50  wenger
-// Merged V2_1b3_br_0 thru V2_1b3_br_end to V2_1b4_br.
-//
-// Revision 1.6.18.1  2002/10/31 22:17:36  wenger
-// Changed Exception output to use toString() instead of getMessage()
-// because that (at least sometimes) produces more complete information.
-//
-// Revision 1.6  2001/01/25 16:37:46  wenger
-// Fixed a bug that could cause an infinite loop in the perecent assignment
-// calculations; put filesize, cpu, and coredump limits in s2d script;
-// updated star file list; got rid of some unnecessary warnings.
-//
-// Revision 1.5  2001/01/17 19:55:46  wenger
-// Restructured the peptide-cgi code to make it much more maintainable.
-//
-// Revision 1.4  2000/08/03 19:11:52  wenger
-// Added S2DException class; better tolerance for certain missing data.
-//
-// Revision 1.3  2000/08/02 17:47:45  wenger
-// Greatly improved error handling.
-//
-// Revision 1.2  2000/07/27 16:11:23  wenger
-// Added standard DEVise headers.
-//
+// ...
 
 // ========================================================================
 

@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/20 20:26:09  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 20:23:12  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -34,25 +39,7 @@
 // Fixed up chem shift ref output in summary html file; added more
 // debug code to S2DResList.
 //
-// Revision 1.1.2.2  2003/05/14 21:45:52  wenger
-// Changed "/"s in file names to File.separator (hope I got them all!).
-//
-// Revision 1.1.2.1  2003/04/22 21:58:15  wenger
-// Added package name to peptide-cgi java code and put everything into
-// a single jar file; version is now 6.0.
-//
-// Revision 1.1.2.3  2003/04/09 18:02:13  wenger
-// First version of visualization-server capability now in place; still
-// needs some fixes.
-//
-// Revision 1.1.2.2  2003/03/19 17:43:02  wenger
-// Fixed bug 019 (problem with residue lists in the atomic coordinate
-// sessions).
-//
-// Revision 1.1.2.1  2003/03/06 20:39:16  wenger
-// Residue lists in the 3D visualizations now correctly come from the
-// monomeric_polymer save frame, as opposed to the coordinate data.
-//
+// ...
 
 // ========================================================================
 

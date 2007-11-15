@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/08/21 18:56:29  wenger
+// Improved debug output -- better verbosity levels, etc.
+//
 // Revision 1.3  2007/08/20 20:26:05  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -35,32 +38,7 @@
 // try-again message if timed out; cleaned up warning/error messages
 // somewhat.
 //
-// Revision 1.1.2.2  2003/05/08 16:40:50  wenger
-// Got rid of all System.exit() calls.
-//
-// Revision 1.1.2.1  2003/04/22 21:58:13  wenger
-// Added package name to peptide-cgi java code and put everything into
-// a single jar file; version is now 6.0.
-//
-// Revision 1.5.20.1  2003/01/14 16:51:47  wenger
-// Merged V2_1b3_br_0 thru V2_1b3_br_end to V2_1b4_br.
-//
-// Revision 1.5.18.1  2002/10/31 22:17:33  wenger
-// Changed Exception output to use toString() instead of getMessage()
-// because that (at least sometimes) produces more complete information.
-//
-// Revision 1.5  2001/01/17 19:55:46  wenger
-// Restructured the peptide-cgi code to make it much more maintainable.
-//
-// Revision 1.4  2000/08/03 19:11:51  wenger
-// Added S2DException class; better tolerance for certain missing data.
-//
-// Revision 1.3  2000/08/02 17:47:44  wenger
-// Greatly improved error handling.
-//
-// Revision 1.2  2000/07/27 16:11:23  wenger
-// Added standard DEVise headers.
-//
+// ...
 
 // ========================================================================
 

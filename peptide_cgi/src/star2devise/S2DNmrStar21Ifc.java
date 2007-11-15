@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/10/01 21:32:29  wenger
+// Changes to how we get chemical shift entity ID values: added check for
+// _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
+// not found; change "?" to "1" in values.  This makes the new test50 work
+// at least somewhat, but that still needs more checking.  Also added
+// some more error checking for problems I found while working on this.
+//
 // Revision 1.6  2007/08/20 20:26:08  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -31,69 +38,7 @@
 // Revision 1.4.2.1  2007/01/03 23:17:36  wenger
 // Added ABBREV_COMMON for ChemShift.
 //
-// Revision 1.4  2006/04/12 15:55:49  wenger
-// Improved some error messages, fixed a comment.
-//
-// Revision 1.3  2006/02/01 21:34:32  wenger
-// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
-// to the trunk.
-//
-// Revision 1.2  2006/02/01 20:23:11  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
-//
-// Revision 1.1.2.8.2.1  2005/07/27 15:58:29  wenger
-// Fixed S2DNmrStarIfc.getPdbIdsFromMolSys() to work for NMR-STAR 3.0,
-// added test34 which tests that; better error handling in
-// S2DUtils.arrayStr2Double().
-//
-// Revision 1.1.2.8  2005/04/22 21:41:10  wenger
-// Okay, chemical shift data now pretty much works with NMR-STAR
-// 3.0 (although a lot of cleanup is still needed).  The other
-// types of data still need to be adapted to work with the
-// "multiple entities per loop" model of 3.0.
-//
-// Revision 1.1.2.7  2005/03/22 20:34:38  wenger
-// Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
-//
-// Revision 1.1.2.6.4.1  2005/03/10 19:27:36  wenger
-// Merged ambiguity_vis_br_0 thru ambiguity_vis_br_end to
-// ambiguity_vis2_br.
-//
-// Revision 1.1.2.6.2.1  2005/03/10 18:34:07  wenger
-// I need to commit the ambiguity stuff I've done so far so I can make
-// a new ambiguity branch that has the latest Pistachio changes.
-//
-// Revision 1.1.2.6  2005/01/31 23:02:54  wenger
-// Merged pistachio_vis_br_0 thru pistachio_vis_br_1a to V2_1b4_br.
-//
-// Revision 1.1.2.5.2.1  2004/11/11 23:13:02  wenger
-// Early prototype of Pistachio calculations and visualization;
-// session, etc., are not automatically generated yet.  Note: I
-// added some HN data to bmr6318_pistachio.str.nmrstr for the
-// sake of my testing.
-//
-// Revision 1.1.2.5  2004/01/28 20:26:07  wenger
-// Fixed bug 025 (problem with missing residue list); note that
-// bmr4096.str as committed has fix to the residue list that's
-// not in the real entry yet.
-//
-// Revision 1.1.2.4  2004/01/17 20:15:36  wenger
-// PDB processing works for NMR-STAR 3.0 except for part of the protein
-// checking (S2DNmrStar30.getMonoPolyFrame(), waiting for more info
-// from Eldon and Steve), and some problems with 4096.
-//
-// Revision 1.1.2.3  2004/01/16 23:09:05  wenger
-// PDB processing works for NMR-STAR 3.0 except for protein checking.
-//
-// Revision 1.1.2.2  2004/01/16 22:26:00  wenger
-// NMR-STAR 3.0 support is now working except for saving residue
-// counts, etc and protein check for chem shifts; haven't tested
-// processing related PDB entries for 3.0 yet.
-//
-// Revision 1.1.2.1  2004/01/14 18:00:22  wenger
-// NMR-STAR version detection (2.1 vs. 3.0) is now working.
-//
+// ...
 
 // ========================================================================
 

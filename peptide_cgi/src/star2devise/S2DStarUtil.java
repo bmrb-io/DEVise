@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/02/01 20:23:12  wenger
+// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
+// trunk.
+//
 // Revision 1.1.2.2  2005/04/22 21:41:10  wenger
 // Okay, chemical shift data now pretty much works with NMR-STAR
 // 3.0 (although a lot of cleanup is still needed).  The other
@@ -33,29 +37,7 @@
 // Revision 1.1.10.1  2003/01/14 16:51:49  wenger
 // Merged V2_1b3_br_0 thru V2_1b3_br_end to V2_1b4_br.
 //
-// Revision 1.1.8.2  2002/10/31 22:17:35  wenger
-// Changed Exception output to use toString() instead of getMessage()
-// because that (at least sometimes) produces more complete information.
-//
-// Revision 1.1.8.1  2002/07/19 18:38:12  wenger
-// Merged V2_1b2_br_0 thru V2_1b2_br_end to V2_1b3_br.
-//
-// Revision 1.1.6.1  2002/06/20 20:59:47  wenger
-// Merged V2_1b1_br thru V2_1b1_br_end2 to V2_1b2_br.
-//
-// Revision 1.1.4.1  2002/05/01 22:26:46  wenger
-// Merged V2_1b0_br thru V2_1b0_br_end to V2_1b1_br.
-//
-// Revision 1.1.2.2  2002/04/04 15:40:41  wenger
-// The basic grabbing of atomic coordinates from mmCIF files at PDB is
-// now working; still needs cleanup, more testing, better error handling,
-// etc.
-//
-// Revision 1.1.2.1  2002/04/01 19:56:48  wenger
-// S2DNmrStarIfc and S2DmmCifIfc are now fully subclasses of S2DStarIfc;
-// split off S2DStarUtil into a totally separate class.
-//
-//
+// ...
 
 // ========================================================================
 

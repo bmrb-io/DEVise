@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/10/02 18:54:23  wenger
+// More improvements to error and warning messages, including printing
+// fewer at the default verbosity setting.
+//
 // Revision 1.7  2007/10/02 17:39:53  wenger
 // More debug output; updated the version history with changes from last
 // commit.
@@ -32,52 +36,7 @@
 // at least somewhat, but that still needs more checking.  Also added
 // some more error checking for problems I found while working on this.
 //
-// Revision 1.5  2007/08/21 18:56:29  wenger
-// Improved debug output -- better verbosity levels, etc.
-//
-// Revision 1.4  2007/08/20 20:26:06  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.3  2006/02/01 21:34:32  wenger
-// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
-// to the trunk.
-//
-// Revision 1.2  2006/02/01 20:23:09  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
-//
-// Revision 1.1.4.3.6.1  2005/05/19 16:07:42  wenger
-// Merged nmrfam_mods2_br (argh -- must have forgotten to make
-// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
-// peptide_cgi_10_8_0_br.
-//
-// Revision 1.1.4.3.4.1  2005/05/18 18:08:14  wenger
-// Changed Pisatchio percentage calculation to be relative to the number
-// of atoms that actually exist in each amino acid, not just the number
-// we have figures of merit for; the Pistachio visualization now comes
-// up with "Color by figure of merit" selected; minor improvements to
-// ambiguity debug/error messages.
-//
-// Revision 1.1.4.3  2005/04/05 19:06:53  wenger
-// More ambiguity vis changes: "color by ambiguity code" is initially
-// selected; changes to some of the ambiguity-related strings.
-//
-// Revision 1.1.4.2  2005/03/22 21:47:56  wenger
-// Minor cleanups to ambiguity visualization.
-//
-// Revision 1.1.4.1  2005/03/22 20:34:37  wenger
-// Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
-//
-// Revision 1.1.2.1  2005/03/21 21:07:37  wenger
-// Changed ambiguity percentage calculation to be relative to the number
-// of atoms that actually exist in each amino acid, not just the number
-// we have chem shift values for; added a check of the residue list
-// against residues in the chem shift save frame (optional, but almost
-// all tests now use it); added ambiguity output files to test checks;
-// added ambiguity visualization help file (not yet complete).
-//
+// ...
 
 // ========================================================================
 

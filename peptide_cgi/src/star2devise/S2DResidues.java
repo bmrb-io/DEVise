@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/10/03 15:38:40  wenger
+// We now allow single-letter residue codes in chemical shift loops,
+// etc.
+//
 // Revision 1.4  2007/10/02 18:54:24  wenger
 // More improvements to error and warning messages, including printing
 // fewer at the default verbosity setting.
@@ -34,33 +38,7 @@
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
 //
-// Revision 1.1.2.4  2005/03/22 20:34:38  wenger
-// Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
-//
-// Revision 1.1.2.3.6.1  2005/03/21 21:07:37  wenger
-// Changed ambiguity percentage calculation to be relative to the number
-// of atoms that actually exist in each amino acid, not just the number
-// we have chem shift values for; added a check of the residue list
-// against residues in the chem shift save frame (optional, but almost
-// all tests now use it); added ambiguity output files to test checks;
-// added ambiguity visualization help file (not yet complete).
-//
-// Revision 1.1.2.3  2004/01/28 20:26:07  wenger
-// Fixed bug 025 (problem with missing residue list); note that
-// bmr4096.str as committed has fix to the residue list that's
-// not in the real entry yet.
-//
-// Revision 1.1.2.2  2003/05/09 16:21:06  wenger
-// Removed case-sensitivity in residue labels.
-//
-// Revision 1.1.2.1  2003/04/22 21:58:15  wenger
-// Added package name to peptide-cgi java code and put everything into
-// a single jar file; version is now 6.0.
-//
-// Revision 1.1.2.1  2003/04/09 20:05:40  wenger
-// Oops!  Forgot to cvs add this file -- part of first version of
-// visualization-server capability.
-//
+// ...
 
 // ========================================================================
 

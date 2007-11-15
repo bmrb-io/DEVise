@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/08/20 20:26:09  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.7  2007/03/07 16:37:58  wenger
 // Phase 2 of "upload and visualize data" -- mostly working, I think,
 // but still needs chem shift reference capability and hasn't been
@@ -33,164 +38,7 @@
 // Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
 // to the trunk.
 //
-// Revision 1.4  2006/05/11 21:10:25  wenger
-// Fixed problems with some html page titles being based on the BMRB
-// ID rather than the name, etc.  Fixed test36 to work with new LACS
-// file names.
-//
-// Revision 1.3.2.1  2006/02/20 21:57:40  wenger
-// Peptide-CGI now generates data, sessions, etc., that use
-// Jmol for 3D molecule visualization.
-//
-// Revision 1.3  2006/02/01 21:34:32  wenger
-// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
-// to the trunk.
-//
-// Revision 1.2  2006/02/01 20:23:12  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
-//
-// Revision 1.1.2.9.6.4  2005/11/23 21:07:25  wenger
-// A bunch of changes to the Pistachio visualization:
-// - Added titles to more views to clarify things;
-// - Changed JS background color so inter-view borders show up
-//   (also for ambiguity visualization);
-// - H -> "backbone proton" in data select view;
-// - Changed color select view and color legend view;
-// - Unknown -> unassigned in color legend;
-// - Moved unassigned to right in color legend;
-// - Y axis label in data view.
-//
-// Revision 1.1.2.9.6.3  2005/11/03 17:52:52  wenger
-// Added the capability to select large (1024x768 pixel) or
-// small (800x600 pixel) visualizations.
-//
-// Revision 1.1.2.9.6.2  2005/10/14 21:19:31  wenger
-// Most LACS processing now in place -- still needs lots of cleanup,
-// though.
-//
-// Revision 1.1.2.9.6.1  2005/05/19 16:07:43  wenger
-// Merged nmrfam_mods2_br (argh -- must have forgotten to make
-// nmrfam_mods2_br_0 tag!) thru nmrfam_mods2_br_3 to
-// peptide_cgi_10_8_0_br.
-//
-// Revision 1.1.2.9.4.1  2005/05/12 19:07:41  wenger
-// Merged nmrfam_mods_br_0 thru nmrfam_mods_br_1 to new
-// nmrfam_mods2_br (created to get ambiguity visualization help
-// and fix to coordinate visualization help).
-//
-// Revision 1.1.2.9.2.1  2005/05/12 17:40:33  wenger
-// The format of the input file name (e.g., bmrXXXX.str, or whatever)
-// and the comment email for the web pages are now configurable.
-//
-// Revision 1.1.2.9  2005/03/22 20:34:38  wenger
-// Merged ambiguity_vis2_br_0 thru ambiguity_vis2_br_3 to V2_1b4_br.
-//
-// Revision 1.1.2.8.4.1  2005/03/10 19:27:36  wenger
-// Merged ambiguity_vis_br_0 thru ambiguity_vis_br_end to
-// ambiguity_vis2_br.
-//
-// Revision 1.1.2.8.2.1  2005/03/10 18:34:07  wenger
-// I need to commit the ambiguity stuff I've done so far so I can make
-// a new ambiguity branch that has the latest Pistachio changes.
-//
-// Revision 1.1.2.8  2005/01/31 23:02:55  wenger
-// Merged pistachio_vis_br_0 thru pistachio_vis_br_1a to V2_1b4_br.
-//
-// Revision 1.1.2.7  2004/12/08 23:07:18  wenger
-// Oops -- re-fixed deltashift session template; added titles to
-// specific html pages; enlarges the JavaScreen.
-//
-// Revision 1.1.2.6.2.1  2005/01/12 20:46:42  wenger
-// Pistachio processing is now integrated into the normal Peptide-CGI
-// processing -- the Pistachio visualization is generated autmatically
-// if the Pistachio data exists.  (Still needs some cleanup, though.)
-// (We generate the Pistachio visualization by generating a temporary
-// mmCIF file with coordinates -- that is then run through the normal
-// coordinate processing to generate the DEVise file with Pistachio
-// coordinates.)
-//
-// Revision 1.1.2.6  2004/06/23 17:39:26  wenger
-// Preliminary version of chem shift reference visualization 3 in
-// place; cleaned up 4317 chem shift ref test data; changed fonts
-// in chem shift ref visualization 1.
-//
-// Revision 1.1.2.5  2004/01/26 18:55:37  wenger
-// Incorporated "Eldon's" chemical shift reference session; added help
-// pages for both chem shift ref visualizations (with no help info
-// for now).
-//
-// Revision 1.1.2.4  2003/10/23 18:08:57  wenger
-// Basic chem shift ref stuff is in place -- session and specific html
-// files are generated, summary html file has link, etc.  The main thing
-// left is the mechanics of calling Dan's chem shift ref software --
-// right now I am just using a script that creates dummy chem shift
-// ref data files.
-//
-// Revision 1.1.2.3  2003/05/14 21:45:52  wenger
-// Changed "/"s in file names to File.separator (hope I got them all!).
-//
-// Revision 1.1.2.2  2003/05/14 20:10:48  wenger
-// Split generated html and data files into separate directories (for
-// better security); moved html and session templates out of main
-// html and session directories.
-//
-// Revision 1.1.2.1  2003/04/22 21:58:16  wenger
-// Added package name to peptide-cgi java code and put everything into
-// a single jar file; version is now 6.0.
-//
-// Revision 1.7.18.3  2003/04/09 18:02:13  wenger
-// First version of visualization-server capability now in place; still
-// needs some fixes.
-//
-// Revision 1.7.18.2  2003/03/06 19:18:26  wenger
-// Restored visible borders between views in the 3D visualizations, as
-// per Eldon's request.
-//
-// Revision 1.7.18.1  2003/01/14 16:51:49  wenger
-// Merged V2_1b3_br_0 thru V2_1b3_br_end to V2_1b4_br.
-//
-// Revision 1.7.16.2  2002/11/01 17:40:14  wenger
-// Fixed bug 013 (s2d fails if no write permission on output files).
-//
-// Revision 1.7.16.1  2002/10/31 22:17:35  wenger
-// Changed Exception output to use toString() instead of getMessage()
-// because that (at least sometimes) produces more complete information.
-//
-// Revision 1.7  2001/10/10 22:37:33  wenger
-// First version of atomic coordinate extraction and visualization (atoms,
-// not bonds, only tested on 4096 -- coordinates must be in same NMR-STAR
-// file as other data); fixed various minor problems with peptide-cgi code.
-//
-// Revision 1.6  2001/07/25 17:46:49  wenger
-// Added -usage and -version args to S2DMain, changed version to 2.12;
-// slightly improved s2d error messages; install script now uses find
-// to change the mode of html/data files to avoid argument overflow;
-// distribution now generates tar file name with version number.
-//
-// Revision 1.5  2001/04/17 17:09:10  wenger
-// Added display of H vs. N chem shifts.
-//
-// Revision 1.4  2001/04/16 19:49:11  wenger
-// Added display of all chem shifts by amino acid.
-//
-// Revision 1.3  2001/03/08 20:33:24  wenger
-// Merged changes from no_collab_br_0 thru no_collab_br_2 from the branch
-// to the trunk.
-//
-// Revision 1.2.2.1  2001/02/09 16:57:13  wenger
-// Added heteronuclear NOE; made T1 and T2 relaxation errors optional
-// (conversion doesn't fail if they are not found); added an X margin of
-// 0.5 in all sessions; updated star file list; misc. minor cleanups.
-//
-// Revision 1.2  2001/01/19 15:39:06  wenger
-// Added T1 and T2 relaxation; removed some unnecessary variables from
-// coupling constants; added schema files to installation, unified T1
-// and T2 relaxation schema.
-//
-// Revision 1.1  2001/01/17 20:00:07  wenger
-// Restructured the peptide-cgi code to make it much more maintainable.
-//
+// ...
 
 // ========================================================================
 

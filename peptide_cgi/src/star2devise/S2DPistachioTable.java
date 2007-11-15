@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/20 20:26:09  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 20:23:12  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -34,27 +39,7 @@
 // Ambiguity visualization is mostly working (incorporating some feedback
 // from Eldon); still needs some cleanup to the calculations, though.
 //
-// Revision 1.1.4.2.4.2  2005/03/10 20:22:10  wenger
-// Mods to S2DPistachioTable in preparation for adding a corresponding
-// S2DAmbiguityTable.
-//
-// Revision 1.1.4.2.4.1  2005/03/10 19:27:36  wenger
-// Merged ambiguity_vis_br_0 thru ambiguity_vis_br_end to
-// ambiguity_vis2_br.
-//
-// Revision 1.1.4.2.2.1  2005/03/10 18:34:07  wenger
-// I need to commit the ambiguity stuff I've done so far so I can make
-// a new ambiguity branch that has the latest Pistachio changes.
-//
-// Revision 1.1.4.2  2005/02/01 21:37:23  wenger
-// More cleanups, especially to the Pistachio code.
-//
-// Revision 1.1.4.1  2005/01/31 23:02:54  wenger
-// Merged pistachio_vis_br_0 thru pistachio_vis_br_1a to V2_1b4_br.
-//
-// Revision 1.1.2.1  2005/01/31 22:03:12  wenger
-// Oops!  Forgot to cvs add S2DPistachioTable.java!
-//
+// ...
 
 // ========================================================================
 
