@@ -4075,6 +4075,13 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 953 10/31/07	OPEN	Destroying a view does not destroy the corresponding
 			mapping. (wenger)
 
+954 11/16/07	OPEN	JavaScreen locks up IE for Miron:  go to BMRB
+			visualization, then try to go to a different URL,
+			and the browser locks up. (This is in IE/WinXP.)
+			Doesn't have to be a Jmol visualization.  Miron says
+			this started after upgrading his Java version.
+			(miron/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
