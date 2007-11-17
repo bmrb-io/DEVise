@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2007/11/15 17:15:34  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.53  2007/11/14 20:07:17  wenger
 // Made improvements to test37 and test47; we now print all input parameters
 // at verbosity level 1 instead of 2.
@@ -28,6 +31,10 @@
 // Revision 1.52  2007/11/14 18:49:02  wenger
 // Replaced all test NMR-STAR 3.1 files with the latest versions,
 // changed test_all accordingly (because this fixes earlier problems).
+//
+// Revision 1.51.2.1  2007/10/31 16:09:25  wenger
+// Updated Peptide-CGI version to 11.2.0x1 -- I figure adding the nucleic
+// acid histograms is enough of a change for a minor version change.
 //
 // Revision 1.51  2007/10/08 19:52:50  wenger
 // Version string is now 11.1.6x1 because 11.1.5 has been released.
@@ -55,7 +62,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.1.6x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.0x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

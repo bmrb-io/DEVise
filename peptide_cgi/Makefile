@@ -129,8 +129,7 @@ dev_test:
 	mkdir dev_test/session
 	cd dev_test/session; ln -s ../../test_session bmrb
 	cd dev_test/session; ln -s ../../session_templates .
-	cd dev_test/session; ln -s ../../histograms/session/* .
-	rm dev_test/session/CVS
+	cd dev_test/session; ln -s ../../histograms/session histograms
 
 dev_testclean:
 	-rm -rf dev_test

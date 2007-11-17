@@ -1,0 +1,12 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jun 18 1999 13:53:05
+# DEVise version: 1.6.3
+# DEVise date: Jun 11 1999
+# DEVise endHeader
+
+type single_rec ascii
+comment #
+whitespace '	'' '
+attr foo int
+attr bar int

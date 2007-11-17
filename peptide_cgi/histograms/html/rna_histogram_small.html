@@ -1,7 +1,7 @@
 <!--
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2006
+  (c) Copyright 1999-2007
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -18,7 +18,7 @@
 
 <html>
 <head>
-<title>DEVise JavaScreen: Chemical Shift Distribution Histograms</title>
+<title>DEVise JavaScreen: RNA Chemical Shift Distribution Histograms</title>
 <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
 </head>
 <body bgcolor = #FFFFCC>
@@ -40,7 +40,7 @@
 <hr>
 
 <center> <h2>
-  Chemical Shift Distribution Histograms
+  RNA Chemical Shift Distribution Histograms
 </h2> </center>
 
 <p>
@@ -51,20 +51,20 @@ turn off popup blocking in your web browser.</strong>
 </p>
 
 <p>
-Normal-size visualization on this page;
-  <a href="histogram2_small.html">small</a> visualization;
-  <a href="histogram2_large.html">large</a> visualization
+Small visualization on this page;
+  <a href="rna_histogram.html">normal-size</a> visualization;
+  <a href="rna_histogram_large.html">large</a> visualization
 </p>
 
-<applet code=JavaScreen.jsb.class archive=jsb1.jar,jsb2.jar,Jmol.jar width=800 height=600>
+<applet code=JavaScreen.jsb.class archive=jsb1.jar,jsb2.jar,Jmol.jar width=600 height=450>
 <param name="applet" value="JavaScreen.jsb">
 <param name="debug" value="0">
-<param name="session" value="bmrb/histogram2.ds">
+<param name="session" value="bmrb/rna_histogram.ds">
 <param name="cmdport" value="6666">
 <param name="cgiurl" value="/cgi-bin/js.cgi">
 <param name="rubberbandlimit" value="4x4">
 <param name="bgcolor" value="64+96+0">
-<param name="screensize" value="800x600">
+<param name="screensize" value="600x450">
 </applet>
 
 <br><br>
