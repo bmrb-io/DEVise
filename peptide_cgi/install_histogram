@@ -48,6 +48,26 @@ if (! -d $wwwhome) then
   exit 1
 endif
 
+
+#-----------------------------------------------------------
+# Make sure the user really wants to do this.
+
+echo ""
+echo ""
+echo You are about to install the histogram setup.  This
+echo will install files in $demohome, $wwwhome, $datahome
+echo and $htmlhome.
+endif
+echo ""
+echo -n "Are you absolutely sure you want to do this? [n] "
+
+set answer = $<
+if ($answer != y && $answer != Y) then
+  echo Aborted.
+  exit 1
+endif
+
+
 #-----------------------------------------------------------
 # Okay, here we actually start doing the installation.
 

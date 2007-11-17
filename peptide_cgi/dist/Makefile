@@ -46,6 +46,7 @@ peptide-cgi-setup:
 	ln -s ../../view_entry .
 	ln -s ../../scripts .
 	ln -s ../../pep-version-history .
+	ln -s ../../histograms .
 	mkdir cgi-bin; cd cgi-bin; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist cgi-bin-setup; rm Makefile.dist
 	mkdir chem_info; cd chem_info; ln -s ../Makefile.dist .; \

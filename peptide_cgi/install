@@ -115,8 +115,11 @@ if (! $is_vur) then
 endif
 
 
+#-----------------------------------------------------------
 # Make sure the user really wants to do this.
 
+echo ""
+echo ""
 if ($is_vur) then
   echo You are about to install the peptide-cgi setup for
   echo viewing unreleased entries.  This will install files
