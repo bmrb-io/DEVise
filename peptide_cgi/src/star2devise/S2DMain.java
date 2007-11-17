@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2007/11/17 18:33:47  wenger
+// Changed version to 11.2.0 for release.
+//
 // Revision 1.55  2007/11/17 16:32:02  wenger
 // Merged peptide_cgi_na_histograms_br_0 thru
 // peptide_cgi_na_histograms_br_1 to trunk.
@@ -66,7 +69,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.0";
+    public static final String PEP_CGI_VERSION = "11.2.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

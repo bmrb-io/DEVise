@@ -60,6 +60,7 @@ peptide-cgi-setup:
 	mkdir html_templates; cd html_templates; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist html_templates-setup; rm Makefile.dist
 	ln -s ../../install .
+	ln -s ../../install_histogram .
 	ln -s ../../install_uvd .
 	mkdir session_templates; cd session_templates; \
 	  ln -s ../Makefile.dist .; \
