@@ -76,6 +76,12 @@ The following testing steps must be done:
   the "Test" link.  Make sure the summary page is correct and some of
   the visualizations work.
 
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html.
+
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram2.html.
+
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/rna_histogram.html.
+
 
 * Things to do to this document:
 
