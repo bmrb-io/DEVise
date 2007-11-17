@@ -1,0 +1,102 @@
+#! /bin/csh -f
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2000-2007
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+############################################################
+
+#   Install the histogram visualizations.
+
+############################################################
+
+#  $Id$
+
+############################################################
+
+#-----------------------------------------------------------
+# Check and get the arguments.
+
+if ($#argv != 4) then
+  echo "Usage: install_histogram <dev_demo_home> <www_home>"
+  echo "  <histogram_data_home> <histogram_html_home>"
+  exit 1;
+endif
+
+set demohome = $1
+set wwwhome = $2
+set datahome = $3
+set htmlhome = $4
+
+
+# Make sure the demo home and www home directories already exist.
+
+if (! -d $demohome) then
+  echo "$demohome directory doesn't exist; aborting."
+  exit 1
+endif
+if (! -d $wwwhome) then
+  echo "$wwwhome directory doesn't exist; aborting."
+  exit 1
+endif
+
+#-----------------------------------------------------------
+# Okay, here we actually start doing the installation.
+
+# Create and set up the sessions directory.
+
+set targetdir = $demohome/session.js/bmrb
+echo "Installing histogram sessions in $targetdir"
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+cp -p histograms/session/*.ds $targetdir
+chmod a+r $targetdir/*.ds
+
+
+# Create and set up the data directory.
+
+set targetdir = $demohome/dat/bmrb
+echo "Installing histogram data in $targetdir"
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+cp -p histograms/dat/[a-z]* $targetdir
+chmod a+r $targetdir/[a-z]*
+set targetdir = $targetdir/bmrb_histogram_data
+if (! -e $targetdir) then
+  ln -s $datahome $targetdir
+endif 
+
+
+# Create and set up the html directory.
+
+set targetdir = $htmlhome
+echo "Installing histogram html files in $targetdir"
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+cp -p histograms/html/*.html $targetdir
+chmod a+r $targetdir/*.html
+
+
+# Copy the schemas to the demo area.
+
+set targetdir = $demohome/schema/schema/physical
+echo "Installing histogram schema files in $targetdir"
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rx $targetdir
+cp -p histograms/schema/bmrb-* $targetdir
