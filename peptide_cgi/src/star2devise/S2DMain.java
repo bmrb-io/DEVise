@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2007/11/20 18:01:27  wenger
+// Merged peptide_cgi_na_histograms_br_2 thru
+// peptide_cgi_na_histograms_br_3 to trunk.
+//
 // Revision 1.57  2007/11/17 19:32:30  wenger
 // Incremented version; added install_histogram to the distribution
 // (it was missing).
@@ -76,7 +80,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.1x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.1";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
