@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2007/11/17 19:32:30  wenger
+// Incremented version; added install_histogram to the distribution
+// (it was missing).
+//
 // Revision 1.56  2007/11/17 18:33:47  wenger
 // Changed version to 11.2.0 for release.
 //
@@ -38,6 +42,9 @@
 // Revision 1.52  2007/11/14 18:49:02  wenger
 // Replaced all test NMR-STAR 3.1 files with the latest versions,
 // changed test_all accordingly (because this fixes earlier problems).
+//
+// Revision 1.51.2.2  2007/11/19 19:41:16  wenger
+// Added DNA histogram html files, incremented Peptide-CGI version.
 //
 // Revision 1.51.2.1  2007/10/31 16:09:25  wenger
 // Updated Peptide-CGI version to 11.2.0x1 -- I figure adding the nucleic

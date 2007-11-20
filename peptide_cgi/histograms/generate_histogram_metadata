@@ -14,12 +14,13 @@ my $data_dir = "/p/devise/demo/dat/bmrb/bmrb_histogram_data";
 opendir DATADIR, $data_dir or die "Cannot open data directory $!";
 my @files = readdir DATADIR;
 closedir DATADIR;
-#print "@files\n";
+print "@files\n" if ($debug >= 2);
 
+# ....................................................................
 # Pull out the RNA histogram files (this is a way to get a list of all
 # of the RNA residue/atom combinations we have to show).
 my @rnalist = grep /^\w_.*_hist.txt/, @files;
-#print "@rnalist\n";
+print "@rnalist\n" if ($debug >= 2);
 
 open (HIST_LIST, ">dat/rna_hist_list.new") or
   die "Can't create file: $!";
@@ -28,12 +29,7 @@ open (HIST_LINK_LIST, ">dat/rna_hist_list_link.new") or
 open (HIST_DATASOURCES, ">session/rna_datasources.new") or
   die "Can't create file: $!";
 
-print HIST_LIST "# <residue number> <atom number> <residue> <atom name> " .
-  "<data source name>\n";
-print HIST_LIST "#   <title>\n";
-print HIST_LINK_LIST "# <residue number> <atom number> <residue> <atom name> " .
-  "<data source name>\n";
-print HIST_LINK_LIST "#   <title>\n";
+print_headers();
 
 my $prev_residue = "";
 my $res_num = 0;
@@ -47,12 +43,42 @@ close (HIST_LIST);
 close (HIST_LINK_LIST);
 close (HIST_DATASOURCES);
 
-
-
+# ....................................................................
 # Pull out the DNA histogram files (this is a way to get a list of all
 # of the DNA residue/atom combinations we have to show).
 my @dnalist = grep /^D\w_.*_hist.txt/, @files;
-#print "@dnalist\n";
+print "@dnalist\n" if ($debug >= 2);
+
+open (HIST_LIST, ">dat/dna_hist_list.new") or
+  die "Can't create file: $!";
+open (HIST_LINK_LIST, ">dat/dna_hist_list_link.new") or
+  die "Can't create file: $!";
+open (HIST_DATASOURCES, ">session/dna_datasources.new") or
+  die "Can't create file: $!";
+
+print_headers();
+
+$prev_residue = "";
+$res_num = 0;
+$atom_num;
+
+foreach my $dnaitem (@dnalist) {
+  write_one("dna", $dnaitem);
+}
+
+close (HIST_LIST);
+close (HIST_LINK_LIST);
+close (HIST_DATASOURCES);
+
+# --------------------------------------------------------------------
+sub print_headers {
+  print HIST_LIST "# <residue number> <atom number> <residue> <atom name> " .
+    "<data source name>\n";
+  print HIST_LIST "#   <title>\n";
+  print HIST_LINK_LIST "# <residue number> <atom number> <residue> " .
+    "<atom name> <data source name>\n";
+  print HIST_LINK_LIST "#   <title>\n";
+}
 
 # --------------------------------------------------------------------
 sub write_one {

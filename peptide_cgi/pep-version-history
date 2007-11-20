@@ -1,10 +1,17 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.2.1
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Added DNA histograms.
+
+
 Peptide-CGI 11.2.0
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
-* Added nucleic acid histograms.
+* Added RNA histograms.
 
 * Updated histogram html files to have colors and fonts matching the rest
 of the BMRB web site.

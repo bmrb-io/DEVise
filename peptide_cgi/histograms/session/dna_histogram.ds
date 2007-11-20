@@ -1,0 +1,982 @@
+# DEVise startHeader
+# file type: session
+# file date: Nov 19 2007 13:14:47
+# DEVise version: 1.9.0
+# DEVise date: Jul 13 2006
+# DEVise endHeader
+
+# Session description
+DEVise setSessionDesc {}
+
+# Load color palette
+DEVise color SessionPalette {#000000000000 black
+#000000008b00 DarkBlue
+#00000000cd00 MediumBlue
+#00000000ff00 blue
+#000064000000 DarkGreen
+#00008b000000 green4
+#0000bf00ff00 DeepSkyBlue1
+#0000ff000000 green
+#0000ff00ff00 cyan
+#190019007000 MidnightBlue
+#1e009000ff00 DodgerBlue
+#1f001f001f00 gray12
+#22008b002200 ForestGreen
+#400040004000 gray25
+#610061006100 gray38
+#7f007f007f00 gray50
+#8b0000000000 DarkRed
+#8b0045001300 SaddleBrown
+#99003200cc00 DarkOrchid
+#a100a100a100 gray63
+#b20022002200 firebrick
+#b4005200cd00 MediumOrchid3
+#bf00bf00bf00 gray75
+#c000ff003e00 OliveDrab
+#e000e000e000 gray88
+#ee00ad000e00 Goldenrod2
+#ee00e800aa00 PaleGoldenrod
+#f000e6008c00 khaki
+#f500de00b300 wheat
+#fa00fa00d200 LightGoldenrodYellow
+#fd00f500e600 OldLace
+#ff0000000000 red
+#ff000000ff00 magenta
+#ff007f000000 DarkOrange1
+#ff00a5000000 orange
+#ff00d7000000 gold
+#ff00ff000000 yellow
+#ffffffffffff white
+}
+
+# Set color mode (modulus or truncation)
+DEVise setColorMode 0
+
+# Per-session data source definitions
+DEVise dteInsertCatalogEntry . { "single_rec" UNIXFILE single_rec single_rec  $DEVISE_SCHEMA/physical/bmrb-single_rec "" 100 50  "$DEVISE_DAT/bmrb" ""}
+DEVise dteInsertCatalogEntry . {"dna_hist_list" UNIXFILE dna_hist_list HistList  $DEVISE_SCHEMA/physical/bmrb-HistList "" 100 50  "$DEVISE_DAT/bmrb" ""}
+DEVise dteInsertCatalogEntry . {"dna_hist_list_link" UNIXFILE dna_hist_list_link HistList  $DEVISE_SCHEMA/physical/bmrb-HistList "" 100 50  "$DEVISE_DAT/bmrb" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C1p" UNIXFILE DA_C1p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C1p" UNIXFILE DA_C1p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C2" UNIXFILE DA_C2_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C2" UNIXFILE DA_C2_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C2p" UNIXFILE DA_C2p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C2p" UNIXFILE DA_C2p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C3p" UNIXFILE DA_C3p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C3p" UNIXFILE DA_C3p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C4" UNIXFILE DA_C4_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C4" UNIXFILE DA_C4_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C4p" UNIXFILE DA_C4p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C4p" UNIXFILE DA_C4p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C5" UNIXFILE DA_C5_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C5" UNIXFILE DA_C5_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C5p" UNIXFILE DA_C5p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C5p" UNIXFILE DA_C5p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C6" UNIXFILE DA_C6_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C6" UNIXFILE DA_C6_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_C8" UNIXFILE DA_C8_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_C8" UNIXFILE DA_C8_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H1p" UNIXFILE DA_H1p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H1p" UNIXFILE DA_H1p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H2" UNIXFILE DA_H2_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H2" UNIXFILE DA_H2_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H2p" UNIXFILE DA_H2p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H2p" UNIXFILE DA_H2p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H2pp" UNIXFILE DA_H2pp_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H2pp" UNIXFILE DA_H2pp_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H3p" UNIXFILE DA_H3p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H3p" UNIXFILE DA_H3p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H4p" UNIXFILE DA_H4p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H4p" UNIXFILE DA_H4p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H5p" UNIXFILE DA_H5p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H5p" UNIXFILE DA_H5p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H5pp" UNIXFILE DA_H5pp_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H5pp" UNIXFILE DA_H5pp_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H61" UNIXFILE DA_H61_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H61" UNIXFILE DA_H61_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H62" UNIXFILE DA_H62_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H62" UNIXFILE DA_H62_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_H8" UNIXFILE DA_H8_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_H8" UNIXFILE DA_H8_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_N1" UNIXFILE DA_N1_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_N1" UNIXFILE DA_N1_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_N3" UNIXFILE DA_N3_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_N3" UNIXFILE DA_N3_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_N6" UNIXFILE DA_N6_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_N6" UNIXFILE DA_N6_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_N7" UNIXFILE DA_N7_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_N7" UNIXFILE DA_N7_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_N9" UNIXFILE DA_N9_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_N9" UNIXFILE DA_N9_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DA_P" UNIXFILE DA_P_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DA_P" UNIXFILE DA_P_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C1p" UNIXFILE DC_C1p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C1p" UNIXFILE DC_C1p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C2" UNIXFILE DC_C2_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C2" UNIXFILE DC_C2_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C2p" UNIXFILE DC_C2p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C2p" UNIXFILE DC_C2p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C3p" UNIXFILE DC_C3p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C3p" UNIXFILE DC_C3p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C4" UNIXFILE DC_C4_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C4" UNIXFILE DC_C4_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C4p" UNIXFILE DC_C4p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C4p" UNIXFILE DC_C4p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C5" UNIXFILE DC_C5_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C5" UNIXFILE DC_C5_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C5p" UNIXFILE DC_C5p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C5p" UNIXFILE DC_C5p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_C6" UNIXFILE DC_C6_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_C6" UNIXFILE DC_C6_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H1p" UNIXFILE DC_H1p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H1p" UNIXFILE DC_H1p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H2p" UNIXFILE DC_H2p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H2p" UNIXFILE DC_H2p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H2pp" UNIXFILE DC_H2pp_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H2pp" UNIXFILE DC_H2pp_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H3p" UNIXFILE DC_H3p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H3p" UNIXFILE DC_H3p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H41" UNIXFILE DC_H41_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H41" UNIXFILE DC_H41_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H42" UNIXFILE DC_H42_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H42" UNIXFILE DC_H42_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H4p" UNIXFILE DC_H4p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H4p" UNIXFILE DC_H4p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H5" UNIXFILE DC_H5_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H5" UNIXFILE DC_H5_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H5p" UNIXFILE DC_H5p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H5p" UNIXFILE DC_H5p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H5pp" UNIXFILE DC_H5pp_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H5pp" UNIXFILE DC_H5pp_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_H6" UNIXFILE DC_H6_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_H6" UNIXFILE DC_H6_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_N1" UNIXFILE DC_N1_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_N1" UNIXFILE DC_N1_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_N3" UNIXFILE DC_N3_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_N3" UNIXFILE DC_N3_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_N4" UNIXFILE DC_N4_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_N4" UNIXFILE DC_N4_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DC_P" UNIXFILE DC_P_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DC_P" UNIXFILE DC_P_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C1p" UNIXFILE DG_C1p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C1p" UNIXFILE DG_C1p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C2" UNIXFILE DG_C2_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C2" UNIXFILE DG_C2_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C2p" UNIXFILE DG_C2p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C2p" UNIXFILE DG_C2p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C3p" UNIXFILE DG_C3p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C3p" UNIXFILE DG_C3p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C4" UNIXFILE DG_C4_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C4" UNIXFILE DG_C4_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C4p" UNIXFILE DG_C4p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C4p" UNIXFILE DG_C4p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C5" UNIXFILE DG_C5_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C5" UNIXFILE DG_C5_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C5p" UNIXFILE DG_C5p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C5p" UNIXFILE DG_C5p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C6" UNIXFILE DG_C6_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C6" UNIXFILE DG_C6_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_C8" UNIXFILE DG_C8_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_C8" UNIXFILE DG_C8_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H1" UNIXFILE DG_H1_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H1" UNIXFILE DG_H1_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H1p" UNIXFILE DG_H1p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H1p" UNIXFILE DG_H1p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H21" UNIXFILE DG_H21_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H21" UNIXFILE DG_H21_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H22" UNIXFILE DG_H22_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H22" UNIXFILE DG_H22_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H2p" UNIXFILE DG_H2p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H2p" UNIXFILE DG_H2p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H2pp" UNIXFILE DG_H2pp_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H2pp" UNIXFILE DG_H2pp_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H3p" UNIXFILE DG_H3p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H3p" UNIXFILE DG_H3p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H4p" UNIXFILE DG_H4p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H4p" UNIXFILE DG_H4p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H5p" UNIXFILE DG_H5p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H5p" UNIXFILE DG_H5p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H5pp" UNIXFILE DG_H5pp_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H5pp" UNIXFILE DG_H5pp_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_H8" UNIXFILE DG_H8_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_H8" UNIXFILE DG_H8_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_N1" UNIXFILE DG_N1_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_N1" UNIXFILE DG_N1_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_N2" UNIXFILE DG_N2_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_N2" UNIXFILE DG_N2_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_N3" UNIXFILE DG_N3_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_N3" UNIXFILE DG_N3_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_N7" UNIXFILE DG_N7_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_N7" UNIXFILE DG_N7_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_N9" UNIXFILE DG_N9_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_N9" UNIXFILE DG_N9_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DG_P" UNIXFILE DG_P_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DG_P" UNIXFILE DG_P_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C1p" UNIXFILE DT_C1p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C1p" UNIXFILE DT_C1p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C2" UNIXFILE DT_C2_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C2" UNIXFILE DT_C2_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C2p" UNIXFILE DT_C2p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C2p" UNIXFILE DT_C2p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C3p" UNIXFILE DT_C3p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C3p" UNIXFILE DT_C3p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C4" UNIXFILE DT_C4_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C4" UNIXFILE DT_C4_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C4p" UNIXFILE DT_C4p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C4p" UNIXFILE DT_C4p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C5" UNIXFILE DT_C5_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C5" UNIXFILE DT_C5_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C5p" UNIXFILE DT_C5p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C5p" UNIXFILE DT_C5p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C6" UNIXFILE DT_C6_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C6" UNIXFILE DT_C6_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_C7" UNIXFILE DT_C7_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_C7" UNIXFILE DT_C7_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H1p" UNIXFILE DT_H1p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H1p" UNIXFILE DT_H1p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H2p" UNIXFILE DT_H2p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H2p" UNIXFILE DT_H2p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H2pp" UNIXFILE DT_H2pp_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H2pp" UNIXFILE DT_H2pp_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H3" UNIXFILE DT_H3_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H3" UNIXFILE DT_H3_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H3p" UNIXFILE DT_H3p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H3p" UNIXFILE DT_H3p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H4p" UNIXFILE DT_H4p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H4p" UNIXFILE DT_H4p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H5p" UNIXFILE DT_H5p_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H5p" UNIXFILE DT_H5p_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H5pp" UNIXFILE DT_H5pp_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H5pp" UNIXFILE DT_H5pp_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H6" UNIXFILE DT_H6_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H6" UNIXFILE DT_H6_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H71" UNIXFILE DT_H71_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H71" UNIXFILE DT_H71_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H72" UNIXFILE DT_H72_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H72" UNIXFILE DT_H72_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H73" UNIXFILE DT_H73_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H73" UNIXFILE DT_H73_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_H7" UNIXFILE DT_H7_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_H7" UNIXFILE DT_H7_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_N1" UNIXFILE DT_N1_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_N1" UNIXFILE DT_N1_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_N3" UNIXFILE DT_N3_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_N3" UNIXFILE DT_N3_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrbhist_dna_DT_P" UNIXFILE DT_P_hist.txt Histogram $DEVISE_SCHEMA/physical/bmrb-Histogram "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+DEVise dteInsertCatalogEntry . {"bmrblink_dna_DT_P" UNIXFILE DT_P_link.txt bmrb-Link $DEVISE_SCHEMA/physical/bmrb-Link "" 100 50 "$DEVISE_DAT/bmrb/bmrb_histogram_data" ""}
+
+# Create views
+
+# View {View 1} uses mapping {.dna_hist_list#View 1}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 1} -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise setLabel {View 1} 0 12 {Residue() vs. AtomName}
+DEVise setViewStatistics {View 1} 00000000
+DEVise setViewDimensions {View 1} 2
+DEVise setViewSolid3D {View 1} 2
+DEVise setViewXYZoom {View 1} 1
+DEVise setViewDisplayDataValues {View 1} 0
+DEVise setFont {View 1} {title} 0 12 0 0
+DEVise setFont {View 1} {x axis} 0 12 0 0
+DEVise setFont {View 1} {y axis} 0 12 0 0
+DEVise viewSetHome {View 1} 1 1 1 0 0.500000 0.500000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 1} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
+DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 1} -0.5 0.5 10
+DEVise setCountMapping {View 1} 0 {} {} 0
+DEVise viewSetIsHighlight {View 1} 0
+DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 1} {%.4g}
+DEVise setYAxisFloatFormat {View 1} {%.4g}
+DEVise setViewAutoFilter {View 1} {0}
+DEVise setDupElim {View 1} {0}
+DEVise setNiceAxes {View 1} 0 0
+DEVise viewSetDisabledActions {View 1} 1 0 0 1
+DEVise setShowMouseLocation {View 1} {1}
+DEVise setLinkMultFact {View 1} {X} 1
+DEVise setLinkMultFact {View 1} {Y} 1
+DEVise setGAttrLinkMode {View 1} 0
+DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
+
+# View {View 2} uses mapping {.dna_hist_list#View 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 2} -0.500000 0.500000 -4.500000 -0.500000 37 0 0 37 0 37
+DEVise setLabel {View 2} 0 12 {}
+DEVise setViewStatistics {View 2} 00000000
+DEVise setViewDimensions {View 2} 2
+DEVise setViewSolid3D {View 2} 2
+DEVise setViewXYZoom {View 2} 1
+DEVise setViewDisplayDataValues {View 2} 0
+DEVise setFont {View 2} {title} 0 12 0 0
+DEVise setFont {View 2} {x axis} 0 12 0 0
+DEVise setFont {View 2} {y axis} 0 12 0 0
+DEVise viewSetHome {View 2} 1 1 1 0 0.500000 0.500000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
+DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 2} 0 1 0 "" 1 " " 1
+DEVise setHistogram {View 2} -4.5 -0.5 10
+DEVise setCountMapping {View 2} 0 {} {} 0
+DEVise viewSetIsHighlight {View 2} 0
+DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 2} {%.4g}
+DEVise setYAxisFloatFormat {View 2} {%.4g}
+DEVise setViewAutoFilter {View 2} {0}
+DEVise setDupElim {View 2} {1}
+DEVise setNiceAxes {View 2} 0 0
+DEVise viewSetDisabledActions {View 2} 1 0 1 1
+DEVise setShowMouseLocation {View 2} {1}
+DEVise setLinkMultFact {View 2} {X} 1
+DEVise setLinkMultFact {View 2} {Y} 1
+DEVise setGAttrLinkMode {View 2} 0
+DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
+
+# View {View 3} uses mapping {.dna_hist_list#View 3}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 3} 0.500000 26.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise setLabel {View 3} 1 16 {Atom}
+DEVise setViewStatistics {View 3} 00000000
+DEVise setViewDimensions {View 3} 2
+DEVise setViewSolid3D {View 3} 2
+DEVise setViewXYZoom {View 3} 1
+DEVise setViewDisplayDataValues {View 3} 0
+DEVise setFont {View 3} {title} 2 12 0 0
+DEVise setFont {View 3} {x axis} 0 12 0 0
+DEVise setFont {View 3} {y axis} 0 12 0 0
+DEVise viewSetHome {View 3} 1 1 1 0 0.500000 0.500000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 3} 1 1 1 0 0.5 0.5 0 0 100 100
+DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
+DEVise setViewGDS {View 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 3} 0 1 0 "" 1 " " 1
+DEVise setHistogram {View 3} -0.5 0.5 10
+DEVise setCountMapping {View 3} 0 {} {} 0
+DEVise viewSetIsHighlight {View 3} 0
+DEVise setXAxisDateFormat {View 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 3} {%.4g}
+DEVise setYAxisFloatFormat {View 3} {%.4g}
+DEVise setViewAutoFilter {View 3} {1}
+DEVise setDupElim {View 3} {1}
+DEVise setNiceAxes {View 3} 0 0
+DEVise viewSetDisabledActions {View 3} 1 0 1 1
+DEVise setShowMouseLocation {View 3} {1}
+DEVise setLinkMultFact {View 3} {X} 1
+DEVise setLinkMultFact {View 3} {Y} 1
+DEVise setGAttrLinkMode {View 3} 0
+DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
+
+# View {View 4} uses mapping {.dna_hist_list#View 4}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -3.500000 -2.500000 37 0 0 37 0 37
+DEVise setLabel {View 4} 0 12 {}
+DEVise setViewStatistics {View 4} 00000000
+DEVise setViewDimensions {View 4} 2
+DEVise setViewSolid3D {View 4} 2
+DEVise setViewXYZoom {View 4} 1
+DEVise setViewDisplayDataValues {View 4} 0
+DEVise setFont {View 4} {title} 0 12 0 0
+DEVise setFont {View 4} {x axis} 0 12 0 0
+DEVise setFont {View 4} {y axis} 0 12 0 0
+DEVise viewSetHome {View 4} 1 1 1 0 0.500000 0.500000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 4} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 4} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 4} 1 0.500000 1.000000
+DEVise setViewGDS {View 4} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 4} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 4} -3.5 -2.5 10
+DEVise setCountMapping {View 4} 0 {} {} 0
+DEVise viewSetIsHighlight {View 4} 0
+DEVise setXAxisDateFormat {View 4} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 4} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 4} {%.4g}
+DEVise setYAxisFloatFormat {View 4} {%.4g}
+DEVise setViewAutoFilter {View 4} {0}
+DEVise setDupElim {View 4} {1}
+DEVise setNiceAxes {View 4} 0 0
+DEVise viewSetDisabledActions {View 4} 0 0 0 0
+DEVise setShowMouseLocation {View 4} {1}
+DEVise setLinkMultFact {View 4} {X} 1
+DEVise setLinkMultFact {View 4} {Y} 1
+DEVise setGAttrLinkMode {View 4} 0
+DEVise setDoHomeOnVisLink {View 4} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 4} {1}
+DEVise viewSetUseJmol {View 4} {0}
+
+# View {View 5} uses mapping {.dna_hist_list#View 5}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 5} 10.500000 11.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise setLabel {View 5} 0 12 {}
+DEVise setViewStatistics {View 5} 00000000
+DEVise setViewDimensions {View 5} 2
+DEVise setViewSolid3D {View 5} 2
+DEVise setViewXYZoom {View 5} 1
+DEVise setViewDisplayDataValues {View 5} 0
+DEVise setFont {View 5} {title} 0 12 0 0
+DEVise setFont {View 5} {x axis} 0 12 0 0
+DEVise setFont {View 5} {y axis} 0 12 0 0
+DEVise viewSetHome {View 5} 1 1 1 0 0.500000 0.500000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 5} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 5} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 5} 1 0.500000 1.000000
+DEVise setViewGDS {View 5} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 5} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 5} -0.5 0.5 10
+DEVise setCountMapping {View 5} 0 {} {} 0
+DEVise viewSetIsHighlight {View 5} 0
+DEVise setXAxisDateFormat {View 5} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 5} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 5} {%.4g}
+DEVise setYAxisFloatFormat {View 5} {%.4g}
+DEVise setViewAutoFilter {View 5} {0}
+DEVise setDupElim {View 5} {1}
+DEVise setNiceAxes {View 5} 0 0
+DEVise viewSetDisabledActions {View 5} 0 0 0 0
+DEVise setShowMouseLocation {View 5} {1}
+DEVise setLinkMultFact {View 5} {X} 1
+DEVise setLinkMultFact {View 5} {Y} 1
+DEVise setGAttrLinkMode {View 5} 0
+DEVise setDoHomeOnVisLink {View 5} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 5} {1}
+DEVise viewSetUseJmol {View 5} {0}
+
+# View {View 6} uses mapping {.bmrbhist_dna_DG_H1#View 6}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 6} -34.007500 9.987500 0.000000 10.000000 37 0 0 37 0 37
+DEVise setLabel {View 6} 1 16 {DG_H1}
+DEVise setViewStatistics {View 6} 00000000
+DEVise setViewDimensions {View 6} 2
+DEVise setViewSolid3D {View 6} 2
+DEVise setViewXYZoom {View 6} 1
+DEVise setViewDisplayDataValues {View 6} 0
+DEVise setFont {View 6} {title} 2 14 0 0
+DEVise setFont {View 6} {x axis} 2 12 0 0
+DEVise setFont {View 6} {y axis} 2 12 0 0
+DEVise viewSetHome {View 6} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 6} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 6} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 6} 1 0.500000 1.000000
+DEVise setViewGDS {View 6} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 6} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 6} 0 10 10
+DEVise setCountMapping {View 6} 0 {} {} 0
+DEVise viewSetIsHighlight {View 6} 0
+DEVise setXAxisDateFormat {View 6} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 6} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 6} {%.4g}
+DEVise setYAxisFloatFormat {View 6} {%.4g}
+DEVise setViewAutoFilter {View 6} {1}
+DEVise setDupElim {View 6} {0}
+DEVise setNiceAxes {View 6} 0 0
+DEVise viewSetDisabledActions {View 6} 0 0 0 0
+DEVise setShowMouseLocation {View 6} {1}
+DEVise setLinkMultFact {View 6} {X} 1
+DEVise setLinkMultFact {View 6} {Y} 1
+DEVise setGAttrLinkMode {View 6} 0
+DEVise setDoHomeOnVisLink {View 6} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 6} {1}
+DEVise viewSetUseJmol {View 6} {0}
+
+# View {View 7} uses mapping {.bmrblink_dna_DG_H1#View 7}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 7} -34.007500 9.987500 0.000000 10.000000 37 0 0 37 0 37
+DEVise setLabel {View 7} 1 16 {DG_H1}
+DEVise setViewStatistics {View 7} 00000000
+DEVise setViewDimensions {View 7} 2
+DEVise setViewSolid3D {View 7} 2
+DEVise setViewXYZoom {View 7} 1
+DEVise setViewDisplayDataValues {View 7} 0
+DEVise setFont {View 7} {title} 2 14 0 0
+DEVise setFont {View 7} {x axis} 2 12 0 0
+DEVise setFont {View 7} {y axis} 2 12 0 0
+DEVise viewSetHome {View 7} 0 0 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 7} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 7} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 7} 1 0.500000 1.000000
+DEVise setViewGDS {View 7} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 7} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 7} 0 13 10
+DEVise setCountMapping {View 7} 0 {} {} 0
+DEVise viewSetIsHighlight {View 7} 0
+DEVise setXAxisDateFormat {View 7} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 7} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 7} {%.4g}
+DEVise setYAxisFloatFormat {View 7} {%.4g}
+DEVise setViewAutoFilter {View 7} {0}
+DEVise setDupElim {View 7} {0}
+DEVise setNiceAxes {View 7} 0 0
+DEVise viewSetDisabledActions {View 7} 0 0 0 0
+DEVise setShowMouseLocation {View 7} {1}
+DEVise setLinkMultFact {View 7} {X} 1
+DEVise setLinkMultFact {View 7} {Y} 1
+DEVise setGAttrLinkMode {View 7} 0
+DEVise setDoHomeOnVisLink {View 7} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {View 7} {0}
+DEVise viewSetUseJmol {View 7} {0}
+
+# View {View 8} uses mapping {.dna_hist_list_link#View 8}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 8} -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise setLabel {View 8} 0 12 {Residue() vs. AtomName}
+DEVise setViewStatistics {View 8} 00000000
+DEVise setViewDimensions {View 8} 2
+DEVise setViewSolid3D {View 8} 2
+DEVise setViewXYZoom {View 8} 1
+DEVise setViewDisplayDataValues {View 8} 0
+DEVise setFont {View 8} {title} 0 12 0 0
+DEVise setFont {View 8} {x axis} 0 12 0 0
+DEVise setFont {View 8} {y axis} 0 12 0 0
+DEVise viewSetHome {View 8} 1 1 1 0 0.500000 0.500000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 8} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 8} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 8} 1 0.500000 1.000000
+DEVise setViewGDS {View 8} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 8} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 8} -0.5 0.5 10
+DEVise setCountMapping {View 8} 0 {} {} 0
+DEVise viewSetIsHighlight {View 8} 0
+DEVise setXAxisDateFormat {View 8} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 8} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 8} {%.4g}
+DEVise setYAxisFloatFormat {View 8} {%.4g}
+DEVise setViewAutoFilter {View 8} {0}
+DEVise setDupElim {View 8} {0}
+DEVise setNiceAxes {View 8} 0 0
+DEVise viewSetDisabledActions {View 8} 1 0 0 1
+DEVise setShowMouseLocation {View 8} {1}
+DEVise setLinkMultFact {View 8} {X} 1
+DEVise setLinkMultFact {View 8} {Y} 1
+DEVise setGAttrLinkMode {View 8} 0
+DEVise setDoHomeOnVisLink {View 8} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 8} {1}
+DEVise viewSetUseJmol {View 8} {0}
+
+# View {View 9} uses mapping {.single_rec#bar_vs_foo}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 9} -1.000000 1.000000 -1.000000 1.000000 37 0 0 37 0 37
+DEVise setLabel {View 9} 0 12 {}
+DEVise setViewStatistics {View 9} 00000000
+DEVise setViewDimensions {View 9} 2
+DEVise setViewSolid3D {View 9} 2
+DEVise setViewXYZoom {View 9} 1
+DEVise setViewDisplayDataValues {View 9} 0
+DEVise setFont {View 9} {title} 0 12 0 0
+DEVise setFont {View 9} {x axis} 0 12 0 0
+DEVise setFont {View 9} {y axis} 0 12 0 0
+DEVise viewSetHome {View 9} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View 9} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View 9} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 9} 1 0.500000 1.000000
+DEVise setViewGDS {View 9} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 9} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 9} -0.5 0.5 10
+DEVise setCountMapping {View 9} 0 {} {} 0
+DEVise viewSetIsHighlight {View 9} 0
+DEVise setXAxisDateFormat {View 9} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 9} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 9} {%.4g}
+DEVise setYAxisFloatFormat {View 9} {%.4g}
+DEVise setViewAutoFilter {View 9} {0}
+DEVise setDupElim {View 9} {0}
+DEVise setNiceAxes {View 9} 0 0
+DEVise viewSetDisabledActions {View 9} 1 1 1 1
+DEVise setShowMouseLocation {View 9} {1}
+DEVise setLinkMultFact {View 9} {X} 1
+DEVise setLinkMultFact {View 9} {Y} 1
+DEVise setGAttrLinkMode {View 9} 0
+DEVise setDoHomeOnVisLink {View 9} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 9} {1}
+DEVise viewSetUseJmol {View 9} {0}
+
+# Create interpreted mapping classes
+DEVise createMappingClass {Residue_vs_AtomName}
+DEVise createMappingClass {Frequency_vs_ChemShiftVal}
+DEVise createMappingClass {bar_vs_foo}
+
+# Create mapping instances (GData)
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Residue_vs_AtomName} .dna_hist_list {.dna_hist_list#View 2} {} 0 {-$ResidueNum} {} 36 12 0 0 16 {$Residue} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.dna_hist_list#View 2} 1
+DEVise setMappingColors {.dna_hist_list#View 2} {36} {17} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Residue_vs_AtomName} .dna_hist_list {.dna_hist_list#View 3} {} {$AtomNum} 0 {} 36 12 0 0 16 {$AtomName} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.dna_hist_list#View 3} 1
+DEVise setMappingColors {.dna_hist_list#View 3} {36} {17} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Residue_vs_AtomName} .dna_hist_list {.dna_hist_list#View 4} {} 0 {-$ResidueNum} {} 36 12 0 0 16 {$Residue} {} 0 {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.dna_hist_list#View 4} 1
+DEVise setMappingColors {.dna_hist_list#View 4} {36} {36} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Residue_vs_AtomName} .dna_hist_list {.dna_hist_list#View 5} {} {$AtomNum} 0 {} 36 12 0 0 16 {$AtomName} {} 0 {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.dna_hist_list#View 5} 1
+DEVise setMappingColors {.dna_hist_list#View 5} {36} {36} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Residue_vs_AtomName} .dna_hist_list {.dna_hist_list#View 1} {} 0 0 {} 0 0.98 0 0 17 {"View 6"} 1 1 {$DataSource} {"shift pile"} {} {} {} {} {} {$Title} {} {} {} {}
+DEVise setPixelWidth {.dna_hist_list#View 1} 1
+DEVise setMappingColors {.dna_hist_list#View 1} {0} {37} {37}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Residue_vs_AtomName} .dna_hist_list_link {.dna_hist_list_link#View 8} {} 0 0 {} 0 0.98 0 0 17 {"View 7"} 1 1 {$DataSource} {"shift pile"} {} {} {} {} {} {$Title} {} {} {} {}
+DEVise setPixelWidth {.dna_hist_list_link#View 8} 1
+DEVise setMappingColors {.dna_hist_list_link#View 8} {0} {37} {37}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Frequency_vs_ChemShiftVal} .bmrblink_dna_DG_H1 {.bmrblink_dna_DG_H1#View 7} {} {-$ChemShiftVal_nodd} 1000 {} 0 1 -1 0 2 0.015 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.bmrblink_dna_DG_H1#View 7} 1
+DEVise setMappingColors {.bmrblink_dna_DG_H1#View 7} {0} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Frequency_vs_ChemShiftVal} .bmrbhist_dna_DG_H1 {.bmrbhist_dna_DG_H1#View 6} {} {-$ChemShiftVal} {$Frequency} {} 36 1 0 0 2 0.015 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.bmrbhist_dna_DG_H1#View 6} 1
+DEVise setMappingColors {.bmrbhist_dna_DG_H1#View 6} {36} {36} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {bar_vs_foo} .single_rec .single_rec#bar_vs_foo {} {$foo} {$bar} {} 37 12 0 90 16 {"Nucleotide"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.single_rec#bar_vs_foo} 1
+DEVise setMappingColors {.single_rec#bar_vs_foo} {37} {0} {0}
+
+# Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
+DEVise create {window} {TileLayout} DEViseWn0 0.201250 0.165000 0.500000 0.500000 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.168750 0.165000 0.039375 0.500000 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.170000 0.665000 0.531250 0.051667 0 0
+DEVise create {window} {TileLayout} DEViseWn3 0.765625 0.562500 0.116875 0.296667 1 0
+
+# Set up window layouts
+
+DEVise setWindowLayout {DEViseWn0} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn1} 1 -1 0
+
+DEVise setWindowLayout {DEViseWn2} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn3} -1 -1 0
+
+# Create links
+DEVise create {link} {Visual_Link} residue_select_link 128
+DEVise create {link} {Visual_Link} atom_select_link 128
+DEVise setLinkType {atom_select_link} 1
+DEVise setLinkType {residue_select_link} 1
+
+# Create cursors
+DEVise create {cursor} {Cursor} residue_select_cursor 2 1 1.000000 1.000000 0
+DEVise create {cursor} {Cursor} atom_select_cursor 1 1 1.000000 1.000000 0
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+
+DEVise setAxisDisplay {View 1} {X} 0
+DEVise setAxisDisplay {View 1} {Y} 0
+DEVise setAxisTicks {View 1} {X} 1
+DEVise setAxisTicks {View 1} {Y} 1
+DEVise setAxisMultFact {View 1} {X} 1
+DEVise setAxisMultFact {View 1} {Y} 1
+
+DEVise setAxisDisplay {View 2} {X} 0
+DEVise setAxisDisplay {View 2} {Y} 0
+DEVise setAxisTicks {View 2} {X} 1
+DEVise setAxisTicks {View 2} {Y} 1
+DEVise setAxisMultFact {View 2} {X} 1
+DEVise setAxisMultFact {View 2} {Y} 1
+
+DEVise setAxisDisplay {View 3} {X} 0
+DEVise setAxisDisplay {View 3} {Y} 0
+DEVise setAxisTicks {View 3} {X} 1
+DEVise setAxisTicks {View 3} {Y} 1
+DEVise setAxisMultFact {View 3} {X} 1
+DEVise setAxisMultFact {View 3} {Y} 1
+
+DEVise setAxisDisplay {View 4} {X} 0
+DEVise setAxisDisplay {View 4} {Y} 0
+DEVise setAxisTicks {View 4} {X} 1
+DEVise setAxisTicks {View 4} {Y} 1
+DEVise setAxisMultFact {View 4} {X} 1
+DEVise setAxisMultFact {View 4} {Y} 1
+
+DEVise setAxisDisplay {View 5} {X} 0
+DEVise setAxisDisplay {View 5} {Y} 0
+DEVise setAxisTicks {View 5} {X} 1
+DEVise setAxisTicks {View 5} {Y} 1
+DEVise setAxisMultFact {View 5} {X} 1
+DEVise setAxisMultFact {View 5} {Y} 1
+
+DEVise setAxisDisplay {View 6} {X} 1
+DEVise setAxisDisplay {View 6} {Y} 1
+DEVise setAxisTicks {View 6} {X} 1
+DEVise setAxisTicks {View 6} {Y} 1
+DEVise setAxisMultFact {View 6} {X} -1
+DEVise setAxisMultFact {View 6} {Y} 1
+
+DEVise setAxisDisplay {View 7} {X} 1
+DEVise setAxisDisplay {View 7} {Y} 1
+DEVise setAxisTicks {View 7} {X} 1
+DEVise setAxisTicks {View 7} {Y} 1
+DEVise setAxisMultFact {View 7} {X} -1
+DEVise setAxisMultFact {View 7} {Y} 1
+
+DEVise setAxisDisplay {View 8} {X} 0
+DEVise setAxisDisplay {View 8} {Y} 0
+DEVise setAxisTicks {View 8} {X} 1
+DEVise setAxisTicks {View 8} {Y} 1
+DEVise setAxisMultFact {View 8} {X} 1
+DEVise setAxisMultFact {View 8} {Y} 1
+
+DEVise setAxisDisplay {View 9} {X} 0
+DEVise setAxisDisplay {View 9} {Y} 0
+DEVise setAxisTicks {View 9} {X} 1
+DEVise setAxisTicks {View 9} {Y} 1
+DEVise setAxisMultFact {View 9} {X} 1
+DEVise setAxisMultFact {View 9} {Y} 1
+
+# Put action into view
+
+# Put views in cursors
+DEVise setCursorSrc {residue_select_cursor} {View 4}
+DEVise setCursorDst {residue_select_cursor} {View 2}
+DEVise color SetCursorColor {residue_select_cursor} #ffffffffffff
+DEVise setCursorConstraints {residue_select_cursor} 1 1 1
+DEVise setCursorSrc {atom_select_cursor} {View 5}
+DEVise setCursorDst {atom_select_cursor} {View 3}
+DEVise color SetCursorColor {atom_select_cursor} #ffffffffffff
+DEVise setCursorConstraints {atom_select_cursor} 1 1 1
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {View 1} {.dna_hist_list#View 1}
+DEVise insertMapping {View 2} {.dna_hist_list#View 2}
+DEVise insertMapping {View 3} {.dna_hist_list#View 3}
+DEVise insertMapping {View 4} {.dna_hist_list#View 4}
+DEVise insertMapping {View 5} {.dna_hist_list#View 5}
+DEVise insertMapping {View 6} {.bmrbhist_dna_DG_H1#View 6}
+DEVise insertMapping {View 7} {.bmrblink_dna_DG_H1#View 7}
+DEVise insertMapping {View 8} {.dna_hist_list_link#View 8}
+DEVise insertMapping {View 9} {.single_rec#bar_vs_foo}
+
+# Link views
+
+DEVise insertLink {residue_select_link} {View 3}
+DEVise insertLink {residue_select_link} {View 5}
+DEVise setLinkMaster {residue_select_link} {View 4}
+
+DEVise insertLink {atom_select_link} {View 1}
+DEVise insertLink {atom_select_link} {View 8}
+DEVise setLinkMaster {atom_select_link} {View 5}
+
+# Insert views into windows
+DEVise insertWindow {View 8} {DEViseWn0}
+DEVise insertWindow {View 1} {DEViseWn0}
+DEVise insertWindow {View 9} {DEViseWn1}
+DEVise insertWindow {View 2} {DEViseWn1}
+DEVise insertWindow {View 3} {DEViseWn2}
+DEVise insertWindow {View 4} {DEViseWn3}
+DEVise insertWindow {View 5} {DEViseWn3}
+
+# Set window pile/stack state
+DEVise setPileStackState {DEViseWn0} 4
+DEVise setPileStackState {DEViseWn1} 1
+DEVise setPileStackState {DEViseWn2} 1
+DEVise setPileStackState {DEViseWn3} 1
+
+# Init history of view
+
+DEVise clearViewHistory {View 1}
+DEVise insertViewHistory {View 1} {0} {0} {100} {100} 0
+DEVise insertViewHistory {View 1} {1} {1} {23} {20} 0
+DEVise insertViewHistory {View 1} {0.5} {0.5} {23.5} {20.5} 0
+DEVise insertViewHistory {View 1} {-0.5} {-0.5} {0.5} {0.5} 0
+
+DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {0} {0} {100} {100} 0
+DEVise insertViewHistory {View 2} {0} {1} {1} {78} 0
+DEVise insertViewHistory {View 2} {-0.5} {1} {0.5} {78} 0
+DEVise insertViewHistory {View 2} {0} {0.5} {1} {20.5} 0
+DEVise insertViewHistory {View 2} {-0.5} {0.5} {0.5} {20.5} 0
+DEVise insertViewHistory {View 2} {-0.5} {-20.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {View 2} {-0.5} {-3.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {View 2} {-0.5} {-4.5} {0.5} {-0.5} 0
+
+DEVise clearViewHistory {View 3}
+DEVise insertViewHistory {View 3} {-0.5} {1} {0.5} {78} 0
+DEVise insertViewHistory {View 3} {0} {0} {77} {1} 0
+DEVise insertViewHistory {View 3} {0} {-0.5} {77} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {23.5} {0.5} 0
+DEVise insertViewHistory {View 3} {1} {0} {17} {1} 0
+DEVise insertViewHistory {View 3} {1} {0} {14} {1} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {6.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {14.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {2.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {33.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {31.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {33.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {34.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {33.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {27.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {24.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {27.5} {0.5} 0
+DEVise insertViewHistory {View 3} {0.5} {-0.5} {26.5} {0.5} 0
+
+DEVise clearViewHistory {View 4}
+DEVise insertViewHistory {View 4} {-0.5} {4.5} {0.5} {5.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {6.5} {0.5} {7.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {7.5} {0.5} {8.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {4.5} {0.5} {5.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {5.5} {0.5} {6.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-10.5} {0.5} {-9.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-11.5} {0.5} {-10.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-10.5} {0.5} {-9.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-9.5} {0.5} {-8.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-10.5} {0.5} {-9.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-8.5} {0.5} {-7.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-10.5} {0.5} {-9.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-2.5} {0.5} {-1.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-1.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-2.5} {0.5} {-1.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-1.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-3.5} {0.5} {-2.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-1.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-2.5} {0.5} {-1.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-3.5} {0.5} {-2.5} 0
+
+DEVise clearViewHistory {View 5}
+DEVise insertViewHistory {View 5} {5.5} {-0.5} {6.5} {0.5} 0
+DEVise insertViewHistory {View 5} {3.5} {-0.5} {4.5} {0.5} 0
+DEVise insertViewHistory {View 5} {8.5} {-0.5} {9.5} {0.5} 0
+DEVise insertViewHistory {View 5} {6.5} {-0.5} {7.5} {0.5} 0
+DEVise insertViewHistory {View 5} {0.5} {-0.5} {1.5} {0.5} 0
+DEVise insertViewHistory {View 5} {12.5} {-0.5} {13.5} {0.5} 0
+DEVise insertViewHistory {View 5} {3.5} {-0.5} {4.5} {0.5} 0
+DEVise insertViewHistory {View 5} {5.5} {-0.5} {6.5} {0.5} 0
+DEVise insertViewHistory {View 5} {2.5} {-0.5} {3.5} {0.5} 0
+DEVise insertViewHistory {View 5} {0.5} {-0.5} {1.5} {0.5} 0
+DEVise insertViewHistory {View 5} {1.5} {-0.5} {2.5} {0.5} 0
+DEVise insertViewHistory {View 5} {0.5} {-0.5} {1.5} {0.5} 0
+DEVise insertViewHistory {View 5} {1.5} {-0.5} {2.5} {0.5} 0
+DEVise insertViewHistory {View 5} {0.5} {-0.5} {1.5} {0.5} 0
+DEVise insertViewHistory {View 5} {26.5} {-0.5} {27.5} {0.5} 0
+DEVise insertViewHistory {View 5} {0.5} {-0.5} {1.5} {0.5} 0
+DEVise insertViewHistory {View 5} {1.5} {-0.5} {2.5} {0.5} 0
+DEVise insertViewHistory {View 5} {5.5} {-0.5} {6.5} {0.5} 0
+DEVise insertViewHistory {View 5} {7.5} {-0.5} {8.5} {0.5} 0
+DEVise insertViewHistory {View 5} {10.5} {-0.5} {11.5} {0.5} 0
+
+DEVise clearViewHistory {View 6}
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {20} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {20} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {2} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {12} 0
+DEVise insertViewHistory {View 6} {-200.045} {0} {-0.055} {13} 0
+DEVise insertViewHistory {View 6} {-34.045} {0} {10.025} {13} 0
+DEVise insertViewHistory {View 6} {-34.045} {0} {10.025} {13} 0
+DEVise insertViewHistory {View 6} {-34.0075} {0} {9.9875} {10} 0
+
+DEVise clearViewHistory {View 7}
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {20} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {20} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {17} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {2} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {12} 0
+DEVise insertViewHistory {View 7} {-200.045} {0} {-0.055} {13} 0
+DEVise insertViewHistory {View 7} {-34.045} {0} {10.025} {13} 0
+DEVise insertViewHistory {View 7} {-34.045} {0} {10.025} {13} 0
+DEVise insertViewHistory {View 7} {-34.0075} {0} {9.9875} {10} 0
+
+DEVise clearViewHistory {View 8}
+DEVise insertViewHistory {View 8} {-0.5} {-0.5} {0.5} {0.5} 0
+
+DEVise clearViewHistory {View 9}
+DEVise insertViewHistory {View 9} {-1} {0} {1} {0.001} 0
+DEVise insertViewHistory {View 9} {-2} {0} {0} {0.001} 0
+DEVise insertViewHistory {View 9} {-1} {-1} {1} {1} 0
+DEVise insertViewHistory {View 9} {-0.5} {-4.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {View 9} {-0.5} {-4.5} {0.5} {1} 0
+DEVise insertViewHistory {View 9} {-1} {-4.5} {1} {1} 0
+DEVise insertViewHistory {View 9} {-1} {-1} {1} {1} 0
+
+# Set camera location for each view
+DEVise set3DLocation {View 1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 3} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 4} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 5} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 6} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 7} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 8} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 9} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+
+# Set string tables for each view
+
+# Session postscript
+DEVise sessionPost updateFilters
+DEVise sessionPost waitForQueries
