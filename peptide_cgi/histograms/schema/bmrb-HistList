@@ -14,5 +14,5 @@ attr ResidueNum int
 attr AtomNum int
 attr Residue string 4
 attr AtomName string 5
-attr DataSource string 20
+attr DataSource string 30
 attr Title string 10
