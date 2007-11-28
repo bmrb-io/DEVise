@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1998/07/29 14:19:38  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.4  1998/05/02 08:38:54  taodb
   Added command logging and playing support
   Added communication support for JAVA Screen
@@ -40,6 +44,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream.h>
+#include <assert.h>
 #include "devise_varargs.h"
 #include "CmdSerialize.h"
 

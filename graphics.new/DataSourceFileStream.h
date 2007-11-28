@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  2000/01/13 23:07:03  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.6  1996/12/03 20:36:07  jussi
   Added support for concurrent I/O.
 
@@ -96,7 +99,7 @@ public:
 
 	char* GetName() { return _filename; }
 
-	int DataSourceFileStream::GetModTime();
+	int GetModTime();
 
         virtual bytecount_t DataSize();
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  2000/02/16 18:51:47  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.3  1998/03/08 00:01:13  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -58,7 +61,7 @@ class UpdateLink
     // ViewCallback messages
     virtual void FilterChanged(View *view, const VisualFilter &filter,
         int flushed);
-    virtual void UpdateLink::ViewRecomputed(View *view);
+    virtual void ViewRecomputed(View *view);
 
     void Print();
     
