@@ -236,6 +236,10 @@ Num Date        Status  Pri     Description
 061 12/5/07	OPEN	3	Use PDB files that are mirrored at BMRB
 				(see Dimitri's email of 2007-11-20). (wenger)
 
+062 12/6/07	OPEN	2	PDB now uses HA2/HA3 instead of HA1/HA2 for
+				GLY; see if this requires Peptide-CGI (and
+				ChemShift) changes. (wenger/dimitri)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
