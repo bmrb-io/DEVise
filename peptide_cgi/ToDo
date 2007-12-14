@@ -240,6 +240,9 @@ Num Date        Status  Pri     Description
 				GLY; see if this requires Peptide-CGI (and
 				ChemShift) changes. (wenger/dimitri)
 
+063 12/14/07	OPEN	3	Incorporate error messages from ChemShift,
+				molmol, and NMRPipe into s2d.out. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
