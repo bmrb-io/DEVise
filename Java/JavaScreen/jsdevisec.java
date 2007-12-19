@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.164  2007/08/27 20:53:46  wenger
+// Made separate menu items for showing and hiding view help, as requested
+// by Chris Schulte.
+//
 // Revision 1.163  2007/08/27 19:16:40  wenger
 // Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
 //
@@ -780,7 +784,7 @@ public class jsdevisec extends JPanel
 
     private DEViseMainButtons _mainButtons = null;
 
-    public  JButton stopButton = null;
+    public  DEViseButton stopButton = null;
 
     private Label commMode = new Label("");
     private Color commModeNormalColor = Color.gray;
@@ -2009,7 +2013,7 @@ class RecordDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    private JButton okButton;
+    private DEViseButton okButton;
     private boolean status = false; // true means this dialog is showing
     private JTable table;
     String[] urls;
@@ -2322,8 +2326,8 @@ class SessionDlg extends Frame
     private java.awt.List fileList = null;
     private Label label = new Label("Current available sessions in directory    ");
     private Label directory = new Label("");
-    private JButton okButton;
-    private JButton cancelButton;
+    private DEViseButton okButton;
+    private DEViseButton cancelButton;
     private String[] sessions = null;
     private boolean[] sessionTypes = null;
     private String[] sessionNames = null;
@@ -2360,7 +2364,7 @@ class SessionDlg extends Frame
 
         setSessionList(data);
 
-        JButton [] button = new JButton[2];
+        DEViseButton [] button = new DEViseButton[2];
         button[0] = okButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
@@ -2586,11 +2590,11 @@ class SettingDlg extends Dialog
 
     private TextField screenX = new TextField(4);
     private TextField screenY = new TextField(4);
-    private JButton setButton;
-    private JButton statButton;
-    private JButton meButton;
-    private JButton collabButton;
-    private JButton cancelButton;
+    private DEViseButton setButton;
+    private DEViseButton statButton;
+    private DEViseButton meButton;
+    private DEViseButton collabButton;
+    private DEViseButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SettingDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -2929,7 +2933,7 @@ class ServerStateDlg extends Dialog
     private Label label1 = new Label("Current active server:");
     private Label label2 = new Label("Current active client:");
     private Label label3 = new Label("Current suspended client:");
-    private JButton okButton;
+    private DEViseButton okButton;
 
     private boolean status = false; // true means this dialog is showing
 
@@ -3146,8 +3150,8 @@ class SetCgiUrlDlg extends Dialog
 {
     jsdevisec jsc = null;
     private TextField url = new TextField(20);
-    private JButton setButton;
-    private JButton cancelButton;
+    private DEViseButton setButton;
+    private DEViseButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetCgiUrlDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3193,7 +3197,7 @@ class SetCgiUrlDlg extends Dialog
         gridbag.setConstraints(url, c);
         add(url);
 
-        JButton [] button = new JButton[2];
+        DEViseButton [] button = new DEViseButton[2];
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
@@ -3294,8 +3298,8 @@ class SetLogFileDlg extends Dialog
     private TextField file = new TextField(30);
     private Checkbox display = new Checkbox("Display", true);
     private Checkbox original = new Checkbox("Original Rate", true);
-    private JButton setButton;
-    private JButton cancelButton;
+    private DEViseButton setButton;
+    private DEViseButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetLogFileDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3356,7 +3360,7 @@ class SetLogFileDlg extends Dialog
         gridbag.setConstraints(panel1, c);
         add(panel1);
 
-        JButton [] button = new JButton[2];
+        DEViseButton [] button = new DEViseButton[2];
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
@@ -3458,9 +3462,9 @@ class SetLogFileDlg extends Dialog
 class SetModeDlg extends Dialog
 {
     private jsdevisec jsc = null;
-    private JButton socketButton;
-    private JButton cgiButton;
-    private JButton cancelButton;
+    private DEViseButton socketButton;
+    private DEViseButton cgiButton;
+    private DEViseButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public SetModeDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3615,11 +3619,11 @@ class CollabSelectDlg extends Dialog
 {
     jsdevisec jsc = null;
 
-    private JButton collabButton;
-    private JButton endButton;
-    private JButton enCollabButton;
-    private JButton disCollabButton;
-    private JButton cancelButton;
+    private DEViseButton collabButton;
+    private DEViseButton endButton;
+    private DEViseButton enCollabButton;
+    private DEViseButton disCollabButton;
+    private DEViseButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public CollabSelectDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -3861,8 +3865,8 @@ class CollabIdDlg extends Frame
 
     private java.awt.List clientList = null;
     private Label label = new Label("Current active clients: ");
-    private JButton okButton;
-    private JButton cancelButton;
+    private DEViseButton okButton;
+    private DEViseButton cancelButton;
     private String[] clients = null;
     private boolean emptyList = false;
 
@@ -3891,7 +3895,7 @@ class CollabIdDlg extends Frame
         clientList.setForeground(jsc.jsValues.uiglobals.textFg);
         clientList.setFont(jsc.jsValues.uiglobals.textFont);
 
-        JButton [] button = new JButton[2];
+        DEViseButton [] button = new DEViseButton[2];
         button[0] = okButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
@@ -4058,8 +4062,8 @@ class CollabPassDlg extends Dialog
 
     private TextField pass = new TextField(20);
     private TextField name = new TextField(20);
-    private JButton setButton;
-    private JButton cancelButton;
+    private DEViseButton setButton;
+    private DEViseButton cancelButton;
     private boolean status = false; // true means this dialog is showing
 
     public CollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -4093,7 +4097,7 @@ class CollabPassDlg extends Dialog
 
 	pass.setText(jsc.jsValues.session.collabLeaderPass);
 
-        JButton [] button = new JButton[2];
+        DEViseButton [] button = new DEViseButton[2];
         button[0] = setButton;
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
@@ -4216,8 +4220,8 @@ class EnterCollabPassDlg extends Dialog
     private jsdevisec jsc = null;
 
     private TextField pass = new TextField(20);
-    private JButton setButton;
-    //public JButton cancelButton = new DEViseButton("Cancel", jsValues);
+    private DEViseButton setButton;
+    //public DEViseButton cancelButton = new DEViseButton("Cancel", jsValues);
     private boolean status = false; // true means this dialog is showing
 
     public EnterCollabPassDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
@@ -4250,7 +4254,7 @@ class EnterCollabPassDlg extends Dialog
 
 	pass.setText(DEViseGlobals.DEFAULT_COLLAB_PASS);
 
-        JButton [] button = new JButton[1];
+        DEViseButton [] button = new DEViseButton[1];
         button[0] = setButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
@@ -4351,7 +4355,7 @@ class CollabStateDlg extends Dialog
 
     private java.awt.List collabList = null;
     private Label label = new Label("Current collaborating followers: ");
-    private JButton closeButton;
+    private DEViseButton closeButton;
     private String[] followers = null;
 
     private boolean status = false; // true means this dialog is showing
@@ -4378,7 +4382,7 @@ class CollabStateDlg extends Dialog
         collabList.setForeground(jsc.jsValues.uiglobals.textFg);
         collabList.setFont(jsc.jsValues.uiglobals.textFont);
 
-        JButton [] button = new JButton[1];
+        DEViseButton [] button = new DEViseButton[1];
         button[0] = closeButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);

@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2007/06/27 17:47:59  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
 // Revision 1.8  2007/04/20 19:42:35  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -127,7 +132,7 @@ public class DEViseJmolMenuButton extends DEViseButton
 {
     private static final int DEBUG = 0;
 
-    private JButton thisButton;
+    private DEViseButton thisButton;
     private DEViseCanvas3DJmol jmolCanvas;
     private PopupMenu jmolMenu;
 

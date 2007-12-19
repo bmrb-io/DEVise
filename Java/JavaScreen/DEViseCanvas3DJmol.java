@@ -42,6 +42,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2007/10/24 17:36:48  wenger
+// Minor change to fix null pointer problem that sometimes shows up with
+// Jmol visualizations.
+//
 // Revision 1.16  2007/09/10 22:10:36  wenger
 // Mouse cursor now changes to the disabled cursor if the selected
 // toolbar mode is not applicable in the current view; mouse cursor
@@ -245,7 +249,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.JLabel;
-import javax.swing.JButton;
 import javax.swing.BoxLayout;
 import javax.swing.Box;
 import javax.swing.SwingUtilities;
@@ -689,9 +692,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    displayPanel.add(Box.createRigidArea(new Dimension(0, 5)));
 
 	    //TEMP -- think of a clearer name for this button?
-	    JButton highlightResetButton = new JButton("Reset");
-	    highlightResetButton.setBackground(jsc.jsValues.uiglobals.bg);
-	    highlightResetButton.setForeground(jsc.jsValues.uiglobals.fg);
+            DEViseButton highlightResetButton =
+	      new DEViseButton("Reset", jsc.jsValues);
 	    highlightResetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 	    highlightResetButton.addActionListener(new ActionListener()
 	        {

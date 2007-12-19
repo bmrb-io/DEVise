@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/08/27 20:53:45  wenger
+// Made separate menu items for showing and hiding view help, as requested
+// by Chris Schulte.
+//
 // Revision 1.6  2007/08/27 19:16:39  wenger
 // Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
 //
@@ -91,11 +95,11 @@ public class DEViseMainButtons
     
     private Component[] _buttons = null;
 
-    // JButtons that bring up menus.
-    private JButton sessionMenuButton;
-    //TEMP private JButton sessionMenuButton = new JButton("Cursor Mode");
-    private JButton viewMenuButton;
-    private JButton helpMenuButton;
+    // DEViseButton that bring up menus.
+    private DEViseButton sessionMenuButton;
+    //TEMP private DEViseButton sessionMenuButton = new DEViseButton("Cursor Mode");
+    private DEViseButton viewMenuButton;
+    private DEViseButton helpMenuButton;
 
     // Menus.
     private PopupMenu sessionPM = new PopupMenu();
@@ -104,8 +108,8 @@ public class DEViseMainButtons
     private PopupMenu helpPM = new PopupMenu();
     private Menu displayModeMenu = new PopupMenu("Display Mode");
 
-    // JButtons that don't bring up menus.
-    public  JButton stopButton;
+    // DEViseButton that don't bring up menus.
+    public  DEViseButton stopButton;
 
     // Menu items.
     private MenuItem openMenuItem = new MenuItem("Open...");
@@ -172,7 +176,7 @@ public class DEViseMainButtons
      * parts of the code to change its color).
      * @return The stop button.
      */
-    public JButton getStopButton()
+    public DEViseButton getStopButton()
     {
         if (DEBUG >= 1) {
 	    System.out.println("DEViseMainButtons.getStopButton()");
