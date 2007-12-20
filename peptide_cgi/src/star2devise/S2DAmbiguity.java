@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2007/11/15 17:15:34  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.8  2007/10/02 18:54:23  wenger
 // More improvements to error and warning messages, including printing
 // fewer at the default verbosity setting.
@@ -153,9 +156,11 @@ public class S2DAmbiguity {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_AMBIGUITY, _name, frameIndex,
 	      "Assigned chemical shift ambiguity code data");
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.

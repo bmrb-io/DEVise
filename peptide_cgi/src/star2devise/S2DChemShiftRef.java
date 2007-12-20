@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/11/15 17:15:34  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.4  2007/08/20 20:26:07  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -244,17 +247,21 @@ public class S2DChemShiftRef
 	    //
 	    // Write the session-specific html files.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_CHEM_SHIFT_REF1, _name, _frameIndex,
 	      "Chemical Shift Reference Difference Histograms");
+	    specHtml.write();
 
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    specHtml = new S2DSpecificHtml(_summary.getHtmlDir(),
 	      S2DUtils.TYPE_CHEM_SHIFT_REF2, _name, _frameIndex,
 	      "Chemical Shift Differences by Residue");
+	    specHtml.write();
 
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    specHtml = new S2DSpecificHtml(_summary.getHtmlDir(),
 	      S2DUtils.TYPE_CHEM_SHIFT_REF3, _name, _frameIndex,
 	      "Observed vs. Calculated Chemical Shift Values");
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
@@ -268,12 +275,28 @@ public class S2DChemShiftRef
 	} catch (Exception ex) {
 	    System.err.println("Exception in chem shift reference " +
 	      "postprocessing: " + ex.toString());
+
+	    // Write the "error" HTML pages.
+	    S2DCSRErrorHtml csrErrorHtml = new S2DCSRErrorHtml(
+	      _summary.getHtmlDir(), S2DUtils.TYPE_CHEM_SHIFT_REF1,
+	      _name, _frameIndex, "", _bmrbId, _pdbId, !_csrRan);
+	    csrErrorHtml.write();
+
+	    csrErrorHtml = new S2DCSRErrorHtml(_summary.getHtmlDir(),
+	      S2DUtils.TYPE_CHEM_SHIFT_REF2, _name, _frameIndex,
+	      "", _bmrbId, _pdbId, !_csrRan);
+	    csrErrorHtml.write();
+
+	    csrErrorHtml = new S2DCSRErrorHtml(_summary.getHtmlDir(),
+	      S2DUtils.TYPE_CHEM_SHIFT_REF3, _name, _frameIndex,
+	      "", _bmrbId, _pdbId, !_csrRan);
+	    csrErrorHtml.write();
+
 	    // Note: the S2DWarning object below is *not* supposed to be
 	    // thrown...
-	    new S2DWarning("Unable to complete chem shift reference " +
-	      "post-processing for <" + _cmdStr + ">");
-	    System.err.println("Unable to complete chem shift reference " +
-	      "post-processing for <" + _cmdStr + ">");
+	    System.err.println(new S2DWarning(
+	      "Unable to complete chem shift reference " +
+	      "post-processing for <" + _cmdStr + ">"));
 	}
     }
 

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/11/15 17:15:34  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.3  2007/08/20 20:26:07  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -142,8 +145,10 @@ public class S2DHetNOE {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(), S2DUtils.TYPE_HETNOE,
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(), S2DUtils.TYPE_HETNOE,
 	      _name, frameIndex, _title);
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.

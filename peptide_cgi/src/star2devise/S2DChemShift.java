@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/11/15 17:15:34  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.4  2007/08/20 20:26:07  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -174,9 +177,11 @@ public class S2DChemShift {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_DELTASHIFT, _name, frameIndex,
 	      "Chemical Shift Delta");
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
@@ -285,8 +290,10 @@ public class S2DChemShift {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(), S2DUtils.TYPE_CSI,
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(), S2DUtils.TYPE_CSI,
 	      _name, frameIndex, "Chemical Shift Index");
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
@@ -402,9 +409,11 @@ public class S2DChemShift {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_PCT_ASSIGN, _name, frameIndex,
 	      "Percent Assigned Atoms");
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
@@ -474,9 +483,11 @@ public class S2DChemShift {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_ALL_CHEM_SHIFTS, _name, frameIndex,
 	      "Chemical shift distributions by amino acid");
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
@@ -631,9 +642,11 @@ public class S2DChemShift {
 	        //
 	        // Write the session-specific html file.
 	        //
-	        S2DSpecificHtml.write(_summary.getHtmlDir(),
+	        S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	          _summary.getHtmlDir(),
 		  S2DUtils.TYPE_HVSN_CHEM_SHIFTS, _name, frameIndex,
 		  "Simulated 1H-15N backbone HSQC spectrum");
+	        specHtml.write();
 
 	        //
 	        // Write the link in the summary html file.

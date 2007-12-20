@@ -1,0 +1,31 @@
+<html>
+<head>
+  <title>Chemical shift reference error</title>
+  <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
+</head>
+
+<body bgcolor = #FFFFCC>
+<font color = #660000>
+
+  <center> <h2>
+  Chemical shift reference calculation error
+  </h2> </center>
+
+  <p>
+  The chemical shift reference calculation (for BMRBID/PDBID) failed.
+  </p>
+  <p>
+  This may be caused by problems such as a mismatch between the BMRB
+  and PDB sequences that cannot be corrected.
+  </p>
+
+  <br><br>
+  <center>
+  <h6>Comments?  Contact <a
+    href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
+  </h6>
+  <h6>Problems with the visualization software?  Contact <a
+    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+  </h6>
+  </center>
+</body></html>

@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/20 20:26:08  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -264,8 +269,10 @@ public class S2DLacs {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(), S2DUtils.TYPE_LACS,
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(), S2DUtils.TYPE_LACS,
 	      _name, frameIndex, _title);
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/11/15 17:15:34  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.7  2007/08/21 18:56:29  wenger
 // Improved debug output -- better verbosity levels, etc.
 //
@@ -271,9 +274,11 @@ public class S2DAtomicCoords {
 	        //
 	        // Write the session-specific html file.
 	        //
-	        S2DSpecificHtml.write(_summary.getHtmlDir(),
+	        S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	          _summary.getHtmlDir(),
 	          S2DUtils.TYPE_ATOMIC_COORDS, _name, frameIndex,
 	          "3D structure");
+	        specHtml.write();
 
 	        //
 	        // Write the link in the summary html file.
@@ -370,9 +375,11 @@ public class S2DAtomicCoords {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_ATOMIC_COORDS, _name, frameIndex,
 	      "3D structure");
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.

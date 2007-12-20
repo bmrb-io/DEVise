@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.60  2007/11/21 00:09:26  wenger
+// Incremented version number.
+//
 // Revision 1.59  2007/11/20 18:48:19  wenger
 // Changed version to 11.2.1 for release.
 //
@@ -1071,6 +1074,10 @@ public class S2DMain {
 	boolean sessionFileOk = sessionData.getSessionData(name, suffix,
 	  sessionDir);
         if (!sessionFileOk) {
+	    if (doDebugOutput(2)) {
+	        System.out.println("Unable to get session file data; " +
+	          "cache not used");
+	    }
 	    return false;
 	}
 
@@ -1208,8 +1215,8 @@ public class S2DMain {
 	        csr.run();
 	        csr.postProcess(_doProteinCheck);
 		if (!csr.ran() || csr.ranButFailed()) {
-		    throw new S2DError(
-		      "Chem shift reference calculation failed");
+		    System.err.println(new S2DError(
+		      "Chem shift reference calculation failed"));
 		}
 	    }
 

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/11/15 17:15:35  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.3  2007/08/20 20:26:09  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -160,8 +163,10 @@ public class S2DRelaxation {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(), _dataType,
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(), _dataType,
 	      _name, frameIndex, _title);
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2007/11/15 17:15:36  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.8  2007/08/20 20:26:09  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -55,178 +58,159 @@ public class S2DSpecificHtml {
     // Whether we're processing for "upload and visualize data".
     private static boolean _isUvd = false;
 
+    protected String _htmlDir;
+    protected int _dataType;
+    protected String _name;
+    protected int _frameIndex;
+    protected String _title;
+    protected String _dataSuffix;
+
+    private static final String searchString1 = "4264d1";
+    private static final String searchString2 = "bmr4264.str";
+    private static final String searchString3 = "help_d.html";
+    private static final String searchString4 = "Dummy title";
+
+    private String _replaceString1;
+    private String _replaceString2;
+    private String _replaceString3;
+    private String _replaceString4;
+
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
+    // Constructor.
+    public S2DSpecificHtml(String htmlDir, int dataType, String name,
+      int frameIndex, String title) throws S2DError
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
+	      htmlDir + ", " + dataType + ", " + name + ", " +
+	      frameIndex + ")");
+	}
+
+	_htmlDir = htmlDir;
+	_dataType = dataType;
+	_name = name;
+	_frameIndex = frameIndex;
+	_title = title;
+
+	_dataSuffix = S2DUtils.dataType2Suffix(_dataType);
+        _replaceString1 = _name + _dataSuffix + _frameIndex;
+        _replaceString2 = _name;
+        _replaceString3 = "help_" + _dataSuffix + ".html";
+        _replaceString4 = _title;
+
+    }
+
+    //-------------------------------------------------------------------
     // Set whether this is UVD processing.
-    static void setIsUvd(boolean isUvd)
+    public static void setIsUvd(boolean isUvd)
     {
         _isUvd = isUvd;
     }
 
     //-------------------------------------------------------------------
-    static void write(String htmlDir, int dataType, String name,
-      int frameIndex, String title) throws S2DException
+    public void write() throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DSpecificHtml.write(" + htmlDir + ", " +
-	      dataType + ", " + name + ", " + frameIndex + ")");
+	    System.out.println("S2DSpecificHtml.write(");
 	}
 
 	// Write the "normal size" file.
-	String templateFile = "html_templates" + File.separator;
-	if (dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
-	    templateFile += "specific_html_jmol.base";
-	} else {
-	    templateFile += "specific_html.base";
-	}
-        writeOne(templateFile, htmlDir, "", dataType, name, frameIndex,
-	  title);
+	String templateFile = TemplateFileName(false);
+        writeOne(templateFile, "");
 
 	// Write the "large size" file.
-	templateFile = "html_templates" + File.separator;
-	if (dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
-	    templateFile += "specific_html_large_jmol.base";
+	templateFile = TemplateFileName(true);
+        writeOne(templateFile, "_large");
+    }
+
+    //===================================================================
+    // PROTECTED METHODS
+
+    //-------------------------------------------------------------------
+    // Get the template file name.
+    protected String TemplateFileName(boolean isLarge)
+    {
+	String templateFile = "html_templates" + File.separator;
+	if (isLarge) {
+	    if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
+	        templateFile += "specific_html_large_jmol.base";
+	    } else {
+	        templateFile += "specific_html_large.base";
+            }
 	} else {
-	    templateFile += "specific_html_large.base";
+	    if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
+	        templateFile += "specific_html_jmol.base";
+	    } else {
+	        templateFile += "specific_html.base";
+	    }
 	}
-        writeOne(templateFile, htmlDir, "_large", dataType, name,
-	  frameIndex, title);
+
+	return templateFile;
+    }
+
+    //-------------------------------------------------------------------
+    // Get the output file name we need to generate.
+    protected String OutFileName(String sizeSuffix) throws S2DError
+    {
+        String outFileName = _htmlDir + File.separator + _name +
+	  _dataSuffix + _frameIndex + sizeSuffix + ".html";
+    	return outFileName;
+    }
+
+    //-------------------------------------------------------------------
+    // Filter one line of the HTML template file, transforming it
+    // into a line to be output.
+    protected String FilterLine(String inLine)
+    {
+	String line = inLine;
+	line = S2DUtils.replace(line, searchString1,
+	  _replaceString1);
+	line = S2DUtils.replace(line, searchString2,
+	  _replaceString2);
+	line = S2DUtils.replace(line, searchString3,
+	  _replaceString3);
+	line = S2DUtils.replace(line, searchString4,
+	  _replaceString4);
+	if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
+	  _dataType == S2DUtils.TYPE_PISTACHIO ||
+	  _dataType == S2DUtils.TYPE_AMBIGUITY) {
+	    // Change JS background color so gaps between views
+	    // show up.
+	    line = S2DUtils.replace(line, "0+0+0", "64+96+0");
+	}
+
+        return line;
     }
 
     //===================================================================
     // PRIVATE METHODS
 
     //-------------------------------------------------------------------
-    private static void writeOne(String templateFile, String htmlDir,
-      String sizeSuffix, int dataType, String name, int frameIndex,
-      String title) throws S2DException
+    private void writeOne(String templateFile, String sizeSuffix)
+      throws S2DException
     {
-	String dataSuffix;
-	String searchString1 = "4264d1";
-	String searchString2 = "bmr4264.str";
-	String searchString3 = "help_d.html";
-	String searchString4 = "Dummy title";
-
-	//TEMP -- should this be made into a method in S2DUtils?
-	switch (dataType) {
-	case S2DUtils.TYPE_DELTASHIFT:
-	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_CSI:
-	    dataSuffix = S2DNames.CSI_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_PCT_ASSIGN:
-	    dataSuffix = S2DNames.PERCENT_ASSIGN_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_ALL_CHEM_SHIFTS:
-	    dataSuffix = S2DNames.ALL_CHEM_SHIFT_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
-	    dataSuffix = S2DNames.HVSN_CHEM_SHIFT_SUFFIX;
-	    break;
-
-        case S2DUtils.TYPE_COUPLING:
-	    dataSuffix = S2DNames.COUPLING_SUFFIX;
-	    break;
-
-/*TEMP
-        case S2DUtils.TYPE_HXRATES:
-	    dataSuffix = S2DNames.HX_RATE_SUFFIX;
-	    break;
-
-        case S2DUtils.TYPE_ORDER:
-	    dataSuffix = S2DNames.
-	    break;
-TEMP*/
-
-        case S2DUtils.TYPE_T1_RELAX:
-	    dataSuffix = S2DNames.T1_SUFFIX;
-	    break;
-
-        case S2DUtils.TYPE_T2_RELAX:
-	    dataSuffix = S2DNames.T2_SUFFIX;
-	    break;
-
-        case S2DUtils.TYPE_HETNOE:
-	    dataSuffix = S2DNames.HETERONUCLEAR_NOE_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_ATOMIC_COORDS:
-	    dataSuffix = S2DNames.ATOMIC_COORD_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_CHEM_SHIFT_REF1:
-	    dataSuffix = S2DNames.CSR1_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_CHEM_SHIFT_REF2:
-	    dataSuffix = S2DNames.CSR2_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_CHEM_SHIFT_REF3:
-	    dataSuffix = S2DNames.CSR3_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_PISTACHIO:
-	    dataSuffix = S2DNames.PISTACHIO_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_AMBIGUITY:
-	    dataSuffix = S2DNames.AMBIGUITY_SUFFIX;
-	    break;
-
-	case S2DUtils.TYPE_LACS:
-	    dataSuffix = S2DNames.LACS_SUFFIX;
-	    break;
-
-	default:
-	    throw new S2DError("Illegal data type: " + dataType);
-	}
-
-        String outFileName = htmlDir + File.separator + name + dataSuffix +
-	  frameIndex + sizeSuffix + ".html";
-
 	try {
-            FileWriter writer = S2DFileWriter.create(outFileName);
+            FileWriter writer = S2DFileWriter.create(
+	      OutFileName(sizeSuffix));
 	    BufferedReader reader = new BufferedReader(
 	      new FileReader(templateFile));
 
-            String replaceString1 = name + dataSuffix + frameIndex;
-            String replaceString2 = name;
-            String replaceString3 = "help_" + dataSuffix + ".html";
-            String replaceString4 = title;
+            String inLine;
+	    while ((inLine = reader.readLine()) != null) {
+		String outLine = FilterLine(inLine);
 
-            String line0;
-	    while ((line0 = reader.readLine()) != null) {
-		String line2 = S2DUtils.replace(line0, searchString1,
-		  replaceString1);
-		String line3 = S2DUtils.replace(line2, searchString2,
-		  replaceString2);
-		String line4 = S2DUtils.replace(line3, searchString3,
-		  replaceString3);
-		line4 = S2DUtils.replace(line4, searchString4,
-		  replaceString4);
-		if (dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
-		  dataType == S2DUtils.TYPE_PISTACHIO ||
-		  dataType == S2DUtils.TYPE_AMBIGUITY) {
-		    // Change JS background color so gaps between views
-		    // show up.
-		    line4 = S2DUtils.replace(line4, "0+0+0", "64+96+0");
-		}
-		line4 = S2DUtils.replace(line4, "COMMENT_EMAIL",
+		outLine = S2DUtils.replace(outLine, "COMMENT_EMAIL",
 		  S2DNames.COMMENT_EMAIL);
+
 		if (_isUvd) {
-		    line4 = S2DUtils.replace(line4, "../..", "../../..");
-		    line4 = S2DUtils.replace(line4, "dynamic_sessions",
+		    outLine = S2DUtils.replace(outLine, "../..", "../../..");
+		    outLine = S2DUtils.replace(outLine, "dynamic_sessions",
 		      "dynamic_sessions/.uvd");
 		}
-	        writer.write(line4 + "\n");
+	        writer.write(outLine + "\n");
 	    }
 
 	    reader.close();
@@ -234,8 +218,7 @@ TEMP*/
         } catch(IOException ex) {
 	    System.err.println("IOException: " +
 	      ex.toString() + " writing specific html file");
-	    throw new S2DError("Can't write specific html file: " +
-	      outFileName);
+	    throw new S2DError("Can't write specific html file");
 	}
     }
 

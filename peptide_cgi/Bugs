@@ -251,6 +251,10 @@ Num Date        Status  Description
 056 11/15/07	OPEN	Could file name collision happen in CSR files if
 			there are over 9 sets of CSR data? (wenger)
 
+057 12/20/07	OPEN	If ChemShift fails (as opposed to not running), it
+			should not get re-run if the user re-clicks the
+			appropriate link in the summary html page. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

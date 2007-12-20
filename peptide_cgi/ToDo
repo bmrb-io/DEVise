@@ -243,6 +243,8 @@ Num Date        Status  Pri     Description
 063 12/14/07	OPEN	3	Incorporate error messages from ChemShift,
 				molmol, and NMRPipe into s2d.out. (wenger)
 
+064 12/19/07	OPEN	3	Make a test for item 063. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

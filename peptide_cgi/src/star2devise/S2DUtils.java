@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/11/15 17:15:36  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.6  2007/10/02 18:54:24  wenger
 // More improvements to error and warning messages, including printing
 // fewer at the default verbosity setting.
@@ -165,7 +168,7 @@ public class S2DUtils
     }
 
     //-------------------------------------------------------------------
-    static String replace(String str, String pattern, String replace)
+    public static String replace(String str, String pattern, String replace)
     {
         int s = 0;
         int e = 0;
@@ -181,7 +184,8 @@ public class S2DUtils
     }
 
     //-------------------------------------------------------------------
-    static void copyFile(String inFile, String outFile) throws IOException
+    public static void copyFile(String inFile, String outFile)
+      throws IOException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DUtils.copyFile(" + inFile + ", " +
@@ -215,7 +219,7 @@ public class S2DUtils
     }
 
     //-------------------------------------------------------------------
-    static void deleteFile(String fileName) throws IOException
+    public static void deleteFile(String fileName) throws IOException
     {
         File file = new File(fileName);
 	if (file.exists()) {
@@ -227,7 +231,7 @@ public class S2DUtils
     }
 
     //-------------------------------------------------------------------
-    static String getCurrentDateStr()
+    public static String getCurrentDateStr()
     {
         Date date = new Date();
 	DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
@@ -245,7 +249,7 @@ public class S2DUtils
      * @return -1 if the first version is less than the second; 0 if
      *   the versions are equal; 1 if version1 is greater than version2.
      */
-    static int compareVersions(String version1, String version2)
+    public static int compareVersions(String version1, String version2)
       throws S2DError
     {
     	MyVersion v1 = new MyVersion(version1);
@@ -266,6 +270,94 @@ public class S2DUtils
         } else {
 	    return 0;
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Translate a data type into the corresponding output file suffix.
+    public static String dataType2Suffix(int dataType) throws S2DError
+    {
+	String dataSuffix;
+
+	switch (dataType) {
+	case S2DUtils.TYPE_DELTASHIFT:
+	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_CSI:
+	    dataSuffix = S2DNames.CSI_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_PCT_ASSIGN:
+	    dataSuffix = S2DNames.PERCENT_ASSIGN_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_ALL_CHEM_SHIFTS:
+	    dataSuffix = S2DNames.ALL_CHEM_SHIFT_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
+	    dataSuffix = S2DNames.HVSN_CHEM_SHIFT_SUFFIX;
+	    break;
+
+        case S2DUtils.TYPE_COUPLING:
+	    dataSuffix = S2DNames.COUPLING_SUFFIX;
+	    break;
+
+/*TEMP
+        case S2DUtils.TYPE_HXRATES:
+	    dataSuffix = S2DNames.HX_RATE_SUFFIX;
+	    break;
+
+        case S2DUtils.TYPE_ORDER:
+	    dataSuffix = S2DNames.
+	    break;
+TEMP*/
+
+        case S2DUtils.TYPE_T1_RELAX:
+	    dataSuffix = S2DNames.T1_SUFFIX;
+	    break;
+
+        case S2DUtils.TYPE_T2_RELAX:
+	    dataSuffix = S2DNames.T2_SUFFIX;
+	    break;
+
+        case S2DUtils.TYPE_HETNOE:
+	    dataSuffix = S2DNames.HETERONUCLEAR_NOE_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_ATOMIC_COORDS:
+	    dataSuffix = S2DNames.ATOMIC_COORD_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_CHEM_SHIFT_REF1:
+	    dataSuffix = S2DNames.CSR1_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_CHEM_SHIFT_REF2:
+	    dataSuffix = S2DNames.CSR2_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_CHEM_SHIFT_REF3:
+	    dataSuffix = S2DNames.CSR3_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_PISTACHIO:
+	    dataSuffix = S2DNames.PISTACHIO_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_AMBIGUITY:
+	    dataSuffix = S2DNames.AMBIGUITY_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_LACS:
+	    dataSuffix = S2DNames.LACS_SUFFIX;
+	    break;
+
+	default:
+	    throw new S2DError("Illegal data type: " + dataType);
+	}
+
+	return dataSuffix;
     }
 
     //===================================================================

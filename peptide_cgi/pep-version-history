@@ -4,6 +4,11 @@ Peptide-CGI 11.2.2
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Improved ChemShiftRef error messages; ChemShift calculation failing
+is no longer considered an error at the top level of the program.
+
+* Some cache checking output is now printed at a lower versbosity setting.
+
 
 Peptide-CGI 11.2.1
 ------------------

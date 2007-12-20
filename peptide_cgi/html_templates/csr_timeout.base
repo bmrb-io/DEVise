@@ -1,0 +1,31 @@
+<html>
+<head>
+  <title>Chemical shift reference timeout</title>
+  <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
+</head>
+
+<body bgcolor = #FFFFCC>
+<font color = #660000>
+
+  <center> <h2>
+  Chemical shift reference calculation timed out
+  </h2> </center>
+
+  <p>
+  The chemical shift reference calculation (for BMRBID/PDBID) timed out.
+  </p>
+  <p>
+  You may want to re-try the calculation by going back in your browser
+  and then re-clicking the chemical shift reference link.
+  </p>
+
+  <br><br>
+  <center>
+  <h6>Comments?  Contact <a
+    href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
+  </h6>
+  <h6>Problems with the visualization software?  Contact <a
+    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+  </h6>
+  </center>
+</body></html>

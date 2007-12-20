@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/11/15 17:15:35  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.6  2007/10/02 18:54:24  wenger
 // More improvements to error and warning messages, including printing
 // fewer at the default verbosity setting.
@@ -160,9 +163,11 @@ public class S2DPistachio {
 	    //
 	    // Write the session-specific html file.
 	    //
-	    S2DSpecificHtml.write(_summary.getHtmlDir(),
+	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
+	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_PISTACHIO, _name, frameIndex,
 	      "Assignment figure of merit data");
+	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
