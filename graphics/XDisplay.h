@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.38  2001/08/20 18:20:26  wenger
+  Fixes to various font problems: XDisplay calculates point sizes correctly
+  and uses screen resolution in specifying font; JS passes *its* screen
+  resolution to the devised so that fonts show up correctly in the JS
+  (JS protocol version now 7.0); changed DEVise version to 1.7.4.
+
   Revision 1.37  2001/07/31 15:53:22  wenger
   Added -fontkludge argument to allow bypassing of font families that
   don't work with Xvfb on SPARC/Solaris.
@@ -276,6 +282,7 @@ protected:
     XFontStruct *GetNormalFontStruct() { return _normalFontStruct; };
     void SetFont(const char *family, const char *weight, const char *slant,
                  const char *width, float pointSize);
+    void SetFont(const char *fname);
     void SetNormalFont();
 
     /* Get width and height of X window */

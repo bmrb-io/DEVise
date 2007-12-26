@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  2005/12/06 20:03:05  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.33  2002/06/17 19:40:59  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
@@ -277,6 +281,9 @@ class Init {
 	// Tcl script to run at startup (if any).
 	static const char *TclScript() { return _tclScript; }
 
+	// Default font to use if we cannot load other fonts.
+	static const char *DefaultFont() { return _defaultFont; }
+
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
@@ -347,6 +354,7 @@ protected:
 	static Boolean _robustOpen;
 	static Boolean _allowExtProc;
 	static const char *_tclScript;
+	static const char *_defaultFont;
 };
 
 #endif

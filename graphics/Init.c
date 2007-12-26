@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.70  2005/12/06 20:03:05  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.69.10.2  2003/06/06 20:48:37  wenger
   Implemented provision for automatic testing of DEVise, including
   running Tcl test scripts within DEVise itself.
@@ -406,6 +410,7 @@ Boolean Init::_fontKludge = false;
 Boolean Init::_robustOpen = true;
 Boolean Init::_allowExtProc = true;
 const char *Init::_tclScript = NULL;
+const char *Init::_defaultFont = NULL;
 
 Boolean Init::_quitOnDisconnect = false;
 int Init::_clientTimeout = 0;
@@ -484,6 +489,8 @@ static void Usage(char *prog)
     "opening a session, or not\n");
   fprintf(stderr, "\t-allowExtProc 0|1: allow external process or not\n");
   fprintf(stderr, "\t-tclScript <file>: Tcl script to run\n");
+  fprintf(stderr, "\t-defaultFont <font name>: font to use if we can't load "
+    "other fonts\n");
 
   Exit::DoExit(1);
 }
@@ -991,6 +998,15 @@ void Init::DoInit(int &argc, char **argv)
 	  Usage(argv[0]);
 	}
 	_tclScript = CopyString(argv[i+1]);
+	MoveArg(argc,argv,i,2);
+      }
+
+      else if (strcmp(&argv[i][1], "defaultFont") == 0) {
+	if (i >= argc -1) {
+	  fprintf(stderr, "Value needed for argument %s\n", argv[i]);
+	  Usage(argv[0]);
+	}
+	_defaultFont = CopyString(argv[i+1]);
 	MoveArg(argc,argv,i,2);
       }
 

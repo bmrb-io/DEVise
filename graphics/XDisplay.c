@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.91  2005/12/06 20:03:13  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.90  2003/01/13 19:25:12  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -585,8 +589,6 @@ void XDisplay::SetFont(const char *family, const char *weight, const char *slant
 	    }
     }
 
-    XFontStruct *oldFont = _fontStruct;
-
     /* Special case for Courier or Helvetica italic. */
     if (((!strcasecmp(family, "courier")) ||
       (!strcasecmp(family, "helvetica"))) && !strcasecmp(slant, "i")) {
@@ -620,28 +622,36 @@ void XDisplay::SetFont(const char *family, const char *weight, const char *slant
 		  (int) (p * 10.0), _desiredScreenXRes, _desiredScreenYRes);
         checkAndTermBuf(fname, bufSize, formatted);
 
-#if 0
-        printf("  Trying font %s\n", fname);
-#endif
-        _fontStruct = XLoadQueryFont(_display, fname);
-        if (_fontStruct) {
-#if defined(DEBUG)
-            printf("Loaded font %s\n", fname);
-#endif
-            if (oldFont && oldFont != _normalFontStruct) {
-#if defined(DEBUG)
-                printf("Freeing font 0x%p\n", _fontStruct);
-#endif
-                XFreeFont(_display, oldFont);
-            }
-            return;
-        }
+		SetFont(fname);
+		if (_fontStruct) return;
     }
     int formatted = snprintf(errBuf, errBufSize,
-      "Warning: could not find font %s %f\n", family, pointSize);
+      "Warning: could not find font %s %f", family, pointSize);
     checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     _fontStruct = _normalFontStruct;
+}
+
+void XDisplay::SetFont(const char *fname)
+{
+#if 0
+    printf("  Trying font %s\n", fname);
+#endif
+
+    XFontStruct *oldFont = _fontStruct;
+
+    _fontStruct = XLoadQueryFont(_display, fname);
+    if (_fontStruct) {
+#if defined(DEBUG)
+        printf("Loaded font %s\n", fname);
+#endif
+        if (oldFont && oldFont != _normalFontStruct) {
+#if defined(DEBUG)
+            printf("Freeing font 0x%p\n", _fontStruct);
+#endif
+            XFreeFont(_display, oldFont);
+        }
+	}
 }
 
 #ifndef LIBCS
@@ -1540,11 +1550,16 @@ XDisplay::SetDefaultFont()
     XFreeFont(_display, _normalFontStruct);
   }
 
-  SetFont("Courier", "Medium", "r", "Normal", 12.0);
+  const char *_defaultFName = Init::DefaultFont();
+
+  if (_defaultFName) {
+    SetFont(_defaultFName);
+  } else {
+    SetFont("Courier", "Medium", "r", "Normal", 12.0);
+  }
   _normalFontStruct = _fontStruct;
   if (!_normalFontStruct) {
-      reportErrNosys("Cannot load 12-point Courier font\n");
-      reportErrNosys("Fatal error");//TEMP -- replace with better message
+	  reportErrNosys("Fatal error: cannot load default font");
       Exit::DoExit(1);
   }
 }
