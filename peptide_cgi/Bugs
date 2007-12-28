@@ -255,6 +255,9 @@ Num Date        Status  Description
 			should not get re-run if the user re-clicks the
 			appropriate link in the summary html page. (wenger)
 
+058 12/28/07	OPEN	Chemical shift data in 7013 doesn't get processed.
+			(dimitri/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
