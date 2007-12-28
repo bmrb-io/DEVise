@@ -4082,6 +4082,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			this started after upgrading his Java version.
 			(miron/wenger)
 
+955 12/28/07	OPEN	Count mappings get goofed up if you zoom in too much
+			in the count axis (e.g., if you zoom in too much on
+			the Y axis in the CSR 1 visualizations, all of the
+			bars disappear). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
