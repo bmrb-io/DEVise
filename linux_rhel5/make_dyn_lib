@@ -1,0 +1,25 @@
+#! /bin/csh -f
+
+# $Id$
+
+# Copy dynamic libraries for RHEL5.
+
+if (! -e dyn_lib) then
+  mkdir dyn_lib
+endif
+
+# On manta, 2008-01-11.
+cp /usr/lib/libtk8.4.so dyn_lib
+cp /usr/lib/libtcl8.4.so dyn_lib
+cp /usr/lib/libX11.so.6 dyn_lib
+cp /lib/libdl.so.2 dyn_lib
+cp /usr/lib/libstdc++.so.6 dyn_lib
+cp /lib/libm.so.6 dyn_lib
+cp /lib/libgcc_s.so.1 dyn_lib
+cp /lib/libc.so.6 dyn_lib
+cp /lib/libpthread.so.0 dyn_lib
+cp /usr/lib/libXau.so.6 dyn_lib
+cp /usr/lib/libXdmcp.so.6 dyn_lib
+cp /lib/ld-linux.so.2 dyn_lib
+
+chmod 644 dyn_lib/*.so*

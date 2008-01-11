@@ -33,7 +33,8 @@ if (-e bin/devised) then
 endif
 
 cd bin
-ln -s ../../../linux_centos/generic/devised .
+#TEMP -- get rid of hard-coded linux_rhel5
+ln -s ../../../linux_rhel5/generic/devised .
 if (! -e Tasvir) then
   ln -s /p/devise/public/bin/Tasvir .
 endif
