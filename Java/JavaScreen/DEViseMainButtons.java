@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2006
+// (c) Copyright 2003-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/12/19 00:08:32  wenger
+// Changed a bunch of JButton references to DEViseButtons to make things
+// more consistent.
+//
 // Revision 1.7  2007/08/27 20:53:45  wenger
 // Made separate menu items for showing and hiding view help, as requested
 // by Chris Schulte.
@@ -78,8 +82,6 @@ package JavaScreen;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.*;
 
 public class DEViseMainButtons
 {
