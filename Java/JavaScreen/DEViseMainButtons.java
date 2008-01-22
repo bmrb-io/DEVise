@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/01/11 17:03:26  wenger
+// Removed unnecessary swing import.
+//
 // Revision 1.8  2007/12/19 00:08:32  wenger
 // Changed a bunch of JButton references to DEViseButtons to make things
 // more consistent.
@@ -316,6 +319,7 @@ public class DEViseMainButtons
             });
 
         exitMenuItem.addActionListener(new ActionListener()
+//TEMPTEMP -- exit menu item here
             {
                 public void actionPerformed(ActionEvent event)
                 {

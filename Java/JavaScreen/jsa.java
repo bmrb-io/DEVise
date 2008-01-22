@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2007/04/20 19:42:36  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.49  2007/02/22 23:20:22  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
 //
@@ -221,24 +225,27 @@ public class jsa extends DEViseJSApplet
 
     public void stop()
     {
-        if (DEBUG >= 1) {
+        if (DEBUG >= 0/*TEMPTEMP 1*/) {
             System.out.println("jsa.stop()");
 	}
 
-        if (jsf != null && !jsf.isQuit()) {
-            jsf.displayMe(false);
-        }
+	jsf.destroy();//TEMPTEMP?
+
+        //TEMPTEMP? if (jsf != null && !jsf.isQuit()) {
+            //TEMPTEMP? jsf.displayMe(false);
+        //TEMPTEMP? }
 
 	super.stop();
     }
 
     public void destroy()
     {
-        if (DEBUG >= 1) {
+        if (DEBUG >= 0/*TEMPTEMP 1*/) {
             System.out.println("jsa.destroy()");
 	}
 
-        if (jsf != null && !jsf.isQuit()) {
+        //TEMPTEMP? if (jsf != null && !jsf.isQuit()) {
+        if (jsf != null) {//TEMPTEMP?
             jsf.destroy();
             jsf = null;
         }
@@ -386,11 +393,11 @@ class jscframe extends JFrame
 
     public void destroy()
     {
-        if (DEBUG >= 1) {
+        if (DEBUG >= 0/*TEMPTEMP 1*/) {
 	    System.out.println("jscframe.destroy()");
 	}
 
-        jsc.destroy();
+        jsc.destroy();//TEMPTEMP -- got null pointer here when destroying jsa
 	jsc = null;
     }
 

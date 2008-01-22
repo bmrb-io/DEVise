@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.165  2007/12/19 00:08:32  wenger
+// Changed a bunch of JButton references to DEViseButtons to make things
+// more consistent.
+//
 // Revision 1.164  2007/08/27 20:53:46  wenger
 // Made separate menu items for showing and hiding view help, as requested
 // by Chris Schulte.
@@ -1726,6 +1730,7 @@ public class jsdevisec extends JPanel
     // (We get here if the "Exit" button is pressed.)
     public synchronized void checkQuit()
     {
+System.out.println("jsdevisec.checkQuit()");//TEMPTEMP
         boolean reallyQuit = true;
 
 	if (specialID == -1) { 
@@ -1750,9 +1755,10 @@ public class jsdevisec extends JPanel
         return isQuit;
     }
 
-    public synchronized void destroy()
+    //TEMPTEMP? public synchronized void destroy()
+    public void destroy()//TEMPTEMP?
     {
-	if (DEBUG >= 1) {
+	if (DEBUG >= 0/*TEMPTEMP 1*/) {
 	    System.out.println("jsdevisec.destroy()");
 	}
 	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||

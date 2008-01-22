@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2007/04/20 19:42:36  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.21.6.1  2007/04/19 21:16:09  wenger
 // Fixed the problem with component layout in the jsb; got rid of
 // jsdevisec screenPanel, since it caused problem with the fix and only
@@ -215,9 +219,11 @@ public class jsb extends DEViseJSApplet
 
     public void stop()
     {
-        if (DEBUG >= 1) {
+        if (DEBUG >= 0/*TEMPTEMP 1*/) {
             System.out.println("jsb.stop()");
 	}
+
+	jsc.destroy();//TEMPTEMP?
 
         if (isInit && jsc != null && !jsc.getQuitStatus()) {
             setVisible(false);
@@ -231,9 +237,11 @@ public class jsb extends DEViseJSApplet
 
     public void destroy()
     {
-        if (DEBUG >= 1) {
+        if (DEBUG >= 0/*TEMPTEMP 1*/) {
             System.out.println("jsb.destroy()");
 	}
+
+	jsc.destroy();//TEMPTEMP?
 
         if (jsc != null && !jsc.getQuitStatus()) {
             jsc.destroy();

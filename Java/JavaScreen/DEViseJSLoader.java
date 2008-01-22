@@ -1,3 +1,4 @@
+//TEMPTEMP -- do we even need this file anymore???
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 1999-2003
@@ -24,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2005/12/06 20:00:19  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.7  2003/01/13 19:23:43  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -234,7 +239,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 
     public void stop()
     {
-	if (DEBUG >= 1) {
+	if (DEBUG >= 0/*TEMPTEMP 1*/) {
 	    System.out.println("DEViseJSLoader.stop()");
 	}
 
@@ -243,7 +248,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 
     public void destroy()
     {
-	if (DEBUG >= 1) {
+	if (DEBUG >= 0/*TEMPTEMP 1*/) {
 	    System.out.println("DEViseJSLoader.destroy()");
 	}
 

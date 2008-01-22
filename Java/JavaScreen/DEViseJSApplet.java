@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2007/06/27 17:47:58  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
 // Revision 1.16  2007/04/20 19:42:35  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -282,6 +287,7 @@ public abstract class DEViseJSApplet extends Applet
 
     public void stop()
     {
+System.out.println("DEViseJSApplet.stop()");//TEMPTEMP
         if (timer == null) {
 	    timer = new DEViseJSTimer(this, jsValues.uiglobals.visTimeout);
 	}
@@ -303,7 +309,7 @@ public abstract class DEViseJSApplet extends Applet
 
     public void destroy()
     {
-        if (DEBUG >= 1) {
+        if (DEBUG >= 0/*TEMPTEMP 1*/) {
 	    System.out.println("DEViseJSApplet(" + _instanceNum +
 	      ").destroy()");
 	}

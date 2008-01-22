@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.128  2007/03/30 15:43:08  wenger
+// (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+// a bunch of calls to validate() in the GUI); fixed up the client logging
+// functionality somewhat; various improvements to debug output.
+//
 // Revision 1.127  2006/06/23 19:52:40  wenger
 // Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
 //
@@ -985,7 +990,7 @@ public class DEViseCmdDispatcher implements Runnable
     // seems to get called with isDisconnect true.  RKW 2000-12-29.
     public void stop(boolean isDisconnect)
     {
-        if (_debug) {
+        if (_debug || true/*TEMPTEMP*/) {
             System.out.println("DEViseCmdDispatcher.stop(" +
 	      isDisconnect + ")");
         }
