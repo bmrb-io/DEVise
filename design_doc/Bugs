@@ -4089,6 +4089,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the Y axis in the CSR 1 visualizations, all of the
 			bars disappear). (wenger)
 
+956 1/23/08	OPEN	JS: bmrb/4096_3d_jmol.html visualization doesn't
+			'react correctly to changes in a "selector"'
+			(needs clarification). (miron/wenger)
+			(JS 5.8.2.1.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
