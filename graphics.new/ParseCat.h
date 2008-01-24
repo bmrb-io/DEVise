@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  2005/12/06 20:04:11  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.18.20.2  2005/09/06 21:20:18  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -101,13 +105,13 @@
 #ifndef ParseCat_h
 #define ParseCat_h
 
+using namespace std;
+
 #include "DeviseTypes.h"
 #include "AttrList.h"
 #include <string>
 #include "DataSourceBuf.h"
 //#define NO_GEN_CLASS_INFO
-
-using namespace std;
 
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */

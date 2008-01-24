@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.11  2000/01/11 22:28:35  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.10  1999/11/30 22:28:30  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -67,9 +73,11 @@
  
 */
 
+using namespace std;
+
 //#define DEBUG
 
-#include <iostream.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

@@ -34,6 +34,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  2005/12/06 20:11:29  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.3.10.1  2003/12/19 18:12:56  wenger
   Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
 
@@ -89,6 +93,8 @@
 // Libraries
 //******************************************************************************
 
+using namespace std;
+
 #include <string>
 
 // Necessary color-related headers (management)
@@ -98,8 +104,6 @@
 //#include "TriColor.h"
 //#include "RGBColor.h"
 //#include "HSVColor.h"
-
-using namespace std;
 
 // Coloring.h should probably be included here, but that causes problems
 // because of circular dependencies.  RKW Feb. 17, 1998.

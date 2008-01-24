@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2005/12/06 20:01:10  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.4.18.1  2005/09/28 22:29:21  wenger
   Various const-ifying to make things compile better on basslet.
 
@@ -43,7 +47,7 @@
 */
 
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include "keys.h"
 // assume the key is composed of two strings

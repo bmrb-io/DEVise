@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  2005/12/06 20:04:42  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.5.14.1  2005/09/12 19:42:20  wenger
   Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
   4.0.1).
@@ -40,7 +44,9 @@
   Initial revision of archive.
 */
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include <stdlib.h>
 
 #include "rectape.h"

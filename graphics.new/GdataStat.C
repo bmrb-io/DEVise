@@ -17,6 +17,8 @@
 //#pragma implementation "HashTable.h"
 //#endif
 
+using namespace std;
+
 #include "GdataStat.h"
 
 //#ifdef __GNUG__

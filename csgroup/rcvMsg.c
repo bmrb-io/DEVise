@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  2005/12/06 20:01:13  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.8  2002/06/17 19:40:40  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
@@ -248,7 +252,7 @@ RecvMsg(int fd, char *buf, int size) {
 			if (nbytes <= 0) { 
 			   return -1;
 			}
-			cbkfn = CBak((int) ceil(log(CTRL_RELINQUISH)/log(2)));
+			cbkfn = CBak((int) ceil(log((double)CTRL_RELINQUISH)/log((double)2)));
 			if (cbkfn != NULL) {
 				(*cbkfn)(gName.grpName, &cInfo);
 			}
@@ -262,7 +266,7 @@ RecvMsg(int fd, char *buf, int size) {
 			   return -1;
 			}
 			MkStateLeader(&gName);
-			cbkfn = CBak((int) ceil(log(CTRL_GRABBED)/log(2)));
+			cbkfn = CBak((int) ceil(log((double)CTRL_GRABBED)/log((double)2)));
 			if (cbkfn != NULL) {
 				(*cbkfn)(gName.grpName, NULL);
 			}
@@ -275,12 +279,12 @@ RecvMsg(int fd, char *buf, int size) {
 			if (nbytes <= 0) { 
 			   return -1;
 			}
-			cbkfn = CBak((int) ceil(log(CTRL_CKPTSERVER)/log(2)));
+			cbkfn = CBak((int) ceil(log((double)CTRL_CKPTSERVER)/log((double)2)));
 			ExecCkpt(&gName, cInfo);
 			SpawnCkptXfer(cbkfn, MasterCkptFile, &cInfo);
 			return 0;
 		case CTRL_EXECCKPT:
-			cbkfn = CBak((int) ceil(log(CTRL_EXECCKPT)/log(2)));
+			cbkfn = CBak((int) ceil(log((double)CTRL_EXECCKPT)/log((double)2)));
 			TransferCkpt(MySocketfd);
 			if (cbkfn != NULL) {
 				(*cbkfn)(ServerCkptFile, NULL);

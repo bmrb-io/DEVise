@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  2000/01/13 23:07:07  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.23  2000/01/11 22:28:32  wenger
   TData indices are now saved when they are built, rather than only when a
   session is saved; other improvements to indexing; indexing info added
@@ -108,7 +111,7 @@
   Added CVS header.
 */
 
-#include <iostream.h>
+#include <iostream>
 
 #include "Exit.h"
 #include "TDataAttr.h"

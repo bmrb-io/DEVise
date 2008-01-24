@@ -22,10 +22,10 @@
 #ifndef _CMD_SERIALIZE_H
 #define _CMD_SERIALIZE_H
 
+using namespace std;
+
 #include <string>
 #include <vector>
-
-using namespace std;
 
 class Serializable
 {

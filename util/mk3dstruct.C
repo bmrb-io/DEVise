@@ -16,12 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/26 00:21:11  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.1  1996/07/21 15:38:12  jussi
   Initial revision.
 
 */
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include <math.h>
 
 #include <time.h>

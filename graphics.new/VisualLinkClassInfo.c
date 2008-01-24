@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  2003/01/13 19:25:29  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.13.10.1  2002/09/05 19:14:04  wenger
   Implemented GData attribute value links (but not GUI for creating
   them).
@@ -88,6 +91,8 @@
   Revision 1.2  1995/09/05 21:13:27  jussi
   Added/updated CVS header.
 */
+
+using namespace std;
 
 #include <stdio.h>
 

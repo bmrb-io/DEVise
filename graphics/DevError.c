@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  2008/01/11 20:17:50  wenger
+  Got DEVise to compile on RHEL5.
+
   Revision 1.13  2005/12/06 20:03:00  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -90,6 +93,8 @@
 
 #define _DevError_c_
 
+using namespace std;
+
 #include <sys/time.h>
 #include <iostream>
 #include <strstream>
@@ -100,8 +105,6 @@
 #include "Init.h"
 #endif
 #include "DebugLog.h"
-
-using namespace std;
 
 #define DEBUG_LOG
 

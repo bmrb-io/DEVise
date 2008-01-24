@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.104  2002/05/01 21:30:13  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
   Revision 1.103.10.1  2002/04/30 17:48:11  wenger
   More improvements to 'home' functionality, especially on QPFull_X
   queries.
@@ -476,6 +479,8 @@
   Revision 1.2  1995/09/05 22:15:15  jussi
   Added CVS header.
 */
+
+using namespace std;
 
 #if defined(DEBUG_MEM)
 #  include <unistd.h>

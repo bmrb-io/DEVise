@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:54  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 08:23:59  liping
   Added CVS header
 
@@ -56,7 +59,7 @@
 #ifndef _HTABLE_H
 #define _HTABLE_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "bucket.h"
 

@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.6  1999/11/30 22:28:58  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.5  1998/05/07 19:11:17  wenger
   Upper-case E now allowed for exponents in doubles and floats.
 
@@ -45,7 +52,9 @@
   Added CVS header.
 */
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include <stdlib.h>
 #include <assert.h>
 #include <ctype.h>

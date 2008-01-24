@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/08/23 21:23:29  wenger
+  Removed Shape::NumShapeAttrs() method -- not used.
+
   Revision 1.8  1999/05/28 16:32:42  wenger
   Finished cleaning up bounding-box-related code except for PolyLineFile
   symbol type; fixed bug 494 (Vector symbols drawn incorrectly); improved
@@ -60,7 +63,7 @@
 #ifndef _ETKWINDOWSHAPE_H_
 #define _ETKWINDOWSHAPE_H_
 
-#include <iostream.h>
+#include <iostream>
 #include "RectShape.h"
 
 class ViewGraph;

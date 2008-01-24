@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/02/26 00:21:11  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.2  1997/01/09 18:46:37  jussi
   First field is now used as a counter.
 
@@ -23,7 +26,9 @@
   Initial revision.
 */
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include <math.h>
 
 #include <time.h>
@@ -48,10 +53,10 @@ int main(int argc, char **argv)
     if ((i % (n / 10)) == 0)
       cerr << i << " ";
     double key = i;
-    cout.write(&key, sizeof key);
+    cerr << key;
     for(int j = 1; j < 32; j++) {
         double d = (rand() % 1000) / 10.0;
-        cout.write(&d, sizeof d);
+	cout << d;
     }
   }
   cerr << endl;

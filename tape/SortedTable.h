@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/11/24 23:16:27  weaver
+  Changes for the new ColorManager.
+
   Revision 1.6.10.1  1997/05/21 20:42:29  weaver
   Change for new ColorManager
 
@@ -43,7 +46,7 @@
 //#pragma interface
 //#endif
 
-#include <iostream.h>
+#include <iostream>
 
 //#define DEBUG
 

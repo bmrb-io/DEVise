@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:58  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:03  liping
   Added CVS header
 
@@ -55,7 +58,7 @@
 */ 
 #ifndef READ_CONFIG_H
 #define READ_CONFIG_H
-#include <fstream.h>
+#include <fstream>
 #define CONFIG_FILE 	"config.colbr"
 #define COMMENT_SYMBOL 	'#'
 

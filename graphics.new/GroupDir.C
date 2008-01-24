@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  2000/01/13 23:07:08  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.7  1998/01/14 16:39:18  wenger
   Merged cleanup_1_4_7_br_6 thru cleanup_1_4_7_br_7.
 
@@ -43,9 +46,11 @@
   Group structure for viewing schema
 */
 
+using namespace std;
+
 #include <stdio.h>
 #include <string.h>
-#include <iostream.h>
+#include <iostream>
 
 #include "GroupDir.h"
 

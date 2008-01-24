@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  2005/12/06 20:04:42  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.12.20.4  2005/09/28 18:38:06  wenger
   Got rid of a few typecasts.
 
@@ -89,13 +93,14 @@
   Initial revision of archive.
 */
 
+using namespace std;
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <fstream>
 #include <iostream>
 #include <strstream>
-using namespace std;
 
 #define X
 

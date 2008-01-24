@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  2005/12/06 20:04:00  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.3.18.1  2005/09/06 21:20:17  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -35,9 +39,10 @@
 
 */
 
-#include <iostream.h>
+#include <iostream>
 #include <assert.h>
 #include "ExtStack.h"
+
 ostream& operator <<(ostream& out, ExtStack* st)
 {
 	int		i= 0;

@@ -17,6 +17,10 @@
   $Id$
 
   $Log$
+  Revision 1.81  2006/04/27 20:48:13  wenger
+  Added X Offset to Bar and Segment shapes (for NRG visualization for
+  Luis Populin).
+
   Revision 1.80  2005/12/06 20:04:07  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -421,7 +425,7 @@
 */
 
 #include <sys/param.h>
-#include <iostream.h>
+#include <iostream>
 #include <unistd.h>
 
 #include "ViewGraph.h"

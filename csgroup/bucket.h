@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:42  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.3  1998/02/02 08:23:50  liping
   Added CVS header
 
@@ -56,7 +59,7 @@
 #ifndef _BUCKET_H
 #define _BUCKET_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "entry.h"
 

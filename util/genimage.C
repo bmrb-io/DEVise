@@ -15,9 +15,14 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1996/05/16 18:24:32  jussi
+  Initial revision.
+*/
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 
 int main()
 {

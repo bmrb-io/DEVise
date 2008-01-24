@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  2005/12/06 20:01:11  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.9.14.2  2005/09/28 17:14:21  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -86,14 +90,14 @@
 #ifndef _Server_h_
 #define _Server_h_
 
+using namespace std;
+
 #include <iostream>
 
 #include "ClientAPI.h"
 #include "CollabTypes.h"
 #include "Dispatcher.h"
 #include "CmdDescriptor.h"
-
-using namespace std;
 
 class CSgroupKey;
 

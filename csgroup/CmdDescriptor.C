@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/06/01 17:36:57  wenger
+  Fixed various compiler warnings.
+
   Revision 1.1  1998/05/02 08:38:52  taodb
   Added command logging and playing support
   Added communication support for JAVA Screen
@@ -30,7 +33,7 @@
  */
 #include <string>
 #include <vector>
-#include <iostream.h>
+#include <iostream>
 #include "CmdDescriptor.h"
 #include "CmdSerialize.h"
 

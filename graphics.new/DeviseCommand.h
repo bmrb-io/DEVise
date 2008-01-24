@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.76  2006/05/26 16:23:04  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.75  2006/05/10 19:04:44  wenger
   Added the new setDoHomeOnVisLinkIfInvisible and
   getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
@@ -447,7 +450,10 @@
 
 #ifndef _DeviseCommand_h_
 #define _DeviseCommand_h_
-#include <iostream.h>
+
+using namespace std;
+
+#include <iostream>
 #include "ClassDir.h"
 #include "Control.h"
 #include "ExtStack.h"

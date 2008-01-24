@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  2002/06/17 19:42:06  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.21.14.1  2002/05/27 18:16:10  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -99,10 +102,12 @@
   Author: Jussi Myllymaki
 */
 
+using namespace std;
+
 //#define TAPE_DEBUG
 //#define TAPE_DEBUG2
 
-#include <iostream.h>
+#include <iostream>
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>

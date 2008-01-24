@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:14:58  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:03  liping
   Added CVS header
 
@@ -53,8 +56,11 @@
 ** 	         University of Wisconsin, Computer Sciences Dept.
 ** 
 */ 
-#include <iostream.h>
-#include <fstream.h>
+
+using namespace std;
+
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #include "parseConfig.h"
 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/22 15:46:23  jussi
+  Added copyright message.
+
   Revision 1.3  1995/09/06 17:20:17  jussi
   Downcased name of include file.
 
@@ -23,7 +26,9 @@
   Added CVS header.
 */
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include "tapedrive.h"
 
 int main(int argc, char **argv)

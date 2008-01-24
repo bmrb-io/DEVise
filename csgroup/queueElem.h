@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/12 17:15:01  wenger
+  Merged through collab_br_2; updated version number to 1.5.1.
+
   Revision 1.1.2.2  1998/02/02 08:24:06  liping
   Added CVS header
 
@@ -56,7 +59,7 @@
 #ifndef _QUEUEELEM_H
 #define _QUEUEELEM_H
 
-#include <iostream.h>
+#include <iostream>
 
 #include "datum.h"
 

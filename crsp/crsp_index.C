@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  1996/03/26 15:34:23  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.6  1995/11/20 16:19:55  jussi
   Type of offset must be unsigned long int, not just int.
 
@@ -54,7 +59,7 @@
 //   Beginning date of data array
 //   End date of data array
 
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include <stdlib.h>
 
@@ -64,7 +69,7 @@
 void crsp_index(char *tapeName, int fileno, unsigned long int offset,
 		char *indexName);
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   if (argc != 3) {
     cerr << "Usage: " << argv[0]

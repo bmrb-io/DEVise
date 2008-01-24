@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  2007/11/28 18:38:48  wenger
+  Fixed minor problems found when compiling DEVise on pike.bmrb.wisc.edu.
+
   Revision 1.5  1998/07/29 14:19:38  wenger
   Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
   allow static linking on Linux.
@@ -43,7 +46,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <assert.h>
 #include "devise_varargs.h"
 #include "CmdSerialize.h"

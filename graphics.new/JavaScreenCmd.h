@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.49  2006/05/26 16:23:05  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.48.4.1  2006/02/23 22:09:08  wenger
   Added flag for whether or not 3D views should use Jmol.
 
@@ -289,13 +292,13 @@
 #ifndef _JAVA_SCREEN_CMD
 #define _JAVA_SCREEN_CMD
 
+using namespace std;
+
 #include <stdio.h>
 #include <string>
 
 #include "DeviseTypes.h"
 #include "JavaScreenCache.h"
-
-using namespace std;
 
 typedef double TDataVal;
 typedef string GDataVal;

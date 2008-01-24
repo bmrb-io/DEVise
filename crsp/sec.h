@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/05/11 03:23:50  jussi
+  Minor improvements for code readability.
+
   Revision 1.3  1995/11/15 07:02:03  ravim
   Minor change in print_security() prototype.
 
@@ -30,7 +33,9 @@
 #ifndef _SEC_H_
 #define _SEC_H_
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 
 #include "tapedrive.h"
 

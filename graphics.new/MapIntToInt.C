@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  2005/12/06 20:04:06  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.3.28.1  2005/09/06 22:04:55  wenger
   Added proper const-ness to HashTable.
 
@@ -30,6 +34,8 @@
   solaris, solsparc, and hp dependencies.
 
  */
+
+using namespace std;
 
 // Changed to non-pragma templates method. CEW 5/12/97
 //#ifdef __GNUG__

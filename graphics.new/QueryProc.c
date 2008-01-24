@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.15  1999/04/22 19:29:53  wenger
+  Separated the configuration of explicit (user-requested) and implicit
+  home actions (no GUI for configuring the implicit home); changed the
+  Condor user script accordingly; modified JavaScreen support so that this
+  all works for the JS.
+
   Revision 1.14  1998/05/06 22:04:55  wenger
   Single-attribute set links are now working except where the slave of
   one is the master of another.
@@ -73,6 +79,8 @@
   Revision 1.2  1995/09/05 22:15:14  jussi
   Added CVS header.
 */
+
+using namespace std;
 
 #include "QueryProc.h"
 #include "QueryProcFull.h"

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.69  2005/12/06 20:04:14  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.68.10.2  2003/06/26 19:10:55  wenger
   Improvement to bad file index fix: we now invalidate the TData instead
   of just rebuilding the index, so the query processor knows things
@@ -310,7 +314,7 @@
   Added CVS header.
 */
 
-#include <iostream.h>
+#include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

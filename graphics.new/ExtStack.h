@@ -20,9 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.1  1998/03/03 05:21:04  taodb
+  Added extendable stack to command object
+
 */
 #ifndef _EXT_STACK_H
 #define _EXT_STACK_H
+
+using namespace std;
+
+#include <iostream>
+
 class ExtStack
 {
 	friend ostream& operator <<(ostream& out, ExtStack* st);

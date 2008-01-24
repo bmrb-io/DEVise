@@ -16,11 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/02/26 00:21:11  zhenhai
+  Implementation for spheres and line segments in OpenGL 3D graphics.
+
   Revision 1.1  1996/04/30 15:53:18  jussi
   Initial revision.
 */
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include <math.h>
 
 #include <time.h>
@@ -51,12 +56,7 @@ int main(int argc, char **argv)
     int f3 = rand() % (int)(75 + 25 * sin(2.4 + 50.0 * 2 * PI * i / n));
     int f4 = rand() % (int)(75 + 25 * sin(3.6 + 50.0 * 2 * PI * i / n));
     int f5 = rand() % (int)(75 + 25 * sin(4.8 + 50.0 * 2 * PI * i / n));
-    cout.write(&i, sizeof i);
-    cout.write(&f1, sizeof f1);
-    cout.write(&f2, sizeof f2);
-    cout.write(&f3, sizeof f3);
-    cout.write(&f4, sizeof f4);
-    cout.write(&f5, sizeof f5);
+    cerr << i << f1 << f2 << f3 << f4 << f5;
   }
   cerr << endl;
 

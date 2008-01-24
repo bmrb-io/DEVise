@@ -16,6 +16,15 @@
   $Id$
 
   $Log$
+  Revision 1.10  1997/12/23 23:35:36  liping
+  Changed internal structure of BufMgrFull and classes it called
+  The buffer manager is now able to accept queries on any attribute from the
+          Query Processor
+  The buffer manager is also able to issue queries on various attributes to DTE
+  Instead of keeping an in memory list for each T/GData, the buffer manager keeps
+          a list for each (T/GData, AttrName, Granularity) combination
+  The class Range was replaced by Interval
+
   Revision 1.9  1997/10/07 17:06:06  liping
   RecId to Coord(double) changes of the BufMgr/QureyProc interface
 
@@ -42,7 +51,7 @@
 */
 
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <errno.h>
 
 #include "Exit.h"

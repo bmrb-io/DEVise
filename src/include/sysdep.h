@@ -957,7 +957,7 @@ typedef strstream stringstream ;
 #endif
 
 #ifdef HAVE_IOSTREAM_H
-#include <iostream.h>
+#include <iostream>
 #endif
 
 #ifdef HAVE_IOMANIP_H
@@ -965,7 +965,7 @@ typedef strstream stringstream ;
 #endif
 
 #ifdef HAVE_FSTREAM_H
-#include <fstream.h>
+#include <fstream>
 #endif
 
 #if !defined(HAVE_STRCHR) && !defined(WWW_MSWINDOWS)

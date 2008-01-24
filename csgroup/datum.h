@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1999/11/19 17:17:18  wenger
+  Added View::SetVisualFilterCommand() method to clean up command-related
+  code for filter setting.
+
   Revision 1.2  1998/02/12 17:14:49  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -59,7 +63,9 @@
 #ifndef _DATUM_H
 #define _DATUM_H
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 
 class Datum {
 

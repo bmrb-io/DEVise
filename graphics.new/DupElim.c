@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2005/12/06 20:03:58  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.4  2003/01/13 19:25:22  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -51,6 +55,8 @@
   Implemented duplicate symbol elimination.
 
  */
+
+using namespace std;
 
 #include <stdio.h>
 #include <values.h>

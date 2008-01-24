@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  2001/04/10 17:14:02  wenger
+  Added conditionaled-out code for compiling on aden.bmrb.wisc.edu.
+
   Revision 1.15  1999/07/12 19:02:11  wenger
   Got DEVise to compile and run again on Linux (including Tcl/Tk 8.0).
 
@@ -80,11 +83,14 @@
 
 // Low level operating system primitives
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include <stdio.h>
 #include <assert.h>
 
 #include "DCE.h"
+
 
 //#define DEBUG
 
@@ -188,6 +194,20 @@ int Semaphore::setValue(int num, int sem)
     ushort *array;
   };
 #endif
+
+#if defined(__GNU_LIBRARY__) && !defined(_SEM_SEMUN_UNDEFINED)
+/* union semun is defined by including <sys/sem.h> */
+#else
+/* according to X/OPEN we have to define it ourselves */
+union semun {
+    int val;                  /* value for SETVAL */
+    struct semid_ds *buf;     /* buffer for IPC_STAT, IPC_SET */
+    unsigned short *array;    /* array for GETALL, SETALL */
+                              /* Linux specific part: */
+    struct seminfo *__buf;    /* buffer for IPC_INFO */
+};
+#endif
+
 #if defined(__sun) || defined(__solaris) || defined(__linux)
   union semun param;
   param.val = num;

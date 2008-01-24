@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1998/08/21 22:16:08  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.3  1998/03/11 18:25:11  wenger
   Got DEVise 1.5.2 to compile and link on Linux; includes drastically
   reducing include dependencies between csgroup code and the rest of
@@ -63,7 +67,7 @@
 ** 
 */ 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <sys/types.h>
 #include <sys/uio.h>
 #include <unistd.h>

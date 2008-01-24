@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.11  2005/12/06 20:01:03  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.10.14.1  2005/09/12 19:41:57  wenger
   Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
   4.0.1).
@@ -55,8 +59,10 @@
 
 // File containing routine that extracts a security from a CRSP tape
 
-#include <iostream.h>
-#include <fstream.h>
+using namespace std;
+
+#include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <string.h>
 #include <tcl.h>

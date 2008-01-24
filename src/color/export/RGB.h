@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  2005/12/06 20:11:29  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.1.26.2  2005/09/06 21:20:31  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -72,11 +76,11 @@
 // Libraries
 //******************************************************************************
 
+using namespace std;
+
 #include <iostream>
 #include <cmath>
 #include <string>
-
-using namespace std;
 
 //******************************************************************************
 // Types and Constants

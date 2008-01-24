@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  1995/09/22 15:46:24  jussi
+  Added copyright message.
+
   Revision 1.3  1995/09/06 17:20:18  jussi
   Downcased name of include file.
 
@@ -23,7 +26,9 @@
   Added CVS header.
 */
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include "tapedrive.h"
 
 int main(int argc, char **argv)
@@ -67,7 +72,7 @@ int main(int argc, char **argv)
     (void)tape.gets(buffer, sizeof buffer);
   }
 
-  for(i = 0; i < numTests; i++) {
+  for(int i = 0; i < numTests; i++) {
     long pos = (long)(1.0 * (numTests - 1 - i) / numTests * inspectSize);
     cout << "Seeking to " << pos << endl;
     if (tape.seek(pos) != pos)

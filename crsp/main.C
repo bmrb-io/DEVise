@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.3  1996/03/26 15:34:24  wenger
+  Fixed various compile warnings and errors; added 'clean' and
+  'mostlyclean' targets to makefiles; changed makefiles so that
+  object lists are derived from source lists.
+
   Revision 1.2  1995/11/09 22:45:02  jussi
   Converted to use tape drive instead of regular file.
 
@@ -25,12 +30,12 @@
 
 // Tests the crsp extraction routines
 
-#include <iostream.h>
+#include <iostream>
 
 #include "sec.h"
 #include "tapedrive.h"
 
-main(int argc, char **argv)
+int main(int argc, char **argv)
 {
   if (argc != 2) {
     cerr << "Usage: " << argv[0] << " <input tape device>" << endl;

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2002/06/17 19:40:33  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.4.46.1  2002/05/27 18:15:29  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -33,9 +36,11 @@
   Initial revision
 */
 
+using namespace std;
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 
 #include "cal.h"

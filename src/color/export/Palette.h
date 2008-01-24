@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2005/12/06 20:11:29  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.4.10.2  2004/08/23 22:53:45  wenger
   Fixed bug 890 (problems with drill-down dialog caused by
   some color palettes not having a pure white color).
@@ -88,14 +92,14 @@
 // Libraries
 //******************************************************************************
 
+using namespace std;
+
 #include <string>
 #include <iostream>
 #include <vector>
 #include <values.h>
 
 #include "PaletteColor.h"
-
-using namespace std;
 
 //******************************************************************************
 // Types and Constants

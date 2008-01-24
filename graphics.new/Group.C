@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2003/01/13 19:25:22  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.11.14.1  2002/09/18 21:38:52  wenger
   Fixed more memory leaks -- in GroupDir/Group/ItemList code.
 
@@ -70,7 +73,7 @@
 */
 
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <string.h>
 #include "Group.h"
 #include "ItemList.h"

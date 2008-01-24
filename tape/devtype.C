@@ -16,11 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.3  1995/09/22 15:46:19  jussi
+  Added copyright message.
+
   Revision 1.2  1995/09/05 20:31:53  jussi
   Added CVS header.
 */
 
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include <stdlib.h>
 
 extern "C" void perror(char *);
@@ -44,11 +49,11 @@ int isTapeDevice(char *fname)
   cout << "st_rdev = " << buf.st_rdev << endl;
   cout << "st_size = " << buf.st_size << endl;
   cout << "st_atime = " << buf.st_atime << endl;
-  cout << "st_spare1 = " << buf.st_spare1 << endl;
+  // cout << "st_spare1 = " << buf.st_spare1 << endl;
   cout << "st_mtime = " << buf.st_mtime << endl;
-  cout << "st_spare2 = " << buf.st_spare2 << endl;
+  // cout << "st_spare2 = " << buf.st_spare2 << endl;
   cout << "st_ctime = " << buf.st_ctime << endl;
-  cout << "st_spare3 = " << buf.st_spare3 << endl;
+  // cout << "st_spare3 = " << buf.st_spare3 << endl;
   cout << "st_blksize = " << buf.st_blksize << endl;
   cout << "st_blocks = " << buf.st_blocks << endl;
 
