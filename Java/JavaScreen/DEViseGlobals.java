@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.94  2007/09/10 22:10:36  wenger
+// Mouse cursor now changes to the disabled cursor if the selected
+// toolbar mode is not applicable in the current view; mouse cursor
+// is default on non-view areas; changed Jmol views to not show the
+// non-applicable mouse cursors (this only happened in some JVMs).
+//
 // Revision 1.93  2007/08/27 19:16:39  wenger
 // Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
 //
@@ -34,6 +40,11 @@
 //
 // Revision 1.90  2007/05/14 23:37:43  wenger
 // Changed version to 5.8.3x1; updated Florence mirror configuration.
+//
+// Revision 1.89.4.1  2008/01/22 22:11:21  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron) in pre-toolbar version
+// of the JavaScreen (the problem before was that I forgot to make
+// jsdevisec.destroy() non-synchronized).
 //
 // Revision 1.89  2007/05/14 16:55:46  wenger
 // Updated JavaScreen version history; changed JavaScreen version to 5.8.2

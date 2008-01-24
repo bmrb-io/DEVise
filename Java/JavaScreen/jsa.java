@@ -21,6 +21,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2008/01/22 20:02:38  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
+// my fix to the pre-toolbar version of the JS, but it doesn't work for
+// some reason (I suspect that some of the other cleanups since then
+// also affect the fix).  Note that this commit has a bunch of temporary
+// code still in place; I want to get a working version into CVS ASAP.
+//
+// Revision 1.50.14.1  2008/01/22 22:11:21  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron) in pre-toolbar version
+// of the JavaScreen (the problem before was that I forgot to make
+// jsdevisec.destroy() non-synchronized).
+//
 // Revision 1.50  2007/04/20 19:42:36  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -225,27 +237,25 @@ public class jsa extends DEViseJSApplet
 
     public void stop()
     {
-        if (DEBUG >= 0/*TEMPTEMP 1*/) {
+        if (DEBUG >= 1) {
             System.out.println("jsa.stop()");
 	}
 
-	jsf.destroy();//TEMPTEMP?
-
-        //TEMPTEMP? if (jsf != null && !jsf.isQuit()) {
-            //TEMPTEMP? jsf.displayMe(false);
-        //TEMPTEMP? }
+        if (jsf != null) {
+            jsf.destroy();
+            jsf = null;
+        }
 
 	super.stop();
     }
 
     public void destroy()
     {
-        if (DEBUG >= 0/*TEMPTEMP 1*/) {
+        if (DEBUG >= 1) {
             System.out.println("jsa.destroy()");
 	}
 
-        //TEMPTEMP? if (jsf != null && !jsf.isQuit()) {
-        if (jsf != null) {//TEMPTEMP?
+        if (jsf != null) {
             jsf.destroy();
             jsf = null;
         }
@@ -393,12 +403,14 @@ class jscframe extends JFrame
 
     public void destroy()
     {
-        if (DEBUG >= 0/*TEMPTEMP 1*/) {
+        if (DEBUG >= 1) {
 	    System.out.println("jscframe.destroy()");
 	}
 
-        jsc.destroy();//TEMPTEMP -- got null pointer here when destroying jsa
-	jsc = null;
+	if (jsc != null) {
+            jsc.destroy();
+	    jsc = null;
+	}
     }
 
     protected void processEvent(AWTEvent event)

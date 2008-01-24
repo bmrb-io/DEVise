@@ -23,6 +23,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.129  2008/01/22 20:02:38  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
+// my fix to the pre-toolbar version of the JS, but it doesn't work for
+// some reason (I suspect that some of the other cleanups since then
+// also affect the fix).  Note that this commit has a bunch of temporary
+// code still in place; I want to get a working version into CVS ASAP.
+//
 // Revision 1.128  2007/03/30 15:43:08  wenger
 // (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
 // a bunch of calls to validate() in the GUI); fixed up the client logging
@@ -990,7 +997,7 @@ public class DEViseCmdDispatcher implements Runnable
     // seems to get called with isDisconnect true.  RKW 2000-12-29.
     public void stop(boolean isDisconnect)
     {
-        if (_debug || true/*TEMPTEMP*/) {
+        if (_debug) {
             System.out.println("DEViseCmdDispatcher.stop(" +
 	      isDisconnect + ")");
         }

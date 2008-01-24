@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2008/01/22 20:02:38  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
+// my fix to the pre-toolbar version of the JS, but it doesn't work for
+// some reason (I suspect that some of the other cleanups since then
+// also affect the fix).  Note that this commit has a bunch of temporary
+// code still in place; I want to get a working version into CVS ASAP.
+//
 // Revision 1.9  2008/01/11 17:03:26  wenger
 // Removed unnecessary swing import.
 //
@@ -319,7 +326,6 @@ public class DEViseMainButtons
             });
 
         exitMenuItem.addActionListener(new ActionListener()
-//TEMPTEMP -- exit menu item here
             {
                 public void actionPerformed(ActionEvent event)
                 {

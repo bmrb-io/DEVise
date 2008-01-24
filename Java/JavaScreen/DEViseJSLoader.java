@@ -25,6 +25,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/01/22 20:02:38  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
+// my fix to the pre-toolbar version of the JS, but it doesn't work for
+// some reason (I suspect that some of the other cleanups since then
+// also affect the fix).  Note that this commit has a bunch of temporary
+// code still in place; I want to get a working version into CVS ASAP.
+//
 // Revision 1.8  2005/12/06 20:00:19  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 // be the end of the V1_7b0_br branch.)
@@ -239,7 +246,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 
     public void stop()
     {
-	if (DEBUG >= 0/*TEMPTEMP 1*/) {
+	if (DEBUG >= 1) {
 	    System.out.println("DEViseJSLoader.stop()");
 	}
 
@@ -248,7 +255,7 @@ public class DEViseJSLoader extends Applet implements Runnable, AppletStub
 
     public void destroy()
     {
-	if (DEBUG >= 0/*TEMPTEMP 1*/) {
+	if (DEBUG >= 1) {
 	    System.out.println("DEViseJSLoader.destroy()");
 	}
 

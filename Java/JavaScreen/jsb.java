@@ -21,6 +21,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2008/01/22 20:02:38  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
+// my fix to the pre-toolbar version of the JS, but it doesn't work for
+// some reason (I suspect that some of the other cleanups since then
+// also affect the fix).  Note that this commit has a bunch of temporary
+// code still in place; I want to get a working version into CVS ASAP.
+//
+// Revision 1.22.14.1  2008/01/22 22:11:21  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron) in pre-toolbar version
+// of the JavaScreen (the problem before was that I forgot to make
+// jsdevisec.destroy() non-synchronized).
+//
 // Revision 1.22  2007/04/20 19:42:36  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -219,31 +231,25 @@ public class jsb extends DEViseJSApplet
 
     public void stop()
     {
-        if (DEBUG >= 0/*TEMPTEMP 1*/) {
+        if (DEBUG >= 1) {
             System.out.println("jsb.stop()");
 	}
 
-	jsc.destroy();//TEMPTEMP?
-
-        if (isInit && jsc != null && !jsc.getQuitStatus()) {
-            setVisible(false);
+        if (jsc != null) {
+            jsc.destroy();
+            jsc = null;
         }
-	if (jsc != null) {
-	    jsc.hideDebug();
-	}
 
 	super.stop();
     }
 
     public void destroy()
     {
-        if (DEBUG >= 0/*TEMPTEMP 1*/) {
+        if (DEBUG >= 1) {
             System.out.println("jsb.destroy()");
 	}
 
-	jsc.destroy();//TEMPTEMP?
-
-        if (jsc != null && !jsc.getQuitStatus()) {
+        if (jsc != null) {
             jsc.destroy();
             jsc = null;
         }

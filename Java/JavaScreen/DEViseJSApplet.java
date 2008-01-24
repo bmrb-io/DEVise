@@ -20,10 +20,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2008/01/22 20:02:38  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
+// my fix to the pre-toolbar version of the JS, but it doesn't work for
+// some reason (I suspect that some of the other cleanups since then
+// also affect the fix).  Note that this commit has a bunch of temporary
+// code still in place; I want to get a working version into CVS ASAP.
+//
 // Revision 1.17  2007/06/27 17:47:58  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
 // problem, which are still in progress).
+//
+// Revision 1.16.6.1  2008/01/22 22:11:21  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron) in pre-toolbar version
+// of the JavaScreen (the problem before was that I forgot to make
+// jsdevisec.destroy() non-synchronized).
 //
 // Revision 1.16  2007/04/20 19:42:35  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
@@ -287,7 +299,11 @@ public abstract class DEViseJSApplet extends Applet
 
     public void stop()
     {
-System.out.println("DEViseJSApplet.stop()");//TEMPTEMP
+        if (DEBUG >= 1) {
+                System.out.println("DEViseJSApplet(" + _instanceNum +
+                  ").stop()");
+        }
+
         if (timer == null) {
 	    timer = new DEViseJSTimer(this, jsValues.uiglobals.visTimeout);
 	}
@@ -309,7 +325,7 @@ System.out.println("DEViseJSApplet.stop()");//TEMPTEMP
 
     public void destroy()
     {
-        if (DEBUG >= 0/*TEMPTEMP 1*/) {
+        if (DEBUG >= 1) {
 	    System.out.println("DEViseJSApplet(" + _instanceNum +
 	      ").destroy()");
 	}

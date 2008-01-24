@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.166  2008/01/22 20:02:38  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
+// my fix to the pre-toolbar version of the JS, but it doesn't work for
+// some reason (I suspect that some of the other cleanups since then
+// also affect the fix).  Note that this commit has a bunch of temporary
+// code still in place; I want to get a working version into CVS ASAP.
+//
 // Revision 1.165  2007/12/19 00:08:32  wenger
 // Changed a bunch of JButton references to DEViseButtons to make things
 // more consistent.
@@ -40,6 +47,11 @@
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
 // problem, which are still in progress).
+//
+// Revision 1.160.4.1  2008/01/22 22:11:21  wenger
+// Fixed bug 954 (JavaScreen locks up IE for Miron) in pre-toolbar version
+// of the JavaScreen (the problem before was that I forgot to make
+// jsdevisec.destroy() non-synchronized).
 //
 // Revision 1.160  2007/05/14 16:55:46  wenger
 // Updated JavaScreen version history; changed JavaScreen version to 5.8.2
@@ -1730,7 +1742,6 @@ public class jsdevisec extends JPanel
     // (We get here if the "Exit" button is pressed.)
     public synchronized void checkQuit()
     {
-System.out.println("jsdevisec.checkQuit()");//TEMPTEMP
         boolean reallyQuit = true;
 
 	if (specialID == -1) { 
@@ -1755,10 +1766,9 @@ System.out.println("jsdevisec.checkQuit()");//TEMPTEMP
         return isQuit;
     }
 
-    //TEMPTEMP? public synchronized void destroy()
-    public void destroy()//TEMPTEMP?
+    public void destroy()
     {
-	if (DEBUG >= 0/*TEMPTEMP 1*/) {
+	if (DEBUG >= 1) {
 	    System.out.println("jsdevisec.destroy()");
 	}
 	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
