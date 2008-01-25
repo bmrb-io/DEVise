@@ -17,6 +17,13 @@ class and image files.
 in CentOS.
 
 
+JavaScreen 5.8.2.1
+------------------
+
+* Fixed a bug (954) that caused the JavaScreen to lock up the browser
+when leaving the JS page, if the Java plugin was version 1.6.
+
+
 JavaScreen 5.8.2
 ----------------
 
