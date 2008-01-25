@@ -4,10 +4,15 @@ Peptide-CGI 11.2.2
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Fixed a bug (DEVise bug 956/Peptide-CGI bug 059) that caused the cursor
+in the data view to not always be updated correctly on changes to the
+cursor in the data scroll view.  (The cursor in the data view is now
+constrained to always be entirely within the data view.)
+
 * Improved ChemShiftRef error messages; ChemShift calculation failing
 is no longer considered an error at the top level of the program.
 
-* Some cache checking output is now printed at a lower versbosity setting.
+* Some cache checking output is now printed at a lower verbosity setting.
 
 
 Peptide-CGI 11.2.1

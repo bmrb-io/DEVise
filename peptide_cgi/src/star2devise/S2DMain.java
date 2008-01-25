@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.61  2007/12/20 16:49:03  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.60  2007/11/21 00:09:26  wenger
 // Incremented version number.
 //
@@ -86,7 +93,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.2x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.2x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

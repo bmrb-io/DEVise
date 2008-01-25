@@ -260,8 +260,10 @@ Num Date        Status  Description
 			(Caused by residue count conflicting with residue
 			list.)
 
-059 1/25/08	OPEN	Problem with data value cursor in 3D visualizations
+059 1/25/08	FIXED	Problem with data value cursor in 3D visualizations
 			(see DEVise bug 956).  (miron/wenger)
+			(Fixed by wenger, 1/25/08, in 11.2.2.)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
