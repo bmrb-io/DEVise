@@ -4093,6 +4093,16 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			'react correctly to changes in a "selector"'
 			(needs clarification). (miron/wenger)
 			(JS 5.8.2.1.)
+			Okay, this bug is not unique to JS 5.8.2.1; in fact,
+			I think it's probably actually a bug in DEVise itself
+			or maybe in how the session is set up.  Anyhow, here's
+			the bug: expand the cursor in the data view to the full
+			size of the view; then decrease the size of the cursor
+			in the data zoom view.  This should reduce the size
+			of the cursor in the data view to match the new view
+			size (which would also select fewer atoms in the 3D
+			view), but it doesn't.  Hmm -- this might have
+			something to do with the use of highlight views.
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
