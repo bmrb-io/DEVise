@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.62  2008/01/25 20:46:04  wenger
+// Fixed DEVise bug 956/Peptide-CGI bug 059 (problem with data view
+// cursor in 3D visualizations).
+//
 // Revision 1.61  2007/12/20 16:49:03  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -93,7 +97,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.2x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.2";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
