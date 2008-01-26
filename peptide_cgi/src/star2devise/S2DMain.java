@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2008/01/26 19:28:56  wenger
+// Changed version to 11.2.2 for release.
+//
 // Revision 1.62  2008/01/25 20:46:04  wenger
 // Fixed DEVise bug 956/Peptide-CGI bug 059 (problem with data view
 // cursor in 3D visualizations).
@@ -97,7 +100,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.2";
+    public static final String PEP_CGI_VERSION = "11.2.3x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
