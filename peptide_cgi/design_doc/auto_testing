@@ -1,0 +1,8 @@
+		Automatic Peptide-CGI Testing
+	$Id$
+
+TEMPTEMP -- totally preliminary
+
+check out or install peptide-cgi
+manually run cgi-bin/test_all to make sure it works
+set up a cron job that runs cgi-bin/test_all, monitor results

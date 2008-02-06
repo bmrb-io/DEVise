@@ -1,0 +1,13 @@
+	Adding a New Visualization to Peptide-CGI
+	$ID$
+
+TEMPTEMP -- totally preliminary!
+
+modify peptide-CGI to produce new data (or else mock up new data)
+run devise in dev_test
+?make sure data links are correct
+create session template with DEVise
+modify peptide-cgi to use new session template to generate session
+modify peptide-cgi to create new specific html page
+modify peptide-cgi to add appropriate link(s) to summary html page
+add appropriate tests to test_all and testing document
