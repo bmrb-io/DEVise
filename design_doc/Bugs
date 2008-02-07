@@ -4011,9 +4011,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			window; move the cursor in the data view -> JS
 			locks up. (elu)
 
-941 6/7/07	OPEN	JavaScreen:  apparently has problems on Windows Vista
+941 6/7/07	FIXED	JavaScreen:  apparently has problems on Windows Vista
 			and/or Java 1.6.  (See notes from talking with Eiichi,
 			also email to devise-sup from Manoj Kumar.)  (wenger)
+			(Marked fixed by wenger, 2/7/08.  The users who
+			reported this are now saying that it works okay.)
 
 942 6/28/07	FIXED?	JS:  in JSA and stand-alone application, toolbar
 			tooltips are obscured by the DEViseScreen panel.
