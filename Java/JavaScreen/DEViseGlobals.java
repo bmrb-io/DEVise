@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.95  2008/01/24 20:30:53  wenger
+// Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
+//
 // Revision 1.94  2007/09/10 22:10:36  wenger
 // Mouse cursor now changes to the disabled cursor if the selected
 // toolbar mode is not applicable in the current view; mouse cursor
@@ -641,7 +644,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.8.3x5"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.9.0x1"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

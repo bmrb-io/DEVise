@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2008/01/24 20:30:53  wenger
+// Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
+//
 // Revision 1.10  2008/01/22 20:02:38  wenger
 // Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
 // my fix to the pre-toolbar version of the JS, but it doesn't work for
@@ -92,6 +95,7 @@ package JavaScreen;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import JavaScreen.UI.*;
 
 public class DEViseMainButtons
 {
@@ -147,6 +151,11 @@ public class DEViseMainButtons
     private MenuItem showViewHelpMenuItem = new MenuItem("Show View Help");
     private MenuItem hideViewHelpMenuItem = new MenuItem("Hide View Help");
     private MenuItem aboutMenuItem = new MenuItem("About JavaScreen...");
+    private MenuItem versionHistMenuItem = new MenuItem(
+      "JavaScreen version history...");
+
+    // Dialogs
+    private DEViseHtmlWindow helpWindow;
 
     //===================================================================
     // PUBLIC METHODS
@@ -248,10 +257,11 @@ public class DEViseMainButtons
 	viewMenuButton.add(viewPM);
 
 	// Set up help menu.
-	//TEMP helpPM.add(jsHelpMenuItem);
+	helpPM.add(jsHelpMenuItem);
 	helpPM.add(showViewHelpMenuItem);
 	helpPM.add(hideViewHelpMenuItem);
 	//TEMP helpPM.add(aboutMenuItem);
+	//TEMP helpPM.add(versionHistMenuItem);
 	helpMenuButton.add(helpPM);
     }
 
@@ -405,6 +415,17 @@ public class DEViseMainButtons
                 }
             });
 
+        jsHelpMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    String htmlText = DEViseHtmlWindow.getTextFromFile(
+		      _js.jsValues, "resources/html/javascreen_help.html");
+		    helpWindow = new DEViseHtmlWindow(
+		      "DEVise JavaScreen help", htmlText);
+                }
+            });
+
         showViewHelpMenuItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
@@ -418,6 +439,22 @@ public class DEViseMainButtons
                 public void actionPerformed(ActionEvent event)
                 {
 		    _js.hideViewHelp();
+                }
+            });
+
+        aboutMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    System.out.println("DIAG about");//TEMP
+                }
+            });
+
+        versionHistMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    System.out.println("DIAG version history");//TEMP
                 }
             });
     }

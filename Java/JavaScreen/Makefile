@@ -73,10 +73,10 @@ client: *.java
     DEViseGenericTreeNode.java \
     DEViseGenericTreeSelectionCallback.java DEViseJmolMenuButton.java \
     DEViseButton.java DEViseJSApplet.java DEViseJSTimer.java \
-		UI/DEViseUIManager.java UI/DEViseStatusPanel.java \
-		UI/DEViseMenuPanel.java UI/DEViseStatusMessage.java UI/DEViseToolBar.java \
-		UI/DEViseToolBarButton.java UI/DEViseToolBarButtonAction.java \
-		UI/DEViseMouseCursor.java
+    UI/DEViseUIManager.java UI/DEViseStatusPanel.java \
+    UI/DEViseMenuPanel.java UI/DEViseStatusMessage.java UI/DEViseToolBar.java \
+    UI/DEViseToolBarButton.java UI/DEViseToolBarButtonAction.java \
+    UI/DEViseMouseCursor.java UI/DEViseHtmlWindow.java
 
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
@@ -97,7 +97,8 @@ jara:
 	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
 	jar cf jsa2.jar JavaScreen/*.class JavaScreen/UI/*.class \
  	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
- 	    JavaScreen/resources/toolbar_cursors/*.png
+ 	    JavaScreen/resources/toolbar_cursors/*.png \
+	    JavaScreen/resources/html/*.html
 
 jarb:
 	make classclean
@@ -108,7 +109,8 @@ jarb:
 	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
 	jar cf jsb2.jar JavaScreen/*.class JavaScreen/UI/*.class \
 	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
- 	    JavaScreen/resources/toolbar_cursors/*.png
+ 	    JavaScreen/resources/toolbar_cursors/*.png \
+	    JavaScreen/resources/html/*.html
 
 jarjs:
 	make classclean
@@ -116,7 +118,8 @@ jarjs:
 	make js
 	jar cf js.jar JavaScreen/*.class JavaScreen/UI/*.class \
 	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
- 	    JavaScreen/resources/toolbar_cursors/*.png
+ 	    JavaScreen/resources/toolbar_cursors/*.png \
+	    JavaScreen/resources/html/*.html
 
 clean: classclean
 	-rm jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar
