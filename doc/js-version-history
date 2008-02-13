@@ -7,6 +7,8 @@ JavaScreen 5.9.0
 performing a number of functions that previously could only be performed
 by key actions.
 
+* Added fairly extensive help information to the JavaScreen.
+
 * The code for loading icon images, etc., has now been improved and
 works universally for running from both jar files and individual
 class and image files.

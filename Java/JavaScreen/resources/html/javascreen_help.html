@@ -21,13 +21,15 @@
 <TITLE>DEVise JavaScreen Help</TITLE>
 </HEAD>
 
-<!-- TEMPTEMP -- what about this??? -->
-<body background="logo_background.gif">
+<!-- <body background="logo_background.gif"> -->
 
 <center>
 <h1>
 DEVise JavaScreen Help
 </h1>
+<h3>
+v5.9.0
+</h3>
 </center>
 
 <!-- TEMP -- until we get links working in the help dialog
@@ -47,7 +49,6 @@ Keyboard shortcuts</a>
 </h3>
 -->
 
-
 <hr>
 
 <a name="General">
@@ -55,7 +56,61 @@ Keyboard shortcuts</a>
 General
 </h2>
 
-<p>(Define DEVise cursors here)
+<p>
+The DEVise (Data Exploration and Visualization) JavaScreen is a Java
+applet that allows users to interactively explore complex data sets.
+The JavaScreen applet connects to a DEVise server, which renders most
+images the user sees.  This allows large data sets to be visualized
+without transmitting the full data set to the client applet.
+</p>
+
+<p>
+Note that a full explanation of DEVise is beyond the scope of this
+help document.  This document will focus on the areas useful to the
+average user of the DEVise JavaScreen.
+</p>
+
+<h3>
+Views
+</h3>
+<p>
+The <em>view</em> is the fundamental component of DEVise.  A view is an
+area of the screen within which symbols are displayed, with each symbol
+corresponding to a record in the underlying data.  One key property of
+a view is the axis ranges (which are in effect even if axes are not
+displayed in the view).  Data outside the current axis ranges is not
+displayed.  (Note that three-dimensional views are somewhat different
+in this respect.)
+</p>
+
+<p>
+One of the most important features of views is that, in most cases,
+you can change the axis ranges by dragging with the mouse or by
+other actions.  (See the "toolbar" and "keyboard shortcuts" sections
+below for specific information on how this is done.)  Some views have
+their axis ranges "locked", to prevent changes that would render
+the visualization less usable.  In some visualizations, several views
+have their axis ranges "linked", so that zooming in or out in one
+view will also zoom correspondingly in other views.
+</p>
+
+<h3>
+DEVise Cursors
+</h3>
+<p>
+The <em>DEVise Cursor</em> is a rectangular "box" within a view.  The
+box can be moved (and in many cases, resized) by dragging
+it with the mouse.  When you do this, "behind the scenes" connections
+will change another part of the visualization.  In some cases, a DEVise
+cursor is used to select a region that is magnified in another view
+(this is probably the most obvious case).  However, there are other uses
+of DEVise cursors, such as selecting which of a number of data sets
+to display.
+</p>
+
+<p>
+Most DEVise visualizations are designed to be explored mainly by
+moving and resizing the DEVise cursors.
 </p>
 
 
@@ -66,8 +121,19 @@ General
 Toolbar
 </h2>
 
+<p>
+The Toolbar (located at the left edge of the JavaScreen) allows you
+to select from a number of different modes.  These modes change the
+behavior of the JavaScreen as described below.  In general, in order to
+perform a given action you have to select the appropriate toolbar
+mode, and then click or drag in the view that is to be affected.
+</p>
+
+<p>
 Note that some views may not allow all toolbar actions.  In such cases,
-the mouse cursor will change to a no-op cursor.
+the mouse cursor will change to a no-op cursor.  Also, at this time,
+the toolbar only has an effect on two-dimensional views.
+</p>
 
 <ul>
 <li><b>Drill down (show data records)</b>:  in this toolbar mode, if you
@@ -75,11 +141,11 @@ click on a data symbol, the location of the click (in data units) and the
 data associated with the symbol will be displayed.  If multiple data
 symbols overlap or are very close together, the drill-down dialog will
 show the data corresponding to all of the symbols.  If you click in an
-area in which there is no symbol, the location of the click will be
+area in which there is no symbol, only the location of the click will be
 displayed.
 
 <li><b>Show help for selected view</b>:  in this toolbar mode, if you
-click anywhere in a view, the help messsage for that view (if any) will
+click anywhere in a view, the help message for that view (if any) will
 be shown.
 
 <li><b>Select cursor/zoom in XY/3D rotate</b>:  this is the "normal"
@@ -89,36 +155,52 @@ in a two-dimensional view, dragging with the mouse will zoom in on both
 the X and Y axes (unless modified by keyboard shortcuts, see below).
 In a three-dimensional view, dragging with the mouse will rotate the
 structure (unless modified by keyboard shortcuts, see below).
-TEMPTEPM -- click moves cursor
+Also, a single-click in a view with a cursor will move the cursor to
+the mouse location.  If there are multiple cursors in the view, only
+one will be moved.
 
 <li><b>Expand DEVise cursor to fill view</b>:  in this toolbar mode, if
 you click anywhere in a view containing a DEVise cursor, the DEVise
 cursor in the view will be expanded (or contracted) to the dimensions of
-view axes.
-TEMPTEMP -- what if >1 cursor?
+view axes.  If there are multiple cursors in the view, only one will
+be resized.
 
-<li><b>Increase symbol size</b>: for some symbol
+<li><b>Increase symbol size</b>: for some symbol types, the size can
+be varied.  In this toolbar mode, clicking in a view with such symbols
+will increase the symbol size.
 
-<li><b>Decrease symbol size</b>:
-starts at min
+<li><b>Decrease symbol size</b>: for some symbol types, the size can
+be varied.  In this toolbar mode, clicking in a view with such symbols
+will decrease the symbol size.  Note that the symbols cannot be made
+smaller than the "default" size, so the symbols will only be reduced
+in size if they have already been increased from the default.
 
-<li><b>Home (show all data)</b>:
+<li><b>Home (show all data)</b>: in this toolbar mode, clicking in a
+view will set the view's axis ranges to the "home" setting.  In most
+cases, this means that the view will be expanded (or contracted) to
+exactly the ranges required to show all data in the view.  In some
+cases, there is a pre-defined home setting different than this default.
 Note that if the view is already at the "home" setting, performing this
 operation again will have no effect.
 
-<li><b>Toggle axis ranges</b>:
+<li><b>Toggle axis ranges</b>: in this toolbar mode, clicking in a view
+will toggle back and forth between the last two sets of axis ranges.
 
 <li><b>Zoom in XY</b>:  in this toolbar mode, dragging with the mouse
-zooms in on both the X and Y axes.
+zooms in on both the X and Y axes.  Single-clicking zooms in on
+both axes by a factor of two.
 
 <li><b>Zoom in X</b>: in this toolbar mode, dragging with the mouse
-zooms in on the X axis only.
+zooms in on the X axis only.  Single-clicking zooms in on the X axis
+by a factor of two.
 
 <li><b>Zoom out XY</b>: in this toolbar mode, dragging with the mouse
-zooms out on both the X and Y axes.
+zooms out on both the X and Y axes.  Single-clicking zooms out on
+both axes by a factor of two.
 
 <li><b>Zoom out X</b>: in this toolbar mode, dragging with the mouse
-zooms out on the X axis only.
+zooms out on the X axis only.  Single-clicking zooms out on the X
+axis by a factor of two.
 </ul>
 
 <hr>
@@ -128,35 +210,36 @@ zooms out on the X axis only.
 Keyboard shortcuts
 </h2>
 
-<p>Keyboard shortcuts are used by pressing the key while the mouse cursor
+<p>
+Keyboard shortcuts are used by pressing the key while the mouse cursor
 is in the appropriate view.  You do not have to select the view before
 pressing the key.
 </p>
 
 
-<h3>Visual Filter Shortcuts</h3>
+<h3>Axis Range Shortcuts</h3>
 <ul>
-<li><b>1</b> or <b>End</b>: zoom in in Y
-<li><b>2</b> or <b>down arrow</b>: move the visual filter down
-<li><b>3</b> or <b>Page Down</b>: zoom out in Y
-<li><b>4</b> or <b>left arrow</b>: move the visual filter left
-<li><b>5</b>: set the visual filter to the "home" location (the default is to
+<li><b>1</b> or <b>End</b>: zoom in on Y axis
+<li><b>2</b> or <b>down arrow</b>: move the Y axis range down
+<li><b>3</b> or <b>Page Down</b>: zoom out on Y axis
+<li><b>4</b> or <b>left arrow</b>: move the X axis range left
+<li><b>5</b>: set the axis ranges to the "home" location (the default is to
   show all data)
-<li><b>6</b> or <b>right arrow</b>: move the visual filter right
-<li><b>7</b> or <b>Home</b>: zoom in in X
-<li><b>8</b> or <b>up arrow</b>: move the visual filter up
-<li><b>9</b> or <b>Page Up</b>: zoom out in X
-<li><b>Backspace</b>: toggle between the last two visual filter
-  settings
-<li><b>c</b> or <b>C</b>: fit cursor to current visual filter (cursor fills
+<li><b>6</b> or <b>right arrow</b>: move the X axis range right
+<li><b>7</b> or <b>Home</b>: zoom in on X axis
+<li><b>8</b> or <b>up arrow</b>: move the Y axis range up
+<li><b>9</b> or <b>Page Up</b>: zoom out on X axis
+<li><b>Backspace</b>: toggle between the last two axis range settings
+<li><b>c</b> or <b>C</b>: fit cursor to current axis ranges (cursor fills
   view)
 </ul>
 
 <h3>2D Mouse Actions</h3>
+In normal toolbar mode only.
 <ul>
 <li><b>Click</b>: select view and move cursor (if view contains a cursor)
 <li><b>Drag</b>: move cursor (if on a cursor) or zoom in
-<li><b>Control-drag</b>: X-only zoom (if not on a cursor).
+<li><b>Control-drag</b>: X-only zoom (if not on a cursor)
 <li><b>Alt-drag</b>: zoom out (if not on a cursor)
 <li><b>Shift-drag</b>: zoom out (same as Alt-drag)
 <li><b>Shift-click</b>: show data records, if any, at mouse location
@@ -166,25 +249,27 @@ pressing the key.
 </ul>
 
 <h3>3D Mouse Actions, Jmol view</h3>
-<p>Note that a Jmol view is one that shows both atoms and bonds.</p>
+<p>
+Note that a Jmol view is one that shows both atoms and bonds.
+</p>
 <ul>
-<li><b>Right click</b>: show Jmol popup menu
-<li><b>Control-left click</b>: show Jmol popup menu
+<li><b>Left drag</b>: rotate object
 <li><b>Left click on atom (with or without shift)</b>: drill down (show
   associated record values)
+<li><b>Control-right drag</b>: move object
+<li><b>Right click</b>: show Jmol popup menu
+<li><b>Control-left click</b>: show Jmol popup menu
 <li><b>Double-left click on atom</b>: go into distance measurement mode
-<li><b>Left drag</b>: rotate object
 <li><b>Shift-drag, left/right</b>: rotate object in the plane of the screen
 <li><b>Shift-drag, up/down</b>: zoom in (move mouse down) or out (move
   mouse up)
 <li><b>Alt-drag</b>: same as shift-drag
-<li><b>Control-right drag</b>: move object
 <li><b>Scroll wheel</b>: zoom in (scroll down) or out (scroll up)
 </ul>
 
 <h3>3D Mouse Actions, non-Jmol view</h3>
 <ul>
-<li><b>Mouse drag</b>: rotate object
+<li><b>Left drag</b>: rotate object
 <li><b>Control-drag</b>: zoom in (move mouse down) or out (move mouse up)
 <li><b>Alt-drag</b>: move object
 <li><b>Shift-drag</b>: move object (same as Alt-drag)
@@ -198,6 +283,9 @@ pressing the key.
 
 
 <h3>Symbol Display Shortcuts</h3>
+<p>
+2D views only.
+</p>
 <ul>
 <li><b>+</b>: increase symbol size
 <li><b>-</b>: decrease symbol size
@@ -232,14 +320,16 @@ pressing the key.
 
 <hr>
 
-<p>If you have any trouble using this software, please contact 
+<p>
+If you have any trouble using this software, please contact 
 devise-sup@cs.wisc.edu
 <!-- TEMP -- until we get links working in the help dialog
 <a href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
 -->
 </p>
 
-<p><i>Last updated 2008-02-08.</i>
+<p>
+<i>Last updated 2008-02-13.</i>
 </p>
 
 </BODY>
