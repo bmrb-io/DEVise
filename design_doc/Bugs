@@ -4107,6 +4107,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			something to do with the use of highlight views.
 			(Fixed by wenger, 1/25/08, in Peptide-CGI 11.2.2.)
 
+957 2/13/08	OPEN	JS: Jmol->View Selection Trees does not bring the
+			tree window to the front or deiconify it on
+			RHEL5/Gnome.  (It still shows it if it's destroyed.)
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

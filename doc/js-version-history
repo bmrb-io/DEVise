@@ -13,6 +13,9 @@ by key actions.
 works universally for running from both jar files and individual
 class and image files.
 
+* Added a button to show the Jmol selection trees without having to
+go into a menu.
+
 * The JavaScreen now prints various useful information, such as the
 Java version, OS version, etc., at the beginning of the Program
 Information log.

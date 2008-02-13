@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.168  2008/02/13 21:21:20  wenger
+// The JavaScreen now prints various useful information, such as the
+// Java version, OS version, etc., at the beginning of the Program
+// Information log.
+//
 // Revision 1.167  2008/01/24 20:30:53  wenger
 // Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
 //
@@ -830,6 +835,7 @@ public class jsdevisec extends JPanel
     public CollabStateDlg collabstatedlg = null;
 
     private DEViseJmolMenuButton jmolButton;
+    private DEViseButton treeButton;
 
     public boolean isSessionOpened = false; 
 
@@ -958,19 +964,29 @@ public class jsdevisec extends JPanel
 	// main menu buttons
 	_mainButtons = new DEViseMainButtons(this);
 	stopButton = _mainButtons.getStopButton();
-  Component[] buttons = _mainButtons.getButtons();
-  DEViseComponentPanel buttonPanel = new DEViseComponentPanel(buttons,
-  	DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
-  	DEViseComponentPanel.ALIGN_LEFT, this);
+        Component[] buttons = _mainButtons.getButtons();
+        DEViseComponentPanel buttonPanel = new DEViseComponentPanel(buttons,
+  	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 6,
+  	  DEViseComponentPanel.ALIGN_LEFT, this);
 	if (jsValues.connection.cgi) {
 	    cgiMode();
 	} else {
 	    socketMode();
 	}
 	buttonPanel.add(commMode);
-  jmolButton = new DEViseJmolMenuButton(jsValues);
+        jmolButton = new DEViseJmolMenuButton(jsValues);
 	buttonPanel.add(jmolButton);
 	jmolButton.hide();
+	treeButton = new DEViseButton("Show Selection Trees...", jsValues);
+        treeButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    toolBar.getJmolCanvas().showTrees();
+                }
+            });
+	buttonPanel.add(treeButton);
+	treeButton.hide();
 
 	// viewInfo contains the process counter
 	viewInfo = new DEViseViewInfo(this, images);
@@ -1349,6 +1365,7 @@ public class jsdevisec extends JPanel
 
 	public void run() {
             jmolButton.show(_canvas);
+	    treeButton.show();
 	    toolBar.setJmolCanvas(_canvas);
 	    validate();
 	}
@@ -1365,6 +1382,7 @@ public class jsdevisec extends JPanel
         Runnable doHideJmol = new Runnable() {
 	    public void run() {
                 jmolButton.hide();
+		treeButton.hide();
 	        toolBar.setJmolCanvas(null);
 	        validate();
 	    }

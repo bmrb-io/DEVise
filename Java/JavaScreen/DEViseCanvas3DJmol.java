@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -42,6 +42,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2007/12/19 00:08:31  wenger
+// Changed a bunch of JButton references to DEViseButtons to make things
+// more consistent.
+//
 // Revision 1.17  2007/10/24 17:36:48  wenger
 // Minor change to fix null pointer problem that sometimes shows up with
 // Jmol visualizations.
@@ -439,6 +443,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	}
 
 	treeFrame.setExtendedState(Frame.NORMAL); // de-iconify
+	// The line below seems to partially fix bug 957 (de-iconifies
+	// it, but doesn't bring it to the front.
+	treeFrame.setState(Frame.NORMAL);
 	treeFrame.toFront();
     }
 

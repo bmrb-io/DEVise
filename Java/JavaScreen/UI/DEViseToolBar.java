@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2007
+// (c) Copyright 2003-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/08/27 19:16:47  wenger
+// Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
+//
 // Revision 1.3  2007/08/03 20:17:35  wenger
 // Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
 //
@@ -270,6 +273,10 @@ public final class DEViseToolBar extends JToolBar {
 	public void setJmolCanvas(DEViseCanvas3DJmol canvas) {
 		jmolCanvas = canvas;
 		setThreeDEnabled(canvas != null);
+	}
+
+	public DEViseCanvas3DJmol getJmolCanvas() {
+		return jmolCanvas;
 	}
 	
 	private void addDefaultButtons() {
