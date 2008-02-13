@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.167  2008/01/24 20:30:53  wenger
+// Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
+//
 // Revision 1.166  2008/01/22 20:02:38  wenger
 // Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
 // my fix to the pre-toolbar version of the JS, but it doesn't work for
@@ -1414,7 +1417,7 @@ public class jsdevisec extends JPanel
         p(msg, 1);
     }
 
-    //TEMP -- what does this do?  show the log window??
+    // Shows or hides the log window, based on what the menu item is.
     public void setLog(MenuItem logMenuItem)
     {
 	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
@@ -1429,6 +1432,48 @@ public class jsdevisec extends JPanel
 	    jsValues.debug._debugLevel = 1;
 	    debugWindow = new YLogGUI(jsValues.debug._debugLevel);
 	    showDebug();
+
+	    String prop = System.getProperty("java.version");
+	    pn("Java version: " + prop);
+	    prop = System.getProperty("java.vendor");
+	    pn("Java vendor: " + prop);
+	    prop = System.getProperty("java.class.version");
+	    pn("Java class version: " + prop);
+	    pn("");
+
+	    prop = System.getProperty("java.runtime.version");
+	    pn("Java runtime version: " + prop);
+	    prop = System.getProperty("java.runtime.name");
+	    pn("Java runtime name: " + prop);
+	    pn("");
+
+	    prop = System.getProperty("java.vm.version");
+	    pn("Java vm version: " + prop);
+	    prop = System.getProperty("java.vm.vendor");
+	    pn("Java vm vendor: " + prop);
+	    pn("");
+
+	    prop = System.getProperty("os.arch");
+	    pn("OS arch: " + prop);
+	    prop = System.getProperty("os.name");
+	    pn("OS name: " + prop);
+	    prop = System.getProperty("os.version");
+	    pn("OS version: " + prop);
+	    pn("");
+
+	    pn("JavaScreen version: " + DEViseGlobals.VERSION);
+	    pn("Jmol version: " + JmolConstants.version);
+	    pn("");
+
+	    /* Print all system properties
+	    Properties props = System.getProperties();
+	    Enumeration names = props.propertyNames();
+	    while (names.hasMoreElements()) {
+		String name = (String)names.nextElement();
+	        pn("Prop " + name + ": " + System.getProperty(name));
+	    }
+	    pn("");
+	    */
 	
 	    for (int i = 0; i < msgBuffer.size(); i++) {
 		String msg = (String)msgBuffer.elementAt(i);

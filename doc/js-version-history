@@ -13,6 +13,10 @@ by key actions.
 works universally for running from both jar files and individual
 class and image files.
 
+* The JavaScreen now prints various useful information, such as the
+Java version, OS version, etc., at the beginning of the Program
+Information log.
+
 * Configuration for the Florence mirror has been updated.
 
 * Fixed JavaScreen startup scripts to deal with new dynamic libraries

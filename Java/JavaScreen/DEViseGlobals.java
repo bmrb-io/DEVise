@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.96  2008/02/08 21:03:12  wenger
+// Changed version from 5.8.3 to 5.9.0 because the toolbar and associated
+// stuff is such a big change; added JavaScreen help dialog (although the
+// text is not yet complete, and some is commented out until I get html
+// links to work in that dialog); added (currently disabled) menu item to
+// show JS version history.
+//
 // Revision 1.95  2008/01/24 20:30:53  wenger
 // Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
 //
@@ -644,7 +651,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.9.0x1"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.9.0x2"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
