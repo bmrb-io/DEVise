@@ -4112,6 +4112,12 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			RHEL5/Gnome.  (It still shows it if it's destroyed.)
 			(wenger)
 
+958 2/15/08	OPEN	JS: view help dialog should come up closer to the
+			click location. (wenger)
+
+959 2/15/08	OPEN	JS: cannot show view help by clicking in a view's
+			title area. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
