@@ -107,6 +107,9 @@ DEVise setViewAutoFilter {ViewUnselectedDataChild} {1}
 DEVise setDupElim {ViewUnselectedDataChild} {0}
 DEVise setNiceAxes {ViewUnselectedDataChild} 0 0
 DEVise viewSetDisabledActions {ViewUnselectedDataChild} 0 0 0 0
+DEVise setViewHelp {ViewUnselectedDataChild} {Data view: use the cursor to
+select which residues are highlighed (shown
+in green) in the structure view above.}
 DEVise setShowMouseLocation {ViewUnselectedDataChild} {1}
 DEVise setLinkMultFact {ViewUnselectedDataChild} {X} 1
 DEVise setLinkMultFact {ViewUnselectedDataChild} {Y} 1
@@ -550,9 +553,9 @@ DEVise setViewAutoFilter {ViewUnselectedDataParent} {0}
 DEVise setDupElim {ViewUnselectedDataParent} {0}
 DEVise setNiceAxes {ViewUnselectedDataParent} 0 0
 DEVise viewSetDisabledActions {ViewUnselectedDataParent} 0 0 0 0
-DEVise setViewHelp {ViewUnselectedDataParent} {Data view: use the cursor to select which residues are
-highlighed (shown in green) in the structure view above
-and the residue list view.}
+DEVise setViewHelp {ViewUnselectedDataParent} {Data view: use the cursor to
+select which residues are highlighed (shown in green)
+in the structure view above.}
 DEVise setShowMouseLocation {ViewUnselectedDataParent} {1}
 DEVise setLinkMultFact {ViewUnselectedDataParent} {X} 1
 DEVise setLinkMultFact {ViewUnselectedDataParent} {Y} 1
@@ -710,6 +713,8 @@ DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 1 1 1 1
+DEVise setViewHelp {View 2} {Atom color legend: gray = carbon, white = hydrogren,
+red = oxygen, blue = nitrogen, orange = sulfur, pink = phosphorus.}
 DEVise setShowMouseLocation {View 2} {1}
 DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1

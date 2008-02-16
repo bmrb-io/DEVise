@@ -162,6 +162,8 @@ DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {1}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 1 0 1 1
+DEVise setViewHelp {View 3} {Use the DEVise cursor in this view to select
+which atom's data is displayed in the view to the right.}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
@@ -196,6 +198,8 @@ DEVise setViewAutoFilter {View 4} {0}
 DEVise setDupElim {View 4} {1}
 DEVise setNiceAxes {View 4} 0 0
 DEVise viewSetDisabledActions {View 4} 1 0 1 1
+DEVise setViewHelp {View 4} {Use the DEVise cursor in this view to select
+which atom's data is displayed in the view to the right.}
 DEVise setShowMouseLocation {View 4} {1}
 DEVise setLinkMultFact {View 4} {X} 1
 DEVise setLinkMultFact {View 4} {Y} 1
@@ -570,6 +574,8 @@ DEVise setViewAutoFilter {View 18} {0}
 DEVise setDupElim {View 18} {0}
 DEVise setNiceAxes {View 18} 0 0
 DEVise viewSetDisabledActions {View 18} 1 1 1 1
+DEVise setViewHelp {View 18} {The BMRB and PDB entries used to generate
+this visualization.}
 DEVise setShowMouseLocation {View 18} {1}
 DEVise setLinkMultFact {View 18} {X} 1
 DEVise setLinkMultFact {View 18} {Y} 1
@@ -604,6 +610,7 @@ DEVise setViewAutoFilter {View 19} {0}
 DEVise setDupElim {View 19} {0}
 DEVise setNiceAxes {View 19} 0 0
 DEVise viewSetDisabledActions {View 19} 1 1 1 1
+DEVise setViewHelp {View 19} {none}
 DEVise setShowMouseLocation {View 19} {1}
 DEVise setLinkMultFact {View 19} {X} 1
 DEVise setLinkMultFact {View 19} {Y} 1
@@ -638,6 +645,7 @@ DEVise setViewAutoFilter {View 110} {0}
 DEVise setDupElim {View 110} {0}
 DEVise setNiceAxes {View 110} 0 0
 DEVise viewSetDisabledActions {View 110} 1 1 1 1
+DEVise setViewHelp {View 110} {axis label}
 DEVise setShowMouseLocation {View 110} {1}
 DEVise setLinkMultFact {View 110} {X} 1
 DEVise setLinkMultFact {View 110} {Y} 1
@@ -672,6 +680,7 @@ DEVise setViewAutoFilter {View 111} {0}
 DEVise setDupElim {View 111} {0}
 DEVise setNiceAxes {View 111} 0 0
 DEVise viewSetDisabledActions {View 111} 1 1 1 1
+DEVise setViewHelp {View 111} {axis label}
 DEVise setShowMouseLocation {View 111} {1}
 DEVise setLinkMultFact {View 111} {X} 1
 DEVise setLinkMultFact {View 111} {Y} 1
@@ -706,6 +715,7 @@ DEVise setViewAutoFilter {View 112} {0}
 DEVise setDupElim {View 112} {0}
 DEVise setNiceAxes {View 112} 0 0
 DEVise viewSetDisabledActions {View 112} 1 1 1 1
+DEVise setViewHelp {View 112} {axis label}
 DEVise setShowMouseLocation {View 112} {1}
 DEVise setLinkMultFact {View 112} {X} 1
 DEVise setLinkMultFact {View 112} {Y} 1
@@ -740,6 +750,7 @@ DEVise setViewAutoFilter {View 113} {0}
 DEVise setDupElim {View 113} {0}
 DEVise setNiceAxes {View 113} 0 0
 DEVise viewSetDisabledActions {View 113} 1 1 1 1
+DEVise setViewHelp {View 113} {axis label}
 DEVise setShowMouseLocation {View 113} {1}
 DEVise setLinkMultFact {View 113} {X} 1
 DEVise setLinkMultFact {View 113} {Y} 1
@@ -876,6 +887,13 @@ DEVise setViewAutoFilter {View 116} {0}
 DEVise setDupElim {View 116} {0}
 DEVise setNiceAxes {View 116} 0 0
 DEVise viewSetDisabledActions {View 116} 0 0 0 0
+DEVise setViewHelp {View 116} {This view shows the difference between the
+actual and predicted chemical shift values, by
+residue, for the atom type selected by the DEVise
+cursor in the view to the left.  The red horizontal
+line shows the average difference for the selected
+atom type, for residues with helix and sheet
+secondary structures.}
 DEVise setShowMouseLocation {View 116} {1}
 DEVise setLinkMultFact {View 116} {X} 1
 DEVise setLinkMultFact {View 116} {Y} 1
@@ -910,6 +928,13 @@ DEVise setViewAutoFilter {View 118} {0}
 DEVise setDupElim {View 118} {0}
 DEVise setNiceAxes {View 118} 0 0
 DEVise viewSetDisabledActions {View 118} 0 0 0 0
+DEVise setViewHelp {View 118} {This view shows the difference between the
+actual and predicted chemical shift values, by
+residue, for the atom type selected by the DEVise
+cursor in the view to the left.  The red horizontal
+line shows the average difference for the selected
+atom type, for residues with helix and sheet
+secondary structures.}
 DEVise setShowMouseLocation {View 118} {1}
 DEVise setLinkMultFact {View 118} {X} 1
 DEVise setLinkMultFact {View 118} {Y} 1
@@ -944,6 +969,11 @@ DEVise setViewAutoFilter {View 1110} {0}
 DEVise setDupElim {View 1110} {0}
 DEVise setNiceAxes {View 1110} 0 0
 DEVise viewSetDisabledActions {View 1110} 1 1 1 1
+DEVise setViewHelp {View 1110} {Legend for this visualization: pink
+bars are residues that are in a helix secondary
+struture; blue bars are residues that are in a
+sheet; yellow bars are residues in other secondary
+structures; the red lines are average values.}
 DEVise setShowMouseLocation {View 1110} {1}
 DEVise setLinkMultFact {View 1110} {X} 1
 DEVise setLinkMultFact {View 1110} {Y} 1

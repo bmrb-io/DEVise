@@ -87,6 +87,7 @@ DEVise setViewAutoFilter {View 1} {1}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setViewHelp {View 1} {Coupling constant values by residue.}
 DEVise setShowMouseLocation {View 1} {1}
 DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
@@ -155,6 +156,7 @@ DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 1 1 1 1
+DEVise setViewHelp {View 3} {axis label}
 DEVise setShowMouseLocation {View 3} {0}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1

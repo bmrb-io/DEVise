@@ -676,6 +676,8 @@ DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {1}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 1 0 1 1
+DEVise setViewHelp {View 2} {Use the DEVise cursor in this view to select the
+amino acid for which to display data.}
 DEVise setShowMouseLocation {View 2} {1}
 DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
@@ -715,6 +717,8 @@ DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {1}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 1 0 1 1
+DEVise setViewHelp {View 3} {Use the DEVise cursor in this view to select
+the atom for which to display data.}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
@@ -871,6 +875,10 @@ DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
 DEVise viewSetDisabledActions {View 7} 0 0 0 0
+DEVise setViewHelp {View 7} {Histogram of frequency versus chemical shift
+value for the selected amino acid and atom.  Drilling
+down on a bar provides links to all entries 
+contributing to that histogram bucket.}
 DEVise setShowMouseLocation {View 7} {1}
 DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
@@ -910,6 +918,7 @@ DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
 DEVise viewSetDisabledActions {View 8} 1 0 0 1
+DEVise setViewHelp {View 8} {none}
 DEVise setShowMouseLocation {View 8} {1}
 DEVise setLinkMultFact {View 8} {X} 1
 DEVise setLinkMultFact {View 8} {Y} 1

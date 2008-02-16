@@ -87,6 +87,7 @@ DEVise setViewAutoFilter {View 1} {1}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setViewHelp {View 1} {HA chemical shift delta values by residue.}
 DEVise setShowMouseLocation {View 1} {1}
 DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
@@ -120,6 +121,7 @@ DEVise setViewAutoFilter {View 2} {1}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise setViewHelp {View 2} {C chemical shift delta values by residue.}
 DEVise setShowMouseLocation {View 2} {1}
 DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
@@ -153,6 +155,7 @@ DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise setViewHelp {View 3} {CA chemical shift delta values by residue.}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
@@ -186,6 +189,7 @@ DEVise setViewAutoFilter {View 4} {1}
 DEVise setDupElim {View 4} {0}
 DEVise setNiceAxes {View 4} 0 0
 DEVise viewSetDisabledActions {View 4} 0 0 0 0
+DEVise setViewHelp {View 4} {CB chemical shift delta values by residue.}
 DEVise setShowMouseLocation {View 4} {1}
 DEVise setLinkMultFact {View 4} {X} 1
 DEVise setLinkMultFact {View 4} {Y} 1
@@ -252,6 +256,8 @@ DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {0}
 DEVise setNiceAxes {View 6} 0 0
 DEVise viewSetDisabledActions {View 6} 0 0 0 0
+DEVise setViewHelp {View 6} {axis label}
+DEVise setShowMouseLocation {View 6} {0}
 DEVise setShowMouseLocation {View 6} {0}
 DEVise setLinkMultFact {View 6} {X} 1
 DEVise setLinkMultFact {View 6} {Y} 1
@@ -285,6 +291,7 @@ DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
 DEVise viewSetDisabledActions {View 7} 0 0 0 0
+DEVise setViewHelp {View 7} {axis label}
 DEVise setShowMouseLocation {View 7} {0}
 DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
@@ -318,6 +325,7 @@ DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
 DEVise viewSetDisabledActions {View 8} 0 0 0 0
+DEVise setViewHelp {View 8} {axis label}
 DEVise setShowMouseLocation {View 8} {0}
 DEVise setLinkMultFact {View 8} {X} 1
 DEVise setLinkMultFact {View 8} {Y} 1
@@ -351,6 +359,7 @@ DEVise setViewAutoFilter {View 9} {0}
 DEVise setDupElim {View 9} {0}
 DEVise setNiceAxes {View 9} 0 0
 DEVise viewSetDisabledActions {View 9} 0 0 0 0
+DEVise setViewHelp {View 9} {axis label}
 DEVise setShowMouseLocation {View 9} {0}
 DEVise setLinkMultFact {View 9} {X} 1
 DEVise setLinkMultFact {View 9} {Y} 1
@@ -384,6 +393,7 @@ DEVise setViewAutoFilter {View 10} {0}
 DEVise setDupElim {View 10} {0}
 DEVise setNiceAxes {View 10} 0 0
 DEVise viewSetDisabledActions {View 10} 0 0 0 0
+DEVise setViewHelp {View 10} {axis label}
 DEVise setShowMouseLocation {View 10} {0}
 DEVise setLinkMultFact {View 10} {X} 1
 DEVise setLinkMultFact {View 10} {Y} 1

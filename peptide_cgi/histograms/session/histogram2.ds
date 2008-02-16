@@ -676,6 +676,9 @@ DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {1}
 DEVise setNiceAxes {View 2} 0 0
 DEVise viewSetDisabledActions {View 2} 1 0 1 1
+DEVise setViewHelp {View 2} {Use the DEVise cursors in this view to select the
+amino acids for which to display data (the color of the
+cursor corresponds to the color of the data).}
 DEVise setShowMouseLocation {View 2} {1}
 DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
@@ -715,6 +718,8 @@ DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {1}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 1 0 1 1
+DEVise setViewHelp {View 3} {Use the DEVise cursor in this view to select
+the atom for which to display data.}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
@@ -871,6 +876,10 @@ DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
 DEVise viewSetDisabledActions {View 7} 1 0 0 1
+DEVise setViewHelp {View 7} {Histogram of frequency versus chemical shift
+value for the selected nucleotide and atom.  Drilling
+down on a bar provides links to all entries
+contributing to that histogram bucket.}
 DEVise setShowMouseLocation {View 7} {1}
 DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
@@ -910,6 +919,7 @@ DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {1}
 DEVise setNiceAxes {View 8} 0 0
 DEVise viewSetDisabledActions {View 8} 0 0 0 0
+DEVise setViewHelp {View 8} {none}
 DEVise setShowMouseLocation {View 8} {1}
 DEVise setLinkMultFact {View 8} {X} 1
 DEVise setLinkMultFact {View 8} {Y} 1
@@ -949,6 +959,8 @@ DEVise setViewAutoFilter {View 9} {1}
 DEVise setDupElim {View 9} {1}
 DEVise setNiceAxes {View 9} 0 0
 DEVise viewSetDisabledActions {View 9} 1 0 1 1
+DEVise setViewHelp {View 9} {Use the DEVise cursor in this view to select
+the atom for which to display data.}
 DEVise setShowMouseLocation {View 9} {1}
 DEVise setLinkMultFact {View 9} {X} 1
 DEVise setLinkMultFact {View 9} {Y} 1
@@ -1066,6 +1078,10 @@ DEVise setViewAutoFilter {View 12} {0}
 DEVise setDupElim {View 12} {0}
 DEVise setNiceAxes {View 12} 0 0
 DEVise viewSetDisabledActions {View 12} 0 0 0 0
+DEVise setViewHelp {View 12} {Histogram of frequency versus chemical shift
+value for the selected amino acid and atom.  Drilling
+down on a bar provides links to all entries 
+contributing to that histogram bucket.}
 DEVise setShowMouseLocation {View 12} {1}
 DEVise setLinkMultFact {View 12} {X} 1
 DEVise setLinkMultFact {View 12} {Y} 1
@@ -1143,6 +1159,10 @@ DEVise setViewAutoFilter {View 14} {0}
 DEVise setDupElim {View 14} {0}
 DEVise setNiceAxes {View 14} 0 0
 DEVise viewSetDisabledActions {View 14} 0 0 0 0
+DEVise setViewHelp {View 14} {Histogram of frequency versus chemical shift
+value for the selected amino acid and atom.  Drilling
+down on a bar provides links to all entries
+contributing to that histogram bucket.}
 DEVise setShowMouseLocation {View 14} {1}
 DEVise setLinkMultFact {View 14} {X} 1
 DEVise setLinkMultFact {View 14} {Y} 1
@@ -1182,6 +1202,7 @@ DEVise setViewAutoFilter {View 15} {0}
 DEVise setDupElim {View 15} {0}
 DEVise setNiceAxes {View 15} 0 0
 DEVise viewSetDisabledActions {View 15} 1 0 0 1
+DEVise setViewHelp {View 15} {none}
 DEVise setShowMouseLocation {View 15} {1}
 DEVise setLinkMultFact {View 15} {X} 1
 DEVise setLinkMultFact {View 15} {Y} 1
@@ -1221,6 +1242,7 @@ DEVise setViewAutoFilter {View 16} {0}
 DEVise setDupElim {View 16} {0}
 DEVise setNiceAxes {View 16} 0 0
 DEVise viewSetDisabledActions {View 16} 1 0 0 1
+DEVise setViewHelp {View 16} {none}
 DEVise setShowMouseLocation {View 16} {1}
 DEVise setLinkMultFact {View 16} {X} 1
 DEVise setLinkMultFact {View 16} {Y} 1

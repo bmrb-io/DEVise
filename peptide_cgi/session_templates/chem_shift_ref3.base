@@ -128,6 +128,13 @@ DEVise setViewAutoFilter {View 1} {1}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setViewHelp {View 1} {This view displays the observed versus
+calculated chemical shift values for the selected
+atom and secondary structure(s).  Each square
+represents one chemical shift value, and is
+colored according to the secondary structure.
+The diagonal line shows where the observed and
+calculated values are equal.}
 DEVise setShowMouseLocation {View 1} {1}
 DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
@@ -298,6 +305,8 @@ DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {1}
 DEVise setNiceAxes {View 7} 0 0
 DEVise viewSetDisabledActions {View 7} 1 0 1 1
+DEVise setViewHelp {View 7} {Use the DEVise cursor in this view to
+which atom's data is shown in the main view to the right.}
 DEVise setShowMouseLocation {View 7} {1}
 DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
@@ -536,6 +545,7 @@ DEVise setViewAutoFilter {View 110} {0}
 DEVise setDupElim {View 110} {0}
 DEVise setNiceAxes {View 110} 0 0
 DEVise viewSetDisabledActions {View 110} 1 1 1 1
+DEVise setViewHelp {View 110} {none}
 DEVise setShowMouseLocation {View 110} {1}
 DEVise setLinkMultFact {View 110} {X} 1
 DEVise setLinkMultFact {View 110} {Y} 1
@@ -570,6 +580,7 @@ DEVise setViewAutoFilter {View 111} {0}
 DEVise setDupElim {View 111} {0}
 DEVise setNiceAxes {View 111} 0 0
 DEVise viewSetDisabledActions {View 111} 1 1 1 1
+DEVise setViewHelp {View 111} {axis label}
 DEVise setShowMouseLocation {View 111} {1}
 DEVise setLinkMultFact {View 111} {X} 1
 DEVise setLinkMultFact {View 111} {Y} 1
@@ -604,6 +615,7 @@ DEVise setViewAutoFilter {View 112} {0}
 DEVise setDupElim {View 112} {0}
 DEVise setNiceAxes {View 112} 0 0
 DEVise viewSetDisabledActions {View 112} 1 1 1 1
+DEVise setViewHelp {View 112} {axis label}
 DEVise setShowMouseLocation {View 112} {1}
 DEVise setLinkMultFact {View 112} {X} 1
 DEVise setLinkMultFact {View 112} {Y} 1
@@ -638,6 +650,10 @@ DEVise setViewAutoFilter {View 113} {0}
 DEVise setDupElim {View 113} {0}
 DEVise setNiceAxes {View 113} 0 0
 DEVise viewSetDisabledActions {View 113} 1 0 1 0
+DEVise setViewHelp {View 113} {Use the DEVise cursor in this view
+to select which types of secondary structure data
+are shown in the main view.  (Note that this cursor
+can be resized.)}
 DEVise setShowMouseLocation {View 113} {1}
 DEVise setLinkMultFact {View 113} {X} 1
 DEVise setLinkMultFact {View 113} {Y} 1

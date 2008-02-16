@@ -251,6 +251,8 @@ DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {1}
 DEVise setNiceAxes {View 7} 0 0
 DEVise viewSetDisabledActions {View 7} 1 0 1 1
+DEVise setViewHelp {View 7} {Use the cursor in this view to select which
+atom type's data is displayed.}
 DEVise setShowMouseLocation {View 7} {1}
 DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
@@ -290,6 +292,8 @@ DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
 DEVise viewSetDisabledActions {View 8} 1 1 1 1
+DEVise setViewHelp {View 8} {The BMRB and PDB entries used to generate
+this visualization.}
 DEVise setShowMouseLocation {View 8} {1}
 DEVise setLinkMultFact {View 8} {X} 1
 DEVise setLinkMultFact {View 8} {Y} 1
@@ -329,6 +333,13 @@ DEVise setViewAutoFilter {View 9} {0}
 DEVise setDupElim {View 9} {0}
 DEVise setNiceAxes {View 9} 0 0
 DEVise viewSetDisabledActions {View 9} 0 0 0 0
+DEVise setViewHelp {View 9} {This view shows a histogram of the differences
+between the actual and predicted chemical shift values,
+for the type of atom selected by the cursor in the bottom
+view. For CA and CB, values from all residues are shown;
+for other atoms, only values from residues with helix and
+sheet secondary structures are shown.}
+# TEMPTEMP -- say what orange is
 DEVise setShowMouseLocation {View 9} {1}
 DEVise setLinkMultFact {View 9} {X} 1
 DEVise setLinkMultFact {View 9} {Y} 1
@@ -368,6 +379,7 @@ DEVise setViewAutoFilter {View 11} {0}
 DEVise setDupElim {View 11} {0}
 DEVise setNiceAxes {View 11} 0 0
 DEVise viewSetDisabledActions {View 11} 1 1 1 1
+DEVise setViewHelp {View 11} {none}
 DEVise setShowMouseLocation {View 11} {1}
 DEVise setLinkMultFact {View 11} {X} 1
 DEVise setLinkMultFact {View 11} {Y} 1
@@ -407,6 +419,7 @@ DEVise setViewAutoFilter {View 12} {0}
 DEVise setDupElim {View 12} {0}
 DEVise setNiceAxes {View 12} 0 0
 DEVise viewSetDisabledActions {View 12} 1 1 1 1
+DEVise setViewHelp {View 12} {axis label}
 DEVise setShowMouseLocation {View 12} {1}
 DEVise setLinkMultFact {View 12} {X} 1
 DEVise setLinkMultFact {View 12} {Y} 1
@@ -446,6 +459,7 @@ DEVise setViewAutoFilter {View 14} {0}
 DEVise setDupElim {View 14} {0}
 DEVise setNiceAxes {View 14} 0 0
 DEVise viewSetDisabledActions {View 14} 1 1 1 1
+DEVise setViewHelp {View 14} {axis label}
 DEVise setShowMouseLocation {View 14} {1}
 DEVise setLinkMultFact {View 14} {X} 1
 DEVise setLinkMultFact {View 14} {Y} 1

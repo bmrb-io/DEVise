@@ -157,6 +157,7 @@ DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
 DEVise viewSetDisabledActions {View 3} 1 0 1 1
+DEVise setViewHelp {View 3} {none}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
@@ -191,6 +192,7 @@ DEVise setViewAutoFilter {ViewXLabel} {0}
 DEVise setDupElim {ViewXLabel} {0}
 DEVise setNiceAxes {ViewXLabel} 0 0
 DEVise viewSetDisabledActions {ViewXLabel} 1 0 1 1
+DEVise setViewHelp {ViewXLabel} {axis label}
 DEVise setShowMouseLocation {ViewXLabel} {1}
 DEVise setLinkMultFact {ViewXLabel} {X} 1
 DEVise setLinkMultFact {ViewXLabel} {Y} 1
@@ -225,6 +227,7 @@ DEVise setViewAutoFilter {ViewYLabel} {0}
 DEVise setDupElim {ViewYLabel} {0}
 DEVise setNiceAxes {ViewYLabel} 0 0
 DEVise viewSetDisabledActions {ViewYLabel} 1 0 1 1
+DEVise setViewHelp {ViewYLabel} {axis label}
 DEVise setShowMouseLocation {ViewYLabel} {1}
 DEVise setLinkMultFact {ViewYLabel} {X} 1
 DEVise setLinkMultFact {ViewYLabel} {Y} 1
@@ -294,6 +297,14 @@ DEVise setViewAutoFilter {ViewPointsDD} {1}
 DEVise setDupElim {ViewPointsDD} {0}
 DEVise setNiceAxes {ViewPointsDD} 0 0
 DEVise viewSetDisabledActions {ViewPointsDD} 0 0 0 0
+DEVise setViewHelp {ViewPointsDD} {The Y-axis represents the secondary
+chemical shifts of the nuclei: CA for alpha carbon,
+CB for beta carbon, HA for alpha proton and CO for
+carbonyl carbon. Secondary chemical shifts are
+calculated by subtracting random coil chemical
+shifts from experimental observed values.  The
+X-axis represents the secondary chemical shift
+difference between CA and CB.}
 DEVise setShowMouseLocation {ViewPointsDD} {1}
 DEVise setLinkMultFact {ViewPointsDD} {X} 1
 DEVise setLinkMultFact {ViewPointsDD} {Y} 1

@@ -101,10 +101,10 @@ DEVise setViewAutoFilter {ViewUnselectedDataChild} {1}
 DEVise setDupElim {ViewUnselectedDataChild} {0}
 DEVise setNiceAxes {ViewUnselectedDataChild} 0 0
 DEVise viewSetDisabledActions {ViewUnselectedDataChild} 0 0 0 0
-DEVise setViewHelp {ViewUnselectedDataChild} {Use the cursor to select which residues are highlighed
-(shown in green) in the 3D view above and the text view
-listing residue sequence codes and amino acid
-abbreviations.}
+DEVise setViewHelp {ViewUnselectedDataChild} {Data view: use the cursor in this view
+to select which residues are highlighed (shown in green)
+in the structure view above and the text view listing
+residue sequence codes and amino acid abbreviations.}
 DEVise setShowMouseLocation {ViewUnselectedDataChild} {1}
 DEVise setLinkMultFact {ViewUnselectedDataChild} {X} 1
 DEVise setLinkMultFact {ViewUnselectedDataChild} {Y} 1
@@ -241,16 +241,13 @@ DEVise setViewAutoFilter {View3DMain_ATCol} {1}
 DEVise setDupElim {View3DMain_ATCol} {0}
 DEVise setNiceAxes {View3DMain_ATCol} 0 0
 DEVise viewSetDisabledActions {View3DMain_ATCol} 0 0 0 0
-DEVise setViewHelp {View3DMain_ATCol} {This view shows the 3D structure of the selected residues.
-The residues selected with the cursor in the bottom view
-are highlighted (shown in green).  Other atoms are colored
-as follows:
-Carbon: gray
-Oxygen: red
-Nitrogen: blue
-Sulfur: orange
-Phosphorus: pink
-Hydrogen: white}
+DEVise setViewHelp {View3DMain_ATCol} {Structure view: this view shows a
+schematic structure of the residues selected
+in the residue select view.  The residues
+selected with the cursor in the data view
+are highlighted (shown in green).  Other
+atoms are colored by atom type or ambiguity
+code as listed in the atom color legend.}
 DEVise setShowMouseLocation {View3DMain_ATCol} {1}
 DEVise setLinkMultFact {View3DMain_ATCol} {X} 1
 DEVise setLinkMultFact {View3DMain_ATCol} {Y} 1
@@ -285,8 +282,8 @@ DEVise setViewAutoFilter {ViewStructSelect} {0}
 DEVise setDupElim {ViewStructSelect} {1}
 DEVise setNiceAxes {ViewStructSelect} 0 0
 DEVise viewSetDisabledActions {ViewStructSelect} 1 0 1 0
-DEVise setViewHelp {ViewStructSelect} {Use the cursor to select which types of atoms are
-shown in the 3D view.}
+DEVise setViewHelp {ViewStructSelect} {Atom select view: use the cursor to select which types
+of atoms are shown in the structure view.}
 DEVise setShowMouseLocation {ViewStructSelect} {0}
 DEVise setLinkMultFact {ViewStructSelect} {X} 1
 DEVise setLinkMultFact {ViewStructSelect} {Y} 1
@@ -355,8 +352,9 @@ DEVise setViewAutoFilter {ViewResidueSelect1} {1}
 DEVise setDupElim {ViewResidueSelect1} {1}
 DEVise setNiceAxes {ViewResidueSelect1} 0 0
 DEVise viewSetDisabledActions {ViewResidueSelect1} 1 0 0 0
-DEVise setViewHelp {ViewResidueSelect1} {Use this cursor to select the range of residues
-displayed in the 3D view.}
+DEVise setViewHelp {ViewResidueSelect1} {Residue select view: use the cursor in this
+view to select the range of residues
+displayed in the structure view.}
 DEVise setShowMouseLocation {ViewResidueSelect1} {3}
 DEVise setLinkMultFact {ViewResidueSelect1} {X} 1
 DEVise setLinkMultFact {ViewResidueSelect1} {Y} 1
@@ -425,8 +423,9 @@ DEVise setViewAutoFilter {ViewResidueSelect2} {1}
 DEVise setDupElim {ViewResidueSelect2} {1}
 DEVise setNiceAxes {ViewResidueSelect2} 0 0
 DEVise viewSetDisabledActions {ViewResidueSelect2} 1 0 0 0
-DEVise setViewHelp {ViewResidueSelect2} {Use this cursor to select the range of residues
-displayed in the text view to the left.}
+DEVise setViewHelp {ViewResidueSelect2} {Residue list scroll view: use the cursor
+in this view to select the range of residues
+displayed in the residue list view.}
 DEVise setShowMouseLocation {ViewResidueSelect2} {3}
 DEVise setLinkMultFact {ViewResidueSelect2} {X} 1
 DEVise setLinkMultFact {ViewResidueSelect2} {Y} 1
@@ -461,7 +460,6 @@ DEVise setViewAutoFilter {ViewResidueName} {0}
 DEVise setDupElim {ViewResidueName} {1}
 DEVise setNiceAxes {ViewResidueName} 0 0
 DEVise viewSetDisabledActions {ViewResidueName} 1 0 0 0
-DEVise setViewHelp {ViewResidueName} {Use this cursor to select the range of residues displayed in the 3D view.}
 DEVise setShowMouseLocation {ViewResidueName} {3}
 DEVise setLinkMultFact {ViewResidueName} {X} 1
 DEVise setLinkMultFact {ViewResidueName} {Y} 1
@@ -530,8 +528,8 @@ DEVise setViewAutoFilter {ViewDataTypeSelect} {1}
 DEVise setDupElim {ViewDataTypeSelect} {0}
 DEVise setNiceAxes {ViewDataTypeSelect} 0 0
 DEVise viewSetDisabledActions {ViewDataTypeSelect} 1 0 1 1
-DEVise setViewHelp {ViewDataTypeSelect} {Use the cursor to select which variable is shown in
-the data view.}
+DEVise setViewHelp {ViewDataTypeSelect} {Data select view: use the cursor to select which variable
+is shown in the data view.}
 DEVise setShowMouseLocation {ViewDataTypeSelect} {1}
 DEVise setLinkMultFact {ViewDataTypeSelect} {X} 1
 DEVise setLinkMultFact {ViewDataTypeSelect} {Y} 1
@@ -600,7 +598,8 @@ DEVise setViewAutoFilter {ViewDataXControl} {1}
 DEVise setDupElim {ViewDataXControl} {1}
 DEVise setNiceAxes {ViewDataXControl} 0 0
 DEVise viewSetDisabledActions {ViewDataXControl} 1 0 0 0
-DEVise setViewHelp {ViewDataXControl} {Use this cursor to select the range of residues displayed
+DEVise setViewHelp {ViewDataXControl} {Data scroll view: use this cursor
+to select the range of residues displayed
 in the data view above.}
 DEVise setShowMouseLocation {ViewDataXControl} {3}
 DEVise setLinkMultFact {ViewDataXControl} {X} 1
@@ -670,6 +669,10 @@ DEVise setViewAutoFilter {ViewUnselectedDataParent} {0}
 DEVise setDupElim {ViewUnselectedDataParent} {0}
 DEVise setNiceAxes {ViewUnselectedDataParent} 0 0
 DEVise viewSetDisabledActions {ViewUnselectedDataParent} 0 0 0 0
+DEVise setViewHelp {ViewUnselectedDataParent} {Data view: use the cursor in this view
+to select which residues are highlighed (shown in green)
+in the structure view above and the text view listing
+residue sequence codes and amino acid abbreviations.}
 DEVise setShowMouseLocation {ViewUnselectedDataParent} {1}
 DEVise setLinkMultFact {ViewUnselectedDataParent} {X} 1
 DEVise setLinkMultFact {ViewUnselectedDataParent} {Y} 1
@@ -772,11 +775,11 @@ DEVise setViewAutoFilter {ViewResidueHighlight} {0}
 DEVise setDupElim {ViewResidueHighlight} {1}
 DEVise setNiceAxes {ViewResidueHighlight} 0 0
 DEVise viewSetDisabledActions {ViewResidueHighlight} 1 0 0 0
-DEVise setViewHelp {ViewResidueHighlight} {This view displays residue sequence codes and the
+DEVise setViewHelp {ViewResidueHighlight} {Residue list view: this view displays residue sequence codes and the
 corresponding amino acid abbreviations.  Residues
 selected by the cursor in the data view are highlighted
 in green (these residues are also highlighted in the
-3D view).}
+structure view).}
 DEVise setShowMouseLocation {ViewResidueHighlight} {3}
 DEVise setLinkMultFact {ViewResidueHighlight} {X} 1
 DEVise setLinkMultFact {ViewResidueHighlight} {Y} 1
@@ -811,16 +814,11 @@ DEVise setViewAutoFilter {View3DMain_FMCol} {1}
 DEVise setDupElim {View3DMain_FMCol} {0}
 DEVise setNiceAxes {View3DMain_FMCol} 0 0
 DEVise viewSetDisabledActions {View3DMain_FMCol} 0 0 0 0
-DEVise setViewHelp {View3DMain_FMCol} {This view shows the 3D structure of the selected residues.
-The residues selected with the cursor in the bottom view
-are highlighted (shown in green).  Other atoms are colored
-as follows:
-Carbon: gray
-Oxygen: red
-Nitrogen: blue
-Sulfur: orange
-Phosphorus: pink
-Hydrogen: white}
+DEVise setViewHelp {View3DMain_FMCol} {Structure view: shows a schematic of the
+structure of the given entry.  The residues selected with
+the cursor in the data view are highlighted (shown in green).
+Other residues are colored either by atom type or by
+ambiguity code as selected in the color select view.}
 DEVise setShowMouseLocation {View3DMain_FMCol} {1}
 DEVise setLinkMultFact {View3DMain_FMCol} {X} 1
 DEVise setLinkMultFact {View3DMain_FMCol} {Y} 1
@@ -855,6 +853,9 @@ DEVise setViewAutoFilter {View 1} {0}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
 DEVise viewSetDisabledActions {View 1} 1 0 1 1
+DEVise setViewHelp {View 1} {Color select view: use the cursor in this view to
+select whether the structure is colored by atom type
+or by ambiguity code.}
 DEVise setShowMouseLocation {View 1} {1}
 DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
@@ -991,6 +992,8 @@ DEVise setViewAutoFilter {View 5} {0}
 DEVise setDupElim {View 5} {0}
 DEVise setNiceAxes {View 5} 0 0
 DEVise viewSetDisabledActions {View 5} 1 1 1 1
+DEVise setViewHelp {View 5} {Atom color legend: shows how the atoms are colored,
+either by atom type or ambiguity code.}
 DEVise setShowMouseLocation {View 5} {1}
 DEVise setLinkMultFact {View 5} {X} 1
 DEVise setLinkMultFact {View 5} {Y} 1

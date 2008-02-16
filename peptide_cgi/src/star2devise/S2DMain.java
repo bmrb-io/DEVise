@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.64  2008/01/26 21:29:45  wenger
+// Started 11.2.3 now that 11.2.2 is released.
+//
 // Revision 1.63  2008/01/26 19:28:56  wenger
 // Changed version to 11.2.2 for release.
 //
@@ -100,7 +103,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.3x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.3x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
