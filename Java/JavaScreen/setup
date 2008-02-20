@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000
+#  (c) Copyright 2000-2008
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -25,7 +25,7 @@
 # have a Makefile.config
 
 if (! -e bin) then
-  mkdir bin
+  mkdir -p bin
 endif 
 
 if (-e bin/devised) then
@@ -41,7 +41,7 @@ endif
 cd ..
 
 if (! -e lib) then
-  mkdir lib
+  mkdir -p lib
 endif 
 
 if (! -e lib/composite.ini) then
@@ -51,14 +51,19 @@ if (! -e lib/composite.ini) then
 endif
 
 if (! -e JavaScreen) then
-  mkdir JavaScreen
+  mkdir -p JavaScreen
 endif
 cd JavaScreen
 ln -s ../*.gif .
 ln -s ../resources .
+ln -s ../html .
 if (! -e UI) then
-  mkdir UI
+  mkdir -p UI
 endif
 cd UI
 ln -s ../../UI/*.java .
 cd ../..
+
+cd html
+ln -s ../resources/toolbar_icons/*.default.* .
+cd ..

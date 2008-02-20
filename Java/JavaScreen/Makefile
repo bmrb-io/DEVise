@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2007
+# (c) Copyright 1992-2008
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -98,7 +98,7 @@ jara:
 	jar cf jsa2.jar JavaScreen/*.class JavaScreen/UI/*.class \
  	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
  	    JavaScreen/resources/toolbar_cursors/*.png \
-	    JavaScreen/resources/html/*.html
+	    JavaScreen/html/*.html
 
 jarb:
 	make classclean
@@ -110,7 +110,7 @@ jarb:
 	jar cf jsb2.jar JavaScreen/*.class JavaScreen/UI/*.class \
 	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
  	    JavaScreen/resources/toolbar_cursors/*.png \
-	    JavaScreen/resources/html/*.html
+	    JavaScreen/html/*.html
 
 jarjs:
 	make classclean
@@ -119,7 +119,7 @@ jarjs:
 	jar cf js.jar JavaScreen/*.class JavaScreen/UI/*.class \
 	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
  	    JavaScreen/resources/toolbar_cursors/*.png \
-	    JavaScreen/resources/html/*.html
+	    JavaScreen/html/*.html
 
 clean: classclean
 	-rm jsa1.jar jsa2.jar jsb1.jar jsb2.jar js.jar

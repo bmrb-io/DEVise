@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.97  2008/02/13 21:21:20  wenger
+// The JavaScreen now prints various useful information, such as the
+// Java version, OS version, etc., at the beginning of the Program
+// Information log.
+//
 // Revision 1.96  2008/02/08 21:03:12  wenger
 // Changed version from 5.8.3 to 5.9.0 because the toolbar and associated
 // stuff is such a big change; added JavaScreen help dialog (although the
@@ -651,7 +656,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.9.0x2"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.9.0x3"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
@@ -674,6 +679,8 @@ public final class DEViseGlobals
     // reach that value, we kill off the oldest client each time a new
     // client connects).
     public static final int DEFAULTMAXCLIENT = 100;
+
+    public static final String JS_HELP_URL = "html/javascreen_help.html";
 
     // global variables
 

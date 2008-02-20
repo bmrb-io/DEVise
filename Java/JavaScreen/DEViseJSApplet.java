@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2008/01/24 20:30:53  wenger
+// Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
+//
 // Revision 1.18  2008/01/22 20:02:38  wenger
 // Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
 // my fix to the pre-toolbar version of the JS, but it doesn't work for
@@ -287,6 +290,30 @@ public abstract class DEViseJSApplet extends Applet
         } catch (MalformedURLException ex) {
             System.err.println("Bad URL: " + ex);
         }
+    }
+
+    public void showHelpInBrowser()
+    {
+	String archive = getParameter("archive");
+
+	String firstElement;
+	int firstComma = archive.indexOf(",");
+	if (firstComma != -1) {
+	    firstElement = archive.substring(0, firstComma);
+	} else {
+	    firstElement = archive;
+	}
+
+	String helpUrl;
+	int lastSlash = firstElement.lastIndexOf("/");
+	if (lastSlash != -1) {
+	    helpUrl = firstElement.substring(0, lastSlash) + "/" +
+	      DEViseGlobals.JS_HELP_URL;
+	} else {
+	    helpUrl = DEViseGlobals.JS_HELP_URL;
+	}
+
+        showDocument(helpUrl, "_blank");
     }
 
 

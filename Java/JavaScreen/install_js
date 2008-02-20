@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2007
+#  (c) Copyright 2001-2008
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -152,7 +152,7 @@ echo ""
 echo "Installing jar and html files"
 
 if (! -d $jardir) then
-  mkdir $jardir
+  mkdir -p $jardir
   chmod 755 $jardir
 endif
 cp -p *.jar $jardir
@@ -166,6 +166,14 @@ chmod 644 $jardir/*.html
 cp -p logo_background.gif $jardir
 chmod 644 $jardir/logo_background.gif
 
+set htmldir = $jardir/html
+if (! -d $htmldir) then
+  mkdir -p $htmldir
+  chmod 755 $htmldir
+endif
+cp -p html/* $htmldir
+chmod 644 $htmldir/*
+
 if ($client_only) then
   exit
 endif
@@ -177,7 +185,7 @@ echo ""
 echo "Installing CGI file"
 
 if (! -d $cgidir) then
-  mkdir $cgidir
+  mkdir -p $cgidir
   chmod 755 $cgidir
 endif
 cp -p js.cgi $cgidir
@@ -185,7 +193,7 @@ chmod 755 $cgidir/js.cgi
 
 set logdir = $cgidir/devise
 if (! -d $logdir) then
-  mkdir $logdir
+  mkdir -p $logdir
   chmod 755 $logdir
 endif
 cp js_log $logdir
@@ -193,7 +201,7 @@ chmod 755 $logdir/js_log
 
 set logdir = $cgidir/devise/js_debug_log
 if (! -d $logdir) then
-  mkdir $logdir
+  mkdir -p $logdir
   chmod 777 $logdir
 endif
 
@@ -205,11 +213,11 @@ echo "Installing server programs (jss, devised, and Tasvir)"
 
 # Create directories.
 if (! -d $servdir) then
-  mkdir $servdir
+  mkdir -p $servdir
   chmod 755 $servdir
 endif
 if (! -d $servdir/JavaScreen) then
-  mkdir $servdir/JavaScreen
+  mkdir -p $servdir/JavaScreen
   chmod 755 $servdir/JavaScreen
 endif
 
@@ -227,7 +235,7 @@ foreach file ($files)
 end
 
 if (! -d $servdir/scripts) then
-  mkdir $servdir/scripts
+  mkdir -p $servdir/scripts
   chmod 755 $servdir/scripts
 endif
 cp -p scripts/* $servdir/scripts
@@ -235,13 +243,13 @@ chmod 755 $servdir/scripts/*
 
 # Create the logs directory if necessary.
 if (! -d $servdir/logs) then
-  mkdir $servdir/logs
+  mkdir -p $servdir/logs
   chmod 777 $servdir/logs
 endif
 
 # Install lib files (for devised).
 if (! -d $servdir/lib) then
-  mkdir $servdir/lib
+  mkdir -p $servdir/lib
   chmod 755 $servdir/lib
 endif
 cp -p lib/composite.ini $servdir/lib
@@ -249,7 +257,7 @@ chmod 644 $servdir/lib/composite.ini
 
 # Create bin directory, and install devised and Tasvir.
 if (! -d $servdir/bin) then
-  mkdir $servdir/bin
+  mkdir -p $servdir/bin
   chmod 755 $servdir/bin
 endif
 
@@ -281,7 +289,7 @@ rm bin2.tar
 # Install dynamic library directory (for devised and Tasvir).
 if (-e dyn_lib) then
   if (! -e $servdir/dyn_lib) then
-    mkdir $servdir/dyn_lib
+    mkdir -p $servdir/dyn_lib
   endif
   cp -p dyn_lib/* $servdir/dyn_lib
 endif
@@ -294,11 +302,11 @@ echo "Installing the JSPoP"
 
 # Create directories.
 if (! -d $popdir) then
-  mkdir $popdir
+  mkdir -p $popdir
   chmod 755 $popdir
 endif
 if (! -d $popdir/JavaScreen) then
-  mkdir $popdir/JavaScreen
+  mkdir -p $popdir/JavaScreen
   chmod 755 $popdir/JavaScreen
 endif
 
@@ -342,7 +350,7 @@ if (! -f $popdir/users.cfg) then
 endif
 
 if (! -d $popdir/scripts) then
-  mkdir $popdir/scripts
+  mkdir -p $popdir/scripts
   chmod 755 $popdir/scripts
 endif
 cp -p scripts/* $popdir/scripts
@@ -350,7 +358,7 @@ chmod 755 $popdir/scripts/*
 
 # Create the logs directory if necessary.
 if (! -d $popdir/logs) then
-  mkdir $popdir/logs
+  mkdir -p $popdir/logs
   chmod 777 $popdir/logs
 endif
 

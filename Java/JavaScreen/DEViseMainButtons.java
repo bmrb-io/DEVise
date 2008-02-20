@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2008/02/08 21:03:12  wenger
+// Changed version from 5.8.3 to 5.9.0 because the toolbar and associated
+// stuff is such a big change; added JavaScreen help dialog (although the
+// text is not yet complete, and some is commented out until I get html
+// links to work in that dialog); added (currently disabled) menu item to
+// show JS version history.
+//
 // Revision 1.11  2008/01/24 20:30:53  wenger
 // Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
 //
@@ -147,12 +154,16 @@ public class DEViseMainButtons
     public static final String closeLogStr = "Hide Log";
     private MenuItem logMenuItem = new MenuItem(displayLogStr);
 
-    private MenuItem jsHelpMenuItem = new MenuItem("JavaScreen Help...");
     private MenuItem showViewHelpMenuItem = new MenuItem("Show View Help");
     private MenuItem hideViewHelpMenuItem = new MenuItem("Hide View Help");
     private MenuItem aboutMenuItem = new MenuItem("About JavaScreen...");
     private MenuItem versionHistMenuItem = new MenuItem(
       "JavaScreen version history...");
+
+    private MenuItem jsHelpBrowserMenuItem = new MenuItem(
+      "JavaScreen Help (in browser window)...");
+    private MenuItem jsHelpInternalMenuItem = new MenuItem(
+      "JavaScreen Help (in Java window)...");
 
     // Dialogs
     private DEViseHtmlWindow helpWindow;
@@ -257,12 +268,16 @@ public class DEViseMainButtons
 	viewMenuButton.add(viewPM);
 
 	// Set up help menu.
-	helpPM.add(jsHelpMenuItem);
+	helpPM.add(jsHelpBrowserMenuItem);
 	helpPM.add(showViewHelpMenuItem);
 	helpPM.add(hideViewHelpMenuItem);
 	//TEMP helpPM.add(aboutMenuItem);
 	//TEMP helpPM.add(versionHistMenuItem);
+	helpPM.add(jsHelpInternalMenuItem);
 	helpMenuButton.add(helpPM);
+	if (_js._parentApplet == null) {
+            jsHelpBrowserMenuItem.setEnabled(false);
+        }
     }
 
     //-------------------------------------------------------------------
@@ -415,12 +430,20 @@ public class DEViseMainButtons
                 }
             });
 
-        jsHelpMenuItem.addActionListener(new ActionListener()
+        jsHelpBrowserMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    _js.showHelpInBrowser();
+                }
+            });
+
+        jsHelpInternalMenuItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
                 {
 		    String htmlText = DEViseHtmlWindow.getTextFromFile(
-		      _js.jsValues, "resources/html/javascreen_help.html");
+		      _js.jsValues, DEViseGlobals.JS_HELP_URL);
 		    helpWindow = new DEViseHtmlWindow(
 		      "DEVise JavaScreen help", htmlText);
                 }

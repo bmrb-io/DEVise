@@ -21,7 +21,7 @@
 <TITLE>DEVise JavaScreen Help</TITLE>
 </HEAD>
 
-<!-- <body background="logo_background.gif"> -->
+<body background="../logo_background.gif">
 
 <center>
 <h1>
@@ -32,7 +32,6 @@ v5.9.0
 </h3>
 </center>
 
-<!-- TEMP -- until we get links working in the help dialog
 <h3>
 <a href="#General">
 General</a>
@@ -47,7 +46,6 @@ Toolbar</a>
 <a href="#Keyboard">
 Keyboard shortcuts</a>
 </h3>
--->
 
 <hr>
 
@@ -127,6 +125,8 @@ to select from a number of different modes.  These modes change the
 behavior of the JavaScreen as described below.  In general, in order to
 perform a given action you have to select the appropriate toolbar
 mode, and then click or drag in the view that is to be affected.
+When you enter a given toolbar mode, the mouse cursor changes to
+reflect the current mode.
 </p>
 
 <p>
@@ -136,7 +136,8 @@ the toolbar only has an effect on two-dimensional views.
 </p>
 
 <ul>
-<li><b>Drill down (show data records)</b>:  in this toolbar mode, if you
+<li> <img src="drill-down.default.png">
+<b>Drill down (show data records)</b>:  in this toolbar mode, if you
 click on a data symbol, the location of the click (in data units) and the
 data associated with the symbol will be displayed.  If multiple data
 symbols overlap or are very close together, the drill-down dialog will
@@ -144,11 +145,13 @@ show the data corresponding to all of the symbols.  If you click in an
 area in which there is no symbol, only the location of the click will be
 displayed.
 
-<li><b>Show help for selected view</b>:  in this toolbar mode, if you
+<li> <img src="show_view_help.default.png">
+<b>Show help for selected view</b>:  in this toolbar mode, if you
 click anywhere in a view, the help message for that view (if any) will
 be shown.
 
-<li><b>Select cursor/zoom in XY/3D rotate</b>:  this is the "normal"
+<li> <img src="crosshairs.default.png">
+<b>Select cursor/zoom in XY/3D rotate</b>:  this is the "normal"
 toolbar mode.  In this mode, you can drag or resize a DEVise cursor
 (if the mouse cursor is on a DEVise cursor).  If you are not on a cursor
 in a two-dimensional view, dragging with the mouse will zoom in on both
@@ -159,23 +162,27 @@ Also, a single-click in a view with a cursor will move the cursor to
 the mouse location.  If there are multiple cursors in the view, only
 one will be moved.
 
-<li><b>Expand DEVise cursor to fill view</b>:  in this toolbar mode, if
+<li> <img src="full_screen_filter.default.png">
+<b>Expand DEVise cursor to fill view</b>:  in this toolbar mode, if
 you click anywhere in a view containing a DEVise cursor, the DEVise
 cursor in the view will be expanded (or contracted) to the dimensions of
 view axes.  If there are multiple cursors in the view, only one will
 be resized.
 
-<li><b>Increase symbol size</b>: for some symbol types, the size can
+<li> <img src="increase_symbol_size.default.png">
+<b>Increase symbol size</b>: for some symbol types, the size can
 be varied.  In this toolbar mode, clicking in a view with such symbols
 will increase the symbol size.
 
-<li><b>Decrease symbol size</b>: for some symbol types, the size can
+<li> <img src="decrease_symbol_size.default.png">
+<b>Decrease symbol size</b>: for some symbol types, the size can
 be varied.  In this toolbar mode, clicking in a view with such symbols
 will decrease the symbol size.  Note that the symbols cannot be made
 smaller than the "default" size, so the symbols will only be reduced
 in size if they have already been increased from the default.
 
-<li><b>Home (show all data)</b>: in this toolbar mode, clicking in a
+<li> <img src="home_filter.default.png">
+<b>Home (show all data)</b>: in this toolbar mode, clicking in a
 view will set the view's axis ranges to the "home" setting.  In most
 cases, this means that the view will be expanded (or contracted) to
 exactly the ranges required to show all data in the view.  In some
@@ -183,22 +190,27 @@ cases, there is a pre-defined home setting different than this default.
 Note that if the view is already at the "home" setting, performing this
 operation again will have no effect.
 
-<li><b>Toggle axis ranges</b>: in this toolbar mode, clicking in a view
+<li> <img src="toggle_filter.default.png">
+<b>Toggle axis ranges</b>: in this toolbar mode, clicking in a view
 will toggle back and forth between the last two sets of axis ranges.
 
-<li><b>Zoom in XY</b>:  in this toolbar mode, dragging with the mouse
+<li> <img src="zoom_in-all.default.png">
+<b>Zoom in XY</b>:  in this toolbar mode, dragging with the mouse
 zooms in on both the X and Y axes.  Single-clicking zooms in on
 both axes by a factor of two.
 
-<li><b>Zoom in X</b>: in this toolbar mode, dragging with the mouse
+<li> <img src="zoom_in-x.default.png">
+<b>Zoom in X</b>: in this toolbar mode, dragging with the mouse
 zooms in on the X axis only.  Single-clicking zooms in on the X axis
 by a factor of two.
 
-<li><b>Zoom out XY</b>: in this toolbar mode, dragging with the mouse
+<li> <img src="zoom_out-all.default.png">
+<b>Zoom out XY</b>: in this toolbar mode, dragging with the mouse
 zooms out on both the X and Y axes.  Single-clicking zooms out on
 both axes by a factor of two.
 
-<li><b>Zoom out X</b>: in this toolbar mode, dragging with the mouse
+<li> <img src="zoom_out-x.default.png">
+<b>Zoom out X</b>: in this toolbar mode, dragging with the mouse
 zooms out on the X axis only.  Single-clicking zooms out on the X
 axis by a factor of two.
 </ul>
@@ -322,14 +334,11 @@ Note that a Jmol view is one that shows both atoms and bonds.
 
 <p>
 If you have any trouble using this software, please contact 
-devise-sup@cs.wisc.edu
-<!-- TEMP -- until we get links working in the help dialog
 <a href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
--->
 </p>
 
 <p>
-<i>Last updated 2008-02-13.</i>
+<i>Last updated 2008-02-20.</i>
 </p>
 
 </BODY>

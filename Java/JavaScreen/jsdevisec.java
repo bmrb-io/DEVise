@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.169  2008/02/13 22:38:17  wenger
+// Added a button to show the Jmol selection trees without having to
+// go into a menu.
+//
 // Revision 1.168  2008/02/13 21:21:20  wenger
 // The JavaScreen now prints various useful information, such as the
 // Java version, OS version, etc., at the beginning of the Program
@@ -1404,6 +1408,22 @@ public class jsdevisec extends JPanel
 	} else {
 	     System.out.println("Can't show document " + url +
 	       " because not an applet");
+	}
+    }
+
+    public void showHelpInBrowser()
+    {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showHelpInBrowser()");
+	}
+    	if (_parentApplet != null) {
+	     _parentApplet.showHelpInBrowser();
+	} else {
+	     System.out.println("Can't show help in browser " +
+	       "because not an applet");
 	}
     }
 
