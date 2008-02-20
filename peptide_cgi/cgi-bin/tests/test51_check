@@ -1,0 +1,11 @@
+echo "Checking output files"
+
+#TEMPTEMP -- add stuff below
+set files = ()
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end

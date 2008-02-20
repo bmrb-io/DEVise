@@ -343,6 +343,21 @@ if ($status != 0) then
   set failed_list = "$failed_list test50"
 endif
 
+echo ""
+echo "Running test51..."
+tests/test51
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test51"
+endif
+
+echo ""
+echo "Running test51_3..."
+tests/test51_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test51_3"
+endif
 
 #TEMP -- maybe add test of 4547
 

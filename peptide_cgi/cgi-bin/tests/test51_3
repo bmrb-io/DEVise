@@ -1,0 +1,29 @@
+#! /bin/csh -f
+
+# This is the same as test51, except on an NMR-STAR v3 file.
+
+# Tests processing of S2 parameters.
+
+set result = 0
+
+rm -f */4689*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 4689 -file test_data/bmr4689_3.str -local -force \
+  -check_res_list
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+source tests/test51_check
+
+
+echo -n "Test51_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

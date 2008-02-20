@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.65  2008/02/16 00:17:48  wenger
+// Greatly improved view help in all Peptide-CGI visualizations.
+//
 // Revision 1.64  2008/01/26 21:29:45  wenger
 // Started 11.2.3 now that 11.2.2 is released.
 //
@@ -103,7 +106,9 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.3x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.3x3"/*TEMP*/;
+    // Change version to 11.3.0 when S2 order stuff is implemented.
+    //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1542,7 +1547,7 @@ public class S2DMain {
         saveHExchangeRate(star);
         saveCoupling(star);
         saveHExchangeProtFact(star);
-        saveS2Params(star);
+        //TEMPTEMP saveS2Params(star);
 
         save3DDataSources();
         saveAtomicCoords(star);
@@ -1745,13 +1750,28 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Note: this can be tested with 4689.
     private void saveS2Params(S2DStarIfc star)
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveS2Params()");
 	}
 
-	// add real code here
+	Enumeration frameList = star.getDataFramesByCat(star.ORDER_SF_CAT,
+	  star.ORDER_PARAMETERS);
+
+	int frameIndex = 1;
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    try {
+	        saveFrameS2Params(star, frame, frameIndex);
+	    } catch(S2DException ex) {
+		System.err.println("Exception saving coupling constants for " +
+		  "frame " + star.getFrameName(frame) + ": " +
+		  ex.toString());
+	    }
+	    frameIndex++;
+        }
     }
 
     //-------------------------------------------------------------------
@@ -2284,6 +2304,52 @@ public class S2DMain {
 	try {
 	    hetNOE.writeHetNOE(frameIndex);
 	    hetNOE.addHetNOEData(_dataSets, frameIndex);
+	} finally {
+	    _summary.endFrame();
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Save coupling constants for one save frame.
+    private void saveFrameS2Params(S2DStarIfc star, SaveFrameNode frame,
+      int frameIndex) throws S2DException
+    {
+        if (doDebugOutput(4)) {
+	    System.out.println("    S2DMain.saveFrameS2Params(" +
+	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	}
+
+	//
+	// Get the values we need from the Star file.
+	//
+	String[] resSeqCodes = star.getFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_RES_SEQ_CODE);
+
+	String[] resLabels = star.getFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_RES_LABEL);
+
+	String[] atomNames = star.getFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_ATOM_NAME);
+
+	String[] s2Values = star.getFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_VALUE);
+
+	String[] s2Errors = star.getOptionalFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_VALUE_ERR, s2Values.length, "0");
+
+	//
+	// Create an S2DS2Order object with the values we just got.
+	//
+	S2DS2Order s2Order = new S2DS2Order(_name/*TEMPTEMP*/);
+
+	//
+	// Now go ahead and calculate and write out the S2 order values.
+	//
+	_summary.startFrame(star.getFrameDetails(frame));
+
+	try {
+	    s2Order.writeS2Order(frameIndex);
+	    s2Order.addS2Order(_dataSets, frameIndex);
 	} finally {
 	    _summary.endFrame();
 	}

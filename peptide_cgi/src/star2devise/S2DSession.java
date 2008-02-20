@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2007
+// (c) Copyright 2001-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/11/15 17:15:36  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.6  2007/08/21 18:56:30  wenger
 // Improved debug output -- better verbosity levels, etc.
 //
@@ -179,14 +182,14 @@ public class S2DSession {
 	    sessionSuffix = dataSuffix;
 	    searchString1 = "4096r";
 	    break;
+TEMP*/
 
         case S2DUtils.TYPE_ORDER:
 	    baseName = "order.base";
-	    dataSuffix = S2DNames.
+	    dataSuffix = S2DNames.ORDER_SUFFIX;
 	    sessionSuffix = dataSuffix;
 	    searchString1 = "";
 	    break;
-TEMP*/
 
         case S2DUtils.TYPE_T1_RELAX:
 	    baseName = "relax.base";

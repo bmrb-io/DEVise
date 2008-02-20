@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/12/20 16:49:03  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.7  2007/11/15 17:15:36  wenger
 // Cleaned out cvs history in source files.
 //
@@ -307,11 +314,11 @@ public class S2DUtils
         case S2DUtils.TYPE_HXRATES:
 	    dataSuffix = S2DNames.HX_RATE_SUFFIX;
 	    break;
+TEMP*/
 
         case S2DUtils.TYPE_ORDER:
-	    dataSuffix = S2DNames.
+	    dataSuffix = S2DNames.ORDER_SUFFIX;
 	    break;
-TEMP*/
 
         case S2DUtils.TYPE_T1_RELAX:
 	    dataSuffix = S2DNames.T1_SUFFIX;

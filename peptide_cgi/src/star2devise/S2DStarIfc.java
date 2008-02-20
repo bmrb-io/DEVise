@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2007
+// (c) Copyright 2002-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2007/11/15 17:15:36  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.6  2007/10/01 21:32:30  wenger
 // Changes to how we get chemical shift entity ID values: added check for
 // _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
@@ -165,7 +168,16 @@ public class S2DStarIfc {
     public String MOL_SYS_COMP_NAME = "";
     public String MONOMERIC_POLYMER = "";
     public String MONOMERIC_POLYMER_SF_CAT = "";
+
     public String NMR_STAR_VERSION = "";
+
+    public String ORDER_ATOM_NAME = "";
+    public String ORDER_PARAMETERS = "";
+    public String ORDER_RES_LABEL = "";
+    public String ORDER_RES_SEQ_CODE = "";
+    public String ORDER_SF_CAT = "";
+    public String ORDER_VALUE = "";
+    public String ORDER_VALUE_ERR = "";
 
     public String POLYMER = "";
     public String POLYPEPTIDE = "";

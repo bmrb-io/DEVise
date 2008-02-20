@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2007
+// (c) Copyright 2007-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/09/26 20:47:15  wenger
+// Changed x.Seq_ID to x.Comp_index_ID for NMR-STAR 3.1 processing as
+// per Eldon's request; added some more debug output.
+//
 // Revision 1.3  2007/08/20 20:26:08  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -132,6 +136,15 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
 	HET_NOE_RES_SEQ_CODE = "_Heteronucl_NOE.Comp_index_ID_1";
 	HET_NOE_VALUE = "_Heteronucl_NOE.Val";
 	HET_NOE_VALUE_ERR = "_Heteronucl_NOE.Val_err";
+
+	//TEMPTEMP -- make sure that all of these are correct
+	ORDER_ATOM_NAME = "_Order_param.Atom_ID";
+	ORDER_PARAMETERS = "order_parameters";
+	ORDER_RES_LABEL = "_Order_param.Comp_ID";
+	ORDER_RES_SEQ_CODE = "_Order_param.Seq_ID";
+	ORDER_SF_CAT = "_Order_parameter_list.Sf_category";
+	ORDER_VALUE = "_Order_param.Order_param_val";
+	ORDER_VALUE_ERR = "_Order_param.Order_param_val_fit_err";
 
 	T1_ATOM_NAME = "_T1.Atom_ID";
 	T1_RES_SEQ_CODE = "_T1.Comp_index_ID";

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2007
+// (c) Copyright 2004-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/11/15 17:15:35  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.7  2007/10/01 21:32:29  wenger
 // Changes to how we get chemical shift entity ID values: added check for
 // _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
@@ -340,7 +343,18 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	MOL_SYS_COMP_NAME = "_Mol_system_component_name";
 	MONOMERIC_POLYMER_SF_CAT = "_Saveframe_category";
 	MONOMERIC_POLYMER = "monomeric_polymer";
+
         NMR_STAR_VERSION = "_NMR_STAR_version";
+
+	//TEMPTEMP -- make sure that all of these are correct.
+	ORDER_ATOM_NAME = "_Atom_name";
+	ORDER_PARAMETERS = "S2_parameters";
+	ORDER_RES_LABEL = "_Residue_label";
+	ORDER_RES_SEQ_CODE = "_Residue_seq_code";
+	ORDER_SF_CAT = "_Saveframe_category";
+	ORDER_VALUE = "_S2_value";
+	ORDER_VALUE_ERR = "_S2_value_fit_error";
+
         SEQ_SUBJ_LENGTH = "_Sequence_subject_length";
         SEQ_IDENTITY = "_Sequence_identity";
 
