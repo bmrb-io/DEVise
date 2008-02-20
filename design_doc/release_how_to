@@ -28,6 +28,8 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 - Build/test JavaScreen:
     - Build the JavaScreen (including jar files).
 
+    - Make sure JavaScreen help version matches the actual software.
+
     - Run "autotest all" in the JS directory.
 
 - Test release:
