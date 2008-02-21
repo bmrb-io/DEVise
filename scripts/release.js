@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2007
+#  (c) Copyright 2001-2008
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.12  2007/05/14 18:26:32  wenger
+#  Fixed JavaScreen release script for new UI directory.
+#
 #  Revision 1.11  2007/02/20 00:00:37  wenger
 #  Changed JavaScreen distribution tarfile to have JavaScreen version
 #  instead of DEVise version; minor cleanup to distribution scripts.
@@ -236,6 +239,15 @@ echo ""
 echo "Releasing GIFs"
 cp -p $src/*.gif $dest
 chmod 644 $dest/*.gif
+
+#-----------------------------------------------------------
+# Release the html directory.
+echo ""
+echo "Releasing html directory"
+mkdir -p $dest/html
+chmod 755 $dest/html
+cp -p $src/html/* $dest/html
+chmod 644 $dest/html/*
 
 #-----------------------------------------------------------
 # Release the cron entry files.
