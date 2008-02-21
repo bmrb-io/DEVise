@@ -14,6 +14,9 @@ track of what's going on.  You end up using a lot of tags on branches,
 so it's good to decide on some form at the beginning of the branch, and
 stick with it.
 
+NOTE: the design_doc directory should *not* be branched (although this
+has been done in the past).
+
 There are several sections below:
 
 * Creating the branch and getting code onto the branch.
@@ -95,7 +98,7 @@ COMMITTING AND MERGING
 * Commit code on the branch.  Once your code is on the branch, any commits
   that you do will automatically be commits on the branch.
 
-* Merging.  You can merge either from the branch to the trunk, or vice
+* Merging.  You can merge either from the branch to the trunk, or vice-
   versa.  WHEN YOU DO A MERGE IT IS VITAL THAT YOU TAG BOTH THE BRANCH
   AND THE TRUNK.  If you don't do this, it may not be possible to do
   subsequent merges without re-merging code that has already been merged,
