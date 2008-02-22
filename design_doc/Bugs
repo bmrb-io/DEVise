@@ -4126,8 +4126,13 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			(wenger)
 
 961 2/22/08	OPEN	JS?: in the chem shift ref 1 visualization, a brown
-			border shows up around the main view (for 4317 on
-			teal, at least). (wenger)
+			border shows up around the main view after zooming
+			in that view (for 4317 on teal, at least). (wenger)
+			Hmm -- this seems to be related to something on
+			the server side (maybe Xvfb version??) -- when I
+			connect to teal with JS client 5.9.0x6 I see the
+			problem; when I connect to marlin I don't (both
+			DEVise 1.9.0 Jul 13 2006).
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
