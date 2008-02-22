@@ -4138,6 +4138,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			drill-down mode for drill-down to work in Jmol
 			views. (wenger)
 
+963 2/22/08	OPEN	JS: JavaScreen release should include the jsj
+			script so you can test run the client application
+			in the release directory. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
