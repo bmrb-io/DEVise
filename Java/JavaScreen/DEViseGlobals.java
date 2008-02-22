@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.99  2008/02/22 17:26:05  wenger
+// Fixed some bugs in showing Java properties in the info window.
+//
 // Revision 1.98  2008/02/20 20:22:10  wenger
 // JavaScreen now defaults to showing help in browser window (to
 // get around problems on Mac with the Java window); added links
@@ -661,7 +664,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.9.0x6"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.9.0");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
