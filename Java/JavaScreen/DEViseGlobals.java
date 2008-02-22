@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.98  2008/02/20 20:22:10  wenger
+// JavaScreen now defaults to showing help in browser window (to
+// get around problems on Mac with the Java window); added links
+// and images to the help page because of this change.
+//
 // Revision 1.97  2008/02/13 21:21:20  wenger
 // The JavaScreen now prints various useful information, such as the
 // Java version, OS version, etc., at the beginning of the Program
@@ -656,7 +661,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.9.0x3"/*TEMPTEMP*/);
+    public static final String VERSION = new String("5.9.0x6"/*TEMPTEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

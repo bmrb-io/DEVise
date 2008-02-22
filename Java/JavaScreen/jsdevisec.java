@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.170  2008/02/20 20:22:11  wenger
+// JavaScreen now defaults to showing help in browser window (to
+// get around problems on Mac with the Java window); added links
+// and images to the help page because of this change.
+//
 // Revision 1.169  2008/02/13 22:38:17  wenger
 // Added a button to show the Jmol selection trees without having to
 // go into a menu.
@@ -1471,32 +1476,22 @@ public class jsdevisec extends JPanel
 	    debugWindow = new YLogGUI(jsValues.debug._debugLevel);
 	    showDebug();
 
-	    String prop = System.getProperty("java.version");
-	    pn("Java version: " + prop);
-	    prop = System.getProperty("java.vendor");
-	    pn("Java vendor: " + prop);
-	    prop = System.getProperty("java.class.version");
-	    pn("Java class version: " + prop);
+	    showProperty("java.version");
+	    showProperty("java.vendor");
+	    showProperty("java.class.version");
 	    pn("");
 
-	    prop = System.getProperty("java.runtime.version");
-	    pn("Java runtime version: " + prop);
-	    prop = System.getProperty("java.runtime.name");
-	    pn("Java runtime name: " + prop);
+	    showProperty("java.runtime.version");
+	    showProperty("java.runtime.name");
 	    pn("");
 
-	    prop = System.getProperty("java.vm.version");
-	    pn("Java vm version: " + prop);
-	    prop = System.getProperty("java.vm.vendor");
-	    pn("Java vm vendor: " + prop);
+	    showProperty("java.vm.version");
+	    showProperty("java.vm.vendor");
 	    pn("");
 
-	    prop = System.getProperty("os.arch");
-	    pn("OS arch: " + prop);
-	    prop = System.getProperty("os.name");
-	    pn("OS name: " + prop);
-	    prop = System.getProperty("os.version");
-	    pn("OS version: " + prop);
+	    showProperty("os.arch");
+	    showProperty("os.name");
+	    showProperty("os.version");
 	    pn("");
 
 	    pn("JavaScreen version: " + DEViseGlobals.VERSION);
@@ -1508,7 +1503,7 @@ public class jsdevisec extends JPanel
 	    Enumeration names = props.propertyNames();
 	    while (names.hasMoreElements()) {
 		String name = (String)names.nextElement();
-	        pn("Prop " + name + ": " + System.getProperty(name));
+	        showProperty(name);
 	    }
 	    pn("");
 	    */
@@ -1528,6 +1523,17 @@ public class jsdevisec extends JPanel
 	    logMenuItem.setLabel(DEViseMainButtons.displayLogStr);
 	}
 
+    }
+
+    // Show the given property in the log window.
+    public void showProperty(String propertyName)
+    {
+    	try {
+	    String propValue = System.getProperty(propertyName);
+	    pn(propertyName + ": " + propValue);
+	} catch (Exception ex) {
+	    pn("Exception (" + ex + ") showing property " + propertyName);
+	}
     }
 
     // show message in message box
