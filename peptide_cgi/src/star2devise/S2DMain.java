@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.67  2008/02/22 19:08:48  wenger
+// Changed version to 11.2.3 for release; slight update to testing document.
+//
 // Revision 1.66  2008/02/20 17:41:07  wenger
 // Committing (disabled) partially-implemented S2 Order visualization
 // code and tests.
@@ -110,7 +113,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.3";
+    public static final String PEP_CGI_VERSION = "11.2.4x1"/*TEMP*/;
     // Change version to 11.3.0 when S2 order stuff is implemented.
     //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
