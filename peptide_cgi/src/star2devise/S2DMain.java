@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.66  2008/02/20 17:41:07  wenger
+// Committing (disabled) partially-implemented S2 Order visualization
+// code and tests.
+//
 // Revision 1.65  2008/02/16 00:17:48  wenger
 // Greatly improved view help in all Peptide-CGI visualizations.
 //
@@ -106,7 +110,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.3x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.3";
     // Change version to 11.3.0 when S2 order stuff is implemented.
     //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";

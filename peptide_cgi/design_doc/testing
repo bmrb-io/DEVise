@@ -80,6 +80,8 @@ The following testing steps must be done:
 
 - Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram2.html.
 
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/dna_histogram.html.
+
 - Test http://devise.cs.wisc.edu/devise/bmrb/histograms/rna_histogram.html.
 
 
