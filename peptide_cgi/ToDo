@@ -249,6 +249,13 @@ Num Date        Status  Pri     Description
 				help links from Peptide-CGI-generated pages.
 				(wenger)
 
+066 2/22/08	OPEN	1	Update visualization help images to match
+				new JavaScreen. (wenger)
+
+067 2/22/08	OPEN	4	Change colors of bars in DNA and RNA histogram
+				visualizations (so they aren't the same as
+				in the protein visualization). (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

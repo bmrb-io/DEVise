@@ -4134,6 +4134,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			problem; when I connect to marlin I don't (both
 			DEVise 1.9.0 Jul 13 2006).
 
+962 2/22/08	OPEN	JS: help needs change -- you need to be in toolbar
+			drill-down mode for drill-down to work in Jmol
+			views. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
