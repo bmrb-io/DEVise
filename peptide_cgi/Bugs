@@ -265,6 +265,10 @@ Num Date        Status  Description
 			(Fixed by wenger, 1/25/08, in 11.2.2.)
 
 
+060 2/25/08	OPEN	3D visualization help links (e.g., "data view")
+			jump to confusing points on the page (solely tied
+			to text, not screendumps). (elu/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
