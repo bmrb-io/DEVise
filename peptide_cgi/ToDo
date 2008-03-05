@@ -245,7 +245,7 @@ Num Date        Status  Pri     Description
 
 064 12/19/07	OPEN	3	Make a test for item 063. (wenger)
 
-065 2/11/08	OPEN	1	After releasing the v5.9.0 JS client, remove
+065 2/11/08	DONE	1	After releasing the v5.9.0 JS client, remove
 				help links from Peptide-CGI-generated pages.
 				(wenger)
 

@@ -4,6 +4,9 @@ Peptide-CGI 11.2.4
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Removed keyboard shortcut links from all web pages and templates (no
+longer needed because of new JavaScreen help).
+
 
 
 Peptide-CGI 11.2.3
