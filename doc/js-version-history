@@ -3,6 +3,10 @@
 JavaScreen 5.9.1
 ----------------
 
+* Disabled alt and shift mouse action modifiers in 2D views to prevent
+confusion (often caused by the JavaScreen not receiving key-up events
+from browsers).
+
 
 JavaScreen 5.9.0
 ----------------

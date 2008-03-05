@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/08/27 19:16:39  wenger
+// Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
+//
 // Revision 1.4  2007/08/03 20:17:27  wenger
 // Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
 //
@@ -90,6 +93,9 @@ import  java.awt.event.*;
 public class DEViseCanvas2D extends DEViseCanvas
 {
     private static final int DEBUG = 0; // 0 - 3
+
+    private static boolean allowAltModifier = false;
+    private static boolean allowShiftModifier = false;
 
     //===================================================================
     // PUBLIC METHODS
@@ -209,10 +215,9 @@ public class DEViseCanvas2D extends DEViseCanvas
             String cmd = null;
             Point p = event.getPoint();
 
-            if (( jsc.toolBar.doNormal() &&
+            if ( ( allowShiftModifier && jsc.toolBar.doNormal() &&
 	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
 	      jsc.toolBar.doDrillDown()) {
-		//TEMPTOOLBAR -- should we turn off drill-down mode here??
                 if (activeView.isDrillDown) {
                     cmd = DEViseCommands.SHOW_RECORDS + " " +
                       activeView.getCurlyName() + " " +
@@ -354,8 +359,10 @@ public class DEViseCanvas2D extends DEViseCanvas
 	      activeView.translateY(y2, 2);
 
             // Alt-drag zooms out.
-            if (jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT || 
-              jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT ||
+            if ( (allowShiftModifier &&
+	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_ALT) ||
+              (allowAltModifier &&
+	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
               jsc.toolBar.doZoomOut()) {
                 cmd = cmd + " 1";
             } else if (jsc.toolBar.doZoomIn()) {

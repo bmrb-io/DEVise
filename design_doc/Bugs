@@ -4148,11 +4148,12 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			okay (even though both seemed to produce the same
 			commands). (elu/wenger)
 
-965 3/5/08	OPEN	JS: user confusion caused by JS not seeing all
+965 3/5/08	FIXED	JS: user confusion caused by JS not seeing all
 			shift-key-up events and therefore zooming out instead
 			of in, etc.  Therefore, disable shift as a keyboard
 			modifier in the JS (and maybe other things that could
 			cause problems). (elu/wenger)
+			(Fixed by wenger, 3/5/08.)
 
 966 3/5/08	OPEN	JS: when doing drill-down on histogram visualizations,
 			for Eldon, at least, the popped-up browser tab/page is
