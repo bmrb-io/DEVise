@@ -4142,6 +4142,26 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			script so you can test run the client application
 			in the release directory. (wenger)
 
+964 3/5/08	OPEN	JS: in DNA or RNA histograms -- shift-click produced
+			a drill-down dialog, but seemed to never actually
+			find the data; drilling down with the toolbar worked
+			okay (even though both seemed to produce the same
+			commands). (elu/wenger)
+
+965 3/5/08	OPEN	JS: user confusion caused by JS not seeing all
+			shift-key-up events and therefore zooming out instead
+			of in, etc.  Therefore, disable shift as a keyboard
+			modifier in the JS (and maybe other things that could
+			cause problems). (elu/wenger)
+
+966 3/5/08	OPEN	JS: when doing drill-down on histogram visualizations,
+			for Eldon, at least, the popped-up browser tab/page is
+			unresponsive while the drill-down dialog is shown.
+			(elu/wenger)
+
+967 3/5/08	OPEN	JS: on DNA/RNA histograms, sometimes finding only
+			the link data and not the "real" data. (elu/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
