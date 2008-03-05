@@ -4,6 +4,9 @@ Peptide-CGI 11.2.4
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Removed all shift-click references from html pages, and replaced
+them with references to the toolbar drill-down mode.
+
 * Removed keyboard shortcut links from all web pages and templates (no
 longer needed because of new JavaScreen help).
 

@@ -257,9 +257,10 @@ Num Date        Status  Pri     Description
 				in the protein visualization). (wenger)
 				(Eldon says to not do this.)
 
-068 3/5/08	OPEN	1	Change all references to drilling down from
+068 3/5/08	FIXED	1	Change all references to drilling down from
 				shift-click to the appropriate toolbar usage.
 				(elu/wenger)
+				(Fixed by wenger, 3/5/08.)
 
 069 3/5/08	OPEN	3	Add residue and atom names to drill-down data
 				in the histogram visualizations. (elu/wenger)

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.68  2008/02/22 19:38:58  wenger
+// Changed version to 11.2.4x1 and added 11.2.4 section to version
+// history.
+//
 // Revision 1.67  2008/02/22 19:08:48  wenger
 // Changed version to 11.2.3 for release; slight update to testing document.
 //
@@ -113,7 +117,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.4x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.4x2"/*TEMP*/;
     // Change version to 11.3.0 when S2 order stuff is implemented.
     //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";

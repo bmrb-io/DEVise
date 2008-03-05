@@ -108,6 +108,7 @@ if (! -e $targetdir) then
 endif
 chmod a+rwx $targetdir
 cp -p histograms/html/*.html $targetdir
+cp -p histograms/html/*.png $targetdir
 chmod a+r $targetdir/*.html
 
 
