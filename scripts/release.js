@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.13  2008/02/21 23:08:35  wenger
+#  Added new JavaScreen/html directory to JavaScreen release script.
+#
 #  Revision 1.12  2007/05/14 18:26:32  wenger
 #  Fixed JavaScreen release script for new UI directory.
 #
@@ -202,7 +205,7 @@ pushd $src > /dev/null
 set files = (check_jss restart_jss jss DEVise.kill jss.kill ports+files \
     DEVise.jspop DEVise.jspop_soil get_timestamp jss_savepid \
     js.cgi check_connect check_jsall check_jspop jspop \
-    js js_cgi restart_jspop jspop.kill kill_jsall ports+files \
+    js jsj js_cgi restart_jspop jspop.kill kill_jsall ports+files \
     get_timestamp run_top run_check jspop_savepid users.cfg install_js \
     Tasvir js_log js_version)
 foreach file ($files)
