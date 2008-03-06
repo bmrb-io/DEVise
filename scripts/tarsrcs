@@ -1,5 +1,5 @@
 #! /bin/csh -f
-tar cvfXz sources.tar.gz scripts/src_exclude \
+tar cvfXz devise_sources.tar.gz scripts/src_exclude \
     CVS EmbeddedTk ImTools \
     Makefile.common QCIMS README aix compustat crsp csgroup cslib \
     design_doc doc generic graphics graphics.new hp issm lib linux \
