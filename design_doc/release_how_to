@@ -100,3 +100,9 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
     - Make a tar file of the sources and archive it (run scripts/tarsrcs
       and copy the file to /p/devise/wenger/src_archive).
+
+- Prepare for future releases:
+    - Increment DEVise version (with x1 on the end).
+    - Add a corresponding section to the DEVise version history.
+    - Increment JavaScreen version (with x1 on the end).
+    - Add a corresponding section to the JavaScreen version history.
