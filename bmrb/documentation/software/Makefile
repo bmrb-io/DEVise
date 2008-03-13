@@ -19,6 +19,7 @@
 ############################################################
 
 setup:
+	ln -s ../../../README devise-building.txt
 	ln -s ../../../peptide_cgi/design_doc/new_visualization \
 		peptide-cgi_new_visualization.txt
 	ln -s ../../../peptide_cgi/design_doc/auto_testing \
