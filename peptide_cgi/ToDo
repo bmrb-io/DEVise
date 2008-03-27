@@ -257,7 +257,7 @@ Num Date        Status  Pri     Description
 				in the protein visualization). (wenger)
 				(Eldon says to not do this.)
 
-068 3/5/08	FIXED	1	Change all references to drilling down from
+068 3/5/08	DONE	1	Change all references to drilling down from
 				shift-click to the appropriate toolbar usage.
 				(elu/wenger)
 				(Fixed by wenger, 3/5/08.)
