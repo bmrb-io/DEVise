@@ -269,6 +269,10 @@ Num Date        Status  Description
 			jump to confusing points on the page (solely tied
 			to text, not screendumps). (elu/wenger)
 
+061 4/3/08	OPEN	For 4001 (and probably other entries with lots of
+			save frames) the text in the data select view is
+			too compressed. (elu/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
