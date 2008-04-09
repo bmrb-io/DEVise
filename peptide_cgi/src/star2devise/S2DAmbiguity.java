@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2007
+// (c) Copyright 2005-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2007/12/20 16:49:02  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.9  2007/11/15 17:15:34  wenger
 // Cleaned out cvs history in source files.
 //
@@ -58,6 +65,7 @@ public class S2DAmbiguity {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private String _frameDetails;
 
     private int[] _resSeqCodes;
     private String[] _residueLabels;
@@ -79,7 +87,7 @@ public class S2DAmbiguity {
     // Constructor.
     public S2DAmbiguity(String name, String dataDir, String sessionDir,
       S2DSummaryHtml summary, int[] resSeqCodes, String[] residueLabels,
-      int[] ambiguityVals)
+      int[] ambiguityVals, String frameDetails)
       throws S2DException
     {
         if (doDebugOutput(11)) {
@@ -91,6 +99,7 @@ public class S2DAmbiguity {
 	_dataDir = dataDir;
 	_sessionDir = sessionDir;
 	_summary = summary;
+	_frameDetails = frameDetails;
 
 	_resSeqCodes = resSeqCodes;
 	_residueLabels = residueLabels;
@@ -101,7 +110,8 @@ public class S2DAmbiguity {
 
     //-------------------------------------------------------------------
     // Write the ambiguity values for this data.
-    public void writeAmbiguity(int frameIndex) throws S2DException
+    public void writeAmbiguity(int frameIndex)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DAmbiguity.writeAmbiguity()");
@@ -159,7 +169,7 @@ public class S2DAmbiguity {
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_AMBIGUITY, _name, frameIndex,
-	      "Assigned chemical shift ambiguity code data");
+	      "Assigned chemical shift ambiguity code data", _frameDetails);
 	    specHtml.write();
 
 	    //

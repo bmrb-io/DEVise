@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2007
+// (c) Copyright 2001-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/12/20 16:49:03  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.4  2007/11/15 17:15:34  wenger
 // Cleaned out cvs history in source files.
 //
@@ -61,6 +68,7 @@ public class S2DHetNOE {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private String _frameDetails;
 
     private String _title;
     private String _shortName;
@@ -78,8 +86,8 @@ public class S2DHetNOE {
     public S2DHetNOE(String name, String longName, String dataDir,
       String sessionDir, S2DSummaryHtml summary, String frequency,
       String atom1Name, String atom2Name, String[] resSeqCodes,
-      String[] resLabels, String[] hetNOEValues, String[] hetNOEErrors)
-      throws S2DException
+      String[] resLabels, String[] hetNOEValues, String[] hetNOEErrors,
+      String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DHetNOE.S2DHetNOE(" + name + ")");
@@ -89,6 +97,7 @@ public class S2DHetNOE {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
+	_frameDetails = frameDetails;
 
 	_shortName = "Het NOE (" + frequency + ") " + atom1Name +
 	  " " + atom2Name;
@@ -147,7 +156,7 @@ public class S2DHetNOE {
 	    //
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), S2DUtils.TYPE_HETNOE,
-	      _name, frameIndex, _title);
+	      _name, frameIndex, _title, _frameDetails);
 	    specHtml.write();
 
 	    //

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.71  2008/03/06 18:04:31  wenger
+// Updated version to 11.2.5x1, added 11.2.5 section of version history.
+//
 // Revision 1.70  2008/03/06 17:08:25  wenger
 // Changed version to 11.2.4 for release.
 //
@@ -124,9 +127,9 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.5x1"/*TEMP*/;
-    // Change version to 11.3.0 when S2 order stuff is implemented.
-    //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.0x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.0x1"/*TEMP*/;
+    // Change version to 11.3.1 when S2 order stuff is implemented.
+    //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1251,7 +1254,7 @@ public class S2DMain {
 	        S2DChemShiftRef csr = new S2DChemShiftRef(_name, _longName,
 		  _dataDir, _csrDataDir, _sessionDir, _masterBmrbId,
 		  _localFiles, _cmdPdbId, _summary, _cmdFrameIndex,
-		  _csrTimeout);
+		  _csrTimeout, "");
 	        csr.run();
 	        csr.postProcess(_doProteinCheck);
 		if (!csr.ran() || csr.ranButFailed()) {
@@ -1295,7 +1298,7 @@ public class S2DMain {
 	if (_csrPdbIds.size() != 0 && _csrLevel == CSR_LEVEL_PROCESS) {
 	    csr = new S2DChemShiftRef(_name, _longName, _dataDir, _csrDataDir,
 	      _sessionDir, _masterBmrbId, _localFiles,
-	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout);
+	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "");
 	    csr.run();
 	}
 
@@ -1326,7 +1329,7 @@ public class S2DMain {
 	  _csrLevel == CSR_LEVEL_PROCESS) {
 	    csr = new S2DChemShiftRef(_name, _longName, _dataDir, _csrDataDir,
 	      _sessionDir, _masterBmrbId, _localFiles,
-	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout);
+	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "");
 	    csr.run();
 	}
 
@@ -1372,7 +1375,7 @@ public class S2DMain {
 		    String csrPdb = (String)_csrPdbIds.elementAt(csrIndex);
 	            csr = new S2DChemShiftRef(_name, _longName, _dataDir,
 		      _csrDataDir, _sessionDir, _masterBmrbId, _localFiles,
-	              csrPdb, _summary, csrIndex + 1, _csrTimeout);
+	              csrPdb, _summary, csrIndex + 1, _csrTimeout, "");
 	            csr.run();
 	            csr.postProcess(_doProteinCheck);
 		    retry = csr.ranButFailed();
@@ -2030,7 +2033,8 @@ public class S2DMain {
 	//
         S2DChemShift chemShift = new S2DChemShift(_name, _longName, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
-	  atomTypes, chemShiftVals, ambiguityVals);
+	  atomTypes, chemShiftVals, ambiguityVals,
+	  star.getFrameDetails(frame));
 
 
 	//
@@ -2143,7 +2147,8 @@ public class S2DMain {
 	S2DRelaxation relaxation = new S2DRelaxation(_name, _longName,
 	  _dataDir, _sessionDir, _summary, S2DUtils.TYPE_T1_RELAX,
 	  star.getOneFrameValue(frame, star.T1_SPEC_FREQ_1H),
-	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors);
+	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors,
+	  star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the relaxation values.
@@ -2193,7 +2198,8 @@ public class S2DMain {
 	S2DRelaxation relaxation = new S2DRelaxation(_name, _longName,
 	  _dataDir, _sessionDir, _summary, S2DUtils.TYPE_T2_RELAX,
 	  star.getOneFrameValue(frame, star.T2_SPEC_FREQ_1H),
-	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors);
+	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors,
+	  star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the relaxation values.
@@ -2260,7 +2266,8 @@ public class S2DMain {
         S2DCoupling coupling = new S2DCoupling(_name, _longName, _dataDir,
 	  _sessionDir, _summary, couplingConstCodes, atom1ResSeqs,
 	  atom1ResLabels, atom1Names, atom2ResSeqs, atom2ResLabels,
-	  atom2Names, couplingConstValues, couplingConstErrors);
+	  atom2Names, couplingConstValues, couplingConstErrors,
+	  star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the coupling contants.
@@ -2311,7 +2318,8 @@ public class S2DMain {
 	  _sessionDir, _summary,
 	  star.getOneFrameValue(frame, star.HET_NOE_SPEC_FREQ_1H),
 	  star.getHetNOEAtom1(frame), star.getHetNOEAtom2(frame),
-	  resSeqCodes, resLabels, hetNOEValues, hetNOEErrors);
+	  resSeqCodes, resLabels, hetNOEValues, hetNOEErrors,
+	  star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the heteronuclear NOE
@@ -2358,7 +2366,8 @@ public class S2DMain {
 	//
 	// Create an S2DS2Order object with the values we just got.
 	//
-	S2DS2Order s2Order = new S2DS2Order(_name/*TEMPTEMP*/);
+	S2DS2Order s2Order = new S2DS2Order(_name/*TEMPTEMP*/,
+	  star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the S2 order values.
@@ -2445,7 +2454,8 @@ public class S2DMain {
 	S2DAtomicCoords atomicCoords = new S2DAtomicCoords(_name,
 	  _longName, _dataDir, _sessionDir, _summary, resSeqCodes,
 	  resLabels, atomNames, atomTypes, atomCoordX, atomCoordY,
-	  atomCoordZ, _connectionFile, _dataSets, _currentPdbId);
+	  atomCoordZ, _connectionFile, _dataSets, _currentPdbId,
+	  star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the atomic coordinates.
@@ -2530,7 +2540,7 @@ public class S2DMain {
 	//
         S2DPistachio pistachio = new S2DPistachio(_name, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
-	  meritVals);
+	  meritVals, star.getFrameDetails(frame));
 
 	//
 	// The S2DPistachioTable object holds the figures of merit for
@@ -2629,7 +2639,8 @@ public class S2DMain {
 	// Create an S2DAmbiguity object with the values we just got.
 	//
         S2DAmbiguity ambiguity = new S2DAmbiguity(_name, _dataDir,
-	  _sessionDir, _summary, resSeqCodes, residueLabels, ambiguityVals);
+	  _sessionDir, _summary, resSeqCodes, residueLabels, ambiguityVals,
+	  star.getFrameDetails(frame));
 
 	//
 	// The S2DAmbiguityTable object holds the ambiguity values for
@@ -2682,7 +2693,7 @@ public class S2DMain {
 	}
 
 	S2DLacs lacs = new S2DLacs(_name, _longName, _dataDir,
-	  _sessionDir, _summary);
+	  _sessionDir, _summary, star.getFrameDetails(frame));
 
         //
         // Get the values we need from the Star file.

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2007
+// (c) Copyright 2001-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/12/20 16:49:03  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.4  2007/11/15 17:15:34  wenger
 // Cleaned out cvs history in source files.
 //
@@ -61,6 +68,7 @@ public class S2DCoupling {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private String _frameDetails;
 
     private String[] _couplingConstCodes;
     private String[] _atom1ResSeqs;
@@ -81,7 +89,8 @@ public class S2DCoupling {
       String sessionDir, S2DSummaryHtml summary, String[] couplingConstCodes,
       String[] atom1ResSeqs, String[] atom1ResLabels, String[] atom1Names,
       String[] atom2ResSeqs, String[] atom2ResLabels, String[] atom2Names,
-      String[] couplingConstValues, String[] couplingConstErrors)
+      String[] couplingConstValues, String[] couplingConstErrors,
+      String frameDetails)
       throws S2DException
     {
         if (doDebugOutput(11)) {
@@ -93,6 +102,7 @@ public class S2DCoupling {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
+	_frameDetails = frameDetails;
 
         _couplingConstCodes = couplingConstCodes;
         _atom1ResSeqs = atom1ResSeqs;
@@ -159,7 +169,7 @@ public class S2DCoupling {
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_COUPLING, _name, frameIndex,
-	      "Coupling Constants");
+	      "Coupling Constants", _frameDetails);
 	    specHtml.write();
 
 	    //

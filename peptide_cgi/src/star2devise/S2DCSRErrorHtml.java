@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2007
+// (c) Copyright 2001-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2007/12/20 16:49:02  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 
 // ========================================================================
 
@@ -44,10 +51,10 @@ public class S2DCSRErrorHtml extends S2DSpecificHtml {
     // Constructor.
     public S2DCSRErrorHtml(String htmlDir, int dataType, String name,
       int frameIndex, String title, String bmrbId, String pdbId,
-      boolean timedOut)
+      boolean timedOut, String frameDetails)
       throws S2DError
     {
-	super(htmlDir, dataType, name, frameIndex, title);
+	super(htmlDir, dataType, name, frameIndex, title, frameDetails);
 
         if (doDebugOutput(11)) {
             System.out.println("S2DCSRErrorHtml.S2DCSRErrorHtml(" +

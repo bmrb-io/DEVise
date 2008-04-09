@@ -22,6 +22,8 @@
   Dummy title
   </h2> </center>
 
+  <p>Dummy details</p>
+
   <h3>
   <p><a target= "nmr_vis_help" href="help_d.html">Help on this visualization</a>
   </h3>

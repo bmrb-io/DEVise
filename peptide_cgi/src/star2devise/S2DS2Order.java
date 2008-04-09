@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2008/02/20 17:41:08  wenger
+// Committing (disabled) partially-implemented S2 Order visualization
+// code and tests.
+//
 
 // ========================================================================
 
@@ -40,6 +44,7 @@ public class S2DS2Order {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private String _frameDetails;
 
     private int _dataType;
     private String _suffix;
@@ -61,7 +66,8 @@ public class S2DS2Order {
       String sessionDir, S2DSummaryHtml summary, int dataType,
       String frequency, String[] resSeqCodes, String[] resLabels,
       String[] atomNames, String[] relaxationValues,
-      String[] relaxationErrors TEMPTEMP*/) throws S2DException
+      String[] relaxationErrors TEMPTEMP*/, String frameDetails)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DS2Order.S2DS2Order(" + name + ")");
@@ -72,6 +78,7 @@ public class S2DS2Order {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
+	_frameDetails = frameDetails;
 
 	_dataType = dataType;
         switch (dataType) {
@@ -147,7 +154,7 @@ TEMPTEMP*/
 	    //
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), _dataType,
-	      _name, frameIndex, _title);
+	      _name, frameIndex, _title, _frameDetails);
 	    specHtml.write();
 
 	    //

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2007
+// (c) Copyright 2003-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/12/20 16:49:03  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.5  2007/11/15 17:15:34  wenger
 // Cleaned out cvs history in source files.
 //
@@ -76,6 +83,7 @@ public class S2DChemShiftRef
     private Vector _localFiles;
     private String _pdbId;
     private S2DSummaryHtml _summary;
+    private String _frameDetails;
     private int _frameIndex;
     private String _cmdStr;
     private S2DWaitFile _doneFile = null;
@@ -88,8 +96,9 @@ public class S2DChemShiftRef
     // PUBLIC METHODS
 
     public S2DChemShiftRef(String name, String longName, String dataDir,
-	  String csrDataDir, String sessionDir, String bmrbId, Vector localFiles,
-	  String pdbId, S2DSummaryHtml summary, int frameIndex, int timeout)
+	  String csrDataDir, String sessionDir, String bmrbId,
+	  Vector localFiles, String pdbId, S2DSummaryHtml summary,
+	  int frameIndex, int timeout, String frameDetails)
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShiftRef.S2DChemShiftRef(" + name +
@@ -118,6 +127,7 @@ public class S2DChemShiftRef
 	_localFiles = localFiles;
 	_pdbId = pdbId;
 	_summary = summary;
+	_frameDetails = frameDetails;
 	_frameIndex = frameIndex;
 	_timeout = timeout;
     }
@@ -250,17 +260,17 @@ public class S2DChemShiftRef
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_CHEM_SHIFT_REF1, _name, _frameIndex,
-	      "Chemical Shift Reference Difference Histograms");
+	      "Chemical Shift Reference Difference Histograms", _frameDetails);
 	    specHtml.write();
 
 	    specHtml = new S2DSpecificHtml(_summary.getHtmlDir(),
 	      S2DUtils.TYPE_CHEM_SHIFT_REF2, _name, _frameIndex,
-	      "Chemical Shift Differences by Residue");
+	      "Chemical Shift Differences by Residue", _frameDetails);
 	    specHtml.write();
 
 	    specHtml = new S2DSpecificHtml(_summary.getHtmlDir(),
 	      S2DUtils.TYPE_CHEM_SHIFT_REF3, _name, _frameIndex,
-	      "Observed vs. Calculated Chemical Shift Values");
+	      "Observed vs. Calculated Chemical Shift Values", _frameDetails);
 	    specHtml.write();
 
 	    //
@@ -279,17 +289,17 @@ public class S2DChemShiftRef
 	    // Write the "error" HTML pages.
 	    S2DCSRErrorHtml csrErrorHtml = new S2DCSRErrorHtml(
 	      _summary.getHtmlDir(), S2DUtils.TYPE_CHEM_SHIFT_REF1,
-	      _name, _frameIndex, "", _bmrbId, _pdbId, !_csrRan);
+	      _name, _frameIndex, "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
 	    csrErrorHtml.write();
 
 	    csrErrorHtml = new S2DCSRErrorHtml(_summary.getHtmlDir(),
 	      S2DUtils.TYPE_CHEM_SHIFT_REF2, _name, _frameIndex,
-	      "", _bmrbId, _pdbId, !_csrRan);
+	      "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
 	    csrErrorHtml.write();
 
 	    csrErrorHtml = new S2DCSRErrorHtml(_summary.getHtmlDir(),
 	      S2DUtils.TYPE_CHEM_SHIFT_REF3, _name, _frameIndex,
-	      "", _bmrbId, _pdbId, !_csrRan);
+	      "", _bmrbId, _pdbId, !_csrRan, _frameDetails);
 	    csrErrorHtml.write();
 
 	    // Note: the S2DWarning object below is *not* supposed to be

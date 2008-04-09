@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2007
+// (c) Copyright 2006-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -29,6 +29,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/09/10 18:07:16  wenger
+// Peptide-CGI-generated html files now use the standard BMRB stylesheet;
+// also specified matching background and font colors for use at CS where
+// the stylesheet is not available.
+//
 // Revision 1.5  2007/08/20 20:26:10  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -120,8 +125,7 @@ public abstract class S2DSummaryHtmlGen {
     // Constructor.  Opens the html file and writes the header.
     public S2DSummaryHtmlGen(String name, String longName,
       String accessionNum, Vector localFiles,
-      String htmlDir, String starFileName, String systemName,
-      String frameTitle) throws S2DException
+      String htmlDir) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlGen.S2DSummaryHtmlGen(" +
@@ -158,7 +162,7 @@ public abstract class S2DSummaryHtmlGen {
     }
 
     //-------------------------------------------------------------------
-    protected void initialize(String systemName, String frameTitle)
+    protected void initialize(String systemName, String entryTitle)
       throws S2DError
     {
 	try {
@@ -174,8 +178,8 @@ public abstract class S2DSummaryHtmlGen {
 
 	    _writer.write("<h3>DEVise plots for " + _longName + ":\n");
 	    _writer.write(systemName + "</h3>\n");
-	    if (!frameTitle.equals("")) {
-	        _writer.write("Title: <tt>" + frameTitle + "</tt>\n");
+	    if (!entryTitle.equals("")) {
+	        _writer.write("Title: <tt>" + entryTitle + "</tt>\n");
 	    }
 
 	    _writer.write("\n<p>\n");
@@ -300,7 +304,7 @@ public abstract class S2DSummaryHtmlGen {
 
     //-------------------------------------------------------------------
     // Writes the deltashift link.
-    protected void writeDeltashift(int frameIndex, int count)
+    protected void writeDeltashift(int frameIndex, int residueCount)
       throws IOException
     {
         if (doDebugOutput(12)) {
@@ -310,14 +314,14 @@ public abstract class S2DSummaryHtmlGen {
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.DELTASHIFT_SUFFIX + frameIndex + sizeString() +
 	  S2DNames.HTML_SUFFIX + "\">Chemical Shift Delta</a> (" +
-	  count + " residues)\n");
+	  residueCount + " residues)\n");
 
         _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
     // Writes the CSI link.
-    protected void writeCSI(int frameIndex, int count)
+    protected void writeCSI(int frameIndex, int residueCount)
       throws IOException
     {
         if (doDebugOutput(12)) {
@@ -327,14 +331,14 @@ public abstract class S2DSummaryHtmlGen {
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.CSI_SUFFIX + frameIndex + sizeString() +
 	  S2DNames.HTML_SUFFIX + "\">Chemical Shift Index</a> (" +
-	  count + " residues)\n");
+	  residueCount + " residues)\n");
 
         _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
     // Writes the percent assignment link.
-    protected void writePctAssign(int frameIndex, int count)
+    protected void writePctAssign(int frameIndex, int residueCount)
       throws IOException
     {
         if (doDebugOutput(12)) {
@@ -344,14 +348,14 @@ public abstract class S2DSummaryHtmlGen {
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + sizeString() +
 	  S2DNames.HTML_SUFFIX + "\">Percent Assigned Atoms</a> (" +
-	  count + " residues)\n");
+	  residueCount + " residues)\n");
 
         _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
     // Writes the coupling constant link.
-    protected void writeCoupling(int frameIndex, int count)
+    protected void writeCoupling(int frameIndex, int valueCount)
       throws IOException
     {
         if (doDebugOutput(12)) {
@@ -361,7 +365,7 @@ public abstract class S2DSummaryHtmlGen {
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.COUPLING_SUFFIX + frameIndex + sizeString() +
 	  S2DNames.HTML_SUFFIX + "\">Coupling Constants</a> (" +
-	  count + " values)\n");
+	  valueCount + " values)\n");
 
         _wroteLink = true;
     }
@@ -369,7 +373,7 @@ public abstract class S2DSummaryHtmlGen {
     //-------------------------------------------------------------------
     // Writes the relaxation link.
     protected void writeRelax(String suffix, String name,
-      int frameIndex, int count) throws IOException
+      int frameIndex, int valueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeRelax()");
@@ -377,7 +381,7 @@ public abstract class S2DSummaryHtmlGen {
 
         _writer.write("<li><a href=\"" + _name +
 	  suffix + frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
-	  "\">" + name + "</a> (" + count + " values)\n");
+	  "\">" + name + "</a> (" + valueCount + " values)\n");
 
         _wroteLink = true;
     }
@@ -385,7 +389,7 @@ public abstract class S2DSummaryHtmlGen {
     //-------------------------------------------------------------------
     // Writes the heteronuclear NOE link.
     protected void writeHetNOE(String name, int frameIndex,
-      int count) throws IOException
+      int valueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeHetNOE()");
@@ -394,14 +398,14 @@ public abstract class S2DSummaryHtmlGen {
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
 	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + name +
-	  "</a> (" + count + " values)\n");
+	  "</a> (" + valueCount + " values)\n");
 
         _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
     // Writes the all chemical shifts link.
-    protected void writeAllShifts(int frameIndex, int count)
+    protected void writeAllShifts(int frameIndex, int shiftCount)
       throws IOException
     {
         if (doDebugOutput(12)) {
@@ -411,15 +415,15 @@ public abstract class S2DSummaryHtmlGen {
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex +
 	  sizeString() + S2DNames.HTML_SUFFIX +
-	  "\">Chemical shift distributions by amino acid</a> (" + count +
-	  " shifts)\n");
+	  "\">Chemical shift distributions by amino acid</a> (" +
+	    shiftCount + " shifts)\n");
 
         _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
     // Writes the H vs. N chemical shifts link.
-    protected void writeHvsNShifts(int frameIndex, int count)
+    protected void writeHvsNShifts(int frameIndex, int peakCount)
       throws IOException
     {
         if (doDebugOutput(12)) {
@@ -429,7 +433,7 @@ public abstract class S2DSummaryHtmlGen {
         _writer.write("<li><a href=\"" + _name +
 	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
 	  sizeString() + S2DNames.HTML_SUFFIX +
-	  "\">Simulated 1H-15N backbone HSQC spectrum</a> (" + count +
+	  "\">Simulated 1H-15N backbone HSQC spectrum</a> (" + peakCount +
 	  " peaks)\n");
 
         _wroteLink = true;

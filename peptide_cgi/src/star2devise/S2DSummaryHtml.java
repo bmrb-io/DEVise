@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,11 +21,19 @@
 // to make it easier to generate two summary files (one for the "normal"
 // visualizations, one for the large visualizations).
 
+// Each object of this class contains an instance of S2DSummaryHtmlNormal
+// and an instance of S2DSummaryHtmlLarge.  Basically, most calls to an
+// object of this class get passed on to the corresponding methods of
+// the S2DSummaryHtmlNormal and S2DSummaryHtmlLarge objects.
+
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/11/15 17:15:36  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.7  2007/08/20 20:26:10  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -118,9 +126,9 @@ public class S2DSummaryHtml {
 	_htmlDir = htmlDir;
 
 	_normal = new S2DSummaryHtmlNormal(name, longName, accessionNum,
-	  localFiles, htmlDir, starFileName, systemName, frameTitle);
+	  localFiles, htmlDir);
 	_large = new S2DSummaryHtmlLarge(name, longName, accessionNum,
-	  localFiles, htmlDir, starFileName, systemName, frameTitle);
+	  localFiles, htmlDir);
 
 	_normal.setSibling(_large);
 	_large.setSibling(_normal);

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2007/12/20 16:49:02  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.5  2007/11/15 17:15:34  wenger
 // Cleaned out cvs history in source files.
 //
@@ -63,6 +70,7 @@ public class S2DChemShift {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private String _frameDetails;
 
     private int[] _resSeqCodes;
     private String[] _residueLabels;
@@ -95,7 +103,8 @@ public class S2DChemShift {
     public S2DChemShift(String name, String longName, String dataDir,
       String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
       String[] residueLabels, String[] atomNames, String[] atomTypes,
-      double[] chemShiftVals, int[] ambiguityVals) throws S2DException
+      double[] chemShiftVals, int[] ambiguityVals, String frameDetails)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.S2DChemShift(" + name +
@@ -107,6 +116,7 @@ public class S2DChemShift {
 	_dataDir = dataDir;
 	_sessionDir = sessionDir;
 	_summary = summary;
+	_frameDetails = frameDetails;
 
 	_resSeqCodes = resSeqCodes;
 	_residueLabels = S2DUtils.arrayToUpper(residueLabels);
@@ -180,7 +190,7 @@ public class S2DChemShift {
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_DELTASHIFT, _name, frameIndex,
-	      "Chemical Shift Delta");
+	      "Chemical Shift Delta", _frameDetails);
 	    specHtml.write();
 
 	    //
@@ -292,7 +302,7 @@ public class S2DChemShift {
 	    //
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), S2DUtils.TYPE_CSI,
-	      _name, frameIndex, "Chemical Shift Index");
+	      _name, frameIndex, "Chemical Shift Index", _frameDetails);
 	    specHtml.write();
 
 	    //
@@ -412,7 +422,7 @@ public class S2DChemShift {
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_PCT_ASSIGN, _name, frameIndex,
-	      "Percent Assigned Atoms");
+	      "Percent Assigned Atoms", _frameDetails);
 	    specHtml.write();
 
 	    //
@@ -486,7 +496,7 @@ public class S2DChemShift {
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_ALL_CHEM_SHIFTS, _name, frameIndex,
-	      "Chemical shift distributions by amino acid");
+	      "Chemical shift distributions by amino acid", _frameDetails);
 	    specHtml.write();
 
 	    //
@@ -645,7 +655,7 @@ public class S2DChemShift {
 	        S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	          _summary.getHtmlDir(),
 		  S2DUtils.TYPE_HVSN_CHEM_SHIFTS, _name, frameIndex,
-		  "Simulated 1H-15N backbone HSQC spectrum");
+		  "Simulated 1H-15N backbone HSQC spectrum", _frameDetails);
 	        specHtml.write();
 
 	        //

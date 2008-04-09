@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2007
+// (c) Copyright 2001-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2007/12/20 16:49:03  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.9  2007/11/15 17:15:36  wenger
 // Cleaned out cvs history in source files.
 //
@@ -69,11 +76,13 @@ public class S2DSpecificHtml {
     private static final String searchString2 = "bmr4264.str";
     private static final String searchString3 = "help_d.html";
     private static final String searchString4 = "Dummy title";
+    private static final String searchString5 = "<p>Dummy details</p>";
 
     private String _replaceString1;
     private String _replaceString2;
     private String _replaceString3;
     private String _replaceString4;
+    private String _replaceString5;
 
     //===================================================================
     // PUBLIC METHODS
@@ -81,7 +90,7 @@ public class S2DSpecificHtml {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DSpecificHtml(String htmlDir, int dataType, String name,
-      int frameIndex, String title) throws S2DError
+      int frameIndex, String title, String frameDetails) throws S2DError
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
@@ -100,6 +109,12 @@ public class S2DSpecificHtml {
         _replaceString2 = _name;
         _replaceString3 = "help_" + _dataSuffix + ".html";
         _replaceString4 = _title;
+	if (frameDetails != null && !frameDetails.equals("")) {
+	    _replaceString5 = "<h3>\n  Frame details: " + frameDetails +
+	      "\n  </h3>";
+        } else {
+	    _replaceString5 = "";
+	}
 
     }
 
@@ -174,6 +189,8 @@ public class S2DSpecificHtml {
 	  _replaceString3);
 	line = S2DUtils.replace(line, searchString4,
 	  _replaceString4);
+	line = S2DUtils.replace(line, searchString5,
+	  _replaceString5);
 	if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
 	  _dataType == S2DUtils.TYPE_PISTACHIO ||
 	  _dataType == S2DUtils.TYPE_AMBIGUITY) {

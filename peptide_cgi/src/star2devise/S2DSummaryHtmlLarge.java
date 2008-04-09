@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2007
+// (c) Copyright 2006-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/20 20:26:10  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2007/03/07 16:37:58  wenger
 // Phase 2 of "upload and visualize data" -- mostly working, I think,
 // but still needs chem shift reference capability and hasn't been
@@ -57,12 +62,10 @@ public class S2DSummaryHtmlLarge extends S2DSummaryHtmlGen {
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
     public S2DSummaryHtmlLarge(String name, String longName,
-      String accessionNum, Vector localFiles, String htmlDir,
-      String starFileName, String systemName, String frameTitle)
+      String accessionNum, Vector localFiles, String htmlDir)
       throws S2DException
     {
-	super(name, longName, accessionNum, localFiles, htmlDir,
-	  starFileName, systemName, frameTitle);
+	super(name, longName, accessionNum, localFiles, htmlDir);
 
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlLarge.S2DSummaryHtmlLarge(" +

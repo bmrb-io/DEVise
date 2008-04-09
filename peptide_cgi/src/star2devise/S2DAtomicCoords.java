@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2007
+// (c) Copyright 2001-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2007/12/20 16:49:02  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.8  2007/11/15 17:15:34  wenger
 // Cleaned out cvs history in source files.
 //
@@ -65,6 +72,7 @@ public class S2DAtomicCoords {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private String _frameDetails;
 
     public class Structure {
         public Vector _residues;
@@ -119,8 +127,8 @@ public class S2DAtomicCoords {
       String sessionDir, S2DSummaryHtml summary, String[] resSeqCodes,
       String[] resLabels, String[] atomNames, String[] atomTypes,
       double[] atomCoordX, double[] atomCoordY, double[] atomCoordZ,
-      String connectionFile, Vector dataSets, String pdbId)
-      throws S2DException
+      String connectionFile, Vector dataSets, String pdbId,
+      String frameDetails) throws S2DException
     {
         if (doDebugOutput(11, true)) {
 	    System.out.println("S2DAtomicCoords.S2DAtomicCoords(" +
@@ -131,6 +139,7 @@ public class S2DAtomicCoords {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
+	_frameDetails = frameDetails;
 
 	_resSeqCodes = resSeqCodes;
 	_resLabels = S2DUtils.arrayToUpper(resLabels);
@@ -277,7 +286,7 @@ public class S2DAtomicCoords {
 	        S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	          _summary.getHtmlDir(),
 	          S2DUtils.TYPE_ATOMIC_COORDS, _name, frameIndex,
-	          "3D structure");
+	          "3D structure", _frameDetails);
 	        specHtml.write();
 
 	        //
@@ -299,7 +308,8 @@ public class S2DAtomicCoords {
     // Write the atoms (including coordinates) for this data.  This
     // output is designed to be transferred to Jmol for visualization.
     // 
-    public void writeAtoms(int frameIndex) throws S2DException
+    public void writeAtoms(int frameIndex)
+      throws S2DException
     {
         if (doDebugOutput(11, true)) {
 	    System.out.println("S2DJmolAtomicCoords.writeAtoms()");
@@ -378,7 +388,7 @@ public class S2DAtomicCoords {
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_ATOMIC_COORDS, _name, frameIndex,
-	      "3D structure");
+	      "3D structure", _frameDetails);
 	    specHtml.write();
 
 	    //

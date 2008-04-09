@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2007
+// (c) Copyright 2005-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/12/20 16:49:03  wenger
+// Improved ChemShiftRef error messages; ChemShift calculation failing
+// is no longer considered an error at the top level of the program;
+// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
+// class could inherit from it correctly; some cache checking output
+// is now printed at a lower versbosity setting.
+//
 // Revision 1.3  2007/08/20 20:26:08  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -69,6 +76,7 @@ public class S2DLacs {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private String _frameDetails;
 
     private String _title;
 
@@ -129,7 +137,7 @@ public class S2DLacs {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DLacs(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary)
+      String sessionDir, S2DSummaryHtml summary, String frameDetails)
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DLacs.S2DLacs(" + name + ")");
@@ -139,6 +147,7 @@ public class S2DLacs {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
+	_frameDetails = frameDetails;
 
 	_line1 = new Line();
 	_line2 = new Line();
@@ -168,8 +177,8 @@ public class S2DLacs {
 	}
 
 	try {
-	    _title = "LACS Data (" + _yCoordName + " vs. " +
-	      _xCoordName + ")";
+	    _title = "Linear Analysis of Chemical Shifts (LACS) (" +
+	      _yCoordName + " vs. " + _xCoordName + ")";
 
 	    //
 	    // Write the LACS line values to the line data file.
@@ -271,7 +280,7 @@ public class S2DLacs {
 	    //
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), S2DUtils.TYPE_LACS,
-	      _name, frameIndex, _title);
+	      _name, frameIndex, _title, _frameDetails);
 	    specHtml.write();
 
 	    //
