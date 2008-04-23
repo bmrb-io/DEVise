@@ -32,6 +32,7 @@
   <p><a href="4264d1_large.html">Larger view</a></p>
   </h3>
 
+  <center>
   <applet code=JavaScreen.jsb.class archive=../../jsb1.jar,../../jsb2.jar,../../Jmol.jar width=800 height=600>
     <param name="applet" value="JavaScreen.jsb">
     <param name="debug" value="0">
@@ -44,14 +45,15 @@
     <param name="bgcolor" value="0+0+0">
     <param name="screensize" value="800x600">
   </applet>
+  </center>
     
   <br><br>
   <center>
-  <h6>Comments?  Contact <a
+  <h5>Comments?  Contact <a
     href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
-  </h6>
-  <h6>Problems with the visualization software?  Contact <a
+  </h5>
+  <h5>Problems with the visualization software?  Contact <a
     href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
-  </h6>
+  </h5>
   </center>
 </body></html>
