@@ -145,7 +145,7 @@ HISTOGRAM_DATA_HOME = /p/condor/workspaces/shared/wenger/devise/bmrb_histogram_d
 ERROR_EMAIL = devise@cs.wisc.edu
 
 # Email for sending comments in web pages.
-COMMENT_EMAIL = garbage@foo.bar.edu
+COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
 
 # Script for uncompressing PDB mmCIF files.
 MY_UNCOMPRESS = my_uncompress_unix
