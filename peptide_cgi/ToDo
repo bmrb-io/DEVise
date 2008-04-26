@@ -265,7 +265,11 @@ Num Date        Status  Pri     Description
 069 3/5/08	OPEN	3	Add residue and atom names to drill-down data
 				in the histogram visualizations. (elu/wenger)
 
-070 4/24/08	oPEN	1	Add T1rho to visualizations. (elu/wenger)
+070 4/24/08	OPEN	1	Add T1rho to visualizations. (elu/wenger)
+
+071 4/26/08	OPEN	1	s2d.out, uvd.out, etc., should have an
+				indication of overall success or failure.
+				(wenger)
 
 * Status:
 OPEN = item has not yet been addressed
