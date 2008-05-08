@@ -4,6 +4,15 @@ Peptide-CGI 11.2.5
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Updated to a new version of starlibj that fixes a parsing bug, added
+a corresponding test.
+
+* Made some changes to the html templates -- centered applet, increased
+size of mailto links.
+
+* Added frame details to individual visualization pages; spelled out
+Linear Analysis of Chemical Shifts.
+
 
 Peptide-CGI 11.2.4
 ------------------
