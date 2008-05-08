@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.73  2008/04/30 15:51:00  wenger
+// Updated starlibj; added a test with the visualization-server-processed
+// file that exposed the problem that the new starlibj fixes.
+//
 // Revision 1.72  2008/04/09 19:35:41  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -133,7 +137,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.5x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.2.5";
     // Change version to 11.3.1 when S2 order stuff is implemented.
     //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
