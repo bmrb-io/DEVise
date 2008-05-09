@@ -419,7 +419,7 @@ public class LoopRowNode extends StarNode implements Cloneable
 	// Starting at the right size to begin with will greatly speed
 	// up the appending.
 	myVal.insert( (index < mySize) ? myStarts[index] : myVal.length(),
-		       insertStr );
+		       insertStr.toString() );
 
 	// Shift the remaining starting indeces forward to match the
 	// change in length of this value: (shifts backward if offset
