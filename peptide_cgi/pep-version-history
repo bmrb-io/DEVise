@@ -1,5 +1,13 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.2.5.1
+--------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Now building starlibj from source so I can compile it with a Java
+1.3 target.
+
+
 Peptide-CGI 11.2.5
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)

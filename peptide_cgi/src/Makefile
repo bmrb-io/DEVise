@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 2000-2003
+# (c) Copyright 2000-2008
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -25,12 +25,13 @@ JAVAC = /s/std/bin/javac -source 1.3 -target 1.3
 default: all jar
 
 all:
-	cd star2devise; $(JAVAC) -classpath ../starlibj.jar *.java
+	cd EDU/bmrb/starlibj; $(JAVAC) *.java
+	cd star2devise; $(JAVAC) -classpath .. *.java
 
 dep:
-	cd star2devise; $(JAVAC) -deprecation -classpath ../starlibj.jar *.java
+	cd star2devise; $(JAVAC) -deprecation -classpath .. *.java
 
-jar: EDU
+jar: 
 	jar cmf star2devise/manifest s2d.jar \
 		star2devise/*.class EDU/bmrb/starlibj/*.class
 
@@ -38,5 +39,4 @@ EDU:
 	jar xf starlibj.jar
 
 clean:
-	-rm star2devise/*.class s2d.jar
-	-rm -r EDU
+	-rm star2devise/*.class EDU/bmrb/starlibj/*.class s2d.jar
