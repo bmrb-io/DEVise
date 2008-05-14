@@ -57,7 +57,7 @@ nohup scripts/Xvfb_savepid :$display $XVFB_ARGS -screen 0 1280x1024x8 &
 # Make sure Xvfb gets going before starting the jss.
 sleep 10
 
-DISPLAY="unix:$display.0"
+DISPLAY=":$display.0"
 export DISPLAY
 
 
