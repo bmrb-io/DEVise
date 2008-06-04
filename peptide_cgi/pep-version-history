@@ -2,8 +2,17 @@
 
 Peptide-CGI 11.2.6
 ------------------
-
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Changed histogram web pages to match previous changes to individual
+visualization templates -- centered applet, increased size of mailto
+links.
+
+* Fixed errors in the DNA histogram links.
+
+* Fixed reference for LACS in visualization help page.
+
+* Added config file for new Osaka server.
 
 
 Peptide-CGI 11.2.5.1
