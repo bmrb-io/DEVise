@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.76  2008/05/09 21:37:53  wenger
+// Incremented version number (to 11.2.6) and added new section to
+// version history.
+//
 // Revision 1.75  2008/05/09 15:52:39  wenger
 // Now building starlibj from source so I can compile it with a Java
 // 1.3 target.
@@ -144,7 +148,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.2.6x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.0x3"/*TEMP*/;
     // Change version to 11.3.1 when S2 order stuff is implemented.
     //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";

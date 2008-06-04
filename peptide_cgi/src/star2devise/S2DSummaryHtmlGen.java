@@ -24,11 +24,24 @@
 // Note: we may want to eventually change this class to use some kind of
 // template file to define most of the output html.
 
+// Notes for testing:
+//   5569 has lots of relaxation and heteronuclear NOE save frames (forces
+//     wrap of table rows in NOE)
+//   5996 also has lots of relaxation and heteronuclear NOE save frames
+//   15724 has lots of coupling constants
+//   4056 has lots of PDB links (forces wrap of table rows)
+
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/04/09 19:35:42  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.6  2007/09/10 18:07:16  wenger
 // Peptide-CGI-generated html files now use the standard BMRB stylesheet;
 // also specified matching background and font colors for use at CS where
@@ -84,17 +97,65 @@ public abstract class S2DSummaryHtmlGen {
     private String _longName;
     private Vector _localFiles;
 
-    private FileWriter _writer = null;
+    protected FileWriter _writer = null;
 
-    private S2DSummaryHtmlGen _sibling = null;
+    protected S2DSummaryHtmlGen _sibling = null;
 
+    //TEMP -- should note an entry that generates no links to test this with
     // This is set to true if any link is written to the summary html file;
     // if we don't write any links, a note is inserted that no data is
     // available.
-    private boolean _wroteLink = false;
+    //TEMP? private boolean _wroteLink = false;
 
     // Whether we're processing for "upload and visualize data".
     private static boolean _isUvd = false;
+
+    private class IntKeyHashtable extends Hashtable {
+        public synchronized Object get(int key)
+	{
+	    Integer keyObj = new Integer(key);
+	    return get(keyObj);
+	}
+
+	public synchronized Object put(int key, Object value)
+	{
+	    Integer keyObj = new Integer(key);
+	    return put(keyObj, value);
+	}
+    };
+
+    private Vector _saveFrameDetails = new Vector();
+
+    private int _maxChemShiftFrame = 0;
+    private IntKeyHashtable _deltaShiftInfo = new IntKeyHashtable();
+    private IntKeyHashtable _csiInfo = new IntKeyHashtable();
+    private IntKeyHashtable _pctAssignInfo = new IntKeyHashtable();
+    private IntKeyHashtable _allShiftsInfo = new IntKeyHashtable();
+    private IntKeyHashtable _hVsNInfo = new IntKeyHashtable();
+    private IntKeyHashtable _pistachioInfo = new IntKeyHashtable();
+    private IntKeyHashtable _ambiguityInfo = new IntKeyHashtable();
+
+    private int _maxCoordFrame = 0;
+    private IntKeyHashtable _coordInfo = new IntKeyHashtable();
+
+    private int _maxRelaxFrame = 0;
+    private IntKeyHashtable _t1RelaxInfo = new IntKeyHashtable();
+    private IntKeyHashtable _t2RelaxInfo = new IntKeyHashtable();
+
+    private int _maxHetNOEFrame = 0;
+    private IntKeyHashtable _hetNOEInfo = new IntKeyHashtable();
+
+    private int _maxCouplingFrame = 0;
+    private IntKeyHashtable _couplingInfo = new IntKeyHashtable();
+
+    private int _maxChemShiftRefFrame = 0;
+    private IntKeyHashtable _csrPdbIdInfo = new IntKeyHashtable();
+    private IntKeyHashtable _csrHistogramInfo = new IntKeyHashtable();
+    private IntKeyHashtable _csrDiffsInfo = new IntKeyHashtable();
+    private IntKeyHashtable _csrScatterInfo = new IntKeyHashtable();
+
+    private int _maxLacsFrame = 0;
+    private IntKeyHashtable _lacsInfo = new IntKeyHashtable();
 
     //===================================================================
     // PUBLIC METHODS
@@ -183,15 +244,7 @@ public abstract class S2DSummaryHtmlGen {
 	    }
 
 	    _writer.write("\n<p>\n");
-	    if (sizeString().equals("")) {
-	    	_writer.write("Normal-size visualizations on this page; " +
-		  "<a href=\"" + _sibling.fileNameShort() +
-		  "\">large</a> visualizations\n");
-	    } else {
-	    	_writer.write("Large visualizations on this page; " +
-		  "<a href=" + _sibling.fileNameShort() +
-		  ">normal size</a> visualizations\n");
-	    }
+            writeSizeLink();
 	    _writer.write("</p>\n");
 
 	} catch(IOException ex) {
@@ -200,6 +253,10 @@ public abstract class S2DSummaryHtmlGen {
 	    throw new S2DError("Cannot create summary html file");
 	}
     }
+
+    //-------------------------------------------------------------------
+    // Write the link to the other size of visualizations.
+    protected abstract void writeSizeLink() throws IOException;
 
     //-------------------------------------------------------------------
     // Writes out the tail of the html and closes the file.
@@ -215,11 +272,25 @@ public abstract class S2DSummaryHtmlGen {
 
 	if (_writer != null) {
 	    try {
+/*TEMP?
 		if (!_wroteLink) {
 		    _writer.write("<hr>\n");
 		    _writer.write("<p>No chemical shift data available " +
 		      "for this entry.\n");
 		}
+TEMP?*/
+
+		// Write out the tables that now contain the actual links.
+		writeChemShiftTable();
+		writeRelaxationTable();
+		writeHetNOETable();
+		writeCouplingTable();
+		writeCoordTable();
+		writeChemShiftRefTable();
+		writeLacsTable();
+
+		// Write the details about the save frames.
+		writeFrameDetails();
 
 		_writer.write("<hr>\n");
 	        _writer.write("\n<p>" + VERSION_LABEL + ": {" +
@@ -272,6 +343,9 @@ public abstract class S2DSummaryHtmlGen {
 	      frameDetails + ")");
 	}
 
+	_saveFrameDetails.add(frameDetails);
+
+/*
 	try {
             _writer.write("\n<hr>\n");
 	    if (frameDetails != null) {
@@ -283,6 +357,7 @@ public abstract class S2DSummaryHtmlGen {
 	      ex.toString());
 	    throw new S2DError("Error writing to summary file");
 	}
+*/
     }
 
     //-------------------------------------------------------------------
@@ -293,6 +368,7 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.endFrame()");
 	}
 
+/*
 	try {
 	    _writer.write("</ul>\n");
 	} catch (IOException ex) {
@@ -300,6 +376,7 @@ public abstract class S2DSummaryHtmlGen {
 	      ex.toString());
 	    throw new S2DError("Error writing to summary file");
 	}
+*/
     }
 
     //-------------------------------------------------------------------
@@ -311,12 +388,12 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeDeltashift()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.DELTASHIFT_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX + "\">Chemical Shift Delta</a> (" +
-	  residueCount + " residues)\n");
+	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-        _wroteLink = true;
+	String value = "<a href=\"" + _name + S2DNames.DELTASHIFT_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
+	  "\">" + residueCount + " residues</a>";
+	_deltaShiftInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -328,12 +405,12 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeCSI()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.CSI_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX + "\">Chemical Shift Index</a> (" +
-	  residueCount + " residues)\n");
+	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-        _wroteLink = true;
+	String value = "<a href=\"" + _name + S2DNames.CSI_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
+	  "\">" + residueCount + " residues</a>";
+	_csiInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -345,12 +422,12 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writePctAssign()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX + "\">Percent Assigned Atoms</a> (" +
-	  residueCount + " residues)\n");
+	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-        _wroteLink = true;
+	String value = "<a href=\"" + _name +
+	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + sizeString() +
+	  S2DNames.HTML_SUFFIX + "\">" + residueCount + " residues</a>";
+	_pctAssignInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -362,28 +439,46 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeCoupling()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.COUPLING_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX + "\">Coupling Constants</a> (" +
-	  valueCount + " values)\n");
+        //TEMP? _wroteLink = true;
 
-        _wroteLink = true;
+	_maxCouplingFrame = Math.max(_maxCouplingFrame, frameIndex);
+
+	String value = "<a href=\"" + _name + S2DNames.COUPLING_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
+	  valueCount + " values</a>";
+	_couplingInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
-    // Writes the relaxation link.
-    protected void writeRelax(String suffix, String name,
-      int frameIndex, int valueCount) throws IOException
+    // Writes the relaxation link.  (See S2DUtils for dataType.)
+    protected void writeRelax(int dataType, int frequency, String suffix,
+      String name, int frameIndex, int valueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeRelax()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  suffix + frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
-	  "\">" + name + "</a> (" + valueCount + " values)\n");
+	_maxRelaxFrame = Math.max(_maxRelaxFrame, frameIndex);
 
-        _wroteLink = true;
+        String value = "<a href=\"" + _name + suffix + frameIndex +
+	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + valueCount +
+	  " values</a>";
+
+        switch (dataType) {
+	case S2DUtils.TYPE_T1_RELAX:
+	    addToRelaxInfo(_t1RelaxInfo, frequency, value);
+	    break;
+
+	case S2DUtils.TYPE_T2_RELAX:
+	    addToRelaxInfo(_t2RelaxInfo, frequency, value);
+	    break;
+
+	default:
+	    System.err.println(new S2DError("Illegal dataType value: " +
+	      dataType));
+	}
+
+        //TEMP? _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
@@ -395,12 +490,15 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeHetNOE()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
+	_maxHetNOEFrame = Math.max(_maxHetNOEFrame, frameIndex);
+
+        String value = "<a href=\"" + _name + 
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
 	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + name +
-	  "</a> (" + valueCount + " values)\n");
+	  " (" + valueCount + " values)</a>";
+	_hetNOEInfo.put(frameIndex, value);
 
-        _wroteLink = true;
+        //TEMP? _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
@@ -412,13 +510,12 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeAllShifts()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex +
-	  sizeString() + S2DNames.HTML_SUFFIX +
-	  "\">Chemical shift distributions by amino acid</a> (" +
-	    shiftCount + " shifts)\n");
+	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-        _wroteLink = true;
+	String value = "<a href=\"" + _name +
+	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + sizeString() +
+	  S2DNames.HTML_SUFFIX + "\">" + shiftCount + " shifts</a>";
+	_allShiftsInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -430,13 +527,12 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeHvsNShifts()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
-	  sizeString() + S2DNames.HTML_SUFFIX +
-	  "\">Simulated 1H-15N backbone HSQC spectrum</a> (" + peakCount +
-	  " peaks)\n");
+	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-        _wroteLink = true;
+	String value = "<a href=\"" + _name +
+	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex + sizeString() +
+	  S2DNames.HTML_SUFFIX + "\">" + peakCount + " peaks</a>";
+	_hVsNInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -448,17 +544,17 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeAtomicCoords()");
 	}
 
-	String linkStr = "3D structure";
+	String linkStr = "none";
 	if (pdbId != null) {
-	    linkStr += " from PDB ID " + pdbId;
+	    linkStr = pdbId;
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.ATOMIC_COORD_SUFFIX + frameIndex +
-	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a> (" +
-	  resCount + " residues, " + atomCount + " atoms)\n");
+	_maxCoordFrame = Math.max(_maxCoordFrame, frameIndex);
 
-        _wroteLink = true;
+        String value = "<a href=\"" + _name +
+	  S2DNames.ATOMIC_COORD_SUFFIX + frameIndex +
+	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	_coordInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -475,24 +571,23 @@ public abstract class S2DSummaryHtmlGen {
 
         String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
-	String linkStr = "3D structure";
+	String linkStr = "none";
 	if (pdbId != null) {
-	    linkStr += " from PDB ID " + pdbId;
+	    linkStr = pdbId;
 	}
 
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId);
+	_maxCoordFrame = Math.max(_maxCoordFrame, frameIndex);
+
+	String value = "<a href=\"" + path + "?pdbid=" + pdbId;
 	if (_isUvd) {
-            _writer.write("&file=" + (String)_localFiles.elementAt(0) +
-	      "&name=" + _name);
+	    value += "&file=" + (String)_localFiles.elementAt(0) +
+	      "&name=" + _name;
 	} else {
-            _writer.write("&number=" + _name);
+	    value += "&number=" + _name;
 	}
-	_writer.write("&do_pdb=2&coord_index=" + frameIndex +
-	  "&size_str=" + sizeString() +
-	  "\">" + linkStr +
-	  "</a> (note: processing may take several minutes)\n");
-
-        _wroteLink = true;
+	value += "&do_pdb=2&coord_index=" + frameIndex + "&size_str=" +
+	  sizeString() + "\">" + linkStr + "</a>";
+	_coordInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -506,36 +601,28 @@ public abstract class S2DSummaryHtmlGen {
 
     //-------------------------------------------------------------------
     // Writes the chem shift reference link.
-    protected void writeChemShiftRef(int frameIndex,
-      boolean fullNames) throws IOException
+    protected void writeChemShiftRef(String pdbId, int frameIndex)
+      throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeChemShiftRef()");
 	}
 
-	// For Jafar we want more descriptive strings, since the section
-	// header info doesn't appear in the GUI.
-	String optStr = "";
-	if (fullNames) {
-	    optStr = "Chemical Shift Reference ";
-	}
+	_maxChemShiftRefFrame = Math.max(_maxChemShiftRefFrame, frameIndex);
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.CSR1_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX + "\">" + optStr +
-	  "Difference Histograms</a>\n");
+	_csrPdbIdInfo.put(frameIndex, pdbId);
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.CSR2_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX + "\">" + optStr +
-	  "Differences by Residue</a>\n");
+        String value = "<a href=\"" + _name + S2DNames.CSR1_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">Go</a>";
+        _csrHistogramInfo.put(frameIndex, value);
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.CSR3_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX +
-	  "\">Observed vs. Calculated Chemical Shift Values</a>\n");
+        value = "<a href=\"" + _name + S2DNames.CSR2_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">Go</a>";
+        _csrDiffsInfo.put(frameIndex, value);
 
-        _wroteLink = true;
+        value = "<a href=\"" + _name + S2DNames.CSR3_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">Go</a>";
+        _csrScatterInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -559,25 +646,24 @@ public abstract class S2DSummaryHtmlGen {
 	    dataId = "&number=" + _name;
 	}
 
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  dataId + "&do_csr=2&coord_index=" + frameIndex +
-	  "&csr_index=1" + "&size_str=" + sizeString() +
-	  "\">Difference Histograms</a> " +
-	  "(note: processing may take several minutes)\n");
+	_maxChemShiftRefFrame = Math.max(_maxChemShiftRefFrame, frameIndex);
 
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  dataId + "&do_csr=2&coord_index=" + frameIndex +
-	  "&csr_index=2" + "&size_str=" + sizeString() +
-	  "\">Differences by Residue</a> " +
-	  "(note: processing may take several minutes)\n");
+	_csrPdbIdInfo.put(frameIndex, pdbId);
 
-        _writer.write("<li><a href=\"" + path + "?pdbid=" + pdbId +
-	  dataId + "&do_csr=2&coord_index=" + frameIndex +
-	  "&csr_index=3" + "&size_str=" + sizeString() +
-	  "\">Observed vs. Calculated Chemical Shift Values</a> " +
-	  "(note: processing may take several minutes)\n");
+        String value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
+	  "&do_csr=2&coord_index=" + frameIndex + "&csr_index=1" +
+	  "&size_str=" + sizeString() + "\">Go</a>";
+        _csrHistogramInfo.put(frameIndex, value);
 
-        _wroteLink = true;
+        value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
+	  "&do_csr=2&coord_index=" + frameIndex + "&csr_index=2" +
+	  "&size_str=" + sizeString() + "\">Go</a>";
+        _csrDiffsInfo.put(frameIndex, value);
+
+        value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
+	  "&do_csr=2&coord_index=" + frameIndex + "&csr_index=3" +
+	  "&size_str=" + sizeString() + "\">Go</a>";
+        _csrScatterInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -585,15 +671,16 @@ public abstract class S2DSummaryHtmlGen {
     protected void writePistachio(int frameIndex) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtmlGen.writePistachio()");
+	    System.out.println("S2DSummaryHtmlGen.writePistachio(" +
+	      frameIndex + ")");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.PISTACHIO_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX +
-	  "\">Assignment figure of merit data</a>\n");
+        String value = "<a href=\"" + _name + S2DNames.PISTACHIO_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
+	  "\">Go</a>";
+	_pistachioInfo.put(frameIndex, value);
 
-        _wroteLink = true;
+        //TEMP? _wroteLink = true;
     }
 
     //-------------------------------------------------------------------
@@ -604,12 +691,12 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeAmbiguity()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.AMBIGUITY_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX +
-	  "\">Assigned chemical shift ambiguity code data</a>\n");
+	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-        _wroteLink = true;
+	String value = "<a href=\"" + _name + S2DNames.AMBIGUITY_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
+	  "\">Go</a>";
+	_ambiguityInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -621,11 +708,12 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlGen.writeLACS()");
 	}
 
-        _writer.write("<li><a href=\"" + _name +
-	  S2DNames.LACS_SUFFIX + frameIndex + sizeString() +
-	  S2DNames.HTML_SUFFIX + "\">" + title + "</a>\n");
+	_maxLacsFrame = Math.max(_maxLacsFrame, frameIndex);
 
-        _wroteLink = true;
+        String value = "<a href=\"" + _name + S2DNames.LACS_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
+	  title + "</a>";
+	_lacsInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -640,8 +728,354 @@ public abstract class S2DSummaryHtmlGen {
 	} catch(IOException ex) {}
     }
 
+    //-------------------------------------------------------------------
+    // Write the html table of chemical shift links.
+    protected void writeChemShiftTable() throws IOException
+    {
+        if (_maxChemShiftFrame > 0) {
+            _writer.write("\n<hr>\n");
+            _writer.write("<table border>\n");
+            _writer.write("  <tr>\n");
+            _writer.write("    <td><br></td>\n");
+	    if (!_deltaShiftInfo.isEmpty()) {
+                _writer.write("    <th>Chemical shift delta</th>\n");
+	    }
+	    if (!_csiInfo.isEmpty()) {
+                _writer.write("    <th>Chemical shift index</th>\n");
+	    }
+	    if (!_pctAssignInfo.isEmpty()) {
+                _writer.write("    <th>Percent assigned atoms</th>\n");
+	    }
+	    if (!_allShiftsInfo.isEmpty()) {
+                _writer.write("    <th>Chemical shift distributions by " +
+		  "amino acid</th>\n");
+	    }
+	    if (!_hVsNInfo.isEmpty()) {
+                _writer.write("    <th>Simulated 1H-15N backbone HSQC " +
+		  "spectrum</th>\n");
+	    }
+	    if (!_pistachioInfo.isEmpty()) {
+                _writer.write("    <th>Assignment figure of merit data</th>\n");
+	    }
+	    if (!_ambiguityInfo.isEmpty()) {
+                _writer.write("    <th>Assigned chemical shift ambiguity " +
+		  "code data</th>\n");
+	    }
+            _writer.write("  </tr>\n");
+
+
+            for (int index = 1; index <= _maxChemShiftFrame; index++ ) {
+                _writer.write("  <tr>\n");
+		_writer.write("    <th><a href=\"#Frame" + index +
+		  "\">Frame&nbsp;" + index + "</a></th>\n");
+
+	        if (!_deltaShiftInfo.isEmpty()) {
+		    writeTableCell(_deltaShiftInfo, index);
+		}
+		if (!_csiInfo.isEmpty()) {
+		    writeTableCell(_csiInfo, index);
+		}
+		if (!_pctAssignInfo.isEmpty()) {
+		    writeTableCell(_pctAssignInfo, index);
+		}
+		if (!_allShiftsInfo.isEmpty()) {
+		    writeTableCell(_allShiftsInfo, index);
+		}
+		if (!_hVsNInfo.isEmpty()) {
+		    writeTableCell(_hVsNInfo, index);
+		}
+	        if (!_pistachioInfo.isEmpty()) {
+		    writeTableCell(_pistachioInfo, index);
+		}
+		if (!_ambiguityInfo.isEmpty()) {
+		    writeTableCell(_ambiguityInfo, index);
+		}
+
+                _writer.write("  </tr>\n");
+	    }
+
+            _writer.write("</table>\n");
+
+            //TEMP? _wroteLink = true;
+        }
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of T1/T2 relaxation links.
+    protected void writeRelaxationTable() throws IOException
+    {
+        if (_maxRelaxFrame > 0) {
+	    _writer.write("\n<hr>\n");
+	    _writer.write("<p><b>T1/T2 Relaxation</b></p>\n");
+
+	    int maxLen = 0;
+	    int numCols = 0;
+
+            _writer.write("<table border>\n");
+            _writer.write("  <tr>\n");
+
+	    // Write the header, and figure out how many rows and
+	    // columns we have.
+	    Object[] t1Freqs = _t1RelaxInfo.keySet().toArray();
+	    Arrays.sort(t1Freqs);
+	    for (int index = 0; index < t1Freqs.length; index++) {
+	        Integer frequency = (Integer)t1Freqs[index];
+		_writer.write("    <th>T1, " + frequency + " MHz</th>\n");
+		Vector values = (Vector)_t1RelaxInfo.get(frequency.intValue());
+		maxLen = Math.max(maxLen, values.size());
+		numCols++;
+	    }
+
+	    Object[] t2Freqs = _t2RelaxInfo.keySet().toArray();
+	    Arrays.sort(t2Freqs);
+	    for (int index = 0; index < t2Freqs.length; index++) {
+	        Integer frequency = (Integer)t2Freqs[index];
+		_writer.write("    <th>T2, " + frequency + " MHz</th>\n");
+		Vector values = (Vector)_t2RelaxInfo.get(frequency.intValue());
+		maxLen = Math.max(maxLen, values.size());
+		numCols++;
+	    }
+
+            _writer.write("  </tr>\n");
+
+	    // Now assemble the data into an array that matches the
+	    // table layout.
+	    String[][] table = new String[numCols][maxLen];
+
+	    int column = 0;
+
+	    for (int index = 0; index < t1Freqs.length; index++) {
+	        Integer frequency = (Integer)t1Freqs[index];
+		Vector values = (Vector)_t1RelaxInfo.get(frequency.intValue());
+		for (int row = 0; row < values.size(); row++) {
+		    table[column][row] = (String)values.elementAt(row);
+		}
+	        column++;
+	    }
+
+	    for (int index = 0; index < t2Freqs.length; index++) {
+	        Integer frequency = (Integer)t2Freqs[index];
+		Vector values = (Vector)_t2RelaxInfo.get(frequency.intValue());
+		for (int row = 0; row < values.size(); row++) {
+		    table[column][row] = (String)values.elementAt(row);
+		}
+	        column++;
+	    }
+
+
+	    // And finally, print it out.
+            for (int row = 0; row < maxLen; row++) {
+                _writer.write("  <tr>\n");
+	        for (column = 0; column < numCols; column++) {
+		    _writer.write("    <td>" + table[column][row] +
+		      "</td>\n");
+		}
+                _writer.write("  </tr>\n");
+	    }
+
+            _writer.write("</table>\n");
+        }
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of heteronuclear NOE links.
+    protected void writeHetNOETable() throws IOException
+    {
+	final int maxPerRow = 5;
+
+        if (_maxHetNOEFrame > 0) {
+	    _writer.write("\n<hr>\n");
+	    _writer.write("<p><b>Heteronuclear NOE</b></p>\n");
+	    _writer.write("<p>(spectrometer frequency, atom one, " +
+	      "atom two, number of values)</p>\n");
+
+            _writer.write("<table border>\n");
+            _writer.write("  <tr>\n");
+
+            for (int index = 1; index <= _maxHetNOEFrame; index++ ) {
+                writeTableCell(_hetNOEInfo, index);
+		if ( index % maxPerRow == 0) {
+                    _writer.write("  </tr>\n");
+                    _writer.write("  <tr>\n");
+		}
+            }
+
+            _writer.write("  </tr>\n");
+            _writer.write("</table>\n");
+        }
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of coupling constant links.
+    protected void writeCouplingTable() throws IOException
+    {
+	final int maxPerRow = 8;
+
+        if (_maxCouplingFrame > 0) {
+	    _writer.write("\n<hr>\n");
+	    _writer.write("<p><b>Coupling Constants</b></p>\n");
+
+            _writer.write("<table border cellpadding=5>\n");
+            _writer.write("  <tr>\n");
+
+            for (int index = 1; index <= _maxCouplingFrame; index++ ) {
+                writeTableCell(_couplingInfo, index);
+		if ( index % maxPerRow == 0) {
+                    _writer.write("  </tr>\n");
+                    _writer.write("  <tr>\n");
+		}
+            }
+
+            _writer.write("  </tr>\n");
+            _writer.write("</table>\n");
+        }
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of coordinate links.
+    protected void writeCoordTable() throws IOException
+    {
+        if (_maxCoordFrame > 0) {
+
+	    final int maxPerRow = 10;
+
+            _writer.write("\n<hr>\n");
+            _writer.write("<p><b>\n" +
+	      "NMR experimental data plots linked to Jmol 3D structure " +
+	      "visualization\n" +
+	      "(note: processing may take several minutes)\n" +
+	      "</b></p>\n");
+
+            _writer.write("<table border cellpadding=5>\n");
+            _writer.write("  <tr>\n");
+	    _writer.write("    <th>PDB ID</th>\n");
+
+            for (int index = 1; index <= _maxCoordFrame; index++ ) {
+                writeTableCell(_coordInfo, index);
+		if ( index % maxPerRow == 0) {
+                    _writer.write("  </tr>\n");
+                    _writer.write("  <tr>\n");
+	            _writer.write("    <th>PDB ID</th>\n");
+		}
+            }
+
+            _writer.write("  </tr>\n");
+            _writer.write("</table>\n");
+
+            //TEMP? _wroteLink = true;
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of chemical shift reference links.
+    protected void writeChemShiftRefTable() throws IOException
+    {
+        if (_maxChemShiftRefFrame > 0) {
+	    _writer.write("\n<hr>\n");
+	    _writer.write("<p><b> Chemical Shift Referencing " +
+	      "Visualizations (note: processing may take several " +
+	      "minutes)</b></p>\n");
+
+            _writer.write("<table border>\n");
+            _writer.write("  <tr>\n");
+	    _writer.write("    <th>PDB ID</th>\n");
+	    _writer.write("    <th>Difference histograms</th>\n");
+	    _writer.write("    <th>Differences by residue</th>\n");
+	    _writer.write("    <th>Observed vs. calculated chemical " +
+	      "shift values</th>\n");
+	    _writer.write("  </tr>\n");
+
+            for (int index = 1; index <= _maxChemShiftRefFrame; index++ ) {
+                _writer.write("  <tr>\n");
+                writeTableCell(_csrPdbIdInfo, index, true);
+                writeTableCell(_csrHistogramInfo, index);
+                writeTableCell(_csrDiffsInfo, index);
+                writeTableCell(_csrScatterInfo, index);
+                _writer.write("  </tr>\n");
+            }
+
+            _writer.write("</table>\n");
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of LACS links.
+    protected void writeLacsTable() throws IOException
+    {
+        if (_maxLacsFrame > 0) {
+	    _writer.write("\n<hr>\n");
+	    _writer.write("<p><b><a target=\"lacs_ref\" " + 
+	      "href=\"http://www.ncbi.nlm.nih.gov/pubmed/16041479\">" +
+	      "Linear Analysis of Chemical Shifts" +
+	      "</a></b></p>\n");
+
+            _writer.write("<table border cellpadding=5>\n");
+            _writer.write("  <tr>\n");
+
+            for (int index = 1; index <= _maxLacsFrame; index++ ) {
+                writeTableCell(_lacsInfo, index);
+            }
+
+            _writer.write("  </tr>\n");
+            _writer.write("</table>\n");
+
+            //TEMP? _wroteLink = true;
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write out save frame details.
+    protected void writeFrameDetails() throws IOException
+    {
+        if (_saveFrameDetails.size() > 0) {
+	    _writer.write("\n<hr>\n");
+	    _writer.write("<p><b>Save frame details</b></p>\n");
+
+            for (int index = 0; index < _saveFrameDetails.size(); index++) {
+		int frameNum = index + 1;
+		_writer.write("<p><a name = \"Frame" + frameNum + "\">" +
+		  "<b>Frame&nbsp;" + frameNum + "</b></a>: ");
+		String frameDetails =
+		  (String)_saveFrameDetails.elementAt(index);
+	        _writer.write(frameDetails + "</p>\n");
+	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write out info to an html table cell.
+    protected void writeTableCell(IntKeyHashtable info, int frameIndex)
+      throws IOException
+    {
+	writeTableCell(info, frameIndex, false);
+    }
+
+    //-------------------------------------------------------------------
+    // Write out info to an html table cell.
+    protected void writeTableCell(IntKeyHashtable info, int frameIndex,
+      boolean isHeader) throws IOException
+    {
+	String value = (String)info.get(frameIndex);
+	value = (value != null) ? value : "<br>";
+	String cellTag = isHeader ? "th" : "td";
+	_writer.write("    <" + cellTag + ">" + value + "</" + cellTag +
+	  ">\n");
+    }
+
     //===================================================================
     // PRIVATE METHODS
+    //-------------------------------------------------------------------
+    // Add an entry to the internal table of T1 or T2 relaxation info.
+    private void addToRelaxInfo(IntKeyHashtable relaxInfo, int frequency,
+      String value)
+    {
+        Vector entries = (Vector)relaxInfo.get(frequency);
+	if (entries == null) {
+	    entries = new Vector();
+	    relaxInfo.put(frequency, entries);
+	}
+	entries.addElement(value);
+    }
 
     //-------------------------------------------------------------------
     // Determine whether to do debug output based on the current debug

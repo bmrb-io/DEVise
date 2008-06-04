@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2008/04/09 19:35:42  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.5  2007/12/20 16:49:03  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -74,6 +80,7 @@ public class S2DRelaxation {
     private String _suffix;
     private String _title;
     private String _shortName;
+    private int _freqValue;
 
     private String[] _resSeqCodes;
     private String[] _resLabels;
@@ -120,6 +127,14 @@ public class S2DRelaxation {
 
 	_shortName = _title + " (" + frequency + ")";
 	_title += " (" + frequency + " MHz)";
+	try { 
+	    // Parse as a float, convert to int for tables in summary.
+	    _freqValue = (int)Float.parseFloat(frequency);
+	} catch (NumberFormatException ex) {
+	    System.err.println("Warning: exception parsing relaxation " +
+	      "frequency: " + ex);
+	    _freqValue = 0;
+	}
 
         _resSeqCodes = resSeqCodes;
         _resLabels = S2DUtils.arrayToUpper(resLabels);
@@ -180,8 +195,8 @@ public class S2DRelaxation {
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeRelax(_suffix, _title, frameIndex,
-	      _resSeqCodes.length);
+	    _summary.writeRelax(_dataType, _freqValue, _suffix, _title,
+	      frameIndex, _resSeqCodes.length);
 
         } catch(IOException ex) {
 	    System.err.println("IOException writing relaxation data: " +

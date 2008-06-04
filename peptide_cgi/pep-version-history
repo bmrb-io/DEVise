@@ -1,5 +1,12 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.3.0
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* New visualization summary page that's much more compact.
+
+
 Peptide-CGI 11.2.6
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)

@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2008/04/09 19:35:42  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.3  2007/08/20 20:26:10  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -71,6 +77,18 @@ public class S2DSummaryHtmlNormal extends S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtmlNormal.S2DSummaryHtmlNormal(" +
 	      name + ", " + accessionNum + ")");
 	}
+    }
+
+    //===================================================================
+    // PROTECTED METHODS
+
+    //-------------------------------------------------------------------
+    // Write the link to the other size of visualizations.
+    protected void writeSizeLink() throws IOException
+    {
+        _writer.write("Normal-size visualizations on this page; " +
+	  "<a href=\"" + _sibling.fileNameShort() +
+	  "\">large</a> visualizations\n");
     }
 
     //===================================================================

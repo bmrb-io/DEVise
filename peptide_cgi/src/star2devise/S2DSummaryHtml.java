@@ -31,6 +31,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/04/09 19:35:42  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.8  2007/11/15 17:15:36  wenger
 // Cleaned out cvs history in source files.
 //
@@ -238,15 +244,17 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the relaxation link.
-    public void writeRelax(String suffix, String name, int frameIndex,
-      int count) throws IOException
+    public void writeRelax(int dataType, int frequency, String suffix,
+      String name, int frameIndex, int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeRelax()");
 	}
 
-	_normal.writeRelax(suffix, name, frameIndex, count);
-	_large.writeRelax(suffix, name, frameIndex, count);
+	_normal.writeRelax(dataType, frequency, suffix, name,
+	  frameIndex, count);
+	_large.writeRelax(dataType, frequency, suffix, name,
+	  frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -326,15 +334,15 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the chem shift reference link.
-    public void writeChemShiftRef(int frameIndex, boolean fullNames)
+    public void writeChemShiftRef(String pdbId, int frameIndex)
       throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeChemShiftRef()");
 	}
 
-	_normal.writeChemShiftRef(frameIndex, fullNames);
-	_large.writeChemShiftRef(frameIndex, fullNames);
+	_normal.writeChemShiftRef(pdbId, frameIndex);
+	_large.writeChemShiftRef(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------

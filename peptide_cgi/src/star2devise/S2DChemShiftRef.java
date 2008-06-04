@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/04/09 19:35:41  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.6  2007/12/20 16:49:03  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -279,7 +285,7 @@ public class S2DChemShiftRef
 	    _summary.startFrame("Chemical Shift Referencing Visualizations" +
 	      " (calculated chem shifts from PDB " + _pdbId + ")");
 	    // We assume that if doProteinCheck is false, we're in Jafar mode.
-	    _summary.writeChemShiftRef(_frameIndex, !doProteinCheck);
+	    _summary.writeChemShiftRef(_pdbId, _frameIndex);
 	    _summary.endFrame();
 
 	} catch (Exception ex) {
