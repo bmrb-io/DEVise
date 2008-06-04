@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.77  2008/06/04 21:12:01  wenger
+// New Peptide-CGI summary page is implemented, test work except for
+// test52 for some weird reason.  (Still may need some other changes
+// before release, though.)
+//
 // Revision 1.76  2008/05/09 21:37:53  wenger
 // Incremented version number (to 11.2.6) and added new section to
 // version history.
@@ -148,7 +153,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.3.0x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.0x4"/*TEMP*/;
     // Change version to 11.3.1 when S2 order stuff is implemented.
     //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";

@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2008/06/04 21:12:01  wenger
+// New Peptide-CGI summary page is implemented, test work except for
+// test52 for some weird reason.  (Still may need some other changes
+// before release, though.)
+//
 // Revision 1.7  2008/04/09 19:35:42  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -290,7 +295,8 @@ TEMP?*/
 		writeLacsTable();
 
 		// Write the details about the save frames.
-		writeFrameDetails();
+	        // Get rid of frame details.
+		// writeFrameDetails();
 
 		_writer.write("<hr>\n");
 	        _writer.write("\n<p>" + VERSION_LABEL + ": {" +
@@ -736,7 +742,8 @@ TEMP?*/
             _writer.write("\n<hr>\n");
             _writer.write("<table border>\n");
             _writer.write("  <tr>\n");
-            _writer.write("    <td><br></td>\n");
+	    // Get rid of frame details.
+            // _writer.write("    <td><br></td>\n");
 	    if (!_deltaShiftInfo.isEmpty()) {
                 _writer.write("    <th>Chemical shift delta</th>\n");
 	    }
@@ -766,8 +773,9 @@ TEMP?*/
 
             for (int index = 1; index <= _maxChemShiftFrame; index++ ) {
                 _writer.write("  <tr>\n");
-		_writer.write("    <th><a href=\"#Frame" + index +
-		  "\">Frame&nbsp;" + index + "</a></th>\n");
+		// Get rid of frame details.
+		// _writer.write("    <th><a href=\"#Frame" + index +
+		  // "\">Frame&nbsp;" + index + "</a></th>\n");
 
 	        if (!_deltaShiftInfo.isEmpty()) {
 		    writeTableCell(_deltaShiftInfo, index);
