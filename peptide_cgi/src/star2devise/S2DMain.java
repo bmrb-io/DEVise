@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2008/06/04 21:27:04  wenger
+// Got rid of frame details from summary page, as requested by Eldon.
+//
 // Revision 1.77  2008/06/04 21:12:01  wenger
 // New Peptide-CGI summary page is implemented, test work except for
 // test52 for some weird reason.  (Still may need some other changes
@@ -153,7 +156,7 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.3.0x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.0";
     // Change version to 11.3.1 when S2 order stuff is implemented.
     //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
