@@ -1,5 +1,12 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 11.3.1
+------------------
+(Needs DEVise/JavaScreen 1.9.0 or higher.)
+
+* Updated configuration file for new Florence server.
+
+
 Peptide-CGI 11.3.0
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)

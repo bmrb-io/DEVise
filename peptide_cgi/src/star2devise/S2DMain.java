@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2008/06/05 19:34:44  wenger
+// Changed version to 11.3.0 for release.
+//
 // Revision 1.78  2008/06/04 21:27:04  wenger
 // Got rid of frame details from summary page, as requested by Eldon.
 //
@@ -156,9 +159,8 @@ public class S2DMain {
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
 
-    public static final String PEP_CGI_VERSION = "11.3.0";
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    //TEMPTEMP public static final String PEP_CGI_VERSION = "11.3.1x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
