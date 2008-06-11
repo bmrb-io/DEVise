@@ -1,3 +1,3 @@
 # Check regular JSPoP, etc., and restart if necessary.
-* * * * * cd /p/devise/js.installed; ./run_check regular 2
-19 * * * * cd /p/devise/js.installed; sleep 20; ./run_check -dev regular 2
+* * * * * cd /bmrb/devise/installed/js; ./run_check regular 2
+19 * * * * cd /bmrb/devise/installed/js; sleep 20; ./run_check -dev regular 2

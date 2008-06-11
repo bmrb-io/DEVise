@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2007
+#  (c) Copyright 2001-2008
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -43,7 +43,7 @@ UVD_CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi/make_uvd
 # Places to install stuff.
 
 # The base of the DEVise demo setup.
-DEV_DEMO_HOME = /bmrb/devise/demo
+DEV_DEMO_HOME = /bmrb/devise/installed/demo
 
 WWW_HOME = /bmrb/htdocs
 
