@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.71  2007/12/26 21:28:12  wenger
+  Added the "-defaultFont" command-line argument to allow DEVise to
+  at least run when we have a very limited selection of fonts (as
+  is now the case after the RHEL5 "upgrade").
+
   Revision 1.70  2005/12/06 20:03:05  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -333,6 +338,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/param.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 #include "Dispatcher.h"
 #include "Exit.h"
@@ -491,6 +498,7 @@ static void Usage(char *prog)
   fprintf(stderr, "\t-tclScript <file>: Tcl script to run\n");
   fprintf(stderr, "\t-defaultFont <font name>: font to use if we can't load "
     "other fonts\n");
+  fprintf(stderr, "\t-allowCore: override limit on core dump size\n");
 
   Exit::DoExit(1);
 }
@@ -745,6 +753,7 @@ void Init::DoInit(int &argc, char **argv)
 
       else if (strcmp(&argv[i][1], "abort") == 0) {
 	_abort = true;
+	AllowCoreDump();
 	MoveArg(argc,argv,i,1);
       }
 
@@ -1010,6 +1019,10 @@ void Init::DoInit(int &argc, char **argv)
 	MoveArg(argc,argv,i,2);
       }
 
+      else if (strcmp(&argv[i][1], "allowCore") == 0) {
+        AllowCoreDump();
+      }
+
       else {
         fprintf(stderr, "Unrecognized argument '%s'\n", argv[i]);
 	Usage(argv[0]);
@@ -1028,4 +1041,30 @@ void Init::SetDaliServer(const char *server)
 {
   if (_daliServer != NULL) delete [] _daliServer;
   _daliServer = CopyString(server);
+}
+
+void
+Init::PrintLimits()
+{
+	struct rlimit values;
+
+	if (getrlimit(RLIMIT_CORE, &values) != 0) {
+		reportErrSys("getrlimit() failed");
+	} else {
+		printf("RLIMIT_CORE limits: soft: %ld; hard: %ld\n",
+		  values.rlim_cur, values.rlim_max);
+	}
+}
+
+void
+Init::AllowCoreDump()
+{
+	struct rlimit values;
+
+	values.rlim_cur = -1;
+	values.rlim_max = -1;
+
+	if (setrlimit(RLIMIT_CORE, &values) != 0) {
+		reportErrSys("setrlimit() failed");
+	}
 }

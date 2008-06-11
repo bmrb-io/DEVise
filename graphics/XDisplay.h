@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.39  2007/12/26 21:28:12  wenger
+  Added the "-defaultFont" command-line argument to allow DEVise to
+  at least run when we have a very limited selection of fonts (as
+  is now the case after the RHEL5 "upgrade").
+
   Revision 1.38  2001/08/20 18:20:26  wenger
   Fixes to various font problems: XDisplay calculates point sizes correctly
   and uses screen resolution in specifying font; JS passes *its* screen
@@ -313,6 +318,10 @@ protected:
 
     // Set normal font to be default.
     void SetDefaultFont();
+
+    // Free the given font, setting _fontStruct and _normalFontStruct
+    // to null if they match the given font.
+    void FreeFont(XFontStruct *fontStruct);
 
 private:
     Display *_display;		    /* X display */

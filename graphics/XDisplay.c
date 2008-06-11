@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.92  2007/12/26 21:28:12  wenger
+  Added the "-defaultFont" command-line argument to allow DEVise to
+  at least run when we have a very limited selection of fonts (as
+  is now the case after the RHEL5 "upgrade").
+
   Revision 1.91  2005/12/06 20:03:13  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -563,9 +568,9 @@ void XDisplay::SetNormalFont()
 
   if (_fontStruct != _normalFontStruct) {
 #if defined(DEBUG)
-    printf("Freeing font 0x%p\n", _fontStruct);
+    printf("Freeing font %p\n", _fontStruct);
 #endif
-    XFreeFont(_display, _fontStruct);
+	FreeFont(_fontStruct);
   }
 
   _fontStruct = _normalFontStruct;
@@ -618,8 +623,8 @@ void XDisplay::SetFont(const char *family, const char *weight, const char *slant
 	    //   average width (in tenths of a pixel)
 	    //   character set
         int formatted = snprintf(fname, bufSize,
-	      "-*-%s-%s-%s-%s-*-*-%d-%d-%d-*-*-*-*", family, weight, slant, width,
-		  (int) (p * 10.0), _desiredScreenXRes, _desiredScreenYRes);
+	      "-*-%s-%s-%s-%s-*-*-%d-*-*-*-*-*-*", family, weight, slant, width,
+		  (int) (p * 10.0));
         checkAndTermBuf(fname, bufSize, formatted);
 
 		SetFont(fname);
@@ -643,13 +648,13 @@ void XDisplay::SetFont(const char *fname)
     _fontStruct = XLoadQueryFont(_display, fname);
     if (_fontStruct) {
 #if defined(DEBUG)
-        printf("Loaded font %s\n", fname);
+        printf("Loaded font %s (%p)\n", fname, _fontStruct);
 #endif
         if (oldFont && oldFont != _normalFontStruct) {
 #if defined(DEBUG)
-            printf("Freeing font 0x%p\n", _fontStruct);
+            printf("Freeing font %p\n", oldFont);
 #endif
-            XFreeFont(_display, oldFont);
+            FreeFont(oldFont);
         }
 	}
 }
@@ -1382,7 +1387,7 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
 
   if (xwin->GetWinId()) {
 #ifdef DEBUG
-    printf("XDisplay::DestroyWindowRep 0x%p, window 0x%lx\n",
+    printf("XDisplay::DestroyWindowRep %p, window 0x%lx\n",
 	   xwin, xwin->GetWinId());
 #endif
     XDestroyWindow(_display, xwin->GetWinId());
@@ -1390,7 +1395,7 @@ void XDisplay::DestroyWindowRep(WindowRep *win)
     xwin->_myWin = 0;
   } else {
 #ifdef DEBUG
-    printf("XDisplay::DestroyWindowRep 0x%p, pixmap 0x%lx\n",
+    printf("XDisplay::DestroyWindowRep %p, pixmap 0x%lx\n",
 	   xwin, xwin->GetPixmapId());
 #endif
     XFreePixmap(_display, xwin->GetPixmapId());
@@ -1446,7 +1451,7 @@ void XDisplay::InternalProcessing()
 	_winList.DoneIterator(index);
 	found = true;
 #if defined(DEBUG)
-	printf("XDisplay::Dispatching event %d to XWindowRep 0x%p\n",
+	printf("XDisplay::Dispatching event %d to XWindowRep %p\n",
 	       event.type, win);
 #endif
 	win->HandleEvent(event);
@@ -1546,8 +1551,15 @@ XDisplay::SetDesiredScreenYRes(int resolution)
 void
 XDisplay::SetDefaultFont()
 {
+#if defined(DEBUG)
+  printf("XDisplay::SetDefaultFont()\n");
+#endif
+
   if (_normalFontStruct != NULL) {
-    XFreeFont(_display, _normalFontStruct);
+#if defined(DEBUG)
+    printf("Freeing font %p\n", _normalFontStruct);
+#endif
+    FreeFont(_normalFontStruct);
   }
 
   const char *_defaultFName = Init::DefaultFont();
@@ -1561,5 +1573,19 @@ XDisplay::SetDefaultFont()
   if (!_normalFontStruct) {
 	  reportErrNosys("Fatal error: cannot load default font");
       Exit::DoExit(1);
+  }
+}
+
+void
+XDisplay::FreeFont(XFontStruct *fontStruct)
+{
+#if defined(DEBUG)
+    printf("XDisplay::FreeFont(%p)\n", fontStruct);
+#endif
+
+  if (fontStruct != NULL) {
+    XFreeFont(_display, fontStruct);
+	if (_fontStruct == fontStruct) _fontStruct = NULL;
+	if (_normalFontStruct == fontStruct) _normalFontStruct = NULL;
   }
 }

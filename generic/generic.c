@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.69  2008/01/24 22:08:14  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.68  2005/12/06 20:02:51  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -1758,6 +1761,9 @@ int main(int argc, char **argv)
 
   printf("Starting DEVise debug log file: %s\n",
       DebugLog::DefaultLog()->LogFile());
+
+  printf("\n");
+  Init::PrintLimits();
 
   HangCheck::CreateDefault();
 	

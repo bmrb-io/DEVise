@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.35  2007/12/26 21:28:12  wenger
+  Added the "-defaultFont" command-line argument to allow DEVise to
+  at least run when we have a very limited selection of fonts (as
+  is now the case after the RHEL5 "upgrade").
+
   Revision 1.34  2005/12/06 20:03:05  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -283,6 +288,12 @@ class Init {
 
 	// Default font to use if we cannot load other fonts.
 	static const char *DefaultFont() { return _defaultFont; }
+
+	// Print various system limits.
+	static void PrintLimits();
+
+	// Override any limits on core dump size, if possible.
+	static void AllowCoreDump();
 
 protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and

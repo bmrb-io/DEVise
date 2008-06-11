@@ -3,7 +3,21 @@
 DEVise 1.9.1
 ------------
 
+* Fixed a problem that sometimes caused DEVise to free the same FontStruct
+twice.
+
+* More flexible generation of font names (horizontal and vertical resolution
+are no longer specified).
+
+* Added -allowCore command-line flag that overrides limits on core dump
+size, if possible.
+
+* We now print the core dump size limit at startup.
+
 * Fixed bug 932 (axis multiplication factor not copied in view copy).
+
+* Added the "-defaultFont" command-line argument to allow DEVise to
+at least run when we have a very limited selection of fonts.
 
 
 DEVise 1.9.0
