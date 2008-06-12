@@ -274,6 +274,11 @@ Num Date        Status  Pri     Description
 072 6/12/08	OPEN	3	Add NMR-STAR file version to detailed
 				info in visualizations. (wenger)
 
+073 6/12/08	OPEN	2	Add a check for all
+				_Atom_chem_shift.Assign_fig_of_merit values
+				being null, don't actually generate the
+				visualization if that's the case. (elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
