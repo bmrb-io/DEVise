@@ -58,8 +58,6 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	data_dir/uvd/test47_outhn1.dat \
 	data_dir/uvd/test47_outmd.dat \
 	data_dir/uvd/test47_outp1.dat \
-	data_dir/uvd/test47_outps1.dat \
-	data_dir/uvd/test47_outpsac1.dat \
 	data_dir/uvd/test47_outrc1.dat \
 	data_dir/uvd/test47_outrl1.dat \
 	html_dir/uvd/test47_outac1.html \
@@ -76,8 +74,6 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	html_dir/uvd/test47_outhn1_large.html \
 	html_dir/uvd/test47_outp1.html \
 	html_dir/uvd/test47_outp1_large.html \
-	html_dir/uvd/test47_outps1.html \
-	html_dir/uvd/test47_outps1_large.html \
 	html_dir/uvd/test47_outtmp1y.html \
 	html_dir/uvd/test47_outtmp1y_large.html \
 	html_dir/uvd/test47_outy.html \
@@ -90,7 +86,6 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	session_dir/.uvd/test47_outd1.ds \
 	session_dir/.uvd/test47_outhn1.ds \
 	session_dir/.uvd/test47_outp1.ds \
-	session_dir/.uvd/test47_outps1.ds \
 	data_dir/uvd/test47_outcsr1_1.dat \
 	data_dir/uvd/test47_outcsr1_2.dat \
 	data_dir/uvd/test47_outcsr1_3.dat \

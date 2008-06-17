@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/02/20 17:41:08  wenger
+// Committing (disabled) partially-implemented S2 Order visualization
+// code and tests.
+//
 // Revision 1.8  2007/12/20 16:49:03  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -172,6 +176,25 @@ public class S2DUtils
 	}
 
 	return result;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Determine whether all values in an array match a given target
+     * value.
+     * @param An array of strings to test.
+     * @param The target value to check against.
+     * @return True iff all values in the array match the target value.
+     */
+    public static boolean entireArrayMatches(String[] values, String target)
+    {
+        for (int index = 0; index < values.length; index++) {
+	    if (!values[index].equals(target)) {
+	        return false;
+	    }
+	}
+
+	return true;
     }
 
     //-------------------------------------------------------------------

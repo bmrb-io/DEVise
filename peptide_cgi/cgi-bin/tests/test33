@@ -24,8 +24,6 @@ set files = (data_dir/6722am1.dat \
 	data_dir/6722hn1.dat \
 	data_dir/6722md.dat \
 	data_dir/6722p1.dat \
-	data_dir/6722ps1.dat \
-	data_dir/6722psac1.dat \
 	data_dir/6722rc1.dat \
 	data_dir/6722rl1.dat \
 	html_dir/6722am1.html \
@@ -33,7 +31,6 @@ set files = (data_dir/6722am1.dat \
 	html_dir/6722d1.html \
 	html_dir/6722hn1.html \
 	html_dir/6722p1.html \
-	html_dir/6722ps1.html \
 	html_dir/6722y.html \
 	html_dir/6722y_large.html \
 	session_dir/6722acdd \
@@ -42,13 +39,11 @@ set files = (data_dir/6722am1.dat \
 	session_dir/6722d1.ds \
 	session_dir/6722hn1.ds \
 	session_dir/6722p1.ds \
-	session_dir/6722ps1.ds \
 	html_dir/6722am1_large.html \
 	html_dir/6722as1_large.html \
 	html_dir/6722d1_large.html \
 	html_dir/6722hn1_large.html \
-	html_dir/6722p1_large.html \
-	html_dir/6722ps1_large.html)
+	html_dir/6722p1_large.html )
 
 foreach file ($files)
   if (! -f $file) then

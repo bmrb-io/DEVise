@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.80  2008/06/05 21:12:26  wenger
+// Changed version to 11.3.1x1; added new version history section;
+// updated config file for new Florence server.
+//
 // Revision 1.79  2008/06/05 19:34:44  wenger
 // Changed version to 11.3.0 for release.
 //
@@ -160,7 +164,7 @@ public class S2DMain {
     public static int _verbosity = 0;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.1x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.1x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -2045,6 +2049,9 @@ public class S2DMain {
 	    String[] ambiguityTmp = star.getAndFilterFrameValues(frame,
 	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE, entityID,
 	      entityIDs);
+	    if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
+	        throw new S2DWarning("Ambiguity code values are all null");
+	    }
 	    ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp,
 	      star.CHEM_SHIFT_AMBIG_CODE);
 	    ambiguityTmp = null;
@@ -2539,10 +2546,13 @@ public class S2DMain {
 	    meritValsTmp = star.getAndFilterFrameValues(frame,
 	      star.CHEM_SHIFT_VALUE, star.FIGURE_OF_MERIT, entityID,
 	      entityIDs);
+	    if (S2DUtils.entireArrayMatches(meritValsTmp, ".")) {
+		throw new S2DWarning("Figure of merit values are all null");
+	    }
 	} catch (S2DException ex) {
             if (doDebugOutput(4)) {
-	        System.out.println("No Pistachio values in this save frame (" +
-		  star.getFrameName(frame) + ")");
+	        System.out.println("No figure of merit values in this " +
+		  "save frame (" + star.getFrameName(frame) + ")");
 	    }
 	    return;
 	}
@@ -2639,6 +2649,9 @@ public class S2DMain {
 	    ambiguityTmp = star.getAndFilterFrameValues(frame,
 	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE, entityID,
 	      entityIDs);
+	    if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
+	        throw new S2DWarning("Ambiguity code values are all null");
+	    }
 	} catch (S2DException ex) {
             if (doDebugOutput(4)) {
 	        System.out.println("No ambiguity values in this save frame (" +

@@ -17,11 +17,7 @@ endif
 echo "Checking output files"
 
 #TEMPTEMP -- this should either produce Pistachio data or figure out that the figures of merit are all "."
-set files = ( data_dir/6502am1.dat \
-	data_dir/6502am2.dat \
-	data_dir/6502amac1.dat \
-	data_dir/6502amac2.dat \
-	data_dir/6502as1.dat \
+set files = ( data_dir/6502as1.dat \
 	data_dir/6502as2.dat \
 	data_dir/6502c1.dat \
 	data_dir/6502c2.dat \
@@ -32,16 +28,10 @@ set files = ( data_dir/6502am1.dat \
 	data_dir/6502md.dat \
 	data_dir/6502p1.dat \
 	data_dir/6502p2.dat \
-	data_dir/6502ps1.dat \
-	data_dir/6502ps2.dat \
-	data_dir/6502psac1.dat \
-	data_dir/6502psac2.dat \
 	data_dir/6502rc1.dat \
 	data_dir/6502rc2.dat \
 	data_dir/6502rl1.dat \
 	data_dir/6502rl2.dat \
-	html_dir/6502am1.html \
-	html_dir/6502am2.html \
 	html_dir/6502as1.html \
 	html_dir/6502as2.html \
 	html_dir/6502c1.html \
@@ -52,13 +42,9 @@ set files = ( data_dir/6502am1.dat \
 	html_dir/6502hn2.html \
 	html_dir/6502p1.html \
 	html_dir/6502p2.html \
-	html_dir/6502ps1.html \
-	html_dir/6502ps2.html \
 	html_dir/6502y.html \
 	html_dir/6502y_large.html \
 	session_dir/6502acdd \
-	session_dir/6502am1.ds \
-	session_dir/6502am2.ds \
 	session_dir/6502as1.ds \
 	session_dir/6502as2.ds \
 	session_dir/6502c1.ds \
@@ -69,10 +55,6 @@ set files = ( data_dir/6502am1.dat \
 	session_dir/6502hn2.ds \
 	session_dir/6502p1.ds \
 	session_dir/6502p2.ds \
-	session_dir/6502ps1.ds \
-	session_dir/6502ps2.ds \
-	html_dir/6502am1_large.html \
-	html_dir/6502am2_large.html \
 	html_dir/6502as1_large.html \
 	html_dir/6502as2_large.html \
 	html_dir/6502c1_large.html \
@@ -82,9 +64,7 @@ set files = ( data_dir/6502am1.dat \
 	html_dir/6502hn1_large.html \
 	html_dir/6502hn2_large.html \
 	html_dir/6502p1_large.html \
-	html_dir/6502p2_large.html \
-	html_dir/6502ps1_large.html \
-	html_dir/6502ps2_large.html )
+	html_dir/6502p2_large.html )
 
 foreach file ($files)
   if (! -f $file) then

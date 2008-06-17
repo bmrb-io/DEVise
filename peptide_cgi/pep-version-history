@@ -4,6 +4,9 @@ Peptide-CGI 11.3.1
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* We no longer generate figure of merit or ambiguity code visualizations
+if the values are all null.
+
 * Updated configuration file for new Florence server.
 
 

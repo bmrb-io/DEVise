@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2008/02/20 17:41:08  wenger
+// Committing (disabled) partially-implemented S2 Order visualization
+// code and tests.
+//
 // Revision 1.7  2007/11/15 17:15:36  wenger
 // Cleaned out cvs history in source files.
 //
@@ -222,46 +226,55 @@ public class S2DStarIfc {
     //===================================================================
     // PUBLIC METHODS
 
+    //-------------------------------------------------------------------
     public String getFileName()
     {
         return _fileName;
     }
 
+    //-------------------------------------------------------------------
     public String getSystemName()
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     public String getEntryTitle()
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     public int residueCount(SaveFrameNode frame, String entityID)
     {
         return -1;
     }
 
+    //-------------------------------------------------------------------
     public Vector getPdbIds()
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     public int getHAChemShiftCount(SaveFrameNode frame)
     {
         return -1;
     }
 
+    //-------------------------------------------------------------------
     public Enumeration getDataFramesByCat(String category)
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     public Enumeration getDataFramesByCat(String tagName, String category)
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     //TEMP -- check whether this should be used in more places
     public SaveFrameNode getOneDataFrameByCat(String category)
       throws S2DException
@@ -274,6 +287,7 @@ public class S2DStarIfc {
 	return getOneDataFrameByCat(DEFAULT_SAVEFRAME_CATEGORY, category);
     }
 
+    //-------------------------------------------------------------------
     public SaveFrameNode getOneDataFrameByCat(String tagName, String category)
       throws S2DException
     {
@@ -298,12 +312,14 @@ public class S2DStarIfc {
 	return (SaveFrameNode)frameList.elementAt(0);
     }
 
+    //-------------------------------------------------------------------
     public boolean refersToProtein(SaveFrameNode frame, String entityID)
       throws S2DException
     {
         return false;
     }
 
+    //-------------------------------------------------------------------
     /**
      * Determines whether the given entity/monomeric polymer save frame
      * has data for a protein or not.
@@ -315,11 +331,13 @@ public class S2DStarIfc {
         return false;
     }
 
+    //-------------------------------------------------------------------
     public S2DResidues getResidues(SaveFrameNode frame) throws S2DException
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     /**
      * Get the value of the given tag in the given save frame.
      * Throws exception if the value doesn't exist.
@@ -348,6 +366,7 @@ public class S2DStarIfc {
         return result;
     }
 
+    //-------------------------------------------------------------------
     /**
      * Get the given values from a save frame.
      * @param The save frame (can be null).
@@ -361,13 +380,15 @@ public class S2DStarIfc {
         return getFrameValues(frame, loopId, name, -1);
     }
 
+    //-------------------------------------------------------------------
     /**
      * Get the given values from a save frame.
      * @param The save frame (can be null).
      * @param The loop ID (tag name to use to find the right loop).
      * @param The tag name for the values to get.
      * @param The maximum number of values to get (-1 for no limit).
-     * @return An array containing the values.
+     * @return An array containing the values (null if the given
+     *   values are not found).
      */
     public String[] getFrameValues(SaveFrameNode frame, String loopId,
       String name, int maxVals) throws S2DException
@@ -403,12 +424,27 @@ public class S2DStarIfc {
 	return result;
     }
 
+    //-------------------------------------------------------------------
+    /**
+     * Get the given values from a save frame, returning defaults if
+     *   the given tag is not found.
+     * @param The save frame (can be null).
+     * @param The loop ID (tag name to use to find the right loop).
+     * @param The tag name for the values to get.
+     * @param The number of values to put into the array if the
+     *   values are not found in the STAR file.
+     * @param The default value.
+     * @return An array containing the values (if the values are not
+     *   found, every element in the array will contain the default
+     *   value.
+     */
     public String[] getOptionalFrameValues(SaveFrameNode frame, String loopId,
       String name, int size, String defaultValue) throws S2DException
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     /**
      * Get the given values from a save frame and filter them, keeping
      * only the ones that match the given entity ID (no filtering takes
@@ -439,16 +475,19 @@ public class S2DStarIfc {
 	return values;
     }
 
+    //-------------------------------------------------------------------
     public String getFrameName(SaveFrameNode frame)
     {
         return (frame != null) ? frame.getLabel() : "null";
     }
 
+    //-------------------------------------------------------------------
     public String getFrameDetails(SaveFrameNode frame)
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     //TEMP -- this method or getTagValue should probably be more widely
     // used in the code
     //TEMP -- change the name to something like getTagValueTolerant
@@ -466,6 +505,7 @@ public class S2DStarIfc {
         return result;
     }
 
+    //-------------------------------------------------------------------
     public String getOneFrameValueStrict(SaveFrameNode frame, String name)
       throws S2DException
     {
@@ -483,33 +523,39 @@ public class S2DStarIfc {
         return result;
     }
 
+    //-------------------------------------------------------------------
     public SaveFrameNode getEntityFrame(SaveFrameNode frame,
       String entityID) throws S2DException
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     public SaveFrameNode getEntityFrame() throws S2DException
     {
         return null;
     }
 
+    //-------------------------------------------------------------------
     public String[] translateAtomNomenclature(String[] resLabels,
       String[] atomNames) throws S2DException
     {
         return atomNames;
     }
 
+    //-------------------------------------------------------------------
     public String getHetNOEAtom1(SaveFrameNode frame)
     {
     	return null;
     }
 
+    //-------------------------------------------------------------------
     public String getHetNOEAtom2(SaveFrameNode frame)
     {
     	return null;
     }
 
+    //-------------------------------------------------------------------
     /**
      * Get a list of unique entity IDs referenced in the chemical shift
      * loop of the given save frame.
@@ -524,6 +570,7 @@ public class S2DStarIfc {
         return null;
     }
 
+    //-------------------------------------------------------------------
     /**
      * Get all atom chemical shift entity IDs for the given save
      * frame.  First we try the "normal" "_Atom_chem_shift.Entity_ID"

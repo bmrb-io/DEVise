@@ -27,8 +27,6 @@ set files = ( data_dir/15014ac1.dat \
 	data_dir/15014hn1.dat \
 	data_dir/15014md.dat \
 	data_dir/15014p1.dat \
-	data_dir/15014ps1.dat \
-	data_dir/15014psac1.dat \
 	data_dir/15014rc1.dat \
 	data_dir/15014rl1.dat \
 	html_dir/15014ac1.html \
@@ -47,8 +45,6 @@ set files = ( data_dir/15014ac1.dat \
 	html_dir/15014hn1_large.html \
 	html_dir/15014p1.html \
 	html_dir/15014p1_large.html \
-	html_dir/15014ps1.html \
-	html_dir/15014ps1_large.html \
 	html_dir/15014y.html \
 	html_dir/15014y_large.html \
 	session_dir/15014ac1.ds \
@@ -59,8 +55,7 @@ set files = ( data_dir/15014ac1.dat \
 	session_dir/15014c1.ds \
 	session_dir/15014d1.ds \
 	session_dir/15014hn1.ds \
-	session_dir/15014p1.ds \
-	session_dir/15014ps1.ds )
+	session_dir/15014p1.ds )
 
 foreach file ($files)
   if (! -f $file) then
