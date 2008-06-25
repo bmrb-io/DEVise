@@ -4,6 +4,13 @@ Peptide-CGI 11.3.1
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Changed order of data sets in the summary page.
+
+* Added "no data available" sections to the summary page so users
+don't get confused by "missing" data.
+
+* Added mailto link to the summary page.
+
 * We no longer generate figure of merit or ambiguity code visualizations
 if the values are all null.
 

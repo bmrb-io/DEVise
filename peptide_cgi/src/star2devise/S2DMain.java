@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.81  2008/06/17 23:07:53  wenger
+// Fixed to-do 073:  we no longer generate figure of merit or ambiguity
+// code visualizations if the values are all null (".").
+//
 // Revision 1.80  2008/06/05 21:12:26  wenger
 // Changed version to 11.3.1x1; added new version history section;
 // updated config file for new Florence server.
@@ -164,7 +168,7 @@ public class S2DMain {
     public static int _verbosity = 0;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

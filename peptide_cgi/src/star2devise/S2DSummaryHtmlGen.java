@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/06/04 21:27:05  wenger
+// Got rid of frame details from summary page, as requested by Eldon.
+//
 // Revision 1.8  2008/06/04 21:12:01  wenger
 // New Peptide-CGI summary page is implemented, test work except for
 // test52 for some weird reason.  (Still may need some other changes
@@ -249,6 +252,12 @@ public abstract class S2DSummaryHtmlGen {
 	    }
 
 	    _writer.write("\n<p>\n");
+	    _writer.write("Comments or questions?  Contact <a href=\"mailto:" +
+	      S2DNames.COMMENT_EMAIL + "\">" + S2DNames.COMMENT_EMAIL +
+	      "</a>\n");
+	    _writer.write("</p>\n");
+
+	    _writer.write("\n<p>\n");
             writeSizeLink();
 	    _writer.write("</p>\n");
 
@@ -286,13 +295,13 @@ public abstract class S2DSummaryHtmlGen {
 TEMP?*/
 
 		// Write out the tables that now contain the actual links.
-		writeChemShiftTable();
-		writeRelaxationTable();
-		writeHetNOETable();
-		writeCouplingTable();
 		writeCoordTable();
+		writeChemShiftTable();
 		writeChemShiftRefTable();
 		writeLacsTable();
+		writeCouplingTable();
+		writeRelaxationTable();
+		writeHetNOETable();
 
 		// Write the details about the save frames.
 	        // Get rid of frame details.
@@ -738,8 +747,9 @@ TEMP?*/
     // Write the html table of chemical shift links.
     protected void writeChemShiftTable() throws IOException
     {
+        _writer.write("\n<hr>\n");
         if (_maxChemShiftFrame > 0) {
-            _writer.write("\n<hr>\n");
+	    _writer.write("<p><b>Chemical shift data</b></p>");
             _writer.write("<table border>\n");
             _writer.write("  <tr>\n");
 	    // Get rid of frame details.
@@ -805,15 +815,18 @@ TEMP?*/
             _writer.write("</table>\n");
 
             //TEMP? _wroteLink = true;
-        }
+        } else {
+	    _writer.write("<p><b>No chemical shift data available " +
+	      "in this entry</b></p>\n");
+	}
     }
 
     //-------------------------------------------------------------------
     // Write the html table of T1/T2 relaxation links.
     protected void writeRelaxationTable() throws IOException
     {
+	_writer.write("\n<hr>\n");
         if (_maxRelaxFrame > 0) {
-	    _writer.write("\n<hr>\n");
 	    _writer.write("<p><b>T1/T2 Relaxation</b></p>\n");
 
 	    int maxLen = 0;
@@ -882,7 +895,10 @@ TEMP?*/
 	    }
 
             _writer.write("</table>\n");
-        }
+        } else {
+	    _writer.write("<p><b>No T1/T2 relaxation data available " +
+	      "in this entry</b></p>\n");
+	}
     }
 
     //-------------------------------------------------------------------
@@ -891,8 +907,8 @@ TEMP?*/
     {
 	final int maxPerRow = 5;
 
+	_writer.write("\n<hr>\n");
         if (_maxHetNOEFrame > 0) {
-	    _writer.write("\n<hr>\n");
 	    _writer.write("<p><b>Heteronuclear NOE</b></p>\n");
 	    _writer.write("<p>(spectrometer frequency, atom one, " +
 	      "atom two, number of values)</p>\n");
@@ -910,6 +926,9 @@ TEMP?*/
 
             _writer.write("  </tr>\n");
             _writer.write("</table>\n");
+        } else {
+	    _writer.write("<p><b>No Heteronuclear NOE data available " +
+	      "in this entry</b></p>\n");
         }
     }
 
@@ -919,8 +938,8 @@ TEMP?*/
     {
 	final int maxPerRow = 8;
 
+	_writer.write("\n<hr>\n");
         if (_maxCouplingFrame > 0) {
-	    _writer.write("\n<hr>\n");
 	    _writer.write("<p><b>Coupling Constants</b></p>\n");
 
             _writer.write("<table border cellpadding=5>\n");
@@ -936,6 +955,9 @@ TEMP?*/
 
             _writer.write("  </tr>\n");
             _writer.write("</table>\n");
+        } else {
+	    _writer.write("<p><b>No coupling constants available in " +
+	      "this entry</b></p>\n");
         }
     }
 
@@ -943,11 +965,11 @@ TEMP?*/
     // Write the html table of coordinate links.
     protected void writeCoordTable() throws IOException
     {
+        _writer.write("\n<hr>\n");
         if (_maxCoordFrame > 0) {
 
 	    final int maxPerRow = 10;
 
-            _writer.write("\n<hr>\n");
             _writer.write("<p><b>\n" +
 	      "NMR experimental data plots linked to Jmol 3D structure " +
 	      "visualization\n" +
@@ -971,6 +993,9 @@ TEMP?*/
             _writer.write("</table>\n");
 
             //TEMP? _wroteLink = true;
+        } else {
+	    _writer.write("<p><b>No coordinate data available for " +
+	      "this entry</b></p>\n");
 	}
     }
 
@@ -978,9 +1003,9 @@ TEMP?*/
     // Write the html table of chemical shift reference links.
     protected void writeChemShiftRefTable() throws IOException
     {
+	_writer.write("\n<hr>\n");
         if (_maxChemShiftRefFrame > 0) {
-	    _writer.write("\n<hr>\n");
-	    _writer.write("<p><b> Chemical Shift Referencing " +
+	    _writer.write("<p><b>Chemical Shift Referencing " +
 	      "Visualizations (note: processing may take several " +
 	      "minutes)</b></p>\n");
 
@@ -1003,6 +1028,10 @@ TEMP?*/
             }
 
             _writer.write("</table>\n");
+        } else {
+	    _writer.write("<p><b>No back calculated chemical shift " +
+	      "referencing visualizations available for this entry" +
+	      "</b></p>\n");
 	}
     }
 
@@ -1010,8 +1039,8 @@ TEMP?*/
     // Write the html table of LACS links.
     protected void writeLacsTable() throws IOException
     {
+	_writer.write("\n<hr>\n");
         if (_maxLacsFrame > 0) {
-	    _writer.write("\n<hr>\n");
 	    _writer.write("<p><b><a target=\"lacs_ref\" " + 
 	      "href=\"http://www.ncbi.nlm.nih.gov/pubmed/16041479\">" +
 	      "Linear Analysis of Chemical Shifts" +
@@ -1028,6 +1057,11 @@ TEMP?*/
             _writer.write("</table>\n");
 
             //TEMP? _wroteLink = true;
+        } else {
+	    _writer.write("<p><b>No <a target=\"lacs_ref\" " +
+	      "href=\"http://www.ncbi.nlm.nih.gov/pubmed/16041479\">" +
+	      "Linear Analysis of Chemical Shifts</a> data available for " +
+	      "this entry</b></p>\n");
 	}
     }
 
