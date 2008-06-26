@@ -12,10 +12,10 @@ Num Date        Status  Description
 003 09/21/01	OPEN	hxrates.base and order.base should be working
 			session files. (rkw)
 
-004 11/02/01	OPEN	s2d can't find set_modes on yola (BMRB).  (./set_modes
+004 11/02/01	NLR	s2d can't find set_modes on yola (BMRB).  (./set_modes
 			doesn't work, explicit full path does). (rkw)
 
-005 5/14/02	OPEN	Dimitri ran into a problem installing peptide-cgi
+005 5/14/02	NLR	Dimitri ran into a problem installing peptide-cgi
 			on top of an earlier version on SPARC/Solaris
 			(may be related to non-gnu make). (rkw)
 
@@ -42,7 +42,7 @@ Num Date        Status  Description
 010 8/22/02	OPEN	Give a better error message if a garbage accession
 			number is entered. (rkw)
 
-011 10/31/02	WORK	On yola at BMRB, a Perl system() call totally
+011 10/31/02	NLR	On yola at BMRB, a Perl system() call totally
 			fails if the Perl script is being run as a
 			CGI.
 			(Workaround by rkw, 10/31/02.)
@@ -131,7 +131,7 @@ Num Date        Status  Description
 			of static variables).  (zsolt/wenger)
 			(Fixed by wenger, 3/4/04.)
 
-031 3/3/04	OPEN	In Jafar (both at NMRFAM and BMRB), files generated
+031 3/3/04	NLR	In Jafar (both at NMRFAM and BMRB), files generated
 			by s2d have timestamps about 15 minutes in the
 			past. (zsolt/wenger)
 
@@ -283,6 +283,7 @@ Num Date        Status  Description
 064 6/26/08	OPEN	Highlighting of 3D residues from selection in data
 			view fails for 4970 (appears to be related to the
 			fact that no 4970rl1.dat file is generated). (wenger)
+			(See also 037.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
