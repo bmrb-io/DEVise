@@ -280,6 +280,10 @@ Num Date        Status  Description
 			in coordinate links in new summary page if we've
 			already processed coordinates. (wenger)
 
+064 6/26/08	OPEN	Highlighting of 3D residues from selection in data
+			view fails for 4970 (appears to be related to the
+			fact that no 4970rl1.dat file is generated). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
