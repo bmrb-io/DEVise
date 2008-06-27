@@ -28,6 +28,7 @@ LACS_LEVEL_DEFAULT = 0
 LACS_NAME_TEMPLATE = bmr*_LACS.str
 LACS_URL = null
 UVD_CGI_URL = undefined
+EXTRA_GC = 0
 
 include Makefile.config
 
@@ -157,6 +158,7 @@ s2d_props:
 	echo "bmrb_mirror.lacs_url=$(LACS_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.verbosity=0" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.debug_level=0" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.extra_gc=$(EXTRA_GC)" >> $(S2D_PROPS_FILE)
 
 error_email:
 	-rm -f $(ERROR_EMAIL_FILE)

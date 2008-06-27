@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.82  2008/06/25 18:48:07  wenger
+// Multiple summary page changes:  re-ordered the data sets; added
+// mailto link; added "no data available" sections so users don't
+// get confused about "missing" data.
+//
 // Revision 1.81  2008/06/17 23:07:53  wenger
 // Fixed to-do 073:  we no longer generate figure of merit or ambiguity
 // code visualizations if the values are all null (".").
@@ -166,9 +171,11 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
+    	// Whether to do "extra" calls to System.gc().
+    private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.1x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.1x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -456,6 +463,20 @@ public class S2DMain {
 		  "; using default"));
 	    }
 	}
+
+	String extraGCTmp = props.getProperty("bmrb_mirror.extra_gc");
+	if (extraGCTmp == null) {
+	    System.err.println(new S2DWarning("Unable to get value for " +
+	      "bmrb_mirror.extra_gc property"));
+	} else {
+	    try {
+	        _extraGC = (Integer.parseInt(extraGCTmp) != 0);
+	    } catch (NumberFormatException ex) {
+	        System.err.println(new S2DWarning("Error parsing " +
+		  "extra_gc value " + ex.toString() +
+		  "; using default"));
+	    }
+        }
 
         return props;
     }
@@ -986,6 +1007,7 @@ public class S2DMain {
 	    System.out.println("_doProteinCheck = " + _doProteinCheck);
 	    System.out.println("_runScripts = " + _runScripts);
 	    System.out.println("_sessionDir = {" + _sessionDir + "}");
+	    System.out.println("_extraGC = " + _extraGC);
 	}
     }
 
@@ -1600,17 +1622,55 @@ public class S2DMain {
 
         //TEMP -- do I really want to skip stuff if I get an error?
 
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "Before saveChemShifts()");
+
         saveChemShifts(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After saveChemShifts()");
+
         saveT1Relaxation(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After saveT1Relaxation()");
+
         saveT2Relaxation(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After saveT2Relaxation()");
+
         saveHetNOE(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory("After saveHetNOE()");
+
         saveHExchangeRate(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After saveHExchangeRate()");
+
         saveCoupling(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory("After saveCoupling()");
+
         saveHExchangeProtFact(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After saveHExchangeProtFact()");
+
         //TEMPTEMP saveS2Params(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory("After saveS2Params()");
 
         save3DDataSources();
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After save3DDataSources()");
+
         saveAtomicCoords(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After saveAtomicCoords()");
 
 	try {
 	    ensureResidueList(star);

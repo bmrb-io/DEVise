@@ -14,6 +14,9 @@ don't get confused by "missing" data.
 * We no longer generate figure of merit or ambiguity code visualizations
 if the values are all null.
 
+* Added the option to explicitly call the garbage collector a number
+of times during processing.
+
 * Updated configuration file for new Florence server.
 
 

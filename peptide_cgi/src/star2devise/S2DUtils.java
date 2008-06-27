@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2008/06/17 23:07:53  wenger
+// Fixed to-do 073:  we no longer generate figure of merit or ambiguity
+// code visualizations if the values are all null (".").
+//
 // Revision 1.9  2008/02/20 17:41:08  wenger
 // Committing (disabled) partially-implemented S2 Order visualization
 // code and tests.
@@ -388,6 +392,17 @@ TEMP*/
 	}
 
 	return dataSuffix;
+    }
+
+    //-------------------------------------------------------------------
+    // Print information about the current memory usage.
+    public static void printMemory(String label)
+    {
+	System.out.println(label);
+    	Runtime rt = Runtime.getRuntime();
+	System.out.println("  Total memory: " + rt.totalMemory());
+	System.out.println("  Free memory:  " + rt.freeMemory());
+	System.out.println("  Max memory:   " + rt.maxMemory());
     }
 
     //===================================================================
