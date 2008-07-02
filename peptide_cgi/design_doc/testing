@@ -36,6 +36,7 @@ The following testing steps must be done:
     - Coupling constants
     - 3D structure from PDB ID 1NGL (make sure the Jmol menu button shows
       up in the JavaScreen)
+    - S2 order parameters
 
 - Run 'tests/test15 -noleech' in /var/home/www/public/cgi-bin/bmrb on teal.
 
@@ -53,6 +54,8 @@ The following testing steps must be done:
     - LACS Data (CB vs. CA-CB)
     - LACS Data (HA vs. CA-CB)
     - LACS Data (CO vs. CA-CB)
+
+- Run 's2d -bmrbid 4096 -force' in /var/home/www/public/cgi-bin/bmrb on teal.
 
 - View the following visualizations for the entry 4096 and MAKE SURE THEY
   ARE CORRECT:
