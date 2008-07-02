@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/02/20 17:41:07  wenger
+// Committing (disabled) partially-implemented S2 Order visualization
+// code and tests.
+//
 // Revision 1.6  2007/11/15 17:15:35  wenger
 // Cleaned out cvs history in source files.
 //
@@ -157,14 +161,13 @@ public class S2DNames
     public static final String LACS_COORD_SUFFIX = LACS_SUFFIX + "c";
     public static final String LACS_LINE_SUFFIX = LACS_SUFFIX + "l";
     public static final String LACS_POINT_SUFFIX = LACS_SUFFIX + "p";
-    public static final String ORDER_SUFFIX = "o";//TEMPTEMP?
+    public static final String ORDER_SUFFIX = "o";
     public static final String PERCENT_ASSIGN_SUFFIX = "p";
     public static final String PISTACHIO_ATOMIC_COORD_SUFFIX = "psac";
     public static final String PISTACHIO_SUMMARY_DATA_SUFFIX = "psmd";
     public static final String PISTACHIO_SUFFIX = "ps";
     public static final String RES_COUNT_SUFFIX = "rc";
     public static final String RES_LIST_SUFFIX = "rl";
-    //TEMPTEMP? public static final String S2_SUFFIX = "s";
     public static final String SUMMARY_DATA_SUFFIX = "md";
     public static final String T1_SUFFIX = "t1";
     public static final String T2_SUFFIX = "t2";

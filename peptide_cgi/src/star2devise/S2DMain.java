@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.84  2008/07/02 16:29:19  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.83  2008/06/27 15:23:33  wenger
 // Added the option to explicitly call the garbage collector a number
 // of times during processing; added memory usage printout at debug
@@ -180,7 +189,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.1xo1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.1";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
