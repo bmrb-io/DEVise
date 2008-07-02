@@ -65,7 +65,7 @@ set line = "175 -0.26 0.0 -1.0 0.0"
 source tests/check4line
 
 set file = "data_dir/4867md.dat"
-set line = 'HA delta chem shift	4867d1	$HA_DeltaShift'
+set line = 'HA delta chem shift \[1\]	4867d1	$HA_DeltaShift'
 source tests/check4line
-set line = '% 15N assign per res	4867p1	\$assigForN'
+set line = '% 15N assign per res \[1\]	4867p1	$assigForN'
 source tests/check4line

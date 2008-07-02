@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2008/04/09 19:35:42  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.1  2008/02/20 17:41:08  wenger
 // Committing (disabled) partially-implemented S2 Order visualization
 // code and tests.
@@ -37,7 +43,7 @@ public class S2DS2Order {
     //===================================================================
     // VARIABLES
 
-    private static final int DEBUG = 1/*TEMPTEMP 0*/;
+    private static final int DEBUG = 0;
 
     private String _name;
     private String _longName;
@@ -47,9 +53,6 @@ public class S2DS2Order {
     private String _frameDetails;
 
     private int _dataType;
-    private String _suffix;
-    private String _title;
-    private String _shortName;
 
     private String[] _resSeqCodes;
     private String[] _resLabels;
@@ -62,17 +65,15 @@ public class S2DS2Order {
 
     //-------------------------------------------------------------------
     // Constructor.  (See S2DUtils for dataType.)
-    public S2DS2Order(String name/*TEMPTEMP, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int dataType,
-      String frequency, String[] resSeqCodes, String[] resLabels,
-      String[] atomNames, String[] relaxationValues,
-      String[] relaxationErrors TEMPTEMP*/, String frameDetails)
+    public S2DS2Order(String name, String longName, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, String[] resSeqCodes,
+      String[] resLabels, String[] atomNames, String[] s2OrderValues,
+      String[] s2OrderErrors, String frameDetails)
       throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DS2Order.S2DS2Order(" + name + ")");
 	}
-/*TEMPTEMP
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
@@ -80,111 +81,88 @@ public class S2DS2Order {
         _summary = summary;
 	_frameDetails = frameDetails;
 
-	_dataType = dataType;
-        switch (dataType) {
-	case S2DUtils.TYPE_T1_RELAX:
-	    _suffix = S2DNames.T1_SUFFIX;
-	    _title = "T1 Relaxation";
-	    break;
-
-	case S2DUtils.TYPE_T2_RELAX:
-	    _suffix = S2DNames.T2_SUFFIX;
-	    _title = "T2 Relaxation";
-	    break;
-
-	default:
-	    throw new S2DError("Illegal data type: " + dataType);
-	}
-
-	_shortName = _title + " (" + frequency + ")";
-	_title += " (" + frequency + " MHz)";
-
         _resSeqCodes = resSeqCodes;
         _resLabels = S2DUtils.arrayToUpper(resLabels);
         _atomNames = atomNames;
-        _relaxationValues = relaxationValues;
-        _relaxationErrors = relaxationErrors;
-TEMPTEMP*/
+        _s2OrderValues = s2OrderValues;
+        _s2OrderErrors = s2OrderErrors;
     }
 
     //-------------------------------------------------------------------
-    // Write the relaxation values for this data.
+    // Write the S2 order values for this data.
     public void writeS2Order(int frameIndex) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DS2Order.writeS2Order()");
 	}
 
-/*TEMPTEMP
 	try {
 	    //
-	    // Write the relaxation values to the data file.
+	    // Write the S2 order values to the data file.
 	    //
-            FileWriter relaxWriter = S2DFileWriter.create(_dataDir +
-	      File.separator +
-	      _name + _suffix + frameIndex + S2DNames.DAT_SUFFIX);
-            relaxWriter.write("# Data: relaxation values for " + _name + "\n");
-            relaxWriter.write("# Schema: bmrb-relax\n");
-            relaxWriter.write("# Attributes: Residue_seq_code; " +
-	      "Residue_label; Atom_name; relax_value; relax_error\n");
-            relaxWriter.write("# Peptide-CGI version: " +
+            FileWriter s2OrderWriter = S2DFileWriter.create(_dataDir +
+	      File.separator + _name + S2DNames.ORDER_SUFFIX +
+	      frameIndex + S2DNames.DAT_SUFFIX);
+            s2OrderWriter.write("# Data: s2order values for " + _name + "\n");
+            s2OrderWriter.write("# Schema: bmrb-s2order\n");
+            s2OrderWriter.write("# Attributes: Residue_seq_code; " +
+	      "Residue_label; Atom_name; s2order_value; s2order_error\n");
+            s2OrderWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
-            relaxWriter.write("# Generation date: " +
+            s2OrderWriter.write("# Generation date: " +
 	      S2DMain.getTimestamp() + "\n");
-            relaxWriter.write("#\n");
+            s2OrderWriter.write("#\n");
 
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        relaxWriter.write(_resSeqCodes[index] + " " +
+	        s2OrderWriter.write(_resSeqCodes[index] + " " +
 		  _resLabels[index] + " " + _atomNames[index] + " " +
-		  _relaxationValues[index] + " " + _relaxationErrors[index] +
+		  _s2OrderValues[index] + " " + _s2OrderErrors[index] +
 		  "\n");
 	    }
 
-	    relaxWriter.close();
+	    s2OrderWriter.close();
 
 	    //
 	    // Write the session file.
 	    //
 	    String info = "Visualization of " + _longName;
-	    S2DSession.write(_sessionDir, _dataType,
-	      _name, frameIndex, info, _title);
+	    String title = "S2 Order Parameters";
+	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ORDER,
+	      _name, frameIndex, info, title);
 
 	    //
 	    // Write the session-specific html file.
 	    //
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), _dataType,
-	      _name, frameIndex, _title, _frameDetails);
+	      _summary.getHtmlDir(), S2DUtils.TYPE_ORDER,
+	      _name, frameIndex, title, _frameDetails);
 	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeS2Order(_suffix, _title, frameIndex,
-	      _resSeqCodes.length);
+	    _summary.writeS2Order(frameIndex, _resSeqCodes.length);
 
         } catch(IOException ex) {
-	    System.err.println("IOException writing relaxation data: " +
+	    System.err.println("IOException writing s2 order data: " +
 	      ex.toString());
-	    throw new S2DError("Can't write relaxation data");
+	    throw new S2DError("Can't write s2 order data");
 	}
-TEMPTEMP*/
     }
 
     //-------------------------------------------------------------------
     /**
-     * Add relaxation sets to the data set list.
+     * Add s2 order sets to the data set list.
      * @param The data set list.
      * @param The frame index.
      */
     public void addS2Order(Vector dataSets, int frameIndex)
     {
-/*TEMPTEMP
-        // Note: attribute names must match the bmrb-relax schema.
-	String dataSource = _name + _suffix + frameIndex;
-	dataSets.addElement(new S2DDatasetInfo(_shortName,
-	  dataSource, "relax_value", "bmrb-relax", "relax"));
-TEMPTEMP*/
+        // Note: attribute names must match the bmrb-s2order schema.
+	String dataSource = _name + S2DNames.ORDER_SUFFIX + frameIndex;
+	String dataName = "S2 Order Parameters [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
+	  "S2order_value", "bmrb-s2", "s2"));
     }
 
     //===================================================================

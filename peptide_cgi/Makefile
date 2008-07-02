@@ -103,7 +103,7 @@ clean:
 testclean:
 	-rm -rf test_data test_session test_html test_html_unreleased
 	-rm cgi-bin/data_dir cgi-bin/session_dir cgi-bin/s2d.jar
-	-rm cgi-bin/html_dir
+	-rm cgi-bin/html_dir cgi-bin/html_unreleased
 	-rm cgi-bin/session_templates cgi-bin/chem_info cgi-bin/html_templates
 	-rm -rf test_data/vis_server
 

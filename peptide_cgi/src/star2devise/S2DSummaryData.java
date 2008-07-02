@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/11/15 17:15:36  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.3  2007/08/20 20:26:10  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -88,7 +91,7 @@ public class S2DSummaryData
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryData.writeSummaryData()");
             System.out.println("Data sets: ");
-            for (int index = 0; index < _dataSets.size(); index++) {
+            for (int index = _dataSets.size()-1; index >= 0; index--) {
                 S2DDatasetInfo info =
 		  (S2DDatasetInfo)_dataSets.elementAt(index);
                 System.out.println("  " + info.getName() + "\t" +
@@ -110,7 +113,7 @@ public class S2DSummaryData
 	      S2DMain.getTimestamp() + "\n");
 	    writer.write("#\n");
 
-            for (int index = 0; index < _dataSets.size(); index++) {
+            for (int index = _dataSets.size()-1; index >= 0; index--) {
                 S2DDatasetInfo info =
 		  (S2DDatasetInfo)_dataSets.elementAt(index);
                 writer.write(info.getName() + "\t" +

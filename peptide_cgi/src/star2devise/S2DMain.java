@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.83  2008/06/27 15:23:33  wenger
+// Added the option to explicitly call the garbage collector a number
+// of times during processing; added memory usage printout at debug
+// level 2.
+//
 // Revision 1.82  2008/06/25 18:48:07  wenger
 // Multiple summary page changes:  re-ordered the data sets; added
 // mailto link; added "no data available" sections so users don't
@@ -175,7 +180,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.1x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.1xo1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1658,7 +1663,7 @@ public class S2DMain {
 	if (doDebugOutput(2)) S2DUtils.printMemory(
 	  "After saveHExchangeProtFact()");
 
-        //TEMPTEMP saveS2Params(star);
+        saveS2Params(star);
 	if (_extraGC) System.gc();
 	if (doDebugOutput(2)) S2DUtils.printMemory("After saveS2Params()");
 
@@ -2468,8 +2473,9 @@ public class S2DMain {
 	//
 	// Create an S2DS2Order object with the values we just got.
 	//
-	S2DS2Order s2Order = new S2DS2Order(_name/*TEMPTEMP*/,
-	  star.getFrameDetails(frame));
+	S2DS2Order s2Order = new S2DS2Order(_name, _longName, _dataDir,
+	  _sessionDir, _summary, resSeqCodes, resLabels, atomNames,
+	  s2Values, s2Errors, star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the S2 order values.

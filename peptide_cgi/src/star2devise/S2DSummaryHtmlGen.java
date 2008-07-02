@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2008/06/25 18:48:07  wenger
+// Multiple summary page changes:  re-ordered the data sets; added
+// mailto link; added "no data available" sections so users don't
+// get confused about "missing" data.
+//
 // Revision 1.9  2008/06/04 21:27:05  wenger
 // Got rid of frame details from summary page, as requested by Eldon.
 //
@@ -164,6 +169,9 @@ public abstract class S2DSummaryHtmlGen {
 
     private int _maxLacsFrame = 0;
     private IntKeyHashtable _lacsInfo = new IntKeyHashtable();
+
+    private int _maxS2OrderFrame = 0;
+    private IntKeyHashtable _s2OrderInfo = new IntKeyHashtable();
 
     //===================================================================
     // PUBLIC METHODS
@@ -302,6 +310,7 @@ TEMP?*/
 		writeCouplingTable();
 		writeRelaxationTable();
 		writeHetNOETable();
+		writeS2OrderTable();
 
 		// Write the details about the save frames.
 	        // Get rid of frame details.
@@ -732,6 +741,25 @@ TEMP?*/
     }
 
     //-------------------------------------------------------------------
+    // Writes the S2 Order parameter data.
+    protected void writeS2Order(int frameIndex, int valueCount)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeS2Order()");
+	}
+
+        //TEMP? _wroteLink = true;
+
+	_maxS2OrderFrame = Math.max(_maxS2OrderFrame, frameIndex);
+
+	String value = "<a href=\"" + _name + S2DNames.ORDER_SUFFIX +
+	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
+	  valueCount + " values</a>";
+	_s2OrderInfo.put(frameIndex, value);
+    }
+
+    //-------------------------------------------------------------------
     // Write a message to the summary html file.
     protected void writeMessage(String msg, boolean horRule)
     {
@@ -1063,6 +1091,35 @@ TEMP?*/
 	      "Linear Analysis of Chemical Shifts</a> data available for " +
 	      "this entry</b></p>\n");
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of S2 order parameter links.
+    protected void writeS2OrderTable() throws IOException
+    {
+	final int maxPerRow = 8;
+
+	_writer.write("\n<hr>\n");
+        if (_maxS2OrderFrame > 0) {
+	    _writer.write("<p><b>S2 Order Parameters</b></p>\n");
+
+            _writer.write("<table border cellpadding=5>\n");
+            _writer.write("  <tr>\n");
+
+            for (int index = 1; index <= _maxS2OrderFrame; index++ ) {
+                writeTableCell(_s2OrderInfo, index);
+		if ( index % maxPerRow == 0) {
+                    _writer.write("  </tr>\n");
+                    _writer.write("  <tr>\n");
+		}
+            }
+
+            _writer.write("  </tr>\n");
+            _writer.write("</table>\n");
+        } else {
+	    _writer.write("<p><b>No S2 order parameters available in " +
+	      "this entry</b></p>\n");
+        }
     }
 
     //-------------------------------------------------------------------

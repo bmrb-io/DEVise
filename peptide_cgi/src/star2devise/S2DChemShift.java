@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/04/09 19:35:41  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.6  2007/12/20 16:49:02  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -689,14 +695,22 @@ public class S2DChemShift {
         // Note: attribute names must match the bmrb-DeltaShift schema.
 	String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX +
 	  frameIndex;
-	dataSets.addElement(new S2DDatasetInfo("HA delta chem shift",
+
+	String dataName = "HA delta chem shift [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "HA_DeltaShift", "bmrb-DeltaShift", "DeltaShift"));
-	dataSets.addElement(new S2DDatasetInfo("C delta chem shift",
+
+	dataName = "C delta chem shift [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "C_DeltaShift", "bmrb-DeltaShift", "DeltaShift"));
-	dataSets.addElement(new S2DDatasetInfo("CA delta chem shift",
+
+	dataName = "CA delta chem shift [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "CA_DeltaShift", "bmrb-DeltaShift", "DeltaShift"));
+
 	if (_hasRealCBShifts) {
-	    dataSets.addElement(new S2DDatasetInfo("CB delta chem shift",
+	    dataName = "CB delta chem shift [" + frameIndex + "]";
+	    dataSets.addElement(new S2DDatasetInfo(dataName,
 	      dataSource, "CB_DeltaShift", "bmrb-DeltaShift", "DeltaShift"));
 	}
     }
@@ -711,17 +725,27 @@ public class S2DChemShift {
     {
         // Note: attribute names must match the bmrb-Csi schema.
 	String dataSource = _name + S2DNames.CSI_SUFFIX + frameIndex;
-        dataSets.addElement(new S2DDatasetInfo("HA CSI", dataSource,
+
+	String dataName = "HA CSI [" + frameIndex + "]";
+        dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	  "HA_Csi", "bmrb-Csi", "Csi"));
-	dataSets.addElement(new S2DDatasetInfo("C CSI", dataSource,
+
+	dataName = "C CSI [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	  "C_Csi", "bmrb-Csi", "Csi"));
-	dataSets.addElement(new S2DDatasetInfo("CA CSI", dataSource,
+
+	dataName = "CA CSI [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	  "CA_Csi", "bmrb-Csi", "Csi"));
+
 	if (_hasRealCBShifts) {
-	    dataSets.addElement(new S2DDatasetInfo("CB CSI", dataSource,
+	    dataName = "CB CSI [" + frameIndex + "]";
+	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	      "CB_Csi", "bmrb-Csi", "Csi"));
 	}
-	dataSets.addElement(new S2DDatasetInfo("Consensus CSI", dataSource,
+
+	dataName = "Consensus CSI [" + frameIndex + ']';
+	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	  "Consensus_Csi", "bmrb-Csi", "Csi"));
     }
 
@@ -736,11 +760,17 @@ public class S2DChemShift {
         // Note: attribute names must match the bmrb-Percent schema.
 	String dataSource = _name + S2DNames.PERCENT_ASSIGN_SUFFIX +
 	  frameIndex;
-	dataSets.addElement(new S2DDatasetInfo("% 1H assign per res",
+
+	String dataName = "% 1H assign per res [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "assigForH", "bmrb-Percent", "ChemShiftPercentage"));
-	dataSets.addElement(new S2DDatasetInfo("% 13C assign per res",
+
+	dataName = "% 13C assign per res [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "assigForC", "bmrb-Percent", "ChemShiftPercentage"));
-	dataSets.addElement(new S2DDatasetInfo("% 15N assign per res",
+
+	dataName = "% 15N assign per res [" + frameIndex + "]";
+	dataSets.addElement(new S2DDatasetInfo(dataName, 
 	  dataSource, "assigForN", "bmrb-Percent", "ChemShiftPercentage"));
     }
 

@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/06/04 21:12:00  wenger
+// New Peptide-CGI summary page is implemented, test work except for
+// test52 for some weird reason.  (Still may need some other changes
+// before release, though.)
+//
 // Revision 1.6  2008/04/09 19:35:41  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -190,7 +195,8 @@ public class S2DHetNOE {
         // Note: attribute names must match the bmrb-NOE schema.
 	String dataSource = _name +
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex;
-        dataSets.addElement(new S2DDatasetInfo(_shortName, dataSource,
+	String dataName = _shortName + " [" + frameIndex + "]";
+        dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	  "NOE_value", "bmrb-NOE", "NOE"));
     }
 

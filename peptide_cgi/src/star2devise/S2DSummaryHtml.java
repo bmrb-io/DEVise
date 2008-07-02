@@ -31,6 +31,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2008/06/04 21:12:01  wenger
+// New Peptide-CGI summary page is implemented, test work except for
+// test52 for some weird reason.  (Still may need some other changes
+// before release, though.)
+//
 // Revision 1.9  2008/04/09 19:35:42  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -395,6 +400,18 @@ public class S2DSummaryHtml {
 
 	_normal.writeLACS(title, frameIndex);
 	_large.writeLACS(title, frameIndex);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the S2 order parameter link.
+    public void writeS2Order(int frameIndex, int count) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeS2Order()");
+	}
+
+	_normal.writeS2Order(frameIndex, count);
+	_large.writeS2Order(frameIndex, count);
     }
 
     //-------------------------------------------------------------------

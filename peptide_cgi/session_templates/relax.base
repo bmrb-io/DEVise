@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: May 08 2006 16:18:20
-# DEVise version: 1.7.19
-# DEVise date: Dec  5 2005
+# file date: Jun 25 2008 12:54:04
+# DEVise version: 1.9.0
+# DEVise date: Jul 13 2006
 # DEVise endHeader
 
 # Session description
@@ -60,6 +60,9 @@ DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVIS
 # Create views
 
 # View {View 1} uses mapping {.4267t11#relax_value_vs_Residue_seq_code}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {View 1} 2.450000 179.550000 0.000000 2.009000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {dummy title}
 DEVise setViewStatistics {View 1} 00000000
@@ -93,8 +96,13 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
 
 # View {View 2} uses mapping {.label#Label_text_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 2} 0.000000 100.000000 0.000000 100.000000 37 0 0 37 0 37
 DEVise setLabel {View 2} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 2} 00000000
@@ -128,8 +136,13 @@ DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
 
 # View {View 3} uses mapping {.label#Label_text_vs_recId 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 3} 0.000000 100.000000 0.000000 100.000000 37 13 0 37 0 37
 DEVise setLabel {View 3} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 3} 00000000
@@ -163,6 +176,8 @@ DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {relax_value_vs_Residue_seq_code}
@@ -170,22 +185,30 @@ DEVise createMappingClass {Label_text_vs_recId}
 
 # Create mapping instances (GData)
 
-DEVise create {mapping} {relax_value_vs_Residue_seq_code} .4267t11 .4267t11#relax_value_vs_Residue_seq_code {} {$Residue_seq_code} {$relax_value} {} 8 1 0 0 2 {} {$relax_value + $relax_error} {} {} {} {} {} {} {} {} {} {} {} {} {}
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {relax_value_vs_Residue_seq_code} .4267t11 .4267t11#relax_value_vs_Residue_seq_code {} {$Residue_seq_code} {$relax_value} {} 8 1 0 0 2 0.1 {$relax_value + $relax_error} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267t11#relax_value_vs_Residue_seq_code} 1
 DEVise setMappingColors {.4267t11#relax_value_vs_Residue_seq_code} {8} {10} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 50 50 {} 37 12 0 0 16 {"Sequence Number"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 50 50 {} 37 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 2} {37} {0} {0}
 
 # Create windows
-DEVise create {window} {TileLayout} DEViseWn0 0.203125 0.219727 0.496875 0.317383 0 0
-DEVise create {window} {TileLayout} DEViseWn1 0.203125 0.536133 0.496875 0.029297 0 0
-DEVise create {window} {TileLayout} DEViseWn2 0.203125 0.199219 0.496875 0.020508 0 0
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
+DEVise create {window} {TileLayout} DEViseWn0 0.203125 0.219167 0.496875 0.316667 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.203125 0.535833 0.496875 0.029167 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.203125 0.199167 0.496875 0.020000 0 0
 
 # Set up window layouts
 
@@ -257,6 +280,7 @@ DEVise insertViewHistory {View 1} {3} {0.49} {179} {1.95} 0
 DEVise insertViewHistory {View 1} {3} {0} {179} {2} 0
 DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {1.95} 0
 DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {1.95} 0
+DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
 DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
 DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0
 DEVise insertViewHistory {View 1} {2.45} {0} {179.55} {2.009} 0

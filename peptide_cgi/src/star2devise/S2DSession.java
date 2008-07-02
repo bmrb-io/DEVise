@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2008/02/20 17:41:08  wenger
+// Committing (disabled) partially-implemented S2 Order visualization
+// code and tests.
+//
 // Revision 1.7  2007/11/15 17:15:36  wenger
 // Cleaned out cvs history in source files.
 //
@@ -188,7 +192,7 @@ TEMP*/
 	    baseName = "order.base";
 	    dataSuffix = S2DNames.ORDER_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "";
+	    searchString1 = "4689o1";
 	    break;
 
         case S2DUtils.TYPE_T1_RELAX:

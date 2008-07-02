@@ -4,6 +4,8 @@ Peptide-CGI 11.3.1
 ------------------
 (Needs DEVise/JavaScreen 1.9.0 or higher.)
 
+* Added S2 order parameter visualization.
+
 * Changed order of data sets in the summary page.
 
 * Added "no data available" sections to the summary page so users
@@ -13,6 +15,9 @@ don't get confused by "missing" data.
 
 * We no longer generate figure of merit or ambiguity code visualizations
 if the values are all null.
+
+* Reversed the order of data sets in the data selection view of
+3D visualizations (more closely matches the summary page).
 
 * Added the option to explicitly call the garbage collector a number
 of times during processing.
