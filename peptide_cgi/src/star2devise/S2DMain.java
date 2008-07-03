@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.85  2008/07/02 18:23:52  wenger
+// Changed version to 11.3.1 for release; final choice of suffix
+// for S2 order params.
+//
 // Revision 1.84  2008/07/02 16:29:19  wenger
 // S2 order parameter visualizations are done and approved by Eldon;
 // tests at least partially updated for S2 order stuff;
@@ -189,7 +193,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.1";
+    public static final String PEP_CGI_VERSION = "11.3.2x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

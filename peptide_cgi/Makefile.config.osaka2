@@ -27,10 +27,8 @@ PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
-#TEMP
-INPUT_WEB_DOMAIN = 133.1.158.132
-#TEMP
-OUTPUT_WEB_DOMAIN = 133.1.158.132
+INPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
+OUTPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 
 STAR_URL = file:/bmrb/htdocs/data_library/files/
 STAR_NAME_TEMPLATE = "bmr*.str"
