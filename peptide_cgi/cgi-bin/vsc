@@ -1,5 +1,7 @@
 #! /bin/csh -f
 # Visualization server conversion.
+# Note: I don't think this is actually used anymore on the BMRB web site.
+#   This may be the the script that was used by Jafar.  wenger 2008-07-08
 
 limit filesize 30000
 # We need a big cpu time limit for 4096.

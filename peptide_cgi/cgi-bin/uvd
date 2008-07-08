@@ -1,5 +1,7 @@
 #! /bin/csh -f
 # "Upload and visualize data" conversion.
+# Note: this is what's now run by the "visualization server"
+#   (http://www.bmrb.wisc.edu/vis_serv/).  wenger 2008-07-08
 
 limit filesize 30000
 # We need a big cpu time limit for 4096.
