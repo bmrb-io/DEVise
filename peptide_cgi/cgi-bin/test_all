@@ -367,6 +367,16 @@ if ($status != 0) then
   set failed_list = "$failed_list test52"
 endif
 
+# Add this test back in when bug 065 is fixed.
+#echo ""
+#echo "Running test53..."
+#tests/test53
+#if ($status != 0) then
+#  set result = 1
+#  set failed_list = "$failed_list test53"
+#endif
+
+
 #TEMP -- maybe add test of 4547
 
 echo ""

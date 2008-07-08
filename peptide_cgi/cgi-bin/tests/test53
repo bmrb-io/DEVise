@@ -1,0 +1,116 @@
+#! /bin/csh -f
+
+# Tests bug 065 (problem Jundong ran into on 2008-06-23).
+
+set result = 0
+
+rm -f */test53_out*
+rm -f */*/test53_out*
+
+echo -n "Processing NMR-STAR: "
+./uvd -file test_data/bmr15803_3.str -name test53_out -force
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/uvd/test53_outam1.dat \
+	data_dir/uvd/test53outam1.dat \
+	data_dir/uvd/test53_outamac1.dat \
+	data_dir/uvd/test53outamac1.dat \
+	data_dir/uvd/test53_outas1.dat \
+	data_dir/uvd/test53outas1.dat \
+	data_dir/uvd/test53_outas2.dat \
+	data_dir/uvd/test53outas2.dat \
+	data_dir/uvd/test53_outc1.dat \
+	data_dir/uvd/test53outc1.dat \
+	data_dir/uvd/test53_outc2.dat \
+	data_dir/uvd/test53outc2.dat \
+	data_dir/uvd/test53_outd1.dat \
+	data_dir/uvd/test53outd1.dat \
+	data_dir/uvd/test53_outd2.dat \
+	data_dir/uvd/test53outd2.dat \
+	data_dir/uvd/test53_outhn1.dat \
+	data_dir/uvd/test53outhn1.dat \
+	data_dir/uvd/test53_outhn2.dat \
+	data_dir/uvd/test53outhn2.dat \
+	data_dir/uvd/test53_outmd.dat \
+	data_dir/uvd/test53outmd.dat \
+	data_dir/uvd/test53_outp1.dat \
+	data_dir/uvd/test53outp1.dat \
+	data_dir/uvd/test53_outp2.dat \
+	data_dir/uvd/test53outp2.dat \
+	data_dir/uvd/test53outpstmp \
+	data_dir/uvd/test53_outpstmp \
+	data_dir/uvd/test53_outrc1.dat \
+	data_dir/uvd/test53outrc1.dat \
+	data_dir/uvd/test53_outrc2.dat \
+	data_dir/uvd/test53outrc2.dat \
+	data_dir/uvd/test53_outrl1.dat \
+	data_dir/uvd/test53outrl1.dat \
+	data_dir/uvd/test53_outrl2.dat \
+	data_dir/uvd/test53outrl2.dat \
+	html_dir/uvd/test53_outam1.html \
+	html_dir/uvd/test53outam1.html \
+	html_dir/uvd/test53_outam1_large.html \
+	html_dir/uvd/test53outam1_large.html \
+	html_dir/uvd/test53_outas1.html \
+	html_dir/uvd/test53outas1.html \
+	html_dir/uvd/test53_outas1_large.html \
+	html_dir/uvd/test53outas1_large.html \
+	html_dir/uvd/test53_outas2.html \
+	html_dir/uvd/test53outas2.html \
+	html_dir/uvd/test53_outas2_large.html \
+	html_dir/uvd/test53outas2_large.html \
+	html_dir/uvd/test53_outc1.html \
+	html_dir/uvd/test53outc1.html \
+	html_dir/uvd/test53_outc1_large.html \
+	html_dir/uvd/test53outc1_large.html \
+	html_dir/uvd/test53_outc2.html \
+	html_dir/uvd/test53outc2.html \
+	html_dir/uvd/test53_outc2_large.html \
+	html_dir/uvd/test53outc2_large.html \
+	html_dir/uvd/test53_outd1.html \
+	html_dir/uvd/test53outd1.html \
+	html_dir/uvd/test53_outd1_large.html \
+	html_dir/uvd/test53outd1_large.html \
+	html_dir/uvd/test53_outd2.html \
+	html_dir/uvd/test53outd2.html \
+	html_dir/uvd/test53_outd2_large.html \
+	html_dir/uvd/test53outd2_large.html \
+	html_dir/uvd/test53_outhn1.html \
+	html_dir/uvd/test53outhn1.html \
+	html_dir/uvd/test53_outhn1_large.html \
+	html_dir/uvd/test53outhn1_large.html \
+	html_dir/uvd/test53_outp1.html \
+	html_dir/uvd/test53outp1.html \
+	html_dir/uvd/test53_outp1_large.html \
+	html_dir/uvd/test53outp1_large.html \
+	html_dir/uvd/test53_outp2.html \
+	html_dir/uvd/test53outp2.html \
+	html_dir/uvd/test53_outp2_large.html \
+	html_dir/uvd/test53outp2_large.html \
+	html_dir/uvd/test53_outy.html \
+	html_dir/uvd/test53outy.html \
+	html_dir/uvd/test53_outy_large.html \
+	html_dir/uvd/test53outy_large.html )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test53 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

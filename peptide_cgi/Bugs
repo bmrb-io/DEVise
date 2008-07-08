@@ -285,6 +285,10 @@ Num Date        Status  Description
 			fact that no 4970rl1.dat file is generated). (wenger)
 			(See also 037.)
 
+065 7/8/08	OPEN	Trying to process non-polymer entities causes
+			problems -- don't process them. (wenger/elu)
+			(See test53.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
