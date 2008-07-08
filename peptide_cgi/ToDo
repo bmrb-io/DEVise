@@ -284,6 +284,11 @@ Num Date        Status  Pri     Description
 				sets in entries that have many of them.
 				(elu/wenger)
 
+075 6/23/08	OPEN	2	(At least for uvd) have summary page and error
+				page have a link back to a copy of uvd.out,
+				and maybe the warning and error files.
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
