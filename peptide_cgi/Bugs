@@ -264,14 +264,13 @@ Num Date        Status  Description
 			(see DEVise bug 956).  (miron/wenger)
 			(Fixed by wenger, 1/25/08, in 11.2.2.)
 
-
 060 2/25/08	OPEN	3D visualization help links (e.g., "data view")
 			jump to confusing points on the page (solely tied
 			to text, not screendumps). (elu/wenger)
 
 061 4/3/08	OPEN	For 4001 (and probably other entries with lots of
 			save frames) the text in the data select view is
-			too compressed (in 3D visualizatiosn). (elu/wenger)
+			too compressed (in 3D visualizations). (elu/wenger)
 
 062 6/4/08	OPEN	Get rid of "null"s in relaxation table for 5996 in
 			new summary page. (wenger)
