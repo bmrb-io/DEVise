@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/07/02 16:29:19  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.8  2008/02/20 17:41:08  wenger
 // Committing (disabled) partially-implemented S2 Order visualization
 // code and tests.
@@ -220,8 +229,8 @@ TEMP*/
 	    baseName = "atom_coord_jmol.base";
 	    dataSuffix = S2DNames.ATOMIC_COORD_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4096ac1";
-	    searchString3 = "4096md";
+	    searchString1 = "4001ac1";
+	    searchString3 = "4001md";
 	    replaceString3 = name + S2DNames.SUMMARY_DATA_SUFFIX;
 	    break;
 
@@ -317,15 +326,15 @@ TEMP*/
 		if (dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
 		    if (line.indexOf("dteInsertCatalogEntry") >= 0) {
 		        if (line.indexOf(searchString1) >= 0) {
-			    // 4096ac1 should get replaced below...
-		        } else if (line.indexOf("4096rl1") >= 0) {
-			    // 4096rl1 should get replaced below...
+			    // 4001ac1 should get replaced below...
+		        } else if (line.indexOf("4001rl1") >= 0) {
+			    // 4001rl1 should get replaced below...
 		        } else if (line.indexOf(searchString3) >= 0) {
-			    // 4096md should get replaced below...
+			    // 4001md should get replaced below...
 		            printSummaryData = true;
 			} else {
 			    // Note: I would like to substitute the string
-			    // below, but we need to keep the 4096 data
+			    // below, but we need to keep the 4001 data
 			    // source definitions in place so that the
 			    // initial session open works (before the parent
 			    // view changes the child view's data source
@@ -334,7 +343,7 @@ TEMP*/
 			}
 		    }
 
-		    line = S2DUtils.replace(line, "4096rl1",
+		    line = S2DUtils.replace(line, "4001rl1",
 		      name + S2DNames.RES_LIST_SUFFIX + "1");
 		}
 
@@ -361,9 +370,9 @@ TEMP*/
 		    if (line.indexOf("label.dat") == -1) {
 
 		        // Don't do data directory substitution on
-			// unchanged 4096 data sources in 3D sessions.
+			// unchanged 4001 data sources in 3D sessions.
 		        if (dataType != S2DUtils.TYPE_ATOMIC_COORDS ||
-		          line.indexOf("4096") == -1) {
+		          line.indexOf("4001") == -1) {
 		            line = S2DUtils.replace(line, _defaultJSDataDir,
 			  _jsDataDir);
 		        }
