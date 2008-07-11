@@ -1,0 +1,82 @@
+#! /usr/bin/perl
+
+# Dummy ChemShift to allow better testing.
+# This takes the place of the "real" csr_wrapper.
+
+use strict;
+
+my $usage = "Usage: dummy_csr <bmrbid> <pdbid> <name>\n";
+
+if ($#ARGV != 2) {
+  print "Wrong number of arguments\n";
+  die "$usage";
+}
+
+my $bmrbId = shift(@ARGV);
+my $pdbId = shift(@ARGV);
+my $name = shift(@ARGV);
+
+if ($bmrbId eq "4974" && $pdbId eq "2CI2") {
+  # Test 16
+  system("cp", "test_data/csr4974.1", $name . "_1.dat");
+  system("cp", "test_data/csr4974.2", $name . "_2.dat");
+  system("cp", "test_data/csr4974.3", $name . "_3.dat");
+  system("cp", "test_data/csr4974.4", $name . "_4.dat");
+  system("cp", "test_data/csr4974.5", $name . "_5.dat");
+  system("chmod", "644", glob($name . "_?.dat"));
+  system("touch", $name . ".done");
+  exit(0);
+
+} elsif (($bmrbId eq "4317" || $bmrbId eq "data_dir/bmr4317_3.str") &&
+    $pdbId eq "1AIL") {
+  # Test 15
+  system("cp", "test_data/csr4317.1", $name . "_1.dat");
+  system("cp", "test_data/csr4317.2", $name . "_2.dat");
+  system("cp", "test_data/csr4317.3", $name . "_3.dat");
+  system("cp", "test_data/csr4317.4", $name . "_4.dat");
+  system("cp", "test_data/csr4317.5", $name . "_5.dat");
+  system("chmod", "644", glob($name . "_?.dat"));
+  system("touch", $name . ".done");
+  exit(0);
+
+} elsif ($bmrbId eq "data_dir/csr_sample.dat" && $pdbId eq "2CI2" &&
+    $name eq "data_dir/test6_outcsr1") {
+  # Test 6 -- Note: we check the name here to make sure data_dir and
+  # csr_data_dir are correctly differentiated.
+  system("cp", "test_data/csr1.1", "data_dir/vis_server/test6_outcsr1_1.dat");
+  system("cp", "test_data/csr1.2", "data_dir/vis_server/test6_outcsr1_2.dat");
+  system("cp", "test_data/csr1.3", "data_dir/vis_server/test6_outcsr1_3.dat");
+  system("cp", "test_data/csr1.4", "data_dir/vis_server/test6_outcsr1_4.dat");
+  system("cp", "test_data/csr1.5", "data_dir/vis_server/test6_outcsr1_5.dat");
+  system("chmod", "644", glob("data_dir/vis_server/test6_outcsr1_?.dat"));
+  system("touch", "data_dir/vis_server/test6_outcsr1.done");
+  exit(0);
+
+} elsif ($bmrbId eq "4336" && $pdbId eq "1HTP") {
+  # Test 22, test 23
+  system("cp", "test_data/csr4336.1", $name . "_1.dat");
+  system("cp", "test_data/csr4336.2", $name . "_2.dat");
+  system("cp", "test_data/csr4336.3", $name . "_3.dat");
+  system("cp", "test_data/csr4336.4", $name . "_4.dat");
+  system("cp", "test_data/csr4336.5", $name . "_5.dat");
+  system("chmod", "644", glob($name . "_?.dat"));
+  system("touch", $name . ".done");
+  exit(0);
+
+} elsif ($bmrbId eq "data_dir/uvd/20070228.28103.str" && $pdbId eq "1FSP") {
+  system("cp", "test_data/csr4336.1", $name . "_1.dat");
+  system("cp", "test_data/csr4336.2", $name . "_2.dat");
+  system("cp", "test_data/csr4336.3", $name . "_3.dat");
+  system("cp", "test_data/csr4336.4", $name . "_4.dat");
+  system("cp", "test_data/csr4336.5", $name . "_5.dat");
+  system("chmod", "644", glob($name . "_?.dat"));
+  system("touch", $name . ".done");
+  exit(0);
+
+} else {
+  # We can't handle the request.
+  print "dummy_csr error ($bmrbId $pdbId)\n";
+  system("touch", $name . ".error");
+  system("touch", $name . ".done");
+  exit(1);
+}
