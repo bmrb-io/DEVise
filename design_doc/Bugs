@@ -4168,6 +4168,12 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			filter of its destination view, you can't move the
 			cursor by clicking in the view. (wenger)
 
+969 7/15/08	OPEN	If a cursor is entirely outside of the destination
+			view's visual filter, maybe doing 'C' (cursor fill) 
+			in the destination view should move the cursor into
+			the visual filter, even if resizing of the cursor
+			is not allowed. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
