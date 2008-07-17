@@ -2,7 +2,7 @@
 //TEMP -- why is DEViseCanvas a Container instead of a Canvas???
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -29,6 +29,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.101  2007/09/10 22:10:35  wenger
+// Mouse cursor now changes to the disabled cursor if the selected
+// toolbar mode is not applicable in the current view; mouse cursor
+// is default on non-view areas; changed Jmol views to not show the
+// non-applicable mouse cursors (this only happened in some JVMs).
+//
 // Revision 1.100  2007/08/03 20:17:27  wenger
 // Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
 //
@@ -1080,29 +1086,34 @@ public class DEViseCanvas extends Container
         DEViseCursor cursor = null;
         for (int i = 0; i < v.viewCursors.size(); i++) {
             cursor = (DEViseCursor)v.viewCursors.elementAt(i);
-            loc = cursor.getLocInCanvas();
+	    if (cursor.cursorIsVisible()) {
+                loc = cursor.getLocInCanvas();
 
-            if (selectedCursor == cursor && isMouseDragged) { // draw cursor movement box
-                if (loc.width < 4)
-                    loc.width = 4;
-                if (loc.height < 4)
-                    loc.height = 4;
+                if (selectedCursor == cursor && isMouseDragged) {
+		    // draw cursor movement box
 
-                gc.setColor(Color.yellow);
-                gc.drawRect(loc.x, loc.y, loc.width - 1, loc.height - 1);
-                gc.setColor(Color.red);
-                gc.drawRect(loc.x + 1, loc.y + 1, loc.width - 3, loc.height - 3);
+                    if (loc.width < 4) loc.width = 4;
+                    if (loc.height < 4) loc.height = 4;
 
-                continue;
-            }
+                    gc.setColor(Color.yellow);
+                    gc.drawRect(loc.x, loc.y, loc.width - 1, loc.height - 1);
+                    gc.setColor(Color.red);
+                    gc.drawRect(loc.x + 1, loc.y + 1, loc.width - 3,
+		      loc.height - 3);
 
-            if (cursor.image == null || isImageUpdated) {
-                cursor.image = getCroppedXORImage(cursor.color, loc);
-            }
+		    // Hmm -- I guess this is here because we can only
+		    // drag one cursor at a time.  wenger 2008-07-15
+                    continue;
+                }
 
-            if (cursor.image != null) {
-                gc.drawImage(cursor.image, loc.x, loc.y, this);
-            }
+                if (cursor.image == null || isImageUpdated) {
+                    cursor.image = getCroppedXORImage(cursor.color, loc);
+                }
+
+                if (cursor.image != null) {
+                    gc.drawImage(cursor.image, loc.x, loc.y, this);
+                }
+	    }
         }
 
         // handling piled views

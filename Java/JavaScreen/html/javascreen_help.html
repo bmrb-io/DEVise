@@ -114,6 +114,13 @@ to display.
 </p>
 
 <p>
+A cursor can also be moved by clicking with the mouse on the place to
+which the center of the cursor should be moved.  (This works even if
+the cursor is not within the view because the view's axis ranges were
+changed.)
+</p>
+
+<p>
 Most DEVise visualizations are designed to be explored mainly by
 moving and resizing the DEVise cursors.
 </p>
@@ -352,7 +359,9 @@ Version 5.9.2
 
 <ul>
 
-<li>Nothing yet.
+<!-- Bug 968 -->
+<li>Fixed a bug that caused it to be impossible to move a cursor that's
+entirely outside the axis ranges of its view.
 
 </ul>
 

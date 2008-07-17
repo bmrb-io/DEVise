@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2003/01/13 19:23:43  wenger
+// Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+//
 // Revision 1.21.8.1  2002/08/01 17:38:22  wenger
 // Massive reorganization of axis labeling and mouse location display
 // code: both now use common number formatting code, which uses DecimalFormat
@@ -113,6 +116,8 @@ public class DEViseCursor
     public static final int GRID_TYPE_CENTER = 0;
     public static final int GRID_TYPE_EDGE = 1;
     private int gridType = 0;
+
+    private boolean isVisible = true;
 
     public static final int sideNone = -1; // not on a cursor, or cursor
                                            // cannot be moved or resized
@@ -426,6 +431,35 @@ public class DEViseCursor
 	  parentView.data2PixelX(dataX0, false)) + 1;
 	height = Math.abs(parentView.data2PixelY(dataY1, false) -
 	  parentView.data2PixelY(dataY0, false)) + 1;
+    }
+
+    // --------------------------------------------------------------------
+    // Returns whether the cursor is visible.
+    public boolean cursorIsVisible()
+    {
+        return isVisible;
+    }
+
+    // --------------------------------------------------------------------
+    // Set this cursor to be invisible.  Note that the cursor will never
+    // be changed from invisible back to visible (it will eventually get
+    // replaced with a new DEViseCursor object representing the same
+    // cursor on the server).  But temporarily keeping the invisible
+    // cursor around is part of the fix for bug 968 (see more detailed
+    // explanation in DEViseView.java).
+    public void setInvisible()
+    {
+        isVisible = false;
+
+	cursorLoc.x = 0;
+	cursorLoc.y = 0;
+	cursorLoc.width = 0;
+	cursorLoc.height = 0;
+
+	cursorLocInCanvas.x = 0;
+	cursorLocInCanvas.y = 0;
+	cursorLocInCanvas.width = 0;
+	cursorLocInCanvas.height = 0;
     }
 
     private int adjustToParentDataAreaX(int x)

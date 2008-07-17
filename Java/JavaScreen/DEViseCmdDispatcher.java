@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.130  2008/01/24 20:30:53  wenger
+// Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
+//
 // Revision 1.129  2008/01/22 20:02:38  wenger
 // Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
 // my fix to the pre-toolbar version of the JS, but it doesn't work for
@@ -1532,7 +1535,7 @@ public class DEViseCmdDispatcher implements Runnable
                   "\"", "DEViseCmdDispatcher::processCmd()", 2);
             }
 
-            jsc.jscreen.removeCursor(args[1], args[2]);
+            jsc.jscreen.hideCursor(args[1], args[2]);
 
         } else if (args[0].equals(DEViseCommands.UPDATE_RECORD_VALUE)) {
 	    // Number of arguments is variable.

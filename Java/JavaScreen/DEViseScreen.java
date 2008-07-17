@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -32,6 +32,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.83  2007/09/10 22:10:36  wenger
+// Mouse cursor now changes to the disabled cursor if the selected
+// toolbar mode is not applicable in the current view; mouse cursor
+// is default on non-view areas; changed Jmol views to not show the
+// non-applicable mouse cursors (this only happened in some JVMs).
+//
 // Revision 1.82  2007/08/27 20:53:46  wenger
 // Made separate menu items for showing and hiding view help, as requested
 // by Chris Schulte.
@@ -871,6 +877,11 @@ public class DEViseScreen extends JPanel
     // Add the given cursor to the named view.
     public void updateCursor(String viewName, DEViseCursor cursor)
     {
+	if (DEBUG >= 1) {
+            System.out.println("DIAG DEViseScreen.updateCursor(" +
+	      viewName + ", " + cursor.name + ")");
+        }
+
         DEViseView view = getView(viewName);
 
         if (view == null) {
@@ -885,12 +896,12 @@ public class DEViseScreen extends JPanel
     }
 
     // Remove the named cursor from the named view.
-    public void removeCursor(String cursorName, String viewname)
+    public void hideCursor(String cursorName, String viewname)
     {
         DEViseView view = getView(viewname);
 
         if (view != null) {
-            if (view.removeCursor(cursorName)) {
+            if (view.hideCursor(cursorName)) {
                 repaint();
             }
         }

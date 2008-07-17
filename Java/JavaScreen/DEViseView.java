@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.76  2006/06/29 21:01:20  wenger
+// Merged devise_jmol_br_2 thru devise_jmol_br_3 to the trunk.
+//
 // Revision 1.75  2006/05/26 16:22:16  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -481,6 +484,11 @@ public class DEViseView
     // not already in this view.
     public boolean addCursor(DEViseCursor cursor) throws YError
     {
+	if (DEBUG >= 2) {
+            System.out.println("DEViseView(" + viewName + ").addCursor(" +
+	      cursor.name + ")");
+	}
+
         if (cursor == null) {
             return false;
         }
@@ -496,6 +504,11 @@ public class DEViseView
                 if (c.isSame(cursor)) {
                     return false;
                 } else {
+	            if (DEBUG >= 4) {
+                        System.out.println("Removing old cursor: " +
+			  ((DEViseCursor)viewCursors.elementAt(i)).name +
+			  " from view " + viewName);
+                    }
                     viewCursors.removeElementAt(i);
                 }
             }
@@ -545,23 +558,49 @@ public class DEViseView
         }
     }
 
-    // Remove the given cursor from this view.
-    public void removeCursor(DEViseCursor cursor)
-    {
-        if (cursor != null) {
-            viewCursors.removeElement(cursor);
-        }
-    }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    // Changes here are part of the (not totally complete) fix for bug
+    // 968 (improper handling of cursors that go entirely outside the
+    // destination view's visual filter).  The problem was that, when
+    // a view is redrawn, the cursors in that view were removed (and if
+    // the cursor was just getting moved withing the view, a new
+    // DEViseCursor object corresponding to the same cursor on the
+    // server would get created).  However, if the cursor went entirely
+    // outside of the view's visual filter, no new DEViseCursor object
+    // would get created in the client, because the server wouldn't
+    // tell the client to draw the cursor.  So the fix is that, when the
+    // view is redrawn, we just temporarily hide the cursors in the view,
+    // so that getFirstCursor() still finds a cursor.  This allows the
+    // user to move the cursor back into the destination view with a
+    // single mouse click.  The old (hidden) DEVise cursor object is
+    // never unhidden -- if and when the cursor is moved back within the
+    // view's visual filter, a new DEViseCursor object will be added
+    // with the addCursor() method, and the old (hidden) DEViseCursor
+    // object will actually be removed from the cursor list at that time.
+    // The limitation of the fix is that a cursor must be at least partially
+    // within the destination view when the destination view is created.
+    // If the cursor is entirely outside of the destination view's visual
+    // filter at view creation time, the cursor will never be drawn, and
+    // so the client will never find out about it.  (A total fix to
+    // this bug would require changes on the server side, but I figure
+    // this is good enough, since we can make sure any sessions start
+    // out with all cursors visible.)  wenger 2008-07-15
+    // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    // Remove the named cursor from this view; returns true iff the cursor
+    // Hide the named cursor from this view; returns true iff the cursor
     // is in this view.
-    public boolean removeCursor(String name)
+    public boolean hideCursor(String name)
     {
+	if (DEBUG >= 2) {
+            System.out.println("DEViseView(" + viewName + ").hideCursor(" +
+	      name + ")");
+	}
+
         if (name != null) {
             for (int i = 0; i < viewCursors.size(); i++) {
                 DEViseCursor cursor = (DEViseCursor)viewCursors.elementAt(i);
                 if (cursor.name.equals(name)) {
-                    viewCursors.removeElement(cursor);
+		    cursor.setInvisible();
                     return true;
                 }
             }

@@ -4164,9 +4164,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 967 3/5/08	OPEN	JS: on DNA/RNA histograms, sometimes finding only
 			the link data and not the "real" data. (elu/wenger)
 
-968 7/15/08	OPEN	JS: if a cursor goes entirely outside of the visual
+968 7/15/08	~OPEN	JS: if a cursor goes entirely outside of the visual
 			filter of its destination view, you can't move the
 			cursor by clicking in the view. (wenger)
+			(Mostly fixed by wenger, 7/15/08.  See notes in
+			DEViseView.java.)
 
 969 7/15/08	OPEN	If a cursor is entirely outside of the destination
 			view's visual filter, maybe doing 'C' (cursor fill) 
