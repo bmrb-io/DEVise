@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2007/11/15 17:15:35  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.7  2007/10/01 21:32:29  wenger
 // Changes to how we get chemical shift entity ID values: added check for
 // _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
@@ -57,7 +60,6 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     private static final int DEBUG = 0;
 
     protected String ENTITY_ID = "_Entity.ID";
-    protected String ENTRY_SF_CAT = "_Entry.Sf_category";
 
     // Maps EntityID (String) to isAProtein (Boolean).
     private Hashtable _frameIsProtein = new Hashtable();
@@ -170,9 +172,9 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	if (!entityID.equals("")) {
 	    String type = getOneFrameValue(entityFrame, ENTITY_TYPE);
 	    if (type.equals(POLYMER)) {
-	        String polymerType = getOneFrameValue(entityFrame,
-		  ENTITY_POLYMER_TYPE);
-	        if (polymerType.indexOf(POLYPEPTIDE) != -1) {
+	        String polymerType = getMolPolymerClass(entityFrame);
+	        if (polymerType != null &&
+		  polymerType.indexOf(POLYPEPTIDE) != -1) {
 		    result = true;
 		}
 	    }
@@ -409,6 +411,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	ENTITY_RES_SEQ_CODE = "_Entity_comp_index.ID";
 	ENTITY_RES_LABEL = "_Entity_comp_index.Comp_ID";
         ENTITY_TYPE = "_Entity.Type";
+    	ENTRY_SF_CAT = "_Entry.Sf_category";
 	ENTRY_TITLE = "_Entry.Title";
 
 	FIGURE_OF_MERIT = "_Atom_chem_shift.Chem_shift_assign_fig_of_merit";
@@ -458,6 +461,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     	return doDebugOutput(level, true);
     }
 
+    //-------------------------------------------------------------------
     // Determine whether to do debug output based on the current debug
     // level settings and the debug level of the output.
     private static boolean doDebugOutput(int level, boolean doPrint)

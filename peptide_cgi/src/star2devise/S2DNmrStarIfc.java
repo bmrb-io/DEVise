@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2007/11/15 17:15:35  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.10  2007/10/08 17:36:51  wenger
 // Temporarily(?) changed some of the Peptide-CGI NMR-STAR 3.1 tests so they
 // work with the current code; changed LACS_LEVEL_DEFAULT in teal config to 1
@@ -241,23 +244,12 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     {
 	String result = "unknown";
 
-        VectorCheckType frames = _starTree.searchByName(SAVE_ENTRY_INFO);
-
-        // This vector should have size 1 because there should
-	// only be one SaveFrame with this name.
-	if (frames.size() != 1) {
-	    System.err.println("Found " + frames.size() +
-	      " save frames for " + SAVE_ENTRY_INFO + ";" +
-	      " expect exactly 1.");
-	} else {
-	    SaveFrameNode frame = (SaveFrameNode)frames.firstElement();
-	    VectorCheckType nodes = _starTree.searchByName(ENTRY_TITLE);
-	    if (nodes.size() != 1) {
-	        System.err.println("Found " + nodes.size() +
-	          " nodes for " + ENTRY_TITLE + ";" + " expect exactly 1.");
-	    } else {
-	        result = ((DataItemNode)nodes.firstElement()).getValue();
-	    }
+	try {
+	    SaveFrameNode frame = getOneDataFrameByCat(ENTRY_SF_CAT,
+	      SAVE_ENTRY_INFO);
+	    result = getOneFrameValue(frame, ENTRY_TITLE);
+	} catch (Exception ex) {
+	    System.err.println(ex.toString());
 	}
 
         return result;
@@ -907,16 +899,14 @@ public class S2DNmrStarIfc extends S2DStarIfc {
      */
     public String getMolPolymerClass(SaveFrameNode frame)
     {
-	String molPolymerClass = null;
+	String molPolymerClass;
 
-	VectorCheckType list = frame.searchByName(ENTITY_POLYMER_TYPE);
-
-	if (list.size() != 1) {
-	    System.err.println("There should be exactly one " +
-	      ENTITY_POLYMER_TYPE + " node; got " + list.size());
-	} else {
-	    DataItemNode node = (DataItemNode)list.firstElement();
-	    molPolymerClass = node.getValue();
+	try {
+	    molPolymerClass = getOneFrameValueStrict(frame,
+	      ENTITY_POLYMER_TYPE);
+	} catch (Exception ex) {
+	    System.err.println(ex.toString());
+	    molPolymerClass = null;
 	}
 
         return molPolymerClass;
@@ -944,16 +934,8 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    //
 	    // Find the _Residue_count value.
 	    //
-	    VectorCheckType list =
-	      frame.searchByName(ENTITY_RESIDUE_COUNT);
-
-	    if (list.size() != 1) {
-	        throw new S2DError("There should be exactly one " +
-		  ENTITY_RESIDUE_COUNT + " node; got " + list.size());
-	    }
-
-            node = (DataItemNode)list.firstElement();
-	    String countStr = node.getValue();
+	    String countStr = getOneFrameValueStrict(frame,
+	      ENTITY_RESIDUE_COUNT);
 	    residueCount = Integer.parseInt(countStr);
 
 	} catch(NumberFormatException ex) {

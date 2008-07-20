@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2008/02/20 17:41:07  wenger
+// Committing (disabled) partially-implemented S2 Order visualization
+// code and tests.
+//
 // Revision 1.4  2007/09/26 20:47:15  wenger
 // Changed x.Seq_ID to x.Comp_index_ID for NMR-STAR 3.1 processing as
 // per Eldon's request; added some more debug output.
@@ -103,7 +107,6 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
     //-------------------------------------------------------------------
     // Constructor.  Constructs an S2DNmrStar30Ifc object corresponding to
     // the STAR file represented by starTree.
-
     protected S2DNmrStar31Ifc(StarNode starTree) throws S2DException
     {
         super(starTree);

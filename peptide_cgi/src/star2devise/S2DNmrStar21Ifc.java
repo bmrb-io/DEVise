@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/02/20 17:41:07  wenger
+// Committing (disabled) partially-implemented S2 Order visualization
+// code and tests.
+//
 // Revision 1.8  2007/11/15 17:15:35  wenger
 // Cleaned out cvs history in source files.
 //
@@ -119,11 +123,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 
 	try {
             SaveFrameNode compFrame = getEntityFrame(frame, entityID);
-
-	    String molPolymerClass = getMolPolymerClass(compFrame);
-            if (S2DNames.PROTEIN.equalsIgnoreCase(molPolymerClass)) {
-	        result = true;
-	    }
+            result = isAProtein(compFrame);
 
 	} catch (S2DException ex) {
 	    if (doDebugOutput(11)) {
@@ -149,8 +149,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 
 	String type = getOneFrameValue(entityFrame, ENTITY_TYPE);
 	if (type.equalsIgnoreCase(POLYMER)) {
-	    String polymerType = getOneFrameValue(entityFrame,
-	      ENTITY_POLYMER_TYPE);
+	    String polymerType = getMolPolymerClass(entityFrame);
 	    if (S2DNames.PROTEIN.equalsIgnoreCase(polymerType)) {
 	        result = true;
 	    }
@@ -245,8 +244,9 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         return result;
     }
 
+    // ----------------------------------------------------------------------
     /**
-     * Get a list of unique entity IDs reference in the chemical shift
+     * Get a list of unique entity IDs referenced in the chemical shift
      * loop of the given save frame.
      * @param The save frame (note that this should be an
      * assigned_chemical_shifts save frame).
@@ -324,6 +324,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	ENTITY_RES_SEQ_CODE = "_Residue_seq_code";
 	ENTITY_RES_LABEL = "_Residue_label";
 	ENTITY_TYPE = "_Mol_type";
+	ENTRY_SF_CAT = "_Saveframe_category";
 	ENTRY_TITLE = "_Entry_title";
 
 	HETERONUCLEAR_NOE = "heteronuclear_NOE";

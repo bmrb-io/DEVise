@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/06/17 23:07:53  wenger
+// Fixed to-do 073:  we no longer generate figure of merit or ambiguity
+// code visualizations if the values are all null (".").
+//
 // Revision 1.8  2008/02/20 17:41:08  wenger
 // Committing (disabled) partially-implemented S2 Order visualization
 // code and tests.
@@ -125,6 +129,7 @@ public class S2DStarIfc {
     public String ENTITY_RES_SEQ_CODE = "";
     public String ENTITY_RES_LABEL = "";
     public String ENTITY_TYPE = "";
+    public String ENTRY_SF_CAT = "";
 
     public String FIGURE_OF_MERIT = "";
 
@@ -349,19 +354,10 @@ public class S2DStarIfc {
       throws S2DException
     {
 //TEMPTEMP -- should implementation be moved to S2DNmrStarIfc, since mmCIF files don't have save frames?? -- or does this work on mmCIF files with frame == null?
-        String result = "";
-
-        VectorCheckType list = frame.searchByName(name);
-        if (list.size() == 1) {
-            DataItemNode node = (DataItemNode)list.firstElement();
-	    result = node.getValue();
-            if (result == null) {
-		throw new S2DError("null value!");
-	    }
-        } else {
-	    throw new S2DError("Number of " + name +
-	      " values is not equal to one");
-        }
+        String result = getOneFrameValueStrict(frame, name);
+        if (result == null) {
+	    throw new S2DError("null value!");
+	}
 
         return result;
     }
