@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.77  2008/07/17 20:28:00  wenger
+// (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
+// that are entirely outside the destination view's visual filter).
+//
 // Revision 1.76  2006/06/29 21:01:20  wenger
 // Merged devise_jmol_br_2 thru devise_jmol_br_3 to the trunk.
 //
@@ -500,12 +504,15 @@ public class DEViseView
 
         for (int i = 0; i < viewCursors.size(); i++) {
             DEViseCursor c = (DEViseCursor)viewCursors.elementAt(i);
+	    if (DEBUG >= 4) {
+               System.out.println("    Checking cursor " + c.name);
+	    }
             if (c.name.equals(cursor.name)) {
                 if (c.isSame(cursor)) {
                     return false;
                 } else {
 	            if (DEBUG >= 4) {
-                        System.out.println("Removing old cursor: " +
+                        System.out.println("  Removing old cursor: " +
 			  ((DEViseCursor)viewCursors.elementAt(i)).name +
 			  " from view " + viewName);
                     }

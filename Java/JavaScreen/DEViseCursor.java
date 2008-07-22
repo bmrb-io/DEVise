@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2008/07/17 20:28:00  wenger
+// (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
+// that are entirely outside the destination view's visual filter).
+//
 // Revision 1.22  2003/01/13 19:23:43  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -94,6 +98,8 @@ import java.awt.*;
 
 public class DEViseCursor
 {
+    private static final int DEBUG = 0;
+
     private jsdevisec jsc = null;
 
     // x, y, width, height and cursorLoc seem to have pretty much the
@@ -135,6 +141,11 @@ public class DEViseCursor
       Rectangle rect, String move, String fixedSize, float gx, float gy,
       int gtype, int ctype, Color c) throws YException
     {
+        if (DEBUG >= 2) {
+            System.out.println("DEViseCursor.DEViseCursor(" + cn + ", " +
+	      vn + ")");
+        }
+
         if (cn == null) {
             throw new YException("Invalid cursor name");
         }
@@ -505,7 +516,9 @@ public class DEViseCursor
     public boolean isSame(DEViseCursor cursor)
     {
         if (cursor != null) {
-            if (cursor.name.equals(name) && cursor.x == x && cursor.y == y && cursor.width == width && cursor.height == height) {
+            if (cursor.name.equals(name) && cursor.x == x &&
+	      cursor.y == y && cursor.width == width &&
+	      cursor.height == height && cursor.isVisible == isVisible) {
                 return true;
             } else {
                 return false;
