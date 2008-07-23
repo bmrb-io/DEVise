@@ -290,6 +290,10 @@ Num Date        Status  Description
 			problems -- don't process them. (wenger/elu)
 			(See test53.)
 
+066 7/23/08	OPEN	Many data sets are not correctly visualized in 3D
+			visualization for 4096 (problem with data source
+			definitions). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
