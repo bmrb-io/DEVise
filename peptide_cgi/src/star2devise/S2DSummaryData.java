@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2008/07/02 16:29:19  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.4  2007/11/15 17:15:36  wenger
 // Cleaned out cvs history in source files.
 //
@@ -91,7 +100,7 @@ public class S2DSummaryData
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryData.writeSummaryData()");
             System.out.println("Data sets: ");
-            for (int index = _dataSets.size()-1; index >= 0; index--) {
+            for (int index = 0; index < _dataSets.size(); index++) {
                 S2DDatasetInfo info =
 		  (S2DDatasetInfo)_dataSets.elementAt(index);
                 System.out.println("  " + info.getName() + "\t" +
@@ -113,7 +122,7 @@ public class S2DSummaryData
 	      S2DMain.getTimestamp() + "\n");
 	    writer.write("#\n");
 
-            for (int index = _dataSets.size()-1; index >= 0; index--) {
+            for (int index = 0; index < _dataSets.size(); index++) {
                 S2DDatasetInfo info =
 		  (S2DDatasetInfo)_dataSets.elementAt(index);
                 writer.write(info.getName() + "\t" +

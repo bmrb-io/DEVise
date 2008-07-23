@@ -268,10 +268,11 @@ Num Date        Status  Description
 			jump to confusing points on the page (solely tied
 			to text, not screendumps). (elu/wenger)
 
-061 4/3/08	ACTIVE	For 4001 (and probably other entries with lots of
+061 4/3/08	~FIXED	For 4001 (and probably other entries with lots of
 			save frames) the text in the data select view is
 			too compressed (in 3D visualizations). (elu/wenger)
 			(See also 009.)
+			(Fixed by wenger, 7/23/08.)
 
 062 6/4/08	OPEN	Get rid of "null"s in relaxation table for 5996 in
 			new summary page. (wenger)
