@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.87  2008/07/24 00:01:40  wenger
+// Kind of a kludgey fix for bug 066 -- just put the missing data source
+// definitions back into the session template.  This isn't a general fix
+// if we get more linked entries, though.  (The problem is that the 4096
+// 3D session was written before 4038 was processed, so the data from
+// 4038 wasn't getting data source definitions written to the session file.)
+// (Note: this bug was just introduced with the recent bug 061 fixes,
+// so the buggy version was not released -- caught it in pre-release
+// testing!)
+//
 // Revision 1.86  2008/07/03 19:34:34  wenger
 // Updated Osaka config file; changed version to 11.3.2x1.
 //
@@ -196,7 +206,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.2x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.2";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
