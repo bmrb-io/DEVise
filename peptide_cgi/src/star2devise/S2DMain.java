@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.86  2008/07/03 19:34:34  wenger
+// Updated Osaka config file; changed version to 11.3.2x1.
+//
 // Revision 1.85  2008/07/02 18:23:52  wenger
 // Changed version to 11.3.1 for release; final choice of suffix
 // for S2 order params.
@@ -193,7 +196,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.2x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.2x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
