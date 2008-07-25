@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.88  2008/07/24 19:24:12  wenger
+// Changed version to 11.3.2 for release.
+//
 // Revision 1.87  2008/07/24 00:01:40  wenger
 // Kind of a kludgey fix for bug 066 -- just put the missing data source
 // definitions back into the session template.  This isn't a general fix
@@ -206,7 +209,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.2";
+    public static final String PEP_CGI_VERSION = "11.3.3x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
