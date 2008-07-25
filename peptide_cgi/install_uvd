@@ -56,6 +56,7 @@ pushd $htmlhome
 ln -s -f ../help* .
 ln -s -f ../*.jpg .
 ln -s -f ../*.gif .
+ln -s -f ../*.png .
 ln -s -f ../*.txt .
 popd
 

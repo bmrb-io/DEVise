@@ -231,6 +231,7 @@ cp -p html/[a-z]* $targetdir
 chmod a+r $targetdir/help*
 chmod a+r $targetdir/*.jpg
 chmod a+r $targetdir/*.gif
+chmod a+r $targetdir/*.png
 chmod a+r $targetdir/*.txt
 #find $targetdir -name \* -type f -exec chmod a+r {} \;
 

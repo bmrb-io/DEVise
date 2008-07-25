@@ -108,6 +108,7 @@ dynamic_sessions-setup:
 html-setup:
 	ln -s ../../../html/*.html .
 	ln -s ../../../html/*.gif .
+	ln -s ../../../html/*.png .
 	ln -s ../../../html/*.jpg .
 	ln -s ../../../html/*.js .
 	ln -s ../../../html/*.txt .
