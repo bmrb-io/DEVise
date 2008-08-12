@@ -1,3 +1,4 @@
+//TEMPTEMP -- hell -- I should probably make a new level in the tree for entity assemblies...
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 1999-2008
@@ -42,6 +43,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2008/02/13 22:38:16  wenger
+// Added a button to show the Jmol selection trees without having to
+// go into a menu.
+//
 // Revision 1.18  2007/12/19 00:08:31  wenger
 // Changed a bunch of JButton references to DEViseButtons to make things
 // more consistent.
@@ -809,7 +814,25 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     {
 	public TreeMoleculeNode()
 	{
-	    super("Molecule");
+	    super("Assembly");
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Specializes a DEViseGenericTreeNode to represent an entity assembly.
+    private class TreeEntityAssemblyNode extends DEViseGenericTreeNode
+    {
+	public int entityAssemblyID;
+
+	public TreeEntityAssemblyNode(int id)
+	{
+	    super("Entity assembly " + id);
+
+	    if (DEBUG >= 3) {
+	        System.out.println("TreeResidueNode.TreeEntityAssemblyNode("
+		  + id + ")");
+	    }
+	    entityAssemblyID = id;
 	}
     }
 
@@ -1008,6 +1031,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    if (node instanceof TreeMoleculeNode) {
 	        selectCmd = "select;";
 		break;
+	    //TEMPTEMP -- need TreeEntityAssemblyNode here
 	    } else if (node instanceof TreeResidueNode) {
 	        int resNum = ((TreeResidueNode)node).residueNumber;
 	        if (!isFirst) {
