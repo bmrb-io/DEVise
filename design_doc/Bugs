@@ -4176,6 +4176,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the visual filter, even if resizing of the cursor
 			is not allowed. (wenger)
 
+970 8/19/08	OPEN	JS: if the screensize is 600x400 (for example), the
+			top items in the toolbar aren't shown after a session
+			is opened. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
