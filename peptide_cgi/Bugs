@@ -298,6 +298,12 @@ Num Date        Status  Description
 067 8/14/08	OPEN	Last line of H vs N data is missing the "H N" or
 			"HE1 NE1" on the end. (wenger)
 
+068 8/22/08	OPEN	(In 11.3.2) In a 3D visualization, once you change
+			the data set you're viewing, you no longer see the
+			red tips on the ends of the bars, and you no longer
+			get the green highlighting of the selected bars.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
