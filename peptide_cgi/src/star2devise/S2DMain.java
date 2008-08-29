@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.90  2008/08/29 16:35:48  wenger
+// Fixed bug 069 (problem with entries that don't have any ambiguity
+// codes).
+//
 // Revision 1.89  2008/07/25 20:31:01  wenger
 // Incremented version to 11.3.3.
 //
@@ -212,7 +216,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.3x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.3x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

@@ -298,11 +298,13 @@ Num Date        Status  Description
 067 8/14/08	OPEN	Last line of H vs N data is missing the "H N" or
 			"HE1 NE1" on the end. (wenger)
 
-068 8/22/08	OPEN	(In 11.3.2) In a 3D visualization, once you change
+068 8/22/08	FIXED	(In 11.3.2) In a 3D visualization, once you change
 			the data set you're viewing, you no longer see the
 			red tips on the ends of the bars, and you no longer
 			get the green highlighting of the selected bars.
-			(wenger)
+			(wenger)  (This bug seems to have been introduced
+			in the changes between 11.3.1 and 11.3.2.)
+			(Fixed by wenger, 8/29/08.)
 
 069 8/28/08	FIXED	Entry 6730 fails with null pointer exception
 			(also 5672, 5865, 6037, 6347, 7330). (dmiller1/wenger)

@@ -859,13 +859,13 @@ DEVise setMappingColors {.4001md#name_vs_recId} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4001md {.4001md#name_vs_recId 2} {} 0 {$recId} {} 0 0.98 0 0 17 {"ViewDataDotsChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
+DEVise create {mapping} {name_vs_recId} .4001md {.4001md#name_vs_recId 2} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewDataDotsChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
 DEVise setPixelWidth {.4001md#name_vs_recId 2} 1
 DEVise setMappingColors {.4001md#name_vs_recId 2} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4001md {.4001md#name_vs_recId 3} {} 0 {$recId} {} 0 0.98 0 0 17 {"ViewSelectedDataChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
+DEVise create {mapping} {name_vs_recId} .4001md {.4001md#name_vs_recId 3} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewSelectedDataChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
 DEVise setPixelWidth {.4001md#name_vs_recId 3} 1
 DEVise setMappingColors {.4001md#name_vs_recId 3} {0} {37} {37}
 
