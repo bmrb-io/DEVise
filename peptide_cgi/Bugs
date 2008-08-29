@@ -304,8 +304,9 @@ Num Date        Status  Description
 			get the green highlighting of the selected bars.
 			(wenger)
 
-069 8/28/08	OPEN	Entry 6730 fails with null pointer exception
+069 8/28/08	FIXED	Entry 6730 fails with null pointer exception
 			(also 5672, 5865, 6037, 6347, 7330). (dmiller1/wenger)
+			(Fixed by wenger, 8/28/08.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

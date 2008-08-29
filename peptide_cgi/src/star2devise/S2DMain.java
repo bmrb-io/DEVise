@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.89  2008/07/25 20:31:01  wenger
+// Incremented version to 11.3.3.
+//
 // Revision 1.88  2008/07/24 19:24:12  wenger
 // Changed version to 11.3.2 for release.
 //
@@ -2103,7 +2106,7 @@ public class S2DMain {
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameChemShifts(" +
-	      star.getFrameName(frame) + " (" + entityID + "), " +
+	      star.getFrameName(frame) + ", <" + entityID + ">, " +
 	      frameIndex + ")");
 	}
 
@@ -2158,7 +2161,7 @@ public class S2DMain {
 	        System.out.println("No ambiguity values in this save frame (" +
 		  star.getFrameName(frame) + ")");
 	    }
-	    ambiguityVals = new int[entityIDs.length];
+	    ambiguityVals = new int[resSeqCodes.length];
 	    for (int index = 0; index < ambiguityVals.length; ++index) {
 	    	ambiguityVals[index] = 9;
 	    }

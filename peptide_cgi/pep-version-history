@@ -4,6 +4,9 @@ Peptide-CGI 11.3.3
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.2 or higher.)
 
+* Fixed bug 069 (problem with entries that don't have any ambiguity
+codes).
+
 
 
 Peptide-CGI 11.3.2

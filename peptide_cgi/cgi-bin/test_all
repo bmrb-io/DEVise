@@ -377,7 +377,17 @@ endif
 #endif
 
 
+echo ""
+echo "Running test55..."
+tests/test55
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test55"
+endif
+
+
 #TEMP -- maybe add test of 4547
+
 
 echo ""
 echo -n "Test_all result: "
