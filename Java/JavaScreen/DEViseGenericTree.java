@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/04/25 20:43:51  wenger
+// Greatly improved the documentation of the DEViseCanvas3DJmol class;
+// minor improvements to other classes.
+//
 // Revision 1.3  2007/04/23 19:41:46  wenger
 // Added some extra GUI-thread-related diagnostic output.
 //
@@ -136,7 +140,7 @@ public class DEViseGenericTree
 	createNodes(top, topDevNode);
 	treeModel.reload();
 
-	// Make all of the residues visible.
+	// Make all of the entity assemblies visible.
 	tree.expandRow(0);
     }
 

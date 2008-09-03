@@ -1,4 +1,3 @@
-//TEMPTEMP -- hell -- I should probably make a new level in the tree for entity assemblies...
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 1999-2008
@@ -43,6 +42,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2008/08/12 21:16:52  wenger
+// Changed "Molecule" to "Assembly" in selection trees; some other
+// partially-finished changes related to multiple-entity fixes.
+//
 // Revision 1.19  2008/02/13 22:38:16  wenger
 // Added a button to show the Jmol selection trees without having to
 // go into a menu.
@@ -798,13 +801,15 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     {
         public final String name;
         public DEViseGenericTree tree;
-        public Hashtable residueNodes;
+	public int maxEntityAssemblyID;
+	public Hashtable entityAssemblyNodes;
 	public DEViseGenericTreeNode topNode;
 
 	public JmolTree(String treeName, DEViseCanvas3DJmol canvas) {
 	    name = treeName;
 	    topNode = new TreeMoleculeNode();
 	    tree = new DEViseGenericTree(name, topNode, canvas);
+	    maxEntityAssemblyID = -1;
 	}
     }
 
@@ -823,16 +828,22 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     private class TreeEntityAssemblyNode extends DEViseGenericTreeNode
     {
 	public int entityAssemblyID;
+        public int maxResidueNum;
+	public Hashtable residueNodes;
 
 	public TreeEntityAssemblyNode(int id)
 	{
 	    super("Entity assembly " + id);
 
 	    if (DEBUG >= 3) {
-	        System.out.println("TreeResidueNode.TreeEntityAssemblyNode("
-		  + id + ")");
+	        System.out.println(
+		  "TreeEntityAssemblyNode.TreeEntityAssemblyNode(" +
+		  id + ")");
 	    }
 	    entityAssemblyID = id;
+
+	    maxResidueNum = -1;
+	    residueNodes = new Hashtable();
 	}
     }
 
@@ -840,10 +851,11 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // Specializes a DEViseGenericTreeNode to represent a residue.
     private class TreeResidueNode extends DEViseGenericTreeNode
     {
+	public int entityAssemblyID; // used to select things properly in Jmol
 	public int residueNumber;
 	public String residueLabel;
 
-	public TreeResidueNode(int number, String label)
+	public TreeResidueNode(int number, String label, int entAssemID)
 	{
 	    super("[" + label + "] " + number);
 
@@ -853,6 +865,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    }
 	    residueNumber = number;
 	    residueLabel = label;
+	    entityAssemblyID = entAssemID;
 	}
     }
 
@@ -952,17 +965,14 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	      jmTree.name + ", " + gDatas.size() + ")");
 	}
 
-	jmTree.residueNodes = new Hashtable();
+	jmTree.entityAssemblyNodes = new Hashtable();
 	jmTree.topNode.children.removeAllElements();
 
 	int maxResidueNum = -1;
 
-	//
-	// We put the residue nodes into a Hashtable, and then pull
-	// them out of the hash table and add them to the top-level
-	// node, because the atoms are not always strictly in order
-	// of increasing residue number.
-	//
+//TEMPTEMP -- shorten some of these names?
+
+	//TEMPTEMP -- explain
 	for (int atomNum = 0; atomNum < gDatas.size(); atomNum++) {
 	    DEViseGData gd = (DEViseGData)gDatas.elementAt(atomNum);
 
@@ -972,16 +982,32 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	        continue;
 	    }
 
-	    if (gd.residueNum > maxResidueNum) maxResidueNum = gd.residueNum;
+	    if (gd.entityAssemblyID > jmTree.maxEntityAssemblyID)
+	      jmTree.maxEntityAssemblyID = gd.entityAssemblyID;
+
+	    // Find or construct the node for the appropriate entity assembly.
+	    Integer entityAssemblyID = new Integer(gd.entityAssemblyID);
+	    TreeEntityAssemblyNode entityAssemblyNode =
+	      (TreeEntityAssemblyNode)jmTree.entityAssemblyNodes.get(
+	        entityAssemblyID);
+	    if (entityAssemblyNode == null) {
+		entityAssemblyNode = new TreeEntityAssemblyNode(
+		  gd.entityAssemblyID);
+		jmTree.entityAssemblyNodes.put(entityAssemblyID,
+		  entityAssemblyNode);
+	    }
+
+	    if (gd.residueNum > entityAssemblyNode.maxResidueNum)
+	      entityAssemblyNode.maxResidueNum = gd.residueNum;
 
 	    // Find or construct the node for the appropriate residue.
 	    Integer resNum = new Integer(gd.residueNum);
 	    TreeResidueNode residueNode =
-	      (TreeResidueNode)jmTree.residueNodes.get(resNum);
+	      (TreeResidueNode)entityAssemblyNode.residueNodes.get(resNum);
 	    if (residueNode == null) {
 		residueNode = new TreeResidueNode(gd.residueNum,
-		  gd.residueLabel);
-		jmTree.residueNodes.put(resNum, residueNode);
+		  gd.residueLabel, gd.entityAssemblyID);
+		entityAssemblyNode.residueNodes.put(resNum, residueNode);
 	    }
 
 	    // Add this atom to the residue node.
@@ -989,15 +1015,31 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    TreeAtomNode atomNode = new TreeAtomNode(gd.atomNum, gd.atomName,
 	      gd);
 	    residueNode.addChild(atomNode);
-	}
+        }
 
-	// Now add the residue nodes to the tree.
-	for (int residueNum = 1; residueNum <= maxResidueNum; residueNum++) {
-	    Integer resNum = new Integer(residueNum);
-	    TreeResidueNode residueNode =
-	      (TreeResidueNode)jmTree.residueNodes.get(resNum);
-	    if (residueNode != null) {
-	        jmTree.topNode.addChild(residueNode);
+	// Now add the entity assembly and residue nodes to the tree.
+	for (int entAssemID = 1; entAssemID <= jmTree.maxEntityAssemblyID;
+	  entAssemID++) {
+	    Integer entityAssemblyID = new Integer(entAssemID);
+	    TreeEntityAssemblyNode entityAssemblyNode =
+	      (TreeEntityAssemblyNode)jmTree.entityAssemblyNodes.get(
+	        entityAssemblyID);
+	    if (entityAssemblyNode != null) {
+	        // Add residues to entity assembly node.
+	        for (int residueNum = 1;
+		  residueNum <= entityAssemblyNode.maxResidueNum;
+		  residueNum++) {
+	            Integer resNum = new Integer(residueNum);
+	            TreeResidueNode residueNode =
+	              (TreeResidueNode)entityAssemblyNode.residueNodes.get(
+		        resNum);
+	            if (residueNode != null) {
+	                entityAssemblyNode.addChild(residueNode);
+	            }
+	        }
+
+		// Add entity assembly node to tree.
+		jmTree.topNode.addChild(entityAssemblyNode);
 	    }
 	}
 
@@ -1031,13 +1073,26 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    if (node instanceof TreeMoleculeNode) {
 	        selectCmd = "select;";
 		break;
-	    //TEMPTEMP -- need TreeEntityAssemblyNode here
+
+	    } else if (node instanceof TreeEntityAssemblyNode) {
+		int entityAssemblyID =
+		  ((TreeEntityAssemblyNode)node).entityAssemblyID;
+		//TEMPTEMP -- convert to A, B, C, etc.
+	        if (!isFirst) {
+	            selection += ",";
+	        }
+	        selection += "*:" + entityAssemblyID;
+
 	    } else if (node instanceof TreeResidueNode) {
 	        int resNum = ((TreeResidueNode)node).residueNumber;
+	        int entAssemID = ((TreeResidueNode)node).entityAssemblyID;
 	        if (!isFirst) {
 	            selection += ",";
 	        }
 	        selection += resNum;
+//TEMPTEMP -- convert entity assembly ID to A, B, C, etc.
+		selection += ":" + entAssemID;
+
 	    } else if (node instanceof TreeAtomNode) {
 	        int atomNum = ((TreeAtomNode)node).atomNumber;
 	        if (!isFirst) {
@@ -1245,11 +1300,19 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 		for (int j = 0; j < v.viewGDatas.size(); j++) {
 		    DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
 		    if (gdata.symbolType == gdata._symOval) {
-			Integer resNum = new Integer(gdata.residueNum);
-		        DEViseGenericTreeNode devNode =
-			  (DEViseGenericTreeNode)highlightTree.residueNodes.get(resNum);
-			if (devNode != null) {
-			    selectedDevNodes.addElement(devNode);
+		    	Integer entAssemID =
+			  new Integer(gdata.entityAssemblyID);
+                        TreeEntityAssemblyNode entAssemNode =
+			  (TreeEntityAssemblyNode)highlightTree.
+			    entityAssemblyNodes.get(entAssemID);
+			if (entAssemNode != null) {
+			    Integer resNum = new Integer(gdata.residueNum);
+			    DEViseGenericTreeNode devNode =
+			      (DEViseGenericTreeNode)entAssemNode.
+			      residueNodes.get(resNum);
+			    if (devNode != null) {
+			        selectedDevNodes.addElement(devNode);
+			    }
 			}
                     } else {
 		    	//TEMP -- error?

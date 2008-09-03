@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006
+// (c) Copyright 2006-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2006/05/26 16:22:16  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.1.2.1  2006/02/23 16:57:42  wenger
 // Cleaned up JavaScreen code that sends data to Jmol, including
 // adding new DEViseJmolData class.
@@ -83,7 +86,7 @@ public class DEViseJmolData
 	    tmpData += " "; // space before residue label
 
 	    tmpData += gd.residueLabel + " ";
-	    tmpData += " "; // chain ID
+	    tmpData += gd.entityAssemblyID; // chain ID//TEMPTEMP -- convert to A, B, C, etc.!!!
 	    tmpData += lengthenStringPrepend("" + gd.residueNum, 4);
 	    tmpData += "    "; // insertion code
 	    tmpData += lengthenStringPrepend("" + gd.x0, 8);

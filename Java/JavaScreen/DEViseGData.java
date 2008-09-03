@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -29,6 +29,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2006/05/26 16:22:15  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.39.36.3  2006/05/18 20:49:00  wenger
 // Added backbone/side chains/protons selection tree.
 //
@@ -196,6 +199,7 @@ public class DEViseGData
     public int atomNum;
     public String atomName;
     public String residueLabel; // amino acid
+    public int entityAssemblyID;
     public int residueNum;
     public String atomType;
     public String structType;
@@ -557,6 +561,15 @@ public class DEViseGData
 	residueNum = (Integer.valueOf(data[13])).intValue();
 	atomType = data[15];
 	structType = data[16];
+	// Get Entity_assembly_ID (pre 11.4.0 versions of Peptide-CGI
+	// don't send that).
+	String entityAssemblyIDTmp = data[21];
+	if (entityAssemblyIDTmp.equals("")) {
+	    entityAssemblyID = 1;
+	} else {
+	    entityAssemblyID =
+	      (Integer.valueOf(entityAssemblyIDTmp)).intValue();
+	}
     }
 
     protected void Segment(String[] data, float size, float xm, float ym)
