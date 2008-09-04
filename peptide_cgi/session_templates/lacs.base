@@ -156,7 +156,7 @@ DEVise setYAxisFloatFormat {View 3} {%.4g}
 DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
-DEVise viewSetDisabledActions {View 3} 1 0 1 1
+DEVise viewSetDisabledActions {View 3} 1 1 1 1
 DEVise setViewHelp {View 3} {none}
 DEVise setShowMouseLocation {View 3} {1}
 DEVise setLinkMultFact {View 3} {X} 1
@@ -191,7 +191,7 @@ DEVise setYAxisFloatFormat {ViewXLabel} {%.4g}
 DEVise setViewAutoFilter {ViewXLabel} {0}
 DEVise setDupElim {ViewXLabel} {0}
 DEVise setNiceAxes {ViewXLabel} 0 0
-DEVise viewSetDisabledActions {ViewXLabel} 1 0 1 1
+DEVise viewSetDisabledActions {ViewXLabel} 1 1 1 1
 DEVise setViewHelp {ViewXLabel} {axis label}
 DEVise setShowMouseLocation {ViewXLabel} {1}
 DEVise setLinkMultFact {ViewXLabel} {X} 1
@@ -226,7 +226,7 @@ DEVise setYAxisFloatFormat {ViewYLabel} {%.4g}
 DEVise setViewAutoFilter {ViewYLabel} {0}
 DEVise setDupElim {ViewYLabel} {0}
 DEVise setNiceAxes {ViewYLabel} 0 0
-DEVise viewSetDisabledActions {ViewYLabel} 1 0 1 1
+DEVise viewSetDisabledActions {ViewYLabel} 1 1 1 1
 DEVise setViewHelp {ViewYLabel} {axis label}
 DEVise setShowMouseLocation {ViewYLabel} {1}
 DEVise setLinkMultFact {ViewYLabel} {X} 1
@@ -261,7 +261,7 @@ DEVise setYAxisFloatFormat {ViewHeader} {%.4g}
 DEVise setViewAutoFilter {ViewHeader} {0}
 DEVise setDupElim {ViewHeader} {0}
 DEVise setNiceAxes {ViewHeader} 0 0
-DEVise viewSetDisabledActions {ViewHeader} 1 1 1 0
+DEVise viewSetDisabledActions {ViewHeader} 1 1 1 1
 DEVise setViewHelp {ViewHeader} {Visualization info}
 DEVise setShowMouseLocation {ViewHeader} {1}
 DEVise setLinkMultFact {ViewHeader} {X} 1

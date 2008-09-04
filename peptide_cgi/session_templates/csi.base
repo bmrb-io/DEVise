@@ -330,7 +330,7 @@ DEVise setYAxisFloatFormat {View 8} {%.4g}
 DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
-DEVise viewSetDisabledActions {View 8} 1 1 1 0
+DEVise viewSetDisabledActions {View 8} 1 1 1 1
 DEVise setViewHelp {View 8} {Visualization info}
 DEVise setShowMouseLocation {View 8} {0}
 DEVise setLinkMultFact {View 8} {X} 1

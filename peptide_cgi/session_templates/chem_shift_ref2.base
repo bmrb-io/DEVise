@@ -1041,7 +1041,7 @@ DEVise setYAxisFloatFormat {View 119} {%.4g}
 DEVise setViewAutoFilter {View 119} {0}
 DEVise setDupElim {View 119} {0}
 DEVise setNiceAxes {View 119} 0 0
-DEVise viewSetDisabledActions {View 119} 1 1 1 0
+DEVise viewSetDisabledActions {View 119} 1 1 1 1
 DEVise setViewHelp {View 119} {Visualization info}
 DEVise setShowMouseLocation {View 119} {1}
 DEVise setLinkMultFact {View 119} {X} 1

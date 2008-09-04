@@ -649,7 +649,7 @@ DEVise setYAxisFloatFormat {View 113} {%.4g}
 DEVise setViewAutoFilter {View 113} {0}
 DEVise setDupElim {View 113} {0}
 DEVise setNiceAxes {View 113} 0 0
-DEVise viewSetDisabledActions {View 113} 1 0 1 0
+DEVise viewSetDisabledActions {View 113} 1 0 1 1
 DEVise setViewHelp {View 113} {Use the DEVise cursor in this view
 to select which types of secondary structure data
 are shown in the main view.  (Note that this cursor
@@ -687,7 +687,7 @@ DEVise setYAxisFloatFormat {View 114} {%.4g}
 DEVise setViewAutoFilter {View 114} {0}
 DEVise setDupElim {View 114} {0}
 DEVise setNiceAxes {View 114} 0 0
-DEVise viewSetDisabledActions {View 114} 1 0 1 0
+DEVise viewSetDisabledActions {View 114} 1 0 1 1
 DEVise setShowMouseLocation {View 114} {1}
 DEVise setLinkMultFact {View 114} {X} 1
 DEVise setLinkMultFact {View 114} {Y} 1
@@ -721,7 +721,7 @@ DEVise setYAxisFloatFormat {View 10} {%.4g}
 DEVise setViewAutoFilter {View 10} {0}
 DEVise setDupElim {View 10} {0}
 DEVise setNiceAxes {View 10} 0 0
-DEVise viewSetDisabledActions {View 10} 1 1 1 0
+DEVise viewSetDisabledActions {View 10} 1 1 1 1
 DEVise setViewHelp {View 10} {Visualization info}
 DEVise setShowMouseLocation {View 10} {1}
 DEVise setLinkMultFact {View 10} {X} 1

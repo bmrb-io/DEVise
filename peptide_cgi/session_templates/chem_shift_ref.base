@@ -68,40 +68,6 @@ DEVise dteInsertCatalogEntry . {"csr1_layout" UNIXFILE csr1_layout.dat bmrb-layo
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} {View 2} 0.000000 100.000000 0.000000 100.000000 37 0 0 37 0 37
-DEVise setLabel {View 2} 1 16 {Value() vs. Bucket}
-DEVise setViewStatistics {View 2} 00000000
-DEVise setViewDimensions {View 2} 2
-DEVise setViewSolid3D {View 2} 2
-DEVise setViewXYZoom {View 2} 1
-DEVise setViewDisplayDataValues {View 2} 0
-DEVise setFont {View 2} {title} 0 12 0 0
-DEVise setFont {View 2} {x axis} 0 12 0 0
-DEVise setFont {View 2} {y axis} 0 12 0 0
-DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
-DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
-DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
-DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
-DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 2} 7.5 8.5 0
-DEVise setCountMapping {View 2} 0 {} {} 0
-DEVise viewSetIsHighlight {View 2} 0
-DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
-DEVise setYAxisDateFormat {View 2} {%b %d %Y %T}
-DEVise setXAxisFloatFormat {View 2} {%.4g}
-DEVise setYAxisFloatFormat {View 2} {%.4g}
-DEVise setViewAutoFilter {View 2} {0}
-DEVise setDupElim {View 2} {0}
-DEVise setNiceAxes {View 2} 0 0
-DEVise viewSetDisabledActions {View 2} 0 0 0 0
-DEVise setShowMouseLocation {View 2} {1}
-DEVise setLinkMultFact {View 2} {X} 1
-DEVise setLinkMultFact {View 2} {Y} 1
-DEVise setGAttrLinkMode {View 2} 0
-DEVise setDoHomeOnVisLink {View 2} {0}
-DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
-DEVise viewSetUseJmol {View 2} {0}
 
 # View {View 1} uses mapping {4974csr1_1#csObs_vs_resID}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
@@ -615,7 +581,7 @@ DEVise setYAxisFloatFormat {View 13} {%.4g}
 DEVise setViewAutoFilter {View 13} {0}
 DEVise setDupElim {View 13} {0}
 DEVise setNiceAxes {View 13} 0 0
-DEVise viewSetDisabledActions {View 13} 1 1 1 0
+DEVise viewSetDisabledActions {View 13} 1 1 1 1
 DEVise setViewHelp {View 13} {Visualization info}
 DEVise setShowMouseLocation {View 13} {1}
 DEVise setLinkMultFact {View 13} {X} 1
@@ -784,13 +750,6 @@ DEVise create {cursor} {Cursor} atom_select_cursor 1 1 1.000000 1.000000 1
 
 # Put labels into views
 
-DEVise setAxisDisplay {View 2} {X} 1
-DEVise setAxisDisplay {View 2} {Y} 1
-DEVise setAxisTicks {View 2} {X} 1
-DEVise setAxisTicks {View 2} {Y} 1
-DEVise setAxisMultFact {View 2} {X} 1
-DEVise setAxisMultFact {View 2} {Y} 1
-
 DEVise setAxisDisplay {View 1} {X} 1
 DEVise setAxisDisplay {View 1} {Y} 1
 DEVise setAxisTicks {View 1} {X} 1
@@ -934,9 +893,6 @@ DEVise setPileStackState {DEViseWn1} 1
 DEVise setPileStackState {DEViseWn5} 1
 
 # Init history of view
-
-DEVise clearViewHistory {View 2}
-DEVise insertViewHistory {View 2} {0} {0} {100} {100} 0
 
 DEVise clearViewHistory {View 1}
 DEVise insertViewHistory {View 1} {-0.925} {0} {0.876} {3} 0
@@ -1117,7 +1073,6 @@ DEVise clearViewHistory {View 13}
 DEVise insertViewHistory {View 13} {-50} {-50} {50} {50} 0
 
 # Set camera location for each view
-DEVise set3DLocation {View 2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {View 1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 5.64737e-270 5.64755e-270
 DEVise set3DLocation {View 4} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {View 5} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0

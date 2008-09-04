@@ -284,7 +284,7 @@ DEVise setYAxisFloatFormat {ViewStructSelect} {%.4g}
 DEVise setViewAutoFilter {ViewStructSelect} {0}
 DEVise setDupElim {ViewStructSelect} {1}
 DEVise setNiceAxes {ViewStructSelect} 0 0
-DEVise viewSetDisabledActions {ViewStructSelect} 1 0 1 0
+DEVise viewSetDisabledActions {ViewStructSelect} 1 0 1 1
 DEVise setViewHelp {ViewStructSelect} {Use the cursor to select which types of atoms are
 shown in the 3D view.}
 DEVise setShowMouseLocation {ViewStructSelect} {0}
@@ -354,7 +354,7 @@ DEVise setYAxisFloatFormat {ViewResidueSelect1} {%.0f}
 DEVise setViewAutoFilter {ViewResidueSelect1} {1}
 DEVise setDupElim {ViewResidueSelect1} {1}
 DEVise setNiceAxes {ViewResidueSelect1} 0 0
-DEVise viewSetDisabledActions {ViewResidueSelect1} 1 0 0 0
+DEVise viewSetDisabledActions {ViewResidueSelect1} 1 0 0 1
 DEVise setViewHelp {ViewResidueSelect1} {Use this cursor to select the range of residues
 displayed in the 3D view.}
 DEVise setShowMouseLocation {ViewResidueSelect1} {3}
@@ -424,7 +424,7 @@ DEVise setYAxisFloatFormat {ViewResidueSelect2} {%.0f}
 DEVise setViewAutoFilter {ViewResidueSelect2} {1}
 DEVise setDupElim {ViewResidueSelect2} {1}
 DEVise setNiceAxes {ViewResidueSelect2} 0 0
-DEVise viewSetDisabledActions {ViewResidueSelect2} 1 0 0 0
+DEVise viewSetDisabledActions {ViewResidueSelect2} 1 0 0 1
 DEVise setViewHelp {ViewResidueSelect2} {Use this cursor to select the range of residues
 displayed in the text view to the left.}
 DEVise setShowMouseLocation {ViewResidueSelect2} {3}
@@ -460,7 +460,7 @@ DEVise setYAxisFloatFormat {ViewResidueName} {%.0f}
 DEVise setViewAutoFilter {ViewResidueName} {0}
 DEVise setDupElim {ViewResidueName} {1}
 DEVise setNiceAxes {ViewResidueName} 0 0
-DEVise viewSetDisabledActions {ViewResidueName} 1 0 0 0
+DEVise viewSetDisabledActions {ViewResidueName} 1 0 0 1
 DEVise setViewHelp {ViewResidueName} {Use this cursor to select the range of residues displayed in the 3D view.}
 DEVise setShowMouseLocation {ViewResidueName} {3}
 DEVise setLinkMultFact {ViewResidueName} {X} 1
@@ -495,7 +495,7 @@ DEVise setYAxisFloatFormat {ViewResidueNumber} {%.0f}
 DEVise setViewAutoFilter {ViewResidueNumber} {0}
 DEVise setDupElim {ViewResidueNumber} {1}
 DEVise setNiceAxes {ViewResidueNumber} 0 0
-DEVise viewSetDisabledActions {ViewResidueNumber} 1 0 0 0
+DEVise viewSetDisabledActions {ViewResidueNumber} 1 0 0 1
 DEVise setShowMouseLocation {ViewResidueNumber} {3}
 DEVise setLinkMultFact {ViewResidueNumber} {X} 1
 DEVise setLinkMultFact {ViewResidueNumber} {Y} 1
@@ -599,7 +599,7 @@ DEVise setYAxisFloatFormat {ViewDataXControl} {%.0f}
 DEVise setViewAutoFilter {ViewDataXControl} {1}
 DEVise setDupElim {ViewDataXControl} {1}
 DEVise setNiceAxes {ViewDataXControl} 0 0
-DEVise viewSetDisabledActions {ViewDataXControl} 1 0 0 0
+DEVise viewSetDisabledActions {ViewDataXControl} 1 0 0 1
 DEVise setViewHelp {ViewDataXControl} {Use this cursor to select the range of residues displayed
 in the data view above.}
 DEVise setShowMouseLocation {ViewDataXControl} {3}
@@ -635,7 +635,7 @@ DEVise setYAxisFloatFormat {ViewSelectedDataParent} {%.4g}
 DEVise setViewAutoFilter {ViewSelectedDataParent} {0}
 DEVise setDupElim {ViewSelectedDataParent} {0}
 DEVise setNiceAxes {ViewSelectedDataParent} 0 0
-DEVise viewSetDisabledActions {ViewSelectedDataParent} 0 0 0 0
+DEVise viewSetDisabledActions {ViewSelectedDataParent} 1 1 1 1
 DEVise setShowMouseLocation {ViewSelectedDataParent} {1}
 DEVise setLinkMultFact {ViewSelectedDataParent} {X} 1
 DEVise setLinkMultFact {ViewSelectedDataParent} {Y} 1
@@ -669,7 +669,7 @@ DEVise setYAxisFloatFormat {ViewUnselectedDataParent} {%.4g}
 DEVise setViewAutoFilter {ViewUnselectedDataParent} {0}
 DEVise setDupElim {ViewUnselectedDataParent} {0}
 DEVise setNiceAxes {ViewUnselectedDataParent} 0 0
-DEVise viewSetDisabledActions {ViewUnselectedDataParent} 0 0 0 0
+DEVise viewSetDisabledActions {ViewUnselectedDataParent} 1 1 1 1
 DEVise setShowMouseLocation {ViewUnselectedDataParent} {1}
 DEVise setLinkMultFact {ViewUnselectedDataParent} {X} 1
 DEVise setLinkMultFact {ViewUnselectedDataParent} {Y} 1
@@ -703,7 +703,7 @@ DEVise setYAxisFloatFormat {ViewDataValueSelectParent} {%.4g}
 DEVise setViewAutoFilter {ViewDataValueSelectParent} {0}
 DEVise setDupElim {ViewDataValueSelectParent} {0}
 DEVise setNiceAxes {ViewDataValueSelectParent} 0 0
-DEVise viewSetDisabledActions {ViewDataValueSelectParent} 0 0 0 0
+DEVise viewSetDisabledActions {ViewDataValueSelectParent} 1 1 1 1
 DEVise setShowMouseLocation {ViewDataValueSelectParent} {1}
 DEVise setLinkMultFact {ViewDataValueSelectParent} {X} 1
 DEVise setLinkMultFact {ViewDataValueSelectParent} {Y} 1
@@ -771,7 +771,7 @@ DEVise setYAxisFloatFormat {ViewResidueHighlight} {%.0f}
 DEVise setViewAutoFilter {ViewResidueHighlight} {0}
 DEVise setDupElim {ViewResidueHighlight} {1}
 DEVise setNiceAxes {ViewResidueHighlight} 0 0
-DEVise viewSetDisabledActions {ViewResidueHighlight} 1 0 0 0
+DEVise viewSetDisabledActions {ViewResidueHighlight} 1 0 0 1
 DEVise setViewHelp {ViewResidueHighlight} {This view displays residue sequence codes and the
 corresponding amino acid abbreviations.  Residues
 selected by the cursor in the data view are highlighted
@@ -922,7 +922,7 @@ DEVise setYAxisFloatFormat {View 3} {%.4g}
 DEVise setViewAutoFilter {View 3} {0}
 DEVise setDupElim {View 3} {1}
 DEVise setNiceAxes {View 3} 0 0
-DEVise viewSetDisabledActions {View 3} 0 0 0 0
+DEVise viewSetDisabledActions {View 3} 1 1 1 1
 DEVise setShowMouseLocation {View 3} {1}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
@@ -956,7 +956,7 @@ DEVise setYAxisFloatFormat {View 4} {%.4g}
 DEVise setViewAutoFilter {View 4} {0}
 DEVise setDupElim {View 4} {1}
 DEVise setNiceAxes {View 4} 0 0
-DEVise viewSetDisabledActions {View 4} 0 0 0 0
+DEVise viewSetDisabledActions {View 4} 1 1 1 1
 DEVise setShowMouseLocation {View 4} {1}
 DEVise setLinkMultFact {View 4} {X} 1
 DEVise setLinkMultFact {View 4} {Y} 1
@@ -1024,7 +1024,7 @@ DEVise setYAxisFloatFormat {View 6} {%.4g}
 DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {0}
 DEVise setNiceAxes {View 6} 0 0
-DEVise viewSetDisabledActions {View 6} 1 0 1 1
+DEVise viewSetDisabledActions {View 6} 1 1 1 1
 DEVise setShowMouseLocation {View 6} {1}
 DEVise setLinkMultFact {View 6} {X} 1
 DEVise setLinkMultFact {View 6} {Y} 1
@@ -1058,7 +1058,7 @@ DEVise setYAxisFloatFormat {View 7} {%.4g}
 DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
-DEVise viewSetDisabledActions {View 7} 1 1 1 0
+DEVise viewSetDisabledActions {View 7} 1 1 1 1
 DEVise setViewHelp {View 7} {Visualization info}
 DEVise setShowMouseLocation {View 7} {1}
 DEVise setLinkMultFact {View 7} {X} 1

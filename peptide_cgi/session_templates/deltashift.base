@@ -255,7 +255,7 @@ DEVise setYAxisFloatFormat {View 6} {%.4g}
 DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {0}
 DEVise setNiceAxes {View 6} 0 0
-DEVise viewSetDisabledActions {View 6} 0 0 0 0
+DEVise viewSetDisabledActions {View 6} 1 1 1 1
 DEVise setViewHelp {View 6} {axis label}
 DEVise setShowMouseLocation {View 6} {0}
 DEVise setShowMouseLocation {View 6} {0}
@@ -290,7 +290,7 @@ DEVise setYAxisFloatFormat {View 7} {%.4g}
 DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {0}
 DEVise setNiceAxes {View 7} 0 0
-DEVise viewSetDisabledActions {View 7} 0 0 0 0
+DEVise viewSetDisabledActions {View 7} 1 1 1 1
 DEVise setViewHelp {View 7} {axis label}
 DEVise setShowMouseLocation {View 7} {0}
 DEVise setLinkMultFact {View 7} {X} 1
@@ -324,7 +324,7 @@ DEVise setYAxisFloatFormat {View 8} {%.4g}
 DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
-DEVise viewSetDisabledActions {View 8} 0 0 0 0
+DEVise viewSetDisabledActions {View 8} 1 1 1 1
 DEVise setViewHelp {View 8} {axis label}
 DEVise setShowMouseLocation {View 8} {0}
 DEVise setLinkMultFact {View 8} {X} 1
@@ -358,7 +358,7 @@ DEVise setYAxisFloatFormat {View 9} {%.4g}
 DEVise setViewAutoFilter {View 9} {0}
 DEVise setDupElim {View 9} {0}
 DEVise setNiceAxes {View 9} 0 0
-DEVise viewSetDisabledActions {View 9} 0 0 0 0
+DEVise viewSetDisabledActions {View 9} 1 1 1 1
 DEVise setViewHelp {View 9} {axis label}
 DEVise setShowMouseLocation {View 9} {0}
 DEVise setLinkMultFact {View 9} {X} 1
@@ -392,7 +392,7 @@ DEVise setYAxisFloatFormat {View 10} {%.4g}
 DEVise setViewAutoFilter {View 10} {0}
 DEVise setDupElim {View 10} {0}
 DEVise setNiceAxes {View 10} 0 0
-DEVise viewSetDisabledActions {View 10} 0 0 0 0
+DEVise viewSetDisabledActions {View 10} 1 1 1 1
 DEVise setViewHelp {View 10} {axis label}
 DEVise setShowMouseLocation {View 10} {0}
 DEVise setLinkMultFact {View 10} {X} 1
@@ -426,7 +426,7 @@ DEVise setYAxisFloatFormat {View 11} {%.4g}
 DEVise setViewAutoFilter {View 11} {0}
 DEVise setDupElim {View 11} {0}
 DEVise setNiceAxes {View 11} 0 0
-DEVise viewSetDisabledActions {View 11} 1 1 1 0
+DEVise viewSetDisabledActions {View 11} 1 1 1 1
 DEVise setViewHelp {View 11} {Visualization info}
 DEVise setShowMouseLocation {View 11} {0}
 DEVise setLinkMultFact {View 11} {X} 1
