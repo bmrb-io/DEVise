@@ -17,6 +17,7 @@ endif
 
 echo "Checking output files"
 
+#TEMP -- no session files here!!!!
 set files = ( data_dir/uvd/test53_outam1.dat \
 	data_dir/uvd/test53outam1.dat \
 	data_dir/uvd/test53_outamac1.dat \
