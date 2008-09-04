@@ -4182,6 +4182,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			happens if the session is passed as a command-line
 			argument; this is stand-alone JS, not the applet.)
 
+971 9/4/08	OPEN	Go to BMRB histogram visualization; then follow
+			the 'large visualization' link, and interact with
+			the applet -> Firefox locks up (not every time,
+			though).  (dmiller1/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
