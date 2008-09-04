@@ -310,6 +310,12 @@ Num Date        Status  Description
 			(also 5672, 5865, 6037, 6347, 7330). (dmiller1/wenger)
 			(Fixed by wenger, 8/28/08.)
 
+070 8/4/08	OPEN	When processing 20080828_47079.str, the "Percent
+			assigned atoms" has some at almost 200%, suggesting
+			that the program hasn't taken into account the
+			symmetrical dimeric nature of the protein.
+			(cavey/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -1,0 +1,72 @@
+#! /bin/csh -f
+
+# Tests bug 070 (found by Andrea Cavey on Sep 2, 2008).
+# (Processing doesn't fail, but percent assigned atoms values are
+# too high.)
+
+set result = 0
+
+rm -f */test56_out*
+rm -f */*/test56_out*
+
+echo -n "Processing NMR-STAR: "
+./uvd -file test_data/20080828_47079.str -name test56_out -force
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/uvd/test56_outam1.dat \
+	data_dir/uvd/test56_outamac1.dat \
+	data_dir/uvd/test56_outas1.dat \
+	data_dir/uvd/test56_outc1.dat \
+	data_dir/uvd/test56_outd1.dat \
+	data_dir/uvd/test56_outhn1.dat \
+	data_dir/uvd/test56_outmd.dat \
+	data_dir/uvd/test56_outp1.dat \
+	data_dir/uvd/test56_outrc1.dat \
+	data_dir/uvd/test56_outrl1.dat \
+	html_dir/uvd/test56_outam1.html \
+	html_dir/uvd/test56_outam1_large.html \
+	html_dir/uvd/test56_outas1.html \
+	html_dir/uvd/test56_outas1_large.html \
+	html_dir/uvd/test56_outc1.html \
+	html_dir/uvd/test56_outc1_large.html \
+	html_dir/uvd/test56_outd1.html \
+	html_dir/uvd/test56_outd1_large.html \
+	html_dir/uvd/test56_outhn1.html \
+	html_dir/uvd/test56_outhn1_large.html \
+	html_dir/uvd/test56_outp1.html \
+	html_dir/uvd/test56_outp1_large.html \
+	html_dir/uvd/test56_outy.html \
+	html_dir/uvd/test56_outy_large.html \
+	session_dir/.uvd/test56_outacdd \
+	session_dir/.uvd/test56_outam1.ds \
+	session_dir/.uvd/test56_outas1.ds \
+	session_dir/.uvd/test56_outc1.ds \
+	session_dir/.uvd/test56_outd1.ds \
+	session_dir/.uvd/test56_outhn1.ds \
+	session_dir/.uvd/test56_outp1.ds )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+#TEMP -- should put some test in here for the percent assigned values
+
+
+echo -n "Test56 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
