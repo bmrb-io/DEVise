@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2006
+  (c) Copyright 1998-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  2006/05/26 16:22:57  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.31.4.1  2006/02/23 22:08:56  wenger
   Added flag for whether or not 3D views should use Jmol.
 
@@ -968,7 +971,12 @@ PileStack::CreatePileLink()
     if (GetViewList()->Find(selectedView)) {
       _link->InsertView((ViewGraph *)selectedView);
     } else {
-      reportErrNosys("Warning: selected view is not in pile!");
+      char errBuf[1024];
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Warning: selected view (%s) is not in pile (%s)!",
+	  selectedView->GetName(), GetName());
+      checkAndTermBuf2(errBuf, formatted);
+      reportErrNosys(errBuf);
     }
   }
 
@@ -1660,9 +1668,11 @@ PileStack::QueryStarted(View *view)
       _currentQueryView = view;
     } else {
       char errBuf[1024];
-      sprintf(errBuf, "View <%s> starting query, but view <%s> in the same "
-          "pile (%s) is already running a query", view->GetName(),
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "View <%s> starting query, but view <%s> in the same pile (%s)"
+	  "is already running a query", view->GetName(),
 	  _currentQueryView->GetName(), GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       DOASSERT(0, "bad query");
     }
