@@ -42,6 +42,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2008/09/03 19:15:58  wenger
+// Initial changes to JavaScreen client to support entity assembly
+// IDs in 3D Jmol visualizations.  (Still needs some cleanup.)
+//
 // Revision 1.20  2008/08/12 21:16:52  wenger
 // Changed "Molecule" to "Assembly" in selection trees; some other
 // partially-finished changes related to multiple-entity fixes.
@@ -970,9 +974,12 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
 	int maxResidueNum = -1;
 
-//TEMPTEMP -- shorten some of these names?
-
-	//TEMPTEMP -- explain
+	// A lot of the complexity here is because we're not guaranteed
+	// to get atoms in order of ascending entity assembly ID and
+	// residue number within an entity assembly.  So we initially
+	// stick things into hash tables, and then go back and pull
+	// them out of the hash tables in numerical order, and stick
+	// them into the tree nodes.
 	for (int atomNum = 0; atomNum < gDatas.size(); atomNum++) {
 	    DEViseGData gd = (DEViseGData)gDatas.elementAt(atomNum);
 
@@ -1075,23 +1082,23 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 		break;
 
 	    } else if (node instanceof TreeEntityAssemblyNode) {
-		int entityAssemblyID =
+		int entAssemID =
 		  ((TreeEntityAssemblyNode)node).entityAssemblyID;
-		//TEMPTEMP -- convert to A, B, C, etc.
+		String chain = DEViseJmolData.entAssem2Chain(entAssemID);
 	        if (!isFirst) {
 	            selection += ",";
 	        }
-	        selection += "*:" + entityAssemblyID;
+	        selection += "*:" + chain;
 
 	    } else if (node instanceof TreeResidueNode) {
 	        int resNum = ((TreeResidueNode)node).residueNumber;
 	        int entAssemID = ((TreeResidueNode)node).entityAssemblyID;
+		String chain = DEViseJmolData.entAssem2Chain(entAssemID);
 	        if (!isFirst) {
 	            selection += ",";
 	        }
 	        selection += resNum;
-//TEMPTEMP -- convert entity assembly ID to A, B, C, etc.
-		selection += ":" + entAssemID;
+		selection += ":" + chain;
 
 	    } else if (node instanceof TreeAtomNode) {
 	        int atomNum = ((TreeAtomNode)node).atomNumber;

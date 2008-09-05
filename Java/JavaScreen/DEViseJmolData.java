@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2008/09/03 19:15:59  wenger
+// Initial changes to JavaScreen client to support entity assembly
+// IDs in 3D Jmol visualizations.  (Still needs some cleanup.)
+//
 // Revision 1.2  2006/05/26 16:22:16  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -86,7 +90,7 @@ public class DEViseJmolData
 	    tmpData += " "; // space before residue label
 
 	    tmpData += gd.residueLabel + " ";
-	    tmpData += gd.entityAssemblyID; // chain ID//TEMPTEMP -- convert to A, B, C, etc.!!!
+	    tmpData += entAssem2Chain(gd.entityAssemblyID); // chain ID
 	    tmpData += lengthenStringPrepend("" + gd.residueNum, 4);
 	    tmpData += "    "; // insertion code
 	    tmpData += lengthenStringPrepend("" + gd.x0, 8);
@@ -103,6 +107,22 @@ public class DEViseJmolData
 	}
 
 	return jmolData;
+    }
+
+    //-------------------------------------------------------------------
+    // Convert a numerical entity assembly ID to a chain letter ID.
+    // (This is done so we can have up to 26 entity assemblies designated
+    // with a single character.)  We pass the chain ID to Jmol;
+    // everything else uses the numerical entity assembly IDs.
+    public static String entAssem2Chain(int entAssemID)
+    {
+    	String[] chains = { "A", "B", "C", "D", "E", "F", "G", "H", "I",
+	  "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U",
+	  "V", "W", "X", "Y", "Z" };
+
+	String result = chains[entAssemID - 1];
+
+	return result;
     }
 
     //===================================================================
