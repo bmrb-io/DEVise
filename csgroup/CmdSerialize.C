@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  2008/01/24 22:08:05  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.6  2007/11/28 18:38:48  wenger
   Fixed minor problems found when compiling DEVise on pike.bmrb.wisc.edu.
 
@@ -43,6 +46,7 @@
  */
 
 #include <string>
+#include <string.h>
 #include <vector>
 #include <stdlib.h>
 #include <stdio.h>

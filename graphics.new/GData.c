@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  2008/01/24 22:08:32  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.24  2000/01/13 23:07:07  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -112,6 +115,8 @@
 */
 
 #include <iostream>
+#include <stdlib.h>
+#include <string.h>
 
 #include "Exit.h"
 #include "TDataAttr.h"

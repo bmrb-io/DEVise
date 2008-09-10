@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/11/30 22:28:22  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.8  1998/03/04 19:11:02  wenger
   Fixed some more dynamic memory errors.
 
@@ -45,6 +52,7 @@
 #include <limits.h>
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 
 #include "Exit.h"
 #include "GDataRangeMap.h"

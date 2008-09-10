@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2005
+  (c) Copyright 1998-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.136  2006/05/26 16:23:04  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.135.4.1  2006/02/23 22:09:07  wenger
   Added flag for whether or not 3D views should use Jmol.
 
@@ -676,6 +679,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <string>
+#include <string.h>
 #include <vector>
 
 #include "JavaScreenCmd.h"

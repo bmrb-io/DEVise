@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/08/21 22:16:06  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.2  1998/02/12 17:14:43  wenger
   Merged through collab_br_2; updated version number to 1.5.1.
 
@@ -60,6 +64,7 @@
 #include <stddef.h> // for NULL(!)
 #endif // SUN
 
+#include "DeviseTypes.h"
 #include "callBks.h"
 
 CallBackHandler CBakArray[MAX_CTRL_MSGS];
