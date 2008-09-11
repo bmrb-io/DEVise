@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.17  2005/12/06 20:01:09  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.16.12.3  2005/09/28 22:29:21  wenger
   Various const-ifying to make things compile better on basslet.
 
@@ -583,7 +587,7 @@ Client::ServerCmd(int argc, const char * const *argv)
 				TokenList tk(groups);
 
 				char *argv[2];
-				argv[0] = "SetGroupList";
+				argv[0] = strdup("SetGroupList");
 				tk.toTclList(argv[1]);
 				ControlCmd(2, argv);
 				delete argv[1];

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.57  2005/12/06 20:04:10  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.56.4.1  2003/11/19 19:40:21  wenger
   Display modes now work for symbol colors; also added some missing
   commands to the (horrible) Tcl code for copying views; minor
@@ -459,13 +463,13 @@ private:
      after conversion it's: [expr $interpAttr_0*2]
      global updated: _tdataFlag, and _maxTDataAttrNum;
   */
-  char *ConvertCmd(char *cmd, AttrType &type, Boolean &isSorted);
+  char *ConvertCmd(const char *cmd, AttrType &type, Boolean &isSorted);
 
   /* Return TRUE if cmd is a simple command,
      and set entry to the converted command entry.
      If entry is an attribute, also return the attribute type,
      and whether it's sorted.*/
-  static Boolean ConvertSimpleCmd(char *cmd, AttrList *attrList,
+  static Boolean ConvertSimpleCmd(const char *cmd, AttrList *attrList,
   				  MappingSimpleCmdEntry &entry,
 			          AttrType &type, Boolean &isSorted,
 				  StringStorage *stringTable);
@@ -489,7 +493,7 @@ private:
   void InsertExprAttrs(RecId recId, char *tDataRec,
     StringStorage *stringTable);
 
-  static Boolean IsConstCmd(char *cmd, AttrList *attrList, Coord &val,
+  static Boolean IsConstCmd(const char *cmd, AttrList *attrList, Coord &val,
 			    AttrType &attrType);
   
   double ConvertOneAttr(char *from,

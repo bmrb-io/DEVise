@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  2005/12/06 20:11:41  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.2.14.1  2003/06/25 19:57:11  wenger
   Various improvments to debug logging; moved command logs from /tmp
   to work directory.
@@ -129,7 +133,7 @@ CommandLog::Playback(const char *logFile)
   FILE *fp = fopen(logFile, "r");
   if (!fp) {
     char errBuf[MAXPATHLEN * 2];
-    sprintf("Unable to open command log file <%s>", logFile);
+    sprintf(errBuf, "Unable to open command log file <%s>", logFile);
     reportErrSys(errBuf);
   } else {
     const int bufSize = 1024;
@@ -166,7 +170,7 @@ CommandLog::Playback(const char *logFile)
 
     if (fclose(fp) != 0) {
       char errBuf[MAXPATHLEN * 2];
-      sprintf("Error closing command log file <%s>", logFile);
+      sprintf(errBuf, "Error closing command log file <%s>", logFile);
       reportErrSys(errBuf);
     }
 

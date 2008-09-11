@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  2000/07/12 20:49:15  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.6  1999/12/23 17:52:44  wenger
   Fixed bug 528, cleaned up bug list some.
 
@@ -153,7 +157,7 @@ SessionDesc::LinkTypeString(DeviseLink *link, char buffer[])
 
     if (flag & ~VISUAL_RECORD) {
       char errBuf[256];
-      sprintf("Warning: record link %s also has other link attributes",
+      sprintf(errBuf, "Warning: record link %s also has other link attributes",
 	  link->GetName());
       reportErrNosys(errBuf);
       result += StatusWarn;

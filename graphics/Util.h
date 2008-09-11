@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  2008/01/11 20:17:50  wenger
+  Got DEVise to compile on RHEL5.
+
   Revision 1.33  2005/12/06 20:03:09  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -204,7 +207,7 @@ extern long ModTime(char *fname);
 
 /* Read the contents of a file into a buffer (buffer allocated by this
  * function). */
-extern DevStatus ReadFile(char *filename, int &size, char *&buffer);
+extern DevStatus ReadFile(const char *filename, int &size, char *&buffer);
 
 extern char *CopyString(const char *str);
 extern void FreeString(char *str);
@@ -254,12 +257,12 @@ DevStatus nice_strncat(char *dest, const char *src, size_t destSize);
 void dos2unix(char *buf);
 
 /* Clear contents of directory */
-extern void ClearDir(char *dir);
-extern void CheckAndMakeDirectory(char *dir, Boolean clear = false,
+extern void ClearDir(const char *dir);
+extern void CheckAndMakeDirectory(const char *dir, Boolean clear = false,
 			Boolean errorIsFatal = true);
 
 /* Check space available in a directory. */
-extern void CheckDirSpace(char *dirname, char *envVar,
+extern void CheckDirSpace(const char *dirname, const char *envVar,
                           int warnSize, int exitSize);
 
 /* strip file of path name */
@@ -329,7 +332,7 @@ inline const char *DateString(double d, const char *format = NULL) {
 
 /* Return true if a number, set num to the converted number.
    A number is defined as: [0-9]+[.[0-9]*]  or .[0-9]+ */
-inline int ConvertNum(char *str, double &num) {
+inline int ConvertNum(const char *str, double &num) {
   int numArgs;
   char temp;
   numArgs = sscanf(str, "%lf%c", &num, &temp);

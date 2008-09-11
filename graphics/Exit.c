@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  2005/12/06 20:03:03  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.30  2003/01/13 19:25:10  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -222,7 +226,7 @@ void Exit::DoExit(int code)
     exit(code);
 }
 
-void Exit::DoAbort(char *reason, char *file, int line)
+void Exit::DoAbort(const char *reason, const char *file, int line)
 {
   char fulltext[256];
   sprintf(fulltext, "%s (%s:%d)", reason, file, line);

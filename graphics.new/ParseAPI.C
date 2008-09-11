@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.107  2001/09/24 15:29:11  wenger
+  Added warning if you close or quit with unsaved session changes (note
+  that visual filter changes are not considered "changes").
+
   Revision 1.106  2001/03/23 18:06:39  wenger
   Color palettes are now associated with sessions; added borders to
   color chooser buttons so they're visible even if they're the same
@@ -516,7 +520,7 @@ GetDisplayImageAndSize(ControlPanel *control, int port, char *imageType)
   FILE *tmpfp = fopen(tmpFile, "w");
   if (tmpfp == NULL) {
     char errBuf[2096];
-    sprintf("Can't open temp file (%s)", tmpFile);
+    sprintf(errBuf, "Can't open temp file (%s)", tmpFile);
     reportErrSys(errBuf);
     control->ReturnVal(API_NAK, errBuf);
     return -1;

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.103  2005/12/06 20:04:08  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.102  2003/01/13 19:25:25  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -515,8 +519,8 @@ Shape     **MappingInterp::_shapes       = NULL;
 
 //--------------------------------------------------------------------------
 /* Return true if command is a constant, and return the constant value */
-Boolean MappingInterp::IsConstCmd(char *cmd, AttrList *attrList, Coord &val,
-								  AttrType &attrType)
+Boolean MappingInterp::IsConstCmd(const char *cmd, AttrList *attrList,
+								  Coord &val, AttrType &attrType)
 {
 #if defined(DEBUG)
   printf("  MappingInterp::IsConstCmd(%s)\n", cmd);
@@ -1402,7 +1406,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
     if (IsConstCmd(_internalCmd->xCmd, attrList, constVal, attrType) &&
 		!FORCE_X_INTO_GDATA) {
       SetDefaultX((Coord)constVal);
-      _tclCmd->xCmd = "";
+      _tclCmd->xCmd = CopyString("");
       attrList->InsertAttr(attrNum++, gdataXName, -1, sizeof(double),
                            attrType, false, NULL, false, false);
     } else {
@@ -1416,7 +1420,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
     if (IsConstCmd(_internalCmd->yCmd, attrList, constVal, attrType) &&
 		!FORCE_Y_INTO_GDATA) {
       SetDefaultY((Coord)constVal);
-      _tclCmd->yCmd = "";
+      _tclCmd->yCmd = CopyString("");
       attrList->InsertAttr(attrNum++, gdataYName, -1, sizeof(double), attrType,
 			   false, NULL, false, false);
     } else {
@@ -1429,7 +1433,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
   if (_cmdFlag & MappingCmd_Z) {
     if (IsConstCmd(_internalCmd->zCmd, attrList, constVal, attrType)) {
       SetDefaultZ((Coord)constVal);
-      _tclCmd->zCmd = "";
+      _tclCmd->zCmd = CopyString("");
       attrList->InsertAttr(attrNum++, gdataZName, -1, sizeof(double), attrType,
 			   false, NULL, false, false);
     } else {
@@ -1447,7 +1451,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
       // Coloring in TDataMap is apparently used to store color if
       // constant.
       GetColoring().SetForeground(pcid);
-      _tclCmd->colorCmd = "";
+      _tclCmd->colorCmd = CopyString("");
       attrList->InsertAttr(attrNum++, gdataColorName, -1, sizeof(double),
 	     attrType, false, NULL, false, false);
     } else {
@@ -1460,7 +1464,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
   if (_cmdFlag & MappingCmd_Size) {
     if (IsConstCmd(_internalCmd->sizeCmd, attrList, constVal, attrType)) {
       SetDefaultSize(constVal);
-      _tclCmd->sizeCmd = "";
+      _tclCmd->sizeCmd = CopyString("");
       attrList->InsertAttr(attrNum++, gdataSizeName, -1,
 	           sizeof(double), attrType, false, NULL, false, false);
     } else {
@@ -1473,7 +1477,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
   if (_cmdFlag & MappingCmd_Pattern) {
     if (IsConstCmd(_internalCmd->patternCmd, attrList, constVal, attrType)) {
       SetDefaultPattern((Pattern)constVal);
-      _tclCmd->patternCmd = "";
+      _tclCmd->patternCmd = CopyString("");
       attrList->InsertAttr(attrNum++, gdataPatternName, -1, sizeof(double),
 	           attrType, false, NULL, false, false);
     } else {
@@ -1486,7 +1490,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
   if (_cmdFlag & MappingCmd_Orientation) {
     if (IsConstCmd(_internalCmd->orientationCmd, attrList, constVal, attrType)) {
       SetDefaultOrientation(constVal);
-      _tclCmd->orientationCmd = "";
+      _tclCmd->orientationCmd = CopyString("");
       attrList->InsertAttr(attrNum++, gdataOrientationName, -1, sizeof(double),
 	      attrType, false, NULL, false, false);
     } else {
@@ -1502,7 +1506,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
       shape = (ShapeID)constVal;
       if (shape >= MaxInterpShapes) shape = 0;
       SetDefaultShape(shape);
-      _tclCmd->shapeCmd = "";
+      _tclCmd->shapeCmd = CopyString("");
       attrList->InsertAttr(attrNum++, gdataShapeName, -1, sizeof(double),
 	           attrType, false, NULL, false, false);
     } else {
@@ -1521,7 +1525,7 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
       if (IsConstCmd(_internalCmd->shapeAttrCmd[shapeAttr], attrList, constVal,
 	      attrType)) {
 	    SetDefaultShapeAttr(shapeAttr,constVal);
-	    _tclCmd->shapeAttrCmd[shapeAttr] = "";
+	    _tclCmd->shapeAttrCmd[shapeAttr] = CopyString("");
 	    attrList->InsertAttr(attrNum++, attrName, -1, sizeof(double),
 			     attrType, false, NULL, false, false);
       } else {
@@ -1602,7 +1606,7 @@ static void InsertChar(char c)
 }
 
 //--------------------------------------------------------------------------
-static void InsertString(char *string)
+static void InsertString(const char *string)
 {
   int length = strlen(string);
   DOASSERT(_numChar + length < MAX_STRING, "No more string space");
@@ -1625,7 +1629,7 @@ static char *GetString()
    converted cmmand entry. A simple command
    is either a constant, or a tdata attribute */
 
-Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
+Boolean MappingInterp::ConvertSimpleCmd(const char *cmd, AttrList *attrList,
 					MappingSimpleCmdEntry &entry,
 					AttrType &type, Boolean &isSorted,
 					StringStorage *stringTable)
@@ -1684,7 +1688,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
 
   if (*cmd == '"') {
     int len = strlen(cmd);
-    char* end = cmd + len - 1;
+    const char* end = cmd + len - 1;
     if( len == 1 || *end != '"' ) return false;
     len -= 2; 
     char* str = new char[len+1];
@@ -1719,7 +1723,7 @@ Boolean MappingInterp::ConvertSimpleCmd(char *cmd, AttrList *attrList,
 // Note: sorted will now be set to false if the command is anything but
 // a simple invocation of a sorted attribute.  This fixes bug 466.
 // RKW 1999-03-02.
-char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
+char *MappingInterp::ConvertCmd(const char *cmd, AttrType &attrType,
 				Boolean &isSorted)
 {
 #if defined(DEBUG)
@@ -1734,7 +1738,7 @@ char *MappingInterp::ConvertCmd(char *cmd, AttrType &attrType,
   while (*cmd != '\0') {
     if (*cmd == '$') {
       /* convert variable name */
-      char *ptr = cmd+1;
+      const char *ptr = cmd+1;
       while ( (*ptr >= 'a' && *ptr <='z') ||
 	     (*ptr >= 'A' && *ptr <= 'Z') ||
 	     (*ptr >= '0' && *ptr <= '9') ||

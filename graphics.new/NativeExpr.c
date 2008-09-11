@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  1999/05/21 14:52:35  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.8  1998/07/03 23:42:20  wenger
   Fixed some memory leaks; added provision to print data segment size
   at certain places in the code.
@@ -477,9 +481,9 @@ int CGraphicExpr::AddRange( Interval **ppSourceRange, Coord High, Coord Low,
     *ppSourceRange = (Interval *)realloc( *ppSourceRange, 
 				       iNumOfRanges * sizeof(Interval) );
 
-  (*ppSourceRange)[iNumOfRanges - 1].AttrName = 
-    (char *)malloc( strlen( pszVar ) + 1 );
-  strcpy( (*ppSourceRange)[iNumOfRanges - 1].AttrName, pszVar );
+  char *tmpStr = (char *)malloc( strlen( pszVar ) + 1 );
+  strcpy( tmpStr, pszVar );
+  (*ppSourceRange)[iNumOfRanges - 1].AttrName = tmpStr;
 
   // get high and low
   InitAttrList();
@@ -790,7 +794,7 @@ int InitAttrList( void )
 }
 
 // insert a new attribute and its value
-int InsertAttr( char *pszName, double dVal )
+int InsertAttr( const char *pszName, double dVal )
 {
   struct AttrValue *pNew;
 
@@ -987,7 +991,7 @@ int PostOrder( struct Node *pExprRoot )
 
 /***********************  FUNCTION DEFINITION ********************************/
 // return 0 if succeed
-int PushOperand( enum TokenType iToken, char *pszToken )
+int PushOperand( enum TokenType iToken, const char *pszToken )
 {
   // printf( "%s\n", pszToken );
 

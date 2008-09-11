@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  1996/10/08 21:49:01  wenger
+  ClassDir now checks for duplicate instance names; fixed bug 047
+  (problem with FileIndex class); fixed various other bugs.
+
   Revision 1.3  1996/04/16 19:45:35  jussi
   Added DoAbort() method and DOASSERT macro.
 
@@ -31,7 +35,7 @@
 class Exit {
 public:
   static void DoExit(int code = 0);
-  static void DoAbort(char *reason, char *file, int line);
+  static void DoAbort(const char *reason, const char *file, int line);
 };
 
 #endif

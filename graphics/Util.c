@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.44  2005/12/06 20:03:09  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.43.10.8  2005/09/28 17:14:42  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -291,7 +295,7 @@ long ModTime(char *fname)
 }
 
 DevStatus
-ReadFile(char *filename, int &size, char *&buffer)
+ReadFile(const char *filename, int &size, char *&buffer)
 {
   DevStatus result = StatusOk;
 
@@ -490,7 +494,7 @@ const char *DateString(time_t tm, const char *format)
   const int bufLen = 32;
   static char dateBuf[bufLen];
 
-  char *result = dateBuf;
+  const char *result = dateBuf;
 
   if (format == NULL || strlen(format) == 0) format = _defaultDateFormat;
 
@@ -510,7 +514,7 @@ const char *DateString(time_t tm, const char *format)
   return result;
 }
 
-void ClearDir(char *dir)
+void ClearDir(const char *dir)
 {
   /* clear directory */
 
@@ -548,7 +552,7 @@ void ClearDir(char *dir)
 /* Check if directory exists. Make directory if not already exists
    Clear directory if clear == true*/
 
-void CheckAndMakeDirectory(char *dir, Boolean clear, Boolean errorIsFatal)
+void CheckAndMakeDirectory(const char *dir, Boolean clear, Boolean errorIsFatal)
 {
   const char *fatalMsg = "";
   if (errorIsFatal) fatalMsg = "Fatal error: ";
@@ -588,7 +592,8 @@ void CheckAndMakeDirectory(char *dir, Boolean clear, Boolean errorIsFatal)
 }
 
 /* Check whether we have enough space in a given directory. */
-void CheckDirSpace(char *dirname, char *envVar, int warnSize, int exitSize)
+void CheckDirSpace(const char *dirname, const char *envVar, int warnSize,
+  int exitSize)
 {
   struct STAT_STRUCT stats;
 
@@ -767,7 +772,7 @@ void
 PrintArgs(FILE *fp, int argc, const char * const *argv, Boolean printNewline)
 {
   int index;
-  char *prefix = "";
+  const char *prefix = "";
   for (index = 0; index < argc; index++) {
     fprintf(fp, "%s<%s>", prefix, argv[index]);
     prefix = ", ";

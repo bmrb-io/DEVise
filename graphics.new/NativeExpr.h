@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  1999/05/21 14:52:37  wenger
+  Cleaned up GData-related code in preparation for including bounding box
+  info.
+
   Revision 1.4  1998/01/30 21:53:19  wenger
   Did some cleaning up of the MappingInterp and NativeExpr code
   (NativeExpr still needs a lot more); NativeExpr code can now
@@ -117,7 +121,7 @@ private:
 #define MAX_STACK_SIZE 100
 
 //TEMPTEMP -- are the attrs static?
-extern int InsertAttr( char *pszName, double dVal );
+extern int InsertAttr( const char *pszName, double dVal );
 extern int InitAttrList( void );
 extern double EvalExpr( Node *pExprRoot );
 extern int InverseExpr( Node *pExpr, Node **ppInverseExpr,
