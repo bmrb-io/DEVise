@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.72  2008/06/11 19:16:56  wenger
+  Fixed a problem that sometimes caused DEVise to free the same FontStruct
+  twice; more flexible generation of font names (horizontal and vertical
+  resolution are no longer specified); added -allowCore command-line flag
+  that overrides limits on core dump size, if possible; we now print the
+  core dump size limit at startup.
+
   Revision 1.71  2007/12/26 21:28:12  wenger
   Added the "-defaultFont" command-line argument to allow DEVise to
   at least run when we have a very limited selection of fonts (as
@@ -355,7 +362,7 @@
 Boolean Init::_savePopup = false;
 
 Boolean Init::_doPlayback = false;
-char *Init::_playbackFile = "";
+const char *Init::_playbackFile = "";
 
 int Init::_bufferSize = 1536;
 int Init::_streamBufSize = 32;
@@ -375,7 +382,7 @@ char *Init::_workDir = 0;
 char *Init::_tmpDir = 0;
 char *Init::_cacheDir = 0;
 
-char *Init::_sessionName = "session.tk";
+const char *Init::_sessionName = "session.tk";
 Boolean Init::_restore = false;
 Boolean Init::_iconify= false;
 
@@ -406,7 +413,7 @@ float Init::_drawTimeout = 10.0;
 int Init::_port = DefaultNetworkPort;
 int Init::_switchport = DefaultSwitchPort;
 int Init::_imageport = DefaultImagePort;
-char* Init::_switchname = DefaultSwitchName;
+const char* Init::_switchname = DefaultSwitchName;
 int Init::_maxclients = DefaultMaxClients;
 
 Boolean Init::_doDebugLog = true;
@@ -513,7 +520,7 @@ void Init::DoInit(int &argc, char **argv)
 	_switchname = temp;
 
   /* Create work directory, if needed */
-  char *workDir = getenv("DEVISE_WORK");
+  const char *workDir = getenv("DEVISE_WORK");
   if (!workDir)
     workDir = "work";
   CheckAndMakeDirectory(workDir);
@@ -521,7 +528,7 @@ void Init::DoInit(int &argc, char **argv)
   CheckDirSpace(workDir, "DEVISE_WORK", 1024 * 1024, 0);
 
   /* Get name of cache directory. */
-  char *cacheDir = getenv("DEVISE_CACHE");
+  const char *cacheDir = getenv("DEVISE_CACHE");
   if (!cacheDir) cacheDir = ".";
   _cacheDir = CopyString(cacheDir);
   CheckDirSpace(cacheDir, "DEVISE_CACHE", 1024 * 1024, 0);
@@ -537,7 +544,7 @@ void Init::DoInit(int &argc, char **argv)
   _progName = CopyString(argv[0]);
   _progModTime = ModTime(argv[0]);
 
-  char *tmpDir =  getenv("DEVISE_TMP");
+  const char *tmpDir =  getenv("DEVISE_TMP");
   if (!tmpDir)
     tmpDir = "tmp";
 

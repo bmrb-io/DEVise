@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.34  2005/12/06 20:01:11  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.33  2002/06/17 19:40:39  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
@@ -299,8 +303,8 @@ int ExecCheckpoint(char *fname, ConnectInfo *cinfo)
 char *NoError = "NONE";
 
 #define DO_ASSERT(c,r) {if (!(c)) DoAbort(r); }
-Server::Server(char *name, int image_port, 
-	int swt_port, int clnt_port, char* swtname,
+Server::Server(const char *name, int image_port, 
+	int swt_port, int clnt_port, const char* swtname,
 	int maxClients)
 {
 #if defined(DEBUG)

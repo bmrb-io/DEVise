@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.109  2006/07/11 20:53:30  wenger
+  Added info about mapping, view, and window creation parameters
+  to saving of session files; updated all example sessions accordingly.
+
   Revision 1.108  2006/05/26 16:22:57  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -1205,7 +1209,7 @@ Session::CreateTData(const char *name)
   // schema type if the type in the file is different from the type
   // given in the catalog.
   if (status.IsComplete()) {
-    char *result ;
+    const char *result ;
     if (isDteSource) {
 	  // TEMP -- memory may be leaked in here
       result = NULL;
@@ -1244,7 +1248,7 @@ Session::CreateTData(const char *name)
 
   // Execute dataSegment command.
   if (status.IsComplete()) {
-	char *filename;
+	const char *filename;
     if (isDteSource) {
       filename = "";
     } else {
@@ -2022,7 +2026,7 @@ Session::OpenDataSourceCmd(ControlPanel *control, int argc, char *argv[])
   DevStatus status = StatusOk;
 
   // Turn old-style (pre-DTE) name into new-style (DTE) name.
-  char *result;
+  const char *result;
   char newName[1024];
   if (argv[1][0] != '.') {
     int formatted = snprintf(newName, sizeof(newName), ".%s", argv[1]);
@@ -2094,8 +2098,8 @@ Session::SetDescriptionCmd(ControlPanel *control, int argc, char *argv[])
  * Save information about the given view.
  */
 DevStatus
-Session::SaveView(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveView(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveView({%s} {%s} {%s})\n", category, devClass, instance);
@@ -2221,8 +2225,8 @@ Session::SaveView(char *category, char *devClass, char *instance,
  * Save information about the given mapping class (if it is interpreted).
  */
 DevStatus
-Session::SaveInterpMapping(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveInterpMapping(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveInterpMapping({%s} {%s} {%s})\n", category, devClass,
@@ -2269,8 +2273,8 @@ Session::SaveInterpMapping(char *category, char *devClass, char *instance,
  * Save information about the given GData.
  */
 DevStatus
-Session::SaveGData(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveGData(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveGData({%s} {%s} {%s})\n", category, devClass,
@@ -2304,8 +2308,8 @@ Session::SaveGData(char *category, char *devClass, char *instance,
  * Save layout information about the given window.
  */
 DevStatus
-Session::SaveWindowLayout(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveWindowLayout(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveWindowLayout({%s} {%s} {%s})\n", category, devClass,
@@ -2326,8 +2330,8 @@ Session::SaveWindowLayout(char *category, char *devClass, char *instance,
  * Save axis label information for the given view.
  */
 DevStatus
-Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveViewAxisLabels(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveViewAxisLabels({%s} {%s} {%s})\n", category, devClass,
@@ -2362,8 +2366,8 @@ Session::SaveViewAxisLabels(char *category, char *devClass, char *instance,
  * Save actions for the given view.
  */
 DevStatus
-Session::SaveViewActions(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveViewActions(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveViewActions({%s} {%s} {%s})\n", category, devClass,
@@ -2381,8 +2385,8 @@ Session::SaveViewActions(char *category, char *devClass, char *instance,
  * Save connections between views and links.
  */
 DevStatus
-Session::SaveViewLinks(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveViewLinks(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveViewLinks({%s} {%s} {%s})\n", category, devClass,
@@ -2417,8 +2421,8 @@ Session::SaveViewLinks(char *category, char *devClass, char *instance,
  * Save the given cursor.
  */
 DevStatus
-Session::SaveCursor(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveCursor(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveCursor({%s} {%s} {%s})\n", category, devClass,
@@ -2464,8 +2468,8 @@ Session::SaveCursor(char *category, char *devClass, char *instance,
  * Save mappings for the given view.
  */
 DevStatus
-Session::SaveViewMappings(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveViewMappings(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveViewMappings({%s} {%s} {%s})\n", category, devClass,
@@ -2497,8 +2501,8 @@ Session::SaveViewMappings(char *category, char *devClass, char *instance,
  * Save views for the given window.
  */
 DevStatus
-Session::SaveWindowViews(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveWindowViews(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveWindowViews({%s} {%s} {%s})\n", category, devClass,
@@ -2545,8 +2549,8 @@ Session::SaveWindowViews(char *category, char *devClass, char *instance,
  * Save views for the given window.
  */
 DevStatus
-Session::SavePileStack(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SavePileStack(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SavePileStack({%s} {%s} {%s})\n", category, devClass,
@@ -2565,8 +2569,8 @@ Session::SavePileStack(char *category, char *devClass, char *instance,
  * Save the history for the given view.
  */
 DevStatus
-Session::SaveViewHistory(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveViewHistory(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveViewHistory({%s} {%s} {%s})\n", category, devClass,
@@ -2600,8 +2604,8 @@ Session::SaveViewHistory(char *category, char *devClass, char *instance,
  * Save the camera location for the given view.
  */
 DevStatus
-Session::SaveCamera(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveCamera(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveCamera({%s} {%s} {%s})\n", category, devClass,
@@ -2627,8 +2631,8 @@ Session::SaveCamera(char *category, char *devClass, char *instance,
  * Save the camera location for the given view.
  */
 DevStatus
-Session::SaveStringTables(char *category, char *devClass, char *instance,
-    SaveData *saveData)
+Session::SaveStringTables(const char *category, const char *devClass,
+    const char *instance, SaveData *saveData)
 {
 #if defined(DEBUG)
   printf("Session::SaveStringTables({%s} {%s} {%s})\n", category, devClass,
@@ -2688,7 +2692,8 @@ Session::SaveRecLinkTypes(SaveData *saveData)
  * function with those parameters.
  */
 DevStatus
-Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
+Session::SaveParams(SaveData *saveData, const char *getCommand,
+    const char *setCommand,
     const char *arg0, const char *arg1, const char *arg2, Boolean addBraces)
 {
 #if defined(DEBUG)
@@ -2698,8 +2703,8 @@ Session::SaveParams(SaveData *saveData, char *getCommand, char *setCommand,
 
   DevStatus status = StatusOk;
 
-  char *leftBrace;
-  char *rightBrace;
+  const char *leftBrace;
+  const char *rightBrace;
   if (addBraces) {
     leftBrace = "{";
     rightBrace = "}";
@@ -2796,7 +2801,7 @@ Session::CallParseAPI(ControlPanelSimple *control, const char *&result,
  * Save all instances of the given category.
  */
 DevStatus
-Session::SaveCategory(SaveData *saveData, char *category)
+Session::SaveCategory(SaveData *saveData, const char *category)
 {
 #if defined(DEBUG)
   printf("Session::SaveCategory()\n");
@@ -2827,7 +2832,8 @@ Session::SaveCategory(SaveData *saveData, char *category)
  * Save all instances of the given class.
  */
 DevStatus
-Session::SaveClass(SaveData *saveData, char *category, char *devClass)
+Session::SaveClass(SaveData *saveData, const char *category,
+     const char *devClass)
 {
 #if defined(DEBUG)
   printf("Session::SaveClass()\n");
@@ -2858,8 +2864,8 @@ Session::SaveClass(SaveData *saveData, char *category, char *devClass)
  * Save the given instance.
  */
 DevStatus
-Session::SaveInstance(SaveData *saveData, char *category, char *devClass,
-    char *instance)
+Session::SaveInstance(SaveData *saveData, const char *category,
+    const char *devClass, const char *instance)
 {
 #if defined(DEBUG)
   printf("Session::SaveInstance(%s, %s, %s)\n", category, devClass, instance);
@@ -2877,7 +2883,7 @@ Session::SaveInstance(SaveData *saveData, char *category, char *devClass,
  * Call the given function for each instance in the given category.
  */
 DevStatus
-Session::ForEachInstance(char *category, InstanceFuncP function,
+Session::ForEachInstance(const char *category, InstanceFuncP function,
     SaveData *saveData)
 {
 #if defined(DEBUG)

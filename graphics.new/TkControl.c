@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.101  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.100  2003/01/13 19:25:27  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -610,7 +614,7 @@ void TkControlPanel::StartSession()
 
   if (Init::Restore()) {
     /* restore session */
-    char *sessionName = Init::SessionName();
+    const char *sessionName = Init::SessionName();
     char buf[MAXPATHLEN + 256];
     sprintf(buf, "DEVise openSession %s", sessionName);
     int code = Tcl_Eval(_interp, buf);

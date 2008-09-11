@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  2008/09/10 17:49:50  wenger
+  Got DEVise to compile on moray at BMRB (gcc 4.3.0) (compiling in the
+  linux_amd64 directory) -- still lots of warnings, though.
+
   Revision 1.20  2005/12/06 20:03:53  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -154,9 +158,9 @@
  * function: DeviseServer::DeviseServer
  * Constructor.
  */
-DeviseServer::DeviseServer(char *name,int image_port,int swt_port, 
+DeviseServer::DeviseServer(const char *name,int image_port,int swt_port, 
 	int clnt_port, 
-	char* switchname, int maxclients, ControlPanel *control) :
+	const char* switchname, int maxclients, ControlPanel *control) :
   	Server(name,image_port, swt_port, clnt_port,switchname, maxclients)
 {
 #if defined(DEBUG)

@@ -25,6 +25,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  2005/12/06 20:03:54  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.11  2003/01/13 19:25:22  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -103,8 +107,8 @@ class CmdContainer;
 
 class DeviseServer : public Server {
 public:
-  DeviseServer(char *name, int image_port, int swt_port, int clnt_port,
-	char* switchname, int maxclients, ControlPanel *control);
+  DeviseServer(const char *name, int image_port, int swt_port, int clnt_port,
+	const char* switchname, int maxclients, ControlPanel *control);
   virtual ~DeviseServer();
 
   virtual char *DispatchedName() { return "DeviseServer"; }

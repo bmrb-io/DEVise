@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  2005/12/06 20:01:13  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.8.14.1  2003/12/19 18:07:08  wenger
   Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
 
@@ -190,7 +194,7 @@ RPCInit(char *server, ConnectInfo Address) {
 
 	strcpy(GroupDBServer, server);
 
-    char *switchname = Init::SwitchName();
+    const char *switchname = Init::SwitchName();
     if (!strcmp(switchname,DefaultSwitchName))
     {
         cerr << "Environment variable DEVISE_COLLABORATOR not defined\n";
@@ -277,7 +281,7 @@ Register(GroupKey *GroupName, ConnectInfo Address, int mode) {
 			return -1;
 		}
 
-		char *switchname = Init::SwitchName();
+		const char *switchname = Init::SwitchName();
 		if (!strcmp(switchname,DefaultSwitchName))
 		{
 			cerr << "Environment variable DEVISE_COLLABORATOR not defined\n";

@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.36  2008/06/11 19:16:56  wenger
+  Fixed a problem that sometimes caused DEVise to free the same FontStruct
+  twice; more flexible generation of font names (horizontal and vertical
+  resolution are no longer specified); added -allowCore command-line flag
+  that overrides limits on core dump size, if possible; we now print the
+  core dump size limit at startup.
+
   Revision 1.35  2007/12/26 21:28:12  wenger
   Added the "-defaultFont" command-line argument to allow DEVise to
   at least run when we have a very limited selection of fonts (as
@@ -195,7 +202,7 @@ class Init {
 
     static Boolean SavePopup() { return _savePopup;}
 
-    static char *PlaybackFileName(){ return _playbackFile; }
+    static const char *PlaybackFileName(){ return _playbackFile; }
     static Boolean DoPlayback() { return _doPlayback; }
   
     /*
@@ -225,7 +232,7 @@ class Init {
     static char *TmpDir() { return _tmpDir; }
     static char *CacheDir() { return _cacheDir; }
   
-    static char *SessionName() { return _sessionName; }
+    static const char *SessionName() { return _sessionName; }
     static void SetSessionName(char *name) { _sessionName = name; }
     static Boolean Restore() { return _restore; }
     static Boolean Iconify() { return _iconify; }
@@ -260,7 +267,7 @@ class Init {
 	static int SwitchPort() {return _switchport;}
 	static int ImagePort() {return _imageport;}
 	static int MaxClients() { return _maxclients;}
-	static char* SwitchName() { return _switchname;}
+	static const char* SwitchName() { return _switchname;}
 
 	static Boolean QuitOnDisconnect() { return _quitOnDisconnect; }
 	static int ClientTimeout() { return _clientTimeout; }
@@ -299,7 +306,7 @@ protected:
     static Boolean _savePopup;     /* true if pop-up window should be saved and
                                       wait for button even to remove it */
 
-    static char *_playbackFile;    /* name of the playback file */
+    static const char *_playbackFile;    /* name of the playback file */
     static Boolean _doPlayback;    /* true if playback requested */
 
     static int _bufferSize;        /* buffer size */
@@ -320,7 +327,7 @@ protected:
     static char *_tmpDir;          /* name of temp directory */
     static char *_cacheDir;        /* name of cache directory */
 
-    static char *_sessionName;     /* name of current session */
+    static const char *_sessionName;     /* name of current session */
     static Boolean _restore;       /* true if Devise is in restore mode */
     static Boolean _iconify;       /* true if session restored iconified */
 
@@ -352,7 +359,7 @@ protected:
     static int _switchport;        /* port for server to listen on */
     static int _imageport;         /* port for image server to listen on */
 	static int _maxclients;		   /* max number of clients */
-	static char* _switchname;      /* name of the switch(collaborator)*/
+	static const char* _switchname;      /* name of the switch(collaborator)*/
 
 	static Boolean _quitOnDisconnect; /* quit when client disconnects */
 	static int _clientTimeout;	   /* quit if client doesn't send commands */

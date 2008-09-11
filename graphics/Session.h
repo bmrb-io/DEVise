@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  2005/12/06 20:03:08  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.31  2003/01/13 19:25:11  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -292,49 +296,49 @@ private:
     FILE *fp;
   };
 
-  static DevStatus SaveCategory(SaveData *saveData, char *category);
-  static DevStatus SaveClass(SaveData *saveData, char *category,
-      char *devClass);
-  static DevStatus SaveInstance(SaveData *saveData, char *category,
-      char *devClass, char *instance);
+  static DevStatus SaveCategory(SaveData *saveData, const char *category);
+  static DevStatus SaveClass(SaveData *saveData, const char *category,
+      const char *devClass);
+  static DevStatus SaveInstance(SaveData *saveData, const char *category,
+      const char *devClass, const char *instance);
 
-  typedef DevStatus (*InstanceFuncP)(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus ForEachInstance(char *category, InstanceFuncP function,
+  typedef DevStatus (*InstanceFuncP)(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus ForEachInstance(const char *category, InstanceFuncP function,
       SaveData *saveData);
 
-  static DevStatus SaveView(char *category, char *devClass, char *instance,
-      SaveData *saveData);
-  static DevStatus SaveInterpMapping(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveGData(char *category, char *devClass, char *instance,
-      SaveData *saveData);
-  static DevStatus SaveWindowLayout(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveViewAxisLabels(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveViewActions(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveViewLinks(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveCursor(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveViewMappings(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveWindowViews(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SavePileStack(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveViewHistory(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveCamera(char *category, char *devClass,
-      char *instance, SaveData *saveData);
-  static DevStatus SaveStringTables(char *category, char *devClass,
-      char *instance, SaveData *saveData);
+  static DevStatus SaveView(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveInterpMapping(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveGData(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveWindowLayout(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveViewAxisLabels(const char *category,
+      const char *devClass, const char *instance, SaveData *saveData);
+  static DevStatus SaveViewActions(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveViewLinks(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveCursor(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveViewMappings(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveWindowViews(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SavePileStack(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveViewHistory(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveCamera(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
+  static DevStatus SaveStringTables(const char *category, const char *devClass,
+      const char *instance, SaveData *saveData);
   static DevStatus SaveRecLinkTypes(SaveData *saveData);
 
-  static DevStatus SaveParams(SaveData *saveData, char *getCommand,
-      char *setCommand, const char *arg0, const char *arg1 = NULL,
+  static DevStatus SaveParams(SaveData *saveData, const char *getCommand,
+      const char *setCommand, const char *arg0, const char *arg1 = NULL,
       const char *arg2 = NULL, Boolean addBraces = false);
 
   static DevStatus CallParseAPI(ControlPanelSimple *control,

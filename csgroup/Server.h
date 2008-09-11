@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  2008/01/24 22:08:05  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.10  2005/12/06 20:01:11  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -155,8 +158,8 @@ class Server:public DispatcherCallback{
 friend class ControlChannel;
 friend class CmdContainer;
 public:
-    Server(char *name,int image_port, 
-		int swt_port, int clnt_port, char* switchname, 
+    Server(const char *name,int image_port, 
+		int swt_port, int clnt_port, const char* switchname, 
 		int maxClients = 10);
     virtual ~Server();
     virtual void MainLoop();      // main loop of server
