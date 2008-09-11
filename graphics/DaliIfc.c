@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.19  2001/08/28 21:40:52  wenger
+  Environment variables are now expanded in Tasvir file names, EmbeddedTk
+  script names and arguments, and physical schema paths within logical
+  schemas (to make distribution setup easier).
+
   Revision 1.18  1999/12/02 16:26:44  wenger
   Fixed bug 518 (confirm before saving a session the first time); got rid
   of error message during normal Tasvir launch.
@@ -684,7 +689,7 @@ OpenConnection(const char *daliServer, int &fd, Boolean tryLaunch)
   const int maxConnectFails = 25;
 
   if (_connectFailCount > maxConnectFails) {
-    char *msg = "Tasvir connect canceled because of previous failures";
+    const char *msg = "Tasvir connect canceled because of previous failures";
     fprintf(stderr, "%s\n", msg);
 #if defined(DEBUG_LOG)
   DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, msg);

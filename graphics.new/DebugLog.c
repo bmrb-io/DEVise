@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  2005/12/06 20:03:49  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.17.2.4  2005/09/28 17:14:50  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -280,7 +284,7 @@ DebugLog::Message(Level level, const char *msg1, int argc,
     write(_fd, msg1, strlen(msg1));
 
     int index;
-    char *prefix = "";
+    const char *prefix = "";
     for (index = 0; index < argc; index++) {
       formatted = snprintf(logBuf, bufSize, "%s<%s>", prefix, argv[index]);
       checkAndTermBuf(logBuf, bufSize, formatted);

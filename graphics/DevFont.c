@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  2000/01/13 23:06:51  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.2  1999/04/20 14:13:31  wenger
   Improved debug output.
 
@@ -115,11 +118,11 @@ DevFont::SetWinFont(WindowRep *win)
   printf("DevFont(0x%p)::SetWinFont()\n", this);
 #endif
 
-  static char *familyTable[] = { "Courier", "Times", "Helvetica",
+  static const char *familyTable[] = { "Courier", "Times", "Helvetica",
     "Lucida", "New Century Schoolbook" };
   static const int familyCount = sizeof(familyTable) / sizeof(familyTable[0]);
 
-  char *familyName = familyTable[_family % familyCount];
+  const char *familyName = familyTable[_family % familyCount];
   const char *weight = _bold ? "Bold" : "Medium";
   const char *slant = _italic ? "i" : "r";
   const char *width = "Normal";

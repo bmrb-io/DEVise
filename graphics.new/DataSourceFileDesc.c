@@ -27,6 +27,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  2000/01/13 23:07:03  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.1  1996/07/01 19:21:25  jussi
   Initial revision.
 */
@@ -51,7 +54,7 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: DataSourceFileDesc::DataSourceFileDesc

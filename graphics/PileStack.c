@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  2008/09/04 18:06:43  wenger
+  Improved some PileStack error messages.
+
   Revision 1.32  2006/05/26 16:22:57  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -1058,7 +1061,7 @@ PileStack::SynchronizeView(View *view)
     if (view != firstView) {
 
       // Fonts.
-      char *which = "title";
+      const char *which = "title";
       int family;
       float pointSize;
       Boolean bold;
@@ -1719,7 +1722,7 @@ PileStack::Dump(FILE *fp)
 
   fprintf(fp, "  <%s>\n", GetName());
   fprintf(fp, "    state: %s\n", StateToStr(_state));
-  char *winName = "(null)";
+  const char *winName = "(null)";
   if (_window) winName = _window->GetName();
   fprintf(fp, "    window: <%s>\n", winName);
   fprintf(fp, "    views:\n");
@@ -1821,7 +1824,7 @@ PileStack::PileOk()
 const char *
 PileStack::StateToStr(State state)
 {
-  char *result = "";
+  const char *result = "";
 
   switch (state) {
   case PileStackInvalid:

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  2000/01/13 23:07:04  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.6  1996/11/23 21:07:21  jussi
   Fixed interface to TapeDrive object.
 
@@ -69,7 +72,7 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: DataSourceTape::DataSourceTape

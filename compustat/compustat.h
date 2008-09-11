@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  2005/12/06 20:00:51  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.9.46.1  2005/09/12 19:41:51  wenger
   Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
   4.0.1).
@@ -56,7 +60,7 @@
 
 #define COMP_NUM_IDX_FIELDS (COMP_NUM_FIELDS_1 + COMP_NUM_FIELDS_2 + 1)
 
-char *comp_idx_form[COMP_NUM_IDX_FIELDS*2] = {
+const char *comp_idx_form[COMP_NUM_IDX_FIELDS*2] = {
     "OFFSET", "I",
     "DNUM",   "I",
     "CNUM",   "C",

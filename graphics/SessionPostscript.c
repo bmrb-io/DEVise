@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  2005/12/06 20:03:08  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.1.4.1  2005/09/06 21:20:10  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -108,10 +112,10 @@ SessionPostscript::Print(FILE *fp)
 
     Command *cmd = _cmdList._next;
     while (cmd != NULL) {
-	char *prefix = "";
+	const char *prefix = "";
         for (int argNum = 0; argNum < cmd->_argc; argNum++) {
-	    char *leftBrace = "";
-	    char *rightBrace = "";
+	    const char *leftBrace = "";
+	    const char *rightBrace = "";
 	    if (ContainsSpace(cmd->_argv[argNum])) {
 	        leftBrace = "{";
 	        rightBrace = "}";

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.4  2000/07/17 21:41:17  wenger
+  Tokens are now enclosed in double quotes so output is easier to parse.
+
   Revision 1.3  2000/07/17 16:55:42  wenger
   Don't try to get view location if view is not mapped (causes crash).
 
@@ -476,7 +479,7 @@ MetaVisDesc::WriteCursor(FILE *file, DeviseCursor *cursor,
     //
     // Cursor type.
     //
-    char *cursorType;
+    const char *cursorType;
     VisualFlag flag = cursor->GetFlag();
     if ((flag & VISUAL_X) && (flag & VISUAL_Y)) {
       cursorType = "XY";

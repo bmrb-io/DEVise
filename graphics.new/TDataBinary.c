@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.42  2008/01/24 22:08:34  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.41  2005/12/06 20:04:14  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -249,7 +252,7 @@
 #define DEBUGLVL 0
 #define PRINT_REC 0
 
-static char *   srcFile = __FILE__;
+static const char *   srcFile = __FILE__;
 
 TDataBinary::TDataBinary(char *name, char *type, char *param,
                          int recSize, int physRecSize)

@@ -43,6 +43,10 @@
   $Id$
 
   $Log$
+  Revision 1.13  2005/12/06 20:04:00  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.12.14.2  2003/06/25 19:57:04  wenger
   Various improvments to debug logging; moved command logs from /tmp
   to work directory.
@@ -134,7 +138,7 @@ static const int newFileCompareBytes = 2048;
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: FileIndex::FileIndex

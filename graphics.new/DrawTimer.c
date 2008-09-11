@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1997/11/12 15:45:44  wenger
+  Merged the cleanup_1_4_7_br branch through the cleanup_1_4_7_br_2 tag
+  into the trunk.
+
   Revision 1.2.4.1  1997/10/30 20:15:48  wenger
   Got DEVise to compile, link, and run on sun and linux; compiles but
   doesn't link on hp (can't find memory mapping functions).  This includes
@@ -58,7 +62,7 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 Boolean DrawTimer::_active = false;
 double DrawTimer::_expTime;

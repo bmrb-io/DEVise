@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  2003/01/13 19:25:10  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.43.14.1  2002/07/25 19:29:20  wenger
   Fixed bug 800 (symbols disappear at extreme zoom) and other drawing-
   related problems; removed unused WindowRep method (FillRectArray with
@@ -1475,12 +1478,12 @@ void PSWindowRep::SetFont(const char *family, const char *weight, const char *sl
     family = "NewCenturySchoolbook";
   }
 
-  char *boldString = "";
+  const char *boldString = "";
   if (!strcasecmp(weight, "bold")) {
     boldString = "-Bold";
   }
 
-  char *angleString = "";
+  const char *angleString = "";
   if (!strcasecmp(slant, "i")) {
     angleString = "-Oblique";
   }

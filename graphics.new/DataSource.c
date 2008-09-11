@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.22  2000/08/10 16:10:49  wenger
+  Phase 1 of getting rid of shared-memory-related code.
+
   Revision 1.21  2000/03/14 17:05:27  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -133,7 +136,7 @@
 static char	rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: DataSource::DataSource

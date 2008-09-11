@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/07/09 15:59:29  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
  */
 
 #define _CompDate_c_
@@ -34,13 +39,13 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: CompDate::Get
  * Return the compile date.
  */
-char *
+const char *
 CompDate::Get()
 {
     return __DATE__;

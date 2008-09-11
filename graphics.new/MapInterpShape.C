@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.82  2008/01/24 22:08:33  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.81  2006/04/27 20:48:13  wenger
   Added X Offset to Bar and Segment shapes (for NRG visualization for
   Luis Populin).
@@ -1875,7 +1878,7 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
 	
 	
 	// Now decide how to deal with it.
-	char *file;
+	const char *file;
 	int imageDataSize;
 	char *image;
 	Boolean dali;

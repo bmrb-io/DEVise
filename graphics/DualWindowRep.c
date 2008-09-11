@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  1997/03/25 17:58:51  wenger
+  Merged rel_1_3_3c through rel_1_3_4b changes into the main trunk.
+
   Revision 1.4.4.1  1997/03/15 00:31:03  wenger
   PostScript printing of entire DEVise display now works; PostScript output
   is now centered on page; other cleanups of the PostScript printing along
@@ -72,7 +75,7 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: DualWindowRep::DualWindowRep

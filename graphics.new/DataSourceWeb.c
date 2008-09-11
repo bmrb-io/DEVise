@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2000/01/13 23:07:04  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.11  1999/11/30 22:28:20  wenger
   Temporarily added extra debug logging to figure out Omer's problems;
   other debug logging improvements; better error checking in setViewGeometry
@@ -93,7 +96,7 @@
 static char rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char * srcFile = __FILE__;
+static const char * srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: DataSourceWeb::DataSourceWeb

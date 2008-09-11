@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  2000/03/30 16:26:57  wenger
+  Added printInstances command; destroy command now reports an error
+  if the instance is not found.
+
   Revision 1.14  2000/03/28 18:57:09  wenger
   Increased max instances per class to 1000.
 
@@ -143,7 +147,7 @@ struct ClassRec {
 };
 
 struct CategoryRec {
-	char *name;
+	const char *name;
 	ClassRec *_classRecs[MaxClasses];
 	int _numClasses;
 };
@@ -152,7 +156,7 @@ class ClassDir {
 public:
 	ClassDir();
 
-	void InsertCategory(char *name);
+	void InsertCategory(const char *name);
 	void InsertClass(ClassInfo *cInfo);
 
 	/* Get name of all classes in a category */

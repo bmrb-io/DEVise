@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  2008/01/24 22:08:23  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.14  2008/01/11 20:17:50  wenger
   Got DEVise to compile on RHEL5.
 
@@ -115,7 +118,7 @@ using namespace std;
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 Boolean DevError::_enabled = true;
 char DevError::_errBuf[MAXPATHLEN * 2];
@@ -141,7 +144,7 @@ void
 DevError::ReportError(const char *message, int argc, const char * const *argv,
   const char *file, int line, int errnum)
 {
-    char * progName = "DEVise";
+    const char * progName = "DEVise";
 
     if (!_enabled) {
         return;

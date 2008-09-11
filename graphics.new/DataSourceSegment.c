@@ -20,6 +20,10 @@
    $Id$
 
    $Log$
+   Revision 1.16  2005/12/06 20:03:45  wenger
+   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+   be the end of the V1_7b0_br branch.)
+
    Revision 1.15.14.1  2005/09/06 21:20:16  wenger
    Got DEVise to compile with gcc 4.0.1.
 
@@ -123,7 +127,7 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: DataSourceSegment::DataSourceSegment

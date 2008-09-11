@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/03/14 17:05:27  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.4  1999/10/18 15:36:41  wenger
   Window destroy events are handled better (DEVise doesn't crash); messages
   such as window destroy notifications are now passed to the client in
@@ -58,7 +62,7 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 char *		DataSeg::_label = NULL;
 char *		DataSeg::_filename = NULL;

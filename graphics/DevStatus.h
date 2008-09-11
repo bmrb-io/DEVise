@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/11/24 23:14:16  weaver
+  Changes for the new ColorManager.
+
   Revision 1.1.10.1  1997/05/21 20:39:36  weaver
   Changes for new ColorManager
 
@@ -87,7 +90,7 @@ public:
   Boolean IsCancel() const {return StatIsCancel(_status);}
 
   // Return string equivalent of _status.
-  char *Value();
+  const char *Value();
 
   void Print();
 

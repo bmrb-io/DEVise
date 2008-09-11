@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/07/09 15:59:31  wenger
+  Added master version number and compile date to C++ code (also displayed
+  in the user interface); added -usage and -version command line arguments;
+  updated usage message.
+
  */
 
 #ifndef _CompDate_h_
@@ -29,7 +34,7 @@
 class CompDate
 {
 public:
-    static char *Get();
+    static const char *Get();
 };
 
 

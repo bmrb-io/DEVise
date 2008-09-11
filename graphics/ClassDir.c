@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.30  2003/01/13 19:25:09  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.29.14.1  2002/09/02 21:29:24  wenger
   Did a bunch of Purifying -- the biggest change is storing the command
   objects in a HashTable instead of an Htable -- the Htable does a bunch
@@ -157,7 +160,7 @@ ClassDir::ClassDir()
   _instanceCount = 0;
 }
 
-void ClassDir::InsertCategory(char *name)
+void ClassDir::InsertCategory(const char *name)
 {
 #if defined(DEBUG)
   printf("ClassDir::InsertCategory(%s)\n", name);

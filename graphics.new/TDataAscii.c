@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.70  2008/01/24 22:08:33  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.69  2005/12/06 20:04:14  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -354,7 +357,7 @@
 
 static const int LINESIZE = 4096;         /* maximum size of a record */
 
-static char *   srcFile = __FILE__;
+static const char *   srcFile = __FILE__;
 
 TDataAscii::TDataAscii(char *name, char *type, char *param, int recSize)
 : TData(name, type, param, recSize)

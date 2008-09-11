@@ -20,6 +20,9 @@
    $Id$
 
    $Log$
+   Revision 1.12  2000/01/13 23:07:03  wenger
+   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
    Revision 1.11  1998/02/26 00:19:23  zhenhai
    Implementation for spheres and line segments in OpenGL 3D graphics.
 
@@ -91,7 +94,7 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: DataSourceBuf::DataSourceBuf
