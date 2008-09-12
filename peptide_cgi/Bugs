@@ -317,7 +317,8 @@ Num Date        Status  Description
 			(cavey/wenger)
 
 071 9/12/08	OPEN	Drill-down doesn't work in CSR 3 session (in JS
-			and DEVise itself). (wenger)
+			and DEVise itself). (wenger)  (This is caused by
+			DEVise finding the diagonal line.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
