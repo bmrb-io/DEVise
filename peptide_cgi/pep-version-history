@@ -12,6 +12,8 @@ codes).
 * Fixed disabled action settings in a number of visualizations views
 (to prevent users from getting the visualizations into an unusable state).
 
+* Dealt with to-do 076 ("no Java" warnings in html pages).
+
 
 Peptide-CGI 11.3.2
 ------------------

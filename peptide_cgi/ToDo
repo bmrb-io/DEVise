@@ -289,7 +289,7 @@ Num Date        Status  Pri     Description
 				and maybe the warning and error files.
 				(wenger)
 
-076 9/19/08	OPEN	3	Put "no Java" warnings into html pages (see
+076 9/19/08	DONE	3	Put "no Java" warnings into html pages (see
 				Scribble.html). (wenger)
 
 * Status:
