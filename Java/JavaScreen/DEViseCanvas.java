@@ -29,6 +29,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.102  2008/07/17 20:27:56  wenger
+// (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
+// that are entirely outside the destination view's visual filter).
+//
 // Revision 1.101  2007/09/10 22:10:35  wenger
 // Mouse cursor now changes to the disabled cursor if the selected
 // toolbar mode is not applicable in the current view; mouse cursor
@@ -1432,6 +1436,7 @@ public class DEViseCanvas extends Container
 		}
 
                 actualKey = (int)keyChar;
+
             } else {
 	        if (DEBUG >= 2) {
                     System.out.println("key char is NOT defined");
@@ -1537,6 +1542,11 @@ public class DEViseCanvas extends Container
                     break;
                 }
             }
+
+	    if (keyCode == KeyEvent.VK_ESCAPE) {
+		jsc.toolBar.setNormal();
+		actualKey = 0; // don't pass this to the server
+	    }
 
 	    if (DEBUG >= 2) {
                 System.out.println("actualKey = " + actualKey);

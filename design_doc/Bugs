@@ -4187,7 +4187,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the applet -> Firefox locks up (not every time,
 			though).  (dmiller1/wenger)
 
-972 9/19/08	OPEN	JS: it's not easy/obvious enough how to get the JS
+972 9/19/08	ACTIVE	JS: it's not easy/obvious enough how to get the JS
 			back into the default toolbar mode once you've
 			switched.  (Maybe a partial solution is that <esc>
 			gets you back into the default mode?)  (Also make
