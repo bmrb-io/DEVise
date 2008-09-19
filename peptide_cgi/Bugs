@@ -320,6 +320,10 @@ Num Date        Status  Description
 			and DEVise itself). (wenger)  (This is caused by
 			DEVise finding the diagonal line.)
 
+072 9/19/08	OPEN	Open 5106csr11 session; zoom in on main view; do
+			home on main view -> you don't get back to where
+			you started. (miron/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
