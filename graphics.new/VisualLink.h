@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  2002/05/01 21:30:13  wenger
+  Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
+
   Revision 1.10.14.1  2002/04/25 21:06:16  wenger
   Totally re-did code for home on visual links -- fixed bug 749,
   fix for bug 735 is much cleaner, fixed previously-unnoted bugs
@@ -98,7 +101,7 @@ public:
   virtual void Print();
 
   // From DispatcherCallback:
-  virtual char *DispatchedName() { return "VisualLink"; }
+  virtual const char *DispatchedName() { return "VisualLink"; }
   virtual void Run();
 
   // Update the given visual filter based on the home values of views in 

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  2001/08/03 18:13:01  wenger
+  Removed all OpenGL-related code.
+
   Revision 1.23  2001/07/31 15:53:21  wenger
   Added -fontkludge argument to allow bypassing of font families that
   don't work with Xvfb on SPARC/Solaris.
@@ -191,7 +194,7 @@ DeviseDisplay::~DeviseDisplay()
   _displays.Delete(this);
 }
 
-char *DeviseDisplay::DispatchedName()
+const char *DeviseDisplay::DispatchedName()
 {
   return "Display";
 }

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.32  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.31  2003/01/13 19:25:28  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -275,7 +279,7 @@ private:
     return 1;
   }
 
-  char *DispatchedName() { return "TkControlPanel"; }
+  const char *DispatchedName() { return "TkControlPanel"; }
   void Run();
 };
 

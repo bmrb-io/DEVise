@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.9  2000/01/11 22:28:35  wenger
+  TData indices are now saved when they are built, rather than only when a
+  session is saved; other improvements to indexing; indexing info added
+  to debug logs; moved duplicate TDataAscii and TDataBinary code up into
+  TData class.
+
   Revision 1.8  1998/10/13 19:40:47  wenger
   Added SetAttrs() function to TData and its subclasses to allow Liping to
   push projection down to the DTE.
@@ -166,7 +172,7 @@ protected:
 
 private:
 	/* From DispatcherCallback */
-	char *DispatchedName() { return "TDataSeqAscii"; }
+	const char *DispatchedName() { return "TDataSeqAscii"; }
 	virtual void Cleanup();
 
 	virtual Boolean CheckFileStatus();

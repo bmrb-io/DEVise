@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.2  1998/05/02 09:02:29  taodb
+  Added support for command logging
+  Added support for registering events with delay
+
   Revision 1.1  1997/09/05 22:35:59  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -47,7 +51,7 @@ public:
   void RequestTimedCallback(DispatcherID info, long time=0);
   void CancelCallback(DispatcherID info);
 
-  virtual char *DispatchedName() { return "Scheduler"; }
+  virtual const char *DispatchedName() { return "Scheduler"; }
   virtual void Run();
 
   void Print();

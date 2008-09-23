@@ -16,6 +16,10 @@
    $Id$
 
    $Log$
+   Revision 1.24  2005/12/06 20:04:14  wenger
+   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+   be the end of the V1_7b0_br branch.)
+
    Revision 1.23.14.1  2005/09/06 21:20:18  wenger
    Got DEVise to compile with gcc 4.0.1.
 
@@ -303,7 +307,7 @@ class TData : protected DispatcherCallback {
 
     DataSource* GetDataSource() { return _data; }
 
-    virtual char *DispatchedName() { return "TData"; }
+    virtual const char *DispatchedName() { return "TData"; }
 
   protected:
 

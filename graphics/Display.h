@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.33  2002/02/05 19:32:33  wenger
+  Fixed bug 750 (problem with child view/pile combinations with an X
+  server with no backing store); added TEST_NO_BACKING_STORE code to
+  test this case even if we really do have backing store on the server.
+
   Revision 1.32  2001/08/20 18:20:26  wenger
   Fixes to various font problems: XDisplay calculates point sizes correctly
   and uses screen resolution in specifying font; JS passes *its* screen
@@ -291,7 +296,7 @@ protected:
 
   friend class WindowRep;
 
-  virtual char *DispatchedName();
+  virtual const char *DispatchedName();
   
   static DeviseDisplayList _displays; /* list of all displays */
     static DeviseDisplay *_defaultDisplay;

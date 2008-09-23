@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  2001/05/24 18:42:02  wenger
+  Fixed bug 674 (drill-down doesn't work correctly on record link follower
+  views).
+
   Revision 1.32  1999/11/19 21:29:26  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -406,7 +410,7 @@ protected:
   coordinateTableEntry **_coordinateTables;
 
   /* from DispatcherCallback */
-  char *DispatchedName() { return "QueryProcFull"; }
+  const char *DispatchedName() { return "QueryProcFull"; }
   void Run() { ProcessQuery(); }
   void Cleanup();
   void TAttrLinkInsert(TData *tdata, char *tdataBuf, int recordsDrawn,

@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.122  2006/05/26 16:22:57  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.121.4.1  2006/02/23 22:08:58  wenger
   Added flag for whether or not 3D views should use Jmol.
 
@@ -1179,7 +1182,7 @@ protected:
 		void	ModeChange(ControlPanel::Mode mode);
 
 		// Callback methods (DispatcherCallback)
-		virtual char*	DispatchedName(void);
+		virtual const char*	DispatchedName(void);
 		virtual void	Run(void);
 		virtual void	Cleanup(void)
 		{ DOASSERT(false, "Call in derived class only"); }
@@ -1276,7 +1279,7 @@ class View_DispatcherCallback : public DispatcherCallback
 		View_DispatcherCallback(View* parent)
 			: _parent(parent) {}
 
-		virtual char*	DispatchedName(void)
+		virtual const char*	DispatchedName(void)
 		{
 			return _parent->DispatchedName();
 		}

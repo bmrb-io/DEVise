@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.42  2005/12/06 20:03:01  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.41.12.1  2005/09/06 21:20:10  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -221,7 +225,7 @@
 class DispatcherCallback {
 public:
   virtual ~DispatcherCallback() {}
-  virtual char *DispatchedName() = 0;
+  virtual const char *DispatchedName() = 0;
   virtual void Run() {}
   virtual void Cleanup() {}
 };

@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  2008/09/11 20:55:37  wenger
+  A few more compile warning fixes...
+
   Revision 1.12  2005/12/06 20:03:54  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -111,7 +114,7 @@ public:
 	const char* switchname, int maxclients, ControlPanel *control);
   virtual ~DeviseServer();
 
-  virtual char *DispatchedName() { return "DeviseServer"; }
+  virtual const char *DispatchedName() { return "DeviseServer"; }
   virtual void Run();
   virtual void WaitForConnection();
   virtual void CloseClient();
