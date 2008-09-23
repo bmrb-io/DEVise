@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  2005/12/06 20:03:37  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.2.46.1  2005/09/06 21:20:16  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -50,13 +54,13 @@ class ViewGraph;
 
 class Action {
 public:
-  Action(char *name) { 
+  Action(const char *name) { 
       _name = name;
       _magnification = 2.0; 
   }
   virtual ~Action() {}
 
-  char *GetName() { return _name; }
+  const char *GetName() { return _name; }
 
   virtual void AreaSelected(ViewGraph *view, Coord xlow, Coord ylow,
 			    Coord xhigh, Coord yhigh, int button);
@@ -65,7 +69,7 @@ public:
   
   virtual Boolean PopUp(ViewGraph *view, Coord x, Coord y,
 			Coord xHigh, Coord yHigh,
-			int button, char **&msgs,
+			int button, const char **&msgs,
 			int &numMsgs) {
     sprintf(buf1, "x:%.2f", x);
     sprintf(buf2, "y:%.2f", y);
@@ -85,8 +89,8 @@ protected:
 
   char buf1[50];
   char buf2[50];
-  char *msgBuf[2];
-  char *_name;
+  const char *msgBuf[2];
+  const char *_name;
 
   double _magnification;
 

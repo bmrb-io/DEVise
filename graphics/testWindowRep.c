@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  1997/05/02 15:39:30  wenger
+  Greatly reduced the dependencies of the testWindowSpeed program.
+
   Revision 1.6  1997/04/01 19:49:08  wenger
   Got the testWindowRep program working again.
 
@@ -70,7 +73,7 @@ public:
 
 	/* handle pop-up */
 	virtual Boolean HandlePopUp(WindowRep *w, int x, int y, 
-		int button, char **&msgs, int &numMsgs){
+		int button, const char **&msgs, int &numMsgs){
 		printf("PopUp 0x%p,%d,%d\n",w,x,y);
 		msgs = msgBuf;
 		msgBuf[0] = "hello";

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.49  2005/12/06 20:03:12  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.48.10.3  2005/09/06 21:20:10  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -531,7 +535,7 @@ private:
 
 #ifndef RAWMOUSEEVENTS
 		virtual Boolean	HandlePopUp(WindowRep* w, int x, int y, int button,
-									char**& msgs, int& numMsgs)
+									const char**& msgs, int& numMsgs)
 		{ return false; }
 #endif
 
@@ -603,7 +607,7 @@ class ViewWin_WindowRepCallback : public WindowRepCallback
   
 #ifndef RAWMOUSEEVENTS
 		virtual Boolean		HandlePopUp(WindowRep* w, int x, int y, int button,
-										char**& msgs, int& numMsgs)
+										const char**& msgs, int& numMsgs)
 		{
 			return _parent->HandlePopUp(w, x, y, button, msgs, numMsgs);
 		}

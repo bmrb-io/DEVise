@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.92  2006/05/10 19:04:44  wenger
+  Added the new setDoHomeOnVisLinkIfInvisible and
+  getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
+  example session for Luis Populin), and fixed a bug in
+  getDoHomeOnVisLink.
+
   Revision 1.91  2005/12/06 20:04:15  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -651,9 +657,9 @@ public:
   MSLinkList *SlaveLinkList() { return &_slaveLink;}
 
   /* Insert/remove mappings from view */
-  virtual void InsertMapping(TDataMap *map, char *label = "");
+  virtual void InsertMapping(TDataMap *map, const char *label = "");
   virtual void RemoveMapping(TDataMap *map);
-  virtual char *GetMappingLegend(TDataMap *map);
+  virtual const char *GetMappingLegend(TDataMap *map);
   virtual void SetMappingLegend(TDataMap *map, char *label);
 
   int InitMappingIterator(Boolean backwards = false) {
@@ -827,8 +833,8 @@ public:
 
   virtual void TAttrLinkChanged();
 
-  void GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr,
-    int &initialValue);
+  void GetCountMapping(Boolean &enabled, const char *&countAttr,
+    const char *&putAttr, int &initialValue);
   DevStatus SetCountMapping(Boolean enabled, char *countAttr, char *putAttr,
     int initialValue);
 
@@ -1012,7 +1018,7 @@ public:
 		virtual void	HandleKey(WindowRep*, int key, int x, int y);
 		virtual void	DoHandleKey(WindowRep*, int key, int x, int y);
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,
-									char**& msgs, int& numMsgs);
+									const char**& msgs, int& numMsgs);
         static void NiceAxisRange(Coord &low, Coord &high);
 
     private:

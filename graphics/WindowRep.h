@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.90  2005/12/06 20:03:13  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.89  2003/01/13 19:25:12  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -499,7 +503,7 @@ public:
 #ifndef RAWMOUSEEVENTS
   /* handle pop-up */
   virtual Boolean HandlePopUp(WindowRep *w, int x, int y, int button,
-			      char **&msgs, int &numMsgs) {
+			      const char **&msgs, int &numMsgs) {
       return 0;
   }
 #endif
@@ -1185,7 +1189,7 @@ protected:
   
 #ifndef RAWMOUSEEVENTS
   /* Called by derived class on pop-up event. Report to all callbacks */
-  virtual Boolean HandlePopUp(int x, int y, int button, char **&msgs,
+  virtual Boolean HandlePopUp(int x, int y, int button, const char **&msgs,
 			      int &numMsgs);
 #endif
 

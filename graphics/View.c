@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.247  2008/09/23 19:32:39  wenger
+  Changed DispatchedName() to const char *.
+
   Revision 1.246  2006/05/26 16:22:57  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -2469,7 +2472,7 @@ void View::UpdateTransform(WindowRep *winRep)
 
 /* Get label parameters */
 
-void View::GetLabelParam(Boolean &occupyTop, int &extent, char *&name)
+void View::GetLabelParam(Boolean &occupyTop, int &extent, const char *&name)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   occupyTop = _label.occupyTop;

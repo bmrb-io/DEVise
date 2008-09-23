@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.50  2008/01/24 22:08:32  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.49  2006/05/26 16:23:05  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -435,7 +438,7 @@ class JavaScreenCmd
 		// Server->JavaScreen Control Commands
 		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
 		ControlCmdType RequestUpdateGData(ViewGraph *view);
-		ControlCmdType RequestUpdateRecordValue(int argc, char** argv);
+		ControlCmdType RequestUpdateRecordValue(int argc, const char** argv);
 
 		// Convenience functions
 		void CloseJavaConnection();

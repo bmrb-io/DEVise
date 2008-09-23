@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2007/11/28 18:38:56  wenger
+  Fixed minor problems found when compiling DEVise on pike.bmrb.wisc.edu.
+
   Revision 1.4  2000/02/16 18:51:47  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -46,7 +49,7 @@ class UpdateLink
 {
   public:
 
-    UpdateLink(char* name);
+    UpdateLink(const char* name);
     virtual ~UpdateLink();
     
     /* Set view as link master, or reset */

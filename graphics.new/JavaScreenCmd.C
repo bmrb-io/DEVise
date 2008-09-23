@@ -21,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.137  2008/09/10 17:49:50  wenger
+  Got DEVise to compile on moray at BMRB (gcc 4.3.0) (compiling in the
+  linux_amd64 directory) -- still lots of warnings, though.
+
   Revision 1.136  2006/05/26 16:23:04  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -1750,7 +1754,7 @@ JavaScreenCmd::ShowRecords()
     int xPix = atoi(_argv[1]);
     int yPix = atoi(_argv[2]);
 
-	char **msgs;
+	const char **msgs;
 	int msgCount;
 
     if (view->HandlePopUp(NULL, xPix, yPix, 2, msgs, msgCount)) {
@@ -1810,7 +1814,9 @@ JavaScreenCmd::ShowRecords3D()
 	    drill.GetResults(msgCount, messages);
 
 	    if (msgCount > 0) {
-	        _status = RequestUpdateRecordValue(msgCount, (char **)messages);
+		//TEMP -- get rid of cast
+	        _status = RequestUpdateRecordValue(msgCount,
+			  (const char**)messages);
 	    }
 	}
 }
@@ -2217,7 +2223,7 @@ JavaScreenCmd::GetViewHelp()
 	if (!helpString) {
 	    Boolean occupyTop;
 	    int extent;
-		char *title;
+		const char *title;
 	    view->GetLabelParam(occupyTop, extent, title);
 		helpString = title;
 	}
@@ -2237,7 +2243,7 @@ JavaScreenCmd::GetViewHelp()
 
 //====================================================================
 JavaScreenCmd::ControlCmdType
-JavaScreenCmd::RequestUpdateRecordValue(int argc, char **argv)
+JavaScreenCmd::RequestUpdateRecordValue(int argc, const char **argv)
 {
 #if defined (DEBUG_LOG)
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,

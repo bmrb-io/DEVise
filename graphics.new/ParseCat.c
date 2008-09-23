@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  2003/01/13 19:25:25  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.54.10.1  2002/09/20 20:49:02  wenger
   More Purifying -- there are now NO leaks when you open and close
   a session!!
@@ -291,7 +294,7 @@ static int numAttrs          = 0;
 static AttrList *attrs       = 0;
 
 static int _line = 0;
-static char *   srcFile = __FILE__;
+static const char *   srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: SetVal
@@ -1212,7 +1215,7 @@ ParseCatLogical(DataSource *schemaSource, char *sname)
  * function: ParseCat
  * Read and parse a schema file.
  */
-char *
+const char *
 ParseCat(char *fileType, char *catFile, char *dataFile) 
 {
   // Check the first line of catFile - if it is "physical abc",
@@ -1339,7 +1342,7 @@ ParseCat(char *fileType, char *catFile, char *dataFile)
   return result;
 }
 
-char *
+const char *
 ParseCat(char *catFile) 
 {
   // Check the first line of catFile - if it is "physical abc",
@@ -1410,14 +1413,16 @@ ParseCat(char *catFile)
  * Parse a schema from buffer(s).
  */
 char *
-ParseSchema(char *schemaName, char *physSchema, char *logSchema)
+ParseSchema(const char *schemaName, const char *physSchema,
+  const char *logSchema)
 {
     char *  result = NULL;
     Boolean physicalOnly = (logSchema == NULL) || !strcmp(logSchema, "");
     
     if ((physSchema != NULL) && strcmp(physSchema, "")) {
 	int len = strlen(physSchema);
-	DataSourceBuf schemaSource(physSchema, len, len, schemaName);
+	//TEMP -- get rid of cast
+	DataSourceBuf schemaSource((char *)physSchema, len, len, schemaName);
 	result = ParseCatPhysical(&schemaSource, physicalOnly);
     } else {
 	fprintf(stderr, "No physical schema specified\n");
@@ -1425,7 +1430,8 @@ ParseSchema(char *schemaName, char *physSchema, char *logSchema)
 
     if (!physicalOnly) {
 	int len = strlen(logSchema);
-	DataSourceBuf schemaSource(logSchema, len, len, schemaName);
+	//TEMP -- get rid of cast
+	DataSourceBuf schemaSource((char *)logSchema, len, len, schemaName);
     	result = ParseCatLogical(&schemaSource, result);
     }
 

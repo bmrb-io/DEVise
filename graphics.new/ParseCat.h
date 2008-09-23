@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.20  2008/01/24 22:08:33  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.19  2005/12/06 20:04:11  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -115,8 +118,8 @@ using namespace std;
 
 /* Parse a catalog file and register new file type with the system.
    Return name of new file type if successful, else return NULL */
-extern char *ParseCat(char *fileType,char *catFile,char *dataFile);
-extern char *ParseCat(char *);
+extern const char *ParseCat(char *fileType,char *catFile,char *dataFile);
+extern const char *ParseCat(char *);
 
 extern int ParseCatDQL(char*, string&, string&);
 extern int ParseDQLCatPhysical(DataSource*, string &);
@@ -125,7 +128,8 @@ extern int ParseDQLCatLogical (DataSource*, string &);
 /* Parse schema(s) from buffer(s) and register new "file type" with
    the system.  Return the name of the new "file type" if successful,
    otherwise return NULL. */
-extern char *ParseSchema(char *schemaName, char *physSchema, char *logSchema);
+extern char *ParseSchema(const char *schemaName, const char *physSchema,
+   const char *logSchema);
 
 #ifndef NO_GEN_CLASS_INFO
 /* Register a new constructor for class. The

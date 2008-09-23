@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.8  1999/08/05 21:42:50  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.7  1997/11/24 23:14:52  weaver
   Changes for the new ColorManager.
 
@@ -124,7 +129,7 @@ protected:
 		virtual void	HandleResize(WindowRep* w, int xlow, int ylow,
 									 unsigned width, unsigned height);
 		virtual Boolean	HandlePopUp(WindowRep* w, int x, int y, int button, 
-									char**& msgs, int& numMsgs);
+									const char**& msgs, int& numMsgs);
 };
 
 //******************************************************************************

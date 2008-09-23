@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.7  1999/06/23 19:45:11  wenger
+  Increased the number of records drill-down can send to the screen; if there
+  are too many records, the message sent to the JavaScreen is now "Too much
+  data to show" instead of "see text window"; generally cleaned up the drill-
+  down code.
+
   Revision 1.6  1998/08/11 13:43:23  wenger
   Server responds to KeyAction commands from JavaScreen (still needs event
   coordinates); did some cleanup of the ActionDefault class.
@@ -56,7 +62,7 @@ public:
   void KeySelected(ViewGraph *view, int c, Coord x, Coord y);
 
   Boolean PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
-		Coord yHigh, int button, char **& msgs, int & numMsgs);
+		Coord yHigh, int button, const char **& msgs, int & numMsgs);
 
 private:
   Boolean PrintRecords(ViewGraph *view, Coord x, Coord y, Coord xHigh,

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.159  2006/12/08 16:24:50  wenger
+  Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
+  changes to merge the DEViseCanvas.java stuff correctly).
+
   Revision 1.158  2006/05/10 19:04:44  wenger
   Added the new setDoHomeOnVisLinkIfInvisible and
   getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
@@ -1260,7 +1264,7 @@ ViewGraph::DeleteVisualLink(VisualLink *link)
   DOASSERT(result, "Deleted a link not in list");
 }
 
-void ViewGraph::InsertMapping(TDataMap *map, char *label)
+void ViewGraph::InsertMapping(TDataMap *map, const char *label)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
@@ -1359,7 +1363,7 @@ void ViewGraph::RemoveMapping(TDataMap *map)
     DoneMappingIterator(index);
 }
 
-char *ViewGraph::GetMappingLegend(TDataMap *map)
+const char *ViewGraph::GetMappingLegend(TDataMap *map)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
     int index = InitMappingIterator();
@@ -2928,7 +2932,7 @@ void	ViewGraph::DoHandleKey(WindowRep *, int key, int x, int y)
 }
 
 Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
-								   char**& msgs, int& numMsgs)
+								   const char**& msgs, int& numMsgs)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
@@ -2936,7 +2940,7 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 #endif
 
 	int 			labelX, labelY, labelW, labelH;
-	static char*	buf[1];
+	static const char*	buf[1];
 
 	SelectView();
 
@@ -2968,10 +2972,10 @@ Boolean		ViewGraph::HandlePopUp(WindowRep* win, int x, int y, int button,
 	}
 }
 
-static char *
+static const char *
 CountMapAttrToStr(CountMapping::Attr attr)
 {
-  char *result;
+  const char *result;
 
   switch (attr) {
   case CountMapping::AttrX:
@@ -3009,8 +3013,8 @@ StrToCountMapAttr(char *attr)
 }
 
 void
-ViewGraph::GetCountMapping(Boolean &enabled, char *&countAttr, char *&putAttr,
-  int &initialValue)
+ViewGraph::GetCountMapping(Boolean &enabled, const char *&countAttr,
+  const char *&putAttr, int &initialValue)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.149  2005/12/06 20:03:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.148  2003/01/13 19:25:12  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -3715,7 +3719,7 @@ void XWindowRep::DoPopup(int x, int y, int button)
 
   DOASSERT(_win, "Cannot display pop-up window in pixmap");
 
-  char **msgs;
+  const char **msgs;
   int numMsgs;
   if (!HandlePopUp(x, y, button, msgs, numMsgs) || numMsgs <= 0)
     /* no message for pop-up */

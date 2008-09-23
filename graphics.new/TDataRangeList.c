@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  2005/12/06 20:04:14  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.5  2002/06/17 19:41:07  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
@@ -57,7 +61,8 @@ TDataRangeList::TDataRangeList()
         _hashTbl[i] = NULL;
 }
 
-TDataRangeListEntry *TDataRangeList::Find(TData *tdata, char *attr_name, Coord granularity)
+TDataRangeListEntry *TDataRangeList::Find(TData *tdata, const char *attr_name,
+  Coord granularity)
 {
     int bucket = Hash(tdata);
     TDataRangeListEntry *cur;
@@ -68,7 +73,8 @@ TDataRangeListEntry *TDataRangeList::Find(TData *tdata, char *attr_name, Coord g
     return cur;
 }
 
-RangeList *TDataRangeList::Get(TData *tdata, char *attr_name, Coord granularity)
+RangeList *TDataRangeList::Get(TData *tdata, const char *attr_name,
+  Coord granularity)
 {
     TDataRangeListEntry *cur = Find(tdata, attr_name, granularity);
     if (cur == NULL) {

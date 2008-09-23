@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  2005/12/06 20:04:06  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.14.28.1  2005/09/06 21:20:17  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -310,9 +314,10 @@ void	KGraph::HandleResize(WindowRep* w, int xlow, int ylow,
 
 // Message displayed: three generic lines followed by values for each axis.
 Boolean KGraph::HandlePopUp(WindowRep* w, int x, int y, int button, 
-							char**& msgs, int& numMsgs)
+							const char**& msgs, int& numMsgs)
 {
-	msgs = _msgBuf;
+	//TEMP -- get rid of cast
+	msgs = (const char**)_msgBuf;
 	sprintf(_msgBuf[0], "%s", _winame);
 	sprintf(_msgBuf[1], "%s", _statname);
 	sprintf(_msgBuf[2], "Values clockwise from 0");

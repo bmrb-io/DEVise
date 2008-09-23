@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  2001/12/28 18:34:39  wenger
+  Fixed bugs 727 and 730 (problems with line graphs in DEVise).
+
   Revision 1.7  1997/12/23 23:35:35  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -132,7 +135,7 @@ public:
 			Coord nextVal);
 
     // given pointer to a record and AttrName, find the value of this attribute
-    Boolean GetAttrVal(char *record, char *attrName, double &value);
+    Boolean GetAttrVal(const char *record, const char *attrName, double &value);
 
 	// check the integrity of this RangeInfo
 	void CheckIntegrity();

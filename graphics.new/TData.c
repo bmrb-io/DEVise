@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.31  2005/12/06 20:04:14  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.30  2003/01/13 19:25:26  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -191,7 +195,7 @@
 #   include "Init.h"
 #endif
 
-static DevStatus WriteString(int fd, char *string);
+static DevStatus WriteString(int fd, const char *string);
 
 /*---------------------------------------------------------------------------*/
 TData::TData(char* name, char* type, char* param, int recSize)
@@ -621,7 +625,7 @@ TData::WriteData(int fd)
  * TEMP
  */
 static DevStatus
-WriteString(int fd, char *string)
+WriteString(int fd, const char *string)
 {
   DevStatus result = StatusOk;
 

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.52  2006/12/08 16:24:49  wenger
+  Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
+  changes to merge the DEViseCanvas.java stuff correctly).
+
   Revision 1.51.2.1  2006/12/07 22:09:13  wenger
   Fixed bug 929 (drill-down on view with empty data source causes crash)
   and associated bugs in the JavaScreen client.
@@ -341,7 +345,7 @@ void ActionDefault::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 }
 
 Boolean ActionDefault::PopUp(ViewGraph *view, Coord x, Coord y, Coord xHigh,
-			     Coord yHigh, int button, char **& msgs,
+			     Coord yHigh, int button, const char **& msgs,
 			     int &numMsgs)
 {
 #if defined(DEBUG)

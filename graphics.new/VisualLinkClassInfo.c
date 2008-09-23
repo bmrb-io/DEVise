@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.15  2008/01/24 22:08:34  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.14  2003/01/13 19:25:29  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -394,7 +397,7 @@ VisualLinkClassInfo::Dump(FILE *fp)
       fprintf(fp, "  Leader view:\n");
       Boolean occupyTop;
       int extent;
-      char *viewTitle;
+      const char *viewTitle;
       view->GetLabelParam(occupyTop, extent, viewTitle);
       if (viewTitle == NULL) viewTitle = "NULL";
       fprintf(fp, "    `%s' (`%s')\n", view->GetName(), viewTitle);
@@ -406,7 +409,7 @@ VisualLinkClassInfo::Dump(FILE *fp)
       view = _link->Next(index);
       Boolean occupyTop;
       int extent;
-      char *viewTitle;
+      const char *viewTitle;
       view->GetLabelParam(occupyTop, extent, viewTitle);
       if (viewTitle == NULL) viewTitle = "NULL";
       fprintf(fp, "    `%s' (`%s')\n", view->GetName(), viewTitle);

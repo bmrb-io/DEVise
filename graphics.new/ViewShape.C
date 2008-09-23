@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.32  2008/01/24 22:08:34  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.31  2003/01/13 19:25:28  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -559,7 +562,7 @@ FullMapping_ViewShape::SetTitle(TDataMap *map, AttrList *attrList,
     } else {
       Boolean occupyTop;
       int extent;
-      char *string;
+      const char *string;
       viewsym->GetLabelParam(occupyTop, extent, string);
       viewsym->SetLabelParam(occupyTop, extent, title);
 #if defined(DEBUG)

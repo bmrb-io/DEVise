@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/08/05 21:41:42  wenger
+  Cursor improvements: cursors can now be dragged in "regular" DEVise;
+  cursors are now drawn with a contrasting border for better visibility;
+  fixed bug 468 (cursor color not working).
+
   Revision 1.3  1998/01/07 19:27:55  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -85,7 +90,7 @@ class WinServer : public Server, public WindowRepCallback {
 #ifndef RAWMOUSEEVENTS
     /* Handle pop-up */
     virtual Boolean HandlePopUp(WindowRep *w, int x, int y, int button,
-				char **&msgs, int &numMsgs) {
+				const char **&msgs, int &numMsgs) {
 	return false;
     }
 #endif

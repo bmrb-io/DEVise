@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  2000/01/13 23:07:27  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.12  1999/01/18 18:15:35  beyer
   fixed compile warning
 
@@ -208,7 +211,7 @@ protected:
   long mt_ios[_max_mt_op];              // number of I/O calls
   long mt_cnt[_max_mt_op];              // number of I/O counts
   double mt_tim[_max_mt_op];            // times of I/O requests
-  static char *_mt_op_name[];           // names of I/O operations
+  static const char *_mt_op_name[];     // names of I/O operations
 
   long read_cnt;                        // number of records read
   long read_ios;                        // number of read() calls

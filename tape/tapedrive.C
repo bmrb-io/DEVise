@@ -7,6 +7,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  2008/01/24 22:09:09  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.22  2002/06/17 19:42:06  wenger
   Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
 
@@ -130,7 +133,7 @@ using namespace std;
 #define USE_FWRITEBUF
 //#define USE_FREAD
 
-char *TapeDrive::_mt_op_name[] = { "WEOF", "FSF", "BSF", "FSR",
+const char *TapeDrive::_mt_op_name[] = { "WEOF", "FSF", "BSF", "FSR",
                                    "BSR", "REW", "OFFL", "NOP",
                                    "RETEN", "ERASE", "EOM", "NBSF",
                                    "SRSZ", "GRSZ", "LOAD" };

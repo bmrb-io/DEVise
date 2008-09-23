@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  2008/09/11 20:28:04  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.33  2008/09/04 18:06:43  wenger
   Improved some PileStack error messages.
 
@@ -1081,7 +1084,7 @@ PileStack::SynchronizeView(View *view)
       // Title.
       Boolean occupyTop;
       int extent;
-      char *title;
+      const char *title;
       firstView->GetLabelParam(occupyTop, extent, title);
       view->SetLabelParam(occupyTop, extent, title, false);
 

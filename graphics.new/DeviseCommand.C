@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.132  2006/05/26 16:23:04  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.131  2006/05/10 19:04:43  wenger
   Added the new setDoHomeOnVisLinkIfInvisible and
   getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
@@ -2227,7 +2230,7 @@ DeviseCommand_importFileType::Run_2(int argc, char** argv)
 {
     {
         {
-          char *name = ParseCat(argv[1]);
+          const char *name = ParseCat(argv[1]);
           if (!name) {
     	ReturnVal(API_NAK, "error parsing UNIXFILE schema");
     	return -1;
@@ -2244,7 +2247,7 @@ DeviseCommand_importFileType::Run_4(int argc, char** argv)
 {
     {
         {
-          char *name = ParseCat(argv[1],argv[2],argv[3]);
+          const char *name = ParseCat(argv[1],argv[2],argv[3]);
           if (!name) {
     	strcpy(_result , "");
     	ReturnVal(API_NAK, _result);
@@ -2468,7 +2471,7 @@ DeviseCommand_getLabel::Run(int argc, char** argv)
           }
           Boolean occupyTop;
           int extent;
-          char *name;
+          const char *name;
           vg->GetLabelParam(occupyTop, extent, name);
           int formatted = snprintf(_result, _resultCapacity, "%d %d {%s}",
 		      (occupyTop ? 1 : 0), extent, (name ? name : ""));
@@ -5818,8 +5821,8 @@ IMPLEMENT_COMMAND_BEGIN(getCountMapping)
         }
 
 		Boolean enabled;
-		char *countAttr;
-		char *putAttr;
+		const char *countAttr;
+		const char *putAttr;
 		int initialValue;
 		view->GetCountMapping(enabled, countAttr, putAttr, initialValue);
 

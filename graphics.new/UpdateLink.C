@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/02/16 18:51:47  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.4  1998/03/08 00:01:13  wenger
   Fixed bugs 115 (I think -- can't test), 128, and 311 (multiple-link
   update problems) -- major changes to visual links.
@@ -44,7 +47,7 @@
 //#define DEBUG
 
 
-UpdateLink::UpdateLink(char* name)
+UpdateLink::UpdateLink(const char* name)
 : DeviseLink(name, 0),
   _master(NULL)
 {

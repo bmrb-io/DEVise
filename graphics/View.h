@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.123  2008/09/23 19:32:39  wenger
+  Changed DispatchedName() to const char *.
+
   Revision 1.122  2006/05/26 16:22:57  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -784,7 +787,7 @@ class View : public ViewWin
 	bool IsViewLocked(int locks) { return (_view_locks & locks) != 0; }
 
 	/* get label (title) parameters */
-	void GetLabelParam(Boolean &occupyTop, int &extent, char *&name);
+	void GetLabelParam(Boolean &occupyTop, int &extent, const char *&name);
 	
 	/* set label (title) parameters */
 	void SetLabelParam(Boolean occupyTop, int extent, const char *name = 0,

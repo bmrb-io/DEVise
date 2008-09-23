@@ -118,7 +118,8 @@ Boolean RangeInfo::ReturnRecs(Coord lowVal, Coord highVal, char *&buf,
     }
 
     // given pointer to a record and AttrName, find the value of this attribute
-Boolean RangeInfo::GetAttrVal(char *record, char *attrName, double &value)
+Boolean RangeInfo::GetAttrVal(const char *record, const char *attrName,
+  double &value)
     {
 
 	// I put the following if/else because it seems recId is not part

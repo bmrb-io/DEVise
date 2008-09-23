@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  2006/12/08 16:24:49  wenger
+  Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
+  changes to merge the DEViseCanvas.java stuff correctly).
+
   Revision 1.3  2006/05/25 20:15:27  wenger
   Merged V1_8b0_br_0 thru V1_8b0_br_1 to the trunk.
 
@@ -86,7 +90,7 @@ DrillDown::GetInstance()
 //-----------------------------------------------------------------------------
 DevStatus
 DrillDown::GetData(ViewData *view, Coord drillX, Coord drillY,
-  Coord pixelX, Coord pixelY, int &numMsgs, char **&msgs)
+  Coord pixelX, Coord pixelY, int &numMsgs, const char **&msgs)
 {
     if (DEBUG >= 1) {
         printf("DrillDown::GetData(%s, %g, %g, %g, %g)\n", view->GetName(),
@@ -266,8 +270,8 @@ DrillDown::RunQuery(ViewData *view, Coord drillX, Coord drillY, Coord pixelX,
 
     // If there's a count mapping, change the query filter accordingly.
     Boolean enabled;
-    char *countAttr;
-    char *putAttr;
+    const char *countAttr;
+    const char *putAttr;
     int initialValue;
     view->GetCountMapping(enabled, countAttr, putAttr, initialValue);
     if (enabled) {
@@ -505,7 +509,7 @@ DrillDown::PutTooMuchMsg()
 
 //-----------------------------------------------------------------------------
 void
-DrillDown::EndPutMessage(int &numMessages, char **&msgs)
+DrillDown::EndPutMessage(int &numMessages, const char **&msgs)
 {
     if (DEBUG >= 1) {
         printf("EndPutMessage()\n");

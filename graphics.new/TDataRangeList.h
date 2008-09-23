@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.4.28.1  2005/09/12 19:42:15  wenger
   Got DEVise to compile on basslet.bmrb.wisc.edu (AMD 64/gcc
   4.0.1).
@@ -46,7 +50,7 @@ class RangeList;
 
 struct TDataRangeListEntry {
     TData *tdata;
-    char *attrName;
+    const char *attrName;
     Coord granularity;
     RangeList *rangeList;
     TDataRangeListEntry *next;
@@ -61,14 +65,16 @@ public:
 
     /* Get the RangeList associated with tdata. Create one if
        there isn't one already */
-    RangeList *Get(TData *tdata, char *attr_name="recId", Coord granularity=1);
+    RangeList *Get(TData *tdata, const char *attr_name="recId",
+      Coord granularity=1);
 
     /* Clear all RangeLists, but don't free the RangeInfos */
     void Clear();
 
 private:
     /* Find entry. Return NULL if not found */
-    TDataRangeListEntry *Find(TData *tdata, char *attr_name, Coord granularity);
+    TDataRangeListEntry *Find(TData *tdata, const char *attr_name,
+      Coord granularity);
 
     int Hash(TData *tdata) {
         return ((unsigned long)tdata) % TDataRangeListHashSize;

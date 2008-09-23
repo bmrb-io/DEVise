@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.15  2005/12/06 20:02:58  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.14.14.1  2003/04/17 18:56:09  wenger
   Now compiles with no warnings with gcc 2.96, except for warnings about
   tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
@@ -245,7 +249,7 @@ CursorClassInfo::Dump(FILE *fp)
       fprintf(fp, "  Source view:\n");
       Boolean occupyTop;
       int extent;
-      char *viewTitle;
+      const char *viewTitle;
       view->GetLabelParam(occupyTop, extent, viewTitle);
       if (viewTitle == NULL) viewTitle = "NULL";
       fprintf(fp, "    `%s' (`%s')\n", view->GetName(), viewTitle);
@@ -256,7 +260,7 @@ CursorClassInfo::Dump(FILE *fp)
       fprintf(fp, "  Destination view:\n");
       Boolean occupyTop;
       int extent;
-      char *viewTitle;
+      const char *viewTitle;
       view->GetLabelParam(occupyTop, extent, viewTitle);
       if (viewTitle == NULL) viewTitle = "NULL";
       fprintf(fp, "    `%s' (`%s')\n", view->GetName(), viewTitle);
