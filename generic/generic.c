@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.70  2008/06/11 19:16:49  wenger
+  Fixed a problem that sometimes caused DEVise to free the same FontStruct
+  twice; more flexible generation of font names (horizontal and vertical
+  resolution are no longer specified); added -allowCore command-line flag
+  that overrides limits on core dump size, if possible; we now print the
+  core dump size limit at startup.
+
   Revision 1.69  2008/01/24 22:08:14  wenger
   Got rid of a bunch of compile warnings.
 
@@ -470,7 +477,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "YYMMDD", "DATE" };
+      const char *primAttrs[] = { "YYMMDD", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -535,7 +542,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
             
-      char *primAttrs[] = { "MMDDYY", "HHMM", "AMPM", "DATE" };
+      const char *primAttrs[] = { "MMDDYY", "HHMM", "AMPM", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -618,7 +625,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "MONTH", "DAY", "YEAR", "DATE" };
+      const char *primAttrs[] = { "MONTH", "DAY", "YEAR", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -683,7 +690,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "DayOfYear", "Time", "Date" };
+      const char *primAttrs[] = { "DayOfYear", "Time", "Date" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -753,7 +760,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "YYDDD", "HHMM", "Date" };
+      const char *primAttrs[] = { "YYDDD", "HHMM", "Date" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -879,7 +886,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "Date", "Time", "Timestamp" };
+      const char *primAttrs[] = { "Date", "Time", "Timestamp" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       _attrOffset = new int [numPrimAttrs];
       DOASSERT(_attrOffset, "Out of memory");
@@ -943,7 +950,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "Date1", "Time1", "Timestamp1", "Date2",
+      const char *primAttrs[] = { "Date1", "Time1", "Timestamp1", "Date2",
 	"Time2", "Timestamp2" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       _attrOffset = new int [numPrimAttrs];
@@ -1007,7 +1014,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "OBS_DAY", "OBS_MON", "OBS_YEAR",
+      const char *primAttrs[] = { "OBS_DAY", "OBS_MON", "OBS_YEAR",
 			    "OBS_HOUR", "OBS_MIN", "OBS_SEC",
 			    "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
@@ -1075,7 +1082,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "DateDiff", "Date" };
+      const char *primAttrs[] = { "DateDiff", "Date" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -1151,7 +1158,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "YEAR", "PERIOD", "DATE" };
+      const char *primAttrs[] = { "YEAR", "PERIOD", "DATE" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -1316,7 +1323,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "State", "TotalAmount",
+      const char *primAttrs[] = { "State", "TotalAmount",
 			    "Latitude", "Longitude", "TotalAmountDegree",
 			    "Color" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
@@ -1416,7 +1423,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "LatitudeInt", "LongitudeInt", "Latitude",
+      const char *primAttrs[] = { "LatitudeInt", "LongitudeInt", "Latitude",
 			    "Longitude" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
@@ -1481,7 +1488,8 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "Address", "RecNum", "Tag", "X", "Y", "Color" };
+      const char *primAttrs[] = { "Address", "RecNum", "Tag", "X", "Y",
+          "Color" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];
       attrOffset = new int [numPrimAttrs];
       DOASSERT(attrOffset, "Out of memory");
@@ -1595,7 +1603,7 @@ public:
     if (!_init) {
       /* initialize by caching offsets of all the attributes we need */
 
-      char *primAttrs[] = { "Address", "Ref", "RecNum", "Tag", "X", "Y",
+      const char *primAttrs[] = { "Address", "Ref", "RecNum", "Tag", "X", "Y",
         "Color", "Misses", "L2miss", "ICmiss", "DCmiss", "ITmiss", "DTmiss",
 		"COmiss", "TotalMisses", "HasMisses" };
       const int numPrimAttrs = sizeof primAttrs / sizeof primAttrs[0];

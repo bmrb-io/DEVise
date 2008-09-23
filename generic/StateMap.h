@@ -15,7 +15,10 @@
 /*
   $Id$
 
-  $Log$*/
+  $Log$
+  Revision 1.1  1997/01/30 19:47:39  jussi
+  Initial revision.
+*/
 
 #ifndef StateMap_h
 #define StateMap_h
@@ -23,14 +26,15 @@
 #include "HashTable.h"
 
 struct stateMapRec {
-  char *state;
+  const char *state;
   float latitude;
   float longitude;
 };
 
-extern int GenStringHash(char *&string, int numBuckets);
-extern int GenStringComp(char *&string1, char *&string2);
+extern int GenStringHash(const char * const &string, int numBuckets);
+extern int GenStringComp(const char * const &string1,
+  const char * const &string2);
 
-extern HashTable<char *, stateMapRec *> genStateMap;
+extern HashTable<const char *, stateMapRec *> genStateMap;
 
 #endif

@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  2005/12/06 20:04:12  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.5.46.1  2003/04/17 17:59:26  wenger
   Now compiles with no warnings with gcc 2.95, except for warnings about
   tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
@@ -63,7 +67,7 @@ public:
   time_t *GetDate(char *attrName);
   
   /* Get attribute info, or NULL */
-  AttrInfo *GetAttrInfo(char *attrName);
+  AttrInfo *GetAttrInfo(const char *attrName);
 
   /* print Attr names as heading */
   void PrintAttrHeading(); 

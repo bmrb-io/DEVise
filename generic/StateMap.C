@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  2008/01/24 22:08:14  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.5  2005/12/06 20:02:51  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -52,7 +55,7 @@ using namespace std;
 
 #include "StateMap.h"
 
-int GenStringHash(char * const &string, int numBuckets)
+int GenStringHash(const char * const &string, int numBuckets)
 {
   int sum = 0;
   for(int i = 0; i < (int)strlen(string); i++)
@@ -60,7 +63,7 @@ int GenStringHash(char * const &string, int numBuckets)
   return sum % numBuckets;
 }
 
-int GenStringComp(char * const &string1, char * const &string2)
+int GenStringComp(const char * const &string1, const char * const &string2)
 {
   return strcmp(string1, string2);
 }
@@ -71,5 +74,5 @@ int GenStringComp(char * const &string1, char * const &string2)
 template class HashTable<char *, stateMapRec *>;
 //#endif
 
-HashTable<char *, stateMapRec *> genStateMap(50, GenStringHash,
+HashTable<const char *, stateMapRec *> genStateMap(50, GenStringHash,
                                              GenStringComp);

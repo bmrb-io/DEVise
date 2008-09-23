@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  2005/12/06 20:04:12  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.6.46.2  2003/04/24 17:31:16  wenger
   Fixed bug in drill-down code; axis date formats now also apply to
   drill-down coordinates; we now check for buffer overruns in
@@ -105,7 +109,7 @@ time_t *RecInterp::GetDate(char *attrName)
   return (time_t *)(((char *)_buf) + info->offset);
 }
 
-AttrInfo *RecInterp::GetAttrInfo(char *attrName)
+AttrInfo *RecInterp::GetAttrInfo(const char *attrName)
 {
   if (_attrs == NULL )
     return NULL;
