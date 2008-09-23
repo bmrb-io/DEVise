@@ -295,7 +295,7 @@ Num Date        Status  Description
 			definitions). (wenger)
 			(Fixed by wenger, 7/23/08.)
 
-067 8/14/08	OPEN	Last line of H vs N data is missing the "H N" or
+067 8/14/08	FIXED	Last line of H vs N data is missing the "H N" or
 			"HE1 NE1" on the end. (wenger)
 
 068 8/22/08	FIXED	(In 11.3.2) In a 3D visualization, once you change

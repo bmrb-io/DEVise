@@ -9,6 +9,8 @@ Peptide-CGI 11.3.3
 * Fixed bug 069 (problem with entries that don't have any ambiguity
 codes).
 
+* Fixed bug 067 (bad last line of H vs N data).
+
 * Fixed disabled action settings in a number of visualizations views
 (to prevent users from getting the visualizations into an unusable state).
 

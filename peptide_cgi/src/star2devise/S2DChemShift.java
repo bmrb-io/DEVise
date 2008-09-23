@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2008/07/02 16:29:19  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.7  2008/04/09 19:35:41  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -644,7 +653,13 @@ public class S2DChemShift {
 	    // Write out the last residue.
 	    if (prevSeqCode != -1 && hasH && hasN) {
 	        hnWriter.write(prevSeqCode + " " + prevResLabel +
-		  " " + hShift + " " + nShift + "\n");
+	          " " + hShift + " " + nShift + " H N \n");
+	        hnCount++;
+	    }
+
+	    if (prevSeqCode != -1 && hasHE1 && hasNE1) {
+	        hnWriter.write(prevSeqCode + " " + prevResLabel +
+	          " " + he1Shift + " " + ne1Shift + " HE1 NE1\n");
 	        hnCount++;
 	    }
 

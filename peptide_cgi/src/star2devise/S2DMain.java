@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.92  2008/09/19 19:55:19  wenger
+// Dealt with Peptide-CGI to-do 076 ("no Java" warnings in html pages).
+//
 // Revision 1.91  2008/08/29 21:04:01  wenger
 // Fixed bug 068 (missing highlights in data view of 3D visualization).
 //
@@ -219,7 +222,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.3x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.3x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
