@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2001
+// (c) Copyright 1999-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2006/06/23 19:52:39  wenger
+// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
+//
 // Revision 1.45.4.2  2006/06/07 15:15:37  wenger
 // Removed ThreadDeath fixes from 26 May 2006 because for some reason
 // they prevent the JavaScreen from being able to be run more than
@@ -111,6 +114,9 @@ public class DEViseAnimPanel extends Canvas implements Runnable
     private Thread animator = null;
     private boolean isAnimated = false;
     private int waitInterval;
+
+    private Date startTime;
+    private static final long MIN_WAIT_TIME = 1500; // milliseconds
 
     public DEViseAnimPanel(jsdevisec what, Vector array, int time)
     {
@@ -241,8 +247,11 @@ public class DEViseAnimPanel extends Canvas implements Runnable
 
     public void start()
     {
-        if (!isAnimated)
+	startTime = new Date();
+
+        if (!isAnimated) {
             return;
+        }
 
         if (animator == null) {
             animator = new Thread(this);
@@ -257,11 +266,28 @@ public class DEViseAnimPanel extends Canvas implements Runnable
 
     public void stop()
     {
-        if (!isAnimated)
-            return;
+	if (startTime != null) {
+	    Date now = new Date();
+	    long interval = now.getTime() - startTime.getTime();
 
-        if (animator == null)
+	    if (interval < jsc.jsValues.uiglobals.minWaitTime) {
+	    	try {
+		    Thread.sleep(jsc.jsValues.uiglobals.minWaitTime - interval);
+		} catch (InterruptedException ex) {
+		    System.err.println("Sleep interrupted: " + ex.toString());
+		}
+	    }
+
+	    startTime = null;
+	}
+
+        if (!isAnimated) {
             return;
+        }
+
+        if (animator == null) {
+            return;
+        }
 
         if (animator.isAlive()) {
 	    if (DEViseGlobals.DEBUG_THREADS >= 1) {

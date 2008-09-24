@@ -4194,11 +4194,12 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the default button more prominent?  Make it look
 			more like the associated mouse cursor?) (miron/wenger)
 
-973 9/19/08	OPEN	JS: sometimes it's too hard to tell that a mouse
+973 9/19/08	FIXED?	JS: sometimes it's too hard to tell that a mouse
 			click (or whatever) did something (e.g., when "home"
 			on a view doesn't change the visual filter).  (Maybe
 			put a minimum on the amount of time the Stop button
 			is red?) (miron/wenger)
+			(Fixed? by wenger, 9/24/08 -- added delay.)
 
 974 9/22/08	OPEN	JS: collaboration doesn't work for Jmol sessions.
 			(wenger)

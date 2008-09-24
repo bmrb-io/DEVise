@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.105  2008/07/25 20:38:45  wenger
+// Updated version to 5.9.3.
+//
 // Revision 1.104  2008/07/23 21:00:41  wenger
 // Removed "x1" from version number for release.
 //
@@ -705,6 +708,10 @@ public final class DEViseGlobals
     public static final int DEFAULTMAXCLIENT = 100;
 
     public static final String JS_HELP_URL = "html/javascreen_help.html";
+
+    // Minimum time (in milliseconds) the stop button will be "busy" after
+    // we've sent a command to the server (see bug 973).
+    public static final int DEFAULT_MIN_WAIT_TIME = 1500;
 
     // global variables
 

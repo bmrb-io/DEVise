@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2008/02/20 20:22:10  wenger
+// JavaScreen now defaults to showing help in browser window (to
+// get around problems on Mac with the Java window); added links
+// and images to the help page because of this change.
+//
 // Revision 1.19  2008/01/24 20:30:53  wenger
 // Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
 //
@@ -619,8 +624,28 @@ public abstract class DEViseJSApplet extends Applet
 
 	String visTimeout = getParameter("vis_timeout");
 	if (visTimeout != null) {
-	    jsValues.uiglobals.visTimeout = Integer.parseInt(visTimeout);
+            try {
+	        jsValues.uiglobals.visTimeout = Integer.parseInt(visTimeout);
+            } catch (NumberFormatException e) {
+	    	// Use the existing value.
+	    }
 	}
+
+        String minWaitTime = getParameter("minwaittime");
+        if (minWaitTime != null) {
+            try {
+                int value = Integer.parseInt(minWaitTime);
+                jsValues.uiglobals.minWaitTime = value;
+                startInfo.append("Parameter minwaittime " + value +
+		  " is used\n");
+            } catch (NumberFormatException e) {
+                jsValues.uiglobals.minWaitTime =
+		  DEViseGlobals.DEFAULT_MIN_WAIT_TIME;
+            }
+        } else {
+            jsValues.uiglobals.minWaitTime =
+	      DEViseGlobals.DEFAULT_MIN_WAIT_TIME;
+        }
     }
 
     public void loadImages()

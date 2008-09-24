@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2003
+// (c) Copyright 2000-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2007/06/27 17:47:59  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
 // Revision 1.16  2007/02/22 23:20:18  wenger
 // Merged the andyd_gui_br thru andyd_gui_br_2 to the trunk.
 //
@@ -208,6 +213,10 @@ public final class DEViseJSValues
 
 	// Timeout (in minutes) for killing the client if it's invisible.
 	public int visTimeout = 60;
+
+	// Minimum time (in milliseconds) the stop button will be "busy" after
+	// we've sent a command to the server (see bug 973).
+	public long minWaitTime = DEViseGlobals.DEFAULT_MIN_WAIT_TIME;
     }
 
     public final class Session {
