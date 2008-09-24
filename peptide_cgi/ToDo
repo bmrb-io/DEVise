@@ -292,6 +292,9 @@ Num Date        Status  Pri     Description
 076 9/19/08	DONE	3	Put "no Java" warnings into html pages (see
 				Scribble.html). (wenger)
 
+077 9/24/08	OPEN	3	Version info in CSR sessions should include
+				ChemShift version. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
