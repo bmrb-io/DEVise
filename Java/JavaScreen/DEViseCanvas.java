@@ -29,6 +29,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.103  2008/09/19 21:46:13  wenger
+// Working on bug 972: <esc> on a view now resets the toolbar to the
+// default mode.  (I'd like to also have it work if you don't have a
+// session open, but I haven't figured out how to "see" the KeyEvent
+// in that case yet).
+//
 // Revision 1.102  2008/07/17 20:27:56  wenger
 // (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
 // that are entirely outside the destination view's visual filter).
@@ -564,8 +570,7 @@ public class DEViseCanvas extends Container
     private Image offScrImg = null;
     private boolean isImageUpdated = false;
 
-    public boolean isMouseDragged = false, isInViewDataArea = false,
-      isInDataArea = false;
+    public boolean isMouseDragged = false, isInViewDataArea = false;
     protected DEViseCursor selectedCursor = null;
 
     // See DEViseCursor.side* for values.
@@ -1217,27 +1222,32 @@ public class DEViseCanvas extends Container
                 h = 4;
 	    }
 
-	    if (DRAW_XOR_RUBBER_BAND) {
-	        gc.setXORMode(Color.black);
-	        if (_lastRBValid) {
-                    gc.drawRect(_lastRB.x, _lastRB.y, _lastRB.width - 1,
-		      _lastRB.height - 1);
-	        }
-	    } else {
-                gc.setColor(Color.yellow);
-	    }
-            gc.drawRect(x0, y0, w - 1, h - 1);
-
+	    // Outer rectangle.
 	    if (DRAW_XOR_RUBBER_BAND) {
 	        gc.setXORMode(Color.red);
 	        if (_lastRBValid) {
-                    gc.drawRect(_lastRB.x + 1, _lastRB.y + 1,
-		      _lastRB.width - 3, _lastRB.height - 3);
+		    // Undraw the last rubberband line.
+                    gc.drawRect(_lastRB.x, _lastRB.y, _lastRB.width,
+		      _lastRB.height);
 	        }
 	    } else {
                 gc.setColor(Color.red);
 	    }
-            gc.drawRect(x0 + 1, y0 + 1, w - 3, h - 3);
+            gc.drawRect(x0, y0, w, h);
+
+	    // Inner rectangle.
+	    if (DRAW_XOR_RUBBER_BAND) {
+	        gc.setXORMode(Color.yellow);
+	        gc.setXORMode(Color.black); // make this one not show up
+	        if (_lastRBValid) {
+		    // Undraw the last rubberband line.
+                    gc.drawRect(_lastRB.x + 1, _lastRB.y + 1,
+		      _lastRB.width - 2, _lastRB.height - 2);
+	        }
+	    } else {
+                gc.setColor(Color.yellow);
+	    }
+            gc.drawRect(x0 + 1, y0 + 1, w - 2, h - 2);
 
 	    if (DRAW_XOR_RUBBER_BAND) {
 	        gc.setPaintMode();

@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.78  2008/07/22 19:17:06  wenger
+// Fixed a case in JavaScreen bug 968 that I missed the first time around.
+//
 // Revision 1.77  2008/07/17 20:28:00  wenger
 // (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
 // that are entirely outside the destination view's visual filter).
@@ -1260,13 +1263,18 @@ TEMP*/
     {
         Rectangle loc = viewLocInCanvas;
 
-        if (mode == 1) { // adjust position x so it is within the range of data area of this view
+        if (mode == 1) { // adjust position x so it is within the range
+		                 // of data area of this view
             if (x < loc.x + viewDataLoc.x) {
+				// Off the left
                 x = loc.x + viewDataLoc.x;
-            } else if (x + width > loc.x + viewDataLoc.x + viewDataLoc.width) {
-                x = loc.x + viewDataLoc.x + viewDataLoc.width - width;
+            } else if ((x + width) >
+			  (loc.x + viewDataLoc.x + viewDataLoc.width - 1)) {
+				// Off the right
+                x = loc.x + viewDataLoc.x + viewDataLoc.width - 1 - width;
             }
-        } else if (mode == 2) { // adjust position x so it is relative to this view
+        } else if (mode == 2) { // adjust position x so it is relative
+		                        // to this view
             x = x - loc.x;
         }
 
@@ -1286,13 +1294,18 @@ TEMP*/
     {
         Rectangle loc = viewLocInCanvas;
 
-        if (mode == 1) { // adjust position y so it is within the range of data area of this view
+        if (mode == 1) { // adjust position y so it is within the range
+		                 // of data area of this view
             if (y < loc.y + viewDataLoc.y) {
+				// Off the top
                 y = loc.y + viewDataLoc.y;
-            } else if (y + height > loc.y + viewDataLoc.y + viewDataLoc.height) {
-                y = loc.y + viewDataLoc.y + viewDataLoc.height - height;
+            } else if ((y + height) >
+			  (loc.y + viewDataLoc.y + viewDataLoc.height - 1)) {
+				// Off the bottom
+                y = loc.y + viewDataLoc.y + viewDataLoc.height - 1 - height;
             }
-        } else if (mode == 2) { // adjust position y so it is relative to this view
+        } else if (mode == 2) { // adjust position y so it is relative
+		                        // to this view
             y = y - loc.y;
         }
 

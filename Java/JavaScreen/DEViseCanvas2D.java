@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2008/03/05 20:02:56  wenger
+// Fixed bug 965 (disabled alt and shift modifiers in 2D views).
+//
 // Revision 1.5  2007/08/27 19:16:39  wenger
 // Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
 //
@@ -174,6 +177,7 @@ public class DEViseCanvas2D extends DEViseCanvas
 
             } else if (activeView.isRubberBand && jsc.toolBar.doRubberband()) {
 	        // rubber band (zoom)
+		// Move point within data area if it's outside.
                 ep.x = activeView.translateX(p.x, 1);
                 ep.y = activeView.translateY(p.y, 1);
 
@@ -181,10 +185,8 @@ public class DEViseCanvas2D extends DEViseCanvas
 	          activeView.getY(ep.y));
 
                 int w = ep.x - sp.x, h = ep.y - sp.y;
-                if (w < 0)
-                    w = -w;
-                if (h < 0)
-                    h = -h;
+                if (w < 0) w = -w;
+                if (h < 0) h = -h;
 
                 if (w > jsc.jsValues.uiglobals.rubberBandLimit.width ||
 		  h > jsc.jsValues.uiglobals.rubberBandLimit.height) {
