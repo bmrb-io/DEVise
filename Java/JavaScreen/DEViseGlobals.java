@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.106  2008/09/24 21:46:51  wenger
+// Partially(?) fixed DEVise/JS bug 973: there is now a minimum delay
+// before the JS stop button goes back to normal when communicating
+// with the server, so the user won't fail to notice.
+//
 // Revision 1.105  2008/07/25 20:38:45  wenger
 // Updated version to 5.9.3.
 //
@@ -683,7 +688,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.9.3x1"/*TEMP*/);
+    public static final String VERSION = new String("5.9.3");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
