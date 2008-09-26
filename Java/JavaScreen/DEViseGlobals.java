@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.107  2008/09/25 23:09:34  wenger
+// Changed version to 5.9.3.  (Note that bug 939 fix also included
+// improvements to zoom box drawing.)
+//
 // Revision 1.106  2008/09/24 21:46:51  wenger
 // Partially(?) fixed DEVise/JS bug 973: there is now a minimum delay
 // before the JS stop button goes back to normal when communicating
@@ -688,7 +692,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.9.3");
+    public static final String VERSION = new String("5.9.4x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
