@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.93  2008/09/23 16:43:23  wenger
+// Fixed bug 067 (bad last line of H vs N data).
+//
 // Revision 1.92  2008/09/19 19:55:19  wenger
 // Dealt with Peptide-CGI to-do 076 ("no Java" warnings in html pages).
 //
@@ -222,7 +225,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.3x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.3";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
