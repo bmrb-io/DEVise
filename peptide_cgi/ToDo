@@ -295,6 +295,16 @@ Num Date        Status  Pri     Description
 077 9/24/08	OPEN	3	Version info in CSR sessions should include
 				ChemShift version. (wenger)
 
+078 10/8/08	OPEN	3	"Standard" chemical shift value for CB in
+				CYS should be changed according to whether
+				the residue is in a disulfide bond (~41ppm)
+				or reduced (~28ppm). (elu/wenger)
+
+079 10/8/08	OPEN	1	Put a comment in the visualization help
+				about the "standard" chemical shift value
+				for CB in CYS being based on it being in
+				a disulfide bond. (elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
