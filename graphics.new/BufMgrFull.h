@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.11  1999/06/01 17:37:37  wenger
+  Fixed various compiler warnings.
+
   Revision 1.10  1997/12/23 23:35:14  liping
   Changed internal structure of BufMgrFull and classes it called
   The buffer manager is now able to accept queries on any attribute from the
@@ -79,7 +82,8 @@ class BufMgrFull: public BufMgr {
 
     virtual void Clear();
 
-    void ClearData(TData *data, char *attrName="recId", Coord granularity=1);
+    void ClearData(TData *data, const char *attrName="recId",
+      Coord granularity=1);
 
     virtual BMHandle InitGetRecs(TData *tdata, GData *gdata,
 				 Interval *interval,

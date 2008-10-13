@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.110  2008/09/11 20:55:31  wenger
+  A few more compile warning fixes...
+
   Revision 1.109  2006/07/11 20:53:30  wenger
   Added info about mapping, view, and window creation parameters
   to saving of session files; updated all example sessions accordingly.
@@ -1082,8 +1085,8 @@ Session::CreateTData(const char *name)
 
   // check for derived sources
   if( strncmp(name, "Hist: ", 6) == 0 ) {
-    char* schemaName = "HISTOGRAM";
-    char* schemaText = 
+    const char* schemaName = "HISTOGRAM";
+    const char* schemaText = 
       "type HISTOGRAM ascii\n"
       "separator ' '\n"
       "sorted attr Bucket double\n"

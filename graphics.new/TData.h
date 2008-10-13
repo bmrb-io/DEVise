@@ -1,7 +1,7 @@
 /*
    ========================================================================
    DEVise Data Visualization Software
-   (c) Copyright 1992-2005
+   (c) Copyright 1992-2008
    By the DEVise Development Group
    Madison, Wisconsin
    All Rights Reserved.
@@ -16,6 +16,9 @@
    $Id$
 
    $Log$
+   Revision 1.25  2008/09/23 19:32:46  wenger
+   Changed DispatchedName() to const char *.
+
    Revision 1.24  2005/12/06 20:04:14  wenger
    Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
    be the end of the V1_7b0_br branch.)
@@ -174,7 +177,7 @@ class TDataRequest {
     char *lastOrigChunk;                // beginning of pipe data chunk
     int lastChunkBytes;                 // size of pipe data chunk
 
-    char *AttrName;			// on which column is the request
+    const char *AttrName;		// on which column is the request
 };
 
 class FileIndex;

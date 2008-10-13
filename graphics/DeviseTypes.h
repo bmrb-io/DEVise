@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  2005/12/06 20:03:01  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.18.28.2  2003/04/18 17:07:41  wenger
   Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
 
@@ -104,7 +108,7 @@ typedef char Boolean;
 
 typedef struct
 {
-    char 	*AttrName;
+    const char 	*AttrName;
     Coord	Low;
     Coord	High;
     Coord	Granularity;

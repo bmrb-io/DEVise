@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  1998/08/21 22:16:50  wenger
+  Got DEVise 1.5.4 to compile on SPARC/SunOS (sundance) -- to make statically-
+  linked DEVise for distribution.
+
   Revision 1.2  1998/05/05 18:20:00  wenger
   Committed changes Zhenhai made, but his copy of this file wasn't in CVS
   somehow.
@@ -41,7 +45,7 @@ extern "C" int strcasecmp(const char *s1, const char *s2);
 // viewing direction
 // need modification later
 enum ViewDir {PosX, PosY, PosZ, NegX, NegY, NegZ};
-inline char * ViewDir2Char(ViewDir const dir) {
+inline const char * ViewDir2Char(ViewDir const dir) {
   switch(dir) {
 	case PosX: return "PosX";
 	case PosY: return "PosY";

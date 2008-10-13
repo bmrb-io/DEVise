@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.93  2008/06/11 19:16:56  wenger
+  Fixed a problem that sometimes caused DEVise to free the same FontStruct
+  twice; more flexible generation of font names (horizontal and vertical
+  resolution are no longer specified); added -allowCore command-line flag
+  that overrides limits on core dump size, if possible; we now print the
+  core dump size limit at startup.
+
   Revision 1.92  2007/12/26 21:28:12  wenger
   Added the "-defaultFont" command-line argument to allow DEVise to
   at least run when we have a very limited selection of fonts (as
@@ -1147,7 +1154,7 @@ static XWMHints xwmh = {
 Create a new window 
 ***************************************************************/
 
-WindowRep *XDisplay::CreateWindowRep(char *name, Coord x, Coord y,
+WindowRep *XDisplay::CreateWindowRep(const char *name, Coord x, Coord y,
 				     Coord width, Coord height, 
 				     WindowRep *parentRep,
 				     Coord min_width, Coord min_height,

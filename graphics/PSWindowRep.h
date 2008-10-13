@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  2003/01/13 19:25:11  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.32.14.1  2002/07/25 19:29:21  wenger
   Fixed bug 800 (symbols disappear at extreme zoom) and other drawing-
   related problems; removed unused WindowRep method (FillRectArray with
@@ -456,8 +459,8 @@ private:
                       Boolean skipLeadingSpaces = false,
 		      Coord orientation = 0.0);
 
-    void GetAlignmentStrings(SymbolAlignment alignment, char *&comment,
-      char *&moveToWindow, char *&moveToText);
+    void GetAlignmentStrings(SymbolAlignment alignment, const char *&comment,
+      const char *&moveToWindow, const char *&moveToText);
 
     /* current dimensions of window */
     int _x, _y;

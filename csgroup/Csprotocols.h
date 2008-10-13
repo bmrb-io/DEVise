@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.10  2005/12/06 20:01:10  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.9.22.2  2005/09/28 17:14:21  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -122,8 +126,8 @@ extern "C" {
 // implement server-server protocols
 class ServerServerProt					
 {
-	static char* DefaultStr;
-	static char* ControlSeperator; 
+	static const char* DefaultStr;
+	static const char* ControlSeperator; 
 	private:
 		char	** newargv;				// message in argv formats	
 		int		newargc;				// number of arguments

@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  2008/09/10 17:49:43  wenger
+  Got DEVise to compile on moray at BMRB (gcc 4.3.0) (compiling in the
+  linux_amd64 directory) -- still lots of warnings, though.
+
   Revision 1.7  2008/01/24 22:08:05  wenger
   Got rid of a bunch of compile warnings.
 
@@ -229,7 +233,7 @@ Serializable::composite_deserialize(string body, vector<string>& vec)
 }
 
 string
-Serializable::serialize(int argc, char** argv)
+Serializable::serialize(int argc, const char** argv)
 {
 	int		i;
 	string	valStr;
@@ -307,7 +311,7 @@ class Test:public Serializable
 		bool	c;
 		string	d;
 		float	e;
-		char *f[2];
+		const char *f[2];
 		string	buf;
 		string Serialize()
 		{

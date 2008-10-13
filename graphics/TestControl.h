@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -22,6 +22,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  2000/01/13 23:06:53  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.2  1998/01/07 19:28:45  wenger
   Merged cleanup_1_4_7_br_4 thru cleanup_1_4_7_br_5 (integration of client/
   server library into Devise); updated solaris, sun, linux, and hp
@@ -56,7 +59,7 @@ public:
   virtual void SetIdle() {}
   virtual Boolean IsBusy() { return false; }
   virtual int ReturnVal(u_short flag, const char *result) { return 0; }
-  virtual int ReturnVal(int argc, char **argv) { return 0; }
+  virtual int ReturnVal(int argc, const char * const *argv) { return 0; }
   virtual GroupDir *GetGroupDir() { return NULL; }
   virtual MapInterpClassInfo *GetInterpProto() { return NULL; }
   virtual void OpenDataChannel(int port) {}

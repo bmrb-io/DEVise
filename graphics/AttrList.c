@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.24  2003/01/13 19:25:09  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.23.10.2  2002/09/21 23:24:28  wenger
   Fixed a few more special-case memory leaks.
 
@@ -114,7 +117,7 @@
 DefinePtrDList(AttrListList, AttrList *);
 static AttrListList _lists;
 
-static char *GetTypeString(AttrType type);
+static const char *GetTypeString(AttrType type);
 static void WriteVal(int fd, AttrVal *aval, AttrType atype);
 
 AttrList::AttrList(const char *name, int startSize)
@@ -414,7 +417,7 @@ void AttrList::Write(int fd)
   {
     AttrInfo *infoP = Next();
 
-    char *string;
+    const char *string;
 
     // Sorted?
     if (infoP->isSorted)
@@ -529,7 +532,7 @@ AttrList::EnlargeArray()
   _arraySize = newArraySize;
 }
 
-static char *
+static const char *
 GetTypeString(AttrType type)
 {
   switch(type)

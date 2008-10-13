@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2006
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.53  2008/09/23 22:55:40  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.52  2006/12/08 16:24:49  wenger
   Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
   changes to merge the DEViseCanvas.java stuff correctly).
@@ -265,7 +268,7 @@
 
 //#define DEBUG
 
-ActionDefault::ActionDefault(char *name, Coord leftEdge,
+ActionDefault::ActionDefault(const char *name, Coord leftEdge,
 			     Boolean useLeftFlag, Coord rightEdge,
 			     Boolean useRightFlag):
      Action(name)

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.7  2001/08/28 21:40:52  wenger
+  Environment variables are now expanded in Tasvir file names, EmbeddedTk
+  script names and arguments, and physical schema paths within logical
+  schemas (to make distribution setup easier).
+
   Revision 1.6  1997/09/19 16:19:43  beyer
   Lengthened some timeouts for etk.
 
@@ -75,7 +80,7 @@ static DevStatus WaitForReply(char *buf, int fd, int bufSize, double timeout);
 #if !defined(lint) && defined(RCSID)
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 static int launchCount = 0;
 
@@ -158,7 +163,7 @@ ETkIfc::CreateWindow(const char *etkServer, Window win,
 //
 // Function to convert ETk anchor positions to strings
 //
-char *
+const char *
 ETkIfc::AnchorToString(Anchor anchor)
 {
     switch (anchor)

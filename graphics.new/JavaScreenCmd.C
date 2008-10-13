@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.138  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.137  2008/09/10 17:49:50  wenger
   Got DEVise to compile on moray at BMRB (gcc 4.3.0) (compiling in the
   linux_amd64 directory) -- still lots of warnings, though.
@@ -752,7 +755,7 @@ static char *_tmpSessionDirBase = NULL;
 static char *_tmpSessionDir = NULL;
 
 // be very careful that this order agrees with the ServiceCmdType definition
-char *JavaScreenCmd::_serviceCmdName[] =
+const char *JavaScreenCmd::_serviceCmdName[] =
 {
     "JAVAC_GetSessionList",
     "JAVAC_OpenSession",
@@ -784,7 +787,7 @@ char *JavaScreenCmd::_serviceCmdName[] =
 };
 
 // be very careful that this order agrees with the ControlCmdType definition
-char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
+const char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 {
 	"JAVAC_UpdateSessionList",
 	"JAVAC_UpdateRecordValue",
@@ -1242,8 +1245,8 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
         _argv[i] = new char[arglen+1];
         while (argv[i][j]&&(
             (argv[i][j]==' ')||
-            (argv[i][j]=='\t')&&
-            (argv[i][j]!= leftBrace)))
+            ((argv[i][j]=='\t')&&
+            (argv[i][j]!= leftBrace))))
             ++j;
         if (argv[i][j]==leftBrace)
         {
@@ -1251,8 +1254,8 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
             j = arglen -1;
             while ((j>0)&&(
                 (argv[i][j]==' ')||
-                (argv[i][j]=='\t')&&
-                (argv[i][j]!= rightBrace))
+                ((argv[i][j]=='\t')&&
+                (argv[i][j]!= rightBrace)))
             )
                 --j;
             if (j > startPos)
@@ -2261,7 +2264,7 @@ JavaScreenCmd::RequestUpdateRecordValue(int argc, const char **argv)
 }
 
 //====================================================================
-char* 
+const char* 
 JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::ControlCmdType ctype)
 {
 	return JavaScreenCmd::_controlCmdName[(int)ctype];
@@ -2745,7 +2748,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 
 //====================================================================
 JavaScreenCmd::ControlCmdType 
-JavaScreenCmd::RequestUpdateSessionList(int argc, char** argv)
+JavaScreenCmd::RequestUpdateSessionList(int argc, const char** argv)
 {
 	ReturnVal(argc, argv);
 	return DONE;
@@ -2898,7 +2901,7 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	// Figure out which direction(s) the cursor is allowed to move in.
 	//
 	VisualFlag cursorFlag = cursor->GetFlag();
-	char *movement;
+	const char *movement;
 	if ((cursorFlag & VISUAL_X) && (cursorFlag & VISUAL_Y)) {
 	  movement = "XY";
 	} else if (cursorFlag & VISUAL_X) {
@@ -2912,7 +2915,7 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	//
 	// Figure out whether the cursor is fixed-size.
 	//
-	char *fixedSize;
+	const char *fixedSize;
 	if (cursor->GetFixedSize()) {
 	  fixedSize = "XY";
 	} else {
@@ -3003,7 +3006,7 @@ JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 
 //====================================================================
 int
-JavaScreenCmd::ReturnVal(int argc, char** argv)
+JavaScreenCmd::ReturnVal(int argc, const char* const * argv)
 {
 #if defined(DEBUG_LOG)
     sprintf(logBuf, "JavaScreenCmd(0x%p, %s)::ReturnVal(", this,
@@ -3152,7 +3155,7 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	}
 
 	_status = RequestUpdateSessionList(args.GetCount(),
-	  (char **)args.GetArgs());	
+	  (const char **)args.GetArgs());	
 }
 
 #if 0
@@ -3412,8 +3415,8 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	//
 	// Get axis types.
 	//
-	char *xAxisType = "none";
-	char *yAxisType = "none";
+	const char *xAxisType = "none";
+	const char *yAxisType = "none";
 	
 	// Don't draw axes for 3D views.
 	// Note that the type is send for 2D views even if the axes are not
@@ -3435,7 +3438,7 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	//
 	// Get view title.
 	//
-	char *viewTitle = "";
+	const char *viewTitle = "";
 	if (view->_label.occupyTop) {
 		viewTitle = view->_label.name;
 	}

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.91  2008/09/23 22:55:34  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.90  2005/12/06 20:03:13  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -834,7 +837,7 @@ public:
   virtual void Line3D(Coord x1, Coord y1, Coord z1,
 		      Coord x2, Coord y2, Coord z2, Coord width,
                       CursorStore *cstore=0) {};
-  virtual void Text3D(Coord x, Coord y, Coord z, char* text) {};
+  virtual void Text3D(Coord x, Coord y, Coord z, const char* text) {};
   virtual void AbsoluteLine(int x1, int y1, int x2, int y2, int width) = 0;
 
   /* draw and scaled text to fit inside box, according to alignment.

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  2008/09/11 20:55:23  wenger
+  A few more compile warning fixes...
+
   Revision 1.34  2005/12/06 20:01:11  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -300,7 +303,7 @@ int ExecCheckpoint(char *fname, ConnectInfo *cinfo)
 //#define DEBUG
 #define DEBUG_LOG
 
-char *NoError = "NONE";
+const char *NoError = "NONE";
 
 #define DO_ASSERT(c,r) {if (!(c)) DoAbort(r); }
 Server::Server(const char *name, int image_port, 
@@ -497,10 +500,10 @@ Server::~Server()
 	_cmd = NULL;
 }
 
-void Server::DoAbort(char *reason)
+void Server::DoAbort(const char *reason)
 {
     fprintf(stderr, "%s\n", reason);
-    char *args[] = { "AbortProgram", reason };
+    const char *args[] = { "AbortProgram", reason };
     Server::SendControl(API_CTL, 2, args, true);
     fprintf(stderr, "Server aborts.\n");
     reportErrNosys("Fatal error");//TEMP -- replace with better message
@@ -802,7 +805,7 @@ Server::WaitForImageportConnection()
 		{
 			// setup the imagefd
 			_clients[slotno].imagefd = imagefd;
-			char*	retval=
+			const char*	retval=
 				JavaScreenCmd::JavaScreenCmdName(JavaScreenCmd::DONE);
 
 #if defined(USE_START_PROTOCOL)
@@ -1048,7 +1051,7 @@ int Server::SendClientCmd(int fd,int flag, int args, ...)
 void Server::ProcessGroupControl(ClientID cid, int argc, char** argv)
 {
 	bool 	success = false;
-	char	*errmsg = "NULL";
+	const char	*errmsg = "NULL";
 	int		mode = 0;
 	GroupKey *gkp = NULL;
 	CSgroupKey *key = NULL;
@@ -1236,11 +1239,11 @@ void Server::ProcessGroupControl(ClientID cid, int argc, char** argv)
 }
 
 
-bool Server::AfterPassiveJoin(GroupKey *gkp, char*&errmsg)
+bool Server::AfterPassiveJoin(GroupKey *gkp, const char*&errmsg)
 {
 	bool	success;
 	success =(GroupSync(gkp, switchaddr) ==0);
-	if (!success)
+	if (!success) {
 		if (errcode == ER_RPCTIMEDOUT)
 		{
 			errmsg = "Collaborator is down";
@@ -1251,6 +1254,7 @@ bool Server::AfterPassiveJoin(GroupKey *gkp, char*&errmsg)
 			fprintf(stderr, "GroupSync error with errcode = %d\n",
 				errcode);
 		}
+    }
 	return success;
 }
 
@@ -1306,7 +1310,7 @@ void Server::ExecClientCmds(fd_set *fdset)
 		else if (flag == API_CMD)
 		{
 			// API_CMD or API_JAVACMD
-			char*	errmsg = NoError;
+			const char*	errmsg = NoError;
 			bool	success;
 #if defined(DEBUG)
 	    	printf("Executing command\n");
@@ -1335,8 +1339,8 @@ void Server::ExecClientCmds(fd_set *fdset)
 }
 
 bool 
-Server::GroupCast(GroupKey* gname, char* cname, char* control,
-	int argc, const char* const * argv, char*&errmsg)
+Server::GroupCast(GroupKey* gname, const char* cname, const char* control,
+	int argc, const char* const * argv, const char*&errmsg)
 {
 	char		*recBuffer;
 	int         msgsize;
@@ -1428,7 +1432,7 @@ Server::ServerClientCmd(u_short flag, int argc, const char* const * argv)
 
 	bool	success = true;
 	int		i;
-	char	*errmsg = NoError;
+	const char	*errmsg = NoError;
 
 	// if we allows a server to server multiple groups,
 	// there will be problems for the server to identify the current group

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.9  1996/06/12 14:56:06  wenger
+  Added GUI and some code for saving data to templates; added preliminary
+  graphical display of TDatas; you now have the option of closing a session
+  in template mode without merging the template into the main data catalog;
+  removed some unnecessary interdependencies among include files; updated
+  the dependencies for Sun, Solaris, and HP; removed never-accessed code in
+  ParseAPI.C.
+
   Revision 1.8  1996/06/07 19:41:06  wenger
   Integrated some of the special attribute projection sources back
   into the regular Devise sources.
@@ -68,10 +76,10 @@ public:
   Group *parent;
   int type;
 
-  Group(char *name, Group *par, int typ);
+  Group(const char *name, Group *par, int typ);
   ~Group();
-  Group *insert_item(char *name);
-  Group *insert_group(char *name);
+  Group *insert_item(const char *name);
+  Group *insert_group(const char *name);
   Group *parent_group();
   void subitems(char *);
 };

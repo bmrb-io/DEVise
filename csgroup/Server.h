@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2008/09/11 20:55:23  wenger
+  A few more compile warning fixes...
+
   Revision 1.11  2008/01/24 22:08:05  wenger
   Got rid of a bunch of compile warnings.
 
@@ -193,7 +196,7 @@ public:
 
 
 protected:
-    virtual void DoAbort(char *reason);   // print error message and abort
+    virtual void DoAbort(const char *reason);// print error message and abort
     virtual void WaitForConnection();     // wait for client connection
     virtual void WaitForImageportConnection();     
 									    	// wait for client connection
@@ -238,8 +241,8 @@ protected:
 
 // group control functions
 protected:
-	virtual bool  AfterPassiveJoin(GroupKey* gkp, char*& errmsg);
-	virtual bool ExecInitServer(ClientID clientID, char*InitStr, char*&errmsg)
+	virtual bool  AfterPassiveJoin(GroupKey* gkp, const char*& errmsg);
+	virtual bool ExecInitServer(ClientID clientID, char*InitStr, const char*&errmsg)
 	{	
 		errmsg = "NULL";
 		return true;
@@ -250,11 +253,11 @@ protected:
 	// right now, it deos not propagate flags, and assume it to be API_CTL
 	// it is to be fixed later
 	virtual bool GroupCast(GroupKey* gname, 
-				char* cname, 
-				char* control,
+				const char* cname, 
+				const char* control,
 				int argc, 
 				const char* const * argv, 
-				char*&errmsg);
+				const char*&errmsg);
     virtual void ProcessCmd(ClientID,
 			    int argc,
 			    char **argv);	 	      // process a single client command

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.27  1999/11/30 22:28:03  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.26  1999/11/19 21:29:15  wenger
   Removed Journal class and related code (no longer works); removed various
   other unused or unnecessary code.
@@ -197,7 +204,7 @@ PSDisplay::PSDisplay(char *name)
 Create a new window 
 ***************************************************************/
 
-WindowRep *PSDisplay::CreateWindowRep(char *name, Coord x, Coord y,
+WindowRep *PSDisplay::CreateWindowRep(const char *name, Coord x, Coord y,
 				     Coord width, Coord height, 
 				     WindowRep *parentRep,
 				     Coord min_width, Coord min_height,
@@ -338,7 +345,7 @@ DevStatus PSDisplay::ImportPSImage(char *filename, Rectangle *location)
      * it already is. */
     if (location != NULL) {
       /* Find out the bounding box for what we're importing. */
-      char *bbString = "%%BoundingBox:";
+      const char *bbString = "%%BoundingBox:";
       int bbStrLen = strlen(bbString);
       Coord x1, y1, x2, y2;
       while (fgets(buf, bufSize, importFile) != NULL) {
@@ -397,7 +404,7 @@ DevStatus PSDisplay::ImportPSImage(char *filename, Rectangle *location)
 Print PostScript header.
 **************************************************************/
 
-void PSDisplay::PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
+void PSDisplay::PrintPSHeader(const char *title, const Rectangle &screenPrintRegion,
     Boolean maintainAspect)
 {
   DOASSERT(_printFile != NULL, "No print file");
@@ -460,7 +467,7 @@ void PSDisplay::PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
     bbY2);
 
 
-  char *userName = getenv("USER");
+  const char *userName = getenv("USER");
   if (userName == NULL) userName = "user unknown";
   fprintf(_printFile, "%%%%Creator: %s\n", userName);
 

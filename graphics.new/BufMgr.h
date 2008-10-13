@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.12  2005/12/06 20:03:39  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.11.22.1  2005/09/06 21:20:16  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -96,7 +100,8 @@ public:
     virtual void Clear() = 0;
 
     /* Clear buffers occupied by given TData/GData */
-    virtual void ClearData(TData *data, char *attrName = "recId", Coord granularith = 1) = 0;
+    virtual void ClearData(TData *data, const char *attrName = "recId",
+      Coord granularith = 1) = 0;
 
     /* Information stored about a buffer manager request */
     struct BufMgrRequest {
@@ -107,7 +112,7 @@ public:
         QPRange processed;                /* list of processed ranges */
         Coord low;                        /* start of requested record range */
         Coord high;                       /* end of requested record range */
-	char *attrName;			  // name of sorted attr requested
+	const char *attrName;		  // name of sorted attr requested
 	Coord granularity;		  /* requested granularity */
         Boolean asyncAllowed;             /* asynchronous I/O allowed */
         Boolean inMemoryOnly;             /* return in-memory data only */

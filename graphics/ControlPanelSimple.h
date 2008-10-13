@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2000
+  (c) Copyright 1999-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  2000/01/13 23:06:51  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.2  1999/12/06 18:40:47  wenger
   Simplified and improved command logging (includes fixing bug 537, command
   logs are now human-readable); added standard header to debug logs.
@@ -62,7 +65,7 @@ public:
 	_result = result;
     return 1;
   }
-  virtual int ReturnVal(int argc, char **argv) {
+  virtual int ReturnVal(int argc, const char * const *argv) {
     _valueReturned = true;
 	_result = "";
     for(int i = 0; i < argc; i++) {

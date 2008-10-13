@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.9  2005/12/06 20:01:10  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.8.8.2  2005/09/28 17:14:19  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -68,16 +72,17 @@
 #include "ServerAPI.h"
 #include "devise_varargs.h"
 
-char* ServerServerProt::DefaultStr = "NULL";
-char* ServerServerProt::ControlSeperator = "?+?";
+const char* ServerServerProt::DefaultStr = "NULL";
+const char* ServerServerProt::ControlSeperator = "?+?";
 ServerServerProt::~ServerServerProt()
 {
 	int		i;
 	if (dynamicStructure)
 	{
 		for (i=0; i < newargc; ++i)
-			if (newargv[i] != DefaultStr)
-				delete newargv[i];
+		{
+			delete newargv[i];
+		}
 		delete newargv;
 	}
 }
@@ -89,11 +94,15 @@ ServerServerProt::ServerServerProt(int argc, const char* const * argv)
 	dynamicStructure = true;
 	newargv = new char*[argc+ getHeaderLength()];
 	for (i=0; i < getHeaderLength(); ++i)
-		newargv[i] = DefaultStr;
+	{
+		newargv[i] = strdup(DefaultStr);
+	}
 
 	// fill in the original commands
 	for (i=0; i< argc; ++i)
-		newargv[i+getHeaderLength()] =strdup(argv[i]);
+	{
+		newargv[i+getHeaderLength()] = strdup(argv[i]);
+	}
 
 	newargc = argc + getHeaderLength();
 	msgsize = NetworkPrepareMsg(API_CMD, 0, newargc,newargv, &recBuffer);
@@ -115,15 +124,18 @@ ServerServerProt::setServerName(const char* sname)
 {
 	if (dynamicStructure)
 	{
-		if (newargv[SERVER_NAME]!=DefaultStr)
+		if (newargv[SERVER_NAME]!=DefaultStr) {
 			delete newargv[SERVER_NAME];
-
+		}
+		
 		newargv[SERVER_NAME] = strdup(sname);
 		msgsize = NetworkPrepareMsg(API_CMD, 0, newargc,newargv, &recBuffer);
 		return msgsize;
 	}
 	else
+	{
 		return -1;
+	}
 }
 
 int
@@ -138,7 +150,9 @@ ServerServerProt::setClientName(const char* cname)
 		return msgsize;
 	}
 	else 
+	{
 		return -1;
+	}
 }
 
 int
@@ -171,7 +185,9 @@ ServerServerProt::setControl(int args, ...)
 		return msgsize;
 	}
 	else
+	{
 		return -1;
+	}
 }
 
 
@@ -232,7 +248,9 @@ ServerServerProt::getControl()
 			prev = i;
 		}
 		else
+		{
 			i++;
+		}
 	}
 	return retval;
 }

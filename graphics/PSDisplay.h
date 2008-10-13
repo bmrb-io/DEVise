@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  1998/12/15 18:47:12  wenger
+  New option in fixed text symbol: if size is <=1, it is assumed to be a
+  fraction of the screen height, rather than the font size in points.
+
   Revision 1.18  1998/05/14 18:21:04  wenger
   New protocol for JavaScreen opening sessions works (sending "real" GIF)
   except for the problem of spaces in view and window names.
@@ -133,7 +137,7 @@ public:
 
     /* Create a new window representative. Dimensions are in normalized
        coord from (0,0) to (1,1) */
-    virtual WindowRep *CreateWindowRep(char *name, Coord x, Coord y,
+    virtual WindowRep *CreateWindowRep(const char *name, Coord x, Coord y,
 				       Coord width, Coord height, 
 				       WindowRep *parentRep = NULL,
                                        Coord min_width = 0.05,
@@ -169,7 +173,7 @@ public:
 #endif
     virtual DevStatus ImportPSImage(char *filename, Rectangle *location = NULL);
 
-    virtual void PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
+    virtual void PrintPSHeader(const char *title, const Rectangle &screenPrintRegion,
       Boolean maintainAspect);
     virtual void PrintPSTrailer();
     virtual void GetBoundingBox(Rectangle &boundingBox) {

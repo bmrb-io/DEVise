@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  1997/03/20 22:05:35  guangshu
+  Added function Resize.
+
   Revision 1.1  1996/08/04 21:23:24  beyer
   DataSource's are now reference counted.
   Added Version() which TData now check to see if the DataSource has changed,
@@ -38,7 +41,7 @@ class DataSourceFixedBuf
 {
   public:
 
-    DataSourceFixedBuf(int buffer_size, char* label);
+    DataSourceFixedBuf(int buffer_size, const char* label);
 
     ~DataSourceFixedBuf();
 
@@ -56,7 +59,7 @@ class DataSourceFixedBuf
 
 
 inline
-DataSourceFixedBuf::DataSourceFixedBuf(int buffer_size, char* label)
+DataSourceFixedBuf::DataSourceFixedBuf(int buffer_size, const char* label)
 : DataSourceBuf(new char[buffer_size], buffer_size, 0, label)
 {
 }

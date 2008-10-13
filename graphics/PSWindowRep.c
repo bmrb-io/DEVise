@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.45  2008/09/11 20:28:04  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.44  2003/01/13 19:25:10  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -1896,9 +1899,9 @@ void PSWindowRep::DrawText(Boolean scaled, const char *text, Coord x, Coord y,
   int textLength = strlen(text);
   if (textLength <= 0) return;
 
-  char *comment;
-  char *moveToWindow;
-  char *moveToText;
+  const char *comment;
+  const char *moveToWindow;
+  const char *moveToText;
 
   /* Here, instead of actually calculating the text position, we generate
    * the correct PostScript code to calculate the position. */
@@ -2032,9 +2035,9 @@ void PSWindowRep::DrawDataText(Boolean scaled, const char *text, Coord x, Coord 
   int textLength = strlen(text);
   if (textLength <= 0) return;
 
-  char *comment;
-  char *moveToWindow;
-  char *moveToText;
+  const char *comment;
+  const char *moveToWindow;
+  const char *moveToText;
 
   /* Here, instead of actually calculating the text position, we generate
    * the correct PostScript code to calculate the position. */
@@ -2147,7 +2150,7 @@ void PSWindowRep::DrawDataText(Boolean scaled, const char *text, Coord x, Coord 
 /* Get the correct PostScript code strings according to the alignment
  * we're using. */
 void PSWindowRep::GetAlignmentStrings(SymbolAlignment alignment,
-    char *&comment, char *&moveToWindow, char *&moveToText)
+    const char *&comment, const char *&moveToWindow, const char *&moveToText)
 {
   comment = "";
   moveToWindow = "";

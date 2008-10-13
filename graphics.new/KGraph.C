@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.15  2005/12/06 20:04:06  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -125,7 +128,7 @@ KGraph::~KGraph(void)
 // Utility Functions
 //******************************************************************************
 
-void KGraph::InitGraph(char *winname, char *statname)
+void KGraph::InitGraph(const char *winname, const char *statname)
 {
   _naxes = 0;
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.8  2008/09/23 22:55:40  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.7  1999/06/23 19:45:11  wenger
   Increased the number of records drill-down can send to the screen; if there
   are too many records, the message sent to the JavaScreen is now "Too much
@@ -55,7 +58,7 @@ class TData;
 
 class ActionDefault: public Action {
 public:
-  ActionDefault(char *name, Coord leftEdge = 0.0, 
+  ActionDefault(const char *name, Coord leftEdge = 0.0, 
 		Boolean useLeftFlag = false,
 		Coord rightEdge = 0.0, Boolean useRightFlag = false);
 

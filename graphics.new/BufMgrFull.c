@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  2008/01/24 22:08:31  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.32  2005/12/06 20:03:39  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -205,7 +208,7 @@ BufMgrFull::BufMgrFull(int bufSize)
     _numGetRecs = _totalGetRecBytes = _totalGetRecBufSize = 0;
     _seqIOs = _parIOs = 0;
 
-    char *policy = "none";
+    const char *policy = "none";
     if (Init::Policy() == BufPolicy::FOCAL) {
         policy = "Focal";
         _policy = new BufferFocal;
@@ -1333,7 +1336,7 @@ void BufMgrFull::Clear()
 */
 
 void BufMgrFull::ClearData(TData *data, 
-			   char *attrName, Coord granularity)
+			   const char *attrName, Coord granularity)
 {
     int numArrays = _memoryRanges->NumArrays();
     for(int i = 0; i < numArrays; i++) {

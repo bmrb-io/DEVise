@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -59,7 +59,7 @@ class Serializable
 		virtual string serialize(char);
 		virtual string serialize(float);
 		virtual string serialize(string);
-		virtual string serialize(int, char**);
+		virtual string serialize(int, const char**);
 		virtual void deserialize(string& str, int& typeId, string& value);
 	private:
 		void check(int);

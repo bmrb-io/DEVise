@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -25,6 +25,9 @@
   $Id$
 
   $Log$
+  Revision 1.14  2008/09/23 19:32:46  wenger
+  Changed DispatchedName() to const char *.
+
   Revision 1.13  2008/09/11 20:55:37  wenger
   A few more compile warning fixes...
 
@@ -137,11 +140,12 @@ public:
 	return Server::ReturnVal(_currentClient, flag, 1, &result, false);
   }
 
-  virtual int ReturnVal(int argc, char **argv){
+  virtual int ReturnVal(int argc, const char * const *argv){
 	return Server::ReturnVal(_currentClient, API_ACK , argc, argv, true);
  }	 
 
-  virtual int ReturnVal(int flag, int argc, char **argv, bool addBrace){
+  virtual int ReturnVal(int flag, int argc, const char * const *argv,
+      bool addBrace){
 	return Server::ReturnVal(_currentClient, flag, argc, argv, addBrace);
  }	 
 

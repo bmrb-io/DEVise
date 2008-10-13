@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -19,6 +19,10 @@
 /*
   $Id$
   $Log$
+  Revision 1.6  2005/12/06 20:01:10  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.5.14.1  2005/09/28 22:29:21  wenger
   Various const-ifying to make things compile better on basslet.
 
@@ -50,7 +54,7 @@ class CSgroupKey;
 
 class CompDate {
 public:
-  static char *Get();
+  static const char *Get();
 };
 
 enum{
@@ -98,7 +102,7 @@ public:
 
 protected:
 	// functions for communcating with the server
-	virtual void DoAbort(char *reason);	// print error message and abort
+	virtual void DoAbort(const char *reason);// print error message and abort
 	virtual int ServerCmd(int argc,		// send command to server
 		const char * const *argv);
 	virtual int  SendServerCmd			// another way to send cmds to server

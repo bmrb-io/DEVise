@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  2008/09/23 19:32:46  wenger
+  Changed DispatchedName() to const char *.
+
   Revision 1.32  2005/12/06 20:04:15  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -271,7 +274,7 @@ private:
     Tcl_SetResult(_interp, (char *)result, TCL_VOLATILE);
     return 1;
   }
-  virtual int ReturnVal(int argc, char **argv) {
+  virtual int ReturnVal(int argc, const char * const *argv) {
 	_valueReturned = true;
     Tcl_ResetResult(_interp);
     for(int i = 0; i < argc; i++) 

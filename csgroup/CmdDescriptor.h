@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1998
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.2  1999/11/24 15:44:03  wenger
+  Removed (unnecessary) CommandObj class; commands are now logged for the
+  monolithic form, not just the client/server form; other command-related
+  cleanups; added GUI for playing back command logs.
+
   Revision 1.1  1998/05/02 08:38:52  taodb
   Added command logging and playing support
   Added communication support for JAVA Screen
@@ -116,7 +121,7 @@ class CmdDescriptor:public Serializable
 		CmdDescriptor(string buf);
 		~CmdDescriptor();
 		CmdSource* getCmdsource();
-		void setRetval(bool success, char* errmsg)
+		void setRetval(bool success, const char* errmsg)
 		{
 			this->success = success;
 			if (errmsg == NULL)

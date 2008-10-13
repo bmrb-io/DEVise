@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.23  2005/12/06 20:04:12  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.22.14.1  2005/09/28 17:14:50  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -204,12 +208,13 @@ private:
 	_valueReturned = true;
     return _server->ReturnVal(flag, result);
   }
-  virtual int ReturnVal(int argc, char **argv) {
+  virtual int ReturnVal(int argc, const char * const *argv) {
 	_valueReturned = true;
     return _server->ReturnVal(argc, argv);
   }
 
-  virtual int ReturnVal(int flag, int argc, char **argv, bool addBrace){
+  virtual int ReturnVal(int flag, int argc, const char * const *argv,
+      bool addBrace){
 	_valueReturned = true;
     return _server->ReturnVal(flag, argc, argv, addBrace);
   } 

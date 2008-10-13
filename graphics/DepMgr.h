@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -22,6 +22,10 @@
   $Id$
 
   $Log$
+  Revision 1.1  1997/09/05 22:35:55  wenger
+  Dispatcher callback requests only generate one callback; added Scheduler;
+  added DepMgr (dependency manager); various minor code cleanups.
+
  */
 
 #ifndef _DepMgr_h_
@@ -76,11 +80,11 @@ public:
   void PrintPlan();
 
 private:
-  char *EventToString(Event event);
+  const char *EventToString(Event event);
 
   DispatcherCallback *_object;
   Event _event;
-  char *_eventStrings[(int) EventLast];
+  const char *_eventStrings[(int) EventLast];
 
   static DepMgr* _current;
 };

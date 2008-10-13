@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  2005/12/06 20:02:57  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.32  2003/01/13 19:25:09  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -302,8 +306,9 @@ public:
 
   /* return one or multiple values to caller of API */
   virtual int ReturnVal(u_short flag, const char *result) = 0;
-  virtual int ReturnVal(int argc, char **argv) = 0;
-  virtual int ReturnVal(int flag, int argc, char **argv, bool addBrace)
+  virtual int ReturnVal(int argc, const char * const *argv) = 0;
+  virtual int ReturnVal(int flag, int argc, const char * const *argv,
+    bool addBrace)
   {
 		return ReturnVal(argc, argv);
   }

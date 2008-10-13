@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  1998/07/29 14:19:44  wenger
+  Mods to compile DEVise on Alpha/OSF again (partially successful); mods to
+  allow static linking on Linux.
+
   Revision 1.6  1998/04/01 05:21:49  taodb
   Replaced types.h with CollabTypes.h, related source files were updated.
 
@@ -98,7 +102,7 @@ extern "C" {
 void prnConnectInfo(ConnectInfo *);
 void prnDbEntry(DbEntry *);
 void prnMode(int, int);
-void prnBuf(int, char *, ...);
+void prnBuf(int, const char *, ...);
 
 #ifdef __cplusplus
 }

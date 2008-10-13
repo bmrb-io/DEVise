@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.13  2008/01/24 22:08:32  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.12  2003/01/13 19:25:22  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -81,7 +84,7 @@
 
 //#define DEBUG
 
-Group::Group(char *nm, Group *par, int typ)
+Group::Group(const char *nm, Group *par, int typ)
 {
   name = new char[strlen(nm) + 1];
   strcpy(name, nm);
@@ -96,7 +99,7 @@ Group::~Group()
   delete(subgrps);
 }
 
-Group *Group::insert_item(char *nm)
+Group *Group::insert_item(const char *nm)
 {
   Group *newitem = new Group(nm, this, ITEM);
 
@@ -104,7 +107,7 @@ Group *Group::insert_item(char *nm)
   return newitem;
 }
 
-Group *Group::insert_group(char *nm)
+Group *Group::insert_group(const char *nm)
 {
   Group *newgrp = new Group(nm, this, SUBGRP);
   

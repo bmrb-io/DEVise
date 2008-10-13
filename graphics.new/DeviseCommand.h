@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2004
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.77  2008/01/24 22:08:32  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.76  2006/05/26 16:23:04  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -512,8 +515,7 @@ class DeviseCommand
 		virtual int Run(int argc, char** argv) = 0;
 
 		virtual int ReturnVal(u_short flag, const char *result);
-		//TEMP -- should be const char **
-		virtual int ReturnVal(int argc, char **argv);
+		virtual int ReturnVal(int argc, const char * const *argv);
 	protected:
         char		*_result;
 		int			_resultCapacity;

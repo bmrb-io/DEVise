@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  2000/01/13 23:06:51  wenger
+  Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
+
   Revision 1.1  1997/09/05 22:35:54  wenger
   Dispatcher callback requests only generate one callback; added Scheduler;
   added DepMgr (dependency manager); various minor code cleanups.
@@ -170,7 +173,7 @@ DepMgr::PrintPlan()
  * function: DepMgr::EventToString
  * Convert an Event enum to the corresponding string.
  */
-char*
+const char*
 DepMgr::EventToString(Event event)
 {
   return _eventStrings[(int) event];

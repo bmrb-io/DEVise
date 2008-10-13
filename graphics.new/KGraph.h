@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.9  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.8  1999/08/05 21:42:50  wenger
   Cursor improvements: cursors can now be dragged in "regular" DEVise;
   cursors are now drawn with a contrasting border for better visibility;
@@ -88,7 +91,7 @@ class KGraph : protected WindowRepCallback
 
 		
   // Initialize the settings
-  void InitGraph(char *winname, char *statname);
+  void InitGraph(const char *winname, const char *statname);
 
   // Set the number of axes to display
   void SetAxes(int num);
@@ -101,8 +104,8 @@ class KGraph : protected WindowRepCallback
 
 protected:
   WindowRep *_win;
-  char *_winame;
-  char *_statname;
+  const char *_winame;
+  const char *_statname;
   int _naxes;
   Coord *_pts;
   Point *_xyarr;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/06/10 18:38:16  wenger
+  Got DEVise to compile on HP again; updated hp, solaris, and sun dependencies.
+
   Revision 1.5  1997/05/21 22:09:51  andyt
   Added EmbeddedTk and Tasvir functionality to client-server library.
   Changed protocol between devise and ETk server: 1) devise can specify
@@ -52,7 +55,7 @@ class ETkIfc
 	NorthWest = 0,
 	Center
     };
-    static char *AnchorToString(Anchor anchor);
+    static const char *AnchorToString(Anchor anchor);
     
     //
     // ETkIfc::CreateWindow()

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  2008/09/23 19:32:39  wenger
+  Changed DispatchedName() to const char *.
+
   Revision 1.33  2002/02/05 19:32:33  wenger
   Fixed bug 750 (problem with child view/pile combinations with an X
   server with no backing store); added TEST_NO_BACKING_STORE code to
@@ -207,7 +210,7 @@ public:
 
   /* Create a new window rep, 
      relative == 1 if in relative dimensions.*/
-  virtual WindowRep* CreateWindowRep(char *name, Coord x, Coord y,
+  virtual WindowRep* CreateWindowRep(const char *name, Coord x, Coord y,
 				     Coord width, Coord height, 
 				     WindowRep *parentRep = NULL,
 				     Coord min_width = 0.05,
@@ -243,7 +246,7 @@ public:
     DisplayExportFormat format) { return StatusFailed; }
 #endif
 
-  virtual void PrintPSHeader(char *title, const Rectangle &screenPrintRegion,
+  virtual void PrintPSHeader(const char *title, const Rectangle &screenPrintRegion,
     Boolean maintainAspect = true) {}
   virtual void PrintPSTrailer() {}
   virtual void GetBoundingBox(Rectangle &boundingBox) {}

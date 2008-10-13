@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.19  2005/12/06 20:03:04  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.18.10.1  2003/04/17 17:59:17  wenger
   Now compiles with no warnings with gcc 2.95, except for warnings about
   tempname and tmpnam on Linux; updated Linux and Solaris dependencies.
@@ -131,7 +135,7 @@ struct AttrVals {
   char *name;
   AttrType type;
   Coord numericalValue;
-  char *stringValue;
+  const char *stringValue;
 };
 
 // See GDataRec.h.
@@ -378,8 +382,10 @@ GDataSock::GetShapeAttr(int attrNum, const AttrInfo *attrInfo,
     // get the string value.
     //
     if (attrVal.type == StringAttr) {
+      char *tmpStr;
       if (stringTable->Lookup( (int) attrVal.numericalValue,
-          attrVal.stringValue) < 0) {
+          tmpStr) < 0) {
+        attrVal.stringValue = tmpStr;
         char buf[1024];
         sprintf(buf, "String not found for %s", attrInfo->name);
         reportErrNosys(buf);
@@ -510,7 +516,7 @@ GDataSock::PrintShapeAttr(const AttrVals &attrVal, char buf[], int &offset,
   // important.  RKW 1999-06-29.
 
   if (attrVal.type == StringAttr) {
-    char *formatStr;
+    const char *formatStr;
     if (strlen(attrVal.stringValue) == 0 ||
         strchr(attrVal.stringValue, _params.separator)) {
       // String is empty or contains separator char -- put braces around it.

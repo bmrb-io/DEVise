@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  2005/12/06 20:01:13  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.7.20.1  2003/12/19 18:07:07  wenger
   Merged redhat9_br_0 thru redhat9_br_1 to V1_7b0_br.
 
@@ -151,7 +155,7 @@ prnMode(int flg, int mode) {
 }
 
 void
-prnBuf(int type, char *format, ...) {
+prnBuf(int type, const char *format, ...) {
 	char command[2000];
 	va_list pvar;
 	int code;

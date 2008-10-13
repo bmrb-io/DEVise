@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.85  2006/05/26 16:23:04  wenger
+  Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+
   Revision 1.84  2006/05/10 19:04:43  wenger
   Added the new setDoHomeOnVisLinkIfInvisible and
   getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
@@ -924,7 +927,7 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 	CmdDescriptor& cmdDes)
 {
 	int		retval = 1;
-	char*	errmsg = NULL;
+	const char*	errmsg = NULL;
 	int		cid;
 	bool	inGroup = false;
 	bool	activeGroup = false;
@@ -1016,7 +1019,7 @@ CmdContainer::Run(int argc, const char* const *argv, ControlPanel* control,
 				//TEMP -- remove typecast on argv
 				retval = _server->GroupCast(cInfo->gname, cInfo->cname,
 						SS_CSS_Cmd,
-						argc, (char **)argv, errmsg) ? 1 : -1;
+						argc, argv, errmsg) ? 1 : -1;
 
 				// run it locally
 				if (retval <= 0)

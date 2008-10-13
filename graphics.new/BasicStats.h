@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.18  1998/02/20 06:16:55  beyer
+  resurected histograms
+
   Revision 1.17  1997/03/20 22:04:42  guangshu
   Added function SetnumBucks.
 
@@ -140,7 +143,7 @@ public:
   virtual Coord GetHistMax();
   virtual void SetHistogram(Coord min, Coord max, int buckets);
   virtual int GetnumBuckets(){ return numBuckets;}
-  virtual char *GetStatName(int statnum);
+  virtual const char *GetStatName(int statnum);
 
 protected:
 

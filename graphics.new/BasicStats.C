@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.36  2005/12/06 20:03:38  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.35.26.1  2003/04/18 17:07:51  wenger
   Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
 
@@ -426,7 +430,7 @@ void BasicStats::SetHistogram(Coord min, Coord max, int buckets)
 
 }
 
-char *BasicStats::GetStatName(int statnum)
+const char *BasicStats::GetStatName(int statnum)
 {
   switch (statnum) {
     case STAT_MEAN:    return "MEAN";

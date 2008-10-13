@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2006
+  (c) Copyright 1998-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.133  2008/09/23 22:55:40  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.132  2006/05/26 16:23:04  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -928,7 +931,7 @@ DeviseCommand::ReturnVal(u_short flag, const char *result)
 }
 
 int
-DeviseCommand::ReturnVal(int argc, char **argv)
+DeviseCommand::ReturnVal(int argc, const char * const *argv)
 {
 #if defined(DEBUG)
     printf("DeviseCommand::ReturnVal(");
@@ -1332,7 +1335,7 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
         char entryName[nameSize];
 		char fullName[256];
 		if (DataCatalog::GetEntryName(argv[2], entryName, nameSize)) {
-			char *catName = argv[1];
+			const char *catName = argv[1];
 			if (!strcmp(catName, ".")) catName = "";
 			int formatted = snprintf(fullName, sizeof(fullName)/sizeof(char),
 			    "%s.%s", catName, entryName);
@@ -1341,7 +1344,7 @@ DeviseCommand_dteInsertCatalogEntry::Run(int argc, char** argv)
               return -1;
 			}
 		} else {
-		  char *errMsg = "Error parsing new data catalog entry";
+		  const char *errMsg = "Error parsing new data catalog entry";
 		  reportErrNosys(errMsg);
           ReturnVal(API_NAK, errMsg);
     	  return -1;
@@ -2184,7 +2187,7 @@ DeviseCommand_serverExit::Run(int argc, char** argv)
             ControlPanel::Instance()->DoQuit();
     		return 1; // We never get to here.
           } else {
-    		char *_result = "Server won't exit with more than one client connected.";
+    		const char *_result = "Server won't exit with more than one client connected.";
 			_resultCapacity = 0;
     		printf("%s\n", _result);
             ReturnVal(API_NAK, _result);
@@ -3936,7 +3939,7 @@ DeviseCommand_testDataSock::Run(int argc, char** argv)
             return -1;
           }
     
-          char *testStr = "abcd0123456789";
+          const char *testStr = "abcd0123456789";
           int numBytes = strlen(testStr) + 1;
           if (write(fd, testStr, numBytes) != numBytes) {
             reportErrSys("write error");
@@ -6046,7 +6049,7 @@ IMPLEMENT_COMMAND_BEGIN(viewGetStringTable)
           ReturnVal(API_NAK, "Invalid table type");
 	      return -1;
 		}
-		char *tableName = view->GetStringTable(type);
+		const char *tableName = view->GetStringTable(type);
 		if (tableName == NULL) tableName = "";
         ReturnVal(API_ACK, tableName);
 	    return 1;

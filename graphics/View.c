@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.248  2008/09/23 22:55:33  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.247  2008/09/23 19:32:39  wenger
   Changed DispatchedName() to const char *.
 
@@ -3217,7 +3220,7 @@ View::DoDrawCursor(WindowRep *winRep, DeviseCursor *cursor)
 
   Boolean pixelsValid;
   int pixX1, pixY1, pixX2, pixY2;
-  char *action;
+  const char *action;
 
   if (_cursorsOn) {
     pixelsValid = cursor->GetOldDestPixels(pixX1, pixY1, pixX2, pixY2);

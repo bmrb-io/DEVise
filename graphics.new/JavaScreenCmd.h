@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2005
+  (c) Copyright 1998-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.51  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.50  2008/01/24 22:08:32  wenger
   Got rid of a bunch of compile warnings.
 
@@ -381,19 +384,19 @@ class JavaScreenCmd
 		~JavaScreenCmd();
 
 		int Run(); // 1 = OK, -1 = error
-		static char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
+		static const char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
 		static void CmdInit();
 		static void CmdTerminate();
 
 	protected:
 		// < 0 if error
-		int ReturnVal(int argc, char** argv);
+		int ReturnVal(int argc, const char* const * argv);
 		ControlCmdType SendWindowData(const char* fileName,
 		  Boolean doChecksum, int &checksumValue);
 
 	private:
-		static char* _serviceCmdName[];
-		static char* _controlCmdName[CONTROLCMD_NUM];
+		static const char* _serviceCmdName[];
+		static const char* _controlCmdName[CONTROLCMD_NUM];
 		ControlPanel	*_control;
 		int				_ctype; // really enum ServiceCmdType
 		int				_argc;
@@ -436,7 +439,7 @@ class JavaScreenCmd
 		void SetDisplayMode();
 
 		// Server->JavaScreen Control Commands
-		ControlCmdType RequestUpdateSessionList(int argc, char** argv);
+		ControlCmdType RequestUpdateSessionList(int argc, const char** argv);
 		ControlCmdType RequestUpdateGData(ViewGraph *view);
 		ControlCmdType RequestUpdateRecordValue(int argc, const char** argv);
 
