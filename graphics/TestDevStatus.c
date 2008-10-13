@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.1  1996/08/23 16:55:43  wenger
+  First version that allows the use of Dali to display images (more work
+  needs to be done on this); changed DevStatus to a class to make it work
+  better; various minor bug fixes.
+
  */
 
 #define _DevStatusTest_c_
@@ -36,7 +41,7 @@
 static char		rcsid[] = "$RCSfile$ $Revision$ $State$";
 #endif
 
-static char *	srcFile = __FILE__;
+static const char *	srcFile = __FILE__;
 
 /*------------------------------------------------------------------------------
  * function: main
