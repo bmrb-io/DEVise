@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.8  2005/12/06 20:01:21  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.7.14.1  2005/09/28 17:14:28  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -444,8 +448,8 @@ Server::GetCmd(int argc, char **argv)
 }
 
 int
-Server::ReturnVal(ClientID clientID, u_short flag, int argc, char **argv,
-    int addBraces)
+Server::ReturnVal(ClientID clientID, u_short flag, int argc,
+    const char * const *argv, int addBraces)
 {
     if (flag != API_ACK && flag != API_NAK) {
         reportErrNosys("Is this really a return value?\n");

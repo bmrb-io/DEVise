@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2008
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  2005/12/06 20:01:21  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.2.28.1  2005/09/28 17:14:28  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -76,11 +80,11 @@ class Server {
     virtual void SingleStep();            // once throught the body of MainLoop
 
     virtual int ReturnVal(		  // send result to client
-	ClientID clientID, u_short flag, char *result) {
+	ClientID clientID, u_short flag, const char *result) {
 	    return ReturnVal(clientID, flag, 1, &result, false); }
 
     virtual int ReturnVal(		  // send result to client
-	ClientID clientID, u_short flag, int argc, char **argv,
+	ClientID clientID, u_short flag, int argc, const char * const *argv,
 	    int addBraces = true);
 
     virtual int SendControl(		  // send command to all clients
