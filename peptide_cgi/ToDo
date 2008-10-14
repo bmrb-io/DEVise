@@ -305,6 +305,20 @@ Num Date        Status  Pri     Description
 				for CB in CYS being based on it being in
 				a disulfide bond. (elu/wenger)
 
+080 10/14/08	OPEN	2	Add a new visualization that allows the user
+				to select any combination of amino acid/atom
+				(as in histograms) and visualizes chem shift
+				delta vs. residue num for that combination
+				for a single entry. (elu/wenger)
+
+081 10/14/08	OPEN	2	Add a link to the visualization summary
+				page that shows all AVS suspcious/anomalous
+				atoms.  (elu/wenger)
+
+082 10/14/08	OPEN	2	Highlight AVS suspicious/anomalous atoms
+				in the visualization for todo 080.  (elu/
+				wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
