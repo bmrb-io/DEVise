@@ -324,6 +324,12 @@ Num Date        Status  Description
 			home on main view -> you don't get back to where
 			you started. (miron/wenger)
 
+073 11/4/08	OPEN	Entity assemblies 2 and 3 don't show up in 4096
+			structure visualization (because they don't have
+			values for residue sequence code and residue
+			label).  (I'm not sure whether this is a bug or
+			not.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
