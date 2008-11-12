@@ -330,6 +330,11 @@ Num Date        Status  Description
 			label).  (I'm not sure whether this is a bug or
 			not.) (wenger)
 
+074 11/12/08	OPEN	In 3D visualizations where you need to scroll to
+			access all of the data sets, there needs to be
+			some better visual indication that more data sets
+			are available than can be seen. (elu/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
