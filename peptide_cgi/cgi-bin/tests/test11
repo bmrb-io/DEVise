@@ -9,7 +9,7 @@ rm -f */4096*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -file test_data/bmr4096.str.nmrstr -name 4096 -force \
-  -check_res_list
+  -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

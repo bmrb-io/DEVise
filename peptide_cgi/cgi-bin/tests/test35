@@ -19,7 +19,7 @@ rm -f */pistachio_example1*
 # Process the sample Pistachio data.
 echo -n "Processing NMR-STAR for Pistachio data: "
 ./s2d -nomail -file test_data/bmr6318_pistachio.str.nmrstr \
-  -name pistachio_example1 -force -check_res_list
+  -name pistachio_example1 -force -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

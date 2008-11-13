@@ -19,18 +19,19 @@ rm -f */6318*
 # Process the sample Pistachio data.
 echo -n "Processing NMR-STAR for Pistachio data: "
 ./s2d -nomail -file test_data/bmr6318_pistachio.str.nmrstr -name 6318 -force \
-  -check_res_list
+  -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
 endif
+mv tmp/s2d.out tmp/s2d.out1
 
 if ($doCoords) then
   # Generate the "normal" structure visualization, so we can make sure
   # that it doesn't conflict with the Pistachio visualization.
   echo -n "Processing NMR-STAR and PDB for coordinate data: "
   ./s2d -nomail -bmrbid 6318 -pdbid 1xfl -coord_index 1 -do_pdb 2 -force \
-    -check_res_list
+    -check_res_list -check_pct
   if ($status != 0) then
     echo "Second invocation of s2d failed!"
     set result = 1

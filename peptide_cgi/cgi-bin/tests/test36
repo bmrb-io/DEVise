@@ -9,7 +9,7 @@ rm -f */lacs_example1*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4267 -name lacs_example1 -force -check_res_list \
-  -lacs_file test_data/bmr4267_LACS.str
+  -lacs_file test_data/bmr4267_LACS.str -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

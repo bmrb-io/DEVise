@@ -7,7 +7,7 @@ rm */*/test5c_out* >& /dev/null
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./vsc -file vis_server_sample.dat -name test5c_out -do_csr 2 -force
-  -check_res_list
+  -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of vsc failed!"
   set result = 1

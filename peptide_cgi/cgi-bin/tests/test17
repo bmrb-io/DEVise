@@ -9,7 +9,7 @@ rm -f */test17_out*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -file test_data/bmr4267mod -name test17_out -do_pdb 1 -force \
-  -check_res_list
+  -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

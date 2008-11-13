@@ -4,7 +4,7 @@
 # to work right).
 
 echo -n "Processing NMR-STAR and chemical shift reference: "
-./s2d -nomail -bmrbid 4317 -do_csr 2 -force -check_res_list
+./s2d -nomail -bmrbid 4317 -do_csr 2 -force -check_res_list -check_pct
 
 if ($status != 0) then
   echo "First invocation of s2d failed!"

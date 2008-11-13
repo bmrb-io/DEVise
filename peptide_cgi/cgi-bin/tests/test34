@@ -7,7 +7,7 @@ set result = 0
 rm -f */6521ur*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./vur -file test_data/bmr6521.str.nmrstr -name 6521ur
+./vur -file test_data/bmr6521.str.nmrstr -name 6521ur -check_pct
 if ($status != 0) then
   echo "First invocation of vur failed!"
   set result = 1

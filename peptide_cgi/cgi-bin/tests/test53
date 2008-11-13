@@ -8,7 +8,7 @@ rm -f */test53_out*
 rm -f */*/test53_out*
 
 echo -n "Processing NMR-STAR: "
-./uvd -file test_data/bmr15803_3.str -name test53_out -force
+./uvd -file test_data/bmr15803_3.str -name test53_out -force -check_pct
 if ($status != 0) then
   echo "First invocation of uvd failed!"
   set result = 1

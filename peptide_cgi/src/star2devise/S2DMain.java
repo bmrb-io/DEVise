@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.95  2008/09/26 20:00:06  wenger
+// Changed version to 11.3.4x1.
+//
 // Revision 1.94  2008/09/26 16:43:51  wenger
 // Changed version to 11.3.3 for release.
 //
@@ -257,6 +260,7 @@ public class S2DMain {
     private boolean _force = false;
     private boolean _useLocalFiles = false;
     private boolean _checkResList = false;
+    private boolean _checkPctAssign = false;
 
     private static final int PDB_LEVEL_NONE = 0;
     private static final int PDB_LEVEL_LINK = 1;
@@ -603,6 +607,8 @@ public class S2DMain {
           "    -bmrbid <value>\n" +
           "        the BMRB accession number to process (e.g., 4081)\n" +
 	  "        (mandatory if pdbid is specified)\n" +
+	  "    -check_pct\n" +
+	  "        check percent assigned values & fail if > 100%\n" +
 	  "    -check_res_list\n" +
 	  "        check the residue list against the chem shift loop residues\n" +
           "    -conn_file <filename>\n" +
@@ -741,6 +747,9 @@ public class S2DMain {
 		} else if (_masterBmrbId.equals("4096")) {
 		    _longName += "/4038";
 		}
+
+	    } else if ("-check_pct".equals(args[index])) {
+	    	_checkPctAssign = true;
 
 	    } else if ("-check_res_list".equals(args[index])) {
 	    	_checkResList = true;
@@ -2237,7 +2246,7 @@ public class S2DMain {
 	}
 
 	try {
-	    chemShift.writePctAssign(frameIndex);
+	    chemShift.writePctAssign(frameIndex, _checkPctAssign);
 	    chemShift.addPctAssignData(_dataSets, frameIndex);
 	} catch (S2DException ex) {
 	    // Don't throw a new exception here because we want to write as

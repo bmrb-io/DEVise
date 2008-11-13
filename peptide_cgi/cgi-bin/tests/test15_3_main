@@ -5,7 +5,7 @@
 
 echo -n "Processing NMR-STAR and chemical shift reference: "
 ./s2d -nomail -name 4317 -file test_data/bmr4317_3.str -do_csr 2 -force \
-  -check_res_list
+  -check_res_list -check_pct
 
 if ($status != 0) then
   echo "First invocation of s2d failed!"

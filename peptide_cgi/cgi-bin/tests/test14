@@ -12,7 +12,7 @@ rm -f */4867*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -bmrbid 4867 -do_pdb 2 -force -check_res_list \
-  -do_lacs 1 -lacs_url file:test_data/
+  -do_lacs 1 -lacs_url file:test_data/ -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

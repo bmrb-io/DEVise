@@ -12,7 +12,7 @@ rm -f */*/test2_out*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./vsc -file bmr4267.str -name test2_out -force -check_res_list \
-  -lacs_file test_data/bmr4267_LACS.str
+  -lacs_file test_data/bmr4267_LACS.str -check_pct
 if ($status != 0) then
   echo "First invocation of vsc failed!"
   set result = 1

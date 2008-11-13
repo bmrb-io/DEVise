@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/09/23 16:43:23  wenger
+// Fixed bug 067 (bad last line of H vs N data).
+//
 // Revision 1.8  2008/07/02 16:29:19  wenger
 // S2 order parameter visualizations are done and approved by Eldon;
 // tests at least partially updated for S2 order stuff;
@@ -341,7 +344,8 @@ public class S2DChemShift {
 
     //-------------------------------------------------------------------
     // Write the percent assignments for this data.
-    public void writePctAssign(int frameIndex) throws S2DException
+    public void writePctAssign(int frameIndex, boolean checkPctAssign)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.writePctAssign()");
@@ -409,10 +413,24 @@ public class S2DChemShift {
 		        index++;
 		    }
 
-		    pctWriter.write(resSeqCode + " " + resLabel + " " +
-		      (100 * (float)starNumH / assignments.numH) + " " +
-		      (100 * (float)starNumC / assignments.numC) + " " +
-		      (100 * (float)starNumN / assignments.numN) + " " + "\n");
+		    float pctH = 100 * (float)starNumH / assignments.numH;
+		    float pctC = 100 * (float)starNumC / assignments.numC;
+		    float pctN = 100 * (float)starNumN / assignments.numN;
+
+		    if (checkPctAssign) {
+                        if (pctH > 100.0 || pctC > 100.0 || pctN > 100.0) {
+		    	    System.err.println("FATAL ERROR!: percent " +
+			      "assignment greater than 100 for residue " +
+			      resSeqCode);
+			    System.exit(1);
+		        }
+		    }
+
+		    pctWriter.write(resSeqCode + " " +
+		      resLabel + " " +
+		      pctH + " " +
+		      pctC + " " +
+		      pctN + "\n");
 		    paCount++;
 		} catch (S2DWarning ex) {
 		    index++;

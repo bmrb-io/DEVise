@@ -10,7 +10,7 @@ rm -f */*/test12_out*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./vsc -file test_data/bmr4081.str -name test12_out -do_csr 2 \
-  -csr_data_dir data_dir -force -check_res_list
+  -csr_data_dir data_dir -force -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of vsc failed!"
   set result = 1

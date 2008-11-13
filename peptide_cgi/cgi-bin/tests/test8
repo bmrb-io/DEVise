@@ -10,7 +10,7 @@ rm */*/test8_out* >& /dev/null
 
 echo -n "Processing NMR-STAR: "
 ./vsc -file ../cgi-bin/test_data/bmr4081.str -name test8_out -force \
-  -check_res_list
+  -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of vsc failed!"
   set result = 1

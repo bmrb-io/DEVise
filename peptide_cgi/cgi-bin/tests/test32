@@ -8,7 +8,7 @@ rm -f */4081ur*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./vur -file test_data/bmr4081.str -name 4081ur \
-  -lacs_file test_data/bmr4081_LACS.str
+  -lacs_file test_data/bmr4081_LACS.str -check_pct
 if ($status != 0) then
   echo "First invocation of vur failed!"
   set result = 1

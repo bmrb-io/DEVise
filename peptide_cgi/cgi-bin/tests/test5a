@@ -8,18 +8,19 @@ rm */4081* >& /dev/null
 # is just for testing!
 
 echo -n "Processing NMR-STAR: "
-./s2d -nomail -bmrbid 4081 -force -check_res_list
+./s2d -nomail -bmrbid 4081 -force -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
 endif
+mv tmp/s2d.out tmp/s2d.out1
 
 echo -n "Processing chem shift ref: "
 #TEMP -- I'm not sure about coord_index here -- it seems like it should
 # be possible to do the csr stuff without processing the coordinates for the
 # 3D visualization
 ./s2d -nomail -bmrbid 4081 -pdbid 2CI2 -coord_index 1 -do_csr 2 -force \
-  -check_res_list
+  -check_res_list -check_pct
 if ($status != 0) then
   echo "Second invocation of s2d failed!"
   set result = 1

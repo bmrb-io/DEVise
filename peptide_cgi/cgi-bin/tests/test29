@@ -11,7 +11,7 @@ set result = 0
 rm -f */5246*
 
 echo -n "Processing NMR-STAR: "
-./s2d -nomail -bmrbid 5246 -do_pdb 1 -force -check_res_list
+./s2d -nomail -bmrbid 5246 -do_pdb 1 -force -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

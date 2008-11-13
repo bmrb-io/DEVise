@@ -10,7 +10,7 @@ rm -f */*/test18_out*
 
 echo -n "Processing NMR-STAR: "
 ./vsc -file test_data/bmr4267mod -name test18_out -do_pdb 1 -force \
-  -check_res_list
+  -check_res_list -check_pct
 if ($status != 0) then
   echo "First invocation of vsc failed!"
   set result = 1
