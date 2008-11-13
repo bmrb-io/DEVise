@@ -335,6 +335,10 @@ Num Date        Status  Description
 			some better visual indication that more data sets
 			are available than can be seen. (elu/wenger)
 
+075 11/13/08	OPEN	Many 3.1 files produce percent assignments above
+			100%.  (See also 070.)
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
