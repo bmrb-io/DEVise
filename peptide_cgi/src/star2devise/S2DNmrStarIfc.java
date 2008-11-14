@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2008/07/20 20:43:07  wenger
+// Made a bunch of cleanups in the course of working on bug 065.
+//
 // Revision 1.11  2007/11/15 17:15:35  wenger
 // Cleaned out cvs history in source files.
 //
@@ -63,6 +66,9 @@ import java.net.*;
 public class S2DNmrStarIfc extends S2DStarIfc {
     //===================================================================
     // VARIABLES
+
+    public static String CHEMASSG_FILE = "chem_info" +
+      File.separator + "assignments.txt";
 
     private static final int DEBUG = 0;
 

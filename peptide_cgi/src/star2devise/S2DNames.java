@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2008/07/02 18:23:52  wenger
+// Changed version to 11.3.1 for release; final choice of suffix
+// for S2 order params.
+//
 // Revision 1.7  2008/02/20 17:41:07  wenger
 // Committing (disabled) partially-implemented S2 Order visualization
 // code and tests.
@@ -182,13 +186,6 @@ public class S2DNames
     //
     public static final String HTML_SUFFIX = ".html";
     public static final String SUMMARY_HTML_SUFFIX = "y";
-
-    //
-    // Helper files.
-    //
-    public static final String CHEMASSG_FILE = "chem_info" +
-      File.separator + "assignments.txt";
-
 }
 
 // ========================================================================

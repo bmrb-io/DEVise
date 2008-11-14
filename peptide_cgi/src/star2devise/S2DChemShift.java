@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2008/11/13 22:23:38  wenger
+// Added -check_pct command-line argument to cause fatal error if
+// percent assigned is > 100%, and added that flag to all tests;
+// also changed test scripts to avoid overwriting output logs within
+// a single test.  (Note: the following tests now fail: test1_3 test3_3
+// test4_3 test14_3 test15_3 test24 test38 test39 test40 test41 test47
+// test52.)
+//
 // Revision 1.9  2008/09/23 16:43:23  wenger
 // Fixed bug 067 (bad last line of H vs N data).
 //
@@ -344,7 +352,8 @@ public class S2DChemShift {
 
     //-------------------------------------------------------------------
     // Write the percent assignments for this data.
-    public void writePctAssign(int frameIndex, boolean checkPctAssign)
+    public void writePctAssign(int frameIndex, boolean checkPctAssign,
+      String chemAssgFile)
       throws S2DException
     {
         if (doDebugOutput(11)) {
@@ -372,7 +381,7 @@ public class S2DChemShift {
 	      S2DMain.getTimestamp() + "\n");
 	    pctWriter.write("#\n");
 
-	    assgTable = new AssgDataManager(S2DNames.CHEMASSG_FILE);
+	    assgTable = new AssgDataManager(chemAssgFile);
         } catch(Exception ex) {
 	    System.err.println(
 	      "Exception writing percent assignment values: " +

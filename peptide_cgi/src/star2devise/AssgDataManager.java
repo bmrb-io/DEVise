@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/11/15 17:15:34  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.4  2007/08/21 18:56:29  wenger
 // Improved debug output -- better verbosity levels, etc.
 //
@@ -78,6 +81,8 @@ public class AssgDataManager
 	{
 	    StreamTokenizer inFile 
 		= new StreamTokenizer (new FileReader( filename ));
+            inFile.slashSlashComments(true);
+
 	    totalNumEntries = 0;
 	    this.filename = filename;
 	    

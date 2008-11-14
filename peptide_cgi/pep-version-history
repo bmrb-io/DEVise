@@ -4,7 +4,8 @@ Peptide-CGI 11.3.4
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.2 or higher.)
 
-(Nothing yet.)
+* Fixed bugs 070 and 075 (problems with percent assignment values
+sometimes being greater than 100% for NMR-STAR 3.1 files).
 
 
 Peptide-CGI 11.3.3

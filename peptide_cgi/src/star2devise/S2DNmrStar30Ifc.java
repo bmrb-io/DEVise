@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/07/20 20:43:07  wenger
+// Made a bunch of cleanups in the course of working on bug 065.
+//
 // Revision 1.8  2007/11/15 17:15:35  wenger
 // Cleaned out cvs history in source files.
 //
@@ -369,6 +372,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
+	CHEMASSG_FILE = "chem_info" + File.separator + "assignments3.txt";
+
 	ABBREV_COMMON = "_Assembly.Name";
 	ASSEMBLY_DB_ACC_CODE = "_Assembly_db_link.Accession_code";
 	ASSEMBLY_DB_NAME = "_Assembly_db_link.Database_code";

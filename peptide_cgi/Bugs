@@ -310,11 +310,12 @@ Num Date        Status  Description
 			(also 5672, 5865, 6037, 6347, 7330). (dmiller1/wenger)
 			(Fixed by wenger, 8/28/08.)
 
-070 8/4/08	OPEN	When processing 20080828_47079.str, the "Percent
+070 8/4/08	FIXED	When processing 20080828_47079.str, the "Percent
 			assigned atoms" has some at almost 200%, suggesting
 			that the program hasn't taken into account the
 			symmetrical dimeric nature of the protein.
 			(cavey/wenger)
+			(Fixed by wenger, 11/14/08.)
 
 071 9/12/08	OPEN	Drill-down doesn't work in CSR 3 session (in JS
 			and DEVise itself). (wenger)  (This is caused by
@@ -335,9 +336,9 @@ Num Date        Status  Description
 			some better visual indication that more data sets
 			are available than can be seen. (elu/wenger)
 
-075 11/13/08	OPEN	Many 3.1 files produce percent assignments above
-			100%.  (See also 070.)
-			(wenger)
+075 11/13/08	FIXED	Many 3.1 files produce percent assignments above
+			100%.  (See also 070.) (wenger)
+			(Fixed by wenger, 11/14/08.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

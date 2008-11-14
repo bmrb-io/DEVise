@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.96  2008/11/13 22:23:38  wenger
+// Added -check_pct command-line argument to cause fatal error if
+// percent assigned is > 100%, and added that flag to all tests;
+// also changed test scripts to avoid overwriting output logs within
+// a single test.  (Note: the following tests now fail: test1_3 test3_3
+// test4_3 test14_3 test15_3 test24 test38 test39 test40 test41 test47
+// test52.)
+//
 // Revision 1.95  2008/09/26 20:00:06  wenger
 // Changed version to 11.3.4x1.
 //
@@ -1744,7 +1752,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save all chem shift data for this entry.
     // Note: this can be tested with 4264.
-    private void saveChemShifts(S2DStarIfc star) throws S2DException
+    private void saveChemShifts(S2DNmrStarIfc star) throws S2DException
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveChemShifts()");
@@ -2126,7 +2134,7 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Save chem shifts for one save frame.
-    private void saveFrameChemShifts(S2DStarIfc star, SaveFrameNode frame,
+    private void saveFrameChemShifts(S2DNmrStarIfc star, SaveFrameNode frame,
       String entityID, int frameIndex) throws S2DException
     {
         if (doDebugOutput(4)) {
@@ -2246,7 +2254,8 @@ public class S2DMain {
 	}
 
 	try {
-	    chemShift.writePctAssign(frameIndex, _checkPctAssign);
+	    chemShift.writePctAssign(frameIndex, _checkPctAssign,
+	      star.CHEMASSG_FILE);
 	    chemShift.addPctAssignData(_dataSets, frameIndex);
 	} catch (S2DException ex) {
 	    // Don't throw a new exception here because we want to write as
