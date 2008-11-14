@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.97  2008/11/14 21:14:59  wenger
+// Fixed bugs 070 and 075 (problems with percent assignment values
+// sometimes being greater than 100% for NMR-STAR 3.1 files).
+//
 // Revision 1.96  2008/11/13 22:23:38  wenger
 // Added -check_pct command-line argument to cause fatal error if
 // percent assigned is > 100%, and added that flag to all tests;
@@ -239,7 +243,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.4x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.3.4x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
