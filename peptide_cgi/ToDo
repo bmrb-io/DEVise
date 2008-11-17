@@ -319,6 +319,13 @@ Num Date        Status  Pri     Description
 				in the visualization for todo 080.  (elu/
 				wenger)
 
+083 8/11/08	OPEN	3	Split S2DMain into several smaller classes
+				to make it easier to understand. (wenger)
+
+084 11/17/08	OPEN	3	Change entity assembly ID integers to
+				names in summary page and individual
+				visualization pages. (elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
