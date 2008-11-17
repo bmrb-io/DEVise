@@ -326,6 +326,11 @@ Num Date        Status  Pri     Description
 				names in summary page and individual
 				visualization pages. (elu/wenger)
 
+085 7/30/08	OPEN	3	Remove duplicate instances of $Residue_seq_code
+				from some mappings in the atom_coord_jmol.base
+				session template (to avoid sending more GData
+				than we really need to). (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
