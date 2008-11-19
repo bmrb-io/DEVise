@@ -331,6 +331,13 @@ Num Date        Status  Pri     Description
 				session template (to avoid sending more GData
 				than we really need to). (wenger)
 
+086 11/19/08	OPEN	3	Add a test with entry 5084 (has multiple
+				proteins, with different PDBs for each one).
+				(wenger)
+
+087 11/19/08	OPEN	3	Make sure I'm correctly testing for model 1
+				of coordinates in mmCIF files. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
