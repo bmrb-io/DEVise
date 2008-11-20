@@ -340,6 +340,10 @@ Num Date        Status  Description
 			100%.  (See also 070.) (wenger)
 			(Fixed by wenger, 11/14/08.)
 
+076 11/20/08	OPEN	Chemical shift reference calculations don't seem
+			to work for most entries with multiple entities (see
+			4310, 4970). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
