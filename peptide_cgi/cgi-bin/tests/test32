@@ -27,7 +27,7 @@ set files = ( data_dir/4081urac1.dat \
 	data_dir/4081urmd.dat \
 	data_dir/4081urp1.dat \
 	data_dir/4081urrc1.dat \
-	data_dir/4081urrl1.dat \
+	data_dir/4081urrl.dat \
 	html_unreleased/4081urac1.html \
 	html_unreleased/4081uram1.html \
 	html_unreleased/4081uras1.html \

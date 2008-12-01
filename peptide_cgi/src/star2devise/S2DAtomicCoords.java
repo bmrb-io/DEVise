@@ -21,6 +21,34 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.2.5  2008/11/19 21:27:22  wenger
+// Cleaned up various notes about things to check.
+//
+// Revision 1.10.2.4  2008/10/28 15:00:54  wenger
+// Ambiguity code visualizations now work with multiple-entity fix, and
+// work for the first time with 3.1 files.
+//
+// Revision 1.10.2.3  2008/08/19 21:24:09  wenger
+// Now generating atomic coordinate data with "real" entity assembly IDs
+// (right now just a direct mapping from A->1, etc -- needs to be changed);
+// changed 3D session to use "master" residue list rather than the
+// individual ones.
+//
+// Revision 1.10.2.2  2008/08/13 15:05:24  wenger
+// Part way to saving the "master" residue list for all entity
+// assemblies (works for 2.1 files, not 3/3.1).
+//
+// Revision 1.10.2.1  2008/07/30 16:13:54  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
+//
+// Revision 1.10  2008/04/09 19:35:41  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.9  2007/12/20 16:49:02  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -85,6 +113,7 @@ public class S2DAtomicCoords {
     }
 
     public class Atom {
+	public int _entityAssemblyID;
 	public String _atomName;
 	public String _atomType; // element
 	public double _coordX;
@@ -105,6 +134,7 @@ public class S2DAtomicCoords {
     private double[] _atomCoordX;
     private double[] _atomCoordY;
     private double[] _atomCoordZ;
+    private int[] _entityAssemblyIDs;
 
     private String _pdbId; // may be null
 
@@ -127,6 +157,7 @@ public class S2DAtomicCoords {
       String sessionDir, S2DSummaryHtml summary, String[] resSeqCodes,
       String[] resLabels, String[] atomNames, String[] atomTypes,
       double[] atomCoordX, double[] atomCoordY, double[] atomCoordZ,
+      int[] entityAssemblyIDs,
       String connectionFile, Vector dataSets, String pdbId,
       String frameDetails) throws S2DException
     {
@@ -148,6 +179,7 @@ public class S2DAtomicCoords {
 	_atomCoordX = atomCoordX;
 	_atomCoordY = atomCoordY;
 	_atomCoordZ = atomCoordZ;
+	_entityAssemblyIDs = entityAssemblyIDs;
 
 	buildStructure();
 
@@ -194,7 +226,8 @@ public class S2DAtomicCoords {
 
 	    coordWriter.write("# Data: atomic coordinates for " + _name + "\n");
 	    coordWriter.write("# Schema: bmrb-atom_coord\n");
-	    coordWriter.write("# Attributes: Residue_seq_code; " +
+	    coordWriter.write("# Attributes: Entity_assembly_ID; " +
+	      "Residue_seq_code; " +
 	      " Residue_label; Atom_name; Atom_type; Atom_coord_x; " +
 	      "Atom_coord_y; Atom_coord_z; Bond_rel_x; Bond_rel_y; " +
 	      "Bond_rel_z; Struct_type");
@@ -328,6 +361,7 @@ public class S2DAtomicCoords {
 	      _name + "\n");
 	    coordWriter.write("# Schema: bmrb-jmol-atom_coord\n");
 	    coordWriter.write("# Attributes: Atom_number; " +
+	      "Entity_assembly_ID; " +
 	      "Residue_seq_code; Residue_label; Atom_name; Atom_type; " +
 	      "Atom_coord_x; Atom_coord_y; Atom_coord_z; Struct_type");
 	    coordWriter.write("\n");
@@ -359,6 +393,7 @@ public class S2DAtomicCoords {
 		}
 
 	        coordWriter.write(atomNum + " ");
+	        coordWriter.write(_entityAssemblyIDs[index] + " ");
 	        coordWriter.write(_resSeqCodes[index] + " ");
 	        coordWriter.write(_resLabels[index] + " ");
 	        coordWriter.write(translateAtomName(atomName) + " ");
@@ -445,6 +480,7 @@ public class S2DAtomicCoords {
 
 		    Atom atom = new Atom();
 
+		    atom._entityAssemblyID = _entityAssemblyIDs[index];
 		    atom._atomName = _atomNames[index];
 		    atom._atomType = _atomTypes[index];
 		    atom._coordX = _atomCoordX[index];
@@ -526,7 +562,8 @@ public class S2DAtomicCoords {
 		// JS treats X, Y as one end, while DEVise treats X, Y
 		// as the middle.
 		if (for2DView) {
-	            coordWriter.write(residue._resSeqCode + " " +
+	            coordWriter.write(atom1._entityAssemblyID + " " +
+		      residue._resSeqCode + " " +
 	              residue._resLabel + " " + atom1._atomName + " " +
 	              atom1._atomType + " " +
 		      coordFmt.format(atom1._coordX + midX/2) + " " +
@@ -536,7 +573,8 @@ public class S2DAtomicCoords {
 		      coordFmt.format(-midY) + " " +
 		      coordFmt.format(midZ) + " " + structType);
 		} else {
-	            coordWriter.write(residue._resSeqCode + " " +
+	            coordWriter.write(atom1._entityAssemblyID + " " +
+		      residue._resSeqCode + " " +
 	              residue._resLabel + " " + atom1._atomName + " " +
 	              atom1._atomType + " " +
 		      coordFmt.format(atom1._coordX) + " " +

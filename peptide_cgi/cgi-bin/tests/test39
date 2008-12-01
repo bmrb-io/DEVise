@@ -28,7 +28,7 @@ set files = ( data_dir/15014ac1.dat \
 	data_dir/15014md.dat \
 	data_dir/15014p1.dat \
 	data_dir/15014rc1.dat \
-	data_dir/15014rl1.dat \
+	data_dir/15014rl.dat \
 	html_dir/15014ac1.html \
 	html_dir/15014ac1_large.html \
 	html_dir/15014ac2.html \

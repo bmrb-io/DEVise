@@ -21,6 +21,28 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.2.3  2008/11/17 19:28:07  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.8.2.2  2008/11/11 20:47:50  wenger
+// Progress on getting entity assembly IDs correct for coupling constants,
+// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
+// (working for 2.1, but not yet for 3.1).
+//
+// Revision 1.8.2.1  2008/07/30 16:13:55  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
+//
+// Revision 1.8  2008/07/02 16:29:19  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.7  2008/06/04 21:12:00  wenger
 // New Peptide-CGI summary page is implemented, test work except for
 // test52 for some weird reason.  (Still may need some other changes
@@ -79,6 +101,7 @@ public class S2DHetNOE {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private int _entityAssemblyID;
     private String _frameDetails;
 
     private String _title;
@@ -98,7 +121,7 @@ public class S2DHetNOE {
       String sessionDir, S2DSummaryHtml summary, String frequency,
       String atom1Name, String atom2Name, String[] resSeqCodes,
       String[] resLabels, String[] hetNOEValues, String[] hetNOEErrors,
-      String frameDetails) throws S2DException
+      int entityAssemblyID, String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DHetNOE.S2DHetNOE(" + name + ")");
@@ -108,6 +131,7 @@ public class S2DHetNOE {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
+	_entityAssemblyID = entityAssemblyID;
 	_frameDetails = frameDetails;
 
 	if (atom1Name.indexOf("not available") != -1) atom1Name = "?";
@@ -140,7 +164,8 @@ public class S2DHetNOE {
 
 	    hetNOEWriter.write("# Data: heteronuclear NOE for " + _name + "\n");
 	    hetNOEWriter.write("# Schema: bmrb-NOE\n");
-	    hetNOEWriter.write("# Attributes: Residue_seq_code; " +
+	    hetNOEWriter.write("# Attributes: Entity_assembly_ID; " +
+	      "Residue_seq_code; " +
 	      "Residue_label; NOE_value; NOE_error\n");
             hetNOEWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -149,8 +174,10 @@ public class S2DHetNOE {
 	    hetNOEWriter.write("#\n");
 
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        hetNOEWriter.write(_resSeqCodes[index] + " " +
-		  _resLabels[index] + " " + _hetNOEValues[index] + " " +
+	        hetNOEWriter.write(_entityAssemblyID + " " +
+		  _resSeqCodes[index] + " " +
+		  _resLabels[index] + " " +
+		  _hetNOEValues[index] + " " +
 		  _hetNOEErrors[index] + "\n");
 	    }
 
@@ -166,15 +193,18 @@ public class S2DHetNOE {
 	    //
 	    // Write the session-specific html file.
 	    //
+	    String fullTitle = _title + " (entity assembly " +
+	      _entityAssemblyID + ")";
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), S2DUtils.TYPE_HETNOE,
-	      _name, frameIndex, _title, _frameDetails);
+	      _name, frameIndex, fullTitle, _frameDetails);
 	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeHetNOE(_title, frameIndex, _resSeqCodes.length);
+	    _summary.writeHetNOE(_title, frameIndex, _entityAssemblyID,
+	      _resSeqCodes.length);
 
         } catch(IOException ex) {
 	    System.err.println(

@@ -25,6 +25,76 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.2.15  2008/11/25 22:48:18  wenger
+// More cleanup of PDB vs. BMRB matching code.
+//
+// Revision 1.10.2.14  2008/11/25 20:50:50  wenger
+// Commented out a lot of the debug code from the previous commit.
+//
+// Revision 1.10.2.13  2008/11/25 20:37:41  wenger
+// Okay, at least phase 1 of the BMRB/PDB entity assembly/chain
+// sequence match checking is mostly done; there's still a ton of
+// debug code here, and some places where it's not 100% done, but
+// it's at least close.  Test27 and test27_3 currently fail.
+//
+// Revision 1.10.2.12  2008/11/19 21:27:22  wenger
+// Cleaned up various notes about things to check.
+//
+// Revision 1.10.2.11  2008/11/19 20:25:18  wenger
+// Fixed problems with getEntityFrame(), added test13_3 to check changes.
+//
+// Revision 1.10.2.10  2008/11/13 23:26:30  wenger
+// Heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters now
+// work for multiple entities in 3.1 files (all tests now work).
+//
+// Revision 1.10.2.9  2008/11/12 23:22:12  wenger
+// Coupling constants now work for multiple entities in 3.1; implemented
+// new S2DStarIfc.getAndFilterOptionalFrameValues() method to make
+// this work; added test61 and test61_3 to test that method.
+//
+// Revision 1.10.2.8  2008/11/11 20:47:51  wenger
+// Progress on getting entity assembly IDs correct for coupling constants,
+// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
+// (working for 2.1, but not yet for 3.1).
+//
+// Revision 1.10.2.7  2008/11/06 21:29:52  wenger
+// Cleaned up S2DMain.saveAllResidueLists(), cleaned up and documented
+// a bunch of other new methods.
+//
+// Revision 1.10.2.6  2008/11/05 18:15:38  wenger
+// Make S2DStarIfc and S2DNmrStarIfc abstract, and got rid of a bunch
+// of things in S2DStarIfc that should only be in S2DNmrStarIfc.
+// (Note that I could move a bunch more methods from S2DStarIfc
+// to S2DNmrStarIfc, but I'm going to wait until after I merge the
+// current branch.)
+//
+// Revision 1.10.2.5  2008/11/05 00:37:44  wenger
+// Fixed a bunch of problems with getting coordinates from NMR-STAR
+// files (e.g., 4096) -- test4 and test4_3 now work.
+//
+// Revision 1.10.2.4  2008/10/30 16:18:45  wenger
+// Got rid of a bunch of code that's obsolete because of the multiple-
+// entity changes.
+//
+// Revision 1.10.2.3  2008/10/28 15:00:55  wenger
+// Ambiguity code visualizations now work with multiple-entity fix, and
+// work for the first time with 3.1 files.
+//
+// Revision 1.10.2.2  2008/10/03 21:08:15  wenger
+// Okay, I think the basic chemical shift stuff is finally working
+// right for various combinations of multiple entities and multiple
+// entity assemblies (see test57* and test58*).  Lots of the other
+// stuff still needs work, though.
+//
+// Revision 1.10.2.1  2008/08/19 21:24:10  wenger
+// Now generating atomic coordinate data with "real" entity assembly IDs
+// (right now just a direct mapping from A->1, etc -- needs to be changed);
+// changed 3D session to use "master" residue list rather than the
+// individual ones.
+//
+// Revision 1.10  2008/07/20 20:43:07  wenger
+// Made a bunch of cleanups in the course of working on bug 065.
+//
 // Revision 1.9  2008/06/17 23:07:53  wenger
 // Fixed to-do 073:  we no longer generate figure of merit or ambiguity
 // code visualizations if the values are all null (".").
@@ -68,7 +138,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class S2DStarIfc {
+public abstract class S2DStarIfc {
     //===================================================================
     // VARIABLES
 
@@ -81,6 +151,7 @@ public class S2DStarIfc {
     public String ABBREV_COMMON = "";
     public String ASSEMBLY_DB_ACC_CODE = "";
     public String ASSEMBLY_DB_NAME = "";
+    public String ATOM_COORD_ASYM_ID = "";
     public String ATOM_COORD_ATOM_NAME = "";
     public String ATOM_COORD_ATOM_TYPE = "";
     public String ATOM_COORD_MODEL_NUM = "";
@@ -110,6 +181,7 @@ public class S2DStarIfc {
     public String COUPLING_CONSTANT_VALUE = "";
     public String COUPLING_CONSTANT_VALUE_ERR = "";
     public String COUPLING_CONSTANTS = "";
+    public String COUPLING_ENTITY_ASSEMBLY_ID_1 = "";
     public String COUPLING_RES_LABEL_1 = "";
     public String COUPLING_RES_LABEL_2 = "";
     public String COUPLING_RES_SEQ_CODE_1 = "";
@@ -144,6 +216,7 @@ public class S2DStarIfc {
     public String HETERONUCLEAR_NOE = "";
     public String HET_NOE_ATOM_1_ATOM_NAME = "";
     public String HET_NOE_ATOM_2_ATOM_NAME = "";
+    public String HET_NOE_ENTITY_ASSEMBLY_ID_1 = "";
     public String HET_NOE_RES_LABEL = "";
     public String HET_NOE_RES_SEQ_CODE = "";
     public String HET_NOE_SF_CAT = "";
@@ -181,6 +254,7 @@ public class S2DStarIfc {
     public String NMR_STAR_VERSION = "";
 
     public String ORDER_ATOM_NAME = "";
+    public String ORDER_ENTITY_ASSEMBLY_ID = "";
     public String ORDER_PARAMETERS = "";
     public String ORDER_RES_LABEL = "";
     public String ORDER_RES_SEQ_CODE = "";
@@ -201,6 +275,7 @@ public class S2DStarIfc {
     public String SEQ_IDENTITY = "";
 
     public String T1_ATOM_NAME = "";
+    public String T1_ENTITY_ASSEMBLY_ID = "";
     public String T1_RELAX = "";
     public String T1_RELAX_SF_CAT = "";
     public String T1_RES_LABEL = "";
@@ -210,6 +285,7 @@ public class S2DStarIfc {
     public String T1_VALUE_ERR = "";
 
     public String T2_ATOM_NAME = "";
+    public String T2_ENTITY_ASSEMBLY_ID = "";
     public String T2_RES_LABEL = "";
     public String T2_RES_SEQ_CODE = "";
     public String T2_RELAX = "";
@@ -237,48 +313,7 @@ public class S2DStarIfc {
         return _fileName;
     }
 
-    //-------------------------------------------------------------------
-    public String getSystemName()
-    {
-        return null;
-    }
-
-    //-------------------------------------------------------------------
-    public String getEntryTitle()
-    {
-        return null;
-    }
-
-    //-------------------------------------------------------------------
-    public int residueCount(SaveFrameNode frame, String entityID)
-    {
-        return -1;
-    }
-
-    //-------------------------------------------------------------------
-    public Vector getPdbIds()
-    {
-        return null;
-    }
-
-    //-------------------------------------------------------------------
-    public int getHAChemShiftCount(SaveFrameNode frame)
-    {
-        return -1;
-    }
-
-    //-------------------------------------------------------------------
-    public Enumeration getDataFramesByCat(String category)
-    {
-        return null;
-    }
-
-    //-------------------------------------------------------------------
-    public Enumeration getDataFramesByCat(String tagName, String category)
-    {
-        return null;
-    }
-
+//TEMP -- move this to S2DNmrStarIfc after merge
     //-------------------------------------------------------------------
     //TEMP -- check whether this should be used in more places
     public SaveFrameNode getOneDataFrameByCat(String category)
@@ -292,6 +327,7 @@ public class S2DStarIfc {
 	return getOneDataFrameByCat(DEFAULT_SAVEFRAME_CATEGORY, category);
     }
 
+//TEMP -- move this to S2DNmrStarIfc after merge
     //-------------------------------------------------------------------
     public SaveFrameNode getOneDataFrameByCat(String tagName, String category)
       throws S2DException
@@ -301,7 +337,6 @@ public class S2DStarIfc {
 	      tagName + ", " + category + ")");
 	}
 
-//TEMPTEMP -- should implementation be moved to S2DNmrStarIfc, since mmCIF files don't have save frames??
 	VectorCheckType frameList;
 
 	final String dataValue = category;
@@ -317,6 +352,7 @@ public class S2DStarIfc {
 	return (SaveFrameNode)frameList.elementAt(0);
     }
 
+//TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
     public boolean refersToProtein(SaveFrameNode frame, String entityID)
       throws S2DException
@@ -324,6 +360,7 @@ public class S2DStarIfc {
         return false;
     }
 
+//TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
     /**
      * Determines whether the given entity/monomeric polymer save frame
@@ -336,24 +373,39 @@ public class S2DStarIfc {
         return false;
     }
 
+//TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
     public S2DResidues getResidues(SaveFrameNode frame) throws S2DException
     {
         return null;
     }
 
+//TEMP -- move this to S2DNmrStarIfc after merge?
+    // ----------------------------------------------------------------------
+    /**
+     * Get entity assembly IDs for the coordinates in the given save frame.
+     * @param frame: the save frame to search
+     * @return an array of the entity assembly IDs
+     */
+    public int[] getCoordEntityAssemblyIDs(SaveFrameNode frame)
+      throws S2DException
+    {
+    	return null;
+    }
+
+//TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
     /**
      * Get the value of the given tag in the given save frame.
      * Throws exception if the value doesn't exist.
-     * @param The save frame.
+     * @param The save frame (note: can be the whole Star tree for an
+     *   mmCif file).
      * @param The tag name.
      * @return The value of the tag.
      */
-    public String getTagValue(SaveFrameNode frame, String name)
+    public String getTagValue(StarNode frame, String name)
       throws S2DException
     {
-//TEMPTEMP -- should implementation be moved to S2DNmrStarIfc, since mmCIF files don't have save frames?? -- or does this work on mmCIF files with frame == null?
         String result = getOneFrameValueStrict(frame, name);
         if (result == null) {
 	    throw new S2DError("null value!");
@@ -399,7 +451,18 @@ public class S2DStarIfc {
 	if (frame != null) {
 	    loop = S2DStarUtil.findLoop(frame, loopId);
 	} else {
-	    loop = S2DStarUtil.findLoop(_starTree, loopId);
+	    try {
+	        loop = S2DStarUtil.findLoop(_starTree, loopId);
+	    } catch (S2DException ex) {
+                if (doDebugOutput(3)) {
+		    System.err.println("Warning: unable to find loop for " +
+		      loopId + "/" + name + "; trying individual tag " +
+		      name);
+		}
+	        String [] result = new String[1];
+		result[0] = getTagValue(_starTree, name);
+		return result;
+	    }
 	}
 	int valueIndex = S2DStarUtil.getIndex(loop, name);
 	LoopTableNode table = loop.getVals();
@@ -448,27 +511,77 @@ public class S2DStarIfc {
      * @param The save frame (can be null).
      * @param The loop ID (tag name to use to find the right loop).
      * @param The tag name for the values to get.
-     * @param The entity ID to match.
-     * @param An array containing the entity ID values corresponding
+     * @param The string to filter on.
+     * @param An array containing the "filter tag" values corresponding
      *   to the values we're getting (used for filtering).
      * @return An array containing the values.
      */
     public String[] getAndFilterFrameValues(SaveFrameNode frame,
-      String loopId, String name, String entityID, String[] entityIDList)
+      String loopId, String name, String matchVal, String[] matchList)
       throws S2DException
     {
     	String[] values = getFrameValues(frame, loopId, name);
 
-	if (!entityID.equals("")) {
-	    values = S2DUtils.selectMatches(entityIDList, values, entityID);
+	if (!matchVal.equals("")) {
+	    values = S2DUtils.selectMatches(matchList, values, matchVal);
 	}
 
 	if (values.length == 0) {
 	    System.err.println("Warning: " + new S2DWarning("all " + name +
-	      " values rejected by entityID " + entityID));
+	      " values rejected by matchVal " + matchVal));
 	}
 
 	return values;
+    }
+
+
+    //-------------------------------------------------------------------
+    /**
+     * Get the given values from a save frame and filter them, keeping
+     * only the ones that match the given entity ID (no filtering takes
+     * place if the entity ID is "").
+     * @param The save frame (can be null).
+     * @param The loop ID (tag name to use to find the right loop).
+     * @param The tag name for the values to get.
+     * @param The string to filter on.
+     * @param An array containing the "filter tag" values corresponding
+     *   to the values we're getting (used for filtering).
+     * @param The number of values to put into the array if the
+     *   values are not found in the STAR file.
+     * @param The default value.
+     * @return An array containing the values.
+     */
+    public String[] getAndFilterOptionalFrameValues(SaveFrameNode frame,
+      String loopId, String name, String matchVal, String[] matchList,
+      int size, String defaultValue)
+      throws S2DException
+    {
+        String[] result = null;
+
+	try {
+            result = getAndFilterFrameValues(frame, loopId, name,
+	      matchVal, matchList);
+
+            // Change "?" to the default value (fixes problems with
+	    // bmr4267_3.str).
+	    for (int index = 0; index < result.length; index++) {
+	        if (result[index].equals("?")) result[index] = defaultValue;
+	    }
+
+	} catch (S2DError ex) {
+            System.err.println("Warning: " + ex.toString());
+
+            // Generate default values.
+            result = new String[size];
+            for (int index = 0; index < size; index++) {
+                result[index] = defaultValue;
+            }
+
+	} catch (S2DWarning ex) {
+	    System.err.println("Warning: " + ex.toString());
+	}
+
+	return result;
     }
 
     //-------------------------------------------------------------------
@@ -487,7 +600,8 @@ public class S2DStarIfc {
     //TEMP -- this method or getTagValue should probably be more widely
     // used in the code
     //TEMP -- change the name to something like getTagValueTolerant
-    public String getOneFrameValue(SaveFrameNode frame, String name)
+    // Note: frame can be the whole Star tree for an mmCif file.
+    public String getOneFrameValue(StarNode frame, String name)
     {
         String result = "";
 
@@ -502,7 +616,8 @@ public class S2DStarIfc {
     }
 
     //-------------------------------------------------------------------
-    public String getOneFrameValueStrict(SaveFrameNode frame, String name)
+    // Note: frame can be the whole Star tree for an mmCif file.
+    public String getOneFrameValueStrict(StarNode frame, String name)
       throws S2DException
     {
         String result = "";
@@ -592,6 +707,7 @@ public class S2DStarIfc {
 	    }
 	}
 
+	//TEMP -- hmm -- how does this not crash on a 2.1 file?
 	for (int index = 0; index < result.length; index++) {
 	    if (result[index].equals("?")) result[index] = "1";
 	}

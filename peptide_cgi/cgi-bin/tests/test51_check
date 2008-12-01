@@ -16,8 +16,7 @@ set files = ( data_dir/4689am1.dat \
 	data_dir/4689p2.dat \
 	data_dir/4689rc1.dat \
 	data_dir/4689rc2.dat \
-	data_dir/4689rl1.dat \
-	data_dir/4689rl2.dat \
+	data_dir/4689rl.dat \
 	data_dir/4689t11.dat \
 	data_dir/4689t12.dat \
 	data_dir/4689t21.dat \

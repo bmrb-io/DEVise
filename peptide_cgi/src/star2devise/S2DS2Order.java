@@ -21,6 +21,28 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.2.3  2008/11/17 19:28:07  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.3.2.2  2008/11/11 20:47:51  wenger
+// Progress on getting entity assembly IDs correct for coupling constants,
+// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
+// (working for 2.1, but not yet for 3.1).
+//
+// Revision 1.3.2.1  2008/07/30 16:13:56  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
+//
+// Revision 1.3  2008/07/02 16:29:19  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.2  2008/04/09 19:35:42  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -50,6 +72,7 @@ public class S2DS2Order {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private int _entityAssemblyID;
     private String _frameDetails;
 
     private int _dataType;
@@ -68,7 +91,7 @@ public class S2DS2Order {
     public S2DS2Order(String name, String longName, String dataDir,
       String sessionDir, S2DSummaryHtml summary, String[] resSeqCodes,
       String[] resLabels, String[] atomNames, String[] s2OrderValues,
-      String[] s2OrderErrors, String frameDetails)
+      String[] s2OrderErrors, int entityAssemblyID, String frameDetails)
       throws S2DException
     {
         if (doDebugOutput(11)) {
@@ -79,6 +102,7 @@ public class S2DS2Order {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
+	_entityAssemblyID = entityAssemblyID;
 	_frameDetails = frameDetails;
 
         _resSeqCodes = resSeqCodes;
@@ -105,7 +129,8 @@ public class S2DS2Order {
 	      frameIndex + S2DNames.DAT_SUFFIX);
             s2OrderWriter.write("# Data: s2order values for " + _name + "\n");
             s2OrderWriter.write("# Schema: bmrb-s2order\n");
-            s2OrderWriter.write("# Attributes: Residue_seq_code; " +
+            s2OrderWriter.write("# Attributes: Entity_assembly_ID; " +
+	      "Residue_seq_code; " +
 	      "Residue_label; Atom_name; s2order_value; s2order_error\n");
             s2OrderWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -114,10 +139,12 @@ public class S2DS2Order {
             s2OrderWriter.write("#\n");
 
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        s2OrderWriter.write(_resSeqCodes[index] + " " +
-		  _resLabels[index] + " " + _atomNames[index] + " " +
-		  _s2OrderValues[index] + " " + _s2OrderErrors[index] +
-		  "\n");
+	        s2OrderWriter.write(_entityAssemblyID + " " +
+		  _resSeqCodes[index] + " " +
+		  _resLabels[index] + " " +
+		  _atomNames[index] + " " +
+		  _s2OrderValues[index] + " " +
+		  _s2OrderErrors[index] + "\n");
 	    }
 
 	    s2OrderWriter.close();
@@ -126,7 +153,8 @@ public class S2DS2Order {
 	    // Write the session file.
 	    //
 	    String info = "Visualization of " + _longName;
-	    String title = "S2 Order Parameters";
+	    String title = "S2 Order Parameters (entity assembly " +
+	      _entityAssemblyID + ")";
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ORDER,
 	      _name, frameIndex, info, title);
 
@@ -141,7 +169,8 @@ public class S2DS2Order {
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeS2Order(frameIndex, _resSeqCodes.length);
+	    _summary.writeS2Order(frameIndex, _entityAssemblyID,
+	      _resSeqCodes.length);
 
         } catch(IOException ex) {
 	    System.err.println("IOException writing s2 order data: " +

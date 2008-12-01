@@ -21,6 +21,28 @@
 // $Id$
 
 // $Log$
+// Revision 1.7.2.3  2008/11/17 19:28:07  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.7.2.2  2008/11/11 20:47:50  wenger
+// Progress on getting entity assembly IDs correct for coupling constants,
+// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
+// (working for 2.1, but not yet for 3.1).
+//
+// Revision 1.7.2.1  2008/07/30 16:13:55  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
+//
+// Revision 1.7  2008/07/02 16:29:19  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.6  2008/04/09 19:35:41  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -74,6 +96,7 @@ public class S2DCoupling {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private int _entityAssemblyID;
     private String _frameDetails;
 
     private String[] _couplingConstCodes;
@@ -96,7 +119,7 @@ public class S2DCoupling {
       String[] atom1ResSeqs, String[] atom1ResLabels, String[] atom1Names,
       String[] atom2ResSeqs, String[] atom2ResLabels, String[] atom2Names,
       String[] couplingConstValues, String[] couplingConstErrors,
-      String frameDetails)
+      int entityAssemblyID, String frameDetails)
       throws S2DException
     {
         if (doDebugOutput(11)) {
@@ -119,6 +142,7 @@ public class S2DCoupling {
         _atom2Names = atom2Names;
         _couplingConstValues = couplingConstValues;
         _couplingConstErrors = couplingConstErrors;
+	_entityAssemblyID = entityAssemblyID;
     }
 
     //-------------------------------------------------------------------
@@ -140,7 +164,8 @@ public class S2DCoupling {
 	      _name + "\n");
             couplingWriter.write("# Schema: bmrb-CouplingConstant\n");
             couplingWriter.write("# Attributes: Coupling_constant_code; " +
-	      "Residue_seq_code; Atom_one_residue_label; " +
+	      "Entity_assembly_ID; Residue_seq_code; " +
+	      "Atom_one_residue_label; " +
 	      "Atom_one_name string; Atom_two_residue_seq_code; " +
 	      "Atom_two_residue_label; Atom_two_name string; " +
 	      "Coupling_constant_value; Coupling_constant_value_error\n");
@@ -152,12 +177,15 @@ public class S2DCoupling {
 
 	    for (int index = 0; index < _couplingConstValues.length; index++) {
 	        couplingWriter.write(_couplingConstCodes[index] + " " +
-		  _atom1ResSeqs[index] + " " + _atom1ResLabels[index] +
-		  " " + _atom1Names[index] + " " + _atom2ResSeqs[index] +
-		  " " + _atom2ResLabels[index] + " " + _atom2Names[index] +
-		  " " + _couplingConstValues[index] + " " +
-		  _couplingConstErrors[index] +
-		  "\n");
+		  _entityAssemblyID + " " +
+		  _atom1ResSeqs[index] + " " +
+		  _atom1ResLabels[index] + " " +
+		  _atom1Names[index] + " " +
+		  _atom2ResSeqs[index] + " " +
+		  _atom2ResLabels[index] + " " +
+		  _atom2Names[index] + " " +
+		  _couplingConstValues[index] + " " +
+		  _couplingConstErrors[index] + "\n");
 	    }
 
 	    couplingWriter.close();
@@ -172,16 +200,19 @@ public class S2DCoupling {
 	    //
 	    // Write the session-specific html file.
 	    //
+	    String title = "Coupling Constants (entity assembly " +
+	      _entityAssemblyID + ")";
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_COUPLING, _name, frameIndex,
-	      "Coupling Constants", _frameDetails);
+	      title, _frameDetails);
 	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeCoupling(frameIndex, _couplingConstValues.length);
+	    _summary.writeCoupling(frameIndex, _entityAssemblyID,
+	      _couplingConstValues.length);
 
         } catch(IOException ex) {
 	    System.err.println("IOException writing coupling constants: " +

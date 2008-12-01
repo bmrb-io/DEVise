@@ -1,0 +1,92 @@
+echo "Checking output files"
+
+set files = ( data_dir/15209ac1.dat \
+	data_dir/15209am1.dat \
+	data_dir/15209am2.dat \
+	data_dir/15209amac1.dat \
+	data_dir/15209amac2.dat \
+	data_dir/15209as1.dat \
+	data_dir/15209as2.dat \
+	data_dir/15209c1.dat \
+	data_dir/15209c2.dat \
+	data_dir/15209d1.dat \
+	data_dir/15209d2.dat \
+	data_dir/15209hn1.dat \
+	data_dir/15209hn2.dat \
+	data_dir/15209md.dat \
+	data_dir/15209p1.dat \
+	data_dir/15209p2.dat \
+	data_dir/15209rc1.dat \
+	data_dir/15209rc2.dat \
+	data_dir/15209rl.dat \
+	html_dir/15209ac1.html \
+	html_dir/15209ac1_large.html \
+	html_dir/15209am1.html \
+	html_dir/15209am1_large.html \
+	html_dir/15209am2.html \
+	html_dir/15209am2_large.html \
+	html_dir/15209as1.html \
+	html_dir/15209as1_large.html \
+	html_dir/15209as2.html \
+	html_dir/15209as2_large.html \
+	html_dir/15209c1.html \
+	html_dir/15209c1_large.html \
+	html_dir/15209c2.html \
+	html_dir/15209c2_large.html \
+	html_dir/15209d1.html \
+	html_dir/15209d1_large.html \
+	html_dir/15209d2.html \
+	html_dir/15209d2_large.html \
+	html_dir/15209hn1.html \
+	html_dir/15209hn1_large.html \
+	html_dir/15209p1.html \
+	html_dir/15209p1_large.html \
+	html_dir/15209p2.html \
+	html_dir/15209p2_large.html \
+	html_dir/15209y.html \
+	html_dir/15209y_large.html \
+	session_dir/15209ac1.ds \
+	session_dir/15209acdd \
+	session_dir/15209am1.ds \
+	session_dir/15209am2.ds \
+	session_dir/15209as1.ds \
+	session_dir/15209as2.ds \
+	session_dir/15209c1.ds \
+	session_dir/15209c2.ds \
+	session_dir/15209d1.ds \
+	session_dir/15209d2.ds \
+	session_dir/15209hn1.ds \
+	session_dir/15209p1.ds \
+	session_dir/15209p2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/15209ac1.dat"
+set line = "1 1 1 MET N N -8.456 0.335 -7.611 backbone"
+source tests/check4line
+set line = "1501 2 6 VAL 3HG2 H 5.317 1.769 3.283 all_hydrogens"
+source tests/check4line
+
+set file = "data_dir/15209am1.dat"
+# 2.1 has HE, 3.1 has HE1, HE2, HE3
+#TEMP set line = "1 1 0.4 0.26666668 0.0 0.0 0.0 0.0"
+#TEMP source tests/check4line
+set line = "1 92 0.29411766 0.0 0.0 0.0 0.0 0.0"
+source tests/check4line
+
+set file = "data_dir/15209amac2.dat"
+set line = "2 1 ARG H H -0.6 0.225 0 0 -0.15 0 backbone AM1 1"
+source tests/check4line
+set line = "2 6 VAL O O 10.6 0.225 0 0 -0.15 0 backbone AMU -1"
+source tests/check4line
+
+set file = "data_dir/15209rl.dat"
+set line = "1	1	MET"
+source tests/check4line
+set line = "2	6	VAL"
+source tests/check4line

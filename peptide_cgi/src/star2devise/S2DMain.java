@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.98  2008/11/14 22:03:11  wenger
+// Incremented x on version.
+//
 // Revision 1.97  2008/11/14 21:14:59  wenger
 // Fixed bugs 070 and 075 (problems with percent assignment values
 // sometimes being greater than 100% for NMR-STAR 3.1 files).
@@ -51,6 +54,128 @@
 // Revision 1.90  2008/08/29 16:35:48  wenger
 // Fixed bug 069 (problem with entries that don't have any ambiguity
 // codes).
+//
+// Revision 1.89.2.28  2008/11/25 22:48:17  wenger
+// More cleanup of PDB vs. BMRB matching code.
+//
+// Revision 1.89.2.27  2008/11/25 20:50:43  wenger
+// Commented out a lot of the debug code from the previous commit.
+//
+// Revision 1.89.2.26  2008/11/25 20:37:40  wenger
+// Okay, at least phase 1 of the BMRB/PDB entity assembly/chain
+// sequence match checking is mostly done; there's still a ton of
+// debug code here, and some places where it's not 100% done, but
+// it's at least close.  Test27 and test27_3 currently fail.
+//
+// Revision 1.89.2.25  2008/11/19 21:27:22  wenger
+// Cleaned up various notes about things to check.
+//
+// Revision 1.89.2.24  2008/11/19 20:25:18  wenger
+// Fixed problems with getEntityFrame(), added test13_3 to check changes.
+//
+// Revision 1.89.2.23  2008/11/19 17:21:44  wenger
+// Renamed saveFrameResCounts() to getFrameResCounts() and fixed it
+// up a bit (we do, in fact, want to use entityID, not entityAssemblyID,
+// in that method).
+//
+// Revision 1.89.2.22  2008/11/19 16:49:49  wenger
+// Checked various issues for multiple entities; fixed test28 because
+// we now generate correct residue lists; marked bug 064 as fixed.
+//
+// Revision 1.89.2.21  2008/11/17 19:28:07  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.89.2.20  2008/11/13 23:26:29  wenger
+// Heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters now
+// work for multiple entities in 3.1 files (all tests now work).
+//
+// Revision 1.89.2.19  2008/11/12 23:22:11  wenger
+// Coupling constants now work for multiple entities in 3.1; implemented
+// new S2DStarIfc.getAndFilterOptionalFrameValues() method to make
+// this work; added test61 and test61_3 to test that method.
+//
+// Revision 1.89.2.18  2008/11/11 20:47:51  wenger
+// Progress on getting entity assembly IDs correct for coupling constants,
+// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
+// (working for 2.1, but not yet for 3.1).
+//
+// Revision 1.89.2.17  2008/11/07 18:41:02  wenger
+// Got rid of some old code that has been replaced by multiple-entity
+// code fixes.
+//
+// Revision 1.89.2.16  2008/11/06 21:29:52  wenger
+// Cleaned up S2DMain.saveAllResidueLists(), cleaned up and documented
+// a bunch of other new methods.
+//
+// Revision 1.89.2.15  2008/11/05 23:21:35  wenger
+// Test7, test24, and test30 now work.  Pistachio session needs fixes,
+// though.
+//
+// Revision 1.89.2.14  2008/11/05 18:15:37  wenger
+// Make S2DStarIfc and S2DNmrStarIfc abstract, and got rid of a bunch
+// of things in S2DStarIfc that should only be in S2DNmrStarIfc.
+// (Note that I could move a bunch more methods from S2DStarIfc
+// to S2DNmrStarIfc, but I'm going to wait until after I merge the
+// current branch.)
+//
+// Revision 1.89.2.13  2008/11/05 00:37:43  wenger
+// Fixed a bunch of problems with getting coordinates from NMR-STAR
+// files (e.g., 4096) -- test4 and test4_3 now work.
+//
+// Revision 1.89.2.12  2008/10/30 16:18:44  wenger
+// Got rid of a bunch of code that's obsolete because of the multiple-
+// entity changes.
+//
+// Revision 1.89.2.11  2008/10/28 15:00:55  wenger
+// Ambiguity code visualizations now work with multiple-entity fix, and
+// work for the first time with 3.1 files.
+//
+// Revision 1.89.2.10  2008/10/06 20:01:09  wenger
+// Pistachio processing now works again; still need to change session
+// to add a link on entity assembly ID, and test this on something with
+// multiple entities.
+//
+// Revision 1.89.2.9  2008/10/03 21:22:08  wenger
+// Minor cleanup...
+//
+// Revision 1.89.2.8  2008/10/03 21:08:14  wenger
+// Okay, I think the basic chemical shift stuff is finally working
+// right for various combinations of multiple entities and multiple
+// entity assemblies (see test57* and test58*).  Lots of the other
+// stuff still needs work, though.
+//
+// Revision 1.89.2.7  2008/09/05 22:16:55  wenger
+// Got saving of master residue list to work for 4310; removed saving
+// of per-chem shift frame residue lists; some more comments about
+// tests.
+//
+// Revision 1.89.2.6  2008/08/19 21:24:09  wenger
+// Now generating atomic coordinate data with "real" entity assembly IDs
+// (right now just a direct mapping from A->1, etc -- needs to be changed);
+// changed 3D session to use "master" residue list rather than the
+// individual ones.
+//
+// Revision 1.89.2.5  2008/08/14 20:19:21  wenger
+// Fixed problems in writing entity assembly IDs for chemical shift
+// data (also includes fixing bug 067, which was already present before
+// I started the current bug 037 multiple entity fixes).
+//
+// Revision 1.89.2.4  2008/08/13 21:38:21  wenger
+// Writing entity assembly IDs now works for the chem shift data for
+// 2.1 files.
+//
+// Revision 1.89.2.3  2008/08/13 19:06:51  wenger
+// Writing entity assembly IDs now works for the chem shift data for
+// 3.0/3.1 files.
+//
+// Revision 1.89.2.2  2008/08/13 15:05:25  wenger
+// Part way to saving the "master" residue list for all entity
+// assemblies (works for 2.1 files, not 3/3.1).
+//
+// Revision 1.89.2.1  2008/07/30 16:13:55  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
 //
 // Revision 1.89  2008/07/25 20:31:01  wenger
 // Incremented version to 11.3.3.
@@ -243,7 +368,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.3.4x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.0x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1615,7 +1740,8 @@ public class S2DMain {
 		try {
 	            process1PDB(star, id);
 		} catch(S2DException ex) {
-		    System.err.println("Unable to process PDB ID " + id);
+		    System.err.println("Unable to process PDB ID " + id +
+		      "(" + ex.toString() + ")");
 		    _summary.writeMessage("Unable to get atomic coordinates" +
 		      " from related PDB ID " + id, false);
 		}
@@ -1691,13 +1817,22 @@ public class S2DMain {
     // Process a given NMR-STAR file entry.
     private void process1NmrStar(S2DNmrStarIfc star) throws S2DException
     {
+	if (doDebugOutput(2)) {
+	    System.out.println("S2DMain.process1NmrStar(" + star + ")");
+	}
+
         Vector ids = star.getPdbIds(_doProteinCheck);
         addPDB(ids);
 
         //TEMP -- do I really want to skip stuff if I get an error?
 
 	if (doDebugOutput(2)) S2DUtils.printMemory(
-	  "Before saveChemShifts()");
+	  "Before saveAllResidueLists()");
+
+        saveAllResidueLists(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After saveAllResidueLists()");
 
         saveChemShifts(star);
 	if (_extraGC) System.gc();
@@ -1745,11 +1880,71 @@ public class S2DMain {
 	if (_extraGC) System.gc();
 	if (doDebugOutput(2)) S2DUtils.printMemory(
 	  "After saveAtomicCoords()");
+    }
 
+    //-------------------------------------------------------------------
+    /**
+     * Write out a list of all residues for all entity assembly IDs in
+     * the given NMR-STAR file.
+     * @param The star file
+     */
+    private void saveAllResidueLists(S2DNmrStarIfc star) throws S2DException
+    {
+        if (doDebugOutput(3)) {
+	    System.out.println("  S2DMain.saveAllResidueLists()");
+	}
+
+	Vector frames = star.getAllEntityAssemblyFrames();
+
+//TEMPTEMP -- don't even try to save for non-proteins???
+	boolean wroteAtLeastOne = false;
 	try {
-	    ensureResidueList(star);
-	} catch (S2DException ex) {
-	    System.err.println("Exception in ensureResidueList(): " + ex);
+	    FileWriter resWriter = S2DFileWriter.create(_dataDir +
+	      File.separator + _name + S2DNames.RES_LIST_SUFFIX +
+	      S2DNames.DAT_SUFFIX);
+	    resWriter.write("# Data: residue list for " + _name + "\n");
+	    resWriter.write("# Schema: bmrb-ResList\n");
+	    resWriter.write("# Attributes: Entity_assembly_ID; " +
+	      "Residue_seq_code; ResLabel\n");
+	    resWriter.write("# Peptide-CGI version: " +
+	      S2DMain.PEP_CGI_VERSION + "\n");
+	    resWriter.write("# Generation date: " +
+	      S2DMain.getTimestamp() + "\n");
+	    resWriter.write("#\n");
+
+	    int entityAssemblyId = 0;
+	    for (int frameNum = 0; frameNum < frames.size(); frameNum++) {
+	        entityAssemblyId++;
+	        SaveFrameNode frame = (SaveFrameNode)frames.elementAt(frameNum);
+		try {
+	            S2DResidues residues = star.getResidues(frame);
+
+	            for (int resNum = 0; resNum < residues._resSeqCodes.length;
+	              resNum++) {
+	                resWriter.write(entityAssemblyId + "\t" +
+		          residues._resSeqCodes[resNum] + "\t" +
+		          residues._resLabels[resNum] + "\n");
+	            }
+		    // Flush here is VITAL to get stuff actually written out
+		    // if a later entity assembly fails...
+		    resWriter.flush();
+    
+	            wroteAtLeastOne = true;
+
+		} catch (S2DException ex) {
+		    System.err.println("Warning (" + ex.toString() +
+		      ") writing residue list for entity assembly ID " +
+		      entityAssemblyId + " (frame " + star.getFrameName(frame) + ")");
+		}
+	    }
+	    resWriter.close();
+
+	} catch (Exception ex) {
+	    System.err.println("Exception writing all residue lists: " +
+	      ex.toString());
+	}
+	if (!wroteAtLeastOne) {
+	    throw new S2DError("Error: unable to write any residue lists");
 	}
     }
 
@@ -1769,33 +1964,37 @@ public class S2DMain {
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
 
-	    Vector entityIDList = star.getUniqueChemShiftEntityIDs(frame);
-	    for (int index = 0; index < entityIDList.size(); index++) {
-	        String entityID = (String)entityIDList.get(index);
+	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	      frame, star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
+	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
+	        String entityAssemblyID =
+		  (String)entityAssemblyIDList.get(index);
+		String entityID = star.entAssemID2entID(entityAssemblyID);
 
 	        // We only want to output chemical shifts corresponding to a
 	        // protein.  (This can be tested with bmr4038.str and bmr4056.str.)
 	        if (_doProteinCheck && !star.refersToProtein(frame, entityID)) {
                     if (doDebugOutput(2)) {
                         System.out.println("Chemical shifts not saved for " +
-                          "save frame " + frame.getLabel() + " (" + entityID +
-			  ") because it is not a protein");
+                          "save frame " + frame.getLabel() + " (" +
+			  entityAssemblyID + ") because it is not a protein");
                     }
 	        } else {
 		    //TEMP -- do I really want to catch the error here (and in
 		    // other similar methods below)?
 		    try {
-	                S2DResidues residues = saveFrameResCounts(star, frame,
+	                S2DResidues residues = getFrameResCounts(star, frame,
 		          entityID, frameIndex);
-	                saveFrameChemShifts(star, frame, entityID, frameIndex);
-	                saveFramePistachio(star, frame, entityID, residues,
-		          frameIndex);
-	                saveFrameAmbiguity(star, frame, entityID, residues,
-		          frameIndex);
+	                saveFrameChemShifts(star, frame, entityAssemblyID,
+			  frameIndex);
+	                saveFramePistachio(star, frame, entityAssemblyID,
+			  residues, frameIndex);
+	                saveFrameAmbiguity(star, frame, entityAssemblyID,
+			  residues, frameIndex);
 		    } catch(S2DException ex) {
 		        System.err.println("Exception saving chem shifts for " +
-		          "frame " + star.getFrameName(frame) + " (" + entityID +
-			  "): " + ex.toString());
+		          "frame " + star.getFrameName(frame) + " (" +
+			  entityAssemblyID + "): " + ex.toString());
 		    }
 		    frameIndex++;
 	        }
@@ -1804,25 +2003,9 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    // Ensure that we've saved a residue list if at all possible.  In
-    // most cases, a residue list will already have been saved when
-    // this method is called, but if not we try to save one now.
-    private void ensureResidueList(S2DStarIfc star) throws S2DException
-    {
-        if (doDebugOutput(3)) {
-	    System.out.println("  S2DMain.ensureResidueList()");
-	}
-
-	if (!_savedResList) {
-	    //TEMP -- this fails if there is more than one entity
-            saveResList (star, null, 1);
-	}
-    }
-
-    //-------------------------------------------------------------------
     // Save all T1 relaxation data for this entry.
     // Note: this can be tested with 4267.
-    private void saveT1Relaxation(S2DStarIfc star)
+    private void saveT1Relaxation(S2DNmrStarIfc star) throws S2DException
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveT1Relaxation()");
@@ -1834,21 +2017,30 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    try {
-	        saveFrameT1Relax(star, frame, frameIndex);
-	    } catch(S2DException ex) {
-		System.err.println("Exception saving T1 relaxation for " +
-		  "frame " + star.getFrameName(frame) + ": " +
-		  ex.toString());
+	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	      frame, star.T1_ENTITY_ASSEMBLY_ID);
+	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
+		String entityAssemblyID =
+		  (String)entityAssemblyIDList.get(index);
+
+	        try {
+	            saveFrameT1Relax(star, frame, entityAssemblyID,
+		      frameIndex);
+	        } catch(S2DException ex) {
+		    System.err.println("Exception saving T1 relaxation " +
+		      "for frame " + star.getFrameName(frame) +
+		      ": " + ex.toString());
+	        }
+
+	        frameIndex++;
 	    }
-	    frameIndex++;
         }
     }
 
     //-------------------------------------------------------------------
     // Save all T2 relaxation data for this entry.
     // Note: this can be tested with 4267.
-    private void saveT2Relaxation(S2DStarIfc star)
+    private void saveT2Relaxation(S2DNmrStarIfc star) throws S2DException
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveT2Relaxation()");
@@ -1860,21 +2052,30 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    try {
-	        saveFrameT2Relax(star, frame, frameIndex);
-	    } catch(S2DException ex) {
-		System.err.println("Exception saving T2 relaxation for " +
-		  "frame " + star.getFrameName(frame) + ": " +
-		  ex.toString());
+	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	      frame, star.T2_ENTITY_ASSEMBLY_ID);
+	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
+		String entityAssemblyID =
+		  (String)entityAssemblyIDList.get(index);
+
+	        try {
+	            saveFrameT2Relax(star, frame, entityAssemblyID,
+		      frameIndex);
+	        } catch(S2DException ex) {
+		    System.err.println("Exception saving T2 relaxation " +
+		      "for frame " + star.getFrameName(frame) +
+		      ": " + ex.toString());
+	        }
+
+	        frameIndex++;
 	    }
-	    frameIndex++;
         }
     }
 
     //-------------------------------------------------------------------
     // Save all heteronuclear NOE values for this entry.
     // Note: this can be tested with 4267.
-    private void saveHetNOE(S2DStarIfc star)
+    private void saveHetNOE(S2DNmrStarIfc star) throws S2DException
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveHetNOE()");
@@ -1886,19 +2087,28 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    try {
-	        saveFrameHetNOE(star, frame, frameIndex);
-	    } catch(S2DException ex) {
-		System.err.println("Exception saving heteronuclear NOE for " +
-		  "frame " + star.getFrameName(frame) + ": " +
-		  ex.toString());
+	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	      frame, star.HET_NOE_ENTITY_ASSEMBLY_ID_1);
+	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
+		String entityAssemblyID =
+		  (String)entityAssemblyIDList.get(index);
+
+	        try {
+	            saveFrameHetNOE(star, frame, entityAssemblyID,
+		      frameIndex);
+	        } catch(S2DException ex) {
+		    System.err.println("Exception saving heternuclear " +
+		      "NOE for frame " + star.getFrameName(frame) +
+		      ": " + ex.toString());
+	        }
+
+	        frameIndex++;
 	    }
-	    frameIndex++;
         }
     }
 
     //-------------------------------------------------------------------
-    private void saveHExchangeRate(S2DStarIfc star)
+    private void saveHExchangeRate(S2DNmrStarIfc star)
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveHExchangeRate()");
@@ -1910,7 +2120,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save all coupling constants for this entry.
     // Note: this can be tested with 4297.
-    private void saveCoupling(S2DStarIfc star)
+    private void saveCoupling(S2DNmrStarIfc star) throws S2DException
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveCoupling()");
@@ -1922,19 +2132,28 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    try {
-	        saveFrameCoupling(star, frame, frameIndex);
-	    } catch(S2DException ex) {
-		System.err.println("Exception saving coupling constants for " +
-		  "frame " + star.getFrameName(frame) + ": " +
-		  ex.toString());
+	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	      frame, star.COUPLING_ENTITY_ASSEMBLY_ID_1);
+	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
+		String entityAssemblyID =
+		  (String)entityAssemblyIDList.get(index);
+
+	        try {
+	            saveFrameCoupling(star, frame, entityAssemblyID,
+		      frameIndex);
+	        } catch(S2DException ex) {
+		    System.err.println("Exception saving coupling " +
+		      "constants for frame " + star.getFrameName(frame) +
+		      ": " + ex.toString());
+	        }
+
+	        frameIndex++;
 	    }
-	    frameIndex++;
         }
     }
 
     //-------------------------------------------------------------------
-    private void saveHExchangeProtFact(S2DStarIfc star)
+    private void saveHExchangeProtFact(S2DNmrStarIfc star)
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveHExchangeProtFact()");
@@ -1945,7 +2164,7 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Note: this can be tested with 4689.
-    private void saveS2Params(S2DStarIfc star)
+    private void saveS2Params(S2DNmrStarIfc star) throws S2DException
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveS2Params()");
@@ -1957,14 +2176,23 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    try {
-	        saveFrameS2Params(star, frame, frameIndex);
-	    } catch(S2DException ex) {
-		System.err.println("Exception saving coupling constants for " +
-		  "frame " + star.getFrameName(frame) + ": " +
-		  ex.toString());
+	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	      frame, star.ORDER_ENTITY_ASSEMBLY_ID);
+	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
+		String entityAssemblyID =
+		  (String)entityAssemblyIDList.get(index);
+
+	        try {
+	            saveFrameS2Params(star, frame, entityAssemblyID,
+		      frameIndex);
+	        } catch(S2DException ex) {
+		    System.err.println("Exception saving S2 order " +
+		      "parameters for frame " + star.getFrameName(frame) +
+		      ": " + ex.toString());
+	        }
+
+	        frameIndex++;
 	    }
-	    frameIndex++;
         }
     }
 
@@ -1988,7 +2216,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    private void saveAtomicCoords(S2DStarIfc star)
+    private void saveAtomicCoords(S2DNmrStarIfc star)
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveAtomicCoords()");
@@ -2014,7 +2242,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    private void saveLACS(S2DStarIfc star) throws S2DException
+    private void saveLACS(S2DNmrStarIfc star) throws S2DException
     {
         if (doDebugOutput(3)) {
 	    System.out.println("  S2DMain.saveLACS()");
@@ -2036,12 +2264,12 @@ public class S2DMain {
     // Save residue counts (and the residue list) corresponding to
     // the given save frame.  (The save frame passed in here should
     // be a save frame containing data such as chemical shifts.)
-    private S2DResidues saveFrameResCounts(S2DStarIfc star,
+    private S2DResidues getFrameResCounts(S2DStarIfc star,
       SaveFrameNode chemShiftFrame, String entityID, int frameIndex)
       throws S2DException
     {
         if (doDebugOutput(4)) {
-	    System.out.println("    S2DMain.saveFrameResCounts(" +
+	    System.out.println("    S2DMain.getFrameResCounts(" +
 	      star.getFrameName(chemShiftFrame) + " (" + entityID +
 	      "), " + frameIndex + ")");
 	}
@@ -2103,6 +2331,7 @@ public class S2DMain {
         return residues;
     }
 
+//TEMPTEMP -- should this really be saveResCount?
     //-------------------------------------------------------------------
     // Save the residue count and residue list for the given save frame.
     // (The save frame passed in here must be the save frame that
@@ -2115,9 +2344,13 @@ public class S2DMain {
 	      star.getFrameName(monoPolyFrame) + ", " + frameIndex + ")");
 	}
 
+	// Note: star.getEntityFrame() will throw an exception if there
+	// is more than one "entity frame"; this call is needed only for
+	// minimal data files for the visualization server, etc.
+	// (See test13, test13_3, test46.)
         if (monoPolyFrame == null) {
 	    monoPolyFrame = star.getEntityFrame();
-        }
+	}
 
         S2DResidues residues = star.getResidues(monoPolyFrame);
 
@@ -2126,58 +2359,60 @@ public class S2DMain {
 
 	resCount.write(frameIndex);
 
-        S2DResList resList = new S2DResList(_name, _dataDir,
-	  residues._resSeqCodes, residues._resLabels);
-
-	resList.write(frameIndex);
-
-	_savedResList = true;
-
 	return residues;
     }
 
     //-------------------------------------------------------------------
     // Save chem shifts for one save frame.
     private void saveFrameChemShifts(S2DNmrStarIfc star, SaveFrameNode frame,
-      String entityID, int frameIndex) throws S2DException
+      String entityAssemblyID, int frameIndex) throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameChemShifts(" +
-	      star.getFrameName(frame) + ", <" + entityID + ">, " +
+	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
 	      frameIndex + ")");
 	}
 
 	//
 	// Get the values we need from the Star file.
 	//
-	String[] entityIDs = null;
-	if (!entityID.equals("")) {
-	    entityIDs = star.getAllChemShiftEntityIDs(frame);
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
 	}
 
 	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE,
+	  entityAssemblyID, entityAssemblyIDs);
 	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
 	  star.CHEM_SHIFT_RES_SEQ_CODE);
 	resSeqCodesTmp = null;
 
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
 	S2DResidues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
 
 	String[] atomTypes = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE, entityAssemblyID,
+	  entityAssemblyIDs);
 
 	String[] chemShiftsTmp = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
         double[] chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp,
 	  star.CHEM_SHIFT_VALUE);
 	chemShiftsTmp = null;
@@ -2185,8 +2420,8 @@ public class S2DMain {
 	int[] ambiguityVals;
 	try {
 	    String[] ambiguityTmp = star.getAndFilterFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE, entityID,
-	      entityIDs);
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE,
+	      entityAssemblyID, entityAssemblyIDs);
 	    if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
 	        throw new S2DWarning("Ambiguity code values are all null");
 	    }
@@ -2204,12 +2439,15 @@ public class S2DMain {
 	    }
 	}
 
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
+
 	//
 	// Create an S2DChemShift object with the values we just got.
 	//
         S2DChemShift chemShift = new S2DChemShift(_name, _longName, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
-	  atomTypes, chemShiftVals, ambiguityVals,
+	  atomTypes, chemShiftVals, ambiguityVals, entityAssemblyIDVal,
 	  star.getFrameDetails(frame));
 
 
@@ -2234,6 +2472,7 @@ public class S2DMain {
 	// bmr4011.str.)
 	int residueCount = -1;
 	if (_doProteinCheck) {
+	    String entityID = star.entAssemID2entID(entityAssemblyID);
 	    residueCount = star.residueCount(frame, entityID);
 	}
 
@@ -2291,32 +2530,55 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Save T1 relaxation values for one save frame.
-    private void saveFrameT1Relax(S2DStarIfc star, SaveFrameNode frame,
-      int frameIndex) throws S2DException
+    private void saveFrameT1Relax(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID, int frameIndex) throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameT1Relax(" +
-	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+	      frameIndex + ")");
 	}
 
 	//
 	// Get the values we need from the Star file.
 	//
-	String[] resSeqCodes = star.getFrameValues(frame,
-	  star.T1_VALUE, star.T1_RES_SEQ_CODE);
 
-	String[] resLabels = star.getFrameValues(frame,
-	  star.T1_VALUE, star.T1_RES_LABEL);
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.T1_ENTITY_ASSEMBLY_ID,
+	      star.T1_ENTITY_ASSEMBLY_ID);
+	}
 
-	String[] atomNames = star.getFrameValues(frame,
-	  star.T1_VALUE, star.T1_ATOM_NAME);
+	String[] resSeqCodes = star.getAndFilterFrameValues(frame,
+	  star.T1_VALUE, star.T1_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
 
-	String[] relaxValues = star.getFrameValues(frame,
-	  star.T1_VALUE, star.T1_VALUE);
+	String[] resLabels = star.getAndFilterFrameValues(frame,
+	  star.T1_VALUE, star.T1_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	String[] atomNames = star.getAndFilterFrameValues(frame,
+	  star.T1_VALUE, star.T1_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	String[] relaxValues = star.getAndFilterFrameValues(frame,
+	  star.T1_VALUE, star.T1_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
 
 	//TEMP -- 4096 has "_T1_error" instead of "_T1_value_error".
-	String[] relaxErrors = star.getOptionalFrameValues(frame,
-	  star.T1_VALUE, star.T1_VALUE_ERR, relaxValues.length, "0");
+	String[] relaxErrors = star.getAndFilterOptionalFrameValues(frame,
+	  star.T1_VALUE, star.T1_VALUE_ERR, entityAssemblyID,
+	  entityAssemblyIDs, relaxValues.length, "0");
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
 
 	//
 	// Create an S2DRelaxation object with the values we just got.
@@ -2325,7 +2587,7 @@ public class S2DMain {
 	  _dataDir, _sessionDir, _summary, S2DUtils.TYPE_T1_RELAX,
 	  star.getOneFrameValue(frame, star.T1_SPEC_FREQ_1H),
 	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors,
-	  star.getFrameDetails(frame));
+	  entityAssemblyIDVal, star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the relaxation values.
@@ -2342,32 +2604,55 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Save T2 relaxation values for one save frame.
-    private void saveFrameT2Relax(S2DStarIfc star, SaveFrameNode frame,
-      int frameIndex) throws S2DException
+    private void saveFrameT2Relax(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID, int frameIndex) throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameT2Relax(" +
-	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+	      frameIndex + ")");
 	}
 
 	//
 	// Get the values we need from the Star file.
 	//
-	String[] resSeqCodes = star.getFrameValues(frame,
-	  star.T2_VALUE, star.T2_RES_SEQ_CODE);
 
-	String[] resLabels = star.getFrameValues(frame,
-	  star.T2_VALUE, star.T2_RES_LABEL);
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.T2_ENTITY_ASSEMBLY_ID,
+	      star.T2_ENTITY_ASSEMBLY_ID);
+	}
 
-	String[] atomNames = star.getFrameValues(frame,
-	  star.T2_VALUE, star.T2_ATOM_NAME);
+	String[] resSeqCodes = star.getAndFilterFrameValues(frame,
+	  star.T2_VALUE, star.T2_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
 
-	String[] relaxValues = star.getFrameValues(frame,
-	  star.T2_VALUE, star.T2_VALUE);
+	String[] resLabels = star.getAndFilterFrameValues(frame,
+	  star.T2_VALUE, star.T2_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	String[] atomNames = star.getAndFilterFrameValues(frame,
+	  star.T2_VALUE, star.T2_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	String[] relaxValues = star.getAndFilterFrameValues(frame,
+	  star.T2_VALUE, star.T2_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
 
 	//TEMP -- 4096 has "_T2_error" instead of "_T2_value_error".
-	String[] relaxErrors = star.getOptionalFrameValues(frame,
-	  star.T2_VALUE, star.T2_VALUE_ERR, relaxValues.length, "0");
+	String[] relaxErrors = star.getAndFilterOptionalFrameValues(frame,
+	  star.T2_VALUE, star.T2_VALUE_ERR, entityAssemblyID,
+	  entityAssemblyIDs, relaxValues.length, "0");
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
 
 	//
 	// Create an S2DRelaxation object with the values we just got.
@@ -2376,7 +2661,7 @@ public class S2DMain {
 	  _dataDir, _sessionDir, _summary, S2DUtils.TYPE_T2_RELAX,
 	  star.getOneFrameValue(frame, star.T2_SPEC_FREQ_1H),
 	  resSeqCodes, resLabels, atomNames, relaxValues, relaxErrors,
-	  star.getFrameDetails(frame));
+	  entityAssemblyIDVal, star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the relaxation values.
@@ -2393,49 +2678,76 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Save coupling constants for one save frame.
-    private void saveFrameCoupling(S2DStarIfc star, SaveFrameNode frame,
-      int frameIndex) throws S2DException
+    private void saveFrameCoupling(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID, int frameIndex) throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameCoupling(" +
-	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+	      frameIndex + ")");
 	}
 
 	//
 	// Get the values we need from the Star file.
 	//
-	String[] atom1ResSeqs = star.getFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_1);
 
-	String[] atom2ResSeqs = star.getFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_2);
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.COUPLING_ENTITY_ASSEMBLY_ID_1,
+	      star.COUPLING_ENTITY_ASSEMBLY_ID_1);
+	}
 
-	String[] couplingConstValues = star.getFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_VALUE);
+	String[] atom1ResSeqs = star.getAndFilterFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_1,
+	  entityAssemblyID, entityAssemblyIDs);
 
-	String[] couplingConstCodes = star.getOptionalFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_CODE,
+	String[] atom2ResSeqs = star.getAndFilterFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_2,
+	  entityAssemblyID, entityAssemblyIDs);
+
+	String[] couplingConstValues = star.getAndFilterFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_VALUE,
+	  entityAssemblyID, entityAssemblyIDs);
+
+	String[] couplingConstCodes = star.getAndFilterOptionalFrameValues(
+	  frame, star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_CODE,
+	  entityAssemblyID, entityAssemblyIDs,
 	  atom1ResSeqs.length, "0");
 
-	String[] atom1ResLabels = star.getOptionalFrameValues(frame,
+	String[] atom1ResLabels = star.getAndFilterOptionalFrameValues(frame,
 	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_LABEL_1,
+	  entityAssemblyID, entityAssemblyIDs,
 	  atom1ResSeqs.length, "0");
 
-	String[] atom1Names = star.getOptionalFrameValues(frame,
+	String[] atom1Names = star.getAndFilterOptionalFrameValues(frame,
 	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_ATOM_NAME_1,
+	  entityAssemblyID, entityAssemblyIDs,
 	  atom1ResSeqs.length, "0");
 
-	String[] atom2ResLabels = star.getOptionalFrameValues(frame,
+	String[] atom2ResLabels = star.getAndFilterOptionalFrameValues(frame,
 	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_LABEL_2,
+	  entityAssemblyID, entityAssemblyIDs,
 	  atom1ResSeqs.length, "0");
 
-	String[] atom2Names = star.getOptionalFrameValues(frame,
+	String[] atom2Names = star.getAndFilterOptionalFrameValues(frame,
 	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_ATOM_NAME_2,
+	  entityAssemblyID, entityAssemblyIDs,
 	  atom1ResSeqs.length, "0");
 
-	String[] couplingConstErrors = star.getOptionalFrameValues(frame,
-	  star.COUPLING_CONSTANT_VALUE,
-	  star.COUPLING_CONSTANT_VALUE_ERR, atom1ResSeqs.length, "0");
+	String[] couplingConstErrors = star.getAndFilterOptionalFrameValues(
+	  frame, star.COUPLING_CONSTANT_VALUE,
+	  star.COUPLING_CONSTANT_VALUE_ERR,
+	  entityAssemblyID, entityAssemblyIDs, atom1ResSeqs.length, "0");
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
 
 	//
 	// Create an S2DCoupling object with the values we just got.
@@ -2444,7 +2756,7 @@ public class S2DMain {
 	  _sessionDir, _summary, couplingConstCodes, atom1ResSeqs,
 	  atom1ResLabels, atom1Names, atom2ResSeqs, atom2ResLabels,
 	  atom2Names, couplingConstValues, couplingConstErrors,
-	  star.getFrameDetails(frame));
+	  entityAssemblyIDVal, star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the coupling contants.
@@ -2461,12 +2773,13 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Save heteronuclear NOE values for one save frame.
-    private void saveFrameHetNOE(S2DStarIfc star, SaveFrameNode frame,
-      int frameIndex) throws S2DException
+    private void saveFrameHetNOE(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID, int frameIndex) throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameHetNOE(" +
-	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+	      frameIndex + ")");
 	}
 
 	//
@@ -2474,18 +2787,39 @@ public class S2DMain {
 	// TEMP -- NMR-STAR 3.0 has two residues for each heternuclear
 	// NOE, so we should probably deal with that eventually.
 	//
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.HET_NOE_ENTITY_ASSEMBLY_ID_1,
+	      star.HET_NOE_ENTITY_ASSEMBLY_ID_1);
+	}
+
 //TEMPTEMP -- convert these to numerical values?
-	String[] resSeqCodes = star.getFrameValues(frame,
-	  star.HET_NOE_VALUE, star.HET_NOE_RES_SEQ_CODE);
+	String[] resSeqCodes = star.getAndFilterFrameValues(frame,
+	  star.HET_NOE_VALUE, star.HET_NOE_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
 
-	String[] resLabels = star.getFrameValues(frame,
-	  star.HET_NOE_VALUE, star.HET_NOE_RES_LABEL);
+	String[] resLabels = star.getAndFilterFrameValues(frame,
+	  star.HET_NOE_VALUE, star.HET_NOE_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
 
-	String[] hetNOEValues = star.getFrameValues(frame,
-	  star.HET_NOE_VALUE, star.HET_NOE_VALUE);
+	String[] hetNOEValues = star.getAndFilterFrameValues(frame,
+	  star.HET_NOE_VALUE, star.HET_NOE_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
 
-	String[] hetNOEErrors = star.getFrameValues(frame,
-	  star.HET_NOE_VALUE, star.HET_NOE_VALUE_ERR);
+	String[] hetNOEErrors = star.getAndFilterFrameValues(frame,
+	  star.HET_NOE_VALUE, star.HET_NOE_VALUE_ERR, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
 
 	//
 	// Create an S2DHetNOE object with the values we just got.
@@ -2496,7 +2830,7 @@ public class S2DMain {
 	  star.getOneFrameValue(frame, star.HET_NOE_SPEC_FREQ_1H),
 	  star.getHetNOEAtom1(frame), star.getHetNOEAtom2(frame),
 	  resSeqCodes, resLabels, hetNOEValues, hetNOEErrors,
-	  star.getFrameDetails(frame));
+	  entityAssemblyIDVal, star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the heteronuclear NOE
@@ -2513,39 +2847,62 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    // Save coupling constants for one save frame.
-    private void saveFrameS2Params(S2DStarIfc star, SaveFrameNode frame,
-      int frameIndex) throws S2DException
+    // Save S2 order parameters for one save frame.
+    private void saveFrameS2Params(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID, int frameIndex) throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameS2Params(" +
-	      star.getFrameName(frame) + ", " + frameIndex + ")");
+	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
+	      frameIndex + ")");
 	}
 
 	//
 	// Get the values we need from the Star file.
 	//
-	String[] resSeqCodes = star.getFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_RES_SEQ_CODE);
 
-	String[] resLabels = star.getFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_RES_LABEL);
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.ORDER_ENTITY_ASSEMBLY_ID,
+	      star.ORDER_ENTITY_ASSEMBLY_ID);
+	}
+	String[] resSeqCodes = star.getAndFilterFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
 
-	String[] atomNames = star.getFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_ATOM_NAME);
+	String[] resLabels = star.getAndFilterFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
 
-	String[] s2Values = star.getFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_VALUE);
+	String[] atomNames = star.getAndFilterFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
 
-	String[] s2Errors = star.getOptionalFrameValues(frame,
-	  star.ORDER_VALUE, star.ORDER_VALUE_ERR, s2Values.length, "0");
+	String[] s2Values = star.getAndFilterFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	String[] s2Errors = star.getAndFilterOptionalFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_VALUE_ERR, entityAssemblyID,
+	  entityAssemblyIDs, s2Values.length, "0");
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
 
 	//
 	// Create an S2DS2Order object with the values we just got.
 	//
 	S2DS2Order s2Order = new S2DS2Order(_name, _longName, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, resLabels, atomNames,
-	  s2Values, s2Errors, star.getFrameDetails(frame));
+	  s2Values, s2Errors, entityAssemblyIDVal,
+	  star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the S2 order values.
@@ -2626,14 +2983,16 @@ public class S2DMain {
 	  star.ATOM_COORD_Z);
         atomCoordZTmp = null;
 
+        int[] entityAssemblyIDs = star.getCoordEntityAssemblyIDs(frame);
+
 	//
 	// Create an S2DAtomicCoords object with the values we just got.
 	//
 	S2DAtomicCoords atomicCoords = new S2DAtomicCoords(_name,
 	  _longName, _dataDir, _sessionDir, _summary, resSeqCodes,
 	  resLabels, atomNames, atomTypes, atomCoordX, atomCoordY,
-	  atomCoordZ, _connectionFile, _dataSets, _currentPdbId,
-	  star.getFrameDetails(frame));
+	  atomCoordZ, entityAssemblyIDs, _connectionFile, _dataSets,
+	  _currentPdbId, star.getFrameDetails(frame));
 
 	//
 	// Now go ahead and calculate and write out the atomic coordinates.
@@ -2658,12 +3017,13 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save Pistachio data for one save frame.
     //TEMP -- needs entity argument
-    private void saveFramePistachio(S2DStarIfc star, SaveFrameNode frame,
-      String entityID, S2DResidues residues, int frameIndex) throws S2DException
+    private void saveFramePistachio(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID, S2DResidues residues, int frameIndex)
+      throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFramePistachio(" +
-	      star.getFrameName(frame) + " (" + entityID + "), " +
+	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
 	      frameIndex + ")");
 	}
 
@@ -2672,20 +3032,26 @@ public class S2DMain {
 	//
 	if (star.FIGURE_OF_MERIT.equals("")) {
 	    // File is not NMR-STAR 3.0
+            if (doDebugOutput(4)) {
+	        System.out.println("    Skipping Pistachio processing " +
+		  "because file is not NMR-STAR 3.x");
+	    }
 	    return;
 	}
 
 //TEMPTEMP -- change CHEM_SHIFT_VALUE to FIGURE_OF_MERIT in all here
-	String[] entityIDs = null;
-	if (!entityID.equals("")) {
-	    entityIDs = star.getAllChemShiftEntityIDs(frame);
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
 	}
 
 	String[] meritValsTmp;
 	try {
 	    meritValsTmp = star.getAndFilterFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.FIGURE_OF_MERIT, entityID,
-	      entityIDs);
+	      star.CHEM_SHIFT_VALUE, star.FIGURE_OF_MERIT, entityAssemblyID,
+	      entityAssemblyIDs);
 	    if (S2DUtils.entireArrayMatches(meritValsTmp, ".")) {
 		throw new S2DWarning("Figure of merit values are all null");
 	    }
@@ -2701,27 +3067,30 @@ public class S2DMain {
 	meritValsTmp = null;
 
 	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
 	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
 	  star.CHEM_SHIFT_RES_SEQ_CODE);
 	resSeqCodesTmp = null;
 
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
 	S2DResidues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
 
 	//
 	// Create an S2DPistachio object with the values we just got.
 	//
         S2DPistachio pistachio = new S2DPistachio(_name, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
-	  meritVals, star.getFrameDetails(frame));
+	  meritVals, entityAssemblyIDVal, star.getFrameDetails(frame));
 
 	//
 	// The S2DPistachioTable object holds the figures of merit for
@@ -2739,7 +3108,8 @@ public class S2DMain {
 	//
         S2DDummyCoords dCoords = S2DDummyCoords.getInstance();
 	String tmpFile = _dataDir + File.separator + _name + "pstmp";
-	dCoords.writeCoords(residues, tmpFile, PISTACHIO_WRAP_LENGTH);
+	dCoords.writeCoords(residues, entityAssemblyIDVal, tmpFile,
+	  PISTACHIO_WRAP_LENGTH);
 
 	S2DmmCifIfc cif = new S2DmmCifIfc(tmpFile);
 	saveFrameAtomicCoords(cif, null, frameIndex, pt, true);
@@ -2765,30 +3135,31 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Save ambiguity data for one save frame.
-    private void saveFrameAmbiguity(S2DStarIfc star, SaveFrameNode frame,
-      String entityID, S2DResidues residues, int frameIndex)
+    private void saveFrameAmbiguity(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID, S2DResidues residues, int frameIndex)
       throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameAmbiguity(" +
-	      star.getFrameName(frame) + " (" + entityID + "), " +
+	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
 	      frameIndex + ")");
 	}
 
-//TEMPTEMP -- change CHEM_SHIFT_VALUE here?
 	//
 	// Get the values we need from the Star file.
 	//
-	String[] entityIDs = null;
-	if (!entityID.equals("")) {
-	    entityIDs = star.getAllChemShiftEntityIDs(frame);
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
 	}
 
 	String[] ambiguityTmp;
 	try {
 	    ambiguityTmp = star.getAndFilterFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE, entityID,
-	      entityIDs);
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE,
+	      entityAssemblyID, entityAssemblyIDs);
 	    if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
 	        throw new S2DWarning("Ambiguity code values are all null");
 	    }
@@ -2804,27 +3175,30 @@ public class S2DMain {
 	ambiguityTmp = null;
 
 	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE,
+	  entityAssemblyID, entityAssemblyIDs);
 	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
 	  star.CHEM_SHIFT_RES_SEQ_CODE);
 	resSeqCodesTmp = null;
 
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
 	S2DResidues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityID,
-	  entityIDs);
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
 
 	//
 	// Create an S2DAmbiguity object with the values we just got.
 	//
         S2DAmbiguity ambiguity = new S2DAmbiguity(_name, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, ambiguityVals,
-	  star.getFrameDetails(frame));
+	  entityAssemblyIDVal, star.getFrameDetails(frame));
 
 	//
 	// The S2DAmbiguityTable object holds the ambiguity values for
@@ -2842,7 +3216,8 @@ public class S2DMain {
 	//
         S2DDummyCoords dCoords = S2DDummyCoords.getInstance();
 	String tmpFile = _dataDir + File.separator + _name + "pstmp";
-	dCoords.writeCoords(residues, tmpFile, AMBIGUITY_WRAP_LENGTH);
+	dCoords.writeCoords(residues, entityAssemblyIDVal, tmpFile,
+	  AMBIGUITY_WRAP_LENGTH);
 
 	S2DmmCifIfc cif = new S2DmmCifIfc(tmpFile);
 	saveFrameAtomicCoords(cif, null, frameIndex, at, true);
@@ -2991,7 +3366,9 @@ public class S2DMain {
 	        _summary.endFrame();
 	    }
 	} else {
-	    S2DmmCifIfc cif = new S2DmmCifIfc(pdbId, _useLocalFiles);
+	    S2DmmCifIfc cif = new S2DmmCifIfc(pdbId, _useLocalFiles,
+	      _dataDir + File.separator + _name + S2DNames.RES_LIST_SUFFIX +
+	      S2DNames.DAT_SUFFIX);
 	    saveFrameAtomicCoords(cif, null, _currentFrameIndex, null, false);
 	}
 	_currentFrameIndex++;

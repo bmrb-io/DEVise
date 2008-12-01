@@ -1695,7 +1695,7 @@ save_J_values_set_1
       _Atom_two_residue_label
       _Atom_two_name
       _Coupling_constant_value
-      _Coupling_constant_value_error
+      _Coupling_constant_value_error_MAKE_THIS_INVALID
 
        3JHNHA   3   LEU  H   3   LEU  HA  7.1  0.5 
        3JHNHA   4   GLY  H   4   GLY  HA  7.9  0.5 
@@ -1811,7 +1811,7 @@ save_J_values_set_2
       _Atom_two_residue_label
       _Atom_two_name
       _Coupling_constant_value
-      _Coupling_constant_value_error
+      _Coupling_constant_value_error_MAKE_THIS_INVALID
 
        3JHNHA   4   SER  H   4   SER  HA  6.9  0.5 
        3JHNHA   5   ASN  H   5   ASN  HA  9.4  0.5 

@@ -112,6 +112,14 @@ if ($status != 0) then
 endif
 
 echo ""
+echo "Running test13_3..."
+tests/test13_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test13_3"
+endif
+
+echo ""
 echo "Running test14..."
 tests/test14
 if ($status != 0) then
@@ -376,6 +384,21 @@ endif
 #  set failed_list = "$failed_list test53"
 #endif
 
+echo ""
+echo "Running test54..."
+tests/test54
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test54"
+endif
+
+echo ""
+echo "Running test54_3..."
+tests/test54_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test54_3"
+endif
 
 echo ""
 echo "Running test55..."
@@ -394,8 +417,80 @@ if ($status != 0) then
   set failed_list = "$failed_list test56"
 endif
 
+echo ""
+echo "Running test57..."
+tests/test57
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test57"
+endif
 
-#TEMP -- maybe add test of 4547
+echo ""
+echo "Running test57_3..."
+tests/test57_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test57_3"
+endif
+
+echo ""
+echo "Running test58..."
+tests/test58
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test58"
+endif
+
+echo ""
+echo "Running test58_3..."
+tests/test58_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test58_3"
+endif
+
+echo ""
+echo "Running test59..."
+tests/test59
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test59"
+endif
+
+echo ""
+echo "Running test60..."
+tests/test60
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test60"
+endif
+
+echo ""
+echo "Running test60_3..."
+tests/test60_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test60_3"
+endif
+
+echo ""
+echo "Running test61..."
+tests/test61
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test61"
+endif
+
+echo ""
+echo "Running test61_3..."
+tests/test61_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test61_3"
+endif
+
+
+#TEMP -- maybe add test of 4547 (has only RNA and DNA)
 
 
 echo ""

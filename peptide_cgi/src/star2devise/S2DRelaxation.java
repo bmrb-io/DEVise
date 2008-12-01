@@ -21,6 +21,28 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.2.3  2008/11/17 19:28:07  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.8.2.2  2008/11/11 20:47:51  wenger
+// Progress on getting entity assembly IDs correct for coupling constants,
+// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
+// (working for 2.1, but not yet for 3.1).
+//
+// Revision 1.8.2.1  2008/07/30 16:13:56  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
+//
+// Revision 1.8  2008/07/02 16:29:19  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.7  2008/06/04 21:12:01  wenger
 // New Peptide-CGI summary page is implemented, test work except for
 // test52 for some weird reason.  (Still may need some other changes
@@ -79,6 +101,7 @@ public class S2DRelaxation {
     private String _dataDir;
     private String _sessionDir;
     private S2DSummaryHtml _summary;
+    private int _entityAssemblyID;
     private String _frameDetails;
 
     private int _dataType;
@@ -102,7 +125,8 @@ public class S2DRelaxation {
       String sessionDir, S2DSummaryHtml summary, int dataType,
       String frequency, String[] resSeqCodes, String[] resLabels,
       String[] atomNames, String[] relaxationValues,
-      String[] relaxationErrors, String frameDetails) throws S2DException
+      String[] relaxationErrors, int entityAssemblyID,
+      String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DRelaxation.S2DRelaxation(" + name + ")");
@@ -112,6 +136,7 @@ public class S2DRelaxation {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
+	_entityAssemblyID = entityAssemblyID;
 	_frameDetails = frameDetails;
 
 	_dataType = dataType;
@@ -165,7 +190,8 @@ public class S2DRelaxation {
 	      _name + _suffix + frameIndex + S2DNames.DAT_SUFFIX);
             relaxWriter.write("# Data: relaxation values for " + _name + "\n");
             relaxWriter.write("# Schema: bmrb-relax\n");
-            relaxWriter.write("# Attributes: Residue_seq_code; " +
+            relaxWriter.write("# Attributes: Entity_assembly_ID; " +
+	      "Residue_seq_code; " +
 	      "Residue_label; Atom_name; relax_value; relax_error\n");
             relaxWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -174,10 +200,12 @@ public class S2DRelaxation {
             relaxWriter.write("#\n");
 
 	    for (int index = 0; index < _resSeqCodes.length; index++) {
-	        relaxWriter.write(_resSeqCodes[index] + " " +
-		  _resLabels[index] + " " + _atomNames[index] + " " +
-		  _relaxationValues[index] + " " + _relaxationErrors[index] +
-		  "\n");
+	        relaxWriter.write(_entityAssemblyID + " " +
+		  _resSeqCodes[index] + " " +
+		  _resLabels[index] + " " +
+		  _atomNames[index] + " " +
+		  _relaxationValues[index] + " " +
+		  _relaxationErrors[index] + "\n");
 	    }
 
 	    relaxWriter.close();
@@ -192,16 +220,18 @@ public class S2DRelaxation {
 	    //
 	    // Write the session-specific html file.
 	    //
+	    String fullTitle = _title + " (entity assembly " +
+	      _entityAssemblyID + ")";
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), _dataType,
-	      _name, frameIndex, _title, _frameDetails);
+	      _name, frameIndex, fullTitle, _frameDetails);
 	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
 	    //
 	    _summary.writeRelax(_dataType, _freqValue, _suffix, _title,
-	      frameIndex, _resSeqCodes.length);
+	      frameIndex, _entityAssemblyID, _resSeqCodes.length);
 
         } catch(IOException ex) {
 	    System.err.println("IOException writing relaxation data: " +

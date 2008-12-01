@@ -44,7 +44,7 @@ set files = ( data_dir/vis_server/test6_outac1.dat \
 	data_dir/vis_server/test6_outmd.dat \
 	data_dir/vis_server/test6_outp1.dat \
 	data_dir/vis_server/test6_outrc1.dat \
-	data_dir/vis_server/test6_outrl1.dat \
+	data_dir/vis_server/test6_outrl.dat \
 	html_dir/test6_outac1.html \
 	html_dir/test6_outas1.html \
 	html_dir/test6_outc1.html \

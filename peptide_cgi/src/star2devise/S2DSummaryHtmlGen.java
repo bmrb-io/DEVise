@@ -36,6 +36,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.2.3  2008/11/19 21:27:22  wenger
+// Cleaned up various notes about things to check.
+//
+// Revision 1.11.2.2  2008/11/17 19:28:07  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.11.2.1  2008/11/05 00:37:44  wenger
+// Fixed a bunch of problems with getting coordinates from NMR-STAR
+// files (e.g., 4096) -- test4 and test4_3 now work.
+//
+// Revision 1.11  2008/07/02 16:29:20  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.10  2008/06/25 18:48:07  wenger
 // Multiple summary page changes:  re-ordered the data sets; added
 // mailto link; added "no data available" sections so users don't
@@ -140,6 +159,12 @@ public abstract class S2DSummaryHtmlGen {
     private Vector _saveFrameDetails = new Vector();
 
     private int _maxChemShiftFrame = 0;
+
+    // Note: entity assembly IDs for all chemical shift data are
+    // derived from the delta shifts -- this assumes that if we don't
+    // have delta shifts we won't have any other chemical shift data,
+    // either.  wenger 2008-11-17.
+    private IntKeyHashtable _dsEntAssemIDInfo = new IntKeyHashtable();
     private IntKeyHashtable _deltaShiftInfo = new IntKeyHashtable();
     private IntKeyHashtable _csiInfo = new IntKeyHashtable();
     private IntKeyHashtable _pctAssignInfo = new IntKeyHashtable();
@@ -321,6 +346,7 @@ TEMP?*/
 	          S2DMain.PEP_CGI_VERSION + "}</p>\n");
 	        _writer.write("<p>" + GEN_DATE_LABEL + ": {" +
 	          S2DMain.getTimestamp() + "}</p>\n\n");
+                //TEMP -- save Star description here
 
 		// Save any related BMRB accession numbers.
 		if (bmrbIds != null) {
@@ -405,8 +431,8 @@ TEMP?*/
 
     //-------------------------------------------------------------------
     // Writes the deltashift link.
-    protected void writeDeltashift(int frameIndex, int residueCount)
-      throws IOException
+    protected void writeDeltashift(int frameIndex, int entityAssemblyID,
+      int residueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeDeltashift()");
@@ -414,7 +440,10 @@ TEMP?*/
 
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-	String value = "<a href=\"" + _name + S2DNames.DELTASHIFT_SUFFIX +
+	String value = "" + entityAssemblyID;
+        _dsEntAssemIDInfo.put(frameIndex, value);
+
+	value = "<a href=\"" + _name + S2DNames.DELTASHIFT_SUFFIX +
 	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
 	  "\">" + residueCount + " residues</a>";
 	_deltaShiftInfo.put(frameIndex, value);
@@ -456,8 +485,8 @@ TEMP?*/
 
     //-------------------------------------------------------------------
     // Writes the coupling constant link.
-    protected void writeCoupling(int frameIndex, int valueCount)
-      throws IOException
+    protected void writeCoupling(int frameIndex, int entityAssemblyID,
+      int valueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeCoupling()");
@@ -469,14 +498,15 @@ TEMP?*/
 
 	String value = "<a href=\"" + _name + S2DNames.COUPLING_SUFFIX +
 	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
-	  valueCount + " values</a>";
+	  valueCount + " values (" + entityAssemblyID + ")</a>";
 	_couplingInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
     // Writes the relaxation link.  (See S2DUtils for dataType.)
     protected void writeRelax(int dataType, int frequency, String suffix,
-      String name, int frameIndex, int valueCount) throws IOException
+      String name, int frameIndex, int entityAssemblyID, int valueCount)
+      throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeRelax()");
@@ -486,7 +516,7 @@ TEMP?*/
 
         String value = "<a href=\"" + _name + suffix + frameIndex +
 	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + valueCount +
-	  " values</a>";
+	  " values (" + entityAssemblyID + ")</a>";
 
         switch (dataType) {
 	case S2DUtils.TYPE_T1_RELAX:
@@ -508,7 +538,7 @@ TEMP?*/
     //-------------------------------------------------------------------
     // Writes the heteronuclear NOE link.
     protected void writeHetNOE(String name, int frameIndex,
-      int valueCount) throws IOException
+      int entityAssemblyID, int valueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeHetNOE()");
@@ -519,7 +549,7 @@ TEMP?*/
         String value = "<a href=\"" + _name + 
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
 	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + name +
-	  " (" + valueCount + " values)</a>";
+	  " (" + valueCount + " values) (" + entityAssemblyID + ")</a>";
 	_hetNOEInfo.put(frameIndex, value);
 
         //TEMP? _wroteLink = true;
@@ -623,6 +653,7 @@ TEMP?*/
 	  maxAtoms + ")\n");
     }
 
+    //TEMP -- what about entity assembly ID here?
     //-------------------------------------------------------------------
     // Writes the chem shift reference link.
     protected void writeChemShiftRef(String pdbId, int frameIndex)
@@ -649,6 +680,7 @@ TEMP?*/
         _csrScatterInfo.put(frameIndex, value);
     }
 
+    //TEMP -- what about entity assembly ID here?
     //-------------------------------------------------------------------
     // Writes the chem shift reference link, where the link is a CGI script
     // invocation (we haven't already done the chem shift reference
@@ -742,8 +774,8 @@ TEMP?*/
 
     //-------------------------------------------------------------------
     // Writes the S2 Order parameter data.
-    protected void writeS2Order(int frameIndex, int valueCount)
-      throws IOException
+    protected void writeS2Order(int frameIndex, int entityAssemblyID,
+      int valueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeS2Order()");
@@ -755,7 +787,7 @@ TEMP?*/
 
 	String value = "<a href=\"" + _name + S2DNames.ORDER_SUFFIX +
 	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
-	  valueCount + " values</a>";
+	  valueCount + " values (" + entityAssemblyID + ")</a>";
 	_s2OrderInfo.put(frameIndex, value);
     }
 
@@ -782,6 +814,7 @@ TEMP?*/
             _writer.write("  <tr>\n");
 	    // Get rid of frame details.
             // _writer.write("    <td><br></td>\n");
+            _writer.write("    <th>Entity assembly ID</th>\n");
 	    if (!_deltaShiftInfo.isEmpty()) {
                 _writer.write("    <th>Chemical shift delta</th>\n");
 	    }
@@ -815,6 +848,7 @@ TEMP?*/
 		// _writer.write("    <th><a href=\"#Frame" + index +
 		  // "\">Frame&nbsp;" + index + "</a></th>\n");
 
+		writeTableCell(_dsEntAssemIDInfo, index);
 	        if (!_deltaShiftInfo.isEmpty()) {
 		    writeTableCell(_deltaShiftInfo, index);
 		}
@@ -856,6 +890,7 @@ TEMP?*/
 	_writer.write("\n<hr>\n");
         if (_maxRelaxFrame > 0) {
 	    _writer.write("<p><b>T1/T2 Relaxation</b></p>\n");
+	    _writer.write("<p>(number of values, entity assembly ID)</p>\n");
 
 	    int maxLen = 0;
 	    int numCols = 0;
@@ -937,9 +972,10 @@ TEMP?*/
 
 	_writer.write("\n<hr>\n");
         if (_maxHetNOEFrame > 0) {
-	    _writer.write("<p><b>Heteronuclear NOE</b></p>\n");
+	    _writer.write("<p><b>Heteronuclear NOE" +
+	      "</b></p>\n");
 	    _writer.write("<p>(spectrometer frequency, atom one, " +
-	      "atom two, number of values)</p>\n");
+	      "atom two, number of values, entity assembly ID)</p>\n");
 
             _writer.write("<table border>\n");
             _writer.write("  <tr>\n");
@@ -969,6 +1005,7 @@ TEMP?*/
 	_writer.write("\n<hr>\n");
         if (_maxCouplingFrame > 0) {
 	    _writer.write("<p><b>Coupling Constants</b></p>\n");
+	    _writer.write("<p>(number of values, entity assembly ID)</p>\n");
 
             _writer.write("<table border cellpadding=5>\n");
             _writer.write("  <tr>\n");
@@ -1102,6 +1139,7 @@ TEMP?*/
 	_writer.write("\n<hr>\n");
         if (_maxS2OrderFrame > 0) {
 	    _writer.write("<p><b>S2 Order Parameters</b></p>\n");
+	    _writer.write("<p>(number of values, entity assembly ID)</p>\n");
 
             _writer.write("<table border cellpadding=5>\n");
             _writer.write("  <tr>\n");

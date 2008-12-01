@@ -1,0 +1,38 @@
+#! /bin/csh -f
+
+# Test bug 037 on an entry that has multiple entities, each with
+# homodimers.
+
+# This is the same as test 54, except on an NMR-STAR 3.1 file.
+
+set result = 0
+
+rm -f */5838*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -name 5838 -file test_data/bmr5838_3.str -do_pdb 1 -force
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+echo -n "Processing mmCIF: "
+./s2d -nomail -pdbid 1PSB -name 5838 -file test_data/bmr5838_3.str \
+  -do_pdb 2 -coord_index 1 -force
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test54_check
+
+
+echo -n "Test54_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

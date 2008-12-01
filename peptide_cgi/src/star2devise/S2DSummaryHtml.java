@@ -31,6 +31,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.2.1  2008/11/17 19:28:07  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.11  2008/07/02 16:29:20  wenger
+// S2 order parameter visualizations are done and approved by Eldon;
+// tests at least partially updated for S2 order stuff;
+// reversed the order of data sets in the data selection view of
+// 3D visualizations (more closely matches the summary page); minor
+// fix to testclean target in top-level makefile; minor fix to
+// relaxation session template (bar widths now set); added indices
+// to data set titles in 3D visualizations.
+//
 // Revision 1.10  2008/06/04 21:12:01  wenger
 // New Peptide-CGI summary page is implemented, test work except for
 // test52 for some weird reason.  (Still may need some other changes
@@ -201,14 +213,15 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the deltashift link.
-    public void writeDeltashift(int frameIndex, int count) throws IOException
+    public void writeDeltashift(int frameIndex, int entityAssemblyID,
+      int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeDeltashift()");
 	}
 
-    	_normal.writeDeltashift(frameIndex, count);
-    	_large.writeDeltashift(frameIndex, count);
+    	_normal.writeDeltashift(frameIndex, entityAssemblyID, count);
+    	_large.writeDeltashift(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -237,42 +250,44 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the coupling constant link.
-    public void writeCoupling(int frameIndex, int count) throws IOException
+    public void writeCoupling(int frameIndex, int entityAssemblyID,
+      int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeCoupling()");
 	}
 
-	_normal.writeCoupling(frameIndex, count);
-	_large.writeCoupling(frameIndex, count);
+	_normal.writeCoupling(frameIndex, entityAssemblyID, count);
+	_large.writeCoupling(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
     // Writes the relaxation link.
     public void writeRelax(int dataType, int frequency, String suffix,
-      String name, int frameIndex, int count) throws IOException
+      String name, int frameIndex, int entityAssemblyID, int count)
+      throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeRelax()");
 	}
 
 	_normal.writeRelax(dataType, frequency, suffix, name,
-	  frameIndex, count);
+	  frameIndex, entityAssemblyID, count);
 	_large.writeRelax(dataType, frequency, suffix, name,
-	  frameIndex, count);
+	  frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
     // Writes the heteronuclear NOE link.
-    public void writeHetNOE(String name, int frameIndex, int count)
-      throws IOException
+    public void writeHetNOE(String name, int frameIndex,
+      int entityAssemblyID, int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeHetNOE()");
 	}
 
-	_normal.writeHetNOE(name, frameIndex, count);
-	_large.writeHetNOE(name, frameIndex, count);
+	_normal.writeHetNOE(name, frameIndex, entityAssemblyID, count);
+	_large.writeHetNOE(name, frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -404,14 +419,15 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the S2 order parameter link.
-    public void writeS2Order(int frameIndex, int count) throws IOException
+    public void writeS2Order(int frameIndex, int entityAssemblyID,
+      int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeS2Order()");
 	}
 
-	_normal.writeS2Order(frameIndex, count);
-	_large.writeS2Order(frameIndex, count);
+	_normal.writeS2Order(frameIndex, entityAssemblyID, count);
+	_large.writeS2Order(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------

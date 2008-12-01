@@ -3,7 +3,7 @@ echo "Checking output files"
 set files = (data_dir/4096ac1.dat data_dir/4096as1.dat data_dir/4096c1.dat \
 	data_dir/4096d1.dat data_dir/4096g1.dat data_dir/4096hn1.dat \
 	data_dir/4096md.dat data_dir/4096n1.dat data_dir/4096p1.dat \
-	data_dir/4096rc1.dat data_dir/4096rl1.dat data_dir/4096t11.dat \
+	data_dir/4096rc1.dat data_dir/4096rl.dat data_dir/4096t11.dat \
 	data_dir/4096t21.dat data_dir/4096t22.dat html_dir/4096ac1.html \
 	html_dir/4096as1.html html_dir/4096c1.html html_dir/4096d1.html \
 	html_dir/4096g1.html html_dir/4096hn1.html html_dir/4096n1.html \
@@ -40,7 +40,7 @@ end
 set file = "data_dir/4096ac1.dat"
 set line = "1 1 GLY N N 11.949 7.838 11.241 backbone"
 source tests/check4line
-set line = "2177 . . O O -7.051 -0.232 -1.921 backbone"
+set line = "2177 3 . . O O -7.051 -0.232 -1.921 backbone"
 source tests/check4line
 
 set file = "data_dir/4096as1.dat"
@@ -60,3 +60,15 @@ set line = "1 GLY 66.666664 50.0 0.0"
 source tests/check4line
 set line = "39 HIS 75.0 83.333336 100.0"
 source tests/check4line
+
+set file = "data_dir/4096rl.dat"
+set line = "1	1	GLY"
+source tests/check4line
+set line = "1	147	SER"
+source tests/check4line
+set line = "2	1	HEME"
+# 2.1 doesn't have residues for entity 2
+#TEMP? source tests/check4line
+set line = "3	1	CO"
+# 2.1 doesn't have residues for entity 3
+#TEMP? source tests/check4line

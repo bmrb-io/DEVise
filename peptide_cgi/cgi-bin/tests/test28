@@ -15,7 +15,6 @@ endif
 
 echo "Checking output files"
 
-#TEMP -- This *should* generate residue lists -- see bug 037.
 set files = (data_dir/4970md.dat \
 	data_dir/4970n1.dat \
 	data_dir/4970n2.dat \
@@ -234,6 +233,7 @@ set files = (data_dir/4970md.dat \
 	data_dir/4970o7.dat \
 	data_dir/4970o8.dat \
 	data_dir/4970o9.dat \
+	data_dir/4970rl.dat \
 	html_dir/4970o10.html \
 	html_dir/4970o10_large.html \
 	html_dir/4970o11.html \
@@ -295,6 +295,16 @@ foreach file ($files)
     set result = 1
   endif
 end
+
+set file = "data_dir/4970rl.dat"
+set line = "1	1	ALA"
+source tests/check4line
+set line = "1	148	LYS"
+source tests/check4line
+set line = "2	1	GLY"
+source tests/check4line
+set line = "2	21	SER"
+source tests/check4line
 
 echo -n "Test28 result: "
 if ($result == 0) then

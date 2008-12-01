@@ -20,6 +20,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.4.1  2008/11/05 18:15:38  wenger
+// Make S2DStarIfc and S2DNmrStarIfc abstract, and got rid of a bunch
+// of things in S2DStarIfc that should only be in S2DNmrStarIfc.
+// (Note that I could move a bunch more methods from S2DStarIfc
+// to S2DNmrStarIfc, but I'm going to wait until after I merge the
+// current branch.)
+//
+// Revision 1.3  2007/08/20 20:26:08  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -53,6 +65,15 @@ public class S2DNmrStarLacsIfc extends S2DNmrStarIfc {
 
     //===================================================================
     // PROTECTED METHODS
+    //-------------------------------------------------------------------
+    /**
+     * Get the NMR-STAR file version corresponding to this object.
+     * @return The NMR-STAR file version corresponding to this object.
+     */
+    public String version()
+    {
+    	return "LACS";
+    }
 
     //-------------------------------------------------------------------
     // Constructor.  Constructs an S2DNmrStarLacsIfc object corresponding to

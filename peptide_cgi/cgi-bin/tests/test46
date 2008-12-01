@@ -28,7 +28,7 @@ set files = ( data_dir/uvd/test46_outam1.dat \
 	data_dir/uvd/test46_outmd.dat \
 	data_dir/uvd/test46_outp1.dat \
 	data_dir/uvd/test46_outrc1.dat \
-	data_dir/uvd/test46_outrl1.dat \
+	data_dir/uvd/test46_outrl.dat \
 	data_dir/uvd/test46_outt11.dat \
 	data_dir/uvd/test46_outt12.dat \
 	data_dir/uvd/test46_outt13.dat \

@@ -38,7 +38,7 @@ set files = (data_dir/abcdac1.dat data_dir/abcdas1.dat data_dir/abcdc1.dat \
 	data_dir/abcdn3.dat data_dir/abcdn4.dat data_dir/abcdn5.dat \
 	data_dir/abcdn6.dat data_dir/abcdn7.dat data_dir/abcdn8.dat \
 	data_dir/abcdn9.dat data_dir/abcdp1.dat data_dir/abcdrc1.dat \
-	data_dir/abcdrl1.dat data_dir/abcdt11.dat data_dir/abcdt12.dat \
+	data_dir/abcdrl.dat data_dir/abcdt11.dat data_dir/abcdt12.dat \
 	data_dir/abcdt13.dat data_dir/abcdt21.dat data_dir/abcdt22.dat \
 	data_dir/abcdt23.dat html_dir/abcdac1.html html_dir/abcdas1.html \
 	html_dir/abcdc1.html html_dir/abcdd1.html html_dir/abcdg1.html \

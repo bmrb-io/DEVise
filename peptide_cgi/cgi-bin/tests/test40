@@ -34,8 +34,7 @@ set files = ( data_dir/15028am1.dat \
 	data_dir/15028p2.dat \
 	data_dir/15028rc1.dat \
 	data_dir/15028rc2.dat \
-	data_dir/15028rl1.dat \
-	data_dir/15028rl2.dat \
+	data_dir/15028rl.dat \
 	html_dir/15028am1.html \
 	html_dir/15028am1_large.html \
 	html_dir/15028am2.html \

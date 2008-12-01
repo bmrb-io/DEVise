@@ -10,6 +10,7 @@
 type bmrb-Pistachio ascii
 comment #
 whitespace ' '
+attr Entity_assembly_ID int
 sorted attr Residue_seq_code int
 
 attr backboneGE95 float

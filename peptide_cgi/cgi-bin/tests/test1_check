@@ -6,7 +6,7 @@ set files = (data_dir/4267ac1.dat data_dir/4267as1.dat data_dir/4267c1.dat \
 	data_dir/4267n3.dat data_dir/4267n4.dat data_dir/4267n5.dat \
 	data_dir/4267n6.dat data_dir/4267n7.dat data_dir/4267n8.dat \
 	data_dir/4267n9.dat data_dir/4267p1.dat data_dir/4267rc1.dat \
-	data_dir/4267rl1.dat data_dir/4267t11.dat data_dir/4267t12.dat \
+	data_dir/4267rl.dat data_dir/4267t11.dat data_dir/4267t12.dat \
 	data_dir/4267t13.dat data_dir/4267t21.dat data_dir/4267t22.dat \
 	data_dir/4267t23.dat html_dir/4267ac1.html html_dir/4267as1.html \
 	html_dir/4267c1.html html_dir/4267d1.html html_dir/4267g1.html \
@@ -103,9 +103,9 @@ set line = "179 -0.215 3.48 1.06 0.0"
 source tests/check4line
 
 set file = "data_dir/4267g1.dat"
-set line = "3JHNHA 9 ILE H 9 ILE HA 4.3 0"
+set line = "3JHNHA 1 9 ILE H 9 ILE HA 4.3 0"
 source tests/check4line
-set line = "3JHNHA 178 ASP H 178 ASP HA 9.5 0"
+set line = "3JHNHA 1 178 ASP H 178 ASP HA 9.5 0"
 source tests/check4line
 
 set file = "data_dir/4267n3.dat"
@@ -120,10 +120,10 @@ source tests/check4line
 set line = "179 GLY 100.0 100.0 100.0"
 source tests/check4line
 
-set file = "data_dir/4267rl1.dat"
-set line = "1	MET"
+set file = "data_dir/4267rl.dat"
+set line = "1	1	MET"
 source tests/check4line
-set line = "179	GLY"
+set line = "1	179	GLY"
 source tests/check4line
 
 set file = "data_dir/4267t11.dat"

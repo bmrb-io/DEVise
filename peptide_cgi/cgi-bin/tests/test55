@@ -24,7 +24,7 @@ set files = ( data_dir/6730as1.dat \
 	data_dir/6730md.dat \
 	data_dir/6730p1.dat \
 	data_dir/6730rc1.dat \
-	data_dir/6730rl1.dat \
+	data_dir/6730rl.dat \
 	html_dir/6730as1.html \
 	html_dir/6730as1_large.html \
 	html_dir/6730c1.html \

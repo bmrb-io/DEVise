@@ -2200,7 +2200,7 @@ save_J_values_set_1
       _Coupling_constant.Val
       _Coupling_constant.Val_min
       _Coupling_constant.Val_max
-      _Coupling_constant.Val_err
+      _Coupling_constant.Val_err_MAKE_THIS_INVALID
       _Coupling_constant.Resonance_ID_1
       _Coupling_constant.Resonance_ID_2
       _Coupling_constant.Entry_ID
@@ -2339,7 +2339,7 @@ save_J_values_set_2
       _Coupling_constant.Val
       _Coupling_constant.Val_min
       _Coupling_constant.Val_max
-      _Coupling_constant.Val_err
+      _Coupling_constant.Val_err_MAKE_THIS_INVALID
       _Coupling_constant.Resonance_ID_1
       _Coupling_constant.Resonance_ID_2
       _Coupling_constant.Entry_ID

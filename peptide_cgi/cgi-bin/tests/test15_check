@@ -13,7 +13,7 @@ set files = ( data_dir/4317as1.dat \
 	data_dir/4317md.dat \
 	data_dir/4317p1.dat \
 	data_dir/4317rc1.dat \
-	data_dir/4317rl1.dat \
+	data_dir/4317rl.dat \
 	html_dir/4317as1.html \
 	html_dir/4317c1.html \
 	html_dir/4317csr11.html \

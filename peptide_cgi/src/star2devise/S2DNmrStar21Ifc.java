@@ -20,6 +20,53 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.2.10  2008/11/19 20:25:18  wenger
+// Fixed problems with getEntityFrame(), added test13_3 to check changes.
+//
+// Revision 1.10.2.9  2008/11/06 21:29:52  wenger
+// Cleaned up S2DMain.saveAllResidueLists(), cleaned up and documented
+// a bunch of other new methods.
+//
+// Revision 1.10.2.8  2008/11/05 00:37:43  wenger
+// Fixed a bunch of problems with getting coordinates from NMR-STAR
+// files (e.g., 4096) -- test4 and test4_3 now work.
+//
+// Revision 1.10.2.7  2008/10/30 16:18:45  wenger
+// Got rid of a bunch of code that's obsolete because of the multiple-
+// entity changes.
+//
+// Revision 1.10.2.6  2008/10/03 21:08:14  wenger
+// Okay, I think the basic chemical shift stuff is finally working
+// right for various combinations of multiple entities and multiple
+// entity assemblies (see test57* and test58*).  Lots of the other
+// stuff still needs work, though.
+//
+// Revision 1.10.2.5  2008/08/19 21:24:10  wenger
+// Now generating atomic coordinate data with "real" entity assembly IDs
+// (right now just a direct mapping from A->1, etc -- needs to be changed);
+// changed 3D session to use "master" residue list rather than the
+// individual ones.
+//
+// Revision 1.10.2.4  2008/08/15 19:36:38  wenger
+// Made some of the new entity-related code more tolerant of missing
+// tags, etc., so it works with visualization-server files, etc.
+// (Test_all currently works.)
+//
+// Revision 1.10.2.3  2008/08/13 21:38:21  wenger
+// Writing entity assembly IDs now works for the chem shift data for
+// 2.1 files.
+//
+// Revision 1.10.2.2  2008/08/13 16:12:46  wenger
+// Writing the "master" residue list is now working for 3.0/3.1 files
+// (still needs checks to make sure things are in order).
+//
+// Revision 1.10.2.1  2008/08/13 15:05:25  wenger
+// Part way to saving the "master" residue list for all entity
+// assemblies (works for 2.1 files, not 3/3.1).
+//
+// Revision 1.10  2008/07/20 20:43:06  wenger
+// Made a bunch of cleanups in the course of working on bug 065.
+//
 // Revision 1.9  2008/02/20 17:41:07  wenger
 // Committing (disabled) partially-implemented S2 Order visualization
 // code and tests.
@@ -66,6 +113,16 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
+    /**
+     * Get the NMR-STAR file version corresponding to this object.
+     * @return The NMR-STAR file version corresponding to this object.
+     */
+    public String version()
+    {
+    	return "2.1";
+    }
+
+    //-------------------------------------------------------------------
     // Determine whether the STAR file represented by starTree is an
     // NMR-STAR 2.1 file.
     public boolean isNmrStar21()
@@ -90,6 +147,46 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	}
 
     	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    /** Get a Vector of the entity frames corresponding to each entity
+        assembly ID (note that if we have homodimers, the same entity
+	frame will be in the Vector more than once).
+	@return: the Vector of entity save frames
+    */
+    public Vector getAllEntityAssemblyFrames() throws S2DException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("  S2DNmrStar21Ifc.getAllEntityAssemblyFrames()");
+	}
+
+	Vector result = new Vector();
+
+	try {
+	    SaveFrameNode molSysFrame = getOneDataFrameByCat(
+	      MOL_SYSTEM_SF_CAT, MOL_SYSTEM);
+
+	    String[] entityLabels = getFrameValues(molSysFrame, MOL_LABEL,
+	      MOL_LABEL);
+	    for (int frameNum = 0; frameNum < entityLabels.length; frameNum++) {
+	        String frameName = SAVE_FRAME_PREFIX + entityLabels[frameNum];
+	        SaveFrameNode frame = getFrameByName(frameName);
+	        result.addElement(frame);
+	    }
+	} catch (S2DException ex) {
+	    // We probably get here if there is no molecular_system save
+	    // frame (e.g., some visualization server uploads).
+	    System.err.println(
+	      "Warning in S2DNmrStar21Ifc.getAllEntityAssemblyFrames(): " +
+	      ex.toString());
+	    Enumeration tmpList = getAllEntityFrames();
+	    while (tmpList.hasMoreElements()) {
+	        result.addElement(tmpList.nextElement());
+	    }
+	}
+
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -159,6 +256,27 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     }
 
     // ----------------------------------------------------------------------
+    /**
+     * Get entity assembly IDs for the coordinates in the given save frame.
+     * @param frame: the save frame to search
+     * @return an array of the entity assembly IDs
+     */
+    public int[] getCoordEntityAssemblyIDs(SaveFrameNode frame)
+      throws S2DException
+    {
+        String[] sysCompNames = getFrameValues(frame, ATOM_COORD_X,
+	  MOL_SYS_COMP_NAME);
+
+        int[] entityAssemblyIDs = new int[sysCompNames.length];
+	for (int index = 0; index < entityAssemblyIDs.length; index++) {
+	    entityAssemblyIDs[index] =
+	      molSysComp2EntAssemID(sysCompNames[index]);
+	}
+
+	return entityAssemblyIDs;
+    }
+
+    // ----------------------------------------------------------------------
     // Get the entity/monomeric polymer save frame corresponding to the given
     // save frame.  (The entity save frame has the residue count, residue
     // sequence list, etc).
@@ -204,36 +322,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	// Get the corresponding save frame.
 	//
 	String frameName = SAVE_FRAME_PREFIX + molLabel;
-	VectorCheckType list = _starTree.searchByName(frameName);
-	if (list.size() != 1) {
-	    throw new S2DError("There should be exactly one " +
-	      frameName + " save frame; got " + list.size());
-	}
-        SaveFrameNode compFrame = (SaveFrameNode)list.elementAt(0);
-
-	result = compFrame;
-
-        if (doDebugOutput(12)) {
-            System.out.println(
-	      "  S2DNmrStar21Ifc.getEntityFrame() returns " +
-	      result.getLabel());
-        }
-
-        return result;
-    }
-
-    // ----------------------------------------------------------------------
-    // Get the monomeric polymer save frame for this NMR-STAR file.
-    // This method will throw an exception if there is more than
-    // one monomeric polymer save frame.
-    public SaveFrameNode getEntityFrame() throws S2DException
-    {
-        if (doDebugOutput(12)) {
-            System.out.println("  S2DNmrStar21Ifc.getEntityFrame()");
-        }
-
-        SaveFrameNode result = getOneDataFrameByCat(
-	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
+	result = getFrameByName(frameName);
 
         if (doDebugOutput(12)) {
             System.out.println(
@@ -258,6 +347,119 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         Vector result = new Vector();
 	result.add("");
 	return result;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Get a list of unique entity assembly IDs for the given frame
+     * and loop tag.  If there are no valid entity assembly ID values,
+     * this method will return a Vector with the single value "".
+     * @param The save frame to search
+     * @param The tag name holding entity assembly IDs in the given
+     *   frame
+     * @return A vector of unique entity assembly IDs (as Strings)
+     */
+    public Vector getUniqueEntityAssemblyIDs(SaveFrameNode frame,
+      String tagName) throws S2DException
+    {
+        Vector result = new Vector();
+	result.add("");
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Get the entity assembly ID corresponding to the given save frame
+     * (NMR-STAR 2.1) or entity assembly ID String (NMR-STAR 3.n).
+     * If the entity assembly ID string is "" this will return 1.
+     * @param The save frame
+     * @param The entity assembly ID String
+     * @return The entity assembly ID (int)
+     */
+    public int getEntityAssemblyID(SaveFrameNode frame, String entAssemIDStr)
+      throws S2DException
+    {
+	int entityAssemblyID = 0;
+
+	try {
+	    //
+	    // Get the _Mol_system_component_name value in the given
+	    // save frame.
+	    //
+	    String molSysComp = getOneFrameValueStrict(frame,
+	      MOL_SYS_COMP_NAME);
+
+	    // 
+	    // Now translate the molecular system component name to
+	    // an entity assembly ID.
+	    //
+            entityAssemblyID = molSysComp2EntAssemID(molSysComp);
+
+	} catch (S2DException ex) {
+	    // We probably get here if there is no
+	    // _Mol_system_component_Name tag in the chemical shifts
+	    // save frame(s) (e.g., some visualization server uploads).
+	    System.out.println(
+	      "Warning in S2DNmrStar21Ifc.getEntityAssemblyID(): " +
+	        ex.toString() + "; assuming default value of 1");
+	    entityAssemblyID = 1;
+	}
+
+        return entityAssemblyID;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Translate a molecular system component name to an entity assembly ID.
+     * @param The molecular system component name.
+     * @return The corresponding entity assembly ID.
+     */
+    int molSysComp2EntAssemID(String molSysComp) throws S2DException
+    {
+	int entityAssemblyID = 0;
+
+        try {
+	    //
+	    // Find the molecular_system save frame.
+	    //
+	    SaveFrameNode molSys = getOneDataFrameByCat(
+	      DEFAULT_SAVEFRAME_CATEGORY, MOL_SYSTEM);
+
+	    //
+	    // Now find the _Mol_system_component_name value (that we got up
+	    // above) in the appropriate loop of this save frame.
+	    //
+	    String[] molSysComps = getFrameValues(molSys, MOL_SYS_COMP_NAME,
+	      MOL_SYS_COMP_NAME);
+
+	    for (int index = 0; index < molSysComps.length; ++index) {
+	        if (molSysComps[index].equalsIgnoreCase(molSysComp)) {
+	            entityAssemblyID = index + 1;
+	        }
+            }
+
+	    if (entityAssemblyID == 0) {
+	    	throw new S2DError("Molecular system component " +
+		  molSysComp + " not found");
+	    }
+        } catch (S2DException ex) {
+	    System.err.println(ex.toString());
+	    throw new S2DError("Error translating " + molSysComp +
+	      " to entity assembly ID");
+	}
+
+        return entityAssemblyID;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Translate an entity assembly ID to the corresponding entity ID.
+     * @param The entity assembly ID
+     * @return The corresponding entity ID
+     */
+    public String entAssemID2entID(String entityAssemblyID)
+    {
+    	return "";
     }
 
     //===================================================================

@@ -21,6 +21,74 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2008/11/14 21:14:59  wenger
+// Fixed bugs 070 and 075 (problems with percent assignment values
+// sometimes being greater than 100% for NMR-STAR 3.1 files).
+//
+// Revision 1.12.2.15  2008/11/19 21:27:22  wenger
+// Cleaned up various notes about things to check.
+//
+// Revision 1.12.2.14  2008/11/19 20:25:18  wenger
+// Fixed problems with getEntityFrame(), added test13_3 to check changes.
+//
+// Revision 1.12.2.13  2008/11/19 16:49:49  wenger
+// Checked various issues for multiple entities; fixed test28 because
+// we now generate correct residue lists; marked bug 064 as fixed.
+//
+// Revision 1.12.2.12  2008/11/12 23:22:12  wenger
+// Coupling constants now work for multiple entities in 3.1; implemented
+// new S2DStarIfc.getAndFilterOptionalFrameValues() method to make
+// this work; added test61 and test61_3 to test that method.
+//
+// Revision 1.12.2.11  2008/11/06 21:29:52  wenger
+// Cleaned up S2DMain.saveAllResidueLists(), cleaned up and documented
+// a bunch of other new methods.
+//
+// Revision 1.12.2.10  2008/11/05 18:15:38  wenger
+// Make S2DStarIfc and S2DNmrStarIfc abstract, and got rid of a bunch
+// of things in S2DStarIfc that should only be in S2DNmrStarIfc.
+// (Note that I could move a bunch more methods from S2DStarIfc
+// to S2DNmrStarIfc, but I'm going to wait until after I merge the
+// current branch.)
+//
+// Revision 1.12.2.9  2008/11/05 00:37:44  wenger
+// Fixed a bunch of problems with getting coordinates from NMR-STAR
+// files (e.g., 4096) -- test4 and test4_3 now work.
+//
+// Revision 1.12.2.8  2008/10/30 16:18:45  wenger
+// Got rid of a bunch of code that's obsolete because of the multiple-
+// entity changes.
+//
+// Revision 1.12.2.7  2008/10/03 21:22:09  wenger
+// Minor cleanup...
+//
+// Revision 1.12.2.6  2008/10/03 21:08:15  wenger
+// Okay, I think the basic chemical shift stuff is finally working
+// right for various combinations of multiple entities and multiple
+// entity assemblies (see test57* and test58*).  Lots of the other
+// stuff still needs work, though.
+//
+// Revision 1.12.2.5  2008/08/15 19:36:38  wenger
+// Made some of the new entity-related code more tolerant of missing
+// tags, etc., so it works with visualization-server files, etc.
+// (Test_all currently works.)
+//
+// Revision 1.12.2.4  2008/08/13 21:38:21  wenger
+// Writing entity assembly IDs now works for the chem shift data for
+// 2.1 files.
+//
+// Revision 1.12.2.3  2008/08/13 19:06:51  wenger
+// Writing entity assembly IDs now works for the chem shift data for
+// 3.0/3.1 files.
+//
+// Revision 1.12.2.2  2008/08/13 16:12:46  wenger
+// Writing the "master" residue list is now working for 3.0/3.1 files
+// (still needs checks to make sure things are in order).
+//
+// Revision 1.12.2.1  2008/08/13 15:05:25  wenger
+// Part way to saving the "master" residue list for all entity
+// assemblies (works for 2.1 files, not 3/3.1).
+//
 // Revision 1.12  2008/07/20 20:43:07  wenger
 // Made a bunch of cleanups in the course of working on bug 065.
 //
@@ -63,7 +131,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class S2DNmrStarIfc extends S2DStarIfc {
+public abstract class S2DNmrStarIfc extends S2DStarIfc {
     //===================================================================
     // VARIABLES
 
@@ -75,8 +143,27 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     private boolean _useLocalFile = false;
     private double _seqIdentMin = 100.0;
 
+    private String _description;
+
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    /**
+     * Get a String describing this object.
+     * @return A String describing this object (BMRB ID, version, etc.).
+     */
+    public String toString()
+    {
+    	return _description + " (version " + version() + ")";
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Get the NMR-STAR file version corresponding to this object.
+     * @return The NMR-STAR file version corresponding to this object.
+     */
+    public abstract String version();
 
     //-------------------------------------------------------------------
     public static String getFileName(String bmrbId, boolean isLacs)
@@ -185,6 +272,9 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    ifc = create(is, isLacs);
 	    is.close();
 
+	    ifc._description = "BMRB " + accessionNum;
+	    if (useLocalFile) ifc._description += " (local)";
+
 	    ifc._fileName = fileName;
 	    ifc._useLocalFile = useLocalFile;
 
@@ -215,6 +305,8 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 
 	    ifc = create(is, isLacs);
 	    is.close();
+
+	    ifc._description = fileName;
 
 	    ifc._fileName = fileName;
 
@@ -538,6 +630,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
         return resList1 != null ? resList1 : resList2;
     }
 
+    //TEMP -- is there some reason this is implemented here instead of in S2DStarIfc?
     //-------------------------------------------------------------------
     // Return an array of Strings containing the values for the given
     // name in the loop identified by loopId of the given frame.
@@ -591,6 +684,44 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	}
 
         return result;
+    }
+
+    // ----------------------------------------------------------------------
+    // Get the monomeric polymer save frame for this NMR-STAR file.
+    // This method will throw an exception if there is more than
+    // one monomeric polymer save frame.
+    public SaveFrameNode getEntityFrame() throws S2DException
+    {
+        if (doDebugOutput(12)) {
+            System.out.println("  S2DNmrStar21Ifc.getEntityFrame()");
+        }
+
+        SaveFrameNode result = getOneDataFrameByCat(
+	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
+
+        if (doDebugOutput(12)) {
+            System.out.println(
+	      "  S2DNmrStar21Ifc.getEntityFrame() returns " +
+	      result.getLabel());
+        }
+
+        return result;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Get a list of unique entity assembly IDs for the given frame
+     * and loop tag.  If there are no valid entity assembly ID values,
+     * this method will return a Vector with the single value "".
+     * @param The save frame to search
+     * @param The tag name holding entity assembly IDs in the given
+     *   frame
+     * @return A vector of unique entity assembly IDs (as Strings)
+     */
+    public Vector getUniqueEntityAssemblyIDs(SaveFrameNode frame,
+      String tagName) throws S2DException
+    {
+        return null;
     }
 
     //===================================================================
@@ -745,6 +876,56 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     }
 
     // ----------------------------------------------------------------------
+    /**
+     * Get all entity/monomeric polymer save frames in this entry.
+     * @return an Enumeration of the save frames.
+     */
+    public Enumeration getAllEntityFrames() throws S2DException
+    {
+        Enumeration frameList = getDataFramesByCat(
+	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
+
+        if (!frameList.hasMoreElements()) {
+	    throw new S2DError("No entity save frames found!");
+	}
+
+        return frameList;
+    }
+
+    // ----------------------------------------------------------------------
+    /** Get a Vector of the entity frames corresponding to each entity
+        assembly ID (note that if we have homodimers, the same entity
+	frame will be in the Vector more than once).
+	@return: the Vector of entity save frames
+    */
+    public Vector getAllEntityAssemblyFrames() throws S2DException
+    {
+        return null;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Get the save frame with the given name.
+     * @param frameName: the name of the frame we want to get.
+     * @return: the frame object
+     */
+    public SaveFrameNode getFrameByName(String frameName) throws S2DException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("  S2DNmrStarIfc.getFrameByName(" +
+	      frameName + ")");
+	}
+
+	VectorCheckType list = _starTree.searchByName(frameName);
+	if (list.size() != 1) {
+	    throw new S2DError("There should be exactly one " +
+	      frameName + " save frame; got " + list.size());
+	}
+
+        return (SaveFrameNode)list.elementAt(0);
+    }
+
+    // ----------------------------------------------------------------------
     // Return value: residue count, or -1 if we can't get the residue count.
     // Note: the save frame should be an assigned_chemical_shifts
     // save frame.
@@ -779,7 +960,6 @@ public class S2DNmrStarIfc extends S2DStarIfc {
     // ----------------------------------------------------------------------
     /**
      * Get PDB IDs from monomeric_polymer save frame.
-
      * @param Whether to do the protein check.
      * @param The Vector in which to put the PDB IDs.
      */
@@ -803,6 +983,7 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	    _seqIdentMin = 97.0;
 	}
 
+        //TEMP -- replace with getAllEntityFrames()?
 	Enumeration frameList = getDataFramesByCat(
 	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
 	while (frameList.hasMoreElements()) {
@@ -916,6 +1097,32 @@ public class S2DNmrStarIfc extends S2DStarIfc {
 	}
 
         return molPolymerClass;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Get the entity assembly ID corresponding to the given save frame
+     * (NMR-STAR 2.1) or entity assembly ID String (NMR-STAR 3.n).
+     * If the entity assembly ID string is "" this will return 1.
+     * @param The save frame
+     * @param The entity assembly ID String
+     * @return The entity assembly ID (int)
+     */
+    public int getEntityAssemblyID(SaveFrameNode frame, String entAssemIDStr)
+      throws S2DException
+    {
+    	return 0;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Translate a molecular system component name to an entity assembly ID.
+     * @param The molecular system component name.
+     * @return The corresponding entity assembly ID.
+     */
+    public String entAssemID2entID(String entityAssemblyID)
+    {
+    	return null;
     }
 
     // ----------------------------------------------------------------------

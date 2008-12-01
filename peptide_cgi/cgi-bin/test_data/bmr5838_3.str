@@ -1,0 +1,2173 @@
+data_5838
+
+save_entry_information
+   _Entry.Sf_category           entry_information
+   _Entry.Sf_framecode          entry_information
+   _Entry.ID                    5838
+   _Entry.Title                
+;
+Structural Model for Calcium Dependent Activation of Ndr Kinase by S100B 
+;
+   _Entry.Version_type          new
+   _Entry.Submission_date       2003-06-21
+   _Entry.Accession_date        2003-06-23
+   _Entry.Origination           author
+   _Entry.NMR_STAR_version     "3.1"
+   _Entry.Experimental_method   NMR
+
+   loop_
+      _Entry_author.Ordinal
+      _Entry_author.Given_name
+      _Entry_author.Family_name
+      _Entry_author.Middle_initials
+      _Entry_author.Family_title
+      _Entry_author.Entry_ID
+
+      1 Shibani Bhattacharya .  . 5838 
+      2 Edward  Large        .  . 5838 
+      3 Claus   Heizmann     W. . 5838 
+      4 Brian   Hemmings     .  . 5838 
+      5 Walter  Chazin       J. . 5838 
+
+   stop_
+
+   loop_
+      _Data_set.Type
+      _Data_set.Count
+      _Data_set.Entry_ID
+
+      assigned_chemical_shifts 2 5838 
+
+   stop_
+
+   loop_
+      _Datum.Type
+      _Datum.Count
+      _Datum.Entry_ID
+
+      '1H chemical shifts'  648 5838 
+      '15N chemical shifts'  92 5838 
+      '13C chemical shifts' 380 5838 
+
+   stop_
+
+   loop_
+      _Release.Release_number
+      _Release.Date
+      _Release.Submission_date
+      _Release.Type
+      _Release.Author
+      _Release.Entry_ID
+
+      . . . . . 5838 
+
+   stop_
+
+save_
+
+
+save_entry_citation
+   _Citation.Sf_category       citations
+   _Citation.Sf_framecode      entry_citation
+   _Citation.Entry_ID          5838
+   _Citation.ID                1
+   _Citation.Class            "entry citation"
+   _Citation.MEDLINE_UI_code   .
+   _Citation.PubMed_ID         14661952
+   _Citation.Title            
+;
+Structure of the Ca(2+)/S100B/NDR Kinase Peptide Complex: Insights into S100
+Target Specificity and Activation of the Kinase
+;
+   _Citation.Status            published
+   _Citation.Type              journal
+   _Citation.Journal_abbrev    Biochemistry
+   _Citation.Journal_volume    42
+   _Citation.Journal_issue     49
+   _Citation.Page_first        14416
+   _Citation.Page_last         14426
+   _Citation.Year              2003
+
+   loop_
+      _Citation_author.Ordinal
+      _Citation_author.Given_name
+      _Citation_author.Family_name
+      _Citation_author.Middle_initials
+      _Citation_author.Family_title
+      _Citation_author.Entry_ID
+      _Citation_author.Citation_ID
+
+      1 Shibani Bhattacharya .  . 5838 1 
+      2 Edward  Large        .  . 5838 1 
+      3 Claus   Heizmann     W. . 5838 1 
+      4 Brian   Hemmings     .  . 5838 1 
+      5 Walter  Chazin       J. . 5838 1 
+
+   stop_
+
+   loop_
+      _Citation_keyword.Keyword
+      _Citation_keyword.Entry_ID
+      _Citation_keyword.Citation_ID
+
+      "calcium-binding protein" 5838 1 
+      "EF-hand"                 5838 1 
+      "S100 proteins"           5838 1 
+      "NMR"                     5838 1 
+      "signal transduction"     5838 1 
+      "NDR kinase"              5838 1 
+
+   stop_
+
+save_
+
+
+save_system_S100B
+   _Assembly.Sf_category                assembly
+   _Assembly.Sf_framecode               system_S100B
+   _Assembly.Entry_ID                   5838
+   _Assembly.ID                         1
+   _Assembly.Name                      "S100B-NDR kinase peptide complex"
+   _Assembly.Paramagnetic               no
+   _Assembly.Thiol_state               'all free'
+   _Assembly.Enzyme_commission_number   .
+
+   loop_
+      _Assembly_type.Type
+      _Assembly_type.Entry_ID
+      _Assembly_type.Assembly_ID
+
+      tetramer 5838 1 
+
+   stop_
+
+   loop_
+      _Entity_assembly.ID
+      _Entity_assembly.Entity_assembly_name
+      _Entity_assembly.Entity_ID
+      _Entity_assembly.Entity_label
+      _Entity_assembly.Physical_state
+      _Entity_assembly.Magnetic_equivalence_group_code
+      _Entity_assembly.Entry_ID
+      _Entity_assembly.Assembly_ID
+
+      1 "S100B Subunit 1"      1 $S100B       native ? 5838 1 
+      2 "S100B Subunit 2"      1 $S100B       native ? 5838 1 
+      3 "NDR kinase peptide 1" 2 $NDR_peptide native ? 5838 1 
+      4 "NDR kinase peptide 2" 2 $NDR_peptide native ? 5838 1 
+
+   stop_
+
+   loop_
+      _Assembly_common_name.Name
+      _Assembly_common_name.Type
+      _Assembly_common_name.Entry_ID
+      _Assembly_common_name.Assembly_ID
+
+      "S100B-NDR kinase peptide complex" system       5838 1 
+      "S100B-NDR"                        abbreviation 5838 1 
+
+   stop_
+
+save_
+
+
+save_S100B
+   _Entity.Sf_category                       entity
+   _Entity.Sf_framecode                      S100B
+   _Entity.Entry_ID                          5838
+   _Entity.ID                                1
+   _Entity.Name                             "subunit of homodimer"
+   _Entity.Type                              polymer
+   _Entity.Polymer_type                     "polypeptide(L)"
+   _Entity.Polymer_seq_one_letter_code_can  
+;
+SELEKAVVALIDVFHQYSGR
+EGDKHKLKKSELKELINNEL
+SHFLEEIKEQEVVDKVMETL
+DSDGDGECDFQEFMAFVAMI
+TTACHEFFEHE
+;
+   _Entity.Polymer_seq_one_letter_code      
+;
+SELEKAVVALIDVFHQYSGR
+EGDKHKLKKSELKELINNEL
+SHFLEEIKEQEVVDKVMETL
+DSDGDGECDFQEFMAFVAMI
+TTACHEFFEHE
+;
+   _Entity.Number_of_monomers                91
+   _Entity.Thiol_state                      'all free'
+   _Entity.DB_query_date                     2008-03-24
+   _Entity.DB_query_revised_last_date        2008-01-28
+
+   loop_
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Seq_query_to_submitted_percent
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+      _Entity_db_link.Seq_positive
+      _Entity_db_link.Seq_homology_expectation_val
+      _Entity_db_link.Seq_difference_details
+      _Entity_db_link.Seq_alignment_details
+      _Entity_db_link.Entry_ID
+      _Entity_db_link.Entity_ID
+
+      PDB        1MHO           "A Chain A, The 2.0 A Structure Of HoloS100b From Bovine Brain"                                                            103.41 88 100 100 5e-44 ? ? 5838 1 
+      PDB        1PSB           "A Chain A, Solution Structure Of CalciumLoaded S100b Complexed To A Peptide From N-TerminalRegulatory Domain Of Ndr Kina" 100.00 91 100 100 4e-46 ? ? 5838 1 
+      PDB        1CFP           "A Chain A, S100b (S100beta) Nmr Data WasCollected From A Sample Of Calcium Free Protein At Ph6.3 And A Temperature Of 31"  98.91 92 100 100 4e-46 ? ? 5838 1 
+      DBJ        BAE88979.1     "unnamed protein product [Macacafascicularis]"                                                                              98.91 92  98 100 1e-45 ? ? 5838 1 
+      GenBank    AAA72205.1     "calcium-modulated protein S100-beta"                                                                                       98.91 92 100 100 4e-46 ? ? 5838 1 
+      GenBank    AAI03042.1     "S100B [Bos taurus]"                                                                                                        98.91 92 100 100 4e-46 ? ? 5838 1 
+      GenBank    AAI34728.1     "S100B [Bos taurus]"                                                                                                        98.91 92 100 100 4e-46 ? ? 5838 1 
+      GenBank    ABA39829.1     "S100B [Bos taurus]"                                                                                                        98.91 92 100 100 4e-46 ? ? 5838 1 
+      PRF        0408231A       "protein S100"                                                                                                             100.00 91  99  99 4e-44 ? ? 5838 1 
+      REF        NP_001029727.1 "S100 calcium binding protein B[Bos taurus]"                                                                                98.91 92 100 100 4e-46 ? ? 5838 1 
+      REF        XP_001097830.1 "PREDICTED: S100 calcium bindingprotein, beta (neural) isoform 1 [Macaca mulatta]"                                          98.91 92  98 100 1e-45 ? ? 5838 1 
+      REF        XP_001097929.1 "PREDICTED: S100 calcium bindingprotein, beta (neural) isoform 2 [Macaca mulatta]"                                          98.91 92  98 100 1e-45 ? ? 5838 1 
+      REF        XP_001098016.1 "PREDICTED: S100 calcium bindingprotein, beta (neural) isoform 3 [Macaca mulatta]"                                          98.91 92  98 100 1e-45 ? ? 5838 1 
+      SWISS-PROT P02638         "S100B_BOVIN Protein S100-B (S100calcium-binding protein B) (S-100 protein subunit beta)(S-100 protein beta chain)"         98.91 92 100 100 4e-46 ? ? 5838 1 
+
+   stop_
+
+   loop_
+      _Entity_common_name.Name
+      _Entity_common_name.Type
+      _Entity_common_name.Entry_ID
+      _Entity_common_name.Entity_ID
+
+      "subunit of homodimer" common       5838 1 
+       S100B                 abbreviation 5838 1 
+
+   stop_
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+       1 ? SER 5838 1 
+       2 ? GLU 5838 1 
+       3 ? LEU 5838 1 
+       4 ? GLU 5838 1 
+       5 ? LYS 5838 1 
+       6 ? ALA 5838 1 
+       7 ? VAL 5838 1 
+       8 ? VAL 5838 1 
+       9 ? ALA 5838 1 
+      10 ? LEU 5838 1 
+      11 ? ILE 5838 1 
+      12 ? ASP 5838 1 
+      13 ? VAL 5838 1 
+      14 ? PHE 5838 1 
+      15 ? HIS 5838 1 
+      16 ? GLN 5838 1 
+      17 ? TYR 5838 1 
+      18 ? SER 5838 1 
+      19 ? GLY 5838 1 
+      20 ? ARG 5838 1 
+      21 ? GLU 5838 1 
+      22 ? GLY 5838 1 
+      23 ? ASP 5838 1 
+      24 ? LYS 5838 1 
+      25 ? HIS 5838 1 
+      26 ? LYS 5838 1 
+      27 ? LEU 5838 1 
+      28 ? LYS 5838 1 
+      29 ? LYS 5838 1 
+      30 ? SER 5838 1 
+      31 ? GLU 5838 1 
+      32 ? LEU 5838 1 
+      33 ? LYS 5838 1 
+      34 ? GLU 5838 1 
+      35 ? LEU 5838 1 
+      36 ? ILE 5838 1 
+      37 ? ASN 5838 1 
+      38 ? ASN 5838 1 
+      39 ? GLU 5838 1 
+      40 ? LEU 5838 1 
+      41 ? SER 5838 1 
+      42 ? HIS 5838 1 
+      43 ? PHE 5838 1 
+      44 ? LEU 5838 1 
+      45 ? GLU 5838 1 
+      46 ? GLU 5838 1 
+      47 ? ILE 5838 1 
+      48 ? LYS 5838 1 
+      49 ? GLU 5838 1 
+      50 ? GLN 5838 1 
+      51 ? GLU 5838 1 
+      52 ? VAL 5838 1 
+      53 ? VAL 5838 1 
+      54 ? ASP 5838 1 
+      55 ? LYS 5838 1 
+      56 ? VAL 5838 1 
+      57 ? MET 5838 1 
+      58 ? GLU 5838 1 
+      59 ? THR 5838 1 
+      60 ? LEU 5838 1 
+      61 ? ASP 5838 1 
+      62 ? SER 5838 1 
+      63 ? ASP 5838 1 
+      64 ? GLY 5838 1 
+      65 ? ASP 5838 1 
+      66 ? GLY 5838 1 
+      67 ? GLU 5838 1 
+      68 ? CYS 5838 1 
+      69 ? ASP 5838 1 
+      70 ? PHE 5838 1 
+      71 ? GLN 5838 1 
+      72 ? GLU 5838 1 
+      73 ? PHE 5838 1 
+      74 ? MET 5838 1 
+      75 ? ALA 5838 1 
+      76 ? PHE 5838 1 
+      77 ? VAL 5838 1 
+      78 ? ALA 5838 1 
+      79 ? MET 5838 1 
+      80 ? ILE 5838 1 
+      81 ? THR 5838 1 
+      82 ? THR 5838 1 
+      83 ? ALA 5838 1 
+      84 ? CYS 5838 1 
+      85 ? HIS 5838 1 
+      86 ? GLU 5838 1 
+      87 ? PHE 5838 1 
+      88 ? PHE 5838 1 
+      89 ? GLU 5838 1 
+      90 ? HIS 5838 1 
+      91 ? GLU 5838 1 
+
+   stop_
+
+save_
+
+
+save_NDR_peptide
+   _Entity.Sf_category                       entity
+   _Entity.Sf_framecode                      NDR_peptide
+   _Entity.Entry_ID                          5838
+   _Entity.ID                                2
+   _Entity.Name                              peptide
+   _Entity.Type                              polymer
+   _Entity.Polymer_type                     "polypeptide(L)"
+   _Entity.Polymer_seq_one_letter_code_can  
+;
+KRLRRSAHARKETEFLRLKR
+TRLGLE
+;
+   _Entity.Polymer_seq_one_letter_code      
+;
+KRLRRSAHARKETEFLRLKR
+TRLGLE
+;
+   _Entity.Number_of_monomers                26
+   _Entity.Thiol_state                      'not present'
+   _Entity.DB_query_date                     2008-03-24
+   _Entity.DB_query_revised_last_date        2008-03-03
+
+   loop_
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Seq_query_to_submitted_percent
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+      _Entity_db_link.Seq_positive
+      _Entity_db_link.Seq_homology_expectation_val
+      _Entity_db_link.Seq_difference_details
+      _Entity_db_link.Seq_alignment_details
+      _Entity_db_link.Entry_ID
+      _Entity_db_link.Entity_ID
+
+      PDB        1PSB           "C Chain C, Solution Structure Of CalciumLoaded S100b Complexed To A Peptide From N-TerminalRegulatory Domain Of Ndr Kina" 100.00  26 100 100 4e-06 ? ? 5838 2 
+      DBJ        BAC37841.1     "unnamed protein product [Musmusculus]"                                                                                     24.53 106 100 100 4e-06 ? ? 5838 2 
+      DBJ        BAC29170.1     "unnamed protein product [Musmusculus]"                                                                                      9.70 268 100 100 4e-06 ? ? 5838 2 
+      DBJ        BAG10255.1     "serine/threonine-protein kinase 38[synthetic construct]"                                                                    5.59 465 100 100 4e-06 ? ? 5838 2 
+      EMBL       CAA84485.1     "Ndr protein kinase [Homo sapiens]"                                                                                          5.59 465 100 100 4e-06 ? ? 5838 2 
+      EMBL       CAB39180.1     "serine/threonine kinase 38 [Homosapiens]"                                                                                   5.59 465 100 100 4e-06 ? ? 5838 2 
+      EMBL       CAH91889.1     "hypothetical protein [Pongo pygmaeus]"                                                                                      5.59 465 100 100 4e-06 ? ? 5838 2 
+      EMBL       CAH92600.1     "hypothetical protein [Pongo pygmaeus]"                                                                                      5.59 465 100 100 4e-06 ? ? 5838 2 
+      GenBank    AAD50530.1     "AF034188_1 Ndr Ser/Thr kinase-likeprotein [Homo sapiens]"                                                                  13.61 191 100 100 4e-06 ? ? 5838 2 
+      GenBank    AAI33418.1     "Similar to Ndr protein kinase [Bostaurus]"                                                                                  5.59 465 100 100 4e-06 ? ? 5838 2 
+      GenBank    EDL96947.1     "serine/threonine kinase 38 [Rattusnorvegicus]"                                                                              5.59 465 100 100 4e-06 ? ? 5838 2 
+      GenBank    AAQ02509.1     "serine/threonine kinase 38 [syntheticconstruct]"                                                                            5.58 466 100 100 4e-06 ? ? 5838 2 
+      GenBank    EDL22601.1     "serine/threonine kinase 38, isoformCRA_a [Mus musculus]"                                                                    5.24 496 100 100 4e-06 ? ? 5838 2 
+      REF        XP_001173106.1 "PREDICTED: serine/threoninekinase 38 [Pan troglodytes]"                                                                     6.28 414 100 100 4e-06 ? ? 5838 2 
+      REF        XP_001173151.1 "PREDICTED: serine/threoninekinase 38 [Pan troglodytes]"                                                                     6.03 431 100 100 4e-06 ? ? 5838 2 
+      REF        NP_001075071.1 "serine/threonine kinase 38 [Bostaurus]"                                                                                     5.59 465 100 100 4e-06 ? ? 5838 2 
+      REF        XP_001378903.1 "PREDICTED: similar to GDPdissociation inhibitor 1 [Monodelphis domestica]"                                                  5.59 465 100 100 4e-06 ? ? 5838 2 
+      REF        XP_001495015.1 "PREDICTED: similar to Ndr proteinkinase [Equus caballus]"                                                                   4.78 544 100 100 4e-06 ? ? 5838 2 
+      SWISS-PROT A2VDV2         "STK38_BOVIN Serine/threonine-proteinkinase 38"                                                                              5.59 465 100 100 4e-06 ? ? 5838 2 
+      SWISS-PROT Q15208         "STK38_HUMAN Serine/threonine-protein kinase38 (NDR1 protein kinase) (Nuclear Dbf2-related kinase1)"                         5.59 465 100 100 4e-06 ? ? 5838 2 
+      SWISS-PROT Q5R8M1         "STK38_PONPY Serine/threonine-protein kinase38"                                                                              5.59 465 100 100 4e-06 ? ? 5838 2 
+      SWISS-PROT Q91VJ4         "STK38_MOUSE Serine/threonine-protein kinase38 (NDR1 protein kinase) (Nuclear Dbf2-related kinase1)"                         5.59 465 100 100 4e-06 ? ? 5838 2 
+
+   stop_
+
+   loop_
+      _Entity_common_name.Name
+      _Entity_common_name.Type
+      _Entity_common_name.Entry_ID
+      _Entity_common_name.Entity_ID
+
+       peptide      common       5838 2 
+      "NDR peptide" abbreviation 5838 2 
+
+   stop_
+
+   loop_
+      _Entity_comp_index.ID
+      _Entity_comp_index.Auth_seq_ID
+      _Entity_comp_index.Comp_ID
+      _Entity_comp_index.Entry_ID
+      _Entity_comp_index.Entity_ID
+
+       1 62 LYS 5838 2 
+       2 63 ARG 5838 2 
+       3 64 LEU 5838 2 
+       4 65 ARG 5838 2 
+       5 66 ARG 5838 2 
+       6 67 SER 5838 2 
+       7 68 ALA 5838 2 
+       8 69 HIS 5838 2 
+       9 70 ALA 5838 2 
+      10 71 ARG 5838 2 
+      11 72 LYS 5838 2 
+      12 73 GLU 5838 2 
+      13 74 THR 5838 2 
+      14 75 GLU 5838 2 
+      15 76 PHE 5838 2 
+      16 77 LEU 5838 2 
+      17 78 ARG 5838 2 
+      18 79 LEU 5838 2 
+      19 80 LYS 5838 2 
+      20 81 ARG 5838 2 
+      21 82 THR 5838 2 
+      22 83 ARG 5838 2 
+      23 84 LEU 5838 2 
+      24 85 GLY 5838 2 
+      25 86 LEU 5838 2 
+      26 87 GLU 5838 2 
+
+   stop_
+
+save_
+
+
+save_natural_source
+   _Entity_natural_src_list.Sf_category    natural_source
+   _Entity_natural_src_list.Sf_framecode   natural_source
+   _Entity_natural_src_list.Entry_ID       5838
+   _Entity_natural_src_list.ID             1
+
+   loop_
+      _Entity_natural_src.ID
+      _Entity_natural_src.Entity_ID
+      _Entity_natural_src.Entity_label
+      _Entity_natural_src.NCBI_taxonomy_ID
+      _Entity_natural_src.Organism_name_scientific
+      _Entity_natural_src.Organism_name_common
+      _Entity_natural_src.Organism_acronym
+      _Entity_natural_src.ICTVdb_decimal_code
+      _Entity_natural_src.Superkingdom
+      _Entity_natural_src.Kingdom
+      _Entity_natural_src.Genus
+      _Entity_natural_src.Species
+      _Entity_natural_src.Strain
+      _Entity_natural_src.Variant
+      _Entity_natural_src.Subvariant
+      _Entity_natural_src.Organ
+      _Entity_natural_src.Tissue
+      _Entity_natural_src.Cell_line
+      _Entity_natural_src.Cell_type
+      _Entity_natural_src.ATCC_number
+      _Entity_natural_src.Organelle
+      _Entity_natural_src.Fraction
+      _Entity_natural_src.Secretion
+      _Entity_natural_src.Plasmid
+      _Entity_natural_src.Gene_mnemonic
+      _Entity_natural_src.Details
+      _Entity_natural_src.Entry_ID
+      _Entity_natural_src.Entity_natural_src_list_ID
+
+      1 1 $S100B       9913 "Bos taurus"   Cow   ? ? Eukaryota Metazoa Bos  taurus  ? ? ? ? ? ? ? ? ? ? ? ? ? ? 5838 1 
+      2 2 $NDR_peptide 9606 "Homo sapiens" Human ? ? Eukaryota Metazoa Homo sapiens ? ? ? ? ? ? ? ? ? ? ? ? ? ? 5838 1 
+
+   stop_
+
+save_
+
+
+save_experimental_source
+   _Entity_experimental_src_list.Sf_category    experimental_source
+   _Entity_experimental_src_list.Sf_framecode   experimental_source
+   _Entity_experimental_src_list.Entry_ID       5838
+   _Entity_experimental_src_list.ID             1
+
+   loop_
+      _Entity_experimental_src.ID
+      _Entity_experimental_src.Entity_ID
+      _Entity_experimental_src.Entity_label
+      _Entity_experimental_src.Production_method
+      _Entity_experimental_src.Host_org_scientific_name
+      _Entity_experimental_src.Host_org_name_common
+      _Entity_experimental_src.Host_org_genus
+      _Entity_experimental_src.Host_org_species
+      _Entity_experimental_src.Host_org_strain
+      _Entity_experimental_src.Host_org_variant
+      _Entity_experimental_src.Host_org_organ
+      _Entity_experimental_src.Host_org_tissue
+      _Entity_experimental_src.Host_org_cell_line
+      _Entity_experimental_src.Host_org_cell_type
+      _Entity_experimental_src.Host_org_ATCC_number
+      _Entity_experimental_src.Vector_type
+      _Entity_experimental_src.Vector_name
+      _Entity_experimental_src.Vendor_name
+      _Entity_experimental_src.Details
+      _Entity_experimental_src.Entry_ID
+      _Entity_experimental_src.Entity_experimental_src_list_ID
+
+      1 1 $S100B       'recombinant technology' "Escherichia coli" "E. coli" Escherichia coli "BL21 Codon Plus (DE3) RIL" ? ? ? ? ? ? ? "pH6 TEV" ? ? 5838 1 
+      2 2 $NDR_peptide 'chemical synthesis'     " "                 .        .           .     .                          ? ? ? ? ? ? ?  .        ? ? 5838 1 
+
+   stop_
+
+save_
+
+
+save_Sample_1
+   _Sample.Sf_category    sample
+   _Sample.Sf_framecode   Sample_1
+   _Sample.Entry_ID       5838
+   _Sample.ID             1
+   _Sample.Type           solution
+   _Sample.Details       "90% H2O/10% D2O"
+
+   loop_
+      _Sample_component.ID
+      _Sample_component.Mol_common_name
+      _Sample_component.Isotopic_labeling
+      _Sample_component.Assembly_ID
+      _Sample_component.Assembly_label
+      _Sample_component.Entity_ID
+      _Sample_component.Entity_label
+      _Sample_component.Concentration_val
+      _Sample_component.Concentration_val_min
+      _Sample_component.Concentration_val_max
+      _Sample_component.Concentration_val_units
+      _Sample_component.Entry_ID
+      _Sample_component.Sample_ID
+
+      1 "subunit of homodimer" "[U-15N; U-13C]" . . 1 $S100B        1 . . mM 5838 1 
+      2  peptide                .               . . 2 $NDR_peptide  1 . . mM 5838 1 
+      3  tris-d11               .               . .  .  .           20 . . mM 5838 1 
+      4 "Potassium Chloride"    .               . .  .  .           30 . . mM 5838 1 
+      5 "d10-DTT"               .               . .  .  .           10 . . mM 5838 1 
+      6 "Calcium Chloride"      .               . .  .  .            5 . . mM 5838 1 
+      7  H2O                    .               . .  .  .           90 . . %  5838 1 
+      8  D2O                    .               . .  .  .           10 . . %  5838 1 
+
+   stop_
+
+save_
+
+
+save_Set_1
+   _Sample_condition_list.Sf_category    sample_conditions
+   _Sample_condition_list.Sf_framecode   Set_1
+   _Sample_condition_list.Entry_ID       5838
+   _Sample_condition_list.ID             1
+
+   loop_
+      _Sample_condition_variable.Type
+      _Sample_condition_variable.Val
+      _Sample_condition_variable.Val_err
+      _Sample_condition_variable.Val_units
+      _Sample_condition_variable.Entry_ID
+      _Sample_condition_variable.Sample_condition_list_ID
+
+       pH                7.5   0.2 n/a 5838 1 
+       temperature     310     1   K   5838 1 
+      'ionic strength'   0.045  .  M   5838 1 
+
+   stop_
+
+save_
+
+
+save_FELIX
+   _Software.Sf_category    software
+   _Software.Sf_framecode   FELIX
+   _Software.Entry_ID       5838
+   _Software.ID             1
+   _Software.Name           FELIX
+   _Software.Version        2000
+
+   loop_
+      _Task.Task
+      _Task.Entry_ID
+      _Task.Software_ID
+
+      "Processing"    5838 1 
+      "Data-Analysis" 5838 1 
+
+   stop_
+
+save_
+
+
+save_NMR_spectrometer_1
+   _NMR_spectrometer.Sf_category      NMR_spectrometer
+   _NMR_spectrometer.Sf_framecode     NMR_spectrometer_1
+   _NMR_spectrometer.Entry_ID         5838
+   _NMR_spectrometer.ID               1
+   _NMR_spectrometer.Manufacturer     Bruker
+   _NMR_spectrometer.Model            Avance
+   _NMR_spectrometer.Field_strength   600
+
+save_
+
+
+save_NMR_spectrometer
+   _NMR_spectrometer.Sf_category      NMR_spectrometer
+   _NMR_spectrometer.Sf_framecode     NMR_spectrometer
+   _NMR_spectrometer.Entry_ID         5838
+   _NMR_spectrometer.ID               2
+   _NMR_spectrometer.Manufacturer     Bruker
+   _NMR_spectrometer.Model            Avance
+   _NMR_spectrometer.Field_strength   800
+
+save_
+
+
+save_spectrometer_list
+   _NMR_spectrometer_list.Sf_category   'NMR_spectrometer_list'
+   _NMR_spectrometer_list.Sf_framecode   spectrometer_list
+   _NMR_spectrometer_list.Entry_ID       5838
+   _NMR_spectrometer_list.ID             1
+
+   loop_
+      _NMR_spectrometer_view.ID
+      _NMR_spectrometer_view.Name
+      _NMR_spectrometer_view.Manufacturer
+      _NMR_spectrometer_view.Model
+      _NMR_spectrometer_view.Serial_number
+      _NMR_spectrometer_view.Field_strength
+      _NMR_spectrometer_view.Details
+      _NMR_spectrometer_view.Entry_ID
+      _NMR_spectrometer_view.NMR_spectrometer_list_ID
+
+      1 NMR_spectrometer_1 Bruker Avance ? 600 ? 5838 1 
+      2 NMR_spectrometer   Bruker Avance ? 800 ? 5838 1 
+
+   stop_
+
+save_
+
+
+save_experiment_list
+   _Experiment_list.Sf_category    experiment_list
+   _Experiment_list.Sf_framecode   experiment_list
+   _Experiment_list.Entry_ID       5838
+   _Experiment_list.ID             1
+
+   loop_
+      _Experiment.Name
+      _Experiment.Sample_ID
+      _Experiment.Sample_label
+      _Experiment.Entry_ID
+      _Experiment.Experiment_list_ID
+
+       CBCA(CO)NH                       . ? 5838 1 
+       HNCA                             . ? 5838 1 
+       HN(CO)CA                         . ? 5838 1 
+       HNCO                             . ? 5838 1 
+       HCCH-TOCSY                       . ? 5838 1 
+       HCCH-COSY                        . ? 5838 1 
+      "2D 15N/13C F1/F2-Filtered COSY"  . ? 5838 1 
+      "2D 15N/13C F1/F2-Filtered TOCSY" . ? 5838 1 
+      "2D 15N/13C F1/F2-Filtered NOESY" . ? 5838 1 
+
+   stop_
+
+save_
+
+
+save_NMR_applied_experiment
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_applied_experiment
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             1
+
+save_
+
+
+save_NMR_spec_expt__0_1
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_1
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             2
+   _NMR_spec_expt.Name           CBCA(CO)NH
+
+save_
+
+
+save_NMR_spec_expt__0_2
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_2
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             3
+   _NMR_spec_expt.Name           HNCA
+
+save_
+
+
+save_NMR_spec_expt__0_3
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_3
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             4
+   _NMR_spec_expt.Name           HN(CO)CA
+
+save_
+
+
+save_NMR_spec_expt__0_4
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_4
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             5
+   _NMR_spec_expt.Name           HNCO
+
+save_
+
+
+save_NMR_spec_expt__0_5
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_5
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             6
+   _NMR_spec_expt.Name           HCCH-TOCSY
+
+save_
+
+
+save_NMR_spec_expt__0_6
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_6
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             7
+   _NMR_spec_expt.Name           HCCH-COSY
+
+save_
+
+
+save_NMR_spec_expt__0_7
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_7
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             8
+   _NMR_spec_expt.Name          "2D 15N/13C F1/F2-Filtered COSY"
+
+save_
+
+
+save_NMR_spec_expt__0_8
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_8
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             9
+   _NMR_spec_expt.Name          "2D 15N/13C F1/F2-Filtered TOCSY"
+
+save_
+
+
+save_NMR_spec_expt__0_9
+   _NMR_spec_expt.Sf_category    NMR_spectrometer_expt
+   _NMR_spec_expt.Sf_framecode   NMR_spec_expt__0_9
+   _NMR_spec_expt.Entry_ID       5838
+   _NMR_spec_expt.ID             10
+   _NMR_spec_expt.Name          "2D 15N/13C F1/F2-Filtered NOESY"
+
+save_
+
+
+save_chemical_shift_reference
+   _Chem_shift_reference.Sf_category              chem_shift_reference
+   _Chem_shift_reference.Sf_framecode             chemical_shift_reference
+   _Chem_shift_reference.Entry_ID                 5838
+   _Chem_shift_reference.ID                       1
+   _Chem_shift_reference.Proton_shifts_flag      "yes"
+   _Chem_shift_reference.Carbon_shifts_flag      "yes"
+   _Chem_shift_reference.Nitrogen_shifts_flag    "yes"
+   _Chem_shift_reference.Phosphorus_shifts_flag   no
+
+   loop_
+      _Chem_shift_ref.Atom_type
+      _Chem_shift_ref.Atom_isotope_number
+      _Chem_shift_ref.Mol_common_name
+      _Chem_shift_ref.Atom_group
+      _Chem_shift_ref.Chem_shift_units
+      _Chem_shift_ref.Chem_shift_val
+      _Chem_shift_ref.Ref_method
+      _Chem_shift_ref.Ref_type
+      _Chem_shift_ref.Indirect_shift_ratio
+      _Chem_shift_ref.External_ref_loc
+      _Chem_shift_ref.External_ref_sample_geometry
+      _Chem_shift_ref.External_ref_axis
+      _Chem_shift_ref.Indirect_shift_ratio_cit_ID
+      _Chem_shift_ref.Indirect_shift_ratio_cit_label
+      _Chem_shift_ref.Ref_correction_type
+      _Chem_shift_ref.Correction_val
+      _Chem_shift_ref.Correction_val_cit_ID
+      _Chem_shift_ref.Correction_val_cit_label
+      _Chem_shift_ref.Entry_ID
+      _Chem_shift_ref.Chem_shift_reference_ID
+
+      H  1 DSS 'methyl protons' ppm 0.0 internal direct   1.0        . . . . ? ? ? . ? 5838 1 
+      N 15 DSS 'methyl protons' ppm 0.0 .        indirect 0.10132905 . . . . ? ? ? . ? 5838 1 
+      C 13 DSS 'methyl protons' ppm 0.0 .        indirect 0.25144952 . . . . ? ? ? . ? 5838 1 
+
+   stop_
+
+save_
+
+
+save_shift_set_1
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  shift_set_1
+   _Assigned_chem_shift_list.Entry_ID                      5838
+   _Assigned_chem_shift_list.ID                            1
+   _Assigned_chem_shift_list.Sample_condition_list_ID      1
+   _Assigned_chem_shift_list.Sample_condition_list_label  $Set_1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label   $chemical_shift_reference
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Entry_ID
+      _Chem_shift_experiment.Assigned_chem_shift_list_ID
+
+      . ? 1 $Sample_1 5838 1 
+
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Auth_seq_ID
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+         1 1 1  1  1 SER N    N 121.30 0.03 1 ? 5838 1 
+         2 1 1  1  1 SER CA   C  57.09 0.50 1 ? 5838 1 
+         3 1 1  1  1 SER CB   C  64.69 0.50 1 ? 5838 1 
+         4 1 1  1  1 SER HA   H   4.70 0.05 1 ? 5838 1 
+         5 1 1  1  1 SER H    H   9.35 0.02 1 ? 5838 1 
+         6 1 1  1  1 SER HB3  H   4.21 0.05 1 ? 5838 1 
+         7 1 1  1  1 SER HB2  H   4.94 0.05 1 ? 5838 1 
+         8 1 1  2  2 GLU C    C 179.26 0.50 1 ? 5838 1 
+         9 1 1  2  2 GLU N    N 120.37 0.03 1 ? 5838 1 
+        10 1 1  2  2 GLU CA   C  59.62 0.50 1 ? 5838 1 
+        11 1 1  2  2 GLU CB   C  28.65 0.50 1 ? 5838 1 
+        12 1 1  2  2 GLU CG   C  36.23 0.50 1 ? 5838 1 
+        13 1 1  2  2 GLU HA   H   4.14 0.05 1 ? 5838 1 
+        14 1 1  2  2 GLU H    H   9.21 0.02 1 ? 5838 1 
+        15 1 1  2  2 GLU HB3  H   1.99 0.05 1 ? 5838 1 
+        16 1 1  2  2 GLU HB2  H   2.09 0.05 1 ? 5838 1 
+        17 1 1  2  2 GLU HG2  H   2.34 0.05 9 ? 5838 1 
+        18 1 1  2  2 GLU HG3  H   2.34 0.05 9 ? 5838 1 
+        19 1 1  3  3 LEU C    C 177.82 0.50 1 ? 5838 1 
+        20 1 1  3  3 LEU N    N 120.46 0.03 1 ? 5838 1 
+        21 1 1  3  3 LEU CA   C  57.60 0.50 1 ? 5838 1 
+        22 1 1  3  3 LEU CB   C  42.04 0.50 1 ? 5838 1 
+        23 1 1  3  3 LEU CG   C  27.21 0.50 1 ? 5838 1 
+        24 1 1  3  3 LEU HA   H   4.24 0.05 1 ? 5838 1 
+        25 1 1  3  3 LEU HG   H   1.67 0.05 1 ? 5838 1 
+        26 1 1  3  3 LEU H    H   8.60 0.02 1 ? 5838 1 
+        27 1 1  3  3 LEU HB3  H   1.75 0.05 1 ? 5838 1 
+        28 1 1  3  3 LEU HB2  H   2.01 0.05 1 ? 5838 1 
+        29 1 1  3  3 LEU HD11 H   0.98 0.05 1 ? 5838 1 
+        30 1 1  3  3 LEU HD12 H   0.98 0.05 1 ? 5838 1 
+        31 1 1  3  3 LEU HD13 H   0.98 0.05 1 ? 5838 1 
+        32 1 1  3  3 LEU HD21 H   1.09 0.05 1 ? 5838 1 
+        33 1 1  3  3 LEU HD22 H   1.09 0.05 1 ? 5838 1 
+        34 1 1  3  3 LEU HD23 H   1.09 0.05 1 ? 5838 1 
+        35 1 1  3  3 LEU CD1  C  23.59 0.50 1 ? 5838 1 
+        36 1 1  3  3 LEU CD2  C  25.93 0.50 1 ? 5838 1 
+        37 1 1  4  4 GLU C    C 178.94 0.50 1 ? 5838 1 
+        38 1 1  4  4 GLU N    N 120.20 0.03 1 ? 5838 1 
+        39 1 1  4  4 GLU CA   C  59.92 0.50 1 ? 5838 1 
+        40 1 1  4  4 GLU CB   C  29.05 0.50 1 ? 5838 1 
+        41 1 1  4  4 GLU HA   H   4.12 0.05 1 ? 5838 1 
+        42 1 1  4  4 GLU HB2  H   2.31 0.05 9 ? 5838 1 
+        43 1 1  4  4 GLU HB3  H   2.31 0.05 9 ? 5838 1 
+        44 1 1  4  4 GLU HG2  H   2.79 0.05 9 ? 5838 1 
+        45 1 1  4  4 GLU HG3  H   2.79 0.05 9 ? 5838 1 
+        46 1 1  4  4 GLU H    H   8.30 0.02 1 ? 5838 1 
+        47 1 1  5  5 LYS C    C 178.63 0.50 1 ? 5838 1 
+        48 1 1  5  5 LYS N    N 117.49 0.03 1 ? 5838 1 
+        49 1 1  5  5 LYS CA   C  60.02 0.50 1 ? 5838 1 
+        50 1 1  5  5 LYS CB   C  32.22 0.50 1 ? 5838 1 
+        51 1 1  5  5 LYS CD   C  29.28 0.50 1 ? 5838 1 
+        52 1 1  5  5 LYS CE   C  41.71 0.50 1 ? 5838 1 
+        53 1 1  5  5 LYS HA   H   3.79 0.05 1 ? 5838 1 
+        54 1 1  5  5 LYS H    H   8.51 0.02 1 ? 5838 1 
+        55 1 1  5  5 LYS HB2  H   1.82 0.05 9 ? 5838 1 
+        56 1 1  5  5 LYS HB3  H   1.82 0.05 9 ? 5838 1 
+        57 1 1  5  5 LYS HD2  H   1.53 0.05 9 ? 5838 1 
+        58 1 1  5  5 LYS HD3  H   1.53 0.05 9 ? 5838 1 
+        59 1 1  5  5 LYS HE2  H   2.79 0.05 9 ? 5838 1 
+        60 1 1  5  5 LYS HE3  H   2.79 0.05 9 ? 5838 1 
+        61 1 1  6  6 ALA C    C 178.42 0.50 1 ? 5838 1 
+        62 1 1  6  6 ALA N    N 123.24 0.03 1 ? 5838 1 
+        63 1 1  6  6 ALA CA   C  55.22 0.50 1 ? 5838 1 
+        64 1 1  6  6 ALA CB   C  17.35 0.50 1 ? 5838 1 
+        65 1 1  6  6 ALA HA   H   4.19 0.05 1 ? 5838 1 
+        66 1 1  6  6 ALA H    H   7.87 0.02 1 ? 5838 1 
+        67 1 1  6  6 ALA HB1  H   1.71 0.05 1 ? 5838 1 
+        68 1 1  6  6 ALA HB2  H   1.71 0.05 1 ? 5838 1 
+        69 1 1  6  6 ALA HB3  H   1.71 0.05 1 ? 5838 1 
+        70 1 1  7  7 VAL C    C 177.54 0.50 1 ? 5838 1 
+        71 1 1  7  7 VAL N    N 117.81 0.03 1 ? 5838 1 
+        72 1 1  7  7 VAL CA   C  67.02 0.50 1 ? 5838 1 
+        73 1 1  7  7 VAL CB   C  31.56 0.50 1 ? 5838 1 
+        74 1 1  7  7 VAL HA   H   3.62 0.05 1 ? 5838 1 
+        75 1 1  7  7 VAL HB   H   2.58 0.05 1 ? 5838 1 
+        76 1 1  7  7 VAL H    H   7.91 0.02 1 ? 5838 1 
+        77 1 1  7  7 VAL HG21 H   1.01 0.05 1 ? 5838 1 
+        78 1 1  7  7 VAL HG22 H   1.01 0.05 1 ? 5838 1 
+        79 1 1  7  7 VAL HG23 H   1.01 0.05 1 ? 5838 1 
+        80 1 1  7  7 VAL HG11 H   1.05 0.05 1 ? 5838 1 
+        81 1 1  7  7 VAL HG12 H   1.05 0.05 1 ? 5838 1 
+        82 1 1  7  7 VAL HG13 H   1.05 0.05 1 ? 5838 1 
+        83 1 1  7  7 VAL CG2  C  20.65 0.50 9 ? 5838 1 
+        84 1 1  7  7 VAL CG1  C  20.65 0.50 9 ? 5838 1 
+        85 1 1  8  8 VAL C    C 177.75 0.50 1 ? 5838 1 
+        86 1 1  8  8 VAL N    N 116.67 0.03 1 ? 5838 1 
+        87 1 1  8  8 VAL CA   C  66.87 0.50 1 ? 5838 1 
+        88 1 1  8  8 VAL CB   C  31.14 0.50 1 ? 5838 1 
+        89 1 1  8  8 VAL HA   H   3.60 0.05 1 ? 5838 1 
+        90 1 1  8  8 VAL HB   H   2.15 0.05 1 ? 5838 1 
+        91 1 1  8  8 VAL H    H   7.79 0.02 1 ? 5838 1 
+        92 1 1  8  8 VAL HG21 H   0.92 0.05 1 ? 5838 1 
+        93 1 1  8  8 VAL HG22 H   0.92 0.05 1 ? 5838 1 
+        94 1 1  8  8 VAL HG23 H   0.92 0.05 1 ? 5838 1 
+        95 1 1  8  8 VAL HG11 H   1.22 0.05 1 ? 5838 1 
+        96 1 1  8  8 VAL HG12 H   1.22 0.05 1 ? 5838 1 
+        97 1 1  8  8 VAL HG13 H   1.22 0.05 1 ? 5838 1 
+        98 1 1  8  8 VAL CG2  C  21.22 0.50 1 ? 5838 1 
+        99 1 1  8  8 VAL CG1  C  23.02 0.50 1 ? 5838 1 
+       100 1 1  9  9 ALA N    N 123.23 0.03 1 ? 5838 1 
+       101 1 1  9  9 ALA CA   C  55.40 0.50 1 ? 5838 1 
+       102 1 1  9  9 ALA CB   C  18.38 0.50 1 ? 5838 1 
+       103 1 1  9  9 ALA HA   H   4.32 0.05 1 ? 5838 1 
+       104 1 1  9  9 ALA H    H   8.61 0.02 1 ? 5838 1 
+       105 1 1  9  9 ALA HB1  H   1.62 0.05 1 ? 5838 1 
+       106 1 1  9  9 ALA HB2  H   1.62 0.05 1 ? 5838 1 
+       107 1 1  9  9 ALA HB3  H   1.62 0.05 1 ? 5838 1 
+       108 1 1 10 10 LEU C    C 178.54 0.50 1 ? 5838 1 
+       109 1 1 10 10 LEU N    N 117.95 0.03 1 ? 5838 1 
+       110 1 1 10 10 LEU CA   C  58.71 0.50 1 ? 5838 1 
+       111 1 1 10 10 LEU CB   C  41.95 0.50 1 ? 5838 1 
+       112 1 1 10 10 LEU CG   C  26.01 0.50 1 ? 5838 1 
+       113 1 1 10 10 LEU HA   H   4.11 0.05 1 ? 5838 1 
+       114 1 1 10 10 LEU HG   H   2.32 0.05 1 ? 5838 1 
+       115 1 1 10 10 LEU H    H   8.19 0.02 1 ? 5838 1 
+       116 1 1 10 10 LEU HB2  H   2.48 0.05 9 ? 5838 1 
+       117 1 1 10 10 LEU HB3  H   2.48 0.05 9 ? 5838 1 
+       118 1 1 10 10 LEU HD11 H   0.86 0.05 1 ? 5838 1 
+       119 1 1 10 10 LEU HD12 H   0.86 0.05 1 ? 5838 1 
+       120 1 1 10 10 LEU HD13 H   0.86 0.05 1 ? 5838 1 
+       121 1 1 10 10 LEU HD21 H   0.99 0.05 1 ? 5838 1 
+       122 1 1 10 10 LEU HD22 H   0.99 0.05 1 ? 5838 1 
+       123 1 1 10 10 LEU HD23 H   0.99 0.05 1 ? 5838 1 
+       124 1 1 10 10 LEU CD1  C  24.24 0.50 1 ? 5838 1 
+       125 1 1 10 10 LEU CD2  C  25.17 0.50 1 ? 5838 1 
+       126 1 1 11 11 ILE C    C 178.11 0.50 1 ? 5838 1 
+       127 1 1 11 11 ILE N    N 117.93 0.03 1 ? 5838 1 
+       128 1 1 11 11 ILE CA   C  65.66 0.50 1 ? 5838 1 
+       129 1 1 11 11 ILE CB   C  38.70 0.50 1 ? 5838 1 
+       130 1 1 11 11 ILE HA   H   3.67 0.05 1 ? 5838 1 
+       131 1 1 11 11 ILE HB   H   2.02 0.05 1 ? 5838 1 
+       132 1 1 11 11 ILE H    H   7.37 0.02 1 ? 5838 1 
+       133 1 1 11 11 ILE CD1  C  13.53 0.50 1 ? 5838 1 
+       134 1 1 11 11 ILE CG2  C  17.61 0.50 1 ? 5838 1 
+       135 1 1 11 11 ILE HD11 H   0.79 0.05 1 ? 5838 1 
+       136 1 1 11 11 ILE HD12 H   0.79 0.05 1 ? 5838 1 
+       137 1 1 11 11 ILE HD13 H   0.79 0.05 1 ? 5838 1 
+       138 1 1 11 11 ILE HG12 H   0.91 0.05 2 ? 5838 1 
+       139 1 1 11 11 ILE HG21 H   0.73 0.05 1 ? 5838 1 
+       140 1 1 11 11 ILE HG22 H   0.73 0.05 1 ? 5838 1 
+       141 1 1 11 11 ILE HG23 H   0.73 0.05 1 ? 5838 1 
+       142 1 1 12 12 ASP C    C 179.57 0.50 1 ? 5838 1 
+       143 1 1 12 12 ASP N    N 120.92 0.03 1 ? 5838 1 
+       144 1 1 12 12 ASP CA   C  57.83 0.50 1 ? 5838 1 
+       145 1 1 12 12 ASP CB   C  41.36 0.50 1 ? 5838 1 
+       146 1 1 12 12 ASP HA   H   4.51 0.05 1 ? 5838 1 
+       147 1 1 12 12 ASP H    H   8.97 0.02 1 ? 5838 1 
+       148 1 1 12 12 ASP HB2  H   2.80 0.05 9 ? 5838 1 
+       149 1 1 12 12 ASP HB3  H   2.80 0.05 9 ? 5838 1 
+       150 1 1 13 13 VAL C    C 177.28 0.50 1 ? 5838 1 
+       151 1 1 13 13 VAL N    N 120.41 0.03 1 ? 5838 1 
+       152 1 1 13 13 VAL CA   C  66.16 0.50 1 ? 5838 1 
+       153 1 1 13 13 VAL CB   C  31.10 0.50 1 ? 5838 1 
+       154 1 1 13 13 VAL HA   H   3.97 0.05 1 ? 5838 1 
+       155 1 1 13 13 VAL HB   H   2.38 0.05 1 ? 5838 1 
+       156 1 1 13 13 VAL H    H   9.15 0.02 1 ? 5838 1 
+       157 1 1 13 13 VAL HG11 H   1.28 0.05 1 ? 5838 1 
+       158 1 1 13 13 VAL HG12 H   1.28 0.05 1 ? 5838 1 
+       159 1 1 13 13 VAL HG13 H   1.28 0.05 1 ? 5838 1 
+       160 1 1 13 13 VAL HG21 H   1.30 0.05 1 ? 5838 1 
+       161 1 1 13 13 VAL HG22 H   1.30 0.05 1 ? 5838 1 
+       162 1 1 13 13 VAL HG23 H   1.30 0.05 1 ? 5838 1 
+       163 1 1 13 13 VAL CG1  C  21.53 0.50 1 ? 5838 1 
+       164 1 1 13 13 VAL CG2  C  22.90 0.50 1 ? 5838 1 
+       165 1 1 14 14 PHE C    C 177.64 0.50 1 ? 5838 1 
+       166 1 1 14 14 PHE N    N 119.91 0.03 1 ? 5838 1 
+       167 1 1 14 14 PHE CA   C  66.17 0.50 1 ? 5838 1 
+       168 1 1 14 14 PHE CB   C  40.36 0.50 1 ? 5838 1 
+       169 1 1 14 14 PHE CZ   C 132.22 0.50 1 ? 5838 1 
+       170 1 1 14 14 PHE HA   H   3.43 0.05 1 ? 5838 1 
+       171 1 1 14 14 PHE H    H   7.24 0.02 1 ? 5838 1 
+       172 1 1 14 14 PHE HB3  H   2.78 0.05 1 ? 5838 1 
+       173 1 1 14 14 PHE HB2  H   3.08 0.05 1 ? 5838 1 
+       174 1 1 14 14 PHE HD1  H   6.04 0.05 1 ? 5838 1 
+       175 1 1 14 14 PHE HD2  H   6.04 0.05 1 ? 5838 1 
+       176 1 1 14 14 PHE HE1  H   6.87 0.05 1 ? 5838 1 
+       177 1 1 14 14 PHE HE2  H   6.87 0.05 1 ? 5838 1 
+       178 1 1 14 14 PHE HZ   H   7.30 0.05 1 ? 5838 1 
+       179 1 1 15 15 HIS C    C 175.17 0.50 1 ? 5838 1 
+       180 1 1 15 15 HIS N    N 116.69 0.03 1 ? 5838 1 
+       181 1 1 15 15 HIS CA   C  58.64 0.50 1 ? 5838 1 
+       182 1 1 15 15 HIS CB   C  28.36 0.50 1 ? 5838 1 
+       183 1 1 15 15 HIS HA   H   4.68 0.05 1 ? 5838 1 
+       184 1 1 15 15 HIS H    H   7.92 0.02 1 ? 5838 1 
+       185 1 1 15 15 HIS HB2  H   3.07 0.05 9 ? 5838 1 
+       186 1 1 15 15 HIS HB3  H   3.07 0.05 9 ? 5838 1 
+       187 1 1 16 16 GLN C    C 177.64 0.50 1 ? 5838 1 
+       188 1 1 16 16 GLN N    N 122.20 0.03 1 ? 5838 1 
+       189 1 1 16 16 GLN CA   C  58.47 0.50 1 ? 5838 1 
+       190 1 1 16 16 GLN CB   C  27.90 0.50 1 ? 5838 1 
+       191 1 1 16 16 GLN CG   C  33.20 0.50 1 ? 5838 1 
+       192 1 1 16 16 GLN CD   C 179.53 0.50 1 ? 5838 1 
+       193 1 1 16 16 GLN HA   H   3.89 0.05 1 ? 5838 1 
+       194 1 1 16 16 GLN H    H   8.40 0.02 1 ? 5838 1 
+       195 1 1 16 16 GLN NE2  N 110.99 0.03 1 ? 5838 1 
+       196 1 1 16 16 GLN HB2  H   2.05 0.05 2 ? 5838 1 
+       197 1 1 16 16 GLN HB3  H   2.23 0.05 2 ? 5838 1 
+       198 1 1 16 16 GLN HE21 H   6.74 0.05 2 ? 5838 1 
+       199 1 1 16 16 GLN HE22 H   7.16 0.05 2 ? 5838 1 
+       200 1 1 16 16 GLN HG2  H   2.05 0.05 2 ? 5838 1 
+       201 1 1 16 16 GLN HG3  H   2.28 0.05 2 ? 5838 1 
+       202 1 1 17 17 TYR C    C 176.34 0.50 1 ? 5838 1 
+       203 1 1 17 17 TYR N    N 115.74 0.03 1 ? 5838 1 
+       204 1 1 17 17 TYR CA   C  60.82 0.50 1 ? 5838 1 
+       205 1 1 17 17 TYR CB   C  39.88 0.50 1 ? 5838 1 
+       206 1 1 17 17 TYR CD1  C 132.22 0.50 1 ? 5838 1 
+       207 1 1 17 17 TYR CD2  C 132.22 0.50 1 ? 5838 1 
+       208 1 1 17 17 TYR CE1  C 117.22 0.50 1 ? 5838 1 
+       209 1 1 17 17 TYR CE2  C 117.22 0.50 1 ? 5838 1 
+       210 1 1 17 17 TYR HA   H   4.05 0.05 1 ? 5838 1 
+       211 1 1 17 17 TYR H    H   7.18 0.02 1 ? 5838 1 
+       212 1 1 17 17 TYR HB2  H   2.47 0.05 1 ? 5838 1 
+       213 1 1 17 17 TYR HB3  H   2.68 0.05 1 ? 5838 1 
+       214 1 1 17 17 TYR HE1  H   6.62 0.05 1 ? 5838 1 
+       215 1 1 17 17 TYR HE2  H   6.62 0.05 1 ? 5838 1 
+       216 1 1 17 17 TYR HD1  H   7.29 0.05 1 ? 5838 1 
+       217 1 1 17 17 TYR HD2  H   7.29 0.05 1 ? 5838 1 
+       218 1 1 18 18 SER C    C 177.63 0.50 1 ? 5838 1 
+       219 1 1 18 18 SER N    N 115.75 0.03 1 ? 5838 1 
+       220 1 1 18 18 SER CA   C  61.73 0.50 1 ? 5838 1 
+       221 1 1 18 18 SER HA   H   3.50 0.05 1 ? 5838 1 
+       222 1 1 18 18 SER H    H   8.93 0.02 1 ? 5838 1 
+       223 1 1 19 19 GLY C    C 180.81 0.50 1 ? 5838 1 
+       224 1 1 19 19 GLY N    N 110.55 0.03 1 ? 5838 1 
+       225 1 1 19 19 GLY CA   C  45.38 0.50 1 ? 5838 1 
+       226 1 1 19 19 GLY H    H   7.57 0.02 1 ? 5838 1 
+       227 1 1 19 19 GLY HA2  H   3.79 0.05 1 ? 5838 1 
+       228 1 1 19 19 GLY HA3  H   3.93 0.05 1 ? 5838 1 
+       229 1 1 20 20 ARG C    C 177.32 0.50 1 ? 5838 1 
+       230 1 1 20 20 ARG N    N 121.69 0.03 1 ? 5838 1 
+       231 1 1 20 20 ARG CA   C  59.65 0.50 1 ? 5838 1 
+       232 1 1 20 20 ARG CB   C  30.34 0.50 1 ? 5838 1 
+       233 1 1 20 20 ARG CD   C  43.46 0.50 1 ? 5838 1 
+       234 1 1 20 20 ARG CG   C  27.90 0.50 1 ? 5838 1 
+       235 1 1 20 20 ARG HA   H   3.94 0.05 1 ? 5838 1 
+       236 1 1 20 20 ARG H    H   7.10 0.02 1 ? 5838 1 
+       237 1 1 20 20 ARG HB2  H   1.98 0.05 2 ? 5838 1 
+       238 1 1 20 20 ARG HB3  H   2.14 0.05 2 ? 5838 1 
+       239 1 1 20 20 ARG HD2  H   3.26 0.05 9 ? 5838 1 
+       240 1 1 20 20 ARG HD3  H   3.26 0.05 9 ? 5838 1 
+       241 1 1 20 20 ARG HG2  H   1.63 0.05 1 ? 5838 1 
+       242 1 1 20 20 ARG HG3  H   1.98 0.05 1 ? 5838 1 
+       243 1 1 21 21 GLU N    N 116.65 0.03 1 ? 5838 1 
+       244 1 1 21 21 GLU CA   C  54.53 0.50 1 ? 5838 1 
+       245 1 1 21 21 GLU CB   C  35.70 0.50 1 ? 5838 1 
+       246 1 1 21 21 GLU CG   C  34.77 0.50 1 ? 5838 1 
+       247 1 1 21 21 GLU HA   H   4.58 0.05 1 ? 5838 1 
+       248 1 1 21 21 GLU H    H   9.41 0.02 1 ? 5838 1 
+       249 1 1 21 21 GLU HB2  H   2.01 0.05 1 ? 5838 1 
+       250 1 1 21 21 GLU HB3  H   2.04 0.05 1 ? 5838 1 
+       251 1 1 21 21 GLU HG3  H   1.71 0.05 1 ? 5838 1 
+       252 1 1 21 21 GLU HG2  H   1.97 0.05 1 ? 5838 1 
+       253 1 1 23 23 ASP CA   C  54.01 0.50 1 ? 5838 1 
+       254 1 1 23 23 ASP HA   H   4.79 0.05 1 ? 5838 1 
+       255 1 1 23 23 ASP HB2  H   1.92 0.05 9 ? 5838 1 
+       256 1 1 23 23 ASP HB3  H   1.92 0.05 9 ? 5838 1 
+       257 1 1 24 24 LYS CA   C  57.44 0.50 1 ? 5838 1 
+       258 1 1 24 24 LYS HA   H   4.43 0.05 1 ? 5838 1 
+       259 1 1 25 25 HIS C    C 173.38 0.50 1 ? 5838 1 
+       260 1 1 25 25 HIS N    N 119.25 0.03 1 ? 5838 1 
+       261 1 1 25 25 HIS CA   C  55.21 0.50 1 ? 5838 1 
+       262 1 1 25 25 HIS CB   C  30.49 0.50 1 ? 5838 1 
+       263 1 1 25 25 HIS HA   H   5.04 0.05 1 ? 5838 1 
+       264 1 1 25 25 HIS H    H   9.45 0.02 1 ? 5838 1 
+       265 1 1 25 25 HIS HB3  H   2.93 0.05 1 ? 5838 1 
+       266 1 1 25 25 HIS HB2  H   3.25 0.05 1 ? 5838 1 
+       267 1 1 26 26 LYS C    C 174.87 0.50 1 ? 5838 1 
+       268 1 1 26 26 LYS N    N 115.23 0.03 1 ? 5838 1 
+       269 1 1 26 26 LYS CA   C  55.14 0.50 1 ? 5838 1 
+       270 1 1 26 26 LYS CB   C  38.74 0.50 1 ? 5838 1 
+       271 1 1 26 26 LYS CE   C  41.64 0.50 1 ? 5838 1 
+       272 1 1 26 26 LYS CG   C  25.46 0.50 1 ? 5838 1 
+       273 1 1 26 26 LYS HA   H   5.10 0.05 1 ? 5838 1 
+       274 1 1 26 26 LYS H    H   7.06 0.02 1 ? 5838 1 
+       275 1 1 26 26 LYS HB2  H   1.65 0.05 9 ? 5838 1 
+       276 1 1 26 26 LYS HB3  H   1.65 0.05 9 ? 5838 1 
+       277 1 1 26 26 LYS HE2  H   3.00 0.05 9 ? 5838 1 
+       278 1 1 26 26 LYS HE3  H   3.00 0.05 9 ? 5838 1 
+       279 1 1 26 26 LYS HG2  H   1.23 0.05 9 ? 5838 1 
+       280 1 1 26 26 LYS HG3  H   1.23 0.05 9 ? 5838 1 
+       281 1 1 27 27 LEU C    C 175.88 0.50 1 ? 5838 1 
+       282 1 1 27 27 LEU N    N 126.14 0.03 1 ? 5838 1 
+       283 1 1 27 27 LEU CA   C  52.51 0.50 1 ? 5838 1 
+       284 1 1 27 27 LEU CB   C  43.05 0.50 1 ? 5838 1 
+       285 1 1 27 27 LEU CG   C  24.71 0.50 1 ? 5838 1 
+       286 1 1 27 27 LEU HA   H   5.09 0.05 1 ? 5838 1 
+       287 1 1 27 27 LEU HG   H   1.21 0.05 1 ? 5838 1 
+       288 1 1 27 27 LEU H    H   9.48 0.02 1 ? 5838 1 
+       289 1 1 27 27 LEU HB3  H   1.13 0.05 1 ? 5838 1 
+       290 1 1 27 27 LEU HB2  H   1.96 0.05 1 ? 5838 1 
+       291 1 1 27 27 LEU HD21 H   0.25 0.05 1 ? 5838 1 
+       292 1 1 27 27 LEU HD22 H   0.25 0.05 1 ? 5838 1 
+       293 1 1 27 27 LEU HD23 H   0.25 0.05 1 ? 5838 1 
+       294 1 1 27 27 LEU HD11 H   0.69 0.05 1 ? 5838 1 
+       295 1 1 27 27 LEU HD12 H   0.69 0.05 1 ? 5838 1 
+       296 1 1 27 27 LEU HD13 H   0.69 0.05 1 ? 5838 1 
+       297 1 1 27 27 LEU CD2  C  27.52 0.50 1 ? 5838 1 
+       298 1 1 27 27 LEU CD1  C  24.23 0.50 1 ? 5838 1 
+       299 1 1 28 28 LYS C    C 177.70 0.50 1 ? 5838 1 
+       300 1 1 28 28 LYS N    N 124.62 0.03 1 ? 5838 1 
+       301 1 1 28 28 LYS CA   C  54.79 0.50 1 ? 5838 1 
+       302 1 1 28 28 LYS CB   C  32.35 0.50 1 ? 5838 1 
+       303 1 1 28 28 LYS CD   C  29.12 0.50 1 ? 5838 1 
+       304 1 1 28 28 LYS CE   C  40.74 0.50 1 ? 5838 1 
+       305 1 1 28 28 LYS CG   C  23.32 0.50 1 ? 5838 1 
+       306 1 1 28 28 LYS HA   H   4.65 0.05 1 ? 5838 1 
+       307 1 1 28 28 LYS H    H   9.66 0.02 1 ? 5838 1 
+       308 1 1 28 28 LYS HB2  H   1.92 0.05 9 ? 5838 1 
+       309 1 1 28 28 LYS HB3  H   1.92 0.05 9 ? 5838 1 
+       310 1 1 28 28 LYS HD2  H   1.62 0.05 9 ? 5838 1 
+       311 1 1 28 28 LYS HD3  H   1.62 0.05 9 ? 5838 1 
+       312 1 1 28 28 LYS HE2  H   2.92 0.05 9 ? 5838 1 
+       313 1 1 28 28 LYS HE3  H   2.92 0.05 9 ? 5838 1 
+       314 1 1 28 28 LYS HG2  H   1.52 0.05 9 ? 5838 1 
+       315 1 1 28 28 LYS HG3  H   1.52 0.05 9 ? 5838 1 
+       316 1 1 29 29 LYS C    C 177.63 0.50 1 ? 5838 1 
+       317 1 1 29 29 LYS N    N 122.07 0.03 1 ? 5838 1 
+       318 1 1 29 29 LYS CA   C  62.32 0.50 1 ? 5838 1 
+       319 1 1 29 29 LYS CB   C  31.73 0.50 1 ? 5838 1 
+       320 1 1 29 29 LYS HA   H   3.58 0.05 1 ? 5838 1 
+       321 1 1 29 29 LYS H    H   8.98 0.02 1 ? 5838 1 
+       322 1 1 29 29 LYS HB3  H   1.77 0.05 1 ? 5838 1 
+       323 1 1 29 29 LYS HB2  H   1.99 0.05 1 ? 5838 1 
+       324 1 1 30 30 SER C    C 177.14 0.50 1 ? 5838 1 
+       325 1 1 30 30 SER N    N 111.46 0.03 1 ? 5838 1 
+       326 1 1 30 30 SER CA   C  60.84 0.50 9 ? 5838 1 
+       327 1 1 30 30 SER CB   C  60.84 0.50 9 ? 5838 1 
+       328 1 1 30 30 SER HA   H   4.05 0.05 1 ? 5838 1 
+       329 1 1 30 30 SER H    H   8.08 0.02 1 ? 5838 1 
+       330 1 1 30 30 SER HB2  H   3.89 0.05 9 ? 5838 1 
+       331 1 1 30 30 SER HB3  H   3.89 0.05 9 ? 5838 1 
+       332 1 1 31 31 GLU C    C 176.81 0.50 1 ? 5838 1 
+       333 1 1 31 31 GLU N    N 123.63 0.03 1 ? 5838 1 
+       334 1 1 31 31 GLU CA   C  58.51 0.50 1 ? 5838 1 
+       335 1 1 31 31 GLU CB   C  30.11 0.50 1 ? 5838 1 
+       336 1 1 31 31 GLU CG   C  36.04 0.50 1 ? 5838 1 
+       337 1 1 31 31 GLU HA   H   4.18 0.05 1 ? 5838 1 
+       338 1 1 31 31 GLU H    H   6.55 0.02 1 ? 5838 1 
+       339 1 1 31 31 GLU HB2  H   1.97 0.05 9 ? 5838 1 
+       340 1 1 31 31 GLU HB3  H   1.97 0.05 9 ? 5838 1 
+       341 1 1 31 31 GLU HG2  H   2.27 0.05 1 ? 5838 1 
+       342 1 1 31 31 GLU HG3  H   2.37 0.05 1 ? 5838 1 
+       343 1 1 32 32 LEU C    C 177.35 0.50 1 ? 5838 1 
+       344 1 1 32 32 LEU N    N 120.80 0.03 1 ? 5838 1 
+       345 1 1 32 32 LEU CA   C  57.62 0.50 1 ? 5838 1 
+       346 1 1 32 32 LEU CB   C  41.92 0.50 1 ? 5838 1 
+       347 1 1 32 32 LEU HA   H   3.91 0.05 1 ? 5838 1 
+       348 1 1 32 32 LEU HG   H   1.38 0.05 1 ? 5838 1 
+       349 1 1 32 32 LEU H    H   8.42 0.02 1 ? 5838 1 
+       350 1 1 32 32 LEU HB2  H   1.15 0.05 1 ? 5838 1 
+       351 1 1 32 32 LEU HB3  H   1.85 0.05 1 ? 5838 1 
+       352 1 1 32 32 LEU HD11 H   0.67 0.05 1 ? 5838 1 
+       353 1 1 32 32 LEU HD12 H   0.67 0.05 1 ? 5838 1 
+       354 1 1 32 32 LEU HD13 H   0.67 0.05 1 ? 5838 1 
+       355 1 1 32 32 LEU HD21 H   0.65 0.05 1 ? 5838 1 
+       356 1 1 32 32 LEU HD22 H   0.65 0.05 1 ? 5838 1 
+       357 1 1 32 32 LEU HD23 H   0.65 0.05 1 ? 5838 1 
+       358 1 1 32 32 LEU CD1  C  25.08 0.50 1 ? 5838 1 
+       359 1 1 32 32 LEU CD2  C  20.61 0.50 1 ? 5838 1 
+       360 1 1 33 33 LYS C    C 177.05 0.50 1 ? 5838 1 
+       361 1 1 33 33 LYS N    N 118.82 0.03 1 ? 5838 1 
+       362 1 1 33 33 LYS CA   C  60.13 0.50 1 ? 5838 1 
+       363 1 1 33 33 LYS CB   C  31.88 0.50 1 ? 5838 1 
+       364 1 1 33 33 LYS CD   C  29.67 0.50 1 ? 5838 1 
+       365 1 1 33 33 LYS CE   C  41.53 0.50 1 ? 5838 1 
+       366 1 1 33 33 LYS CG   C  24.26 0.50 1 ? 5838 1 
+       367 1 1 33 33 LYS HA   H   3.62 0.05 1 ? 5838 1 
+       368 1 1 33 33 LYS H    H   8.29 0.02 1 ? 5838 1 
+       369 1 1 33 33 LYS HB3  H   1.83 0.05 1 ? 5838 1 
+       370 1 1 33 33 LYS HB2  H   1.96 0.05 1 ? 5838 1 
+       371 1 1 33 33 LYS HD2  H   1.59 0.05 9 ? 5838 1 
+       372 1 1 33 33 LYS HD3  H   1.59 0.05 9 ? 5838 1 
+       373 1 1 33 33 LYS HE2  H   2.86 0.05 9 ? 5838 1 
+       374 1 1 33 33 LYS HE3  H   2.86 0.05 9 ? 5838 1 
+       375 1 1 33 33 LYS HG2  H   1.25 0.05 2 ? 5838 1 
+       376 1 1 33 33 LYS HG3  H   1.35 0.05 2 ? 5838 1 
+       377 1 1 34 34 GLU C    C 178.00 0.50 1 ? 5838 1 
+       378 1 1 34 34 GLU N    N 116.58 0.03 1 ? 5838 1 
+       379 1 1 34 34 GLU CA   C  59.14 0.50 1 ? 5838 1 
+       380 1 1 34 34 GLU CB   C  28.86 0.50 1 ? 5838 1 
+       381 1 1 34 34 GLU CG   C  36.12 0.50 1 ? 5838 1 
+       382 1 1 34 34 GLU HA   H   4.01 0.05 1 ? 5838 1 
+       383 1 1 34 34 GLU H    H   7.35 0.02 1 ? 5838 1 
+       384 1 1 34 34 GLU HB2  H   2.27 0.05 9 ? 5838 1 
+       385 1 1 34 34 GLU HB3  H   2.27 0.05 9 ? 5838 1 
+       386 1 1 34 34 GLU HG2  H   2.50 0.05 2 ? 5838 1 
+       387 1 1 34 34 GLU HG3  H   2.56 0.05 2 ? 5838 1 
+       388 1 1 35 35 LEU C    C 179.09 0.50 1 ? 5838 1 
+       389 1 1 35 35 LEU N    N 123.68 0.03 1 ? 5838 1 
+       390 1 1 35 35 LEU CA   C  59.39 0.50 1 ? 5838 1 
+       391 1 1 35 35 LEU CB   C  41.77 0.50 1 ? 5838 1 
+       392 1 1 35 35 LEU CG   C  27.57 0.50 1 ? 5838 1 
+       393 1 1 35 35 LEU HA   H   2.60 0.05 1 ? 5838 1 
+       394 1 1 35 35 LEU HG   H   1.01 0.05 1 ? 5838 1 
+       395 1 1 35 35 LEU H    H   7.90 0.02 1 ? 5838 1 
+       396 1 1 35 35 LEU HB3  H   1.02 0.05 1 ? 5838 1 
+       397 1 1 35 35 LEU HB2  H   1.56 0.05 1 ? 5838 1 
+       398 1 1 35 35 LEU HD21 H   0.63 0.05 1 ? 5838 1 
+       399 1 1 35 35 LEU HD22 H   0.63 0.05 1 ? 5838 1 
+       400 1 1 35 35 LEU HD23 H   0.63 0.05 1 ? 5838 1 
+       401 1 1 35 35 LEU HD11 H   0.74 0.05 1 ? 5838 1 
+       402 1 1 35 35 LEU HD12 H   0.74 0.05 1 ? 5838 1 
+       403 1 1 35 35 LEU HD13 H   0.74 0.05 1 ? 5838 1 
+       404 1 1 35 35 LEU CD2  C  24.09 0.50 1 ? 5838 1 
+       405 1 1 35 35 LEU CD1  C  27.01 0.50 1 ? 5838 1 
+       406 1 1 36 36 ILE C    C 178.24 0.50 1 ? 5838 1 
+       407 1 1 36 36 ILE N    N 120.89 0.03 1 ? 5838 1 
+       408 1 1 36 36 ILE CA   C  66.18 0.50 1 ? 5838 1 
+       409 1 1 36 36 ILE CB   C  37.94 0.50 1 ? 5838 1 
+       410 1 1 36 36 ILE HA   H   3.35 0.05 1 ? 5838 1 
+       411 1 1 36 36 ILE HB   H   1.73 0.05 1 ? 5838 1 
+       412 1 1 36 36 ILE H    H   8.25 0.02 1 ? 5838 1 
+       413 1 1 36 36 ILE CD1  C  13.37 0.50 1 ? 5838 1 
+       414 1 1 36 36 ILE CG1  C  29.77 0.50 1 ? 5838 1 
+       415 1 1 36 36 ILE CG2  C  16.52 0.50 1 ? 5838 1 
+       416 1 1 36 36 ILE HD11 H   0.69 0.05 1 ? 5838 1 
+       417 1 1 36 36 ILE HD12 H   0.69 0.05 1 ? 5838 1 
+       418 1 1 36 36 ILE HD13 H   0.69 0.05 1 ? 5838 1 
+       419 1 1 36 36 ILE HG12 H   1.85 0.05 9 ? 5838 1 
+       420 1 1 36 36 ILE HG13 H   1.85 0.05 9 ? 5838 1 
+       421 1 1 36 36 ILE HG21 H   0.93 0.05 1 ? 5838 1 
+       422 1 1 36 36 ILE HG22 H   0.93 0.05 1 ? 5838 1 
+       423 1 1 36 36 ILE HG23 H   0.93 0.05 1 ? 5838 1 
+       424 1 1 37 37 ASN C    C 177.40 0.50 1 ? 5838 1 
+       425 1 1 37 37 ASN N    N 117.58 0.03 1 ? 5838 1 
+       426 1 1 37 37 ASN CA   C  54.48 0.50 1 ? 5838 1 
+       427 1 1 37 37 ASN CB   C  37.03 0.50 1 ? 5838 1 
+       428 1 1 37 37 ASN CG   C 175.17 0.50 1 ? 5838 1 
+       429 1 1 37 37 ASN HA   H   4.59 0.05 1 ? 5838 1 
+       430 1 1 37 37 ASN H    H   8.25 0.02 1 ? 5838 1 
+       431 1 1 37 37 ASN HB2  H   2.72 0.05 2 ? 5838 1 
+       432 1 1 37 37 ASN HB3  H   2.79 0.05 2 ? 5838 1 
+       433 1 1 37 37 ASN ND2  N 106.78 0.03 1 ? 5838 1 
+       434 1 1 37 37 ASN HD22 H   7.12 0.05 1 ? 5838 1 
+       435 1 1 37 37 ASN HD21 H   7.43 0.05 1 ? 5838 1 
+       436 1 1 38 38 ASN C    C 176.96 0.50 1 ? 5838 1 
+       437 1 1 38 38 ASN N    N 114.77 0.03 1 ? 5838 1 
+       438 1 1 38 38 ASN CA   C  54.73 0.50 1 ? 5838 1 
+       439 1 1 38 38 ASN CB   C  40.12 0.50 1 ? 5838 1 
+       440 1 1 38 38 ASN CG   C 177.38 0.50 1 ? 5838 1 
+       441 1 1 38 38 ASN HA   H   4.85 0.05 1 ? 5838 1 
+       442 1 1 38 38 ASN H    H   8.20 0.02 1 ? 5838 1 
+       443 1 1 38 38 ASN HB3  H   2.73 0.05 1 ? 5838 1 
+       444 1 1 38 38 ASN HB2  H   3.22 0.05 1 ? 5838 1 
+       445 1 1 38 38 ASN ND2  N 113.34 0.03 1 ? 5838 1 
+       446 1 1 38 38 ASN HD21 H   7.06 0.05 2 ? 5838 1 
+       447 1 1 38 38 ASN HD22 H   7.96 0.05 2 ? 5838 1 
+       448 1 1 39 39 GLU C    C 178.30 0.50 1 ? 5838 1 
+       449 1 1 39 39 GLU N    N 113.93 0.03 1 ? 5838 1 
+       450 1 1 39 39 GLU CA   C  55.05 0.50 1 ? 5838 1 
+       451 1 1 39 39 GLU CB   C  29.90 0.50 1 ? 5838 1 
+       452 1 1 39 39 GLU CG   C  36.22 0.50 1 ? 5838 1 
+       453 1 1 39 39 GLU HA   H   4.96 0.05 1 ? 5838 1 
+       454 1 1 39 39 GLU H    H   8.41 0.02 1 ? 5838 1 
+       455 1 1 39 39 GLU HB3  H   1.87 0.05 2 ? 5838 1 
+       456 1 1 39 39 GLU HB2  H   2.45 0.05 2 ? 5838 1 
+       457 1 1 39 39 GLU HG3  H   2.27 0.05 2 ? 5838 1 
+       458 1 1 39 39 GLU HG2  H   2.37 0.05 2 ? 5838 1 
+       459 1 1 40 40 LEU C    C 177.72 0.50 1 ? 5838 1 
+       460 1 1 40 40 LEU N    N 120.39 0.03 1 ? 5838 1 
+       461 1 1 40 40 LEU CA   C  53.82 0.50 1 ? 5838 1 
+       462 1 1 40 40 LEU CB   C  42.13 0.50 1 ? 5838 1 
+       463 1 1 40 40 LEU CG   C  26.39 0.50 1 ? 5838 1 
+       464 1 1 40 40 LEU HA   H   5.29 0.05 1 ? 5838 1 
+       465 1 1 40 40 LEU HG   H   1.57 0.05 1 ? 5838 1 
+       466 1 1 40 40 LEU H    H   7.59 0.02 1 ? 5838 1 
+       467 1 1 40 40 LEU HB2  H   2.06 0.05 1 ? 5838 1 
+       468 1 1 40 40 LEU HB3  H   2.08 0.05 1 ? 5838 1 
+       469 1 1 40 40 LEU HD11 H   0.99 0.05 1 ? 5838 1 
+       470 1 1 40 40 LEU HD12 H   0.99 0.05 1 ? 5838 1 
+       471 1 1 40 40 LEU HD13 H   0.99 0.05 1 ? 5838 1 
+       472 1 1 40 40 LEU HD21 H   0.99 0.05 1 ? 5838 1 
+       473 1 1 40 40 LEU HD22 H   0.99 0.05 1 ? 5838 1 
+       474 1 1 40 40 LEU HD23 H   0.99 0.05 1 ? 5838 1 
+       475 1 1 40 40 LEU CD2  C  23.65 0.50 1 ? 5838 1 
+       476 1 1 40 40 LEU CD1  C  26.39 0.50 1 ? 5838 1 
+       477 1 1 41 41 SER C    C 175.65 0.50 1 ? 5838 1 
+       478 1 1 41 41 SER N    N 115.92 0.03 1 ? 5838 1 
+       479 1 1 41 41 SER CA   C  60.62 0.50 1 ? 5838 1 
+       480 1 1 41 41 SER CB   C  63.53 0.50 1 ? 5838 1 
+       481 1 1 41 41 SER HA   H   4.52 0.05 1 ? 5838 1 
+       482 1 1 41 41 SER H    H   7.43 0.02 1 ? 5838 1 
+       483 1 1 41 41 SER HB2  H   3.82 0.05 1 ? 5838 1 
+       484 1 1 41 41 SER HB3  H   3.88 0.05 1 ? 5838 1 
+       485 1 1 42 42 HIS C    C 174.98 0.50 1 ? 5838 1 
+       486 1 1 42 42 HIS N    N 119.01 0.03 1 ? 5838 1 
+       487 1 1 42 42 HIS CA   C  58.50 0.50 1 ? 5838 1 
+       488 1 1 42 42 HIS CB   C  29.49 0.50 1 ? 5838 1 
+       489 1 1 42 42 HIS HA   H   4.50 0.05 1 ? 5838 1 
+       490 1 1 42 42 HIS H    H   9.79 0.02 1 ? 5838 1 
+       491 1 1 42 42 HIS HB2  H   2.75 0.05 9 ? 5838 1 
+       492 1 1 42 42 HIS HB3  H   2.75 0.05 9 ? 5838 1 
+       493 1 1 43 43 PHE C    C 175.11 0.50 1 ? 5838 1 
+       494 1 1 43 43 PHE N    N 116.67 0.03 1 ? 5838 1 
+       495 1 1 43 43 PHE CA   C  56.27 0.50 1 ? 5838 1 
+       496 1 1 43 43 PHE CB   C  40.25 0.50 1 ? 5838 1 
+       497 1 1 43 43 PHE CD1  C 130.97 0.50 1 ? 5838 1 
+       498 1 1 43 43 PHE CD2  C 130.97 0.50 1 ? 5838 1 
+       499 1 1 43 43 PHE CE1  C 130.97 0.50 1 ? 5838 1 
+       500 1 1 43 43 PHE CE2  C 130.97 0.50 1 ? 5838 1 
+       501 1 1 43 43 PHE HA   H   4.98 0.05 1 ? 5838 1 
+       502 1 1 43 43 PHE H    H   7.60 0.02 1 ? 5838 1 
+       503 1 1 43 43 PHE HB2  H   2.83 0.05 1 ? 5838 1 
+       504 1 1 43 43 PHE HB3  H   3.16 0.05 1 ? 5838 1 
+       505 1 1 43 43 PHE HD1  H   7.02 0.05 1 ? 5838 1 
+       506 1 1 43 43 PHE HD2  H   7.02 0.05 1 ? 5838 1 
+       507 1 1 43 43 PHE HE1  H   7.19 0.05 1 ? 5838 1 
+       508 1 1 43 43 PHE HE2  H   7.19 0.05 1 ? 5838 1 
+       509 1 1 43 43 PHE HZ   H   7.19 0.05 1 ? 5838 1 
+       510 1 1 44 44 LEU C    C 176.36 0.50 1 ? 5838 1 
+       511 1 1 44 44 LEU N    N 120.48 0.03 1 ? 5838 1 
+       512 1 1 44 44 LEU CA   C  53.48 0.50 1 ? 5838 1 
+       513 1 1 44 44 LEU CB   C  44.28 0.50 1 ? 5838 1 
+       514 1 1 44 44 LEU CG   C  27.93 0.50 1 ? 5838 1 
+       515 1 1 44 44 LEU HA   H   5.00 0.05 1 ? 5838 1 
+       516 1 1 44 44 LEU HG   H   1.71 0.05 1 ? 5838 1 
+       517 1 1 44 44 LEU H    H   8.48 0.02 1 ? 5838 1 
+       518 1 1 44 44 LEU HB2  H   1.57 0.05 9 ? 5838 1 
+       519 1 1 44 44 LEU HB3  H   1.57 0.05 9 ? 5838 1 
+       520 1 1 44 44 LEU CD2  C  24.31 0.50 1 ? 5838 1 
+       521 1 1 44 44 LEU CD1  C  26.10 0.50 1 ? 5838 1 
+       522 1 1 44 44 LEU HD21 H   0.91 0.05 1 ? 5838 1 
+       523 1 1 44 44 LEU HD22 H   0.91 0.05 1 ? 5838 1 
+       524 1 1 44 44 LEU HD23 H   0.91 0.05 1 ? 5838 1 
+       525 1 1 44 44 LEU HD11 H   1.01 0.05 1 ? 5838 1 
+       526 1 1 44 44 LEU HD12 H   1.01 0.05 1 ? 5838 1 
+       527 1 1 44 44 LEU HD13 H   1.01 0.05 1 ? 5838 1 
+       528 1 1 45 45 GLU C    C 175.42 0.50 1 ? 5838 1 
+       529 1 1 45 45 GLU N    N 120.75 0.03 1 ? 5838 1 
+       530 1 1 45 45 GLU CA   C  56.54 0.50 1 ? 5838 1 
+       531 1 1 45 45 GLU CB   C  29.51 0.50 1 ? 5838 1 
+       532 1 1 45 45 GLU CG   C  35.68 0.50 1 ? 5838 1 
+       533 1 1 45 45 GLU HA   H   3.98 0.05 1 ? 5838 1 
+       534 1 1 45 45 GLU H    H   8.14 0.02 1 ? 5838 1 
+       535 1 1 45 45 GLU HB2  H   1.89 0.05 2 ? 5838 1 
+       536 1 1 45 45 GLU HB3  H   1.98 0.05 2 ? 5838 1 
+       537 1 1 45 45 GLU HG2  H   2.20 0.05 2 ? 5838 1 
+       538 1 1 45 45 GLU HG3  H   2.30 0.05 2 ? 5838 1 
+       539 1 1 46 46 GLU C    C 177.14 0.50 1 ? 5838 1 
+       540 1 1 46 46 GLU N    N 122.74 0.03 1 ? 5838 1 
+       541 1 1 46 46 GLU CA   C  56.55 0.50 1 ? 5838 1 
+       542 1 1 46 46 GLU CB   C  29.62 0.50 1 ? 5838 1 
+       543 1 1 46 46 GLU CG   C  35.56 0.50 1 ? 5838 1 
+       544 1 1 46 46 GLU HA   H   4.06 0.05 1 ? 5838 1 
+       545 1 1 46 46 GLU H    H   8.11 0.02 1 ? 5838 1 
+       546 1 1 46 46 GLU HB2  H   1.77 0.05 2 ? 5838 1 
+       547 1 1 46 46 GLU HB3  H   2.14 0.05 2 ? 5838 1 
+       548 1 1 46 46 GLU HG2  H   2.00 0.05 1 ? 5838 1 
+       549 1 1 46 46 GLU HG3  H   2.15 0.05 1 ? 5838 1 
+       550 1 1 47 47 ILE C    C 176.18 0.50 1 ? 5838 1 
+       551 1 1 47 47 ILE N    N 126.52 0.03 1 ? 5838 1 
+       552 1 1 47 47 ILE CA   C  61.53 0.50 1 ? 5838 1 
+       553 1 1 47 47 ILE CB   C  37.85 0.50 1 ? 5838 1 
+       554 1 1 47 47 ILE HA   H   4.09 0.05 1 ? 5838 1 
+       555 1 1 47 47 ILE HB   H   1.78 0.05 1 ? 5838 1 
+       556 1 1 47 47 ILE H    H   9.73 0.02 1 ? 5838 1 
+       557 1 1 47 47 ILE HG13 H   1.80 0.05 1 ? 5838 1 
+       558 1 1 47 47 ILE CD1  C  13.55 0.50 1 ? 5838 1 
+       559 1 1 47 47 ILE CG1  C  26.41 0.50 1 ? 5838 1 
+       560 1 1 47 47 ILE CG2  C  18.30 0.50 1 ? 5838 1 
+       561 1 1 47 47 ILE HD11 H   0.82 0.05 1 ? 5838 1 
+       562 1 1 47 47 ILE HD12 H   0.82 0.05 1 ? 5838 1 
+       563 1 1 47 47 ILE HD13 H   0.82 0.05 1 ? 5838 1 
+       564 1 1 47 47 ILE HG12 H   1.13 0.05 1 ? 5838 1 
+       565 1 1 47 47 ILE HG21 H   0.83 0.05 1 ? 5838 1 
+       566 1 1 47 47 ILE HG22 H   0.83 0.05 1 ? 5838 1 
+       567 1 1 47 47 ILE HG23 H   0.83 0.05 1 ? 5838 1 
+       568 1 1 48 48 LYS C    C 176.10 0.50 1 ? 5838 1 
+       569 1 1 48 48 LYS N    N 126.79 0.03 1 ? 5838 1 
+       570 1 1 48 48 LYS CA   C  56.21 0.50 1 ? 5838 1 
+       571 1 1 48 48 LYS CB   C  34.16 0.50 1 ? 5838 1 
+       572 1 1 48 48 LYS CD   C  28.55 0.50 1 ? 5838 1 
+       573 1 1 48 48 LYS CE   C  41.65 0.50 1 ? 5838 1 
+       574 1 1 48 48 LYS CG   C  24.33 0.50 1 ? 5838 1 
+       575 1 1 48 48 LYS HA   H   1.86 0.05 1 ? 5838 1 
+       576 1 1 48 48 LYS H    H   8.86 0.02 1 ? 5838 1 
+       577 1 1 48 48 LYS HB2  H   1.65 0.05 2 ? 5838 1 
+       578 1 1 48 48 LYS HB3  H   1.86 0.05 2 ? 5838 1 
+       579 1 1 48 48 LYS HD2  H   1.66 0.05 9 ? 5838 1 
+       580 1 1 48 48 LYS HD3  H   1.66 0.05 9 ? 5838 1 
+       581 1 1 48 48 LYS HE2  H   2.95 0.05 9 ? 5838 1 
+       582 1 1 48 48 LYS HE3  H   2.95 0.05 9 ? 5838 1 
+       583 1 1 48 48 LYS HG2  H   1.32 0.05 9 ? 5838 1 
+       584 1 1 48 48 LYS HG3  H   1.32 0.05 9 ? 5838 1 
+       585 1 1 49 49 GLU N    N 119.36 0.03 1 ? 5838 1 
+       586 1 1 49 49 GLU CA   C  55.47 0.50 1 ? 5838 1 
+       587 1 1 49 49 GLU CB   C  29.82 0.50 1 ? 5838 1 
+       588 1 1 49 49 GLU CG   C  35.57 0.50 1 ? 5838 1 
+       589 1 1 49 49 GLU HA   H   4.58 0.05 1 ? 5838 1 
+       590 1 1 49 49 GLU H    H   7.67 0.02 1 ? 5838 1 
+       591 1 1 49 49 GLU HB2  H   2.00 0.05 9 ? 5838 1 
+       592 1 1 49 49 GLU HB3  H   2.00 0.05 9 ? 5838 1 
+       593 1 1 49 49 GLU HG2  H   2.28 0.05 9 ? 5838 1 
+       594 1 1 49 49 GLU HG3  H   2.28 0.05 9 ? 5838 1 
+       595 1 1 50 50 GLN C    C 177.22 0.50 1 ? 5838 1 
+       596 1 1 50 50 GLN CA   C  58.24 0.50 1 ? 5838 1 
+       597 1 1 50 50 GLN CB   C  27.91 0.50 1 ? 5838 1 
+       598 1 1 50 50 GLN CG   C  32.74 0.50 1 ? 5838 1 
+       599 1 1 50 50 GLN CD   C 180.36 0.50 1 ? 5838 1 
+       600 1 1 50 50 GLN HA   H   3.78 0.05 1 ? 5838 1 
+       601 1 1 50 50 GLN NE2  N 114.07 0.03 1 ? 5838 1 
+       602 1 1 50 50 GLN HB2  H   1.94 0.05 2 ? 5838 1 
+       603 1 1 50 50 GLN HB3  H   2.17 0.05 2 ? 5838 1 
+       604 1 1 50 50 GLN HG2  H   2.41 0.05 9 ? 5838 1 
+       605 1 1 50 50 GLN HG3  H   2.41 0.05 9 ? 5838 1 
+       606 1 1 50 50 GLN HE21 H   6.52 0.05 2 ? 5838 1 
+       607 1 1 50 50 GLN HE22 H   7.95 0.05 2 ? 5838 1 
+       608 1 1 51 51 GLU C    C 178.60 0.50 1 ? 5838 1 
+       609 1 1 51 51 GLU N    N 117.54 0.03 1 ? 5838 1 
+       610 1 1 51 51 GLU CA   C  59.45 0.50 1 ? 5838 1 
+       611 1 1 51 51 GLU CB   C  28.82 0.50 1 ? 5838 1 
+       612 1 1 51 51 GLU CG   C  36.04 0.50 1 ? 5838 1 
+       613 1 1 51 51 GLU HA   H   4.14 0.05 1 ? 5838 1 
+       614 1 1 51 51 GLU H    H   9.27 0.02 1 ? 5838 1 
+       615 1 1 51 51 GLU HB3  H   2.01 0.05 1 ? 5838 1 
+       616 1 1 51 51 GLU HB2  H   2.10 0.05 1 ? 5838 1 
+       617 1 1 51 51 GLU HG2  H   2.33 0.05 9 ? 5838 1 
+       618 1 1 51 51 GLU HG3  H   2.33 0.05 9 ? 5838 1 
+       619 1 1 52 52 VAL C    C 177.56 0.50 1 ? 5838 1 
+       620 1 1 52 52 VAL N    N 118.51 0.03 1 ? 5838 1 
+       621 1 1 52 52 VAL CA   C  65.92 0.50 1 ? 5838 1 
+       622 1 1 52 52 VAL CB   C  31.10 0.50 1 ? 5838 1 
+       623 1 1 52 52 VAL HA   H   3.64 0.05 1 ? 5838 1 
+       624 1 1 52 52 VAL HB   H   2.23 0.05 1 ? 5838 1 
+       625 1 1 52 52 VAL H    H   7.11 0.02 1 ? 5838 1 
+       626 1 1 52 52 VAL HG11 H   0.96 0.05 1 ? 5838 1 
+       627 1 1 52 52 VAL HG12 H   0.96 0.05 1 ? 5838 1 
+       628 1 1 52 52 VAL HG13 H   0.96 0.05 1 ? 5838 1 
+       629 1 1 52 52 VAL HG21 H   1.05 0.05 1 ? 5838 1 
+       630 1 1 52 52 VAL HG22 H   1.05 0.05 1 ? 5838 1 
+       631 1 1 52 52 VAL HG23 H   1.05 0.05 1 ? 5838 1 
+       632 1 1 52 52 VAL CG1  C  21.34 0.50 1 ? 5838 1 
+       633 1 1 52 52 VAL CG2  C  22.15 0.50 1 ? 5838 1 
+       634 1 1 53 53 VAL C    C 177.37 0.50 1 ? 5838 1 
+       635 1 1 53 53 VAL N    N 119.91 0.03 1 ? 5838 1 
+       636 1 1 53 53 VAL CA   C  66.17 0.50 1 ? 5838 1 
+       637 1 1 53 53 VAL CB   C  30.71 0.50 1 ? 5838 1 
+       638 1 1 53 53 VAL HA   H   3.47 0.05 1 ? 5838 1 
+       639 1 1 53 53 VAL HB   H   2.15 0.05 1 ? 5838 1 
+       640 1 1 53 53 VAL H    H   7.24 0.02 1 ? 5838 1 
+       641 1 1 53 53 VAL HG21 H   0.92 0.05 1 ? 5838 1 
+       642 1 1 53 53 VAL HG22 H   0.92 0.05 1 ? 5838 1 
+       643 1 1 53 53 VAL HG23 H   0.92 0.05 1 ? 5838 1 
+       644 1 1 53 53 VAL HG11 H   0.96 0.05 1 ? 5838 1 
+       645 1 1 53 53 VAL HG12 H   0.96 0.05 1 ? 5838 1 
+       646 1 1 53 53 VAL HG13 H   0.96 0.05 1 ? 5838 1 
+       647 1 1 53 53 VAL CG2  C  21.27 0.50 1 ? 5838 1 
+       648 1 1 53 53 VAL CG1  C  22.72 0.50 1 ? 5838 1 
+       649 1 1 54 54 ASP C    C 178.68 0.50 1 ? 5838 1 
+       650 1 1 54 54 ASP N    N 120.84 0.03 1 ? 5838 1 
+       651 1 1 54 54 ASP CA   C  57.78 0.50 1 ? 5838 1 
+       652 1 1 54 54 ASP CB   C  39.50 0.50 1 ? 5838 1 
+       653 1 1 54 54 ASP HA   H   4.15 0.05 1 ? 5838 1 
+       654 1 1 54 54 ASP H    H   8.42 0.02 1 ? 5838 1 
+       655 1 1 54 54 ASP HB2  H   2.64 0.05 1 ? 5838 1 
+       656 1 1 54 54 ASP HB3  H   2.78 0.05 1 ? 5838 1 
+       657 1 1 55 55 LYS C    C 179.56 0.50 1 ? 5838 1 
+       658 1 1 55 55 LYS N    N 120.85 0.03 1 ? 5838 1 
+       659 1 1 55 55 LYS CA   C  58.43 0.50 1 ? 5838 1 
+       660 1 1 55 55 LYS CB   C  31.15 0.50 1 ? 5838 1 
+       661 1 1 55 55 LYS CD   C  28.20 0.50 1 ? 5838 1 
+       662 1 1 55 55 LYS CE   C  41.71 0.50 1 ? 5838 1 
+       663 1 1 55 55 LYS CG   C  24.24 0.50 1 ? 5838 1 
+       664 1 1 55 55 LYS HA   H   4.05 0.05 1 ? 5838 1 
+       665 1 1 55 55 LYS H    H   7.50 0.02 1 ? 5838 1 
+       666 1 1 55 55 LYS HB2  H   1.63 0.05 1 ? 5838 1 
+       667 1 1 55 55 LYS HB3  H   1.80 0.05 1 ? 5838 1 
+       668 1 1 55 55 LYS HD2  H   1.59 0.05 9 ? 5838 1 
+       669 1 1 55 55 LYS HD3  H   1.59 0.05 9 ? 5838 1 
+       670 1 1 55 55 LYS HE2  H   2.89 0.05 9 ? 5838 1 
+       671 1 1 55 55 LYS HE3  H   2.89 0.05 9 ? 5838 1 
+       672 1 1 55 55 LYS HG2  H   1.42 0.05 9 ? 5838 1 
+       673 1 1 55 55 LYS HG3  H   1.42 0.05 9 ? 5838 1 
+       674 1 1 56 56 VAL C    C 177.94 0.50 1 ? 5838 1 
+       675 1 1 56 56 VAL N    N 122.22 0.03 1 ? 5838 1 
+       676 1 1 56 56 VAL CA   C  66.84 0.50 1 ? 5838 1 
+       677 1 1 56 56 VAL CB   C  30.91 0.50 1 ? 5838 1 
+       678 1 1 56 56 VAL HA   H   3.51 0.05 1 ? 5838 1 
+       679 1 1 56 56 VAL HB   H   2.04 0.05 1 ? 5838 1 
+       680 1 1 56 56 VAL H    H   8.35 0.02 1 ? 5838 1 
+       681 1 1 56 56 VAL HG11 H   0.69 0.05 1 ? 5838 1 
+       682 1 1 56 56 VAL HG12 H   0.69 0.05 1 ? 5838 1 
+       683 1 1 56 56 VAL HG13 H   0.69 0.05 1 ? 5838 1 
+       684 1 1 56 56 VAL HG21 H   0.97 0.05 1 ? 5838 1 
+       685 1 1 56 56 VAL HG22 H   0.97 0.05 1 ? 5838 1 
+       686 1 1 56 56 VAL HG23 H   0.97 0.05 1 ? 5838 1 
+       687 1 1 56 56 VAL CG1  C  21.07 0.50 1 ? 5838 1 
+       688 1 1 56 56 VAL CG2  C  22.52 0.50 1 ? 5838 1 
+       689 1 1 57 57 MET C    C 177.16 0.50 1 ? 5838 1 
+       690 1 1 57 57 MET N    N 118.92 0.03 1 ? 5838 1 
+       691 1 1 57 57 MET CA   C  57.55 0.50 1 ? 5838 1 
+       692 1 1 57 57 MET CB   C  30.17 0.50 1 ? 5838 1 
+       693 1 1 57 57 MET CE   C  17.34 0.50 1 ? 5838 1 
+       694 1 1 57 57 MET CG   C  32.91 0.50 1 ? 5838 1 
+       695 1 1 57 57 MET HA   H   4.11 0.05 1 ? 5838 1 
+       696 1 1 57 57 MET H    H   8.38 0.02 1 ? 5838 1 
+       697 1 1 57 57 MET HB2  H   2.00 0.05 9 ? 5838 1 
+       698 1 1 57 57 MET HB3  H   2.00 0.05 9 ? 5838 1 
+       699 1 1 57 57 MET HE1  H   1.94 0.05 9 ? 5838 1 
+       700 1 1 57 57 MET HE2  H   1.94 0.05 9 ? 5838 1 
+       701 1 1 57 57 MET HE3  H   1.94 0.05 9 ? 5838 1 
+       702 1 1 57 57 MET HG2  H   2.38 0.05 9 ? 5838 1 
+       703 1 1 57 57 MET HG3  H   2.38 0.05 9 ? 5838 1 
+       704 1 1 58 58 GLU C    C 178.60 0.50 1 ? 5838 1 
+       705 1 1 58 58 GLU N    N 118.05 0.03 1 ? 5838 1 
+       706 1 1 58 58 GLU CA   C  59.12 0.50 1 ? 5838 1 
+       707 1 1 58 58 GLU CB   C  29.11 0.50 1 ? 5838 1 
+       708 1 1 58 58 GLU CG   C  36.11 0.50 1 ? 5838 1 
+       709 1 1 58 58 GLU HA   H   4.02 0.05 1 ? 5838 1 
+       710 1 1 58 58 GLU H    H   8.12 0.02 1 ? 5838 1 
+       711 1 1 58 58 GLU HB3  H   2.10 0.05 1 ? 5838 1 
+       712 1 1 58 58 GLU HB2  H   2.14 0.05 1 ? 5838 1 
+       713 1 1 58 58 GLU HG3  H   2.23 0.05 1 ? 5838 1 
+       714 1 1 58 58 GLU HG2  H   2.37 0.05 1 ? 5838 1 
+       715 1 1 59 59 THR C    C 175.18 0.50 1 ? 5838 1 
+       716 1 1 59 59 THR N    N 113.85 0.03 1 ? 5838 1 
+       717 1 1 59 59 THR CA   C  65.72 0.50 1 ? 5838 1 
+       718 1 1 59 59 THR CB   C  68.62 0.50 1 ? 5838 1 
+       719 1 1 59 59 THR HA   H   3.95 0.05 1 ? 5838 1 
+       720 1 1 59 59 THR HB   H   4.32 0.05 1 ? 5838 1 
+       721 1 1 59 59 THR H    H   7.56 0.02 1 ? 5838 1 
+       722 1 1 59 59 THR CG2  C  20.68 0.50 1 ? 5838 1 
+       723 1 1 59 59 THR HG21 H   1.19 0.05 1 ? 5838 1 
+       724 1 1 59 59 THR HG22 H   1.19 0.05 1 ? 5838 1 
+       725 1 1 59 59 THR HG23 H   1.19 0.05 1 ? 5838 1 
+       726 1 1 60 60 LEU C    C 178.06 0.50 1 ? 5838 1 
+       727 1 1 60 60 LEU N    N 119.95 0.03 1 ? 5838 1 
+       728 1 1 60 60 LEU CA   C  55.61 0.50 1 ? 5838 1 
+       729 1 1 60 60 LEU CB   C  42.69 0.50 1 ? 5838 1 
+       730 1 1 60 60 LEU CG   C  25.68 0.50 1 ? 5838 1 
+       731 1 1 60 60 LEU HA   H   4.22 0.05 1 ? 5838 1 
+       732 1 1 60 60 LEU HG   H   1.91 0.05 1 ? 5838 1 
+       733 1 1 60 60 LEU H    H   7.63 0.02 1 ? 5838 1 
+       734 1 1 60 60 LEU HB3  H   1.44 0.05 1 ? 5838 1 
+       735 1 1 60 60 LEU HB2  H   1.63 0.05 1 ? 5838 1 
+       736 1 1 60 60 LEU HD11 H   0.51 0.05 1 ? 5838 1 
+       737 1 1 60 60 LEU HD12 H   0.51 0.05 1 ? 5838 1 
+       738 1 1 60 60 LEU HD13 H   0.51 0.05 1 ? 5838 1 
+       739 1 1 60 60 LEU HD21 H   0.78 0.05 1 ? 5838 1 
+       740 1 1 60 60 LEU HD22 H   0.78 0.05 1 ? 5838 1 
+       741 1 1 60 60 LEU HD23 H   0.78 0.05 1 ? 5838 1 
+       742 1 1 60 60 LEU CD1  C  21.72 0.50 1 ? 5838 1 
+       743 1 1 60 60 LEU CD2  C  24.43 0.50 1 ? 5838 1 
+       744 1 1 61 61 ASP C    C 176.28 0.50 1 ? 5838 1 
+       745 1 1 61 61 ASP N    N 117.61 0.03 1 ? 5838 1 
+       746 1 1 61 61 ASP CA   C  53.32 0.50 1 ? 5838 1 
+       747 1 1 61 61 ASP CB   C  39.55 0.50 1 ? 5838 1 
+       748 1 1 61 61 ASP HA   H   4.61 0.05 1 ? 5838 1 
+       749 1 1 61 61 ASP H    H   8.16 0.02 1 ? 5838 1 
+       750 1 1 61 61 ASP HB2  H   2.71 0.05 1 ? 5838 1 
+       751 1 1 61 61 ASP HB3  H   2.79 0.05 1 ? 5838 1 
+       752 1 1 62 62 SER C    C 175.68 0.50 1 ? 5838 1 
+       753 1 1 62 62 SER N    N 125.14 0.03 1 ? 5838 1 
+       754 1 1 62 62 SER CA   C  59.88 0.50 1 ? 5838 1 
+       755 1 1 62 62 SER CB   C  64.02 0.50 1 ? 5838 1 
+       756 1 1 62 62 SER HA   H   4.39 0.05 1 ? 5838 1 
+       757 1 1 62 62 SER H    H   8.97 0.02 1 ? 5838 1 
+       758 1 1 62 62 SER HB2  H   3.99 0.05 9 ? 5838 1 
+       759 1 1 62 62 SER HB3  H   3.99 0.05 9 ? 5838 1 
+       760 1 1 63 63 ASP C    C 177.99 0.50 1 ? 5838 1 
+       761 1 1 63 63 ASP N    N 119.16 0.03 1 ? 5838 1 
+       762 1 1 63 63 ASP CA   C  53.16 0.50 1 ? 5838 1 
+       763 1 1 63 63 ASP CB   C  39.97 0.50 1 ? 5838 1 
+       764 1 1 63 63 ASP HA   H   4.67 0.05 1 ? 5838 1 
+       765 1 1 63 63 ASP H    H   8.31 0.02 1 ? 5838 1 
+       766 1 1 63 63 ASP HB3  H   2.71 0.05 1 ? 5838 1 
+       767 1 1 63 63 ASP HB2  H   3.03 0.05 1 ? 5838 1 
+       768 1 1 64 64 GLY C    C 175.19 0.50 1 ? 5838 1 
+       769 1 1 64 64 GLY N    N 109.58 0.03 1 ? 5838 1 
+       770 1 1 64 64 GLY CA   C  47.41 0.50 1 ? 5838 1 
+       771 1 1 64 64 GLY H    H   7.64 0.02 1 ? 5838 1 
+       772 1 1 64 64 GLY HA3  H   3.81 0.05 1 ? 5838 1 
+       773 1 1 64 64 GLY HA2  H   3.99 0.05 1 ? 5838 1 
+       774 1 1 65 65 ASP C    C 177.37 0.50 1 ? 5838 1 
+       775 1 1 65 65 ASP N    N 121.35 0.03 1 ? 5838 1 
+       776 1 1 65 65 ASP CA   C  53.55 0.50 1 ? 5838 1 
+       777 1 1 65 65 ASP CB   C  39.43 0.50 1 ? 5838 1 
+       778 1 1 65 65 ASP HA   H   4.54 0.05 1 ? 5838 1 
+       779 1 1 65 65 ASP H    H   8.37 0.02 1 ? 5838 1 
+       780 1 1 65 65 ASP HB3  H   2.54 0.05 1 ? 5838 1 
+       781 1 1 65 65 ASP HB2  H   3.07 0.05 1 ? 5838 1 
+       782 1 1 66 66 GLY C    C 176.90 0.50 1 ? 5838 1 
+       783 1 1 66 66 GLY N    N 113.85 0.03 1 ? 5838 1 
+       784 1 1 66 66 GLY CA   C  45.59 0.50 1 ? 5838 1 
+       785 1 1 66 66 GLY H    H  10.20 0.02 1 ? 5838 1 
+       786 1 1 66 66 GLY HA2  H   3.45 0.05 1 ? 5838 1 
+       787 1 1 66 66 GLY HA3  H   4.11 0.05 1 ? 5838 1 
+       788 1 1 67 67 GLU C    C 175.05 0.50 1 ? 5838 1 
+       789 1 1 67 67 GLU N    N 118.77 0.03 1 ? 5838 1 
+       790 1 1 67 67 GLU CA   C  54.96 0.50 1 ? 5838 1 
+       791 1 1 67 67 GLU CB   C  34.52 0.50 1 ? 5838 1 
+       792 1 1 67 67 GLU CG   C  36.19 0.50 1 ? 5838 1 
+       793 1 1 67 67 GLU HA   H   4.60 0.05 1 ? 5838 1 
+       794 1 1 67 67 GLU H    H   7.90 0.02 1 ? 5838 1 
+       795 1 1 67 67 GLU HB3  H   1.71 0.05 1 ? 5838 1 
+       796 1 1 67 67 GLU HB2  H   2.16 0.05 1 ? 5838 1 
+       797 1 1 67 67 GLU HG2  H   2.02 0.05 9 ? 5838 1 
+       798 1 1 67 67 GLU HG3  H   2.02 0.05 9 ? 5838 1 
+       799 1 1 68 68 CYS C    C 174.71 0.50 1 ? 5838 1 
+       800 1 1 68 68 CYS N    N 124.80 0.03 1 ? 5838 1 
+       801 1 1 68 68 CYS CA   C  56.81 0.50 1 ? 5838 1 
+       802 1 1 68 68 CYS CB   C  27.32 0.50 1 ? 5838 1 
+       803 1 1 68 68 CYS HA   H   5.73 0.05 1 ? 5838 1 
+       804 1 1 68 68 CYS H    H   9.45 0.02 1 ? 5838 1 
+       805 1 1 68 68 CYS HB2  H   2.40 0.05 1 ? 5838 1 
+       806 1 1 68 68 CYS HB3  H   3.24 0.05 1 ? 5838 1 
+       807 1 1 69 69 ASP C    C 175.57 0.50 1 ? 5838 1 
+       808 1 1 69 69 ASP N    N 132.19 0.03 1 ? 5838 1 
+       809 1 1 69 69 ASP CA   C  52.89 0.50 1 ? 5838 1 
+       810 1 1 69 69 ASP CB   C  39.97 0.50 1 ? 5838 1 
+       811 1 1 69 69 ASP HA   H   5.14 0.05 1 ? 5838 1 
+       812 1 1 69 69 ASP H    H   9.92 0.02 1 ? 5838 1 
+       813 1 1 69 69 ASP HB2  H   2.88 0.05 1 ? 5838 1 
+       814 1 1 69 69 ASP HB3  H   3.50 0.05 1 ? 5838 1 
+       815 1 1 70 70 PHE C    C 172.72 0.50 1 ? 5838 1 
+       816 1 1 70 70 PHE N    N 118.92 0.03 1 ? 5838 1 
+       817 1 1 70 70 PHE CA   C  62.88 0.50 1 ? 5838 1 
+       818 1 1 70 70 PHE CB   C  38.55 0.50 1 ? 5838 1 
+       819 1 1 70 70 PHE CD1  C 131.02 0.50 1 ? 5838 1 
+       820 1 1 70 70 PHE CD2  C 131.02 0.50 1 ? 5838 1 
+       821 1 1 70 70 PHE CE1  C 129.17 0.50 1 ? 5838 1 
+       822 1 1 70 70 PHE CE2  C 129.17 0.50 1 ? 5838 1 
+       823 1 1 70 70 PHE CZ   C 129.25 0.50 1 ? 5838 1 
+       824 1 1 70 70 PHE HA   H   3.11 0.05 1 ? 5838 1 
+       825 1 1 70 70 PHE H    H   8.90 0.02 1 ? 5838 1 
+       826 1 1 70 70 PHE HB2  H   2.33 0.05 1 ? 5838 1 
+       827 1 1 70 70 PHE HB3  H   2.46 0.05 1 ? 5838 1 
+       828 1 1 70 70 PHE HD1  H   6.07 0.05 1 ? 5838 1 
+       829 1 1 70 70 PHE HD2  H   6.07 0.05 1 ? 5838 1 
+       830 1 1 70 70 PHE HE1  H   6.72 0.05 1 ? 5838 1 
+       831 1 1 70 70 PHE HE2  H   6.72 0.05 1 ? 5838 1 
+       832 1 1 70 70 PHE HZ   H   6.88 0.05 1 ? 5838 1 
+       833 1 1 71 71 GLN C    C 179.81 0.50 1 ? 5838 1 
+       834 1 1 71 71 GLN N    N 118.94 0.03 1 ? 5838 1 
+       835 1 1 71 71 GLN CA   C  59.60 0.50 1 ? 5838 1 
+       836 1 1 71 71 GLN CB   C  27.77 0.50 1 ? 5838 1 
+       837 1 1 71 71 GLN CG   C  34.22 0.50 1 ? 5838 1 
+       838 1 1 71 71 GLN CD   C 180.16 0.50 1 ? 5838 1 
+       839 1 1 71 71 GLN HA   H   3.70 0.05 1 ? 5838 1 
+       840 1 1 71 71 GLN H    H   7.90 0.02 1 ? 5838 1 
+       841 1 1 71 71 GLN NE2  N 112.87 0.03 1 ? 5838 1 
+       842 1 1 71 71 GLN HB2  H   2.17 0.05 1 ? 5838 1 
+       843 1 1 71 71 GLN HB3  H   2.24 0.05 1 ? 5838 1 
+       844 1 1 71 71 GLN HG2  H   2.46 0.05 9 ? 5838 1 
+       845 1 1 71 71 GLN HG3  H   2.46 0.05 9 ? 5838 1 
+       846 1 1 71 71 GLN HE21 H   6.91 0.05 1 ? 5838 1 
+       847 1 1 71 71 GLN HE22 H   7.61 0.05 1 ? 5838 1 
+       848 1 1 72 72 GLU C    C 179.70 0.50 1 ? 5838 1 
+       849 1 1 72 72 GLU N    N 123.68 0.03 1 ? 5838 1 
+       850 1 1 72 72 GLU CA   C  58.66 0.50 1 ? 5838 1 
+       851 1 1 72 72 GLU CB   C  29.65 0.50 1 ? 5838 1 
+       852 1 1 72 72 GLU CG   C  36.62 0.50 1 ? 5838 1 
+       853 1 1 72 72 GLU HA   H   4.11 0.05 1 ? 5838 1 
+       854 1 1 72 72 GLU H    H   8.88 0.02 1 ? 5838 1 
+       855 1 1 72 72 GLU HB2  H   2.18 0.05 9 ? 5838 1 
+       856 1 1 72 72 GLU HB3  H   2.18 0.05 9 ? 5838 1 
+       857 1 1 72 72 GLU HG2  H   2.49 0.05 1 ? 5838 1 
+       858 1 1 72 72 GLU HG3  H   2.81 0.05 1 ? 5838 1 
+       859 1 1 73 73 PHE C    C 175.81 0.50 1 ? 5838 1 
+       860 1 1 73 73 PHE N    N 123.23 0.03 1 ? 5838 1 
+       861 1 1 73 73 PHE CA   C  60.40 0.50 1 ? 5838 1 
+       862 1 1 73 73 PHE CB   C  39.07 0.50 1 ? 5838 1 
+       863 1 1 73 73 PHE HA   H   4.16 0.05 1 ? 5838 1 
+       864 1 1 73 73 PHE H    H   8.80 0.02 1 ? 5838 1 
+       865 1 1 73 73 PHE HB2  H   2.97 0.05 1 ? 5838 1 
+       866 1 1 73 73 PHE HB3  H   3.20 0.05 1 ? 5838 1 
+       867 1 1 73 73 PHE CD1  C 130.66 0.50 1 ? 5838 1 
+       868 1 1 73 73 PHE CD2  C 130.66 0.50 1 ? 5838 1 
+       869 1 1 73 73 PHE CZ   C 128.80 0.50 1 ? 5838 1 
+       870 1 1 73 73 PHE HD1  H   6.92 0.05 1 ? 5838 1 
+       871 1 1 73 73 PHE HD2  H   6.92 0.05 1 ? 5838 1 
+       872 1 1 73 73 PHE HE1  H   6.81 0.05 1 ? 5838 1 
+       873 1 1 73 73 PHE HE2  H   6.81 0.05 1 ? 5838 1 
+       874 1 1 73 73 PHE HZ   H   7.26 0.05 1 ? 5838 1 
+       875 1 1 74 74 MET C    C 179.12 0.50 1 ? 5838 1 
+       876 1 1 74 74 MET N    N 119.87 0.03 1 ? 5838 1 
+       877 1 1 74 74 MET CA   C  55.53 0.50 1 ? 5838 1 
+       878 1 1 74 74 MET CB   C  29.79 0.50 1 ? 5838 1 
+       879 1 1 74 74 MET HE1  H   1.65 0.05 1 ? 5838 1 
+       880 1 1 74 74 MET HE2  H   1.65 0.05 1 ? 5838 1 
+       881 1 1 74 74 MET HE3  H   1.65 0.05 1 ? 5838 1 
+       882 1 1 74 74 MET CE   C  15.12 0.50 1 ? 5838 1 
+       883 1 1 74 74 MET CG   C  32.34 0.50 1 ? 5838 1 
+       884 1 1 74 74 MET HA   H   4.12 0.05 1 ? 5838 1 
+       885 1 1 74 74 MET H    H   8.19 0.02 1 ? 5838 1 
+       886 1 1 74 74 MET HB2  H   1.88 0.05 9 ? 5838 1 
+       887 1 1 74 74 MET HB3  H   1.88 0.05 9 ? 5838 1 
+       888 1 1 74 74 MET HG2  H   2.23 0.05 9 ? 5838 1 
+       889 1 1 74 74 MET HG3  H   2.23 0.05 9 ? 5838 1 
+       890 1 1 75 75 ALA C    C 180.34 0.50 1 ? 5838 1 
+       891 1 1 75 75 ALA N    N 123.74 0.03 1 ? 5838 1 
+       892 1 1 75 75 ALA CA   C  54.98 0.50 1 ? 5838 1 
+       893 1 1 75 75 ALA CB   C  16.86 0.50 1 ? 5838 1 
+       894 1 1 75 75 ALA HA   H   4.13 0.05 1 ? 5838 1 
+       895 1 1 75 75 ALA H    H   7.57 0.02 1 ? 5838 1 
+       896 1 1 75 75 ALA HB1  H   1.56 0.05 1 ? 5838 1 
+       897 1 1 75 75 ALA HB2  H   1.56 0.05 1 ? 5838 1 
+       898 1 1 75 75 ALA HB3  H   1.56 0.05 1 ? 5838 1 
+       899 1 1 76 76 PHE C    C 177.75 0.50 1 ? 5838 1 
+       900 1 1 76 76 PHE N    N 121.82 0.03 1 ? 5838 1 
+       901 1 1 76 76 PHE CA   C  59.18 0.50 1 ? 5838 1 
+       902 1 1 76 76 PHE CB   C  37.86 0.50 1 ? 5838 1 
+       903 1 1 76 76 PHE CD1  C 131.84 0.50 1 ? 5838 1 
+       904 1 1 76 76 PHE CD2  C 131.84 0.50 1 ? 5838 1 
+       905 1 1 76 76 PHE CE1  C 131.12 0.50 1 ? 5838 1 
+       906 1 1 76 76 PHE CE2  C 131.12 0.50 1 ? 5838 1 
+       907 1 1 76 76 PHE CZ   C 131.84 0.50 1 ? 5838 1 
+       908 1 1 76 76 PHE HA   H   4.46 0.05 1 ? 5838 1 
+       909 1 1 76 76 PHE H    H   7.56 0.02 1 ? 5838 1 
+       910 1 1 76 76 PHE HB3  H   3.30 0.05 1 ? 5838 1 
+       911 1 1 76 76 PHE HB2  H   3.52 0.05 1 ? 5838 1 
+       912 1 1 76 76 PHE HD1  H   7.02 0.05 1 ? 5838 1 
+       913 1 1 76 76 PHE HD2  H   7.02 0.05 1 ? 5838 1 
+       914 1 1 76 76 PHE HE1  H   7.02 0.05 1 ? 5838 1 
+       915 1 1 76 76 PHE HE2  H   7.02 0.05 1 ? 5838 1 
+       916 1 1 76 76 PHE HZ   H   6.81 0.05 1 ? 5838 1 
+       917 1 1 77 77 VAL C    C 179.38 0.50 1 ? 5838 1 
+       918 1 1 77 77 VAL N    N 120.33 0.03 1 ? 5838 1 
+       919 1 1 77 77 VAL CA   C  66.64 0.50 1 ? 5838 1 
+       920 1 1 77 77 VAL CB   C  30.49 0.50 1 ? 5838 1 
+       921 1 1 77 77 VAL HA   H   2.92 0.05 1 ? 5838 1 
+       922 1 1 77 77 VAL HB   H   1.85 0.05 1 ? 5838 1 
+       923 1 1 77 77 VAL H    H   8.40 0.02 1 ? 5838 1 
+       924 1 1 77 77 VAL HG21 H   0.26 0.05 1 ? 5838 1 
+       925 1 1 77 77 VAL HG22 H   0.26 0.05 1 ? 5838 1 
+       926 1 1 77 77 VAL HG23 H   0.26 0.05 1 ? 5838 1 
+       927 1 1 77 77 VAL HG11 H   0.58 0.05 1 ? 5838 1 
+       928 1 1 77 77 VAL HG12 H   0.58 0.05 1 ? 5838 1 
+       929 1 1 77 77 VAL HG13 H   0.58 0.05 1 ? 5838 1 
+       930 1 1 77 77 VAL CG1  C  20.03 0.50 1 ? 5838 1 
+       931 1 1 77 77 VAL CG2  C  22.79 0.50 1 ? 5838 1 
+       932 1 1 78 78 ALA C    C 179.46 0.50 1 ? 5838 1 
+       933 1 1 78 78 ALA N    N 124.98 0.03 1 ? 5838 1 
+       934 1 1 78 78 ALA CA   C  55.88 0.50 1 ? 5838 1 
+       935 1 1 78 78 ALA CB   C  17.20 0.50 1 ? 5838 1 
+       936 1 1 78 78 ALA HA   H   3.97 0.05 1 ? 5838 1 
+       937 1 1 78 78 ALA H    H   8.42 0.02 1 ? 5838 1 
+       938 1 1 78 78 ALA HB1  H   1.41 0.05 1 ? 5838 1 
+       939 1 1 78 78 ALA HB2  H   1.41 0.05 1 ? 5838 1 
+       940 1 1 78 78 ALA HB3  H   1.41 0.05 1 ? 5838 1 
+       941 1 1 79 79 MET C    C 178.78 0.50 1 ? 5838 1 
+       942 1 1 79 79 MET N    N 121.00 0.03 1 ? 5838 1 
+       943 1 1 79 79 MET CA   C  59.54 0.50 1 ? 5838 1 
+       944 1 1 79 79 MET CB   C  32.62 0.50 1 ? 5838 1 
+       945 1 1 79 79 MET CE   C  16.54 0.50 1 ? 5838 1 
+       946 1 1 79 79 MET CG   C  31.04 0.50 1 ? 5838 1 
+       947 1 1 79 79 MET HA   H   4.06 0.05 1 ? 5838 1 
+       948 1 1 79 79 MET H    H   7.92 0.02 1 ? 5838 1 
+       949 1 1 79 79 MET HB3  H   2.18 0.05 1 ? 5838 1 
+       950 1 1 79 79 MET HB2  H   2.37 0.05 1 ? 5838 1 
+       951 1 1 79 79 MET HE1  H   2.07 0.05 1 ? 5838 1 
+       952 1 1 79 79 MET HE2  H   2.07 0.05 1 ? 5838 1 
+       953 1 1 79 79 MET HE3  H   2.07 0.05 1 ? 5838 1 
+       954 1 1 79 79 MET HG2  H   2.55 0.05 1 ? 5838 1 
+       955 1 1 79 79 MET HG3  H   2.80 0.05 1 ? 5838 1 
+       956 1 1 80 80 ILE C    C 178.60 0.50 1 ? 5838 1 
+       957 1 1 80 80 ILE N    N 119.42 0.03 1 ? 5838 1 
+       958 1 1 80 80 ILE CA   C  63.41 0.50 1 ? 5838 1 
+       959 1 1 80 80 ILE CB   C  37.25 0.50 1 ? 5838 1 
+       960 1 1 80 80 ILE HA   H   3.69 0.05 1 ? 5838 1 
+       961 1 1 80 80 ILE HB   H   1.61 0.05 1 ? 5838 1 
+       962 1 1 80 80 ILE H    H   8.19 0.02 1 ? 5838 1 
+       963 1 1 80 80 ILE CD1  C  12.09 0.50 1 ? 5838 1 
+       964 1 1 80 80 ILE CG1  C  27.26 0.50 1 ? 5838 1 
+       965 1 1 80 80 ILE CG2  C  17.25 0.50 1 ? 5838 1 
+       966 1 1 80 80 ILE HD11 H   0.33 0.05 1 ? 5838 1 
+       967 1 1 80 80 ILE HD12 H   0.33 0.05 1 ? 5838 1 
+       968 1 1 80 80 ILE HD13 H   0.33 0.05 1 ? 5838 1 
+       969 1 1 80 80 ILE HG12 H   0.84 0.05 1 ? 5838 1 
+       970 1 1 80 80 ILE HG13 H   1.02 0.05 1 ? 5838 1 
+       971 1 1 80 80 ILE HG21 H   0.65 0.05 1 ? 5838 1 
+       972 1 1 80 80 ILE HG22 H   0.65 0.05 1 ? 5838 1 
+       973 1 1 80 80 ILE HG23 H   0.65 0.05 1 ? 5838 1 
+       974 1 1 81 81 THR C    C 177.15 0.50 1 ? 5838 1 
+       975 1 1 81 81 THR N    N 118.51 0.03 1 ? 5838 1 
+       976 1 1 81 81 THR CA   C  67.64 0.50 1 ? 5838 1 
+       977 1 1 81 81 THR CB   C  67.97 0.50 1 ? 5838 1 
+       978 1 1 81 81 THR HA   H   3.77 0.05 1 ? 5838 1 
+       979 1 1 81 81 THR HB   H   4.23 0.05 1 ? 5838 1 
+       980 1 1 81 81 THR H    H   8.63 0.02 1 ? 5838 1 
+       981 1 1 81 81 THR CG2  C  22.41 0.50 1 ? 5838 1 
+       982 1 1 81 81 THR HG21 H   1.59 0.05 1 ? 5838 1 
+       983 1 1 81 81 THR HG22 H   1.59 0.05 1 ? 5838 1 
+       984 1 1 81 81 THR HG23 H   1.59 0.05 1 ? 5838 1 
+       985 1 1 82 82 THR C    C 176.53 0.50 1 ? 5838 1 
+       986 1 1 82 82 THR N    N 116.81 0.03 1 ? 5838 1 
+       987 1 1 82 82 THR CA   C  67.11 0.50 1 ? 5838 1 
+       988 1 1 82 82 THR CB   C  68.70 0.50 1 ? 5838 1 
+       989 1 1 82 82 THR HA   H   3.98 0.05 1 ? 5838 1 
+       990 1 1 82 82 THR HB   H   4.32 0.05 1 ? 5838 1 
+       991 1 1 82 82 THR H    H   8.20 0.02 1 ? 5838 1 
+       992 1 1 82 82 THR CG2  C  21.30 0.50 1 ? 5838 1 
+       993 1 1 82 82 THR HG21 H   1.30 0.05 1 ? 5838 1 
+       994 1 1 82 82 THR HG22 H   1.30 0.05 1 ? 5838 1 
+       995 1 1 82 82 THR HG23 H   1.30 0.05 1 ? 5838 1 
+       996 1 1 83 83 ALA C    C 180.27 0.50 1 ? 5838 1 
+       997 1 1 83 83 ALA N    N 125.06 0.03 1 ? 5838 1 
+       998 1 1 83 83 ALA CA   C  55.16 0.50 1 ? 5838 1 
+       999 1 1 83 83 ALA CB   C  17.78 0.50 1 ? 5838 1 
+      1000 1 1 83 83 ALA HA   H   4.20 0.05 1 ? 5838 1 
+      1001 1 1 83 83 ALA H    H   7.77 0.02 1 ? 5838 1 
+      1002 1 1 83 83 ALA HB1  H   1.51 0.05 1 ? 5838 1 
+      1003 1 1 83 83 ALA HB2  H   1.51 0.05 1 ? 5838 1 
+      1004 1 1 83 83 ALA HB3  H   1.51 0.05 1 ? 5838 1 
+      1005 1 1 84 84 CYS C    C 177.09 0.50 1 ? 5838 1 
+      1006 1 1 84 84 CYS N    N 116.66 0.03 1 ? 5838 1 
+      1007 1 1 84 84 CYS CA   C  62.92 0.50 1 ? 5838 1 
+      1008 1 1 84 84 CYS CB   C  26.14 0.50 1 ? 5838 1 
+      1009 1 1 84 84 CYS HA   H   3.86 0.05 1 ? 5838 1 
+      1010 1 1 84 84 CYS H    H   8.27 0.02 1 ? 5838 1 
+      1011 1 1 84 84 CYS HB2  H   2.38 0.05 1 ? 5838 1 
+      1012 1 1 84 84 CYS HB3  H   2.77 0.05 1 ? 5838 1 
+      1013 1 1 85 85 HIS C    C 176.12 0.50 1 ? 5838 1 
+      1014 1 1 85 85 HIS N    N 120.10 0.03 1 ? 5838 1 
+      1015 1 1 85 85 HIS CA   C  59.66 0.50 1 ? 5838 1 
+      1016 1 1 85 85 HIS HA   H   3.91 0.05 1 ? 5838 1 
+      1017 1 1 85 85 HIS H    H   8.20 0.02 1 ? 5838 1 
+      1018 1 1 86 86 GLU C    C 177.67 0.50 1 ? 5838 1 
+      1019 1 1 86 86 GLU N    N 117.20 0.03 1 ? 5838 1 
+      1020 1 1 86 86 GLU CA   C  58.29 0.50 1 ? 5838 1 
+      1021 1 1 86 86 GLU CB   C  28.82 0.50 1 ? 5838 1 
+      1022 1 1 86 86 GLU CG   C  35.60 0.50 1 ? 5838 1 
+      1023 1 1 86 86 GLU HA   H   3.90 0.05 1 ? 5838 1 
+      1024 1 1 86 86 GLU H    H   7.69 0.02 1 ? 5838 1 
+      1025 1 1 86 86 GLU HB2  H   1.90 0.05 9 ? 5838 1 
+      1026 1 1 86 86 GLU HB3  H   1.90 0.05 9 ? 5838 1 
+      1027 1 1 86 86 GLU HG2  H   2.24 0.05 9 ? 5838 1 
+      1028 1 1 86 86 GLU HG3  H   2.24 0.05 9 ? 5838 1 
+      1029 1 1 87 87 PHE C    C 176.52 0.50 1 ? 5838 1 
+      1030 1 1 87 87 PHE N    N 117.75 0.03 1 ? 5838 1 
+      1031 1 1 87 87 PHE CB   C  38.94 0.50 1 ? 5838 1 
+      1032 1 1 87 87 PHE CA   C  58.88 0.50 1 ? 5838 1 
+      1033 1 1 87 87 PHE CD1  C 132.12 0.50 1 ? 5838 1 
+      1034 1 1 87 87 PHE CD2  C 132.12 0.50 1 ? 5838 1 
+      1035 1 1 87 87 PHE HA   H   4.34 0.05 1 ? 5838 1 
+      1036 1 1 87 87 PHE H    H   7.60 0.02 1 ? 5838 1 
+      1037 1 1 87 87 PHE HB2  H   2.75 0.05 2 ? 5838 1 
+      1038 1 1 87 87 PHE HB3  H   2.86 0.05 2 ? 5838 1 
+      1039 1 1 87 87 PHE HD1  H   6.95 0.05 1 ? 5838 1 
+      1040 1 1 87 87 PHE HD2  H   6.95 0.05 1 ? 5838 1 
+      1041 1 1 87 87 PHE HE1  H   7.14 0.05 1 ? 5838 1 
+      1042 1 1 87 87 PHE HE2  H   7.14 0.05 1 ? 5838 1 
+      1043 1 1 87 87 PHE HZ   H   7.18 0.05 1 ? 5838 1 
+      1044 1 1 88 88 PHE C    C 175.77 0.50 1 ? 5838 1 
+      1045 1 1 88 88 PHE N    N 118.04 0.03 1 ? 5838 1 
+      1046 1 1 88 88 PHE CA   C  57.92 0.50 1 ? 5838 1 
+      1047 1 1 88 88 PHE CB   C  38.85 0.50 1 ? 5838 1 
+      1048 1 1 88 88 PHE CD1  C 132.12 0.50 1 ? 5838 1 
+      1049 1 1 88 88 PHE CD2  C 132.12 0.50 1 ? 5838 1 
+      1050 1 1 88 88 PHE HA   H   4.45 0.05 1 ? 5838 1 
+      1051 1 1 88 88 PHE H    H   7.78 0.02 1 ? 5838 1 
+      1052 1 1 88 88 PHE HB2  H   2.79 0.05 1 ? 5838 1 
+      1053 1 1 88 88 PHE HB3  H   3.07 0.05 1 ? 5838 1 
+      1054 1 1 88 88 PHE HD1  H   7.10 0.05 1 ? 5838 1 
+      1055 1 1 88 88 PHE HD2  H   7.10 0.05 1 ? 5838 1 
+      1056 1 1 88 88 PHE HE1  H   7.21 0.05 1 ? 5838 1 
+      1057 1 1 88 88 PHE HE2  H   7.21 0.05 1 ? 5838 1 
+      1058 1 1 88 88 PHE HZ   H   7.21 0.05 1 ? 5838 1 
+      1059 1 1 89 89 GLU C    C 175.81 0.50 1 ? 5838 1 
+      1060 1 1 89 89 GLU N    N 120.86 0.03 1 ? 5838 1 
+      1061 1 1 89 89 GLU CA   C  56.38 0.50 1 ? 5838 1 
+      1062 1 1 89 89 GLU CB   C  30.24 0.50 1 ? 5838 1 
+      1063 1 1 89 89 GLU CG   C  35.64 0.50 1 ? 5838 1 
+      1064 1 1 89 89 GLU HA   H   4.15 0.05 1 ? 5838 1 
+      1065 1 1 89 89 GLU H    H   7.75 0.02 1 ? 5838 1 
+      1066 1 1 89 89 GLU HB2  H   1.77 0.05 1 ? 5838 1 
+      1067 1 1 89 89 GLU HB3  H   1.89 0.05 1 ? 5838 1 
+      1068 1 1 89 89 GLU HG2  H   2.01 0.05 9 ? 5838 1 
+      1069 1 1 89 89 GLU HG3  H   2.01 0.05 9 ? 5838 1 
+      1070 1 1 90 90 HIS C    C 173.86 0.50 1 ? 5838 1 
+      1071 1 1 90 90 HIS N    N 120.12 0.03 1 ? 5838 1 
+      1072 1 1 90 90 HIS CA   C  55.56 0.50 1 ? 5838 1 
+      1073 1 1 90 90 HIS CB   C  30.09 0.50 1 ? 5838 1 
+      1074 1 1 90 90 HIS HA   H   4.52 0.05 1 ? 5838 1 
+      1075 1 1 90 90 HIS H    H   7.90 0.02 1 ? 5838 1 
+      1076 1 1 90 90 HIS HB2  H   2.96 0.05 2 ? 5838 1 
+      1077 1 1 90 90 HIS HB3  H   3.01 0.05 2 ? 5838 1 
+      1078 1 1 91 91 GLU N    N 127.78 0.03 1 ? 5838 1 
+      1079 1 1 91 91 GLU CA   C  58.17 0.50 1 ? 5838 1 
+      1080 1 1 91 91 GLU CB   C  30.45 0.50 1 ? 5838 1 
+      1081 1 1 91 91 GLU CG   C  36.27 0.50 1 ? 5838 1 
+      1082 1 1 91 91 GLU HA   H   4.08 0.05 1 ? 5838 1 
+      1083 1 1 91 91 GLU H    H   8.06 0.02 1 ? 5838 1 
+      1084 1 1 91 91 GLU HB2  H   1.88 0.05 1 ? 5838 1 
+      1085 1 1 91 91 GLU HB3  H   2.03 0.05 1 ? 5838 1 
+      1086 1 1 91 91 GLU HG2  H   2.18 0.05 9 ? 5838 1 
+      1087 1 1 91 91 GLU HG3  H   2.18 0.05 9 ? 5838 1 
+
+   stop_
+
+save_
+
+
+save_shift_set_2
+   _Assigned_chem_shift_list.Sf_category                   assigned_chemical_shifts
+   _Assigned_chem_shift_list.Sf_framecode                  shift_set_2
+   _Assigned_chem_shift_list.Entry_ID                      5838
+   _Assigned_chem_shift_list.ID                            2
+   _Assigned_chem_shift_list.Sample_condition_list_ID      1
+   _Assigned_chem_shift_list.Sample_condition_list_label  $Set_1
+   _Assigned_chem_shift_list.Chem_shift_reference_ID       1
+   _Assigned_chem_shift_list.Chem_shift_reference_label   $chemical_shift_reference
+
+   loop_
+      _Chem_shift_experiment.Experiment_ID
+      _Chem_shift_experiment.Experiment_name
+      _Chem_shift_experiment.Sample_ID
+      _Chem_shift_experiment.Sample_label
+      _Chem_shift_experiment.Entry_ID
+      _Chem_shift_experiment.Assigned_chem_shift_list_ID
+
+      . ? 1 $Sample_1 5838 2 
+
+   stop_
+
+   loop_
+      _Atom_chem_shift.ID
+      _Atom_chem_shift.Entity_assembly_ID
+      _Atom_chem_shift.Entity_ID
+      _Atom_chem_shift.Comp_index_ID
+      _Atom_chem_shift.Seq_ID
+      _Atom_chem_shift.Comp_ID
+      _Atom_chem_shift.Atom_ID
+      _Atom_chem_shift.Atom_type
+      _Atom_chem_shift.Val
+      _Atom_chem_shift.Val_err
+      _Atom_chem_shift.Ambiguity_code
+      _Atom_chem_shift.Auth_seq_ID
+      _Atom_chem_shift.Entry_ID
+      _Atom_chem_shift.Assigned_chem_shift_list_ID
+
+        1 3 2  3  3 LEU H    H 8.33 0.02 1 ? 5838 2 
+        2 3 2  3  3 LEU HA   H 4.32 0.05 1 ? 5838 2 
+        3 3 2  3  3 LEU HB2  H 1.55 0.05 9 ? 5838 2 
+        4 3 2  3  3 LEU HB3  H 1.55 0.05 9 ? 5838 2 
+        5 3 2  3  3 LEU HD11 H 0.72 0.05 9 ? 5838 2 
+        6 3 2  3  3 LEU HD12 H 0.72 0.05 9 ? 5838 2 
+        7 3 2  3  3 LEU HD13 H 0.72 0.05 9 ? 5838 2 
+        8 3 2  3  3 LEU HD21 H 0.72 0.05 9 ? 5838 2 
+        9 3 2  3  3 LEU HD22 H 0.72 0.05 9 ? 5838 2 
+       10 3 2  3  3 LEU HD23 H 0.72 0.05 9 ? 5838 2 
+       11 3 2  4  4 ARG H    H 8.29 0.02 1 ? 5838 2 
+       12 3 2  4  4 ARG HA   H 4.28 0.05 1 ? 5838 2 
+       13 3 2  5  5 ARG H    H 8.29 0.02 1 ? 5838 2 
+       14 3 2  5  5 ARG HA   H 4.28 0.05 1 ? 5838 2 
+       15 3 2  5  5 ARG HB2  H 1.71 0.05 1 ? 5838 2 
+       16 3 2  5  5 ARG HB3  H 1.79 0.05 1 ? 5838 2 
+       17 3 2  5  5 ARG HG2  H 1.57 0.05 9 ? 5838 2 
+       18 3 2  5  5 ARG HG3  H 1.57 0.05 9 ? 5838 2 
+       19 3 2  5  5 ARG HD2  H 3.15 0.05 9 ? 5838 2 
+       20 3 2  5  5 ARG HD3  H 3.15 0.05 9 ? 5838 2 
+       21 3 2  6  6 SER H    H 8.33 0.02 1 ? 5838 2 
+       22 3 2  6  6 SER HA   H 4.36 0.05 1 ? 5838 2 
+       23 3 2  6  6 SER HB2  H 3.75 0.05 1 ? 5838 2 
+       24 3 2  6  6 SER HB3  H 3.80 0.05 1 ? 5838 2 
+       25 3 2  7  7 ALA H    H 7.89 0.02 1 ? 5838 2 
+       26 3 2  7  7 ALA HA   H 4.19 0.05 1 ? 5838 2 
+       27 3 2  7  7 ALA HB1  H 1.25 0.05 1 ? 5838 2 
+       28 3 2  7  7 ALA HB2  H 1.25 0.05 1 ? 5838 2 
+       29 3 2  7  7 ALA HB3  H 1.25 0.05 1 ? 5838 2 
+       30 3 2  8  8 HIS H    H 7.57 0.02 1 ? 5838 2 
+       31 3 2  8  8 HIS HA   H 4.35 0.05 1 ? 5838 2 
+       32 3 2  8  8 HIS HB2  H 2.90 0.05 1 ? 5838 2 
+       33 3 2  8  8 HIS HB3  H 3.11 0.05 1 ? 5838 2 
+       34 3 2  9  9 ALA H    H 8.11 0.02 1 ? 5838 2 
+       35 3 2  9  9 ALA HA   H 4.24 0.05 1 ? 5838 2 
+       36 3 2  9  9 ALA HB1  H 1.30 0.05 1 ? 5838 2 
+       37 3 2  9  9 ALA HB2  H 1.30 0.05 1 ? 5838 2 
+       38 3 2  9  9 ALA HB3  H 1.30 0.05 1 ? 5838 2 
+       39 3 2 10 10 ARG H    H 8.19 0.02 1 ? 5838 2 
+       40 3 2 10 10 ARG HA   H 4.29 0.05 1 ? 5838 2 
+       41 3 2 10 10 ARG HB2  H 1.71 0.05 1 ? 5838 2 
+       42 3 2 10 10 ARG HB3  H 1.80 0.05 1 ? 5838 2 
+       43 3 2 11 11 LYS H    H 8.19 0.02 1 ? 5838 2 
+       44 3 2 11 11 LYS HA   H 3.88 0.05 1 ? 5838 2 
+       45 3 2 11 11 LYS HB2  H 1.77 0.05 9 ? 5838 2 
+       46 3 2 11 11 LYS HB3  H 1.77 0.05 9 ? 5838 2 
+       47 3 2 11 11 LYS HG2  H 1.11 0.05 9 ? 5838 2 
+       48 3 2 11 11 LYS HG3  H 1.11 0.05 9 ? 5838 2 
+       49 3 2 11 11 LYS HD2  H 1.62 0.05 9 ? 5838 2 
+       50 3 2 11 11 LYS HD3  H 1.62 0.05 9 ? 5838 2 
+       51 3 2 11 11 LYS HE2  H 2.93 0.05 9 ? 5838 2 
+       52 3 2 11 11 LYS HE3  H 2.93 0.05 9 ? 5838 2 
+       53 3 2 12 12 GLU H    H 8.51 0.02 1 ? 5838 2 
+       54 3 2 12 12 GLU HA   H 4.23 0.05 1 ? 5838 2 
+       55 3 2 12 12 GLU HB2  H 1.93 0.05 1 ? 5838 2 
+       56 3 2 12 12 GLU HB3  H 2.05 0.05 1 ? 5838 2 
+       57 3 2 12 12 GLU HG2  H 2.23 0.05 9 ? 5838 2 
+       58 3 2 12 12 GLU HG3  H 2.23 0.05 9 ? 5838 2 
+       59 3 2 13 13 THR H    H 7.89 0.02 1 ? 5838 2 
+       60 3 2 13 13 THR HA   H 4.22 0.05 1 ? 5838 2 
+       61 3 2 13 13 THR HB   H 4.09 0.05 1 ? 5838 2 
+       62 3 2 13 13 THR HG21 H 1.10 0.05 1 ? 5838 2 
+       63 3 2 13 13 THR HG22 H 1.10 0.05 1 ? 5838 2 
+       64 3 2 13 13 THR HG23 H 1.10 0.05 1 ? 5838 2 
+       65 3 2 14 14 GLU H    H 8.22 0.02 1 ? 5838 2 
+       66 3 2 14 14 GLU HA   H 4.13 0.05 1 ? 5838 2 
+       67 3 2 14 14 GLU HB2  H 1.86 0.05 9 ? 5838 2 
+       68 3 2 14 14 GLU HB3  H 1.86 0.05 9 ? 5838 2 
+       69 3 2 14 14 GLU HG2  H 2.05 0.05 9 ? 5838 2 
+       70 3 2 14 14 GLU HG3  H 2.12 0.05 9 ? 5838 2 
+       71 3 2 15 15 PHE H    H 7.90 0.02 1 ? 5838 2 
+       72 3 2 15 15 PHE HA   H 4.49 0.05 1 ? 5838 2 
+       73 3 2 15 15 PHE HB2  H 3.00 0.05 9 ? 5838 2 
+       74 3 2 15 15 PHE HB3  H 3.00 0.05 9 ? 5838 2 
+       75 3 2 15 15 PHE HD1  H 7.17 0.05 1 ? 5838 2 
+       76 3 2 15 15 PHE HD2  H 7.17 0.05 1 ? 5838 2 
+       77 3 2 15 15 PHE HE1  H 7.25 0.05 1 ? 5838 2 
+       78 3 2 15 15 PHE HE2  H 7.25 0.05 1 ? 5838 2 
+       79 3 2 15 15 PHE HZ   H 7.22 0.05 1 ? 5838 2 
+       80 3 2 16 16 LEU H    H 7.73 0.02 1 ? 5838 2 
+       81 3 2 16 16 LEU HA   H 4.29 0.05 1 ? 5838 2 
+       82 3 2 16 16 LEU HB2  H 1.47 0.05 9 ? 5838 2 
+       83 3 2 16 16 LEU HB3  H 1.47 0.05 9 ? 5838 2 
+       84 3 2 16 16 LEU HG   H 1.44 0.05 1 ? 5838 2 
+       85 3 2 16 16 LEU HD11 H 0.75 0.05 9 ? 5838 2 
+       86 3 2 16 16 LEU HD12 H 0.75 0.05 9 ? 5838 2 
+       87 3 2 16 16 LEU HD13 H 0.75 0.05 9 ? 5838 2 
+       88 3 2 16 16 LEU HD21 H 0.75 0.05 9 ? 5838 2 
+       89 3 2 16 16 LEU HD22 H 0.75 0.05 9 ? 5838 2 
+       90 3 2 16 16 LEU HD23 H 0.75 0.05 9 ? 5838 2 
+       91 3 2 17 17 ARG H    H 7.67 0.02 1 ? 5838 2 
+       92 3 2 17 17 ARG HA   H 4.10 0.05 1 ? 5838 2 
+       93 3 2 17 17 ARG HB2  H 1.75 0.05 9 ? 5838 2 
+       94 3 2 17 17 ARG HB3  H 1.75 0.05 9 ? 5838 2 
+       95 3 2 17 17 ARG HG2  H 1.64 0.05 9 ? 5838 2 
+       96 3 2 17 17 ARG HG3  H 1.64 0.05 9 ? 5838 2 
+       97 3 2 18 18 LEU H    H 7.85 0.02 1 ? 5838 2 
+       98 3 2 18 18 LEU HA   H 4.18 0.05 1 ? 5838 2 
+       99 3 2 18 18 LEU HB2  H 1.46 0.05 9 ? 5838 2 
+      100 3 2 18 18 LEU HB3  H 1.46 0.05 9 ? 5838 2 
+      101 3 2 18 18 LEU HG   H 1.49 0.05 1 ? 5838 2 
+      102 3 2 18 18 LEU HD11 H 0.84 0.05 9 ? 5838 2 
+      103 3 2 18 18 LEU HD12 H 0.84 0.05 9 ? 5838 2 
+      104 3 2 18 18 LEU HD13 H 0.84 0.05 9 ? 5838 2 
+      105 3 2 18 18 LEU HD21 H 0.84 0.05 9 ? 5838 2 
+      106 3 2 18 18 LEU HD22 H 0.84 0.05 9 ? 5838 2 
+      107 3 2 18 18 LEU HD23 H 0.84 0.05 9 ? 5838 2 
+      108 3 2 19 19 LYS H    H 7.83 0.02 1 ? 5838 2 
+      109 3 2 19 19 LYS HA   H 4.10 0.05 1 ? 5838 2 
+      110 3 2 19 19 LYS HB2  H 1.76 0.05 9 ? 5838 2 
+      111 3 2 19 19 LYS HB3  H 1.76 0.05 9 ? 5838 2 
+      112 3 2 19 19 LYS HG2  H 1.33 0.05 9 ? 5838 2 
+      113 3 2 19 19 LYS HG3  H 1.33 0.05 9 ? 5838 2 
+      114 3 2 19 19 LYS HD2  H 1.65 0.05 9 ? 5838 2 
+      115 3 2 19 19 LYS HD3  H 1.65 0.05 9 ? 5838 2 
+      116 3 2 19 19 LYS HE2  H 2.86 0.05 9 ? 5838 2 
+      117 3 2 19 19 LYS HE3  H 2.86 0.05 9 ? 5838 2 
+      118 3 2 20 20 ARG H    H 8.08 0.02 1 ? 5838 2 
+      119 3 2 20 20 ARG HA   H 4.24 0.05 1 ? 5838 2 
+      120 3 2 20 20 ARG HB2  H 1.78 0.05 9 ? 5838 2 
+      121 3 2 20 20 ARG HB3  H 1.78 0.05 9 ? 5838 2 
+      122 3 2 20 20 ARG HG2  H 1.70 0.05 9 ? 5838 2 
+      123 3 2 20 20 ARG HG3  H 1.70 0.05 9 ? 5838 2 
+      124 3 2 21 21 THR HA   H 4.17 0.05 1 ? 5838 2 
+      125 3 2 21 21 THR HB   H 4.17 0.05 1 ? 5838 2 
+      126 3 2 21 21 THR HG21 H 1.11 0.05 1 ? 5838 2 
+      127 3 2 21 21 THR HG22 H 1.11 0.05 1 ? 5838 2 
+      128 3 2 21 21 THR HG23 H 1.11 0.05 1 ? 5838 2 
+      129 3 2 22 22 ARG H    H 8.11 0.02 1 ? 5838 2 
+      130 3 2 22 22 ARG HA   H 4.21 0.05 1 ? 5838 2 
+      131 3 2 22 22 ARG HB2  H 1.77 0.05 1 ? 5838 2 
+      132 3 2 22 22 ARG HB3  H 1.65 0.05 1 ? 5838 2 
+      133 3 2 22 22 ARG HG2  H 1.53 0.05 9 ? 5838 2 
+      134 3 2 22 22 ARG HG3  H 1.53 0.05 9 ? 5838 2 
+      135 3 2 23 23 LEU H    H 8.01 0.02 1 ? 5838 2 
+      136 3 2 23 23 LEU HA   H 4.24 0.05 1 ? 5838 2 
+      137 3 2 23 23 LEU HB2  H 1.52 0.05 9 ? 5838 2 
+      138 3 2 23 23 LEU HB3  H 1.52 0.05 9 ? 5838 2 
+      139 3 2 23 23 LEU HG   H 1.52 0.05 1 ? 5838 2 
+      140 3 2 23 23 LEU HD11 H 0.72 0.05 9 ? 5838 2 
+      141 3 2 23 23 LEU HD12 H 0.72 0.05 9 ? 5838 2 
+      142 3 2 23 23 LEU HD13 H 0.72 0.05 9 ? 5838 2 
+      143 3 2 23 23 LEU HD21 H 0.72 0.05 9 ? 5838 2 
+      144 3 2 23 23 LEU HD22 H 0.72 0.05 9 ? 5838 2 
+      145 3 2 23 23 LEU HD23 H 0.72 0.05 9 ? 5838 2 
+      146 3 2 24 24 GLY H    H 8.13 0.02 1 ? 5838 2 
+      147 3 2 24 24 GLY HA2  H 3.85 0.05 9 ? 5838 2 
+      148 3 2 24 24 GLY HA3  H 3.85 0.05 9 ? 5838 2 
+      149 3 2 25 25 LEU H    H 7.52 0.02 1 ? 5838 2 
+      150 3 2 25 25 LEU HA   H 4.13 0.05 1 ? 5838 2 
+      151 3 2 25 25 LEU HB2  H 1.49 0.05 9 ? 5838 2 
+      152 3 2 25 25 LEU HB3  H 1.49 0.05 9 ? 5838 2 
+      153 3 2 25 25 LEU HG   H 1.49 0.05 1 ? 5838 2 
+      154 3 2 25 25 LEU HD11 H 0.74 0.05 9 ? 5838 2 
+      155 3 2 25 25 LEU HD12 H 0.74 0.05 9 ? 5838 2 
+      156 3 2 25 25 LEU HD13 H 0.74 0.05 9 ? 5838 2 
+      157 3 2 25 25 LEU HD21 H 0.74 0.05 9 ? 5838 2 
+      158 3 2 25 25 LEU HD22 H 0.74 0.05 9 ? 5838 2 
+      159 3 2 25 25 LEU HD23 H 0.74 0.05 9 ? 5838 2 
+
+   stop_
+
+save_
+

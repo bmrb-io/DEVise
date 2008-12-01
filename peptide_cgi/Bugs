@@ -155,16 +155,18 @@ Num Date        Status  Description
 036 4/22/05	OPEN	4103 and 4104 fail -- fix them and add them to automated
 			test script. (wenger)
 
-037 5/12/05	OPEN	ensureResidueList() fails for entries that have
+037 5/12/05	FIXED	ensureResidueList() fails for entries that have
 			2 or more entities and no chem shifts (try entry
 			4970 or 5153 to reproduce). (wenger)
+			(Fixed by wenger, 12/1/08.)
 
-038 5/12/05	OPEN	Coordinate visualizations may not be correct for
+038 5/12/05	FIXED	Coordinate visualizations may not be correct for
 			entries with 2 or more entities (try entry
 			4177 to reproduce, also try 5246/1K3M). (wenger)
 			(At least part of the problem is getting the
 			correct residue list hooked into the coordinate
 			visualization.)
+			(Fixed by wenger, 12/1/08.)
 
 039 5/13/05	OPEN	4835 fails because what's expected to be three-
 			letter residue list has one-letter codes. (wenger)
@@ -281,10 +283,11 @@ Num Date        Status  Description
 			in coordinate links in new summary page if we've
 			already processed coordinates. (wenger)
 
-064 6/26/08	OPEN	Highlighting of 3D residues from selection in data
+064 6/26/08	FIXED	Highlighting of 3D residues from selection in data
 			view fails for 4970 (appears to be related to the
 			fact that no 4970rl1.dat file is generated). (wenger)
 			(See also 037.)
+			(Fixed by wenger, 11/19/08.)
 
 065 7/8/08	OPEN	Trying to process non-polymer entities causes
 			problems -- don't process them. (wenger/elu)

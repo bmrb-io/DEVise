@@ -24,8 +24,8 @@ set files = ( data_dir/5076ac1.dat data_dir/5076as1.dat data_dir/5076as2.dat \
 	data_dir/5076hn3.dat data_dir/5076md.dat data_dir/5076n1.dat \
 	data_dir/5076n2.dat data_dir/5076p1.dat data_dir/5076p2.dat \
 	data_dir/5076p3.dat data_dir/5076rc1.dat data_dir/5076rc2.dat \
-	data_dir/5076rc3.dat data_dir/5076rl1.dat data_dir/5076rl2.dat \
-	data_dir/5076rl3.dat data_dir/5076t11.dat data_dir/5076t12.dat \
+	data_dir/5076rc3.dat data_dir/5076rl.dat \
+	data_dir/5076t11.dat data_dir/5076t12.dat \
 	data_dir/5076t13.dat data_dir/5076t14.dat data_dir/5076t15.dat \
 	data_dir/5076t16.dat html_dir/5076ac1.html html_dir/5076as1.html \
 	html_dir/5076as2.html html_dir/5076as3.html html_dir/5076d1.html \

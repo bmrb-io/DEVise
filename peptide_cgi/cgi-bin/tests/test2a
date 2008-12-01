@@ -36,7 +36,7 @@ set files = (data_dir/vis_server/test2a_outas1.dat \
 	data_dir/vis_server/test2a_outn9.dat \
 	data_dir/vis_server/test2a_outp1.dat \
 	data_dir/vis_server/test2a_outrc1.dat \
-	data_dir/vis_server/test2a_outrl1.dat \
+	data_dir/vis_server/test2a_outrl.dat \
 	data_dir/vis_server/test2a_outt11.dat \
 	data_dir/vis_server/test2a_outt12.dat \
 	data_dir/vis_server/test2a_outt13.dat \

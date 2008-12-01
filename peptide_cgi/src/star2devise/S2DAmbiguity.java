@@ -21,6 +21,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.2.3  2008/11/17 19:28:06  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.11.2.2  2008/10/28 15:00:54  wenger
+// Ambiguity code visualizations now work with multiple-entity fix, and
+// work for the first time with 3.1 files.
+//
+// Revision 1.11.2.1  2008/07/30 16:13:54  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
+//
+// Revision 1.11  2008/04/09 19:35:41  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.10  2007/12/20 16:49:02  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -70,6 +88,7 @@ public class S2DAmbiguity {
     private int[] _resSeqCodes;
     private String[] _residueLabels;
     private int[] _ambiguityVals;
+    private int _entityAssemblyID;
 
     // Valid ambiguity codes are 1, 2, 3, 4, 5, and 9.
     private boolean[] _residueHasData;
@@ -87,7 +106,7 @@ public class S2DAmbiguity {
     // Constructor.
     public S2DAmbiguity(String name, String dataDir, String sessionDir,
       S2DSummaryHtml summary, int[] resSeqCodes, String[] residueLabels,
-      int[] ambiguityVals, String frameDetails)
+      int[] ambiguityVals, int entityAssemblyID, String frameDetails)
       throws S2DException
     {
         if (doDebugOutput(11)) {
@@ -104,6 +123,7 @@ public class S2DAmbiguity {
 	_resSeqCodes = resSeqCodes;
 	_residueLabels = residueLabels;
 	_ambiguityVals = ambiguityVals;
+	_entityAssemblyID = entityAssemblyID;
 
 	calculateAmbiguityValues();
     }
@@ -128,8 +148,8 @@ public class S2DAmbiguity {
 	    ambiguityWriter.write("# Data: ambiguity values for " +
 	      _name + "\n");
 	    ambiguityWriter.write("# Schema: bmrb-ambiguity\n");
-	    ambiguityWriter.write("# Attributes: Residue_seq_code; " +
-	      "%1; %2; %3; %4; %5; %9\n");
+	    ambiguityWriter.write("# Attributes: Entity_assembly_ID; " +
+	      "Residue_seq_code; %1; %2; %3; %4; %5; %9\n");
             ambiguityWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             ambiguityWriter.write("# Generation date: " +
@@ -145,7 +165,8 @@ public class S2DAmbiguity {
 	try {
             for (int index = 0; index < _residueHasData.length; ++index) {
 		if (_residueHasData[index]) {
-	            ambiguityWriter.write(index + " " +
+	            ambiguityWriter.write(_entityAssemblyID + " " +
+		      index + " " +
 		      _percent1[index] + " " +
 		      _percent2[index] + " " +
 		      _percent3[index] + " " +
@@ -166,10 +187,12 @@ public class S2DAmbiguity {
 	    //
 	    // Write the session-specific html file.
 	    //
+	    String title = "Assigned chemical shift ambiguity code " +
+	      "data (entity assembly " + _entityAssemblyID + ")";
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
-	      S2DUtils.TYPE_AMBIGUITY, _name, frameIndex,
-	      "Assigned chemical shift ambiguity code data", _frameDetails);
+	      S2DUtils.TYPE_AMBIGUITY, _name, frameIndex, title,
+	      _frameDetails);
 	    specHtml.write();
 
 	    //

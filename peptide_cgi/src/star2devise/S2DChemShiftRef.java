@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.2.1  2008/11/11 20:47:50  wenger
+// Progress on getting entity assembly IDs correct for coupling constants,
+// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
+// (working for 2.1, but not yet for 3.1).
+//
+// Revision 1.8  2008/06/04 21:12:00  wenger
+// New Peptide-CGI summary page is implemented, test work except for
+// test52 for some weird reason.  (Still may need some other changes
+// before release, though.)
+//
 // Revision 1.7  2008/04/09 19:35:41  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -63,6 +73,8 @@ package star2devise;
 
 import java.util.*;
 import java.io.*;
+
+//TEMP -- hmm -- I think I need to make a connection between entity assembly ID in the BMRB and PDB entries here...
 
 public class S2DChemShiftRef
 {

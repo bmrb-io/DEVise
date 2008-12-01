@@ -19,7 +19,7 @@ endif
 echo "Checking output files"
 
 set files = ( data_dir/4096ac1.dat data_dir/4096g1.dat \
-	data_dir/4096rl1.dat data_dir/4096md.dat \
+	data_dir/4096rl.dat data_dir/4096md.dat \
 	data_dir/4096n1.dat data_dir/4096t11.dat data_dir/4096t21.dat \
 	data_dir/4096t22.dat html_dir/4096ac1.html html_dir/4096g1.html \
 	html_dir/4096n1.html html_dir/4096t11.html html_dir/4096t21.html \

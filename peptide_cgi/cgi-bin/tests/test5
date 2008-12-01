@@ -34,7 +34,7 @@ set files = (data_dir/4974ac1.dat data_dir/4974as1.dat data_dir/4974c1.dat \
 	data_dir/4974csr1_1.dat data_dir/4974csr1_2.dat data_dir/4974csr1_3.dat \
 	data_dir/4974csr1_4.dat \
 	data_dir/4974d1.dat data_dir/4974hn1.dat data_dir/4974md.dat \
-	data_dir/4974p1.dat data_dir/4974rc1.dat data_dir/4974rl1.dat \
+	data_dir/4974p1.dat data_dir/4974rc1.dat data_dir/4974rl.dat \
 	html_dir/4974ac1.html html_dir/4974as1.html html_dir/4974c1.html \
 	html_dir/4974csr1.html html_dir/4974d1.html html_dir/4974hn1.html \
 	html_dir/4974p1.html html_dir/4974tmp1y.html \

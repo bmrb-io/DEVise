@@ -1,0 +1,28 @@
+#! /bin/csh -f
+#TEMP -- add -check_pct after merge
+
+# Test a multiple-entity entry that has data other than chemical
+# shifts.  Input file is a hand-modified version of 4267.
+
+set result = 0
+
+rm -f */4267_2ent*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -name 4267_2ent -file test_data/bmr4267_2ent_3.str -force
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+source tests/test60_check
+
+
+echo -n "Test60_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

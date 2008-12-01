@@ -49,7 +49,7 @@ set files = ( data_dir/uvd/test49_outam1.dat \
 	data_dir/uvd/test49_outn9.dat \
 	data_dir/uvd/test49_outp1.dat \
 	data_dir/uvd/test49_outrc1.dat \
-	data_dir/uvd/test49_outrl1.dat \
+	data_dir/uvd/test49_outrl.dat \
 	data_dir/uvd/test49_outt11.dat \
 	data_dir/uvd/test49_outt12.dat \
 	data_dir/uvd/test49_outt13.dat \

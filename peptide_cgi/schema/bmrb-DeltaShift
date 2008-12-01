@@ -10,6 +10,7 @@
 type DeltaShift ascii
 comment #
 whitespace ' '
+attr Entity_assembly_ID int
 sorted attr Residue_seq_code int
 attr HA_DeltaShift float
 attr C_DeltaShift float

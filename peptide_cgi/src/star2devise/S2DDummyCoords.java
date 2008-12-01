@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2007
+// (c) Copyright 2005-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.4.3  2008/11/19 23:21:19  wenger
+// Partially fixed up entity assembly ID/chain conversions -- still
+// need to check whether sequences match.
+//
+// Revision 1.4.4.2  2008/10/28 15:00:54  wenger
+// Ambiguity code visualizations now work with multiple-entity fix, and
+// work for the first time with 3.1 files.
+//
+// Revision 1.4.4.1  2008/10/06 20:01:09  wenger
+// Pistachio processing now works again; still need to change session
+// to add a link on entity assembly ID, and test this on something with
+// multiple entities.
+//
+// Revision 1.4  2007/08/20 20:26:07  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -78,6 +96,10 @@ public class S2DDummyCoords
     private static float HORIZ_SPACING = 2.0f;
     private static float VERT_SPACING = 2.2f;
 
+    private static String[] chains = {"A", "B", "C", "D", "E", "F", "G",
+      "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+      "U", "V", "W", "X", "Y", "Z"};
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -107,14 +129,18 @@ public class S2DDummyCoords
      * @param The length to use for "wrapping" the structure (0 means
      *        no wrapping).
      */
-    public void writeCoords(S2DResidues residues, String filename,
-      int wrapLength) throws S2DException
+    public void writeCoords(S2DResidues residues, int entityAssemblyID,
+      String filename, int wrapLength) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DDummyCoords.writeCoords()");
+	    System.out.println("S2DDummyCoords.writeCoords(" +
+	      entityAssemblyID + ", " + filename + ")");
 	}
 
+	String chain = entAssemID2Chain(entityAssemblyID);
+
 	try {
+	    //TEMP -- this should use strings from S2DmmCifIfc
 	    S2DFileWriter writer = S2DFileWriter.create(filename);
 	    writer.write("data_dummy_coords_Temp\n");
 	    writer.write("#\n");
@@ -122,6 +148,7 @@ public class S2DDummyCoords
             writer.write("_atom_site.type_symbol\n");
             writer.write("_atom_site.label_atom_id\n");
             writer.write("_atom_site.label_comp_id\n");
+            writer.write("_atom_site.label_asym_id\n");
             writer.write("_atom_site.label_seq_id\n");
             writer.write("_atom_site.Cartn_x\n");
             writer.write("_atom_site.Cartn_y\n");
@@ -181,9 +208,14 @@ public class S2DDummyCoords
 		    	    atomX -= 0.5 * direction;
 		        }
 
-		        writer.write(atomType + "\t" + info._atomName + "\t" +
-		          aminoAcid + "\t" + residueNum + "\t" +
-		          atomX + "\t" + atomY + "\t" + atomZ + "\t" +
+		        writer.write(atomType + "\t" +
+			  info._atomName + "\t" +
+		          aminoAcid + "\t" +
+			  chain + "\t" +
+			  residueNum + "\t" +
+		          atomX + "\t" +
+			  atomY + "\t" +
+			  atomZ + "\t" +
 		          modelNum + "\n");
 	            }
 		}
@@ -206,6 +238,30 @@ public class S2DDummyCoords
 	    throw new S2DError("Unable to create dummy coordinates " +
 	      "file: " + ex);
 	}
+    }
+
+    /** -----------------------------------------------------------------
+     * Convert an entity assembly ID to an mmCIF chain value.
+     * Note: since this is only for dummy data, we aren't doing
+     * any checking of residues.
+     * @param The entity assembly ID.
+     * @return The chain value.
+     */
+    //TEMP -- this should deal with entity assembly IDs > 26 (chain can
+    //TEMP be more than one character)
+    public String entAssemID2Chain(int entityAssemblyID)
+      throws S2DException
+    {
+	String result;
+
+	try {
+	    result = chains[entityAssemblyID-1];
+	} catch (ArrayIndexOutOfBoundsException ex) {
+	    throw new S2DError("Illegal entity assembly ID: " +
+	      ex.toString());
+	}
+
+	return result;
     }
 
     //===================================================================

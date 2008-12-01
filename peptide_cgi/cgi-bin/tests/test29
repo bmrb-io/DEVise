@@ -53,10 +53,7 @@ set files = (data_dir/5246am1.dat \
 	data_dir/5246rc2.dat \
 	data_dir/5246rc3.dat \
 	data_dir/5246rc4.dat \
-	data_dir/5246rl1.dat \
-	data_dir/5246rl2.dat \
-	data_dir/5246rl3.dat \
-	data_dir/5246rl4.dat \
+	data_dir/5246rl.dat \
 	html_dir/5246am1.html \
 	html_dir/5246am2.html \
 	html_dir/5246am3.html \

@@ -42,7 +42,7 @@ set files = (data_dir/4336as1.dat \
 	data_dir/4336md.dat \
 	data_dir/4336p1.dat \
 	data_dir/4336rc1.dat \
-	data_dir/4336rl1.dat \
+	data_dir/4336rl.dat \
 	html_dir/4336as1.html \
 	html_dir/4336c1.html \
 	html_dir/4336csr13.html \

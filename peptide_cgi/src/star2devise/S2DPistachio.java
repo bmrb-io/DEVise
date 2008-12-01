@@ -21,6 +21,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.2.3  2008/11/17 19:28:07  wenger
+// Added entity assembly IDs to summary page and specific visualization pages.
+//
+// Revision 1.9.2.2  2008/10/06 20:01:10  wenger
+// Pistachio processing now works again; still need to change session
+// to add a link on entity assembly ID, and test this on something with
+// multiple entities.
+//
+// Revision 1.9.2.1  2008/07/30 16:13:56  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
+//
+// Revision 1.9  2008/04/09 19:35:42  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.8  2007/12/20 16:49:03  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -76,6 +95,7 @@ public class S2DPistachio {
     private String[] _residueLabels;
     private String[] _atomNames;
     private double[] _meritVals;
+    private int _entityAssemblyID;
 
     private boolean[] _residueHasData;
     private float[] _backboneGE95;
@@ -92,8 +112,8 @@ public class S2DPistachio {
     // Constructor.
     public S2DPistachio(String name, String dataDir, String sessionDir,
       S2DSummaryHtml summary, int[] resSeqCodes, String[] residueLabels,
-      String[] atomNames, double[] meritVals, String frameDetails)
-      throws S2DException
+      String[] atomNames, double[] meritVals, int entityAssemblyID,
+      String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DPistachio.S2DPistachio(" + name +
@@ -110,6 +130,7 @@ public class S2DPistachio {
 	_residueLabels = residueLabels;
 	_atomNames = atomNames;
 	_meritVals = meritVals;
+	_entityAssemblyID = entityAssemblyID;
 
 	calculatePistachioValues();
     }
@@ -133,7 +154,8 @@ public class S2DPistachio {
 	    pistachioWriter.write("# Data: Assignment figure of merit " +
 	      "values for " + _name + "\n");
 	    pistachioWriter.write("# Schema: bmrb-Pistachio\n");
-	    pistachioWriter.write("# Attributes: Residue_seq_code; " +
+	    pistachioWriter.write("# Attributes: Entity_assembly_ID; " +
+	      "Residue_seq_code; " +
 	      "backbone >= 95%; backbone < 95%; side chain >= 95%; " +
 	      "side chain < 95%; H >= 95%; H < 95%\n");
             pistachioWriter.write("# Peptide-CGI version: " +
@@ -151,7 +173,8 @@ public class S2DPistachio {
 	try {
             for (int index = 0; index < _residueHasData.length; ++index) {
 		if (_residueHasData[index]) {
-	            pistachioWriter.write(index + " " +
+	            pistachioWriter.write(_entityAssemblyID + " " +
+		      index + " " +
 		      _backboneGE95[index] + " " +
 		      _backboneLT95[index] + " " +
 		      _sideChainGE95[index] + " " +
@@ -172,10 +195,12 @@ public class S2DPistachio {
 	    //
 	    // Write the session-specific html file.
 	    //
+	    String title = "Assignment figure of merit data (entity " +
+	      "assembly " + _entityAssemblyID + ")";
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_PISTACHIO, _name, frameIndex,
-	      "Assignment figure of merit data", _frameDetails);
+	      title, _frameDetails);
 	    specHtml.write();
 
 	    //

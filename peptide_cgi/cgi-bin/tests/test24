@@ -31,8 +31,7 @@ set files = ( data_dir/6502as1.dat \
 	data_dir/6502p2.dat \
 	data_dir/6502rc1.dat \
 	data_dir/6502rc2.dat \
-	data_dir/6502rl1.dat \
-	data_dir/6502rl2.dat \
+	data_dir/6502rl.dat \
 	html_dir/6502as1.html \
 	html_dir/6502as2.html \
 	html_dir/6502c1.html \
@@ -73,6 +72,16 @@ foreach file ($files)
     set result = 1
   endif
 end
+
+set file = "data_dir/6502rl.dat"
+set line = "1	1	GLY"
+source tests/check4line
+set line = "1	100	LYS"
+source tests/check4line
+set line = "2	1	GLY"
+source tests/check4line
+set line = "2	83	PRO"
+source tests/check4line
 
 
 echo -n "Test24 result: "

@@ -49,7 +49,7 @@ set files = (data_dir/6318as1.dat \
 	data_dir/6318ps1.dat \
 	data_dir/6318psac1.dat \
 	data_dir/6318rc1.dat \
-	data_dir/6318rl1.dat \
+	data_dir/6318rl.dat \
 	html_dir/6318as1.html \
 	html_dir/6318d1.html \
 	html_dir/6318hn1.html \

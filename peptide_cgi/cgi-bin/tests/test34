@@ -36,8 +36,7 @@ set files = (data_dir/6521urac1.dat \
 	data_dir/6521urp2.dat \
 	data_dir/6521urrc1.dat \
 	data_dir/6521urrc2.dat \
-	data_dir/6521urrl1.dat \
-	data_dir/6521urrl2.dat \
+	data_dir/6521urrl.dat \
 	html_unreleased/6521urac1.html \
 	html_unreleased/6521urac2.html \
 	html_unreleased/6521urac3.html \

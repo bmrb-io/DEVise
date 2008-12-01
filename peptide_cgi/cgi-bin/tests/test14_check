@@ -9,7 +9,7 @@ set files = (data_dir/4867ac1.dat \
 	data_dir/4867md.dat \
 	data_dir/4867p1.dat \
 	data_dir/4867rc1.dat \
-	data_dir/4867rl1.dat \
+	data_dir/4867rl.dat \
 	html_dir/4867ac1.html \
 	html_dir/4867as1.html \
 	html_dir/4867c1.html \
@@ -49,7 +49,7 @@ end
 set file = "data_dir/4867ac1.dat"
 set line = "1 1 G O5' O 118.098 -36.722 1.395 side_chains"
 source tests/check4line
-set line = "3444 175 GLY HA3 H 123.371 1.993 19.454 backbone"
+set line = "3444 2 175 GLY HA3 H 123.371 1.993 19.454 backbone"
 source tests/check4line
 
 set file = "data_dir/4867as1.dat"

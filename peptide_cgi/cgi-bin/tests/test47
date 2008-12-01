@@ -60,7 +60,7 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	data_dir/uvd/test47_outmd.dat \
 	data_dir/uvd/test47_outp1.dat \
 	data_dir/uvd/test47_outrc1.dat \
-	data_dir/uvd/test47_outrl1.dat \
+	data_dir/uvd/test47_outrl.dat \
 	html_dir/uvd/test47_outac1.html \
 	html_dir/uvd/test47_outac1_large.html \
 	html_dir/uvd/test47_outam1.html \

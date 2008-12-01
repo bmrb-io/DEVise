@@ -36,7 +36,7 @@ set files = (data_dir/pistachio_example1as1.dat \
 	data_dir/pistachio_example1ps1.dat \
 	data_dir/pistachio_example1psac1.dat \
 	data_dir/pistachio_example1rc1.dat \
-	data_dir/pistachio_example1rl1.dat \
+	data_dir/pistachio_example1rl.dat \
 	html_dir/pistachio_example1as1.html \
 	html_dir/pistachio_example1d1.html \
 	html_dir/pistachio_example1hn1.html \

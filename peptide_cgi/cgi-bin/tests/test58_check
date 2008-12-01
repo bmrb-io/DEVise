@@ -1,0 +1,91 @@
+echo "Checking output files"
+
+#TEMPTEMP -- should we get a data_dir/15303c2.dat?
+set files = ( data_dir/15303ac1.dat \
+	data_dir/15303am1.dat \
+	data_dir/15303am2.dat \
+	data_dir/15303amac1.dat \
+	data_dir/15303amac2.dat \
+	data_dir/15303as1.dat \
+	data_dir/15303as2.dat \
+	data_dir/15303c1.dat \
+	data_dir/15303d1.dat \
+	data_dir/15303d2.dat \
+	data_dir/15303hn1.dat \
+	data_dir/15303hn2.dat \
+	data_dir/15303md.dat \
+	data_dir/15303p1.dat \
+	data_dir/15303p2.dat \
+	data_dir/15303rc1.dat \
+	data_dir/15303rc2.dat \
+	data_dir/15303rl.dat \
+	html_dir/15303ac1.html \
+	html_dir/15303ac1_large.html \
+	html_dir/15303am1.html \
+	html_dir/15303am1_large.html \
+	html_dir/15303am2.html \
+	html_dir/15303am2_large.html \
+	html_dir/15303as1.html \
+	html_dir/15303as1_large.html \
+	html_dir/15303as2.html \
+	html_dir/15303as2_large.html \
+	html_dir/15303c1.html \
+	html_dir/15303c1_large.html \
+	html_dir/15303d1.html \
+	html_dir/15303d1_large.html \
+	html_dir/15303d2.html \
+	html_dir/15303d2_large.html \
+	html_dir/15303hn1.html \
+	html_dir/15303hn1_large.html \
+	html_dir/15303hn2.html \
+	html_dir/15303hn2_large.html \
+	html_dir/15303p1.html \
+	html_dir/15303p1_large.html \
+	html_dir/15303p2.html \
+	html_dir/15303p2_large.html \
+	html_dir/15303y.html \
+	html_dir/15303y_large.html \
+	session_dir/15303ac1.ds \
+	session_dir/15303acdd \
+	session_dir/15303am1.ds \
+	session_dir/15303am2.ds \
+	session_dir/15303as1.ds \
+	session_dir/15303as2.ds \
+	session_dir/15303c1.ds \
+	session_dir/15303d1.ds \
+	session_dir/15303d2.ds \
+	session_dir/15303hn1.ds \
+	session_dir/15303hn2.ds \
+	session_dir/15303p1.ds \
+	session_dir/15303p2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/15303ac1.dat"
+set line = "1 1 1 GLY N N 7.038 -22.774 -13.339 backbone"
+source tests/check4line
+set line = "3588 1 228 SER HG H -28.842 -21.335 -72.264 all_hydrogens"
+source tests/check4line
+
+set file = "data_dir/15303as2.dat"
+set line = "2 2 PRO C C 176.9"
+source tests/check4line
+set line = "2 227 MET N N 121.2"
+source tests/check4line
+
+set file = "data_dir/15303d1.dat"
+set line = "1 2 0.0 0.9 0.1 0.4"
+source tests/check4line
+set line = "1 228 0.0 0.0 1.6 1.9"
+source tests/check4line
+
+set file = "data_dir/15303hn2.dat"
+set line = "2 3 LEU 8.51 121.4 H N"
+source tests/check4line
+set line = "2 227 MET 8.28 121.2 H N"
+source tests/check4line

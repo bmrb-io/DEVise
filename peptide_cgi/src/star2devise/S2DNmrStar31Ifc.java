@@ -20,6 +20,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.2.3  2008/11/19 20:25:18  wenger
+// Fixed problems with getEntityFrame(), added test13_3 to check changes.
+//
+// Revision 1.6.2.2  2008/11/13 23:26:30  wenger
+// Heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters now
+// work for multiple entities in 3.1 files (all tests now work).
+//
+// Revision 1.6.2.1  2008/11/05 00:37:43  wenger
+// Fixed a bunch of problems with getting coordinates from NMR-STAR
+// files (e.g., 4096) -- test4 and test4_3 now work.
+//
+// Revision 1.6  2008/07/20 20:43:07  wenger
+// Made a bunch of cleanups in the course of working on bug 065.
+//
 // Revision 1.5  2008/02/20 17:41:07  wenger
 // Committing (disabled) partially-implemented S2 Order visualization
 // code and tests.
@@ -66,6 +80,16 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
+    /**
+     * Get the NMR-STAR file version corresponding to this object.
+     * @return The NMR-STAR file version corresponding to this object.
+     */
+    public String version()
+    {
+    	return "3.1";
+    }
+
+    //-------------------------------------------------------------------
     // Determine whether the STAR file represented by starTree is an
     // NMR-STAR 3.1 file.
     public boolean isNmrStar31()
@@ -105,7 +129,7 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
     // PROTECTED METHODS
 
     //-------------------------------------------------------------------
-    // Constructor.  Constructs an S2DNmrStar30Ifc object corresponding to
+    // Constructor.  Constructs an S2DNmrStar31Ifc object corresponding to
     // the STAR file represented by starTree.
     protected S2DNmrStar31Ifc(StarNode starTree) throws S2DException
     {
@@ -142,6 +166,7 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
 
 	//TEMPTEMP -- make sure that all of these are correct
 	ORDER_ATOM_NAME = "_Order_param.Atom_ID";
+	ORDER_ENTITY_ASSEMBLY_ID = "_Order_param.Entity_assembly_ID";
 	ORDER_PARAMETERS = "order_parameters";
 	ORDER_RES_LABEL = "_Order_param.Comp_ID";
 	ORDER_RES_SEQ_CODE = "_Order_param.Seq_ID";

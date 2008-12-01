@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2007
+// (c) Copyright 2003-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,30 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.2.4  2008/12/01 16:34:43  wenger
+// We now try to match all combinations of PDB chains and BMRB entity
+// assemblies (not just A->1, B->2, etc.); renamed DataSequence and
+// TALOS classes to avoid conflict with ChemShift.
+//
+// Revision 1.6.2.3  2008/11/26 21:10:18  wenger
+// Added the TALOS matching from ChemShift to try to match sequences
+// with differences at the beginning and end.  (TALOS.java is a stripped-
+// down version of the class from ChemShift, with just the stuff we
+// need to try to match the sequences without adjusting the data for
+// each atom.)
+//
+// Revision 1.6.2.2  2008/11/25 22:48:18  wenger
+// More cleanup of PDB vs. BMRB matching code.
+//
+// Revision 1.6.2.1  2008/11/25 20:37:41  wenger
+// Okay, at least phase 1 of the BMRB/PDB entity assembly/chain
+// sequence match checking is mostly done; there's still a ton of
+// debug code here, and some places where it's not 100% done, but
+// it's at least close.  Test27 and test27_3 currently fail.
+//
+// Revision 1.6  2007/11/15 17:15:36  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.5  2007/10/03 15:38:40  wenger
 // We now allow single-letter residue codes in chemical shift loops,
 // etc.
@@ -52,11 +76,15 @@ public class S2DResidues {
     // VARIABLES
     public int _resCount = -1;
     public int[] _resSeqCodes = null;
-    public String[] _resLabels = null;
+    public String[] _resLabels = null; // three-letter
 
     private static final int DEBUG = 0;
 
+    // Translate single-letter to three-letter amino acid codes.
     private static Hashtable _acidTrans = null;
+
+    // Translate three-letter to single-letter amino acid codes.
+    private static Hashtable _acidReverseTrans = null;
 
     //===================================================================
     // PUBLIC METHODS
@@ -112,6 +140,10 @@ public class S2DResidues {
         boolean result = true;
 
         if (other._resCount != _resCount) {
+	    if (doDebugOutput(1)) {
+	        System.err.println("Residue count mismatch: " +
+		  other._resCount + " vs. " + _resCount);
+	    }
 	    result = false;
 	} else {
 	    for (int index = 0; result && index < _resCount; index++) {
@@ -130,6 +162,51 @@ public class S2DResidues {
 	}
 
 	return result;
+    }
+
+    /** -----------------------------------------------------------------
+     * Test whether this sequence matches another sequence (not 
+     * necessarily whether they are exactly the same).
+     * @param The other sequence to check.
+     * @return True iff the sequences match.
+     */
+    public boolean matches(S2DResidues other)
+    {
+        if (doDebugOutput(5)) {
+	    System.out.println("S2DResidues.matches()");
+	}
+
+	if (equals(other)) {
+            if (doDebugOutput(5)) {
+	        System.out.println("Sequences are equal");
+	    }
+	    return true;
+	} else {
+            if (doDebugOutput(5)) {
+	        System.out.println("Sequences are NOT equal; trying " +
+		  "TALOS matching");
+	    }
+	    S2DDataSequence thisDS = toDataSequence();
+	    S2DDataSequence otherDS = other.toDataSequence();
+	    otherDS.add("A");
+	    S2DTALOS talos = new S2DTALOS();
+	    talos.setDataSequence(thisDS);
+
+            //TEMP -- if we match here, we should probably offeset the residue indices so things match up right
+	    Set resMismatchList = new TreeSet();
+	    if (talos.seqCompare(otherDS, resMismatchList) == 0) {
+                if (doDebugOutput(5)) {
+	            System.out.println("TALOS matches the sequences");
+	        }
+	        return true;
+	    }
+	}
+
+        if (doDebugOutput(5)) {
+	    System.out.println("Sequences don't match");
+	}
+
+    	return false;
     }
 
     //-------------------------------------------------------------------
@@ -170,6 +247,26 @@ public class S2DResidues {
 		}
 	    }
 	}
+    }
+
+    /** -----------------------------------------------------------------
+     * Convert this list to a S2DDataSequence object (for TALOS sequence
+     * matching).
+     * @return A S2DDataSequence corresponding to this residue list
+     */
+    public S2DDataSequence toDataSequence()
+    {
+	initializeTranslation();
+
+    	S2DDataSequence ds = new S2DDataSequence();
+
+        for (int index = 0; index < _resLabels.length; index++) {
+	    String acid = (String)_acidReverseTrans.get(_resLabels[index]);
+	    if (acid == null) acid = "*";
+	    ds.add(acid);
+	}
+
+	return ds;
     }
 
     //===================================================================
@@ -213,6 +310,34 @@ public class S2DResidues {
 	    _acidTrans.put(new Character('W'), "TRP");
 	    _acidTrans.put(new Character('Y'), "TYR");
 	    _acidTrans.put(new Character('V'), "VAL");
+	}
+
+	// Note: it would be nice to generate one table from the other
+	// to make sure they're consistent, but I'm just doing things
+	// the quickest way right now.  wenger 2008-11-26.
+	if (_acidReverseTrans == null) {
+	    _acidReverseTrans = new Hashtable();
+
+	    _acidReverseTrans.put("ALA", "A");
+	    _acidReverseTrans.put("ARG", "R");
+	    _acidReverseTrans.put("ASN", "N");
+	    _acidReverseTrans.put("ASP", "D");
+	    _acidReverseTrans.put("CYS", "C");
+	    _acidReverseTrans.put("GLU", "E");
+	    _acidReverseTrans.put("GLN", "Q");
+	    _acidReverseTrans.put("GLY", "G");
+	    _acidReverseTrans.put("HIS", "H");
+	    _acidReverseTrans.put("ILE", "I");
+	    _acidReverseTrans.put("LEU", "L");
+	    _acidReverseTrans.put("LYS", "K");
+	    _acidReverseTrans.put("MET", "M");
+	    _acidReverseTrans.put("PHE", "F");
+	    _acidReverseTrans.put("PRO", "P");
+	    _acidReverseTrans.put("SER", "S");
+	    _acidReverseTrans.put("THR", "T");
+	    _acidReverseTrans.put("TRP", "W");
+	    _acidReverseTrans.put("TYR", "Y");
+	    _acidReverseTrans.put("VAL", "V");
 	}
     }
 

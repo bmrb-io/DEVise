@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2007
+// (c) Copyright 2004-2008
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,85 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2008/11/14 21:14:59  wenger
+// Fixed bugs 070 and 075 (problems with percent assignment values
+// sometimes being greater than 100% for NMR-STAR 3.1 files).
+//
+// Revision 1.9.2.17  2008/11/19 21:27:22  wenger
+// Cleaned up various notes about things to check.
+//
+// Revision 1.9.2.16  2008/11/19 20:25:18  wenger
+// Fixed problems with getEntityFrame(), added test13_3 to check changes.
+//
+// Revision 1.9.2.15  2008/11/13 23:26:30  wenger
+// Heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters now
+// work for multiple entities in 3.1 files (all tests now work).
+//
+// Revision 1.9.2.14  2008/11/11 20:47:51  wenger
+// Progress on getting entity assembly IDs correct for coupling constants,
+// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
+// (working for 2.1, but not yet for 3.1).
+//
+// Revision 1.9.2.13  2008/11/06 21:29:52  wenger
+// Cleaned up S2DMain.saveAllResidueLists(), cleaned up and documented
+// a bunch of other new methods.
+//
+// Revision 1.9.2.12  2008/11/06 16:55:45  wenger
+// Test50 now works (by treating entity assembly ID values of all "?"
+// or all "." as if there is no entity assembly ID tag at all) -- so
+// all tests now work, but I don't think everything is actually
+// correct yet -- some more tests probably need checks for correct
+// entity assembly IDs.
+//
+// Revision 1.9.2.11  2008/11/05 23:21:35  wenger
+// Test7, test24, and test30 now work.  Pistachio session needs fixes,
+// though.
+//
+// Revision 1.9.2.10  2008/11/05 00:37:43  wenger
+// Fixed a bunch of problems with getting coordinates from NMR-STAR
+// files (e.g., 4096) -- test4 and test4_3 now work.
+//
+// Revision 1.9.2.9  2008/10/30 16:18:45  wenger
+// Got rid of a bunch of code that's obsolete because of the multiple-
+// entity changes.
+//
+// Revision 1.9.2.8  2008/10/03 21:22:09  wenger
+// Minor cleanup...
+//
+// Revision 1.9.2.7  2008/10/03 21:08:15  wenger
+// Okay, I think the basic chemical shift stuff is finally working
+// right for various combinations of multiple entities and multiple
+// entity assemblies (see test57* and test58*).  Lots of the other
+// stuff still needs work, though.
+//
+// Revision 1.9.2.6  2008/08/19 21:24:10  wenger
+// Now generating atomic coordinate data with "real" entity assembly IDs
+// (right now just a direct mapping from A->1, etc -- needs to be changed);
+// changed 3D session to use "master" residue list rather than the
+// individual ones.
+//
+// Revision 1.9.2.5  2008/08/15 19:36:38  wenger
+// Made some of the new entity-related code more tolerant of missing
+// tags, etc., so it works with visualization-server files, etc.
+// (Test_all currently works.)
+//
+// Revision 1.9.2.4  2008/08/13 21:38:21  wenger
+// Writing entity assembly IDs now works for the chem shift data for
+// 2.1 files.
+//
+// Revision 1.9.2.3  2008/08/13 16:12:46  wenger
+// Writing the "master" residue list is now working for 3.0/3.1 files
+// (still needs checks to make sure things are in order).
+//
+// Revision 1.9.2.2  2008/08/13 15:05:25  wenger
+// Part way to saving the "master" residue list for all entity
+// assemblies (works for 2.1 files, not 3/3.1).
+//
+// Revision 1.9.2.1  2008/07/30 16:13:55  wenger
+// First steps towards fixing bug 037/etc -- added (dummy) entity
+// assembly ID values to generated data; updated schemas and tests
+// accordingly.
+//
 // Revision 1.9  2008/07/20 20:43:07  wenger
 // Made a bunch of cleanups in the course of working on bug 065.
 //
@@ -62,13 +141,27 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
     private static final int DEBUG = 0;
 
+    protected String ENTITY_ASSEMBLY_ID = "_Entity_assembly.ID";
+    protected String ENTITY_ASSEMBLY_ENTITY_ID = "_Entity_assembly.Entity_ID";
     protected String ENTITY_ID = "_Entity.ID";
+    protected String REP_CONF_ENTITY_ASSEMBLY_ID =
+      "_Rep_conf.Entity_assembly_ID";
 
     // Maps EntityID (String) to isAProtein (Boolean).
     private Hashtable _frameIsProtein = new Hashtable();
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    /**
+     * Get the NMR-STAR file version corresponding to this object.
+     * @return The NMR-STAR file version corresponding to this object.
+     */
+    public String version()
+    {
+    	return "3.0";
+    }
 
     //-------------------------------------------------------------------
     // Determine whether the STAR file represented by starTree is an
@@ -99,6 +192,55 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	}
 
     	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    /** Get a Vector of the entity frames corresponding to each entity
+        assembly ID (note that if we have homodimers, the same entity
+	frame will be in the Vector more than once).
+	@return: the Vector of entity save frames
+    */
+    public Vector getAllEntityAssemblyFrames() throws S2DException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("  S2DNmrStar30Ifc.getAllEntityAssemblyFrames()");
+	}
+
+	Vector result = new Vector();
+
+	try {
+	    SaveFrameNode molSysFrame = getOneDataFrameByCat(MOL_SYSTEM_SF_CAT,
+	      MOL_SYSTEM);
+
+	    String[] tmpValues = getFrameValues(molSysFrame,
+	      ENTITY_ASSEMBLY_ID, ENTITY_ASSEMBLY_ID);
+	    int[] entityAssemblyIDs = S2DUtils.arrayStr2Int(tmpValues,
+	      ENTITY_ASSEMBLY_ID);
+              //TEMP -- we don't really use entityAssemblyIDs here!!
+
+	    String[] entityIDs = getFrameValues(molSysFrame,
+	      ENTITY_ASSEMBLY_ID, ENTITY_ASSEMBLY_ENTITY_ID);
+
+	    for (int index = 0; index < entityAssemblyIDs.length; index++) {
+	        //TEMP -- is it safe to assume that this will find the right save frame?
+	        SaveFrameNode frame = getOneDataFrameByCat(ENTITY_ID,
+	          entityIDs[index]);
+	        //TEMP -- make sure things are in right order
+	        result.addElement(frame);
+	    }
+	} catch (S2DException ex) {
+	    // We probably get here if there is no assembly save frame
+	    // (e.g., some visualization server uploads).
+	    System.err.println(
+	      "Warning in S2DNmrStar30Ifc.getAllEntityAssemblyFrames(): " + 
+	      ex.toString());
+	    Enumeration tmpList = getAllEntityFrames();
+	    while (tmpList.hasMoreElements()) {
+	        result.addElement(tmpList.nextElement());
+	    }
+	}
+
+        return result;
     }
 
     //-------------------------------------------------------------------
@@ -225,74 +367,54 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         return result;
     }
 
-    // ----------------------------------------------------------------------
-    // Get the "monomeric polymer" save frame for this NMR-STAR file
-    // (the same frame containing entity information for a polymer).
-    // This method will throw an exception if there is more than
-    // one monomeric polymer save frame.
-    public SaveFrameNode getEntityFrame() throws S2DException
-    {
-        if (doDebugOutput(12)) {
-            System.out.println("  S2DNmrStar30.getEntityFrame()");
-        }
-
-        SaveFrameNode result = null;
-
-	Enumeration frameList = getDataFramesByCat(
-	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
-
-        //TEMP -- if there is more than one entity save frame, this
-	// just returns the first one -- that's wrong!!
-
-        while (frameList.hasMoreElements() && result == null) {
-	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    String entityType = getOneFrameValueStrict(frame, ENTITY_TYPE);
-	    if (entityType.equals(POLYMER)) {
-	    	result = frame;
-	    }
-	}
-
-	if (result == null) {
-	    throw new S2DError("No monomeric polymer save frame found");
-	}
-
-        if (doDebugOutput(12)) {
-	    System.out.println(
-	      "  S2DNmrStar30Ifc.getEntityFrame() returns " +
-	      result.getLabel());
-	}
-
-        return result;
-    }
-
-    // ----------------------------------------------------------------------
+    //-------------------------------------------------------------------
     /**
-     * Get a list of unique entity IDs referenced in the chemical shift
-     * loop of the given save frame.
-     * @param The save frame (note that this should be an
-     * assigned_chemical_shifts save frame).
-     * @return A Vector containing all relevant entity IDs (the Vector
-     * contains Strings).
+     * Get a list of unique entity assembly IDs for the given frame
+     * and loop tag.  If there are no valid entity assembly ID values,
+     * this method will return a Vector with the single value "".
+     * @param The save frame to search
+     * @param The tag name holding entity assembly IDs in the given
+     *   frame
+     * @return A vector of unique entity assembly IDs (as Strings)
      */
-    public Vector getUniqueChemShiftEntityIDs(SaveFrameNode frame)
-      throws S2DException
+    public Vector getUniqueEntityAssemblyIDs(SaveFrameNode frame,
+      String tagName) throws S2DException
     {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DNmrStar30Ifc.getUniqueEntityAssemblyIDs(" +
+	      frame + ", " + tagName + ")");
+	}
+
 	Vector result = new Vector();
 
-        if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStar30Ifc.getUniqueChemShiftEntityIDs(" +
-	      frame + ")");
-	}
+	try {
+            String[] entityAssemblyIDs = getFrameValues(frame,
+	      tagName, tagName);
 
-        String[] entityIDs = getAllChemShiftEntityIDs(frame);
-        for (int index = 0; index < entityIDs.length; index++) {
-            if (!result.contains(entityIDs[index])) result.add(
-	      entityIDs[index]);
-        }
+	    // If all values are "?" or ".", treat this like it has
+	    // no entity assembly IDs at all.
+            if (S2DUtils.entireArrayMatches(entityAssemblyIDs, "?") ||
+                S2DUtils.entireArrayMatches(entityAssemblyIDs, ".")) {
+	        result.add("");
+		return result;
+	    } else {
+                for (int index = 0; index < entityAssemblyIDs.length; index++) {
+                    if (!result.contains(entityAssemblyIDs[index])) {
+		        result.add(entityAssemblyIDs[index]);
+	            }
+                }
+	    }
+	} catch (S2DException ex) {
+	    // This is so things can work without entity assembly IDs
+	    // for visualization server uploads.
+	    System.err.println("Warning (" + ex.toString() +
+	      ": unable to get entity assembly IDs; using default");
+	    result.add("");
+	}
 
         if (doDebugOutput(12)) {
 	    System.out.print(
-	      "S2DNmrStar30Ifc.getUniqueChemShiftEntityIDs() returns ");
+	      "S2DNmrStar30Ifc.getUniqueEntityAssemblyIDs() returns ");
 	    for (int index = 0; index < result.size(); index++) {
 	        System.out.print((String)result.get(index) + " ");
 	    }
@@ -300,6 +422,94 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	}
 
     	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Get the entity assembly ID corresponding to the given save frame
+     * (NMR-STAR 2.1) or entity assembly ID String (NMR-STAR 3.n).
+     * If the entity assembly ID string is "" this will return 1.
+     * @param The save frame
+     * @param The entity assembly ID String
+     * @return The entity assembly ID (int)
+     */
+    public int getEntityAssemblyID(SaveFrameNode frame, String entAssemIDStr)
+    throws S2DException
+    {
+    	int entityAssemblyID = 0;
+
+	if (entAssemIDStr.equals("")) {
+	    // This is so things can work without entity assembly IDs
+	    // for visualization server uploads.
+	    entityAssemblyID = 1;
+
+	} else {
+	    try {
+	        entityAssemblyID = Integer.parseInt(entAssemIDStr);
+	    } catch (NumberFormatException ex) {
+	        System.out.println("Error parsing entity assembly ID: " +
+	          ex.toString());
+	        throw new S2DError("Invalid entity assembly ID: " +
+	          entAssemIDStr);
+	    }
+	}
+
+	return entityAssemblyID;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Translate an entity assembly ID to the corresponding entity ID.
+     * @param The entity assembly ID
+     * @return The corresponding entity ID
+     */
+    public String entAssemID2entID(String entityAssemblyID)
+    {
+	String result = "";
+
+	try {
+	    SaveFrameNode molSysFrame = getOneDataFrameByCat(MOL_SYSTEM_SF_CAT,
+	      MOL_SYSTEM);
+
+	    String[] entityAssemblyIDs = getFrameValues(molSysFrame,
+	      ENTITY_ASSEMBLY_ID, ENTITY_ASSEMBLY_ID);
+
+	    String[] entityIDs = getFrameValues(molSysFrame,
+	      ENTITY_ASSEMBLY_ID, ENTITY_ASSEMBLY_ENTITY_ID);
+
+	    for (int index = 0; index < entityAssemblyIDs.length; index++) {
+	        if (entityAssemblyID.equals(entityAssemblyIDs[index])) {
+		    result = entityIDs[index];
+		    break;
+		}
+	    }
+	} catch (S2DException ex) {
+	    // We probably get here if there is no assembly save frame
+	    // (e.g., some visualization server uploads).
+	    System.err.println(
+	      "Warning in S2DNmrStar30Ifc.entAssemID2entID(): " + 
+	      ex.toString());
+	    result = "1";
+	}
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Get entity assembly IDs for the coordinates in the given save frame.
+     * @param frame: the save frame to search
+     * @return an array of the entity assembly IDs
+     */
+    public int[] getCoordEntityAssemblyIDs(SaveFrameNode frame)
+      throws S2DException
+    {
+	String[] entAssemIDStrs = getFrameValues(frame, ATOM_COORD_X,
+	  REP_CONF_ENTITY_ASSEMBLY_ID);
+    	int [] entAssemIDVals = S2DUtils.arrayStr2Int(entAssemIDStrs,
+	  REP_CONF_ENTITY_ASSEMBLY_ID);
+
+    	return entAssemIDVals;
     }
 
     //===================================================================
@@ -402,6 +612,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         COUPLING_CONSTANT_CODE = "_Coupling_constant.Code";
         COUPLING_CONSTANT_VALUE = "_Coupling_constant.Val";
         COUPLING_CONSTANT_VALUE_ERR = "_Coupling_constant.Val_err";
+	COUPLING_ENTITY_ASSEMBLY_ID_1 =
+	  "_Coupling_constant.Entity_assembly_ID_1";
         COUPLING_RES_LABEL_1 = "_Coupling_constant.Comp_ID_1";
         COUPLING_RES_LABEL_2 = "_Coupling_constant.Comp_ID_2";
         COUPLING_RES_SEQ_CODE_1 = "_Coupling_constant.Seq_ID_1";
@@ -424,6 +636,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	HETERONUCLEAR_NOE = "heteronucl_NOE_list";
 	HET_NOE_ATOM_1_ATOM_NAME = "_Heteronucl_NOE.Atom_ID_1";
 	HET_NOE_ATOM_2_ATOM_NAME = "_Heteronucl_NOE.Atom_ID_2";
+	HET_NOE_ENTITY_ASSEMBLY_ID_1 = "_Heteronucl_NOE.Entity_assembly_ID_1";
 	HET_NOE_RES_LABEL = "_Heteronucl_NOE.Comp_ID_1";
 	HET_NOE_RES_SEQ_CODE = "_Heteronucl_NOE.Seq_ID_1";
 	HET_NOE_SF_CAT = "_Heteronucl_NOE_list.Sf_category";
@@ -440,6 +653,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	SEQ_IDENTITY = "_Entity_db_link.Seq_identity";
 
 	T1_ATOM_NAME = "_T1.Entry_atom_ID";
+	T1_ENTITY_ASSEMBLY_ID = "_T1.Entity_assembly_ID";
         T1_RELAX = "heteronucl_T1_relaxation";
         T1_RELAX_SF_CAT = "_Heteronucl_T1_list.Sf_category";
         T1_RES_LABEL = "_T1.Comp_ID";
@@ -449,6 +663,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         T1_VALUE_ERR = "_T1.T1_val_err";
 
 	T2_ATOM_NAME = "_T2.Entry_atom_ID";
+	T2_ENTITY_ASSEMBLY_ID = "_T2.Entity_assembly_ID";
         T2_RELAX = "heteronucl_T2_relaxation";
         T2_RELAX_SF_CAT = "_Heteronucl_T2_list.Sf_category";
         T2_RES_LABEL = "_T2.Comp_ID";

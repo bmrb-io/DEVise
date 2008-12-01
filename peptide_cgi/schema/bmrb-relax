@@ -10,6 +10,7 @@
 type relax ascii
 comment #
 whitespace ' '
+attr Entity_assembly_ID int
 attr Residue_seq_code int lo 0
 attr Residue_label string 4
 attr Atom_name string 5

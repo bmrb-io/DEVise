@@ -27,7 +27,7 @@ set files = ( data_dir/6011ac1.dat \
 	data_dir/6011md.dat \
 	data_dir/6011p1.dat \
 	data_dir/6011rc1.dat \
-	data_dir/6011rl1.dat \
+	data_dir/6011rl.dat \
 	html_dir/6011ac1.html \
 	html_dir/6011ac1_large.html \
 	html_dir/6011am1.html \

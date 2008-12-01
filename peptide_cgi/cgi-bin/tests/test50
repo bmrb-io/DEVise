@@ -28,7 +28,7 @@ set files = ( data_dir/uvd/test50_outam1.dat \
 	data_dir/uvd/test50_outps1.dat \
 	data_dir/uvd/test50_outpsac1.dat \
 	data_dir/uvd/test50_outrc1.dat \
-	data_dir/uvd/test50_outrl1.dat \
+	data_dir/uvd/test50_outrl.dat \
 	html_dir/uvd/test50_outam1.html \
 	html_dir/uvd/test50_outam1_large.html \
 	html_dir/uvd/test50_outas1.html \

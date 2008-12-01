@@ -24,7 +24,7 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	data_dir/lacs_example1n3.dat data_dir/lacs_example1n4.dat data_dir/lacs_example1n5.dat \
 	data_dir/lacs_example1n6.dat data_dir/lacs_example1n7.dat data_dir/lacs_example1n8.dat \
 	data_dir/lacs_example1n9.dat data_dir/lacs_example1p1.dat data_dir/lacs_example1rc1.dat \
-	data_dir/lacs_example1rl1.dat data_dir/lacs_example1t11.dat data_dir/lacs_example1t12.dat \
+	data_dir/lacs_example1rl.dat data_dir/lacs_example1t11.dat data_dir/lacs_example1t12.dat \
 	data_dir/lacs_example1t13.dat data_dir/lacs_example1t21.dat data_dir/lacs_example1t22.dat \
 	data_dir/lacs_example1t23.dat html_dir/lacs_example1as1.html \
 	html_dir/lacs_example1c1.html html_dir/lacs_example1d1.html html_dir/lacs_example1g1.html \

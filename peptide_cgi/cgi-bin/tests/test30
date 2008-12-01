@@ -26,7 +26,7 @@ set files = (data_dir/simple_pistachioas1.dat \
 	data_dir/simple_pistachiops1.dat \
 	data_dir/simple_pistachiopsac1.dat \
 	data_dir/simple_pistachiorc1.dat \
-	data_dir/simple_pistachiorl1.dat \
+	data_dir/simple_pistachiorl.dat \
 	html_dir/simple_pistachioas1.html \
 	html_dir/simple_pistachiod1.html \
 	html_dir/simple_pistachiohn1.html \

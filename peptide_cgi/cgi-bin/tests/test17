@@ -34,7 +34,7 @@ set files = (data_dir/test17_outas1.dat \
 	data_dir/test17_outn9.dat \
 	data_dir/test17_outp1.dat \
 	data_dir/test17_outrc1.dat \
-	data_dir/test17_outrl1.dat \
+	data_dir/test17_outrl.dat \
 	data_dir/test17_outt11.dat \
 	data_dir/test17_outt12.dat \
 	data_dir/test17_outt13.dat \
