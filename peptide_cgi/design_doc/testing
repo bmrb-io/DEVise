@@ -75,6 +75,17 @@ The following testing steps must be done:
     - Chemical shift distributions by amino acid (from the first save
       frame) [also make sure this shows up in the large size]
 
+- View the following visualizations for entry 5246:
+    - The 3D structure visualization for 5246/1KMF; select data sets
+      from the two different entity assemblies (e.g., HA delta chem shift
+      [1] and HA delta chem shift [2]) and make sure that selecting
+      residues in the data view correctly highlights them in the structure
+      selection window and structure view.
+    - The first two assigned chemical shift ambiguity code data
+      visualizations -- make sure that the structure is the correct one
+      for the given entity assembly ID, and selecting data highlights
+      the residues correctly.
+
 - Go to http://devise.cs.wisc.edu/devise/bmrb/uvd/uvd_works.html and click
   the "Test" link.  Make sure the summary page is correct and some of
   the visualizations work.
