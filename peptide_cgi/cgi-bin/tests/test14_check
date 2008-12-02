@@ -69,3 +69,10 @@ set line = 'HA delta chem shift \[1\]	4867d1	$HA_DeltaShift'
 source tests/check4line
 set line = '% 15N assign per res \[1\]	4867p1	$assigForN'
 source tests/check4line
+
+set file = "data_dir/4867hn1.dat"
+set line = "2 6 GLU 8.5 124.7 H N"
+source tests/check4line
+set line = "2 175 GLY 7.85 114.9 H N"
+source tests/check4line
+
