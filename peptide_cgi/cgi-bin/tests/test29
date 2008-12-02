@@ -19,8 +19,7 @@ endif
 
 echo "Checking output files"
 
-#TEMP -- This *should* generate residue lists -- see bug 037.
-set files = (data_dir/5246am1.dat \
+set files = ( data_dir/5246am1.dat \
 	data_dir/5246am2.dat \
 	data_dir/5246am3.dat \
 	data_dir/5246am4.dat \
@@ -55,25 +54,45 @@ set files = (data_dir/5246am1.dat \
 	data_dir/5246rc4.dat \
 	data_dir/5246rl.dat \
 	html_dir/5246am1.html \
+	html_dir/5246am1_large.html \
 	html_dir/5246am2.html \
+	html_dir/5246am2_large.html \
 	html_dir/5246am3.html \
+	html_dir/5246am3_large.html \
 	html_dir/5246am4.html \
+	html_dir/5246am4_large.html \
 	html_dir/5246as1.html \
+	html_dir/5246as1_large.html \
 	html_dir/5246as2.html \
+	html_dir/5246as2_large.html \
 	html_dir/5246as3.html \
+	html_dir/5246as3_large.html \
 	html_dir/5246as4.html \
+	html_dir/5246as4_large.html \
 	html_dir/5246c1.html \
+	html_dir/5246c1_large.html \
 	html_dir/5246c2.html \
+	html_dir/5246c2_large.html \
 	html_dir/5246c3.html \
+	html_dir/5246c3_large.html \
 	html_dir/5246c4.html \
+	html_dir/5246c4_large.html \
 	html_dir/5246d1.html \
+	html_dir/5246d1_large.html \
 	html_dir/5246d2.html \
+	html_dir/5246d2_large.html \
 	html_dir/5246d3.html \
+	html_dir/5246d3_large.html \
 	html_dir/5246d4.html \
+	html_dir/5246d4_large.html \
 	html_dir/5246p1.html \
+	html_dir/5246p1_large.html \
 	html_dir/5246p2.html \
+	html_dir/5246p2_large.html \
 	html_dir/5246p3.html \
+	html_dir/5246p3_large.html \
 	html_dir/5246p4.html \
+	html_dir/5246p4_large.html \
 	html_dir/5246y.html \
 	html_dir/5246y_large.html \
 	session_dir/5246acdd \
@@ -96,27 +115,7 @@ set files = (data_dir/5246am1.dat \
 	session_dir/5246p1.ds \
 	session_dir/5246p2.ds \
 	session_dir/5246p3.ds \
-	session_dir/5246p4.ds \
-	html_dir/5246am1_large.html \
-	html_dir/5246am2_large.html \
-	html_dir/5246am3_large.html \
-	html_dir/5246am4_large.html \
-	html_dir/5246as1_large.html \
-	html_dir/5246as2_large.html \
-	html_dir/5246as3_large.html \
-	html_dir/5246as4_large.html \
-	html_dir/5246c1_large.html \
-	html_dir/5246c2_large.html \
-	html_dir/5246c3_large.html \
-	html_dir/5246c4_large.html \
-	html_dir/5246d1_large.html \
-	html_dir/5246d2_large.html \
-	html_dir/5246d3_large.html \
-	html_dir/5246d4_large.html \
-	html_dir/5246p1_large.html \
-	html_dir/5246p2_large.html \
-	html_dir/5246p3_large.html \
-	html_dir/5246p4_large.html)
+	session_dir/5246p4.ds )
 
 foreach file ($files)
   if (! -f $file) then

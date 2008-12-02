@@ -1,5 +1,4 @@
 #! /bin/csh -f
-#TEMP -- add -check_pct after merge
 
 # Test star.getAndFilterOptionalFrameValues
 
@@ -8,7 +7,7 @@ set result = 0
 rm -f */5085
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -nomail -name 5085 -file test_data/bmr5085.str -force
+./s2d -nomail -name 5085 -file test_data/bmr5085.str -force -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

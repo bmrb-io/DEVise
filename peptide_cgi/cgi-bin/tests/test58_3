@@ -1,5 +1,4 @@
 #! /bin/csh -f
-#TEMP -- add -check_pct after merge
 
 # Test an entry where the 3.1 file has data for more than one entity
 # assembly (of the same entity) in the same save frame.
@@ -9,7 +8,8 @@ set result = 0
 rm -f */15303*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -nomail -name 15303 -file test_data/bmr15303_3.str -do_pdb 2 -force
+./s2d -nomail -name 15303 -file test_data/bmr15303_3.str -do_pdb 2 -force \
+  -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
