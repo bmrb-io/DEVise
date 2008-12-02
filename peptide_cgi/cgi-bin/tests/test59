@@ -13,6 +13,7 @@ if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
 endif
+mv tmp/s2d.out tmp/s2d.out1
 
 echo -n "Processing mmCIF: "
 ./s2d -nomail -bmrbid 4310 -pdbid 1A29 -coord_index 1 -do_pdb 2 -force \
