@@ -1,6 +1,5 @@
 			Peptide-CGI Version History
 
-
 Peptide-CGI 11.4.0
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.3 or higher.)
@@ -36,6 +35,10 @@ Peptide-CGI 11.3.2
 
 * Fixed bug 061 (data selection text too small in 3D visualizations for
 entries with many data sources).
+
+* Fixed up help for coordinate visualizations -- images match latest
+session version; changed all images from GIFs to PNGs; clarified
+the text a little.
 
 
 Peptide-CGI 11.3.1
