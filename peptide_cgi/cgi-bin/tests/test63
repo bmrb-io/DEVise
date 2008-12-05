@@ -1,0 +1,43 @@
+#! /bin/csh -f
+
+# 5962 has RNA only.
+
+set result = 0
+
+rm -f */5962*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -bmrbid 5962 -do_pdb 2 -force -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+#TEMPTEMP set file = "data_dir/4310g1.dat"
+#TEMPTEMP set line = "3JHNHA 1 3 GLN H 3 GLN HA 7.240 2.0"
+#TEMPTEMP source tests/check4line
+#TEMPTEMP set line = "3JHNHA 1 148 LYS H 148 LYS HA 8.576 2.0"
+#TEMPTEMP source tests/check4line 
+
+
+echo -n "Test63 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

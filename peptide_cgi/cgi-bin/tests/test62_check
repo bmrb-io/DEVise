@@ -1,0 +1,17 @@
+echo "Checking output files"
+
+#TEMPTEMP -- needs files
+set files = ( )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+#TEMPTEMP set file = "data_dir/5085g1.dat"
+#TEMPTEMP set line = "3JHNHA 1 3 LEU H 3 LEU HA 7.1 0"
+#TEMPTEMP source tests/check4line
+#TEMPTEMP set line = "3JHNHA 1 98 VAL H 98 VAL HA 9.8 0"
+#TEMPTEMP source tests/check4line

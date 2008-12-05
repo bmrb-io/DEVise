@@ -6,7 +6,7 @@ set result = 0
 
 rm -f */5085
 
-echo -n "Processing NMR-STAR and mmCIF: "
+echo -n "Processing NMR-STAR: "
 ./s2d -nomail -name 5085 -file test_data/bmr5085.str -force -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"

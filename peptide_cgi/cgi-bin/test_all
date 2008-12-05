@@ -489,6 +489,30 @@ if ($status != 0) then
   set failed_list = "$failed_list test61_3"
 endif
 
+echo ""
+echo "Running test62..."
+tests/test62
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test62"
+endif
+
+echo ""
+echo "Running test62_3..."
+tests/test62_3
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test62_3"
+endif
+
+echo ""
+echo "Running test63..."
+tests/test63
+if ($status != 0) then
+  set result = 1
+  set failed_list = "$failed_list test63"
+endif
+
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 
