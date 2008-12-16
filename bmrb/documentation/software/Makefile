@@ -41,6 +41,3 @@ clean:
 
 tar:
 	cd ..; tar cvfzh software_doc.tgz --exclude CVS software
-
-#TEMPTEMP -- make links from the appropriate docs to here
-#TEMPTEMP -- make a target to tar things up for xfer to bmrb
