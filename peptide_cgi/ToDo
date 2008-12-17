@@ -338,6 +338,11 @@ Num Date        Status  Pri     Description
 087 11/19/08	OPEN	3	Make sure I'm correctly testing for model 1
 				of coordinates in mmCIF files. (wenger)
 
+088 12/17/08	OPEN	3	Add the residue amino acid code (one-letter
+				or three-letter?) to the data for the delta
+				shift, etc., visualizations (so it shows up
+				when drilling down). (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
