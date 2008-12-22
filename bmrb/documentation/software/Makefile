@@ -40,4 +40,4 @@ clean:
 	\rm *.txt
 
 tar:
-	cd ..; tar cvfzh software_doc.tgz --exclude CVS software
+	cd ..; tar cvfXzh software_doc.tgz software/exclude_from_tar software
