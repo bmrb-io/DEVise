@@ -35,6 +35,20 @@ setup:
 		bmrb_mirror_instructions.txt
 	ln -s ../../../peptide_cgi/INSTALL_NOTES.txt peptide-cgi_install.txt
 	ln -s ../../../peptide_cgi/CONFIG.txt peptide-cgi_config.txt
+	ln -s ../../../peptide_cgi/design_doc/bmrb_setup \
+		peptide-cgi_bmrb_setup.txt
+	ln -s ../../../peptide_cgi/design_doc/cs_setup \
+		peptide-cgi_cs_setup.txt
+	ln -s ../../../peptide_cgi/design_doc/building \
+		peptide-cgi_building.txt
+	ln -s ../../../Java/JavaScreen/doc/commands js_commands.txt
+	ln -s ../../../Java/JavaScreen/doc/js_doc js_client_doc.txt
+	ln -s ../../../Java/JavaScreen/doc/jspop_doc jspop_doc.txt
+	ln -s ../../../Java/JavaScreen/doc/jss_doc jss_doc.txt
+	ln -s ../../../Java/JavaScreen/doc/building js_building.txt
+	ln -s ../../../Java/JavaScreen/doc/adding_functionality \
+		js_adding_functionality.txt
+	ln -s chem_shift_install chem_shift_install.txt
 
 clean:
 	\rm *.txt

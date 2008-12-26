@@ -1,6 +1,8 @@
 		Peptide-CGI Configuration Information
 		$Id$
 
+TEMPTEMP -- make sure this is up-to-date
+
 * INTRODUCTION
 
 This file explains the various configuration variables that are found

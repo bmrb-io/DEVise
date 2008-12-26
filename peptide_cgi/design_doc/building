@@ -1,0 +1,9 @@
+                        Building Peptide-CGI
+                $Id$
+
+TEMP -- preliminary
+
+
+* config file
+* cd src
+* make all jar

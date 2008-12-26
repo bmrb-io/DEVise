@@ -2,6 +2,7 @@
 	$ID$
 
 TEMPTEMP -- totally preliminary!
+TEMPTEMP -- test new stuff with "test" config
 
 modify peptide-CGI to produce new data (or else mock up new data)
 run devise in dev_test

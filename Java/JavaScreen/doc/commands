@@ -4,7 +4,7 @@
 Version: this document refers to the JavaScreen communication protocol
 version 16.0.
 
-For the details of the format in which commands are send on the socket,
+For the details of the format in which commands are sent on the socket,
 see comments in DEViseCommSocket.java.
 
 

@@ -1,8 +1,34 @@
 		Automatic Peptide-CGI Testing
 	$Id$
 
+Peptide-CGI is currently tested every night with an automatic test
+script.
+
+This is quite simple to do, following these steps:
+1. Check out Peptide-CGI.
+2. Build Peptide-CGI (see TEMPTEMP).
+3. Manually run cgi-bin/test_all and make sure it works.
+4. Set up a cron job to run it every night.
+
+Right now, the nightly tests are run in /scratch/wenger/peptide_cgi_test
+on manta.cs.wisc.edu (but the exact location is not important for
+the successful running of the tests).
+
+This is the cron entry used to run the tests:
+
+    08 23 * * * cd /scratch/wenger/peptide_cgi_test/peptide_cgi/cgi-bin;
+    ./test_all
+
+
+
 TEMPTEMP -- totally preliminary
 
 check out or install peptide-cgi
 manually run cgi-bin/test_all to make sure it works
 set up a cron job that runs cgi-bin/test_all, monitor results
+
+
+/scratch/wenger/peptide_cgi_test
+08 23 * * * cd /scratch/wenger/peptide_cgi_test/peptide_cgi/cgi-bin;
+./test_all
+

@@ -14,21 +14,120 @@ BMRB visualization software overview
 </h2></center>
 
 
+<p>TEMPTEMP -- document Bugs and Todo files</p>
+<p>TEMPTEMP -- document version history files</p>
 
+
+<center><h3>
+Components
+</h3></center>
+<p>
+The BMRB data visualization system consists of the following four
 components:
-* devise
-* JavaScreen/JSPop/JSS
-* Peptide-CGI
-* ChemShift
+</p>
+<ul>
+<li>DEVise
+<li>JavaScreen
+<li>Peptide-CGI
+<li>ChemShift
+</ul>
+
+<p>
+<b>DEVise</b> is an interactive visualization tool that lets users easily
+browse visual presentations of large tabular datasets.  However, DEVise
+itself is based on the X Windows system, so it is not web-compatible.
+Also, creating new visualizations in DEVise is not as easy as we had
+initially hoped.  Therefore, we have combined DEVise with other pieces
+of software to make it useful as a web-based visualization tool.
+</p>
+
+<p>
+DEVise basically enables data records to get translated to symbols
+that are displayed on the screen (in what we call a "view").  The
+power of DEVise comes mainly from interconnections between various
+views.  (For more details on this, see the paper
+<a href="http://pages.cs.wisc.edu/~devise/devise/spie2000_hongyu.ps.gz">
+"DEVise and the JavaScreen: Visualization on the Web"</a>.)
+
+data sesssion schema files
+
+</p>
+
+<p>
+For the point of this document, the most important thing is that 
+a DEVise visualization consists of a session file, and a number of
+associated data and schema files.  The session file basically defines
+how the data is displayed, and the connections between views.  Data
+files are ASCII (in the case of all BMRB data) files that have a
+uniform format for all records within a given file.  Schema files
+specify the formats of the data files.
+</p>
+
+<p>
+There is more detailed information about DEVise at the
+<a href="http://pages.cs.wisc.edu/~devise">DEVise home page</a>.
+</p>
+
+
+<p>
+The <b>JavaScreen</b> enables DEVise to operate on the web.  The
+JavaScreen setup consists of three main parts: the JavaScreen client,
+the JavaScreen Point of Presence (JSPoP) and one or more DEVise
+servers.
+</p>
+
+<p>
+<a href="js_commands.txt">JavaScreen commands</a>
+</p>
+
+<p>
+<a href="js_client_doc.txt">JavaScreen client concepts</a>
+</p>
+
+<p>
+<a href="jspop_doc.txt">JSPoP concepts</a>
+</p>
+
+<p>
+<a href="jss_doc.txt">JSS concepts</a>
+</p>
+
+<p>
+<b>Peptide-CGI</b> is responsible for translating a BMRB entry into
+a set of DEVise visualizations.
+uses STARlibJ (case?)
+peptide-cgi creates data & sessions for devise & html; has static schema files
+histograms
+vis server
+</p>
+
+<p>
+<b>ChemShift</b>...
+uses NMRPipe, MOLMOL
+how server works
+file to run it (what is in the file?)
+</p>
 
 
 data flow, make_view, NMR browser, etc.
 
-peptide-cgi creates data & sessions for devise & html; has static schema files
 
-hitograms
 
-vis server
+
+<center><h3>
+Control and Data Flow
+</h3></center>
+
+
+when the user clicks "Data Visualizations" in NMR browser, what happens?
+explain special cases for coordinates, chem shift
+cache
+make_view
+
+
+
+
+
 
 
 <center><h3>
@@ -57,11 +156,120 @@ visualization</a>
 </p>
 
 
-<p>
-TEMPTEMP -- where in CVS?
-TEMPTEMP -- programming languages
-TEMPTEMP -- where devel, QA, and production versions run
-</p>
+<center><h3>
+Details (TEMPTEMP -- better title?)
+</h3></center>
+
+<h4>
+DEVise
+</h4>
+
+<table border="0" cellspacing="2" cellpadding="2">
+  <tr>
+    <td>CVS repository:</td>
+    <td>/p/devise/cvs at computer sciences</td>
+  </tr>
+  <tr>
+    <td>Programming language:</td>
+    <td>C++ (most recently compiled with gcc 4.3.0)</td>
+  </tr>
+  <tr>
+    <td>Development installation:</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Quality assurance installation:</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Production installations:</td>
+    <td></td>
+  </tr>
+</table>
+
+<h4>
+JavaScreen
+</h4>
+<table border="0" cellspacing="2" cellpadding="2">
+  <tr>
+    <td>CVS repository:</td>
+    <td>/p/devise/cvs at computer sciences</td>
+  </tr>
+  <tr>
+    <td>Programming language:</td>
+    <td>Java (most recently compiled with 1.6.0_07; generates 1.3
+      class files)</td>
+  </tr>
+  <tr>
+    <td>Development installation:</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Quality assurance installation:</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Production installations:</td>
+    <td></td>
+  </tr>
+</table>
+
+<h4>
+Peptide-CGI
+</h4>
+TEMPTEMP -- add notes about histogram installations
+<table border="0" cellspacing="2" cellpadding="2">
+  <tr>
+    <td>CVS repository:</td>
+    <td>/p/devise/cvs at computer sciences</td>
+  </tr>
+  <tr>
+    <td>Programming language:</td>
+    <td>Java (most recently compiled with 1.6.0_07; generates 1.3
+      class files)</td>
+  </tr>
+  <tr>
+    <td>Development installation:</td>
+    <td>http://devise.cs.wisc.edu/devise/bmrb_test/bmrb_select.html
+      (see Makefile.config.uw_cs_test)</td>
+  </tr>
+  <tr>
+    <td>Quality assurance installation:</td>
+    <td>http://devise.cs.wisc.edu/devise/bmrb/ (see
+      Makefile.config.uw_cs_teal)</td>
+  </tr>
+  <tr>
+    <td>Production installations:</td>
+    <td></td>
+  </tr>
+</table>
+
+<h4>
+ChemShift
+</h4>
+<table border="0" cellspacing="2" cellpadding="2">
+  <tr>
+    <td>CVS repository:</td>
+    <td>/cvsmain at BMRB</td>
+  </tr>
+  <tr>
+    <td>Programming language:</td>
+    <td>Java (most recently compiled with 1.5.0_11; generates 1.3
+      class files)</td>
+  </tr>
+  <tr>
+    <td>Development installation:</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Quality assurance installation:</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>Production installations:</td>
+    <td></td>
+  </tr>
+</table>
 
 
 <P class="datestamp">Last updated <!--#flastmod file="./overview.html" -->
