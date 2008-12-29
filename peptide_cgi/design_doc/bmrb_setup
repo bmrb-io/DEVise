@@ -1,11 +1,9 @@
 		Directory Setup for Peptide-CGI at BMRB
 		$Id$
 
-TEMPTEMP -- out of date
-TEMPTEMP -- add ChemShift
-TEMPTEMP -- explain about what stuff must be "visible" to DEVise, etc.
+This is on moray.bmrb.wisc.edu and swordfish.bmrb.wisc.edu.
 
-/p/devise/demo                          
+/website/devise/demo
   dat                          
     bmrb                          
       (dynamic_data) <---------------+ 
@@ -14,21 +12,29 @@ TEMPTEMP -- explain about what stuff must be "visible" to DEVise, etc.
       physical                       |              
   session.js                         |              
     bmrb                             |              
-      (dynamic_sessions) <-----------|-+             
-                                     | |        
-/bmrb/htdocs                         | |     
-  cgi-bin                            | |  
-    peptide-cgi                      | |        
-      bin                            | |  
-      java_classes                   | |  
-      (data_dir) <-------------------+ |  
-      (session_dir) <----------------|-+  
-  devise [JS jar files]              | |  
-    peptide-cgi [bmrb_select.html]   | |  
-      data_dir >---------------------+-|--+
-      session_dir >--------------------+  |        
-      (html) <----------------------------+ [make_view points to html files here]
-CGI script doesn't return html in path
+      (dynamic_sessions) <-----------|--+             
+                                     |  |        
+/website/devise/ChemShift            |  |           
+  (data_dir) <-----------------------+  | 
+                                     |  |      
+/website/htdocs                      |  |     
+  cgi-bin                            |  |  
+    peptide-cgi                      |  |        
+      bin                            |  |  
+      (data_dir) <-------------------+  |  
+      (session_dir) <----------------|--+  
+      (html_dir) <-------------------|--|--+       
+      (upload_data) <----------------|--|--|--+
+  devise [JS jar files]              |  |  |  |    
+    peptide-cgi [bmrb_select.html]   |  |  |  | 
+      (html) <-----------------------|--|--+  |
+  vis_serv                           |  |  |  |
+    upload_data >--------------------|--|--|--+
+                                     |  |  |         
+/website/devise/bmrb                 |  |  |          
+  dynamic_data >---------------------+  |  |    
+  dynamic_sessions >--------------------+  |        
+  dynamic_html >---------------------------+    
 
 
 Note: a >---> (b) is a symlink from a to b.

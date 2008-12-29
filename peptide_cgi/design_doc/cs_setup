@@ -1,7 +1,12 @@
 		Directory Setup for Peptide-CGI at CS
 		$Id$
 
-TEMPTEMP -- out of date
+This is on teal.cs.wisc.edu.
+
+Note that the NMR-STAR 2.1 and 3.1 installations overwrite some of each
+others' files -- there is not enough flexibility in the configuration
+right now to avoid that (I think it would actually require separate
+JavaScreen installations or some changes to DEVise itself.)
 
 /p/devise/demo
   dat
@@ -11,23 +16,46 @@ TEMPTEMP -- out of date
     schema                   |               
       physical               |                   
   session.js                 |       
-    bmrb                     |                                                
+    bmrb                     |                                     
       (dynamic_sessions) <---|--+                                 
                              |  |  
-/var/home/www                |  |              
+/var/home/www/public         |  |              
   cgi-bin                    |  |          
     bmrb                     |  |          
       bin                    |  |  
-      java_classes           |  |  
       (data_dir) <-----------+  |                  
       (session_dir) <--------|--+                     
-  public [JS jar files]      |  |          
-    bmrb [bmrb_select.html]  |  |          
+      (html_dir) <-----------|--|--+
+      (upload_data) <--------|--|--|--+
+    bmrb3.1                  |  |  |  |    
+      bin                    |  |  |  |
+      (data_dir) <-----------+  |  |  |            
+      (session_dir) <--------|--+  |  |               
+      (html_dir) <-----------|--|--|--|--+        
+      (upload_data) <--------|--|--|--+  |
+    bmrb_test                |  |  |  |  |  
+      bin                    |  |  |  |  |  
+      (data_dir) <-----------+  |  |  |  |   
+      (session_dir) <--------|--+  |  |  |      
+      (html_dir) <-----------|--|--|--|--|--+
+      (upload_data) <--------|--|--|--+  |  |   
+  html/devise [JS jar files] |  |  |  |  |  |
+    bmrb [bmrb_select.html]  |  |  |  |  |  |
+      histograms             |  |  |  |  |  | [histogram html files]
+      vis_serv               |  |  |  |  |  |  
+        upload_data >--------|--|--|--+  |  |       
       (html) <---------------|--|--+ [make_view points to html files here]
-                             |  |  | 
-/local.pumori/devise/bmrb    |  |  |                          
-  dynamic_data >-------------+--|--+
-  dynamic_sessions >------------+
+    bmrb3.1                  |  |  |     |  | [bmrb_select.html]
+      (html) <---------------|--|--|-----+  |
+    bmrb_test                |  |  |     |  | [bmrb_select.html]
+      (html) <---------------|--|--|-----|--+
+                             |  |  |     |  |
+/scratch/devise/bmrb         |  |  |     |  |        
+  dynamic_data >-------------+  |  |     |  |
+  dynamic_sessions >------------+  |     |  |
+  dynamic_html >-------------------+     |  |
+  dynamic_html3.1 >----------------------+  |
+  dynamic_html_test >-----------------------+
 
 
 Note: a >---> (b) is a symlink from a to b.
