@@ -1,7 +1,6 @@
 		Peptide-CGI Configuration Information
 		$Id$
 
-TEMPTEMP -- make sure this is up-to-date
 
 * INTRODUCTION
 
@@ -23,6 +22,8 @@ JAVA_BIN:  the directory containing the java executable you want to use.
 The Java version must be at least 1.3.
 
 PERL_BIN:  the directory containing the perl executable you want to use.
+
+JAR_HOME:  no longer used (this was for Jafar).
 
 
     Web URLs
@@ -58,6 +59,11 @@ by using OUTPUT_WEB_DOMAIN.
 CGI_URL:  the URL of the CGI script that runs Peptide-CGI.  This URL
 should point to the same file as $(CGI_HOME)/make_view, see below.
 This value should be defined by using OUTPUT_WEB_DOMAIN.
+
+UVD_CGI_URL:  the URL of the CGI script that runs Peptide-CGI for
+"upload and visualize data"/visualization server.  This should point
+to the same file as $(CGI_HOME)/make_uvd.  This value should be defined
+by using OUTPUT_WEB_DOMAIN.
 
 
     Star file name template
@@ -188,6 +194,13 @@ VUR_SCRIPT:  the "main" script to run.  This should point to
 view_unreleased as it is installed on the JavaScreen machine.
 
 
+    Installation parameters for the Visualization Server
+    ----------------------------------------------------
+
+UVD_DATA_UPLOAD:  the directory into which the UVD/visualization server
+data is uploaded.
+
+
     Installation parameters for LACS data
     -------------------------------------
 
@@ -204,6 +217,16 @@ leave this variable set to the default value.
 
 LACS_URL:  the URL of the directory containing the LACS files.  This
 value must end with a trailing slash.
+
+
+    Installation parameters for histograms
+    --------------------------------------
+
+HISTOGRAM_HTML_HOME:  the directory into which the histogram HTML
+files, etc., will be installed.
+
+HISTOGRAM_DATA_HOME:  the directory containing the actual database-wide
+histogram data.
 
 
     Email addresses
@@ -231,3 +254,5 @@ the full chemical shift reference calculation when it does the "main"
 visualization generation and generates the summary html page.
 Note:  if you do not have the separate ChemShift software installed,
 this variable should be set to 0!
+
+EXTRA_GC:  whether Peptide-CGI should do "extra" garbage collection.
