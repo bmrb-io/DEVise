@@ -20,11 +20,17 @@ architecture (hp, solaris, solsparc, etc.).  Most of the system architecture
 directory names should be pretty self-explanatory.  Note that 'solaris'
 is for Intel/Solaris, and 'solsparc' is for SPARC/Solaris.
 
+If you are building in one of the linux* directories (other than just
+plain linux), you need to run '../linux/setup' in that directory before
+doing anything else.
+
 To build the "normal" (monolithic) version of DEVise, make the target
 'generic' in the appropriate architecture directory.  This will end up
 making an executable called 'generic' in the 'generic' subdirectory.
 Other targets include 'all', 'devise', 'multi', 'static' (for some
-architectures), 'pure' (for some architectures), and 'cslib'.
+architectures), 'pure' (for some architectures), and 'cslib'.  If you
+are going to use DEVise with the JavaScreen server, you need to build
+the devised (you can do this by making the 'all' or 'devised' targets).
 
 You may need to update the dependency files to get the sources to compile
 correctly.  To do this, go to the top level source directory (where you
@@ -83,7 +89,7 @@ src/foo (see below).
 *** Library and Object Files
 
 All library (.a) and object (.o) files should be created a the directory
-*under the appropriate archictecture directory*, NOT in the same directory
+*under the appropriate architecture directory*, NOT in the same directory
 as the source files.  For example, the .a and .o files corresponding to
 the sources in graphics are in hp/graphics, solaris/graphics, etc.
 
