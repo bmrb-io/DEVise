@@ -1,6 +1,85 @@
 			Building the JavaScreen
 		$Id$
 
-TEMP -- preliminary!
+*** Quick overview
 
-Note that JS client, JSS, and JSPoP sources are all mixed together
+The following steps are necessary to build the JavaScreen:
+
+1) Check out the source code.
+2) Make a configuration file.
+3) Make the 'setup' target.
+4) Make the 'all' target.
+
+
+*** Checkout, Configuration and Setup
+
+You should have gotten this file by doing a 'cvs checkout world', or some
+variation on that, with your CVSROOT environment variable set to
+/p/devise/cvs.
+
+Once you have the sources, you need to make an appropriate Makefile.config
+file.  It's best to start by copying or linking an appropriate
+Makefile.config.* file to Makefile.config, and then modifying it as
+necessary.
+
+After creating the configuration file, you need to make the target
+'setup'.  This creates things like the bin and bin2 directories.
+Currently, the setup script has the linux_rhel5 directory hard-coded
+as the place to get the devised executable.  That should be changed...
+
+
+*** Building
+
+Unfortunately, the JS client, JSPoP, and JSS sources are mostly in the
+same directory (some JS client sources are in the UI directory), which
+makes the code somewhat harder to understand and also means that making
+the jar files is more complicated than it should be (when you make the
+'jar' target, you end up deleting all of the class files).
+
+You can build all of the JavaScreen classes by making the target 'all'.
+This creates class files in the JavaScreen within the current (JavaScreen)
+directory.  (We ended up with kind of a goofy directory structure because
+we didn't initially set things up right to use packages.)
+
+If you want to end up with all of the jar and class files, make the targets
+'jar all' (in that order).  (You need to have both the jar file and the
+class files to do a JavaScreen release.)
+
+
+*** Running
+
+The JavaScreen client can be run locally either from the jar files or
+directly from the class files (the applet, of course, is run from the
+jar files).  The JSPoP and JSS, however, are currently set up to run
+only from the class files (there are no corresponding jar files).
+
+To start up the JSPoP and all related processes, run the command
+'restart_jspop'.  To kill all of the JSPoP-related processes, run
+'kill_jsall'.
+
+When the processes are running, you should have Xvfb, devised, jspop,
+and jss "PID files" of the form <name>_pid:<id>:<machine>:<pid>.  The
+scripts use these files to monitor and kill the processes.  For example,
+running the "regular" JSPoP on ricotta produced the following PID files:
+
+    Xvfb_pid::ricotta.cs.wisc.edu:30608
+    devised_pid:regular:ricotta.cs.wisc.edu:5102
+    jspop_pid:regular:ricotta.cs.wisc.edu:30529
+    jss_pid:regular:ricotta.cs.wisc.edu:30616
+
+Currently, Xvfb on manta will not accept connections.  I haven't spent a lot
+of time trying to figure this out, but it has something to do with how
+it's configured, and I'm not sure it can be fixed without root access.
+Because of that problem, I've been running the JSPoP, etc., on ricotta
+to test them without changing the software on teal (which is the "public"
+JavaScreen).
+
+Note that there is only one Xvfb per machine, and all deviseds use that
+same Xvfb process, even deviseds run with different "IDs".  (This is
+something that I want to change in the future.)
+
+
+*** Running the Client Only
+
+If you are just changing the JavaScreen client, you can run it by running the
+command 'js -hostteal' (this will connect to the JSPoP running on teal).

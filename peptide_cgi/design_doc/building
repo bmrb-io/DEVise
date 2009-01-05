@@ -1,9 +1,38 @@
                         Building Peptide-CGI
                 $Id$
 
-TEMP -- preliminary
+* Building Peptide-CGI
+
+There are four basic steps in building Peptide-CGI:
+1) Get the code.
+2) Set up a config file.
+3) Set up various directories, etc.
+4) Compile the code.
 
 
-* config file
-* cd src
-* make all jar
+Generally, you get the Peptide-CGI code by checking out the peptide_cgi
+module from the repository in /p/devise/cvs at CS.  There are also source
+code archives of releases in /p/devise/wenger/src_archive.
+
+
+To set up a config file, you should copy or link the appropriate
+Makefile.config.* to Makefile.config (take a guess depending on where
+you're building the software).  Then modify Makefile.config as necessary
+(the various config values are detailed in a separate document).
+
+
+Once you have your Makefile.config set up, run the command:
+
+    make setup testsetup
+
+(You need to make the target testsetup to be able to run the automatic
+test scripts.)
+
+
+To actually compile the software, go into the src directory and run
+the command:
+
+    make all jar
+
+If the compile works properly, you will end up with an s2d.jar file
+in the src directory.

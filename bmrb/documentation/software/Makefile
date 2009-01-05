@@ -49,6 +49,8 @@ setup:
 	ln -s ../../../Java/JavaScreen/doc/adding_functionality \
 		js_adding_functionality.txt
 	ln -s chem_shift_install chem_shift_install.txt
+	ln -s ../../../peptide_cgi/design_doc/concepts \
+		peptide-cgi_concepts.txt
 
 clean:
 	\rm *.txt

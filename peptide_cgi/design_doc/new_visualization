@@ -12,3 +12,6 @@ modify peptide-cgi to use new session template to generate session
 modify peptide-cgi to create new specific html page
 modify peptide-cgi to add appropriate link(s) to summary html page
 add appropriate tests to test_all and testing document
+
+TEMPTEMP -- talk about the setup for running devise "locally" on 
+peptide-cgi sessions, etc.

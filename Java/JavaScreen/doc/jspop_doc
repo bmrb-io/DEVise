@@ -87,4 +87,9 @@ When either of these cases happen, the DEViseServer requests that the
 JSS kill the devised and start a new one.
 
 
+* Multiple JSPoP instances per machine
+
+Explain the "IDs" (regular/test/etc) TEMP
+
+
 * Other:

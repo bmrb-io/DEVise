@@ -6,7 +6,7 @@ script.
 
 This is quite simple to do, following these steps:
 1. Check out Peptide-CGI.
-2. Build Peptide-CGI (see TEMPTEMP).
+2. Build Peptide-CGI (see the building document).
 3. Manually run cgi-bin/test_all and make sure it works.
 4. Set up a cron job to run it every night.
 
@@ -17,18 +17,7 @@ the successful running of the tests).
 This is the cron entry used to run the tests:
 
     08 23 * * * cd /scratch/wenger/peptide_cgi_test/peptide_cgi/cgi-bin;
-    ./test_all
+      ./test_all
 
-
-
-TEMPTEMP -- totally preliminary
-
-check out or install peptide-cgi
-manually run cgi-bin/test_all to make sure it works
-set up a cron job that runs cgi-bin/test_all, monitor results
-
-
-/scratch/wenger/peptide_cgi_test
-08 23 * * * cd /scratch/wenger/peptide_cgi_test/peptide_cgi/cgi-bin;
-./test_all
-
+Once this is done, just keep updating the Peptide-CGI version as things
+change, and monitor the emails from the cron job.
