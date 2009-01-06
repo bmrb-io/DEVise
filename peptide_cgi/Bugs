@@ -347,6 +347,11 @@ Num Date        Status  Description
 			to work for most entries with multiple entities (see
 			4310, 4970). (wenger)
 
+077 1/6/09	OPEN	View 4310/1A29 3D visualization, select "Protons"
+			in "Atom Display" -> doesn't seem to display the
+			right atoms in the 3D view, nothing shows up in the
+			"Atom Selection" tree. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
