@@ -1,0 +1,80 @@
+			Testing ChemShift
+		$Id$
+
+This testing must be done before any release of ChemShift.  (Note that
+right now, at least, ChemShift sources need to be copied back and forth
+between machines, because I don't think there are any machines that
+have both /cvsmain and molmol and NMRPipe installations.)
+
+
+* BASIC TESTING
+
+First, run 'make test1'.  You should get the following output files:
+
+    test_out_avgs.out
+    test_out_data.out
+    test_out_histogram.out
+    test_out_stats.out
+    test_out_table.out
+    test_out_weighted_correction.out
+
+Make sure they contain good data.  The first line of each file should
+be something like this:
+
+    # Created at Mon Dec 22 11:42:34 CST 2008 by ChemShift version {2.0.3}
+
+If this fails, try running the command
+
+    java -classpath ChemShift.jar ChemShift -k 4974 2CI2 test_out
+
+(-k means keep temporary files).  Temporary files include the following:
+
+    4974_excluded.pdb
+    4974_excluded.talos
+    CalcSecondary.txt
+    chemshift.mac
+    csCalc.tab
+    DC.out
+
+Check those files for error messages.
+
+
+* SERVER TESTING
+
+If test1 worked okay, your basic ChemShift build is okay.  Now
+you need to test the server.  Run the following command:
+
+     make server_test
+
+Look at the ran_csr file to see whether the test worked.  The last line
+should eventually look like this (note that it takes a little while
+for the test to run even after the make command has returned):
+
+    4974 2CI2 data_dir/test_out (Mon Dec 22 11:46:48 CST 2008): SUCCEEDED
+
+(of course the timestamp will be different).
+
+If this failed, look at the file csr.out for error messages.
+
+Once you've run this test, be sure to kill off the test server.  Find
+it by doing a command something like this:
+
+    ps ax | grep csr_server
+
+(obviously the exact ps arguments depend on what kind of system you're
+on).  Look for the csr_server process that has the current directory as
+its first argument, and kill it.
+
+
+* OTHER TESTING
+
+Take a look at Makefile and the various tests it contains.  Run these
+tests as necessary.  (Some comments on the tests should be changed as
+bugs are fixed, etc., and previously-failing tests work.)
+
+
+* IMPROVEMENTS
+
+We should make some kind of overall test script or target (like the
+test_all script for Peptide-CGI) that actually runs all relevant
+tests and does some checking of the output.

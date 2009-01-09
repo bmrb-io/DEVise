@@ -51,6 +51,8 @@ setup:
 	ln -s chem_shift_install chem_shift_install.txt
 	ln -s ../../../peptide_cgi/design_doc/concepts \
 		peptide-cgi_concepts.txt
+	ln -s chem_shift_building chem_shift_building.txt
+	ln -s chem_shift_testing chem_shift_testing.txt
 
 clean:
 	\rm *.txt
