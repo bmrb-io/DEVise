@@ -53,6 +53,7 @@ setup:
 		peptide-cgi_concepts.txt
 	ln -s chem_shift_building chem_shift_building.txt
 	ln -s chem_shift_testing chem_shift_testing.txt
+	ln -s chem_shift_release chem_shift_release.txt
 
 clean:
 	\rm *.txt

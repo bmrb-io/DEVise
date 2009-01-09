@@ -3,6 +3,8 @@
 
 Note: this is pretty preliminary right now.
 
+- Make sure pep-version-history is up to date.
+
 - Go through the testing procedure in "testing".
 
 - Get rid of "x" part of version and recompile.
@@ -13,7 +15,8 @@ Note: this is pretty preliminary right now.
 
 - Check at least one visualization on teal.
 
-- Tag the sources.
+- Tag the sources with a tag of the form peptide_cgi_x_y_z, where
+  x_y_z is the version.
 
 - Archive the sources.
 
@@ -24,6 +27,8 @@ Note: this is pretty preliminary right now.
 
 - Put the distribution tarball into the appropriate /p/devise/ftp/Devise-*
   directory.
+
+- Possibly install the new version at BMRB and the mirror sites.
 
 - Announce the release to BMRB and mirrors.
 
