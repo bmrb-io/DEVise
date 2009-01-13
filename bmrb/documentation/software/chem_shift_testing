@@ -4,7 +4,7 @@
 This testing must be done before any release of ChemShift.  (Note that
 right now, at least, ChemShift sources need to be copied back and forth
 between machines, because I don't think there are any machines that
-have both /cvsmain and molmol and NMRPipe installations.)
+have both /cvsmain and MOLMOL and NMRPipe installations.)
 
 
 * BASIC TESTING

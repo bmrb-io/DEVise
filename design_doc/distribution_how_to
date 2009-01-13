@@ -1,6 +1,8 @@
 		How to Create a DEVise Distribution
 		$Id$
 
+* OVERVIEW
+
 This is a quick-and-dirty documentation of what needs to be done for
 a DEVise/JavaScreen/peptide-cgi distribution (by a distribution, I mean
 making tar files that can be downloaded and installed by users who have
@@ -13,6 +15,9 @@ IMPORTANT NOTE:  the DEVise and JavaScreen files that are put into the
 distribution come from /p/devise/release, not the area in which you're
 running the distribution scripts.  However, the peptide-cgi files come
 from the peptide_cgi tree in which you run the distribution scripts.
+
+
+* PROCEDURE
 
 - Generate DEVise/JavaScreen distribution:
     - Go to the dist directory.
@@ -51,3 +56,17 @@ from the peptide_cgi tree in which you run the distribution scripts.
     - Archive the peptide-cgi sources by checking out a version with
       the appropriate tag, tarring it up, and copying the file to
       /p/devise/wenger/src_archive.
+
+
+* COMMON PROBLEMS
+
+One thing that's a pain is that the DEVise tarballs can only be generated
+from what's in /p/devise/release.  This means that you can't generate
+new tarballs without doing a "local" release first -- which is really
+backwards.  We should generate tarballs from the source tree we're in,
+and install them instead of the other way around.
+
+Another thing is that you can only generate the tarballs into a
+subdirectory of /p/devise/ftp.  If you want to generate "unofficial"
+tarballs you need to give some kind of bogus version name when prompted
+by the distribution script.

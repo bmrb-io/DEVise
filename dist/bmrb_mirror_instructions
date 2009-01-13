@@ -226,6 +226,13 @@ To do the actual installation, perform the following steps:
   the JSPop.  Look at the supplied cron_entry.* files, especially
   cron_entry.tuna, for examples.  The cron job should cd to the directory
   where the JavaScreen is installed, and then run "./run_check regular 4".
+
+  It's also a good idea to run a run_check job with the -dev flag (perhaps
+  less frequently than without that flag).  'run_check -dev' actually
+  connects to a devised, so it will find some problems that won't be
+  found without the -dev flag.  However, it can also end up causing
+  client switches for the devised it connects to, which will cause a
+  performance penalty for users.
   
   After installing the cron job, you should get an email stating that no
   jspop process was found; after that, the JavaScreen-related processes
@@ -294,3 +301,33 @@ INSTALL_NOTES.txt.
 
 After all of this has been done, you should be able to access DEVise/JavaScreen
 visualizations via the NMR Browser.
+
+
+* COMMON PROBLEMS
+
+One of the most common problems with a DEVise installation is dynamic
+library incompatibilities.  Sometimes DEVise works only with the 
+dynamic libraries that are installed with the DEVise installation, sometimes
+it only works without them, and sometimes it only works with a subset
+of them.  So it may take some experimentation with renaming files in the
+dyn_lib directory to get DEVise to run.
+
+Another problem is that sometimes Xvfb will not accept connections (check
+the nohup.out file for error messages).  This seems to have become more
+prevalent recently, as Xvfb has been set up to be more secure.  Sometimes,
+at least, you need root permission to fix this.
+
+The most common problem once you've actually gotten things to work is
+that, sometimes, Xvfb gets itself goofed up.  The only fix I've seen
+for this is for Xvfb to be killed and restarted.  If KILL_XVFB is true
+(1) in your config file, Xvfb will be killed and restarted if the
+JSPoP is restarted; however, if you have multiple JSPoPs on the same
+machine, you should probably have KILL_XVFB set to false.  In that case,
+you can kill Xvfb manually, which will fix the problem (and force a
+restart of all of the JSPoPs).  The automatic checking script will
+only find this problem if it is passed the -dev flag.
+
+If there are multiple JSPoPs on the same machine, it would be better
+if each one had its own Xvfb.  However, that's not currently possible
+-- it will take some changes to the Tasvir interface in DEVise to make
+that work.

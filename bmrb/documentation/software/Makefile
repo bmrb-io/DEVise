@@ -32,7 +32,7 @@ setup:
 	ln -s ../../../peptide_cgi/design_doc/release_procedure \
 		peptide-cgi_release_procedure.txt
 	ln -s ../../../dist/bmrb_mirror_instructions \
-		bmrb_mirror_instructions.txt
+		devise_js_install.txt
 	ln -s ../../../peptide_cgi/INSTALL_NOTES.txt peptide-cgi_install.txt
 	ln -s ../../../peptide_cgi/CONFIG.txt peptide-cgi_config.txt
 	ln -s ../../../peptide_cgi/design_doc/bmrb_setup \

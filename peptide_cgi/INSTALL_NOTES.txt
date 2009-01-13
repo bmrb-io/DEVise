@@ -83,7 +83,7 @@ lists the visualizations for the entry.
 
 There are several areas where problems can occur:
 
-1. In the peptide-cgi code itself.
+1. In the Peptide-CGI code itself.
 2. Loading the DEVise JavaScreen applet.
 3. Establishing the connection between the applet and the JSPoP.
 4. Opening the appropriate session.
@@ -127,3 +127,14 @@ html file was generated.
 
 You can force a deletion and re-generation of all files by deleting the
 summary html file (<accession number>y.html).
+
+
+* COMMON PROBLEMS
+
+Probably the most common cause of problems when running Peptide-CGI is
+misconfiguration.  Refer to the Peptide-CGI configuration document for
+more information, and also look at the "debugging" section above.
+You may also want to refer to the "Peptide-CGI directory setup at
+computer sciences" and "Peptide-CGI directory setup at BMRB" documents
+and make sure that you have all of the directories configured in a
+similar manner.

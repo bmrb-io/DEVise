@@ -21,3 +21,14 @@ This is the cron entry used to run the tests:
 
 Once this is done, just keep updating the Peptide-CGI version as things
 change, and monitor the emails from the cron job.
+
+
+* COMMON PROBLEMS
+
+The most common problem causing the automatic tests to fail has been
+that sometimes the PDB site is unavailable, which causes tests involving
+coordinate processing to fail.  (Obviously, this is assuming that the
+Peptide-CGI code works correctly.  Assuming everything is tested before
+committing changes, this should be the case.)  Note that some of the
+tests can be run successfully without a connection to any web site,
+so if *all* tests fail something else is wrong.

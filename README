@@ -134,23 +134,6 @@ an example:
     $DEVISE_EXEC -sharedMem 0 $*
 
 
-*** Releasing Software
-
-Most DEVise developers should not do releases, at least not to
-/p/devise/public.
-
-(This section is not yet complete.)
-(release, release.linux, release.devcs, release.cslib)
-
-
-*** Generating Distributions
-
-Most DEVise developers should not generate distribution files.
-
-(This section is not yet complete.)
-(gen_dist)
-
-
 *** Mailing List
 
 All developers should be on the deviseproj mailing list.  You can subscribe
@@ -162,3 +145,25 @@ the following as the message body:
 When you commit changes to the code, please send a short description of
 them to the deviseproj mailing list.  This makes it easier to know when
 to release new versions of the code, and so on.
+
+
+*** Common problems
+
+One of the most common problems in building DEVise is simply that each
+newer version of gcc tends to expose (at least potential) problems in the
+code.  So each time we move to a new version of gcc, it takes some
+work to get everything to compile correctly.  As noted above, the templates
+are a common source of problems.
+
+Sometimes newer versions of Tcl and Tk also cause problems building
+devise.  Also, a common problem when running the X-based version of
+DEVise on a machine different than the one it was compiled on is that
+the binary's paths to the Tcl and Tk libraries are incorrect.  Sometimes
+there are also problems with the files that Tcl and Tk need at startup,
+as well (see the TCL_LIBRARY and TK_LIBRARY environment variables).
+(Note that the devised, which is used with the JavaScreen, doesn't
+need the Tcl and Tk auxiliary files.)
+
+One other confusing thing is that the names of the binaries as built
+don't correspond to the names of the binaries as they're installed
+(generic becomes devise, devise becomes devisec).

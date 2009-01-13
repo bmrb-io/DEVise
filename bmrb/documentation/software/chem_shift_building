@@ -4,7 +4,7 @@
 * Building ChemShift
 
 There are five basic steps in building ChemShift:
-1) Install NMRPipe and molmol.
+1) Install NMRPipe and MOLMOL.
 2) Get the code.
 3) Set up a config file.
 4) Set up various directories, etc.
@@ -12,10 +12,10 @@ There are five basic steps in building ChemShift:
 
 
 This document will not include the details of installing NMRPipe and
-molmol.  This should be done before building ChemShift, however, since
-the ChemShift configuration has to point to the NMRPipe and molmol
+MOLMOL.  This should be done before building ChemShift, however, since
+the ChemShift configuration has to point to the NMRPipe and MOLMOL
 installations.  (It should be possible to compile ChemShift without
-an NMRPipe or molmol installation, but it will not run successfully.)
+an NMRPipe or MOLMOL installation, but it will not run successfully.)
 
 
 Generally, you get the ChemShift code by checking out the ChemShift

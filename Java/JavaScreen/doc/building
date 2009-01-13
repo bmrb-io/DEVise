@@ -83,3 +83,24 @@ something that I want to change in the future.)
 
 If you are just changing the JavaScreen client, you can run it by running the
 command 'js -hostteal' (this will connect to the JSPoP running on teal).
+
+
+*** Common problems
+
+The most common problem with running the JavaScreen servers is the
+devised(s) having problems connecting to Xvfb.  See the installation
+document for more information on this.
+
+Another possible problem is with Java version incompatibilities.  We
+have stayed behind the "bleeding edge" of Java to try to minimize these
+problems.  Note that (as of 2009-01-13, at least) the Makefile is set
+up to produce class files compatible with Java 1.3 JVMs.
+
+More problematic are issues the client sometimes runs into -- there have
+been a few versions of Java with specific GUI-related bugs that have 
+gotten tickled by the JavaScreen client.  Another difficulty is that
+the browser/JVM interactions are not well defined in a number of cases,
+for example when the user leaves a page containing a JavaScreen.  We
+have seen cases where browser/JVM/JavaScreen client interactions locked
+up the entire browser.  Running a browser with a Java Console is invaluable
+in tracking down these types of problems.

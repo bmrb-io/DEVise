@@ -17,8 +17,8 @@ predicted chemical shift values.
 
 ChemShift uses NMRPipe (http://spin.niddk.nih.gov/bax/software/NMRPipe/)
 and MOLMOL (http://www.mol.biol.ethz.ch/groups/wuthrich_group/software) to
- do parts of the calculation.  Therefore, you must install NMRPipe and
- MOLMOL before installing ChemShift.
+do parts of the calculation.  Therefore, you must install NMRPipe and
+MOLMOL before installing ChemShift.
 
 ChemShift also needs Java 1.4 or higher, and Perl.
 
@@ -146,3 +146,23 @@ in your crontab file (where, of course, you replace <install directory>
 with the appropriate directory name).
 
 Make sure this starts up a csr_server process, and you are all set!
+
+
+* COMMON PROBLEMS
+
+One of the most common problems is simply that the chemical shift back
+calculations don't work (ChemShift can't match the BMRB and PDB sequences,
+or other problems).  These are inherent difficulties in doing the
+calculation, as opposed to errors in the installation.
+
+Sometimes it's a bit tricky to get the paths to all the components
+of MOLMOL and NMRPipe set up correctly.  Especially with NMRPipe, I've
+sometimes had to examine the scripts pretty carefully to get things
+to work.  Also, you have to make sure that NMRPipe has all of its
+environment variable set correctly.
+
+Once in a while, the csr_server seems to not "see" the csr.run files
+as quickly as it should, but this hasn't seemed to happen very much
+recently.  (We're working on having Peptide-CGI call ChemShift directly,
+and getting rid of the csr_server.  That setup is somewhat of a holdover
+from when Peptide-CGI and ChemShift had to run on different machines.)
