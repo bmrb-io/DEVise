@@ -78,6 +78,8 @@ RunTest("test61_3");
 RunTest("test62");
 RunTest("test62_3");
 RunTest("test63");
+#TEMP -- put this back in once bug 078 is fixed.
+#RunTest("test66");
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 

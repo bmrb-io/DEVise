@@ -352,6 +352,10 @@ Num Date        Status  Description
 			right atoms in the 3D view, nothing shows up in the
 			"Atom Selection" tree. (wenger)
 
+078 1/16/09	OPEN	"S2d -pdbid 1LUU -bmrbid 5531 -do_pdb 2
+			-coord_index 1" produces a null pointer error.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

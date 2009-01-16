@@ -1,0 +1,42 @@
+#! /bin/csh -f
+
+# Reproduces bug 078 ("s2d -pdbid 1LUU -bmrbid 5531 -do_pdb 2 -coord_index 1"
+# produces null pointer error).
+
+set result = 0
+
+rm -f */5531*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -bmrbid 5531 -do_pdb 2
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+#TEMP -- add more here once it works!
+set files = ( data_dir/5531md.dat \
+	data_dir/5531rl.dat \
+	html_dir/5531y.html \
+	html_dir/5531y_large.html \
+	session_dir/5531acdd )
+	
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+echo -n "Test2 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
