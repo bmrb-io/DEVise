@@ -8,7 +8,7 @@ set result = 0
 rm -f */5531*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -bmrbid 5531 -do_pdb 2
+./s2d -nomail -bmrbid 5531 -do_pdb 2
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
