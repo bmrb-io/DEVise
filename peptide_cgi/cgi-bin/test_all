@@ -1,529 +1,105 @@
-#! /bin/csh -f
+#! /usr/bin/perl -w
 
-set result = 0
-set failed_list = ""
+# Perform Peptide-CGI automated tests.
 
-echo ""
-echo -n "Peptide-CGI version: "
-./get_version
+# $Id$
 
-echo ""
-echo "Running test1..."
-tests/test1
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test1"
-endif
+############################################################
 
-echo ""
-echo "Running test1_3..."
-tests/test1_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test1_3"
-endif
+use strict;
 
-echo ""
-echo "Running test2..."
-tests/test2
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test2"
-endif
+my $result = 0;
+my $failed_list = "";
 
-echo ""
-echo "Running test3..."
-tests/test3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test3"
-endif
+my $version = `./get_version`;
+print "\nPeptide-CGI version: $version\n";
 
-echo ""
-echo "Running test3_3..."
-tests/test3_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test3_3"
-endif
-
-echo ""
-echo "Running test4..."
-tests/test4
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test4"
-endif
-
-echo ""
-echo "Running test4_3..."
-tests/test4_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test4_3"
-endif
-
-echo ""
-echo "Running test6..."
-tests/test6 -noleech
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test6"
-endif
-
-echo ""
-echo "Running test7..."
-tests/test7
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test7"
-endif
-
-echo ""
-echo "Running test9..."
-tests/test9
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test9"
-endif
-
-echo ""
-echo "Running test10..."
-tests/test10
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test10"
-endif
-
-echo ""
-echo "Running test11..."
-tests/test11
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test11"
-endif
-
-echo ""
-echo "Running test13..."
-tests/test13
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test13"
-endif
-
-echo ""
-echo "Running test13_3..."
-tests/test13_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test13_3"
-endif
-
-echo ""
-echo "Running test14..."
-tests/test14
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test14"
-endif
-
-echo ""
-echo "Running test14_3..."
-tests/test14_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test14_3"
-endif
-
-echo ""
-echo "Running test15..."
-tests/test15 -noleech
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test15"
-endif
-
-echo ""
-echo "Running test15_3..."
-tests/test15_3 -noleech
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test15_3"
-endif
-
-echo ""
-echo "Running test16..."
-tests/test16 -noleech
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test16"
-endif
-
-echo ""
-echo "Running test17..."
-tests/test17
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test17"
-endif
-
-echo ""
-echo "Running test18..."
-tests/test18
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test18"
-endif
-
-echo ""
-echo "Running test19..."
-tests/test19
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test19"
-endif
-
-echo ""
-echo "Running test22..."
-tests/test22 -noleech
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test22"
-endif
-
-echo ""
-echo "Running test23..."
-tests/test23 -noleech
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test23"
-endif
-
-echo ""
-echo "Running test24..."
-tests/test24
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test24"
-endif
-
-echo ""
-echo "Running test26..."
-tests/test26
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test26"
-endif
-
-echo ""
-echo "Running test27..."
-tests/test27
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test27"
-endif
-
-echo ""
-echo "Running test27_3..."
-tests/test27_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test27_3"
-endif
-
-echo ""
-echo "Running test28..."
-tests/test28
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test28"
-endif
-
-echo ""
-echo "Running test29..."
-tests/test29
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test29"
-endif
-
-echo ""
-echo "Running test30..."
-tests/test30
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test30"
-endif
-
-echo ""
-echo "Running test32..."
-tests/test32
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test32"
-endif
-
-echo ""
-echo "Running test33..."
-tests/test33
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test33"
-endif
-
-echo ""
-echo "Running test34..."
-tests/test34
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test34"
-endif
-
-echo ""
-echo "Running test37..."
-tests/test37
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test37"
-endif
-
-echo ""
-echo "Running test38..."
-tests/test38
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test38"
-endif
-
-echo ""
-echo "Running test39..."
-tests/test39
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test39"
-endif
-
-echo ""
-echo "Running test40..."
-tests/test40
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test40"
-endif
-
-echo ""
-echo "Running test41..."
-tests/test41
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test41"
-endif
-
-echo ""
-echo "Running test46..."
-tests/test46
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test46"
-endif
-
-echo ""
-echo "Running test47..."
-tests/test47 -noleech
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test47"
-endif
-
-echo ""
-echo "Running test49..."
-tests/test49
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test49"
-endif
-
-echo ""
-echo "Running test50..."
-tests/test50
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test50"
-endif
-
-echo ""
-echo "Running test51..."
-tests/test51
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test51"
-endif
-
-echo ""
-echo "Running test51_3..."
-tests/test51_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test51_3"
-endif
-
-echo ""
-echo "Running test52..."
-tests/test52
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test52"
-endif
-
+RunTest("test1");
+RunTest("test1_3");
+RunTest("test2");
+RunTest("test3");
+RunTest("test3_3");
+RunTest("test4");
+RunTest("test4_3");
+RunTest("test6", "-noleech");
+RunTest("test7");
+RunTest("test9");
+RunTest("test10");
+RunTest("test11");
+RunTest("test13");
+RunTest("test13_3");
+RunTest("test14");
+RunTest("test14_3");
+RunTest("test15", "-noleech");
+RunTest("test15_3", "-noleech");
+RunTest("test16", "-noleech");
+RunTest("test17");
+RunTest("test18");
+RunTest("test19");
+RunTest("test22", "-noleech");
+RunTest("test23", "-noleech");
+RunTest("test24");
+RunTest("test26");
+RunTest("test27");
+RunTest("test27_3");
+RunTest("test28");
+RunTest("test29");
+RunTest("test30");
+RunTest("test32");
+RunTest("test33");
+RunTest("test34");
+RunTest("test37");
+RunTest("test38");
+RunTest("test39");
+RunTest("test40");
+RunTest("test41");
+RunTest("test46");
+RunTest("test47", "-noleech");
+RunTest("test49");
+RunTest("test50");
+RunTest("test51");
+RunTest("test51_3");
+RunTest("test52");
 # Add this test back in when bug 065 is fixed.
-#echo ""
-#echo "Running test53..."
-#tests/test53
-#if ($status != 0) then
-#  set result = 1
-#  set failed_list = "$failed_list test53"
-#endif
-
-echo ""
-echo "Running test54..."
-tests/test54
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test54"
-endif
-
-echo ""
-echo "Running test54_3..."
-tests/test54_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test54_3"
-endif
-
-echo ""
-echo "Running test55..."
-tests/test55
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test55"
-endif
-
-
-echo ""
-echo "Running test56..."
-tests/test56
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test56"
-endif
-
-echo ""
-echo "Running test57..."
-tests/test57
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test57"
-endif
-
-echo ""
-echo "Running test57_3..."
-tests/test57_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test57_3"
-endif
-
-echo ""
-echo "Running test58..."
-tests/test58
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test58"
-endif
-
-echo ""
-echo "Running test58_3..."
-tests/test58_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test58_3"
-endif
-
-echo ""
-echo "Running test59..."
-tests/test59
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test59"
-endif
-
-echo ""
-echo "Running test60..."
-tests/test60
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test60"
-endif
-
-echo ""
-echo "Running test60_3..."
-tests/test60_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test60_3"
-endif
-
-echo ""
-echo "Running test61..."
-tests/test61
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test61"
-endif
-
-echo ""
-echo "Running test61_3..."
-tests/test61_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test61_3"
-endif
-
-echo ""
-echo "Running test62..."
-tests/test62
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test62"
-endif
-
-echo ""
-echo "Running test62_3..."
-tests/test62_3
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test62_3"
-endif
-
-echo ""
-echo "Running test63..."
-tests/test63
-if ($status != 0) then
-  set result = 1
-  set failed_list = "$failed_list test63"
-endif
-
+#RunTest("test53");
+RunTest("test54");
+RunTest("test54_3");
+RunTest("test55");
+RunTest("test56");
+RunTest("test57");
+RunTest("test57_3");
+RunTest("test58");
+RunTest("test58_3");
+RunTest("test59");
+RunTest("test60");
+RunTest("test60_3");
+RunTest("test61");
+RunTest("test61_3");
+RunTest("test62");
+RunTest("test62_3");
+RunTest("test63");
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 
+print "\nTest_all result: ";
+if ($result == 0) {
+  print "OK\n";
+  exit 0;
+} else {
+  print "FAILED ($failed_list failed)\n";
+  exit 1;
+}
 
-echo ""
-echo -n "Test_all result: "
-if ($result == 0) then
-  echo "OK"
-  exit 0
-else
-  echo "FAILED ($failed_list failed)"
-  exit 1
-endif
-
+#-----------------------------------------------------------
+sub RunTest {
+  my $test = $_[0];
+  print "\nRunning $test...\n";
+  my @args = @_;
+  $args[0] = "tests/" . $args[0];
+  #TEMPTEMP my @args = "tests/" . $test;
+  if (system(@args) != 0) {
+    $result = 1;
+    if ($failed_list ne "") { $failed_list = $failed_list . " " };
+    $failed_list = $failed_list . $test;
+  }
+}
