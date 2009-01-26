@@ -78,6 +78,10 @@ RunTest("test61_3");
 RunTest("test62");
 RunTest("test62_3");
 RunTest("test63");
+#TEMP -- needs to work for DNA
+#RunTest("test64");
+#TEMP -- needs to work for DNA
+#RunTest("test65");
 #TEMP -- put this back in once bug 078 is fixed.
 #RunTest("test66");
 

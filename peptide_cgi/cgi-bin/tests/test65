@@ -1,14 +1,13 @@
 #! /bin/csh -f
 
-# Reproduces bug 078 ("s2d -pdbid 1LUU -bmrbid 5531 -do_pdb 2 -coord_index 1"
-# produces null pointer error).
+# 5167 has DNA only.
 
 set result = 0
 
-rm -f */5531*
+rm -f */5167*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -nomail -bmrbid 5531 -do_pdb 2
+./s2d -nomail -bmrbid 5167 -do_pdb 2 -force -check_pct
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
@@ -17,13 +16,8 @@ endif
 
 echo "Checking output files"
 
-#TEMP -- add more here once it works!
-set files = ( data_dir/5531md.dat \
-	data_dir/5531rl.dat \
-	html_dir/5531y.html \
-	html_dir/5531y_large.html \
-	session_dir/5531acdd )
-	
+set files = ( )
+
 foreach file ($files)
   if (! -f $file) then
     echo "  Output file $file is missing"
@@ -32,7 +26,14 @@ foreach file ($files)
 end
 
 
-echo -n "Test66 result: "
+#TEMPTEMP set file = "data_dir/4310g1.dat"
+#TEMPTEMP set line = "3JHNHA 1 3 GLN H 3 GLN HA 7.240 2.0"
+#TEMPTEMP source tests/check4line
+#TEMPTEMP set line = "3JHNHA 1 148 LYS H 148 LYS HA 8.576 2.0"
+#TEMPTEMP source tests/check4line 
+
+
+echo -n "Test65 result: "
 if ($result == 0) then
   echo "OK"
   exit 0
