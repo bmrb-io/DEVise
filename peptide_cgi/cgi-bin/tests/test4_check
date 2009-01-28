@@ -50,9 +50,9 @@ set line = "147 SER N N 120.79"
 source tests/check4line
 
 set file = "data_dir/4096c1.dat"
-set line = "1 -1 0 -1 0 0"
+set line = "1 1 0 0 -1 0 1"
 source tests/check4line
-set line = "147 -1 1 1 1 -1"
+set line = "1 147 -1 1 0 0 -1"
 source tests/check4line
 
 set file = "data_dir/4096p1.dat"
