@@ -356,6 +356,12 @@ Num Date        Status  Description
 			-coord_index 1" produces a null pointer error.
 			(wenger)
 
+079 1/28/09	OPEN	Peptide-CGI should get "standard" chemical shift
+			values from ftp://ftp.bmrb.wisc.edu/pub/data/stats/
+			chem_shifts/selected/statsel_prot.txt, etc., rather
+			than from chemshift.txt, etc., committed with the
+			code (so we always use the latest values.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
