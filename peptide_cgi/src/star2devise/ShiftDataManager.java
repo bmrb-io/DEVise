@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2007/11/15 17:15:37  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.4  2007/08/21 18:56:30  wenger
 // Improved debug output -- better verbosity levels, etc.
 //
@@ -89,6 +92,7 @@ public class ShiftDataManager
 	{
 	    StreamTokenizer inFile = 
 		new StreamTokenizer(new FileReader(filename));
+	    inFile.wordChars('\'', '\'');
 	    totalNumEntries = 0;
 	    this.filename = filename;
 	    
@@ -102,8 +106,15 @@ public class ShiftDataManager
 		chemicalShiftCorr[totalNumEntries] = inFile.nval;
 		inFile.nextToken();
 		range[totalNumEntries] = inFile.nval;
+
+		if (doDebugOutput(31, false)) {
+		    System.out.println("  " +
+		      aminoAcidType[totalNumEntries] + " " +
+		      atomName[totalNumEntries] + " " +
+		      chemicalShiftCorr[totalNumEntries] + " " +
+		      range[totalNumEntries]);
+		}
 		totalNumEntries++;
-		
 	    }
 
 	} catch (FileNotFoundException e) {
@@ -138,28 +149,26 @@ public class ShiftDataManager
 	int position = 0;
 
 	boolean foundAminoAcidType = false;
-	while((!foundAminoAcidType) && position < totalNumEntries)
-	{
-	    if(in_aminoAcidType.compareTo(aminoAcidType[position]) == 0) {
+	while ((!foundAminoAcidType) && position < totalNumEntries) {
+	    if (in_aminoAcidType.equals(aminoAcidType[position])) {
 		foundAminoAcidType = true;
 	    } else {
 		position++;
 	    }
 	}
 
-	if(foundAminoAcidType)
-	{
+	if (foundAminoAcidType) {
 	    boolean foundAtomName = false;
-	    while(position < totalNumEntries && (!foundAtomName) &&
-	      in_aminoAcidType.compareTo(aminoAcidType[position]) == 0) {
-	        if(in_atomName.compareTo(atomName[position]) == 0) {
+	    while ((position < totalNumEntries) && (!foundAtomName) &&
+	      in_aminoAcidType.equals(aminoAcidType[position])) {
+	        if (in_atomName.equals(atomName[position])) {
 	            foundAtomName = true;
 	        } else {
 		    position++;
 	        }
 	    }
 		
-	    if(!foundAtomName) {
+	    if (!foundAtomName) {
 		if (doDebugOutput(21, false)) {
 		    throw new S2DWarning("Warning: atom " +
 		      in_atomName + " corresponding to amino acid " +
