@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.101  2008/12/02 20:30:06  wenger
+// Set version to 11.4.1x1, added corresponding section to version
+// history.
+//
 // Revision 1.100  2008/12/02 19:24:09  wenger
 // Changed version to 11.4.0 for release.
 //
@@ -374,7 +378,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

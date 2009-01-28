@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.13  2008/11/14 21:14:59  wenger
 // Fixed bugs 070 and 075 (problems with percent assignment values
 // sometimes being greater than 100% for NMR-STAR 3.1 files).
@@ -344,7 +347,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
 	try {
 	    SaveFrameNode frame = getOneDataFrameByCat(ENTRY_SF_CAT,
-	      SAVE_ENTRY_INFO);
+	      ENTRY_INFO);
 	    result = getOneFrameValue(frame, ENTRY_TITLE);
 	} catch (Exception ex) {
 	    System.err.println(ex.toString());
