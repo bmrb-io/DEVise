@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2008
+// (c) Copyright 2000-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.102  2009/01/28 16:43:00  wenger
+// Fixed an error in getting entry titles.
+//
 // Revision 1.101  2008/12/02 20:30:06  wenger
 // Set version to 11.4.1x1, added corresponding section to version
 // history.
@@ -1996,7 +1999,7 @@ public class S2DMain {
 	                S2DResidues residues = getFrameResCounts(star, frame,
 		          entityID, frameIndex);
 	                saveFrameChemShifts(star, frame, entityAssemblyID,
-			  frameIndex);
+			  residues, frameIndex);
 	                saveFramePistachio(star, frame, entityAssemblyID,
 			  residues, frameIndex);
 	                saveFrameAmbiguity(star, frame, entityAssemblyID,
@@ -2321,7 +2324,7 @@ public class S2DMain {
 	    String[] residueLabels = star.getAndFilterFrameValues(
 	      chemShiftFrame, star.CHEM_SHIFT_VALUE,
 	      star.CHEM_SHIFT_RES_LABEL, entityID, entityIDs);
-	    S2DResidues.make3Letter(residueLabels);
+	    residues.make3Letter(residueLabels);
 
             for (int index = 0; index < resSeqCodes.length; ++index) {
 	        int resNum = resSeqCodes[index];
@@ -2365,7 +2368,7 @@ public class S2DMain {
         S2DResidues residues = star.getResidues(monoPolyFrame);
 
         S2DResCount resCount = new S2DResCount(_name, _dataDir,
-	  residues._resSeqCodes, residues._resLabels);
+	  residues._resSeqCodes, residues._resLabels, S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!!!*/);
 
 	resCount.write(frameIndex);
 
@@ -2375,7 +2378,8 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save chem shifts for one save frame.
     private void saveFrameChemShifts(S2DNmrStarIfc star, SaveFrameNode frame,
-      String entityAssemblyID, int frameIndex) throws S2DException
+      String entityAssemblyID, S2DResidues residues, int frameIndex)
+      throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameChemShifts(" +
@@ -2410,7 +2414,7 @@ public class S2DMain {
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
 	  entityAssemblyIDs);
-	S2DResidues.make3Letter(residueLabels);
+	residues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
@@ -3086,7 +3090,7 @@ public class S2DMain {
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
 	  entityAssemblyIDs);
-	S2DResidues.make3Letter(residueLabels);
+	residues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
@@ -3194,7 +3198,7 @@ public class S2DMain {
 	String[] residueLabels = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
 	  entityAssemblyIDs);
-	S2DResidues.make3Letter(residueLabels);
+	residues.make3Letter(residueLabels);
 
 	String[] atomNames = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,

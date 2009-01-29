@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2008
+// (c) Copyright 2003-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/12/01 20:37:53  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.6.2.4  2008/12/01 16:34:43  wenger
 // We now try to match all combinations of PDB chains and BMRB entity
 // assemblies (not just A->1, B->2, etc.); renamed DataSequence and
@@ -78,7 +81,15 @@ public class S2DResidues {
     public int[] _resSeqCodes = null;
     public String[] _resLabels = null; // three-letter
 
+    public static final int POLYMER_TYPE_NONE = 0;
+    public static final int POLYMER_TYPE_PROTEIN = 1;
+    public static final int POLYMER_TYPE_DNA = 2; 
+    public static final int POLYMER_TYPE_RNA = 3;
+
     private static final int DEBUG = 0;
+
+    // The type of polymer we're dealing with.
+    private int _polymerType;
 
     // Translate single-letter to three-letter amino acid codes.
     private static Hashtable _acidTrans = null;
@@ -91,22 +102,35 @@ public class S2DResidues {
 
     //-------------------------------------------------------------------
     // Constructor.  Contruct a residue list from three-letter info.
-    public S2DResidues(int[] resSeqCodes, String[] resLabels)
-      throws S2DException
+    public S2DResidues(int[] resSeqCodes, String[] resLabels,
+      int polymerType) throws S2DException
     {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DResidues.S2DResidues()");
+	}
+
+	_polymerType = polymerType;
         _resSeqCodes = resSeqCodes;
 	_resLabels = S2DUtils.arrayToUpper(resLabels);
+
+	if (_polymerType == POLYMER_TYPE_DNA) {
+	    for (int index = 0; index < _resLabels.length; index++) {
+	        _resLabels[index] = "D" + _resLabels[index];
+	    }
+	}
 
 	setCount();
     }
 
     //-------------------------------------------------------------------
     // Constructor.  Contruct a residue list from one-letter info.
-    public S2DResidues(String resSeq) throws S2DException
+    public S2DResidues(String resSeq, int polymerType) throws S2DException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DResidues.S2DResidues(" + resSeq + ")");
 	}
+
+	_polymerType = polymerType;
 
 	// In case any chars in the input string are lower-case.
 	resSeq = resSeq.toUpperCase();
@@ -129,7 +153,17 @@ public class S2DResidues {
 
         for (int index = 0; index < resSeq2.length(); index++) {
 	    _resSeqCodes[index] = index + 1;
-	    _resLabels[index] = translate(resSeq2.charAt(index));
+	    if (polymerType == POLYMER_TYPE_PROTEIN) {
+	        _resLabels[index] = translate(resSeq2.charAt(index));
+	    } else {
+	        _resLabels[index] = "" + resSeq2.charAt(index);
+	    }
+	}
+
+	if (_polymerType == POLYMER_TYPE_DNA) {
+	    for (int index = 0; index < _resLabels.length; index++) {
+	        _resLabels[index] = "D" + _resLabels[index];
+	    }
 	}
     }
 
@@ -221,7 +255,7 @@ public class S2DResidues {
     //-------------------------------------------------------------------
     // Change any one-letter residue labels in the array to three-letter
     // labels.
-    public static void make3Letter(String[] residueLabels)
+    public void make3Letter(String[] residueLabels)
     { 
         initializeTranslation();
 	
@@ -229,9 +263,24 @@ public class S2DResidues {
 	    String label = residueLabels[index];
 	    if (label.length() == 1) {
 	        try {
-	            residueLabels[index] = translate(label.charAt(0));
+		    switch (_polymerType) {
+		    case POLYMER_TYPE_PROTEIN:
+	                residueLabels[index] = translate(label.charAt(0));
+			break;
+
+		    case POLYMER_TYPE_DNA:
+	                residueLabels[index] = "D" + residueLabels[index];
+			break;
+
+		    case POLYMER_TYPE_RNA:
+			break;
+
+		    default:
+		    	//TEMPTEMP -- throw error
+			break;
+		    }
 		} catch (Exception ex) {
-		    // Don't about processing the whole entry if we get
+		    // Don't abort processing the whole entry if we get
 		    // one bad residue code...
 		    if (doDebugOutput(0)) {
 		        System.err.println(ex);

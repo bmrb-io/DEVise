@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2007
+// (c) Copyright 2001-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/11/15 17:15:35  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.3  2007/08/20 20:26:09  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -57,18 +60,39 @@ public class S2DResCount {
     private int[] _resSeqCodes;
     private String[] _residueLabels;
 
-    private String[] _acidList = new String[] { "ALA", "ARG", "ASP", "ASN",
-      "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS", "MET", "PHE",
-      "PRO", "SER", "THR", "TRP", "TYR", "VAL" };
+    private String[] _acidList;
     private Hashtable _ht = null;
 
     //===================================================================
     // PUBLIC METHODS
     public S2DResCount(String name, String dataDir, int[] resSeqCodes,
-      String[] residueLabels)
+      String[] residueLabels, int polymerType)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DResCount.S2DResCount()");
+	    System.out.println("S2DResCount.S2DResCount(" +
+	      polymerType + ")");
+	}
+
+	// Initialize the list of "amino acids" according to the type
+	// of polymer we have.
+	switch (polymerType) {
+	case S2DResidues.POLYMER_TYPE_PROTEIN:
+            _acidList = new String[] { "ALA", "ARG", "ASP", "ASN",
+	      "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS",
+	      "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL" };
+	    break;
+
+	case S2DResidues.POLYMER_TYPE_DNA:
+            _acidList = new String[] { "DA", "DC", "DG", "DT" };
+	    break;
+
+	case S2DResidues.POLYMER_TYPE_RNA:
+            _acidList = new String[] { "A", "C", "G", "U" };
+	    break;
+
+	default:
+	    //TEMPTEMP -- throw error?
+	    break;
 	}
 
         _name = name;

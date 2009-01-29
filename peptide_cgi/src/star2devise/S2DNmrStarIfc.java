@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2009/01/28 16:43:00  wenger
+// Fixed an error in getting entry titles.
+//
 // Revision 1.14  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -542,6 +545,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // The residue count is also read (if present) and checked against
     // the residue list(s).  If it is not present, it is calculated from
     // the residue list(s).
+//TEMP -- okay, this probably has to figure out whether things are protein, DNA, or RNA
     public S2DResidues getResidues(SaveFrameNode frame) throws S2DException
     {
         if (doDebugOutput(12)) {
@@ -564,7 +568,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	    String[] resLabels = getFrameValues(frame,
 	      ENTITY_RES_SEQ_CODE, ENTITY_RES_LABEL);
 
-	    resList1 = new S2DResidues(resSeqCodes, resLabels);
+	    resList1 = new S2DResidues(resSeqCodes, resLabels,
+	      S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!!*/);
             if (doDebugOutput(13)) {
 	        System.out.println("Got three-letter residue list");
 	    }
@@ -584,7 +589,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	try {
             String molResSeq = getTagValue(frame, ENTITY_SEQ_1LETTER);
 
-	    resList2 = new S2DResidues(molResSeq);
+	    resList2 = new S2DResidues(molResSeq,
+	      S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!*/);
             if (doDebugOutput(13)) {
 	        System.out.println("Got one-letter residue list");
 	    }

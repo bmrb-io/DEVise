@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/12/01 20:37:53  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.6.2.10  2008/12/01 16:34:43  wenger
 // We now try to match all combinations of PDB chains and BMRB entity
 // assemblies (not just A->1, B->2, etc.); renamed DataSequence and
@@ -399,7 +402,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	        // Create a residue list for this entity to match against
 	        // the BMRB ones.
 	        S2DResidues pdbResidues = new S2DResidues(resSeqCodes,
-		  resLabels);
+		  resLabels, S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!!*/);
 
 		// Now compare this chain against all unmatched BMRB
 		// entity assemblies.
@@ -554,7 +557,8 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	        }
 	    }
 
-	    S2DResidues resList = new S2DResidues(resNums, resLabels);
+	    S2DResidues resList = new S2DResidues(resNums, resLabels,
+	      S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!!!*/);
 	    residueLists.add(resList);
 	}
 
