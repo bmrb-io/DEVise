@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.103  2009/01/29 16:43:31  wenger
+// A lot of the nucleic acid code is working, but I need to add in
+// the detection of what type of polymer we're processing -- so I'm
+// just committing this with 'protein' hard-coded in for now, so
+// the existing stuff all works.
+//
 // Revision 1.102  2009/01/28 16:43:00  wenger
 // Fixed an error in getting entry titles.
 //
@@ -2459,11 +2465,11 @@ public class S2DMain {
 	//
 	// Create an S2DChemShift object with the values we just got.
 	//
-        S2DChemShift chemShift = new S2DChemShift(_name, _longName, _dataDir,
+        S2DChemShift chemShift = S2DChemShift.create(
+	  residues.getPolymerType(), _name, _longName, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
 	  atomTypes, chemShiftVals, ambiguityVals, entityAssemblyIDVal,
 	  star.getFrameDetails(frame));
-
 
 	//
 	// Now go ahead and calculate and write out the chem shift values.

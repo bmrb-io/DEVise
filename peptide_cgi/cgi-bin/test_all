@@ -88,6 +88,7 @@ RunTest("test63");
 #RunTest("test66");
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
+#TEMP -- 4141 has protein and DNA
 
 print "\nTest_all result: ";
 if ($result == 0) {
@@ -104,7 +105,6 @@ sub RunTest {
   print "\nRunning $test...\n";
   my @args = @_;
   $args[0] = "tests/" . $args[0];
-  #TEMPTEMP my @args = "tests/" . $test;
   if (system(@args) != 0) {
     $result = 1;
     if ($failed_list ne "") { $failed_list = $failed_list . " " };

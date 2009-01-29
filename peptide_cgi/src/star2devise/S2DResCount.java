@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2009/01/29 16:43:31  wenger
+// A lot of the nucleic acid code is working, but I need to add in
+// the detection of what type of polymer we're processing -- so I'm
+// just committing this with 'protein' hard-coded in for now, so
+// the existing stuff all works.
+//
 // Revision 1.4  2007/11/15 17:15:35  wenger
 // Cleaned out cvs history in source files.
 //
@@ -66,7 +72,7 @@ public class S2DResCount {
     //===================================================================
     // PUBLIC METHODS
     public S2DResCount(String name, String dataDir, int[] resSeqCodes,
-      String[] residueLabels, int polymerType)
+      String[] residueLabels, int polymerType) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DResCount.S2DResCount(" +
@@ -91,8 +97,7 @@ public class S2DResCount {
 	    break;
 
 	default:
-	    //TEMPTEMP -- throw error?
-	    break;
+	    throw new S2DError("Illegal polymer type: " + polymerType);
 	}
 
         _name = name;

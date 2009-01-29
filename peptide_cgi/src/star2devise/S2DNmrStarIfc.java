@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2008
+// (c) Copyright 2000-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2009/01/29 16:43:31  wenger
+// A lot of the nucleic acid code is working, but I need to add in
+// the detection of what type of polymer we're processing -- so I'm
+// just committing this with 'protein' hard-coded in for now, so
+// the existing stuff all works.
+//
 // Revision 1.15  2009/01/28 16:43:00  wenger
 // Fixed an error in getting entry titles.
 //

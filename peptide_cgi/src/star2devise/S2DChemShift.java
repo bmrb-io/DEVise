@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2008
+// (c) Copyright 2000-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.11  2008/11/14 21:14:59  wenger
 // Fixed bugs 070 and 075 (problems with percent assignment values
 // sometimes being greater than 100% for NMR-STAR 3.1 files).
@@ -141,9 +144,8 @@ public class S2DChemShift {
     private int[] _ambiguityVals;
     private int _entityAssemblyID;
 
-    private final String CHEMSHIFT_FILE = "chem_info" + File.separator +
-      "chemshift.txt";
-    private ShiftDataManager _refTable;
+    protected String CHEMSHIFT_FILE = "chem_info" + File.separator;
+    protected ShiftDataManager _refTable;
 
     private String[] _deltaShiftResLabels;
     private float[] _haDeltaShifts;
@@ -159,6 +161,47 @@ public class S2DChemShift {
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    // Factory.
+    public static S2DChemShift create(int polymerType, String name,
+      String longName, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
+      String[] residueLabels, String[] atomNames, String[] atomTypes,
+      double[] chemShiftVals, int[] ambiguityVals,
+      int entityAssemblyID, String frameDetails)
+      throws S2DException
+    {
+	S2DChemShift chemShift;
+
+        switch (polymerType) {
+	case S2DResidues.POLYMER_TYPE_PROTEIN:
+	    chemShift = new S2DProteinChemShift(name, longName, dataDir,
+	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
+	      atomTypes, chemShiftVals, ambiguityVals, entityAssemblyID,
+	      frameDetails);
+	    break;
+
+	case S2DResidues.POLYMER_TYPE_DNA:
+	    chemShift = new S2DDNAChemShift(name, longName, dataDir,
+	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
+	      atomTypes, chemShiftVals, ambiguityVals, entityAssemblyID,
+	      frameDetails);
+	    break;
+
+	case S2DResidues.POLYMER_TYPE_RNA:
+	    chemShift = new S2DRNAChemShift(name, longName, dataDir,
+	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
+	      atomTypes, chemShiftVals, ambiguityVals, entityAssemblyID,
+	      frameDetails);
+	    break;
+
+	default:
+	    throw new S2DError("Illegal polymer type: " + polymerType);
+	}
+
+	return chemShift;
+    }
 
     //-------------------------------------------------------------------
     // Constructor.
@@ -189,11 +232,7 @@ public class S2DChemShift {
 	_ambiguityVals = ambiguityVals;
 	_entityAssemblyID = entityAssemblyID;
 
-	_refTable = new ShiftDataManager(CHEMSHIFT_FILE);
-
 	_info = "Visualization of " + _longName;
-
-	calculateDeltaShifts();
     }
 
     //-------------------------------------------------------------------
@@ -851,11 +890,11 @@ public class S2DChemShift {
     }
 
     //===================================================================
-    // PRIVATE METHODS
+    // PROTECTED METHODS
 
     //-------------------------------------------------------------------
     // Calculate all delta shifts for this data set.
-    private void calculateDeltaShifts()
+    protected void calculateDeltaShifts() throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.calculateDeltaShifts()");
@@ -972,6 +1011,9 @@ public class S2DChemShift {
 	    }
 	}
     }
+
+    //===================================================================
+    // PRIVATE METHODS
 
     //-------------------------------------------------------------------
     // Calculate the chemical shift index for the given values; returns

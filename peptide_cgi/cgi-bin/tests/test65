@@ -16,7 +16,30 @@ endif
 
 echo "Checking output files"
 
-set files = ( )
+set files = ( data_dir/5167ac1.dat \
+	data_dir/5167as1.dat \
+	data_dir/5167c1.dat \
+	data_dir/5167d1.dat \
+	data_dir/5167hn1.dat \
+	data_dir/5167md.dat \
+	data_dir/5167pstmp \
+	data_dir/5167rc1.dat \
+	data_dir/5167rl.dat \
+	html_dir/5167ac1.html \
+	html_dir/5167ac1_large.html \
+	html_dir/5167as1.html \
+	html_dir/5167as1_large.html \
+	html_dir/5167c1.html \
+	html_dir/5167c1_large.html \
+	html_dir/5167d1.html \
+	html_dir/5167d1_large.html \
+	html_dir/5167y.html \
+	html_dir/5167y_large.html \
+	session_dir/5167ac1.ds \
+	session_dir/5167acdd \
+	session_dir/5167as1.ds \
+	session_dir/5167c1.ds \
+	session_dir/5167d1.ds )
 
 foreach file ($files)
   if (! -f $file) then
@@ -26,11 +49,23 @@ foreach file ($files)
 end
 
 
-#TEMPTEMP set file = "data_dir/4310g1.dat"
-#TEMPTEMP set line = "3JHNHA 1 3 GLN H 3 GLN HA 7.240 2.0"
+set file = "data_dir/5167as1.dat"
+set line = "1 1 DC H1' H 6.01"
+source tests/check4line
+set line = "1 27 DG H5' H 4.106"
+source tests/check4line 
+
+set file = "data_dir/5167d1.dat"
+set line = "TEMPTEMP"
 #TEMPTEMP source tests/check4line
-#TEMPTEMP set line = "3JHNHA 1 148 LYS H 148 LYS HA 8.576 2.0"
+set line = "TEMPTEMP"
 #TEMPTEMP source tests/check4line 
+
+set file = "data_dir/5167ac1.dat"
+set line = "1 1 1 DC O5' O 5.736 -23.194 16.011 side_chains"
+source tests/check4line
+set line = "859 1 27 DG H22 H -3.196 -21.462 11.991 all_hydrogens"
+source tests/check4line 
 
 
 echo -n "Test65 result: "

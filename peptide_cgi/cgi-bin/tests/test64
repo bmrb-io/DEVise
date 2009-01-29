@@ -16,7 +16,44 @@ endif
 
 echo "Checking output files"
 
-set files = ( )
+set files = ( data_dir/4416ac1.dat \
+	data_dir/4416as1.dat \
+	data_dir/4416as2.dat \
+	data_dir/4416c1.dat \
+	data_dir/4416c2.dat \
+	data_dir/4416d1.dat \
+	data_dir/4416d2.dat \
+	data_dir/4416hn1.dat \
+	data_dir/4416hn2.dat \
+	data_dir/4416md.dat \
+	data_dir/4416pstmp \
+	data_dir/4416rc1.dat \
+	data_dir/4416rc2.dat \
+	data_dir/4416rl.dat \
+	html_dir/4416ac1.html \
+	html_dir/4416ac1_large.html \
+	html_dir/4416as1.html \
+	html_dir/4416as1_large.html \
+	html_dir/4416as2.html \
+	html_dir/4416as2_large.html \
+	html_dir/4416c1.html \
+	html_dir/4416c1_large.html \
+	html_dir/4416c2.html \
+	html_dir/4416c2_large.html \
+	html_dir/4416d1.html \
+	html_dir/4416d1_large.html \
+	html_dir/4416d2.html \
+	html_dir/4416d2_large.html \
+	html_dir/4416y.html \
+	html_dir/4416y_large.html \
+	session_dir/4416ac1.ds \
+	session_dir/4416acdd \
+	session_dir/4416as1.ds \
+	session_dir/4416as2.ds \
+	session_dir/4416c1.ds \
+	session_dir/4416c2.ds \
+	session_dir/4416d1.ds \
+	session_dir/4416d2.ds )
 
 foreach file ($files)
   if (! -f $file) then
@@ -26,10 +63,22 @@ foreach file ($files)
 end
 
 
-#TEMPTEMP set file = "data_dir/4310g1.dat"
-#TEMPTEMP set line = "3JHNHA 1 3 GLN H 3 GLN HA 7.240 2.0"
+set file = "data_dir/4416ac1.dat"
+set line = "1 1 1 DG O5' O 11.389 -13.227 1.201 side_chains"
+source tests/check4line
+set line = "761 2 12 DC H6 H 3.798 -1.275 -2.962 all_hydrogens"
+source tests/check4line 
+
+set file = "data_dir/4416as1.dat"
+set line = "1 1 DG H8 H 7.92"
+source tests/check4line
+set line = "1 12 DG H4' H 4.22"
+source tests/check4line 
+
+set file = "data_dir/4416d1.dat"
+set line = "TEMPTEMP"
 #TEMPTEMP source tests/check4line
-#TEMPTEMP set line = "3JHNHA 1 148 LYS H 148 LYS HA 8.576 2.0"
+set line = "TEMPTEMP"
 #TEMPTEMP source tests/check4line 
 
 

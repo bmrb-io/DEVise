@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2009/01/29 16:43:31  wenger
+// A lot of the nucleic acid code is working, but I need to add in
+// the detection of what type of polymer we're processing -- so I'm
+// just committing this with 'protein' hard-coded in for now, so
+// the existing stuff all works.
+//
 // Revision 1.7  2008/12/01 20:37:53  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -167,6 +173,15 @@ public class S2DResidues {
 	}
     }
 
+    /** -----------------------------------------------------------------
+     * Get the polymer type of this sequence.
+     * @return the polymer type.
+     */
+    public int getPolymerType()
+    {
+    	return _polymerType;
+    }
+
     //-------------------------------------------------------------------
     // Test whether another residue list is equal to this one.
     public boolean equals(S2DResidues other)
@@ -255,7 +270,7 @@ public class S2DResidues {
     //-------------------------------------------------------------------
     // Change any one-letter residue labels in the array to three-letter
     // labels.
-    public void make3Letter(String[] residueLabels)
+    public void make3Letter(String[] residueLabels) throws S2DException
     { 
         initializeTranslation();
 	
@@ -276,8 +291,8 @@ public class S2DResidues {
 			break;
 
 		    default:
-		    	//TEMPTEMP -- throw error
-			break;
+			throw new S2DError("Illegal polymer type: " +
+			  _polymerType);
 		    }
 		} catch (Exception ex) {
 		    // Don't abort processing the whole entry if we get
