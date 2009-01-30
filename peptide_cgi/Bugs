@@ -361,6 +361,9 @@ Num Date        Status  Description
 			chem_shifts/selected/statsel_prot.txt, etc., rather
 			than from chemshift.txt, etc., committed with the
 			code (so we always use the latest values.) (wenger)
+			(Note: the CSI calculations need to use the fixed
+			set of values rather than the updated values -- Eldon
+			090130.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
