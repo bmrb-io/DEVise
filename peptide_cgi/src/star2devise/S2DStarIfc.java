@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2008
+// (c) Copyright 2002-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2008/12/01 20:37:53  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.10.2.15  2008/11/25 22:48:18  wenger
 // More cleanup of PDB vs. BMRB matching code.
 //
@@ -190,6 +193,8 @@ public abstract class S2DStarIfc {
 
     public String DEFAULT_SAVEFRAME_CATEGORY = "";
     public String DETAILS = "";
+    public String DNA = "";
+
     public String ENTRY_INFO = "";
     public String ENTRY_TITLE = "";
 
@@ -264,6 +269,8 @@ public abstract class S2DStarIfc {
 
     public String POLYMER = "";
     public String POLYPEPTIDE = "";
+
+    public String RNA = "";
 
     public String S2_PARAMS = "";
     public String SAVE_CONF_STAT = "";

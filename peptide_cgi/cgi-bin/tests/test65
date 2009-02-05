@@ -22,7 +22,7 @@ set files = ( data_dir/5167ac1.dat \
 	data_dir/5167d1.dat \
 	data_dir/5167hn1.dat \
 	data_dir/5167md.dat \
-	data_dir/5167pstmp \
+	#TEMP? data_dir/5167pstmp \
 	data_dir/5167rc1.dat \
 	data_dir/5167rl.dat \
 	html_dir/5167ac1.html \

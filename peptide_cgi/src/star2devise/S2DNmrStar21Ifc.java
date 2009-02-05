@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2008
+// (c) Copyright 2004-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.10.2.10  2008/11/19 20:25:18  wenger
 // Fixed problems with getEntityFrame(), added test13_3 to check changes.
 //
@@ -234,12 +237,41 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     }
 
     // ----------------------------------------------------------------------
+    //TEMPTEMP -- document
+    public int getPolymerType(SaveFrameNode entityFrame)
+    {
+        if (doDebugOutput(12)) {
+            System.out.println("  S2DNmrStar21Ifc.getPolymerType(" +
+	      entityFrame.getLabel() + ")");
+        }
+
+    	int result = S2DResidues.POLYMER_TYPE_NONE;
+
+	String type = getOneFrameValue(entityFrame, ENTITY_TYPE);
+	//TEMPTEMP? if (type.equalsIgnoreCase(POLYMER)) {
+	    String polymerType = getMolPolymerClass(entityFrame);
+	    if (S2DNames.PROTEIN.equalsIgnoreCase(polymerType)) {
+	    	result = S2DResidues.POLYMER_TYPE_PROTEIN;
+	    }
+	    else if (DNA.equalsIgnoreCase(polymerType)) {
+	    	result = S2DResidues.POLYMER_TYPE_DNA;
+	    }
+	    else if (RNA.equalsIgnoreCase(polymerType)) {
+	    	result = S2DResidues.POLYMER_TYPE_RNA;
+	    }
+	//TEMPTEMP? }
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
     /**
      * Determines whether the given entity/monomeric polymer save frame
      * has data for a protein or not.
      * @param The entity/monomeric polymer save frame.
      * @return True iff the save frame is a protein.
      */
+    //TEMP -- should this use getPolymerType?
     public boolean isAProtein(SaveFrameNode entityFrame)
     {
         boolean result = false;
@@ -517,6 +549,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         COUPLING_SF_CAT = "_Saveframe_category";
 
 	DEFAULT_SAVEFRAME_CATEGORY = "_Saveframe_category";
+	DNA = "DNA";
 
 	ENTITY_DB_ACC_CODE = "_Database_accession_code";
 	ENTITY_DB_NAME = "_Database_name";
@@ -557,6 +590,8 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	ORDER_SF_CAT = "_Saveframe_category";
 	ORDER_VALUE = "_S2_value";
 	ORDER_VALUE_ERR = "_S2_value_fit_error";
+
+	RNA = "RNA";
 
         SEQ_SUBJ_LENGTH = "_Sequence_subject_length";
         SEQ_IDENTITY = "_Sequence_identity";

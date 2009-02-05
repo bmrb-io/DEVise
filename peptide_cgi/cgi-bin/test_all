@@ -80,12 +80,14 @@ RunTest("test62_3");
 RunTest("test63");
 #TEMP -- needs to work for DNA
 #TEMP -- add 3.1 version
-#RunTest("test64");
+RunTest("test64");
 #TEMP -- needs to work for DNA
 #TEMP -- add 3.1 version
-#RunTest("test65");
+RunTest("test65");
 #TEMP -- put this back in once bug 078 is fixed.
 #RunTest("test66");
+
+#TEMP -- add 2.1 and 3.1 tests of 15080 and 15083
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 #TEMP -- 4141 has protein and DNA

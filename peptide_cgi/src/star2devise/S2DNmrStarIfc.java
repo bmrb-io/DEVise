@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2009/01/29 22:04:57  wenger
+// Made protein, DNA, and RNA subclasses of S2DChemShift to make further
+// stuff easier; added some file checking to test64 and test65 (but
+// delta shifts and CSI don't work yet for nucleic acids); committing
+// again with nucleic acid stuff disabled.
+//
 // Revision 1.16  2009/01/29 16:43:31  wenger
 // A lot of the nucleic acid code is working, but I need to add in
 // the detection of what type of polymer we're processing -- so I'm
@@ -295,6 +301,12 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
             if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
               fileName);
+	} catch(Exception ex) {
+	    System.err.println("Exception (" + ex.toString() +
+	      ") parsing NMR-STAR file");
+	    String errMsg = "Unable to get data in star file " + fileName;
+	    System.err.println(errMsg);
+            throw new S2DError(errMsg);
 	}
 
 	return ifc;
@@ -327,6 +339,12 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
             if (doDebugOutput(11)) ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
               fileName);
+	} catch(Exception ex) {
+	    System.err.println("Exception (" + ex.toString() +
+	      ") parsing NMR-STAR file");
+	    String errMsg = "Unable to get data in star file " + fileName;
+	    System.err.println(errMsg);
+            throw new S2DError(errMsg);
 	}
 
 	return ifc;
@@ -471,6 +489,13 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     }
 
     // ----------------------------------------------------------------------
+    //TEMPTEMP -- document
+    public int getPolymerType(SaveFrameNode entityFrame)
+    {
+    	return S2DResidues.POLYMER_TYPE_NONE;
+    }
+
+    // ----------------------------------------------------------------------
     // Returns the number of HA chem shifts in the given save frame.
     public int getHAChemShiftCount(SaveFrameNode frame)
     {
@@ -559,6 +584,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	      frame.getLabel() + ")");
         }
 
+	int polymerType = getPolymerType(frame);
+
 	//
 	// Get the three-letter residue list, if it's available.
 	//
@@ -575,7 +602,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	      ENTITY_RES_SEQ_CODE, ENTITY_RES_LABEL);
 
 	    resList1 = new S2DResidues(resSeqCodes, resLabels,
-	      S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!!*/);
+	      polymerType);
             if (doDebugOutput(13)) {
 	        System.out.println("Got three-letter residue list");
 	    }
@@ -595,8 +622,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	try {
             String molResSeq = getTagValue(frame, ENTITY_SEQ_1LETTER);
 
-	    resList2 = new S2DResidues(molResSeq,
-	      S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!*/);
+	    resList2 = new S2DResidues(molResSeq, polymerType);
             if (doDebugOutput(13)) {
 	        System.out.println("Got one-letter residue list");
 	    }

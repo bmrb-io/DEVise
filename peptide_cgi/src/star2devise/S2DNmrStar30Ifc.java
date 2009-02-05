@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2008
+// (c) Copyright 2004-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.10  2008/11/14 21:14:59  wenger
 // Fixed bugs 070 and 075 (problems with percent assignment values
 // sometimes being greater than 100% for NMR-STAR 3.1 files).
@@ -303,12 +306,46 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     }
 
     // ----------------------------------------------------------------------
+    //TEMPTEMP -- document
+    public int getPolymerType(SaveFrameNode entityFrame)
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("  S2DNmrStar30Ifc.getPolymerType(" +
+	      entityFrame.getLabel() + ")");
+	}
+
+    	int result = S2DResidues.POLYMER_TYPE_NONE;
+
+	String entityID = getOneFrameValue(entityFrame, ENTITY_ID);
+	//TEMPTEMP? if (!entityID.equals("")) {
+	    String type = getOneFrameValue(entityFrame, ENTITY_TYPE);
+	    //TEMPTEMP? if (type.equals(POLYMER)) {
+	        String polymerType = getMolPolymerClass(entityFrame);
+System.out.println("DIAG polymerType: " + polymerType);//TEMPTEMP
+	        if (polymerType != null &&
+		  (polymerType.indexOf(POLYPEPTIDE) != -1 || polymerType.indexOf("protein") != -1/*TEMPTEMP?*/)) {
+		    result = S2DResidues.POLYMER_TYPE_PROTEIN;
+	        } else if (polymerType != null &&
+		  DNA.equalsIgnoreCase(polymerType)) {//TEMPTEMP -- is this the right check?
+	    	    result = S2DResidues.POLYMER_TYPE_DNA;
+	        } else if (polymerType != null &&
+		  RNA.equalsIgnoreCase(polymerType)) {//TEMPTEMP -- is this the right check?
+	    	    result = S2DResidues.POLYMER_TYPE_RNA;
+		}
+	    //TEMPTEMP? }
+	//TEMPTEMP? }
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
     /**
      * Determines whether the given entity/monomeric polymer save frame
      * has data for a protein or not.
      * @param The entity/monomeric polymer save frame.
      * @return True iff the save frame is a protein.
      */
+    //TEMP -- should this use getPolymerType?
     public boolean isAProtein(SaveFrameNode entityFrame)
     {
 	boolean result = false;
@@ -620,6 +657,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         COUPLING_RES_SEQ_CODE_2 = "_Coupling_constant.Seq_ID_2";
 	COUPLING_SF_CAT = "_Coupling_constant_list.Sf_category";
 
+	DNA = "polydeoxyribonucleotide";
+
 	ENTITY_DB_ACC_CODE = "_Entity_db_link.Accession_code";
 	ENTITY_DB_NAME = "_Entity_db_link.Database_code";
 	ENTITY_POLYMER_TYPE = "_Entity.Polymer_type";
@@ -648,7 +687,11 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	MOL_SYSTEM_SF_CAT = "_Assembly.Sf_category";
 	MONOMERIC_POLYMER = "entity";
 	MONOMERIC_POLYMER_SF_CAT = "_Entity.Sf_category";
+
         NMR_STAR_VERSION = "_Entry.NMR_STAR_version";
+
+	RNA = "polyribonucleotide";
+
 	SEQ_SUBJ_LENGTH = "_Entity_db_link.Seq_subject_length";
 	SEQ_IDENTITY = "_Entity_db_link.Seq_identity";
 

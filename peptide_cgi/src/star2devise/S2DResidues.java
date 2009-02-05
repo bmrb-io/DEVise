@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2009/01/29 22:04:57  wenger
+// Made protein, DNA, and RNA subclasses of S2DChemShift to make further
+// stuff easier; added some file checking to test64 and test65 (but
+// delta shifts and CSI don't work yet for nucleic acids); committing
+// again with nucleic acid stuff disabled.
+//
 // Revision 1.8  2009/01/29 16:43:31  wenger
 // A lot of the nucleic acid code is working, but I need to add in
 // the detection of what type of polymer we're processing -- so I'm
@@ -159,7 +165,7 @@ public class S2DResidues {
 
         for (int index = 0; index < resSeq2.length(); index++) {
 	    _resSeqCodes[index] = index + 1;
-	    if (polymerType == POLYMER_TYPE_PROTEIN) {
+	    if (_polymerType == POLYMER_TYPE_PROTEIN) {
 	        _resLabels[index] = translate(resSeq2.charAt(index));
 	    } else {
 	        _resLabels[index] = "" + resSeq2.charAt(index);

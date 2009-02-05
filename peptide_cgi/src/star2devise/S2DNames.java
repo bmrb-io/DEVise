@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2008
+// (c) Copyright 2000-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/11/14 21:14:59  wenger
+// Fixed bugs 070 and 075 (problems with percent assignment values
+// sometimes being greater than 100% for NMR-STAR 3.1 files).
+//
 // Revision 1.8  2008/07/02 18:23:52  wenger
 // Changed version to 11.3.1 for release; final choice of suffix
 // for S2 order params.

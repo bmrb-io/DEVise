@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.104  2009/01/29 22:04:57  wenger
+// Made protein, DNA, and RNA subclasses of S2DChemShift to make further
+// stuff easier; added some file checking to test64 and test65 (but
+// delta shifts and CSI don't work yet for nucleic acids); committing
+// again with nucleic acid stuff disabled.
+//
 // Revision 1.103  2009/01/29 16:43:31  wenger
 // A lot of the nucleic acid code is working, but I need to add in
 // the detection of what type of polymer we're processing -- so I'm
@@ -1915,7 +1921,7 @@ public class S2DMain {
 
 	Vector frames = star.getAllEntityAssemblyFrames();
 
-//TEMPTEMP -- don't even try to save for non-proteins???
+//TEMPTEMP -- don't even try to save for non-polymers???
 	boolean wroteAtLeastOne = false;
 	try {
 	    FileWriter resWriter = S2DFileWriter.create(_dataDir +
@@ -1992,6 +1998,7 @@ public class S2DMain {
 
 	        // We only want to output chemical shifts corresponding to a
 	        // protein.  (This can be tested with bmr4038.str and bmr4056.str.)
+/*TEMP -- do we want to check for non-polymer entities here? (see bug 065)
 	        if (_doProteinCheck && !star.refersToProtein(frame, entityID)) {
                     if (doDebugOutput(2)) {
                         System.out.println("Chemical shifts not saved for " +
@@ -1999,6 +2006,7 @@ public class S2DMain {
 			  entityAssemblyID + ") because it is not a protein");
                     }
 	        } else {
+TEMP*/
 		    //TEMP -- do I really want to catch the error here (and in
 		    // other similar methods below)?
 		    try {
@@ -2016,7 +2024,7 @@ public class S2DMain {
 			  entityAssemblyID + "): " + ex.toString());
 		    }
 		    frameIndex++;
-	        }
+//TEMP	        }
 	    }
 	}
     }
@@ -2374,7 +2382,8 @@ public class S2DMain {
         S2DResidues residues = star.getResidues(monoPolyFrame);
 
         S2DResCount resCount = new S2DResCount(_name, _dataDir,
-	  residues._resSeqCodes, residues._resLabels, S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!!!*/);
+	  residues._resSeqCodes, residues._resLabels,
+	  residues.getPolymerType());
 
 	resCount.write(frameIndex);
 
@@ -2491,7 +2500,11 @@ public class S2DMain {
 	// the entry.  (This can be tested with bmr4001.str and
 	// bmr4011.str.)
 	int residueCount = -1;
-	if (_doProteinCheck) {
+	// 2009-02-05: okay, at least temporarily we are not going to do
+	// this check for non-proteins (to make things work for nucleic
+	// acids).
+	if (_doProteinCheck &&
+	  residues.getPolymerType() == S2DResidues.POLYMER_TYPE_PROTEIN) {
 	    String entityID = star.entAssemID2entID(entityAssemblyID);
 	    residueCount = star.residueCount(frame, entityID);
 	}
@@ -3047,6 +3060,16 @@ public class S2DMain {
 	      frameIndex + ")");
 	}
 
+	// 2009-02-05: at least temporarily don't try to save ambiguity
+	// code data for non-proteins.
+	if (residues.getPolymerType() != S2DResidues.POLYMER_TYPE_PROTEIN) {
+            if (doDebugOutput(2)) {
+	    	System.out.println("Not saving Pistachio data because " +
+		  "structure is not a protein");
+	    }
+            return;
+	}
+
 	//
 	// Get the values we need from the Star file.
 	//
@@ -3163,6 +3186,16 @@ public class S2DMain {
 	    System.out.println("    S2DMain.saveFrameAmbiguity(" +
 	      star.getFrameName(frame) + " (" + entityAssemblyID + "), " +
 	      frameIndex + ")");
+	}
+
+	// 2009-02-05: at least temporarily don't try to save ambiguity
+	// code data for non-proteins.
+	if (residues.getPolymerType() != S2DResidues.POLYMER_TYPE_PROTEIN) {
+            if (doDebugOutput(2)) {
+	    	System.out.println("Not saving ambiguity data because " +
+		  "structure is not a protein");
+	    }
+            return;
 	}
 
 	//

@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2009/01/29 22:04:57  wenger
+// Made protein, DNA, and RNA subclasses of S2DChemShift to make further
+// stuff easier; added some file checking to test64 and test65 (but
+// delta shifts and CSI don't work yet for nucleic acids); committing
+// again with nucleic acid stuff disabled.
+//
 // Revision 1.8  2009/01/29 16:43:31  wenger
 // A lot of the nucleic acid code is working, but I need to add in
 // the detection of what type of polymer we're processing -- so I'm
@@ -207,6 +213,12 @@ public class S2DmmCifIfc extends S2DStarIfc {
             ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
               _fileName);
+	} catch (Exception ex) {
+	    System.err.println("Exception (" + ex.toString() +
+	      ") parsing mmCIF file");
+	    String errMsg = "Unable to get data in star file " + _fileName;
+	    System.err.println(errMsg);
+	    throw new S2DError(errMsg);
 	}
     }
 
@@ -218,6 +230,8 @@ public class S2DmmCifIfc extends S2DStarIfc {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DmmCifIfc.S2DmmCifIfc(" + filename + ")");
 	}
+
+	_fileName = filename;
 
 	setStarNames();
 
@@ -233,6 +247,12 @@ public class S2DmmCifIfc extends S2DStarIfc {
             ex.printStackTrace();
             throw new S2DError("Unable to get data in star file " +
               _fileName);
+	} catch (Exception ex) {
+	    System.err.println("Exception (" + ex.toString() +
+	      ") parsing mmCIF file");
+	    String errMsg = "Unable to get data in star file " + _fileName;
+	    System.err.println(errMsg);
+	    throw new S2DError(errMsg);
 	}
     }
 
