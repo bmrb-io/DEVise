@@ -11,8 +11,15 @@ use strict;
 my $result = 0;
 my $failed_list = "";
 
+open LOGFILE, ">> test_all.log";
+
+my $curtime = localtime();
+print LOGFILE "$curtime: ";
+
 my $version = `./get_version`;
+chomp $version;
 print "\nPeptide-CGI version: $version\n";
+print LOGFILE "Peptide-CGI version: $version: ";
 
 RunTest("test1");
 RunTest("test1_3");
@@ -78,11 +85,7 @@ RunTest("test61_3");
 RunTest("test62");
 RunTest("test62_3");
 RunTest("test63");
-#TEMP -- needs to work for DNA
-#TEMP -- add 3.1 version
 RunTest("test64");
-#TEMP -- needs to work for DNA
-#TEMP -- add 3.1 version
 RunTest("test65");
 #TEMP -- put this back in once bug 078 is fixed.
 #RunTest("test66");
@@ -95,13 +98,17 @@ RunTest("test68_3");
 #TEMP -- 4141 has protein and DNA
 
 print "\nTest_all result: ";
+print LOGFILE "Test_all result: ";
 if ($result == 0) {
   print "OK\n";
+  print LOGFILE "OK\n";
   exit 0;
 } else {
   print "FAILED ($failed_list failed)\n";
+  print LOGFILE "FAILED ($failed_list failed)\n";
   exit 1;
 }
+close LOGFILE;
 
 #-----------------------------------------------------------
 sub RunTest {
