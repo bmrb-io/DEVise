@@ -1,0 +1,50 @@
+echo "Checking output files"
+
+#TEMPTEMP -- should we get c1,2 files????
+set files = ( data_dir/15083as1.dat \
+	data_dir/15083as2.dat \
+	data_dir/15083c1.dat \
+	data_dir/15083c2.dat \
+	data_dir/15083d1.dat \
+	data_dir/15083d2.dat \
+	data_dir/15083hn1.dat \
+	data_dir/15083hn2.dat \
+	data_dir/15083md.dat \
+	data_dir/15083rc1.dat \
+	data_dir/15083rc2.dat \
+	data_dir/15083rl.dat \
+	html_dir/15083as1.html \
+	html_dir/15083as1_large.html \
+	html_dir/15083as2.html \
+	html_dir/15083as2_large.html \
+	html_dir/15083c1.html \
+	html_dir/15083c1_large.html \
+	html_dir/15083c2.html \
+	html_dir/15083c2_large.html \
+	html_dir/15083d1.html \
+	html_dir/15083d1_large.html \
+	html_dir/15083d2.html \
+	html_dir/15083d2_large.html \
+	html_dir/15083y.html \
+	html_dir/15083y_large.html \
+	session_dir/15083acdd \
+	session_dir/15083as1.ds \
+	session_dir/15083as2.ds \
+	session_dir/15083c1.ds \
+	session_dir/15083c2.ds \
+	session_dir/15083d1.ds \
+	session_dir/15083d2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+#TEMPTEMP set file = "data_dir/15080as1.dat"
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+

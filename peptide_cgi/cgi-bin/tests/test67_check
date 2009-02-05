@@ -1,0 +1,53 @@
+echo "Checking output files"
+
+#TEMPTEMP -- should we get c1 files????
+set files = ( data_dir/15080as1.dat \
+	data_dir/15080c1.dat \
+	data_dir/15080d1.dat \
+	data_dir/15080hn1.dat \
+	data_dir/15080md.dat \
+	data_dir/15080rc1.dat \
+	data_dir/15080rl.dat \
+	html_dir/15080as1.html \
+	html_dir/15080as1_large.html \
+	html_dir/15080c1.html \
+	html_dir/15080c1_large.html \
+	html_dir/15080d1.html \
+	html_dir/15080d1_large.html \
+	html_dir/15080y.html \
+	html_dir/15080y_large.html \
+	session_dir/15080acdd \
+	session_dir/15080as1.ds \
+	session_dir/15080c1.ds \
+	session_dir/15080d1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/15080as1.dat"
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+
+set file = "data_dir/15080d1.dat"
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+
+set file = "data_dir/15080hn1.dat"
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+
+set file = "data_dir/15080rl.dat"
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line
+set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line

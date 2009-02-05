@@ -1,0 +1,26 @@
+#! /bin/csh -f
+
+# Test an entry with RNA only.
+
+set result = 0
+
+rm -f */15080*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -bmrbid 15080 -force -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+source tests/test67_check
+
+
+echo -n "Test67 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
