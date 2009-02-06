@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/02/05 20:24:37  wenger
+// All tests now work (including new nucleic acid tests), but lots of
+// cleanup to be done plus actually writing correct deltashifts for
+// nucleic acids.
+//
 // Revision 1.11  2008/12/01 20:37:53  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -617,6 +622,21 @@ public abstract class S2DStarIfc {
 	} catch(S2DException ex) {
 	    System.err.println(ex);
 	    result = name + " not available for this save frame.";
+	}
+
+        return result;
+    }
+
+    //-------------------------------------------------------------------
+    // Note: frame can be the whole Star tree for an mmCif file.
+    public String getOneFrameValueOrNull(StarNode frame, String name)
+    {
+        String result = null;
+
+	try {
+	    result = getOneFrameValueStrict(frame, name);
+	} catch(S2DException ex) {
+	    System.err.println(ex);
 	}
 
         return result;

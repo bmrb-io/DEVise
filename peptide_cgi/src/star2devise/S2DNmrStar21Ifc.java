@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/02/05 20:24:37  wenger
+// All tests now work (including new nucleic acid tests), but lots of
+// cleanup to be done plus actually writing correct deltashifts for
+// nucleic acids.
+//
 // Revision 1.11  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -237,7 +242,11 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     }
 
     // ----------------------------------------------------------------------
-    //TEMPTEMP -- document
+    /**
+     * Get the polymer type of the given entity save frame.
+     * @param The entity/monomeric polymer save frame.
+     * @return The polymer type (see S2DResidues.POLYMER_TYPE*).
+     */
     public int getPolymerType(SaveFrameNode entityFrame)
     {
         if (doDebugOutput(12)) {
@@ -247,8 +256,9 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 
     	int result = S2DResidues.POLYMER_TYPE_NONE;
 
-	String type = getOneFrameValue(entityFrame, ENTITY_TYPE);
-	//TEMPTEMP? if (type.equalsIgnoreCase(POLYMER)) {
+	String type = getOneFrameValueOrNull(entityFrame, ENTITY_TYPE);
+	// We consider no value for ENTITY_TYPE okay here.
+	if (type == null || type.equalsIgnoreCase(POLYMER)) {
 	    String polymerType = getMolPolymerClass(entityFrame);
 	    if (S2DNames.PROTEIN.equalsIgnoreCase(polymerType)) {
 	    	result = S2DResidues.POLYMER_TYPE_PROTEIN;
@@ -259,7 +269,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	    else if (RNA.equalsIgnoreCase(polymerType)) {
 	    	result = S2DResidues.POLYMER_TYPE_RNA;
 	    }
-	//TEMPTEMP? }
+	}
 
 	return result;
     }

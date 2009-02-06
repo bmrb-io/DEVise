@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/02/05 20:24:37  wenger
+// All tests now work (including new nucleic acid tests), but lots of
+// cleanup to be done plus actually writing correct deltashifts for
+// nucleic acids.
+//
 // Revision 1.11  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -306,7 +311,11 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     }
 
     // ----------------------------------------------------------------------
-    //TEMPTEMP -- document
+    /**
+     * Get the polymer type of the given entity save frame.
+     * @param The entity/monomeric polymer save frame.
+     * @return The polymer type (see S2DResidues.POLYMER_TYPE*).
+     */
     public int getPolymerType(SaveFrameNode entityFrame)
     {
         if (doDebugOutput(12)) {
@@ -317,23 +326,24 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     	int result = S2DResidues.POLYMER_TYPE_NONE;
 
 	String entityID = getOneFrameValue(entityFrame, ENTITY_ID);
-	//TEMPTEMP? if (!entityID.equals("")) {
-	    String type = getOneFrameValue(entityFrame, ENTITY_TYPE);
-	    //TEMPTEMP? if (type.equals(POLYMER)) {
+	if (!entityID.equals("")) {
+	    String type = getOneFrameValueOrNull(entityFrame, ENTITY_TYPE);
+            // We consider no value for ENTITY_TYPE okay here.
+	    if (type == null || type.equals(POLYMER)) {
 	        String polymerType = getMolPolymerClass(entityFrame);
-System.out.println("DIAG polymerType: " + polymerType);//TEMPTEMP
 	        if (polymerType != null &&
-		  (polymerType.indexOf(POLYPEPTIDE) != -1 || polymerType.indexOf("protein") != -1/*TEMPTEMP?*/)) {
+		  (polymerType.indexOf(POLYPEPTIDE) != -1 ||
+		  polymerType.indexOf(S2DNames.PROTEIN) != -1)) {
 		    result = S2DResidues.POLYMER_TYPE_PROTEIN;
 	        } else if (polymerType != null &&
-		  DNA.equalsIgnoreCase(polymerType)) {//TEMPTEMP -- is this the right check?
+		  DNA.equalsIgnoreCase(polymerType)) {
 	    	    result = S2DResidues.POLYMER_TYPE_DNA;
 	        } else if (polymerType != null &&
-		  RNA.equalsIgnoreCase(polymerType)) {//TEMPTEMP -- is this the right check?
+		  RNA.equalsIgnoreCase(polymerType)) {
 	    	    result = S2DResidues.POLYMER_TYPE_RNA;
 		}
-	    //TEMPTEMP? }
-	//TEMPTEMP? }
+	    }
+	}
 
 	return result;
     }

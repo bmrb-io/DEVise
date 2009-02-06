@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2009/02/05 20:24:37  wenger
+// All tests now work (including new nucleic acid tests), but lots of
+// cleanup to be done plus actually writing correct deltashifts for
+// nucleic acids.
+//
 // Revision 1.17  2009/01/29 22:04:57  wenger
 // Made protein, DNA, and RNA subclasses of S2DChemShift to make further
 // stuff easier; added some file checking to test64 and test65 (but
@@ -489,7 +494,11 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     }
 
     // ----------------------------------------------------------------------
-    //TEMPTEMP -- document
+    /**
+     * Get the polymer type of the given entity save frame.
+     * @param The entity/monomeric polymer save frame.
+     * @return The polymer type (see S2DResidues.POLYMER_TYPE*).
+     */
     public int getPolymerType(SaveFrameNode entityFrame)
     {
     	return S2DResidues.POLYMER_TYPE_NONE;
