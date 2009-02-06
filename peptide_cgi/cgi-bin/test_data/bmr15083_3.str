@@ -388,7 +388,7 @@ RRI
   _Entity.Nstd_monomer                     no
   _Entity.Nstd_chirality                   no
   _Entity.Nstd_linkage                     no
-  _Entity.Number_of_monomers               62
+  _Entity.Number_of_monomers               63
   _Entity.Paramagnetic                     no
   _Entity.Thiol_state                      'not present'
   _Entity.Src_method                       man
