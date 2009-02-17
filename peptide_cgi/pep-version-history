@@ -4,6 +4,9 @@ Peptide-CGI 11.4.1
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.3 or higher.)
 
+* Fixed a problem with the 5531/1LUU combination causing a null pointer
+error (see bug 078).
+
 * Fixed an error that caused Peptide-CGI to not correctly get entry
 titles.
 

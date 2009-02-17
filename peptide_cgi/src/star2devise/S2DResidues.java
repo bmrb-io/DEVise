@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2009/02/05 20:24:37  wenger
+// All tests now work (including new nucleic acid tests), but lots of
+// cleanup to be done plus actually writing correct deltashifts for
+// nucleic acids.
+//
 // Revision 1.9  2009/01/29 22:04:57  wenger
 // Made protein, DNA, and RNA subclasses of S2DChemShift to make further
 // stuff easier; added some file checking to test64 and test65 (but
@@ -125,6 +130,9 @@ public class S2DResidues {
         _resSeqCodes = resSeqCodes;
 	_resLabels = S2DUtils.arrayToUpper(resLabels);
 
+	initializeTranslation();
+    	ensureLegalResidues();
+
 	if (_polymerType == POLYMER_TYPE_DNA) {
 	    for (int index = 0; index < _resLabels.length; index++) {
 	        _resLabels[index] = "D" + _resLabels[index];
@@ -171,6 +179,8 @@ public class S2DResidues {
 	        _resLabels[index] = "" + resSeq2.charAt(index);
 	    }
 	}
+
+    	ensureLegalResidues();
 
 	if (_polymerType == POLYMER_TYPE_DNA) {
 	    for (int index = 0; index < _resLabels.length; index++) {
@@ -314,6 +324,7 @@ public class S2DResidues {
 		    if (doDebugOutput(0)) {
 		        System.err.println(error);
 		    }
+		    residueLabels[index] = "X";
 		}
 	    }
 	}
@@ -424,6 +435,50 @@ public class S2DResidues {
 	}
 
 	return acidOut;
+    }
+
+    /** -----------------------------------------------------------------
+     * Ensure that all residue sequence codes are legal, or else are
+     * "X" (for illegal/unknown).
+     */
+    private void ensureLegalResidues() throws S2DException
+    {
+	for (int index = 0; index < _resLabels.length; index++) {
+	    if (!_resLabels[index].equals("X")) {
+	        boolean badCode = false;
+
+	        switch (_polymerType) {
+	        case POLYMER_TYPE_PROTEIN:
+		    badCode = !_acidTrans.containsValue(_resLabels[index]);
+	            break;
+
+	        case POLYMER_TYPE_DNA:
+		    badCode = !_resLabels[index].equals("A") &&
+		      !_resLabels[index].equals("C") &&
+		      !_resLabels[index].equals("G") &&
+		      !_resLabels[index].equals("T");
+	            break;
+
+	        case POLYMER_TYPE_RNA:
+		    badCode = !_resLabels[index].equals("A") &&
+		      !_resLabels[index].equals("C") &&
+		      !_resLabels[index].equals("G") &&
+		      !_resLabels[index].equals("U");
+	            break;
+
+	        default:
+		    throw new S2DError("Illegal polymer type: " +
+		      _polymerType);
+	        }
+
+	        if (badCode) {
+		    System.err.println(new S2DWarning("Warning: " +
+		      "unrecognized residue sequence code: " +
+		      _resLabels[index]));
+	            _resLabels[index] = "X";
+	        }
+	    }
+	}
     }
 
     //-------------------------------------------------------------------
