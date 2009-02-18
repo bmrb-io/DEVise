@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2008
+// (c) Copyright 2001-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2008/12/01 20:37:53  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.10.2.3  2008/10/28 15:00:55  wenger
 // Ambiguity code visualizations now work with multiple-entity fix, and
 // work for the first time with 3.1 files.
@@ -161,6 +164,7 @@ public class S2DSession {
 
 	switch (dataType) {
 	case S2DUtils.TYPE_DELTASHIFT:
+	case S2DUtils.TYPE_NA_DELTASHIFT://TEMPTEMP -- needs different template
 	    baseName = "deltashift.base";
 	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;

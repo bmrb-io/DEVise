@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2009/02/18 18:10:49  wenger
+// Fixed bug 065 (don't process non-polymer entities).
+//
 // Revision 1.13  2009/01/29 22:04:57  wenger
 // Made protein, DNA, and RNA subclasses of S2DChemShift to make further
 // stuff easier; added some file checking to test64 and test65 (but
@@ -135,12 +138,12 @@ public class S2DChemShift {
 
     private static final int DEBUG = 0;
 
-    private String _name;
+    protected String _name;
     private String _longName;
-    private String _dataDir;
-    private String _sessionDir;
-    private S2DSummaryHtml _summary;
-    private String _frameDetails;
+    protected String _dataDir;
+    protected String _sessionDir;
+    protected S2DSummaryHtml _summary;
+    protected String _frameDetails;
 
     private int[] _resSeqCodes;
     private String[] _residueLabels;
@@ -148,11 +151,12 @@ public class S2DChemShift {
     private String[] _atomTypes;
     private double[] _chemShiftVals;
     private int[] _ambiguityVals;
-    private int _entityAssemblyID;
+    protected int _entityAssemblyID;
 
     protected String CHEMSHIFT_FILE = "chem_info" + File.separator;
     protected ShiftDataManager _refTable;
 
+    //TEMP -- move a lot of this stuff???
     private String[] _deltaShiftResLabels;
     private float[] _haDeltaShifts;
     private float[] _cDeltaShifts;
@@ -163,7 +167,7 @@ public class S2DChemShift {
     // with the GLY HA3->CB translation.
     private boolean _hasRealCBShifts;
 
-    private String _info;
+    protected String _info;
 
     //===================================================================
     // PUBLIC METHODS

@@ -18,7 +18,6 @@ echo "Checking output files"
 
 set files = ( data_dir/5167ac1.dat \
 	data_dir/5167as1.dat \
-	data_dir/5167c1.dat \
 	data_dir/5167d1.dat \
 	data_dir/5167hn1.dat \
 	data_dir/5167md.dat \
@@ -29,8 +28,6 @@ set files = ( data_dir/5167ac1.dat \
 	html_dir/5167ac1_large.html \
 	html_dir/5167as1.html \
 	html_dir/5167as1_large.html \
-	html_dir/5167c1.html \
-	html_dir/5167c1_large.html \
 	html_dir/5167d1.html \
 	html_dir/5167d1_large.html \
 	html_dir/5167y.html \
@@ -38,7 +35,6 @@ set files = ( data_dir/5167ac1.dat \
 	session_dir/5167ac1.ds \
 	session_dir/5167acdd \
 	session_dir/5167as1.ds \
-	session_dir/5167c1.ds \
 	session_dir/5167d1.ds )
 
 foreach file ($files)

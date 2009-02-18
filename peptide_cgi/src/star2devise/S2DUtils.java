@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2008
+// (c) Copyright 2000-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2008/06/27 15:23:33  wenger
+// Added the option to explicitly call the garbage collector a number
+// of times during processing; added memory usage printout at debug
+// level 2.
+//
 // Revision 1.10  2008/06/17 23:07:53  wenger
 // Fixed to-do 073:  we no longer generate figure of merit or ambiguity
 // code visualizations if the values are all null (".").
@@ -77,7 +82,8 @@ public class S2DUtils
       TYPE_HETNOE = 9, TYPE_ALL_CHEM_SHIFTS = 10, TYPE_HVSN_CHEM_SHIFTS = 11,
       TYPE_ATOMIC_COORDS = 12, TYPE_CHEM_SHIFT_REF1 = 13,
       TYPE_CHEM_SHIFT_REF2 = 14, TYPE_CHEM_SHIFT_REF3 = 15,
-      TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18;
+      TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18,
+      TYPE_NA_DELTASHIFT = 19;
 
     //===================================================================
     // PUBLIC METHODS

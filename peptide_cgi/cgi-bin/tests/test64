@@ -19,8 +19,6 @@ echo "Checking output files"
 set files = ( data_dir/4416ac1.dat \
 	data_dir/4416as1.dat \
 	data_dir/4416as2.dat \
-	data_dir/4416c1.dat \
-	data_dir/4416c2.dat \
 	data_dir/4416d1.dat \
 	data_dir/4416d2.dat \
 	data_dir/4416hn1.dat \
@@ -36,10 +34,6 @@ set files = ( data_dir/4416ac1.dat \
 	html_dir/4416as1_large.html \
 	html_dir/4416as2.html \
 	html_dir/4416as2_large.html \
-	html_dir/4416c1.html \
-	html_dir/4416c1_large.html \
-	html_dir/4416c2.html \
-	html_dir/4416c2_large.html \
 	html_dir/4416d1.html \
 	html_dir/4416d1_large.html \
 	html_dir/4416d2.html \
@@ -50,8 +44,6 @@ set files = ( data_dir/4416ac1.dat \
 	session_dir/4416acdd \
 	session_dir/4416as1.ds \
 	session_dir/4416as2.ds \
-	session_dir/4416c1.ds \
-	session_dir/4416c2.ds \
 	session_dir/4416d1.ds \
 	session_dir/4416d2.ds )
 

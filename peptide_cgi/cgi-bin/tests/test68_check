@@ -6,8 +6,6 @@ set files = ( data_dir/15083am3.dat \
 	data_dir/15083as1.dat \
 	data_dir/15083as2.dat \
 	data_dir/15083as3.dat \
-	data_dir/15083c1.dat \
-	data_dir/15083c2.dat \
 	data_dir/15083c3.dat \
 	data_dir/15083d1.dat \
 	data_dir/15083d2.dat \
@@ -29,10 +27,6 @@ set files = ( data_dir/15083am3.dat \
 	html_dir/15083as2_large.html \
 	html_dir/15083as3.html \
 	html_dir/15083as3_large.html \
-	html_dir/15083c1.html \
-	html_dir/15083c1_large.html \
-	html_dir/15083c2.html \
-	html_dir/15083c2_large.html \
 	html_dir/15083c3.html \
 	html_dir/15083c3_large.html \
 	html_dir/15083d1.html \
@@ -52,8 +46,6 @@ set files = ( data_dir/15083am3.dat \
 	session_dir/15083as1.ds \
 	session_dir/15083as2.ds \
 	session_dir/15083as3.ds \
-	session_dir/15083c1.ds \
-	session_dir/15083c2.ds \
 	session_dir/15083c3.ds \
 	session_dir/15083d1.ds \
 	session_dir/15083d2.ds \
