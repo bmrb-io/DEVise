@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.106  2009/02/18 18:10:49  wenger
+// Fixed bug 065 (don't process non-polymer entities).
+//
 // Revision 1.105  2009/02/05 20:24:37  wenger
 // All tests now work (including new nucleic acid tests), but lots of
 // cleanup to be done plus actually writing correct deltashifts for
@@ -398,7 +401,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
