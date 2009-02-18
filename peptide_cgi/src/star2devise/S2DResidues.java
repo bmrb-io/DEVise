@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2009/02/17 20:06:19  wenger
+// Fixed bug 078 (5531/1LUU combination causes a null pointer error).
+//
 // Revision 1.10  2009/02/05 20:24:37  wenger
 // All tests now work (including new nucleic acid tests), but lots of
 // cleanup to be done plus actually writing correct deltashifts for
@@ -98,10 +101,11 @@ public class S2DResidues {
     public int[] _resSeqCodes = null;
     public String[] _resLabels = null; // three-letter
 
-    public static final int POLYMER_TYPE_NONE = 0;
-    public static final int POLYMER_TYPE_PROTEIN = 1;
-    public static final int POLYMER_TYPE_DNA = 2; 
-    public static final int POLYMER_TYPE_RNA = 3;
+    public static final int POLYMER_TYPE_UNKNOWN = 0;
+    public static final int POLYMER_TYPE_NONE = 1; // not a polymer
+    public static final int POLYMER_TYPE_PROTEIN = 2;
+    public static final int POLYMER_TYPE_DNA = 3; 
+    public static final int POLYMER_TYPE_RNA = 4;
 
     private static final int DEBUG = 0;
 
@@ -173,7 +177,7 @@ public class S2DResidues {
 
         for (int index = 0; index < resSeq2.length(); index++) {
 	    _resSeqCodes[index] = index + 1;
-	    if (_polymerType == POLYMER_TYPE_PROTEIN) {
+	    if (treatAsProtein()) {
 	        _resLabels[index] = translate(resSeq2.charAt(index));
 	    } else {
 	        _resLabels[index] = "" + resSeq2.charAt(index);
@@ -196,6 +200,18 @@ public class S2DResidues {
     public int getPolymerType()
     {
     	return _polymerType;
+    }
+
+    /** -----------------------------------------------------------------
+     * Get whether to treat this sequence as a polymer.  Note that if
+     * we're not sure, we treat it as a polymer (this makes visualization
+     * server uploads with minimal data work).
+     * @return whether to treat this sequence as a polymer.
+     */
+    public boolean treatAsProtein()
+    {
+    	return (_polymerType == POLYMER_TYPE_PROTEIN ||
+	  _polymerType == POLYMER_TYPE_UNKNOWN);
     }
 
     //-------------------------------------------------------------------
@@ -296,6 +312,7 @@ public class S2DResidues {
 	        try {
 		    switch (_polymerType) {
 		    case POLYMER_TYPE_PROTEIN:
+		    case POLYMER_TYPE_UNKNOWN:
 	                residueLabels[index] = translate(label.charAt(0));
 			break;
 
@@ -449,6 +466,7 @@ public class S2DResidues {
 
 	        switch (_polymerType) {
 	        case POLYMER_TYPE_PROTEIN:
+	        case POLYMER_TYPE_UNKNOWN:
 		    badCode = !_acidTrans.containsValue(_resLabels[index]);
 	            break;
 

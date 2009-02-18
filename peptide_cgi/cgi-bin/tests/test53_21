@@ -1,6 +1,7 @@
 #! /bin/csh -f
 
 # Tests bug 065 (problem Jundong ran into on 2008-06-23).
+# Tests the same thing with the version 2.1 file.
 
 set result = 0
 
@@ -8,7 +9,7 @@ rm -f */test53_out*
 rm -f */*/test53_out*
 
 echo -n "Processing NMR-STAR: "
-./uvd -file test_data/bmr15803_3.str -name test53_out -force -check_pct
+./uvd -file test_data/bmr15803.str -name test53_out -force -check_pct
 if ($status != 0) then
   echo "First invocation of uvd failed!"
   set result = 1
@@ -18,7 +19,7 @@ endif
 source tests/test53_check
 
 
-echo -n "Test53 result: "
+echo -n "Test53_21 result: "
 if ($result == 0) then
   echo "OK"
   exit 0

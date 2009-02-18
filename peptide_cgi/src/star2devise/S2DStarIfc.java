@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/02/06 16:20:25  wenger
+// Cleaned up a bunch of the nucleic acid-related code; all tests pass
+// (but I still need to fix up the deltashift values for nucleic acids).
+//
 // Revision 1.12  2009/02/05 20:24:37  wenger
 // All tests now work (including new nucleic acid tests), but lots of
 // cleanup to be done plus actually writing correct deltashifts for
@@ -374,13 +378,8 @@ public abstract class S2DStarIfc {
 
 //TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
-    /**
-     * Determines whether the given entity/monomeric polymer save frame
-     * has data for a protein or not.
-     * @param The entity/monomeric polymer save frame.
-     * @return True iff the save frame is a protein.
-     */
-    public boolean isAProtein(SaveFrameNode entityFrame)
+    public boolean refersToPolymer(SaveFrameNode frame, String entityID)
+      throws S2DException
     {
         return false;
     }

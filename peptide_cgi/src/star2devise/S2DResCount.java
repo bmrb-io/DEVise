@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2009/01/29 22:04:57  wenger
+// Made protein, DNA, and RNA subclasses of S2DChemShift to make further
+// stuff easier; added some file checking to test64 and test65 (but
+// delta shifts and CSI don't work yet for nucleic acids); committing
+// again with nucleic acid stuff disabled.
+//
 // Revision 1.5  2009/01/29 16:43:31  wenger
 // A lot of the nucleic acid code is working, but I need to add in
 // the detection of what type of polymer we're processing -- so I'm
@@ -83,6 +89,7 @@ public class S2DResCount {
 	// of polymer we have.
 	switch (polymerType) {
 	case S2DResidues.POLYMER_TYPE_PROTEIN:
+	case S2DResidues.POLYMER_TYPE_UNKNOWN:
             _acidList = new String[] { "ALA", "ARG", "ASP", "ASN",
 	      "CYS", "GLU", "GLN", "GLY", "HIS", "ILE", "LEU", "LYS",
 	      "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL" };

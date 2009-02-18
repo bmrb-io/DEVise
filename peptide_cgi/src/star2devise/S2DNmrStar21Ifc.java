@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/02/06 16:20:24  wenger
+// Cleaned up a bunch of the nucleic acid-related code; all tests pass
+// (but I still need to fix up the deltashift values for nucleic acids).
+//
 // Revision 1.12  2009/02/05 20:24:37  wenger
 // All tests now work (including new nucleic acid tests), but lots of
 // cleanup to be done plus actually writing correct deltashifts for
@@ -242,6 +246,40 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     }
 
     // ----------------------------------------------------------------------
+    // Returns true iff the given save frame refers to data for a polymer
+    // (at least for chemical assignments save frames).
+    // Note: the save frame should be an assigned_chemical_shifts
+    // save frame.
+    // entityID is ignored -- needed for NMR-STAR 3.0 only.
+    public boolean refersToPolymer(SaveFrameNode frame, String entityID)
+    {
+        if (doDebugOutput(12)) {
+            System.out.println("  S2DNmrStar21Ifc.refersToPolymer(" +
+	      frame.getLabel() + " (" + entityID + "))");
+        }
+
+        boolean result = false;
+
+	//TEMP -- check that _Saveframe_category is assigned_chemical_shifts?
+
+	try {
+            SaveFrameNode compFrame = getEntityFrame(frame, entityID);
+	    result = (getPolymerType(compFrame) !=
+	      S2DResidues.POLYMER_TYPE_NONE);
+
+	} catch (S2DException ex) {
+	    if (doDebugOutput(11)) {
+	        System.err.println("S2DException checking for polymer: " +
+	          ex.toString());
+	    }
+	    // If we're not sure, treat it as a polymer.
+	    result = true;
+	}
+
+        return result;
+    }
+
+    // ----------------------------------------------------------------------
     /**
      * Get the polymer type of the given entity save frame.
      * @param The entity/monomeric polymer save frame.
@@ -254,11 +292,12 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	      entityFrame.getLabel() + ")");
         }
 
-    	int result = S2DResidues.POLYMER_TYPE_NONE;
+    	int result = S2DResidues.POLYMER_TYPE_UNKNOWN;
 
 	String type = getOneFrameValueOrNull(entityFrame, ENTITY_TYPE);
-	// We consider no value for ENTITY_TYPE okay here.
-	if (type == null || type.equalsIgnoreCase(POLYMER)) {
+	if (type == null) {
+	    result = S2DResidues.POLYMER_TYPE_UNKNOWN;
+	} else if (type.equalsIgnoreCase(POLYMER)) {
 	    String polymerType = getMolPolymerClass(entityFrame);
 	    if (S2DNames.PROTEIN.equalsIgnoreCase(polymerType)) {
 	    	result = S2DResidues.POLYMER_TYPE_PROTEIN;
@@ -269,29 +308,8 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	    else if (RNA.equalsIgnoreCase(polymerType)) {
 	    	result = S2DResidues.POLYMER_TYPE_RNA;
 	    }
-	}
-
-	return result;
-    }
-
-    // ----------------------------------------------------------------------
-    /**
-     * Determines whether the given entity/monomeric polymer save frame
-     * has data for a protein or not.
-     * @param The entity/monomeric polymer save frame.
-     * @return True iff the save frame is a protein.
-     */
-    //TEMP -- should this use getPolymerType?
-    public boolean isAProtein(SaveFrameNode entityFrame)
-    {
-        boolean result = false;
-
-	String type = getOneFrameValue(entityFrame, ENTITY_TYPE);
-	if (type.equalsIgnoreCase(POLYMER)) {
-	    String polymerType = getMolPolymerClass(entityFrame);
-	    if (S2DNames.PROTEIN.equalsIgnoreCase(polymerType)) {
-	        result = true;
-	    }
+	} else {
+	    result = S2DResidues.POLYMER_TYPE_NONE;
 	}
 
 	return result;

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/02/06 16:20:25  wenger
+// Cleaned up a bunch of the nucleic acid-related code; all tests pass
+// (but I still need to fix up the deltashift values for nucleic acids).
+//
 // Revision 1.12  2009/02/05 20:24:37  wenger
 // All tests now work (including new nucleic acid tests), but lots of
 // cleanup to be done plus actually writing correct deltashifts for
@@ -155,8 +159,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     protected String REP_CONF_ENTITY_ASSEMBLY_ID =
       "_Rep_conf.Entity_assembly_ID";
 
-    // Maps EntityID (String) to isAProtein (Boolean).
-    private Hashtable _frameIsProtein = new Hashtable();
+    // Maps EntityID (String) to polymer type.
+    private Hashtable _framePolymerType = new Hashtable();
 
     //===================================================================
     // PUBLIC METHODS
@@ -300,11 +304,44 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
 	boolean result = false;
 
-        Boolean isProt = (Boolean)_frameIsProtein.get(entityID);
-	if (isProt != null) {
-	    result = isProt.booleanValue();
+	Integer polymerType = (Integer) _framePolymerType.get(entityID);
+	if (polymerType != null) {
+	    result = (polymerType.intValue() ==
+	      S2DResidues.POLYMER_TYPE_PROTEIN ||
+	      polymerType.intValue() == S2DResidues.POLYMER_TYPE_UNKNOWN);
 	} else {
 	    throw new S2DError("Entity ID " + entityID + " not found!");
+	}
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Determine whether the given entity is a polymer.
+     * @param The relevant frame (ignored here, needed for NMR-STAR 2.1).
+     * @param The entity ID (a string containing an integer).
+     * @return True iff the entity is a polymer.
+     */
+    public boolean refersToPolymer(SaveFrameNode frame, String entityID)
+      throws S2DException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("  S2DNmrStar30Ifc.refersToPolymer(" +
+	      frame.getLabel() + " (" + entityID + "))");
+        }
+
+	boolean result = false;
+
+	Integer polymerType = (Integer) _framePolymerType.get(entityID);
+	if (polymerType != null) {
+	    result = (polymerType.intValue() !=
+	      S2DResidues.POLYMER_TYPE_NONE);
+	} else {
+	    System.err.println("Warning: entity ID " + entityID +
+	      " not found when checking for polymer!");
+	    // If we're not sure, treat it as a polymer.
+	    result = true;
 	}
 
 	return result;
@@ -323,13 +360,14 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	      entityFrame.getLabel() + ")");
 	}
 
-    	int result = S2DResidues.POLYMER_TYPE_NONE;
+    	int result = S2DResidues.POLYMER_TYPE_UNKNOWN;
 
 	String entityID = getOneFrameValue(entityFrame, ENTITY_ID);
 	if (!entityID.equals("")) {
 	    String type = getOneFrameValueOrNull(entityFrame, ENTITY_TYPE);
-            // We consider no value for ENTITY_TYPE okay here.
-	    if (type == null || type.equals(POLYMER)) {
+	    if (type == null) {
+	    	result = S2DResidues.POLYMER_TYPE_UNKNOWN;
+	    } else if (type.equals(POLYMER)) {
 	        String polymerType = getMolPolymerClass(entityFrame);
 	        if (polymerType != null &&
 		  (polymerType.indexOf(POLYPEPTIDE) != -1 ||
@@ -342,33 +380,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 		  RNA.equalsIgnoreCase(polymerType)) {
 	    	    result = S2DResidues.POLYMER_TYPE_RNA;
 		}
-	    }
-	}
-
-	return result;
-    }
-
-    // ----------------------------------------------------------------------
-    /**
-     * Determines whether the given entity/monomeric polymer save frame
-     * has data for a protein or not.
-     * @param The entity/monomeric polymer save frame.
-     * @return True iff the save frame is a protein.
-     */
-    //TEMP -- should this use getPolymerType?
-    public boolean isAProtein(SaveFrameNode entityFrame)
-    {
-	boolean result = false;
-
-	String entityID = getOneFrameValue(entityFrame, ENTITY_ID);
-	if (!entityID.equals("")) {
-	    String type = getOneFrameValue(entityFrame, ENTITY_TYPE);
-	    if (type.equals(POLYMER)) {
-	        String polymerType = getMolPolymerClass(entityFrame);
-	        if (polymerType != null &&
-		  polymerType.indexOf(POLYPEPTIDE) != -1) {
-		    result = true;
-		}
+	    } else {
+	    	result = S2DResidues.POLYMER_TYPE_NONE;
 	    }
 	}
 
@@ -598,23 +611,19 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	        }
 
 	        String entityID = getOneFrameValue(frame, ENTITY_ID);
-                boolean frameIsProtein = isAProtein(frame);
+                int polymerType = getPolymerType(frame);
 
 	        if (doDebugOutput(13, false)) {
-		    if (frameIsProtein) {
-		        System.out.println("is a protein");
-		    } else {
-		        System.out.println("is not a protein");
-		    }
-	        }
+		    System.out.println("polymer type: " + polymerType);
+		}
 
-		// Add the "is a protein" info into the hash table.
-		if (_frameIsProtein.containsKey(entityID)) {
+		// Add the polymer type info into the hash table.
+		if (_framePolymerType.containsKey(entityID)) {
 		    throw new S2DError("Duplicate entity ID " +
 		      entityID + "!!");
 		} else {
-		    Boolean isProt = new Boolean(frameIsProtein);
-		    _frameIsProtein.put(entityID, isProt);
+		    Integer polymerTypeObj = new Integer(polymerType);
+		    _framePolymerType.put(entityID, polymerTypeObj);
 		}
 	    }
 	} catch (Exception ex) {

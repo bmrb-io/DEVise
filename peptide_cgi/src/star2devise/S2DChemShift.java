@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/01/29 22:04:57  wenger
+// Made protein, DNA, and RNA subclasses of S2DChemShift to make further
+// stuff easier; added some file checking to test64 and test65 (but
+// delta shifts and CSI don't work yet for nucleic acids); committing
+// again with nucleic acid stuff disabled.
+//
 // Revision 1.12  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -176,6 +182,7 @@ public class S2DChemShift {
 
         switch (polymerType) {
 	case S2DResidues.POLYMER_TYPE_PROTEIN:
+	case S2DResidues.POLYMER_TYPE_UNKNOWN:
 	    chemShift = new S2DProteinChemShift(name, longName, dataDir,
 	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
 	      atomTypes, chemShiftVals, ambiguityVals, entityAssemblyID,

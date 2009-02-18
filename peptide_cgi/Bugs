@@ -289,9 +289,10 @@ Num Date        Status  Description
 			(See also 037.)
 			(Fixed by wenger, 11/19/08.)
 
-065 7/8/08	OPEN	Trying to process non-polymer entities causes
+065 7/8/08	FIXED	Trying to process non-polymer entities causes
 			problems -- don't process them. (wenger/elu)
 			(See test53.)
+			(Fixed by wenger, 2/18/09.)
 
 066 7/23/08	FIXED	Many data sets are not correctly visualized in 3D
 			visualization for 4096 (problem with data source

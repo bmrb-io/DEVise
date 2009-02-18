@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.105  2009/02/05 20:24:37  wenger
+// All tests now work (including new nucleic acid tests), but lots of
+// cleanup to be done plus actually writing correct deltashifts for
+// nucleic acids.
+//
 // Revision 1.104  2009/01/29 22:04:57  wenger
 // Made protein, DNA, and RNA subclasses of S2DChemShift to make further
 // stuff easier; added some file checking to test64 and test65 (but
@@ -1921,7 +1926,6 @@ public class S2DMain {
 
 	Vector frames = star.getAllEntityAssemblyFrames();
 
-//TEMPTEMP -- don't even try to save for non-polymers???
 	boolean wroteAtLeastOne = false;
 	try {
 	    FileWriter resWriter = S2DFileWriter.create(_dataDir +
@@ -1941,6 +1945,11 @@ public class S2DMain {
 	    for (int frameNum = 0; frameNum < frames.size(); frameNum++) {
 	        entityAssemblyId++;
 	        SaveFrameNode frame = (SaveFrameNode)frames.elementAt(frameNum);
+
+		// Don't do anything for non-polymers.
+		int polymerType = star.getPolymerType(frame);
+		if (polymerType == S2DResidues.POLYMER_TYPE_NONE) continue;
+
 		try {
 	            S2DResidues residues = star.getResidues(frame);
 
@@ -2007,6 +2016,13 @@ public class S2DMain {
                     }
 	        } else {
 TEMP*/
+	        if (!star.refersToPolymer(frame, entityID)) {
+                    if (doDebugOutput(2)) {
+                        System.out.println("Chemical shifts not saved for " +
+                          "save frame " + frame.getLabel() + " (" +
+			  entityAssemblyID + ") because it is not a polymer");
+                    }
+		} else {
 		    //TEMP -- do I really want to catch the error here (and in
 		    // other similar methods below)?
 		    try {
@@ -2024,7 +2040,7 @@ TEMP*/
 			  entityAssemblyID + "): " + ex.toString());
 		    }
 		    frameIndex++;
-//TEMP	        }
+	        }
 	    }
 	}
     }
@@ -2049,6 +2065,16 @@ TEMP*/
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 		String entityAssemblyID =
 		  (String)entityAssemblyIDList.get(index);
+
+		String entityID = star.entAssemID2entID(entityAssemblyID);
+	        if (!star.refersToPolymer(frame, entityID)) {
+                    if (doDebugOutput(2)) {
+                        System.out.println("T1 relaxation not saved for " +
+                          "save frame " + frame.getLabel() + " (" +
+			  entityAssemblyID + ") because it is not a polymer");
+                    }
+		    continue;
+		}
 
 	        try {
 	            saveFrameT1Relax(star, frame, entityAssemblyID,
@@ -2085,6 +2111,16 @@ TEMP*/
 		String entityAssemblyID =
 		  (String)entityAssemblyIDList.get(index);
 
+		String entityID = star.entAssemID2entID(entityAssemblyID);
+	        if (!star.refersToPolymer(frame, entityID)) {
+                    if (doDebugOutput(2)) {
+                        System.out.println("T2 relaxation not saved for " +
+                          "save frame " + frame.getLabel() + " (" +
+			  entityAssemblyID + ") because it is not a polymer");
+                    }
+		    continue;
+		}
+
 	        try {
 	            saveFrameT2Relax(star, frame, entityAssemblyID,
 		      frameIndex);
@@ -2119,6 +2155,16 @@ TEMP*/
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 		String entityAssemblyID =
 		  (String)entityAssemblyIDList.get(index);
+
+		String entityID = star.entAssemID2entID(entityAssemblyID);
+	        if (!star.refersToPolymer(frame, entityID)) {
+                    if (doDebugOutput(2)) {
+                        System.out.println("Heteronuclear NOE not saved for " +
+                          "save frame " + frame.getLabel() + " (" +
+			  entityAssemblyID + ") because it is not a polymer");
+                    }
+		    continue;
+		}
 
 	        try {
 	            saveFrameHetNOE(star, frame, entityAssemblyID,
@@ -2165,6 +2211,16 @@ TEMP*/
 		String entityAssemblyID =
 		  (String)entityAssemblyIDList.get(index);
 
+		String entityID = star.entAssemID2entID(entityAssemblyID);
+	        if (!star.refersToPolymer(frame, entityID)) {
+                    if (doDebugOutput(2)) {
+                        System.out.println("Coupling constants not saved for " +
+                          "save frame " + frame.getLabel() + " (" +
+			  entityAssemblyID + ") because it is not a polymer");
+                    }
+		    continue;
+		}
+
 	        try {
 	            saveFrameCoupling(star, frame, entityAssemblyID,
 		      frameIndex);
@@ -2208,6 +2264,16 @@ TEMP*/
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 		String entityAssemblyID =
 		  (String)entityAssemblyIDList.get(index);
+
+		String entityID = star.entAssemID2entID(entityAssemblyID);
+	        if (!star.refersToPolymer(frame, entityID)) {
+                    if (doDebugOutput(2)) {
+                        System.out.println("S2 order parameters not saved for " +
+                          "save frame " + frame.getLabel() + " (" +
+			  entityAssemblyID + ") because it is not a polymer");
+                    }
+		    continue;
+		}
 
 	        try {
 	            saveFrameS2Params(star, frame, entityAssemblyID,
@@ -2503,8 +2569,7 @@ TEMP*/
 	// 2009-02-05: okay, at least temporarily we are not going to do
 	// this check for non-proteins (to make things work for nucleic
 	// acids).
-	if (_doProteinCheck &&
-	  residues.getPolymerType() == S2DResidues.POLYMER_TYPE_PROTEIN) {
+	if (_doProteinCheck && residues.treatAsProtein()) {
 	    String entityID = star.entAssemID2entID(entityAssemblyID);
 	    residueCount = star.residueCount(frame, entityID);
 	}
@@ -3062,7 +3127,7 @@ TEMP*/
 
 	// 2009-02-05: at least temporarily don't try to save ambiguity
 	// code data for non-proteins.
-	if (residues.getPolymerType() != S2DResidues.POLYMER_TYPE_PROTEIN) {
+	if (!residues.treatAsProtein()) {
             if (doDebugOutput(2)) {
 	    	System.out.println("Not saving Pistachio data because " +
 		  "structure is not a protein");
@@ -3190,7 +3255,7 @@ TEMP*/
 
 	// 2009-02-05: at least temporarily don't try to save ambiguity
 	// code data for non-proteins.
-	if (residues.getPolymerType() != S2DResidues.POLYMER_TYPE_PROTEIN) {
+	if (!residues.treatAsProtein()) {
             if (doDebugOutput(2)) {
 	    	System.out.println("Not saving ambiguity data because " +
 		  "structure is not a protein");

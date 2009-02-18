@@ -67,8 +67,8 @@ RunTest("test50");
 RunTest("test51");
 RunTest("test51_3");
 RunTest("test52");
-# Add this test back in when bug 065 is fixed.
-# RunTest("test53");
+RunTest("test53");
+RunTest("test53_21");
 RunTest("test54");
 RunTest("test54_3");
 RunTest("test55");
