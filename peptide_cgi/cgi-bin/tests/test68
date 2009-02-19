@@ -6,6 +6,7 @@ set result = 0
 
 rm -f */15083*
 
+#TEMP -- add -do_pdb 2 to arguments
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -name 15083 -file test_data/bmr15083.str -force -check_pct
 if ($status != 0) then

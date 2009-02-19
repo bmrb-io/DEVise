@@ -1,6 +1,5 @@
 echo "Checking output files"
 
-#TEMPTEMP -- should we get c1,2 files????
 set files = ( data_dir/15083am3.dat \
 	data_dir/15083amac3.dat \
 	data_dir/15083as1.dat \
@@ -60,9 +59,57 @@ foreach file ($files)
   endif
 end
 
-#TEMPTEMP set file = "data_dir/15080as1.dat"
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
+#TEMP -- manually check these values!
+set file = "data_dir/15083am3.dat"
+set line = "3 1 0.1764706 0.11764706 0.0 0.0 0.0 0.0"
+source tests/check4line
+set line = "3 63 0.7222222 0.0 0.0 0.0 0.0 0.0"
+#TEMP -- 2.1 vs. 3.1 conflict source tests/check4line
 
+set file = "data_dir/15083amac3.dat"
+set line = "3 1 HIS H H -0.6 0.225 0 0 -0.15 0 backbone AMU -1"
+source tests/check4line
+set line = "3 63 ILE O O 4.6 -12.975 0 0 -0.15 0 backbone AMU -1"
+source tests/check4line
+
+set file = "data_dir/15083as1.dat"
+set line = "1 1 DT H1' H 6.004"
+source tests/check4line
+set line = "1 14 DC H6 H 7.627"
+source tests/check4line
+
+set file = "data_dir/15083as3.dat"
+set line = "3 1 HIS HA H 4.873"
+source tests/check4line
+set line = "3 63 ILE N N 129.466"
+source tests/check4line
+
+set file = "data_dir/15083c3.dat"
+set line = "3 1 1 0 0 -1 1"
+source tests/check4line
+set line = "3 63 1 0 0 1 1"
+source tests/check4line
+
+set file = "data_dir/15083d1.dat"
+set line = "1 1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.044 0.0 0.163 0.247 0.0 0.0 0.0 -0.058 -0.309 0.0 0.0 0.0 -0.149 0.0 0.257 0.0 0.0 0.189 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+source tests/check4line
+set line = "1 14 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.38 0.0 0.207 0.0 0.0 0.0 0.0 -0.134 -0.068 0.0 0.0 0.178 0.0 0.0 0.117 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+source tests/check4line
+
+set file = "data_dir/15083d3.dat"
+set line = "3 1 0.243 0.0 0.587 -0.987"
+source tests/check4line
+set line = "3 63 0.258 0.0 0.11 2.153"
+source tests/check4line
+
+set file = "data_dir/15083hn3.dat"
+set line = "3 2 MET 8.677 122.255 H N"
+source tests/check4line
+set line = "3 63 ILE 7.747 129.466 H N"
+source tests/check4line
+
+set file = "data_dir/15083rl.dat"
+set line = "1	1	DT"
+source tests/check4line
+set line = "3	63	ILE"
+source tests/check4line

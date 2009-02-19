@@ -1,10 +1,10 @@
 echo "Checking output files"
 
-#TEMPTEMP -- should we get c1 files????
 set files = ( data_dir/15080as1.dat \
 	data_dir/15080d1.dat \
 	data_dir/15080hn1.dat \
 	data_dir/15080md.dat \
+	data_dir/15080rc1.dat \
 	data_dir/15080rl.dat \
 	html_dir/15080as1.html \
 	html_dir/15080as1_large.html \
@@ -12,7 +12,6 @@ set files = ( data_dir/15080as1.dat \
 	html_dir/15080d1_large.html \
 	html_dir/15080y.html \
 	html_dir/15080y_large.html \
-	session_dir/15080acdd \
 	session_dir/15080as1.ds \
 	session_dir/15080d1.ds )
 
@@ -23,26 +22,21 @@ foreach file ($files)
   endif
 end
 
+#TEMP -- manually check these values!
 set file = "data_dir/15080as1.dat"
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
+set line = "1 1 G C1' C 91.505"
+source tests/check4line
+set line = "1 20 C H6 H 7.703"
+source tests/check4line
 
 set file = "data_dir/15080d1.dat"
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
-
-set file = "data_dir/15080hn1.dat"
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
+set line = "1 1 0.555 0.0 1.403 3.152 0.0 2.285 0.0 0.0 0.0 2.7 0.556 0.196 0.0 0.335 0.0 0.0 0.0 0.203 0.089 0.0 0.0 0.0 0.028 -0.09 0.0 0.0 0.0 0.575 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+source tests/check4line
+set line = "1 20 0.788 0.0 3.231 -1.532 0.0 2.544 1.841 0.0 1.475 0.0 0.0 0.25 0.0 -0.321 0.0 0.0 0.0 -0.226 -0.161 0.388 -0.174 0.065 0.0 0.305 0.033 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+source tests/check4line
 
 set file = "data_dir/15080rl.dat"
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
+set line = "1	1	G"
+source tests/check4line
+set line = "1	20	C"
+source tests/check4line

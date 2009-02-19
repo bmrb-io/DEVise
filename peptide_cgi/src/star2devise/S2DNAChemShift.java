@@ -24,6 +24,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2009/02/18 21:43:07  wenger
+// Added S2DNAChemShift class to clean up nucleic acid code (this class
+// will do the actual calculation and writing of chemical shift deltas
+// for nucleic acids); added schemas for nucleic acid deltashift
+// visualizations; updated tests to reflect the fact that (at least
+// initially) we're not going to generate CSI visualizations for nucleic
+// acids.
+//
 //
 
 // ========================================================================
@@ -39,7 +47,11 @@ public class S2DNAChemShift extends S2DChemShift {
 
     private static final int DEBUG = 0;
 
-    protected String[] atomNameList;//TEMPTEMP -- rename?
+    // List of all possible atom names for the relevant type of
+    // polymer (DNA or RNA) -- set by subclass.
+    protected String[] atomNameList;
+
+    protected ResidueInfo[] _deltashiftData;
 
     //===================================================================
     // PUBLIC METHODS
@@ -77,9 +89,9 @@ public class S2DNAChemShift extends S2DChemShift {
 	//
         FileWriter deltashiftWriter = null;
 	try {
-            deltashiftWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + S2DNames.DELTASHIFT_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
+            deltashiftWriter = S2DFileWriter.create(_dataDir +
+	      File.separator + _name + S2DNames.DELTASHIFT_SUFFIX +
+	      frameIndex + S2DNames.DAT_SUFFIX);
 	    deltashiftWriter.write("# Data: delta shift values for " +
 	      _name + "\n");
 	    deltashiftWriter.write("# Schema: " + schemaName + "\n");
@@ -97,8 +109,13 @@ public class S2DNAChemShift extends S2DChemShift {
 	}
 
 	try {
-	    //TEMPTEMP -- write actual values here
-	    int dsCount = 0;//TEMPTEMP
+	    int dsCount = 0;//TEMPTEMP?
+
+	    for (int index = 1; index < _deltashiftData.length; index++) {
+		if (_deltashiftData[index] != null) {
+	            _deltashiftData[index].write(deltashiftWriter);
+		}
+	    }
 
 	    //
 	    // Write the session file
@@ -171,8 +188,88 @@ public class S2DNAChemShift extends S2DChemShift {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DNAChemShift.calculateDeltaShifts()");
 	}
+	
+	int lastResidue = findLastResidue();
 
-	//TEMPTEMP -- do actual calculation here
+	// Residues normally start with 1 -- skip the first element of
+	// this array to make things simpler.
+	_deltashiftData = new ResidueInfo[lastResidue + 1];
+
+	for (int index = 0; index < _resSeqCodes.length; ++index) {
+	    int resSeqCode = _resSeqCodes[index];
+	    if (_deltashiftData[resSeqCode] == null) {
+	        _deltashiftData[resSeqCode] = new ResidueInfo(resSeqCode);
+	    }
+
+            String resLabel = _residueLabels[index];
+	    String atomName = _atomNames[index];
+	    double chemShift = _chemShiftVals[index];
+
+	    try {
+	        ShiftDataManager.Pair standardValue =
+		  _refTable.returnValues(resLabel, atomName);
+
+                // Note: do the calculation in double and truncate to float
+		// to avoid getting values like 0.05000000000000071.
+		float deltashift = (float)(chemShift -
+		  standardValue.chemshift);
+
+		_deltashiftData[resSeqCode].put(atomName,
+		  new Float(deltashift));
+
+	    } catch(S2DWarning ex) {
+	        if (doDebugOutput(11)) {
+	            System.err.println(ex.toString());
+	        }
+	    } catch(S2DException ex) {
+	        System.err.println(ex.toString());
+	    }
+
+
+
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Class to hold all deltashift info for one residue -- maps
+    // atom name to deltashift value.
+    protected class ResidueInfo extends Hashtable
+    {
+	int _residueSequenceCode;
+
+        //---------------------------------------------------------------
+	/**
+	 * Constructor.
+	 * @param The residue sequence code for this residue.
+	 */
+        public ResidueInfo(int residueSequenceCode) {
+	    super();
+
+	    _residueSequenceCode = residueSequenceCode;
+
+	    // Add all possible atoms to the hash table.
+	    for (int index = 0; index < atomNameList.length; index++) {
+	    	Float value = new Float(0.0/*TEMP?*/);
+		put(atomNameList[index], value);
+	    }
+	}
+
+        //---------------------------------------------------------------
+	/**
+	 * Write the deltashift values for this residue.
+	 * @param The FileWriter to write to.
+	 */
+	public void write(FileWriter writer) throws IOException
+	{
+	    writer.write(_entityAssemblyID + " " +
+	      _residueSequenceCode + " ");
+
+	    for (int index = 0; index < atomNameList.length; index++) {
+	    	Float value = (Float)get(atomNameList[index]);
+		writer.write(value + " ");
+	    }
+	    writer.write("\n");
+	}
     }
 
     //===================================================================

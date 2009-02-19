@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2009/02/18 18:10:50  wenger
+// Fixed bug 065 (don't process non-polymer entities).
+//
 // Revision 1.13  2009/02/06 16:20:25  wenger
 // Cleaned up a bunch of the nucleic acid-related code; all tests pass
 // (but I still need to fix up the deltashift values for nucleic acids).
@@ -384,6 +387,11 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	    	result = S2DResidues.POLYMER_TYPE_NONE;
 	    }
 	}
+
+        if (doDebugOutput(12)) {
+            System.out.println(
+	      "    S2DNmrStar30Ifc.getPolymerType() result: " + result);
+        }
 
 	return result;
     }

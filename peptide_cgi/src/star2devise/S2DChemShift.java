@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2009/02/18 21:43:04  wenger
+// Added S2DNAChemShift class to clean up nucleic acid code (this class
+// will do the actual calculation and writing of chemical shift deltas
+// for nucleic acids); added schemas for nucleic acid deltashift
+// visualizations; updated tests to reflect the fact that (at least
+// initially) we're not going to generate CSI visualizations for nucleic
+// acids.
+//
 // Revision 1.14  2009/02/18 18:10:49  wenger
 // Fixed bug 065 (don't process non-polymer entities).
 //
@@ -145,11 +153,11 @@ public class S2DChemShift {
     protected S2DSummaryHtml _summary;
     protected String _frameDetails;
 
-    private int[] _resSeqCodes;
-    private String[] _residueLabels;
-    private String[] _atomNames;
+    protected int[] _resSeqCodes;
+    protected String[] _residueLabels;
+    protected String[] _atomNames;
     private String[] _atomTypes;
-    private double[] _chemShiftVals;
+    protected double[] _chemShiftVals;
     private int[] _ambiguityVals;
     protected int _entityAssemblyID;
 
@@ -265,6 +273,7 @@ public class S2DChemShift {
 	    deltashiftWriter.write("# Data: delta shift values for " +
 	      _name + "\n");
 	    deltashiftWriter.write("# Schema: bmrb-DeltaShift\n");
+	    // TEMP -- add amino acid for drill-down?
 	    deltashiftWriter.write("# Attributes: Entity_assembly_ID; " +
 	      "Residue_seq_code; " +
 	      "HA_DeltaShift; C_DeltaShift; CA_DeltaShift; CB_DeltaShift\n");
@@ -671,6 +680,7 @@ public class S2DChemShift {
 	}
     }
 
+//TEMPTEMP -- for protein only?
     //-------------------------------------------------------------------
     // Write H vs. N chem shifts for this data.
     // TEMP -- this could probably get restructured, too.
@@ -904,6 +914,24 @@ public class S2DChemShift {
     // PROTECTED METHODS
 
     //-------------------------------------------------------------------
+    /**
+     * Find the last (highest-numbered) residue in this set of chemical
+     * shift data.
+     * @return The highest residue sequence code in the data.
+     */
+    protected int findLastResidue()
+    {
+	// We calculate lastResidue this way to allow for the data not
+	// being strictly ordered by residue.
+	int lastResidue = 0;
+	for (int index = 0; index < _resSeqCodes.length; index++) {
+	    lastResidue = Math.max(lastResidue, _resSeqCodes[index]);
+	}
+
+	return lastResidue;
+    }
+
+    //-------------------------------------------------------------------
     // Calculate all delta shifts for this data set.
     protected void calculateDeltaShifts() throws S2DException
     {
@@ -911,12 +939,7 @@ public class S2DChemShift {
 	    System.out.println("S2DChemShift.calculateDeltaShifts()");
 	}
 
-	// We calculate lastResidue this way to allow for the data not
-	// being strictly ordered by residue.
-	int lastResidue = 0;
-	for (int index = 0; index < _resSeqCodes.length; index++) {
-	    lastResidue = Math.max(lastResidue, _resSeqCodes[index]);
-	}
+	int lastResidue = findLastResidue();
 
 	// Residues normally start with 1 -- skip the first element of
 	// these arrays to make things simpler.

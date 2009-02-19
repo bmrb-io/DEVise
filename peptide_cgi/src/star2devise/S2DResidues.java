@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/02/18 18:10:50  wenger
+// Fixed bug 065 (don't process non-polymer entities).
+//
 // Revision 1.11  2009/02/17 20:06:19  wenger
 // Fixed bug 078 (5531/1LUU combination causes a null pointer error).
 //
@@ -490,9 +493,11 @@ public class S2DResidues {
 	        }
 
 	        if (badCode) {
+		    int residueNum = index + 1;
 		    System.err.println(new S2DWarning("Warning: " +
 		      "unrecognized residue sequence code: " +
-		      _resLabels[index]));
+		      _resLabels[index] + " (for residue " + residueNum +
+		      ", polymer type " + _polymerType + ")"));
 	            _resLabels[index] = "X";
 	        }
 	    }

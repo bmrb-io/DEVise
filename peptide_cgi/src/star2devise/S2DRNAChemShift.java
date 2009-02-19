@@ -22,6 +22,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2009/02/18 21:43:07  wenger
+// Added S2DNAChemShift class to clean up nucleic acid code (this class
+// will do the actual calculation and writing of chemical shift deltas
+// for nucleic acids); added schemas for nucleic acid deltashift
+// visualizations; updated tests to reflect the fact that (at least
+// initially) we're not going to generate CSI visualizations for nucleic
+// acids.
+//
 // Revision 1.1  2009/01/29 22:04:57  wenger
 // Made protein, DNA, and RNA subclasses of S2DChemShift to make further
 // stuff easier; added some file checking to test64 and test65 (but
@@ -85,6 +93,7 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 	}
 
 	String schemaName = "bmrb-RNADeltaShift";
+	// TEMP -- add nucleotide for drill-down?
 	String attributes = "Entity_assembly_ID; Residue_seq_code; " +
               "C1p_DeltaShift; C2_DeltaShift; C2p_DeltaShift; " +
 	      "C3p_DeltaShift; C4_DeltaShift; c4p_DeltaShift;  " +
