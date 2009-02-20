@@ -1,5 +1,5 @@
-# Data: summary of available datasets for Pistachio visualizations
-# Schema: bmrb-summary
+# Data: list of atoms available for DNA deltashift visualizations.
+# Schema: bmrb-NAAtomList
 # Attributes: atom_name; atom_name_long; attribute
 # $Id$
 #

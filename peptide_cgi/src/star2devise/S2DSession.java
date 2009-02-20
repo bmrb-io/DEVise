@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/02/20 18:41:47  wenger
+// Preliminary version of DNA deltashift session template is now in place
+// (still needs cleanup); Peptide-CGI code uses that session template for
+// DNA processing.
+//
 // Revision 1.12  2009/02/18 21:43:07  wenger
 // Added S2DNAChemShift class to clean up nucleic acid code (this class
 // will do the actual calculation and writing of chemical shift deltas
@@ -186,10 +191,14 @@ public class S2DSession {
 	    break;
 
 	case S2DUtils.TYPE_RNA_DELTASHIFT:
-	    baseName = "deltashift_dna.base";//TEMPTEMP -- change
+	    baseName = "deltashift_dna.base";//TEMPTEMP -- change?
 	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "15083d1";//TEMPTEMP -- change
+	    searchString1 = "15083d1";//TEMPTEMP -- change?
+	    searchString2 = "DNADeltaShift";
+	    replaceString2 = "RNADeltaShift";
+	    searchString3 = "dna_atom_list";
+	    replaceString3 = "rna_atom_list";
 	    break;
 
 	case S2DUtils.TYPE_CSI:

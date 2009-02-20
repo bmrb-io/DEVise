@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2009/02/20 18:41:47  wenger
+// Preliminary version of DNA deltashift session template is now in place
+// (still needs cleanup); Peptide-CGI code uses that session template for
+// DNA processing.
+//
 // Revision 1.2  2009/02/19 22:40:41  wenger
 // DNA and RNA deltashift calculations now work (still need to check
 // that all values are correct); added value checks to relevant tests.
@@ -134,7 +139,7 @@ public class S2DNAChemShift extends S2DChemShift {
 	      _entityAssemblyID + ")";
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
-	      S2DUtils.TYPE_DELTASHIFT, _name, frameIndex,
+	      sessionType, _name, frameIndex,
 	      title, _frameDetails);
 	    specHtml.write();
 

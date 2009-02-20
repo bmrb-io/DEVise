@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Feb 20 2009 14:47:31
+# file date: Feb 20 2009 16:20:15
 # DEVise version: 1.9.0
 # DEVise date: Jul 13 2006
 # DEVise endHeader
@@ -65,7 +65,7 @@ DEVise dteInsertCatalogEntry . {"atom_list" UNIXFILE dna_atom_list.dat bmrb-NAAt
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} View_Child1 0.950000 14.050000 -0.482000 0.380000 37 0 0 37 0 37
+DEVise create {view} {SortedX} View_Child1 0.450000 14.550000 -0.084000 0.404000 37 0 0 37 0 37
 DEVise setLabel {View_Child1} 1 16 {H2''}
 DEVise setViewStatistics {View_Child1} 00000000
 DEVise setViewDimensions {View_Child1} 2
@@ -104,7 +104,7 @@ DEVise viewSetUseJmol {View_Child1} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} View_Child2 0.950000 14.050000 -0.482000 0.380000 37 0 0 37 0 37
+DEVise create {view} {SortedX} View_Child2 0.450000 14.550000 -0.482000 0.380000 37 0 0 37 0 37
 DEVise setLabel {View_Child2} 1 16 {H1'}
 DEVise setViewStatistics {View_Child2} 00000000
 DEVise setViewDimensions {View_Child2} 2
@@ -233,8 +233,8 @@ DEVise setViewDisplayDataValues {View_AtomSelect} 0
 DEVise setFont {View_AtomSelect} {title} 0 12 0 0
 DEVise setFont {View_AtomSelect} {x axis} 0 12 0 0
 DEVise setFont {View_AtomSelect} {y axis} 0 12 0 0
-DEVise viewSetHome {View_AtomSelect} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
-DEVise viewSetImplicitHome {View_AtomSelect} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHome {View_AtomSelect} 0 1 1 0 0.000000 0.500000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View_AtomSelect} 0 1 1 0 0 0.5 0 0 100 100
 DEVise viewSetHorPan {View_AtomSelect} 1 0.500000 1.000000
 DEVise viewSetVerPan {View_AtomSelect} 1 0.500000 1.000000
 DEVise setViewGDS {View_AtomSelect} 1 0 0 "" 1 " " 1
@@ -246,7 +246,7 @@ DEVise setXAxisDateFormat {View_AtomSelect} {%b %d %Y %T}
 DEVise setYAxisDateFormat {View_AtomSelect} {%b %d %Y %T}
 DEVise setXAxisFloatFormat {View_AtomSelect} {%.4g}
 DEVise setYAxisFloatFormat {View_AtomSelect} {%.4g}
-DEVise setViewAutoFilter {View_AtomSelect} {0}
+DEVise setViewAutoFilter {View_AtomSelect} {1}
 DEVise setDupElim {View_AtomSelect} {0}
 DEVise setNiceAxes {View_AtomSelect} 0 0
 DEVise viewSetDisabledActions {View_AtomSelect} 1 0 1 1
@@ -484,7 +484,7 @@ DEVise create {window} {TileLayout} DEViseWn1 0.146875 0.747500 0.500000 0.02666
 DEVise create {window} {TileLayout} DEViseWn4 0.032500 0.190000 0.614375 0.026667 0 0
 DEVise create {window} {TileLayout} DEViseWn2 0.032500 0.222500 0.110000 0.551667 0 0
 DEVise create {window} {TileLayout} DEViseWn3 0.171875 0.222500 0.475625 0.515000 0 0
-DEVise create {window} {TileLayout} DEViseWn5 0.148125 0.222500 0.021875 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn5 0.148125 0.222500 0.021250 0.515000 0 0
 
 # Set up window layouts
 
@@ -627,11 +627,14 @@ DEVise insertViewHistory {View_Child1} {1} {0} {14} {0.001} 0
 DEVise insertViewHistory {View_Child1} {0.95} {-0.482} {14.05} {0.38} 0
 DEVise insertViewHistory {View_Child1} {5.66679} {-0.482} {8.75847} {0.38} 0
 DEVise insertViewHistory {View_Child1} {0.95} {-0.482} {14.05} {0.38} 0
+DEVise insertViewHistory {View_Child1} {0.45} {-0.084} {14.55} {0.404} 0
 
 DEVise clearViewHistory {View_Child2}
 DEVise insertViewHistory {View_Child2} {0.95} {-0.482} {14.05} {0.38} 0
 DEVise insertViewHistory {View_Child2} {5.66679} {-0.482} {8.75847} {0.38} 0
 DEVise insertViewHistory {View_Child2} {0.95} {-0.482} {14.05} {0.38} 0
+DEVise insertViewHistory {View_Child2} {0.45} {-0.482} {14.55} {0.38} 0
+DEVise insertViewHistory {View_Child2} {0.45} {-0.482} {14.55} {0.38} 0
 
 DEVise clearViewHistory {View_XAxisLabel}
 DEVise insertViewHistory {View_XAxisLabel} {0} {0} {100} {100} 0
