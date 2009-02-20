@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2009/02/19 22:40:41  wenger
+// DNA and RNA deltashift calculations now work (still need to check
+// that all values are correct); added value checks to relevant tests.
+//
 // Revision 1.1  2009/02/18 21:43:07  wenger
 // Added S2DNAChemShift class to clean up nucleic acid code (this class
 // will do the actual calculation and writing of chemical shift deltas
@@ -78,7 +82,7 @@ public class S2DNAChemShift extends S2DChemShift {
     //-------------------------------------------------------------------
     // Write the deltashifts for this data.
     public void writeDeltaShifts(int frameIndex, String schemaName,
-      String attributes) throws S2DException
+      String attributes, int sessionType) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DNAChemShift.writeDeltashifts()");
@@ -120,8 +124,8 @@ public class S2DNAChemShift extends S2DChemShift {
 	    //
 	    // Write the session file
 	    //
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_NA_DELTASHIFT,
-	      _name, frameIndex, _info);
+	    S2DSession.write(_sessionDir, sessionType, _name, frameIndex,
+	      _info);
 
 	    //
 	    // Write the session-specific html file.

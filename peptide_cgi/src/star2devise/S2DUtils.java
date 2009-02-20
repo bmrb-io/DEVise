@@ -19,6 +19,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/02/18 21:43:07  wenger
+// Added S2DNAChemShift class to clean up nucleic acid code (this class
+// will do the actual calculation and writing of chemical shift deltas
+// for nucleic acids); added schemas for nucleic acid deltashift
+// visualizations; updated tests to reflect the fact that (at least
+// initially) we're not going to generate CSI visualizations for nucleic
+// acids.
+//
 // Revision 1.11  2008/06/27 15:23:33  wenger
 // Added the option to explicitly call the garbage collector a number
 // of times during processing; added memory usage printout at debug
@@ -83,7 +91,7 @@ public class S2DUtils
       TYPE_ATOMIC_COORDS = 12, TYPE_CHEM_SHIFT_REF1 = 13,
       TYPE_CHEM_SHIFT_REF2 = 14, TYPE_CHEM_SHIFT_REF3 = 15,
       TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18,
-      TYPE_NA_DELTASHIFT = 19;
+      TYPE_DNA_DELTASHIFT = 19, TYPE_RNA_DELTASHIFT = 20;
 
     //===================================================================
     // PUBLIC METHODS

@@ -20,6 +20,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/02/18 21:43:07  wenger
+// Added S2DNAChemShift class to clean up nucleic acid code (this class
+// will do the actual calculation and writing of chemical shift deltas
+// for nucleic acids); added schemas for nucleic acid deltashift
+// visualizations; updated tests to reflect the fact that (at least
+// initially) we're not going to generate CSI visualizations for nucleic
+// acids.
+//
 // Revision 1.11  2008/12/01 20:37:53  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -164,11 +172,24 @@ public class S2DSession {
 
 	switch (dataType) {
 	case S2DUtils.TYPE_DELTASHIFT:
-	case S2DUtils.TYPE_NA_DELTASHIFT://TEMPTEMP -- needs different template
 	    baseName = "deltashift.base";
 	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
 	    searchString1 = "4081d1";
+	    break;
+
+	case S2DUtils.TYPE_DNA_DELTASHIFT:
+	    baseName = "deltashift_dna.base";
+	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "15083d1";
+	    break;
+
+	case S2DUtils.TYPE_RNA_DELTASHIFT:
+	    baseName = "deltashift_dna.base";//TEMPTEMP -- change
+	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "15083d1";//TEMPTEMP -- change
 	    break;
 
 	case S2DUtils.TYPE_CSI:

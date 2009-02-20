@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2009/02/19 22:40:42  wenger
+// DNA and RNA deltashift calculations now work (still need to check
+// that all values are correct); added value checks to relevant tests.
+//
 // Revision 1.2  2009/02/18 21:43:07  wenger
 // Added S2DNAChemShift class to clean up nucleic acid code (this class
 // will do the actual calculation and writing of chemical shift deltas
@@ -108,7 +112,8 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 	      "N2_DeltaShift; N3_DeltaShift; N4_DeltaShift;  " +
 	      "N6_DeltaShift; N7_DeltaShift; N9_DeltaShift";
 
-	writeDeltaShifts(frameIndex, schemaName, attributes);
+	writeDeltaShifts(frameIndex, schemaName, attributes,
+	  S2DUtils.TYPE_RNA_DELTASHIFT);
     }
 
     //===================================================================

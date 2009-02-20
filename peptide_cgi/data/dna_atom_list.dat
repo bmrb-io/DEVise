@@ -1,0 +1,46 @@
+# Data: summary of available datasets for Pistachio visualizations
+# Schema: bmrb-summary
+# Attributes: atom_name; atom_name_long; attribute
+# $Id$
+#
+C1'	C1' (DA, DC, DG, DT)	$C1p_DeltaShift
+C2	C2 (DA)	$C2_DeltaShift
+C2'	C2' (DA, DC, DG, DT)	$C2p_DeltaShift
+C3'	C3' (DA, DC, DG, DT)	$C3p_DeltaShift
+#C4	C4 ()	$C4_DeltaShift
+C4'	C4' (DA, DC, DG, DT)	$C4p_DeltaShift
+C5	C5 (DC)	$C5_DeltaShift
+C5'	C5' (DA, DC, DG, DT)	$C5p_DeltaShift
+C6	C6 (DC, DT)	$C6_DeltaShift
+C7	C7 (DT)	$C7_DeltaShift
+C8	C8 (DA, DG)	$C8_DeltaShift
+H1	H1 (DG)	$H1_DeltaShift
+H1'	H1' (DA, DC, DG, DT)	$H1p_DeltaShift
+H2	H2 (DA)	$H2_DeltaShift
+H2'	H2' (DA, DC, DG, DT)	$H2p_DeltaShift
+H2''	H2'' (DA, DC, DG, DT)	$H2pp_DeltaShift
+H21	H21 (DG)	$H21_DeltaShift
+H22	H22 (DG)	$H22_DeltaShift
+H3	H3 (DT)	$H3_DeltaShift
+H3'	H3' (DA, DC, DG, DT)	$H3p_DeltaShift
+H4'	H4' (DA, DC, DG, DT)	$H4p_DeltaShift
+H41	H41 (DC)	$H41_DeltaShift
+H42	H42 (DC)	$H42_DeltaShift
+H5	H5 (DC)	$H5_DeltaShift
+H5'	H5' (DA, DC, DG, DT)	$H5p_DeltaShift
+H5''	H5'' (DA, DC, DG, DT)	$H5pp_DeltaShift
+H6	H6 (DC, DT)	$H6_DeltaShift
+H61	H61 (DA)	$H61_DeltaShift
+H62	H62 (DA)	$H62_DeltaShift
+H7	H7 (DT)	$H7_DeltaShift
+H71	H71 (DT)	$H71_DeltaShift
+H72	H72 (DT)	$H72_DeltaShift
+H73	H73 (DT)	$H73_DeltaShift
+H8	H8 (DA, DG)	$H8_DeltaShift
+N1	N1 (DA, DG)	$N1_DeltaShift
+N2	N2 (DG)	$N2_DeltaShift
+N3	N3 (DA, DT)	$N3_DeltaShift
+N4	N4 (DC)	$N4_DeltaShift
+N6	N6 (DA)	$N6_DeltaShift
+N7	N7 (DG)	$N7_DeltaShift
+N9	N9 (DA, DG)	$N9_DeltaShift
