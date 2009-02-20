@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Feb 20 2009 12:33:12
+# file date: Feb 20 2009 14:47:31
 # DEVise version: 1.9.0
 # DEVise date: Jul 13 2006
 # DEVise endHeader
@@ -65,7 +65,7 @@ DEVise dteInsertCatalogEntry . {"atom_list" UNIXFILE dna_atom_list.dat bmrb-NAAt
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} View_Child1 0.950000 14.050000 -0.482000 0.380000 37 14 0 37 0 37
+DEVise create {view} {SortedX} View_Child1 0.950000 14.050000 -0.482000 0.380000 37 0 0 37 0 37
 DEVise setLabel {View_Child1} 1 16 {H2''}
 DEVise setViewStatistics {View_Child1} 00000000
 DEVise setViewDimensions {View_Child1} 2
@@ -75,8 +75,8 @@ DEVise setViewDisplayDataValues {View_Child1} 0
 DEVise setFont {View_Child1} {title} 2 14 0 0
 DEVise setFont {View_Child1} {x axis} 2 10 0 0
 DEVise setFont {View_Child1} {y axis} 2 10 0 0
-DEVise viewSetHome {View_Child1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
-DEVise viewSetImplicitHome {View_Child1} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHome {View_Child1} 1 1 1 0 0.500000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View_Child1} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View_Child1} 1 0.500000 1.000000
 DEVise viewSetVerPan {View_Child1} 1 0.500000 1.000000
 DEVise setViewGDS {View_Child1} 1 0 0 "" 1 " " 1
@@ -88,7 +88,7 @@ DEVise setXAxisDateFormat {View_Child1} {%b %d %Y %T}
 DEVise setYAxisDateFormat {View_Child1} {%b %d %Y %T}
 DEVise setXAxisFloatFormat {View_Child1} {%.4g}
 DEVise setYAxisFloatFormat {View_Child1} {%.4g}
-DEVise setViewAutoFilter {View_Child1} {0}
+DEVise setViewAutoFilter {View_Child1} {1}
 DEVise setDupElim {View_Child1} {0}
 DEVise setNiceAxes {View_Child1} 0 0
 DEVise viewSetDisabledActions {View_Child1} 0 0 0 0
@@ -104,7 +104,7 @@ DEVise viewSetUseJmol {View_Child1} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} View_Child2 0.950000 14.050000 -0.482000 0.380000 37 14 0 37 0 37
+DEVise create {view} {SortedX} View_Child2 0.950000 14.050000 -0.482000 0.380000 37 0 0 37 0 37
 DEVise setLabel {View_Child2} 1 16 {H1'}
 DEVise setViewStatistics {View_Child2} 00000000
 DEVise setViewDimensions {View_Child2} 2
@@ -114,8 +114,8 @@ DEVise setViewDisplayDataValues {View_Child2} 0
 DEVise setFont {View_Child2} {title} 2 14 0 0
 DEVise setFont {View_Child2} {x axis} 2 10 0 0
 DEVise setFont {View_Child2} {y axis} 2 10 0 0
-DEVise viewSetHome {View_Child2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
-DEVise viewSetImplicitHome {View_Child2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHome {View_Child2} 1 1 1 0 0.500000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View_Child2} 1 1 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {View_Child2} 1 0.500000 1.000000
 DEVise viewSetVerPan {View_Child2} 1 0.500000 1.000000
 DEVise setViewGDS {View_Child2} 1 0 0 "" 1 " " 1
@@ -127,7 +127,7 @@ DEVise setXAxisDateFormat {View_Child2} {%b %d %Y %T}
 DEVise setYAxisDateFormat {View_Child2} {%b %d %Y %T}
 DEVise setXAxisFloatFormat {View_Child2} {%.4g}
 DEVise setYAxisFloatFormat {View_Child2} {%.4g}
-DEVise setViewAutoFilter {View_Child2} {0}
+DEVise setViewAutoFilter {View_Child2} {1}
 DEVise setDupElim {View_Child2} {0}
 DEVise setNiceAxes {View_Child2} 0 0
 DEVise viewSetDisabledActions {View_Child2} 0 0 0 0
@@ -238,7 +238,7 @@ DEVise viewSetImplicitHome {View_AtomSelect} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View_AtomSelect} 1 0.500000 1.000000
 DEVise viewSetVerPan {View_AtomSelect} 1 0.500000 1.000000
 DEVise setViewGDS {View_AtomSelect} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View_AtomSelect} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View_AtomSelect} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View_AtomSelect} -40.5 0.5 10
 DEVise setCountMapping {View_AtomSelect} 0 {} {} 0
 DEVise viewSetIsHighlight {View_AtomSelect} 0
@@ -278,7 +278,7 @@ DEVise viewSetHorPan {View_Parent1} 1 0.500000 1.000000
 DEVise viewSetVerPan {View_Parent1} 1 0.500000 1.000000
 DEVise setViewGDS {View_Parent1} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View_Parent1} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View_Parent1} -24.5 -23.5 10
+DEVise setHistogram {View_Parent1} -14.5 -13.5 10
 DEVise setCountMapping {View_Parent1} 0 {} {} 0
 DEVise viewSetIsHighlight {View_Parent1} 0
 DEVise setXAxisDateFormat {View_Parent1} {%b %d %Y %T}
@@ -317,7 +317,7 @@ DEVise viewSetHorPan {View_Parent2} 1 0.500000 1.000000
 DEVise viewSetVerPan {View_Parent2} 1 0.500000 1.000000
 DEVise setViewGDS {View_Parent2} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View_Parent2} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View_Parent2} -12.5 -11.5 10
+DEVise setHistogram {View_Parent2} -11.5 -10.5 10
 DEVise setCountMapping {View_Parent2} 0 {} {} 0
 DEVise viewSetIsHighlight {View_Parent2} 0
 DEVise setXAxisDateFormat {View_Parent2} {%b %d %Y %T}
@@ -335,6 +335,86 @@ DEVise setGAttrLinkMode {View_Parent2} 0
 DEVise setDoHomeOnVisLink {View_Parent2} {1}
 DEVise setDoHomeOnVisLinkIfInvisible {View_Parent2} {1}
 DEVise viewSetUseJmol {View_Parent2} {0}
+
+# View {View_XAxisLabel 2} uses mapping {.label#Label_text_vs_recId 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View_XAxisLabel 2} -1.000000 1.000000 -1.000000 1.000000 37 0 0 37 0 37
+DEVise setLabel {View_XAxisLabel 2} 0 12 {}
+DEVise setViewStatistics {View_XAxisLabel 2} 00000000
+DEVise setViewDimensions {View_XAxisLabel 2} 2
+DEVise setViewSolid3D {View_XAxisLabel 2} 2
+DEVise setViewXYZoom {View_XAxisLabel 2} 1
+DEVise setViewDisplayDataValues {View_XAxisLabel 2} 0
+DEVise setFont {View_XAxisLabel 2} {title} 0 12 0 0
+DEVise setFont {View_XAxisLabel 2} {x axis} 0 12 0 0
+DEVise setFont {View_XAxisLabel 2} {y axis} 0 12 0 0
+DEVise viewSetHome {View_XAxisLabel 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View_XAxisLabel 2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View_XAxisLabel 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {View_XAxisLabel 2} 1 0.500000 1.000000
+DEVise setViewGDS {View_XAxisLabel 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View_XAxisLabel 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View_XAxisLabel 2} -1 1 10
+DEVise setCountMapping {View_XAxisLabel 2} 0 {} {} 0
+DEVise viewSetIsHighlight {View_XAxisLabel 2} 0
+DEVise setXAxisDateFormat {View_XAxisLabel 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View_XAxisLabel 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View_XAxisLabel 2} {%.4g}
+DEVise setYAxisFloatFormat {View_XAxisLabel 2} {%.4g}
+DEVise setViewAutoFilter {View_XAxisLabel 2} {0}
+DEVise setDupElim {View_XAxisLabel 2} {0}
+DEVise setNiceAxes {View_XAxisLabel 2} 0 0
+DEVise viewSetDisabledActions {View_XAxisLabel 2} 1 1 1 1
+DEVise setViewHelp {View_XAxisLabel 2} {axis label}
+DEVise setShowMouseLocation {View_XAxisLabel 2} {0}
+DEVise setLinkMultFact {View_XAxisLabel 2} {X} 1
+DEVise setLinkMultFact {View_XAxisLabel 2} {Y} 1
+DEVise setGAttrLinkMode {View_XAxisLabel 2} 0
+DEVise setDoHomeOnVisLink {View_XAxisLabel 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View_XAxisLabel 2} {1}
+DEVise viewSetUseJmol {View_XAxisLabel 2} {0}
+
+# View {View_XAxisLabel 3} uses mapping {.label#Label_text_vs_recId 3}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View_XAxisLabel 3} -1.000000 1.000000 -1.000000 1.000000 37 0 0 37 0 37
+DEVise setLabel {View_XAxisLabel 3} 0 12 {}
+DEVise setViewStatistics {View_XAxisLabel 3} 00000000
+DEVise setViewDimensions {View_XAxisLabel 3} 2
+DEVise setViewSolid3D {View_XAxisLabel 3} 2
+DEVise setViewXYZoom {View_XAxisLabel 3} 1
+DEVise setViewDisplayDataValues {View_XAxisLabel 3} 0
+DEVise setFont {View_XAxisLabel 3} {title} 0 12 0 0
+DEVise setFont {View_XAxisLabel 3} {x axis} 0 12 0 0
+DEVise setFont {View_XAxisLabel 3} {y axis} 0 12 0 0
+DEVise viewSetHome {View_XAxisLabel 3} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetImplicitHome {View_XAxisLabel 3} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View_XAxisLabel 3} 1 0.500000 1.000000
+DEVise viewSetVerPan {View_XAxisLabel 3} 1 0.500000 1.000000
+DEVise setViewGDS {View_XAxisLabel 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View_XAxisLabel 3} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View_XAxisLabel 3} -1 1 10
+DEVise setCountMapping {View_XAxisLabel 3} 0 {} {} 0
+DEVise viewSetIsHighlight {View_XAxisLabel 3} 0
+DEVise setXAxisDateFormat {View_XAxisLabel 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View_XAxisLabel 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View_XAxisLabel 3} {%.4g}
+DEVise setYAxisFloatFormat {View_XAxisLabel 3} {%.4g}
+DEVise setViewAutoFilter {View_XAxisLabel 3} {0}
+DEVise setDupElim {View_XAxisLabel 3} {0}
+DEVise setNiceAxes {View_XAxisLabel 3} 0 0
+DEVise viewSetDisabledActions {View_XAxisLabel 3} 1 1 1 1
+DEVise setViewHelp {View_XAxisLabel 3} {axis label}
+DEVise setShowMouseLocation {View_XAxisLabel 3} {0}
+DEVise setLinkMultFact {View_XAxisLabel 3} {X} 1
+DEVise setLinkMultFact {View_XAxisLabel 3} {Y} 1
+DEVise setGAttrLinkMode {View_XAxisLabel 3} 0
+DEVise setDoHomeOnVisLink {View_XAxisLabel 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View_XAxisLabel 3} {1}
+DEVise viewSetUseJmol {View_XAxisLabel 3} {0}
 
 # Create interpreted mapping classes
 DEVise createMappingClass {Label_text_vs_recId}
@@ -357,6 +437,18 @@ DEVise setMappingColors {.label#Label_text_vs_recId 5} {37} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 37 12 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
+DEVise setMappingColors {.label#Label_text_vs_recId 2} {37} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 3} {} 0 0 {} 37 12 0 90 16 {"ppm"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId 3} 1
+DEVise setMappingColors {.label#Label_text_vs_recId 3} {37} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {C1p_DeltaShift_vs_Residue_seq_code} .15083d1 .15083d1#C1p_DeltaShift_vs_Residue_seq_code {} {$Residue_seq_code} #parentVal {} 31 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.15083d1#C1p_DeltaShift_vs_Residue_seq_code} 1
 DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code} {31} {0} {0}
@@ -369,29 +461,30 @@ DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} {10} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {atom_name_vs_recId} .atom_list .atom_list#atom_name_vs_recId {} 0 {-$recId} {} 8 12 0 0 16 {$atom_name_long} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {atom_name_vs_recId} .atom_list .atom_list#atom_name_vs_recId {} 0 {-$recId} {} 36 12 0 0 16 {$atom_name_long} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId} {8} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId} {36} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 2} {} 0 {-$recId} {} 14 0.9 0 0 17 {"View_Child1"} 1 1 {} {} {} {} {} {} {$attribute} {$atom_name} {} {} {} {}
+DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 2} {} 0 {-$recId} {} 0 0.98 0 0 17 {"View_Child1"} 1 1 {} {} {} {} {} {} {$attribute} {$atom_name} {} {} {} {}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 2} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 2} {14} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 2} {0} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 3} {} 0 {-$recId} {} 14 0.9 0 0 17 {"View_Child2"} 1 1 {} {} {} {} {} {} {$attribute} {$atom_name} {} {} {} {}
+DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 3} {} 0 {-$recId} {} 0 0.98 0 0 17 {"View_Child2"} 1 1 {} {} {} {} {} {} {$attribute} {$atom_name} {} {} {} {}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 3} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 3} {14} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 3} {0} {0} {0}
 
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
-DEVise create {window} {TileLayout} DEViseWn1 0.146875 0.747500 0.500625 0.026667 0 0
-DEVise create {window} {TileLayout} DEViseWn4 0.032500 0.190000 0.615000 0.026667 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.146875 0.747500 0.500000 0.026667 0 0
+DEVise create {window} {TileLayout} DEViseWn4 0.032500 0.190000 0.614375 0.026667 0 0
 DEVise create {window} {TileLayout} DEViseWn2 0.032500 0.222500 0.110000 0.551667 0 0
-DEVise create {window} {TileLayout} DEViseWn3 0.148125 0.222500 0.500000 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn3 0.171875 0.222500 0.475625 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn5 0.148125 0.222500 0.021875 0.515000 0 0
 
 # Set up window layouts
 
@@ -402,6 +495,8 @@ DEVise setWindowLayout {DEViseWn4} -1 -1 0
 DEVise setWindowLayout {DEViseWn2} -1 -1 0
 
 DEVise setWindowLayout {DEViseWn3} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn5} -1 -1 0
 
 # Create links
 DEVise create {link} {Visual_Link} {Residue_seq_code Link} 1
@@ -465,6 +560,20 @@ DEVise setAxisTicks {View_Parent2} {Y} 1
 DEVise setAxisMultFact {View_Parent2} {X} 1
 DEVise setAxisMultFact {View_Parent2} {Y} 1
 
+DEVise setAxisDisplay {View_XAxisLabel 2} {X} 0
+DEVise setAxisDisplay {View_XAxisLabel 2} {Y} 0
+DEVise setAxisTicks {View_XAxisLabel 2} {X} 0
+DEVise setAxisTicks {View_XAxisLabel 2} {Y} 1
+DEVise setAxisMultFact {View_XAxisLabel 2} {X} 1
+DEVise setAxisMultFact {View_XAxisLabel 2} {Y} 1
+
+DEVise setAxisDisplay {View_XAxisLabel 3} {X} 0
+DEVise setAxisDisplay {View_XAxisLabel 3} {Y} 0
+DEVise setAxisTicks {View_XAxisLabel 3} {X} 0
+DEVise setAxisTicks {View_XAxisLabel 3} {Y} 1
+DEVise setAxisMultFact {View_XAxisLabel 3} {X} 1
+DEVise setAxisMultFact {View_XAxisLabel 3} {Y} 1
+
 # Put action into view
 
 # Put views in cursors
@@ -487,6 +596,8 @@ DEVise insertMapping {View_VisInfo} {.label#Label_text_vs_recId 5}
 DEVise insertMapping {View_AtomSelect} {.atom_list#atom_name_vs_recId}
 DEVise insertMapping {View_Parent1} {.atom_list#atom_name_vs_recId 2}
 DEVise insertMapping {View_Parent2} {.atom_list#atom_name_vs_recId 3}
+DEVise insertMapping {View_XAxisLabel 2} {.label#Label_text_vs_recId 2}
+DEVise insertMapping {View_XAxisLabel 3} {.label#Label_text_vs_recId 3}
 
 # Link views
 
@@ -499,12 +610,15 @@ DEVise insertWindow {View_VisInfo} {DEViseWn4}
 DEVise insertWindow {View_AtomSelect} {DEViseWn2}
 DEVise insertWindow {View_Parent1} {DEViseWn3}
 DEVise insertWindow {View_Parent2} {DEViseWn3}
+DEVise insertWindow {View_XAxisLabel 2} {DEViseWn5}
+DEVise insertWindow {View_XAxisLabel 3} {DEViseWn5}
 
 # Set window pile/stack state
 DEVise setPileStackState {DEViseWn1} 1
 DEVise setPileStackState {DEViseWn4} 1
 DEVise setPileStackState {DEViseWn2} 1
 DEVise setPileStackState {DEViseWn3} 1
+DEVise setPileStackState {DEViseWn5} 1
 
 # Init history of view
 
@@ -569,6 +683,12 @@ DEVise insertViewHistory {View_Parent2} {-0.5} {-13.5} {0.5} {-12.5} 0
 DEVise insertViewHistory {View_Parent2} {-0.5} {-12.5} {0.5} {-11.5} 0
 DEVise insertViewHistory {View_Parent2} {-0.5} {-11.5} {0.5} {-10.5} 0
 
+DEVise clearViewHistory {View_XAxisLabel 2}
+DEVise insertViewHistory {View_XAxisLabel 2} {-1} {-1} {1} {1} 0
+
+DEVise clearViewHistory {View_XAxisLabel 3}
+DEVise insertViewHistory {View_XAxisLabel 3} {-1} {-1} {1} {1} 0
+
 # Set camera location for each view
 DEVise set3DLocation {View_Child1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 1.6976e-312 1.00764e-313
 DEVise set3DLocation {View_Child2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
@@ -577,6 +697,8 @@ DEVise set3DLocation {View_VisInfo} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {View_AtomSelect} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {View_Parent1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {View_Parent2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View_XAxisLabel 2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View_XAxisLabel 3} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 
 # Set string tables for each view
 

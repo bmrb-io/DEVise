@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.108  2009/02/18 21:43:04  wenger
+// Added S2DNAChemShift class to clean up nucleic acid code (this class
+// will do the actual calculation and writing of chemical shift deltas
+// for nucleic acids); added schemas for nucleic acid deltashift
+// visualizations; updated tests to reflect the fact that (at least
+// initially) we're not going to generate CSI visualizations for nucleic
+// acids.
+//
 // Revision 1.107  2009/02/18 18:11:57  wenger
 // Changed version x number.
 //
@@ -404,7 +412,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
