@@ -10,8 +10,11 @@
 type bmrb-RNADeltaShift ascii
 comment #
 whitespace ' '
+
 attr Entity_assembly_ID int
 sorted attr Residue_seq_code int
+attr Residue_label string 4
+
 attr C1p_DeltaShift float
 attr C2_DeltaShift float
 attr C2p_DeltaShift float

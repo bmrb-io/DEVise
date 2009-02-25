@@ -10,8 +10,11 @@
 type Csi ascii
 comment #
 whitespace ' '
+
 attr Entity_assembly_ID int
 sorted attr Residue_seq_code int lo 0
+attr Residue_label string 4
+
 attr HA_Csi int hi 1 lo -1
 attr C_Csi int hi 1 lo -1
 attr CA_Csi int hi 1 lo -1

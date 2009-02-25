@@ -10,9 +10,11 @@
 type HvsN ascii
 comment #
 whitespace ' ''	'
+
 attr Entity_assembly_ID int
 sorted attr Residue_seq_code int
 attr AcidName string 4
+
 attr Hshift float
 attr Nshift float
 attr Hatom string 4

@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2009/02/20 18:41:47  wenger
+// Preliminary version of DNA deltashift session template is now in place
+// (still needs cleanup); Peptide-CGI code uses that session template for
+// DNA processing.
+//
 // Revision 1.3  2009/02/19 22:40:41  wenger
 // DNA and RNA deltashift calculations now work (still need to check
 // that all values are correct); added value checks to relevant tests.
@@ -98,6 +103,7 @@ public class S2DDNAChemShift extends S2DNAChemShift {
 	String schemaName = "bmrb-DNADeltaShift";
 	// TEMP -- add nucleotide for drill-down?
 	String attributes = "Entity_assembly_ID; Residue_seq_code; " +
+	      "Residue_label; " +
               "C1p_DeltaShift; C2_DeltaShift; C2p_DeltaShift; " +
 	      "C3p_DeltaShift; C4_DeltaShift; C4p_DeltaShift; " +
 	      "C5_DeltaShift; C5p_DeltaShift; C6_DeltaShift; " +

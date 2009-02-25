@@ -75,27 +75,27 @@ set line = "3840 4 26 GLU HG3 H 1.168 19.586 5.375 all_hydrogens"
 source tests/check4line
 
 set file = "data_dir/5838d1.dat"
-set line = "1 1 0.2 0.0 -1.21 1.99"
+set line = "1 1 SER 0.2 0.0 -1.21 1.99"
 source tests/check4line
-set line = "1 91 -0.21 0.0 1.47 0.75"
+set line = "1 91 GLU -0.21 0.0 1.47 0.75"
 source tests/check4line
 
 set file = "data_dir/5838d2.dat"
-set line = "3 3 0.15 0.0 0.0 0.0"
+set line = "3 3 LEU 0.15 0.0 0.0 0.0"
 source tests/check4line
-set line = "3 25 -0.04 0.0 0.0 0.0"
+set line = "3 25 LEU -0.04 0.0 0.0 0.0"
 source tests/check4line
 
 set file = "data_dir/5838am1.dat"
-set line = "1 1 0.7777778 0.0 0.0 0.0 0.0 0.0"
+set line = "1 1 SER 0.7777778 0.0 0.0 0.0 0.0 0.0"
 source tests/check4line
-set line = "1 91 0.61538464 0.0 0.0 0.0 0.0 0.15384616"
+set line = "1 91 GLU 0.61538464 0.0 0.0 0.0 0.0 0.15384616"
 source tests/check4line
 
 set file = "data_dir/5838am2.dat"
-set line = "3 3 0.11111111 0.0 0.0 0.0 0.0 0.22222222"
+set line = "3 3 LEU 0.11111111 0.0 0.0 0.0 0.0 0.22222222"
 #TEMPTEMP source tests/check4line
-set line = "3 25 0.16666667 0.0 0.0 0.0 0.0 0.22222222"
+set line = "3 25 LEU 0.16666667 0.0 0.0 0.0 0.0 0.22222222"
 #TEMPTEMP source tests/check4line
 
 set file = "data_dir/5838amac1.dat"

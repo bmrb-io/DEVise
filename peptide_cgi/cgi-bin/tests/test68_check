@@ -61,9 +61,9 @@ end
 
 #TEMP -- manually check these values!
 set file = "data_dir/15083am3.dat"
-set line = "3 1 0.1764706 0.11764706 0.0 0.0 0.0 0.0"
+set line = "3 1 HIS 0.1764706 0.11764706 0.0 0.0 0.0 0.0"
 source tests/check4line
-set line = "3 63 0.7222222 0.0 0.0 0.0 0.0 0.0"
+set line = "3 63 ILE 0.7222222 0.0 0.0 0.0 0.0 0.0"
 #TEMP -- 2.1 vs. 3.1 conflict source tests/check4line
 
 set file = "data_dir/15083amac3.dat"
@@ -85,21 +85,21 @@ set line = "3 63 ILE N N 129.466"
 source tests/check4line
 
 set file = "data_dir/15083c3.dat"
-set line = "3 1 1 0 0 -1 1"
+set line = "3 1 HIS 1 0 0 -1 1"
 source tests/check4line
-set line = "3 63 1 0 0 1 1"
+set line = "3 63 ILE 1 0 0 1 1"
 source tests/check4line
 
 set file = "data_dir/15083d1.dat"
-set line = "1 1 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.044 0.0 0.163 0.247 0.0 0.0 0.0 -0.058 -0.309 0.0 0.0 0.0 -0.149 0.0 0.257 0.0 0.0 0.189 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+set line = "1 1 DT 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.044 0.0 0.163 0.247 0.0 0.0 0.0 -0.058 -0.309 0.0 0.0 0.0 -0.149 0.0 0.257 0.0 0.0 0.189 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
 source tests/check4line
-set line = "1 14 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.38 0.0 0.207 0.0 0.0 0.0 0.0 -0.134 -0.068 0.0 0.0 0.178 0.0 0.0 0.117 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+set line = "1 14 DC 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.38 0.0 0.207 0.0 0.0 0.0 0.0 -0.134 -0.068 0.0 0.0 0.178 0.0 0.0 0.117 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
 source tests/check4line
 
 set file = "data_dir/15083d3.dat"
-set line = "3 1 0.243 0.0 0.587 -0.987"
+set line = "3 1 HIS 0.243 0.0 0.587 -0.987"
 source tests/check4line
-set line = "3 63 0.258 0.0 0.11 2.153"
+set line = "3 63 ILE 0.258 0.0 0.11 2.153"
 source tests/check4line
 
 set file = "data_dir/15083hn3.dat"

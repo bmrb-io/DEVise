@@ -154,9 +154,9 @@ foreach file ($files)
 end
 
 set file = "data_dir/4267_2entam2.dat"
-set line = "2 3 0.6 0.2 0.0 0.0 0.0 0.0"
+set line = "2 3 ASP 0.6 0.2 0.0 0.0 0.0 0.0"
 source tests/check4line
-set line = "2 179 0.6666667 0.33333334 0.0 0.0 0.0 0.0"
+set line = "2 179 GLY 0.6666667 0.33333334 0.0 0.0 0.0 0.0"
 source tests/check4line
 
 set file = "data_dir/4267_2entamac2.dat"
@@ -172,15 +172,15 @@ set line = "2 179 GLY N N 113.37"
 source tests/check4line
 
 set file = "data_dir/4267_2entd1.dat"
-set line = "1 2 0.04 1.81 -0.49 -0.57"
+set line = "1 2 GLN 0.04 1.81 -0.49 -0.57"
 source tests/check4line
-set line = "1 179 -0.215 3.48 1.06 0.0"
+set line = "1 179 GLY -0.215 3.48 1.06 0.0"
 source tests/check4line
 
 set file = "data_dir/4267_2entd2.dat"
-set line = "2 3 -0.12 -0.79 0.12 0.39"
+set line = "2 3 ASP -0.12 -0.79 0.12 0.39"
 source tests/check4line
-set line = "2 179 -0.215 3.48 1.06 0.0"
+set line = "2 179 GLY -0.215 3.48 1.06 0.0"
 source tests/check4line
 
 set file = "data_dir/4267_2entg2.dat"
@@ -250,10 +250,10 @@ set line = "1 155 ARG NE 0.1898 0.0292"
 source tests/check4line
 
 set file = "data_dir/4267_2entp1.dat"
-#TEMP -- until bug 075 is fixed
+#TEMP -- doesn't work for 2.1
 #set line = "1 8 LEU 100.0 100.0 100.0"
 #source tests/check4line
-#TEMP -- until bug 075 is fixed
+#TEMP -- doesn't work for 2.1
 #set line = "1 11 ALA 100.0 66.666664 100.0"
 #source tests/check4line
 

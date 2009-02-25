@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.110  2009/02/20 22:54:24  wenger
+// RNA visualization now works, using the DNA template; added stub
+// help file for nucleic acid deltashift visualizations.
+//
 // Revision 1.109  2009/02/20 21:07:28  wenger
 // Updated the DNA deltashift session template.
 //
@@ -415,7 +419,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x6"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x7"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested

@@ -12,6 +12,7 @@
 type AllShift ascii
 comment #
 whitespace ' '
+
 attr Entity_assembly_ID int
 attr Residue_seq_code int
 attr ResLabel string 4

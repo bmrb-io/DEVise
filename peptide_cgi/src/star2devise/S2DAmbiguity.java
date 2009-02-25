@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2008
+// (c) Copyright 2005-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.11.2.3  2008/11/17 19:28:06  wenger
 // Added entity assembly IDs to summary page and specific visualization pages.
 //
@@ -86,12 +89,13 @@ public class S2DAmbiguity {
     private String _frameDetails;
 
     private int[] _resSeqCodes;
-    private String[] _residueLabels;
+    private String[] _residueLabels; // indexed by atom
     private int[] _ambiguityVals;
     private int _entityAssemblyID;
 
     // Valid ambiguity codes are 1, 2, 3, 4, 5, and 9.
     private boolean[] _residueHasData;
+    private String[] _resLabels; // indexed by residue number
     private float[] _percent1;
     private float[] _percent2;
     private float[] _percent3;
@@ -149,7 +153,7 @@ public class S2DAmbiguity {
 	      _name + "\n");
 	    ambiguityWriter.write("# Schema: bmrb-ambiguity\n");
 	    ambiguityWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; %1; %2; %3; %4; %5; %9\n");
+	      "Residue_seq_code; Residue_label; %1; %2; %3; %4; %5; %9\n");
             ambiguityWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             ambiguityWriter.write("# Generation date: " +
@@ -163,10 +167,12 @@ public class S2DAmbiguity {
 	}
 
 	try {
-            for (int index = 0; index < _residueHasData.length; ++index) {
+	    //TEMPTEMP -- make sure 1 is right below
+            for (int index = 1; index < _residueHasData.length; ++index) {
 		if (_residueHasData[index]) {
 	            ambiguityWriter.write(_entityAssemblyID + " " +
 		      index + " " +
+		      _resLabels[index] + " " +
 		      _percent1[index] + " " +
 		      _percent2[index] + " " +
 		      _percent3[index] + " " +
@@ -236,6 +242,7 @@ public class S2DAmbiguity {
 	// Residues normally start with 1 -- skip the first element of
 	// these arrays to make things simpler.
         _residueHasData = new boolean[lastResidue + 1];
+        _resLabels = new String[lastResidue + 1];
         _percent1 = new float[lastResidue + 1];
         _percent2 = new float[lastResidue + 1];
         _percent3 = new float[lastResidue + 1];
@@ -363,6 +370,7 @@ public class S2DAmbiguity {
 	        int atomCount = counts.getCHNCount(residueLabel);
 
                 _residueHasData[resSeqCode] = true;
+		_resLabels[resSeqCode] = residueLabel;
 
 	    	_percent1[resSeqCode] = (float)_ambig1Count / atomCount;
 	    	_percent2[resSeqCode] = (float)_ambig2Count / atomCount;

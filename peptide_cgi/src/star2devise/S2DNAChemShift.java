@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2009/02/20 22:54:24  wenger
+// RNA visualization now works, using the DNA template; added stub
+// help file for nucleic acid deltashift visualizations.
+//
 // Revision 1.3  2009/02/20 18:41:47  wenger
 // Preliminary version of DNA deltashift session template is now in place
 // (still needs cleanup); Peptide-CGI code uses that session template for
@@ -206,11 +210,12 @@ public class S2DNAChemShift extends S2DChemShift {
 
 	for (int index = 0; index < _resSeqCodes.length; ++index) {
 	    int resSeqCode = _resSeqCodes[index];
+            String resLabel = _residueLabels[index];
 	    if (_deltashiftData[resSeqCode] == null) {
-	        _deltashiftData[resSeqCode] = new ResidueInfo(resSeqCode);
+	        _deltashiftData[resSeqCode] = new ResidueInfo(resSeqCode,
+		  resLabel);
 	    }
 
-            String resLabel = _residueLabels[index];
 	    String atomName = _atomNames[index];
 	    double chemShift = _chemShiftVals[index];
 
@@ -245,16 +250,18 @@ public class S2DNAChemShift extends S2DChemShift {
     protected class ResidueInfo extends Hashtable
     {
 	int _residueSequenceCode;
+	String _residueLabel;
 
         //---------------------------------------------------------------
 	/**
 	 * Constructor.
 	 * @param The residue sequence code for this residue.
 	 */
-        public ResidueInfo(int residueSequenceCode) {
+        public ResidueInfo(int residueSequenceCode, String residueLabel) {
 	    super();
 
 	    _residueSequenceCode = residueSequenceCode;
+	    _residueLabel = residueLabel;
 
 	    // Add all possible atoms to the hash table.
 	    for (int index = 0; index < atomNameList.length; index++) {
@@ -271,7 +278,8 @@ public class S2DNAChemShift extends S2DChemShift {
 	public void write(FileWriter writer) throws IOException
 	{
 	    writer.write(_entityAssemblyID + " " +
-	      _residueSequenceCode + " ");
+	      _residueSequenceCode + " " +
+	      _residueLabel + " ");
 
 	    for (int index = 0; index < atomNameList.length; index++) {
 	    	Float value = (Float)get(atomNameList[index]);

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2009/02/19 22:40:41  wenger
+// DNA and RNA deltashift calculations now work (still need to check
+// that all values are correct); added value checks to relevant tests.
+//
 // Revision 1.15  2009/02/18 21:43:04  wenger
 // Added S2DNAChemShift class to clean up nucleic acid code (this class
 // will do the actual calculation and writing of chemical shift deltas
@@ -275,7 +279,7 @@ public class S2DChemShift {
 	    deltashiftWriter.write("# Schema: bmrb-DeltaShift\n");
 	    // TEMP -- add amino acid for drill-down?
 	    deltashiftWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; " +
+	      "Residue_seq_code; Residue_label; " +
 	      "HA_DeltaShift; C_DeltaShift; CA_DeltaShift; CB_DeltaShift\n");
             deltashiftWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -296,6 +300,7 @@ public class S2DChemShift {
 		    dsCount++;
 		    deltashiftWriter.write(_entityAssemblyID + " " +
 		      index + " " +
+		      _deltaShiftResLabels[index] + " " +//TEMPTEMP?
 		      _haDeltaShifts[index] + " " +
 		      _cDeltaShifts[index] + " " +
 		      _caDeltaShifts[index] + " " +
@@ -360,7 +365,7 @@ public class S2DChemShift {
 	      _name + "\n");
 	    csiWriter.write("# Schema: bmrb-Csi\n");
 	    csiWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; " +
+	      "Residue_seq_code; Residue_label; " +
 	      "HA_Csi; C_Csi; CA_Csi; CB_Csi; Consensus_Csi\n");
             csiWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -416,6 +421,7 @@ public class S2DChemShift {
 
 		    csiWriter.write(_entityAssemblyID + " " +
 		      index + " " +
+		      resLabel + " " +//TEMPTEMP?
 		      haCsi + " " +
 		      cCsi + " " +
 		      caCsi + " " +

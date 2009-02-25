@@ -47,21 +47,21 @@ foreach file ($files)
 end
 
 set file = "data_dir/4867ac1.dat"
-set line = "1 1 G O5' O 118.098 -36.722 1.395 side_chains"
+set line = "1 1 1 G O5' O 118.098 -36.722 1.395 side_chains"
 source tests/check4line
 set line = "3444 2 175 GLY HA3 H 123.371 1.993 19.454 backbone"
 source tests/check4line
 
 set file = "data_dir/4867as1.dat"
-set line = "5 VAL H H 8.09"
+set line = "2 5 VAL H H 8.09"
 source tests/check4line
-set line = "175 GLY N N 114.9"
+set line = "2 175 GLY N N 114.9"
 source tests/check4line
 
 set file = "data_dir/4867d1.dat"
-set line = "5 0.1 0.0 -3.4 -1.8"
+set line = "2 5 VAL 0.1 0.0 -3.4 -1.8"
 source tests/check4line
-set line = "175 -0.26 0.0 -1.0 0.0"
+set line = "2 175 GLY -0.26 0.0 -1.0 0.0"
 source tests/check4line
 
 set file = "data_dir/4867md.dat"

@@ -10,9 +10,11 @@
 type HXProtFactors ascii
 comment #
 whitespace ' '
+
 attr Entity_assembly_ID int
 sorted attr Residue_seq_code int lo 0
 attr Residue_label string 4
+
 attr Atom_name string 5
 attr H_exchange_calculated_intrinsic_rate float
 attr H_exchange_protection_factor_value float

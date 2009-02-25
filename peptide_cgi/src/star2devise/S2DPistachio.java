@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2008
+// (c) Copyright 2004-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.9.2.3  2008/11/17 19:28:07  wenger
 // Added entity assembly IDs to summary page and specific visualization pages.
 //
@@ -92,12 +95,13 @@ public class S2DPistachio {
     private String _frameDetails;
 
     private int[] _resSeqCodes;
-    private String[] _residueLabels;
+    private String[] _residueLabels; // indexed by atom
     private String[] _atomNames;
     private double[] _meritVals;
     private int _entityAssemblyID;
 
     private boolean[] _residueHasData;
+    private String[] _resLabels; // indexed by residue number
     private float[] _backboneGE95;
     private float[] _backboneLT95;
     private float[] _sideChainGE95;
@@ -155,7 +159,7 @@ public class S2DPistachio {
 	      "values for " + _name + "\n");
 	    pistachioWriter.write("# Schema: bmrb-Pistachio\n");
 	    pistachioWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; " +
+	      "Residue_seq_code; Residue_label; " +
 	      "backbone >= 95%; backbone < 95%; side chain >= 95%; " +
 	      "side chain < 95%; H >= 95%; H < 95%\n");
             pistachioWriter.write("# Peptide-CGI version: " +
@@ -171,10 +175,12 @@ public class S2DPistachio {
 	}
 
 	try {
-            for (int index = 0; index < _residueHasData.length; ++index) {
+	    //TEMPTEMP -- make sure 1 is correct below
+            for (int index = 1; index < _residueHasData.length; ++index) {
 		if (_residueHasData[index]) {
 	            pistachioWriter.write(_entityAssemblyID + " " +
 		      index + " " +
+		      _resLabels[index] + " " +
 		      _backboneGE95[index] + " " +
 		      _backboneLT95[index] + " " +
 		      _sideChainGE95[index] + " " +
@@ -244,6 +250,7 @@ public class S2DPistachio {
 	// Residues normally start with 1 -- skip the first element of
 	// these arrays to make things simpler.
         _residueHasData = new boolean[lastResidue + 1];
+        _resLabels = new String[lastResidue + 1];
         _backboneGE95 = new float[lastResidue + 1];
         _backboneLT95 = new float[lastResidue + 1];
         _sideChainGE95 = new float[lastResidue + 1];
@@ -352,6 +359,7 @@ public class S2DPistachio {
 	    }
 
             _residueHasData[resSeqCode] = true;
+	    _resLabels[resSeqCode] = residueLabel;
 
 	    try {
 	        S2DAtomCounts counts = S2DAtomCounts.getInstance();

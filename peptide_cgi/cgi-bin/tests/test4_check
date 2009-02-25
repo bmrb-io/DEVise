@@ -38,27 +38,29 @@ foreach file ($files)
 end
 
 set file = "data_dir/4096ac1.dat"
-set line = "1 1 GLY N N 11.949 7.838 11.241 backbone"
+set line = "1 1 1 GLY N N 11.949 7.838 11.241 backbone"
+source tests/check4line
+set line = "2102 1 147 SER O2 O -11.593 18.226 3.842 side_chains"
 source tests/check4line
 set line = "2177 3 . . O O -7.051 -0.232 -1.921 backbone"
 source tests/check4line
 
 set file = "data_dir/4096as1.dat"
-set line = "1 GLY CA C 43.08"
+set line = "1 1 GLY CA C 43.08"
 source tests/check4line
-set line = "147 SER N N 120.79"
+set line = "1 147 SER N N 120.79"
 source tests/check4line
 
 set file = "data_dir/4096c1.dat"
-set line = "1 -1 0 -1 0 0"
+set line = "1 1 GLY -1 0 -1 0 0"
 source tests/check4line
-set line = "147 -1 1 1 1 -1"
+set line = "1 147 SER -1 1 1 1 -1"
 source tests/check4line
 
 set file = "data_dir/4096p1.dat"
-set line = "1 GLY 66.666664 50.0 0.0"
+set line = "1 1 GLY 66.666664 50.0 0.0"
 source tests/check4line
-set line = "39 HIS 75.0 83.333336 100.0"
+set line = "1 39 HIS 75.0 83.333336 100.0"
 source tests/check4line
 
 set file = "data_dir/4096rl.dat"

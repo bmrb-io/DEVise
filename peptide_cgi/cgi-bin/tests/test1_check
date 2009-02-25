@@ -85,21 +85,21 @@ foreach file ($files)
 end
 
 set file = "data_dir/4267as1.dat"
-set line = "2 GLN HA H 4.41"
+set line = "1 2 GLN HA H 4.41"
 source tests/check4line
-set line = "179 GLY N N 114.48"
+set line = "1 179 GLY N N 114.48"
 source tests/check4line
 
 set file = "data_dir/4267c1.dat"
-set line = "2 0 1 0 0 -1"
+set line = "1 2 GLN 0 1 0 0 -1"
 source tests/check4line
-set line = "179 -1 1 1 0 -1"
+set line = "1 179 GLY -1 1 1 0 -1"
 source tests/check4line
 
 set file = "data_dir/4267d1.dat"
-set line = "2 0.04 1.81 -0.49 -0.57"
+set line = "1 2 GLN 0.04 1.81 -0.49 -0.57"
 source tests/check4line
-set line = "179 -0.215 3.48 1.06 0.0"
+set line = "1 179 GLY -0.215 3.48 1.06 0.0"
 source tests/check4line
 
 set file = "data_dir/4267g1.dat"
@@ -109,15 +109,15 @@ set line = "3JHNHA 1 178 ASP H 178 ASP HA 9.5 0"
 source tests/check4line
 
 set file = "data_dir/4267n3.dat"
-set line = "3 ASP -0.256 0.050"
+set line = "1 3 ASP -0.256 0.050"
 source tests/check4line
-set line = "179 GLY 0.234 0.050"
+set line = "1 179 GLY 0.234 0.050"
 source tests/check4line
 
 set file = "data_dir/4267p1.dat"
-set line = "2 GLN 62.5 60.0 0.0"
+set line = "1 2 GLN 62.5 60.0 0.0"
 source tests/check4line
-set line = "179 GLY 100.0 100.0 100.0"
+set line = "1 179 GLY 100.0 100.0 100.0"
 source tests/check4line
 
 set file = "data_dir/4267rl.dat"
@@ -127,7 +127,7 @@ set line = "1	179	GLY"
 source tests/check4line
 
 set file = "data_dir/4267t11.dat"
-set line = "3 ASP N 1.030 0.031"
+set line = "1 3 ASP N 1.030 0.031"
 source tests/check4line
-set line = "155 ARG NE 1.830 0.110"
+set line = "1 155 ARG NE 1.830 0.110"
 source tests/check4line
