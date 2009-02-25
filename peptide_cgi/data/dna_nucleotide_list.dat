@@ -1,0 +1,9 @@
+# Data: list of nucleotides available for DNA deltashift visualizations.
+# Schema: bmrb-NANucList
+# Attributes: nucleotide_name
+# $Id$
+#
+DA
+DC
+DG
+DT
