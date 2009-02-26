@@ -1100,11 +1100,11 @@ DEVise setCursorDst {Atom_select_scroll_cursor2} {View_AtomSelect 4}
 DEVise color SetCursorColor {Atom_select_scroll_cursor2} #ffffffffffff
 DEVise setCursorConstraints {Atom_select_scroll_cursor2} 1 0 1
 DEVise setCursorSrc {Atom_select_fix_cursor1} {View_Parent1}
-DEVise setCursorDst {Atom_select_fix_cursor1} {View_AtomSelect 5}
+#DEVise setCursorDst {Atom_select_fix_cursor1} {View_AtomSelect 5}
 DEVise color SetCursorColor {Atom_select_fix_cursor1} #ffffffffffff
 DEVise setCursorConstraints {Atom_select_fix_cursor1} 0 0 1
 DEVise setCursorSrc {Atom_select_fix_cursor2} {View_Parent2}
-DEVise setCursorDst {Atom_select_fix_cursor2} {View_AtomSelect 6}
+#DEVise setCursorDst {Atom_select_fix_cursor2} {View_AtomSelect 6}
 DEVise color SetCursorColor {Atom_select_fix_cursor2} #ffffffffffff
 DEVise setCursorConstraints {Atom_select_fix_cursor2} 0 0 1
 
