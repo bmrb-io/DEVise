@@ -10,6 +10,6 @@
 type bmrb-NAAtomList ascii
 comment #
 whitespace '	'
+attr nucleotide string 4
 attr atom_name string 5
-attr atom_name_long string 25
 attr attribute string 20

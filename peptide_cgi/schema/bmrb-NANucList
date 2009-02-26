@@ -10,4 +10,6 @@
 type bmrb-NANucList ascii
 comment #
 whitespace '	'
+attr label string 5
 attr nucleotide_name string 5
+attr index int
