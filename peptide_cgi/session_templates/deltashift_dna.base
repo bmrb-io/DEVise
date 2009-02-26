@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Feb 25 2009 18:18:39
+# file date: Feb 25 2009 18:33:00
 # DEVise version: 1.9.0
 # DEVise date: Jul 13 2006
 # DEVise endHeader
@@ -66,7 +66,7 @@ DEVise dteInsertCatalogEntry . {"nucleotide_list" UNIXFILE dna_nucleotide_list.d
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} View_Child1 4.450000 14.550000 -0.084000 0.000000 37 0 0 37 0 37
+DEVise create {view} {SortedX} View_Child1 0.500000 14.550000 -0.084000 0.404000 37 0 0 37 0 37
 DEVise setLabel {View_Child1} 1 16 {H2''}
 DEVise setViewStatistics {View_Child1} 00000000
 DEVise setViewDimensions {View_Child1} 2
@@ -105,7 +105,7 @@ DEVise viewSetUseJmol {View_Child1} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} View_Child2 4.450000 14.550000 -0.482000 0.380000 37 0 0 37 0 37
+DEVise create {view} {SortedX} View_Child2 0.500000 14.550000 -0.482000 0.380000 37 9 0 37 0 37
 DEVise setLabel {View_Child2} 1 16 {H1'}
 DEVise setViewStatistics {View_Child2} 00000000
 DEVise setViewDimensions {View_Child2} 2
@@ -302,7 +302,7 @@ DEVise viewSetUseJmol {View_Parent1} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View_Parent2 -0.500000 0.500000 -11.500000 -10.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} View_Parent2 -0.500000 0.500000 -11.500000 -10.500000 37 9 0 37 0 37
 DEVise setLabel {View_Parent2} 0 12 {atom_name() vs. recId}
 DEVise setViewStatistics {View_Parent2} 00000000
 DEVise setViewDimensions {View_Parent2} 2
@@ -381,7 +381,7 @@ DEVise viewSetUseJmol {View_XAxisLabel 2} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View_XAxisLabel 3} -1.000000 1.000000 -1.000000 1.000000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View_XAxisLabel 3} -1.000000 1.000000 -1.000000 1.000000 37 9 0 37 0 37
 DEVise setLabel {View_XAxisLabel 3} 0 12 {}
 DEVise setViewStatistics {View_XAxisLabel 3} 00000000
 DEVise setViewDimensions {View_XAxisLabel 3} 2
@@ -460,7 +460,7 @@ DEVise viewSetUseJmol {View_nuc_select_1} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View_nuc_select2 -0.500000 0.500000 -3.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} View_nuc_select2 -0.500000 0.500000 -3.500000 0.500000 37 9 0 37 0 37
 DEVise setLabel {View_nuc_select2} 0 12 {nucleotide_name() vs. recId}
 DEVise setViewStatistics {View_nuc_select2} 00000000
 DEVise setViewDimensions {View_nuc_select2} 2
@@ -577,7 +577,7 @@ DEVise viewSetUseJmol {View_nuc_leader2} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View_AtomSelect 2} -0.500000 1.000000 -18.500000 -7.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View_AtomSelect 2} -0.500000 1.000000 -18.500000 -7.500000 37 9 0 37 0 37
 DEVise setLabel {View_AtomSelect 2} 0 12 {atom_name() vs. recId}
 DEVise setViewStatistics {View_AtomSelect 2} 00000000
 DEVise setViewDimensions {View_AtomSelect 2} 2
@@ -655,7 +655,7 @@ DEVise viewSetUseJmol {View_AtomSelect 3} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View_AtomSelect 4} -0.500000 0.500000 -39.625000 0.625000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View_AtomSelect 4} -0.500000 0.500000 -39.625000 0.625000 37 9 0 37 0 37
 DEVise setLabel {View_AtomSelect 4} 0 12 {atom_name() vs. recId}
 DEVise setViewStatistics {View_AtomSelect 4} 00000000
 DEVise setViewDimensions {View_AtomSelect 4} 2
@@ -730,9 +730,9 @@ DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code} {31} {0} {
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {C1p_DeltaShift_vs_Residue_seq_code} .15083d1 {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} {} {$Residue_seq_code} #parentVal {} 10 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {$Residue_label}
+DEVise create {mapping} {C1p_DeltaShift_vs_Residue_seq_code} .15083d1 {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} {} {$Residue_seq_code} #parentVal {} 31 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {$Residue_label}
 DEVise setPixelWidth {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} 1
-DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} {10} {0} {0}
+DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} {31} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -754,9 +754,9 @@ DEVise setMappingColors {.atom_list#atom_name_vs_recId 2} {0} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 3} {} 0 {-$recId} {} 0 0.98 0 0 17 {"View_Child2"} 1 1 {} {} {} {} {} {} {$attribute} {$atom_name} {} {} {} {}
+DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 3} {} 0 {-$recId} {} 9 0.98 0 0 17 {"View_Child2"} 1 1 {} {} {} {} {} {} {$attribute} {$atom_name} {} {} {} {}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 3} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 3} {0} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 3} {9} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -805,12 +805,12 @@ DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId 4} {36} {0} {
 #   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn1 0.170000 0.747500 0.476250 0.026667 0 0
 DEVise create {window} {TileLayout} DEViseWn4 0.055625 0.190000 0.591250 0.026667 0 0
-DEVise create {window} {TileLayout} DEViseWn2 0.086250 0.222500 0.040000 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.085625 0.222500 0.040000 0.515000 0 0
 DEVise create {window} {TileLayout} DEViseWn3 0.171875 0.222500 0.475625 0.515000 0 0
 DEVise create {window} {TileLayout} DEViseWn5 0.148125 0.222500 0.021250 0.515000 0 0
 DEVise create {window} {TileLayout} DEViseWn0 0.055625 0.221667 0.031250 0.515000 0 0
 DEVise create {window} {TileLayout} DEViseWn6 0.661250 0.199167 0.079375 0.515000 1 0
-DEVise create {window} {TileLayout} DEViseWn7 0.123125 0.222500 0.023750 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn7 0.122500 0.222500 0.023750 0.515000 0 0
 
 # Set up window layouts
 
@@ -966,19 +966,19 @@ DEVise setAxisMultFact {View_AtomSelect 4} {Y} 1
 # Put views in cursors
 DEVise setCursorSrc {Atom_Select_Cursor1} {View_Parent1}
 DEVise setCursorDst {Atom_Select_Cursor1} {View_AtomSelect}
-DEVise color SetCursorColor {Atom_Select_Cursor1} #ff0000000000
+DEVise color SetCursorColor {Atom_Select_Cursor1} #ffffffffffff
 DEVise setCursorConstraints {Atom_Select_Cursor1} 1 0 0
 DEVise setCursorSrc {Atom_Select_Cursor2} {View_Parent2}
 DEVise setCursorDst {Atom_Select_Cursor2} {View_AtomSelect 2}
-DEVise color SetCursorColor {Atom_Select_Cursor2} #1e009000ff00
+DEVise color SetCursorColor {Atom_Select_Cursor2} #ffffffffffff
 DEVise setCursorConstraints {Atom_Select_Cursor2} 1 0 0
 DEVise setCursorSrc {Nuc_select_cursor1} {View_nuc_leader1}
 DEVise setCursorDst {Nuc_select_cursor1} {View_nuc_select_1}
-DEVise color SetCursorColor {Nuc_select_cursor1} #ff0000000000
+DEVise color SetCursorColor {Nuc_select_cursor1} #ffffffffffff
 DEVise setCursorConstraints {Nuc_select_cursor1} 0 0 1
 DEVise setCursorSrc {Nuc_select_cursor2} {View_nuc_leader2}
 DEVise setCursorDst {Nuc_select_cursor2} {View_nuc_select2}
-DEVise color SetCursorColor {Nuc_select_cursor2} #1e009000ff00
+DEVise color SetCursorColor {Nuc_select_cursor2} #ffffffffffff
 DEVise setCursorConstraints {Nuc_select_cursor2} 0 0 1
 DEVise setCursorSrc {Atom_select_scroll_cursor1} {View_AtomSelect}
 DEVise setCursorDst {Atom_select_scroll_cursor1} {View_AtomSelect 3}
@@ -1050,30 +1050,29 @@ DEVise setPileStackState {DEViseWn7} 1
 
 DEVise clearViewHistory {View_Child1}
 DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
-DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0} 0
-DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.5} {0} 0
+DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
 DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
 DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
 DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
-DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0} 0
+DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
 DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
-DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0} 0
+DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
 DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
-DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0} 0
-DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
-DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0} 0
+DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
 DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
 DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
 DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
 DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0} 0
 DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
 DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
-DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0} 0
+DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0.404} 0
+DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
+DEVise insertViewHistory {View_Child1} {4.45} {-0.084} {14.55} {0.404} 0
+DEVise insertViewHistory {View_Child1} {0.5} {-0.084} {14.55} {0.404} 0
 
 DEVise clearViewHistory {View_Child2}
 DEVise insertViewHistory {View_Child2} {4.45} {-0.482} {14.55} {0.38} 0
 DEVise insertViewHistory {View_Child2} {0.5} {-0.482} {14.55} {0.38} 0
-DEVise insertViewHistory {View_Child2} {0.5} {-0.482} {14.5} {0.38} 0
 DEVise insertViewHistory {View_Child2} {4.45} {-0.482} {14.55} {0.38} 0
 DEVise insertViewHistory {View_Child2} {0.5} {-0.482} {14.55} {0.38} 0
 DEVise insertViewHistory {View_Child2} {4.45} {-0.482} {14.55} {0.38} 0
@@ -1091,6 +1090,7 @@ DEVise insertViewHistory {View_Child2} {0.5} {-0.482} {14.55} {0.38} 0
 DEVise insertViewHistory {View_Child2} {4.45} {-0.482} {14.55} {0.38} 0
 DEVise insertViewHistory {View_Child2} {0.5} {-0.482} {14.55} {0.38} 0
 DEVise insertViewHistory {View_Child2} {4.45} {-0.482} {14.55} {0.38} 0
+DEVise insertViewHistory {View_Child2} {0.5} {-0.482} {14.55} {0.38} 0
 
 DEVise clearViewHistory {View_XAxisLabel}
 DEVise insertViewHistory {View_XAxisLabel} {0} {0} {100} {100} 0
