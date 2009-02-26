@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.111  2009/02/25 21:33:14  wenger
+// Added residue labels to all data that were missing them (in preparation
+// for selection by nucleotide in nucleotide visualizations; also allows
+// user to drill down to see residue label in protein deltashift, CSI,
+// etc., visualizations); changed tests accordingly; also fixed up some
+// tests that weren't checking for entity assembly IDs in data.
+//
 // Revision 1.110  2009/02/20 22:54:24  wenger
 // RNA visualization now works, using the DNA template; added stub
 // help file for nucleic acid deltashift visualizations.
@@ -419,7 +426,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x7"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x8"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
