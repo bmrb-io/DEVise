@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.114  2009/02/26 18:38:11  wenger
+// Added "fix" cursors so that the atom select cursors stay within the
+// range of legal values when changing nucleotides, even if they are
+// out of the destination view.
+//
 // Revision 1.113  2009/02/26 00:49:33  wenger
 // Changed view background colors to show which views go together.
 //
@@ -432,7 +437,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x10"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x11"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
