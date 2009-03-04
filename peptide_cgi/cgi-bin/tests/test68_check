@@ -1,6 +1,10 @@
 echo "Checking output files"
 
-set files = ( data_dir/15083am3.dat \
+#TEMPTEMP -- I don't think we should get hn for NAs
+set files = ( \
+	data_dir/15083ac1.dat \
+	data_dir/15083ac2.dat \
+	data_dir/15083am3.dat \
 	data_dir/15083amac3.dat \
 	data_dir/15083as1.dat \
 	data_dir/15083as2.dat \
@@ -18,6 +22,10 @@ set files = ( data_dir/15083am3.dat \
 	data_dir/15083rc2.dat \
 	data_dir/15083rc3.dat \
 	data_dir/15083rl.dat \
+	html_dir/15083ac1.html \
+	html_dir/15083ac1_large.html \
+	html_dir/15083ac2.html \
+	html_dir/15083ac2_large.html \
 	html_dir/15083am3.html \
 	html_dir/15083am3_large.html \
 	html_dir/15083as1.html \
@@ -40,6 +48,9 @@ set files = ( data_dir/15083am3.dat \
 	html_dir/15083p3_large.html \
 	html_dir/15083y.html \
 	html_dir/15083y_large.html \
+	session_dir/15083ac1.ds \
+	session_dir/15083ac2.ds \
+	session_dir/15083acdd \
 	session_dir/15083acdd \
 	session_dir/15083am3.ds \
 	session_dir/15083as1.ds \
@@ -112,4 +123,24 @@ set file = "data_dir/15083rl.dat"
 set line = "1	1	DT"
 source tests/check4line
 set line = "3	63	ILE"
+source tests/check4line
+
+set file = "data_dir/15083ac1.dat"
+set line = "1 1 1 DT O5' O -5.328 10.389 18.756 side_chains"
+source tests/check4line
+set line = "1969 3 63 ILE 3HD1 H 11.034 1.442 18.427 all_hydrogens"
+source tests/check4line
+
+set file = "data_dir/15083ac2.dat"
+set line = "1 1 1 DT O5' O 7.554 -3.904 19.019 side_chains"
+source tests/check4line
+set line = "1861 3 63 ILE 3HD1 H 16.745 -3.199 6.486 all_hydrogens"
+source tests/check4line
+
+set file = "data_dir/15083md.dat"
+set attr = '$C1p_DeltaShift'
+set line = "C1' delta chem shift \[1\]	15083d1	$attr"
+source tests/check4line
+set attr = '$assigForN'
+set line = "% 15N assign per res \[3\]	15083p3	$attr"
 source tests/check4line

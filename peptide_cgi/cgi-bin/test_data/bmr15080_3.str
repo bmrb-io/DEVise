@@ -275,6 +275,18 @@ save_Yeast_U2_Stem_I
     .   C    19    19    15080    1    
     .   C    20    20    15080    1    
   stop_
+
+  # This loop manually added so test67_3 works.  wenger 2009-03-03
+  loop_
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+
+      PDB 2O33 "Yeast U2 Stem I structure" 20 100.00
+      PDB 2O32 "Human U2 stem I structure" 20 100.00
+  stop_
 save_
 
     ####################

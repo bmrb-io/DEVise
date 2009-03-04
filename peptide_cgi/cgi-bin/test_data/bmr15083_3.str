@@ -549,6 +549,18 @@ RRI
     .   ARG    62    62    15083    3    
     .   ILE    63    63    15083    3    
   stop_
+
+  # This loop manually added so test68_3 works.  wenger 2009-03-03
+  loop_
+      _Entity_db_link.Database_code
+      _Entity_db_link.Accession_code
+      _Entity_db_link.Entry_mol_name
+      _Entity_db_link.Seq_subject_length
+      _Entity_db_link.Seq_identity
+
+      PDB 2O8K "Nmr Structure Of The Sigma-54 Rpon Domain Bound To The-24 Promoter Element" 63 100.00
+      PDB 2O9L "Amber Refined Nmr Structure Of The Sigma-54 Rpon Domain Bound To The-24 Promoter Element" 63 100.00
+  stop_
 save_
 
     ####################

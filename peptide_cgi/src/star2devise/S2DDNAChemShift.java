@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2009/02/25 21:33:14  wenger
+// Added residue labels to all data that were missing them (in preparation
+// for selection by nucleotide in nucleotide visualizations; also allows
+// user to drill down to see residue label in protein deltashift, CSI,
+// etc., visualizations); changed tests accordingly; also fixed up some
+// tests that weren't checking for entity assembly IDs in data.
+//
 // Revision 1.4  2009/02/20 18:41:47  wenger
 // Preliminary version of DNA deltashift session template is now in place
 // (still needs cleanup); Peptide-CGI code uses that session template for
@@ -121,6 +128,81 @@ public class S2DDNAChemShift extends S2DNAChemShift {
 
 	writeDeltaShifts(frameIndex, schemaName, attributes,
 	  S2DUtils.TYPE_DNA_DELTASHIFT);
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Add delta chem shift data sets to the data set list.
+     * @param The data set list.
+     * @param The frame index.
+     */
+    public void addDeltaData(Vector dataSets, int frameIndex)
+    {
+        // Note: attribute names must match the bmrb-DNADeltaShift schema.
+
+	String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX +
+	  frameIndex;
+
+	class DataSet {
+	    public String _dataName;
+	    public String _attribute;
+
+	    public DataSet(String dataName, String attribute) {
+	        _dataName = dataName;
+	        _attribute = attribute;
+	    }
+	}
+
+	DataSet[] info = {
+          new DataSet("C1'", "C1p_DeltaShift"),
+          new DataSet("C2", "C2_DeltaShift"),
+          new DataSet("C2'", "C2p_DeltaShift"),
+          new DataSet("C3'", "C3p_DeltaShift"),
+          new DataSet("C4'", "C4p_DeltaShift"),
+          new DataSet("C5", "C5_DeltaShift"),
+          new DataSet("C5'", "C5p_DeltaShift"),
+          new DataSet("C6", "C6_DeltaShift"),
+          new DataSet("C7", "C7_DeltaShift"),
+          new DataSet("C8", "C8_DeltaShift"),
+          new DataSet("H1", "H1_DeltaShift"),
+          new DataSet("H1'", "H1p_DeltaShift"),
+          new DataSet("H2", "H2_DeltaShift"),
+          new DataSet("H2'", "H2p_DeltaShift"),
+          new DataSet("H2''", "H2pp_DeltaShift"),
+          new DataSet("H21", "H21_DeltaShift"),
+          new DataSet("H22", "H22_DeltaShift"),
+          new DataSet("H3", "H3_DeltaShift"),
+          new DataSet("H3'", "H3p_DeltaShift"),
+          new DataSet("H4'", "H4p_DeltaShift"),
+          new DataSet("H41", "H41_DeltaShift"),
+          new DataSet("H42", "H42_DeltaShift"),
+          new DataSet("H5", "H5_DeltaShift"),
+          new DataSet("H5'", "H5p_DeltaShift"),
+          new DataSet("H5''", "H5pp_DeltaShift"),
+          new DataSet("H6", "H6_DeltaShift"),
+          new DataSet("H61", "H61_DeltaShift"),
+          new DataSet("H62", "H62_DeltaShift"),
+          new DataSet("H7", "H7_DeltaShift"),
+          new DataSet("H71", "H71_DeltaShift"),
+          new DataSet("H72", "H72_DeltaShift"),
+          new DataSet("H73", "H73_DeltaShift"),
+          new DataSet("H8", "H8_DeltaShift"),
+          new DataSet("N1", "N1_DeltaShift"),
+          new DataSet("N2", "N2_DeltaShift"),
+          new DataSet("N3", "N3_DeltaShift"),
+          new DataSet("N4", "N4_DeltaShift"),
+          new DataSet("N6", "N6_DeltaShift"),
+          new DataSet("N7", "N7_DeltaShift"),
+          new DataSet("N9", "N9_DeltaShift")
+	};
+
+	for (int index = 0; index < info.length; index++) {
+	    dataSets.addElement(new S2DDatasetInfo(
+	      info[index]._dataName +
+	        " delta chem shift [" + frameIndex + "]", 
+	      dataSource, info[index]._attribute, "bmrb-DNADeltaShift",
+	      "bmrb-DNADeltaShift"));
+	}
     }
 
     //===================================================================

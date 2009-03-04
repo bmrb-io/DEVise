@@ -6,9 +6,9 @@ set result = 0
 
 rm -f */15080*
 
-#TEMP -- add -do_pdb 2 to arguments
 echo -n "Processing NMR-STAR and mmCIF: "
-./s2d -nomail -name 15080 -file test_data/bmr15080_3.str -force -check_pct
+./s2d -nomail -name 15080 -file test_data/bmr15080_3.str -force -check_pct \
+  -do_pdb 2
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
@@ -17,7 +17,7 @@ endif
 source tests/test67_check
 
 
-echo -n "Test67 result: "
+echo -n "Test67_3 result: "
 if ($result == 0) then
   echo "OK"
   exit 0

@@ -1,17 +1,27 @@
 echo "Checking output files"
 
-set files = ( data_dir/15080as1.dat \
+#TEMPTEMP -- I don't think we should get hn for NAs
+set files = ( data_dir/15080ac1.dat \
+	data_dir/15080ac2.dat \
+	data_dir/15080as1.dat \
 	data_dir/15080d1.dat \
 	data_dir/15080hn1.dat \
 	data_dir/15080md.dat \
 	data_dir/15080rc1.dat \
 	data_dir/15080rl.dat \
+	html_dir/15080ac1.html \
+	html_dir/15080ac1_large.html \
+	html_dir/15080ac2.html \
+	html_dir/15080ac2_large.html \
 	html_dir/15080as1.html \
 	html_dir/15080as1_large.html \
 	html_dir/15080d1.html \
 	html_dir/15080d1_large.html \
 	html_dir/15080y.html \
 	html_dir/15080y_large.html \
+	session_dir/15080ac1.ds \
+	session_dir/15080ac2.ds \
+	session_dir/15080acdd \
 	session_dir/15080as1.ds \
 	session_dir/15080d1.ds )
 
@@ -40,3 +50,22 @@ set line = "1	1	G"
 source tests/check4line
 set line = "1	20	C"
 source tests/check4line
+
+set file = "data_dir/15080ac1.dat"
+set line = "1 1 1 G O5' O -0.831 12.956 4.46 side_chains"
+source tests/check4line
+set line = "627 1 20 C H6 H 9.539 13.306 -3.974 all_hydrogens"
+source tests/check4line
+
+set file = "data_dir/15080ac2.dat"
+set line = "1 1 1 PSU N1 N 0.508 13.363 1.384 side_chains"
+source tests/check4line
+set line = "645 1 20 A H2 H 3.233 14.267 -3.694 all_hydrogens"
+source tests/check4line
+
+set file = "data_dir/15080md.dat"
+set attr = '$C1p_DeltaShift'
+set line = "C1' delta chem shift \[1\]	15080d1	$attr"
+source tests/check4line
+#TEMPTEMP set line = "TEMPTEMP"
+#TEMPTEMP source tests/check4line

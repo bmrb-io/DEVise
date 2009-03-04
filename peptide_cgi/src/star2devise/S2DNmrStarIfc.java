@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2009/02/18 18:10:50  wenger
+// Fixed bug 065 (don't process non-polymer entities).
+//
 // Revision 1.19  2009/02/06 16:20:25  wenger
 // Cleaned up a bunch of the nucleic acid-related code; all tests pass
 // (but I still need to fix up the deltashift values for nucleic acids).
@@ -1053,9 +1056,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	    _seqIdentMin = 97.0;
 	}
 
-        //TEMP -- replace with getAllEntityFrames()?
-	Enumeration frameList = getDataFramesByCat(
-	  MONOMERIC_POLYMER_SF_CAT, MONOMERIC_POLYMER);
+	Enumeration frameList = getAllEntityFrames();
 	while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
             if (doDebugOutput(12)) {
@@ -1063,52 +1064,57 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 		  getFrameName(frame));
             }
 
-	    // Make sure this is a protein.
-	    if (!doProteinCheck || isAProtein(frame)) {
-	        int residueCount = getResCountVal(frame);
+            try {
+	        // Make sure this is a polymer.
+	        if (getPolymerType(frame) != S2DResidues.POLYMER_TYPE_NONE) {
+	            int residueCount = getResCountVal(frame);
 
-                String[] dbNames = getFrameValues(frame, ENTITY_DB_NAME,
-	          ENTITY_DB_NAME);
-                String[] dbAccCodes = getFrameValues(frame, ENTITY_DB_NAME,
-	          ENTITY_DB_ACC_CODE);
+                    String[] dbNames = getFrameValues(frame, ENTITY_DB_NAME,
+	              ENTITY_DB_NAME);
+                    String[] dbAccCodes = getFrameValues(frame, ENTITY_DB_NAME,
+	              ENTITY_DB_ACC_CODE);
 
-		int[] seqLengths = null;
-                String[] seqIdents = null;
-                String[] tmpSeqLengths = getFrameValues(frame, ENTITY_DB_NAME,
-		  SEQ_SUBJ_LENGTH);
-		seqLengths = S2DUtils.arrayStr2Int(tmpSeqLengths,
-		  SEQ_SUBJ_LENGTH);
-                seqIdents = getFrameValues(frame, ENTITY_DB_NAME,
-		  SEQ_IDENTITY);
+		    int[] seqLengths = null;
+                    String[] seqIdents = null;
+                    String[] tmpSeqLengths = getFrameValues(frame,
+		      ENTITY_DB_NAME, SEQ_SUBJ_LENGTH);
+		    seqLengths = S2DUtils.arrayStr2Int(tmpSeqLengths,
+		      SEQ_SUBJ_LENGTH);
+                    seqIdents = getFrameValues(frame, ENTITY_DB_NAME,
+		      SEQ_IDENTITY);
 
-                //TEMP -- when we have 2 entities, what residue count
-		// are we checking against?
-                for (int index = 0; index < dbAccCodes.length; index++) {
-		    if (dbNames[index].equals("PDB")) {
-			if (checkDBEntry(residueCount, dbNames[index],
-			  seqLengths[index], seqIdents[index])) {
-			    ids.addElement(dbAccCodes[index]);
-                            if (doDebugOutput(12)) {
-			        System.out.println("  Got PDB ID " +
-				  dbAccCodes[index]);
-			    }
-		        } else {
-            		    if (doDebugOutput(11)) {
-			        System.out.println("PDB entry " +
-			          dbAccCodes[index] + " rejected because " +
-			          "of residue count mismatch or sequence " +
-			          "identity less than " + _seqIdentMin + "%");
-	                    }
+                    //TEMP -- when we have 2 entities, what residue count
+		    // are we checking against?
+                    for (int index = 0; index < dbAccCodes.length; index++) {
+		        if (dbNames[index].equals("PDB")) {
+			    if (checkDBEntry(residueCount, dbNames[index],
+			      seqLengths[index], seqIdents[index])) {
+			        ids.addElement(dbAccCodes[index]);
+                                if (doDebugOutput(12)) {
+			            System.out.println("  Got PDB ID " +
+				      dbAccCodes[index]);
+			        }
+		            } else {
+            		        if (doDebugOutput(11)) {
+			            System.out.println("PDB entry " +
+			              dbAccCodes[index] + " rejected because " +
+			              "of residue count mismatch or sequence " +
+			              "identity less than " + _seqIdentMin + "%");
+	                        }
+		            }
 		        }
-		    }
+	            }
+	        } else {
+                    if (doDebugOutput(11)) {
+		        System.out.println("PDB IDs in save frame " +
+		          getFrameName(frame) +
+		          " ignored because of polymer check");
+	            }
 	        }
-	    } else {
-                if (doDebugOutput(11)) {
-		    System.out.println("PDB IDs in save frame " +
-		      getFrameName(frame) +
-		      " ignored because of protein check");
-	        }
-	    }
+            } catch (S2DException ex) {
+                System.err.println("Exception getting PDB IDs: " +
+		  ex.toString());
+            }
         }
     }
 

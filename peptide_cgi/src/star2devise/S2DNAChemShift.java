@@ -24,6 +24,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2009/02/25 21:33:14  wenger
+// Added residue labels to all data that were missing them (in preparation
+// for selection by nucleotide in nucleotide visualizations; also allows
+// user to drill down to see residue label in protein deltashift, CSI,
+// etc., visualizations); changed tests accordingly; also fixed up some
+// tests that weren't checking for entity assembly IDs in data.
+//
 // Revision 1.4  2009/02/20 22:54:24  wenger
 // RNA visualization now works, using the DNA template; added stub
 // help file for nucleic acid deltashift visualizations.
@@ -190,6 +197,28 @@ public class S2DNAChemShift extends S2DChemShift {
 	}
 
 	// Don't do anything for nucleic acids.
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Add chem shift index data sets to the data set list.
+     * @param The data set list.
+     * @param The frame index.
+     */
+    public void addCsiData(Vector dataSets, int frameIndex)
+    {
+    	// Currently a no-op for nucleic acids.
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Add percent assignment data sets to the data set list.
+     * @param The data set list.
+     * @param The frame index.
+     */
+    public void addPctAssignData(Vector dataSets, int frameIndex)
+    {
+    	// Currently a no-op for nucleic acids.
     }
 
     //===================================================================

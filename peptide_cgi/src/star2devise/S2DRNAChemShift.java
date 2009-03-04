@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2009/02/25 21:33:14  wenger
+// Added residue labels to all data that were missing them (in preparation
+// for selection by nucleotide in nucleotide visualizations; also allows
+// user to drill down to see residue label in protein deltashift, CSI,
+// etc., visualizations); changed tests accordingly; also fixed up some
+// tests that weren't checking for entity assembly IDs in data.
+//
 // Revision 1.4  2009/02/20 18:41:47  wenger
 // Preliminary version of DNA deltashift session template is now in place
 // (still needs cleanup); Peptide-CGI code uses that session template for
@@ -120,6 +127,43 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 
 	writeDeltaShifts(frameIndex, schemaName, attributes,
 	  S2DUtils.TYPE_RNA_DELTASHIFT);
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Add delta chem shift data sets to the data set list.
+     * @param The data set list.
+     * @param The frame index.
+     */
+    public void addDeltaData(Vector dataSets, int frameIndex)
+    {
+        // Note: attribute names must match the bmrb-RNADeltaShift schema.
+
+	String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX +
+	  frameIndex;
+
+	class DataSet {
+	    public String _dataName;
+	    public String _attribute;
+
+	    public DataSet(String dataName, String attribute) {
+	        _dataName = dataName;
+	        _attribute = attribute;
+	    }
+	}
+
+	DataSet[] info = {
+	  new DataSet("C1'", "C1p_DeltaShift")
+	  //TEMPTEMP -- add the rest...
+	};
+
+	for (int index = 0; index < info.length; index++) {
+	    dataSets.addElement(new S2DDatasetInfo(
+	      info[index]._dataName +
+	        " delta chem shift [" + frameIndex + "]", 
+	      dataSource, info[index]._attribute, "bmrb-RNADeltaShift",
+	      "bmrb-RNADeltaShift"));
+	}
     }
 
     //===================================================================
