@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.116  2009/03/04 15:27:20  wenger
+// DNA deltashift data is now working as part of 3D visualizations,
+// just started on RNA, but need to finish other changes to RNA first;
+// made changes to test67* and test68* accordingly.  (Note: highlighing
+// doesn't work right for DNA in 3D visualizations.)
+//
 // Revision 1.115  2009/03/02 18:20:03  wenger
 // Re-enabled the "fix" cursors in a window that's drawn by the JS,
 // but very small (workaround for bug 923).
@@ -444,6 +450,7 @@ public class S2DMain {
     // Change version to 11.3.1 when S2 order stuff is implemented.
     public static final String PEP_CGI_VERSION = "11.4.1x12"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
+    public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
     private String _masterBmrbId = ""; // accession number the user requested
 
@@ -904,7 +911,8 @@ public class S2DMain {
 	    if ("-dev_version".equals(args[index])) {
 		System.out.println("Peptide-CGI version " + PEP_CGI_VERSION +
 		  " requires DEVise version " + DEVISE_MIN_VERSION +
-		  " or higher");
+		  " or higher and JavaScreen client version " +
+		  JS_CLIENT_MIN_VERSION + " or higher");
 		throw new S2DCancel();
 
 	    } else if ("-usage".equals(args[index])) {
