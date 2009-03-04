@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2008/09/05 20:34:48  wenger
+// (Hopefully, at least) fininshed JavaScreen changes for multiple
+// entity assemblies -- we now send alphabetic chain IDs to Jmol,
+// so that we can at least have 26 entity assemblies.
+//
 // Revision 1.3  2008/09/03 19:15:59  wenger
 // Initial changes to JavaScreen client to support entity assembly
 // IDs in 3D Jmol visualizations.  (Still needs some cleanup.)
@@ -89,7 +94,13 @@ public class DEViseJmolData
 	    tmpData += lengthenStringAppend(gd.atomName, 4);
 	    tmpData += " "; // space before residue label
 
-	    tmpData += gd.residueLabel + " ";
+	    // Get spacing right for DNA and RNA.
+	    String resLabel = gd.residueLabel;
+	    while (resLabel.length() < 3) {
+	        resLabel += " ";
+	    }
+	    tmpData += resLabel + " ";
+
 	    tmpData += entAssem2Chain(gd.entityAssemblyID); // chain ID
 	    tmpData += lengthenStringPrepend("" + gd.residueNum, 4);
 	    tmpData += "    "; // insertion code
