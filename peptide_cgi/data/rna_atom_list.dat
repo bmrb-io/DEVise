@@ -3,39 +3,138 @@
 # Attributes: atom_name; atom_name_long; attribute
 # $Id$
 #
-C1'	C1' (A, C, G, U)	$C1p_DeltaShift
-C2	C2 (A, C, G, U)	$C2_DeltaShift
-C2'	C2' (A, C, G, U)	$C2p_DeltaShift
-C3'	C3' (A, C, G, U)	$C3p_DeltaShift
-C4	C4 (A, C, G, U)	$C4_DeltaShift
-C4'	C4' (A, C, G, U)	$c4p_DeltaShift
-C5	C5 (A, C, G, U)	$C5_DeltaShift
-C5'	C5' (A, C, G, U)	$C5p_DeltaShift
-C6	C6 (A, C, G, U)	$C6_DeltaShift
-C8	C8 (A, G)	$C8_DeltaShift
-H1	H1 (G)	$H1_DeltaShift
-H1'	H1' (A, C, G, U)	$H1p_DeltaShift
-H2	H2 (A)	$H2_DeltaShift
-H2'	H2' (A, C, G, U)	$H2p_DeltaShift
-H21	H21 (G)	$H21_DeltaShift
-H22	H22 (G)	$H22_DeltaShift
-H3	H3 (U)	$H3_DeltaShift
-H3'	H3' (A, C, G, U)	$H3p_DeltaShift
-H4'	H4' (A, C, G, U)	$H4p_DeltaShift
-H41	H41 (C)	$H41_DeltaShift
-H42	H42 (C)	$H42_DeltaShift
-H5	H5 (C, U)	$H5_DeltaShift
-H5'	H5' (A, C, G, U)	$H5p_DeltaShift
-H5''	H5'' (A, C, G, U)	$H5pp_DeltaShift
-H6	H6 (C, U)	$H6_DeltaShift
-H61	H61 (A)	$H61_DeltaShift
-H62	H62 (A)	$H62_DeltaShift
-H8	H8 (A, G)	$H8_DeltaShift
-HO2'	HO2' (A, C, G, U)	$HO2p_DeltaShift
-N1	N1 (A, C, G, U)	$N1_DeltaShift
-N2	N2 (G)	$N2_DeltaShift
-N3	N3 (A, C, U)	$N3_DeltaShift
-N4	N4 (C)	$N4_DeltaShift
-N6	N6 (A)	$N6_DeltaShift
-N7	N7 (A, G)	$N7_DeltaShift
-N9	N9 (A, G)	$N9_DeltaShift
+All	C1'	$C1p_DeltaShift
+All	C2	$C2_DeltaShift
+All	C2'	$C2p_DeltaShift
+All	C3'	$C3p_DeltaShift
+All	C4	$C4_DeltaShift
+All	C4'	$c4p_DeltaShift
+All	C5	$C5_DeltaShift
+All	C5'	$C5p_DeltaShift
+All	C6	$C6_DeltaShift
+All	C8	$C8_DeltaShift
+All	H1	$H1_DeltaShift
+All	H1'	$H1p_DeltaShift
+All	H2	$H2_DeltaShift
+All	H2'	$H2p_DeltaShift
+All	H21	$H21_DeltaShift
+All	H22	$H22_DeltaShift
+All	H3	$H3_DeltaShift
+All	H3'	$H3p_DeltaShift
+All	H4'	$H4p_DeltaShift
+All	H41	$H41_DeltaShift
+All	H42	$H42_DeltaShift
+All	H5	$H5_DeltaShift
+All	H5'	$H5p_DeltaShift
+All	H5''	$H5pp_DeltaShift
+All	H6	$H6_DeltaShift
+All	H61	$H61_DeltaShift
+All	H62	$H62_DeltaShift
+All	H8	$H8_DeltaShift
+All	HO2'	$HO2p_DeltaShift
+All	N1	$N1_DeltaShift
+All	N2	$N2_DeltaShift
+All	N3	$N3_DeltaShift
+All	N4	$N4_DeltaShift
+All	N6	$N6_DeltaShift
+All	N7	$N7_DeltaShift
+All	N9	$N9_DeltaShift
+
+A	C1'	$C1p_DeltaShift
+A	C2	$C2_DeltaShift
+A	C2'	$C2p_DeltaShift
+A	C3'	$C3p_DeltaShift
+A	C4	$C4_DeltaShift
+A	C4'	$c4p_DeltaShift
+A	C5	$C5_DeltaShift
+A	C5'	$C5p_DeltaShift
+A	C6	$C6_DeltaShift
+A	C8	$C8_DeltaShift
+A	H1'	$H1p_DeltaShift
+A	H2	$H2_DeltaShift
+A	H2'	$H2p_DeltaShift
+A	H3'	$H3p_DeltaShift
+A	H4'	$H4p_DeltaShift
+A	H5'	$H5p_DeltaShift
+A	H5''	$H5pp_DeltaShift
+A	H61	$H61_DeltaShift
+A	H62	$H62_DeltaShift
+A	H8	$H8_DeltaShift
+A	HO2'	$HO2p_DeltaShift
+A	N1	$N1_DeltaShift
+A	N3	$N3_DeltaShift
+A	N6	$N6_DeltaShift
+A	N7	$N7_DeltaShift
+A	N9	$N9_DeltaShift
+
+C	C1'	$C1p_DeltaShift
+C	C2	$C2_DeltaShift
+C	C2'	$C2p_DeltaShift
+C	C3'	$C3p_DeltaShift
+C	C4	$C4_DeltaShift
+C	C4'	$c4p_DeltaShift
+C	C5	$C5_DeltaShift
+C	C5'	$C5p_DeltaShift
+C	C6	$C6_DeltaShift
+C	H1'	$H1p_DeltaShift
+C	H2'	$H2p_DeltaShift
+C	H3'	$H3p_DeltaShift
+C	H4'	$H4p_DeltaShift
+C	H41	$H41_DeltaShift
+C	H42	$H42_DeltaShift
+C	H5	$H5_DeltaShift
+C	H5'	$H5p_DeltaShift
+C	H5''	$H5pp_DeltaShift
+C	H6	$H6_DeltaShift
+C	HO2'	$HO2p_DeltaShift
+C	N1	$N1_DeltaShift
+C	N3	$N3_DeltaShift
+C	N4	$N4_DeltaShift
+
+G	C1'	$C1p_DeltaShift
+G	C2	$C2_DeltaShift
+G	C2'	$C2p_DeltaShift
+G	C3'	$C3p_DeltaShift
+G	C4	$C4_DeltaShift
+G	C4'	$c4p_DeltaShift
+G	C5	$C5_DeltaShift
+G	C5'	$C5p_DeltaShift
+G	C6	$C6_DeltaShift
+G	C8	$C8_DeltaShift
+G	H1	$H1_DeltaShift
+G	H1'	$H1p_DeltaShift
+G	H2'	$H2p_DeltaShift
+G	H21	$H21_DeltaShift
+G	H22	$H22_DeltaShift
+G	H3'	$H3p_DeltaShift
+G	H4'	$H4p_DeltaShift
+G	H5'	$H5p_DeltaShift
+G	H5''	$H5pp_DeltaShift
+G	H8	$H8_DeltaShift
+G	HO2'	$HO2p_DeltaShift
+G	N1	$N1_DeltaShift
+G	N2	$N2_DeltaShift
+G	N7	$N7_DeltaShift
+G	N9	$N9_DeltaShift
+
+U	C1'	$C1p_DeltaShift
+U	C2	$C2_DeltaShift
+U	C2'	$C2p_DeltaShift
+U	C3'	$C3p_DeltaShift
+U	C4	$C4_DeltaShift
+U	C4'	$c4p_DeltaShift
+U	C5	$C5_DeltaShift
+U	C5'	$C5p_DeltaShift
+U	C6	$C6_DeltaShift
+U	H1'	$H1p_DeltaShift
+U	H2'	$H2p_DeltaShift
+U	H3	$H3_DeltaShift
+U	H3'	$H3p_DeltaShift
+U	H4'	$H4p_DeltaShift
+U	H5	$H5_DeltaShift
+U	H5'	$H5p_DeltaShift
+U	H5''	$H5pp_DeltaShift
+U	H6	$H6_DeltaShift
+U	HO2'	$HO2p_DeltaShift
+U	N1	$N1_DeltaShift
+U	N3	$N3_DeltaShift

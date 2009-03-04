@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2009/02/20 22:54:24  wenger
+// RNA visualization now works, using the DNA template; added stub
+// help file for nucleic acid deltashift visualizations.
+//
 // Revision 1.13  2009/02/20 18:41:47  wenger
 // Preliminary version of DNA deltashift session template is now in place
 // (still needs cleanup); Peptide-CGI code uses that session template for
@@ -197,8 +201,8 @@ public class S2DSession {
 	    searchString1 = "15083d1";//TEMPTEMP -- change?
 	    searchString2 = "DNADeltaShift";
 	    replaceString2 = "RNADeltaShift";
-	    searchString3 = "dna_atom_list";
-	    replaceString3 = "rna_atom_list";
+	    searchString3 = "dna_";
+	    replaceString3 = "rna_";
 	    break;
 
 	case S2DUtils.TYPE_CSI:

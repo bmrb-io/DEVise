@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.117  2009/03/04 17:44:36  wenger
+// Added JavaScreen client version to -dev_version output.
+//
 // Revision 1.116  2009/03/04 15:27:20  wenger
 // DNA deltashift data is now working as part of 3D visualizations,
 // just started on RNA, but need to finish other changes to RNA first;
@@ -448,7 +451,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x12"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x13"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
