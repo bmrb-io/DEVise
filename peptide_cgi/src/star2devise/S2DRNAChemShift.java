@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2009/03/04 15:27:20  wenger
+// DNA deltashift data is now working as part of 3D visualizations,
+// just started on RNA, but need to finish other changes to RNA first;
+// made changes to test67* and test68* accordingly.  (Note: highlighing
+// doesn't work right for DNA in 3D visualizations.)
+//
 // Revision 1.5  2009/02/25 21:33:14  wenger
 // Added residue labels to all data that were missing them (in preparation
 // for selection by nucleotide in nucleotide visualizations; also allows
@@ -153,8 +159,42 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 	}
 
 	DataSet[] info = {
-	  new DataSet("C1'", "C1p_DeltaShift")
-	  //TEMPTEMP -- add the rest...
+	  new DataSet("C1'", "C1p_DeltaShift"),
+	  new DataSet("C2", "C2_DeltaShift"),
+	  new DataSet("C2'", "C2p_DeltaShift"),
+	  new DataSet("C3'", "C3p_DeltaShift"),
+	  new DataSet("C4", "C4_DeltaShift"),
+	  new DataSet("C4'", "c4p_DeltaShift"),
+	  new DataSet("C5", "C5_DeltaShift"),
+	  new DataSet("C5'", "C5p_DeltaShift"),
+	  new DataSet("C6", "C6_DeltaShift"),
+	  new DataSet("C8", "C8_DeltaShift"),
+	  new DataSet("H1", "H1_DeltaShift"),
+	  new DataSet("H1'", "H1p_DeltaShift"),
+	  new DataSet("H2", "H2_DeltaShift"),
+	  new DataSet("H2'", "H2p_DeltaShift"),
+	  new DataSet("H21", "H21_DeltaShift"),
+	  new DataSet("H22", "H22_DeltaShift"),
+	  new DataSet("H3", "H3_DeltaShift"),
+	  new DataSet("H3'", "H3p_DeltaShift"),
+	  new DataSet("H4'", "H4p_DeltaShift"),
+	  new DataSet("H41", "H41_DeltaShift"),
+	  new DataSet("H42", "H42_DeltaShift"),
+	  new DataSet("H5", "H5_DeltaShift"),
+	  new DataSet("H5'", "H5p_DeltaShift"),
+	  new DataSet("H5''", "H5pp_DeltaShift"),
+	  new DataSet("H6", "H6_DeltaShift"),
+	  new DataSet("H61", "H61_DeltaShift"),
+	  new DataSet("H62", "H62_DeltaShift"),
+	  new DataSet("H8", "H8_DeltaShift"),
+	  new DataSet("HO2'", "HO2p_DeltaShift"),
+	  new DataSet("N1", "N1_DeltaShift"),
+	  new DataSet("N2", "N2_DeltaShift"),
+	  new DataSet("N3", "N3_DeltaShift"),
+	  new DataSet("N4", "N4_DeltaShift"),
+	  new DataSet("N6", "N6_DeltaShift"),
+	  new DataSet("N7", "N7_DeltaShift"),
+	  new DataSet("N9", "N9_DeltaShift"),
 	};
 
 	for (int index = 0; index < info.length; index++) {
