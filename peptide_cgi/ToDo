@@ -344,6 +344,11 @@ Num Date        Status  Pri     Description
 				when drilling down). (wenger)
 				(Done by wenger, 2/25/09.)
 
+089 3/10/09	OPEN	4	Use PDB IDs for coordinates if the BMRB
+				sequence is any subset of the PDB sequence
+				(instead of the sequence lengths having
+				to match exactly). (See 15603/2K1G.) (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
