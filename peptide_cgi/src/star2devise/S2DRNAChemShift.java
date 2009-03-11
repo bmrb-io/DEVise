@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2009/03/04 20:06:11  wenger
+// Coordinate visualization now works for RNA (also fixed color legend
+// to match Jmol's color for phosphorus).
+//
 // Revision 1.6  2009/03/04 15:27:20  wenger
 // DNA deltashift data is now working as part of 3D visualizations,
 // just started on RNA, but need to finish other changes to RNA first;
@@ -202,7 +206,7 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 	      info[index]._dataName +
 	        " delta chem shift [" + frameIndex + "]", 
 	      dataSource, info[index]._attribute, "bmrb-RNADeltaShift",
-	      "bmrb-RNADeltaShift"));
+	      "bmrb-RNADeltaShift", _entityAssemblyID));
 	}
     }
 

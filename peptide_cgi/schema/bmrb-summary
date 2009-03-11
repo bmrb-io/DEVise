@@ -10,6 +10,10 @@
 type bmrb-summary ascii
 comment #
 whitespace '	'
+
+attr Entity_assembly_name string 30
+attr Entity_assembly_ID int
+
 attr name string 30
 attr data_source string 30
 attr y_attribute string 30

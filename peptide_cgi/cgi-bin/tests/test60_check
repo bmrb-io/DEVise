@@ -196,9 +196,9 @@ set line = "2 179 GLY 7.66 113.37 H N"
 source tests/check4line
 
 set file = "data_dir/4267_2entmd.dat"
-set line = 'HA delta chem shift \[1\]	4267_2entd1	$HA_DeltaShift'
+set line = 'Entity assembly 1	1	HA delta chem shift \[1\]	4267_2entd1	$HA_DeltaShift'
 source tests/check4line
-set line = 'S2 Order Parameters \[2\]	4267_2ento2	$S2order_value'
+set line = 'Entity assembly 2	2	S2 Order Parameters \[2\]	4267_2ento2	$S2order_value'
 source tests/check4line
 
 set file = "data_dir/4267_2entn4.dat"

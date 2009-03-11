@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2008
+// (c) Copyright 2001-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.7.2.3  2008/11/17 19:28:07  wenger
 // Added entity assembly IDs to summary page and specific visualization pages.
 //
@@ -235,7 +238,7 @@ public class S2DCoupling {
 	String dataName = "3JHNHA coupling const [" + frameIndex + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "Coupling_constant_value", "bmrb-CouplingConstant",
-	  "CouplingConstant"));
+	  "CouplingConstant", _entityAssemblyID));
     }
 
     //===================================================================

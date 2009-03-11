@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2008
+// (c) Copyright 2008-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2008/12/01 20:37:53  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.3.2.3  2008/11/17 19:28:07  wenger
 // Added entity assembly IDs to summary page and specific visualization pages.
 //
@@ -191,7 +194,7 @@ public class S2DS2Order {
 	String dataSource = _name + S2DNames.ORDER_SUFFIX + frameIndex;
 	String dataName = "S2 Order Parameters [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "S2order_value", "bmrb-s2", "s2"));
+	  "S2order_value", "bmrb-s2", "s2", _entityAssemblyID));
     }
 
     //===================================================================

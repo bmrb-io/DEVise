@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2009/02/25 21:33:14  wenger
+// Added residue labels to all data that were missing them (in preparation
+// for selection by nucleotide in nucleotide visualizations; also allows
+// user to drill down to see residue label in protein deltashift, CSI,
+// etc., visualizations); changed tests accordingly; also fixed up some
+// tests that weren't checking for entity assembly IDs in data.
+//
 // Revision 1.16  2009/02/19 22:40:41  wenger
 // DNA and RNA deltashift calculations now work (still need to check
 // that all values are correct); added value checks to relevant tests.
@@ -236,8 +243,8 @@ public class S2DChemShift {
       throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShift.S2DChemShift(" + name +
-	      ")");
+	    System.out.println("S2DChemShift.S2DChemShift(" + name + ", " +
+	      entityAssemblyID + ")");
 	}
 
 	_name = name;
@@ -300,7 +307,7 @@ public class S2DChemShift {
 		    dsCount++;
 		    deltashiftWriter.write(_entityAssemblyID + " " +
 		      index + " " +
-		      _deltaShiftResLabels[index] + " " +//TEMPTEMP?
+		      _deltaShiftResLabels[index] + " " +
 		      _haDeltaShifts[index] + " " +
 		      _cDeltaShifts[index] + " " +
 		      _caDeltaShifts[index] + " " +
@@ -421,7 +428,7 @@ public class S2DChemShift {
 
 		    csiWriter.write(_entityAssemblyID + " " +
 		      index + " " +
-		      resLabel + " " +//TEMPTEMP?
+		      resLabel + " " +
 		      haCsi + " " +
 		      cCsi + " " +
 		      caCsi + " " +
@@ -840,20 +847,24 @@ public class S2DChemShift {
 
 	String dataName = "HA delta chem shift [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "HA_DeltaShift", "bmrb-DeltaShift", "DeltaShift"));
+	  dataSource, "HA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
+	  _entityAssemblyID));
 
 	dataName = "C delta chem shift [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "C_DeltaShift", "bmrb-DeltaShift", "DeltaShift"));
+	  dataSource, "C_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
+	  _entityAssemblyID));
 
 	dataName = "CA delta chem shift [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "CA_DeltaShift", "bmrb-DeltaShift", "DeltaShift"));
+	  dataSource, "CA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
+	  _entityAssemblyID));
 
 	if (_hasRealCBShifts) {
 	    dataName = "CB delta chem shift [" + frameIndex + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName,
-	      dataSource, "CB_DeltaShift", "bmrb-DeltaShift", "DeltaShift"));
+	      dataSource, "CB_DeltaShift", "bmrb-DeltaShift",
+	      "DeltaShift", _entityAssemblyID));
 	}
     }
 
@@ -870,25 +881,25 @@ public class S2DChemShift {
 
 	String dataName = "HA CSI [" + frameIndex + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "HA_Csi", "bmrb-Csi", "Csi"));
+	  "HA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
 
 	dataName = "C CSI [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "C_Csi", "bmrb-Csi", "Csi"));
+	  "C_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
 
 	dataName = "CA CSI [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "CA_Csi", "bmrb-Csi", "Csi"));
+	  "CA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
 
 	if (_hasRealCBShifts) {
 	    dataName = "CB CSI [" + frameIndex + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	      "CB_Csi", "bmrb-Csi", "Csi"));
+	      "CB_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
 	}
 
 	dataName = "Consensus CSI [" + frameIndex + ']';
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "Consensus_Csi", "bmrb-Csi", "Csi"));
+	  "Consensus_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
     }
 
     //-------------------------------------------------------------------
@@ -905,15 +916,18 @@ public class S2DChemShift {
 
 	String dataName = "% 1H assign per res [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "assigForH", "bmrb-Percent", "ChemShiftPercentage"));
+	  dataSource, "assigForH", "bmrb-Percent", "ChemShiftPercentage",
+	  _entityAssemblyID));
 
 	dataName = "% 13C assign per res [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "assigForC", "bmrb-Percent", "ChemShiftPercentage"));
+	  dataSource, "assigForC", "bmrb-Percent", "ChemShiftPercentage",
+	  _entityAssemblyID));
 
 	dataName = "% 15N assign per res [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, 
-	  dataSource, "assigForN", "bmrb-Percent", "ChemShiftPercentage"));
+	  dataSource, "assigForN", "bmrb-Percent", "ChemShiftPercentage",
+	  _entityAssemblyID));
     }
 
     //===================================================================

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2007
+// (c) Copyright 2003-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2008/07/23 21:22:30  wenger
+// Fixed bug 061 (problems with 3D data selection view if there are too
+// many data sources); visualization help still needs updates.
+//
 // Revision 1.5  2008/07/02 16:29:19  wenger
 // S2 order parameter visualizations are done and approved by Eldon;
 // tests at least partially updated for S2 order stuff;
@@ -115,7 +119,8 @@ public class S2DSummaryData
 	    writer.write("# Data: summary of available datasets for " +
 	      _name + " 3D visualization\n");
 	    writer.write("# Schema: bmrb-summary\n");
-	    writer.write("# Attributes: name; data_source; y_attribute\n");
+	    writer.write("# Attributes: Entity_assembly_name; " +
+	      "Entity_assembly_ID; name; data_source; y_attribute\n");
             writer.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             writer.write("# Generation date: " +
@@ -125,7 +130,9 @@ public class S2DSummaryData
             for (int index = 0; index < _dataSets.size(); index++) {
                 S2DDatasetInfo info =
 		  (S2DDatasetInfo)_dataSets.elementAt(index);
-                writer.write(info.getName() + "\t" +
+                writer.write(info.getEntityAssemblyName() + "\t" +
+		  info.getEntityAssemblyID() + "\t" +
+		  info.getName() + "\t" +
 		  info.getDataSourceName() + "\t" +
 		  "$" + info.getYAttribute() + "\n");
 	    }

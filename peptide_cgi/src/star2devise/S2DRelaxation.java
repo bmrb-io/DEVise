@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2008
+// (c) Copyright 2001-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.8.2.3  2008/11/17 19:28:07  wenger
 // Added entity assembly IDs to summary page and specific visualization pages.
 //
@@ -252,7 +255,8 @@ public class S2DRelaxation {
 	String dataSource = _name + _suffix + frameIndex;
 	String dataName = _shortName + " [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "relax_value", "bmrb-relax", "relax"));
+	  dataSource, "relax_value", "bmrb-relax", "relax",
+	  _entityAssemblyID));
     }
 
     //===================================================================

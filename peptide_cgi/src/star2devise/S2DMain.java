@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.119  2009/03/04 20:06:11  wenger
+// Coordinate visualization now works for RNA (also fixed color legend
+// to match Jmol's color for phosphorus).
+//
 // Revision 1.118  2009/03/04 18:22:18  wenger
 // Deltashift visualization now works for RNA.
 //
@@ -454,7 +458,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x14"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x15"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

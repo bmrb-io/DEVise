@@ -1,43 +1,54 @@
 echo "Checking output files"
 
-set files = (data_dir/4867ac1.dat \
+set files = ( data_dir/4867ac1.dat \
 	data_dir/4867ac2.dat \
+	data_dir/4867am1.dat \
+	data_dir/4867amac1.dat \
 	data_dir/4867as1.dat \
+	data_dir/4867as2.dat \
 	data_dir/4867c1.dat \
 	data_dir/4867d1.dat \
+	data_dir/4867d2.dat \
 	data_dir/4867hn1.dat \
+	data_dir/4867hn2.dat \
 	data_dir/4867md.dat \
 	data_dir/4867p1.dat \
 	data_dir/4867rc1.dat \
+	data_dir/4867rc2.dat \
 	data_dir/4867rl.dat \
 	html_dir/4867ac1.html \
+	html_dir/4867ac1_large.html \
+	html_dir/4867ac2.html \
+	html_dir/4867ac2_large.html \
+	html_dir/4867am1.html \
+	html_dir/4867am1_large.html \
 	html_dir/4867as1.html \
+	html_dir/4867as1_large.html \
+	html_dir/4867as2.html \
+	html_dir/4867as2_large.html \
 	html_dir/4867c1.html \
+	html_dir/4867c1_large.html \
 	html_dir/4867d1.html \
+	html_dir/4867d1_large.html \
+	html_dir/4867d2.html \
+	html_dir/4867d2_large.html \
 	html_dir/4867hn1.html \
+	html_dir/4867hn1_large.html \
 	html_dir/4867p1.html \
+	html_dir/4867p1_large.html \
 	html_dir/4867y.html \
 	html_dir/4867y_large.html \
 	session_dir/4867ac1.ds \
 	session_dir/4867ac2.ds \
 	session_dir/4867acdd \
+	session_dir/4867am1.ds \
 	session_dir/4867as1.ds \
+	session_dir/4867as2.ds \
 	session_dir/4867c1.ds \
 	session_dir/4867d1.ds \
+	session_dir/4867d2.ds \
 	session_dir/4867hn1.ds \
-	session_dir/4867p1.ds \
-	data_dir/4867am1.dat \
-	data_dir/4867amac1.dat \
-	html_dir/4867am1.html \
-	session_dir/4867am1.ds \
-	html_dir/4867ac1_large.html \
-	html_dir/4867ac2_large.html \
-	html_dir/4867am1_large.html \
-	html_dir/4867as1_large.html \
-	html_dir/4867c1_large.html \
-	html_dir/4867d1_large.html \
-	html_dir/4867hn1_large.html \
-	html_dir/4867p1_large.html)
+	session_dir/4867p1.ds )
 
 foreach file ($files)
   if (! -f $file) then
@@ -65,9 +76,11 @@ set line = "2 175 GLY -0.26 0.0 -1.0 0.0"
 source tests/check4line
 
 set file = "data_dir/4867md.dat"
-set line = 'HA delta chem shift \[1\]	4867d1	$HA_DeltaShift'
+set line = 'Entity assembly 2	2	HA delta chem shift \[1\]	4867d1	$HA_DeltaShift'
 source tests/check4line
-set line = '% 15N assign per res \[1\]	4867p1	$assigForN'
+set line = 'Entity assembly 2	2	% 15N assign per res \[1\]	4867p1	$assigForN'
+source tests/check4line
+set line = 'Entity assembly 1	1	N9 delta chem shift \[2\]	4867d2	$N9_DeltaShift'
 source tests/check4line
 
 set file = "data_dir/4867hn1.dat"

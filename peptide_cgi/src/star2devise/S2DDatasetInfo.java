@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2007
+// (c) Copyright 2002-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/20 20:26:07  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 20:23:10  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -61,13 +66,16 @@ public class S2DDatasetInfo
     private String _yAttribute;
     private String _schemaFile;
     private String _schemaType;
+    private String _entityAssemblyName;
+    private int _entityAssemblyID;
 
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
     public S2DDatasetInfo(String name, String dataSourceName,
-      String yAttribute, String schemaFile, String schemaType)
+      String yAttribute, String schemaFile, String schemaType,
+        int entityAssemblyID)
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DDatasetInfo.S2DDataSetInfo(" + name +
@@ -79,6 +87,8 @@ public class S2DDatasetInfo
 	_yAttribute = yAttribute;
 	_schemaFile = schemaFile;
 	_schemaType = schemaType;
+	_entityAssemblyName = "Entity assembly " + entityAssemblyID;
+	_entityAssemblyID = entityAssemblyID;
     }
 
     //-------------------------------------------------------------------
@@ -95,6 +105,12 @@ public class S2DDatasetInfo
 
     //-------------------------------------------------------------------
     public String getSchemaType() { return _schemaType; }
+
+    //-------------------------------------------------------------------
+    public String getEntityAssemblyName() { return _entityAssemblyName; }
+
+    //-------------------------------------------------------------------
+    public int getEntityAssemblyID() { return _entityAssemblyID; }
 
     //===================================================================
     // PRIVATE METHODS

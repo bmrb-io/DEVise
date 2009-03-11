@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2009/03/04 15:27:20  wenger
+// DNA deltashift data is now working as part of 3D visualizations,
+// just started on RNA, but need to finish other changes to RNA first;
+// made changes to test67* and test68* accordingly.  (Note: highlighing
+// doesn't work right for DNA in 3D visualizations.)
+//
 // Revision 1.5  2009/02/25 21:33:14  wenger
 // Added residue labels to all data that were missing them (in preparation
 // for selection by nucleotide in nucleotide visualizations; also allows
@@ -201,7 +207,7 @@ public class S2DDNAChemShift extends S2DNAChemShift {
 	      info[index]._dataName +
 	        " delta chem shift [" + frameIndex + "]", 
 	      dataSource, info[index]._attribute, "bmrb-DNADeltaShift",
-	      "bmrb-DNADeltaShift"));
+	      "bmrb-DNADeltaShift", _entityAssemblyID));
 	}
     }
 
