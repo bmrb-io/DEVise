@@ -1,0 +1,27 @@
+#! /bin/csh -f
+
+# Test an entry available in 3.1 form that has relaxation and heteronuclear
+# NOE data.
+
+set result = 0
+
+rm -f */15437*
+
+echo -n "Processing NMR-STAR and mmCIF: "
+./s2d -nomail -bmrbid 15437 -force -check_pct -do_pdb 2
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+source tests/test69_check
+
+
+echo -n "Test69 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

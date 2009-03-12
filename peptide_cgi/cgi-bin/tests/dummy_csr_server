@@ -70,6 +70,7 @@ sub ProcessRunFile() {
   my $line = `cat $thisRunFile`;
   chomp $line;
   my @args = split / /, $line;
+  #TEMPTEMP -- don't strip this anymore?
   if (@args[0] eq "-l") {
     shift @args;
   }

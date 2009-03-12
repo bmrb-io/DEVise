@@ -92,6 +92,8 @@ RunTest("test67");
 RunTest("test67_3");
 RunTest("test68");
 RunTest("test68_3");
+RunTest("test69");
+RunTest("test69_3");
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 #TEMP -- 4141 has protein and DNA
