@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2009/03/04 15:27:20  wenger
+// DNA deltashift data is now working as part of 3D visualizations,
+// just started on RNA, but need to finish other changes to RNA first;
+// made changes to test67* and test68* accordingly.  (Note: highlighing
+// doesn't work right for DNA in 3D visualizations.)
+//
 // Revision 1.20  2009/02/18 18:10:50  wenger
 // Fixed bug 065 (don't process non-polymer entities).
 //
@@ -509,6 +515,31 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public int getPolymerType(SaveFrameNode entityFrame)
     {
     	return S2DResidues.POLYMER_TYPE_NONE;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Get the polymer type referred to by the given data frame/entity ID.
+     * @param The data save frame (needed for 2.1 only).
+     * @param The entity ID (needed for 3.x only).
+     * @return The polymer type (see S2DResidues.POLYMER_TYPE*).
+     */
+    public int getDataPolymerType(SaveFrameNode dataFrame, String entityID)
+    {
+        int result = S2DResidues.POLYMER_TYPE_UNKNOWN;
+
+	try {
+            SaveFrameNode compFrame = getEntityFrame(dataFrame, entityID);
+            result = getPolymerType(compFrame);
+
+	} catch (S2DException ex) {
+	    if (doDebugOutput(11)) {
+	        System.err.println("S2DException finding data polymer type: " +
+	          ex.toString());
+	    }
+	}
+
+        return result;
     }
 
     // ----------------------------------------------------------------------

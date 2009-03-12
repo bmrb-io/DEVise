@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2009/03/11 19:53:15  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.7  2009/03/04 20:06:11  wenger
 // Coordinate visualization now works for RNA (also fixed color legend
 // to match Jmol's color for phosphorus).
@@ -206,7 +212,8 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 	      info[index]._dataName +
 	        " delta chem shift [" + frameIndex + "]", 
 	      dataSource, info[index]._attribute, "bmrb-RNADeltaShift",
-	      "bmrb-RNADeltaShift", _entityAssemblyID));
+	      "bmrb-RNADeltaShift", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_RNA));
 	}
     }
 

@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2009/03/11 19:53:14  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.17  2009/02/25 21:33:14  wenger
 // Added residue labels to all data that were missing them (in preparation
 // for selection by nucleotide in nucleotide visualizations; also allows
@@ -848,23 +854,24 @@ public class S2DChemShift {
 	String dataName = "HA delta chem shift [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "HA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	  _entityAssemblyID));
+	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	dataName = "C delta chem shift [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "C_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	  _entityAssemblyID));
+	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	dataName = "CA delta chem shift [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "CA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	  _entityAssemblyID));
+	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	if (_hasRealCBShifts) {
 	    dataName = "CB delta chem shift [" + frameIndex + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName,
 	      dataSource, "CB_DeltaShift", "bmrb-DeltaShift",
-	      "DeltaShift", _entityAssemblyID));
+	      "DeltaShift", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_PROTEIN));
 	}
     }
 
@@ -881,25 +888,30 @@ public class S2DChemShift {
 
 	String dataName = "HA CSI [" + frameIndex + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "HA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
+	  "HA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	  S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	dataName = "C CSI [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "C_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
+	  "C_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	  S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	dataName = "CA CSI [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "CA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
+	  "CA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	  S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	if (_hasRealCBShifts) {
 	    dataName = "CB CSI [" + frameIndex + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	      "CB_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
+	      "CB_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_PROTEIN));
 	}
 
 	dataName = "Consensus CSI [" + frameIndex + ']';
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "Consensus_Csi", "bmrb-Csi", "Csi", _entityAssemblyID));
+	  "Consensus_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	  S2DResidues.POLYMER_TYPE_PROTEIN));
     }
 
     //-------------------------------------------------------------------
@@ -917,17 +929,17 @@ public class S2DChemShift {
 	String dataName = "% 1H assign per res [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "assigForH", "bmrb-Percent", "ChemShiftPercentage",
-	  _entityAssemblyID));
+	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	dataName = "% 13C assign per res [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "assigForC", "bmrb-Percent", "ChemShiftPercentage",
-	  _entityAssemblyID));
+	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	dataName = "% 15N assign per res [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, 
 	  dataSource, "assigForN", "bmrb-Percent", "ChemShiftPercentage",
-	  _entityAssemblyID));
+	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
     }
 
     //===================================================================

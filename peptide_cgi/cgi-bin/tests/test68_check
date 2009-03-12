@@ -139,8 +139,8 @@ source tests/check4line
 
 set file = "data_dir/15083md.dat"
 set attr = '$C1p_DeltaShift'
-set line = "Entity assembly 1	1	C1' delta chem shift \[1\]	15083d1	$attr"
+set line = "EA 1 (DNA)	1	C1' delta chem shift \[1\]	15083d1	$attr"
 source tests/check4line
 set attr = '$assigForN'
-set line = "Entity assembly 3	3	% 15N assign per res \[3\]	15083p3	$attr"
+set line = "EA 3 (polypeptide(L))	3	% 15N assign per res \[3\]	15083p3	$attr"
 source tests/check4line

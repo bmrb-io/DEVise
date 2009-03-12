@@ -65,8 +65,8 @@ source tests/check4line
 
 set file = "data_dir/15080md.dat"
 set attr = '$C1p_DeltaShift'
-set line = "Entity assembly 1	1	C1' delta chem shift \[1\]	15080d1	$attr"
+set line = "EA 1 (RNA)	1	C1' delta chem shift \[1\]	15080d1	$attr"
 source tests/check4line
 set attr = '$N9_DeltaShift'
-set line = "Entity assembly 1	1	N9 delta chem shift \[1\]	15080d1	$attr"
+set line = "EA 1 (RNA)	1	N9 delta chem shift \[1\]	15080d1	$attr"
 source tests/check4line

@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2009/03/11 19:53:14  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.6  2009/03/04 15:27:20  wenger
 // DNA deltashift data is now working as part of 3D visualizations,
 // just started on RNA, but need to finish other changes to RNA first;
@@ -207,7 +213,8 @@ public class S2DDNAChemShift extends S2DNAChemShift {
 	      info[index]._dataName +
 	        " delta chem shift [" + frameIndex + "]", 
 	      dataSource, info[index]._attribute, "bmrb-DNADeltaShift",
-	      "bmrb-DNADeltaShift", _entityAssemblyID));
+	      "bmrb-DNADeltaShift", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_DNA));
 	}
     }
 

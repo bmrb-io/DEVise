@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2009/03/11 19:53:15  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.9  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -249,14 +255,15 @@ public class S2DRelaxation {
      * @param The data set list.
      * @param The frame index.
      */
-    public void addRelaxationData(Vector dataSets, int frameIndex)
+    public void addRelaxationData(Vector dataSets, int frameIndex,
+      int polymerType)
     {
         // Note: attribute names must match the bmrb-relax schema.
 	String dataSource = _name + _suffix + frameIndex;
 	String dataName = _shortName + " [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "relax_value", "bmrb-relax", "relax",
-	  _entityAssemblyID));
+	  _entityAssemblyID, polymerType));
     }
 
     //===================================================================

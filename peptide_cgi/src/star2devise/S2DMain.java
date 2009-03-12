@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.120  2009/03/11 19:53:15  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.119  2009/03/04 20:06:11  wenger
 // Coordinate visualization now works for RNA (also fixed color legend
 // to match Jmol's color for phosphorus).
@@ -2756,7 +2762,9 @@ TEMP*/
 
 	try {
 	    relaxation.writeRelaxation(frameIndex);
-	    relaxation.addRelaxationData(_dataSets, frameIndex);
+	    String entityID = star.entAssemID2entID(entityAssemblyID);
+	    relaxation.addRelaxationData(_dataSets, frameIndex,
+	      star.getDataPolymerType(frame, entityID));
 	} finally {
 	    _summary.endFrame();
 	}
@@ -2830,7 +2838,9 @@ TEMP*/
 
 	try {
 	    relaxation.writeRelaxation(frameIndex);
-	    relaxation.addRelaxationData(_dataSets, frameIndex);
+	    String entityID = star.entAssemID2entID(entityAssemblyID);
+	    relaxation.addRelaxationData(_dataSets, frameIndex,
+	      star.getDataPolymerType(frame, entityID));
 	} finally {
 	    _summary.endFrame();
 	}
@@ -2925,7 +2935,9 @@ TEMP*/
 
 	try {
 	    coupling.writeCoupling(frameIndex);
-	    coupling.addCouplingData(_dataSets, frameIndex);
+	    String entityID = star.entAssemID2entID(entityAssemblyID);
+	    coupling.addCouplingData(_dataSets, frameIndex,
+	      star.getDataPolymerType(frame, entityID));
 	} finally {
 	    _summary.endFrame();
 	}
@@ -3000,7 +3012,9 @@ TEMP*/
 
 	try {
 	    hetNOE.writeHetNOE(frameIndex);
-	    hetNOE.addHetNOEData(_dataSets, frameIndex);
+	    String entityID = star.entAssemID2entID(entityAssemblyID);
+	    hetNOE.addHetNOEData(_dataSets, frameIndex,
+	      star.getDataPolymerType(frame, entityID));
 	} finally {
 	    _summary.endFrame();
 	}
@@ -3071,7 +3085,9 @@ TEMP*/
 
 	try {
 	    s2Order.writeS2Order(frameIndex);
-	    s2Order.addS2Order(_dataSets, frameIndex);
+	    String entityID = star.entAssemID2entID(entityAssemblyID);
+	    s2Order.addS2Order(_dataSets, frameIndex,
+	      star.getDataPolymerType(frame, entityID));
 	} finally {
 	    _summary.endFrame();
 	}

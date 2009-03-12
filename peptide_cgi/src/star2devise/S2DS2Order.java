@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2009/03/11 19:53:15  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.4  2008/12/01 20:37:53  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -188,13 +194,15 @@ public class S2DS2Order {
      * @param The data set list.
      * @param The frame index.
      */
-    public void addS2Order(Vector dataSets, int frameIndex)
+    public void addS2Order(Vector dataSets, int frameIndex,
+      int polymerType)
     {
         // Note: attribute names must match the bmrb-s2order schema.
 	String dataSource = _name + S2DNames.ORDER_SUFFIX + frameIndex;
 	String dataName = "S2 Order Parameters [" + frameIndex + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "S2order_value", "bmrb-s2", "s2", _entityAssemblyID));
+	  "S2order_value", "bmrb-s2", "s2", _entityAssemblyID,
+	  polymerType));
     }
 
     //===================================================================

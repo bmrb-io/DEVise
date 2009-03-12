@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2009/02/19 22:40:42  wenger
+// DNA and RNA deltashift calculations now work (still need to check
+// that all values are correct); added value checks to relevant tests.
+//
 // Revision 1.14  2009/02/18 18:10:50  wenger
 // Fixed bug 065 (don't process non-polymer entities).
 //
@@ -307,7 +311,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
 	boolean result = false;
 
-	Integer polymerType = (Integer) _framePolymerType.get(entityID);
+	Integer polymerType = (Integer)_framePolymerType.get(entityID);
 	if (polymerType != null) {
 	    result = (polymerType.intValue() ==
 	      S2DResidues.POLYMER_TYPE_PROTEIN ||
@@ -336,7 +340,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
 	boolean result = false;
 
-	Integer polymerType = (Integer) _framePolymerType.get(entityID);
+	Integer polymerType = (Integer)_framePolymerType.get(entityID);
 	if (polymerType != null) {
 	    result = (polymerType.intValue() !=
 	      S2DResidues.POLYMER_TYPE_NONE);

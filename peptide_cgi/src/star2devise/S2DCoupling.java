@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2009/03/11 19:53:14  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.8  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -230,7 +236,8 @@ public class S2DCoupling {
      * @param The data set list.
      * @param The frame index.
      */
-    public void addCouplingData(Vector dataSets, int frameIndex)
+    public void addCouplingData(Vector dataSets, int frameIndex,
+      int polymerType)
     {
         // Note: attribute names must match the bmrb-CouplingConstant schema.
 	String dataSource = _name + S2DNames.COUPLING_SUFFIX +
@@ -238,7 +245,7 @@ public class S2DCoupling {
 	String dataName = "3JHNHA coupling const [" + frameIndex + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "Coupling_constant_value", "bmrb-CouplingConstant",
-	  "CouplingConstant", _entityAssemblyID));
+	  "CouplingConstant", _entityAssemblyID, polymerType));
     }
 
     //===================================================================

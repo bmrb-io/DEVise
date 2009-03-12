@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/02/19 22:40:42  wenger
+// DNA and RNA deltashift calculations now work (still need to check
+// that all values are correct); added value checks to relevant tests.
+//
 // Revision 1.12  2009/02/18 18:10:50  wenger
 // Fixed bug 065 (don't process non-polymer entities).
 //
@@ -368,6 +372,43 @@ public class S2DResidues {
 	}
 
 	return ds;
+    }
+
+    /** -----------------------------------------------------------------
+     * Convert an integer polymer type (see POLYMER_TYPE_*) into the
+     * corresponding string.
+     * @param The polymer type value.
+     * @return The name of the polymer type (string).
+     */
+    public static String getPolymerTypeName(int polymerType)
+    {
+	String result = "unknown";
+
+    	switch (polymerType) {
+	case POLYMER_TYPE_NONE:
+	    result = "not a polymer";
+	    break;
+
+        case POLYMER_TYPE_PROTEIN:
+	    result = "polypeptide(L)";
+	    break;
+
+        case POLYMER_TYPE_DNA:
+	    result = "DNA";
+	    break;
+
+        case POLYMER_TYPE_RNA:
+	    result = "RNA";
+	    break;
+
+        case POLYMER_TYPE_UNKNOWN:
+	default:
+	    // No op
+	    break;
+
+	}
+
+	return result;
     }
 
     //===================================================================

@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2009/03/11 19:53:14  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.3  2007/08/20 20:26:07  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -75,7 +81,7 @@ public class S2DDatasetInfo
     //-------------------------------------------------------------------
     public S2DDatasetInfo(String name, String dataSourceName,
       String yAttribute, String schemaFile, String schemaType,
-        int entityAssemblyID)
+        int entityAssemblyID, int polymerType)
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DDatasetInfo.S2DDataSetInfo(" + name +
@@ -87,7 +93,10 @@ public class S2DDatasetInfo
 	_yAttribute = yAttribute;
 	_schemaFile = schemaFile;
 	_schemaType = schemaType;
-	_entityAssemblyName = "Entity assembly " + entityAssemblyID;
+	String polymerTypeName = 
+	  S2DResidues.getPolymerTypeName(polymerType);
+	_entityAssemblyName = "EA " + entityAssemblyID + " (" +
+	  polymerTypeName + ")";
 	_entityAssemblyID = entityAssemblyID;
     }
 

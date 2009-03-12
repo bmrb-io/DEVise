@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2009/03/11 19:53:14  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.9  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -223,14 +229,16 @@ public class S2DHetNOE {
      * @param The data set list.
      * @param The frame index.
      */
-    public void addHetNOEData(Vector dataSets, int frameIndex)
+    public void addHetNOEData(Vector dataSets, int frameIndex,
+      int polymerType)
     {
         // Note: attribute names must match the bmrb-NOE schema.
 	String dataSource = _name +
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex;
 	String dataName = _shortName + " [" + frameIndex + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "NOE_value", "bmrb-NOE", "NOE", _entityAssemblyID));
+	  "NOE_value", "bmrb-NOE", "NOE", _entityAssemblyID,
+	  polymerType));
     }
 
     //===================================================================
