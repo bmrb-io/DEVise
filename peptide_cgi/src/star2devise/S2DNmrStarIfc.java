@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.21  2009/03/04 15:27:20  wenger
 // DNA deltashift data is now working as part of 3D visualizations,
 // just started on RNA, but need to finish other changes to RNA first;
@@ -529,6 +533,9 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
         int result = S2DResidues.POLYMER_TYPE_UNKNOWN;
 
 	try {
+	    //TEMP -- should probably throw an exeption if entityID is
+	    // blank and there is more than one entity in this entry
+	    if (entityID.equals("")) entityID = "1";
             SaveFrameNode compFrame = getEntityFrame(dataFrame, entityID);
             result = getPolymerType(compFrame);
 
@@ -797,7 +804,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public SaveFrameNode getEntityFrame() throws S2DException
     {
         if (doDebugOutput(12)) {
-            System.out.println("  S2DNmrStar21Ifc.getEntityFrame()");
+            System.out.println("  S2DNmrStarIfc.getEntityFrame()");
         }
 
         SaveFrameNode result = getOneDataFrameByCat(
@@ -805,7 +812,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
         if (doDebugOutput(12)) {
             System.out.println(
-	      "  S2DNmrStar21Ifc.getEntityFrame() returns " +
+	      "  S2DNmrStarIfc.getEntityFrame() returns " +
 	      result.getLabel());
         }
 

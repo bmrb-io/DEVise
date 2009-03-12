@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2009/02/19 22:40:41  wenger
+// DNA and RNA deltashift calculations now work (still need to check
+// that all values are correct); added value checks to relevant tests.
+//
 // Revision 1.14  2009/02/18 18:10:49  wenger
 // Fixed bug 065 (don't process non-polymer entities).
 //
@@ -353,7 +357,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar21Ifc.getEntityFrame(" +
-	      frame.getLabel() + " (" + entityID + "))");
+	      getFrameName(frame) + " (" + entityID + "))");
         }
 
         SaveFrameNode result = null;

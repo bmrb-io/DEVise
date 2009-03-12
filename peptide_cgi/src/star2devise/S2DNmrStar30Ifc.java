@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.15  2009/02/19 22:40:42  wenger
 // DNA and RNA deltashift calculations now work (still need to check
 // that all values are correct); added value checks to relevant tests.
@@ -409,7 +413,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStar30.getEntityFrame(" +
-	      getFrameName(frame) + ")");
+	      getFrameName(frame) + " (" + entityID + "))");
         }
 
         SaveFrameNode result = null;
@@ -513,6 +517,8 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	if (entAssemIDStr.equals("")) {
 	    // This is so things can work without entity assembly IDs
 	    // for visualization server uploads.
+	    //TEMP -- hmm -- we should probably throw an exception here if
+	    // there is more than one entity assembly...
 	    entityAssemblyID = 1;
 
 	} else {
