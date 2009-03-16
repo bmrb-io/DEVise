@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.8  2009/03/11 19:53:15  wenger
 // Implemented two-stage selection of data sets in coordinate
 // visualizations (select entity assembly, then select data set); updated
@@ -208,12 +212,14 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 	};
 
 	for (int index = 0; index < info.length; index++) {
-	    dataSets.addElement(new S2DDatasetInfo(
-	      info[index]._dataName +
-	        " delta chem shift [" + frameIndex + "]", 
-	      dataSource, info[index]._attribute, "bmrb-RNADeltaShift",
-	      "bmrb-RNADeltaShift", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_RNA));
+	    if (_atomSet.contains(info[index]._dataName)) {
+	        dataSets.addElement(new S2DDatasetInfo(
+	          info[index]._dataName +
+	            " delta chem shift [" + frameIndex + "]", 
+	          dataSource, info[index]._attribute, "bmrb-RNADeltaShift",
+	          "bmrb-RNADeltaShift", _entityAssemblyID,
+	          S2DResidues.POLYMER_TYPE_RNA));
+	    }
 	}
     }
 

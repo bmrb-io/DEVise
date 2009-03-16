@@ -80,7 +80,7 @@ set line = 'EA 2 (polypeptide(L))	2	HA delta chem shift \[1\]	4867d1	$HA_DeltaSh
 source tests/check4line
 set line = 'EA 2 (polypeptide(L))	2	% 15N assign per res \[1\]	4867p1	$assigForN'
 source tests/check4line
-set line = 'EA 1 (RNA)	1	N9 delta chem shift \[2\]	4867d2	$N9_DeltaShift'
+set line = 'EA 1 (RNA)	1	N3 delta chem shift \[2\]	4867d2	$N3_DeltaShift'
 source tests/check4line
 
 set file = "data_dir/4867hn1.dat"

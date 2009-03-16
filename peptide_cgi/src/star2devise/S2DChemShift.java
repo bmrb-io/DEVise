@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.18  2009/03/11 19:53:14  wenger
 // Implemented two-stage selection of data sets in coordinate
 // visualizations (select entity assembly, then select data set); updated
@@ -193,6 +197,10 @@ public class S2DChemShift {
     private boolean _hasRealCBShifts;
 
     protected String _info;
+
+    // The set of atoms that are available for this frame/entity.
+    protected HashSet _atomSet = new HashSet();
+
 
     //===================================================================
     // PUBLIC METHODS
@@ -851,20 +859,27 @@ public class S2DChemShift {
 	String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX +
 	  frameIndex;
 
-	String dataName = "HA delta chem shift [" + frameIndex + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "HA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	String dataName;
+	if (_atomSet.contains("HA")) {
+	    dataName = "HA delta chem shift [" + frameIndex + "]";
+	    dataSets.addElement(new S2DDatasetInfo(dataName,
+	      dataSource, "HA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
+	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+        }
 
-	dataName = "C delta chem shift [" + frameIndex + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "C_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	if (_atomSet.contains("C")) {
+	    dataName = "C delta chem shift [" + frameIndex + "]";
+	    dataSets.addElement(new S2DDatasetInfo(dataName,
+	      dataSource, "C_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
+	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+        }
 
-	dataName = "CA delta chem shift [" + frameIndex + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "CA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	if (_atomSet.contains("CA")) {
+	    dataName = "CA delta chem shift [" + frameIndex + "]";
+	    dataSets.addElement(new S2DDatasetInfo(dataName,
+	      dataSource, "CA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
+	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+        }
 
 	if (_hasRealCBShifts) {
 	    dataName = "CB delta chem shift [" + frameIndex + "]";
@@ -886,20 +901,27 @@ public class S2DChemShift {
         // Note: attribute names must match the bmrb-Csi schema.
 	String dataSource = _name + S2DNames.CSI_SUFFIX + frameIndex;
 
-	String dataName = "HA CSI [" + frameIndex + "]";
-        dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "HA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
-	  S2DResidues.POLYMER_TYPE_PROTEIN));
+	String dataName;
+	if (_atomSet.contains("HA")) {
+	    dataName = "HA CSI [" + frameIndex + "]";
+            dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
+	      "HA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_PROTEIN));
+        }
 
-	dataName = "C CSI [" + frameIndex + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "C_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
-	  S2DResidues.POLYMER_TYPE_PROTEIN));
+	if (_atomSet.contains("C")) {
+	    dataName = "C CSI [" + frameIndex + "]";
+	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
+	      "C_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_PROTEIN));
+        }
 
-	dataName = "CA CSI [" + frameIndex + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "CA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
-	  S2DResidues.POLYMER_TYPE_PROTEIN));
+	if (_atomSet.contains("CA")) {
+	    dataName = "CA CSI [" + frameIndex + "]";
+	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
+	      "CA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_PROTEIN));
+        }
 
 	if (_hasRealCBShifts) {
 	    dataName = "CB CSI [" + frameIndex + "]";
@@ -999,6 +1021,7 @@ public class S2DChemShift {
 	    int currResSeqCode = _resSeqCodes[index];
 	    String resLabel = _residueLabels[index];
 	    String atomName = _atomNames[index];
+	    _atomSet.add(atomName);
 	    double chemShift = _chemShiftVals[index];
 
 	    if (currResSeqCode != prevResSeqCode) {

@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2009/03/04 15:27:20  wenger
+// DNA deltashift data is now working as part of 3D visualizations,
+// just started on RNA, but need to finish other changes to RNA first;
+// made changes to test67* and test68* accordingly.  (Note: highlighing
+// doesn't work right for DNA in 3D visualizations.)
+//
 // Revision 1.5  2009/02/25 21:33:14  wenger
 // Added residue labels to all data that were missing them (in preparation
 // for selection by nucleotide in nucleotide visualizations; also allows
@@ -71,6 +77,8 @@ public class S2DNAChemShift extends S2DChemShift {
     // polymer (DNA or RNA) -- set by subclass.
     protected String[] atomNameList;
 
+    // An array (indexed by residue number) holding the delta shift data
+    // we have for each residue.
     protected ResidueInfo[] _deltashiftData;
 
     //===================================================================
@@ -246,6 +254,7 @@ public class S2DNAChemShift extends S2DChemShift {
 	    }
 
 	    String atomName = _atomNames[index];
+	    _atomSet.add(atomName);
 	    double chemShift = _chemShiftVals[index];
 
 	    try {

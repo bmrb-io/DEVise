@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.123  2009/03/16 16:18:29  wenger
+// Data selection cursor is now forced to be something that's available
+// with the currently-selected entity assembly (by using the
+// data_select_fix_cursor).
+//
 // Revision 1.122  2009/03/12 23:02:29  wenger
 // Fixed a problem with the output from test1_3 (polymer type for
 // heteronuclear NOEs showing up as "unknown"), and fixed the checking
@@ -473,7 +478,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x17"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x18"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
