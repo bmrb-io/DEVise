@@ -70,3 +70,13 @@ source tests/check4line
 set attr = '$H8_DeltaShift'
 set line = "EA 1 (RNA)	1	H8 delta chem shift \[1\]	15080d1	$attr"
 source tests/check4line
+
+set file = "session_dir/15080ac1.ds"
+set line = 'DEVise dteInsertCatalogEntry . {"15080ac1" UNIXFILE 15080ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
+source tests/check4line
+set line = 'DEVise dteInsertCatalogEntry . {"15080d1" UNIXFILE 15080d1.dat bmrb-RNADeltaShift $DEVISE_SCHEMA/physical/bmrb-RNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
+source tests/check4line
+set line = 'DEVise setViewHelp {View 1} {Visualization of .*15080 and PDB 2O33'
+source tests/check4line
+set line = 'DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization of .*15080 and PDB 2O33 generated'
+source tests/check4line
