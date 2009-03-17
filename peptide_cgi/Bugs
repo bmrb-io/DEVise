@@ -367,6 +367,10 @@ Num Date        Status  Description
 			set of values rather than the updated values -- Eldon
 			090130.)
 
+080 3/17/09	OPEN	Chemical shift reference links are shown in the
+			summary html page even for entries that have no
+			chemical shift data.  (See 4970.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
