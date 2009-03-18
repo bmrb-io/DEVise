@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.124  2009/03/16 20:33:08  wenger
+// 3D data select view now only shows data that is available for the
+// currently-selected entity assembly ID.
+//
 // Revision 1.123  2009/03/16 16:18:29  wenger
 // Data selection cursor is now forced to be something that's available
 // with the currently-selected entity assembly (by using the
@@ -478,7 +482,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x18"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x19"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

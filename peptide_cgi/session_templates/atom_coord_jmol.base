@@ -57,29 +57,56 @@ DEVise color SessionPalette {#000000000000 black
 DEVise setColorMode 0
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4267ac1" UNIXFILE 4267ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267md" UNIXFILE 4267md.dat bmrb-summary $DEVISE_SCHEMA/physical/bmrb-summary "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267d1" UNIXFILE 4267d1.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267c1" UNIXFILE 4267c1.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267p1" UNIXFILE 4267p1.dat ChemShiftPercentage $DEVISE_SCHEMA/physical/bmrb-Percent "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267t11" UNIXFILE 4267t11.dat relax $DEVISE_SCHEMA/physical/bmrb-relax "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267t12" UNIXFILE 4267t12.dat relax $DEVISE_SCHEMA/physical/bmrb-relax "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267t13" UNIXFILE 4267t13.dat relax $DEVISE_SCHEMA/physical/bmrb-relax "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267t21" UNIXFILE 4267t21.dat relax $DEVISE_SCHEMA/physical/bmrb-relax "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267t22" UNIXFILE 4267t22.dat relax $DEVISE_SCHEMA/physical/bmrb-relax "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267t23" UNIXFILE 4267t23.dat relax $DEVISE_SCHEMA/physical/bmrb-relax "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n1" UNIXFILE 4267n1.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n2" UNIXFILE 4267n2.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n3" UNIXFILE 4267n3.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n4" UNIXFILE 4267n4.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n5" UNIXFILE 4267n5.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n6" UNIXFILE 4267n6.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n7" UNIXFILE 4267n7.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n8" UNIXFILE 4267n8.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267n9" UNIXFILE 4267n9.dat NOE $DEVISE_SCHEMA/physical/bmrb-NOE "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267g1" UNIXFILE 4267g1.dat CouplingConstant $DEVISE_SCHEMA/physical/bmrb-CouplingConstant "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267o1" UNIXFILE 4267o1.dat s2 $DEVISE_SCHEMA/physical/bmrb-s2 "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4267rl" UNIXFILE 4267rl.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083ac1" UNIXFILE 15083ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083md" UNIXFILE 15083md.dat bmrb-summary $DEVISE_SCHEMA/physical/bmrb-summary "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d2" UNIXFILE 15083d2.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d3" UNIXFILE 15083d3.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d3" UNIXFILE 15083d3.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083d3" UNIXFILE 15083d3.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083c3" UNIXFILE 15083c3.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083c3" UNIXFILE 15083c3.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083c3" UNIXFILE 15083c3.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083c3" UNIXFILE 15083c3.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083p3" UNIXFILE 15083p3.dat ChemShiftPercentage $DEVISE_SCHEMA/physical/bmrb-Percent "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083p3" UNIXFILE 15083p3.dat ChemShiftPercentage $DEVISE_SCHEMA/physical/bmrb-Percent "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083p3" UNIXFILE 15083p3.dat ChemShiftPercentage $DEVISE_SCHEMA/physical/bmrb-Percent "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"15083rl" UNIXFILE 15083rl.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096as1" UNIXFILE 4096as1.dat AllShift $DEVISE_SCHEMA/physical/bmrb-AllShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096rc1" UNIXFILE 4096rc1.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResCount "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4096c1" UNIXFILE 4096c1.dat Csi $DEVISE_SCHEMA/physical/bmrb-Csi "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
@@ -91,7 +118,7 @@ DEVise dteInsertCatalogEntry . {"pistachio_at_legend" UNIXFILE pistachio_at_lege
 
 # Create views
 
-# View {ViewUnselectedDataChild} uses mapping {.4267d1#ViewUnselectedDataChild}
+# View {ViewUnselectedDataChild} uses mapping {.15083d1#ViewUnselectedDataChild}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -133,7 +160,7 @@ DEVise setDoHomeOnVisLink {ViewUnselectedDataChild} {1}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewUnselectedDataChild} {1}
 DEVise viewSetUseJmol {ViewUnselectedDataChild} {0}
 
-# View {ViewSelectedDataChild} uses mapping {.4267d1#ViewSelectedDataChild}
+# View {ViewSelectedDataChild} uses mapping {.15083d1#ViewSelectedDataChild}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -172,7 +199,7 @@ DEVise setDoHomeOnVisLink {ViewSelectedDataChild} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewSelectedDataChild} {1}
 DEVise viewSetUseJmol {ViewSelectedDataChild} {0}
 
-# View {ViewDataDotsChild} uses mapping {.4267d1#ViewDataDotsChild}
+# View {ViewDataDotsChild} uses mapping {.15083d1#ViewDataDotsChild}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -211,7 +238,7 @@ DEVise setDoHomeOnVisLink {ViewDataDotsChild} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataDotsChild} {1}
 DEVise viewSetUseJmol {ViewDataDotsChild} {0}
 
-# View {ViewDataValueSelectChild} uses mapping {.4267d1#ViewDataValueSelectChild}
+# View {ViewDataValueSelectChild} uses mapping {.15083d1#ViewDataValueSelectChild}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -250,7 +277,7 @@ DEVise setDoHomeOnVisLink {ViewDataValueSelectChild} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataValueSelectChild} {1}
 DEVise viewSetUseJmol {ViewDataValueSelectChild} {0}
 
-# View {View3DMain} uses mapping {.4267ac1#Atom_coord_y_vs_Atom_coord_x}
+# View {View3DMain} uses mapping {.15083ac1#Atom_coord_y_vs_Atom_coord_x}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -299,7 +326,7 @@ DEVise setDoHomeOnVisLink {View3DMain} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {View3DMain} {1}
 DEVise viewSetUseJmol {View3DMain} {1}
 
-# View {ViewStructSelectSource} uses mapping {.4267ac1#Struct_type_vs_recId 2}
+# View {ViewStructSelectSource} uses mapping {.15083ac1#Struct_type_vs_recId 2}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -338,7 +365,7 @@ DEVise setDoHomeOnVisLink {ViewStructSelectSource} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewStructSelectSource} {1}
 DEVise viewSetUseJmol {ViewStructSelectSource} {0}
 
-# View {ViewResidueSelect1Source} uses mapping {.4267ac1#Residue_seq_code_vs_recId 2}
+# View {ViewResidueSelect1Source} uses mapping {.15083ac1#Residue_seq_code_vs_recId 2}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -377,7 +404,7 @@ DEVise setDoHomeOnVisLink {ViewResidueSelect1Source} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewResidueSelect1Source} {1}
 DEVise viewSetUseJmol {ViewResidueSelect1Source} {0}
 
-# View {ViewDataTypeSelect} uses mapping {.4267md#name_vs_recId}
+# View {ViewDataTypeSelect} uses mapping {.15083md#name_vs_recId}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -418,7 +445,7 @@ DEVise setDoHomeOnVisLink {ViewDataTypeSelect} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataTypeSelect} {1}
 DEVise viewSetUseJmol {ViewDataTypeSelect} {0}
 
-# View {ViewDataDotsParent} uses mapping {.4267md#name_vs_recId 2}
+# View {ViewDataDotsParent} uses mapping {.15083md#name_vs_recId 2}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -457,7 +484,7 @@ DEVise setDoHomeOnVisLink {ViewDataDotsParent} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataDotsParent} {1}
 DEVise viewSetUseJmol {ViewDataDotsParent} {0}
 
-# View {ViewDataXControl} uses mapping {.4267ac1#ViewDataXControl}
+# View {ViewDataXControl} uses mapping {.15083ac1#ViewDataXControl}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -498,7 +525,7 @@ DEVise setDoHomeOnVisLink {ViewDataXControl} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataXControl} {1}
 DEVise viewSetUseJmol {ViewDataXControl} {0}
 
-# View {ViewSelectedDataParent} uses mapping {.4267md#name_vs_recId 3}
+# View {ViewSelectedDataParent} uses mapping {.15083md#name_vs_recId 3}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -537,7 +564,7 @@ DEVise setDoHomeOnVisLink {ViewSelectedDataParent} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewSelectedDataParent} {1}
 DEVise viewSetUseJmol {ViewSelectedDataParent} {0}
 
-# View {ViewUnselectedDataParent} uses mapping {.4267md#name_vs_recId 4}
+# View {ViewUnselectedDataParent} uses mapping {.15083md#name_vs_recId 4}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -579,7 +606,7 @@ DEVise setDoHomeOnVisLink {ViewUnselectedDataParent} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewUnselectedDataParent} {1}
 DEVise viewSetUseJmol {ViewUnselectedDataParent} {0}
 
-# View {ViewDataValueSelectParent} uses mapping {.4267md#name_vs_recId 5}
+# View {ViewDataValueSelectParent} uses mapping {.15083md#name_vs_recId 5}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -618,7 +645,7 @@ DEVise setDoHomeOnVisLink {ViewDataValueSelectParent} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataValueSelectParent} {1}
 DEVise viewSetUseJmol {ViewDataValueSelectParent} {0}
 
-# View {View3DHighlight} uses mapping {.4267rl#View3DHighlight}
+# View {View3DHighlight} uses mapping {.15083rl#View3DHighlight}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -738,7 +765,7 @@ DEVise setDoHomeOnVisLink {View 2} {1}
 DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
 DEVise viewSetUseJmol {View 2} {0}
 
-# View {ViewDataTypeSelect 2} uses mapping {.4267md#name_vs_recId 6}
+# View {ViewDataTypeSelect 2} uses mapping {.15083md#name_vs_recId 6}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -779,7 +806,7 @@ DEVise setDoHomeOnVisLink {ViewDataTypeSelect 2} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataTypeSelect 2} {1}
 DEVise viewSetUseJmol {ViewDataTypeSelect 2} {0}
 
-# View {ViewDataTypeSelect 3} uses mapping {.4267md#name_vs_recId 7}
+# View {ViewDataTypeSelect 3} uses mapping {.15083md#name_vs_recId 7}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -820,7 +847,7 @@ DEVise setDoHomeOnVisLink {ViewDataTypeSelect 3} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataTypeSelect 3} {1}
 DEVise viewSetUseJmol {ViewDataTypeSelect 3} {0}
 
-# View {ViewDataTypeSelect 4} uses mapping {.4267md#name_vs_recId 8}
+# View {ViewDataTypeSelect 4} uses mapping {.15083md#name_vs_recId 8}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -861,7 +888,7 @@ DEVise setDoHomeOnVisLink {ViewDataTypeSelect 4} {0}
 DEVise setDoHomeOnVisLinkIfInvisible {ViewDataTypeSelect 4} {1}
 DEVise viewSetUseJmol {ViewDataTypeSelect 4} {0}
 
-# View {ViewDataTypeSelect 5} uses mapping {.4267md#name_vs_recId 9}
+# View {ViewDataTypeSelect 5} uses mapping {.15083md#name_vs_recId 9}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
@@ -915,123 +942,123 @@ DEVise createMappingClass {color_str_vs_recId}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4267ac1 .4267ac1#Atom_coord_y_vs_Atom_coord_x {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} {$Atom_type} 0.5 0 0 4 1 1 {$Atom_number} {$Atom_name} {} {$Residue_seq_code} {$Residue_label} {$Atom_type} {$Struct_type} {} {} {} {} {$Entity_assembly_ID} {}
-DEVise setPixelWidth {.4267ac1#Atom_coord_y_vs_Atom_coord_x} 1
-DEVise setMappingColors {.4267ac1#Atom_coord_y_vs_Atom_coord_x} {$Atom_type} {$Atom_type} {0}
+DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .15083ac1 .15083ac1#Atom_coord_y_vs_Atom_coord_x {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} {$Atom_type} 0.5 0 0 4 1 1 {$Atom_number} {$Atom_name} {} {$Residue_seq_code} {$Residue_label} {$Atom_type} {$Struct_type} {} {} {} {} {$Entity_assembly_ID} {}
+DEVise setPixelWidth {.15083ac1#Atom_coord_y_vs_Atom_coord_x} 1
+DEVise setMappingColors {.15083ac1#Atom_coord_y_vs_Atom_coord_x} {$Atom_type} {$Atom_type} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4267rl .4267rl#View3DHighlight {} {$Residue_seq_code} 0 0 7 0.5 0 0 4 1 1 1 {"X"} {} {$Residue_seq_code} {$Residue_label} {"X"} {} {} {} {} {} {$Entity_assembly_ID} {$Residue_seq_code}
-DEVise setPixelWidth {.4267rl#View3DHighlight} 1
-DEVise setMappingColors {.4267rl#View3DHighlight} {7} {7} {0}
+DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .15083rl .15083rl#View3DHighlight {} {$Residue_seq_code} 0 0 7 0.5 0 0 4 1 1 1 {"X"} {} {$Residue_seq_code} {$Residue_label} {"X"} {} {} {} {} {} {$Entity_assembly_ID} {$Residue_seq_code}
+DEVise setPixelWidth {.15083rl#View3DHighlight} 1
+DEVise setMappingColors {.15083rl#View3DHighlight} {7} {7} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Struct_type_vs_recId} .4267ac1 .4267ac1#Struct_type_vs_recId {} 0 {$Struct_type} {} 7 0.020 0 0 16 {$Struct_type} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267ac1#Struct_type_vs_recId} 1
-DEVise setMappingColors {.4267ac1#Struct_type_vs_recId} {7} {4} {0}
+DEVise create {mapping} {Struct_type_vs_recId} .15083ac1 .15083ac1#Struct_type_vs_recId {} 0 {$Struct_type} {} 7 0.020 0 0 16 {$Struct_type} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083ac1#Struct_type_vs_recId} 1
+DEVise setMappingColors {.15083ac1#Struct_type_vs_recId} {7} {4} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Struct_type_vs_recId} .4267ac1 {.4267ac1#Struct_type_vs_recId 2} {} 0 {$Struct_type} {} 7 1 0 0 0 0.5 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267ac1#Struct_type_vs_recId 2} 1
-DEVise setMappingColors {.4267ac1#Struct_type_vs_recId 2} {7} {7} {0}
+DEVise create {mapping} {Struct_type_vs_recId} .15083ac1 {.15083ac1#Struct_type_vs_recId 2} {} 0 {$Struct_type} {} 7 1 0 0 0 0.5 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083ac1#Struct_type_vs_recId 2} 1
+DEVise setMappingColors {.15083ac1#Struct_type_vs_recId 2} {7} {7} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Residue_seq_code_vs_recId} .4267ac1 {.4267ac1#Residue_seq_code_vs_recId 2} {} 0 {-$Residue_seq_code} {} 7 0.5 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267ac1#Residue_seq_code_vs_recId 2} 1
-DEVise setMappingColors {.4267ac1#Residue_seq_code_vs_recId 2} {7} {7} {0}
+DEVise create {mapping} {Residue_seq_code_vs_recId} .15083ac1 {.15083ac1#Residue_seq_code_vs_recId 2} {} 0 {-$Residue_seq_code} {} 7 0.5 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083ac1#Residue_seq_code_vs_recId 2} 1
+DEVise setMappingColors {.15083ac1#Residue_seq_code_vs_recId 2} {7} {7} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Residue_seq_code_vs_recId} .4267ac1 {.4267ac1#Residue_seq_code_vs_recId 7} {} -1 {-$Residue_seq_code} {} 5 1 0 0 0 10 1 {} {} {} {} {} {} {} {} {} {} {} {} {$Residue_seq_code}
-DEVise setPixelWidth {.4267ac1#Residue_seq_code_vs_recId 7} 1
-DEVise setMappingColors {.4267ac1#Residue_seq_code_vs_recId 7} {5} {23} {0}
+DEVise create {mapping} {Residue_seq_code_vs_recId} .15083ac1 {.15083ac1#Residue_seq_code_vs_recId 7} {} -1 {-$Residue_seq_code} {} 5 1 0 0 0 10 1 {} {} {} {} {} {} {} {} {} {} {} {} {$Residue_seq_code}
+DEVise setPixelWidth {.15083ac1#Residue_seq_code_vs_recId 7} 1
+DEVise setMappingColors {.15083ac1#Residue_seq_code_vs_recId 7} {5} {23} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Residue_seq_code_vs_recId} .4267ac1 .4267ac1#ViewDataXControl {} {$Residue_seq_code} 0 {} 36 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267ac1#ViewDataXControl} 1
-DEVise setMappingColors {.4267ac1#ViewDataXControl} {36} {1} {0}
+DEVise create {mapping} {Residue_seq_code_vs_recId} .15083ac1 .15083ac1#ViewDataXControl {} {$Residue_seq_code} 0 {} 36 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083ac1#ViewDataXControl} 1
+DEVise setMappingColors {.15083ac1#ViewDataXControl} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md .4267md#name_vs_recId {} 0 {-$recId} {} 36 0.020 0 0 16 {$name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId} 1
-DEVise setMappingColors {.4267md#name_vs_recId} {36} {1} {0}
+DEVise create {mapping} {name_vs_recId} .15083md .15083md#name_vs_recId {} 0 {-$recId} {} 36 0.020 0 0 16 {$name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId} 1
+DEVise setMappingColors {.15083md#name_vs_recId} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md {.4267md#name_vs_recId 2} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewDataDotsChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId 2} 1
-DEVise setMappingColors {.4267md#name_vs_recId 2} {0} {37} {37}
+DEVise create {mapping} {name_vs_recId} .15083md {.15083md#name_vs_recId 2} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewDataDotsChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId 2} 1
+DEVise setMappingColors {.15083md#name_vs_recId 2} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md {.4267md#name_vs_recId 3} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewSelectedDataChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId 3} 1
-DEVise setMappingColors {.4267md#name_vs_recId 3} {0} {37} {37}
+DEVise create {mapping} {name_vs_recId} .15083md {.15083md#name_vs_recId 3} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewSelectedDataChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId 3} 1
+DEVise setMappingColors {.15083md#name_vs_recId 3} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md {.4267md#name_vs_recId 4} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewUnselectedDataChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId 4} 1
-DEVise setMappingColors {.4267md#name_vs_recId 4} {0} {37} {37}
+DEVise create {mapping} {name_vs_recId} .15083md {.15083md#name_vs_recId 4} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewUnselectedDataChild"} 1 1 {$data_source} {"Data Pile"} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId 4} 1
+DEVise setMappingColors {.15083md#name_vs_recId 4} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md {.4267md#name_vs_recId 5} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewDataValueSelectChild"} 1 1 {$data_source} {} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId 5} 1
-DEVise setMappingColors {.4267md#name_vs_recId 5} {0} {37} {37}
+DEVise create {mapping} {name_vs_recId} .15083md {.15083md#name_vs_recId 5} {} 0 {-$recId} {} 0 0.98 0 0 17 {"ViewDataValueSelectChild"} 1 1 {$data_source} {} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId 5} 1
+DEVise setMappingColors {.15083md#name_vs_recId 5} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md {.4267md#name_vs_recId 6} {} 0 {-$recId} {} 36 1 0 0 0 0.5 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId 6} 1
-DEVise setMappingColors {.4267md#name_vs_recId 6} {36} {1} {0}
+DEVise create {mapping} {name_vs_recId} .15083md {.15083md#name_vs_recId 6} {} 0 {-$recId} {} 36 1 0 0 0 0.5 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId 6} 1
+DEVise setMappingColors {.15083md#name_vs_recId 6} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md {.4267md#name_vs_recId 7} {} 0 {-$Entity_assembly_ID} {} 36 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId 7} 1
-DEVise setMappingColors {.4267md#name_vs_recId 7} {36} {1} {0}
+DEVise create {mapping} {name_vs_recId} .15083md {.15083md#name_vs_recId 7} {} 0 {-$Entity_assembly_ID} {} 36 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId 7} 1
+DEVise setMappingColors {.15083md#name_vs_recId 7} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md {.4267md#name_vs_recId 8} {} 0 {-$Entity_assembly_ID} {} 36 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId 8} 1
-DEVise setMappingColors {.4267md#name_vs_recId 8} {36} {1} {0}
+DEVise create {mapping} {name_vs_recId} .15083md {.15083md#name_vs_recId 8} {} 0 {-$Entity_assembly_ID} {} 36 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId 8} 1
+DEVise setMappingColors {.15083md#name_vs_recId 8} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4267md {.4267md#name_vs_recId 9} {} 0 {-$recId} {} 36 1 0 0 0 0.5 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267md#name_vs_recId 9} 1
-DEVise setMappingColors {.4267md#name_vs_recId 9} {36} {1} {0}
+DEVise create {mapping} {name_vs_recId} .15083md {.15083md#name_vs_recId 9} {} 0 {-$recId} {} 36 1 0 0 0 0.5 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083md#name_vs_recId 9} 1
+DEVise setMappingColors {.15083md#name_vs_recId 9} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .4267d1 .4267d1#ViewUnselectedDataChild {} {$Residue_seq_code} #parentVal {} 35 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267d1#ViewUnselectedDataChild} 1
-DEVise setMappingColors {.4267d1#ViewUnselectedDataChild} {35} {35} {0}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15083d1 .15083d1#ViewUnselectedDataChild {} {$Residue_seq_code} #parentVal {} 35 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083d1#ViewUnselectedDataChild} 1
+DEVise setMappingColors {.15083d1#ViewUnselectedDataChild} {35} {35} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .4267d1 .4267d1#ViewDataValueSelectChild {} {$Residue_seq_code} #parentVal {} 31 0 0 0 1 {} {} {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
-DEVise setPixelWidth {.4267d1#ViewDataValueSelectChild} 1
-DEVise setMappingColors {.4267d1#ViewDataValueSelectChild} {31} {31} {0}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15083d1 .15083d1#ViewDataValueSelectChild {} {$Residue_seq_code} #parentVal {} 31 0 0 0 1 {} {} {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
+DEVise setPixelWidth {.15083d1#ViewDataValueSelectChild} 1
+DEVise setMappingColors {.15083d1#ViewDataValueSelectChild} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .4267d1 .4267d1#ViewSelectedDataChild {} {$Residue_seq_code} #parentVal {} 7 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267d1#ViewSelectedDataChild} 1
-DEVise setMappingColors {.4267d1#ViewSelectedDataChild} {7} {7} {0}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15083d1 .15083d1#ViewSelectedDataChild {} {$Residue_seq_code} #parentVal {} 7 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083d1#ViewSelectedDataChild} 1
+DEVise setMappingColors {.15083d1#ViewSelectedDataChild} {7} {7} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .4267d1 .4267d1#ViewDataDotsChild {} {$Residue_seq_code} #parentVal {} 31 1 0 0 1 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4267d1#ViewDataDotsChild} 1
-DEVise setMappingColors {.4267d1#ViewDataDotsChild} {31} {31} {0}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15083d1 .15083d1#ViewDataDotsChild {} {$Residue_seq_code} #parentVal {} 31 1 0 0 1 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15083d1#ViewDataDotsChild} 1
+DEVise setMappingColors {.15083d1#ViewDataDotsChild} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1289,26 +1316,26 @@ DEVise setCursorConstraints {data_select_fix_cursor} 1 0 1
 # Put axis label into views
 
 # Insert mappings into views
-DEVise insertMapping {ViewUnselectedDataChild} {.4267d1#ViewUnselectedDataChild}
-DEVise insertMapping {ViewSelectedDataChild} {.4267d1#ViewSelectedDataChild}
-DEVise insertMapping {ViewDataDotsChild} {.4267d1#ViewDataDotsChild}
-DEVise insertMapping {ViewDataValueSelectChild} {.4267d1#ViewDataValueSelectChild}
-DEVise insertMapping {View3DMain} {.4267ac1#Atom_coord_y_vs_Atom_coord_x}
-DEVise insertMapping {ViewStructSelectSource} {.4267ac1#Struct_type_vs_recId 2}
-DEVise insertMapping {ViewResidueSelect1Source} {.4267ac1#Residue_seq_code_vs_recId 2}
-DEVise insertMapping {ViewDataTypeSelect} {.4267md#name_vs_recId}
-DEVise insertMapping {ViewDataDotsParent} {.4267md#name_vs_recId 2}
-DEVise insertMapping {ViewDataXControl} {.4267ac1#ViewDataXControl}
-DEVise insertMapping {ViewSelectedDataParent} {.4267md#name_vs_recId 3}
-DEVise insertMapping {ViewUnselectedDataParent} {.4267md#name_vs_recId 4}
-DEVise insertMapping {ViewDataValueSelectParent} {.4267md#name_vs_recId 5}
-DEVise insertMapping {View3DHighlight} {.4267rl#View3DHighlight}
+DEVise insertMapping {ViewUnselectedDataChild} {.15083d1#ViewUnselectedDataChild}
+DEVise insertMapping {ViewSelectedDataChild} {.15083d1#ViewSelectedDataChild}
+DEVise insertMapping {ViewDataDotsChild} {.15083d1#ViewDataDotsChild}
+DEVise insertMapping {ViewDataValueSelectChild} {.15083d1#ViewDataValueSelectChild}
+DEVise insertMapping {View3DMain} {.15083ac1#Atom_coord_y_vs_Atom_coord_x}
+DEVise insertMapping {ViewStructSelectSource} {.15083ac1#Struct_type_vs_recId 2}
+DEVise insertMapping {ViewResidueSelect1Source} {.15083ac1#Residue_seq_code_vs_recId 2}
+DEVise insertMapping {ViewDataTypeSelect} {.15083md#name_vs_recId}
+DEVise insertMapping {ViewDataDotsParent} {.15083md#name_vs_recId 2}
+DEVise insertMapping {ViewDataXControl} {.15083ac1#ViewDataXControl}
+DEVise insertMapping {ViewSelectedDataParent} {.15083md#name_vs_recId 3}
+DEVise insertMapping {ViewUnselectedDataParent} {.15083md#name_vs_recId 4}
+DEVise insertMapping {ViewDataValueSelectParent} {.15083md#name_vs_recId 5}
+DEVise insertMapping {View3DHighlight} {.15083rl#View3DHighlight}
 DEVise insertMapping {View 1} {.label#Label_text_vs_recId}
 DEVise insertMapping {View 2} {.pistachio_at_legend#color_str_vs_recId}
-DEVise insertMapping {ViewDataTypeSelect 2} {.4267md#name_vs_recId 6}
-DEVise insertMapping {ViewDataTypeSelect 3} {.4267md#name_vs_recId 7}
-DEVise insertMapping {ViewDataTypeSelect 4} {.4267md#name_vs_recId 8}
-DEVise insertMapping {ViewDataTypeSelect 5} {.4267md#name_vs_recId 9}
+DEVise insertMapping {ViewDataTypeSelect 2} {.15083md#name_vs_recId 6}
+DEVise insertMapping {ViewDataTypeSelect 3} {.15083md#name_vs_recId 7}
+DEVise insertMapping {ViewDataTypeSelect 4} {.15083md#name_vs_recId 8}
+DEVise insertMapping {ViewDataTypeSelect 5} {.15083md#name_vs_recId 9}
 
 # Link views
 

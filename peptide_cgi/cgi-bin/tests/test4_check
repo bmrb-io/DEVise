@@ -78,7 +78,7 @@ set line = "3	1	CO"
 set file = "session_dir/4096ac1.ds"
 set line = 'DEVise dteInsertCatalogEntry . {"4096ac1" UNIXFILE 4096ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
 source tests/check4line
-set line = 'DEVise dteInsertCatalogEntry . {"4267d1" UNIXFILE 4267d1.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
+set line = 'DEVise dteInsertCatalogEntry . {"4096d1" UNIXFILE 4096d1.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
 source tests/check4line
 set line = 'DEVise dteInsertCatalogEntry . {"4096as1" UNIXFILE 4096as1.dat AllShift $DEVISE_SCHEMA/physical/bmrb-AllShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
 source tests/check4line

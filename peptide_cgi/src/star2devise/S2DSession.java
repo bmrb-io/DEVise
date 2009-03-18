@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2009/03/04 18:22:18  wenger
+// Deltashift visualization now works for RNA.
+//
 // Revision 1.14  2009/02/20 22:54:24  wenger
 // RNA visualization now works, using the DNA template; added stub
 // help file for nucleic acid deltashift visualizations.
@@ -285,8 +288,8 @@ TEMP*/
 	    baseName = "atom_coord_jmol.base";
 	    dataSuffix = S2DNames.ATOMIC_COORD_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4267ac1";
-	    searchString3 = "4267md";
+	    searchString1 = "15083ac1";
+	    searchString3 = "15083md";
 	    replaceString3 = name + S2DNames.SUMMARY_DATA_SUFFIX;
 	    break;
 
@@ -382,11 +385,11 @@ TEMP*/
 		if (dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
 		    if (line.indexOf("dteInsertCatalogEntry") >= 0) {
 		        if (line.indexOf(searchString1) >= 0) {
-			    // 4267ac1 should get replaced below...
-		        } else if (line.indexOf("4267rl") >= 0) {
-			    // 4267rl should get replaced below...
+			    // 15083ac1 should get replaced below...
+		        } else if (line.indexOf("15083rl") >= 0) {
+			    // 15083rl should get replaced below...
 		        } else if (line.indexOf(searchString3) >= 0) {
-			    // 4267md should get replaced below...
+			    // 15083md should get replaced below...
 		            printSummaryData = true;
 			} else {
 			    // Note: I would like to substitute the string
@@ -399,7 +402,7 @@ TEMP*/
 			}
 		    }
 
-		    line = S2DUtils.replace(line, "4267rl",
+		    line = S2DUtils.replace(line, "15083rl",
 		      name + S2DNames.RES_LIST_SUFFIX);
 		}
 
@@ -426,9 +429,9 @@ TEMP*/
 		    if (line.indexOf("label.dat") == -1) {
 
 		        // Don't do data directory substitution on
-			// unchanged 4267 data sources in 3D sessions.
+			// unchanged 15083 data sources in 3D sessions.
 		        if (dataType != S2DUtils.TYPE_ATOMIC_COORDS ||
-		          line.indexOf("4267") == -1) {
+		          line.indexOf("15083") == -1) {
 		            line = S2DUtils.replace(line, _defaultJSDataDir,
 			  _jsDataDir);
 		        }
