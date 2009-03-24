@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2008/12/01 20:37:53  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.11.2.3  2008/11/19 21:27:22  wenger
 // Cleaned up various notes about things to check.
 //
@@ -432,7 +435,7 @@ TEMP?*/
     //-------------------------------------------------------------------
     // Writes the deltashift link.
     protected void writeDeltashift(int frameIndex, int entityAssemblyID,
-      int residueCount) throws IOException
+      int residueCount, boolean isNucleicAcid) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeDeltashift()");
@@ -443,9 +446,10 @@ TEMP?*/
 	String value = "" + entityAssemblyID;
         _dsEntAssemIDInfo.put(frameIndex, value);
 
+	String resNuc = isNucleicAcid ? "nucleotides" : "residues";
 	value = "<a href=\"" + _name + S2DNames.DELTASHIFT_SUFFIX +
 	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
-	  "\">" + residueCount + " residues</a>";
+	  "\">" + residueCount + " " + resNuc + "</a>";
 	_deltaShiftInfo.put(frameIndex, value);
     }
 
@@ -825,8 +829,8 @@ TEMP?*/
                 _writer.write("    <th>Percent assigned atoms</th>\n");
 	    }
 	    if (!_allShiftsInfo.isEmpty()) {
-                _writer.write("    <th>Chemical shift distributions by " +
-		  "amino acid</th>\n");
+                _writer.write("    <th>Chem shift distributions by " +
+		  "AA/nucleotide</th>\n");
 	    }
 	    if (!_hVsNInfo.isEmpty()) {
                 _writer.write("    <th>Simulated 1H-15N backbone HSQC " +

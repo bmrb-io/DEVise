@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.126  2009/03/20 17:21:24  wenger
+// The data scroll view X filter is now updated according to the residues
+// that have data for the selected entity assembly.
+//
 // Revision 1.125  2009/03/18 18:36:29  wenger
 // Changed atom_coord_jmol.base to work off of 15083 instead of 4267,
 // so we have multiple entities, and both a protein and a nucleic acid;
@@ -487,7 +491,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x20"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.4.1x21"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

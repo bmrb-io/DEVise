@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2009/03/16 20:33:08  wenger
+// 3D data select view now only shows data that is available for the
+// currently-selected entity assembly ID.
+//
 // Revision 1.6  2009/03/04 15:27:20  wenger
 // DNA deltashift data is now working as part of 3D visualizations,
 // just started on RNA, but need to finish other changes to RNA first;
@@ -137,10 +141,11 @@ public class S2DNAChemShift extends S2DChemShift {
 	}
 
 	try {
-	    int dsCount = 0;//TEMPTEMP?
+	    int dsCount = 0;
 
 	    for (int index = 1; index < _deltashiftData.length; index++) {
 		if (_deltashiftData[index] != null) {
+		    dsCount++;
 	            _deltashiftData[index].write(deltashiftWriter);
 		}
 	    }
@@ -166,7 +171,7 @@ public class S2DNAChemShift extends S2DChemShift {
 	    // Write the link in the summary html file.
 	    //
 	    _summary.writeDeltashift(frameIndex, _entityAssemblyID,
-	      dsCount);
+	      dsCount, true);
 
 	} catch (IOException ex) {
 	    System.err.println("IOException writing deltashift data: " +

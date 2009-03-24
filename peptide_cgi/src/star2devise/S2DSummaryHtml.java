@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2008
+// (c) Copyright 2000-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -31,6 +31,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2008/12/01 20:37:53  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.11.2.1  2008/11/17 19:28:07  wenger
 // Added entity assembly IDs to summary page and specific visualization pages.
 //
@@ -214,14 +217,16 @@ public class S2DSummaryHtml {
     //-------------------------------------------------------------------
     // Writes the deltashift link.
     public void writeDeltashift(int frameIndex, int entityAssemblyID,
-      int count) throws IOException
+      int count, boolean isNucleicAcid) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeDeltashift()");
 	}
 
-    	_normal.writeDeltashift(frameIndex, entityAssemblyID, count);
-    	_large.writeDeltashift(frameIndex, entityAssemblyID, count);
+    	_normal.writeDeltashift(frameIndex, entityAssemblyID, count,
+	  isNucleicAcid);
+    	_large.writeDeltashift(frameIndex, entityAssemblyID, count,
+	  isNucleicAcid);
     }
 
     //-------------------------------------------------------------------

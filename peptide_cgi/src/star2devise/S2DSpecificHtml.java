@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/02/20 22:54:24  wenger
+// RNA visualization now works, using the DNA template; added stub
+// help file for nucleic acid deltashift visualizations.
+//
 // Revision 1.11  2008/04/09 19:35:42  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -113,7 +117,12 @@ public class S2DSpecificHtml {
 	_dataSuffix = S2DUtils.dataType2Suffix(_dataType);
         _replaceString1 = _name + _dataSuffix + _frameIndex;
         _replaceString2 = _name;
-        _replaceString3 = "help_" + _dataSuffix + ".html";
+	String helpSuffix = _dataSuffix;
+	if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
+	  dataType == S2DUtils.TYPE_RNA_DELTASHIFT) {
+	    helpSuffix += "_na";
+	}
+        _replaceString3 = "help_" + helpSuffix + ".html";
         _replaceString4 = _title;
 	if (frameDetails != null && !frameDetails.equals("")) {
 	    _replaceString5 = "<h3>\n  Frame details: " + frameDetails +

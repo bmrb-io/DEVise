@@ -893,15 +893,15 @@ DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId 4} {36} {0} {
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
-DEVise create {window} {TileLayout} DEViseWn1 0.170000 0.747500 0.476250 0.026667 0 0
-DEVise create {window} {TileLayout} DEViseWn4 0.055625 0.190000 0.591250 0.026667 0 0
-DEVise create {window} {TileLayout} DEViseWn2 0.085625 0.222500 0.040000 0.515000 0 0
-DEVise create {window} {TileLayout} DEViseWn3 0.171875 0.222500 0.475625 0.515000 0 0
-DEVise create {window} {TileLayout} DEViseWn5 0.148125 0.222500 0.021250 0.515000 0 0
-DEVise create {window} {TileLayout} DEViseWn0 0.055625 0.221667 0.031250 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.169000 0.735000 0.481000 0.028000 0 0
+DEVise create {window} {TileLayout} DEViseWn4 0.050000 0.190000 0.600000 0.027000 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.082000 0.220000 0.040000 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn3 0.169000 0.220000 0.481000 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn5 0.147000 0.220000 0.021000 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn0 0.050000 0.220000 0.030000 0.515000 0 0
 DEVise create {window} {TileLayout} DEViseWn6 0.661250 0.199167 0.079375 0.515000 1 0
-DEVise create {window} {TileLayout} DEViseWn7 0.118125 0.222500 0.023750 0.515000 0 0
-DEVise create {window} {TileLayout} DEViseWn8 0.055625 0.746667 0.110625 0.027500 0 0
+DEVise create {window} {TileLayout} DEViseWn7 0.119000 0.220000 0.028000 0.515000 0 0
+DEVise create {window} {TileLayout} DEViseWn8 0.050000 0.735000 0.120000 0.028000 0 0
 
 # Set up window layouts
 

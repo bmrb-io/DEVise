@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2009/03/16 20:33:08  wenger
+// 3D data select view now only shows data that is available for the
+// currently-selected entity assembly ID.
+//
 // Revision 1.19  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -350,7 +354,7 @@ public class S2DChemShift {
 	    // Write the link in the summary html file.
 	    //
 	    _summary.writeDeltashift(frameIndex, _entityAssemblyID,
-	      dsCount);
+	      dsCount, false);
 
 	} catch (IOException ex) {
 	    System.err.println("IOException writing deltashift data: " +
