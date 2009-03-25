@@ -73,7 +73,7 @@ set line = "1501 2 6 VAL 3HG2 H 5.317 1.769 3.283 all_hydrogens"
 source tests/check4line
 
 set file = "data_dir/15209am1.dat"
-# 2.1 has HE, 3.1 has HE1, HE2, HE3
+#TEMP 2.1 has HE, 3.1 has HE1, HE2, HE3
 #TEMP set line = "1 1 MET 0.4 0.26666668 0.0 0.0 0.0 0.0"
 #TEMP source tests/check4line
 set line = "1 92 HIS 0.29411766 0.0 0.0 0.0 0.0 0.0"

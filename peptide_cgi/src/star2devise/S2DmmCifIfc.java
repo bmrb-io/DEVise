@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2009/02/05 20:24:37  wenger
+// All tests now work (including new nucleic acid tests), but lots of
+// cleanup to be done plus actually writing correct deltashifts for
+// nucleic acids.
+//
 // Revision 1.9  2009/01/29 22:04:57  wenger
 // Made protein, DNA, and RNA subclasses of S2DChemShift to make further
 // stuff easier; added some file checking to test64 and test65 (but
@@ -126,9 +131,13 @@ public class S2DmmCifIfc extends S2DStarIfc {
     private String _bmrbResListFile;
     private Hashtable _chainHash; // PDB chain -> BMRB entity assembly ID
 
+    protected String ENTITY_ENTITY_ID = "_entity_poly.entity_id";
+    protected String ENTITY_POLY_TYPE = "_entity_poly.type";
+
     protected String RES_LIST_ENTITY_ID = "_entity_poly_seq.entity_id";
     protected String RES_LIST_RES_NUM = "_entity_poly_seq.num";
     protected String RES_LIST_RES_LABEL = "_entity_poly_seq.mon_id";
+
     protected String STRUCT_CHAIN_ID = "_struct_asym.id";
     protected String STRUCT_ENTITY_ID = "_struct_asym.entity_id";
 
@@ -329,6 +338,12 @@ public class S2DmmCifIfc extends S2DStarIfc {
         ATOM_COORD_X = "_atom_site.Cartn_x";
 	ATOM_COORD_Y = "_atom_site.Cartn_y";
 	ATOM_COORD_Z = "_atom_site.Cartn_z";
+
+	DNA = "polydeoxyribonucleotide";
+
+	POLYPEPTIDE = "polypeptide";
+
+	RNA = "polyribonucleotide";
     }
 
     /** -----------------------------------------------------------------
@@ -406,6 +421,8 @@ public class S2DmmCifIfc extends S2DStarIfc {
 		  chain + "; entityID: " + entityID);
 	    }
 
+	    int polymerType = getPolymerType(entityID);
+
 	    //
 	    // Get the residue numbers and types, filtered by entity ID.
 	    //
@@ -428,7 +445,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	        // Create a residue list for this entity to match against
 	        // the BMRB ones.
 	        S2DResidues pdbResidues = new S2DResidues(resSeqCodes,
-		  resLabels, S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!!*/);
+		  resLabels, polymerType);
 
 		// Now compare this chain against all unmatched BMRB
 		// entity assemblies.
@@ -458,6 +475,52 @@ public class S2DmmCifIfc extends S2DStarIfc {
 		}
 	    }
 	}
+    }
+
+    /** -----------------------------------------------------------------
+     * Get the polymer type of the given entity.
+     * @param The entity ID of the entity
+     * @return The polymer type
+     */
+    private int getPolymerType(String entityID) 
+    {
+	// If we don't find the appropriate values at all, we want
+	// this to stay UNKNOWN.
+	int polymerType = S2DResidues.POLYMER_TYPE_UNKNOWN;
+
+	try {
+            String[] entityIDs = getFrameValues(null, ENTITY_ENTITY_ID,
+	      ENTITY_ENTITY_ID);
+            String[] polymerTypeNames = getFrameValues(null, ENTITY_POLY_TYPE,
+	      ENTITY_POLY_TYPE);
+
+	    String polymerTypeName = "";
+	    for (int index = 0; index < entityIDs.length; index++) {
+	        if (entityID.equals(entityIDs[index])) {
+	            polymerTypeName = polymerTypeNames[index];
+		    break;
+	        }
+	    }
+
+	    if (polymerTypeName.indexOf(POLYPEPTIDE) != -1) {
+	        polymerType = S2DResidues.POLYMER_TYPE_PROTEIN;
+
+	    } else if (polymerTypeName.indexOf(DNA) != -1) {
+	        polymerType = S2DResidues.POLYMER_TYPE_DNA;
+
+	    } else if (polymerTypeName.indexOf(RNA) != -1) {
+	        polymerType = S2DResidues.POLYMER_TYPE_RNA;
+
+	    } else {
+	        polymerType = S2DResidues.POLYMER_TYPE_NONE;
+	    }
+
+	} catch (S2DException ex) {
+	    System.err.println("Error (" + ex.toString() +
+	      " getting polymer type for entity " + entityID);
+	}
+
+        return polymerType;
     }
 
     /** -----------------------------------------------------------------
@@ -583,8 +646,22 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	        }
 	    }
 
+	    // Figure out polymer type -- very kludgey!!  wenger 2009-03-25.
+	    int polymerType = S2DResidues.POLYMER_TYPE_UNKNOWN;
+
+	    if (resLabels[0].length() == 1) {
+	        polymerType = S2DResidues.POLYMER_TYPE_RNA;
+
+	    } else if (resLabels[0].length() == 2) {
+	        polymerType = S2DResidues.POLYMER_TYPE_DNA;
+
+	    } else if (resLabels[0].length() == 3) {
+	        polymerType = S2DResidues.POLYMER_TYPE_PROTEIN;
+
+	    }
+
 	    S2DResidues resList = new S2DResidues(resNums, resLabels,
-	      S2DResidues.POLYMER_TYPE_PROTEIN/*TEMP!!!!!*/);
+	      polymerType);
 	    residueLists.add(resList);
 	}
 

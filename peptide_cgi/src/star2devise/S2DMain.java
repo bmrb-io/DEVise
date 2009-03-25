@@ -1,4 +1,3 @@
-//TEMPTEMP -- I'll bet Struct_type (e.g., side_chains) needs fixing for NAs
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2000-2009
@@ -22,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.128  2009/03/25 15:42:51  wenger
+// Changed version to 11.5.0 (because I think this is a big enough
+// change for a new minor version, not just a new revision); fixed
+// up help for atomic coordinates, and added help for nucleic acid
+// delta shifts.
+//
 // Revision 1.127  2009/03/24 19:04:50  wenger
 // Fixed layout of nucleic acid deltashift session (made windows line
 // up better, etc.); fixed nucleotide counts in summary html page, and
@@ -498,7 +503,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.5.0x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.5.0x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
@@ -2108,16 +2113,7 @@ public class S2DMain {
 		String entityID = star.entAssemID2entID(entityAssemblyID);
 
 	        // We only want to output chemical shifts corresponding to a
-	        // protein.  (This can be tested with bmr4038.str and bmr4056.str.)
-/*TEMP -- do we want to check for non-polymer entities here? (see bug 065)
-	        if (_doProteinCheck && !star.refersToProtein(frame, entityID)) {
-                    if (doDebugOutput(2)) {
-                        System.out.println("Chemical shifts not saved for " +
-                          "save frame " + frame.getLabel() + " (" +
-			  entityAssemblyID + ") because it is not a protein");
-                    }
-	        } else {
-TEMP*/
+	        // polymer.
 	        if (!star.refersToPolymer(frame, entityID)) {
                     if (doDebugOutput(2)) {
                         System.out.println("Chemical shifts not saved for " +
@@ -2526,7 +2522,7 @@ TEMP*/
         return residues;
     }
 
-//TEMPTEMP -- should this really be saveResCount?
+    //TEMP -- should this really be saveResCount?
     //-------------------------------------------------------------------
     // Save the residue count and residue list for the given save frame.
     // (The save frame passed in here must be the save frame that
@@ -3127,6 +3123,7 @@ TEMP*/
 	}
     }
 
+    //TEMP -- I'll bet Struct_type (e.g., side_chains) needs fixing for NAs
     //-------------------------------------------------------------------
     // Save atomic coordinates for one save frame.
     private void saveFrameAtomicCoords(S2DStarIfc star, SaveFrameNode frame,

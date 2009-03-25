@@ -4,7 +4,7 @@ Peptide-CGI 11.5.0
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.3 or higher.)
 
-* TEMPTEMP -- NA visualization
+* Added visualization of chemical shift deltas for nucleic acids.
 
 * Added residue labels to data for delta shifts, CSI, coupling constants,
 chemical shifts by amino acid, ambiguity codes, and Pistachio so it

@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2009/03/24 19:04:50  wenger
+// Fixed layout of nucleic acid deltashift session (made windows line
+// up better, etc.); fixed nucleotide counts in summary html page, and
+// changed residue to nucleotide where appropriate; fixed nucleic acid
+// deltashift html pages so that they link to the nucleic-acid-specific
+// help page.
+//
 // Revision 1.20  2009/03/16 20:33:08  wenger
 // 3D data select view now only shows data that is available for the
 // currently-selected entity assembly ID.
@@ -189,7 +196,7 @@ public class S2DChemShift {
     protected String CHEMSHIFT_FILE = "chem_info" + File.separator;
     protected ShiftDataManager _refTable;
 
-    //TEMP -- move a lot of this stuff???
+    //TEMP -- move a lot of this stuff to subclasses?
     private String[] _deltaShiftResLabels;
     private float[] _haDeltaShifts;
     private float[] _cDeltaShifts;
@@ -302,7 +309,6 @@ public class S2DChemShift {
 	    deltashiftWriter.write("# Data: delta shift values for " +
 	      _name + "\n");
 	    deltashiftWriter.write("# Schema: bmrb-DeltaShift\n");
-	    // TEMP -- add amino acid for drill-down?
 	    deltashiftWriter.write("# Attributes: Entity_assembly_ID; " +
 	      "Residue_seq_code; Residue_label; " +
 	      "HA_DeltaShift; C_DeltaShift; CA_DeltaShift; CB_DeltaShift\n");
@@ -711,7 +717,7 @@ public class S2DChemShift {
 	}
     }
 
-//TEMPTEMP -- for protein only?
+    //TEMP -- move to protein subclass
     //-------------------------------------------------------------------
     // Write H vs. N chem shifts for this data.
     // TEMP -- this could probably get restructured, too.

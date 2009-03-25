@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2009/03/12 23:02:29  wenger
+// Fixed a problem with the output from test1_3 (polymer type for
+// heteronuclear NOEs showing up as "unknown"), and fixed the checking
+// script so that the test will fail if the problem happens again.
+//
 // Revision 1.22  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -646,7 +651,6 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // The residue count is also read (if present) and checked against
     // the residue list(s).  If it is not present, it is calculated from
     // the residue list(s).
-//TEMP -- okay, this probably has to figure out whether things are protein, DNA, or RNA
     public S2DResidues getResidues(SaveFrameNode frame) throws S2DException
     {
         if (doDebugOutput(12)) {

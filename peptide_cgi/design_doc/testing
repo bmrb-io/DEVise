@@ -86,6 +86,16 @@ The following testing steps must be done:
       for the given entity assembly ID, and selecting data highlights
       the residues correctly.
 
+- (RNA) view the following visualizations for 15080:
+    - Chemical shift delta for entity assembly 1.
+    - 3D structure from PDB 2O33.
+
+- (DNA) view the following visualizations for 15083:
+    - Chemical shift delta for entity assembly 1.
+    - 3D structure for PDB 2O8K (make sure that selection of data for
+      the different entity assemblies works, and highlighting in the
+      atom selection tree works).
+
 - Go to http://devise.cs.wisc.edu/devise/bmrb/uvd/uvd_works.html and click
   the "Test" link.  Make sure the summary page is correct and some of
   the visualizations work.

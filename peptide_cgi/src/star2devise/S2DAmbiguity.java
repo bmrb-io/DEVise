@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/02/25 21:33:14  wenger
+// Added residue labels to all data that were missing them (in preparation
+// for selection by nucleotide in nucleotide visualizations; also allows
+// user to drill down to see residue label in protein deltashift, CSI,
+// etc., visualizations); changed tests accordingly; also fixed up some
+// tests that weren't checking for entity assembly IDs in data.
+//
 // Revision 1.12  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -167,7 +174,7 @@ public class S2DAmbiguity {
 	}
 
 	try {
-	    //TEMPTEMP -- make sure 1 is right below
+	    //TEMP -- make sure 1 is right below
             for (int index = 1; index < _residueHasData.length; ++index) {
 		if (_residueHasData[index]) {
 	            ambiguityWriter.write(_entityAssemblyID + " " +

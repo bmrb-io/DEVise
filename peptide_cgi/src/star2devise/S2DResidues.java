@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.13  2009/02/19 22:40:42  wenger
 // DNA and RNA deltashift calculations now work (still need to check
 // that all values are correct); added value checks to relevant tests.
@@ -518,7 +522,11 @@ public class S2DResidues {
 		    badCode = !_resLabels[index].equals("A") &&
 		      !_resLabels[index].equals("C") &&
 		      !_resLabels[index].equals("G") &&
-		      !_resLabels[index].equals("T");
+		      !_resLabels[index].equals("T") &&
+		      !_resLabels[index].equals("DA") &&
+		      !_resLabels[index].equals("DC") &&
+		      !_resLabels[index].equals("DG") &&
+		      !_resLabels[index].equals("DT");
 	            break;
 
 	        case POLYMER_TYPE_RNA:
