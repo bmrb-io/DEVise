@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2009/03/18 18:36:29  wenger
+// Changed atom_coord_jmol.base to work off of 15083 instead of 4267,
+// so we have multiple entities, and both a protein and a nucleic acid;
+// fixed an error in test4_check (still referred to 4267).
+//
 // Revision 1.15  2009/03/04 18:22:18  wenger
 // Deltashift visualization now works for RNA.
 //
@@ -198,10 +203,10 @@ public class S2DSession {
 	    break;
 
 	case S2DUtils.TYPE_RNA_DELTASHIFT:
-	    baseName = "deltashift_dna.base";//TEMPTEMP -- change?
+	    baseName = "deltashift_dna.base";
 	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "15083d1";//TEMPTEMP -- change?
+	    searchString1 = "15083d1";
 	    searchString2 = "DNADeltaShift";
 	    replaceString2 = "RNADeltaShift";
 	    searchString3 = "dna_";

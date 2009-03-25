@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.127  2009/03/24 19:04:50  wenger
+// Fixed layout of nucleic acid deltashift session (made windows line
+// up better, etc.); fixed nucleotide counts in summary html page, and
+// changed residue to nucleotide where appropriate; fixed nucleic acid
+// deltashift html pages so that they link to the nucleic-acid-specific
+// help page.
+//
 // Revision 1.126  2009/03/20 17:21:24  wenger
 // The data scroll view X filter is now updated according to the residues
 // that have data for the selected entity assembly.
@@ -491,7 +498,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.4.1x21"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.5.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
