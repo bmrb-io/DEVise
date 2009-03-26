@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2009/03/11 19:53:15  wenger
+// Implemented two-stage selection of data sets in coordinate
+// visualizations (select entity assembly, then select data set); updated
+// tests accordingly.  Updated test14 because it now generates data for
+// entity assembly 1.
+//
 // Revision 1.6  2008/07/23 21:22:30  wenger
 // Fixed bug 061 (problems with 3D data selection view if there are too
 // many data sources); visualization help still needs updates.
@@ -71,7 +77,7 @@ public class S2DSummaryData
 
     private String _name;
     private String _dataDir;
-    private Vector _dataSets;
+    private Vector _dataSets; // Vector of S2DDatasetInfo
 
     //===================================================================
     // PUBLIC METHODS
@@ -127,6 +133,9 @@ public class S2DSummaryData
 	      S2DMain.getTimestamp() + "\n");
 	    writer.write("#\n");
 
+	    // Sort metadata (fixes bug 081).
+            Collections.sort(_dataSets, new DataSetComparator());
+
             for (int index = 0; index < _dataSets.size(); index++) {
                 S2DDatasetInfo info =
 		  (S2DDatasetInfo)_dataSets.elementAt(index);
@@ -161,6 +170,18 @@ public class S2DSummaryData
 	}
 
 	return false;
+    }
+
+    //-------------------------------------------------------------------
+    // Comparator for sorting S2DDatasetInfo Vectors.
+    class DataSetComparator implements Comparator 
+    {
+        public int compare(Object o1, Object o2)
+	{
+	    String s1 = ((S2DDatasetInfo)o1).getEntityAssemblyName();
+	    String s2 = ((S2DDatasetInfo)o2).getEntityAssemblyName();
+	    return s1.compareTo(s2);
+	}
     }
 }
 

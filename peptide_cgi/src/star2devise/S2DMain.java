@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.129  2009/03/25 21:49:09  wenger
+// Final cleanup of some of the nucleic-acid-related code, especially
+// getting polymer types correctly for mmCIF files; added nucleic acid
+// tests to pre-release testing document.
+//
 // Revision 1.128  2009/03/25 15:42:51  wenger
 // Changed version to 11.5.0 (because I think this is a big enough
 // change for a new minor version, not just a new revision); fixed
@@ -503,7 +508,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.5.0x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.5.0x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
@@ -568,7 +573,7 @@ public class S2DMain {
     private int _cmdFrameIndex = -1;
     private int _currentFrameIndex = -1;
 
-    private Vector _dataSets = new Vector();
+    private Vector _dataSets = new Vector(); // Vector of S2DDatasetInfo
 
     private boolean _doProteinCheck = true;
 

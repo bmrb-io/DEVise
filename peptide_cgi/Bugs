@@ -371,6 +371,11 @@ Num Date        Status  Description
 			summary html page even for entries that have no
 			chemical shift data.  (See 4970.) (wenger)
 
+081 3/26/09	OPEN	In 3D visualization for 5246/1KMF, the data select
+			window has gaps in the data sets (caused by
+			5245md.dat not being sorted by entity assembly).
+			(Fixed by wenger, 2009-03-26)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
