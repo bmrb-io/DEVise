@@ -1,11 +1,12 @@
 # Data: summary of available datasets for Pistachio visualizations
 # Schema: bmrb-summary
-# Attributes: name; data_source; y_attribute
+# Attributes: Entity_assembly_name; name; Entity_assembly_ID;
+#   data_source; y_attribute
 # $Id$
 #
-9 (other)	-	$Ambig9
-5 (inter-residue)	-	$Ambig5
-4 (intra-residue)	-	$Ambig4
-3 (aromatics)	-	$Ambig3
-2 (geminals)	-	$Ambig2
-1 (unique)	-	$Ambig1
+-	-	9 (other)	-	$Ambig9
+-	-	5 (inter-residue)	-	$Ambig5
+-	-	4 (intra-residue)	-	$Ambig4
+-	-	3 (aromatics)	-	$Ambig3
+-	-	2 (geminals)	-	$Ambig2
+-	-	1 (unique)	-	$Ambig1
