@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.130  2009/03/26 21:29:07  wenger
+// Found and fixed bug 081 (needed to force 3D metadata to be ordered
+// by entity assembly, so we don't have gaps if save frames are not
+// ordered by entity assembly).
+//
 // Revision 1.129  2009/03/25 21:49:09  wenger
 // Final cleanup of some of the nucleic-acid-related code, especially
 // getting polymer types correctly for mmCIF files; added nucleic acid
@@ -508,7 +513,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.5.0x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.5.0";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
