@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.108  2008/09/26 19:56:46  wenger
+// Changed version to 5.9.4x1.
+//
 // Revision 1.107  2008/09/25 23:09:34  wenger
 // Changed version to 5.9.3.  (Note that bug 939 fix also included
 // improvements to zoom box drawing.)
@@ -692,7 +695,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.9.4x1"/*TEMP*/);
+    public static final String VERSION = new String("5.9.4");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
