@@ -39,6 +39,10 @@ set files = ( data_dir/5246am1.dat \
 	data_dir/5246d2.dat \
 	data_dir/5246d3.dat \
 	data_dir/5246d4.dat \
+	data_dir/5246hc1.dat \
+	data_dir/5246hc2.dat \
+	data_dir/5246hc3.dat \
+	data_dir/5246hc4.dat \
 	data_dir/5246hn1.dat \
 	data_dir/5246hn2.dat \
 	data_dir/5246hn3.dat \

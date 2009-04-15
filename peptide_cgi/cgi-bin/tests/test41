@@ -25,6 +25,7 @@ set files = ( data_dir/4267ac1.dat \
 	data_dir/4267c1.dat \
 	data_dir/4267d1.dat \
 	data_dir/4267g1.dat \
+	data_dir/4267hc1.dat \
 	data_dir/4267hn1.dat \
 	data_dir/4267md.dat \
 	data_dir/4267n1.dat \
@@ -59,6 +60,8 @@ set files = ( data_dir/4267ac1.dat \
 	html_dir/4267d1_large.html \
 	html_dir/4267g1.html \
 	html_dir/4267g1_large.html \
+	html_dir/4267hc1.html \
+	html_dir/4267hc1_large.html \
 	html_dir/4267hn1.html \
 	html_dir/4267hn1_large.html \
 	html_dir/4267n1.html \
@@ -103,6 +106,7 @@ set files = ( data_dir/4267ac1.dat \
 	session_dir/4267c1.ds \
 	session_dir/4267d1.ds \
 	session_dir/4267g1.ds \
+	session_dir/4267hc1.ds \
 	session_dir/4267hn1.ds \
 	session_dir/4267n1.ds \
 	session_dir/4267n2.ds \

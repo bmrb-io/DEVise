@@ -376,6 +376,10 @@ Num Date        Status  Description
 			5245md.dat not being sorted by entity assembly).
 			(Fixed by wenger, 2009-03-26)
 
+082 4/15/09	OPEN	H vs C simulated spectrum doesn't work in test50
+			(maybe because of single-letter amino acid codes?).
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -30,6 +30,7 @@ echo "Checking output files"
 
 set files = (data_dir/pistachio_example1as1.dat \
 	data_dir/pistachio_example1d1.dat \
+	data_dir/pistachio_example1hc1.dat \
 	data_dir/pistachio_example1hn1.dat \
 	data_dir/pistachio_example1md.dat \
 	data_dir/pistachio_example1p1.dat \
@@ -39,6 +40,7 @@ set files = (data_dir/pistachio_example1as1.dat \
 	data_dir/pistachio_example1rl.dat \
 	html_dir/pistachio_example1as1.html \
 	html_dir/pistachio_example1d1.html \
+	html_dir/pistachio_example1hc1.html \
 	html_dir/pistachio_example1hn1.html \
 	html_dir/pistachio_example1p1.html \
 	html_dir/pistachio_example1ps1.html \
@@ -47,6 +49,7 @@ set files = (data_dir/pistachio_example1as1.dat \
 	session_dir/pistachio_example1acdd \
 	session_dir/pistachio_example1as1.ds \
 	session_dir/pistachio_example1d1.ds \
+	session_dir/pistachio_example1hc1.ds \
 	session_dir/pistachio_example1hn1.ds \
 	session_dir/pistachio_example1p1.ds \
 	session_dir/pistachio_example1ps1.ds \
@@ -56,6 +59,7 @@ set files = (data_dir/pistachio_example1as1.dat \
 	html_dir/pistachio_example1am1_large.html \
 	html_dir/pistachio_example1as1_large.html \
 	html_dir/pistachio_example1d1_large.html \
+	html_dir/pistachio_example1hc1_large.html \
 	html_dir/pistachio_example1hn1_large.html \
 	html_dir/pistachio_example1p1_large.html \
 	html_dir/pistachio_example1ps1_large.html)

@@ -17,11 +17,13 @@ endif
 
 echo "Checking output files"
 
+#TEMP -- hc files temporarily removed (see bug 082).
 set files = ( data_dir/uvd/test50_outam1.dat \
 	data_dir/uvd/test50_outamac1.dat \
 	data_dir/uvd/test50_outas1.dat \
 	data_dir/uvd/test50_outc1.dat \
 	data_dir/uvd/test50_outd1.dat \
+#	data_dir/uvd/test50_outhc1.dat \
 	data_dir/uvd/test50_outhn1.dat \
 	data_dir/uvd/test50_outmd.dat \
 	data_dir/uvd/test50_outp1.dat \
@@ -37,6 +39,8 @@ set files = ( data_dir/uvd/test50_outam1.dat \
 	html_dir/uvd/test50_outc1_large.html \
 	html_dir/uvd/test50_outd1.html \
 	html_dir/uvd/test50_outd1_large.html \
+#	html_dir/uvd/test50_outhc1.html \
+#	html_dir/uvd/test50_outhc1_large.html \
 	html_dir/uvd/test50_outhn1.html \
 	html_dir/uvd/test50_outhn1_large.html \
 	html_dir/uvd/test50_outp1.html \
@@ -50,6 +54,7 @@ set files = ( data_dir/uvd/test50_outam1.dat \
 	session_dir/.uvd/test50_outas1.ds \
 	session_dir/.uvd/test50_outc1.ds \
 	session_dir/.uvd/test50_outd1.ds \
+#	session_dir/.uvd/test50_outhc1.ds \
 	session_dir/.uvd/test50_outhn1.ds \
 	session_dir/.uvd/test50_outp1.ds \
 	session_dir/.uvd/test50_outps1.ds )

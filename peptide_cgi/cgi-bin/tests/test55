@@ -20,6 +20,7 @@ echo "Checking output files"
 set files = ( data_dir/6730as1.dat \
 	data_dir/6730c1.dat \
 	data_dir/6730d1.dat \
+	data_dir/6730hc1.dat \
 	data_dir/6730hn1.dat \
 	data_dir/6730md.dat \
 	data_dir/6730p1.dat \
@@ -41,6 +42,7 @@ set files = ( data_dir/6730as1.dat \
 	session_dir/6730as1.ds \
 	session_dir/6730c1.ds \
 	session_dir/6730d1.ds \
+	session_dir/6730hc1.ds \
 	session_dir/6730hn1.ds \
 	session_dir/6730p1.ds )
 	

@@ -9,6 +9,7 @@ set files = ( data_dir/4867ac1.dat \
 	data_dir/4867c1.dat \
 	data_dir/4867d1.dat \
 	data_dir/4867d2.dat \
+	data_dir/4867hc1.dat \
 	data_dir/4867hn1.dat \
 	data_dir/4867hn2.dat \
 	data_dir/4867md.dat \
@@ -32,6 +33,8 @@ set files = ( data_dir/4867ac1.dat \
 	html_dir/4867d1_large.html \
 	html_dir/4867d2.html \
 	html_dir/4867d2_large.html \
+	html_dir/4867hc1.html \
+	html_dir/4867hc1_large.html \
 	html_dir/4867hn1.html \
 	html_dir/4867hn1_large.html \
 	html_dir/4867p1.html \
@@ -47,6 +50,7 @@ set files = ( data_dir/4867ac1.dat \
 	session_dir/4867c1.ds \
 	session_dir/4867d1.ds \
 	session_dir/4867d2.ds \
+	session_dir/4867hc1.ds \
 	session_dir/4867hn1.ds \
 	session_dir/4867p1.ds )
 

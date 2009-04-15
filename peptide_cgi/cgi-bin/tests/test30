@@ -20,6 +20,7 @@ echo "Checking output files"
 
 set files = (data_dir/simple_pistachioas1.dat \
 	data_dir/simple_pistachiod1.dat \
+	data_dir/simple_pistachiohc1.dat \
 	data_dir/simple_pistachiohn1.dat \
 	data_dir/simple_pistachiomd.dat \
 	data_dir/simple_pistachiop1.dat \
@@ -29,6 +30,7 @@ set files = (data_dir/simple_pistachioas1.dat \
 	data_dir/simple_pistachiorl.dat \
 	html_dir/simple_pistachioas1.html \
 	html_dir/simple_pistachiod1.html \
+	html_dir/simple_pistachiohc1.html \
 	html_dir/simple_pistachiohn1.html \
 	html_dir/simple_pistachiop1.html \
 	html_dir/simple_pistachiops1.html \
@@ -37,12 +39,14 @@ set files = (data_dir/simple_pistachioas1.dat \
 	session_dir/simple_pistachioacdd \
 	session_dir/simple_pistachioas1.ds \
 	session_dir/simple_pistachiod1.ds \
+	session_dir/simple_pistachiohc1.ds \
 	session_dir/simple_pistachiohn1.ds \
 	session_dir/simple_pistachiop1.ds \
 	session_dir/simple_pistachiops1.ds \
 	html_dir/simple_pistachioas1_large.html \
 	html_dir/simple_pistachioc1_large.html \
 	html_dir/simple_pistachiod1_large.html \
+	html_dir/simple_pistachiohc1_large.html \
 	html_dir/simple_pistachiohn1_large.html \
 	html_dir/simple_pistachiop1_large.html \
 	html_dir/simple_pistachiops1_large.html)

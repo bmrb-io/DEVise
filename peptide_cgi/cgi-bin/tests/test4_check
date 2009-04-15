@@ -28,7 +28,11 @@ set files = (data_dir/4096ac1.dat data_dir/4096as1.dat data_dir/4096c1.dat \
 	html_dir/4096p1_large.html \
 	html_dir/4096t11_large.html \
 	html_dir/4096t21_large.html \
-	html_dir/4096t22_large.html)
+	html_dir/4096t22_large.html \
+	data_dir/4096hc1.dat \
+	html_dir/4096hc1.html \
+	session_dir/4096hc1.ds \
+	html_dir/4096hc1_large.html )
 
 foreach file ($files)
   if (! -f $file) then

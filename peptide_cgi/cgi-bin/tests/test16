@@ -42,6 +42,7 @@ set files = ( data_dir/4974as1.dat \
 	data_dir/4974csr1_5.dat \
 	data_dir/4974csr1src.dat \
 	data_dir/4974d1.dat \
+	data_dir/4974hc1.dat \
 	data_dir/4974hn1.dat \
 	data_dir/4974md.dat \
 	data_dir/4974p1.dat \
@@ -53,6 +54,7 @@ set files = ( data_dir/4974as1.dat \
 	html_dir/4974csr21.html \
 	html_dir/4974csr31.html \
 	html_dir/4974d1.html \
+	html_dir/4974hc1.html \
 	html_dir/4974hn1.html \
 	html_dir/4974p1.html \
 	html_dir/4974y.html \
@@ -64,6 +66,7 @@ set files = ( data_dir/4974as1.dat \
 	session_dir/4974csr21.ds \
 	session_dir/4974csr31.ds \
 	session_dir/4974d1.ds \
+	session_dir/4974hc1.ds \
 	session_dir/4974hn1.ds \
 	session_dir/4974p1.ds \
 	data_dir/4974am1.dat \
@@ -76,6 +79,7 @@ set files = ( data_dir/4974as1.dat \
 	html_dir/4974csr21_large.html \
 	html_dir/4974csr31_large.html \
 	html_dir/4974d1_large.html \
+	html_dir/4974hc1_large.html \
 	html_dir/4974hn1_large.html \
 	html_dir/4974p1_large.html )
 

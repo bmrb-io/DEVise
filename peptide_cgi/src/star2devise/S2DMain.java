@@ -21,6 +21,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.132.2.3  2009/04/14 22:20:50  wenger
+// Added help for simulated H vs C spectrum.
+//
+// Revision 1.132.2.2  2009/04/14 22:09:07  wenger
+// Session file, visualization-specific HTML file and summary page link
+// are now created; removed "legend view" from session template;
+// documented and cleaned up code.  (Still needs help for H vs C
+// visualization.)
+//
+// Revision 1.132.2.1  2009/04/09 20:20:54  wenger
+// HvsC simulated spectrum stuff is partly in place -- data is generated
+// (but not fully tested, plus lots of temporary code still in place);
+// schema and session template have been generated; processing does not
+// yet generate the session file, specific HTML file, or the link in
+// the summary HTML file.
+//
+// Revision 1.132  2009/04/01 16:19:25  wenger
+// Changed version to 11.5.1x1, added 11.5.1 version history section.
+//
 // Revision 1.131  2009/03/26 22:46:25  wenger
 // Changed version to 11.5.0 for release.
 //
@@ -516,7 +535,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.5.1x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.0x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
@@ -2733,6 +2752,18 @@ public class S2DMain {
 	    // line.
 	    System.err.println(ex.toString());
 	}
+
+
+	try {
+	    chemShift.writeHvsCShifts(_connectionFile, frameIndex);
+	} catch (S2DException ex) {
+	    // Don't throw a new exception here because we want to write as
+	    // much as we can, even if there's an error somewhere along the
+	    // line.
+	    System.err.println(ex.toString());
+	}
+
+
 
 	_summary.endFrame();
     }

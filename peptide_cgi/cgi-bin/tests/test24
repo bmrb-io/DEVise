@@ -24,6 +24,8 @@ set files = ( data_dir/6502as1.dat \
 	data_dir/6502c2.dat \
 	data_dir/6502d1.dat \
 	data_dir/6502d2.dat \
+	data_dir/6502hc1.dat \
+	data_dir/6502hc2.dat \
 	data_dir/6502hn1.dat \
 	data_dir/6502hn2.dat \
 	data_dir/6502md.dat \
@@ -38,6 +40,8 @@ set files = ( data_dir/6502as1.dat \
 	html_dir/6502c2.html \
 	html_dir/6502d1.html \
 	html_dir/6502d2.html \
+	html_dir/6502hc1.html \
+	html_dir/6502hc2.html \
 	html_dir/6502hn1.html \
 	html_dir/6502hn2.html \
 	html_dir/6502p1.html \
@@ -51,6 +55,8 @@ set files = ( data_dir/6502as1.dat \
 	session_dir/6502c2.ds \
 	session_dir/6502d1.ds \
 	session_dir/6502d2.ds \
+	session_dir/6502hc1.ds \
+	session_dir/6502hc2.ds \
 	session_dir/6502hn1.ds \
 	session_dir/6502hn2.ds \
 	session_dir/6502p1.ds \
@@ -61,6 +67,8 @@ set files = ( data_dir/6502as1.dat \
 	html_dir/6502c2_large.html \
 	html_dir/6502d1_large.html \
 	html_dir/6502d2_large.html \
+	html_dir/6502hc1_large.html \
+	html_dir/6502hc2_large.html \
 	html_dir/6502hn1_large.html \
 	html_dir/6502hn2_large.html \
 	html_dir/6502p1_large.html \

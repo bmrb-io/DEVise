@@ -12,6 +12,8 @@ set files = ( data_dir/4267_2entam1.dat \
 	data_dir/4267_2entd2.dat \
 	data_dir/4267_2entg1.dat \
 	data_dir/4267_2entg2.dat \
+	data_dir/4267_2enthc1.dat \
+	data_dir/4267_2enthc2.dat \
 	data_dir/4267_2enthn1.dat \
 	data_dir/4267_2enthn2.dat \
 	data_dir/4267_2entmd.dat \
@@ -60,6 +62,10 @@ set files = ( data_dir/4267_2entam1.dat \
 	html_dir/4267_2entg1_large.html \
 	html_dir/4267_2entg2.html \
 	html_dir/4267_2entg2_large.html \
+	html_dir/4267_2enthc1.html \
+	html_dir/4267_2enthc1_large.html \
+	html_dir/4267_2enthc2.html \
+	html_dir/4267_2enthc2_large.html \
 	html_dir/4267_2enthn1.html \
 	html_dir/4267_2enthn1_large.html \
 	html_dir/4267_2enthn2.html \
@@ -121,6 +127,8 @@ set files = ( data_dir/4267_2entam1.dat \
 	session_dir/4267_2entd2.ds \
 	session_dir/4267_2entg1.ds \
 	session_dir/4267_2entg2.ds \
+	session_dir/4267_2enthc1.ds \
+	session_dir/4267_2enthc2.ds \
 	session_dir/4267_2enthn1.ds \
 	session_dir/4267_2enthn2.ds \
 	session_dir/4267_2entn10.ds \

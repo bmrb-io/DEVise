@@ -39,6 +39,7 @@ set files = (data_dir/4336as1.dat \
 	data_dir/4336csr3_5.dat \
 	data_dir/4336csr3src.dat \
 	data_dir/4336d1.dat \
+	data_dir/4336hc1.dat \
 	data_dir/4336hn1.dat \
 	data_dir/4336md.dat \
 	data_dir/4336p1.dat \
@@ -50,6 +51,7 @@ set files = (data_dir/4336as1.dat \
 	html_dir/4336csr23.html \
 	html_dir/4336csr33.html \
 	html_dir/4336d1.html \
+	html_dir/4336hc1.html \
 	html_dir/4336hn1.html \
 	html_dir/4336p1.html \
 	html_dir/4336y.html \
@@ -61,6 +63,7 @@ set files = (data_dir/4336as1.dat \
 	session_dir/4336csr23.ds \
 	session_dir/4336csr33.ds \
 	session_dir/4336d1.ds \
+	session_dir/4336hc1.ds \
 	session_dir/4336hn1.ds \
 	session_dir/4336p1.ds \
 	data_dir/4336am1.dat \
@@ -73,6 +76,7 @@ set files = (data_dir/4336as1.dat \
 	html_dir/4336csr23_large.html \
 	html_dir/4336csr33_large.html \
 	html_dir/4336d1_large.html \
+	html_dir/4336hc1_large.html \
 	html_dir/4336hn1_large.html \
 	html_dir/4336p1_large.html)
 

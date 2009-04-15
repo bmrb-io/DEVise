@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2008
+// (c) Copyright 2006-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -36,6 +36,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.2.1  2009/04/14 22:09:07  wenger
+// Session file, visualization-specific HTML file and summary page link
+// are now created; removed "legend view" from session template;
+// documented and cleaned up code.  (Still needs help for H vs C
+// visualization.)
+//
+// Revision 1.13  2009/03/24 19:04:50  wenger
+// Fixed layout of nucleic acid deltashift session (made windows line
+// up better, etc.); fixed nucleotide counts in summary html page, and
+// changed residue to nucleotide where appropriate; fixed nucleic acid
+// deltashift html pages so that they link to the nucleic-acid-specific
+// help page.
+//
 // Revision 1.12  2008/12/01 20:37:53  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -173,6 +186,7 @@ public abstract class S2DSummaryHtmlGen {
     private IntKeyHashtable _pctAssignInfo = new IntKeyHashtable();
     private IntKeyHashtable _allShiftsInfo = new IntKeyHashtable();
     private IntKeyHashtable _hVsNInfo = new IntKeyHashtable();
+    private IntKeyHashtable _hVsCInfo = new IntKeyHashtable();
     private IntKeyHashtable _pistachioInfo = new IntKeyHashtable();
     private IntKeyHashtable _ambiguityInfo = new IntKeyHashtable();
 
@@ -594,6 +608,23 @@ TEMP?*/
     }
 
     //-------------------------------------------------------------------
+    // Writes the H vs. C chemical shifts link.
+    protected void writeHvsCShifts(int frameIndex, int peakCount)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeHvsCShifts()");
+	}
+
+	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
+
+	String value = "<a href=\"" + _name +
+	  S2DNames.HVSC_CHEM_SHIFT_SUFFIX + frameIndex + sizeString() +
+	  S2DNames.HTML_SUFFIX + "\">" + peakCount + " peaks</a>";
+	_hVsCInfo.put(frameIndex, value);
+    }
+
+    //-------------------------------------------------------------------
     // Writes the atomic coordinates link.
     protected void writeAtomicCoords(String pdbId, int frameIndex,
       int resCount, int atomCount) throws IOException
@@ -836,6 +867,10 @@ TEMP?*/
                 _writer.write("    <th>Simulated 1H-15N backbone HSQC " +
 		  "spectrum</th>\n");
 	    }
+	    if (!_hVsCInfo.isEmpty()) {
+                _writer.write("    <th>Simulated 1H-13C HSQC " +
+		  "spectrum</th>\n");
+	    }
 	    if (!_pistachioInfo.isEmpty()) {
                 _writer.write("    <th>Assignment figure of merit data</th>\n");
 	    }
@@ -867,6 +902,9 @@ TEMP?*/
 		}
 		if (!_hVsNInfo.isEmpty()) {
 		    writeTableCell(_hVsNInfo, index);
+		}
+		if (!_hVsCInfo.isEmpty()) {
+		    writeTableCell(_hVsCInfo, index);
 		}
 	        if (!_pistachioInfo.isEmpty()) {
 		    writeTableCell(_pistachioInfo, index);

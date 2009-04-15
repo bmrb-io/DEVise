@@ -11,6 +11,8 @@ set files = ( data_dir/15209ac1.dat \
 	data_dir/15209c2.dat \
 	data_dir/15209d1.dat \
 	data_dir/15209d2.dat \
+	data_dir/15209hc1.dat \
+	data_dir/15209hc2.dat \
 	data_dir/15209hn1.dat \
 	data_dir/15209hn2.dat \
 	data_dir/15209md.dat \
@@ -37,6 +39,8 @@ set files = ( data_dir/15209ac1.dat \
 	html_dir/15209d1_large.html \
 	html_dir/15209d2.html \
 	html_dir/15209d2_large.html \
+	html_dir/15209hc1.html \
+	html_dir/15209hc1_large.html \
 	html_dir/15209hn1.html \
 	html_dir/15209hn1_large.html \
 	html_dir/15209p1.html \
@@ -55,6 +59,7 @@ set files = ( data_dir/15209ac1.dat \
 	session_dir/15209c2.ds \
 	session_dir/15209d1.ds \
 	session_dir/15209d2.ds \
+	session_dir/15209hc1.ds \
 	session_dir/15209hn1.ds \
 	session_dir/15209p1.ds \
 	session_dir/15209p2.ds )

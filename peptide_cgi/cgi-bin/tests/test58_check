@@ -11,6 +11,7 @@ set files = ( data_dir/15303ac1.dat \
 	data_dir/15303c1.dat \
 	data_dir/15303d1.dat \
 	data_dir/15303d2.dat \
+	data_dir/15303hc1.dat \
 	data_dir/15303hn1.dat \
 	data_dir/15303hn2.dat \
 	data_dir/15303md.dat \
@@ -35,6 +36,8 @@ set files = ( data_dir/15303ac1.dat \
 	html_dir/15303d1_large.html \
 	html_dir/15303d2.html \
 	html_dir/15303d2_large.html \
+	html_dir/15303hc1.html \
+	html_dir/15303hc1_large.html \
 	html_dir/15303hn1.html \
 	html_dir/15303hn1_large.html \
 	html_dir/15303hn2.html \
@@ -54,6 +57,7 @@ set files = ( data_dir/15303ac1.dat \
 	session_dir/15303c1.ds \
 	session_dir/15303d1.ds \
 	session_dir/15303d2.ds \
+	session_dir/15303hc1.ds \
 	session_dir/15303hn1.ds \
 	session_dir/15303hn2.ds \
 	session_dir/15303p1.ds \

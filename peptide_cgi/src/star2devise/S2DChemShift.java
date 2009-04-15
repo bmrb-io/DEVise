@@ -21,6 +21,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.2.1  2009/04/09 20:20:54  wenger
+// HvsC simulated spectrum stuff is partly in place -- data is generated
+// (but not fully tested, plus lots of temporary code still in place);
+// schema and session template have been generated; processing does not
+// yet generate the session file, specific HTML file, or the link in
+// the summary HTML file.
+//
+// Revision 1.22  2009/03/25 21:49:09  wenger
+// Final cleanup of some of the nucleic-acid-related code, especially
+// getting polymer types correctly for mmCIF files; added nucleic acid
+// tests to pre-release testing document.
+//
 // Revision 1.21  2009/03/24 19:04:50  wenger
 // Fixed layout of nucleic acid deltashift session (made windows line
 // up better, etc.); fixed nucleotide counts in summary html page, and
@@ -188,7 +200,7 @@ public class S2DChemShift {
     protected int[] _resSeqCodes;
     protected String[] _residueLabels;
     protected String[] _atomNames;
-    private String[] _atomTypes;
+    protected String[] _atomTypes;
     protected double[] _chemShiftVals;
     private int[] _ambiguityVals;
     protected int _entityAssemblyID;
@@ -855,6 +867,12 @@ public class S2DChemShift {
 	        System.err.println("IOException: " + ex.toString());
 	    }
 	}
+    }
+
+    //-------------------------------------------------------------------
+    public void writeHvsCShifts(String connectionFile, int frameIndex)
+      throws S2DException
+    {
     }
 
     //-------------------------------------------------------------------

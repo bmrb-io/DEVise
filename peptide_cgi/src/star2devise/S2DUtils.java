@@ -19,6 +19,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.2.1  2009/04/14 22:09:07  wenger
+// Session file, visualization-specific HTML file and summary page link
+// are now created; removed "legend view" from session template;
+// documented and cleaned up code.  (Still needs help for H vs C
+// visualization.)
+//
+// Revision 1.15  2009/03/24 19:04:50  wenger
+// Fixed layout of nucleic acid deltashift session (made windows line
+// up better, etc.); fixed nucleotide counts in summary html page, and
+// changed residue to nucleotide where appropriate; fixed nucleic acid
+// deltashift html pages so that they link to the nucleic-acid-specific
+// help page.
+//
 // Revision 1.14  2009/02/20 22:54:24  wenger
 // RNA visualization now works, using the DNA template; added stub
 // help file for nucleic acid deltashift visualizations.
@@ -100,7 +113,8 @@ public class S2DUtils
       TYPE_ATOMIC_COORDS = 12, TYPE_CHEM_SHIFT_REF1 = 13,
       TYPE_CHEM_SHIFT_REF2 = 14, TYPE_CHEM_SHIFT_REF3 = 15,
       TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18,
-      TYPE_DNA_DELTASHIFT = 19, TYPE_RNA_DELTASHIFT = 20;
+      TYPE_DNA_DELTASHIFT = 19, TYPE_RNA_DELTASHIFT = 20,
+      TYPE_HVSC_CHEM_SHIFTS = 21;
 
     //===================================================================
     // PUBLIC METHODS
@@ -356,6 +370,10 @@ public class S2DUtils
 
 	case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
 	    dataSuffix = S2DNames.HVSN_CHEM_SHIFT_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_HVSC_CHEM_SHIFTS:
+	    dataSuffix = S2DNames.HVSC_CHEM_SHIFT_SUFFIX;
 	    break;
 
         case S2DUtils.TYPE_COUPLING:

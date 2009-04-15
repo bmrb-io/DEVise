@@ -31,6 +31,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.2.1  2009/04/14 22:09:07  wenger
+// Session file, visualization-specific HTML file and summary page link
+// are now created; removed "legend view" from session template;
+// documented and cleaned up code.  (Still needs help for H vs C
+// visualization.)
+//
+// Revision 1.13  2009/03/24 19:04:50  wenger
+// Fixed layout of nucleic acid deltashift session (made windows line
+// up better, etc.); fixed nucleotide counts in summary html page, and
+// changed residue to nucleotide where appropriate; fixed nucleic acid
+// deltashift html pages so that they link to the nucleic-acid-specific
+// help page.
+//
 // Revision 1.12  2008/12/01 20:37:53  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -319,6 +332,19 @@ public class S2DSummaryHtml {
 
 	_normal.writeHvsNShifts(frameIndex, count);
 	_large.writeHvsNShifts(frameIndex, count);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the H vs. C chemical shifts link.
+    public void writeHvsCShifts(int frameIndex, int count)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeHvsCShifts()");
+	}
+
+	_normal.writeHvsCShifts(frameIndex, count);
+	_large.writeHvsCShifts(frameIndex, count);
     }
 
     //-------------------------------------------------------------------

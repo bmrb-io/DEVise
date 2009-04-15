@@ -23,6 +23,7 @@ set files = ( data_dir/uvd/test52_outam1.dat \
 	data_dir/uvd/test52_outas1.dat \
 	data_dir/uvd/test52_outc1.dat \
 	data_dir/uvd/test52_outd1.dat \
+	data_dir/uvd/test52_outhc1.dat \
 	data_dir/uvd/test52_outhn1.dat \
 	data_dir/uvd/test52_outmd.dat \
 	data_dir/uvd/test52_outp1.dat \
@@ -36,6 +37,8 @@ set files = ( data_dir/uvd/test52_outam1.dat \
 	html_dir/uvd/test52_outc1_large.html \
 	html_dir/uvd/test52_outd1.html \
 	html_dir/uvd/test52_outd1_large.html \
+	html_dir/uvd/test52_outhc1.html \
+	html_dir/uvd/test52_outhc1_large.html \
 	html_dir/uvd/test52_outhn1.html \
 	html_dir/uvd/test52_outhn1_large.html \
 	html_dir/uvd/test52_outp1.html \
@@ -47,6 +50,7 @@ set files = ( data_dir/uvd/test52_outam1.dat \
 	session_dir/.uvd/test52_outas1.ds \
 	session_dir/.uvd/test52_outc1.ds \
 	session_dir/.uvd/test52_outd1.ds \
+	session_dir/.uvd/test52_outhc1.ds \
 	session_dir/.uvd/test52_outhn1.ds \
 	session_dir/.uvd/test52_outp1.ds )
 	

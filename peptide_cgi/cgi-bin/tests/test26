@@ -83,7 +83,11 @@ set files = (data_dir/abcdac1.dat data_dir/abcdas1.dat data_dir/abcdc1.dat \
 	html_dir/abcdt13_large.html \
 	html_dir/abcdt21_large.html \
 	html_dir/abcdt22_large.html \
-	html_dir/abcdt23_large.html)
+	html_dir/abcdt23_large.html \
+	data_dir/abcdhc1.dat \
+	html_dir/abcdhc1.html \
+	session_dir/abcdhc1.ds \
+	html_dir/abcdhc1_large.html )
 
 foreach file ($files)
   if (! -f $file) then

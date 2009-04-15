@@ -54,6 +54,7 @@ The following testing steps must be done:
     - LACS Data (CB vs. CA-CB)
     - LACS Data (HA vs. CA-CB)
     - LACS Data (CO vs. CA-CB)
+    - Simulated 1H-13C HSQC spectrum
 
 - Run 's2d -bmrbid 4096 -force' in /var/home/www/public/cgi-bin/bmrb on teal.
 

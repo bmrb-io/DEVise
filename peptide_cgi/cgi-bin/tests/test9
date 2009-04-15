@@ -34,7 +34,8 @@ set files = (data_dir/4845ac1.dat data_dir/4845as1.dat data_dir/4845c1.dat \
 	html_dir/4845c1_large.html \
 	html_dir/4845d1_large.html \
 	html_dir/4845g1_large.html \
-	html_dir/4845p1_large.html)
+	html_dir/4845p1_large.html \
+	data_dir/4845hc1.dat )
 
 
 foreach file ($files)

@@ -1,0 +1,21 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# $Id$
+
+type bmrb-HvsC ascii
+comment #
+whitespace ' ''	'
+
+attr Entity_assembly_ID int
+sorted attr Residue_seq_code int
+attr AcidName string 4
+
+attr Hshift float
+attr Cshift float
+attr Hatom string 5
+attr Catom string 4

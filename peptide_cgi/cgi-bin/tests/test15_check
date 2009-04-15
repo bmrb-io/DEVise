@@ -9,6 +9,7 @@ set files = ( data_dir/4317as1.dat \
 	data_dir/4317csr1_5.dat \
 	data_dir/4317csr1src.dat \
 	data_dir/4317d1.dat \
+	data_dir/4317hc1.dat \
 	data_dir/4317hn1.dat \
 	data_dir/4317md.dat \
 	data_dir/4317p1.dat \
@@ -20,6 +21,7 @@ set files = ( data_dir/4317as1.dat \
 	html_dir/4317csr21.html \
 	html_dir/4317csr31.html \
 	html_dir/4317d1.html \
+	html_dir/4317hc1.html \
 	html_dir/4317hn1.html \
 	html_dir/4317p1.html \
 	html_dir/4317y.html \
@@ -31,6 +33,7 @@ set files = ( data_dir/4317as1.dat \
 	session_dir/4317csr21.ds \
 	session_dir/4317csr31.ds \
 	session_dir/4317d1.ds \
+	session_dir/4317hc1.ds \
 	session_dir/4317hn1.ds \
 	session_dir/4317p1.ds \
 	data_dir/4317am1.dat \
@@ -43,6 +46,7 @@ set files = ( data_dir/4317as1.dat \
 	html_dir/4317csr21_large.html \
 	html_dir/4317csr31_large.html \
 	html_dir/4317d1_large.html \
+	html_dir/4317hc1_large.html \
 	html_dir/4317hn1_large.html \
 	html_dir/4317p1_large.html )
 

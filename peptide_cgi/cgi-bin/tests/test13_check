@@ -4,6 +4,7 @@ set files = (data_dir/vis_server/test13_outas1.dat \
 	data_dir/vis_server/test13_outc1.dat \
 	data_dir/vis_server/test13_outd1.dat \
 	data_dir/vis_server/test13_outg1.dat \
+	data_dir/vis_server/test13_outhc1.dat \
 	data_dir/vis_server/test13_outhn1.dat \
 	data_dir/vis_server/test13_outmd.dat \
 	data_dir/vis_server/test13_outp1.dat \
@@ -19,6 +20,7 @@ set files = (data_dir/vis_server/test13_outas1.dat \
 	html_dir/test13_outc1.html \
 	html_dir/test13_outd1.html \
 	html_dir/test13_outg1.html \
+	html_dir/test13_outhc1.html \
 	html_dir/test13_outhn1.html \
 	html_dir/test13_outp1.html \
 	html_dir/test13_outt11.html \
@@ -34,6 +36,7 @@ set files = (data_dir/vis_server/test13_outas1.dat \
 	session_dir/vis_server/test13_outc1.ds \
 	session_dir/vis_server/test13_outd1.ds \
 	session_dir/vis_server/test13_outg1.ds \
+	session_dir/vis_server/test13_outhc1.ds \
 	session_dir/vis_server/test13_outhn1.ds \
 	session_dir/vis_server/test13_outp1.ds \
 	session_dir/vis_server/test13_outt11.ds \
@@ -50,6 +53,7 @@ set files = (data_dir/vis_server/test13_outas1.dat \
 	html_dir/test13_outc1_large.html \
 	html_dir/test13_outd1_large.html \
 	html_dir/test13_outg1_large.html \
+	html_dir/test13_outhc1_large.html \
 	html_dir/test13_outhn1_large.html \
 	html_dir/test13_outp1_large.html \
 	html_dir/test13_outt11_large.html \

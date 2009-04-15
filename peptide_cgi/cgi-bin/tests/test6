@@ -40,6 +40,7 @@ set files = ( data_dir/vis_server/test6_outac1.dat \
 	data_dir/vis_server/test6_outcsr1_4.dat \
 	data_dir/vis_server/test6_outcsr1_5.dat \
 	data_dir/vis_server/test6_outd1.dat \
+	data_dir/vis_server/test6_outhc1.dat \
 	data_dir/vis_server/test6_outhn1.dat \
 	data_dir/vis_server/test6_outmd.dat \
 	data_dir/vis_server/test6_outp1.dat \
@@ -52,6 +53,7 @@ set files = ( data_dir/vis_server/test6_outac1.dat \
 	html_dir/test6_outcsr21.html \
 	html_dir/test6_outcsr31.html \
 	html_dir/test6_outd1.html \
+	html_dir/test6_outhc1.html \
 	html_dir/test6_outhn1.html \
 	html_dir/test6_outp1.html \
 	html_dir/test6_outy.html \
@@ -64,6 +66,7 @@ set files = ( data_dir/vis_server/test6_outac1.dat \
 	session_dir/vis_server/test6_outcsr21.ds \
 	session_dir/vis_server/test6_outcsr31.ds \
 	session_dir/vis_server/test6_outd1.ds \
+	session_dir/vis_server/test6_outhc1.ds \
 	session_dir/vis_server/test6_outhn1.ds \
 	session_dir/vis_server/test6_outp1.ds \
 	data_dir/vis_server/test6_outam1.dat \
@@ -77,6 +80,7 @@ set files = ( data_dir/vis_server/test6_outac1.dat \
 	html_dir/test6_outcsr21_large.html \
 	html_dir/test6_outcsr31_large.html \
 	html_dir/test6_outd1_large.html \
+	html_dir/test6_outhc1_large.html \
 	html_dir/test6_outhn1_large.html \
 	html_dir/test6_outp1_large.html )
 

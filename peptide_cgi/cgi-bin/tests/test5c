@@ -25,6 +25,7 @@ set files = (data_dir/vis_server/test5c_outac1.dat \
 	data_dir/vis_server/test5c_outcsr1_3.dat \
 	data_dir/vis_server/test5c_outcsr1_4.dat \
 	data_dir/vis_server/test5c_outd1.dat \
+	data_dir/vis_server/test5c_outhc1.dat \
 	data_dir/vis_server/test5c_outhn1.dat \
 	data_dir/vis_server/test5c_outmd.dat \
 	data_dir/vis_server/test5c_outp1.dat \
@@ -35,6 +36,8 @@ set files = (data_dir/vis_server/test5c_outac1.dat \
 	html_dir/test5c_outc1.html \
 	html_dir/test5c_outcsr1.html \
 	html_dir/test5c_outd1.html \
+	html_dir/test5c_outhc1.html \
+	html_dir/test5c_outhc1_large.html \
 	html_dir/test5c_outhn1.html \
 	html_dir/test5c_outp1.html \
 	html_dir/test5c_outy.html \
@@ -45,6 +48,7 @@ set files = (data_dir/vis_server/test5c_outac1.dat \
 	session_dir/vis_server/test5c_outc1.ds \
 	session_dir/vis_server/test5c_outcsr1.ds \
 	session_dir/vis_server/test5c_outd1.ds \
+	session_dir/vis_server/test5c_outhc1.ds \
 	session_dir/vis_server/test5c_outhn1.ds \
 	session_dir/vis_server/test5c_outp1.ds)
 	

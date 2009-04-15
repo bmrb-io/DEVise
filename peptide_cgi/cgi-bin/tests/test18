@@ -22,6 +22,7 @@ set files = (data_dir/vis_server/test18_outas1.dat \
 	data_dir/vis_server/test18_outc1.dat \
 	data_dir/vis_server/test18_outd1.dat \
 	data_dir/vis_server/test18_outg1.dat \
+	data_dir/vis_server/test18_outhc1.dat \
 	data_dir/vis_server/test18_outhn1.dat \
 	data_dir/vis_server/test18_outmd.dat \
 	data_dir/vis_server/test18_outn1.dat \
@@ -46,6 +47,7 @@ set files = (data_dir/vis_server/test18_outas1.dat \
 	html_dir/test18_outc1.html \
 	html_dir/test18_outd1.html \
 	html_dir/test18_outg1.html \
+	html_dir/test18_outhc1.html \
 	html_dir/test18_outhn1.html \
 	html_dir/test18_outn1.html \
 	html_dir/test18_outn2.html \
@@ -70,6 +72,7 @@ set files = (data_dir/vis_server/test18_outas1.dat \
 	session_dir/vis_server/test18_outc1.ds \
 	session_dir/vis_server/test18_outd1.ds \
 	session_dir/vis_server/test18_outg1.ds \
+	session_dir/vis_server/test18_outhc1.ds \
 	session_dir/vis_server/test18_outhn1.ds \
 	session_dir/vis_server/test18_outn1.ds \
 	session_dir/vis_server/test18_outn2.ds \
@@ -95,6 +98,7 @@ set files = (data_dir/vis_server/test18_outas1.dat \
 	html_dir/test18_outc1_large.html \
 	html_dir/test18_outd1_large.html \
 	html_dir/test18_outg1_large.html \
+	html_dir/test18_outhc1_large.html \
 	html_dir/test18_outhn1_large.html \
 	html_dir/test18_outn1_large.html \
 	html_dir/test18_outn2_large.html \

@@ -74,7 +74,19 @@ set files = ( data_dir/5076ac1.dat data_dir/5076as1.dat data_dir/5076as2.dat \
 	html_dir/5076t13_large.html \
 	html_dir/5076t14_large.html \
 	html_dir/5076t15_large.html \
-	html_dir/5076t16_large.html )
+	html_dir/5076t16_large.html \
+	data_dir/5076hc1.dat \
+	data_dir/5076hc2.dat \
+	data_dir/5076hc3.dat \
+	html_dir/5076hc1.html \
+	html_dir/5076hc1_large.html \
+	html_dir/5076hc2.html \
+	html_dir/5076hc2_large.html \
+	html_dir/5076hc3.html \
+	html_dir/5076hc3_large.html \
+	session_dir/5076hc1.ds \
+	session_dir/5076hc2.ds \
+	session_dir/5076hc3.ds )
 
 foreach file ($files)
   if (! -f $file) then

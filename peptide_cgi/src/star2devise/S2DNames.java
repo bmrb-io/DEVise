@@ -19,6 +19,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.2.1  2009/04/09 20:20:54  wenger
+// HvsC simulated spectrum stuff is partly in place -- data is generated
+// (but not fully tested, plus lots of temporary code still in place);
+// schema and session template have been generated; processing does not
+// yet generate the session file, specific HTML file, or the link in
+// the summary HTML file.
+//
+// Revision 1.10  2009/02/05 20:24:37  wenger
+// All tests now work (including new nucleic acid tests), but lots of
+// cleanup to be done plus actually writing correct deltashifts for
+// nucleic acids.
+//
 // Revision 1.9  2008/11/14 21:14:59  wenger
 // Fixed bugs 070 and 075 (problems with percent assignment values
 // sometimes being greater than 100% for NMR-STAR 3.1 files).
@@ -162,6 +174,7 @@ public class S2DNames
     public static final String DELTASHIFT_SUFFIX = "d";
     public static final String COUPLING_SUFFIX = "g";
     public static final String HETERONUCLEAR_NOE_SUFFIX = "n";
+    public static final String HVSC_CHEM_SHIFT_SUFFIX = "hc";
     public static final String HVSN_CHEM_SHIFT_SUFFIX = "hn";
     public static final String HX_PROT_FACTOR_SUFFIX = "f";
     public static final String HX_RATE_SUFFIX = "r";

@@ -33,6 +33,7 @@ set files = ( data_dir/uvd/test48_outam1.dat \
 	data_dir/uvd/test48_outcsr1_data.out \
 	data_dir/uvd/test48_outcsr1src.dat \
 	data_dir/uvd/test48_outd1.dat \
+	data_dir/uvd/test48_outhc1.dat \
 	data_dir/uvd/test48_outhn1.dat \
 	data_dir/uvd/test48_outmd.dat \
 	data_dir/uvd/test48_outp1.dat \
@@ -52,6 +53,8 @@ set files = ( data_dir/uvd/test48_outam1.dat \
 	html_dir/uvd/test48_outcsr31_large.html \
 	html_dir/uvd/test48_outd1.html \
 	html_dir/uvd/test48_outd1_large.html \
+	html_dir/uvd/test48_outhc1.html \
+	html_dir/uvd/test48_outhc1_large.html \
 	html_dir/uvd/test48_outhn1.html \
 	html_dir/uvd/test48_outhn1_large.html \
 	html_dir/uvd/test48_outp1.html \
@@ -66,6 +69,7 @@ set files = ( data_dir/uvd/test48_outam1.dat \
 	session_dir/.uvd/test48_outcsr21.ds \
 	session_dir/.uvd/test48_outcsr31.ds \
 	session_dir/.uvd/test48_outd1.ds \
+	session_dir/.uvd/test48_outhc1.ds \
 	session_dir/.uvd/test48_outhn1.ds \
 	session_dir/.uvd/test48_outp1.ds )
 	

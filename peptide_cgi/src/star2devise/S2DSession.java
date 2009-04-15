@@ -20,6 +20,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.2.1  2009/04/14 22:09:07  wenger
+// Session file, visualization-specific HTML file and summary page link
+// are now created; removed "legend view" from session template;
+// documented and cleaned up code.  (Still needs help for H vs C
+// visualization.)
+//
+// Revision 1.17  2009/03/25 15:42:51  wenger
+// Changed version to 11.5.0 (because I think this is a big enough
+// change for a new minor version, not just a new revision); fixed
+// up help for atomic coordinates, and added help for nucleic acid
+// delta shifts.
+//
 // Revision 1.16  2009/03/18 18:36:29  wenger
 // Changed atom_coord_jmol.base to work off of 15083 instead of 4267,
 // so we have multiple entities, and both a protein and a nucleic acid;
@@ -241,6 +253,15 @@ public class S2DSession {
 	    dataSuffix = S2DNames.HVSN_CHEM_SHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
 	    searchString1 = "4267hn1";
+	    searchString2 = "4267rc1";
+	    replaceString2 = name + S2DNames.RES_COUNT_SUFFIX + frameIndex;
+	    break;
+
+	case S2DUtils.TYPE_HVSC_CHEM_SHIFTS:
+	    baseName = "h_vs_c.base";
+	    dataSuffix = S2DNames.HVSC_CHEM_SHIFT_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "4267hc1";
 	    searchString2 = "4267rc1";
 	    replaceString2 = name + S2DNames.RES_COUNT_SUFFIX + frameIndex;
 	    break;

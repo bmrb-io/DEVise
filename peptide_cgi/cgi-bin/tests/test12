@@ -19,6 +19,7 @@ endif
 
 echo "Checking output files"
 
+#TEMP -- needs "large" specific html files
 set files = (data_dir/vis_server/test12_outac1.dat \
 	data_dir/vis_server/test12_outas1.dat \
 	data_dir/vis_server/test12_outc1.dat \
@@ -27,6 +28,7 @@ set files = (data_dir/vis_server/test12_outac1.dat \
 	data_dir/vis_server/test12_outcsr1_3.dat \
 	data_dir/vis_server/test12_outcsr1_4.dat \
 	data_dir/vis_server/test12_outd1.dat \
+	data_dir/vis_server/test12_outhc1.dat \
 	data_dir/vis_server/test12_outhn1.dat \
 	data_dir/vis_server/test12_outmd.dat \
 	data_dir/vis_server/test12_outp1.dat \
@@ -38,6 +40,7 @@ set files = (data_dir/vis_server/test12_outac1.dat \
 	html_dir/test12_outcsr11.html \
 	html_dir/test12_outcsr21.html \
 	html_dir/test12_outd1.html \
+	html_dir/test12_outhc1.html \
 	html_dir/test12_outhn1.html \
 	html_dir/test12_outp1.html \
 	html_dir/test12_outy.html \
@@ -49,6 +52,7 @@ set files = (data_dir/vis_server/test12_outac1.dat \
 	session_dir/vis_server/test12_outcsr11.ds \
 	session_dir/vis_server/test12_outcsr21.ds \
 	session_dir/vis_server/test12_outd1.ds \
+	session_dir/vis_server/test12_outhc1.ds \
 	session_dir/vis_server/test12_outhn1.ds \
 	session_dir/vis_server/test12_outp1.ds)
 

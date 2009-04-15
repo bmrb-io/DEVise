@@ -12,6 +12,8 @@ set files = ( data_dir/5085am1.dat \
 	data_dir/5085d2.dat \
 	data_dir/5085g1.dat \
 	data_dir/5085g2.dat \
+	data_dir/5085hc1.dat \
+	data_dir/5085hc2.dat \
 	data_dir/5085hn1.dat \
 	data_dir/5085hn2.dat \
 	data_dir/5085md.dat \
@@ -40,6 +42,8 @@ set files = ( data_dir/5085am1.dat \
 	html_dir/5085g1_large.html \
 	html_dir/5085g2.html \
 	html_dir/5085g2_large.html \
+	html_dir/5085hc1.html \
+	html_dir/5085hc1_large.html \
 	html_dir/5085hn1.html \
 	html_dir/5085hn1_large.html \
 	html_dir/5085hn2.html \
@@ -61,6 +65,7 @@ set files = ( data_dir/5085am1.dat \
 	session_dir/5085d2.ds \
 	session_dir/5085g1.ds \
 	session_dir/5085g2.ds \
+	session_dir/5085hc1.ds \
 	session_dir/5085hn1.ds \
 	session_dir/5085hn2.ds \
 	session_dir/5085p1.ds \

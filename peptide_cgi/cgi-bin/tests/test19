@@ -43,6 +43,7 @@ echo "Checking output files"
 
 set files = (data_dir/6318as1.dat \
 	data_dir/6318d1.dat \
+	data_dir/6318hc1.dat \
 	data_dir/6318hn1.dat \
 	data_dir/6318md.dat \
 	data_dir/6318p1.dat \
@@ -52,6 +53,7 @@ set files = (data_dir/6318as1.dat \
 	data_dir/6318rl.dat \
 	html_dir/6318as1.html \
 	html_dir/6318d1.html \
+	html_dir/6318hc1.html \
 	html_dir/6318hn1.html \
 	html_dir/6318p1.html \
 	html_dir/6318ps1.html \
@@ -60,6 +62,7 @@ set files = (data_dir/6318as1.dat \
 	session_dir/6318acdd \
 	session_dir/6318as1.ds \
 	session_dir/6318d1.ds \
+	session_dir/6318hc1.ds \
 	session_dir/6318hn1.ds \
 	session_dir/6318p1.ds \
 	session_dir/6318ps1.ds \
@@ -69,6 +72,7 @@ set files = (data_dir/6318as1.dat \
 	html_dir/6318am1_large.html \
 	html_dir/6318as1_large.html \
 	html_dir/6318d1_large.html \
+	html_dir/6318hc1_large.html \
 	html_dir/6318hn1_large.html \
 	html_dir/6318p1_large.html \
 	html_dir/6318ps1_large.html)

@@ -27,6 +27,8 @@ set files = ( data_dir/15028am1.dat \
 	data_dir/15028c2.dat \
 	data_dir/15028d1.dat \
 	data_dir/15028d2.dat \
+	data_dir/15028hc1.dat \
+	data_dir/15028hc2.dat \
 	data_dir/15028hn1.dat \
 	data_dir/15028hn2.dat \
 	data_dir/15028md.dat \
@@ -51,6 +53,10 @@ set files = ( data_dir/15028am1.dat \
 	html_dir/15028d1_large.html \
 	html_dir/15028d2.html \
 	html_dir/15028d2_large.html \
+	html_dir/15028hc1.html \
+	html_dir/15028hc1_large.html \
+	html_dir/15028hc2.html \
+	html_dir/15028hc2_large.html \
 	html_dir/15028hn1.html \
 	html_dir/15028hn1_large.html \
 	html_dir/15028hn2.html \
@@ -70,6 +76,8 @@ set files = ( data_dir/15028am1.dat \
 	session_dir/15028c2.ds \
 	session_dir/15028d1.ds \
 	session_dir/15028d2.ds \
+	session_dir/15028hc1.ds \
+	session_dir/15028hc2.ds \
 	session_dir/15028hn1.ds \
 	session_dir/15028hn2.ds \
 	session_dir/15028p1.ds \

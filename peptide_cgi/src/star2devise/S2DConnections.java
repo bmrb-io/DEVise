@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2007
+// (c) Copyright 2001-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.6.2  2009/04/14 22:09:07  wenger
+// Session file, visualization-specific HTML file and summary page link
+// are now created; removed "legend view" from session template;
+// documented and cleaned up code.  (Still needs help for H vs C
+// visualization.)
+//
+// Revision 1.3.6.1  2009/04/09 20:20:54  wenger
+// HvsC simulated spectrum stuff is partly in place -- data is generated
+// (but not fully tested, plus lots of temporary code still in place);
+// schema and session template have been generated; processing does not
+// yet generate the session file, specific HTML file, or the link in
+// the summary HTML file.
+//
+// Revision 1.3  2007/08/20 20:26:07  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 20:23:10  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -73,7 +91,7 @@ public class S2DConnections {
 
     class AminoAcid {
 	public String _name;
-        public Vector _bonds; // really, half-bonds
+        public Vector _bonds; // really, half-bonds (Bond objects)
     }
 
     class Bond {
@@ -203,7 +221,12 @@ public class S2DConnections {
     }
 
     //-------------------------------------------------------------------
-    // Constructor.
+    /**
+     * Get the list of bonds for the given amino acid.
+     * @param The name of the amino acid -- can be 1 or 3 letter
+     * @return A Vector of Bond objects representing the half-bonds in
+       the given amino acid
+     */
     public Vector getBonds(String acidName) throws S2DException
     {
 	if (doDebugOutput(12)) {

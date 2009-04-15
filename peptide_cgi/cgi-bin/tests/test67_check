@@ -1,6 +1,5 @@
 echo "Checking output files"
 
-#TEMPTEMP -- I don't think we should get hn for NAs
 set files = ( data_dir/15080ac1.dat \
 	data_dir/15080ac2.dat \
 	data_dir/15080as1.dat \

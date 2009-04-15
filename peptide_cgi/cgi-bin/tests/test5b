@@ -40,7 +40,11 @@ set files = (data_dir/4081as1.dat data_dir/4081c1.dat data_dir/4081csr1_1.dat \
 	html_dir/4081y.html html_dir/4081y_large.html \
 	session_dir/4081acdd session_dir/4081as1.ds session_dir/4081c1.ds \
 	session_dir/4081csr1.ds session_dir/4081d1.ds session_dir/4081hn1.ds \
-	session_dir/4081p1.ds)
+	session_dir/4081p1.ds \
+	data_dir/4081hc1.dat \
+	html_dir/4081hc1.html \
+	html_dir/4081hc1_large.html \
+	session_dir/4081hn1.ds )
 
 foreach file ($files)
   if (! -f $file) then

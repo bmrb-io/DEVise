@@ -92,7 +92,11 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	html_dir/lacs_example1t13_large.html \
 	html_dir/lacs_example1t21_large.html \
 	html_dir/lacs_example1t22_large.html \
-	html_dir/lacs_example1t23_large.html)
+	html_dir/lacs_example1t23_large.html \
+	data_dir/lacs_example1hc1.dat \
+	html_dir/lacs_example1hc1.html \
+	session_dir/lacs_example1hc1.ds \
+	html_dir/lacs_example1hc1_large.html )
 
 foreach file ($files)
   if (! -f $file) then

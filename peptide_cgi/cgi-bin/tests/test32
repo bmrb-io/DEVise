@@ -23,6 +23,7 @@ set files = ( data_dir/4081urac1.dat \
 	data_dir/4081uras1.dat \
 	data_dir/4081urc1.dat \
 	data_dir/4081urd1.dat \
+	data_dir/4081urhc1.dat \
 	data_dir/4081urhn1.dat \
 	data_dir/4081urmd.dat \
 	data_dir/4081urp1.dat \
@@ -33,6 +34,7 @@ set files = ( data_dir/4081urac1.dat \
 	html_unreleased/4081uras1.html \
 	html_unreleased/4081urc1.html \
 	html_unreleased/4081urd1.html \
+	html_unreleased/4081urhc1.html \
 	html_unreleased/4081urhn1.html \
 	html_unreleased/4081urp1.html \
 	html_unreleased/4081ury.html \
@@ -43,6 +45,7 @@ set files = ( data_dir/4081urac1.dat \
 	session_dir/.unreleased/4081uras1.ds \
 	session_dir/.unreleased/4081urc1.ds \
 	session_dir/.unreleased/4081urd1.ds \
+	session_dir/.unreleased/4081urhc1.ds \
 	session_dir/.unreleased/4081urhn1.ds \
 	session_dir/.unreleased/4081urp1.ds \
 	data_dir/4081urlacsc1.dat \
@@ -67,6 +70,7 @@ set files = ( data_dir/4081urac1.dat \
 	html_unreleased/4081uras1_large.html \
 	html_unreleased/4081urc1_large.html \
 	html_unreleased/4081urd1_large.html \
+	html_unreleased/4081urhc1_large.html \
 	html_unreleased/4081urhn1_large.html \
 	html_unreleased/4081urlacs1_large.html \
 	html_unreleased/4081urlacs2_large.html \

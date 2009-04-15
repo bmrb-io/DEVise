@@ -24,6 +24,7 @@ set files = ( data_dir/uvd/test49_outam1.dat \
 	data_dir/uvd/test49_outc1.dat \
 	data_dir/uvd/test49_outd1.dat \
 	data_dir/uvd/test49_outg1.dat \
+	data_dir/uvd/test49_outhc1.dat \
 	data_dir/uvd/test49_outhn1.dat \
 	data_dir/uvd/test49_outlacsc1.dat \
 	data_dir/uvd/test49_outlacsc2.dat \
@@ -66,6 +67,8 @@ set files = ( data_dir/uvd/test49_outam1.dat \
 	html_dir/uvd/test49_outd1_large.html \
 	html_dir/uvd/test49_outg1.html \
 	html_dir/uvd/test49_outg1_large.html \
+	html_dir/uvd/test49_outhc1.html \
+	html_dir/uvd/test49_outhc1_large.html \
 	html_dir/uvd/test49_outhn1.html \
 	html_dir/uvd/test49_outhn1_large.html \
 	html_dir/uvd/test49_outlacs1.html \
@@ -116,6 +119,7 @@ set files = ( data_dir/uvd/test49_outam1.dat \
 	session_dir/.uvd/test49_outc1.ds \
 	session_dir/.uvd/test49_outd1.ds \
 	session_dir/.uvd/test49_outg1.ds \
+	session_dir/.uvd/test49_outhc1.ds \
 	session_dir/.uvd/test49_outhn1.ds \
 	session_dir/.uvd/test49_outlacs1.ds \
 	session_dir/.uvd/test49_outlacs2.ds \
