@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.133  2009/04/15 16:21:04  wenger
+// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
+// fixed test61 and test61_3.
+//
 // Revision 1.132.2.3  2009/04/14 22:20:50  wenger
 // Added help for simulated H vs C spectrum.
 //
@@ -535,7 +539,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.0x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.0";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

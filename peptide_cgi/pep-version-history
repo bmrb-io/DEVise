@@ -7,11 +7,6 @@ Peptide-CGI 11.6.0
 * Added visualization of simulated 1H-13C HSQC spectrum.
 
 
-Peptide-CGI 11.5.1
-------------------
-(Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
-
-
 Peptide-CGI 11.5.0
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
