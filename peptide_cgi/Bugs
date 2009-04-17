@@ -380,6 +380,10 @@ Num Date        Status  Description
 			(maybe because of single-letter amino acid codes?).
 			(wenger)
 
+083 4/17/09	OPEN	Open 5838/1PSB 3D visualization, change from EA 1
+			to EA 3 and back -> data view stays at small size.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
