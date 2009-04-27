@@ -5,4 +5,5 @@ tar cvfXz devise_sources.tar.gz scripts/src_exclude \
     design_doc doc generic graphics graphics.new hp issm lib linux \
     public run run_public run.new scripts sgi \
     solaris solsparc src sun tape util xvertext Java/JavaScreen dist \
-    linux_amd64 linux_rh72 linux_rh73 linux_rh9 linux_tao10
+    linux_amd64 linux_rh72 linux_rh73 linux_rh9 linux_tao10 linux_centos \
+    linux_rhel5
