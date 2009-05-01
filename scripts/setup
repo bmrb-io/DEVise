@@ -17,6 +17,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.7  2006/07/14 18:35:49  wenger
+#  Added release_clean makefile target and corresponding script.
+#
 #  Revision 1.6  2006/07/14 14:45:10  wenger
 #  Changed release_std script to release to solsparc, linux_centos,
 #  and linux_tao10; fixed some paths in setup script.
@@ -134,6 +137,7 @@ if (-d solsparc) then
   cd solsparc
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/devvg . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
@@ -147,6 +151,7 @@ if (-d sun) then
   cd sun
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/devvg . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
@@ -159,6 +164,7 @@ if (-d hp) then
   cd hp
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/devvg . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
@@ -171,6 +177,7 @@ if (-d sgi) then
   cd sgi
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/devvg . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
@@ -183,6 +190,7 @@ if (-d linux) then
   cd linux
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/devvg . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
@@ -195,6 +203,7 @@ if (-d aix) then
   cd aix
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/devvg . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
@@ -207,6 +216,7 @@ if (-d alpha_osf20) then
   cd alpha_osf20
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/devvg . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
@@ -219,6 +229,7 @@ if (-d pmax_ul43a) then
   cd pmax_ul43a
   ln -s ../solaris/Makefile . >& /dev/null
   ln -s ../solaris/dev . >& /dev/null
+  ln -s ../solaris/devvg . >& /dev/null
   ln -s ../solaris/dev mul >& /dev/null
   ln -s ../solaris/devcs . >& /dev/null
   ln -s ../solaris/clean_dyn_lib . >& /dev/null
