@@ -35,19 +35,19 @@ PERL_BIN2P = /usr/bin
 # BIN3 is for compiling.
 JAVA_BIN3 = /usr/bin
 
-POP_DIR = /bmrb/devise/installed/js
-SERV_DIR = /bmrb/devise/installed/js
-JAR_DIR = /bmrb/htdocs/devise
-CGI_DIR = /bmrb/htdocs/cgi-bin
+POP_DIR = /website/devise/js.installed
+SERV_DIR = /website/devise/js.installed
+JAR_DIR = /website/htdocs/devise
+CGI_DIR = /website/htdocs/cgi-bin
 IDSTR = regular
 
 # Where the DEVise sessions, schemas, etc., are installed.
-DEVISE_VIS = /bmrb/devise/installed/demo
+DEVISE_VIS = /website/devise/demo
 
 # This is who gets email about any errors.
-ERROR_EMAIL = devise@cs.wisc.edu
+ERROR_EMAIL = web@bmrb.wisc.edu
 
-INSTALL_HOST = icnm.cerm.unifi.it
+INSTALL_HOST = swordfish.bmrb.wisc.edu
 
 # You should probably set this to 0 if you're running more than one JSS
 # on the same machine.
