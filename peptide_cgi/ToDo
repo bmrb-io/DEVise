@@ -355,9 +355,10 @@ Num Date        Status  Pri     Description
 091 4/25/09	OPEN	4	Add Peptide-CGI version history link to
 				summary pages. (wenger)
 
-092 5/7/09	OPEN	3	Add a button or link on the summary page
+092 5/7/09	DONE	3	Add a button or link on the summary page
 				that forces reprocessing of the entry.
 				(wenger)
+				(Done by wenger, 5/11/09.)
 
 * Status:
 OPEN = item has not yet been addressed

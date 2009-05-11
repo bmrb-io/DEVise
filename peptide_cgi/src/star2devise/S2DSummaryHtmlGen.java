@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2009/04/15 16:21:04  wenger
+// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
+// fixed test61 and test61_3.
+//
 // Revision 1.13.2.1  2009/04/14 22:09:07  wenger
 // Session file, visualization-specific HTML file and summary page link
 // are now created; removed "legend view" from session template;
@@ -359,6 +363,29 @@ TEMP?*/
 		// writeFrameDetails();
 
 		_writer.write("<hr>\n");
+
+                String action = _isUvd ? S2DNames.UVD_CGI_URL :
+		  S2DNames.CGI_URL;
+		_writer.write("\n<form name=\"input\" action=\"" + action +
+		  "\" " + "method=\"get\">\n");
+	        if (_isUvd) {
+		    _writer.write("<input type=\"hidden\" name=\"file\" " +
+		      "value=\"" + (String)_localFiles.elementAt(0) + "\">\n");
+		    _writer.write("<input type=\"hidden\" name=\"name\" " +
+		      "value=\"" + _name + "\">\n");
+		} else {
+		    _writer.write("<input type=\"hidden\" name=\"number\" " +
+		      "value=\"" + _name + "\">\n");
+		}
+		_writer.write("<input type=\"hidden\" name=\"force\" " +
+		  "value=\"1\">\n");
+		_writer.write("<input type=\"hidden\" name=\"size_str\" " +
+		  "value=\"" + sizeString() + "\">\n");
+
+		_writer.write("<input type=\"submit\" value=\"Force " +
+		  "reprocessing\">\n");
+		_writer.write("</form>\n");
+
 	        _writer.write("\n<p>" + VERSION_LABEL + ": {" +
 	          S2DMain.PEP_CGI_VERSION + "}</p>\n");
 	        _writer.write("<p>" + GEN_DATE_LABEL + ": {" +

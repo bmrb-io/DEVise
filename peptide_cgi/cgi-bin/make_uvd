@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2007
+#  (c) Copyright 2007-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -50,6 +50,7 @@ $do_pdb = $query->param('do_pdb');
 $do_csr = $query->param('do_csr');
 $csr_index = $query->param('csr_index');
 my $size_str = $query->param('size_str') || '';
+my $force = $query->param('force') || '';
 
 print "  file = $file\n" if ($debug);
 print "  name = $name\n" if ($debug);
@@ -80,6 +81,10 @@ if ($do_pdb) {
 } else {
   $cmd = "./uvd -file $file -name $name";
 }
+if ($force) {
+  $cmd = $cmd . " -force";
+}
+
 my $result = `$cmd`;
 chomp $result;
 if ($result ne "OK") {

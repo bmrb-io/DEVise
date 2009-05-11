@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2007/08/20 20:26:09  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 20:23:12  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -94,7 +99,7 @@ public class S2DSessionFileData extends S2DFileData
 	// Get the version of peptide-cgi that created the
 	// coordinate session file.
 	String tmpValue = getLabeledValue(line,
-	  S2DSummaryHtml.VERSION_LABEL);
+	  S2DSummaryHtmlGen.VERSION_LABEL);
 	if (tmpValue != null) {
 	    fileVersion = tmpValue;
 	    if (doDebugOutput(13)) {
@@ -104,7 +109,7 @@ public class S2DSessionFileData extends S2DFileData
 
 	// Get the creation time/date of the coordinate session file.
 	tmpValue = getLabeledValue(line,
-	  S2DSummaryHtml.GEN_DATE_LABEL);
+	  S2DSummaryHtmlGen.GEN_DATE_LABEL);
 	if (tmpValue != null) {
 	    fileDate = DateFormat.getDateTimeInstance().parse(tmpValue);
 	    if (doDebugOutput(13)) {

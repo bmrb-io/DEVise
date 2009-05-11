@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2007/08/20 20:26:10  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.3  2006/02/01 21:34:32  wenger
 // Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
 // to the trunk.
@@ -131,7 +136,7 @@ public class S2DSummaryFileData extends S2DFileData
 	// Get the version of peptide-cgi that created the
 	// summary file.
 	String tmpValue = getLabeledValue(line,
-	  S2DSummaryHtml.VERSION_LABEL);
+	  S2DSummaryHtmlGen.VERSION_LABEL);
 	if (tmpValue != null) {
 	    fileVersion = tmpValue;
 	    if (doDebugOutput(13)) {
@@ -141,7 +146,7 @@ public class S2DSummaryFileData extends S2DFileData
 
 	// Get the creation time/date of the summary file.
 	tmpValue = getLabeledValue(line,
-	  S2DSummaryHtml.GEN_DATE_LABEL);
+	  S2DSummaryHtmlGen.GEN_DATE_LABEL);
 	if (tmpValue != null) {
 	    fileDate = DateFormat.getDateTimeInstance().parse(tmpValue);
 	    if (doDebugOutput(13)) {
@@ -151,7 +156,7 @@ public class S2DSummaryFileData extends S2DFileData
 	}
 
 	// Get any related BMRB IDs.
-	tmpValue = getLabeledValue(line, S2DSummaryHtml.BMRB_ID_LABEL);
+	tmpValue = getLabeledValue(line, S2DSummaryHtmlGen.BMRB_ID_LABEL);
 	if (tmpValue != null) {
 	    if (doDebugOutput(13)) {
 	        System.out.println("Related BMRB ID: " + tmpValue);
@@ -160,7 +165,7 @@ public class S2DSummaryFileData extends S2DFileData
 	}
 
 	// Get any related PDB IDs.
-	tmpValue = getLabeledValue(line, S2DSummaryHtml.PDB_ID_LABEL);
+	tmpValue = getLabeledValue(line, S2DSummaryHtmlGen.PDB_ID_LABEL);
 	if (tmpValue != null) {
 	    if (doDebugOutput(13)) {
 	        System.out.println("Related PDB ID: " + tmpValue);

@@ -31,6 +31,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2009/04/15 16:21:04  wenger
+// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
+// fixed test61 and test61_3.
+//
 // Revision 1.13.2.1  2009/04/14 22:09:07  wenger
 // Session file, visualization-specific HTML file and summary page link
 // are now created; removed "legend view" from session template;
@@ -106,11 +110,6 @@ public class S2DSummaryHtml {
     // VARIABLES
 
     private static final int DEBUG = 0;
-
-    public static final String VERSION_LABEL = "PepCgi_version";
-    public static final String GEN_DATE_LABEL = "Generation_date";
-    public static final String BMRB_ID_LABEL = "Related_BMRB_ID";
-    public static final String PDB_ID_LABEL = "Related_PDB_ID";
 
     private String _htmlDir = null;
 

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2007
+#  (c) Copyright 1999-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -56,6 +56,7 @@ $do_pdb = $query->param('do_pdb');
 $do_csr = $query->param('do_csr');
 $csr_index = $query->param('csr_index');
 my $size_str = $query->param('size_str') || '';
+my $force = $query->param('force') || '';
 
 print "  acc_num = $acc_num\n" if ($debug);
 print "  pdbid = $pdbid\n" if ($debug);
@@ -85,6 +86,10 @@ if ($do_pdb) {
 } else {
   $cmd = "./s2d -bmrbid $acc_num";
 }
+if ($force) {
+  $cmd = $cmd . " -force";
+}
+
 my $result = `$cmd`;
 chomp $result;
 if ($result ne "OK") {
