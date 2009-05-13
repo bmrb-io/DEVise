@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.76  2009/05/13 22:41:30  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.75.6.1  2009/05/01 22:26:41  wenger
   Debug code (and a few actual changes) trying to get DEVise to work
   on the x86_64/Centos 5 machines at BMRB (currently, opening
@@ -478,7 +482,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.1x2"/*TEMP*/;
+static const char *	version = "1.9.1x3"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2006";
