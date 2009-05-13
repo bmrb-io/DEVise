@@ -34,6 +34,9 @@ Allow XY cursor with bottom anchored at 0. (wenger)
 SECTION 04 (DEVise, piles and stacks)
 Number Date	Status  Pri
 ------ --------	------	---
+04.001 5/13/09	OPEN	1
+Be able to exclude a given view from drill-down in a pile (needed to
+fix Peptide-CGI bug 071). (wenger)
 
 ...........................................................................
 SECTION 05 (DEVise, views)
@@ -68,7 +71,7 @@ When printing to GIFs, we should either deal correctly with parts
 of windows being obscured, or at least warn the user that they should
 raise all of the windows before printing. (wenger)
 
-08.003 5/28/03	OPEN	3
+08.003 5/28/03	DONE?	3
 Eliminate all dependencies on having /p/devise for a DEVise installation.
 (wenger)
 
@@ -79,7 +82,7 @@ Number Date	Status  Pri
 09.001 09/10/01	DONE	?
 JavaScreen: X-only zoom. (various)
 
-09.002 09/10/01	OPEN	?
+09.002 09/10/01	DONE	?
 JavaScreen: toolbars. (amos/wenger)
 
 09.003 09/10/01	ACTIVE	?
