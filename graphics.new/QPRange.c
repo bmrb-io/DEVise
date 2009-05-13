@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,16 @@
   $Id$
 
   $Log$
+  Revision 1.13.12.2  2009/05/06 20:19:19  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.13.12.1  2009/05/04 19:17:01  wenger
+  Fixed some memory problems found by valgrind (looking for the problems
+  that are causing core dumps on swordfish@bmrb).
+
+  Revision 1.13  2003/01/13 19:25:26  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.12.32.1  2002/09/21 23:24:37  wenger
   Fixed a few more special-case memory leaks.
 
@@ -230,6 +240,8 @@ void QPRange::Insert(Coord low, Coord high, QPRangeCallback *callback,
 #if defined(DEBUG)
     printf("QPRange::Insert(%d, %d)\n", (int) low, (int) high);
 #endif
+
+    if (incomplete != NULL) *incomplete = false;
 
     int recordsProcessed;
 

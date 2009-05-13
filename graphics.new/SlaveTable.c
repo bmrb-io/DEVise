@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998
+  (c) Copyright 1998-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -25,6 +25,19 @@
   $Id$
 
   $Log$
+  Revision 1.5.44.2  2009/05/06 20:19:19  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.5.44.1  2009/05/01 22:26:41  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.5  1999/11/16 17:02:08  wenger
+  Removed all DTE-related conditional compiles; changed version number to
+  1.7.0 because of removing DTE; removed DTE-related schema editing and
+  data source creation GUI.
+
   Revision 1.4  1999/01/20 22:47:14  beyer
   Major changes to the DTE.
   * Added a new type system.

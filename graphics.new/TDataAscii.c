@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.71.2.2  2009/05/06 20:19:19  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.71.2.1  2009/05/01 22:26:41  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.71  2008/09/11 20:28:14  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.70  2008/01/24 22:08:33  wenger
   Got rid of a bunch of compile warnings.
 
@@ -433,7 +444,7 @@ TDataAscii::~TDataAscii()
   Dispatcher::Current()->Unregister(this);
 
   delete _indexP;
-  delete [] _indexFileName;
+  FreeString(_indexFileName);
 }
 
 /* Build index for the file. This code should work when file size

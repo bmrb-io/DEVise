@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.15.42.2  2009/05/01 22:30:40  wenger
+  Probably don't need the DList debug output any more.
+
+  Revision 1.15.42.1  2009/05/01 22:26:34  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.15  2001/01/08 20:32:41  wenger
+  Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
+  back onto the trunk.
+
   Revision 1.13.2.1  2000/10/18 20:31:52  wenger
   Merged changes from fixed_bug_616 through link_gui_improvements onto
   the branch.
@@ -239,10 +251,11 @@ int listName::InitIterator(int backwards) {\
 		if (_iterators[i].current == NULL){\
 			/* found one */\
 			_iterators[i].backwards = backwards;\
-			if (backwards)\
+			if (backwards) {\
 				_iterators[i].current = _head->prev;\
-			else\
+			} else {\
 				_iterators[i].current = _head->next; \
+                        }\
 			_numIterators++;\
 			return i;\
 		}\

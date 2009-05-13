@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2006
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.75.6.1  2009/05/01 22:26:41  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.75  2006/12/08 16:24:50  wenger
+  Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
+  changes to merge the DEViseCanvas.java stuff correctly).
+
   Revision 1.74  2006/07/21 16:26:40  wenger
   Updated versions to reflect 1.9.0 release.
 
@@ -469,7 +478,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.1x1"/*TEMP*/;
+static const char *	version = "1.9.1x2"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2006";

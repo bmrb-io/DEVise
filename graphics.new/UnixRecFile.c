@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.13.44.2  2009/05/06 20:19:19  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.13.44.1  2009/05/01 22:26:41  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.13  2000/03/14 17:05:35  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.12  1998/12/15 14:55:24  wenger
   Reduced DEVise memory usage in initialization by about 6 MB: eliminated
   Temp.c (had huge global arrays); eliminated Object3D class and greatly
@@ -217,6 +229,7 @@ void UnixRecFile::ReadRec(int recNum, int numRecs, void *buf)
 Write a page.
 ***********************************************************************/
 
+//TEMP -- what is the size of buf?!?
 void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
 {
   char errBuf[1024];
@@ -256,8 +269,9 @@ void UnixRecFile::WriteRec(int recNum, int numRecs, void *buf)
   _seekRec = recNum + numRecs;
   
   /* adjust # of records */
-  if (_seekRec > _totalRecs)
+  if (_seekRec > _totalRecs) {
     _totalRecs = _seekRec;
+  }
 }
 
 /*

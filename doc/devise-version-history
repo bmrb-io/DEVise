@@ -3,6 +3,9 @@
 DEVise 1.9.1
 ------------
 
+* Fixed a problem that caused the DEVised to core dump on x86_64/Centos 5
+when sending string GData to the JavaScreen client.
+
 * Fixed a problem that sometimes caused DEVise to free the same FontStruct
 twice.
 

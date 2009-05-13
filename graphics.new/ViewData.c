@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.32.10.2  2009/05/06 20:19:19  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.32.10.1  2009/05/01 22:26:41  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.32  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.31  2003/01/13 19:25:28  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -737,7 +749,7 @@ void
 ViewData::GAttrLinkLeader(TDataMap *mapping, void *gdata, int numGData,
   int gRecSize, SymbolInfo symArray[])
 {
-	int index = _masterLink.InitIterator(index);
+	int index = _masterLink.InitIterator();
 	while (_masterLink.More(index)) {
 	  MasterSlaveLink *msLink = _masterLink.Next(index);
 	  if (msLink->GetFlag() == VISUAL_GATTR) {

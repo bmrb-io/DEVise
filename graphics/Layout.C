@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,18 @@
   $Id$
 
   $Log$
+  Revision 1.15.10.2  2009/05/06 20:19:13  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.15.10.1  2009/05/01 22:26:34  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.15  2005/12/06 20:03:06  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.14.14.1  2003/04/18 17:07:41  wenger
   Merged gcc3_br_0 thru gcc3_br_1 to V1_7b0_br.
 
@@ -110,11 +122,11 @@ Layout::Layout(char* name, Coord x, Coord y, Coord w, Coord h,
 #endif
 
   _objectValid.Set();
+  _mode = AUTOMATIC;
   Coord rootWidth, rootHeight;
   DeviseDisplay::DefaultDisplay()->Dimensions(rootWidth, rootHeight);
   Map((int) ( x * rootWidth), (int) (y * rootHeight),
       (unsigned) (w * rootWidth), (unsigned) (h * rootHeight));
-  _mode = AUTOMATIC;
   SetPrintExclude(printExclude);
   SetPrintPixmap(printPixmap);
 }
@@ -128,8 +140,8 @@ Layout::Layout(char* name, int x, int y, unsigned w, unsigned h,
 #endif
 
   _objectValid.Set();
-  Map(x, y, w, h);
   _mode = AUTOMATIC;
+  Map(x, y, w, h);
   SetPrintExclude(printExclude);
   SetPrintPixmap(printPixmap);
 }
@@ -302,10 +314,11 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
     int index;
     for(index = InitIterator(); More(index);) {
       ViewWin *vw = Next(index);
-      if (resize)
+      if (resize) {
 	vw->MoveResize(_x, _y, _w, _h);
-      else
+      } else {
 	vw->Map(_x, _y, _w, _h);
+      }
     }
     DoneIterator(index);
     if (x) {
@@ -341,12 +354,14 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
     ViewWin *vw = Next(index);
 
     // if vertical stack of views, compute height based on weight
-    if (horViews == 1)
+    if (horViews == 1) {
       height = (int)(1.0 * vw->GetWeight() / totalWeight * _h);
+    }
 
     // if horizontal arrangement, compute width based on weight
-    if (verViews == 1)
+    if (verViews == 1) {
       width = (int)(1.0 * vw->GetWeight() / totalWeight * _w);
+    }
 
     // see if we're instructed to ignore all but one child
     if (!single || single == vw) {
@@ -359,11 +374,11 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
     }
 
     // compute position of next view
-    if (horViews == 1)
+    if (horViews == 1) {
       yoff += height;
-    else if (verViews == 1)
+    } else if (verViews == 1) {
       xoff += width;
-    else {
+    } else {
       xoff += width;
       // no more views fit in horizontally?
       if (_x + xoff + width > _x + _w) {
@@ -372,7 +387,6 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
       }
     }
   }
-
   DoneIterator(index);
 
   // see if we need to report back any unused space (for one more child)
@@ -380,14 +394,15 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
     DOASSERT(x && y && w && h, "Invalid window position or size");
     *x = _x + xoff;
     *y = _y + yoff;
-    if (horViews == 1)
+    if (horViews == 1) {
       *h = _h - yoff;
-    else
+    } else {
       *h = height;
-    if (verViews == 1)
+    } if (verViews == 1) {
       *w = _w - xoff;
-    else
+    } else {
       *w = width;
+    }
   }
 #if defined(DEBUG_LOG)
     sprintf(logBuf, "  Done with Layout::MapChildren()\n");

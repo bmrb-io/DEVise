@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,17 @@
   $Id$
 
   $Log$
+  Revision 1.94.2.2  2009/05/06 20:19:13  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.94.2.1  2009/05/01 22:26:34  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.94  2008/10/13 19:45:16  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.93  2008/06/11 19:16:56  wenger
   Fixed a problem that sometimes caused DEVise to free the same FontStruct
   twice; more flexible generation of font names (horizontal and vertical

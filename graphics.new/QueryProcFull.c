@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2001
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.105.2.3  2009/05/06 20:19:19  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.105.2.2  2009/05/04 19:17:01  wenger
+  Fixed some memory problems found by valgrind (looking for the problems
+  that are causing core dumps on swordfish@bmrb).
+
+  Revision 1.105.2.1  2009/05/01 22:26:41  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.105  2008/01/24 22:08:33  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.104  2002/05/01 21:30:13  wenger
   Merged V1_7b0_br thru V1_7b0_br_1 to trunk.
 
@@ -553,10 +568,15 @@ QPFullData::QPFullData()
   state = QPFull_InvalidState;
   useCoordMap = false;
   handle = NULL;
+  low = -1;
+  high = -1;
   isRandom = false;
   isRecLinkSlave = false;
   processed = NULL;
+  started.tv_sec = 0;
+  started.tv_usec = 0;
   bytes = 0;
+  hintId = -1;
   userData = NULL;
 }
 
@@ -1379,7 +1399,7 @@ void QueryProcFull::ProcessScan(QPFullData *query)
 	  }
 	#endif
 
-	Boolean drawTimedOut;
+	Boolean drawTimedOut = false;
         DistributeData(query, isTData, startRid, numRecs, buf, drawTimedOut);
         
         _mgr->FreeRecs(buf);
@@ -2097,10 +2117,12 @@ void QueryProcFull::DistributeData(QPFullData *query, Boolean isTData,
         RecId tempLow = low;
         RecId tempHigh = high;
 
-        if (tempLow < otherQ->low)
+        if (tempLow < otherQ->low) {
             tempLow = otherQ->low;
-        if (tempHigh > otherQ->high)
+	}
+        if (tempHigh > otherQ->high) {
             tempHigh = otherQ->high;
+	}
         if (tempHigh >= tempLow) {
             _rangeQuery = otherQ;
             otherQ->processed->Insert(tempLow, tempHigh, this, &drawTimedOut);

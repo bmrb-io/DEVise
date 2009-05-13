@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,21 @@
   $Id$
 
   $Log$
+  Revision 1.20.2.3  2009/05/06 20:19:13  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.20.2.2  2009/05/04 20:40:17  wenger
+  Fixed the error on swordfish@bmrb!!  (I don't know how
+  GDataSock::GetShapeAttr() even *ever* worked for strings.)
+
+  Revision 1.20.2.1  2009/05/01 22:26:34  wenger
+  Debug code (and a few actual changes) trying to get DEVise to work
+  on the x86_64/Centos 5 machines at BMRB (currently, opening
+  histogram2.ds causes a core dump).
+
+  Revision 1.20  2008/10/13 19:45:16  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.19  2005/12/06 20:03:04  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -385,12 +400,13 @@ GDataSock::GetShapeAttr(int attrNum, const AttrInfo *attrInfo,
       char *tmpStr;
       if (stringTable->Lookup( (int) attrVal.numericalValue,
           tmpStr) < 0) {
-        attrVal.stringValue = tmpStr;
+        tmpStr = "<error>";
         char buf[1024];
         sprintf(buf, "String not found for %s", attrInfo->name);
         reportErrNosys(buf);
         result += StatusFailed;
       }
+      attrVal.stringValue = tmpStr;
     }
   } else {
     // This attribute is not specified.

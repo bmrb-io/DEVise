@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.111.2.2  2009/05/06 20:19:13  wenger
+  Got rid of extra debug output, cleaned up a few things.
+
+  Revision 1.111.2.1  2009/05/04 19:16:54  wenger
+  Fixed some memory problems found by valgrind (looking for the problems
+  that are causing core dumps on swordfish@bmrb).
+
+  Revision 1.111  2008/10/13 19:45:16  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.110  2008/09/11 20:55:31  wenger
   A few more compile warning fixes...
 
@@ -1738,6 +1748,7 @@ Session::ReadCommand(FILE *fp, char buf[], int bufSize, DevStatus &status)
 {
   Boolean result = true;
 
+  if (bufSize > 0) buf[0] = '\0';
   Boolean done = false;
   char *ptr = buf;
   char *last = buf + bufSize - 1;
@@ -1780,7 +1791,7 @@ Session::ReadCommand(FILE *fp, char buf[], int bufSize, DevStatus &status)
 	  if (ptr >= last) {
 	    done = true;
 		reportErrNosys("Command buffer too short");
-		buf[bufSize-1] = '\0';
+		*last = '\0';
 		fprintf(stderr, "Command so far is: <%s>\n", buf);
 		status += StatusFailed;
 		result = false;
