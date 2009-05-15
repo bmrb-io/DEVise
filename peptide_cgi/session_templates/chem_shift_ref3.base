@@ -516,6 +516,7 @@ DEVise setLinkMultFact {View 19} {X} 1
 DEVise setLinkMultFact {View 19} {Y} 1
 DEVise setGAttrLinkMode {View 19} 0
 DEVise setDoHomeOnVisLink {View 19} {0}
+DEVise setExcludeFromDrillDown {View 19} {1}
 
 # View {View 110} uses mapping {.csr3_layout#y_vs_x}
 DEVise create {view} {Scatter} {View 110} -0.560000 0.500000 -0.560000 0.600000 0 0 0 37 0 37

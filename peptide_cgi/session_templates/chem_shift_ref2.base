@@ -899,6 +899,7 @@ DEVise setLinkMultFact {View 116} {X} 1
 DEVise setLinkMultFact {View 116} {Y} 1
 DEVise setGAttrLinkMode {View 116} 0
 DEVise setDoHomeOnVisLink {View 116} {0}
+DEVise setExcludeFromDrillDown {View 116} {1}
 
 # View {View 118} uses mapping {.label#Label_text_vs_recId 10}
 DEVise create {view} {Scatter} {View 118} 3.250000 63.750000 -2.042000 3.207000 37 9 0 37 0 37

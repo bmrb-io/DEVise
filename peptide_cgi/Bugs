@@ -321,9 +321,11 @@ Num Date        Status  Description
 			(cavey/wenger)
 			(Fixed by wenger, 11/14/08.)
 
-071 9/12/08	OPEN	Drill-down doesn't work in CSR 3 session (in JS
+071 9/12/08	FIXED	Drill-down doesn't work in CSR 3 session (in JS
 			and DEVise itself). (wenger)  (This is caused by
 			DEVise finding the diagonal line.)
+			(Fixed by wenger, 5/15/09; depends on DEVise
+			to-do 04.001 implementation in 1.9.1x3.)
 
 072 9/19/08	OPEN	Open 5106csr11 session; zoom in on main view; do
 			home on main view -> you don't get back to where

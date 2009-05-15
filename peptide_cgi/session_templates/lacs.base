@@ -94,6 +94,7 @@ DEVise setLinkMultFact {ViewLines} {X} 1
 DEVise setLinkMultFact {ViewLines} {Y} 1
 DEVise setGAttrLinkMode {ViewLines} 0
 DEVise setDoHomeOnVisLink {ViewLines} {0}
+DEVise setExcludeFromDrillDown {ViewLines} {1}
 
 # View {ViewPoints} uses mapping {.4081lacs2#Y_coord_val_vs_X_coord_val}
 DEVise create {view} {Scatter} ViewPoints -7.960000 8.500000 -4.140000 6.590000 37 0 0 37 0 37

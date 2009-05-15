@@ -4,6 +4,11 @@ Peptide-CGI 11.6.1
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
 
+* Improved how drill-down works in the chemical shift referencing
+differences by residue and observed vs. calculated chemical shift
+values visualizations and the LACS visualizations.  (This fix
+only works with DEVise 1.9.1x3 or higher.)
+
 * Added "Force reprocessing" button to summary pages (mainly for
 testing).
 
