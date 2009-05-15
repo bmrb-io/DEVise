@@ -34,9 +34,10 @@ Allow XY cursor with bottom anchored at 0. (wenger)
 SECTION 04 (DEVise, piles and stacks)
 Number Date	Status  Pri
 ------ --------	------	---
-04.001 5/13/09	OPEN	1
+04.001 5/13/09	DONE	1
 Be able to exclude a given view from drill-down in a pile (needed to
 fix Peptide-CGI bug 071). (wenger)
+(Fixed by wenger, 5/15/09.)
 
 ...........................................................................
 SECTION 05 (DEVise, views)
