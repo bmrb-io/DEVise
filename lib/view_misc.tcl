@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2006
+# (c) Copyright 1992-2009
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -20,6 +20,10 @@
 # $Id$
 
 # $Log$
+# Revision 1.1  2006/07/12 20:54:51  wenger
+# Added "Misc. View Properties" GUI to control things we haven't
+# had a GUI for previously.
+#
 
 ############################################################
 
@@ -47,6 +51,7 @@ proc EditViewMisc {} {
     global viewMiscHomeVisLinkInvisible
     global viewMiscUseJmol
     global viewMiscGAttrLinkMode
+    global viewMiscExcludeDD
 
     set viewMiscXLinkMult [DEVise getLinkMultFact $curView X]
     set viewMiscYLinkMult [DEVise getLinkMultFact $curView Y]
@@ -55,6 +60,7 @@ proc EditViewMisc {} {
       getDoHomeOnVisLinkIfInvisible $curView]
     set viewMiscUseJmol [DEVise viewGetUseJmol $curView]
     set viewMiscGAttrLinkMode [DEVise getGAttrLinkMode $curView]
+    set viewMiscExcludeDD [DEVise getExcludeFromDrillDown $curView]
 
 
     # Create the top level widget and the frames we'll later use for
@@ -68,6 +74,7 @@ proc EditViewMisc {} {
     frame .editViewMisc.row4
     frame .editViewMisc.row5
     frame .editViewMisc.row6
+    frame .editViewMisc.row7
 
     # Create the various widgets.
     button .editViewMisc.ok -text "OK" -width 10 \
@@ -92,6 +99,9 @@ proc EditViewMisc {} {
     checkbutton .editViewMisc.useJmol -text "Use Jmol" \
       -variable viewMiscUseJmol
 
+    checkbutton .editViewMisc.excludeDD -text "Exclude from drill-down" \
+      -variable viewMiscExcludeDD
+
     label .editViewMisc.gAttrModeLabel -text "GData Attr Link Mode:"
     radiobutton .editViewMisc.gAttrModeInter -text "Intersection" \
       -variable viewMiscGAttrLinkMode -value 0
@@ -102,6 +112,7 @@ proc EditViewMisc {} {
     frame .editViewMisc.row3a -width 10m -height 4m
     frame .editViewMisc.row4a -width 10m -height 4m
     frame .editViewMisc.row5a -width 10m -height 4m
+    frame .editViewMisc.row6a -width 10m -height 4m
 
     # Pack the widgets into the frames.
     pack .editViewMisc.row1 -side bottom -pady 4m
@@ -113,6 +124,8 @@ proc EditViewMisc {} {
     pack .editViewMisc.row5 -side top
     pack .editViewMisc.row5a -side top
     pack .editViewMisc.row6 -side top
+    pack .editViewMisc.row6a -side top
+    pack .editViewMisc.row7 -side top
 
     pack .editViewMisc.ok .editViewMisc.cancel -in .editViewMisc.row1 \
       -side left -padx 3m
@@ -131,6 +144,8 @@ proc EditViewMisc {} {
 
     pack .editViewMisc.useJmol -in .editViewMisc.row6 -side left -padx 5m
 
+    pack .editViewMisc.excludeDD -in .editViewMisc.row7 -side left -padx 5m
+
     # Wait for the user to make a selection from this window.
     tkwait visibility .editViewMisc
     grab set .editViewMisc
@@ -147,6 +162,7 @@ proc SetViewMisc {} {
     global viewMiscHomeVisLinkInvisible
     global viewMiscUseJmol
     global viewMiscGAttrLinkMode
+    global viewMiscExcludeDD
 
     DEVise setLinkMultFact $curView X $viewMiscXLinkMult
     DEVise setLinkMultFact $curView Y $viewMiscYLinkMult
@@ -154,6 +170,7 @@ proc SetViewMisc {} {
     DEVise setDoHomeOnVisLinkIfInvisible $curView $viewMiscHomeVisLinkInvisible
     DEVise viewSetUseJmol $curView $viewMiscUseJmol
     DEVise setGAttrLinkMode $curView $viewMiscGAttrLinkMode
+    DEVise setExcludeFromDrillDown $curView $viewMiscExcludeDD
 }
 
 #============================================================================

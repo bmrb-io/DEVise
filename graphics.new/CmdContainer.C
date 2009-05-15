@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.86  2008/10/13 19:45:25  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.85  2006/05/26 16:23:04  wenger
   Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 
@@ -888,6 +891,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(selectNextInPile)
 	REGISTER_COMMAND(viewGetUseJmol)
 	REGISTER_COMMAND(viewSetUseJmol)
+	REGISTER_COMMAND(getExcludeFromDrillDown)
+	REGISTER_COMMAND(setExcludeFromDrillDown)
 }
 
 CmdContainer::~CmdContainer()

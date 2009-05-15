@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.124  2008/09/23 22:55:34  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.123  2008/09/23 19:32:39  wenger
   Changed DispatchedName() to const char *.
 
@@ -987,6 +990,10 @@ class View : public ViewWin
 	  }
     }
 
+	Boolean GetExcludeFromDrillDown() { return _excludeFromDrillDown; }
+	void SetExcludeFromDrillDown(Boolean value) {
+	    _excludeFromDrillDown = value; }
+
 	static void EnableDrawing(Boolean enable);
 
 	const char *GetViewHelp() { return _viewHelp; }
@@ -1219,6 +1226,8 @@ protected:
 	    Boolean _cursorMoveDisabled;
 	    Boolean _drillDownDisabled;
 		Boolean _keysDisabled;
+
+		Boolean _excludeFromDrillDown;
 
 		Boolean _refreshPending;
 

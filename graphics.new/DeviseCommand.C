@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2008
+  (c) Copyright 1998-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.134  2008/10/13 19:45:25  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.133  2008/09/23 22:55:40  wenger
   More const-ifying, especially drill-down-related stuff.
 
@@ -8637,6 +8640,63 @@ IMPLEMENT_COMMAND_BEGIN(viewSetUseJmol)
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in viewSetUseJmol\n",
 		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getExcludeFromDrillDown)
+    // Arguments: <view name>
+    // Returns: <drill-down exclusion enabled (Boolean)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+            ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+		}
+
+		char buf[256];
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d", view->GetExcludeFromDrillDown());
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	    }
+       	ReturnVal(API_ACK, buf);
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in "
+		  "getExcludeFromDrillDown\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setExcludeFromDrillDown)
+    // Arguments: <view name> <enable drill-down exclusion (Boolean)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+            ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+		}
+
+        Session::SetDirty();
+
+		Boolean enable = atoi(argv[2]);
+		view->SetExcludeFromDrillDown(enable);
+
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setExcludeFromDrillDown\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

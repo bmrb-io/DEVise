@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.77  2009/05/13 22:43:56  wenger
+  Changed version to 1.9.1x3.
+
   Revision 1.76  2009/05/13 22:41:30  wenger
   Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
   the trunk.
@@ -485,7 +488,7 @@
 static const char *	version = "1.9.1x3"/*TEMP*/;
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-2006";
+static const char *	copyright = "Copyright (c) 1992-2009";
 
 // Trademark logo for each DEVise window.
 static const char *	winLogo = "Visualization by DEVise (tm) 2006";

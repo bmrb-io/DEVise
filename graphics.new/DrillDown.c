@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2003-2006
+  (c) Copyright 2003-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.4  2006/12/08 16:24:49  wenger
   Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
   changes to merge the DEViseCanvas.java stuff correctly).
@@ -232,6 +235,13 @@ DrillDown::RunQuery(ViewData *view, Coord drillX, Coord drillY, Coord pixelX,
 
     DevStatus result(StatusOk);
     gotData = false;
+
+    if (view->GetExcludeFromDrillDown()) {
+        if (DEBUG >= 1) {
+	    printf("Excluding view <%s> from drill-down\n", view->GetName());
+        }
+        return result;
+    }
 
     // Figure out whether this view has fixed text labels as its
     // symbols.  If so, increase the size of the visual filter for

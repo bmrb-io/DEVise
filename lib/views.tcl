@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2003
+#  (c) Copyright 1992-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.68  2006/12/08 19:20:29  wenger
+#  Fixed bug 932 (axis multiplication factor not copied in view copy).
+#
 #  Revision 1.67  2006/07/11 21:33:49  wenger
 #  The tcl view copying code now copies setDoHomeOnVisLinkIfInvisible
 #  and viewSetUseJmol.
@@ -684,6 +687,9 @@ proc DoActualViewCopy {view tdata gdata newGdata window} {
     eval DEVise setDoHomeOnVisLinkIfInvisible {$newView} \
       {[DEVise getDoHomeOnVisLinkIfInvisible $view]}
     eval DEVise viewSetUseJmol {$newView} {[DEVise viewGetUseJmol $view]}
+    eval DEVise setExcludeFromDrillDown {$newView} \
+      {[DEVise getExcludeFromDrillDown $view]}
+
 
     eval DEVise setAxisMultFact {$newView} {X} {[DEVise getAxisMultFact \
       $view {X}]}

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.249  2008/10/13 19:45:16  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.248  2008/09/23 22:55:33  wenger
   More const-ifying, especially drill-down-related stuff.
 
@@ -1369,6 +1372,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 	_viewZ = -1.0; // invalid -- needs to be set later
 
 	SetDisabledActions(false, false, false, false);
+	_excludeFromDrillDown = false;
 
 	_refreshPending = false;
 

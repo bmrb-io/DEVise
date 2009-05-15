@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.112  2009/05/13 22:41:23  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.111.2.2  2009/05/06 20:19:13  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -890,7 +894,7 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
     char nameBuf[1024];
     nameBuf[0] = '\0';
     classNameList = nameBuf;
-    classNameListLen = 1024;
+    classNameListLen = sizeof(nameBuf);
     status += ForEachInstance("mapping", SaveInterpMapping, &saveData);
     classNameList = NULL;
     classNameListLen = 0;
@@ -1208,9 +1212,11 @@ Session::CreateTData(const char *name)
 	  status += tmpStatus;
 
 	  if (tmpStatus.IsComplete()) {
-        strcpy(schema, args.GetArgs()[3]);//TEMP -- not safe!
-        strcpy(schemaFile, args.GetArgs()[4]);//TEMP -- not safe!
-        strcpy(sourceType, args.GetArgs()[1]);//TEMP -- not safe!
+        status += nice_strncpy(schema, args.GetArgs()[3], sizeof(schema));
+        status += nice_strncpy(schemaFile, args.GetArgs()[4],
+		    sizeof(schemaFile));
+        status += nice_strncpy(sourceType, args.GetArgs()[1],
+		    sizeof(sourceType));
         int formatted = snprintf(param, sizeof(param), "%s/%s",
 		    args.GetArgs()[8], args.GetArgs()[2]);
 		status += checkAndTermBuf2(param, formatted);
@@ -1253,7 +1259,7 @@ Session::CreateTData(const char *name)
 		  reportErrNosys(buf);
 		  status += StatusWarn;
 
-          strcpy(schema, result);//TEMP -- not safe!
+          status += nice_strncpy(schema, result, sizeof(schema));
         }
       }
     }
@@ -2162,7 +2168,14 @@ Session::SaveView(const char *category, const char *devClass,
   status += SaveParams(saveData, "getFont", "setFont", instance, "x axis");
   status += SaveParams(saveData, "getFont", "setFont", instance, "y axis");
 
+  fprintf(saveData->fp, "# Params: <viewName> [<doHomeX> <doHomeY>] <mode> "
+      "[<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> "
+      "<manXHi> <manYHi>\n");
   status += SaveParams(saveData, "viewGetHome", "viewSetHome", instance);
+
+  fprintf(saveData->fp, "# Params: <viewName> <doHomeX> <doHomeY> <mode> "
+      "<autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> "
+      "<manXHi> <manYHi>\n");
   status += SaveParams(saveData, "viewGetImplicitHome",
       "viewSetImplicitHome", instance);
 
@@ -2200,6 +2213,8 @@ Session::SaveView(const char *category, const char *devClass,
   status += SaveParams(saveData, "getNiceAxes", "setNiceAxes",
       instance, NULL, NULL, false);
 
+  fprintf(saveData->fp, "# Params: <viewName> <rubberband disabled> "
+      "<cursor move disabled> <drill down disabled> <keys disabled>\n");
   status += SaveParams(saveData, "viewGetDisabledActions",
       "viewSetDisabledActions", instance, NULL, NULL, false);
 
@@ -2230,6 +2245,9 @@ Session::SaveView(const char *category, const char *devClass,
   status += SaveParams(saveData, "viewGetUseJmol",
       "viewSetUseJmol", instance, NULL, NULL, true);
 
+  status += SaveParams(saveData, "getExcludeFromDrillDown",
+      "setExcludeFromDrillDown", instance, NULL, NULL, true);
+
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
@@ -2257,7 +2275,7 @@ Session::SaveInterpMapping(const char *category, const char *devClass,
   if (checkAndTermBuf2(buf, formatted).IsComplete()) {
     if (strstr(classNameList, buf) == NULL) {
       if (strlen(classNameList) + strlen(buf) < classNameListLen) {
-        strcat(classNameList, buf);
+        nice_strncat(classNameList, buf, classNameListLen);
       } else {
         reportErrNosys("Ran out of room in class name list; saved session file"
 	  " may have errors");

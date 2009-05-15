@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2009
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.78  2008/10/13 19:45:25  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.77  2008/01/24 22:08:32  wenger
   Got rid of a bunch of compile warnings.
 
@@ -2409,6 +2412,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(viewSetUseJmol) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getExcludeFromDrillDown) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setExcludeFromDrillDown) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_
