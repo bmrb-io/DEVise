@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/09/25 22:44:21  wenger
+// Workaround for bug 939: fixed off-by-one errors in the JS client
+// so this no longer happens for the JS; no fix on the server side,
+// though.
+//
 // Revision 1.6  2008/03/05 20:02:56  wenger
 // Fixed bug 965 (disabled alt and shift modifiers in 2D views).
 //
@@ -221,6 +226,7 @@ public class DEViseCanvas2D extends DEViseCanvas
 	      jsc.jsValues.canvas.lastKey == KeyEvent.VK_SHIFT) ||
 	      jsc.toolBar.doDrillDown()) {
                 if (activeView.isDrillDown) {
+		    drawDrillDownMark(p.x, p.y);
                     cmd = DEViseCommands.SHOW_RECORDS + " " +
                       activeView.getCurlyName() + " " +
 		      activeView.translateX(p.x, 2) + " " +

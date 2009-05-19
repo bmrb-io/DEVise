@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.171  2008/02/22 17:26:05  wenger
+// Fixed some bugs in showing Java properties in the info window.
+//
 // Revision 1.170  2008/02/20 20:22:11  wenger
 // JavaScreen now defaults to showing help in browser window (to
 // get around problems on Mac with the Java window); added links
@@ -807,6 +810,9 @@ public class jsdevisec extends JPanel
     public DEViseScreen jscreen = null;
 
     public DEViseMouseCursor mouseCursor = null;
+
+    // Canvas in which a drill-down event has just occurred.
+    public DEViseCanvas drillDownCanvas = null;
 
     // These are the beginnings of restructuring the UI into a UI branch
     private DEViseUIManager uiManager;
@@ -2299,6 +2305,8 @@ class RecordDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
+			jsc.drillDownCanvas.eraseDrillDownMark();
+			jsc.drillDownCanvas = null;
                         close();
 			// close the dialog in followers
 			if (jsc.specialID == -1 && jsc.isCollab) {

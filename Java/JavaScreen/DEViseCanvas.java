@@ -2,7 +2,7 @@
 //TEMP -- why is DEViseCanvas a Container instead of a Canvas???
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -29,6 +29,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.104  2008/09/25 22:44:19  wenger
+// Workaround for bug 939: fixed off-by-one errors in the JS client
+// so this no longer happens for the JS; no fix on the server side,
+// though.
+//
 // Revision 1.103  2008/09/19 21:46:13  wenger
 // Working on bug 972: <esc> on a view now resets the toolbar to the
 // default mode.  (I'd like to also have it work if you don't have a
@@ -625,6 +630,17 @@ public class DEViseCanvas extends Container
     // just redraw the rubberband line itself on each mouse drag).
     protected static final boolean DRAW_XOR_RUBBER_BAND = true;
 
+    // Whether to draw a drill-down marker at the point where the mouse
+    // was clicked.
+    protected static final boolean DRAW_DRILL_DOWN_MARKER = false;
+
+    // Whether a drill-down marker should currently be drawn in this
+    // canvas.
+    private boolean drawDD = false;
+
+    // The location of the drill-down marker (only valid if drawDD is true).
+    private int ddXCoord, ddYCoord;
+
     // v is base view if there is a pile in this canvas.
     public DEViseCanvas(DEViseView v, Image img)
     {
@@ -673,6 +689,27 @@ public class DEViseCanvas extends Container
     public boolean mouseIsWithin()
     {
         return _mouseIsInCanvas;
+    }
+
+    // Turn on a drill-down marker at the given location.
+    public void drawDrillDownMark(int xCoord, int yCoord)
+    {
+	jsc.drillDownCanvas = this;
+	if (DRAW_DRILL_DOWN_MARKER) {
+	    ddXCoord = xCoord;
+	    ddYCoord = yCoord;
+            drawDD = true;
+	    repaint();
+	}
+    }
+
+    // Turn off the drill-down marker.
+    public void eraseDrillDownMark()
+    {
+	if (DRAW_DRILL_DOWN_MARKER) {
+            drawDD = false;
+	    repaint();
+	}
     }
 
     // This function is used to draw cursors because direct XOR drawing
@@ -792,6 +829,9 @@ public class DEViseCanvas extends Container
 
             // draw all the GDatas
             paintGData(gc, view);
+
+	    // draw the drill-down mark, if any
+	    paintDrillDownMark(gc);
         }
 
         // draw rubber band
@@ -1259,6 +1299,26 @@ public class DEViseCanvas extends Container
 	        _lastRBValid = true;
 	    }
         }
+    }
+
+    // Paint the drill-down mark (if any).
+    private synchronized void paintDrillDownMark(Graphics gc)
+    {
+        if (drawDD) {
+	    boolean DRAW_XOR = false;//TEMP?
+	    if (DRAW_XOR) {
+	        gc.setXORMode(Color.red);
+	    } else {
+                gc.setColor(Color.red);
+	    }
+	    //TEMP -- need to draw multiple colors
+	    gc.drawLine(ddXCoord, ddYCoord-5, ddXCoord, ddYCoord+5);
+	    gc.drawLine(ddXCoord-5, ddYCoord, ddXCoord+5, ddYCoord);
+
+	    if (DRAW_XOR) {
+	        gc.setPaintMode();
+	    }
+	}
     }
 
     protected void processMouseEvent(MouseEvent event)
