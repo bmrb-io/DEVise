@@ -360,6 +360,11 @@ Num Date        Status  Pri     Description
 				(wenger)
 				(Done by wenger, 5/11/09.)
 
+093 5/19/09	OPEN	3	Derive Atom_type values in chemical shift
+				save frames (and others?) if only the
+				Atom_ID values exist.  (See test_data/
+				swordfish_20090519_82287.str.) (wenger/elu)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
