@@ -4206,6 +4206,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 974 9/22/08	OPEN	JS: collaboration doesn't work for Jmol sessions.
 			(wenger)
 
+975 5/19/09	OPEN	JS: it looks like we re-draw the entire view each
+			time a cursor is dragged.  If so, we should avoid
+			that!  (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
