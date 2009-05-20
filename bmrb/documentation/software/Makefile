@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 2008
+# (c) Copyright 2008-2009
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -55,6 +55,8 @@ setup:
 	ln -s chem_shift_testing chem_shift_testing.txt
 	ln -s chem_shift_release chem_shift_release.txt
 	ln -s peptide-cgi_routine_testing peptide-cgi_routine_testing.txt
+	ln -s ../../../peptide_cgi/design_doc/vis_server_testing \
+		vis_server_testing.txt
 
 clean:
 	\rm *.txt
