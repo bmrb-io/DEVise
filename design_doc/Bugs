@@ -4210,6 +4210,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			time a cursor is dragged.  If so, we should avoid
 			that!  (wenger)
 
+976 6/1/09	OPEN	Something in devise.ldemo still expects a /p/devise.
+			(maziuk/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
