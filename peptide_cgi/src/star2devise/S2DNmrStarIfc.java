@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2009/03/25 21:49:09  wenger
+// Final cleanup of some of the nucleic-acid-related code, especially
+// getting polymer types correctly for mmCIF files; added nucleic acid
+// tests to pre-release testing document.
+//
 // Revision 1.23  2009/03/12 23:02:29  wenger
 // Fixed a problem with the output from test1_3 (polymer type for
 // heteronuclear NOEs showing up as "unknown"), and fixed the checking
@@ -717,6 +722,11 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	    String tmpCount = getTagValue(frame, ENTITY_RESIDUE_COUNT);
 	    residueCount = Integer.parseInt(tmpCount);
 	} catch (S2DException ex) {
+	    // See comment above.
+	} catch (NumberFormatException ex) {
+	    System.err.println("Error parsing " + ENTITY_RESIDUE_COUNT +
+	      ": " + ex.toString());
+	    throw new S2DError("Illegal " + ENTITY_RESIDUE_COUNT + " value");
 	}
 	if (residueCount != -1) {
 	    if (resList1 != null && residueCount != resList1._resCount) {
