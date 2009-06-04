@@ -12,11 +12,11 @@ comment #
 whitespace ' '
 
 attr Entity_assembly_ID int
-sorted attr Residue_seq_code int lo 0
+attr Residue_seq_code int
 attr Residue_label string 4
 
-attr HA_Csi int hi 1 lo -1
-attr C_Csi int hi 1 lo -1
-attr CA_Csi int hi 1 lo -1
-attr CB_Csi int hi 1 lo -1
-attr Consensus_Csi int hi 1 lo -1
+attr HA_Csi int
+attr C_Csi int
+attr CA_Csi int
+attr CB_Csi int
+attr Consensus_Csi int

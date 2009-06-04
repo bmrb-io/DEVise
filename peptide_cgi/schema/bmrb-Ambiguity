@@ -12,7 +12,7 @@ comment #
 whitespace ' '
 
 attr Entity_assembly_ID int
-sorted attr Residue_seq_code int
+attr Residue_seq_code int
 attr Residue_label string 4
 
 attr Ambig1 float
