@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.172  2009/05/19 18:13:42  wenger
+// Implementation of JavaScreen drill-down marker is mostly done --
+// committing now with it disabled to make sure changes don't get lost.
+//
 // Revision 1.171  2008/02/22 17:26:05  wenger
 // Fixed some bugs in showing Java properties in the info window.
 //
@@ -2305,8 +2309,10 @@ class RecordDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-			jsc.drillDownCanvas.eraseDrillDownMark();
-			jsc.drillDownCanvas = null;
+			if (jsc.drillDownCanvas != null) {
+			    jsc.drillDownCanvas.eraseDrillDownMark();
+			    jsc.drillDownCanvas = null;
+			}
                         close();
 			// close the dialog in followers
 			if (jsc.specialID == -1 && jsc.isCollab) {
