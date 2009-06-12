@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2008
+// (c) Copyright 2006-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.4.1  2009/06/11 20:56:59  wenger
+// Made changes to the JavaScreen client to allow highlighting by
+// specific atom as well as the existing capability of highlighting
+// by residue (this is for the torsion angle restraints visualization).
+//
+// Revision 1.5  2009/03/04 17:42:01  wenger
+// Changed the code that converts GData to PDB for Jmol slightly to
+// work with DNA and RNA (the formatting was incorrect if the residue
+// labels weren't three characters).  This makes highlighting work
+// for DNA and RNA.
+//
 // Revision 1.4  2008/09/05 20:34:48  wenger
 // (Hopefully, at least) fininshed JavaScreen changes for multiple
 // entity assemblies -- we now send alphabetic chain IDs to Jmol,
@@ -88,10 +99,11 @@ public class DEViseJmolData
 	    // If the atom name has four characters (e.g., 1HH1) the
 	    // H, not the leading 1, has to line up with the first
 	    // character of the other atom names (e.g., NH1).
-	    if (gd.atomName.length() < 4) {
-	        gd.atomName = " " + gd.atomName;
+	    String atomName = gd.atomName;
+	    if (atomName.length() < 4) {
+	        atomName = " " + atomName;
 	    }
-	    tmpData += lengthenStringAppend(gd.atomName, 4);
+	    tmpData += lengthenStringAppend(atomName, 4);
 	    tmpData += " "; // space before residue label
 
 	    // Get spacing right for DNA and RNA.

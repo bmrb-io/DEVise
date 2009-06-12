@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -42,6 +42,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.4.1  2009/06/11 20:56:58  wenger
+// Made changes to the JavaScreen client to allow highlighting by
+// specific atom as well as the existing capability of highlighting
+// by residue (this is for the torsion angle restraints visualization).
+//
+// Revision 1.22  2008/09/05 20:34:45  wenger
+// (Hopefully, at least) fininshed JavaScreen changes for multiple
+// entity assemblies -- we now send alphabetic chain IDs to Jmol,
+// so that we can at least have 26 entity assemblies.
+//
 // Revision 1.21  2008/09/03 19:15:58  wenger
 // Initial changes to JavaScreen client to support entity assembly
 // IDs in 3D Jmol visualizations.  (Still needs some cleanup.)
@@ -858,6 +868,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	public int entityAssemblyID; // used to select things properly in Jmol
 	public int residueNumber;
 	public String residueLabel;
+	public Hashtable atomNodes;
 
 	public TreeResidueNode(int number, String label, int entAssemID)
 	{
@@ -870,6 +881,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    residueNumber = number;
 	    residueLabel = label;
 	    entityAssemblyID = entAssemID;
+	    atomNodes = new Hashtable();
 	}
     }
 
@@ -989,8 +1001,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	        continue;
 	    }
 
-	    if (gd.entityAssemblyID > jmTree.maxEntityAssemblyID)
-	      jmTree.maxEntityAssemblyID = gd.entityAssemblyID;
+	    if (gd.entityAssemblyID > jmTree.maxEntityAssemblyID) {
+	        jmTree.maxEntityAssemblyID = gd.entityAssemblyID;
+	    }
 
 	    // Find or construct the node for the appropriate entity assembly.
 	    Integer entityAssemblyID = new Integer(gd.entityAssemblyID);
@@ -1004,8 +1017,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 		  entityAssemblyNode);
 	    }
 
-	    if (gd.residueNum > entityAssemblyNode.maxResidueNum)
-	      entityAssemblyNode.maxResidueNum = gd.residueNum;
+	    if (gd.residueNum > entityAssemblyNode.maxResidueNum) {
+	        entityAssemblyNode.maxResidueNum = gd.residueNum;
+	    }
 
 	    // Find or construct the node for the appropriate residue.
 	    Integer resNum = new Integer(gd.residueNum);
@@ -1022,6 +1036,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    TreeAtomNode atomNode = new TreeAtomNode(gd.atomNum, gd.atomName,
 	      gd);
 	    residueNode.addChild(atomNode);
+	    residueNode.atomNodes.put(gd.atomName, atomNode);
         }
 
 	// Now add the entity assembly and residue nodes to the tree.
@@ -1306,21 +1321,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	        DEViseView v = (DEViseView)view.viewPiledViews.elementAt(i);
 		for (int j = 0; j < v.viewGDatas.size(); j++) {
 		    DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
+
 		    if (gdata.symbolType == gdata._symOval) {
-		    	Integer entAssemID =
-			  new Integer(gdata.entityAssemblyID);
-                        TreeEntityAssemblyNode entAssemNode =
-			  (TreeEntityAssemblyNode)highlightTree.
-			    entityAssemblyNodes.get(entAssemID);
-			if (entAssemNode != null) {
-			    Integer resNum = new Integer(gdata.residueNum);
-			    DEViseGenericTreeNode devNode =
-			      (DEViseGenericTreeNode)entAssemNode.
-			      residueNodes.get(resNum);
-			    if (devNode != null) {
-			        selectedDevNodes.addElement(devNode);
-			    }
-			}
+			highlightOneGData(gdata, selectedDevNodes);
                     } else {
 		    	//TEMP -- error?
                     }
@@ -1329,6 +1332,43 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
 	    highlightTree.tree.setSelection(selectedDevNodes);
         }
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Add to the highlight list according to the given GData record.
+     */
+    private void highlightOneGData(DEViseGData gdata,
+      Vector selectedDevNodes)
+    {
+        Integer entAssemID = new Integer(gdata.entityAssemblyID);
+        TreeEntityAssemblyNode entAssemNode = (TreeEntityAssemblyNode)
+	  highlightTree.entityAssemblyNodes.get(entAssemID);
+
+        if (entAssemNode != null) {
+            Integer resNum = new Integer(gdata.residueNum);
+	    TreeResidueNode residueNode = (TreeResidueNode)
+	      entAssemNode.residueNodes.get(resNum);
+
+            if (residueNode != null) {
+	        String atomName = gdata.atomName;
+
+		// If no atom name is specified, or the atom name is "X",
+		// we want to highlight the entire residue specified by
+		// this GData record.  If a valid atom name is given, we
+		// we want to just highlight that particular atom.
+	        if (atomName == null || atomName.equals("X")) {
+	            selectedDevNodes.addElement(residueNode);
+	        } else {
+		    TreeAtomNode atomNode = (TreeAtomNode)
+		      residueNode.atomNodes.get(atomName);
+
+		    if (atomNode != null) {
+		        selectedDevNodes.addElement(atomNode);
+		    }
+	        }
+	    }
+	}
     }
 
     //-------------------------------------------------------------------

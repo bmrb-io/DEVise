@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.111  2009/06/11 20:38:56  wenger
+// Fixed a bug with the new drill-down marker code that caused a null
+// pointer exception when drilling down in a Jmol canvas.
+//
+// Revision 1.110.4.1  2009/06/11 20:56:59  wenger
+// Made changes to the JavaScreen client to allow highlighting by
+// specific atom as well as the existing capability of highlighting
+// by residue (this is for the torsion angle restraints visualization).
+//
 // Revision 1.110  2009/03/31 18:42:47  wenger
 // Changed version to 5.9.5x1, added 5.9.5 section to version history.
 //
@@ -701,7 +710,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.9.5x2"/*TEMP*/);
+    public static final String VERSION = new String("5.10.0x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
