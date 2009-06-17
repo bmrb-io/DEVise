@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2008
+#  (c) Copyright 2001-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -63,7 +63,7 @@ PEP_DATA_HOME = $(DEV_DEMO_HOME)/peptide-cgi/data_dir
 PEP_HTML_HOME = $(PEP_HOME)/html_dir
 
 # Machine installation should be done on (optional).
-INSTALL_MACHINE = newicnm
+INSTALL_MACHINE = icnm.cerm.unifi.it
 
 #-----------------------------------------------------------
 # Configuration for viewing unreleased entries.
