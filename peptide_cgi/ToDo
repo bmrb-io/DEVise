@@ -371,6 +371,13 @@ Num Date        Status  Pri     Description
 				like "Save frame (xxx) skipped: xxx".
 				(wenger)
 
+095 6/17/09	OPEN	1	Add robots.txt files to appropriate html
+				directories. (wenger)
+
+096 6/17/09	OPEN	3	Removed unused views and links in 3D
+				sessions (probably left over from pre-Jmol,
+				pre-selection tree versions). (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
