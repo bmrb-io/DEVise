@@ -374,9 +374,10 @@ Num Date        Status  Pri     Description
 095 6/17/09	OPEN	1	Add robots.txt files to appropriate html
 				directories. (wenger)
 
-096 6/17/09	OPEN	3	Removed unused views and links in 3D
+096 6/17/09	DONE	3	Remove unused views and links in 3D
 				sessions (probably left over from pre-Jmol,
 				pre-selection tree versions). (wenger)
+				(Done by wenger, 6/18/09.)
 
 * Status:
 OPEN = item has not yet been addressed

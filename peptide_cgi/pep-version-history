@@ -12,6 +12,9 @@ only works with DEVise 1.9.1x3 or higher.)
 * Added "Force reprocessing" button to summary pages (mainly for
 testing).
 
+* Removed obsolete views, links, etc., from Jmol coordinate
+visualization session template.
+
 
 Peptide-CGI 11.6.0
 ------------------
