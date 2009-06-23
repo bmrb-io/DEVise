@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.137  2009/06/04 17:07:19  wenger
+// Improved error message for errors parsing residue count.
+//
 // Revision 1.136  2009/05/15 21:04:20  wenger
 // Fixed Peptide-CGI bug 071 (note that the fix only works in conjunction
 // with DEVise 1.9.1x3 and later).
@@ -550,7 +553,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.1x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.1x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

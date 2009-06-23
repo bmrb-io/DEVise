@@ -49,6 +49,13 @@ $query = new CGI;
 # BMRB accession number.
 $acc_num = $query->param('number') || '4101';
 
+# Check for illegal bmrb id here.
+if ($acc_num =~ /^[0-9]*$/) {
+  # Okay - all digits.
+} else {
+  dienice("Illegal bmrb accession number: $acc_num\n");
+}
+
 my ($pdbid, $coord_index, $do_pdb, $do_csr, $csr_index);
 $pdbid = $query->param('pdbid');
 $coord_index = $query->param('coord_index');
