@@ -379,6 +379,10 @@ Num Date        Status  Pri     Description
 				pre-selection tree versions). (wenger)
 				(Done by wenger, 6/18/09.)
 
+097 6/25/09	OPEN	3	Add link to original entry to summary
+				html page and specific html pages. (elu/
+				wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
