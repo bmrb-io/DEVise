@@ -1,7 +1,64 @@
 echo "Checking output files"
 
-#TEMPTEMP -- needs files
-set files = ( )
+set files = ( data_dir/15117ac1.dat \
+	data_dir/15117ac2.dat \
+	data_dir/15117am1.dat \
+	data_dir/15117am2.dat \
+	data_dir/15117amac1.dat \
+	data_dir/15117amac2.dat \
+	data_dir/15117as1.dat \
+	data_dir/15117as2.dat \
+	data_dir/15117d1.dat \
+	data_dir/15117d2.dat \
+	data_dir/15117hc1.dat \
+	data_dir/15117hc2.dat \
+	data_dir/15117hn1.dat \
+	data_dir/15117hn2.dat \
+	data_dir/15117md.dat \
+	data_dir/15117p1.dat \
+	data_dir/15117p2.dat \
+	data_dir/15117rc1.dat \
+	data_dir/15117rc2.dat \
+	data_dir/15117rl.dat \
+	html_dir/15117ac1.html \
+	html_dir/15117ac1_large.html \
+	html_dir/15117ac2.html \
+	html_dir/15117ac2_large.html \
+	html_dir/15117am1.html \
+	html_dir/15117am1_large.html \
+	html_dir/15117am2.html \
+	html_dir/15117am2_large.html \
+	html_dir/15117as1.html \
+	html_dir/15117as1_large.html \
+	html_dir/15117as2.html \
+	html_dir/15117as2_large.html \
+	html_dir/15117d1.html \
+	html_dir/15117d1_large.html \
+	html_dir/15117d2.html \
+	html_dir/15117d2_large.html \
+	html_dir/15117hn1.html \
+	html_dir/15117hn1_large.html \
+	html_dir/15117hn2.html \
+	html_dir/15117hn2_large.html \
+	html_dir/15117p1.html \
+	html_dir/15117p1_large.html \
+	html_dir/15117p2.html \
+	html_dir/15117p2_large.html \
+	html_dir/15117y.html \
+	html_dir/15117y_large.html \
+	session_dir/15117ac1.ds \
+	session_dir/15117ac2.ds \
+	session_dir/15117acdd \
+	session_dir/15117am1.ds \
+	session_dir/15117am2.ds \
+	session_dir/15117as1.ds \
+	session_dir/15117as2.ds \
+	session_dir/15117d1.ds \
+	session_dir/15117d2.ds \
+	session_dir/15117hn1.ds \
+	session_dir/15117hn2.ds \
+	session_dir/15117p1.ds \
+	session_dir/15117p2.ds )
 
 foreach file ($files)
   if (! -f $file) then
@@ -10,8 +67,8 @@ foreach file ($files)
   endif
 end
 
-#TEMPTEMP set file = "data_dir/5085g1.dat"
-#TEMPTEMP set line = "3JHNHA 1 3 LEU H 3 LEU HA 7.1 0"
-#TEMPTEMP source tests/check4line
-#TEMPTEMP set line = "3JHNHA 1 98 VAL H 98 VAL HA 9.8 0"
-#TEMPTEMP source tests/check4line
+set file = "data_dir/5085g1.dat"
+set line = '^3JHNHA 1 3 LEU H 3 LEU HA 7.1 0$'
+source tests/check4line
+set line = '^3JHNHA 1 98 VAL H 98 VAL HA 9.8 0$'
+source tests/check4line

@@ -38,19 +38,19 @@ foreach file ($files)
 end
 
 set file = "data_dir/5153ac1.dat"
-set line = "1 2 1 PHE N N 57.676 84.393 21.624 backbone"
+set line = '^1 2 1 PHE N N 57.676 84.393 21.624 backbone$'
 source tests/check4line
-set line = "6039 0 . HOH O O 53.253 9.478 42.866 backbone"
+set line = '^6039 0 . HOH O O 53.253 9.478 42.866 backbone$'
 source tests/check4line
 
 set file = "data_dir/5153n1.dat"
-set line = "2 THR 0.78988 0.0461"
+set line = '^1 2 THR 0.78988 0.0461$'
 source tests/check4line
-set line = "126 GLU -1.0948 0.1182"
+set line = '^1 126 GLU -1.0948 0.1182$'
 source tests/check4line
 
 set file = "data_dir/5153t21.dat"
-set line = "2 THR N 0.048239 0.0025"
+set line = '^1 2 THR N 0.048239 0.0025$'
 source tests/check4line
-set line = "126 GLU N 0.190114 0.0243"
+set line = '^1 126 GLU N 0.190114 0.0243$'
 source tests/check4line

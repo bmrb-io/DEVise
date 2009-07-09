@@ -16,7 +16,25 @@ endif
 
 echo "Checking output files"
 
-set files = ( )
+set files = ( data_dir/5962ac1.dat \
+	data_dir/5962as1.dat \
+	data_dir/5962d1.dat \
+	data_dir/5962hn1.dat \
+	data_dir/5962md.dat \
+	data_dir/5962rc1.dat \
+	data_dir/5962rl.dat \
+	html_dir/5962ac1.html \
+	html_dir/5962ac1_large.html \
+	html_dir/5962as1.html \
+	html_dir/5962as1_large.html \
+	html_dir/5962d1.html \
+	html_dir/5962d1_large.html \
+	html_dir/5962y.html \
+	html_dir/5962y_large.html \
+	session_dir/5962ac1.ds \
+	session_dir/5962acdd \
+	session_dir/5962as1.ds \
+	session_dir/5962d1.ds )
 
 foreach file ($files)
   if (! -f $file) then
@@ -26,11 +44,11 @@ foreach file ($files)
 end
 
 
-#TEMPTEMP set file = "data_dir/4310g1.dat"
-#TEMPTEMP set line = "3JHNHA 1 3 GLN H 3 GLN HA 7.240 2.0"
-#TEMPTEMP source tests/check4line
-#TEMPTEMP set line = "3JHNHA 1 148 LYS H 148 LYS HA 8.576 2.0"
-#TEMPTEMP source tests/check4line 
+set file = "data_dir/5962d1.dat"
+set line = '^1 1 G -1.54 0.0 3.53 3.57 0.0 3.97 0.0 3.53 0.0 2.57 0.0 0.2 0.0 0.368 0.0 0.0 0.0 0.012 0.116 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.596 0.0 0.05 0.0 0.0 0.0 0.0 0.0 0.0 $'
+source tests/check4line
+set line = '^1 36 C 0.0 0.0 0.0 0.0 0.0 0.0 0.65 0.0 0.2 0.0 0.0 0.154 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.032 0.0 0.0 0.0010 0.0 0.0 0.0 0.0 0.0 0.0 9.46 0.0 0.0 0.0 0.0 $'
+source tests/check4line 
 
 
 echo -n "Test63 result: "

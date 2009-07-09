@@ -162,106 +162,106 @@ foreach file ($files)
 end
 
 set file = "data_dir/4267_2entam2.dat"
-set line = "2 3 ASP 0.6 0.2 0.0 0.0 0.0 0.0"
+set line = '^2 3 ASP 0.6 0.2 0.0 0.0 0.0 0.0$'
 source tests/check4line
-set line = "2 179 GLY 0.6666667 0.33333334 0.0 0.0 0.0 0.0"
+set line = '^2 179 GLY 0.6666667 0.33333334 0.0 0.0 0.0 0.0$'
 source tests/check4line
 
 set file = "data_dir/4267_2entamac2.dat"
-set line = "2 1 ALA H H -0.6 0.225 0 0 -0.15 0 backbone AMU -1"
+set line = '^2 1 ALA H H -0.6 0.225 0 0 -0.15 0 backbone AMU -1$'
 source tests/check4line
-set line = "2 179 GLY O O 1.4 -37.175 0 0 -0.15 0 backbone AMU -1"
+set line = '^2 179 GLY O O 1.4 -37.175 0 0 -0.15 0 backbone AMU -1$'
 source tests/check4line
 
 set file = "data_dir/4267_2entas2.dat"
-set line = "2 3 ASP H H 7.47"
+set line = '^2 3 ASP H H 7.47$'
 source tests/check4line
-set line = "2 179 GLY N N 113.37"
+set line = '^2 179 GLY N N 113.37$'
 source tests/check4line
 
 set file = "data_dir/4267_2entd1.dat"
-set line = "1 2 GLN 0.04 1.81 -0.49 -0.57"
+set line = '^1 2 GLN 0.04 1.81 -0.49 -0.57$'
 source tests/check4line
-set line = "1 179 GLY -0.215 3.48 1.06 0.0"
+set line = '^1 179 GLY -0.215 3.48 1.06 0.0$'
 source tests/check4line
 
 set file = "data_dir/4267_2entd2.dat"
-set line = "2 3 ASP -0.12 -0.79 0.12 0.39"
+set line = '^2 3 ASP -0.12 -0.79 0.12 0.39$'
 source tests/check4line
-set line = "2 179 GLY -0.215 3.48 1.06 0.0"
+set line = '^2 179 GLY -0.215 3.48 1.06 0.0$'
 source tests/check4line
 
 set file = "data_dir/4267_2entg2.dat"
-set line = "3JHNHA 2 9 ILE H 9 ILE HA 5.2 0"
+set line = '^3JHNHA 2 9 ILE H 9 ILE HA 5.2 0$'
 source tests/check4line
-set line = "3JHNHA 2 178 ASP H 178 ASP HA 8.9 0"
+set line = '^3JHNHA 2 178 ASP H 178 ASP HA 8.9 0$'
 source tests/check4line
 
 set file = "data_dir/4267_2enthn2.dat"
-set line = "2 3 ASP 7.47 122.81 H N"
+set line = '^2 3 ASP 7.47 122.81 H N $'
 source tests/check4line
-set line = "2 179 GLY 7.66 113.37 H N"
+set line = '^2 179 GLY 7.66 113.37 H N $'
 source tests/check4line
 
 set file = "data_dir/4267_2entmd.dat"
-set line = 'EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	4267_2entd1	$HA_DeltaShift'
+set line = '^EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	4267_2entd1	$HA_DeltaShift$'
 source tests/check4line
-set line = 'EA 2 (polypeptide(L))	2	S2 Order Parameters \[2\]	4267_2ento2	$S2order_value'
+set line = '^EA 2 (polypeptide(L))	2	S2 Order Parameters \[2\]	4267_2ento2	$S2order_value$'
 source tests/check4line
 
 set file = "data_dir/4267_2entn4.dat"
-set line = "2 3 ASP -0.364 0.050"
+set line = '^2 3 ASP -0.364 0.050$'
 source tests/check4line
-set line = "2 179 GLY 0.343 0.050"
+set line = '^2 179 GLY 0.343 0.050$'
 source tests/check4line
 
 set file = "data_dir/4267_2ento2.dat"
-set line = "2 3 ASP N 0.216 0.117"
+set line = '^2 3 ASP N 0.216 0.117$'
 source tests/check4line
-set line = "2 155 ARG NE 0.245 0.127"
+set line = '^2 155 ARG NE 0.245 0.127$'
 source tests/check4line
 
 set file = "data_dir/4267_2entp2.dat"
-set line = "2 3 ASP 100.0 75.0 100.0"
+set line = '^2 3 ASP 100.0 75.0 100.0$'
 source tests/check4line
-set line = "2 179 GLY 100.0 100.0 100.0"
+set line = '^2 179 GLY 100.0 100.0 100.0$'
 source tests/check4line
 
 set file = "data_dir/4267_2entrc2.dat"
-set line = "ALA 7"
+set line = '^ALA 7$'
 source tests/check4line
-set line = "VAL 13"
+set line = '^VAL 13$'
 source tests/check4line
 
 set file = "data_dir/4267_2entrl.dat"
-set line = "1	1	MET"
+set line = '^1	1	MET$'
 source tests/check4line
-set line = "2	179	GLY"
+set line = '^2	179	GLY$'
 source tests/check4line
 
 set file = "data_dir/4267_2entt13.dat"
-set line = "2 3 ASP N 0.681 0.020"
+set line = '^2 3 ASP N 0.681 0.020$'
 source tests/check4line
-set line = "2 155 ARG NE 1.634 0.087"
+set line = '^2 155 ARG NE 1.634 0.087$'
 source tests/check4line
 
 set file = "data_dir/4267_2entt22.dat"
-set line = "2 3 ASP N 0.3939 0.0077"
+set line = '^2 3 ASP N 0.3939 0.0077$'
 source tests/check4line
-set line = "2 155 ARG NE 0.4832 0.0347"
+set line = '^2 155 ARG NE 0.4832 0.0347$'
 source tests/check4line
 
 set file = "data_dir/4267_2entt23.dat"
-set line = "1 3 ASP N 0.2162 0.0085"
+set line = '^1 3 ASP N 0.2162 0.0085$'
 source tests/check4line
-set line = "1 155 ARG NE 0.1898 0.0292"
+set line = '^1 155 ARG NE 0.1898 0.0292$'
 source tests/check4line
 
 set file = "data_dir/4267_2entp1.dat"
 #TEMP -- doesn't work for 2.1
-#set line = "1 8 LEU 100.0 100.0 100.0"
+#set line = '^1 8 LEU 100.0 100.0 100.0$'
 #source tests/check4line
 #TEMP -- doesn't work for 2.1
-#set line = "1 11 ALA 100.0 66.666664 100.0"
+#set line = '^1 11 ALA 100.0 66.666664 100.0$'
 #source tests/check4line
 

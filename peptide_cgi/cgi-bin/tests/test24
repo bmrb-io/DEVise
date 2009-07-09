@@ -17,7 +17,7 @@ endif
 
 echo "Checking output files"
 
-#TEMPTEMP -- this should either produce Pistachio data or figure out that the figures of merit are all "."
+#TEMP -- this should either produce Pistachio data or figure out that the figures of merit are all "."
 set files = ( data_dir/6502as1.dat \
 	data_dir/6502as2.dat \
 	data_dir/6502c1.dat \
@@ -82,13 +82,13 @@ foreach file ($files)
 end
 
 set file = "data_dir/6502rl.dat"
-set line = "1	1	GLY"
+set line = '^1	1	GLY$'
 source tests/check4line
-set line = "1	100	LYS"
+set line = '^1	100	LYS$'
 source tests/check4line
-set line = "2	1	GLY"
+set line = '^2	1	GLY$'
 source tests/check4line
-set line = "2	83	PRO"
+set line = '^2	83	PRO$'
 source tests/check4line
 
 

@@ -33,49 +33,49 @@ end
 
 #TEMP -- manually check these values!
 set file = "data_dir/15080as1.dat"
-set line = "1 1 G C1' C 91.505"
+set line = "^1 1 G C1' C 91.505"
 source tests/check4line
-set line = "1 20 C H6 H 7.703"
+set line = '^1 20 C H6 H 7.703$'
 source tests/check4line
 
 set file = "data_dir/15080d1.dat"
-set line = "1 1 G 0.555 0.0 1.403 3.152 0.0 2.285 0.0 0.0 0.0 2.7 0.556 0.196 0.0 0.335 0.0 0.0 0.0 0.203 0.089 0.0 0.0 0.0 0.028 -0.09 0.0 0.0 0.0 0.575 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+set line = '^1 1 G 0.555 0.0 1.403 3.152 0.0 2.285 0.0 0.0 0.0 2.7 0.556 0.196 0.0 0.335 0.0 0.0 0.0 0.203 0.089 0.0 0.0 0.0 0.028 -0.09 0.0 0.0 0.0 0.575 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 $'
 source tests/check4line
-set line = "1 20 C 0.788 0.0 3.231 -1.532 0.0 2.544 1.841 0.0 1.475 0.0 0.0 0.25 0.0 -0.321 0.0 0.0 0.0 -0.226 -0.161 0.388 -0.174 0.065 0.0 0.305 0.033 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0"
+set line = '^1 20 C 0.788 0.0 3.231 -1.532 0.0 2.544 1.841 0.0 1.475 0.0 0.0 0.25 0.0 -0.321 0.0 0.0 0.0 -0.226 -0.161 0.388 -0.174 0.065 0.0 0.305 0.033 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 $'
 source tests/check4line
 
 set file = "data_dir/15080rl.dat"
-set line = "1	1	G"
+set line = '^1	1	G$'
 source tests/check4line
-set line = "1	20	C"
+set line = '^1	20	C$'
 source tests/check4line
 
 set file = "data_dir/15080ac1.dat"
-set line = "1 1 1 G O5' O -0.831 12.956 4.46 side_chains"
+set line = "^1 1 1 G O5' O -0.831 12.956 4.46 side_chains"
 source tests/check4line
-set line = "627 1 20 C H6 H 9.539 13.306 -3.974 all_hydrogens"
+set line = '^627 1 20 C H6 H 9.539 13.306 -3.974 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/15080ac2.dat"
-set line = "1 1 1 PSU N1 N 0.508 13.363 1.384 side_chains"
+set line = '^1 1 1 PSU N1 N 0.508 13.363 1.384 side_chains$'
 source tests/check4line
-set line = "645 1 20 A H2 H 3.233 14.267 -3.694 all_hydrogens"
+set line = '^645 1 20 A H2 H 3.233 14.267 -3.694 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/15080md.dat"
 set attr = '$C1p_DeltaShift'
-set line = "EA 1 (RNA)	1	C1' delta chem shift \[1\]	15080d1	$attr"
+set line = "^EA 1 (RNA)	1	C1' delta chem shift \[1\]	15080d1	$attr"
 source tests/check4line
 set attr = '$H8_DeltaShift'
-set line = "EA 1 (RNA)	1	H8 delta chem shift \[1\]	15080d1	$attr"
+set line = "^EA 1 (RNA)	1	H8 delta chem shift \[1\]	15080d1	$attr"
 source tests/check4line
 
 set file = "session_dir/15080ac1.ds"
-set line = 'DEVise dteInsertCatalogEntry . {"15080ac1" UNIXFILE 15080ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
+set line = '^DEVise dteInsertCatalogEntry . {"15080ac1" UNIXFILE 15080ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
 source tests/check4line
-set line = 'DEVise dteInsertCatalogEntry . {"15080d1" UNIXFILE 15080d1.dat bmrb-RNADeltaShift $DEVISE_SCHEMA/physical/bmrb-RNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
+set line = '^DEVise dteInsertCatalogEntry . {"15080d1" UNIXFILE 15080d1.dat bmrb-RNADeltaShift $DEVISE_SCHEMA/physical/bmrb-RNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
 source tests/check4line
-set line = 'DEVise setViewHelp {ViewVisualizationInfo} {Visualization of .*15080 and PDB 2O33'
+set line = '^DEVise setViewHelp {ViewVisualizationInfo} {Visualization of .*15080 and PDB 2O33'
 source tests/check4line
-set line = 'DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization of .*15080 and PDB 2O33 generated'
+set line = '^DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization of .*15080 and PDB 2O33 generated'
 source tests/check4line

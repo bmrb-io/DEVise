@@ -79,13 +79,13 @@ foreach file ($files)
 end
 
 set file = "data_dir/5085g1.dat"
-set line = "3JHNHA 1 3 LEU H 3 LEU HA 7.1 0"
+set line = '^3JHNHA 1 3 LEU H 3 LEU HA 7.1 0$'
 source tests/check4line
-set line = "3JHNHA 1 98 VAL H 98 VAL HA 9.8 0"
+set line = '^3JHNHA 1 98 VAL H 98 VAL HA 9.8 0$'
 source tests/check4line
 
 set file = "data_dir/5085g2.dat"
-set line = "3JHNHA 2 4 SER H 4 SER HA 6.9 0"
+set line = '^3JHNHA 2 4 SER H 4 SER HA 6.9 0$'
 source tests/check4line
-set line = "3JHNHA 2 22 ILE H 22 ILE HA 9.4 0"
+set line = '^3JHNHA 2 22 ILE H 22 ILE HA 9.4 0$'
 source tests/check4line

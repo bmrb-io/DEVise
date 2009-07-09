@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.138  2009/06/23 19:32:28  wenger
+// Make_view now rejects all illegal (non-numerical) BMRB accession
+// numbers (to cut down on the number of error emails I've been getting
+// since I added the 'Force Reprocessing' button).
+//
 // Revision 1.137  2009/06/04 17:07:19  wenger
 // Improved error message for errors parsing residue count.
 //
@@ -553,7 +558,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.1x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.1x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

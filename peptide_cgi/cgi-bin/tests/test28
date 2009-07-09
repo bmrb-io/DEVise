@@ -297,13 +297,13 @@ foreach file ($files)
 end
 
 set file = "data_dir/4970rl.dat"
-set line = "1	1	ALA"
+set line = '^1	1	ALA$'
 source tests/check4line
-set line = "1	148	LYS"
+set line = '^1	148	LYS$'
 source tests/check4line
-set line = "2	1	GLY"
+set line = '^2	1	GLY$'
 source tests/check4line
-set line = "2	21	SER"
+set line = '^2	21	SER$'
 source tests/check4line
 
 echo -n "Test28 result: "

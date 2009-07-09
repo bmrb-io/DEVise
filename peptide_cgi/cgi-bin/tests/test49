@@ -151,9 +151,9 @@ foreach file ($files)
 end
 
 set file = "data_dir/uvd/test49_outt11.dat"
-set line = "3 ASP N 1.030 0.031"
+set line = '^1 3 ASP N 1.030 0.031$'
 source tests/check4line
-set line = "155 ARG NE 1.830 0.110"
+set line = '^1 155 ARG NE 1.830 0.110$'
 source tests/check4line
 
 

@@ -89,101 +89,101 @@ foreach file ($files)
 end
 
 set file = "data_dir/4267as1.dat"
-set line = "1 2 GLN HA H 4.41"
+set line = '^1 2 GLN HA H 4.41$'
 source tests/check4line
-set line = "1 179 GLY N N 114.48"
+set line = '^1 179 GLY N N 114.48$'
 source tests/check4line
 
 set file = "data_dir/4267c1.dat"
-set line = "1 2 GLN 0 1 0 0 -1"
+set line = '^1 2 GLN 0 1 0 0 -1$'
 source tests/check4line
-set line = "1 179 GLY -1 1 1 0 -1"
+set line = '^1 179 GLY -1 1 1 0 -1$'
 source tests/check4line
 
 set file = "data_dir/4267d1.dat"
-set line = "1 2 GLN 0.04 1.81 -0.49 -0.57"
+set line = '^1 2 GLN 0.04 1.81 -0.49 -0.57$'
 source tests/check4line
-set line = "1 179 GLY -0.215 3.48 1.06 0.0"
+set line = '^1 179 GLY -0.215 3.48 1.06 0.0$'
 source tests/check4line
 
 set file = "data_dir/4267g1.dat"
-set line = "3JHNHA 1 9 ILE H 9 ILE HA 4.3 0"
+set line = '^3JHNHA 1 9 ILE H 9 ILE HA 4.3 0$'
 source tests/check4line
-set line = "3JHNHA 1 178 ASP H 178 ASP HA 9.5 0"
+set line = '^3JHNHA 1 178 ASP H 178 ASP HA 9.5 0$'
 source tests/check4line
 
 set file = "data_dir/4267hc1.dat"
-set line = "1 2 GLN 2.09 29.53 HB3 CB"
+set line = '^1 2 GLN 2.09 29.53 HB3 CB$'
 source tests/check4line
-set line = "1 179 GLY 3.77 46.06 HA3 CA"
+set line = '^1 179 GLY 3.77 46.06 HA3 CA$'
 source tests/check4line
 
 set file = "data_dir/4267hn1.dat"
-set line = "1 3 ASP 8.58 122.81 H N"
+set line = '^1 3 ASP 8.58 122.81 H N $'
 source tests/check4line
-set line = "1 179 GLY 7.66 114.48 H N"
+set line = '^1 179 GLY 7.66 114.48 H N $'
 source tests/check4line
 
 set file = "data_dir/4267n3.dat"
-set line = "1 3 ASP -0.256 0.050"
+set line = '^1 3 ASP -0.256 0.050$'
 source tests/check4line
-set line = "1 179 GLY 0.234 0.050"
+set line = '^1 179 GLY 0.234 0.050$'
 source tests/check4line
 
 set file = "data_dir/4267p1.dat"
-set line = "1 2 GLN 62.5 60.0 0.0"
+set line = '^1 2 GLN 62.5 60.0 0.0$'
 source tests/check4line
-set line = "1 179 GLY 100.0 100.0 100.0"
+set line = '^1 179 GLY 100.0 100.0 100.0$'
 source tests/check4line
 
 set file = "data_dir/4267rl.dat"
-set line = "1	1	MET"
+set line = '^1	1	MET$'
 source tests/check4line
-set line = "1	179	GLY"
+set line = '^1	179	GLY$'
 source tests/check4line
 
 set file = "data_dir/4267t11.dat"
-set line = "1 3 ASP N 1.030 0.031"
+set line = '^1 3 ASP N 1.030 0.031$'
 source tests/check4line
-set line = "1 155 ARG NE 1.830 0.110"
+set line = '^1 155 ARG NE 1.830 0.110$'
 source tests/check4line
 
 set file = "data_dir/4267md.dat"
 set attr = '$HA_DeltaShift'
-set line = "EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	4267d1	$attr"
+set line = "^EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	4267d1	$attr"
 source tests/check4line
 set attr = '$HA_Csi'
-set line = "EA 1 (polypeptide(L))	1	HA CSI \[1\]	4267c1	$attr"
+set line = "^EA 1 (polypeptide(L))	1	HA CSI \[1\]	4267c1	$attr"
 source tests/check4line
 set attr = '$assigForH'
-set line = "EA 1 (polypeptide(L))	1	% 1H assign per res \[1\]	4267p1	$attr"
+set line = "^EA 1 (polypeptide(L))	1	% 1H assign per res \[1\]	4267p1	$attr"
 source tests/check4line
 set attr = '$relax_value'
-set line = "EA 1 (polypeptide(L))	1	T1 Relaxation (750) \[1\]	4267t11	$attr"
+set line = "^EA 1 (polypeptide(L))	1	T1 Relaxation (750) \[1\]	4267t11	$attr"
 source tests/check4line
 set attr = '$relax_value'
-set line = "EA 1 (polypeptide(L))	1	T2 Relaxation (750) \[1\]	4267t21	$attr"
+set line = "^EA 1 (polypeptide(L))	1	T2 Relaxation (750) \[1\]	4267t21	$attr"
 source tests/check4line
 set attr = '$NOE_value'
 #TEMP -- 3.1 is missing atom names
-#TEMP set line = "EA 1 (polypeptide(L))	1	Het NOE (750) NE1 HE1 \[1\]	4267n1	$attr"
-set line = "EA 1 (polypeptide(L))	1	Het NOE (750) .* \[1\]	4267n1	$attr"
+#TEMP set line = "^EA 1 (polypeptide(L))	1	Het NOE (750) NE1 HE1 \[1\]	4267n1	$attr"
+set line = "^EA 1 (polypeptide(L))	1	Het NOE (750) .* \[1\]	4267n1	$attr"
 source tests/check4line
 set attr = '$Coupling_constant_value'
-set line = "EA 1 (polypeptide(L))	1	3JHNHA coupling const \[1\]	4267g1	$attr"
+set line = "^EA 1 (polypeptide(L))	1	3JHNHA coupling const \[1\]	4267g1	$attr"
 source tests/check4line
 set attr = '$S2order_value'
-set line = "EA 1 (polypeptide(L))	1	S2 Order Parameters \[1\]	4267o1	$attr"
+set line = "^EA 1 (polypeptide(L))	1	S2 Order Parameters \[1\]	4267o1	$attr"
 source tests/check4line
 
 set file = "session_dir/4267ac1.ds"
-set line = 'DEVise dteInsertCatalogEntry . {"4267ac1" UNIXFILE 4267ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
+set line = '^DEVise dteInsertCatalogEntry . {"4267ac1" UNIXFILE 4267ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
 source tests/check4line
-set line = 'DEVise dteInsertCatalogEntry . {"4267md" UNIXFILE 4267md.dat bmrb-summary $DEVISE_SCHEMA/physical/bmrb-summary "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}'
-source tests/check4line
-# 2.1 has "BMRB 4267"; 3.1 just has "4267" (because it's a local file)
-set line = 'DEVise setViewHelp {ViewVisualizationInfo} {Visualization of .*4267 and PDB 1dfv generated by Peptide-CGI'
+set line = '^DEVise dteInsertCatalogEntry . {"4267md" UNIXFILE 4267md.dat bmrb-summary $DEVISE_SCHEMA/physical/bmrb-summary "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
 source tests/check4line
 # 2.1 has "BMRB 4267"; 3.1 just has "4267" (because it's a local file)
-set line = 'DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization of .*4267 and PDB 1dfv generated on'
+set line = '^DEVise setViewHelp {ViewVisualizationInfo} {Visualization of .*4267 and PDB 1dfv generated by Peptide-CGI'
+source tests/check4line
+# 2.1 has "BMRB 4267"; 3.1 just has "4267" (because it's a local file)
+set line = '^DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization of .*4267 and PDB 1dfv generated on'
 source tests/check4line

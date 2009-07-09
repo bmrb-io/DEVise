@@ -46,21 +46,21 @@ end
 
 
 set file = "data_dir/5167as1.dat"
-set line = "1 1 DC H1' H 6.01"
+set line = "^1 1 DC H1' H 6.01"
 source tests/check4line
-set line = "1 27 DG H5' H 4.106"
+set line = "^1 27 DG H5' H 4.106"
 source tests/check4line 
 
 set file = "data_dir/5167d1.dat"
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line
-set line = "TEMPTEMP"
-#TEMPTEMP source tests/check4line 
+set line = '^1 1 DC 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.1 0.0 0.164 0.219 0.0 0.0 0.0 -0.046 0.019 0.361 -0.163 0.387 -0.207 -0.217 0.321 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 $'
+source tests/check4line
+set line = '^1 27 DG 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.418 0.267 0.0 -0.187 -0.323 0.0 0.0 0.0 -0.304 -0.094 0.0 0.0 0.0 0.036 0.036 0.0 0.0 0.0 0.0 0.0 0.0 0.0 -0.085 0.0 0.0 0.0 0.0 0.0 0.0 0.0 $'
+source tests/check4line 
 
 set file = "data_dir/5167ac1.dat"
-set line = "1 1 1 DC O5' O 5.736 -23.194 16.011 side_chains"
+set line = "^1 1 1 DC O5' O 5.736 -23.194 16.011 side_chains"
 source tests/check4line
-set line = "859 1 27 DG H22 H -3.196 -21.462 11.991 all_hydrogens"
+set line = '^859 1 27 DG H22 H -3.196 -21.462 11.991 all_hydrogens$'
 source tests/check4line 
 
 

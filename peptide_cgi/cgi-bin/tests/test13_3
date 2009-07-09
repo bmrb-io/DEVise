@@ -10,7 +10,7 @@ rm -f */test13_out*
 rm -f */*/test13_out*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-#TEMPTEMP -- -check_res_list makes this fail -- should fix input file.
+#TEMP -- -check_res_list makes this fail -- should fix input file.
 ./vsc -file test_data/Jafar1_3.str -name test13_out -do_csr 2 -force
 if ($status != 0) then
   echo "First invocation of vsc failed!"
