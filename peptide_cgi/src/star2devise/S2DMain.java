@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.139  2009/07/09 22:43:34  wenger
+// General fixes to Peptide-CGI tests -- check for beginning and end
+// of lines in most checks for specific text; added output file lists
+// to some tests that were missing them; a few other fixes.
+//
 // Revision 1.138  2009/06/23 19:32:28  wenger
 // Make_view now rejects all illegal (non-numerical) BMRB accession
 // numbers (to cut down on the number of error emails I've been getting
@@ -558,7 +563,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.1x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.1x6"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

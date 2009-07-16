@@ -201,7 +201,7 @@ DEVise setDoHomeOnVisLink {View 4} {1}
 
 # View {View 5} uses mapping {.4081c1#Consensus_Csi_vs_SeqNum}
 DEVise create {view} {SortedX} {View 5} 0.400000 165.600000 -1.000000 1.000000 37 0 0 37 0 37
-DEVise setLabel {View 5} 1 16 {Concensus CSI}
+DEVise setLabel {View 5} 1 16 {Consensus CSI}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
 DEVise setViewSolid3D {View 5} 2
