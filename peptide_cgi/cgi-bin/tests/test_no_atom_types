@@ -1,0 +1,78 @@
+#! /bin/csh -f
+
+# Tests a data file that has no Atom_type values.
+
+set result = 0
+
+rm -f */test_out*
+
+echo -n "Processing NMR-STAR: "
+./s2d -file test_data/swordfish_20090519_82287.str -name test_out -force
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/test_outam1.dat \
+	data_dir/test_outamac1.dat \
+	data_dir/test_outas1.dat \
+	data_dir/test_outc1.dat \
+	data_dir/test_outd1.dat \
+	data_dir/test_outhc1.dat \
+	data_dir/test_outhn1.dat \
+	data_dir/test_outmd.dat \
+	data_dir/test_outp1.dat \
+	data_dir/test_outrc1.dat \
+	data_dir/test_outrl.dat \
+	html_dir/test_outam1.html \
+	html_dir/test_outam1_large.html \
+	html_dir/test_outas1.html \
+	html_dir/test_outas1_large.html \
+	html_dir/test_outc1.html \
+	html_dir/test_outc1_large.html \
+	html_dir/test_outd1.html \
+	html_dir/test_outd1_large.html \
+	html_dir/test_outhc1.html \
+	html_dir/test_outhc1_large.html \
+	html_dir/test_outhn1.html \
+	html_dir/test_outhn1_large.html \
+	html_dir/test_outp1.html \
+	html_dir/test_outp1_large.html \
+	html_dir/test_outy.html \
+	html_dir/test_outy_large.html \
+	session_dir/test_outacdd \
+	session_dir/test_outam1.ds \
+	session_dir/test_outas1.ds \
+	session_dir/test_outc1.ds \
+	session_dir/test_outd1.ds \
+	session_dir/test_outhc1.ds \
+	session_dir/test_outhn1.ds \
+	session_dir/test_outp1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/test_outd1.dat"
+set line = '^1 1 ALA -0.271 0.0 -0.698 -0.102$'
+source tests/check4line
+set line = '^1 23 GLU -0.0040 0.0 0.888 -1.304$'
+source tests/check4line
+set line = '^1 175 ARG 0.411 0.0 1.062 1.077$'
+source tests/check4line
+
+
+echo -n "test_no_atom_types result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

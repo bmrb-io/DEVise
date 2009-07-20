@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2009/04/15 16:21:04  wenger
+// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
+// fixed test61 and test61_3.
+//
 // Revision 1.10.2.1  2009/04/09 20:20:54  wenger
 // HvsC simulated spectrum stuff is partly in place -- data is generated
 // (but not fully tested, plus lots of temporary code still in place);
@@ -87,6 +91,8 @@ public class S2DNames
     public static final String ATOM_N = "N";
     public static final String ATOM_NE1 = "NE1";
     public static final String ATOM_O = "O";
+    public static final String ATOM_P = "P";
+    public static final String ATOM_S = "S";
 
     //
     // Residue labels (amino acids).

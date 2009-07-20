@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2009/04/15 16:21:04  wenger
+// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
+// fixed test61 and test61_3.
+//
 // Revision 1.15.2.1  2009/04/14 22:09:07  wenger
 // Session file, visualization-specific HTML file and summary page link
 // are now created; removed "legend view" from session template;
@@ -178,6 +182,33 @@ public class S2DUtils
 	}
         
         return results;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Convert atom name values to atom types.
+     * @param An array of atom names.
+     * @return An array of atom types.
+     */
+    public static String[] atomName2AtomType(String[] atomNames)
+      throws S2DException
+    {
+    	String[] atomTypes = new String[atomNames.length];
+	for (int index = 0; index < atomNames.length; index++) {
+	    atomTypes[index] = atomNames[index].substring(0, 1);
+	    if (!atomTypes[index].equals(S2DNames.ATOM_H) &&
+	      !atomTypes[index].equals(S2DNames.ATOM_C) &&
+	      !atomTypes[index].equals(S2DNames.ATOM_O) &&
+	      !atomTypes[index].equals(S2DNames.ATOM_N) &&
+	      !atomTypes[index].equals(S2DNames.ATOM_S) &&
+	      !atomTypes[index].equals(S2DNames.ATOM_P)) {
+	    	throw new S2DError("Illegal atom type: " +
+		  atomTypes[index] + " derived from atom name " +
+		  atomNames[index]);
+	    }
+	}
+
+	return atomTypes;
     }
 
     //-------------------------------------------------------------------

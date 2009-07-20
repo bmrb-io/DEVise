@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.140  2009/07/16 19:23:39  wenger
+// Fixed spelling of 'consensus' in CSI session.
+//
 // Revision 1.139  2009/07/09 22:43:34  wenger
 // General fixes to Peptide-CGI tests -- check for beginning and end
 // of lines in most checks for specific text; added output file lists
@@ -563,7 +566,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.1x6"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.1x7"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
@@ -665,7 +668,7 @@ public class S2DMain {
 	    System.err.println("Top-level warning: ");
 	    System.err.println(ex.toString());
 	} catch (Exception ex) {
-	    System.err.println("Top-level error: ");
+	    System.err.println("\n*** Top-level error: ");
 	    ex.printStackTrace();
 	    System.err.println(ex.toString());
 	    throw new S2DError("NMR-Star to DEVise conversion failed");
@@ -2659,9 +2662,21 @@ public class S2DMain {
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
 	  entityAssemblyIDs);
 
-	String[] atomTypes = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE, entityAssemblyID,
-	  entityAssemblyIDs);
+	String[] atomTypes = null;
+	try { 
+	    atomTypes = star.getAndFilterFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE,
+	      entityAssemblyID, entityAssemblyIDs);
+	} catch (S2DException ex) {
+	    if (doDebugOutput(0)) {
+	    	System.out.println("Warning: unable to get " +
+		  star.CHEM_SHIFT_ATOM_TYPE +
+		  " values (" + ex.toString() + "); deriving them from " +
+		  star.CHEM_SHIFT_ATOM_NAME + " values instead");
+	    }
+
+	    atomTypes = S2DUtils.atomName2AtomType(atomNames);
+	}
 
 	String[] chemShiftsTmp = star.getAndFilterFrameValues(frame,
 	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityAssemblyID,

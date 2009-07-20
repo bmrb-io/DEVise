@@ -4,6 +4,9 @@ Peptide-CGI 11.6.1
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
 
+* Atom type values are now derived from atom name values if the atom
+types are not available.
+
 * Make_view now rejects all illegal (non-numerical) BMRB accession
 numbers without passing them along to s2d.
 
