@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2009/04/15 16:21:04  wenger
+// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
+// fixed test61 and test61_3.
+//
 // Revision 1.22.2.1  2009/04/09 20:20:54  wenger
 // HvsC simulated spectrum stuff is partly in place -- data is generated
 // (but not fully tested, plus lots of temporary code still in place);
@@ -703,7 +707,7 @@ public class S2DChemShift {
 	    // Write the session-specific html file.
 	    //
 	    String title = "Chemical shift distributions by amino " +
-	      "acid (entity assembly " + _entityAssemblyID + ")";
+	      "acid/nucleotide (entity assembly " + _entityAssemblyID + ")";
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
 	      S2DUtils.TYPE_ALL_CHEM_SHIFTS, _name, frameIndex,
