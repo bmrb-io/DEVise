@@ -25,6 +25,35 @@
 // $Id$
 
 // $Log$
+// Revision 1.14.6.5  2009/08/25 17:52:03  wenger
+// Very minor code cleanups, added SPARTA stuff to pre-release manual
+// testing procedure.
+//
+// Revision 1.14.6.4  2009/08/07 20:05:41  wenger
+// Changed sd16385.str and sd16385_3.str  to new versions of SPARTA format;
+// changed the code to work on the new format; removed test_sparta1
+// and test_sparta2 from test_all because their data is the old format
+// and no longer works.
+//
+// Revision 1.14.6.3  2009/07/22 19:29:14  wenger
+// Added capability for processing SPARTA-calculated delta shifts for
+// multiple models.  (This generates separate visualizations for each
+// model -- I have to combine them, and probably also deal with the
+// possibility of having SPARTA data for different entities/entity
+// assemblies.)
+//
+// Revision 1.14.6.2  2009/07/15 21:11:27  wenger
+// Added new SPARTA tests of sd16385.str and sd16385_3.str (they
+// have some new tag names, etc.); added beginning and end of line
+// checks to SPARTA tests.
+//
+// Revision 1.14.6.1  2009/07/01 18:06:00  wenger
+// A lot of the SPARTA deltashift processing is in place -- the actual
+// data isn't yet coming out right, though.
+//
+// Revision 1.14  2009/02/18 18:10:50  wenger
+// Fixed bug 065 (don't process non-polymer entities).
+//
 // Revision 1.13  2009/02/06 16:20:25  wenger
 // Cleaned up a bunch of the nucleic acid-related code; all tests pass
 // (but I still need to fix up the deltashift values for nucleic acids).
@@ -201,6 +230,17 @@ public abstract class S2DStarIfc {
     public String COUPLING_SF_CAT = "";
 
     public String DEFAULT_SAVEFRAME_CATEGORY = "";
+    public String DELTA_CHEM_SHIFTS = "";
+    public String DELTA_CHEM_SHIFTS_AVG = "";
+    public String DELTA_SHIFT_SF_CAT = "";
+    public String DELTA_SHIFT_ATOM_NAME = "";
+    public String DELTA_SHIFT_ATOM_TYPE = "";
+    public String DELTA_SHIFT_ENTITY_ASSEMBLY_ID = "";
+    public String DELTA_SHIFT_MODEL_NUM = "";
+    public String DELTA_SHIFT_MOL_SYS_COMP_NAME = "";
+    public String DELTA_SHIFT_RES_LABEL = "";
+    public String DELTA_SHIFT_RES_SEQ_CODE = "";
+    public String DELTA_SHIFT_VALUE = "";
     public String DETAILS = "";
     public String DNA = "";
 
@@ -653,8 +693,12 @@ public abstract class S2DStarIfc {
             DataItemNode node = (DataItemNode)list.firstElement();
 	    result = node.getValue();
         } else {
-	    throw new S2DError("Expected one value for " + name + "; got " +
-	      list.size());
+	    String msg = "Expected one value for " + name + "; got " +
+	                  list.size();
+	    if (frame instanceof SaveFrameNode) {
+	        msg += " in frame " + getFrameName((SaveFrameNode)frame);
+	    }
+	    throw new S2DError(msg);
         }
 
         return result;

@@ -21,6 +21,35 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.6.5  2009/08/25 17:52:03  wenger
+// Very minor code cleanups, added SPARTA stuff to pre-release manual
+// testing procedure.
+//
+// Revision 1.17.6.4  2009/08/24 18:50:28  wenger
+// Minor improvements to some debug output.
+//
+// Revision 1.17.6.3  2009/08/07 20:05:41  wenger
+// Changed sd16385.str and sd16385_3.str  to new versions of SPARTA format;
+// changed the code to work on the new format; removed test_sparta1
+// and test_sparta2 from test_all because their data is the old format
+// and no longer works.
+//
+// Revision 1.17.6.2  2009/07/22 19:29:14  wenger
+// Added capability for processing SPARTA-calculated delta shifts for
+// multiple models.  (This generates separate visualizations for each
+// model -- I have to combine them, and probably also deal with the
+// possibility of having SPARTA data for different entities/entity
+// assemblies.)
+//
+// Revision 1.17.6.1  2009/07/01 18:06:00  wenger
+// A lot of the SPARTA deltashift processing is in place -- the actual
+// data isn't yet coming out right, though.
+//
+// Revision 1.17  2009/03/12 23:02:29  wenger
+// Fixed a problem with the output from test1_3 (polymer type for
+// heteronuclear NOEs showing up as "unknown"), and fixed the checking
+// script so that the test will fail if the problem happens again.
+//
 // Revision 1.16  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -431,7 +460,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
         if (result == null) {
 	    throw new S2DError("No entity frame found corresponding to " +
-	      "frame " + getFrameName(frame));
+	      "frame " + getFrameName(frame) + ", entityID " + entityID);
 	}
 
         if (doDebugOutput(12)) {
@@ -695,6 +724,17 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	COUPLING_SF_CAT = "_Coupling_constant_list.Sf_category";
 
 	DNA = "polydeoxyribonucleotide";
+	DELTA_CHEM_SHIFTS = "delta_chem_shifts";
+	DELTA_CHEM_SHIFTS_AVG = "delta_chem_shifts_average";
+	DELTA_SHIFT_SF_CAT = "_Entity_delta_chem_shifts.Sf_category";
+	DELTA_SHIFT_ATOM_NAME = "_Delta_CS.Atom_ID";
+	DELTA_SHIFT_ATOM_TYPE = "_Delta_CS.Atom_type";
+	DELTA_SHIFT_ENTITY_ASSEMBLY_ID = "_Delta_CS.Entity_assembly_ID";
+	DELTA_SHIFT_MODEL_NUM = "_Delta_CS.Conformer_ID";
+	// DELTA_SHIFT_MOL_SYS_COMP_NAME (not needed for 3.0/3.1 files)
+	DELTA_SHIFT_RES_LABEL = "_Delta_CS.Comp_ID";
+	DELTA_SHIFT_RES_SEQ_CODE = "_Delta_CS.Seq_ID";
+	DELTA_SHIFT_VALUE = "_Delta_CS.Delta_CS_value";
 
 	ENTITY_DB_ACC_CODE = "_Entity_db_link.Accession_code";
 	ENTITY_DB_NAME = "_Entity_db_link.Database_code";

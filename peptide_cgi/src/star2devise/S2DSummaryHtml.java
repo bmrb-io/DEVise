@@ -31,6 +31,27 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.4.4  2009/08/21 19:29:38  wenger
+// Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
+// But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
+// (Tagging with s2d_sparta_deltashift_br_1 before this commit,
+// s2d_sparta_deltashift_br_2 after.)
+//
+// Revision 1.15.4.3  2009/07/28 22:40:01  wenger
+// Added processing of SPARTA-calculated delta shift average values.
+//
+// Revision 1.15.4.2  2009/07/22 20:20:22  wenger
+// Fixed residue numbering in SPARTA delta shift visualizations;
+// changed "theoretical" to "SPARTA-calculated" and changed method
+// names, etc., to match.
+//
+// Revision 1.15.4.1  2009/07/06 20:37:23  wenger
+// Summary pages now have links for SPARTA-calculated deltashifts.
+//
+// Revision 1.15  2009/05/11 22:22:46  wenger
+// Added "Force reprocessing" button to summary pages (mainly for
+// testing).
+//
 // Revision 1.14  2009/04/15 16:21:04  wenger
 // Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
 // fixed test61 and test61_3.
@@ -239,6 +260,19 @@ public class S2DSummaryHtml {
 	  isNucleicAcid);
     	_large.writeDeltashift(frameIndex, entityAssemblyID, count,
 	  isNucleicAcid);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the SPARTA-calculated deltashift link.
+    public void writeSpartaDeltashift(int entityAssemblyID, int count)
+      throws IOException
+    {
+	if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeSpartaDeltashift()");
+	}
+
+    	_normal.writeSpartaDeltashift(entityAssemblyID, count);
+    	_large.writeSpartaDeltashift(entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------

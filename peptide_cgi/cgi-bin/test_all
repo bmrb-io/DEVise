@@ -95,6 +95,15 @@ RunTest("test68_3");
 RunTest("test69");
 RunTest("test69_3");
 RunTest("test_no_atom_types");
+# No longer relevant because of SPARTA data format changes.
+#RunTest("test_sparta1");
+# No longer relevant because of SPARTA data format changes.
+#RunTest("test_sparta2");
+RunTest("test_sparta3");
+RunTest("test_sparta3_3");
+RunTest("test_sparta4");
+RunTest("test_sparta5");
+RunTest("test_sparta5_3");
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 #TEMP -- 4141 has protein and DNA

@@ -19,6 +19,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.6.1  2009/07/01 18:06:00  wenger
+// A lot of the SPARTA deltashift processing is in place -- the actual
+// data isn't yet coming out right, though.
+//
+// Revision 1.6  2009/01/28 19:48:01  wenger
+// Updated the ShiftDataManager class to work with DNA and RNA chemical
+// shift lists.
+//
 // Revision 1.5  2007/11/15 17:15:37  wenger
 // Cleaned out cvs history in source files.
 //
@@ -55,6 +63,9 @@ public class ShiftDataManager
     private static final int DEBUG = 0;
 
     private static final int MAX_DATA_ENTRIES = 500;
+
+    private boolean _dummy = false;
+
     private String filename;
 
     // Residue label name
@@ -128,6 +139,16 @@ public class ShiftDataManager
 	}
     } // end constructor
 
+    // Constructor for dummy version that always returns zeroes.
+    ShiftDataManager()
+    {
+	if (doDebugOutput(11, true)) {
+	    System.out.println("ShiftDataManager()");
+	}
+
+	_dummy = true;
+    }
+
     
     // A function that takes as input arguments a residue name and an
     // atom name and returns a pair of values -- standard value of
@@ -141,6 +162,12 @@ public class ShiftDataManager
 	}
 
 	Pair retValues = new Pair();
+
+	if (_dummy) {
+	    retValues.chemshift = 0.0;
+	    retValues.offset    = 0.0;
+	    return retValues;
+	}
 	
 	// Initialize with default error values
 	retValues.chemshift = -1.0;

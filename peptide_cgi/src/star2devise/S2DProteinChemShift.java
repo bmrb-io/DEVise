@@ -22,6 +22,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.3  2009/08/21 21:00:44  wenger
+// Fixed errors that made some tests fail with the previous version.
+//
+// Revision 1.2.4.2  2009/07/15 17:36:31  wenger
+// Added processing of N and HN deltashifts for SPARTA; added N and
+// HN views to the session template (now split off from the "normal"
+// deltashift template); partially added provision for multiple models.
+//
+// Revision 1.2.4.1  2009/07/01 18:06:00  wenger
+// A lot of the SPARTA deltashift processing is in place -- the actual
+// data isn't yet coming out right, though.
+//
+// Revision 1.2  2009/04/15 16:21:04  wenger
+// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
+// fixed test61 and test61_3.
+//
 // Revision 1.1.2.2  2009/04/14 22:09:07  wenger
 // Session file, visualization-specific HTML file and summary page link
 // are now created; removed "legend view" from session template;
@@ -59,7 +75,7 @@ public class S2DProteinChemShift extends S2DChemShift {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    // Constructor.
+    // Constructor (for experimental chemical shifts).
     public S2DProteinChemShift(String name, String longName, String dataDir,
       String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
       String[] residueLabels, String[] atomNames, String[] atomTypes,
@@ -78,6 +94,31 @@ public class S2DProteinChemShift extends S2DChemShift {
 
 	CHEMSHIFT_FILE += "chemshift.txt";
         _refTable = new ShiftDataManager(CHEMSHIFT_FILE);
+
+	calculateDeltaShifts();
+    }
+
+    //-------------------------------------------------------------------
+    // Constructor (for SPARTA-calculated deltashifts).
+    public S2DProteinChemShift(String name, String longName, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
+      String[] residueLabels, String[] atomNames, String[] atomTypes,
+      double[] deltaShiftVals, int entityAssemblyID, int modelNum,
+      String frameDetails) throws S2DException
+    {
+	super(name, longName, dataDir, sessionDir, summary, resSeqCodes,
+	  residueLabels, atomNames, atomTypes, deltaShiftVals,
+	  entityAssemblyID, modelNum, frameDetails);
+
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DProteinChemShift.S2DProteinChemShift(" +
+	      name + ")");
+	}
+
+	// ShiftDataManager with no chemshift file creates a special
+	// version for already-calculated deltashift values
+	// (see ShiftDataManager.java).
+        _refTable = new ShiftDataManager();
 
 	calculateDeltaShifts();
     }

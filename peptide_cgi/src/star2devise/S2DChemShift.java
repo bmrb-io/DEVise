@@ -21,6 +21,48 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2009/08/21 21:40:32  wenger
+// Changed "amino acid" to "amino acid/nucleotide" in chemical shift
+// by AA/nucleotide html page.
+//
+// Revision 1.23.4.9  2009/08/21 19:29:38  wenger
+// Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
+// But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
+// (Tagging with s2d_sparta_deltashift_br_1 before this commit,
+// s2d_sparta_deltashift_br_2 after.)
+//
+// Revision 1.23.4.8  2009/07/28 22:40:01  wenger
+// Added processing of SPARTA-calculated delta shift average values.
+//
+// Revision 1.23.4.7  2009/07/22 20:20:22  wenger
+// Fixed residue numbering in SPARTA delta shift visualizations;
+// changed "theoretical" to "SPARTA-calculated" and changed method
+// names, etc., to match.
+//
+// Revision 1.23.4.6  2009/07/15 19:50:46  wenger
+// Changed SPARTA version from 11.7.0 to 11.6.1; changed HN to H in
+// SPARTA processing and visualization.
+//
+// Revision 1.23.4.5  2009/07/15 17:36:31  wenger
+// Added processing of N and HN deltashifts for SPARTA; added N and
+// HN views to the session template (now split off from the "normal"
+// deltashift template); partially added provision for multiple models.
+//
+// Revision 1.23.4.4  2009/07/06 21:47:46  wenger
+// Sparta tests now check for links in summary HTML pages; cleaned up
+// some debug code.
+//
+// Revision 1.23.4.3  2009/07/06 20:37:23  wenger
+// Summary pages now have links for SPARTA-calculated deltashifts.
+//
+// Revision 1.23.4.2  2009/07/01 20:57:50  wenger
+// Data is now generated for SPARTA deltashift values; the link in
+// the summary page is not written yet, though.
+//
+// Revision 1.23.4.1  2009/07/01 18:05:59  wenger
+// A lot of the SPARTA deltashift processing is in place -- the actual
+// data isn't yet coming out right, though.
+//
 // Revision 1.23  2009/04/15 16:21:04  wenger
 // Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
 // fixed test61 and test61_3.
@@ -199,6 +241,7 @@ public class S2DChemShift {
     protected String _dataDir;
     protected String _sessionDir;
     protected S2DSummaryHtml _summary;
+    protected int _modelNum; // for SPARTA-calculated deltashifts only
     protected String _frameDetails;
 
     protected int[] _resSeqCodes;
@@ -218,6 +261,8 @@ public class S2DChemShift {
     private float[] _cDeltaShifts;
     private float[] _caDeltaShifts;
     private float[] _cbDeltaShifts;
+    private float[] _nDeltaShifts; // for SPARTA only
+    private float[] _hDeltaShifts; // for SPARTA only
 
     // Distinguish between "real" CB shifts and the values plugged in
     // with the GLY HA3->CB translation.
@@ -228,12 +273,15 @@ public class S2DChemShift {
     // The set of atoms that are available for this frame/entity.
     protected HashSet _atomSet = new HashSet();
 
+    // Whether deltashifts are SPARTA-calculated as opposed to experimental.
+    private boolean _deltaShiftsAreSparta = false;
+
 
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    // Factory.
+    // Factory -- experimental chemical shifts.
     public static S2DChemShift create(int polymerType, String name,
       String longName, String dataDir,
       String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
@@ -275,7 +323,43 @@ public class S2DChemShift {
     }
 
     //-------------------------------------------------------------------
-    // Constructor.
+    // Factory -- SPARTA-calculated delta shifts.
+    public static S2DChemShift createSparta(int polymerType, String name,
+      String longName, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
+      String[] residueLabels, String[] atomNames, String[] atomTypes,
+      double[] deltaShiftVals, int entityAssemblyID, int modelNum,
+      String frameDetails) throws S2DException
+    {
+	S2DChemShift chemShift;
+
+        switch (polymerType) {
+	case S2DResidues.POLYMER_TYPE_PROTEIN:
+	case S2DResidues.POLYMER_TYPE_UNKNOWN:
+	    chemShift = new S2DProteinChemShift(name, longName, dataDir,
+	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
+	      atomTypes, deltaShiftVals, entityAssemblyID, modelNum,
+	      frameDetails);
+	    break;
+
+	//TEMP -- do we need to support DNA and RNA?
+	case S2DResidues.POLYMER_TYPE_DNA:
+	    throw new S2DError(
+	      "DNA not supported for SPARTA deltashifts");
+
+	case S2DResidues.POLYMER_TYPE_RNA:
+	    throw new S2DError(
+	      "RNA not supported for SPARTA deltashifts");
+
+	default:
+	    throw new S2DError("Illegal polymer type: " + polymerType);
+	}
+
+	return chemShift;
+    }
+
+    //-------------------------------------------------------------------
+    // Constructor (for experimental chemical shifts).
     public S2DChemShift(String name, String longName, String dataDir,
       String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
       String[] residueLabels, String[] atomNames, String[] atomTypes,
@@ -307,32 +391,90 @@ public class S2DChemShift {
     }
 
     //-------------------------------------------------------------------
+    // Constructor (for SPARTA-calculated deltashifts).
+    public S2DChemShift(String name, String longName, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
+      String[] residueLabels, String[] atomNames, String[] atomTypes,
+      double[] deltaShiftVals, int entityAssemblyID, int modelNum,
+      String frameDetails) throws S2DException
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DChemShift.S2DChemShift(" + name + ", " +
+	      entityAssemblyID + ", " + modelNum + ")");
+	}
+
+	_name = name;
+	_longName = longName;
+	_dataDir = dataDir;
+	_sessionDir = sessionDir;
+	_summary = summary;
+	_modelNum = modelNum;
+	_frameDetails = frameDetails;
+
+	_resSeqCodes = resSeqCodes;
+	_residueLabels = S2DUtils.arrayToUpper(residueLabels);
+	_atomNames = atomNames;
+	_atomTypes = atomTypes;
+	_chemShiftVals = deltaShiftVals;
+	_entityAssemblyID = entityAssemblyID;
+
+	_info = "Visualization of " + _longName;
+
+        _deltaShiftsAreSparta = true;
+    }
+
+    //-------------------------------------------------------------------
     // Write the deltashifts for this data.
-    public void writeDeltashifts(int frameIndex) throws S2DException
+    public void writeDeltashifts(int frameIndex, boolean append)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.writeDeltashifts()");
 	}
+
+	String suffix = _deltaShiftsAreSparta ?
+	  S2DNames.SPARTA_DELTASHIFT_SUFFIX :
+	  S2DNames.DELTASHIFT_SUFFIX;
 
 	//
 	// Write the deltashift values to the appropriate data file.
 	//
         FileWriter deltashiftWriter = null;
 	try {
-            deltashiftWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + S2DNames.DELTASHIFT_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
-	    deltashiftWriter.write("# Data: delta shift values for " +
-	      _name + "\n");
-	    deltashiftWriter.write("# Schema: bmrb-DeltaShift\n");
-	    deltashiftWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; Residue_label; " +
-	      "HA_DeltaShift; C_DeltaShift; CA_DeltaShift; CB_DeltaShift\n");
-            deltashiftWriter.write("# Peptide-CGI version: " +
-	      S2DMain.PEP_CGI_VERSION + "\n");
-            deltashiftWriter.write("# Generation date: " +
-	      S2DMain.getTimestamp() + "\n");
-	    deltashiftWriter.write("#\n");
+	    String fileName = _dataDir + File.separator + _name +
+	      suffix + frameIndex + S2DNames.DAT_SUFFIX;
+	    if (append) {
+                deltashiftWriter = S2DFileWriter.append(fileName);
+	    } else {
+                deltashiftWriter = S2DFileWriter.create(fileName);
+
+		if (_deltaShiftsAreSparta) {
+	            deltashiftWriter.write("# Data: SPARTA-calculated " +
+		      "delta shift values for " + _name + "\n");
+	            deltashiftWriter.write("# Schema: bmrb-SpartaDeltaShift\n");
+		} else {
+	            deltashiftWriter.write("# Data: delta shift values for " +
+	              _name + "\n");
+	            deltashiftWriter.write("# Schema: bmrb-DeltaShift\n");
+		}
+
+	        deltashiftWriter.write("# Attributes: Entity_assembly_ID; ");
+	        if (_deltaShiftsAreSparta) {
+	            deltashiftWriter.write("Model_number; ");
+	        }
+	        deltashiftWriter.write("Residue_seq_code; Residue_label; " +
+	          "HA_DeltaShift; C_DeltaShift; CA_DeltaShift; CB_DeltaShift");
+	        if (_deltaShiftsAreSparta) {
+	            deltashiftWriter.write("; N_DeltaShift; H_DeltaShift");
+	        }
+	        deltashiftWriter.write("\n");
+
+                deltashiftWriter.write("# Peptide-CGI version: " +
+	          S2DMain.PEP_CGI_VERSION + "\n");
+                deltashiftWriter.write("# Generation date: " +
+	          S2DMain.getTimestamp() + "\n");
+	        deltashiftWriter.write("#\n");
+	    }
 
         } catch(IOException ex) {
 	    System.err.println("IOException writing deltashifts: " +
@@ -345,20 +487,32 @@ public class S2DChemShift {
             for (int index = 0; index < _deltaShiftResLabels.length; ++index) {
 	        if (!_deltaShiftResLabels[index].equals("")) {
 		    dsCount++;
-		    deltashiftWriter.write(_entityAssemblyID + " " +
-		      index + " " +
+		    deltashiftWriter.write(_entityAssemblyID + " ");
+		    if (_deltaShiftsAreSparta) {
+		        deltashiftWriter.write(_modelNum + " ");
+		    }
+		    deltashiftWriter.write("" + index + " " +
 		      _deltaShiftResLabels[index] + " " +
 		      _haDeltaShifts[index] + " " +
 		      _cDeltaShifts[index] + " " +
 		      _caDeltaShifts[index] + " " +
-		      _cbDeltaShifts[index] + "\n");
+		      _cbDeltaShifts[index]);
+		    if (_deltaShiftsAreSparta) {
+		        deltashiftWriter.write(" " + _nDeltaShifts[index] +
+			" " + _hDeltaShifts[index]);
+		    }
+		    deltashiftWriter.write("\n");
 	        }
 	    }
+
+	    int type = _deltaShiftsAreSparta ?
+	      S2DUtils.TYPE_SPARTA_DELTASHIFT :
+	      S2DUtils.TYPE_DELTASHIFT;
 
 	    //
 	    // Write the session file
 	    //
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_DELTASHIFT,
+	    S2DSession.write(_sessionDir, type,
 	      _name, frameIndex, _info, null, _hasRealCBShifts);
 
 	    //
@@ -366,17 +520,27 @@ public class S2DChemShift {
 	    //
 	    String title = "Chemical Shift Delta (entity assembly " +
 	      _entityAssemblyID + ")";
+	    if (_deltaShiftsAreSparta) {
+	        title = "SPARTA-calculated " + title;
+	    }
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(),
-	      S2DUtils.TYPE_DELTASHIFT, _name, frameIndex,
+	      type, _name, frameIndex,
 	      title, _frameDetails);
 	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeDeltashift(frameIndex, _entityAssemblyID,
-	      dsCount, false);
+	    if (_deltaShiftsAreSparta) {
+		if (!append) {
+	            _summary.writeSpartaDeltashift(_entityAssemblyID,
+		      dsCount);
+	        }
+	    } else {
+	        _summary.writeDeltashift(frameIndex, _entityAssemblyID,
+	          dsCount, false);
+	    }
 
 	} catch (IOException ex) {
 	    System.err.println("IOException writing deltashift data: " +
@@ -888,8 +1052,7 @@ public class S2DChemShift {
     public void addDeltaData(Vector dataSets, int frameIndex)
     {
         // Note: attribute names must match the bmrb-DeltaShift schema.
-	String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX +
-	  frameIndex;
+	String dataSource = _name + S2DNames.DELTASHIFT_SUFFIX + frameIndex;
 
 	String dataName;
 	if (_atomSet.contains("HA")) {
@@ -996,6 +1159,66 @@ public class S2DChemShift {
 	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
     }
 
+    //-------------------------------------------------------------------
+    /**
+     * Add SPARTA-calculated delta chem shift data sets to the data set
+     * list and the list of models for the SPARTA data.
+     * @param The data set list.
+     * @param The entity assembly ID.
+     * @param Whether this is appending to the list of models.
+     */
+    public void addSpartaData(Vector dataSets, boolean append)
+      throws S2DError
+    {
+        FileWriter spartaWriter = null;
+
+	try {
+	    String fileName = _dataDir + File.separator + _name +
+	      S2DNames.SPARTA_DELTASHIFT_SUFFIX + _entityAssemblyID +
+	      S2DNames.MODELS_SUFFIX + S2DNames.DAT_SUFFIX;
+	    if (append) {
+                spartaWriter = S2DFileWriter.append(fileName);
+	    } else {
+                spartaWriter = S2DFileWriter.create(fileName);
+
+	        spartaWriter.write("# Data: models for SPARTA-calculated "
+		  + "delta shift values for " + _name + "\n");
+	        spartaWriter.write("# Schema: bmrb-SpartaModel\n");
+
+	        spartaWriter.write("# Attributes: Label_text; " +
+		  "Model_num\n");
+
+                spartaWriter.write("# Peptide-CGI version: " +
+	          S2DMain.PEP_CGI_VERSION + "\n");
+                spartaWriter.write("# Generation date: " +
+	          S2DMain.getTimestamp() + "\n");
+	        spartaWriter.write("#\n");
+	    }
+
+	    String modelName = "" + _modelNum;
+	    if (_modelNum == 0) {
+	        modelName = "Avg";
+	    }
+	    spartaWriter.write(modelName + "\t" + _modelNum + "\n");
+
+        } catch(IOException ex) {
+	    System.err.println("IOException writing SPARTA metadata: " +
+	      ex.toString());
+	    throw new S2DError("Can't write SPARTA metadata");
+
+	} finally {
+	    try {
+	        spartaWriter.close();
+	    } catch (IOException ex) {
+	        System.err.println("IOException: " + ex.toString());
+	    }
+	}
+
+	// We might want to append here to the 3D data sets, but
+	// because all SPARTA models are in one file it might be
+	// tricky.
+    }
+
     //===================================================================
     // PROTECTED METHODS
 
@@ -1034,6 +1257,8 @@ public class S2DChemShift {
 	_cDeltaShifts = new float[lastResidue + 1];
 	_caDeltaShifts = new float[lastResidue + 1];
 	_cbDeltaShifts = new float[lastResidue + 1];
+	_nDeltaShifts = new float[lastResidue + 1];
+	_hDeltaShifts = new float[lastResidue + 1];
 
 	float[] ha2DeltaShifts = new float[lastResidue + 1];
 	float[] ha3DeltaShifts = new float[lastResidue + 1];
@@ -1097,6 +1322,12 @@ public class S2DChemShift {
 		  resLabel.equalsIgnoreCase(S2DNames.ACID_GLY)) {
 		    // Special case for GLY as per info from Eldon.
 		    _cbDeltaShifts[currResSeqCode] = deltashift;
+
+		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_N)) {
+		    _nDeltaShifts[currResSeqCode] = deltashift;
+
+		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_H)) {
+		    _hDeltaShifts[currResSeqCode] = deltashift;
 
                 } else {
 	            //TEMP -- should we ever get here????

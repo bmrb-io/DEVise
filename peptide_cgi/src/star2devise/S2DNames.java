@@ -19,6 +19,40 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/07/20 22:33:48  wenger
+// Implemented Peptide-CGI to-do 093 (derive Atom_type values from
+// Atom_ID values if the Atom_type values don't exist).
+//
+// Revision 1.11.4.6  2009/08/21 19:29:38  wenger
+// Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
+// But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
+// (Tagging with s2d_sparta_deltashift_br_1 before this commit,
+// s2d_sparta_deltashift_br_2 after.)
+//
+// Revision 1.11.4.5  2009/08/19 20:11:05  wenger
+// Changed SPARTA processing to deal with SPARTA data being in a
+// separate file from the main BMRB entry (requested by Eldon
+// yesterday).  (This includes modifying existing tests and adding
+// a new test.)
+//
+// Revision 1.11.4.4  2009/07/22 20:20:22  wenger
+// Fixed residue numbering in SPARTA delta shift visualizations;
+// changed "theoretical" to "SPARTA-calculated" and changed method
+// names, etc., to match.
+//
+// Revision 1.11.4.3  2009/07/15 19:50:46  wenger
+// Changed SPARTA version from 11.7.0 to 11.6.1; changed HN to H in
+// SPARTA processing and visualization.
+//
+// Revision 1.11.4.2  2009/07/15 17:36:31  wenger
+// Added processing of N and HN deltashifts for SPARTA; added N and
+// HN views to the session template (now split off from the "normal"
+// deltashift template); partially added provision for multiple models.
+//
+// Revision 1.11.4.1  2009/07/01 20:57:50  wenger
+// Data is now generated for SPARTA deltashift values; the link in
+// the summary page is not written yet, though.
+//
 // Revision 1.11  2009/04/15 16:21:04  wenger
 // Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
 // fixed test61 and test61_3.
@@ -111,7 +145,7 @@ public class S2DNames
     public static String BMRB_STAR_URL = null;
 
     //
-    // URL for getting NMR-STAR files from BMRB.  Note: this will be
+    // URL for getting LACS files from BMRB.  Note: this will be
     // set according to the s2d.props file value.
     //
     public static String LACS_URL = null;
@@ -149,7 +183,7 @@ public class S2DNames
     public static String STAR_NAME_TEMPLATE = null;
 
     //
-    // Template for the LACS input STAR file.  This should be a
+    // Template for the LACS input STAR file name.  This should be a
     // string of the form "x*x" where x is any number of legal file
     // name characters; the "*" will be replaced with the BMRB ID.
     // Note: this will be set according to the s2d.props file value.
@@ -162,6 +196,20 @@ public class S2DNames
     // file value.
     //
     public static String COMMENT_EMAIL = null;
+
+    //
+    // URL for getting SPARTA files from BMRB.  Note: this will be
+    // set according to the s2d.props file value.
+    //
+    public static String SPARTA_URL = null;
+
+    //
+    // Template for the SPARTA input STAR file name.  This should be a
+    // string of the form "x*x" where x is any number of legal file
+    // name characters; the "*" will be replaced with the BMRB ID.
+    // Note: this will be set according to the s2d.props file value.
+    //
+    public static String SPARTA_NAME_TEMPLATE = null;
 
     //
     // Data type suffixes.
@@ -188,6 +236,7 @@ public class S2DNames
     public static final String LACS_COORD_SUFFIX = LACS_SUFFIX + "c";
     public static final String LACS_LINE_SUFFIX = LACS_SUFFIX + "l";
     public static final String LACS_POINT_SUFFIX = LACS_SUFFIX + "p";
+    public static final String MODELS_SUFFIX = "_models";
     public static final String ORDER_SUFFIX = "o";
     public static final String PERCENT_ASSIGN_SUFFIX = "p";
     public static final String PISTACHIO_ATOMIC_COORD_SUFFIX = "psac";
@@ -195,6 +244,7 @@ public class S2DNames
     public static final String PISTACHIO_SUFFIX = "ps";
     public static final String RES_COUNT_SUFFIX = "rc";
     public static final String RES_LIST_SUFFIX = "rl";
+    public static final String SPARTA_DELTASHIFT_SUFFIX = "sd";
     public static final String SUMMARY_DATA_SUFFIX = "md";
     public static final String T1_SUFFIX = "t1";
     public static final String T2_SUFFIX = "t2";

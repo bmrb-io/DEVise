@@ -23,6 +23,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.10.1  2009/08/21 19:29:38  wenger
+// Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
+// But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
+// (Tagging with s2d_sparta_deltashift_br_1 before this commit,
+// s2d_sparta_deltashift_br_2 after.)
+//
+// Revision 1.3  2007/08/20 20:26:07  wenger
+// Added -verb command-line flag and property so we can turn on debug
+// output without recompiling; added debug_level property corresponding
+// to the existing -debug command-line flag.
+//
 // Revision 1.2  2006/02/01 20:23:11  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -56,6 +67,8 @@ public class S2DFileWriter extends FileWriter {
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
     public static S2DFileWriter create(String fileName) throws IOException
     {
 	S2DUtils.deleteFile(fileName);
@@ -63,6 +76,12 @@ public class S2DFileWriter extends FileWriter {
 	File file = new File(fileName);
 
 	return new S2DFileWriter(file);
+    }
+
+    //-------------------------------------------------------------------
+    public static S2DFileWriter append(String fileName) throws IOException
+    {
+	return new S2DFileWriter(fileName, true);
     }
 
     //===================================================================
@@ -73,6 +92,13 @@ public class S2DFileWriter extends FileWriter {
     private S2DFileWriter(File file) throws IOException
     {
         super(file);
+    }
+
+    //-------------------------------------------------------------------
+    // Constructor.
+    private S2DFileWriter(String fileName, boolean append) throws IOException
+    {
+        super(fileName, append);
     }
 
     //-------------------------------------------------------------------

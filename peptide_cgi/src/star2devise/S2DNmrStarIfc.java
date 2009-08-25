@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.25.2.1  2009/08/19 20:11:05  wenger
+// Changed SPARTA processing to deal with SPARTA data being in a
+// separate file from the main BMRB entry (requested by Eldon
+// yesterday).  (This includes modifying existing tests and adding
+// a new test.)
+//
+// Revision 1.25  2009/06/04 17:07:19  wenger
+// Improved error message for errors parsing residue count.
+//
 // Revision 1.24  2009/03/25 21:49:09  wenger
 // Final cleanup of some of the nucleic-acid-related code, especially
 // getting polymer types correctly for mmCIF files; added nucleic acid
@@ -216,11 +225,15 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     public abstract String version();
 
     //-------------------------------------------------------------------
-    public static String getFileName(String bmrbId, boolean isLacs)
+    public static String getFileName(String bmrbId, boolean isLacs,
+      boolean isSparta)
     {
 	String name;
 	if (isLacs) {
 	    name = S2DUtils.replace(S2DNames.LACS_NAME_TEMPLATE, "*",
+	      bmrbId);
+	} else if (isSparta) {
+	    name = S2DUtils.replace(S2DNames.SPARTA_NAME_TEMPLATE, "*",
 	      bmrbId);
 	} else {
 	    name = S2DUtils.replace(S2DNames.STAR_NAME_TEMPLATE, "*",
@@ -231,11 +244,14 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     }
 
     //-------------------------------------------------------------------
-    public static String getURLName(String fileName, boolean isLacs)
+    public static String getURLName(String fileName, boolean isLacs,
+      boolean isSparta)
     {
 	String url;
 	if (isLacs) {
             url = S2DNames.LACS_URL + fileName;
+	} else if (isSparta) {
+            url = S2DNames.SPARTA_URL + fileName;
 	} else {
             url = S2DNames.BMRB_STAR_URL + fileName;
 	}
@@ -245,17 +261,18 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
     //-------------------------------------------------------------------
     // Get the modification date/time of the appropriate NMR-Star file.
-    public static Date getModDate(String bmrbId, boolean isLacs)
+    public static Date getModDate(String bmrbId, boolean isLacs,
+      boolean isSparta)
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DNmrStarIfc.getModDate(" + bmrbId +
-	      ", " + isLacs + ")");
+	      ", " + isLacs + ", " + isSparta + ")");
 	}
 
 	Date date = null;
 	try {
-	    URL starfile = new URL(getURLName(getFileName(bmrbId, isLacs),
-	      isLacs));
+	    URL starfile = new URL(getURLName(getFileName(bmrbId, isLacs,
+	      isSparta), isLacs, isSparta));
 	    URLConnection connection = starfile.openConnection();
 
 	    long timestamp = connection.getLastModified();
@@ -298,14 +315,20 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // Factory method to create an S2DNmrStarIfc object based on accession
     // number.
     public static S2DNmrStarIfc createFromID(String accessionNum,
-      boolean useLocalFile, boolean isLacs) throws S2DException
+      boolean useLocalFile, boolean isLacs, boolean isSparta)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.createFromID(" +
-	      accessionNum + ", " + useLocalFile + ", " + isLacs + ")");
+	      accessionNum + ", " + useLocalFile + ", " + isLacs +
+	      ", " + isSparta + ")");
 	}
 
-	String fileName = getFileName(accessionNum, isLacs);
+	if (isLacs && isSparta) {
+	    throw new S2DError("File cannot be both LACS and SPARTA!");
+	}
+
+	String fileName = getFileName(accessionNum, isLacs, isSparta);
 
 	S2DNmrStarIfc ifc;
 
@@ -315,7 +338,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 		System.out.println("Note: using local copy of star file");
 	        is = new FileInputStream(fileName);
 	    } else {
-                URL starfile = new URL(getURLName(fileName, isLacs));
+                URL starfile = new URL(getURLName(fileName, isLacs, isSparta));
 	        is = starfile.openStream();
 	    }
 

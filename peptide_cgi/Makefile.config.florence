@@ -139,6 +139,11 @@ HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
 HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/stats/chem_shifts/full/devise
 
 #-----------------------------------------------------------
+# SPARTA-related configuration
+# The URL of directory containing SPARTA files (must end with "/").
+SPARTA_URL = file:CHANGE_THIS/
+
+#-----------------------------------------------------------
 # Other.
 
 # User to send email to on errors.

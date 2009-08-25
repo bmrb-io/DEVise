@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.6.1  2009/08/21 21:00:44  wenger
+// Fixed errors that made some tests fail with the previous version.
+//
+// Revision 1.10  2009/03/16 20:33:08  wenger
+// 3D data select view now only shows data that is available for the
+// currently-selected entity assembly ID.
+//
 // Revision 1.9  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -122,7 +129,8 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 
     //-------------------------------------------------------------------
     // Write the deltashifts for this data.
-    public void writeDeltashifts(int frameIndex) throws S2DException
+    public void writeDeltashifts(int frameIndex, boolean append)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DRNAChemShift.writeDeltashifts()");

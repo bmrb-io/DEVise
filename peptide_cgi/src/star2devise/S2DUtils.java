@@ -19,6 +19,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2009/07/20 22:33:48  wenger
+// Implemented Peptide-CGI to-do 093 (derive Atom_type values from
+// Atom_ID values if the Atom_type values don't exist).
+//
+// Revision 1.16.4.2  2009/07/22 20:20:23  wenger
+// Fixed residue numbering in SPARTA delta shift visualizations;
+// changed "theoretical" to "SPARTA-calculated" and changed method
+// names, etc., to match.
+//
+// Revision 1.16.4.1  2009/07/01 20:57:51  wenger
+// Data is now generated for SPARTA deltashift values; the link in
+// the summary page is not written yet, though.
+//
 // Revision 1.16  2009/04/15 16:21:04  wenger
 // Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
 // fixed test61 and test61_3.
@@ -118,7 +131,7 @@ public class S2DUtils
       TYPE_CHEM_SHIFT_REF2 = 14, TYPE_CHEM_SHIFT_REF3 = 15,
       TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18,
       TYPE_DNA_DELTASHIFT = 19, TYPE_RNA_DELTASHIFT = 20,
-      TYPE_HVSC_CHEM_SHIFTS = 21;
+      TYPE_HVSC_CHEM_SHIFTS = 21, TYPE_SPARTA_DELTASHIFT = 22;
 
     //===================================================================
     // PUBLIC METHODS
@@ -459,6 +472,10 @@ TEMP*/
 
 	case S2DUtils.TYPE_LACS:
 	    dataSuffix = S2DNames.LACS_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_SPARTA_DELTASHIFT:
+	    dataSuffix = S2DNames.SPARTA_DELTASHIFT_SUFFIX;
 	    break;
 
 	default:

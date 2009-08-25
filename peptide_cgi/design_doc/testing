@@ -97,6 +97,11 @@ The following testing steps must be done:
       the different entity assemblies works, and highlighting in the
       atom selection tree works).
 
+- (SPARTA) Run 'tests/test_sparta5' in /var/home/www/public/cgi-bin/bmrb
+  on teal.  View the following visualization for entry 16387:
+    - SPARTA-calculated chemical shift deltas.  Make sure model # on
+      drill-down matches model # selected with cursor, etc.
+
 - Go to http://devise.cs.wisc.edu/devise/bmrb/uvd/uvd_works.html and click
   the "Test" link.  Make sure the summary page is correct and some of
   the visualizations work.

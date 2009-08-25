@@ -20,6 +20,49 @@
 // $Id$
 
 // $Log$
+// Revision 1.16.6.8  2009/08/25 17:52:03  wenger
+// Very minor code cleanups, added SPARTA stuff to pre-release manual
+// testing procedure.
+//
+// Revision 1.16.6.7  2009/08/12 20:15:17  wenger
+// Changed _Delta_CS_Residue_author_seq_code to _Delta_CS_Residue_seq_code
+// as per earlier email from Eldon.
+//
+// Revision 1.16.6.6  2009/08/07 20:05:41  wenger
+// Changed sd16385.str and sd16385_3.str  to new versions of SPARTA format;
+// changed the code to work on the new format; removed test_sparta1
+// and test_sparta2 from test_all because their data is the old format
+// and no longer works.
+//
+// Revision 1.16.6.5  2009/07/29 15:38:22  wenger
+// Fixed warnings about not finding _Mol_system_component_name in
+// deltashift save frames.
+//
+// Revision 1.16.6.4  2009/07/22 19:29:14  wenger
+// Added capability for processing SPARTA-calculated delta shifts for
+// multiple models.  (This generates separate visualizations for each
+// model -- I have to combine them, and probably also deal with the
+// possibility of having SPARTA data for different entities/entity
+// assemblies.)
+//
+// Revision 1.16.6.3  2009/07/15 21:11:27  wenger
+// Added new SPARTA tests of sd16385.str and sd16385_3.str (they
+// have some new tag names, etc.); added beginning and end of line
+// checks to SPARTA tests.
+//
+// Revision 1.16.6.2  2009/07/01 20:57:51  wenger
+// Data is now generated for SPARTA deltashift values; the link in
+// the summary page is not written yet, though.
+//
+// Revision 1.16.6.1  2009/07/01 18:06:00  wenger
+// A lot of the SPARTA deltashift processing is in place -- the actual
+// data isn't yet coming out right, though.
+//
+// Revision 1.16  2009/03/12 23:02:29  wenger
+// Fixed a problem with the output from test1_3 (polymer type for
+// heteronuclear NOEs showing up as "unknown"), and fixed the checking
+// script so that the test will fail if the problem happens again.
+//
 // Revision 1.15  2009/02/19 22:40:41  wenger
 // DNA and RNA deltashift calculations now work (still need to check
 // that all values are correct); added value checks to relevant tests.
@@ -365,7 +408,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	//
 	// Get the _Mol_system_component_name value in the given save frame.
 	//
-	String molSysComp = getOneFrameValueStrict(frame, MOL_SYS_COMP_NAME);
+	String molSysComp = getMolSysComp(frame);
 
 	//
 	// Find the molecular_system save frame.
@@ -458,8 +501,7 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	    // Get the _Mol_system_component_name value in the given
 	    // save frame.
 	    //
-	    String molSysComp = getOneFrameValueStrict(frame,
-	      MOL_SYS_COMP_NAME);
+	    String molSysComp = getMolSysComp(frame);
 
 	    // 
 	    // Now translate the molecular system component name to
@@ -549,6 +591,28 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     	//TEMP
     }
 
+    //-------------------------------------------------------------------
+    // Get either the _Mol_system_component_name or 
+    // _Delta_CS_Mol_system_component_name value from the given save frame.
+    protected String getMolSysComp(SaveFrameNode frame) throws S2DError
+    {
+	String molSysComp;
+        try {
+	    molSysComp = getOneFrameValueStrict(frame, MOL_SYS_COMP_NAME);
+	} catch (Exception ex) {
+	    try {
+	        molSysComp = getOneFrameValueStrict(frame,
+		  DELTA_SHIFT_MOL_SYS_COMP_NAME);
+	    } catch(Exception ex2) {
+	        throw new S2DError("Unable to get one value for either " +
+	          MOL_SYS_COMP_NAME + " or " + DELTA_SHIFT_MOL_SYS_COMP_NAME +
+	          " in save frame " + getFrameName(frame));
+	    }
+	}
+
+	return molSysComp;
+    }
+
     //===================================================================
     // PRIVATE METHODS
 
@@ -589,6 +653,16 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         COUPLING_SF_CAT = "_Saveframe_category";
 
 	DEFAULT_SAVEFRAME_CATEGORY = "_Saveframe_category";
+	DELTA_CHEM_SHIFTS = "delta_chem_shifts";
+	DELTA_CHEM_SHIFTS_AVG = "delta_chem_shifts_average";
+	DELTA_SHIFT_SF_CAT = "_Saveframe_category";
+	DELTA_SHIFT_ATOM_NAME = "_Delta_CS_Atom_name";
+	DELTA_SHIFT_ATOM_TYPE = "_Delta_CS_Atom_type";
+	DELTA_SHIFT_MODEL_NUM = "_Delta_CS_Conformer_ID";
+	DELTA_SHIFT_MOL_SYS_COMP_NAME = "_Delta_CS_Mol_system_component_name";
+	DELTA_SHIFT_RES_LABEL = "_Delta_CS_Residue_label";
+	DELTA_SHIFT_RES_SEQ_CODE = "_Delta_CS_Residue_seq_code";
+	DELTA_SHIFT_VALUE = "_Delta_CS_Delta_CS_value";
 	DNA = "DNA";
 
 	ENTITY_DB_ACC_CODE = "_Database_accession_code";

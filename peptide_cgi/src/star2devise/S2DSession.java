@@ -20,6 +20,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.19.4.3  2009/07/22 20:20:22  wenger
+// Fixed residue numbering in SPARTA delta shift visualizations;
+// changed "theoretical" to "SPARTA-calculated" and changed method
+// names, etc., to match.
+//
+// Revision 1.19.4.2  2009/07/15 17:36:31  wenger
+// Added processing of N and HN deltashifts for SPARTA; added N and
+// HN views to the session template (now split off from the "normal"
+// deltashift template); partially added provision for multiple models.
+//
+// Revision 1.19.4.1  2009/07/01 20:57:51  wenger
+// Data is now generated for SPARTA deltashift values; the link in
+// the summary page is not written yet, though.
+//
+// Revision 1.19  2009/05/11 22:22:46  wenger
+// Added "Force reprocessing" button to summary pages (mainly for
+// testing).
+//
 // Revision 1.18  2009/04/15 16:21:04  wenger
 // Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
 // fixed test61 and test61_3.
@@ -378,6 +396,13 @@ TEMP*/
 	    replaceString2 = name + S2DNames.LACS_POINT_SUFFIX + frameIndex;
 	    searchString3 = "4081lacsc1";
 	    replaceString3 = name + S2DNames.LACS_COORD_SUFFIX + frameIndex;
+	    break;
+
+	case S2DUtils.TYPE_SPARTA_DELTASHIFT:
+	    baseName = "deltashift_sparta.base";
+	    dataSuffix = S2DNames.SPARTA_DELTASHIFT_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "15339td1";
 	    break;
 
 	default:

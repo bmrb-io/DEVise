@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2008
+#  (c) Copyright 2001-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -139,6 +139,11 @@ HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
 
 # The directory containing the "real" histogram data.
 HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/stats/chem_shifts/full/devise
+
+#-----------------------------------------------------------
+# SPARTA-related configuration
+# The URL of directory containing SPARTA files (must end with "/").
+SPARTA_URL = file:CHANGE_THIS/
 
 #-----------------------------------------------------------
 # Other.

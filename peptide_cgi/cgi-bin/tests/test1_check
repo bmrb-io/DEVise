@@ -187,3 +187,9 @@ source tests/check4line
 # 2.1 has "BMRB 4267"; 3.1 just has "4267" (because it's a local file)
 set line = '^DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization of .*4267 and PDB 1dfv generated on'
 source tests/check4line
+
+set file = "html_dir/4267d1.html"
+set line = '^  Chemical Shift Delta (entity assembly 1)$'
+source tests/check4line
+set line = '^    <param name="session" value="bmrb/dynamic_sessions/4267d1.ds">$'
+source tests/check4line

@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2007
+#  (c) Copyright 2001-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -29,6 +29,8 @@ LACS_NAME_TEMPLATE = bmr*_LACS.str
 LACS_URL = null
 UVD_CGI_URL = undefined
 EXTRA_GC = 0
+SPARTA_NAME_TEMPLATE = bmr*_sparta.str
+SPARTA_URL = null
 
 include Makefile.config
 
@@ -159,6 +161,9 @@ s2d_props:
 	echo "bmrb_mirror.verbosity=0" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.debug_level=0" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.extra_gc=$(EXTRA_GC)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.sparta_name_template=$(SPARTA_NAME_TEMPLATE)" >> \
+	  $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.sparta_url=$(SPARTA_URL)" >> $(S2D_PROPS_FILE)
 
 error_email:
 	-rm -f $(ERROR_EMAIL_FILE)

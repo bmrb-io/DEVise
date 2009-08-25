@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.142  2009/08/21 21:40:32  wenger
+// Changed "amino acid" to "amino acid/nucleotide" in chemical shift
+// by AA/nucleotide html page.
+//
 // Revision 1.141  2009/07/20 22:33:48  wenger
 // Implemented Peptide-CGI to-do 093 (derive Atom_type values from
 // Atom_ID values if the Atom_type values don't exist).
@@ -32,6 +36,94 @@
 // General fixes to Peptide-CGI tests -- check for beginning and end
 // of lines in most checks for specific text; added output file lists
 // to some tests that were missing them; a few other fixes.
+//
+// Revision 1.138.2.20  2009/08/25 17:52:03  wenger
+// Very minor code cleanups, added SPARTA stuff to pre-release manual
+// testing procedure.
+//
+// Revision 1.138.2.19  2009/08/24 18:50:28  wenger
+// Minor improvements to some debug output.
+//
+// Revision 1.138.2.18  2009/08/24 15:52:59  wenger
+// Minor cleanup of SPARTA code.
+//
+// Revision 1.138.2.17  2009/08/21 21:00:44  wenger
+// Fixed errors that made some tests fail with the previous version.
+//
+// Revision 1.138.2.16  2009/08/21 19:29:38  wenger
+// Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
+// But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
+// (Tagging with s2d_sparta_deltashift_br_1 before this commit,
+// s2d_sparta_deltashift_br_2 after.)
+//
+// Revision 1.138.2.15  2009/08/19 20:11:05  wenger
+// Changed SPARTA processing to deal with SPARTA data being in a
+// separate file from the main BMRB entry (requested by Eldon
+// yesterday).  (This includes modifying existing tests and adding
+// a new test.)
+//
+// Revision 1.138.2.14  2009/08/12 20:15:16  wenger
+// Changed _Delta_CS_Residue_author_seq_code to _Delta_CS_Residue_seq_code
+// as per earlier email from Eldon.
+//
+// Revision 1.138.2.13  2009/08/07 20:05:41  wenger
+// Changed sd16385.str and sd16385_3.str  to new versions of SPARTA format;
+// changed the code to work on the new format; removed test_sparta1
+// and test_sparta2 from test_all because their data is the old format
+// and no longer works.
+//
+// Revision 1.138.2.12  2009/07/29 15:38:22  wenger
+// Fixed warnings about not finding _Mol_system_component_name in
+// deltashift save frames.
+//
+// Revision 1.138.2.11  2009/07/28 22:40:01  wenger
+// Added processing of SPARTA-calculated delta shift average values.
+//
+// Revision 1.138.2.10  2009/07/22 20:20:22  wenger
+// Fixed residue numbering in SPARTA delta shift visualizations;
+// changed "theoretical" to "SPARTA-calculated" and changed method
+// names, etc., to match.
+//
+// Revision 1.138.2.9  2009/07/22 19:29:14  wenger
+// Added capability for processing SPARTA-calculated delta shifts for
+// multiple models.  (This generates separate visualizations for each
+// model -- I have to combine them, and probably also deal with the
+// possibility of having SPARTA data for different entities/entity
+// assemblies.)
+//
+// Revision 1.138.2.8  2009/07/15 21:11:27  wenger
+// Added new SPARTA tests of sd16385.str and sd16385_3.str (they
+// have some new tag names, etc.); added beginning and end of line
+// checks to SPARTA tests.
+//
+// Revision 1.138.2.7  2009/07/15 19:50:46  wenger
+// Changed SPARTA version from 11.7.0 to 11.6.1; changed HN to H in
+// SPARTA processing and visualization.
+//
+// Revision 1.138.2.6  2009/07/15 17:36:31  wenger
+// Added processing of N and HN deltashifts for SPARTA; added N and
+// HN views to the session template (now split off from the "normal"
+// deltashift template); partially added provision for multiple models.
+//
+// Revision 1.138.2.5  2009/07/06 21:47:46  wenger
+// Sparta tests now check for links in summary HTML pages; cleaned up
+// some debug code.
+//
+// Revision 1.138.2.4  2009/07/06 20:37:23  wenger
+// Summary pages now have links for SPARTA-calculated deltashifts.
+//
+// Revision 1.138.2.3  2009/07/01 20:57:50  wenger
+// Data is now generated for SPARTA deltashift values; the link in
+// the summary page is not written yet, though.
+//
+// Revision 1.138.2.2  2009/07/01 18:05:59  wenger
+// A lot of the SPARTA deltashift processing is in place -- the actual
+// data isn't yet coming out right, though.
+//
+// Revision 1.138.2.1  2009/06/29 21:37:18  wenger
+// Added initial versions of SPARTA-deltashift tests (just running the
+// files thru Peptide-CGI -- we don't actually process the SPARTA-
+// calculated deltashifts yet).
 //
 // Revision 1.138  2009/06/23 19:32:28  wenger
 // Make_view now rejects all illegal (non-numerical) BMRB accession
@@ -570,7 +662,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.1x8"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.1x9"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
@@ -619,6 +711,9 @@ public class S2DMain {
     private static final int LACS_LEVEL_MANDATORY = 2;
     private int _lacsLevel = LACS_LEVEL_NONE;
     private String _lacsFile = null;
+
+    // SPARTA-related info.
+    private String _spartaFile = null;
 
     private boolean _haveCoords = false;
 
@@ -875,6 +970,16 @@ public class S2DMain {
 	    }
         }
 
+	S2DNames.SPARTA_NAME_TEMPLATE = props.getProperty(
+	  "bmrb_mirror.sparta_name_template");
+	if (S2DNames.SPARTA_NAME_TEMPLATE == null) {
+	    if (doDebugOutput(2)) {
+	        System.out.println("bmrb_mirror.sparta_name_template " +
+		  "property value not defined; using default");
+	    }
+	    S2DNames.SPARTA_NAME_TEMPLATE = "bmr*_sparta.str";
+	}
+
         return props;
     }
 
@@ -920,6 +1025,13 @@ public class S2DMain {
 	    } else {
 	        System.err.println(err + "; using default");
 	    }
+	}
+
+	S2DNames.SPARTA_URL = props.getProperty("bmrb_mirror.sparta_url");
+	if (S2DNames.SPARTA_URL == null) {
+	    S2DError err = new S2DError("Unable to get value for " +
+	      "bmrb_mirror.sparta_url property; using default");
+	    S2DNames.SPARTA_URL = "file:./";
 	}
     }
 
@@ -1013,6 +1125,12 @@ public class S2DMain {
           "        the PDB ID to process (e.g., 1dfv)\n" +
           "    -session_dir <directory>\n" +
           "        the directory in which to store the session files (mandatory)\n" +
+	  "    -sparta_file <filename>\n" +
+	  "        file containing SPARTA data to process\n" +
+	  "    -sparta_url <url>\n" +
+	  "        URL of directory containing SPARTA files\n" +
+	  "    -star_url <url>\n" +
+	  "        URL of directory containing NMR-STAR files\n" +
           "    -usage\n" +
           "        show this message\n" +
 	  "    -uvd\n" + 
@@ -1273,6 +1391,27 @@ public class S2DMain {
 		}
 	        _sessionDir = args[index];
 
+	    } else if ("-sparta_file".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-sparta_file argument needs value");
+		}
+		_spartaFile = args[index];
+
+	    } else if ("-sparta_url".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-sparta_url argument needs value");
+		}
+		S2DNames.SPARTA_URL = args[index];
+
+	    } else if ("-star_url".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-star_url argument needs value");
+		}
+		S2DNames.BMRB_STAR_URL = args[index];
+
 	    } else if ("-uvd".equals(args[index])) {
 	        if (S2DNames.UVD_CGI_URL == null) {
 	            throw new S2DError("Unable to get value for " +
@@ -1398,8 +1537,8 @@ public class S2DMain {
 	    System.out.println("_dataDir = {" + _dataDir + "}");
 	    System.out.println("_csrLevel = " + _csrLevel);
 	    System.out.println("_pdbLevel = " + _pdbLevel);
-	    System.out.println("_lacsLevel = " + _lacsLevel);
 	    System.out.println("_lacsFile = " + _lacsFile);
+	    System.out.println("_lacsLevel = " + _lacsLevel);
 	    if (_localFiles.size() > 0) {
 	        System.out.println("localFile = {" +
 		  _localFiles.elementAt(0) + "}");
@@ -1410,6 +1549,7 @@ public class S2DMain {
 	    System.out.println("_doProteinCheck = " + _doProteinCheck);
 	    System.out.println("_runScripts = " + _runScripts);
 	    System.out.println("_sessionDir = {" + _sessionDir + "}");
+	    System.out.println("_spartaFile = " + _spartaFile);
 	    System.out.println("_extraGC = " + _extraGC);
 	}
     }
@@ -1471,7 +1611,8 @@ public class S2DMain {
 	    for (int index = 0; index < summaryData.bmrbIds.size(); index++) {
 	        String id = (String)summaryData.bmrbIds.elementAt(index);
 		if (!id.equals("")) {
-	            Date starModDate = S2DNmrStarIfc.getModDate(id, false);
+	            Date starModDate = S2DNmrStarIfc.getModDate(id, false,
+		      false);
 	            if (starModDate == null ||
 		      starModDate.after(summaryData.fileDate)) {
 		        if (doDebugOutput(2)) {
@@ -1745,7 +1886,7 @@ public class S2DMain {
 	S2DNmrStarIfc masterStar = null;
 	if (!_masterBmrbId.equals("")) {
             masterStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
-	      _useLocalFiles, false);
+	      _useLocalFiles, false, false);
 
 	    _summary = new S2DSummaryHtml(_name, _longName, _masterBmrbId,
 	      _localFiles, _htmlDir, masterStar.getFileName(),
@@ -1902,7 +2043,7 @@ public class S2DMain {
 
 	    if (index > 0) { // avoid parsing the "master" file twice
                 star = S2DNmrStarIfc.createFromID(bmrbId, _useLocalFiles,
-		  false);
+		  false, false);
 	    }
 
             process1NmrStar(star);
@@ -1978,7 +2119,7 @@ public class S2DMain {
 	            lacsStar = S2DNmrStarIfc.createFromFile(_lacsFile, true);
 	        } else {
 	            lacsStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
-		      _useLocalFiles, true);
+		      _useLocalFiles, true, false);
 	        }
 
 		saveLACS(lacsStar);
@@ -2042,6 +2183,11 @@ public class S2DMain {
 	if (_extraGC) System.gc();
 	if (doDebugOutput(2)) S2DUtils.printMemory(
 	  "After saveChemShifts()");
+
+        saveSpartaDeltaShifts(star);
+	if (_extraGC) System.gc();
+	if (doDebugOutput(2)) S2DUtils.printMemory(
+	  "After saveDeltaShifts()");
 
         saveT1Relaxation(star);
 	if (_extraGC) System.gc();
@@ -2208,6 +2354,107 @@ public class S2DMain {
 	        }
 	    }
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Save all pre-calculated SPARTA-calculated deltashifts for this
+    // entry.
+    private void saveSpartaDeltaShifts(S2DNmrStarIfc star)
+      throws S2DException
+    {
+        if (doDebugOutput(3)) {
+	    System.out.println("  S2DMain.saveSpartaDeltaShifts()");
+	}
+
+	boolean checkResListTmp = _checkResList;
+	try {
+	    // Leave this for now -- we may need to get rid of it when
+	    // SPARTA can deal with multiple entities.
+	    _checkResList = false;
+
+	    S2DNmrStarIfc spartaStar = null;
+	    if (_spartaFile != null) {
+	        spartaStar = S2DNmrStarIfc.createFromFile(_spartaFile, false);
+	    } else {
+	        spartaStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
+	          _useLocalFiles, false, true);
+	    }
+
+            doSaveSpartaDeltaShifts(star, spartaStar, true);
+            doSaveSpartaDeltaShifts(star, spartaStar, false);
+	} catch (Exception ex) {
+	    System.err.println("Error processing SPARTA-calculated " +
+	      "deltashifts: " + ex.toString());
+	} finally {
+	    _checkResList = checkResListTmp;
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Save SPARTA delta shifts for either all models or the average
+    // (split out like this because the save frames have different
+    // category names).
+    private void doSaveSpartaDeltaShifts(S2DNmrStarIfc mainStar,
+      S2DNmrStarIfc spartaStar, boolean isAvg)
+      throws S2DException
+    {
+        if (doDebugOutput(3)) {
+	    System.out.println("  S2DMain.doSaveSpartaDeltaShifts(" +
+	      isAvg + ")");
+	}
+
+	String categoryName = null;
+	boolean append = false;
+	if (isAvg) {
+	    categoryName = spartaStar.DELTA_CHEM_SHIFTS_AVG;
+	} else {
+	    categoryName = spartaStar.DELTA_CHEM_SHIFTS;
+	    append = true;
+	}
+
+	Enumeration frameList = spartaStar.getDataFramesByCat(
+	  spartaStar.DELTA_SHIFT_SF_CAT, categoryName);
+
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+
+	    Vector entityAssemblyIDList = spartaStar.getUniqueEntityAssemblyIDs(
+	      frame, spartaStar.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
+	    for (int index = 0; index < entityAssemblyIDList.size();
+	      index++) {
+	        String entityAssemblyID =
+		  (String)entityAssemblyIDList.get(index);
+		String entityID = mainStar.entAssemID2entID(entityAssemblyID);
+
+		// I'm pretty sure this will fail if the main STAR file
+		// and the SPARTA star file are different versions.
+		// wenger 2009-08-19
+		S2DResidues residues = getFrameResCounts(mainStar, frame,
+		  entityID, 0);
+
+		int minModelNum = 0;
+		int maxModelNum = 0;
+		if (!isAvg) {
+		    minModelNum = 1;
+		    maxModelNum = getSpartaMaxModelNum(spartaStar, frame,
+		      entityAssemblyID);
+		}
+		for (int modelNum = minModelNum; modelNum <= maxModelNum;
+		  modelNum++) {
+		    try {
+	                saveFrameSpartaDeltaShifts(spartaStar, frame,
+			  entityAssemblyID, modelNum, residues, append);
+		    } catch (Exception ex) {
+		        System.err.println("Warning: error saving SPARTA " +
+			  "delta shifts for save frame " +
+		          spartaStar.getFrameName(frame) + " (" +
+			  entityAssemblyID + ", " + modelNum + "): " +
+			  ex.toString());
+		    }
+		    append = true;
+		}
+	    }
+    	}
     }
 
     //-------------------------------------------------------------------
@@ -2541,6 +2788,8 @@ public class S2DMain {
 	    tmpFrame = star.getEntityFrame(chemShiftFrame, entityID);
 	} catch (S2DException ex) {
 	    if (_doProteinCheck) {
+		System.err.println("Can't get entity frame for frame " +
+		  star.getFrameName(chemShiftFrame));
 	        throw ex;
 	    }
 	}
@@ -2579,8 +2828,7 @@ public class S2DMain {
 		      resNum + ": " + residues.getResLabel(resNum) +
 		      " in residue list vs. " + residueLabels[index] +
 		      " in chem shift loop");
-		    System.err.println(err);
-		    System.exit(1);
+		    throw(err);
 	        }
 	    }
 
@@ -2616,7 +2864,10 @@ public class S2DMain {
 	  residues._resSeqCodes, residues._resLabels,
 	  residues.getPolymerType());
 
-	resCount.write(frameIndex);
+	// In case we want to get the residue list without writing it out.
+	if (frameIndex > 0) {
+	    resCount.write(frameIndex);
+	}
 
 	return residues;
     }
@@ -2729,7 +2980,7 @@ public class S2DMain {
 	_summary.startFrame(star.getFrameDetails(frame));
 
 	try {
-	    chemShift.writeDeltashifts(frameIndex);
+	    chemShift.writeDeltashifts(frameIndex, false);
 	    chemShift.addDeltaData(_dataSets, frameIndex);
 	} catch (S2DException ex) {
 	    // Don't throw a new exception here because we want to write as
@@ -2810,7 +3061,160 @@ public class S2DMain {
 	    System.err.println(ex.toString());
 	}
 
+	_summary.endFrame();
+    }
 
+    //-------------------------------------------------------------------
+    // Get the maximum model number for which there is SPARTA-calculated
+    // delta shift data, for a given save frame and entity assembly ID.
+    // (Note that this method will fail on a frame containing average
+    // values rather than values for individual models.)
+    private int getSpartaMaxModelNum(S2DNmrStarIfc star,
+      SaveFrameNode frame, String entityAssemblyID) throws S2DException
+    {
+        if (doDebugOutput(4)) {
+	    System.out.println("    S2DMain.getSpartaMaxModelNum(" +
+	      star.getFrameName(frame) + " (" + entityAssemblyID + ")");
+	}
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
+	}
+
+	String[] modelNumsStr = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_MODEL_NUM,
+	  entityAssemblyID, entityAssemblyIDs);
+	int[] modelNums = S2DUtils.arrayStr2Int(modelNumsStr,
+	  star.DELTA_SHIFT_RES_SEQ_CODE);
+	modelNumsStr = null;
+
+	int maxModelNum = 0;
+	for (int index = 0; index < modelNums.length; index++) {
+		maxModelNum = Math.max(maxModelNum, modelNums[index]);
+	}
+
+	return maxModelNum;
+    }
+
+    //-------------------------------------------------------------------
+    // Save (pre-calculated) delta shifts for one save frame.
+    private void saveFrameSpartaDeltaShifts(S2DNmrStarIfc star,
+      SaveFrameNode frame, String entityAssemblyID, int modelNum,
+      S2DResidues residues, boolean append)
+      throws S2DException
+    {
+        if (doDebugOutput(4)) {
+	    System.out.println("    S2DMain.saveFrameSpartaDeltaShifts(" +
+	      star.getFrameName(frame) + " (" + entityAssemblyID + ", " +
+	      modelNum + "), " + append + ")");
+	}
+
+	//
+	// Get the values we need from the Star file.
+	//
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
+	}
+
+	String[] modelNumsStr = null;
+	if (modelNum != 0) {
+	    modelNumsStr = star.getAndFilterFrameValues(frame,
+	      star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_MODEL_NUM,
+	      entityAssemblyID, entityAssemblyIDs);
+	}
+
+	String[] resSeqCodesStr = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_RES_SEQ_CODE,
+	  entityAssemblyID, entityAssemblyIDs);
+
+	String[] residueLabels = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+	residues.make3Letter(residueLabels);
+
+	String[] atomNames = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	String[] atomTypes = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_TYPE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	String[] deltaShiftValsStr = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
+
+	// Filter by model number if necessary.
+    	if (modelNum != 0) {
+            String modelStr = "" + modelNum;
+
+            resSeqCodesStr = S2DUtils.selectMatches(modelNumsStr,
+              resSeqCodesStr, modelStr);
+
+            residueLabels = S2DUtils.selectMatches(
+              modelNumsStr, residueLabels, modelStr);
+
+            atomNames = S2DUtils.selectMatches(modelNumsStr,
+              atomNames, modelStr);
+
+            atomTypes = S2DUtils.selectMatches(modelNumsStr,
+	      atomTypes, modelStr);
+
+            deltaShiftValsStr = S2DUtils.selectMatches(
+              modelNumsStr, deltaShiftValsStr, modelStr);
+        }
+
+	// Convert strings to numerical values as necessary.
+        int[] resSeqCodesInt = S2DUtils.arrayStr2Int(
+          resSeqCodesStr, star.DELTA_SHIFT_RES_SEQ_CODE);
+        double[] deltaShiftValsDouble = S2DUtils.arrayStr2Double(
+          deltaShiftValsStr, star.DELTA_SHIFT_VALUE);
+
+	//
+	// Create an S2DChemShift object with the values we just got.
+	//
+        S2DChemShift chemShift = S2DChemShift.createSparta(
+	  residues.getPolymerType(), _name, _longName, _dataDir,
+	  _sessionDir, _summary, resSeqCodesInt, residueLabels,
+	  atomNames, atomTypes, deltaShiftValsDouble,
+	  entityAssemblyIDVal, modelNum, star.getFrameDetails(frame));
+
+	//
+	// Now go ahead and write out the delta shift values.
+	//
+	_summary.startFrame(star.getFrameDetails(frame));
+
+	try {
+	    chemShift.writeDeltashifts(entityAssemblyIDVal, append);
+	    chemShift.addSpartaData(_dataSets, append);
+	} catch (S2DException ex) {
+	    // Don't throw a new exception here because we want to write as
+	    // much as we can, even if there's an error somewhere along the
+	    // line.
+	    System.err.println(ex.toString());
+	}
 
 	_summary.endFrame();
     }

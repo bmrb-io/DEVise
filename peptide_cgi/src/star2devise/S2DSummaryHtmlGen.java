@@ -36,6 +36,27 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.4.4  2009/08/21 19:29:38  wenger
+// Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
+// But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
+// (Tagging with s2d_sparta_deltashift_br_1 before this commit,
+// s2d_sparta_deltashift_br_2 after.)
+//
+// Revision 1.15.4.3  2009/07/28 22:40:01  wenger
+// Added processing of SPARTA-calculated delta shift average values.
+//
+// Revision 1.15.4.2  2009/07/22 20:20:23  wenger
+// Fixed residue numbering in SPARTA delta shift visualizations;
+// changed "theoretical" to "SPARTA-calculated" and changed method
+// names, etc., to match.
+//
+// Revision 1.15.4.1  2009/07/06 20:37:23  wenger
+// Summary pages now have links for SPARTA-calculated deltashifts.
+//
+// Revision 1.15  2009/05/11 22:22:46  wenger
+// Added "Force reprocessing" button to summary pages (mainly for
+// testing).
+//
 // Revision 1.14  2009/04/15 16:21:04  wenger
 // Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
 // fixed test61 and test61_3.
@@ -194,6 +215,10 @@ public abstract class S2DSummaryHtmlGen {
     private IntKeyHashtable _pistachioInfo = new IntKeyHashtable();
     private IntKeyHashtable _ambiguityInfo = new IntKeyHashtable();
 
+    private int _maxSpartaEntAssemID = 0;
+    private IntKeyHashtable _spartaDSEntAssemIDInfo = new IntKeyHashtable();
+    private IntKeyHashtable _spartaDeltaShiftInfo = new IntKeyHashtable();
+
     private int _maxCoordFrame = 0;
     private IntKeyHashtable _coordInfo = new IntKeyHashtable();
 
@@ -351,6 +376,7 @@ TEMP?*/
 		// Write out the tables that now contain the actual links.
 		writeCoordTable();
 		writeChemShiftTable();
+		writeSpartaDeltaShiftTable();
 		writeChemShiftRefTable();
 		writeLacsTable();
 		writeCouplingTable();
@@ -492,6 +518,30 @@ TEMP?*/
 	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
 	  "\">" + residueCount + " " + resNuc + "</a>";
 	_deltaShiftInfo.put(frameIndex, value);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the SPARTA-calculated deltashift link.
+    protected void writeSpartaDeltashift(int entityAssemblyID,
+      int residueCount) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println(
+	      "S2DSummaryHtmlGen.writeSpartaDeltashift()");
+	}
+
+	_maxSpartaEntAssemID = Math.max(_maxSpartaEntAssemID,
+	  entityAssemblyID);
+
+	String value = "" + entityAssemblyID;
+        _spartaDSEntAssemIDInfo.put(entityAssemblyID, value);
+
+	String resNuc = "residues";
+	value = "<a href=\"" + _name +
+	  S2DNames.SPARTA_DELTASHIFT_SUFFIX + entityAssemblyID +
+	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + residueCount +
+	  " " + resNuc + "</a>";
+	_spartaDeltaShiftInfo.put(entityAssemblyID, value);
     }
 
     //-------------------------------------------------------------------
@@ -949,6 +999,44 @@ TEMP?*/
         } else {
 	    _writer.write("<p><b>No chemical shift data available " +
 	      "in this entry</b></p>\n");
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of SPARTA-calculated delta shifts.
+    protected void writeSpartaDeltaShiftTable() throws IOException
+    {
+        if (_maxSpartaEntAssemID > 0) {
+            _writer.write("\n<hr>\n");
+	    _writer.write("<p><b>SPARTA-calculated chemical shift " +
+	      "deltas</b></p>");
+            _writer.write("<table border>\n");
+            _writer.write("  <tr>\n");
+	    // Get rid of frame details.
+            // _writer.write("    <td><br></td>\n");
+            _writer.write("    <th>Entity assembly ID</th>\n");
+	    if (!_spartaDeltaShiftInfo.isEmpty()) {
+                _writer.write("    <th>Chemical shift delta</th>\n");
+	    }
+            _writer.write("  </tr>\n");
+
+            for (int index = 1; index <= _maxSpartaEntAssemID; index++ ) {
+                _writer.write("  <tr>\n");
+		// Get rid of frame details.
+		// _writer.write("    <th><a href=\"#Frame" + index +
+		  // "\">Frame&nbsp;" + index + "</a></th>\n");
+
+		writeTableCell(_spartaDSEntAssemIDInfo, index);
+	        if (!_spartaDeltaShiftInfo.isEmpty()) {
+		    writeTableCell(_spartaDeltaShiftInfo, index);
+		}
+
+                _writer.write("  </tr>\n");
+	    }
+
+            _writer.write("</table>\n");
+
+            //TEMP? _wroteLink = true;
 	}
     }
 
