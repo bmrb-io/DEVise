@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.143  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.142  2009/08/21 21:40:32  wenger
 // Changed "amino acid" to "amino acid/nucleotide" in chemical shift
 // by AA/nucleotide html page.
@@ -662,7 +666,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.1x9"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.1x10"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
@@ -1523,6 +1527,13 @@ public class S2DMain {
 	    // the real simple case should do for now.
 	    _lacsFile = S2DUtils.replace((String)_localFiles.elementAt(0),
 	      ".str", ".LACS.str");
+	}
+
+	if (_isUvd && _spartaFile == null) {
+	    //TEMP -- we probably want to make this more general, but
+	    // the real simple case should do for now.
+	    _spartaFile = S2DUtils.replace((String)_localFiles.elementAt(0),
+	      ".str", ".sparta.str");
 	}
 
         if (doDebugOutput(1)) {
