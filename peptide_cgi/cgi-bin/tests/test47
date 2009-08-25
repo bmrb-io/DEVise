@@ -12,8 +12,8 @@ if ($#argv > 0) then
   endif
 endif
 
-rm -f */test47_out*
 rm -f */*/test47_out*
+rm -f */.*/test47_out*
 
 echo -n "Processing NMR-STAR: "
 # This is 15011.

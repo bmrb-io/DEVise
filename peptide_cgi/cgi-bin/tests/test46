@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */test46_out*
 rm -f */*/test46_out*
+rm -f */.*/test46_out*
 
 echo -n "Processing NMR-STAR: "
 # This is 4038/4096.

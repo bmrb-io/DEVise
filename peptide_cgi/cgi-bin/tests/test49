@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */test49_out*
 rm -f */*/test49_out*
+rm -f */.*/test49_out*
 
 echo -n "Processing NMR-STAR: "
 ./uvd -file test_data/20070430_12345.str -name test49_out -force -do_lacs 1 \

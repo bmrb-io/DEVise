@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */test50_out*
 rm -f */*/test50_out*
+rm -f */.*/test50_out*
 
 echo -n "Processing NMR-STAR: "
 ./uvd -file test_data/20070921_30450.str -name test50_out -force -check_pct
