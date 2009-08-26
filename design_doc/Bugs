@@ -4216,6 +4216,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 977 6/23/09	OPEN	If a session file is a symbolic link, saving the
 			session breaks the link. (wenger)
 
+978 8/26/09	OPEN	In Firefox/Windows Vista (on glandon, at least)
+			the coordinates the JavaScreen gets doesn't match
+			where the mouse cursor is drawn (draw a zoom box
+			to see this). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
