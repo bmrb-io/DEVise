@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.144  2009/08/25 23:19:14  wenger
+// Added special code to set the SPARTA file for visualization
+// server mode (uvd); added a corresponding test.
+//
 // Revision 1.143  2009/08/25 18:15:57  wenger
 // Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
 // to trunk.
@@ -666,7 +670,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.1x10"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.1";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
