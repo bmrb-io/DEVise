@@ -62,9 +62,7 @@ foreach file ($files)
 end
 
 set file = "data_dir/4867ac1.dat"
-echo "DIAG 1010"
 set line = "^1 1 1 G O5' O 118.098 -36.722 1.395 side_chains"
-echo "DIAG 1011"
 source tests/check4line
 set line = '^3444 2 175 GLY HA3 H 123.371 1.993 19.454 backbone$'
 source tests/check4line
@@ -95,3 +93,8 @@ source tests/check4line
 set line = '^2 175 GLY 7.85 114.9 H N $'
 source tests/check4line
 
+set file = "data_dir/4867hc1.dat"
+set line = '^2 5 VAL 1.95 29.9 HB CB$'
+source tests/check4line
+set line = '^2 175 GLY 3.6 44.0 HA3 CA$'
+source tests/check4line
