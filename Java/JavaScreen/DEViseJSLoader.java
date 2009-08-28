@@ -1,4 +1,3 @@
-//TEMPTEMP -- do we even need this file anymore???
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 1999-2003
@@ -12,6 +11,7 @@
 // Development Group.
 
 // ------------------------------------------------------------------------
+//TEMPTEMP -- do we even need this file anymore???
 
 // This applet loads the applet specified in the appletToLoad
 // string. Used to print a short message that Java Screen is 
@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2008/01/24 20:30:53  wenger
+// Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
+//
 // Revision 1.9  2008/01/22 20:02:38  wenger
 // Fixed bug 954 (JavaScreen locks up IE for Miron); I tried backporting
 // my fix to the pre-toolbar version of the JS, but it doesn't work for

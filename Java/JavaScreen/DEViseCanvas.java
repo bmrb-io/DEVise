@@ -1,5 +1,3 @@
-//TEMPTEMP Look at the interfaces in org.jmol.api
-//TEMP -- why is DEViseCanvas a Container instead of a Canvas???
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 1999-2009
@@ -13,6 +11,9 @@
 // Development Group.
 
 // ------------------------------------------------------------------------
+
+//TEMP Look at the interfaces in org.jmol.api
+//TEMP -- why is DEViseCanvas a Container instead of a Canvas???
 
 // This class provides an interface to canvases in the JavaScreen.
 // It puts images into canvases, and also does the drawing of cursors,
@@ -29,6 +30,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.105  2009/05/19 18:13:42  wenger
+// Implementation of JavaScreen drill-down marker is mostly done --
+// committing now with it disabled to make sure changes don't get lost.
+//
 // Revision 1.104  2008/09/25 22:44:19  wenger
 // Workaround for bug 939: fixed off-by-one errors in the JS client
 // so this no longer happens for the JS; no fix on the server side,
@@ -632,7 +637,7 @@ public class DEViseCanvas extends Container
 
     // Whether to draw a drill-down marker at the point where the mouse
     // was clicked.
-    protected static final boolean DRAW_DRILL_DOWN_MARKER = false;
+    protected static final boolean DRAW_DRILL_DOWN_MARKER = true;
 
     // Whether a drill-down marker should currently be drawn in this
     // canvas.
@@ -808,7 +813,7 @@ public class DEViseCanvas extends Container
             }
         }
 
-//TEMPTEMP -- check whether help works in Jmol views -- no, it doesn't
+//TEMP -- check whether help works in Jmol views -- no, it doesn't
         if (!_paintRubberbandOnly) {
             // draw 3D molecular view
             if (paintCrystal(gc)) {
@@ -1305,15 +1310,26 @@ public class DEViseCanvas extends Container
     private synchronized void paintDrillDownMark(Graphics gc)
     {
         if (drawDD) {
-	    boolean DRAW_XOR = false;//TEMP?
+	    boolean DRAW_XOR = false;
+	    int SIZE = 7;
+
+	    if (DRAW_XOR) {
+	        gc.setXORMode(Color.white);
+	    } else {
+                gc.setColor(Color.white);
+	    }
+	    gc.drawLine(ddXCoord-1, ddYCoord-SIZE, ddXCoord-1, ddYCoord+SIZE);
+	    gc.drawLine(ddXCoord+1, ddYCoord-SIZE, ddXCoord+1, ddYCoord+SIZE);
+	    gc.drawLine(ddXCoord-SIZE, ddYCoord-1, ddXCoord+SIZE, ddYCoord-1);
+	    gc.drawLine(ddXCoord-SIZE, ddYCoord+1, ddXCoord+SIZE, ddYCoord+1);
+
 	    if (DRAW_XOR) {
 	        gc.setXORMode(Color.red);
 	    } else {
                 gc.setColor(Color.red);
 	    }
-	    //TEMP -- need to draw multiple colors
-	    gc.drawLine(ddXCoord, ddYCoord-5, ddXCoord, ddYCoord+5);
-	    gc.drawLine(ddXCoord-5, ddYCoord, ddXCoord+5, ddYCoord);
+	    gc.drawLine(ddXCoord, ddYCoord-SIZE, ddXCoord, ddYCoord+SIZE);
+	    gc.drawLine(ddXCoord-SIZE, ddYCoord, ddXCoord+SIZE, ddYCoord);
 
 	    if (DRAW_XOR) {
 	        gc.setPaintMode();

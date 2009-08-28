@@ -27,6 +27,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.81  2005/12/06 20:00:19  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.80  2003/01/13 19:23:43  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -1288,8 +1292,6 @@ public class DEViseServer implements Runnable, DEViseCheckableThread
                     }
                     socket.clearSocket(count);
                 }
-		//System.out.println("Closing socket for test");//TEMPTEMP
-		//closeSocket();//TEMPTEMP -- for testing only!!!
             }
         }
 
