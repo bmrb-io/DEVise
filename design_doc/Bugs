@@ -4225,6 +4225,33 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the drill-down dialog doesn't expand according to the
 			length of the strings that are displayed. (wenger)
 
+980 8/28/09	OPEN	JS: go to a web page with the JavaScreen, quit
+			browser, you get a null pointer error (at least in
+			IE): (wenger)
+java.lang.NullPointerException: null pData
+  at sun.awt.windows.WComponentPeer.hide(Native Method)
+  at java.awt.Component.removeNotify(Unknown Source)
+  at java.awt.Container.removeNotify(Unknown Source)
+  at java.awt.Container.removeNotify(Unknown Source)
+  at java.awt.Container.removeNotify(Unknown Source)
+  at java.awt.Container.removeNotify(Unknown Source)
+  at java.awt.Container.removeAll(Unknown Source)
+  at sun.plugin.viewer.frame.IExplorerEmbeddedFrame.windowClosed(Unknown Source)
+  at java.awt.Window.processWindowEvent(Unknown Source)
+  at java.awt.Window.processEvent(Unknown Source)
+  at java.awt.Component.dispatchEventImpl(Unknown Source)
+  at java.awt.Container.dispatchEventImpl(Unknown Source)
+  at java.awt.Window.dispatchEventImpl(Unknown Source)
+  at java.awt.Component.dispatchEvent(Unknown Source)
+  at java.awt.EventQueue.dispatchEvent(Unknown Source)
+  at java.awt.EventDispatchThread.pumpOneEventForFilters(Unknown Source)
+  at java.awt.EventDispatchThread.pumpEventsForFilter(Unknown Source)
+  at java.awt.EventDispatchThread.pumpEventsForHierarchy(Unknown Source)
+  at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+  at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
+  at java.awt.EventDispatchThread.run(Unknown Source)
+(Hmm -- this happens with the Scribble applet, too...)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
