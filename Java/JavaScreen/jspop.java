@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.81  2005/12/06 20:00:24  wenger
+// Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+// be the end of the V1_7b0_br branch.)
+//
 // Revision 1.80  2003/01/13 19:23:45  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -990,6 +994,67 @@ public class jspop implements Runnable
     }
 
     //----------------------------------------------------------------------
+    // Close the client that has been inactive for the longest period of
+    // time.
+    private synchronized void killOldestClient()
+    {
+        if (_debugLvl >= 1) {
+	    pn("jspop.killOldestClient()");
+	}
+
+	//
+	// Note: we are checking both the active and suspended clients lists
+	// here in case of the special case where maxclients is equal to
+	// the number of servers.  If that's the case, and a new client
+	// connects, the new client is the only client in the suspended
+	// list, so if we only check that list, the new client will be
+	// closed immediately.  RKW 2000-11-08.
+	//
+	DEViseClient oldestClient = null;
+	long oldestHeartbeat = Long.MAX_VALUE;
+
+	for (int i = 0; i < activeClients.size(); i++) {
+	    DEViseClient tmpClient =
+	      (DEViseClient) activeClients.elementAt(i);
+	    if (tmpClient != null) {
+	        if (tmpClient.getHeartbeat() < oldestHeartbeat) {
+		    oldestClient = tmpClient;
+		    oldestHeartbeat = oldestClient.getHeartbeat();
+		}
+	    }
+        }
+
+        if (_debugLvl >= 4) pn("DIAG jspop 4210");
+	for (int i = 0; i < suspendClients.size(); i++) {
+	    DEViseClient tmpClient =
+	      (DEViseClient) suspendClients.elementAt(i);
+	    if (tmpClient != null) {
+	        if (tmpClient.getHeartbeat() < oldestHeartbeat) {
+		    oldestClient = tmpClient;
+		    oldestHeartbeat = oldestClient.getHeartbeat();
+		}
+	    }
+        }
+        if (_debugLvl >= 4) pn("DIAG jspop 4290");
+
+	if (oldestClient != null) {
+	    pn("Killing client " +
+	      oldestClient.getConnectionID() +
+	      " because maxclients limit has been reached");
+	    killClient(oldestClient);
+
+	    //
+	    // Note: killed clients will actually be removed from the client
+	    // list in getNextRequestingClient().  We don't *really* need
+	    // to call this here, because it will be called later, but it's
+	    // kind of weird to kill off a client and then still have it in
+	    // the clients list.  RKW 2002-04-11.
+	    //
+	    getNextRequestingClient();
+	}
+    }
+
+    //----------------------------------------------------------------------
 
     // Get the DEViseUser object corresponding to the given key and password.
     public DEViseUser getUser(String username, String password)
@@ -1556,68 +1621,6 @@ public class jspop implements Runnable
 	}
 
 	return id;
-    }
-
-    //TEMPTEMP -- put this and check heartbeat next to each other
-    //----------------------------------------------------------------------
-    // Close the client that has been inactive for the longest period of
-    // time.
-    private synchronized void killOldestClient()
-    {
-        if (_debugLvl >= 1) {
-	    pn("jspop.killOldestClient()");
-	}
-
-	//
-	// Note: we are checking both the active and suspended clients lists
-	// here in case of the special case where maxclients is equal to
-	// the number of servers.  If that's the case, and a new client
-	// connects, the new client is the only client in the suspended
-	// list, so if we only check that list, the new client will be
-	// closed immediately.  RKW 2000-11-08.
-	//
-	DEViseClient oldestClient = null;
-	long oldestHeartbeat = Long.MAX_VALUE;
-
-	for (int i = 0; i < activeClients.size(); i++) {
-	    DEViseClient tmpClient =
-	      (DEViseClient) activeClients.elementAt(i);
-	    if (tmpClient != null) {
-	        if (tmpClient.getHeartbeat() < oldestHeartbeat) {
-		    oldestClient = tmpClient;
-		    oldestHeartbeat = oldestClient.getHeartbeat();
-		}
-	    }
-        }
-
-        if (_debugLvl >= 4) pn("DIAG jspop 4210");
-	for (int i = 0; i < suspendClients.size(); i++) {
-	    DEViseClient tmpClient =
-	      (DEViseClient) suspendClients.elementAt(i);
-	    if (tmpClient != null) {
-	        if (tmpClient.getHeartbeat() < oldestHeartbeat) {
-		    oldestClient = tmpClient;
-		    oldestHeartbeat = oldestClient.getHeartbeat();
-		}
-	    }
-        }
-        if (_debugLvl >= 4) pn("DIAG jspop 4290");
-
-	if (oldestClient != null) {
-	    pn("Killing client " +
-	      oldestClient.getConnectionID() +
-	      " because maxclients limit has been reached");
-	    killClient(oldestClient);
-
-	    //
-	    // Note: killed clients will actually be removed from the client
-	    // list in getNextRequestingClient().  We don't *really* need
-	    // to call this here, because it will be called later, but it's
-	    // kind of weird to kill off a client and then still have it in
-	    // the clients list.  RKW 2002-04-11.
-	    //
-	    getNextRequestingClient();
-	}
     }
 
     //----------------------------------------------------------------------

@@ -27,6 +27,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2008/09/24 21:46:51  wenger
+// Partially(?) fixed DEVise/JS bug 973: there is now a minimum delay
+// before the JS stop button goes back to normal when communicating
+// with the server, so the user won't fail to notice.
+//
 // Revision 1.17  2007/06/27 17:47:59  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
@@ -148,8 +153,7 @@ import java.applet.*;
 public final class DEViseJSValues
 {
 //TEMPTOOLBAR -- add something in here to save what toolbar mode we're in?
-    //TEMPTEMP - this stupid class should get renamed to avoid confusion with the Java Canvas class
-    public final class Canvas {
+    public final class CanvasValues {
 	public int lastKey = KeyEvent.VK_UNDEFINED;
 	public DEViseCanvas sourceCanvas = null;
 
@@ -162,7 +166,7 @@ public final class DEViseJSValues
 	public int crystalPaintCount = 0;
     }
 
-    public final class Debug {
+    public final class DebugValues {
 	public int _debugLevel = 0;
 
 	public boolean _logEnabled = false;
@@ -174,12 +178,12 @@ public final class DEViseJSValues
 	}
     }
 
-    public final class GData {
+    public final class GDataValues {
 	public Font defaultFont = null;
 	public int _gdCount = 0;
     }
 
-    public final class Connection {
+    public final class ConnectionValues {
 	public int cmdport = 0;
 	public int connectionID = DEViseGlobals.DEFAULTID; // for client
 	public String username = null, password = null, hostname = null;
@@ -219,7 +223,7 @@ public final class DEViseJSValues
 	public long minWaitTime = DEViseGlobals.DEFAULT_MIN_WAIT_TIME;
     }
 
-    public final class Session {
+    public final class SessionValues {
         public String defaultName = null;
 	public String clientLogName = null;
 	public boolean autoPlayback = false;
@@ -233,13 +237,13 @@ public final class DEViseJSValues
 	public String collabPass = null;
     }
 
-    public Canvas canvas = new Canvas();
-    public Debug  debug = new Debug();
-    public GData  gdata = new GData();
+    public CanvasValues canvas = new CanvasValues();
+    public DebugValues  debug = new DebugValues();
+    public GDataValues  gdata = new GDataValues();
     //Fonts  fonts;
-    public Connection connection = new Connection(); 
+    public ConnectionValues connection = new ConnectionValues(); 
     public UIGlobals uiglobals = new UIGlobals();
-    public Session session = new Session();
+    public SessionValues session = new SessionValues();
 
     // for loading images for icons, etc.
     public Component _imageLoadComp = null;
