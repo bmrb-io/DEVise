@@ -4220,7 +4220,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			the coordinates the JavaScreen gets doesn't match
 			where the mouse cursor is drawn (draw a zoom box
 			to see this). (wenger)  (Seems like the problem is
-			with the cursor hot spot.  wenger 9/2/09.)
+			with the cursor hot spot.  wenger 9/2/09.)  (Okay,
+			the problem is that the cursor image is actually
+			drawn double-size for some reason, which throws off
+			the cursor hot spot.)
 
 979 8/26/09	OPEN	JS: in Firefox/Windows Vista (on glandon, at least)
 			the drill-down dialog doesn't expand according to the
