@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.112  2009/06/12 16:34:45  wenger
+// Merged s2d_torsion_rest_0905_br_0 thru s2d_torsion_rest_0905_br_js1
+// to the trunk (JavaScreen changes only -- mainly to get the fix that
+// gets rid of the extra space stuck into atom names in the Atom
+// Selection tree).
+//
 // Revision 1.111  2009/06/11 20:38:56  wenger
 // Fixed a bug with the new drill-down marker code that caused a null
 // pointer exception when drilling down in a Jmol canvas.
@@ -710,7 +716,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.10.0x1"/*TEMP*/);
+    public static final String VERSION = new String("5.10.0x2"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

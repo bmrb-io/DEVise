@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2007
+// (c) Copyright 2007-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2007/08/03 20:17:34  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.1.2.2  2007/08/03 19:21:24  wenger
 // Mouse cursor now changes according to toolbar mode; fixed existing
 // problems with mouse cursor being crosshairs cursor when it should be
@@ -82,104 +85,75 @@ public class DEViseMouseCursor
     private Cursor permanentCursor;
     private Cursor temporaryCursor;
 
+    private DEViseJSValues _jsValues;
+    private Toolkit _toolkit;
+
     /** Constructor.
     */
     public DEViseMouseCursor(DEViseJSValues jsValues)
     {
+	_jsValues = jsValues;
+
 	if (decSymSizeCursor == null) {
 	    try {
-	        Toolkit toolkit = Toolkit.getDefaultToolkit();
+	        _toolkit = Toolkit.getDefaultToolkit();
+		boolean doubleCursor = false;
+	        Dimension curDim = _toolkit.getBestCursorSize(16, 16);
+	        System.out.println("Best cursor size: " + curDim.width +
+	          ", " + curDim.height);
+		if (curDim.width == 32 && curDim.height == 32) {
+		    doubleCursor = true;
+		    System.out.println("Warning: expecting doubled " +
+		      "cursor size; adjusting hotspot accordingly");
+		}
 
-		rbCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/crosshairs.png", jsValues),
-		  new Point(7, 7), "default");
+		rbCursor = createCursor("crosshairs.png",
+		  7, 7, doubleCursor, "default");
 
-		decSymSizeCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/decrease_symbol_size.png",
-		    jsValues),
-		  new Point(4, 11), "decrease symbol size");
+		decSymSizeCursor = createCursor(
+		  "decrease_symbol_size.png", 4, 11, doubleCursor,
+		  "decrease symbol size");
 
-		disabledCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/disabled.png",
-		    jsValues),
-		  new Point(7, 7), "disabled");
+		disabledCursor = createCursor("disabled.png",
+		  7, 7, doubleCursor, "disabled");
 
-		drillDownCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/drill-down.png",
-		    jsValues),
-		  new Point(4, 11), "drill down");
+		drillDownCursor = createCursor("drill-down.png",
+		  4, 11, doubleCursor, "drill down");
 
-		fillViewCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/full_screen_filter.png",
-		    jsValues),
-		  new Point(7, 7), "cursor fills view");
+		fillViewCursor = createCursor("full_screen_filter.png",
+		  7, 7, doubleCursor, "cursor fills view");
 
-		homeCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/home_filter.png",
-		    jsValues),
-		  new Point(7, 7), "home");
+		homeCursor = createCursor("home_filter.png",
+		  7, 7, doubleCursor, "home");
 
-		incSymSizeCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/increase_symbol_size.png",
-		    jsValues),
-		  new Point(4, 11), "increase symbol size");
+		incSymSizeCursor = createCursor("increase_symbol_size.png",
+		  4, 11, doubleCursor, "increase symbol size");
 
-		jmRotCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/jmol_rotate.png",
-		    jsValues),
-		  new Point(8, 8), "Jmol rotate");
+		jmRotCursor = createCursor("jmol_rotate.png",
+		  8, 8, doubleCursor, "Jmol rotate");
 
-		jmTransCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/jmol_translate.png",
-		    jsValues),
-		  new Point(7, 7), "Jmol translate");
+		jmTransCursor = createCursor("jmol_translate.png",
+		  7, 7, doubleCursor, "Jmol translate");
 
-		jmZoomCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/jmol_zoom.png",
-		    jsValues),
-		  new Point(8, 6), "Jmol zoom");
+		jmZoomCursor = createCursor("jmol_zoom.png",
+		  8, 6, doubleCursor, "Jmol zoom");
 
 /*
-		moveCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/move_cursor.png",
-		    jsValues),
-		  new Point(7, 8), "Move DEVise cursor");
+		moveCursor = createCursor("move_cursor.png",
+		  7, 8, doubleCursor, "Move DEVise cursor");
 */
 
-		helpCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/show_view_help.png",
-		    jsValues),
-		  new Point(4, 11), "view help");
+		helpCursor = createCursor("show_view_help.png",
+		  4, 11, doubleCursor, "view help");
 
-		togFiltCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/toggle_filter.png",
-		    jsValues),
-		  new Point(4, 11), "toggle filter");
+		togFiltCursor = createCursor("toggle_filter.png",
+		  4, 11, doubleCursor, "toggle filter");
 
-		zoomInCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/zoom-in.png",
-		    jsValues),
-		  new Point(5, 5), "zoom in");
+		zoomInCursor = createCursor("zoom-in.png",
+		  5, 5, doubleCursor, "zoom in");
 
-		zoomOutCursor = toolkit.createCustomCursor(
-		  jsdevisec.loadImage(
-		    "resources/toolbar_cursors/zoom-out.png",
-		    jsValues),
-		  new Point(5, 5), "zoom out");
+		zoomOutCursor = createCursor("zoom-out.png",
+		  5, 5, doubleCursor, "zoom out");
 
                 permanentCursor = defaultCursor;
 
@@ -188,6 +162,39 @@ public class DEViseMouseCursor
 		  "non-standard cursors" + ex);
 	    }
 	}
+    }
+
+    /** Create a cursor with the given parameters.
+        @param imageFile: the file containing the image to use for this
+	  cursor (in the JavaScreen resources).
+	@param hotSpotX: the X coordinate of the cursor hot spot.
+	@param hotSpotY: the Y coordinate of the cursor hot spot.
+	@param doubleCursor: whether the cursor size will be doubled
+	  (see bug 978).
+	@param name: the name of the cursor.
+	@return the cursor created according to the given parameters,
+	  or the default cursor if there is an error.
+    */
+    protected Cursor createCursor(String imageFile, int hotSpotX,
+      int hotSpotY, boolean doubleCursor, String name)
+    {
+	Cursor cursor;
+    	try {
+	    Point hotSpot = new Point(hotSpotX, hotSpotY);
+	    if (doubleCursor) {
+	        doublePoint(hotSpot);
+	    }
+	    cursor = _toolkit.createCustomCursor(
+	      jsdevisec.loadImage("resources/toolbar_cursors/" + imageFile,
+	        _jsValues),
+	      hotSpot, name);
+	} catch (Exception ex) {
+	    System.err.println("Warning: cannot create mouse cursor " + name +
+	      ": " + ex.toString() + "; using default cursor");
+	    cursor = defaultCursor;
+	}
+
+	return cursor;
     }
 
     /** Set the permanent cursor to the given cursor, and also set
@@ -240,5 +247,14 @@ public class DEViseMouseCursor
 	if (comp != null) {
 	    comp.setCursor(permanentCursor);
 	}
+    }
+
+    /** Double the coordinates of the given point
+        @param p: the Point to be doubled (input/output).
+    */
+    public static void doublePoint(Point p)
+    {
+    	p.x = p.x * 2;
+	p.y = p.y * 2;
     }
 }
