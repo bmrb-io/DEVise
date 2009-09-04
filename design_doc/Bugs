@@ -4257,6 +4257,14 @@ java.lang.NullPointerException: null pData
   at java.awt.EventDispatchThread.run(Unknown Source)
 (Hmm -- this happens with the Scribble applet, too...)
 
+981 9/4/09	OPEN	JS: numbers should be right-justified in drill-
+			down dialog. (miron/wenger)
+
+982 9/4/09	OPEN	JS: mouse cursor is large and ugly on Windows.
+			(miron/wenger)  (Maybe create a 32x32 cursor
+			image, and see if Windows displays that at the
+			original size instead of doubling it.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
