@@ -386,6 +386,12 @@ Num Date        Status  Description
 			to EA 3 and back -> data view stays at small size.
 			(wenger)
 
+084 9/4/09	OPEN	Fix problems with cursor behavior (especially when
+			switching data sets) in the 3D sessions, etc.
+			(miron/wenger)  (Sit down with Eldon to decide on
+			what behavior we want, figure out how to do it --
+			will probably require DEVise server changes.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
