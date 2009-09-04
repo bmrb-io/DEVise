@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.173  2009/06/11 20:38:55  wenger
+// Fixed a bug with the new drill-down marker code that caused a null
+// pointer exception when drilling down in a Jmol canvas.
+//
 // Revision 1.172  2009/05/19 18:13:42  wenger
 // Implementation of JavaScreen drill-down marker is mostly done --
 // committing now with it disabled to make sure changes don't get lost.
@@ -2236,6 +2240,13 @@ class RecordDlg extends Dialog
         String[] columnNames = {"Attribute", "Value"};
         table = new JTable(swingData, columnNames);
 
+	// Make the value column right-justified (see JS bug 981) -- making
+	// *everything* justified for now, not just numbers...
+	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
+        renderer.setHorizontalAlignment(JLabel.RIGHT);
+        TableColumn tColumn = table.getColumnModel().getColumn(1);
+	tColumn.setCellRenderer(renderer);
+
         // Disable auto resizing
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
@@ -2251,11 +2262,11 @@ class RecordDlg extends Dialog
 	    }
 	});
    
-        // Pack the second column of the table
+        // Pack the second column of the table (make the column widths
+	// fit the widths of the attributes and values).
         int margin = 2;
-   
         for (int column = 0; column < table.getColumnCount(); column++) {
-    	    packColumn(table, column, 2);
+    	    packColumn(table, column, margin);
         }
 
         panesize = table.getPreferredSize();
@@ -2366,7 +2377,8 @@ class RecordDlg extends Dialog
     // (resulting in an additional width of 2*margin pixels).
     private void packColumn(JTable table, int vColIndex, int margin) {
         TableModel model = table.getModel();
-        DefaultTableColumnModel colModel = (DefaultTableColumnModel)table.getColumnModel();
+        DefaultTableColumnModel colModel =
+	  (DefaultTableColumnModel)table.getColumnModel();
         TableColumn col = colModel.getColumn(vColIndex);
         int width = 0;
     
@@ -2383,7 +2395,8 @@ class RecordDlg extends Dialog
         for (int r=0; r<table.getRowCount(); r++) {
             renderer = table.getCellRenderer(r, vColIndex);
             comp = renderer.getTableCellRendererComponent(
-                table, table.getValueAt(r, vColIndex), false, false, r, vColIndex);
+                table, table.getValueAt(r, vColIndex), false, false,
+		r, vColIndex);
             width = Math.max(width, comp.getPreferredSize().width);
         }
     
