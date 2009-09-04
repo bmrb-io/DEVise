@@ -395,6 +395,8 @@ Num Date        Status  Description
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
+ACTIVE = being worked on
+PART = partially fixed
 NB = not (really) a bug.
 CD = can't duplicate (reproduce).
 DUP = duplicate of another bug
