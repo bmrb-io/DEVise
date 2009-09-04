@@ -106,13 +106,17 @@ The following testing steps must be done:
   the "Test" link.  Make sure the summary page is correct and some of
   the visualizations work.
 
-- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html.
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html
+  (make sure drill-down works).
 
-- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram2.html.
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram2.html
+  (make sure drill-down works).
 
-- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/dna_histogram.html.
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/dna_histogram.html
+  (make sure drill-down works).
 
-- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/rna_histogram.html.
+- Test http://devise.cs.wisc.edu/devise/bmrb/histograms/rna_histogram.html
+  (make sure drill-down works).
 
 
 * Things to do to this document:
