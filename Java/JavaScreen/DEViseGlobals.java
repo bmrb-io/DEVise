@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.113  2009/09/02 22:58:29  wenger
+// Probably fixed DEVise/JS bug 978 (mouse cursor hot spot problems).
+// (Needs some more testing.)
+//
 // Revision 1.112  2009/06/12 16:34:45  wenger
 // Merged s2d_torsion_rest_0905_br_0 thru s2d_torsion_rest_0905_br_js1
 // to the trunk (JavaScreen changes only -- mainly to get the fix that
@@ -716,7 +720,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.10.0x2"/*TEMP*/);
+    public static final String VERSION = new String("5.10.0");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
