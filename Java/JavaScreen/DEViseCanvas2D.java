@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2009/05/19 18:13:42  wenger
+// Implementation of JavaScreen drill-down marker is mostly done --
+// committing now with it disabled to make sure changes don't get lost.
+//
 // Revision 1.7  2008/09/25 22:44:21  wenger
 // Workaround for bug 939: fixed off-by-one errors in the JS client
 // so this no longer happens for the JS; no fix on the server side,
@@ -284,7 +288,7 @@ public class DEViseCanvas2D extends DEViseCanvas
 
                     cursor.image = null;
                 }
-            } else if (activeView.isRubberBand && jsc.toolBar.doZoomMode()) {
+            } else if (activeView.isRubberBand && jsc.toolBar.doZoomOnly()) {
 		doClickZoom(p.x, p.y);
 	    }
 

@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2008/02/13 22:38:25  wenger
+// Added a button to show the Jmol selection trees without having to
+// go into a menu.
+//
 // Revision 1.4  2007/08/27 19:16:47  wenger
 // Merged andyd_gui_br_7 thru andyd_gui_br_8 to trunk.
 //
@@ -393,7 +397,7 @@ public final class DEViseToolBar extends JToolBar {
 	}
 
 	// Modes where zoom is the only allowed action.
-	public boolean doZoomMode() {
+	public boolean doZoomOnly() {
 		return (selectedButton == zoomInXYButton) ||
 		  (selectedButton == zoomInXButton) ||
 		  (selectedButton == zoomInYButton) ||

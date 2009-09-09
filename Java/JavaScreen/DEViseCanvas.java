@@ -30,6 +30,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.106  2009/08/28 15:42:17  wenger
+// Drill-down marker is now working; cleaned up version history, since
+// 5.9.5 was never released.
+//
 // Revision 1.105  2009/05/19 18:13:42  wenger
 // Implementation of JavaScreen drill-down marker is mostly done --
 // committing now with it disabled to make sure changes don't get lost.
@@ -566,7 +570,9 @@ public class DEViseCanvas extends Container
     public Point point = new Point();
     public DEViseCrystal crystal = null;
 
-    public DEViseView view = null; // base view if piled
+    // The view associated with this canvas (base view if piled; parent
+    // pile if there are view symbols).
+    public DEViseView view = null;
 
     // ADD COMMENT -- we need clarification here as to why this is on a
     // per-canvas basis, since there can actually only be one active view
@@ -1866,11 +1872,13 @@ public class DEViseCanvas extends Container
                 jsc.mouseCursor.setTemporaryCursor(
                   jsc.mouseCursor.rbCursor, this);
 
-	    } else if (jsc.toolBar.doZoomMode() && !activeView.isRubberBand) {
+	    } else if (jsc.toolBar.doZoomOnly() && !activeView.isRubberBand) {
 	        jsc.mouseCursor.setTemporaryCursor(
 		  jsc.mouseCursor.disabledCursor, this);
 
-            } else if (jsc.toolBar.doCursorFill() && !activeView.isCursorMove) {
+            } else if (jsc.toolBar.doCursorFill() &&
+	      (!activeView.isCursorMove ||
+	      activeView.getFirstCursor() == null)) {
 	        jsc.mouseCursor.setTemporaryCursor(
 		  jsc.mouseCursor.disabledCursor, this);
 
@@ -1895,7 +1903,8 @@ public class DEViseCanvas extends Container
 		  jsc.mouseCursor.disabledCursor, this);
 
             } else if (jsc.toolBar.doNormal() &&
-	      (!activeView.isCursorMove || view.getFirstCursor() == null) &&
+	      (!activeView.isCursorMove ||
+	      activeView.getFirstCursor() == null) &&
 	      !activeView.isRubberBand) {
 	        jsc.mouseCursor.setTemporaryCursor(
 		  jsc.mouseCursor.disabledCursor, this);

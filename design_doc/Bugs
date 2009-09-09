@@ -4120,12 +4120,12 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 959 2/15/08	OPEN	JS: cannot show view help by clicking in a view's
 			title area. (wenger)
 
-960 2/22/08	OPEN	JS: in default toolbar mode, JS shows a noop cursor
+960 2/22/08	FIXED	JS: in default toolbar mode, JS shows a noop cursor
 			when not on the DEVise cursor in the bottom (atom
 			selection) view of the chem shift ref 1 visualization.
 			(It shouldn't show the noop cursor because clicking
-			will move the DEVise cursor.)
-			(wenger)
+			will move the DEVise cursor.) (wenger)
+			(Fixed by wenger, 9/9/09.)
 
 961 2/22/08	OPEN	JS?: in the chem shift ref 1 visualization, a brown
 			border shows up around the main view after zooming
@@ -4216,7 +4216,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 977 6/23/09	OPEN	If a session file is a symbolic link, saving the
 			session breaks the link. (wenger)
 
-978 8/26/09	DONE	JS: in Firefox/Windows Vista (on glandon, at least)
+978 8/26/09	FIXED	JS: in Firefox/Windows Vista (on glandon, at least)
 			the coordinates the JavaScreen gets doesn't match
 			where the mouse cursor is drawn (draw a zoom box
 			to see this). (wenger)  (Seems like the problem is
@@ -4267,9 +4267,10 @@ java.lang.NullPointerException: null pData
 			original size instead of doubling it.)
 			(Fixed by wenger, 9/9/09.)
 
-983 9/9/09	OPEN	JS: when in "expand cursor" toolbar mode, the "expand
+983 9/9/09	FIXED	JS: when in "expand cursor" toolbar mode, the "expand
 			cursor" mouse cursor shows up even when you're on
 			a view that doesn't have any DEVise cursors. (wenger)
+			(Fixed by wenger, 9/9/09.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
