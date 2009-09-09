@@ -4266,6 +4266,10 @@ java.lang.NullPointerException: null pData
 			image, and see if Windows displays that at the
 			original size instead of doubling it.)
 
+983 9/9/09	OPEN	JS: when in "expand cursor" toolbar mode, the "expand
+			cursor" mouse cursor shows up even when you're on
+			a view that doesn't have any DEVise cursors. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
