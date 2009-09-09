@@ -4261,10 +4261,11 @@ java.lang.NullPointerException: null pData
 			down dialog. (miron/wenger)
 			(Partially fixed by wenger, 9/4/09.)
 
-982 9/4/09	OPEN	JS: mouse cursor is large and ugly on Windows.
+982 9/4/09	FIXED	JS: mouse cursor is large and ugly on Windows.
 			(miron/wenger)  (Maybe create a 32x32 cursor
 			image, and see if Windows displays that at the
 			original size instead of doubling it.)
+			(Fixed by wenger, 9/9/09.)
 
 983 9/9/09	OPEN	JS: when in "expand cursor" toolbar mode, the "expand
 			cursor" mouse cursor shows up even when you're on
