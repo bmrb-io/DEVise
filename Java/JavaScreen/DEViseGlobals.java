@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.117  2009/09/10 22:06:39  wenger
+// Fixed JavaScreen bug 985 (change 'Reset Filters' to 'Reset Axis Ranges');
+// made other menu improvements; changed communication mode dialog to
+// menu for simplification.
+//
 // Revision 1.116  2009/09/09 16:41:11  wenger
 // Changed version to 5.10.1x2.
 //
@@ -729,7 +734,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.10.1x3"/*TEMP*/);
+    public static final String VERSION = new String("5.10.1x4"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

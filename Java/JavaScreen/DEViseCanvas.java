@@ -30,6 +30,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.107  2009/09/09 21:50:18  wenger
+// Fixed JavaScreen bugs 960 and 983 (problems with the mouse cursor
+// not changing correctly according to the toolbar mode and the state
+// of the active view).
+//
 // Revision 1.106  2009/08/28 15:42:17  wenger
 // Drill-down marker is now working; cleaned up version history, since
 // 5.9.5 was never released.
@@ -852,10 +857,10 @@ public class DEViseCanvas extends Container
             // draw highlight border
             paintBorder(gc);
 
-            paintHelpMsg(gc);
-
 	    // draw sxis labels
 	    paintAxisLabel(gc);
+
+            paintHelpMsg(gc);
         }
     }
 
