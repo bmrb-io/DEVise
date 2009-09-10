@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2008
+// (c) Copyright 2003-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2008/02/20 20:22:10  wenger
+// JavaScreen now defaults to showing help in browser window (to
+// get around problems on Mac with the Java window); added links
+// and images to the help page because of this change.
+//
 // Revision 1.12  2008/02/08 21:03:12  wenger
 // Changed version from 5.8.3 to 5.9.0 because the toolbar and associated
 // stuff is such a big change; added JavaScreen help dialog (although the
@@ -130,6 +135,7 @@ public class DEViseMainButtons
     private PopupMenu viewPM = new PopupMenu();
     private PopupMenu helpPM = new PopupMenu();
     private Menu displayModeMenu = new PopupMenu("Display Mode");
+    private Menu commModeMenu = new PopupMenu("Communication Mode");
 
     // DEViseButton that don't bring up menus.
     public  DEViseButton stopButton;
@@ -138,19 +144,22 @@ public class DEViseMainButtons
     private MenuItem openMenuItem = new MenuItem("Open...");
     private MenuItem closeMenuItem = new MenuItem("Close");
     private MenuItem restartMenuItem = new MenuItem("Restart");
-    private MenuItem filterMenuItem = new MenuItem("Reset Filters");
+    private MenuItem filterMenuItem = new MenuItem("Reset Axis Ranges");
     private MenuItem exitMenuItem = new MenuItem("Exit");
 
     private MenuItem normalDisplayMenuItem = new MenuItem("Normal");
     private MenuItem colorPrintDisplayMenuItem = new MenuItem("Color print");
     private MenuItem bwPrintDisplayMenuItem = new MenuItem("B/w print");
 
-    private MenuItem setMenuItem = new MenuItem("Option...");
-    private MenuItem modeMenuItem = new MenuItem("Mode...");
+    private MenuItem setMenuItem = new MenuItem("Settings...");
+
+    private MenuItem socketModeMenuItem = new MenuItem("Socket");
+    private MenuItem cgiModeMenuItem = new MenuItem("CGI...");
+
     private MenuItem collabMenuItem = new MenuItem("Collaborate...");
     private MenuItem playbackMenuItem = new MenuItem("Playback...");
 
-    public static final String displayLogStr = "Show Log";
+    public static final String displayLogStr = "Show Log...";
     public static final String closeLogStr = "Hide Log";
     private MenuItem logMenuItem = new MenuItem(displayLogStr);
 
@@ -258,10 +267,14 @@ public class DEViseMainButtons
 	displayModeMenu.add(colorPrintDisplayMenuItem);
 	displayModeMenu.add(bwPrintDisplayMenuItem);
 
+	// Set up communication mode menu.
+	commModeMenu.add(socketModeMenuItem);
+	commModeMenu.add(cgiModeMenuItem);
+
 	// Set up view menu.
 	viewPM.add(displayModeMenu);
 	viewPM.add(setMenuItem);
-	viewPM.add(modeMenuItem);
+	viewPM.add(commModeMenu);
 	viewPM.add(collabMenuItem);
 	viewPM.add(playbackMenuItem);
 	viewPM.add(logMenuItem);
@@ -382,19 +395,31 @@ public class DEViseMainButtons
                 }
             });
 
+        socketModeMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    _js.jsValues.connection.cgi = false;
+		    _js.socketMode();
+
+                }
+            });
+
+        cgiModeMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    _js.jsValues.connection.cgi = true;
+		    _js.cgiMode();
+		    _js.setCgiUrl();
+                }
+            });
+
         setMenuItem.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
                 {
                     _js.showSetting();
-                }
-            });
-
-        modeMenuItem.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent event)
-                {
-		    _js.setMode();
                 }
             });
 

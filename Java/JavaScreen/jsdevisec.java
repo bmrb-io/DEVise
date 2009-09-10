@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.174  2009/09/04 19:53:12  wenger
+// Partially fixed JS bug 981 (all values are now displayed right-justified,
+// whether they are numbers or not).
+//
 // Revision 1.173  2009/06/11 20:38:55  wenger
 // Fixed a bug with the new drill-down marker code that caused a null
 // pointer exception when drilling down in a Jmol canvas.
@@ -850,7 +854,6 @@ public class jsdevisec extends JPanel
     private SettingDlg settingdlg = null;
     private SetCgiUrlDlg setcgiurldlg = null;
     private SetLogFileDlg setlogfiledlg = null;
-    private SetModeDlg setmodedlg = null;
     private CollabSelectDlg collabSelectDlg = null;
     public CollabIdDlg collabIdDlg = null;
     public CollabPassDlg collabpassdlg = null;
@@ -1805,20 +1808,6 @@ public class jsdevisec extends JPanel
 	playback = new DEVisePlayback(this, dispatcher, logFileName);
     }
 
-
-    public void setMode()
-    {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.setMode()");
-	}
-        setmodedlg = new SetModeDlg(this, parentFrame, isCenterScreen);
-        setmodedlg.open();
-        setmodedlg = null;
-    }
-
     public void showCollab()
     {
 	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
@@ -2760,7 +2749,7 @@ class SettingDlg extends Dialog
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
-        setTitle("JavaScreen Setting");
+        setTitle("JavaScreen Settings");
 
         screenX.setBackground(jsc.jsValues.uiglobals.textBg);
         screenX.setForeground(jsc.jsValues.uiglobals.textFg);
@@ -3578,163 +3567,6 @@ class SetLogFileDlg extends Dialog
             status = false;
         }
 	jsc.jsValues.debug.log("Closed SetLogFileDlg");
-    }
-
-    // true means this dialog is showing
-    public synchronized boolean getStatus()
-    {
-        return status;
-    }
-}
-
-
-// ------------------------------------------------------------------------
-
-// Dialog for setting socket/cgi mode.
-class SetModeDlg extends Dialog
-{
-    private jsdevisec jsc = null;
-    private DEViseButton socketButton;
-    private DEViseButton cgiButton;
-    private DEViseButton cancelButton;
-    private boolean status = false; // true means this dialog is showing
-
-    public SetModeDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
-    {
-        super(owner, true);
-
-	what.jsValues.debug.log("Creating SetModeDlg");
-
-        jsc = what;
-
-        socketButton = new DEViseButton("Socket", jsc.jsValues);
-        cgiButton = new DEViseButton("CGI", jsc.jsValues);
-        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
-
-        setBackground(jsc.jsValues.uiglobals.bg);
-        setForeground(jsc.jsValues.uiglobals.fg);
-        setFont(jsc.jsValues.uiglobals.font);
-
-        setTitle("Setting JavaScreen Mode");
-
-	if (jsc.specialID == -1) {
-	    cgiButton.setBackground(jsc.jsValues.uiglobals.bg);
-	} else {
-	    cgiButton.setBackground(Color.red);
-	}
-
-        // set layout manager
-        GridBagLayout  gridbag = new GridBagLayout();
-        GridBagConstraints  c = new GridBagConstraints();
-        setLayout(gridbag);
-
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        c.fill = GridBagConstraints.BOTH;
-        c.anchor = GridBagConstraints.CENTER;
-        c.weightx = 1.0;
-        c.weighty = 1.0;
-        c.insets = new Insets(10, 10, 10, 10);
-
-        Label label = new Label("Mode Switch:");
-        gridbag.setConstraints(label, c);
-        add(label);
-
-        gridbag.setConstraints(socketButton, c);
-        add(socketButton);
-        gridbag.setConstraints(cgiButton, c);
-        add(cgiButton);
-        gridbag.setConstraints(cancelButton, c);
-        add(cancelButton);
-
-        pack();
-
-        // reposition the window
-        Point parentLoc = null;
-        Dimension parentSize = null;
-
-        if (isCenterScreen) {
-            Toolkit kit = Toolkit.getDefaultToolkit();
-            parentSize = kit.getScreenSize();
-            parentLoc = new Point(0, 0);
-        } else {
-            parentLoc = owner.getLocation();
-            parentSize = owner.getSize();
-        }
-
-        Dimension mysize = getSize();
-        parentLoc.y += parentSize.height / 2;
-        parentLoc.x += parentSize.width / 2;
-        parentLoc.y -= mysize.height / 2;
-        parentLoc.x -= mysize.width / 2;
-        setLocation(parentLoc);
-
-        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-
-	if (jsc.specialID == -1) {
-	    cgiButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			jsc.jsValues.connection.cgi = true;
-			jsc.cgiMode();
-                        close();
-			jsc.setCgiUrl();
-                    }
-                });
-	}
-
-        socketButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-			jsc.jsValues.connection.cgi = false;
-			jsc.socketMode();
-			close();
-                    }
-                });
-
-
-	cancelButton.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent event)
-                    {
-                        close();
-                    }
-                });
-
-    }
-
-    protected void processEvent(AWTEvent event)
-    {
-        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
-            close();
-            return;
-        }
-
-        super.processEvent(event);
-    }
-
-    // If this dialog is a modal dialog, the show() or setVisible(true) method
-    // will block current thread(i.e. the thread that access this method, may
-    // be the event dispatcher thread) until setVisible(false) or dispose() is
-    // called
-    // In JDK1.1, any thread that access AWT method is acting as a event
-    // dispatcher thread
-    public void open()
-    {
-	jsc.jsValues.debug.log("Opening SetModeDlg");
-        status = true;
-        setVisible(true);
-    }
-
-    public synchronized void close()
-    {
-        if (status) {
-            dispose();
-
-            status = false;
-        }
-	jsc.jsValues.debug.log("Closed SetModeDlg");
     }
 
     // true means this dialog is showing

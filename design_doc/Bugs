@@ -4278,8 +4278,9 @@ java.lang.NullPointerException: null pData
 			view, but not when it's in the amino acid list view.
 			(wenger)
 
-985 9/10/09	ACTIVE	JS: change 'Reset Filters' to 'Reset Axis Ranges'
+985 9/10/09	FIXED	JS: change 'Reset Filters' to 'Reset Axis Ranges'
 			in the View menu. (wenger)
+			(Fixed by wenger, 9/10/09.)
 
 986 9/10/09	OPEN	JS: the JavaScreen help page should also have
 			information about menu items. (wenger)

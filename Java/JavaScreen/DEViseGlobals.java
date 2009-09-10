@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.116  2009/09/09 16:41:11  wenger
+// Changed version to 5.10.1x2.
+//
 // Revision 1.115  2009/09/04 22:16:03  wenger
 // Incremented version to 5.10.1x1, added new version history section.
 //
@@ -726,7 +729,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.10.1x2"/*TEMP*/);
+    public static final String VERSION = new String("5.10.1x3"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
