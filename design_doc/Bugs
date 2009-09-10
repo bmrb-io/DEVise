@@ -3990,8 +3990,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			a return statement right after the drillDown3D() call.
 			(wenger) (fix on 1.8 branch)
 
-936 5/11/06	OPEN	JS: F1 key to see view help doesn't work consistently
+936 5/11/06	WORK	JS: F1 key to see view help doesn't work consistently
 			in Firefox. (wenger)
+			(The toolbar works around this.)
 
 937 1/17/07	OPEN	In the BMRB 3D visualization, the cursor in the data
 			view *sometimes* changes its X range when you change
@@ -4271,6 +4272,11 @@ java.lang.NullPointerException: null pData
 			cursor" mouse cursor shows up even when you're on
 			a view that doesn't have any DEVise cursors. (wenger)
 			(Fixed by wenger, 9/9/09.)
+
+984 9/10/09	OPEN	JS: in the 4267hc1.ds session, <escape> gets you back
+			to default toolbar mode when the mouse is in the main
+			view, but not when it's in the amino acid list view.
+			(wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
