@@ -193,3 +193,11 @@ set line = '^  Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line
 set line = '^    <param name="session" value="bmrb/dynamic_sessions/4267d1.ds">$'
 source tests/check4line
+
+set file = "html_dir/4267y.html"
+set line = 'var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");'
+source tests/check4line
+set line = 'document.write(unescape('
+source tests/check4line
+set line = 'var pageTracker = _gat._getTracker("UA-10448758-1");'
+source tests/check4line

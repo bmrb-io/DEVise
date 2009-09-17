@@ -387,8 +387,9 @@ Num Date        Status  Pri     Description
 098 8/28/09	OPEN	1	Add a PDB (really mmCIF) file command-line
 				argument. (dmaziuk/wenger)
 
-099 9/15/09	OPEN	2	Include the google analytics script in
+099 9/15/09	DONE	2	Include the google analytics script in
 				visualization summary pages. (elu/wenger)
+				(Done by wenger, 9/17/09.)
 
 * Status:
 OPEN = item has not yet been addressed

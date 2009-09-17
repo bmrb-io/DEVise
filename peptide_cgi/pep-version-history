@@ -4,6 +4,9 @@ Peptide-CGI 11.6.2
 ------------------
 (Needs DEVise 1.9.0 or higher, JavaScreen client 5.9.4 or higher.)
 
+* Visualization summary pages now contain a Google Analytics script to
+track usage.
+
 
 Peptide-CGI 11.6.1
 ------------------

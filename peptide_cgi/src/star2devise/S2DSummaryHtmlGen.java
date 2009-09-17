@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.15.4.4  2009/08/21 19:29:38  wenger
 // Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
 // But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
@@ -439,6 +443,25 @@ TEMP?*/
 			  "} -->\n");
 		    }
 		}
+
+                // Write Google Analytics script to track usage.
+                _writer.write("\n\n");
+                _writer.write("<!-- code to track usage -->\n");
+                _writer.write("<script type=\"text/javascript\">\n");
+                _writer.write("  var gaJsHost = ((\"https:\" == " +
+		  "document.location.protocol) ? \"https://ssl.\" " + 
+		  ": \"http://www.\");\n");
+                _writer.write("  document.write(unescape(\"%3Cscript " +
+		  "src='\" + gaJsHost + \"google-analytics.com/ga.js' " +
+		  "type='text/javascript'%3E%3C/script%3E\"));\n");
+                _writer.write("</script>\n");
+                _writer.write("<script type=\"text/javascript\">\n");
+                _writer.write("  try {\n");
+                _writer.write("    var pageTracker = _gat._getTracker" +
+		  "(\"UA-10448758-1\");\n");
+                _writer.write("    pageTracker._trackPageview();\n");
+                _writer.write("  } catch(err) {}\n");
+                _writer.write("</script>\n");
 
 	        _writer.write("\n</body>\n");
 	        _writer.write("</html>\n");
