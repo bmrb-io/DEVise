@@ -4290,6 +4290,20 @@ java.lang.NullPointerException: null pData
 			(wenger)
 			(Fixed by wenger, 9/10/09.)
 
+988 9/18/09	OPEN	Color print mode often doesn't work well for views
+			that have symbol colors mapped to a variable
+			(for example, the BMRB ambiguity code visualization).
+			Maybe I should create a palette that has a second
+			set of colors added onto the end, so you can do
+			something like '$foo + 45' for color print mode.
+			(Or else change color print mode to use a different
+			palette?)  (wenger)
+
+989 9/18/09	OPEN	Probably should also be able to change symbol pattern
+			according to display mode.  (That would help with the
+			cursor in the ViewResidueHighlight view of the
+			ambiguity code visualization, for example.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
