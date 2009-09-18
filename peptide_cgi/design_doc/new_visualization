@@ -98,6 +98,9 @@ Then make sure that the prototype session file works as a session
 template.  If "real" data was used for the prototype, this shouldn't
 require any changes.
 
+Make sure to set color and black/white print mode colors in the session
+template!
+
 Then, code must be written to translate the relevant session template
 file into the actual session files for each visualization.  An html
 file must be generated that "contains" the visualization, and links

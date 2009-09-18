@@ -4,6 +4,9 @@
 This testing must be done before any release of Peptide-CGI or DEVise/
 JavaScreen.
 
+NOTE: when adding a new visualization, be sure to test color print and
+black/white print display modes!
+
 The following testing steps must be done:
 
 - Run make_view manually in cgi-bin.  Make sure it doesn't generate any
