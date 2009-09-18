@@ -3864,8 +3864,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			bmrb/4096_side3h.ds for example -- select fewer
 			residues and then rotate.) (wenger)
 
-909 11/8/04	OPEN	JavaScreen: axis label text overwrites view help if
+909 11/8/04	DUP	JavaScreen: axis label text overwrites view help if
 			they overlap. (wenger)
+			(Duplicate of 987.)
 
 910 12/17/04	OPEN	JavaScreen: entering screen size sometimes doesn't
 			work (with JSB?).  It should either work or be
@@ -4303,6 +4304,9 @@ java.lang.NullPointerException: null pData
 			according to display mode.  (That would help with the
 			cursor in the ViewResidueHighlight view of the
 			ambiguity code visualization, for example.) (wenger)
+
+990 9/18/09	OPEN	JS: Help->Show View Help doesn't seem to show the
+			help info for views that are too small.  (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
