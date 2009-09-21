@@ -3,6 +3,9 @@
 DEVise 1.9.1
 ------------
 
+* Added the capability to exclude specific views in a pile from drill-
+down.
+
 * Fixed a problem that caused the DEVised to core dump on x86_64/Centos 5
 when sending string GData to the JavaScreen client.
 
