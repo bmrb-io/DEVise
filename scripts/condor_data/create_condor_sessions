@@ -36,7 +36,6 @@ endif
 
 # Make sure the data file contains some data.
 set foo = `wc -c $dataFile | cut -d\   -f 1`
-echo "$foo"
 if ($foo == 0) then
     echo "$dataFile contains no data -- exiting"
     exit 1
