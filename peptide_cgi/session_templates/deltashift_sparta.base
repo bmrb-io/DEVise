@@ -225,7 +225,7 @@ DEVise viewSetUseJmol {View 4} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} {View 5} -0.500000 0.500000 -1.000000 1.000000 37 0 0 37 0 37
+DEVise create {view} {SortedX} {View 5} -0.500000 0.500000 -1.000000 1.000000 37 17 37 17 37 17
 DEVise setLabel {View 5} 1 16 {CB Chemical Shift Delta}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
@@ -703,7 +703,7 @@ DEVise viewSetUseJmol {View 16} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 17} -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 17} -0.500000 0.500000 -0.500000 0.500000 37 17 37 17 37 17
 DEVise setLabel {View 17} 1 16 {Model}
 DEVise setViewStatistics {View 17} 00000000
 DEVise setViewDimensions {View 17} 2
@@ -791,43 +791,43 @@ DEVise createMappingClass {Label_text_vs_Label_text}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {HA_DeltaShift_vs_CurrSeqNum} .16385sd1 .16385sd1#HA_DeltaShift_vs_CurrSeqNum {} {$Residue_seq_code} {$HA_DeltaShift} {$Model_number} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1#HA_DeltaShift_vs_CurrSeqNum} 1
-DEVise setMappingColors {.16385sd1#HA_DeltaShift_vs_CurrSeqNum} {8} {10} {0}
+DEVise setMappingColors {.16385sd1#HA_DeltaShift_vs_CurrSeqNum} {8} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {C_DeltaShift_vs_CurrSeqNum} .16385sd1 .16385sd1#C_DeltaShift_vs_CurrSeqNum {} {$Residue_seq_code} {$C_DeltaShift} {$Model_number} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1#C_DeltaShift_vs_CurrSeqNum} 1
-DEVise setMappingColors {.16385sd1#C_DeltaShift_vs_CurrSeqNum} {8} {10} {0}
+DEVise setMappingColors {.16385sd1#C_DeltaShift_vs_CurrSeqNum} {8} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {CA_DeltaShift_vs_CurrSeqNum} .16385sd1 .16385sd1#CA_DeltaShift_vs_CurrSeqNum {} {$Residue_seq_code} {$CA_DeltaShift} {$Model_number} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1#CA_DeltaShift_vs_CurrSeqNum} 1
-DEVise setMappingColors {.16385sd1#CA_DeltaShift_vs_CurrSeqNum} {8} {10} {0}
+DEVise setMappingColors {.16385sd1#CA_DeltaShift_vs_CurrSeqNum} {8} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {CA_DeltaShift_vs_CurrSeqNum} .16385sd1 {.16385sd1#CA_DeltaShift_vs_CurrSeqNum 2} {} {$Residue_seq_code} {$N_DeltaShift} {$Model_number} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1#CA_DeltaShift_vs_CurrSeqNum 2} 1
-DEVise setMappingColors {.16385sd1#CA_DeltaShift_vs_CurrSeqNum 2} {8} {10} {0}
+DEVise setMappingColors {.16385sd1#CA_DeltaShift_vs_CurrSeqNum 2} {8} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {CA_DeltaShift_vs_CurrSeqNum} .16385sd1 {.16385sd1#CA_DeltaShift_vs_CurrSeqNum 3} {} {$Residue_seq_code} {$H_DeltaShift} {$Model_number} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1#CA_DeltaShift_vs_CurrSeqNum 3} 1
-DEVise setMappingColors {.16385sd1#CA_DeltaShift_vs_CurrSeqNum 3} {8} {10} {0}
+DEVise setMappingColors {.16385sd1#CA_DeltaShift_vs_CurrSeqNum 3} {8} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {CB_DeltaShift_vs_CurrSeqNum} .16385sd1 .16385sd1#CB_DeltaShift_vs_CurrSeqNum {} {$Residue_seq_code} {$CB_DeltaShift} {$Model_number} 8 2 0 0 2 0.1 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1#CB_DeltaShift_vs_CurrSeqNum} 1
-DEVise setMappingColors {.16385sd1#CB_DeltaShift_vs_CurrSeqNum} {8} {10} {0}
+DEVise setMappingColors {.16385sd1#CB_DeltaShift_vs_CurrSeqNum} {8} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {CB_DeltaShift_vs_CurrSeqNum} .label {.label#View 5} {} 0 0 {} 8 14 0 0 16 {"No CB chemical shifts available"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#View 5} 1
-DEVise setMappingColors {.label#View 5} {8} {8} {0}
+DEVise setMappingColors {.label#View 5} {8} {8} {8}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -881,19 +881,19 @@ DEVise setMappingColors {.label#Label_text_vs_recId 7} {37} {0} {0}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .16385sd1_models .16385sd1_models#Label_text_vs_recId {} 0 {-$recId} {} 36 12 0 0 16 {$Label_text} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1_models#Label_text_vs_recId} 1
-DEVise setMappingColors {.16385sd1_models#Label_text_vs_recId} {36} {0} {0}
+DEVise setMappingColors {.16385sd1_models#Label_text_vs_recId} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .16385sd1_models {.16385sd1_models#Label_text_vs_recId 2} {} 0 {-$recId} {$Model_num} 36 12 0 0 16 {$Label_text} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1_models#Label_text_vs_recId 2} 1
-DEVise setMappingColors {.16385sd1_models#Label_text_vs_recId 2} {36} {0} {0}
+DEVise setMappingColors {.16385sd1_models#Label_text_vs_recId 2} {36} {36} {36}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .16385sd1_models {.16385sd1_models#Label_text_vs_recId 3} {} 0 {-$recId} {} 36 1 0 0 0 0.5 0.3 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.16385sd1_models#Label_text_vs_recId 3} 1
-DEVise setMappingColors {.16385sd1_models#Label_text_vs_recId 3} {36} {0} {0}
+DEVise setMappingColors {.16385sd1_models#Label_text_vs_recId 3} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>

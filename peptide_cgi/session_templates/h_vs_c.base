@@ -320,7 +320,7 @@ DEVise createMappingClass {y_vs_x}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Hshift_vs_Cshift} .4267hc1 .4267hc1#Hshift_vs_Cshift {} {-$Hshift} {-$Cshift} {} 10 0.5 -1 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hc1#Hshift_vs_Cshift} 1
-DEVise setMappingColors {.4267hc1#Hshift_vs_Cshift} {10} {$Hatom} {0}
+DEVise setMappingColors {.4267hc1#Hshift_vs_Cshift} {10} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>

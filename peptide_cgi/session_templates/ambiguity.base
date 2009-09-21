@@ -237,7 +237,7 @@ DEVise viewSetUseJmol {ViewDataValueSelectChild} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View3DMain_ATCol -1.600000 19.600001 -37.099999 0.800000 4 0 0 37 0 37
+DEVise create {view} {Scatter} View3DMain_ATCol -1.600000 19.600001 -37.099999 0.800000 4 0 0 22 0 37
 DEVise setLabel {View3DMain_ATCol} 0 12 {Atom_coord_y() vs. Atom_coord_x}
 DEVise setViewStatistics {View3DMain_ATCol} 00000000
 DEVise setViewDimensions {View3DMain_ATCol} 2
@@ -324,7 +324,7 @@ DEVise viewSetUseJmol {ViewStructSelect} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewStructSelectSource -0.500000 0.500000 40.500000 42.500000 4 0 0 37 0 37
+DEVise create {view} {Scatter} ViewStructSelectSource -0.500000 0.500000 40.500000 42.500000 4 38 0 38 0 38
 DEVise setLabel {ViewStructSelectSource} 0 12 {Struct_type() vs. recId}
 DEVise setViewStatistics {ViewStructSelectSource} 00000000
 DEVise setViewDimensions {ViewStructSelectSource} 2
@@ -405,7 +405,7 @@ DEVise viewSetUseJmol {ViewResidueSelect1} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewResidueSelect1Source -0.500000 0.500000 -165.500000 -0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} ViewResidueSelect1Source -0.500000 0.500000 -165.500000 -0.500000 37 38 0 38 0 38
 DEVise setLabel {ViewResidueSelect1Source} 0 12 {}
 DEVise setViewStatistics {ViewResidueSelect1Source} 00000000
 DEVise setViewDimensions {ViewResidueSelect1Source} 2
@@ -768,7 +768,7 @@ DEVise viewSetUseJmol {ViewUnselectedDataParent} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewDataValueSelectParent -0.500000 0.500000 4.500000 5.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} ViewDataValueSelectParent -0.500000 0.500000 4.500000 5.500000 37 38 0 38 0 38
 DEVise setLabel {ViewDataValueSelectParent} 0 12 {name() vs. recId}
 DEVise setViewStatistics {ViewDataValueSelectParent} 00000000
 DEVise setViewDimensions {ViewDataValueSelectParent} 2
@@ -807,7 +807,7 @@ DEVise viewSetUseJmol {ViewDataValueSelectParent} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View3DHighlight -1.600000 19.600001 -37.099999 0.800000 4 0 0 37 0 37
+DEVise create {view} {Scatter} View3DHighlight -1.600000 19.600001 -37.099999 0.800000 4 0 0 22 0 37
 DEVise setLabel {View3DHighlight} 0 12 {Atom_coord_y() vs. Atom_coord_x}
 DEVise setViewStatistics {View3DHighlight} 00000000
 DEVise setViewDimensions {View3DHighlight} 2
@@ -890,7 +890,7 @@ DEVise viewSetUseJmol {ViewResidueHighlight} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View3DMain_FMCol -1.600000 19.600001 -37.099999 0.800000 4 0 0 37 0 37
+DEVise create {view} {Scatter} View3DMain_FMCol -1.600000 19.600001 -37.099999 0.800000 4 0 0 22 0 37
 DEVise setLabel {View3DMain_FMCol} 0 12 {Atom_coord_y() vs. Atom_coord_x}
 DEVise setViewStatistics {View3DMain_FMCol} 00000000
 DEVise setViewDimensions {View3DMain_FMCol} 2
@@ -1015,7 +1015,7 @@ DEVise viewSetUseJmol {View 2} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 3} 0.500000 1.500000 -1.000000 1.000000 0 37 0 37 0 37
+DEVise create {view} {Scatter} {View 3} 0.500000 1.500000 -1.000000 1.000000 0 38 0 38 0 38
 DEVise setLabel {View 3} 0 12 {Residue_label() vs. recId}
 DEVise setViewStatistics {View 3} 00000000
 DEVise setViewDimensions {View 3} 2
@@ -1054,7 +1054,7 @@ DEVise viewSetUseJmol {View 3} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 4} 0.500000 1.500000 -1.000000 1.000000 0 37 0 37 0 37
+DEVise create {view} {Scatter} {View 4} 0.500000 1.500000 -1.000000 1.000000 0 38 0 38 0 38
 DEVise setLabel {View 4} 0 12 {Residue_label() vs. recId}
 DEVise setViewStatistics {View 4} 00000000
 DEVise setViewDimensions {View 4} 2
@@ -1093,7 +1093,7 @@ DEVise viewSetUseJmol {View 4} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 5} 0.500000 1.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 5} 0.500000 1.500000 -0.500000 0.500000 37 0 0 22 0 37
 DEVise setLabel {View 5} 0 12 {color_str() vs. recId}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
@@ -1233,19 +1233,19 @@ DEVise setMappingColors {.4081amac1#View3DMain_ATCol} {$Atom_type} {$Atom_type} 
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4081amac1 .4081amac1#View3DMain_FMCol {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} {$ambiguity_color} 1 0 0 7 {$Bond_rel_x} {$Bond_rel_y} {$Bond_rel_z} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081amac1#View3DMain_FMCol} 1
-DEVise setMappingColors {.4081amac1#View3DMain_FMCol} {$ambiguity_color} {$fig_merit_col} {0}
+DEVise setMappingColors {.4081amac1#View3DMain_FMCol} {$ambiguity_color} {$ambiguity_color} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4081amac1 .4081amac1#View3DHighlight {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} 7 1 0 0 7 {$Bond_rel_x} {$Bond_rel_y} {$Bond_rel_z} {} {} {} {} {} {} {} {} {} {} {} {$Residue_seq_code}
 DEVise setPixelWidth {.4081amac1#View3DHighlight} 1
-DEVise setMappingColors {.4081amac1#View3DHighlight} {7} {7} {0}
+DEVise setMappingColors {.4081amac1#View3DHighlight} {7} {8} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Struct_type_vs_recId} .4081amac1 .4081amac1#ViewStructSelect {} 0 {$Struct_type} {} 7 0.020 0 0 16 {$Struct_type} {} {} 2 {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID}
 DEVise setPixelWidth {.4081amac1#ViewStructSelect} 1
-DEVise setMappingColors {.4081amac1#ViewStructSelect} {7} {7} {0}
+DEVise setMappingColors {.4081amac1#ViewStructSelect} {7} {8} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1257,13 +1257,13 @@ DEVise setMappingColors {.4081amac1#ViewStructSelectSource} {7} {7} {0}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_seq_code_vs_recId} .4081amac1 .4081amac1#ViewResidueHighlight {} -1 {-$Residue_seq_code} {} 5 1 0 0 0 10 1 {} {} {} {} {} {} {} {} {} {} {} {} {$Residue_seq_code}
 DEVise setPixelWidth {.4081amac1#ViewResidueHighlight} 1
-DEVise setMappingColors {.4081amac1#ViewResidueHighlight} {5} {5} {0}
+DEVise setMappingColors {.4081amac1#ViewResidueHighlight} {5} {23} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_seq_code_vs_recId} .4081amac1 .4081amac1#ViewDataXControl {} {$Residue_seq_code} 0 {} 36 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081amac1#ViewDataXControl} 1
-DEVise setMappingColors {.4081amac1#ViewDataXControl} {36} {36} {0}
+DEVise setMappingColors {.4081amac1#ViewDataXControl} {36} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1275,31 +1275,31 @@ DEVise setMappingColors {.4081amac1#ViewResidueSelect1Source} {7} {7} {0}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_seq_code_vs_recId} .4081rl .4081rl#ViewResidueNumber {} -1 {-$Residue_seq_code} {} 36 0.020 0 0 16 {$Residue_seq_code} {} -3 2 {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID}
 DEVise setPixelWidth {.4081rl#ViewResidueNumber} 1
-DEVise setMappingColors {.4081rl#ViewResidueNumber} {36} {36} {0}
+DEVise setMappingColors {.4081rl#ViewResidueNumber} {36} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_seq_code_vs_recId} .4081rl .4081rl#ViewResidueName {} 1 {-$Residue_seq_code} {} 36 0.020 0 0 16 {$ResLabel} {} -3 2 {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID}
 DEVise setPixelWidth {.4081rl#ViewResidueName} 1
-DEVise setMappingColors {.4081rl#ViewResidueName} {36} {36} {0}
+DEVise setMappingColors {.4081rl#ViewResidueName} {36} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_seq_code_vs_recId} .4081rl .4081rl#ViewResidueSelect2 {} 0 {-$Residue_seq_code} {} 36 0.5 0 0 0 1 0 {} {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID}
 DEVise setPixelWidth {.4081rl#ViewResidueSelect2} 1
-DEVise setMappingColors {.4081rl#ViewResidueSelect2} {36} {36} {0}
+DEVise setMappingColors {.4081rl#ViewResidueSelect2} {36} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_seq_code_vs_recId} .4081rl .4081rl#ViewResidueSelect1 {} 0 {-$Residue_seq_code} {} 36 0.5 0 0 0 1 0 {} {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID}
 DEVise setPixelWidth {.4081rl#ViewResidueSelect1} 1
-DEVise setMappingColors {.4081rl#ViewResidueSelect1} {36} {36} {0}
+DEVise setMappingColors {.4081rl#ViewResidueSelect1} {36} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {name_vs_recId} .ambiguity_md .ambiguity_md#ViewDataTypeSelect {} 0 {$recId} {} 36 0.020 0 0 16 {$name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.ambiguity_md#ViewDataTypeSelect} 1
-DEVise setMappingColors {.ambiguity_md#ViewDataTypeSelect} {36} {36} {0}
+DEVise setMappingColors {.ambiguity_md#ViewDataTypeSelect} {36} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1323,19 +1323,19 @@ DEVise setMappingColors {.ambiguity_md#ViewDataDotsParent} {0} {37} {37}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {name_vs_recId} .ambiguity_md .ambiguity_md#ViewDataValueSelectParent {} 0 {$recId} {} 0 0.98 0 0 17 {"ViewDataValueSelectChild"} 1 1 {} {} {} {} {} {} {$y_attribute} {$name} {} {} {} {}
 DEVise setPixelWidth {.ambiguity_md#ViewDataValueSelectParent} 1
-DEVise setMappingColors {.ambiguity_md#ViewDataValueSelectParent} {0} {37} {37}
+DEVise setMappingColors {.ambiguity_md#ViewDataValueSelectParent} {38} {38} {38}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {HA_Csi_vs_SeqNum} .4081am1 .4081am1#ViewUnselectedDataChild {} {$Residue_seq_code} #parentVal {} 35 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081am1#ViewUnselectedDataChild} 1
-DEVise setMappingColors {.4081am1#ViewUnselectedDataChild} {35} {35} {0}
+DEVise setMappingColors {.4081am1#ViewUnselectedDataChild} {35} {25} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {HA_Csi_vs_SeqNum} .4081am1 .4081am1#ViewSelectedDataChild {} {$Residue_seq_code} #parentVal {} 7 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081am1#ViewSelectedDataChild} 1
-DEVise setMappingColors {.4081am1#ViewSelectedDataChild} {7} {7} {0}
+DEVise setMappingColors {.4081am1#ViewSelectedDataChild} {7} {8} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>

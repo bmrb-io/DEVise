@@ -207,7 +207,7 @@ DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
 
 # View {View 5} uses mapping {4974csr1_1#diff_vs_resID 5}
-DEVise create {view} {Scatter} {View 5} -32.100000 32.000000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 5} -32.100000 32.000000 -0.500000 0.500000 37 0 37 0 37 0
 DEVise setLabel {View 5} 0 12 {fdsfsd}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
@@ -241,7 +241,7 @@ DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
 
 # View {View 6} uses mapping {4974csr1_1#diff_vs_resID 6}
-DEVise create {view} {Scatter} {View 6} -32.100000 32.000000 -1.500000 -0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 6} -32.100000 32.000000 -1.500000 -0.500000 37 9 37 9 37 9
 DEVise setLabel {View 6} 0 12 {Chem shift ref diff vs. residue}
 DEVise setViewStatistics {View 6} 00000000
 DEVise setViewDimensions {View 6} 2
@@ -411,7 +411,7 @@ DEVise setGAttrLinkMode {View 10} 0
 DEVise setDoHomeOnVisLink {View 10} {1}
 
 # View {View 11} uses mapping {.4974csr1_1#diff_vs_resID 8}
-DEVise create {view} {Scatter} {View 11} -0.500000 0.500000 7.500000 8.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 11} -0.500000 0.500000 7.500000 8.500000 37 0 37 0 37 0
 DEVise setLabel {View 11} 1 16 {Chem shift diff vs. residue}
 DEVise setViewStatistics {View 11} 00000000
 DEVise setViewDimensions {View 11} 2
@@ -445,7 +445,7 @@ DEVise setGAttrLinkMode {View 11} 0
 DEVise setDoHomeOnVisLink {View 11} {1}
 
 # View {View 12} uses mapping {.4974csr1_1#diff_vs_resID 9}
-DEVise create {view} {Scatter} {View 12} -0.500000 0.500000 6.500000 7.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 12} -0.500000 0.500000 6.500000 7.500000 37 0 37 0 37 0
 DEVise setLabel {View 12} 1 16 {Chem shift diff vs. residue}
 DEVise setViewStatistics {View 12} 00000000
 DEVise setViewDimensions {View 12} 2
@@ -479,7 +479,7 @@ DEVise setGAttrLinkMode {View 12} 0
 DEVise setDoHomeOnVisLink {View 12} {1}
 
 # View {View 16} uses mapping {.4974csr1_1#diff_vs_resID 10}
-DEVise create {view} {Scatter} {View 16} -0.500000 0.500000 7.500000 8.500000 37 9 0 37 0 37
+DEVise create {view} {Scatter} {View 16} -0.500000 0.500000 7.500000 8.500000 37 9 37 9 37 9
 DEVise setLabel {View 16} 1 16 {Chem shift diff vs. residue}
 DEVise setViewStatistics {View 16} 00000000
 DEVise setViewDimensions {View 16} 2
@@ -513,7 +513,7 @@ DEVise setGAttrLinkMode {View 16} 0
 DEVise setDoHomeOnVisLink {View 16} {1}
 
 # View {View 17} uses mapping {.4974csr1_1#diff_vs_resID 11}
-DEVise create {view} {Scatter} {View 17} -0.500000 0.500000 6.500000 7.500000 37 9 0 37 0 37
+DEVise create {view} {Scatter} {View 17} -0.500000 0.500000 6.500000 7.500000 37 9 37 9 37 9
 DEVise setLabel {View 17} 1 16 {Chem shift diff vs. residue}
 DEVise setViewStatistics {View 17} 00000000
 DEVise setViewDimensions {View 17} 2
@@ -1077,11 +1077,11 @@ DEVise setMappingColors {4974csr1_1#diff_vs_resID 4} {36} {9} {0}
 
 DEVise create {mapping} {diff_vs_resID} .4974csr1_1 {4974csr1_1#diff_vs_resID 5} {} 0 {-$atomName} {} 37 12 0 0 16 {$atomName} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#diff_vs_resID 5} 1
-DEVise setMappingColors {4974csr1_1#diff_vs_resID 5} {37} {37} {0}
+DEVise setMappingColors {4974csr1_1#diff_vs_resID 5} {37} {37} {37}
 
 DEVise create {mapping} {diff_vs_resID} .4974csr1_1 {4974csr1_1#diff_vs_resID 6} {} 0 {-$atomName} {} 37 12 0 0 16 {$atomName} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#diff_vs_resID 6} 1
-DEVise setMappingColors {4974csr1_1#diff_vs_resID 6} {37} {37} {0}
+DEVise setMappingColors {4974csr1_1#diff_vs_resID 6} {37} {37} {37}
 
 DEVise create {mapping} {diff_vs_resID} .4974csr1_1 .4974csr1_1#diff_vs_resID {} {$resID} {$diff} {} 32 1 0 0 2 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#diff_vs_resID} 1
@@ -1113,19 +1113,19 @@ DEVise setMappingColors {.4974csr1_1#diff_vs_resID 7} {6} {6} {0}
 
 DEVise create {mapping} {diff_vs_resID} .4974csr1_1 {.4974csr1_1#diff_vs_resID 8} {} 0 {$secondary} {} 6 12 0 0 16 {$secondary} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#diff_vs_resID 8} 1
-DEVise setMappingColors {.4974csr1_1#diff_vs_resID 8} {6} {6} {0}
+DEVise setMappingColors {.4974csr1_1#diff_vs_resID 8} {6} {6} {6}
 
 DEVise create {mapping} {diff_vs_resID} .4974csr1_1 {.4974csr1_1#diff_vs_resID 9} {} 0 {$secondary} {} 32 12 0 0 16 {$secondary} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#diff_vs_resID 9} 1
-DEVise setMappingColors {.4974csr1_1#diff_vs_resID 9} {32} {32} {0}
+DEVise setMappingColors {.4974csr1_1#diff_vs_resID 9} {32} {32} {32}
 
 DEVise create {mapping} {diff_vs_resID} .4974csr1_1 {.4974csr1_1#diff_vs_resID 10} {} 0 {$secondary} {} 6 12 0 0 16 {$secondary} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#diff_vs_resID 10} 1
-DEVise setMappingColors {.4974csr1_1#diff_vs_resID 10} {6} {6} {0}
+DEVise setMappingColors {.4974csr1_1#diff_vs_resID 10} {6} {6} {6}
 
 DEVise create {mapping} {diff_vs_resID} .4974csr1_1 {.4974csr1_1#diff_vs_resID 11} {} 0 {$secondary} {} 32 12 0 0 16 {$secondary} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#diff_vs_resID 11} 1
-DEVise setMappingColors {.4974csr1_1#diff_vs_resID 11} {32} {32} {0}
+DEVise setMappingColors {.4974csr1_1#diff_vs_resID 11} {32} {32} {32}
 
 DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 6 12 0 0 16 {"Sheet"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1

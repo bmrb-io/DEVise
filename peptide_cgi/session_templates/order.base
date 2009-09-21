@@ -189,7 +189,7 @@ DEVise createMappingClass {Label_text_vs_recId}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {S2order_value_vs_Residue_seq_code} .4689o1 .4689o1#S2order_value_vs_Residue_seq_code {} {$Residue_seq_code} {$S2order_value} {} 25 1 0 0 2 0.1 {$S2order_value + $S2order_error} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4689o1#S2order_value_vs_Residue_seq_code} 1
-DEVise setMappingColors {.4689o1#S2order_value_vs_Residue_seq_code} {25} {10} {0}
+DEVise setMappingColors {.4689o1#S2order_value_vs_Residue_seq_code} {25} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>

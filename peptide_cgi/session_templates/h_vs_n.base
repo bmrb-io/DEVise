@@ -383,11 +383,11 @@ DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
 
 DEVise create {mapping} {y_vs_x} .h_vs_n_legend .h_vs_n_legend#y_vs_x {} {$x} {$y} {} {$color_norm} 0.3 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.h_vs_n_legend#y_vs_x} 1
-DEVise setMappingColors {.h_vs_n_legend#y_vs_x} {$color_norm} {0} {0}
+DEVise setMappingColors {.h_vs_n_legend#y_vs_x} {$color_norm} {$color_norm} {0}
 
 DEVise create {mapping} {y_vs_x} .h_vs_n_legend {.h_vs_n_legend#y_vs_x 2} {} {$x+0.3} {$y} {} {$color_norm} 14 0 0 16 {$text} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.h_vs_n_legend#y_vs_x 2} 1
-DEVise setMappingColors {.h_vs_n_legend#y_vs_x 2} {$color_norm} {0} {0}
+DEVise setMappingColors {.h_vs_n_legend#y_vs_x 2} {$color_norm} {$color_norm} {0}
 
 # Create windows
 DEVise create {window} {TileLayout} DEViseWn0 0.349219 0.291016 0.500000 0.500000 0 0

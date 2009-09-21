@@ -374,7 +374,7 @@ DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
 
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 31 14 0 0 16 {"No CB chemical shifts available"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
-DEVise setMappingColors {.label#Label_text_vs_recId 2} {31} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_recId 2} {31} {31} {0}
 
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 3} {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 3} 1

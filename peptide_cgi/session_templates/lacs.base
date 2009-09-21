@@ -1,3 +1,4 @@
+#TEMPTEMP -- fix color print modes!!!!!
 # DEVise startHeader
 # file type: session
 # file date: May 11 2006 14:52:44
@@ -201,7 +202,7 @@ DEVise setGAttrLinkMode {ViewXLabel} 0
 DEVise setDoHomeOnVisLink {ViewXLabel} {1}
 
 # View {ViewYLabel} uses mapping {.4081lacsc1#ViewYLabel}
-DEVise create {view} {Scatter} ViewYLabel -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
+DEVise create {view} {Scatter} ViewYLabel -1.000000 1.000000 -1.000000 1.000000 37 0 0 37 0 37
 DEVise setLabel {ViewYLabel} 0 12 {foo() vs. recId}
 DEVise setViewStatistics {ViewYLabel} 00000000
 DEVise setViewDimensions {ViewYLabel} 2
@@ -322,27 +323,27 @@ DEVise createMappingClass {foo_vs_recId}
 
 DEVise create {mapping} {line_y1_vs_recId} .4081lacsl1 .4081lacs1#line_y1_vs_recId {} {$line_center_x} {$line_center_y} {} {$line_type * 21 + 6} 1 0 0 7 {$line_size_x} {$line_size_y} {} {} 2 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacs1#line_y1_vs_recId} 1
-DEVise setMappingColors {.4081lacs1#line_y1_vs_recId} {$line_type * 21 + 6} {0} {0}
+DEVise setMappingColors {.4081lacs1#line_y1_vs_recId} {$line_type * 21 + 6} {$line_type * 21 + 6} {0}
 
 DEVise create {mapping} {Y_coord_val_vs_X_coord_val} .4081lacsp1 .4081lacs2#Y_coord_val_vs_X_coord_val {} {$X_coord_val} {$Y_coord_val} {} {31+5*$Designator} 12 0 0 16 {"O"} {} 0 0 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacs2#Y_coord_val_vs_X_coord_val} 1
-DEVise setMappingColors {.4081lacs2#Y_coord_val_vs_X_coord_val} {31+5*$Designator} {0} {0}
+DEVise setMappingColors {.4081lacs2#Y_coord_val_vs_X_coord_val} {31+5*$Designator} {31-28*$Designator} {0}
 
 DEVise create {mapping} {Y_coord_val_vs_X_coord_val} .4081lacsp1 .4081lacsp1#Y_coord_val_vs_X_coord_val {} {$X_coord_val} {$Y_coord_val} {} 0 0.2 0 0 4 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacsp1#Y_coord_val_vs_X_coord_val} 1
-DEVise setMappingColors {.4081lacsp1#Y_coord_val_vs_X_coord_val} {0} {0} {0}
+DEVise setMappingColors {.4081lacsp1#Y_coord_val_vs_X_coord_val} {0} {37} {37}
 
 DEVise create {mapping} {y_vs_x} .lacs_layout1 .lacs_layout1#y_vs_x {} {$x} {$y} {} {} 1 0 0 17 {$view} {$width} {$height} {} {$pile} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.lacs_layout1#y_vs_x} 1
-DEVise setMappingColors {.lacs_layout1#y_vs_x} {} {0} {0}
+DEVise setMappingColors {.lacs_layout1#y_vs_x} {0} {37} {37}
 
 DEVise create {mapping} {foo_vs_recId} .4081lacsc1 .4081lacsc1#ViewYLabel {} 0 0 {} 37 12 0 90 16 {$y_coord_name} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacsc1#ViewYLabel} 1
-DEVise setMappingColors {.4081lacsc1#ViewYLabel} {37} {37} {0}
+DEVise setMappingColors {.4081lacsc1#ViewYLabel} {37} {0} {0}
 
 DEVise create {mapping} {foo_vs_recId} .4081lacsc1 .4081lacsc1#ViewXLabel {} 0 0 {} 37 12 0 0 16 {$x_coord_name} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacsc1#ViewXLabel} 1
-DEVise setMappingColors {.4081lacsc1#ViewXLabel} {37} {37} {0}
+DEVise setMappingColors {.4081lacsc1#ViewXLabel} {37} {0} {0}
 
 DEVise create {mapping} {foo_vs_recId} .label .label#ViewHeader {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#ViewHeader} 1

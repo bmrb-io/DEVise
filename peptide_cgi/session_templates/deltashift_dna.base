@@ -1,3 +1,4 @@
+#TEMPTEMP -- need to fix print mode colors!!!!
 # DEVise startHeader
 # file type: session
 # file date: Feb 27 2009 10:25:25
@@ -499,7 +500,7 @@ DEVise viewSetUseJmol {View_nuc_select2} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View_nuc_leader1 -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} View_nuc_leader1 -0.500000 0.500000 -0.500000 0.500000 37 17 37 17 37 17
 DEVise setLabel {View_nuc_leader1} 0 12 {nucleotide_name() vs. recId}
 DEVise setViewStatistics {View_nuc_leader1} 00000000
 DEVise setViewDimensions {View_nuc_leader1} 2
@@ -538,7 +539,7 @@ DEVise viewSetUseJmol {View_nuc_leader1} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View_nuc_leader2 -0.500000 0.500000 -1.500000 -0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} View_nuc_leader2 -0.500000 0.500000 -1.500000 -0.500000 37 17 37 17 37 17
 DEVise setLabel {View_nuc_leader2} 0 12 {nucleotide_name() vs. recId}
 DEVise setViewStatistics {View_nuc_leader2} 00000000
 DEVise setViewDimensions {View_nuc_leader2} 2
@@ -694,7 +695,7 @@ DEVise viewSetUseJmol {View_AtomSelect 4} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View_AtomSelect 5} -0.500000 0.500000 -39.625000 0.625000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View_AtomSelect 5} -0.500000 0.500000 -39.625000 0.625000 37 17 37 17 37 17
 DEVise setLabel {View_AtomSelect 5} 0 12 {atom_name() vs. recId}
 DEVise setViewStatistics {View_AtomSelect 5} 00000000
 DEVise setViewDimensions {View_AtomSelect 5} 2
@@ -733,7 +734,7 @@ DEVise viewSetUseJmol {View_AtomSelect 5} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View_AtomSelect 6} -0.500000 0.500000 -61.625000 -39.375000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View_AtomSelect 6} -0.500000 0.500000 -61.625000 -39.375000 37 17 37 17 37 17
 DEVise setLabel {View_AtomSelect 6} 0 12 {atom_name() vs. recId}
 DEVise setViewStatistics {View_AtomSelect 6} 00000000
 DEVise setViewDimensions {View_AtomSelect 6} 2
@@ -804,13 +805,13 @@ DEVise setMappingColors {.label#Label_text_vs_recId 3} {37} {0} {0}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {C1p_DeltaShift_vs_Residue_seq_code} .15083d1 .15083d1#C1p_DeltaShift_vs_Residue_seq_code {} {$Residue_seq_code} #parentVal {} 31 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {$Residue_label}
 DEVise setPixelWidth {.15083d1#C1p_DeltaShift_vs_Residue_seq_code} 1
-DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code} {31} {0} {0}
+DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {C1p_DeltaShift_vs_Residue_seq_code} .15083d1 {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} {} {$Residue_seq_code} #parentVal {} 31 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {$Residue_label}
 DEVise setPixelWidth {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} 1
-DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} {31} {0} {0}
+DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 2} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -822,73 +823,73 @@ DEVise setMappingColors {.15083d1#C1p_DeltaShift_vs_Residue_seq_code 3} {31} {0}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atom_name_vs_recId} .atom_list .atom_list#atom_name_vs_recId {} 0 {-$recId} {} 36 12 0 0 16 {$atom_name} {} -3 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId} {36} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 2} {} 0 {-$recId} {} 0 0.98 0 0 17 {"View_Child1"} 1 1 {} {} {} {} {} {} {$attribute} {$atom_name} {} {} {} {}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 2} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 2} {0} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 2} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 3} {} 0 {-$recId} {} 9 0.98 0 0 17 {"View_Child2"} 1 1 {} {} {} {} {} {} {$attribute} {$atom_name} {} {} {} {}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 3} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 3} {9} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 3} {9} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 4} {} 0 {-$recId} {} 36 12 0 0 16 {$atom_name} {} -3 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 4} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 4} {36} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 4} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 5} {} 0 {-$recId} {} 36 0.5 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {$nucleotide}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 5} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 5} {36} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 5} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 6} {} 0 {-$recId} {} 36 0.5 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {$nucleotide}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 6} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 6} {36} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 6} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 7} {} 0 {-$recId} {} 36 0.5 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {$nucleotide}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 7} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 7} {36} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 7} {36} {36} {36}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atom_name_vs_recId} .atom_list {.atom_list#atom_name_vs_recId 8} {} 0 {-$recId} {} 36 0.5 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {$nucleotide}
 DEVise setPixelWidth {.atom_list#atom_name_vs_recId 8} 1
-DEVise setMappingColors {.atom_list#atom_name_vs_recId 8} {36} {0} {0}
+DEVise setMappingColors {.atom_list#atom_name_vs_recId 8} {36} {36} {36}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {nucleotide_name_vs_recId} .nucleotide_list .nucleotide_list#nucleotide_name_vs_recId {} 0 {-$index} {} 36 12 0 0 16 {$label} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.nucleotide_list#nucleotide_name_vs_recId} 1
-DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId} {36} {0} {0}
+DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {nucleotide_name_vs_recId} .nucleotide_list {.nucleotide_list#nucleotide_name_vs_recId 2} {} 0 {-$index} {} 36 12 0 0 16 {$label} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.nucleotide_list#nucleotide_name_vs_recId 2} 1
-DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId 2} {36} {0} {0}
+DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId 2} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {nucleotide_name_vs_recId} .nucleotide_list {.nucleotide_list#nucleotide_name_vs_recId 3} {} 0 {-$index} {} 36 12 0 0 16 {$label} {} {} 2 {} {} {} {} {} {} {} {} {} {} {$nucleotide_name}
 DEVise setPixelWidth {.nucleotide_list#nucleotide_name_vs_recId 3} 1
-DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId 3} {36} {0} {0}
+DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId 3} {36} {36} {36}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {nucleotide_name_vs_recId} .nucleotide_list {.nucleotide_list#nucleotide_name_vs_recId 4} {} 0 {-$index} {} 36 12 0 0 16 {$label} {} {} 2 {} {} {} {} {} {} {} {} {} {} {$nucleotide_name}
 DEVise setPixelWidth {.nucleotide_list#nucleotide_name_vs_recId 4} 1
-DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId 4} {36} {0} {0}
+DEVise setMappingColors {.nucleotide_list#nucleotide_name_vs_recId 4} {36} {36} {36}
 
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
@@ -901,7 +902,7 @@ DEVise create {window} {TileLayout} DEViseWn5 0.147000 0.220000 0.021000 0.51500
 DEVise create {window} {TileLayout} DEViseWn0 0.050000 0.220000 0.030000 0.515000 0 0
 DEVise create {window} {TileLayout} DEViseWn6 0.661250 0.199167 0.079375 0.515000 1 0
 DEVise create {window} {TileLayout} DEViseWn7 0.119000 0.220000 0.028000 0.515000 0 0
-DEVise create {window} {TileLayout} DEViseWn8 0.050000 0.735000 0.120000 0.028000 0 0
+DEVise create {window} {TileLayout} DEViseWn8 0.050000 0.735000 0.120000 0.028000 1 0
 
 # Set up window layouts
 

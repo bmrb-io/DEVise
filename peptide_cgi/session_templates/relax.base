@@ -189,7 +189,7 @@ DEVise createMappingClass {Label_text_vs_recId}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {relax_value_vs_Residue_seq_code} .4267t11 .4267t11#relax_value_vs_Residue_seq_code {} {$Residue_seq_code} {$relax_value} {} 8 1 0 0 2 0.1 {$relax_value + $relax_error} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267t11#relax_value_vs_Residue_seq_code} 1
-DEVise setMappingColors {.4267t11#relax_value_vs_Residue_seq_code} {8} {10} {0}
+DEVise setMappingColors {.4267t11#relax_value_vs_Residue_seq_code} {8} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>

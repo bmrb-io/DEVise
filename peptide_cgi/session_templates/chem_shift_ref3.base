@@ -176,7 +176,7 @@ DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
 
 # View {View 4} uses mapping {4974csr1_1#atomName_vs_atomName}
-DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -0.500000 0.500000 37 17 37 17 37 17
 DEVise setLabel {View 4} 1 16 {atom_name_link leader}
 DEVise setViewStatistics {View 4} 00000000
 DEVise setViewDimensions {View 4} 2
@@ -210,7 +210,7 @@ DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
 
 # View {View 5} uses mapping {4974csr1_1#atomName_vs_atomName 2}
-DEVise create {view} {Scatter} {View 5} -1.000000 1.000000 6.500000 7.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 5} -1.000000 1.000000 6.500000 7.500000 37 17 37 17 37 17
 DEVise setLabel {View 5} 1 16 {helix_link leader}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
@@ -244,7 +244,7 @@ DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
 
 # View {View 6} uses mapping {4974csr1_1#atomName_vs_atomName 3}
-DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 7.500000 8.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 7.500000 8.500000 37 17 37 17 37 17
 DEVise setLabel {View 6} 1 16 {sheet_link leader}
 DEVise setViewStatistics {View 6} 00000000
 DEVise setViewDimensions {View 6} 2
@@ -382,7 +382,7 @@ DEVise setGAttrLinkMode {View 9} 0
 DEVise setDoHomeOnVisLink {View 9} {1}
 
 # View {View 16} uses mapping {.4974csr1_1#csObs_vs_resID 2}
-DEVise create {view} {Scatter} {View 16} -0.500000 2.500000 -0.100000 0.100000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 16} -0.500000 2.500000 -0.100000 0.100000 37 17 37 17 37 17
 DEVise setLabel {View 16} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 16} 00000000
 DEVise setViewDimensions {View 16} 2
@@ -416,7 +416,7 @@ DEVise setGAttrLinkMode {View 16} 0
 DEVise setDoHomeOnVisLink {View 16} {1}
 
 # View {View 17} uses mapping {.4974csr1_1#csObs_vs_resID 3}
-DEVise create {view} {Scatter} {View 17} -0.500000 2.500000 -0.100000 0.100000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 17} -0.500000 2.500000 -0.100000 0.100000 37 17 37 17 37 17
 DEVise setLabel {View 17} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 17} 00000000
 DEVise setViewDimensions {View 17} 2
@@ -450,7 +450,7 @@ DEVise setGAttrLinkMode {View 17} 0
 DEVise setDoHomeOnVisLink {View 17} {1}
 
 # View {View 18} uses mapping {.4974csr1_1#csObs_vs_resID 4}
-DEVise create {view} {Scatter} {View 18} -0.500000 2.500000 -0.100000 0.100000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 18} -0.500000 2.500000 -0.100000 0.100000 37 17 37 17 37 17
 DEVise setLabel {View 18} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 18} 00000000
 DEVise setViewDimensions {View 18} 2
@@ -766,7 +766,7 @@ DEVise setMappingColors {.4974csr1_1#csObs_vs_resID 4} {36} {6} {0}
 
 DEVise create {mapping} {csObs_vs_resID} .label {.label#View 19} {} {$x} {$y} {} 37 1 0 0 7 1000 1000 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#View 19} 1
-DEVise setMappingColors {.label#View 19} {37} {37} {0}
+DEVise setMappingColors {.label#View 19} {37} {0} {0}
 
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 4974csr1_1#atomName_vs_atomName {} 0 {-$atomName} {} 8 12 0 0 16 {$atomName} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName} 1

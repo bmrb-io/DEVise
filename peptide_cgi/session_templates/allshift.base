@@ -206,7 +206,7 @@ DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
 
 # View {View 4} uses mapping {.4267as1#AtomType_vs_recId 2}
-DEVise create {view} {Scatter} {View 4} 0.500000 1.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 4} 0.500000 1.500000 -0.500000 0.500000 37 17 0 17 0 17
 DEVise setLabel {View 4} 0 12 {AtomType() vs. recId}
 DEVise setViewStatistics {View 4} 00000000
 DEVise setViewDimensions {View 4} 2
@@ -240,7 +240,7 @@ DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
 
 # View {View 5} uses mapping {.label#Label_text_vs_recId}
-DEVise create {view} {Scatter} {View 5} -0.520000 0.520000 -0.600000 0.600000 4 3 0 3 0 0
+DEVise create {view} {Scatter} {View 5} -0.520000 0.520000 -0.600000 0.600000 4 3 0 6 0 0
 DEVise setLabel {View 5} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
@@ -318,7 +318,7 @@ DEVise createMappingClass {Label_text_vs_recId}
 
 DEVise create {mapping} {ChemShiftVal_vs_ShiftAssignID} .4267as1 .4267as1#ChemShiftVal_vs_ShiftAssignID {} {-$ChemShiftVal} {19-$ResLabel} {} 8 1 0 0 0 0.01 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267as1#ChemShiftVal_vs_ShiftAssignID} 1
-DEVise setMappingColors {.4267as1#ChemShiftVal_vs_ShiftAssignID} {8} {10} {0}
+DEVise setMappingColors {.4267as1#ChemShiftVal_vs_ShiftAssignID} {8} {3} {0}
 
 DEVise create {mapping} {ResLabel_vs_ShiftAssignID} .4267rc1 {.4267rc1#View 2} {} 0 {19-$ResLabel} {} 37 14 0 0 16 {$ResLabel} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267rc1#View 2} 1

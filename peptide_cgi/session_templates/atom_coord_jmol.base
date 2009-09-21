@@ -647,7 +647,7 @@ DEVise viewSetUseJmol {ViewVisualizationInfo} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {ViewLegend} -0.500000 5.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {ViewLegend} -0.500000 5.500000 -0.500000 0.500000 37 0 0 22 0 37
 DEVise setLabel {ViewLegend} 0 12 {color_str() vs. recId}
 DEVise setViewStatistics {ViewLegend} 00000000
 DEVise setViewDimensions {ViewLegend} 2
@@ -1006,7 +1006,7 @@ DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {color_str_vs_recId} .pistachio_at_legend .pistachio_at_legend#color_str_vs_recId {} {$recId} 0 {} {$color_str} 0.02 0 0 16 {$color_str} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.pistachio_at_legend#color_str_vs_recId} 1
-DEVise setMappingColors {.pistachio_at_legend#color_str_vs_recId} {$color_str} {0} {0}
+DEVise setMappingColors {.pistachio_at_legend#color_str_vs_recId} {$color_str} {$color_str} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
