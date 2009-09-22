@@ -392,6 +392,11 @@ Num Date        Status  Description
 			what behavior we want, figure out how to do it --
 			will probably require DEVise server changes.)
 
+085 9/22/09	OPEN	In 3D session, if you switch back and forth between
+			entity assemblies, the cursors in the data select
+			view and data select scroll view eventually end up
+			at the bottom of the views. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
