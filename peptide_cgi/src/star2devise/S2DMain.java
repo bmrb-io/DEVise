@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.147  2009/09/21 23:36:50  wenger
+// Did a bunch of fixing up of colors for color and black/white print
+// modes.  Also made "hidden" views brown to stand out when editing.
+//
 // Revision 1.146  2009/08/27 15:04:05  wenger
 // Changed version to 11.6.2x1, added 11.6.2 version history section.
 //
@@ -676,7 +680,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.2x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.2x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

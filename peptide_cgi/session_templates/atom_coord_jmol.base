@@ -327,7 +327,7 @@ DEVise viewSetUseJmol {View3DMain} {1}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewDataTypeSelect -0.500000 0.500000 -19.500000 -9.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} ViewDataTypeSelect -0.500000 0.500000 -10.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {ViewDataTypeSelect} 0 12 {name() vs. recId}
 DEVise setViewStatistics {ViewDataTypeSelect} 00000000
 DEVise setViewDimensions {ViewDataTypeSelect} 2
@@ -368,7 +368,7 @@ DEVise viewSetUseJmol {ViewDataTypeSelect} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewDataDotsParent -0.500000 0.500000 -19.500000 -18.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} ViewDataDotsParent -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {ViewDataDotsParent} 0 12 {}
 DEVise setViewStatistics {ViewDataDotsParent} 00000000
 DEVise setViewDimensions {ViewDataDotsParent} 2
@@ -448,7 +448,7 @@ DEVise viewSetUseJmol {ViewDataXControl} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewSelectedDataParent -0.500000 0.500000 -19.500000 -18.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} ViewSelectedDataParent -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {ViewSelectedDataParent} 0 12 {}
 DEVise setViewStatistics {ViewSelectedDataParent} 00000000
 DEVise setViewDimensions {ViewSelectedDataParent} 2
@@ -487,7 +487,7 @@ DEVise viewSetUseJmol {ViewSelectedDataParent} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewUnselectedDataParent -0.500000 0.500000 -19.500000 -18.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} ViewUnselectedDataParent -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {ViewUnselectedDataParent} 0 12 {}
 DEVise setViewStatistics {ViewUnselectedDataParent} 00000000
 DEVise setViewDimensions {ViewUnselectedDataParent} 2
