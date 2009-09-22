@@ -1656,3 +1656,6 @@ DEVise set3DLocation {ViewDataScrollFixParent} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0
 DEVise sessionPost updateFilters
 DEVise sessionPost waitForQueries
 DEVise sessionPost cursorHome ViewDataXControl
+DEVise sessionPost cursorHome ViewUnselectedDataChild
+DEVise sessionPost keyToView ViewDataValueSelectChild 49 89 65
+DEVise sessionPost keyToView ViewDataValueSelectChild 55 89 65

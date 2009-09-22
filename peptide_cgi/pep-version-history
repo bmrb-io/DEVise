@@ -9,6 +9,10 @@ track usage.
 
 * Fixed colors for print modes in some of the visualizations.
 
+* Improved behavior of the DEVise cursor in the data select view
+for coordinate, ambiguity code, and assignment figure of merit
+visualizations.
+
 
 Peptide-CGI 11.6.1
 ------------------
