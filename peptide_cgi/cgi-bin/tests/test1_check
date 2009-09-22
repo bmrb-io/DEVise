@@ -201,3 +201,11 @@ set line = 'document.write(unescape('
 source tests/check4line
 set line = 'var pageTracker = _gat._getTracker("UA-10448758-1");'
 source tests/check4line
+
+set file = "html_dir/4267d1.html"
+set line = 'var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");'
+source tests/check4line
+set line = 'document.write(unescape('
+source tests/check4line
+set line = 'var pageTracker = _gat._getTracker("UA-10448758-1");'
+source tests/check4line

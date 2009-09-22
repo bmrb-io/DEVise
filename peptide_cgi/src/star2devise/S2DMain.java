@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.149  2009/09/22 19:01:21  wenger
+// In the 3D, ambiguity, and assignment figure of merit sessions, the
+// DEVise cursor in the data view is now automatically sized at
+// startup to occupy the middle half of the view's axis ranges in both
+// the X and Y directions.
+//
 // Revision 1.148  2009/09/22 00:00:19  wenger
 // Changed 3D session to show the top, rather than the bottom, of the
 // available data sources at startup (but switching entity assemblies
@@ -687,7 +693,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.2x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.2x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
