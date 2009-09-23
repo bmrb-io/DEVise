@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.250  2009/05/15 20:29:39  wenger
+  Implemented to-do 04.001 (be able to exclude views from drill-down;
+  this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
+  code (strcpy, strcat) in Session.c; added GUI for setting drill-down
+  exclusion and copying it when copying a view.
+
   Revision 1.249  2008/10/13 19:45:16  wenger
   More const-ifying, especially Control- and csgroup-related.
 
@@ -1314,6 +1320,7 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	int		flushed = _filterQueue->Enqueue(initFilter);
 
+	_filterChangeCmds = NULL;
 	ReportFilterChanged(initFilter, flushed);
 	_selected = false; 
 
@@ -1434,6 +1441,9 @@ View::~View(void)
 
 	delete controlPanelCallback;
 	delete dispatcherCallback;
+
+	FreeString(_filterChangeCmds);
+	_filterChangeCmds = NULL;
 }
 
 //******************************************************************************
@@ -2957,8 +2967,13 @@ void View::ReportFilterChanged(const VisualFilter &filter, int flushed)
   printf("View(%s)::ReportFilterChanged()\n", GetName());
 #endif
 
-  if (!_viewCallbackList)
+  if (_filterChangeCmds) {
+    RunFilterChangeCmds();
+  }
+
+  if (!_viewCallbackList) {
     return;
+  }
   
   int index;
   for(index = _viewCallbackList->InitIterator(); 
@@ -2973,10 +2988,60 @@ void View::ReportFilterChanged(const VisualFilter &filter, int flushed)
   _viewCallbackList->DoneIterator(index);
 }
 
+void
+View::RunFilterChangeCmds()
+{
+#if defined(DEBUG)
+  printf("View(%s)::RunFilterChangeCmds()\n", GetName());
+  printf("  Cmds: <%s>\n", _filterChangeCmds ? _filterChangeCmds : "");
+#endif
+
+  if (!_filterChangeCmds) {
+    return;
+  }
+
+  // Parse the overall command string into individual commands, and
+  // execute each one.
+  // Note: do we need a capability to escape '{' and '}'?
+  char *tmpCmd = CopyString(_filterChangeCmds);
+  int braceCount = 0;
+  char *cmdStart = NULL;
+  char *current = tmpCmd;
+  while(*current != '\0') {
+	if (*current == '{') {
+	  if (braceCount == 0) {
+	    cmdStart = current + 1;
+	  }
+	  braceCount++;
+	} else if (*current == '}') {
+	  braceCount--;
+	  if (braceCount == 0) {
+	    if (!cmdStart) {
+		  reportErrNosys("Error: } w/o {"/*TEMP*/);
+	      break;
+	    } else {
+	  	  *current = '\0';
+		  printf("Running command <%s>\n", cmdStart);//TEMP
+		  //TEMP -- actually parse and run the command here
+		  cmdStart = NULL;
+	    }
+	  }
+	}
+    current++;
+  }
+
+  if (braceCount != 0) {
+    reportErrNosys("Error: unterminated command"/*TEMP*/);
+  }
+
+  FreeString(tmpCmd);
+}
+
 void View::InsertViewCallback(ViewCallback *callBack)
 {
-  if (!_viewCallbackList)
+  if (!_viewCallbackList) {
     _viewCallbackList = new ViewCallbackList;
+  }
     
   DOASSERT(_viewCallbackList, "Invalid view callback list");
 
@@ -5260,6 +5325,13 @@ View::SetViewHelp(const char *helpStr)
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
   if (_viewHelp) FreeString((char *)_viewHelp);
   _viewHelp = CopyString(helpStr);
+}
+
+void
+View::SetFilterChangeCmds(const char *cmds)
+{
+	FreeString(_filterChangeCmds);
+	_filterChangeCmds = CopyString(cmds);
 }
 
 void

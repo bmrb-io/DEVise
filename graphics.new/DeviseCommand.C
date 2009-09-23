@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.135  2009/05/15 20:29:47  wenger
+  Implemented to-do 04.001 (be able to exclude views from drill-down;
+  this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
+  code (strcpy, strcat) in Session.c; added GUI for setting drill-down
+  exclusion and copying it when copying a view.
+
   Revision 1.134  2008/10/13 19:45:25  wenger
   More const-ifying, especially Control- and csgroup-related.
 
@@ -8692,6 +8698,55 @@ IMPLEMENT_COMMAND_BEGIN(setExcludeFromDrillDown)
 
 		Boolean enable = atoi(argv[2]);
 		view->SetExcludeFromDrillDown(enable);
+
+       	ReturnVal(API_ACK, "done");
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in setExcludeFromDrillDown\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getFilterChangeCmds)
+    // Arguments: <view name>
+    // Returns: <filter change commands (char *)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+            ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+		}
+
+       	ReturnVal(API_ACK, view->GetFilterChangeCmds());
+		return 1;
+	} else {
+		fprintf(stderr,"Wrong # of arguments: %d in "
+		  "getExcludeFromDrillDown\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setFilterChangeCmds)
+    // Arguments: <view name> <filter change commands (char *)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 3) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+            ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+		}
+
+        Session::SetDirty();
+
+		view->SetFilterChangeCmds(argv[2]);
 
        	ReturnVal(API_ACK, "done");
 		return 1;

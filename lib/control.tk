@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.226  2006/07/12 20:54:51  wenger
+#	Added "Misc. View Properties" GUI to control things we haven't
+#	had a GUI for previously.
+#	
 #	Revision 1.225  2005/12/06 20:04:50  wenger
 #	Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 #	be the end of the V1_7b0_br branch.)
@@ -1111,6 +1115,7 @@ source $libdir/dialogInfo.tk
 source $libdir/dialogParam.tk
 source $libdir/dialogCkBut.tk
 source $libdir/dialogMapping.tk
+source $libdir/filter_change_cmd.tcl
 source $libdir/fonts.tcl
 source $libdir/help.tk
 source $libdir/macrodef.tk
@@ -1779,6 +1784,8 @@ menu .mbar.view.menu.statMenu -tearoff 0
   -command EditActionDisable
 .mbar.view.menu add command -label "Show Mouse Location..." \
   -command EditShowMouse
+#TEMP .mbar.view.menu add command -label "Filter Change Command..." \
+#TEMP  -command {EditFilterChangeCmd}
 .mbar.view.menu add separator
 .mbar.view.menu add command -label "Destroy" -command {
     global curView

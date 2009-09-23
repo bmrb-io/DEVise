@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.87  2009/05/15 20:29:47  wenger
+  Implemented to-do 04.001 (be able to exclude views from drill-down;
+  this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
+  code (strcpy, strcat) in Session.c; added GUI for setting drill-down
+  exclusion and copying it when copying a view.
+
   Revision 1.86  2008/10/13 19:45:25  wenger
   More const-ifying, especially Control- and csgroup-related.
 
@@ -893,6 +899,8 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(viewSetUseJmol)
 	REGISTER_COMMAND(getExcludeFromDrillDown)
 	REGISTER_COMMAND(setExcludeFromDrillDown)
+	REGISTER_COMMAND(getFilterChangeCmds)
+	REGISTER_COMMAND(setFilterChangeCmds)
 }
 
 CmdContainer::~CmdContainer()

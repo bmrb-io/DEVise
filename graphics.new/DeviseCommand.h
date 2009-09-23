@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.79  2009/05/15 20:29:47  wenger
+  Implemented to-do 04.001 (be able to exclude views from drill-down;
+  this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
+  code (strcpy, strcat) in Session.c; added GUI for setting drill-down
+  exclusion and copying it when copying a view.
+
   Revision 1.78  2008/10/13 19:45:25  wenger
   More const-ifying, especially Control- and csgroup-related.
 
@@ -2424,6 +2430,18 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(setExcludeFromDrillDown) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getFilterChangeCmds) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setFilterChangeCmds) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

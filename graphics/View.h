@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.125  2009/05/15 20:29:39  wenger
+  Implemented to-do 04.001 (be able to exclude views from drill-down;
+  this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
+  code (strcpy, strcat) in Session.c; added GUI for setting drill-down
+  exclusion and copying it when copying a view.
+
   Revision 1.124  2008/09/23 22:55:34  wenger
   More const-ifying, especially drill-down-related stuff.
 
@@ -1011,6 +1017,10 @@ class View : public ViewWin
     Boolean IsChildView() { return _isChildView; }
 	void SetChildView(Boolean isChild) { _isChildView = isChild; }
 
+	void SetFilterChangeCmds(const char *cmds);
+	const char *GetFilterChangeCmds(void) const {
+	  return _filterChangeCmds ? _filterChangeCmds : ""; }
+
 protected:
 	/* called by base class when it has been mapped/unmapped */
 	virtual void SubClassMapped();   /* called just after mapping */
@@ -1046,6 +1056,7 @@ protected:
 private:
     void CleanUpViewSyms();
 	void InvalidateCursors();
+	void RunFilterChangeCmds();
 
 	// Get the geometry of the view, with the space for the highlight outline
 	// removed.
@@ -1250,6 +1261,8 @@ protected:
 
 		double _xAxisLinkMultFact;
 		double _yAxisLinkMultFact;
+
+		char *_filterChangeCmds;
 
     private:
         ObjectValid _objectValid;

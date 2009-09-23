@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.113  2009/05/15 20:29:38  wenger
+  Implemented to-do 04.001 (be able to exclude views from drill-down;
+  this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
+  code (strcpy, strcat) in Session.c; added GUI for setting drill-down
+  exclusion and copying it when copying a view.
+
   Revision 1.112  2009/05/13 22:41:23  wenger
   Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
   the trunk.
@@ -2247,6 +2253,9 @@ Session::SaveView(const char *category, const char *devClass,
 
   status += SaveParams(saveData, "getExcludeFromDrillDown",
       "setExcludeFromDrillDown", instance, NULL, NULL, true);
+
+  status += SaveParams(saveData, "getFilterChangeCmds",
+      "setFilterChangeCmds", instance, NULL, NULL, true);
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
