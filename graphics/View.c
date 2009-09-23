@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.252  2009/09/23 20:39:02  wenger
+  Added the selectParent, selectFirstChild, and selectNextChild
+  commands to help in editing complex sessions.
+
   Revision 1.251  2009/09/23 17:05:37  wenger
   Partial implementation of the 'filter change command' idea -- view
   has command it's saved in sessions, parsed, but not actually
@@ -2354,10 +2358,17 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
     _titleFont.SetWinFont(win);
     win->SetForeground(GetForeground());
 
+	ViewWin *parent = GetParent();
+	if (parent->GetParent() == NULL) {
+	  // This is a window, not a view.
+	  parent = NULL;
+	}
     int xloc, yloc, width, height;
     GetDataArea(xloc, yloc, width, height);
     char buf[1024];
-    sprintf(buf, "<%s>", GetName());
+    int formatted = snprintf(buf, sizeof(buf), "<%s%s%s>",
+	    parent ? parent->GetName() : "", parent ? ":" : "", GetName());
+	checkAndTermBuf2(buf, formatted);
 
     // Show the names of all views in piled mode, but keep them from
     // overlapping.
