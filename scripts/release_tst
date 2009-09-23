@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2003
+#  (c) Copyright 2003-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -20,4 +20,4 @@
 
 ############################################################
 
-scripts/release ~/tst/devise_release solsparc linux_centos linux_tao10
+scripts/release ~/tst/devise_release linux_rhel5

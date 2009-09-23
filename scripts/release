@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2006
+#  (c) Copyright 2001-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -19,6 +19,9 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.14  2006/07/14 19:45:43  wenger
+#  More fixes to release scripts.
+#
 #  Revision 1.13  2005/12/06 20:08:44  wenger
 #  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 #  be the end of the V1_7b0_br branch.)
@@ -109,6 +112,7 @@ if ($#argv < 2) then
   echo "    linux_rh9 (Linux (RedHat 9)/Intel)"
   echo "    linux_tao10 (Linux (Tao 1.0)/Intel)"
   echo "    linux_centos (Linux (CentOS)/Intel)"
+  echo "    linux_rhel5 (Linux (RHEL 5)/Intel)"
   exit 1
 endif
 
@@ -210,6 +214,9 @@ foreach arch ($arches)
   else if ($arch == linux_centos) then
     set mainarch = i386_cent40
     set otherarches = 
+  else if ($arch == linux_rhel5) then
+    set mainarch = i386_rhel5
+    set otherarches = 
   else if ($arch == solaris) then
     set mainarch = sunx86_54
     set otherarches = (sunx86_55 sunx86_56 sunx86_57 sunx86_58)
@@ -256,6 +263,8 @@ foreach arch ($arches)
     set mainarch = i386_tao10
   else if ($arch == linux_centos) then
     set mainarch = i386_cent40
+  else if ($arch == linux_rhel5) then
+    set mainarch = i386_rhel5
   else if ($arch == solaris) then
     set mainarch = sunx86_54
   else if ($arch == solsparc) then
