@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.127  2009/09/23 20:39:02  wenger
+  Added the selectParent, selectFirstChild, and selectNextChild
+  commands to help in editing complex sessions.
+
   Revision 1.126  2009/09/23 17:05:37  wenger
   Partial implementation of the 'filter change command' idea -- view
   has command it's saved in sessions, parsed, but not actually
@@ -752,6 +756,8 @@ class View : public ViewWin
 	static void SelectParent();
 	static void SelectFirstChild();
 	static void SelectNextChild();
+
+	static void ClearGlobalFilterHistory();
 
 	/* Set axes callback */
 	void SetXAxisAttrType(AttrType type);

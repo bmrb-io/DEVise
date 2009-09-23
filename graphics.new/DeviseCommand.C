@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.137  2009/09/23 20:39:10  wenger
+  Added the selectParent, selectFirstChild, and selectNextChild
+  commands to help in editing complex sessions.
+
   Revision 1.136  2009/09/23 17:05:46  wenger
   Partial implementation of the 'filter change command' idea -- view
   has command it's saved in sessions, parsed, but not actually
@@ -8816,6 +8820,25 @@ IMPLEMENT_COMMAND_BEGIN(selectNextChild)
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in selectNextChild\n",
 		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(clearGlobalFilterHistory)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		View::ClearGlobalFilterHistory();
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		    "clearGlobalFilterHistory\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

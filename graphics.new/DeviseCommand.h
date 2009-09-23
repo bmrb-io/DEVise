@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.81  2009/09/23 20:39:10  wenger
+  Added the selectParent, selectFirstChild, and selectNextChild
+  commands to help in editing complex sessions.
+
   Revision 1.80  2009/09/23 17:05:46  wenger
   Partial implementation of the 'filter change command' idea -- view
   has command it's saved in sessions, parsed, but not actually
@@ -2466,6 +2470,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(selectNextChild) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(clearGlobalFilterHistory) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

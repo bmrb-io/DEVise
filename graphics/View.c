@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.253  2009/09/23 21:15:38  wenger
+  Added parent view names to view names (optionally) displayed in views
+  (to help in editing complex sessions).
+
   Revision 1.252  2009/09/23 20:39:02  wenger
   Added the selectParent, selectFirstChild, and selectNextChild
   commands to help in editing complex sessions.
@@ -5206,6 +5210,18 @@ View::SelectNextChild()
 	  }
     }
   }
+}
+
+// Clear the visual filter histories of all views.
+void
+View::ClearGlobalFilterHistory()
+{
+  int index = InitViewIterator();
+  while (MoreView(index)) {
+    View *view = NextView(index);
+    view->ClearHistory();
+  }
+  DoneViewIterator(index);
 }
 
 void

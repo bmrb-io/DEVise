@@ -15,6 +15,10 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.228  2009/09/23 20:39:16  wenger
+#	Added the selectParent, selectFirstChild, and selectNextChild
+#	commands to help in editing complex sessions.
+#	
 #	Revision 1.227  2009/09/23 17:05:53  wenger
 #	Partial implementation of the 'filter change command' idea -- view
 #	has command it's saved in sessions, parsed, but not actually
@@ -1800,6 +1804,8 @@ menu .mbar.view.menu.statMenu -tearoff 0
 #TEMP .mbar.view.menu add command -label "Filter Change Command..." \
 #TEMP  -command {EditFilterChangeCmd}
 .mbar.view.menu add separator
+.mbar.view.menu add command -label "Clear All History" \
+    -command { DEVise clearGlobalFilterHistory }
 .mbar.view.menu add command -label "Destroy" -command {
     global curView
     DestroyView $curView

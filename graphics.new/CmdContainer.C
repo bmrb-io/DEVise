@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.89  2009/09/23 20:39:09  wenger
+  Added the selectParent, selectFirstChild, and selectNextChild
+  commands to help in editing complex sessions.
+
   Revision 1.88  2009/09/23 17:05:46  wenger
   Partial implementation of the 'filter change command' idea -- view
   has command it's saved in sessions, parsed, but not actually
@@ -907,10 +911,10 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setExcludeFromDrillDown)
 	REGISTER_COMMAND(getFilterChangeCmds)
 	REGISTER_COMMAND(setFilterChangeCmds)
-
 	REGISTER_COMMAND(selectParent)
 	REGISTER_COMMAND(selectFirstChild)
 	REGISTER_COMMAND(selectNextChild)
+	REGISTER_COMMAND(clearGlobalFilterHistory)
 }
 
 CmdContainer::~CmdContainer()
