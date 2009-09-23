@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.126  2009/09/23 17:05:37  wenger
+  Partial implementation of the 'filter change command' idea -- view
+  has command it's saved in sessions, parsed, but not actually
+  executed.  GUI for creating the command is partly done (but
+  commented out).
+
   Revision 1.125  2009/05/15 20:29:39  wenger
   Implemented to-do 04.001 (be able to exclude views from drill-down;
   this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
@@ -743,6 +749,9 @@ class View : public ViewWin
 	static View *FindSelectedView();
 	void SelectView(Boolean calledFromPile = false);
 	static void SelectNextInPile();
+	static void SelectParent();
+	static void SelectFirstChild();
+	static void SelectNextChild();
 
 	/* Set axes callback */
 	void SetXAxisAttrType(AttrType type);

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.251  2009/09/23 17:05:37  wenger
+  Partial implementation of the 'filter change command' idea -- view
+  has command it's saved in sessions, parsed, but not actually
+  executed.  GUI for creating the command is partly done (but
+  commented out).
+
   Revision 1.250  2009/05/15 20:29:39  wenger
   Implemented to-do 04.001 (be able to exclude views from drill-down;
   this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
@@ -5054,6 +5060,140 @@ View::SelectNextInPile()
 	  // view in the pile.
 	  ((View *)nextView)->SelectView(true);
 	}
+  }
+}
+
+// Select the parent view of the currently-selected view (if the
+// currently-selected view has no parent, do nothing; if there is no
+// currently-selected view, do nothing).
+void
+View::SelectParent()
+{
+#if defined(DEBUG)
+  printf("View::SelectParent()\n");
+#endif
+
+  View *selView = FindSelectedView();
+
+#if defined(DEBUG)
+  printf("  Currently-selected view is %s\n",
+      selView ? selView->GetName() : "none");
+#endif
+
+  if (selView) {
+    ViewWin *parent = selView->GetParent();
+    if (parent) {
+	  // Figure out whether the parent is a view or a window -- if the
+	  // parent has no parent, it is a window and we can't select it.
+	  if (parent->GetParent() == NULL) {
+	    printf("Currently-selected view <%s> has no parent view\n",
+		    selView->GetName());
+	  } else {
+#if defined(DEBUG)
+        printf("  View to select next is %s\n",
+            parent ? parent->GetName() : "none");
+#endif
+	    // Note: must pass in true here to keep from selecting the first
+	    // view in the pile.
+	    ((View *)parent)->SelectView(true);
+	  }
+    }
+  }
+}
+
+// Select the first child view (if any) of the currently-selected
+// view (if the currently-selected view has no children, do nothing;
+// if there is no currently-selected view, do nothing).
+void
+View::SelectFirstChild()
+{
+#if defined(DEBUG)
+  printf("View::SelectFirstChild()\n");
+#endif
+
+  View *selView = FindSelectedView();
+
+#if defined(DEBUG)
+  printf("  Currently-selected view is %s\n",
+      selView ? selView->GetName() : "none");
+#endif
+
+  if (selView) {
+    int index = selView->InitIterator();
+	if (!selView->More(index)) {
+	    printf("Currently-selected view <%s> has no children\n",
+		    selView->GetName());
+	} else {
+	  ViewWin *nextView = selView->Next(index);
+
+#if defined(DEBUG)
+      printf("  View to select next is %s\n",
+          nextView ? nextView->GetName() : "none");
+#endif
+
+	  // Note: must pass in true here to keep from selecting the first
+	  // view in the pile.
+	  ((View *)nextView)->SelectView(true);
+	}
+	selView->DoneIterator(index);
+  }
+}
+
+// Select the next child of the currently-selected view's parent (if
+// the currently-selected view is not a child view, or is the last child
+// view of its parent, do nothing; if there is no currently-selected view,
+// do nothing).
+void
+View::SelectNextChild()
+{
+#if defined(DEBUG)
+  printf("View::SelectNextChild()\n");
+#endif
+
+  View *selView = FindSelectedView();
+
+#if defined(DEBUG)
+  printf("  Currently-selected view is %s\n",
+      selView ? selView->GetName() : "none");
+#endif
+
+  if (selView) {
+    ViewWin *parent = selView->GetParent();
+    if (parent) {
+	  // Figure out whether the parent is a view or a window -- if the
+	  // parent has no parent, it is a window and we can't select it.
+	  if (parent->GetParent() == NULL) {
+	    printf("Currently-selected view <%s> has no parent view\n",
+		    selView->GetName());
+	  } else {
+		// Find the next child of the parent view.
+		ViewWin *nextView = NULL;
+	    int index = parent->InitIterator();
+		while (parent->More(index)) {
+		  ViewWin *tmpView = parent->Next(index);
+		  if (tmpView == selView) {
+		    if (!parent->More(index)) {
+			  printf("Currently-selected view <%s> is last child of "
+			      "its parent\n", selView->GetName());
+			} else {
+			  nextView = parent->Next(index);
+			}
+			break;
+		  }
+		}
+		parent->DoneIterator(index);
+
+		if (nextView) {
+#if defined(DEBUG)
+          printf("  View to select next is %s\n",
+              nextView ? nextView->GetName() : "none");
+#endif
+	      // Note: must pass in true here to keep from selecting the first
+	      // view in the pile.
+	      ((View *)nextView)->SelectView(true);
+	    }
+	  }
+    }
   }
 }
 

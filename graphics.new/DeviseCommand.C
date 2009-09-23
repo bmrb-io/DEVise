@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.136  2009/09/23 17:05:46  wenger
+  Partial implementation of the 'filter change command' idea -- view
+  has command it's saved in sessions, parsed, but not actually
+  executed.  GUI for creating the command is partly done (but
+  commented out).
+
   Revision 1.135  2009/05/15 20:29:47  wenger
   Implemented to-do 04.001 (be able to exclude views from drill-down;
   this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
@@ -8725,7 +8731,7 @@ IMPLEMENT_COMMAND_BEGIN(getFilterChangeCmds)
 		return 1;
 	} else {
 		fprintf(stderr,"Wrong # of arguments: %d in "
-		  "getExcludeFromDrillDown\n", argc);
+		  "getFilterChangeCmds\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}
@@ -8751,7 +8757,65 @@ IMPLEMENT_COMMAND_BEGIN(setFilterChangeCmds)
        	ReturnVal(API_ACK, "done");
 		return 1;
 	} else {
-		fprintf(stderr,"Wrong # of arguments: %d in setExcludeFromDrillDown\n", argc);
+		fprintf(stderr,"Wrong # of arguments: %d in setFilterChangeCmds\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(selectParent)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		View::SelectParent();
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in selectParent\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(selectFirstChild)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		View::SelectFirstChild();
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in selectFirstChild\n",
+		  argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(selectNextChild)
+    // Arguments: none
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 1) {
+		View::SelectNextChild();
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in selectNextChild\n",
+		  argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

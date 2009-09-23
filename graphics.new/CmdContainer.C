@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.88  2009/09/23 17:05:46  wenger
+  Partial implementation of the 'filter change command' idea -- view
+  has command it's saved in sessions, parsed, but not actually
+  executed.  GUI for creating the command is partly done (but
+  commented out).
+
   Revision 1.87  2009/05/15 20:29:47  wenger
   Implemented to-do 04.001 (be able to exclude views from drill-down;
   this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
@@ -901,6 +907,10 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(setExcludeFromDrillDown)
 	REGISTER_COMMAND(getFilterChangeCmds)
 	REGISTER_COMMAND(setFilterChangeCmds)
+
+	REGISTER_COMMAND(selectParent)
+	REGISTER_COMMAND(selectFirstChild)
+	REGISTER_COMMAND(selectNextChild)
 }
 
 CmdContainer::~CmdContainer()

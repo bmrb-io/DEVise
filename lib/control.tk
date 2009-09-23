@@ -15,6 +15,12 @@
 #	$Id$	
 
 #	$Log$
+#	Revision 1.227  2009/09/23 17:05:53  wenger
+#	Partial implementation of the 'filter change command' idea -- view
+#	has command it's saved in sessions, parsed, but not actually
+#	executed.  GUI for creating the command is partly done (but
+#	commented out).
+#	
 #	Revision 1.226  2006/07/12 20:54:51  wenger
 #	Added "Misc. View Properties" GUI to control things we haven't
 #	had a GUI for previously.
@@ -1675,6 +1681,13 @@ menu .mbar.view.menu -tearoff 0
 
 .mbar.view.menu add command -label "Select Next in Pile" \
 	-command { DEVise selectNextInPile }
+.mbar.view.menu add command -label "Select Parent" \
+	-command { DEVise selectParent }
+.mbar.view.menu add command -label "Select First Child" \
+	-command { DEVise selectFirstChild }
+.mbar.view.menu add command -label "Select Next Child" \
+	-command { DEVise selectNextChild }
+.mbar.view.menu add separator
 .mbar.view.menu add command -label "Toggle X Axis" \
 	-command { DoToggleAxis X }
 .mbar.view.menu add command -label "Toggle Y Axis" \
