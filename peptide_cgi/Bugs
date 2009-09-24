@@ -397,6 +397,10 @@ Num Date        Status  Description
 			view and data select scroll view eventually end up
 			at the bottom of the views. (wenger)
 
+086 9/24/09	OPEN	Color print mode is still not that great for 3D,
+			ambiguity code, and assignment figure of merit
+			visualizations. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
