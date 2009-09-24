@@ -49,6 +49,12 @@ Keyboard shortcuts</a>
 
 
 <h3>
+<a href="#Menus">
+Menus</a>
+</h3>
+
+
+<h3>
 <a href="#History">
 Version history</a>
 </h3>
@@ -352,6 +358,72 @@ Note that a Jmol view is one that shows both atoms and bonds.
 
 <hr>
 
+
+<a name="Menus">
+<h2>
+Menus
+</h2>
+
+<h3>Session Menu</h3>
+<ul>
+<li><b>Open</b> (*): open a DEVise session.  This menu item brings up
+a dialog listing available sessions.
+<li><b>Close</b> (*): close the current session.  You must close the
+current session before opening another session.
+<li><b>Restart</b>: restarts the current session (closes it and
+re-opens it).
+<li><b>Reset Axis Ranges</b>: reset all axis ranges to the default
+values.
+<li><b>Exit</b> (*): exit from the JavaScreen.
+</ul>
+<h3>View Menu</h3>
+<ul>
+<li><b>Display Mode</b>: control which display mode (normal, color print,
+or black/white print) is used.  Color print and black/white print display
+modes change the visualization colors to ones more suitable for printing
+than the colors in normal mode (black backgrounds are changed to white,
+etc.).
+<li><b>Settings</b>: show a dialog with a number of settings and
+version information.  The only setting the user can change (in some
+JavaScreen configurations) is the JavaScreen Size.
+<li><b>Communication Mode</b>: switch between Socket and CGI modes.
+Socket mode is the default, and is always preferred if it works.  CGI
+mode can be used in some cases to avoid communication problems caused
+by firewalls.
+<li><b>Collaborate</b>: show a dialog used to control collaboration
+mode.  More information about collaboration mode can be found on
+the <a href="../collab.html">collaboration help</a> page.
+<li><b>Playback</b>: play back a command log file.  (This option
+is mainly useful for debugging, because the command log files are
+saved on the server machine.)
+<li><b>Show Log</b>: show the communication log.  This menu item
+shows a dialog containing the text of all of the commands between
+the client and server.
+</ul>
+<h3>Stop Button</h3>
+Cause the JavaScreen to stop its current
+communication with the server.  This should only be done if the
+JavaScreen becomes unresponsive -- stopping communication may leave
+the client and server in inconsistent states.
+<h3>Help Menu</h3>
+<ul>
+<li><b>JavaScreen Help (in browser window)</b>: show this page in
+a browser window or tab (the preferred means of viewing help).
+<li><b>Show View Help</b>: show the view help for all views in the
+current session.
+<li><b>Hide View Help</b>: hide the view help for all views.
+<li><b>JavaScreen Help (in Java window)</b>: show this page in a
+Java window (this does not provide all of the functionality of
+viewing the page in a browser window).
+</ul>
+
+<p>* These menu items are not available to the user in many JavaScreen
+configurations (the session is automatically specified by the HTML
+page incorporating the JavaScreen).</p>
+
+
+<hr>
+
 <a name="History">
 <h2>
 Version history
@@ -371,9 +443,14 @@ based on the toolbar mode and the state of the active view.
 
 <li>Changed the communication mode dialog to a menu.
 
-<li>Changed some menu strings for clarification.
+<li>Changed some item names for clarification.
+
+<li>Changed communication mode selection from a dialog to a
+pull-right menu.
 
 <li>Fixed a problem with axis value labels overwriting view help.
+
+<li>Added menu info to this help page.
 
 </ul>
 
@@ -928,7 +1005,7 @@ If you have any trouble using this software, please contact
 </p>
 
 <p>
-<i>Last updated 2008-03-05.</i>
+<i>Last updated 2009-09-24.</i>
 </p>
 
 </BODY>
