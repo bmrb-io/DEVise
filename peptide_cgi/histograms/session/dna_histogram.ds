@@ -392,7 +392,7 @@ DEVise viewSetUseJmol {View 3} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -3.500000 -2.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -3.500000 -2.500000 337 17 37 17 37 17
 DEVise setLabel {View 4} 0 12 {}
 DEVise setViewStatistics {View 4} 00000000
 DEVise setViewDimensions {View 4} 2
@@ -431,7 +431,7 @@ DEVise viewSetUseJmol {View 4} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 5} 10.500000 11.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 5} 10.500000 11.500000 -0.500000 0.500000 37 17 37 17 37 17
 DEVise setLabel {View 5} 0 12 {}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
@@ -651,13 +651,13 @@ DEVise setMappingColors {.dna_hist_list#View 3} {36} {17} {0}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_vs_AtomName} .dna_hist_list {.dna_hist_list#View 4} {} 0 {-$ResidueNum} {} 36 12 0 0 16 {$Residue} {} 0 {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.dna_hist_list#View 4} 1
-DEVise setMappingColors {.dna_hist_list#View 4} {36} {36} {0}
+DEVise setMappingColors {.dna_hist_list#View 4} {36} {36} {36}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_vs_AtomName} .dna_hist_list {.dna_hist_list#View 5} {} {$AtomNum} 0 {} 36 12 0 0 16 {$AtomName} {} 0 {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.dna_hist_list#View 5} 1
-DEVise setMappingColors {.dna_hist_list#View 5} {36} {36} {0}
+DEVise setMappingColors {.dna_hist_list#View 5} {36} {36} {36}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -675,13 +675,13 @@ DEVise setMappingColors {.dna_hist_list_link#View 8} {0} {37} {37}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Frequency_vs_ChemShiftVal} .bmrblink_dna_DG_H1 {.bmrblink_dna_DG_H1#View 7} {} {-$ChemShiftVal_nodd} 1000 {} 0 1 -1 0 2 0.015 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.bmrblink_dna_DG_H1#View 7} 1
-DEVise setMappingColors {.bmrblink_dna_DG_H1#View 7} {0} {0} {0}
+DEVise setMappingColors {.bmrblink_dna_DG_H1#View 7} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Frequency_vs_ChemShiftVal} .bmrbhist_dna_DG_H1 {.bmrbhist_dna_DG_H1#View 6} {} {-$ChemShiftVal} {$Frequency} {} 36 1 0 0 2 0.015 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.bmrbhist_dna_DG_H1#View 6} 1
-DEVise setMappingColors {.bmrbhist_dna_DG_H1#View 6} {36} {36} {0}
+DEVise setMappingColors {.bmrbhist_dna_DG_H1#View 6} {36} {34} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>

@@ -731,7 +731,7 @@ DEVise viewSetUseJmol {View 3} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -10.500000 -9.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -10.500000 -9.500000 37 17 37 17 37 17
 DEVise setLabel {View 4} 0 12 {}
 DEVise setViewStatistics {View 4} 00000000
 DEVise setViewDimensions {View 4} 2
@@ -770,7 +770,7 @@ DEVise viewSetUseJmol {View 4} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 5} 5.500000 6.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 5} 5.500000 6.500000 -0.500000 0.500000 37 17 37 17 37 17
 DEVise setLabel {View 5} 0 12 {}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2

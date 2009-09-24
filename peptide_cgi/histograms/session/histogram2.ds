@@ -732,7 +732,7 @@ DEVise viewSetUseJmol {View 3} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -8.500000 -7.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -8.500000 -7.500000 37 17 37 17 37 17
 DEVise setLabel {View 4} 0 12 {}
 DEVise setViewStatistics {View 4} 00000000
 DEVise setViewDimensions {View 4} 2
@@ -771,7 +771,7 @@ DEVise viewSetUseJmol {View 4} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 5} 5.500000 6.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 5} 5.500000 6.500000 -0.500000 0.500000 37 17 37 17 37 17
 DEVise setLabel {View 5} 0 12 {}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
@@ -892,7 +892,7 @@ DEVise viewSetUseJmol {View 7} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 8} -0.500000 0.500000 -11.500000 -10.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 8} -0.500000 0.500000 -11.500000 -10.500000 37 17 37 17 37 17
 DEVise setLabel {View 8} 0 12 {}
 DEVise setViewStatistics {View 8} 00000000
 DEVise setViewDimensions {View 8} 2
@@ -973,7 +973,7 @@ DEVise viewSetUseJmol {View 9} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 10} 0.500000 1.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 10} 0.500000 1.500000 -0.500000 0.500000 37 17 37 17 37 17
 DEVise setLabel {View 10} 0 12 {}
 DEVise setViewStatistics {View 10} 00000000
 DEVise setViewDimensions {View 10} 2
@@ -1273,7 +1273,7 @@ DEVise setMappingColors {.hist_list#Residue_vs_AtomName 2} {36} {17} {0}
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Residue_vs_AtomName} .hist_list {.hist_list#Residue_vs_AtomName 3} {} {$AtomNum} 0 {} 36 12 0 0 16 {$AtomName} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.hist_list#Residue_vs_AtomName 3} 1
-DEVise setMappingColors {.hist_list#Residue_vs_AtomName 3} {36} {36} {0}
+DEVise setMappingColors {.hist_list#Residue_vs_AtomName 3} {36} {17} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
