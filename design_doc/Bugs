@@ -4309,6 +4309,9 @@ java.lang.NullPointerException: null pData
 990 9/18/09	OPEN	JS: Help->Show View Help doesn't seem to show the
 			help info for views that are too small.  (wenger)
 
+991 9/24/09	OPEN	Cursors should have separate foreground colors for
+			each color mode. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
