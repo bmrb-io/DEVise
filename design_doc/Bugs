@@ -3936,6 +3936,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 924 9/22/06	OPEN	If a view is excluded from printing, but has a
 			cursor in it, DEVise still tells the JS to draw
 			the cursor, which of course confuses it. (wenger)
+			(Maybe work around this by having the client treat
+			a cursor draw on a non-existant view as a warning
+			rather than an error.)
 
 925 9/22/06	OPEN	Print modes don't work for Jmol view. (wenger)
 
