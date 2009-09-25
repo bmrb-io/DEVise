@@ -4315,6 +4315,11 @@ java.lang.NullPointerException: null pData
 991 9/24/09	OPEN	Cursors should have separate foreground colors for
 			each color mode. (wenger)
 
+992 9/25/09	OPEN	Switching color mode changes visual filters in some
+			cases (at least in the JS) -- seems like the views
+			with automatic filter updates enabled change their
+			filters. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
