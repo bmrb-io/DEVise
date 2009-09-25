@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.150  2009/09/22 21:59:54  wenger
+// Added the Google Analytics script to all of the rest of the HTML
+// pages we generate (it's already in the summary page).
+//
 // Revision 1.149  2009/09/22 19:01:21  wenger
 // In the 3D, ambiguity, and assignment figure of merit sessions, the
 // DEVise cursor in the data view is now automatically sized at
@@ -693,7 +697,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.2x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.2x6"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

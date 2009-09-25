@@ -6,7 +6,7 @@
 # DEVise endHeader
 
 # Session description
-DEVise setSessionDesc {TEMPTEMP -- average data is only for helix right now -- needs changes to the chemShift program?
+DEVise setSessionDesc {TEMP -- average data is only for helix right now -- needs changes to the chemShift program?
 $Id$}
 
 # Load strings table
@@ -305,7 +305,7 @@ for the type of atom selected by the cursor in the bottom
 view. For CA and CB, values from all residues are shown;
 for other atoms, only values from residues with helix and
 sheet secondary structures are shown.}
-# TEMPTEMP -- say what orange is
+# TEMP -- say what orange is
 DEVise setShowMouseLocation {View 9} {1}
 DEVise setLinkMultFact {View 9} {X} 1
 DEVise setLinkMultFact {View 9} {Y} 1
