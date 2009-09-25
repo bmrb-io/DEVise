@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.151  2009/09/25 14:48:44  wenger
+// Fixed a bug I introduced in the DNA/RNA deltashift template when
+// I fixed the colors; cleaned up a few commente in other session
+// templates.
+//
 // Revision 1.150  2009/09/22 21:59:54  wenger
 // Added the Google Analytics script to all of the rest of the HTML
 // pages we generate (it's already in the summary page).
@@ -697,7 +702,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.2x6"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.2";
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
