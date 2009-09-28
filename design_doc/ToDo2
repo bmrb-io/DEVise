@@ -125,6 +125,12 @@ white background, colored data; 3. white background, black data.
 Be able to click on multiple places, and get a single drill-down dialog
 showing the results of all of them. (elu/wenger)
 
+09.013 9/28/09	OPEN	2
+Have a "cursor draw" toolbar mode -- if you're in that mode, you can
+draw a rubberband line in a view, and any cursors in that view will
+be moved and resized to match the rubberband line, without having to
+grab an existing part of the cursor. (wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
