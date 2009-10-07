@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.153  2009/09/25 21:30:32  wenger
+// Changed version to 11.6.3x1, added 11.6.3 section to version
+// history.
+//
 // Revision 1.152  2009/09/25 20:05:39  wenger
 // Changed version to 11.6.2 for release.
 //
@@ -3680,75 +3684,13 @@ public class S2DMain {
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
 
-	//
-	// If this is a PDB (mmCIF) file, figure out which coordinates
-	// correspond to the first model, and only get that data.
-	//
-	int model1AtomCount = -1;
-	if (!star.ATOM_COORD_MODEL_NUM.equals("")) {
-	    String[] modelNums = star.getFrameValues(frame,
-	      star.ATOM_COORD_X, star.ATOM_COORD_MODEL_NUM);
-	    for (int index = 0; index < modelNums.length; index++) {
-	        if (!modelNums[index].equals("1")) {
-		    model1AtomCount = index;
-		    break;
-		}
-	    }
-
-	    if (doDebugOutput(2)) {
-	        System.out.println("Model 1 atom count = " + model1AtomCount);
-	    }
-	}
-
-	//
-	// Get the values we need from the Star file.
-	//
-	String[] resSeqCodes = star.getFrameValues(frame,
-	  star.ATOM_COORD_X, star.ATOM_COORD_RES_SEQ_CODE, model1AtomCount);
-
-	String[] resLabels = star.getFrameValues(frame,
-	  star.ATOM_COORD_X, star.ATOM_COORD_RES_LABEL, model1AtomCount);
-
-	String[] atomNames = star.getFrameValues(frame,
-	  star.ATOM_COORD_X, star.ATOM_COORD_ATOM_NAME, model1AtomCount);
-
-        atomNames = star.translateAtomNomenclature(resLabels, atomNames);
-
-	String[] atomTypes = star.getFrameValues(frame,
-	  star.ATOM_COORD_X, star.ATOM_COORD_ATOM_TYPE, model1AtomCount);
-
-	String[] atomCoordXTmp = star.getFrameValues(frame,
-	  star.ATOM_COORD_X, star.ATOM_COORD_X, model1AtomCount);
-        double[] atomCoordX = S2DUtils.arrayStr2Double(atomCoordXTmp,
-	  star.ATOM_COORD_X);
-        atomCoordXTmp = null;
-
-	String[] atomCoordYTmp = star.getFrameValues(frame,
-	  star.ATOM_COORD_Y, star.ATOM_COORD_Y, model1AtomCount);
-        double[] atomCoordY = S2DUtils.arrayStr2Double(atomCoordYTmp,
-	  star.ATOM_COORD_Y);
-        atomCoordYTmp = null;
-
-	String[] atomCoordZTmp = star.getFrameValues(frame,
-	  star.ATOM_COORD_Z, star.ATOM_COORD_Z, model1AtomCount);
-        double[] atomCoordZ = S2DUtils.arrayStr2Double(atomCoordZTmp,
-	  star.ATOM_COORD_Z);
-        atomCoordZTmp = null;
-
-        int[] entityAssemblyIDs = star.getCoordEntityAssemblyIDs(frame);
-
-	//
-	// Create an S2DAtomicCoords object with the values we just got.
-	//
+	// Create an S2DAtomicCoordinates object with the data
+	// in the current save frame.
 	S2DAtomicCoords atomicCoords = new S2DAtomicCoords(_name,
-	  _longName, _dataDir, _sessionDir, _summary, resSeqCodes,
-	  resLabels, atomNames, atomTypes, atomCoordX, atomCoordY,
-	  atomCoordZ, entityAssemblyIDs, _connectionFile, _dataSets,
-	  _currentPdbId, star.getFrameDetails(frame));
+	  _longName, star, frame, _dataDir, _sessionDir, _summary,
+	  _connectionFile, _dataSets, _currentPdbId);
 
-	//
 	// Now go ahead and calculate and write out the atomic coordinates.
-	//
 	if (pt == null) {
 	    AtomicCoordSummaryPre(star, frame);
 	}

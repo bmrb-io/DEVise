@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2008
+// (c) Copyright 2001-2009
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.10.2.5  2008/11/19 21:27:22  wenger
 // Cleaned up various notes about things to check.
 //
@@ -80,6 +83,7 @@
 
 package star2devise;
 
+import EDU.bmrb.starlibj.SaveFrameNode;
 import java.io.*;
 import java.text.*;
 import java.util.*;
@@ -143,7 +147,7 @@ public class S2DAtomicCoords {
     // The number of bonds actually written.
     private int _bondCount;
 
-    //TEMPTEMP -- what units? Angstroms?
+    //TEMP -- what units? Angstroms?
     private static final double MAX_BOND_LENGTH = 4.0;
 
     private Hashtable _atomNameTrans;
@@ -153,33 +157,79 @@ public class S2DAtomicCoords {
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DAtomicCoords(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, String[] resSeqCodes,
-      String[] resLabels, String[] atomNames, String[] atomTypes,
-      double[] atomCoordX, double[] atomCoordY, double[] atomCoordZ,
-      int[] entityAssemblyIDs,
-      String connectionFile, Vector dataSets, String pdbId,
-      String frameDetails) throws S2DException
+    public S2DAtomicCoords(String name, String longName, S2DStarIfc star,
+      SaveFrameNode frame, String dataDir, String sessionDir,
+      S2DSummaryHtml summary, String connectionFile, Vector dataSets,
+      String pdbId) throws S2DException
     {
         if (doDebugOutput(11, true)) {
 	    System.out.println("S2DAtomicCoords.S2DAtomicCoords(" +
 	      name + ")");
 	}
+
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_frameDetails = frameDetails;
+	_frameDetails = star.getFrameDetails(frame);
 
-	_resSeqCodes = resSeqCodes;
-	_resLabels = S2DUtils.arrayToUpper(resLabels);
-	_atomNames = atomNames;
-	_atomTypes = atomTypes;
-	_atomCoordX = atomCoordX;
-	_atomCoordY = atomCoordY;
-	_atomCoordZ = atomCoordZ;
-	_entityAssemblyIDs = entityAssemblyIDs;
+	//
+	// If this is a PDB (mmCIF) file, figure out which coordinates
+	// correspond to the first model, and only get that data.
+	//
+	int model1AtomCount = -1;
+	if (!star.ATOM_COORD_MODEL_NUM.equals("")) {
+	    String[] modelNums = star.getFrameValues(frame,
+	      star.ATOM_COORD_X, star.ATOM_COORD_MODEL_NUM);
+	    for (int index = 0; index < modelNums.length; index++) {
+	        if (!modelNums[index].equals("1")) {
+		    model1AtomCount = index;
+		    break;
+		}
+	    }
+
+	    if (doDebugOutput(2, true)) {
+	        System.out.println("Model 1 atom count = " + model1AtomCount);
+	    }
+	}
+
+	//
+	// Get the values we need from the Star file.
+	//
+	_resSeqCodes = star.getFrameValues(frame,
+	  star.ATOM_COORD_X, star.ATOM_COORD_RES_SEQ_CODE, model1AtomCount);
+
+	_resLabels = star.getFrameValues(frame,
+	  star.ATOM_COORD_X, star.ATOM_COORD_RES_LABEL, model1AtomCount);
+
+	_atomNames = star.getFrameValues(frame,
+	  star.ATOM_COORD_X, star.ATOM_COORD_ATOM_NAME, model1AtomCount);
+
+        _atomNames = star.translateAtomNomenclature(_resLabels, _atomNames);
+
+	_atomTypes = star.getFrameValues(frame,
+	  star.ATOM_COORD_X, star.ATOM_COORD_ATOM_TYPE, model1AtomCount);
+
+	String[] atomCoordXTmp = star.getFrameValues(frame,
+	  star.ATOM_COORD_X, star.ATOM_COORD_X, model1AtomCount);
+        _atomCoordX = S2DUtils.arrayStr2Double(atomCoordXTmp,
+	  star.ATOM_COORD_X);
+        atomCoordXTmp = null;
+
+	String[] atomCoordYTmp = star.getFrameValues(frame,
+	  star.ATOM_COORD_Y, star.ATOM_COORD_Y, model1AtomCount);
+        _atomCoordY = S2DUtils.arrayStr2Double(atomCoordYTmp,
+	  star.ATOM_COORD_Y);
+        atomCoordYTmp = null;
+
+	String[] atomCoordZTmp = star.getFrameValues(frame,
+	  star.ATOM_COORD_Z, star.ATOM_COORD_Z, model1AtomCount);
+        _atomCoordZ = S2DUtils.arrayStr2Double(atomCoordZTmp,
+	  star.ATOM_COORD_Z);
+        atomCoordZTmp = null;
+
+        _entityAssemblyIDs = star.getCoordEntityAssemblyIDs(frame);
 
 	buildStructure();
 
