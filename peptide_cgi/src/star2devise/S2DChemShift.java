@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2009/10/20 16:54:10  wenger
+// Created a new S2DSpartaChemShift class and cleaned up S2DChemShift
+// class heirarchy in preparation for fixing things for the new SPARTA
+// file format; various related cleanups (note that empty hn?.dat files
+// are no longer generated for nucleic acids, resulting in changes to
+// the test scripts).
+//
 // Revision 1.25  2009/08/25 18:15:57  wenger
 // Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
 // to trunk.
@@ -231,6 +238,7 @@
 
 package star2devise;
 
+import EDU.bmrb.starlibj.SaveFrameNode;
 import java.io.*;
 import java.util.*;
 
@@ -324,21 +332,20 @@ public class S2DChemShift {
     //-------------------------------------------------------------------
     // Factory -- SPARTA-calculated delta shifts.
     public static S2DChemShift createSparta(int polymerType, String name,
-      String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
-      String[] residueLabels, String[] atomNames, String[] atomTypes,
-      double[] deltaShiftVals, int entityAssemblyID, int modelNum,
-      String frameDetails) throws S2DException
+      String longName, S2DNmrStarIfc star, SaveFrameNode frame,
+      String dataDir, String sessionDir, S2DSummaryHtml summary,
+      String entityAssemblyID, int modelNum, S2DResidues residues)
+      throws S2DException
     {
+
 	S2DChemShift chemShift;
 
         switch (polymerType) {
 	case S2DResidues.POLYMER_TYPE_PROTEIN:
 	case S2DResidues.POLYMER_TYPE_UNKNOWN:
-	    chemShift = new S2DSpartaChemShift(name, longName, dataDir,
-	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
-	      atomTypes, deltaShiftVals, entityAssemblyID, modelNum,
-	      frameDetails);
+	    chemShift = new S2DSpartaChemShift(name, longName, star,
+	      frame, dataDir, sessionDir, summary, entityAssemblyID,
+	      modelNum, residues);
 	    break;
 
 	//TEMP -- do we need to support DNA and RNA?
@@ -391,15 +398,13 @@ public class S2DChemShift {
 
     //-------------------------------------------------------------------
     // Constructor (for SPARTA-calculated deltashifts).
-    public S2DChemShift(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
-      String[] residueLabels, String[] atomNames, String[] atomTypes,
-      double[] deltaShiftVals, int entityAssemblyID, int modelNum,
-      String frameDetails) throws S2DException
+    public S2DChemShift(String name, String longName, S2DNmrStarIfc star,
+      SaveFrameNode frame, String dataDir, String sessionDir,
+      S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShift.S2DChemShift(" + name + ", " +
-	      entityAssemblyID + ", " + modelNum + ")");
+	      entityAssemblyID + ")");
 	}
 
 	_name = name;
@@ -407,14 +412,10 @@ public class S2DChemShift {
 	_dataDir = dataDir;
 	_sessionDir = sessionDir;
 	_summary = summary;
-	_frameDetails = frameDetails;
+	_frameDetails = star.getFrameDetails(frame);
 
-	_resSeqCodes = resSeqCodes;
-	_residueLabels = S2DUtils.arrayToUpper(residueLabels);
-	_atomNames = atomNames;
-	_atomTypes = atomTypes;
-	_chemShiftVals = deltaShiftVals;
-	_entityAssemblyID = entityAssemblyID;
+	_entityAssemblyID = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
 
 	_info = "Visualization of " + _longName;
     }

@@ -24,11 +24,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2009/10/20 16:54:10  wenger
+// Created a new S2DSpartaChemShift class and cleaned up S2DChemShift
+// class heirarchy in preparation for fixing things for the new SPARTA
+// file format; various related cleanups (note that empty hn?.dat files
+// are no longer generated for nucleic acids, resulting in changes to
+// the test scripts).
+//
 
 // ========================================================================
 
 package star2devise;
 
+import EDU.bmrb.starlibj.SaveFrameNode;
 import java.io.*;
 import java.util.*;
 
@@ -44,22 +52,95 @@ public class S2DSpartaChemShift extends S2DChemShift {
 
     //-------------------------------------------------------------------
     // Constructor (for SPARTA-calculated deltashifts).
-    public S2DSpartaChemShift(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
-      String[] residueLabels, String[] atomNames, String[] atomTypes,
-      double[] deltaShiftVals, int entityAssemblyID, int modelNum,
-      String frameDetails) throws S2DException
+    public S2DSpartaChemShift(String name, String longName,
+      S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
+      int modelNum, S2DResidues residues) throws S2DException
     {
-	super(name, longName, dataDir, sessionDir, summary, resSeqCodes,
-	  residueLabels, atomNames, atomTypes, deltaShiftVals,
-	  entityAssemblyID, modelNum, frameDetails);
+	super(name, longName, star, frame, dataDir, sessionDir, summary,
+	  entityAssemblyID);
 
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSpartaChemShift.S2DSpartaChemShift(" +
-	      name + ")");
+	      name + ", " + entityAssemblyID + ", " + modelNum + ")");
 	}
 
 	_modelNum = modelNum;
+
+	//
+	// Get the values we need from the Star file.
+	//
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
+	}
+
+	String[] modelNumsStr = null;
+	if (modelNum != 0) {
+	    modelNumsStr = star.getAndFilterFrameValues(frame,
+	      star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_MODEL_NUM,
+	      entityAssemblyID, entityAssemblyIDs);
+	}
+
+	String[] resSeqCodesStr = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_RES_SEQ_CODE,
+	  entityAssemblyID, entityAssemblyIDs);
+
+	_residueLabels = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+	residues.make3Letter(_residueLabels);
+	_residueLabels = S2DUtils.arrayToUpper(_residueLabels);
+
+	_atomNames = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_atomTypes = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_TYPE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	String[] deltaShiftValsStr = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
+
+	// Filter by model number if necessary.
+    	if (modelNum != 0) {
+            String modelStr = "" + modelNum;
+
+            resSeqCodesStr = S2DUtils.selectMatches(modelNumsStr,
+              resSeqCodesStr, modelStr);
+
+            _residueLabels = S2DUtils.selectMatches(
+              modelNumsStr, _residueLabels, modelStr);
+
+            _atomNames = S2DUtils.selectMatches(modelNumsStr,
+              _atomNames, modelStr);
+
+            _atomTypes = S2DUtils.selectMatches(modelNumsStr,
+	      _atomTypes, modelStr);
+
+            deltaShiftValsStr = S2DUtils.selectMatches(
+              modelNumsStr, deltaShiftValsStr, modelStr);
+        }
+
+	// Convert strings to numerical values as necessary.
+        _resSeqCodes = S2DUtils.arrayStr2Int(
+          resSeqCodesStr, star.DELTA_SHIFT_RES_SEQ_CODE);
+        _chemShiftVals = S2DUtils.arrayStr2Double(
+          deltaShiftValsStr, star.DELTA_SHIFT_VALUE);
 
 	// ShiftDataManager with no chemshift file creates a special
 	// version for already-calculated deltashift values
@@ -71,6 +152,7 @@ public class S2DSpartaChemShift extends S2DChemShift {
 
     //-------------------------------------------------------------------
     // Write the deltashifts for this data.
+    // Note: frameIndex is really entityAssemblyID for this class.
     public void writeDeltashifts(int frameIndex, boolean append)
       throws S2DException
     {

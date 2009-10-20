@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.155  2009/10/20 16:54:10  wenger
+// Created a new S2DSpartaChemShift class and cleaned up S2DChemShift
+// class heirarchy in preparation for fixing things for the new SPARTA
+// file format; various related cleanups (note that empty hn?.dat files
+// are no longer generated for nucleic acids, resulting in changes to
+// the test scripts).
+//
 // Revision 1.154  2009/10/07 21:39:43  wenger
 // Code reorganization as a test for the torsion angle code: for atomic
 // coordinates, moved all of the code that actually gets the values from
@@ -3181,88 +3188,16 @@ public class S2DMain {
 	      modelNum + "), " + append + ")");
 	}
 
-	//
-	// Get the values we need from the Star file.
-	//
-
-	// If a non-blank entityAssemblyID is specified, we need to filter
-	// the frame values to only take the ones corresponding to that
-	// entityAssemblyID.  To do that, we get the entityAssemblyID
-	// values in each row of the loop.  (entityAssemblyID will be blank
-	// when processing NMR-STAR 2.1 files -- they don't have data for
-	// more than one entity assembly in a single save frame).
-	String[] entityAssemblyIDs = null;
-	if (!entityAssemblyID.equals("")) {
-	    entityAssemblyIDs = star.getFrameValues(frame,
-	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID,
-	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
-	}
-
-	String[] modelNumsStr = null;
-	if (modelNum != 0) {
-	    modelNumsStr = star.getAndFilterFrameValues(frame,
-	      star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_MODEL_NUM,
-	      entityAssemblyID, entityAssemblyIDs);
-	}
-
-	String[] resSeqCodesStr = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_RES_SEQ_CODE,
-	  entityAssemblyID, entityAssemblyIDs);
-
-	String[] residueLabels = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_RES_LABEL, entityAssemblyID,
-	  entityAssemblyIDs);
-	residues.make3Letter(residueLabels);
-
-	String[] atomNames = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_NAME, entityAssemblyID,
-	  entityAssemblyIDs);
-
-	String[] atomTypes = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_TYPE, entityAssemblyID,
-	  entityAssemblyIDs);
-
-	String[] deltaShiftValsStr = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_VALUE, entityAssemblyID,
-	  entityAssemblyIDs);
-
 	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
 	  entityAssemblyID);
-
-	// Filter by model number if necessary.
-    	if (modelNum != 0) {
-            String modelStr = "" + modelNum;
-
-            resSeqCodesStr = S2DUtils.selectMatches(modelNumsStr,
-              resSeqCodesStr, modelStr);
-
-            residueLabels = S2DUtils.selectMatches(
-              modelNumsStr, residueLabels, modelStr);
-
-            atomNames = S2DUtils.selectMatches(modelNumsStr,
-              atomNames, modelStr);
-
-            atomTypes = S2DUtils.selectMatches(modelNumsStr,
-	      atomTypes, modelStr);
-
-            deltaShiftValsStr = S2DUtils.selectMatches(
-              modelNumsStr, deltaShiftValsStr, modelStr);
-        }
-
-	// Convert strings to numerical values as necessary.
-        int[] resSeqCodesInt = S2DUtils.arrayStr2Int(
-          resSeqCodesStr, star.DELTA_SHIFT_RES_SEQ_CODE);
-        double[] deltaShiftValsDouble = S2DUtils.arrayStr2Double(
-          deltaShiftValsStr, star.DELTA_SHIFT_VALUE);
 
 	//
 	// Create an S2DChemShift object with the values we just got.
 	//
         S2DChemShift chemShift = S2DChemShift.createSparta(
-	  residues.getPolymerType(), _name, _longName, _dataDir,
-	  _sessionDir, _summary, resSeqCodesInt, residueLabels,
-	  atomNames, atomTypes, deltaShiftValsDouble,
-	  entityAssemblyIDVal, modelNum, star.getFrameDetails(frame));
+	  residues.getPolymerType(), _name, _longName, star, frame,
+	  _dataDir, _sessionDir, _summary, entityAssemblyID,
+	  modelNum, residues);
 
 	//
 	// Now go ahead and write out the delta shift values.
