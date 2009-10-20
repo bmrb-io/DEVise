@@ -24,6 +24,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2009/03/24 19:04:50  wenger
+// Fixed layout of nucleic acid deltashift session (made windows line
+// up better, etc.); fixed nucleotide counts in summary html page, and
+// changed residue to nucleotide where appropriate; fixed nucleic acid
+// deltashift html pages so that they link to the nucleic-acid-specific
+// help page.
+//
 // Revision 1.7  2009/03/16 20:33:08  wenger
 // 3D data select view now only shows data that is available for the
 // currently-selected entity assembly ID.
@@ -187,53 +194,6 @@ public class S2DNAChemShift extends S2DChemShift {
 	}
     }
 
-    //-------------------------------------------------------------------
-    // Write the CSI info for this data.
-    public void writeCSI(int frameIndex) throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShift.writeCSI()");
-	}
-
-	// Don't do anything for nucleic acids.
-    }
-
-    //-------------------------------------------------------------------
-    // Write the percent assignments for this data.
-    // For now, do nothing for nucleic acids.
-    public void writePctAssign(int frameIndex, boolean checkPctAssign,
-      String chemAssgFile)
-      throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DNAChemShift.writePctAssign()");
-	}
-
-	// Don't do anything for nucleic acids.
-    }
-
-    //-------------------------------------------------------------------
-    /**
-     * Add chem shift index data sets to the data set list.
-     * @param The data set list.
-     * @param The frame index.
-     */
-    public void addCsiData(Vector dataSets, int frameIndex)
-    {
-    	// Currently a no-op for nucleic acids.
-    }
-
-    //-------------------------------------------------------------------
-    /**
-     * Add percent assignment data sets to the data set list.
-     * @param The data set list.
-     * @param The frame index.
-     */
-    public void addPctAssignData(Vector dataSets, int frameIndex)
-    {
-    	// Currently a no-op for nucleic acids.
-    }
-
     //===================================================================
     // PROTECTED METHODS
     //-------------------------------------------------------------------
@@ -281,9 +241,6 @@ public class S2DNAChemShift extends S2DChemShift {
 	    } catch(S2DException ex) {
 	        System.err.println(ex.toString());
 	    }
-
-
-
 	}
     }
 

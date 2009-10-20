@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.154  2009/10/07 21:39:43  wenger
+// Code reorganization as a test for the torsion angle code: for atomic
+// coordinates, moved all of the code that actually gets the values from
+// the STAR file from S2DMain into the S2DAtomicCoordinates constructor.
+// I think this really makes a lot of sense -- it simplifies S2DMain,
+// which is too complicated anyhow, and moves the knowledge about what
+// data we need down into the relevant object.  I should probably make
+// this change for all of the similar pieces of code.
+//
 // Revision 1.153  2009/09/25 21:30:32  wenger
 // Changed version to 11.6.3x1, added 11.6.3 section to version
 // history.
@@ -709,7 +718,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.3x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.3x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

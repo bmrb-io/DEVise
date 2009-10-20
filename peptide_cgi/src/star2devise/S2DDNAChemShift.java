@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.9.6.1  2009/08/21 21:00:44  wenger
 // Fixed errors that made some tests fail with the previous version.
 //
@@ -113,6 +117,7 @@ public class S2DDNAChemShift extends S2DNAChemShift {
 	CHEMSHIFT_FILE += "statsel_dna.txt";
 	_refTable = new ShiftDataManager(CHEMSHIFT_FILE);
 
+	// Note: atoms here must match the schema (bmrb-DNADeltaShift).
 	atomNameList = new String[] { "C1'", "C2", "C2'", "C3'", "C4",
 	  "C4'", "C5", "C5'", "C6", "C7", "C8", "H1", "H1'", "H2", "H2'",
 	  "H2''", "H21", "H22", "H3", "H3'", "H4'", "H41", "H42", "H5",
@@ -129,6 +134,11 @@ public class S2DDNAChemShift extends S2DNAChemShift {
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DDNAChemShift.writeDeltashifts()");
+	}
+
+	if (append) {
+	    throw new S2DError("append should never be true for " +
+	      "S2DDNAChemShift.writeDeltashifts()!");
 	}
 
 	String schemaName = "bmrb-DNADeltaShift";
@@ -150,7 +160,7 @@ public class S2DDNAChemShift extends S2DNAChemShift {
 	      "N3_DeltaShift; N4_DeltaShift; N6_DeltaShift; " +
 	      "N7_DeltaShift; N9_DeltaShift";
 
-	writeDeltaShifts(frameIndex, schemaName, attributes,
+	super.writeDeltaShifts(frameIndex, schemaName, attributes,
 	  S2DUtils.TYPE_DNA_DELTASHIFT);
     }
 

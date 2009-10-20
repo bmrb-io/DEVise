@@ -19,7 +19,6 @@ echo "Checking output files"
 set files = ( data_dir/5962ac1.dat \
 	data_dir/5962as1.dat \
 	data_dir/5962d1.dat \
-	data_dir/5962hn1.dat \
 	data_dir/5962md.dat \
 	data_dir/5962rc1.dat \
 	data_dir/5962rl.dat \

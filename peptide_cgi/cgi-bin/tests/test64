@@ -21,8 +21,6 @@ set files = ( data_dir/4416ac1.dat \
 	data_dir/4416as2.dat \
 	data_dir/4416d1.dat \
 	data_dir/4416d2.dat \
-	data_dir/4416hn1.dat \
-	data_dir/4416hn2.dat \
 	data_dir/4416md.dat \
 	#TEMP? data_dir/4416pstmp \
 	data_dir/4416rc1.dat \
