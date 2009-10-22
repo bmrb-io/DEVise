@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2009/10/20 16:54:10  wenger
+// Created a new S2DSpartaChemShift class and cleaned up S2DChemShift
+// class heirarchy in preparation for fixing things for the new SPARTA
+// file format; various related cleanups (note that empty hn?.dat files
+// are no longer generated for nucleic acids, resulting in changes to
+// the test scripts).
+//
 // Revision 1.3  2009/08/25 18:15:57  wenger
 // Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
 // to trunk.
@@ -66,6 +73,7 @@
 
 package star2devise;
 
+import EDU.bmrb.starlibj.SaveFrameNode;
 import java.io.*;
 import java.util.*;
 
@@ -80,21 +88,20 @@ public class S2DProteinChemShift extends S2DChemShift {
 
     //-------------------------------------------------------------------
     // Constructor (for experimental chemical shifts).
-    public S2DProteinChemShift(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
-      String[] residueLabels, String[] atomNames, String[] atomTypes,
-      double[] chemShiftVals, int[] ambiguityVals,
-      int entityAssemblyID, String frameDetails)
-      throws S2DException
+    public S2DProteinChemShift(String name, String longName,
+      S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
+      S2DResidues residues) throws S2DException
     {
-	super(name, longName, dataDir, sessionDir, summary, resSeqCodes,
-	  residueLabels, atomNames, atomTypes, chemShiftVals,
-	  ambiguityVals, entityAssemblyID, frameDetails);
+        super(name, longName, star, frame, dataDir, sessionDir, summary,
+	  entityAssemblyID);
 
         if (doDebugOutput(11)) {
 	    System.out.println("S2DProteinChemShift.S2DProteinChemShift(" +
 	      name + ")");
 	}
+
+	getExperimentalValues(star, frame, entityAssemblyID, residues);
 
 	CHEMSHIFT_FILE += "chemshift.txt";
         _refTable = new ShiftDataManager(CHEMSHIFT_FILE);

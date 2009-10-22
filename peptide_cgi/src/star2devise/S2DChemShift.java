@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2009/10/20 22:07:56  wenger
+// Reorganized the chemical shift code by moving the code that actually
+// gets the data values out of S2DMain (as I did for S2DAtomicCoords).
+//
 // Revision 1.26  2009/10/20 16:54:10  wenger
 // Created a new S2DSpartaChemShift class and cleaned up S2DChemShift
 // class heirarchy in preparation for fixing things for the new SPARTA
@@ -290,36 +294,30 @@ public class S2DChemShift {
     //-------------------------------------------------------------------
     // Factory -- experimental chemical shifts.
     public static S2DChemShift create(int polymerType, String name,
-      String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
-      String[] residueLabels, String[] atomNames, String[] atomTypes,
-      double[] chemShiftVals, int[] ambiguityVals,
-      int entityAssemblyID, String frameDetails)
-      throws S2DException
+      String longName, S2DNmrStarIfc star, SaveFrameNode frame,
+      String dataDir, String sessionDir, S2DSummaryHtml summary,
+      String entityAssemblyID, S2DResidues residues) throws S2DException
     {
-	S2DChemShift chemShift;
+	S2DChemShift chemShift = null;
 
         switch (polymerType) {
 	case S2DResidues.POLYMER_TYPE_PROTEIN:
 	case S2DResidues.POLYMER_TYPE_UNKNOWN:
-	    chemShift = new S2DProteinChemShift(name, longName, dataDir,
-	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
-	      atomTypes, chemShiftVals, ambiguityVals, entityAssemblyID,
-	      frameDetails);
+	    chemShift = new S2DProteinChemShift(name, longName, star,
+	      frame, dataDir, sessionDir, summary, entityAssemblyID,
+	      residues);
 	    break;
 
 	case S2DResidues.POLYMER_TYPE_DNA:
-	    chemShift = new S2DDNAChemShift(name, longName, dataDir,
-	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
-	      atomTypes, chemShiftVals, ambiguityVals, entityAssemblyID,
-	      frameDetails);
+	    chemShift = new S2DDNAChemShift(name, longName, star,
+	      frame, dataDir, sessionDir, summary, entityAssemblyID,
+	      residues);
 	    break;
 
 	case S2DResidues.POLYMER_TYPE_RNA:
-	    chemShift = new S2DRNAChemShift(name, longName, dataDir,
-	      sessionDir, summary, resSeqCodes, residueLabels, atomNames,
-	      atomTypes, chemShiftVals, ambiguityVals, entityAssemblyID,
-	      frameDetails);
+	    chemShift = new S2DRNAChemShift(name, longName, star,
+	      frame, dataDir, sessionDir, summary, entityAssemblyID,
+	      residues);
 	    break;
 
 	default:
@@ -337,8 +335,7 @@ public class S2DChemShift {
       String entityAssemblyID, int modelNum, S2DResidues residues)
       throws S2DException
     {
-
-	S2DChemShift chemShift;
+	S2DChemShift chemShift = null;
 
         switch (polymerType) {
 	case S2DResidues.POLYMER_TYPE_PROTEIN:
@@ -365,39 +362,7 @@ public class S2DChemShift {
     }
 
     //-------------------------------------------------------------------
-    // Constructor (for experimental chemical shifts).
-    public S2DChemShift(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
-      String[] residueLabels, String[] atomNames, String[] atomTypes,
-      double[] chemShiftVals, int[] ambiguityVals,
-      int entityAssemblyID, String frameDetails)
-      throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DChemShift.S2DChemShift(" + name + ", " +
-	      entityAssemblyID + ")");
-	}
-
-	_name = name;
-	_longName = longName;
-	_dataDir = dataDir;
-	_sessionDir = sessionDir;
-	_summary = summary;
-	_frameDetails = frameDetails;
-
-	_resSeqCodes = resSeqCodes;
-	_residueLabels = S2DUtils.arrayToUpper(residueLabels);
-	_atomNames = atomNames;
-	_atomTypes = atomTypes;
-	_chemShiftVals = chemShiftVals;
-	_ambiguityVals = ambiguityVals;
-	_entityAssemblyID = entityAssemblyID;
-
-	_info = "Visualization of " + _longName;
-    }
-
-    //-------------------------------------------------------------------
-    // Constructor (for SPARTA-calculated deltashifts).
+    // Constructor.
     public S2DChemShift(String name, String longName, S2DNmrStarIfc star,
       SaveFrameNode frame, String dataDir, String sessionDir,
       S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
@@ -610,6 +575,103 @@ public class S2DChemShift {
 
     //===================================================================
     // PROTECTED METHODS
+
+    //-------------------------------------------------------------------
+    /**
+     * Get experimental values needed for chemical shift output from
+     * the given STAR file ane frame.
+     * @param The NMR-STAR file
+     * @param The frame containing chemical shifts
+     * @param The entity assembly ID we're currently processing
+     * @param The residues for the current entity assembly
+     */
+    void getExperimentalValues(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID, S2DResidues residues) throws S2DException
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DChemShift.getExperimentalValues(" +
+	      star.getFrameName(frame) + ", " + entityAssemblyID + ")");
+	}
+
+	//
+	// Get the values we need from the Star file.
+	//
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
+	}
+
+	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE,
+	  entityAssemblyID, entityAssemblyIDs);
+	_resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	  star.CHEM_SHIFT_RES_SEQ_CODE);
+	resSeqCodesTmp = null;
+
+	_residueLabels = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+	residues.make3Letter(_residueLabels);
+
+	_atomNames = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	try { 
+	    _atomTypes = star.getAndFilterFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE,
+	      entityAssemblyID, entityAssemblyIDs);
+	} catch (S2DException ex) {
+	    if (doDebugOutput(0)) {
+	    	System.out.println("Warning: unable to get " +
+		  star.CHEM_SHIFT_ATOM_TYPE +
+		  " values (" + ex.toString() + "); deriving them from " +
+		  star.CHEM_SHIFT_ATOM_NAME + " values instead");
+	    }
+
+	    _atomTypes = S2DUtils.atomName2AtomType(_atomNames);
+	}
+
+	String[] chemShiftsTmp = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
+        _chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp,
+	  star.CHEM_SHIFT_VALUE);
+	chemShiftsTmp = null;
+
+	try {
+	    String[] ambiguityTmp = star.getAndFilterFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE,
+	      entityAssemblyID, entityAssemblyIDs);
+	    if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
+	        throw new S2DWarning("Ambiguity code values are all null");
+	    }
+	    _ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp,
+	      star.CHEM_SHIFT_AMBIG_CODE);
+	    ambiguityTmp = null;
+	} catch (S2DException ex) {
+            if (doDebugOutput(4)) {
+	        System.out.println("No ambiguity values in this save frame (" +
+		  star.getFrameName(frame) + ")");
+	    }
+	    _ambiguityVals = new int[_resSeqCodes.length];
+	    for (int index = 0; index < _ambiguityVals.length; ++index) {
+	    	_ambiguityVals[index] = 9;
+	    }
+	}
+
+	_entityAssemblyID = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
+    }
 
     //-------------------------------------------------------------------
     /**

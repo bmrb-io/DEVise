@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.156  2009/10/20 22:07:56  wenger
+// Reorganized the chemical shift code by moving the code that actually
+// gets the data values out of S2DMain (as I did for S2DAtomicCoords).
+//
 // Revision 1.155  2009/10/20 16:54:10  wenger
 // Created a new S2DSpartaChemShift class and cleaned up S2DChemShift
 // class heirarchy in preparation for fixing things for the new SPARTA
@@ -2955,94 +2959,11 @@ public class S2DMain {
 	}
 
 	//
-	// Get the values we need from the Star file.
-	//
-
-	// If a non-blank entityAssemblyID is specified, we need to filter
-	// the frame values to only take the ones corresponding to that
-	// entityAssemblyID.  To do that, we get the entityAssemblyID
-	// values in each row of the loop.  (entityAssemblyID will be blank
-	// when processing NMR-STAR 2.1 files -- they don't have data for
-	// more than one entity assembly in a single save frame).
-	String[] entityAssemblyIDs = null;
-	if (!entityAssemblyID.equals("")) {
-	    entityAssemblyIDs = star.getFrameValues(frame,
-	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
-	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
-	}
-
-	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE,
-	  entityAssemblyID, entityAssemblyIDs);
-	int[] resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
-	  star.CHEM_SHIFT_RES_SEQ_CODE);
-	resSeqCodesTmp = null;
-
-	String[] residueLabels = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
-	  entityAssemblyIDs);
-	residues.make3Letter(residueLabels);
-
-	String[] atomNames = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
-	  entityAssemblyIDs);
-
-	String[] atomTypes = null;
-	try { 
-	    atomTypes = star.getAndFilterFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_TYPE,
-	      entityAssemblyID, entityAssemblyIDs);
-	} catch (S2DException ex) {
-	    if (doDebugOutput(0)) {
-	    	System.out.println("Warning: unable to get " +
-		  star.CHEM_SHIFT_ATOM_TYPE +
-		  " values (" + ex.toString() + "); deriving them from " +
-		  star.CHEM_SHIFT_ATOM_NAME + " values instead");
-	    }
-
-	    atomTypes = S2DUtils.atomName2AtomType(atomNames);
-	}
-
-	String[] chemShiftsTmp = star.getAndFilterFrameValues(frame,
-	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_VALUE, entityAssemblyID,
-	  entityAssemblyIDs);
-        double[] chemShiftVals = S2DUtils.arrayStr2Double(chemShiftsTmp,
-	  star.CHEM_SHIFT_VALUE);
-	chemShiftsTmp = null;
-
-	int[] ambiguityVals;
-	try {
-	    String[] ambiguityTmp = star.getAndFilterFrameValues(frame,
-	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE,
-	      entityAssemblyID, entityAssemblyIDs);
-	    if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
-	        throw new S2DWarning("Ambiguity code values are all null");
-	    }
-	    ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp,
-	      star.CHEM_SHIFT_AMBIG_CODE);
-	    ambiguityTmp = null;
-	} catch (S2DException ex) {
-            if (doDebugOutput(4)) {
-	        System.out.println("No ambiguity values in this save frame (" +
-		  star.getFrameName(frame) + ")");
-	    }
-	    ambiguityVals = new int[resSeqCodes.length];
-	    for (int index = 0; index < ambiguityVals.length; ++index) {
-	    	ambiguityVals[index] = 9;
-	    }
-	}
-
-	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
-	  entityAssemblyID);
-
-	//
-	// Create an S2DChemShift object with the values we just got.
+	// Create an S2DChemShift object.
 	//
         S2DChemShift chemShift = S2DChemShift.create(
-	  residues.getPolymerType(), _name, _longName, _dataDir,
-	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
-	  atomTypes, chemShiftVals, ambiguityVals, entityAssemblyIDVal,
-	  star.getFrameDetails(frame));
+	  residues.getPolymerType(), _name, _longName, star, frame,
+	  _dataDir, _sessionDir, _summary, entityAssemblyID, residues);
 
 	//
 	// Now go ahead and calculate and write out the chem shift values.
