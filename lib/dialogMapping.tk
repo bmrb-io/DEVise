@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2005
+#  (c) Copyright 1992-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.60  2006/04/27 20:48:08  wenger
+#       Added X Offset to Bar and Segment shapes (for NRG visualization for
+#       Luis Populin).
+#
 #       Revision 1.59  2005/12/06 20:04:51  wenger
 #       Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 #       be the end of the V1_7b0_br branch.)
@@ -282,7 +286,7 @@ proc DoEditMapping {} {
 	return
     }
 
-#TEMPTEMP -- check for compiled mapping here
+#TEMP -- check for compiled mapping here
     
     if {[WindowVisible .editMapping]}  {
 	return
@@ -346,6 +350,10 @@ proc BringUpMappingDialog { w curview } {
 	    [list "ShapeAttr8" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr9" {0 0.1 0.5 1 2}] \
 	    [list "ShapeAttr10" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr11" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr12" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr13" {0 0.1 0.5 1 2}] \
+	    [list "ShapeAttr14" {0 0.1 0.5 1 2}] \
 	    ]
 
     set xname  [lindex [lindex $mappings 0] 0]
@@ -494,7 +502,8 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 		set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
 			"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \
 			"ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" "ShapeAttr9" \
-			"ShapeAttr10"
+			"ShapeAttr10" "ShapeAttr11" "ShapeAttr12" "ShapeAttr13" \
+			"ShapeAttr14"
     	]
 
 		foreach item $mappings  {
@@ -580,10 +589,6 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 	set shapeAttr8 [lindex [lindex $params 19] 1]
 	set shapeAttr9 [lindex [lindex $params 20] 1]
 	set shapeAttr10 [lindex [lindex $params 21] 1]
-
-	# Save shapeAttr11-14 -- not implemented in the GUI, but we need to
-	# save the values so they don't get cleared.  (See bug 913.)
-    global shapeAttr11 shapeAttr12 shapeAttr13 shapeAttr14
 	set shapeAttr11 [lindex [lindex $params 22] 1]
 	set shapeAttr12 [lindex [lindex $params 23] 1]
 	set shapeAttr13 [lindex [lindex $params 24] 1]
@@ -609,6 +614,10 @@ proc UpdateMappingDialog { w curView {goToTop 1} } {
 			[list "ShapeAttr8" $shapeAttr8] \
 			[list "ShapeAttr9" $shapeAttr9] \
 			[list "ShapeAttr10" $shapeAttr10] \
+			[list "ShapeAttr11" $shapeAttr11] \
+			[list "ShapeAttr12" $shapeAttr12] \
+			[list "ShapeAttr13" $shapeAttr13] \
+			[list "ShapeAttr14" $shapeAttr14] \
 			]
      
 	#    set topgrp [SelectTopGroup $schemaname]
@@ -659,7 +668,8 @@ proc ClearMappingDialog { w } {
 	set mappings [list X Y Z Color Size Pattern Orientation SymbolType \
 		"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" "ShapeAttr4" \
 		"ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" "ShapeAttr9" \
-		"ShapeAttr10"
+		"ShapeAttr10" "ShapeAttr11" "ShapeAttr12" "ShapeAttr13" \
+		"ShapeAttr14"
     ]
 
 	foreach item $mappings  {
@@ -771,10 +781,10 @@ proc ChangeParams { map oldparams newmap } {
 			[lindex $newmap 16] \
 			[lindex $newmap 17] \
 			[lindex $newmap 18] \
-			$shapeAttr11 \
-			$shapeAttr12 \
-			$shapeAttr13 \
-			$shapeAttr14 \
+			[lindex $newmap 19] \
+			[lindex $newmap 20] \
+			[lindex $newmap 21] \
+			[lindex $newmap 22] \
 			]
     # Change parameter
     set cmd "DEVise changeParam \{$map\} $newparams"
@@ -826,28 +836,44 @@ proc UpdateMappings { map params mappings } {
 # each shape and attr# (e.g. Rect Attr1 => Width)
 ###############Added a new shape : View 
 set DEViseShapeAttrNames { \
-	{Rect Width Height "Cloud Width" "Cloud Height" "Line Width"} \
-	{RectX "Relative Width" "Relative Height" "" "" "Line Width"} \
-	{Bar Width Error "" "X Offset" "Line Width"} \
-	{Line "" "" "" "X Offset" "Line Width"} \
-	{"Line Shade" "" "" "" "" ""} \
-	{"Regular Polygon" Width Height Segments "" "Line Width"} \
-	{Oval Width Height "" "" "Line Width"} \
-	{Vector "X Length (Width)" "Y Length (Height)" "" "" "Line Width"} \
-	{HorLine "" "" "" "" "Line Width"} \
-	{Segment Width Height "" "X Offset" "Line Width"} \
-	{HighLow Width "Mid" "Low (Y min)" "Color increment" \
-	  "Line Width"} \
-	{Polyline "" "" "" "" ""} \
-	{Image "Filename/Image" "Image Type" "Aspect" "" ""} \
-	{"Polyline File" Filename Format "" "" "Line Width"} \
-	{"Text Label" "Label Text" "Format" "Width" "Height" "Outline"} \
-	{"Tcl/Tk Window" "Script File" "Arg Count" "Arg 0" "Arg 1" "Arg 2"} \
-	{"View" "View Name" Width Height TData Pile } \
-	{"Fixed Text Label" "Label Text" "Format" "Alignment" "Font Family" \
-	  "Bold"} \
-	{"Text Data Label" "Label Text" "Alignment" "Font Family" "Bold" \
-	  "Italic"} \
+	{Rect "Width <SA0>" "Height <SA1>" "Cloud Width <SA2>" "Cloud Height <SA3>" \
+	  "Line Width <SA4>"} \
+	{RectX "Relative Width <SA0>" "Relative Height <SA1>" "<SA2>" \
+	  "<SA3>" "Line Width <SA4>"} \
+	{Bar "Width <SA0>" "Error <SA1>" "<SA2>" "X Offset <SA3>" \
+	  "Line Width <SA4>"} \
+	{Line "<SA0>" "<SA1>" "<SA2>" "X Offset <SA3>" \
+	  "Line Width <SA4>"} \
+	{"Line Shade" "<SA0>" "<SA1>" "<SA2>" "<SA3>" \
+	  "<SA4>"} \
+	{"Regular Polygon" "Width <SA0>" "Height <SA1>" "Segments <SA2>" \
+	  "<SA3>" "Line Width <SA4>" } \
+	{Oval "Width <SA0>" "Height <SA0]" "<SA1>" "<SA2>" \
+	  "Line Width <SA3>" "<SA4>" } \
+	{Vector "X Length (Width) <SA0>" "Y Length (Height) <SA1>" \
+	  "<SA2>" "<SA3>" "Line Width <SA4>"} \
+	{HorLine "<SA0>" "<SA1>" "<SA2>" "<SA3>" \
+	  "Line Width <SA4>"} \
+	{Segment "Width <SA0>" "Height <SA1>" "<SA2>" "X Offset <SA3>" \
+	  "Line Width <SA4>"} \
+	{HighLow "Width <SA0>" "Mid <SA1>" "Low (Y min) <SA2>" \
+	  "Color increment <SA3>" "Line Width <SA4>"} \
+	{Polyline "<SA0>" "<SA1>" "<SA2>" "<SA3>" \
+	   "<SA4>"} \
+	{Image "Filename/Image <SA0>" "Image Type <SA1>" "Aspect <SA2>" \
+	  "<SA3>" "<SA4>"} \
+	{"Polyline File" "Filename <SA0>" "Format <SA1>" "<SA2>" \
+	  "<SA3>" "Line Width <SA4>"} \
+	{"Text Label" "Label Text <SA0>" "Format <SA1>" "Width <SA2>" \
+	  "Height <SA3>" "Outline <SA4>"} \
+	{"Tcl/Tk Window" "Script File <SA0>" "Arg Count <SA1>" "Arg 0 <SA2>" \
+	  "Arg 1 <SA3>" "Arg 2 <SA4>"} \
+	{"View" "View Name <SA0>" "Width <SA1>" "Height <SA2>" \
+	  "TData <SA3>" "Pile <SA4>" } \
+	{"Fixed Text Label" "Label Text <SA0>" "Format <SA1>" \
+	  "Alignment <SA2>" "Font Family <SA3>" "Bold <SA4>"} \
+	{"Text Data Label" "Label Text <SA0>" "Alignment <SA1>" \
+	  "Font Family <SA2>" "Bold <SA3>" "Italic <SA4>"} \
 }
 
 # Adjusts the labels of the five ShapeAttr menu labels to descriptive terms
@@ -857,113 +883,142 @@ proc UpdateShapeAttrs { w shape } {
 	global DEViseShapeAttrNames
 
     if {$shape == "View"} {
-		$w.mapping.label.pShapeAttr5 config -text "X Low"
+		$w.mapping.label.pShapeAttr5 config -text "X Low <SA5>"
 		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr5 -side top -fill x
 
-		$w.mapping.label.pShapeAttr6 config -text "Y Low"
+		$w.mapping.label.pShapeAttr6 config -text "Y Low <SA6>"
 		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr6 -side top -fill x
 
-		$w.mapping.label.pShapeAttr7 config -text "X High"
+		$w.mapping.label.pShapeAttr7 config -text "X High <SA7>"
 		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr7 -side top -fill x
 
-		$w.mapping.label.pShapeAttr8 config -text "Y High"
+		$w.mapping.label.pShapeAttr8 config -text "Y High <SA8>"
 		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr8 -side top -fill x
 
-		$w.mapping.label.pShapeAttr9 config -text "Child Value"
+		$w.mapping.label.pShapeAttr9 config -text "Child Value <SA9>"
 		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr9 -side top -fill x
 
-		$w.mapping.label.pShapeAttr10 config -text "Title"
+		$w.mapping.label.pShapeAttr10 config -text "Title <SA10>"
 		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr10 -side top -fill x
 	} elseif {$shape == "Text Label"} {
-		$w.mapping.label.pShapeAttr5 config -text "Alignment"
+		$w.mapping.label.pShapeAttr5 config -text "Alignment <SA5>"
 		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr5 -side top -fill x
 
-		$w.mapping.label.pShapeAttr6 config -text "Font Family"
+		$w.mapping.label.pShapeAttr6 config -text "Font Family <SA6>"
 		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr6 -side top -fill x
 
-		$w.mapping.label.pShapeAttr7 config -text "Bold"
+		$w.mapping.label.pShapeAttr7 config -text "Bold <SA7>"
 		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr7 -side top -fill x
 
-		$w.mapping.label.pShapeAttr8 config -text "Italic"
+		$w.mapping.label.pShapeAttr8 config -text "Italic <SA8>"
 		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr8 -side top -fill x
 
-	    pack forget $w.mapping.label.pShapeAttr9
-	    pack forget $w.mapping.value.pShapeAttr9
-
-	    pack forget $w.mapping.label.pShapeAttr10
-	    pack forget $w.mapping.value.pShapeAttr10
-	} elseif {$shape == "Fixed Text Label"} {
-		$w.mapping.label.pShapeAttr5 config -text "Italic"
-		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
-		pack $w.mapping.value.pShapeAttr5 -side top -fill x
-
-	    pack forget $w.mapping.label.pShapeAttr6
-	    pack forget $w.mapping.value.pShapeAttr6
-
-	    pack forget $w.mapping.label.pShapeAttr7
-	    pack forget $w.mapping.value.pShapeAttr7
-
-	    pack forget $w.mapping.label.pShapeAttr8
-	    pack forget $w.mapping.value.pShapeAttr8
-
-	    pack forget $w.mapping.label.pShapeAttr9
-	    pack forget $w.mapping.value.pShapeAttr9
-
-	    pack forget $w.mapping.label.pShapeAttr10
-	    pack forget $w.mapping.value.pShapeAttr10
-    } elseif {$shape == "RectX"} {
-		$w.mapping.label.pShapeAttr5 config -text "Program"
-		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
-		pack $w.mapping.value.pShapeAttr5 -side top -fill x
-
-		$w.mapping.label.pShapeAttr6 config -text "Output File"
-		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
-		pack $w.mapping.value.pShapeAttr6 -side top -fill x
-
-		$w.mapping.label.pShapeAttr7 config -text "Arg 1"
-		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
-		pack $w.mapping.value.pShapeAttr7 -side top -fill x
-
-		$w.mapping.label.pShapeAttr8 config -text "Arg 2"
-		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
-		pack $w.mapping.value.pShapeAttr8 -side top -fill x
-
-		$w.mapping.label.pShapeAttr9 config -text "Arg 3"
+		$w.mapping.label.pShapeAttr9 config -text "<SA9>"
 		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr9 -side top -fill x
 
-		$w.mapping.label.pShapeAttr10 config -text "Arg 4"
+		$w.mapping.label.pShapeAttr10 config -text "<SA10>"
+		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr10 -side top -fill x
+	} elseif {$shape == "Fixed Text Label"} {
+		$w.mapping.label.pShapeAttr5 config -text "Italic <SA5>"
+		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr5 -side top -fill x
+
+		$w.mapping.label.pShapeAttr6 config -text "<SA6>"
+		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr6 -side top -fill x
+
+		$w.mapping.label.pShapeAttr7 config -text "<SA7>"
+		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr7 -side top -fill x
+
+		$w.mapping.label.pShapeAttr8 config -text "<SA8>"
+		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr8 -side top -fill x
+
+		$w.mapping.label.pShapeAttr9 config -text "<SA9>"
+		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr9 -side top -fill x
+
+		$w.mapping.label.pShapeAttr10 config -text "<SA10>"
+		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr10 -side top -fill x
+    } elseif {$shape == "RectX"} {
+		$w.mapping.label.pShapeAttr5 config -text "Program <SA5>"
+		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr5 -side top -fill x
+
+		$w.mapping.label.pShapeAttr6 config -text "Output File <SA6>"
+		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr6 -side top -fill x
+
+		$w.mapping.label.pShapeAttr7 config -text "Arg 1 <SA7>"
+		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr7 -side top -fill x
+
+		$w.mapping.label.pShapeAttr8 config -text "Arg 2 <SA8>"
+		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr8 -side top -fill x
+
+		$w.mapping.label.pShapeAttr9 config -text "Arg 3 <SA9>"
+		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr9 -side top -fill x
+
+		$w.mapping.label.pShapeAttr10 config -text "Arg 4 <SA10>"
 		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr10 -side top -fill x
 	} else {
-	    pack forget $w.mapping.label.pShapeAttr5
-	    pack forget $w.mapping.value.pShapeAttr5
+		$w.mapping.label.pShapeAttr5 config -text "<SA5>"
+		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr5 -side top -fill x
 
-	    pack forget $w.mapping.label.pShapeAttr6
-	    pack forget $w.mapping.value.pShapeAttr6
+		$w.mapping.label.pShapeAttr6 config -text "<SA6>"
+		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr6 -side top -fill x
 
-	    pack forget $w.mapping.label.pShapeAttr7
-	    pack forget $w.mapping.value.pShapeAttr7
+		$w.mapping.label.pShapeAttr7 config -text "<SA7>"
+		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr7 -side top -fill x
 
-	    pack forget $w.mapping.label.pShapeAttr8
-	    pack forget $w.mapping.value.pShapeAttr8
+		$w.mapping.label.pShapeAttr8 config -text "<SA8>"
+		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr8 -side top -fill x
 
-	    pack forget $w.mapping.label.pShapeAttr9
-	    pack forget $w.mapping.value.pShapeAttr9
+		$w.mapping.label.pShapeAttr9 config -text "<SA9>"
+		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr9 -side top -fill x
 
-	    pack forget $w.mapping.label.pShapeAttr10
-	    pack forget $w.mapping.value.pShapeAttr10
+		$w.mapping.label.pShapeAttr10 config -text "<SA10>"
+		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr10 -side top -fill x
 	}
+
+	$w.mapping.label.pShapeAttr11 config -text "<SA11>"
+	pack $w.mapping.label.pShapeAttr11 -side top -fill x -pady 0.7m
+	pack $w.mapping.value.pShapeAttr11 -side top -fill x
+
+	$w.mapping.label.pShapeAttr12 config -text "<SA12>"
+	pack $w.mapping.label.pShapeAttr12 -side top -fill x -pady 0.7m
+	pack $w.mapping.value.pShapeAttr12 -side top -fill x
+
+	$w.mapping.label.pShapeAttr13 config -text "<SA13>"
+	pack $w.mapping.label.pShapeAttr13 -side top -fill x -pady 0.7m
+	pack $w.mapping.value.pShapeAttr13 -side top -fill x
+
+	$w.mapping.label.pShapeAttr14 config -text "<SA14>"
+	pack $w.mapping.label.pShapeAttr14 -side top -fill x -pady 0.7m
+	pack $w.mapping.value.pShapeAttr14 -side top -fill x
 
 	set i 0
 	set j 1
@@ -1013,7 +1068,8 @@ proc UpdateDefaultShapeAttrs { w } {
 
     foreach item {"ShapeAttr0" "ShapeAttr1" "ShapeAttr2" "ShapeAttr3" \
 	  "ShapeAttr4" "ShapeAttr5" "ShapeAttr6" "ShapeAttr7" "ShapeAttr8" \
-	  "ShapeAttr9" "ShapeAttr10" } {
+	  "ShapeAttr9" "ShapeAttr10" "ShapeAttr11" "ShapeAttr12" \
+	  "ShapeAttr13" "ShapeAttr14" } {
 		$w.mapping.label.p$item config -text $item
 		$w.mapping.value.p$item config -state normal
 	}
