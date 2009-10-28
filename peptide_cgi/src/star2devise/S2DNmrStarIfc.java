@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.25.2.1  2009/08/19 20:11:05  wenger
 // Changed SPARTA processing to deal with SPARTA data being in a
 // separate file from the main BMRB entry (requested by Eldon
@@ -868,6 +872,19 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      */
     public Vector getUniqueEntityAssemblyIDs(SaveFrameNode frame,
       String tagName) throws S2DException
+    {
+        return null;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Get the save frame containing the requested type of SPARTA
+     * data (average or single-model).
+     * @param Whether to get average data.
+     * @return The save frame (or null if an appropriate save frame
+     *   is not found).
+     */
+    public SaveFrameNode getSpartaFrame(boolean isAvg)
     {
         return null;
     }

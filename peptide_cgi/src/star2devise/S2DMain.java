@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.157  2009/10/22 17:26:34  wenger
+// Refactored the experimental chemical shifts to match the new-style
+// Sparta processing where we get the appropriate data values in
+// the appropriate chemical shift-related class(es) rather than in
+// S2DMain.
+//
 // Revision 1.156  2009/10/20 22:07:56  wenger
 // Reorganized the chemical shift code by moving the code that actually
 // gets the data values out of S2DMain (as I did for S2DAtomicCoords).
@@ -2477,58 +2483,51 @@ public class S2DMain {
 	      isAvg + ")");
 	}
 
-	String categoryName = null;
-	boolean append = false;
-	if (isAvg) {
-	    categoryName = spartaStar.DELTA_CHEM_SHIFTS_AVG;
-	} else {
-	    categoryName = spartaStar.DELTA_CHEM_SHIFTS;
-	    append = true;
+	boolean append = !isAvg;
+
+	SaveFrameNode frame = spartaStar.getSpartaFrame(isAvg);
+
+	if (frame == null) {
+	    String type = isAvg ? "average" : "single";
+	    throw new S2DError("No SPARTA (" + type + ") save frame found!");
 	}
 
-	Enumeration frameList = spartaStar.getDataFramesByCat(
-	  spartaStar.DELTA_SHIFT_SF_CAT, categoryName);
+	Vector entityAssemblyIDList = spartaStar.getUniqueEntityAssemblyIDs(
+	  frame, spartaStar.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
+	for (int index = 0; index < entityAssemblyIDList.size();
+	  index++) {
+	    String entityAssemblyID =
+	      (String)entityAssemblyIDList.get(index);
+	    String entityID = mainStar.entAssemID2entID(entityAssemblyID);
 
-        while (frameList.hasMoreElements()) {
-	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    // I'm pretty sure this will fail if the main STAR file
+	    // and the SPARTA star file are different versions.
+	    // wenger 2009-08-19
+	    S2DResidues residues = getFrameResCounts(mainStar, frame,
+	      entityID, 0);
 
-	    Vector entityAssemblyIDList = spartaStar.getUniqueEntityAssemblyIDs(
-	      frame, spartaStar.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
-	    for (int index = 0; index < entityAssemblyIDList.size();
-	      index++) {
-	        String entityAssemblyID =
-		  (String)entityAssemblyIDList.get(index);
-		String entityID = mainStar.entAssemID2entID(entityAssemblyID);
-
-		// I'm pretty sure this will fail if the main STAR file
-		// and the SPARTA star file are different versions.
-		// wenger 2009-08-19
-		S2DResidues residues = getFrameResCounts(mainStar, frame,
-		  entityID, 0);
-
-		int minModelNum = 0;
-		int maxModelNum = 0;
-		if (!isAvg) {
-		    minModelNum = 1;
-		    maxModelNum = getSpartaMaxModelNum(spartaStar, frame,
-		      entityAssemblyID);
-		}
-		for (int modelNum = minModelNum; modelNum <= maxModelNum;
-		  modelNum++) {
-		    try {
-	                saveFrameSpartaDeltaShifts(spartaStar, frame,
-			  entityAssemblyID, modelNum, residues, append);
-		    } catch (Exception ex) {
-		        System.err.println("Warning: error saving SPARTA " +
-			  "delta shifts for save frame " +
-		          spartaStar.getFrameName(frame) + " (" +
-			  entityAssemblyID + ", " + modelNum + "): " +
-			  ex.toString());
-		    }
-		    append = true;
-		}
+	    int minModelNum = 0;
+	    int maxModelNum = 0;
+	    if (!isAvg) {
+		minModelNum = 1;
+		maxModelNum = getSpartaMaxModelNum(spartaStar, frame,
+		  entityAssemblyID);
 	    }
-    	}
+	    for (int modelNum = minModelNum; modelNum <= maxModelNum;
+	      modelNum++) {
+	        try {
+	            saveFrameSpartaDeltaShifts(spartaStar, frame,
+		      entityAssemblyID, modelNum, residues, append);
+		} catch (Exception ex) {
+		    System.err.println("Warning: error saving SPARTA " +
+		      "delta shifts for save frame " +
+		      spartaStar.getFrameName(frame) + " (" +
+		      entityAssemblyID + ", " + modelNum + "): " +
+		      ex.toString());
+		}
+		append = true;
+	    }
+        }
     }
 
     //-------------------------------------------------------------------

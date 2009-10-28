@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.16.6.8  2009/08/25 17:52:03  wenger
 // Very minor code cleanups, added SPARTA stuff to pre-release manual
 // testing procedure.
@@ -611,6 +615,42 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	}
 
 	return molSysComp;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Get the save frame containing the requested type of SPARTA
+     * data (average or single-model).
+     * @param Whether to get average data.
+     * @return The save frame (or null if an appropriate save frame
+     *   is not found).
+     */
+    public SaveFrameNode getSpartaFrame(boolean isAvg)
+    {
+	String categoryName = null;
+	if (isAvg) {
+	    categoryName = DELTA_CHEM_SHIFTS_AVG;
+	} else {
+	    categoryName = DELTA_CHEM_SHIFTS;
+	}
+
+	SaveFrameNode spartaFrame = null;
+
+	Enumeration frameList = getDataFramesByCat(DELTA_SHIFT_SF_CAT,
+	  categoryName);
+
+	while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    if (spartaFrame != null) {
+		String type = isAvg ? "average" : "single";
+		System.err.println(new S2DWarning("More than one SPARTA ("
+		  + type + ") save frame found; only using first one"));
+	    } else {
+	        spartaFrame = frame;
+	    }
+        }
+
+	return spartaFrame;
     }
 
     //===================================================================

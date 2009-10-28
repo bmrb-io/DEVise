@@ -17,6 +17,13 @@ endif
 
 source tests/test_sparta3_check
 
+#TEMP? (until SPARTA output is fixed)
+set file = "data_dir/16385sd1.dat"
+set line = '^1 0 2 GLU -0.245 0.0 0.202 0.0 0.0 0.0$' 
+source tests/check4line
+set line = '^1 20 107 LEU -0.08 0.0 1.02 0.0 0.0 0.054$'
+source tests/check4line
+
 
 echo -n "Test_sparta3_3 result: "
 if ($result == 0) then

@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.14.6.5  2009/08/25 17:52:03  wenger
 // Very minor code cleanups, added SPARTA stuff to pre-release manual
 // testing procedure.
@@ -187,6 +191,8 @@ public abstract class S2DStarIfc {
     // Star tags and values.  (Treat these as constants -- they are set
     // by the constructor of each subclass to match that file type.)
     //
+    //TEMP -- maybe eventually change these all to "protected", once all
+    // "data extraction" code is moved out of S2DMain.
     public String ASSIGNED_CHEM_SHIFTS = "";
 
     public String ABBREV_COMMON = "";

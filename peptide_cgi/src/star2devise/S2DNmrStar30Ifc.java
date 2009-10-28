@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.17.6.5  2009/08/25 17:52:03  wenger
 // Very minor code cleanups, added SPARTA stuff to pre-release manual
 // testing procedure.
@@ -193,6 +197,10 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
     private static final int DEBUG = 0;
 
+    protected String DELTA_CHEM_SHIFTS_MODEL_TYPE_SINGLE = "single";
+    protected String DELTA_CHEM_SHIFTS_MODEL_TYPE_AVG = "average";
+    protected String DELTA_CHEM_SHIFTS_MODEL_TYPE =
+      "_Entity_delta_chem_shifts.Model_type";
     protected String ENTITY_ASSEMBLY_ID = "_Entity_assembly.ID";
     protected String ENTITY_ASSEMBLY_ENTITY_ID = "_Entity_assembly.Entity_ID";
     protected String ENTITY_ID = "_Entity.ID";
@@ -617,6 +625,53 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	  REP_CONF_ENTITY_ASSEMBLY_ID);
 
     	return entAssemIDVals;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Get the save frame containing the requested type of SPARTA
+     * data (average or single-model).
+     * @param Whether to get average data.
+     * @return The save frame (or null if an appropriate save frame
+     *   is not found).
+     */
+    public SaveFrameNode getSpartaFrame(boolean isAvg)
+    {
+	String modelTypeToGet = null;
+	if (isAvg) {
+	    modelTypeToGet = DELTA_CHEM_SHIFTS_MODEL_TYPE_AVG;
+	} else {
+	    modelTypeToGet = DELTA_CHEM_SHIFTS_MODEL_TYPE_SINGLE;
+	}
+
+	SaveFrameNode spartaFrame = null;
+
+        Enumeration frameList = getDataFramesByCat(DELTA_SHIFT_SF_CAT,
+	  DELTA_CHEM_SHIFTS);
+
+        while (frameList.hasMoreElements()) {
+	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
+	    String modelType = getOneFrameValueOrNull(frame,
+	      DELTA_CHEM_SHIFTS_MODEL_TYPE);
+
+	    if (modelType == null) {
+		System.err.println("Warning: " +
+		  DELTA_CHEM_SHIFTS_MODEL_TYPE +
+		  " not found in save frame " + getFrameName(frame));
+
+	    } else if (modelType.equals(modelTypeToGet)) {
+	    	if (spartaFrame != null) {
+		    String type = isAvg ? "average" : "single";
+		    System.err.println(new S2DWarning(
+		      "More than one SPARTA (" + type +
+		      ") save frame found; only using first one"));
+		} else {
+		    spartaFrame = frame;
+		}
+	    }
+	}
+
+	return spartaFrame;
     }
 
     //===================================================================
