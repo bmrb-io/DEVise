@@ -2,6 +2,11 @@
 
 # $Id$
 
+# Note: the "single-H-methyl group" atoms don't goof up the
+# ambiguity code and Pistachio coordinate data because they
+# are not listed in pistachio_tmpl, so the don't appear in
+# the coordinate output.
+
 # Residue atoms
 #
 A,ALA,H,N
@@ -14,6 +19,10 @@ A,ALA,CA,C,CB,N,HA
 A,ALA,CB,CA,HB1,HB2,HB3
 A,ALA,N,CA,H
 A,ALA,O,C
+# The following lines fix the 1H-13C spectrum visualizations for
+# entries that only list a single H for methyl groups.
+A,ALA,CB,HB
+A,ALA,HB,CB
 #
 R,ARG,H,N
 R,ARG,HA,CA
@@ -162,6 +171,12 @@ I,ILE,CG2,CB,HG21,HG22,HG23
 I,ILE,CD1,CG1,HD11,HD12,HD13
 I,ILE,N,CA,H
 I,ILE,O,C
+# The following lines fix the 1H-13C spectrum visualizations for
+# entries that only list a single H for methyl groups.
+I,ILE,CD1,HD1
+I,ILE,HD1,CD1
+I,ILE,CG2,HG2
+I,ILE,HG2,CG2
 #
 L,LEU,H,N
 L,LEU,HA,CA
@@ -182,6 +197,12 @@ L,LEU,CD1,CG,HD11,HD12,HD13
 L,LEU,CD2,CG,HD21,HD22,HD23
 L,LEU,N,CA,H
 L,LEU,O,C
+# The following lines fix the 1H-13C spectrum visualizations for
+# entries that only list a single H for methyl groups.
+L,LEU,CD1,HD1
+L,LEU,HD1,CD1
+L,LEU,HD2,CD2
+L,LEU,CD2,HD2
 #
 K,LYS,H,N
 K,LYS,HA,CA
@@ -223,6 +244,10 @@ M,MET,CE,SD,HE1,HE2,HE3
 M,MET,N,CA,H
 M,MET,O,C
 M,MET,SD,CG,CE
+# The following lines fix the 1H-13C spectrum visualizations for
+# entries that only list a single H for methyl groups.
+M,MET,CE,HE
+M,MET,HE,CE
 #
 F,PHE,H,N
 F,PHE,HA,CA
@@ -288,6 +313,10 @@ T,THR,CG2,CB,HG21,HG22,HG23
 T,THR,N,CA,H
 T,THR,O,C
 T,THR,OG1,CB,HG1
+# The following lines fix the 1H-13C spectrum visualizations for
+# entries that only list a single H for methyl groups.
+T,THR,CG2,HG2
+T,THR,HG2,CG2
 #
 W,TRP,H,N
 W,TRP,HA,CA
@@ -352,3 +381,10 @@ V,VAL,CG1,CB,HG11,HG12,HG13
 V,VAL,CG2,CB,HG21,HG22,HG23
 V,VAL,N,CA,H
 V,VAL,O,C
+# The following lines fix the 1H-13C spectrum visualizations for
+# entries that only list a single H for methyl groups.
+V,VAL,CG1,HG1
+V,VAL,HG1,CG1
+V,VAL,CG2,HG2
+V,VAL,HG2,CG2
+
