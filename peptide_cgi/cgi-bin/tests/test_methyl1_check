@@ -1,0 +1,97 @@
+echo "Checking output files"
+
+set files = ( data_dir/uvd/methyl1_outam1.dat \
+	data_dir/uvd/methyl1_outamac1.dat \
+	data_dir/uvd/methyl1_outas1.dat \
+	data_dir/uvd/methyl1_outc1.dat \
+	data_dir/uvd/methyl1_outd1.dat \
+	data_dir/uvd/methyl1_outhc1.dat \
+	data_dir/uvd/methyl1_outhn1.dat \
+	data_dir/uvd/methyl1_outmd.dat \
+	data_dir/uvd/methyl1_outp1.dat \
+	data_dir/uvd/methyl1_outrc1.dat \
+	data_dir/uvd/methyl1_outrl.dat \
+	html_dir/uvd/methyl1_outam1.html \
+	html_dir/uvd/methyl1_outam1_large.html \
+	html_dir/uvd/methyl1_outas1.html \
+	html_dir/uvd/methyl1_outas1_large.html \
+	html_dir/uvd/methyl1_outc1.html \
+	html_dir/uvd/methyl1_outc1_large.html \
+	html_dir/uvd/methyl1_outd1.html \
+	html_dir/uvd/methyl1_outd1_large.html \
+	html_dir/uvd/methyl1_outhc1.html \
+	html_dir/uvd/methyl1_outhc1_large.html \
+	html_dir/uvd/methyl1_outhn1.html \
+	html_dir/uvd/methyl1_outhn1_large.html \
+	html_dir/uvd/methyl1_outp1.html \
+	html_dir/uvd/methyl1_outp1_large.html \
+	html_dir/uvd/methyl1_outy.html \
+	html_dir/uvd/methyl1_outy_large.html \
+	session_dir/.uvd/methyl1_outacdd \
+	session_dir/.uvd/methyl1_outam1.ds \
+	session_dir/.uvd/methyl1_outas1.ds \
+	session_dir/.uvd/methyl1_outc1.ds \
+	session_dir/.uvd/methyl1_outd1.ds \
+	session_dir/.uvd/methyl1_outhc1.ds \
+	session_dir/.uvd/methyl1_outhn1.ds \
+	session_dir/.uvd/methyl1_outp1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+
+# Check for proper 1H-13C output for things that are not methyl groups
+# (output for methyl groups will be different in 2.1 and 3.n).
+set file = "data_dir/uvd/methyl1_outhc1.dat"
+
+# ALA
+set line = '^1 12 ALA 4.05 56.29 HA CA$'
+source tests/check4line
+
+# ILE
+set line = '^1 8 ILE 1.87 38.55 HB CB$'
+source tests/check4line
+set line = '^1 8 ILE 3.97 64.29 HA CA$'
+source tests/check4line
+set line = '^1 8 ILE 1.26 28.87 HG13 CG1$'
+source tests/check4line
+set line = '^1 8 ILE 1.48 28.87 HG12 CG1$'
+source tests/check4line
+
+# LEU
+set line = '^1 29 LEU 1.308 43.299 HB3 CB$'
+source tests/check4line
+set line = '^1 29 LEU 5.443 53.803 HA CA$'
+source tests/check4line
+set line = '^1 29 LEU 1.906 43.299 HB2 CB$'
+source tests/check4line
+set line = '^1 29 LEU 1.588 27.407 HG CG$'
+source tests/check4line
+
+# MET
+set line = '^1 28 MET 2.53 33.0 HG3 CG$'
+source tests/check4line
+set line = '^1 28 MET 2.6 33.0 HG2 CG$'
+source tests/check4line
+set line = '^1 28 MET 2.13 35.5 HB3 CB$'
+source tests/check4line
+set line = '^1 28 MET 4.1 58.9 HA CA$'
+source tests/check4line
+set line = '1 28 MET 2.18 35.5 HB2 CB$'
+source tests/check4line
+
+# THR
+set line = '^1 18 THR 4.34 70.83 HB CB$'
+source tests/check4line
+set line = '^1 18 THR 4.29 64.16 HA CA$'
+source tests/check4line
+
+# VAL
+set line = '^1 19 VAL 2.29 32.14 HB CB$'
+source tests/check4line
+set line = '^1 19 VAL 4.25 64.85 HA CA$'
+source tests/check4line

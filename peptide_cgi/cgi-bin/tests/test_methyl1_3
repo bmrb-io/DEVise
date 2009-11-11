@@ -1,0 +1,95 @@
+#! /bin/csh -f
+
+# Tests processing of methyl groups for 1H-13C simulated spectrum.
+
+set result = 0
+
+rm -f */*/methyl1_out*
+rm -f */.*/methyl1_out*
+
+echo -n "Processing NMR-STAR: "
+./uvd -file test_data/test_methyl1_3_0.str -name methyl1_out -force -check_pct
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+source tests/test_methyl1_check
+
+# 3.0-specific checks for methyl groups.
+set file = "data_dir/uvd/methyl1_outhc1.dat"
+
+# ALA
+set line = '^1 12 ALA 1.51 18.13 HB3 CB$'
+source tests/check4line
+set line = '^1 12 ALA 1.51 18.13 HB2 CB$'
+source tests/check4line
+set line = '^1 12 ALA 1.51 18.13 HB1 CB$'
+source tests/check4line
+
+# ILE
+set line = '^1 8 ILE 0.84 17.45 HG23 CG2$'
+source tests/check4line
+set line = '^1 8 ILE 0.84 17.45 HG22 CG2$'
+source tests/check4line
+set line = '^1 8 ILE 0.84 17.45 HG21 CG2$'
+source tests/check4line
+set line = '^1 8 ILE 0.86 12.71 HD13 CD1$'
+source tests/check4line
+set line = '^1 8 ILE 0.86 12.71 HD12 CD1$'
+source tests/check4line
+set line = '^1 8 ILE 0.86 12.71 HD11 CD1$'
+source tests/check4line
+
+# LEU
+set line = '^1 29 LEU 0.863 23.893 HD23 CD2$'
+source tests/check4line
+set line = '^1 29 LEU 0.863 23.893 HD22 CD2$'
+source tests/check4line
+set line = '^1 29 LEU 0.863 23.893 HD21 CD2$'
+source tests/check4line
+set line = '^1 29 LEU 1.028 26.184 HD13 CD1$'
+source tests/check4line
+set line = '^1 29 LEU 1.028 26.184 HD12 CD1$'
+source tests/check4line
+set line = '^1 29 LEU 1.028 26.184 HD11 CD1$'
+source tests/check4line
+
+# MET
+set line = '^1 28 MET 2.12 14.9 HE3 CE$'
+source tests/check4line
+set line = '^1 28 MET 2.12 14.9 HE2 CE$'
+source tests/check4line
+set line = '^1 28 MET 2.12 14.9 HE1 CE$'
+source tests/check4line
+
+# THR
+set line = '^1 18 THR 1.3 21.99 HG22 CG2$'
+source tests/check4line
+set line = '^1 18 THR 1.3 21.99 HG21 CG2$'
+source tests/check4line
+set line = '^1 18 THR 1.3 21.99 HG23 CG2$'
+source tests/check4line
+
+# VAL
+set line = '^1 19 VAL 1.01 21.48 HG22 CG2$'
+source tests/check4line
+set line = '^1 19 VAL 1.01 21.48 HG21 CG2$'
+source tests/check4line
+set line = '^1 19 VAL 1.01 21.48 HG23 CG2$'
+source tests/check4line
+set line = '^1 19 VAL 1.1 22.41 HG13 CG1$'
+source tests/check4line
+set line = '^1 19 VAL 1.1 22.41 HG12 CG1$'
+source tests/check4line
+set line = '^1 19 VAL 1.1 22.41 HG11 CG1$'
+source tests/check4line
+
+echo -n "Test_methyl1_3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

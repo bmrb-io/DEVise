@@ -1,0 +1,60 @@
+#! /bin/csh -f
+
+# Tests processing of methyl groups for 1H-13C simulated spectrum.
+
+set result = 0
+
+rm -f */*/methyl1_out*
+rm -f */.*/methyl1_out*
+
+echo -n "Processing NMR-STAR: "
+./uvd -file test_data/test_methyl1_2_1.str -name methyl1_out -force -check_pct
+if ($status != 0) then
+  echo "First invocation of uvd failed!"
+  set result = 1
+endif
+
+source tests/test_methyl1_check
+
+# 2.1-specific checks for methyl groups.
+set file = "data_dir/uvd/methyl1_outhc1.dat"
+
+# ALA
+set line = '^1 12 ALA 1.51 18.13 HB CB$'
+source tests/check4line
+
+# ILE
+set line = '^1 8 ILE 0.84 17.45 HG2 CG2$'
+source tests/check4line
+set line = '^1 8 ILE 0.86 12.71 HD1 CD1$'
+source tests/check4line
+
+# LEU
+set line = '^1 29 LEU 0.863 23.893 HD2 CD2$'
+source tests/check4line
+set line = '^1 29 LEU 1.028 26.184 HD1 CD1$'
+source tests/check4line
+
+# MET
+set line = '^1 28 MET 2.12 14.9 HE CE$'
+source tests/check4line
+
+# THR
+set line = '^1 18 THR 1.3 21.99 HG2 CG2$'
+source tests/check4line
+
+# VAL
+set line = '^1 19 VAL 1.01 21.48 HG2 CG2$'
+source tests/check4line
+set line = '^1 19 VAL 1.1 22.41 HG1 CG1$'
+source tests/check4line
+
+
+echo -n "Test_methyl1 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
