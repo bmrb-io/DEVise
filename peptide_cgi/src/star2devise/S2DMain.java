@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.158  2009/10/28 19:25:42  wenger
+// Finished fixing things up for the new 3.0 SPARTA format (except that
+// the actual SPARTA output is still incorrect, so the tests are kind
+// of kludged for now -- they should be fixed when the actual SPARTA
+// output is fixed).
+//
 // Revision 1.157  2009/10/22 17:26:34  wenger
 // Refactored the experimental chemical shifts to match the new-style
 // Sparta processing where we get the appropriate data values in
@@ -735,7 +741,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.3x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.3x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 

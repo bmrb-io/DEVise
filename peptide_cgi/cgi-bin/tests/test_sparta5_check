@@ -57,18 +57,17 @@ source tests/check4line
 
 set file = "data_dir/16387sd1.dat"
 set line = '^1 1 2 GLU 0.115 -1.11 -0.538 -0.198 -4.886 0.4$'
-#TEMP -- test_data/bmr16387_sparta.str_v3 needs fixes
-#TEMP source tests/check4line
+source tests/check4line
 set line = '^1 1 80 HIS -1.023 0.0 3.746 -2.65 3.312 -0.482$'
-#TEMP source tests/check4line
+source tests/check4line
 set line = '^1 20 2 GLU -0.057 -1.07 -0.442 -1.193 -4.161 0.0040$'
-#TEMP source tests/check4line
+source tests/check4line
 set line = '^1 20 80 HIS -0.155 0.0 2.095 -0.392 0.868 -0.193$'
-#TEMP source tests/check4line
+source tests/check4line
 set line = '^1 0 2 GLU 0.095 -0.681 -0.653 -0.717 -3.482 -0.051$'
-#TEMP source tests/check4line
+source tests/check4line
 set line = '^1 0 80 HIS -0.369 0.0 2.113 -0.761 1.636 -0.366$'
-#TEMP source tests/check4line
+source tests/check4line
 
 
 set file = "html_dir/16387y.html"

@@ -7,7 +7,7 @@ Peptide-CGI 11.6.3
 * Fixed the 1H-13C visualizations for data containing only single
 atoms for the methyl groups.
 
-TEMP -- new SPARTA format
+* Peptide-CGI can now process the new format for v3 SPARTA files.
 
 
 Peptide-CGI 11.6.2
