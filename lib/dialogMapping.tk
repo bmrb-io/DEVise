@@ -15,6 +15,10 @@
 #       $Id$
 
 #       $Log$
+#       Revision 1.61  2009/10/23 17:54:18  wenger
+#       Changed mapped dialog so that all shape attributes are always displayed
+#       (because we use "non-active" shape attributes for GAttr links).
+#
 #       Revision 1.60  2006/04/27 20:48:08  wenger
 #       Added X Offset to Bar and Segment shapes (for NRG visualization for
 #       Luis Populin).
@@ -976,6 +980,30 @@ proc UpdateShapeAttrs { w shape } {
 		pack $w.mapping.value.pShapeAttr9 -side top -fill x
 
 		$w.mapping.label.pShapeAttr10 config -text "Arg 4 <SA10>"
+		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr10 -side top -fill x
+    } elseif {$shape == "HighLow"} {
+		$w.mapping.label.pShapeAttr5 config -text "Is angle<SA5>"
+		pack $w.mapping.label.pShapeAttr5 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr5 -side top -fill x
+
+		$w.mapping.label.pShapeAttr6 config -text "<SA6>"
+		pack $w.mapping.label.pShapeAttr6 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr6 -side top -fill x
+
+		$w.mapping.label.pShapeAttr7 config -text "<SA7>"
+		pack $w.mapping.label.pShapeAttr7 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr7 -side top -fill x
+
+		$w.mapping.label.pShapeAttr8 config -text "<SA8>"
+		pack $w.mapping.label.pShapeAttr8 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr8 -side top -fill x
+
+		$w.mapping.label.pShapeAttr9 config -text "<SA9>"
+		pack $w.mapping.label.pShapeAttr9 -side top -fill x -pady 0.7m
+		pack $w.mapping.value.pShapeAttr9 -side top -fill x
+
+		$w.mapping.label.pShapeAttr10 config -text "<SA10>"
 		pack $w.mapping.label.pShapeAttr10 -side top -fill x -pady 0.7m
 		pack $w.mapping.value.pShapeAttr10 -side top -fill x
 	} else {

@@ -17,6 +17,9 @@
   $Id$
 
   $Log$
+  Revision 1.83  2008/09/11 20:28:13  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.82  2008/01/24 22:08:33  wenger
   Got rid of a bunch of compile warnings.
 
@@ -443,6 +446,9 @@
 #include "ExtProc.h"
 
 //#define DEBUG
+// It seems like the PIXELOPTIMIZE code hasn't been turned on for quite
+// a while, so it may not even work anymore.  wenger 2009-11-16.
+//#define PIXELOPTIMIZE
 #define USE_TIMER 1
 #define TEST_TIMEOUT 0
 
@@ -450,6 +456,8 @@
 #define IMAGE_TYPE_DALI_FILE		(1)
 #define IMAGE_TYPE_DALI_FILE_SEND	(2)
 #define IMAGE_TYPE_DALI_IMAGE		(3)
+#define ANGLE_MAX 180.0
+#define ANGLE_MIN -180.0
 
 //---------------------------------------------------------------------------
 
@@ -1456,9 +1464,15 @@ FullMapping_HighLowShape::FindBoundingBoxes(void *gdataArray,
 	Coord width = symSize * tdMap->GetShapeAttr0(dataP);
 	Coord mid = tdMap->GetShapeAttr1(dataP);
 	Coord low = tdMap->GetShapeAttr2(dataP);
+	Boolean isAngle = ((int)(tdMap->GetShapeAttr(dataP, 5) + 0.5)) != 0;
 
 	Coord trueHigh = MAX(high, MAX(mid, low));
 	Coord trueLow = MIN(high, MIN(mid, low));
+	if ((low > high) && isAngle) {
+	  // Range of highlow wraps around -180 to 180 degree division.
+	  trueHigh = ANGLE_MAX;
+	  trueLow = ANGLE_MIN;
+	}
 
 	tmpMaxW = MAX(tmpMaxW, width);
 	tmpMaxH = MAX(tmpMaxH, trueHigh - trueLow);
@@ -1533,12 +1547,13 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	PColorID color = (int)(map->GetColor(gdata) + 0.5);
 	Coord width = fabs(map->GetSize(gdata)
 			   * map->GetShapeAttr0(gdata));
-	width *= pixelSize;
+	width *= pixelSize; // +/- key symbol sizing
 	Coord mid = map->GetShapeAttr1(gdata);
 	Coord low = map->GetShapeAttr2(gdata);
 	int colorInc = (int)(map->GetShapeAttr3(gdata) + 0.5);
-	Coord tw = width / 20.0;
-	Coord hw = width / 2.0;
+	Boolean isAngle = ((int)(map->GetShapeAttr(gdata, 5) + 0.5)) != 0;
+	Coord halfWidth = width / 2.0;
+	Coord barHalfWidth = halfWidth / 10.0;
 
     Coord high = y;
 
@@ -1546,6 +1561,7 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 	win->SetPattern(map->GetPattern(gdata));
 	int line_width = map->GetLineWidth(gdata);
 	if (line_width > 0) {
+		//TEMP -- what does this do, when we pass width to Line() anyhow?!?
 	    win->SetLineWidth(line_width);
 	} else {
 	    win->SetLineWidth(0);
@@ -1553,17 +1569,25 @@ void FullMapping_HighLowShape::DrawGDataArray(WindowRep *win, void **gdataArray,
 
 	// ksb: should the width be applied to the rect, lines, or both?
 	if (colorInc == 0) {
-		win->FillRect(x - tw, low, 2 * tw, high - low);
+		if ((low > high) && isAngle) {
+	        // Range of highlow wraps around -180 to 180 degree division.
+		    win->FillRect(x - barHalfWidth, ANGLE_MIN, 2 * barHalfWidth,
+			  high + ANGLE_MAX);
+		    win->FillRect(x - barHalfWidth, low, 2 * barHalfWidth, ANGLE_MAX);
+		} else {
+			// Should we print a warning here if low > high?
+		    win->FillRect(x - barHalfWidth, low, 2 * barHalfWidth, high - low);
+		}
 	} else {
-		win->FillRect(x - tw, low, 2 * tw, mid - low);
+		win->FillRect(x - barHalfWidth, low, 2 * barHalfWidth, mid - low);
 		win->SetForeground(color + colorInc);
-		win->FillRect(x - tw, mid, 2 * tw, high - mid);
+		win->FillRect(x - barHalfWidth, mid, 2 * barHalfWidth, high - mid);
 		win->SetForeground(color);
 	}
 	if (line_width >= 0) {
-	    win->Line(x - hw, mid, x + hw, mid, line_width);
-	    win->Line(x - hw, low, x + hw, low, line_width);
-	    win->Line(x - hw, high, x + hw, high, line_width);
+	    win->Line(x - halfWidth, mid, x + halfWidth, mid, line_width);
+	    win->Line(x - halfWidth, low, x + halfWidth, low, line_width);
+	    win->Line(x - halfWidth, high, x + halfWidth, high, line_width);
 	}
 
 	if (view->GetDisplayDataValues())

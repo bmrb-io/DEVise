@@ -81,7 +81,9 @@ of the bars not at 0)
         0) width
         1) y maximum (high)
         2) y minimum (low)
+	3) color increment
         4) line width
+	5) is angle (special provision for -180 to 180 deg)
 
 POLYLINE - arbitrary-shape polygon
     Shape value: 9

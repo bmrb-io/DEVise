@@ -20,6 +20,12 @@
   $Id$
 
   $Log$
+  Revision 1.78  2009/05/15 20:29:47  wenger
+  Implemented to-do 04.001 (be able to exclude views from drill-down;
+  this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
+  code (strcpy, strcat) in Session.c; added GUI for setting drill-down
+  exclusion and copying it when copying a view.
+
   Revision 1.77  2009/05/13 22:43:56  wenger
   Changed version to 1.9.1x3.
 
@@ -485,7 +491,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.1x3"/*TEMP*/;
+static const char *	version = "1.9.1x4"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2009";
