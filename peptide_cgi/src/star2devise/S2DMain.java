@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.159  2009/11/12 23:04:22  wenger
+// New 3.0 SPARTA files from Jon, updated tests accordingly.
+//
 // Revision 1.158  2009/10/28 19:25:42  wenger
 // Finished fixing things up for the new 3.0 SPARTA format (except that
 // the actual SPARTA output is still incorrect, so the tests are kind
@@ -741,7 +744,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.3x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.6.3x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
 
