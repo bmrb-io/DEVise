@@ -25,6 +25,12 @@ size, if possible.
 * Added the "-defaultFont" command-line argument to allow DEVise to
 at least run when we have a very limited selection of fonts.
 
+* Added some new functionality to the HighLow symbol type for displaying
+angles in the BMRB torsion angle restraint visualizations.  (If the new
+'Is angle' shape attribute is set to true, the HighLow symbol has special
+provisions for displaying values that "wrap around" the -180 to 180 degree
+boundary.)
+
 
 DEVise 1.9.0
 ------------
