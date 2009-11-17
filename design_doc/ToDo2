@@ -136,10 +136,14 @@ Be able to change the drill-down location without dismissing the drill-
 down dialog -- just click in a new place and have the dialog update.
 (wenger)
 
-09.015 11/13/09	oPEN	1
+09.015 11/13/09	OPEN	1
 Add an option to the JavaScreen to automatically refresh the data at
 a user-configurable rate.  (In other words, every n seconds, have the
 DEVised re-read all of the data for a session.) (miron)
+
+09.016 11/17/09 OPEN	1
+Add links to the youtube videos in the JS help menu (once they're released).
+(wenger)
 
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
