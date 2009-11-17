@@ -26,7 +26,7 @@
 # BIN2 is for JSS and devised.
 JAVA_BIN2 = /s/std/bin
 PERL_BIN2 = /s/std/bin
-XVFB_BIN2 = /s/std/bin
+XVFB_BIN2 = /usr/bin
 
 # BIN2P is for JSPoP.
 JAVA_BIN2P = /s/std/bin
