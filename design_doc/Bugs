@@ -4320,11 +4320,14 @@ java.lang.NullPointerException: null pData
 			with automatic filter updates enabled change their
 			filters. (wenger)
 
-993 11/13/09	OPEN	High/low symbols are sometimes not drawn correctly
+993 11/13/09	PART	High/low symbols are sometimes not drawn correctly
 			if zoomed out too far (the vertical bar is not drawn).
 			(See 16270tar2.ds -- the symbol at an X value of
 			63 in the data view is not drawn correctly at
 			the "home" visual filter setting.) (wenger)
+			(It turns out that this problem only occurs when
+			low > high (see torsion angle restraint
+			visualizations, new "Is angle" attribute).)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
