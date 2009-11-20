@@ -33,12 +33,15 @@ The following testing steps must be done:
     - Percent Assigned Atoms
     - Chemical shift distributions by amino acid
     - Simulated 1H-15N backbone HSQC spectrum
-    - Assigned chemical shift ambiguity code data
+    - Assigned chemical shift ambiguity code data (make sure data
+      cursor shows up at correct initial size/location)
     - T1 Relaxation (750 MHz)
+    - T2 Relaxation (750 MHz)
     - Heteronuclear NOE (750 MHz) N H
     - Coupling constants
     - 3D structure from PDB ID 1NGL (make sure the Jmol menu button shows
-      up in the JavaScreen)
+      up in the JavaScreen) (make sure data cursor shows up at correct
+      initial size/location)
     - S2 order parameters
 
 - Run 'tests/test15 -noleech' in /var/home/www/public/cgi-bin/bmrb on teal.
@@ -63,21 +66,23 @@ The following testing steps must be done:
 
 - View the following visualizations for the entry 4096 and MAKE SURE THEY
   ARE CORRECT:
-    - 3D structure
+    - 3D structure (make sure data cursor shows up at correct initial
+      size/location)
 
 - Run tests/test19 in /var/home/www/public/cgi-bin/bmrb on teal.
 
 - View the following visualizations for the entry 6318 and MAKE SURE THEY
   ARE CORRECT:
-    - Assignment figure of merit data
+    - Assignment figure of merit data (make sure data cursor shows up
+      at correct initial size/location)
     - Follow the "Larger view" link and make sure it shows up correctly.
 
 - View the following visualizations for the entry 4001 USING THE LARGE
   VISUALIZATIONS SUMMARY PAGE and MAKE SURE THEY ARE CORRECT:
-    - 3D structure from PDB ID 1QLK [also make sure this shows up in
-      the large size]
+    - 3D structure from PDB ID 1QLK (make sure data cursor shows up at
+      correct initial size/location)
     - Chemical shift distributions by amino acid (from the first save
-      frame) [also make sure this shows up in the large size]
+      frame)
 
 - View the following visualizations for entry 5246:
     - The 3D structure visualization for 5246/1KMF; select data sets
