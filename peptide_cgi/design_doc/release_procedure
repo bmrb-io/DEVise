@@ -11,7 +11,7 @@ Note: this is pretty preliminary right now.
 
 - Commit the sources.
 
-- Install on teal, run test_all.
+- Recompile and install on teal, run test_all.
 
 - Check at least one visualization on teal.
 
