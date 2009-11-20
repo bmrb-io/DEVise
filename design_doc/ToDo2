@@ -145,6 +145,10 @@ DEVised re-read all of the data for a session.) (miron)
 Add links to the youtube videos in the JS help menu (once they're released).
 (wenger)
 
+09.017 11/20/09	OPEN	?
+Implement an "undo" function.  (Would also require changes on the server.)
+(schulte/wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
