@@ -3,8 +3,25 @@
 DEVise 1.9.1
 ------------
 
+* Added new 'isAngle' field to the mapping for HighLow symbols -- if
+this is turned on, the HighLow symbols treat the data as angles
+from -180 to 180 degrees, with special provision for angles that
+"wrap around" the -180 to 180 boundary (low > high in the data).
+
 * Added the capability to exclude specific views in a pile from drill-
 down.
+
+* Added the selectParent, selectFirstChild, and selectNextChild
+commands to help in editing complex sessions.
+
+* Added parent view names to view names (optionally) displayed in views
+(to help in editing complex sessions).
+
+* Added clearGlobalFilterHistory command to clean up session files
+(especially for things like Peptide-CGI templates).
+
+* Changed mapped dialog so that all shape attributes are always displayed
+(because we use "non-active" shape attributes for GAttr links).
 
 * Fixed a problem that caused the DEVised to core dump on x86_64/Centos 5
 when sending string GData to the JavaScreen client.
@@ -30,6 +47,11 @@ angles in the BMRB torsion angle restraint visualizations.  (If the new
 'Is angle' shape attribute is set to true, the HighLow symbol has special
 provisions for displaying values that "wrap around" the -180 to 180 degree
 boundary.)
+
+* Improved some PileStack error messages.
+
+* Code cleanup, fixed compile warnings (many relating to string const-
+ness), valgrind, etc.
 
 
 DEVise 1.9.0
