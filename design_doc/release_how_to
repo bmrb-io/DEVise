@@ -5,11 +5,14 @@ This is a quick-and-dirty documentation of what needs to be done for
 a DEVise/JavaScreen release (by a release, I mean making a new version
 of DEVise accessible to users running from /p/devise in the CS AFS tree,
 and putting a new version of the JavaScreen on the "standard" installation
-on pumori).
+on teal).
 
 This document should probably be improved eventually -- right now it's
 mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
+- Make sure the version history is complete.
+
+- Get rid of the x<whatever> on the DEVise version -- e.g., change "1.9.2x3" to "1.9.2".
 
 - Update sources.
     - Check out/update sources (make sure they're on the right branch,
@@ -94,14 +97,16 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 	  release.
 
 - Tag/archive sources:
-    - Cvs tag the source tree (the tag should be of the form
-      Mmm_dd_yyyy_release, where Mmm is the three-letter abbreviation for
-      the month, dd is the day of the month, and yyyy is the year).
+    - Cvs tag the source tree (the tag should be of the form devise_<x>_<y>_<z> --
+      e.g., devise_1_9_2, matching the DEVise version.
 
     - Make a tar file of the sources and archive it (run scripts/tarsrcs
       and copy the file to /p/devise/wenger/src_archive).
 
 - Prepare for future releases:
+    - If we just made a new stable series branch, this stuff needs to be done
+      both on the trunk and on the stable series branch.
+
     - Increment DEVise version (with x1 on the end).
     - Add a corresponding section to the DEVise version history.
     - Increment JavaScreen version (with x1 on the end).

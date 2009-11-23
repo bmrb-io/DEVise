@@ -4,7 +4,7 @@
 * OVERVIEW
 
 This is a quick-and-dirty documentation of what needs to be done for
-a DEVise/JavaScreen/peptide-cgi distribution (by a distribution, I mean
+a DEVise/JavaScreen distribution (by a distribution, I mean
 making tar files that can be downloaded and installed by users who have
 no access to the CS AFS tree).
 
@@ -13,11 +13,13 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-30.
 
 IMPORTANT NOTE:  the DEVise and JavaScreen files that are put into the
 distribution come from /p/devise/release, not the area in which you're
-running the distribution scripts.  However, the peptide-cgi files come
-from the peptide_cgi tree in which you run the distribution scripts.
+running the distribution scripts.
 
 
 * PROCEDURE
+
+- If necessary, make a new stable series branch, and do a local release
+  from that branch (see release_how_to).
 
 - Generate DEVise/JavaScreen distribution:
     - Go to the dist directory.
@@ -28,34 +30,16 @@ from the peptide_cgi tree in which you run the distribution scripts.
 
     - Do a test installation from each tar file to make sure it works.
 
-- Generate peptide-cgi distribution:
-    - Be sure the version in the peptide_cgi tree works correctly.
-
-    - Go to peptide_cgi.
-
-    - Run "make setup".
-
-    - Run "make dist".
-
-    - Copy the distribution tar file into the appropriate subdirectory
-      in /p/devise/ftp.
-
-    - Do a test installation from the tar file to make sure it works.
-
 - BMRB mirror site instructions:
     - Copy bmrb_mirror_instructions into the appropriate subdirectory
       in /p/devise/ftp.
 
 - Tag/archive sources:
-    - Cvs tag the source tree (the tag should be of the form dist_x_y_z,
-      where the DEVise version is x.y.z.
+    - The source tree should already have been tagged when the "internal"
+      release was done.
 
     - There should already be a DEVise/JavaScreen source archive (see
       the release document).
-
-    - Archive the peptide-cgi sources by checking out a version with
-      the appropriate tag, tarring it up, and copying the file to
-      /p/devise/wenger/src_archive.
 
 
 * COMMON PROBLEMS
@@ -70,3 +54,10 @@ Another thing is that you can only generate the tarballs into a
 subdirectory of /p/devise/ftp.  If you want to generate "unofficial"
 tarballs you need to give some kind of bogus version name when prompted
 by the distribution script.
+
+
+* NOTES
+
+"External" releases may skip versions, especially if they are released
+in the development series (since I now want to give each "internal"
+release a new revision number).
