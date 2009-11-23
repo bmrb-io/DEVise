@@ -21,6 +21,8 @@ running the distribution scripts.
 - If necessary, make a new stable series branch, and do a local release
   from that branch (see release_how_to).
 
+- If necessary, compile DEVise on additional platforms.
+
 - Generate DEVise/JavaScreen distribution:
     - Go to the dist directory.
 
