@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.80  2009/11/20 21:42:26  wenger
+  Changed version to 1.9.1 for local release.
+
   Revision 1.79  2009/11/16 21:48:46  wenger
   Added new 'isAngle' field to the mapping for HighLow symbols -- if
   this is turned on, the HighLow symbols treat the data as angles
@@ -497,7 +500,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.1";
+static const char *	version = "1.9.2x1"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2009";
