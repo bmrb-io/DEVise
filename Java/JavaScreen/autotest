@@ -22,7 +22,7 @@ endif
 rm jspop_pid:* jss_pid:* devised_pid:*
 
 # Restart one "regular" jspop and associated processes
-./restart_jspop 
+./restart_jspop test 1
 
 sleep 20
 

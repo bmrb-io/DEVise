@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -12,8 +12,7 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the bin directory for a given architecture-
-#  specific subdirectory. 
+#  Run this script to set up the linux-intel_rhel5/dyn_lib directory.
 
 ############################################################
 
@@ -21,11 +20,4 @@
 
 ############################################################
 
-# EmbeddedTk is not up to date.
-# ln -s ../../dist_sw/bin_arch/$ARCH_DIR/EmbeddedTk .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/Tasvir .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/TasvirWithPaths .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devise .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/deviseb .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devisec .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devised .
+ln -s ../../dist_sw/dyn_lib_arch/i386_rhel5/* .

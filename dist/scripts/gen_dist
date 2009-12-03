@@ -70,16 +70,16 @@ endif
 # tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
 # cd $dist_home
 
-echo "Generating solaris-sparc distribution"
-set logfile = $dist_home/solaris-sparc.log
-if (-f $logfile) then
-  rm $logfile
-endif
-set src = solaris-sparc
-set dest = $target/Devise-$version-solaris-sparc.tar.gz
-cd $src
-tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
-cd $dist_home
+# echo "Generating solaris-sparc distribution"
+# set logfile = $dist_home/solaris-sparc.log
+# if (-f $logfile) then
+#   rm $logfile
+# endif
+# set src = solaris-sparc
+# set dest = $target/Devise-$version-solaris-sparc.tar.gz
+# cd $src
+# tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+# cd $dist_home
 
 # set src = sunos-sparc
 # set dest = $target/Devise-$version-sunos-sparc.tar.gz
@@ -109,24 +109,35 @@ cd $dist_home
 # tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
 # cd $dist_home
 
-echo "Generating linux-intel_tao10 distribution"
-set logfile = $dist_home/linux-intel_tao10.log
-if (-f $logfile) then
-  rm $logfile
-endif
-set src = linux-intel_tao10
-set dest = $target/Devise-$version-linux-intel_tao10.tar.gz
-cd $src
-tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
-cd $dist_home
+# echo "Generating linux-intel_tao10 distribution"
+# set logfile = $dist_home/linux-intel_tao10.log
+# if (-f $logfile) then
+#   rm $logfile
+# endif
+# set src = linux-intel_tao10
+# set dest = $target/Devise-$version-linux-intel_tao10.tar.gz
+# cd $src
+# tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+# cd $dist_home
 
-echo "Generating linux-intel_centos distribution"
-set logfile = $dist_home/linux-intel_centos.log
+# echo "Generating linux-intel_centos distribution"
+# set logfile = $dist_home/linux-intel_centos.log
+# if (-f $logfile) then
+#   rm $logfile
+# endif
+# set src = linux-intel_centos
+# set dest = $target/Devise-$version-linux-intel_centos.tar.gz
+# cd $src
+# tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
+# cd $dist_home
+
+echo "Generating linux-intel_rhel5 distribution"
+set logfile = $dist_home/linux-intel_rhel5.log
 if (-f $logfile) then
   rm $logfile
 endif
-set src = linux-intel_centos
-set dest = $target/Devise-$version-linux-intel_centos.tar.gz
+set src = linux-intel_rhel5
+set dest = $target/Devise-$version-linux-intel_rhel5.tar.gz
 cd $src
 tar cvfzhX $dest $dist_home/scripts/tar_exclude . > $logfile
 cd $dist_home

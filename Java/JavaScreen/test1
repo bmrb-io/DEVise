@@ -10,7 +10,7 @@
 ############################################################
  
 # Start a collaboration leader
-./js -collableadernameClbName1 -collableaderpassClbPW1 -autoplayback -clientlogclient_log.1 -playbackoriginal -screensize600x400 &
+./js -collableadernameClbName1 -collableaderpassClbPW1 -autoplayback -clientlogclient_log.1 -playbackoriginal -screensize600x400 -cmdport6266 &
 
 sleep 10
  
@@ -18,7 +18,7 @@ sleep 10
 # here so we can get the follower's PID)
 unsetenv CLASSPATH
 set javaexec = `cat bin2/java`
-$javaexec JavaScreen.js -collabnameClbName1 -collabpassClbPW1 -screensize600x400 &
+$javaexec -Xmx128M -cp .:Jmol.jar JavaScreen.js -collabnameClbName1 -collabpassClbPW1 -screensize600x400 -cmdport6266 &
 set follower_id = $!
 
 sleep 180
@@ -34,4 +34,3 @@ if ("$js" != "") then
 endif
 
 exit (0)
-

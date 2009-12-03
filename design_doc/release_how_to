@@ -35,6 +35,18 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
     - Run "autotest all" in the JS directory.
 
+    - Test the new DEVise/JSPoP with the standard Peptide-CGI release
+      tests:
+        - Run the new DEVise/JSPop on teal as the 'test' ID.
+	- Go through the Peptide-CGI pre-release tests (following
+	  appropriate links in a browser so the right sessions get
+	  created), but instead of running the (released) JavaScreen
+	  client in the browser, run a JavaScreen client locally,
+	  connecting to the test JSPoP, and open the sessions in
+	  that client.
+        (Maybe a better way to do this would be to set things up so
+	that the bmrb_test setup on teal uses a test JavaScreen.)
+
 - Test release:
     - Run scripts/release_tst and scripts/release.js_tst and make sure
       the software in the test release area works correctly.

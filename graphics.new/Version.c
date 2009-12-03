@@ -20,6 +20,17 @@
   $Id$
 
   $Log$
+  Revision 1.82  2009/12/03 16:15:14  wenger
+  Changed DEVise version to 1.11.0x1 and JS version to 5.13.0; added
+  appropriate version history sections.
+
+  Revision 1.81.2.2  2009/12/03 17:21:58  wenger
+  Cleaned up version numbers & version history for 1.10.0 release.
+
+  Revision 1.81.2.1  2009/12/03 15:55:46  wenger
+  Changed DEVise version to 1.10.0x1 and JS version to 5.12.0 for
+  1.10 branch; added appropriate version history sections.
+
   Revision 1.81  2009/11/23 21:11:19  wenger
   Changed version to 1.9.2x1, added 1.9.2 section in version history.
 

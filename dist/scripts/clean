@@ -34,9 +34,9 @@ cd ..
 # ./clean
 # cd ..
 
-cd solaris-sparc
-./clean
-cd ..
+# cd solaris-sparc
+# ./clean
+# cd ..
 
 # \rm -r sunos-sparc
 
@@ -48,11 +48,15 @@ cd ..
 # ./clean
 # cd ..
 
-cd linux-intel_tao10
-./clean
-cd ..
+# cd linux-intel_tao10
+# ./clean
+# cd ..
 
-cd linux-intel_centos
+# cd linux-intel_centos
+# ./clean
+# cd ..
+
+cd linux-intel_rhel5
 ./clean
 cd ..
 

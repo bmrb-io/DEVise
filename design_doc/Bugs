@@ -4329,6 +4329,10 @@ java.lang.NullPointerException: null pData
 			low > high (see torsion angle restraint
 			visualizations, new "Is angle" attribute).)
 
+994 12/3/09	OPEN	JS: autotest should not rely on sessions from
+			the jsdemo area -- it should be set up to work
+			with local sessions. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

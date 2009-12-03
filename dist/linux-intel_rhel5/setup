@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2009
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -12,8 +12,8 @@
 #  or altered in any way without prior permission from the DEVise
 #  Development Group.
 
-#  Run this script to set up the bin directory for a given architecture-
-#  specific subdirectory. 
+#  Run this script to set up the linux-intel_rhel5 architecture-specific
+#  subdirectory.
 
 ############################################################
 
@@ -21,11 +21,26 @@
 
 ############################################################
 
-# EmbeddedTk is not up to date.
-# ln -s ../../dist_sw/bin_arch/$ARCH_DIR/EmbeddedTk .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/Tasvir .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/TasvirWithPaths .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devise .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/deviseb .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devisec .
-ln -s ../../dist_sw/bin_arch/$ARCH_DIR/devised .
+ln -s ../common/README .
+ln -s ../common/public .
+ln -s ../common/doc .
+ln -s ../common/lib .
+ln -s ../common/run .
+
+mkdir tcl
+cp -p -r /usr/lib/tcl8.4/* tcl
+rm -rf tcl/encoding
+mkdir tk
+cp -p -r /usr/lib/tk8.4/* tk
+rm -rf tk/demos tk/images
+
+mkdir bin
+cd bin
+../../scripts/setup.bin
+cd ..
+
+cd dyn_lib
+./setup
+cd ..
+
+mkdir cache

@@ -50,11 +50,11 @@ cd ..
 # ./setup
 # cd ..
 
-echo "Creating solaris-sparc directory"
-setenv ARCH_DIR sun4m_54
-cd solaris-sparc
-./setup
-cd ..
+# echo "Creating solaris-sparc directory"
+# setenv ARCH_DIR sun4m_54
+# cd solaris-sparc
+# ./setup
+# cd ..
 
 # echo "Creating sunos-sparc directory"
 # setenv ARCH_DIR sun4m_412
@@ -75,15 +75,21 @@ cd ..
 # ./setup
 # cd ..
 
-echo "Creating linux-intel_tao10 directory"
-setenv ARCH_DIR i386_tao10
-cd linux-intel_tao10
-./setup
-cd ..
+# echo "Creating linux-intel_tao10 directory"
+# setenv ARCH_DIR i386_tao10
+# cd linux-intel_tao10
+# ./setup
+# cd ..
 
-echo "Creating linux-intel_centos directory"
-setenv ARCH_DIR i386_cent40
-cd linux-intel_centos
+# echo "Creating linux-intel_centos directory"
+# setenv ARCH_DIR i386_cent40
+# cd linux-intel_centos
+# ./setup
+# cd ..
+
+echo "Creating linux-intel_rhel5 directory"
+setenv ARCH_DIR i386_rhel5
+cd linux-intel_rhel5
 ./setup
 cd ..
 

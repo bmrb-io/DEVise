@@ -20,6 +20,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.121  2009/12/03 16:14:55  wenger
+// Changed DEVise version to 1.11.0x1 and JS version to 5.13.0; added
+// appropriate version history sections.
+//
+// Revision 1.120.2.2  2009/12/03 17:21:39  wenger
+// Cleaned up version numbers & version history for 1.10.0 release.
+//
+// Revision 1.120.2.1  2009/12/03 15:55:25  wenger
+// Changed DEVise version to 1.10.0x1 and JS version to 5.12.0 for
+// 1.10 branch; added appropriate version history sections.
+//
 // Revision 1.120  2009/10/02 15:33:08  wenger
 // Incremented version to 5.10.2x1, added 5.10.2 version history section.
 //
