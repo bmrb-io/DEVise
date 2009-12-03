@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.81  2009/11/23 21:11:19  wenger
+  Changed version to 1.9.2x1, added 1.9.2 section in version history.
+
   Revision 1.80  2009/11/20 21:42:26  wenger
   Changed version to 1.9.1 for local release.
 
@@ -500,7 +503,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.9.2x1"/*TEMP*/;
+static const char *	version = "1.11.0x1"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2009";
