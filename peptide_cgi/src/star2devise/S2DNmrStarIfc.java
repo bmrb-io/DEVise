@@ -21,6 +21,38 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2009/10/28 19:25:43  wenger
+// Finished fixing things up for the new 3.0 SPARTA format (except that
+// the actual SPARTA output is still incorrect, so the tests are kind
+// of kludged for now -- they should be fixed when the actual SPARTA
+// output is fixed).
+//
+// Revision 1.26.4.5  2009/12/04 16:47:54  wenger
+// Added a property for default torsion angle restraint processing
+// level; started on torsion angle help page.
+//
+// Revision 1.26.4.4  2009/12/01 18:02:07  wenger
+// Torsion angle data can now be retreived by URL from the restraint grid.
+//
+// Revision 1.26.4.3  2009/12/01 15:56:57  wenger
+// Got filtering of the html file returned by the restraint grid working;
+// actually getting that file from the restraint grid via the URL isn't
+// working yet (specifying a URL to a local file does work).
+//
+// Revision 1.26.4.2  2009/11/24 23:59:02  wenger
+// Added the S2DNmrStarTarIfc to properly deal with the torsion angle-
+// related tags.  Note: 3D tests fail because they're not yet updated
+// for the new Atom_ID field.
+//
+// Revision 1.26.4.1  2009/10/22 17:11:31  wenger
+// "Bounced" s2d_torsion_rest_0909_br off the trunk -- created new
+// s2d_torsion_rest_0910_br, merged s2d_torsion_rest_0909_br_0 thru
+// s2d_torsion_rest_0909_br_end to the new branch.
+//
+// Revision 1.26.2.1  2009/10/08 16:20:23  wenger
+// Partway along the processing of torsion angle restraints -- just
+// committing for safety.
+//
 // Revision 1.26  2009/08/25 18:15:57  wenger
 // Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
 // to trunk.
@@ -346,7 +378,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	        is = starfile.openStream();
 	    }
 
-	    ifc = create(is, isLacs);
+	    ifc = create(is, isLacs, false);
 	    is.close();
 
 	    ifc._description = "BMRB " + accessionNum;
@@ -374,7 +406,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     //-------------------------------------------------------------------
     // Factory method to create an S2DNmrStarIfc object based on file name.
     public static S2DNmrStarIfc createFromFile(String fileName,
-      boolean isLacs) throws S2DException
+      boolean isLacs, boolean isTorsionAngle) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DNmrStarIfc.createFromFile(" +
@@ -386,7 +418,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
         try {
 	    InputStream is = new FileInputStream(fileName);
 
-	    ifc = create(is, isLacs);
+	    ifc = create(is, isLacs, isTorsionAngle);
 	    is.close();
 
 	    ifc._description = fileName;
@@ -896,19 +928,27 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // Create an S2DNmrStarIfc object from the given InputStream.
     // This method decides what version of NMR-STAR file the InputStream
     // corresponds to, and constructs an object appropriately.
-    private static S2DNmrStarIfc create(InputStream is, boolean isLacs)
-      throws S2DException
+    private static S2DNmrStarIfc create(InputStream is, boolean isLacs,
+      boolean isTorsionAngle) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.create(" + isLacs + ")");
+	    System.out.println("S2DNmrStarIfc.create(" + isLacs + ", " +
+	      isTorsionAngle + ")");
 	}
 
 	StarNode starTree = parseStar(is);
 
 	S2DNmrStarIfc ifc = null;
 
+	if (isLacs && isTorsionAngle) {
+	    throw new S2DError("isLacs and isTorsionAngle cannot " +
+	      "both be true!");
+	}
+
 	if (isLacs) {
 	    ifc = new S2DNmrStarLacsIfc(starTree);
+	} else if (isTorsionAngle) {
+	    ifc = new S2DNmrStarTarIfc(starTree);
 	} else {
 	    S2DNmrStar21Ifc ifc21 = new S2DNmrStar21Ifc(starTree);
 	    S2DNmrStar30Ifc ifc30 = new S2DNmrStar30Ifc(starTree);

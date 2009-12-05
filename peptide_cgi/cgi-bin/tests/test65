@@ -57,9 +57,9 @@ set line = '^1 27 DG 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.418 0.267 0.0
 source tests/check4line 
 
 set file = "data_dir/5167ac1.dat"
-set line = "^1 1 1 DC O5' O 5.736 -23.194 16.011 side_chains"
+set line = "^1 1_1_O5' 1 1 DC O5' O 5.736 -23.194 16.011 side_chains"
 source tests/check4line
-set line = '^859 1 27 DG H22 H -3.196 -21.462 11.991 all_hydrogens$'
+set line = '^859 1_27_H22 1 27 DG H22 H -3.196 -21.462 11.991 all_hydrogens$'
 source tests/check4line 
 
 

@@ -146,6 +146,16 @@ HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/stats/chem_shifts/full/devise
 SPARTA_URL = file:CHANGE_THIS/
 
 #-----------------------------------------------------------
+# Restraint-related configuration.
+
+# The root URL of the restraint grid (must end with "/").
+RESTRAINT_GRID_ROOT = "http://bmrb.protein.osaka-u.ac.jp/servlets/"
+
+# Default torsion angle restraint processing level: create link
+# if appropriate restraint grid entry is available.
+DO_TAR_DEFAULT = 1
+
+#-----------------------------------------------------------
 # Other.
 
 # User to send email to on errors.

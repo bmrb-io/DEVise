@@ -1,0 +1,39 @@
+#! /bin/csh -f
+
+# Next phase of torsion angle processing -- use the URL of the specific
+# entry in the restraints grid.
+
+set result = 0
+
+rm -f */4020*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4020 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+set url = 'http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet#63db_username=wattos1#38format=dihedral+angle#38mrblock_id=189055#38pdb_id=1brv#38request_type=block#38subtype=violation#38type=check'
+
+echo -n "Processing mmCIF and torsion angle restraints: "
+./s2d -nomail -bmrbid 4020 -pdbid 1brv -coord_index 1 -force \
+  -tar_url $url -do_tar 3 -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test_tar1_check
+
+
+echo -n "Test_tar1u result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

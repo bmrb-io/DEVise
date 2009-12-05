@@ -19,6 +19,37 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.4.4  2009/12/01 23:25:25  wenger
+// Cleaned up a bunch of the temporary code for finding the torsion
+// angle violations in the restraint grid; tested it at Osaka and
+// Florence, added torsion-angle-related items to config files.
+//
+// Revision 1.13.4.3  2009/11/30 18:09:01  wenger
+// Got rid of sessions and specific html pages for (now obsolete) torsion
+// angle violation visualizations.
+//
+// Revision 1.13.4.2  2009/10/29 20:06:43  wenger
+// For torsion angles, the session files and specific html files are
+// now created; there are some cursor behavior problems in the session
+// files that need to be fixed, and also they are not loading right
+// in the JavaScreen (I wonder if I need to have some kind of different
+// setup in the JS client to handle the different highlighting).
+// (There also seem to be problems with DEVise drawing the high/low
+// symbols in some cases!)
+//
+// Revision 1.13.4.1  2009/10/22 17:11:31  wenger
+// "Bounced" s2d_torsion_rest_0909_br off the trunk -- created new
+// s2d_torsion_rest_0910_br, merged s2d_torsion_rest_0909_br_0 thru
+// s2d_torsion_rest_0909_br_end to the new branch.
+//
+// Revision 1.13.2.1  2009/10/08 16:20:23  wenger
+// Partway along the processing of torsion angle restraints -- just
+// committing for safety.
+//
+// Revision 1.13  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.12  2009/07/20 22:33:48  wenger
 // Implemented Peptide-CGI to-do 093 (derive Atom_type values from
 // Atom_ID values if the Atom_type values don't exist).
@@ -212,6 +243,19 @@ public class S2DNames
     public static String SPARTA_NAME_TEMPLATE = null;
 
     //
+    // Root of the restraint grid -- documents w/in it are referenced
+    // from the URL.
+    //
+    public static String RESTRAINT_GRID_ROOT = null;
+
+    //
+    // Search string to use for torsion angle data (gets dihedral
+    // angle violations -- filtered FRED) -- relative to
+    // RESTRAINT_GRID_ROOT.
+    //
+    public static String TORSION_ANGLE_SEARCH_TEMPLATE = null;
+
+    //
     // Data type suffixes.
     //
     public static final String AMBIGUITY_ATOMIC_COORD_SUFFIX = "amac";
@@ -248,6 +292,8 @@ public class S2DNames
     public static final String SUMMARY_DATA_SUFFIX = "md";
     public static final String T1_SUFFIX = "t1";
     public static final String T2_SUFFIX = "t2";
+    public static final String TAR_SUFFIX = "tar";
+    public static final String TAR_MD_SUFFIX = "tar-md";
 
     //
     // Data file suffixes.

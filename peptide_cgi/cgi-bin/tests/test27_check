@@ -38,9 +38,9 @@ foreach file ($files)
 end
 
 set file = "data_dir/5153ac1.dat"
-set line = '^1 2 1 PHE N N 57.676 84.393 21.624 backbone$'
+set line = '^1 2_1_N 2 1 PHE N N 57.676 84.393 21.624 backbone$'
 source tests/check4line
-set line = '^6039 0 . HOH O O 53.253 9.478 42.866 backbone$'
+set line = '^6039 0_._O 0 . HOH O O 53.253 9.478 42.866 backbone$'
 source tests/check4line
 
 set file = "data_dir/5153n1.dat"

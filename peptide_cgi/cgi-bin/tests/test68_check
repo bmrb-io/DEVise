@@ -126,15 +126,15 @@ set line = '^3	63	ILE$'
 source tests/check4line
 
 set file = "data_dir/15083ac1.dat"
-set line = "^1 1 1 DT O5' O -5.328 10.389 18.756 side_chains"
+set line = "^1 1_1_O5' 1 1 DT O5' O -5.328 10.389 18.756 side_chains"
 source tests/check4line
-set line = '^1969 3 63 ILE 3HD1 H 11.034 1.442 18.427 all_hydrogens$'
+set line = '^1969 3_63_HD13 3 63 ILE 3HD1 H 11.034 1.442 18.427 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/15083ac2.dat"
-set line = "^1 1 1 DT O5' O 7.554 -3.904 19.019 side_chains"
+set line = "^1 1_1_O5' 1 1 DT O5' O 7.554 -3.904 19.019 side_chains"
 source tests/check4line
-set line = '^1861 3 63 ILE 3HD1 H 16.745 -3.199 6.486 all_hydrogens$'
+set line = '^1861 3_63_HD13 3 63 ILE 3HD1 H 16.745 -3.199 6.486 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/15083hc3.dat"

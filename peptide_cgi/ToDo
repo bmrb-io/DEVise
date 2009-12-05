@@ -395,6 +395,14 @@ Num Date        Status  Pri     Description
 				(e.g., 6311) add a note to the summary page saying why.
 				(elu/wenger)
 
+101 11/17/09	OPEN	2	Enable torsion angle restraint visualizations
+				for PDB entries that have no assocated
+				BMRB entry. (elu/wenger)
+
+102 12/5/09	OPEN	1	Deal correctly with torsion angle files that
+				have more than one save frame of torsion
+				angle restraints (see 4310/1CKK)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

@@ -1,0 +1,26 @@
+#! /bin/csh -f
+
+# A new torsion angle test -- 15209 also has two entity assemblies.
+
+set result = 0
+
+rm -f */15209*
+
+echo -n "Processing NMR-STAR, mmCIF, and torsion angle restraints: "
+./s2d -nomail -bmrbid 15209 -do_tar 3 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+
+source tests/test_tar5_check
+
+
+echo -n "Test_tar5 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

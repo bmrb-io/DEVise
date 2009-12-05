@@ -7,6 +7,10 @@ comment #
 whitespace ' '
 
 attr Atom_number int
+# Atom_ID is a combination of entity assembly ID, residue sequence code,
+# and atom name (to uniquely identify an atom for links with the
+# torsion angle data)
+attr Atom_ID string 15
 attr Entity_assembly_ID int
 attr Residue_seq_code int
 attr Residue_label string 4

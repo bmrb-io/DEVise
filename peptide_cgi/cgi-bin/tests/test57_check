@@ -72,9 +72,9 @@ foreach file ($files)
 end
 
 set file = "data_dir/15209ac1.dat"
-set line = '^1 1 1 MET N N -8.456 0.335 -7.611 backbone$'
+set line = '^1 1_1_N 1 1 MET N N -8.456 0.335 -7.611 backbone$'
 source tests/check4line
-set line = '^1501 2 6 VAL 3HG2 H 5.317 1.769 3.283 all_hydrogens$'
+set line = '^1501 2_6_HG23 2 6 VAL 3HG2 H 5.317 1.769 3.283 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/15209am1.dat"

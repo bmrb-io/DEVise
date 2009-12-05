@@ -25,6 +25,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2009/10/28 19:25:43  wenger
+// Finished fixing things up for the new 3.0 SPARTA format (except that
+// the actual SPARTA output is still incorrect, so the tests are kind
+// of kludged for now -- they should be fixed when the actual SPARTA
+// output is fixed).
+//
+// Revision 1.15.4.1  2009/11/24 23:59:02  wenger
+// Added the S2DNmrStarTarIfc to properly deal with the torsion angle-
+// related tags.  Note: 3D tests fail because they're not yet updated
+// for the new Atom_ID field.
+//
 // Revision 1.15  2009/08/25 18:15:57  wenger
 // Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
 // to trunk.
@@ -193,6 +204,8 @@ public abstract class S2DStarIfc {
     //
     //TEMP -- maybe eventually change these all to "protected", once all
     // "data extraction" code is moved out of S2DMain.
+    //TEMP -- most of these declarations should probably get moved to
+    // S2DNmrStarIfc
     public String ASSIGNED_CHEM_SHIFTS = "";
 
     public String ABBREV_COMMON = "";
@@ -284,6 +297,7 @@ public abstract class S2DStarIfc {
     public String HET_NOE_VALUE = "";
     public String HET_NOE_VALUE_ERR = "";
 
+    //TEMP -- should these LACS declarations all get removed from here?
     public String LACS_DESIGNATOR = "";
     public String LACS_LINE1_X1 = "";
     public String LACS_LINE1_X2 = "";

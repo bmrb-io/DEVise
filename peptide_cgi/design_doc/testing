@@ -114,6 +114,10 @@ The following testing steps must be done:
   the "Test" link.  Make sure the summary page is correct and some of
   the visualizations work.
 
+TEMPTEMP -- add stuff for torsion angle restraints!!
+TEMPTEMP -- should be 4310 because of 2 entity assemblies
+TEMPTEMP -- also 15209 (2 ent), 4416 (2 ent, na)
+
 - Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html
   (make sure drill-down works).
 

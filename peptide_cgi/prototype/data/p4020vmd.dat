@@ -1,0 +1,15 @@
+# Data: summary of available datasets for 4020 3D visualization
+# Schema: bmrb-summary
+# Attributes: Entity_assembly_name; Entity_assembly_ID; name; data_source; y_attribute
+# Peptide-CGI version: 11.7.0TRx1
+# Generation date: May 29, 2009 3:58:29 PM
+#
+EA 1 (polypeptide(L))	1	Phi angle violation	4020ta-phi1	$Torsion_angle_lower_bound
+
+EA 1 (polypeptide(L))	1	Psi angle violation	4020ta-psi1	$Torsion_angle_lower_bound
+
+EA 1 (polypeptide(L))	1	Omega angle violation	4020ta-om1	$Torsion_angle_lower_bound
+
+EA 1 (polypeptide(L))	1	Chi-1 angle violation	4020ta-ch11	$Torsion_angle_lower_bound
+
+EA 1 (polypeptide(L))	1	Other angle violation	4020ta-o1	$Torsion_angle_lower_bound

@@ -1,0 +1,10 @@
+# Data: torision angle constraint values for 4020
+# Schema: bmrb-TorsionAngle
+T Attributes: Entity_assembly_ID; Residue_seq_code1; Residue_label1; Residue_seq_code2; Residue_label2; Torsion_angle_lower_bound; Torsion_angle_upper_bound; Residue_seq_code; atom1Num; atom2Num; atom3Num; atom4Num; angleType
+
+# Fake data
+#1 16 CYS 16 CYS 10.500 35.000 16.0 CA CB SG HG chi-2 36.19 5.83
+1 20 GLU 20 GLU -100.000 -70.000 20.0 77 80 81 82 chi-2 -72.63 3.52
+1 23 LEU 23 LEU 25.000 45.000 23.0 117 118 120 127 chi-4 29.08 6.70
+1 30 HIS 30 HIS -50.000 -45.000 30.0 212 215 216 217 chi-2 -44.37 4.03
+

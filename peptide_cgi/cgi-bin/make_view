@@ -21,6 +21,8 @@
 #   coord_index - the index of this coordinate frame in the parent
 #   do_pdb - the level of PDB (structure) processing
 #   do_csr - the level of chemical shift reference processing
+#   do_tar - the level of torsion angle restraint processing
+#   tar_url - the URL for the document containing torsion angle data
 
 #  can call using
 #  http://pumori.cs.wisc.edu/cgi-bin/bmrb/make_view?number=4101
@@ -64,6 +66,8 @@ $do_csr = $query->param('do_csr');
 $csr_index = $query->param('csr_index');
 my $size_str = $query->param('size_str') || '';
 my $force = $query->param('force') || '';
+my $do_tar = $query->param('do_tar');
+my $tar_url = $query->param('tar_url');
 
 print "  acc_num = $acc_num\n" if ($debug);
 print "  pdbid = $pdbid\n" if ($debug);
@@ -79,6 +83,10 @@ if ($do_pdb) {
   print "  has CSR\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $acc_num . 'csr' . $csr_index .
     $coord_index . $size_str . '.html';
+} elsif ($do_tar) {
+  print "  has TAR\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $acc_num . 'tar' . $csr_index .
+    $coord_index . $size_str . '.html';
 } else {
   print "  does not have PDB or CSR\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $acc_num . 'y' . $size_str .
@@ -90,8 +98,13 @@ if ($do_pdb) {
   $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_pdb $do_pdb -coord_index $coord_index";
 } elsif ($do_csr) {
   $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_csr $do_csr -coord_index $coord_index";
+} elsif ($do_tar) {
+  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_tar $do_tar -coord_index $coord_index";
 } else {
   $cmd = "./s2d -bmrbid $acc_num";
+}
+if ($tar_url) {
+  $cmd = $cmd . " -tar_url " . $tar_url;
 }
 if ($force) {
   $cmd = $cmd . " -force";

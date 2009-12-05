@@ -36,6 +36,47 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.4.8  2009/12/02 21:38:46  wenger
+// Added the new TAR_LEVEL_LINK_CHECK processing level, and made it
+// the default; partially implemented passing the torsion angle URL
+// thru the CGI script arguments as an optimization.  Added the capability
+// of running some subsets of the tests in test_all.
+//
+// Revision 1.17.4.7  2009/12/02 19:18:12  wenger
+// Improved the CGI methods for summary html pages to use named constants
+// from S2DMain for the values for do_pdb, do_csr, and do_tar; added
+// processing time note for torsion angle links.
+//
+// Revision 1.17.4.6  2009/12/02 18:32:45  wenger
+// Cleaned up the mixing of coordinate/torsion angle code in S2DMain;
+// "all-in-one" processing now works (see test_tar2p).
+//
+// Revision 1.17.4.5  2009/12/02 17:26:54  wenger
+// The torsion angle CGI links now work for the "standard" NMR Browser
+// setup (haven't tested it yet with the visualization server).
+// A bunch of clean up still needed...  Added a new test for "all-in-one"
+// processing, but that doesn't work yet.
+//
+// Revision 1.17.4.4  2009/11/30 18:09:01  wenger
+// Got rid of sessions and specific html pages for (now obsolete) torsion
+// angle violation visualizations.
+//
+// Revision 1.17.4.3  2009/11/30 17:54:03  wenger
+// Changed torsion angle links in summary page to reflect angle/violation
+// unification.
+//
+// Revision 1.17.4.2  2009/11/24 16:04:08  wenger
+// Changed how torsion angle restraints are put into summary HTML page.
+//
+// Revision 1.17.4.1  2009/11/17 23:25:19  wenger
+// Writing of torsion angle sessions, etc., now mostly working (links in
+// summary page are still not right, lots of other cleanup, finding
+// data in restraint grid still needed).
+//
+// Revision 1.17  2009/09/17 22:55:38  wenger
+// Implemented Peptide-CGI to-do 099 (add google analytics script to
+// visualization summary pages).
+//
 // Revision 1.16  2009/08/25 18:15:57  wenger
 // Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
 // to trunk.
@@ -248,6 +289,9 @@ public abstract class S2DSummaryHtmlGen {
     private int _maxS2OrderFrame = 0;
     private IntKeyHashtable _s2OrderInfo = new IntKeyHashtable();
 
+    private int _maxTorsionAngleFrame = 0;
+    private IntKeyHashtable _torsionAngleInfo = new IntKeyHashtable();
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -379,6 +423,7 @@ TEMP?*/
 
 		// Write out the tables that now contain the actual links.
 		writeCoordTable();
+		writeTorsionAngleTable();
 		writeChemShiftTable();
 		writeSpartaDeltaShiftTable();
 		writeChemShiftRefTable();
@@ -774,8 +819,9 @@ TEMP?*/
 	} else {
 	    value += "&number=" + _name;
 	}
-	value += "&do_pdb=2&coord_index=" + frameIndex + "&size_str=" +
-	  sizeString() + "\">" + linkStr + "</a>";
+	value += "&do_pdb=" + S2DMain.PDB_LEVEL_PROCESS +
+	  "&coord_index=" + frameIndex + "&size_str=" + sizeString() +
+	  "\">" + linkStr + "</a>";
 	_coordInfo.put(frameIndex, value);
     }
 
@@ -842,18 +888,21 @@ TEMP?*/
 	_csrPdbIdInfo.put(frameIndex, pdbId);
 
         String value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
-	  "&do_csr=2&coord_index=" + frameIndex + "&csr_index=1" +
-	  "&size_str=" + sizeString() + "\">Go</a>";
+	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
+	  frameIndex + "&csr_index=1" + "&size_str=" + sizeString() +
+	  "\">Go</a>";
         _csrHistogramInfo.put(frameIndex, value);
 
         value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
-	  "&do_csr=2&coord_index=" + frameIndex + "&csr_index=2" +
-	  "&size_str=" + sizeString() + "\">Go</a>";
+	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
+	    frameIndex + "&csr_index=2" + "&size_str=" + sizeString() +
+	    "\">Go</a>";
         _csrDiffsInfo.put(frameIndex, value);
 
         value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
-	  "&do_csr=2&coord_index=" + frameIndex + "&csr_index=3" +
-	  "&size_str=" + sizeString() + "\">Go</a>";
+	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
+	  frameIndex + "&csr_index=3" + "&size_str=" + sizeString() +
+	  "\">Go</a>";
         _csrScatterInfo.put(frameIndex, value);
     }
 
@@ -924,6 +973,73 @@ TEMP?*/
 	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
 	  valueCount + " values (" + entityAssemblyID + ")</a>";
 	_s2OrderInfo.put(frameIndex, value);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the torsion angle link, where we've actually done the
+    // torsion angle processing.
+    protected void writeTorsionAngle(String pdbId, int frameIndex)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeTorsionAngle()");
+	}
+
+	if (pdbId != null) {
+	    String linkStr = pdbId;
+
+	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
+	      frameIndex);
+
+            String value = "<a href=\"" + _name +
+	      S2DNames.TAR_SUFFIX + frameIndex +
+	      sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	    _torsionAngleInfo.put(frameIndex, value);
+	}
+    }
+
+    //TEMP -- what about entity assembly ID here?
+    //-------------------------------------------------------------------
+    // Writes the torsion angle link, where the link is a CGI script
+    // invocation (we haven't already done the torsion angle
+    // processing).
+    protected void writeTorsionAngleCGI(String pdbId, String tarUrl,
+      int frameIndex) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeTorsionAngleCGI()");
+	}
+
+	if (pdbId != null) {
+	    String linkStr = pdbId;
+
+            String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
+
+	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
+	      frameIndex);
+
+//TEMPTEMP -- test vis server
+	    String value = "<a href=\"" + path + "?pdbid=" + pdbId;
+	    if (_isUvd) {
+	        value += "&file=" + (String)_localFiles.elementAt(0) +
+	          "&name=" + _name;
+	    } else {
+	        value += "&number=" + _name;
+	    }
+/* TEMP Haven't gotten passing the URL thru CGI to work yet.
+	    if (tarUrl != null) {
+		// Special conversion to avoid goofing up argument
+		// passing thru CGI scripts.
+		tarUrl = S2DUtils.replace(tarUrl, "&", "#38");
+		tarUrl = S2DUtils.replace(tarUrl, "?", "#63");
+	    	value += "&tar_url=" + tarUrl;
+	    }
+*/
+	    value += "&do_tar=" + S2DMain.TAR_LEVEL_PROCESS +
+	      "&coord_index=" + frameIndex + "&size_str=" +
+	      sizeString() + "\">" + linkStr + "</a>";
+	    _torsionAngleInfo.put(frameIndex, value);
+	}
     }
 
     //-------------------------------------------------------------------
@@ -1336,6 +1452,42 @@ TEMP?*/
             _writer.write("</table>\n");
         } else {
 	    _writer.write("<p><b>No S2 order parameters available in " +
+	      "this entry</b></p>\n");
+        }
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of torsion angle links.
+    protected void writeTorsionAngleTable() throws IOException
+    {
+	final int maxPerRow = 10;
+
+	_writer.write("\n<hr>\n");
+        if (_maxTorsionAngleFrame > 0) {
+            _writer.write("<p><b>\n" + "Torsion angle restraints" +
+	      "(note: processing may take several minutes)\n" +
+	      "</b></p>\n");
+
+            _writer.write("<table border cellpadding=5>\n");
+            _writer.write("  <tr>\n");
+	    _writer.write("    <th>PDB ID</th>\n");
+
+            for (int index = 1; index <= _maxTorsionAngleFrame; index++ ) {
+		if (_torsionAngleInfo.get(index) != null) {
+                    writeTableCell(_torsionAngleInfo, index);
+		    if ( index % maxPerRow == 0) {
+                        _writer.write("  </tr>\n");
+                        _writer.write("  <tr>\n");
+	                _writer.write("    <th>PDB ID</th>\n");
+		    }
+		}
+            }
+
+            _writer.write("  </tr>\n");
+            _writer.write("</table>\n");
+
+        } else {
+	    _writer.write("<p><b>No torsion angle data available for " +
 	      "this entry</b></p>\n");
         }
     }

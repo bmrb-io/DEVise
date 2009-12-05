@@ -1,0 +1,9 @@
+# Data: torision angle constraint values for 4020
+# Schema: bmrb-TorsionAngle
+# Attributes: Entity_assembly_ID; Residue_seq_code1; Residue_label1; Residue_seq_code2; Residue_label2; Torsion_angle_lower_bound; Torsion_angle_upper_bound; Residue_seq_code; atom1Num; atom2Num; atom3Num; atom4Num; angleType
+
+# Fake data
+1 16 CYS 17 SER -20.000 15.000 16.75 31 32 33 41 psi 15.93 4.98
+1 22 ASN 23 LEU 31.000 45.000 22.75 99 100 101 113 psi 38.70 3.69
+1 30 HIS 31 ILE -79.500 -61.000 30.75 211 212 213 228 psi -78.65 7.05
+

@@ -1,0 +1,36 @@
+#! /bin/csh -f
+
+# A new torsion angle test -- 4081 has some "other" angles.
+
+set result = 0
+
+rm -f */4081*
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 4081 -force -check_res_list -check_pct
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing mmCIF and torsion angle restraints: "
+./s2d -nomail -bmrbid 4081 -pdbid 1ITF -coord_index 1 -force \
+  -do_tar 3 -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+source tests/test_tar4_check
+
+
+echo -n "Test_tar4 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

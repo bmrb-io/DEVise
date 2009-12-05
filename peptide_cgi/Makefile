@@ -31,6 +31,8 @@ UVD_CGI_URL = undefined
 EXTRA_GC = 0
 SPARTA_NAME_TEMPLATE = bmr*_sparta.str
 SPARTA_URL = null
+TORSION_ANGLE_SEARCH_TEMPLATE = "MRGridServlet\?pdb_id=*\&bmrb_id=\&block_text_type=4-filtered-FRED\&min_items=100\&db_username=wattos1"
+DO_TAR_DEFAULT = 1
 
 include Makefile.config
 
@@ -72,6 +74,8 @@ testsetup:
 	mkdir test_data/uvd
 	mkdir test_session/.uvd
 	mkdir test_html/uvd
+	cd test_data; ln -s ../prototype/data/*.dat .
+	cd test_session; ln -s ../prototype/session/*.ds .
 
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
 install: histogram_install uvd_install
@@ -92,6 +96,11 @@ vur_install:
 uvd_install: do_install
 	./install_uvd $(UVD_SESSION_HOME) $(UVD_DATA_HOME) $(UVD_HTML_HOME) \
 	  $(UVD_DATA_UPLOAD) $(CGI_HOME)
+
+proto_install:
+	cp -p prototype/data/*.dat $(PEP_DATA_HOME)
+	cp -p prototype/html/*.html $(PEP_HTML_HOME)
+	cp -p prototype/session/*.ds $(PEP_SESSION_HOME)
 
 clean:
 	-rm $(S2D_PROPS_FILE)
@@ -164,6 +173,11 @@ s2d_props:
 	echo "bmrb_mirror.sparta_name_template=$(SPARTA_NAME_TEMPLATE)" >> \
 	  $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.sparta_url=$(SPARTA_URL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.restraint_grid_root=$(RESTRAINT_GRID_ROOT)" >> \
+	  $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.torsion_angle_search_template=$(TORSION_ANGLE_SEARCH_TEMPLATE)" >> \
+	  $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.do_tar_default=$(DO_TAR_DEFAULT)" >> $(S2D_PROPS_FILE)
 
 error_email:
 	-rm -f $(ERROR_EMAIL_FILE)

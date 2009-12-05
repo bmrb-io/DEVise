@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<title>Torsion Angle Restraints Help Page</title>
+<link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
+</head>
+<body bgcolor = #FFFFCC>
+<font color = #660000>
+
+<h2>Torsion Angle Restraints</h2>
+
+<p>
+This visualization shows the 3D structure of the relevant molecule,
+in combination with the torsion angle restraint data.
+</p>
+
+<h3>Main Visualization Window (angle mode)</h3>
+
+<p>
+The visualization is laid out as shown below; the view names are
+referred to in the text.
+</p>
+
+<p>
+<center>
+<img src="tar_angle.png">
+</center>
+</p>
+
+<p>
+The <strong>structure (main) view</strong> shows the 3D structure
+(rendered by <a href="http://jmol.sourceforge.net/">Jmol</a>).
+Note that you can control many options in the structure view with the
+popup menus in that view and the Jmol menu in the JavaScreen menu bar.
+</p>
+
+<p>
+The atoms corresponding to the angles selected in
+the <a href="#data_view">data view</a>
+or atoms and residues selected in the the <a href="#atom_select_tree">
+atom select tree</a> (see below) are highlighted in green.  You have
+the option
+of highlighting the atoms with a "selection halo" or by coloring the
+atoms themselves (Jmol->View->Highlight in the menu bar).
+Atoms not colored for highlighting are colored as follows:
+</p>
+
+<table border="1">
+<caption>
+<strong>
+Atom type colors
+</strong>
+</caption>
+  <tr>
+    <th>
+      Element
+    </th>
+    <th>
+      Color
+    </th>
+  </tr>
+  <tr>
+    <td>
+      Carbon
+    </td>
+    <td>
+      Gray
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Hydrogen
+    </td>
+    <td>
+      White
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Oxygen
+    </td>
+    <td>
+      Red
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Nitrogen
+    </td>
+    <td>
+      Blue
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Sulfur
+    </td>
+    <td>
+      Yellow
+    </td>
+  </tr>
+  <tr>
+    <td>
+      Phosphorus
+    </td>
+    <td>
+      Orange
+    </td>
+  </tr>
+</table>
+
+<p>
+The <strong>atom color legend</strong> shows the colors for
+the elements.
+</p>
+
+<a name="data_view"></a>
+<p>
+The <strong>data view</strong> shows one of the data sets available
+for this entry (selected by the <a href="#data_select_view">
+data select view</a>).  The DEVise cursor in this view selects
+angles according
+to the data values -- an angle for which the red tip of the bar (for
+violations) or the red average line (for angles) is
+enclosed in the cursor are selected.  By default, angles selected
+in this view are selected in the <a href="#atom_select_tree">
+atom select tree</a> (see below).
+The way the data is displayed in this view is slightly different
+according to whether you are displaying the actual torsion angle
+values or the violations (see the <a href="#main_angle_mode">angle mode</a>
+and <a href="#main_violation_mode">violation mode</a> explanations below).
+</p>
+
+<p>
+The <strong>data scroll view</strong> scrolls the X axis of the data
+view.  The DEVise cursor selects the range of residues shown in the data view
+-- you can drag the entire cursor, or drag the left or right edge to
+change its size.
+</p>
+
+<a name="ea_select_view"></a>
+<p>
+The <strong>entity assembly select view</strong> selects the entity
+assembly for which data is shown in the <strong>data select view</strong>.
+If the entry being visualized has only one entity assembly, this view has
+no effect.
+</p>
+
+<a name="data_select_view"></a>
+<p>
+The <strong>data select view</strong> selects the data set shown
+in the data view.  All available data sets for the currently-selected
+entity assembly are
+listed in this view; by dragging the DEVise cursor you select which data set
+is shown in the data view.
+</p>
+
+<p>
+The <strong>info view</strong> shows the BMRB accession number and
+PDB ID, and the generation date of the visualization; show
+the view help (F1 key) to see the Peptide-CGI version and exact
+generation timestamp.
+</p>
+
+
+<a name="main_violation_mode"></a>
+<h3>Main Visualization Window (violation mode)</h3>
+
+<p>
+When a violation data set is selected, the data is displayed as a bar
+graph, with the value of the bar being the maximum violation found for
+any model in the data.  Each bar has a red tip on top, indicating the
+location that must be enclosed by the cursor to select that angle for
+highlighting in the structure view.  Unselected angles are displayed
+with an orange bar, while selected angles are displayed with a green
+bar.
+</p>
+
+<p>
+<center>
+<img src="tar_violation.png">
+</center>
+</p>
+
+
+<a name="main_angle_mode"></a>
+<h3>Main Visualization Window (angle mode, data view closeup)</h3>
+
+<p>
+When an angle data set is selected, the lower bound, upper bound, and
+average value are displayed for each torsion angle.  The upper and lower
+bound are displayed as a vertical bar, with horizontal lines at the
+lower and upper bounds; the average is displayed as a horizontal red
+line.  To select a given angle for highlighting in the structure view,
+the average line for that angle must be enclosed in the cursor.
+Unselected angles are displayed with an orange bar, while selected
+angles are displayed with a green bar.  Angles that "wrap around" the
+180 degree/-180 degree boundary are displayed as two separate bars
+(you can see this with the psi angle for residue 43 below, for
+example).
+<p>
+<center>
+<img src="tar_angle_wrap.png">
+</center>
+</p>
+
+
+<h3>Main Visualization Window (violation mode, structure closeup)</h3>
+
+<p>
+For each angle selected in the data view (as long as the selection
+is not modified in the selection tree) the four atoms making up the
+torsion angle are highlighted in the structure view.  In this case,
+for a phi angle, C, N, CA, and C atoms are highlighted.
+</p>
+
+<p>
+<center>
+<img src="tar_violation_closeup.png">
+</center>
+</p>
+
+
+
+<h3>Structure Selection Window</h3>
+
+<p>
+Selection of which atoms to display and highlight is done in a
+separate window, to allow more space in the main window to be used for
+the structure view and data view.
+</p>
+
+<p>
+<center>
+<img src="coordinate_vis_select.png">
+</center>
+</p>
+
+<p>
+The <strong>structure type tree</strong> selects which atoms are shown
+in the structure view by structure type (backbone, backbone and side chains,
+or backbone, side chains, and hydrogens).  Changing what's selected in
+this tree also changes what is displayed in the atom display tree and
+the atom select tree.
+</p>
+
+<p>
+The <strong>atom display tree</strong> selects which atoms are displayed
+in the structure view.  The atom display tree allows selection of the entire
+molecule, or parts of the molecule by residue and individual atom.
+Changing what's selected in this tree also changes what is displayed
+in the atom select tree.
+</p>
+
+<a name="atom_select_tree"></a>
+<p>
+The <strong>atom select tree</strong> enables you to modify the selections
+made with the data view cursor.
+The atom select tree allows selection of the entire
+molecule, or parts of the molecule by residue and individual atom.
+</p>
+
+<p>
+By default, the atoms corresponding to the angles selected in the
+<a href="#data_view">
+data view</a> are also selected in the atom select tree.  You can change
+which residues and atoms are selected by manipulating the tree.  The
+Reset button sets the selection in the tree back to the atoms selected
+in the
+data view.
+</p>
+
+<h3>JavaScreen Menubar Jmol Menu</h3>
+
+<p>
+Left-clicking the Jmol button in the JavaScreen menu bar brings up
+this menu.
+</p>
+
+<p>
+<center>
+<img src="jmol_menubar_menu.png">
+</center>
+</p>
+
+<h3>Jmol Popup Menu</h3>
+
+<p>
+Right-clicking in the structure (Jmol) view brings up this menu.
+</p>
+
+<p>
+<center>
+<img src="jmol_popup_menu.png">
+</center>
+</p>
+
+<h3>Jmol Mouse Functions</h3>
+
+<ul>
+<li><b>Drag, left button</b>: rotate object
+<li><b>Alt-drag, left button (vertically)</b>: enlarge or shrink object
+<li><b>Alt-drag, left button (horizontally)</b>: rotate object around
+  axis normal to screen
+<li><b>Drag, middle button (vertically)</b>: enlarge or shrink object
+<li><b>Drag, middle button (horizontally)</b>: rotate object around axis
+  normal to screen
+<li><b>Control-drag, right button</b>: translate object
+<li><b>Scroll wheel</b>: enlarge or shrink object
+</ul>
+
+<!-- $Id$ -->
+
+</body>
+</html>

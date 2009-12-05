@@ -61,9 +61,9 @@ foreach file ($files)
 end
 
 set file = "data_dir/4867ac1.dat"
-set line = "^1 1 1 G O5' O 118.098 -36.722 1.395 side_chains"
+set line = "^1 1_1_O5' 1 1 G O5' O 118.098 -36.722 1.395 side_chains"
 source tests/check4line
-set line = '^3444 2 175 GLY HA3 H 123.371 1.993 19.454 backbone$'
+set line = '^3444 2_175_HA3 2 175 GLY HA3 H 123.371 1.993 19.454 backbone$'
 source tests/check4line
 
 set file = "data_dir/4867as1.dat"

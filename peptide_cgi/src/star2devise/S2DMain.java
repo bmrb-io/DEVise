@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.162  2009/11/20 21:18:29  wenger
+// Changed version to 11.6.4x1, new version history section, small change to
+// release document.
+//
 // Revision 1.161  2009/11/20 16:56:13  wenger
 // Set version to 11.6.3 for release; updated testing document.
 //
@@ -43,6 +47,115 @@
 // the appropriate chemical shift-related class(es) rather than in
 // S2DMain.
 //
+// Revision 1.156.2.25  2009/12/05 21:45:39  wenger
+// Hopefully final cleanup before merge(!).
+//
+// Revision 1.156.2.24  2009/12/04 22:19:51  wenger
+// Implemented cache checking for torsion angle restraints.
+//
+// Revision 1.156.2.23  2009/12/04 18:55:45  wenger
+// Forced Y axis range for "angle" views to always be -180 to 180, as
+// per request from Eldon.
+//
+// Revision 1.156.2.22  2009/12/04 16:47:53  wenger
+// Added a property for default torsion angle restraint processing
+// level; started on torsion angle help page.
+//
+// Revision 1.156.2.21  2009/12/02 22:43:44  wenger
+// Added the new TAR_LEVEL_LINK_CHECK processing level, and made it
+// the default; partially implemented passing the torsion angle URL
+// thru the CGI script arguments as an optimization.  Added the capability
+// of running some subsets of the tests in test_all; and added a couple
+// more torsion angle tests (dealing with multiple entity assemblies,
+// and "other" angles).
+//
+// Revision 1.156.2.20  2009/12/02 21:38:45  wenger
+// Added the new TAR_LEVEL_LINK_CHECK processing level, and made it
+// the default; partially implemented passing the torsion angle URL
+// thru the CGI script arguments as an optimization.  Added the capability
+// of running some subsets of the tests in test_all.
+//
+// Revision 1.156.2.19  2009/12/02 19:18:12  wenger
+// Improved the CGI methods for summary html pages to use named constants
+// from S2DMain for the values for do_pdb, do_csr, and do_tar; added
+// processing time note for torsion angle links.
+//
+// Revision 1.156.2.18  2009/12/02 18:32:45  wenger
+// Cleaned up the mixing of coordinate/torsion angle code in S2DMain;
+// "all-in-one" processing now works (see test_tar2p).
+//
+// Revision 1.156.2.17  2009/12/02 17:26:53  wenger
+// The torsion angle CGI links now work for the "standard" NMR Browser
+// setup (haven't tested it yet with the visualization server).
+// A bunch of clean up still needed...  Added a new test for "all-in-one"
+// processing, but that doesn't work yet.
+//
+// Revision 1.156.2.16  2009/12/01 23:25:25  wenger
+// Cleaned up a bunch of the temporary code for finding the torsion
+// angle violations in the restraint grid; tested it at Osaka and
+// Florence, added torsion-angle-related items to config files.
+//
+// Revision 1.156.2.15  2009/12/01 18:32:16  wenger
+// Test stub code for retreiving torsion angle data by PDB ID is now in
+// place.
+//
+// Revision 1.156.2.14  2009/12/01 18:02:07  wenger
+// Torsion angle data can now be retreived by URL from the restraint grid.
+//
+// Revision 1.156.2.13  2009/12/01 15:56:57  wenger
+// Got filtering of the html file returned by the restraint grid working;
+// actually getting that file from the restraint grid via the URL isn't
+// working yet (specifying a URL to a local file does work).
+//
+// Revision 1.156.2.12  2009/11/30 21:47:50  wenger
+// Fixed title, etc., in html pages for torsion angle visualizations.
+//
+// Revision 1.156.2.11  2009/11/30 19:58:48  wenger
+// Fixed visualization info for the torsion angle sessions; removed
+// now-obsolete session template for separate violation visualization.
+//
+// Revision 1.156.2.10  2009/11/30 17:54:03  wenger
+// Changed torsion angle links in summary page to reflect angle/violation
+// unification.
+//
+// Revision 1.156.2.9  2009/11/30 17:09:15  wenger
+// Changed order of torsion angle meta-data so that violations appear
+// just below the corresponding lower/upper/average values.
+//
+// Revision 1.156.2.8  2009/11/26 00:30:47  wenger
+// Did some cleaning up of the torsion angle meta-data.
+//
+// Revision 1.156.2.7  2009/11/25 22:46:05  wenger
+// Okay, I think I have the "unified" visualization working.  I should
+// do some cleaning up of names in the session template, though, to match
+// the scheme I ended up with.  I also have to take out the creation of
+// separate session, links, etc., for violations.
+//
+// Revision 1.156.2.6  2009/11/24 23:59:02  wenger
+// Added the S2DNmrStarTarIfc to properly deal with the torsion angle-
+// related tags.  Note: 3D tests fail because they're not yet updated
+// for the new Atom_ID field.
+//
+// Revision 1.156.2.5  2009/11/24 16:22:34  wenger
+// Got rid of a bunch of temporary notes that are no longer needed.
+//
+// Revision 1.156.2.4  2009/11/17 23:38:46  wenger
+// Added some notes based on discussions at today's BMRB staff meeting.
+//
+// Revision 1.156.2.3  2009/11/17 23:25:18  wenger
+// Writing of torsion angle sessions, etc., now mostly working (links in
+// summary page are still not right, lots of other cleanup, finding
+// data in restraint grid still needed).
+//
+// Revision 1.156.2.2  2009/11/16 21:50:42  wenger
+// Modified the torsion angle session template to take advantage
+// of the new HighLow symbol 'isAngle' mapping attribute.
+//
+// Revision 1.156.2.1  2009/10/22 17:11:31  wenger
+// "Bounced" s2d_torsion_rest_0909_br off the trunk -- created new
+// s2d_torsion_rest_0910_br, merged s2d_torsion_rest_0909_br_0 thru
+// s2d_torsion_rest_0909_br_end to the new branch.
+//
 // Revision 1.156  2009/10/20 22:07:56  wenger
 // Reorganized the chemical shift code by moving the code that actually
 // gets the data values out of S2DMain (as I did for S2DAtomicCoords).
@@ -62,6 +175,18 @@
 // which is too complicated anyhow, and moves the knowledge about what
 // data we need down into the relevant object.  I should probably make
 // this change for all of the similar pieces of code.
+//
+// Revision 1.153.2.3  2009/10/21 20:24:11  wenger
+// Fixed the 1brv_ta.str file -- I was using the wrong version before;
+// we output some real data in S2DTorsionAngle.
+//
+// Revision 1.153.2.2  2009/10/08 16:20:23  wenger
+// Partway along the processing of torsion angle restraints -- just
+// committing for safety.
+//
+// Revision 1.153.2.1  2009/09/29 18:01:25  wenger
+// Merged s2d_torsion_rest_0905_br_0 thru s2d_torsion_rest_0905_br_end
+// to s2d_torsion_rest_0909_br.
 //
 // Revision 1.153  2009/09/25 21:30:32  wenger
 // Changed version to 11.6.3x1, added 11.6.3 section to version
@@ -221,6 +346,9 @@
 //
 // Revision 1.137  2009/06/04 17:07:19  wenger
 // Improved error message for errors parsing residue count.
+//
+// Revision 1.136.2.1  2009/06/10 20:55:59  wenger
+// Changed Peptide-CGI version to 11.7.0TRx1 for this branch.
 //
 // Revision 1.136  2009/05/15 21:04:20  wenger
 // Fixed Peptide-CGI bug 071 (note that the fix only works in conjunction
@@ -751,9 +879,9 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.6.4x1"/*TEMP*/;
-    public static final String DEVISE_MIN_VERSION = "1.9.0";
-    public static final String JS_CLIENT_MIN_VERSION = "5.9.4";
+    public static final String PEP_CGI_VERSION = "11.7.0x1"/*TEMP*/;
+    public static final String DEVISE_MIN_VERSION = "1.9.1";
+    public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
     private String _masterBmrbId = ""; // accession number the user requested
 
@@ -783,26 +911,37 @@ public class S2DMain {
     private boolean _checkResList = false;
     private boolean _checkPctAssign = false;
 
-    private static final int PDB_LEVEL_NONE = 0;
-    private static final int PDB_LEVEL_LINK = 1;
-    private static final int PDB_LEVEL_PROCESS = 2;
+    public static final int PDB_LEVEL_NONE = 0;
+    public static final int PDB_LEVEL_LINK = 1;
+    public static final int PDB_LEVEL_PROCESS = 2;
     //TEMP -- _pdbLevel should really be something like _coordLevel
     private int _pdbLevel = PDB_LEVEL_LINK;
 
-    private static final int CSR_LEVEL_NONE = 0;
-    private static final int CSR_LEVEL_LINK = 1;
-    private static final int CSR_LEVEL_PROCESS = 2;
+    public static final int CSR_LEVEL_NONE = 0;
+    public static final int CSR_LEVEL_LINK = 1;
+    public static final int CSR_LEVEL_PROCESS = 2;
     private int _csrLevel = CSR_LEVEL_NONE;
 
     // LACS-related info.
-    private static final int LACS_LEVEL_NONE = 0;
-    private static final int LACS_LEVEL_TRY = 1;
-    private static final int LACS_LEVEL_MANDATORY = 2;
+    public static final int LACS_LEVEL_NONE = 0;
+    public static final int LACS_LEVEL_TRY = 1;
+    public static final int LACS_LEVEL_MANDATORY = 2;
     private int _lacsLevel = LACS_LEVEL_NONE;
     private String _lacsFile = null;
 
     // SPARTA-related info.
     private String _spartaFile = null;
+
+    // Torsion angle restraint-related info.
+    public static final int TAR_LEVEL_NONE = 0;
+    // This means create the links only if the appropriate entry
+    // exists in the restraint grid.
+    public static final int TAR_LEVEL_LINK_CHECK = 1;
+    public static final int TAR_LEVEL_LINK = 2;
+    public static final int TAR_LEVEL_PROCESS = 3;
+    private int _tarLevel = TAR_LEVEL_LINK_CHECK;
+    private String _tarFile = null;
+    private String _tarUrl = null;//TEMP -- change name?
 
     private boolean _haveCoords = false;
 
@@ -816,7 +955,9 @@ public class S2DMain {
     // PDB ID(s) for chem shift reference processing.
     private Vector _csrPdbIds = new Vector(); // Vector contains Strings.
 
+    //TEMP -- need to document this!!!
     private int _cmdFrameIndex = -1;
+    //TEMP -- need to document this!!!
     private int _currentFrameIndex = -1;
 
     private Vector _dataSets = new Vector(); // Vector of S2DDatasetInfo
@@ -874,6 +1015,7 @@ public class S2DMain {
 	    s2d._pdbLevel = PDB_LEVEL_NONE;
 	    s2d._csrLevel = CSR_LEVEL_NONE;
 	    s2d._lacsLevel = LACS_LEVEL_NONE;
+	    s2d._tarLevel = TAR_LEVEL_NONE;
 	}
 
 	try {
@@ -1069,6 +1211,29 @@ public class S2DMain {
 	    S2DNames.SPARTA_NAME_TEMPLATE = "bmr*_sparta.str";
 	}
 
+	S2DNames.RESTRAINT_GRID_ROOT = props.getProperty(
+	  "bmrb_mirror.restraint_grid_root");
+	if (S2DNames.RESTRAINT_GRID_ROOT == null) {
+	    if (doDebugOutput(2)) {
+	        System.out.println("bmrb_mirror.restraint_grid_root " +
+		  "property value not defined; using default");
+	    }
+	    S2DNames.RESTRAINT_GRID_ROOT =
+	      "http://restraintsgrid.bmrb.wisc.edu/NRG/";
+	}
+
+	S2DNames.TORSION_ANGLE_SEARCH_TEMPLATE = props.getProperty(
+	  "bmrb_mirror.torsion_angle_search_template");
+	if (S2DNames.TORSION_ANGLE_SEARCH_TEMPLATE == null) {
+	    if (doDebugOutput(2)) {
+	        System.out.println("bmrb_mirror.torsion_angle_search_template " +
+		  "property value not defined; using default");
+	    }
+	    S2DNames.TORSION_ANGLE_SEARCH_TEMPLATE =
+	      "MRGridServlet?pdb_id=*&bmrb_id=&block_text_type=" +
+	      "4-filtered-FRED&min_items=100&db_username=wattos1";
+	}
+
         return props;
     }
 
@@ -1121,6 +1286,20 @@ public class S2DMain {
 	    S2DError err = new S2DError("Unable to get value for " +
 	      "bmrb_mirror.sparta_url property; using default");
 	    S2DNames.SPARTA_URL = "file:./";
+	}
+
+	String tarTmp = props.getProperty("bmrb_mirror.do_tar_default");
+	if (tarTmp == null) {
+	    System.err.println(new S2DWarning("Unable to get value for " +
+	      "bmrb_mirror.do_tar_default property"));
+	} else {
+	    try {
+	        _tarLevel = Integer.parseInt(tarTmp);
+	    } catch(NumberFormatException ex) {
+	        System.err.println(new S2DWarning("Error parsing " +
+		  "do_tar_default value " + ex.toString() +
+		  "; using default"));
+	    }
 	}
     }
 
@@ -1185,7 +1364,12 @@ public class S2DMain {
           "        0: ignore PDB references;\n" +
           "        1: create links in summary file but don't process;\n" +
           "        2: process PDB references\n" +
-          "        (default is " + _pdbLevel + " unless -pdbid is set)\n" +
+          "        (default is " + _pdbLevel + "\n" +
+          "    -do_tar <0|1|2>\n" +
+          "        0: ignore torsion angle restraint references;\n" +
+          "        1: create links in summary file but don't process;\n" +
+          "        2: process torsion angle restraint references\n" +
+          "        (default is " + _tarLevel + "\n" +
 	  "    -file <filename>\n" +
 	  "        local file containing data to be processed\n" +
           "    -force\n" +
@@ -1220,6 +1404,10 @@ public class S2DMain {
 	  "        URL of directory containing SPARTA files\n" +
 	  "    -star_url <url>\n" +
 	  "        URL of directory containing NMR-STAR files\n" +
+	  "    -tar_file <filename>\n" +
+	  "        file containing torsion angle restraint data\n" +
+	  "    -tar_url <url>\n" +
+	  "        URL of document containing torsion angle restraint data\n" +
           "    -usage\n" +
           "        show this message\n" +
 	  "    -uvd\n" + 
@@ -1407,6 +1595,28 @@ public class S2DMain {
 		      ex.toString());
 	        }
 
+	    } else if ("-do_tar".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-do_tar argument needs value");
+		}
+		try {
+	            _tarLevel = Integer.parseInt(args[index]);
+		    // For now, we're forcing coordinate processing to
+		    // happen whenever we do torsion angle processing.
+		    // This should eventually be changed to not re-
+		    // process coordinates if we already have them andy
+		    // they're up-to-date.
+		    if (_tarLevel == TAR_LEVEL_PROCESS) {
+		        _pdbLevel = PDB_LEVEL_PROCESS;
+		    }
+	        } catch(NumberFormatException ex) {
+	            System.err.println("Error parsing do_tar value: " +
+		      ex.toString());
+	            throw new S2DError("Error parsing do_tar value " +
+		      ex.toString());
+	        }
+
 	    } else if ("-file".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -1500,6 +1710,24 @@ public class S2DMain {
 		    throw new S2DError("-star_url argument needs value");
 		}
 		S2DNames.BMRB_STAR_URL = args[index];
+
+	    } else if ("-tar_url".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-tar_url argument needs value");
+		}
+		_tarUrl = args[index];
+		// This is to test URL strings to be able to be passed
+		// in test script.
+		_tarUrl = S2DUtils.replace(_tarUrl, "#38", "&");
+		_tarUrl = S2DUtils.replace(_tarUrl, "#63", "?");
+
+	    } else if ("-tar_file".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-tar_file argument needs value");
+		}
+		_tarFile = args[index];
 
 	    } else if ("-uvd".equals(args[index])) {
 	        if (S2DNames.UVD_CGI_URL == null) {
@@ -1600,6 +1828,13 @@ public class S2DMain {
 	      LACS_LEVEL_MANDATORY + ")");
 	}
 	
+	if (_tarLevel < TAR_LEVEL_NONE || _tarLevel > TAR_LEVEL_PROCESS) {
+	    throw new S2DError("illegal do_tar value: " + _tarLevel +
+	      " (must be between " + TAR_LEVEL_NONE + " and " +
+	      TAR_LEVEL_PROCESS + ")");
+	}
+
+
 	//
 	// Set some defaults.
 	//
@@ -1635,6 +1870,9 @@ public class S2DMain {
 	    System.out.println("_pdbLevel = " + _pdbLevel);
 	    System.out.println("_lacsFile = " + _lacsFile);
 	    System.out.println("_lacsLevel = " + _lacsLevel);
+	    System.out.println("_tarLevel = " + _tarLevel);
+	    System.out.println("_tarFile = " + _tarFile);
+	    System.out.println("_tarUrl = " + _tarUrl);
 	    if (_localFiles.size() > 0) {
 	        System.out.println("localFile = {" +
 		  _localFiles.elementAt(0) + "}");
@@ -1740,7 +1978,8 @@ public class S2DMain {
 	    // Compare the generation date of the summary html file to the
 	    // modification date of any related PDB files.
 	    //
-	    if (_pdbLevel == PDB_LEVEL_PROCESS) {
+	    if (_pdbLevel == PDB_LEVEL_PROCESS ||
+	      _tarLevel == TAR_LEVEL_PROCESS) {
 		Vector pdbIds2Check = null;
 	        if (_cmdPdbId != null) {
 		        // PDB ID was specified on the command line -- check
@@ -1755,23 +1994,9 @@ public class S2DMain {
 
 	        for (int index = 0; index < pdbIds2Check.size(); index++) {
 	            String id = (String)pdbIds2Check.elementAt(index);
-		    if (doDebugOutput(2)) {
-                        System.out.println("  Checking PDB ID " + id);
+		    if (!pdbIdUseCache(summaryData, id)) {
+		        break check;
 		    }
-	            Date pdbModDate = S2DmmCifIfc.getModDate(id);
-		        // Note: if a PDB ID was specified on the command
-			// line we really should compare the PDB file date
-			// against the session-specific html file here,
-			// instead of the summary html file, but I'm
-			// leaving it for now.  wenger 2004-11-03.
-	            if (pdbModDate == null ||
-		      pdbModDate.after(summaryData.fileDate)) {
-		        if (doDebugOutput(2)) {
-		            System.out.println("Existing summary html file " +
-			      "is older than PDB file; cache not used");
-		        }
-	                break check;
-	            }
 	        }
 	    }
 
@@ -1791,7 +2016,16 @@ public class S2DMain {
 		        break check;
 		    }
 		}
+
+		if (_tarLevel == TAR_LEVEL_PROCESS) {
+		    if (!sessionFileUseCache(_name,
+		      S2DNames.TAR_SUFFIX + _cmdFrameIndex,
+		      _sessionDir, summaryData)) {
+		        break check;
+		    }
+		}
 	    }
+
 
 	    result = true;
 	}
@@ -1804,12 +2038,69 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    /**
+     * Figure out whether the cache is valid relative to a given
+     * PDB ID (checking coordinate and/or torsion angle data, according
+     * to what processing we're doing).
+     * @param The S2DSummaryFileData for the summary html file.
+     * @param The PDB ID.
+     * @param True iff the cache is valid for the specified PDB ID.
+     */
+    private boolean pdbIdUseCache(S2DSummaryFileData summaryData,
+      String id)
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("  S2DMain.pdbIdUseCache(" + id + ")");
+	}
+
+	if (_pdbLevel == PDB_LEVEL_PROCESS) {
+	    Date pdbModDate = S2DmmCifIfc.getModDate(id);
+	        // Note: if a PDB ID was specified on the command
+	        // line we really should compare the PDB file date
+	        // against the session-specific html file here,
+	        // instead of the summary html file, but I'm
+	        // leaving it for now.  wenger 2004-11-03.
+	    if (pdbModDate == null || pdbModDate.after(summaryData.fileDate)) {
+	        if (doDebugOutput(2)) {
+	            System.out.println("Existing summary html file " +
+	              "is older than PDB file; cache not used");
+	        }
+	        return false;
+	    }
+	}
+
+        if (_tarLevel == TAR_LEVEL_PROCESS) {
+	    Date tarModDate = S2DNmrStarTarIfc.getModDate(id);
+	        // Note: if a PDB ID was specified on the command
+	        // line we really should compare the PDB file date
+	        // against the session-specific html file here,
+	        // instead of the summary html file, but I'm
+	        // leaving it for now.  wenger 2004-11-03.
+	    if (tarModDate == null || tarModDate.after(summaryData.fileDate)) {
+	        if (doDebugOutput(2)) {
+	            System.out.println("Existing summary html file is " +
+		      "older than torsion angle restraint file; cache " +
+		      "not used");
+	        }
+	        return false;
+	    }
+	}
+
+	return true;
+    }
+
+    //-------------------------------------------------------------------
     // Determine whether the given session file allows us to use the
     // cache.  (Note that if *any* test shows the cache to be invalid,
     // we consider the cache invalid.)
     private boolean sessionFileUseCache(String name, String suffix,
       String sessionDir, S2DSummaryFileData summaryData)
     {
+        if (doDebugOutput(2)) {
+	    System.out.println("  S2DMain.sessionFileUseCache(" + name +
+	      ", " + suffix + ")");
+	}
+
         //
 	// Get peptide-cgi version and generation timestamp from
 	// the appropriate session file.
@@ -1962,6 +2253,14 @@ public class S2DMain {
 		    System.err.println(new S2DError(
 		      "Chem shift reference calculation failed"));
 		}
+	    }
+
+	    //
+	    // Do the torsion angle processing.
+	    //
+	    if (_tarLevel == TAR_LEVEL_PROCESS) {
+		_currentFrameIndex = _cmdFrameIndex;
+	        process1TAR(_tarFile, _tarUrl, _cmdPdbId);
 	    }
 
 	    _summary.close(null, null);
@@ -2158,7 +2457,7 @@ public class S2DMain {
 
         for (int index = 0; index < _localFiles.size(); index++) {
 	    star = S2DNmrStarIfc.createFromFile(
-	      (String)_localFiles.elementAt(index), false);
+	      (String)_localFiles.elementAt(index), false, false);
 
 	    process1NmrStar(star);
 	}
@@ -2176,6 +2475,10 @@ public class S2DMain {
 
 	for (int index = 0; index < _pdbIds.size(); index++) {
 	    String id = (String)_pdbIds.elementAt(index);
+
+	    // We do the same thing here for PDB_LEVEL_LINK and
+	    // PDB_LEVEL_PROCESS because they are split out inside
+	    // process1PDB().
 	    if (_pdbLevel == PDB_LEVEL_LINK ||
 	      _pdbLevel == PDB_LEVEL_PROCESS) {
 		try {
@@ -2196,6 +2499,33 @@ public class S2DMain {
 		      "PDB ID " + id + " not read", false);
 	        }
 	    }
+
+	    // We do the same thing here for TAR_LEVEL_LINK and
+	    // TAR_LEVEL_PROCESS because they are split out inside
+	    // process1TAR().
+	    if (_tarLevel == TAR_LEVEL_LINK_CHECK ||
+	      _tarLevel == TAR_LEVEL_LINK ||
+	      _tarLevel == TAR_LEVEL_PROCESS) {
+		try {
+	            process1TAR(null, null, id);
+		} catch(S2DException ex) {
+		    System.err.println("Unable to process PDB ID " + id +
+		      "(" + ex.toString() + ")");
+		    System.err.println("Unable to get torsion angle " +
+		      "restraints from related PDB ID " + id);
+		}
+	    } else {
+	        if (_retrying) {
+		    System.err.println("Unable to get torsion angle " +
+		      " restraints from related PDB ID " + id + " because " +
+		      "of insufficient memory");
+	        } else {
+		    System.err.println("Torsion angle restraints " +
+		      "from related PDB ID " + id + " not read");
+	        }
+	    }
+
+	    _currentFrameIndex++;
 	}
     }
 
@@ -2212,7 +2542,8 @@ public class S2DMain {
 	    try {
 	        S2DNmrStarIfc lacsStar;
 	        if (_lacsFile != null) {
-	            lacsStar = S2DNmrStarIfc.createFromFile(_lacsFile, true);
+	            lacsStar = S2DNmrStarIfc.createFromFile(_lacsFile,
+		      true, false);
 	        } else {
 	            lacsStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
 		      _useLocalFiles, true, false);
@@ -2470,7 +2801,8 @@ public class S2DMain {
 
 	    S2DNmrStarIfc spartaStar = null;
 	    if (_spartaFile != null) {
-	        spartaStar = S2DNmrStarIfc.createFromFile(_spartaFile, false);
+	        spartaStar = S2DNmrStarIfc.createFromFile(_spartaFile,
+		  false, false);
 	    } else {
 	        spartaStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
 	          _useLocalFiles, false, true);
@@ -2810,6 +3142,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Save atomic coordinates that are in the main NMR-STAR file.
     private void saveAtomicCoords(S2DNmrStarIfc star)
     {
         if (doDebugOutput(3)) {
@@ -3966,7 +4299,57 @@ public class S2DMain {
 	      S2DNames.DAT_SUFFIX);
 	    saveFrameAtomicCoords(cif, null, _currentFrameIndex, null, false);
 	}
-	_currentFrameIndex++;
+
+        _currentPdbId = null;
+    }
+
+    //-------------------------------------------------------------------
+    // Process one torsion angle restraints file.
+    private void process1TAR(String tarFile, String tarUrl, String pdbId)
+      throws S2DException
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("process1TARFile(" + tarFile + ", " +
+	      tarUrl + ", " + pdbId + ")");
+	}
+
+        _currentPdbId = pdbId;
+
+	if (_tarLevel == TAR_LEVEL_LINK_CHECK ||
+	  _tarLevel == TAR_LEVEL_LINK) {
+	    try {
+		if (_tarLevel == TAR_LEVEL_LINK_CHECK) {
+		    // Note: this will throw an error if the relevant
+		    // entry doesn't exist in the restraints grid.
+		    tarUrl = S2DTorsionAngle.pdbIdToUrl(pdbId);
+		}
+	        _summary.writeTorsionAngleCGI(_currentPdbId, tarUrl,
+		  _currentFrameIndex);
+            } catch(IOException ex) {
+                System.err.println(
+		  "IOException writing torsion angle restraints: " +
+		  ex.toString());
+	        throw new S2DError("Can't write torsion angle restraints");
+	    } finally {
+	        _summary.endFrame();
+	    }
+
+	} else {
+	    S2DNmrStarTarIfc tarStar;
+	    if (tarFile != null) {
+	        tarStar = (S2DNmrStarTarIfc)S2DNmrStarIfc.createFromFile(
+		  tarFile, false, true);
+	    } else if (tarUrl != null) {
+	        tarStar = S2DNmrStarTarIfc.createFromUrl(tarUrl, pdbId);
+	    } else {
+	        tarStar = S2DNmrStarTarIfc.createFromId(pdbId);
+	    }
+
+	    S2DTorsionAngle tar = new S2DTorsionAngle(_name, _longName,
+	      tarStar, _dataDir, _sessionDir, _summary, _currentPdbId);
+
+	    tar.writeRestraints(_currentFrameIndex);
+	}
 
         _currentPdbId = null;
     }

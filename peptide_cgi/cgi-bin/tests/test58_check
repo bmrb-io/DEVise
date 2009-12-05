@@ -71,9 +71,9 @@ foreach file ($files)
 end
 
 set file = "data_dir/15303ac1.dat"
-set line = '^1 1 1 GLY N N 7.038 -22.774 -13.339 backbone$'
+set line = '^1 1_1_N 1 1 GLY N N 7.038 -22.774 -13.339 backbone$'
 source tests/check4line
-set line = '^3588 1 228 SER HG H -28.842 -21.335 -72.264 all_hydrogens$'
+set line = '^3588 1_228_HG 1 228 SER HG H -28.842 -21.335 -72.264 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/15303as2.dat"

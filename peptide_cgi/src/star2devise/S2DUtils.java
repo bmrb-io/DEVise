@@ -19,6 +19,32 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.4.4  2009/12/05 21:17:03  wenger
+// Converted dots to zeros in numerical torsion angle data so DEVise
+// can read the data correctly.
+//
+// Revision 1.18.4.3  2009/11/30 18:09:01  wenger
+// Got rid of sessions and specific html pages for (now obsolete) torsion
+// angle violation visualizations.
+//
+// Revision 1.18.4.2  2009/10/29 20:06:43  wenger
+// For torsion angles, the session files and specific html files are
+// now created; there are some cursor behavior problems in the session
+// files that need to be fixed, and also they are not loading right
+// in the JavaScreen (I wonder if I need to have some kind of different
+// setup in the JS client to handle the different highlighting).
+// (There also seem to be problems with DEVise drawing the high/low
+// symbols in some cases!)
+//
+// Revision 1.18.4.1  2009/10/22 18:28:31  wenger
+// Early phases of setting up "atom IDs" (entity assembly ID/residue
+// sequence code/atom name) values to facilitate linking of torsion
+// angle data to coordinate data.
+//
+// Revision 1.18  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.17  2009/07/20 22:33:48  wenger
 // Implemented Peptide-CGI to-do 093 (derive Atom_type values from
 // Atom_ID values if the Atom_type values don't exist).
@@ -131,7 +157,8 @@ public class S2DUtils
       TYPE_CHEM_SHIFT_REF2 = 14, TYPE_CHEM_SHIFT_REF3 = 15,
       TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18,
       TYPE_DNA_DELTASHIFT = 19, TYPE_RNA_DELTASHIFT = 20,
-      TYPE_HVSC_CHEM_SHIFTS = 21, TYPE_SPARTA_DELTASHIFT = 22;
+      TYPE_HVSC_CHEM_SHIFTS = 21, TYPE_SPARTA_DELTASHIFT = 22,
+      TYPE_TORSION_ANGLE = 23;
 
     //===================================================================
     // PUBLIC METHODS
@@ -192,6 +219,24 @@ public class S2DUtils
 
         for (int index = 0; index < count; index++) {
 	    results[index] = values[index].toUpperCase();
+	}
+        
+        return results;
+    }
+
+    //-------------------------------------------------------------------
+    // Change any array values that are "." to "0".
+    public static String[] arrayDot2Zero(String[] values)
+    {
+	int count = values.length;
+	String[] results = new String[count];
+
+        for (int index = 0; index < count; index++) {
+	    if (values[index].equals(".")) {
+	        results[index] = "0";
+	    } else {
+	        results[index] = values[index];
+	    }
 	}
         
         return results;
@@ -478,6 +523,10 @@ TEMP*/
 	    dataSuffix = S2DNames.SPARTA_DELTASHIFT_SUFFIX;
 	    break;
 
+	case S2DUtils.TYPE_TORSION_ANGLE:
+	    dataSuffix = S2DNames.TAR_SUFFIX;
+	    break;
+
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);
 	}
@@ -494,6 +543,25 @@ TEMP*/
 	System.out.println("  Total memory: " + rt.totalMemory());
 	System.out.println("  Free memory:  " + rt.freeMemory());
 	System.out.println("  Max memory:   " + rt.maxMemory());
+    }
+
+    //-------------------------------------------------------------------
+    // Create an AtomId string (uniquely identifies an atom).
+    public static String createAtomId(int entityAssemblyId,
+      String residueSeqCode, String atomName)
+    {
+        String entStr = "";
+	entStr += entityAssemblyId;
+
+	return createAtomId(entStr, residueSeqCode, atomName);
+    }
+
+    //-------------------------------------------------------------------
+    // Create an AtomId string (uniquely identifies an atom).
+    public static String createAtomId(String entityAssemblyId,
+      String residueSeqCode, String atomName)
+    {
+        return entityAssemblyId + "_" + residueSeqCode + "_" + atomName;
     }
 
     //===================================================================

@@ -50,15 +50,15 @@ set line = '^1	20	C$'
 source tests/check4line
 
 set file = "data_dir/15080ac1.dat"
-set line = "^1 1 1 G O5' O -0.831 12.956 4.46 side_chains"
+set line = "^1 1_1_O5' 1 1 G O5' O -0.831 12.956 4.46 side_chains"
 source tests/check4line
-set line = '^627 1 20 C H6 H 9.539 13.306 -3.974 all_hydrogens$'
+set line = '^627 1_20_H6 1 20 C H6 H 9.539 13.306 -3.974 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/15080ac2.dat"
-set line = '^1 1 1 PSU N1 N 0.508 13.363 1.384 side_chains$'
+set line = '^1 1_1_N1 1 1 PSU N1 N 0.508 13.363 1.384 side_chains$'
 source tests/check4line
-set line = '^645 1 20 A H2 H 3.233 14.267 -3.694 all_hydrogens$'
+set line = '^645 1_20_H2 1 20 A H2 H 3.233 14.267 -3.694 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/15080md.dat"

@@ -111,15 +111,15 @@ set line = '^3JHNHA 1 148 LYS H 148 LYS HA 8.576 2.0$'
 source tests/check4line 
 
 set file = "data_dir/4310ac1.dat"
-set line = '^1 1 3 GLN N N 20.125 13.902 29.049 backbone$'
+set line = '^1 1_3_N 1 3 GLN N N 20.125 13.902 29.049 backbone$'
 source tests/check4line
-set line = '^1087 0 . CA CA CA 23.511 -12.581 18.32 backbone$'
+set line = '^1087 0_._CA 0 . CA CA CA 23.511 -12.581 18.32 backbone$'
 source tests/check4line
-set line = '^1088 0 . CA CA CA 31.624 -7.849 25.118 backbone$'
+set line = '^1088 0_._CA 0 . CA CA CA 31.624 -7.849 25.118 backbone$'
 source tests/check4line
-set line = '^1089 0 . CA CA CA 15.321 10.508 -2.053 backbone$'
+set line = '^1089 0_._CA 0 . CA CA CA 15.321 10.508 -2.053 backbone$'
 source tests/check4line
-set line = '^1146 0 . TFP F3 F 15.201 1.583 13.478 side_chains$'
+set line = '^1146 0_._F3 0 . TFP F3 F 15.201 1.583 13.478 side_chains$'
 source tests/check4line
 
 set file = "data_dir/4310amac1.dat"

@@ -20,6 +20,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.20.4.2  2009/11/30 18:09:01  wenger
+// Got rid of sessions and specific html pages for (now obsolete) torsion
+// angle violation visualizations.
+//
+// Revision 1.20.4.1  2009/10/29 20:06:43  wenger
+// For torsion angles, the session files and specific html files are
+// now created; there are some cursor behavior problems in the session
+// files that need to be fixed, and also they are not loading right
+// in the JavaScreen (I wonder if I need to have some kind of different
+// setup in the JS client to handle the different highlighting).
+// (There also seem to be problems with DEVise drawing the high/low
+// symbols in some cases!)
+//
+// Revision 1.20  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.19.4.3  2009/07/22 20:20:22  wenger
 // Fixed residue numbering in SPARTA delta shift visualizations;
 // changed "theoretical" to "SPARTA-calculated" and changed method
@@ -403,6 +420,18 @@ TEMP*/
 	    dataSuffix = S2DNames.SPARTA_DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
 	    searchString1 = "15339td1";
+	    break;
+
+	case S2DUtils.TYPE_TORSION_ANGLE:
+	    baseName = "torsion_angle.base";
+	    dataSuffix = S2DNames.TAR_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "4020ac1";
+	    replaceString1 = name + S2DNames.ATOMIC_COORD_SUFFIX + frameIndex;
+	    searchString2 = "4020tar-md1";
+	    replaceString2 = name + S2DNames.TAR_MD_SUFFIX + frameIndex;
+	    searchString3 = "4020tar1";
+	    replaceString3 = name + S2DNames.TAR_SUFFIX + frameIndex;
 	    break;
 
 	default:

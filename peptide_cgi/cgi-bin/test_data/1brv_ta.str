@@ -1,0 +1,116 @@
+data_1brv
+
+# This is http://www.bmrb.wisc.edu/servlets/MRGridServlet?db_username=wattos1&format=dihedral+angle&mrblock_id=149944&pdb_id=1brv&request_type=block&subtype=violation&type=check
+# 4-filtered-FRED/Wattos/check/violation/dihedral angle
+
+save_distance_constraint_statistics_1
+    _TA_constraint_stats_list.Sf_category                   torsion_angle_constraint_statistics
+    _TA_constraint_stats_list.Constraint_count              29
+    _TA_constraint_stats_list.Viol_count                    950
+    _TA_constraint_stats_list.Viol_total                    232354.05
+    _TA_constraint_stats_list.Viol_max                      11.82
+    _TA_constraint_stats_list.Viol_rms                      3.46
+    _TA_constraint_stats_list.Viol_average_all_restraints   3.48
+    _TA_constraint_stats_list.Viol_average_violations_only  5.10
+    _TA_constraint_stats_list.Cutoff_violation_report       5.00
+    _TA_constraint_stats_list.Details                       
+;
+Description of the tags in this list:
+*  1 * Administrative tag
+*  2 * ID of the restraint list.                                                                 
+*  3 * Number of restraints in list.                                                             
+*  4 * Number of violated restraints (each model violation is used).                             
+*  5 * Sum of violations in degrees.                                                             
+*  6 * Maximum violation of a restraint without averaging in any way.                            
+*  7 * Rms of violations over all restraints.                                                    
+*  8 *  Average violation over all restraints.                                                   
+*  9 *  Average violation over violated restraints.                                              
+            This violation is averaged over only those models in which the restraint is violated.
+            Threshold for reporting violations (degrees) in the last columns of the next table.     
+*  10 * This tag.                                                                                
+
+Description of the tags in the per restraint table below:
+*  1 * Restraint ID within restraint list.                             
+*  2 * Torsion angle name where available.                             
+*  3 *     First atom's:                                               
+*  4 * Chain identifier (can be absent if none defined)                
+*  5 * Residue number                                                  
+*  6 * Residue name                                                    
+*  7 * Name of (pseudo-)atom                                           
+*  8 *  Second thru fourth atom's identifiers occupy columns 7 thru 18.
+*  19 * Lower bound (degrees)                                               
+*  20 * Upper bound (degrees)                                               
+*  21 * Average angle in ensemble of models                                 
+*  22 * Minimum angle in ensemble of models (counter clockwise from range)  
+*  23 * Maximum angle in ensemble of models         (clockwise from range)  
+*  24 * Maximum violation (without any averaging)                           
+*  25 * Model number with the maximum violation                             
+*  26 * Number of models with a violation above cutoff                      
+*  27 * List of models with a violation above cutoff. See description above.
+*  28 * Administrative tag                                                  
+*  29 * Administrative tag                                                  
+
+;
+
+
+    loop_
+       _TA_constraint_stats.Restraint_ID
+       _TA_constraint_stats.Torsion_angle_name
+       _TA_constraint_stats.Entity_assembly_ID_1
+       _TA_constraint_stats.Comp_index_ID_1
+       _TA_constraint_stats.Comp_ID_1
+       _TA_constraint_stats.Atom_ID_1
+       _TA_constraint_stats.Entity_assembly_ID_2
+       _TA_constraint_stats.Comp_index_ID_2
+       _TA_constraint_stats.Comp_ID_2
+       _TA_constraint_stats.Atom_ID_2
+       _TA_constraint_stats.Entity_assembly_ID_3
+       _TA_constraint_stats.Comp_index_ID_3
+       _TA_constraint_stats.Comp_ID_3
+       _TA_constraint_stats.Atom_ID_3
+       _TA_constraint_stats.Entity_assembly_ID_4
+       _TA_constraint_stats.Comp_index_ID_4
+       _TA_constraint_stats.Comp_ID_4
+       _TA_constraint_stats.Atom_ID_4
+       _TA_constraint_stats.Angle_lower_bound_val
+       _TA_constraint_stats.Angle_upper_bound_val
+       _TA_constraint_stats.Angle_average
+       _TA_constraint_stats.Angle_minimum
+       _TA_constraint_stats.Angle_maximum
+       _TA_constraint_stats.Max_violation
+       _TA_constraint_stats.Max_violation_model_number
+       _TA_constraint_stats.Over_cutoff_violation_count
+       _TA_constraint_stats.Over_cutoff_violation_per_model
+
+        1 . 1 16 CYS N  1 16 CYS CA 1 16 CYS CB 1 16 CYS SG -100.00  -20.00 -101.85 -107.17  -95.92  7.17 12  5 "[    .    1-+ *.    2    .    3    .    *  * .   ]" 
+        2 . 1 17 SER N  1 17 SER CA 1 17 SER CB 1 17 SER OG   20.00  100.00   63.85   57.57   70.86     .  .  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+        3 . 1 19 CYS N  1 19 CYS CA 1 19 CYS CB 1 19 CYS SG -100.00  -20.00  -62.98  -62.72  -62.98     .  .  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+        4 . 1 22 ASN N  1 22 ASN CA 1 22 ASN CB 1 22 ASN CG  140.00 -140.00 -160.90 -163.08 -159.20     .  .  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+        5 . 1 23 LEU N  1 23 LEU CA 1 23 LEU CB 1 23 LEU CG -100.00  -20.00  -89.66  -89.12  -89.45     .  .  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+        6 . 1 25 CYS N  1 25 CYS CA 1 25 CYS CB 1 25 CYS SG  140.00 -140.00 -168.22 -168.92 -167.55     .  .  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+        7 . 1 26 LEU N  1 26 LEU CA 1 26 LEU CB 1 26 LEU CG -100.00  -20.00  -74.78  -76.27  -73.74     .  .  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+        8 . 1 29 CYS N  1 29 CYS CA 1 29 CYS CB 1 29 CYS SG   20.00  100.00   80.11   58.45   96.59     .  .  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+        9 . 1 30 HIS N  1 30 HIS CA 1 30 HIS CB 1 30 HIS CG -100.00  -20.00  -35.23  -55.64  -12.29  7.71 30  3 "[    .    1   -.    2    .    +    *    4    .   ]" 
+       10 . 1 29 CYS C  1 30 HIS N  1 30 HIS CA 1 30 HIS C  -140.00 -100.00  -97.69 -117.88  -92.28  7.72 45 11 "[    .  * *    .    *  -**  * 3    *    4    +* *]" 
+       11 . 1 30 HIS C  1 31 ILE N  1 31 ILE CA 1 31 ILE C  -140.00 -100.00  -97.64 -144.43  -89.89 10.11 47 23 "[* * **** *    .  **2*** *** **    -   *4 * ** + ]" 
+       12 . 1 14 VAL CA 1 14 VAL C  1 15 PRO N  1 15 PRO CA  178.00 -178.00  178.53  170.59 -173.57  7.41 40  4 "[    .    1-* *.    2    .    3    .    +    .   ]" 
+       13 . 1 15 PRO CA 1 15 PRO C  1 16 CYS N  1 16 CYS CA  178.00 -178.00  179.77  175.08 -173.73  4.27 48  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+       14 . 1 16 CYS CA 1 16 CYS C  1 17 SER N  1 17 SER CA  178.00 -178.00  167.47  166.91  166.81 11.82 10 48  [*********+******************************-*******]  
+       15 . 1 17 SER CA 1 17 SER C  1 18 THR N  1 18 THR CA  178.00 -178.00  177.27  175.56  179.04  2.44 21  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+       16 . 1 18 THR CA 1 18 THR C  1 19 CYS N  1 19 CYS CA  178.00 -178.00  172.77  173.13  172.75  8.23  8 27 "[*   * *+**   **** *2   *.** ******.* * * * *-  *]" 
+       17 . 1 19 CYS CA 1 19 CYS C  1 20 GLU N  1 20 GLU CA  178.00 -178.00  169.93  167.93  172.14 10.07 14 48  [************-+**********************************]  
+       18 . 1 20 GLU CA 1 20 GLU C  1 21 GLY N  1 21 GLY CA  178.00 -178.00 -176.56 -177.07 -177.21  3.07 34  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+       19 . 1 21 GLY CA 1 21 GLY C  1 22 ASN N  1 22 ASN CA  178.00 -178.00  174.06  173.02  175.85  4.98 41  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+       20 . 1 22 ASN CA 1 22 ASN C  1 23 LEU N  1 23 LEU CA  178.00 -178.00 -172.52 -171.99 -172.36  6.63 29 33 "[ ***.****1* **** * 2* ******+3-  **** ***   ****]" 
+       21 . 1 23 LEU CA 1 23 LEU C  1 24 ALA N  1 24 ALA CA  178.00 -178.00  167.53  167.69  167.58 11.04 22 48  [********-************+**************************]  
+       22 . 1 24 ALA CA 1 24 ALA C  1 25 CYS N  1 25 CYS CA  178.00 -178.00  171.41  169.75  172.53  8.25  9 48  [********+******-********************************]  
+       23 . 1 25 CYS CA 1 25 CYS C  1 26 LEU N  1 26 LEU CA  178.00 -178.00  170.76  169.85  171.42  8.15 34 48  [*********-***********************+**************]  
+       24 . 1 26 LEU CA 1 26 LEU C  1 27 SER N  1 27 SER CA  178.00 -178.00  171.52  169.10  173.23  8.90  2 46  [*+*******1***-********************.*************]  
+       25 . 1 27 SER CA 1 27 SER C  1 28 LEU N  1 28 LEU CA  178.00 -178.00  171.36  169.59  176.01  8.41  6 44 "[*****+***** **.*********** **3**********-*******]" 
+       26 . 1 28 LEU CA 1 28 LEU C  1 29 CYS N  1 29 CYS CA  178.00 -178.00 -176.55  173.19 -168.51  9.49 14 21 "[*   *    **  +.** *2    ***  3*** * *  * * -* * ]" 
+       27 . 1 29 CYS CA 1 29 CYS C  1 30 HIS N  1 30 HIS CA  178.00 -178.00  173.47  172.91  172.55 10.87 30 28 "[*   *  * 1** *. * ** - ** ** +*** **** * * ** **]" 
+       28 . 1 30 HIS CA 1 30 HIS C  1 31 ILE N  1 31 ILE CA  178.00 -178.00 -174.86 -173.99 -174.21  7.49 46  8 "[    .  * 1    . *  2 * -.   *3    .  * 4*   .+  ]" 
+       29 . 1 31 ILE CA 1 31 ILE C  1 32 GLU N  1 32 GLU CA  178.00 -178.00 -179.33  174.75 -174.16  3.84 47  0 "[    .    1    .    2    .    3    .    4    .   ]" 
+    stop_
+
+save_

@@ -74,9 +74,9 @@ end
 
 #TEMP -- any more tests here?
 set file = "data_dir/5838ac1.dat"
-set line = '^1 1 1 SER N N 9.054 5.221 -12.338 backbone$'
+set line = '^1 1_1_N 1 1 SER N N 9.054 5.221 -12.338 backbone$'
 source tests/check4line
-set line = '^3840 4 26 GLU HG3 H 1.168 19.586 5.375 all_hydrogens$'
+set line = '^3840 4_26_HG3 4 26 GLU HG3 H 1.168 19.586 5.375 all_hydrogens$'
 source tests/check4line
 
 set file = "data_dir/5838d1.dat"

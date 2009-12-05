@@ -13,7 +13,7 @@
 // ------------------------------------------------------------------------
 
 // This class implements the output of atomic coordinate data.  For each set
-// of atomic coordindate data, it creates a data file, a session file, an
+// of atomic coordinate data, it creates a data file, a session file, an
 // individual html file, and a link in the summary html file.
 
 // ------------------------------------------------------------------------
@@ -21,6 +21,29 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.2.2  2009/10/22 18:28:31  wenger
+// Early phases of setting up "atom IDs" (entity assembly ID/residue
+// sequence code/atom name) values to facilitate linking of torsion
+// angle data to coordinate data.
+//
+// Revision 1.12.2.1  2009/10/22 17:11:31  wenger
+// "Bounced" s2d_torsion_rest_0909_br off the trunk -- created new
+// s2d_torsion_rest_0910_br, merged s2d_torsion_rest_0909_br_0 thru
+// s2d_torsion_rest_0909_br_end to the new branch.
+//
+// Revision 1.12  2009/10/07 21:39:43  wenger
+// Code reorganization as a test for the torsion angle code: for atomic
+// coordinates, moved all of the code that actually gets the values from
+// the STAR file from S2DMain into the S2DAtomicCoordinates constructor.
+// I think this really makes a lot of sense -- it simplifies S2DMain,
+// which is too complicated anyhow, and moves the knowledge about what
+// data we need down into the relevant object.  I should probably make
+// this change for all of the similar pieces of code.
+//
+// Revision 1.11.8.1  2009/10/21 22:33:35  wenger
+// More partial changes -- committing again because I think maybe
+// I *still* have the wrong restraints file...
+//
 // Revision 1.11  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -411,6 +434,7 @@ public class S2DAtomicCoords {
 	      _name + "\n");
 	    coordWriter.write("# Schema: bmrb-jmol-atom_coord\n");
 	    coordWriter.write("# Attributes: Atom_number; " +
+	      "Atom_ID; " +
 	      "Entity_assembly_ID; " +
 	      "Residue_seq_code; Residue_label; Atom_name; Atom_type; " +
 	      "Atom_coord_x; Atom_coord_y; Atom_coord_z; Struct_type");
@@ -443,6 +467,9 @@ public class S2DAtomicCoords {
 		}
 
 	        coordWriter.write(atomNum + " ");
+		String atomId = S2DUtils.createAtomId(
+		  _entityAssemblyIDs[index], _resSeqCodes[index], atomName);
+	        coordWriter.write(atomId + " ");
 	        coordWriter.write(_entityAssemblyIDs[index] + " ");
 	        coordWriter.write(_resSeqCodes[index] + " ");
 	        coordWriter.write(_resLabels[index] + " ");

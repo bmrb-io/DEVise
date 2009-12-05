@@ -54,9 +54,9 @@ end
 
 
 set file = "data_dir/4416ac1.dat"
-set line = "^1 1 1 DG O5' O 11.389 -13.227 1.201 side_chains"
+set line = "^1 1_1_O5' 1 1 DG O5' O 11.389 -13.227 1.201 side_chains"
 source tests/check4line
-set line = '^761 2 12 DC H6 H 3.798 -1.275 -2.962 all_hydrogens$'
+set line = '^761 2_12_H6 2 12 DC H6 H 3.798 -1.275 -2.962 all_hydrogens$'
 source tests/check4line 
 
 set file = "data_dir/4416as1.dat"

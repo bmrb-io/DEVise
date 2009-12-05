@@ -31,6 +31,30 @@
 // $Id$
 
 // $Log$
+// Revision 1.16.4.4  2009/12/05 21:45:39  wenger
+// Hopefully final cleanup before merge(!).
+//
+// Revision 1.16.4.3  2009/12/02 21:38:45  wenger
+// Added the new TAR_LEVEL_LINK_CHECK processing level, and made it
+// the default; partially implemented passing the torsion angle URL
+// thru the CGI script arguments as an optimization.  Added the capability
+// of running some subsets of the tests in test_all.
+//
+// Revision 1.16.4.2  2009/12/02 17:26:53  wenger
+// The torsion angle CGI links now work for the "standard" NMR Browser
+// setup (haven't tested it yet with the visualization server).
+// A bunch of clean up still needed...  Added a new test for "all-in-one"
+// processing, but that doesn't work yet.
+//
+// Revision 1.16.4.1  2009/11/17 23:25:18  wenger
+// Writing of torsion angle sessions, etc., now mostly working (links in
+// summary page are still not right, lots of other cleanup, finding
+// data in restraint grid still needed).
+//
+// Revision 1.16  2009/08/25 18:15:57  wenger
+// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
+// to trunk.
+//
 // Revision 1.15.4.4  2009/08/21 19:29:38  wenger
 // Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
 // But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
@@ -492,6 +516,35 @@ public class S2DSummaryHtml {
 
 	_normal.writeS2Order(frameIndex, entityAssemblyID, count);
 	_large.writeS2Order(frameIndex, entityAssemblyID, count);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the torsion angle link, where we've actually done the
+    // torsion angle processing.
+    public void writeTorsionAngle(String pdbId, int frameIndex)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeTorsionAngle()");
+	}
+
+	_normal.writeTorsionAngle(pdbId, frameIndex);
+	_large.writeTorsionAngle(pdbId, frameIndex);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the atomic coordinates link, where the link is a CGI script
+    // invocation (we haven't already processed the PDB entry with
+    // the atomic coordinates).
+    public void writeTorsionAngleCGI(String pdbId, String tarUrl,
+      int frameIndex) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeTorsionAngleCGI()");
+	}
+
+	_normal.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex);
+	_large.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex);
     }
 
     //-------------------------------------------------------------------

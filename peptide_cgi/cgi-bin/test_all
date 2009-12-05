@@ -8,6 +8,30 @@
 
 use strict;
 
+my $do_all = 1;
+my $do_sparta = 0;
+my $do_tar = 0;
+
+my $usage = "Usage: test_all [-sparta] [-tar]";
+
+my $arg;
+while ($arg = shift) {
+  if ($arg eq -sparta) {
+    $do_all = 0;
+    $do_sparta = 1;
+  } elsif ($arg eq -tar) {
+    $do_all = 0;
+    $do_tar = 1;
+  } elsif ($arg eq -usage) {
+     print "$usage\n";
+     exit 0;
+  } else {
+    print "Illegal argument: $arg\n";
+     print "$usage\n";
+     exit 0;
+  }
+}
+
 my $result = 0;
 my $failed_list = "";
 
@@ -21,100 +45,133 @@ chomp $version;
 print "\nPeptide-CGI version: $version\n";
 print LOGFILE "Peptide-CGI version: $version: ";
 
-RunTest("test1");
-RunTest("test1_3");
-RunTest("test2");
-RunTest("test3");
-RunTest("test3_3");
-RunTest("test4");
-RunTest("test4_3");
-RunTest("test6", "-noleech");
-RunTest("test7");
-RunTest("test9");
-RunTest("test10");
-RunTest("test11");
-RunTest("test13");
-RunTest("test13_3");
-RunTest("test14");
-RunTest("test14_3");
-RunTest("test15", "-noleech");
-RunTest("test15_3", "-noleech");
-RunTest("test16", "-noleech");
-RunTest("test17");
-RunTest("test18");
-RunTest("test19");
-RunTest("test22", "-noleech");
-RunTest("test23", "-noleech");
-RunTest("test24");
-RunTest("test26");
-RunTest("test27");
-RunTest("test27_3");
-RunTest("test28");
-RunTest("test29");
-RunTest("test30");
-RunTest("test32");
-RunTest("test33");
-RunTest("test34");
-RunTest("test37");
-RunTest("test38");
-RunTest("test39");
-RunTest("test40");
-RunTest("test41");
-RunTest("test46");
-RunTest("test47", "-noleech");
-RunTest("test49");
-RunTest("test50");
-RunTest("test51");
-RunTest("test51_3");
-RunTest("test52");
-RunTest("test53");
-RunTest("test53_21");
-RunTest("test54");
-RunTest("test54_3");
-RunTest("test55");
-RunTest("test56");
-RunTest("test57");
-RunTest("test57_3");
-RunTest("test58");
-RunTest("test58_3");
-RunTest("test59");
-RunTest("test60");
-RunTest("test60_3");
-RunTest("test61");
-RunTest("test61_3");
-RunTest("test62");
-RunTest("test62_3");
-RunTest("test63");
-RunTest("test64");
-RunTest("test65");
-RunTest("test66");
-RunTest("test67");
-RunTest("test67_3");
-RunTest("test68");
-RunTest("test68_3");
-RunTest("test69");
-RunTest("test69_3");
-RunTest("test_no_atom_types");
-# No longer relevant because of SPARTA data format changes.
-#RunTest("test_sparta1");
-# No longer relevant because of SPARTA data format changes.
-#RunTest("test_sparta2");
-RunTest("test_sparta3");
-RunTest("test_sparta3_3");
-RunTest("test_sparta3_vs");
-RunTest("test_sparta4");
-RunTest("test_sparta5");
-RunTest("test_sparta5_3");
-RunTest("test_min_2_1");
-RunTest("test_min_3_0");
-RunTest("test_methyl1");
-RunTest("test_methyl1_3");
+if ($do_all != 0) {
+  RunTest("test1");
+  RunTest("test1_3");
+  RunTest("test2");
+  RunTest("test3");
+  RunTest("test3_3");
+  RunTest("test4");
+  RunTest("test4_3");
+  RunTest("test6", "-noleech");
+  RunTest("test7");
+  RunTest("test9");
+  RunTest("test10");
+  RunTest("test11");
+  RunTest("test13");
+  RunTest("test13_3");
+  RunTest("test14");
+  RunTest("test14_3");
+  RunTest("test15", "-noleech");
+  RunTest("test15_3", "-noleech");
+  RunTest("test16", "-noleech");
+  RunTest("test17");
+  RunTest("test18");
+  RunTest("test19");
+  RunTest("test22", "-noleech");
+  RunTest("test23", "-noleech");
+  RunTest("test24");
+  RunTest("test26");
+  RunTest("test27");
+  RunTest("test27_3");
+  RunTest("test28");
+  RunTest("test29");
+  RunTest("test30");
+  RunTest("test32");
+  RunTest("test33");
+  RunTest("test34");
+  RunTest("test37");
+  RunTest("test38");
+  RunTest("test39");
+  RunTest("test40");
+  RunTest("test41");
+  RunTest("test46");
+  RunTest("test47", "-noleech");
+  RunTest("test49");
+  RunTest("test50");
+  RunTest("test51");
+  RunTest("test51_3");
+  RunTest("test52");
+  RunTest("test53");
+  RunTest("test53_21");
+  RunTest("test54");
+  RunTest("test54_3");
+  RunTest("test55");
+  RunTest("test56");
+  RunTest("test57");
+  RunTest("test57_3");
+  RunTest("test58");
+  RunTest("test58_3");
+  RunTest("test59");
+  RunTest("test60");
+  RunTest("test60_3");
+  RunTest("test61");
+  RunTest("test61_3");
+  RunTest("test62");
+  RunTest("test62_3");
+  RunTest("test63");
+  RunTest("test64");
+  RunTest("test65");
+  RunTest("test66");
+  RunTest("test67");
+  RunTest("test67_3");
+  RunTest("test68");
+  RunTest("test68_3");
+  RunTest("test69");
+  RunTest("test69_3");
+  RunTest("test_no_atom_types");
+}
+
+if (($do_all != 0) or ($do_sparta != 0)) {
+  # No longer relevant because of SPARTA data format changes.
+  #RunTest("test_sparta1");
+  # No longer relevant because of SPARTA data format changes.
+  #RunTest("test_sparta2");
+  RunTest("test_sparta3");
+  RunTest("test_sparta3_3");
+  RunTest("test_sparta3_vs");
+  RunTest("test_sparta4");
+  RunTest("test_sparta5");
+  RunTest("test_sparta5_3");
+}
+
+if ($do_all != 0) {
+  RunTest("test_min_2_1");
+  RunTest("test_min_3_0");
+  RunTest("test_methyl1");
+  RunTest("test_methyl1_3");
+}
+
+if (($do_all != 0) or ($do_tar != 0)) {
+  RunTest("test_tar1");
+  RunTest("test_tar1u");
+  RunTest("test_tar1i");
+  RunTest("test_tar2");
+  RunTest("test_tar2u");
+  RunTest("test_tar2i");
+  RunTest("test_tar2p");
+  RunTest("test_tar3");
+  RunTest("test_tar4");
+  RunTest("test_tar5");
+  RunTest("test_tar6");
+}
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 #TEMP -- 4141 has protein and DNA
 
 print "\nTest_all result: ";
-print LOGFILE "Test_all result: ";
+print LOGFILE "Test_all result (";
+if ($do_all != 0) {
+  print LOGFILE "all";
+} else {
+  if ($do_sparta) {
+    print LOGFILE " sparta";
+  }
+  if ($do_tar) {
+    print LOGFILE " tar";
+  }
+}
+print LOGFILE "): ";
 if ($result == 0) {
   print "OK\n";
   print LOGFILE "OK\n";

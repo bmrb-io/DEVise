@@ -18,6 +18,12 @@
 #  Parameters:
 #   file - the name of the uploaded file
 #   name - the name to use for the base of the generated files
+#   pdbid - the PDB ID to process
+#   coord_index - the index of this coordinate frame in the parent
+#   do_pdb - the level of PDB (structure) processing
+#   do_csr - the level of chemical shift reference processing
+#   do_tar - the level of torsion angle restraint processing
+#   tar_url - the URL for the document containing torsion angle data
 
 #  can call using
 #  http://bmrb.wisc.edu/cgi-bin/peptide-cgi/make_uvd?file=test_data/20070430_12345.str&name=20070430_12345
@@ -51,6 +57,8 @@ $do_csr = $query->param('do_csr');
 $csr_index = $query->param('csr_index');
 my $size_str = $query->param('size_str') || '';
 my $force = $query->param('force') || '';
+my $do_tar = $query->param('do_tar');
+my $tar_url = $query->param('tar_url');
 
 print "  file = $file\n" if ($debug);
 print "  name = $name\n" if ($debug);
@@ -67,6 +75,10 @@ if ($do_pdb) {
   print "  has CSR\n" if ($debug);
   $summary_page = $summary_page_dir . "/uvd/" . $name . 'csr' . $csr_index .
     $coord_index . $size_str . '.html';
+} elsif ($do_tar) {
+  print "  has PDB\n" if ($debug);
+  $summary_page = $summary_page_dir . "/uvd/" . $name . 'tar' . $coord_index .
+    $size_str . '.html';
 } else {
   print "  does not have PDB or CSR\n" if ($debug);
   $summary_page = $summary_page_dir . "/uvd/" . $name . 'y' . $size_str .
@@ -78,8 +90,13 @@ if ($do_pdb) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_pdb $do_pdb -coord_index $coord_index";
 } elsif ($do_csr) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_csr $do_csr -coord_index $coord_index";
+} elsif ($do_tar) {
+  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_tar $do_tar -coord_index $coord_index";
 } else {
   $cmd = "./uvd -file $file -name $name";
+}
+if ($tar_url) {
+  $cmd = $cmd . " -tar_url " . $tar_url;
 }
 if ($force) {
   $cmd = $cmd . " -force";
