@@ -20,9 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.83  2009/12/03 21:52:22  wenger
+  Merged devise_1_10_br_0 thru devise_1_10_br_1 to trunk.
+
   Revision 1.82  2009/12/03 16:15:14  wenger
   Changed DEVise version to 1.11.0x1 and JS version to 5.13.0; added
   appropriate version history sections.
+
+  Revision 1.81.2.3  2009/12/07 20:55:18  wenger
+  Changed DEVise version to 1.10.1x1 and JavaScreen version to 5.12.1x1;
+  added corresponding version history sections.
 
   Revision 1.81.2.2  2009/12/03 17:21:58  wenger
   Cleaned up version numbers & version history for 1.10.0 release.

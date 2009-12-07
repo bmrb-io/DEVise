@@ -20,9 +20,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.122  2009/12/03 21:51:15  wenger
+// Merged devise_1_10_br_0 thru devise_1_10_br_1 to trunk.
+//
 // Revision 1.121  2009/12/03 16:14:55  wenger
 // Changed DEVise version to 1.11.0x1 and JS version to 5.13.0; added
 // appropriate version history sections.
+//
+// Revision 1.120.2.3  2009/12/07 20:54:59  wenger
+// Changed DEVise version to 1.10.1x1 and JavaScreen version to 5.12.1x1;
+// added corresponding version history sections.
 //
 // Revision 1.120.2.2  2009/12/03 17:21:39  wenger
 // Cleaned up version numbers & version history for 1.10.0 release.
