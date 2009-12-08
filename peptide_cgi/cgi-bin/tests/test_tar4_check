@@ -8,18 +8,6 @@ set files = ( data_dir/4081ac1.dat \
 	data_dir/4081d1.dat \
 	data_dir/4081hc1.dat \
 	data_dir/4081hn1.dat \
-	data_dir/4081lacsc1.dat \
-	data_dir/4081lacsc2.dat \
-	data_dir/4081lacsc3.dat \
-	data_dir/4081lacsc4.dat \
-	data_dir/4081lacsl1.dat \
-	data_dir/4081lacsl2.dat \
-	data_dir/4081lacsl3.dat \
-	data_dir/4081lacsl4.dat \
-	data_dir/4081lacsp1.dat \
-	data_dir/4081lacsp2.dat \
-	data_dir/4081lacsp3.dat \
-	data_dir/4081lacsp4.dat \
 	data_dir/4081md.dat \
 	data_dir/4081p1.dat \
 	data_dir/4081rc1.dat \
@@ -40,14 +28,6 @@ set files = ( data_dir/4081ac1.dat \
 	html_dir/4081hc1_large.html \
 	html_dir/4081hn1.html \
 	html_dir/4081hn1_large.html \
-	html_dir/4081lacs1.html \
-	html_dir/4081lacs1_large.html \
-	html_dir/4081lacs2.html \
-	html_dir/4081lacs2_large.html \
-	html_dir/4081lacs3.html \
-	html_dir/4081lacs3_large.html \
-	html_dir/4081lacs4.html \
-	html_dir/4081lacs4_large.html \
 	html_dir/4081p1.html \
 	html_dir/4081p1_large.html \
 	html_dir/4081tar1.html \
@@ -64,10 +44,6 @@ set files = ( data_dir/4081ac1.dat \
 	session_dir/4081d1.ds \
 	session_dir/4081hc1.ds \
 	session_dir/4081hn1.ds \
-	session_dir/4081lacs1.ds \
-	session_dir/4081lacs2.ds \
-	session_dir/4081lacs3.ds \
-	session_dir/4081lacs4.ds \
 	session_dir/4081p1.ds \
 	session_dir/4081tar1.ds )
 
