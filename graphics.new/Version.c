@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.84  2009/12/07 21:39:48  wenger
+  Merged devise_1_10_br_1 thru devise_1_10_br_2 to trunk.
+
   Revision 1.83  2009/12/03 21:52:22  wenger
   Merged devise_1_10_br_0 thru devise_1_10_br_1 to trunk.
 
@@ -527,7 +530,7 @@ static const char *	version = "1.11.0x1"/*TEMP*/;
 static const char *	copyright = "Copyright (c) 1992-2009";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 2006";
+static const char *	winLogo = "Visualization by DEVise (tm) 2009";
 
 
 #if !defined(lint) && defined(RCSID)
