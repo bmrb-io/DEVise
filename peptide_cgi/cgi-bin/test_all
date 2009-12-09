@@ -120,6 +120,11 @@ if ($do_all != 0) {
   RunTest("test69");
   RunTest("test69_3");
   RunTest("test_no_atom_types");
+  RunTest("test_min_2_1");
+  RunTest("test_min_3_0");
+  RunTest("test_methyl1");
+  RunTest("test_methyl1_3");
+  RunTest("test_pdb_file1");
 }
 
 if (($do_all != 0) or ($do_sparta != 0)) {
@@ -133,13 +138,6 @@ if (($do_all != 0) or ($do_sparta != 0)) {
   RunTest("test_sparta4");
   RunTest("test_sparta5");
   RunTest("test_sparta5_3");
-}
-
-if ($do_all != 0) {
-  RunTest("test_min_2_1");
-  RunTest("test_min_3_0");
-  RunTest("test_methyl1");
-  RunTest("test_methyl1_3");
 }
 
 if (($do_all != 0) or ($do_tar != 0)) {

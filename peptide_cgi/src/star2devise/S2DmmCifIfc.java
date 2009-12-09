@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2009/03/25 21:49:09  wenger
+// Final cleanup of some of the nucleic-acid-related code, especially
+// getting polymer types correctly for mmCIF files; added nucleic acid
+// tests to pre-release testing document.
+//
 // Revision 1.10  2009/02/05 20:24:37  wenger
 // All tests now work (including new nucleic acid tests), but lots of
 // cleanup to be done plus actually writing correct deltashifts for
@@ -198,6 +203,10 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	_useLocalFile = useLocalFile;
 	_bmrbResListFile = bmrbResListFile;
 
+        if (doDebugOutput(11)) {
+	    System.out.println("mmCIF file is: " + _fileName);
+	}
+
         try {
 	    InputStream is = null;
 	    InputStream tmpIs = null;
@@ -206,6 +215,9 @@ public class S2DmmCifIfc extends S2DStarIfc {
 		tmpIs = new FileInputStream(_fileName + ".gz");
 	    } else {
 		String urlName = getURLName(_fileName);
+                if (doDebugOutput(11)) {
+	            System.out.println("mmCIF URL is: " + urlName);
+	        }
 		URL url = new URL(urlName);
 		URLConnection connection = url.openConnection();
 		tmpIs = connection.getInputStream();
