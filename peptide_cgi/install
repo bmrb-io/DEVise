@@ -235,6 +235,8 @@ chmod a+r $targetdir/*.png
 chmod a+r $targetdir/*.txt
 #find $targetdir -name \* -type f -exec chmod a+r {} \;
 
+cp -p pep-version-history $targetdir/pep-version-history.txt
+
 
 # Create the link that we use to have the browser find the summary page.
 

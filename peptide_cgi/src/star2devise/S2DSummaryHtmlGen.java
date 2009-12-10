@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2009/12/05 22:26:32  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.17.4.8  2009/12/02 21:38:46  wenger
 // Added the new TAR_LEVEL_LINK_CHECK processing level, and made it
 // the default; partially implemented passing the torsion angle URL
@@ -464,7 +468,10 @@ TEMP?*/
 	        _writer.write("\n<p>" + VERSION_LABEL + ": {" +
 	          S2DMain.PEP_CGI_VERSION + "}</p>\n");
 	        _writer.write("<p>" + GEN_DATE_LABEL + ": {" +
-	          S2DMain.getTimestamp() + "}</p>\n\n");
+	          S2DMain.getTimestamp() + "}</p>\n");
+	        _writer.write("<p>Peptide-CGI " +
+		  "<a href=\"pep-version-history.txt\">" +
+		  "version history</a></p>\n");
                 //TEMP -- save Star description here
 
 		// Save any related BMRB accession numbers.

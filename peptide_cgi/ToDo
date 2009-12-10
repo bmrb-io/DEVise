@@ -352,8 +352,9 @@ Num Date        Status  Pri     Description
 090 4/15/09	OPEN	4	Summary HTML page should have protein/DNA/
 				RNA/etc for the entity assemblies. (wenger)
 
-091 4/25/09	OPEN	4	Add Peptide-CGI version history link to
+091 4/25/09	DONE	4	Add Peptide-CGI version history link to
 				summary pages. (wenger)
+				(Done by wenger, 12/10/09.)
 
 092 5/7/09	DONE	3	Add a button or link on the summary page
 				that forces reprocessing of the entry.
