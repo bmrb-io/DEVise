@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.165  2009/12/07 21:43:55  wenger
+// Changed version to 11.7.1x1, added new version history section.
+//
 // Revision 1.164  2009/12/07 17:44:19  wenger
 // Changed version to 11.7.0 for release.
 //
@@ -1401,6 +1404,9 @@ public class S2DMain {
 	  "        turn off check that data is for a protein\n" +
 	  "    -no_scripts\n" +
 	  "        don't run scripts (e.g., running on Windows)\n" +
+          "    -pdb_file <filename>\n" +
+          "        a PDB (really mmCIF) file containing the coordinates " +
+	    "to be processed\n" +
           "    -pdbid <value>\n" +
           "        the PDB ID to process (e.g., 1dfv)\n" +
           "    -session_dir <directory>\n" +
@@ -1680,6 +1686,18 @@ public class S2DMain {
 
 	    } else if ("-no_scripts".equals(args[index])) {
 		_runScripts = false;
+
+	    } else if ("-pdb_file".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-pdb_file argument needs value");
+		}
+		String url = "file:" + args[index];
+	        _cmdPdbId = url;
+		_pdbIds.addElement(url);
+		// ChemShift needs changes to work with local file.
+		// _csrPdbIds.addElement(_cmdPdbId);
+		_pdbLevel = PDB_LEVEL_PROCESS;
 
 	    } else if ("-pdbid".equals(args[index])) {
 	        index++;

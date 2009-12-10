@@ -157,16 +157,6 @@ save_system_AtTRXh1
 
    stop_
 
-   loop_
-      _Database_name
-      _Database_accession_code
-      _Database_entry_mol_name
-      _Database_entry_details
-
-      PDB 1XFL ? . 
-
-   stop_
-
 save_
 
 
@@ -235,26 +225,6 @@ KHLA
 
    _Sequence_homology_query_date                2009-12-05
    _Sequence_homology_query_revised_last_date   2009-12-05
-
-   loop_
-      _Database_name
-      _Database_accession_code
-      _Database_entry_mol_name
-      _Sequence_query_to_submitted_percentage
-      _Sequence_subject_length
-      _Sequence_identity
-      _Sequence_positive
-      _Sequence_homology_expectation_value
-
-      PDB  1XFL      "Solution Structure Of Thioredoxin H1 From Arabidopsis Thaliana"                                         100.00 124 100.00 100.00 1.10e-66 
-      EMBL CAA78462  "Thioredoxin H [Arabidopsis thaliana]"                                                                    91.94 114 100.00 100.00 4.34e-60 
-      EMBL CAB62625  "thioredoxin h [Arabidopsis thaliana]"                                                                    91.94 114 100.00 100.00 4.34e-60 
-      GB   AAC49354  "thioredoxin h [Arabidopsis thaliana]"                                                                    91.94 114 100.00 100.00 4.34e-60 
-      GB   AAM67008  "thioredoxin h [Arabidopsis thaliana]"                                                                    91.94 114 100.00 100.00 4.34e-60 
-      REF  NP_190672 "ATTRX1; oxidoreductase, acting on sulfur group of donors, disulfide as acceptor [Arabidopsis thaliana]"  91.94 114 100.00 100.00 4.34e-60 
-      SP   P29448    "RecName: Full=Thioredoxin H-type 1; Short=Trx-H-1"                                                       91.94 114 100.00 100.00 4.34e-60 
-
-   stop_
 
 save_
 

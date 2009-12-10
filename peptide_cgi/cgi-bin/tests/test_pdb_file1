@@ -2,17 +2,14 @@
 
 # Tests the new -pdb_file command-line argument.
 
-#TEMP -- run this with the PDB file listed in the NMR-STAR file; then take the PDB file out of the STAR file and add it as a command-line argument -- the result should be the same...
-
 set result = 0
 
 rm -f */*/test_pdb_file1_out*
 rm -f */.*/test_pdb_file1_out*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-#TEMP -- get rid of do_pdb 2 -- -pdf_file should force that
 ./uvd -file test_data/test_pdb_file1.str -name test_pdb_file1_out -force \
-  -check_pct -do_pdb 2
+  -check_pct -pdb_file test_data/test_pdb_file1.cif.gz
 if ($status != 0) then
   echo "First invocation of uvd failed!"
   set result = 1

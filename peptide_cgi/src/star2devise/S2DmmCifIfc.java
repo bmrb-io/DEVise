@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/12/09 22:39:50  wenger
+// First version of test for new -pdb_file command-line argument -- the
+// test currently uses a PDB ID referenced in the NMR-STAR file itself.
+// I'll change the test as soon as the new argument is actually implemented.
+//
 // Revision 1.11  2009/03/25 21:49:09  wenger
 // Final cleanup of some of the nucleic-acid-related code, especially
 // getting polymer types correctly for mmCIF files; added nucleic acid
@@ -152,13 +157,21 @@ public class S2DmmCifIfc extends S2DStarIfc {
     //-------------------------------------------------------------------
     public static String getFileName(String pdbId)
     {
-        return pdbId.toLowerCase() + ".cif";
+	if (pdbId.startsWith("file:")) {
+            return pdbId;
+	} else {
+            return pdbId.toLowerCase() + ".cif.gz";
+	}
     }
 
     //-------------------------------------------------------------------
     public static String getURLName(String fileName)
     {
-        return S2DNames.PDB_FILE_URL + fileName + ".gz";
+	if (fileName.startsWith("file:")) {
+            return fileName;
+	} else {
+            return S2DNames.PDB_FILE_URL + fileName;
+	}
     }
 
     //-------------------------------------------------------------------
@@ -212,7 +225,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	    InputStream tmpIs = null;
 	    if (_useLocalFile) {
 		System.out.println("Note: using local copy of star file");
-		tmpIs = new FileInputStream(_fileName + ".gz");
+		tmpIs = new FileInputStream(_fileName);
 	    } else {
 		String urlName = getURLName(_fileName);
                 if (doDebugOutput(11)) {
@@ -223,7 +236,11 @@ public class S2DmmCifIfc extends S2DStarIfc {
 		tmpIs = connection.getInputStream();
 	    }
 
-	    is = new GZIPInputStream(tmpIs);
+	    if (_fileName.endsWith(".gz")) {
+	        is = new GZIPInputStream(tmpIs);
+	    } else {
+	        is = tmpIs;
+	    }
 	    _starTree = parseStar(is);
 	    is.close();
 
