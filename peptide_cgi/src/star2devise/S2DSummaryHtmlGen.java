@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2009/12/10 16:06:22  wenger
+// Added Peptide-CGI version history link to summary html pages.
+//
 // Revision 1.18  2009/12/05 22:26:32  wenger
 // Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
 // to the trunk.
@@ -390,6 +393,12 @@ public abstract class S2DSummaryHtmlGen {
 
 	    _writer.write("\n<p>\n");
             writeSizeLink();
+	    _writer.write("</p>\n");
+
+	    _writer.write("\n<p>\n");
+            _writer.write("<a target= \"js_videos\" href=\"js_videos.html" +
+	      "\">DEVise/JavaScreen\n");
+            _writer.write("tutorial videos</a>\n");
 	    _writer.write("</p>\n");
 
 	} catch(IOException ex) {

@@ -25,11 +25,17 @@
   <p>Dummy details</p>
 
   <h3>
-  <p><a target= "nmr_vis_help" href="help_d.html">Help on this visualization</a>
+  <p><a href="4264d1_large.html">Larger view</a></p>
   </h3>
 
   <h3>
-  <p><a href="4264d1_large.html">Larger view</a></p>
+  <p><a target= "nmr_vis_help" href="help_d.html">Help on this
+    visualization</a></p>
+  </h3>
+
+  <h3>
+  <p><a target= "js_videos" href="js_videos.html">DEVise/JavaScreen
+    tutorial videos</a></p>
   </h3>
 
   <center>
