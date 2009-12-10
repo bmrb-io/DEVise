@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/12/05 22:26:31  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.12.2.2  2009/10/22 18:28:31  wenger
 // Early phases of setting up "atom IDs" (entity assembly ID/residue
 // sequence code/atom name) values to facilitate linking of torsion
@@ -110,6 +114,7 @@ import EDU.bmrb.starlibj.SaveFrameNode;
 import java.io.*;
 import java.text.*;
 import java.util.*;
+import java.net.*;
 
 public class S2DAtomicCoords {
     //===================================================================
@@ -187,7 +192,7 @@ public class S2DAtomicCoords {
     {
         if (doDebugOutput(11, true)) {
 	    System.out.println("S2DAtomicCoords.S2DAtomicCoords(" +
-	      name + ")");
+	      name + ", " + pdbId + ")");
 	}
 
         _name = name;
@@ -261,6 +266,17 @@ public class S2DAtomicCoords {
 	_dataSets = dataSets;
 
 	_pdbId = pdbId;
+	if (_pdbId != null && _pdbId.startsWith("file:")) {
+	    // Get just the main component of the filename.
+	    int index = _pdbId.lastIndexOf(File.separator);
+	    if (index > 0) {
+	        _pdbId = _pdbId.substring(index + 1);
+	    }
+	    index = _pdbId.indexOf(".");
+	    if (index > 0) {
+	        _pdbId = _pdbId.substring(0, index);
+	    }
+	}
 
 	setUpTranslation();
     }
