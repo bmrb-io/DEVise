@@ -62,7 +62,7 @@ end
 set file = "data_dir/test_outd1.dat"
 set line = '^1 1 ALA -0.271 0.0 -0.698 -0.102$'
 source tests/check4line
-set line = '^1 23 GLU -0.0040 0.0 0.888 -1.304$'
+set line = '^1 23 GLU -0.0040* 0.0 0.888 -1.304$'
 source tests/check4line
 set line = '^1 175 ARG 0.411 0.0 1.062 1.077$'
 source tests/check4line
