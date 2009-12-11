@@ -27,12 +27,12 @@ PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
-INPUT_WEB_DOMAIN = moray.bmrb.wisc.edu
-OUTPUT_WEB_DOMAIN = moray.bmrb.wisc.edu
+INPUT_WEB_DOMAIN = www.bmrb.wisc.edu
+OUTPUT_WEB_DOMAIN = www.bmrb.wisc.edu
 
-STAR_URL = file:/website/ftp/pub/data/nmr-star/
+STAR_URL = file:/website/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
-PDB_FILE_URL = http://www.rcsb.org/pdb/files/
+PDB_FILE_URL = file:/website/ftp/pub/pdb/data/structures/all/mmCIF/
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
 SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/peptide-cgi/html
@@ -127,7 +127,7 @@ UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
 LACS_LEVEL_DEFAULT = 1
 
 # The URL of directory containing LACS files (must end with "/").
-LACS_URL = file:/website/ftp/pub/data/LACS/
+LACS_URL = file:/website/ftp/pub/bmrb/validation_reports/LACS/
 
 #-----------------------------------------------------------
 # Histogram-related configuration
@@ -136,12 +136,12 @@ LACS_URL = file:/website/ftp/pub/data/LACS/
 HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
 
 # The directory containing the "real" histogram data.
-HISTOGRAM_DATA_HOME = /website/ftp/pub/data/stats/chem_shifts/full/devise
+HISTOGRAM_DATA_HOME = /website/ftp/pub/bmrb/statistics/chem_shifts/full/devise
 
 #-----------------------------------------------------------
 # SPARTA-related configuration
 # The URL of directory containing SPARTA files (must end with "/").
-SPARTA_URL = file:CHANGE_THIS/
+SPARTA_URL = file:/website/ftp/pub/bmrb/validation_reports/SPARTA/
 
 #-----------------------------------------------------------
 # Restraint-related configuration.

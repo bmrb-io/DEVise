@@ -7,6 +7,9 @@ Peptide-CGI 11.7.1
 * Added the -pdb_file command-line argument for use by the visualization
 server.
 
+* Updated configuration files for new paths, etc.; Osaka mirror now
+gets mmCIF files from PDBj.
+
 * Fixed up some tests that were failing at Osaka and Florence because
 they don't have the LACS files.
 

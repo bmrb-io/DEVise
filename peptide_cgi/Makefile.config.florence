@@ -30,7 +30,8 @@ PERL_BIN = /usr/bin
 INPUT_WEB_DOMAIN = bmrb.postgenomicnmr.net
 OUTPUT_WEB_DOMAIN = bmrb.postgenomicnmr.net
 
-STAR_URL = file:/bmrb/htdocs/data_library/files/
+STAR_URL = file:/bmrb/ftp/pub/bmrb/nmr-star/
+#TEMP STAR_URL = file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = http://www.rcsb.org/pdb/files/
 
@@ -127,7 +128,7 @@ UVD_DATA_UPLOAD = $(WWW_HOME)/vis_serv/upload_data
 LACS_LEVEL_DEFAULT = 1
 
 # The URL of directory containing LACS files (must end with "/").
-LACS_URL = file:/bmrb/ftp/pub/data/LACS/
+LACS_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/LACS/
 
 #-----------------------------------------------------------
 # Histogram-related configuration
@@ -137,11 +138,12 @@ HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
 
 # The directory containing the "real" histogram data.
 HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/stats/chem_shifts/full/devise
+#TEMP HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/bmrb/statistics/chem_shifts/full/devise
 
 #-----------------------------------------------------------
 # SPARTA-related configuration
 # The URL of directory containing SPARTA files (must end with "/").
-SPARTA_URL = file:CHANGE_THIS/
+SPARTA_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/SPARTA/
 
 #-----------------------------------------------------------
 # Restraint-related configuration.

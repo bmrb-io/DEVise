@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.167  2009/12/10 20:35:05  wenger
+// Added DEVise/JavaScreen tutorial video links to html pages we generate.
+//
 // Revision 1.166  2009/12/10 00:01:37  wenger
 // Got the new -pdb_file argument working -- test works, just needs a bit
 // more manual checking to make sure everything is okay.
@@ -893,7 +896,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

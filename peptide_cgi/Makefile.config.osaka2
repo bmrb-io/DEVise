@@ -30,9 +30,9 @@ PERL_BIN = /usr/bin
 INPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 OUTPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 
-STAR_URL = file:/bmrb/htdocs/data_library/files/
+STAR_URL = file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
-PDB_FILE_URL = http://www.rcsb.org/pdb/files/
+PDB_FILE_URL = ftp://ftp.pdbj.org/mmcif/
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
 SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/peptide-cgi/html
@@ -139,11 +139,12 @@ HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
 
 # The directory containing the "real" histogram data.
 HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/stats/chem_shifts/full/devise
+#TEMP HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/statistics/chem_shifts/full/devise
 
 #-----------------------------------------------------------
 # SPARTA-related configuration
 # The URL of directory containing SPARTA files (must end with "/").
-SPARTA_URL = file:CHANGE_THIS/
+SPARTA_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/SPARTA/
 
 #-----------------------------------------------------------
 # Restraint-related configuration.

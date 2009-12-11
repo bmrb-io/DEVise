@@ -136,7 +136,7 @@ LACS_URL = file:/website/ftp/pub/data/LACS/
 HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
 
 # The directory containing the "real" histogram data.
-HISTOGRAM_DATA_HOME = /website/ftp/pub/data/stats/chem_shifts/full/devise
+HISTOGRAM_DATA_HOME = /website/ftp/pub/data/statistics/chem_shifts/full/devise
 
 #-----------------------------------------------------------
 # SPARTA-related configuration
