@@ -247,9 +247,10 @@ if (! $is_vur) then
     # Need to change any previous installation.
     rm $targetdir
   endif
-  if (! -e $targetdir) then
-    ln -s $htmlhome $targetdir
+  if (-e $targetdir || -l $targetdir) then
+    rm $targetdir
   endif
+  ln -s $htmlhome $targetdir
 endif
 
 
@@ -330,7 +331,7 @@ if ($jarhome != "null") then
   endif
   chmod a+rx $targetdir
 
-  if (-e $targetdir/s2d.jar) then
+  if (-e $targetdir/s2d.jar || -l $targetdir/s2d.jar) then
     rm $targetdir/s2d.jar
   endif
 
@@ -342,18 +343,20 @@ endif
 
 echo "Linking data directory to CGI directory"
 set targetdir = $cgihome/data_dir
-if (! -e $targetdir) then
-  ln -s $datahome $targetdir
+if (-e $targetdir || -l $targetdir) then
+  rm $targetdir
 endif
+ln -s $datahome $targetdir
 
 
 # Link session directory to CGI directory.
 
 echo "Linking session directory to CGI directory"
 set targetdir = $cgihome/session_dir
-if (! -e $targetdir) then
-  ln -s $sessionhome $targetdir
+if (! -e $targetdir || -l $targetdir) then
+  rm $targetdir
 endif
+ln -s $sessionhome $targetdir
 
 # Link html directory to CGI directory.
 
@@ -363,18 +366,20 @@ if ($is_vur) then
 else
   set targetdir = $cgihome/html_dir
 endif
-if (! -e $targetdir) then
-  ln -s $htmlhome $targetdir
+if (-e $targetdir || -l $targetdir) then
+  rm $targetdir
 endif
+ln -s $htmlhome $targetdir
 
 
 # Link data directory to the DEVise demo area.
 
 echo "Linking data directory to DEVise demo area"
 set targetdir = $demohome/dat/bmrb/dynamic_data
-if (! -e $targetdir) then
-  ln -s $datahome $targetdir
+if (-e $targetdir || -l $targetdir) then
+  rm $targetdir
 endif
+ln -s $datahome $targetdir
 
 
 # Link session directory to the DEVise demo area.  (Not if Jafar!
@@ -383,9 +388,10 @@ endif
 if ($jarhome == "null") then
   echo "Linking session directory to DEVise demo area"
   set targetdir = $demohome/session.js/bmrb/dynamic_sessions
-  if (! -e $targetdir) then
-    ln -s $sessionhome $targetdir
+  if (-e $targetdir || -l $targetdir) then
+    rm $targetdir
   endif
+  ln -s $sessionhome $targetdir
 endif
 
 

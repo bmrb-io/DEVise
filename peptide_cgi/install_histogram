@@ -94,9 +94,10 @@ chmod a+rwx $targetdir
 cp -p histograms/dat/[a-z]* $targetdir
 chmod a+r $targetdir/[a-z]*
 set targetdir = $targetdir/bmrb_histogram_data
-if (! -e $targetdir) then
-  ln -s $datahome $targetdir
+if (-e $targetdir || -l $targetdir) then
+  rm $targetdir
 endif 
+ln -s $datahome $targetdir
 
 
 # Create and set up the html directory.
