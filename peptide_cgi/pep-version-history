@@ -13,6 +13,8 @@ gets mmCIF files from PDBj.
 * Fixed up some tests that were failing at Osaka and Florence because
 they don't have the LACS files.
 
+* More updates to SPARTA data file format.
+
 
 Peptide-CGI 11.7.0
 ------------------
