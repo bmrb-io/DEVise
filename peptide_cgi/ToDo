@@ -402,13 +402,14 @@ Num Date        Status  Pri     Description
 				for PDB entries that have no assocated
 				BMRB entry. (elu/wenger)
 
-102 12/5/09	OPEN	1	Deal correctly with torsion angle files that
+102 12/5/09	DONE?	1	Deal correctly with torsion angle files that
 				have more than one save frame of torsion
 				angle restraints (see 4310/1CKK)
 
-103 12/8/09	OPEN	1	Add links to JavaScreen videos to the
+103 12/8/09	DONE	1	Add links to JavaScreen videos to the
 				summary pages (and maybe the individual
 				visualization pages). (elu/wenger)
+				(Done by wenger, 12/10/09.)
 
 104 12/8/09	DUP	1	Add a PDB file argument. (dmaziuk/wenger)
 				(Done by wenger, 12/10/09.)
