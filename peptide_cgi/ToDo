@@ -414,6 +414,23 @@ Num Date        Status  Pri     Description
 104 12/8/09	DUP	1	Add a PDB file argument. (dmaziuk/wenger)
 				(Done by wenger, 12/10/09.)
 
+105 1/5/10	ACTIVE	1	Get distance restraint visualizations
+				working. (elu/wenger)
+
+106 1/5/10	OPEN	2	Produce "PDB-only" interface to generate
+				restraint visualizations. (elu/wenger)
+
+107 1/5/10	OPEN	1	Get distance restraints working with both
+				the remediated restraint files (from
+				http://www.bmrb.wisc.edu/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/all/nmr-star...)
+				and the data from the restraint grid.
+				(elu/wenger)
+
+108 1/5/10	OPEN	1	Get the torsion angle restraints working
+				with the remediated restraint files in
+				addition to the files from the restraint
+				grid it already uses. (elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
