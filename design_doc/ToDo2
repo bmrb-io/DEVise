@@ -141,13 +141,22 @@ Add an option to the JavaScreen to automatically refresh the data at
 a user-configurable rate.  (In other words, every n seconds, have the
 DEVised re-read all of the data for a session.) (miron)
 
-09.016 11/17/09 OPEN	1
+09.016 11/17/09 DONE	1
 Add links to the youtube videos in the JS help menu (once they're released).
 (wenger)
+(Done by wenger ?/?/09.)
 
 09.017 11/20/09	OPEN	?
 Implement an "undo" function.  (Would also require changes on the server.)
 (schulte/wenger)
+
+09.018 1/6/10	OPEN	2
+Make JavaScreen resizing able to work while a session is open (the
+JSPoP would have to force the devised to do a checkpoint). (elu/wenger)
+
+09.019 1/6/10	OPEN	3
+Have JavaScreen menu options to enlarge and reduce the window size
+by a fixed percentage. (wenger)
 
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
