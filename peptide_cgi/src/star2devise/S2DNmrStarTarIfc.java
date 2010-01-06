@@ -20,6 +20,33 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.5  2010/01/04 23:59:18  wenger
+// Finished moving creation of all S2DNmrStar*Ifc objects into the new
+// factory classes.
+//
+// Revision 1.2.2.4  2010/01/04 19:31:06  wenger
+// Made most S2DNmrStarIfcFactory methods non-static in preparation for
+// splitting it up into various subclasses as appropriate.
+//
+// Revision 1.2.2.3  2010/01/04 18:57:00  wenger
+// Added new S2DNmrStarIfcFactory class as part 1 of cleaning up the
+// creation of various S2D*Ifc objects.
+//
+// Revision 1.2.2.2  2009/12/16 00:07:56  wenger
+// Added S2DDistRestraint and S2DNmrStarDistRIfc classes (mostly
+// stubs so far); added a bunch of notes based on today's BMRB
+// staff meeting discussions; also added stubbed-in classes in
+// S2DSummaryHtml, etc.
+//
+// Revision 1.2.2.1  2009/12/14 23:31:03  wenger
+// Added new S2DRestraint class to be parent of S2DTorsionAngle and
+// (not yet created) S2DDistRestraint class; moved a bunch of the
+// code from S2DTorsionAngle to S2DRestraint.
+//
+// Revision 1.2  2009/12/05 22:26:32  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.1.2.6  2009/12/05 00:30:24  wenger
 // Partway to getting angles assigned to correct residues -- fixed
 // atom/residue pairings, removed some unused fields from the torsion
@@ -89,81 +116,6 @@ public class S2DNmrStarTarIfc extends S2DNmrStarIfc {
     private static final int DEBUG = 0;
 
     //===================================================================
-    // PUBLIC METHODS
-
-    //-------------------------------------------------------------------
-    // Get the modification date/time of the appropriate torsion angle
-    // restraint file.
-    // Note: this doesn't seem to work so far -- always returns a
-    // timestamp of 0.  RKW 2009-12-04.
-
-    public static Date getModDate(String pdbId)
-    {
-	Date date = null;
-	try {
-	    URL starfile = new URL(S2DTorsionAngle.pdbIdToUrl(pdbId));
-	    URLConnection connection = starfile.openConnection();
-
-	    long timestamp = connection.getLastModified();
-	    date = new Date(timestamp);
-	} catch (S2DException ex) {
-	    System.err.println("S2DException: " + ex.toString());
-        } catch (MalformedURLException ex) {
-	    System.err.println("MalformedURLException: " + ex.toString());
-        } catch (IOException ex) {
-	    System.err.println("IOException: " + ex.toString());
-	}
-
-	return date;
-    }
-
-
-
-    //-------------------------------------------------------------------
-    // Factory method to create an S2DNmrStarTarIfc object based on
-    // PDB ID.
-    public static S2DNmrStarTarIfc createFromId(String pdbId)
-      throws S2DException
-    {
-        String urlName = S2DTorsionAngle.pdbIdToUrl(pdbId);
-
-        S2DNmrStarTarIfc ifc = createFromUrl(urlName, pdbId);
-
-	return ifc;
-    }
-
-    //-------------------------------------------------------------------
-    // Factory method to create an S2DNmrStarTarIfc object based on
-    // URL.
-    public static S2DNmrStarTarIfc createFromUrl(String urlName,
-      String pdbId) throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarTarIfc.createFromUrl(" +
-	      urlName + ")");
-	}
-
-	S2DNmrStarTarIfc ifc;
-
-        try {
-	    String tmpFileName =
-	      S2DTorsionAngle.filterUrlToTempFile(urlName, pdbId);
-
-	    ifc = (S2DNmrStarTarIfc)
-	      createFromFile(tmpFileName, false, true);
-
-	} catch(Exception ex) {
-	    System.err.println("Exception (" + ex.toString() +
-	      ") parsing NMR-STAR file");
-	    String errMsg = "Unable to get data in star file " + urlName;
-	    System.err.println(errMsg);
-            throw new S2DError(errMsg);
-	}
-
-	return ifc;
-    }
-
-    //===================================================================
     // PROTECTED METHODS
     //-------------------------------------------------------------------
     /**
@@ -172,7 +124,7 @@ public class S2DNmrStarTarIfc extends S2DNmrStarIfc {
      */
     public String version()
     {
-    	return "TAR";
+    	return "torsion_angle_restraint";
     }
 
     //-------------------------------------------------------------------

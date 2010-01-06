@@ -21,6 +21,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.28.2.2  2010/01/04 18:57:00  wenger
+// Added new S2DNmrStarIfcFactory class as part 1 of cleaning up the
+// creation of various S2D*Ifc objects.
+//
+// Revision 1.28.2.1  2009/12/29 23:51:40  wenger
+// Removed some debug code; added comments about improving the organization
+// of of the factory methods for NMRStar*Ifc classes.
+//
+// Revision 1.28  2009/12/05 22:26:32  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.27  2009/10/28 19:25:43  wenger
 // Finished fixing things up for the new 3.0 SPARTA format (except that
 // the actual SPARTA output is still incorrect, so the tests are kind
@@ -235,10 +247,10 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
     private static final int DEBUG = 0;
 
-    private boolean _useLocalFile = false;
+    protected boolean _useLocalFile = false;
     private double _seqIdentMin = 100.0;
 
-    private String _description;
+    protected String _description;
 
     //===================================================================
     // PUBLIC METHODS
@@ -259,187 +271,6 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
      * @return The NMR-STAR file version corresponding to this object.
      */
     public abstract String version();
-
-    //-------------------------------------------------------------------
-    public static String getFileName(String bmrbId, boolean isLacs,
-      boolean isSparta)
-    {
-	String name;
-	if (isLacs) {
-	    name = S2DUtils.replace(S2DNames.LACS_NAME_TEMPLATE, "*",
-	      bmrbId);
-	} else if (isSparta) {
-	    name = S2DUtils.replace(S2DNames.SPARTA_NAME_TEMPLATE, "*",
-	      bmrbId);
-	} else {
-	    name = S2DUtils.replace(S2DNames.STAR_NAME_TEMPLATE, "*",
-	      bmrbId);
-	}
-
-	return name;
-    }
-
-    //-------------------------------------------------------------------
-    public static String getURLName(String fileName, boolean isLacs,
-      boolean isSparta)
-    {
-	String url;
-	if (isLacs) {
-            url = S2DNames.LACS_URL + fileName;
-	} else if (isSparta) {
-            url = S2DNames.SPARTA_URL + fileName;
-	} else {
-            url = S2DNames.BMRB_STAR_URL + fileName;
-	}
-
-	return url;
-    }
-
-    //-------------------------------------------------------------------
-    // Get the modification date/time of the appropriate NMR-Star file.
-    public static Date getModDate(String bmrbId, boolean isLacs,
-      boolean isSparta)
-    {
-        if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStarIfc.getModDate(" + bmrbId +
-	      ", " + isLacs + ", " + isSparta + ")");
-	}
-
-	Date date = null;
-	try {
-	    URL starfile = new URL(getURLName(getFileName(bmrbId, isLacs,
-	      isSparta), isLacs, isSparta));
-	    URLConnection connection = starfile.openConnection();
-
-	    long timestamp = connection.getLastModified();
-	    date = new Date(timestamp);
-        } catch (MalformedURLException ex) {
-	    System.err.println("MalformedURLException: " + ex.toString());
-        } catch (IOException ex) {
-	    System.err.println("IOException: " + ex.toString());
-	}
-
-        if (doDebugOutput(12)) {
-	    System.out.println("  Mod date is : " + date);
-	}
-
-	return date;
-    }
-
-    //-------------------------------------------------------------------
-    // Get the modification date/time of the appropriate file.
-    public static Date getModDateFile(String filename)
-    {
-        if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStarIfc.getModDateFile(" +
-	      filename + ")");
-	}
-
-	Date date = null;
-	File tmpFile = new File(filename);
-	long timestamp = tmpFile.lastModified();
-	date = new Date(timestamp);
-
-        if (doDebugOutput(12)) {
-	    System.out.println("  Mod date is : " + date);
-	}
-
-	return date;
-    }
-
-    //-------------------------------------------------------------------
-    // Factory method to create an S2DNmrStarIfc object based on accession
-    // number.
-    public static S2DNmrStarIfc createFromID(String accessionNum,
-      boolean useLocalFile, boolean isLacs, boolean isSparta)
-      throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.createFromID(" +
-	      accessionNum + ", " + useLocalFile + ", " + isLacs +
-	      ", " + isSparta + ")");
-	}
-
-	if (isLacs && isSparta) {
-	    throw new S2DError("File cannot be both LACS and SPARTA!");
-	}
-
-	String fileName = getFileName(accessionNum, isLacs, isSparta);
-
-	S2DNmrStarIfc ifc;
-
-        try {
-	    InputStream is = null;
-	    if (useLocalFile) {
-		System.out.println("Note: using local copy of star file");
-	        is = new FileInputStream(fileName);
-	    } else {
-                URL starfile = new URL(getURLName(fileName, isLacs, isSparta));
-	        is = starfile.openStream();
-	    }
-
-	    ifc = create(is, isLacs, false);
-	    is.close();
-
-	    ifc._description = "BMRB " + accessionNum;
-	    if (useLocalFile) ifc._description += " (local)";
-
-	    ifc._fileName = fileName;
-	    ifc._useLocalFile = useLocalFile;
-
-        } catch(java.io.IOException ex) {
-            System.err.println("Unable to open or read " + ex.toString());
-            if (doDebugOutput(11)) ex.printStackTrace();
-            throw new S2DError("Unable to get data in star file " +
-              fileName);
-	} catch(Exception ex) {
-	    System.err.println("Exception (" + ex.toString() +
-	      ") parsing NMR-STAR file");
-	    String errMsg = "Unable to get data in star file " + fileName;
-	    System.err.println(errMsg);
-            throw new S2DError(errMsg);
-	}
-
-	return ifc;
-    }
-
-    //-------------------------------------------------------------------
-    // Factory method to create an S2DNmrStarIfc object based on file name.
-    public static S2DNmrStarIfc createFromFile(String fileName,
-      boolean isLacs, boolean isTorsionAngle) throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.createFromFile(" +
-	      fileName + ", " + isLacs + ")");
-	}
-
-	S2DNmrStarIfc ifc;
-
-        try {
-	    InputStream is = new FileInputStream(fileName);
-
-	    ifc = create(is, isLacs, isTorsionAngle);
-	    is.close();
-
-	    ifc._description = fileName;
-
-	    ifc._fileName = fileName;
-
-        } catch(java.io.IOException ex) {
-            System.err.println("Unable to open or read " + ex.toString());
-            if (doDebugOutput(11)) ex.printStackTrace();
-            throw new S2DError("Unable to get data in star file " +
-              fileName);
-	} catch(Exception ex) {
-	    System.err.println("Exception (" + ex.toString() +
-	      ") parsing NMR-STAR file");
-	    String errMsg = "Unable to get data in star file " + fileName;
-	    System.err.println(errMsg);
-            throw new S2DError(errMsg);
-	}
-
-	return ifc;
-    }
 
     //-------------------------------------------------------------------
     // Returns the system name from the NMR-Star file.
@@ -923,66 +754,6 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
     //===================================================================
     // PRIVATE METHODS
-
-    //-------------------------------------------------------------------
-    // Create an S2DNmrStarIfc object from the given InputStream.
-    // This method decides what version of NMR-STAR file the InputStream
-    // corresponds to, and constructs an object appropriately.
-    private static S2DNmrStarIfc create(InputStream is, boolean isLacs,
-      boolean isTorsionAngle) throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DNmrStarIfc.create(" + isLacs + ", " +
-	      isTorsionAngle + ")");
-	}
-
-	StarNode starTree = parseStar(is);
-
-	S2DNmrStarIfc ifc = null;
-
-	if (isLacs && isTorsionAngle) {
-	    throw new S2DError("isLacs and isTorsionAngle cannot " +
-	      "both be true!");
-	}
-
-	if (isLacs) {
-	    ifc = new S2DNmrStarLacsIfc(starTree);
-	} else if (isTorsionAngle) {
-	    ifc = new S2DNmrStarTarIfc(starTree);
-	} else {
-	    S2DNmrStar21Ifc ifc21 = new S2DNmrStar21Ifc(starTree);
-	    S2DNmrStar30Ifc ifc30 = new S2DNmrStar30Ifc(starTree);
-	    S2DNmrStar31Ifc ifc31 = new S2DNmrStar31Ifc(starTree);
-
-	    if (ifc21.isNmrStar21()) {
-                if (doDebugOutput(1)) {
-	            System.out.println("File is NMR-STAR 2.1");
-	        }
-	        ifc = ifc21;
-
-	    } else if (ifc31.isNmrStar31()) {
-                if (doDebugOutput(1)) {
-	            System.out.println("File is NMR-STAR 3.1");
-	        }
-		ifc31.checkForProteins();
-	        ifc = ifc31;
-
-	    } else if (ifc30.isNmrStar30()) {
-                if (doDebugOutput(1)) {
-	            System.out.println("File is NMR-STAR 3.0");
-	        }
-		ifc30.checkForProteins();
-	        ifc = ifc30;
-
-	    } else {
-	        System.err.println("Warning: possibly unknown or unsupported " +
-	          "NMR-STAR version; trying NMR-STAR 2.1");
-	        ifc = ifc21;
-	    }
-	}
-
-	return ifc;
-    }
 
     //-------------------------------------------------------------------
     // Constructor.  Constructs an S2DNmrStarIfc object corresponding to

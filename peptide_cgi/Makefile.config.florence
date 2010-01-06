@@ -155,6 +155,13 @@ RESTRAINT_GRID_ROOT = "http://bmrb.postgenomicnmr.net/servlets/"
 # if appropriate restraint grid entry is available.
 DO_TAR_DEFAULT = 1
 
+# The root URL of the distance restraint files (must end with "/").
+DIST_RESTRAINTS_ROOT = "http://www.bmrb.wisc.edu/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/all/nmr-star/"
+
+# Default distance restraint processing level: create link
+# if appropriate distance restraint entry is available.
+DO_DIST_DEFAULT = 1
+
 #-----------------------------------------------------------
 # Other.
 

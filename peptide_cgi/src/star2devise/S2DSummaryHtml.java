@@ -31,6 +31,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.2.1  2009/12/16 00:07:56  wenger
+// Added S2DDistRestraint and S2DNmrStarDistRIfc classes (mostly
+// stubs so far); added a bunch of notes based on today's BMRB
+// staff meeting discussions; also added stubbed-in classes in
+// S2DSummaryHtml, etc.
+//
+// Revision 1.17  2009/12/05 22:26:32  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.16.4.4  2009/12/05 21:45:39  wenger
 // Hopefully final cleanup before merge(!).
 //
@@ -533,9 +543,8 @@ public class S2DSummaryHtml {
     }
 
     //-------------------------------------------------------------------
-    // Writes the atomic coordinates link, where the link is a CGI script
-    // invocation (we haven't already processed the PDB entry with
-    // the atomic coordinates).
+    // Writes the torsion angle link, where the link is a CGI script
+    // invocation (we haven't already done the torsion angle processing).
     public void writeTorsionAngleCGI(String pdbId, String tarUrl,
       int frameIndex) throws IOException
     {
@@ -545,6 +554,35 @@ public class S2DSummaryHtml {
 
 	_normal.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex);
 	_large.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the distance restraint link, where we've actually done the
+    // distance restraint processing.
+    public void writeDistRestraint(String pdbId, int frameIndex)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeDistRestraint()");
+	}
+
+	_normal.writeDistRestraint(pdbId, frameIndex);
+	_large.writeDistRestraint(pdbId, frameIndex);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the distance restraint link, where the link is a CGI script
+    // invocation (we haven't already done the distance restraint
+    // processing).
+    public void writeDistRestraintCGI(String pdbId, String tarUrl,
+      int frameIndex) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeDistRestraintCGI()");
+	}
+
+	_normal.writeDistRestraintCGI(pdbId, tarUrl, frameIndex);
+	_large.writeDistRestraintCGI(pdbId, tarUrl, frameIndex);
     }
 
     //-------------------------------------------------------------------

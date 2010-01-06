@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.2.1  2010/01/04 18:57:00  wenger
+// Added new S2DNmrStarIfcFactory class as part 1 of cleaning up the
+// creation of various S2D*Ifc objects.
+//
+// Revision 1.13  2009/12/10 00:01:37  wenger
+// Got the new -pdb_file argument working -- test works, just needs a bit
+// more manual checking to make sure everything is okay.
+//
 // Revision 1.12  2009/12/09 22:39:50  wenger
 // First version of test for new -pdb_file command-line argument -- the
 // test currently uses a PDB ID referenced in the NMR-STAR file itself.
@@ -178,7 +186,6 @@ public class S2DmmCifIfc extends S2DStarIfc {
     // Get the modification date/time of the appropriate PDB file.
     // Note: this doesn't seem to work so far -- always returns a
     // timestamp of 0.  RKW 2002-08-06.
-
     public static Date getModDate(String pdbId)
     {
 	Date date = null;

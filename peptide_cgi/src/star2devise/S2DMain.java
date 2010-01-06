@@ -21,11 +21,60 @@
 // $Id$
 
 // $Log$
+// Revision 1.171  2009/12/23 15:37:10  wenger
+// Changed version to 11.7.1x2, added new version history section.
+//
 // Revision 1.170  2009/12/22 19:40:30  wenger
 // Changed version to 11.7.1 for release.
 //
 // Revision 1.169  2009/12/22 16:16:41  wenger
 // Updated SPARTA test files to the latest version.
+//
+// Revision 1.168.2.10  2010/01/06 22:21:56  wenger
+// Did a bunch of cleanups on the distance restraint code, in preparation
+// for merging it to the trunk, so I can suspend work on it and move to
+// working on the "PDB-ID-only" torsion angle restraint visualizations.
+//
+// Revision 1.168.2.9  2010/01/05 15:33:52  wenger
+// Cleaned up the pdbIdToUrl() methods for various restraint-related
+// classes.
+//
+// Revision 1.168.2.8  2010/01/04 23:59:17  wenger
+// Finished moving creation of all S2DNmrStar*Ifc objects into the new
+// factory classes.
+//
+// Revision 1.168.2.7  2010/01/04 19:31:06  wenger
+// Made most S2DNmrStarIfcFactory methods non-static in preparation for
+// splitting it up into various subclasses as appropriate.
+//
+// Revision 1.168.2.6  2010/01/04 18:56:59  wenger
+// Added new S2DNmrStarIfcFactory class as part 1 of cleaning up the
+// creation of various S2D*Ifc objects.
+//
+// Revision 1.168.2.5  2009/12/29 23:51:40  wenger
+// Removed some debug code; added comments about improving the organization
+// of of the factory methods for NMRStar*Ifc classes.
+//
+// Revision 1.168.2.4  2009/12/29 22:46:10  wenger
+// Added property and code to get default distance restraint level;
+// moved the usage message code to after we get properties so default
+// values in usage message are correct.
+//
+// Revision 1.168.2.3  2009/12/29 21:52:21  wenger
+// Added command-line arguments related to distance restraints; fixed
+// some errors in the usage message I found in the course of doing that.
+// Added skeleton of first distance restraint test.
+//
+// Revision 1.168.2.2  2009/12/16 00:07:56  wenger
+// Added S2DDistRestraint and S2DNmrStarDistRIfc classes (mostly
+// stubs so far); added a bunch of notes based on today's BMRB
+// staff meeting discussions; also added stubbed-in classes in
+// S2DSummaryHtml, etc.
+//
+// Revision 1.168.2.1  2009/12/14 23:31:03  wenger
+// Added new S2DRestraint class to be parent of S2DTorsionAngle and
+// (not yet created) S2DDistRestraint class; moved a bunch of the
+// code from S2DTorsionAngle to S2DRestraint.
 //
 // Revision 1.168  2009/12/11 23:25:54  wenger
 // Deleted a bunch of obsolete config files, changed various settings to
@@ -971,6 +1020,17 @@ public class S2DMain {
     private String _tarFile = null;
     private String _tarUrl = null;//TEMP -- change name?
 
+    // Distance restraint-related info.
+    public static final int DISTR_LEVEL_NONE = 0;
+    // This means create the links only if the appropriate entry
+    // exists in the restraint grid.
+    public static final int DISTR_LEVEL_LINK_CHECK = 1;
+    public static final int DISTR_LEVEL_LINK = 2;
+    public static final int DISTR_LEVEL_PROCESS = 3;
+    private int _distRLevel = DISTR_LEVEL_LINK_CHECK;
+    private String _distRFile = null;
+    private String _distRUrl = null;//TEMP -- change name?
+
     private boolean _haveCoords = false;
 
     private S2DSummaryHtml _summary;
@@ -1044,6 +1104,7 @@ public class S2DMain {
 	    s2d._csrLevel = CSR_LEVEL_NONE;
 	    s2d._lacsLevel = LACS_LEVEL_NONE;
 	    s2d._tarLevel = TAR_LEVEL_NONE;
+	    s2d._distRLevel = DISTR_LEVEL_NONE;
 	}
 
 	try {
@@ -1329,6 +1390,20 @@ public class S2DMain {
 		  "; using default"));
 	    }
 	}
+
+	String distTmp = props.getProperty("bmrb_mirror.do_dist_default");
+	if (distTmp == null) {
+	    System.err.println(new S2DWarning("Unable to get value for " +
+	      "bmrb_mirror.do_dist_default property"));
+	} else {
+	    try {
+	        _distRLevel = Integer.parseInt(distTmp);
+	    } catch(NumberFormatException ex) {
+	        System.err.println(new S2DWarning("Error parsing " +
+		  "do_dist_default value " + ex.toString() +
+		  "; using default"));
+	    }
+	}
     }
 
     //-------------------------------------------------------------------
@@ -1336,6 +1411,35 @@ public class S2DMain {
     // we try to get properties, set member variables accordingly.
     private void checkArgsNoProps(String args[]) throws S2DException
     {
+	int index = 0;
+	while (index < args.length) {
+	    if ("-dev_version".equals(args[index])) {
+		System.out.println("Peptide-CGI version " + PEP_CGI_VERSION +
+		  " requires DEVise version " + DEVISE_MIN_VERSION +
+		  " or higher and JavaScreen client version " +
+		  JS_CLIENT_MIN_VERSION + " or higher");
+		throw new S2DCancel();
+
+	    } else if ("-version".equals(args[index])) {
+	        System.out.println(PEP_CGI_VERSION);
+		throw new S2DCancel();
+	    }
+
+	    index++;
+    	}
+    }
+
+    //-------------------------------------------------------------------
+    // Check arguments to constructor, set member variables accordingly.
+    private void checkArgs(String args[]) throws S2DException
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("Arguments: ");
+	    for (int index = 0; index < args.length; index++) {
+	        System.out.println("  {" + args[index] + "}");
+	    }
+	}
+
 	//
 	// The usage message.
 	//
@@ -1377,12 +1481,24 @@ public class S2DMain {
 	  "        set the debug level (default is 0 -- messages but no " +
 	  "stack traces)\n" +
 	  "    -dev_version\n" +
-	  "        show the minimum required DEVise version\n" +
+	  "        print the DEVise and JavaScreen client versions needed\n" +
+	  "        by this version of Peptide-CGI\n" +
+	  "    -dist_file <filename>\n" +
+	  "        file containing distance restraint data\n" +
+	  "    -dist_url <url>\n" +
+	  "        URL of document containing distance restraint data\n" +
           "    -do_csr <0|1|2>\n" +
           "        0: don't do chem shift reference calculations;\n" +
           "        1: create link in summary file but don't do the calculation;\n" +
           "        2: do chem shift reference calculations\n" +
           "        (default is " + _csrLevel + ")\n" +
+          "    -do_dist <0|1|2|3>\n" +
+          "        0: ignore distance restraint references;\n" +
+          "        1: if restraint grid entry exists create links in\n" +
+	  "          summary file but don't process;\n" +
+          "        1: create links in summary file but don't process;\n" +
+          "        3: process distance restraint references\n" +
+          "        (default is " + _distRLevel + ")\n" +
           "    -do_lacs <0|1|2>\n" +
           "        0: don't attempt LACS processing\n" +
           "        1: attempt LACS processing, failure is not an error\n" +
@@ -1392,12 +1508,14 @@ public class S2DMain {
           "        0: ignore PDB references;\n" +
           "        1: create links in summary file but don't process;\n" +
           "        2: process PDB references\n" +
-          "        (default is " + _pdbLevel + "\n" +
-          "    -do_tar <0|1|2>\n" +
+          "        (default is " + _pdbLevel + " unless -pdb_file is set)\n" +
+          "    -do_tar <0|1|2|3>\n" +
           "        0: ignore torsion angle restraint references;\n" +
+          "        1: if restraint grid entry exists create links in\n" +
+	  "          summary file but don't process;\n" +
           "        1: create links in summary file but don't process;\n" +
-          "        2: process torsion angle restraint references\n" +
-          "        (default is " + _tarLevel + "\n" +
+          "        3: process torsion angle restraint references\n" +
+          "        (default is " + _tarLevel + ")\n" +
 	  "    -file <filename>\n" +
 	  "        local file containing data to be processed\n" +
           "    -force\n" +
@@ -1453,39 +1571,6 @@ public class S2DMain {
           "    java S2DMain -bmrbid 4101 ...\n" +
           "    java S2DMain -pdbid 1OXM -bmrbid 4101 -coord_index 2 ...\n" +
 	  "    java S2DMain -file foo_data -name foo_out ...\n";
-
-	int index = 0;
-	while (index < args.length) {
-	    if ("-dev_version".equals(args[index])) {
-		System.out.println("Peptide-CGI version " + PEP_CGI_VERSION +
-		  " requires DEVise version " + DEVISE_MIN_VERSION +
-		  " or higher and JavaScreen client version " +
-		  JS_CLIENT_MIN_VERSION + " or higher");
-		throw new S2DCancel();
-
-	    } else if ("-usage".equals(args[index])) {
-	        System.out.println(usage);
-		throw new S2DCancel();
-
-	    } else if ("-version".equals(args[index])) {
-	        System.out.println(PEP_CGI_VERSION);
-		throw new S2DCancel();
-	    }
-
-	    index++;
-    	}
-    }
-
-    //-------------------------------------------------------------------
-    // Check arguments to constructor, set member variables accordingly.
-    private void checkArgs(String args[]) throws S2DException
-    {
-        if (doDebugOutput(2)) {
-	    System.out.println("Arguments: ");
-	    for (int index = 0; index < args.length; index++) {
-	        System.out.println("  {" + args[index] + "}");
-	    }
-	}
 
 	//
 	// Reset static variables (for Jafar).
@@ -1584,6 +1669,24 @@ public class S2DMain {
 		      ex.toString());
 	        }
 
+	    } else if ("-dist_file".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-dist_file argument needs value");
+		}
+		_distRFile = args[index];
+
+	    } else if ("-dist_url".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-dist_url argument needs value");
+		}
+		_distRUrl = args[index];
+		// This is to test URL strings to be able to be passed
+		// in test script.
+		_distRUrl = S2DUtils.replace(_distRUrl, "#38", "&");
+		_distRUrl = S2DUtils.replace(_distRUrl, "#63", "?");
+
 	    } else if ("-do_csr".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -1595,6 +1698,28 @@ public class S2DMain {
 	            System.err.println("Error parsing do_csr value: " +
 		      ex.toString());
 	            throw new S2DError("Error parsing do_csr value " +
+		      ex.toString());
+	        }
+
+	    } else if ("-do_dist".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-do_dist argument needs value");
+		}
+		try {
+	            _distRLevel = Integer.parseInt(args[index]);
+		    // For now, we're forcing coordinate processing to
+		    // happen whenever we do distance restraint processing.
+		    // This should eventually be changed to not re-
+		    // process coordinates if we already have them andy
+		    // they're up-to-date.
+		    if (_distRLevel == DISTR_LEVEL_PROCESS) {
+		        _pdbLevel = PDB_LEVEL_PROCESS;
+		    }
+	        } catch(NumberFormatException ex) {
+	            System.err.println("Error parsing do_dist value: " +
+		      ex.toString());
+	            throw new S2DError("Error parsing do_dist value " +
 		      ex.toString());
 	        }
 
@@ -1754,6 +1879,13 @@ public class S2DMain {
 		}
 		S2DNames.BMRB_STAR_URL = args[index];
 
+	    } else if ("-tar_file".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-tar_file argument needs value");
+		}
+		_tarFile = args[index];
+
 	    } else if ("-tar_url".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -1765,12 +1897,9 @@ public class S2DMain {
 		_tarUrl = S2DUtils.replace(_tarUrl, "#38", "&");
 		_tarUrl = S2DUtils.replace(_tarUrl, "#63", "?");
 
-	    } else if ("-tar_file".equals(args[index])) {
-	        index++;
-		if (index >= args.length) {
-		    throw new S2DError("-tar_file argument needs value");
-		}
-		_tarFile = args[index];
+	    } else if ("-usage".equals(args[index])) {
+	        System.out.println(usage);
+		throw new S2DCancel();
 
 	    } else if ("-uvd".equals(args[index])) {
 	        if (S2DNames.UVD_CGI_URL == null) {
@@ -1916,6 +2045,9 @@ public class S2DMain {
 	    System.out.println("_tarLevel = " + _tarLevel);
 	    System.out.println("_tarFile = " + _tarFile);
 	    System.out.println("_tarUrl = " + _tarUrl);
+	    System.out.println("_distRLevel = " + _distRLevel);
+	    System.out.println("_distRFile = " + _distRFile);
+	    System.out.println("_distRUrl = " + _distRUrl);
 	    if (_localFiles.size() > 0) {
 	        System.out.println("localFile = {" +
 		  _localFiles.elementAt(0) + "}");
@@ -1988,8 +2120,8 @@ public class S2DMain {
 	    for (int index = 0; index < summaryData.bmrbIds.size(); index++) {
 	        String id = (String)summaryData.bmrbIds.elementAt(index);
 		if (!id.equals("")) {
-	            Date starModDate = S2DNmrStarIfc.getModDate(id, false,
-		      false);
+	            Date starModDate =
+		      (new S2DNmrStarStdIfcFactory()).getModDate(id);
 	            if (starModDate == null ||
 		      starModDate.after(summaryData.fileDate)) {
 		        if (doDebugOutput(2)) {
@@ -2005,7 +2137,7 @@ public class S2DMain {
 	        String filename = (String)_localFiles.elementAt(index);
 		if (!filename.equals("")) {
 	            Date starModDate =
-		      S2DNmrStarIfc.getModDateFile(filename);
+		      S2DNmrStarIfcFactory.getModDateFile(filename);
 	            if (starModDate == null ||
 		      starModDate.after(summaryData.fileDate)) {
 		        if (doDebugOutput(2)) {
@@ -2113,7 +2245,7 @@ public class S2DMain {
 	}
 
         if (_tarLevel == TAR_LEVEL_PROCESS) {
-	    Date tarModDate = S2DNmrStarTarIfc.getModDate(id);
+	    Date tarModDate = (new S2DNmrStarTarIfcFactory()).getModDate(id);
 	        // Note: if a PDB ID was specified on the command
 	        // line we really should compare the PDB file date
 	        // against the session-specific html file here,
@@ -2128,6 +2260,8 @@ public class S2DMain {
 	        return false;
 	    }
 	}
+
+	//TEMP -- check distance restraint file here
 
 	return true;
     }
@@ -2306,6 +2440,14 @@ public class S2DMain {
 	        process1TAR(_tarFile, _tarUrl, _cmdPdbId);
 	    }
 
+	    //
+	    // Do the distance restraint processing.
+	    //
+	    if (_distRLevel == DISTR_LEVEL_PROCESS) {
+		_currentFrameIndex = _cmdFrameIndex;
+	        process1DistR(_distRFile, _distRUrl, _cmdPdbId);
+	    }
+
 	    _summary.close(null, null);
 
 	    // Note: we should delete this "junk" summary file here, but
@@ -2323,8 +2465,8 @@ public class S2DMain {
 	//
 	S2DNmrStarIfc masterStar = null;
 	if (!_masterBmrbId.equals("")) {
-            masterStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
-	      _useLocalFiles, false, false);
+            masterStar = (new S2DNmrStarStdIfcFactory()).createFromId(
+	      _masterBmrbId, _useLocalFiles);
 
 	    _summary = new S2DSummaryHtml(_name, _longName, _masterBmrbId,
 	      _localFiles, _htmlDir, masterStar.getFileName(),
@@ -2480,8 +2622,8 @@ public class S2DMain {
 	    }
 
 	    if (index > 0) { // avoid parsing the "master" file twice
-                star = S2DNmrStarIfc.createFromID(bmrbId, _useLocalFiles,
-		  false, false);
+                star = (new S2DNmrStarStdIfcFactory()).createFromId(bmrbId,
+		  _useLocalFiles);
 	    }
 
             process1NmrStar(star);
@@ -2499,8 +2641,8 @@ public class S2DMain {
 	S2DNmrStarIfc star = null;
 
         for (int index = 0; index < _localFiles.size(); index++) {
-	    star = S2DNmrStarIfc.createFromFile(
-	      (String)_localFiles.elementAt(index), false, false);
+	    star = (new S2DNmrStarStdIfcFactory()).createFromFile(
+	      (String)_localFiles.elementAt(index));
 
 	    process1NmrStar(star);
 	}
@@ -2568,6 +2710,31 @@ public class S2DMain {
 	        }
 	    }
 
+	    // We do the same thing here for DISTR_LEVEL_LINK and
+	    // DISTR_LEVEL_PROCESS because they are split out inside
+	    // process1DistR().
+	    if (_distRLevel == DISTR_LEVEL_LINK_CHECK ||
+	      _distRLevel == DISTR_LEVEL_LINK ||
+	      _distRLevel == DISTR_LEVEL_PROCESS) {
+		try {
+	            process1DistR(null, null, id);
+		} catch(S2DException ex) {
+		    System.err.println("Unable to process PDB ID " + id +
+		      "(" + ex.toString() + ")");
+		    System.err.println("Unable to get distance " +
+		      "restraints from related PDB ID " + id);
+		}
+	    } else {
+	        if (_retrying) {
+		    System.err.println("Unable to get distance " +
+		      " restraints from related PDB ID " + id + " because " +
+		      "of insufficient memory");
+	        } else {
+		    System.err.println("Distance restraints " +
+		      "from related PDB ID " + id + " not read");
+	        }
+	    }
+
 	    _currentFrameIndex++;
 	}
     }
@@ -2585,11 +2752,11 @@ public class S2DMain {
 	    try {
 	        S2DNmrStarIfc lacsStar;
 	        if (_lacsFile != null) {
-	            lacsStar = S2DNmrStarIfc.createFromFile(_lacsFile,
-		      true, false);
+	            lacsStar = (new S2DNmrStarLacsIfcFactory()).
+		      createFromFile(_lacsFile);
 	        } else {
-	            lacsStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
-		      _useLocalFiles, true, false);
+	            lacsStar = (new S2DNmrStarLacsIfcFactory()).
+		      createFromId(_masterBmrbId, _useLocalFiles);
 	        }
 
 		saveLACS(lacsStar);
@@ -2844,11 +3011,11 @@ public class S2DMain {
 
 	    S2DNmrStarIfc spartaStar = null;
 	    if (_spartaFile != null) {
-	        spartaStar = S2DNmrStarIfc.createFromFile(_spartaFile,
-		  false, false);
+	        spartaStar = (new S2DNmrStarSpartaIfcFactory()).
+		  createFromFile(_spartaFile);
 	    } else {
-	        spartaStar = S2DNmrStarIfc.createFromID(_masterBmrbId,
-	          _useLocalFiles, false, true);
+	        spartaStar = (new S2DNmrStarSpartaIfcFactory()).
+		  createFromId(_masterBmrbId, _useLocalFiles);
 	    }
 
             doSaveSpartaDeltaShifts(star, spartaStar, true);
@@ -3808,7 +3975,7 @@ public class S2DMain {
 	      star.HET_NOE_ENTITY_ASSEMBLY_ID_1);
 	}
 
-//TEMPTEMP -- convert these to numerical values?
+//TEMP -- convert these to numerical values?
 	String[] resSeqCodes = star.getAndFilterFrameValues(frame,
 	  star.HET_NOE_VALUE, star.HET_NOE_RES_SEQ_CODE, entityAssemblyID,
 	  entityAssemblyIDs);
@@ -3999,7 +4166,7 @@ public class S2DMain {
 	    return;
 	}
 
-//TEMPTEMP -- change CHEM_SHIFT_VALUE to FIGURE_OF_MERIT in all here
+//TEMP -- change CHEM_SHIFT_VALUE to FIGURE_OF_MERIT in all here
 	String[] entityAssemblyIDs = null;
 	if (!entityAssemblyID.equals("")) {
 	    entityAssemblyIDs = star.getFrameValues(frame,
@@ -4364,7 +4531,7 @@ public class S2DMain {
 		if (_tarLevel == TAR_LEVEL_LINK_CHECK) {
 		    // Note: this will throw an error if the relevant
 		    // entry doesn't exist in the restraints grid.
-		    tarUrl = S2DTorsionAngle.pdbIdToUrl(pdbId);
+		    tarUrl = S2DNmrStarTarIfcFactory.pdbIdToUrl(pdbId);
 		}
 	        _summary.writeTorsionAngleCGI(_currentPdbId, tarUrl,
 		  _currentFrameIndex);
@@ -4379,19 +4546,72 @@ public class S2DMain {
 
 	} else {
 	    S2DNmrStarTarIfc tarStar;
+	    S2DNmrStarTarIfcFactory factory = new S2DNmrStarTarIfcFactory();
 	    if (tarFile != null) {
-	        tarStar = (S2DNmrStarTarIfc)S2DNmrStarIfc.createFromFile(
-		  tarFile, false, true);
+	        tarStar = (S2DNmrStarTarIfc)factory.createFromFile(tarFile);
 	    } else if (tarUrl != null) {
-	        tarStar = S2DNmrStarTarIfc.createFromUrl(tarUrl, pdbId);
+	        tarStar = factory.createFromUrl(tarUrl, pdbId);
 	    } else {
-	        tarStar = S2DNmrStarTarIfc.createFromId(pdbId);
+	        tarStar = factory.createFromId(pdbId);
 	    }
 
 	    S2DTorsionAngle tar = new S2DTorsionAngle(_name, _longName,
 	      tarStar, _dataDir, _sessionDir, _summary, _currentPdbId);
 
 	    tar.writeRestraints(_currentFrameIndex);
+	}
+
+        _currentPdbId = null;
+    }
+
+    //-------------------------------------------------------------------
+    // Process one distance restraints file.
+    private void process1DistR(String distRFile, String distRUrl,
+      String pdbId) throws S2DException
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("process1DistRFile(" + distRFile + ", " +
+	      distRUrl + ", " + pdbId + ")");
+	}
+
+        _currentPdbId = pdbId;
+
+	if (_distRLevel == DISTR_LEVEL_LINK_CHECK ||
+	  _distRLevel == DISTR_LEVEL_LINK) {
+	    try {
+		if (_distRLevel == DISTR_LEVEL_LINK_CHECK) {
+		    // Note: this will throw an error if the relevant
+		    // entry doesn't exist in the restraints grid.
+		    distRUrl = S2DNmrStarDistRIfcFactory.pdbIdToUrl(pdbId);
+		}
+	        _summary.writeDistRestraintCGI(_currentPdbId, distRUrl,
+		  _currentFrameIndex);
+            } catch(IOException ex) {
+                System.err.println(
+		  "IOException writing distance restraints: " +
+		  ex.toString());
+	        throw new S2DError("Can't write distance restraints");
+	    } finally {
+	        _summary.endFrame();
+	    }
+
+	} else {
+	    S2DNmrStarDistRIfc distRStar;
+	    S2DNmrStarDistRIfcFactory factory =
+	      new S2DNmrStarDistRIfcFactory();
+	    if (distRFile != null) {
+	        distRStar = (S2DNmrStarDistRIfc)factory.createFromFile(
+		  distRFile);
+	    } else if (distRUrl != null) {
+	        distRStar = factory.createFromUrl(distRUrl, pdbId);
+	    } else {
+	        distRStar = factory.createFromId(pdbId);
+	    }
+
+	    S2DDistRestraint distR = new S2DDistRestraint(_name, _longName,
+	      distRStar, _dataDir, _sessionDir, _summary, _currentPdbId);
+
+	    distR.writeRestraints(_currentFrameIndex);
 	}
 
         _currentPdbId = null;

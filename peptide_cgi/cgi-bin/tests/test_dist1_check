@@ -1,0 +1,20 @@
+echo "Checking output files"
+
+#TEMPTEMP -- add file list
+set files = ( )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/16270tar2.dat"
+set line = '^1 3 ALA -90.00 -30.00 1_2_C C 1_3_N N 1_3_CA CA 1_3_C C phi -64.39 0'
+#TEMPTEMP source tests/check4line
+set line = '^1 143 VAL 150.00 -150.00 1_143_N N 1_143_CA CA 1_143_CB CB 1_143_CG1 CG1 chi-1 173.46 0'
+#TEMPTEMP source tests/check4line
+set line = '^1 7 ILE 100.00 160.00 1_7_N N 1_7_CA CA 1_7_C C 1_8_N N psi 104.95 0.70'
+#TEMPTEMP source tests/check4line
+

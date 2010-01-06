@@ -24,6 +24,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.2.3  2010/01/05 15:33:52  wenger
+// Cleaned up the pdbIdToUrl() methods for various restraint-related
+// classes.
+//
+// Revision 1.2.2.2  2009/12/16 00:07:56  wenger
+// Added S2DDistRestraint and S2DNmrStarDistRIfc classes (mostly
+// stubs so far); added a bunch of notes based on today's BMRB
+// staff meeting discussions; also added stubbed-in classes in
+// S2DSummaryHtml, etc.
+//
+// Revision 1.2.2.1  2009/12/14 23:31:03  wenger
+// Added new S2DRestraint class to be parent of S2DTorsionAngle and
+// (not yet created) S2DDistRestraint class; moved a bunch of the
+// code from S2DTorsionAngle to S2DRestraint.
+//
+// Revision 1.2  2009/12/05 22:26:32  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.1.4.27  2009/12/05 21:45:39  wenger
 // Hopefully final cleanup before merge(!).
 //
@@ -175,18 +194,11 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class S2DTorsionAngle {
+public class S2DTorsionAngle extends S2DRestraint {
     //===================================================================
     // VARIABLES
 
     private static final int DEBUG = 0;
-
-    private String _name;
-    private String _longName;
-    private String _dataDir;
-    private String _sessionDir;
-    private S2DSummaryHtml _summary;
-    private String _pdbId;
 
     //
     // Note: we're keeping a lot of numerical values as Strings here, since
@@ -239,107 +251,16 @@ public class S2DTorsionAngle {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    /**
-     * Get the URL name for the document containing the dihedral angle
-     * violation data (parsed FRED) for the given PDB ID.
-     * @param The PDB ID we need data for.
-     * @return The URL name for the document containing the actual
-     *   dihedral angle violation data.
-     */
-    public static String pdbIdToUrl(String pdbId) throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DTorsionAngle.pdbIdToUrl(" + pdbId + ")");
-	}
-
-	String violationUrlName = getViolationUrl(pdbId);
-	String mrBlockIdName = getMrBlockId(violationUrlName, pdbId);
-
-	return mrBlockIdName;
-    }
-
-    //-------------------------------------------------------------------
-    /**
-     * Take the URL of a document containing dihedral angle violation
-     * data (filtered FRED) and strip out all of the html surrounding
-     * the actual NMR-STAR file, putting the NMR-STAR file into
-     * a temporary file.
-     * @param The URL name for the document containing the actual
-     *   dihedral angle violation data.
-     * @param The PDB ID we need data for.
-     * @return The name of the temporary file created.
-     */
-    public static String filterUrlToTempFile(String urlName, String pdbId)
-      throws S2DException
-    {
-        if (doDebugOutput(11)) {
-	    System.out.println("S2DTorsionAngle.filterUrlToTempFile(" +
-	      urlName + ")");
-	}
-
-    	File tmpFile;
-	try {
-    	    tmpFile = File.createTempFile("tar_", ".str", new File("tmp"));
-	    tmpFile.deleteOnExit();
-
-	    FileWriter writer = new FileWriter(tmpFile);
-
-	    URL url = new URL(urlName);
-	    InputStream is = url.openStream();
-	    InputStreamReader isr = new InputStreamReader(is);
-	    BufferedReader reader = new BufferedReader(isr);
-
-	    // Extract the NMR-STAR file embedded within the html page.
-	    boolean foundStart = false;
-	    String startString = "data_" + pdbId.toLowerCase();
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-		// Do case-insensitive searches.
-		String searchLine = line.toLowerCase();
-
-		if (!foundStart) {
-		    int begin = searchLine.indexOf(startString);
-		    if (begin >= 0) {
-		        foundStart = true;
-			writer.write(
-			  line.substring(begin) + "\n");
-		    }
-		} else {
-		    if (searchLine.indexOf("</pre>") >= 0) {
-		        // Hit the end of the actual STAR file part.
-			break;
-		    }
-	            writer.write(line + "\n");
-		}
-	    }
-
-	    reader.close();
-	    writer.close();
-
-        } catch (IOException ex) {
-	    throw new S2DError("Error creating temp file for torsion " +
-	      "angle data: " + ex.toString());
-	}
-
-    	return tmpFile.getPath();
-    }
-
-    //-------------------------------------------------------------------
     // Constructor.
     public S2DTorsionAngle(String name, String longName,
       S2DNmrStarTarIfc star, String dataDir, String sessionDir,
       S2DSummaryHtml summary, String pdbId) throws S2DException
     {
+	super(name, longName, dataDir, sessionDir, summary, pdbId);
+
         if (doDebugOutput(11)) {
 	    System.out.println("S2DTorsionAngle.S2DTorsionAngle(" + name + ")");
 	}
-        _name = name;
-        _longName = longName;
-        _dataDir = dataDir;
-        _sessionDir = sessionDir;
-        _summary = summary;
-
-	_pdbId = pdbId;
 
         _entityAssemblyIds = new Vector();
 
@@ -727,160 +648,6 @@ public class S2DTorsionAngle {
 
     //===================================================================
     // PRIVATE METHODS
-
-    //-------------------------------------------------------------------
-    /**
-     * Get the URL name for dihedral angle violations (filtered
-     * FRED data) for the given PDB ID.
-     * @param The PDB ID we need data for.
-     * @return The URL name corresponding to the dihedral angle violations.
-     */
-    private static String getViolationUrl(String pdbId) throws S2DException
-    {
-        if (doDebugOutput(12)) {
-	    System.out.println("S2DTorsionAngle.getViolationUrl(" + pdbId + ")");
-	}
-
-	String restraintGridTemplate = S2DNames.RESTRAINT_GRID_ROOT +
-	  S2DNames.TORSION_ANGLE_SEARCH_TEMPLATE;
-	String requestUrlName = S2DUtils.replace(restraintGridTemplate,
-	  "*", pdbId);
-
-        if (doDebugOutput(12)) {
-	    System.out.println("  requestUrlName: " + requestUrlName);
-	}
-
-	try {
-	    URL url = new URL(requestUrlName);
-	    InputStream is = url.openStream();
-	    InputStreamReader isr = new InputStreamReader(is);
-	    BufferedReader reader = new BufferedReader(isr);
-
-	    String violationUrlName = null;
-
-	    boolean foundViolation = false;
-	    boolean foundDihedralAngle = false;
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-	        // Do case-insensitive searches.
-	        String searchLine = line.toLowerCase();
-
-	        // Need to find "violation", "dihedral angle", and "href" in
-	        // the same table row.
-	        if (searchLine.indexOf("</tr>") >= 0) {
-	            foundViolation = false;
-		    foundDihedralAngle = false;
-	        } else if (!foundViolation) {
-	            if (searchLine.indexOf("violation") >= 0) {
-		        foundViolation = true;
-		    }
-	        } else if (!foundDihedralAngle) {
-	            if (searchLine.indexOf("dihedral angle") >= 0) {
-		        foundDihedralAngle = true;
-		    }
-	        } else if (searchLine.indexOf("href") >= 0) {
-                    if (doDebugOutput(15)) {
-                        System.out.println("  line: <" + line + ">");
-	            }
-	            violationUrlName = line.substring(line.indexOf('"') + 1);
-		    violationUrlName = violationUrlName.substring(0,
-		      violationUrlName.indexOf('"'));
-                    if (doDebugOutput(12)) {
-	                System.out.println("  violationUrlName: " +
-		          violationUrlName);
-	            }
-		    break;
-	        }
-	    }
-
-	    reader.close();
-
-	    if (violationUrlName == null) {
-	        throw new S2DError("No violation URL found for PDB " +
-	          pdbId);
-	    }
-
-	    violationUrlName = S2DNames.RESTRAINT_GRID_ROOT +
-	      violationUrlName;
-
-	    return violationUrlName;
-
-	} catch (Exception ex) {
-	    throw new S2DError("Error (" + ex.toString() +
-	      " getting violation URL for PDB " + pdbId);
-	}
-    }
-
-    //-------------------------------------------------------------------
-    /**
-     * Get the MR Block ID name for the given dihedral angle violation
-     * URL.
-     * @param The name of the dihedral angle violation URL.
-     * @param The PDB ID we need data for.
-     * @return The MR Block ID (URL).
-     */
-    private static String getMrBlockId(String violationUrlName,
-      String pdbId) throws S2DException
-    {
-        if (doDebugOutput(12)) {
-	    System.out.println("S2DTorsionAngle.getMrBlockId(" +
-	      violationUrlName + ")");
-	}
-
-	try {
-	    URL violationUrl = new URL(violationUrlName);
-	    InputStream is = violationUrl.openStream();
-	    InputStreamReader isr = new InputStreamReader(is);
-	    BufferedReader reader = new BufferedReader(isr);
-
-	    String mrBlockIdName = null;
-
-	    boolean foundMrBlockId = false;
-	    boolean foundFirstHref = false;
-	    String line;
-	    while ((line = reader.readLine()) != null) {
-	        // Do case-insensitive searches.
-	        String searchLine = line.toLowerCase();
-
-		// Find the second href after mrblock_id.
-		if (!foundMrBlockId) {
-	            if (searchLine.indexOf("mrblock_id") >= 0) {
-		        foundMrBlockId = true;
-		    }
-		} else if (!foundFirstHref) {
-		    if (searchLine.indexOf("href") >= 0) {
-		        foundFirstHref = true;
-		    }
-		} else if (searchLine.indexOf("href") >= 0) {
-                    if (doDebugOutput(15)) {
-                        System.out.println("  line: <" + line + ">");
-	            }
-	            mrBlockIdName = line.substring(line.indexOf('"') + 1);
-		    mrBlockIdName = mrBlockIdName.substring(0,
-		      mrBlockIdName.indexOf('"'));
-                    if (doDebugOutput(12)) {
-	                System.out.println("  mrBlockIdName: " +
-		          mrBlockIdName);
-	            }
-		    break;
-		}
-            }
-
-	    if (mrBlockIdName == null) {
-	        throw new S2DError("No MR Block ID found for PDB " +
-	          pdbId);
-	    }
-
-	    mrBlockIdName = S2DNames.RESTRAINT_GRID_ROOT +
-	      mrBlockIdName;
-
-	    return mrBlockIdName;
-
-        } catch (Exception ex) {
-	    throw new S2DError("Error (" + ex.toString() +
-	      " getting MR block ID for PDB " + pdbId);
-	}
-    }
 
     //-------------------------------------------------------------------
     // Determine whether to do debug output based on the current debug

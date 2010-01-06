@@ -36,6 +36,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.20.2.2  2010/01/06 22:21:57  wenger
+// Did a bunch of cleanups on the distance restraint code, in preparation
+// for merging it to the trunk, so I can suspend work on it and move to
+// working on the "PDB-ID-only" torsion angle restraint visualizations.
+//
+// Revision 1.20.2.1  2009/12/16 00:07:56  wenger
+// Added S2DDistRestraint and S2DNmrStarDistRIfc classes (mostly
+// stubs so far); added a bunch of notes based on today's BMRB
+// staff meeting discussions; also added stubbed-in classes in
+// S2DSummaryHtml, etc.
+//
+// Revision 1.20  2009/12/10 20:35:05  wenger
+// Added DEVise/JavaScreen tutorial video links to html pages we generate.
+//
 // Revision 1.19  2009/12/10 16:06:22  wenger
 // Added Peptide-CGI version history link to summary html pages.
 //
@@ -1034,7 +1048,7 @@ TEMP?*/
 	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
 	      frameIndex);
 
-//TEMPTEMP -- test vis server
+//TEMP -- test vis server
 	    String value = "<a href=\"" + path + "?pdbid=" + pdbId;
 	    if (_isUvd) {
 	        value += "&file=" + (String)_localFiles.elementAt(0) +
@@ -1055,6 +1069,77 @@ TEMP?*/
 	      "&coord_index=" + frameIndex + "&size_str=" +
 	      sizeString() + "\">" + linkStr + "</a>";
 	    _torsionAngleInfo.put(frameIndex, value);
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the distance restraint link, where we've actually done the
+    // distance restraint processing.
+    protected void writeDistRestraint(String pdbId, int frameIndex)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeDistRestraint()");
+	}
+
+	if (pdbId != null) {
+/*TEMP
+	    String linkStr = pdbId;
+
+	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
+	      frameIndex);
+
+            String value = "<a href=\"" + _name +
+	      S2DNames.TAR_SUFFIX + frameIndex +
+	      sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	    _torsionAngleInfo.put(frameIndex, value);
+TEMP*/
+	}
+    }
+
+    //TEMP -- what about entity assembly ID here?
+    //-------------------------------------------------------------------
+    // Writes the distance restraint link, where the link is a CGI script
+    // invocation (we haven't already done the distance restraint
+    // processing).
+    protected void writeDistRestraintCGI(String pdbId, String tarUrl,
+      int frameIndex) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeDistRestraintCGI()");
+	}
+
+	if (pdbId != null) {
+/*TEMP
+	    String linkStr = pdbId;
+
+            String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
+
+	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
+	      frameIndex);
+
+//TEMP -- test vis server
+	    String value = "<a href=\"" + path + "?pdbid=" + pdbId;
+	    if (_isUvd) {
+	        value += "&file=" + (String)_localFiles.elementAt(0) +
+	          "&name=" + _name;
+	    } else {
+	        value += "&number=" + _name;
+	    }
+if (false) {// TEMP Haven't gotten passing the URL thru CGI to work yet.
+	    if (tarUrl != null) {
+		// Special conversion to avoid goofing up argument
+		// passing thru CGI scripts.
+		tarUrl = S2DUtils.replace(tarUrl, "&", "#38");
+		tarUrl = S2DUtils.replace(tarUrl, "?", "#63");
+	    	value += "&tar_url=" + tarUrl;
+	    }
+} //TEMP
+	    value += "&do_tar=" + S2DMain.TAR_LEVEL_PROCESS +
+	      "&coord_index=" + frameIndex + "&size_str=" +
+	      sizeString() + "\">" + linkStr + "</a>";
+	    _torsionAngleInfo.put(frameIndex, value);
+TEMP*/
 	}
     }
 

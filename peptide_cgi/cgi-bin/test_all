@@ -11,8 +11,9 @@ use strict;
 my $do_all = 1;
 my $do_sparta = 0;
 my $do_tar = 0;
+my $do_dist = 0;
 
-my $usage = "Usage: test_all [-sparta] [-tar]";
+my $usage = "Usage: test_all [-sparta] [-tar] [-dist]";
 
 my $arg;
 while ($arg = shift) {
@@ -22,6 +23,9 @@ while ($arg = shift) {
   } elsif ($arg eq -tar) {
     $do_all = 0;
     $do_tar = 1;
+  } elsif ($arg eq -dist) {
+    $do_all = 0;
+    $do_dist = 1;
   } elsif ($arg eq -usage) {
      print "$usage\n";
      exit 0;
@@ -152,6 +156,12 @@ if (($do_all != 0) or ($do_tar != 0)) {
   RunTest("test_tar4");
   RunTest("test_tar5");
   RunTest("test_tar6");
+}
+
+if (($do_all != 0) or ($do_dist != 0)) {
+  RunTest("test_dist1");
+  RunTest("test_dist1u");
+  RunTest("test_dist1i");
 }
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
