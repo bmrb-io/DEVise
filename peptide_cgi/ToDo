@@ -431,6 +431,10 @@ Num Date        Status  Pri     Description
 				addition to the files from the restraint
 				grid it already uses. (elu/wenger)
 
+109 1/6/10	OPEN	2	Change html pages to use the non-embedded
+				JavaScreen (JSA) so we can allow resizing.
+				(elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
