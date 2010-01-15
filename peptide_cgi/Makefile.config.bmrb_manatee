@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2005
+#  (c) Copyright 2001-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -31,19 +31,19 @@ INPUT_WEB_DOMAIN = manatee.bmrb.wisc.edu
 OUTPUT_WEB_DOMAIN = manatee.bmrb.wisc.edu
 
 STAR_URL = file:/website/ftp/pub/bmrb/entry_lists/nmr-star2.1/
-
 STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = file:/website/ftp/pub/pdb/data/structures/all/mmCIF/
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
 SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/peptide-cgi/html
 CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi/make_view
+UVD_CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi/make_uvd
 
 #-----------------------------------------------------------
 # Places to install stuff.
 
 # The base of the DEVise demo setup.
-DEV_DEMO_HOME = /p/devise/demo
+DEV_DEMO_HOME = /website/devise/demo
 
 WWW_HOME = /website/htdocs
 
@@ -54,16 +54,16 @@ PEP_HOME = $(WWW_HOME)/devise/peptide-cgi
 CGI_HOME = $(WWW_HOME)/cgi-bin/peptide-cgi
 
 # The "real" directory (not symlink) for peptide-cgi sessions.
-PEP_SESSION_HOME = $(PEP_HOME)/session_dir
+PEP_SESSION_HOME = /website/devise/bmrb/dynamic_sessions
 
 # The "real" directory (not symlink) for peptide-cgi data.
-PEP_DATA_HOME = /bmrb/devise/data_mount/nmr_browser/data_dir
+PEP_DATA_HOME = /website/devise/bmrb/dynamic_data
 
 # The "real" directory (not symlink) for peptide-cgi html files.
-PEP_HTML_HOME = $(PEP_HOME)/html_dir
+PEP_HTML_HOME = /website/devise/bmrb/dynamic_html
 
 # Machine installation should be done on (optional).
-INSTALL_MACHINE = manatee
+INSTALL_MACHINE = manatee.bmrb.wisc.edu
 
 #-----------------------------------------------------------
 # Configuration for viewing unreleased entries.
@@ -72,7 +72,7 @@ INSTALL_MACHINE = manatee
 # This first subsection is installation parameters.
 
 # Where to install the main scripts, jar file, etc.
-VUR_CGI_HOME = /export/home/web/vur/peptide-cgi/cgi-bin
+VUR_CGI_HOME = /home/web/vur/peptide-cgi/cgi-bin
 
 # Where to store the session files for viewing unreleased
 # entries (the session files will actually be stored in
@@ -94,14 +94,14 @@ VUR_HTML_HOME = /tmp/vur/html_unreleased
 VUR_FRONTEND_DIR = null
 
 # Machine installation should be done on (optional).
-VUR_INSTALL_MACHINE = manatee
+VUR_INSTALL_MACHINE = manatee.bmrb.wisc.edu
 
 #...........................................................
 # This subsection is parameters we actually use when runing
 # the view_entry script, etc.
 
 # The directory in which the JavaScreen client is installed.
-VUR_JS_DIR = /p/devise/js.installed
+VUR_JS_DIR = /website/devise/js.installed
 
 # The "base" directory from which to get the NMR-STAR file.
 VUR_INPUT_DIR = web@yellowtail:/share/subedit/Third.Ed
