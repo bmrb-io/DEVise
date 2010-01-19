@@ -435,6 +435,10 @@ Num Date        Status  Pri     Description
 				JavaScreen (JSA) so we can allow resizing.
 				(elu/wenger)
 
+110 1/19/10	OPEN	1	"PDB-only" processing should pull in data
+				from related BMRB entry(s), if possible
+				(elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
