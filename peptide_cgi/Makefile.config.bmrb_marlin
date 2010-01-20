@@ -27,8 +27,8 @@ PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
-INPUT_WEB_DOMAIN = www.bmrb.wisc.edu
-OUTPUT_WEB_DOMAIN = www.bmrb.wisc.edu
+INPUT_WEB_DOMAIN = marlin.bmrb.wisc.edu
+OUTPUT_WEB_DOMAIN = marlin.bmrb.wisc.edu
 
 STAR_URL = file:/website/ftp/pub/data/nmr-star/
 STAR_NAME_TEMPLATE = "bmr*.str"

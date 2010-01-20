@@ -27,7 +27,6 @@ PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
-#TEMP -- change when pike becomes www
 INPUT_WEB_DOMAIN = pike.bmrb.wisc.edu
 OUTPUT_WEB_DOMAIN = pike.bmrb.wisc.edu
 
