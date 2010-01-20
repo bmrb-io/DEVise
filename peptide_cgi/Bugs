@@ -404,10 +404,13 @@ Num Date        Status  Description
 087 10/14/09	OPEN	Code should filter out values of "." for PDB IDs
 			(see entry 6468). (madings/wenger)
 
-088 1/20/10	OPEN	Heteronuclear NOE visualizations at BMRB (but not
+088 1/20/10	CD	Heteronuclear NOE visualizations at BMRB (but not
 			on devise) don't list the appropriate atoms anymore.
 			(I suspect that something changed in the files.)
 			(wenger)
+			(Can't duplicate 1/20/10 -- I think the first
+			instance of this may have been an artifact of
+			running the test script in the "real" CGI directory.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
