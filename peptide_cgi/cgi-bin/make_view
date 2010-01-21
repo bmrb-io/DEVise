@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2009
+#  (c) Copyright 1999-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -45,7 +45,7 @@ my $debug = 0;
 
 print "Content-type: text/plain\n\n" if ($debug);
 
-my ($acc_num, $summary_page, $query);
+my ($acc_num, $summary_page, $query, $restraint_id);
 $query = new CGI;
 
 # BMRB accession number.
@@ -57,6 +57,9 @@ if ($acc_num =~ /^[0-9]*$/) {
 } else {
   dienice("Illegal bmrb accession number: $acc_num\n");
 }
+
+# PDB ID for restraint-only visualizations (may be undefined).
+$restraint_id = $query->param('restraint_id');
 
 my ($pdbid, $coord_index, $do_pdb, $do_csr, $csr_index);
 $pdbid = $query->param('pdbid');
@@ -70,12 +73,17 @@ my $do_tar = $query->param('do_tar');
 my $tar_url = $query->param('tar_url');
 
 print "  acc_num = $acc_num\n" if ($debug);
+print "  restraint_id = $restraint_id\n" if ($debug);
 print "  pdbid = $pdbid\n" if ($debug);
 print "  coord_index = $coord_index\n" if ($debug);
 
 # File name of html summary page to generate.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
-if ($do_pdb) {
+if (defined($restraint_id)) {
+  print "  restraint-only\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $restraint_id . 'y' .
+    $size_str . '.html';
+} elsif ($do_pdb) {
   print "  has PDB\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $acc_num . 'ac' . $coord_index .
     $size_str . '.html';
@@ -94,7 +102,10 @@ if ($do_pdb) {
 }
 
 my $cmd;
-if ($do_pdb) {
+if (defined($restraint_id)) {
+  # Add -do_dist here once distance restraints are working.
+  $cmd = "./s2d -pdbid $restraint_id -name $restraint_id -do_tar 3 -coord_index 1";
+} elsif ($do_pdb) {
   $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_pdb $do_pdb -coord_index $coord_index";
 } elsif ($do_csr) {
   $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_csr $do_csr -coord_index $coord_index";
@@ -114,8 +125,13 @@ my $result = `$cmd`;
 chomp $result;
 if ($result ne "OK") {
   my ($tmpmsg);
-  $tmpmsg = "<p>Unable to process data for accession number " . $acc_num .
-    ".</p>\n<pre>\n" . `cat tmp/s2d.out` . "</pre>\n";
+  if (defined($restraint_id)) {
+    $tmpmsg = "<p>Unable to process data for PDB ID " . $restraint_id .
+      ".</p>\n<pre>\n" . `cat tmp/s2d.out` . "</pre>\n";
+  } else {
+    $tmpmsg = "<p>Unable to process data for accession number " . $acc_num .
+      ".</p>\n<pre>\n" . `cat tmp/s2d.out` . "</pre>\n";
+  }
   dienice($tmpmsg);
 }
 

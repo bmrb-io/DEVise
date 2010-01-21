@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2009
+// (c) Copyright 2001-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.14.4.2  2010/01/19 19:07:28  wenger
+// Minor cleanups of PDB-only processing code.
+//
+// Revision 1.14.4.1  2010/01/07 23:26:10  wenger
+// First cut at "PDB-only" torsion angle restraint processing -- basically
+// just cut out some steps for this case.  It *seems* to work okay -- comes
+// up with a visualization that works, but I want to do some more checking
+// before I say it's ready.
+//
+// Revision 1.14  2009/12/10 18:50:24  wenger
+// Fixed up name of coordinate link in summary files generated with
+// the -pdb_file command-line argument.
+//
 // Revision 1.13  2009/12/05 22:26:31  wenger
 // Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
 // to the trunk.
@@ -430,7 +443,7 @@ public class S2DAtomicCoords {
     // Write the atoms (including coordinates) for this data.  This
     // output is designed to be transferred to Jmol for visualization.
     // 
-    public void writeAtoms(int frameIndex)
+    public void writeAtoms(int frameIndex, boolean restraintOnly)
       throws S2DException
     {
         if (doDebugOutput(11, true)) {
@@ -499,6 +512,14 @@ public class S2DAtomicCoords {
 	    }
 
 	    coordWriter.close();
+
+	    //
+	    // For restraint-only (PDB ID-only) processing, we just want
+	    // the actual coordinate data, not the session files, etc.
+	    //
+            if (restraintOnly) {
+	        return;
+	    }
 
 	    //
 	    // Write the session file.

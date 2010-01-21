@@ -117,6 +117,8 @@ The following testing steps must be done:
 TEMPTEMP -- add stuff for torsion angle restraints!!
 TEMPTEMP -- should be 4310 because of 2 entity assemblies
 TEMPTEMP -- also 15209 (2 ent), 4416 (2 ent, na)
+TEMPTEMP -- add stuff for restraint-only visualizations
+TEMPTEMP -- test Force Reprocessing button for regular, uvd, and restraint-only
 
 - Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html
   (make sure drill-down works).

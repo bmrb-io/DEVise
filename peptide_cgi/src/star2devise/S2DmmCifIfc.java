@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2009
+// (c) Copyright 2002-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.14.2.2  2010/01/19 19:07:29  wenger
+// Minor cleanups of PDB-only processing code.
+//
+// Revision 1.14.2.1  2010/01/07 23:26:10  wenger
+// First cut at "PDB-only" torsion angle restraint processing -- basically
+// just cut out some steps for this case.  It *seems* to work okay -- comes
+// up with a visualization that works, but I want to do some more checking
+// before I say it's ready.
+//
+// Revision 1.14  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.13.2.1  2010/01/04 18:57:00  wenger
 // Added new S2DNmrStarIfcFactory class as part 1 of cleaning up the
 // creation of various S2D*Ifc objects.
@@ -251,7 +263,14 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	    _starTree = parseStar(is);
 	    is.close();
 
-	    matchResidueLists();
+	    //
+	    // Skip matching against BMRB residues for PDB-only processing.
+	    // TEMP -- can we rely on the restraint grid residue numbering
+	    // matching the coordinates files?
+	    //
+	    if (_bmrbResListFile != null) {
+	        matchResidueLists();
+	    }
 
         } catch(java.io.IOException ex) {
             System.err.println("Unable to open or read " + ex.toString());

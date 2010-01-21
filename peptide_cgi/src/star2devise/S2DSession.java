@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2009
+// (c) Copyright 2001-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.21.4.2  2010/01/19 19:07:29  wenger
+// Minor cleanups of PDB-only processing code.
+//
+// Revision 1.21.4.1  2010/01/07 23:26:10  wenger
+// First cut at "PDB-only" torsion angle restraint processing -- basically
+// just cut out some steps for this case.  It *seems* to work okay -- comes
+// up with a visualization that works, but I want to do some more checking
+// before I say it's ready.
+//
+// Revision 1.21  2009/12/05 22:26:32  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.20.4.2  2009/11/30 18:09:01  wenger
 // Got rid of sessions and specific html pages for (now obsolete) torsion
 // angle violation visualizations.

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2008
+// (c) Copyright 2006-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.16.2  2010/01/08 23:28:33  wenger
+// Fixed 'Force reprocessing' functionality for restraint-only summary
+// page; fixed error message in make_view for restraint-only processing.
+//
+// Revision 1.5.16.1  2010/01/08 16:29:30  wenger
+// Added changes to make the summary html file have only the relevant
+// things for restraint-only processing.
+//
+// Revision 1.5  2008/06/04 21:12:01  wenger
+// New Peptide-CGI summary page is implemented, test work except for
+// test52 for some weird reason.  (Still may need some other changes
+// before release, though.)
+//
 // Revision 1.4  2008/04/09 19:35:42  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -68,14 +81,15 @@ public class S2DSummaryHtmlLarge extends S2DSummaryHtmlGen {
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
     public S2DSummaryHtmlLarge(String name, String longName,
-      String accessionNum, Vector localFiles, String htmlDir)
-      throws S2DException
+      String masterId, Vector localFiles, String htmlDir,
+      boolean restraintOnly) throws S2DException
     {
-	super(name, longName, accessionNum, localFiles, htmlDir);
+	super(name, longName, masterId, localFiles, htmlDir,
+	  restraintOnly);
 
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlLarge.S2DSummaryHtmlLarge(" +
-	      name + ", " + accessionNum + ")");
+	      name + ", " + masterId + ")");
 	}
     }
 

@@ -188,6 +188,7 @@ source tests/check4line
 set line = '^DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization of .*4267 and PDB 1dfv generated on'
 source tests/check4line
 
+#TEMP -- add checks for *all* data types in summary html file
 set file = "html_dir/4267d1.html"
 set line = '^  Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line

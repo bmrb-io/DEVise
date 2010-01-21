@@ -1,0 +1,25 @@
+echo "Checking output files"
+
+set files = ( data_dir/tar_1brvac1.dat \
+	data_dir/tar_1brvtar1.dat \
+	data_dir/tar_1brvtar-md1.dat \
+	html_dir/tar_1brvtar1.html \
+	html_dir/tar_1brvtar1_large.html \
+	html_dir/tar_1brvy.html \
+	html_dir/tar_1brvy_large.html \
+	session_dir/tar_1brvtar1.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/tar_1brvtar1.dat"
+set line = '^1 16 CYS -100.00 -20.00 1_16_N N 1_16_CA CA 1_16_CB CB 1_16_SG SG chi-1 -101.85 7.17'
+source tests/check4line
+set line = '^1 32 GLU 178.00 -178.00 1_31_CA CA 1_31_C C 1_32_N N 1_32_CA CA omega -179.33 3.84'
+source tests/check4line
+set line = '^1 30 HIS -140.00 -100.00 1_29_C C 1_30_N N 1_30_CA CA 1_30_C C phi -97.69 7.72'
+source tests/check4line

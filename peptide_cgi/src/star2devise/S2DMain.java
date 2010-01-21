@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2009
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.172.2.4  2010/01/19 19:07:29  wenger
+// Minor cleanups of PDB-only processing code.
+//
+// Revision 1.172.2.3  2010/01/08 23:28:32  wenger
+// Fixed 'Force reprocessing' functionality for restraint-only summary
+// page; fixed error message in make_view for restraint-only processing.
+//
+// Revision 1.172.2.2  2010/01/08 16:29:29  wenger
+// Added changes to make the summary html file have only the relevant
+// things for restraint-only processing.
+//
+// Revision 1.172.2.1  2010/01/07 23:26:10  wenger
+// First cut at "PDB-only" torsion angle restraint processing -- basically
+// just cut out some steps for this case.  It *seems* to work okay -- comes
+// up with a visualization that works, but I want to do some more checking
+// before I say it's ready.
+//
+// Revision 1.172  2010/01/06 23:03:39  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.171  2009/12/23 15:37:10  wenger
 // Changed version to 11.7.1x2, added new version history section.
 //
@@ -956,7 +976,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.2x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.2x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
@@ -1008,6 +1028,11 @@ public class S2DMain {
 
     // SPARTA-related info.
     private String _spartaFile = null;
+
+    // General restraint-related info.
+        // This is true only if we're processing restraints without
+	// any connection to a BMRB entry.
+    private boolean _restraintOnly = false;
 
     // Torsion angle restraint-related info.
     public static final int TAR_LEVEL_NONE = 0;
@@ -2028,6 +2053,11 @@ public class S2DMain {
 	      ".str", ".sparta.str");
 	}
 
+	_restraintOnly = ((_tarLevel == TAR_LEVEL_PROCESS) ||
+	  (_distRLevel == DISTR_LEVEL_PROCESS)) &&
+	  _masterBmrbId.equals("") &&
+	  (_localFiles.size() == 0);
+
         if (doDebugOutput(1)) {
 	    System.out.println("_name = {" + _name + "}");
 	    System.out.println("_longName = {" + _longName + "}");
@@ -2060,6 +2090,7 @@ public class S2DMain {
 	    System.out.println("_sessionDir = {" + _sessionDir + "}");
 	    System.out.println("_spartaFile = " + _spartaFile);
 	    System.out.println("_extraGC = " + _extraGC);
+	    System.out.println("_restraintOnly = " + _restraintOnly);
 	}
     }
 
@@ -2403,10 +2434,19 @@ public class S2DMain {
 	    // Note: we create a "junk" summary file here because some
 	    // of the existing code can't write the atomic coordinate
 	    // stuff without writing to a summary file.  wenger 2003-09-12.
-	    String tmpSummaryFile = _name + "tmp" + _cmdFrameIndex;
+	    // If we're doing restraint-only processing, this is the
+	    // real summary file, though.
+	    String tmpSummaryFile = _name;
+	    if (!_restraintOnly) {
+	        tmpSummaryFile = _name + "tmp" + _cmdFrameIndex;
+	    }
+	    String id = _masterBmrbId;
+	    if (_restraintOnly) {
+	    	id = _cmdPdbId;
+	    }
 	    _summary = new S2DSummaryHtml(tmpSummaryFile, _longName,
-	      _masterBmrbId, _localFiles, _htmlDir, "starFileName",
-	      "systemName", "frameTitle");
+	      id, _localFiles, _htmlDir, "starFileName",
+	      "systemName", "frameTitle", _restraintOnly);
 
 	    //
 	    // Do the coordinate processing.
@@ -2470,10 +2510,12 @@ public class S2DMain {
 
 	    _summary = new S2DSummaryHtml(_name, _longName, _masterBmrbId,
 	      _localFiles, _htmlDir, masterStar.getFileName(),
-	      masterStar.getSystemName(), masterStar.getEntryTitle());
+	      masterStar.getSystemName(), masterStar.getEntryTitle(),
+	      _restraintOnly);
 	} else {
 	    _summary = new S2DSummaryHtml(_name, _longName, "99999",
-	      _localFiles, _htmlDir, _name, ""/*TEMP?*/, ""/*TEMP?*/);
+	      _localFiles, _htmlDir, _name, ""/*TEMP?*/, ""/*TEMP?*/,
+	      _restraintOnly);
 	}
 
 	//
@@ -4122,7 +4164,7 @@ public class S2DMain {
 	    if (for2DView) {
 	        atomicCoords.writeBonds(frameIndex, pt, for2DView);
 	    } else {
-	        atomicCoords.writeAtoms(frameIndex);
+	        atomicCoords.writeAtoms(frameIndex, _restraintOnly);
 	    }
 	} finally {
 	    if (pt == null) {
@@ -4504,9 +4546,11 @@ public class S2DMain {
 	        _summary.endFrame();
 	    }
 	} else {
+	    String resListFile = _restraintOnly ? null :
+	      _dataDir + File.separator + _name +
+	      S2DNames.RES_LIST_SUFFIX + S2DNames.DAT_SUFFIX;
 	    S2DmmCifIfc cif = new S2DmmCifIfc(pdbId, _useLocalFiles,
-	      _dataDir + File.separator + _name + S2DNames.RES_LIST_SUFFIX +
-	      S2DNames.DAT_SUFFIX);
+	      resListFile);
 	    saveFrameAtomicCoords(cif, null, _currentFrameIndex, null, false);
 	}
 

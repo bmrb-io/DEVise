@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2007
+#  (c) Copyright 2000-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -95,7 +95,7 @@ endif
 
 # Make sure other necessary files have been generated.
 
-if (! -f bmrb_select.html || ! -f cgi-bin/s2d.props || ! -d cgi-bin/bin) then
+if (! -f bmrb_select.html || ! -f restraint_select.html || ! -f cgi-bin/s2d.props || ! -d cgi-bin/bin) then
   echo "You must do 'make setup' before doing 'make install'."
   exit 1
 endif
@@ -156,6 +156,9 @@ if ($pephome != null) then
   else
     cp -p bmrb_select.html $targetdir
     chmod a+r $targetdir/bmrb_select.html
+
+    cp -p restraint_select.html $targetdir
+    chmod a+r $targetdir/restraint_select.html
   endif
 endif
 

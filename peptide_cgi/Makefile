@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2009
+#  (c) Copyright 2001-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -53,8 +53,9 @@ S2D_PROPS_FILE = cgi-bin/s2d.props
 ERROR_EMAIL_FILE = cgi-bin/error_email
 SELECT_HTML_FILE = bmrb_select.html
 VUR_CONFIG_FILE = cgi-bin/vur_config
+RESTRAINT_SELECT_HTML_FILE = restraint_select.html
 
-setup: s2d_props bin select_html error_email tmp vur_config
+setup: s2d_props bin select_html error_email tmp vur_config restraint_select
 
 testsetup:
 	mkdir test_html; cd test_html; ln -s ../html/* .
@@ -111,6 +112,7 @@ clean:
 	-rm $(ERROR_EMAIL_FILE)
 	-rm $(VUR_CONFIG_FILE)
 	-rm vur_config
+	-rm $(RESTRAINT_SELECT_HTML_FILE)
 
 testclean:
 	-rm -rf test_data test_session test_html test_html_unreleased
@@ -210,3 +212,8 @@ select_html: $(SELECT_HTML_FILE)
 $(SELECT_HTML_FILE): bmrb_select.tmpl
 	-rm -f $(SELECT_HTML_FILE)
 	sed -e 's%CGI_URL%$(CGI_URL)%' bmrb_select.tmpl > $(SELECT_HTML_FILE)
+
+restraint_select: $(RESTRAINT_SELECT_HTML_FILE)
+$(RESTRAINT_SELECT_HTML_FILE): restraint_select.tmpl
+	-rm -f $(RESTRAINT_SELECT_HTML_FILE)
+	sed -e 's%CGI_URL%$(CGI_URL)%' restraint_select.tmpl > $(RESTRAINT_SELECT_HTML_FILE)

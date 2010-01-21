@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2009
+// (c) Copyright 2006-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -36,6 +36,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.21.2.3  2010/01/19 19:07:29  wenger
+// Minor cleanups of PDB-only processing code.
+//
+// Revision 1.21.2.2  2010/01/08 23:28:33  wenger
+// Fixed 'Force reprocessing' functionality for restraint-only summary
+// page; fixed error message in make_view for restraint-only processing.
+//
+// Revision 1.21.2.1  2010/01/08 16:29:30  wenger
+// Added changes to make the summary html file have only the relevant
+// things for restraint-only processing.
+//
+// Revision 1.21  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.20.2.2  2010/01/06 22:21:57  wenger
 // Did a bunch of cleanups on the distance restraint code, in preparation
 // for merging it to the trunk, so I can suspend work on it and move to
@@ -230,7 +244,7 @@ public abstract class S2DSummaryHtmlGen {
     public static final String BMRB_ID_LABEL = "Related_BMRB_ID";
     public static final String PDB_ID_LABEL = "Related_PDB_ID";
 
-    private String _bmrbId;
+    private String _masterId;
     private String _htmlDir = null;
     private String _name;
     private String _longName;
@@ -248,6 +262,8 @@ public abstract class S2DSummaryHtmlGen {
 
     // Whether we're processing for "upload and visualize data".
     private static boolean _isUvd = false;
+
+    private static boolean _restraintOnly = false;
 
     private class IntKeyHashtable extends Hashtable {
         public synchronized Object get(int key)
@@ -341,19 +357,20 @@ public abstract class S2DSummaryHtmlGen {
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
     public S2DSummaryHtmlGen(String name, String longName,
-      String accessionNum, Vector localFiles,
-      String htmlDir) throws S2DException
+      String masterId, Vector localFiles,
+      String htmlDir, boolean restraintOnly) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlGen.S2DSummaryHtmlGen(" +
-	      name + ", " + accessionNum + ")");
+	      name + ", " + masterId + ")");
 	}
 
 	_name = name;
 	_longName = longName;
-        _bmrbId = accessionNum;
+        _masterId = masterId;
 	_localFiles = localFiles;
 	_htmlDir = htmlDir;
+	_restraintOnly = restraintOnly;
     }
 
     //-------------------------------------------------------------------
@@ -449,16 +466,22 @@ public abstract class S2DSummaryHtmlGen {
 TEMP?*/
 
 		// Write out the tables that now contain the actual links.
-		writeCoordTable();
+		if (!_restraintOnly) {
+		    writeCoordTable();
+		}
+
 		writeTorsionAngleTable();
-		writeChemShiftTable();
-		writeSpartaDeltaShiftTable();
-		writeChemShiftRefTable();
-		writeLacsTable();
-		writeCouplingTable();
-		writeRelaxationTable();
-		writeHetNOETable();
-		writeS2OrderTable();
+
+		if (!_restraintOnly) {
+		    writeChemShiftTable();
+		    writeSpartaDeltaShiftTable();
+		    writeChemShiftRefTable();
+		    writeLacsTable();
+		    writeCouplingTable();
+		    writeRelaxationTable();
+		    writeHetNOETable();
+		    writeS2OrderTable();
+		}
 
 		// Write the details about the save frames.
 	        // Get rid of frame details.
@@ -475,6 +498,9 @@ TEMP?*/
 		      "value=\"" + (String)_localFiles.elementAt(0) + "\">\n");
 		    _writer.write("<input type=\"hidden\" name=\"name\" " +
 		      "value=\"" + _name + "\">\n");
+		} else if (_restraintOnly) {
+		    _writer.write("<input type=\"hidden\" name=\"restraint_id\" " +
+		      "value=\"" + _masterId + "\">\n");
 		} else {
 		    _writer.write("<input type=\"hidden\" name=\"number\" " +
 		      "value=\"" + _name + "\">\n");
@@ -502,7 +528,7 @@ TEMP?*/
 	            _writer.write("\n");
 		    for (int index = 0; index < bmrbIds.size(); index++) {
 		        String id = (String)bmrbIds.elementAt(index);
-			if (!id.equals(_bmrbId)) {
+			if (!id.equals(_masterId)) {
 	                    _writer.write("<!-- " + BMRB_ID_LABEL + ": {" +
 			      id + "} -->\n");
 			}

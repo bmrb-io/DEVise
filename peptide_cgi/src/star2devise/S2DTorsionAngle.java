@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009
+// (c) Copyright 2009-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.2.1  2010/01/12 22:40:53  wenger
+// Added a bunch more tests for PDB-only torsion angle restraints, and
+// finished the partially-completed ones I already had.
+//
+// Revision 1.3  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.2.2.3  2010/01/05 15:33:52  wenger
 // Cleaned up the pdbIdToUrl() methods for various restraint-related
 // classes.

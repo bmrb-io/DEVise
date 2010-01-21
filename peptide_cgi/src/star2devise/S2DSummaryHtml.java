@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2009
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -31,6 +31,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.2.2  2010/01/08 23:28:32  wenger
+// Fixed 'Force reprocessing' functionality for restraint-only summary
+// page; fixed error message in make_view for restraint-only processing.
+//
+// Revision 1.18.2.1  2010/01/08 16:29:30  wenger
+// Added changes to make the summary html file have only the relevant
+// things for restraint-only processing.
+//
+// Revision 1.18  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.17.2.1  2009/12/16 00:07:56  wenger
 // Added S2DDistRestraint and S2DNmrStarDistRIfc classes (mostly
 // stubs so far); added a bunch of notes based on today's BMRB
@@ -207,21 +218,22 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
-    public S2DSummaryHtml(String name, String longName, String accessionNum,
+    public S2DSummaryHtml(String name, String longName, String masterId,
       Vector localFiles, String htmlDir, String starFileName,
-      String systemName, String frameTitle) throws S2DException
+      String systemName, String frameTitle, boolean restraintOnly)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
-	      name + ", " + accessionNum + ")");
+	      name + ", " + masterId + ")");
 	}
 
 	_htmlDir = htmlDir;
 
-	_normal = new S2DSummaryHtmlNormal(name, longName, accessionNum,
-	  localFiles, htmlDir);
-	_large = new S2DSummaryHtmlLarge(name, longName, accessionNum,
-	  localFiles, htmlDir);
+	_normal = new S2DSummaryHtmlNormal(name, longName, masterId,
+	  localFiles, htmlDir, restraintOnly);
+	_large = new S2DSummaryHtmlLarge(name, longName, masterId,
+	  localFiles, htmlDir, restraintOnly);
 
 	_normal.setSibling(_large);
 	_large.setSibling(_normal);
