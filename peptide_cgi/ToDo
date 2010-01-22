@@ -445,7 +445,11 @@ Num Date        Status  Pri     Description
 112 1/22/10	OPEN	3	Change tests to not create "non-standard"
 				output for BMRB entries (so running the
 				tests in the "real" CGI directory doesn't
-				goof things up. (wenger)
+				goof things up. (wenger)  (Hmm -- how will
+				that work with some of the pre-release
+				tests that rely on the "non-standard" output?
+				Maybe allow a test name to be passed
+				to make_view??
 
 113 1/22/10	OPEN	4	Change PDB ID of "none" to "internal" (or
 				something else) for 4096 summary page.
