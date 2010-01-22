@@ -7,9 +7,7 @@
 
 # Session description
 DEVise setSessionDesc {Torsion angle
-$Id$
-TEMPTEMP -- high/low symbols aren't drawn correctly for 16270 when all residues are shown
-TEMPTEMP -- session won't load in JS}
+$Id$}
 
 # Load strings table
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/bond_color.str
