@@ -4,7 +4,8 @@ Peptide-CGI 11.7.2
 ------------------
 (Needs DEVise 1.9.1 or higher, JavaScreen client 5.10.0 or higher.)
 
-(Nothing yet.)
+* Added the capability to generate torsion angle restraint visualizations
+with only a PDB ID.
 
 
 Peptide-CGI 11.7.1

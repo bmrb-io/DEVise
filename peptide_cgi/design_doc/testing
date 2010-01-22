@@ -43,6 +43,8 @@ The following testing steps must be done:
       up in the JavaScreen) (make sure data cursor shows up at correct
       initial size/location)
     - S2 order parameters
+- Click the 'Force Reprocessing' button and make sure the summary page
+  gets updated.
 
 - Run 'tests/test15 -noleech' in /var/home/www/public/cgi-bin/bmrb on teal.
 
@@ -113,12 +115,22 @@ The following testing steps must be done:
 - Go to http://devise.cs.wisc.edu/devise/bmrb/uvd/uvd_works.html and click
   the "Test" link.  Make sure the summary page is correct and some of
   the visualizations work.
+- Click the 'Force Reprocessing' button and make sure the summary page
+  gets updated.
 
-TEMPTEMP -- add stuff for torsion angle restraints!!
-TEMPTEMP -- should be 4310 because of 2 entity assemblies
-TEMPTEMP -- also 15209 (2 ent), 4416 (2 ent, na)
-TEMPTEMP -- add stuff for restraint-only visualizations
-TEMPTEMP -- test Force Reprocessing button for regular, uvd, and restraint-only
+- (Torsion angle restraints) Go to
+  http://devise.cs.wisc.edu/devise/bmrb/bmrb_select.html and view the
+  torsion angle visualization for 15209/2OQS:
+    - Make sure that torsion angle data shows up for both entity assemblies,
+      and that atoms in the correct entity assembly are highlighted in
+      the 3D view.
+
+- (PDB-only torsion angle restraints) Go to
+  http://devise.cs.wisc.edu/devise/bmrb/restraint_select.html, view the
+  torsion angle visualization for 1eza:
+    - There should be data for all angle types except omega.
+- Click the 'Force Reprocessing' button and make sure the summary page
+  gets updated.
 
 - Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html
   (make sure drill-down works).
