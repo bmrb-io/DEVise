@@ -439,6 +439,18 @@ Num Date        Status  Pri     Description
 				from related BMRB entry(s), if possible
 				(elu/wenger)
 
+111 1/22/10	OPEN	3	Add make_view and make_uvd tests to test_all
+				(wenger)
+
+112 1/22/10	OPEN	3	Change tests to not create "non-standard"
+				output for BMRB entries (so running the
+				tests in the "real" CGI directory doesn't
+				goof things up. (wenger)
+
+113 1/22/10	OPEN	4	Change PDB ID of "none" to "internal" (or
+				something else) for 4096 summary page.
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
