@@ -13,12 +13,15 @@ the mirror sites.  This testing should be done at least once a week.
 (Note that the visualization server can be accessed through the
 "Spectroscopists' Corner" link on the web site.)
 
-  http://www.bmrb.wisc.edu/vis_serv/
-  http://bmrb.protein.osaka-u.ac.jp/vis_serv/
-  http://bmrb.postgenomicnmr.net/vis_serv/
+  http://www.bmrb.wisc.edu/vis_serv/ (Madison)
+  http://bmrb.protein.osaka-u.ac.jp/vis_serv/ (Osaka)
+  http://bmrb.postgenomicnmr.net/vis_serv/ (Florence)
 
 
 * TESTING THE VISUALIZATION SERVER
+
+* First, search for entry 4267 and save a copy of the actual NMR-STAR file
+(bmr4267.str).
 
 For each of the visualization server URLs listed above, perform the
 following procedure:

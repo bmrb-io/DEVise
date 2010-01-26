@@ -12,18 +12,18 @@ BMRB every working day.
 
 * URLS
 
-NMR Browser:
-  http://www.bmrb.wisc.edu/search/
-  http://www.bmrb.wisc.edu/search/
-  http://bmrb.postgenomicnmr.net/search/
+Search:
+  http://www.bmrb.wisc.edu/search/ (Madison)
+  http://bmrb.protein.osaka-u.ac.jp/search/ (Osaka)
+  http://bmrb.postgenomicnmr.net/search/ (Florence)
 
 Histograms:
-  http://www.bmrb.wisc.edu/ref_info/
-  http://www.bmrb.wisc.edu/ref_info/
-  http://bmrb.postgenomicnmr.net/ref_info/
+  http://www.bmrb.wisc.edu/ref_info/ (Madison)
+  http://bmrb.protein.osaka-u.ac.jp/ref_info/ (Osaka)
+  http://bmrb.postgenomicnmr.net/ref_info/ (Florence)
 
 
-* TESTING THE NMR BROWSER
+* TESTING THE SEARCH FUNCTION AND INDIVIDUAL ENTRY VISUALIZATIONS
 
 For each of the NMR browser URLs listed above, perform the following
 procedure:
@@ -35,10 +35,10 @@ resulting page.
 * Look at Generation_date value in the visualization summary page and
 make sure that it's "freshly" generated (remember time zones for the
 mirror sites -- the generation date is in local time).  If the
-visualizations are old (cached), go back and enter a different accession
-number until you get a "fresh" set of visualizations.  (You can also
-find entries to test by following the links when you drill-down in
-the histogram visualizations -- see below.)
+visualizations are old (cached), click the "Force reprocessing" button
+or go back and enter a different accession number until you get a "fresh"
+set of visualizations.  (You can also find entries to test by following
+the links when you drill-down in the histogram visualizations -- see below.)
 
 * Once you have a "fresh" visualization summary page, follow the links
 to the various types of visualizations.  The most important ones to test
@@ -47,7 +47,8 @@ are the most likely to fail).  Note that the chemical shift referencing
 visualizations don't always work because of mismatches between the
 BMRB and PDB entries, etc.  (See the list below for info.)  Also remember
 that the chemical shift referencing visualizations are not available
-at the Florence mirror (bmrb.postgenomicnmr.net).
+at the Florence mirror (bmrb.postgenomicnmr.net), and the LACS
+visualizations are not available at Osaka or Florence.
 
 * When you test a visualization, make sure that various functions such
 as zooming, drilling down, etc., work.  For the 3D structure
