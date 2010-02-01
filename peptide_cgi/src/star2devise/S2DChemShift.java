@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2009/10/22 17:26:34  wenger
+// Refactored the experimental chemical shifts to match the new-style
+// Sparta processing where we get the appropriate data values in
+// the appropriate chemical shift-related class(es) rather than in
+// S2DMain.
+//
 // Revision 1.27  2009/10/20 22:07:56  wenger
 // Reorganized the chemical shift code by moving the code that actually
 // gets the data values out of S2DMain (as I did for S2DAtomicCoords).
@@ -753,11 +759,15 @@ public class S2DChemShift {
 
 		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA2)) {
 		    ha2DeltaShifts[currResSeqCode] = deltashift;
-		    ha2Ambiguities[currResSeqCode] = _ambiguityVals[index];
+		    if ( _ambiguityVals != null) {
+		        ha2Ambiguities[currResSeqCode] = _ambiguityVals[index];
+		    }
 
 		} else if (atomName.equalsIgnoreCase(S2DNames.ATOM_HA3)) {
 		    ha3DeltaShifts[currResSeqCode] = deltashift;
-		    ha3Ambiguities[currResSeqCode] = _ambiguityVals[index];
+		    if ( _ambiguityVals != null) {
+		        ha3Ambiguities[currResSeqCode] = _ambiguityVals[index];
+		    }
 
 	        } else if (atomName.equalsIgnoreCase(S2DNames.ATOM_C)) {
 		    _cDeltaShifts[currResSeqCode] = deltashift;
