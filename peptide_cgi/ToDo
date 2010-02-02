@@ -87,7 +87,7 @@ Num Date        Status  Pri     Description
 				"normal" mode after vis server mods. (wenger)
 				(Done by wenger, 1/22/04.)
 
-023 4/9/03	OPEN	1	Cleanup visualization server code (see
+023 4/9/03	OPEN	2	Cleanup visualization server code (see
 				TEMP comments in code). (wenger)
 
 024 4/9/03	DONE	2	Make a separate directory or directories
@@ -186,7 +186,7 @@ Num Date        Status  Pri     Description
 048 6/9/04	OPEN	2	Visualization of data from nucleic acids.
 				(bmrb/wenger)
 
-049 3/22/05	OPEN	1	Calculate Pistachio percentages based on
+049 3/22/05	OPEN	2	Calculate Pistachio percentages based on
 				all C, H, N atoms in a given residue, not
 				just the ones we have chem shifts for.
 				(hamid/wenger)
@@ -226,7 +226,7 @@ Num Date        Status  Pri     Description
 058 10/3/07	OPEN	4	Have Osaka config set up to get PDB files
 				from pdbj. (wenger)
 
-059 10/8/07	OPEN	1	Figure out NMR-STAR 3.1 problems -- files
+059 10/8/07	OPEN	2	Figure out NMR-STAR 3.1 problems -- files
 				are broken or Peptide-CGI code is wrong?
 				(See test1_3, test27_3, test49.) (wenger)
 
@@ -249,7 +249,7 @@ Num Date        Status  Pri     Description
 				help links from Peptide-CGI-generated pages.
 				(wenger)
 
-066 2/22/08	OPEN	1	Update visualization help images to match
+066 2/22/08	OPEN	2	Update visualization help images to match
 				new JavaScreen. (wenger)
 
 067 2/22/08	DONE	5	Change colors of bars in DNA and RNA histogram
@@ -265,9 +265,9 @@ Num Date        Status  Pri     Description
 069 3/5/08	OPEN	3	Add residue and atom names to drill-down data
 				in the histogram visualizations. (elu/wenger)
 
-070 4/24/08	OPEN	1	Add T1rho to visualizations. (elu/wenger)
+070 4/24/08	OPEN	2	Add T1rho to visualizations. (elu/wenger)
 
-071 4/26/08	OPEN	1	s2d.out, uvd.out, etc., should have an
+071 4/26/08	OPEN	2	s2d.out, uvd.out, etc., should have an
 				indication of overall success or failure.
 				(wenger)
 
@@ -374,7 +374,7 @@ Num Date        Status  Pri     Description
 				like "Save frame (xxx) skipped: xxx".
 				(wenger)
 
-095 6/17/09	OPEN	1	Add robots.txt files to appropriate html
+095 6/17/09	OPEN	2	Add robots.txt files to appropriate html
 				directories. (wenger)
 
 096 6/17/09	DONE	3	Remove unused views and links in 3D
@@ -453,6 +453,34 @@ Num Date        Status  Pri     Description
 
 113 1/22/10	OPEN	4	Change PDB ID of "none" to "internal" (or
 				something else) for 4096 summary page.
+				(wenger)
+
+115 2/2/10	OPEN	3	Be able to deal with multiple chem shift
+				values for a single atom (for the same
+				entity assembly ID, etc.).  (Take highest
+				value for figure of merit; not sure what to
+				do about actual chem shift values.) (elu/
+				wenger)
+
+116 2/2/10	OPEN	2	Get SPARTA working cross-version ("main"
+				entry file is 2.1 & SPARTA file is 3.x or
+				vice-versa). (dmaziuk/wenger)
+
+117 2/2/10	OPEN	2	Get SPARTA working for multiple entity
+				assembly IDs (needs example). (dmaziuk/elu/
+				wenger)
+
+118 2/2/10	OPEN	2	Get SPARTA working properly for entries
+				with multiple sets of chemical shifts (e.g.,
+				4001). (dmaziuk/elu/wenger)
+
+119 2/2/10	OPEN	2	Visualization server should provide the user
+				more info if processing fails (maybe echo
+				the uvd.out or the error file). (elu/wenger)
+
+120 2/2/10	OPEN	4	Visualization server should give the user
+				an option (via a button?) to reprocess with
+				higher verbosity if processing fails.
 				(wenger)
 
 * Status:
