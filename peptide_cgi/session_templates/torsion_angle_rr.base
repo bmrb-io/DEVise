@@ -1,0 +1,1338 @@
+# DEVise startHeader
+# file type: session
+# file date: Feb 10 2010 11:36:52
+# DEVise version: 1.10.0
+# DEVise date: Dec  3 2009
+# DEVise endHeader
+
+# Session description
+DEVise setSessionDesc {Torsion angle
+$Id$}
+
+# Load strings table
+DEVise loadStringSpace $DEVISE_SESSION/bmrb/bond_color.str
+
+# Load color palette
+DEVise color SessionPalette {#000000000000 black
+#000000008b00 DarkBlue
+#00000000cd00 MediumBlue
+#00000000ff00 blue
+#000064000000 DarkGreen
+#00008b000000 green4
+#0000bf00ff00 DeepSkyBlue1
+#0000ff000000 green
+#0000ff00ff00 cyan
+#190019007000 MidnightBlue
+#1e009000ff00 DodgerBlue
+#1f001f001f00 gray12
+#22008b002200 ForestGreen
+#400040004000 gray25
+#610061006100 gray38
+#7f007f007f00 gray50
+#8b0000000000 DarkRed
+#8b0045001300 SaddleBrown
+#99003200cc00 DarkOrchid
+#a100a100a100 gray63
+#b20022002200 firebrick
+#b4005200cd00 MediumOrchid3
+#bf00bf00bf00 gray75
+#c000ff003e00 OliveDrab
+#e000e000e000 gray88
+#ee00ad000e00 Goldenrod2
+#ee00e800aa00 PaleGoldenrod
+#f000e6008c00 khaki
+#f500de00b300 wheat
+#fa00fa00d200 LightGoldenrodYellow
+#fd00f500e600 OldLace
+#ff0000000000 red
+#ff000000ff00 magenta
+#ff007f000000 DarkOrange1
+#ff00a5000000 orange
+#ff00d7000000 gold
+#ff00ff000000 yellow
+#ffffffffffff white
+}
+
+# Set color mode (modulus or truncation)
+DEVise setColorMode 0
+
+# Per-session data source definitions
+DEVise dteInsertCatalogEntry . {"4020rrac1" UNIXFILE 4020rrac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4020rrtar-md1" UNIXFILE 4020rrtar-md1.dat bmrb-tar-meta $DEVISE_SCHEMA/physical/bmrb-tar-meta "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4020rrtar1" UNIXFILE 4020rrtar1.dat bmrb-TorsionAngle $DEVISE_SCHEMA/physical/bmrb-TorsionAngle "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVISE_SCHEMA/physical/bmrb-AxisLabel "" 100 50 "$DEVISE_DAT/bmrb" ""}
+DEVise dteInsertCatalogEntry . {"pistachio_at_legend" UNIXFILE pistachio_at_legend.dat bmrb-pistachio_legend $DEVISE_SCHEMA/physical/bmrb-pistachio_legend "" 100 50 "$DEVISE_DAT/bmrb" ""}
+
+# Create views
+
+# View {ViewAngleUnselectedDataChild} uses mapping {.4020ta#ViewAngleUnselectedDataChild}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {SortedX} ViewAngleUnselectedDataChild 14.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
+DEVise setLabel {ViewAngleUnselectedDataChild} 1 16 {Phi angle lower/upper}
+DEVise setViewStatistics {ViewAngleUnselectedDataChild} 00000000
+DEVise setViewDimensions {ViewAngleUnselectedDataChild} 2
+DEVise setViewSolid3D {ViewAngleUnselectedDataChild} 2
+DEVise setViewXYZoom {ViewAngleUnselectedDataChild} 1
+DEVise setViewDisplayDataValues {ViewAngleUnselectedDataChild} 0
+DEVise setFont {ViewAngleUnselectedDataChild} {title} 2 12 0 0
+DEVise setFont {ViewAngleUnselectedDataChild} {x axis} 2 10 0 0
+DEVise setFont {ViewAngleUnselectedDataChild} {y axis} 2 10 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewAngleUnselectedDataChild} 0 1 2 0 0.000000 0.000000 0.000000 -180.000000 100.000000 360.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewAngleUnselectedDataChild} 0 1 2 0 0 0 0 -180 100 360
+DEVise viewSetHorPan {ViewAngleUnselectedDataChild} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewAngleUnselectedDataChild} 1 0.500000 1.000000
+DEVise setViewGDS {ViewAngleUnselectedDataChild} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewAngleUnselectedDataChild} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewAngleUnselectedDataChild} -100 220 10
+DEVise setCountMapping {ViewAngleUnselectedDataChild} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewAngleUnselectedDataChild} 0
+DEVise setXAxisDateFormat {ViewAngleUnselectedDataChild} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewAngleUnselectedDataChild} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewAngleUnselectedDataChild} {%.4g}
+DEVise setYAxisFloatFormat {ViewAngleUnselectedDataChild} {%.4g}
+DEVise setViewAutoFilter {ViewAngleUnselectedDataChild} {1}
+DEVise setDupElim {ViewAngleUnselectedDataChild} {0}
+DEVise setNiceAxes {ViewAngleUnselectedDataChild} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewAngleUnselectedDataChild} 0 0 0 0
+DEVise setViewHelp {ViewAngleUnselectedDataChild} {Data view: use the cursor to
+select which residues are highlighed (shown
+in green) in the structure view above.}
+DEVise setShowMouseLocation {ViewAngleUnselectedDataChild} {1}
+DEVise setLinkMultFact {ViewAngleUnselectedDataChild} {X} 1
+DEVise setLinkMultFact {ViewAngleUnselectedDataChild} {Y} 1
+DEVise setGAttrLinkMode {ViewAngleUnselectedDataChild} 0
+DEVise setDoHomeOnVisLink {ViewAngleUnselectedDataChild} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewAngleUnselectedDataChild} {0}
+DEVise viewSetUseJmol {ViewAngleUnselectedDataChild} {0}
+DEVise setExcludeFromDrillDown {ViewAngleUnselectedDataChild} {0}
+
+# View {ViewAngleSelectedDataChild} uses mapping {.4020ta#ViewAngleSelectedDataChild}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {SortedX} ViewAngleSelectedDataChild 14.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
+DEVise setLabel {ViewAngleSelectedDataChild} 1 16 {Phi angle lower/upper}
+DEVise setViewStatistics {ViewAngleSelectedDataChild} 00000000
+DEVise setViewDimensions {ViewAngleSelectedDataChild} 2
+DEVise setViewSolid3D {ViewAngleSelectedDataChild} 2
+DEVise setViewXYZoom {ViewAngleSelectedDataChild} 1
+DEVise setViewDisplayDataValues {ViewAngleSelectedDataChild} 0
+DEVise setFont {ViewAngleSelectedDataChild} {title} 2 12 0 0
+DEVise setFont {ViewAngleSelectedDataChild} {x axis} 2 10 0 0
+DEVise setFont {ViewAngleSelectedDataChild} {y axis} 2 10 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewAngleSelectedDataChild} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewAngleSelectedDataChild} 0 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {ViewAngleSelectedDataChild} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewAngleSelectedDataChild} 1 0.500000 1.000000
+DEVise setViewGDS {ViewAngleSelectedDataChild} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewAngleSelectedDataChild} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewAngleSelectedDataChild} -100 220 10
+DEVise setCountMapping {ViewAngleSelectedDataChild} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewAngleSelectedDataChild} 0
+DEVise setXAxisDateFormat {ViewAngleSelectedDataChild} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewAngleSelectedDataChild} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewAngleSelectedDataChild} {%.4g}
+DEVise setYAxisFloatFormat {ViewAngleSelectedDataChild} {%.4g}
+DEVise setViewAutoFilter {ViewAngleSelectedDataChild} {0}
+DEVise setDupElim {ViewAngleSelectedDataChild} {0}
+DEVise setNiceAxes {ViewAngleSelectedDataChild} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewAngleSelectedDataChild} 0 0 0 0
+DEVise setShowMouseLocation {ViewAngleSelectedDataChild} {1}
+DEVise setLinkMultFact {ViewAngleSelectedDataChild} {X} 1
+DEVise setLinkMultFact {ViewAngleSelectedDataChild} {Y} 1
+DEVise setGAttrLinkMode {ViewAngleSelectedDataChild} 0
+DEVise setDoHomeOnVisLink {ViewAngleSelectedDataChild} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewAngleSelectedDataChild} {0}
+DEVise viewSetUseJmol {ViewAngleSelectedDataChild} {0}
+DEVise setExcludeFromDrillDown {ViewAngleSelectedDataChild} {0}
+
+# View {ViewAngleDataDotsChild} uses mapping {.4020ta#ViewAngleDataDotsChild}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {SortedX} ViewAngleDataDotsChild 14.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
+DEVise setLabel {ViewAngleDataDotsChild} 1 16 {Phi angle lower/upper/avg}
+DEVise setViewStatistics {ViewAngleDataDotsChild} 00000000
+DEVise setViewDimensions {ViewAngleDataDotsChild} 2
+DEVise setViewSolid3D {ViewAngleDataDotsChild} 2
+DEVise setViewXYZoom {ViewAngleDataDotsChild} 1
+DEVise setViewDisplayDataValues {ViewAngleDataDotsChild} 0
+DEVise setFont {ViewAngleDataDotsChild} {title} 2 12 0 0
+DEVise setFont {ViewAngleDataDotsChild} {x axis} 2 10 0 0
+DEVise setFont {ViewAngleDataDotsChild} {y axis} 2 10 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewAngleDataDotsChild} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewAngleDataDotsChild} 0 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {ViewAngleDataDotsChild} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewAngleDataDotsChild} 1 0.500000 1.000000
+DEVise setViewGDS {ViewAngleDataDotsChild} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewAngleDataDotsChild} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewAngleDataDotsChild} -0.5 0.5 10
+DEVise setCountMapping {ViewAngleDataDotsChild} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewAngleDataDotsChild} 0
+DEVise setXAxisDateFormat {ViewAngleDataDotsChild} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewAngleDataDotsChild} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewAngleDataDotsChild} {%.4g}
+DEVise setYAxisFloatFormat {ViewAngleDataDotsChild} {%.4g}
+DEVise setViewAutoFilter {ViewAngleDataDotsChild} {0}
+DEVise setDupElim {ViewAngleDataDotsChild} {0}
+DEVise setNiceAxes {ViewAngleDataDotsChild} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewAngleDataDotsChild} 0 0 0 0
+DEVise setShowMouseLocation {ViewAngleDataDotsChild} {1}
+DEVise setLinkMultFact {ViewAngleDataDotsChild} {X} 1
+DEVise setLinkMultFact {ViewAngleDataDotsChild} {Y} 1
+DEVise setGAttrLinkMode {ViewAngleDataDotsChild} 0
+DEVise setDoHomeOnVisLink {ViewAngleDataDotsChild} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewAngleDataDotsChild} {0}
+DEVise viewSetUseJmol {ViewAngleDataDotsChild} {0}
+DEVise setExcludeFromDrillDown {ViewAngleDataDotsChild} {0}
+
+# View {ViewDataValueSelectChild} uses mapping {.4020ta#ViewDataValueSelectChild}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {SortedX} ViewDataValueSelectChild 19.000000 28.000000 -90.000000 90.000000 0 37 0 37 0 37
+DEVise setLabel {ViewDataValueSelectChild} 1 16 {Phi angle lower/upper}
+DEVise setViewStatistics {ViewDataValueSelectChild} 00000000
+DEVise setViewDimensions {ViewDataValueSelectChild} 2
+DEVise setViewSolid3D {ViewDataValueSelectChild} 2
+DEVise setViewXYZoom {ViewDataValueSelectChild} 1
+DEVise setViewDisplayDataValues {ViewDataValueSelectChild} 0
+DEVise setFont {ViewDataValueSelectChild} {title} 2 12 0 0
+DEVise setFont {ViewDataValueSelectChild} {x axis} 2 10 0 0
+DEVise setFont {ViewDataValueSelectChild} {y axis} 2 10 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewDataValueSelectChild} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewDataValueSelectChild} 0 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {ViewDataValueSelectChild} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewDataValueSelectChild} 1 0.500000 1.000000
+DEVise setViewGDS {ViewDataValueSelectChild} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewDataValueSelectChild} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewDataValueSelectChild} -90 90 10
+DEVise setCountMapping {ViewDataValueSelectChild} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewDataValueSelectChild} 0
+DEVise setXAxisDateFormat {ViewDataValueSelectChild} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewDataValueSelectChild} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewDataValueSelectChild} {%.4g}
+DEVise setYAxisFloatFormat {ViewDataValueSelectChild} {%.4g}
+DEVise setViewAutoFilter {ViewDataValueSelectChild} {0}
+DEVise setDupElim {ViewDataValueSelectChild} {0}
+DEVise setNiceAxes {ViewDataValueSelectChild} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewDataValueSelectChild} 0 0 0 0
+DEVise setShowMouseLocation {ViewDataValueSelectChild} {1}
+DEVise setLinkMultFact {ViewDataValueSelectChild} {X} 1
+DEVise setLinkMultFact {ViewDataValueSelectChild} {Y} 1
+DEVise setGAttrLinkMode {ViewDataValueSelectChild} 0
+DEVise setDoHomeOnVisLink {ViewDataValueSelectChild} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewDataValueSelectChild} {0}
+DEVise viewSetUseJmol {ViewDataValueSelectChild} {0}
+DEVise setExcludeFromDrillDown {ViewDataValueSelectChild} {0}
+
+# View {ViewDataScrollFixChild} uses mapping {.4020ta#ViewDataScrollFixChild}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {SortedX} ViewDataScrollFixChild 14.500000 32.500000 -100.000000 220.000000 37 17 0 37 0 37
+DEVise setLabel {ViewDataScrollFixChild} 1 16 {Phi angle lower/upper}
+DEVise setViewStatistics {ViewDataScrollFixChild} 00000000
+DEVise setViewDimensions {ViewDataScrollFixChild} 2
+DEVise setViewSolid3D {ViewDataScrollFixChild} 2
+DEVise setViewXYZoom {ViewDataScrollFixChild} 1
+DEVise setViewDisplayDataValues {ViewDataScrollFixChild} 0
+DEVise setFont {ViewDataScrollFixChild} {title} 0 12 0 0
+DEVise setFont {ViewDataScrollFixChild} {x axis} 0 12 0 0
+DEVise setFont {ViewDataScrollFixChild} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewDataScrollFixChild} 1 1 1 0 0.500000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewDataScrollFixChild} 1 1 1 0 0.5 0 0 0 100 100
+DEVise viewSetHorPan {ViewDataScrollFixChild} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewDataScrollFixChild} 1 0.500000 1.000000
+DEVise setViewGDS {ViewDataScrollFixChild} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewDataScrollFixChild} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewDataScrollFixChild} -100 220 10
+DEVise setCountMapping {ViewDataScrollFixChild} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewDataScrollFixChild} 0
+DEVise setXAxisDateFormat {ViewDataScrollFixChild} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewDataScrollFixChild} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewDataScrollFixChild} {%.4g}
+DEVise setYAxisFloatFormat {ViewDataScrollFixChild} {%.4g}
+DEVise setViewAutoFilter {ViewDataScrollFixChild} {1}
+DEVise setDupElim {ViewDataScrollFixChild} {0}
+DEVise setNiceAxes {ViewDataScrollFixChild} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewDataScrollFixChild} 0 0 0 0
+DEVise setShowMouseLocation {ViewDataScrollFixChild} {1}
+DEVise setLinkMultFact {ViewDataScrollFixChild} {X} 1
+DEVise setLinkMultFact {ViewDataScrollFixChild} {Y} 1
+DEVise setGAttrLinkMode {ViewDataScrollFixChild} 0
+DEVise setDoHomeOnVisLink {ViewDataScrollFixChild} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewDataScrollFixChild} {1}
+DEVise viewSetUseJmol {ViewDataScrollFixChild} {0}
+DEVise setExcludeFromDrillDown {ViewDataScrollFixChild} {0}
+
+# View {View3DMain} uses mapping {.4020ac1#Atom_coord_y_vs_Atom_coord_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} View3DMain -9.754000 8.979000 -7.386000 12.710000 4 0 0 37 0 37
+DEVise setLabel {View3DMain} 0 12 {Atom_coord_y() vs. Atom_coord_x}
+DEVise setViewStatistics {View3DMain} 00000000
+DEVise setViewDimensions {View3DMain} 3
+DEVise setViewSolid3D {View3DMain} 2
+DEVise setViewXYZoom {View3DMain} 1
+DEVise setViewDisplayDataValues {View3DMain} 0
+DEVise setFont {View3DMain} {title} 0 12 0 0
+DEVise setFont {View3DMain} {x axis} 0 12 0 0
+DEVise setFont {View3DMain} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {View3DMain} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {View3DMain} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View3DMain} 1 0.500000 1.000000
+DEVise viewSetVerPan {View3DMain} 1 0.500000 1.000000
+DEVise setViewGDS {View3DMain} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View3DMain} 0 1 0 "" 1 " " 1
+DEVise setHistogram {View3DMain} -7.136 12.46 10
+DEVise setCountMapping {View3DMain} 0 {} {} 0
+DEVise viewSetIsHighlight {View3DMain} 0
+DEVise setXAxisDateFormat {View3DMain} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View3DMain} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View3DMain} {%.4g}
+DEVise setYAxisFloatFormat {View3DMain} {%.4g}
+DEVise setViewAutoFilter {View3DMain} {0}
+DEVise setDupElim {View3DMain} {0}
+DEVise setNiceAxes {View3DMain} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {View3DMain} 0 0 0 0
+DEVise setViewHelp {View3DMain} {Structure view: this view shows the 3D structure of the
+molecule.  The residues selected with the cursor in the
+data view are highlighted (shown in green).  Other atoms
+are colored as follows:
+Carbon: gray
+Oxygen: red
+Nitrogen: blue
+Sulfur: orange
+Phosphorus: pink
+Hydrogen: white}
+DEVise setShowMouseLocation {View3DMain} {1}
+DEVise setLinkMultFact {View3DMain} {X} 1
+DEVise setLinkMultFact {View3DMain} {Y} 1
+DEVise setGAttrLinkMode {View3DMain} 0
+DEVise setDoHomeOnVisLink {View3DMain} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {View3DMain} {1}
+DEVise viewSetUseJmol {View3DMain} {1}
+DEVise setExcludeFromDrillDown {View3DMain} {0}
+
+# View {ViewDataTypeSelect} uses mapping {.4020tar-md1#name_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewDataTypeSelect -0.500000 0.500000 -4.500000 0.500000 37 0 0 37 0 37
+DEVise setLabel {ViewDataTypeSelect} 0 12 {name() vs. recId}
+DEVise setViewStatistics {ViewDataTypeSelect} 00000000
+DEVise setViewDimensions {ViewDataTypeSelect} 2
+DEVise setViewSolid3D {ViewDataTypeSelect} 2
+DEVise setViewXYZoom {ViewDataTypeSelect} 1
+DEVise setViewDisplayDataValues {ViewDataTypeSelect} 0
+DEVise setFont {ViewDataTypeSelect} {title} 0 12 0 0
+DEVise setFont {ViewDataTypeSelect} {x axis} 0 12 0 0
+DEVise setFont {ViewDataTypeSelect} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewDataTypeSelect} 0 1 1 0 0.000000 0.500000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewDataTypeSelect} 0 1 1 0 0 0.5 0 0 100 100
+DEVise viewSetHorPan {ViewDataTypeSelect} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewDataTypeSelect} 1 0.500000 1.000000
+DEVise setViewGDS {ViewDataTypeSelect} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewDataTypeSelect} 0 1 0 "" 1 " " 1
+DEVise setHistogram {ViewDataTypeSelect} -4.5 0.5 10
+DEVise setCountMapping {ViewDataTypeSelect} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewDataTypeSelect} 0
+DEVise setXAxisDateFormat {ViewDataTypeSelect} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewDataTypeSelect} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewDataTypeSelect} {%.4g}
+DEVise setYAxisFloatFormat {ViewDataTypeSelect} {%.4g}
+DEVise setViewAutoFilter {ViewDataTypeSelect} {1}
+DEVise setDupElim {ViewDataTypeSelect} {0}
+DEVise setNiceAxes {ViewDataTypeSelect} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewDataTypeSelect} 1 0 1 1
+DEVise setViewHelp {ViewDataTypeSelect} {Data select view: use the cursor to select which variable
+is shown in the data view}
+DEVise setShowMouseLocation {ViewDataTypeSelect} {1}
+DEVise setLinkMultFact {ViewDataTypeSelect} {X} 1
+DEVise setLinkMultFact {ViewDataTypeSelect} {Y} 1
+DEVise setGAttrLinkMode {ViewDataTypeSelect} 0
+DEVise setDoHomeOnVisLink {ViewDataTypeSelect} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewDataTypeSelect} {1}
+DEVise viewSetUseJmol {ViewDataTypeSelect} {0}
+DEVise setExcludeFromDrillDown {ViewDataTypeSelect} {0}
+
+# View {ViewDataXControl} uses mapping {.4020ac1#ViewDataXControl}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewDataXControl 14.500000 32.500000 -0.300000 0.300000 37 0 0 37 0 37
+DEVise setLabel {ViewDataXControl} 0 12 {Residues}
+DEVise setViewStatistics {ViewDataXControl} 00000000
+DEVise setViewDimensions {ViewDataXControl} 2
+DEVise setViewSolid3D {ViewDataXControl} 2
+DEVise setViewXYZoom {ViewDataXControl} 1
+DEVise setViewDisplayDataValues {ViewDataXControl} 0
+DEVise setFont {ViewDataXControl} {title} 2 14 0 0
+DEVise setFont {ViewDataXControl} {x axis} 0 12 0 0
+DEVise setFont {ViewDataXControl} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewDataXControl} 0 0 1 0 0.000000 0.250000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewDataXControl} 0 0 1 0 0.25 0 0 0 100 100
+DEVise viewSetHorPan {ViewDataXControl} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewDataXControl} 1 0.500000 1.000000
+DEVise setViewGDS {ViewDataXControl} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewDataXControl} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewDataXControl} -0.3 0.3 10
+DEVise setCountMapping {ViewDataXControl} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewDataXControl} 0
+DEVise setXAxisDateFormat {ViewDataXControl} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewDataXControl} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewDataXControl} {%.4g}
+DEVise setYAxisFloatFormat {ViewDataXControl} {%.0f}
+DEVise setViewAutoFilter {ViewDataXControl} {1}
+DEVise setDupElim {ViewDataXControl} {1}
+DEVise setNiceAxes {ViewDataXControl} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewDataXControl} 1 0 0 0
+DEVise setViewHelp {ViewDataXControl} {Data scroll view: use this cursor to select the range of
+residues displayed in the data view above.}
+DEVise setShowMouseLocation {ViewDataXControl} {3}
+DEVise setLinkMultFact {ViewDataXControl} {X} 1
+DEVise setLinkMultFact {ViewDataXControl} {Y} 1
+DEVise setGAttrLinkMode {ViewDataXControl} 0
+DEVise setDoHomeOnVisLink {ViewDataXControl} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewDataXControl} {1}
+DEVise viewSetUseJmol {ViewDataXControl} {0}
+DEVise setExcludeFromDrillDown {ViewDataXControl} {0}
+
+# View {ViewSelectedDataParent} uses mapping {.4020tar-md1#name_vs_recId 3}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewSelectedDataParent -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise setLabel {ViewSelectedDataParent} 0 12 {}
+DEVise setViewStatistics {ViewSelectedDataParent} 00000000
+DEVise setViewDimensions {ViewSelectedDataParent} 2
+DEVise setViewSolid3D {ViewSelectedDataParent} 2
+DEVise setViewXYZoom {ViewSelectedDataParent} 1
+DEVise setViewDisplayDataValues {ViewSelectedDataParent} 0
+DEVise setFont {ViewSelectedDataParent} {title} 0 12 0 0
+DEVise setFont {ViewSelectedDataParent} {x axis} 0 12 0 0
+DEVise setFont {ViewSelectedDataParent} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewSelectedDataParent} 0 1 1 0 0.000000 0.500000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewSelectedDataParent} 0 1 1 0 0 0.5 0 0 100 100
+DEVise viewSetHorPan {ViewSelectedDataParent} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewSelectedDataParent} 1 0.500000 1.000000
+DEVise setViewGDS {ViewSelectedDataParent} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewSelectedDataParent} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewSelectedDataParent} -0.5 0.5 10
+DEVise setCountMapping {ViewSelectedDataParent} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewSelectedDataParent} 0
+DEVise setXAxisDateFormat {ViewSelectedDataParent} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewSelectedDataParent} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewSelectedDataParent} {%.4g}
+DEVise setYAxisFloatFormat {ViewSelectedDataParent} {%.4g}
+DEVise setViewAutoFilter {ViewSelectedDataParent} {0}
+DEVise setDupElim {ViewSelectedDataParent} {0}
+DEVise setNiceAxes {ViewSelectedDataParent} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewSelectedDataParent} 0 0 0 0
+DEVise setShowMouseLocation {ViewSelectedDataParent} {1}
+DEVise setLinkMultFact {ViewSelectedDataParent} {X} 1
+DEVise setLinkMultFact {ViewSelectedDataParent} {Y} 1
+DEVise setGAttrLinkMode {ViewSelectedDataParent} 0
+DEVise setDoHomeOnVisLink {ViewSelectedDataParent} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewSelectedDataParent} {1}
+DEVise viewSetUseJmol {ViewSelectedDataParent} {0}
+DEVise setExcludeFromDrillDown {ViewSelectedDataParent} {0}
+
+# View {ViewUnselectedDataParent} uses mapping {.4020tar-md1#name_vs_recId 4}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewUnselectedDataParent -0.500000 0.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise setLabel {ViewUnselectedDataParent} 0 12 {}
+DEVise setViewStatistics {ViewUnselectedDataParent} 00000000
+DEVise setViewDimensions {ViewUnselectedDataParent} 2
+DEVise setViewSolid3D {ViewUnselectedDataParent} 2
+DEVise setViewXYZoom {ViewUnselectedDataParent} 1
+DEVise setViewDisplayDataValues {ViewUnselectedDataParent} 0
+DEVise setFont {ViewUnselectedDataParent} {title} 0 12 0 0
+DEVise setFont {ViewUnselectedDataParent} {x axis} 0 12 0 0
+DEVise setFont {ViewUnselectedDataParent} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewUnselectedDataParent} 0 1 1 0 0.000000 0.500000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewUnselectedDataParent} 0 1 1 0 0 0.5 0 0 100 100
+DEVise viewSetHorPan {ViewUnselectedDataParent} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewUnselectedDataParent} 1 0.500000 1.000000
+DEVise setViewGDS {ViewUnselectedDataParent} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewUnselectedDataParent} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewUnselectedDataParent} -0.5 0.5 10
+DEVise setCountMapping {ViewUnselectedDataParent} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewUnselectedDataParent} 0
+DEVise setXAxisDateFormat {ViewUnselectedDataParent} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewUnselectedDataParent} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewUnselectedDataParent} {%.4g}
+DEVise setYAxisFloatFormat {ViewUnselectedDataParent} {%.4g}
+DEVise setViewAutoFilter {ViewUnselectedDataParent} {0}
+DEVise setDupElim {ViewUnselectedDataParent} {0}
+DEVise setNiceAxes {ViewUnselectedDataParent} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewUnselectedDataParent} 0 0 0 0
+DEVise setViewHelp {ViewUnselectedDataParent} {Data view: use the cursor to
+select which residues are highlighed (shown in green)
+in the structure view above.}
+DEVise setShowMouseLocation {ViewUnselectedDataParent} {1}
+DEVise setLinkMultFact {ViewUnselectedDataParent} {X} 1
+DEVise setLinkMultFact {ViewUnselectedDataParent} {Y} 1
+DEVise setGAttrLinkMode {ViewUnselectedDataParent} 0
+DEVise setDoHomeOnVisLink {ViewUnselectedDataParent} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewUnselectedDataParent} {1}
+DEVise viewSetUseJmol {ViewUnselectedDataParent} {0}
+DEVise setExcludeFromDrillDown {ViewUnselectedDataParent} {0}
+
+# View {ViewDataValueSelectParent} uses mapping {.4020tar-md1#name_vs_recId 5}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewDataValueSelectParent -0.500000 0.500000 -0.500000 0.500000 37 17 0 37 0 37
+DEVise setLabel {ViewDataValueSelectParent} 0 12 {name() vs. recId}
+DEVise setViewStatistics {ViewDataValueSelectParent} 00000000
+DEVise setViewDimensions {ViewDataValueSelectParent} 2
+DEVise setViewSolid3D {ViewDataValueSelectParent} 2
+DEVise setViewXYZoom {ViewDataValueSelectParent} 1
+DEVise setViewDisplayDataValues {ViewDataValueSelectParent} 0
+DEVise setFont {ViewDataValueSelectParent} {title} 0 12 0 0
+DEVise setFont {ViewDataValueSelectParent} {x axis} 0 12 0 0
+DEVise setFont {ViewDataValueSelectParent} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewDataValueSelectParent} 0 1 1 0 0.000000 0.500000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewDataValueSelectParent} 0 1 1 0 0 0.5 0 0 100 100
+DEVise viewSetHorPan {ViewDataValueSelectParent} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewDataValueSelectParent} 1 0.500000 1.000000
+DEVise setViewGDS {ViewDataValueSelectParent} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewDataValueSelectParent} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewDataValueSelectParent} -0.5 0.5 10
+DEVise setCountMapping {ViewDataValueSelectParent} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewDataValueSelectParent} 0
+DEVise setXAxisDateFormat {ViewDataValueSelectParent} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewDataValueSelectParent} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewDataValueSelectParent} {%.4g}
+DEVise setYAxisFloatFormat {ViewDataValueSelectParent} {%.4g}
+DEVise setViewAutoFilter {ViewDataValueSelectParent} {0}
+DEVise setDupElim {ViewDataValueSelectParent} {0}
+DEVise setNiceAxes {ViewDataValueSelectParent} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewDataValueSelectParent} 0 0 0 0
+DEVise setShowMouseLocation {ViewDataValueSelectParent} {1}
+DEVise setLinkMultFact {ViewDataValueSelectParent} {X} 1
+DEVise setLinkMultFact {ViewDataValueSelectParent} {Y} 1
+DEVise setGAttrLinkMode {ViewDataValueSelectParent} 0
+DEVise setDoHomeOnVisLink {ViewDataValueSelectParent} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewDataValueSelectParent} {1}
+DEVise viewSetUseJmol {ViewDataValueSelectParent} {0}
+DEVise setExcludeFromDrillDown {ViewDataValueSelectParent} {0}
+
+# View {ViewVisualizationInfo} uses mapping {.label#Label_text_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewVisualizationInfo -1.000000 1.000000 -1.000000 1.000000 0 13 0 37 0 37
+DEVise setLabel {ViewVisualizationInfo} 0 12 {Label_text() vs. recId}
+DEVise setViewStatistics {ViewVisualizationInfo} 00000000
+DEVise setViewDimensions {ViewVisualizationInfo} 2
+DEVise setViewSolid3D {ViewVisualizationInfo} 2
+DEVise setViewXYZoom {ViewVisualizationInfo} 1
+DEVise setViewDisplayDataValues {ViewVisualizationInfo} 0
+DEVise setFont {ViewVisualizationInfo} {title} 0 12 0 0
+DEVise setFont {ViewVisualizationInfo} {x axis} 0 12 0 0
+DEVise setFont {ViewVisualizationInfo} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewVisualizationInfo} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewVisualizationInfo} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {ViewVisualizationInfo} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewVisualizationInfo} 1 0.500000 1.000000
+DEVise setViewGDS {ViewVisualizationInfo} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewVisualizationInfo} 0 1 0 "" 1 " " 1
+DEVise setHistogram {ViewVisualizationInfo} -1 1 10
+DEVise setCountMapping {ViewVisualizationInfo} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewVisualizationInfo} 0
+DEVise setXAxisDateFormat {ViewVisualizationInfo} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewVisualizationInfo} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewVisualizationInfo} {%.4g}
+DEVise setYAxisFloatFormat {ViewVisualizationInfo} {%.4g}
+DEVise setViewAutoFilter {ViewVisualizationInfo} {0}
+DEVise setDupElim {ViewVisualizationInfo} {0}
+DEVise setNiceAxes {ViewVisualizationInfo} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewVisualizationInfo} 1 1 1 1
+DEVise setViewHelp {ViewVisualizationInfo} {Visualization info}
+DEVise setShowMouseLocation {ViewVisualizationInfo} {1}
+DEVise setLinkMultFact {ViewVisualizationInfo} {X} 1
+DEVise setLinkMultFact {ViewVisualizationInfo} {Y} 1
+DEVise setGAttrLinkMode {ViewVisualizationInfo} 0
+DEVise setDoHomeOnVisLink {ViewVisualizationInfo} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewVisualizationInfo} {1}
+DEVise viewSetUseJmol {ViewVisualizationInfo} {0}
+DEVise setExcludeFromDrillDown {ViewVisualizationInfo} {0}
+
+# View {ViewLegend} uses mapping {.pistachio_at_legend#color_str_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewLegend -0.500000 5.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise setLabel {ViewLegend} 0 12 {color_str() vs. recId}
+DEVise setViewStatistics {ViewLegend} 00000000
+DEVise setViewDimensions {ViewLegend} 2
+DEVise setViewSolid3D {ViewLegend} 2
+DEVise setViewXYZoom {ViewLegend} 1
+DEVise setViewDisplayDataValues {ViewLegend} 0
+DEVise setFont {ViewLegend} {title} 0 12 0 0
+DEVise setFont {ViewLegend} {x axis} 0 12 0 0
+DEVise setFont {ViewLegend} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewLegend} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewLegend} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {ViewLegend} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewLegend} 1 0.500000 1.000000
+DEVise setViewGDS {ViewLegend} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewLegend} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewLegend} -0.5 0.5 10
+DEVise setCountMapping {ViewLegend} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewLegend} 0
+DEVise setXAxisDateFormat {ViewLegend} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewLegend} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewLegend} {%.4g}
+DEVise setYAxisFloatFormat {ViewLegend} {%.4g}
+DEVise setViewAutoFilter {ViewLegend} {0}
+DEVise setDupElim {ViewLegend} {0}
+DEVise setNiceAxes {ViewLegend} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewLegend} 1 1 1 1
+DEVise setViewHelp {ViewLegend} {Atom color legend: gray = carbon, white = hydrogren,
+red = oxygen, blue = nitrogen, orange = sulfur, pink = phosphorus.}
+DEVise setShowMouseLocation {ViewLegend} {1}
+DEVise setLinkMultFact {ViewLegend} {X} 1
+DEVise setLinkMultFact {ViewLegend} {Y} 1
+DEVise setGAttrLinkMode {ViewLegend} 0
+DEVise setDoHomeOnVisLink {ViewLegend} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewLegend} {1}
+DEVise viewSetUseJmol {ViewLegend} {0}
+DEVise setExcludeFromDrillDown {ViewLegend} {0}
+
+# View {ViewDataTypeSelect 3} uses mapping {.4020tar-md1#name_vs_recId 7}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {ViewDataTypeSelect 3} -0.500000 0.500000 -1.500000 -0.500000 37 0 0 37 0 37
+DEVise setLabel {ViewDataTypeSelect 3} 0 12 {name() vs. recId}
+DEVise setViewStatistics {ViewDataTypeSelect 3} 00000000
+DEVise setViewDimensions {ViewDataTypeSelect 3} 2
+DEVise setViewSolid3D {ViewDataTypeSelect 3} 2
+DEVise setViewXYZoom {ViewDataTypeSelect 3} 1
+DEVise setViewDisplayDataValues {ViewDataTypeSelect 3} 0
+DEVise setFont {ViewDataTypeSelect 3} {title} 0 12 0 0
+DEVise setFont {ViewDataTypeSelect 3} {x axis} 0 12 0 0
+DEVise setFont {ViewDataTypeSelect 3} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewDataTypeSelect 3} 0 1 1 0 0.000000 0.500000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewDataTypeSelect 3} 0 1 1 0 0 0.5 0 0 100 100
+DEVise viewSetHorPan {ViewDataTypeSelect 3} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewDataTypeSelect 3} 1 0.500000 1.000000
+DEVise setViewGDS {ViewDataTypeSelect 3} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewDataTypeSelect 3} 0 1 0 "" 1 " " 1
+DEVise setHistogram {ViewDataTypeSelect 3} -1.5 -0.5 10
+DEVise setCountMapping {ViewDataTypeSelect 3} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewDataTypeSelect 3} 0
+DEVise setXAxisDateFormat {ViewDataTypeSelect 3} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewDataTypeSelect 3} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewDataTypeSelect 3} {%.4g}
+DEVise setYAxisFloatFormat {ViewDataTypeSelect 3} {%.4g}
+DEVise setViewAutoFilter {ViewDataTypeSelect 3} {1}
+DEVise setDupElim {ViewDataTypeSelect 3} {0}
+DEVise setNiceAxes {ViewDataTypeSelect 3} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewDataTypeSelect 3} 1 0 1 1
+DEVise setViewHelp {ViewDataTypeSelect 3} {Data select view: use the cursor to select which variable
+is shown in the data view}
+DEVise setShowMouseLocation {ViewDataTypeSelect 3} {1}
+DEVise setLinkMultFact {ViewDataTypeSelect 3} {X} 1
+DEVise setLinkMultFact {ViewDataTypeSelect 3} {Y} 1
+DEVise setGAttrLinkMode {ViewDataTypeSelect 3} 0
+DEVise setDoHomeOnVisLink {ViewDataTypeSelect 3} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewDataTypeSelect 3} {1}
+DEVise viewSetUseJmol {ViewDataTypeSelect 3} {0}
+DEVise setExcludeFromDrillDown {ViewDataTypeSelect 3} {0}
+
+# View {ViewDataTypeSelect 4} uses mapping {.4020tar-md1#name_vs_recId 8}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {ViewDataTypeSelect 4} -0.500000 0.500000 -1.500000 -0.500000 37 17 0 37 0 37
+DEVise setLabel {ViewDataTypeSelect 4} 0 12 {name() vs. recId}
+DEVise setViewStatistics {ViewDataTypeSelect 4} 00000000
+DEVise setViewDimensions {ViewDataTypeSelect 4} 2
+DEVise setViewSolid3D {ViewDataTypeSelect 4} 2
+DEVise setViewXYZoom {ViewDataTypeSelect 4} 1
+DEVise setViewDisplayDataValues {ViewDataTypeSelect 4} 0
+DEVise setFont {ViewDataTypeSelect 4} {title} 0 12 0 0
+DEVise setFont {ViewDataTypeSelect 4} {x axis} 0 12 0 0
+DEVise setFont {ViewDataTypeSelect 4} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewDataTypeSelect 4} 0 1 1 0 0.000000 0.500000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewDataTypeSelect 4} 0 1 1 0 0 0.5 0 0 100 100
+DEVise viewSetHorPan {ViewDataTypeSelect 4} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewDataTypeSelect 4} 1 0.500000 1.000000
+DEVise setViewGDS {ViewDataTypeSelect 4} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewDataTypeSelect 4} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewDataTypeSelect 4} -1.5 -0.5 10
+DEVise setCountMapping {ViewDataTypeSelect 4} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewDataTypeSelect 4} 0
+DEVise setXAxisDateFormat {ViewDataTypeSelect 4} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewDataTypeSelect 4} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewDataTypeSelect 4} {%.4g}
+DEVise setYAxisFloatFormat {ViewDataTypeSelect 4} {%.4g}
+DEVise setViewAutoFilter {ViewDataTypeSelect 4} {0}
+DEVise setDupElim {ViewDataTypeSelect 4} {0}
+DEVise setNiceAxes {ViewDataTypeSelect 4} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewDataTypeSelect 4} 1 0 1 1
+DEVise setViewHelp {ViewDataTypeSelect 4} {Data select view: use the cursor to select which variable
+is shown in the data view}
+DEVise setShowMouseLocation {ViewDataTypeSelect 4} {1}
+DEVise setLinkMultFact {ViewDataTypeSelect 4} {X} 1
+DEVise setLinkMultFact {ViewDataTypeSelect 4} {Y} 1
+DEVise setGAttrLinkMode {ViewDataTypeSelect 4} 0
+DEVise setDoHomeOnVisLink {ViewDataTypeSelect 4} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewDataTypeSelect 4} {1}
+DEVise viewSetUseJmol {ViewDataTypeSelect 4} {0}
+DEVise setExcludeFromDrillDown {ViewDataTypeSelect 4} {0}
+
+# View {ViewDataScrollFixParent} uses mapping {.4020tar-md1#Entity_assembly_ID_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewDataScrollFixParent -0.500000 0.500000 -0.500000 0.500000 0 17 0 37 0 37
+DEVise setLabel {ViewDataScrollFixParent} 0 12 {Entity_assembly_ID() vs. recId}
+DEVise setViewStatistics {ViewDataScrollFixParent} 00000000
+DEVise setViewDimensions {ViewDataScrollFixParent} 2
+DEVise setViewSolid3D {ViewDataScrollFixParent} 2
+DEVise setViewXYZoom {ViewDataScrollFixParent} 1
+DEVise setViewDisplayDataValues {ViewDataScrollFixParent} 0
+DEVise setFont {ViewDataScrollFixParent} {title} 0 12 0 0
+DEVise setFont {ViewDataScrollFixParent} {x axis} 0 12 0 0
+DEVise setFont {ViewDataScrollFixParent} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewDataScrollFixParent} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewDataScrollFixParent} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {ViewDataScrollFixParent} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewDataScrollFixParent} 1 0.500000 1.000000
+DEVise setViewGDS {ViewDataScrollFixParent} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewDataScrollFixParent} 1 0 0 "" 1 " " 1
+DEVise setHistogram {ViewDataScrollFixParent} -0.5 0.5 10
+DEVise setCountMapping {ViewDataScrollFixParent} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewDataScrollFixParent} 0
+DEVise setXAxisDateFormat {ViewDataScrollFixParent} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewDataScrollFixParent} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewDataScrollFixParent} {%.4g}
+DEVise setYAxisFloatFormat {ViewDataScrollFixParent} {%.4g}
+DEVise setViewAutoFilter {ViewDataScrollFixParent} {0}
+DEVise setDupElim {ViewDataScrollFixParent} {0}
+DEVise setNiceAxes {ViewDataScrollFixParent} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewDataScrollFixParent} 0 0 0 0
+DEVise setShowMouseLocation {ViewDataScrollFixParent} {1}
+DEVise setLinkMultFact {ViewDataScrollFixParent} {X} 1
+DEVise setLinkMultFact {ViewDataScrollFixParent} {Y} 1
+DEVise setGAttrLinkMode {ViewDataScrollFixParent} 0
+DEVise setDoHomeOnVisLink {ViewDataScrollFixParent} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewDataScrollFixParent} {1}
+DEVise viewSetUseJmol {ViewDataScrollFixParent} {0}
+DEVise setExcludeFromDrillDown {ViewDataScrollFixParent} {0}
+
+# View {View3DHighlight} uses mapping {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} View3DHighlight -9.754000 8.979000 -7.386000 12.710000 4 0 0 37 0 37
+DEVise setLabel {View3DHighlight} 0 12 {Atom_coord_y() vs. Atom_coord_x}
+DEVise setViewStatistics {View3DHighlight} 00000000
+DEVise setViewDimensions {View3DHighlight} 3
+DEVise setViewSolid3D {View3DHighlight} 2
+DEVise setViewXYZoom {View3DHighlight} 1
+DEVise setViewDisplayDataValues {View3DHighlight} 0
+DEVise setFont {View3DHighlight} {title} 0 12 0 0
+DEVise setFont {View3DHighlight} {x axis} 0 12 0 0
+DEVise setFont {View3DHighlight} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {View3DHighlight} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {View3DHighlight} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {View3DHighlight} 1 0.500000 1.000000
+DEVise viewSetVerPan {View3DHighlight} 1 0.500000 1.000000
+DEVise setViewGDS {View3DHighlight} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View3DHighlight} 0 1 0 "" 1 " " 1
+DEVise setHistogram {View3DHighlight} -7.136 12.46 10
+DEVise setCountMapping {View3DHighlight} 0 {} {} 0
+DEVise viewSetIsHighlight {View3DHighlight} 1
+DEVise setXAxisDateFormat {View3DHighlight} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View3DHighlight} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View3DHighlight} {%.4g}
+DEVise setYAxisFloatFormat {View3DHighlight} {%.4g}
+DEVise setViewAutoFilter {View3DHighlight} {0}
+DEVise setDupElim {View3DHighlight} {0}
+DEVise setNiceAxes {View3DHighlight} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {View3DHighlight} 0 0 0 0
+DEVise setViewHelp {View3DHighlight} {Structure view: this view shows the 3D structure of the
+molecule.  The residues selected with the cursor in the
+data view are highlighted (shown in green).  Other atoms
+are colored as follows:
+Carbon: gray
+Oxygen: red
+Nitrogen: blue
+Sulfur: orange
+Phosphorus: pink
+Hydrogen: white}
+DEVise setShowMouseLocation {View3DHighlight} {1}
+DEVise setLinkMultFact {View3DHighlight} {X} 1
+DEVise setLinkMultFact {View3DHighlight} {Y} 1
+DEVise setGAttrLinkMode {View3DHighlight} 1
+DEVise setDoHomeOnVisLink {View3DHighlight} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {View3DHighlight} {1}
+DEVise viewSetUseJmol {View3DHighlight} {1}
+DEVise setExcludeFromDrillDown {View3DHighlight} {0}
+
+# Create interpreted mapping classes
+DEVise createMappingClass {Atom_coord_y_vs_Atom_coord_x}
+DEVise createMappingClass {Residue_seq_code_vs_recId}
+DEVise createMappingClass {name_vs_recId}
+DEVise createMappingClass {HA_Csi_vs_SeqNum}
+DEVise createMappingClass {Label_text_vs_recId}
+DEVise createMappingClass {color_str_vs_recId}
+DEVise createMappingClass {Entity_assembly_ID_vs_recId}
+DEVise createMappingClass {C1p_DeltaShift_vs_Residue_seq_code}
+
+# Create mapping instances (GData)
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4020rrac1 .4020ac1#Atom_coord_y_vs_Atom_coord_x {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} {$Atom_type} 0.5 0 0 4 1 1 {$Atom_number} {$Atom_name} {} {$Residue_seq_code} {$Residue_label} {$Atom_type} {$Struct_type} {} {} {} {} {$Entity_assembly_ID} {$Atom_ID}
+DEVise setPixelWidth {.4020ac1#Atom_coord_y_vs_Atom_coord_x} 1
+DEVise setMappingColors {.4020ac1#Atom_coord_y_vs_Atom_coord_x} {$Atom_type} {$Atom_type} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4020rrac1 {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2} {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} 7 0.5 0 0 4 1 1 {$Atom_number} {$Atom_name} {} {$Residue_seq_code} {$Residue_label} {$Atom_type} {$Struct_type} {} {} {} {} {$Entity_assembly_ID} {$Atom_ID}
+DEVise setPixelWidth {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2} 1
+DEVise setMappingColors {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2} {7} {$Atom_type} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Residue_seq_code_vs_recId} .4020rrac1 .4020ac1#ViewDataXControl {} {$Residue_seq_code} 0 {} 36 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4020ac1#ViewDataXControl} 1
+DEVise setMappingColors {.4020ac1#ViewDataXControl} {36} {1} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {name_vs_recId} .4020rrtar-md1 .4020tar-md1#name_vs_recId {} 0 {-$recId} {} 36 0.020 0 0 16 {$name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4020tar-md1#name_vs_recId} 1
+DEVise setMappingColors {.4020tar-md1#name_vs_recId} {36} {1} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {name_vs_recId} .4020rrtar-md1 {.4020tar-md1#name_vs_recId 3} {} 0 {-$recId} {} 0 0.98 0 0 17 {$ViewSelectedDataChild} 1 1 {} {"Data Pile"} {} {} {} {} {} {$name} {} {} {} {}
+DEVise setPixelWidth {.4020tar-md1#name_vs_recId 3} 1
+DEVise setMappingColors {.4020tar-md1#name_vs_recId 3} {0} {37} {37}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {name_vs_recId} .4020rrtar-md1 {.4020tar-md1#name_vs_recId 4} {} 0 {-$recId} {} 0 0.98 0 0 17 {$ViewUnselectedDataChild} 1 1 {} {"Data Pile"} {} {} {} {} {} {$name} {} {} {} {$angle_type}
+DEVise setPixelWidth {.4020tar-md1#name_vs_recId 4} 1
+DEVise setMappingColors {.4020tar-md1#name_vs_recId 4} {0} {37} {37}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {name_vs_recId} .4020rrtar-md1 {.4020tar-md1#name_vs_recId 5} {} 0 {-$recId} {} 37 0.98 0 0 17 {"ViewDataValueSelectChild"} 1 1 {} {} {} {} {} {} {$ChildViewYAttribute} {$name} {} {} {} {}
+DEVise setPixelWidth {.4020tar-md1#name_vs_recId 5} 1
+DEVise setMappingColors {.4020tar-md1#name_vs_recId 5} {37} {37} {37}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {name_vs_recId} .4020rrtar-md1 {.4020tar-md1#name_vs_recId 7} {} 0 {-$Entity_assembly_ID} {} 36 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4020tar-md1#name_vs_recId 7} 1
+DEVise setMappingColors {.4020tar-md1#name_vs_recId 7} {36} {1} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {name_vs_recId} .4020rrtar-md1 {.4020tar-md1#name_vs_recId 8} {} 0 {-$Entity_assembly_ID} {} 36 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
+DEVise setPixelWidth {.4020tar-md1#name_vs_recId 8} 1
+DEVise setMappingColors {.4020tar-md1#name_vs_recId 8} {36} {1} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020rrtar1 .4020ta#ViewAngleUnselectedDataChild {} {$Residue_seq_code} {$Torsion_angle_upper_bound} {} 35 1 0 0 8 0.2 {$Torsion_angle_lower_bound} {$Torsion_angle_lower_bound} {} {} 1 {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
+DEVise setPixelWidth {.4020ta#ViewAngleUnselectedDataChild} 1
+DEVise setMappingColors {.4020ta#ViewAngleUnselectedDataChild} {35} {35} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020rrtar1 .4020ta#ViewDataValueSelectChild {} {$Residue_seq_code} {$Torsion_angle_upper_bound} {} 31 1 0 0 8 {} {$Torsion_angle_lower_bound} {$Torsion_angle_lower_bound} {} {} 1 {} {$atom1Id} {$atom2Id} {$atom3Id} {$atom4Id} {} {} {$Entity_assembly_ID} {$angleType}
+DEVise setPixelWidth {.4020ta#ViewDataValueSelectChild} 1
+DEVise setMappingColors {.4020ta#ViewDataValueSelectChild} {31} {31} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020rrtar1 .4020ta#ViewAngleSelectedDataChild {} {$Residue_seq_code} {$Torsion_angle_upper_bound} {} 7 1 0 0 8 0.2 {$Torsion_angle_lower_bound} {$Torsion_angle_lower_bound} {} {} 1 {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
+DEVise setPixelWidth {.4020ta#ViewAngleSelectedDataChild} 1
+DEVise setMappingColors {.4020ta#ViewAngleSelectedDataChild} {7} {7} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020rrtar1 .4020ta#ViewAngleDataDotsChild {} {$Residue_seq_code} {$averageValue} {} 31 1 0 0 7 0.5 0 {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
+DEVise setPixelWidth {.4020ta#ViewAngleDataDotsChild} 1
+DEVise setMappingColors {.4020ta#ViewAngleDataDotsChild} {31} {31} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#Label_text_vs_recId} 1
+DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {color_str_vs_recId} .pistachio_at_legend .pistachio_at_legend#color_str_vs_recId {} {$recId} 0 {} {$color_str} 0.02 0 0 16 {$color_str} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.pistachio_at_legend#color_str_vs_recId} 1
+DEVise setMappingColors {.pistachio_at_legend#color_str_vs_recId} {$color_str} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Entity_assembly_ID_vs_recId} .4020rrtar-md1 .4020tar-md1#Entity_assembly_ID_vs_recId {} 0 {-$recId} {} 17 0.8 0 0 17 {"ViewDataScrollFixChild"} 1 1 {} {} {} {} {} {} {} {$name} {} {} {} {}
+DEVise setPixelWidth {.4020tar-md1#Entity_assembly_ID_vs_recId} 1
+DEVise setMappingColors {.4020tar-md1#Entity_assembly_ID_vs_recId} {17} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {C1p_DeltaShift_vs_Residue_seq_code} .4020rrtar1 .4020ta#ViewDataScrollFixChild {} {$Residue_seq_code} {$Torsion_angle_upper_bound} {} 35 1 0 0 2 0 {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.4020ta#ViewDataScrollFixChild} 1
+DEVise setMappingColors {.4020ta#ViewDataScrollFixChild} {35} {35} {0}
+
+# Create windows
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
+DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.219167 0.541250 0.501667 0 0
+DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.344167 0.140625 0.374167 0 0
+DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.724167 0.685000 0.127500 0 0
+DEVise create {window} {TileLayout} DEViseWn8 0.012500 0.854167 0.685000 0.021667 0 0
+DEVise create {window} {TileLayout} DEViseWn11 0.848750 0.781667 0.085625 0.121667 1 0
+DEVise create {window} {TileLayout} DEViseWn10 0.012500 0.190000 0.685000 0.026667 0 0
+DEVise create {window} {TileLayout} DEViseWn12 0.012500 0.879167 0.685000 0.029167 0 0
+DEVise create {window} {TileLayout} DEViseWn3 0.012500 0.220000 0.140625 0.119167 0 0
+DEVise create {window} {TileLayout} DEViseWn5 0.728750 0.166667 0.149375 0.110000 1 0
+DEVise create {window} {TileLayout} DEViseWn13 0.418750 0.062500 0.312500 0.082500 1 0
+
+# Set up window layouts
+
+DEVise setWindowLayout {DEViseWn0} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn7} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn9} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn8} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn11} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn10} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn12} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn3} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn5} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn13} -1 -1 0
+
+# Create links
+DEVise create {link} {Visual_Link} data_view_link 3
+DEVise create {link} {Visual_Link} angle_data_value_link 128
+DEVise create {link} {Visual_Link} data_pile_supplement_link 3
+DEVise create {link} {Visual_Link} entity_assembly_id_link 128
+DEVise create {link} {Visual_Link} data_scroll_fix_link 1
+DEVise create {link} {Visual_Link} 3dHighlightLink1 4096 shapeAttr_7 shapeAttr_14
+DEVise create {link} {Visual_Link} 3dHighlightLink2 4096 shapeAttr_8 shapeAttr_14
+DEVise create {link} {Visual_Link} 3dHighlightLink3 4096 shapeAttr_9 shapeAttr_14
+DEVise create {link} {Visual_Link} 3dHighlightLink4 4096 shapeAttr_10 shapeAttr_14
+DEVise create {link} {Visual_Link} angle_type_link 4096 shapeAttr_14 shapeAttr_14
+DEVise create {link} {Visual_Link} violation_data_value_link 128
+DEVise create {link} {Visual_Link} entity_assembly_data_link 4096 shapeAttr_13 shapeAttr_13
+DEVise setLinkType {violation_data_value_link} 1
+DEVise setLinkType {entity_assembly_id_link} 1
+DEVise setLinkType {angle_data_value_link} 1
+
+# Create cursors
+DEVise create {cursor} {Cursor} data_select_cursor 2 1 1.000000 1.000000 0
+DEVise create {cursor} {Cursor} data_x_cursor 1 1 1.000000 1.000000 1
+DEVise create {cursor} {Cursor} angle_data_value_cursor 3 0 1.000000 1.000000 0
+DEVise create {cursor} {Cursor} entity_assembly_select_cursor 2 1 1.000000 1.000000 1
+DEVise create {cursor} {Cursor} violation_data_value_cursor 3 0 1.000000 1.000000 0
+
+# Create axislabel
+
+# Create actions
+
+# Put labels into views
+
+DEVise setAxisDisplay {ViewAngleUnselectedDataChild} {X} 1
+DEVise setAxisDisplay {ViewAngleUnselectedDataChild} {Y} 1
+DEVise setAxisTicks {ViewAngleUnselectedDataChild} {X} 1
+DEVise setAxisTicks {ViewAngleUnselectedDataChild} {Y} 1
+DEVise setAxisMultFact {ViewAngleUnselectedDataChild} {X} 1
+DEVise setAxisMultFact {ViewAngleUnselectedDataChild} {Y} 1
+
+DEVise setAxisDisplay {ViewAngleSelectedDataChild} {X} 1
+DEVise setAxisDisplay {ViewAngleSelectedDataChild} {Y} 1
+DEVise setAxisTicks {ViewAngleSelectedDataChild} {X} 1
+DEVise setAxisTicks {ViewAngleSelectedDataChild} {Y} 1
+DEVise setAxisMultFact {ViewAngleSelectedDataChild} {X} 1
+DEVise setAxisMultFact {ViewAngleSelectedDataChild} {Y} 1
+
+DEVise setAxisDisplay {ViewAngleDataDotsChild} {X} 1
+DEVise setAxisDisplay {ViewAngleDataDotsChild} {Y} 1
+DEVise setAxisTicks {ViewAngleDataDotsChild} {X} 1
+DEVise setAxisTicks {ViewAngleDataDotsChild} {Y} 1
+DEVise setAxisMultFact {ViewAngleDataDotsChild} {X} 1
+DEVise setAxisMultFact {ViewAngleDataDotsChild} {Y} 1
+
+DEVise setAxisDisplay {ViewDataValueSelectChild} {X} 1
+DEVise setAxisDisplay {ViewDataValueSelectChild} {Y} 1
+DEVise setAxisTicks {ViewDataValueSelectChild} {X} 1
+DEVise setAxisTicks {ViewDataValueSelectChild} {Y} 1
+DEVise setAxisMultFact {ViewDataValueSelectChild} {X} 1
+DEVise setAxisMultFact {ViewDataValueSelectChild} {Y} 1
+
+DEVise setAxisDisplay {ViewDataScrollFixChild} {X} 1
+DEVise setAxisDisplay {ViewDataScrollFixChild} {Y} 1
+DEVise setAxisTicks {ViewDataScrollFixChild} {X} 1
+DEVise setAxisTicks {ViewDataScrollFixChild} {Y} 1
+DEVise setAxisMultFact {ViewDataScrollFixChild} {X} 1
+DEVise setAxisMultFact {ViewDataScrollFixChild} {Y} 1
+
+DEVise setAxisDisplay {View3DMain} {X} 0
+DEVise setAxisDisplay {View3DMain} {Y} 0
+DEVise setAxisTicks {View3DMain} {X} 1
+DEVise setAxisTicks {View3DMain} {Y} 1
+DEVise setAxisMultFact {View3DMain} {X} 1
+DEVise setAxisMultFact {View3DMain} {Y} 1
+
+DEVise setAxisDisplay {ViewDataTypeSelect} {X} 0
+DEVise setAxisDisplay {ViewDataTypeSelect} {Y} 0
+DEVise setAxisTicks {ViewDataTypeSelect} {X} 1
+DEVise setAxisTicks {ViewDataTypeSelect} {Y} 1
+DEVise setAxisMultFact {ViewDataTypeSelect} {X} 1
+DEVise setAxisMultFact {ViewDataTypeSelect} {Y} 1
+
+DEVise setAxisDisplay {ViewDataXControl} {X} 0
+DEVise setAxisDisplay {ViewDataXControl} {Y} 0
+DEVise setAxisTicks {ViewDataXControl} {X} 1
+DEVise setAxisTicks {ViewDataXControl} {Y} 1
+DEVise setAxisMultFact {ViewDataXControl} {X} 1
+DEVise setAxisMultFact {ViewDataXControl} {Y} 1
+
+DEVise setAxisDisplay {ViewSelectedDataParent} {X} 0
+DEVise setAxisDisplay {ViewSelectedDataParent} {Y} 0
+DEVise setAxisTicks {ViewSelectedDataParent} {X} 1
+DEVise setAxisTicks {ViewSelectedDataParent} {Y} 1
+DEVise setAxisMultFact {ViewSelectedDataParent} {X} 1
+DEVise setAxisMultFact {ViewSelectedDataParent} {Y} 1
+
+DEVise setAxisDisplay {ViewUnselectedDataParent} {X} 0
+DEVise setAxisDisplay {ViewUnselectedDataParent} {Y} 0
+DEVise setAxisTicks {ViewUnselectedDataParent} {X} 1
+DEVise setAxisTicks {ViewUnselectedDataParent} {Y} 1
+DEVise setAxisMultFact {ViewUnselectedDataParent} {X} 1
+DEVise setAxisMultFact {ViewUnselectedDataParent} {Y} 1
+
+DEVise setAxisDisplay {ViewDataValueSelectParent} {X} 0
+DEVise setAxisDisplay {ViewDataValueSelectParent} {Y} 0
+DEVise setAxisTicks {ViewDataValueSelectParent} {X} 1
+DEVise setAxisTicks {ViewDataValueSelectParent} {Y} 1
+DEVise setAxisMultFact {ViewDataValueSelectParent} {X} 1
+DEVise setAxisMultFact {ViewDataValueSelectParent} {Y} 1
+
+DEVise setAxisDisplay {ViewVisualizationInfo} {X} 0
+DEVise setAxisDisplay {ViewVisualizationInfo} {Y} 0
+DEVise setAxisTicks {ViewVisualizationInfo} {X} 1
+DEVise setAxisTicks {ViewVisualizationInfo} {Y} 1
+DEVise setAxisMultFact {ViewVisualizationInfo} {X} 1
+DEVise setAxisMultFact {ViewVisualizationInfo} {Y} 1
+
+DEVise setAxisDisplay {ViewLegend} {X} 0
+DEVise setAxisDisplay {ViewLegend} {Y} 0
+DEVise setAxisTicks {ViewLegend} {X} 1
+DEVise setAxisTicks {ViewLegend} {Y} 1
+DEVise setAxisMultFact {ViewLegend} {X} 1
+DEVise setAxisMultFact {ViewLegend} {Y} 1
+
+DEVise setAxisDisplay {ViewDataTypeSelect 3} {X} 0
+DEVise setAxisDisplay {ViewDataTypeSelect 3} {Y} 0
+DEVise setAxisTicks {ViewDataTypeSelect 3} {X} 1
+DEVise setAxisTicks {ViewDataTypeSelect 3} {Y} 1
+DEVise setAxisMultFact {ViewDataTypeSelect 3} {X} 1
+DEVise setAxisMultFact {ViewDataTypeSelect 3} {Y} 1
+
+DEVise setAxisDisplay {ViewDataTypeSelect 4} {X} 0
+DEVise setAxisDisplay {ViewDataTypeSelect 4} {Y} 0
+DEVise setAxisTicks {ViewDataTypeSelect 4} {X} 1
+DEVise setAxisTicks {ViewDataTypeSelect 4} {Y} 1
+DEVise setAxisMultFact {ViewDataTypeSelect 4} {X} 1
+DEVise setAxisMultFact {ViewDataTypeSelect 4} {Y} 1
+
+DEVise setAxisDisplay {ViewDataScrollFixParent} {X} 0
+DEVise setAxisDisplay {ViewDataScrollFixParent} {Y} 0
+DEVise setAxisTicks {ViewDataScrollFixParent} {X} 1
+DEVise setAxisTicks {ViewDataScrollFixParent} {Y} 1
+DEVise setAxisMultFact {ViewDataScrollFixParent} {X} 1
+DEVise setAxisMultFact {ViewDataScrollFixParent} {Y} 1
+
+DEVise setAxisDisplay {View3DHighlight} {X} 0
+DEVise setAxisDisplay {View3DHighlight} {Y} 0
+DEVise setAxisTicks {View3DHighlight} {X} 1
+DEVise setAxisTicks {View3DHighlight} {Y} 1
+DEVise setAxisMultFact {View3DHighlight} {X} 1
+DEVise setAxisMultFact {View3DHighlight} {Y} 1
+
+# Put action into view
+
+# Put views in cursors
+DEVise setCursorSrc {data_select_cursor} {ViewUnselectedDataParent}
+DEVise setCursorDst {data_select_cursor} {ViewDataTypeSelect}
+DEVise color SetCursorColor {data_select_cursor} #ffffffffffff
+DEVise setCursorConstraints {data_select_cursor} 1 0 0
+DEVise setCursorSrc {data_x_cursor} {ViewAngleUnselectedDataChild}
+DEVise setCursorDst {data_x_cursor} {ViewDataXControl}
+DEVise color SetCursorColor {data_x_cursor} #ffffffffffff
+DEVise setCursorConstraints {data_x_cursor} 0 0 1
+DEVise setCursorSrc {angle_data_value_cursor} {ViewDataValueSelectChild}
+DEVise setCursorDst {angle_data_value_cursor} {ViewAngleUnselectedDataChild}
+DEVise color SetCursorColor {angle_data_value_cursor} #ffffffffffff
+DEVise setCursorConstraints {angle_data_value_cursor} 0 0 1
+DEVise setCursorSrc {entity_assembly_select_cursor} {ViewDataTypeSelect 4}
+DEVise setCursorDst {entity_assembly_select_cursor} {ViewDataTypeSelect 3}
+DEVise color SetCursorColor {entity_assembly_select_cursor} #ffffffffffff
+DEVise setCursorConstraints {entity_assembly_select_cursor} 1 0 1
+DEVise color SetCursorColor {violation_data_value_cursor} #ffffffffffff
+DEVise setCursorConstraints {violation_data_value_cursor} 0 1 0
+
+# Put axis label into views
+
+# Insert mappings into views
+DEVise insertMapping {ViewAngleUnselectedDataChild} {.4020ta#ViewAngleUnselectedDataChild}
+DEVise insertMapping {ViewAngleSelectedDataChild} {.4020ta#ViewAngleSelectedDataChild}
+DEVise insertMapping {ViewAngleDataDotsChild} {.4020ta#ViewAngleDataDotsChild}
+DEVise insertMapping {ViewDataValueSelectChild} {.4020ta#ViewDataValueSelectChild}
+DEVise insertMapping {ViewDataScrollFixChild} {.4020ta#ViewDataScrollFixChild}
+DEVise insertMapping {View3DMain} {.4020ac1#Atom_coord_y_vs_Atom_coord_x}
+DEVise insertMapping {ViewDataTypeSelect} {.4020tar-md1#name_vs_recId}
+DEVise insertMapping {ViewDataXControl} {.4020ac1#ViewDataXControl}
+DEVise insertMapping {ViewSelectedDataParent} {.4020tar-md1#name_vs_recId 3}
+DEVise insertMapping {ViewUnselectedDataParent} {.4020tar-md1#name_vs_recId 4}
+DEVise insertMapping {ViewDataValueSelectParent} {.4020tar-md1#name_vs_recId 5}
+DEVise insertMapping {ViewVisualizationInfo} {.label#Label_text_vs_recId}
+DEVise insertMapping {ViewLegend} {.pistachio_at_legend#color_str_vs_recId}
+DEVise insertMapping {ViewDataTypeSelect 3} {.4020tar-md1#name_vs_recId 7}
+DEVise insertMapping {ViewDataTypeSelect 4} {.4020tar-md1#name_vs_recId 8}
+DEVise insertMapping {ViewDataScrollFixParent} {.4020tar-md1#Entity_assembly_ID_vs_recId}
+DEVise insertMapping {View3DHighlight} {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2}
+
+# Link views
+
+DEVise insertLink {data_view_link} {ViewDataValueSelectParent}
+DEVise insertLink {data_view_link} {ViewDataScrollFixParent}
+
+DEVise insertLink {angle_data_value_link} {ViewAngleSelectedDataChild}
+DEVise setLinkMaster {angle_data_value_link} {ViewDataValueSelectChild}
+
+DEVise insertLink {data_pile_supplement_link} {ViewAngleUnselectedDataChild}
+DEVise insertLink {data_pile_supplement_link} {ViewAngleSelectedDataChild}
+DEVise insertLink {data_pile_supplement_link} {ViewAngleDataDotsChild}
+
+DEVise insertLink {entity_assembly_id_link} {ViewDataTypeSelect}
+DEVise setLinkMaster {entity_assembly_id_link} {ViewDataTypeSelect 4}
+
+DEVise insertLink {data_scroll_fix_link} {ViewDataScrollFixChild}
+DEVise insertLink {data_scroll_fix_link} {ViewDataXControl}
+
+DEVise insertLink {3dHighlightLink1} {View3DHighlight}
+DEVise setLinkMaster {3dHighlightLink1} {ViewDataValueSelectChild}
+
+DEVise insertLink {3dHighlightLink2} {View3DHighlight}
+DEVise setLinkMaster {3dHighlightLink2} {ViewDataValueSelectChild}
+
+DEVise insertLink {3dHighlightLink3} {View3DHighlight}
+DEVise setLinkMaster {3dHighlightLink3} {ViewDataValueSelectChild}
+
+DEVise insertLink {3dHighlightLink4} {View3DHighlight}
+DEVise setLinkMaster {3dHighlightLink4} {ViewDataValueSelectChild}
+
+DEVise insertLink {angle_type_link} {ViewDataValueSelectChild}
+DEVise insertLink {angle_type_link} {ViewAngleUnselectedDataChild}
+DEVise insertLink {angle_type_link} {ViewAngleSelectedDataChild}
+DEVise insertLink {angle_type_link} {ViewAngleDataDotsChild}
+DEVise setLinkMaster {angle_type_link} {ViewUnselectedDataParent}
+
+DEVise setLinkMaster {violation_data_value_link} {ViewDataValueSelectChild}
+
+DEVise insertLink {entity_assembly_data_link} {ViewAngleUnselectedDataChild}
+DEVise insertLink {entity_assembly_data_link} {ViewAngleSelectedDataChild}
+DEVise insertLink {entity_assembly_data_link} {ViewAngleDataDotsChild}
+DEVise insertLink {entity_assembly_data_link} {ViewDataValueSelectChild}
+DEVise setLinkMaster {entity_assembly_data_link} {ViewDataTypeSelect 4}
+
+# Insert views into windows
+DEVise insertWindow {View3DMain} {DEViseWn0}
+DEVise insertWindow {View3DHighlight} {DEViseWn0}
+DEVise insertWindow {ViewDataTypeSelect} {DEViseWn7}
+DEVise insertWindow {ViewUnselectedDataParent} {DEViseWn9}
+DEVise insertWindow {ViewSelectedDataParent} {DEViseWn9}
+DEVise insertWindow {ViewDataXControl} {DEViseWn8}
+DEVise insertWindow {ViewDataValueSelectParent} {DEViseWn11}
+DEVise insertWindow {ViewVisualizationInfo} {DEViseWn10}
+DEVise insertWindow {ViewLegend} {DEViseWn12}
+DEVise insertWindow {ViewDataTypeSelect 3} {DEViseWn3}
+DEVise insertWindow {ViewDataTypeSelect 4} {DEViseWn5}
+DEVise insertWindow {ViewDataScrollFixParent} {DEViseWn13}
+
+# Set window pile/stack state
+DEVise setPileStackState {DEViseWn0} 4
+DEVise setPileStackState {DEViseWn7} 1
+DEVise setPileStackState {DEViseWn9} 4
+DEVise setPileStackState {DEViseWn8} 1
+DEVise setPileStackState {DEViseWn11} 1
+DEVise setPileStackState {DEViseWn10} 1
+DEVise setPileStackState {DEViseWn12} 1
+DEVise setPileStackState {DEViseWn3} 1
+DEVise setPileStackState {DEViseWn5} 1
+DEVise setPileStackState {DEViseWn13} 1
+
+# Init history of view
+
+DEVise clearViewHistory {ViewAngleUnselectedDataChild}
+DEVise insertViewHistory {ViewAngleUnselectedDataChild} {14.5} {-180} {32.5} {360} -1
+
+DEVise clearViewHistory {ViewAngleSelectedDataChild}
+DEVise insertViewHistory {ViewAngleSelectedDataChild} {14.5} {-180} {32.5} {360} 0
+
+DEVise clearViewHistory {ViewAngleDataDotsChild}
+DEVise insertViewHistory {ViewAngleDataDotsChild} {14.5} {-180} {32.5} {360} 0
+
+DEVise clearViewHistory {ViewDataValueSelectChild}
+DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-90} {28} {90} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-180} {32.5} {360} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-90} {32.5} {90} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-90} {28} {90} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-180} {32.5} {360} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-90} {32.5} {90} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-90} {28} {90} 0
+
+DEVise clearViewHistory {ViewDataScrollFixChild}
+DEVise insertViewHistory {ViewDataScrollFixChild} {14.5} {-178} {32.5} {100} 0
+DEVise insertViewHistory {ViewDataScrollFixChild} {14.5} {-100} {32.5} {220} 0
+
+DEVise clearViewHistory {View3DMain}
+DEVise insertViewHistory {View3DMain} {-9.754} {-7.386} {8.979} {12.71} 0
+
+DEVise clearViewHistory {ViewDataTypeSelect}
+DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-9.5} {0.5} {0.5} 0
+DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-4.5} {0.5} {0.5} 0
+
+DEVise clearViewHistory {ViewDataXControl}
+DEVise insertViewHistory {ViewDataXControl} {14.5} {-0.3} {32.5} {0.3} 0
+
+DEVise clearViewHistory {ViewSelectedDataParent}
+DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 81
+
+DEVise clearViewHistory {ViewUnselectedDataParent}
+DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
+
+DEVise clearViewHistory {ViewDataValueSelectParent}
+DEVise insertViewHistory {ViewDataValueSelectParent} {-0.5} {-0.5} {0.5} {0.5} 0
+
+DEVise clearViewHistory {ViewVisualizationInfo}
+DEVise insertViewHistory {ViewVisualizationInfo} {-1} {-1} {1} {1} 0
+
+DEVise clearViewHistory {ViewLegend}
+DEVise insertViewHistory {ViewLegend} {-0.5} {-0.5} {5.5} {0.5} 0
+
+DEVise clearViewHistory {ViewDataTypeSelect 3}
+DEVise insertViewHistory {ViewDataTypeSelect 3} {-0.5} {-1.5} {0.5} {-0.5} 0
+
+DEVise clearViewHistory {ViewDataTypeSelect 4}
+DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-1.5} {0.5} {-0.5} 0
+
+DEVise clearViewHistory {ViewDataScrollFixParent}
+DEVise insertViewHistory {ViewDataScrollFixParent} {-0.5} {-0.5} {0.5} {0.5} 0
+
+DEVise clearViewHistory {View3DHighlight}
+DEVise insertViewHistory {View3DHighlight} {-9.754} {-7.386} {8.979} {12.71} 0
+
+# Set camera location for each view
+DEVise set3DLocation {ViewAngleUnselectedDataChild} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewAngleSelectedDataChild} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewAngleDataDotsChild} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewDataValueSelectChild} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewDataScrollFixChild} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View3DMain} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewDataTypeSelect} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewDataXControl} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewSelectedDataParent} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewUnselectedDataParent} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewDataValueSelectParent} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewVisualizationInfo} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewLegend} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewDataTypeSelect 3} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewDataTypeSelect 4} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewDataScrollFixParent} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View3DHighlight} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+
+# Set string tables for each view
+
+# Session postscript
+DEVise sessionPost updateFilters
+DEVise sessionPost waitForQueries
+DEVise sessionPost viewGoHome ViewAngleUnselectedDataChild
+DEVise sessionPost waitForQueries
+DEVise sessionPost cursorHome ViewDataXControl
+DEVise sessionPost cursorHome ViewAngleUnselectedDataChild
+DEVise sessionPost keyToView ViewDataValueSelectChild 49 89 65
+DEVise sessionPost keyToView ViewDataValueSelectChild 55 89 65

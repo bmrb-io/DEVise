@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009
+// (c) Copyright 2009-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.1  2010/02/03 21:38:58  wenger
+// Made S2DNmrStarDistRIfc, S2DNmrStarRRIfc, and S2DNmrStarTarIfc
+// subclasses of new S2DNmrStarRestIfc class, so that I can pass
+// either a S2DNmrStarTarIfc or a S2DNmrStarRRIfc to the
+// S2DTorsionAngle constructor.
+//
+// Revision 1.2  2010/01/06 23:03:39  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.1.2.4  2010/01/04 23:59:18  wenger
 // Finished moving creation of all S2DNmrStar*Ifc objects into the new
 // factory classes.
@@ -49,7 +58,7 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class S2DNmrStarDistRIfc extends S2DNmrStarIfc {
+public class S2DNmrStarDistRIfc extends S2DNmrStarRestIfc {
     //===================================================================
     // VARIABLES
 

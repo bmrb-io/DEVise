@@ -19,6 +19,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.19.6.1  2010/02/03 23:13:20  wenger
+// Torsion angle output from remediated restraints files now has different
+// suffixes to avoid conflict with the restraint grid output; meta-data
+// for remediated restraints doesn't have violations
+//
+// Revision 1.19  2009/12/05 22:26:32  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.18.4.4  2009/12/05 21:17:03  wenger
 // Converted dots to zeros in numerical torsion angle data so DEVise
 // can read the data correctly.
@@ -158,10 +167,21 @@ public class S2DUtils
       TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18,
       TYPE_DNA_DELTASHIFT = 19, TYPE_RNA_DELTASHIFT = 20,
       TYPE_HVSC_CHEM_SHIFTS = 21, TYPE_SPARTA_DELTASHIFT = 22,
-      TYPE_TORSION_ANGLE = 23;
+      TYPE_TORSION_ANGLE = 23, TYPE_RRTORSION_ANGLE = 24;
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    public static String[] createStringArray(int size, String value)
+    {
+    	String[] result = new String[size];
+	for (int index = 0; index < size; index++) {
+	    result[index] = value;
+	}
+
+	return result;
+    }
 
     //-------------------------------------------------------------------
     public static double[] arrayStr2Double(String[] values, String name)
@@ -525,6 +545,10 @@ TEMP*/
 
 	case S2DUtils.TYPE_TORSION_ANGLE:
 	    dataSuffix = S2DNames.TAR_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_RRTORSION_ANGLE:
+	    dataSuffix = S2DNames.RRTAR_SUFFIX;
 	    break;
 
 	default:

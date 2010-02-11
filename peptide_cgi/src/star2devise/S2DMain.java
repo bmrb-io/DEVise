@@ -21,6 +21,80 @@
 // $Id$
 
 // $Log$
+// Revision 1.175.2.18  2010/02/11 20:28:08  wenger
+// Added some tests of the make_view and make_uvd scripts, fixed a bug in
+// make_view that this found...
+//
+// Revision 1.175.2.17  2010/02/11 17:30:07  wenger
+// Minor changes to make sure remediated restraint coordinate processing
+// doesn't overwrite "regular" coordinate session, etc.
+//
+// Revision 1.175.2.16  2010/02/11 16:53:32  wenger
+// Added cache checking for remediated restraint files.
+//
+// Revision 1.175.2.15  2010/02/10 20:25:15  wenger
+// Put remediated restraint stuff into config files, etc.
+//
+// Revision 1.175.2.14  2010/02/10 18:33:39  wenger
+// Oops -- fixed logic bug in the remediated restraint coordinate
+// processing.
+//
+// Revision 1.175.2.13  2010/02/10 16:23:39  wenger
+// Removed a bunch of temporary stuff.
+//
+// Revision 1.175.2.12  2010/02/09 22:44:16  wenger
+// Renamed process1RRPDB() to process1RRCoordSet() to make the
+// functionality clearer.
+//
+// Revision 1.175.2.11  2010/02/09 22:41:20  wenger
+// Mostly done getting coordinates from remediated restraint files --
+// seems to work, but still needs some checking.
+//
+// Revision 1.175.2.10  2010/02/05 22:51:37  wenger
+// Implemented to-do item 115: PDB IDs differing only by case are now
+// considered the same (implemented by internally changing all PDB IDs
+// to upper case).
+//
+// Revision 1.175.2.9  2010/02/05 20:46:12  wenger
+// Partially implemented getting remediated restraints file template from
+// properties.
+//
+// Revision 1.175.2.8  2010/02/04 18:38:46  wenger
+// Got PDB-only calculations working with remediated restraints; got
+// CGI links in summary page for remediated working.
+//
+// Revision 1.175.2.7  2010/02/04 00:08:27  wenger
+// Now writing remediated restraint links in summary page -- CGI links
+// don't seem to work right yet.
+//
+// Revision 1.175.2.6  2010/02/03 23:13:19  wenger
+// Torsion angle output from remediated restraints files now has different
+// suffixes to avoid conflict with the restraint grid output; meta-data
+// for remediated restraints doesn't have violations
+//
+// Revision 1.175.2.5  2010/02/03 22:02:47  wenger
+// First version of S2DNmrStarRRIfc with actual tag values -- processing
+// seems to mostly work.
+//
+// Revision 1.175.2.4  2010/02/03 21:38:58  wenger
+// Made S2DNmrStarDistRIfc, S2DNmrStarRRIfc, and S2DNmrStarTarIfc
+// subclasses of new S2DNmrStarRestIfc class, so that I can pass
+// either a S2DNmrStarTarIfc or a S2DNmrStarRRIfc to the
+// S2DTorsionAngle constructor.
+//
+// Revision 1.175.2.3  2010/02/03 20:57:00  wenger
+// Blocked in code for getting remediated restraints from a specified file.
+//
+// Revision 1.175.2.2  2010/02/03 17:59:19  wenger
+// Added some extra checking for legal processing levels.
+//
+// Revision 1.175.2.1  2010/02/03 16:46:34  wenger
+// Started adding arguments and tests for remediated restraint torsion
+// angle processing.
+//
+// Revision 1.175  2010/01/22 23:42:18  wenger
+// Changed version to 11.7.3x1 and added 11.7.3 version history section.
+//
 // Revision 1.174  2010/01/22 20:45:35  wenger
 // Changed version to 11.7.2 for release.
 //
@@ -983,7 +1057,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.3x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.3x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
@@ -1051,6 +1125,16 @@ public class S2DMain {
     private int _tarLevel = TAR_LEVEL_LINK_CHECK;
     private String _tarFile = null;
     private String _tarUrl = null;//TEMP -- change name?
+
+    // Remediated restraints-related info.
+    public static final int RRTAR_LEVEL_NONE = 0;
+    // This means create the links only if the appropriate entry
+    // exists in the restraint grid.
+    public static final int RRTAR_LEVEL_LINK_CHECK = 1;
+    public static final int RRTAR_LEVEL_LINK = 2;
+    public static final int RRTAR_LEVEL_PROCESS = 3;
+    private int _rrTarLevel = RRTAR_LEVEL_LINK_CHECK;
+    private String _rrFile; // remediated restraints
 
     // Distance restraint-related info.
     public static final int DISTR_LEVEL_NONE = 0;
@@ -1136,6 +1220,7 @@ public class S2DMain {
 	    s2d._csrLevel = CSR_LEVEL_NONE;
 	    s2d._lacsLevel = LACS_LEVEL_NONE;
 	    s2d._tarLevel = TAR_LEVEL_NONE;
+	    s2d._rrTarLevel = RRTAR_LEVEL_NONE;
 	    s2d._distRLevel = DISTR_LEVEL_NONE;
 	}
 
@@ -1355,6 +1440,20 @@ public class S2DMain {
 	      "4-filtered-FRED&min_items=100&db_username=wattos1";
 	}
 
+	S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE = props.getProperty(
+	  "bmrb_mirror.remediated_restraints_template");
+	if (S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE == null) {
+	    if (doDebugOutput(2)) {
+	        System.out.println(
+		  "bmrb_mirror.remediated_restraints_template " +
+		  "property value not defined; using default");
+	    }
+	    S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE =
+	      "http://www.bmrb.wisc.edu/ftp/pub/bmrb/" +
+	      "nmr_pdb_integrated_data/coordinates_restraints_chemshifts" +
+	      "/all/nmr-star/*/*_linked.str";
+	}
+
         return props;
     }
 
@@ -1419,6 +1518,20 @@ public class S2DMain {
 	    } catch(NumberFormatException ex) {
 	        System.err.println(new S2DWarning("Error parsing " +
 		  "do_tar_default value " + ex.toString() +
+		  "; using default"));
+	    }
+	}
+
+	String rrTarTmp = props.getProperty("bmrb_mirror.do_rrtar_default");
+	if (rrTarTmp == null) {
+	    System.err.println(new S2DWarning("Unable to get value for " +
+	      "bmrb_mirror.do_rrtar_default property"));
+	} else {
+	    try {
+	        _rrTarLevel = Integer.parseInt(rrTarTmp);
+	    } catch(NumberFormatException ex) {
+	        System.err.println(new S2DWarning("Error parsing " +
+		  "do_rrtar_default value " + ex.toString() +
 		  "; using default"));
 	    }
 	}
@@ -1541,6 +1654,13 @@ public class S2DMain {
           "        1: create links in summary file but don't process;\n" +
           "        2: process PDB references\n" +
           "        (default is " + _pdbLevel + " unless -pdb_file is set)\n" +
+          "    -do_rrtar <0|1|2|3>\n" +
+          "        0: ignore torsion angle restraint references;\n" +
+          "        1: if remediated restraints entry exists create links in\n" +
+	  "          summary file but don't process;\n" +
+          "        1: create links in summary file but don't process;\n" +
+          "        3: process torsion angle restraint references\n" +
+          "        (default is " + _rrTarLevel + ")\n" +
           "    -do_tar <0|1|2|3>\n" +
           "        0: ignore torsion angle restraint references;\n" +
           "        1: if restraint grid entry exists create links in\n" +
@@ -1577,6 +1697,8 @@ public class S2DMain {
 	    "to be processed\n" +
           "    -pdbid <value>\n" +
           "        the PDB ID to process (e.g., 1dfv)\n" +
+	  "    -rr_file <filename>\n" +
+	  "        file containing remediated restraint data\n" +
           "    -session_dir <directory>\n" +
           "        the directory in which to store the session files (mandatory)\n" +
 	  "    -sparta_file <filename>\n" +
@@ -1783,6 +1905,20 @@ public class S2DMain {
 		      ex.toString());
 	        }
 
+	    } else if ("-do_rrtar".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-do_rrtar argument needs value");
+		}
+		try {
+	            _rrTarLevel = Integer.parseInt(args[index]);
+	        } catch(NumberFormatException ex) {
+	            System.err.println("Error parsing do_rrtar value: " +
+		      ex.toString());
+	            throw new S2DError("Error parsing do_rrtar value " +
+		      ex.toString());
+	        }
+
 	    } else if ("-do_tar".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -1790,14 +1926,6 @@ public class S2DMain {
 		}
 		try {
 	            _tarLevel = Integer.parseInt(args[index]);
-		    // For now, we're forcing coordinate processing to
-		    // happen whenever we do torsion angle processing.
-		    // This should eventually be changed to not re-
-		    // process coordinates if we already have them andy
-		    // they're up-to-date.
-		    if (_tarLevel == TAR_LEVEL_PROCESS) {
-		        _pdbLevel = PDB_LEVEL_PROCESS;
-		    }
 	        } catch(NumberFormatException ex) {
 	            System.err.println("Error parsing do_tar value: " +
 		      ex.toString());
@@ -1880,8 +2008,16 @@ public class S2DMain {
 		    throw new S2DError("-pdbid argument needs value");
 		}
 	        _cmdPdbId = args[index];
+		_cmdPdbId = _cmdPdbId.toUpperCase();
 		_pdbIds.addElement(_cmdPdbId);
 		_csrPdbIds.addElement(_cmdPdbId);
+
+	    } else if ("-rr_file".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-rr_file argument needs value");
+		}
+		_rrFile = args[index];
 
 	    } else if ("-session_dir".equals(args[index])) {
 	        index++;
@@ -1963,6 +2099,16 @@ public class S2DMain {
 	    index++;
 	}
 
+        // For now, we're forcing coordinate processing to
+        // happen whenever we do torsion angle processing.
+        // This should eventually be changed to not re-
+        // process coordinates if we already have them andy
+        // they're up-to-date.
+        if (_tarLevel == TAR_LEVEL_PROCESS ||
+	  _rrTarLevel == RRTAR_LEVEL_PROCESS) {
+            _pdbLevel = PDB_LEVEL_PROCESS;
+        }
+
 	//
 	// Check for illegal combinations of arguments.
 	// TEMP: can bmrbid and local file *both* be specified?  If not,
@@ -2038,6 +2184,13 @@ public class S2DMain {
 	      TAR_LEVEL_PROCESS + ")");
 	}
 
+	if (_rrTarLevel < RRTAR_LEVEL_NONE ||
+	  _rrTarLevel > RRTAR_LEVEL_PROCESS) {
+	    throw new S2DError("illegal do_rrtar value: " + _rrTarLevel +
+	      " (must be between " + RRTAR_LEVEL_NONE + " and " +
+	      RRTAR_LEVEL_PROCESS + ")");
+	}
+
 
 	//
 	// Set some defaults.
@@ -2061,6 +2214,7 @@ public class S2DMain {
 	}
 
 	_restraintOnly = ((_tarLevel == TAR_LEVEL_PROCESS) ||
+	  (_rrTarLevel == RRTAR_LEVEL_PROCESS) ||
 	  (_distRLevel == DISTR_LEVEL_PROCESS)) &&
 	  _masterBmrbId.equals("") &&
 	  (_localFiles.size() == 0);
@@ -2079,6 +2233,8 @@ public class S2DMain {
 	    System.out.println("_pdbLevel = " + _pdbLevel);
 	    System.out.println("_lacsFile = " + _lacsFile);
 	    System.out.println("_lacsLevel = " + _lacsLevel);
+	    System.out.println("_rrTarLevel = " + _rrTarLevel);
+	    System.out.println("_rrFile = " + _rrFile);
 	    System.out.println("_tarLevel = " + _tarLevel);
 	    System.out.println("_tarFile = " + _tarFile);
 	    System.out.println("_tarUrl = " + _tarUrl);
@@ -2192,7 +2348,8 @@ public class S2DMain {
 	    // modification date of any related PDB files.
 	    //
 	    if (_pdbLevel == PDB_LEVEL_PROCESS ||
-	      _tarLevel == TAR_LEVEL_PROCESS) {
+	      _tarLevel == TAR_LEVEL_PROCESS ||
+	      _rrTarLevel == RRTAR_LEVEL_PROCESS) {
 		Vector pdbIds2Check = null;
 	        if (_cmdPdbId != null) {
 		        // PDB ID was specified on the command line -- check
@@ -2233,6 +2390,14 @@ public class S2DMain {
 		if (_tarLevel == TAR_LEVEL_PROCESS) {
 		    if (!sessionFileUseCache(_name,
 		      S2DNames.TAR_SUFFIX + _cmdFrameIndex,
+		      _sessionDir, summaryData)) {
+		        break check;
+		    }
+		}
+
+		if (_rrTarLevel == RRTAR_LEVEL_PROCESS) {
+		    if (!sessionFileUseCache(_name,
+		      S2DNames.RRTAR_SUFFIX + _cmdFrameIndex,
 		      _sessionDir, summaryData)) {
 		        break check;
 		    }
@@ -2293,6 +2458,24 @@ public class S2DMain {
 	        if (doDebugOutput(2)) {
 	            System.out.println("Existing summary html file is " +
 		      "older than torsion angle restraint file; cache " +
+		      "not used");
+	        }
+	        return false;
+	    }
+	}
+
+        if (_rrTarLevel == RRTAR_LEVEL_PROCESS) {
+	    Date rrTarModDate = (new S2DNmrStarRRIfcFactory()).getModDate(id);
+	        // Note: if a PDB ID was specified on the command
+	        // line we really should compare the PDB file date
+	        // against the session-specific html file here,
+	        // instead of the summary html file, but I'm
+	        // leaving it for now.  wenger 2004-11-03.
+	    if (rrTarModDate == null ||
+	      rrTarModDate.after(summaryData.fileDate)) {
+	        if (doDebugOutput(2)) {
+	            System.out.println("Existing summary html file is " +
+		      "older than remediated restraints file; cache " +
 		      "not used");
 	        }
 	        return false;
@@ -2383,7 +2566,7 @@ public class S2DMain {
         }
 
 	for (int index = 0; index < ids.size(); index++) {
-	    String id = (String)ids.elementAt(index);
+	    String id = ((String)ids.elementAt(index)).toUpperCase();
 
 	    // Use only the first PDB ID.
 	    //TEMP -- comment this out to process all relevant PDB IDs.
@@ -2399,7 +2582,7 @@ public class S2DMain {
 	// save all of the PDB IDs in the chem shift ref list.
 	if (_csrPdbIds.size() == 0) {
 	    for (int index = 0; index < _pdbIds.size(); index++) {
-	        String id = (String)_pdbIds.elementAt(index);
+	        String id = ((String)_pdbIds.elementAt(index)).toUpperCase();
 		_csrPdbIds.addElement(id);
 	    }
 	}
@@ -2485,6 +2668,12 @@ public class S2DMain {
 	    if (_tarLevel == TAR_LEVEL_PROCESS) {
 		_currentFrameIndex = _cmdFrameIndex;
 	        process1TAR(_tarFile, _tarUrl, _cmdPdbId);
+	    }
+
+	    if (_rrTarLevel == RRTAR_LEVEL_PROCESS) {
+		_currentFrameIndex = _cmdFrameIndex;
+	        process1RRCoordSet(_rrFile, _cmdPdbId);
+	        process1RRTAR(_rrFile, _cmdPdbId);
 	    }
 
 	    //
@@ -2742,6 +2931,32 @@ public class S2DMain {
 	      _tarLevel == TAR_LEVEL_PROCESS) {
 		try {
 	            process1TAR(null, null, id);
+		} catch(S2DException ex) {
+		    System.err.println("Unable to process PDB ID " + id +
+		      "(" + ex.toString() + ")");
+		    System.err.println("Unable to get torsion angle " +
+		      "restraints from related PDB ID " + id);
+		}
+	    } else {
+	        if (_retrying) {
+		    System.err.println("Unable to get torsion angle " +
+		      " restraints from related PDB ID " + id + " because " +
+		      "of insufficient memory");
+	        } else {
+		    System.err.println("Torsion angle restraints " +
+		      "from related PDB ID " + id + " not read");
+	        }
+	    }
+
+	    // We do the same thing here for RRTAR_LEVEL_LINK and
+	    // RRTAR_LEVEL_PROCESS because they are split out inside
+	    // process1TAR().
+	    if (_rrTarLevel == RRTAR_LEVEL_LINK_CHECK ||
+	      _rrTarLevel == RRTAR_LEVEL_LINK ||
+	      _rrTarLevel == RRTAR_LEVEL_PROCESS) {
+		try {
+	            process1RRCoordSet(null, id);
+	            process1RRTAR(null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
 		      "(" + ex.toString() + ")");
@@ -3414,8 +3629,8 @@ public class S2DMain {
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
 	    try {
-	        saveFrameAtomicCoords(star, frame, _currentFrameIndex, null,
-		  false);
+	        saveFrameAtomicCoords(star, frame, _currentFrameIndex,
+		  null, false, false);
 
 		_haveCoords = true;
 	    } catch(S2DException ex) {
@@ -4148,7 +4363,7 @@ public class S2DMain {
     //-------------------------------------------------------------------
     // Save atomic coordinates for one save frame.
     private void saveFrameAtomicCoords(S2DStarIfc star, SaveFrameNode frame,
-      int frameIndex, S2DAtomDataTable pt, boolean for2DView)
+      int frameIndex, S2DAtomDataTable pt, boolean for2DView, boolean isRR)
       throws S2DException
     {
         if (doDebugOutput(4)) {
@@ -4162,8 +4377,12 @@ public class S2DMain {
 	  _longName, star, frame, _dataDir, _sessionDir, _summary,
 	  _connectionFile, _dataSets, _currentPdbId);
 
+	// Don't write session file, summary file link, etc., if doing
+	// coordinates from remediated restraints.
+	boolean restraintOnly = isRR ? true : _restraintOnly;
+
 	// Now go ahead and calculate and write out the atomic coordinates.
-	if (pt == null) {
+	if (pt == null && !restraintOnly) {
 	    AtomicCoordSummaryPre(star, frame);
 	}
 
@@ -4171,7 +4390,7 @@ public class S2DMain {
 	    if (for2DView) {
 	        atomicCoords.writeBonds(frameIndex, pt, for2DView);
 	    } else {
-	        atomicCoords.writeAtoms(frameIndex, _restraintOnly);
+	        atomicCoords.writeAtoms(frameIndex, restraintOnly, isRR);
 	    }
 	} finally {
 	    if (pt == null) {
@@ -4288,7 +4507,7 @@ public class S2DMain {
 	  PISTACHIO_WRAP_LENGTH);
 
 	S2DmmCifIfc cif = new S2DmmCifIfc(tmpFile);
-	saveFrameAtomicCoords(cif, null, frameIndex, pt, true);
+	saveFrameAtomicCoords(cif, null, frameIndex, pt, true, false);
 
 	try {
 	    S2DUtils.deleteFile(tmpFile);
@@ -4406,7 +4625,7 @@ public class S2DMain {
 	  AMBIGUITY_WRAP_LENGTH);
 
 	S2DmmCifIfc cif = new S2DmmCifIfc(tmpFile);
-	saveFrameAtomicCoords(cif, null, frameIndex, at, true);
+	saveFrameAtomicCoords(cif, null, frameIndex, at, true, false);
 
 	try {
 	    S2DUtils.deleteFile(tmpFile);
@@ -4552,13 +4771,47 @@ public class S2DMain {
 	    } finally {
 	        _summary.endFrame();
 	    }
-	} else {
+	} else if (_pdbLevel == PDB_LEVEL_PROCESS) {
 	    String resListFile = _restraintOnly ? null :
 	      _dataDir + File.separator + _name +
 	      S2DNames.RES_LIST_SUFFIX + S2DNames.DAT_SUFFIX;
 	    S2DmmCifIfc cif = new S2DmmCifIfc(pdbId, _useLocalFiles,
 	      resListFile);
-	    saveFrameAtomicCoords(cif, null, _currentFrameIndex, null, false);
+	    saveFrameAtomicCoords(cif, null, _currentFrameIndex, null,
+	      false, false);
+	} else {
+	    throw new S2DError("Illegal _pdbLevel value: " + _pdbLevel);
+	}
+
+        _currentPdbId = null;
+    }
+
+    //-------------------------------------------------------------------
+    // Process coordinates from a remediated restraints file.
+    // TEMP -- see if this can be combined with process1PDB
+    private void process1RRCoordSet(String rrFile, String pdbId)
+      throws S2DException
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("process1RRCoordSet(" + pdbId + ")");
+	}
+
+        _currentPdbId = pdbId;
+
+	if (_rrTarLevel == RRTAR_LEVEL_PROCESS) {
+	    String resListFile = _restraintOnly ? null :
+	      _dataDir + File.separator + _name +
+	      S2DNames.RES_LIST_SUFFIX + S2DNames.DAT_SUFFIX;
+
+	    S2DNmrStarRRIfc rrStar;
+	    S2DNmrStarRRIfcFactory factory = new S2DNmrStarRRIfcFactory();
+	    if (rrFile != null) {
+	        rrStar = (S2DNmrStarRRIfc)factory.createFromFile(rrFile);
+	    } else {
+	        rrStar = factory.createFromId(pdbId);
+	    }
+	    saveFrameAtomicCoords(rrStar, null, _currentFrameIndex,
+	      null, false, true);
 	}
 
         _currentPdbId = null;
@@ -4570,7 +4823,7 @@ public class S2DMain {
       throws S2DException
     {
         if (doDebugOutput(2)) {
-	    System.out.println("process1TARFile(" + tarFile + ", " +
+	    System.out.println("process1TAR(" + tarFile + ", " +
 	      tarUrl + ", " + pdbId + ")");
 	}
 
@@ -4585,7 +4838,7 @@ public class S2DMain {
 		    tarUrl = S2DNmrStarTarIfcFactory.pdbIdToUrl(pdbId);
 		}
 	        _summary.writeTorsionAngleCGI(_currentPdbId, tarUrl,
-		  _currentFrameIndex);
+		  _currentFrameIndex, false);
             } catch(IOException ex) {
                 System.err.println(
 		  "IOException writing torsion angle restraints: " +
@@ -4595,7 +4848,7 @@ public class S2DMain {
 	        _summary.endFrame();
 	    }
 
-	} else {
+	} else if (_tarLevel == TAR_LEVEL_PROCESS) {
 	    S2DNmrStarTarIfc tarStar;
 	    S2DNmrStarTarIfcFactory factory = new S2DNmrStarTarIfcFactory();
 	    if (tarFile != null) {
@@ -4609,7 +4862,64 @@ public class S2DMain {
 	    S2DTorsionAngle tar = new S2DTorsionAngle(_name, _longName,
 	      tarStar, _dataDir, _sessionDir, _summary, _currentPdbId);
 
-	    tar.writeRestraints(_currentFrameIndex);
+	    tar.writeRestraints(_currentFrameIndex, false);
+	} else {
+	    throw new S2DError("Illegal _tarLevel value: " + _tarLevel);
+	}
+
+        _currentPdbId = null;
+    }
+
+    // TEMP -- see if this can be combined with process1TAR -- maybe
+    // pass in factory object, etc. (see how much commonality there is
+    // once I get everything working
+    //-------------------------------------------------------------------
+    // Do torsion angle processing for one remediated restraints file.
+    private void process1RRTAR(String rrFile, String pdbId)
+      throws S2DException
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("process1RRTAR(" + rrFile + ", " +
+	      pdbId + ")");
+	}
+
+        _currentPdbId = pdbId;
+
+	if (_rrTarLevel == RRTAR_LEVEL_LINK_CHECK ||
+	  _rrTarLevel == RRTAR_LEVEL_LINK) {
+	    try {
+		String rrUrl = null;
+		if (_rrTarLevel == RRTAR_LEVEL_LINK_CHECK) {
+		    // Note: this will throw an error if the relevant
+		    // entry doesn't exist in the remediated restraints.
+		    rrUrl = S2DNmrStarTarIfcFactory.pdbIdToUrl(pdbId);
+		}
+	        _summary.writeTorsionAngleCGI(_currentPdbId, rrUrl,
+		  _currentFrameIndex, true);
+            } catch(IOException ex) {
+                System.err.println(
+		  "IOException writing torsion angle restraints: " +
+		  ex.toString());
+	        throw new S2DError("Can't write torsion angle restraints");
+	    } finally {
+	        _summary.endFrame();
+	    }
+
+	} else if (_rrTarLevel == RRTAR_LEVEL_PROCESS) {
+	    S2DNmrStarRRIfc rrStar;
+	    S2DNmrStarRRIfcFactory factory = new S2DNmrStarRRIfcFactory();
+	    if (rrFile != null) {
+	        rrStar = (S2DNmrStarRRIfc)factory.createFromFile(rrFile);
+	    } else {
+	        rrStar = factory.createFromId(pdbId);
+	    }
+
+	    S2DTorsionAngle tar = new S2DTorsionAngle(_name, _longName,
+	      rrStar, _dataDir, _sessionDir, _summary, _currentPdbId);
+
+	    tar.writeRestraints(_currentFrameIndex, true);
+	} else {
+	    throw new S2DError("Illegal _rrTarLevel value: " + _rrTarLevel);
 	}
 
         _currentPdbId = null;
@@ -4646,7 +4956,7 @@ public class S2DMain {
 	        _summary.endFrame();
 	    }
 
-	} else {
+	} else if (_distRLevel == DISTR_LEVEL_PROCESS) {
 	    S2DNmrStarDistRIfc distRStar;
 	    S2DNmrStarDistRIfcFactory factory =
 	      new S2DNmrStarDistRIfcFactory();
@@ -4663,6 +4973,8 @@ public class S2DMain {
 	      distRStar, _dataDir, _sessionDir, _summary, _currentPdbId);
 
 	    distR.writeRestraints(_currentFrameIndex);
+	} else {
+	    throw new S2DError("Illegal _distRLevel value: " + _distRLevel);
 	}
 
         _currentPdbId = null;

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009
+// (c) Copyright 2009-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.1  2010/02/10 20:25:15  wenger
+// Put remediated restraint stuff into config files, etc.
+//
+// Revision 1.2  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.1.2.3  2010/01/05 15:33:52  wenger
 // Cleaned up the pdbIdToUrl() methods for various restraint-related
 // classes.

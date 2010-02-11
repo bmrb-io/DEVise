@@ -414,6 +414,11 @@ Num Date        Status  Description
 			(No, this really is an issue for some newer
 			entries, such as 16360.)
 
+089 2/11/10	OPEN	PDB-only restraint processing should use processing
+			levels -do_tar 1 and -do_rrtar 1; but that currently
+			doesn't work, so we're using -do_tar 3 and -do_rrtar
+			3. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

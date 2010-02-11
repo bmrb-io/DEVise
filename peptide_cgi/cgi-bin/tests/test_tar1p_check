@@ -23,3 +23,7 @@ set line = '^1 32 GLU 178.00 -178.00 1_31_CA CA 1_31_C C 1_32_N N 1_32_CA CA ome
 source tests/check4line
 set line = '^1 30 HIS -140.00 -100.00 1_29_C C 1_30_N N 1_30_CA CA 1_30_C C phi -97.69 7.72'
 source tests/check4line
+
+set file = "html_dir/tar_1brvy.html"
+set line = '<a href="tar_1brvtar1.html">1BRV</a>'
+source tests/check4line

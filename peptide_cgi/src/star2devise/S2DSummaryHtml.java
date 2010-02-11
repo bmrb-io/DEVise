@@ -31,6 +31,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.19.2.1  2010/02/04 00:08:27  wenger
+// Now writing remediated restraint links in summary page -- CGI links
+// don't seem to work right yet.
+//
+// Revision 1.19  2010/01/21 16:32:15  wenger
+// Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
+// to trunk.
+//
 // Revision 1.18.2.2  2010/01/08 23:28:32  wenger
 // Fixed 'Force reprocessing' functionality for restraint-only summary
 // page; fixed error message in make_view for restraint-only processing.
@@ -543,29 +551,29 @@ public class S2DSummaryHtml {
     //-------------------------------------------------------------------
     // Writes the torsion angle link, where we've actually done the
     // torsion angle processing.
-    public void writeTorsionAngle(String pdbId, int frameIndex)
-      throws IOException
+    public void writeTorsionAngle(String pdbId, int frameIndex,
+      boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeTorsionAngle()");
 	}
 
-	_normal.writeTorsionAngle(pdbId, frameIndex);
-	_large.writeTorsionAngle(pdbId, frameIndex);
+	_normal.writeTorsionAngle(pdbId, frameIndex, isRR);
+	_large.writeTorsionAngle(pdbId, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
     // Writes the torsion angle link, where the link is a CGI script
     // invocation (we haven't already done the torsion angle processing).
     public void writeTorsionAngleCGI(String pdbId, String tarUrl,
-      int frameIndex) throws IOException
+      int frameIndex, boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeTorsionAngleCGI()");
 	}
 
-	_normal.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex);
-	_large.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex);
+	_normal.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex, isRR);
+	_large.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------

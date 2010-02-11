@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009
+// (c) Copyright 2009-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.4.1  2010/02/03 21:38:59  wenger
+// Made S2DNmrStarDistRIfc, S2DNmrStarRRIfc, and S2DNmrStarTarIfc
+// subclasses of new S2DNmrStarRestIfc class, so that I can pass
+// either a S2DNmrStarTarIfc or a S2DNmrStarRRIfc to the
+// S2DTorsionAngle constructor.
+//
+// Revision 1.3  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.2.2.5  2010/01/04 23:59:18  wenger
 // Finished moving creation of all S2DNmrStar*Ifc objects into the new
 // factory classes.
@@ -81,37 +90,9 @@ import java.io.*;
 import java.util.*;
 import java.net.*;
 
-public class S2DNmrStarTarIfc extends S2DNmrStarIfc {
+public class S2DNmrStarTarIfc extends S2DNmrStarRestIfc {
     //===================================================================
     // VARIABLES
-
-    public String TAR_ANGLE_AVERAGE = "";
-    public String TAR_ANGLE_LOWER_BOUND = "";
-    public String TAR_ANGLE_UPPER_BOUND = "";
-    public String TAR_ATOM_ID_1 = "";
-    public String TAR_ATOM_ID_2 = "";
-    public String TAR_ATOM_ID_3 = "";
-    public String TAR_ATOM_ID_4 = "";
-
-    public String TAR_CONSTRAINT_STATS_SF_CAT = "";
-    public String TAR_CONSTRAINT_STATS_CAT_NAME = "";
-
-    public String TAR_ENT_ASSEM_1 = "";
-    public String TAR_ENT_ASSEM_2 = "";
-    public String TAR_ENT_ASSEM_3 = "";
-    public String TAR_ENT_ASSEM_4 = "";
-
-    public String TAR_MAX_VIOLATION = "";
-
-    public String TAR_RES_SEQ_CODE_1 = "";
-    public String TAR_RES_SEQ_CODE_2 = "";
-    public String TAR_RES_SEQ_CODE_3 = "";
-    public String TAR_RES_SEQ_CODE_4 = "";
-    public String TAR_RES_SEQ_LABEL_1 = "";
-    public String TAR_RES_SEQ_LABEL_2 = "";
-    public String TAR_RES_SEQ_LABEL_3 = "";
-    public String TAR_RES_SEQ_LABEL_4 = "";
-    public String TAR_RESTRAINT_ID = "";
 
     private static final int DEBUG = 0;
 

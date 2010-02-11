@@ -4,7 +4,13 @@ Peptide-CGI 11.7.3
 ------------------
 (Needs DEVise 1.9.1 or higher, JavaScreen client 5.10.0 or higher.)
 
-(Nothing yet.)
+* Added torsion angle restraint visualizations from remediated restraint
+files.
+
+* PDB IDs differing only by case are now considered the same.
+
+* Added a note about torsion angle restraint violations being calculated
+by CING to the visualizations summary page and the visualization page.
 
 
 Peptide-CGI 11.7.2

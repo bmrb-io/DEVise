@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.29.4.1  2010/02/03 23:13:19  wenger
+// Torsion angle output from remediated restraints files now has different
+// suffixes to avoid conflict with the restraint grid output; meta-data
+// for remediated restraints doesn't have violations
+//
+// Revision 1.29  2010/01/06 23:03:39  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.28.2.2  2010/01/04 18:57:00  wenger
 // Added new S2DNmrStarIfcFactory class as part 1 of cleaning up the
 // creation of various S2D*Ifc objects.
@@ -674,10 +682,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	    System.err.println("Warning: " + ex.toString());
 
 	    // Generate default values.
-	    result = new String[size];
-	    for (int index = 0; index < size; index++) {
-	        result[index] = defaultValue;
-	    }
+	    result = S2DUtils.createStringArray(size, defaultValue);
 	} catch (S2DWarning ex) {
 	    System.err.println("Warning: " + ex.toString());
 	}

@@ -20,6 +20,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.2.2  2010/02/10 17:04:59  wenger
+// Made a separate session template for remediated restraint torsion
+// angle visualizations -- still needs to be modified to work how we
+// want.
+//
+// Revision 1.22.2.1  2010/02/03 23:13:19  wenger
+// Torsion angle output from remediated restraints files now has different
+// suffixes to avoid conflict with the restraint grid output; meta-data
+// for remediated restraints doesn't have violations
+//
+// Revision 1.22  2010/01/21 16:32:15  wenger
+// Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
+// to trunk.
+//
 // Revision 1.21.4.2  2010/01/19 19:07:29  wenger
 // Minor cleanups of PDB-only processing code.
 //
@@ -445,6 +459,18 @@ TEMP*/
 	    replaceString2 = name + S2DNames.TAR_MD_SUFFIX + frameIndex;
 	    searchString3 = "4020tar1";
 	    replaceString3 = name + S2DNames.TAR_SUFFIX + frameIndex;
+	    break;
+
+	case S2DUtils.TYPE_RRTORSION_ANGLE:
+	    baseName = "torsion_angle_rr.base";
+	    dataSuffix = S2DNames.RRTAR_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "4020rrac1";
+	    replaceString1 = name + S2DNames.RRATOMIC_COORD_SUFFIX + frameIndex;
+	    searchString2 = "4020rrtar-md1";
+	    replaceString2 = name + S2DNames.RRTAR_MD_SUFFIX + frameIndex;
+	    searchString3 = "4020rrtar1";
+	    replaceString3 = name + S2DNames.RRTAR_SUFFIX + frameIndex;
 	    break;
 
 	default:

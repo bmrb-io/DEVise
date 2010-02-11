@@ -96,6 +96,7 @@ if ($do_all != 0) {
   RunTest("test51");
   RunTest("test51_3");
   RunTest("test52");
+  RunTest("test52mu");
   RunTest("test53");
   RunTest("test53_21");
   RunTest("test54");
@@ -149,10 +150,13 @@ if (($do_all != 0) or ($do_tar != 0)) {
   RunTest("test_tar1");
   # RunTest("test_tar1u");
   RunTest("test_tar1i");
+  RunTest("test_tar1imv");
   RunTest("test_tar2");
   RunTest("test_tar2u");
   RunTest("test_tar2i");
   RunTest("test_tar2p");
+  RunTest("test_tar2imv");
+  RunTest("test_tar2imu");
   RunTest("test_tar3");
   RunTest("test_tar4");
   RunTest("test_tar5");
@@ -165,6 +169,17 @@ if (($do_all != 0) or ($do_tar != 0)) {
   RunTest("test_tar2pi");
   RunTest("test_tar3p");
   RunTest("test_tar4p");
+  RunTest("test_tar7");
+  RunTest("test_tar7i");
+  RunTest("test_tar7pi");
+  RunTest("test_tar7imv");
+  RunTest("test_tar8");
+  RunTest("test_tar8i");
+  RunTest("test_tar8imv");
+  RunTest("test_tar8imu");
+  RunTest("test_tar9");
+  RunTest("test_tar9i");
+  RunTest("test_tar10");
 }
 
 if (($do_all != 0) or ($do_dist != 0)) {

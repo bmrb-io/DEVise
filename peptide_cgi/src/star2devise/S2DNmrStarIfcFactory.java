@@ -20,6 +20,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.2  2010/02/10 16:23:40  wenger
+// Removed a bunch of temporary stuff.
+//
+// Revision 1.2.4.1  2010/02/03 20:57:00  wenger
+// Blocked in code for getting remediated restraints from a specified file.
+//
+// Revision 1.2  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.1.2.4  2010/01/06 22:21:56  wenger
 // Did a bunch of cleanups on the distance restraint code, in preparation
 // for merging it to the trunk, so I can suspend work on it and move to

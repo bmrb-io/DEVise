@@ -1,5 +1,9 @@
 			Peptide-CGI To-Do List
+<<<<<<< ToDo
 			$Revision$
+=======
+			$Revision$
+>>>>>>> 1.61.2.5
 
 Num Date        Status  Pri     Description
 --- --------    ------  ---     -----------------------------------------------
@@ -12,7 +16,7 @@ Num Date        Status  Pri     Description
 003 08/05/02	POST	1	Properly check for out-of-dateness relative
 				to PDB files and related BMRB files.
 
-004 08/05/02	ACTIVE	1	Deal with NMR-STAR version 3.0 files.
+004 08/05/02	DONE	1	Deal with NMR-STAR version 3.0 files.
 
 005 08/05/02	OPEN	4	If some source files have changed, and
 				others haven't, reprocess only the changed
@@ -426,10 +430,11 @@ Num Date        Status  Pri     Description
 				and the data from the restraint grid.
 				(elu/wenger)
 
-108 1/5/10	OPEN	1	Get the torsion angle restraints working
+108 1/5/10	DONE	1	Get the torsion angle restraints working
 				with the remediated restraint files in
 				addition to the files from the restraint
 				grid it already uses. (elu/wenger)
+				(Done by wenger, 2/11/10.)
 
 109 1/6/10	OPEN	2	Change html pages to use the non-embedded
 				JavaScreen (JSA) so we can allow resizing.
@@ -439,7 +444,7 @@ Num Date        Status  Pri     Description
 				from related BMRB entry(s), if possible
 				(elu/wenger)
 
-111 1/22/10	OPEN	3	Add make_view and make_uvd tests to test_all
+111 1/22/10	ACTIVE	3	Add make_view and make_uvd tests to test_all
 				(wenger)
 
 112 1/22/10	OPEN	3	Change tests to not create "non-standard"
@@ -455,6 +460,7 @@ Num Date        Status  Pri     Description
 				something else) for 4096 summary page.
 				(wenger)
 
+<<<<<<< ToDo
 115 2/2/10	OPEN	3	Be able to deal with multiple chem shift
 				values for a single atom (for the same
 				entity assembly ID, etc.).  (Take highest
@@ -482,6 +488,14 @@ Num Date        Status  Pri     Description
 				an option (via a button?) to reprocess with
 				higher verbosity if processing fails.
 				(wenger)
+
+121 2/2/10	DONE	1	Add note about violoations being determined
+				by CING. (elu/wenger)
+				(Done by wenger, 2/4/10.)
+
+122 2/5/10	DONE?	1	Combine PDB IDs that are the same except
+				for case. (elu/wenger)
+				(Done by wenger, 2/5/10.)
 
 * Status:
 OPEN = item has not yet been addressed

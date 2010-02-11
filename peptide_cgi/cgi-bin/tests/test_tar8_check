@@ -1,0 +1,69 @@
+echo "Checking output files"
+
+set files = ( data_dir/16270ac2.dat \
+	data_dir/16270am1.dat \
+	data_dir/16270amac1.dat \
+	data_dir/16270as1.dat \
+	data_dir/16270c1.dat \
+	data_dir/16270d1.dat \
+	data_dir/16270hc1.dat \
+	data_dir/16270hn1.dat \
+	data_dir/16270md.dat \
+	data_dir/16270p1.dat \
+	data_dir/16270rc1.dat \
+	data_dir/16270rc2.dat \
+	data_dir/16270rl.dat \
+	data_dir/16270rrac2.dat \
+	data_dir/16270rrtar2.dat \
+	data_dir/16270rrtar-md2.dat \
+	html_dir/16270ac2.html \
+	html_dir/16270ac2_large.html \
+	html_dir/16270am1.html \
+	html_dir/16270am1_large.html \
+	html_dir/16270as1.html \
+	html_dir/16270as1_large.html \
+	html_dir/16270c1.html \
+	html_dir/16270c1_large.html \
+	html_dir/16270d1.html \
+	html_dir/16270d1_large.html \
+	html_dir/16270hc1.html \
+	html_dir/16270hc1_large.html \
+	html_dir/16270hn1.html \
+	html_dir/16270hn1_large.html \
+	html_dir/16270p1.html \
+	html_dir/16270p1_large.html \
+	html_dir/16270rrtar2.html \
+	html_dir/16270rrtar2_large.html \
+	html_dir/16270tmp2y.html \
+	html_dir/16270tmp2y_large.html \
+	html_dir/16270y.html \
+	html_dir/16270y_large.html \
+	session_dir/16270ac2.ds \
+	session_dir/16270acdd \
+	session_dir/16270am1.ds \
+	session_dir/16270as1.ds \
+	session_dir/16270c1.ds \
+	session_dir/16270d1.ds \
+	session_dir/16270hc1.ds \
+	session_dir/16270hn1.ds \
+	session_dir/16270p1.ds \
+	session_dir/16270rrtar2.ds )
+
+foreach file ($files)
+  if (! -f $file) then
+    echo "  Output file $file is missing"
+    set result = 1
+  endif
+end
+
+set file = "data_dir/16270rrtar2.dat"
+set line = '^1 3 ALA -90.0 -30.0 1_2_C C 1_3_N N 1_3_CA CA 1_3_C C phi 0.0 0.0'
+source tests/check4line
+set line = '^1 143 VAL 150.0 210.0 1_143_N N 1_143_CA CA 1_143_CB CB 1_143_CG1 CG1 chi-1 0.0 0.0'
+source tests/check4line
+set line = '^1 7 ILE 100.0 160.0 1_7_N N 1_7_CA CA 1_7_C C 1_8_N N psi 0.0 0.0'
+source tests/check4line
+
+set file = "html_dir/16270y.html"
+set line = '<a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=2KID&number=16270&do_rrtar=3&coord_index=2&size_str=">2KID</a>'
+source tests/check4line

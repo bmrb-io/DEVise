@@ -33,6 +33,7 @@ SPARTA_NAME_TEMPLATE = bmr*_sparta.str
 SPARTA_URL = null
 TORSION_ANGLE_SEARCH_TEMPLATE = "MRGridServlet\?pdb_id=*\&bmrb_id=\&block_text_type=4-filtered-FRED\&min_items=100\&db_username=wattos1"
 DO_TAR_DEFAULT = 1
+DO_RRTAR_DEFAULT = 1
 DO_DIST_DEFAULT = 1
 
 include Makefile.config
@@ -181,6 +182,8 @@ s2d_props:
 	echo "bmrb_mirror.torsion_angle_search_template=$(TORSION_ANGLE_SEARCH_TEMPLATE)" >> \
 	  $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.do_tar_default=$(DO_TAR_DEFAULT)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.remediated_restraints_template=$(REMEDIATED_RESTRAINTS_TEMPLATE)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.do_rrtar_default=$(DO_RRTAR_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.do_dist_default=$(DO_DIST_DEFAULT)" >> $(S2D_PROPS_FILE)
 
 error_email:

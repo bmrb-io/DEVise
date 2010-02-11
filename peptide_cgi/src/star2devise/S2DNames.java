@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2009
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.14.6.3  2010/02/09 22:41:21  wenger
+// Mostly done getting coordinates from remediated restraint files --
+// seems to work, but still needs some checking.
+//
+// Revision 1.14.6.2  2010/02/05 20:46:13  wenger
+// Partially implemented getting remediated restraints file template from
+// properties.
+//
+// Revision 1.14.6.1  2010/02/03 23:13:19  wenger
+// Torsion angle output from remediated restraints files now has different
+// suffixes to avoid conflict with the restraint grid output; meta-data
+// for remediated restraints doesn't have violations
+//
+// Revision 1.14  2009/12/05 22:26:31  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.13.4.4  2009/12/01 23:25:25  wenger
 // Cleaned up a bunch of the temporary code for finding the torsion
 // angle violations in the restraint grid; tested it at Osaka and
@@ -255,6 +272,8 @@ public class S2DNames
     //
     public static String TORSION_ANGLE_SEARCH_TEMPLATE = null;
 
+    public static String REMEDIATED_RESTRAINTS_TEMPLATE = null;
+
     //
     // Data type suffixes.
     //
@@ -288,6 +307,9 @@ public class S2DNames
     public static final String PISTACHIO_SUFFIX = "ps";
     public static final String RES_COUNT_SUFFIX = "rc";
     public static final String RES_LIST_SUFFIX = "rl";
+    public static final String RRATOMIC_COORD_SUFFIX = "rrac";
+    public static final String RRTAR_SUFFIX = "rrtar";
+    public static final String RRTAR_MD_SUFFIX = "rrtar-md";
     public static final String SPARTA_DELTASHIFT_SUFFIX = "sd";
     public static final String SUMMARY_DATA_SUFFIX = "md";
     public static final String T1_SUFFIX = "t1";

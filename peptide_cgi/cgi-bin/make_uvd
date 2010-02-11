@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2007-2009
+#  (c) Copyright 2007-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -58,6 +58,7 @@ $csr_index = $query->param('csr_index');
 my $size_str = $query->param('size_str') || '';
 my $force = $query->param('force') || '';
 my $do_tar = $query->param('do_tar');
+my $do_rrtar = $query->param('do_rrtar');
 my $tar_url = $query->param('tar_url');
 
 print "  file = $file\n" if ($debug);
@@ -65,7 +66,7 @@ print "  name = $name\n" if ($debug);
 print "  pdbid = $pdbid\n" if ($debug);
 print "  coord_index = $coord_index\n" if ($debug);
 
-# File name of html summary page to generate.
+# File name of the html page returned.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
 if ($do_pdb) {
   print "  has PDB\n" if ($debug);
@@ -78,6 +79,10 @@ if ($do_pdb) {
 } elsif ($do_tar) {
   print "  has PDB\n" if ($debug);
   $summary_page = $summary_page_dir . "/uvd/" . $name . 'tar' . $coord_index .
+    $size_str . '.html';
+} elsif ($do_rrtar) {
+  print "  has PDB\n" if ($debug);
+  $summary_page = $summary_page_dir . "/uvd/" . $name . 'rrtar' . $coord_index .
     $size_str . '.html';
 } else {
   print "  does not have PDB or CSR\n" if ($debug);
@@ -92,6 +97,8 @@ if ($do_pdb) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_csr $do_csr -coord_index $coord_index";
 } elsif ($do_tar) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_tar $do_tar -coord_index $coord_index";
+} elsif ($do_rrtar) {
+  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_rrtar $do_rrtar -coord_index $coord_index";
 } else {
   $cmd = "./uvd -file $file -name $name";
 }

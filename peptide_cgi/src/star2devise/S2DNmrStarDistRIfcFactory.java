@@ -1,3 +1,4 @@
+//TEMP -- maybe combine this with S2DNmrStarRRIfcFactory?
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2000-2010
@@ -22,6 +23,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.2  2010/02/11 20:28:09  wenger
+// Added some tests of the make_view and make_uvd scripts, fixed a bug in
+// make_view that this found...
+//
+// Revision 1.2.4.1  2010/02/05 22:51:37  wenger
+// Implemented to-do item 115: PDB IDs differing only by case are now
+// considered the same (implemented by internally changing all PDB IDs
+// to upper case).
+//
+// Revision 1.2  2010/01/06 23:03:39  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.1.2.4  2010/01/06 22:21:56  wenger
 // Did a bunch of cleanups on the distance restraint code, in preparation
 // for merging it to the trunk, so I can suspend work on it and move to
@@ -89,6 +102,7 @@ public class S2DNmrStarDistRIfcFactory extends S2DNmrStarIfcFactory {
      */
     public static String pdbIdToUrl(String pdbId) throws S2DException
     {
+	pdbId = pdbId.toLowerCase();
     	String url = "http://www.bmrb.wisc.edu/ftp/pub/bmrb/" +
 	  "nmr_pdb_integrated_data/coordinates_restraints_chemshifts/" +
 	  "all/nmr-star/" + pdbId + "/" + pdbId + "_linked.str";//TEMP!!!

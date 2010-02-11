@@ -24,6 +24,43 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.2.7  2010/02/11 20:28:09  wenger
+// Added some tests of the make_view and make_uvd scripts, fixed a bug in
+// make_view that this found...
+//
+// Revision 1.4.2.6  2010/02/10 17:39:35  wenger
+// Mostly fixed up the remediated restraint torsion angle template;
+// fixed meta data to not include 'avg' in labels.
+//
+// Revision 1.4.2.5  2010/02/04 17:07:35  wenger
+// Completed to-do item 114 (added note about torsion angle violations
+// being calculated by CING); also, both the summary page and the
+// session-specific html pages now have notes about whether the restraints
+// come from the restraints grid or the remediated restraints.
+//
+// Revision 1.4.2.4  2010/02/04 00:08:27  wenger
+// Now writing remediated restraint links in summary page -- CGI links
+// don't seem to work right yet.
+//
+// Revision 1.4.2.3  2010/02/03 23:13:20  wenger
+// Torsion angle output from remediated restraints files now has different
+// suffixes to avoid conflict with the restraint grid output; meta-data
+// for remediated restraints doesn't have violations
+//
+// Revision 1.4.2.2  2010/02/03 22:02:47  wenger
+// First version of S2DNmrStarRRIfc with actual tag values -- processing
+// seems to mostly work.
+//
+// Revision 1.4.2.1  2010/02/03 21:38:59  wenger
+// Made S2DNmrStarDistRIfc, S2DNmrStarRRIfc, and S2DNmrStarTarIfc
+// subclasses of new S2DNmrStarRestIfc class, so that I can pass
+// either a S2DNmrStarTarIfc or a S2DNmrStarRRIfc to the
+// S2DTorsionAngle constructor.
+//
+// Revision 1.4  2010/01/21 16:32:15  wenger
+// Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
+// to trunk.
+//
 // Revision 1.3.2.1  2010/01/12 22:40:53  wenger
 // Added a bunch more tests for PDB-only torsion angle restraints, and
 // finished the partially-completed ones I already had.
@@ -207,6 +244,11 @@ public class S2DTorsionAngle extends S2DRestraint {
 
     private static final int DEBUG = 0;
 
+    public static final String STR_RESTRANTS_GRID = "Torsion angle " +
+      "restraints from restraints grid (violations calculated by CING)";
+    public static final String STR_REMEDIATED_RESTRANTS = "Torsion angle " +
+      "restraints from remediated restraints";
+
     //
     // Note: we're keeping a lot of numerical values as Strings here, since
     // we're just spitting them back out as strings, so we avoid two
@@ -249,7 +291,9 @@ public class S2DTorsionAngle extends S2DRestraint {
     private String[] _atom4Names;
 
     private String[] _angleTypes;
+    private boolean _hasAverages;
     private String[] _averageValues;
+    private boolean _hasViolations;
     private String[] _maxViolations;
 
     private Vector _entityAssemblyIds;
@@ -260,7 +304,7 @@ public class S2DTorsionAngle extends S2DRestraint {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DTorsionAngle(String name, String longName,
-      S2DNmrStarTarIfc star, String dataDir, String sessionDir,
+      S2DNmrStarRestIfc star, String dataDir, String sessionDir,
       S2DSummaryHtml summary, String pdbId) throws S2DException
     {
 	super(name, longName, dataDir, sessionDir, summary, pdbId);
@@ -336,13 +380,27 @@ public class S2DTorsionAngle extends S2DRestraint {
             _atom4Names = star.getFrameValues(frame,
 	      star.TAR_RESTRAINT_ID, star.TAR_ATOM_ID_4);
 
-            _averageValues = star.getFrameValues(frame,
-	      star.TAR_RESTRAINT_ID, star.TAR_ANGLE_AVERAGE);
-            _averageValues = S2DUtils.arrayDot2Zero(_averageValues);
+	    if (!star.TAR_ANGLE_AVERAGE.equals("")) {
+                _averageValues = star.getFrameValues(frame,
+	          star.TAR_RESTRAINT_ID, star.TAR_ANGLE_AVERAGE);
+                _averageValues = S2DUtils.arrayDot2Zero(_averageValues);
+	        _hasAverages = true;
+	    } else {
+                _averageValues = S2DUtils.createStringArray(
+		  restraintCount, "0.0");
+	        _hasAverages = false;
+	    }
 
-            _maxViolations = star.getFrameValues(frame,
-	      star.TAR_RESTRAINT_ID, star.TAR_MAX_VIOLATION);
-            _maxViolations = S2DUtils.arrayDot2Zero(_maxViolations);
+	    if (!star.TAR_MAX_VIOLATION.equals("")) {
+                _maxViolations = star.getFrameValues(frame,
+	          star.TAR_RESTRAINT_ID, star.TAR_MAX_VIOLATION);
+                _maxViolations = S2DUtils.arrayDot2Zero(_maxViolations);
+	        _hasViolations = true;
+	    } else {
+                _maxViolations = S2DUtils.createStringArray(
+		  restraintCount, "0.0");
+	        _hasViolations = false;
+	    }
 
             _atom1Ids = new String[restraintCount];
 	    for (int index = 0; index < restraintCount; index++) {
@@ -447,7 +505,8 @@ public class S2DTorsionAngle extends S2DRestraint {
 
     //-------------------------------------------------------------------
     // Write the torsion angle restraint values for this data.
-    public void writeRestraints(int frameIndex) throws S2DException
+    public void writeRestraints(int frameIndex, boolean isRR)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DTorsionAngle.writeRestraints()");
@@ -457,9 +516,11 @@ public class S2DTorsionAngle extends S2DRestraint {
 	    //
 	    // Write the actual data.
 	    //
+	    String suffix = isRR ? S2DNames.RRTAR_SUFFIX :
+	      S2DNames.TAR_SUFFIX;
             FileWriter tarWriter = S2DFileWriter.create(_dataDir +
-	      File.separator + _name + S2DNames.TAR_SUFFIX +
-	      frameIndex + S2DNames.DAT_SUFFIX);
+	      File.separator + _name + suffix + frameIndex +
+	      S2DNames.DAT_SUFFIX);
 
 	    // Write header.
 	    tarWriter.write("# Data: torsion angle restraints for " +
@@ -503,9 +564,10 @@ public class S2DTorsionAngle extends S2DRestraint {
 	    //
 	    // Write the meta-data.
 	    //
+	    suffix = isRR ? S2DNames.RRTAR_MD_SUFFIX :
+	      S2DNames.TAR_MD_SUFFIX;
             tarWriter = S2DFileWriter.create(_dataDir + File.separator +
-	      _name + S2DNames.TAR_MD_SUFFIX + frameIndex +
-	      S2DNames.DAT_SUFFIX);
+	      _name + suffix + frameIndex + S2DNames.DAT_SUFFIX);
 
 	    tarWriter.write("# Data: torsion angle meta-data for " +
 	      _name + "\n");
@@ -520,6 +582,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 	      S2DMain.getTimestamp() + "\n");
 	    tarWriter.write("#\n");
 
+	    String upLowAvg = _hasAverages ? "lower/upper/avg" : "lower/upper";
 	    for (int index = 0; index < _entityAssemblyIds.size(); index++) {
 		String eANum = (String)_entityAssemblyIds.elementAt(index);
 	        String eAName = "EA " + eANum;//TEMP -- add type of structure here
@@ -527,97 +590,107 @@ public class S2DTorsionAngle extends S2DRestraint {
 	        // Phi angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Phi angle lower/upper/avg\t" +
+	          "Phi angle " + upLowAvg + "\t" +
 	          "phi\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
 	          "ViewAngleDataDotsChild\t" +
 	          "$averageValue\n");
 
-                tarWriter.write(eAName + "\t" +
-	          eANum + "\t" +
-	          "Phi angle violation\t" +
-	          "phi\t" +
-                  "ViewViolationUnselectedDataChild\t" +
-	          "ViewViolationSelectedDataChild\t" +
-	          "ViewViolationDataDotsChild\t" +
-	          "$maxViolation\n");
+		if (_hasViolations) {
+                    tarWriter.write(eAName + "\t" +
+	              eANum + "\t" +
+	              "Phi angle violation\t" +
+	              "phi\t" +
+                      "ViewViolationUnselectedDataChild\t" +
+	              "ViewViolationSelectedDataChild\t" +
+	              "ViewViolationDataDotsChild\t" +
+	              "$maxViolation\n");
+	        }
 
 	        // Psi angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Psi angle lower/upper/avg\t" +
+	          "Psi angle " + upLowAvg + "\t" +
 	          "psi\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
 	          "ViewAngleDataDotsChild\t" +
 	          "$averageValue\n");
 
-                tarWriter.write(eAName + "\t" +
-	          eANum + "\t" +
-	          "Psi angle violation\t" +
-	          "psi\t" +
-                  "ViewViolationUnselectedDataChild\t" +
-	          "ViewViolationSelectedDataChild\t" +
-	          "ViewViolationDataDotsChild\t" +
-	          "$maxViolation\n");
+		if (_hasViolations) {
+                    tarWriter.write(eAName + "\t" +
+	              eANum + "\t" +
+	              "Psi angle violation\t" +
+	              "psi\t" +
+                      "ViewViolationUnselectedDataChild\t" +
+	              "ViewViolationSelectedDataChild\t" +
+	              "ViewViolationDataDotsChild\t" +
+	              "$maxViolation\n");
+	        }
 
 	        // Omega angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Omega angle lower/upper/avg\t" +
+	          "Omega angle " + upLowAvg + "\t" +
 	          "omega\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
 	          "ViewAngleDataDotsChild\t" +
 	          "$averageValue\n");
 
-                tarWriter.write(eAName + "\t" +
-	          eANum + "\t" +
-	          "Omega angle violation\t" +
-	          "omega\t" +
-                  "ViewViolationUnselectedDataChild\t" +
-	          "ViewViolationSelectedDataChild\t" +
-	          "ViewViolationDataDotsChild\t" +
-	          "$maxViolation\n");
+		if (_hasViolations) {
+                    tarWriter.write(eAName + "\t" +
+	              eANum + "\t" +
+	              "Omega angle violation\t" +
+	              "omega\t" +
+                      "ViewViolationUnselectedDataChild\t" +
+	              "ViewViolationSelectedDataChild\t" +
+	              "ViewViolationDataDotsChild\t" +
+	              "$maxViolation\n");
+	        }
 
 	        // Chi-1 angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Chi-1 angle lower/upper/avg\t" +
+	          "Chi-1 angle " + upLowAvg + "\t" +
 	          "chi-1\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
 	          "ViewAngleDataDotsChild\t" +
 	          "$averageValue\n");
 
-                tarWriter.write(eAName + "\t" +
-	          eANum + "\t" +
-	          "Chi-1 angle violation\t" +
-	          "chi-1\t" +
-                  "ViewViolationUnselectedDataChild\t" +
-	          "ViewViolationSelectedDataChild\t" +
-	          "ViewViolationDataDotsChild\t" +
-	          "$maxViolation\n");
+		if (_hasViolations) {
+                    tarWriter.write(eAName + "\t" +
+	              eANum + "\t" +
+	              "Chi-1 angle violation\t" +
+	              "chi-1\t" +
+                      "ViewViolationUnselectedDataChild\t" +
+	              "ViewViolationSelectedDataChild\t" +
+	              "ViewViolationDataDotsChild\t" +
+	              "$maxViolation\n");
+	        }
 
 	        // Other angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Other angle lower/upper/avg\t" +
+	          "Other angle " + upLowAvg + "\t" +
 	          "other\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
 	          "ViewAngleDataDotsChild\t" +
 	          "$averageValue\n");
 
-                tarWriter.write(eAName + "\t" +
-	          eANum + "\t" +
-	          "Other angle violation\t" +
-	          "other\t" +
-                  "ViewViolationUnselectedDataChild\t" +
-	          "ViewViolationSelectedDataChild\t" +
-	          "ViewViolationDataDotsChild\t" +
-	          "$maxViolation\n");
+		if (_hasViolations) {
+                    tarWriter.write(eAName + "\t" +
+	              eANum + "\t" +
+	              "Other angle violation\t" +
+	              "other\t" +
+                      "ViewViolationUnselectedDataChild\t" +
+	              "ViewViolationSelectedDataChild\t" +
+	              "ViewViolationDataDotsChild\t" +
+	              "$maxViolation\n");
+	        }
 	    }
 
 	    tarWriter.close();
@@ -625,25 +698,30 @@ public class S2DTorsionAngle extends S2DRestraint {
 	    //
 	    // Write the session files.
 	    //
+	    int type = isRR ? S2DUtils.TYPE_RRTORSION_ANGLE :
+	      S2DUtils.TYPE_TORSION_ANGLE;
 	    String info = "Visualization of " + _longName;
 	    if (_pdbId != null) {
 	        info += " and PDB " + _pdbId;
 	    }
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_TORSION_ANGLE,
-	      _name, frameIndex, info, null);
+	    S2DSession.write(_sessionDir, type, _name, frameIndex,
+	      info, null);
 
 	    //
 	    // Write the session-specific html files.
 	    //
+	    String title = isRR ?
+	      S2DTorsionAngle.STR_REMEDIATED_RESTRANTS :
+	      S2DTorsionAngle.STR_RESTRANTS_GRID;
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
-	      _summary.getHtmlDir(), S2DUtils.TYPE_TORSION_ANGLE,
-	      _name, frameIndex, "Torsion angle restraints", null);
+	      _summary.getHtmlDir(), type, _name, frameIndex,
+	      title, null);
 	    specHtml.write();
 
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeTorsionAngle(_pdbId, frameIndex);
+	    _summary.writeTorsionAngle(_pdbId, frameIndex, isRR);
 
         } catch(IOException ex) {
 	    System.err.println(

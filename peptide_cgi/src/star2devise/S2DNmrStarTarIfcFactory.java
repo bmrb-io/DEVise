@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.1  2010/02/03 20:57:00  wenger
+// Blocked in code for getting remediated restraints from a specified file.
+//
+// Revision 1.2  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.1.2.3  2010/01/06 22:21:57  wenger
 // Did a bunch of cleanups on the distance restraint code, in preparation
 // for merging it to the trunk, so I can suspend work on it and move to
@@ -87,7 +93,8 @@ public class S2DNmrStarTarIfcFactory extends S2DNmrStarIfcFactory {
       throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DRestraint.pdbIdToUrl(" + pdbId + ")");
+	    System.out.println("S2DNmrStarTarIfcFactory.pdbIdToUrl(" +
+	      pdbId + ")");
 	}
 
 	String violationUrlName = S2DRestraint.getViolationUrl(pdbId);

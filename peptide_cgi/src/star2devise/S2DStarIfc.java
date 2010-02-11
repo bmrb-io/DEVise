@@ -25,6 +25,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.6.1  2010/02/03 23:13:19  wenger
+// Torsion angle output from remediated restraints files now has different
+// suffixes to avoid conflict with the restraint grid output; meta-data
+// for remediated restraints doesn't have violations
+//
+// Revision 1.17  2009/12/05 22:26:32  wenger
+// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
+// to the trunk.
+//
 // Revision 1.16  2009/10/28 19:25:43  wenger
 // Finished fixing things up for the new 3.0 SPARTA format (except that
 // the actual SPARTA output is still incorrect, so the tests are kind
@@ -643,10 +652,7 @@ public abstract class S2DStarIfc {
             System.err.println("Warning: " + ex.toString());
 
             // Generate default values.
-            result = new String[size];
-            for (int index = 0; index < size; index++) {
-                result[index] = defaultValue;
-            }
+            result = S2DUtils.createStringArray(size, defaultValue);
 
 	} catch (S2DWarning ex) {
 	    System.err.println("Warning: " + ex.toString());

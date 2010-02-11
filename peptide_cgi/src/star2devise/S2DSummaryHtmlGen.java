@@ -36,6 +36,33 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.2.5  2010/02/10 22:40:03  wenger
+// Fixed up remediated restraints torsion angle tests (and fixed a
+// bug in the html summary page that I found in the course of doing
+// that).
+//
+// Revision 1.22.2.4  2010/02/05 20:46:13  wenger
+// Partially implemented getting remediated restraints file template from
+// properties.
+//
+// Revision 1.22.2.3  2010/02/04 17:07:35  wenger
+// Completed to-do item 114 (added note about torsion angle violations
+// being calculated by CING); also, both the summary page and the
+// session-specific html pages now have notes about whether the restraints
+// come from the restraints grid or the remediated restraints.
+//
+// Revision 1.22.2.2  2010/02/04 00:08:27  wenger
+// Now writing remediated restraint links in summary page -- CGI links
+// don't seem to work right yet.
+//
+// Revision 1.22.2.1  2010/02/03 16:46:34  wenger
+// Started adding arguments and tests for remediated restraint torsion
+// angle processing.
+//
+// Revision 1.22  2010/01/21 16:32:15  wenger
+// Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
+// to trunk.
+//
 // Revision 1.21.2.3  2010/01/19 19:07:29  wenger
 // Minor cleanups of PDB-only processing code.
 //
@@ -329,6 +356,9 @@ public abstract class S2DSummaryHtmlGen {
     private int _maxTorsionAngleFrame = 0;
     private IntKeyHashtable _torsionAngleInfo = new IntKeyHashtable();
 
+    private int _maxRRTorsionAngleFrame = 0;
+    private IntKeyHashtable _rrTorsionAngleInfo = new IntKeyHashtable();
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -470,7 +500,7 @@ TEMP?*/
 		    writeCoordTable();
 		}
 
-		writeTorsionAngleTable();
+		writeBothTorsionAngleTables();
 
 		if (!_restraintOnly) {
 		    writeChemShiftTable();
@@ -1034,8 +1064,8 @@ TEMP?*/
     //-------------------------------------------------------------------
     // Writes the torsion angle link, where we've actually done the
     // torsion angle processing.
-    protected void writeTorsionAngle(String pdbId, int frameIndex)
-      throws IOException
+    protected void writeTorsionAngle(String pdbId, int frameIndex,
+      boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeTorsionAngle()");
@@ -1044,13 +1074,24 @@ TEMP?*/
 	if (pdbId != null) {
 	    String linkStr = pdbId;
 
-	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
-	      frameIndex);
+	    String suffix = null;
+	    IntKeyHashtable info = null;
+	    if (isRR) {
+	        _maxRRTorsionAngleFrame = Math.max(_maxRRTorsionAngleFrame,
+	          frameIndex);
+	        suffix = S2DNames.RRTAR_SUFFIX;
+		info = _rrTorsionAngleInfo;
+	    } else {
+	        _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
+	          frameIndex);
+	        suffix = S2DNames.TAR_SUFFIX;
+		info = _torsionAngleInfo;
+	    }
 
             String value = "<a href=\"" + _name +
-	      S2DNames.TAR_SUFFIX + frameIndex +
+	      suffix + frameIndex +
 	      sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
-	    _torsionAngleInfo.put(frameIndex, value);
+	    info.put(frameIndex, value);
 	}
     }
 
@@ -1060,7 +1101,7 @@ TEMP?*/
     // invocation (we haven't already done the torsion angle
     // processing).
     protected void writeTorsionAngleCGI(String pdbId, String tarUrl,
-      int frameIndex) throws IOException
+      int frameIndex, boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeTorsionAngleCGI()");
@@ -1071,8 +1112,19 @@ TEMP?*/
 
             String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
-	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
-	      frameIndex);
+	    String doStr = null;
+	    IntKeyHashtable info = null;
+	    if (isRR) {
+	        _maxRRTorsionAngleFrame = Math.max(_maxRRTorsionAngleFrame,
+	          frameIndex);
+	        doStr = "&do_rrtar=" + S2DMain.RRTAR_LEVEL_PROCESS;
+		info = _rrTorsionAngleInfo;
+	    } else {
+	        _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
+	          frameIndex);
+	        doStr = "&do_tar=" + S2DMain.TAR_LEVEL_PROCESS;
+		info = _torsionAngleInfo;
+	    }
 
 //TEMP -- test vis server
 	    String value = "<a href=\"" + path + "?pdbid=" + pdbId;
@@ -1091,10 +1143,10 @@ TEMP?*/
 	    	value += "&tar_url=" + tarUrl;
 	    }
 */
-	    value += "&do_tar=" + S2DMain.TAR_LEVEL_PROCESS +
+	    value += doStr + 
 	      "&coord_index=" + frameIndex + "&size_str=" +
 	      sizeString() + "\">" + linkStr + "</a>";
-	    _torsionAngleInfo.put(frameIndex, value);
+	    info.put(frameIndex, value);
 	}
     }
 
@@ -1584,14 +1636,34 @@ TEMP*/
     }
 
     //-------------------------------------------------------------------
+    // Write the tables for restraing grid and remediated restraint
+    // torsion angles.
+    protected void writeBothTorsionAngleTables() throws IOException
+    {
+	_writer.write("\n<hr>\n");
+
+	writeTorsionAngleTable(_maxTorsionAngleFrame,
+	  _torsionAngleInfo, false);
+	writeTorsionAngleTable(_maxRRTorsionAngleFrame,
+	  _rrTorsionAngleInfo, true);
+
+    	if (_maxTorsionAngleFrame < 1 && _maxRRTorsionAngleFrame < 1) {
+	    _writer.write("<p><b>No torsion angle data available for " +
+	      "this entry</b></p>\n");
+	}
+    }
+    //-------------------------------------------------------------------
     // Write the html table of torsion angle links.
-    protected void writeTorsionAngleTable() throws IOException
+    protected void writeTorsionAngleTable(int maxFrame,
+      IntKeyHashtable info, boolean isRR) throws IOException
     {
 	final int maxPerRow = 10;
 
-	_writer.write("\n<hr>\n");
-        if (_maxTorsionAngleFrame > 0) {
-            _writer.write("<p><b>\n" + "Torsion angle restraints" +
+        if (maxFrame > 0) {
+	    String title = isRR ?
+	      S2DTorsionAngle.STR_REMEDIATED_RESTRANTS + " ":
+	      S2DTorsionAngle.STR_RESTRANTS_GRID + " ";
+            _writer.write("<p><b>\n" + title +
 	      "(note: processing may take several minutes)\n" +
 	      "</b></p>\n");
 
@@ -1599,9 +1671,9 @@ TEMP*/
             _writer.write("  <tr>\n");
 	    _writer.write("    <th>PDB ID</th>\n");
 
-            for (int index = 1; index <= _maxTorsionAngleFrame; index++ ) {
-		if (_torsionAngleInfo.get(index) != null) {
-                    writeTableCell(_torsionAngleInfo, index);
+            for (int index = 1; index <= maxFrame; index++ ) {
+		if (info.get(index) != null) {
+                    writeTableCell(info, index);
 		    if ( index % maxPerRow == 0) {
                         _writer.write("  </tr>\n");
                         _writer.write("  <tr>\n");
@@ -1612,10 +1684,6 @@ TEMP*/
 
             _writer.write("  </tr>\n");
             _writer.write("</table>\n");
-
-        } else {
-	    _writer.write("<p><b>No torsion angle data available for " +
-	      "this entry</b></p>\n");
         }
     }
 

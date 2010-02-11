@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.2.1  2010/02/09 22:41:20  wenger
+// Mostly done getting coordinates from remediated restraint files --
+// seems to work, but still needs some checking.
+//
+// Revision 1.15  2010/01/21 16:32:15  wenger
+// Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
+// to trunk.
+//
 // Revision 1.14.4.2  2010/01/19 19:07:28  wenger
 // Minor cleanups of PDB-only processing code.
 //
@@ -443,15 +451,16 @@ public class S2DAtomicCoords {
     // Write the atoms (including coordinates) for this data.  This
     // output is designed to be transferred to Jmol for visualization.
     // 
-    public void writeAtoms(int frameIndex, boolean restraintOnly)
-      throws S2DException
+    public void writeAtoms(int frameIndex, boolean restraintOnly,
+      boolean isRR) throws S2DException
     {
         if (doDebugOutput(11, true)) {
 	    System.out.println("S2DJmolAtomicCoords.writeAtoms()");
 	}
 
 	try {
-	    String suffix = S2DNames.ATOMIC_COORD_SUFFIX;
+	    String suffix = isRR ? S2DNames.RRATOMIC_COORD_SUFFIX :
+	      S2DNames.ATOMIC_COORD_SUFFIX;
 	    _outputFile = _dataDir + File.separator + _name +
 	      suffix + frameIndex + S2DNames.DAT_SUFFIX;
             FileWriter coordWriter = S2DFileWriter.create(_outputFile);

@@ -118,19 +118,24 @@ The following testing steps must be done:
 - Click the 'Force Reprocessing' button and make sure the summary page
   gets updated.
 
-- (Torsion angle restraints) Go to
-  http://devise.cs.wisc.edu/devise/bmrb/bmrb_select.html and view the
-  torsion angle visualization for 15209/2OQS:
-    - Make sure that torsion angle data shows up for both entity assemblies,
-      and that atoms in the correct entity assembly are highlighted in
-      the 3D view.
+- (Torsion angle restraints) View the following visualizations for
+  entry 15209:
+    - Restraints grid torsion angles for 2OQS (make sure that torsion
+      angle data shows up for both entity assemblies, and that atoms
+      in the correct entity assembly are highlighted in the 3D view).
+    - Remediated restraints torsion angles for 2OQS (make sure that torsion
+      angle data shows up for both entity assemblies, and that atoms
+      in the correct entity assembly are highlighted in the 3D view).
+    - 3D structure for 2OQS (make sure the right data sets show up, and
+      highlighting works).
 
 - (PDB-only torsion angle restraints) Go to
   http://devise.cs.wisc.edu/devise/bmrb/restraint_select.html, view the
-  torsion angle visualization for 1eza:
-    - There should be data for all angle types except omega.
-- Click the 'Force Reprocessing' button and make sure the summary page
-  gets updated.
+  following visualizations for 1eza:
+    - Restraints grid torsion angles (make sure there is both angle
+      and violation data, make sure highlighting works right).
+    - Remediated restraints torsion angles (make sure highlighting works
+      right).
 
 - Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html
   (make sure drill-down works).
