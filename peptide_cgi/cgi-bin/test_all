@@ -144,6 +144,8 @@ if (($do_all != 0) or ($do_sparta != 0)) {
   RunTest("test_sparta5");
   RunTest("test_sparta5_3");
   RunTest("test_sparta6_3");
+  RunTest("test_sparta7");
+  RunTest("test_sparta8");
 }
 
 if (($do_all != 0) or ($do_tar != 0)) {
