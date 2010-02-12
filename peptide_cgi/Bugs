@@ -419,6 +419,11 @@ Num Date        Status  Description
 			doesn't work, so we're using -do_tar 3 and -do_rrtar
 			3. (wenger)
 
+090 2/12/10	OPEN	Torsion angle visualization for 15418/2JTT doesn;t
+			work right (seems like it has something to do with
+			the multiple entity assemblies -- the data selection
+			cursor isn't drawn(!)). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
