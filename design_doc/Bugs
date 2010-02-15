@@ -4341,6 +4341,10 @@ java.lang.NullPointerException: null pData
 			4, 3)-> devised crashes (sorting the meta-data by
 			entity assembly ID makes it take more switches
 			for it to crash). (wenger)
+			(Note: going back to version 1.3 of torsion_angle.base
+			(which doesn't have the data selection cursor
+			constrained to be within the view) prevents this
+			problem from happening!).
 
 997 2/15/10	OPEN	-allowCore command-line argument causes DEVise
 			to hang. (wenger)
