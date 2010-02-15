@@ -4337,10 +4337,10 @@ java.lang.NullPointerException: null pData
 			zooom in too far (see bug995.png). (corbeille/wenger)
 
 996 2/15/10	OPEN	JS: open the 15418tar5.ds in the JavaScreen,
-			select EA 3->devised crashes (for some reason,
-			sorting the meta-data by entity assembly fixes
-			this(!); the problem doesn't show up when
-			running stand-along DEVise.  (wenger)
+			switch the entity assembly several times ->
+			devised crashes (sorting the meta-data by
+			entity assembly ID makes it take more switches
+			for it to crash). (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
