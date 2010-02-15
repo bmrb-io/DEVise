@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.176  2010/02/11 22:13:10  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.175.2.18  2010/02/11 20:28:08  wenger
 // Added some tests of the make_view and make_uvd scripts, fixed a bug in
 // make_view that this found...
@@ -1057,7 +1062,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.3x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.3x6"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

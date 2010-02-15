@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Dec 05 2009 13:49:43
+# file date: Feb 15 2010 11:02:40
 # DEVise version: 1.10.0
 # DEVise date: Dec  3 2009
 # DEVise endHeader
@@ -1371,7 +1371,7 @@ DEVise setAxisMultFact {View3DHighlight} {Y} 1
 DEVise setCursorSrc {data_select_cursor} {ViewUnselectedDataParent}
 DEVise setCursorDst {data_select_cursor} {ViewDataTypeSelect}
 DEVise color SetCursorColor {data_select_cursor} #ffffffffffff
-DEVise setCursorConstraints {data_select_cursor} 1 0 0
+DEVise setCursorConstraints {data_select_cursor} 1 0 1
 DEVise setCursorSrc {data_x_cursor} {ViewAngleUnselectedDataChild}
 DEVise setCursorDst {data_x_cursor} {ViewDataXControl}
 DEVise color SetCursorColor {data_x_cursor} #ffffffffffff
@@ -1508,6 +1508,9 @@ DEVise clearViewHistory {ViewAngleDataDotsChild}
 DEVise insertViewHistory {ViewAngleDataDotsChild} {14.5} {-180} {32.5} {180} 0
 
 DEVise clearViewHistory {ViewDataValueSelectChild}
+DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-90} {28} {90} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-180} {32.5} {180} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-90} {32.5} {90} 0
 DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-90} {28} {90} 0
 
 DEVise clearViewHistory {ViewDataScrollFixChild}

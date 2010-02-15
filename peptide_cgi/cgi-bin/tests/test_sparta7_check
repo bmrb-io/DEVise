@@ -12,10 +12,10 @@ end
 
 
 set file = "data_dir/15418d1.dat"
-set line = '^1 1 MET -0.521 0.0 -1.49 0.347$'
-#TEMPTEMP source tests/check4line
-set line = '^1 108 GLU -0.022 -0.635 -0.569 1.427$'
-#TEMPTEMP source tests/check4line
+set line = '^1 1 MET 0.085 0.0 -2.931 0.636$'
+source tests/check4line
+set line = '^1 90 GLY 0.0 0.0 1.355 0.0$'
+source tests/check4line
 
 set file = "data_dir/15418sd1.dat"
 set line = '^1 1 2 GLU -0.286 -1.14 0.09 0.731 0.0 0.0$'

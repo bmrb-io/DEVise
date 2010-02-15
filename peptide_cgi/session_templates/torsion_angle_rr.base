@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Feb 10 2010 11:36:52
+# file date: Feb 15 2010 11:10:26
 # DEVise version: 1.10.0
 # DEVise date: Dec  3 2009
 # DEVise endHeader
@@ -201,7 +201,7 @@ DEVise setExcludeFromDrillDown {ViewAngleDataDotsChild} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} ViewDataValueSelectChild 19.000000 28.000000 -90.000000 90.000000 0 37 0 37 0 37
+DEVise create {view} {SortedX} ViewDataValueSelectChild 19.000000 28.000000 -45.000000 225.000000 0 37 0 37 0 37
 DEVise setLabel {ViewDataValueSelectChild} 1 16 {Phi angle lower/upper}
 DEVise setViewStatistics {ViewDataValueSelectChild} 00000000
 DEVise setViewDimensions {ViewDataValueSelectChild} 2
@@ -219,7 +219,7 @@ DEVise viewSetHorPan {ViewDataValueSelectChild} 1 0.500000 1.000000
 DEVise viewSetVerPan {ViewDataValueSelectChild} 1 0.500000 1.000000
 DEVise setViewGDS {ViewDataValueSelectChild} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {ViewDataValueSelectChild} 1 0 0 "" 1 " " 1
-DEVise setHistogram {ViewDataValueSelectChild} -90 90 10
+DEVise setHistogram {ViewDataValueSelectChild} -100 220 10
 DEVise setCountMapping {ViewDataValueSelectChild} 0 {} {} 0
 DEVise viewSetIsHighlight {ViewDataValueSelectChild} 0
 DEVise setXAxisDateFormat {ViewDataValueSelectChild} {%b %d %Y %T}
@@ -1138,7 +1138,7 @@ DEVise setAxisMultFact {View3DHighlight} {Y} 1
 DEVise setCursorSrc {data_select_cursor} {ViewUnselectedDataParent}
 DEVise setCursorDst {data_select_cursor} {ViewDataTypeSelect}
 DEVise color SetCursorColor {data_select_cursor} #ffffffffffff
-DEVise setCursorConstraints {data_select_cursor} 1 0 0
+DEVise setCursorConstraints {data_select_cursor} 1 0 1
 DEVise setCursorSrc {data_x_cursor} {ViewAngleUnselectedDataChild}
 DEVise setCursorDst {data_x_cursor} {ViewDataXControl}
 DEVise color SetCursorColor {data_x_cursor} #ffffffffffff
@@ -1264,6 +1264,9 @@ DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-90} {28} {90} 0
 DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-180} {32.5} {360} 0
 DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-90} {32.5} {90} 0
 DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-90} {28} {90} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-180} {32.5} {360} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {14.5} {-45} {32.5} {225} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-45} {28} {225} 0
 
 DEVise clearViewHistory {ViewDataScrollFixChild}
 DEVise insertViewHistory {ViewDataScrollFixChild} {14.5} {-178} {32.5} {100} 0

@@ -182,6 +182,7 @@ if (($do_all != 0) or ($do_tar != 0)) {
   RunTest("test_tar9");
   RunTest("test_tar9i");
   RunTest("test_tar10");
+  RunTest("test_bug090");
 }
 
 if (($do_all != 0) or ($do_dist != 0)) {

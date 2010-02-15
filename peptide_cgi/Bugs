@@ -419,10 +419,11 @@ Num Date        Status  Description
 			doesn't work, so we're using -do_tar 3 and -do_rrtar
 			3. (wenger)
 
-090 2/12/10	ACTIVE	Torsion angle visualization for 15418/2JTT doesn't
+090 2/12/10	FIXED	Torsion angle visualization for 15418/2JTT doesn't
 			work right (seems like it has something to do with
 			the multiple entity assemblies -- the data selection
 			cursor isn't drawn(!)). (wenger)
+			(Fixed by wenger, 2/15/10.)
 
 091 2/15/10	OPEN	Torsion angle metadata for 15418/2JTT is not
 			sorted by entity assembly ID. (wenger)

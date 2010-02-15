@@ -94,11 +94,11 @@ if (defined($restraint_id)) {
     $coord_index . $size_str . '.html';
 } elsif ($do_tar) {
   print "  has TAR\n" if ($debug);
-  $summary_page = $summary_page_dir . "/" . $acc_num . 'tar' . $coord_index .
+  $summary_page = $summary_page_dir . "/" . $acc_num . 'tar' . 
     $coord_index . $size_str . '.html';
 } elsif ($do_rrtar) {
   print "  has RRTAR\n" if ($debug);
-  $summary_page = $summary_page_dir . "/" . $acc_num . 'rrtar' . $coord_index .
+  $summary_page = $summary_page_dir . "/" . $acc_num . 'rrtar' . 
     $coord_index . $size_str . '.html';
 } else {
   print "  does not have PDB or CSR\n" if ($debug);
