@@ -425,11 +425,14 @@ Num Date        Status  Description
 			cursor isn't drawn(!)). (wenger)
 			(Fixed by wenger, 2/15/10.)
 
-091 2/15/10	OPEN	Torsion angle metadata for 15418/2JTT is not
-			sorted by entity assembly ID. (wenger)
+091 2/15/10	FIXED	Torsion angle metadata for 15418/2JTT is not
+			sorted by entity assembly ID. (wenger)  (Also
+			see DEVise/JS bug 996.)
+			(Fixed by wenger, 2/16/10.)
 
-092 2/15/10	OPEN	Data view title, etc., for torsion angle data
+092 2/15/10	FIXED	Data view title, etc., for torsion angle data
 			doesn't have entity assembly ID. (wenger)
+			(Fixed by wenger, 2/16/10.)
 
 093 2/15/10	OPEN	In 15418 coordinate visualization, when you
 			select entity assembly 3, the data view title, etc.,

@@ -14,7 +14,7 @@ whitespace '	'
 attr Entity_assembly_name string 30
 attr Entity_assembly_ID int
 
-attr name string 30
+attr name string 35
 attr angle_type string 30
 
 attr ViewUnselectedDataChild string 40

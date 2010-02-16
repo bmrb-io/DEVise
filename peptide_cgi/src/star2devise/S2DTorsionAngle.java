@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.4.2.7  2010/02/11 20:28:09  wenger
 // Added some tests of the make_view and make_uvd scripts, fixed a bug in
 // make_view that this found...
@@ -237,6 +242,7 @@ import EDU.bmrb.starlibj.SaveFrameNode;
 import java.io.*;
 import java.util.*;
 import java.net.*;
+import java.text.Collator;
 
 public class S2DTorsionAngle extends S2DRestraint {
     //===================================================================
@@ -583,6 +589,10 @@ public class S2DTorsionAngle extends S2DRestraint {
 	    tarWriter.write("#\n");
 
 	    String upLowAvg = _hasAverages ? "lower/upper/avg" : "lower/upper";
+
+	    // Sort by entity assembly ID (fixes bug 091).
+	    Collections.sort(_entityAssemblyIds, Collator.getInstance());
+
 	    for (int index = 0; index < _entityAssemblyIds.size(); index++) {
 		String eANum = (String)_entityAssemblyIds.elementAt(index);
 	        String eAName = "EA " + eANum;//TEMP -- add type of structure here
@@ -590,7 +600,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 	        // Phi angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Phi angle " + upLowAvg + "\t" +
+	          "Phi angle " + upLowAvg + " [" + eANum + "]\t" +
 	          "phi\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
@@ -600,7 +610,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 		if (_hasViolations) {
                     tarWriter.write(eAName + "\t" +
 	              eANum + "\t" +
-	              "Phi angle violation\t" +
+	              "Phi angle violation [" + eANum + "]\t" +
 	              "phi\t" +
                       "ViewViolationUnselectedDataChild\t" +
 	              "ViewViolationSelectedDataChild\t" +
@@ -611,7 +621,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 	        // Psi angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Psi angle " + upLowAvg + "\t" +
+	          "Psi angle " + upLowAvg + " [" + eANum + "]\t" +
 	          "psi\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
@@ -621,7 +631,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 		if (_hasViolations) {
                     tarWriter.write(eAName + "\t" +
 	              eANum + "\t" +
-	              "Psi angle violation\t" +
+	              "Psi angle violation [" + eANum + "]\t" +
 	              "psi\t" +
                       "ViewViolationUnselectedDataChild\t" +
 	              "ViewViolationSelectedDataChild\t" +
@@ -632,7 +642,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 	        // Omega angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Omega angle " + upLowAvg + "\t" +
+	          "Omega angle " + upLowAvg + " [" + eANum + "]\t" +
 	          "omega\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
@@ -642,7 +652,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 		if (_hasViolations) {
                     tarWriter.write(eAName + "\t" +
 	              eANum + "\t" +
-	              "Omega angle violation\t" +
+	              "Omega angle violation [" + eANum + "]\t" +
 	              "omega\t" +
                       "ViewViolationUnselectedDataChild\t" +
 	              "ViewViolationSelectedDataChild\t" +
@@ -653,7 +663,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 	        // Chi-1 angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Chi-1 angle " + upLowAvg + "\t" +
+	          "Chi-1 angle " + upLowAvg + " [" + eANum + "]\t" +
 	          "chi-1\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
@@ -663,7 +673,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 		if (_hasViolations) {
                     tarWriter.write(eAName + "\t" +
 	              eANum + "\t" +
-	              "Chi-1 angle violation\t" +
+	              "Chi-1 angle violation [" + eANum + "]\t" +
 	              "chi-1\t" +
                       "ViewViolationUnselectedDataChild\t" +
 	              "ViewViolationSelectedDataChild\t" +
@@ -674,7 +684,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 	        // Other angle.
                 tarWriter.write(eAName + "\t" +
 	          eANum + "\t" +
-	          "Other angle " + upLowAvg + "\t" +
+	          "Other angle " + upLowAvg + " [" + eANum + "]\t" +
 	          "other\t" +
                   "ViewAngleUnselectedDataChild\t" +
 	          "ViewAngleSelectedDataChild\t" +
@@ -684,7 +694,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 		if (_hasViolations) {
                     tarWriter.write(eAName + "\t" +
 	              eANum + "\t" +
-	              "Other angle violation\t" +
+	              "Other angle violation [" + eANum + "]\t" +
 	              "other\t" +
                       "ViewViolationUnselectedDataChild\t" +
 	              "ViewViolationSelectedDataChild\t" +

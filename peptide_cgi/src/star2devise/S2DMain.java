@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.177  2010/02/15 19:35:31  wenger
+// At least mostly fixed bug 090 (by forcing the data_select_cursor to
+// be within the destination view's visual filter); *maybe* we want to
+// add a data_select_fix_cursor like the 3D sessions (hell, I'm not
+// even sure exactly what that's doing any more).  Also fixed a bug that
+// I introduced into make_view, and added a new link in uvd_works.html
+// that produces torsion angle visualizations.
+//
 // Revision 1.176  2010/02/11 22:13:10  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -1062,7 +1070,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.3x6"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.3x7"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
