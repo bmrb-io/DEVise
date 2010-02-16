@@ -4189,7 +4189,7 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			happens if the session is passed as a command-line
 			argument; this is stand-alone JS, not the applet.)
 
-971 9/4/08	OPEN	Go to BMRB histogram visualization; then follow
+971 9/4/08	OPEN	JS: Go to BMRB histogram visualization; then follow
 			the 'large visualization' link, and interact with
 			the applet -> Firefox locks up (not every time,
 			though).  (dmiller1/wenger)
@@ -4336,7 +4336,7 @@ java.lang.NullPointerException: null pData
 995 2/12/10	OPEN	JavaScreen axis tick labels get garbled if you
 			zooom in too far (see bug995.png). (corbeille/wenger)
 
-996 2/15/10	OPEN	JS: open the 15418tar5.ds in the JavaScreen,
+996 2/15/10	FIXED	JS: open the 15418tar5.ds in the JavaScreen,
 			switch the entity assembly several times (1, 2, 3,
 			4, 3)-> devised crashes (sorting the meta-data by
 			entity assembly ID makes it take more switches
@@ -4345,6 +4345,7 @@ java.lang.NullPointerException: null pData
 			(which doesn't have the data selection cursor
 			constrained to be within the view) prevents this
 			problem from happening!).
+			(Fixed in 1.10.1 by wenger, 2/16/10.)
 
 997 2/15/10	OPEN	-allowCore command-line argument causes DEVise
 			to hang. (wenger)
