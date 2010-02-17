@@ -9,6 +9,8 @@ files.
 
 * PDB IDs differing only by case are now considered the same.
 
+* More SPARTA file format updates.
+
 * Fixed bug 090 (problems with DEVise cursor behavior in torsion angle
 visualizations with multiple entity assemblies).
 

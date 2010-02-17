@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.22.2.5  2010/02/10 22:40:03  wenger
 // Fixed up remediated restraints torsion angle tests (and fixed a
 // bug in the html summary page that I found in the course of doing
@@ -681,7 +686,8 @@ TEMP?*/
     {
         if (doDebugOutput(12)) {
 	    System.out.println(
-	      "S2DSummaryHtmlGen.writeSpartaDeltashift()");
+	      "S2DSummaryHtmlGen.writeSpartaDeltashift(" +
+	        entityAssemblyID + ", " + residueCount + ")");
 	}
 
 	_maxSpartaEntAssemID = Math.max(_maxSpartaEntAssemID,
@@ -1344,8 +1350,8 @@ TEMP*/
 		// _writer.write("    <th><a href=\"#Frame" + index +
 		  // "\">Frame&nbsp;" + index + "</a></th>\n");
 
-		writeTableCell(_spartaDSEntAssemIDInfo, index);
-	        if (!_spartaDeltaShiftInfo.isEmpty()) {
+		if (_spartaDeltaShiftInfo.get(index) != null) {
+		    writeTableCell(_spartaDSEntAssemIDInfo, index);
 		    writeTableCell(_spartaDeltaShiftInfo, index);
 		}
 

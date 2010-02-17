@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.181  2010/02/17 21:58:12  wenger
+// Changed the code and older test files to match the latest SPARTA
+// file versions.
+//
 // Revision 1.180  2010/02/17 21:24:40  wenger
 // Fixed some errors in changing strings in the SPARTA session files.
 //
@@ -3304,6 +3308,9 @@ public class S2DMain {
 		  createFromId(_masterBmrbId, _useLocalFiles);
 	    }
 
+	    // Note: average must be done first, because the
+	    // single-mode code expects to append to files
+	    // created by the average.
             doSaveSpartaDeltaShifts(star, spartaStar, true);
             doSaveSpartaDeltaShifts(star, spartaStar, false);
 	} catch (Exception ex) {
@@ -3369,7 +3376,6 @@ public class S2DMain {
 		      entityAssemblyID + ", " + modelNum + "): " +
 		      ex.toString());
 		}
-		append = true;
 	    }
         }
     }
