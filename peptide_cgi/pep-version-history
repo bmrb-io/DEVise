@@ -17,6 +17,9 @@ visualizations with multiple entity assemblies).
 * Fixed bug 092 (torsion angle meta-data doesn't have entity assembly IDs
 in titles).
 
+* Fixed bug 093 (problem with incorrect entity assembly IDs in data
+titles for 3D visualizations).
+
 * Added a note about torsion angle restraint violations being calculated
 by CING to the visualizations summary page and the visualization page.
 

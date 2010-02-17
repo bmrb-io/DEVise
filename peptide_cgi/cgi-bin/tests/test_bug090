@@ -168,6 +168,13 @@ source tests/check4line
 set line = '<td><a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=2JTT&number=15418&do_rrtar=3&coord_index=5&size_str=_large">2JTT</a></td>'
 source tests/check4line
 
+set file = "data_dir/15418md.dat"
+set line = '^EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	15418d1	\$HA_DeltaShift'
+source tests/check4line
+# Check for bug 093.
+set line = '^EA 3 (polypeptide(L))	3	% 15N assign per res \[3\]	15418p2	\$assigForN'
+source tests/check4line
+
 
 echo -n "Test_bug090 result: "
 if ($result == 0) then

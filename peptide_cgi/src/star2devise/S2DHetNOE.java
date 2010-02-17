@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2009
+// (c) Copyright 2001-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.10  2009/03/11 19:53:14  wenger
 // Implemented two-stage selection of data sets in coordinate
 // visualizations (select entity assembly, then select data set); updated
@@ -235,7 +239,7 @@ public class S2DHetNOE {
         // Note: attribute names must match the bmrb-NOE schema.
 	String dataSource = _name +
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex;
-	String dataName = _shortName + " [" + frameIndex + "]";
+	String dataName = _shortName + " [" + _entityAssemblyID + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	  "NOE_value", "bmrb-NOE", "NOE", _entityAssemblyID,
 	  polymerType));

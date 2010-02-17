@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2009
+// (c) Copyright 2001-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.10  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.9  2009/03/11 19:53:14  wenger
 // Implemented two-stage selection of data sets in coordinate
 // visualizations (select entity assembly, then select data set); updated
@@ -242,7 +246,7 @@ public class S2DCoupling {
         // Note: attribute names must match the bmrb-CouplingConstant schema.
 	String dataSource = _name + S2DNames.COUPLING_SUFFIX +
 	  frameIndex;
-	String dataName = "3JHNHA coupling const [" + frameIndex + "]";
+	String dataName = "3JHNHA coupling const [" + _entityAssemblyID + "]";
         dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "Coupling_constant_value", "bmrb-CouplingConstant",
 	  "CouplingConstant", _entityAssemblyID, polymerType));

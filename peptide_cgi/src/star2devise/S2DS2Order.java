@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2008-2009
+// (c) Copyright 2008-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.5  2009/03/11 19:53:15  wenger
 // Implemented two-stage selection of data sets in coordinate
 // visualizations (select entity assembly, then select data set); updated
@@ -199,7 +203,7 @@ public class S2DS2Order {
     {
         // Note: attribute names must match the bmrb-s2order schema.
 	String dataSource = _name + S2DNames.ORDER_SUFFIX + frameIndex;
-	String dataName = "S2 Order Parameters [" + frameIndex + "]";
+	String dataName = "S2 Order Parameters [" + _entityAssemblyID + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	  "S2order_value", "bmrb-s2", "s2", _entityAssemblyID,
 	  polymerType));

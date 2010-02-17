@@ -434,9 +434,14 @@ Num Date        Status  Description
 			doesn't have entity assembly ID. (wenger)
 			(Fixed by wenger, 2/16/10.)
 
-093 2/15/10	OPEN	In 15418 coordinate visualization, when you
+093 2/15/10	FIXED	In 15418 coordinate visualization, when you
 			select entity assembly 3, the data view title, etc.,
 			show and entity assembly ID of 2. (wenger)
+			(Fixed by wenger, 2/17/10.)
+
+094 2/17/10	OPEN	In 15418 coordinate visualization, there's a "gap"
+			in the entity assembly select view where "EA 2"
+			would go, if there were any data for it. (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.178  2010/02/16 23:49:27  wenger
+// Fixed bugs 091 and 092 (problems with torsion angle visualizations).
+//
 // Revision 1.177  2010/02/15 19:35:31  wenger
 // At least mostly fixed bug 090 (by forcing the data_select_cursor to
 // be within the destination view's visual filter); *maybe* we want to
@@ -1070,7 +1073,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.3x7"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.3x8"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

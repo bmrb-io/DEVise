@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009
+// (c) Copyright 2009-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2009/10/22 17:26:34  wenger
+// Refactored the experimental chemical shifts to match the new-style
+// Sparta processing where we get the appropriate data values in
+// the appropriate chemical shift-related class(es) rather than in
+// S2DMain.
+//
 // Revision 1.12  2009/10/20 16:54:10  wenger
 // Created a new S2DSpartaChemShift class and cleaned up S2DChemShift
 // class heirarchy in preparation for fixing things for the new SPARTA
@@ -238,7 +244,7 @@ public class S2DRNAChemShift extends S2DNAChemShift {
 	    if (_atomSet.contains(info[index]._dataName)) {
 	        dataSets.addElement(new S2DDatasetInfo(
 	          info[index]._dataName +
-	            " delta chem shift [" + frameIndex + "]", 
+	            " delta chem shift [" + _entityAssemblyID + "]", 
 	          dataSource, info[index]._attribute, "bmrb-RNADeltaShift",
 	          "bmrb-RNADeltaShift", _entityAssemblyID,
 	          S2DResidues.POLYMER_TYPE_RNA));

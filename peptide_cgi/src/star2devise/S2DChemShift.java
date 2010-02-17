@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2009
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2010/02/01 21:42:32  wenger
+// Added new test of the latest-format SPARTA file, fixed a bug that it
+// found (not having to do with the new format!).
+//
 // Revision 1.28  2009/10/22 17:26:34  wenger
 // Refactored the experimental chemical shifts to match the new-style
 // Sparta processing where we get the appropriate data values in
@@ -517,28 +521,28 @@ public class S2DChemShift {
 
 	String dataName;
 	if (_atomSet.contains("HA")) {
-	    dataName = "HA delta chem shift [" + frameIndex + "]";
+	    dataName = "HA delta chem shift [" + _entityAssemblyID + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName,
 	      dataSource, "HA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
 	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_atomSet.contains("C")) {
-	    dataName = "C delta chem shift [" + frameIndex + "]";
+	    dataName = "C delta chem shift [" + _entityAssemblyID + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName,
 	      dataSource, "C_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
 	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_atomSet.contains("CA")) {
-	    dataName = "CA delta chem shift [" + frameIndex + "]";
+	    dataName = "CA delta chem shift [" + _entityAssemblyID + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName,
 	      dataSource, "CA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
 	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_hasRealCBShifts) {
-	    dataName = "CB delta chem shift [" + frameIndex + "]";
+	    dataName = "CB delta chem shift [" + _entityAssemblyID + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName,
 	      dataSource, "CB_DeltaShift", "bmrb-DeltaShift",
 	      "DeltaShift", _entityAssemblyID,

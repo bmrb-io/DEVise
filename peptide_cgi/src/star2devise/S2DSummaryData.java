@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2009
+// (c) Copyright 2003-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2009/03/26 21:29:08  wenger
+// Found and fixed bug 081 (needed to force 3D metadata to be ordered
+// by entity assembly, so we don't have gaps if save frames are not
+// ordered by entity assembly).
+//
 // Revision 1.7  2009/03/11 19:53:15  wenger
 // Implemented two-stage selection of data sets in coordinate
 // visualizations (select entity assembly, then select data set); updated

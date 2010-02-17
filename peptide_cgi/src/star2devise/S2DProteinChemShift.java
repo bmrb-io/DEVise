@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009
+// (c) Copyright 2009-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2009/11/11 20:32:41  wenger
+// Added new tests for dealing properly with methyl groups in 1H-13C
+// simulated spectra.  (Tests work right now with a kludged connections
+// file that might break other stuff.)  Added warning to the 1H-13C
+// processing for atoms that are not found in the connections list.
+//
 // Revision 1.5  2009/10/22 17:26:34  wenger
 // Refactored the experimental chemical shifts to match the new-style
 // Sparta processing where we get the appropriate data values in
@@ -722,34 +728,34 @@ public class S2DProteinChemShift extends S2DChemShift {
 
 	String dataName;
 	if (_atomSet.contains("HA")) {
-	    dataName = "HA CSI [" + frameIndex + "]";
+	    dataName = "HA CSI [" + _entityAssemblyID + "]";
             dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	      "HA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
 	      S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_atomSet.contains("C")) {
-	    dataName = "C CSI [" + frameIndex + "]";
+	    dataName = "C CSI [" + _entityAssemblyID + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	      "C_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
 	      S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_atomSet.contains("CA")) {
-	    dataName = "CA CSI [" + frameIndex + "]";
+	    dataName = "CA CSI [" + _entityAssemblyID + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	      "CA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
 	      S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_hasRealCBShifts) {
-	    dataName = "CB CSI [" + frameIndex + "]";
+	    dataName = "CB CSI [" + _entityAssemblyID + "]";
 	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	      "CB_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
 	      S2DResidues.POLYMER_TYPE_PROTEIN));
 	}
 
-	dataName = "Consensus CSI [" + frameIndex + ']';
+	dataName = "Consensus CSI [" + _entityAssemblyID + ']';
 	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
 	  "Consensus_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
 	  S2DResidues.POLYMER_TYPE_PROTEIN));
@@ -767,17 +773,17 @@ public class S2DProteinChemShift extends S2DChemShift {
 	String dataSource = _name + S2DNames.PERCENT_ASSIGN_SUFFIX +
 	  frameIndex;
 
-	String dataName = "% 1H assign per res [" + frameIndex + "]";
+	String dataName = "% 1H assign per res [" + _entityAssemblyID + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "assigForH", "bmrb-Percent", "ChemShiftPercentage",
 	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
 
-	dataName = "% 13C assign per res [" + frameIndex + "]";
+	dataName = "% 13C assign per res [" + _entityAssemblyID + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName,
 	  dataSource, "assigForC", "bmrb-Percent", "ChemShiftPercentage",
 	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
 
-	dataName = "% 15N assign per res [" + frameIndex + "]";
+	dataName = "% 15N assign per res [" + _entityAssemblyID + "]";
 	dataSets.addElement(new S2DDatasetInfo(dataName, 
 	  dataSource, "assigForN", "bmrb-Percent", "ChemShiftPercentage",
 	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
