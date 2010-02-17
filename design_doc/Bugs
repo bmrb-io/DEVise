@@ -4347,8 +4347,9 @@ java.lang.NullPointerException: null pData
 			problem from happening!).
 			(Fixed in 1.10.1 by wenger, 2/16/10.)
 
-997 2/15/10	OPEN	-allowCore command-line argument causes DEVise
+997 2/15/10	FIXED	-allowCore command-line argument causes DEVise
 			to hang. (wenger)
+			(Fixed in 1.10.1 by wenger, 2/17/10.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
