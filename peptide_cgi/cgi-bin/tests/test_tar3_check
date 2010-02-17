@@ -93,7 +93,7 @@ set line = '^2 17 LEU -100.00 -10.00 2_16_C C 2_17_N N 2_17_CA CA 2_17_C C phi -
 source tests/check4line
 
 set file = "data_dir/4310tar-md5.dat"
-set line = '^EA 1	1	Phi angle lower/upper/avg	phi	ViewAngleUnselectedDataChild	ViewAngleSelectedDataChild	ViewAngleDataDotsChild	\$averageValue'
+set line = '^EA 1	1	Phi angle lower/upper/avg \[1\]	phi	ViewAngleUnselectedDataChild	ViewAngleSelectedDataChild	ViewAngleDataDotsChild	\$averageValue'
 source tests/check4line
-set line = '^EA 2	2	Other angle violation	other	ViewViolationUnselectedDataChild	ViewViolationSelectedDataChild	ViewViolationDataDotsChild	\$maxViolation'
+set line = '^EA 2	2	Other angle violation \[2\]	other	ViewViolationUnselectedDataChild	ViewViolationSelectedDataChild	ViewViolationDataDotsChild	\$maxViolation'
 source tests/check4line
