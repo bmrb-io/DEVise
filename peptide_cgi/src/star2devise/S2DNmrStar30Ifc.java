@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2009/10/28 19:25:43  wenger
+// Finished fixing things up for the new 3.0 SPARTA format (except that
+// the actual SPARTA output is still incorrect, so the tests are kind
+// of kludged for now -- they should be fixed when the actual SPARTA
+// output is fixed).
+//
 // Revision 1.18  2009/08/25 18:15:57  wenger
 // Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
 // to trunk.
@@ -200,7 +206,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
     protected String DELTA_CHEM_SHIFTS_MODEL_TYPE_SINGLE = "single";
     protected String DELTA_CHEM_SHIFTS_MODEL_TYPE_AVG = "average";
     protected String DELTA_CHEM_SHIFTS_MODEL_TYPE =
-      "_Entity_delta_chem_shifts.Model_type";
+      "_Entity_delta_chem_shifts.Conformer_type";
     protected String ENTITY_ASSEMBLY_ID = "_Entity_assembly.ID";
     protected String ENTITY_ASSEMBLY_ENTITY_ID = "_Entity_assembly.Entity_ID";
     protected String ENTITY_ID = "_Entity.ID";

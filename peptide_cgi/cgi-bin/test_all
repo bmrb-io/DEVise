@@ -143,6 +143,7 @@ if (($do_all != 0) or ($do_sparta != 0)) {
   RunTest("test_sparta4");
   RunTest("test_sparta5");
   RunTest("test_sparta5_3");
+  #TEMP RunTest("test_sparta6");
   RunTest("test_sparta6_3");
   RunTest("test_sparta7");
   RunTest("test_sparta8");

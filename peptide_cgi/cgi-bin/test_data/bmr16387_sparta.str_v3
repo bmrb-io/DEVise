@@ -9,7 +9,7 @@ save_
 save_delta_chem_shifts
    _Entity_delta_chem_shifts.Sf_category         delta_chem_shifts
    _Entity_delta_chem_shifts.Sf_framecode        delta_chem_shifts
-   _Entity_delta_chem_shifts.Model_type          single
+   _Entity_delta_chem_shifts.Conformer_type      single
    _Entity_delta_chem_shifts.Entry_ID            16387
    _Entity_delta_chem_shifts.ID                  1
 			
@@ -9268,7 +9268,7 @@ save_delta_chem_shifts_average
 
    _Entity_delta_chem_shifts.Sf_category         delta_chem_shifts
    _Entity_delta_chem_shifts.Sf_framecode        delta_chem_shifts_average
-   _Entity_delta_chem_shifts.Model_type          average
+   _Entity_delta_chem_shifts.Conformer_type      average
    _Entity_delta_chem_shifts.Entry_ID            16387
    _Entity_delta_chem_shifts.ID                  2
    _Entity_delta_chem_shifts.Details

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.180  2010/02/17 21:24:40  wenger
+// Fixed some errors in changing strings in the SPARTA session files.
+//
 // Revision 1.179  2010/02/17 18:48:41  wenger
 // Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
 //
@@ -1076,7 +1079,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.3x9"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.3x10"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
