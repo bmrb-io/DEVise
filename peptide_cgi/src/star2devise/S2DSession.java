@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.22.2.2  2010/02/10 17:04:59  wenger
 // Made a separate session template for remediated restraint torsion
 // angle visualizations -- still needs to be modified to work how we
@@ -446,7 +451,7 @@ TEMP*/
 	    baseName = "deltashift_sparta.base";
 	    dataSuffix = S2DNames.SPARTA_DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "15339td1";
+	    searchString1 = "16385sd1";
 	    break;
 
 	case S2DUtils.TYPE_TORSION_ANGLE:

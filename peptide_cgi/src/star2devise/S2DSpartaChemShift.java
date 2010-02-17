@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009
+// (c) Copyright 2009-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2009/10/20 22:07:56  wenger
+// Reorganized the chemical shift code by moving the code that actually
+// gets the data values out of S2DMain (as I did for S2DAtomicCoords).
+//
 // Revision 1.1  2009/10/20 16:54:10  wenger
 // Created a new S2DSpartaChemShift class and cleaned up S2DChemShift
 // class heirarchy in preparation for fixing things for the new SPARTA
