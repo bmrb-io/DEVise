@@ -505,6 +505,16 @@ Num Date        Status  Pri     Description
 				value.  (Maybe make a modified version
 				of bmr11030_3.str to test).  (wenger/elu)
 
+124 2/18/10	oPEN	2	S2DUtils.selectMatches() actually returns
+				a one element array with an element of ""
+				if there are no matches.  I don't think
+				this is so good, because it's kind of
+				ambiguous -- maybe it should either return
+				null or throw an exception if there are
+				no matches (but either case requires lots
+				of changes to other parts of the code).
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
