@@ -513,7 +513,8 @@ Num Date        Status  Pri     Description
 				null or throw an exception if there are
 				no matches (but either case requires lots
 				of changes to other parts of the code).
-				(wenger)
+				(wenger)  (Hmm -- maybe make a new subclass
+				of S2DException to throw in this case.)
 
 * Status:
 OPEN = item has not yet been addressed
