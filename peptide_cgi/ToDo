@@ -1,9 +1,5 @@
 			Peptide-CGI To-Do List
-<<<<<<< ToDo
 			$Revision$
-=======
-			$Revision$
->>>>>>> 1.61.2.5
 
 Num Date        Status  Pri     Description
 --- --------    ------  ---     -----------------------------------------------
@@ -460,7 +456,10 @@ Num Date        Status  Pri     Description
 				something else) for 4096 summary page.
 				(wenger)
 
-<<<<<<< ToDo
+114 2/2/10	DONE	1	Add note about violoations being determined
+				by CING. (elu/wenger)
+				(Done by wenger, 2/4/10.)
+
 115 2/2/10	OPEN	3	Be able to deal with multiple chem shift
 				values for a single atom (for the same
 				entity assembly ID, etc.).  (Take highest
@@ -492,10 +491,19 @@ Num Date        Status  Pri     Description
 121 2/2/10	DONE	1	Add note about violoations being determined
 				by CING. (elu/wenger)
 				(Done by wenger, 2/4/10.)
+				(Duplicate of 114.)
 
-122 2/5/10	DONE?	1	Combine PDB IDs that are the same except
+122 2/5/10	DONE	1	Combine PDB IDs that are the same except
 				for case. (elu/wenger)
 				(Done by wenger, 2/5/10.)
+				(This was originally 115; changed in
+				merge.)
+
+123 2/18/10	OPEN	2	Deal with separate chemical shift lists
+				in the same save frame (distinguished by
+				_Atom_chem_shift.Assigned_chem_shift_list_ID
+				value.  (Maybe make a modified version
+				of bmr11030_3.str to test).  (wenger/elu)
 
 * Status:
 OPEN = item has not yet been addressed
