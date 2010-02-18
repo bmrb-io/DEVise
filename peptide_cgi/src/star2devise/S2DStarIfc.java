@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.17.6.1  2010/02/03 23:13:19  wenger
 // Torsion angle output from remediated restraints files now has different
 // suffixes to avoid conflict with the restraint grid output; meta-data
@@ -516,7 +521,9 @@ public abstract class S2DStarIfc {
      * @param The tag name for the values to get.
      * @param The maximum number of values to get (-1 for no limit).
      * @return An array containing the values (null if the given
-     *   values are not found).
+     *   values are not found). TEMP -- I don't think this comment about
+     *   returning null is correct.  Maybe we should throw an exception
+     *   if we don't find the data.  I think that might be what happens.
      */
     public String[] getFrameValues(SaveFrameNode frame, String loopId,
       String name, int maxVals) throws S2DException
@@ -607,6 +614,7 @@ public abstract class S2DStarIfc {
 	}
 
 	if (values.length == 0) {
+	    //TEMP -- this never happens! (see to-do 124).
 	    System.err.println("Warning: " + new S2DWarning("all " + name +
 	      " values rejected by matchVal " + matchVal));
 	}
