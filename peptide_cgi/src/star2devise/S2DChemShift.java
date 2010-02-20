@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2010/02/17 18:48:41  wenger
+// Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
+//
 // Revision 1.29  2010/02/01 21:42:32  wenger
 // Added new test of the latest-format SPARTA file, fixed a bug that it
 // found (not having to do with the new format!).
@@ -276,6 +279,7 @@ public class S2DChemShift {
     protected double[] _chemShiftVals;
     private int[] _ambiguityVals;
     protected int _entityAssemblyID;
+    protected String _chemShiftListID;
 
     protected String CHEMSHIFT_FILE = "chem_info" + File.separator;
     protected ShiftDataManager _refTable;
@@ -342,8 +346,8 @@ public class S2DChemShift {
     public static S2DChemShift createSparta(int polymerType, String name,
       String longName, S2DNmrStarIfc star, SaveFrameNode frame,
       String dataDir, String sessionDir, S2DSummaryHtml summary,
-      String entityAssemblyID, int modelNum, S2DResidues residues)
-      throws S2DException
+      String entityAssemblyID, String chemShiftListID, int modelNum,
+      S2DResidues residues) throws S2DException
     {
 	S2DChemShift chemShift = null;
 
@@ -352,7 +356,7 @@ public class S2DChemShift {
 	case S2DResidues.POLYMER_TYPE_UNKNOWN:
 	    chemShift = new S2DSpartaChemShift(name, longName, star,
 	      frame, dataDir, sessionDir, summary, entityAssemblyID,
-	      modelNum, residues);
+	      chemShiftListID, modelNum, residues);
 	    break;
 
 	//TEMP -- do we need to support DNA and RNA?
@@ -578,8 +582,8 @@ public class S2DChemShift {
      * @param The entity assembly ID.
      * @param Whether this is appending to the list of models.
      */
-    public void addSpartaData(Vector dataSets, boolean append)
-      throws S2DError
+    public void addSpartaData(Vector dataSets, int frameIndex,
+      boolean append) throws S2DError
     {
     }
 

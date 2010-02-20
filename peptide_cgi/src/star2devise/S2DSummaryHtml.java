@@ -31,6 +31,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.19.2.1  2010/02/04 00:08:27  wenger
 // Now writing remediated restraint links in summary page -- CGI links
 // don't seem to work right yet.
@@ -318,15 +323,17 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the SPARTA-calculated deltashift link.
-    public void writeSpartaDeltashift(int entityAssemblyID, int count)
-      throws IOException
+    public void writeSpartaDeltashift(int entityAssemblyID,
+      int frameIndex, int count) throws IOException
     {
 	if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeSpartaDeltashift()");
 	}
 
-    	_normal.writeSpartaDeltashift(entityAssemblyID, count);
-    	_large.writeSpartaDeltashift(entityAssemblyID, count);
+    	_normal.writeSpartaDeltashift(entityAssemblyID, frameIndex,
+	  count);
+    	_large.writeSpartaDeltashift(entityAssemblyID, frameIndex,
+	  count);
     }
 
     //-------------------------------------------------------------------

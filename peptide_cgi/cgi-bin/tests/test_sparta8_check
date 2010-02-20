@@ -1,7 +1,80 @@
 echo "Checking output files"
 
-#TEMPTEMP -- add files
-set files = ( )
+set files = ( data_dir/11030am1.dat \
+	data_dir/11030am2.dat \
+	data_dir/11030amac1.dat \
+	data_dir/11030amac2.dat \
+	data_dir/11030as1.dat \
+	data_dir/11030as2.dat \
+	data_dir/11030c1.dat \
+	data_dir/11030c2.dat \
+	data_dir/11030d1.dat \
+	data_dir/11030d2.dat \
+	data_dir/11030hc1.dat \
+	data_dir/11030hc2.dat \
+	data_dir/11030hn1.dat \
+	data_dir/11030hn2.dat \
+	data_dir/11030md.dat \
+	data_dir/11030p1.dat \
+	data_dir/11030p2.dat \
+	data_dir/11030rc1.dat \
+	data_dir/11030rc2.dat \
+	data_dir/11030rl.dat \
+	data_dir/11030sd1.dat \
+	data_dir/11030sd1_models.dat \
+	data_dir/11030sd2.dat \
+	data_dir/11030sd2_models.dat \
+	html_dir/11030am1.html \
+	html_dir/11030am1_large.html \
+	html_dir/11030am2.html \
+	html_dir/11030am2_large.html \
+	html_dir/11030as1.html \
+	html_dir/11030as1_large.html \
+	html_dir/11030as2.html \
+	html_dir/11030as2_large.html \
+	html_dir/11030c1.html \
+	html_dir/11030c1_large.html \
+	html_dir/11030c2.html \
+	html_dir/11030c2_large.html \
+	html_dir/11030d1.html \
+	html_dir/11030d1_large.html \
+	html_dir/11030d2.html \
+	html_dir/11030d2_large.html \
+	html_dir/11030hc1.html \
+	html_dir/11030hc1_large.html \
+	html_dir/11030hc2.html \
+	html_dir/11030hc2_large.html \
+	html_dir/11030hn1.html \
+	html_dir/11030hn1_large.html \
+	html_dir/11030hn2.html \
+	html_dir/11030hn2_large.html \
+	html_dir/11030p1.html \
+	html_dir/11030p1_large.html \
+	html_dir/11030p2.html \
+	html_dir/11030p2_large.html \
+	html_dir/11030sd1.html \
+	html_dir/11030sd1_large.html \
+	html_dir/11030sd2.html \
+	html_dir/11030sd2_large.html \
+	html_dir/11030y.html \
+	html_dir/11030y_large.html \
+	session_dir/11030acdd \
+	session_dir/11030am1.ds \
+	session_dir/11030am2.ds \
+	session_dir/11030as1.ds \
+	session_dir/11030as2.ds \
+	session_dir/11030c1.ds \
+	session_dir/11030c2.ds \
+	session_dir/11030d1.ds \
+	session_dir/11030d2.ds \
+	session_dir/11030hc1.ds \
+	session_dir/11030hc2.ds \
+	session_dir/11030hn1.ds \
+	session_dir/11030hn2.ds \
+	session_dir/11030p1.ds \
+	session_dir/11030p2.ds \
+	session_dir/11030sd1.ds \
+	session_dir/11030sd2.ds )
 
 foreach file ($files)
   if (! -f $file) then
@@ -10,45 +83,70 @@ foreach file ($files)
   endif
 end
 
-
 set file = "data_dir/11030d1.dat"
-set line = '^1 1 MET -0.521 0.0 -1.49 0.347$'
-#TEMPTEMP source tests/check4line
-set line = '^1 108 GLU -0.022 -0.635 -0.569 1.427$'
-#TEMPTEMP source tests/check4line
+set line = '^1 1 GLY 0.0 -3.787 -2.128 0.0$'
+source tests/check4line
+set line = '^1 110 ALA -0.267 5.221 0.933 0.505$'
+source tests/check4line
 
 set file = "data_dir/11030sd1.dat"
-set line = '^1 1 2 GLU -0.286 -1.14 0.09 0.731 0.0 0.0$'
-#TEMPTEMP source tests/check4line
-set line = '^1 1 107 LEU 0.242 -1.544 -1.754 0.886 -0.059 -0.457$'
-#TEMPTEMP source tests/check4line
-set line = '^1 20 2 GLU -0.143 -1.812 -0.099 0.943 0.0 0.0$'
-#TEMPTEMP source tests/check4line
-set line = '^1 20 107 LEU -0.08 -0.42 1.02 0.144 1.538 0.054$'
-#TEMPTEMP source tests/check4line
-set line = '^1 0 2 GLU -0.245 -1.449 0.202 0.053 0.0 0.0$'
-#TEMPTEMP source tests/check4line
-set line = '^1 0 107 LEU -0.031 0.038 0.022 0.675 0.875 -0.095$'
-#TEMPTEMP source tests/check4line
+set line = '^1 0 2 SER -0.086 -0.131 -1.466 -0.473 -1.31 0.444$'
+source tests/check4line
+set line = '^1 0 109 GLU 0.168 -1.35 -1.014 1.382 4.395 0.313$'
+source tests/check4line
+set line = '^1 1 2 SER -0.319 -0.268 0.431 0.231 -4.603 0.235$'
+source tests/check4line
+set line = '^1 1 109 GLU 0.246 -0.623 -1.641 1.558 5.71 -0.027$'
+source tests/check4line
+set line = '^1 3 2 SER -0.36 0.502 -1.484 -1.727 1.485 1.094$'
+source tests/check4line
+set line = '^1 3 109 GLU 0.28 -1.416 -1.737 1.434 3.888 0.389$'
+source tests/check4line
+
+set file = "data_dir/11030sd2.dat"
+set line = '^1 0 2 SER -0.096 -0.142 -1.598 -0.473 -1.31 0.444$'
+source tests/check4line
+set line = '^1 0 109 GLU 0.162 -1.35 -0.957 1.377 4.395 0.313$'
+source tests/check4line
+set line = '^1 1 2 SER -0.329 -0.279 0.299 0.231 -4.603 0.235$'
+source tests/check4line
+set line = '^1 1 109 GLU 0.24 -0.623 -1.584 1.553 5.71 -0.027$'
+source tests/check4line
+set line = '^1 3 2 SER -0.37 0.491 -1.616 -1.727 1.485 1.094$'
+source tests/check4line
+set line = '^1 3 109 GLU 0.274 -1.416 -1.68 1.429 3.888 0.389$'
+source tests/check4line
+set line = '^1 4 2 SER -0.328 -0.278 0.298 0.232 -4.604 0.236$'
+source tests/check4line
 
 set file = "html_dir/11030y.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
-#TEMPTEMP source tests/check4line
+source tests/check4line
 set line = '^    <td><a href="11030sd1.html">106 residues</a></td>$'
-#TEMPTEMP source tests/check4line
+source tests/check4line
+set line = '^    <td><a href="11030sd2.html">106 residues</a></td>$'
+source tests/check4line
 
 set file = "html_dir/11030y_large.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
-#TEMPTEMP source tests/check4line
+source tests/check4line
 set line = '^    <td><a href="11030sd1_large.html">106 residues</a></td>$'
-#TEMPTEMP source tests/check4line
+source tests/check4line
+set line = '^    <td><a href="11030sd2_large.html">106 residues</a></td>$'
+source tests/check4line
 
 set file = "html_dir/11030sd1.html"
 set line = '^  SPARTA-calculated Chemical Shift Delta (entity assembly 1)$'
-#TEMPTEMP source tests/check4line
+source tests/check4line
 
 set file = "data_dir/11030sd1_models.dat"
 set line = '^Avg	0$'
-#TEMPTEMP source tests/check4line
-set line = '^20	20$'
-#TEMPTEMP source tests/check4line
+source tests/check4line
+set line = '^3	3$'
+source tests/check4line
+
+set file = "data_dir/11030sd2_models.dat"
+set line = '^Avg	0$'
+source tests/check4line
+set line = '^4	4$'
+source tests/check4line

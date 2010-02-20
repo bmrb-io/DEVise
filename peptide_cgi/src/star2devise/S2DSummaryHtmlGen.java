@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2010/02/17 23:48:20  wenger
+// Added checking to test_sparta7; fixed a couple of bugs in the SPARTA
+// code.
+//
 // Revision 1.23  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -329,7 +333,7 @@ public abstract class S2DSummaryHtmlGen {
     private IntKeyHashtable _pistachioInfo = new IntKeyHashtable();
     private IntKeyHashtable _ambiguityInfo = new IntKeyHashtable();
 
-    private int _maxSpartaEntAssemID = 0;
+    private int _maxSpartaFrameIndex = 0;
     private IntKeyHashtable _spartaDSEntAssemIDInfo = new IntKeyHashtable();
     private IntKeyHashtable _spartaDeltaShiftInfo = new IntKeyHashtable();
 
@@ -682,26 +686,27 @@ TEMP?*/
     //-------------------------------------------------------------------
     // Writes the SPARTA-calculated deltashift link.
     protected void writeSpartaDeltashift(int entityAssemblyID,
-      int residueCount) throws IOException
+      int frameIndex, int residueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println(
 	      "S2DSummaryHtmlGen.writeSpartaDeltashift(" +
-	        entityAssemblyID + ", " + residueCount + ")");
+	        entityAssemblyID + ", " + frameIndex + ", " +
+		residueCount + ")");
 	}
 
-	_maxSpartaEntAssemID = Math.max(_maxSpartaEntAssemID,
-	  entityAssemblyID);
+	_maxSpartaFrameIndex = Math.max(_maxSpartaFrameIndex,
+	  frameIndex);
 
 	String value = "" + entityAssemblyID;
-        _spartaDSEntAssemIDInfo.put(entityAssemblyID, value);
+        _spartaDSEntAssemIDInfo.put(frameIndex, value);
 
 	String resNuc = "residues";
 	value = "<a href=\"" + _name +
-	  S2DNames.SPARTA_DELTASHIFT_SUFFIX + entityAssemblyID +
+	  S2DNames.SPARTA_DELTASHIFT_SUFFIX + frameIndex +
 	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + residueCount +
 	  " " + resNuc + "</a>";
-	_spartaDeltaShiftInfo.put(entityAssemblyID, value);
+	_spartaDeltaShiftInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
@@ -1330,7 +1335,7 @@ TEMP*/
     // Write the html table of SPARTA-calculated delta shifts.
     protected void writeSpartaDeltaShiftTable() throws IOException
     {
-        if (_maxSpartaEntAssemID > 0) {
+        if (_maxSpartaFrameIndex > 0) {
             _writer.write("\n<hr>\n");
 	    _writer.write("<p><b>SPARTA-calculated chemical shift " +
 	      "deltas</b></p>");
@@ -1344,7 +1349,7 @@ TEMP*/
 	    }
             _writer.write("  </tr>\n");
 
-            for (int index = 1; index <= _maxSpartaEntAssemID; index++ ) {
+            for (int index = 1; index <= _maxSpartaFrameIndex; index++ ) {
                 _writer.write("  <tr>\n");
 		// Get rid of frame details.
 		// _writer.write("    <th><a href=\"#Frame" + index +

@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2009/10/28 19:25:43  wenger
+// Finished fixing things up for the new 3.0 SPARTA format (except that
+// the actual SPARTA output is still incorrect, so the tests are kind
+// of kludged for now -- they should be fixed when the actual SPARTA
+// output is fixed).
+//
 // Revision 1.17  2009/08/25 18:15:57  wenger
 // Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
 // to trunk.
@@ -452,33 +458,17 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         return result;
     }
 
-    // ----------------------------------------------------------------------
-    /**
-     * Get a list of unique entity IDs referenced in the chemical shift
-     * loop of the given save frame.
-     * @param The save frame (note that this should be an
-     * assigned_chemical_shifts save frame).
-     * @return A Vector containing all relevant entity IDs (the Vector
-     * contains Strings).
-     */
-    public Vector getUniqueChemShiftEntityIDs(SaveFrameNode frame)
-    {
-        Vector result = new Vector();
-	result.add("");
-	return result;
-    }
-
     //-------------------------------------------------------------------
     /**
-     * Get a list of unique entity assembly IDs for the given frame
-     * and loop tag.  If there are no valid entity assembly ID values,
+     * Get a list of unique values for the given frame
+     * and loop tag.  If there are no valid values,
      * this method will return a Vector with the single value "".
      * @param The save frame to search
-     * @param The tag name holding entity assembly IDs in the given
+     * @param The tag name holding the values in the given
      *   frame
-     * @return A vector of unique entity assembly IDs (as Strings)
+     * @return A vector of unique values (as Strings)
      */
-    public Vector getUniqueEntityAssemblyIDs(SaveFrameNode frame,
+    public Vector getUniqueTagValues(SaveFrameNode frame,
       String tagName) throws S2DException
     {
         Vector result = new Vector();

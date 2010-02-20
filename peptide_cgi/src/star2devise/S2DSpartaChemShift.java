@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2010/02/17 21:24:40  wenger
+// Fixed some errors in changing strings in the SPARTA session files.
+//
 // Revision 1.2  2009/10/20 22:07:56  wenger
 // Reorganized the chemical shift code by moving the code that actually
 // gets the data values out of S2DMain (as I did for S2DAtomicCoords).
@@ -59,16 +62,19 @@ public class S2DSpartaChemShift extends S2DChemShift {
     public S2DSpartaChemShift(String name, String longName,
       S2DNmrStarIfc star, SaveFrameNode frame, String dataDir,
       String sessionDir, S2DSummaryHtml summary, String entityAssemblyID,
-      int modelNum, S2DResidues residues) throws S2DException
+      String chemShiftListID, int modelNum, S2DResidues residues)
+      throws S2DException
     {
 	super(name, longName, star, frame, dataDir, sessionDir, summary,
 	  entityAssemblyID);
 
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSpartaChemShift.S2DSpartaChemShift(" +
-	      name + ", " + entityAssemblyID + ", " + modelNum + ")");
+	      name + ", <" + entityAssemblyID + ">, <" + chemShiftListID +
+	      ">, " + modelNum + ")");
 	}
 
+	_chemShiftListID = chemShiftListID;
 	_modelNum = modelNum;
 
 	//
@@ -88,6 +94,13 @@ public class S2DSpartaChemShift extends S2DChemShift {
 	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
 	}
 
+	String[] chemShiftListIDs = null;
+	if (!chemShiftListID.equals("")) {
+	    chemShiftListIDs = star.getAndFilterFrameValues(frame,
+	      star.DELTA_SHIFT_VALUE, star.DELTA_CHEM_SHIFT_LIST_ID,
+	      entityAssemblyID, entityAssemblyIDs);
+	}
+
 	String[] modelNumsStr = null;
 	if (modelNum != 0) {
 	    modelNumsStr = star.getAndFilterFrameValues(frame,
@@ -100,25 +113,48 @@ public class S2DSpartaChemShift extends S2DChemShift {
 	  entityAssemblyID, entityAssemblyIDs);
 
 	_residueLabels = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_RES_LABEL, entityAssemblyID,
-	  entityAssemblyIDs);
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_RES_LABEL,
+	  entityAssemblyID, entityAssemblyIDs);
 	residues.make3Letter(_residueLabels);
 	_residueLabels = S2DUtils.arrayToUpper(_residueLabels);
 
 	_atomNames = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_NAME, entityAssemblyID,
-	  entityAssemblyIDs);
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_NAME,
+	  entityAssemblyID, entityAssemblyIDs);
 
 	_atomTypes = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_TYPE, entityAssemblyID,
-	  entityAssemblyIDs);
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_ATOM_TYPE,
+	  entityAssemblyID, entityAssemblyIDs);
 
 	String[] deltaShiftValsStr = star.getAndFilterFrameValues(frame,
-	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_VALUE, entityAssemblyID,
-	  entityAssemblyIDs);
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_VALUE,
+	  entityAssemblyID, entityAssemblyIDs);
 
 	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
 	  entityAssemblyID);
+
+	// Filter by chem shift list ID if necessary.
+    	if (!chemShiftListID.equals("")) {
+	    if (modelNumsStr != null) {
+                modelNumsStr = S2DUtils.selectMatches(chemShiftListIDs,
+                  modelNumsStr, chemShiftListID);
+            }
+
+            resSeqCodesStr = S2DUtils.selectMatches(chemShiftListIDs,
+              resSeqCodesStr, chemShiftListID);
+
+            _residueLabels = S2DUtils.selectMatches(
+              chemShiftListIDs, _residueLabels, chemShiftListID);
+
+            _atomNames = S2DUtils.selectMatches(chemShiftListIDs,
+              _atomNames, chemShiftListID);
+
+            _atomTypes = S2DUtils.selectMatches(chemShiftListIDs,
+	      _atomTypes, chemShiftListID);
+
+            deltaShiftValsStr = S2DUtils.selectMatches(
+              chemShiftListIDs, deltaShiftValsStr, chemShiftListID);
+	}
 
 	// Filter by model number if necessary.
     	if (modelNum != 0) {
@@ -242,7 +278,8 @@ public class S2DSpartaChemShift extends S2DChemShift {
 	    // Write the link in the summary html file.
 	    //
 	    if (!append) {
-	        _summary.writeSpartaDeltashift(_entityAssemblyID, dsCount);
+	        _summary.writeSpartaDeltashift(_entityAssemblyID,
+		  frameIndex, dsCount);
 	    }
 
 	} catch (IOException ex) {
@@ -267,14 +304,14 @@ public class S2DSpartaChemShift extends S2DChemShift {
      * @param The entity assembly ID.
      * @param Whether this is appending to the list of models.
      */
-    public void addSpartaData(Vector dataSets, boolean append)
-      throws S2DError
+    public void addSpartaData(Vector dataSets, int frameIndex,
+      boolean append) throws S2DError
     {
         FileWriter spartaWriter = null;
 
 	try {
 	    String fileName = _dataDir + File.separator + _name +
-	      S2DNames.SPARTA_DELTASHIFT_SUFFIX + _entityAssemblyID +
+	      S2DNames.SPARTA_DELTASHIFT_SUFFIX + frameIndex +
 	      S2DNames.MODELS_SUFFIX + S2DNames.DAT_SUFFIX;
 	    if (append) {
                 spartaWriter = S2DFileWriter.append(fileName);

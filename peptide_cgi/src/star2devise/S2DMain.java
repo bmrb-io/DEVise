@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.182  2010/02/17 23:48:20  wenger
+// Added checking to test_sparta7; fixed a couple of bugs in the SPARTA
+// code.
+//
 // Revision 1.181  2010/02/17 21:58:12  wenger
 // Changed the code and older test files to match the latest SPARTA
 // file versions.
@@ -1083,7 +1087,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.3x10"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.3x11"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
@@ -3245,7 +3249,7 @@ public class S2DMain {
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
 
-	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	    Vector entityAssemblyIDList = star.getUniqueTagValues(
 	      frame, star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 	        String entityAssemblyID =
@@ -3343,8 +3347,12 @@ public class S2DMain {
 	    throw new S2DError("No SPARTA (" + type + ") save frame found!");
 	}
 
-	Vector entityAssemblyIDList = spartaStar.getUniqueEntityAssemblyIDs(
+	Vector entityAssemblyIDList = spartaStar.getUniqueTagValues(
 	  frame, spartaStar.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
+	Vector chemShiftListIDList = spartaStar.getUniqueTagValues(
+	  frame, spartaStar.DELTA_CHEM_SHIFT_LIST_ID);
+
+	int frameIndex = 1;
 	for (int index = 0; index < entityAssemblyIDList.size();
 	  index++) {
 	    String entityAssemblyID =
@@ -3357,27 +3365,36 @@ public class S2DMain {
 	    S2DResidues residues = getFrameResCounts(mainStar, frame,
 	      entityID, 0);
 
-	    int minModelNum = 0;
-	    int maxModelNum = 0;
-	    if (!isAvg) {
-		minModelNum = 1;
-		maxModelNum = getSpartaMaxModelNum(spartaStar, frame,
-		  entityAssemblyID);
-	    }
-	    for (int modelNum = minModelNum; modelNum <= maxModelNum;
-	      modelNum++) {
-	        try {
-	            saveFrameSpartaDeltaShifts(spartaStar, frame,
-		      entityAssemblyID, modelNum, residues, append);
-		} catch (Exception ex) {
-		    System.err.println("Warning: error saving SPARTA " +
-		      "delta shifts for save frame " +
-		      spartaStar.getFrameName(frame) + " (" +
-		      entityAssemblyID + ", " + modelNum + "): " +
+	    for (int cslIndex = 0; cslIndex < chemShiftListIDList.size();
+	      cslIndex++) {
+	        String chemShiftListID =
+	          (String)chemShiftListIDList.get(cslIndex);
+
+	        int minModelNum = 0;
+	        int maxModelNum = 0;
+	        if (!isAvg) {
+		    minModelNum = 1;
+		    maxModelNum = getSpartaMaxModelNum(spartaStar, frame,
+		      entityAssemblyID, chemShiftListID);
+	        }
+	        for (int modelNum = minModelNum; modelNum <= maxModelNum;
+	          modelNum++) {
+	            try {
+	                saveFrameSpartaDeltaShifts(spartaStar, frame,
+		          entityAssemblyID, chemShiftListID, modelNum,
+			  residues, frameIndex, append);
+		    } catch (Exception ex) {
+		        System.err.println("Warning: error saving SPARTA " +
+		          "delta shifts for save frame " +
+		          spartaStar.getFrameName(frame) + " (" +
+		          entityAssemblyID + ", " + modelNum + "): " +
 		      ex.toString());
-		}
-	    }
-        }
+		    }
+	        }
+
+	        frameIndex++;
+            }
+	}
     }
 
     //-------------------------------------------------------------------
@@ -3395,7 +3412,7 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	    Vector entityAssemblyIDList = star.getUniqueTagValues(
 	      frame, star.T1_ENTITY_ASSEMBLY_ID);
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 		String entityAssemblyID =
@@ -3440,7 +3457,7 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	    Vector entityAssemblyIDList = star.getUniqueTagValues(
 	      frame, star.T2_ENTITY_ASSEMBLY_ID);
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 		String entityAssemblyID =
@@ -3485,7 +3502,7 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	    Vector entityAssemblyIDList = star.getUniqueTagValues(
 	      frame, star.HET_NOE_ENTITY_ASSEMBLY_ID_1);
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 		String entityAssemblyID =
@@ -3540,7 +3557,7 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	    Vector entityAssemblyIDList = star.getUniqueTagValues(
 	      frame, star.COUPLING_ENTITY_ASSEMBLY_ID_1);
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 		String entityAssemblyID =
@@ -3594,7 +3611,7 @@ public class S2DMain {
 	int frameIndex = 1;
         while (frameList.hasMoreElements()) {
 	    SaveFrameNode frame = (SaveFrameNode)frameList.nextElement();
-	    Vector entityAssemblyIDList = star.getUniqueEntityAssemblyIDs(
+	    Vector entityAssemblyIDList = star.getUniqueTagValues(
 	      frame, star.ORDER_ENTITY_ASSEMBLY_ID);
 	    for (int index = 0; index < entityAssemblyIDList.size(); index++) {
 		String entityAssemblyID =
@@ -3907,15 +3924,18 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Get the maximum model number for which there is SPARTA-calculated
-    // delta shift data, for a given save frame and entity assembly ID.
+    // delta shift data, for a given save frame, entity assembly ID,
+    // and chem shift list ID.
     // (Note that this method will fail on a frame containing average
     // values rather than values for individual models.)
     private int getSpartaMaxModelNum(S2DNmrStarIfc star,
-      SaveFrameNode frame, String entityAssemblyID) throws S2DException
+      SaveFrameNode frame, String entityAssemblyID,
+      String chemShiftListID) throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.getSpartaMaxModelNum(" +
-	      star.getFrameName(frame) + " (" + entityAssemblyID + ")");
+	      star.getFrameName(frame) + " (<" + entityAssemblyID +
+	      ">, <" + chemShiftListID + ">)");
 	}
 
 	// If a non-blank entityAssemblyID is specified, we need to filter
@@ -3931,9 +3951,25 @@ public class S2DMain {
 	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
 	}
 
+	// If a non-blank chemShiftListID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// chemShiftListID.  To do that, we get the chemShiftListID
+	// values in each row of the loop.
+	String[] chemShiftListIDs = null;
+	if (!chemShiftListID.equals("")) {
+	    chemShiftListIDs = star.getAndFilterFrameValues(frame,
+	      star.DELTA_CHEM_SHIFT_LIST_ID, star.DELTA_CHEM_SHIFT_LIST_ID,
+	      entityAssemblyID, entityAssemblyIDs);
+	}
+
 	String[] modelNumsStr = star.getAndFilterFrameValues(frame,
 	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_MODEL_NUM,
 	  entityAssemblyID, entityAssemblyIDs);
+	// Now filter by chemShiftListID if necessary.
+	if (!chemShiftListID.equals("")) {
+	    modelNumsStr = S2DUtils.selectMatches(chemShiftListIDs,
+	      modelNumsStr, chemShiftListID);
+	}
 	int[] modelNums = S2DUtils.arrayStr2Int(modelNumsStr,
 	  star.DELTA_SHIFT_RES_SEQ_CODE);
 	modelNumsStr = null;
@@ -3943,24 +3979,26 @@ public class S2DMain {
 		maxModelNum = Math.max(maxModelNum, modelNums[index]);
 	}
 
+        if (doDebugOutput(4)) {
+	    System.out.println("  maxModelNum: " + maxModelNum);
+	}
+
 	return maxModelNum;
     }
 
     //-------------------------------------------------------------------
     // Save (pre-calculated) delta shifts for one save frame.
     private void saveFrameSpartaDeltaShifts(S2DNmrStarIfc star,
-      SaveFrameNode frame, String entityAssemblyID, int modelNum,
-      S2DResidues residues, boolean append)
-      throws S2DException
+      SaveFrameNode frame, String entityAssemblyID,
+      String chemShiftListID, int modelNum, S2DResidues residues,
+      int frameIndex, boolean append) throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveFrameSpartaDeltaShifts(" +
-	      star.getFrameName(frame) + " (" + entityAssemblyID + ", " +
-	      modelNum + "), " + append + ")");
+	      star.getFrameName(frame) + " (<" + entityAssemblyID +
+	      ">, <" + chemShiftListID + ">, " + modelNum + ", " +
+	      frameIndex + "), " + append + ")");
 	}
-
-	int entityAssemblyIDVal = star.getEntityAssemblyID(frame,
-	  entityAssemblyID);
 
 	//
 	// Create an S2DChemShift object with the values we just got.
@@ -3968,7 +4006,7 @@ public class S2DMain {
         S2DChemShift chemShift = S2DChemShift.createSparta(
 	  residues.getPolymerType(), _name, _longName, star, frame,
 	  _dataDir, _sessionDir, _summary, entityAssemblyID,
-	  modelNum, residues);
+	  chemShiftListID, modelNum, residues);
 
 	//
 	// Now go ahead and write out the delta shift values.
@@ -3976,8 +4014,8 @@ public class S2DMain {
 	_summary.startFrame(star.getFrameDetails(frame));
 
 	try {
-	    chemShift.writeDeltashifts(entityAssemblyIDVal, append);
-	    chemShift.addSpartaData(_dataSets, append);
+	    chemShift.writeDeltashifts(frameIndex, append);
+	    chemShift.addSpartaData(_dataSets, frameIndex, append);
 	} catch (S2DException ex) {
 	    // Don't throw a new exception here because we want to write as
 	    // much as we can, even if there's an error somewhere along the

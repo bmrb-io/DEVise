@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2009
+// (c) Copyright 2002-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2010/02/18 20:39:06  wenger
+// Added comments relating to to-do 124 (what to do if all values are
+// filtered).
+//
 // Revision 1.18  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -263,6 +267,7 @@ public abstract class S2DStarIfc {
     public String COUPLING_SF_CAT = "";
 
     public String DEFAULT_SAVEFRAME_CATEGORY = "";
+    public String DELTA_CHEM_SHIFT_LIST_ID = "";
     public String DELTA_CHEM_SHIFTS = "";
     public String DELTA_CHEM_SHIFTS_AVG = "";
     public String DELTA_SHIFT_SF_CAT = "";
@@ -772,14 +777,15 @@ public abstract class S2DStarIfc {
 
     //-------------------------------------------------------------------
     /**
-     * Get a list of unique entity IDs referenced in the chemical shift
-     * loop of the given save frame.
-     * @param The save frame (note that this should be an
-     * assigned_chemical_shifts save frame).
-     * @return A Vector containing all relevant entity IDs (the Vector
-     * contains Strings).
+     * Get a list of unique values for the given frame
+     * and loop tag.  If there are no valid values,
+     * this method will return a Vector with the single value "".
+     * @param The save frame to search
+     * @param The tag name holding the values in the given
+     *   frame
+     * @return A vector of unique values (as Strings)
      */
-    public Vector getUniqueChemShiftEntityIDs(SaveFrameNode frame)
+    public Vector getUniqueTagValues(SaveFrameNode frame)
       throws S2DException
     {
         return null;

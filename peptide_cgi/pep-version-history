@@ -7,6 +7,9 @@ Peptide-CGI 11.7.3
 * Added torsion angle restraint visualizations from remediated restraint
 files.
 
+* SPARTA visualizations now work with multiple entity assembly IDs and
+multiple chemical shift lists per entity assembly.
+
 * PDB IDs differing only by case are now considered the same.
 
 * More SPARTA file format updates.

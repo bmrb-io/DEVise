@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2009
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.19.6.1  2010/02/03 23:13:20  wenger
 // Torsion angle output from remediated restraints files now has different
 // suffixes to avoid conflict with the restraint grid output; meta-data
@@ -296,7 +301,8 @@ public class S2DUtils
      * @param An array of values to match with.
      * @param An array of values to be selected from.
      * @param The value to match with.
-     * @return An array of values selected from the values array.
+     * @return An array of values selected from the values array
+     *  (a one-element array with an element of "" if no matches).
      */
     public static String[] selectMatches(String[] keys, String[] values,
       String matchWith) throws S2DException
@@ -309,6 +315,14 @@ public class S2DUtils
         int matchCount = 0;
 	for (int index = 0; index < values.length; index++ ) {
 	    if (keys[index].equals(matchWith)) matchCount++;
+	}
+
+        if (matchCount < 1) {
+	    if (doDebugOutput(11) {
+	        System.err.println(new S2DWarning(
+		  "S2DUtils.selectMatches(): match value <" +
+		  matchWith + "> selects no values"));
+	    }
 	}
 
 	String[] result;

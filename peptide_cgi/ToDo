@@ -471,13 +471,15 @@ Num Date        Status  Pri     Description
 				entry file is 2.1 & SPARTA file is 3.x or
 				vice-versa). (dmaziuk/wenger)
 
-117 2/2/10	OPEN	2	Get SPARTA working for multiple entity
+117 2/2/10	DONE	2	Get SPARTA working for multiple entity
 				assembly IDs (needs example). (dmaziuk/elu/
 				wenger)
+				(Done by wenger, 2/19/10.)
 
-118 2/2/10	OPEN	2	Get SPARTA working properly for entries
+118 2/2/10	DONE	2	Get SPARTA working properly for entries
 				with multiple sets of chemical shifts (e.g.,
 				4001). (dmaziuk/elu/wenger)
+				(Done by wenger, 2/19/10.)
 
 119 2/2/10	OPEN	2	Visualization server should provide the user
 				more info if processing fails (maybe echo

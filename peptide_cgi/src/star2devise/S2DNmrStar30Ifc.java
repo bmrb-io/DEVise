@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2009
+// (c) Copyright 2004-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2010/02/17 21:58:12  wenger
+// Changed the code and older test files to match the latest SPARTA
+// file versions.
+//
 // Revision 1.19  2009/10/28 19:25:43  wenger
 // Finished fixing things up for the new 3.0 SPARTA format (except that
 // the actual SPARTA output is still incorrect, so the tests are kind
@@ -488,38 +492,38 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
     //-------------------------------------------------------------------
     /**
-     * Get a list of unique entity assembly IDs for the given frame
-     * and loop tag.  If there are no valid entity assembly ID values,
+     * Get a list of unique values for the given frame
+     * and loop tag.  If there are no valid values,
      * this method will return a Vector with the single value "".
      * @param The save frame to search
-     * @param The tag name holding entity assembly IDs in the given
+     * @param The tag name holding the values in the given
      *   frame
-     * @return A vector of unique entity assembly IDs (as Strings)
+     * @return A vector of unique values (as Strings)
      */
-    public Vector getUniqueEntityAssemblyIDs(SaveFrameNode frame,
+    public Vector getUniqueTagValues(SaveFrameNode frame,
       String tagName) throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DNmrStar30Ifc.getUniqueEntityAssemblyIDs(" +
+	    System.out.println("S2DNmrStar30Ifc.getUniqueTagValues(" +
 	      frame + ", " + tagName + ")");
 	}
 
 	Vector result = new Vector();
 
 	try {
-            String[] entityAssemblyIDs = getFrameValues(frame,
+            String[] values = getFrameValues(frame,
 	      tagName, tagName);
 
 	    // If all values are "?" or ".", treat this like it has
 	    // no entity assembly IDs at all.
-            if (S2DUtils.entireArrayMatches(entityAssemblyIDs, "?") ||
-                S2DUtils.entireArrayMatches(entityAssemblyIDs, ".")) {
+            if (S2DUtils.entireArrayMatches(values, "?") ||
+                S2DUtils.entireArrayMatches(values, ".")) {
 	        result.add("");
 		return result;
 	    } else {
-                for (int index = 0; index < entityAssemblyIDs.length; index++) {
-                    if (!result.contains(entityAssemblyIDs[index])) {
-		        result.add(entityAssemblyIDs[index]);
+                for (int index = 0; index < values.length; index++) {
+                    if (!result.contains(values[index])) {
+		        result.add(values[index]);
 	            }
                 }
 	    }
@@ -527,13 +531,13 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	    // This is so things can work without entity assembly IDs
 	    // for visualization server uploads.
 	    System.err.println("Warning (" + ex.toString() +
-	      ": unable to get entity assembly IDs; using default");
+	      ": unable to get " + tagName + " values; using default");
 	    result.add("");
 	}
 
         if (doDebugOutput(12)) {
 	    System.out.print(
-	      "S2DNmrStar30Ifc.getUniqueEntityAssemblyIDs() returns ");
+	      "S2DNmrStar30Ifc.getUniqueTagValues() returns ");
 	    for (int index = 0; index < result.size(); index++) {
 	        System.out.print((String)result.get(index) + " ");
 	    }
@@ -785,6 +789,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	COUPLING_SF_CAT = "_Coupling_constant_list.Sf_category";
 
 	DNA = "polydeoxyribonucleotide";
+	DELTA_CHEM_SHIFT_LIST_ID = "_Delta_CS.Assigned_chem_shift_list_ID";
 	DELTA_CHEM_SHIFTS = "delta_chem_shifts";
 	DELTA_CHEM_SHIFTS_AVG = "delta_chem_shifts_average";
 	DELTA_SHIFT_SF_CAT = "_Entity_delta_chem_shifts.Sf_category";
