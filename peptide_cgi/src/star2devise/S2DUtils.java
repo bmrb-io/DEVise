@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.20  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -318,7 +323,7 @@ public class S2DUtils
 	}
 
         if (matchCount < 1) {
-	    if (doDebugOutput(11) {
+	    if (doDebugOutput(11)) {
 	        System.err.println(new S2DWarning(
 		  "S2DUtils.selectMatches(): match value <" +
 		  matchWith + "> selects no values"));
