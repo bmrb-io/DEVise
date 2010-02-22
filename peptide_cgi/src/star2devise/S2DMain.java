@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.183  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.182  2010/02/17 23:48:20  wenger
 // Added checking to test_sparta7; fixed a couple of bugs in the SPARTA
 // code.
@@ -1087,7 +1092,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.3x11"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.3";
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
