@@ -100,11 +100,11 @@ set line = '^EA 2	2	Other angle lower/upper \[2\]	other	ViewAngleUnselectedDataC
 source tests/check4line
 
 set file = "html_dir/4310y.html"
-set line = '<a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=1CKK&number=4310&do_rrtar=3&coord_index=5&size_str=">1CKK</a>'
+set line = '<a href="http://.*/make_view?pdbid=1CKK&number=4310&do_rrtar=3&coord_index=5&size_str=">1CKK</a>'
 source tests/check4line
-set line = '<a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=2JZI&number=4310&do_rrtar=3&coord_index=32&size_str=">2JZI</a>'
+set line = '<a href="http://.*/make_view?pdbid=2JZI&number=4310&do_rrtar=3&coord_index=32&size_str=">2JZI</a>'
 source tests/check4line
-set line = '<a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=2K0E&number=4310&do_rrtar=3&coord_index=33&size_str=">2K0E</a>'
+set line = '<a href="http://.*/make_view?pdbid=2K0E&number=4310&do_rrtar=3&coord_index=33&size_str=">2K0E</a>'
 source tests/check4line
-set line = '<a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=2KNE&number=4310&do_rrtar=3&coord_index=36&size_str=">2KNE</a>'
+set line = '<a href="http://.*/make_view?pdbid=2KNE&number=4310&do_rrtar=3&coord_index=36&size_str=">2KNE</a>'
 source tests/check4line

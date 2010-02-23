@@ -65,5 +65,5 @@ set line = '^1 7 ILE 100.0 160.0 1_7_N N 1_7_CA CA 1_7_C C 1_8_N N psi 0.0 0.0'
 source tests/check4line
 
 set file = "html_dir/16270y.html"
-set line = '<a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=2KID&number=16270&do_rrtar=3&coord_index=2&size_str=">2KID</a>'
+set line = '<a href="http://.*/make_view?pdbid=2KID&number=16270&do_rrtar=3&coord_index=2&size_str=">2KID</a>'
 source tests/check4line

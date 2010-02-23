@@ -155,7 +155,7 @@ if (($do_all != 0) or ($do_tar != 0)) {
   RunTest("test_tar1i");
   RunTest("test_tar1imv");
   RunTest("test_tar2");
-  RunTest("test_tar2u");
+  #RunTest("test_tar2u");
   RunTest("test_tar2i");
   RunTest("test_tar2p");
   RunTest("test_tar2imv");
@@ -168,7 +168,7 @@ if (($do_all != 0) or ($do_tar != 0)) {
   # RunTest("test_tar1pu");
   RunTest("test_tar1pi");
   RunTest("test_tar2p");
-  RunTest("test_tar2pu");
+  #RunTest("test_tar2pu");
   RunTest("test_tar2pi");
   RunTest("test_tar3p");
   RunTest("test_tar4p");

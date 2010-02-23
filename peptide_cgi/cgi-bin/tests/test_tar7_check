@@ -61,5 +61,5 @@ set line = '^1 30 HIS -140.0 -100.0 1_29_C C 1_30_N N 1_30_CA CA 1_30_C C phi 0.
 source tests/check4line
 
 set file = "html_dir/4020y.html"
-set line = '<a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=1BRV&number=4020&do_rrtar=3&coord_index=1&size_str=">1BRV</a>'
+set line = '<a href="http://.*/make_view?pdbid=1BRV&number=4020&do_rrtar=3&coord_index=1&size_str=">1BRV</a>'
 source tests/check4line
