@@ -10,6 +10,9 @@ on teal).
 This document should probably be improved eventually -- right now it's
 mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
+- If releasing from the trunk (development series) make sure all stable
+  series changes have been merged to the trunk.
+
 - Make sure the version history is complete.
 
 - Get rid of the x<whatever> on the DEVise version -- e.g., change "1.9.2x3" to "1.9.2".
