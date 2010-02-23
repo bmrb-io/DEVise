@@ -1,3 +1,4 @@
+//TEMPTEMP -- don't commit until release is done
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2000-2010
@@ -21,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.184  2010/02/22 22:41:06  wenger
+// Changed version to 11.7.3 for release.
+//
 // Revision 1.183  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -1092,7 +1096,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.3";
+    public static final String PEP_CGI_VERSION = "11.7.4x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
