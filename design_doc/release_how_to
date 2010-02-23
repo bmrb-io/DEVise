@@ -119,8 +119,7 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
     - If we released from a stable series branch, merge the latest round
       of changes to the trunk.
 
-    - If we just made a new stable series branch, this stuff needs to be done
-      both on the trunk and on the stable series branch:
+    - On the branch we released from:
         - Increment DEVise version (with x1 on the end).
         - Add a corresponding section to the DEVise version history.
         - Increment JavaScreen version (with x1 on the end).
