@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.85  2009/12/08 16:12:40  wenger
+  Updated trademark to 2009.
+
   Revision 1.84  2009/12/07 21:39:48  wenger
   Merged devise_1_10_br_1 thru devise_1_10_br_2 to trunk.
 
@@ -29,6 +32,12 @@
   Revision 1.82  2009/12/03 16:15:14  wenger
   Changed DEVise version to 1.11.0x1 and JS version to 5.13.0; added
   appropriate version history sections.
+
+  Revision 1.81.2.5  2010/02/17 18:27:15  wenger
+  Fixed bug 997 (-allowCore command-line argument causes DEVise to hang).
+
+  Revision 1.81.2.4  2009/12/08 16:13:52  wenger
+  Updated trademark to 2009.
 
   Revision 1.81.2.3  2009/12/07 20:55:18  wenger
   Changed DEVise version to 1.10.1x1 and JavaScreen version to 5.12.1x1;
@@ -524,7 +533,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.0x1"/*TEMP*/;
+static const char *	version = "1.11.0x2"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2009";

@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.73.4.1  2010/02/17 18:27:09  wenger
+  Fixed bug 997 (-allowCore command-line argument causes DEVise to hang).
+
+  Revision 1.73  2008/09/11 20:55:31  wenger
+  A few more compile warning fixes...
+
   Revision 1.72  2008/06/11 19:16:56  wenger
   Fixed a problem that sometimes caused DEVise to free the same FontStruct
   twice; more flexible generation of font names (horizontal and vertical
@@ -1028,6 +1034,7 @@ void Init::DoInit(int &argc, char **argv)
 
       else if (strcmp(&argv[i][1], "allowCore") == 0) {
         AllowCoreDump();
+	MoveArg(argc,argv,i,1);
       }
 
       else {

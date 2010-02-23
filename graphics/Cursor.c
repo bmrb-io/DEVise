@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.44.14.1  2010/02/16 23:16:01  wenger
+  Fixed bug 996 (certain combinations of JavaScreen cursor actions
+  crashed devised).
+
+  Revision 1.44  2003/01/13 19:25:09  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.43.10.1  2002/08/23 21:10:30  wenger
   Fixed a problem that sometimes caused a cursor with no source view
   to cause a core dump (fixes bug 679).
@@ -918,7 +925,14 @@ DeviseCursor::GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
 #endif
 
   if (_dst) {
-    _dst->GetVisualFilter(vFilter);
+    if (!_dst->GetWindowRep()) {
+#if defined(DEBUG)
+      printf("  Cursor has no destination WindowRep\n");
+#endif
+      result = false;
+    } else {
+      _dst->GetVisualFilter(vFilter);
+    }
   } else {
 #if defined(DEBUG)
     printf("  Cursor has no destination\n");

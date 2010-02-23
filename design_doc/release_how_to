@@ -116,11 +116,13 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
       and copy the file to /p/devise/wenger/src_archive).
 
 - Prepare for future releases:
-    - If we just made a new stable series branch, this stuff needs to be done
-      both on the trunk and on the stable series branch.
+    - If we released from a stable series branch, merge the latest round
+      of changes to the trunk.
 
-    - Increment DEVise version (with x1 on the end).
-    - Add a corresponding section to the DEVise version history.
-    - Increment JavaScreen version (with x1 on the end).
-    - Add a corresponding section to the JavaScreen version history.
-    - Commit sources.
+    - If we just made a new stable series branch, this stuff needs to be done
+      both on the trunk and on the stable series branch:
+        - Increment DEVise version (with x1 on the end).
+        - Add a corresponding section to the DEVise version history.
+        - Increment JavaScreen version (with x1 on the end).
+        - Add a corresponding section to the JavaScreen version history.
+        - Commit sources.

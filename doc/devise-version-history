@@ -9,7 +9,10 @@ DEVise 1.11.0
 DEVise 1.10.1
 -------------
 
-(Nothing yet.)
+* Fixed bug 996 (certain combinations of cursor actions in the JavaScreen
+could cause DEVise to crash).
+
+* Fixed bug 997 (problem with -allowCore flag).
 
 
 DEVise 1.10.0
