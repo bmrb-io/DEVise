@@ -522,6 +522,11 @@ Num Date        Status  Pri     Description
 				support to the make_uvd script.
 				(dmaziuk/wenger)
 
+126 3/2/10	OPEN	1	Add the ability to specify multiple paths
+				in STAR_URL (for 3.1 and 2.1 paths, so we
+				can do SPARTA processing with 3.1 files).
+				(dmaziuk/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
