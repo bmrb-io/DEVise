@@ -4369,6 +4369,10 @@ java.security.AccessControlException: access denied
         at sun.applet.AppletPanel.run(AppletPanel.java:503)
         at java.lang.Thread.run(Thread.java:613)
 
+999 3/8/10	OPEN	Using an expression in a parent view for an attribute
+			that maps to "parent value" in the child view
+			doesn't seem to work. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
