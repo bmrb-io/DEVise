@@ -271,8 +271,9 @@ Num Date        Status  Pri     Description
 				indication of overall success or failure.
 				(wenger)
 
-072 6/12/08	OPEN	3	Add NMR-STAR file version to detailed
+072 6/12/08	DONE	3	Add NMR-STAR file version to detailed
 				info in visualizations. (wenger)
+				(Done by wenger, 3/10/10)
 
 073 6/12/08	FIXED	2	Add a check for all
 				_Atom_chem_shift.Assign_fig_of_merit values
@@ -467,9 +468,11 @@ Num Date        Status  Pri     Description
 				do about actual chem shift values.) (elu/
 				wenger)
 
-116 2/2/10	OPEN	2	Get SPARTA working cross-version ("main"
+116 2/2/10	NLR	5	Get SPARTA working cross-version ("main"
 				entry file is 2.1 & SPARTA file is 3.x or
 				vice-versa). (dmaziuk/wenger)
+				(Working around this with multiple NMR-STAR
+				file paths -- see #126).
 
 117 2/2/10	DONE	2	Get SPARTA working for multiple entity
 				assembly IDs (needs example). (dmaziuk/elu/
@@ -523,7 +526,7 @@ Num Date        Status  Pri     Description
 				(dmaziuk/wenger)
 				(Done by wenger, 3/9/10.)
 
-126 3/2/10	OPEN	1	Add the ability to specify multiple paths
+126 3/2/10	ACTIVE	1	Add the ability to specify multiple paths
 				in STAR_URL (for 3.1 and 2.1 paths, so we
 				can do SPARTA processing with 3.1 files).
 				(dmaziuk/wenger)

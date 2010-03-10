@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2010/01/21 16:32:16  wenger
+// Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
+// to trunk.
+//
 // Revision 1.14.2.2  2010/01/19 19:07:29  wenger
 // Minor cleanups of PDB-only processing code.
 //
@@ -173,6 +177,14 @@ public class S2DmmCifIfc extends S2DStarIfc {
 
     //===================================================================
     // PUBLIC METHODS
+    //-------------------------------------------------------------------
+    /**
+     * Get the STAR file version corresponding to this object.
+     * @return The STAR file version corresponding to this object.
+     */
+    public String version() {
+        return "mmCIF";
+    }
 
     //-------------------------------------------------------------------
     public static String getFileName(String pdbId)

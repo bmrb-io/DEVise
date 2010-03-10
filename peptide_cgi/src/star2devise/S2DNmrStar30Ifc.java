@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.20  2010/02/17 21:58:12  wenger
 // Changed the code and older test files to match the latest SPARTA
 // file versions.
@@ -230,7 +235,13 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
      */
     public String version()
     {
-    	return "3.0";
+	String result = "NMR-STAR 3.0";
+
+	if (_versionStr != null) {
+	    result += " (" + _versionStr + ")";
+	}
+
+    	return result;
     }
 
     //-------------------------------------------------------------------
@@ -244,10 +255,10 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	    SaveFrameNode frame = getOneDataFrameByCat(ENTRY_SF_CAT,
 	      ENTRY_INFO);
 
-	    String version = getTagValue(frame, NMR_STAR_VERSION);
+	    _versionStr = getTagValue(frame, NMR_STAR_VERSION);
 
-            if (version.startsWith("3.0") ||
-	      version.startsWith("production.3.0")) {
+            if (_versionStr.startsWith("3.0") ||
+	      _versionStr.startsWith("production.3.0")) {
 	        result = true;
 	    }
 

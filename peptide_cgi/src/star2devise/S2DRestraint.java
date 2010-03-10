@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.2.4.1  2010/02/10 20:25:15  wenger
 // Put remediated restraint stuff into config files, etc.
 //
@@ -68,6 +73,7 @@ public class S2DRestraint {
     protected String _sessionDir;
     protected S2DSummaryHtml _summary;
     protected String _pdbId;
+    protected String _starVersion;
 
     //===================================================================
     // PUBLIC METHODS
@@ -141,7 +147,7 @@ public class S2DRestraint {
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DRestraint(String name, String longName,
+    public S2DRestraint(String name, String longName, S2DNmrStarIfc star,
       String dataDir, String sessionDir, S2DSummaryHtml summary,
       String pdbId) throws S2DException
     {
@@ -155,6 +161,8 @@ public class S2DRestraint {
         _summary = summary;
 
 	_pdbId = pdbId;
+
+	_starVersion = star.version();
     }
 
     //===================================================================

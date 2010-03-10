@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.3  2010/02/17 21:24:40  wenger
 // Fixed some errors in changing strings in the SPARTA session files.
 //
@@ -261,7 +266,8 @@ public class S2DSpartaChemShift extends S2DChemShift {
 	    // Write the session file
 	    //
 	    S2DSession.write(_sessionDir, sessionType,
-	      _name, frameIndex, _info, null, _hasRealCBShifts);
+	      _name, frameIndex, _info, null, _hasRealCBShifts,
+	      _starVersion);
 
 	    //
 	    // Write the session-specific html file.

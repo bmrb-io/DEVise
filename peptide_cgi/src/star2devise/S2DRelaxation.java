@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2010/02/17 18:48:41  wenger
+// Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
+//
 // Revision 1.11  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -129,6 +132,8 @@ public class S2DRelaxation {
     private String[] _relaxationValues;
     private String[] _relaxationErrors;
 
+    private String _starVersion;
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -228,7 +233,7 @@ public class S2DRelaxation {
 	    //
 	    String info = "Visualization of " + _longName;
 	    S2DSession.write(_sessionDir, _dataType,
-	      _name, frameIndex, info, _title);
+	      _name, frameIndex, info, _title, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.

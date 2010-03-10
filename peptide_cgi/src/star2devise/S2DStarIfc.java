@@ -25,6 +25,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.19  2010/02/18 20:39:06  wenger
 // Added comments relating to to-do 124 (what to do if all values are
 // filtered).
@@ -401,6 +406,13 @@ public abstract class S2DStarIfc {
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    /**
+     * Get the STAR file version corresponding to this object.
+     * @return The STAR file version corresponding to this object.
+     */
+    public abstract String version();
 
     //-------------------------------------------------------------------
     public String getFileName()

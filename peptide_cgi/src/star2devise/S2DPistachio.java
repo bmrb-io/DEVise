@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2009
+// (c) Copyright 2004-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2009/03/25 21:49:09  wenger
+// Final cleanup of some of the nucleic-acid-related code, especially
+// getting polymer types correctly for mmCIF files; added nucleic acid
+// tests to pre-release testing document.
+//
 // Revision 1.11  2009/02/25 21:33:14  wenger
 // Added residue labels to all data that were missing them (in preparation
 // for selection by nucleotide in nucleotide visualizations; also allows
@@ -116,15 +121,17 @@ public class S2DPistachio {
     private float[] _hGE95;
     private float[] _hLT95;
 
+    private String _starVersion;
+
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DPistachio(String name, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, int[] resSeqCodes, String[] residueLabels,
-      String[] atomNames, double[] meritVals, int entityAssemblyID,
-      String frameDetails) throws S2DException
+    public S2DPistachio(String name, S2DNmrStarIfc star, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
+      String[] residueLabels, String[] atomNames, double[] meritVals,
+      int entityAssemblyID, String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DPistachio.S2DPistachio(" + name +
@@ -142,6 +149,8 @@ public class S2DPistachio {
 	_atomNames = atomNames;
 	_meritVals = meritVals;
 	_entityAssemblyID = entityAssemblyID;
+
+	_starVersion = star.version();
 
 	calculatePistachioValues();
     }
@@ -203,7 +212,7 @@ public class S2DPistachio {
 	    String info = "Visualization of " + _name +
 	      " assignment figure of merit data";
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_PISTACHIO,
-	      _name, frameIndex, info);
+	      _name, frameIndex, info, null, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.

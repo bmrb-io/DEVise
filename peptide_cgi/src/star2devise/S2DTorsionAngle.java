@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2010/02/16 23:49:27  wenger
+// Fixed bugs 091 and 092 (problems with torsion angle visualizations).
+//
 // Revision 1.5  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -313,7 +316,7 @@ public class S2DTorsionAngle extends S2DRestraint {
       S2DNmrStarRestIfc star, String dataDir, String sessionDir,
       S2DSummaryHtml summary, String pdbId) throws S2DException
     {
-	super(name, longName, dataDir, sessionDir, summary, pdbId);
+	super(name, longName, star, dataDir, sessionDir, summary, pdbId);
 
         if (doDebugOutput(11)) {
 	    System.out.println("S2DTorsionAngle.S2DTorsionAngle(" + name + ")");
@@ -715,7 +718,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 	        info += " and PDB " + _pdbId;
 	    }
 	    S2DSession.write(_sessionDir, type, _name, frameIndex,
-	      info, null);
+	      info, null, true, _starVersion);
 
 	    //
 	    // Write the session-specific html files.

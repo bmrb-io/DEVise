@@ -31,6 +31,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.20  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -263,7 +268,7 @@ public class S2DSummaryHtml {
 	    System.out.println("S2DSummaryHtml.finalize()");
 	}
 
-        close(null, null);
+        close(null, null, "");
     }
 
     //-------------------------------------------------------------------
@@ -271,14 +276,15 @@ public class S2DSummaryHtml {
     // Now saves related BMRB and PDB IDs in this file, so we can check
     // whether related files have changed without parsing the main
     // BMRB file.
-    public void close(Vector bmrbIds, Vector pdbIds) throws S2DException
+    public void close(Vector bmrbIds, Vector pdbIds, String starVersion)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.close()");
 	}
 
-	_normal.close(bmrbIds, pdbIds);
-	_large.close(bmrbIds, pdbIds);
+	_normal.close(bmrbIds, pdbIds, starVersion);
+	_large.close(bmrbIds, pdbIds, starVersion);
     }
 
     //-------------------------------------------------------------------

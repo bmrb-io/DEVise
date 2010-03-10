@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.24  2010/02/17 23:48:20  wenger
 // Added checking to test_sparta7; fixed a couple of bugs in the SPARTA
 // code.
@@ -276,6 +281,7 @@ public abstract class S2DSummaryHtmlGen {
     private static final int DEBUG = 0;
 
     public static final String VERSION_LABEL = "PepCgi_version";
+    public static final String FILE_VERSION_LABEL = "Data_file_version";
     public static final String GEN_DATE_LABEL = "Generation_date";
     public static final String BMRB_ID_LABEL = "Related_BMRB_ID";
     public static final String PDB_ID_LABEL = "Related_PDB_ID";
@@ -431,7 +437,7 @@ public abstract class S2DSummaryHtmlGen {
 	    System.out.println("S2DSummaryHtml.finalize()");
 	}
 
-        close(null, null);
+        close(null, null, "");
     }
 
     //-------------------------------------------------------------------
@@ -487,7 +493,7 @@ public abstract class S2DSummaryHtmlGen {
     // Now saves related BMRB and PDB IDs in this file, so we can check
     // whether related files have changed without parsing the main
     // BMRB file.
-    protected void close(Vector bmrbIds, Vector pdbIds)
+    protected void close(Vector bmrbIds, Vector pdbIds, String starVersion)
       throws S2DException
     {
         if (doDebugOutput(11)) {
@@ -553,7 +559,9 @@ TEMP?*/
 		  "reprocessing\">\n");
 		_writer.write("</form>\n");
 
-	        _writer.write("\n<p>" + VERSION_LABEL + ": {" +
+	        _writer.write("\n<p>" + FILE_VERSION_LABEL + ": {" +
+	          starVersion + "}</p>\n");
+	        _writer.write("<p>" + VERSION_LABEL + ": {" +
 	          S2DMain.PEP_CGI_VERSION + "}</p>\n");
 	        _writer.write("<p>" + GEN_DATE_LABEL + ": {" +
 	          S2DMain.getTimestamp() + "}</p>\n");

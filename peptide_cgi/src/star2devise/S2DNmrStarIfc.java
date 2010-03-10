@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.30  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -264,6 +269,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     private double _seqIdentMin = 100.0;
 
     protected String _description;
+    protected String _versionStr = null;
 
     //===================================================================
     // PUBLIC METHODS
@@ -277,13 +283,6 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     {
     	return _description + " (version " + version() + ")";
     }
-
-    //-------------------------------------------------------------------
-    /**
-     * Get the NMR-STAR file version corresponding to this object.
-     * @return The NMR-STAR file version corresponding to this object.
-     */
-    public abstract String version();
 
     //-------------------------------------------------------------------
     // Returns the system name from the NMR-Star file.

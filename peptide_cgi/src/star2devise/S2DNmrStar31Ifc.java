@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2007-2008
+// (c) Copyright 2007-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.6.2.3  2008/11/19 20:25:18  wenger
 // Fixed problems with getEntityFrame(), added test13_3 to check changes.
 //
@@ -86,7 +89,13 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
      */
     public String version()
     {
-    	return "3.1";
+	String result = "NMR-STAR 3.1";
+
+	if (_versionStr != null) {
+	    result += " (" + _versionStr + ")";
+	}
+
+    	return result;
     }
 
     //-------------------------------------------------------------------
@@ -100,15 +109,15 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
 	    SaveFrameNode frame = getOneDataFrameByCat(ENTRY_SF_CAT,
 	      ENTRY_INFO);
 
-	    String version = getTagValue(frame, NMR_STAR_VERSION);
+	    _versionStr = getTagValue(frame, NMR_STAR_VERSION);
 
-            if (version.startsWith("3.1") ||
+            if (_versionStr.startsWith("3.1") ||
 	      // Note trailing dot below...
 	      // This test probably doesn't work for all possible NMR-STAR
 	      // 3.x versions, but everything except some of my existing
 	      // tests should actually be 3.1 as opposed to 3.0.  wenger
 	      // 2007-01-08.
-	      version.startsWith("3.0.")) {
+	      _versionStr.startsWith("3.0.")) {
 	        result = true;
 	    }
 

@@ -1,4 +1,3 @@
-//TEMPTEMP -- don't commit until release is done
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2000-2010
@@ -22,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.185  2010/02/23 20:04:28  wenger
+// Changed version to 11.7.4x1; added 11.7.4 version history section.
+//
 // Revision 1.184  2010/02/22 22:41:06  wenger
 // Changed version to 11.7.3 for release.
 //
@@ -1096,7 +1098,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.4x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.4x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
@@ -2692,7 +2694,7 @@ public class S2DMain {
 	        S2DChemShiftRef csr = new S2DChemShiftRef(_name, _longName,
 		  _dataDir, _csrDataDir, _sessionDir, _masterBmrbId,
 		  _localFiles, _cmdPdbId, _summary, _cmdFrameIndex,
-		  _csrTimeout, "");
+		  _csrTimeout, "", "");
 	        csr.run();
 	        csr.postProcess(_doProteinCheck);
 		if (!csr.ran() || csr.ranButFailed()) {
@@ -2723,7 +2725,7 @@ public class S2DMain {
 	        process1DistR(_distRFile, _distRUrl, _cmdPdbId);
 	    }
 
-	    _summary.close(null, null);
+	    _summary.close(null, null, "");
 
 	    // Note: we should delete this "junk" summary file here, but
 	    // File.delete() doesn't seem to work!  wenger 2003-09-12.
@@ -2760,7 +2762,8 @@ public class S2DMain {
 	if (_csrPdbIds.size() != 0 && _csrLevel == CSR_LEVEL_PROCESS) {
 	    csr = new S2DChemShiftRef(_name, _longName, _dataDir, _csrDataDir,
 	      _sessionDir, _masterBmrbId, _localFiles,
-	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "");
+	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "",
+	      "");
 	    csr.run();
 	}
 
@@ -2771,9 +2774,11 @@ public class S2DMain {
 	// Note: star seems to hold the *last* NMR-STAR file we process,
 	// which we need for processing PDB entries later on.
         S2DStarIfc star = null;
+	String starVersion = null;
 
 	if (!_masterBmrbId.equals("")) {
 	    star = processAllBMRBs(masterStar);
+	    starVersion = star.version();
 	}
 
 	//
@@ -2781,6 +2786,7 @@ public class S2DMain {
 	//
 	if (_localFiles.size() > 0) {
 	    star = processLocalFiles();
+	    if (starVersion == null) starVersion = star.version();
 	}
 
 	//
@@ -2791,7 +2797,8 @@ public class S2DMain {
 	  _csrLevel == CSR_LEVEL_PROCESS) {
 	    csr = new S2DChemShiftRef(_name, _longName, _dataDir, _csrDataDir,
 	      _sessionDir, _masterBmrbId, _localFiles,
-	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "");
+	      (String)_csrPdbIds.elementAt(0), _summary, 1, _csrTimeout, "",
+	      star.version());
 	    csr.run();
 	}
 
@@ -2837,7 +2844,8 @@ public class S2DMain {
 		    String csrPdb = (String)_csrPdbIds.elementAt(csrIndex);
 	            csr = new S2DChemShiftRef(_name, _longName, _dataDir,
 		      _csrDataDir, _sessionDir, _masterBmrbId, _localFiles,
-	              csrPdb, _summary, csrIndex + 1, _csrTimeout, "");
+	              csrPdb, _summary, csrIndex + 1, _csrTimeout, "",
+		      star.version());
 	            csr.run();
 	            csr.postProcess(_doProteinCheck);
 		    retry = csr.ranButFailed();
@@ -2871,7 +2879,7 @@ public class S2DMain {
 
 	processLACS();
 
-	_summary.close(_bmrbIds, _pdbIds);
+	_summary.close(_bmrbIds, _pdbIds, starVersion);
 	_summary = null;
 
 	runSetModes();
@@ -4010,7 +4018,7 @@ public class S2DMain {
 	}
 
 	//
-	// Create an S2DChemShift object with the values we just got.
+	// Create an S2DChemShift object.
 	//
         S2DChemShift chemShift = S2DChemShift.createSparta(
 	  residues.getPolymerType(), _name, _longName, star, frame,
@@ -4049,6 +4057,7 @@ public class S2DMain {
 	//
 	// Get the values we need from the Star file.
 	//
+	//TEMP -- move this to S2DRelaxation constructor
 
 	// If a non-blank entityAssemblyID is specified, we need to filter
 	// the frame values to only take the ones corresponding to that
@@ -4125,6 +4134,7 @@ public class S2DMain {
 	//
 	// Get the values we need from the Star file.
 	//
+	//TEMP -- move this to S2DRelaxation constructor
 
 	// If a non-blank entityAssemblyID is specified, we need to filter
 	// the frame values to only take the ones corresponding to that
@@ -4201,6 +4211,7 @@ public class S2DMain {
 	//
 	// Get the values we need from the Star file.
 	//
+	//TEMP -- move this to S2DCoupling constructor
 
 	// If a non-blank entityAssemblyID is specified, we need to filter
 	// the frame values to only take the ones corresponding to that
@@ -4263,8 +4274,8 @@ public class S2DMain {
 	//
 	// Create an S2DCoupling object with the values we just got.
 	//
-        S2DCoupling coupling = new S2DCoupling(_name, _longName, _dataDir,
-	  _sessionDir, _summary, couplingConstCodes, atom1ResSeqs,
+        S2DCoupling coupling = new S2DCoupling(_name, _longName, star,
+	  _dataDir, _sessionDir, _summary, couplingConstCodes, atom1ResSeqs,
 	  atom1ResLabels, atom1Names, atom2ResSeqs, atom2ResLabels,
 	  atom2Names, couplingConstValues, couplingConstErrors,
 	  entityAssemblyIDVal, star.getFrameDetails(frame));
@@ -4300,6 +4311,7 @@ public class S2DMain {
 	// TEMP -- NMR-STAR 3.0 has two residues for each heternuclear
 	// NOE, so we should probably deal with that eventually.
 	//
+	//TEMP -- move this to S2DHetNOE constructor
 
 	// If a non-blank entityAssemblyID is specified, we need to filter
 	// the frame values to only take the ones corresponding to that
@@ -4338,7 +4350,7 @@ public class S2DMain {
 	// Create an S2DHetNOE object with the values we just got.
 	//
 	// are dealt with really differently in 2.1 and 3.0
-	S2DHetNOE hetNOE = new S2DHetNOE(_name, _longName, _dataDir,
+	S2DHetNOE hetNOE = new S2DHetNOE(_name, _longName, star, _dataDir,
 	  _sessionDir, _summary,
 	  star.getOneFrameValue(frame, star.HET_NOE_SPEC_FREQ_1H),
 	  star.getHetNOEAtom1(frame), star.getHetNOEAtom2(frame),
@@ -4375,6 +4387,7 @@ public class S2DMain {
 	//
 	// Get the values we need from the Star file.
 	//
+	//TEMP -- move this to S2DS2Order constructor
 
 	// If a non-blank entityAssemblyID is specified, we need to filter
 	// the frame values to only take the ones corresponding to that
@@ -4414,9 +4427,9 @@ public class S2DMain {
 	//
 	// Create an S2DS2Order object with the values we just got.
 	//
-	S2DS2Order s2Order = new S2DS2Order(_name, _longName, _dataDir,
-	  _sessionDir, _summary, resSeqCodes, resLabels, atomNames,
-	  s2Values, s2Errors, entityAssemblyIDVal,
+	S2DS2Order s2Order = new S2DS2Order(_name, _longName, star,
+	  _dataDir, _sessionDir, _summary, resSeqCodes, resLabels,
+	  atomNames, s2Values, s2Errors, entityAssemblyIDVal,
 	  star.getFrameDetails(frame));
 
 	//
@@ -4500,6 +4513,7 @@ public class S2DMain {
 	//
 	// Get the values we need from the Star file.
 	//
+	//TEMP -- move this to S2DPistachio constructor
 	if (star.FIGURE_OF_MERIT.equals("")) {
 	    // File is not NMR-STAR 3.0
             if (doDebugOutput(4)) {
@@ -4558,7 +4572,7 @@ public class S2DMain {
 	//
 	// Create an S2DPistachio object with the values we just got.
 	//
-        S2DPistachio pistachio = new S2DPistachio(_name, _dataDir,
+        S2DPistachio pistachio = new S2DPistachio(_name, star, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, atomNames,
 	  meritVals, entityAssemblyIDVal, star.getFrameDetails(frame));
 
@@ -4628,6 +4642,7 @@ public class S2DMain {
 	//
 	// Get the values we need from the Star file.
 	//
+	//TEMP -- move this to S2DAmbiguity constructor
 	String[] entityAssemblyIDs = null;
 	if (!entityAssemblyID.equals("")) {
 	    entityAssemblyIDs = star.getFrameValues(frame,
@@ -4676,7 +4691,7 @@ public class S2DMain {
 	//
 	// Create an S2DAmbiguity object with the values we just got.
 	//
-        S2DAmbiguity ambiguity = new S2DAmbiguity(_name, _dataDir,
+        S2DAmbiguity ambiguity = new S2DAmbiguity(_name, star, _dataDir,
 	  _sessionDir, _summary, resSeqCodes, residueLabels, ambiguityVals,
 	  entityAssemblyIDVal, star.getFrameDetails(frame));
 
@@ -4731,12 +4746,13 @@ public class S2DMain {
 	      star.getFrameName(frame) + ", " + frameIndex + ")");
 	}
 
-	S2DLacs lacs = new S2DLacs(_name, _longName, _dataDir,
+	S2DLacs lacs = new S2DLacs(_name, _longName, star, _dataDir,
 	  _sessionDir, _summary, star.getFrameDetails(frame));
 
         //
         // Get the values we need from the Star file.
         //
+	//TEMP -- move this to S2DLacs constructor
 
 	lacs._xCoordName = star.getTagValue(frame, star.LACS_X_NAME);
 	lacs._yCoordName = star.getTagValue(frame, star.LACS_Y_NAME);

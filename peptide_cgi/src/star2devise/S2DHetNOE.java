@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2010/02/17 18:48:41  wenger
+// Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
+//
 // Revision 1.11  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -125,16 +128,19 @@ public class S2DHetNOE {
     private String[] _hetNOEValues;
     private String[] _hetNOEErrors;
 
+    private String _starVersion;
+
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DHetNOE(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, String frequency,
-      String atom1Name, String atom2Name, String[] resSeqCodes,
-      String[] resLabels, String[] hetNOEValues, String[] hetNOEErrors,
-      int entityAssemblyID, String frameDetails) throws S2DException
+    public S2DHetNOE(String name, String longName, S2DNmrStarIfc star,
+      String dataDir, String sessionDir, S2DSummaryHtml summary,
+      String frequency, String atom1Name, String atom2Name,
+      String[] resSeqCodes, String[] resLabels, String[] hetNOEValues,
+      String[] hetNOEErrors, int entityAssemblyID, String frameDetails)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DHetNOE.S2DHetNOE(" + name + ")");
@@ -157,6 +163,8 @@ public class S2DHetNOE {
         _resLabels = S2DUtils.arrayToUpper(resLabels);
         _hetNOEValues = hetNOEValues;
         _hetNOEErrors = hetNOEErrors;
+
+	_starVersion = star.version();
     }
 
     //-------------------------------------------------------------------
@@ -201,7 +209,7 @@ public class S2DHetNOE {
 	    //
 	    String info = "Visualization of " + _longName;
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_HETNOE,
-	      _name, frameIndex, info, _title);
+	      _name, frameIndex, info, _title, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.

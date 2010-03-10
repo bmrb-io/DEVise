@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2010/02/17 18:48:41  wenger
+// Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
+//
 // Revision 1.6  2009/11/11 20:32:41  wenger
 // Added new tests for dealing properly with methyl groups in 1H-13C
 // simulated spectra.  (Tests work right now with a kludged connections
@@ -185,8 +188,8 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    //
 	    // Write the session file
 	    //
-	    S2DSession.write(_sessionDir, sessionType,
-	      _name, frameIndex, _info, null, _hasRealCBShifts);
+	    S2DSession.write(_sessionDir, sessionType, _name, frameIndex,
+	      _info, null, _hasRealCBShifts, _starVersion);
 
 	    //
 	    // Write the session-specific html file.
@@ -308,8 +311,8 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    //
 	    // Write the session file.
 	    //
-	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CSI,
-	      _name, frameIndex, _info, null, _hasRealCBShifts);
+	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CSI, _name,
+	      frameIndex, _info, null, _hasRealCBShifts, _starVersion);
 
 	    //
 	    // Write the session-specific html file.
@@ -448,7 +451,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    // Write the session file.
 	    //
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_PCT_ASSIGN,
-	      _name, frameIndex, _info);
+	      _name, frameIndex, _info, null, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.
@@ -586,7 +589,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	        // Write the session file.
 	        //
 	        S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
-	          _name, frameIndex, _info);
+	          _name, frameIndex, _info, null, true, _starVersion);
 
 	        //
 	        // Write the session-specific html file.
@@ -689,7 +692,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	        // Write the session file.
 	        //
 	        S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSC_CHEM_SHIFTS,
-	          _name, frameIndex, _info);
+	          _name, frameIndex, _info, null, true, _starVersion);
 
 	        //
 	        // Write the session-specific html file.

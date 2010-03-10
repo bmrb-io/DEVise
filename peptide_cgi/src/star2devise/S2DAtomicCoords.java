@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2010/02/11 22:13:10  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.15.2.1  2010/02/09 22:41:20  wenger
 // Mostly done getting coordinates from remediated restraint files --
 // seems to work, but still needs some checking.
@@ -193,6 +198,8 @@ public class S2DAtomicCoords {
 
     private String _outputFile;
 
+    private String _starVersion;
+
     // The number of bonds actually written.
     private int _bondCount;
 
@@ -298,6 +305,8 @@ public class S2DAtomicCoords {
 	        _pdbId = _pdbId.substring(0, index);
 	    }
 	}
+
+	_starVersion = star.version();
 
 	setUpTranslation();
     }
@@ -421,7 +430,7 @@ public class S2DAtomicCoords {
 	            info += " and PDB " + _pdbId;
 	        }
 	        S2DSession.write(_sessionDir, S2DUtils.TYPE_ATOMIC_COORDS,
-	          _name, frameIndex, info, null);
+	          _name, frameIndex, info, null, true, _starVersion);
 
 	        //
 	        // Write the session-specific html file.
@@ -538,7 +547,7 @@ public class S2DAtomicCoords {
 	        info += " and PDB " + _pdbId;
 	    }
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ATOMIC_COORDS,
-	      _name, frameIndex, info, null);
+	      _name, frameIndex, info, null, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.

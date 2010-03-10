@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2010/02/20 00:18:36  wenger
+// Finished getting SPARTA processing to work with multiple entity
+// assemblies (to-do 117) and multiple chemical shift lists per entity
+// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
+//
 // Revision 1.30  2010/02/17 18:48:41  wenger
 // Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
 //
@@ -293,6 +298,8 @@ public class S2DChemShift {
     protected float[] _nDeltaShifts; // for SPARTA only
     protected float[] _hDeltaShifts; // for SPARTA only
 
+    protected String _starVersion;
+
     // Distinguish between "real" CB shifts and the values plugged in
     // with the GLY HA3->CB translation.
     protected boolean _hasRealCBShifts;
@@ -397,6 +404,8 @@ public class S2DChemShift {
 	  entityAssemblyID);
 
 	_info = "Visualization of " + _longName;
+
+	_starVersion = star.version();
     }
 
     //-------------------------------------------------------------------
@@ -468,7 +477,7 @@ public class S2DChemShift {
 	    // Write the session file.
 	    //
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ALL_CHEM_SHIFTS,
-	      _name, frameIndex, _info);
+	      _name, frameIndex, _info, null, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2008
+// (c) Copyright 2005-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2008/06/04 21:12:01  wenger
+// New Peptide-CGI summary page is implemented, test work except for
+// test52 for some weird reason.  (Still may need some other changes
+// before release, though.)
+//
 // Revision 1.5  2008/04/09 19:35:41  wenger
 // Added frame details to individual visualization pages in preparation
 // for summary page changes; spelled out Linear Analysis of Chemical
@@ -136,14 +141,16 @@ public class S2DLacs {
     private XYPair _lineIntersect;
     private boolean _lineIntersectValid;
 
+    private String _starVersion;
 
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DLacs(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, String frameDetails)
+    public S2DLacs(String name, String longName, S2DStarIfc star,
+      String dataDir, String sessionDir, S2DSummaryHtml summary,
+      String frameDetails)
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DLacs.S2DLacs(" + name + ")");
@@ -159,6 +166,8 @@ public class S2DLacs {
 	_line2 = new Line();
 	_lineIntersect = new XYPair();
 	_lineIntersectValid = false;
+
+	_starVersion = star.version();
     }
 
     //-------------------------------------------------------------------
@@ -278,7 +287,7 @@ public class S2DLacs {
 	    //
 	    String info = "Visualization of " + _longName;
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_LACS,
-	      _name, frameIndex, info, _title);
+	      _name, frameIndex, info, _title, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2008
+// (c) Copyright 2003-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.9  2008/12/01 20:37:52  wenger
+// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
+//
 // Revision 1.8.2.1  2008/11/11 20:47:50  wenger
 // Progress on getting entity assembly IDs correct for coupling constants,
 // heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
@@ -110,13 +113,16 @@ public class S2DChemShiftRef
     private boolean _ranButFailed = false;
     private boolean _csrRan = false;
 
+    private String _starVersion;
+
     //===================================================================
     // PUBLIC METHODS
 
     public S2DChemShiftRef(String name, String longName, String dataDir,
 	  String csrDataDir, String sessionDir, String bmrbId,
 	  Vector localFiles, String pdbId, S2DSummaryHtml summary,
-	  int frameIndex, int timeout, String frameDetails)
+	  int frameIndex, int timeout, String frameDetails,
+	  String starVersion)
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DChemShiftRef.S2DChemShiftRef(" + name +
@@ -148,6 +154,8 @@ public class S2DChemShiftRef
 	_frameDetails = frameDetails;
 	_frameIndex = frameIndex;
 	_timeout = timeout;
+
+	_starVersion = starVersion;
     }
 
     public void run() throws S2DException
@@ -264,13 +272,13 @@ public class S2DChemShiftRef
 	    // Write the session files.
 	    //
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF1, _name,
-	      _frameIndex, "");
+	      _frameIndex, "", null, true, _starVersion);
 
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF2, _name,
-	      _frameIndex, "");
+	      _frameIndex, "", null, true, _starVersion);
 
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF3, _name,
-	      _frameIndex, "");
+	      _frameIndex, "", null, true, _starVersion);
 
 	    //
 	    // Write the session-specific html files.

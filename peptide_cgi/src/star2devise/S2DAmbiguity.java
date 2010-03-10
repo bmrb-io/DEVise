@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2009
+// (c) Copyright 2005-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2009/03/25 21:49:09  wenger
+// Final cleanup of some of the nucleic-acid-related code, especially
+// getting polymer types correctly for mmCIF files; added nucleic acid
+// tests to pre-release testing document.
+//
 // Revision 1.13  2009/02/25 21:33:14  wenger
 // Added residue labels to all data that were missing them (in preparation
 // for selection by nucleotide in nucleotide visualizations; also allows
@@ -100,6 +105,8 @@ public class S2DAmbiguity {
     private int[] _ambiguityVals;
     private int _entityAssemblyID;
 
+    private String _starVersion;
+
     // Valid ambiguity codes are 1, 2, 3, 4, 5, and 9.
     private boolean[] _residueHasData;
     private String[] _resLabels; // indexed by residue number
@@ -115,10 +122,10 @@ public class S2DAmbiguity {
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DAmbiguity(String name, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, int[] resSeqCodes, String[] residueLabels,
-      int[] ambiguityVals, int entityAssemblyID, String frameDetails)
-      throws S2DException
+    public S2DAmbiguity(String name, S2DNmrStarIfc star, String dataDir,
+      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
+      String[] residueLabels, int[] ambiguityVals, int entityAssemblyID,
+      String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DAmbiguity.S2DAmbiguity(" + name +
@@ -135,6 +142,8 @@ public class S2DAmbiguity {
 	_residueLabels = residueLabels;
 	_ambiguityVals = ambiguityVals;
 	_entityAssemblyID = entityAssemblyID;
+
+	_starVersion = star.version();
 
 	calculateAmbiguityValues();
     }
@@ -195,7 +204,7 @@ public class S2DAmbiguity {
 	    String info = "Visualization of BMRB " + _name +
 	      " chemical shift ambiguity data";
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_AMBIGUITY,
-	      _name, frameIndex, info);
+	      _name, frameIndex, info, null, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.

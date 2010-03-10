@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2010/01/06 23:03:39  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.1.2.3  2010/01/06 22:21:56  wenger
 // Did a bunch of cleanups on the distance restraint code, in preparation
 // for merging it to the trunk, so I can suspend work on it and move to
@@ -86,7 +89,7 @@ public class S2DDistRestraint extends S2DRestraint {
       S2DNmrStarDistRIfc star, String dataDir, String sessionDir,
       S2DSummaryHtml summary, String pdbId) throws S2DException
     {
-	super(name, longName, dataDir, sessionDir, summary, pdbId);
+	super(name, longName, star, dataDir, sessionDir, summary, pdbId);
 
         if (doDebugOutput(11)) {
 	    System.out.println("S2DDistRestraint.S2DDistRestraint(" +

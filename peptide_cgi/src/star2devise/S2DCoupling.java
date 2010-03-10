@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.11  2010/02/17 18:48:41  wenger
+// Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
+//
 // Revision 1.10  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -122,18 +125,20 @@ public class S2DCoupling {
     private String[] _couplingConstValues;
     private String[] _couplingConstErrors;
 
+    private String _starVersion;
+
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DCoupling(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, String[] couplingConstCodes,
-      String[] atom1ResSeqs, String[] atom1ResLabels, String[] atom1Names,
-      String[] atom2ResSeqs, String[] atom2ResLabels, String[] atom2Names,
+    public S2DCoupling(String name, String longName, S2DNmrStarIfc star,
+      String dataDir, String sessionDir, S2DSummaryHtml summary,
+      String[] couplingConstCodes, String[] atom1ResSeqs,
+      String[] atom1ResLabels, String[] atom1Names, String[] atom2ResSeqs,
+      String[] atom2ResLabels, String[] atom2Names,
       String[] couplingConstValues, String[] couplingConstErrors,
-      int entityAssemblyID, String frameDetails)
-      throws S2DException
+      int entityAssemblyID, String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DCoupling.S2DCoupling(" + name +
@@ -156,6 +161,8 @@ public class S2DCoupling {
         _couplingConstValues = couplingConstValues;
         _couplingConstErrors = couplingConstErrors;
 	_entityAssemblyID = entityAssemblyID;
+
+	_starVersion = star.version();
     }
 
     //-------------------------------------------------------------------
@@ -208,7 +215,7 @@ public class S2DCoupling {
 	    //
 	    String info = "Visualization of " + _longName;
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_COUPLING,
-	      _name, frameIndex, info);
+	      _name, frameIndex, info, null, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.

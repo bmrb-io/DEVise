@@ -5,7 +5,10 @@ Peptide-CGI 11.7.4
 (Needs DEVise 1.10.1 or higher, JavaScreen client 5.10.0 or higher.)
 
 * Added -pdb_file, -lacs_file, and -sparta_file support to the
-make_uvd script
+make_uvd script.
+
+* Added NMR-STAR file version to summary html page and detailed
+visualization version info.
 
 
 Peptide-CGI 11.7.3

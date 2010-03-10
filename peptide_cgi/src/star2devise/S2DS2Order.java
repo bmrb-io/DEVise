@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2010/02/17 18:48:41  wenger
+// Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
+//
 // Revision 1.6  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -96,16 +99,18 @@ public class S2DS2Order {
     private String[] _s2OrderValues;
     private String[] _s2OrderErrors;
 
+    private String _starVersion;
+
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
     // Constructor.  (See S2DUtils for dataType.)
-    public S2DS2Order(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, String[] resSeqCodes,
-      String[] resLabels, String[] atomNames, String[] s2OrderValues,
-      String[] s2OrderErrors, int entityAssemblyID, String frameDetails)
-      throws S2DException
+    public S2DS2Order(String name, String longName, S2DNmrStarIfc star,
+      String dataDir, String sessionDir, S2DSummaryHtml summary,
+      String[] resSeqCodes, String[] resLabels, String[] atomNames,
+      String[] s2OrderValues, String[] s2OrderErrors,
+      int entityAssemblyID, String frameDetails) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DS2Order.S2DS2Order(" + name + ")");
@@ -123,6 +128,8 @@ public class S2DS2Order {
         _atomNames = atomNames;
         _s2OrderValues = s2OrderValues;
         _s2OrderErrors = s2OrderErrors;
+
+	_starVersion = star.version();
     }
 
     //-------------------------------------------------------------------
@@ -169,7 +176,7 @@ public class S2DS2Order {
 	    String title = "S2 Order Parameters (entity assembly " +
 	      _entityAssemblyID + ")";
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ORDER,
-	      _name, frameIndex, info, title);
+	      _name, frameIndex, info, title, true, _starVersion);
 
 	    //
 	    // Write the session-specific html file.
