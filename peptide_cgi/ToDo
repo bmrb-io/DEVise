@@ -518,9 +518,10 @@ Num Date        Status  Pri     Description
 				(wenger)  (Hmm -- maybe make a new subclass
 				of S2DException to throw in this case.)
 
-125 2/23/10	OPEN	1	Add -pdb_file, -lacs_file, and -sparta_file
+125 2/23/10	DONE	1	Add -pdb_file, -lacs_file, and -sparta_file
 				support to the make_uvd script.
 				(dmaziuk/wenger)
+				(Done by wenger, 3/9/10.)
 
 126 3/2/10	OPEN	1	Add the ability to specify multiple paths
 				in STAR_URL (for 3.1 and 2.1 paths, so we

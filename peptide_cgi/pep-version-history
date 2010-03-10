@@ -4,7 +4,8 @@ Peptide-CGI 11.7.4
 ------------------
 (Needs DEVise 1.10.1 or higher, JavaScreen client 5.10.0 or higher.)
 
-(Nothing yet.)
+* Added -pdb_file, -lacs_file, and -sparta_file support to the
+make_uvd script
 
 
 Peptide-CGI 11.7.3

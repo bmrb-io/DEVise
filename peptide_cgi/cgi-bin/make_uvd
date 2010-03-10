@@ -60,6 +60,9 @@ my $force = $query->param('force') || '';
 my $do_tar = $query->param('do_tar');
 my $do_rrtar = $query->param('do_rrtar');
 my $tar_url = $query->param('tar_url');
+my $pdb_file = $query->param('pdb_file');
+my $lacs_file = $query->param('lacs_file');
+my $sparta_file = $query->param('sparta_file');
 
 print "  file = $file\n" if ($debug);
 print "  name = $name\n" if ($debug);
@@ -104,6 +107,15 @@ if ($do_pdb) {
 }
 if ($tar_url) {
   $cmd = $cmd . " -tar_url " . $tar_url;
+}
+if ($pdb_file) {
+  $cmd = $cmd . " -pdb_file " . $pdb_file;
+}
+if ($lacs_file) {
+  $cmd = $cmd . " -lacs_file " . $lacs_file;
+}
+if ($sparta_file) {
+  $cmd = $cmd . " -sparta_file " . $sparta_file;
 }
 if ($force) {
   $cmd = $cmd . " -force";
