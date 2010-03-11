@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2010/02/20 00:19:29  wenger
+// Oops -- minor typo in last commit.
+//
 // Revision 1.21  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -160,6 +163,7 @@ package star2devise;
 import java.io.*;
 import java.util.*;
 import java.text.DateFormat;
+import java.net.*;
 
 public class S2DUtils
 {
@@ -605,6 +609,30 @@ TEMP*/
       String residueSeqCode, String atomName)
     {
         return entityAssemblyId + "_" + residueSeqCode + "_" + atomName;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Try a URL (find out whether it actually exists).  If the URL
+     * exists, we simply return; otherwise we throw an S2DError.
+     * @param The string representing the URL.
+     */
+    public static void tryUrl(String urlName) throws S2DError
+    {
+        if (doDebugOutput(11)) {
+            System.out.println("Trying URL: <" + urlName + ">");
+        }
+        try {
+            URL url = new URL(urlName);
+            InputStream is = url.openStream();
+            is.close();
+        } catch(Exception ex) {
+            if (doDebugOutput(11)) {
+                System.out.println("Unable to open stream from URL " +
+                urlName + " : " + ex.toString());
+            }
+	    throw new S2DError("URL " + urlName + " is not valid");
+        }
     }
 
     //===================================================================

@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.1.2.2  2010/01/06 22:21:57  wenger
 // Did a bunch of cleanups on the distance restraint code, in preparation
 // for merging it to the trunk, so I can suspend work on it and move to
@@ -60,9 +63,10 @@ public class S2DNmrStarSpartaIfcFactory extends S2DNmrStarIfcFactory {
     }
 
     //-------------------------------------------------------------------
-    public String getURLName(String fileName)
+    public String getURLName(String fileName) throws S2DException
     {
 	String url = S2DNames.SPARTA_URL + fileName;
+	S2DUtils.tryUrl(url);
 
 	return url;
     }

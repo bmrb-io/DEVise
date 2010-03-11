@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.2.4.2  2010/02/10 16:23:40  wenger
 // Removed a bunch of temporary stuff.
 //
@@ -69,7 +74,8 @@ public abstract class S2DNmrStarIfcFactory {
     public abstract String getFileName(String bmrbId);
 
     //-------------------------------------------------------------------
-    public abstract String getURLName(String fileName);
+    public abstract String getURLName(String fileName)
+      throws S2DException;
 
     //-------------------------------------------------------------------
     // Get the modification date/time of the appropriate NMR-Star file.
@@ -87,9 +93,7 @@ public abstract class S2DNmrStarIfcFactory {
 
 	    long timestamp = connection.getLastModified();
 	    date = new Date(timestamp);
-        } catch (MalformedURLException ex) {
-	    System.err.println("MalformedURLException: " + ex.toString());
-        } catch (IOException ex) {
+        } catch (Exception ex) {
 	    System.err.println("IOException: " + ex.toString());
 	}
 

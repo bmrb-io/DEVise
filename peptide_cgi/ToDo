@@ -526,10 +526,11 @@ Num Date        Status  Pri     Description
 				(dmaziuk/wenger)
 				(Done by wenger, 3/9/10.)
 
-126 3/2/10	ACTIVE	1	Add the ability to specify multiple paths
+126 3/2/10	DONE	1	Add the ability to specify multiple paths
 				in STAR_URL (for 3.1 and 2.1 paths, so we
 				can do SPARTA processing with 3.1 files).
 				(dmaziuk/wenger)
+				(Done by wenger, 3/11/10.)
 
 * Status:
 OPEN = item has not yet been addressed

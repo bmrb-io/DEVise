@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.15  2010/01/21 16:32:16  wenger
 // Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
 // to trunk.
@@ -197,13 +203,17 @@ public class S2DmmCifIfc extends S2DStarIfc {
     }
 
     //-------------------------------------------------------------------
-    public static String getURLName(String fileName)
+    public static String getURLName(String fileName) throws S2DException
     {
+	String urlName;
 	if (fileName.startsWith("file:")) {
-            return fileName;
+            urlName = fileName;
 	} else {
-            return S2DNames.PDB_FILE_URL + fileName;
+            urlName = S2DNames.PDB_FILE_URL + fileName;
 	}
+	S2DUtils.tryUrl(urlName);
+
+	return urlName;
     }
 
     //-------------------------------------------------------------------
@@ -219,9 +229,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 
 	    long timestamp = connection.getLastModified();
 	    date = new Date(timestamp);
-        } catch (MalformedURLException ex) {
-	    System.err.println("MalformedURLException: " + ex.toString());
-        } catch (IOException ex) {
+        } catch (Exception ex) {
 	    System.err.println("IOException: " + ex.toString());
 	}
 

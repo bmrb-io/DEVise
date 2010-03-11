@@ -23,6 +23,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.1.2.3  2010/02/05 20:46:13  wenger
 // Partially implemented getting remediated restraints file template from
 // properties.
@@ -61,15 +66,10 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
     }
 
     //-------------------------------------------------------------------
-    public String getURLName(String fileName)
+    public String getURLName(String fileName) throws S2DException
     {
-	String url = null;
-
-	try {
-	    url = pdbIdToUrl(fileName);
-        } catch (S2DException ex) {
-	    System.err.println("S2DException: " + ex.toString());
-	}
+	String url = pdbIdToUrl(fileName);
+	S2DUtils.tryUrl(url);
 
 	return url;
     }

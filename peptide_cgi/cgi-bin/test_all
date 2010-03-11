@@ -144,7 +144,8 @@ if (($do_all != 0) or ($do_sparta != 0)) {
   RunTest("test_sparta3_vs");
   RunTest("test_sparta3_3mu");
   RunTest("test_sparta4");
-  RunTest("test_sparta5");
+  # This doesn't work if we're processing 3.1 entries.
+  #RunTest("test_sparta5");
   RunTest("test_sparta5_3");
   #TEMP RunTest("test_sparta6");
   RunTest("test_sparta6_3");

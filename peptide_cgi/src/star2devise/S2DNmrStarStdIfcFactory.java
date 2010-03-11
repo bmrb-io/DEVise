@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2010/01/06 23:03:40  wenger
+// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
+//
 // Revision 1.1.2.2  2010/01/06 22:21:57  wenger
 // Did a bunch of cleanups on the distance restraint code, in preparation
 // for merging it to the trunk, so I can suspend work on it and move to
@@ -47,6 +50,8 @@ public class S2DNmrStarStdIfcFactory extends S2DNmrStarIfcFactory {
 
     private static final int DEBUG = 0;
 
+    private String _urlName = null;
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -60,11 +65,29 @@ public class S2DNmrStarStdIfcFactory extends S2DNmrStarIfcFactory {
     }
 
     //-------------------------------------------------------------------
-    public String getURLName(String fileName)
+    public String getURLName(String fileName) throws S2DException
     {
-	String url = S2DNames.BMRB_STAR_URL + fileName;
+	if (_urlName == null) {
+	    StringTokenizer st =
+	      new StringTokenizer(S2DNames.BMRB_STAR_URL, ";", false);
+	    while (_urlName == null && st.hasMoreTokens()) {
+	        String tmpUrl = st.nextToken().trim() + fileName;
+		try {
+		    S2DUtils.tryUrl(tmpUrl);
+		    _urlName = tmpUrl;
+		} catch (Exception ex) {
+		    // Just continue to try the next one.
+		}
+	    }
+	}
 
-	return url;
+	if (_urlName == null || _urlName.equals("")) {
+	    _urlName = "";
+	    throw new S2DError("Unable to valid find URL for " +
+	      fileName);
+	}
+
+	return _urlName;
     }
 
     //===================================================================
