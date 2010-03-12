@@ -9,7 +9,7 @@ rm -f */16350*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -file test_data/sd16350_3.str -name 16350 -force -check_res_list \
-  -check_pct
+  -check_pct -sparta_url file:test_data/
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1

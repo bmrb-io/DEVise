@@ -141,7 +141,7 @@ HISTOGRAM_DATA_HOME = /p/condor/workspaces/shared/wenger/devise/bmrb_histogram_d
 #-----------------------------------------------------------
 # SPARTA-related configuration
 # The URL of directory containing SPARTA files (must end with "/").
-SPARTA_URL = file:test_data/
+SPARTA_URL = http://$(INPUT_WEB_DOMAIN)/ftp/pub/bmrb/validation_reports/SPARTA/
 
 #-----------------------------------------------------------
 # Restraint-related configuration.

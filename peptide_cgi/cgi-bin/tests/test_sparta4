@@ -6,6 +6,9 @@
 set result = 0
 
 ln -s test_data/sd16385.str bmr16385.str
+cd test_data;
+ln -s bmr16385_sparta.str bmr16385_SPARTA.str
+cd ..
 
 rm -f */16385*
 
@@ -20,6 +23,7 @@ endif
 source tests/test_sparta4_check
 
 rm bmr16385.str
+rm test_data/bmr16385_SPARTA.str
 
 
 echo -n "Test_sparta4 result: "

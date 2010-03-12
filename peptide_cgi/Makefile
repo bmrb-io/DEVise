@@ -29,7 +29,7 @@ LACS_NAME_TEMPLATE = bmr*_LACS.str
 LACS_URL = null
 UVD_CGI_URL = undefined
 EXTRA_GC = 0
-SPARTA_NAME_TEMPLATE = bmr*_sparta.str
+SPARTA_NAME_TEMPLATE = bmr*_SPARTA.str
 SPARTA_URL = null
 TORSION_ANGLE_SEARCH_TEMPLATE = "MRGridServlet\?pdb_id=*\&bmrb_id=\&block_text_type=4-filtered-FRED\&min_items=100\&db_username=wattos1"
 DO_TAR_DEFAULT = 1
