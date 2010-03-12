@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2009
+#  (c) Copyright 2001-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -30,7 +30,7 @@ PERL_BIN = /usr/bin
 INPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 OUTPUT_WEB_DOMAIN = bmrb.protein.osaka-u.ac.jp
 
-STAR_URL = file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star2.1/
+STAR_URL = file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star3.1/;file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = ftp://ftp.pdbj.org/mmcif/
 

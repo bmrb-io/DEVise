@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2009
+#  (c) Copyright 2001-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -30,7 +30,7 @@ PERL_BIN = /usr/bin
 INPUT_WEB_DOMAIN = swordfish.bmrb.wisc.edu
 OUTPUT_WEB_DOMAIN = swordfish.bmrb.wisc.edu
 
-STAR_URL = file:/website/ftp/pub/bmrb/entry_lists/nmr-star2.1/
+STAR_URL = file:/website/ftp/pub/bmrb/entry_lists/nmr-star3.1/;file:/website/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
 PDB_FILE_URL = file:/website/ftp/pub/pdb/data/structures/all/mmCIF/
 
