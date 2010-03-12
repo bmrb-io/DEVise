@@ -10,6 +10,9 @@ so we can process either 3.1 or 2.1 files.
 * Added -pdb_file, -lacs_file, and -sparta_file support to the
 make_uvd script.
 
+* Updated SPARTA filename template to work with the current web site
+setup.
+
 * Added NMR-STAR file version to summary html page and detailed
 visualization version info.
 
