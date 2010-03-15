@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.187  2010/03/12 20:57:34  wenger
+// Changed x part of version.
+//
 // Revision 1.186  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -1104,7 +1107,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.4x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.7.4";
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

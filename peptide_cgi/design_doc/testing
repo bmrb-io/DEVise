@@ -107,7 +107,7 @@ The following testing steps must be done:
       the different entity assemblies works, and highlighting in the
       atom selection tree works).
 
-- (SPARTA) Run 'tests/test_sparta5' in /var/home/www/public/cgi-bin/bmrb
+- (SPARTA) Run 'tests/test_sparta5_3' in /var/home/www/public/cgi-bin/bmrb
   on teal.  View the following visualization for entry 16387:
     - SPARTA-calculated chemical shift deltas.  Make sure model # on
       drill-down matches model # selected with cursor, etc.
