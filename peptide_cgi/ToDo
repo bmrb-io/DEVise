@@ -532,6 +532,11 @@ Num Date        Status  Pri     Description
 				(dmaziuk/wenger)
 				(Done by wenger, 3/11/10.)
 
+127 3/15/10	OPEN	2	Add accepting X for a residue in the
+				one-letter residue list, and something
+				corresponding (XXX?) in the three-letter
+				list. (dmaziuk/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
