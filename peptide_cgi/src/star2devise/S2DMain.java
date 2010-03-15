@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.188  2010/03/15 20:58:40  wenger
+// Minor change to SPARTA part of test procedure; version is 11.7.4
+// for release.
+//
 // Revision 1.187  2010/03/12 20:57:34  wenger
 // Changed x part of version.
 //
@@ -1107,7 +1111,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.4";
+    public static final String PEP_CGI_VERSION = "11.7.5x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
