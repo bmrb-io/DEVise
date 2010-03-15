@@ -443,6 +443,9 @@ Num Date        Status  Description
 			in the entity assembly select view where "EA 2"
 			would go, if there were any data for it. (wenger)
 
+095 3/15/10	OPEN	6860/2GW6 3D visualization core dumps DEVise.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
