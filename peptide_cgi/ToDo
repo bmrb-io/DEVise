@@ -537,6 +537,9 @@ Num Date        Status  Pri     Description
 				corresponding (XXX?) in the three-letter
 				list. (dmaziuk/wenger)
 
+128 3/16/10	OPEN	2	Add a note to the summary html page if no
+				SPARTA visualizations are available. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
