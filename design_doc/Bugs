@@ -4373,6 +4373,9 @@ java.security.AccessControlException: access denied
 			that maps to "parent value" in the child view
 			doesn't seem to work. (wenger)
 
+1000 3/31/10	OPEN	Labels don't line up with values in mapping dialog.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
