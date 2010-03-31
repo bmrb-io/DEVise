@@ -22,6 +22,11 @@ Number Date	Status  Pri
 Allow multiplicative factor (and offset?) for visual links (specify for
 each view).
 
+02.002 3/31/10	OPEN	3
+Allow a special "All" value in GAttr link leader data that matches all
+values in the follower view.  (This would make it a lot easier to create
+cursors that select one out of a set of alternatives, or all of the data.)
+
 ...........................................................................
 SECTION 03 (DEVise, cursors)
 Number Date	Status  Pri
