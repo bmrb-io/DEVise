@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2009
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,40 @@
 // $Id$
 
 // $Log$
+// Revision 1.123.2.8  2010/04/20 21:56:27  wenger
+// Made restraints thinner.
+//
+// Revision 1.123.2.7  2010/04/19 21:06:00  wenger
+// Changed JS version string.
+//
+// Revision 1.123.2.6  2010/04/19 14:18:43  wenger
+// Minor cleanups.
+//
+// Revision 1.123.2.5  2010/04/08 20:43:18  wenger
+// Changed the JavaScreen to make a 3D Jmol canvas default to wireframe
+// mode if the main view's name contains the string 'wireframe'.
+//
+// Revision 1.123.2.4  2010/04/08 16:49:31  wenger
+// Changed the JavaScreen to use JmolApplet.jar instead of Jmol.jar.
+//
+// Revision 1.123.2.3  2010/04/05 20:24:43  wenger
+// Got coloring of restraints working (at least for violated/non-violated;
+// I haven't tested ambiguous/non-ambiguous yet).
+//
+// Revision 1.123.2.2  2010/03/29 18:17:47  wenger
+// Got things to work as an applet with the latest Jmol version -- needed
+// some more initialization in creating the JmolViewer object.  Added
+// the jsdevisec.pnStackTrace() method, since we can't get a Java
+// console with the lab's Firefox setup.
+//
+// Revision 1.123.2.1  2010/03/24 16:33:19  wenger
+// Okay, I think I now have all of the existing functionality (except
+// for top, bottom, right, and left) working with the new Jmol.  I'm
+// also drawing three "dummy" restraints to test out how they'd look.
+//
+// Revision 1.123  2009/12/07 21:39:12  wenger
+// Merged devise_1_10_br_1 thru devise_1_10_br_2 to trunk.
+//
 // Revision 1.122  2009/12/03 21:51:15  wenger
 // Merged devise_1_10_br_0 thru devise_1_10_br_1 to trunk.
 //

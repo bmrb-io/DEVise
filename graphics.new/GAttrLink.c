@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2002
+  (c) Copyright 2002-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,22 @@
   $Id$
 
   $Log$
+  Revision 1.4.6.3  2010/04/07 19:06:26  wenger
+  Finished implementation of "all" option in GAttrLinks, except for GUI
+  to control it.
+
+  Revision 1.4.6.2  2010/04/07 18:10:54  wenger
+  The "All" option in GAttrLinks is now working except for commands to
+  get and set it.
+
+  Revision 1.4.6.1  2010/04/06 23:54:56  wenger
+  Partially implemented the "All" option in GAttrLink -- a leader value
+  of "All" will match all follower records (still needs a bunch of cleanup,
+  and a command to turn it on and off).
+
+  Revision 1.4  2008/01/24 22:08:32  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.3  2005/12/06 20:04:00  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -52,6 +68,7 @@ using namespace std;
 #include "Init.h"
 #include "Control.h"
 #include "AttrList.h"
+#include "StringStorage.h"
 
 #define DEBUG 0
 
@@ -75,6 +92,8 @@ GAttrLink::GAttrLink(const char *name, const char *leaderAttrName,
 
   const int hashTableSize = 1024;
   _selectionValues = new HashTable<Coord, int>(hashTableSize, CoordHash, NULL);
+
+  _enableAll = false;
 
   _objectValid.Set();
 }
@@ -196,6 +215,7 @@ GAttrLink::Initialize()
   if (_selectionValues->clear() != 0) {
     reportErrNosys("Error clearing hash table");
   }
+  _hasAll = false;
 
   CheckAttrs();
 }
@@ -317,9 +337,21 @@ GAttrLink::InsertRecord(TDataMap *tdMap, const char *gDataRec)
 #endif
 
   Coord value;
-  if (GetAttrValue(tdMap, gDataRec, _leaderAttrName, value)) {
+  const int bufLen = 128;
+  char strBuf[bufLen];
+  char *strPtr = NULL;
+  int strBufLen = 0;
+  if (_enableAll) {
+    strPtr = strBuf;
+    strBufLen = bufLen;
+  }
+  if (GetAttrValue(tdMap, gDataRec, _leaderAttrName, value, strPtr,
+      strBufLen)) {
     int tmpVal = 0;
     _selectionValues->insert(value, tmpVal);
+    if (strPtr && (!strcmp(strPtr, "All") || !strcmp(strPtr, "all"))) {
+      _hasAll = true;
+    }
   }
 }
 
@@ -340,7 +372,9 @@ GAttrLink::TestRecord(TDataMap *tdMap, const char *gDataRec)
   bool result = false;
 
   Coord value;
-  if (GetAttrValue(tdMap, gDataRec, _followerAttrName, value)) {
+  if (_hasAll) {
+    result = true;
+  } else if (GetAttrValue(tdMap, gDataRec, _followerAttrName, value)) {
     int tmpVal = 0;
     if (_selectionValues->lookup(value, tmpVal) == 0) {
       result = true;
@@ -353,7 +387,6 @@ GAttrLink::TestRecord(TDataMap *tdMap, const char *gDataRec)
 
   return result;
 }
-
 
 /*------------------------------------------------------------------------------
  * function: GAttrLink::CheckAttrs
@@ -394,6 +427,8 @@ GAttrLink::CheckAttrs()
     if (tdMap != NULL) {
       AttrList *attrList = tdMap->GDataAttrList();
       AttrInfo *attrInfo = attrList->Find(_leaderAttrName);
+      StringStorage *leaderStringTable = GetStringTable(tdMap,
+          _leaderAttrName);
       if (attrInfo == NULL) {
 	int formatted = snprintf(errBuf, bufLen, "Warning: GAttr link "
 	    "leader view %s has no values for leader attribute %s",
@@ -475,6 +510,25 @@ GAttrLink::CheckAttrs()
 
 	      } else {
 	        // Attribute types are compatible.
+		if (leaderAttrType != StringAttr) {
+		  // Make sure we're not using different string tables
+		  // in the leader and follower views.
+		  // Note: if we *are* using different string tables, I
+		  // guess we could get the actual string values and
+		  // compare them when we're checking follower records.
+                  StringStorage *followerStringTable = GetStringTable(
+		      tdMap, _followerAttrName);
+		  if (leaderStringTable != followerStringTable) {
+		    int formatted = snprintf(errBuf, bufLen, "Warning: "
+		        "GAttr link leader (%s) and follower (%s) views "
+			"use different string tables for the linked "
+			"attributes (%s and %s; this may cause GAttrLink "
+			"to fail", _masterView->GetName(), view->GetName(),
+			_leaderAttrName, _followerAttrName);
+		    checkAndTermBuf(errBuf, bufLen, formatted);
+		    reportErrNosys(errBuf);
+		  }
+		}
 	      }
 	    }
 	  }
@@ -500,10 +554,13 @@ GAttrLink::CheckAttrs()
  */
 bool
 GAttrLink::GetAttrValue(TDataMap *tdMap, const char *gDataRec,
-    const char *attrName, Coord &value)
+    const char *attrName, Coord &value, char *strBuf, int bufLen)
 {
   bool result = false;
   value = 0.0;
+  if (strBuf) {
+    strBuf[0] = '\0';
+  }
 
   AttrList *attrList = tdMap->GDataAttrList();
 
@@ -516,56 +573,57 @@ GAttrLink::GetAttrValue(TDataMap *tdMap, const char *gDataRec,
   // the difference between an invalid GData attribute name and one for
   // which there simply happens to be no value.  RKW 2002-09-04.
   //
+  AttrInfo *attrInfo = NULL;
   if (!strcmp(attrName, recIdName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = (Coord)tdMap->GetRecId(gDataRec);
       result = true;
     }
 
   } else if (!strcmp(attrName, gdataXName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = tdMap->GetX(gDataRec);
       result = true;
     }
 
   } else if (!strcmp(attrName, gdataYName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = tdMap->GetY(gDataRec);
       result = true;
     }
 
   } else if (!strcmp(attrName, gdataZName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = tdMap->GetZ(gDataRec);
       result = true;
     }
 
   } else if (!strcmp(attrName, gdataColorName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = (Coord)tdMap->GetColor(gDataRec);
       result = true;
     }
 
   } else if (!strcmp(attrName, gdataSizeName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = tdMap->GetSize(gDataRec);
       result = true;
     }
 
   } else if (!strcmp(attrName, gdataPatternName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = (Coord)tdMap->GetPattern(gDataRec);
       result = true;
     }
 
   } else if (!strcmp(attrName, gdataOrientationName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = tdMap->GetOrientation(gDataRec);
       result = true;
     }
 
   } else if (!strcmp(attrName, gdataShapeName)) {
-    if (attrList->Find(attrName) != NULL) {
+    if ((attrInfo = attrList->Find(attrName)) != NULL) {
       value = (Coord)tdMap->GetShape(gDataRec);
       result = true;
     }
@@ -576,7 +634,7 @@ GAttrLink::GetAttrValue(TDataMap *tdMap, const char *gDataRec,
         attrNum >= MAX_SHAPE_ATTRS) {
       badAttrName = true;
     } else {
-      if (attrList->Find(attrName) != NULL) {
+      if ((attrInfo = attrList->Find(attrName)) != NULL) {
         value = tdMap->GetShapeAttr(gDataRec, attrNum);
         result = true;
       }
@@ -584,6 +642,25 @@ GAttrLink::GetAttrValue(TDataMap *tdMap, const char *gDataRec,
 
   } else {
     badAttrName = true;
+  }
+
+  if (result && strBuf) {
+    if (attrInfo->type == StringAttr) {
+      StringStorage *stringTable = GetStringTable(tdMap, attrName);
+
+      char *strVal;
+      int code = stringTable->Lookup((int)value, strVal);
+      if (code < 0) {
+	char errBuf[128];
+	int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "String not found for index %d\n", (int) value);
+	checkAndTermBuf2(errBuf, formatted);
+	reportErrNosys(errBuf);
+      } else {
+        int formatted = snprintf(strBuf, bufLen, "%s", strVal);
+	checkAndTermBuf(strBuf, bufLen, formatted);
+      }
+    }
   }
 
   if (badAttrName) {
@@ -624,6 +701,29 @@ GAttrLink::CoordHash(const Coord &value, int numBuckets)
   //DOASSERT(result >= 0, "Hash function error");
 
   return result;
+}
+
+/*------------------------------------------------------------------------------
+ * function: GAttrLink::GetStringTable
+ * Get the string table for a given TDataMap and attribute name.
+ */
+StringStorage *
+GAttrLink::GetStringTable(TDataMap *tdMap, const char *attrName)
+{
+  TDataMap::TableType type = TDataMap::TableInvalid;
+  if (!strcmp(attrName, gdataXName)) {
+    type = TDataMap::TableX;
+  } else if (!strcmp(attrName, gdataYName)) {
+    type = TDataMap::TableY;
+  } else if (!strcmp(attrName, gdataZName)) {
+    type = TDataMap::TableZ;
+  } else {
+    type = TDataMap::TableGen;
+  }
+
+  StringStorage *stringTable = tdMap->GetStringTable(type);
+
+  return stringTable;
 }
 
 /*============================================================================*/

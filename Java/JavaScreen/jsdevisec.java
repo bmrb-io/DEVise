@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2009
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.175.4.1  2010/03/29 18:17:47  wenger
+// Got things to work as an applet with the latest Jmol version -- needed
+// some more initialization in creating the JmolViewer object.  Added
+// the jsdevisec.pnStackTrace() method, since we can't get a Java
+// console with the lab's Firefox setup.
+//
+// Revision 1.175  2009/09/10 22:06:39  wenger
+// Fixed JavaScreen bug 985 (change 'Reset Filters' to 'Reset Axis Ranges');
+// made other menu improvements; changed communication mode dialog to
+// menu for simplification.
+//
 // Revision 1.174  2009/09/04 19:53:12  wenger
 // Partially fixed JS bug 981 (all values are now displayed right-justified,
 // whether they are numbers or not).
@@ -1455,8 +1466,9 @@ public class jsdevisec extends JPanel
     {
         if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.pn(msg, level);
-        } else 
+        } else {
 	    msgBuffer.addElement(msg);
+    	}
     }
 
     public void pn(String msg)
@@ -1468,8 +1480,18 @@ public class jsdevisec extends JPanel
     {
         if (jsValues.debug._debugLevel > 0 && debugWindow != null) {
             debugWindow.p(msg, level);
-        } else
+        } else {
 	    msgBuffer.addElement(msg);
+    	}
+    }
+
+    public void pnStackTrace(Throwable throwable)
+    {
+	pn("Stack trace:");
+    	StackTraceElement ste[] = throwable.getStackTrace();
+	for (int index = 0; index < ste.length; index++) {
+	    pn("  " + ste[index].toString());
+	}
     }
 
     public void p(String msg)

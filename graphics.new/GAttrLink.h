@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2002-2005
+  (c) Copyright 2002-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -24,6 +24,23 @@
   $Id$
 
   $Log$
+  Revision 1.3.14.3  2010/04/07 19:06:26  wenger
+  Finished implementation of "all" option in GAttrLinks, except for GUI
+  to control it.
+
+  Revision 1.3.14.2  2010/04/07 18:10:54  wenger
+  The "All" option in GAttrLinks is now working except for commands to
+  get and set it.
+
+  Revision 1.3.14.1  2010/04/06 23:54:56  wenger
+  Partially implemented the "All" option in GAttrLink -- a leader value
+  of "All" will match all follower records (still needs a bunch of cleanup,
+  and a command to turn it on and off).
+
+  Revision 1.3  2005/12/06 20:04:00  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.2  2003/01/13 19:25:22  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -50,6 +67,7 @@
 #include "HashTable.h"
 
 class TDataMap;
+class StringStorage;
 
 class GAttrLink : public MasterSlaveLink {
 public:
@@ -82,6 +100,9 @@ public:
   void SetLeaderAttr(char *leaderAttrName);
   void SetFollowerAttr(char *followerAttrName);
 
+  bool GetAllEnabled() { return _enableAll; }
+  void SetAllEnabled(bool enabled) { _enableAll = enabled; }
+
   void InsertRecord(TDataMap *tdMap, const char *gDataRec);
   bool TestRecord(TDataMap *tdMap, const char *gDataRec);
 
@@ -93,13 +114,25 @@ private:
   // Returns true iff there are no leader/follower attribute incompatibilities.
   bool CheckAttrs();
 
-  // Returns true iff value is valid.
+  // Returns true iff value is valid.  (Optionally get the value as a
+  // string, only if the actual attribute is a string -- this doesn't
+  // convert if the attribute is not a string.)
   static bool GetAttrValue(TDataMap *tdMap, const char *gDataRec,
-    const char *attrName, Coord &value);
+    const char *attrName, Coord &value, char *strBuf = NULL,
+    int bufLen = 0);
 
   static int CoordHash(const Coord &value, int numBuckets);
 
   HashTable<Coord, int> *_selectionValues;
+
+  static StringStorage *GetStringTable(TDataMap *tdMap,
+    const char *attrName);
+
+  // Whether the "all link" option is enabled.
+  bool _enableAll;
+
+  // Whether the leader actually had an "all" value.
+  bool _hasAll;
  
   ObjectValid _objectValid;
 };

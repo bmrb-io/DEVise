@@ -3,7 +3,9 @@
 DEVise 1.11.0
 -------------
 
-(nothing yet)
+* Added the "all" option to GAttrLinks -- when turned on, a string value
+of "all" or "All" in the leader view's GData attribute selects all
+records in the follower view(s).
 
 
 DEVise 1.10.1

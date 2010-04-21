@@ -30,7 +30,7 @@ amd_setup:
 install_remote:
 	make jar
 	cp jsb*.jar gui_build/jar
-	cp Jmol.jar gui_build/jar
+	cp JmolApplet.jar gui_build/jar
 	make upload_gui_build
 
 upload_gui_build:
@@ -39,7 +39,7 @@ upload_gui_build:
 install_local:
 	make jar
 	cp jsb*.jar gui_build/jar
-	cp Jmol.jar gui_build/jar
+	cp JmolApplet.jar gui_build/jar
 	make sync_web_local
 	
 sync_web_local:

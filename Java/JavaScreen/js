@@ -10,4 +10,4 @@
 
 unsetenv CLASSPATH
 set javaexec = `cat bin2/java`
-$javaexec -Xmx128M -cp .:Jmol.jar JavaScreen.js -cgiurl/cgi-bin/js.cgi $*
+$javaexec -Xmx128M -cp .:JmolApplet.jar JavaScreen.js -cgiurl/cgi-bin/js.cgi $*

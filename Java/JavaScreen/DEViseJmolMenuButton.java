@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2007
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.8.3  2010/04/19 14:18:44  wenger
+// Minor cleanups.
+//
+// Revision 1.10.8.2  2010/04/08 20:43:18  wenger
+// Changed the JavaScreen to make a 3D Jmol canvas default to wireframe
+// mode if the main view's name contains the string 'wireframe'.
+//
+// Revision 1.10.8.1  2010/03/24 16:33:19  wenger
+// Okay, I think I now have all of the existing functionality (except
+// for top, bottom, right, and left) working with the new Jmol.  I'm
+// also drawing three "dummy" restraints to test out how they'd look.
+//
+// Revision 1.10  2007/12/19 00:08:32  wenger
+// Changed a bunch of JButton references to DEViseButtons to make things
+// more consistent.
+//
 // Revision 1.9  2007/06/27 17:47:59  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
@@ -361,10 +377,12 @@ public class DEViseJmolMenuButton extends DEViseButton
 	addMenuItem(highlightMenu, STR_BY_COLOR);
 
 	addMenuItem(viewMenu, STR_FRONT);
+/* No longer supported by newer Jmol version (11.8.21).
 	addMenuItem(viewMenu, STR_TOP);
 	addMenuItem(viewMenu, STR_BOTTOM);
 	addMenuItem(viewMenu, STR_RIGHT);
 	addMenuItem(viewMenu, STR_LEFT);
+*/
 	addMenuItem(viewMenu, STR_DEFINE_CTR);
 
 	//
@@ -474,8 +492,10 @@ public class DEViseJmolMenuButton extends DEViseButton
 	} else if (event.getActionCommand().equals(STR_ANGSTROMS)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "set measure angstroms");
 
+/* No longer supported by newer Jmol version (11.8.21).
 	} else if (event.getActionCommand().equals(STR_BOTTOM)) {
 	    jmolCanvas.bottom();
+*/
 
 	} else if (event.getActionCommand().equals(STR_BY_COLOR)) {
 	    jmolCanvas.setHighlightWithHalos(false);
@@ -519,8 +539,10 @@ public class DEViseJmolMenuButton extends DEViseButton
 	} else if (event.getActionCommand().equals(STR_HYDROGEN)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "select hydrogen");
 
+/* No longer supported by newer Jmol version (11.8.21).
 	} else if (event.getActionCommand().equals(STR_LEFT)) {
 	    jmolCanvas.left();
+*/
 
 	} else if (event.getActionCommand().equals(STR_LOOP)) {
 	    jmolCanvas.jmolEvalStringErr(viewer,
@@ -600,8 +622,10 @@ public class DEViseJmolMenuButton extends DEViseButton
 	} else if (event.getActionCommand().equals(STR_REWIND)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "frame 1");
 
+/* No longer supported by newer Jmol version (11.8.21).
 	} else if (event.getActionCommand().equals(STR_RIGHT)) {
 	    jmolCanvas.right();
+*/
 
 	} else if (event.getActionCommand().equals(STR_SCALE_02)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "vector scale 0.2");
@@ -622,6 +646,7 @@ public class DEViseJmolMenuButton extends DEViseButton
 	    jmolCanvas.showTrees();
 
 	} else if (event.getActionCommand().equals(STR_SELECT_ALL)) {
+	    // This doesn't seem to always work for restraints...
 	    viewer.selectAll();
 
 	} else if (event.getActionCommand().equals(STR_START_VIBE)) {
@@ -639,8 +664,10 @@ public class DEViseJmolMenuButton extends DEViseButton
 	} else if (event.getActionCommand().equals(STR_SYMBOL)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "label %e");
 
+/* No longer supported by newer Jmol version (11.8.21).
 	} else if (event.getActionCommand().equals(STR_TOP)) {
 	    jmolCanvas.top();
+*/
 
 	} else if (event.getActionCommand().equals(STR_UPPER_RIGHT)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "set labeloffset 4 4");

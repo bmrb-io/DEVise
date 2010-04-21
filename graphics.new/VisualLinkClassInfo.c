@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.16.6.1  2010/04/07 19:06:26  wenger
+  Finished implementation of "all" option in GAttrLinks, except for GUI
+  to control it.
+
+  Revision 1.16  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.15  2008/01/24 22:08:34  wenger
   Got rid of a bunch of compile warnings.
 
@@ -185,20 +192,22 @@ const char *VisualLinkClassInfo::ClassName()
   return "Visual_Link";
 }
 
-static const char *args[4];
+static const char *args[5];
 static char buf1[80];
 static char buf2[80];
 static char buf3[80];
+static char buf4[80];
 
 void VisualLinkClassInfo::ParamNames(int &argc, const char **&argv)
 {
-  argc = 4;
+  argc = 5;
   argv = args;
 
-  args[0] = "Name link";
+  args[0] = "Link name";
   args[1] = "flags 2";
-  args[2] = "master TData attribute name (TData attribute link only)";
-  args[3] = "slave TData attribute name (TData attribute link only)";
+  args[2] = "leader GData attribute name (GData attribute link only)";
+  args[3] = "leader GData attribute name (GData attribute link only)";
+  args[4] = "whether 'all' feature is enabled (GData attribute link only)";
   return;
 }
 
@@ -207,9 +216,10 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
 {
 #if defined(DEBUG)
   printf("VisualLinkClassInfo(%p)::CreateWithParams(%s)\n", this, argv[0]);
+  PrintArgs(stdout, argc, argv);
 #endif
 
-  if (argc != 2 && argc != 4) {
+  if (argc != 2 && argc != 4 && argc != 5) {
     reportErrNosys("Wrong number of arguments");
     return NULL;
   }
@@ -275,7 +285,8 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
   }
 
   if (flag & VISUAL_GATTR) {
-    if (argc != 4) {
+    if (argc != 4 && argc != 5) {
+      // Note: 4 args is pre-"all" link GAttrLinks
       reportErrNosys("Wrong number of arguments");
       return NULL;
     }
@@ -285,6 +296,10 @@ ClassInfo *VisualLinkClassInfo::CreateWithParams(int argc,
 	  "attributes -- they will be ignored");
     }
     GAttrLink *link = new GAttrLink(name, argv[2], argv[3]);
+    if (argc == 5) {
+      bool allEnabled = atoi(argv[4]);
+      link->SetAllEnabled(allEnabled);
+    }
     return new VisualLinkClassInfo(name, flag, link);
   }
 
@@ -333,11 +348,13 @@ void VisualLinkClassInfo::CreateParams(int &argc, const char **&argv)
     sprintf(buf3, "%s", ((TAttrLink *)_link)->GetSlaveAttrName());
     args[3] = buf3;
   } else if (_flag & VISUAL_GATTR) {
-    argc = 4;
+    argc = 5;
     sprintf(buf2, "%s", ((GAttrLink *)_link)->GetLeaderAttrName());
     args[2] = buf2;
     sprintf(buf3, "%s", ((GAttrLink *)_link)->GetFollowerAttrName());
     args[3] = buf3;
+    sprintf(buf4, "%d", ((GAttrLink *)_link)->GetAllEnabled());
+    args[4] = buf4;
   }
 }
 
@@ -388,7 +405,8 @@ VisualLinkClassInfo::Dump(FILE *fp)
       if (!leaderAttr) leaderAttr= "";
       const char *followerAttr = gAttrLink->GetFollowerAttrName();
       if (!followerAttr) followerAttr = "";
-      fprintf(fp, "GAttr (%s/%s)", leaderAttr, followerAttr);
+      fprintf(fp, "GAttr (%s/%s/%d)", leaderAttr, followerAttr,
+          gAttrLink->GetAllEnabled());
     }
     fprintf(fp, "\n");
 

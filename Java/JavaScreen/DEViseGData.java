@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -29,6 +29,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.41.8.3  2010/04/19 16:15:01  wenger
+// Changed the JavaScreen slightly to get coloring of ambiguous restraints
+// working correctly.
+//
+// Revision 1.41.8.2  2010/04/05 20:24:43  wenger
+// Got coloring of restraints working (at least for violated/non-violated;
+// I haven't tested ambiguous/non-ambiguous yet).
+//
+// Revision 1.41.8.1  2010/04/01 21:03:44  wenger
+// Woo hoo!  Display of restraints is partly working!  (We're not yet
+// differentiating violated vs. non-violated, ambiguous vs. non-
+// ambiguous; and the code needs lots of checking and cleanup.)
+//
+// Revision 1.41  2008/09/03 19:15:59  wenger
+// Initial changes to JavaScreen client to support entity assembly
+// IDs in 3D Jmol visualizations.  (Still needs some cleanup.)
+//
 // Revision 1.40  2006/05/26 16:22:15  wenger
 // Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
 //
@@ -183,6 +200,8 @@ public class DEViseGData
     public boolean isJavaSymbol = false;
     public int symbolType = 0;
 
+    // Note: I should probably make subclasses of DEViseGData...
+
     // Values for symbolType.
     public static final int _symOval = 4;
     public static final int _symSegment = 7;
@@ -195,7 +214,7 @@ public class DEViseGData
     public Font font = null;
     public int outline = 0;
 
-    // Values for Jmol
+    // Values for Jmol atoms
     public int atomNum;
     public String atomName;
     public String residueLabel; // amino acid
@@ -203,6 +222,13 @@ public class DEViseGData
     public int residueNum;
     public String atomType;
     public String structType;
+    public String atomId;
+
+    // Distance restraint values for Jmol
+    public String atom1Id;
+    public String atom2Id;
+    public boolean isViolated;
+    public boolean isAmbiguous;
 
     private static final boolean _debug = false;
 
@@ -279,7 +305,11 @@ public class DEViseGData
 	    }
 
 	} else if (symbolType == _symSegment) {
-            Segment(data, size, xm, ym);
+	    if (view.getUseJmol() && view.viewDimension == 3) {
+		JmolSegment(data, size, xm, ym);
+	    } else {
+                Segment(data, size, xm, ym);
+	    }
 
         } else {
 	    DefaultSymbol(data, size, xm, ym);
@@ -570,6 +600,18 @@ public class DEViseGData
 	    entityAssemblyID =
 	      (Integer.valueOf(entityAssemblyIDTmp)).intValue();
 	}
+	atomId = data[22];
+    }
+
+    // This is a distance restraint...
+    protected void JmolSegment(String[] data, float size, float xm, float ym)
+    {
+        isJavaSymbol = false;
+
+	atom1Id = data[17].trim();
+	atom2Id = data[18].trim();
+	isViolated = data[19].trim().equals("Violated");
+	isAmbiguous = data[22].trim().equals("Ambiguous");
     }
 
     protected void Segment(String[] data, float size, float xm, float ym)

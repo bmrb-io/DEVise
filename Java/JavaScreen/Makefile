@@ -21,7 +21,7 @@
 
 include Makefile.config
 
-JAVAC = $(JAVA_BIN3)/javac -d . -classpath .:Jmol.jar -source 1.3 -target 1.3
+JAVAC = $(JAVA_BIN3)/javac -d . -classpath .:JmolApplet.jar -source 1.3 -target 1.3
 
 all: js jsa jspop jss circ_log
 js: js.class

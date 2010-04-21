@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2008
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.19.4.1  2010/03/29 18:17:47  wenger
+// Got things to work as an applet with the latest Jmol version -- needed
+// some more initialization in creating the JmolViewer object.  Added
+// the jsdevisec.pnStackTrace() method, since we can't get a Java
+// console with the lab's Firefox setup.
+//
+// Revision 1.19  2009/08/28 15:59:39  wenger
+// Minor code cleanups.
+//
 // Revision 1.18  2008/09/24 21:46:51  wenger
 // Partially(?) fixed DEVise/JS bug 973: there is now a minimum delay
 // before the JS stop button goes back to normal when communicating
@@ -149,6 +158,7 @@ package JavaScreen;
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.*;
+import java.net.URL;
 
 public final class DEViseJSValues
 {
@@ -190,6 +200,8 @@ public final class DEViseJSValues
 	public boolean helpBox = false;
 	public boolean cgi = false;  // using cgi, default false.
 	public String cgiURL = null; // URL for cgi.
+	public URL documentBase = null;
+	public URL codeBase = null;
     }
 
     public final class UIGlobals {

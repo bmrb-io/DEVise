@@ -20,6 +20,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.21.8.1  2010/03/29 18:17:47  wenger
+// Got things to work as an applet with the latest Jmol version -- needed
+// some more initialization in creating the JmolViewer object.  Added
+// the jsdevisec.pnStackTrace() method, since we can't get a Java
+// console with the lab's Firefox setup.
+//
+// Revision 1.21  2008/09/24 21:46:51  wenger
+// Partially(?) fixed DEVise/JS bug 973: there is now a minimum delay
+// before the JS stop button goes back to normal when communicating
+// with the server, so the user won't fail to notice.
+//
 // Revision 1.20  2008/02/20 20:22:10  wenger
 // JavaScreen now defaults to showing help in browser window (to
 // get around problems on Mac with the Java window); added links
@@ -266,6 +277,8 @@ public abstract class DEViseJSApplet extends Applet
         jsValues.connection.hostname = codeBaseURL.getHost();
         jsValues.connection.username = DEViseGlobals.DEFAULTUSER;
         jsValues.connection.password = DEViseGlobals.DEFAULTPASS;
+	jsValues.connection.documentBase = getDocumentBase();
+	jsValues.connection.codeBase = getCodeBase();
 
         String version = System.getProperty("java.version");
         String vendor = System.getProperty("java.vendor");

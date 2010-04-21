@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2009
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -42,6 +42,65 @@
 // $Id$
 
 // $Log$
+// Revision 1.23.4.13  2010/04/20 21:56:27  wenger
+// Made restraints thinner.
+//
+// Revision 1.23.4.12  2010/04/19 16:30:38  wenger
+// Protons are now initially displayed for distance restraint visualizations.
+//
+// Revision 1.23.4.11  2010/04/08 20:43:18  wenger
+// Changed the JavaScreen to make a 3D Jmol canvas default to wireframe
+// mode if the main view's name contains the string 'wireframe'.
+//
+// Revision 1.23.4.10  2010/04/08 17:08:14  wenger
+// Oops -- one small change to compile without Jmol.jar.
+//
+// Revision 1.23.4.9  2010/04/06 22:25:42  wenger
+// Made distance restraint lines thinner.
+//
+// Revision 1.23.4.8  2010/04/05 20:24:42  wenger
+// Got coloring of restraints working (at least for violated/non-violated;
+// I haven't tested ambiguous/non-ambiguous yet).
+//
+// Revision 1.23.4.7  2010/04/01 21:03:44  wenger
+// Woo hoo!  Display of restraints is partly working!  (We're not yet
+// differentiating violated vs. non-violated, ambiguous vs. non-
+// ambiguous; and the code needs lots of checking and cleanup.)
+//
+// Revision 1.23.4.6  2010/03/29 18:17:46  wenger
+// Got things to work as an applet with the latest Jmol version -- needed
+// some more initialization in creating the JmolViewer object.  Added
+// the jsdevisec.pnStackTrace() method, since we can't get a Java
+// console with the lab's Firefox setup.
+//
+// Revision 1.23.4.5  2010/03/24 16:33:18  wenger
+// Okay, I think I now have all of the existing functionality (except
+// for top, bottom, right, and left) working with the new Jmol.  I'm
+// also drawing three "dummy" restraints to test out how they'd look.
+//
+// Revision 1.23.4.4  2010/03/23 16:43:16  wenger
+// Figured out how to draw and erase restraints (I have a couple of fake
+// ones in right now); partway through re-creating all of the other JS
+// functionality with the new Jmol (I don't have drill-down working yet).
+//
+// Revision 1.23.4.3  2010/03/19 21:28:14  wenger
+// Got selection halos working again with new Jmol version.
+//
+// Revision 1.23.4.2  2010/03/19 20:42:27  wenger
+// We don't seem to need the JmolPopup stuff anymore -- we still get a
+// popup menu, even without it.
+//
+// Revision 1.23.4.1  2010/03/18 17:43:16  wenger
+// Updated to latest production Jmol (11.8.21) -- got it to mostly work,
+// but a bunch of stuff is commented out now, so things like highlighting
+// in the 3D view don't work.
+//
+// Revision 1.23  2009/06/12 16:34:45  wenger
+// Merged s2d_torsion_rest_0905_br_0 thru s2d_torsion_rest_0905_br_js1
+// to the trunk (JavaScreen changes only -- mainly to get the fix that
+// gets rid of the extra space stuck into atom names in the Atom
+// Selection tree).
+//
 // Revision 1.22.4.1  2009/06/11 20:56:58  wenger
 // Made changes to the JavaScreen client to allow highlighting by
 // specific atom as well as the existing capability of highlighting
@@ -284,9 +343,8 @@ import org.jmol.api.*;
 import org.jmol.adapter.smarter.SmarterJmolAdapter;
 import org.jmol.api.JmolAdapter;
 import org.jmol.api.JmolViewer;
-import org.openscience.jmol.ui.JmolPopup;
+import org.jmol.api.JmolStatusListener;
 import org.jmol.viewer.JmolConstants;
-import org.openscience.jmol.app.Jmol;
 
 public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
   DEViseGenericTreeSelectionCallback
@@ -310,7 +368,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
     private static final String BACKBONE_STR = "backbone";
     private static final String SIDE_CHAINS_STR = "side chains";
-    private static final String PROTONS_STR = "protons";
+    private static final String PROTONS_STR = "side chain protons";
 
     // Whether the secondary structure (molecule, backbone, side chains,
     // protons) to display has been updated since the last repaint.
@@ -332,8 +390,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     private Vector highlightNodes = null;
 
     private JmolViewer viewer;
-    private MyStatusListener myStatusListener;
-    private JmolPopup jmolPopup;
+    private MyCallbackListener myCallbackListener;
 
     // True if atoms should be highlighted with halos, false if they
     // should be updated by changing color.
@@ -342,8 +399,28 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // The atoms to display, in the form of DEViseGData.
     private Vector gDatasToDisplay;
 
+    private Hashtable atomId2AtomNum;
+
+    class DistRestraint {
+        public int atom1Num;
+	public int atom2Num;
+	public boolean isViolated;
+	public boolean isAmbiguous;
+    };
+
+    // Vector of DistRestraint objects.
+    private Vector distRestraints;
+
+    // Whether the distance restraints have been updated since the last
+    // repaint.
+    private boolean distRestUpdated = false;
+
     // True if drill-down is enabled in Jmol, false otherwise.
     private boolean drillDownEnabled = false;
+
+    // Whether we've set Jmol to wireframe style since the last time
+    // we loaded atoms into it.
+    private boolean setToWireframe = false;
 
     //===================================================================
     // PUBLIC METHODS
@@ -381,6 +458,11 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	if (highlightUpdated) {
 	    highlightSelected(highlightNodes);
 	    highlightUpdated = false;
+	}
+
+	if (distRestUpdated) {
+	    drawRestraints();
+	    distRestUpdated = false;
 	}
 
         //TEMP? jsc.parentFrame.setCursor(jsc.mouseCursor.defaultCursor);
@@ -535,6 +617,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     	viewer.rotateFront();
     }
 
+/* No longer supported by newer Jmol version (11.8.21).
     //-------------------------------------------------------------------
     public void top()
     {
@@ -558,13 +641,14 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     {
 	viewer.rotateToY(-90);
     }
+*/
 
     //-------------------------------------------------------------------
     public void defineCenter()
     {
 	viewer.setCenterSelected();
 	viewer.setModeMouse(JmolConstants.MOUSE_ROTATE);
-	viewer.setSelectionHaloEnabled(false);
+	viewer.setSelectionHalos(false);
     }
 
     //-------------------------------------------------------------------
@@ -583,13 +667,13 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
         if (halosOn != highlightWithHalos) {
 	    if (halosOn) {
-	        viewer.setSelectionHaloEnabled(true);
+	        viewer.setSelectionHalos(true);
 		// Note: we're assuming here that the "normal" color is
 		// CPK; that may not always be true, but I don't know
 		// what else to do for now.  wenger 2006-06027.
                 jmolEvalStringErr(viewer, "color atoms CPK");
 	    } else {
-	    	viewer.setSelectionHaloEnabled(false);
+	        viewer.setSelectionHalos(false);
                 jmolEvalStringErr(viewer, "color atoms lime");
 	    }
 	    highlightWithHalos = halosOn;
@@ -609,8 +693,8 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    System.out.println("DEViseCanvas3DJmol.jmolEvalStringErr(" +
 	      script + ")");
 	}
-        String errStr = viewer.evalString(script);
-	if (errStr != null) {
+        String errStr = viewer.scriptWait(script);
+	if (errStr != null && errStr.indexOf("ERROR") != -1) {
 	    System.err.println("ERROR: Jmol error evaluating script <" +
 	      script + ">: " + errStr);
 	}
@@ -782,14 +866,16 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    //
 	    // Create the actual Jmol panel.
 	    //
-            jmolPanel = new JmolPanel();
+            jmolPanel = new JmolPanel(jsc);
             add(jmolPanel);
             jmolPanel.setSize(canvasDim.width, canvasDim.height);
             jmolPanel.setVisible(true);
 
             viewer = jmolPanel.getViewer();
-	    myStatusListener = new MyStatusListener();
-	    viewer.setJmolStatusListener(myStatusListener);
+            myCallbackListener = new MyCallbackListener();
+	    viewer.setJmolCallbackListener(myCallbackListener);
+
+	    setToWireframe = false;
 	}
 
 	// Doing updateStructTree() only when the base view's GData is
@@ -920,10 +1006,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    System.out.println("DEViseCanvas3DJmol.jmolOpenStringErr(" +
 	      dataStr + ")");
 	}
-	viewer.openStringInline(dataStr);
-        // Note: nothing shows up if you don't call getOpenFileError()
-	// after openFile()
-    	String errStr = viewer.getOpenFileError();
+	String errStr = viewer.openStringInline(dataStr);
 	if (errStr != null) {
 	    System.err.println("ERROR: Jmol error opening data string: " +
 	      errStr);
@@ -958,6 +1041,9 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	DEViseGenericTreeNode protonNode =
 	  new DEViseGenericTreeNode(PROTONS_STR);
 	structDisplayTree.topNode.addChild(protonNode);
+	if (view.viewName.indexOf("wireframe") >= 0) {
+	    selectedNodes.addElement(protonNode);
+	}
 
         structDisplayTree.tree.updateTree(structDisplayTree.topNode);
 	structDisplayTree.tree.setSelection(selectedNodes);
@@ -1093,7 +1179,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    }
 
 	    if (node instanceof TreeMoleculeNode) {
-	        selectCmd = "select;";
+	        selectCmd = "select ;";
 		break;
 
 	    } else if (node instanceof TreeEntityAssemblyNode) {
@@ -1152,8 +1238,35 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
         jmolEvalStringErr(viewer, selectCmd);
 
 	if (highlightWithHalos) {
-	    viewer.setColorSelection(Color.GREEN);
-	    viewer.setSelectionHaloEnabled(true);
+       	    jmolEvalStringErr(viewer, "color selectionHalos limegreen");
+	    viewer.setSelectionHalos(true);
+	}
+    }
+
+    private void drawRestraints()
+    {
+	if (view.viewName.indexOf("wireframe") >= 0 && !setToWireframe) {
+            jmolEvalStringErr(viewer, "select; wireframe only; select 0");
+	    setToWireframe = true;
+	}
+
+	// Delete any restraints we drew previously.
+        jmolEvalStringErr(viewer, "draw delete");
+
+	if (distRestraints != null) {
+	    for (int index = 0; index < distRestraints.size(); index++) {
+	        DistRestraint restraint =
+		  (DistRestraint)distRestraints.elementAt(index);
+		String color = getDistRestColor(restraint);
+	    	String cmd = "draw myrestraint" + index;
+		cmd += " diameter 0.05 {atomno=" + restraint.atom1Num + "}";
+		cmd += " {atomno=" + restraint.atom2Num + "}";
+		cmd += " color " + color;
+		if (DEBUG >= 2) {
+                    System.out.println("Restraint cmd: <" + cmd + ">");
+		}
+	        jmolEvalStringErr(viewer, cmd);
+	    }
 	}
     }
 
@@ -1186,7 +1299,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	// Update what's shown in Jmol.
 	String jmolData = DEViseJmolData.createJmolData(gDatasToDisplay);
 	if (!jmolData.equals("") && viewer != null) {
-	    viewer.setSelectionHaloEnabled(false);
+	    viewer.setSelectionHalos(false);
 	    jmolOpenStringErr(viewer, jmolData);
             viewer.setShowHydrogens(true);
             viewer.setShowAxes(true);
@@ -1199,8 +1312,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	// to the highlight data we got from DEVise.
 	setHighlightFromData();
 
-	// Load this here so it knows how many atoms and bonds there are.
-	loadPopupMenuAsBackgroundTask();
+	setToWireframe = false;
     }
 
     //-------------------------------------------------------------------
@@ -1256,6 +1368,15 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    }
 	}
 
+	// Save atom ID string to atom number mapping.  We will use
+	// this to tell Jmol which atoms to connect for distance
+	// restraints.
+	atomId2AtomNum = new Hashtable();
+        for (int index = 0; index < gDatasToDisplay.size(); index++) {
+	    DEViseGData gdata = (DEViseGData)gDatasToDisplay.elementAt(index);
+	    atomId2AtomNum.put(gdata.atomId, new Integer(gdata.atomNum));
+	}
+
 	updateTreeData(atomDisplayTree, gDatasToDisplay);
 	atomDisplayTree.tree.selectTop();
     }
@@ -1309,6 +1430,11 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	    " calls DEViseCanvas3DJmol.setHighlightFromData()");
 	}
 
+	int oldDistRCount =
+	  (distRestraints != null) ? distRestraints.size() : 0;
+	distRestraints = new Vector(); // throw away old restraints
+	distRestUpdated = true;
+
 	// Piled views are used to highlight atoms that were created in
 	// the "base" view.
 	// Right now the JavaScreen expects the 3D highlight views to
@@ -1323,14 +1449,33 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 		    DEViseGData gdata = (DEViseGData)v.viewGDatas.elementAt(j);
 
 		    if (gdata.symbolType == gdata._symOval) {
+			// Highlight an atom.
 			highlightOneGData(gdata, selectedDevNodes);
+		    } else if (gdata.symbolType == gdata._symSegment) {
+			// Draw a distance restraint.
+		        DistRestraint restraint = new DistRestraint();
+			Integer atom1Num = (Integer)atomId2AtomNum.get(gdata.atom1Id);
+			Integer atom2Num = (Integer)atomId2AtomNum.get(gdata.atom2Id);
+			if (atom1Num != null && atom2Num != null) {
+			    restraint.atom1Num = atom1Num.intValue();
+			    restraint.atom2Num = atom2Num.intValue();
+			    restraint.isViolated = gdata.isViolated;
+			    restraint.isAmbiguous = gdata.isAmbiguous;
+			    distRestraints.addElement(restraint);
+			}
                     } else {
-		    	//TEMP -- error?
+			jsc.pn("Warning: unexpected symbol type (" +
+			  gdata.symbolType + ") in DEViseCanvas3DJmol");
                     }
                 }
             }
 
 	    highlightTree.tree.setSelection(selectedDevNodes);
+        }
+
+	if (oldDistRCount > 0 || distRestraints.size() > 0) {
+	    // Make sure we update the distrance restraints.
+	    repaint();
         }
     }
 
@@ -1373,29 +1518,49 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 
     //-------------------------------------------------------------------
     /**
-     * Load the Jmol popup menu.  (This code is copied from the Jmol
-     * source.)
+     * Get distance restraint color name based on whether the restraint
+     * is violated and/or ambiguous.
+     * @param restraint: the distance restraint object.
+     * @return: the name of the color in which the restraint should be
+     *   drawn (e.g., "yellow").
      */
-    void loadPopupMenuAsBackgroundTask() {
-    	// no popup on MacOS 9 NetScape
-	if (viewer.getOperatingSystemName().equals("Mac OS") && 
-	  viewer.getJavaVersion().equals("1.1.5")) {
-	    return; 
+    private static String getDistRestColor(DistRestraint restraint)
+    {
+        if (restraint.isViolated) {
+	    if (restraint.isAmbiguous) {
+	        return "magenta";
+	    } else {
+	        return "orange";
+	    }
+	} else {
+	    if (restraint.isAmbiguous) {
+	        return "cyan";
+	    } else {
+	        return "yellow";
+	    }
 	}
-	new Thread(new LoadPopupThread()).start();
     }
 
     //===================================================================
-
-    //-------------------------------------------------------------------
     static class JmolPanel extends JPanel {
         JmolViewer viewer;
         JmolAdapter adapter;
 
         //---------------------------------------------------------------
-        JmolPanel() {
-            adapter = new SmarterJmolAdapter(null);
-            viewer = JmolViewer.allocateViewer(this, adapter);
+        JmolPanel(jsdevisec jsc) {
+	    try {
+	        String htmlName = "JavaScreen";
+	        String options = "-applet";
+	        // The "-applet" string seems to be the critical thing here
+	        // -- without it, this call fails in an applet.
+                viewer = JmolViewer.allocateViewer(this, null, htmlName,
+	          jsc.jsValues.connection.documentBase,
+	          jsc.jsValues.connection.codeBase, options, null);
+	    } catch (Exception ex) {
+	        jsc.pn("Exception creating Jmol viewer: " + ex.toString());
+		jsc.pnStackTrace(ex);
+		viewer = null;
+	    }
         }
 
         //---------------------------------------------------------------
@@ -1415,153 +1580,119 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //===================================================================
-
-    //-------------------------------------------------------------------
-    // This class exists just to load the Jmol popup menu.
-  class LoadPopupThread implements Runnable {
-
-    public void run() {
-      Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
-      // long beginTime = System.currentTimeMillis();
-      // System.out.println("LoadPopupThread starting ");
-      // this is a background task
-      JmolPopup popup;
-      try {
-        popup = JmolPopup.newJmolPopup(viewer);
-      } catch (Exception e) {
-        System.out.println("JmolPopup not loaded");
-        return;
-      }
-      if (viewer.haveFrame()) {
-        popup.updateComputedMenus();
-      }
-      jmolPopup = popup;
-      // long runTime = System.currentTimeMillis() - beginTime;
-      // System.out.println("LoadPopupThread finished " + runTime + " ms");
-    }
-  }
-
-    //===================================================================
     // This class gets notified of various events in the Jmol viewer.
     // We use is for drill down, bringing up the popup menu, etc.
-  class MyStatusListener implements JmolStatusListener {
-    private DoDrillDown _ddd;
+    class MyCallbackListener implements JmolCallbackListener {
 
-    public void notifyFileLoaded(String fullPathName, String fileName,
-                                 String modelName, Object clientFile,
-                                 String errorMsg) {
-    }
+	private DoDrillDown _ddd;
 
-    public void setStatusMessage(String statusMessage) {
-    }
+        //---------------------------------------------------------------
+        // I'm not sure what this does.
+        public void setCallbackFunction(String callbackType,
+          String callbackFunction) {
+        }
 
-    public void scriptEcho(String strEcho) {
-    }
+        //---------------------------------------------------------------
+	// This method is called when the user picks an atom (we use
+	// it for drill-down).
+        public void notifyCallback(int type, Object[] data) {
+	    String strInfo = (data == null || data[1] == null ? null : data[1]
+	              .toString());
+            switch(type) {
+	    case JmolConstants.CALLBACK_PICK:
+		if (drillDownEnabled) {
+		    if (data == null || data[2] == null) {
+		        System.err.println(
+			  "ERROR: missing data in CALLBACK_PICK event!");
+		    } else {
+		        int atomIndex = ((Integer)data[2]).intValue();
+		        DEViseGData gData =
+		          (DEViseGData)gDatasToDisplay.elementAt(atomIndex);
+		        _ddd = new DoDrillDown(view.getCurlyName(), gData.x0,
+		          gData.y0, gData.z0);
+		    }
+		}
+	        break;
+	    }
+        }
 
-    public void scriptStatus(String strStatus) {
-    }
+        //---------------------------------------------------------------
+	// Tell Jmol what events we want to know about.
+        public boolean notifyEnabled(int type) {
+            switch (type) {
+            case JmolConstants.CALLBACK_PICK:
+                return true;
+            }
+            return false;
+        }
 
-    public void notifyScriptTermination(String errorMessage, int msWalltime) {
-    }
+        //===============================================================
+        // This class does drill-down in a Jmol view.  The main reason for
+        // this class is to create the thread that allows us to differentiate
+        // between single and double clicks (a double-click cancels the
+        // drill-down).
+        private class DoDrillDown implements Runnable
+        {
+	    private String _viewName;
+	    private float _x;
+	    private float _y;
+	    private float _z;
+	    private Thread _ddThread;
+	    private boolean _cancelled;
 
-    public void handlePopupMenu(int x, int y) {
-      if (jmolPopup != null) {
-        jmolPopup.show(x, y);
-      }
-    }
+	    // How fast the second click has to come to consider it a double-
+	    // click and cancel the drill-down.
+	    private static final int DOUBLE_CLICK_TIME = 500;
 
-    public void measureSelection(int atomIndex) {
-    }
+            public DoDrillDown(String viewName, float x, float y, float z) {
+	        _viewName = viewName;
+	        _x = x;
+	        _y = y;
+	        _z = z;
+	        _cancelled = false;
 
-    public void notifyMeasurementsChanged() {
-	// Cancel drill-down (notifyAtomPicked gets called on the first
-	// click of a double-click).
-    	if (_ddd != null) _ddd.cancel();
-    }
+	        _ddThread = new Thread(this);
+	        _ddThread.setName("3D Jmol drill down");
+	        _ddThread.start();
+	    }
 
-    public void notifyFrameChanged(int frameNo) {
-    }
+	    public void run() {
+		/* We don't need this anymore because notifyCallback()
+		 * doesn't get called twice for a double-click (with
+		 * Jmol 11.8.21).  In fact, there doesn't seem to be
+		 * a way to tell a double-click from a single-click,
+		 * so if we're in drill-down mode, we'll drill down
+		 * on a double-click.
+	        try {
+	            Thread.sleep(DOUBLE_CLICK_TIME);
+	        } catch (InterruptedException e)  {
+	        }
+		*/
 
-    public void notifyAtomPicked(int atomIndex, String strInfo) {
-    	if (DEBUG >= 1) {
-	    System.out.println(
-	      "DEViseCanvas3DJmol.MyStatusListener.notifyAtomPicked(" +
-	      atomIndex + ", " + strInfo + ")");
-	}
+	        if (_cancelled) {
+		    if (DEBUG >= 2) {
+	                System.out.println(
+			  "Drill-down cancelled by double-click");
+		    }
+	        } else {
+		    if (DEBUG >= 2) {
+	                System.out.println("Doing 3D drill-down");
+		    }
+	            String cmd = DEViseCommands.SHOW_RECORDS3D + " " +
+	              _viewName + " 1 ";
+	            cmd += _x + " " + _y + " " + _z;
 
-	if (drillDownEnabled) {
-	    DEViseGData gData = (DEViseGData)gDatasToDisplay.elementAt(
-	      atomIndex);
+	            jscreen.guiAction = true;
+	            dispatcher.start(cmd);
+	        }
+	    }
 
-	    _ddd = new DoDrillDown(view.getCurlyName(), gData.x0,
-	      gData.y0, gData.z0);
+	    public void stop() {
+	    }
+
+	    public void cancel() {
+	        _cancelled = true;
+	    }
         }
     }
-
-    public void showUrl(String urlString) {
-    }
-
-    public void showConsole(boolean showConsole) {
-    }
-
-    // This class does drill-down in a Jmol view.  The main reason for
-    // this class is to create the thread that allows us to differentiate
-    // between single and double clicks (a double-click cancels the
-    // drill-down).
-    private class DoDrillDown implements Runnable
-    {
-	private String _viewName;
-	private float _x;
-	private float _y;
-	private float _z;
-	private Thread _ddThread;
-	private boolean _cancelled;
-
-	// How fast the second click has to come to consider it a double-
-	// click and cancel the drill-down.
-	private static final int DOUBLE_CLICK_TIME = 500;
-
-        public DoDrillDown(String viewName, float x, float y, float z) {
-	    _viewName = viewName;
-	    _x = x;
-	    _y = y;
-	    _z = z;
-	    _cancelled = false;
-
-	    _ddThread = new Thread(this);
-	    _ddThread.setName("3D Jmol drill down");
-	    _ddThread.start();
-	}
-
-	public void run() {
-	    try {
-	        Thread.sleep(DOUBLE_CLICK_TIME);
-	    } catch (InterruptedException e)  {
-	    }
-
-	    if (_cancelled) {
-		if (DEBUG >= 2) {
-	            System.out.println("Drill-down cancelled by double-click");
-		}
-	    } else {
-		if (DEBUG >= 2) {
-	            System.out.println("Doing 3D drill-down");
-		}
-	        String cmd = DEViseCommands.SHOW_RECORDS3D + " " +
-	          _viewName + " 1 ";
-	        cmd += _x + " " + _y + " " + _z;
-
-	        jscreen.guiAction = true;
-	        dispatcher.start(cmd);
-	    }
-	}
-
-	public void stop() {
-	}
-
-	public void cancel() {
-	    _cancelled = true;
-	}
-    }
-  }
 }

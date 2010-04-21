@@ -14,6 +14,10 @@ Warn when closing session if there are changes other than cursor moves.
 01.003 10/1/02	OPEN	?
 The print dialog should remember previous values. (kola/wenger)
 
+01.004 4/7/10	OPEN	2
+Create GUI to control whether the "All" option is turned on in GAttr
+links.
+
 ...........................................................................
 SECTION 02 (DEVise, links)
 Number Date	Status  Pri
@@ -22,10 +26,11 @@ Number Date	Status  Pri
 Allow multiplicative factor (and offset?) for visual links (specify for
 each view).
 
-02.002 3/31/10	OPEN	3
-Allow a special "All" value in GAttr link leader data that matches all
-values in the follower view.  (This would make it a lot easier to create
-cursors that select one out of a set of alternatives, or all of the data.)
+02.002 4/7/10	DONE	1
+Allow "All" option in GAttr links (a value of "All" in the leader data
+selects all records in the follower).  (Makes it much easier to set up
+cursors that select one of a set of values, or all of the values.)
+(Done by wenger, 4/7/10.)
 
 ...........................................................................
 SECTION 03 (DEVise, cursors)
