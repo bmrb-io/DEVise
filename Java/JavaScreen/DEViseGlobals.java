@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.124  2010/04/21 17:10:10  wenger
+// Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+//
 // Revision 1.123.2.8  2010/04/20 21:56:27  wenger
 // Made restraints thinner.
 //
@@ -795,7 +798,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.0x1"/*TEMP*/);
+    public static final String VERSION = new String("5.13.0");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

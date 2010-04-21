@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.86  2010/02/23 22:05:38  wenger
+  Merged devise_1_10_br_2 thru devise_1_10_br_3 to trunk.
+
   Revision 1.85  2009/12/08 16:12:40  wenger
   Updated trademark to 2009.
 
@@ -533,7 +536,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.0x2"/*TEMP*/;
+static const char *	version = "1.11.0";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2009";
