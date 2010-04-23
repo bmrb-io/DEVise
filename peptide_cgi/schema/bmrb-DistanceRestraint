@@ -1,0 +1,33 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:56:00
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+# $Id$
+
+type bmrb-DistanceRestraint ascii
+comment #
+whitespace '	'
+
+attr Entity_assembly_ID int
+attr Residue_seq_code int
+attr Residue_label string 5
+
+attr Distance_lower_bound float
+attr Distance_upper_bound float
+
+# The atom IDs are what link this data to the coordinate data.  The
+# atom names are mainly for drill-down.
+attr atom1Id string 15
+attr atom1Name string 5
+attr atom2Id string 15
+attr atom2Name string 5
+
+attr restraintType string 20
+attr restraintLengthType string 20
+attr averageValue float
+attr maxViolation float
+attr isViolated string 15
+attr isAmbiguous string 15

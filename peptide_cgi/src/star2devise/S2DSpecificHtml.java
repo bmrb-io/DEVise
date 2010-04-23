@@ -20,6 +20,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.18.1  2010/04/08 18:45:41  wenger
+// Temporarily changed the Jmol page templates to use cmdport 6266 to
+// run with the 'test' DEVise server; also changed torsion angle
+// and distance restrain visualizations to use the Jmol version of the
+// html templates (which should have been done before).
+//
+// Revision 1.13  2009/03/24 19:04:50  wenger
+// Fixed layout of nucleic acid deltashift session (made windows line
+// up better, etc.); fixed nucleotide counts in summary html page, and
+// changed residue to nucleotide where appropriate; fixed nucleic acid
+// deltashift html pages so that they link to the nucleic-acid-specific
+// help page.
+//
 // Revision 1.12  2009/02/20 22:54:24  wenger
 // RNA visualization now works, using the DNA template; added stub
 // help file for nucleic acid deltashift visualizations.
@@ -163,15 +176,21 @@ public class S2DSpecificHtml {
     // Get the template file name.
     protected String TemplateFileName(boolean isLarge)
     {
+	boolean isJmol = (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) ||
+	  (_dataType == S2DUtils.TYPE_TORSION_ANGLE) ||
+	  (_dataType == S2DUtils.TYPE_RRTORSION_ANGLE) ||
+	  (_dataType == S2DUtils.TYPE_DIST_RESTR) ||
+	  (_dataType == S2DUtils.TYPE_RRDIST_RESTR);
+
 	String templateFile = "html_templates" + File.separator;
 	if (isLarge) {
-	    if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
+	    if (isJmol) {
 	        templateFile += "specific_html_large_jmol.base";
 	    } else {
 	        templateFile += "specific_html_large.base";
             }
 	} else {
-	    if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
+	    if (isJmol) {
 	        templateFile += "specific_html_jmol.base";
 	    } else {
 	        templateFile += "specific_html.base";

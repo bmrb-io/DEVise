@@ -20,6 +20,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.20.2  2010/04/22 16:38:11  wenger
+// Various minor cleanups of distance restraint code.
+//
+// Revision 1.3.20.1  2010/02/24 22:37:03  wenger
+// Implemented basic distance restraint processing of remediated
+// restraints files, added a test using remediated restraints via
+// the BMRB web site.
+//
+// Revision 1.3  2007/11/15 17:15:36  wenger
+// Cleaned out cvs history in source files.
+//
 // Revision 1.2  2006/02/01 20:23:12  wenger
 // Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
 // trunk.
@@ -92,9 +103,22 @@ public class S2DStarUtil
     }
 
     // ----------------------------------------------------------------------
+    // Determines whether a loop or loops containing the given loopId
+    // tag exist in the given save frame.
+    //TEMP -- change name of 'frame'?
+    public static boolean loopExists(StarNode frame, String loopId)
+      throws S2DException
+    {
+        VectorCheckType loopList = frame.searchForTypeByName(_loopClass,
+	  loopId);
+
+        return (loopList.size() > 0);
+    }
+
+    // ----------------------------------------------------------------------
     // Finds the loop containing the given loopId tag in the given save
     // frame.
-    //TEMPTEMP -- change name of 'frame'?
+    //TEMP -- change name of 'frame'?
     public static DataLoopNode findLoop(StarNode frame, String loopId)
       throws S2DException
     {

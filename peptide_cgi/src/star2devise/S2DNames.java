@@ -19,6 +19,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.2.2  2010/03/03 19:07:47  wenger
+// We now output total and violated restraint counts for intra-residue,
+// sequential, etc., so we can select on those in the visualization.
+//
+// Revision 1.15.2.1  2010/02/24 20:03:06  wenger
+// Got basic generation of distance restraint data from the restraints
+// grid mostly working.
+//
+// Revision 1.15  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.14.6.3  2010/02/09 22:41:21  wenger
 // Mostly done getting coordinates from remediated restraint files --
 // seems to work, but still needs some checking.
@@ -289,6 +302,9 @@ public class S2DNames
     public static final String CSR2_SUFFIX = CSR_SUFFIX + "2";
     public static final String CSR3_SUFFIX = CSR_SUFFIX + "3";
     public static final String DELTASHIFT_SUFFIX = "d";
+    public static final String DISTR_SUFFIX = "distr";
+    public static final String DISTRC_SUFFIX = "distrc";
+    public static final String DISTR_MD_SUFFIX = "distr-md";
     public static final String COUPLING_SUFFIX = "g";
     public static final String HETERONUCLEAR_NOE_SUFFIX = "n";
     public static final String HVSC_CHEM_SHIFT_SUFFIX = "hc";
@@ -308,6 +324,9 @@ public class S2DNames
     public static final String RES_COUNT_SUFFIX = "rc";
     public static final String RES_LIST_SUFFIX = "rl";
     public static final String RRATOMIC_COORD_SUFFIX = "rrac";
+    public static final String RRDISTR_SUFFIX = "rrdistr";
+    public static final String RRDISTRC_SUFFIX = "rrdistrc";
+    public static final String RRDISTR_MD_SUFFIX = "rrdistr-md";
     public static final String RRTAR_SUFFIX = "rrtar";
     public static final String RRTAR_MD_SUFFIX = "rrtar-md";
     public static final String SPARTA_DELTASHIFT_SUFFIX = "sd";

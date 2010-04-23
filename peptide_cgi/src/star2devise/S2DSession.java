@@ -18,13 +18,25 @@
 // ------------------------------------------------------------------------
 
 // $Id$
+// $Id$
 
 // $Log$
+// Revision 1.26  2010/03/10 23:09:57  wenger
+// Slight cleanup of STAR file version in session info.
+//
 // Revision 1.25  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
 // add multiple NMR-STAR paths so we can see which NMR-STAR file
 // was used.)
+//
+// Revision 1.24.2.2  2010/04/19 14:49:48  wenger
+// Changed session code to match previous change in distance restraint
+// session template (coord_index changed from 2 to 1).
+//
+// Revision 1.24.2.1  2010/03/05 23:12:36  wenger
+// Creation of distance restraint session files is now (at least mostly)
+// working.
 //
 // Revision 1.24  2010/02/17 21:24:40  wenger
 // Fixed some errors in changing strings in the SPARTA session files.
@@ -252,6 +264,9 @@ public class S2DSession {
 	// The summary data for the 3D atomic coordinates visualization.
 	String replaceString3 = null;
 
+	String searchString4 = null;
+	String replaceString4 = null;
+
 	// The dummy visualization info string in the base file.
 	String visInfoSearchString = "Visualization info";
 
@@ -475,6 +490,34 @@ TEMP*/
 	    replaceString3 = name + S2DNames.RRTAR_SUFFIX + frameIndex;
 	    break;
 
+	case S2DUtils.TYPE_DIST_RESTR:
+	    baseName = "distance_rest.base";
+	    dataSuffix = S2DNames.DISTR_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "15209ac1";
+	    replaceString1 = name + S2DNames.ATOMIC_COORD_SUFFIX + frameIndex;
+	    searchString2 = "15209distr-md1";
+	    replaceString2 = name + S2DNames.DISTR_MD_SUFFIX + frameIndex;
+	    searchString3 = "15209distr1";
+	    replaceString3 = name + S2DNames.DISTR_SUFFIX + frameIndex;
+	    searchString4 = "15209distrc1";
+	    replaceString4 = name + S2DNames.DISTRC_SUFFIX + frameIndex;
+	    break;
+
+	case S2DUtils.TYPE_RRDIST_RESTR:
+	    baseName = "distance_rest.base";
+	    dataSuffix = S2DNames.RRDISTR_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchString1 = "15209ac1";
+	    replaceString1 = name + S2DNames.RRATOMIC_COORD_SUFFIX + frameIndex;
+	    searchString2 = "15209distr-md1";
+	    replaceString2 = name + S2DNames.RRDISTR_MD_SUFFIX + frameIndex;
+	    searchString3 = "15209distr1";
+	    replaceString3 = name + S2DNames.RRDISTR_SUFFIX + frameIndex;
+	    searchString4 = "15209distrc1";
+	    replaceString4 = name + S2DNames.RRDISTRC_SUFFIX + frameIndex;
+	    break;
+
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);
 	}
@@ -542,6 +585,11 @@ TEMP*/
                 if (searchString3 != null) {
 	            line = S2DUtils.replace(line, searchString3,
 		      replaceString3);
+		}
+
+                if (searchString4 != null) {
+	            line = S2DUtils.replace(line, searchString4,
+		      replaceString4);
 		}
 
 		line = S2DUtils.replace(line, visInfoSearchString, visInfo);

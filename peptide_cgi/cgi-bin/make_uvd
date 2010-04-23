@@ -22,6 +22,8 @@
 #   coord_index - the index of this coordinate frame in the parent
 #   do_pdb - the level of PDB (structure) processing
 #   do_csr - the level of chemical shift reference processing
+#   do_dist - the level of distance restraint processing
+#   dist_url - the URL for the document containing distance restraint data
 #   do_tar - the level of torsion angle restraint processing
 #   tar_url - the URL for the document containing torsion angle data
 
@@ -57,6 +59,9 @@ $do_csr = $query->param('do_csr');
 $csr_index = $query->param('csr_index');
 my $size_str = $query->param('size_str') || '';
 my $force = $query->param('force') || '';
+my $do_dist = $query->param('do_dist');
+my $do_rrdist = $query->param('do_rrdist');
+my $dist_url = $query->param('dist_url');
 my $do_tar = $query->param('do_tar');
 my $do_rrtar = $query->param('do_rrtar');
 my $tar_url = $query->param('tar_url');
@@ -79,12 +84,20 @@ if ($do_pdb) {
   print "  has CSR\n" if ($debug);
   $summary_page = $summary_page_dir . "/uvd/" . $name . 'csr' . $csr_index .
     $coord_index . $size_str . '.html';
+} elsif ($do_dist) {
+  print "  has Dist\n" if ($debug);
+  $summary_page = $summary_page_dir . "/uvd/" . $name . 'distr' . $coord_index .
+    $size_str . '.html';
+} elsif ($do_rrdist) {
+  print "  has RRDist\n" if ($debug);
+  $summary_page = $summary_page_dir . "/uvd/" . $name . 'rrdistr' . $coord_index .
+    $size_str . '.html';
 } elsif ($do_tar) {
-  print "  has PDB\n" if ($debug);
+  print "  has TAR\n" if ($debug);
   $summary_page = $summary_page_dir . "/uvd/" . $name . 'tar' . $coord_index .
     $size_str . '.html';
 } elsif ($do_rrtar) {
-  print "  has PDB\n" if ($debug);
+  print "  has RRTAR\n" if ($debug);
   $summary_page = $summary_page_dir . "/uvd/" . $name . 'rrtar' . $coord_index .
     $size_str . '.html';
 } else {
@@ -92,18 +105,25 @@ if ($do_pdb) {
   $summary_page = $summary_page_dir . "/uvd/" . $name . 'y' . $size_str .
     '.html';
 }
-
 my $cmd;
 if ($do_pdb) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_pdb $do_pdb -coord_index $coord_index";
 } elsif ($do_csr) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_csr $do_csr -coord_index $coord_index";
+
+} elsif ($do_dist) {
+  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_dist $do_dist -coord_index $coord_index";
+} elsif ($do_rrdist) {
+  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_rrdist $do_rrdist -coord_index $coord_index";
 } elsif ($do_tar) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_tar $do_tar -coord_index $coord_index";
 } elsif ($do_rrtar) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_rrtar $do_rrtar -coord_index $coord_index";
 } else {
   $cmd = "./uvd -file $file -name $name";
+}
+if ($dist_url) {
+  $cmd = $cmd . " -dist_url " . $dist_url;
 }
 if ($tar_url) {
   $cmd = $cmd . " -tar_url " . $tar_url;
@@ -120,6 +140,8 @@ if ($sparta_file) {
 if ($force) {
   $cmd = $cmd . " -force";
 }
+
+print "Cmd: <$cmd>\n" if ($debug);
 
 my $result = `$cmd`;
 chomp $result;

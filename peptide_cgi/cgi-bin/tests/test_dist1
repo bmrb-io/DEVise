@@ -1,7 +1,7 @@
 #! /bin/csh -f
 
 # First test of distance restraints -- use an explicitly-specified
-# restraint file.
+# remediated restraints file.
 
 set result = 0
 
@@ -15,9 +15,9 @@ if ($status != 0) then
 endif
 mv tmp/s2d.out tmp/s2d.out1
 
-echo -n "Processing mmCIF and distance restraints: "
+echo -n "Processing coordinates and distance restraints: "
 ./s2d -nomail -bmrbid 16270 -pdbid 2kid -coord_index 2 -force \
-  -dist_file test_data/2kid_dist.str -do_dist 3 -check_res_list -check_pct
+  -dist_file test_data/2kid_linked.str -do_rrdist 3 -check_res_list -check_pct
 if ($status != 0) then
   echo "Second invocation of s2d failed!"
   set result = 1

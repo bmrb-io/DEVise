@@ -12,15 +12,38 @@
 
 // ------------------------------------------------------------------------
 
-//TEMPTEMP -- change
 // This class contains NMR-Star access methods, etc., specific to NMR-STAR/
-// torsion angle restraint files.
+// remediated restraint files.
 
 // ------------------------------------------------------------------------
 
 // $Id$
 
 // $Log$
+// Revision 1.2.2.5  2010/04/22 18:29:20  wenger
+// Eliminated multiple counting of ambiguous restraints; various fixes
+// to the distance restraint tests.
+//
+// Revision 1.2.2.4  2010/04/22 16:38:10  wenger
+// Various minor cleanups of distance restraint code.
+//
+// Revision 1.2.2.3  2010/03/09 20:36:47  wenger
+// Added ambiguous and non-ambiguous restraint counts to data.
+//
+// Revision 1.2.2.2  2010/03/03 21:52:29  wenger
+// Added processing of distance constraint type (e.g., "hydrogen bond",
+// "NOE", etc.).
+//
+// Revision 1.2.2.1  2010/02/24 22:37:03  wenger
+// Implemented basic distance restraint processing of remediated
+// restraints files, added a test using remediated restraints via
+// the BMRB web site.
+//
+// Revision 1.2  2010/02/11 22:13:11  wenger
+// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
+// to trunk (note: s2d_remediated_rest_1002_br_1 ==
+// s2d_remediated_rest_1002_br_end).
+//
 // Revision 1.1.2.6  2010/02/09 22:41:21  wenger
 // Mostly done getting coordinates from remediated restraint files --
 // seems to work, but still needs some checking.
@@ -67,7 +90,6 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
     //===================================================================
     // PUBLIC METHODS
     //-------------------------------------------------------------------
-//TEMPTEMP -- make sure this is correct!
     /**
      * Get entity assembly IDs for the coordinates in the given save frame.
      * @param frame: the save frame to search
@@ -84,9 +106,6 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
     	return entAssemIDVals;
     }
 
-    //===================================================================
-    // PROTECTED METHODS
-//TEMPTEMP -- should this be public?
     //-------------------------------------------------------------------
     /**
      * Get the NMR-STAR file version corresponding to this object.
@@ -97,6 +116,8 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
     	return "remediated_restraint";
     }
 
+    //===================================================================
+    // PROTECTED METHODS
     //-------------------------------------------------------------------
     // Constructor.  Constructs an S2DNmrStarRRIfc object corresponding to
     // the STAR file represented by starTree.
@@ -119,7 +140,8 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
     // Set the tag names and values to work for NMR-Star files.
     private void setStarNames()
     {
-	//TEMPTEMP -- check these...
+	// Atomic coordinates.
+	//TEMP -- check these...
 	ATOM_COORD_MODEL_NUM = "_Atom_site.Model_ID";
 	ATOM_COORD_ATOM_NAME = "_Atom_site.Label_atom_ID";
 	ATOM_COORD_ATOM_TYPE = "_Atom_site.Type_symbol";
@@ -129,8 +151,34 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
 	ATOM_COORD_Y = "_Atom_site.Cartn_y";
 	ATOM_COORD_Z = "_Atom_site.Cartn_z";
 
-	REP_CONF_ENTITY_ASSEMBLY_ID = "_Atom_site.Label_entity_assembly_ID";//TEMPTEMP?
+	// Distance restraints.
+        DISTR_ATOM_ID_1 = "_Gen_dist_constraint.Atom_ID_1";
+        DISTR_ATOM_ID_2 = "_Gen_dist_constraint.Atom_ID_2";
 
+        DISTR_CONSTRAINT_STATS_SF_CAT =
+	  "_Gen_dist_constraint_list.Sf_category";
+        DISTR_CONSTRAINT_STATS_CAT_NAME = "general_distance_constraints";
+        DISTR_CONSTRAINT_TYPE = "_Gen_dist_constraint_list.Constraint_type";
+
+        DISTR_ENT_ASSEM_1 = "_Gen_dist_constraint.Entity_assembly_ID_1";
+        DISTR_ENT_ASSEM_2 = "_Gen_dist_constraint.Entity_assembly_ID_2";
+
+	DISTR_MAX = "_Gen_dist_constraint.Distance_upper_bound_val";
+	DISTR_MEMBER_ID = "_Gen_dist_constraint.Member_ID";
+	DISTR_MEMBER_LOGIC_CODE = "_Gen_dist_constraint.Member_logic_code";
+	DISTR_MIN = "_Gen_dist_constraint.Distance_lower_bound_val";
+
+	    //TEMP -- check this one
+        DISTR_RES_SEQ_CODE_1 = "_Gen_dist_constraint.Comp_index_ID_1";
+	    //TEMP -- check this one
+        DISTR_RES_SEQ_CODE_2 = "_Gen_dist_constraint.Comp_index_ID_2";
+        DISTR_RES_SEQ_LABEL_1 = "_Gen_dist_constraint.Comp_ID_1";
+        DISTR_RES_SEQ_LABEL_2 = "_Gen_dist_constraint.Comp_ID_2";
+        DISTR_RESTRAINT_ID = "_Gen_dist_constraint.ID";
+
+	REP_CONF_ENTITY_ASSEMBLY_ID = "_Atom_site.Label_entity_assembly_ID";
+
+	// Torsion angle restraints.
         TAR_ANGLE_LOWER_BOUND =
 	  "_Torsion_angle_constraint.Angle_lower_bound_val";
         TAR_ANGLE_UPPER_BOUND =
@@ -143,7 +191,6 @@ public class S2DNmrStarRRIfc extends S2DNmrStarRestIfc {
         TAR_CONSTRAINT_STATS_SF_CAT =
 	  "_Torsion_angle_constraint_list.Sf_category";
         TAR_CONSTRAINT_STATS_CAT_NAME = "torsion_angle_constraints";
-
 
         TAR_ENT_ASSEM_1 = "_Torsion_angle_constraint.Entity_assembly_ID_1";
         TAR_ENT_ASSEM_2 = "_Torsion_angle_constraint.Entity_assembly_ID_2";

@@ -31,6 +31,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
+// Revision 1.21.2.1  2010/03/08 19:16:24  wenger
+// Now writing distance restraint links in summary html pages.
+//
 // Revision 1.21  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -592,15 +601,15 @@ public class S2DSummaryHtml {
     //-------------------------------------------------------------------
     // Writes the distance restraint link, where we've actually done the
     // distance restraint processing.
-    public void writeDistRestraint(String pdbId, int frameIndex)
-      throws IOException
+    public void writeDistRestraint(String pdbId, int frameIndex,
+      boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeDistRestraint()");
 	}
 
-	_normal.writeDistRestraint(pdbId, frameIndex);
-	_large.writeDistRestraint(pdbId, frameIndex);
+	_normal.writeDistRestraint(pdbId, frameIndex, isRR);
+	_large.writeDistRestraint(pdbId, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -608,14 +617,14 @@ public class S2DSummaryHtml {
     // invocation (we haven't already done the distance restraint
     // processing).
     public void writeDistRestraintCGI(String pdbId, String tarUrl,
-      int frameIndex) throws IOException
+      int frameIndex, boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeDistRestraintCGI()");
 	}
 
-	_normal.writeDistRestraintCGI(pdbId, tarUrl, frameIndex);
-	_large.writeDistRestraintCGI(pdbId, tarUrl, frameIndex);
+	_normal.writeDistRestraintCGI(pdbId, tarUrl, frameIndex, isRR);
+	_large.writeDistRestraintCGI(pdbId, tarUrl, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------

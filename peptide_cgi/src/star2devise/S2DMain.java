@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.189  2010/03/15 22:16:43  wenger
+// Updated version to 11.7.5 and added new version history section.
+//
 // Revision 1.188  2010/03/15 20:58:40  wenger
 // Minor change to SPARTA part of test procedure; version is 11.7.4
 // for release.
@@ -33,6 +36,127 @@
 // visualization version info (to-do 072).  (Doing this before I
 // add multiple NMR-STAR paths so we can see which NMR-STAR file
 // was used.)
+//
+// Revision 1.185.2.27  2010/04/22 23:32:06  wenger
+// Fixed selection to work for ambiguous/non-ambiguous (forgot to add
+// in the appropriate GAttr link in the session template before(!)).
+//
+// Revision 1.185.2.26  2010/04/22 18:49:59  wenger
+// We now get the bmrb_mirror.do_rrdist_default property value; added
+// appropriate values to the configuration.
+//
+// Revision 1.185.2.25  2010/04/22 16:38:10  wenger
+// Various minor cleanups of distance restraint code.
+//
+// Revision 1.185.2.24  2010/04/21 21:03:05  wenger
+// Largely fixed up tests for distance restraint processing -- still
+// need to do some manual checking to make sure that values are
+// correct; some minor cleanup of the distance restraint data
+// files.
+//
+// Revision 1.185.2.23  2010/04/20 21:45:55  wenger
+// Changed distance restraint data view title to include "Restraints per
+// residue" so people have a better idea what is actually graphed.
+//
+// Revision 1.185.2.22  2010/04/20 19:22:59  wenger
+// We now deal with pseudoatoms -- for restraints with pseudoatoms,
+// we generate one record in the restraint data file for each combination
+// of "real" atoms represented by pseudoatoms -- so we end up drawing
+// a connection between all possible atoms in the 3D view.
+//
+// Revision 1.185.2.21  2010/04/19 21:00:15  wenger
+// Changed distance restraint session template to allow selection
+// by both violated/non-violated and ambiguous/non-ambiguous.
+//
+// Revision 1.185.2.20  2010/04/19 18:35:43  wenger
+// Cleaned up the distance restraint meta-data-writing code in preparation
+// for allowing selection by both violated/non-violated and ambiguous/
+// non-ambiguous.
+//
+// Revision 1.185.2.19  2010/04/19 16:17:21  wenger
+// Slight session template changes to get coloring restraints by ambiguous/
+// non-ambiguous working; slight fixes to some of the distance restraint
+// test scripts.
+//
+// Revision 1.185.2.18  2010/04/19 14:49:48  wenger
+// Changed session code to match previous change in distance restraint
+// session template (coord_index changed from 2 to 1).
+//
+// Revision 1.185.2.17  2010/04/08 19:49:48  wenger
+// Oops -- forgot to change coordinates data source from coord_index 2
+// to 1; changed main 3D view name to include 'wireframe' for JS client.
+//
+// Revision 1.185.2.16  2010/04/08 18:45:41  wenger
+// Temporarily changed the Jmol page templates to use cmdport 6266 to
+// run with the 'test' DEVise server; also changed torsion angle
+// and distance restrain visualizations to use the Jmol version of the
+// html templates (which should have been done before).
+//
+// Revision 1.185.2.15  2010/04/07 21:28:00  wenger
+// Simplified restraint-counting code in preparation for dealing with
+// *combinations* of violated and ambiguous restraints; changed coord_index
+// in test_dist3rgi and test_dist3rri to match the entry.
+//
+// Revision 1.185.2.14  2010/04/01 15:40:52  wenger
+// Oops -- forgot to switch the distance restraint template back to 3D
+// views; also added atom IDs to the highlight view mapping so they get
+// passed to the JS.
+//
+// Revision 1.185.2.13  2010/03/09 20:36:47  wenger
+// Added ambiguous and non-ambiguous restraint counts to data.
+//
+// Revision 1.185.2.12  2010/03/09 00:14:09  wenger
+// Got rid of the data_pile_supplement_link -- it seems like having
+// the combination of multiple visual links (with the actual pile
+// link) is what's causing problems with the data view Y axis.
+// (This disadvantage of getting rid of this link is that if we
+// unpile things, the views won't be properly linked anymore.)
+//
+// Revision 1.185.2.11  2010/03/08 22:50:53  wenger
+// Fixed titles in distance restraint data views.
+//
+// Revision 1.185.2.10  2010/03/08 22:23:38  wenger
+// Fixed cache checking for distance restraints; added some debug output
+// to make_view and make_uvd.
+//
+// Revision 1.185.2.9  2010/03/08 21:33:33  wenger
+// Fixed display of non-violated restraints (got rid of expression in
+// parent value, and did the actual calculation in the Peptide-CGI code --
+// see DEVise bug 999).
+//
+// Revision 1.185.2.8  2010/03/08 19:16:24  wenger
+// Now writing distance restraint links in summary html pages.
+//
+// Revision 1.185.2.7  2010/03/05 23:12:36  wenger
+// Creation of distance restraint session files is now (at least mostly)
+// working.
+//
+// Revision 1.185.2.6  2010/03/03 17:44:41  wenger
+// Fixed the fact that coordinates from the remediated restraints file
+// weren't getting processed for distance restraints.
+//
+// Revision 1.185.2.5  2010/02/25 21:03:39  wenger
+// First partial implementation of writing out per-residue distance
+// restraint data.
+//
+// Revision 1.185.2.4  2010/02/24 22:37:03  wenger
+// Implemented basic distance restraint processing of remediated
+// restraints files, added a test using remediated restraints via
+// the BMRB web site.
+//
+// Revision 1.185.2.3  2010/02/24 20:03:06  wenger
+// Got basic generation of distance restraint data from the restraints
+// grid mostly working.
+//
+// Revision 1.185.2.2  2010/02/24 16:35:20  wenger
+// Torsion angle restraints now work with new S2DNmrStarRGIfc and
+// S2DNmrStarRGIfcFactory classes.
+//
+// Revision 1.185.2.1  2010/02/24 16:03:15  wenger
+// More work on distance restraints: added -do_rrdist argument, partially
+// completed code to get distance restraints URL from restraints grid;
+// committing in preparation for combining S2DNmrStarDistRIfc and
+// S2DNmrStarTarIfc into a single S2DNmrStarRGIfc class.
 //
 // Revision 1.185  2010/02/23 20:04:28  wenger
 // Changed version to 11.7.4x1; added 11.7.4 version history section.
@@ -1111,7 +1235,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.7.5x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
@@ -1169,7 +1293,7 @@ public class S2DMain {
 	// any connection to a BMRB entry.
     private boolean _restraintOnly = false;
 
-    // Torsion angle restraint-related info.
+    // Torsion angle restraint-related info (for restraints grid).
     public static final int TAR_LEVEL_NONE = 0;
     // This means create the links only if the appropriate entry
     // exists in the restraint grid.
@@ -1190,7 +1314,7 @@ public class S2DMain {
     private int _rrTarLevel = RRTAR_LEVEL_LINK_CHECK;
     private String _rrFile; // remediated restraints
 
-    // Distance restraint-related info.
+    // Distance restraint-related info (for restraints grid).
     public static final int DISTR_LEVEL_NONE = 0;
     // This means create the links only if the appropriate entry
     // exists in the restraint grid.
@@ -1200,6 +1324,15 @@ public class S2DMain {
     private int _distRLevel = DISTR_LEVEL_LINK_CHECK;
     private String _distRFile = null;
     private String _distRUrl = null;//TEMP -- change name?
+
+    // Distance restraint-related info (for remediated restraints).
+    public static final int RRDISTR_LEVEL_NONE = 0;
+    // This means create the links only if the appropriate entry
+    // exists in the restraint grid.
+    public static final int RRDISTR_LEVEL_LINK_CHECK = 1;
+    public static final int RRDISTR_LEVEL_LINK = 2;
+    public static final int RRDISTR_LEVEL_PROCESS = 3;
+    private int _rrDistRLevel = RRDISTR_LEVEL_LINK_CHECK;
 
     private boolean _haveCoords = false;
 
@@ -1276,6 +1409,7 @@ public class S2DMain {
 	    s2d._tarLevel = TAR_LEVEL_NONE;
 	    s2d._rrTarLevel = RRTAR_LEVEL_NONE;
 	    s2d._distRLevel = DISTR_LEVEL_NONE;
+	    s2d._rrDistRLevel = RRDISTR_LEVEL_NONE;
 	}
 
 	try {
@@ -1603,6 +1737,20 @@ public class S2DMain {
 		  "; using default"));
 	    }
 	}
+
+	String rrDistTmp = props.getProperty("bmrb_mirror.do_rrdist_default");
+	if (rrDistTmp == null) {
+	    System.err.println(new S2DWarning("Unable to get value for " +
+	      "bmrb_mirror.do_rrdist_default property"));
+	} else {
+	    try {
+	        _rrDistRLevel = Integer.parseInt(rrDistTmp);
+	    } catch(NumberFormatException ex) {
+	        System.err.println(new S2DWarning("Error parsing " +
+		  "do_rrdist_default value " + ex.toString() +
+		  "; using default"));
+	    }
+	}
     }
 
     //-------------------------------------------------------------------
@@ -1708,6 +1856,13 @@ public class S2DMain {
           "        1: create links in summary file but don't process;\n" +
           "        2: process PDB references\n" +
           "        (default is " + _pdbLevel + " unless -pdb_file is set)\n" +
+          "    -do_rrdist <0|1|2|3>\n" +
+          "        0: ignore distance restraint references;\n" +
+          "        1: if remediated restraints entry exists create links in\n" +
+	  "          summary file but don't process;\n" +
+          "        1: create links in summary file but don't process;\n" +
+          "        3: process distance restraint references\n" +
+          "        (default is " + _rrDistRLevel + ")\n" +
           "    -do_rrtar <0|1|2|3>\n" +
           "        0: ignore torsion angle restraint references;\n" +
           "        1: if remediated restraints entry exists create links in\n" +
@@ -1959,6 +2114,20 @@ public class S2DMain {
 		      ex.toString());
 	        }
 
+	    } else if ("-do_rrdist".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-do_rrdist argument needs value");
+		}
+		try {
+	            _rrDistRLevel = Integer.parseInt(args[index]);
+	        } catch(NumberFormatException ex) {
+	            System.err.println("Error parsing do_rrdist value: " +
+		      ex.toString());
+	            throw new S2DError("Error parsing do_rrdist value " +
+		      ex.toString());
+	        }
+
 	    } else if ("-do_rrtar".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -1980,6 +2149,14 @@ public class S2DMain {
 		}
 		try {
 	            _tarLevel = Integer.parseInt(args[index]);
+		    // For now, we're forcing coordinate processing to
+		    // happen whenever we do torsion angle restraint processing.
+		    // This should eventually be changed to not re-
+		    // process coordinates if we already have them andy
+		    // they're up-to-date.
+		    if (_tarLevel == TAR_LEVEL_PROCESS) {
+		        _pdbLevel = PDB_LEVEL_PROCESS;
+		    }
 	        } catch(NumberFormatException ex) {
 	            System.err.println("Error parsing do_tar value: " +
 		      ex.toString());
@@ -2245,6 +2422,19 @@ public class S2DMain {
 	      RRTAR_LEVEL_PROCESS + ")");
 	}
 
+	if (_distRLevel < DISTR_LEVEL_NONE ||
+	  _distRLevel > DISTR_LEVEL_PROCESS) {
+	    throw new S2DError("illegal do_dist value: " + _distRLevel +
+	      " (must be between " + DISTR_LEVEL_NONE + " and " +
+	      DISTR_LEVEL_PROCESS + ")");
+	}
+
+	if (_rrDistRLevel < RRDISTR_LEVEL_NONE ||
+	  _rrDistRLevel > RRDISTR_LEVEL_PROCESS) {
+	    throw new S2DError("illegal do_rrdist value: " + _rrDistRLevel +
+	      " (must be between " + RRDISTR_LEVEL_NONE + " and " +
+	      RRDISTR_LEVEL_PROCESS + ")");
+	}
 
 	//
 	// Set some defaults.
@@ -2269,7 +2459,8 @@ public class S2DMain {
 
 	_restraintOnly = ((_tarLevel == TAR_LEVEL_PROCESS) ||
 	  (_rrTarLevel == RRTAR_LEVEL_PROCESS) ||
-	  (_distRLevel == DISTR_LEVEL_PROCESS)) &&
+	  (_distRLevel == DISTR_LEVEL_PROCESS) ||
+	  (_rrDistRLevel == RRDISTR_LEVEL_PROCESS)) &&
 	  _masterBmrbId.equals("") &&
 	  (_localFiles.size() == 0);
 
@@ -2295,6 +2486,7 @@ public class S2DMain {
 	    System.out.println("_distRLevel = " + _distRLevel);
 	    System.out.println("_distRFile = " + _distRFile);
 	    System.out.println("_distRUrl = " + _distRUrl);
+	    System.out.println("_rrDistRLevel = " + _rrDistRLevel);
 	    if (_localFiles.size() > 0) {
 	        System.out.println("localFile = {" +
 		  _localFiles.elementAt(0) + "}");
@@ -2441,6 +2633,22 @@ public class S2DMain {
 		    }
 		}
 
+		if (_distRLevel == DISTR_LEVEL_PROCESS) {
+		    if (!sessionFileUseCache(_name,
+		      S2DNames.DISTR_SUFFIX + _cmdFrameIndex,
+		      _sessionDir, summaryData)) {
+		        break check;
+		    }
+		}
+
+		if (_rrDistRLevel == RRDISTR_LEVEL_PROCESS) {
+		    if (!sessionFileUseCache(_name,
+		      S2DNames.RRDISTR_SUFFIX + _cmdFrameIndex,
+		      _sessionDir, summaryData)) {
+		        break check;
+		    }
+		}
+
 		if (_tarLevel == TAR_LEVEL_PROCESS) {
 		    if (!sessionFileUseCache(_name,
 		      S2DNames.TAR_SUFFIX + _cmdFrameIndex,
@@ -2502,7 +2710,7 @@ public class S2DMain {
 	}
 
         if (_tarLevel == TAR_LEVEL_PROCESS) {
-	    Date tarModDate = (new S2DNmrStarTarIfcFactory()).getModDate(id);
+	    Date tarModDate = (new S2DNmrStarRGIfcFactory(true)).getModDate(id);
 	        // Note: if a PDB ID was specified on the command
 	        // line we really should compare the PDB file date
 	        // against the session-specific html file here,
@@ -2736,6 +2944,12 @@ public class S2DMain {
 	    if (_distRLevel == DISTR_LEVEL_PROCESS) {
 		_currentFrameIndex = _cmdFrameIndex;
 	        process1DistR(_distRFile, _distRUrl, _cmdPdbId);
+	    }
+
+	    if (_rrDistRLevel == RRDISTR_LEVEL_PROCESS) {
+		_currentFrameIndex = _cmdFrameIndex;
+	        process1RRCoordSet(_rrFile, _cmdPdbId);
+	        process1RRDistR(_rrFile, _cmdPdbId);
 	    }
 
 	    _summary.close(null, null, "");
@@ -3042,6 +3256,32 @@ public class S2DMain {
 	      _distRLevel == DISTR_LEVEL_PROCESS) {
 		try {
 	            process1DistR(null, null, id);
+		} catch(S2DException ex) {
+		    System.err.println("Unable to process PDB ID " + id +
+		      "(" + ex.toString() + ")");
+		    System.err.println("Unable to get distance " +
+		      "restraints from related PDB ID " + id);
+		}
+	    } else {
+	        if (_retrying) {
+		    System.err.println("Unable to get distance " +
+		      " restraints from related PDB ID " + id + " because " +
+		      "of insufficient memory");
+	        } else {
+		    System.err.println("Distance restraints " +
+		      "from related PDB ID " + id + " not read");
+	        }
+	    }
+
+	    // We do the same thing here for RRDISTR_LEVEL_LINK and
+	    // RRDISTR_LEVEL_PROCESS because they are split out inside
+	    // process1RRDistR().
+	    if (_rrDistRLevel == RRDISTR_LEVEL_LINK_CHECK ||
+	      _rrDistRLevel == RRDISTR_LEVEL_LINK ||
+	      _rrDistRLevel == RRDISTR_LEVEL_PROCESS) {
+		try {
+	            process1RRCoordSet(null, id);
+	            process1RRDistR(null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
 		      "(" + ex.toString() + ")");
@@ -4902,7 +5142,8 @@ public class S2DMain {
 
         _currentPdbId = pdbId;
 
-	if (_rrTarLevel == RRTAR_LEVEL_PROCESS) {
+	if (_rrTarLevel == RRTAR_LEVEL_PROCESS ||
+	  _rrDistRLevel == RRDISTR_LEVEL_PROCESS) {
 	    String resListFile = _restraintOnly ? null :
 	      _dataDir + File.separator + _name +
 	      S2DNames.RES_LIST_SUFFIX + S2DNames.DAT_SUFFIX;
@@ -4922,7 +5163,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    // Process one torsion angle restraints file.
+    // Do torsion angle processing for one restraints grid file.
     private void process1TAR(String tarFile, String tarUrl, String pdbId)
       throws S2DException
     {
@@ -4939,7 +5180,8 @@ public class S2DMain {
 		if (_tarLevel == TAR_LEVEL_LINK_CHECK) {
 		    // Note: this will throw an error if the relevant
 		    // entry doesn't exist in the restraints grid.
-		    tarUrl = S2DNmrStarTarIfcFactory.pdbIdToUrl(pdbId);
+		    tarUrl = (new S2DNmrStarRGIfcFactory(true)).
+		      pdbIdToUrl(pdbId);
 		}
 	        _summary.writeTorsionAngleCGI(_currentPdbId, tarUrl,
 		  _currentFrameIndex, false);
@@ -4953,18 +5195,19 @@ public class S2DMain {
 	    }
 
 	} else if (_tarLevel == TAR_LEVEL_PROCESS) {
-	    S2DNmrStarTarIfc tarStar;
-	    S2DNmrStarTarIfcFactory factory = new S2DNmrStarTarIfcFactory();
+	    S2DNmrStarRGIfc rgStar;
+	    S2DNmrStarRGIfcFactory factory =
+	      new S2DNmrStarRGIfcFactory(true);
 	    if (tarFile != null) {
-	        tarStar = (S2DNmrStarTarIfc)factory.createFromFile(tarFile);
+	        rgStar = (S2DNmrStarRGIfc)factory.createFromFile(tarFile);
 	    } else if (tarUrl != null) {
-	        tarStar = factory.createFromUrl(tarUrl, pdbId);
+	        rgStar = factory.createFromUrl(tarUrl, pdbId);
 	    } else {
-	        tarStar = factory.createFromId(pdbId);
+	        rgStar = factory.createFromId(pdbId);
 	    }
 
 	    S2DTorsionAngle tar = new S2DTorsionAngle(_name, _longName,
-	      tarStar, _dataDir, _sessionDir, _summary, _currentPdbId);
+	      rgStar, _dataDir, _sessionDir, _summary, _currentPdbId);
 
 	    tar.writeRestraints(_currentFrameIndex, false);
 	} else {
@@ -4996,7 +5239,8 @@ public class S2DMain {
 		if (_rrTarLevel == RRTAR_LEVEL_LINK_CHECK) {
 		    // Note: this will throw an error if the relevant
 		    // entry doesn't exist in the remediated restraints.
-		    rrUrl = S2DNmrStarTarIfcFactory.pdbIdToUrl(pdbId);
+		    rrUrl = (new S2DNmrStarRGIfcFactory(true)).
+		      pdbIdToUrl(pdbId);
 		}
 	        _summary.writeTorsionAngleCGI(_currentPdbId, rrUrl,
 		  _currentFrameIndex, true);
@@ -5030,7 +5274,7 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    // Process one distance restraints file.
+    // Do distance restraint processing for one restraints grid file.
     private void process1DistR(String distRFile, String distRUrl,
       String pdbId) throws S2DException
     {
@@ -5047,10 +5291,11 @@ public class S2DMain {
 		if (_distRLevel == DISTR_LEVEL_LINK_CHECK) {
 		    // Note: this will throw an error if the relevant
 		    // entry doesn't exist in the restraints grid.
-		    distRUrl = S2DNmrStarDistRIfcFactory.pdbIdToUrl(pdbId);
+		    distRUrl = (new S2DNmrStarRGIfcFactory(true)).
+		      pdbIdToUrl(pdbId);
 		}
 	        _summary.writeDistRestraintCGI(_currentPdbId, distRUrl,
-		  _currentFrameIndex);
+		  _currentFrameIndex, false);
             } catch(IOException ex) {
                 System.err.println(
 		  "IOException writing distance restraints: " +
@@ -5061,24 +5306,78 @@ public class S2DMain {
 	    }
 
 	} else if (_distRLevel == DISTR_LEVEL_PROCESS) {
-	    S2DNmrStarDistRIfc distRStar;
-	    S2DNmrStarDistRIfcFactory factory =
-	      new S2DNmrStarDistRIfcFactory();
+	    S2DNmrStarRGIfc rgStar;
+	    S2DNmrStarRGIfcFactory factory =
+	      new S2DNmrStarRGIfcFactory(false);
 	    if (distRFile != null) {
-	        distRStar = (S2DNmrStarDistRIfc)factory.createFromFile(
+	        rgStar = (S2DNmrStarRGIfc)factory.createFromFile(
 		  distRFile);
 	    } else if (distRUrl != null) {
-	        distRStar = factory.createFromUrl(distRUrl, pdbId);
+	        rgStar = factory.createFromUrl(distRUrl, pdbId);
 	    } else {
-	        distRStar = factory.createFromId(pdbId);
+	        rgStar = factory.createFromId(pdbId);
 	    }
 
 	    S2DDistRestraint distR = new S2DDistRestraint(_name, _longName,
-	      distRStar, _dataDir, _sessionDir, _summary, _currentPdbId);
+	      rgStar, _dataDir, _sessionDir, _summary, _currentPdbId);
 
-	    distR.writeRestraints(_currentFrameIndex);
+	    distR.writeRestraints(_currentFrameIndex, false);
 	} else {
 	    throw new S2DError("Illegal _distRLevel value: " + _distRLevel);
+	}
+
+        _currentPdbId = null;
+    }
+
+    //-------------------------------------------------------------------
+    // Do distance restraint processing for one remediated restraints file.
+    private void process1RRDistR(String rrFile, String pdbId)
+      throws S2DException
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("process1RRDistR(" + rrFile + ", " +
+	      pdbId + ")");
+	}
+
+        _currentPdbId = pdbId;
+
+	if (_rrDistRLevel == RRDISTR_LEVEL_LINK_CHECK ||
+	  _rrDistRLevel == RRDISTR_LEVEL_LINK) {
+	    try {
+		String rrUrl = null;
+		if (_rrDistRLevel == RRDISTR_LEVEL_LINK_CHECK) {
+		    // Note: this will throw an error if the relevant
+		    // entry doesn't exist in the remediated restraints.
+		    rrUrl = (new S2DNmrStarRGIfcFactory(true)).
+		      pdbIdToUrl(pdbId);
+		}
+	        _summary.writeDistRestraintCGI(_currentPdbId, rrUrl,
+		  _currentFrameIndex, true);
+            } catch(IOException ex) {
+                System.err.println(
+		  "IOException writing distance restraints: " +
+		  ex.toString());
+	        throw new S2DError("Can't write distance restraints");
+	    } finally {
+	        _summary.endFrame();
+	    }
+
+	} else if (_rrDistRLevel == RRDISTR_LEVEL_PROCESS) {
+	    S2DNmrStarRRIfc rrStar;
+	    S2DNmrStarRRIfcFactory factory = new S2DNmrStarRRIfcFactory();
+	    if (rrFile != null) {
+	        rrStar = (S2DNmrStarRRIfc)factory.createFromFile(rrFile);
+	    } else {
+	        rrStar = factory.createFromId(pdbId);
+	    }
+
+	    S2DDistRestraint distR = new S2DDistRestraint(_name, _longName,
+	      rrStar, _dataDir, _sessionDir, _summary, _currentPdbId);
+
+	    distR.writeRestraints(_currentFrameIndex, true);
+	} else {
+	    throw new S2DError("Illegal _rrDistRLevel value: " +
+	      _rrDistRLevel);
 	}
 
         _currentPdbId = null;

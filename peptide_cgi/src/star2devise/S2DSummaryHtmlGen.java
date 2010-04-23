@@ -36,6 +36,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
+// Revision 1.25.2.2  2010/03/08 20:33:34  wenger
+// Added distance restraint-processing code to make_view; fixed a couple
+// of views in the session template that weren't supposed to show up in
+// the JavaScreen; fixed the distance restraint links in the summary page.
+//
+// Revision 1.25.2.1  2010/03/08 19:16:24  wenger
+// Now writing distance restraint links in summary html pages.
+//
 // Revision 1.25  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -368,6 +382,12 @@ public abstract class S2DSummaryHtmlGen {
     private int _maxS2OrderFrame = 0;
     private IntKeyHashtable _s2OrderInfo = new IntKeyHashtable();
 
+    private int _maxDistRestrFrame = 0;
+    private IntKeyHashtable _distRestrInfo = new IntKeyHashtable();
+
+    private int _maxRRDistRestrFrame = 0;
+    private IntKeyHashtable _rrDistRestrInfo = new IntKeyHashtable();
+
     private int _maxTorsionAngleFrame = 0;
     private IntKeyHashtable _torsionAngleInfo = new IntKeyHashtable();
 
@@ -515,6 +535,7 @@ TEMP?*/
 		    writeCoordTable();
 		}
 
+		writeBothDistRestrTables();
 		writeBothTorsionAngleTables();
 
 		if (!_restraintOnly) {
@@ -1081,6 +1102,95 @@ TEMP?*/
     }
 
     //-------------------------------------------------------------------
+    // Writes the distance restraint link, where we've actually done the
+    // distance restraint processing.
+    protected void writeDistRestraint(String pdbId, int frameIndex,
+      boolean isRR) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeDistRestr()");
+	}
+
+	if (pdbId != null) {
+	    String linkStr = pdbId;
+
+	    String suffix = null;
+	    IntKeyHashtable info = null;
+	    if (isRR) {
+	        _maxRRDistRestrFrame = Math.max(_maxRRDistRestrFrame,
+	          frameIndex);
+	        suffix = S2DNames.RRDISTR_SUFFIX;
+		info = _rrDistRestrInfo;
+	    } else {
+	        _maxDistRestrFrame = Math.max(_maxDistRestrFrame,
+	          frameIndex);
+	        suffix = S2DNames.DISTR_SUFFIX;
+		info = _distRestrInfo;
+	    }
+
+            String value = "<a href=\"" + _name +
+	      suffix + frameIndex +
+	      sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	    info.put(frameIndex, value);
+	}
+    }
+
+    //TEMP -- what about entity assembly ID here?
+    //-------------------------------------------------------------------
+    // Writes the distance restraint link, where the link is a CGI script
+    // invocation (we haven't already done the distance restraint
+    // processing).
+    protected void writeDistRestraintCGI(String pdbId, String distRUrl,
+      int frameIndex, boolean isRR) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeDistRestrCGI()");
+	}
+
+	if (pdbId != null) {
+	    String linkStr = pdbId;
+
+            String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
+
+	    String doStr = null;
+	    IntKeyHashtable info = null;
+	    if (isRR) {
+	        _maxRRDistRestrFrame = Math.max(_maxRRDistRestrFrame,
+	          frameIndex);
+	        doStr = "&do_rrdist=" + S2DMain.RRDISTR_LEVEL_PROCESS;
+		info = _rrDistRestrInfo;
+	    } else {
+	        _maxDistRestrFrame = Math.max(_maxDistRestrFrame,
+	          frameIndex);
+	        doStr = "&do_dist=" + S2DMain.DISTR_LEVEL_PROCESS;
+		info = _distRestrInfo;
+	    }
+
+//TEMP -- test vis server
+	    String value = "<a href=\"" + path + "?pdbid=" + pdbId;
+	    if (_isUvd) {
+	        value += "&file=" + (String)_localFiles.elementAt(0) +
+	          "&name=" + _name;
+	    } else {
+	        value += "&number=" + _name;
+	    }
+/* TEMP Haven't gotten passing the URL thru CGI to work yet.
+	    if (distRUrl != null) {
+		// Special conversion to avoid goofing up argument
+		// passing thru CGI scripts.
+		distRUrl = S2DUtils.replace(distRUrl, "&", "#38");
+		distRUrl = S2DUtils.replace(distRUrl, "?", "#63");
+	    	value += "&dist_url=" + distRUrl;
+	    }
+*/
+	    value += doStr + 
+	      "&coord_index=" + frameIndex + "&size_str=" +
+	      sizeString() + "\">" + linkStr + "</a>";
+	    info.put(frameIndex, value);
+	}
+    }
+
+    //-------------------------------------------------------------------
     // Writes the torsion angle link, where we've actually done the
     // torsion angle processing.
     protected void writeTorsionAngle(String pdbId, int frameIndex,
@@ -1166,77 +1276,6 @@ TEMP?*/
 	      "&coord_index=" + frameIndex + "&size_str=" +
 	      sizeString() + "\">" + linkStr + "</a>";
 	    info.put(frameIndex, value);
-	}
-    }
-
-    //-------------------------------------------------------------------
-    // Writes the distance restraint link, where we've actually done the
-    // distance restraint processing.
-    protected void writeDistRestraint(String pdbId, int frameIndex)
-      throws IOException
-    {
-        if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtmlGen.writeDistRestraint()");
-	}
-
-	if (pdbId != null) {
-/*TEMP
-	    String linkStr = pdbId;
-
-	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
-	      frameIndex);
-
-            String value = "<a href=\"" + _name +
-	      S2DNames.TAR_SUFFIX + frameIndex +
-	      sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
-	    _torsionAngleInfo.put(frameIndex, value);
-TEMP*/
-	}
-    }
-
-    //TEMP -- what about entity assembly ID here?
-    //-------------------------------------------------------------------
-    // Writes the distance restraint link, where the link is a CGI script
-    // invocation (we haven't already done the distance restraint
-    // processing).
-    protected void writeDistRestraintCGI(String pdbId, String tarUrl,
-      int frameIndex) throws IOException
-    {
-        if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtmlGen.writeDistRestraintCGI()");
-	}
-
-	if (pdbId != null) {
-/*TEMP
-	    String linkStr = pdbId;
-
-            String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
-
-	    _maxTorsionAngleFrame = Math.max(_maxTorsionAngleFrame,
-	      frameIndex);
-
-//TEMP -- test vis server
-	    String value = "<a href=\"" + path + "?pdbid=" + pdbId;
-	    if (_isUvd) {
-	        value += "&file=" + (String)_localFiles.elementAt(0) +
-	          "&name=" + _name;
-	    } else {
-	        value += "&number=" + _name;
-	    }
-if (false) {// TEMP Haven't gotten passing the URL thru CGI to work yet.
-	    if (tarUrl != null) {
-		// Special conversion to avoid goofing up argument
-		// passing thru CGI scripts.
-		tarUrl = S2DUtils.replace(tarUrl, "&", "#38");
-		tarUrl = S2DUtils.replace(tarUrl, "?", "#63");
-	    	value += "&tar_url=" + tarUrl;
-	    }
-} //TEMP
-	    value += "&do_tar=" + S2DMain.TAR_LEVEL_PROCESS +
-	      "&coord_index=" + frameIndex + "&size_str=" +
-	      sizeString() + "\">" + linkStr + "</a>";
-	    _torsionAngleInfo.put(frameIndex, value);
-TEMP*/
 	}
     }
 
@@ -1656,6 +1695,59 @@ TEMP*/
 
     //-------------------------------------------------------------------
     // Write the tables for restraing grid and remediated restraint
+    // distance restraints.
+    protected void writeBothDistRestrTables() throws IOException
+    {
+	_writer.write("\n<hr>\n");
+
+	writeDistRestrTable(_maxDistRestrFrame,
+	  _distRestrInfo, false);
+	writeDistRestrTable(_maxRRDistRestrFrame,
+	  _rrDistRestrInfo, true);
+
+    	if (_maxDistRestrFrame < 1 && _maxRRDistRestrFrame < 1) {
+	    _writer.write("<p><b>No distance restraint data available " +
+	      "for this entry</b></p>\n");
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of distance restraint links.
+    protected void writeDistRestrTable(int maxFrame,
+      IntKeyHashtable info, boolean isRR) throws IOException
+    {
+	final int maxPerRow = 10;
+
+        if (maxFrame > 0) {
+	    String title = isRR ?
+	      S2DDistRestraint.STR_REMEDIATED_RESTRANTS + " ":
+	      S2DDistRestraint.STR_RESTRANTS_GRID + " ";
+            _writer.write("<p><b>\n" + title +
+	      "(note: processing may take several minutes)\n" +
+	      "</b></p>\n");
+
+            _writer.write("<table border cellpadding=5>\n");
+            _writer.write("  <tr>\n");
+	    _writer.write("    <th>PDB ID</th>\n");
+
+            for (int index = 1; index <= maxFrame; index++ ) {
+		if (info.get(index) != null) {
+                    writeTableCell(info, index);
+		    if ( index % maxPerRow == 0) {
+                        _writer.write("  </tr>\n");
+                        _writer.write("  <tr>\n");
+	                _writer.write("    <th>PDB ID</th>\n");
+		    }
+		}
+            }
+
+            _writer.write("  </tr>\n");
+            _writer.write("</table>\n");
+        }
+    }
+
+    //-------------------------------------------------------------------
+    // Write the tables for restraing grid and remediated restraint
     // torsion angles.
     protected void writeBothTorsionAngleTables() throws IOException
     {
@@ -1671,6 +1763,7 @@ TEMP*/
 	      "this entry</b></p>\n");
 	}
     }
+
     //-------------------------------------------------------------------
     // Write the html table of torsion angle links.
     protected void writeTorsionAngleTable(int maxFrame,

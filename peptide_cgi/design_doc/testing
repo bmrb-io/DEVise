@@ -137,6 +137,15 @@ The following testing steps must be done:
     - Remediated restraints torsion angles (make sure highlighting works
       right).
 
+- (Distance restraints) View the following visualizations for
+  entry 15209:
+    - Restraints grid distance restraints for 2OQS (make sure that distance
+      restraint data shows up for both entity assemblies, and that the
+      restraints connect correct atoms in the 3D view).
+    - Remediated restraints distance restraints for 2OQS (make sure that
+      distance restraint data shows up for both entity assemblies, and
+      that the restraints connect correct atoms in the 3D view).
+
 - Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html
   (make sure drill-down works).
 

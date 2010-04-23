@@ -19,6 +19,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2010/03/11 20:31:29  wenger
+// Implemented to-do 126 (multiple NMR-STAR file paths), except that
+// not all config files are updated yet; added checks that the URL
+// exists to all methods for getting URLs.  Also changed a few tests
+// affected by using the 3.1 files instead of 2.1 files.
+//
+// Revision 1.22.2.2  2010/03/05 23:30:02  wenger
+// We now create the session-specific HTML files for distance
+// restraint visualizations.
+//
+// Revision 1.22.2.1  2010/03/05 23:12:36  wenger
+// Creation of distance restraint session files is now (at least mostly)
+// working.
+//
 // Revision 1.22  2010/02/20 00:19:29  wenger
 // Oops -- minor typo in last commit.
 //
@@ -181,7 +195,8 @@ public class S2DUtils
       TYPE_PISTACHIO = 16, TYPE_AMBIGUITY = 17, TYPE_LACS = 18,
       TYPE_DNA_DELTASHIFT = 19, TYPE_RNA_DELTASHIFT = 20,
       TYPE_HVSC_CHEM_SHIFTS = 21, TYPE_SPARTA_DELTASHIFT = 22,
-      TYPE_TORSION_ANGLE = 23, TYPE_RRTORSION_ANGLE = 24;
+      TYPE_TORSION_ANGLE = 23, TYPE_RRTORSION_ANGLE = 24,
+      TYPE_DIST_RESTR = 25, TYPE_RRDIST_RESTR = 26;
 
     //===================================================================
     // PUBLIC METHODS
@@ -572,6 +587,14 @@ TEMP*/
 
 	case S2DUtils.TYPE_RRTORSION_ANGLE:
 	    dataSuffix = S2DNames.RRTAR_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_DIST_RESTR:
+	    dataSuffix = S2DNames.DISTR_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_RRDIST_RESTR:
+	    dataSuffix = S2DNames.RRDISTR_SUFFIX;
 	    break;
 
 	default:

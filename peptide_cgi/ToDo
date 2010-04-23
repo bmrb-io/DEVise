@@ -540,6 +540,45 @@ Num Date        Status  Pri     Description
 128 3/16/10	OPEN	2	Add a note to the summary html page if no
 				SPARTA visualizations are available. (wenger)
 
+126 4/7/10	OPEN	2	Add selection by type of distance restraint
+				(NOE, hydrogen bond, etc.) to distance
+				restraint visualizations. (elu/wenger)
+
+127 4/8/10	DONE	1	Default to wireframe in Jmol for restraint
+				visualizations. (elu/wenger)
+				(Done by wenger in JavaScreen 5.13.0.)
+
+128 4/8/10	DONE	1	Change 'protons' to 'side chain protons'
+				in 3D selection tree. (elu/wenger)
+				(Done by wenger in JavaScreen 5.13.0.)
+
+129 4/8/10	OPEN	1	Add a note that amid and alpha protons are
+				included in 'backbone'. (elu/wenger)
+
+130 4/8/10	OPEN	3	Add capability to step thru models in 3D
+				visualizations (neuhaus/elu/wenger)
+
+131 4/8/10	OPEN	3	Add a command to our Jmol menu to turn on
+				semi-transparent ribbons for the whole
+				molecule (but still show atoms). (neuhaus/
+				elu/wenger)
+
+132 4/20/10	OPEN	3	Add links back to the summary page from
+				each individual visualization page. (wenger)
+
+133 4/22/10	OPEN	2	Make the distance restraint visualizations
+				work for PDB-only data (like the torsion
+				angle restraints). (wenger)
+
+134 4/23/10	OPEN	2	Update structre selection window image and
+				Jmol menu images in help pages to match
+				the current JS client version. (wenger)
+
+135 4/23/10	OPEN	3	For restraints with pseudoatoms, draw
+				the restraint to the pseudoatom location
+				instead of drawing a line to each possible
+				"real" atom. (elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

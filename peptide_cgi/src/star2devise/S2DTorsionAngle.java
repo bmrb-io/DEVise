@@ -24,6 +24,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
+// Revision 1.6.2.2  2010/03/05 23:12:36  wenger
+// Creation of distance restraint session files is now (at least mostly)
+// working.
+//
+// Revision 1.6.2.1  2010/02/24 20:03:06  wenger
+// Got basic generation of distance restraint data from the restraints
+// grid mostly working.
+//
 // Revision 1.6  2010/02/16 23:49:27  wenger
 // Fixed bugs 091 and 092 (problems with torsion angle visualizations).
 //
@@ -305,6 +319,7 @@ public class S2DTorsionAngle extends S2DRestraint {
     private boolean _hasViolations;
     private String[] _maxViolations;
 
+    // A list of unique entity assembly IDs found in the data.
     private Vector _entityAssemblyIds;
 
     //===================================================================
@@ -510,6 +525,10 @@ public class S2DTorsionAngle extends S2DRestraint {
 
 	    frameIndex++;
     	}
+
+	if (frameIndex == 1) {
+	    throw new S2DError("No torsion angle save frames found");
+	}
     }
 
     //-------------------------------------------------------------------
@@ -723,9 +742,8 @@ public class S2DTorsionAngle extends S2DRestraint {
 	    //
 	    // Write the session-specific html files.
 	    //
-	    String title = isRR ?
-	      S2DTorsionAngle.STR_REMEDIATED_RESTRANTS :
-	      S2DTorsionAngle.STR_RESTRANTS_GRID;
+	    String title = isRR ? STR_REMEDIATED_RESTRANTS :
+	      STR_RESTRANTS_GRID;
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), type, _name, frameIndex,
 	      title, null);

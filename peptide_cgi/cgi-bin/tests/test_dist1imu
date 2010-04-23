@@ -1,0 +1,36 @@
+#! /bin/csh -f
+
+# Test distance restraints with remediated restraint data.
+
+set result = 0
+
+rm -f */*/16270*
+rm -f */.*/16270*
+
+echo -n "Processing NMR-STAR: "
+./make_uvd name=16270\&file=test_data/bmr16270.str
+if ($status != 0) then
+  echo "First invocation of make_uvd failed!"
+  set result = 1
+endif
+mv tmp/uvd.out tmp/uvd.out1
+
+echo -n "Processing coordinates and distance restraints: "
+./make_uvd name=16270\&file=test_data/bmr16270.str\&pdbid=2kid\&coord_index=2\&do_rrdist=3
+if ($status != 0) then
+  echo "Second invocation of make_uvd failed!"
+  set result = 1
+endif
+
+
+source tests/test_dist1imu_check
+
+
+echo -n "Test_dist1imu result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif

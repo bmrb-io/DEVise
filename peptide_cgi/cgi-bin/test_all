@@ -194,6 +194,13 @@ if (($do_all != 0) or ($do_dist != 0)) {
   RunTest("test_dist1");
   RunTest("test_dist1u");
   RunTest("test_dist1i");
+  RunTest("test_dist1imu");
+  RunTest("test_dist2i");
+  RunTest("test_dist2imu");
+  RunTest("test_dist3rgi");
+  RunTest("test_dist3rri");
+  RunTest("test_dist3rgimv");
+  RunTest("test_dist3rrimv");
 }
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)

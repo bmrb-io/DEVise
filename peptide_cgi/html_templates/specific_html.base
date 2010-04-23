@@ -39,7 +39,7 @@
   </h3>
 
   <center>
-  <applet code=JavaScreen.jsb.class archive=../../jsb1.jar,../../jsb2.jar,../../Jmol.jar width=800 height=600>
+  <applet code=JavaScreen.jsb.class archive=../../jsb1.jar,../../jsb2.jar,../../JmolApplet.jar width=800 height=600>
     <param name="applet" value="JavaScreen.jsb">
     <param name="debug" value="0">
     <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">

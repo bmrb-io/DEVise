@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2008-2009
+#  (c) Copyright 2008-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -145,6 +145,34 @@ HISTOGRAM_DATA_HOME = /p/condor/workspaces/shared/wenger/devise/bmrb_histogram_d
 # SPARTA-related configuration
 # The URL of directory containing SPARTA files (must end with "/").
 SPARTA_URL = file:CHANGE_THIS/
+
+#-----------------------------------------------------------
+# Restraint-related configuration.
+
+# The root URL of the restraint grid (must end with "/").
+RESTRAINT_GRID_ROOT = "http://restraintsgrid.bmrb.wisc.edu/NRG/"
+
+# Default torsion angle restraint processing level: create link
+# if appropriate restraint grid entry is available.
+DO_TAR_DEFAULT = 1
+
+# The root URL of the remediated restraints files.
+REMEDIATED_RESTRAINTS_TEMPLATE = "http://www.bmrb.wisc.edu/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/all/nmr-star/*/*_linked.str"
+
+# Default remediated restraints torsion angle processing level: create link
+# if appropriate restraint grid entry is available.
+DO_RRTAR_DEFAULT = 1
+
+# The root URL of the distance restraint files (must end with "/").
+DIST_RESTRAINTS_ROOT = "http://www.bmrb.wisc.edu/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/all/nmr-star/"
+
+# Default (restraints grid) distance restraint processing level: create
+# link if appropriate distance restraint entry is available.
+DO_DIST_DEFAULT = 1
+
+# Default remediated restraints distance restraint processing level:
+# create link if appropriate distance restraint entry is available.
+DO_RRDIST_DEFAULT = 1
 
 #-----------------------------------------------------------
 # Other.

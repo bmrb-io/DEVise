@@ -12,10 +12,8 @@
 
 // ------------------------------------------------------------------------
 
-//TEMPTEMP -- change!
-// This class implements the output of torsion angle restraint data.
-// For each set of torsion angle data, it creates a data file, a session
-// file, an individual html file, and a link in the summary html file.
+// This class implements processing common to both torsion angle and
+// distance restraints.
 
 // Note: the code that deals with the restraint grid web site should
 // be cleaned up and use a real html parser...
@@ -25,6 +23,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
+// Revision 1.3.2.2  2010/04/22 16:38:11  wenger
+// Various minor cleanups of distance restraint code.
+//
+// Revision 1.3.2.1  2010/02/24 16:03:15  wenger
+// More work on distance restraints: added -do_rrdist argument, partially
+// completed code to get distance restraints URL from restraints grid;
+// committing in preparation for combining S2DNmrStarDistRIfc and
+// S2DNmrStarTarIfc into a single S2DNmrStarRGIfc class.
+//
 // Revision 1.3  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -79,12 +92,11 @@ public class S2DRestraint {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-//TEMPTEMP -- change to be either angle or distance!
     /**
-     * Take the URL of a document containing dihedral angle violation
-     * data (filtered FRED) and strip out all of the html surrounding
-     * the actual NMR-STAR file, putting the NMR-STAR file into
-     * a temporary file.
+     * Take the URL of a document containing distance or dihedral angle
+     * violation * data (filtered FRED) and strip out all of the html
+     * surrounding the actual NMR-STAR file, putting the NMR-STAR file
+     * into a temporary file.
      * @param The URL name for the document containing the actual
      *   dihedral angle violation data.
      * @param The PDB ID we need data for.
@@ -170,15 +182,18 @@ public class S2DRestraint {
 
     //-------------------------------------------------------------------
     /**
-     * Get the URL name for dihedral angle violations (filtered
+     * Get the URL name for distance or dihedral angle violations (filtered
      * FRED data) for the given PDB ID.
      * @param The PDB ID we need data for.
-     * @return The URL name corresponding to the dihedral angle violations.
+     * @return The URL name corresponding to the distance or dihedral
+     *   angle violations.
      */
-    protected static String getViolationUrl(String pdbId) throws S2DException
+    protected static String getViolationUrl(String pdbId, boolean isAngle)
+      throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DRestraint.getViolationUrl(" + pdbId + ")");
+	    System.out.println("S2DRestraint.getViolationUrl(" + pdbId +
+	      ", " + isAngle + ")");
 	}
 
 	String restraintGridTemplate = S2DNames.RESTRAINT_GRID_ROOT +
@@ -198,25 +213,27 @@ public class S2DRestraint {
 
 	    String violationUrlName = null;
 
+	    String typeString = isAngle ? "dihedral angle" : "distance";
+
 	    boolean foundViolation = false;
-	    boolean foundDihedralAngle = false;
+	    boolean foundTypeString = false;
 	    String line;
 	    while ((line = reader.readLine()) != null) {
 	        // Do case-insensitive searches.
 	        String searchLine = line.toLowerCase();
 
-	        // Need to find "violation", "dihedral angle", and "href" in
-	        // the same table row.
+	        // Need to find "violation", "distance" or "dihedral angle",
+		// and "href" in the same table row.
 	        if (searchLine.indexOf("</tr>") >= 0) {
 	            foundViolation = false;
-		    foundDihedralAngle = false;
+		    foundTypeString = false;
 	        } else if (!foundViolation) {
 	            if (searchLine.indexOf("violation") >= 0) {
 		        foundViolation = true;
 		    }
-	        } else if (!foundDihedralAngle) {
-	            if (searchLine.indexOf("dihedral angle") >= 0) {
-		        foundDihedralAngle = true;
+	        } else if (!foundTypeString) {
+	            if (searchLine.indexOf(typeString) >= 0) {
+		        foundTypeString = true;
 		    }
 	        } else if (searchLine.indexOf("href") >= 0) {
                     if (doDebugOutput(15)) {
