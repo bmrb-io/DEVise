@@ -3,6 +3,10 @@
 
 * NOTES
 
+Be sure to think about possible DEVise/JavaScreen/Peptide-CGI version
+incompatibilities when doing installations -- plan things to minimize
+downtime.
+
 Before installing the peptide-cgi software, you should install DEVise
 and the DEVise JavaScreen.  You must also have web access to the BMRB web
 site or a mirror of that site.
