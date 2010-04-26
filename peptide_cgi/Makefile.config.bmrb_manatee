@@ -154,7 +154,7 @@ RESTRAINT_GRID_ROOT = "http://restraintsgrid.bmrb.wisc.edu/NRG/"
 DO_TAR_DEFAULT = 1
 
 # The root URL of the remediated restraints files.
-REMEDIATED_RESTRAINTS_TEMPLATE = "file:/website/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/all/nmr-star/*/*_linked.str"
+REMEDIATED_RESTRAINTS_TEMPLATE = "file:/website/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/all/nmr-star/*_linked.str"
 
 # Default remediated restraints torsion angle processing level: create link
 # if appropriate restraint grid entry is available.
