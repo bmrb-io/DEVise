@@ -26,7 +26,7 @@
 # BIN2 is for JSS and devised.
 JAVA_BIN2 = /usr/bin
 PERL_BIN2 = /usr/bin
-XVFB_BIN2 = /usr/openwin/bin
+XVFB_BIN2 = /usr/bin
 
 # BIN2P is for JSPoP.
 JAVA_BIN2P = /usr/bin
@@ -47,7 +47,7 @@ DEVISE_VIS = /p/devise/demo
 # This is who gets email about any errors.
 ERROR_EMAIL = devise@cs.wisc.edu
 
-INSTALL_HOST = manatee
+INSTALL_HOST = manatee.bmrb.wisc.edu
 
 # You should probably set this to 0 if you're running more than one JSS
 # on the same machine.

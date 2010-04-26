@@ -52,7 +52,7 @@ doutfile=`echo $info | cut -d' ' -f6`
 echo "Attempting to start Xvfb"
 
 display=1
-nohup scripts/Xvfb_savepid :$display $XVFB_ARGS -screen 0 1280x1024x8 &
+nohup scripts/Xvfb_savepid :$display -auth Xvfb.hosts $XVFB_ARGS -screen 0 1280x1024x8 &
 
 # Make sure Xvfb gets going before starting the jss.
 sleep 10

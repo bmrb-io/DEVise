@@ -6,6 +6,10 @@
 This file contains instructions for installing the DEVise-related software
 at BMRB mirror sites.
 
+NOTE:  If possible, do installations that will interrupt JavaScreen
+availability (ones that require a server restart or are tightly coupled
+to a Peptide-CGI version) on a weekend.
+
 Note:  the DEVise/JavaScreen software is designed to be untarred into a
 directory that you use for configuration and testing, and then installed
 into other directories for the "production" system once the configuration

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.88  2010/04/26 17:30:42  wenger
+  Incremented versions and added new version history sections.
+
   Revision 1.87  2010/04/21 17:17:37  wenger
   Changed DEVise version to 1.11.0 and JavaScreen version to 5.13.0
   in preparation for release.
@@ -39,6 +42,10 @@
   Revision 1.82  2009/12/03 16:15:14  wenger
   Changed DEVise version to 1.11.0x1 and JS version to 5.13.0; added
   appropriate version history sections.
+
+  Revision 1.81.2.6  2010/02/23 22:24:48  wenger
+  Changed version to 1.10.2x1 and added 1.10.2 version history section;
+  changed copyright, etc., to 2010.
 
   Revision 1.81.2.5  2010/02/17 18:27:15  wenger
   Fixed bug 997 (-allowCore command-line argument causes DEVise to hang).
