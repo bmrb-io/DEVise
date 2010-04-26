@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.87  2010/04/21 17:17:37  wenger
+  Changed DEVise version to 1.11.0 and JavaScreen version to 5.13.0
+  in preparation for release.
+
   Revision 1.86  2010/02/23 22:05:38  wenger
   Merged devise_1_10_br_2 thru devise_1_10_br_3 to trunk.
 
@@ -536,13 +540,13 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.0";
+static const char *	version = "1.11.1x1"/*TEMP*/;
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-2009";
+static const char *	copyright = "Copyright (c) 1992-2010";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 2009";
+static const char *	winLogo = "Visualization by DEVise (tm) 2010";
 
 
 #if !defined(lint) && defined(RCSID)
