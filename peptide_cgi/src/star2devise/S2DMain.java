@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.191  2010/04/23 21:16:03  wenger
+// Changed version to 11.8.0 for release.
+//
 // Revision 1.190  2010/04/23 16:51:06  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
 //
@@ -1238,7 +1241,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.0";
+    public static final String PEP_CGI_VERSION = "11.8.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
