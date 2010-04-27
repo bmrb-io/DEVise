@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2010/04/23 16:51:07  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.1.2.1  2010/02/24 16:35:20  wenger
 // Torsion angle restraints now work with new S2DNmrStarRGIfc and
 // S2DNmrStarRGIfcFactory classes.
@@ -94,6 +97,10 @@ public class S2DNmrStarRGIfcFactory extends S2DNmrStarIfcFactory {
 	  _isAngle);
 	String mrBlockIdName = S2DRestraint.getMrBlockId(
 	  violationUrlName, pdbId);
+
+        if (doDebugOutput(11)) {
+	    System.out.println("URL: " + mrBlockIdName);
+	}
 
 	return mrBlockIdName;
     }

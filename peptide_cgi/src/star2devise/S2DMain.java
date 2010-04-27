@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.192  2010/04/26 17:32:07  wenger
+// Incremented version and added new version history section.
+//
 // Revision 1.191  2010/04/23 21:16:03  wenger
 // Changed version to 11.8.0 for release.
 //
@@ -3188,7 +3191,7 @@ public class S2DMain {
 	            process1PDB(star, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      "(" + ex.toString() + ")");
+		      " (" + ex.toString() + ")");
 		    _summary.writeMessage("Unable to get atomic coordinates" +
 		      " from related PDB ID " + id, false);
 		}
@@ -3213,17 +3216,17 @@ public class S2DMain {
 	            process1TAR(null, null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      "(" + ex.toString() + ")");
-		    System.err.println("Unable to get torsion angle " +
+		      " (" + ex.toString() + ")");
+		    System.err.println("Unable to get RG torsion angle " +
 		      "restraints from related PDB ID " + id);
 		}
 	    } else {
 	        if (_retrying) {
-		    System.err.println("Unable to get torsion angle " +
+		    System.err.println("Unable to get RG torsion angle " +
 		      " restraints from related PDB ID " + id + " because " +
 		      "of insufficient memory");
 	        } else {
-		    System.err.println("Torsion angle restraints " +
+		    System.err.println("RG torsion angle restraints " +
 		      "from related PDB ID " + id + " not read");
 	        }
 	    }
@@ -3239,17 +3242,17 @@ public class S2DMain {
 	            process1RRTAR(null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      "(" + ex.toString() + ")");
-		    System.err.println("Unable to get torsion angle " +
+		      " (" + ex.toString() + ")");
+		    System.err.println("Unable to get RR torsion angle " +
 		      "restraints from related PDB ID " + id);
 		}
 	    } else {
 	        if (_retrying) {
-		    System.err.println("Unable to get torsion angle " +
+		    System.err.println("Unable to get RR torsion angle " +
 		      " restraints from related PDB ID " + id + " because " +
 		      "of insufficient memory");
 	        } else {
-		    System.err.println("Torsion angle restraints " +
+		    System.err.println("RR torsion angle restraints " +
 		      "from related PDB ID " + id + " not read");
 	        }
 	    }
@@ -3264,17 +3267,17 @@ public class S2DMain {
 	            process1DistR(null, null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      "(" + ex.toString() + ")");
-		    System.err.println("Unable to get distance " +
+		      " (" + ex.toString() + ")");
+		    System.err.println("Unable to get RG distance " +
 		      "restraints from related PDB ID " + id);
 		}
 	    } else {
 	        if (_retrying) {
-		    System.err.println("Unable to get distance " +
+		    System.err.println("Unable to get RG distance " +
 		      " restraints from related PDB ID " + id + " because " +
 		      "of insufficient memory");
 	        } else {
-		    System.err.println("Distance restraints " +
+		    System.err.println("RG distance restraints " +
 		      "from related PDB ID " + id + " not read");
 	        }
 	    }
@@ -3290,17 +3293,17 @@ public class S2DMain {
 	            process1RRDistR(null, id);
 		} catch(S2DException ex) {
 		    System.err.println("Unable to process PDB ID " + id +
-		      "(" + ex.toString() + ")");
-		    System.err.println("Unable to get distance " +
+		      " (" + ex.toString() + ")");
+		    System.err.println("Unable to get RR distance " +
 		      "restraints from related PDB ID " + id);
 		}
 	    } else {
 	        if (_retrying) {
-		    System.err.println("Unable to get distance " +
+		    System.err.println("Unable to get RR distance " +
 		      " restraints from related PDB ID " + id + " because " +
 		      "of insufficient memory");
 	        } else {
-		    System.err.println("Distance restraints " +
+		    System.err.println("RR distance restraints " +
 		      "from related PDB ID " + id + " not read");
 	        }
 	    }
@@ -5176,6 +5179,7 @@ public class S2DMain {
         if (doDebugOutput(2)) {
 	    System.out.println("process1TAR(" + tarFile + ", " +
 	      tarUrl + ", " + pdbId + ")");
+	    System.out.println("_tarLevel: " + _tarLevel);
 	}
 
         _currentPdbId = pdbId;
@@ -5234,6 +5238,7 @@ public class S2DMain {
         if (doDebugOutput(2)) {
 	    System.out.println("process1RRTAR(" + rrFile + ", " +
 	      pdbId + ")");
+	    System.out.println("_rrTarLevel: " + _rrTarLevel);
 	}
 
         _currentPdbId = pdbId;
@@ -5245,7 +5250,7 @@ public class S2DMain {
 		if (_rrTarLevel == RRTAR_LEVEL_LINK_CHECK) {
 		    // Note: this will throw an error if the relevant
 		    // entry doesn't exist in the remediated restraints.
-		    rrUrl = (new S2DNmrStarRGIfcFactory(true)).
+		    rrUrl = (new S2DNmrStarRRIfcFactory()).
 		      pdbIdToUrl(pdbId);
 		}
 	        _summary.writeTorsionAngleCGI(_currentPdbId, rrUrl,
@@ -5285,8 +5290,9 @@ public class S2DMain {
       String pdbId) throws S2DException
     {
         if (doDebugOutput(2)) {
-	    System.out.println("process1DistRFile(" + distRFile + ", " +
+	    System.out.println("process1DistR(" + distRFile + ", " +
 	      distRUrl + ", " + pdbId + ")");
+	    System.out.println("_distRLevel: " + _distRLevel);
 	}
 
         _currentPdbId = pdbId;
@@ -5297,7 +5303,7 @@ public class S2DMain {
 		if (_distRLevel == DISTR_LEVEL_LINK_CHECK) {
 		    // Note: this will throw an error if the relevant
 		    // entry doesn't exist in the restraints grid.
-		    distRUrl = (new S2DNmrStarRGIfcFactory(true)).
+		    distRUrl = (new S2DNmrStarRGIfcFactory(false)).
 		      pdbIdToUrl(pdbId);
 		}
 	        _summary.writeDistRestraintCGI(_currentPdbId, distRUrl,
@@ -5343,6 +5349,7 @@ public class S2DMain {
         if (doDebugOutput(2)) {
 	    System.out.println("process1RRDistR(" + rrFile + ", " +
 	      pdbId + ")");
+	    System.out.println("_rrDistRLevel: " + _rrDistRLevel);
 	}
 
         _currentPdbId = pdbId;
@@ -5354,7 +5361,7 @@ public class S2DMain {
 		if (_rrDistRLevel == RRDISTR_LEVEL_LINK_CHECK) {
 		    // Note: this will throw an error if the relevant
 		    // entry doesn't exist in the remediated restraints.
-		    rrUrl = (new S2DNmrStarRGIfcFactory(true)).
+		    rrUrl = (new S2DNmrStarRRIfcFactory()).
 		      pdbIdToUrl(pdbId);
 		}
 	        _summary.writeDistRestraintCGI(_currentPdbId, rrUrl,

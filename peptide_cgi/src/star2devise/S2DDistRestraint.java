@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2010/04/23 16:51:05  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.3  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -219,7 +222,6 @@ public class S2DDistRestraint extends S2DRestraint {
       "restraints from restraints grid (violations calculated by CING)";
     public static final String STR_REMEDIATED_RESTRANTS = "Distance " +
       "restraints from remediated restraints";
-
 
     // Per-restraint data.
     private class RestraintInfo {

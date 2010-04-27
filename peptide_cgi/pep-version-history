@@ -5,7 +5,9 @@ Peptide-CGI 11.8.1
 ------------------
 (Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.0 or higher.)
 
-(Nothing yet.)
+* Fixed a bug in the restraint processing that sometimes did not
+correctly generate some restraint visualization options in the
+summary html files.
 
 
 Peptide-CGI 11.8.0

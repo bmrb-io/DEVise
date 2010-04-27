@@ -23,6 +23,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2010/03/11 20:31:29  wenger
+// Implemented to-do 126 (multiple NMR-STAR file paths), except that
+// not all config files are updated yet; added checks that the URL
+// exists to all methods for getting URLs.  Also changed a few tests
+// affected by using the 3.1 files instead of 2.1 files.
+//
 // Revision 1.2  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -94,6 +100,10 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
 
         String url = S2DUtils.replace(
 	  S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE, "*", pdbId);
+
+        if (doDebugOutput(11)) {
+	    System.out.println("URL: " + url);
+	}
 
 	return url;
     }

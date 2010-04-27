@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2010/04/23 16:51:08  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.4  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -253,8 +256,9 @@ public class S2DRestraint {
 	    reader.close();
 
 	    if (violationUrlName == null) {
-	        throw new S2DError("No violation URL found for PDB " +
-	          pdbId);
+	        throw new S2DError("No " + typeString +
+		  " violation URL found for PDB " +
+	          pdbId + " (in " + requestUrlName + ")");
 	    }
 
 	    violationUrlName = S2DNames.RESTRAINT_GRID_ROOT +
@@ -264,7 +268,7 @@ public class S2DRestraint {
 
 	} catch (Exception ex) {
 	    throw new S2DError("Error (" + ex.toString() +
-	      " getting violation URL for PDB " + pdbId);
+	      ") getting violation URL for PDB " + pdbId);
 	}
     }
 
