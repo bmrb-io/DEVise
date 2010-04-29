@@ -4376,6 +4376,15 @@ java.security.AccessControlException: access denied
 1000 3/31/10	OPEN	Labels don't line up with values in mapping dialog.
 			(wenger)
 
+1001 4/29/10	OPEN	DEVise reports the following error when opening
+			the distance restraint template (Peptide-CGI v11.8.1):
+			DEVise error: Can't find attribute 'Atom_type'
+			requested by mapping .15209distr1#View3DHighlight
+			at ../../graphics.new/MappingInterp.c: 1786.  (That
+			attribute is not actually in the specified mapping;
+			it's in the mapping of the other view in the pile.)
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
