@@ -4383,7 +4383,9 @@ java.security.AccessControlException: access denied
 			at ../../graphics.new/MappingInterp.c: 1786.  (That
 			attribute is not actually in the specified mapping;
 			it's in the mapping of the other view in the pile.)
-			(wenger)
+			(wenger)  (Note: unpiling the 3D views gets rid
+			of the error; unlinking the ea_res_record link
+			also gets rid of it.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
