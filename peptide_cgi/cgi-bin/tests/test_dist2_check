@@ -57,21 +57,21 @@ foreach file ($files)
 end
 
 set file = "data_dir/16270distr2.dat"
-set line = '^1	73	THR	2.334	2.646	1_73_H	H	1_74_H	H	unknown	Sequential	2.445	0	Non-violated	Non-ambiguous'
+set line = '^1	73	THR	1_73	1	74	ASN	1_74	2.334	2.646	1_73_H	H	1_74_H	H	unknown	Sequential	2.445	0	Non-violated	Non-ambiguous'
 source tests/check4line
-set line = '^1	102	ASP	2.444	2.960	1_102_H	H	1_102_HB2	HB2	unknown	Intra-residue	2.781	0	Non-violated	Non-ambiguous'
+set line = '^1	102	ASP	1_102	1	102	ASP	1_102	2.444	2.960	1_102_H	H	1_102_HB2	HB2	unknown	Intra-residue	2.781	0	Non-violated	Non-ambiguous'
 source tests/check4line
-set line = '^1	97	MET	3.432	3.512	1_97_HB2	HB2	1_98_H	H	unknown	Sequential	3.476	0.012	Violated	Non-ambiguous'
+set line = '^1	97	MET	1_97	1	98	THR	1_98	3.432	3.512	1_97_HB2	HB2	1_98_H	H	unknown	Sequential	3.476	0.012	Violated	Non-ambiguous'
 source tests/check4line
-set line = '^1	107	ASP	2.582	2.971	1_107_O	O	1_110_N	N	unknown	Medium-range	2.805	0	Non-violated	Non-ambiguous'
+set line = '^1	107	ASP	1_107	1	110	VAL	1_110	2.582	2.971	1_107_O	O	1_110_N	N	unknown	Medium-range	2.805	0	Non-violated	Non-ambiguous'
 source tests/check4line
 
 set file = "data_dir/16270distrc2.dat"
-set line = '^1 109 13 1 12 0 0 0 13 1 12 0 0 0 0 0 0 0 0 0 5 0 5 0 0 0 5 0 5 8 1 7 0 0 0 8 1 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+set line = '^1 109 1_109 13 1 12 0 0 0 13 1 12 0 0 0 0 0 0 0 0 0 5 0 5 0 0 0 5 0 5 8 1 7 0 0 0 8 1 7 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
 source tests/check4line
-set line = '^1 108 18 7 11 0 0 0 18 7 11 2 2 0 0 0 0 2 2 0 8 1 7 0 0 0 8 1 7 8 4 4 0 0 0 8 4 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+set line = '^1 108 1_108 18 7 11 0 0 0 18 7 11 2 2 0 0 0 0 2 2 0 8 1 7 0 0 0 8 1 7 8 4 4 0 0 0 8 4 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
 source tests/check4line
-set line = '^1 110 26 8 18 0 0 0 26 8 18 1 1 0 0 0 0 1 1 0 6 3 3 0 0 0 6 3 3 11 2 9 0 0 0 11 2 9 8 2 6 0 0 0 8 2 6 0 0 0 0 0 0 0 0 0'
+set line = '^1 110 1_110 26 8 18 0 0 0 26 8 18 1 1 0 0 0 0 1 1 0 6 3 3 0 0 0 6 3 3 11 2 9 0 0 0 11 2 9 8 2 6 0 0 0 8 2 6 0 0 0 0 0 0 0 0 0'
 source tests/check4line
 
 set file = "data_dir/16270distr-md2.dat"

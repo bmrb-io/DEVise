@@ -54,19 +54,19 @@ foreach file ($files)
 end
 
 set file = "data_dir/16270rrdistr2.dat"
-set line = '^1	74	ASN	1.8	3.70	1_74_H	H	1_73_H	H	NOE	Sequential	0.0	0.0	Non-violated	Non-ambiguous'
+set line = '^1	74	ASN	1_74	1	73	THR	1_73	1.8	3.70	1_74_H	H	1_73_H	H	NOE	Sequential	0.0	0.0	Non-violated	Non-ambiguous'
 source tests/check4line
-set line = '^1	102	ASP	1.8	3.50	1_102_H	H	1_102_HB2	HB2	NOE	Intra-residue	0.0	0.0	Non-violated	Ambiguous'
+set line = '^1	102	ASP	1_102	1	102	ASP	1_102	1.8	3.50	1_102_H	H	1_102_HB2	HB2	NOE	Intra-residue	0.0	0.0	Non-violated	Ambiguous'
 source tests/check4line
-set line = '^1	107	ASP	2.5	3.5	1_107_O	O	1_110_N	N	hydrogen bond	Medium-range	0.0	0.0	Non-violated	Non-ambiguous'
+set line = '^1	107	ASP	1_107	1	110	VAL	1_110	2.5	3.5	1_107_O	O	1_110_N	N	hydrogen bond	Medium-range	0.0	0.0	Non-violated	Non-ambiguous'
 source tests/check4line
 
 set file = "data_dir/16270rrdistrc2.dat"
-set line = '^1 109 13 0 13 6 0 6 7 0 7 0 0 0 0 0 0 0 0 0 9 0 9 6 0 6 3 0 3 12 0 12 8 0 8 4 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+set line = '^1 109 1_109 13 0 13 6 0 6 7 0 7 0 0 0 0 0 0 0 0 0 9 0 9 6 0 6 3 0 3 12 0 12 8 0 8 4 0 4 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
 source tests/check4line
-set line = '^1 108 19 0 19 8 0 8 11 0 11 5 0 5 4 0 4 1 0 1 14 0 14 10 0 10 4 0 4 10 0 10 4 0 4 6 0 6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
+set line = '^1 108 1_108 19 0 19 8 0 8 11 0 11 5 0 5 4 0 4 1 0 1 14 0 14 10 0 10 4 0 4 10 0 10 4 0 4 6 0 6 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0'
 source tests/check4line
-set line = '^1 110 27 0 27 13 0 13 14 0 14 3 0 3 2 0 2 1 0 1 8 0 8 4 0 4 4 0 4 17 0 17 10 0 10 7 0 7 16 0 16 14 0 14 2 0 2 0 0 0 0 0 0 0 0 0'
+set line = '^1 110 1_110 27 0 27 13 0 13 14 0 14 3 0 3 2 0 2 1 0 1 8 0 8 4 0 4 4 0 4 17 0 17 10 0 10 7 0 7 16 0 16 14 0 14 2 0 2 0 0 0 0 0 0 0 0 0'
 source tests/check4line
 
 set file = "data_dir/16270rrdistr-md2.dat"

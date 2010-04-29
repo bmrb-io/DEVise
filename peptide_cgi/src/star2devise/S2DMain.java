@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.194  2010/04/29 22:39:32  wenger
+// Fixed Peptide-CGI bug 096 (problem with distance restraint selection).
+// Note that the tests aren't updated yet to correspond to the fixed data,
+// and the distance restraint visualization generates DEVise error messages
+// that don't seem to cause actual problems (see DEVise bug 1001).
+//
 // Revision 1.193  2010/04/27 18:47:07  wenger
 // Fixed bugs Eldon found in testing of whether restraints info exists
 // (for *_LEVEL_LINK_CHECK level of restraint processing).
@@ -1248,7 +1254,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
