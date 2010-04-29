@@ -11,9 +11,15 @@ type bmrb-DistanceRestraint ascii
 comment #
 whitespace '	'
 
-attr Entity_assembly_ID int
-attr Residue_seq_code int
-attr Residue_label string 5
+attr Entity_assembly1_ID int
+attr Residue1_seq_code int
+attr Residue1_label string 5
+attr EA_res1 string 10
+
+attr Entity_assembly2_ID int
+attr Residue2_seq_code int
+attr Residue2_label string 5
+attr EA_res2 string 10
 
 attr Distance_lower_bound float
 attr Distance_upper_bound float

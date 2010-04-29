@@ -9,6 +9,8 @@ Peptide-CGI 11.8.1
 correctly generate some restraint visualization options in the
 summary html files.
 
+* Fixed a bug in the selection of distance restraints (bug 096).
+
 
 Peptide-CGI 11.8.0
 ------------------

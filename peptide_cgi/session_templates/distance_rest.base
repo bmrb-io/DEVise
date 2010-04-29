@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Apr 22 2010 18:17:45
+# file date: Apr 29 2010 14:49:25
 # DEVise version: 1.11.0
 # DEVise date: Apr 22 2010
 # DEVise endHeader
@@ -785,7 +785,7 @@ DEVise setExcludeFromDrillDown {ViewDataScrollFixParent} {0}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View3DHighlight -9.754000 8.979000 -7.386000 12.710000 4 0 0 37 0 37
+DEVise create {view} {Scatter} View3DHighlight 23.500000 67.500000 1.248000 7.002000 4 0 0 37 0 37
 DEVise setLabel {View3DHighlight} 0 12 {Atom_coord_y() vs. Atom_coord_x}
 DEVise setViewStatistics {View3DHighlight} 00000000
 DEVise setViewDimensions {View3DHighlight} 3
@@ -1102,6 +1102,50 @@ DEVise setDoHomeOnVisLinkIfInvisible {ViewDataTypeSelect 8} {1}
 DEVise viewSetUseJmol {ViewDataTypeSelect 8} {0}
 DEVise setExcludeFromDrillDown {ViewDataTypeSelect 8} {0}
 
+# View {View_ea_residue_select} uses mapping {.15209distr1#Entity_assembly1_ID_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} View_ea_residue_select 6.750000 2260.250000 -0.750000 0.750000 37 17 0 37 0 37
+DEVise setLabel {View_ea_residue_select} 1 16 {Entity_assembly1_ID() vs. recId}
+DEVise setViewStatistics {View_ea_residue_select} 00000000
+DEVise setViewDimensions {View_ea_residue_select} 2
+DEVise setViewSolid3D {View_ea_residue_select} 2
+DEVise setViewXYZoom {View_ea_residue_select} 1
+DEVise setViewDisplayDataValues {View_ea_residue_select} 0
+DEVise setFont {View_ea_residue_select} {title} 0 12 0 0
+DEVise setFont {View_ea_residue_select} {x axis} 0 12 0 0
+DEVise setFont {View_ea_residue_select} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {View_ea_residue_select} 1 1 1 0 0.500000 0.500000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {View_ea_residue_select} 1 1 1 0 0 0.5 0 0 100 100
+DEVise viewSetHorPan {View_ea_residue_select} 1 0.500000 1.000000
+DEVise viewSetVerPan {View_ea_residue_select} 1 0.500000 1.000000
+DEVise setViewGDS {View_ea_residue_select} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View_ea_residue_select} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View_ea_residue_select} -0.75 0.75 10
+DEVise setCountMapping {View_ea_residue_select} 0 {} {} 0
+DEVise viewSetIsHighlight {View_ea_residue_select} 0
+DEVise setXAxisDateFormat {View_ea_residue_select} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View_ea_residue_select} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View_ea_residue_select} {%.4g}
+DEVise setYAxisFloatFormat {View_ea_residue_select} {%.4g}
+DEVise setViewAutoFilter {View_ea_residue_select} {1}
+DEVise setDupElim {View_ea_residue_select} {0}
+DEVise setNiceAxes {View_ea_residue_select} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {View_ea_residue_select} 0 0 0 0
+DEVise setViewHelp {View_ea_residue_select} {This view exists only to get the union of ea_res1_gattr_link and ea_res2_gattr_link.  We take the union of those links here (to show restraints for which *either* EA/residue pair is selected), and then feed the result into the 3D highlight view via the ea_res_record_link.}
+DEVise setShowMouseLocation {View_ea_residue_select} {1}
+DEVise setLinkMultFact {View_ea_residue_select} {X} 1
+DEVise setLinkMultFact {View_ea_residue_select} {Y} 1
+DEVise setGAttrLinkMode {View_ea_residue_select} 1
+DEVise setDoHomeOnVisLink {View_ea_residue_select} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View_ea_residue_select} {1}
+DEVise viewSetUseJmol {View_ea_residue_select} {0}
+DEVise setExcludeFromDrillDown {View_ea_residue_select} {0}
+
 # Create interpreted mapping classes
 DEVise createMappingClass {Atom_coord_y_vs_Atom_coord_x}
 DEVise createMappingClass {Residue_seq_code_vs_recId}
@@ -1111,6 +1155,7 @@ DEVise createMappingClass {Label_text_vs_recId}
 DEVise createMappingClass {color_str_vs_recId}
 DEVise createMappingClass {Entity_assembly_ID_vs_recId}
 DEVise createMappingClass {C1p_DeltaShift_vs_Residue_seq_code}
+DEVise createMappingClass {Entity_assembly1_ID_vs_recId}
 
 # Create mapping instances (GData)
 
@@ -1122,7 +1167,7 @@ DEVise setMappingColors {.15209ac1#Atom_coord_y_vs_Atom_coord_x} {$Atom_type} {$
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .15209distr1 .15209distr1#View3DHighlight {} {$Residue_seq_code} {$Distance_upper_bound} {} 7 1 0 0 7 1 1 {} {} {} {} {} {} {} {$atom1Id} {$atom2Id} {$isViolated} {$restraintLengthType} {$Entity_assembly_ID} {$isAmbiguous}
+DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .15209distr1 .15209distr1#View3DHighlight {} {$Residue1_seq_code} {$Distance_upper_bound} {} 7 1 0 0 7 1 1 {} {} {} {} {} {} {} {$atom1Id} {$atom2Id} {$isViolated} {$restraintLengthType} {$Entity_assembly1_ID} {$isAmbiguous}
 DEVise setPixelWidth {.15209distr1#View3DHighlight} 1
 DEVise setMappingColors {.15209distr1#View3DHighlight} {7} {7} {0}
 
@@ -1218,7 +1263,7 @@ DEVise setMappingColors {.15209distrc1#ViewSelectedDataChild} {7} {7} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .15209distrc1 .15209distrc1#ViewDataValueSelectChild {} {$Residue_seq_code} #parentVal {} 31 1 0 0 7 0.2 0 {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15209distrc1 .15209distrc1#ViewDataValueSelectChild {} {$Residue_seq_code} #parentVal {} 31 1 0 0 7 0.2 0 {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {$EA_res}
 DEVise setPixelWidth {.15209distrc1#ViewDataValueSelectChild} 1
 DEVise setMappingColors {.15209distrc1#ViewDataValueSelectChild} {31} {31} {0}
 
@@ -1252,6 +1297,12 @@ DEVise create {mapping} {C1p_DeltaShift_vs_Residue_seq_code} .15209distrc1 .1520
 DEVise setPixelWidth {.15209distrc1#ViewDataScrollFixChild} 1
 DEVise setMappingColors {.15209distrc1#ViewDataScrollFixChild} {35} {35} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {Entity_assembly1_ID_vs_recId} .15209distr1 .15209distr1#Entity_assembly1_ID_vs_recId {} {$recId} 0 {} 36 1 0 0 0 0.5 0.5 {} {} {} {} {} {} {} {} {} {} {} {$EA_res1} {$EA_res2}
+DEVise setPixelWidth {.15209distr1#Entity_assembly1_ID_vs_recId} 1
+DEVise setMappingColors {.15209distr1#Entity_assembly1_ID_vs_recId} {36} {0} {0}
+
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
@@ -1268,7 +1319,7 @@ DEVise create {window} {TileLayout} DEViseWn13 0.418750 0.062500 0.312500 0.0825
 DEVise create {window} {TileLayout} DEViseWn1 0.011875 0.344167 0.140625 0.084167 0 0
 DEVise create {window} {TileLayout} DEViseWn2 0.739375 0.344167 0.110625 0.091667 1 0
 DEVise create {window} {TileLayout} DEViseWn4 0.728750 0.661667 0.125000 0.227500 1 0
-DEVise create {window} {TileLayout} DEViseWn6 0.734375 0.501667 0.110625 0.091667 1 0
+DEVise create {window} {TileLayout} DEViseWn6 0.734375 0.501667 0.137500 0.116667 1 0
 DEVise create {window} {TileLayout} DEViseWn14 0.012500 0.434167 0.140625 0.082500 0 0
 
 # Set up window layouts
@@ -1310,11 +1361,14 @@ DEVise create {link} {Visual_Link} entity_assembly_select_link 128
 DEVise create {link} {Visual_Link} violation_select_link 128
 DEVise create {link} {Visual_Link} length_select_link 128
 DEVise create {link} {Visual_Link} entity_assembly_gattr_link 4096 shapeAttr_13 shapeAttr_13 0
-DEVise create {link} {Visual_Link} residue_gattr_link 4096 x x 0
 DEVise create {link} {Visual_Link} length_type_gattr_link 4096 shapeAttr_0 shapeAttr_12 1
 DEVise create {link} {Visual_Link} violated_gattr_link 4096 shapeAttr_0 shapeAttr_11 1
 DEVise create {link} {Visual_Link} ambig_select_link 128
 DEVise create {link} {Visual_Link} ambig_gattr_link 4096 shapeAttr_0 shapeAttr_14 1
+DEVise create {link} {Visual_Link} ea_res1_gattr_link 4096 shapeAttr_14 shapeAttr_13 0
+DEVise create {link} {Visual_Link} ea_res2_gattr_link 4096 shapeAttr_14 shapeAttr_14 0
+DEVise create {link} {Visual_Link} ea_res_record_link 128
+DEVise setLinkType {ea_res_record_link} 1
 DEVise setLinkType {ambig_select_link} 1
 DEVise setLinkType {length_select_link} 1
 DEVise setLinkType {violation_select_link} 1
@@ -1497,6 +1551,13 @@ DEVise setAxisTicks {ViewDataTypeSelect 8} {Y} 1
 DEVise setAxisMultFact {ViewDataTypeSelect 8} {X} 1
 DEVise setAxisMultFact {ViewDataTypeSelect 8} {Y} 1
 
+DEVise setAxisDisplay {View_ea_residue_select} {X} 0
+DEVise setAxisDisplay {View_ea_residue_select} {Y} 0
+DEVise setAxisTicks {View_ea_residue_select} {X} 1
+DEVise setAxisTicks {View_ea_residue_select} {Y} 1
+DEVise setAxisMultFact {View_ea_residue_select} {X} 1
+DEVise setAxisMultFact {View_ea_residue_select} {Y} 1
+
 # Put action into view
 
 # Put views in cursors
@@ -1553,6 +1614,7 @@ DEVise insertMapping {ViewDataTypeSelect 6} {.15209distr-md1#name_vs_recId 9}
 DEVise insertMapping {ViewDataDotsParent} {.15209distr-md1#name_vs_recId 10}
 DEVise insertMapping {ViewDataTypeSelect 7} {.15209distr-md1#name_vs_recId 11}
 DEVise insertMapping {ViewDataTypeSelect 8} {.15209distr-md1#name_vs_recId 12}
+DEVise insertMapping {View_ea_residue_select} {.15209distr1#Entity_assembly1_ID_vs_recId}
 
 # Link views
 
@@ -1587,11 +1649,7 @@ DEVise insertLink {entity_assembly_gattr_link} {ViewUnselectedDataChild}
 DEVise insertLink {entity_assembly_gattr_link} {ViewSelectedDataChild}
 DEVise insertLink {entity_assembly_gattr_link} {ViewDataDotsChild}
 DEVise insertLink {entity_assembly_gattr_link} {ViewDataValueSelectChild}
-DEVise insertLink {entity_assembly_gattr_link} {View3DHighlight}
 DEVise setLinkMaster {entity_assembly_gattr_link} {ViewDataTypeSelect 4}
-
-DEVise insertLink {residue_gattr_link} {View3DHighlight}
-DEVise setLinkMaster {residue_gattr_link} {ViewDataValueSelectChild}
 
 DEVise insertLink {length_type_gattr_link} {View3DHighlight}
 DEVise setLinkMaster {length_type_gattr_link} {ViewDataTypeSelect 6}
@@ -1608,6 +1666,15 @@ DEVise setLinkMaster {ambig_select_link} {ViewDataTypeSelect 7}
 
 DEVise insertLink {ambig_gattr_link} {View3DHighlight}
 DEVise setLinkMaster {ambig_gattr_link} {ViewDataTypeSelect 7}
+
+DEVise insertLink {ea_res1_gattr_link} {View_ea_residue_select}
+DEVise setLinkMaster {ea_res1_gattr_link} {ViewDataValueSelectChild}
+
+DEVise insertLink {ea_res2_gattr_link} {View_ea_residue_select}
+DEVise setLinkMaster {ea_res2_gattr_link} {ViewDataValueSelectChild}
+
+DEVise insertLink {ea_res_record_link} {View3DHighlight}
+DEVise setLinkMaster {ea_res_record_link} {View_ea_residue_select}
 
 # Insert views into windows
 DEVise insertWindow {View3DMain_wireframe} {DEViseWn0}
@@ -1626,6 +1693,7 @@ DEVise insertWindow {ViewDataScrollFixParent} {DEViseWn13}
 DEVise insertWindow {ViewDataTypeSelect 2} {DEViseWn1}
 DEVise insertWindow {ViewDataTypeSelect 5} {DEViseWn2}
 DEVise insertWindow {ViewDataTypeSelect 6} {DEViseWn4}
+DEVise insertWindow {View_ea_residue_select} {DEViseWn4}
 DEVise insertWindow {ViewDataTypeSelect 7} {DEViseWn6}
 DEVise insertWindow {ViewDataTypeSelect 8} {DEViseWn14}
 
@@ -1649,162 +1717,33 @@ DEVise setPileStackState {DEViseWn14} 1
 # Init history of view
 
 DEVise clearViewHistory {ViewUnselectedDataChild}
-DEVise insertViewHistory {ViewUnselectedDataChild} {14.5} {-180} {32.5} {360} -1
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {36} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {19} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {5} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {6} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {7} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {12} 0
-DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {79} 0
+DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {92.5} {79} -1
 
 DEVise clearViewHistory {ViewSelectedDataChild}
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {36} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {19} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {5} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {6} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {7} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {12} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {92.5} {79} 0
 
 DEVise clearViewHistory {ViewDataDotsChild}
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {-180} {92.5} {360} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {36} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {19} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {5} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {6} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {7} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {12} 0
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {92.5} {79} 0
 
 DEVise clearViewHistory {ViewDataValueSelectChild}
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0.75} {92.5} {2.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {23.5} {0.75} {69.5} {2.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0.75} {92.5} {2.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {23.5} {0.75} {69.5} {2.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0.75} {92.5} {2.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {23.5} {0.75} {69.5} {2.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {19.75} {92.5} {59.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {23.5} {19.75} {69.5} {59.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {19.75} {92.5} {59.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {23.5} {19.75} {69.5} {59.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {19.75} {92.5} {59.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {23.5} {19.75} {69.5} {59.25} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataValueSelectChild} {0.5} {19.75} {92.5} {59.25} 0
 DEVise insertViewHistory {ViewDataValueSelectChild} {23.5} {19.75} {69.5} {59.25} 0
 
 DEVise clearViewHistory {ViewDataScrollFixChild}
-DEVise insertViewHistory {ViewDataScrollFixChild} {14.5} {-178} {32.5} {100} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {14.5} {-100} {32.5} {220} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {-100} {92.5} {220} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {79} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {19} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {5} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {6} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {7} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {13} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {3} 0
-DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {12} 0
 DEVise insertViewHistory {ViewDataScrollFixChild} {0.5} {0} {92.5} {79} 0
 
 DEVise clearViewHistory {View3DMain_wireframe}
 DEVise insertViewHistory {View3DMain_wireframe} {-9.754} {-7.386} {8.979} {12.71} 0
 
 DEVise clearViewHistory {ViewDataTypeSelect}
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-9.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-4.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-17.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-35.5} {0.5} {-17.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-17.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-1809.5} {0.5} {-1803.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-589.5} {0.5} {-583.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-1809.5} {0.5} {-1803.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-72.5} {0.5} {-66.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-6.5} {0.5} {0.5} 0
 DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-5.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataXControl}
-DEVise insertViewHistory {ViewDataXControl} {14.5} {-0.3} {32.5} {0.3} 0
 DEVise insertViewHistory {ViewDataXControl} {0.5} {-0.3} {92.5} {0.3} 0
 
 DEVise clearViewHistory {ViewSelectedDataParent}
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 81
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-18.5} {0.5} {-17.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-17.5} {0.5} {-16.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-11.5} {0.5} {-10.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-1804.5} {0.5} {-1803.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-589.5} {0.5} {-588.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-584.5} {0.5} {-583.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-1804.5} {0.5} {-1803.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-72.5} {0.5} {-71.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-67.5} {0.5} {-66.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-69.5} {0.5} {-68.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-67.5} {0.5} {-66.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-6.5} {0.5} {-5.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-1.5} {0.5} {-0.5} 0
-DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
+DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 20
 
 DEVise clearViewHistory {ViewUnselectedDataParent}
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-18.5} {0.5} {-17.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-17.5} {0.5} {-16.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-11.5} {0.5} {-10.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-1804.5} {0.5} {-1803.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-589.5} {0.5} {-588.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-584.5} {0.5} {-583.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-1804.5} {0.5} {-1803.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-72.5} {0.5} {-71.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-67.5} {0.5} {-66.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-69.5} {0.5} {-68.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-67.5} {0.5} {-66.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-6.5} {0.5} {-5.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-1.5} {0.5} {-0.5} 0
 DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataValueSelectParent}
@@ -1817,58 +1756,24 @@ DEVise clearViewHistory {ViewLegend}
 DEVise insertViewHistory {ViewLegend} {-0.5} {-0.5} {5.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataTypeSelect 3}
-DEVise insertViewHistory {ViewDataTypeSelect 3} {-0.5} {-1.5} {0.5} {-0.5} 0
 DEVise insertViewHistory {ViewDataTypeSelect 3} {-0.5} {-2.5} {0.5} {-0.5} 0
 
 DEVise clearViewHistory {ViewDataTypeSelect 4}
-DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-1.5} {0.5} {-0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-2.5} {0.5} {-1.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-1.5} {0.5} {-0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-2.5} {0.5} {-1.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-1.5} {0.5} {-0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-2.5} {0.5} {-1.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-1.5} {0.5} {-0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-2.5} {0.5} {-1.5} 0
 DEVise insertViewHistory {ViewDataTypeSelect 4} {-0.5} {-1.5} {0.5} {-0.5} 0
 
 DEVise clearViewHistory {ViewDataScrollFixParent}
 DEVise insertViewHistory {ViewDataScrollFixParent} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {View3DHighlight}
-DEVise insertViewHistory {View3DHighlight} {-9.754} {-7.386} {8.979} {12.71} 0
-DEVise insertViewHistory {View3DHighlight} {0.5} {1.248} {92.5} {7.631} 0
-DEVise insertViewHistory {View3DHighlight} {-9.754} {-7.386} {8.979} {12.71} 0
+DEVise insertViewHistory {View3DHighlight} {23.5} {1.248} {67.5} {7.002} 0
 
 DEVise clearViewHistory {ViewDataTypeSelect 2}
-DEVise insertViewHistory {ViewDataTypeSelect 2} {-0.5} {-1809.5} {0.5} {-1803.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 2} {-0.5} {-1811.5} {0.5} {-1803.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 2} {-0.5} {-74.5} {0.5} {-66.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 2} {-0.5} {-2.5} {0.5} {0.5} 0
+DEVise insertViewHistory {ViewDataTypeSelect 2} {-0.5} {-2.5} {0.5} {0.5} -101
 
 DEVise clearViewHistory {ViewDataTypeSelect 5}
-DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-2.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-0.545872} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-2.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-2.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-1.5} {0.5} {-0.5} 0
 DEVise insertViewHistory {ViewDataTypeSelect 5} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataTypeSelect 6}
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-5.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-5.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-9.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-5.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-1.5} {0.5} {-0.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-2.5} {0.5} {-1.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-3.5} {0.5} {-2.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-4.5} {0.5} {-3.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-5.5} {0.5} {-4.5} 0
-DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-1.5} {0.5} {-0.5} 0
 DEVise insertViewHistory {ViewDataTypeSelect 6} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataDotsParent}
@@ -1878,8 +1783,10 @@ DEVise clearViewHistory {ViewDataTypeSelect 7}
 DEVise insertViewHistory {ViewDataTypeSelect 7} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataTypeSelect 8}
-DEVise insertViewHistory {ViewDataTypeSelect 8} {-0.5} {-2.5} {0.5} {0.5} 0
 DEVise insertViewHistory {ViewDataTypeSelect 8} {-0.5} {-0.5} {0.5} {0.5} 0
+
+DEVise clearViewHistory {View_ea_residue_select}
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
 
 # Set camera location for each view
 DEVise set3DLocation {ViewUnselectedDataChild} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
@@ -1905,6 +1812,7 @@ DEVise set3DLocation {ViewDataTypeSelect 6} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {ViewDataDotsParent} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {ViewDataTypeSelect 7} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {ViewDataTypeSelect 8} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View_ea_residue_select} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 
 # Set string tables for each view
 

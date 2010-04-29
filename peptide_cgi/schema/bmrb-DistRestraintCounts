@@ -13,6 +13,7 @@ whitespace ' '
 
 attr Entity_assembly_ID int
 attr Residue_seq_code int
+attr EA_res string 10
 
 attr All_viol-all_ambig-all int
 attr All_viol-yes_ambig-all int

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.193  2010/04/27 18:47:07  wenger
+// Fixed bugs Eldon found in testing of whether restraints info exists
+// (for *_LEVEL_LINK_CHECK level of restraint processing).
+//
 // Revision 1.192  2010/04/26 17:32:07  wenger
 // Incremented version and added new version history section.
 //
@@ -1244,7 +1248,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.1x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.1x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

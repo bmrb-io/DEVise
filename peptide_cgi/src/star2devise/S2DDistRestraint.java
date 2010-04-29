@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2010/04/27 18:47:07  wenger
+// Fixed bugs Eldon found in testing of whether restraints info exists
+// (for *_LEVEL_LINK_CHECK level of restraint processing).
+//
 // Revision 1.4  2010/04/23 16:51:05  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
 //
@@ -230,9 +234,12 @@ public class S2DDistRestraint extends S2DRestraint {
         // conversions.  Residue sequence codes are numerical so we can do
         // numerical comparisons, though. wenger 2010-02-24.
 
-        public String _entityAssemblyId;
-	public String _resSeqCode;
-	public String _resSeqLabel;
+        public String _entityAssembly1Id;
+	public String _resSeq1Code;
+	public String _resSeq1Label;
+        public String _entityAssembly2Id;
+	public String _resSeq2Code;
+	public String _resSeq2Label;
 
 	public String _restraintType;
 	public String _restraintLengthType;
@@ -256,9 +263,12 @@ public class S2DDistRestraint extends S2DRestraint {
 	}
 
 	public RestraintInfo(RestraintInfo resInfo) {
-            this._entityAssemblyId = resInfo._entityAssemblyId;
-	    this._resSeqCode = resInfo._resSeqCode;
-	    this._resSeqLabel = resInfo._resSeqLabel;
+            this._entityAssembly1Id = resInfo._entityAssembly1Id;
+	    this._resSeq1Code = resInfo._resSeq1Code;
+	    this._resSeq1Label = resInfo._resSeq1Label;
+            this._entityAssembly2Id = resInfo._entityAssembly2Id;
+	    this._resSeq2Code = resInfo._resSeq2Code;
+	    this._resSeq2Label = resInfo._resSeq2Label;
 	    this._restraintType = resInfo._restraintType;
 	    this._restraintLengthType = resInfo._restraintLengthType;
 	    this._atom1Id = resInfo._atom1Id;
@@ -271,6 +281,33 @@ public class S2DDistRestraint extends S2DRestraint {
 	    this._maxViolation = resInfo._maxViolation;
 	    this._isViolated = resInfo._isViolated;
 	    this._isAmbiguous = resInfo._isAmbiguous;
+	}
+
+	public String toString()
+	{
+	    String violationStr = _isViolated ? "Violated" : "Non-violated";
+	    String ambigStr = _isAmbiguous ?  "Ambiguous" : "Non-ambiguous";
+	    return "" +
+	      _entityAssembly1Id + "\t" +
+	      _resSeq1Code + "\t" +
+	      _resSeq1Label + "\t" +
+	      _entityAssembly1Id + "_" + _resSeq1Code + "\t" +
+	      _entityAssembly2Id + "\t" +
+	      _resSeq2Code + "\t" +
+	      _resSeq2Label + "\t" +
+	      _entityAssembly2Id + "_" + _resSeq2Code + "\t" +
+	      _lowerBound + "\t" +
+	      _upperBound + "\t" +
+	      _atom1Id + "\t" +
+	      _atom1Name + "\t" +
+	      _atom2Id + "\t" +
+	      _atom2Name + "\t" +
+	      _restraintType + "\t" +
+	      _restraintLengthType + "\t" +
+	      _averageValue + "\t" +
+	      _maxViolation + "\t" +
+	      violationStr + "\t" +
+	      ambigStr;
 	}
     }
 
@@ -469,14 +506,18 @@ public class S2DDistRestraint extends S2DRestraint {
 	    for (int index = 0; index < restraintCount; index++) {
 		RestraintInfo restraintInfo = new RestraintInfo();
 
-		// More-or-less arbitrarily choosing to assign restraints
-		// to the first entity assembly and residue.
-		restraintInfo._entityAssemblyId =
+		restraintInfo._entityAssembly1Id =
 		  entityAssembly1Ids[index];
-		restraintInfo._resSeqCode =
+		restraintInfo._resSeq1Code =
 		  resSeq1Codes[index];
-		restraintInfo._resSeqLabel =
+		restraintInfo._resSeq1Label =
 		  resSeq1Labels[index];
+		restraintInfo._entityAssembly2Id =
+		  entityAssembly2Ids[index];
+		restraintInfo._resSeq2Code =
+		  resSeq2Codes[index];
+		restraintInfo._resSeq2Label =
+		  resSeq2Labels[index];
 
 		restraintInfo._restraintType = restraintType;
 
@@ -602,10 +643,11 @@ public class S2DDistRestraint extends S2DRestraint {
 	    distWriter.write("# Data: distance restraints for " +
 	      _name + "\n");
 	    distWriter.write("# Schema: bmrb-DistanceRestraint\n");
-	    distWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; Residue_label; " +
-	      "Distance_lower_bound; Distance_upper_bound; atom1Id; " +
-	      "atom1Name; atom2Id; atom2Name; restraintType; " +
+	    distWriter.write("# Attributes: Entity_assembly1_ID; " +
+	      "Residue1_seq_code; Residue1_label; EA_res1; " +
+	      "Entity_assembly2_ID; Residue2_seq_code; Residue2_label; " +
+	      "EA_res2; Distance_lower_bound; Distance_upper_bound; " +
+	      "atom1Id; atom1Name; atom2Id; atom2Name; restraintType; " +
 	      "restraintLengthType; averageValue; maxViolation; " +
 	      "isViolated; isAmbiguous\n");
             distWriter.write("# Peptide-CGI version: " +
@@ -617,26 +659,7 @@ public class S2DDistRestraint extends S2DRestraint {
 	    for (int index = 0; index < _restraints.size(); index++) {
 	        RestraintInfo restraintInfo =
 		  (RestraintInfo)_restraints.elementAt(index);
-		String violationStr = restraintInfo._isViolated ? "Violated" :
-		  "Non-violated";
-		String ambigStr = restraintInfo._isAmbiguous ?
-		  "Ambiguous" : "Non-ambiguous";
-		distWriter.write(restraintInfo._entityAssemblyId + "\t" +
-		  restraintInfo._resSeqCode + "\t" +
-		  restraintInfo._resSeqLabel + "\t" +
-		  restraintInfo._lowerBound + "\t" +
-		  restraintInfo._upperBound + "\t" +
-		  restraintInfo._atom1Id + "\t" +
-		  restraintInfo._atom1Name + "\t" +
-		  restraintInfo._atom2Id + "\t" +
-		  restraintInfo._atom2Name + "\t" +
-		  restraintInfo._restraintType + "\t" +
-		  restraintInfo._restraintLengthType + "\t" +
-		  restraintInfo._averageValue + "\t" +
-		  restraintInfo._maxViolation + "\t" +
-		  violationStr + "\t" +
-		  ambigStr + 
-		  "\n");
+		distWriter.write(restraintInfo.toString() + "\n");
 	    }
 
 	    distWriter.close();
@@ -655,7 +678,7 @@ public class S2DDistRestraint extends S2DRestraint {
 	      _name + "\n");
 	    distWriter.write("# Schema: bmrb-DistRestraintCounts\n");
 	    distWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; All_viol-all_ambig-all; " +
+	      "Residue_seq_code; EA_res; All_viol-all_ambig-all; " +
 	      "All_viol-yes_ambig-all; All_viol-no_ambig-all; " +
 	      "All_viol-all_ambig-yes; All_viol-yes_ambig-yes; " +
 	      "All_viol-no_ambig-yes; All_viol-all_ambig-no; " +
@@ -703,6 +726,7 @@ public class S2DDistRestraint extends S2DRestraint {
 
 		    distWriter.write(entity + " " +
 		      residue + " " +
+		      entity + "_" + residue + " " +
 		      residueInfo.toString() +
 		      "\n");
 		}
@@ -847,6 +871,7 @@ public class S2DDistRestraint extends S2DRestraint {
     // Determine the restraint length type for the given restraint
     // information, and update restraintInfo, residue1Info, and
     // residue2Info accordingly.
+    //TEMP -- make this just use the values in restraintInfo?
     private static void findLengthType(String entityAssembly1Id,
       String entityAssembly2Id, String resSeq1Code,
       String resSeq2Code, RestraintInfo restraintInfo,
