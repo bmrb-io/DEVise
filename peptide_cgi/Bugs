@@ -453,6 +453,21 @@ Num Date        Status  Description
 			-- no restraints are shown. (elu/wenger)
 			(Fixed by wenger, 4/29/10.)
 
+097 5/6/10	OPEN	Histogram web pages don't have Google Analytics
+			scripts. (wenger)
+
+098 5/6/10	OPEN	Visualization server generates links for remediated
+			restraint visualizations even if the restraint
+			files don't exist (for bmr4267.str, anyhow). (wenger)
+
+099 5/6/10	OPEN	Restraint visualizations don't have the structure
+			type (e.g., polypeptide(L)) in the entity assembly
+			selection. (wenger)
+
+100 5/6/10	OPEN	The visualization server doesn't actually generate
+			data for T1/T2 and heteronuclear NOE visualizations
+			for bmr4267_3.str. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
