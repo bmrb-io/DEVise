@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2010/04/27 18:47:07  wenger
+// Fixed bugs Eldon found in testing of whether restraints info exists
+// (for *_LEVEL_LINK_CHECK level of restraint processing).
+//
 // Revision 1.3  2010/03/11 20:31:29  wenger
 // Implemented to-do 126 (multiple NMR-STAR file paths), except that
 // not all config files are updated yet; added checks that the URL
@@ -100,6 +104,15 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
 
         String url = S2DUtils.replace(
 	  S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE, "*", pdbId);
+
+	// Throw an exception if the URL doesn't exist.
+	try {
+	    InputStream is = (new URL(url)).openStream(); 
+	    is.close();
+	} catch(IOException ex) {
+	    throw new S2DError("URL " + url + " doesn't exist (" +
+	      ex.toString() + ")");
+	}
 
         if (doDebugOutput(11)) {
 	    System.out.println("URL: " + url);

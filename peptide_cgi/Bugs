@@ -456,9 +456,10 @@ Num Date        Status  Description
 097 5/6/10	OPEN	Histogram web pages don't have Google Analytics
 			scripts. (wenger)
 
-098 5/6/10	OPEN	Visualization server generates links for remediated
+098 5/6/10	FIXED	Visualization server generates links for remediated
 			restraint visualizations even if the restraint
 			files don't exist (for bmr4267.str, anyhow). (wenger)
+			(Fixed by wenger, 5/10/10.)
 
 099 5/6/10	OPEN	Restraint visualizations don't have the structure
 			type (e.g., polypeptide(L)) in the entity assembly
