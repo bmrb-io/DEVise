@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.197  2010/05/05 19:07:00  wenger
+// Changed version to 11.8.2x1 and added 11.8.2 version history section.
+//
 // Revision 1.196  2010/05/05 14:50:58  wenger
 // Changed version to 11.8.1 for release.
 //
@@ -1260,7 +1263,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.2x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.2x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

@@ -453,8 +453,9 @@ Num Date        Status  Description
 			-- no restraints are shown. (elu/wenger)
 			(Fixed by wenger, 4/29/10.)
 
-097 5/6/10	OPEN	Histogram web pages don't have Google Analytics
+097 5/6/10	FIXED	Histogram web pages don't have Google Analytics
 			scripts. (wenger)
+			(Fixed by wenger, 5/10/10.)
 
 098 5/6/10	FIXED	Visualization server generates links for remediated
 			restraint visualizations even if the restraint
