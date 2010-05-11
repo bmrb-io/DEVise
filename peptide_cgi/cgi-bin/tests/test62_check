@@ -67,8 +67,14 @@ foreach file ($files)
   endif
 end
 
-set file = "data_dir/5085g1.dat"
-set line = '^3JHNHA 1 3 LEU H 3 LEU HA 7.1 0$'
+set file = "data_dir/15117as1.dat"
+set line = '^1 1 MET C C 172.88$'
 source tests/check4line
-set line = '^3JHNHA 1 98 VAL H 98 VAL HA 9.8 0$'
+set line = '^1 73 SER N N 122.69$'
+source tests/check4line
+
+set file = "data_dir/15117md.dat"
+set line = 'EA 1 (polypeptide(L))	1	C delta chem shift \[1\]	15117d1	\$C_DeltaShift$'
+source tests/check4line
+set line = 'EA 2 (polypeptide(L))	2	% 15N assign per res \[2\]	15117p2	\$assigForN$'
 source tests/check4line
