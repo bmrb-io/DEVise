@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2009/09/10 22:06:39  wenger
+// Fixed JavaScreen bug 985 (change 'Reset Filters' to 'Reset Axis Ranges');
+// made other menu improvements; changed communication mode dialog to
+// menu for simplification.
+//
 // Revision 1.13  2008/02/20 20:22:10  wenger
 // JavaScreen now defaults to showing help in browser window (to
 // get around problems on Mac with the Java window); added links
@@ -141,7 +146,7 @@ public class DEViseMainButtons
     public  DEViseButton stopButton;
 
     // Menu items.
-    private MenuItem openMenuItem = new MenuItem("Open...");
+    private MenuItem openMenuItem = new MenuItem("Open/Switch...");
     private MenuItem closeMenuItem = new MenuItem("Close");
     private MenuItem restartMenuItem = new MenuItem("Restart");
     private MenuItem filterMenuItem = new MenuItem("Reset Axis Ranges");

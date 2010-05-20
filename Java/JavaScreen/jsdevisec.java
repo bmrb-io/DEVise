@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.176  2010/04/21 17:10:18  wenger
+// Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+//
 // Revision 1.175.4.1  2010/03/29 18:17:47  wenger
 // Got things to work as an applet with the latest Jmol version -- needed
 // some more initialization in creating the JmolViewer object.  Added
@@ -1267,12 +1270,6 @@ public class jsdevisec extends JPanel
 
     public void getSessionList()
     {
-        if (isSessionOpened) {
-            showMsg("You already have a session opened!\n" +
-	      "Please close current session first!");
-            return;
-        }
-
         // If we are a follower in collaboration mode
         if (specialID != -1) {
             showMsg("Cannot 'Open' while following.");
@@ -1287,13 +1284,19 @@ public class jsdevisec extends JPanel
     {
 	jscreen.setScreenDim(jscreen.getWidth(), jscreen.getHeight());
 
-        dispatcher.start(DEViseCommands.SET_DISPLAY_SIZE + " " +
+	String command = "";
+        if (isSessionOpened) {
+	    command += DEViseCommands.CLOSE_SESSION + "\n";
+	}
+
+        command += DEViseCommands.SET_DISPLAY_SIZE + " " +
 	  jsValues.uiglobals.screenSize.width + " " +
 	  jsValues.uiglobals.screenSize.height + " " +
 	  jsValues.uiglobals.screenRes + " " +
 	  jsValues.uiglobals.screenRes + "\n" +
 	  DEViseCommands.OPEN_SESSION + " {" +
-	  fullSessionName + "}");
+	  fullSessionName + "}";
+        dispatcher.start(command);
     }
 
     public void resetFilters()
