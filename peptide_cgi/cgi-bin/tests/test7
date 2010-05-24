@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm */test7_out* >& /dev/null
-rm */*/test7_out* >& /dev/null
+rm -r */test7_out* >& /dev/null
+rm -r */*/test7_out* >& /dev/null
 
 echo -n "Processing NMR-STAR: "
 ./vsc -file test_data/bmr4096.str -name test7_out -force -check_res_list \
@@ -34,13 +34,13 @@ set files = (data_dir/vis_server/test7_outac1.dat \
 	html_dir/test7_outt22.html \
 	html_dir/test7_outy.html \
 	html_dir/test7_outy_large.html \
-	session_dir/vis_server/test7_outac1.ds \
+	session_dir/vis_server/test7_out/test7_outac1.ds \
 	session_dir/vis_server/test7_outacdd \
-	session_dir/vis_server/test7_outg1.ds \
-	session_dir/vis_server/test7_outn1.ds \
-	session_dir/vis_server/test7_outt11.ds \
-	session_dir/vis_server/test7_outt21.ds \
-	session_dir/vis_server/test7_outt22.ds \
+	session_dir/vis_server/test7_out/test7_outg1.ds \
+	session_dir/vis_server/test7_out/test7_outn1.ds \
+	session_dir/vis_server/test7_out/test7_outt11.ds \
+	session_dir/vis_server/test7_out/test7_outt21.ds \
+	session_dir/vis_server/test7_out/test7_outt22.ds \
 	html_dir/test7_outac1_large.html \
 	html_dir/test7_outg1_large.html \
 	html_dir/test7_outn1_large.html \

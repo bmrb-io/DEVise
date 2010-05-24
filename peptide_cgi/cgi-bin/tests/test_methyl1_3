@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */*/methyl1_out*
-rm -f */.*/methyl1_out*
+rm -r -f */*/methyl1_out*
+rm -r -f */.*/methyl1_out*
 
 echo -n "Processing NMR-STAR: "
 ./uvd -file test_data/test_methyl1_3_0.str -name methyl1_out -force -check_pct

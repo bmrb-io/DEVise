@@ -39,8 +39,8 @@
   </h3>
 
   <center>
-  <applet code=JavaScreen.jsb.class archive=../../jsb1.jar,../../jsb2.jar,../../JmolApplet.jar width=1024 height=768>
-    <param name="applet" value="JavaScreen.jsb">
+  <applet code=JavaScreen.jsa.class archive=../../jsa1.jar,../../jsa2.jar,../../JmolApplet.jar width=600 height=200>
+    <param name="applet" value="JavaScreen.jsa">
     <param name="debug" value="0">
     <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
     <param name="cmdport" value="6666">

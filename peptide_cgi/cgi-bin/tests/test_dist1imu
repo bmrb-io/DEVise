@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */*/16270*
-rm -f */.*/16270*
+rm -r -f */*/16270*
+rm -r -f */.*/16270*
 
 echo -n "Processing NMR-STAR: "
 ./make_uvd name=16270\&file=test_data/bmr16270.str

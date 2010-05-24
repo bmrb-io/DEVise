@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */*/test50_out*
-rm -f */.*/test50_out*
+rm -r -f */*/test50_out*
+rm -r -f */.*/test50_out*
 
 echo -n "Processing NMR-STAR: "
 ./uvd -file test_data/20070921_30450.str -name test50_out -force -check_pct
@@ -50,14 +50,14 @@ set files = ( data_dir/uvd/test50_outam1.dat \
 	html_dir/uvd/test50_outy.html \
 	html_dir/uvd/test50_outy_large.html \
 	session_dir/.uvd/test50_outacdd \
-	session_dir/.uvd/test50_outam1.ds \
-	session_dir/.uvd/test50_outas1.ds \
-	session_dir/.uvd/test50_outc1.ds \
-	session_dir/.uvd/test50_outd1.ds \
-#	session_dir/.uvd/test50_outhc1.ds \
-	session_dir/.uvd/test50_outhn1.ds \
-	session_dir/.uvd/test50_outp1.ds \
-	session_dir/.uvd/test50_outps1.ds )
+	session_dir/.uvd/test50_out/test50_outam1.ds \
+	session_dir/.uvd/test50_out/test50_outas1.ds \
+	session_dir/.uvd/test50_out/test50_outc1.ds \
+	session_dir/.uvd/test50_out/test50_outd1.ds \
+#	session_dir/.uvd/test50_out/test50_outhc1.ds \
+	session_dir/.uvd/test50_out/test50_outhn1.ds \
+	session_dir/.uvd/test50_out/test50_outp1.ds \
+	session_dir/.uvd/test50_out/test50_outps1.ds )
 	
 foreach file ($files)
   if (! -f $file) then

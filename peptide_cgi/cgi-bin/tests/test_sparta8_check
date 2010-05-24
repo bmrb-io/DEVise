@@ -59,22 +59,22 @@ set files = ( data_dir/11030am1.dat \
 	html_dir/11030y.html \
 	html_dir/11030y_large.html \
 	session_dir/11030acdd \
-	session_dir/11030am1.ds \
-	session_dir/11030am2.ds \
-	session_dir/11030as1.ds \
-	session_dir/11030as2.ds \
-	session_dir/11030c1.ds \
-	session_dir/11030c2.ds \
-	session_dir/11030d1.ds \
-	session_dir/11030d2.ds \
-	session_dir/11030hc1.ds \
-	session_dir/11030hc2.ds \
-	session_dir/11030hn1.ds \
-	session_dir/11030hn2.ds \
-	session_dir/11030p1.ds \
-	session_dir/11030p2.ds \
-	session_dir/11030sd1.ds \
-	session_dir/11030sd2.ds )
+	session_dir/11030/11030am1.ds \
+	session_dir/11030/11030am2.ds \
+	session_dir/11030/11030as1.ds \
+	session_dir/11030/11030as2.ds \
+	session_dir/11030/11030c1.ds \
+	session_dir/11030/11030c2.ds \
+	session_dir/11030/11030d1.ds \
+	session_dir/11030/11030d2.ds \
+	session_dir/11030/11030hc1.ds \
+	session_dir/11030/11030hc2.ds \
+	session_dir/11030/11030hn1.ds \
+	session_dir/11030/11030hn2.ds \
+	session_dir/11030/11030p1.ds \
+	session_dir/11030/11030p2.ds \
+	session_dir/11030/11030sd1.ds \
+	session_dir/11030/11030sd2.ds )
 
 foreach file ($files)
   if (! -f $file) then

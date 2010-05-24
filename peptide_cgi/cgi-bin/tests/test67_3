@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */15080*
+rm -r -f */15080*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -name 15080 -file test_data/bmr15080_3.str -force -check_pct \

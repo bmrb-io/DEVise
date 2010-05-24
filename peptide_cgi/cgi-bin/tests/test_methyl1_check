@@ -28,13 +28,13 @@ set files = ( data_dir/uvd/methyl1_outam1.dat \
 	html_dir/uvd/methyl1_outy.html \
 	html_dir/uvd/methyl1_outy_large.html \
 	session_dir/.uvd/methyl1_outacdd \
-	session_dir/.uvd/methyl1_outam1.ds \
-	session_dir/.uvd/methyl1_outas1.ds \
-	session_dir/.uvd/methyl1_outc1.ds \
-	session_dir/.uvd/methyl1_outd1.ds \
-	session_dir/.uvd/methyl1_outhc1.ds \
-	session_dir/.uvd/methyl1_outhn1.ds \
-	session_dir/.uvd/methyl1_outp1.ds )
+	session_dir/.uvd/methyl1_out/methyl1_outam1.ds \
+	session_dir/.uvd/methyl1_out/methyl1_outas1.ds \
+	session_dir/.uvd/methyl1_out/methyl1_outc1.ds \
+	session_dir/.uvd/methyl1_out/methyl1_outd1.ds \
+	session_dir/.uvd/methyl1_out/methyl1_outhc1.ds \
+	session_dir/.uvd/methyl1_out/methyl1_outhn1.ds \
+	session_dir/.uvd/methyl1_out/methyl1_outp1.ds )
 
 foreach file ($files)
   if (! -f $file) then

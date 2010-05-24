@@ -17,11 +17,11 @@ set files = ( data_dir/15080ac1.dat \
 	html_dir/15080d1_large.html \
 	html_dir/15080y.html \
 	html_dir/15080y_large.html \
-	session_dir/15080ac1.ds \
-	session_dir/15080ac2.ds \
+	session_dir/15080/15080ac1.ds \
+	session_dir/15080/15080ac2.ds \
 	session_dir/15080acdd \
-	session_dir/15080as1.ds \
-	session_dir/15080d1.ds )
+	session_dir/15080/15080as1.ds \
+	session_dir/15080/15080d1.ds )
 
 foreach file ($files)
   if (! -f $file) then
@@ -69,7 +69,7 @@ set attr = '$H8_DeltaShift'
 set line = "^EA 1 (RNA)	1	H8 delta chem shift \[1\]	15080d1	$attr"
 source tests/check4line
 
-set file = "session_dir/15080ac1.ds"
+set file = "session_dir/15080/15080ac1.ds"
 set line = '^DEVise dteInsertCatalogEntry . {"15080ac1" UNIXFILE 15080ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
 source tests/check4line
 set line = '^DEVise dteInsertCatalogEntry . {"15080d1" UNIXFILE 15080d1.dat bmrb-RNADeltaShift $DEVISE_SCHEMA/physical/bmrb-RNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'

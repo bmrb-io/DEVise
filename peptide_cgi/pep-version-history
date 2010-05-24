@@ -5,6 +5,9 @@ Peptide-CGI 11.8.2
 ------------------
 (Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.0 or higher.)
 
+* Made it possible to switch between related visualizations within
+a single instance of the JavaScreen.
+
 * Links for remediated restraint visualizations are no longer created
 if the remediated restraints file doesn't exist (fixed bug 098).
 

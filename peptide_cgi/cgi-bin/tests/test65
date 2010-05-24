@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */5167*
+rm -r -f */5167*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -bmrbid 5167 -do_pdb 2 -force -check_pct
@@ -31,10 +31,10 @@ set files = ( data_dir/5167ac1.dat \
 	html_dir/5167d1_large.html \
 	html_dir/5167y.html \
 	html_dir/5167y_large.html \
-	session_dir/5167ac1.ds \
+	session_dir/5167/5167ac1.ds \
 	session_dir/5167acdd \
-	session_dir/5167as1.ds \
-	session_dir/5167d1.ds )
+	session_dir/5167/5167as1.ds \
+	session_dir/5167/5167d1.ds )
 
 foreach file ($files)
   if (! -f $file) then

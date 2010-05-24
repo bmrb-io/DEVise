@@ -32,14 +32,14 @@ set files = ( data_dir/uvd/20090824_12345am1.dat \
 	html_dir/uvd/20090824_12345y.html \
 	html_dir/uvd/20090824_12345y_large.html \
 	session_dir/.uvd/20090824_12345acdd \
-	session_dir/.uvd/20090824_12345am1.ds \
-	session_dir/.uvd/20090824_12345as1.ds \
-	session_dir/.uvd/20090824_12345c1.ds \
-	session_dir/.uvd/20090824_12345d1.ds \
-	session_dir/.uvd/20090824_12345hc1.ds \
-	session_dir/.uvd/20090824_12345hn1.ds \
-	session_dir/.uvd/20090824_12345p1.ds \
-	session_dir/.uvd/20090824_12345sd1.ds )
+	session_dir/.uvd/20090824_12345/20090824_12345am1.ds \
+	session_dir/.uvd/20090824_12345/20090824_12345as1.ds \
+	session_dir/.uvd/20090824_12345/20090824_12345c1.ds \
+	session_dir/.uvd/20090824_12345/20090824_12345d1.ds \
+	session_dir/.uvd/20090824_12345/20090824_12345hc1.ds \
+	session_dir/.uvd/20090824_12345/20090824_12345hn1.ds \
+	session_dir/.uvd/20090824_12345/20090824_12345p1.ds \
+	session_dir/.uvd/20090824_12345/20090824_12345sd1.ds )
 
 foreach file ($files)
   if (! -f $file) then

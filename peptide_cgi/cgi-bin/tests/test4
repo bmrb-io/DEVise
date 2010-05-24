@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */4096*
+rm -r -f */4096*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4096 -force -check_res_list -check_pct

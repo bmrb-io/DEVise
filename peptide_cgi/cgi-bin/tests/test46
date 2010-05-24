@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */*/test46_out*
-rm -f */.*/test46_out*
+rm -r -f */*/test46_out*
+rm -r -f */.*/test46_out*
 
 echo -n "Processing NMR-STAR: "
 # This is 4038/4096.
@@ -67,20 +67,20 @@ set files = ( data_dir/uvd/test46_outam1.dat \
 	html_dir/uvd/test46_outy.html \
 	html_dir/uvd/test46_outy_large.html \
 	session_dir/.uvd/test46_outacdd \
-	session_dir/.uvd/test46_outam1.ds \
-	session_dir/.uvd/test46_outas1.ds \
-	session_dir/.uvd/test46_outc1.ds \
-	session_dir/.uvd/test46_outd1.ds \
-	session_dir/.uvd/test46_outg1.ds \
-	session_dir/.uvd/test46_outhc1.ds \
-	session_dir/.uvd/test46_outhn1.ds \
-	session_dir/.uvd/test46_outp1.ds \
-	session_dir/.uvd/test46_outt11.ds \
-	session_dir/.uvd/test46_outt12.ds \
-	session_dir/.uvd/test46_outt13.ds \
-	session_dir/.uvd/test46_outt21.ds \
-	session_dir/.uvd/test46_outt22.ds \
-	session_dir/.uvd/test46_outt23.ds )
+	session_dir/.uvd/test46_out/test46_outam1.ds \
+	session_dir/.uvd/test46_out/test46_outas1.ds \
+	session_dir/.uvd/test46_out/test46_outc1.ds \
+	session_dir/.uvd/test46_out/test46_outd1.ds \
+	session_dir/.uvd/test46_out/test46_outg1.ds \
+	session_dir/.uvd/test46_out/test46_outhc1.ds \
+	session_dir/.uvd/test46_out/test46_outhn1.ds \
+	session_dir/.uvd/test46_out/test46_outp1.ds \
+	session_dir/.uvd/test46_out/test46_outt11.ds \
+	session_dir/.uvd/test46_out/test46_outt12.ds \
+	session_dir/.uvd/test46_out/test46_outt13.ds \
+	session_dir/.uvd/test46_out/test46_outt21.ds \
+	session_dir/.uvd/test46_out/test46_outt22.ds \
+	session_dir/.uvd/test46_out/test46_outt23.ds )
 	
 foreach file ($files)
   if (! -f $file) then

@@ -9,7 +9,7 @@ set result = 0
 
 ln -s test_data/bmr5153.str .
 
-rm -f */5153*
+rm -r -f */5153*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 5153 -local -do_pdb 1 -force -check_res_list -check_pct

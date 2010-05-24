@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */*/test49_out*
-rm -f */.*/test49_out*
+rm -r -f */*/test49_out*
+rm -r -f */.*/test49_out*
 
 echo -n "Processing NMR-STAR: "
 ./uvd -file test_data/20070430_12345.str -name test49_out -force -do_lacs 1 \
@@ -114,34 +114,34 @@ set files = ( data_dir/uvd/test49_outam1.dat \
 	html_dir/uvd/test49_outy.html \
 	html_dir/uvd/test49_outy_large.html \
 	session_dir/.uvd/test49_outacdd \
-	session_dir/.uvd/test49_outam1.ds \
-	session_dir/.uvd/test49_outas1.ds \
-	session_dir/.uvd/test49_outc1.ds \
-	session_dir/.uvd/test49_outd1.ds \
-	session_dir/.uvd/test49_outg1.ds \
-	session_dir/.uvd/test49_outhc1.ds \
-	session_dir/.uvd/test49_outhn1.ds \
-	session_dir/.uvd/test49_outlacs1.ds \
-	session_dir/.uvd/test49_outlacs2.ds \
-	session_dir/.uvd/test49_outlacs3.ds \
-	session_dir/.uvd/test49_outlacs4.ds \
-	session_dir/.uvd/test49_outn1.ds \
-	session_dir/.uvd/test49_outn2.ds \
-	session_dir/.uvd/test49_outn3.ds \
-	session_dir/.uvd/test49_outn4.ds \
-	session_dir/.uvd/test49_outn5.ds \
-	session_dir/.uvd/test49_outn6.ds \
-	session_dir/.uvd/test49_outn7.ds \
-	session_dir/.uvd/test49_outn8.ds \
-	session_dir/.uvd/test49_outn9.ds \
-	session_dir/.uvd/test49_outo1.ds \
-	session_dir/.uvd/test49_outp1.ds \
-	session_dir/.uvd/test49_outt11.ds \
-	session_dir/.uvd/test49_outt12.ds \
-	session_dir/.uvd/test49_outt13.ds \
-	session_dir/.uvd/test49_outt21.ds \
-	session_dir/.uvd/test49_outt22.ds \
-	session_dir/.uvd/test49_outt23.ds )
+	session_dir/.uvd/test49_out/test49_outam1.ds \
+	session_dir/.uvd/test49_out/test49_outas1.ds \
+	session_dir/.uvd/test49_out/test49_outc1.ds \
+	session_dir/.uvd/test49_out/test49_outd1.ds \
+	session_dir/.uvd/test49_out/test49_outg1.ds \
+	session_dir/.uvd/test49_out/test49_outhc1.ds \
+	session_dir/.uvd/test49_out/test49_outhn1.ds \
+	session_dir/.uvd/test49_out/test49_outlacs1.ds \
+	session_dir/.uvd/test49_out/test49_outlacs2.ds \
+	session_dir/.uvd/test49_out/test49_outlacs3.ds \
+	session_dir/.uvd/test49_out/test49_outlacs4.ds \
+	session_dir/.uvd/test49_out/test49_outn1.ds \
+	session_dir/.uvd/test49_out/test49_outn2.ds \
+	session_dir/.uvd/test49_out/test49_outn3.ds \
+	session_dir/.uvd/test49_out/test49_outn4.ds \
+	session_dir/.uvd/test49_out/test49_outn5.ds \
+	session_dir/.uvd/test49_out/test49_outn6.ds \
+	session_dir/.uvd/test49_out/test49_outn7.ds \
+	session_dir/.uvd/test49_out/test49_outn8.ds \
+	session_dir/.uvd/test49_out/test49_outn9.ds \
+	session_dir/.uvd/test49_out/test49_outo1.ds \
+	session_dir/.uvd/test49_out/test49_outp1.ds \
+	session_dir/.uvd/test49_out/test49_outt11.ds \
+	session_dir/.uvd/test49_out/test49_outt12.ds \
+	session_dir/.uvd/test49_out/test49_outt13.ds \
+	session_dir/.uvd/test49_out/test49_outt21.ds \
+	session_dir/.uvd/test49_out/test49_outt22.ds \
+	session_dir/.uvd/test49_out/test49_outt23.ds )
 	
 foreach file ($files)
   if (! -f $file) then

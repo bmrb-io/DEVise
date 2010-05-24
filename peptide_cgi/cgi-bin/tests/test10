@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */5076*
+rm -r -f */5076*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -file test_data/bmr5076.str.nmrstr -name 5076 -do_pdb 2 -force \
@@ -36,18 +36,18 @@ set files = ( data_dir/5076ac1.dat data_dir/5076as1.dat data_dir/5076as2.dat \
 	html_dir/5076p3.html html_dir/5076t11.html html_dir/5076t12.html \
 	html_dir/5076t13.html html_dir/5076t14.html html_dir/5076t15.html \
 	html_dir/5076t16.html html_dir/5076y.html html_dir/5076y_large.html \
-	session_dir/5076ac1.ds \
-	session_dir/5076acdd session_dir/5076as1.ds session_dir/5076as2.ds \
-	session_dir/5076as3.ds session_dir/5076d1.ds session_dir/5076d2.ds \
-	session_dir/5076d3.ds session_dir/5076g1.ds session_dir/5076g2.ds \
-	session_dir/5076g3.ds session_dir/5076hn1.ds session_dir/5076hn2.ds \
-	session_dir/5076hn3.ds session_dir/5076n1.ds session_dir/5076n2.ds \
-	session_dir/5076p1.ds session_dir/5076p2.ds session_dir/5076p3.ds \
-	session_dir/5076t11.ds session_dir/5076t12.ds session_dir/5076t13.ds \
-	session_dir/5076t14.ds session_dir/5076t15.ds session_dir/5076t16.ds \
+	session_dir/5076/5076ac1.ds \
+	session_dir/5076acdd session_dir/5076/5076as1.ds session_dir/5076/5076as2.ds \
+	session_dir/5076/5076as3.ds session_dir/5076/5076d1.ds session_dir/5076/5076d2.ds \
+	session_dir/5076/5076d3.ds session_dir/5076/5076g1.ds session_dir/5076/5076g2.ds \
+	session_dir/5076/5076g3.ds session_dir/5076/5076hn1.ds session_dir/5076/5076hn2.ds \
+	session_dir/5076/5076hn3.ds session_dir/5076/5076n1.ds session_dir/5076/5076n2.ds \
+	session_dir/5076/5076p1.ds session_dir/5076/5076p2.ds session_dir/5076/5076p3.ds \
+	session_dir/5076/5076t11.ds session_dir/5076/5076t12.ds session_dir/5076/5076t13.ds \
+	session_dir/5076/5076t14.ds session_dir/5076/5076t15.ds session_dir/5076/5076t16.ds \
 	data_dir/5076am1.dat \
 	html_dir/5076am1.html \
-	session_dir/5076am1.ds \
+	session_dir/5076/5076am1.ds \
 	html_dir/5076ac1_large.html \
 	html_dir/5076am1_large.html \
 	html_dir/5076am2_large.html \
@@ -84,9 +84,9 @@ set files = ( data_dir/5076ac1.dat data_dir/5076as1.dat data_dir/5076as2.dat \
 	html_dir/5076hc2_large.html \
 	html_dir/5076hc3.html \
 	html_dir/5076hc3_large.html \
-	session_dir/5076hc1.ds \
-	session_dir/5076hc2.ds \
-	session_dir/5076hc3.ds )
+	session_dir/5076/5076hc1.ds \
+	session_dir/5076/5076hc2.ds \
+	session_dir/5076/5076hc3.ds )
 
 foreach file ($files)
   if (! -f $file) then

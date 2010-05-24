@@ -2,7 +2,7 @@
 
 set result = 0
 
-rm */4081* >& /dev/null
+rm -r */4081* >& /dev/null
 
 # Note: PDB ID 2CI2 is not the right PDB ID for this BMRB entry -- this
 # is just for testing!
@@ -39,13 +39,13 @@ set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
 	html_dir/4081csr1.html html_dir/4081d1.html html_dir/4081hn1.html \
 	html_dir/4081p1.html html_dir/4081tmp1y.html \
 	html_dir/4081y.html html_dir/4081y_large.html \
-	session_dir/4081ac1.ds session_dir/4081acdd session_dir/4081as1.ds \
-	session_dir/4081c1.ds session_dir/4081csr1.ds session_dir/4081d1.ds \
-	session_dir/4081hn1.ds session_dir/4081p1.ds)
+	session_dir/4081/4081ac1.ds session_dir/4081acdd session_dir/4081/4081as1.ds \
+	session_dir/4081/4081c1.ds session_dir/4081/4081csr1.ds session_dir/4081/4081d1.ds \
+	session_dir/4081/4081hn1.ds session_dir/4081/4081p1.ds \
 	data_dir/4081hc1.dat \
 	html_dir/4081hc1.html \
 	html_dir/4081hc1_large.html \
-	session_dir/4081hc1.ds )
+	session_dir/4081/4081hc1.ds )
 
 foreach file ($files)
   if (! -f $file) then

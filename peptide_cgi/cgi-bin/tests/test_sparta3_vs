@@ -5,8 +5,8 @@
 
 set result = 0
 
-rm -f */*/20090824_12345*
-rm -f */.*/20090824_12345*
+rm -r -f */*/20090824_12345*
+rm -r -f */.*/20090824_12345*
 
 ln -s test_data/sd16385.str 20090824_12345.str
 ln -s test_data/bmr16385_sparta.str 20090824_12345.sparta.str

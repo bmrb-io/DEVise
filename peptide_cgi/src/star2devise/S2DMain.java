@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.198  2010/05/10 21:24:49  wenger
+// Fixed bug 097 (added Google Analytics scripts to histogram pages).
+//
 // Revision 1.197  2010/05/05 19:07:00  wenger
 // Changed version to 11.8.2x1 and added 11.8.2 version history section.
 //
@@ -1263,7 +1266,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.2x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.2x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

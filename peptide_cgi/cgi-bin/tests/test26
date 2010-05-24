@@ -8,7 +8,7 @@ set result = 0
 ln -s test_data/bmr4267.str bmrabcd.str
 ln -s test_data/1dfv.cif.gz .
 
-rm -f */abcd*
+rm -r -f */abcd*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid abcd -local -force -check_res_list -check_pct
@@ -49,18 +49,18 @@ set files = (data_dir/abcdac1.dat data_dir/abcdas1.dat data_dir/abcdc1.dat \
 	html_dir/abcdt12.html html_dir/abcdt13.html html_dir/abcdt21.html \
 	html_dir/abcdt22.html html_dir/abcdt23.html \
 	html_dir/abcdy.html html_dir/abcdy_large.html \
-	session_dir/abcdac1.ds session_dir/abcdacdd \
-	session_dir/abcdas1.ds session_dir/abcdc1.ds session_dir/abcdd1.ds \
-	session_dir/abcdg1.ds session_dir/abcdhn1.ds session_dir/abcdn1.ds \
-	session_dir/abcdn2.ds session_dir/abcdn3.ds session_dir/abcdn4.ds \
-	session_dir/abcdn5.ds session_dir/abcdn6.ds session_dir/abcdn7.ds \
-	session_dir/abcdn8.ds session_dir/abcdn9.ds session_dir/abcdp1.ds \
-	session_dir/abcdt11.ds session_dir/abcdt12.ds session_dir/abcdt13.ds \
-	session_dir/abcdt21.ds session_dir/abcdt22.ds session_dir/abcdt23.ds \
+	session_dir/abcd/abcdac1.ds session_dir/abcdacdd \
+	session_dir/abcd/abcdas1.ds session_dir/abcd/abcdc1.ds session_dir/abcd/abcdd1.ds \
+	session_dir/abcd/abcdg1.ds session_dir/abcd/abcdhn1.ds session_dir/abcd/abcdn1.ds \
+	session_dir/abcd/abcdn2.ds session_dir/abcd/abcdn3.ds session_dir/abcd/abcdn4.ds \
+	session_dir/abcd/abcdn5.ds session_dir/abcd/abcdn6.ds session_dir/abcd/abcdn7.ds \
+	session_dir/abcd/abcdn8.ds session_dir/abcd/abcdn9.ds session_dir/abcd/abcdp1.ds \
+	session_dir/abcd/abcdt11.ds session_dir/abcd/abcdt12.ds session_dir/abcd/abcdt13.ds \
+	session_dir/abcd/abcdt21.ds session_dir/abcd/abcdt22.ds session_dir/abcd/abcdt23.ds \
 	data_dir/abcdam1.dat \
 	data_dir/abcdamac1.dat \
 	html_dir/abcdam1.html \
-	session_dir/abcdam1.ds \
+	session_dir/abcd/abcdam1.ds \
 	html_dir/abcdac1_large.html \
 	html_dir/abcdam1_large.html \
 	html_dir/abcdas1_large.html \
@@ -86,7 +86,7 @@ set files = (data_dir/abcdac1.dat data_dir/abcdas1.dat data_dir/abcdc1.dat \
 	html_dir/abcdt23_large.html \
 	data_dir/abcdhc1.dat \
 	html_dir/abcdhc1.html \
-	session_dir/abcdhc1.ds \
+	session_dir/abcd/abcdhc1.ds \
 	html_dir/abcdhc1_large.html )
 
 foreach file ($files)

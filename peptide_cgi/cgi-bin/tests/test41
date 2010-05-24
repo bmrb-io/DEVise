@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */4267*
+rm -r -f */4267*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -file test_data/bmr4267_3.str -name 4267 -do_pdb 2 \
@@ -98,32 +98,32 @@ set files = ( data_dir/4267ac1.dat \
 	html_dir/4267t23_large.html \
 	html_dir/4267y.html \
 	html_dir/4267y_large.html \
-	session_dir/4267ac1.ds \
-	session_dir/4267ac2.ds \
+	session_dir/4267/4267ac1.ds \
+	session_dir/4267/4267ac2.ds \
 	session_dir/4267acdd \
-	session_dir/4267am1.ds \
-	session_dir/4267as1.ds \
-	session_dir/4267c1.ds \
-	session_dir/4267d1.ds \
-	session_dir/4267g1.ds \
-	session_dir/4267hc1.ds \
-	session_dir/4267hn1.ds \
-	session_dir/4267n1.ds \
-	session_dir/4267n2.ds \
-	session_dir/4267n3.ds \
-	session_dir/4267n4.ds \
-	session_dir/4267n5.ds \
-	session_dir/4267n6.ds \
-	session_dir/4267n7.ds \
-	session_dir/4267n8.ds \
-	session_dir/4267n9.ds \
-	session_dir/4267p1.ds \
-	session_dir/4267t11.ds \
-	session_dir/4267t12.ds \
-	session_dir/4267t13.ds \
-	session_dir/4267t21.ds \
-	session_dir/4267t22.ds \
-	session_dir/4267t23.ds )
+	session_dir/4267/4267am1.ds \
+	session_dir/4267/4267as1.ds \
+	session_dir/4267/4267c1.ds \
+	session_dir/4267/4267d1.ds \
+	session_dir/4267/4267g1.ds \
+	session_dir/4267/4267hc1.ds \
+	session_dir/4267/4267hn1.ds \
+	session_dir/4267/4267n1.ds \
+	session_dir/4267/4267n2.ds \
+	session_dir/4267/4267n3.ds \
+	session_dir/4267/4267n4.ds \
+	session_dir/4267/4267n5.ds \
+	session_dir/4267/4267n6.ds \
+	session_dir/4267/4267n7.ds \
+	session_dir/4267/4267n8.ds \
+	session_dir/4267/4267n9.ds \
+	session_dir/4267/4267p1.ds \
+	session_dir/4267/4267t11.ds \
+	session_dir/4267/4267t12.ds \
+	session_dir/4267/4267t13.ds \
+	session_dir/4267/4267t21.ds \
+	session_dir/4267/4267t22.ds \
+	session_dir/4267/4267t23.ds )
 foreach file ($files)
   if (! -f $file) then
     echo "  Output file $file is missing"

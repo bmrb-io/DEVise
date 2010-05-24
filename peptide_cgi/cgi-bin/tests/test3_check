@@ -6,12 +6,12 @@ set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
 	html_dir/4081ac1.html html_dir/4081as1.html html_dir/4081c1.html \
 	html_dir/4081d1.html html_dir/4081hn1.html html_dir/4081p1.html \
 	html_dir/4081y.html html_dir/4081y_large.html \
-	session_dir/4081ac1.ds session_dir/4081acdd \
-	session_dir/4081as1.ds session_dir/4081c1.ds session_dir/4081d1.ds \
-	session_dir/4081hn1.ds session_dir/4081p1.ds \
+	session_dir/4081/4081ac1.ds session_dir/4081acdd \
+	session_dir/4081/4081as1.ds session_dir/4081/4081c1.ds session_dir/4081/4081d1.ds \
+	session_dir/4081/4081hn1.ds session_dir/4081/4081p1.ds \
 	data_dir/4081am1.dat \
 	html_dir/4081am1.html \
-	session_dir/4081am1.ds \
+	session_dir/4081/4081am1.ds \
 	data_dir/4081lacsc1.dat \
 	data_dir/4081lacsc2.dat \
 	data_dir/4081lacsc3.dat \
@@ -28,10 +28,10 @@ set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
 	html_dir/4081lacs2.html \
 	html_dir/4081lacs3.html \
 	html_dir/4081lacs4.html \
-	session_dir/4081lacs1.ds \
-	session_dir/4081lacs2.ds \
-	session_dir/4081lacs3.ds \
-	session_dir/4081lacs4.ds \
+	session_dir/4081/4081lacs1.ds \
+	session_dir/4081/4081lacs2.ds \
+	session_dir/4081/4081lacs3.ds \
+	session_dir/4081/4081lacs4.ds \
 	html_dir/4081ac1_large.html \
 	html_dir/4081ac2_large.html \
 	html_dir/4081am1_large.html \
@@ -46,7 +46,7 @@ set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
 	html_dir/4081p1_large.html \
 	data_dir/4081hc1.dat \
 	html_dir/4081hc1.html \
-	session_dir/4081hc1.ds \
+	session_dir/4081/4081hc1.ds \
 	html_dir/4081hc1_large.html )
 
 foreach file ($files)

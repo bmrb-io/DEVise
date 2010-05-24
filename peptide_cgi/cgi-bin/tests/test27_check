@@ -15,13 +15,13 @@ set files = (data_dir/5153ac1.dat \
 	html_dir/5153t21.html \
 	html_dir/5153y.html \
 	html_dir/5153y_large.html \
-	session_dir/5153ac1.ds \
-	session_dir/5153ac4.ds \
+	session_dir/5153/5153ac1.ds \
+	session_dir/5153/5153ac4.ds \
 	session_dir/5153acdd \
-	session_dir/5153n1.ds \
-	session_dir/5153o1.ds \
-	session_dir/5153t11.ds \
-	session_dir/5153t21.ds \
+	session_dir/5153/5153n1.ds \
+	session_dir/5153/5153o1.ds \
+	session_dir/5153/5153t11.ds \
+	session_dir/5153/5153t21.ds \
 	html_dir/5153ac1_large.html \
 	html_dir/5153ac4_large.html \
 	html_dir/5153n1_large.html \

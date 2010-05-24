@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm */4974* >& /dev/null
+rm -r */4974* >& /dev/null
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4974 -force -check_res_list
@@ -39,16 +39,16 @@ set files = (data_dir/4974ac1.dat data_dir/4974as1.dat data_dir/4974c1.dat \
 	html_dir/4974csr1.html html_dir/4974d1.html html_dir/4974hn1.html \
 	html_dir/4974p1.html html_dir/4974tmp1y.html \
 	html_dir/4974y.html html_dir/4974y_large.html \
-	session_dir/4974ac1.ds session_dir/4974acdd session_dir/4974as1.ds \
-	session_dir/4974c1.ds session_dir/4974csr1.ds session_dir/4974d1.ds \
-	session_dir/4974hn1.ds session_dir/4974p1.ds \
+	session_dir/4974/4974ac1.ds session_dir/4974acdd session_dir/4974/4974as1.ds \
+	session_dir/4974/4974c1.ds session_dir/4974/4974csr1.ds session_dir/4974/4974d1.ds \
+	session_dir/4974/4974hn1.ds session_dir/4974/4974p1.ds \
 	data_dir/4974am1.dat \
 	html_dir/4974am1.html \
-	session_dir/4974am1.ds \
+	session_dir/4974/4974am1.ds \
 	data_dir/4974hc1.dat \
 	html_dir/4974hc1.html \
 	html_dir/4974hc1_large.html \
-	session_dir/4974hc1.ds )
+	session_dir/4974/4974hc1.ds )
 
 foreach file ($files)
   if (! -f $file) then

@@ -27,18 +27,18 @@ set files = ( data_dir/4317as1.dat \
 	html_dir/4317y.html \
 	html_dir/4317y_large.html \
 	session_dir/4317acdd \
-	session_dir/4317as1.ds \
-	session_dir/4317c1.ds \
-	session_dir/4317csr11.ds \
-	session_dir/4317csr21.ds \
-	session_dir/4317csr31.ds \
-	session_dir/4317d1.ds \
-	session_dir/4317hc1.ds \
-	session_dir/4317hn1.ds \
-	session_dir/4317p1.ds \
+	session_dir/4317/4317as1.ds \
+	session_dir/4317/4317c1.ds \
+	session_dir/4317/4317csr11.ds \
+	session_dir/4317/4317csr21.ds \
+	session_dir/4317/4317csr31.ds \
+	session_dir/4317/4317d1.ds \
+	session_dir/4317/4317hc1.ds \
+	session_dir/4317/4317hn1.ds \
+	session_dir/4317/4317p1.ds \
 	data_dir/4317am1.dat \
 	html_dir/4317am1.html \
-	session_dir/4317am1.ds \
+	session_dir/4317/4317am1.ds \
 	html_dir/4317am1_large.html \
 	html_dir/4317as1_large.html \
 	html_dir/4317c1_large.html \

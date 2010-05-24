@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */test_nat_out*
+rm -r -f */test_nat_out*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -file test_data/swordfish_20090519_82287.str -name test_nat_out -force
@@ -44,13 +44,13 @@ set files = ( data_dir/test_nat_outam1.dat \
 	html_dir/test_nat_outy.html \
 	html_dir/test_nat_outy_large.html \
 	session_dir/test_nat_outacdd \
-	session_dir/test_nat_outam1.ds \
-	session_dir/test_nat_outas1.ds \
-	session_dir/test_nat_outc1.ds \
-	session_dir/test_nat_outd1.ds \
-	session_dir/test_nat_outhc1.ds \
-	session_dir/test_nat_outhn1.ds \
-	session_dir/test_nat_outp1.ds )
+	session_dir/test_nat_out/test_nat_outam1.ds \
+	session_dir/test_nat_out/test_nat_outas1.ds \
+	session_dir/test_nat_out/test_nat_outc1.ds \
+	session_dir/test_nat_out/test_nat_outd1.ds \
+	session_dir/test_nat_out/test_nat_outhc1.ds \
+	session_dir/test_nat_out/test_nat_outhn1.ds \
+	session_dir/test_nat_out/test_nat_outp1.ds )
 
 foreach file ($files)
   if (! -f $file) then

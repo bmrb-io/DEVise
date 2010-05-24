@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */6502*
+rm -r -f */6502*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -file test_data/bmr6502.str.nmrstr -name 6502 -force \
@@ -49,18 +49,18 @@ set files = ( data_dir/6502as1.dat \
 	html_dir/6502y.html \
 	html_dir/6502y_large.html \
 	session_dir/6502acdd \
-	session_dir/6502as1.ds \
-	session_dir/6502as2.ds \
-	session_dir/6502c1.ds \
-	session_dir/6502c2.ds \
-	session_dir/6502d1.ds \
-	session_dir/6502d2.ds \
-	session_dir/6502hc1.ds \
-	session_dir/6502hc2.ds \
-	session_dir/6502hn1.ds \
-	session_dir/6502hn2.ds \
-	session_dir/6502p1.ds \
-	session_dir/6502p2.ds \
+	session_dir/6502/6502as1.ds \
+	session_dir/6502/6502as2.ds \
+	session_dir/6502/6502c1.ds \
+	session_dir/6502/6502c2.ds \
+	session_dir/6502/6502d1.ds \
+	session_dir/6502/6502d2.ds \
+	session_dir/6502/6502hc1.ds \
+	session_dir/6502/6502hc2.ds \
+	session_dir/6502/6502hn1.ds \
+	session_dir/6502/6502hn2.ds \
+	session_dir/6502/6502p1.ds \
+	session_dir/6502/6502p2.ds \
 	html_dir/6502as1_large.html \
 	html_dir/6502as2_large.html \
 	html_dir/6502c1_large.html \

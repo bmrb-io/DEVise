@@ -50,20 +50,20 @@ set files = ( data_dir/5838ac1.dat \
 	html_dir/5838p2_large.html \
 	html_dir/5838y.html \
 	html_dir/5838y_large.html \
-	session_dir/5838ac1.ds \
+	session_dir/5838/5838ac1.ds \
 	session_dir/5838acdd \
-	session_dir/5838am1.ds \
-	session_dir/5838am2.ds \
-	session_dir/5838as1.ds \
-	session_dir/5838as2.ds \
-	session_dir/5838c1.ds \
-	session_dir/5838c2.ds \
-	session_dir/5838d1.ds \
-	session_dir/5838d2.ds \
-	session_dir/5838hc1.ds \
-	session_dir/5838hn1.ds \
-	session_dir/5838p1.ds \
-	session_dir/5838p2.ds )
+	session_dir/5838/5838am1.ds \
+	session_dir/5838/5838am2.ds \
+	session_dir/5838/5838as1.ds \
+	session_dir/5838/5838as2.ds \
+	session_dir/5838/5838c1.ds \
+	session_dir/5838/5838c2.ds \
+	session_dir/5838/5838d1.ds \
+	session_dir/5838/5838d2.ds \
+	session_dir/5838/5838hc1.ds \
+	session_dir/5838/5838hn1.ds \
+	session_dir/5838/5838p1.ds \
+	session_dir/5838/5838p2.ds )
 
 foreach file ($files)
   if (! -f $file) then

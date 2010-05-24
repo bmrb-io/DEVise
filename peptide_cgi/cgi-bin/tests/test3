@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */4081*
+rm -r -f */4081*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -bmrbid 4081 -do_pdb 2 -force -check_res_list \

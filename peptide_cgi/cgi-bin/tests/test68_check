@@ -47,21 +47,20 @@ set files = ( data_dir/15083ac1.dat \
 	html_dir/15083p3_large.html \
 	html_dir/15083y.html \
 	html_dir/15083y_large.html \
-	session_dir/15083ac1.ds \
-	session_dir/15083ac2.ds \
+	session_dir/15083/15083ac1.ds \
+	session_dir/15083/15083ac2.ds \
 	session_dir/15083acdd \
-	session_dir/15083acdd \
-	session_dir/15083am3.ds \
-	session_dir/15083as1.ds \
-	session_dir/15083as2.ds \
-	session_dir/15083as3.ds \
-	session_dir/15083c3.ds \
-	session_dir/15083d1.ds \
-	session_dir/15083d2.ds \
-	session_dir/15083d3.ds \
-	session_dir/15083hc3.ds \
-	session_dir/15083hn3.ds \
-	session_dir/15083p3.ds )
+	session_dir/15083/15083am3.ds \
+	session_dir/15083/15083as1.ds \
+	session_dir/15083/15083as2.ds \
+	session_dir/15083/15083as3.ds \
+	session_dir/15083/15083c3.ds \
+	session_dir/15083/15083d1.ds \
+	session_dir/15083/15083d2.ds \
+	session_dir/15083/15083d3.ds \
+	session_dir/15083/15083hc3.ds \
+	session_dir/15083/15083hn3.ds \
+	session_dir/15083/15083p3.ds )
 
 foreach file ($files)
   if (! -f $file) then
@@ -151,7 +150,7 @@ set attr = '$assigForN'
 set line = "^EA 3 (polypeptide(L))	3	% 15N assign per res \[3\]	15083p3	$attr"
 source tests/check4line
 
-set file = "session_dir/15083ac1.ds"
+set file = "session_dir/15083/15083ac1.ds"
 set line = '^DEVise dteInsertCatalogEntry . {"15083ac1" UNIXFILE 15083ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
 source tests/check4line
 set line = '^DEVise dteInsertCatalogEntry . {"15083d1" UNIXFILE 15083d1.dat bmrb-DNADeltaShift $DEVISE_SCHEMA/physical/bmrb-DNADeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'

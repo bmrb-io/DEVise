@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */4416*
+rm -r -f */4416*
 
 echo -n "Processing NMR-STAR, mmCIF, and torsion angle restraints: "
 ./s2d -nomail -bmrbid 4416 -do_tar 3 -force -check_res_list -check_pct

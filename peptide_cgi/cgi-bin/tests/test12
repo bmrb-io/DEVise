@@ -5,8 +5,8 @@
 
 set result = 0
 
-rm -f */test12_out*
-rm -f */*/test12_out*
+rm -r -f */test12_out*
+rm -r -f */*/test12_out*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./vsc -file test_data/bmr4081.str -name test12_out -do_csr 2 \
@@ -45,16 +45,16 @@ set files = (data_dir/vis_server/test12_outac1.dat \
 	html_dir/test12_outp1.html \
 	html_dir/test12_outy.html \
 	html_dir/test12_outy_large.html \
-	session_dir/vis_server/test12_outac1.ds \
+	session_dir/vis_server/test12_out/test12_outac1.ds \
 	session_dir/vis_server/test12_outacdd \
-	session_dir/vis_server/test12_outas1.ds \
-	session_dir/vis_server/test12_outc1.ds \
-	session_dir/vis_server/test12_outcsr11.ds \
-	session_dir/vis_server/test12_outcsr21.ds \
-	session_dir/vis_server/test12_outd1.ds \
-	session_dir/vis_server/test12_outhc1.ds \
-	session_dir/vis_server/test12_outhn1.ds \
-	session_dir/vis_server/test12_outp1.ds)
+	session_dir/vis_server/test12_out/test12_outas1.ds \
+	session_dir/vis_server/test12_out/test12_outc1.ds \
+	session_dir/vis_server/test12_out/test12_outcsr11.ds \
+	session_dir/vis_server/test12_out/test12_outcsr21.ds \
+	session_dir/vis_server/test12_out/test12_outd1.ds \
+	session_dir/vis_server/test12_out/test12_outhc1.ds \
+	session_dir/vis_server/test12_out/test12_outhn1.ds \
+	session_dir/vis_server/test12_out/test12_outp1.ds)
 
 foreach file ($files)
   if (! -f $file) then

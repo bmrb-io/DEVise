@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */lacs_example1*
+rm -r -f */lacs_example1*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4267 -name lacs_example1 -force -check_res_list \
@@ -36,17 +36,17 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	html_dir/lacs_example1t22.html html_dir/lacs_example1t23.html \
 	html_dir/lacs_example1y.html html_dir/lacs_example1y_large.html \
 	session_dir/lacs_example1acdd \
-	session_dir/lacs_example1as1.ds session_dir/lacs_example1c1.ds session_dir/lacs_example1d1.ds \
-	session_dir/lacs_example1g1.ds session_dir/lacs_example1hn1.ds session_dir/lacs_example1n1.ds \
-	session_dir/lacs_example1n2.ds session_dir/lacs_example1n3.ds session_dir/lacs_example1n4.ds \
-	session_dir/lacs_example1n5.ds session_dir/lacs_example1n6.ds session_dir/lacs_example1n7.ds \
-	session_dir/lacs_example1n8.ds session_dir/lacs_example1n9.ds session_dir/lacs_example1p1.ds \
-	session_dir/lacs_example1t11.ds session_dir/lacs_example1t12.ds session_dir/lacs_example1t13.ds \
-	session_dir/lacs_example1t21.ds session_dir/lacs_example1t22.ds session_dir/lacs_example1t23.ds \
+	session_dir/lacs_example1/lacs_example1as1.ds session_dir/lacs_example1/lacs_example1c1.ds session_dir/lacs_example1/lacs_example1d1.ds \
+	session_dir/lacs_example1/lacs_example1g1.ds session_dir/lacs_example1/lacs_example1hn1.ds session_dir/lacs_example1/lacs_example1n1.ds \
+	session_dir/lacs_example1/lacs_example1n2.ds session_dir/lacs_example1/lacs_example1n3.ds session_dir/lacs_example1/lacs_example1n4.ds \
+	session_dir/lacs_example1/lacs_example1n5.ds session_dir/lacs_example1/lacs_example1n6.ds session_dir/lacs_example1/lacs_example1n7.ds \
+	session_dir/lacs_example1/lacs_example1n8.ds session_dir/lacs_example1/lacs_example1n9.ds session_dir/lacs_example1/lacs_example1p1.ds \
+	session_dir/lacs_example1/lacs_example1t11.ds session_dir/lacs_example1/lacs_example1t12.ds session_dir/lacs_example1/lacs_example1t13.ds \
+	session_dir/lacs_example1/lacs_example1t21.ds session_dir/lacs_example1/lacs_example1t22.ds session_dir/lacs_example1/lacs_example1t23.ds \
 	data_dir/lacs_example1am1.dat \
 	data_dir/lacs_example1amac1.dat \
 	html_dir/lacs_example1am1.html \
-	session_dir/lacs_example1am1.ds \
+	session_dir/lacs_example1/lacs_example1am1.ds \
 	data_dir/lacs_example1lacsc1.dat \
 	data_dir/lacs_example1lacsc2.dat \
 	data_dir/lacs_example1lacsc3.dat \
@@ -63,10 +63,10 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	html_dir/lacs_example1lacs2.html \
 	html_dir/lacs_example1lacs3.html \
 	html_dir/lacs_example1lacs4.html \
-	session_dir/lacs_example1lacs1.ds \
-	session_dir/lacs_example1lacs2.ds \
-	session_dir/lacs_example1lacs3.ds \
-	session_dir/lacs_example1lacs4.ds \
+	session_dir/lacs_example1/lacs_example1lacs1.ds \
+	session_dir/lacs_example1/lacs_example1lacs2.ds \
+	session_dir/lacs_example1/lacs_example1lacs3.ds \
+	session_dir/lacs_example1/lacs_example1lacs4.ds \
 	html_dir/lacs_example1am1_large.html \
 	html_dir/lacs_example1as1_large.html \
 	html_dir/lacs_example1c1_large.html \
@@ -95,7 +95,7 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	html_dir/lacs_example1t23_large.html \
 	data_dir/lacs_example1hc1.dat \
 	html_dir/lacs_example1hc1.html \
-	session_dir/lacs_example1hc1.ds \
+	session_dir/lacs_example1/lacs_example1hc1.ds \
 	html_dir/lacs_example1hc1_large.html )
 
 foreach file ($files)

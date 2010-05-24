@@ -7,7 +7,7 @@ set files = ( data_dir/tar_1brvac1.dat \
 	html_dir/tar_1brvtar1_large.html \
 	html_dir/tar_1brvy.html \
 	html_dir/tar_1brvy_large.html \
-	session_dir/tar_1brvtar1.ds )
+	session_dir/tar_1brv/tar_1brvtar1.ds )
 
 foreach file ($files)
   if (! -f $file) then

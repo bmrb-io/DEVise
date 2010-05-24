@@ -13,7 +13,7 @@ if ($#argv > 0) then
   endif
 endif
 
-rm -f */4336*
+rm -r -f */4336*
 
 if ($noleech) then
   tests/test23_noleech
@@ -56,18 +56,18 @@ set files = (data_dir/4336as1.dat \
 	html_dir/4336y.html \
 	html_dir/4336y_large.html \
 	session_dir/4336acdd \
-	session_dir/4336as1.ds \
-	session_dir/4336c1.ds \
-	session_dir/4336csr13.ds \
-	session_dir/4336csr23.ds \
-	session_dir/4336csr33.ds \
-	session_dir/4336d1.ds \
-	session_dir/4336hc1.ds \
-	session_dir/4336hn1.ds \
-	session_dir/4336p1.ds \
+	session_dir/4336/4336as1.ds \
+	session_dir/4336/4336c1.ds \
+	session_dir/4336/4336csr13.ds \
+	session_dir/4336/4336csr23.ds \
+	session_dir/4336/4336csr33.ds \
+	session_dir/4336/4336d1.ds \
+	session_dir/4336/4336hc1.ds \
+	session_dir/4336/4336hn1.ds \
+	session_dir/4336/4336p1.ds \
 	data_dir/4336am1.dat \
 	html_dir/4336am1.html \
-	session_dir/4336am1.ds \
+	session_dir/4336/4336am1.ds \
 	html_dir/4336am1_large.html \
 	html_dir/4336as1_large.html \
 	html_dir/4336c1_large.html \

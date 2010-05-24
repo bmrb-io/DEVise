@@ -10,7 +10,7 @@
 
 set result = 0
 
-rm -f */4310*
+rm -r -f */4310*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4310 -force -check_res_list -check_pct

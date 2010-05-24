@@ -9,14 +9,14 @@ set files = (data_dir/4096ac1.dat data_dir/4096as1.dat data_dir/4096c1.dat \
 	html_dir/4096g1.html html_dir/4096hn1.html html_dir/4096n1.html \
 	html_dir/4096p1.html html_dir/4096t11.html html_dir/4096t21.html \
 	html_dir/4096t22.html html_dir/4096y.html html_dir/4096y_large.html \
-	session_dir/4096ac1.ds \
-	session_dir/4096acdd session_dir/4096as1.ds session_dir/4096c1.ds \
-	session_dir/4096d1.ds session_dir/4096g1.ds session_dir/4096hn1.ds \
-	session_dir/4096n1.ds session_dir/4096p1.ds session_dir/4096t11.ds \
-	session_dir/4096t21.ds session_dir/4096t22.ds \
+	session_dir/4096/4096ac1.ds \
+	session_dir/4096acdd session_dir/4096/4096as1.ds session_dir/4096/4096c1.ds \
+	session_dir/4096/4096d1.ds session_dir/4096/4096g1.ds session_dir/4096/4096hn1.ds \
+	session_dir/4096/4096n1.ds session_dir/4096/4096p1.ds session_dir/4096/4096t11.ds \
+	session_dir/4096/4096t21.ds session_dir/4096/4096t22.ds \
 	data_dir/4096am1.dat \
 	html_dir/4096am1.html \
-	session_dir/4096am1.ds \
+	session_dir/4096/4096am1.ds \
 	html_dir/4096ac1_large.html \
 	html_dir/4096am1_large.html \
 	html_dir/4096as1_large.html \
@@ -31,7 +31,7 @@ set files = (data_dir/4096ac1.dat data_dir/4096as1.dat data_dir/4096c1.dat \
 	html_dir/4096t22_large.html \
 	data_dir/4096hc1.dat \
 	html_dir/4096hc1.html \
-	session_dir/4096hc1.ds \
+	session_dir/4096/4096hc1.ds \
 	html_dir/4096hc1_large.html )
 
 foreach file ($files)
@@ -79,7 +79,7 @@ set line = '^3	1	CO$'
 # 2.1 doesn't have residues for entity 3
 #TEMP? source tests/check4line
 
-set file = "session_dir/4096ac1.ds"
+set file = "session_dir/4096/4096ac1.ds"
 set line = '^DEVise dteInsertCatalogEntry . {"4096ac1" UNIXFILE 4096ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
 source tests/check4line
 set line = '^DEVise dteInsertCatalogEntry . {"4096d1" UNIXFILE 4096d1.dat DeltaShift $DEVISE_SCHEMA/physical/bmrb-DeltaShift "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'

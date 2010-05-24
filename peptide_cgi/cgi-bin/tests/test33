@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */6722*
+rm -r -f */6722*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -file test_data/bmr6722.str.nmrstr -name 6722 -force \
@@ -34,11 +34,11 @@ set files = (data_dir/6722am1.dat \
 	html_dir/6722y.html \
 	html_dir/6722y_large.html \
 	session_dir/6722acdd \
-	session_dir/6722am1.ds \
-	session_dir/6722as1.ds \
-	session_dir/6722d1.ds \
-	session_dir/6722hn1.ds \
-	session_dir/6722p1.ds \
+	session_dir/6722/6722am1.ds \
+	session_dir/6722/6722as1.ds \
+	session_dir/6722/6722d1.ds \
+	session_dir/6722/6722hn1.ds \
+	session_dir/6722/6722p1.ds \
 	html_dir/6722am1_large.html \
 	html_dir/6722as1_large.html \
 	html_dir/6722d1_large.html \

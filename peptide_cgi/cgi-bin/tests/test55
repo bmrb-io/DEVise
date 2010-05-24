@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */6730*
+rm -r -f */6730*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -bmrbid 6730 -force -check_pct
@@ -39,12 +39,12 @@ set files = ( data_dir/6730as1.dat \
 	html_dir/6730y.html \
 	html_dir/6730y_large.html \
 	session_dir/6730acdd \
-	session_dir/6730as1.ds \
-	session_dir/6730c1.ds \
-	session_dir/6730d1.ds \
-	session_dir/6730hc1.ds \
-	session_dir/6730hn1.ds \
-	session_dir/6730p1.ds )
+	session_dir/6730/6730as1.ds \
+	session_dir/6730/6730c1.ds \
+	session_dir/6730/6730d1.ds \
+	session_dir/6730/6730hc1.ds \
+	session_dir/6730/6730hn1.ds \
+	session_dir/6730/6730p1.ds )
 	
 foreach file ($files)
   if (! -f $file) then

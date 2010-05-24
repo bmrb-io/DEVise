@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */4267_2ent*
+rm -r -f */4267_2ent*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -name 4267_2ent -file test_data/bmr4267_2ent_3.str -force \

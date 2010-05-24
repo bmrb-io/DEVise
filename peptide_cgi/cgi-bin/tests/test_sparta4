@@ -10,7 +10,7 @@ cd test_data;
 ln -s bmr16385_sparta.str bmr16385_SPARTA.str
 cd ..
 
-rm -f */16385*
+rm -r -f */16385*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -bmrbid 16385 -force -check_res_list \

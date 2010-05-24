@@ -36,16 +36,16 @@ set files = ( data_dir/4081ac1.dat \
 	html_dir/4081tmp1y_large.html \
 	html_dir/4081y.html \
 	html_dir/4081y_large.html \
-	session_dir/4081ac1.ds \
+	session_dir/4081/4081ac1.ds \
 	session_dir/4081acdd \
-	session_dir/4081am1.ds \
-	session_dir/4081as1.ds \
-	session_dir/4081c1.ds \
-	session_dir/4081d1.ds \
-	session_dir/4081hc1.ds \
-	session_dir/4081hn1.ds \
-	session_dir/4081p1.ds \
-	session_dir/4081tar1.ds )
+	session_dir/4081/4081am1.ds \
+	session_dir/4081/4081as1.ds \
+	session_dir/4081/4081c1.ds \
+	session_dir/4081/4081d1.ds \
+	session_dir/4081/4081hc1.ds \
+	session_dir/4081/4081hn1.ds \
+	session_dir/4081/4081p1.ds \
+	session_dir/4081/4081tar1.ds )
 
 foreach file ($files)
   if (! -f $file) then

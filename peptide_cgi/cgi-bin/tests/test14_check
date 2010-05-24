@@ -40,18 +40,18 @@ set files = ( data_dir/4867ac1.dat \
 	html_dir/4867p1_large.html \
 	html_dir/4867y.html \
 	html_dir/4867y_large.html \
-	session_dir/4867ac1.ds \
-	session_dir/4867ac2.ds \
+	session_dir/4867/4867ac1.ds \
+	session_dir/4867/4867ac2.ds \
 	session_dir/4867acdd \
-	session_dir/4867am1.ds \
-	session_dir/4867as1.ds \
-	session_dir/4867as2.ds \
-	session_dir/4867c1.ds \
-	session_dir/4867d1.ds \
-	session_dir/4867d2.ds \
-	session_dir/4867hc1.ds \
-	session_dir/4867hn1.ds \
-	session_dir/4867p1.ds )
+	session_dir/4867/4867am1.ds \
+	session_dir/4867/4867as1.ds \
+	session_dir/4867/4867as2.ds \
+	session_dir/4867/4867c1.ds \
+	session_dir/4867/4867d1.ds \
+	session_dir/4867/4867d2.ds \
+	session_dir/4867/4867hc1.ds \
+	session_dir/4867/4867hn1.ds \
+	session_dir/4867/4867p1.ds )
 
 foreach file ($files)
   if (! -f $file) then

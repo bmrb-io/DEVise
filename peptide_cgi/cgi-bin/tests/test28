@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */4970*
+rm -r -f */4970*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4970 -do_pdb 1 -force -check_res_list -check_pct
@@ -117,55 +117,55 @@ set files = (data_dir/4970md.dat \
 	html_dir/4970y.html \
 	html_dir/4970y_large.html \
 	session_dir/4970acdd \
-	session_dir/4970n1.ds \
-	session_dir/4970n2.ds \
-	session_dir/4970n3.ds \
-	session_dir/4970n4.ds \
-	session_dir/4970n5.ds \
-	session_dir/4970t11.ds \
-	session_dir/4970t12.ds \
-	session_dir/4970t13.ds \
-	session_dir/4970t14.ds \
-	session_dir/4970t15.ds \
-	session_dir/4970t210.ds \
-	session_dir/4970t211.ds \
-	session_dir/4970t212.ds \
-	session_dir/4970t213.ds \
-	session_dir/4970t214.ds \
-	session_dir/4970t215.ds \
-	session_dir/4970t216.ds \
-	session_dir/4970t217.ds \
-	session_dir/4970t218.ds \
-	session_dir/4970t219.ds \
-	session_dir/4970t21.ds \
-	session_dir/4970t220.ds \
-	session_dir/4970t221.ds \
-	session_dir/4970t222.ds \
-	session_dir/4970t223.ds \
-	session_dir/4970t224.ds \
-	session_dir/4970t225.ds \
-	session_dir/4970t226.ds \
-	session_dir/4970t227.ds \
-	session_dir/4970t228.ds \
-	session_dir/4970t229.ds \
-	session_dir/4970t22.ds \
-	session_dir/4970t230.ds \
-	session_dir/4970t231.ds \
-	session_dir/4970t232.ds \
-	session_dir/4970t233.ds \
-	session_dir/4970t234.ds \
-	session_dir/4970t235.ds \
-	session_dir/4970t236.ds \
-	session_dir/4970t237.ds \
-	session_dir/4970t238.ds \
-	session_dir/4970t239.ds \
-	session_dir/4970t23.ds \
-	session_dir/4970t24.ds \
-	session_dir/4970t25.ds \
-	session_dir/4970t26.ds \
-	session_dir/4970t27.ds \
-	session_dir/4970t28.ds \
-	session_dir/4970t29.ds \
+	session_dir/4970/4970n1.ds \
+	session_dir/4970/4970n2.ds \
+	session_dir/4970/4970n3.ds \
+	session_dir/4970/4970n4.ds \
+	session_dir/4970/4970n5.ds \
+	session_dir/4970/4970t11.ds \
+	session_dir/4970/4970t12.ds \
+	session_dir/4970/4970t13.ds \
+	session_dir/4970/4970t14.ds \
+	session_dir/4970/4970t15.ds \
+	session_dir/4970/4970t210.ds \
+	session_dir/4970/4970t211.ds \
+	session_dir/4970/4970t212.ds \
+	session_dir/4970/4970t213.ds \
+	session_dir/4970/4970t214.ds \
+	session_dir/4970/4970t215.ds \
+	session_dir/4970/4970t216.ds \
+	session_dir/4970/4970t217.ds \
+	session_dir/4970/4970t218.ds \
+	session_dir/4970/4970t219.ds \
+	session_dir/4970/4970t21.ds \
+	session_dir/4970/4970t220.ds \
+	session_dir/4970/4970t221.ds \
+	session_dir/4970/4970t222.ds \
+	session_dir/4970/4970t223.ds \
+	session_dir/4970/4970t224.ds \
+	session_dir/4970/4970t225.ds \
+	session_dir/4970/4970t226.ds \
+	session_dir/4970/4970t227.ds \
+	session_dir/4970/4970t228.ds \
+	session_dir/4970/4970t229.ds \
+	session_dir/4970/4970t22.ds \
+	session_dir/4970/4970t230.ds \
+	session_dir/4970/4970t231.ds \
+	session_dir/4970/4970t232.ds \
+	session_dir/4970/4970t233.ds \
+	session_dir/4970/4970t234.ds \
+	session_dir/4970/4970t235.ds \
+	session_dir/4970/4970t236.ds \
+	session_dir/4970/4970t237.ds \
+	session_dir/4970/4970t238.ds \
+	session_dir/4970/4970t239.ds \
+	session_dir/4970/4970t23.ds \
+	session_dir/4970/4970t24.ds \
+	session_dir/4970/4970t25.ds \
+	session_dir/4970/4970t26.ds \
+	session_dir/4970/4970t27.ds \
+	session_dir/4970/4970t28.ds \
+	session_dir/4970/4970t29.ds \
 	html_dir/4970n1_large.html \
 	html_dir/4970n2_large.html \
 	html_dir/4970n3_large.html \
@@ -270,24 +270,24 @@ set files = (data_dir/4970md.dat \
 	html_dir/4970o8_large.html \
 	html_dir/4970o9.html \
 	html_dir/4970o9_large.html \
-	session_dir/4970o10.ds \
-	session_dir/4970o11.ds \
-	session_dir/4970o12.ds \
-	session_dir/4970o13.ds \
-	session_dir/4970o14.ds \
-	session_dir/4970o15.ds \
-	session_dir/4970o16.ds \
-	session_dir/4970o17.ds \
-	session_dir/4970o18.ds \
-	session_dir/4970o1.ds \
-	session_dir/4970o2.ds \
-	session_dir/4970o3.ds \
-	session_dir/4970o4.ds \
-	session_dir/4970o5.ds \
-	session_dir/4970o6.ds \
-	session_dir/4970o7.ds \
-	session_dir/4970o8.ds \
-	session_dir/4970o9.ds )
+	session_dir/4970/4970o10.ds \
+	session_dir/4970/4970o11.ds \
+	session_dir/4970/4970o12.ds \
+	session_dir/4970/4970o13.ds \
+	session_dir/4970/4970o14.ds \
+	session_dir/4970/4970o15.ds \
+	session_dir/4970/4970o16.ds \
+	session_dir/4970/4970o17.ds \
+	session_dir/4970/4970o18.ds \
+	session_dir/4970/4970o1.ds \
+	session_dir/4970/4970o2.ds \
+	session_dir/4970/4970o3.ds \
+	session_dir/4970/4970o4.ds \
+	session_dir/4970/4970o5.ds \
+	session_dir/4970/4970o6.ds \
+	session_dir/4970/4970o7.ds \
+	session_dir/4970/4970o8.ds \
+	session_dir/4970/4970o9.ds )
 
 foreach file ($files)
   if (! -f $file) then

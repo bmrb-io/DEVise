@@ -14,7 +14,7 @@ if ($#argv > 0) then
   endif
 endif
 
-rm -f */4317*
+rm -r -f */4317*
 
 if ($noleech) then
   tests/test15_noleech

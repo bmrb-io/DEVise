@@ -7,8 +7,8 @@
 
 set result = 0
 
-rm -f */*/test48_out*
-rm -f */.*/test48_out*
+rm -r -f */*/test48_out*
+rm -r -f */.*/test48_out*
 
 echo -n "Processing NMR-STAR: "
 ./uvd -file test_data/20070314_79717.str -name test48_out -do_csr 2 -force \
@@ -62,16 +62,16 @@ set files = ( data_dir/uvd/test48_outam1.dat \
 	html_dir/uvd/test48_outy.html \
 	html_dir/uvd/test48_outy_large.html \
 	session_dir/.uvd/test48_outacdd \
-	session_dir/.uvd/test48_outam1.ds \
-	session_dir/.uvd/test48_outas1.ds \
-	session_dir/.uvd/test48_outc1.ds \
-	session_dir/.uvd/test48_outcsr11.ds \
-	session_dir/.uvd/test48_outcsr21.ds \
-	session_dir/.uvd/test48_outcsr31.ds \
-	session_dir/.uvd/test48_outd1.ds \
-	session_dir/.uvd/test48_outhc1.ds \
-	session_dir/.uvd/test48_outhn1.ds \
-	session_dir/.uvd/test48_outp1.ds )
+	session_dir/.uvd/test48_out/test48_outam1.ds \
+	session_dir/.uvd/test48_out/test48_outas1.ds \
+	session_dir/.uvd/test48_out/test48_outc1.ds \
+	session_dir/.uvd/test48_out/test48_outcsr11.ds \
+	session_dir/.uvd/test48_out/test48_outcsr21.ds \
+	session_dir/.uvd/test48_out/test48_outcsr31.ds \
+	session_dir/.uvd/test48_out/test48_outd1.ds \
+	session_dir/.uvd/test48_out/test48_outhc1.ds \
+	session_dir/.uvd/test48_out/test48_outhn1.ds \
+	session_dir/.uvd/test48_out/test48_outp1.ds )
 	
 foreach file ($files)
   if (! -f $file) then

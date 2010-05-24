@@ -6,7 +6,7 @@
 
 set result = 0
 
-rm -f */16270*
+rm -r -f */16270*
 
 echo -n "Processing NMR-STAR: "
 ./make_view number=16270

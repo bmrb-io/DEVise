@@ -5,8 +5,8 @@
 
 set result = 0
 
-rm -f */test18_out*
-rm -f */*/test18_out*
+rm -r -f */test18_out*
+rm -r -f */*/test18_out*
 
 echo -n "Processing NMR-STAR: "
 ./vsc -file test_data/bmr4267mod -name test18_out -do_pdb 1 -force \
@@ -68,31 +68,31 @@ set files = (data_dir/vis_server/test18_outas1.dat \
 	html_dir/test18_outy.html \
 	html_dir/test18_outy_large.html \
 	session_dir/vis_server/test18_outacdd \
-	session_dir/vis_server/test18_outas1.ds \
-	session_dir/vis_server/test18_outc1.ds \
-	session_dir/vis_server/test18_outd1.ds \
-	session_dir/vis_server/test18_outg1.ds \
-	session_dir/vis_server/test18_outhc1.ds \
-	session_dir/vis_server/test18_outhn1.ds \
-	session_dir/vis_server/test18_outn1.ds \
-	session_dir/vis_server/test18_outn2.ds \
-	session_dir/vis_server/test18_outn3.ds \
-	session_dir/vis_server/test18_outn4.ds \
-	session_dir/vis_server/test18_outn5.ds \
-	session_dir/vis_server/test18_outn6.ds \
-	session_dir/vis_server/test18_outn7.ds \
-	session_dir/vis_server/test18_outn8.ds \
-	session_dir/vis_server/test18_outn9.ds \
-	session_dir/vis_server/test18_outp1.ds \
-	session_dir/vis_server/test18_outt11.ds \
-	session_dir/vis_server/test18_outt12.ds \
-	session_dir/vis_server/test18_outt13.ds \
-	session_dir/vis_server/test18_outt21.ds \
-	session_dir/vis_server/test18_outt22.ds \
-	session_dir/vis_server/test18_outt23.ds \
+	session_dir/vis_server/test18_out/test18_outas1.ds \
+	session_dir/vis_server/test18_out/test18_outc1.ds \
+	session_dir/vis_server/test18_out/test18_outd1.ds \
+	session_dir/vis_server/test18_out/test18_outg1.ds \
+	session_dir/vis_server/test18_out/test18_outhc1.ds \
+	session_dir/vis_server/test18_out/test18_outhn1.ds \
+	session_dir/vis_server/test18_out/test18_outn1.ds \
+	session_dir/vis_server/test18_out/test18_outn2.ds \
+	session_dir/vis_server/test18_out/test18_outn3.ds \
+	session_dir/vis_server/test18_out/test18_outn4.ds \
+	session_dir/vis_server/test18_out/test18_outn5.ds \
+	session_dir/vis_server/test18_out/test18_outn6.ds \
+	session_dir/vis_server/test18_out/test18_outn7.ds \
+	session_dir/vis_server/test18_out/test18_outn8.ds \
+	session_dir/vis_server/test18_out/test18_outn9.ds \
+	session_dir/vis_server/test18_out/test18_outp1.ds \
+	session_dir/vis_server/test18_out/test18_outt11.ds \
+	session_dir/vis_server/test18_out/test18_outt12.ds \
+	session_dir/vis_server/test18_out/test18_outt13.ds \
+	session_dir/vis_server/test18_out/test18_outt21.ds \
+	session_dir/vis_server/test18_out/test18_outt22.ds \
+	session_dir/vis_server/test18_out/test18_outt23.ds \
 	html_dir/test18_outam1.html \
 	data_dir/vis_server/test18_outam1.dat \
-	session_dir/vis_server/test18_outam1.ds \
+	session_dir/vis_server/test18_out/test18_outam1.ds \
 	html_dir/test18_outam1_large.html \
 	html_dir/test18_outas1_large.html \
 	html_dir/test18_outc1_large.html \

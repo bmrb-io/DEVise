@@ -12,8 +12,8 @@ if ($#argv > 0) then
   endif
 endif
 
-rm -f */*/test47_out*
-rm -f */.*/test47_out*
+rm -r -f */*/test47_out*
+rm -r -f */.*/test47_out*
 
 echo -n "Processing NMR-STAR: "
 # This is 15011.
@@ -82,15 +82,15 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	html_dir/uvd/test47_outtmp1y_large.html \
 	html_dir/uvd/test47_outy.html \
 	html_dir/uvd/test47_outy_large.html \
-	session_dir/.uvd/test47_outac1.ds \
+	session_dir/.uvd/test47_out/test47_outac1.ds \
 	session_dir/.uvd/test47_outacdd \
-	session_dir/.uvd/test47_outam1.ds \
-	session_dir/.uvd/test47_outas1.ds \
-	session_dir/.uvd/test47_outc1.ds \
-	session_dir/.uvd/test47_outd1.ds \
-	session_dir/.uvd/test47_outhc1.ds \
-	session_dir/.uvd/test47_outhn1.ds \
-	session_dir/.uvd/test47_outp1.ds \
+	session_dir/.uvd/test47_out/test47_outam1.ds \
+	session_dir/.uvd/test47_out/test47_outas1.ds \
+	session_dir/.uvd/test47_out/test47_outc1.ds \
+	session_dir/.uvd/test47_out/test47_outd1.ds \
+	session_dir/.uvd/test47_out/test47_outhc1.ds \
+	session_dir/.uvd/test47_out/test47_outhn1.ds \
+	session_dir/.uvd/test47_out/test47_outp1.ds \
 	data_dir/uvd/test47_outcsr1_1.dat \
 	data_dir/uvd/test47_outcsr1_2.dat \
 	data_dir/uvd/test47_outcsr1_3.dat \
@@ -103,9 +103,9 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	html_dir/uvd/test47_outcsr21_large.html \
 	html_dir/uvd/test47_outcsr31.html \
 	html_dir/uvd/test47_outcsr31_large.html \
-	session_dir/.uvd/test47_outcsr11.ds \
-	session_dir/.uvd/test47_outcsr21.ds \
-	session_dir/.uvd/test47_outcsr31.ds )
+	session_dir/.uvd/test47_out/test47_outcsr11.ds \
+	session_dir/.uvd/test47_out/test47_outcsr21.ds \
+	session_dir/.uvd/test47_out/test47_outcsr31.ds )
 	
 foreach file ($files)
   if (! -f $file) then

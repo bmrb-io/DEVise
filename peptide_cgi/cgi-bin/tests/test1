@@ -8,7 +8,7 @@ set result = 0
 ln -s test_data/bmr4267.str .
 ln -s test_data/1dfv.cif.gz .
 
-rm -f */4267*
+rm -r -f */4267*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4267 -local -force -check_res_list \

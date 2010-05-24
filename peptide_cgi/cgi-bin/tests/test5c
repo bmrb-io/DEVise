@@ -2,8 +2,8 @@
 
 set result = 0
 
-rm */test5c_out* >& /dev/null
-rm */*/test5c_out* >& /dev/null
+rm -r */test5c_out* >& /dev/null
+rm -r */*/test5c_out* >& /dev/null
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./vsc -file vis_server_sample.dat -name test5c_out -do_csr 2 -force
@@ -42,15 +42,15 @@ set files = (data_dir/vis_server/test5c_outac1.dat \
 	html_dir/test5c_outp1.html \
 	html_dir/test5c_outy.html \
 	html_dir/test5c_outy_large.html \
-	session_dir/vis_server/test5c_outac1.ds \
+	session_dir/vis_server/test5c_out/test5c_outac1.ds \
 	session_dir/vis_server/test5c_outacdd \
-	session_dir/vis_server/test5c_outas1.ds \
-	session_dir/vis_server/test5c_outc1.ds \
-	session_dir/vis_server/test5c_outcsr1.ds \
-	session_dir/vis_server/test5c_outd1.ds \
-	session_dir/vis_server/test5c_outhc1.ds \
-	session_dir/vis_server/test5c_outhn1.ds \
-	session_dir/vis_server/test5c_outp1.ds)
+	session_dir/vis_server/test5c_out/test5c_outas1.ds \
+	session_dir/vis_server/test5c_out/test5c_outc1.ds \
+	session_dir/vis_server/test5c_out/test5c_outcsr1.ds \
+	session_dir/vis_server/test5c_out/test5c_outd1.ds \
+	session_dir/vis_server/test5c_out/test5c_outhc1.ds \
+	session_dir/vis_server/test5c_out/test5c_outhn1.ds \
+	session_dir/vis_server/test5c_out/test5c_outp1.ds)
 	
 foreach file ($files)
   if (! -f $file) then

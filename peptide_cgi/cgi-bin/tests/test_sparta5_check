@@ -32,14 +32,14 @@ set files = ( data_dir/16387am1.dat \
 	html_dir/16387y.html \
 	html_dir/16387y_large.html \
 	session_dir/16387acdd \
-	session_dir/16387am1.ds \
-	session_dir/16387as1.ds \
-	session_dir/16387c1.ds \
-	session_dir/16387d1.ds \
-	session_dir/16387hc1.ds \
-	session_dir/16387hn1.ds \
-	session_dir/16387p1.ds \
-	session_dir/16387sd1.ds )
+	session_dir/16387/16387am1.ds \
+	session_dir/16387/16387as1.ds \
+	session_dir/16387/16387c1.ds \
+	session_dir/16387/16387d1.ds \
+	session_dir/16387/16387hc1.ds \
+	session_dir/16387/16387hn1.ds \
+	session_dir/16387/16387p1.ds \
+	session_dir/16387/16387sd1.ds )
 
 foreach file ($files)
   if (! -f $file) then

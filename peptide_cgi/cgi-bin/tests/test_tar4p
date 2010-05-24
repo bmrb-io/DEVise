@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */tar_1itf*
+rm -r -f */tar_1itf*
 
 echo -n "Processing mmCIF and torsion angle restraints: "
 ./s2d -nomail -name tar_1itf -pdbid 1ITF -coord_index 1 -force \

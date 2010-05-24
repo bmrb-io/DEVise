@@ -62,24 +62,24 @@ set files = ( data_dir/4689am1.dat \
 	html_dir/4689y.html \
 	html_dir/4689y_large.html \
 	session_dir/4689acdd \
-	session_dir/4689am1.ds \
-	session_dir/4689am2.ds \
-	session_dir/4689as1.ds \
-	session_dir/4689as2.ds \
-	session_dir/4689d1.ds \
-	session_dir/4689d2.ds \
-	session_dir/4689hc1.ds \
-	session_dir/4689hc2.ds \
-	session_dir/4689hn1.ds \
-	session_dir/4689hn2.ds \
-	session_dir/4689o1.ds \
-	session_dir/4689o2.ds \
-	session_dir/4689p1.ds \
-	session_dir/4689p2.ds \
-	session_dir/4689t11.ds \
-	session_dir/4689t12.ds \
-	session_dir/4689t21.ds \
-	session_dir/4689t22.ds )
+	session_dir/4689/4689am1.ds \
+	session_dir/4689/4689am2.ds \
+	session_dir/4689/4689as1.ds \
+	session_dir/4689/4689as2.ds \
+	session_dir/4689/4689d1.ds \
+	session_dir/4689/4689d2.ds \
+	session_dir/4689/4689hc1.ds \
+	session_dir/4689/4689hc2.ds \
+	session_dir/4689/4689hn1.ds \
+	session_dir/4689/4689hn2.ds \
+	session_dir/4689/4689o1.ds \
+	session_dir/4689/4689o2.ds \
+	session_dir/4689/4689p1.ds \
+	session_dir/4689/4689p2.ds \
+	session_dir/4689/4689t11.ds \
+	session_dir/4689/4689t12.ds \
+	session_dir/4689/4689t21.ds \
+	session_dir/4689/4689t22.ds )
 
 foreach file ($files)
   if (! -f $file) then

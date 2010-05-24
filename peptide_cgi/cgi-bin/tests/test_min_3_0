@@ -5,8 +5,8 @@
 
 set result = 0
 
-rm -f */*/test_min_out*
-rm -f */.*/test_min_out*
+rm -r -f */*/test_min_out*
+rm -r -f */.*/test_min_out*
 
 echo -n "Processing NMR-STAR: "
 ./uvd -file test_data/minimal_3.0.str -name test_min_out -force 

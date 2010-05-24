@@ -26,13 +26,13 @@ set files = ( data_dir/4416ac1.dat \
 	html_dir/4416rrtar1_large.html \
 	html_dir/4416y.html \
 	html_dir/4416y_large.html \
-	session_dir/4416ac1.ds \
+	session_dir/4416/4416ac1.ds \
 	session_dir/4416acdd \
-	session_dir/4416as1.ds \
-	session_dir/4416as2.ds \
-	session_dir/4416d1.ds \
-	session_dir/4416d2.ds \
-	session_dir/4416rrtar1.ds )
+	session_dir/4416/4416as1.ds \
+	session_dir/4416/4416as2.ds \
+	session_dir/4416/4416d1.ds \
+	session_dir/4416/4416d2.ds \
+	session_dir/4416/4416rrtar1.ds )
 
 foreach file ($files)
   if (! -f $file) then

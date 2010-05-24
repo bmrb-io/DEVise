@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2010/04/23 16:51:08  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.26  2010/03/10 23:09:57  wenger
 // Slight cleanup of STAR file version in session info.
 //
@@ -522,8 +525,18 @@ TEMP*/
 	    throw new S2DError("Illegal data type: " + dataType);
 	}
 
-        String outFileName = sessionDir + File.separator + name +
+	String directory = sessionDir + File.separator + name;
+        String outFileName = directory + File.separator + name +
 	  sessionSuffix + frameIndex + ".ds";
+
+	File dir = new File(directory);
+	if (!dir.isDirectory()) {
+	    // Note: stupid Java creates the directory here with 664
+	    // permissions; in spite of that, we seem to be able to
+	    // write into it.  The permissions are then fixed by
+	    // the set_modes script at the end.
+	    dir.mkdir();
+	}
 
 	try {
             FileWriter writer = S2DFileWriter.create(outFileName);

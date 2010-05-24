@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */15014*
+rm -r -f */15014*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -file test_data/bmr15014_3.str -name 15014 -do_pdb 2 \
@@ -50,16 +50,16 @@ set files = ( data_dir/15014ac1.dat \
 	html_dir/15014p1_large.html \
 	html_dir/15014y.html \
 	html_dir/15014y_large.html \
-	session_dir/15014ac1.ds \
-	session_dir/15014ac2.ds \
+	session_dir/15014/15014ac1.ds \
+	session_dir/15014/15014ac2.ds \
 	session_dir/15014acdd \
-	session_dir/15014am1.ds \
-	session_dir/15014as1.ds \
-	session_dir/15014c1.ds \
-	session_dir/15014d1.ds \
-	session_dir/15014hc1.ds \
-	session_dir/15014hn1.ds \
-	session_dir/15014p1.ds )
+	session_dir/15014/15014am1.ds \
+	session_dir/15014/15014as1.ds \
+	session_dir/15014/15014c1.ds \
+	session_dir/15014/15014d1.ds \
+	session_dir/15014/15014hc1.ds \
+	session_dir/15014/15014hn1.ds \
+	session_dir/15014/15014p1.ds )
 
 foreach file ($files)
   if (! -f $file) then

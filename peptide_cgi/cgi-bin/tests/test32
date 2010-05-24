@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */4081ur*
+rm -r -f */4081ur*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./vur -file test_data/bmr4081.str -name 4081ur \
@@ -39,15 +39,15 @@ set files = ( data_dir/4081urac1.dat \
 	html_unreleased/4081urp1.html \
 	html_unreleased/4081ury.html \
 	html_unreleased/4081ury_large.html \
-	session_dir/.unreleased/4081urac1.ds \
+	session_dir/.unreleased/4081ur/4081urac1.ds \
 	session_dir/.unreleased/4081uracdd \
-	session_dir/.unreleased/4081uram1.ds \
-	session_dir/.unreleased/4081uras1.ds \
-	session_dir/.unreleased/4081urc1.ds \
-	session_dir/.unreleased/4081urd1.ds \
-	session_dir/.unreleased/4081urhc1.ds \
-	session_dir/.unreleased/4081urhn1.ds \
-	session_dir/.unreleased/4081urp1.ds \
+	session_dir/.unreleased/4081ur/4081uram1.ds \
+	session_dir/.unreleased/4081ur/4081uras1.ds \
+	session_dir/.unreleased/4081ur/4081urc1.ds \
+	session_dir/.unreleased/4081ur/4081urd1.ds \
+	session_dir/.unreleased/4081ur/4081urhc1.ds \
+	session_dir/.unreleased/4081ur/4081urhn1.ds \
+	session_dir/.unreleased/4081ur/4081urp1.ds \
 	data_dir/4081urlacsc1.dat \
 	data_dir/4081urlacsc2.dat \
 	data_dir/4081urlacsc3.dat \

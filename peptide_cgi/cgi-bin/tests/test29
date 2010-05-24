@@ -8,7 +8,7 @@
 
 set result = 0
 
-rm -f */5246*
+rm -r -f */5246*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 5246 -do_pdb 1 -force -check_res_list -check_pct
@@ -100,26 +100,26 @@ set files = ( data_dir/5246am1.dat \
 	html_dir/5246y.html \
 	html_dir/5246y_large.html \
 	session_dir/5246acdd \
-	session_dir/5246am1.ds \
-	session_dir/5246am2.ds \
-	session_dir/5246am3.ds \
-	session_dir/5246am4.ds \
-	session_dir/5246as1.ds \
-	session_dir/5246as2.ds \
-	session_dir/5246as3.ds \
-	session_dir/5246as4.ds \
-	session_dir/5246c1.ds \
-	session_dir/5246c2.ds \
-	session_dir/5246c3.ds \
-	session_dir/5246c4.ds \
-	session_dir/5246d1.ds \
-	session_dir/5246d2.ds \
-	session_dir/5246d3.ds \
-	session_dir/5246d4.ds \
-	session_dir/5246p1.ds \
-	session_dir/5246p2.ds \
-	session_dir/5246p3.ds \
-	session_dir/5246p4.ds )
+	session_dir/5246/5246am1.ds \
+	session_dir/5246/5246am2.ds \
+	session_dir/5246/5246am3.ds \
+	session_dir/5246/5246am4.ds \
+	session_dir/5246/5246as1.ds \
+	session_dir/5246/5246as2.ds \
+	session_dir/5246/5246as3.ds \
+	session_dir/5246/5246as4.ds \
+	session_dir/5246/5246c1.ds \
+	session_dir/5246/5246c2.ds \
+	session_dir/5246/5246c3.ds \
+	session_dir/5246/5246c4.ds \
+	session_dir/5246/5246d1.ds \
+	session_dir/5246/5246d2.ds \
+	session_dir/5246/5246d3.ds \
+	session_dir/5246/5246d4.ds \
+	session_dir/5246/5246p1.ds \
+	session_dir/5246/5246p2.ds \
+	session_dir/5246/5246p3.ds \
+	session_dir/5246/5246p4.ds )
 
 foreach file ($files)
   if (! -f $file) then

@@ -14,8 +14,8 @@ if ($#argv > 0) then
   endif
 endif
 
-rm -f */test6_out*
-rm -f */*/test6_out*
+rm -r -f */test6_out*
+rm -r -f */*/test6_out*
 
 if ($noleech) then
   tests/test6_noleech
@@ -58,20 +58,20 @@ set files = ( data_dir/vis_server/test6_outac1.dat \
 	html_dir/test6_outp1.html \
 	html_dir/test6_outy.html \
 	html_dir/test6_outy_large.html \
-	session_dir/vis_server/test6_outac1.ds \
+	session_dir/vis_server/test6_out/test6_outac1.ds \
 	session_dir/vis_server/test6_outacdd \
-	session_dir/vis_server/test6_outas1.ds \
-	session_dir/vis_server/test6_outc1.ds \
-	session_dir/vis_server/test6_outcsr11.ds \
-	session_dir/vis_server/test6_outcsr21.ds \
-	session_dir/vis_server/test6_outcsr31.ds \
-	session_dir/vis_server/test6_outd1.ds \
-	session_dir/vis_server/test6_outhc1.ds \
-	session_dir/vis_server/test6_outhn1.ds \
-	session_dir/vis_server/test6_outp1.ds \
+	session_dir/vis_server/test6_out/test6_outas1.ds \
+	session_dir/vis_server/test6_out/test6_outc1.ds \
+	session_dir/vis_server/test6_out/test6_outcsr11.ds \
+	session_dir/vis_server/test6_out/test6_outcsr21.ds \
+	session_dir/vis_server/test6_out/test6_outcsr31.ds \
+	session_dir/vis_server/test6_out/test6_outd1.ds \
+	session_dir/vis_server/test6_out/test6_outhc1.ds \
+	session_dir/vis_server/test6_out/test6_outhn1.ds \
+	session_dir/vis_server/test6_out/test6_outp1.ds \
 	data_dir/vis_server/test6_outam1.dat \
 	html_dir/test6_outam1.html \
-	session_dir/vis_server/test6_outam1.ds \
+	session_dir/vis_server/test6_out/test6_outam1.ds \
 	html_dir/test6_outac1_large.html \
 	html_dir/test6_outam1_large.html \
 	html_dir/test6_outas1_large.html \

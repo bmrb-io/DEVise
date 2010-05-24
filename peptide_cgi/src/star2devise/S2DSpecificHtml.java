@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2009
+// (c) Copyright 2001-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2010/04/23 16:51:08  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.13.18.1  2010/04/08 18:45:41  wenger
 // Temporarily changed the Jmol page templates to use cmdport 6266 to
 // run with the 'test' DEVise server; also changed torsion angle
@@ -128,7 +131,8 @@ public class S2DSpecificHtml {
 	_title = title;
 
 	_dataSuffix = S2DUtils.dataType2Suffix(_dataType);
-        _replaceString1 = _name + _dataSuffix + _frameIndex;
+        _replaceString1 = _name + File.separator + _name + _dataSuffix +
+	  _frameIndex;
         _replaceString2 = _name;
 	String helpSuffix = _dataSuffix;
 	if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||

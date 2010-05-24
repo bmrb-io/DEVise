@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */test17_out*
+rm -r -f */test17_out*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -file test_data/bmr4267mod -name test17_out -do_pdb 1 -force \
@@ -67,31 +67,31 @@ set files = (data_dir/test17_outas1.dat \
 	html_dir/test17_outy.html \
 	html_dir/test17_outy_large.html \
 	session_dir/test17_outacdd \
-	session_dir/test17_outas1.ds \
-	session_dir/test17_outc1.ds \
-	session_dir/test17_outd1.ds \
-	session_dir/test17_outg1.ds \
-	session_dir/test17_outhc1.ds \
-	session_dir/test17_outhn1.ds \
-	session_dir/test17_outn1.ds \
-	session_dir/test17_outn2.ds \
-	session_dir/test17_outn3.ds \
-	session_dir/test17_outn4.ds \
-	session_dir/test17_outn5.ds \
-	session_dir/test17_outn6.ds \
-	session_dir/test17_outn7.ds \
-	session_dir/test17_outn8.ds \
-	session_dir/test17_outn9.ds \
-	session_dir/test17_outp1.ds \
-	session_dir/test17_outt11.ds \
-	session_dir/test17_outt12.ds \
-	session_dir/test17_outt13.ds \
-	session_dir/test17_outt21.ds \
-	session_dir/test17_outt22.ds \
-	session_dir/test17_outt23.ds \
+	session_dir/test17_out/test17_outas1.ds \
+	session_dir/test17_out/test17_outc1.ds \
+	session_dir/test17_out/test17_outd1.ds \
+	session_dir/test17_out/test17_outg1.ds \
+	session_dir/test17_out/test17_outhc1.ds \
+	session_dir/test17_out/test17_outhn1.ds \
+	session_dir/test17_out/test17_outn1.ds \
+	session_dir/test17_out/test17_outn2.ds \
+	session_dir/test17_out/test17_outn3.ds \
+	session_dir/test17_out/test17_outn4.ds \
+	session_dir/test17_out/test17_outn5.ds \
+	session_dir/test17_out/test17_outn6.ds \
+	session_dir/test17_out/test17_outn7.ds \
+	session_dir/test17_out/test17_outn8.ds \
+	session_dir/test17_out/test17_outn9.ds \
+	session_dir/test17_out/test17_outp1.ds \
+	session_dir/test17_out/test17_outt11.ds \
+	session_dir/test17_out/test17_outt12.ds \
+	session_dir/test17_out/test17_outt13.ds \
+	session_dir/test17_out/test17_outt21.ds \
+	session_dir/test17_out/test17_outt22.ds \
+	session_dir/test17_out/test17_outt23.ds \
 	data_dir/test17_outam1.dat \
 	html_dir/test17_outam1.html \
-	session_dir/test17_outam1.ds \
+	session_dir/test17_out/test17_outam1.ds \
 	html_dir/test17_outam1_large.html \
 	html_dir/test17_outas1_large.html \
 	html_dir/test17_outc1_large.html \

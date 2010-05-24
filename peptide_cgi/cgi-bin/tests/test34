@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */6521ur*
+rm -r -f */6521ur*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./vur -file test_data/bmr6521.str.nmrstr -name 6521ur -check_pct
@@ -56,24 +56,24 @@ set files = (data_dir/6521urac1.dat \
 	html_unreleased/6521urp2.html \
 	html_unreleased/6521ury.html \
 	html_unreleased/6521ury_large.html \
-	session_dir/.unreleased/6521urac1.ds \
-	session_dir/.unreleased/6521urac2.ds \
-	session_dir/.unreleased/6521urac3.ds \
-	session_dir/.unreleased/6521urac4.ds \
-	session_dir/.unreleased/6521urac5.ds \
-	session_dir/.unreleased/6521urac6.ds \
-	session_dir/.unreleased/6521urac7.ds \
+	session_dir/.unreleased/6521ur/6521urac1.ds \
+	session_dir/.unreleased/6521ur/6521urac2.ds \
+	session_dir/.unreleased/6521ur/6521urac3.ds \
+	session_dir/.unreleased/6521ur/6521urac4.ds \
+	session_dir/.unreleased/6521ur/6521urac5.ds \
+	session_dir/.unreleased/6521ur/6521urac6.ds \
+	session_dir/.unreleased/6521ur/6521urac7.ds \
 	session_dir/.unreleased/6521uracdd \
-	session_dir/.unreleased/6521uras1.ds \
-	session_dir/.unreleased/6521uras2.ds \
-	session_dir/.unreleased/6521urc1.ds \
-	session_dir/.unreleased/6521urc2.ds \
-	session_dir/.unreleased/6521urd1.ds \
-	session_dir/.unreleased/6521urd2.ds \
-	session_dir/.unreleased/6521urhn1.ds \
-	session_dir/.unreleased/6521urhn2.ds \
-	session_dir/.unreleased/6521urp1.ds \
-	session_dir/.unreleased/6521urp2.ds \
+	session_dir/.unreleased/6521ur/6521uras1.ds \
+	session_dir/.unreleased/6521ur/6521uras2.ds \
+	session_dir/.unreleased/6521ur/6521urc1.ds \
+	session_dir/.unreleased/6521ur/6521urc2.ds \
+	session_dir/.unreleased/6521ur/6521urd1.ds \
+	session_dir/.unreleased/6521ur/6521urd2.ds \
+	session_dir/.unreleased/6521ur/6521urhn1.ds \
+	session_dir/.unreleased/6521ur/6521urhn2.ds \
+	session_dir/.unreleased/6521ur/6521urp1.ds \
+	session_dir/.unreleased/6521ur/6521urp2.ds \
 	html_unreleased/6521urac1_large.html \
 	html_unreleased/6521urac2_large.html \
 	html_unreleased/6521urac3_large.html \

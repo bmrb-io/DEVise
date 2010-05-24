@@ -14,7 +14,7 @@ if ($#argv > 0) then
   endif
 endif
 
-rm -f */6318*
+rm -r -f */6318*
 
 # Process the sample Pistachio data.
 echo -n "Processing NMR-STAR for Pistachio data: "
@@ -60,15 +60,15 @@ set files = (data_dir/6318as1.dat \
 	html_dir/6318y.html \
 	html_dir/6318y_large.html \
 	session_dir/6318acdd \
-	session_dir/6318as1.ds \
-	session_dir/6318d1.ds \
-	session_dir/6318hc1.ds \
-	session_dir/6318hn1.ds \
-	session_dir/6318p1.ds \
-	session_dir/6318ps1.ds \
+	session_dir/6318/6318as1.ds \
+	session_dir/6318/6318d1.ds \
+	session_dir/6318/6318hc1.ds \
+	session_dir/6318/6318hn1.ds \
+	session_dir/6318/6318p1.ds \
+	session_dir/6318/6318ps1.ds \
 	data_dir/6318am1.dat \
 	html_dir/6318am1.html \
-	session_dir/6318am1.ds \
+	session_dir/6318/6318am1.ds \
 	html_dir/6318am1_large.html \
 	html_dir/6318as1_large.html \
 	html_dir/6318d1_large.html \
@@ -81,7 +81,7 @@ if ($doCoords) then
   set files = ($files \
 	data_dir/6318ac1.dat \
 	html_dir/6318ac1.html \
-	session_dir/6318ac1.ds)
+	session_dir/6318/6318ac1.ds)
 endif
 
 foreach file ($files)

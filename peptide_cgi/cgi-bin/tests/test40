@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */15028*
+rm -r -f */15028*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -file test_data/bmr15028_3.str -name 15028 -do_pdb 2 \
@@ -68,20 +68,20 @@ set files = ( data_dir/15028am1.dat \
 	html_dir/15028y.html \
 	html_dir/15028y_large.html \
 	session_dir/15028acdd \
-	session_dir/15028am1.ds \
-	session_dir/15028am2.ds \
-	session_dir/15028as1.ds \
-	session_dir/15028as2.ds \
-	session_dir/15028c1.ds \
-	session_dir/15028c2.ds \
-	session_dir/15028d1.ds \
-	session_dir/15028d2.ds \
-	session_dir/15028hc1.ds \
-	session_dir/15028hc2.ds \
-	session_dir/15028hn1.ds \
-	session_dir/15028hn2.ds \
-	session_dir/15028p1.ds \
-	session_dir/15028p2.ds )
+	session_dir/15028/15028am1.ds \
+	session_dir/15028/15028am2.ds \
+	session_dir/15028/15028as1.ds \
+	session_dir/15028/15028as2.ds \
+	session_dir/15028/15028c1.ds \
+	session_dir/15028/15028c2.ds \
+	session_dir/15028/15028d1.ds \
+	session_dir/15028/15028d2.ds \
+	session_dir/15028/15028hc1.ds \
+	session_dir/15028/15028hc2.ds \
+	session_dir/15028/15028hn1.ds \
+	session_dir/15028/15028hn2.ds \
+	session_dir/15028/15028p1.ds \
+	session_dir/15028/15028p2.ds )
 
 foreach file ($files)
   if (! -f $file) then

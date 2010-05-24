@@ -32,22 +32,22 @@ set files = (data_dir/vis_server/test13_outas1.dat \
 	html_dir/test13_outy.html \
 	html_dir/test13_outy_large.html \
 	session_dir/vis_server/test13_outacdd \
-	session_dir/vis_server/test13_outas1.ds \
-	session_dir/vis_server/test13_outc1.ds \
-	session_dir/vis_server/test13_outd1.ds \
-	session_dir/vis_server/test13_outg1.ds \
-	session_dir/vis_server/test13_outhc1.ds \
-	session_dir/vis_server/test13_outhn1.ds \
-	session_dir/vis_server/test13_outp1.ds \
-	session_dir/vis_server/test13_outt11.ds \
-	session_dir/vis_server/test13_outt12.ds \
-	session_dir/vis_server/test13_outt13.ds \
-	session_dir/vis_server/test13_outt21.ds \
-	session_dir/vis_server/test13_outt22.ds \
-	session_dir/vis_server/test13_outt23.ds \
+	session_dir/vis_server/test13_out/test13_outas1.ds \
+	session_dir/vis_server/test13_out/test13_outc1.ds \
+	session_dir/vis_server/test13_out/test13_outd1.ds \
+	session_dir/vis_server/test13_out/test13_outg1.ds \
+	session_dir/vis_server/test13_out/test13_outhc1.ds \
+	session_dir/vis_server/test13_out/test13_outhn1.ds \
+	session_dir/vis_server/test13_out/test13_outp1.ds \
+	session_dir/vis_server/test13_out/test13_outt11.ds \
+	session_dir/vis_server/test13_out/test13_outt12.ds \
+	session_dir/vis_server/test13_out/test13_outt13.ds \
+	session_dir/vis_server/test13_out/test13_outt21.ds \
+	session_dir/vis_server/test13_out/test13_outt22.ds \
+	session_dir/vis_server/test13_out/test13_outt23.ds \
 	html_dir/test13_outam1.html \
 	data_dir/vis_server/test13_outam1.dat \
-	session_dir/vis_server/test13_outam1.ds \
+	session_dir/vis_server/test13_out/test13_outam1.ds \
 	html_dir/test13_outam1_large.html \
 	html_dir/test13_outas1_large.html \
 	html_dir/test13_outc1_large.html \

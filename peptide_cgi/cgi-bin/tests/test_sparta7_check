@@ -56,21 +56,21 @@ set files = ( data_dir/15418am1.dat \
 	html_dir/15418y.html \
 	html_dir/15418y_large.html \
 	session_dir/15418acdd \
-	session_dir/15418am1.ds \
-	session_dir/15418am2.ds \
-	session_dir/15418as1.ds \
-	session_dir/15418as2.ds \
-	session_dir/15418c2.ds \
-	session_dir/15418d1.ds \
-	session_dir/15418d2.ds \
-	session_dir/15418hc1.ds \
-	session_dir/15418hc2.ds \
-	session_dir/15418hn1.ds \
-	session_dir/15418hn2.ds \
-	session_dir/15418p1.ds \
-	session_dir/15418p2.ds \
-	session_dir/15418sd1.ds \
-	session_dir/15418sd2.ds )
+	session_dir/15418/15418am1.ds \
+	session_dir/15418/15418am2.ds \
+	session_dir/15418/15418as1.ds \
+	session_dir/15418/15418as2.ds \
+	session_dir/15418/15418c2.ds \
+	session_dir/15418/15418d1.ds \
+	session_dir/15418/15418d2.ds \
+	session_dir/15418/15418hc1.ds \
+	session_dir/15418/15418hc2.ds \
+	session_dir/15418/15418hn1.ds \
+	session_dir/15418/15418hn2.ds \
+	session_dir/15418/15418p1.ds \
+	session_dir/15418/15418p2.ds \
+	session_dir/15418/15418sd1.ds \
+	session_dir/15418/15418sd2.ds )
 
 foreach file ($files)
   if (! -f $file) then

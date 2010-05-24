@@ -4,7 +4,7 @@
 
 set result = 0
 
-rm -f */5085*
+rm -r -f */5085*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -name 5085 -file test_data/bmr5085_3.str -force -check_pct

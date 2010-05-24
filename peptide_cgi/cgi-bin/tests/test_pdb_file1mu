@@ -4,8 +4,8 @@
 
 set result = 0
 
-rm -f */*/test_pdb_file1_out*
-rm -f */.*/test_pdb_file1_out*
+rm -r -f */*/test_pdb_file1_out*
+rm -r -f */.*/test_pdb_file1_out*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./make_uvd file=test_data/test_pdb_file1.str\&name=test_pdb_file1_out\&pdb_file=test_data/test_pdb_file1.cif.gz\&force=1

@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */15339*
+rm -r -f */15339*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -file test_data/sd15339.str -name 15339 -force -check_res_list \
@@ -49,14 +49,14 @@ set files = ( data_dir/15339am1.dat \
 	html_dir/15339y.html \
 	html_dir/15339y_large.html \
 	session_dir/15339acdd \
-	session_dir/15339am1.ds \
-	session_dir/15339as1.ds \
-	session_dir/15339c1.ds \
-	session_dir/15339d1.ds \
-	session_dir/15339hc1.ds \
-	session_dir/15339hn1.ds \
-	session_dir/15339p1.ds \
-	session_dir/15339sd1.ds )
+	session_dir/15339/15339am1.ds \
+	session_dir/15339/15339as1.ds \
+	session_dir/15339/15339c1.ds \
+	session_dir/15339/15339d1.ds \
+	session_dir/15339/15339hc1.ds \
+	session_dir/15339/15339hn1.ds \
+	session_dir/15339/15339p1.ds \
+	session_dir/15339/15339sd1.ds )
 	
 foreach file ($files)
   if (! -f $file) then

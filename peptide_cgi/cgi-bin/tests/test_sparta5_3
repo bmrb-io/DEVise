@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */16387*
+rm -r -f */16387*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -file test_data/bmr16387_3.str -name 16387 -force -check_res_list \

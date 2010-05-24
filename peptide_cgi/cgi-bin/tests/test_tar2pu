@@ -5,7 +5,7 @@
 
 set result = 0
 
-rm -f */tar_2kid*
+rm -r -f */tar_2kid*
 
 set url = 'http://restraintsgrid.bmrb.wisc.edu/NRG/MRGridServlet#63db_username=wattos1#38format=dihedral+angle#38mrblock_id=265523#38pdb_id=2kid#38request_type=block#38subtype=violation#38type=check'
 

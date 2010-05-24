@@ -7,7 +7,7 @@
 
 set result = 0
 
-rm -f */5838*
+rm -r -f */5838*
 
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -name 5838 -file test_data/bmr5838_3.str -do_pdb 1 -force

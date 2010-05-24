@@ -48,20 +48,20 @@ set files = ( data_dir/15303ac1.dat \
 	html_dir/15303p2_large.html \
 	html_dir/15303y.html \
 	html_dir/15303y_large.html \
-	session_dir/15303ac1.ds \
+	session_dir/15303/15303ac1.ds \
 	session_dir/15303acdd \
-	session_dir/15303am1.ds \
-	session_dir/15303am2.ds \
-	session_dir/15303as1.ds \
-	session_dir/15303as2.ds \
-	session_dir/15303c1.ds \
-	session_dir/15303d1.ds \
-	session_dir/15303d2.ds \
-	session_dir/15303hc1.ds \
-	session_dir/15303hn1.ds \
-	session_dir/15303hn2.ds \
-	session_dir/15303p1.ds \
-	session_dir/15303p2.ds )
+	session_dir/15303/15303am1.ds \
+	session_dir/15303/15303am2.ds \
+	session_dir/15303/15303as1.ds \
+	session_dir/15303/15303as2.ds \
+	session_dir/15303/15303c1.ds \
+	session_dir/15303/15303d1.ds \
+	session_dir/15303/15303d2.ds \
+	session_dir/15303/15303hc1.ds \
+	session_dir/15303/15303hn1.ds \
+	session_dir/15303/15303hn2.ds \
+	session_dir/15303/15303p1.ds \
+	session_dir/15303/15303p2.ds )
 
 foreach file ($files)
   if (! -f $file) then

@@ -5,8 +5,8 @@
 
 set result = 0
 
-rm */test8_out* >& /dev/null
-rm */*/test8_out* >& /dev/null
+rm -r */test8_out* >& /dev/null
+rm -r */*/test8_out* >& /dev/null
 
 echo -n "Processing NMR-STAR: "
 ./vsc -file ../cgi-bin/test_data/bmr4081.str -name test8_out -force \

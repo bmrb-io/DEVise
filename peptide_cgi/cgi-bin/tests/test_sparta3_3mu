@@ -5,8 +5,8 @@
 
 set result = 0
 
-rm -f */*/uvd16385*
-rm -f */.*/uvd16385*
+rm -r -f */*/uvd16385*
+rm -r -f */.*/uvd16385*
 
 echo -n "Processing NMR-STAR: "
 ./make_uvd file=test_data/sd16385_3.str\&name=uvd16385\&force=1\&sparta_file=test_data/bmr16385_3_sparta.str
@@ -49,14 +49,14 @@ set files = ( data_dir/uvd/uvd16385am1.dat \
 	html_dir/uvd/uvd16385y.html \
 	html_dir/uvd/uvd16385y_large.html \
 	session_dir/.uvd/uvd16385acdd \
-	session_dir/.uvd/uvd16385am1.ds \
-	session_dir/.uvd/uvd16385as1.ds \
-	session_dir/.uvd/uvd16385c1.ds \
-	session_dir/.uvd/uvd16385d1.ds \
-	session_dir/.uvd/uvd16385hc1.ds \
-	session_dir/.uvd/uvd16385hn1.ds \
-	session_dir/.uvd/uvd16385p1.ds \
-	session_dir/.uvd/uvd16385sd1.ds )
+	session_dir/.uvd/uvd16385/uvd16385am1.ds \
+	session_dir/.uvd/uvd16385/uvd16385as1.ds \
+	session_dir/.uvd/uvd16385/uvd16385c1.ds \
+	session_dir/.uvd/uvd16385/uvd16385d1.ds \
+	session_dir/.uvd/uvd16385/uvd16385hc1.ds \
+	session_dir/.uvd/uvd16385/uvd16385hn1.ds \
+	session_dir/.uvd/uvd16385/uvd16385p1.ds \
+	session_dir/.uvd/uvd16385/uvd16385sd1.ds )
 
 foreach file ($files)
   if (! -f $file) then

@@ -14,7 +14,7 @@ if ($#argv > 0) then
   endif
 endif
 
-rm -f */pistachio_example1*
+rm -r -f */pistachio_example1*
 
 # Process the sample Pistachio data.
 echo -n "Processing NMR-STAR for Pistachio data: "
@@ -47,15 +47,15 @@ set files = (data_dir/pistachio_example1as1.dat \
 	html_dir/pistachio_example1y.html \
 	html_dir/pistachio_example1y_large.html \
 	session_dir/pistachio_example1acdd \
-	session_dir/pistachio_example1as1.ds \
-	session_dir/pistachio_example1d1.ds \
-	session_dir/pistachio_example1hc1.ds \
-	session_dir/pistachio_example1hn1.ds \
-	session_dir/pistachio_example1p1.ds \
-	session_dir/pistachio_example1ps1.ds \
+	session_dir/pistachio_example1/pistachio_example1as1.ds \
+	session_dir/pistachio_example1/pistachio_example1d1.ds \
+	session_dir/pistachio_example1/pistachio_example1hc1.ds \
+	session_dir/pistachio_example1/pistachio_example1hn1.ds \
+	session_dir/pistachio_example1/pistachio_example1p1.ds \
+	session_dir/pistachio_example1/pistachio_example1ps1.ds \
 	data_dir/pistachio_example1am1.dat \
 	html_dir/pistachio_example1am1.html \
-	session_dir/pistachio_example1am1.ds \
+	session_dir/pistachio_example1/pistachio_example1am1.ds \
 	html_dir/pistachio_example1am1_large.html \
 	html_dir/pistachio_example1as1_large.html \
 	html_dir/pistachio_example1d1_large.html \

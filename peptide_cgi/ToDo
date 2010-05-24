@@ -579,6 +579,10 @@ Num Date        Status  Pri     Description
 				instead of drawing a line to each possible
 				"real" atom. (elu/wenger)
 
+136 5/18/10	ACTIVE	1	Be able to easily switch to related
+				visualizations within the JavaScreen.
+				(elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
