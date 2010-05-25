@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.177  2010/05/20 18:38:41  wenger
+// In the JavaScreen, you can now switch sessions without explicitly
+// closing the current one before opening the new one (to make it easier
+// to switch sessions in the new Peptide-CGI setup).
+//
 // Revision 1.176  2010/04/21 17:10:18  wenger
 // Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
 //
@@ -2475,7 +2480,7 @@ class SessionDlg extends Frame
     private DEViseButton okButton;
     private DEViseButton cancelButton;
     private String[] sessions = null;
-    private boolean[] sessionTypes = null;
+    private boolean[] isFiles = null;
     private String[] sessionNames = null;
 
     private boolean isShowing = false; // whether this dialog is showing
@@ -2635,6 +2640,12 @@ class SessionDlg extends Frame
 	            jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST +
 		      " {" + jsc.currentDir + "}");
                 } else { // a file
+		    // Remove BMRB visualization description, if there is
+		    // one (so we just have the actual file name).
+		    int descIndex = sessionName.indexOf(" (");
+		    if (descIndex != -1) {
+		        sessionName = sessionName.substring(0, descIndex);
+		    }
                     jsc.currentSession = sessionName;
 		    jsc.openSession(jsc.currentDir + "/" + sessionName);
                     close();
@@ -2658,22 +2669,27 @@ class SessionDlg extends Frame
         // need to correct for num < 1
         int number = (sessions.length - 1) / 3;
         sessionNames = new String[number];
-        sessionTypes = new boolean[number];
+	// Whether this is a file (as opposed to a directory).
+        isFiles = new boolean[number];
         String tmpstr = null;
         for (int i = 0; i < number; i++) {
             sessionNames[i] = sessions[i * 3 + 1];
             tmpstr = sessions[i * 3 + 2];
             if (tmpstr.equals("0")) {
-                sessionTypes[i] = true;
+                isFiles[i] = true;
             } else {
-                sessionTypes[i] = false;
+                isFiles[i] = false;
             }
         }
 
         fileList.removeAll();
 
         for (int i = 0; i < number; i++) {
-            if (sessionTypes[i]) {
+            if (isFiles[i]) {
+		String visType = DEViseUtils.getVisType(sessionNames[i]);
+		if (!visType.equals("")) {
+		    sessionNames[i] += " (" + visType + ")";
+	        }
                 fileList.add(sessionNames[i]);
             } else {
                 fileList.add("[" + sessionNames[i] + "]");

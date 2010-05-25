@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2006
+// (c) Copyright 2003-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2006/07/11 18:32:44  wenger
+// Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
+//
 // Revision 1.2  2005/12/06 20:00:20  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 // be the end of the V1_7b0_br branch.)
@@ -39,9 +42,24 @@ package JavaScreen;
 import  java.io.*;
 import  java.net.*;
 import  java.util.Date;
+import  java.util.Vector;
+import	java.util.regex.Pattern;
+import	java.util.regex.Matcher;
 
 public class DEViseUtils
 {
+    private static class VisTypeName {
+        public Pattern _p;
+	public String _type;
+
+	public VisTypeName(String regexp, String type) {
+	    _p = Pattern.compile(regexp);
+	    _type = type;
+	}
+    }
+
+    private static Vector _visTypes = null;
+
     public static void printAllThreads(String msg)
     {
 	int count = Thread.activeCount();
@@ -51,5 +69,81 @@ public class DEViseUtils
 	for (int index = 0; index < count2; index++) {
 	    System.out.println("  " + threads[index]);
 	}
+    }
+
+    // Convert a session name (from Peptide-CGI) to a visualization
+    // type.
+    public static String getVisType(String sessionName)
+    {
+	if (_visTypes == null) {
+	    initializeVisTypes();
+	}
+
+	for (int index = 0; index <  _visTypes.size(); index++) {
+	    VisTypeName vtn = (VisTypeName)_visTypes.elementAt(index);
+	    Matcher m = vtn._p.matcher(sessionName);
+	    if (m.matches()) {
+	        return vtn._type;
+	    }
+	}
+
+        return "";
+    }
+
+    private static void initializeVisTypes()
+    {
+        _visTypes = new Vector();
+
+	// Note: order is significant here, because we will stop checking
+	// as soon as we get a match.  So put the most "deterministic"
+	// strings first.
+	_visTypes.addElement(
+	  new VisTypeName(".*ac\\d+\\.ds", "atomic coordinates"));
+	_visTypes.addElement(
+	  new VisTypeName(".*dist\\d+\\.ds", "distance restraints"));
+	_visTypes.addElement(
+	  new VisTypeName(".*tar\\d+\\.ds", "torsion angle restraints"));
+	_visTypes.addElement(
+	  new VisTypeName(".*csr1\\d+\\.ds", "chem shift ref histogram"));
+	_visTypes.addElement(
+	  new VisTypeName(".*csr2\\d+\\.ds", "chem shift ref diffs"));
+	_visTypes.addElement(
+	  new VisTypeName(".*csr3\\d+\\.ds", "observed vs. calculated CS"));
+	_visTypes.addElement(
+	  new VisTypeName(".*lacs1\\.ds", "LACS (CA vs. CA-CB)"));
+	_visTypes.addElement(
+	  new VisTypeName(".*lacs2\\.ds", "LACS (CB vs. CA-CB)"));
+	_visTypes.addElement(
+	  new VisTypeName(".*lacs3\\.ds", "LACS (HA vs. CA-CB)"));
+	_visTypes.addElement(
+	  new VisTypeName(".*lacs4\\.ds", "LACS (CO vs. CA-CB)"));
+	_visTypes.addElement(
+	  new VisTypeName(".*sd\\d+\\.ds", "SPARTA chem shift deltas"));
+	_visTypes.addElement(
+	  new VisTypeName(".*as\\d+\\.ds", "all shifts"));
+	_visTypes.addElement(
+	  new VisTypeName(".*hn\\d+\\.ds", "1H-15N spectrum"));
+	_visTypes.addElement(
+	  new VisTypeName(".*hc\\d+\\.ds", "1H-13C spectrum"));
+	_visTypes.addElement(
+	  new VisTypeName(".*am\\d+\\.ds", "ambiguity codes"));
+	_visTypes.addElement(
+	  new VisTypeName(".*ps\\d+\\.ds", "assignment figure of merit"));
+	_visTypes.addElement(
+	  new VisTypeName(".*t1\\d+\\.ds", "T1 relaxation"));
+	_visTypes.addElement(
+	  new VisTypeName(".*t2\\d+\\.ds", "T2 relaxation"));
+	_visTypes.addElement(
+	  new VisTypeName(".*g\\d+\\.ds", "coupling constants"));
+	_visTypes.addElement(
+	  new VisTypeName(".*n\\d+\\.ds", "heteronuclear NOE"));
+	_visTypes.addElement(
+	  new VisTypeName(".*o\\d+\\.ds", "S2 order params"));
+	_visTypes.addElement(
+	  new VisTypeName(".*d\\d+\\.ds", "chemical shift deltas"));
+	_visTypes.addElement(
+	  new VisTypeName(".*c\\d+\\.ds", "chemical shift indexes"));
+	_visTypes.addElement(
+	  new VisTypeName(".*p\\d+\\.ds", "percent assigned"));
     }
 }
