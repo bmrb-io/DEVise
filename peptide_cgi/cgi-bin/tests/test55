@@ -38,7 +38,7 @@ set files = ( data_dir/6730as1.dat \
 	html_dir/6730p1_large.html \
 	html_dir/6730y.html \
 	html_dir/6730y_large.html \
-	session_dir/6730acdd \
+	session_dir/6730/6730acdd \
 	session_dir/6730/6730as1.ds \
 	session_dir/6730/6730c1.ds \
 	session_dir/6730/6730d1.ds \

@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2010/05/24 20:06:15  wenger
+// Changed Peptide-CGI to put all sessions for a given entry in a
+// subdirectory, and use the JSA instead of the JSB, so it's possible to
+// switch between related sessions in the JavaScreen (see to-do 136).
+// (Note: using the JSA is also a first step in allowing arbitrary
+// re-sizing.)
+//
 // Revision 1.27  2010/04/23 16:51:08  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
 //
@@ -712,7 +719,7 @@ TEMP*/
 	}
 
 	BufferedReader reader = new BufferedReader(new FileReader(
-	  sessionDir + File.separator + name +
+	  sessionDir + File.separator + name + File.separator + name +
 	  S2DNames.ATOMIC_COORD_DATA_DEF));
 
 	 String line;

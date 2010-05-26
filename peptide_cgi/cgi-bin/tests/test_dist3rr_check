@@ -54,7 +54,7 @@ set files = ( data_dir/15209am1.dat \
 	html_dir/15209tmp1y_large.html \
 	html_dir/15209y.html \
 	html_dir/15209y_large.html \
-	session_dir/15209acdd \
+	session_dir/15209/15209acdd \
 	session_dir/15209/15209am1.ds \
 	session_dir/15209/15209am2.ds \
 	session_dir/15209/15209as1.ds \

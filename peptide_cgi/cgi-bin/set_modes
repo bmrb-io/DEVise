@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001
+#  (c) Copyright 2001-2010
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -23,10 +23,11 @@
 
 ############################################################
 
-if ($#argv == 1) then
-  set accNum = $1
+if ($#argv == 2) then
+  set name = $1
+  set is_uvd = $2
 else
-  echo "Usage: set_modes <accession number>"
+  echo "Usage: set_modes <name> <is_uvd>"
   exit
 endif
 
@@ -36,6 +37,25 @@ if (-e $outfile) then
 endif
 echo set_modes arguments: $* > $outfile
 
-chmod 644 data_dir/$accNum* session_dir/$accNum* html_dir/$accNum* \
-  data_dir/vis_server/$accNum* session_dir/vis_server/$accNum* >>& $outfile
-chmod 755 session_dir/$accNum
+if ($is_uvd) then
+  set sess_dir = "session_dir/.uvd"
+  set data_dir = "data_dir/uvd"
+  set html_dir = "html_dir/uvd"
+else
+  set sess_dir = "session_dir"
+  set data_dir = "data_dir"
+  set html_dir = "html_dir"
+endif
+
+# Make sure the session file directory has correct permissions, since
+# Java creates directories with 644 permissions(!).
+if (-e $sess_dir/$name) then
+  chmod 755 $sess_dir/$name >>& outfile
+  chmod 644 $sess_dir/$name/$name* $data_dir/$name* >>& outfile
+endif
+if (-e session_dir/vis_server/$name) then
+  chmod 755 session_dir/vis_server/$name >>& outfile
+  chmod 644 session_dir/vis_server/$name/$name* \
+    data_dir/vis_server/$name* >>& outfile
+endif
+chmod 644 $html_dir/$name* >>& outfile

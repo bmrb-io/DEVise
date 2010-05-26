@@ -49,7 +49,7 @@ set files = ( data_dir/uvd/test50_outam1.dat \
 	html_dir/uvd/test50_outps1_large.html \
 	html_dir/uvd/test50_outy.html \
 	html_dir/uvd/test50_outy_large.html \
-	session_dir/.uvd/test50_outacdd \
+	session_dir/.uvd/test50_out/test50_outacdd \
 	session_dir/.uvd/test50_out/test50_outam1.ds \
 	session_dir/.uvd/test50_out/test50_outas1.ds \
 	session_dir/.uvd/test50_out/test50_outc1.ds \

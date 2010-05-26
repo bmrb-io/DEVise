@@ -46,7 +46,7 @@ set files = (data_dir/vis_server/test12_outac1.dat \
 	html_dir/test12_outy.html \
 	html_dir/test12_outy_large.html \
 	session_dir/vis_server/test12_out/test12_outac1.ds \
-	session_dir/vis_server/test12_outacdd \
+	session_dir/vis_server/test12_out/test12_outacdd \
 	session_dir/vis_server/test12_out/test12_outas1.ds \
 	session_dir/vis_server/test12_out/test12_outc1.ds \
 	session_dir/vis_server/test12_out/test12_outcsr11.ds \

@@ -81,7 +81,7 @@ set files = ( data_dir/4310ac1.dat \
 	html_dir/4310y.html \
 	html_dir/4310y_large.html \
 	session_dir/4310/4310ac1.ds \
-	session_dir/4310acdd \
+	session_dir/4310/4310acdd \
 	session_dir/4310/4310am1.ds \
 	session_dir/4310/4310am2.ds \
 	session_dir/4310/4310as1.ds \

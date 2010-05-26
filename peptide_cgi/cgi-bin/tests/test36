@@ -35,7 +35,7 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	html_dir/lacs_example1t12.html html_dir/lacs_example1t13.html html_dir/lacs_example1t21.html \
 	html_dir/lacs_example1t22.html html_dir/lacs_example1t23.html \
 	html_dir/lacs_example1y.html html_dir/lacs_example1y_large.html \
-	session_dir/lacs_example1acdd \
+	session_dir/lacs_example1/lacs_example1acdd \
 	session_dir/lacs_example1/lacs_example1as1.ds session_dir/lacs_example1/lacs_example1c1.ds session_dir/lacs_example1/lacs_example1d1.ds \
 	session_dir/lacs_example1/lacs_example1g1.ds session_dir/lacs_example1/lacs_example1hn1.ds session_dir/lacs_example1/lacs_example1n1.ds \
 	session_dir/lacs_example1/lacs_example1n2.ds session_dir/lacs_example1/lacs_example1n3.ds session_dir/lacs_example1/lacs_example1n4.ds \

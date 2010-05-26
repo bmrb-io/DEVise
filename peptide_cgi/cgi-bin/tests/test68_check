@@ -49,7 +49,7 @@ set files = ( data_dir/15083ac1.dat \
 	html_dir/15083y_large.html \
 	session_dir/15083/15083ac1.ds \
 	session_dir/15083/15083ac2.ds \
-	session_dir/15083acdd \
+	session_dir/15083/15083acdd \
 	session_dir/15083/15083am3.ds \
 	session_dir/15083/15083as1.ds \
 	session_dir/15083/15083as2.ds \

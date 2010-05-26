@@ -43,7 +43,7 @@ set files = ( data_dir/test_nat_outam1.dat \
 	html_dir/test_nat_outp1_large.html \
 	html_dir/test_nat_outy.html \
 	html_dir/test_nat_outy_large.html \
-	session_dir/test_nat_outacdd \
+	session_dir/test_nat_out/test_nat_outacdd \
 	session_dir/test_nat_out/test_nat_outam1.ds \
 	session_dir/test_nat_out/test_nat_outas1.ds \
 	session_dir/test_nat_out/test_nat_outc1.ds \

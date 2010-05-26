@@ -116,7 +116,7 @@ set files = ( data_dir/4267_2entam1.dat \
 	html_dir/4267_2entt24_large.html \
 	html_dir/4267_2enty.html \
 	html_dir/4267_2enty_large.html \
-	session_dir/4267_2entacdd \
+	session_dir/4267_2ent/4267_2entacdd \
 	session_dir/4267_2ent/4267_2entam1.ds \
 	session_dir/4267_2ent/4267_2entam2.ds \
 	session_dir/4267_2ent/4267_2entas1.ds \

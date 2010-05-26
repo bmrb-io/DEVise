@@ -66,7 +66,7 @@ set files = (data_dir/test17_outas1.dat \
 	html_dir/test17_outt23.html \
 	html_dir/test17_outy.html \
 	html_dir/test17_outy_large.html \
-	session_dir/test17_outacdd \
+	session_dir/test17_out/test17_outacdd \
 	session_dir/test17_out/test17_outas1.ds \
 	session_dir/test17_out/test17_outc1.ds \
 	session_dir/test17_out/test17_outd1.ds \

@@ -39,7 +39,7 @@ set files = (data_dir/4974ac1.dat data_dir/4974as1.dat data_dir/4974c1.dat \
 	html_dir/4974csr1.html html_dir/4974d1.html html_dir/4974hn1.html \
 	html_dir/4974p1.html html_dir/4974tmp1y.html \
 	html_dir/4974y.html html_dir/4974y_large.html \
-	session_dir/4974/4974ac1.ds session_dir/4974acdd session_dir/4974/4974as1.ds \
+	session_dir/4974/4974ac1.ds session_dir/4974/4974acdd session_dir/4974/4974as1.ds \
 	session_dir/4974/4974c1.ds session_dir/4974/4974csr1.ds session_dir/4974/4974d1.ds \
 	session_dir/4974/4974hn1.ds session_dir/4974/4974p1.ds \
 	data_dir/4974am1.dat \

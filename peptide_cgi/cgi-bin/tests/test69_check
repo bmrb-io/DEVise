@@ -51,7 +51,7 @@ set files = ( \
 	html_dir/15437y.html \
 	html_dir/15437y_large.html \
 	#TEMP session_dir/15437/15437ac1.ds \
-	session_dir/15437acdd \
+	session_dir/15437/15437acdd \
 	session_dir/15437/15437am1.ds \
 	session_dir/15437/15437as1.ds \
 	session_dir/15437/15437c1.ds \

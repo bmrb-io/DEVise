@@ -100,7 +100,7 @@ set files = ( data_dir/4267ac1.dat \
 	html_dir/4267y_large.html \
 	session_dir/4267/4267ac1.ds \
 	session_dir/4267/4267ac2.ds \
-	session_dir/4267acdd \
+	session_dir/4267/4267acdd \
 	session_dir/4267/4267am1.ds \
 	session_dir/4267/4267as1.ds \
 	session_dir/4267/4267c1.ds \

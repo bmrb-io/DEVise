@@ -116,7 +116,7 @@ set files = (data_dir/4970md.dat \
 	html_dir/4970t29.html \
 	html_dir/4970y.html \
 	html_dir/4970y_large.html \
-	session_dir/4970acdd \
+	session_dir/4970/4970acdd \
 	session_dir/4970/4970n1.ds \
 	session_dir/4970/4970n2.ds \
 	session_dir/4970/4970n3.ds \

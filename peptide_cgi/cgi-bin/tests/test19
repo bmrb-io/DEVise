@@ -59,7 +59,7 @@ set files = (data_dir/6318as1.dat \
 	html_dir/6318ps1.html \
 	html_dir/6318y.html \
 	html_dir/6318y_large.html \
-	session_dir/6318acdd \
+	session_dir/6318/6318acdd \
 	session_dir/6318/6318as1.ds \
 	session_dir/6318/6318d1.ds \
 	session_dir/6318/6318hc1.ds \

@@ -37,7 +37,7 @@ set files = ( data_dir/5076ac1.dat data_dir/5076as1.dat data_dir/5076as2.dat \
 	html_dir/5076t13.html html_dir/5076t14.html html_dir/5076t15.html \
 	html_dir/5076t16.html html_dir/5076y.html html_dir/5076y_large.html \
 	session_dir/5076/5076ac1.ds \
-	session_dir/5076acdd session_dir/5076/5076as1.ds session_dir/5076/5076as2.ds \
+	session_dir/5076/5076acdd session_dir/5076/5076as1.ds session_dir/5076/5076as2.ds \
 	session_dir/5076/5076as3.ds session_dir/5076/5076d1.ds session_dir/5076/5076d2.ds \
 	session_dir/5076/5076d3.ds session_dir/5076/5076g1.ds session_dir/5076/5076g2.ds \
 	session_dir/5076/5076g3.ds session_dir/5076/5076hn1.ds session_dir/5076/5076hn2.ds \

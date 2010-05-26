@@ -10,7 +10,7 @@ set files = (data_dir/4096ac1.dat data_dir/4096as1.dat data_dir/4096c1.dat \
 	html_dir/4096p1.html html_dir/4096t11.html html_dir/4096t21.html \
 	html_dir/4096t22.html html_dir/4096y.html html_dir/4096y_large.html \
 	session_dir/4096/4096ac1.ds \
-	session_dir/4096acdd session_dir/4096/4096as1.ds session_dir/4096/4096c1.ds \
+	session_dir/4096/4096acdd session_dir/4096/4096as1.ds session_dir/4096/4096c1.ds \
 	session_dir/4096/4096d1.ds session_dir/4096/4096g1.ds session_dir/4096/4096hn1.ds \
 	session_dir/4096/4096n1.ds session_dir/4096/4096p1.ds session_dir/4096/4096t11.ds \
 	session_dir/4096/4096t21.ds session_dir/4096/4096t22.ds \

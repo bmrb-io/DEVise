@@ -99,7 +99,7 @@ set files = ( data_dir/5246am1.dat \
 	html_dir/5246p4_large.html \
 	html_dir/5246y.html \
 	html_dir/5246y_large.html \
-	session_dir/5246acdd \
+	session_dir/5246/5246acdd \
 	session_dir/5246/5246am1.ds \
 	session_dir/5246/5246am2.ds \
 	session_dir/5246/5246am3.ds \

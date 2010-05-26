@@ -40,7 +40,7 @@ set files = ( data_dir/4081urac1.dat \
 	html_unreleased/4081ury.html \
 	html_unreleased/4081ury_large.html \
 	session_dir/.unreleased/4081ur/4081urac1.ds \
-	session_dir/.unreleased/4081uracdd \
+	session_dir/.unreleased/4081ur/4081uracdd \
 	session_dir/.unreleased/4081ur/4081uram1.ds \
 	session_dir/.unreleased/4081ur/4081uras1.ds \
 	session_dir/.unreleased/4081ur/4081urc1.ds \

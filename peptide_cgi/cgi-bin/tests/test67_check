@@ -19,7 +19,7 @@ set files = ( data_dir/15080ac1.dat \
 	html_dir/15080y_large.html \
 	session_dir/15080/15080ac1.ds \
 	session_dir/15080/15080ac2.ds \
-	session_dir/15080acdd \
+	session_dir/15080/15080acdd \
 	session_dir/15080/15080as1.ds \
 	session_dir/15080/15080d1.ds )
 

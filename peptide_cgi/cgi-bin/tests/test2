@@ -78,7 +78,7 @@ set files = (data_dir/vis_server/test2_outac1.dat \
 	html_dir/test2_outy_large.html \
 	session_dir/vis_server/test2_out/test2_outac1.ds \
 	session_dir/vis_server/test2_out/test2_outac2.ds \
-	session_dir/vis_server/test2_outacdd \
+	session_dir/vis_server/test2_out/test2_outacdd \
 	session_dir/vis_server/test2_out/test2_outas1.ds \
 	session_dir/vis_server/test2_out/test2_outc1.ds \
 	session_dir/vis_server/test2_out/test2_outd1.ds \

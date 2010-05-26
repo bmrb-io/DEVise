@@ -42,7 +42,7 @@ set files = ( data_dir/4867ac1.dat \
 	html_dir/4867y_large.html \
 	session_dir/4867/4867ac1.ds \
 	session_dir/4867/4867ac2.ds \
-	session_dir/4867acdd \
+	session_dir/4867/4867acdd \
 	session_dir/4867/4867am1.ds \
 	session_dir/4867/4867as1.ds \
 	session_dir/4867/4867as2.ds \

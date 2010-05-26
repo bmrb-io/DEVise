@@ -63,7 +63,7 @@ set files = (data_dir/6521urac1.dat \
 	session_dir/.unreleased/6521ur/6521urac5.ds \
 	session_dir/.unreleased/6521ur/6521urac6.ds \
 	session_dir/.unreleased/6521ur/6521urac7.ds \
-	session_dir/.unreleased/6521uracdd \
+	session_dir/.unreleased/6521ur/6521uracdd \
 	session_dir/.unreleased/6521ur/6521uras1.ds \
 	session_dir/.unreleased/6521ur/6521uras2.ds \
 	session_dir/.unreleased/6521ur/6521urc1.ds \

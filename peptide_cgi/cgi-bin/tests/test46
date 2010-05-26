@@ -66,7 +66,7 @@ set files = ( data_dir/uvd/test46_outam1.dat \
 	html_dir/uvd/test46_outt23_large.html \
 	html_dir/uvd/test46_outy.html \
 	html_dir/uvd/test46_outy_large.html \
-	session_dir/.uvd/test46_outacdd \
+	session_dir/.uvd/test46_out/test46_outacdd \
 	session_dir/.uvd/test46_out/test46_outam1.ds \
 	session_dir/.uvd/test46_out/test46_outas1.ds \
 	session_dir/.uvd/test46_out/test46_outc1.ds \

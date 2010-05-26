@@ -17,7 +17,7 @@ set files = (data_dir/5153ac1.dat \
 	html_dir/5153y_large.html \
 	session_dir/5153/5153ac1.ds \
 	session_dir/5153/5153ac4.ds \
-	session_dir/5153acdd \
+	session_dir/5153/5153acdd \
 	session_dir/5153/5153n1.ds \
 	session_dir/5153/5153o1.ds \
 	session_dir/5153/5153t11.ds \

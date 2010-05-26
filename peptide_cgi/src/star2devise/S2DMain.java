@@ -1,3 +1,6 @@
+//TEMPTEMP -- need to delete all sessions when doing "main" processing...
+//TEMPTEMP -- fix "large" link problem (see email) -- add check to a test...
+//TEMPTEMP -- make sure this won't break security for the vis server...
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2000-2010
@@ -21,6 +24,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.199  2010/05/24 20:06:15  wenger
+// Changed Peptide-CGI to put all sessions for a given entry in a
+// subdirectory, and use the JSA instead of the JSB, so it's possible to
+// switch between related sessions in the JavaScreen (see to-do 136).
+// (Note: using the JSA is also a first step in allowing arbitrary
+// re-sizing.)
+//
 // Revision 1.198  2010/05/10 21:24:49  wenger
 // Fixed bug 097 (added Google Analytics scripts to histogram pages).
 //
@@ -3374,9 +3384,8 @@ public class S2DMain {
 	if (_runScripts) {
 	    try {
 	        Runtime currentRT = Runtime.getRuntime();
-		String directory = _isUvd ? "uvd/" : "";
 	        Process ps = currentRT.exec("." + File.separator +
-		  "set_modes " + directory + _name);
+		  "set_modes " + _name + " " + (_isUvd ? "1" : "0"));
 	        ps.waitFor();
 	        int result = ps.exitValue();
 	        if (result != 0) {
@@ -3952,7 +3961,8 @@ public class S2DMain {
 
 	try {
 	    Writer writer = S2DFileWriter.create(_sessionDir +
-	      File.separator + _name + S2DNames.ATOMIC_COORD_DATA_DEF);
+	      File.separator + _name + File.separator + _name +
+	      S2DNames.ATOMIC_COORD_DATA_DEF);
 	    S2DSession.write3DDataSources(writer, _dataSets);
 	    writer.close();
 	} catch (IOException ex) {

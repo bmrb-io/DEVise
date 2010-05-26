@@ -33,7 +33,7 @@ set files = (data_dir/6722am1.dat \
 	html_dir/6722p1.html \
 	html_dir/6722y.html \
 	html_dir/6722y_large.html \
-	session_dir/6722acdd \
+	session_dir/6722/6722acdd \
 	session_dir/6722/6722am1.ds \
 	session_dir/6722/6722as1.ds \
 	session_dir/6722/6722d1.ds \

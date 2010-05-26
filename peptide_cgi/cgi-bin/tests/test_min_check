@@ -27,7 +27,7 @@ set files = ( data_dir/uvd/test_min_outam1.dat \
 	html_dir/uvd/test_min_outp1_large.html \
 	html_dir/uvd/test_min_outy.html \
 	html_dir/uvd/test_min_outy_large.html \
-	session_dir/.uvd/test_min_outacdd \
+	session_dir/.uvd/test_min_out/test_min_outacdd \
 	session_dir/.uvd/test_min_out/test_min_outam1.ds \
 	session_dir/.uvd/test_min_out/test_min_outas1.ds \
 	session_dir/.uvd/test_min_out/test_min_outc1.ds \

@@ -35,7 +35,7 @@ set files = (data_dir/vis_server/test7_outac1.dat \
 	html_dir/test7_outy.html \
 	html_dir/test7_outy_large.html \
 	session_dir/vis_server/test7_out/test7_outac1.ds \
-	session_dir/vis_server/test7_outacdd \
+	session_dir/vis_server/test7_out/test7_outacdd \
 	session_dir/vis_server/test7_out/test7_outg1.ds \
 	session_dir/vis_server/test7_out/test7_outn1.ds \
 	session_dir/vis_server/test7_out/test7_outt11.ds \

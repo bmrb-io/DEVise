@@ -36,7 +36,7 @@ set files = (data_dir/simple_pistachioas1.dat \
 	html_dir/simple_pistachiops1.html \
 	html_dir/simple_pistachioy.html \
 	html_dir/simple_pistachioy_large.html \
-	session_dir/simple_pistachioacdd \
+	session_dir/simple_pistachio/simple_pistachioacdd \
 	session_dir/simple_pistachio/simple_pistachioas1.ds \
 	session_dir/simple_pistachio/simple_pistachiod1.ds \
 	session_dir/simple_pistachio/simple_pistachiohc1.ds \

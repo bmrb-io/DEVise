@@ -36,7 +36,7 @@ set files = ( data_dir/4020ac1.dat \
 	html_dir/4020y.html \
 	html_dir/4020y_large.html \
 	session_dir/4020/4020ac1.ds \
-	session_dir/4020acdd \
+	session_dir/4020/4020acdd \
 	session_dir/4020/4020am1.ds \
 	session_dir/4020/4020as1.ds \
 	session_dir/4020/4020c1.ds \

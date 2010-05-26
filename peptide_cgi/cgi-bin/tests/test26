@@ -49,7 +49,7 @@ set files = (data_dir/abcdac1.dat data_dir/abcdas1.dat data_dir/abcdc1.dat \
 	html_dir/abcdt12.html html_dir/abcdt13.html html_dir/abcdt21.html \
 	html_dir/abcdt22.html html_dir/abcdt23.html \
 	html_dir/abcdy.html html_dir/abcdy_large.html \
-	session_dir/abcd/abcdac1.ds session_dir/abcdacdd \
+	session_dir/abcd/abcdac1.ds session_dir/abcd/abcdacdd \
 	session_dir/abcd/abcdas1.ds session_dir/abcd/abcdc1.ds session_dir/abcd/abcdd1.ds \
 	session_dir/abcd/abcdg1.ds session_dir/abcd/abcdhn1.ds session_dir/abcd/abcdn1.ds \
 	session_dir/abcd/abcdn2.ds session_dir/abcd/abcdn3.ds session_dir/abcd/abcdn4.ds \
