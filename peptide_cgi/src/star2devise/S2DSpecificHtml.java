@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2010/05/24 20:06:15  wenger
+// Changed Peptide-CGI to put all sessions for a given entry in a
+// subdirectory, and use the JSA instead of the JSB, so it's possible to
+// switch between related sessions in the JavaScreen (see to-do 136).
+// (Note: using the JSA is also a first step in allowing arbitrary
+// re-sizing.)
+//
 // Revision 1.14  2010/04/23 16:51:08  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
 //
@@ -98,13 +105,17 @@ public class S2DSpecificHtml {
     protected String _title;
     protected String _dataSuffix;
 
-    private static final String searchString1 = "4264d1";
+    private static final String searchString1 = "4264d1.ds";
+    private static final String searchString1a = "4264d1_large.html";
+    private static final String searchString1b = "4264d1.html";
     private static final String searchString2 = "bmr4264.str";
     private static final String searchString3 = "help_d.html";
     private static final String searchString4 = "Dummy title";
     private static final String searchString5 = "<p>Dummy details</p>";
 
     private String _replaceString1;
+    private String _replaceString1a;
+    private String _replaceString1b;
     private String _replaceString2;
     private String _replaceString3;
     private String _replaceString4;
@@ -132,7 +143,12 @@ public class S2DSpecificHtml {
 
 	_dataSuffix = S2DUtils.dataType2Suffix(_dataType);
         _replaceString1 = _name + File.separator + _name + _dataSuffix +
-	  _frameIndex;
+	  _frameIndex + ".ds";
+        _replaceString1a =  _name + _dataSuffix +
+	  _frameIndex + "_large.html";
+        _replaceString1b =  _name + _dataSuffix +
+	  _frameIndex + ".html";
+
         _replaceString2 = _name;
 	String helpSuffix = _dataSuffix;
 	if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
@@ -221,6 +237,10 @@ public class S2DSpecificHtml {
 	String line = inLine;
 	line = S2DUtils.replace(line, searchString1,
 	  _replaceString1);
+	line = S2DUtils.replace(line, searchString1a,
+	  _replaceString1a);
+	line = S2DUtils.replace(line, searchString1b,
+	  _replaceString1b);
 	line = S2DUtils.replace(line, searchString2,
 	  _replaceString2);
 	line = S2DUtils.replace(line, searchString3,

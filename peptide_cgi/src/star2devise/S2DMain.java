@@ -1,6 +1,5 @@
-//TEMPTEMP -- need to delete all sessions when doing "main" processing...
-//TEMPTEMP -- fix "large" link problem (see email) -- add check to a test...
-//TEMPTEMP -- make sure this won't break security for the vis server...
+// TEMPTEMP -- need to delete all sessions when doing "main" processing...
+// TEMPTEMP -- make sure this won't break security for the vis server...
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2000-2010
@@ -24,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.200  2010/05/26 15:29:43  wenger
+// Moved acdd files to entry-specific subdirectories and changed tests
+// accordingly; fixed some problems with set_modes.
+//
 // Revision 1.199  2010/05/24 20:06:15  wenger
 // Changed Peptide-CGI to put all sessions for a given entry in a
 // subdirectory, and use the JSA instead of the JSB, so it's possible to
@@ -1276,7 +1279,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.2x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.2x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

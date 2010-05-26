@@ -210,3 +210,9 @@ set line = 'document.write(unescape('
 source tests/check4line
 set line = 'var pageTracker = _gat._getTracker("UA-10448758-1");'
 source tests/check4line
+set line = '<a href="4267d1_large.html">Larger view</a>'
+source tests/check4line
+
+set file = "html_dir/4267d1_large.html"
+set line = '<a href="4267d1.html">Smaller view</a>'
+source tests/check4line
