@@ -1,5 +1,3 @@
-// TEMPTEMP -- need to delete all sessions when doing "main" processing...
-// TEMPTEMP -- make sure this won't break security for the vis server...
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2000-2010
@@ -23,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.201  2010/05/26 16:05:22  wenger
+// Fixed problems with incorrect links to different-size visualization
+// pages in visualization-specific html pages.
+//
 // Revision 1.200  2010/05/26 15:29:43  wenger
 // Moved acdd files to entry-specific subdirectories and changed tests
 // accordingly; fixed some problems with set_modes.
@@ -3009,6 +3011,12 @@ public class S2DMain {
         _currentFrameIndex = 1;
 
 	//
+	// Delete any existing session files, so the user can't change
+	// to invalid ones in the JavaScreen.
+	//
+        deleteSessions();
+
+	//
 	// Create the summary HTML file.
 	//
 	S2DNmrStarIfc masterStar = null;
@@ -3397,6 +3405,28 @@ public class S2DMain {
 	        }
 	    } catch (Exception ex) {
 	        System.err.println("Error setting file permissions: " +
+	          ex.toString());
+	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Delete any existing sessions for the current entry.
+    private void deleteSessions()
+    {
+	if (_runScripts) {
+	    try {
+	        Runtime currentRT = Runtime.getRuntime();
+	        Process ps = currentRT.exec("." + File.separator +
+		  "delete_sessions " + _name + " " + (_isUvd ? "1" : "0"));
+	        ps.waitFor();
+	        int result = ps.exitValue();
+	        if (result != 0) {
+	            throw new S2DWarning("Non-zero exit value from " +
+		      "delete_sessions; see tmp/delete_sessions.out");
+	        }
+	    } catch (Exception ex) {
+	        System.err.println("Error deleting old session files: " +
 	          ex.toString());
 	    }
 	}
