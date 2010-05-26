@@ -3980,8 +3980,9 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			(wenger)
 			(Fixed by wenger, 12/8/06.)
 
-933 1/30/06	OPEN	JS/DEVise: JS shows 4096acdd as a session file.
+933 1/30/06	WORK	JS/DEVise: JS shows 4096acdd as a session file.
 			(wenger)
+			(Workaround in JS client by wenger, 5/26/10.)
 
 934 2/23/06	OPEN	JS/Jmol: the Jmol view sometimes shows the "busy"
 			mouse cursor when it shouldn't. (wenger)

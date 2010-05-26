@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.178  2010/05/25 22:19:16  wenger
+// The JavaScreen now shows BMRB visualization type along with the
+// filename in the 'open session' dialog.
+//
 // Revision 1.177  2010/05/20 18:38:41  wenger
 // In the JavaScreen, you can now switch sessions without explicitly
 // closing the current one before opening the new one (to make it easier
@@ -2685,6 +2689,10 @@ class SessionDlg extends Frame
         fileList.removeAll();
 
         for (int i = 0; i < number; i++) {
+	    // Workaround for DEVise/JS bug 933.
+	    if (sessionNames[i].endsWith("acdd")) {
+	        continue;
+	    }
             if (isFiles[i]) {
 		String visType = DEViseUtils.getVisType(sessionNames[i]);
 		if (!visType.equals("")) {
