@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.51  2007/06/27 17:48:00  wenger
+// Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
+// the toolbar stuff, but not the fixes for the "obscured tooltips"
+// problem, which are still in progress).
+//
 // Revision 1.50  2007/04/20 19:42:36  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -227,6 +232,7 @@ public class js extends JFrame
 	"  -playbackoriginal: play back client log file at original speed\n" +
 	  "    (default: false)\n" +
 	"  -playbackdisplayoff: turn off display during command log playback\n" +
+	"  -hidebmrbsess: hide BMRB session names if the vis type is recognized\n" + 
 	"  -version: print the version and exit\n" +
 	"  -usage: print this message and exit");
 
@@ -575,6 +581,10 @@ public class js extends JFrame
 	    } else if (DEViseGlobals.checkArgument(args[i], "-collabpass",
 	      true, argValue)) {
 		jsValues.session.collabPass = argValue.toString();
+
+	    } else if (DEViseGlobals.checkArgument(args[i], "-hidebmrbsess",
+	      false, argValue)) {
+	        jsValues.uiglobals._hideBmrbSessionNames = true;
 
             } else {
 		throw new YException("Invalid js option \"" + args[i]

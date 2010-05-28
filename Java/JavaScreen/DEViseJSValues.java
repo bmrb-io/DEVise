@@ -27,6 +27,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2010/04/21 17:10:10  wenger
+// Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+//
 // Revision 1.19.4.1  2010/03/29 18:17:47  wenger
 // Got things to work as an applet with the latest Jmol version -- needed
 // some more initialization in creating the JmolViewer object.  Added
@@ -233,6 +236,7 @@ public final class DEViseJSValues
 	// Minimum time (in milliseconds) the stop button will be "busy" after
 	// we've sent a command to the server (see bug 973).
 	public long minWaitTime = DEViseGlobals.DEFAULT_MIN_WAIT_TIME;
+	public boolean _hideBmrbSessionNames = false;
     }
 
     public final class SessionValues {

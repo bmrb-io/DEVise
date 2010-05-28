@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2008
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.22  2010/04/21 17:10:10  wenger
+// Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+//
 // Revision 1.21.8.1  2010/03/29 18:17:47  wenger
 // Got things to work as an applet with the latest Jmol version -- needed
 // some more initialization in creating the JmolViewer object.  Added
@@ -588,6 +591,14 @@ public abstract class DEViseJSApplet extends Applet
 	    }
         } else {
             jsValues.session.disableButtons = false;
+        }
+
+        String hideBmrbSess = getParameter("hidebmrbsess");
+        if (hideBmrbSess != null) {
+            jsValues.uiglobals._hideBmrbSessionNames =
+	      !hideBmrbSess.equals("0");
+        } else {
+            jsValues.uiglobals._hideBmrbSessionNames = false;
         }
 
 	// Force reloadApplet to always be true for now, since the "no-reload"

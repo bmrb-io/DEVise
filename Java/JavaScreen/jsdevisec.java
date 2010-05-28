@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.179  2010/05/26 13:54:37  wenger
+// Implemented workaround in the JS client for DEVise/JS bug 933 (acdd
+// files show up as sessions).
+//
 // Revision 1.178  2010/05/25 22:19:16  wenger
 // The JavaScreen now shows BMRB visualization type along with the
 // filename in the 'open session' dialog.
@@ -2479,17 +2483,22 @@ class SessionDlg extends Frame
 
     private String sessionName = null;
     private java.awt.List fileList = null;
+    private Vector fileInfo;
     private Label label = new Label("Current available sessions in directory    ");
     private Label directory = new Label("");
     private DEViseButton okButton;
     private DEViseButton cancelButton;
     private String[] sessions = null;
-    private boolean[] isFiles = null;
     private String[] sessionNames = null;
 
     private boolean isShowing = false; // whether this dialog is showing
 
     private boolean selectionMade = false;
+
+    private class FileDirInfo {
+        public boolean isDir;
+	public String filename;
+    }
 
     public SessionDlg(jsdevisec what, Frame owner, boolean isCenterScreen, String[] data)
     {
@@ -2610,12 +2619,10 @@ class SessionDlg extends Frame
             int idx;
             if ((fileList.getItemCount() > 0) &&
               ((idx = fileList.getSelectedIndex()) != -1)) {
-                sessionName = fileList.getItem(idx);
+		FileDirInfo fdi = (FileDirInfo)fileInfo.elementAt(idx);
 
-                if (sessionName.startsWith("[")) { // a directory
-                    String[] name = DEViseGlobals.parseString(sessionName,
-		      '[', ']');
-	            if (name[0].equals("..")) { // go up a directory
+		if (fdi.isDir) {
+	            if (fdi.filename.equals("..")) { // go up a directory
                         jsc.previousDir = jsc.currentDir;
 	                if (jsc.currentDir.equals(jsc.rootDir)) {
 	                    jsc.showMsg("You do not have access to this directory!");
@@ -2636,7 +2643,7 @@ class SessionDlg extends Frame
                         }
                     } else {
 	                jsc.previousDir = jsc.currentDir;
-	                jsc.currentDir = jsc.currentDir + "/" + name[0];
+	                jsc.currentDir = jsc.currentDir + "/" + fdi.filename;
 	            }
 
                     directory.setText("/" + jsc.currentDir);
@@ -2644,14 +2651,8 @@ class SessionDlg extends Frame
 	            jsc.dispatcher.start(DEViseCommands.GET_SESSION_LIST +
 		      " {" + jsc.currentDir + "}");
                 } else { // a file
-		    // Remove BMRB visualization description, if there is
-		    // one (so we just have the actual file name).
-		    int descIndex = sessionName.indexOf(" (");
-		    if (descIndex != -1) {
-		        sessionName = sessionName.substring(0, descIndex);
-		    }
-                    jsc.currentSession = sessionName;
-		    jsc.openSession(jsc.currentDir + "/" + sessionName);
+                    jsc.currentSession = fdi.filename;
+		    jsc.openSession(jsc.currentDir + "/" + fdi.filename);
                     close();
                 }
             }
@@ -2674,34 +2675,41 @@ class SessionDlg extends Frame
         int number = (sessions.length - 1) / 3;
         sessionNames = new String[number];
 	// Whether this is a file (as opposed to a directory).
-        isFiles = new boolean[number];
+        boolean[] isDirs = new boolean[number];
         String tmpstr = null;
         for (int i = 0; i < number; i++) {
             sessionNames[i] = sessions[i * 3 + 1];
             tmpstr = sessions[i * 3 + 2];
-            if (tmpstr.equals("0")) {
-                isFiles[i] = true;
-            } else {
-                isFiles[i] = false;
-            }
+	    isDirs[i] = !tmpstr.equals("0");
         }
 
         fileList.removeAll();
+	fileInfo = new Vector();
 
         for (int i = 0; i < number; i++) {
 	    // Workaround for DEVise/JS bug 933.
 	    if (sessionNames[i].endsWith("acdd")) {
 	        continue;
 	    }
-            if (isFiles[i]) {
+	    FileDirInfo fdi = new FileDirInfo();
+	    if (isDirs[i]) {
+		fdi.isDir = true;
+		fdi.filename = sessionNames[i];
+                fileList.add("[" + sessionNames[i] + "]");
+	    } else {
+		fdi.isDir = false;
+		fdi.filename = sessionNames[i];
 		String visType = DEViseUtils.getVisType(sessionNames[i]);
 		if (!visType.equals("")) {
-		    sessionNames[i] += " (" + visType + ")";
+		    String filename = sessionNames[i];
+		    sessionNames[i] = visType;
+		    if (!jsc.jsValues.uiglobals._hideBmrbSessionNames) {
+		        sessionNames[i] += " (" + filename + ")";
+		    }
 	        }
                 fileList.add(sessionNames[i]);
-            } else {
-                fileList.add("[" + sessionNames[i] + "]");
             }
+	    fileInfo.add(fdi);
         }
 
         validate();

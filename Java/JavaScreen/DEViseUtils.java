@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2010/05/28 14:35:56  wenger
+// Added visualization "numbers" to type strings.
+//
 // Revision 1.4  2010/05/25 22:19:16  wenger
 // The JavaScreen now shows BMRB visualization type along with the
 // filename in the 'open session' dialog.
@@ -106,11 +109,27 @@ public class DEViseUtils
 	// as soon as we get a match.  So put the most "deterministic"
 	// strings first.
 	_visTypes.addElement(
+	  new VisTypeName("dna_histogram\\.ds", "DNA histogram"));
+	_visTypes.addElement(
+	  new VisTypeName("rna_histogram\\.ds", "RNA histogram"));
+	_visTypes.addElement(
+	  new VisTypeName("histogram2\\.ds", "dual-protein histograms"));
+	_visTypes.addElement(
+	  new VisTypeName("histogram\\.ds", "protein histogram"));
+	_visTypes.addElement(
 	  new VisTypeName(".*ac(\\d+)\\.ds", "atomic coordinates"));
 	_visTypes.addElement(
-	  new VisTypeName(".*dist(\\d+)\\.ds", "distance restraints"));
+	  new VisTypeName(".*rrdistr(\\d+)\\.ds",
+	  "distance restraints from remediated restraints"));
 	_visTypes.addElement(
-	  new VisTypeName(".*tar(\\d+)\\.ds", "torsion angle restraints"));
+	  new VisTypeName(".*rrtar(\\d+)\\.ds",
+	  "torsion angle restraints from remediated restraints"));
+	_visTypes.addElement(
+	  new VisTypeName(".*distr(\\d+)\\.ds",
+	  "distance restraints from restraints grid"));
+	_visTypes.addElement(
+	  new VisTypeName(".*tar(\\d+)\\.ds",
+	  "torsion angle restraints from restraints grid"));
 	_visTypes.addElement(
 	  new VisTypeName(".*csr1(\\d+)\\.ds", "chem shift ref histogram"));
 	_visTypes.addElement(
@@ -128,13 +147,15 @@ public class DEViseUtils
 	_visTypes.addElement(
 	  new VisTypeName(".*sd(\\d+)\\.ds", "SPARTA chem shift deltas"));
 	_visTypes.addElement(
-	  new VisTypeName(".*as(\\d+)\\.ds", "all shifts"));
+	  new VisTypeName(".*as(\\d+)\\.ds",
+	  "chem shift dist by AA/nucleotide"));
 	_visTypes.addElement(
-	  new VisTypeName(".*hn(\\d+)\\.ds", "1H-15N spectrum"));
+	  new VisTypeName(".*hn(\\d+)\\.ds", "simulated 1H-15N spectrum"));
 	_visTypes.addElement(
-	  new VisTypeName(".*hc(\\d+)\\.ds", "1H-13C spectrum"));
+	  new VisTypeName(".*hc(\\d+)\\.ds", "simulated 1H-13C spectrum"));
 	_visTypes.addElement(
-	  new VisTypeName(".*am(\\d+)\\.ds", "ambiguity codes"));
+	  new VisTypeName(".*am(\\d+)\\.ds",
+	  "assigned chem shift ambiguity codes"));
 	_visTypes.addElement(
 	  new VisTypeName(".*ps(\\d+)\\.ds", "assignment figure of merit"));
 	_visTypes.addElement(
