@@ -20,7 +20,7 @@
 
 # Defaults -- can be overridden in Makefile.config.
 STAR_NAME_TEMPLATE = "bmr*.str"
-ERROR_EMAIL = devise@cs.wisc.edu
+ERROR_EMAIL = devise-sup@cs.wisc.edu
 COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
 JAR_HOME = null
 DO_CSR_DEFAULT = 0
