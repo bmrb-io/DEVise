@@ -19,6 +19,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2010/05/25 22:19:16  wenger
+// The JavaScreen now shows BMRB visualization type along with the
+// filename in the 'open session' dialog.
+//
 // Revision 1.3  2006/07/11 18:32:44  wenger
 // Minor cleanups for DEVise 1.9.0 -- changed versions, etc.
 //
@@ -83,7 +87,11 @@ public class DEViseUtils
 	    VisTypeName vtn = (VisTypeName)_visTypes.elementAt(index);
 	    Matcher m = vtn._p.matcher(sessionName);
 	    if (m.matches()) {
-	        return vtn._type;
+		String visType = vtn._type;
+		if (m.groupCount() > 0) {
+		    visType += " " + m.group(1);
+		}
+	        return visType;
 	    }
 	}
 
@@ -98,17 +106,17 @@ public class DEViseUtils
 	// as soon as we get a match.  So put the most "deterministic"
 	// strings first.
 	_visTypes.addElement(
-	  new VisTypeName(".*ac\\d+\\.ds", "atomic coordinates"));
+	  new VisTypeName(".*ac(\\d+)\\.ds", "atomic coordinates"));
 	_visTypes.addElement(
-	  new VisTypeName(".*dist\\d+\\.ds", "distance restraints"));
+	  new VisTypeName(".*dist(\\d+)\\.ds", "distance restraints"));
 	_visTypes.addElement(
-	  new VisTypeName(".*tar\\d+\\.ds", "torsion angle restraints"));
+	  new VisTypeName(".*tar(\\d+)\\.ds", "torsion angle restraints"));
 	_visTypes.addElement(
-	  new VisTypeName(".*csr1\\d+\\.ds", "chem shift ref histogram"));
+	  new VisTypeName(".*csr1(\\d+)\\.ds", "chem shift ref histogram"));
 	_visTypes.addElement(
-	  new VisTypeName(".*csr2\\d+\\.ds", "chem shift ref diffs"));
+	  new VisTypeName(".*csr2(\\d+)\\.ds", "chem shift ref diffs"));
 	_visTypes.addElement(
-	  new VisTypeName(".*csr3\\d+\\.ds", "observed vs. calculated CS"));
+	  new VisTypeName(".*csr3(\\d+)\\.ds", "observed vs. calculated CS"));
 	_visTypes.addElement(
 	  new VisTypeName(".*lacs1\\.ds", "LACS (CA vs. CA-CB)"));
 	_visTypes.addElement(
@@ -118,32 +126,32 @@ public class DEViseUtils
 	_visTypes.addElement(
 	  new VisTypeName(".*lacs4\\.ds", "LACS (CO vs. CA-CB)"));
 	_visTypes.addElement(
-	  new VisTypeName(".*sd\\d+\\.ds", "SPARTA chem shift deltas"));
+	  new VisTypeName(".*sd(\\d+)\\.ds", "SPARTA chem shift deltas"));
 	_visTypes.addElement(
-	  new VisTypeName(".*as\\d+\\.ds", "all shifts"));
+	  new VisTypeName(".*as(\\d+)\\.ds", "all shifts"));
 	_visTypes.addElement(
-	  new VisTypeName(".*hn\\d+\\.ds", "1H-15N spectrum"));
+	  new VisTypeName(".*hn(\\d+)\\.ds", "1H-15N spectrum"));
 	_visTypes.addElement(
-	  new VisTypeName(".*hc\\d+\\.ds", "1H-13C spectrum"));
+	  new VisTypeName(".*hc(\\d+)\\.ds", "1H-13C spectrum"));
 	_visTypes.addElement(
-	  new VisTypeName(".*am\\d+\\.ds", "ambiguity codes"));
+	  new VisTypeName(".*am(\\d+)\\.ds", "ambiguity codes"));
 	_visTypes.addElement(
-	  new VisTypeName(".*ps\\d+\\.ds", "assignment figure of merit"));
+	  new VisTypeName(".*ps(\\d+)\\.ds", "assignment figure of merit"));
 	_visTypes.addElement(
-	  new VisTypeName(".*t1\\d+\\.ds", "T1 relaxation"));
+	  new VisTypeName(".*t1(\\d+)\\.ds", "T1 relaxation"));
 	_visTypes.addElement(
-	  new VisTypeName(".*t2\\d+\\.ds", "T2 relaxation"));
+	  new VisTypeName(".*t2(\\d+)\\.ds", "T2 relaxation"));
 	_visTypes.addElement(
-	  new VisTypeName(".*g\\d+\\.ds", "coupling constants"));
+	  new VisTypeName(".*g(\\d+)\\.ds", "coupling constants"));
 	_visTypes.addElement(
-	  new VisTypeName(".*n\\d+\\.ds", "heteronuclear NOE"));
+	  new VisTypeName(".*n(\\d+)\\.ds", "heteronuclear NOE"));
 	_visTypes.addElement(
-	  new VisTypeName(".*o\\d+\\.ds", "S2 order params"));
+	  new VisTypeName(".*o(\\d+)\\.ds", "S2 order params"));
 	_visTypes.addElement(
-	  new VisTypeName(".*d\\d+\\.ds", "chemical shift deltas"));
+	  new VisTypeName(".*d(\\d+)\\.ds", "chemical shift deltas"));
 	_visTypes.addElement(
-	  new VisTypeName(".*c\\d+\\.ds", "chemical shift indexes"));
+	  new VisTypeName(".*c(\\d+)\\.ds", "chemical shift indexes"));
 	_visTypes.addElement(
-	  new VisTypeName(".*p\\d+\\.ds", "percent assigned"));
+	  new VisTypeName(".*p(\\d+)\\.ds", "percent assigned"));
     }
 }
