@@ -50,12 +50,16 @@ endif
 # Make sure the session file directory has correct permissions, since
 # Java creates directories with 644 permissions(!).
 if (-e $sess_dir/$name) then
-  chmod 755 $sess_dir/$name >>& outfile
-  chmod 644 $sess_dir/$name/$name* $data_dir/$name* >>& outfile
+  # 777 here so we can run tests as different users and be able to
+  # overwrite session files.
+  chmod 777 $sess_dir/$name >>& $outfile
+  chmod 644 $sess_dir/$name/$name* $data_dir/$name* >>& $outfile
 endif
 if (-e session_dir/vis_server/$name) then
-  chmod 755 session_dir/vis_server/$name >>& outfile
+  # 777 here so we can run tests as different users and be able to
+  # overwrite session files.
+  chmod 777 session_dir/vis_server/$name >>& $outfile
   chmod 644 session_dir/vis_server/$name/$name* \
-    data_dir/vis_server/$name* >>& outfile
+    data_dir/vis_server/$name* >>& $outfile
 endif
-chmod 644 $html_dir/$name* >>& outfile
+chmod 644 $html_dir/$name* >>& $outfile
