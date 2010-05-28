@@ -13,6 +13,8 @@ if the remediated restraints file doesn't exist (fixed bug 098).
 
 * Added Google Analytics scripts to histogram pages (fixed bug 097).
 
+* Changed error emails for all sites to go to devise-sup@cs.wisc.edu.
+
 
 Peptide-CGI 11.8.1
 ------------------
