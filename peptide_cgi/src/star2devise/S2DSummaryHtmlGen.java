@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2010/04/23 16:51:08  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.26  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -474,6 +477,17 @@ public abstract class S2DSummaryHtmlGen {
 	      "</head>\n" +
 	      "<body bgcolor = #FFFFCC>\n" +
 	      "<font color = #660000>\n\n");
+
+	    if (!_isUvd && !_masterId.equals("")) {
+	        _writer.write("<h3>\n");
+	        _writer.write("<p>\n");
+	        _writer.write("<a href=\"../../../data_library/" +
+		  "generate_summary.php?bmrbId=" + _name +
+		  "&chooseAccOrDep=useAcc\">Main entry page</a>\n");
+	        _writer.write("</p>\n");
+	        _writer.write("</h3>\n");
+	        _writer.write("<hr>\n\n");
+	    }
 
 	    _writer.write("<h3>DEVise plots for " + _longName + ":\n");
 	    _writer.write(systemName + "</h3>\n");

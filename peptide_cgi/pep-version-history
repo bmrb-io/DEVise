@@ -14,6 +14,9 @@ if the remediated restraints file doesn't exist (fixed bug 098).
 * All individual visualization pages now have links back to the
 summary visualization page for the entry.
 
+* All visualization summary pages for released BMRB entries now have
+links to the "main" page for the entry.
+
 * Added Google Analytics scripts to histogram pages (fixed bug 097).
 
 * Changed error emails for all sites to go to devise-sup@cs.wisc.edu.
