@@ -22,6 +22,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.180  2010/05/28 19:29:11  wenger
+// Changed open session dialog to show BMRB visualization types (with
+// numbers) as the "main" value if they are available, with the new
+// hidebmrbsess applet parameter and command-line argument to hide the
+// file names completely if visualization types are available; added
+// histogram visualization types.
+//
 // Revision 1.179  2010/05/26 13:54:37  wenger
 // Implemented workaround in the JS client for DEVise/JS bug 933 (acdd
 // files show up as sessions).
@@ -2168,6 +2175,8 @@ class RecordDlg extends Dialog
       jsdevisec what)
     {
         super(owner, true);
+
+	setResizable(true);
 	
 	jsc = what;
 
@@ -2244,25 +2253,10 @@ class RecordDlg extends Dialog
 	    }
         }
 
-	DEViseComponentPanel panel = null;
-
         // set layout manager
-        GridBagLayout  gridbag = new GridBagLayout();
-        GridBagConstraints  c = new GridBagConstraints();
-        setLayout(gridbag);
-        c.gridwidth = GridBagConstraints.REMAINDER;
-        c.fill = GridBagConstraints.NONE;
-        c.insets = new Insets(10, 10, 10, 10);
-        c.anchor = GridBagConstraints.CENTER;
-        c.weightx = 1.0;
-        c.weighty = 1.0;
-
-        gridbag.setConstraints(okButton, c);
-        add(okButton);
-
-        pack();
-
-	Dimension panesize;
+	BorderLayout layout = new BorderLayout();
+	layout.setVgap(10);
+	setLayout(layout);
 
         String[] columnNames = {"Attribute", "Value"};
         table = new JTable(swingData, columnNames);
@@ -2296,29 +2290,16 @@ class RecordDlg extends Dialog
     	    packColumn(table, column, margin);
         }
 
-        panesize = table.getPreferredSize();
+        Dimension panesize = table.getPreferredSize();
         removeAll();
 	    
-        if(panesize.height > 600 || panesize.width > 800) {
-	    JScrollPane pane = new JScrollPane(table);
-	    if(panesize.height > 600) panesize.height = 600;
-	    if(panesize.width > 800) panesize.width = 800;
-	    pane.setPreferredSize(panesize);
+	JScrollPane pane = new JScrollPane(table);
+	if(panesize.height > 600) panesize.height = 600;
+	if(panesize.width > 800) panesize.width = 800;
+	pane.setPreferredSize(panesize);
 	    
-	    gridbag.setConstraints(pane, c);
-	    add(pane);
-        } else {
-	    JPanel jpanel = new JPanel(new BorderLayout());
-	    jpanel.add(table.getTableHeader(), BorderLayout.NORTH);
-	    jpanel.add(table, BorderLayout.CENTER);
-
-	    gridbag.setConstraints(jpanel, c);
-	    add(jpanel);
-        }
-
-        gridbag.setConstraints(okButton, c);
-        add(okButton);
-
+	add(pane, BorderLayout.CENTER);
+        add(okButton, BorderLayout.SOUTH);
         pack();
 
         // reposition the window

@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.128  2010/05/28 14:35:56  wenger
+// Added visualization "numbers" to type strings.
+//
 // Revision 1.127  2010/05/25 22:19:16  wenger
 // The JavaScreen now shows BMRB visualization type along with the
 // filename in the 'open session' dialog.
@@ -809,7 +812,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.1x3"/*TEMP*/);
+    public static final String VERSION = new String("5.13.1x4"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
