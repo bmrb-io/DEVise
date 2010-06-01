@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.203  2010/05/28 14:26:32  wenger
+// More fixes to set_modes script.
+//
 // Revision 1.202  2010/05/26 17:31:39  wenger
 // We now delete existing sessions when doing the "main" processing for
 // an entry, so the user can't switch to invalid sessions in the JavaScreen
@@ -1286,7 +1289,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.2x6"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.2x7"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 

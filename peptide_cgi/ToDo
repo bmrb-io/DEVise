@@ -563,8 +563,9 @@ Num Date        Status  Pri     Description
 				molecule (but still show atoms). (neuhaus/
 				elu/wenger)
 
-132 4/20/10	OPEN	3	Add links back to the summary page from
+132 4/20/10	DONE	1	Add links back to the summary page from
 				each individual visualization page. (wenger)
+				(Done by wenger, 6/1/10.)
 
 133 4/22/10	OPEN	2	Make the distance restraint visualizations
 				work for PDB-only data (like the torsion

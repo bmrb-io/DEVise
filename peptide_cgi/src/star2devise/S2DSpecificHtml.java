@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2010/05/26 16:05:22  wenger
+// Fixed problems with incorrect links to different-size visualization
+// pages in visualization-specific html pages.
+//
 // Revision 1.15  2010/05/24 20:06:15  wenger
 // Changed Peptide-CGI to put all sessions for a given entry in a
 // subdirectory, and use the JSA instead of the JSB, so it's possible to
@@ -112,6 +116,7 @@ public class S2DSpecificHtml {
     private static final String searchString3 = "help_d.html";
     private static final String searchString4 = "Dummy title";
     private static final String searchString5 = "<p>Dummy details</p>";
+    private static final String searchString6 = "4264y";
 
     private String _replaceString1;
     private String _replaceString1a;
@@ -120,6 +125,7 @@ public class S2DSpecificHtml {
     private String _replaceString3;
     private String _replaceString4;
     private String _replaceString5;
+    private String _replaceString6;
 
     //===================================================================
     // PUBLIC METHODS
@@ -164,6 +170,7 @@ public class S2DSpecificHtml {
 	    _replaceString5 = "";
 	}
 
+	_replaceString6 = name + S2DNames.SUMMARY_HTML_SUFFIX;
     }
 
     //-------------------------------------------------------------------
@@ -249,6 +256,8 @@ public class S2DSpecificHtml {
 	  _replaceString4);
 	line = S2DUtils.replace(line, searchString5,
 	  _replaceString5);
+	line = S2DUtils.replace(line, searchString6,
+	  _replaceString6);
 	if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
 	  _dataType == S2DUtils.TYPE_PISTACHIO ||
 	  _dataType == S2DUtils.TYPE_AMBIGUITY) {
