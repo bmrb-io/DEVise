@@ -21,6 +21,9 @@ links to the "main" page for the entry.
 
 * Changed error emails for all sites to go to devise-sup@cs.wisc.edu.
 
+* Made a minor fix to view alignments in the percent assigned
+visualization.
+
 
 Peptide-CGI 11.8.1
 ------------------

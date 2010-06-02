@@ -394,7 +394,7 @@ DEVise setMappingColors {.label#Label_text_vs_recId 6} {37} {0} {0}
 # Create windows
 DEVise create {window} {TileLayout} DEViseWn0 0.164844 0.190430 0.502344 0.498047 0 0
 DEVise create {window} {TileLayout} DEViseWn1 0.146875 0.685547 0.518750 0.032227 0 0
-DEVise create {window} {TileLayout} DEViseWn2 0.146875 0.188477 0.017969 0.498047 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.146875 0.190430 0.017969 0.498047 0 0
 DEVise create {window} {TileLayout} DEViseWn3 0.146875 0.163086 0.518750 0.020508 0 0
 
 # Set up window layouts
