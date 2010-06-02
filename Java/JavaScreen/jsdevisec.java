@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.181  2010/06/01 18:50:16  wenger
+// Made the the drill-down dialog resizable and made some other cleanups
+// (but I think maybe the whole thing should be changed from a Dialog
+// to a JDialog, but I haven't gotten that to work yet).
+//
 // Revision 1.180  2010/05/28 19:29:11  wenger
 // Changed open session dialog to show BMRB visualization types (with
 // numbers) as the "main" value if they are available, with the new
@@ -898,6 +903,8 @@ public class jsdevisec extends JPanel
     private DEViseButton treeButton;
 
     public boolean isSessionOpened = false; 
+    // Visualization type for BMRB sessions.
+    public String _currentVisType = null;
 
     // This variable will tell us if a CollabIdDlg is open (only 1
     // should be open at a time)
@@ -1211,6 +1218,10 @@ public class jsdevisec extends JPanel
                 currentSession = sessionName;
             }
 
+	    if (jsValues.uiglobals._hideBmrbSessionNames) {
+	        _currentVisType = DEViseUtils.getVisType(currentSession);
+	    }
+
 	    String cmd = DEViseCommands.SET_DISPLAY_SIZE + " " +
 	      jsValues.uiglobals.screenSize.width + " " +
 	      jsValues.uiglobals.screenSize.height + " " +
@@ -1285,6 +1296,7 @@ public class jsdevisec extends JPanel
             showMsg("You do not have any open session!");
             return;
         }
+	_currentVisType = null;
         dispatcher.start(DEViseCommands.CLOSE_SESSION);
     }
 
@@ -1302,6 +1314,10 @@ public class jsdevisec extends JPanel
 
     public void openSession(String fullSessionName)
     {
+	if (jsValues.uiglobals._hideBmrbSessionNames) {
+	    _currentVisType = DEViseUtils.getVisType(fullSessionName);
+	}
+
 	jscreen.setScreenDim(jscreen.getWidth(), jscreen.getHeight());
 
 	String command = "";

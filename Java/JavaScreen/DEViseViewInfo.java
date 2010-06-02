@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.63  2007/04/20 19:42:35  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.62  2007/03/30 17:29:56  wenger
 // Moved some GUI functions to the AWT-EventQueue thread (which is where
 // they should be) to more correctly fix JavaScreen 5.8.0 lockup problems.
@@ -180,8 +184,6 @@ public class DEViseViewInfo extends Panel
 
     private jsdevisec jsc = null;
     Vector images = null;
-	// viewName doesn't appear tu be used anywhere
-    // JTextField viewName = new JTextField(16);
 
     JTextField mouseX = new JTextField(12);
 	JTextField mouseY = new JTextField(12);
@@ -195,10 +197,6 @@ public class DEViseViewInfo extends Panel
         setBackground(jsc.jsValues.uiglobals.bg);
         setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
-
-        // viewName.setBackground(jsc.jsValues.uiglobals.textBg);
-        // viewName.setForeground(jsc.jsValues.uiglobals.textFg);
-        // viewName.setFont(jsc.jsValues.uiglobals.textFont);
 
         mouseX.setBackground(jsc.jsValues.uiglobals.textBg);
         mouseX.setForeground(jsc.jsValues.uiglobals.textFg);
@@ -221,25 +219,23 @@ public class DEViseViewInfo extends Panel
         //if (light != null)
         //    add(light);
 
-        //add(viewName);
-
         add(mouseX);
         add(mouseY);
     }
 
     public void updateInfo(String name, String x, String y)
     {
+/* Don't change the title according to which view we're in.  wenger 2010-06-02.
         if (name == null) {
-            //viewName.setText("");
             if (jsc.parentFrame != null) {
                 jsc.parentFrame.setTitle(DEViseUIGlobals.javaScreenTitle);
             }
         } else {
-            //viewName.setText(name);
             if (jsc.parentFrame != null) {
                 jsc.parentFrame.setTitle(DEViseUIGlobals.javaScreenTitle + "     \"" + name + "\"");
             }
         }
+*/
         if ((x == null) || (x == "")) {
 	    // This 'if' is added to avoid flickering when no values to display
 	    if(!mouseX.getText().equals("")) {
@@ -270,10 +266,11 @@ public class DEViseViewInfo extends Panel
 
     public void updateInfo()
     {
-        //viewName.setText("");
+/* Don't change the title according to which view we're in.  wenger 2010-06-02.
         if (jsc.parentFrame != null) {
             jsc.parentFrame.setTitle(DEViseUIGlobals.javaScreenTitle);
         }
+*/
 
         mouseX.setText("");
         mouseY.setText("");

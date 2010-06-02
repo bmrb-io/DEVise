@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -32,6 +32,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.84  2008/07/17 20:28:00  wenger
+// (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
+// that are entirely outside the destination view's visual filter).
+//
 // Revision 1.83  2007/09/10 22:10:36  wenger
 // Mouse cursor now changes to the disabled cursor if the selected
 // toolbar mode is not applicable in the current view; mouse cursor
@@ -945,9 +949,18 @@ public class DEViseScreen extends JPanel
     {
         if (flag) {
             jsc.isSessionOpened = true;
+
+	    if (jsc.parentFrame != null && jsc._currentVisType != null) {
+	        jsc.parentFrame.setTitle(jsc._currentVisType + " (" +
+		  DEViseUIGlobals.javaScreenTitle + ")");
+	    }
         } else {
 	    // Note: this section of code does the work of cleaning
 	    // up when we close a session.  RKW 2000-03-31.
+
+	    if (jsc.parentFrame != null) {
+	        jsc.parentFrame.setTitle(DEViseUIGlobals.javaScreenTitle);
+	    }
 
 	    // Remove the view's references to all of its GData records,
 	    // so they hopefully get garbage collected. RKW 2000-03-31.
