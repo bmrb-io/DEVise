@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2010/05/28 19:29:11  wenger
+// Changed open session dialog to show BMRB visualization types (with
+// numbers) as the "main" value if they are available, with the new
+// hidebmrbsess applet parameter and command-line argument to hide the
+// file names completely if visualization types are available; added
+// histogram visualization types.
+//
 // Revision 1.22  2010/04/21 17:10:10  wenger
 // Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
 //
@@ -263,6 +270,16 @@ public abstract class DEViseJSApplet extends Applet
 
         setLayout(new BorderLayout(0, 10));
 
+	int appletHt = -1;
+	String height = getParameter("height");
+	if (height != null) {
+	    try {
+	        appletHt = Integer.parseInt(height);
+	    } catch (NumberFormatException ex) {
+	        appletHt = -1;
+	    }
+	}
+
 	// Note: the "\n" here magically gets rid of the scrollbar
 	// warnings we've had for ages.  RKW 2001-01-05.
         startInfo = new TextArea("\n", 8, 50,
@@ -270,7 +287,11 @@ public abstract class DEViseJSApplet extends Applet
         startInfo.setBackground(jsValues.uiglobals.textBg);
         startInfo.setForeground(jsValues.uiglobals.textFg);
         startInfo.setFont(jsValues.uiglobals.textFont);
-        add(startInfo, BorderLayout.CENTER);
+	// Option to hide the startInfo here added at Eldon's request
+	// for BMRB.  wenger 2010-06-02.
+	if (appletHt >= 50) {
+            add(startInfo, BorderLayout.CENTER);
+	}
 
         setVisible(true);
 

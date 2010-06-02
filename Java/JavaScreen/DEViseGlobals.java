@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.129  2010/06/01 18:50:16  wenger
+// Made the the drill-down dialog resizable and made some other cleanups
+// (but I think maybe the whole thing should be changed from a Dialog
+// to a JDialog, but I haven't gotten that to work yet).
+//
 // Revision 1.128  2010/05/28 14:35:56  wenger
 // Added visualization "numbers" to type strings.
 //
@@ -812,7 +817,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.1x4"/*TEMP*/);
+    public static final String VERSION = new String("5.13.1x5"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
