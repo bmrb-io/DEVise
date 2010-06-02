@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2010/06/01 15:31:07  wenger
+// All visualization summary pages for released BMRB entries now have
+// links to the "main" page for the entry.
+//
 // Revision 1.27  2010/04/23 16:51:08  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
 //
@@ -479,13 +483,13 @@ public abstract class S2DSummaryHtmlGen {
 	      "<font color = #660000>\n\n");
 
 	    if (!_isUvd && !_masterId.equals("")) {
-	        _writer.write("<h3>\n");
+	        _writer.write("<h2>\n");
 	        _writer.write("<p>\n");
 	        _writer.write("<a href=\"../../../data_library/" +
 		  "generate_summary.php?bmrbId=" + _name +
-		  "&chooseAccOrDep=useAcc\">Main entry page</a>\n");
+		  "&chooseAccOrDep=useAcc\">Back to main entry page</a>\n");
 	        _writer.write("</p>\n");
-	        _writer.write("</h3>\n");
+	        _writer.write("</h2>\n");
 	        _writer.write("<hr>\n\n");
 	    }
 

@@ -18,9 +18,9 @@
 
   <hr>
 
-  <h3>
-  <p><a href="4264y.html">All visualizations for this entry</a></p>
-  </h3>
+  <h2>
+  <p><a href="4264y.html">Back to all visualizations for this entry</a></p>
+  </h2>
 
   <hr>
 
@@ -45,7 +45,7 @@
   </h3>
 
   <center>
-  <applet code=JavaScreen.jsa.class archive=../../jsa1.jar,../../jsa2.jar,../../JmolApplet.jar width=600 height=200>
+  <applet code=JavaScreen.jsa.class archive=../../jsa1.jar,../../jsa2.jar,../../JmolApplet.jar width=600 height=30>
     <param name="applet" value="JavaScreen.jsa">
     <param name="debug" value="0">
     <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
@@ -65,6 +65,18 @@
   </applet>
   </center>
     
+  <p>
+  <b>Switching visualizations:</b> to switch between visualizations
+  for this entry, select Session->Open/Switch in the JavaScreen.  This
+  will show a dialog listing the visualizations that are currently
+  available for this entry.  Note that some visualizations (such as
+  coordinates and restraints) require additional processing on the
+  server, so you may have to go back to the "all visualizations" page
+  for this entry to access them.  Also, if you switch visualizations
+  inside the JavaScreen, the "help on this visualization" link will
+  no longer correspond to the visualization you are viewing.
+  </p>
+
   <br><br>
   <center>
   <h3>
