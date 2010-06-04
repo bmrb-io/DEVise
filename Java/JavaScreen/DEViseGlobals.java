@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.131  2010/06/04 16:29:13  wenger
+// Enabled auto resizing in drill-down dialog JTable to improve appearance.
+//
 // Revision 1.130  2010/06/02 15:12:05  wenger
 // The JSA startInfo text object is no longer displayed if the applet
 // height is less than 50 pixels (Eldon asked me to get rid of this).
@@ -821,7 +824,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.1x6"/*TEMP*/);
+    public static final String VERSION = new String("5.13.1");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
