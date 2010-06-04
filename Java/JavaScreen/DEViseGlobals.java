@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.130  2010/06/02 15:12:05  wenger
+// The JSA startInfo text object is no longer displayed if the applet
+// height is less than 50 pixels (Eldon asked me to get rid of this).
+//
 // Revision 1.129  2010/06/01 18:50:16  wenger
 // Made the the drill-down dialog resizable and made some other cleanups
 // (but I think maybe the whole thing should be changed from a Dialog
@@ -817,7 +821,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.1x5"/*TEMP*/);
+    public static final String VERSION = new String("5.13.1x6"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

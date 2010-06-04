@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.182  2010/06/02 17:41:07  wenger
+// The JavaScreen now puts the BMRB visualization type into the JSA
+// window title if the hidebmrbsess parameter is turned on.
+//
 // Revision 1.181  2010/06/01 18:50:16  wenger
 // Made the the drill-down dialog resizable and made some other cleanups
 // (but I think maybe the whole thing should be changed from a Dialog
@@ -2283,9 +2287,6 @@ class RecordDlg extends Dialog
         renderer.setHorizontalAlignment(JLabel.RIGHT);
         TableColumn tColumn = table.getColumnModel().getColumn(1);
 	tColumn.setCellRenderer(renderer);
-
-        // Disable auto resizing
-        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
 	table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 	table.setCellSelectionEnabled(true);
