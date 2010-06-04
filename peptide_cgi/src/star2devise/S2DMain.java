@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.206  2010/06/02 16:06:01  wenger
+// Reduced applet height in all HTML templates, and added info about
+// switching sessions in the JS; increased the font size of the links
+// to the visualization summary page and entry "main" page; slightly
+// changed the link text.
+//
 // Revision 1.205  2010/06/01 15:31:07  wenger
 // All visualization summary pages for released BMRB entries now have
 // links to the "main" page for the entry.
@@ -1297,7 +1303,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.2x9"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.2";
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
