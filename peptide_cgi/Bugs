@@ -470,7 +470,8 @@ Num Date        Status  Description
 			data for T1/T2 and heteronuclear NOE visualizations
 			for bmr4267_3.str. (wenger)
 
-101 5/11/10	ACTIVE	Test62 now fails. (wenger)
+101 5/11/10	FIXED	Test62 now fails. (wenger)
+			(This got fixed at some point...)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

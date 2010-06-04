@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.19  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -346,6 +352,11 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	    // If we're not sure, treat it as a polymer.
 	    result = true;
 	}
+
+        if (doDebugOutput(12)) {
+            System.out.println(
+	      "  S2DNmrStar21Ifc.refersToPolymer() returns " + result);
+        }
 
         return result;
     }
