@@ -20,21 +20,21 @@ echo "Checking output files"
 set files = (data_dir/4845ac1.dat data_dir/4845as1.dat data_dir/4845c1.dat \
 	data_dir/4845d1.dat data_dir/4845g1.dat data_dir/4845hn1.dat \
 	data_dir/4845md.dat data_dir/4845p1.dat data_dir/4845rc1.dat \
-	data_dir/4845rl.dat html_dir/4845ac1.html html_dir/4845as1.html \
-	html_dir/4845c1.html html_dir/4845d1.html html_dir/4845g1.html \
-	html_dir/4845p1.html html_dir/4845y.html html_dir/4845y_large.html \
+	data_dir/4845rl.dat html_dir/4845/4845ac1.html html_dir/4845/4845as1.html \
+	html_dir/4845/4845c1.html html_dir/4845/4845d1.html html_dir/4845/4845g1.html \
+	html_dir/4845/4845p1.html html_dir/4845/4845y.html html_dir/4845/4845y_large.html \
 	session_dir/4845/4845ac1.ds session_dir/4845/4845acdd session_dir/4845/4845as1.ds \
 	session_dir/4845/4845c1.ds session_dir/4845/4845d1.ds session_dir/4845/4845g1.ds \
 	session_dir/4845/4845p1.ds data_dir/4845am1.dat data_dir/4845amac1.dat \
-	html_dir/4845am1.html session_dir/4845/4845am1.ds \
-	html_dir/4845ac1_large.html \
-	html_dir/4845ac2_large.html \
-	html_dir/4845am1_large.html \
-	html_dir/4845as1_large.html \
-	html_dir/4845c1_large.html \
-	html_dir/4845d1_large.html \
-	html_dir/4845g1_large.html \
-	html_dir/4845p1_large.html \
+	html_dir/4845/4845am1.html session_dir/4845/4845am1.ds \
+	html_dir/4845/4845ac1_large.html \
+	html_dir/4845/4845ac2_large.html \
+	html_dir/4845/4845am1_large.html \
+	html_dir/4845/4845as1_large.html \
+	html_dir/4845/4845c1_large.html \
+	html_dir/4845/4845d1_large.html \
+	html_dir/4845/4845g1_large.html \
+	html_dir/4845/4845p1_large.html \
 	data_dir/4845hc1.dat )
 
 

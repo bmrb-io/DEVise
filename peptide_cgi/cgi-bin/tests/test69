@@ -6,6 +6,7 @@
 set result = 0
 
 rm -r -f */15437*
+rm -r -f */15437/*
 
 echo -n "Processing NMR-STAR and mmCIF: "
 ./s2d -nomail -bmrbid 15437 -force -check_pct -do_pdb 2

@@ -29,22 +29,22 @@ set files = ( data_dir/uvd/test52_outam1.dat \
 	data_dir/uvd/test52_outp1.dat \
 	data_dir/uvd/test52_outrc1.dat \
 	data_dir/uvd/test52_outrl.dat \
-	html_dir/uvd/test52_outam1.html \
-	html_dir/uvd/test52_outam1_large.html \
-	html_dir/uvd/test52_outas1.html \
-	html_dir/uvd/test52_outas1_large.html \
-	html_dir/uvd/test52_outc1.html \
-	html_dir/uvd/test52_outc1_large.html \
-	html_dir/uvd/test52_outd1.html \
-	html_dir/uvd/test52_outd1_large.html \
-	html_dir/uvd/test52_outhc1.html \
-	html_dir/uvd/test52_outhc1_large.html \
-	html_dir/uvd/test52_outhn1.html \
-	html_dir/uvd/test52_outhn1_large.html \
-	html_dir/uvd/test52_outp1.html \
-	html_dir/uvd/test52_outp1_large.html \
-	html_dir/uvd/test52_outy.html \
-	html_dir/uvd/test52_outy_large.html \
+	html_dir/uvd/test52_out/test52_outam1.html \
+	html_dir/uvd/test52_out/test52_outam1_large.html \
+	html_dir/uvd/test52_out/test52_outas1.html \
+	html_dir/uvd/test52_out/test52_outas1_large.html \
+	html_dir/uvd/test52_out/test52_outc1.html \
+	html_dir/uvd/test52_out/test52_outc1_large.html \
+	html_dir/uvd/test52_out/test52_outd1.html \
+	html_dir/uvd/test52_out/test52_outd1_large.html \
+	html_dir/uvd/test52_out/test52_outhc1.html \
+	html_dir/uvd/test52_out/test52_outhc1_large.html \
+	html_dir/uvd/test52_out/test52_outhn1.html \
+	html_dir/uvd/test52_out/test52_outhn1_large.html \
+	html_dir/uvd/test52_out/test52_outp1.html \
+	html_dir/uvd/test52_out/test52_outp1_large.html \
+	html_dir/uvd/test52_out/test52_outy.html \
+	html_dir/uvd/test52_out/test52_outy_large.html \
 	session_dir/.uvd/test52_out/test52_outacdd \
 	session_dir/.uvd/test52_out/test52_outam1.ds \
 	session_dir/.uvd/test52_out/test52_outas1.ds \

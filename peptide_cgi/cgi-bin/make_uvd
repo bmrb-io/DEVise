@@ -76,33 +76,35 @@ print "  coord_index = $coord_index\n" if ($debug);
 
 # File name of the html page returned.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
+$summary_page_dir = $summary_page_dir . "/uvd/" . $name;
+
 if ($do_pdb) {
   print "  has PDB\n" if ($debug);
-  $summary_page = $summary_page_dir . "/uvd/" . $name . 'ac' . $coord_index .
+  $summary_page = $summary_page_dir . "/" . $name . 'ac' . $coord_index .
     $size_str . '.html';
 } elsif ($do_csr) {
   print "  has CSR\n" if ($debug);
-  $summary_page = $summary_page_dir . "/uvd/" . $name . 'csr' . $csr_index .
+  $summary_page = $summary_page_dir . "/" . $name . 'csr' . $csr_index .
     $coord_index . $size_str . '.html';
 } elsif ($do_dist) {
   print "  has Dist\n" if ($debug);
-  $summary_page = $summary_page_dir . "/uvd/" . $name . 'distr' . $coord_index .
+  $summary_page = $summary_page_dir . "/" . $name . 'distr' . $coord_index .
     $size_str . '.html';
 } elsif ($do_rrdist) {
   print "  has RRDist\n" if ($debug);
-  $summary_page = $summary_page_dir . "/uvd/" . $name . 'rrdistr' . $coord_index .
+  $summary_page = $summary_page_dir . "/" . $name . 'rrdistr' . $coord_index .
     $size_str . '.html';
 } elsif ($do_tar) {
   print "  has TAR\n" if ($debug);
-  $summary_page = $summary_page_dir . "/uvd/" . $name . 'tar' . $coord_index .
+  $summary_page = $summary_page_dir . "/" . $name . 'tar' . $coord_index .
     $size_str . '.html';
 } elsif ($do_rrtar) {
   print "  has RRTAR\n" if ($debug);
-  $summary_page = $summary_page_dir . "/uvd/" . $name . 'rrtar' . $coord_index .
+  $summary_page = $summary_page_dir . "/" . $name . 'rrtar' . $coord_index .
     $size_str . '.html';
 } else {
   print "  does not have PDB or CSR\n" if ($debug);
-  $summary_page = $summary_page_dir . "/uvd/" . $name . 'y' . $size_str .
+  $summary_page = $summary_page_dir . "/" . $name . 'y' . $size_str .
     '.html';
 }
 my $cmd;

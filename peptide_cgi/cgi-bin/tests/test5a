@@ -35,16 +35,16 @@ set files = (data_dir/4081ac1.dat data_dir/4081as1.dat data_dir/4081c1.dat \
 	data_dir/4081csr1_4.dat \
 	data_dir/4081d1.dat data_dir/4081hn1.dat data_dir/4081md.dat \
 	data_dir/4081p1.dat data_dir/4081rc1.dat data_dir/4081rl.dat \
-	html_dir/4081ac1.html html_dir/4081as1.html html_dir/4081c1.html \
-	html_dir/4081csr1.html html_dir/4081d1.html html_dir/4081hn1.html \
-	html_dir/4081p1.html html_dir/4081tmp1y.html \
-	html_dir/4081y.html html_dir/4081y_large.html \
+	html_dir/4081/4081ac1.html html_dir/4081/4081as1.html html_dir/4081/4081c1.html \
+	html_dir/4081/4081csr1.html html_dir/4081/4081d1.html html_dir/4081/4081hn1.html \
+	html_dir/4081/4081p1.html \
+	html_dir/4081/4081y.html html_dir/4081/4081y_large.html \
 	session_dir/4081/4081ac1.ds session_dir/4081/4081acdd session_dir/4081/4081as1.ds \
 	session_dir/4081/4081c1.ds session_dir/4081/4081csr1.ds session_dir/4081/4081d1.ds \
 	session_dir/4081/4081hn1.ds session_dir/4081/4081p1.ds \
 	data_dir/4081hc1.dat \
-	html_dir/4081hc1.html \
-	html_dir/4081hc1_large.html \
+	html_dir/4081/4081hc1.html \
+	html_dir/4081/4081hc1_large.html \
 	session_dir/4081/4081hc1.ds )
 
 foreach file ($files)

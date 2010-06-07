@@ -38,15 +38,21 @@ echo delete_sessions arguments: $* > $outfile
 
 if ($is_uvd) then
   set sess_dir = "session_dir/.uvd"
+  set html_dir = "html_dir/uvd"
 else
   set sess_dir = "session_dir"
+  set html_dir = "html_dir"
 endif
 
 if (-e $sess_dir/$name) then
   echo "removing $sess_dir/$name/*" >>& $outfile
   rm $sess_dir/$name/* >>& $outfile
+  echo "removing $html_dir/$name/*" >>& $outfile
+  rm $html_dir/$name/* >>& $outfile
 endif
 if (-e $sess_dir/vis_server/$name) then
   echo "removing $sess_dir/vis_server/$name/*" >>& $outfile
   rm $sess_dir/vis_server/$name/* >>& $outfile
+  echo "removing $html_dir/$name/*" >>& $outfile
+  rm $html_dir/$name/* >>& $outfile
 endif

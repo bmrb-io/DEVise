@@ -30,24 +30,24 @@ set files = ( data_dir/uvd/uvd16385am1.dat \
 	data_dir/uvd/uvd16385rl.dat \
 	data_dir/uvd/uvd16385sd1.dat \
 	data_dir/uvd/uvd16385sd1_models.dat \
-	html_dir/uvd/uvd16385am1.html \
-	html_dir/uvd/uvd16385am1_large.html \
-	html_dir/uvd/uvd16385as1.html \
-	html_dir/uvd/uvd16385as1_large.html \
-	html_dir/uvd/uvd16385c1.html \
-	html_dir/uvd/uvd16385c1_large.html \
-	html_dir/uvd/uvd16385d1.html \
-	html_dir/uvd/uvd16385d1_large.html \
-	html_dir/uvd/uvd16385hc1.html \
-	html_dir/uvd/uvd16385hc1_large.html \
-	html_dir/uvd/uvd16385hn1.html \
-	html_dir/uvd/uvd16385hn1_large.html \
-	html_dir/uvd/uvd16385p1.html \
-	html_dir/uvd/uvd16385p1_large.html \
-	html_dir/uvd/uvd16385sd1.html \
-	html_dir/uvd/uvd16385sd1_large.html \
-	html_dir/uvd/uvd16385y.html \
-	html_dir/uvd/uvd16385y_large.html \
+	html_dir/uvd/uvd16385/uvd16385am1.html \
+	html_dir/uvd/uvd16385/uvd16385am1_large.html \
+	html_dir/uvd/uvd16385/uvd16385as1.html \
+	html_dir/uvd/uvd16385/uvd16385as1_large.html \
+	html_dir/uvd/uvd16385/uvd16385c1.html \
+	html_dir/uvd/uvd16385/uvd16385c1_large.html \
+	html_dir/uvd/uvd16385/uvd16385d1.html \
+	html_dir/uvd/uvd16385/uvd16385d1_large.html \
+	html_dir/uvd/uvd16385/uvd16385hc1.html \
+	html_dir/uvd/uvd16385/uvd16385hc1_large.html \
+	html_dir/uvd/uvd16385/uvd16385hn1.html \
+	html_dir/uvd/uvd16385/uvd16385hn1_large.html \
+	html_dir/uvd/uvd16385/uvd16385p1.html \
+	html_dir/uvd/uvd16385/uvd16385p1_large.html \
+	html_dir/uvd/uvd16385/uvd16385sd1.html \
+	html_dir/uvd/uvd16385/uvd16385sd1_large.html \
+	html_dir/uvd/uvd16385/uvd16385y.html \
+	html_dir/uvd/uvd16385/uvd16385y_large.html \
 	session_dir/.uvd/uvd16385/uvd16385acdd \
 	session_dir/.uvd/uvd16385/uvd16385am1.ds \
 	session_dir/.uvd/uvd16385/uvd16385as1.ds \
@@ -86,19 +86,19 @@ source tests/check4line
 set line = '^1 0 107 LEU -0.031 0.038 0.022 0.675 0.875 -0.095$'
 source tests/check4line
 
-set file = "html_dir/uvd/uvd16385y.html"
+set file = "html_dir/uvd/uvd16385/uvd16385y.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="uvd16385sd1.html">106 residues</a></td>$'
 source tests/check4line
 
-set file = "html_dir/uvd/uvd16385y_large.html"
+set file = "html_dir/uvd/uvd16385/uvd16385y_large.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="uvd16385sd1_large.html">106 residues</a></td>$'
 source tests/check4line
 
-set file = "html_dir/uvd/uvd16385sd1.html"
+set file = "html_dir/uvd/uvd16385/uvd16385sd1.html"
 set line = '^  SPARTA-calculated Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line
 

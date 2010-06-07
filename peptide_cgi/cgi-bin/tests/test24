@@ -34,20 +34,20 @@ set files = ( data_dir/6502as1.dat \
 	data_dir/6502rc1.dat \
 	data_dir/6502rc2.dat \
 	data_dir/6502rl.dat \
-	html_dir/6502as1.html \
-	html_dir/6502as2.html \
-	html_dir/6502c1.html \
-	html_dir/6502c2.html \
-	html_dir/6502d1.html \
-	html_dir/6502d2.html \
-	html_dir/6502hc1.html \
-	html_dir/6502hc2.html \
-	html_dir/6502hn1.html \
-	html_dir/6502hn2.html \
-	html_dir/6502p1.html \
-	html_dir/6502p2.html \
-	html_dir/6502y.html \
-	html_dir/6502y_large.html \
+	html_dir/6502/6502as1.html \
+	html_dir/6502/6502as2.html \
+	html_dir/6502/6502c1.html \
+	html_dir/6502/6502c2.html \
+	html_dir/6502/6502d1.html \
+	html_dir/6502/6502d2.html \
+	html_dir/6502/6502hc1.html \
+	html_dir/6502/6502hc2.html \
+	html_dir/6502/6502hn1.html \
+	html_dir/6502/6502hn2.html \
+	html_dir/6502/6502p1.html \
+	html_dir/6502/6502p2.html \
+	html_dir/6502/6502y.html \
+	html_dir/6502/6502y_large.html \
 	session_dir/6502/6502acdd \
 	session_dir/6502/6502as1.ds \
 	session_dir/6502/6502as2.ds \
@@ -61,18 +61,18 @@ set files = ( data_dir/6502as1.dat \
 	session_dir/6502/6502hn2.ds \
 	session_dir/6502/6502p1.ds \
 	session_dir/6502/6502p2.ds \
-	html_dir/6502as1_large.html \
-	html_dir/6502as2_large.html \
-	html_dir/6502c1_large.html \
-	html_dir/6502c2_large.html \
-	html_dir/6502d1_large.html \
-	html_dir/6502d2_large.html \
-	html_dir/6502hc1_large.html \
-	html_dir/6502hc2_large.html \
-	html_dir/6502hn1_large.html \
-	html_dir/6502hn2_large.html \
-	html_dir/6502p1_large.html \
-	html_dir/6502p2_large.html )
+	html_dir/6502/6502as1_large.html \
+	html_dir/6502/6502as2_large.html \
+	html_dir/6502/6502c1_large.html \
+	html_dir/6502/6502c2_large.html \
+	html_dir/6502/6502d1_large.html \
+	html_dir/6502/6502d2_large.html \
+	html_dir/6502/6502hc1_large.html \
+	html_dir/6502/6502hc2_large.html \
+	html_dir/6502/6502hn1_large.html \
+	html_dir/6502/6502hn2_large.html \
+	html_dir/6502/6502p1_large.html \
+	html_dir/6502/6502p2_large.html )
 
 foreach file ($files)
   if (! -f $file) then

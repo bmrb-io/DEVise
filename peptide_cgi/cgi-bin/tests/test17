@@ -42,30 +42,30 @@ set files = (data_dir/test17_outas1.dat \
 	data_dir/test17_outt21.dat \
 	data_dir/test17_outt22.dat \
 	data_dir/test17_outt23.dat \
-	html_dir/test17_outas1.html \
-	html_dir/test17_outc1.html \
-	html_dir/test17_outd1.html \
-	html_dir/test17_outg1.html \
-	html_dir/test17_outhc1.html \
-	html_dir/test17_outhn1.html \
-	html_dir/test17_outn1.html \
-	html_dir/test17_outn2.html \
-	html_dir/test17_outn3.html \
-	html_dir/test17_outn4.html \
-	html_dir/test17_outn5.html \
-	html_dir/test17_outn6.html \
-	html_dir/test17_outn7.html \
-	html_dir/test17_outn8.html \
-	html_dir/test17_outn9.html \
-	html_dir/test17_outp1.html \
-	html_dir/test17_outt11.html \
-	html_dir/test17_outt12.html \
-	html_dir/test17_outt13.html \
-	html_dir/test17_outt21.html \
-	html_dir/test17_outt22.html \
-	html_dir/test17_outt23.html \
-	html_dir/test17_outy.html \
-	html_dir/test17_outy_large.html \
+	html_dir/test17_out/test17_outas1.html \
+	html_dir/test17_out/test17_outc1.html \
+	html_dir/test17_out/test17_outd1.html \
+	html_dir/test17_out/test17_outg1.html \
+	html_dir/test17_out/test17_outhc1.html \
+	html_dir/test17_out/test17_outhn1.html \
+	html_dir/test17_out/test17_outn1.html \
+	html_dir/test17_out/test17_outn2.html \
+	html_dir/test17_out/test17_outn3.html \
+	html_dir/test17_out/test17_outn4.html \
+	html_dir/test17_out/test17_outn5.html \
+	html_dir/test17_out/test17_outn6.html \
+	html_dir/test17_out/test17_outn7.html \
+	html_dir/test17_out/test17_outn8.html \
+	html_dir/test17_out/test17_outn9.html \
+	html_dir/test17_out/test17_outp1.html \
+	html_dir/test17_out/test17_outt11.html \
+	html_dir/test17_out/test17_outt12.html \
+	html_dir/test17_out/test17_outt13.html \
+	html_dir/test17_out/test17_outt21.html \
+	html_dir/test17_out/test17_outt22.html \
+	html_dir/test17_out/test17_outt23.html \
+	html_dir/test17_out/test17_outy.html \
+	html_dir/test17_out/test17_outy_large.html \
 	session_dir/test17_out/test17_outacdd \
 	session_dir/test17_out/test17_outas1.ds \
 	session_dir/test17_out/test17_outc1.ds \
@@ -90,31 +90,31 @@ set files = (data_dir/test17_outas1.dat \
 	session_dir/test17_out/test17_outt22.ds \
 	session_dir/test17_out/test17_outt23.ds \
 	data_dir/test17_outam1.dat \
-	html_dir/test17_outam1.html \
+	html_dir/test17_out/test17_outam1.html \
 	session_dir/test17_out/test17_outam1.ds \
-	html_dir/test17_outam1_large.html \
-	html_dir/test17_outas1_large.html \
-	html_dir/test17_outc1_large.html \
-	html_dir/test17_outd1_large.html \
-	html_dir/test17_outg1_large.html \
-	html_dir/test17_outhc1_large.html \
-	html_dir/test17_outhn1_large.html \
-	html_dir/test17_outn1_large.html \
-	html_dir/test17_outn2_large.html \
-	html_dir/test17_outn3_large.html \
-	html_dir/test17_outn4_large.html \
-	html_dir/test17_outn5_large.html \
-	html_dir/test17_outn6_large.html \
-	html_dir/test17_outn7_large.html \
-	html_dir/test17_outn8_large.html \
-	html_dir/test17_outn9_large.html \
-	html_dir/test17_outp1_large.html \
-	html_dir/test17_outt11_large.html \
-	html_dir/test17_outt12_large.html \
-	html_dir/test17_outt13_large.html \
-	html_dir/test17_outt21_large.html \
-	html_dir/test17_outt22_large.html \
-	html_dir/test17_outt23_large.html)
+	html_dir/test17_out/test17_outam1_large.html \
+	html_dir/test17_out/test17_outas1_large.html \
+	html_dir/test17_out/test17_outc1_large.html \
+	html_dir/test17_out/test17_outd1_large.html \
+	html_dir/test17_out/test17_outg1_large.html \
+	html_dir/test17_out/test17_outhc1_large.html \
+	html_dir/test17_out/test17_outhn1_large.html \
+	html_dir/test17_out/test17_outn1_large.html \
+	html_dir/test17_out/test17_outn2_large.html \
+	html_dir/test17_out/test17_outn3_large.html \
+	html_dir/test17_out/test17_outn4_large.html \
+	html_dir/test17_out/test17_outn5_large.html \
+	html_dir/test17_out/test17_outn6_large.html \
+	html_dir/test17_out/test17_outn7_large.html \
+	html_dir/test17_out/test17_outn8_large.html \
+	html_dir/test17_out/test17_outn9_large.html \
+	html_dir/test17_out/test17_outp1_large.html \
+	html_dir/test17_out/test17_outt11_large.html \
+	html_dir/test17_out/test17_outt12_large.html \
+	html_dir/test17_out/test17_outt13_large.html \
+	html_dir/test17_out/test17_outt21_large.html \
+	html_dir/test17_out/test17_outt22_large.html \
+	html_dir/test17_out/test17_outt23_large.html)
 
 foreach file ($files)
   if (! -f $file) then
@@ -124,24 +124,24 @@ foreach file ($files)
 end
 
 # Check for correct PDB links in summary html file.
-if (`grep -l 1QQS html_dir/test17_outy.html` != "") then
+if (`grep -l 1QQS html_dir/test17_out/test17_outy.html` != "") then
   echo "Error: PDB ID 1QQS should have been rejected because"
   echo "  sequence identity is less than 100%."
   set result = 1
 endif
 
-if (`grep -l 1DFV html_dir/test17_outy.html` != "") then
+if (`grep -l 1DFV html_dir/test17_out/test17_outy.html` != "") then
   echo "Error: PDB ID 1DFV should have been rejected because"
   echo "  the number of residues does not match."
   set result = 1
 endif
 
-if (`grep -l 1NGL html_dir/test17_outy.html` == "") then
+if (`grep -l 1NGL html_dir/test17_out/test17_outy.html` == "") then
   echo "Error: PDB ID 1NGL should have been linked."
   set result = 1
 endif
 
-if (`grep -l 1L6M html_dir/test17_outy.html` != "") then
+if (`grep -l 1L6M html_dir/test17_out/test17_outy.html` != "") then
   echo "Error: PDB ID 1L6M should have been rejected because"
   echo "  sequence identity is less than 100%."
   set result = 1

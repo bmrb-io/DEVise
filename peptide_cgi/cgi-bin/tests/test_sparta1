@@ -30,24 +30,24 @@ set files = ( data_dir/15339am1.dat \
 	data_dir/15339rc1.dat \
 	data_dir/15339rl.dat \
 	data_dir/15339sd1.dat \
-	html_dir/15339am1.html \
-	html_dir/15339am1_large.html \
-	html_dir/15339as1.html \
-	html_dir/15339as1_large.html \
-	html_dir/15339c1.html \
-	html_dir/15339c1_large.html \
-	html_dir/15339d1.html \
-	html_dir/15339d1_large.html \
-	html_dir/15339hc1.html \
-	html_dir/15339hc1_large.html \
-	html_dir/15339hn1.html \
-	html_dir/15339hn1_large.html \
-	html_dir/15339p1.html \
-	html_dir/15339p1_large.html \
-	html_dir/15339sd1.html \
-	html_dir/15339sd1_large.html \
-	html_dir/15339y.html \
-	html_dir/15339y_large.html \
+	html_dir/15339/15339am1.html \
+	html_dir/15339/15339am1_large.html \
+	html_dir/15339/15339as1.html \
+	html_dir/15339/15339as1_large.html \
+	html_dir/15339/15339c1.html \
+	html_dir/15339/15339c1_large.html \
+	html_dir/15339/15339d1.html \
+	html_dir/15339/15339d1_large.html \
+	html_dir/15339/15339hc1.html \
+	html_dir/15339/15339hc1_large.html \
+	html_dir/15339/15339hn1.html \
+	html_dir/15339/15339hn1_large.html \
+	html_dir/15339/15339p1.html \
+	html_dir/15339/15339p1_large.html \
+	html_dir/15339/15339sd1.html \
+	html_dir/15339/15339sd1_large.html \
+	html_dir/15339/15339y.html \
+	html_dir/15339/15339y_large.html \
 	session_dir/15339/15339acdd \
 	session_dir/15339/15339am1.ds \
 	session_dir/15339/15339as1.ds \
@@ -78,13 +78,13 @@ source tests/check4line
 set line = '^1 1 59 GLU -0.141 -2.163 0.326 0.0 0.223 -0.516$'
 source tests/check4line
 
-set file = "html_dir/15339y.html"
+set file = "html_dir/15339/15339y.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="15339sd1.html">58 residues</a></td>$'
 source tests/check4line
 
-set file = "html_dir/15339y_large.html"
+set file = "html_dir/15339/15339y_large.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="15339sd1_large.html">58 residues</a></td>$'

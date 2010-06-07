@@ -62,26 +62,24 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	data_dir/uvd/test47_outp1.dat \
 	data_dir/uvd/test47_outrc1.dat \
 	data_dir/uvd/test47_outrl.dat \
-	html_dir/uvd/test47_outac1.html \
-	html_dir/uvd/test47_outac1_large.html \
-	html_dir/uvd/test47_outam1.html \
-	html_dir/uvd/test47_outam1_large.html \
-	html_dir/uvd/test47_outas1.html \
-	html_dir/uvd/test47_outas1_large.html \
-	html_dir/uvd/test47_outc1.html \
-	html_dir/uvd/test47_outc1_large.html \
-	html_dir/uvd/test47_outd1.html \
-	html_dir/uvd/test47_outd1_large.html \
-	html_dir/uvd/test47_outhc1.html \
-	html_dir/uvd/test47_outhc1_large.html \
-	html_dir/uvd/test47_outhn1.html \
-	html_dir/uvd/test47_outhn1_large.html \
-	html_dir/uvd/test47_outp1.html \
-	html_dir/uvd/test47_outp1_large.html \
-	html_dir/uvd/test47_outtmp1y.html \
-	html_dir/uvd/test47_outtmp1y_large.html \
-	html_dir/uvd/test47_outy.html \
-	html_dir/uvd/test47_outy_large.html \
+	html_dir/uvd/test47_out/test47_outac1.html \
+	html_dir/uvd/test47_out/test47_outac1_large.html \
+	html_dir/uvd/test47_out/test47_outam1.html \
+	html_dir/uvd/test47_out/test47_outam1_large.html \
+	html_dir/uvd/test47_out/test47_outas1.html \
+	html_dir/uvd/test47_out/test47_outas1_large.html \
+	html_dir/uvd/test47_out/test47_outc1.html \
+	html_dir/uvd/test47_out/test47_outc1_large.html \
+	html_dir/uvd/test47_out/test47_outd1.html \
+	html_dir/uvd/test47_out/test47_outd1_large.html \
+	html_dir/uvd/test47_out/test47_outhc1.html \
+	html_dir/uvd/test47_out/test47_outhc1_large.html \
+	html_dir/uvd/test47_out/test47_outhn1.html \
+	html_dir/uvd/test47_out/test47_outhn1_large.html \
+	html_dir/uvd/test47_out/test47_outp1.html \
+	html_dir/uvd/test47_out/test47_outp1_large.html \
+	html_dir/uvd/test47_out/test47_outy.html \
+	html_dir/uvd/test47_out/test47_outy_large.html \
 	session_dir/.uvd/test47_out/test47_outac1.ds \
 	session_dir/.uvd/test47_out/test47_outacdd \
 	session_dir/.uvd/test47_out/test47_outam1.ds \
@@ -97,12 +95,12 @@ set files = ( data_dir/uvd/test47_outac1.dat \
 	data_dir/uvd/test47_outcsr1_4.dat \
 	data_dir/uvd/test47_outcsr1_5.dat \
 	data_dir/uvd/test47_outcsr1src.dat \
-	html_dir/uvd/test47_outcsr11.html \
-	html_dir/uvd/test47_outcsr11_large.html \
-	html_dir/uvd/test47_outcsr21.html \
-	html_dir/uvd/test47_outcsr21_large.html \
-	html_dir/uvd/test47_outcsr31.html \
-	html_dir/uvd/test47_outcsr31_large.html \
+	html_dir/uvd/test47_out/test47_outcsr11.html \
+	html_dir/uvd/test47_out/test47_outcsr11_large.html \
+	html_dir/uvd/test47_out/test47_outcsr21.html \
+	html_dir/uvd/test47_out/test47_outcsr21_large.html \
+	html_dir/uvd/test47_out/test47_outcsr31.html \
+	html_dir/uvd/test47_out/test47_outcsr31_large.html \
 	session_dir/.uvd/test47_out/test47_outcsr11.ds \
 	session_dir/.uvd/test47_out/test47_outcsr21.ds \
 	session_dir/.uvd/test47_out/test47_outcsr31.ds )
@@ -115,23 +113,23 @@ foreach file ($files)
 end
 
 # Check for correct structure link in summary html file.
-if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_pdb=2&coord_index=1' html_dir/uvd/test47_outy.html` == "") then
+if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_pdb=2&coord_index=1' html_dir/uvd/test47_out/test47_outy.html` == "") then
   echo "1FSP structure link missing"
   set result = 1
 endif
 
 # Check for correct chemical shift reference links in summary html file.
-if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_csr=2&coord_index=1&csr_index=1' html_dir/uvd/test47_outy.html` == "") then
+if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_csr=2&coord_index=1&csr_index=1' html_dir/uvd/test47_out/test47_outy.html` == "") then
   echo "1FSP structure link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_csr=2&coord_index=1&csr_index=2' html_dir/uvd/test47_outy.html` == "") then
+if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_csr=2&coord_index=1&csr_index=2' html_dir/uvd/test47_out/test47_outy.html` == "") then
   echo "1FSP structure link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_csr=2&coord_index=1&csr_index=3' html_dir/uvd/test47_outy.html` == "") then
+if (`grep -l 'make_uvd?pdbid=1FSP&file=test_data/20070228.28103.str&name=test47_out&do_csr=2&coord_index=1&csr_index=3' html_dir/uvd/test47_out/test47_outy.html` == "") then
   echo "1FSP structure link missing"
   set result = 1
 endif

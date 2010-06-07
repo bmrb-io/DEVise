@@ -51,42 +51,40 @@ set files = ( data_dir/15418ac5.dat \
 	data_dir/15418rrtar-md5.dat \
 	data_dir/15418tar5.dat \
 	data_dir/15418tar-md5.dat \
-	html_dir/15418ac5.html \
-	html_dir/15418ac5_large.html \
-	html_dir/15418am1.html \
-	html_dir/15418am1_large.html \
-	html_dir/15418am2.html \
-	html_dir/15418am2_large.html \
-	html_dir/15418as1.html \
-	html_dir/15418as1_large.html \
-	html_dir/15418as2.html \
-	html_dir/15418as2_large.html \
-	html_dir/15418c2.html \
-	html_dir/15418c2_large.html \
-	html_dir/15418d1.html \
-	html_dir/15418d1_large.html \
-	html_dir/15418d2.html \
-	html_dir/15418d2_large.html \
-	html_dir/15418hc1.html \
-	html_dir/15418hc1_large.html \
-	html_dir/15418hc2.html \
-	html_dir/15418hc2_large.html \
-	html_dir/15418hn1.html \
-	html_dir/15418hn1_large.html \
-	html_dir/15418hn2.html \
-	html_dir/15418hn2_large.html \
-	html_dir/15418p1.html \
-	html_dir/15418p1_large.html \
-	html_dir/15418p2.html \
-	html_dir/15418p2_large.html \
-	html_dir/15418rrtar5.html \
-	html_dir/15418rrtar5_large.html \
-	html_dir/15418tar5.html \
-	html_dir/15418tar5_large.html \
-	html_dir/15418tmp5y.html \
-	html_dir/15418tmp5y_large.html \
-	html_dir/15418y.html \
-	html_dir/15418y_large.html \
+	html_dir/15418/15418ac5.html \
+	html_dir/15418/15418ac5_large.html \
+	html_dir/15418/15418am1.html \
+	html_dir/15418/15418am1_large.html \
+	html_dir/15418/15418am2.html \
+	html_dir/15418/15418am2_large.html \
+	html_dir/15418/15418as1.html \
+	html_dir/15418/15418as1_large.html \
+	html_dir/15418/15418as2.html \
+	html_dir/15418/15418as2_large.html \
+	html_dir/15418/15418c2.html \
+	html_dir/15418/15418c2_large.html \
+	html_dir/15418/15418d1.html \
+	html_dir/15418/15418d1_large.html \
+	html_dir/15418/15418d2.html \
+	html_dir/15418/15418d2_large.html \
+	html_dir/15418/15418hc1.html \
+	html_dir/15418/15418hc1_large.html \
+	html_dir/15418/15418hc2.html \
+	html_dir/15418/15418hc2_large.html \
+	html_dir/15418/15418hn1.html \
+	html_dir/15418/15418hn1_large.html \
+	html_dir/15418/15418hn2.html \
+	html_dir/15418/15418hn2_large.html \
+	html_dir/15418/15418p1.html \
+	html_dir/15418/15418p1_large.html \
+	html_dir/15418/15418p2.html \
+	html_dir/15418/15418p2_large.html \
+	html_dir/15418/15418rrtar5.html \
+	html_dir/15418/15418rrtar5_large.html \
+	html_dir/15418/15418tar5.html \
+	html_dir/15418/15418tar5_large.html \
+	html_dir/15418/15418y.html \
+	html_dir/15418/15418y_large.html \
 	session_dir/15418/15418ac5.ds \
 	session_dir/15418/15418acdd \
 	session_dir/15418/15418am1.ds \
@@ -156,13 +154,13 @@ set line = '^2 88 LEU -220.0 -20.0 2_88_N N 2_88_CA CA 2_88_CB CB 2_88_CG CG chi
 source tests/check4line
 
 
-set file = "html_dir/15418y.html"
+set file = "html_dir/15418/15418y.html"
 set line = '<td><a href="http://.*/make_view?pdbid=2JTT&number=15418&do_tar=3&coord_index=1&size_str=">2JTT</a></td>'
 source tests/check4line
 set line = '<td><a href="http://.*/make_view?pdbid=2JTT&number=15418&do_rrtar=3&coord_index=1&size_str=">2JTT</a></td>'
 source tests/check4line
 
-set file = "html_dir/15418y_large.html"
+set file = "html_dir/15418/15418y_large.html"
 set line = '<td><a href="http://.*/make_view?pdbid=2JTT&number=15418&do_tar=3&coord_index=1&size_str=_large">2JTT</a></td>'
 source tests/check4line
 set line = '<td><a href="http://.*/make_view?pdbid=2JTT&number=15418&do_rrtar=3&coord_index=1&size_str=_large">2JTT</a></td>'

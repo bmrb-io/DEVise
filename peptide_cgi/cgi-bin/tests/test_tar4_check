@@ -14,28 +14,26 @@ set files = ( data_dir/4081ac1.dat \
 	data_dir/4081rl.dat \
 	data_dir/4081tar1.dat \
 	data_dir/4081tar-md1.dat \
-	html_dir/4081ac1.html \
-	html_dir/4081ac1_large.html \
-	html_dir/4081am1.html \
-	html_dir/4081am1_large.html \
-	html_dir/4081as1.html \
-	html_dir/4081as1_large.html \
-	html_dir/4081c1.html \
-	html_dir/4081c1_large.html \
-	html_dir/4081d1.html \
-	html_dir/4081d1_large.html \
-	html_dir/4081hc1.html \
-	html_dir/4081hc1_large.html \
-	html_dir/4081hn1.html \
-	html_dir/4081hn1_large.html \
-	html_dir/4081p1.html \
-	html_dir/4081p1_large.html \
-	html_dir/4081tar1.html \
-	html_dir/4081tar1_large.html \
-	html_dir/4081tmp1y.html \
-	html_dir/4081tmp1y_large.html \
-	html_dir/4081y.html \
-	html_dir/4081y_large.html \
+	html_dir/4081/4081ac1.html \
+	html_dir/4081/4081ac1_large.html \
+	html_dir/4081/4081am1.html \
+	html_dir/4081/4081am1_large.html \
+	html_dir/4081/4081as1.html \
+	html_dir/4081/4081as1_large.html \
+	html_dir/4081/4081c1.html \
+	html_dir/4081/4081c1_large.html \
+	html_dir/4081/4081d1.html \
+	html_dir/4081/4081d1_large.html \
+	html_dir/4081/4081hc1.html \
+	html_dir/4081/4081hc1_large.html \
+	html_dir/4081/4081hn1.html \
+	html_dir/4081/4081hn1_large.html \
+	html_dir/4081/4081p1.html \
+	html_dir/4081/4081p1_large.html \
+	html_dir/4081/4081tar1.html \
+	html_dir/4081/4081tar1_large.html \
+	html_dir/4081/4081y.html \
+	html_dir/4081/4081y_large.html \
 	session_dir/4081/4081ac1.ds \
 	session_dir/4081/4081acdd \
 	session_dir/4081/4081am1.ds \

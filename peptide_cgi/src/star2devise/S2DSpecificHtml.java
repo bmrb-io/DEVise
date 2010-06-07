@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2010/06/01 15:00:02  wenger
+// Implemented to-do 132 (links from individual visualization pages back
+// to the summary pages).
+//
 // Revision 1.16  2010/05/26 16:05:22  wenger
 // Fixed problems with incorrect links to different-size visualization
 // pages in visualization-specific html pages.
@@ -232,7 +236,8 @@ public class S2DSpecificHtml {
     protected String OutFileName(String sizeSuffix) throws S2DError
     {
         String outFileName = _htmlDir + File.separator + _name +
-	  _dataSuffix + _frameIndex + sizeSuffix + ".html";
+	  File.separator + _name + _dataSuffix + _frameIndex +
+	  sizeSuffix + ".html";
     	return outFileName;
     }
 

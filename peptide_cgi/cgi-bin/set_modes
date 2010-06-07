@@ -40,11 +40,11 @@ echo set_modes arguments: $* > $outfile
 if ($is_uvd) then
   set sess_dir = "session_dir/.uvd"
   set data_dir = "data_dir/uvd"
-  set html_dir = "html_dir/uvd"
+  set html_dir = "html_dir/uvd/$name"
 else
   set sess_dir = "session_dir"
   set data_dir = "data_dir"
-  set html_dir = "html_dir"
+  set html_dir = "html_dir/$name"
 endif
 
 # Make sure the session file directory has correct permissions, since
@@ -62,4 +62,5 @@ if (-e session_dir/vis_server/$name) then
   chmod 644 session_dir/vis_server/$name/$name* \
     data_dir/vis_server/$name* >>& $outfile
 endif
-chmod 644 $html_dir/$name* >>& $outfile
+chmod 777 $html_dir >>& $outfile
+chmod 644 $html_dir/* >>& $outfile

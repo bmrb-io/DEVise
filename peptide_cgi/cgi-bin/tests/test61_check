@@ -22,38 +22,38 @@ set files = ( data_dir/5085am1.dat \
 	data_dir/5085rc1.dat \
 	data_dir/5085rc2.dat \
 	data_dir/5085rl.dat \
-	html_dir/5085am1.html \
-	html_dir/5085am1_large.html \
-	html_dir/5085am2.html \
-	html_dir/5085am2_large.html \
-	html_dir/5085as1.html \
-	html_dir/5085as1_large.html \
-	html_dir/5085as2.html \
-	html_dir/5085as2_large.html \
-	html_dir/5085c1.html \
-	html_dir/5085c1_large.html \
-	html_dir/5085c2.html \
-	html_dir/5085c2_large.html \
-	html_dir/5085d1.html \
-	html_dir/5085d1_large.html \
-	html_dir/5085d2.html \
-	html_dir/5085d2_large.html \
-	html_dir/5085g1.html \
-	html_dir/5085g1_large.html \
-	html_dir/5085g2.html \
-	html_dir/5085g2_large.html \
-	html_dir/5085hc1.html \
-	html_dir/5085hc1_large.html \
-	html_dir/5085hn1.html \
-	html_dir/5085hn1_large.html \
-	html_dir/5085hn2.html \
-	html_dir/5085hn2_large.html \
-	html_dir/5085p1.html \
-	html_dir/5085p1_large.html \
-	html_dir/5085p2.html \
-	html_dir/5085p2_large.html \
-	html_dir/5085y.html \
-	html_dir/5085y_large.html \
+	html_dir/5085/5085am1.html \
+	html_dir/5085/5085am1_large.html \
+	html_dir/5085/5085am2.html \
+	html_dir/5085/5085am2_large.html \
+	html_dir/5085/5085as1.html \
+	html_dir/5085/5085as1_large.html \
+	html_dir/5085/5085as2.html \
+	html_dir/5085/5085as2_large.html \
+	html_dir/5085/5085c1.html \
+	html_dir/5085/5085c1_large.html \
+	html_dir/5085/5085c2.html \
+	html_dir/5085/5085c2_large.html \
+	html_dir/5085/5085d1.html \
+	html_dir/5085/5085d1_large.html \
+	html_dir/5085/5085d2.html \
+	html_dir/5085/5085d2_large.html \
+	html_dir/5085/5085g1.html \
+	html_dir/5085/5085g1_large.html \
+	html_dir/5085/5085g2.html \
+	html_dir/5085/5085g2_large.html \
+	html_dir/5085/5085hc1.html \
+	html_dir/5085/5085hc1_large.html \
+	html_dir/5085/5085hn1.html \
+	html_dir/5085/5085hn1_large.html \
+	html_dir/5085/5085hn2.html \
+	html_dir/5085/5085hn2_large.html \
+	html_dir/5085/5085p1.html \
+	html_dir/5085/5085p1_large.html \
+	html_dir/5085/5085p2.html \
+	html_dir/5085/5085p2_large.html \
+	html_dir/5085/5085y.html \
+	html_dir/5085/5085y_large.html \
 	session_dir/5085/5085acdd \
 	session_dir/5085/5085am1.ds \
 	session_dir/5085/5085am2.ds \

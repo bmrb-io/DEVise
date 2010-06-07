@@ -13,24 +13,24 @@ set files = ( data_dir/uvd/20090824_12345am1.dat \
 	data_dir/uvd/20090824_12345rl.dat \
 	data_dir/uvd/20090824_12345sd1.dat \
 	data_dir/uvd/20090824_12345sd1_models.dat \
-	html_dir/uvd/20090824_12345am1.html \
-	html_dir/uvd/20090824_12345am1_large.html \
-	html_dir/uvd/20090824_12345as1.html \
-	html_dir/uvd/20090824_12345as1_large.html \
-	html_dir/uvd/20090824_12345c1.html \
-	html_dir/uvd/20090824_12345c1_large.html \
-	html_dir/uvd/20090824_12345d1.html \
-	html_dir/uvd/20090824_12345d1_large.html \
-	html_dir/uvd/20090824_12345hc1.html \
-	html_dir/uvd/20090824_12345hc1_large.html \
-	html_dir/uvd/20090824_12345hn1.html \
-	html_dir/uvd/20090824_12345hn1_large.html \
-	html_dir/uvd/20090824_12345p1.html \
-	html_dir/uvd/20090824_12345p1_large.html \
-	html_dir/uvd/20090824_12345sd1.html \
-	html_dir/uvd/20090824_12345sd1_large.html \
-	html_dir/uvd/20090824_12345y.html \
-	html_dir/uvd/20090824_12345y_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345am1.html \
+	html_dir/uvd/20090824_12345/20090824_12345am1_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345as1.html \
+	html_dir/uvd/20090824_12345/20090824_12345as1_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345c1.html \
+	html_dir/uvd/20090824_12345/20090824_12345c1_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345d1.html \
+	html_dir/uvd/20090824_12345/20090824_12345d1_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345hc1.html \
+	html_dir/uvd/20090824_12345/20090824_12345hc1_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345hn1.html \
+	html_dir/uvd/20090824_12345/20090824_12345hn1_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345p1.html \
+	html_dir/uvd/20090824_12345/20090824_12345p1_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345sd1.html \
+	html_dir/uvd/20090824_12345/20090824_12345sd1_large.html \
+	html_dir/uvd/20090824_12345/20090824_12345y.html \
+	html_dir/uvd/20090824_12345/20090824_12345y_large.html \
 	session_dir/.uvd/20090824_12345/20090824_12345acdd \
 	session_dir/.uvd/20090824_12345/20090824_12345am1.ds \
 	session_dir/.uvd/20090824_12345/20090824_12345as1.ds \
@@ -69,19 +69,19 @@ source tests/check4line
 set line = '^1 0 107 LEU -0.031 0.038 0.022 0.675 0.875 -0.095$'
 source tests/check4line
 
-set file = "html_dir/uvd/20090824_12345y.html"
+set file = "html_dir/uvd/20090824_12345/20090824_12345y.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="20090824_12345sd1.html">106 residues</a></td>$'
 source tests/check4line
 
-set file = "html_dir/uvd/20090824_12345y_large.html"
+set file = "html_dir/uvd/20090824_12345/20090824_12345y_large.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="20090824_12345sd1_large.html">106 residues</a></td>$'
 source tests/check4line
 
-set file = "html_dir/uvd/20090824_12345sd1.html"
+set file = "html_dir/uvd/20090824_12345/20090824_12345sd1.html"
 set line = '^  SPARTA-calculated Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line
 

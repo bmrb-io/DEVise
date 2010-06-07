@@ -16,26 +16,24 @@ set files = ( data_dir/16270am1.dat \
 	data_dir/16270rrdistr2.dat \
 	data_dir/16270rrdistrc2.dat \
 	data_dir/16270rrdistr-md2.dat \
-	html_dir/16270am1.html \
-	html_dir/16270am1_large.html \
-	html_dir/16270as1.html \
-	html_dir/16270as1_large.html \
-	html_dir/16270c1.html \
-	html_dir/16270c1_large.html \
-	html_dir/16270d1.html \
-	html_dir/16270d1_large.html \
-	html_dir/16270hc1.html \
-	html_dir/16270hc1_large.html \
-	html_dir/16270hn1.html \
-	html_dir/16270hn1_large.html \
-	html_dir/16270p1.html \
-	html_dir/16270p1_large.html \
-	html_dir/16270rrdistr2.html \
-	html_dir/16270rrdistr2_large.html \
-	html_dir/16270tmp2y.html \
-	html_dir/16270tmp2y_large.html \
-	html_dir/16270y.html \
-	html_dir/16270y_large.html \
+	html_dir/16270/16270am1.html \
+	html_dir/16270/16270am1_large.html \
+	html_dir/16270/16270as1.html \
+	html_dir/16270/16270as1_large.html \
+	html_dir/16270/16270c1.html \
+	html_dir/16270/16270c1_large.html \
+	html_dir/16270/16270d1.html \
+	html_dir/16270/16270d1_large.html \
+	html_dir/16270/16270hc1.html \
+	html_dir/16270/16270hc1_large.html \
+	html_dir/16270/16270hn1.html \
+	html_dir/16270/16270hn1_large.html \
+	html_dir/16270/16270p1.html \
+	html_dir/16270/16270p1_large.html \
+	html_dir/16270/16270rrdistr2.html \
+	html_dir/16270/16270rrdistr2_large.html \
+	html_dir/16270/16270y.html \
+	html_dir/16270/16270y_large.html \
 	session_dir/16270/16270acdd \
 	session_dir/16270/16270am1.ds \
 	session_dir/16270/16270as1.ds \

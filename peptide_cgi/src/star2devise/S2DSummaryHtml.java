@@ -31,6 +31,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.23  2010/04/23 16:51:08  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.22  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -218,6 +221,12 @@ public class S2DSummaryHtml {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
+    public static String directory(String htmlDir, String name)
+    {
+    	return htmlDir + File.separator + name;
+    }
+
+    //-------------------------------------------------------------------
     public static String fileName(String htmlDir, String name)
     {
 	return fileName(htmlDir, name, "");
@@ -227,7 +236,8 @@ public class S2DSummaryHtml {
     public static String fileName(String htmlDir, String name,
       String sizeString)
     {
-	return htmlDir + File.separator + fileNameShort(name, sizeString);
+	return directory(htmlDir, name) + File.separator +
+	  fileNameShort(name, sizeString);
     }
 
     //-------------------------------------------------------------------

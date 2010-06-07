@@ -31,17 +31,17 @@ set files = (data_dir/vis_server/test5c_outac1.dat \
 	data_dir/vis_server/test5c_outp1.dat \
 	data_dir/vis_server/test5c_outrc1.dat \
 	data_dir/vis_server/test5c_outrl.dat \
-	html_dir/test5c_outac1.html \
-	html_dir/test5c_outas1.html \
-	html_dir/test5c_outc1.html \
-	html_dir/test5c_outcsr1.html \
-	html_dir/test5c_outd1.html \
-	html_dir/test5c_outhc1.html \
-	html_dir/test5c_outhc1_large.html \
-	html_dir/test5c_outhn1.html \
-	html_dir/test5c_outp1.html \
-	html_dir/test5c_outy.html \
-	html_dir/test5c_outy_large.html \
+	html_dir/test5c_out/test5c_outac1.html \
+	html_dir/test5c_out/test5c_outas1.html \
+	html_dir/test5c_out/test5c_outc1.html \
+	html_dir/test5c_out/test5c_outcsr1.html \
+	html_dir/test5c_out/test5c_outd1.html \
+	html_dir/test5c_out/test5c_outhc1.html \
+	html_dir/test5c_out/test5c_outhc1_large.html \
+	html_dir/test5c_out/test5c_outhn1.html \
+	html_dir/test5c_out/test5c_outp1.html \
+	html_dir/test5c_out/test5c_outy.html \
+	html_dir/test5c_out/test5c_outy_large.html \
 	session_dir/vis_server/test5c_out/test5c_outac1.ds \
 	session_dir/vis_server/test5c_out/test5c_outacdd \
 	session_dir/vis_server/test5c_out/test5c_outas1.ds \

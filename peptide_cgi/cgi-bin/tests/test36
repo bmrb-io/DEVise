@@ -26,15 +26,15 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	data_dir/lacs_example1n9.dat data_dir/lacs_example1p1.dat data_dir/lacs_example1rc1.dat \
 	data_dir/lacs_example1rl.dat data_dir/lacs_example1t11.dat data_dir/lacs_example1t12.dat \
 	data_dir/lacs_example1t13.dat data_dir/lacs_example1t21.dat data_dir/lacs_example1t22.dat \
-	data_dir/lacs_example1t23.dat html_dir/lacs_example1as1.html \
-	html_dir/lacs_example1c1.html html_dir/lacs_example1d1.html html_dir/lacs_example1g1.html \
-	html_dir/lacs_example1hn1.html html_dir/lacs_example1n1.html html_dir/lacs_example1n2.html \
-	html_dir/lacs_example1n3.html html_dir/lacs_example1n4.html html_dir/lacs_example1n5.html \
-	html_dir/lacs_example1n6.html html_dir/lacs_example1n7.html html_dir/lacs_example1n8.html \
-	html_dir/lacs_example1n9.html html_dir/lacs_example1p1.html html_dir/lacs_example1t11.html \
-	html_dir/lacs_example1t12.html html_dir/lacs_example1t13.html html_dir/lacs_example1t21.html \
-	html_dir/lacs_example1t22.html html_dir/lacs_example1t23.html \
-	html_dir/lacs_example1y.html html_dir/lacs_example1y_large.html \
+	data_dir/lacs_example1t23.dat html_dir/lacs_example1/lacs_example1as1.html \
+	html_dir/lacs_example1/lacs_example1c1.html html_dir/lacs_example1/lacs_example1d1.html html_dir/lacs_example1/lacs_example1g1.html \
+	html_dir/lacs_example1/lacs_example1hn1.html html_dir/lacs_example1/lacs_example1n1.html html_dir/lacs_example1/lacs_example1n2.html \
+	html_dir/lacs_example1/lacs_example1n3.html html_dir/lacs_example1/lacs_example1n4.html html_dir/lacs_example1/lacs_example1n5.html \
+	html_dir/lacs_example1/lacs_example1n6.html html_dir/lacs_example1/lacs_example1n7.html html_dir/lacs_example1/lacs_example1n8.html \
+	html_dir/lacs_example1/lacs_example1n9.html html_dir/lacs_example1/lacs_example1p1.html html_dir/lacs_example1/lacs_example1t11.html \
+	html_dir/lacs_example1/lacs_example1t12.html html_dir/lacs_example1/lacs_example1t13.html html_dir/lacs_example1/lacs_example1t21.html \
+	html_dir/lacs_example1/lacs_example1t22.html html_dir/lacs_example1/lacs_example1t23.html \
+	html_dir/lacs_example1/lacs_example1y.html html_dir/lacs_example1/lacs_example1y_large.html \
 	session_dir/lacs_example1/lacs_example1acdd \
 	session_dir/lacs_example1/lacs_example1as1.ds session_dir/lacs_example1/lacs_example1c1.ds session_dir/lacs_example1/lacs_example1d1.ds \
 	session_dir/lacs_example1/lacs_example1g1.ds session_dir/lacs_example1/lacs_example1hn1.ds session_dir/lacs_example1/lacs_example1n1.ds \
@@ -45,7 +45,7 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	session_dir/lacs_example1/lacs_example1t21.ds session_dir/lacs_example1/lacs_example1t22.ds session_dir/lacs_example1/lacs_example1t23.ds \
 	data_dir/lacs_example1am1.dat \
 	data_dir/lacs_example1amac1.dat \
-	html_dir/lacs_example1am1.html \
+	html_dir/lacs_example1/lacs_example1am1.html \
 	session_dir/lacs_example1/lacs_example1am1.ds \
 	data_dir/lacs_example1lacsc1.dat \
 	data_dir/lacs_example1lacsc2.dat \
@@ -59,44 +59,44 @@ set files = (data_dir/lacs_example1as1.dat data_dir/lacs_example1c1.dat \
 	data_dir/lacs_example1lacsp2.dat \
 	data_dir/lacs_example1lacsp3.dat \
 	data_dir/lacs_example1lacsp4.dat \
-	html_dir/lacs_example1lacs1.html \
-	html_dir/lacs_example1lacs2.html \
-	html_dir/lacs_example1lacs3.html \
-	html_dir/lacs_example1lacs4.html \
+	html_dir/lacs_example1/lacs_example1lacs1.html \
+	html_dir/lacs_example1/lacs_example1lacs2.html \
+	html_dir/lacs_example1/lacs_example1lacs3.html \
+	html_dir/lacs_example1/lacs_example1lacs4.html \
 	session_dir/lacs_example1/lacs_example1lacs1.ds \
 	session_dir/lacs_example1/lacs_example1lacs2.ds \
 	session_dir/lacs_example1/lacs_example1lacs3.ds \
 	session_dir/lacs_example1/lacs_example1lacs4.ds \
-	html_dir/lacs_example1am1_large.html \
-	html_dir/lacs_example1as1_large.html \
-	html_dir/lacs_example1c1_large.html \
-	html_dir/lacs_example1d1_large.html \
-	html_dir/lacs_example1g1_large.html \
-	html_dir/lacs_example1hn1_large.html \
-	html_dir/lacs_example1lacs1_large.html \
-	html_dir/lacs_example1lacs2_large.html \
-	html_dir/lacs_example1lacs3_large.html \
-	html_dir/lacs_example1lacs4_large.html \
-	html_dir/lacs_example1n1_large.html \
-	html_dir/lacs_example1n2_large.html \
-	html_dir/lacs_example1n3_large.html \
-	html_dir/lacs_example1n4_large.html \
-	html_dir/lacs_example1n5_large.html \
-	html_dir/lacs_example1n6_large.html \
-	html_dir/lacs_example1n7_large.html \
-	html_dir/lacs_example1n8_large.html \
-	html_dir/lacs_example1n9_large.html \
-	html_dir/lacs_example1p1_large.html \
-	html_dir/lacs_example1t11_large.html \
-	html_dir/lacs_example1t12_large.html \
-	html_dir/lacs_example1t13_large.html \
-	html_dir/lacs_example1t21_large.html \
-	html_dir/lacs_example1t22_large.html \
-	html_dir/lacs_example1t23_large.html \
+	html_dir/lacs_example1/lacs_example1am1_large.html \
+	html_dir/lacs_example1/lacs_example1as1_large.html \
+	html_dir/lacs_example1/lacs_example1c1_large.html \
+	html_dir/lacs_example1/lacs_example1d1_large.html \
+	html_dir/lacs_example1/lacs_example1g1_large.html \
+	html_dir/lacs_example1/lacs_example1hn1_large.html \
+	html_dir/lacs_example1/lacs_example1lacs1_large.html \
+	html_dir/lacs_example1/lacs_example1lacs2_large.html \
+	html_dir/lacs_example1/lacs_example1lacs3_large.html \
+	html_dir/lacs_example1/lacs_example1lacs4_large.html \
+	html_dir/lacs_example1/lacs_example1n1_large.html \
+	html_dir/lacs_example1/lacs_example1n2_large.html \
+	html_dir/lacs_example1/lacs_example1n3_large.html \
+	html_dir/lacs_example1/lacs_example1n4_large.html \
+	html_dir/lacs_example1/lacs_example1n5_large.html \
+	html_dir/lacs_example1/lacs_example1n6_large.html \
+	html_dir/lacs_example1/lacs_example1n7_large.html \
+	html_dir/lacs_example1/lacs_example1n8_large.html \
+	html_dir/lacs_example1/lacs_example1n9_large.html \
+	html_dir/lacs_example1/lacs_example1p1_large.html \
+	html_dir/lacs_example1/lacs_example1t11_large.html \
+	html_dir/lacs_example1/lacs_example1t12_large.html \
+	html_dir/lacs_example1/lacs_example1t13_large.html \
+	html_dir/lacs_example1/lacs_example1t21_large.html \
+	html_dir/lacs_example1/lacs_example1t22_large.html \
+	html_dir/lacs_example1/lacs_example1t23_large.html \
 	data_dir/lacs_example1hc1.dat \
-	html_dir/lacs_example1hc1.html \
+	html_dir/lacs_example1/lacs_example1hc1.html \
 	session_dir/lacs_example1/lacs_example1hc1.ds \
-	html_dir/lacs_example1hc1_large.html )
+	html_dir/lacs_example1/lacs_example1hc1_large.html )
 
 foreach file ($files)
   if (! -f $file) then

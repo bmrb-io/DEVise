@@ -29,24 +29,24 @@ set files = ( data_dir/6011ac1.dat \
 	data_dir/6011p1.dat \
 	data_dir/6011rc1.dat \
 	data_dir/6011rl.dat \
-	html_dir/6011ac1.html \
-	html_dir/6011ac1_large.html \
-	html_dir/6011am1.html \
-	html_dir/6011am1_large.html \
-	html_dir/6011as1.html \
-	html_dir/6011as1_large.html \
-	html_dir/6011c1.html \
-	html_dir/6011c1_large.html \
-	html_dir/6011d1.html \
-	html_dir/6011d1_large.html \
-	html_dir/6011hc1.html \
-	html_dir/6011hc1_large.html \
-	html_dir/6011hn1.html \
-	html_dir/6011hn1_large.html \
-	html_dir/6011p1.html \
-	html_dir/6011p1_large.html \
-	html_dir/6011y.html \
-	html_dir/6011y_large.html \
+	html_dir/6011/6011ac1.html \
+	html_dir/6011/6011ac1_large.html \
+	html_dir/6011/6011am1.html \
+	html_dir/6011/6011am1_large.html \
+	html_dir/6011/6011as1.html \
+	html_dir/6011/6011as1_large.html \
+	html_dir/6011/6011c1.html \
+	html_dir/6011/6011c1_large.html \
+	html_dir/6011/6011d1.html \
+	html_dir/6011/6011d1_large.html \
+	html_dir/6011/6011hc1.html \
+	html_dir/6011/6011hc1_large.html \
+	html_dir/6011/6011hn1.html \
+	html_dir/6011/6011hn1_large.html \
+	html_dir/6011/6011p1.html \
+	html_dir/6011/6011p1_large.html \
+	html_dir/6011/6011y.html \
+	html_dir/6011/6011y_large.html \
 	session_dir/6011/6011ac1.ds \
 	session_dir//6011/6011acdd \
 	session_dir/6011/6011am1.ds \

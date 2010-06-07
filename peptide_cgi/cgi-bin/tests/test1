@@ -13,6 +13,11 @@ mkdir session_dir/4267
 set coord_file = "session_dir/4267/4267ac1.ds"
 touch $coord_file
 
+
+mkdir html_dir/4267
+set html_file = "html_dir/4267/4267ac1.html"
+touch $html_file
+
 echo -n "Processing NMR-STAR: "
 ./s2d -nomail -bmrbid 4267 -local -force -check_res_list \
   -lacs_file test_data/bmr4267_LACS.str -check_pct
@@ -24,6 +29,11 @@ mv tmp/s2d.out tmp/s2d.out1
 
 if (-f $coord_file) then
   echo "Error: $coord_file was not deleted!"
+  set result = 1
+endif
+
+if (-f $html_file) then
+  echo "Error: $html_file was not deleted!"
   set result = 1
 endif
 

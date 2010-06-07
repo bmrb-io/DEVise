@@ -23,14 +23,14 @@ set files = ( data_dir/5167ac1.dat \
 	#TEMP? data_dir/5167pstmp \
 	data_dir/5167rc1.dat \
 	data_dir/5167rl.dat \
-	html_dir/5167ac1.html \
-	html_dir/5167ac1_large.html \
-	html_dir/5167as1.html \
-	html_dir/5167as1_large.html \
-	html_dir/5167d1.html \
-	html_dir/5167d1_large.html \
-	html_dir/5167y.html \
-	html_dir/5167y_large.html \
+	html_dir/5167/5167ac1.html \
+	html_dir/5167/5167ac1_large.html \
+	html_dir/5167/5167as1.html \
+	html_dir/5167/5167as1_large.html \
+	html_dir/5167/5167d1.html \
+	html_dir/5167/5167d1_large.html \
+	html_dir/5167/5167y.html \
+	html_dir/5167/5167y_large.html \
 	session_dir/5167/5167ac1.ds \
 	session_dir/5167/5167acdd \
 	session_dir/5167/5167as1.ds \

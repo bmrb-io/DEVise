@@ -13,24 +13,24 @@ set files = ( data_dir/11017am1.dat \
 	data_dir/11017rl.dat \
 	data_dir/11017sd1.dat \
 	data_dir/11017sd1_models.dat \
-	html_dir/11017am1.html \
-	html_dir/11017am1_large.html \
-	html_dir/11017as1.html \
-	html_dir/11017as1_large.html \
-	html_dir/11017c1.html \
-	html_dir/11017c1_large.html \
-	html_dir/11017d1.html \
-	html_dir/11017d1_large.html \
-	html_dir/11017hc1.html \
-	html_dir/11017hc1_large.html \
-	html_dir/11017hn1.html \
-	html_dir/11017hn1_large.html \
-	html_dir/11017p1.html \
-	html_dir/11017p1_large.html \
-	html_dir/11017sd1.html \
-	html_dir/11017sd1_large.html \
-	html_dir/11017y.html \
-	html_dir/11017y_large.html \
+	html_dir/11017/11017am1.html \
+	html_dir/11017/11017am1_large.html \
+	html_dir/11017/11017as1.html \
+	html_dir/11017/11017as1_large.html \
+	html_dir/11017/11017c1.html \
+	html_dir/11017/11017c1_large.html \
+	html_dir/11017/11017d1.html \
+	html_dir/11017/11017d1_large.html \
+	html_dir/11017/11017hc1.html \
+	html_dir/11017/11017hc1_large.html \
+	html_dir/11017/11017hn1.html \
+	html_dir/11017/11017hn1_large.html \
+	html_dir/11017/11017p1.html \
+	html_dir/11017/11017p1_large.html \
+	html_dir/11017/11017sd1.html \
+	html_dir/11017/11017sd1_large.html \
+	html_dir/11017/11017y.html \
+	html_dir/11017/11017y_large.html \
 	session_dir/11017/11017acdd \
 	session_dir/11017/11017am1.ds \
 	session_dir/11017/11017as1.ds \
@@ -70,19 +70,19 @@ set line = '^1 0 94 SER -0.279 0.0 1.53 1.049 0.0 -0.404$'
 source tests/check4line
 
 
-set file = "html_dir/11017y.html"
+set file = "html_dir/11017/11017y.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="11017sd1.html">91 residues</a></td>$'
 source tests/check4line
 
-set file = "html_dir/11017y_large.html"
+set file = "html_dir/11017/11017y_large.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="11017sd1_large.html">91 residues</a></td>$'
 source tests/check4line
 
-set file = "html_dir/11017sd1.html"
+set file = "html_dir/11017/11017sd1.html"
 set line = '^  SPARTA-calculated Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line
 

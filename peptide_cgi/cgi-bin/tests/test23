@@ -44,17 +44,17 @@ set files = (data_dir/4336as1.dat \
 	data_dir/4336p1.dat \
 	data_dir/4336rc1.dat \
 	data_dir/4336rl.dat \
-	html_dir/4336as1.html \
-	html_dir/4336c1.html \
-	html_dir/4336csr13.html \
-	html_dir/4336csr23.html \
-	html_dir/4336csr33.html \
-	html_dir/4336d1.html \
-	html_dir/4336hc1.html \
-	html_dir/4336hn1.html \
-	html_dir/4336p1.html \
-	html_dir/4336y.html \
-	html_dir/4336y_large.html \
+	html_dir/4336/4336as1.html \
+	html_dir/4336/4336c1.html \
+	html_dir/4336/4336csr13.html \
+	html_dir/4336/4336csr23.html \
+	html_dir/4336/4336csr33.html \
+	html_dir/4336/4336d1.html \
+	html_dir/4336/4336hc1.html \
+	html_dir/4336/4336hn1.html \
+	html_dir/4336/4336p1.html \
+	html_dir/4336/4336y.html \
+	html_dir/4336/4336y_large.html \
 	session_dir/4336/4336acdd \
 	session_dir/4336/4336as1.ds \
 	session_dir/4336/4336c1.ds \
@@ -66,19 +66,18 @@ set files = (data_dir/4336as1.dat \
 	session_dir/4336/4336hn1.ds \
 	session_dir/4336/4336p1.ds \
 	data_dir/4336am1.dat \
-	html_dir/4336am1.html \
+	html_dir/4336/4336am1.html \
 	session_dir/4336/4336am1.ds \
-	html_dir/4336am1_large.html \
-	html_dir/4336as1_large.html \
-	html_dir/4336c1_large.html \
-	html_dir/4336csr13_large.html \
-	html_dir/4336csr23_large.html \
-	html_dir/4336csr33_large.html \
-	html_dir/4336d1_large.html \
-	html_dir/4336hc1_large.html \
-	html_dir/4336hn1_large.html \
-	html_dir/4336p1_large.html \
-	html_dir/4336tmp3y_large.html)
+	html_dir/4336/4336am1_large.html \
+	html_dir/4336/4336as1_large.html \
+	html_dir/4336/4336c1_large.html \
+	html_dir/4336/4336csr13_large.html \
+	html_dir/4336/4336csr23_large.html \
+	html_dir/4336/4336csr33_large.html \
+	html_dir/4336/4336d1_large.html \
+	html_dir/4336/4336hc1_large.html \
+	html_dir/4336/4336hn1_large.html \
+	html_dir/4336/4336p1_large.html )
 
 foreach file ($files)
   if (! -f $file) then
@@ -88,47 +87,47 @@ foreach file ($files)
 end
 
 # Check for correct chem shift ref links in summary html file.
-if (`grep -l 'make_view?pdbid=1DXM&number=4336&do_csr=2&coord_index=1&csr_index=1' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1DXM&number=4336&do_csr=2&coord_index=1&csr_index=1' html_dir/4336/4336y.html` == "") then
   echo "1DXM chem shift ref 1 link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_view?pdbid=1DXM&number=4336&do_csr=2&coord_index=1&csr_index=2' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1DXM&number=4336&do_csr=2&coord_index=1&csr_index=2' html_dir/4336/4336y.html` == "") then
   echo "1DXM chem shift ref 2 link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_view?pdbid=1DXM&number=4336&do_csr=2&coord_index=1&csr_index=3' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1DXM&number=4336&do_csr=2&coord_index=1&csr_index=3' html_dir/4336/4336y.html` == "") then
   echo "1DXM chem shift ref 3 link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_view?pdbid=1HTP&number=4336&do_csr=2&coord_index=3&csr_index=1' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1HTP&number=4336&do_csr=2&coord_index=3&csr_index=1' html_dir/4336/4336y.html` == "") then
   echo "1HTP chem shift ref 1 link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_view?pdbid=1HTP&number=4336&do_csr=2&coord_index=3&csr_index=2' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1HTP&number=4336&do_csr=2&coord_index=3&csr_index=2' html_dir/4336/4336y.html` == "") then
   echo "1HTP chem shift ref 2 link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_view?pdbid=1HTP&number=4336&do_csr=2&coord_index=3&csr_index=3' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1HTP&number=4336&do_csr=2&coord_index=3&csr_index=3' html_dir/4336/4336y.html` == "") then
   echo "1HTP chem shift ref 3 link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_view?pdbid=1HPC&number=4336&do_csr=2&coord_index=2&csr_index=1' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1HPC&number=4336&do_csr=2&coord_index=2&csr_index=1' html_dir/4336/4336y.html` == "") then
   echo "1HPC chem shift ref 1 link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_view?pdbid=1HPC&number=4336&do_csr=2&coord_index=2&csr_index=2' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1HPC&number=4336&do_csr=2&coord_index=2&csr_index=2' html_dir/4336/4336y.html` == "") then
   echo "1HPC chem shift ref 2 link missing"
   set result = 1
 endif
 
-if (`grep -l 'make_view?pdbid=1HPC&number=4336&do_csr=2&coord_index=2&csr_index=3' html_dir/4336y.html` == "") then
+if (`grep -l 'make_view?pdbid=1HPC&number=4336&do_csr=2&coord_index=2&csr_index=3' html_dir/4336/4336y.html` == "") then
   echo "1HPC chem shift ref 3 link missing"
   set result = 1
 endif

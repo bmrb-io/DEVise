@@ -86,6 +86,12 @@ print "  coord_index = $coord_index\n" if ($debug);
 # File name of the html page returned.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
 if (defined($restraint_id)) {
+  $summary_page_dir = $summary_page_dir . "/" . $restraint_id;
+} else {
+  $summary_page_dir = $summary_page_dir . "/" . $acc_num;
+}
+
+if (defined($restraint_id)) {
   print "  restraint-only\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $restraint_id . 'y' .
     $size_str . '.html';

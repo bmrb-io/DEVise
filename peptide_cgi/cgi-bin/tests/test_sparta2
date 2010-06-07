@@ -30,22 +30,22 @@ set files = ( data_dir/16350am1.dat \
 	data_dir/16350rc1.dat \
 	data_dir/16350rl.dat \
 	data_dir/16350sd1.dat \
-	html_dir/16350am1.html \
-	html_dir/16350am1_large.html \
-	html_dir/16350as1.html \
-	html_dir/16350as1_large.html \
-	html_dir/16350c1.html \
-	html_dir/16350c1_large.html \
-	html_dir/16350d1.html \
-	html_dir/16350d1_large.html \
-	html_dir/16350hc1.html \
-	html_dir/16350hc1_large.html \
-	html_dir/16350p1.html \
-	html_dir/16350p1_large.html \
-	html_dir/16350sd1.html \
-	html_dir/16350sd1_large.html \
-	html_dir/16350y.html \
-	html_dir/16350y_large.html \
+	html_dir/16350/16350am1.html \
+	html_dir/16350/16350am1_large.html \
+	html_dir/16350/16350as1.html \
+	html_dir/16350/16350as1_large.html \
+	html_dir/16350/16350c1.html \
+	html_dir/16350/16350c1_large.html \
+	html_dir/16350/16350d1.html \
+	html_dir/16350/16350d1_large.html \
+	html_dir/16350/16350hc1.html \
+	html_dir/16350/16350hc1_large.html \
+	html_dir/16350/16350p1.html \
+	html_dir/16350/16350p1_large.html \
+	html_dir/16350/16350sd1.html \
+	html_dir/16350/16350sd1_large.html \
+	html_dir/16350/16350y.html \
+	html_dir/16350/16350y_large.html \
 	session_dir/16350/16350acdd \
 	session_dir/16350/16350am1.ds \
 	session_dir/16350/16350as1.ds \
@@ -75,13 +75,13 @@ source tests/check4line
 set line = '^1 1 60 MET 0.228 0.0 -3.258 0.0 0.0 -0.437$'
 source tests/check4line
 
-set file = "html_dir/16350y.html"
+set file = "html_dir/16350/16350y.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="16350sd1.html">59 residues</a></td>$'
 source tests/check4line
 
-set file = "html_dir/16350y_large.html"
+set file = "html_dir/16350/16350y_large.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="16350sd1_large.html">59 residues</a></td>$'

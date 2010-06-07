@@ -36,6 +36,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2010/06/02 16:06:01  wenger
+// Reduced applet height in all HTML templates, and added info about
+// switching sessions in the JS; increased the font size of the links
+// to the visualization summary page and entry "main" page; slightly
+// changed the link text.
+//
 // Revision 1.28  2010/06/01 15:31:07  wenger
 // All visualization summary pages for released BMRB entries now have
 // links to the "main" page for the entry.
@@ -415,6 +421,12 @@ public abstract class S2DSummaryHtmlGen {
     public abstract String sizeString();
 
     //-------------------------------------------------------------------
+    public String directory()
+    {
+        return S2DSummaryHtml.directory(_htmlDir, _name);
+    }
+
+    //-------------------------------------------------------------------
     public String fileName()
     {
         return S2DSummaryHtml.fileName(_htmlDir, _name, sizeString());
@@ -472,6 +484,15 @@ public abstract class S2DSummaryHtmlGen {
       throws S2DError
     {
 	try {
+	    File dir = new File(directory());
+	    if (!dir.isDirectory()) {
+		// Note: stupid Java creates the directory here with 664
+		// permissions; in spite of that, we seem to be able to
+		// write into it.  The permissions are then fixed by
+		// the set_modes script at the end.
+	        dir.mkdir();
+	    }
+
 	    _writer = S2DFileWriter.create(fileName());
 
 	    _writer.write("<html>\n<head>\n" +

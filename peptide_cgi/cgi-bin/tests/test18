@@ -43,30 +43,30 @@ set files = (data_dir/vis_server/test18_outas1.dat \
 	data_dir/vis_server/test18_outt21.dat \
 	data_dir/vis_server/test18_outt22.dat \
 	data_dir/vis_server/test18_outt23.dat \
-	html_dir/test18_outas1.html \
-	html_dir/test18_outc1.html \
-	html_dir/test18_outd1.html \
-	html_dir/test18_outg1.html \
-	html_dir/test18_outhc1.html \
-	html_dir/test18_outhn1.html \
-	html_dir/test18_outn1.html \
-	html_dir/test18_outn2.html \
-	html_dir/test18_outn3.html \
-	html_dir/test18_outn4.html \
-	html_dir/test18_outn5.html \
-	html_dir/test18_outn6.html \
-	html_dir/test18_outn7.html \
-	html_dir/test18_outn8.html \
-	html_dir/test18_outn9.html \
-	html_dir/test18_outp1.html \
-	html_dir/test18_outt11.html \
-	html_dir/test18_outt12.html \
-	html_dir/test18_outt13.html \
-	html_dir/test18_outt21.html \
-	html_dir/test18_outt22.html \
-	html_dir/test18_outt23.html \
-	html_dir/test18_outy.html \
-	html_dir/test18_outy_large.html \
+	html_dir/test18_out/test18_outas1.html \
+	html_dir/test18_out/test18_outc1.html \
+	html_dir/test18_out/test18_outd1.html \
+	html_dir/test18_out/test18_outg1.html \
+	html_dir/test18_out/test18_outhc1.html \
+	html_dir/test18_out/test18_outhn1.html \
+	html_dir/test18_out/test18_outn1.html \
+	html_dir/test18_out/test18_outn2.html \
+	html_dir/test18_out/test18_outn3.html \
+	html_dir/test18_out/test18_outn4.html \
+	html_dir/test18_out/test18_outn5.html \
+	html_dir/test18_out/test18_outn6.html \
+	html_dir/test18_out/test18_outn7.html \
+	html_dir/test18_out/test18_outn8.html \
+	html_dir/test18_out/test18_outn9.html \
+	html_dir/test18_out/test18_outp1.html \
+	html_dir/test18_out/test18_outt11.html \
+	html_dir/test18_out/test18_outt12.html \
+	html_dir/test18_out/test18_outt13.html \
+	html_dir/test18_out/test18_outt21.html \
+	html_dir/test18_out/test18_outt22.html \
+	html_dir/test18_out/test18_outt23.html \
+	html_dir/test18_out/test18_outy.html \
+	html_dir/test18_out/test18_outy_large.html \
 	session_dir/vis_server/test18_out/test18_outacdd \
 	session_dir/vis_server/test18_out/test18_outas1.ds \
 	session_dir/vis_server/test18_out/test18_outc1.ds \
@@ -90,32 +90,32 @@ set files = (data_dir/vis_server/test18_outas1.dat \
 	session_dir/vis_server/test18_out/test18_outt21.ds \
 	session_dir/vis_server/test18_out/test18_outt22.ds \
 	session_dir/vis_server/test18_out/test18_outt23.ds \
-	html_dir/test18_outam1.html \
+	html_dir/test18_out/test18_outam1.html \
 	data_dir/vis_server/test18_outam1.dat \
 	session_dir/vis_server/test18_out/test18_outam1.ds \
-	html_dir/test18_outam1_large.html \
-	html_dir/test18_outas1_large.html \
-	html_dir/test18_outc1_large.html \
-	html_dir/test18_outd1_large.html \
-	html_dir/test18_outg1_large.html \
-	html_dir/test18_outhc1_large.html \
-	html_dir/test18_outhn1_large.html \
-	html_dir/test18_outn1_large.html \
-	html_dir/test18_outn2_large.html \
-	html_dir/test18_outn3_large.html \
-	html_dir/test18_outn4_large.html \
-	html_dir/test18_outn5_large.html \
-	html_dir/test18_outn6_large.html \
-	html_dir/test18_outn7_large.html \
-	html_dir/test18_outn8_large.html \
-	html_dir/test18_outn9_large.html \
-	html_dir/test18_outp1_large.html \
-	html_dir/test18_outt11_large.html \
-	html_dir/test18_outt12_large.html \
-	html_dir/test18_outt13_large.html \
-	html_dir/test18_outt21_large.html \
-	html_dir/test18_outt22_large.html \
-	html_dir/test18_outt23_large.html)
+	html_dir/test18_out/test18_outam1_large.html \
+	html_dir/test18_out/test18_outas1_large.html \
+	html_dir/test18_out/test18_outc1_large.html \
+	html_dir/test18_out/test18_outd1_large.html \
+	html_dir/test18_out/test18_outg1_large.html \
+	html_dir/test18_out/test18_outhc1_large.html \
+	html_dir/test18_out/test18_outhn1_large.html \
+	html_dir/test18_out/test18_outn1_large.html \
+	html_dir/test18_out/test18_outn2_large.html \
+	html_dir/test18_out/test18_outn3_large.html \
+	html_dir/test18_out/test18_outn4_large.html \
+	html_dir/test18_out/test18_outn5_large.html \
+	html_dir/test18_out/test18_outn6_large.html \
+	html_dir/test18_out/test18_outn7_large.html \
+	html_dir/test18_out/test18_outn8_large.html \
+	html_dir/test18_out/test18_outn9_large.html \
+	html_dir/test18_out/test18_outp1_large.html \
+	html_dir/test18_out/test18_outt11_large.html \
+	html_dir/test18_out/test18_outt12_large.html \
+	html_dir/test18_out/test18_outt13_large.html \
+	html_dir/test18_out/test18_outt21_large.html \
+	html_dir/test18_out/test18_outt22_large.html \
+	html_dir/test18_out/test18_outt23_large.html)
 
 foreach file ($files)
   if (! -f $file) then
@@ -125,24 +125,24 @@ foreach file ($files)
 end
 
 # Check for correct PDB links in summary html file.
-if (`grep -l 1QQS html_dir/test18_outy.html` != "") then
+if (`grep -l 1QQS html_dir/test18_out/test18_outy.html` != "") then
   echo "Error: PDB ID 1QQS should have been rejected because" 
   echo "  sequence identity is less than 97%."
   set result = 1
 endif
 
-if (`grep -l 1DFV html_dir/test18_outy.html` != "") then
+if (`grep -l 1DFV html_dir/test18_out/test18_outy.html` != "") then
   echo "Error: PDB ID 1DFV should have been rejected because"
   echo "  the number of residues does not match."
   set result = 1
 endif
 
-if (`grep -l 1NGL html_dir/test18_outy.html` == "") then
+if (`grep -l 1NGL html_dir/test18_out/test18_outy.html` == "") then
   echo "Error: PDB ID 1NGL should have been linked."
   set result = 1
 endif
 
-if (`grep -l 1L6M html_dir/test18_outy.html` == "") then
+if (`grep -l 1L6M html_dir/test18_out/test18_outy.html` == "") then
   echo "Error: PDB ID 1L6M should have been linked."
   set result = 1
 endif

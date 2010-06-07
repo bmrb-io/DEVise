@@ -7,16 +7,16 @@ set files = ( data_dir/15080ac1.dat \
 	data_dir/15080md.dat \
 	data_dir/15080rc1.dat \
 	data_dir/15080rl.dat \
-	html_dir/15080ac1.html \
-	html_dir/15080ac1_large.html \
-	html_dir/15080ac2.html \
-	html_dir/15080ac2_large.html \
-	html_dir/15080as1.html \
-	html_dir/15080as1_large.html \
-	html_dir/15080d1.html \
-	html_dir/15080d1_large.html \
-	html_dir/15080y.html \
-	html_dir/15080y_large.html \
+	html_dir/15080/15080ac1.html \
+	html_dir/15080/15080ac1_large.html \
+	html_dir/15080/15080ac2.html \
+	html_dir/15080/15080ac2_large.html \
+	html_dir/15080/15080as1.html \
+	html_dir/15080/15080as1_large.html \
+	html_dir/15080/15080d1.html \
+	html_dir/15080/15080d1_large.html \
+	html_dir/15080/15080y.html \
+	html_dir/15080/15080y_large.html \
 	session_dir/15080/15080ac1.ds \
 	session_dir/15080/15080ac2.ds \
 	session_dir/15080/15080acdd \

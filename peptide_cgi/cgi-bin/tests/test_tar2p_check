@@ -3,10 +3,10 @@ echo "Checking output files"
 set files = ( data_dir/tar_2kidac2.dat \
 	data_dir/tar_2kidtar2.dat \
 	data_dir/tar_2kidtar-md2.dat \
-	html_dir/tar_2kidtar2.html \
-	html_dir/tar_2kidtar2_large.html \
-	html_dir/tar_2kidy.html \
-	html_dir/tar_2kidy_large.html \
+	html_dir/tar_2kid/tar_2kidtar2.html \
+	html_dir/tar_2kid/tar_2kidtar2_large.html \
+	html_dir/tar_2kid/tar_2kidy.html \
+	html_dir/tar_2kid/tar_2kidy_large.html \
 	session_dir/tar_2kid/tar_2kidtar2.ds )
 
 foreach file ($files)

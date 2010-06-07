@@ -25,40 +25,38 @@ set files = ( data_dir/4310ac5.dat \
 	data_dir/4310rrac5.dat \
 	data_dir/4310rrtar5.dat \
 	data_dir/4310rrtar-md5.dat \
-	html_dir/4310ac5.html \
-	html_dir/4310ac5_large.html \
-	html_dir/4310am1.html \
-	html_dir/4310am1_large.html \
-	html_dir/4310am2.html \
-	html_dir/4310am2_large.html \
-	html_dir/4310as1.html \
-	html_dir/4310as1_large.html \
-	html_dir/4310as2.html \
-	html_dir/4310as2_large.html \
-	html_dir/4310c1.html \
-	html_dir/4310c1_large.html \
-	html_dir/4310c2.html \
-	html_dir/4310c2_large.html \
-	html_dir/4310d1.html \
-	html_dir/4310d1_large.html \
-	html_dir/4310d2.html \
-	html_dir/4310d2_large.html \
-	html_dir/4310g1.html \
-	html_dir/4310g1_large.html \
-	html_dir/4310hc1.html \
-	html_dir/4310hc1_large.html \
-	html_dir/4310hn1.html \
-	html_dir/4310hn1_large.html \
-	html_dir/4310p1.html \
-	html_dir/4310p1_large.html \
-	html_dir/4310p2.html \
-	html_dir/4310p2_large.html \
-	html_dir/4310rrtar5.html \
-	html_dir/4310rrtar5_large.html \
-	html_dir/4310tmp5y.html \
-	html_dir/4310tmp5y_large.html \
-	html_dir/4310y.html \
-	html_dir/4310y_large.html \
+	html_dir/4310/4310ac5.html \
+	html_dir/4310/4310ac5_large.html \
+	html_dir/4310/4310am1.html \
+	html_dir/4310/4310am1_large.html \
+	html_dir/4310/4310am2.html \
+	html_dir/4310/4310am2_large.html \
+	html_dir/4310/4310as1.html \
+	html_dir/4310/4310as1_large.html \
+	html_dir/4310/4310as2.html \
+	html_dir/4310/4310as2_large.html \
+	html_dir/4310/4310c1.html \
+	html_dir/4310/4310c1_large.html \
+	html_dir/4310/4310c2.html \
+	html_dir/4310/4310c2_large.html \
+	html_dir/4310/4310d1.html \
+	html_dir/4310/4310d1_large.html \
+	html_dir/4310/4310d2.html \
+	html_dir/4310/4310d2_large.html \
+	html_dir/4310/4310g1.html \
+	html_dir/4310/4310g1_large.html \
+	html_dir/4310/4310hc1.html \
+	html_dir/4310/4310hc1_large.html \
+	html_dir/4310/4310hn1.html \
+	html_dir/4310/4310hn1_large.html \
+	html_dir/4310/4310p1.html \
+	html_dir/4310/4310p1_large.html \
+	html_dir/4310/4310p2.html \
+	html_dir/4310/4310p2_large.html \
+	html_dir/4310/4310rrtar5.html \
+	html_dir/4310/4310rrtar5_large.html \
+	html_dir/4310/4310y.html \
+	html_dir/4310/4310y_large.html \
 	session_dir/4310/4310ac5.ds \
 	session_dir/4310/4310acdd \
 	session_dir/4310/4310am1.ds \
@@ -99,7 +97,7 @@ source tests/check4line
 set line = '^EA 2	2	Other angle lower/upper \[2\]	other	ViewAngleUnselectedDataChild	ViewAngleSelectedDataChild	ViewAngleDataDotsChild	\$averageValue'
 source tests/check4line
 
-set file = "html_dir/4310y.html"
+set file = "html_dir/4310/4310y.html"
 set line = '<a href="http://.*/make_view?pdbid=1CKK&number=4310&do_rrtar=3&coord_index=5&size_str=">1CKK</a>'
 source tests/check4line
 set line = '<a href="http://.*/make_view?pdbid=2JZI&number=4310&do_rrtar=3&coord_index=32&size_str=">2JZI</a>'
