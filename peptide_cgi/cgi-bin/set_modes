@@ -53,14 +53,17 @@ if (-e $sess_dir/$name) then
   # 777 here so we can run tests as different users and be able to
   # overwrite session files.
   chmod 777 $sess_dir/$name >>& $outfile
-  chmod 644 $sess_dir/$name/$name* $data_dir/$name* >>& $outfile
+  chmod 666 $sess_dir/$name/$name* $data_dir/$name* >>& $outfile
 endif
 if (-e session_dir/vis_server/$name) then
   # 777 here so we can run tests as different users and be able to
   # overwrite session files.
   chmod 777 session_dir/vis_server/$name >>& $outfile
-  chmod 644 session_dir/vis_server/$name/$name* \
+  chmod 666 session_dir/vis_server/$name/$name* \
     data_dir/vis_server/$name* >>& $outfile
 endif
 chmod 777 $html_dir >>& $outfile
-chmod 644 $html_dir/* >>& $outfile
+chmod 666 $html_dir/* >>& $outfile
+chmod 777 $html_dir"tmp"*
+echo $html_dir"tmp"
+chmod 666 $html_dir"tmp"*/*

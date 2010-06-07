@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.208  2010/06/07 16:49:11  wenger
+// We now delete html files for an entry when the session files are
+// deleted (so you don't accidentally end up with an html file for,
+// say, coordinates, for which no session exists); this involved moving
+// all of the html files into a separate directory for each entry,
+// so they can be easily deleted.
+//
 // Revision 1.207  2010/06/04 17:03:24  wenger
 // Changed version to 11.8.2 for release.
 //
@@ -1306,7 +1313,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.2x10"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.2x11"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
