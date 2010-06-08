@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.209  2010/06/07 23:27:35  wenger
+// Changed set_modes to make files writeable by everyone and to set the
+// modes of the tmp summary files (we should get rid of those eventually);
+// added a new section to the testing document about testing with 4264/
+// 1EZA, because that isn't used by any of the automated test scripts.
+//
 // Revision 1.208  2010/06/07 16:49:11  wenger
 // We now delete html files for an entry when the session files are
 // deleted (so you don't accidentally end up with an html file for,
@@ -1313,7 +1319,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.2x11"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.2";
     public static final String DEVISE_MIN_VERSION = "1.9.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
 
