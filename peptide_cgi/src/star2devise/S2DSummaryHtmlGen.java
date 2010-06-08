@@ -36,6 +36,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2010/06/07 16:49:11  wenger
+// We now delete html files for an entry when the session files are
+// deleted (so you don't accidentally end up with an html file for,
+// say, coordinates, for which no session exists); this involved moving
+// all of the html files into a separate directory for each entry,
+// so they can be easily deleted.
+//
 // Revision 1.29  2010/06/02 16:06:01  wenger
 // Reduced applet height in all HTML templates, and added info about
 // switching sessions in the JS; increased the font size of the links
@@ -506,7 +513,7 @@ public abstract class S2DSummaryHtmlGen {
 	    if (!_isUvd && !_masterId.equals("")) {
 	        _writer.write("<h2>\n");
 	        _writer.write("<p>\n");
-	        _writer.write("<a href=\"../../../data_library/" +
+	        _writer.write("<a href=\"../../../../data_library/" +
 		  "generate_summary.php?bmrbId=" + _name +
 		  "&chooseAccOrDep=useAcc\">Back to main entry page</a>\n");
 	        _writer.write("</p>\n");
