@@ -33,7 +33,7 @@ endif
 
 set outfile = "tmp/set_modes.out"
 if (-e $outfile) then
-  rm $outfile
+  rm -f $outfile
 endif
 echo set_modes arguments: $* > $outfile
 
