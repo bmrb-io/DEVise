@@ -1,9 +1,16 @@
 			Peptide-CGI Version History
 
 
+Peptide-CGI 11.8.3
+------------------
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.1 or higher.)
+
+(Nothing yet.)
+
+
 Peptide-CGI 11.8.2
 ------------------
-(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.0 or higher.)
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.1 or higher.)
 
 * Made it possible to switch between related visualizations within
 a single instance of the JavaScreen.

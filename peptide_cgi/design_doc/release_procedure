@@ -3,7 +3,11 @@
 
 Note: this is pretty preliminary right now.
 
-- Make sure pep-version-history is up to date.
+- Make sure pep-version-history is up to date (make sure DEVise and
+  JavaScreen client versions are correct).
+
+- Make sure DEVISE_MIN_VERSION and JS_CLIENT_MIN_VERSION are up-to-date
+  in S2DMain.java.
 
 - Go through the testing procedure in "testing".
 
@@ -28,7 +32,10 @@ Note: this is pretty preliminary right now.
 - Put the distribution tarball into the appropriate /p/devise/ftp/Devise-*
   directory.
 
-- Possibly install the new version at BMRB and the mirror sites.
+- Install on manatee at BMRB and test things, including the visualization
+  server and visualization server restart IDs.
+
+- Install the new version at BMRB and the mirror sites.
 
 - Announce the release to BMRB and mirrors.
 

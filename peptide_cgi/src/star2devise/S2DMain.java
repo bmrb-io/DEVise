@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.210  2010/06/08 17:24:56  wenger
+// Changed version to 11.8.2 for release (again, after fixing some bugs).
+//
 // Revision 1.209  2010/06/07 23:27:35  wenger
 // Changed set_modes to make files writeable by everyone and to set the
 // modes of the tmp summary files (we should get rid of those eventually);
@@ -1319,9 +1322,9 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.2";
-    public static final String DEVISE_MIN_VERSION = "1.9.1";
-    public static final String JS_CLIENT_MIN_VERSION = "5.10.0";
+    public static final String PEP_CGI_VERSION = "11.8.3x1"/*TEMP*/;
+    public static final String DEVISE_MIN_VERSION = "1.11.0";
+    public static final String JS_CLIENT_MIN_VERSION = "5.13.1";
 
     private String _masterBmrbId = ""; // accession number the user requested
 
