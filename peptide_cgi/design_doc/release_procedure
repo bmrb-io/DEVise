@@ -9,7 +9,10 @@ Note: this is pretty preliminary right now.
 - Make sure DEVISE_MIN_VERSION and JS_CLIENT_MIN_VERSION are up-to-date
   in S2DMain.java.
 
-- Go through the testing procedure in "testing".
+- Create a preliminary tarball.
+
+- Go through the testing procedure in "testing", BASED ON THE PRELIMINARY
+  TARBALL.
 
 - Get rid of "x" part of version and recompile.
 
