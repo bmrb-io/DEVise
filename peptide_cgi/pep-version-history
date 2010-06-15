@@ -5,7 +5,7 @@ Peptide-CGI 11.8.3
 ------------------
 (Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.1 or higher.)
 
-(Nothing yet.)
+* Fixed histogram web pages to get rid of JavaScreen "junk".
 
 
 Peptide-CGI 11.8.2

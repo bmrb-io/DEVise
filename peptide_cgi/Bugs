@@ -473,8 +473,9 @@ Num Date        Status  Description
 101 5/11/10	FIXED	Test62 now fails. (wenger)
 			(This got fixed at some point...)
 
-102 6/10/10	OPEN	Histogram html pages still have extra JSA embedded
+102 6/10/10	FIXED	Histogram html pages still have extra JSA embedded
 			"junk". (wenger)
+			(Fixed by wenger, 6/15/10.)
 
 103 6/15/10	OPEN	6926ac1 visualization seems to crash devised.
 			(wenger)
