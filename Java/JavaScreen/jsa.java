@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2010/06/02 15:12:05  wenger
+// The JSA startInfo text object is no longer displayed if the applet
+// height is less than 50 pixels (Eldon asked me to get rid of this).
+//
 // Revision 1.52  2008/01/24 20:30:53  wenger
 // Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
 //
@@ -199,7 +203,7 @@ public class jsa extends DEViseJSApplet
 
         jsValues.uiglobals.inBrowser = false;
 
-        add(startButton, BorderLayout.NORTH);
+        //add(startButton, BorderLayout.NORTH);
         startButton.setEnabled(false);
 
         startButton.addActionListener(new ActionListener()
@@ -224,11 +228,11 @@ public class jsa extends DEViseJSApplet
 	} else {
 	    loadImages();
 
-            startButton.setEnabled(true);
+            //startButton.setEnabled(true);
 
-            if (jsValues.session.defaultName != null) {
+            //if (jsValues.session.defaultName != null) {
 	        startJS();
-            }
+            //}
 
 	    repaint();
 
