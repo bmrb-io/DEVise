@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.213  2010/06/16 17:17:34  wenger
+// Changed version to 11.8.3 for release.
+//
 // Revision 1.212  2010/06/16 14:36:33  wenger
 // Reduced applet size to match the latest changes in the JavaScreen client.
 //
@@ -1331,7 +1334,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.3";
+    public static final String PEP_CGI_VERSION = "11.8.4x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.2";
 
