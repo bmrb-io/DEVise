@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.135  2010/06/16 17:56:51  wenger
+// Changed version to 5.13.2 for release.
+//
 // Revision 1.134  2010/06/16 14:32:03  wenger
 // Added a message ("(DEVise data visualization will appear in a new
 // window)") to the embedded part of the JSA.
@@ -834,7 +837,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.2");
+    public static final String VERSION = new String("5.13.3x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
