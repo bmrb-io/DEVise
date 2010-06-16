@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2010/06/15 18:56:57  wenger
+// Got rid of the "Click here to start/restart JavaScreen" button in
+// the JSA (non-embedded) version as requested by Eldon (the JSA now
+// starts automatically even if no session is specified).
+//
 // Revision 1.53  2010/06/02 15:12:05  wenger
 // The JSA startInfo text object is no longer displayed if the applet
 // height is less than 50 pixels (Eldon asked me to get rid of this).
@@ -189,6 +194,9 @@ public class jsa extends DEViseJSApplet
     static final int DEBUG = 0;
 
     Button startButton = new Button("Click here to start/restart JavaScreen");
+    Label startLabel =
+      new Label("(DEVise data visualization will appear in a new window)",
+      Label.CENTER);
 
     jscframe jsf = null;
     boolean started = false;
@@ -205,6 +213,7 @@ public class jsa extends DEViseJSApplet
 
         //add(startButton, BorderLayout.NORTH);
         startButton.setEnabled(false);
+        add(startLabel, BorderLayout.NORTH);
 
         startButton.addActionListener(new ActionListener()
             {
@@ -386,10 +395,12 @@ class jscframe extends JFrame
         Dimension size = getSize();
         loc.y = loc.y + dim.height / 2 - size.height / 2;
         loc.x = loc.x + dim.width / 2 - size.width / 2;
-        if (loc.y < 0)
+        if (loc.y < 0) {
             loc.y = 0;
-        if (loc.x < 0)
+	}
+        if (loc.x < 0) {
             loc.x = 0;
+	}
 
         setLocation(loc);
 
