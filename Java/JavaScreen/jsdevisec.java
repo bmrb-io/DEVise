@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.183  2010/06/04 16:29:13  wenger
+// Enabled auto resizing in drill-down dialog JTable to improve appearance.
+//
 // Revision 1.182  2010/06/02 17:41:07  wenger
 // The JavaScreen now puts the BMRB visualization type into the JSA
 // window title if the hidebmrbsess parameter is turned on.
@@ -962,14 +965,24 @@ public class jsdevisec extends JPanel
     // so we can see what is what.
     private boolean FUNKY_COLORS = false;
 
-    // images[0-9] are the gears; 10 and 11 are "traffic lights"
-    //   (devise[0-10].gif).
+    private DEViseScreenResizeHandler _resizeHandler =
+      new DEViseScreenResizeHandler(this);
+
+    //---------------------------------------------------------------------
+    // Constructor.
     public jsdevisec(Applet parentApplet, JFrame frame, Vector images,
       DEViseJSValues jv)
     {
 	if (DEViseGlobals.DEBUG_THREADS >= 1) {
 	    DEViseUtils.printAllThreads("In jsdevisec constructor");
 	}
+
+	// Handle resizes of this component.
+        addComponentListener(new ComponentAdapter() {
+	    public void componentResized(ComponentEvent e) {
+	        _resizeHandler.handleResize();
+	    }
+	});
 
 	// create the DEViseJSValues object
 	jsValues = jv;
@@ -2990,11 +3003,6 @@ class SettingDlg extends Dialog
                 {
                     public void actionPerformed(ActionEvent event)
                     {
-                        if (jsc.isSessionOpened) {
-                            jsc.showMsg("You already have a session opened!\nPlease close current session first!");
-                            return;
-                        }
-
                         int x = 0, y = 0;
 
                         try {

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.131  2008/07/17 20:28:00  wenger
+// (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
+// that are entirely outside the destination view's visual filter).
+//
 // Revision 1.130  2008/01/24 20:30:53  wenger
 // Merged js_ie_fix_br_0 thru js_ie_fix_br_1 to the trunk.
 //
@@ -846,7 +850,7 @@ public class DEViseCmdDispatcher implements Runnable
     // condition between two commands getting in here at the same time,
     // and both trying to modify the status flag, etc.
 
-    // Note: this method MUST call notify() if it exits in any way other 
+    // Note: this method MUST call notifyAll() if it exits in any way other 
     // than the normal exit from the end (so that we don't get stuck in
     // the wait() in another thread.
 
@@ -883,14 +887,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    // Note: we wait here because otherwise a second command could
 	    // sneak in between the end of start() and the beginning of
 	    // the corresponding run() and overwrite the _commands array.
-	    try { 
-		_cmdWaiting = true;
-	        wait();
-		_cmdWaiting = false;
-            } catch (InterruptedException ex) {
-	        System.out.println("Interrupted exception: " +
-		  ex.getMessage());
-	    }
+	    waitForCmds();
 	}
 
         if (cmd.startsWith(DEViseCommands.HEART_BEAT)) {
@@ -923,7 +920,7 @@ public class DEViseCmdDispatcher implements Runnable
 			    jsc.stopButton.setBackground(
 			      jsc.jsValues.uiglobals.bg);
 			    setStatus(STATUS_IDLE);
-			    notify();
+			    notifyAll();
 			    return;
 			}
 		    } else {
@@ -970,7 +967,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    jsc.animPanel.stop();
 	    jsc.stopButton.setBackground(jsc.jsValues.uiglobals.bg);
 	    setStatus(STATUS_IDLE);
-	    notify();
+	    notifyAll();
 	    return;
 	}
 
@@ -987,6 +984,20 @@ public class DEViseCmdDispatcher implements Runnable
         if (_debug) {
             System.out.println("Done with DEViseCmdDispatcher.start()");
         }
+    }
+
+    //---------------------------------------------------------------------
+    // Wait for all pending commands to finish.
+    public synchronized void waitForCmds()
+    {
+        while (getStatus() == STATUS_RUNNING_NON_HB || _cmdWaiting) {
+	    try {
+	        wait();
+	    } catch (InterruptedException ex) {
+	        System.err.println("InterruptedException (" +
+		  ex.toString() + ") waiting for command");
+	    }
+	}
     }
 
     //---------------------------------------------------------------------
@@ -1179,7 +1190,7 @@ public class DEViseCmdDispatcher implements Runnable
     // This method is called to do the actual sending of a command, and
     // the receving and processing of replies to that command.
 
-    // Note: this method MUST call notify() when it exits (so that we don't
+    // Note: this method MUST call notifyAll() when it exits (so that we don't
     // get stuck in the wait() in another thread.
     public synchronized void run()
     {
@@ -1278,7 +1289,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    }
         }
 
-	notify();
+	notifyAll();
 
         if (_debug) {
 	    System.out.println("  Done with DEViseCmdDispatcher.run(" +
@@ -1372,7 +1383,8 @@ public class DEViseCmdDispatcher implements Runnable
         if (args[0].equals(DEViseCommands.DONE)) {
             // this command will guaranteed to be the last
 	    if (command != null) {
-		if (command.startsWith(DEViseCommands.OPEN_SESSION)) {
+		if (command.startsWith(DEViseCommands.OPEN_SESSION) ||
+		  command.startsWith(DEViseCommands.REOPEN_SESSION)) {
 		    jsc.jscreen.updateScreen(true);
 		}
 	    }

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2009
+// (c) Copyright 2003-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2010/05/20 18:38:41  wenger
+// In the JavaScreen, you can now switch sessions without explicitly
+// closing the current one before opening the new one (to make it easier
+// to switch sessions in the new Peptide-CGI setup).
+//
 // Revision 1.14  2009/09/10 22:06:39  wenger
 // Fixed JavaScreen bug 985 (change 'Reset Filters' to 'Reset Axis Ranges');
 // made other menu improvements; changed communication mode dialog to
@@ -152,6 +157,8 @@ public class DEViseMainButtons
     private MenuItem filterMenuItem = new MenuItem("Reset Axis Ranges");
     private MenuItem exitMenuItem = new MenuItem("Exit");
 
+    private MenuItem largerMenuItem = new MenuItem("Larger");
+    private MenuItem smallerMenuItem = new MenuItem("Smaller");
     private MenuItem normalDisplayMenuItem = new MenuItem("Normal");
     private MenuItem colorPrintDisplayMenuItem = new MenuItem("Color print");
     private MenuItem bwPrintDisplayMenuItem = new MenuItem("B/w print");
@@ -181,6 +188,8 @@ public class DEViseMainButtons
 
     // Dialogs
     private DEViseHtmlWindow helpWindow;
+
+    private static double RESIZE_FACTOR = 1.25;
 
     //===================================================================
     // PUBLIC METHODS
@@ -277,6 +286,8 @@ public class DEViseMainButtons
 	commModeMenu.add(cgiModeMenuItem);
 
 	// Set up view menu.
+	viewPM.add(largerMenuItem);
+	viewPM.add(smallerMenuItem);
 	viewPM.add(displayModeMenu);
 	viewPM.add(setMenuItem);
 	viewPM.add(commModeMenu);
@@ -351,7 +362,6 @@ public class DEViseMainButtons
 	        }
 	    });
 
-
         restartMenuItem.addActionListener(new ActionListener()
 	    {
 	        public void actionPerformed(ActionEvent event)
@@ -373,6 +383,34 @@ public class DEViseMainButtons
                 public void actionPerformed(ActionEvent event)
                 {
                     _js.checkQuit();
+                }
+            });
+
+        largerMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    int width =
+		      (int)(_js.jsValues.uiglobals.screenSize.width *
+		      RESIZE_FACTOR);
+		    int height =
+		      (int)(_js.jsValues.uiglobals.screenSize.height *
+		      RESIZE_FACTOR);
+		    _js.jscreen.setScreenDim(width, height);
+                }
+            });
+
+        smallerMenuItem.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    int width =
+		      (int)(_js.jsValues.uiglobals.screenSize.width /
+		      RESIZE_FACTOR);
+		    int height =
+		      (int)(_js.jsValues.uiglobals.screenSize.height /
+		      RESIZE_FACTOR);
+		    _js.jscreen.setScreenDim(width, height);
                 }
             });
 

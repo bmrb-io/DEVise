@@ -32,6 +32,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.85  2010/06/02 17:41:07  wenger
+// The JavaScreen now puts the BMRB visualization type into the JSA
+// window title if the hidebmrbsess parameter is turned on.
+//
 // Revision 1.84  2008/07/17 20:28:00  wenger
 // (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
 // that are entirely outside the destination view's visual filter).
@@ -521,8 +525,29 @@ public class DEViseScreen extends JPanel
     // session
     public void setScreenDim(int width, int height)
     {
-        if (width < 1 || height < 1)
+	if (DEBUG >= 1) {
+            System.out.println("DEViseScreen.setScreenDim(" + width +
+	      ", " + height + ")");
+        }
+
+        if (width < 1 || height < 1) {
             return;
+        }
+
+	if (screenDim.width == width && screenDim.height == height) {
+            return;
+	}
+
+	boolean sessionOpen = jsc.isSessionOpened;
+
+	if (sessionOpen) {
+	    // Save and close the current session.
+	    String command = new String();
+	    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
+	    jsc.dispatcher.start(command);
+	    jsc.dispatcher.waitForCmds();
+	    jsc.closeSession();
+	}
 
         screenDim.width = width;
         screenDim.height = height;
@@ -531,6 +556,19 @@ public class DEViseScreen extends JPanel
         jsc.jsValues.uiglobals.screenSize.height = screenDim.height;
 
         isDimChanged = true;
+
+	if (sessionOpen) {
+	    // Send updated size, re-open the session.
+	    jsc.dispatcher.waitForCmds();
+	    String command = new String();
+	    command = DEViseCommands.SET_DISPLAY_SIZE + " " +
+	      jsc.jsValues.uiglobals.screenSize.width + " " +
+	      jsc.jsValues.uiglobals.screenSize.height + " " +
+	      jsc.jsValues.uiglobals.screenRes + " " +
+	      jsc.jsValues.uiglobals.screenRes + "\n";
+	    command += DEViseCommands.REOPEN_SESSION + "\n";
+	    jsc.dispatcher.start(command);
+	}
 
         repaint();
     }

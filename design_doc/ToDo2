@@ -164,9 +164,10 @@ Implement an "undo" function.  (Would also require changes on the server.)
 Make JavaScreen resizing able to work while a session is open (the
 JSPoP would have to force the devised to do a checkpoint). (elu/wenger)
 
-09.019 1/6/10	OPEN	3
+09.019 1/6/10	DONE	3
 Have JavaScreen menu options to enlarge and reduce the window size
 by a fixed percentage. (wenger)
+(Done by wenger, 7/1/10.)
 
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
