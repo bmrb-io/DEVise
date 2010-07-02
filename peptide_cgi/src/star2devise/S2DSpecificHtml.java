@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.18  2010/06/07 16:49:11  wenger
+// We now delete html files for an entry when the session files are
+// deleted (so you don't accidentally end up with an html file for,
+// say, coordinates, for which no session exists); this involved moving
+// all of the html files into a separate directory for each entry,
+// so they can be easily deleted.
+//
 // Revision 1.17  2010/06/01 15:00:02  wenger
 // Implemented to-do 132 (links from individual visualization pages back
 // to the summary pages).
@@ -165,7 +172,7 @@ public class S2DSpecificHtml {
 	  dataType == S2DUtils.TYPE_RNA_DELTASHIFT) {
 	    helpSuffix += "_na";
 	}
-        _replaceString3 = "help_" + helpSuffix + ".html";
+        _replaceString3 = "../help_" + helpSuffix + ".html";
         _replaceString4 = _title;
 	if (frameDetails != null && !frameDetails.equals("")) {
 	    _replaceString5 = "<h3>\n  Frame details: " + frameDetails +

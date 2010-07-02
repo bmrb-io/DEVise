@@ -480,8 +480,10 @@ Num Date        Status  Description
 103 6/15/10	OPEN	6926ac1 visualization seems to crash devised.
 			(wenger)
 
-104 7/2/10	OPEN	Latest version broke links to help pages because
-			of extra level of directories for html. (wenger)
+104 7/2/10	FIXED	Latest version (11.8.3) broke links to help pages
+			because of extra level of directories for html.
+			(wenger)
+			(Fixed by wenger, 7/2/10.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
