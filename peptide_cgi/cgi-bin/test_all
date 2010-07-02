@@ -132,6 +132,7 @@ if ($do_all != 0) {
   RunTest("test_methyl1_3");
   RunTest("test_pdb_file1");
   RunTest("test_pdb_file1mu");
+  RunTest("test70");
 }
 
 if (($do_all != 0) or ($do_sparta != 0)) {
