@@ -75,7 +75,8 @@ Backbone NMR Assignment of low-molecular-weight Protein Tryosin Phosphatase
     _Entry.Last_release_date      ? 
     _Entry.Original_release_date  ? 
     _Entry.Origination            author 
-    _Entry.NMR_STAR_version       production.3.0.2.2 
+    # _Entry.NMR_STAR_version       production.3.0.2.2 
+    _Entry.NMR_STAR_version       3.0
     _Entry.Experimental_method    NMR 
     _Entry.Release_request       "on publication" 
 

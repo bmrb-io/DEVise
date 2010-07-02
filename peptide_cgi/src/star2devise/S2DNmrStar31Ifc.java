@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.7  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
@@ -117,7 +123,8 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
 	      // 3.x versions, but everything except some of my existing
 	      // tests should actually be 3.1 as opposed to 3.0.  wenger
 	      // 2007-01-08.
-	      _versionStr.startsWith("3.0.")) {
+	      _versionStr.startsWith("3.0.") ||
+	      _versionStr.startsWith("production.3.0.")) {
 	        result = true;
 	    }
 

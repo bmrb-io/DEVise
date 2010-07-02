@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.215  2010/07/02 18:01:03  wenger
+// We now print the details of residue mismatches at the default
+// verbosity; also, we print the exact version of each NMR-STAR file
+// we process.
+//
 // Revision 1.214  2010/06/16 20:23:52  wenger
 // Changed Peptide-CGI version to 11.8.4x1, added 11.8.4 section
 // to version history.
@@ -1338,7 +1343,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.4x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.4x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.2";
 
