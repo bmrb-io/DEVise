@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2009/03/25 21:49:09  wenger
+// Final cleanup of some of the nucleic-acid-related code, especially
+// getting polymer types correctly for mmCIF files; added nucleic acid
+// tests to pre-release testing document.
+//
 // Revision 1.14  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -243,11 +248,9 @@ public class S2DResidues {
 		    result = false;
 		} else if (!other._resLabels[index].equals(
 		  _resLabels[index])) {
-		    if (doDebugOutput(1)) {
-		        System.err.println("Amino acid mismatch at residue " +
-			  (index + 1) + "; " + other._resLabels[index] +
-			  " vs. " + _resLabels[index]);
-		    }
+		    System.err.println("Amino acid mismatch at residue " +
+		      (index + 1) + "; " + other._resLabels[index] +
+		      " vs. " + _resLabels[index]);
 		    result = false;
 		}
 	    }
