@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2009
+// (c) Copyright 2004-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2010/06/04 14:24:15  wenger
+// Added note that bug 062 was fixed somewhere along the line; also
+// added a bit of extra debug output as a result of looking into this.
+//
 // Revision 1.20  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -377,9 +381,13 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
     	int result = S2DResidues.POLYMER_TYPE_UNKNOWN;
 
 	String type = getOneFrameValueOrNull(entityFrame, ENTITY_TYPE);
+        if (doDebugOutput(13)) {
+	    System.out.println("Entity type: " + type);
+	}
 	if (type == null) {
 	    result = S2DResidues.POLYMER_TYPE_UNKNOWN;
-	} else if (type.equalsIgnoreCase(POLYMER)) {
+	} else if (type.equalsIgnoreCase(POLYMER) ||
+	  type.equalsIgnoreCase(MONOMERIC_POLYMER)) {
 	    String polymerType = getMolPolymerClass(entityFrame);
 	    if (S2DNames.PROTEIN.equalsIgnoreCase(polymerType)) {
 	    	result = S2DResidues.POLYMER_TYPE_PROTEIN;

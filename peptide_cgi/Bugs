@@ -489,6 +489,10 @@ Num Date        Status  Description
 			as NMR-STAR 3.1, not 3.0. (wenger)  (See test70.)
 			(Fixed by wenger, 7/2/10.)
 
+106 7/2/10	FIXED	Peptide-CGI fails on BMRB 4092 because it thinks
+			it's not a protein. (wenger)
+			(Fixed by wenger, 7/2/10.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.216  2010/07/02 19:30:21  wenger
+// Fixed bug 105 (most "production.3.0..." files should be treated as
+// 3.1, not 3.0) (modified a couple of old test_data files to correspond
+// to the code changes).
+//
 // Revision 1.215  2010/07/02 18:01:03  wenger
 // We now print the details of residue mismatches at the default
 // verbosity; also, we print the exact version of each NMR-STAR file
@@ -1343,7 +1348,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.4x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.4x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.2";
 
@@ -3601,10 +3606,21 @@ public class S2DMain {
 	    for (int frameNum = 0; frameNum < frames.size(); frameNum++) {
 	        entityAssemblyId++;
 	        SaveFrameNode frame = (SaveFrameNode)frames.elementAt(frameNum);
+                if (doDebugOutput(5)) {
+		    System.out.println("Writing residue list for save frame "
+		      + star.getFrameName(frame));
+	        }	
 
 		// Don't do anything for non-polymers.
 		int polymerType = star.getPolymerType(frame);
-		if (polymerType == S2DResidues.POLYMER_TYPE_NONE) continue;
+		if (polymerType == S2DResidues.POLYMER_TYPE_NONE) {
+                    if (doDebugOutput(5)) {
+		        System.out.println("Skipping save frame " +
+			  star.getFrameName(frame) +
+			  " because it is a non-polymer");
+		    }
+		    continue;
+		}
 
 		try {
 	            S2DResidues residues = star.getResidues(frame);
