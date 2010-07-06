@@ -493,6 +493,9 @@ Num Date        Status  Description
 			it's not a protein. (wenger)
 			(Fixed by wenger, 7/2/10.)
 
+107 7/6/10	OPEN	Help pages for remediated restraints torsion angle
+			and distance restraints don't work. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
