@@ -231,6 +231,12 @@ endif
 chmod a+rwx $targetdir
 
 cp -p html/[a-z]* $targetdir
+if (! -e $targetdir/help_rrdistr.html) then
+  ln -s $targetdir/help_distr.html $targetdir/help_rrdistr.html
+endif
+if (! -e $targetdir/help_rrtar.html) then
+  ln -s $targetdir/help_tar.html $targetdir/help_rrtar.html
+endif
 chmod a+r $targetdir/help*
 chmod a+r $targetdir/*.jpg
 chmod a+r $targetdir/*.gif

@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.217  2010/07/02 21:57:48  wenger
+// Fixed bug 106 (Peptide-CGI fails on BMRB 4092 because it thinks it's
+// not a protein).
+//
 // Revision 1.216  2010/07/02 19:30:21  wenger
 // Fixed bug 105 (most "production.3.0..." files should be treated as
 // 3.1, not 3.0) (modified a couple of old test_data files to correspond
@@ -1348,7 +1352,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.4x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.4x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.2";
 

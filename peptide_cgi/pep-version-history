@@ -10,6 +10,10 @@ from being displayed.
 * Fixed a bug that caused entries with a _Mol_type of monomeric_polymer
 (rather than polymer) (for example, 4092) to be incorrectly processed.
 
+* Fixed a bug that prevented the visualization help pages from being shown
+for remediated restraint distance and torsion angle restraint
+visualizations (bug 107).
+
 * Added more diagnostic output, such as details of sequence mismatches.
 
 
