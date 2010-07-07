@@ -16,23 +16,14 @@ set files = ( data_dir/4020ac1.dat \
 	data_dir/4020rrtar1.dat \
 	data_dir/4020rrtar-md1.dat \
 	html_dir/4020/4020ac1.html \
-	html_dir/4020/4020ac1_large.html \
 	html_dir/4020/4020am1.html \
-	html_dir/4020/4020am1_large.html \
 	html_dir/4020/4020as1.html \
-	html_dir/4020/4020as1_large.html \
 	html_dir/4020/4020c1.html \
-	html_dir/4020/4020c1_large.html \
 	html_dir/4020/4020d1.html \
-	html_dir/4020/4020d1_large.html \
 	html_dir/4020/4020hc1.html \
-	html_dir/4020/4020hc1_large.html \
 	html_dir/4020/4020p1.html \
-	html_dir/4020/4020p1_large.html \
 	html_dir/4020/4020rrtar1.html \
-	html_dir/4020/4020rrtar1_large.html \
 	html_dir/4020/4020y.html \
-	html_dir/4020/4020y_large.html \
 	session_dir/4020/4020ac1.ds \
 	session_dir/4020/4020acdd \
 	session_dir/4020/4020am1.ds \

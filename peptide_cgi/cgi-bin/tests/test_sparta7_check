@@ -24,37 +24,21 @@ set files = ( data_dir/15418am1.dat \
 	data_dir/15418sd2.dat \
 	data_dir/15418sd2_models.dat \
 	html_dir/15418/15418am1.html \
-	html_dir/15418/15418am1_large.html \
 	html_dir/15418/15418am2.html \
-	html_dir/15418/15418am2_large.html \
 	html_dir/15418/15418as1.html \
-	html_dir/15418/15418as1_large.html \
 	html_dir/15418/15418as2.html \
-	html_dir/15418/15418as2_large.html \
 	html_dir/15418/15418c2.html \
-	html_dir/15418/15418c2_large.html \
 	html_dir/15418/15418d1.html \
-	html_dir/15418/15418d1_large.html \
 	html_dir/15418/15418d2.html \
-	html_dir/15418/15418d2_large.html \
 	html_dir/15418/15418hc1.html \
-	html_dir/15418/15418hc1_large.html \
 	html_dir/15418/15418hc2.html \
-	html_dir/15418/15418hc2_large.html \
 	html_dir/15418/15418hn1.html \
-	html_dir/15418/15418hn1_large.html \
 	html_dir/15418/15418hn2.html \
-	html_dir/15418/15418hn2_large.html \
 	html_dir/15418/15418p1.html \
-	html_dir/15418/15418p1_large.html \
 	html_dir/15418/15418p2.html \
-	html_dir/15418/15418p2_large.html \
 	html_dir/15418/15418sd1.html \
-	html_dir/15418/15418sd1_large.html \
 	html_dir/15418/15418sd2.html \
-	html_dir/15418/15418sd2_large.html \
 	html_dir/15418/15418y.html \
-	html_dir/15418/15418y_large.html \
 	session_dir/15418/15418acdd \
 	session_dir/15418/15418am1.ds \
 	session_dir/15418/15418am2.ds \
@@ -112,14 +96,6 @@ source tests/check4line
 set line = '<td><a href="15418sd1.html">64 residues</a></td>'
 source tests/check4line
 set line = '<td><a href="15418sd2.html">29 residues</a></td>'
-source tests/check4line
-
-set file = "html_dir/15418/15418y_large.html"
-set line = '<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>'
-source tests/check4line
-set line = '<td><a href="15418sd1_large.html">64 residues</a></td>'
-source tests/check4line
-set line = '<td><a href="15418sd2_large.html">29 residues</a></td>'
 source tests/check4line
 
 set file = "html_dir/15418/15418sd1.html"

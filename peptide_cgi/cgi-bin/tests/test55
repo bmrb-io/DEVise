@@ -27,17 +27,11 @@ set files = ( data_dir/6730as1.dat \
 	data_dir/6730rc1.dat \
 	data_dir/6730rl.dat \
 	html_dir/6730/6730as1.html \
-	html_dir/6730/6730as1_large.html \
 	html_dir/6730/6730c1.html \
-	html_dir/6730/6730c1_large.html \
 	html_dir/6730/6730d1.html \
-	html_dir/6730/6730d1_large.html \
 	html_dir/6730/6730hn1.html \
-	html_dir/6730/6730hn1_large.html \
 	html_dir/6730/6730p1.html \
-	html_dir/6730/6730p1_large.html \
 	html_dir/6730/6730y.html \
-	html_dir/6730/6730y_large.html \
 	session_dir/6730/6730acdd \
 	session_dir/6730/6730as1.ds \
 	session_dir/6730/6730c1.ds \

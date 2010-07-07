@@ -2,7 +2,10 @@
 
 Peptide-CGI 11.8.5
 ------------------
-(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.2 or higher.)
+(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Changed Peptide-CGI-generated HTML pages to work with the new
+re-sizable JavaScreen.
 
 * Fixed bug 108 (Peptide-CGI version history link doesn't work).
 

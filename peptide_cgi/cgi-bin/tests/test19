@@ -58,7 +58,6 @@ set files = (data_dir/6318as1.dat \
 	html_dir/6318/6318p1.html \
 	html_dir/6318/6318ps1.html \
 	html_dir/6318/6318y.html \
-	html_dir/6318/6318y_large.html \
 	session_dir/6318/6318acdd \
 	session_dir/6318/6318as1.ds \
 	session_dir/6318/6318d1.ds \
@@ -68,14 +67,7 @@ set files = (data_dir/6318as1.dat \
 	session_dir/6318/6318ps1.ds \
 	data_dir/6318am1.dat \
 	html_dir/6318/6318am1.html \
-	session_dir/6318/6318am1.ds \
-	html_dir/6318/6318am1_large.html \
-	html_dir/6318/6318as1_large.html \
-	html_dir/6318/6318d1_large.html \
-	html_dir/6318/6318hc1_large.html \
-	html_dir/6318/6318hn1_large.html \
-	html_dir/6318/6318p1_large.html \
-	html_dir/6318/6318ps1_large.html)
+	session_dir/6318/6318am1.ds )
 
 if ($doCoords) then
   set files = ($files \

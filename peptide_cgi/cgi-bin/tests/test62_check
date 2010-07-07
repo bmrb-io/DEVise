@@ -21,31 +21,18 @@ set files = ( data_dir/15117ac1.dat \
 	data_dir/15117rc2.dat \
 	data_dir/15117rl.dat \
 	html_dir/15117/15117ac1.html \
-	html_dir/15117/15117ac1_large.html \
 	html_dir/15117/15117ac2.html \
-	html_dir/15117/15117ac2_large.html \
 	html_dir/15117/15117am1.html \
-	html_dir/15117/15117am1_large.html \
 	html_dir/15117/15117am2.html \
-	html_dir/15117/15117am2_large.html \
 	html_dir/15117/15117as1.html \
-	html_dir/15117/15117as1_large.html \
 	html_dir/15117/15117as2.html \
-	html_dir/15117/15117as2_large.html \
 	html_dir/15117/15117d1.html \
-	html_dir/15117/15117d1_large.html \
 	html_dir/15117/15117d2.html \
-	html_dir/15117/15117d2_large.html \
 	html_dir/15117/15117hn1.html \
-	html_dir/15117/15117hn1_large.html \
 	html_dir/15117/15117hn2.html \
-	html_dir/15117/15117hn2_large.html \
 	html_dir/15117/15117p1.html \
-	html_dir/15117/15117p1_large.html \
 	html_dir/15117/15117p2.html \
-	html_dir/15117/15117p2_large.html \
 	html_dir/15117/15117y.html \
-	html_dir/15117/15117y_large.html \
 	session_dir/15117/15117ac1.ds \
 	session_dir/15117/15117ac2.ds \
 	session_dir/15117/15117acdd \

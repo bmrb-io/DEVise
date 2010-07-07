@@ -115,7 +115,6 @@ set files = (data_dir/4970md.dat \
 	html_dir/4970/4970t28.html \
 	html_dir/4970/4970t29.html \
 	html_dir/4970/4970y.html \
-	html_dir/4970/4970y_large.html \
 	session_dir/4970/4970acdd \
 	session_dir/4970/4970n1.ds \
 	session_dir/4970/4970n2.ds \
@@ -166,55 +165,6 @@ set files = (data_dir/4970md.dat \
 	session_dir/4970/4970t27.ds \
 	session_dir/4970/4970t28.ds \
 	session_dir/4970/4970t29.ds \
-	html_dir/4970/4970n1_large.html \
-	html_dir/4970/4970n2_large.html \
-	html_dir/4970/4970n3_large.html \
-	html_dir/4970/4970n4_large.html \
-	html_dir/4970/4970n5_large.html \
-	html_dir/4970/4970t11_large.html \
-	html_dir/4970/4970t12_large.html \
-	html_dir/4970/4970t13_large.html \
-	html_dir/4970/4970t14_large.html \
-	html_dir/4970/4970t15_large.html \
-	html_dir/4970/4970t210_large.html \
-	html_dir/4970/4970t211_large.html \
-	html_dir/4970/4970t212_large.html \
-	html_dir/4970/4970t213_large.html \
-	html_dir/4970/4970t214_large.html \
-	html_dir/4970/4970t215_large.html \
-	html_dir/4970/4970t216_large.html \
-	html_dir/4970/4970t217_large.html \
-	html_dir/4970/4970t218_large.html \
-	html_dir/4970/4970t219_large.html \
-	html_dir/4970/4970t21_large.html \
-	html_dir/4970/4970t220_large.html \
-	html_dir/4970/4970t221_large.html \
-	html_dir/4970/4970t222_large.html \
-	html_dir/4970/4970t223_large.html \
-	html_dir/4970/4970t224_large.html \
-	html_dir/4970/4970t225_large.html \
-	html_dir/4970/4970t226_large.html \
-	html_dir/4970/4970t227_large.html \
-	html_dir/4970/4970t228_large.html \
-	html_dir/4970/4970t229_large.html \
-	html_dir/4970/4970t22_large.html \
-	html_dir/4970/4970t230_large.html \
-	html_dir/4970/4970t231_large.html \
-	html_dir/4970/4970t232_large.html \
-	html_dir/4970/4970t233_large.html \
-	html_dir/4970/4970t234_large.html \
-	html_dir/4970/4970t235_large.html \
-	html_dir/4970/4970t236_large.html \
-	html_dir/4970/4970t237_large.html \
-	html_dir/4970/4970t238_large.html \
-	html_dir/4970/4970t239_large.html \
-	html_dir/4970/4970t23_large.html \
-	html_dir/4970/4970t24_large.html \
-	html_dir/4970/4970t25_large.html \
-	html_dir/4970/4970t26_large.html \
-	html_dir/4970/4970t27_large.html \
-	html_dir/4970/4970t28_large.html \
-	html_dir/4970/4970t29_large.html \
 	data_dir/4970o10.dat \
 	data_dir/4970o11.dat \
 	data_dir/4970o12.dat \
@@ -235,41 +185,23 @@ set files = (data_dir/4970md.dat \
 	data_dir/4970o9.dat \
 	data_dir/4970rl.dat \
 	html_dir/4970/4970o10.html \
-	html_dir/4970/4970o10_large.html \
 	html_dir/4970/4970o11.html \
-	html_dir/4970/4970o11_large.html \
 	html_dir/4970/4970o12.html \
-	html_dir/4970/4970o12_large.html \
 	html_dir/4970/4970o13.html \
-	html_dir/4970/4970o13_large.html \
 	html_dir/4970/4970o14.html \
-	html_dir/4970/4970o14_large.html \
 	html_dir/4970/4970o15.html \
-	html_dir/4970/4970o15_large.html \
 	html_dir/4970/4970o16.html \
-	html_dir/4970/4970o16_large.html \
 	html_dir/4970/4970o17.html \
-	html_dir/4970/4970o17_large.html \
 	html_dir/4970/4970o18.html \
-	html_dir/4970/4970o18_large.html \
 	html_dir/4970/4970o1.html \
-	html_dir/4970/4970o1_large.html \
 	html_dir/4970/4970o2.html \
-	html_dir/4970/4970o2_large.html \
 	html_dir/4970/4970o3.html \
-	html_dir/4970/4970o3_large.html \
 	html_dir/4970/4970o4.html \
-	html_dir/4970/4970o4_large.html \
 	html_dir/4970/4970o5.html \
-	html_dir/4970/4970o5_large.html \
 	html_dir/4970/4970o6.html \
-	html_dir/4970/4970o6_large.html \
 	html_dir/4970/4970o7.html \
-	html_dir/4970/4970o7_large.html \
 	html_dir/4970/4970o8.html \
-	html_dir/4970/4970o8_large.html \
 	html_dir/4970/4970o9.html \
-	html_dir/4970/4970o9_large.html \
 	session_dir/4970/4970o10.ds \
 	session_dir/4970/4970o11.ds \
 	session_dir/4970/4970o12.ds \

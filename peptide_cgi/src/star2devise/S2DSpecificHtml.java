@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2010/07/02 15:40:11  wenger
+// Fixed bug 104 (help page links were broken by changes in 11.8.3).
+//
 // Revision 1.18  2010/06/07 16:49:11  wenger
 // We now delete html files for an entry when the session files are
 // deleted (so you don't accidentally end up with an html file for,
@@ -201,10 +204,6 @@ public class S2DSpecificHtml {
 	// Write the "normal size" file.
 	String templateFile = TemplateFileName(false);
         writeOne(templateFile, "");
-
-	// Write the "large size" file.
-	templateFile = TemplateFileName(true);
-        writeOne(templateFile, "_large");
     }
 
     //===================================================================

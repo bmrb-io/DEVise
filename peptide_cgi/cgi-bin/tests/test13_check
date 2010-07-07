@@ -30,7 +30,6 @@ set files = (data_dir/vis_server/test13_outas1.dat \
 	html_dir/test13_out/test13_outt22.html \
 	html_dir/test13_out/test13_outt23.html \
 	html_dir/test13_out/test13_outy.html \
-	html_dir/test13_out/test13_outy_large.html \
 	session_dir/vis_server/test13_out/test13_outacdd \
 	session_dir/vis_server/test13_out/test13_outas1.ds \
 	session_dir/vis_server/test13_out/test13_outc1.ds \
@@ -47,21 +46,7 @@ set files = (data_dir/vis_server/test13_outas1.dat \
 	session_dir/vis_server/test13_out/test13_outt23.ds \
 	html_dir/test13_out/test13_outam1.html \
 	data_dir/vis_server/test13_outam1.dat \
-	session_dir/vis_server/test13_out/test13_outam1.ds \
-	html_dir/test13_out/test13_outam1_large.html \
-	html_dir/test13_out/test13_outas1_large.html \
-	html_dir/test13_out/test13_outc1_large.html \
-	html_dir/test13_out/test13_outd1_large.html \
-	html_dir/test13_out/test13_outg1_large.html \
-	html_dir/test13_out/test13_outhc1_large.html \
-	html_dir/test13_out/test13_outhn1_large.html \
-	html_dir/test13_out/test13_outp1_large.html \
-	html_dir/test13_out/test13_outt11_large.html \
-	html_dir/test13_out/test13_outt12_large.html \
-	html_dir/test13_out/test13_outt13_large.html \
-	html_dir/test13_out/test13_outt21_large.html \
-	html_dir/test13_out/test13_outt22_large.html \
-	html_dir/test13_out/test13_outt23_large.html)
+	session_dir/vis_server/test13_out/test13_outam1.ds )
 	
 foreach file ($files)
   if (! -f $file) then

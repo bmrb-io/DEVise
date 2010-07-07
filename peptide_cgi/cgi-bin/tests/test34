@@ -55,7 +55,6 @@ set files = (data_dir/6521urac1.dat \
 	html_unreleased/6521ur/6521urp1.html \
 	html_unreleased/6521ur/6521urp2.html \
 	html_unreleased/6521ur/6521ury.html \
-	html_unreleased/6521ur/6521ury_large.html \
 	session_dir/.unreleased/6521ur/6521urac1.ds \
 	session_dir/.unreleased/6521ur/6521urac2.ds \
 	session_dir/.unreleased/6521ur/6521urac3.ds \
@@ -73,24 +72,7 @@ set files = (data_dir/6521urac1.dat \
 	session_dir/.unreleased/6521ur/6521urhn1.ds \
 	session_dir/.unreleased/6521ur/6521urhn2.ds \
 	session_dir/.unreleased/6521ur/6521urp1.ds \
-	session_dir/.unreleased/6521ur/6521urp2.ds \
-	html_unreleased/6521ur/6521urac1_large.html \
-	html_unreleased/6521ur/6521urac2_large.html \
-	html_unreleased/6521ur/6521urac3_large.html \
-	html_unreleased/6521ur/6521urac4_large.html \
-	html_unreleased/6521ur/6521urac5_large.html \
-	html_unreleased/6521ur/6521urac6_large.html \
-	html_unreleased/6521ur/6521urac7_large.html \
-	html_unreleased/6521ur/6521uras1_large.html \
-	html_unreleased/6521ur/6521uras2_large.html \
-	html_unreleased/6521ur/6521urc1_large.html \
-	html_unreleased/6521ur/6521urc2_large.html \
-	html_unreleased/6521ur/6521urd1_large.html \
-	html_unreleased/6521ur/6521urd2_large.html \
-	html_unreleased/6521ur/6521urhn1_large.html \
-	html_unreleased/6521ur/6521urhn2_large.html \
-	html_unreleased/6521ur/6521urp1_large.html \
-	html_unreleased/6521ur/6521urp2_large.html )
+	session_dir/.unreleased/6521ur/6521urp2.ds )
 
 foreach file ($files)
   if (! -f $file) then

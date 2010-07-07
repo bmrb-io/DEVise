@@ -30,23 +30,14 @@ set files = ( data_dir/15011ac1.dat \
 	data_dir/15011rc1.dat \
 	data_dir/15011rl.dat \
 	html_dir/15011/15011ac1.html \
-	html_dir/15011/15011ac1_large.html \
 	html_dir/15011/15011am1.html \
-	html_dir/15011/15011am1_large.html \
 	html_dir/15011/15011as1.html \
-	html_dir/15011/15011as1_large.html \
 	html_dir/15011/15011c1.html \
-	html_dir/15011/15011c1_large.html \
 	html_dir/15011/15011d1.html \
-	html_dir/15011/15011d1_large.html \
 	html_dir/15011/15011hc1.html \
-	html_dir/15011/15011hc1_large.html \
 	html_dir/15011/15011hn1.html \
-	html_dir/15011/15011hn1_large.html \
 	html_dir/15011/15011p1.html \
-	html_dir/15011/15011p1_large.html \
 	html_dir/15011/15011y.html \
-	html_dir/15011/15011y_large.html \
 	session_dir/15011/15011ac1.ds \
 	session_dir/15011/15011acdd \
 	session_dir/15011/15011am1.ds \

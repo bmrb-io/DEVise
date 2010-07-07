@@ -17,25 +17,15 @@ set files = ( data_dir/uvd/16270ac2.dat \
 	data_dir/uvd/16270rrtar2.dat \
 	data_dir/uvd/16270rrtar-md2.dat \
 	html_dir/uvd/16270/16270ac2.html \
-	html_dir/uvd/16270/16270ac2_large.html \
 	html_dir/uvd/16270/16270am1.html \
-	html_dir/uvd/16270/16270am1_large.html \
 	html_dir/uvd/16270/16270as1.html \
-	html_dir/uvd/16270/16270as1_large.html \
 	html_dir/uvd/16270/16270c1.html \
-	html_dir/uvd/16270/16270c1_large.html \
 	html_dir/uvd/16270/16270d1.html \
-	html_dir/uvd/16270/16270d1_large.html \
 	html_dir/uvd/16270/16270hc1.html \
-	html_dir/uvd/16270/16270hc1_large.html \
 	html_dir/uvd/16270/16270hn1.html \
-	html_dir/uvd/16270/16270hn1_large.html \
 	html_dir/uvd/16270/16270p1.html \
-	html_dir/uvd/16270/16270p1_large.html \
 	html_dir/uvd/16270/16270rrtar2.html \
-	html_dir/uvd/16270/16270rrtar2_large.html \
 	html_dir/uvd/16270/16270y.html \
-	html_dir/uvd/16270/16270y_large.html \
 	session_dir/.uvd/16270/16270ac2.ds \
 	session_dir/.uvd/16270/16270acdd \
 	session_dir/.uvd/16270/16270am1.ds \

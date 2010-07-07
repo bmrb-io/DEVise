@@ -31,25 +31,15 @@ set files = ( data_dir/15014ac1.dat \
 	data_dir/15014rc1.dat \
 	data_dir/15014rl.dat \
 	html_dir/15014/15014ac1.html \
-	html_dir/15014/15014ac1_large.html \
 	html_dir/15014/15014ac2.html \
-	html_dir/15014/15014ac2_large.html \
 	html_dir/15014/15014am1.html \
-	html_dir/15014/15014am1_large.html \
 	html_dir/15014/15014as1.html \
-	html_dir/15014/15014as1_large.html \
 	html_dir/15014/15014c1.html \
-	html_dir/15014/15014c1_large.html \
 	html_dir/15014/15014d1.html \
-	html_dir/15014/15014d1_large.html \
 	html_dir/15014/15014hc1.html \
-	html_dir/15014/15014hc1_large.html \
 	html_dir/15014/15014hn1.html \
-	html_dir/15014/15014hn1_large.html \
 	html_dir/15014/15014p1.html \
-	html_dir/15014/15014p1_large.html \
 	html_dir/15014/15014y.html \
-	html_dir/15014/15014y_large.html \
 	session_dir/15014/15014ac1.ds \
 	session_dir/15014/15014ac2.ds \
 	session_dir/15014/15014acdd \

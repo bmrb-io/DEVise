@@ -39,35 +39,20 @@ set files = ( data_dir/7033ac1.dat \
 	data_dir/7033rc2.dat \
 	data_dir/7033rl.dat \
 	html_dir/7033/7033ac1.html \
-	html_dir/7033/7033ac1_large.html \
 	html_dir/7033/7033ac2.html \
-	html_dir/7033/7033ac2_large.html \
 	html_dir/7033/7033am1.html \
-	html_dir/7033/7033am1_large.html \
 	html_dir/7033/7033am2.html \
-	html_dir/7033/7033am2_large.html \
 	html_dir/7033/7033as1.html \
-	html_dir/7033/7033as1_large.html \
 	html_dir/7033/7033as2.html \
-	html_dir/7033/7033as2_large.html \
 	html_dir/7033/7033c1.html \
-	html_dir/7033/7033c1_large.html \
 	html_dir/7033/7033c2.html \
-	html_dir/7033/7033c2_large.html \
 	html_dir/7033/7033d1.html \
-	html_dir/7033/7033d1_large.html \
 	html_dir/7033/7033d2.html \
-	html_dir/7033/7033d2_large.html \
 	html_dir/7033/7033hc2.html \
-	html_dir/7033/7033hc2_large.html \
 	html_dir/7033/7033hn2.html \
-	html_dir/7033/7033hn2_large.html \
 	html_dir/7033/7033p1.html \
-	html_dir/7033/7033p1_large.html \
 	html_dir/7033/7033p2.html \
-	html_dir/7033/7033p2_large.html \
 	html_dir/7033/7033y.html \
-	html_dir/7033/7033y_large.html \
 	session_dir/7033/7033ac1.ds \
 	session_dir/7033/7033ac2.ds \
 	session_dir/7033/7033acdd \

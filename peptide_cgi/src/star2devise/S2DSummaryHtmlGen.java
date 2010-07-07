@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2010/07/07 18:46:09  wenger
+// Fixed bug 108 (Peptide-CGI version history link doesn't work).
+//
 // Revision 1.31  2010/06/08 21:25:13  wenger
 // Fixed "main entry page" link in summary html pages.
 //
@@ -537,7 +540,6 @@ public abstract class S2DSummaryHtmlGen {
 	    _writer.write("</p>\n");
 
 	    _writer.write("\n<p>\n");
-            writeSizeLink();
 	    _writer.write("</p>\n");
 
 	    _writer.write("\n<p>\n");
@@ -552,10 +554,6 @@ public abstract class S2DSummaryHtmlGen {
 	    throw new S2DError("Cannot create summary html file");
 	}
     }
-
-    //-------------------------------------------------------------------
-    // Write the link to the other size of visualizations.
-    protected abstract void writeSizeLink() throws IOException;
 
     //-------------------------------------------------------------------
     // Writes out the tail of the html and closes the file.

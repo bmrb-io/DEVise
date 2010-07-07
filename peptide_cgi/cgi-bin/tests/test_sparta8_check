@@ -25,39 +25,22 @@ set files = ( data_dir/11030am1.dat \
 	data_dir/11030sd2.dat \
 	data_dir/11030sd2_models.dat \
 	html_dir/11030/11030am1.html \
-	html_dir/11030/11030am1_large.html \
 	html_dir/11030/11030am2.html \
-	html_dir/11030/11030am2_large.html \
 	html_dir/11030/11030as1.html \
-	html_dir/11030/11030as1_large.html \
 	html_dir/11030/11030as2.html \
-	html_dir/11030/11030as2_large.html \
 	html_dir/11030/11030c1.html \
-	html_dir/11030/11030c1_large.html \
 	html_dir/11030/11030c2.html \
-	html_dir/11030/11030c2_large.html \
 	html_dir/11030/11030d1.html \
-	html_dir/11030/11030d1_large.html \
 	html_dir/11030/11030d2.html \
-	html_dir/11030/11030d2_large.html \
 	html_dir/11030/11030hc1.html \
-	html_dir/11030/11030hc1_large.html \
 	html_dir/11030/11030hc2.html \
-	html_dir/11030/11030hc2_large.html \
 	html_dir/11030/11030hn1.html \
-	html_dir/11030/11030hn1_large.html \
 	html_dir/11030/11030hn2.html \
-	html_dir/11030/11030hn2_large.html \
 	html_dir/11030/11030p1.html \
-	html_dir/11030/11030p1_large.html \
 	html_dir/11030/11030p2.html \
-	html_dir/11030/11030p2_large.html \
 	html_dir/11030/11030sd1.html \
-	html_dir/11030/11030sd1_large.html \
 	html_dir/11030/11030sd2.html \
-	html_dir/11030/11030sd2_large.html \
 	html_dir/11030/11030y.html \
-	html_dir/11030/11030y_large.html \
 	session_dir/11030/11030acdd \
 	session_dir/11030/11030am1.ds \
 	session_dir/11030/11030am2.ds \
@@ -125,14 +108,6 @@ source tests/check4line
 set line = '^    <td><a href="11030sd1.html">106 residues</a></td>$'
 source tests/check4line
 set line = '^    <td><a href="11030sd2.html">106 residues</a></td>$'
-source tests/check4line
-
-set file = "html_dir/11030/11030y_large.html"
-set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
-source tests/check4line
-set line = '^    <td><a href="11030sd1_large.html">106 residues</a></td>$'
-source tests/check4line
-set line = '^    <td><a href="11030sd2_large.html">106 residues</a></td>$'
 source tests/check4line
 
 set file = "html_dir/11030/11030sd1.html"

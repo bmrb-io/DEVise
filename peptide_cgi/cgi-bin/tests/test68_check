@@ -20,33 +20,19 @@ set files = ( data_dir/15083ac1.dat \
 	data_dir/15083rc3.dat \
 	data_dir/15083rl.dat \
 	html_dir/15083/15083ac1.html \
-	html_dir/15083/15083ac1_large.html \
 	html_dir/15083/15083ac2.html \
-	html_dir/15083/15083ac2_large.html \
 	html_dir/15083/15083am3.html \
-	html_dir/15083/15083am3_large.html \
 	html_dir/15083/15083as1.html \
-	html_dir/15083/15083as1_large.html \
 	html_dir/15083/15083as2.html \
-	html_dir/15083/15083as2_large.html \
 	html_dir/15083/15083as3.html \
-	html_dir/15083/15083as3_large.html \
 	html_dir/15083/15083c3.html \
-	html_dir/15083/15083c3_large.html \
 	html_dir/15083/15083d1.html \
-	html_dir/15083/15083d1_large.html \
 	html_dir/15083/15083d2.html \
-	html_dir/15083/15083d2_large.html \
 	html_dir/15083/15083d3.html \
-	html_dir/15083/15083d3_large.html \
 	html_dir/15083/15083hc3.html \
-	html_dir/15083/15083hc3_large.html \
 	html_dir/15083/15083hn3.html \
-	html_dir/15083/15083hn3_large.html \
 	html_dir/15083/15083p3.html \
-	html_dir/15083/15083p3_large.html \
 	html_dir/15083/15083y.html \
-	html_dir/15083/15083y_large.html \
 	session_dir/15083/15083ac1.ds \
 	session_dir/15083/15083ac2.ds \
 	session_dir/15083/15083acdd \

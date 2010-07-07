@@ -21,35 +21,20 @@ set files = ( \
 	data_dir/15437t21.dat \
 	data_dir/15437t22.dat \
 	#TEMP html_dir/15437/15437ac1.html \
-	#TEMP html_dir/15437/15437ac1_large.html \
 	html_dir/15437/15437am1.html \
-	html_dir/15437/15437am1_large.html \
 	html_dir/15437/15437as1.html \
-	html_dir/15437/15437as1_large.html \
 	html_dir/15437/15437c1.html \
-	html_dir/15437/15437c1_large.html \
 	html_dir/15437/15437d1.html \
-	html_dir/15437/15437d1_large.html \
 	html_dir/15437/15437hc1.html \
-	html_dir/15437/15437hc1_large.html \
 	html_dir/15437/15437hn1.html \
-	html_dir/15437/15437hn1_large.html \
 	html_dir/15437/15437n1.html \
-	html_dir/15437/15437n1_large.html \
 	html_dir/15437/15437n2.html \
-	html_dir/15437/15437n2_large.html \
 	html_dir/15437/15437p1.html \
-	html_dir/15437/15437p1_large.html \
 	html_dir/15437/15437t11.html \
-	html_dir/15437/15437t11_large.html \
 	html_dir/15437/15437t12.html \
-	html_dir/15437/15437t12_large.html \
 	html_dir/15437/15437t21.html \
-	html_dir/15437/15437t21_large.html \
 	html_dir/15437/15437t22.html \
-	html_dir/15437/15437t22_large.html \
 	html_dir/15437/15437y.html \
-	html_dir/15437/15437y_large.html \
 	#TEMP session_dir/15437/15437ac1.ds \
 	session_dir/15437/15437acdd \
 	session_dir/15437/15437am1.ds \

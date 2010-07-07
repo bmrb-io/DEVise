@@ -21,7 +21,6 @@ echo "Checking output files"
 set files = ( data_dir/5531md.dat \
 	data_dir/5531rl.dat \
 	html_dir/5531/5531y.html \
-	html_dir/5531/5531y_large.html \
 	session_dir/5531/5531acdd )
 	
 foreach file ($files)

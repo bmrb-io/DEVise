@@ -48,7 +48,7 @@ set files = (data_dir/abcdac1.dat data_dir/abcdas1.dat data_dir/abcdc1.dat \
 	html_dir/abcd/abcdn9.html html_dir/abcd/abcdp1.html html_dir/abcd/abcdt11.html \
 	html_dir/abcd/abcdt12.html html_dir/abcd/abcdt13.html html_dir/abcd/abcdt21.html \
 	html_dir/abcd/abcdt22.html html_dir/abcd/abcdt23.html \
-	html_dir/abcd/abcdy.html html_dir/abcd/abcdy_large.html \
+	html_dir/abcd/abcdy.html \
 	session_dir/abcd/abcdac1.ds session_dir/abcd/abcdacdd \
 	session_dir/abcd/abcdas1.ds session_dir/abcd/abcdc1.ds session_dir/abcd/abcdd1.ds \
 	session_dir/abcd/abcdg1.ds session_dir/abcd/abcdhn1.ds session_dir/abcd/abcdn1.ds \
@@ -61,33 +61,9 @@ set files = (data_dir/abcdac1.dat data_dir/abcdas1.dat data_dir/abcdc1.dat \
 	data_dir/abcdamac1.dat \
 	html_dir/abcd/abcdam1.html \
 	session_dir/abcd/abcdam1.ds \
-	html_dir/abcd/abcdac1_large.html \
-	html_dir/abcd/abcdam1_large.html \
-	html_dir/abcd/abcdas1_large.html \
-	html_dir/abcd/abcdc1_large.html \
-	html_dir/abcd/abcdd1_large.html \
-	html_dir/abcd/abcdg1_large.html \
-	html_dir/abcd/abcdhn1_large.html \
-	html_dir/abcd/abcdn1_large.html \
-	html_dir/abcd/abcdn2_large.html \
-	html_dir/abcd/abcdn3_large.html \
-	html_dir/abcd/abcdn4_large.html \
-	html_dir/abcd/abcdn5_large.html \
-	html_dir/abcd/abcdn6_large.html \
-	html_dir/abcd/abcdn7_large.html \
-	html_dir/abcd/abcdn8_large.html \
-	html_dir/abcd/abcdn9_large.html \
-	html_dir/abcd/abcdp1_large.html \
-	html_dir/abcd/abcdt11_large.html \
-	html_dir/abcd/abcdt12_large.html \
-	html_dir/abcd/abcdt13_large.html \
-	html_dir/abcd/abcdt21_large.html \
-	html_dir/abcd/abcdt22_large.html \
-	html_dir/abcd/abcdt23_large.html \
 	data_dir/abcdhc1.dat \
 	html_dir/abcd/abcdhc1.html \
-	session_dir/abcd/abcdhc1.ds \
-	html_dir/abcd/abcdhc1_large.html )
+	session_dir/abcd/abcdhc1.ds )
 
 foreach file ($files)
   if (! -f $file) then

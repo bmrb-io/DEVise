@@ -31,6 +31,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2010/06/07 16:49:11  wenger
+// We now delete html files for an entry when the session files are
+// deleted (so you don't accidentally end up with an html file for,
+// say, coordinates, for which no session exists); this involved moving
+// all of the html files into a separate directory for each entry,
+// so they can be easily deleted.
+//
 // Revision 1.23  2010/04/23 16:51:08  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
 //
@@ -210,7 +217,6 @@ public class S2DSummaryHtml {
     private String _htmlDir = null;
 
     S2DSummaryHtmlNormal _normal;
-    S2DSummaryHtmlLarge _large;
 
     // This is set to true if any link is written to the summary html file;
     // if we don't write any links, a note is inserted that no data is
@@ -269,14 +275,8 @@ public class S2DSummaryHtml {
 
 	_normal = new S2DSummaryHtmlNormal(name, longName, masterId,
 	  localFiles, htmlDir, restraintOnly);
-	_large = new S2DSummaryHtmlLarge(name, longName, masterId,
-	  localFiles, htmlDir, restraintOnly);
-
-	_normal.setSibling(_large);
-	_large.setSibling(_normal);
 
 	_normal.initialize(systemName, frameTitle);
-	_large.initialize(systemName, frameTitle);
     }
 
     //-------------------------------------------------------------------
@@ -303,7 +303,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.close(bmrbIds, pdbIds, starVersion);
-	_large.close(bmrbIds, pdbIds, starVersion);
     }
 
     //-------------------------------------------------------------------
@@ -316,7 +315,6 @@ public class S2DSummaryHtml {
 	}
 
     	_normal.startFrame(frameDetails);
-    	_large.startFrame(frameDetails);
     }
 
     //-------------------------------------------------------------------
@@ -328,7 +326,6 @@ public class S2DSummaryHtml {
 	}
 
     	_normal.endFrame();
-    	_large.endFrame();
     }
 
     //-------------------------------------------------------------------
@@ -341,8 +338,6 @@ public class S2DSummaryHtml {
 	}
 
     	_normal.writeDeltashift(frameIndex, entityAssemblyID, count,
-	  isNucleicAcid);
-    	_large.writeDeltashift(frameIndex, entityAssemblyID, count,
 	  isNucleicAcid);
     }
 
@@ -357,8 +352,6 @@ public class S2DSummaryHtml {
 
     	_normal.writeSpartaDeltashift(entityAssemblyID, frameIndex,
 	  count);
-    	_large.writeSpartaDeltashift(entityAssemblyID, frameIndex,
-	  count);
     }
 
     //-------------------------------------------------------------------
@@ -370,7 +363,6 @@ public class S2DSummaryHtml {
 	}
 
     	_normal.writeCSI(frameIndex, count);
-    	_large.writeCSI(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -382,7 +374,6 @@ public class S2DSummaryHtml {
 	}
 
     	_normal.writePctAssign(frameIndex, count);
-    	_large.writePctAssign(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -395,7 +386,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeCoupling(frameIndex, entityAssemblyID, count);
-	_large.writeCoupling(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -410,8 +400,6 @@ public class S2DSummaryHtml {
 
 	_normal.writeRelax(dataType, frequency, suffix, name,
 	  frameIndex, entityAssemblyID, count);
-	_large.writeRelax(dataType, frequency, suffix, name,
-	  frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -424,7 +412,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeHetNOE(name, frameIndex, entityAssemblyID, count);
-	_large.writeHetNOE(name, frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -437,7 +424,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeAllShifts(frameIndex, count);
-	_large.writeAllShifts(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -450,7 +436,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeHvsNShifts(frameIndex, count);
-	_large.writeHvsNShifts(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -463,7 +448,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeHvsCShifts(frameIndex, count);
-	_large.writeHvsCShifts(frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -476,7 +460,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeAtomicCoords(pdbId, frameIndex, resCount, atomCount);
-	_large.writeAtomicCoords(pdbId, frameIndex, resCount, atomCount);
     }
 
     //-------------------------------------------------------------------
@@ -491,7 +474,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeAtomicCoordsCGI(pdbId, frameIndex);
-	_large.writeAtomicCoordsCGI(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -499,7 +481,6 @@ public class S2DSummaryHtml {
       throws IOException
     {
 	_normal.writeTooManyAtoms(atomCount, maxAtoms);
-	_large.writeTooManyAtoms(atomCount, maxAtoms);
     }
 
     //-------------------------------------------------------------------
@@ -512,7 +493,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeChemShiftRef(pdbId, frameIndex);
-	_large.writeChemShiftRef(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -527,7 +507,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeChemShiftRefCGI(pdbId, frameIndex);
-	_large.writeChemShiftRefCGI(pdbId, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -539,7 +518,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writePistachio(frameIndex);
-	_large.writePistachio(frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -551,7 +529,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeAmbiguity(frameIndex);
-	_large.writeAmbiguity(frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -564,7 +541,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeLACS(title, frameIndex);
-	_large.writeLACS(title, frameIndex);
     }
 
     //-------------------------------------------------------------------
@@ -577,7 +553,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeS2Order(frameIndex, entityAssemblyID, count);
-	_large.writeS2Order(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -591,7 +566,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeTorsionAngle(pdbId, frameIndex, isRR);
-	_large.writeTorsionAngle(pdbId, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -605,7 +579,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex, isRR);
-	_large.writeTorsionAngleCGI(pdbId, tarUrl, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -619,7 +592,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeDistRestraint(pdbId, frameIndex, isRR);
-	_large.writeDistRestraint(pdbId, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -634,7 +606,6 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeDistRestraintCGI(pdbId, tarUrl, frameIndex, isRR);
-	_large.writeDistRestraintCGI(pdbId, tarUrl, frameIndex, isRR);
     }
 
     //-------------------------------------------------------------------
@@ -642,7 +613,6 @@ public class S2DSummaryHtml {
     public void writeMessage(String msg, boolean horRule)
     {
 	_normal.writeMessage(msg, horRule);
-	_large.writeMessage(msg, horRule);
     }
 
     //===================================================================

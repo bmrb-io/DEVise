@@ -23,33 +23,19 @@ set files = ( data_dir/5838ac1.dat \
 	data_dir/5838rc2.dat \
 	data_dir/5838rl.dat \
 	html_dir/5838/5838ac1.html \
-	html_dir/5838/5838ac1_large.html \
 	html_dir/5838/5838am1.html \
-	html_dir/5838/5838am1_large.html \
 	html_dir/5838/5838am2.html \
-	html_dir/5838/5838am2_large.html \
 	html_dir/5838/5838as1.html \
-	html_dir/5838/5838as1_large.html \
 	html_dir/5838/5838as2.html \
-	html_dir/5838/5838as2_large.html \
 	html_dir/5838/5838c1.html \
-	html_dir/5838/5838c1_large.html \
 	html_dir/5838/5838c2.html \
-	html_dir/5838/5838c2_large.html \
 	html_dir/5838/5838d1.html \
-	html_dir/5838/5838d1_large.html \
 	html_dir/5838/5838d2.html \
-	html_dir/5838/5838d2_large.html \
 	html_dir/5838/5838hc1.html \
-	html_dir/5838/5838hc1_large.html \
 	html_dir/5838/5838hn1.html \
-	html_dir/5838/5838hn1_large.html \
 	html_dir/5838/5838p1.html \
-	html_dir/5838/5838p1_large.html \
 	html_dir/5838/5838p2.html \
-	html_dir/5838/5838p2_large.html \
 	html_dir/5838/5838y.html \
-	html_dir/5838/5838y_large.html \
 	session_dir/5838/5838ac1.ds \
 	session_dir/5838/5838acdd \
 	session_dir/5838/5838am1.ds \

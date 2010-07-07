@@ -35,21 +35,13 @@ set files = (data_dir/simple_pistachioas1.dat \
 	html_dir/simple_pistachio/simple_pistachiop1.html \
 	html_dir/simple_pistachio/simple_pistachiops1.html \
 	html_dir/simple_pistachio/simple_pistachioy.html \
-	html_dir/simple_pistachio/simple_pistachioy_large.html \
 	session_dir/simple_pistachio/simple_pistachioacdd \
 	session_dir/simple_pistachio/simple_pistachioas1.ds \
 	session_dir/simple_pistachio/simple_pistachiod1.ds \
 	session_dir/simple_pistachio/simple_pistachiohc1.ds \
 	session_dir/simple_pistachio/simple_pistachiohn1.ds \
 	session_dir/simple_pistachio/simple_pistachiop1.ds \
-	session_dir/simple_pistachio/simple_pistachiops1.ds \
-	html_dir/simple_pistachio/simple_pistachioas1_large.html \
-	html_dir/simple_pistachio/simple_pistachioc1_large.html \
-	html_dir/simple_pistachio/simple_pistachiod1_large.html \
-	html_dir/simple_pistachio/simple_pistachiohc1_large.html \
-	html_dir/simple_pistachio/simple_pistachiohn1_large.html \
-	html_dir/simple_pistachio/simple_pistachiop1_large.html \
-	html_dir/simple_pistachio/simple_pistachiops1_large.html)
+	session_dir/simple_pistachio/simple_pistachiops1.ds )
 
 foreach file ($files)
   if (! -f $file) then

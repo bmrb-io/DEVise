@@ -25,37 +25,21 @@ set files = ( data_dir/4310ac5.dat \
 	data_dir/4310tar5.dat \
 	data_dir/4310tar-md5.dat \
 	html_dir/4310/4310ac5.html \
-	html_dir/4310/4310ac5_large.html \
 	html_dir/4310/4310am1.html \
-	html_dir/4310/4310am1_large.html \
 	html_dir/4310/4310am2.html \
-	html_dir/4310/4310am2_large.html \
 	html_dir/4310/4310as1.html \
-	html_dir/4310/4310as1_large.html \
 	html_dir/4310/4310as2.html \
-	html_dir/4310/4310as2_large.html \
 	html_dir/4310/4310c1.html \
-	html_dir/4310/4310c1_large.html \
 	html_dir/4310/4310c2.html \
-	html_dir/4310/4310c2_large.html \
 	html_dir/4310/4310d1.html \
-	html_dir/4310/4310d1_large.html \
 	html_dir/4310/4310d2.html \
-	html_dir/4310/4310d2_large.html \
 	html_dir/4310/4310g1.html \
-	html_dir/4310/4310g1_large.html \
 	html_dir/4310/4310hc1.html \
-	html_dir/4310/4310hc1_large.html \
 	html_dir/4310/4310hn1.html \
-	html_dir/4310/4310hn1_large.html \
 	html_dir/4310/4310p1.html \
-	html_dir/4310/4310p1_large.html \
 	html_dir/4310/4310p2.html \
-	html_dir/4310/4310p2_large.html \
 	html_dir/4310/4310tar5.html \
-	html_dir/4310/4310tar5_large.html \
 	html_dir/4310/4310y.html \
-	html_dir/4310/4310y_large.html \
 	session_dir/4310/4310ac5.ds \
 	session_dir/4310/4310acdd \
 	session_dir/4310/4310am1.ds \

@@ -28,21 +28,13 @@ set files = ( data_dir/test_nat_outam1.dat \
 	data_dir/test_nat_outrc1.dat \
 	data_dir/test_nat_outrl.dat \
 	html_dir/test_nat_out/test_nat_outam1.html \
-	html_dir/test_nat_out/test_nat_outam1_large.html \
 	html_dir/test_nat_out/test_nat_outas1.html \
-	html_dir/test_nat_out/test_nat_outas1_large.html \
 	html_dir/test_nat_out/test_nat_outc1.html \
-	html_dir/test_nat_out/test_nat_outc1_large.html \
 	html_dir/test_nat_out/test_nat_outd1.html \
-	html_dir/test_nat_out/test_nat_outd1_large.html \
 	html_dir/test_nat_out/test_nat_outhc1.html \
-	html_dir/test_nat_out/test_nat_outhc1_large.html \
 	html_dir/test_nat_out/test_nat_outhn1.html \
-	html_dir/test_nat_out/test_nat_outhn1_large.html \
 	html_dir/test_nat_out/test_nat_outp1.html \
-	html_dir/test_nat_out/test_nat_outp1_large.html \
 	html_dir/test_nat_out/test_nat_outy.html \
-	html_dir/test_nat_out/test_nat_outy_large.html \
 	session_dir/test_nat_out/test_nat_outacdd \
 	session_dir/test_nat_out/test_nat_outam1.ds \
 	session_dir/test_nat_out/test_nat_outas1.ds \

@@ -31,23 +31,14 @@ set files = ( data_dir/15339am1.dat \
 	data_dir/15339rl.dat \
 	data_dir/15339sd1.dat \
 	html_dir/15339/15339am1.html \
-	html_dir/15339/15339am1_large.html \
 	html_dir/15339/15339as1.html \
-	html_dir/15339/15339as1_large.html \
 	html_dir/15339/15339c1.html \
-	html_dir/15339/15339c1_large.html \
 	html_dir/15339/15339d1.html \
-	html_dir/15339/15339d1_large.html \
 	html_dir/15339/15339hc1.html \
-	html_dir/15339/15339hc1_large.html \
 	html_dir/15339/15339hn1.html \
-	html_dir/15339/15339hn1_large.html \
 	html_dir/15339/15339p1.html \
-	html_dir/15339/15339p1_large.html \
 	html_dir/15339/15339sd1.html \
-	html_dir/15339/15339sd1_large.html \
 	html_dir/15339/15339y.html \
-	html_dir/15339/15339y_large.html \
 	session_dir/15339/15339acdd \
 	session_dir/15339/15339am1.ds \
 	session_dir/15339/15339as1.ds \
@@ -82,12 +73,6 @@ set file = "html_dir/15339/15339y.html"
 set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="15339sd1.html">58 residues</a></td>$'
-source tests/check4line
-
-set file = "html_dir/15339/15339y_large.html"
-set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
-source tests/check4line
-set line = '^    <td><a href="15339sd1_large.html">58 residues</a></td>$'
 source tests/check4line
 
 

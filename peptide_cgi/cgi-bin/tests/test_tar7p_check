@@ -5,9 +5,7 @@ set files = ( data_dir/tar_1brvac1.dat \
 	data_dir/tar_1brvrrtar1.dat \
 	data_dir/tar_1brvrrtar-md1.dat \
 	html_dir/tar_1brv/tar_1brvrrtar1.html \
-	html_dir/tar_1brv/tar_1brvrrtar1_large.html \
 	html_dir/tar_1brv/tar_1brvy.html \
-	html_dir/tar_1brv/tar_1brvy_large.html \
 	session_dir/tar_1brv/tar_1brvrrtar1.ds )
 
 foreach file ($files)

@@ -38,35 +38,20 @@ set files = ( data_dir/15028am1.dat \
 	data_dir/15028rc2.dat \
 	data_dir/15028rl.dat \
 	html_dir/15028/15028am1.html \
-	html_dir/15028/15028am1_large.html \
 	html_dir/15028/15028am2.html \
-	html_dir/15028/15028am2_large.html \
 	html_dir/15028/15028as1.html \
-	html_dir/15028/15028as1_large.html \
 	html_dir/15028/15028as2.html \
-	html_dir/15028/15028as2_large.html \
 	html_dir/15028/15028c1.html \
-	html_dir/15028/15028c1_large.html \
 	html_dir/15028/15028c2.html \
-	html_dir/15028/15028c2_large.html \
 	html_dir/15028/15028d1.html \
-	html_dir/15028/15028d1_large.html \
 	html_dir/15028/15028d2.html \
-	html_dir/15028/15028d2_large.html \
 	html_dir/15028/15028hc1.html \
-	html_dir/15028/15028hc1_large.html \
 	html_dir/15028/15028hc2.html \
-	html_dir/15028/15028hc2_large.html \
 	html_dir/15028/15028hn1.html \
-	html_dir/15028/15028hn1_large.html \
 	html_dir/15028/15028hn2.html \
-	html_dir/15028/15028hn2_large.html \
 	html_dir/15028/15028p1.html \
-	html_dir/15028/15028p1_large.html \
 	html_dir/15028/15028p2.html \
-	html_dir/15028/15028p2_large.html \
 	html_dir/15028/15028y.html \
-	html_dir/15028/15028y_large.html \
 	session_dir/15028/15028acdd \
 	session_dir/15028/15028am1.ds \
 	session_dir/15028/15028am2.ds \
