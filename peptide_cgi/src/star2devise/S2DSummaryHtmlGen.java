@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.31  2010/06/08 21:25:13  wenger
+// Fixed "main entry page" link in summary html pages.
+//
 // Revision 1.30  2010/06/07 16:49:11  wenger
 // We now delete html files for an entry when the session files are
 // deleted (so you don't accidentally end up with an html file for,
@@ -633,7 +636,7 @@ TEMP?*/
 	        _writer.write("<p>" + GEN_DATE_LABEL + ": {" +
 	          S2DMain.getTimestamp() + "}</p>\n");
 	        _writer.write("<p>Peptide-CGI " +
-		  "<a href=\"pep-version-history.txt\">" +
+		  "<a href=\"../pep-version-history.txt\">" +
 		  "version history</a></p>\n");
                 //TEMP -- save Star description here
 

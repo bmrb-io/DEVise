@@ -497,8 +497,9 @@ Num Date        Status  Description
 			and distance restraints don't work. (wenger)
 			(Fixed by wenger, 7/7/10.)
 
-108 7/7/10	OPEN	Peptide-CGI version history link doesn't work.
+108 7/7/10	FIXED	Peptide-CGI version history link doesn't work.
 			(wenger)
+			(Fixed by wenger, 7/7/10.)
 
 109 7/7/10	OPEN	Test3 (using cache) fails on BMRB machines (but
 			going thru the web interface seems to use the
