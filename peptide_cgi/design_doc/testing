@@ -144,10 +144,12 @@ The following testing steps must be done:
       that the restraints connect correct atoms in the 3D view).
     - Test distance restraints help page.
 
-- (PDB-only torsion angle restraints) Go to
+- (PDB-only restraints) Go to
   http://devise.cs.wisc.edu/devise/bmrb/restraint_select.html, view the
   following visualizations for 1eza:
-    - Restraints grid torsion angles (make sure there is both angle
+    - Restraints grid distance restraints (make sure there is both angle
+      and violation data, make sure highlighting works right).
+    - Restraints grid distance restraints (make sure there is both angle
       and violation data, make sure highlighting works right).
     - Remediated restraints torsion angles (make sure highlighting works
       right).
