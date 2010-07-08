@@ -22,7 +22,7 @@
 
 #-----------------------------------------------------------
 # Directories for executables we need.
-JAVA_BIN = /usr/local/jdk1.6.0_05/bin
+JAVA_BIN = /usr/local/bin
 PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
