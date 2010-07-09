@@ -32,6 +32,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.86  2010/07/01 17:32:59  wenger
+// Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
+// while a session is open, added new view menu options to enlarge and
+// reduce by a fixed amount.
+//
 // Revision 1.85  2010/06/02 17:41:07  wenger
 // The JavaScreen now puts the BMRB visualization type into the JSA
 // window title if the hidebmrbsess parameter is turned on.
@@ -538,17 +543,6 @@ public class DEViseScreen extends JPanel
             return;
 	}
 
-	boolean sessionOpen = jsc.isSessionOpened;
-
-	if (sessionOpen) {
-	    // Save and close the current session.
-	    String command = new String();
-	    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
-	    jsc.dispatcher.start(command);
-	    jsc.dispatcher.waitForCmds();
-	    jsc.closeSession();
-	}
-
         screenDim.width = width;
         screenDim.height = height;
 
@@ -557,10 +551,29 @@ public class DEViseScreen extends JPanel
 
         isDimChanged = true;
 
-	if (sessionOpen) {
+	if (jsc.isSessionOpened) {
+	    // We do this stuff in a new thread so that the stop button
+	    // shows up red immediately, and the GUI is responsive.
+	    Thread thread = new Thread(new SessionReopen());
+	    thread.start();
+	}
+
+        repaint();
+    }
+
+    private class SessionReopen implements Runnable
+    {
+        public void run()
+        {
+	    // Save and close the current session.
+	    String command = new String();
+	    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
+	    jsc.dispatcher.start(command);
+	    jsc.dispatcher.waitForCmds();
+	    jsc.closeSession();
+
 	    // Send updated size, re-open the session.
 	    jsc.dispatcher.waitForCmds();
-	    String command = new String();
 	    command = DEViseCommands.SET_DISPLAY_SIZE + " " +
 	      jsc.jsValues.uiglobals.screenSize.width + " " +
 	      jsc.jsValues.uiglobals.screenSize.height + " " +
@@ -568,9 +581,7 @@ public class DEViseScreen extends JPanel
 	      jsc.jsValues.uiglobals.screenRes + "\n";
 	    command += DEViseCommands.REOPEN_SESSION + "\n";
 	    jsc.dispatcher.start(command);
-	}
-
-        repaint();
+        }
     }
 
     // Show help messages in all views.
