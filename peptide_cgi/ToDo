@@ -596,6 +596,15 @@ Num Date        Status  Pri     Description
 				found in remediated restraints file.
 				(wenger)
 
+140 7/9/10	OPEN	3	Have visualization help accessed via the
+				JS rather than via a link in the html page,
+				so it can be updated when you change
+				sessions in the JS (probably something in
+				the session file would have to specify the
+				help page, with a "base" from the document
+				root or something).  (This would obviously
+				also take JS changes.) (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
