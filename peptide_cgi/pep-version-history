@@ -9,6 +9,8 @@ re-sizable JavaScreen.
 
 * Fixed bug 108 (Peptide-CGI version history link doesn't work).
 
+* Fixed bug 110 ("." shows up for PDB IDs in some cases).
+
 
 Peptide-CGI 11.8.4
 ------------------

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2009
+// (c) Copyright 2000-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.31  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -998,7 +1004,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
                     //TEMP -- when we have 2 entities, what residue count
 		    // are we checking against?
                     for (int index = 0; index < dbAccCodes.length; index++) {
-		        if (dbNames[index].equals("PDB")) {
+		        if (dbNames[index].equals("PDB") &&
+			  !S2DStarIfc.valueIsEmpty(dbAccCodes[index])) {
 			    if (checkDBEntry(residueCount, dbNames[index],
 			      seqLengths[index], seqIdents[index])) {
 			        ids.addElement(dbAccCodes[index]);
@@ -1054,8 +1061,10 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
             for (int index = 0; index < dbAccCodes.length; index++) {
 
-	        // Make sure the database is PDB.
-	        if (dbNames[index].equals("PDB")) {
+	        // Make sure the database is PDB, and we don't have an
+		// empty PDB ID.
+	        if (dbNames[index].equals("PDB") &&
+		  !S2DStarIfc.valueIsEmpty(dbAccCodes[index])) {
 	            ids.addElement(dbAccCodes[index]);
                     if (doDebugOutput(12)) {
                         System.out.println("  Got PDB ID " +

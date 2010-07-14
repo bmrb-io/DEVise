@@ -505,8 +505,9 @@ Num Date        Status  Description
 			going thru the web interface seems to use the
 			cache correctly). (wenger)
 
-110 7/14/10	OPEN	For entry 11017, Peptide-CGI comes up with "."
+110 7/14/10	FIXED	For entry 11017, Peptide-CGI comes up with "."
 			as one of the related PDB ID's. (wenger)
+			(Fixed by wenger, 7/14/10.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

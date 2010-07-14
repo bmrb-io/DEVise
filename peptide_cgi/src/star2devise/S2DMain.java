@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.221  2010/07/07 20:54:13  wenger
+// Changed Peptide-CGI to work with new JavaScreen re-sizing feature
+// (since the user can now re-size the JS, we don't generate html
+// pages for different sizes of visualization; this also includes
+// eliminating the different-size pages for the histograms).
+//
 // Revision 1.220  2010/07/07 18:39:09  wenger
 // Changed version to 11.8.5x1 and added 11.8.5 version history section.
 //
@@ -1362,7 +1368,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.5x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.5x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

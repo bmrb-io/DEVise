@@ -25,6 +25,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.20  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -835,6 +841,25 @@ public abstract class S2DStarIfc {
 	}
 
 	return result;
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Determine whether the given value is "empty" (in the sense of
+     * STAR files, where "." and "?" are considered empty).
+     * @param The value to test.
+     * @return True iff the value is empty.
+     */
+    public static boolean valueIsEmpty(String value)
+    {
+        if (value == null ||
+	  value.equals("") ||
+	  value.equals(".") ||
+	  value.equals("?")) {
+	    return true;
+	} else {
+	    return false;
+	}
     }
 
     //===================================================================
