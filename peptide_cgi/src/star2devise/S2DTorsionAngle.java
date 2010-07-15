@@ -24,6 +24,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2010/04/23 16:51:09  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.7  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -465,6 +468,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 
             _angleTypes = new String[restraintCount];
 	    for (int index = 0; index < restraintCount; index++) {
+		_angleTypes[index] = null;
 	        if (_atom1Names[index].equals("C")) {
 		    if (_atom2Names[index].equals("N") &&
 		      _atom3Names[index].equals("CA") &&
@@ -506,8 +510,11 @@ public class S2DTorsionAngle extends S2DRestraint {
 		      _entityAssembly3Ids[index];
                     _angleResSeqCodes[index] = _resSeq3Codes[index];
                     _angleResSeqLabels[index] = _resSeq3Labels[index];
+		}
 
-		} else {
+		if (_angleTypes[index] == null) {
+		    // If we get here, we fell through the above ifs
+		    // without assigning an angle type.
 		    _angleTypes[index] = "other";
 		    // Not sure which residue should get assigned here...
                     _angleEntityAssemblyIds[index] =
@@ -521,7 +528,6 @@ public class S2DTorsionAngle extends S2DRestraint {
 	            _entityAssemblyIds.add(_angleEntityAssemblyIds[index]);
 	        }
 	    }
-
 
 	    frameIndex++;
     	}

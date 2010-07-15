@@ -11,6 +11,8 @@ re-sizable JavaScreen.
 
 * Fixed bug 110 ("." shows up for PDB IDs in some cases).
 
+* Fixed bug 111 (an error in dealing with some unusual torsion angles).
+
 
 Peptide-CGI 11.8.4
 ------------------

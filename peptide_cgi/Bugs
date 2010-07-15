@@ -509,6 +509,10 @@ Num Date        Status  Description
 			as one of the related PDB ID's. (wenger)
 			(Fixed by wenger, 7/14/10.)
 
+111 7/15/10	FIXED	's2d -pdbid 3EZA -bmrbid 4264 -do_rrtar 3
+			-coord_index 16' results in null pointer. (wenger)
+			(Fixed by wenger, 7/15/10.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
