@@ -28,6 +28,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.1  2010/07/01 17:32:59  wenger
+// Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
+// while a session is open, added new view menu options to enlarge and
+// reduce by a fixed amount.
+//
 
 // ========================================================================
 
@@ -58,6 +63,7 @@ public class DEViseScreenResizeHandler implements Runnable
     {
 	if (DEBUG >= 2) {
             System.out.println("DEViseScreenResizeHandler.handleResize()");
+            _jsc.pn("DEViseScreenResizeHandler.handleResize()");
 	}
 
 	if (_thread != null) {

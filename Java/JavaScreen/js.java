@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2010/05/28 19:29:11  wenger
+// Changed open session dialog to show BMRB visualization types (with
+// numbers) as the "main" value if they are available, with the new
+// hidebmrbsess applet parameter and command-line argument to hide the
+// file names completely if visualization types are available; added
+// histogram visualization types.
+//
 // Revision 1.51  2007/06/27 17:48:00  wenger
 // Merged andyd_gui_br_5 thru andyd_gui_br_6 to the trunk (this includes
 // the toolbar stuff, but not the fixes for the "obscured tooltips"
