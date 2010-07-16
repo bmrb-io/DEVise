@@ -39,6 +39,24 @@ Number Date	Status  Pri
 03.001 11/20/01	OPEN	?
 Allow XY cursor with bottom anchored at 0. (wenger)
 
+03.002 7/16/10	OPEN	1
+Explicitly define startup cursor size *relative to view visual filter*.
+(Miron wants to do this rather than continuing with the current system
+of links to other views, etc., used in the BMRB 3D visualizations, for
+example.) (miron/wenger)
+
+03.003 7/16/10	OPEN	1
+Explicitly define cursor size on "update" (e.g., switch of TData)
+*relative to view visual filter*.  (Again, for the scheme we've come
+up with for cursor behavior in 3D BMRB visualizations, etc.).
+(wenger)
+
+03.004 7/16/10	OPEN	1
+Have option (explicitly enabled) to "remember" cursor location for
+different TDatas, etc.  (Again, for the scheme we've come
+up with for cursor behavior in 3D BMRB visualizations, etc.).
+(miron/wenger)
+
 
 ...........................................................................
 SECTION 04 (DEVise, piles and stacks)
@@ -160,14 +178,23 @@ Add links to the youtube videos in the JS help menu (once they're released).
 Implement an "undo" function.  (Would also require changes on the server.)
 (schulte/wenger)
 
-09.018 1/6/10	OPEN	2
+09.018 1/6/10	DONE	2
 Make JavaScreen resizing able to work while a session is open (the
 JSPoP would have to force the devised to do a checkpoint). (elu/wenger)
+(Done by wenger, 7/?/10.)
 
 09.019 1/6/10	DONE	3
 Have JavaScreen menu options to enlarge and reduce the window size
 by a fixed percentage. (wenger)
 (Done by wenger, 7/1/10.)
+
+09.020 7/16/10	OPEN	4
+Allow "hidden" views in the JavaScreen.  (Maybe with stacks?)  The idea
+would be that some "control" views could be hidden, but that you could
+view a "read-only" version of the view with some kind of mouse click.
+(The DEVised would send the view image to the JS, but the JS wouldn't
+display it.)  (Miron proposed this idea as part of allowing selection
+on more than one data cursor in BMRB 3D visualizations.) (miron/wenger)
 
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
