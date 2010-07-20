@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.223  2010/07/15 21:37:32  wenger
+// Fixed Peptide-CGI bug 111.
+//
 // Revision 1.222  2010/07/14 21:47:54  wenger
 // Fixed Peptide-CGI bug 110.
 //
@@ -1371,7 +1374,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.5x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.5x7"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

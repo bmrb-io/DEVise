@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2009
+// (c) Copyright 2003-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.16  2010/07/02 18:01:03  wenger
+// We now print the details of residue mismatches at the default
+// verbosity; also, we print the exact version of each NMR-STAR file
+// we process.
+//
 // Revision 1.15  2009/03/25 21:49:09  wenger
 // Final cleanup of some of the nucleic-acid-related code, especially
 // getting polymer types correctly for mmCIF files; added nucleic acid
@@ -155,11 +160,22 @@ public class S2DResidues {
 
 	if (_polymerType == POLYMER_TYPE_DNA) {
 	    for (int index = 0; index < _resLabels.length; index++) {
-	        _resLabels[index] = "D" + _resLabels[index];
+		// 2010-07-19: residue labels for DNA now contain the "D".
+		if (!_resLabels[index].startsWith("D")) {
+	            _resLabels[index] = "D" + _resLabels[index];
+		}
 	    }
 	}
 
 	setCount();
+
+        if (doDebugOutput(12)) {
+	    System.out.println("residues: ");
+	    for (int index = 0; index < _resLabels.length; index++) {
+	        System.out.println("  " + _resSeqCodes[index] + " " +
+		  _resLabels[index]);
+	    }
+	}
     }
 
     //-------------------------------------------------------------------
@@ -205,6 +221,14 @@ public class S2DResidues {
 	if (_polymerType == POLYMER_TYPE_DNA) {
 	    for (int index = 0; index < _resLabels.length; index++) {
 	        _resLabels[index] = "D" + _resLabels[index];
+	    }
+	}
+
+        if (doDebugOutput(12)) {
+	    System.out.println("residues: ");
+	    for (int index = 0; index < _resLabels.length; index++) {
+	        System.out.println("  " + _resSeqCodes[index] + " " +
+		  _resLabels[index]);
 	    }
 	}
     }
@@ -315,7 +339,7 @@ public class S2DResidues {
 
     //-------------------------------------------------------------------
     // Change any one-letter residue labels in the array to three-letter
-    // labels.
+    // labels.  (Note that DNA will have two-letter labels, e.g., "DA".)
     public void make3Letter(String[] residueLabels) throws S2DException
     { 
         initializeTranslation();
@@ -335,6 +359,8 @@ public class S2DResidues {
 			break;
 
 		    case POLYMER_TYPE_RNA:
+			// Don't change -- we only have single-letter
+			// labels for RNA.
 			break;
 
 		    default:
@@ -348,7 +374,7 @@ public class S2DResidues {
 		        System.err.println(ex);
 		    }
 		}
-	    } else {
+	    } else if (label.length() != 2) {
 	        if (!_acidTrans.containsValue(label)) {
 		    S2DError error = new S2DError(
 		      "Illegal residue label " + label);

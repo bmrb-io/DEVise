@@ -7,6 +7,9 @@ Peptide-CGI 11.8.5
 * Changed Peptide-CGI-generated HTML pages to work with the new
 re-sizable JavaScreen.
 
+* Changed Peptide-CGI to correctly deal with new residue labels for
+DNA (DA, DC, etc., instead of A, C, etc.).
+
 * Fixed bug 108 (Peptide-CGI version history link doesn't work).
 
 * Fixed bug 110 ("." shows up for PDB IDs in some cases).

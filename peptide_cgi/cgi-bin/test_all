@@ -182,9 +182,10 @@ if (($do_all != 0) or ($do_tar != 0)) {
   RunTest("test_tar7pi");
   RunTest("test_tar7imv");
   RunTest("test_tar8");
-  RunTest("test_tar8i");
-  RunTest("test_tar8imv");
-  RunTest("test_tar8imu");
+  # 2010-07-19: 2kid disappeared from remediated restraints
+  #TEMP? RunTest("test_tar8i");
+  #TEMP? RunTest("test_tar8imv");
+  #TEMP? RunTest("test_tar8imu");
   RunTest("test_tar9");
   RunTest("test_tar9i");
   RunTest("test_tar10");
@@ -192,10 +193,11 @@ if (($do_all != 0) or ($do_tar != 0)) {
 }
 
 if (($do_all != 0) or ($do_dist != 0)) {
-  RunTest("test_dist1");
-  RunTest("test_dist1u");
-  RunTest("test_dist1i");
-  RunTest("test_dist1imu");
+  # 2010-07-19: 2kid disappeared from remediated restraints
+  #TEMP? RunTest("test_dist1");
+  #TEMP? RunTest("test_dist1u");
+  #TEMP? RunTest("test_dist1i");
+  #TEMP? RunTest("test_dist1imu");
   RunTest("test_dist2i");
   RunTest("test_dist2imu");
   RunTest("test_dist3rgi");
