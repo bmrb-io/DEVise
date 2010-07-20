@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.137  2010/07/09 23:46:27  wenger
+// Changed the JavaScreen client to do the session re-opening for
+// a resize in separate thread, so that the GUI isn't locked up while
+// the re-opening is happening.
+//
 // Revision 1.136  2010/06/16 20:10:25  wenger
 // Changed JavaScreen version to 5.13.3x1 and added 5.13.3 version history
 // section.
@@ -841,7 +846,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.3x2"/*TEMP*/);
+    public static final String VERSION = new String("5.13.3");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
