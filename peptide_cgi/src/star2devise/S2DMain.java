@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.224  2010/07/20 17:49:06  wenger
+// Fixed Peptide-CGI for changes to NMR-STAR files -- residues for DNA
+// are now DA, DC, etc., instead of just A, C, etc. (note: test68/
+// bmr15083.str still has old labels; test68_3/bmr15083_3.str has new
+// labels); 2kid has disappeared from the remediated restraints.
+//
 // Revision 1.223  2010/07/15 21:37:32  wenger
 // Fixed Peptide-CGI bug 111.
 //
@@ -1374,7 +1380,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.5x7"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.5";
     public static final String DEVISE_MIN_VERSION = "1.11.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
