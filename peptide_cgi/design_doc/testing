@@ -80,10 +80,8 @@ The following testing steps must be done:
   ARE CORRECT:
     - Assignment figure of merit data (make sure data cursor shows up
       at correct initial size/location)
-    - Follow the "Larger view" link and make sure it shows up correctly.
 
-- View the following visualizations for the entry 4001 USING THE LARGE
-  VISUALIZATIONS SUMMARY PAGE and MAKE SURE THEY ARE CORRECT:
+- View the following visualizations for the entry 4001:
     - 3D structure from PDB ID 1QLK (make sure data cursor shows up at
       correct initial size/location)
     - Chemical shift distributions by amino acid (from the first save
