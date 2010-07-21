@@ -513,6 +513,13 @@ Num Date        Status  Description
 			-coord_index 16' results in null pointer. (wenger)
 			(Fixed by wenger, 7/15/10.)
 
+112 7/21/10	OPEN	Highlighting by selection in data view doesn't
+			work for distance restraint visualizations. (wenger)
+			(Note: this may actually be a JavaScreen bug.)
+
+113 7/21/10	OPEN	test_dist1 should work based on local restraint
+			file, not restraints grid. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
