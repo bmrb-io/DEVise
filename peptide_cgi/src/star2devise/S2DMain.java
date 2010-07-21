@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.225  2010/07/21 15:55:27  wenger
+// Changed version to 11.8.5 for release.
+//
 // Revision 1.224  2010/07/20 17:49:06  wenger
 // Fixed Peptide-CGI for changes to NMR-STAR files -- residues for DNA
 // are now DA, DC, etc., instead of just A, C, etc. (note: test68/
@@ -1380,7 +1383,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.5";
+    public static final String PEP_CGI_VERSION = "11.8.6x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.0";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
