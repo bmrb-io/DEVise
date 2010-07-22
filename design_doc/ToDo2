@@ -196,6 +196,14 @@ view a "read-only" version of the view with some kind of mouse click.
 display it.)  (Miron proposed this idea as part of allowing selection
 on more than one data cursor in BMRB 3D visualizations.) (miron/wenger)
 
+09.021 7/22/10	OPEN	4
+Have a "hand mode", where dragging with the mouse would drag the data
+within the visual filter (like dragging works on google maps). (wenger)
+
+09.022 7/22/10	OPEN	4
+Have a "cursor move" mode, where dragging with the mouse can only move
+a cursor, not change the visual filter. (wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
