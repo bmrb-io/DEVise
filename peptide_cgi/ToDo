@@ -605,6 +605,20 @@ Num Date        Status  Pri     Description
 				root or something).  (This would obviously
 				also take JS changes.) (wenger)
 
+141 7/27/10	OPEN	1	Add JavaScreen command port to the Peptide-
+				CGI configuration, so I can easily set up
+				an installation that uses the test JSPoP
+				at CS. (wenger)
+
+142 7/27/10	OPEN	1	Set up BMRB examples for the JavaScreen
+				examples page that are not affected by
+				"normal" Peptide-CGI processing.  (Note
+				that I'll need separate schema files.)
+				It should be reasonably easy to update the
+				examples as Peptide-CGI changes -- maybe
+				give a special name when processing.
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
