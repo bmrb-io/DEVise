@@ -204,6 +204,9 @@ within the visual filter (like dragging works on google maps). (wenger)
 Have a "cursor move" mode, where dragging with the mouse can only move
 a cursor, not change the visual filter. (wenger)
 
+09.023 7/28/10	OPEN	4
+Allow an image to be shown in the drill-down dialog.
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
