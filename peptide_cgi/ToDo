@@ -619,6 +619,11 @@ Num Date        Status  Pri     Description
 				give a special name when processing.
 				(wenger)
 
+143 7/29/10	OPEN	4	Add a prefix to all generated files for
+				the "test" setup, so it and the "normal"
+				setup can co-exist peacefully on teal.
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
