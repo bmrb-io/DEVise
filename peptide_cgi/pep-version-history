@@ -7,6 +7,8 @@ Peptide-CGI 11.8.6
 * Fixed a problem that prevented Peptide-CGI from correctly processing
 entry 6939 (dealing with "?" for residue count).
 
+* Peptide-CGI version is now printed as part of standard output.
+
 
 Peptide-CGI 11.8.5
 ------------------
