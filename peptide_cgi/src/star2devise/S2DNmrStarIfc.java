@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2010/07/14 21:47:54  wenger
+// Fixed Peptide-CGI bug 110.
+//
 // Revision 1.32  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -1139,7 +1142,6 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
 	int residueCount = -1;
 
-	DataItemNode node = null;
         try {
 	    //
 	    // Find the _Residue_count value.
@@ -1150,7 +1152,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
 	} catch(NumberFormatException ex) {
 	    System.err.println("NumberFormatException (" + ex.toString() +
-	      ") getting residue count at " + S2DStarUtil.node2String(node));
+	      ") getting residue count in save frame " +
+	      getFrameName(frame));
 	} catch(Exception ex) {
 	    System.err.println("Exception getting residue count: " +
 	      ex.toString());
