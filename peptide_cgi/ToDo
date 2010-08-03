@@ -628,6 +628,16 @@ Num Date        Status  Pri     Description
 				setup can co-exist peacefully on teal.
 				(wenger)
 
+144 8/3/10	OPEN	1	Heteronuclear NOEs in 3.1 files need to be
+				split out by _Heteronucl_NOE.Atom_ID_1 and
+				_Heteronucl_NOE.Atom_ID_2 values (each
+				_Heteronucl_NOE.Atom_ID_1/
+				_Heteronucl_NOE.Atom_ID_2 pair, order not
+				significant, should be a separate
+				visualization).  Note: in 2.1, different
+				pairs are in separate save frames.
+				(elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
