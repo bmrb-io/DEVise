@@ -636,7 +636,11 @@ Num Date        Status  Pri     Description
 				significant, should be a separate
 				visualization).  Note: in 2.1, different
 				pairs are in separate save frames.
-				(elu/wenger)
+				(elu/wenger)  (Note: 4267 has some NOEs that
+				are N/H, and some that hare NE1/HE1, but
+				the 3.1 file I have has them all in separate
+				save frames.  I guess I could combine them
+				for testing.)
 
 * Status:
 OPEN = item has not yet been addressed
