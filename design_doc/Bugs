@@ -4388,6 +4388,10 @@ java.security.AccessControlException: access denied
 			of the error; unlinking the ea_res_record link
 			also gets rid of it.)
 
+1002 8/5/10	OPEN	JS: When saving and re-opening the session for
+			JS resizing, the session postscript should not be
+			run. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
