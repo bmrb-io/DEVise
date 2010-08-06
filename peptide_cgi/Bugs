@@ -152,8 +152,10 @@ Num Date        Status  Description
 			atoms within those groups.  The Peptide-CGI code
 			doesn't really handle that -- should it? (wenger)
 
-036 4/22/05	OPEN	4103 and 4104 fail -- fix them and add them to automated
+036 4/22/05	CD	4103 and 4104 fail -- fix them and add them to automated
 			test script. (wenger)
+			(This got fixed when we dealt with DNA/RNA properly.
+			wenger, 8/6/10)
 
 037 5/12/05	FIXED	ensureResidueList() fails for entries that have
 			2 or more entities and no chem shifts (try entry
@@ -168,8 +170,10 @@ Num Date        Status  Description
 			visualization.)
 			(Fixed by wenger, 12/1/08.)
 
-039 5/13/05	OPEN	4835 fails because what's expected to be three-
+039 5/13/05	CD	4835 fails because what's expected to be three-
 			letter residue list has one-letter codes. (wenger)
+			(This got fixed when we dealt with DNA/RNA properly.
+			wenger, 8/6/10)
 
 040 5/13/05	FIXED	Processing totally fails for entries that have
 			2 or more entities and no chem shifts (try entry
@@ -186,10 +190,10 @@ Num Date        Status  Description
 			(See test29.)
 			(Fixed by wenger, 3/3/04.)
 
-043 7/26/05	OPEN	If the same PDB ID is listed in both upper- and
+043 7/26/05	FIXED	If the same PDB ID is listed in both upper- and
 			lower-case, both versions appear separately in
 			the list of coordinate visualizations.  (jurgenfd/
-			wenger)
+			wenger) (Fixed by wenger, 2/5/10)
 
 044 9/14/05	OPEN	If we retry processing because of insufficient memory,
 			the error and warning files don't get properly updated
@@ -373,7 +377,7 @@ Num Date        Status  Description
 			summary html page even for entries that have no
 			chemical shift data.  (See 4970.) (wenger)
 
-081 3/26/09	OPEN	In 3D visualization for 5246/1KMF, the data select
+081 3/26/09	FIXED	In 3D visualization for 5246/1KMF, the data select
 			window has gaps in the data sets (caused by
 			5245md.dat not being sorted by entity assembly).
 			(Fixed by wenger, 2009-03-26)
@@ -382,9 +386,10 @@ Num Date        Status  Description
 			(maybe because of single-letter amino acid codes?).
 			(wenger)
 
-083 4/17/09	OPEN	Open 5838/1PSB 3D visualization, change from EA 1
+083 4/17/09	NLR	Open 5838/1PSB 3D visualization, change from EA 1
 			to EA 3 and back -> data view stays at small size.
-			(wenger)
+			(wenger)  (No longer relevant because of upcoming
+			3D data cursor changes.  wenger, 8/6/10)
 
 084 9/4/09	OPEN	Fix problems with cursor behavior (especially when
 			switching data sets) in the 3D sessions, etc.
@@ -443,8 +448,8 @@ Num Date        Status  Description
 			in the entity assembly select view where "EA 2"
 			would go, if there were any data for it. (wenger)
 
-095 3/15/10	OPEN	6860/2GW6 3D visualization core dumps DEVise.
-			(wenger)
+095 3/15/10	CD	6860/2GW6 3D visualization core dumps DEVise.
+			(wenger)  (Can't duplicate.  wenger, 8/6/10)
 
 096 4/27/10	FIXED	Inter-residue/inter-molecular distance restraints
 			must be displayed if *either* residue is selected
@@ -466,9 +471,12 @@ Num Date        Status  Description
 			type (e.g., polypeptide(L)) in the entity assembly
 			selection. (wenger)
 
-100 5/6/10	OPEN	The visualization server doesn't actually generate
+100 5/6/10	NB	The visualization server doesn't actually generate
 			data for T1/T2 and heteronuclear NOE visualizations
 			for bmr4267_3.str. (wenger)
+			(This appears to have been an artifact of the
+			particular file I was using for testing.  wenger,
+			8/6/10)
 
 101 5/11/10	FIXED	Test62 now fails. (wenger)
 			(This got fixed at some point...)
@@ -477,8 +485,8 @@ Num Date        Status  Description
 			"junk". (wenger)
 			(Fixed by wenger, 6/15/10.)
 
-103 6/15/10	OPEN	6926ac1 visualization seems to crash devised.
-			(wenger)
+103 6/15/10	CD	6926ac1 visualization seems to crash devised.
+			(wenger)  (Can't duplicate.  wenger, 8/6/10)
 
 104 7/2/10	FIXED	Latest version (11.8.3) broke links to help pages
 			because of extra level of directories for html.
