@@ -531,6 +531,9 @@ Num Date        Status  Description
 113 7/21/10	OPEN	test_dist1 should work based on local restraint
 			file, not restraints grid. (wenger)
 
+114 8/6/10	OPEN	Residue sequence code shows up as "." in last line
+			of 16270ac2.dat. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
