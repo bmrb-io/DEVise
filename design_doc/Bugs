@@ -4388,12 +4388,13 @@ java.security.AccessControlException: access denied
 			of the error; unlinking the ea_res_record link
 			also gets rid of it.)
 
-1002 8/5/10	OPEN	JS: When saving and re-opening the session for
+1002 8/5/10	FIXED	JS: When saving and re-opening the session for
 			JS resizing, the session postscript should not be
 			run. (wenger)  We also have to temporarily disable
 			implicit homes (or else maybe run the 'reset filters'
 			command -- will that even work right?).  Note: this
 			also applies to DEVise server switching.
+			(Fixed by wenger, 8/10/10.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

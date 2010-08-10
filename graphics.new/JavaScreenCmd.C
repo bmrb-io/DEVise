@@ -21,6 +21,12 @@
   $Id$
 
   $Log$
+  Revision 1.140  2010/08/10 17:05:48  wenger
+  Implemented Peptide-CGI to-do 137 (make session switching work for the
+  visualization server).  (All changes actually are on the DEVise end,
+  not in Peptide-CGI.)  Also added provision to run the JavaScreen on
+  the local Peptide-CGI's sessions, data, etc.
+
   Revision 1.139  2008/10/13 19:45:26  wenger
   More const-ifying, especially Control- and csgroup-related.
 
@@ -1489,7 +1495,7 @@ JavaScreenCmd::OpenSession()
 		    UpdateSessionList(_argv[0]);
 	    } else {
 		    printf("Session %s requested!\n", fullpath);
-		    DoOpenSession(fullpath);
+		    DoOpenSession(fullpath, false);
 	    }
 	}
 }
@@ -1521,12 +1527,12 @@ JavaScreenCmd::OpenTmpSession()
 	}
 
     printf("Session %s requested!\n", fullpath);
-    DoOpenSession(fullpath);
+    DoOpenSession(fullpath, true);
 }
 
 //====================================================================
 void
-JavaScreenCmd::DoOpenSession(char *fullpath)
+JavaScreenCmd::DoOpenSession(char *fullpath, Boolean disableHome)
 {
 #if defined (DEBUG_LOG)
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
@@ -1560,6 +1566,12 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// Set modes, etc., for session to work correctly in JavaScreen.
 	JSSessionInit();
 
+	// If we're re-opening a session because of a resize, etc., we
+	// don't want to do the automatic view homes.
+	if (disableHome) {
+		ViewGraph::DisableHome();
+	}
+
 	// Open the session.
 	Session::SetIsJsSession(true);
     DevStatus result = Session::Open(fullpath);
@@ -1567,6 +1579,7 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	{
 		errmsg = "Error opening session";
 		_status = ERROR;
+		ViewGraph::EnableHome();
 		return;
 	}
 
@@ -1681,6 +1694,8 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 		  "Done playing back command cache file");
 	    (void)_cache.StopPlayingBack();
 	}
+
+	ViewGraph::EnableHome();
 
 #if JS_TIMER
 	et.ReportTime("OpenSession");

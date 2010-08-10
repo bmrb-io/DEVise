@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.93  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.92  2006/05/10 19:04:44  wenger
   Added the new setDoHomeOnVisLinkIfInvisible and
   getDoHomeOnVisLinkIfInvisible commands (to fix a problem with the
@@ -727,6 +730,8 @@ public:
   virtual void GoHome(Boolean explicitRequest);
   virtual void PanLeftOrRight(PanDirection direction);
   virtual void PanUpOrDown(PanDirection direction);
+  static void DisableHome() { _homeDisabled = true; }
+  static void EnableHome() { _homeDisabled = false; }
 
   // Make any cursors in this view exactly match the visual filter of
   // the view.
@@ -983,6 +988,7 @@ public:
 
   Boolean _doHomeOnVisLink;
   Boolean _doHomeOnVisLinkIfInvisible;
+  static Boolean _homeDisabled;
 
 	protected:
 

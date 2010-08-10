@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2008
+  (c) Copyright 1998-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.52  2008/10/13 19:45:27  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.51  2008/09/23 22:55:41  wenger
   More const-ifying, especially drill-down-related stuff.
 
@@ -449,7 +452,7 @@ class JavaScreenCmd
 		int  ControlCmd(ControlCmdType  status);
 		void UpdateSessionList(char *dirName);
 		void DoCloseSession();
-		void DoOpenSession(char *fullpath);
+		void DoOpenSession(char *fullpath, Boolean disableHome);
 		void DoSetTmpSessionDir(const char *popMachine, const char *popPort);
 
 		// < 0 if error

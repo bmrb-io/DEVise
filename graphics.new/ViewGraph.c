@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.161  2009/05/13 22:41:30  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.160.2.2  2009/05/06 20:19:19  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -850,6 +854,8 @@
 ImplementDList(GStatList, double)
 ImplementDList(BStatList, BasicStats *)
 
+Boolean ViewGraph::_homeDisabled = false;
+
 //******************************************************************************
 // class ViewGraph_QueryCallback
 //******************************************************************************
@@ -1610,6 +1616,13 @@ void ViewGraph::GoHome(Boolean explicitRequest)
 #if defined(DEBUG)
     printf("ViewGraph(%s)::GoHome(%d)\n", GetName(), explicitRequest);
 #endif
+
+	if (_homeDisabled) {
+#if defined(DEBUG)
+    	printf("  Home is currently disabled\n");
+#endif
+		return;
+	}
 
     /* show all data records in view i.e. set filter to use the
        actual min/max X values and the actual min/max Y values;

@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.89  2010/04/26 19:33:04  wenger
+  Merged devise_1_10_br_3 thru devise_1_10_br_4 to trunk.
+
   Revision 1.88  2010/04/26 17:30:42  wenger
   Incremented versions and added new version history sections.
 
@@ -547,7 +550,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.1x1"/*TEMP*/;
+static const char *	version = "1.11.1x2"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2010";

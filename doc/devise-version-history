@@ -7,6 +7,9 @@ DEVise 1.11.1
 slightly more permissive, so session switching will work for the BMRB
 visualization server.
 
+* Fixed bug 1002 (current axis ranges not always preserved correctly
+on JavaScreen resize).
+
 
 DEVise 1.11.0
 -------------
