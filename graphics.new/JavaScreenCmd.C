@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2008
+  (c) Copyright 1998-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.139  2008/10/13 19:45:26  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.138  2008/09/23 22:55:41  wenger
   More const-ifying, especially drill-down-related stuff.
 
@@ -688,6 +691,7 @@
 #include <string>
 #include <string.h>
 #include <vector>
+#include <libgen.h>
 
 #include "JavaScreenCmd.h"
 #include "DeviseServer.h"
@@ -1538,11 +1542,11 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// and other problems.
 	DoCloseSession();
 
-#if 0 //TEMPTEMP
+#if 0 //TEMP
 	if (Init::UseJSCache()) {
         (void)_cache.StartPlayingBack(this, fullpath, protocolMajorVersion);
 	}
-#endif //TEMPTEMP
+#endif //TEMP
 	if (_cache.IsPlayingBack()) {
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
 		  "Opening session by playing back cache");
@@ -1625,12 +1629,12 @@ JavaScreenCmd::DoOpenSession(char *fullpath)
 	// ...end of kludgey section.
 	//
 
-#if 0 //TEMPTEMP
+#if 0 //TEMP
 	if (Init::UseJSCache() && !_cache.IsPlayingBack()) {
 	    (void)_cache.StartRecording(fullpath, protocolMajorVersion,
 		  protocolMinorVersion);
 	}
-#endif //TEMPTEMP
+#endif //TEMP
 	if (_cache.IsRecording()) {
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
 		  "Recording opening of session to cache files");
@@ -3081,12 +3085,31 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	// Figure out whether any part of the path below the base session
 	// directory is hidden; if so, we are going to return an empty
 	// list.
+
+	//
+	// Figure out whether the directory we're in is hidden; if so, we
+	// return an empty list.  (Made this more permissive so session
+	// switching will work for the BMRB visualization server.  wenger
+	// 2010-08-10)
 	//
 	Boolean hidden = false;
+	Boolean cantGoUp = false;
 	if (dirName != NULL) {
-	    if (dirName[0] == '.' || (strstr(dirName, "/.") != NULL)) {
-		    hidden = true;
+		char *dirCopy = CopyString(dirName);
+		const char *lastDir = basename(dirCopy);
+		if (lastDir[0] == '.') {
+		   	hidden = true;
 		}
+
+		char *dirWOLast = dirname(dirCopy);
+		char *dir2Copy = CopyString(dirWOLast);
+		const char *nextLastDir = basename(dir2Copy);
+		if (nextLastDir[0] == '.') {
+			cantGoUp = true;
+		}
+		FreeString(dir2Copy);
+
+		FreeString(dirCopy);
 	}
 
 	const char *sessionDir = newPath;
@@ -3121,8 +3144,12 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 			while (true) {
 		    	struct dirent *entry = readdir(directory);
 				if (entry == NULL) break;
-				if (strcmp(entry->d_name, ".") &&
-			  	(!strcmp(entry->d_name, "..") || entry->d_name[0] != '.')) {
+				if (!strcmp(entry->d_name, ".")) {
+					// Don't show "."
+				} else if ((entry->d_name[0] == '.') &&
+				  (strcmp(entry->d_name, "..") || cantGoUp)) {
+				  	// Don't show anything beginning with ".", except "..".
+				} else {
 					files.AddArg(entry->d_name);
 				}
 			}

@@ -3,7 +3,9 @@
 DEVise 1.11.1
 -------------
 
-(Nothing yet.)
+* Made the code for deciding when to hide session files for the JavaScreen
+slightly more permissive, so session switching will work for the BMRB
+visualization server.
 
 
 DEVise 1.11.0

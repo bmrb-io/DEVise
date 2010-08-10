@@ -17,8 +17,8 @@ set devise_run = `dirname $devpath`
 setenv DEVISE_PROG	$devise_run/..
 
 source $devise_run/dev_prog.gen
-setenv DEVISE_MONO_EXEC ../../linux_rhel5/generic/generic
-setenv DEVISE_LIB ../../lib
+setenv DEVISE_MONO_EXEC ../../devise/linux_rhel5/generic/generic
+setenv DEVISE_LIB ../../devise/lib
 
 source ./dev_vis.pep
 

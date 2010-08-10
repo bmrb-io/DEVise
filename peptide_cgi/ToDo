@@ -586,9 +586,10 @@ Num Date        Status  Pri     Description
 				(elu/wenger)
 				(Done by wenger, ?/?/10.)
 
-137 6/10/10	OPEN	1	Make session switching work for the
+137 6/10/10	DONE	1	Make session switching work for the
 				visualization server (requires DEVise
 				changes). (elu/wenger)
+				(Done by wenger, 8/10/10)
 
 138 6/29/10	OPEN	4	Treat "?" as 0.0 (in some cases, anyhow)
 				(like we do now with "."). (wenger)
