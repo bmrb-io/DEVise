@@ -651,6 +651,11 @@ Num Date        Status  Pri     Description
 				on the magnitude of the violation.
 				(elu/wenger)
 
+147 8/17/10	OPEN	2	Check that BMRB residue numbers and PDB/
+				coordinate residue numbers are matched
+				property (do we have to use *author* number
+				for the link?).  (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
