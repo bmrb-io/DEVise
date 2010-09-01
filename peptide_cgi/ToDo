@@ -656,6 +656,11 @@ Num Date        Status  Pri     Description
 				property (do we have to use *author* number
 				for the link?).  (wenger)
 
+148 9/1/10	OPEN	4	Make use of the _Entity_assembly.PDB_chain_ID
+				in NMR-STAR 3.1 files to make sure we
+				coordinate entity assembly IDs correctly
+				with coordindate data. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
