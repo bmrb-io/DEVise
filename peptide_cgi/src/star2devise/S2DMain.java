@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.227  2010/08/02 22:12:33  wenger
+// Peptide-CGI version is now printed as part of standard output.
+//
 // Revision 1.226  2010/07/21 19:19:54  wenger
 // Changed version to 11.8.6x1, added new version history section.
 //
@@ -38,6 +41,19 @@
 //
 // Revision 1.222  2010/07/14 21:47:54  wenger
 // Fixed Peptide-CGI bug 110.
+//
+// Revision 1.221.2.3  2010/08/31 17:38:39  wenger
+// Changed Peptide-CGI session templates to use the new cursor features
+// when relevant.
+//
+// Revision 1.221.2.2  2010/08/04 15:15:38  wenger
+// Updated cs_test configuration to get both 3.1 and 2.1 files; added
+// stuff to version history about 3D cursor fixes.
+//
+// Revision 1.221.2.1  2010/07/29 17:58:41  wenger
+// Added specification of the JS command port to the configuration, and
+// made other changes so that the "test" Peptide-CGI setup at CS can use
+// the "test" JavaScreen installation.
 //
 // Revision 1.221  2010/07/07 20:54:13  wenger
 // Changed Peptide-CGI to work with new JavaScreen re-sizing feature
@@ -1386,8 +1402,8 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.6x2"/*TEMP*/;
-    public static final String DEVISE_MIN_VERSION = "1.11.0";
+    public static final String PEP_CGI_VERSION = "11.8.6x3"/*TEMP*/;
+    public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
     private String _masterBmrbId = ""; // accession number the user requested
@@ -1793,6 +1809,15 @@ public class S2DMain {
 	      "http://www.bmrb.wisc.edu/ftp/pub/bmrb/" +
 	      "nmr_pdb_integrated_data/coordinates_restraints_chemshifts" +
 	      "/all/nmr-star/*/*_linked.str";
+	}
+
+	S2DNames.JS_CMD_PORT = props.getProperty("bmrb_mirror.js_cmd_port");
+	if (S2DNames.JS_CMD_PORT == null) {
+	    if (doDebugOutput(2)) {
+	        System.out.println("bmrb_mirror.js_cmd_port " +
+		  "property value not defined; using default");
+	    }
+	    S2DNames.JS_CMD_PORT = "6666";
 	}
 
         return props;

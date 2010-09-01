@@ -20,6 +20,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.20.2.1  2010/07/29 17:58:42  wenger
+// Added specification of the JS command port to the configuration, and
+// made other changes so that the "test" Peptide-CGI setup at CS can use
+// the "test" JavaScreen installation.
+//
+// Revision 1.20  2010/07/07 20:54:13  wenger
+// Changed Peptide-CGI to work with new JavaScreen re-sizing feature
+// (since the user can now re-size the JS, we don't generate html
+// pages for different sizes of visualization; this also includes
+// eliminating the different-size pages for the histograms).
+//
 // Revision 1.19  2010/07/02 15:40:11  wenger
 // Fixed bug 104 (help page links were broken by changes in 11.8.3).
 //
@@ -131,6 +142,8 @@ public class S2DSpecificHtml {
     private static final String searchString4 = "Dummy title";
     private static final String searchString5 = "<p>Dummy details</p>";
     private static final String searchString6 = "4264y";
+    private static final String searchString7 =
+      "\"cmdport\" value=\"6666\"";
 
     private String _replaceString1;
     private String _replaceString1a;
@@ -140,6 +153,7 @@ public class S2DSpecificHtml {
     private String _replaceString4;
     private String _replaceString5;
     private String _replaceString6;
+    private String _replaceString7;
 
     //===================================================================
     // PUBLIC METHODS
@@ -185,6 +199,8 @@ public class S2DSpecificHtml {
 	}
 
 	_replaceString6 = name + S2DNames.SUMMARY_HTML_SUFFIX;
+	_replaceString7 = "\"cmdport\" value=\"" +
+	  S2DNames.JS_CMD_PORT + "\"";
     }
 
     //-------------------------------------------------------------------
@@ -269,6 +285,8 @@ public class S2DSpecificHtml {
 	  _replaceString5);
 	line = S2DUtils.replace(line, searchString6,
 	  _replaceString6);
+	line = S2DUtils.replace(line, searchString7,
+	  _replaceString7);
 	if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
 	  _dataType == S2DUtils.TYPE_PISTACHIO ||
 	  _dataType == S2DUtils.TYPE_AMBIGUITY) {

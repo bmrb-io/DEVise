@@ -46,7 +46,6 @@
     <param name="debug" value="0">
     <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
     <param name="cmdport" value="6666">
-    <param name="imgport" value="6644">
     <param name="cgiurl" value="/cgi-bin/js.cgi">
     <param name="rubberbandlimit" value="4x4">
     <!-- old bgcolor     <param name="bgcolor" value="64+96+0"> -->

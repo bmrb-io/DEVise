@@ -2,12 +2,15 @@
 
 Peptide-CGI 11.8.6
 ------------------
-(Needs DEVise 1.11.0 or higher, JavaScreen client 5.13.3 or higher.)
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
 
 * Fixed a problem that prevented Peptide-CGI from correctly processing
 entry 6939 (dealing with "?" for residue count).
 
 * Peptide-CGI version is now printed as part of standard output.
+
+* Improved the behavior of the data scroll view and its cursor in
+atomic coordinate, ambiguity code, and Pistachio visualizations.
 
 
 Peptide-CGI 11.8.5

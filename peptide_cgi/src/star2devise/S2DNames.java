@@ -19,6 +19,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.16.2.1  2010/07/29 17:58:42  wenger
+// Added specification of the JS command port to the configuration, and
+// made other changes so that the "test" Peptide-CGI setup at CS can use
+// the "test" JavaScreen installation.
+//
+// Revision 1.16  2010/04/23 16:51:06  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.15.2.2  2010/03/03 19:07:47  wenger
 // We now output total and violated restraint counts for intra-residue,
 // sequential, etc., so we can select on those in the visualization.
@@ -286,6 +294,8 @@ public class S2DNames
     public static String TORSION_ANGLE_SEARCH_TEMPLATE = null;
 
     public static String REMEDIATED_RESTRAINTS_TEMPLATE = null;
+
+    public static String JS_CMD_PORT = null;
 
     //
     // Data type suffixes.
