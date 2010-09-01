@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,42 @@
   $Id$
 
   $Log$
+  Revision 1.32.46.6  2010/08/31 17:28:22  wenger
+  Changed the names of some of the new commands and methods to better
+  reflect their functions; documented the new methods.  (Note: cursor
+  mods still don't always work right for ambiguity code and Pistachio
+  visualizations.)
+
+  Revision 1.32.46.5  2010/08/24 21:01:28  wenger
+  Added the setCursorProportions command to allow explicit setting of
+  cursor proportions (to be used in session post scripts).
+
+  Revision 1.32.46.4  2010/08/24 20:38:26  wenger
+  Added the getViewSaveState, setViewSaveState, getCursorSaveState,
+  setCursorSaveState, getCursorKeepProp, and setCursorKeepProp commands
+  to control the new view and cursor properties.
+
+  Revision 1.32.46.3  2010/08/19 18:28:31  wenger
+  Added class variables to control the new cursor and view symbol
+  behaviors (but not the commands to set them yet) -- Y stuff for the
+  cursors are temporarily turned on.
+
+  Revision 1.32.46.2  2010/08/19 16:50:06  wenger
+  Did some cleanup of the 3D cursor fixes -- no real functional changes,
+  mainly changing some method and variable names to better match the
+  current functionality.
+
+  Revision 1.32.46.1  2010/08/18 21:10:18  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
+  Revision 1.32  2001/08/03 18:13:01  wenger
+  Removed all OpenGL-related code.
+
   Revision 1.31  2001/01/08 20:32:41  wenger
   Merged all changes thru mgd_thru_dup_gds_fix on the js_cgi_br branch
   back onto the trunk.
@@ -183,7 +219,7 @@ DefinePtrDList(DeviseCursorList, DeviseCursor *)
 
 class DeviseCursor : private ViewCallback
 {
-	public:
+public:
 
 		// Constructors and Destructors
 		DeviseCursor(char* name, VisualFlag flag,
@@ -211,6 +247,44 @@ class DeviseCursor : private ViewCallback
   /* Move the X and Y coords of source; X and Y are the center of the cursor */
   void MoveSource(Coord x, Coord y, Coord width = -1.0, Coord height = -1.0,
       Boolean doCommand = true);
+
+  /* Get whether to save this cursor's source view visual filter (indexed
+     by TData name and parent attribute value) when changing either the
+     TData or parent attribute value in the destination view. */
+  void GetSaveSrcFilter(Boolean &saveX, Boolean &saveY) {
+      saveX = _saveStateX; saveY = _saveStateY; }
+
+  /* Set whether to save this cursor's source view visual filter (indexed
+     by TData name and parent attribute value) when changing either the
+     TData or parent attribute value in the destination view. */
+  void SetSaveSrcFilter(Boolean saveX, Boolean saveY) {
+      _saveStateX = saveX; _saveStateY = saveY; }
+
+  /* Get whether to keep this cursor's proportions (relative to the
+     destination view's visual filter) when changing the destination
+     view's TData or parent attribute value. */
+  void GetKeepProportions(Boolean &keepX, Boolean &keepY) {
+      keepX = _keepPropX; keepY = _keepPropY; }
+
+  /* Set whether to keep this cursor's proportions (relative to the
+     destination view's visual filter) when changing the destination
+     view's TData or parent attribute value. */
+  void SetKeepProportions(Boolean keepX, Boolean keepY) {
+      _keepPropX = keepX; _keepPropY = keepY; }
+
+  /* Save the state of this cursor (proportions and/or source view
+     visual filter). */
+  void SaveState();
+
+  /* Restore the state of this cursor (proportions and/or source view
+     visual filter; if both, a saved source view visual filter overrides
+     the proportions). */
+  void RestoreState();
+
+  /* Set the proportions of this cursor (relative to the destination
+     view's visual filter).  Note: this method is intended mainly for
+     use in session postscripts. */
+  void SetProportions(Coord xlo, Coord ylo, Coord xhi, Coord yhi);
 
   /* Get or set the grid parameters. */
   void GetGrid(Boolean &useGrid, Coord &gridX, Coord &gridY,
@@ -305,6 +379,23 @@ private:
   int _oldPixY2;
 
   Boolean _inMoveSource;
+
+  // Whether to save the cursor state (dimensions) in X and Y (when cursor
+  // views are view symbols and TData and/or parent value get changed).
+  Boolean _saveStateX;
+  Boolean _saveStateY;
+
+  // Whether to keep cursor proportions relative to the destination view
+  // in X and Y (when cursor views are view symbols and TData and/or
+  // parent value get changed).
+  Boolean _keepPropX;
+  Boolean _keepPropY;
+
+  // Whether the cursor state is valid (hasn't already been restored).
+  Boolean _stateValid;
+
+  // Proportions of cursor relative to destination view.
+  VisualFilter _proportions;
 };
 
 //******************************************************************************

@@ -16,6 +16,56 @@
   $Id$
 
   $Log$
+  Revision 1.45.4.9  2010/08/31 19:14:42  wenger
+  Fixed the cursor behavior problems in the ambiguity code and Pistachio
+  visualizations by calling RestoreCursorState() at a different point.
+
+  Revision 1.45.4.8  2010/08/31 17:28:22  wenger
+  Changed the names of some of the new commands and methods to better
+  reflect their functions; documented the new methods.  (Note: cursor
+  mods still don't always work right for ambiguity code and Pistachio
+  visualizations.)
+
+  Revision 1.45.4.7  2010/08/24 21:01:28  wenger
+  Added the setCursorProportions command to allow explicit setting of
+  cursor proportions (to be used in session post scripts).
+
+  Revision 1.45.4.6  2010/08/24 20:38:25  wenger
+  Added the getViewSaveState, setViewSaveState, getCursorSaveState,
+  setCursorSaveState, getCursorKeepProp, and setCursorKeepProp commands
+  to control the new view and cursor properties.
+
+  Revision 1.45.4.5  2010/08/19 18:28:30  wenger
+  Added class variables to control the new cursor and view symbol
+  behaviors (but not the commands to set them yet) -- Y stuff for the
+  cursors are temporarily turned on.
+
+  Revision 1.45.4.4  2010/08/19 17:12:43  wenger
+  Got rid of a bunch of debug output, etc.
+
+  Revision 1.45.4.3  2010/08/19 16:50:06  wenger
+  Did some cleanup of the 3D cursor fixes -- no real functional changes,
+  mainly changing some method and variable names to better match the
+  current functionality.
+
+  Revision 1.45.4.2  2010/08/19 15:39:58  wenger
+  More work on 3D cursor fixes -- we now remember the cursor location for
+  a given TData/parentVal combination; if you go to a new combination for
+  the first time, the cursor stays the same proportion of the destination
+  view that it was.  (Still needs options to turn this on and off for
+  X and Y independently.)
+
+  Revision 1.45.4.1  2010/08/18 21:10:17  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
+  Revision 1.45  2010/02/23 22:05:31  wenger
+  Merged devise_1_10_br_2 thru devise_1_10_br_3 to trunk.
+
   Revision 1.44.14.1  2010/02/16 23:16:01  wenger
   Fixed bug 996 (certain combinations of JavaScreen cursor actions
   crashed devised).
@@ -241,7 +291,7 @@
 */
 
 #include "Cursor.h"
-#include "View.h"
+#include "ViewGraph.h"
 #include "Color.h"
 #include "XColor.h"
 #include "Util.h"
@@ -270,6 +320,13 @@ DeviseCursor::DeviseCursor(char *name, VisualFlag flag,
   _allInDest = false;
   _oldPixelsValid = false;
   _inMoveSource = false;
+
+  _saveStateX = false;
+  _saveStateY = false;
+  _keepPropX = false;
+  _keepPropY = false;
+
+  _stateValid = false;
 
   View::InsertViewCallback(this);
 }
@@ -508,6 +565,99 @@ void DeviseCursor::MoveSource(Coord x, Coord y, Coord width, Coord height,
   }
 
   _inMoveSource = false;
+}
+
+void
+DeviseCursor::SaveState()
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::SaveState()\n", GetName());
+#endif
+
+  // Save the source view's current visual filter, indexed by TData
+  // and parent value.
+  ((ViewGraph *)_src)->SaveViewSymFilter();
+
+  // Now save the source view's visual filter as a proportion of the
+  // destination view's filter.
+  VisualFilter srcFilter;
+  _src->GetVisualFilter(srcFilter);
+  VisualFilter dstFilter;
+  _dst->GetVisualFilter(dstFilter);
+
+  _proportions.xLow = (srcFilter.xLow - dstFilter.xLow) /
+      (dstFilter.xHigh - dstFilter.xLow);
+  _proportions.xHigh = (srcFilter.xHigh - dstFilter.xLow) /
+      (dstFilter.xHigh - dstFilter.xLow);
+  _proportions.yLow = (srcFilter.yLow - dstFilter.yLow) /
+      (dstFilter.yHigh - dstFilter.yLow);
+  _proportions.yHigh = (srcFilter.yHigh - dstFilter.yLow) /
+      (dstFilter.yHigh - dstFilter.yLow);
+
+  _stateValid = true;
+}
+
+void
+DeviseCursor::RestoreState()
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::RestoreState()\n", GetName());
+#endif
+  if (_stateValid) {
+    VisualFilter srcFilter;
+    _src->GetVisualFilter(srcFilter);
+    VisualFilter dstFilter;
+    _dst->GetVisualFilter(dstFilter);
+
+	if (_keepPropX) {
+      srcFilter.xLow = _proportions.xLow *
+          (dstFilter.xHigh - dstFilter.xLow) + dstFilter.xLow;
+      srcFilter.xHigh = _proportions.xHigh *
+          (dstFilter.xHigh - dstFilter.xLow) + dstFilter.xLow;
+	}
+	if (_keepPropY) {
+      srcFilter.yLow = _proportions.yLow *
+          (dstFilter.yHigh - dstFilter.yLow) + dstFilter.yLow;
+      srcFilter.yHigh = _proportions.yHigh *
+          (dstFilter.yHigh - dstFilter.yLow) + dstFilter.yLow;
+    }
+
+    _src->SetVisualFilter(srcFilter);
+
+    // If we don't have an entry for the relevant TData/parent value
+    // combination, this won't do anything; otherwise it will override
+    // the the proportions.
+    ((ViewGraph *)_src)->RestoreViewSymFilter(_saveStateX, _saveStateY);
+
+    // We only want to do this once, otherwise the user won't be able
+    // to change the cursor themselves...
+    _stateValid = false;
+  }
+}
+
+void
+DeviseCursor::SetProportions(Coord xlo, Coord ylo, Coord xhi, Coord yhi)
+{
+#if defined(DEBUG)
+  printf("DeviseCursor(%s)::SetProportions((%g, %g), (%g, %g))\n",
+      GetName(), xlo, ylo, xhi, yhi);
+#endif
+
+  VisualFilter srcFilter;
+  _src->GetVisualFilter(srcFilter);
+  VisualFilter dstFilter;
+  _dst->GetVisualFilter(dstFilter);
+
+  srcFilter.xLow = xlo * (dstFilter.xHigh - dstFilter.xLow) +
+      dstFilter.xLow;
+  srcFilter.xHigh = xhi * (dstFilter.xHigh - dstFilter.xLow) +
+      dstFilter.xLow;
+  srcFilter.yLow = ylo * (dstFilter.yHigh - dstFilter.yLow) +
+      dstFilter.yLow;
+  srcFilter.yHigh = yhi * (dstFilter.yHigh - dstFilter.yLow) +
+      dstFilter.yLow;
+
+  _src->SetVisualFilter(srcFilter);
 }
 
 void DeviseCursor::DrawCursorFill(WindowRep* w)

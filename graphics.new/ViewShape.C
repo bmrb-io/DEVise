@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2002
+  (c) Copyright 1998-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,47 @@
   $Id$
 
   $Log$
+  Revision 1.33.8.7  2010/08/31 19:14:48  wenger
+  Fixed the cursor behavior problems in the ambiguity code and Pistachio
+  visualizations by calling RestoreCursorState() at a different point.
+
+  Revision 1.33.8.6  2010/08/31 17:28:29  wenger
+  Changed the names of some of the new commands and methods to better
+  reflect their functions; documented the new methods.  (Note: cursor
+  mods still don't always work right for ambiguity code and Pistachio
+  visualizations.)
+
+  Revision 1.33.8.5  2010/08/19 18:28:39  wenger
+  Added class variables to control the new cursor and view symbol
+  behaviors (but not the commands to set them yet) -- Y stuff for the
+  cursors are temporarily turned on.
+
+  Revision 1.33.8.4  2010/08/19 17:12:51  wenger
+  Got rid of a bunch of debug output, etc.
+
+  Revision 1.33.8.3  2010/08/19 16:50:14  wenger
+  Did some cleanup of the 3D cursor fixes -- no real functional changes,
+  mainly changing some method and variable names to better match the
+  current functionality.
+
+  Revision 1.33.8.2  2010/08/19 15:40:04  wenger
+  More work on 3D cursor fixes -- we now remember the cursor location for
+  a given TData/parentVal combination; if you go to a new combination for
+  the first time, the cursor stays the same proportion of the destination
+  view that it was.  (Still needs options to turn this on and off for
+  X and Y independently.)
+
+  Revision 1.33.8.1  2010/08/18 21:10:28  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
+  Revision 1.33  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.32  2008/01/24 22:08:34  wenger
   Got rid of a bunch of compile warnings.
 
@@ -130,6 +171,7 @@
 
 #include "ViewShape.h"
 #include "TDataMap.h"
+#include "TData.h"
 #include "Init.h"
 #include "Util.h"
 #include "DevError.h"
@@ -321,8 +363,18 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
       continue;
     }
 
-    //TEMP -- check return value?
+    // Save the state of cursors in this view; note that the restoring
+    // of the cursor state occurs in View::SetVisualFilter() so that
+    // the cursor state is set correctly for a new visual filter.
+    viewsym->SaveCursorState();
+
+    // Save this view's current visual filter, indexed by TData and parent
+    // value.
     viewsym->SaveViewSymFilter();
+
+    // Setting this temporarily to "" (it will get reset in SetChildValue())
+    // reduces the number of "Can't find attribute..." error messages we get.
+    viewsym->SetParentValue("");
 
     // Set the view's TData if a TData is specified in the mapping.
     AttrList *attrList = map->GDataAttrList();
@@ -339,7 +391,8 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     // the parent view's mapping.
     SetFilter(map, attrList, stringTable, gdata, viewsym);
 
-    //TEMP -- check return value?
+    // Restore the previous visual filter (if any) for the current TData
+    // and parent value.
     viewsym->RestoreViewSymFilter();
 
     // Set the view symbol's title if a title value is specified in the
@@ -395,6 +448,9 @@ FullMapping_ViewShape::SetTData(TDataMap *map, AttrList *attrList,
     if (code < 0) {
       reportErrNosys("Can't find TData name in string table");
     } else {
+#if defined(DEBUG)
+      printf("  New TData name: %s\n", tdName);
+#endif
       viewsym->SwitchTData(tdName);
     }
   }
@@ -497,6 +553,11 @@ FullMapping_ViewShape::SetFilter(TDataMap *map, AttrList *attrList,
     filter.yHigh = yhi;
   }
 
+#if defined(DEBUG)
+  printf("  Visual filter: (%g, %g), (%g, %g)\n", filter.xLow,
+    filter.yLow, filter.xHigh, filter.yHigh);
+#endif
+
   viewsym->SetVisualFilter(filter);
 }
 
@@ -506,7 +567,7 @@ FullMapping_ViewShape::ShapeAttrToFilterVal(TDataMap *map, AttrList *attrList,
     Coord &value)
 {
 #if defined(DEBUG)
-  printf("FullMapping_ViewShape::ShapeAttrToFilterVal(%d)\n", attrNum);
+  printf("FullMapping_ViewShape()::ShapeAttrToFilterVal(%d)\n", attrNum);
 #endif
 
   DOASSERT(attrNum < MAX_SHAPE_ATTRS, "Illegal shape attribute number");

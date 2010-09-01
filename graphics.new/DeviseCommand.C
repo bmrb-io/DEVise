@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2009
+  (c) Copyright 1998-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,29 @@
   $Id$
 
   $Log$
+  Revision 1.138.6.4  2010/08/31 17:28:29  wenger
+  Changed the names of some of the new commands and methods to better
+  reflect their functions; documented the new methods.  (Note: cursor
+  mods still don't always work right for ambiguity code and Pistachio
+  visualizations.)
+
+  Revision 1.138.6.3  2010/08/24 21:28:05  wenger
+  Fixed missing return values in setCursorSaveState, setCursorKeepProp,
+  setViewSaveState, setCursorProportions commands.
+
+  Revision 1.138.6.2  2010/08/24 21:01:35  wenger
+  Added the setCursorProportions command to allow explicit setting of
+  cursor proportions (to be used in session post scripts).
+
+  Revision 1.138.6.1  2010/08/24 20:38:33  wenger
+  Added the getViewSaveState, setViewSaveState, getCursorSaveState,
+  setCursorSaveState, getCursorKeepProp, and setCursorKeepProp commands
+  to control the new view and cursor properties.
+
+  Revision 1.138  2009/09/23 21:39:35  wenger
+  Added clearGlobalFilterHistory command to clean up session files
+  (especially for things like Peptide-CGI templates).
+
   Revision 1.137  2009/09/23 20:39:10  wenger
   Added the selectParent, selectFirstChild, and selectNextChild
   commands to help in editing complex sessions.
@@ -8839,6 +8862,219 @@ IMPLEMENT_COMMAND_BEGIN(clearGlobalFilterHistory)
 	} else {
 		fprintf(stderr, "Wrong # of arguments: %d in "
 		    "clearGlobalFilterHistory\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getCursorSaveSrcFilter)
+    // Arguments: <cursor name>
+    // Returns: <x save cursor state (Boolean)>
+	//   <y save cursor state (Boolean)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        DeviseCursor *cursor =
+		  (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		Boolean saveX, saveY;
+		cursor->GetSaveSrcFilter(saveX, saveY);
+		char buf[256];
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %d", saveX, saveY);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	    }
+       	ReturnVal(API_ACK, buf);
+		return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		    "getCursorSaveState\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setCursorSaveSrcFilter)
+    // Arguments: <cursor name> <x save cursor state (Boolean)>
+	//   <y save cursor state (Boolean)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 4) {
+        DeviseCursor *cursor =
+		  (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		Boolean saveX = atoi(argv[2]) != 0;
+		Boolean saveY = atoi(argv[3]) != 0;
+		cursor->SetSaveSrcFilter(saveX, saveY);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		    "setCursorSaveState\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getCursorKeepProp)
+    // Arguments: <cursor name> 
+    // Returns: <x keep cursor proportions (Boolean)>
+	//   <y keep cursor proportions (Boolean)>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        DeviseCursor *cursor =
+		  (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		Boolean keepX, keepY;
+		cursor->GetKeepProportions(keepX, keepY);
+		char buf[256];
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %d", keepX, keepY);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	    }
+       	ReturnVal(API_ACK, buf);
+		return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		    "getCursorKeepProp\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setCursorKeepProp)
+    // Arguments: <cursor name> <x keep cursor proportions (Boolean)>
+	//   <y keep cursor proportions (Boolean)>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 4) {
+        DeviseCursor *cursor =
+		  (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		Boolean keepX = atoi(argv[2]) != 0;
+		Boolean keepY = atoi(argv[3]) != 0;
+		cursor->SetKeepProportions(keepX, keepY);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		    "setCursorKeepProp\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(getViewSaveFilter)
+    // Arguments: <view name>
+    // Returns: <x save view state (Boolean)> <y save view state (Boolean>
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 2) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+            ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+		}
+
+		Boolean saveX, saveY;
+		view->GetViewSymSaveFilter(saveX, saveY);
+		char buf[256];
+		int formatted = snprintf(buf, sizeof(buf)/sizeof(char),
+		  "%d %d", saveX, saveY);
+	    if (checkAndTermBuf2(buf, formatted) != StatusOk) {
+            ReturnVal(API_NAK, "buffer overflow");
+            return -1;
+	    }
+       	ReturnVal(API_ACK, buf);
+		return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		    "getViewSaveState\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setViewSaveFilter)
+    // Arguments: <view name> <x save view state (Boolean)>
+	 //  <y save view state (Boolean>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 4) {
+        ViewGraph *view = (ViewGraph *)_classDir->FindInstance(argv[1]);
+		if (view == NULL) {
+            ReturnVal(API_NAK, "Cannot find view");
+    	    return -1;
+		}
+
+		Boolean saveX = atoi(argv[2]) != 0;
+		Boolean saveY = atoi(argv[3]) != 0;
+		view->SetViewSymSaveFilter(saveX, saveY);
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		    "setViewSaveState\n", argc);
+    	ReturnVal(API_NAK, "Wrong # of arguments");
+    	return -1;
+	}
+IMPLEMENT_COMMAND_END
+
+IMPLEMENT_COMMAND_BEGIN(setCursorProportions)
+    // Arguments: <cursor name> <xlo> <ylo> <xhi> <yhi>
+    // Returns: "done"
+#if defined(DEBUG)
+    PrintArgs(stdout, argc, argv);
+#endif
+    if (argc == 6) {
+        DeviseCursor *cursor =
+		  (DeviseCursor *)_classDir->FindInstance(argv[1]);
+        if (!cursor) {
+    	    ReturnVal(API_NAK, "Cannot find cursor");
+    	    return -1;
+        }
+
+		cursor->SetProportions(atof(argv[2]), atof(argv[3]), atof(argv[4]),
+		    atof(argv[5]));
+
+        ReturnVal(API_ACK, "done");
+        return 1;
+	} else {
+		fprintf(stderr, "Wrong # of arguments: %d in "
+		    "setCursorProportions\n", argc);
     	ReturnVal(API_NAK, "Wrong # of arguments");
     	return -1;
 	}

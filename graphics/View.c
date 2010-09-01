@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,42 @@
   $Id$
 
   $Log$
+  Revision 1.254.6.6  2010/08/31 19:14:42  wenger
+  Fixed the cursor behavior problems in the ambiguity code and Pistachio
+  visualizations by calling RestoreCursorState() at a different point.
+
+  Revision 1.254.6.5  2010/08/19 18:28:31  wenger
+  Added class variables to control the new cursor and view symbol
+  behaviors (but not the commands to set them yet) -- Y stuff for the
+  cursors are temporarily turned on.
+
+  Revision 1.254.6.4  2010/08/19 17:12:43  wenger
+  Got rid of a bunch of debug output, etc.
+
+  Revision 1.254.6.3  2010/08/19 16:50:06  wenger
+  Did some cleanup of the 3D cursor fixes -- no real functional changes,
+  mainly changing some method and variable names to better match the
+  current functionality.
+
+  Revision 1.254.6.2  2010/08/19 15:39:59  wenger
+  More work on 3D cursor fixes -- we now remember the cursor location for
+  a given TData/parentVal combination; if you go to a new combination for
+  the first time, the cursor stays the same proportion of the destination
+  view that it was.  (Still needs options to turn this on and off for
+  X and Y independently.)
+
+  Revision 1.254.6.1  2010/08/18 21:10:18  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
+  Revision 1.254  2009/09/23 21:39:29  wenger
+  Added clearGlobalFilterHistory command to clean up session files
+  (especially for things like Peptide-CGI templates).
+
   Revision 1.253  2009/09/23 21:15:38  wenger
   Added parent view names to view names (optionally) displayed in views
   (to help in editing complex sessions).
@@ -1415,6 +1451,9 @@ View::View(char* name, VisualFilter& initFilter, PColorID fgid, PColorID bgid,
 
 	_xAxisLinkMultFact = 1.0;
 	_yAxisLinkMultFact = 1.0;
+
+	_viewSymSaveX = false;
+	_viewSymSaveY = false;
 }
 
 View::~View(void)
@@ -1650,7 +1689,7 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
     if (!(_filter == newFilter)) {
 
 #if defined(DEBUG)
-      printf("filter changed\n");
+      printf("View %s filter changed\n", GetName());
 #endif
 
       //TEMP -- what is this stuff for? wenger 2003-08-01.
@@ -2340,6 +2379,10 @@ void View::ReportQueryDone(int bytes, Boolean aborted)
 	     _queryCount, GetName());
 #endif
    }
+
+  if (!aborted) {
+   	RestoreCursorState();
+  }
 
   _refreshPending = false;
 
@@ -5239,6 +5282,17 @@ View::SetShowNames(Boolean showNames)
 }
 
 void
+View::SetAutoUpdate(Boolean autoUpdate)
+{
+  _autoUpdate = autoUpdate;
+  if (autoUpdate && (_viewSymSaveX || _viewSymSaveY)) {
+    printf("Warning (view %s): automatic filter updating and saving "
+         "view symbol filters are both enabled -- this may produce "
+	 "unpredictable behavior\n", GetName());
+  }
+}
+
+void
 View::SetXAxisDateFormat(const char *format, Boolean notifyPile)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
@@ -5499,6 +5553,38 @@ View::SetFilterChangeCmds(const char *cmds)
 {
 	FreeString(_filterChangeCmds);
 	_filterChangeCmds = CopyString(cmds);
+}
+
+void
+View::SaveCursorState()
+{
+#if defined(DEBUG)
+  printf("View(%s)::SaveCursorState()\n", GetName());
+#endif
+
+  int index = _cursors->InitIterator();
+  while (_cursors->More(index)) {
+    DeviseCursor *cursor = _cursors->Next(index);
+    DOASSERT(cursor, "Invalid cursor");
+    cursor->SaveState();
+  }
+  _cursors->DoneIterator(index);
+}
+
+void
+View::RestoreCursorState()
+{
+#if defined(DEBUG)
+  printf("View(%s)::RestoreCursorState()\n", GetName());
+#endif
+
+  int index = _cursors->InitIterator();
+  while (_cursors->More(index)) {
+    DeviseCursor *cursor = _cursors->Next(index);
+    DOASSERT(cursor, "Invalid cursor");
+    cursor->RestoreState();
+  }
+  _cursors->DoneIterator(index);
 }
 
 void

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,25 @@
   $Id$
 
   $Log$
+  Revision 1.90.6.3  2010/08/31 17:28:28  wenger
+  Changed the names of some of the new commands and methods to better
+  reflect their functions; documented the new methods.  (Note: cursor
+  mods still don't always work right for ambiguity code and Pistachio
+  visualizations.)
+
+  Revision 1.90.6.2  2010/08/24 21:01:35  wenger
+  Added the setCursorProportions command to allow explicit setting of
+  cursor proportions (to be used in session post scripts).
+
+  Revision 1.90.6.1  2010/08/24 20:38:33  wenger
+  Added the getViewSaveState, setViewSaveState, getCursorSaveState,
+  setCursorSaveState, getCursorKeepProp, and setCursorKeepProp commands
+  to control the new view and cursor properties.
+
+  Revision 1.90  2009/09/23 21:39:35  wenger
+  Added clearGlobalFilterHistory command to clean up session files
+  (especially for things like Peptide-CGI templates).
+
   Revision 1.89  2009/09/23 20:39:09  wenger
   Added the selectParent, selectFirstChild, and selectNextChild
   commands to help in editing complex sessions.
@@ -915,6 +934,13 @@ CmdContainer::CmdContainer(ControlPanel* defaultControl,CmdContainer::Make make,
 	REGISTER_COMMAND(selectFirstChild)
 	REGISTER_COMMAND(selectNextChild)
 	REGISTER_COMMAND(clearGlobalFilterHistory)
+	REGISTER_COMMAND(getCursorSaveSrcFilter)
+	REGISTER_COMMAND(setCursorSaveSrcFilter)
+	REGISTER_COMMAND(getCursorKeepProp)
+	REGISTER_COMMAND(setCursorKeepProp)
+	REGISTER_COMMAND(getViewSaveFilter)
+	REGISTER_COMMAND(setViewSaveFilter)
+	REGISTER_COMMAND(setCursorProportions)
 }
 
 CmdContainer::~CmdContainer()

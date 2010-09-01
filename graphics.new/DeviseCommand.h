@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,25 @@
   $Id$
 
   $Log$
+  Revision 1.82.6.3  2010/08/31 17:28:29  wenger
+  Changed the names of some of the new commands and methods to better
+  reflect their functions; documented the new methods.  (Note: cursor
+  mods still don't always work right for ambiguity code and Pistachio
+  visualizations.)
+
+  Revision 1.82.6.2  2010/08/24 21:01:36  wenger
+  Added the setCursorProportions command to allow explicit setting of
+  cursor proportions (to be used in session post scripts).
+
+  Revision 1.82.6.1  2010/08/24 20:38:33  wenger
+  Added the getViewSaveState, setViewSaveState, getCursorSaveState,
+  setCursorSaveState, getCursorKeepProp, and setCursorKeepProp commands
+  to control the new view and cursor properties.
+
+  Revision 1.82  2009/09/23 21:39:35  wenger
+  Added clearGlobalFilterHistory command to clean up session files
+  (especially for things like Peptide-CGI templates).
+
   Revision 1.81  2009/09/23 20:39:10  wenger
   Added the selectParent, selectFirstChild, and selectNextChild
   commands to help in editing complex sessions.
@@ -2476,6 +2495,48 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(clearGlobalFilterHistory) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getCursorSaveSrcFilter) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setCursorSaveSrcFilter) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getCursorKeepProp) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setCursorKeepProp) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(getViewSaveFilter) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setViewSaveFilter) 
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(setCursorProportions) 
 DECLARE_CLASS_END
 
 #endif // _DeviseCommand_h_

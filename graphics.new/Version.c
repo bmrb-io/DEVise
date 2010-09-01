@@ -20,6 +20,15 @@
   $Id$
 
   $Log$
+  Revision 1.90  2010/08/10 21:36:10  wenger
+  Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
+  correctly on JavaScreen resize).
+
+  Revision 1.89.2.1  2010/08/19 18:28:38  wenger
+  Added class variables to control the new cursor and view symbol
+  behaviors (but not the commands to set them yet) -- Y stuff for the
+  cursors are temporarily turned on.
+
   Revision 1.89  2010/04/26 19:33:04  wenger
   Merged devise_1_10_br_3 thru devise_1_10_br_4 to trunk.
 
@@ -550,7 +559,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.1x2"/*TEMP*/;
+static const char *	version = "1.11.1x3"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2010";

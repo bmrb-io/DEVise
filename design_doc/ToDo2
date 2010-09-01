@@ -39,23 +39,26 @@ Number Date	Status  Pri
 03.001 11/20/01	OPEN	?
 Allow XY cursor with bottom anchored at 0. (wenger)
 
-03.002 7/16/10	OPEN	1
+03.002 7/16/10	~DONE	1
 Explicitly define startup cursor size *relative to view visual filter*.
 (Miron wants to do this rather than continuing with the current system
 of links to other views, etc., used in the BMRB 3D visualizations, for
 example.) (miron/wenger)
+(Done except for GUI by wenger, 8/31/10.)
 
-03.003 7/16/10	OPEN	1
+03.003 7/16/10	~DONE	1
 Explicitly define cursor size on "update" (e.g., switch of TData)
 *relative to view visual filter*.  (Again, for the scheme we've come
 up with for cursor behavior in 3D BMRB visualizations, etc.).
 (wenger)
+(Done except for GUI by wenger, 8/31/10.)
 
-03.004 7/16/10	OPEN	1
+03.004 7/16/10	~DONE	1
 Have option (explicitly enabled) to "remember" cursor location for
 different TDatas, etc.  (Again, for the scheme we've come
 up with for cursor behavior in 3D BMRB visualizations, etc.).
 (miron/wenger)
+(Done except for GUI by wenger, 8/31/10.)
 
 
 ...........................................................................

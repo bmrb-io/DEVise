@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,39 @@
   $Id$
 
   $Log$
+  Revision 1.128.6.5  2010/08/31 17:28:22  wenger
+  Changed the names of some of the new commands and methods to better
+  reflect their functions; documented the new methods.  (Note: cursor
+  mods still don't always work right for ambiguity code and Pistachio
+  visualizations.)
+
+  Revision 1.128.6.4  2010/08/24 20:38:26  wenger
+  Added the getViewSaveState, setViewSaveState, getCursorSaveState,
+  setCursorSaveState, getCursorKeepProp, and setCursorKeepProp commands
+  to control the new view and cursor properties.
+
+  Revision 1.128.6.3  2010/08/19 18:28:31  wenger
+  Added class variables to control the new cursor and view symbol
+  behaviors (but not the commands to set them yet) -- Y stuff for the
+  cursors are temporarily turned on.
+
+  Revision 1.128.6.2  2010/08/19 16:50:07  wenger
+  Did some cleanup of the 3D cursor fixes -- no real functional changes,
+  mainly changing some method and variable names to better match the
+  current functionality.
+
+  Revision 1.128.6.1  2010/08/18 21:10:18  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
+  Revision 1.128  2009/09/23 21:39:29  wenger
+  Added clearGlobalFilterHistory command to clean up session files
+  (especially for things like Peptide-CGI templates).
+
   Revision 1.127  2009/09/23 20:39:02  wenger
   Added the selectParent, selectFirstChild, and selectNextChild
   commands to help in editing complex sessions.
@@ -979,7 +1012,7 @@ class View : public ViewWin
 	static void SetShowNames(Boolean showNames);
 
 	Boolean AutoUpdateFilter() { return _autoUpdate; }
-	void SetAutoUpdate(Boolean autoUpdate) { _autoUpdate = autoUpdate; }
+	void SetAutoUpdate(Boolean autoUpdate);
 
 	// Disable certain actions in a view (mainly for JavaScreen).
 	void GetDisabledActions(Boolean &rubberbandDisabled,
@@ -1035,6 +1068,28 @@ class View : public ViewWin
 	void SetFilterChangeCmds(const char *cmds);
 	const char *GetFilterChangeCmds(void) const {
 	  return _filterChangeCmds ? _filterChangeCmds : ""; }
+
+	/* Get whether to save this view's visual filter (indexed by
+	   TData name and parent attribute value) when either the TData
+	   or parent value is changed, if this view is a view symbol. */
+	void GetViewSymSaveFilter(Boolean &saveX, Boolean &saveY) {
+	  saveX = _viewSymSaveX; saveY = _viewSymSaveY; }
+
+	/* Set whether to save this view's visual filter (indexed by
+	   TData name and parent attribute value) when either the TData
+	   or parent value is changed, if this view is a view symbol. */
+	void SetViewSymSaveFilter(Boolean saveX, Boolean saveY) {
+	  _viewSymSaveX = saveX; _viewSymSaveY = saveY; }
+
+	/* Save the state of all cursors for which this view is the
+	   destination view (state is source view visual filter and
+	   proportions relative to destination view). */
+	void SaveCursorState();
+
+	/* Restore the state of all cursors for which this view is the
+	   destination view (state is source view visual filter and
+	   proportions relative to destination view). */
+	void RestoreCursorState();
 
 protected:
 	/* called by base class when it has been mapped/unmapped */
@@ -1172,6 +1227,8 @@ protected:
 
 	int _view_locks;	// bits from VIEW_LOCK
 
+	// This is a list of cursors for which this view is the *destination*
+	// view (in other words, cursors that are drawn in this view).
 	DeviseCursorList *_cursors;
 	DevisePixmap *_pixmap;
 	int _bytes;          /* # data bytes used to draw the current view */
@@ -1210,7 +1267,10 @@ protected:
 
 	Boolean _isHighlightView;
 
-
+	// Whether to save and restore the X and Y parts of the visual filter
+	// for a view symbol when we switch TData and/or parent value.
+	Boolean _viewSymSaveX;
+	Boolean _viewSymSaveY;
 
 	protected:
 

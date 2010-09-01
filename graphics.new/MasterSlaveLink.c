@@ -20,6 +20,20 @@
   $Id$
 
   $Log$
+  Revision 1.10.50.2  2010/08/19 17:12:50  wenger
+  Got rid of a bunch of debug output, etc.
+
+  Revision 1.10.50.1  2010/08/18 21:10:27  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
+  Revision 1.10  2000/02/16 18:51:39  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.9  2000/02/09 21:29:32  wenger
   Fixed bug 562 (one problem with pop clip underflow, related to highlight
   views).

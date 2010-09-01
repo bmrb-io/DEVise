@@ -16,6 +16,23 @@
   $Id$
 
   $Log$
+  Revision 1.94  2010/08/10 21:36:10  wenger
+  Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
+  correctly on JavaScreen resize).
+
+  Revision 1.93.8.2  2010/08/19 18:28:39  wenger
+  Added class variables to control the new cursor and view symbol
+  behaviors (but not the commands to set them yet) -- Y stuff for the
+  cursors are temporarily turned on.
+
+  Revision 1.93.8.1  2010/08/18 21:10:27  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
   Revision 1.93  2008/09/23 22:55:41  wenger
   More const-ifying, especially drill-down-related stuff.
 
@@ -707,6 +724,7 @@ public:
   // back to a TData and/or parent value we had previously.
   DevStatus SaveViewSymFilter();
   DevStatus RestoreViewSymFilter();
+  DevStatus RestoreViewSymFilter(Boolean doX, Boolean doY);
 
   /* Return true if restoring pixmaps is allowed */
   virtual Boolean PixmapEnabled() {

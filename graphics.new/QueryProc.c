@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.16.8.2  2010/08/19 17:12:50  wenger
+  Got rid of a bunch of debug output, etc.
+
+  Revision 1.16.8.1  2010/08/18 21:10:27  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
+  Revision 1.16  2008/01/24 22:08:33  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.15  1999/04/22 19:29:53  wenger
   Separated the configuration of explicit (user-requested) and implicit
   home actions (no GUI for configuring the implicit home); changed the

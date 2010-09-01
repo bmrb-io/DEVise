@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,23 @@
   $Id$
 
   $Log$
+  Revision 1.114.6.2  2010/08/31 17:28:22  wenger
+  Changed the names of some of the new commands and methods to better
+  reflect their functions; documented the new methods.  (Note: cursor
+  mods still don't always work right for ambiguity code and Pistachio
+  visualizations.)
+
+  Revision 1.114.6.1  2010/08/24 20:38:26  wenger
+  Added the getViewSaveState, setViewSaveState, getCursorSaveState,
+  setCursorSaveState, getCursorKeepProp, and setCursorKeepProp commands
+  to control the new view and cursor properties.
+
+  Revision 1.114  2009/09/23 17:05:37  wenger
+  Partial implementation of the 'filter change command' idea -- view
+  has command it's saved in sessions, parsed, but not actually
+  executed.  GUI for creating the command is partly done (but
+  commented out).
+
   Revision 1.113  2009/05/15 20:29:38  wenger
   Implemented to-do 04.001 (be able to exclude views from drill-down;
   this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
@@ -936,7 +953,8 @@ Session::Save(const char *filename, Boolean asTemplate, Boolean asExport,
     fprintf(saveData.fp, "\n# Put action into view\n");
     status += ForEachInstance("view", SaveViewActions, &saveData);
 
-    fprintf(saveData.fp, "\n# Put views in cursors\n");
+    fprintf(saveData.fp,
+        "\n# Put cursors into views and set cursor properties\n");
     status += ForEachInstance("cursor", SaveCursor, &saveData);
 
     fprintf(saveData.fp, "\n# Put axis label into views\n");
@@ -2257,6 +2275,9 @@ Session::SaveView(const char *category, const char *devClass,
   status += SaveParams(saveData, "getFilterChangeCmds",
       "setFilterChangeCmds", instance, NULL, NULL, true);
 
+  status += SaveParams(saveData, "getViewSaveFilter",
+      "setViewSaveFilter", instance);
+
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;
 }
@@ -2499,6 +2520,14 @@ Session::SaveCursor(const char *category, const char *devClass,
 
   status += SaveParams(saveData, "getCursorConstraints",
       "setCursorConstraints", instance);
+
+  status += SaveParams(saveData, "getCursorSaveSrcFilter",
+      "setCursorSaveSrcFilter", instance);
+
+  status += SaveParams(saveData, "getCursorKeepProp",
+      "setCursorKeepProp", instance);
+
+  fprintf(saveData->fp, "\n");
 
   if (status.IsError()) reportErrNosys("Error or warning");
   return status;

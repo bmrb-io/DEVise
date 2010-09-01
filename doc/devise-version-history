@@ -10,6 +10,10 @@ visualization server.
 * Fixed bug 1002 (current axis ranges not always preserved correctly
 on JavaScreen resize).
 
+* Added a number of options to improve cursor behavior, especially for
+cursors whose destination view is a view symbol whose TData or parent
+value are switched by its parent.
+
 
 DEVise 1.11.0
 -------------

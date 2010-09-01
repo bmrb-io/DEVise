@@ -16,6 +16,36 @@
   $Id$
 
   $Log$
+  Revision 1.162  2010/08/10 21:36:10  wenger
+  Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
+  correctly on JavaScreen resize).
+
+  Revision 1.161.6.5  2010/08/24 20:38:34  wenger
+  Added the getViewSaveState, setViewSaveState, getCursorSaveState,
+  setCursorSaveState, getCursorKeepProp, and setCursorKeepProp commands
+  to control the new view and cursor properties.
+
+  Revision 1.161.6.4  2010/08/19 18:28:38  wenger
+  Added class variables to control the new cursor and view symbol
+  behaviors (but not the commands to set them yet) -- Y stuff for the
+  cursors are temporarily turned on.
+
+  Revision 1.161.6.3  2010/08/19 17:12:51  wenger
+  Got rid of a bunch of debug output, etc.
+
+  Revision 1.161.6.2  2010/08/19 16:50:14  wenger
+  Did some cleanup of the 3D cursor fixes -- no real functional changes,
+  mainly changing some method and variable names to better match the
+  current functionality.
+
+  Revision 1.161.6.1  2010/08/18 21:10:27  wenger
+  Working on 3D cursor fixes -- I have a (preliminary?) implementation
+  here that saves the cursor proportions relative to the destination
+  view when you change TData and/or parent value for the destination
+  view.  (This commit also includes loads of debug code, and turning
+  off the earlier feature of trying to save view filters by TData/
+  parent value.)
+
   Revision 1.161  2009/05/13 22:41:30  wenger
   Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
   the trunk.
@@ -3546,8 +3576,11 @@ ViewGraph::SaveViewSymFilter()
   // In case no parent value is specified.
   if (!parentVal) parentVal = "(null)";
 
-  if (tdata && _viewSymParentVal) {
-    _viewSymFilterInfo->Save(tdata->GetName(), _viewSymParentVal,
+  if (tdata) {
+#if defined(DEBUG)
+    printf("  TData: %s; parentVal: %s\n", tdata->GetName(), parentVal);
+#endif
+    _viewSymFilterInfo->Save(tdata->GetName(), parentVal,
         GetVisualFilter());
   }
 
@@ -3558,23 +3591,53 @@ ViewGraph::SaveViewSymFilter()
 DevStatus
 ViewGraph::RestoreViewSymFilter()
 {
+  return RestoreViewSymFilter(_viewSymSaveX, _viewSymSaveY);
+}
+
+//---------------------------------------------------------------------------
+DevStatus
+ViewGraph::RestoreViewSymFilter(Boolean doX, Boolean doY)
+{
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG)
-  printf("ViewGraph(%s)::RestoreViewSymFilter()\n", GetName());
+  printf("ViewGraph(%s)::RestoreViewSymFilter(%d, %d)\n", GetName(), doX,
+      doY);
 #endif
 
   DevStatus result = StatusOk;
 
-  TData *tdata = NULL;
-  TDataMap *tdMap = GetFirstMap();
-  if (tdMap) tdata = tdMap->GetLogTData();
-  if (tdata && _viewSymParentVal) {
+  if (doX || doY) {
+    TData *tdata = NULL;
+    TDataMap *tdMap = GetFirstMap();
+    if (tdMap) tdata = tdMap->GetLogTData();
+    const char *parentVal = _viewSymParentVal;
+    // In case no parent value is specified.
+    if (!parentVal) parentVal = "(null)";
 
-    const VisualFilter *filter = _viewSymFilterInfo->Find(tdata->GetName(),
-        _viewSymParentVal);
-	if (filter) {
-      SetVisualFilter(*filter);
-	}
+    if (tdata) {
+#if defined(DEBUG)
+      printf("  TData: %s; parentVal: %s\n", tdata->GetName(), parentVal);
+#endif
+      const VisualFilter *filter = _viewSymFilterInfo->Find(tdata->GetName(),
+          parentVal);
+	  if (filter) {
+	    VisualFilter viewFilter;
+		GetVisualFilter(viewFilter);
+		if (doX) {
+		  viewFilter.xLow = filter->xLow;
+		  viewFilter.xHigh = filter->xHigh;
+		}
+		if (doY) {
+		  viewFilter.yLow = filter->yLow;
+		  viewFilter.yHigh = filter->yHigh;
+		}
+#if defined(DEBUG)
+    printf("  Visual filter: (%g, %g), (%g, %g)\n", viewFilter.xLow,
+        viewFilter.yLow, viewFilter.xHigh, viewFilter.yHigh);
+#endif
+        SetVisualFilter(viewFilter);
+	  }
+    }
   }
 
   return result;
