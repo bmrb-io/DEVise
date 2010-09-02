@@ -537,6 +537,11 @@ Num Date        Status  Description
 115 8/10/10	OPEN	15117/1AIL coordinates visualization doesn't show
 			anything in the coordinates view. (wenger)
 
+116 9/2/10	OPEN	Color print modes don't work right for database-wide
+			protein histogram visualization
+			(http://www.bmrb.wisc.edu/devise/histogram.html).
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
