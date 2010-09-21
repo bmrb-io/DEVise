@@ -542,6 +542,10 @@ Num Date        Status  Description
 			(http://www.bmrb.wisc.edu/devise/histogram.html).
 			(wenger)
 
+117 9/21/10	OPEN	Figure out differences between how PDB entries are
+			listed in 2.1 and 3 files.  (See 15080/test67 for
+			an example.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

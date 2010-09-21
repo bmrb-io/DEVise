@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2010/03/11 20:31:29  wenger
+// Implemented to-do 126 (multiple NMR-STAR file paths), except that
+// not all config files are updated yet; added checks that the URL
+// exists to all methods for getting URLs.  Also changed a few tests
+// affected by using the 3.1 files instead of 2.1 files.
+//
 // Revision 1.3  2010/02/11 22:13:11  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -153,6 +159,10 @@ public abstract class S2DNmrStarIfcFactory {
 	    ifc = create(is);
 	    is.close();
 
+	    String url = useLocalFile ? fileName + " (local)" :
+	      getURLName(fileName);
+	    System.out.println("Using NMR-STAR file " + url);
+
 	    ifc._description = "BMRB " + accessionNum;
 	    if (useLocalFile) ifc._description += " (local)";
 
@@ -192,6 +202,8 @@ public abstract class S2DNmrStarIfcFactory {
 
 	    ifc = create(is);
 	    is.close();
+
+	    System.out.println("Using NMR-STAR file " + fileName);
 
 	    ifc._description = fileName;
 
