@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.228  2010/09/01 18:49:56  wenger
+// Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+//
 // Revision 1.227  2010/08/02 22:12:33  wenger
 // Peptide-CGI version is now printed as part of standard output.
 //
@@ -1402,7 +1405,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.6x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.6x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
@@ -1545,8 +1548,6 @@ public class S2DMain {
     {
 	_retrying = false;
 
-	System.out.println("Peptide-CGI version " + PEP_CGI_VERSION);
-
 	setTimestamps();
 
 	try {
@@ -1636,6 +1637,8 @@ public class S2DMain {
 	getPropertiesDynamic(props);
 
 	checkArgs(args);
+
+	System.out.println("Peptide-CGI version " + PEP_CGI_VERSION);
     }
 
     //===================================================================
