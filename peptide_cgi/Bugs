@@ -540,7 +540,9 @@ Num Date        Status  Description
 116 9/2/10	OPEN	Color print modes don't work right for database-wide
 			protein histogram visualization
 			(http://www.bmrb.wisc.edu/devise/histogram.html).
-			(wenger)
+			(wenger)  (Hmm -- seems like you have to move the
+			cursors in non-default color mode, and then change
+			color mode again, for this problem to show up.)
 
 117 9/21/10	OPEN	Figure out differences between how PDB entries are
 			listed in 2.1 and 3 files.  (See 15080/test67 for
