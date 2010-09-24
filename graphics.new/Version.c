@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.91  2010/09/01 18:44:17  wenger
+  Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+
   Revision 1.90  2010/08/10 21:36:10  wenger
   Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
   correctly on JavaScreen resize).
@@ -559,7 +562,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.1x3"/*TEMP*/;
+static const char *	version = "1.11.1";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2010";
