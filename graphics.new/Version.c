@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.92  2010/09/24 17:56:49  wenger
+  Changed DEVise version to 1.11.1 for release.
+
   Revision 1.91  2010/09/01 18:44:17  wenger
   Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
 
@@ -562,7 +565,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.1";
+static const char *	version = "1.11.2x1"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2010";
