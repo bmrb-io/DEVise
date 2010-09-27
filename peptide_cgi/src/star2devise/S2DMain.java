@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.230  2010/09/24 17:55:25  wenger
+// Changed Peptide-CGI version to 11.8.6 for release.
+//
 // Revision 1.229  2010/09/23 17:58:21  wenger
 // Moved the default printing of the Peptide-CGI version, because the
 // printing it at the beginning goofed up the distribution scripts.
@@ -1409,7 +1412,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.6";
+    public static final String PEP_CGI_VERSION = "11.8.7x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
