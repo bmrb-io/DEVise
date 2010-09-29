@@ -4,7 +4,8 @@ Peptide-CGI 11.8.7
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
 
-(Nothing yet.)
+* Improved the behavior of the data scroll view and its cursor in
+the distance and torsion angle restraint visualizations.
 
 
 Peptide-CGI 11.8.6
