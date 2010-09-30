@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2010/04/21 17:10:46  wenger
+  Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+
   Revision 1.4.6.3  2010/04/07 19:06:26  wenger
   Finished implementation of "all" option in GAttrLinks, except for GUI
   to control it.
@@ -96,6 +99,8 @@ GAttrLink::GAttrLink(const char *name, const char *leaderAttrName,
   _enableAll = false;
 
   _objectValid.Set();
+
+  Initialize();
 }
 
 /*------------------------------------------------------------------------------
