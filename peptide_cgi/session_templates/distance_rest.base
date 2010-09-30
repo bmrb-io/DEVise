@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Sep 29 2010 10:31:38
+# file date: Sep 30 2010 15:39:46
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -733,7 +733,7 @@ DEVise setViewGDS {View3DHighlight} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View3DHighlight} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View3DHighlight} 1.748 7.131 10
 DEVise setCountMapping {View3DHighlight} 0 {} {} 0
-DEVise viewSetIsHighlight {View3DHighlight} 1
+DEVise viewSetIsHighlight {View3DHighlight} 0
 DEVise setXAxisDateFormat {View3DHighlight} {%b %d %Y %T}
 DEVise setYAxisDateFormat {View3DHighlight} {%b %d %Y %T}
 DEVise setXAxisFloatFormat {View3DHighlight} {%.4g}
@@ -752,7 +752,8 @@ Oxygen: red
 Nitrogen: blue
 Sulfur: orange
 Phosphorus: pink
-Hydrogen: white}
+Hydrogen: white
+TEMPTEMP -- this view is temporarily(?) not a highlight view, because that crashes devise!}
 DEVise setShowMouseLocation {View3DHighlight} {1}
 DEVise setLinkMultFact {View3DHighlight} {X} 1
 DEVise setLinkMultFact {View3DHighlight} {Y} 1
@@ -1041,7 +1042,7 @@ DEVise setViewSaveFilter {ViewDataTypeSelect 8} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View_ea_residue_select 0.000000 2268.000000 -0.750000 0.750000 37 17 0 37 0 37
+DEVise create {view} {Scatter} View_ea_residue_select 6.750000 2260.250000 -0.750000 0.750000 37 17 0 37 0 37
 DEVise setLabel {View_ea_residue_select} 1 16 {Entity_assembly1_ID() vs. recId}
 DEVise setViewStatistics {View_ea_residue_select} 00000000
 DEVise setViewDimensions {View_ea_residue_select} 2
@@ -1082,6 +1083,94 @@ DEVise viewSetUseJmol {View_ea_residue_select} {0}
 DEVise setExcludeFromDrillDown {View_ea_residue_select} {0}
 DEVise setViewSaveFilter {View_ea_residue_select} 0 0
 
+# View {View 1} uses mapping {.15209distr1#maxViolation_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 1} -0.100000 0.100000 -0.050000 0.290000 37 0 0 37 0 37
+DEVise setLabel {View 1} 1 16 {Max. violation}
+DEVise setViewStatistics {View 1} 00000000
+DEVise setViewDimensions {View 1} 2
+DEVise setViewSolid3D {View 1} 2
+DEVise setViewXYZoom {View 1} 1
+DEVise setViewDisplayDataValues {View 1} 0
+DEVise setFont {View 1} {title} 2 12 0 0
+DEVise setFont {View 1} {x axis} 0 12 0 0
+DEVise setFont {View 1} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {View 1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {View 1} 0 1 1 0 0 0.05 0 0 100 100
+DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
+DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 1} 0 0.989 10
+DEVise setCountMapping {View 1} 0 {} {} 0
+DEVise viewSetIsHighlight {View 1} 0
+DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 1} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 1} {%.4g}
+DEVise setYAxisFloatFormat {View 1} {%.4g}
+DEVise setViewAutoFilter {View 1} {1}
+DEVise setDupElim {View 1} {0}
+DEVise setNiceAxes {View 1} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {View 1} 0 0 0 0
+DEVise setShowMouseLocation {View 1} {1}
+DEVise setLinkMultFact {View 1} {X} 1
+DEVise setLinkMultFact {View 1} {Y} 1
+DEVise setGAttrLinkMode {View 1} 0
+DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
+DEVise setExcludeFromDrillDown {View 1} {0}
+DEVise setViewSaveFilter {View 1} 0 0
+
+# View {View 2} uses mapping {.15209distr1#maxViolation_vs_recId 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 2} -0.100000 0.100000 -0.050000 0.290000 37 17 0 37 0 37
+DEVise setLabel {View 2} 1 16 {Max. violation}
+DEVise setViewStatistics {View 2} 00000000
+DEVise setViewDimensions {View 2} 2
+DEVise setViewSolid3D {View 2} 2
+DEVise setViewXYZoom {View 2} 1
+DEVise setViewDisplayDataValues {View 2} 0
+DEVise setFont {View 2} {title} 2 12 0 0
+DEVise setFont {View 2} {x axis} 0 12 0 0
+DEVise setFont {View 2} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {View 2} 0 1 1 0 0 0.05 0 0 100 100
+DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
+DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
+DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
+DEVise setHistogram {View 2} 0 0.989 10
+DEVise setCountMapping {View 2} 0 {} {} 0
+DEVise viewSetIsHighlight {View 2} 0
+DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {View 2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {View 2} {%.4g}
+DEVise setYAxisFloatFormat {View 2} {%.4g}
+DEVise setViewAutoFilter {View 2} {0}
+DEVise setDupElim {View 2} {0}
+DEVise setNiceAxes {View 2} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {View 2} 0 0 0 0
+DEVise setShowMouseLocation {View 2} {1}
+DEVise setLinkMultFact {View 2} {X} 1
+DEVise setLinkMultFact {View 2} {Y} 1
+DEVise setGAttrLinkMode {View 2} 0
+DEVise setDoHomeOnVisLink {View 2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
+DEVise setExcludeFromDrillDown {View 2} {0}
+DEVise setViewSaveFilter {View 2} 0 0
+
 # Create interpreted mapping classes
 DEVise createMappingClass {Atom_coord_y_vs_Atom_coord_x}
 DEVise createMappingClass {Residue_seq_code_vs_recId}
@@ -1092,6 +1181,7 @@ DEVise createMappingClass {color_str_vs_recId}
 DEVise createMappingClass {Entity_assembly_ID_vs_recId}
 DEVise createMappingClass {C1p_DeltaShift_vs_Residue_seq_code}
 DEVise createMappingClass {Entity_assembly1_ID_vs_recId}
+DEVise createMappingClass {maxViolation_vs_recId}
 
 # Create mapping instances (GData)
 
@@ -1239,23 +1329,37 @@ DEVise create {mapping} {Entity_assembly1_ID_vs_recId} .15209distr1 .15209distr1
 DEVise setPixelWidth {.15209distr1#Entity_assembly1_ID_vs_recId} 1
 DEVise setMappingColors {.15209distr1#Entity_assembly1_ID_vs_recId} {36} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {maxViolation_vs_recId} .15209distr1 .15209distr1#maxViolation_vs_recId {} 0 {$maxViolation} {} 36 1 0 0 2 {} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15209distr1#maxViolation_vs_recId} 1
+DEVise setMappingColors {.15209distr1#maxViolation_vs_recId} {36} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {maxViolation_vs_recId} .15209distr1 {.15209distr1#maxViolation_vs_recId 2} {} 0 {$maxViolation} {} 36 1 0 0 0 0.1 0 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.15209distr1#maxViolation_vs_recId 2} 1
+DEVise setMappingColors {.15209distr1#maxViolation_vs_recId 2} {36} {0} {0}
+
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.218519 0.541146 0.500926 0 0
-DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.516667 0.140625 0.198148 0 0
-DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.723148 0.684896 0.126852 0 0
-DEVise create {window} {TileLayout} DEViseWn8 0.012500 0.853704 0.684896 0.020370 0 0
-DEVise create {window} {TileLayout} DEViseWn11 0.847917 0.780556 0.085417 0.120370 1 0
+DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.516667 0.140625 0.193519 0 0
+DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.718519 0.684896 0.126852 0 0
+DEVise create {window} {TileLayout} DEViseWn8 0.012500 0.853704 0.684896 0.018519 0 0
+DEVise create {window} {TileLayout} DEViseWn11 0.847917 0.780556 0.085417 0.118519 1 0
 DEVise create {window} {TileLayout} DEViseWn10 0.012500 0.189815 0.684896 0.025926 0 0
 DEVise create {window} {TileLayout} DEViseWn12 0.012500 0.878704 0.684896 0.028704 0 0
 DEVise create {window} {TileLayout} DEViseWn3 0.012500 0.218519 0.140625 0.118519 0 0
-DEVise create {window} {TileLayout} DEViseWn5 0.728646 0.166667 0.148438 0.108333 1 0
-DEVise create {window} {TileLayout} DEViseWn1 0.010937 0.343519 0.140625 0.082407 0 0
+DEVise create {window} {TileLayout} DEViseWn5 0.728646 0.166667 0.148438 0.105556 1 0
+DEVise create {window} {TileLayout} DEViseWn1 0.010417 0.343519 0.140625 0.080556 0 0
 DEVise create {window} {TileLayout} DEViseWn2 0.738542 0.343519 0.110417 0.091667 1 0
-DEVise create {window} {TileLayout} DEViseWn4 0.728646 0.660185 0.125000 0.226852 1 0
+DEVise create {window} {TileLayout} DEViseWn4 0.728646 0.655556 0.125000 0.226852 1 0
 DEVise create {window} {TileLayout} DEViseWn6 0.734375 0.500926 0.137500 0.116667 1 0
-DEVise create {window} {TileLayout} DEViseWn14 0.012500 0.432407 0.140625 0.081481 0 0
+DEVise create {window} {TileLayout} DEViseWn14 0.012500 0.430556 0.140625 0.080556 0 0
+DEVise create {window} {TileLayout} DEViseWn13 0.703125 0.187963 0.099479 0.093519 0 0
+DEVise create {window} {TileLayout} DEViseWn15 0.838542 0.479630 0.117188 0.143519 1 0
 
 # Set up window layouts
 
@@ -1287,6 +1391,10 @@ DEVise setWindowLayout {DEViseWn6} -1 -1 0
 
 DEVise setWindowLayout {DEViseWn14} -1 -1 0
 
+DEVise setWindowLayout {DEViseWn13} -1 -1 0
+
+DEVise setWindowLayout {DEViseWn15} -1 -1 0
+
 # Create links
 DEVise create {link} {Visual_Link} data_value_link 128
 DEVise create {link} {Visual_Link} entity_assembly_select_link 128
@@ -1300,6 +1408,8 @@ DEVise create {link} {Visual_Link} ambig_gattr_link 4096 shapeAttr_0 shapeAttr_1
 DEVise create {link} {Visual_Link} ea_res1_gattr_link 4096 shapeAttr_14 shapeAttr_13 0
 DEVise create {link} {Visual_Link} ea_res2_gattr_link 4096 shapeAttr_14 shapeAttr_14 0
 DEVise create {link} {Visual_Link} ea_res_record_link 128
+DEVise create {link} {Visual_Link} violation_mag_link 128
+DEVise setLinkType {violation_mag_link} 1
 DEVise setLinkType {ea_res_record_link} 1
 DEVise setLinkType {ambig_select_link} 1
 DEVise setLinkType {length_select_link} 1
@@ -1315,6 +1425,7 @@ DEVise create {cursor} {Cursor} violation_data_value_cursor 3 0 1.000000 1.00000
 DEVise create {cursor} {Cursor} violation_select_cursor 2 1 1.000000 1.000000 1
 DEVise create {cursor} {Cursor} length_select_cursor 2 1 1.000000 1.000000 1
 DEVise create {cursor} {Cursor} ambig_select_cursor 2 1 1.000000 1.000000 1
+DEVise create {cursor} {Cursor} violation_mag_cursor 2 0 1.000000 1.000000 0
 
 # Create axislabel
 
@@ -1476,6 +1587,20 @@ DEVise setAxisTicks {View_ea_residue_select} {Y} 1
 DEVise setAxisMultFact {View_ea_residue_select} {X} 1
 DEVise setAxisMultFact {View_ea_residue_select} {Y} 1
 
+DEVise setAxisDisplay {View 1} {X} 0
+DEVise setAxisDisplay {View 1} {Y} 1
+DEVise setAxisTicks {View 1} {X} 1
+DEVise setAxisTicks {View 1} {Y} 1
+DEVise setAxisMultFact {View 1} {X} 1
+DEVise setAxisMultFact {View 1} {Y} 1
+
+DEVise setAxisDisplay {View 2} {X} 0
+DEVise setAxisDisplay {View 2} {Y} 1
+DEVise setAxisTicks {View 2} {X} 1
+DEVise setAxisTicks {View 2} {Y} 1
+DEVise setAxisMultFact {View 2} {X} 1
+DEVise setAxisMultFact {View 2} {Y} 1
+
 # Put action into view
 
 # Put cursors into views and set cursor properties
@@ -1526,6 +1651,13 @@ DEVise setCursorConstraints {ambig_select_cursor} 1 0 1
 DEVise setCursorSaveSrcFilter {ambig_select_cursor} 0 0
 DEVise setCursorKeepProp {ambig_select_cursor} 0 0
 
+DEVise setCursorSrc {violation_mag_cursor} {View 2}
+DEVise setCursorDst {violation_mag_cursor} {View 1}
+DEVise color SetCursorColor {violation_mag_cursor} #ffffffffffff
+DEVise setCursorConstraints {violation_mag_cursor} 0 1 0
+DEVise setCursorSaveSrcFilter {violation_mag_cursor} 0 0
+DEVise setCursorKeepProp {violation_mag_cursor} 0 0
+
 
 # Put axis label into views
 
@@ -1552,6 +1684,8 @@ DEVise insertMapping {ViewDataDotsParent} {.15209distr-md1#name_vs_recId 10}
 DEVise insertMapping {ViewDataTypeSelect 7} {.15209distr-md1#name_vs_recId 11}
 DEVise insertMapping {ViewDataTypeSelect 8} {.15209distr-md1#name_vs_recId 12}
 DEVise insertMapping {View_ea_residue_select} {.15209distr1#Entity_assembly1_ID_vs_recId}
+DEVise insertMapping {View 1} {.15209distr1#maxViolation_vs_recId}
+DEVise insertMapping {View 2} {.15209distr1#maxViolation_vs_recId 2}
 
 # Link views
 
@@ -1604,7 +1738,12 @@ DEVise insertLink {ea_res2_gattr_link} {View_ea_residue_select}
 DEVise setLinkMaster {ea_res2_gattr_link} {ViewDataValueSelectChild}
 
 DEVise insertLink {ea_res_record_link} {View3DHighlight}
+DEVise insertLink {ea_res_record_link} {View 1}
+DEVise insertLink {ea_res_record_link} {View 2}
 DEVise setLinkMaster {ea_res_record_link} {View_ea_residue_select}
+
+DEVise insertLink {violation_mag_link} {View3DHighlight}
+DEVise setLinkMaster {violation_mag_link} {View 2}
 
 # Insert views into windows
 DEVise insertWindow {View3DMain_wireframe} {DEViseWn0}
@@ -1625,6 +1764,8 @@ DEVise insertWindow {ViewDataTypeSelect 6} {DEViseWn4}
 DEVise insertWindow {View_ea_residue_select} {DEViseWn4}
 DEVise insertWindow {ViewDataTypeSelect 7} {DEViseWn6}
 DEVise insertWindow {ViewDataTypeSelect 8} {DEViseWn14}
+DEVise insertWindow {View 1} {DEViseWn13}
+DEVise insertWindow {View 2} {DEViseWn15}
 
 # Set window pile/stack state
 DEVise setPileStackState {DEViseWn0} 3
@@ -1641,6 +1782,8 @@ DEVise setPileStackState {DEViseWn2} 1
 DEVise setPileStackState {DEViseWn4} 1
 DEVise setPileStackState {DEViseWn6} 1
 DEVise setPileStackState {DEViseWn14} 1
+DEVise setPileStackState {DEViseWn13} 1
+DEVise setPileStackState {DEViseWn15} 1
 
 # Init history of view
 
@@ -1709,6 +1852,64 @@ DEVise insertViewHistory {ViewDataTypeSelect 8} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {View_ea_residue_select}
 DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {6.75} {-0.75} {2260.25} {0.75} 0
+
+DEVise clearViewHistory {View 1}
+DEVise insertViewHistory {View 1} {-0.1} {0} {0.1} {0.989} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.05} {0.1} {0.29} 0
+
+DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {-0.1} {0} {0.1} {0.989} 0
+DEVise insertViewHistory {View 2} {-0.1} {0.4945} {0.1} {1.4835} 0
+DEVise insertViewHistory {View 2} {-0.1} {0.4945} {0.1} {1.4835} 0
+DEVise insertViewHistory {View 2} {-0.1} {-1.11022e-16} {0.1} {0.989} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {0.29} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {1.039} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.05} {0.1} {0.29} 0
 
 # Set camera location for each view
 DEVise set3DLocation {ViewUnselectedDataChild} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
@@ -1733,6 +1934,8 @@ DEVise set3DLocation {ViewDataDotsParent} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {ViewDataTypeSelect 7} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {ViewDataTypeSelect 8} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {View_ea_residue_select} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {View 2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 
 # Set string tables for each view
 
