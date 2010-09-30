@@ -210,6 +210,10 @@ a cursor, not change the visual filter. (wenger)
 09.023 7/28/10	OPEN	4
 Allow an image to be shown in the drill-down dialog.
 
+09.024 9/30/10	OPEN	3
+Have a dialog that allows a user to explicitly set the dimensions of
+a cursor. (wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
