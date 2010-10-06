@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.232  2010/09/29 18:14:30  wenger
+// Merged violation_select_br_0 thru violation_select_br_1 to trunk.
+//
 // Revision 1.231  2010/09/27 17:22:40  wenger
 // Changed Peptide-CGI version to 11.8.7x1, added 11.8.7 version history
 // section.
@@ -1416,7 +1419,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.7x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.7x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
@@ -3693,11 +3696,11 @@ public class S2DMain {
 		// Don't do anything for non-polymers.
 		int polymerType = star.getPolymerType(frame);
 		if (polymerType == S2DResidues.POLYMER_TYPE_NONE) {
-                    if (doDebugOutput(5)) {
-		        System.out.println("Skipping save frame " +
-			  star.getFrameName(frame) +
+                    // if (doDebugOutput(5)) {
+		        System.out.println("Skipping residue list for " +
+			  "save frame " + star.getFrameName(frame) +
 			  " because it is a non-polymer");
-		    }
+		    // }
 		    continue;
 		}
 
@@ -3759,11 +3762,11 @@ public class S2DMain {
 	        // We only want to output chemical shifts corresponding to a
 	        // polymer.
 	        if (!star.refersToPolymer(frame, entityID)) {
-                    if (doDebugOutput(2)) {
+                    // if (doDebugOutput(2)) {
                         System.out.println("Chemical shifts not saved for " +
                           "save frame " + frame.getLabel() + " (" +
 			  entityAssemblyID + ") because it is not a polymer");
-                    }
+                    // }
 		} else {
 		    //TEMP -- do I really want to catch the error here (and in
 		    // other similar methods below)?

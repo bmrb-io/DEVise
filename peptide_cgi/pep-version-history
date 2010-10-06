@@ -7,6 +7,8 @@ Peptide-CGI 11.8.7
 * Improved the behavior of the data scroll view and its cursor in
 the distance and torsion angle restraint visualizations.
 
+* Added some more debug output for non-polymers.
+
 
 Peptide-CGI 11.8.6
 ------------------
