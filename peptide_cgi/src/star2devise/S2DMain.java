@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.234  2010/10/13 20:44:02  wenger
+// Finished restructuring Peptide-CGI code so that we get values from
+// the STAR files in the relevant object constructors, instead of in the
+// S2DMain class.
+//
 // Revision 1.233  2010/10/06 13:25:12  wenger
 // We now default to printing more messages about skipping saving residue
 // lists and chemical shifts for non-polymers.
@@ -1423,7 +1428,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.7x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.7x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
