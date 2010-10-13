@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2009
+// (c) Copyright 2002-2010
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2009/03/12 17:30:19  wenger
+// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
+// as requested by Eldon; changed tests accordingly.
+//
 // Revision 1.4  2009/03/11 19:53:14  wenger
 // Implemented two-stage selection of data sets in coordinate
 // visualizations (select entity assembly, then select data set); updated
@@ -84,7 +88,7 @@ public class S2DDatasetInfo
         int entityAssemblyID, int polymerType)
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DDatasetInfo.S2DDataSetInfo(" + name +
+	    System.out.println("S2DDatasetInfo.S2DDatasetInfo(" + name +
 	      ", " + dataSourceName + ", " + yAttribute);
         }
 

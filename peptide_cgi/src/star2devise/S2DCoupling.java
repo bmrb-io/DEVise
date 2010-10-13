@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.12  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.11  2010/02/17 18:48:41  wenger
 // Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
 //
@@ -100,6 +106,7 @@ package star2devise;
 
 import java.io.*;
 import java.util.*;
+import EDU.bmrb.starlibj.SaveFrameNode;
 
 public class S2DCoupling {
     //===================================================================
@@ -133,36 +140,83 @@ public class S2DCoupling {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DCoupling(String name, String longName, S2DNmrStarIfc star,
-      String dataDir, String sessionDir, S2DSummaryHtml summary,
-      String[] couplingConstCodes, String[] atom1ResSeqs,
-      String[] atom1ResLabels, String[] atom1Names, String[] atom2ResSeqs,
-      String[] atom2ResLabels, String[] atom2Names,
-      String[] couplingConstValues, String[] couplingConstErrors,
-      int entityAssemblyID, String frameDetails) throws S2DException
+      SaveFrameNode frame, String dataDir, String sessionDir,
+      S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DCoupling.S2DCoupling(" + name +
 	      ")");
 	}
+
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_frameDetails = frameDetails;
-
-        _couplingConstCodes = couplingConstCodes;
-        _atom1ResSeqs = atom1ResSeqs;
-        _atom1ResLabels = atom1ResLabels;
-        _atom1Names = atom1Names;
-        _atom2ResSeqs = atom2ResSeqs;
-        _atom2ResLabels = atom2ResLabels;
-        _atom2Names = atom2Names;
-        _couplingConstValues = couplingConstValues;
-        _couplingConstErrors = couplingConstErrors;
-	_entityAssemblyID = entityAssemblyID;
-
+	_frameDetails = star.getFrameDetails(frame);
 	_starVersion = star.version();
+
+	//
+	// Get the values we need from the Star file.
+	//
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.COUPLING_ENTITY_ASSEMBLY_ID_1,
+	      star.COUPLING_ENTITY_ASSEMBLY_ID_1);
+	}
+
+	_atom1ResSeqs = star.getAndFilterFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_1,
+	  entityAssemblyID, entityAssemblyIDs);
+
+	_atom2ResSeqs = star.getAndFilterFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_SEQ_CODE_2,
+	  entityAssemblyID, entityAssemblyIDs);
+
+	_couplingConstValues = star.getAndFilterFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_VALUE,
+	  entityAssemblyID, entityAssemblyIDs);
+
+	_couplingConstCodes = star.getAndFilterOptionalFrameValues(
+	  frame, star.COUPLING_CONSTANT_VALUE, star.COUPLING_CONSTANT_CODE,
+	  entityAssemblyID, entityAssemblyIDs,
+	  _atom1ResSeqs.length, "0");
+
+	_atom1ResLabels = star.getAndFilterOptionalFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_LABEL_1,
+	  entityAssemblyID, entityAssemblyIDs,
+	  _atom1ResSeqs.length, "0");
+
+	_atom1Names = star.getAndFilterOptionalFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_ATOM_NAME_1,
+	  entityAssemblyID, entityAssemblyIDs,
+	  _atom1ResSeqs.length, "0");
+
+	_atom2ResLabels = star.getAndFilterOptionalFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_RES_LABEL_2,
+	  entityAssemblyID, entityAssemblyIDs,
+	  _atom1ResSeqs.length, "0");
+
+	_atom2Names = star.getAndFilterOptionalFrameValues(frame,
+	  star.COUPLING_CONSTANT_VALUE, star.COUPLING_ATOM_NAME_2,
+	  entityAssemblyID, entityAssemblyIDs,
+	  _atom1ResSeqs.length, "0");
+
+	_couplingConstErrors = star.getAndFilterOptionalFrameValues(
+	  frame, star.COUPLING_CONSTANT_VALUE,
+	  star.COUPLING_CONSTANT_VALUE_ERR, entityAssemblyID,
+	  entityAssemblyIDs, _atom1ResSeqs.length, "0");
+
+	_entityAssemblyID = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
     }
 
     //-------------------------------------------------------------------

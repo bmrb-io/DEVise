@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.6  2008/06/04 21:12:01  wenger
 // New Peptide-CGI summary page is implemented, test work except for
 // test52 for some weird reason.  (Still may need some other changes
@@ -75,6 +81,7 @@ package star2devise;
 
 import java.io.*;
 import java.util.*;
+import EDU.bmrb.starlibj.SaveFrameNode;
 
 public class S2DLacs {
     //===================================================================
@@ -91,7 +98,7 @@ public class S2DLacs {
 
     private String _title;
 
-    public String _xCoordName;
+    private String _xCoordName;
     public String _yCoordName;
 
     class XYPair {
@@ -149,8 +156,8 @@ public class S2DLacs {
     //-------------------------------------------------------------------
     // Constructor.
     public S2DLacs(String name, String longName, S2DStarIfc star,
-      String dataDir, String sessionDir, S2DSummaryHtml summary,
-      String frameDetails)
+      SaveFrameNode frame, String dataDir, String sessionDir,
+      S2DSummaryHtml summary) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DLacs.S2DLacs(" + name + ")");
@@ -160,14 +167,69 @@ public class S2DLacs {
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_frameDetails = frameDetails;
+	_frameDetails = star.getFrameDetails(frame);
+	_starVersion = star.version();
 
 	_line1 = new Line();
 	_line2 = new Line();
 	_lineIntersect = new XYPair();
 	_lineIntersectValid = false;
 
-	_starVersion = star.version();
+        //
+        // Get the values we need from the Star file.
+        //
+	_xCoordName = star.getTagValue(frame, star.LACS_X_NAME);
+	_yCoordName = star.getTagValue(frame, star.LACS_Y_NAME);
+
+	//TEMP -- catch NumberFormatExceptions here and report details?
+	_line1._point1._x = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE1_X1));
+	_line1._point1._y = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE1_Y1));
+	_line1._point2._x = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE1_X2));
+	_line1._point2._y = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE1_Y2));
+
+	_line2._point1._x = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE2_X1));
+	_line2._point1._y = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE2_Y1));
+	_line2._point2._x = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE2_X2));
+	_line2._point2._y = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_LINE2_Y2));
+
+	_yOffset = Double.parseDouble(star.getTagValue(frame,
+	  star.LACS_Y_OFFSET));
+
+	calculateLines();
+
+        String[] resSeqCodesTmp = star.getFrameValues(frame,
+          star.LACS_RES_NUM, star.LACS_RES_NUM);
+	_resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	  star.LACS_RES_NUM);
+	resSeqCodesTmp = null;
+
+        _resLabels = star.getFrameValues(frame,
+          star.LACS_RES_NUM, star.LACS_RES_LABEL);
+
+        String[] xCoordsTmp = star.getFrameValues(frame,
+	  star.LACS_RES_NUM, star.LACS_X_VALUE);
+	_xCoords = S2DUtils.arrayStr2Double(xCoordsTmp,
+	  star.LACS_X_VALUE);
+	xCoordsTmp = null;
+
+        String[] yCoordsTmp = star.getFrameValues(frame,
+	  star.LACS_RES_NUM, star.LACS_Y_VALUE);
+	_yCoords = S2DUtils.arrayStr2Double(yCoordsTmp,
+	  star.LACS_Y_VALUE);
+	yCoordsTmp = null;
+
+        String[] desigsTmp = star.getFrameValues(frame,
+	  star.LACS_RES_NUM, star.LACS_DESIGNATOR);
+	_desigs = S2DUtils.arrayStr2Int(desigsTmp, star.LACS_DESIGNATOR);
+	desigsTmp = null;
     }
 
     //-------------------------------------------------------------------

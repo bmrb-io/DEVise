@@ -24,6 +24,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.5  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.4  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -61,6 +67,72 @@ public class S2DSpartaChemShift extends S2DChemShift {
 
     //===================================================================
     // PUBLIC METHODS
+
+    //-------------------------------------------------------------------
+    // Get the maximum model number for which there is SPARTA-calculated
+    // delta shift data, for a given save frame, entity assembly ID,
+    // and chem shift list ID.
+    // (Note that this method will fail on a frame containing average
+    // values rather than values for individual models.)
+    // S2DNmrStarSpartaIfc class.
+    public static int getSpartaMaxModelNum(S2DNmrStarIfc star,
+      SaveFrameNode frame, String entityAssemblyID,
+      String chemShiftListID) throws S2DException
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DSpartaChemShift.getSpartaMaxModelNum(" +
+	      star.getFrameName(frame) + " (<" + entityAssemblyID +
+	      ">, <" + chemShiftListID + ">)");
+	}
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.DELTA_SHIFT_ENTITY_ASSEMBLY_ID);
+	}
+
+	// If a non-blank chemShiftListID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// chemShiftListID.  To do that, we get the chemShiftListID
+	// values in each row of the loop.
+	String[] chemShiftListIDs = null;
+	if (!chemShiftListID.equals("")) {
+	    chemShiftListIDs = star.getAndFilterFrameValues(frame,
+	      star.DELTA_CHEM_SHIFT_LIST_ID, star.DELTA_CHEM_SHIFT_LIST_ID,
+	      entityAssemblyID, entityAssemblyIDs);
+	}
+
+	String[] modelNumsStr = star.getAndFilterFrameValues(frame,
+	  star.DELTA_SHIFT_VALUE, star.DELTA_SHIFT_MODEL_NUM,
+	  entityAssemblyID, entityAssemblyIDs);
+	// Now filter by chemShiftListID if necessary.
+	if (!chemShiftListID.equals("")) {
+	    modelNumsStr = S2DUtils.selectMatches(chemShiftListIDs,
+	      modelNumsStr, chemShiftListID);
+	}
+	int[] modelNums = S2DUtils.arrayStr2Int(modelNumsStr,
+	  star.DELTA_SHIFT_RES_SEQ_CODE);
+	modelNumsStr = null;
+
+	int maxModelNum = 0;
+	for (int index = 0; index < modelNums.length; index++) {
+		maxModelNum = Math.max(maxModelNum, modelNums[index]);
+	}
+
+        if (doDebugOutput(4)) {
+	    System.out.println("  maxModelNum: " + maxModelNum);
+	}
+
+	return maxModelNum;
+    }
+
 
     //-------------------------------------------------------------------
     // Constructor (for SPARTA-calculated deltashifts).

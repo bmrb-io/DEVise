@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.12  2010/02/17 18:48:41  wenger
 // Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
 //
@@ -105,6 +111,7 @@ package star2devise;
 
 import java.io.*;
 import java.util.*;
+import EDU.bmrb.starlibj.SaveFrameNode;
 
 public class S2DRelaxation {
     //===================================================================
@@ -124,6 +131,7 @@ public class S2DRelaxation {
     private String _suffix;
     private String _title;
     private String _shortName;
+    private String _frequency;
     private int _freqValue;
 
     private String[] _resSeqCodes;
@@ -139,56 +147,52 @@ public class S2DRelaxation {
 
     //-------------------------------------------------------------------
     // Constructor.  (See S2DUtils for dataType.)
-    public S2DRelaxation(String name, String longName, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int dataType,
-      String frequency, String[] resSeqCodes, String[] resLabels,
-      String[] atomNames, String[] relaxationValues,
-      String[] relaxationErrors, int entityAssemblyID,
-      String frameDetails) throws S2DException
+    public S2DRelaxation(String name, String longName, S2DNmrStarIfc star,
+      SaveFrameNode frame, String dataDir, String sessionDir,
+      S2DSummaryHtml summary, int dataType, String entityAssemblyID)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DRelaxation.S2DRelaxation(" + name + ")");
 	}
+
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_entityAssemblyID = entityAssemblyID;
-	_frameDetails = frameDetails;
+	_entityAssemblyID = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
+	_frameDetails = star.getFrameDetails(frame);
+        _starVersion = star.version();
 
+	// Note: we should probably split this into subclasses for T1 and
+	// T2, but I'm keeping things in a single class for now to do
+	// restructuring more quickly.
 	_dataType = dataType;
         switch (dataType) {
 	case S2DUtils.TYPE_T1_RELAX:
-	    _suffix = S2DNames.T1_SUFFIX;
-	    _title = "T1 Relaxation";
+	    initT1(star, frame, entityAssemblyID);
 	    break;
 
 	case S2DUtils.TYPE_T2_RELAX:
-	    _suffix = S2DNames.T2_SUFFIX;
-	    _title = "T2 Relaxation";
+	    initT2(star, frame, entityAssemblyID);
 	    break;
 
 	default:
 	    throw new S2DError("Illegal data type: " + dataType);
 	}
 
-	_shortName = _title + " (" + frequency + ")";
-	_title += " (" + frequency + " MHz)";
+	_shortName = _title + " (" + _frequency + ")";
+	_title += " (" + _frequency + " MHz)";
 	try { 
 	    // Parse as a float, convert to int for tables in summary.
-	    _freqValue = (int)Float.parseFloat(frequency);
+	    _freqValue = (int)Float.parseFloat(_frequency);
 	} catch (NumberFormatException ex) {
 	    System.err.println("Warning: exception parsing relaxation " +
 	      "frequency: " + ex);
 	    _freqValue = 0;
 	}
-
-        _resSeqCodes = resSeqCodes;
-        _resLabels = S2DUtils.arrayToUpper(resLabels);
-        _atomNames = atomNames;
-        _relaxationValues = relaxationValues;
-        _relaxationErrors = relaxationErrors;
     }
 
     //-------------------------------------------------------------------
@@ -277,6 +281,104 @@ public class S2DRelaxation {
 
     //===================================================================
     // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Initialize this object with T1 relaxation values.
+    private void initT1(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID) throws S2DException
+    {
+        _suffix = S2DNames.T1_SUFFIX;
+        _title = "T1 Relaxation";
+
+	//
+	// Get the values we need from the Star file.
+	//
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.T1_ENTITY_ASSEMBLY_ID,
+	      star.T1_ENTITY_ASSEMBLY_ID);
+	}
+
+	_resSeqCodes = star.getAndFilterFrameValues(frame,
+	  star.T1_VALUE, star.T1_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_resLabels = star.getAndFilterFrameValues(frame,
+	  star.T1_VALUE, star.T1_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_atomNames = star.getAndFilterFrameValues(frame,
+	  star.T1_VALUE, star.T1_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_relaxationValues = star.getAndFilterFrameValues(frame,
+	  star.T1_VALUE, star.T1_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	//TEMP -- 4096 has "_T1_error" instead of "_T1_value_error".
+	_relaxationErrors = star.getAndFilterOptionalFrameValues(frame,
+	  star.T1_VALUE, star.T1_VALUE_ERR, entityAssemblyID,
+	  entityAssemblyIDs, _relaxationValues.length, "0");
+
+        _frequency = star.getOneFrameValue(frame, star.T1_SPEC_FREQ_1H);
+    }
+
+    //-------------------------------------------------------------------
+    // Initialize this object with T2 relaxation values.
+    private void initT2(S2DNmrStarIfc star, SaveFrameNode frame,
+      String entityAssemblyID) throws S2DException
+    {
+        _suffix = S2DNames.T2_SUFFIX;
+        _title = "T2 Relaxation";
+
+	//
+	// Get the values we need from the Star file.
+	//
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.T2_ENTITY_ASSEMBLY_ID,
+	      star.T2_ENTITY_ASSEMBLY_ID);
+	}
+
+	_resSeqCodes = star.getAndFilterFrameValues(frame,
+	  star.T2_VALUE, star.T2_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_resLabels = star.getAndFilterFrameValues(frame,
+	  star.T2_VALUE, star.T2_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_atomNames = star.getAndFilterFrameValues(frame,
+	  star.T2_VALUE, star.T2_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_relaxationValues = star.getAndFilterFrameValues(frame,
+	  star.T2_VALUE, star.T2_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	//TEMP -- 4096 has "_T2_error" instead of "_T2_value_error".
+	_relaxationErrors = star.getAndFilterOptionalFrameValues(frame,
+	  star.T2_VALUE, star.T2_VALUE_ERR, entityAssemblyID,
+	  entityAssemblyIDs, _relaxationValues.length, "0");
+
+        _frequency = star.getOneFrameValue(frame, star.T2_SPEC_FREQ_1H);
+    }
 
     //-------------------------------------------------------------------
     // Determine whether to do debug output based on the current debug

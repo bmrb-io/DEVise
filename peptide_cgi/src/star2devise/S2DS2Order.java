@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.8  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.7  2010/02/17 18:48:41  wenger
 // Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
 //
@@ -76,6 +82,7 @@ package star2devise;
 
 import java.io.*;
 import java.util.*;
+import EDU.bmrb.starlibj.SaveFrameNode;
 
 public class S2DS2Order {
     //===================================================================
@@ -91,8 +98,6 @@ public class S2DS2Order {
     private int _entityAssemblyID;
     private String _frameDetails;
 
-    private int _dataType;
-
     private String[] _resSeqCodes;
     private String[] _resLabels;
     private String[] _atomNames;
@@ -105,31 +110,62 @@ public class S2DS2Order {
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    // Constructor.  (See S2DUtils for dataType.)
+    // Constructor.
     public S2DS2Order(String name, String longName, S2DNmrStarIfc star,
-      String dataDir, String sessionDir, S2DSummaryHtml summary,
-      String[] resSeqCodes, String[] resLabels, String[] atomNames,
-      String[] s2OrderValues, String[] s2OrderErrors,
-      int entityAssemblyID, String frameDetails) throws S2DException
+      SaveFrameNode frame, String dataDir, String sessionDir,
+      S2DSummaryHtml summary, String entityAssemblyID) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DS2Order.S2DS2Order(" + name + ")");
 	}
+
         _name = name;
         _longName = longName;
         _dataDir = dataDir;
         _sessionDir = sessionDir;
         _summary = summary;
-	_entityAssemblyID = entityAssemblyID;
-	_frameDetails = frameDetails;
-
-        _resSeqCodes = resSeqCodes;
-        _resLabels = S2DUtils.arrayToUpper(resLabels);
-        _atomNames = atomNames;
-        _s2OrderValues = s2OrderValues;
-        _s2OrderErrors = s2OrderErrors;
-
+	_frameDetails = star.getFrameDetails(frame);
 	_starVersion = star.version();
+
+	//
+	// Get the values we need from the Star file.
+	//
+
+	// If a non-blank entityAssemblyID is specified, we need to filter
+	// the frame values to only take the ones corresponding to that
+	// entityAssemblyID.  To do that, we get the entityAssemblyID
+	// values in each row of the loop.  (entityAssemblyID will be blank
+	// when processing NMR-STAR 2.1 files -- they don't have data for
+	// more than one entity assembly in a single save frame).
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.ORDER_ENTITY_ASSEMBLY_ID,
+	      star.ORDER_ENTITY_ASSEMBLY_ID);
+	}
+
+	_resSeqCodes = star.getAndFilterFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_resLabels = star.getAndFilterFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_atomNames = star.getAndFilterFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_s2OrderValues = star.getAndFilterFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_VALUE, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_s2OrderErrors = star.getAndFilterOptionalFrameValues(frame,
+	  star.ORDER_VALUE, star.ORDER_VALUE_ERR, entityAssemblyID,
+	  entityAssemblyIDs, _s2OrderValues.length, "0");
+
+	_entityAssemblyID = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
     }
 
     //-------------------------------------------------------------------

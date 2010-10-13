@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.13  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.12  2009/03/25 21:49:09  wenger
 // Final cleanup of some of the nucleic-acid-related code, especially
 // getting polymer types correctly for mmCIF files; added nucleic acid
@@ -93,6 +99,7 @@ package star2devise;
 
 import java.io.*;
 import java.util.*;
+import EDU.bmrb.starlibj.SaveFrameNode;
 
 public class S2DPistachio {
     //===================================================================
@@ -128,31 +135,104 @@ public class S2DPistachio {
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DPistachio(String name, S2DNmrStarIfc star, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
-      String[] residueLabels, String[] atomNames, double[] meritVals,
-      int entityAssemblyID, String frameDetails) throws S2DException
+    public S2DPistachio(String name, S2DNmrStarIfc star,
+      SaveFrameNode frame, String dataDir, String sessionDir,
+      S2DSummaryHtml summary, String entityAssemblyID,
+      S2DResidues residues) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DPistachio.S2DPistachio(" + name +
 	      ")");
 	}
 
+	// 2009-02-05: at least temporarily don't try to save Pistachio
+	// data for non-proteins.
+	if (!residues.treatAsProtein()) {
+	    String msg = "Not saving Pistachio data because " +
+	      "structure is not a protein";
+            if (doDebugOutput(2)) {
+	    	System.out.println(msg);
+	    }
+            throw new S2DCancel(msg);
+	}
+
+	if (star.FIGURE_OF_MERIT.equals("")) {
+	    // File is not NMR-STAR 3.0
+	    String msg = "Skipping Pistachio processing " +
+	      "because file is not NMR-STAR 3.x";
+            if (doDebugOutput(4)) {
+	        System.out.println(msg);
+	    }
+	    throw new S2DCancel(msg);
+	}
+
 	_name = name;
 	_dataDir = dataDir;
 	_sessionDir = sessionDir;
 	_summary = summary;
-	_frameDetails = frameDetails;
-
-	_resSeqCodes = resSeqCodes;
-	_residueLabels = residueLabels;
-	_atomNames = atomNames;
-	_meritVals = meritVals;
-	_entityAssemblyID = entityAssemblyID;
-
+	_frameDetails = star.getFrameDetails(frame);
 	_starVersion = star.version();
 
+	//
+	// Get the values we need from the Star file.
+	//
+//TEMP -- change CHEM_SHIFT_VALUE to FIGURE_OF_MERIT in all here
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
+	}
+
+	String[] meritValsTmp;
+	try {
+	    meritValsTmp = star.getAndFilterFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.FIGURE_OF_MERIT, entityAssemblyID,
+	      entityAssemblyIDs);
+	    if (S2DUtils.entireArrayMatches(meritValsTmp, ".")) {
+		throw new S2DWarning("Figure of merit values are all null");
+	    }
+	} catch (S2DException ex) {
+	    String msg = "No figure of merit values in this " +
+	      "save frame (" + star.getFrameName(frame) + ")";
+            if (doDebugOutput(4)) {
+	        System.out.println(msg);
+	    }
+	    throw new S2DCancel(msg);
+	}
+	_meritVals = S2DUtils.arrayStr2Double(meritValsTmp,
+	  star.FIGURE_OF_MERIT);
+	meritValsTmp = null;
+
+	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE, entityAssemblyID,
+	  entityAssemblyIDs);
+	_resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	  star.CHEM_SHIFT_RES_SEQ_CODE);
+	resSeqCodesTmp = null;
+
+	_residueLabels = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+	residues.make3Letter(_residueLabels);
+
+	_atomNames = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_entityAssemblyID = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
+
 	calculatePistachioValues();
+    }
+
+    //-------------------------------------------------------------------
+    // Create an S2DPistachioTable object corresponding to this set of
+    // Pistachio values.
+    public S2DPistachioTable createPistachioTable() throws S2DException
+    {
+        return new S2DPistachioTable(_resSeqCodes, _atomNames,
+	  _meritVals);
     }
 
     //-------------------------------------------------------------------

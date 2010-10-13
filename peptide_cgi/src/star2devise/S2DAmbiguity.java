@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.15  2010/03/10 22:36:15  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.14  2009/03/25 21:49:09  wenger
 // Final cleanup of some of the nucleic-acid-related code, especially
 // getting polymer types correctly for mmCIF files; added nucleic acid
@@ -87,6 +93,7 @@ package star2devise;
 
 import java.io.*;
 import java.util.*;
+import EDU.bmrb.starlibj.SaveFrameNode;
 
 public class S2DAmbiguity {
     //===================================================================
@@ -102,6 +109,7 @@ public class S2DAmbiguity {
 
     private int[] _resSeqCodes;
     private String[] _residueLabels; // indexed by atom
+    private String[] _atomNames;
     private int[] _ambiguityVals;
     private int _entityAssemblyID;
 
@@ -122,10 +130,10 @@ public class S2DAmbiguity {
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DAmbiguity(String name, S2DNmrStarIfc star, String dataDir,
-      String sessionDir, S2DSummaryHtml summary, int[] resSeqCodes,
-      String[] residueLabels, int[] ambiguityVals, int entityAssemblyID,
-      String frameDetails) throws S2DException
+    public S2DAmbiguity(String name, S2DNmrStarIfc star,
+      SaveFrameNode frame,String dataDir, String sessionDir,
+      S2DSummaryHtml summary, String entityAssemblyID,
+      S2DResidues residues) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DAmbiguity.S2DAmbiguity(" + name +
@@ -136,16 +144,68 @@ public class S2DAmbiguity {
 	_dataDir = dataDir;
 	_sessionDir = sessionDir;
 	_summary = summary;
-	_frameDetails = frameDetails;
-
-	_resSeqCodes = resSeqCodes;
-	_residueLabels = residueLabels;
-	_ambiguityVals = ambiguityVals;
-	_entityAssemblyID = entityAssemblyID;
-
+	_frameDetails = star.getFrameDetails(frame);
 	_starVersion = star.version();
 
+	//
+	// Get the values we need from the Star file.
+	//
+	String[] entityAssemblyIDs = null;
+	if (!entityAssemblyID.equals("")) {
+	    entityAssemblyIDs = star.getFrameValues(frame,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID,
+	      star.CHEM_SHIFT_ENTITY_ASSEMBLY_ID);
+	}
+
+	String[] ambiguityTmp;
+	try {
+	    ambiguityTmp = star.getAndFilterFrameValues(frame,
+	      star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_AMBIG_CODE,
+	      entityAssemblyID, entityAssemblyIDs);
+	    if (S2DUtils.entireArrayMatches(ambiguityTmp, ".")) {
+	        throw new S2DWarning("Ambiguity code values are all null");
+	    }
+	} catch (S2DException ex) {
+	    String msg = "No ambiguity values in this save frame (" +
+		  star.getFrameName(frame) + ")";
+            if (doDebugOutput(4)) {
+	        System.out.println(msg);
+	    }
+	    throw new S2DCancel(msg);
+	}
+	_ambiguityVals = S2DUtils.arrayStr2Int(ambiguityTmp,
+	  star.CHEM_SHIFT_AMBIG_CODE);
+	ambiguityTmp = null;
+
+	String[] resSeqCodesTmp = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_SEQ_CODE,
+	  entityAssemblyID, entityAssemblyIDs);
+	_resSeqCodes = S2DUtils.arrayStr2Int(resSeqCodesTmp,
+	  star.CHEM_SHIFT_RES_SEQ_CODE);
+	resSeqCodesTmp = null;
+
+	_residueLabels = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_RES_LABEL, entityAssemblyID,
+	  entityAssemblyIDs);
+	residues.make3Letter(_residueLabels);
+
+	_atomNames = star.getAndFilterFrameValues(frame,
+	  star.CHEM_SHIFT_VALUE, star.CHEM_SHIFT_ATOM_NAME, entityAssemblyID,
+	  entityAssemblyIDs);
+
+	_entityAssemblyID = star.getEntityAssemblyID(frame,
+	  entityAssemblyID);
+
 	calculateAmbiguityValues();
+    }
+
+    //-------------------------------------------------------------------
+    // Create an S2DAmbiguityTable object corresponding to this set
+    // of ambiguity code values.
+    public S2DAmbiguityTable createAmbiguityTable() throws S2DException
+    {
+    	return new S2DAmbiguityTable(_resSeqCodes, _atomNames,
+	  _ambiguityVals);
     }
 
     //-------------------------------------------------------------------

@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.31  2010/02/20 00:18:36  wenger
 // Finished getting SPARTA processing to work with multiple entity
 // assemblies (to-do 117) and multiple chemical shift lists per entity
@@ -260,9 +266,9 @@
 
 package star2devise;
 
-import EDU.bmrb.starlibj.SaveFrameNode;
 import java.io.*;
 import java.util.*;
+import EDU.bmrb.starlibj.SaveFrameNode;
 
 public class S2DChemShift {
     //===================================================================
