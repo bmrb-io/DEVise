@@ -214,6 +214,10 @@ Allow an image to be shown in the drill-down dialog.
 Have a dialog that allows a user to explicitly set the dimensions of
 a cursor. (wenger)
 
+09.025 10/29/10	OPEN	3
+Add mouseover capability, at least for views that contain text that's
+drawn on the client side. (wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
