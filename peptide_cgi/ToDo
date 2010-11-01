@@ -670,6 +670,9 @@ Num Date        Status  Pri     Description
 				Peptide-CGI takes, and whether it used the
 				cache. (miron/wenger)
 
+151 11/1/10	OPEN	1	Check whether 'whitespace' should be changed					to 'separator' in schema files to prevent
+				quotes issue. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

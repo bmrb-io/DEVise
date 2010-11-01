@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.236  2010/11/01 00:51:12  wenger
+// Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
+//
 // Revision 1.235.2.8  2010/10/29 21:57:10  wenger
 // Changed how things work for 3.0/3.1 files -- we follow the experiment
 // ID to get the sample info if necessary; tests changed accordingly.
@@ -1474,7 +1477,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.7x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.7x6"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

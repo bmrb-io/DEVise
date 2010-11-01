@@ -9,7 +9,9 @@
 
 type bmrb-summary ascii
 comment #
-whitespace '	'
+# Changed this to "separator", because if it's "whitespace" single- or
+# double-quotes delimit a field, and we don't want that.
+separator '	'
 
 attr Entity_assembly_name string 30
 attr Entity_assembly_ID int
