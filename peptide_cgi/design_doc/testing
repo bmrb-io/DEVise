@@ -47,6 +47,8 @@ The following testing steps must be done:
     - 3D structure from PDB ID 1NGL (make sure the Jmol menu button shows
       up in the JavaScreen) (make sure data cursor shows up at correct
       initial size/location)
+        - Make sure that frame details/sample/sample conditions drill-
+	  down works.
     - S2 order parameters
 - Click the 'Force Reprocessing' button and make sure the summary page
   gets updated.

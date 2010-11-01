@@ -25,6 +25,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.6.3  2010/10/29 21:57:11  wenger
+// Changed how things work for 3.0/3.1 files -- we follow the experiment
+// ID to get the sample info if necessary; tests changed accordingly.
+//
+// Revision 1.22.6.2  2010/10/22 16:57:36  wenger
+// Hopefully final cleanup of 3.0/3.1 code for sample conditions, etc.
+//
+// Revision 1.22.6.1  2010/10/16 01:32:26  wenger
+// Getting sample conditions save frame names now works for 2.1 files.
+//
+// Revision 1.22  2010/07/14 21:47:54  wenger
+// Fixed Peptide-CGI bug 110.
+//
 // Revision 1.21  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -759,6 +772,49 @@ public abstract class S2DStarIfc {
         }
 
         return result;
+    }
+
+    //-------------------------------------------------------------------
+    // Get the value(s) for a label that may be a stand-alone tag or
+    // a loop.  Returns an empty vector if it doesn't find anything.
+    // Only unique values are returned, if a loop contains duplicates.
+    public Vector getSingleOrLoopValue(SaveFrameNode frame, String tagName)
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DStarIfc.getSingleOrLoopValue(" +
+	      getFrameName(frame) + ", " + tagName + ")");
+	}
+        Vector result = new Vector();
+
+	// Try getting the value as a lone tag; if that doesn't
+	// work, try it in a loop.
+	try {
+	    String tmpName = getOneFrameValueStrict(frame, tagName);
+	    result.addElement(tmpName);
+	} catch (Exception ex) {
+	    try {
+	        String[] tmpNames = getFrameValues(frame, tagName,
+		  tagName);
+	        for (int index = 0; index < tmpNames.length; index++) {
+	            String tmpName = tmpNames[index];
+	            if (!result.contains(tmpName)) {
+	                result.addElement(tmpName);
+	            }
+	        }
+	    } catch (S2DException ex2) {
+	        System.err.println("Warning: " + ex2.toString());
+	    }
+	}
+
+        if (doDebugOutput(11)) {
+	    System.out.print("result: ");
+	    for (int index = 0; index < result.size(); index++) {
+	        System.out.print((String)result.elementAt(index) + " ");
+	    }
+	    System.out.println("");
+	}
+
+	return result;
     }
 
     //-------------------------------------------------------------------

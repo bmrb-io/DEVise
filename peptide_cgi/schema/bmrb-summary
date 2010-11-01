@@ -15,5 +15,10 @@ attr Entity_assembly_name string 30
 attr Entity_assembly_ID int
 
 attr name string 30
+
+attr Details string 101
+attr Sample string 101
+attr Sample_conditions string 101
+
 attr data_source string 30
 attr y_attribute string 30

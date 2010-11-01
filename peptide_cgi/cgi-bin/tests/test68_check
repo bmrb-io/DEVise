@@ -128,14 +128,6 @@ source tests/check4line
 set line = '^3 63 ILE 1.034 27.38 HG12 CG1$'
 source tests/check4line
 
-set file = "data_dir/15083md.dat"
-set attr = '$H1_DeltaShift'
-set line = "^EA 1 (DNA)	1	H1 delta chem shift \[1\]	15083d1	$attr"
-source tests/check4line
-set attr = '$assigForN'
-set line = "^EA 3 (polypeptide(L))	3	% 15N assign per res \[3\]	15083p3	$attr"
-source tests/check4line
-
 set file = "session_dir/15083/15083ac1.ds"
 set line = '^DEVise dteInsertCatalogEntry . {"15083ac1" UNIXFILE 15083ac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}$'
 source tests/check4line

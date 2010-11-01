@@ -22,6 +22,30 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.10.2  2010/10/19 00:23:20  wenger
+// Split the actual sample info out from the sample conditions info,
+// including modifying ambiguity code and Pistachio metadata accordingly.
+//
+// Revision 1.13.10.1  2010/10/15 15:29:02  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.13.8.2  2010/10/11 14:38:32  wenger
+// Started on method to get sample conditions for data save frames; I'm
+// just committing a preliminary version until I make a change on the trunk
+// to move all of the code for actually getting the relevant frame values
+// down into the data-specific classes like I've already done with the
+// delta shifts.
+//
+// Revision 1.13.8.1  2010/10/08 21:17:41  wenger
+// We now put save frame details into the drill-down data for the data
+// selection view in 3D visualizations; also fixed a bug in getting save
+// frame details for 3.0/3.1 files.
+//
+// Revision 1.13  2010/02/17 18:48:41  wenger
+// Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
+//
 // Revision 1.12  2009/10/22 17:26:34  wenger
 // Refactored the experimental chemical shifts to match the new-style
 // Sparta processing where we get the appropriate data values in
@@ -246,8 +270,9 @@ public class S2DDNAChemShift extends S2DNAChemShift {
 	        dataSets.addElement(new S2DDatasetInfo(
 	          info[index]._dataName +
 	            " delta chem shift [" + _entityAssemblyID + "]", 
-	          dataSource, info[index]._attribute, "bmrb-DNADeltaShift",
-	          "bmrb-DNADeltaShift", _entityAssemblyID,
+		  _frameDetails, _sample, _sampleConditions, dataSource,
+		  info[index]._attribute, "bmrb-DNADeltaShift",
+		  "bmrb-DNADeltaShift", _entityAssemblyID,
 	          S2DResidues.POLYMER_TYPE_DNA));
 	    }
 	}

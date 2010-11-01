@@ -20,6 +20,33 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.2.4  2010/10/29 14:32:34  wenger
+// Added test of sample conditions with 6838; fixed code to make sure
+// we don't get multiple copies of the same sample info.
+//
+// Revision 1.6.2.3  2010/10/22 19:45:02  wenger
+// We now truncate and add "..." to the end of the details, sample, and
+// sample conditions strings if they're longer than 100 characters.
+//
+// Revision 1.6.2.2  2010/10/19 00:23:20  wenger
+// Split the actual sample info out from the sample conditions info,
+// including modifying ambiguity code and Pistachio metadata accordingly.
+//
+// Revision 1.6.2.1  2010/10/15 15:29:02  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.6  2010/10/13 20:44:02  wenger
+// Finished restructuring Peptide-CGI code so that we get values from
+// the STAR files in the relevant object constructors, instead of in the
+// S2DMain class.
+//
+// Revision 1.5.24.1  2010/10/08 21:17:41  wenger
+// We now put save frame details into the drill-down data for the data
+// selection view in 3D visualizations; also fixed a bug in getting save
+// frame details for 3.0/3.1 files.
+//
 // Revision 1.5  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
@@ -78,12 +105,20 @@ public class S2DDatasetInfo
     private String _schemaType;
     private String _entityAssemblyName;
     private int _entityAssemblyID;
+    private String _details;
+    private String _sample;
+    private String _sampleConditions;
+
+    // See schema file bmrb-summary.
+    private final int MAX_LENGTH = 100;
 
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
-    public S2DDatasetInfo(String name, String dataSourceName,
+    // Constructor.
+    public S2DDatasetInfo(String name, String details,
+      String sample, String sampleConditions, String dataSourceName,
       String yAttribute, String schemaFile, String schemaType,
         int entityAssemblyID, int polymerType)
     {
@@ -92,7 +127,37 @@ public class S2DDatasetInfo
 	      ", " + dataSourceName + ", " + yAttribute);
         }
 
+	// Note: we might want to eventually collapse multiple consecutive
+	// spaces to a single space in these fields.  wenger 2010-10-28
 	_name = name;
+	_details = details;
+	if (_details != null) {
+	    _details = _details.replace("\n", " ");
+	    _details = _details.replace("\t", " ");
+	    if (_details.length() > MAX_LENGTH) {
+	        _details = _details.substring(0, MAX_LENGTH-3) + "...";
+	    }
+	}
+
+	_sample = sample;
+	if (_sample != null) {
+	    _sample = _sample.replace("\n", " ");
+	    _sample = _sample.replace("\t", " ");
+	    if (_sample.length() > MAX_LENGTH) {
+	        _sample = _sample.substring(0, MAX_LENGTH-3) + "...";
+	    }
+	}
+
+	_sampleConditions = sampleConditions;
+	if (_sampleConditions != null) {
+	    _sampleConditions= _sampleConditions.replace("\n", " ");
+	    _sampleConditions = _sampleConditions.replace("\t", " ");
+	    if (_sampleConditions.length() > MAX_LENGTH) {
+	        _sampleConditions =
+		  _sampleConditions.substring(0, MAX_LENGTH-3) + "...";
+	    }
+	}
+
 	_dataSourceName = dataSourceName;
 	_yAttribute = yAttribute;
 	_schemaFile = schemaFile;
@@ -106,6 +171,15 @@ public class S2DDatasetInfo
 
     //-------------------------------------------------------------------
     public String getName() { return _name; }
+
+    //-------------------------------------------------------------------
+    public String getDetails() { return _details; }
+
+    //-------------------------------------------------------------------
+    public String getSample() { return _sample; }
+
+    //-------------------------------------------------------------------
+    public String getSampleConditions() { return _sampleConditions; }
 
     //-------------------------------------------------------------------
     public String getDataSourceName() { return _dataSourceName; }

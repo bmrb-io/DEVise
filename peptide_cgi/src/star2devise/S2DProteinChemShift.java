@@ -22,6 +22,33 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.8.2  2010/10/19 00:23:20  wenger
+// Split the actual sample info out from the sample conditions info,
+// including modifying ambiguity code and Pistachio metadata accordingly.
+//
+// Revision 1.8.8.1  2010/10/15 15:29:03  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.8.6.2  2010/10/11 14:38:33  wenger
+// Started on method to get sample conditions for data save frames; I'm
+// just committing a preliminary version until I make a change on the trunk
+// to move all of the code for actually getting the relevant frame values
+// down into the data-specific classes like I've already done with the
+// delta shifts.
+//
+// Revision 1.8.6.1  2010/10/08 21:17:41  wenger
+// We now put save frame details into the drill-down data for the data
+// selection view in 3D visualizations; also fixed a bug in getting save
+// frame details for 3.0/3.1 files.
+//
+// Revision 1.8  2010/03/10 22:36:17  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.7  2010/02/17 18:48:41  wenger
 // Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
 //
@@ -732,35 +759,36 @@ public class S2DProteinChemShift extends S2DChemShift {
 	String dataName;
 	if (_atomSet.contains("HA")) {
 	    dataName = "HA CSI [" + _entityAssemblyID + "]";
-            dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	      "HA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_PROTEIN));
+            dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	      _sample, _sampleConditions, dataSource, "HA_Csi", "bmrb-Csi",
+	      "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_atomSet.contains("C")) {
 	    dataName = "C CSI [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	      "C_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_PROTEIN));
+	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	      _sample, _sampleConditions, dataSource, "C_Csi", "bmrb-Csi",
+	      "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_atomSet.contains("CA")) {
 	    dataName = "CA CSI [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	      "CA_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_PROTEIN));
+	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	      _sample, _sampleConditions, dataSource, "CA_Csi", "bmrb-Csi",
+	      "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_hasRealCBShifts) {
 	    dataName = "CB CSI [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	      "CB_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
-	      S2DResidues.POLYMER_TYPE_PROTEIN));
+	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	      _sample, _sampleConditions, dataSource, "CB_Csi", "bmrb-Csi",
+	      "Csi", _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
 	}
 
 	dataName = "Consensus CSI [" + _entityAssemblyID + ']';
-	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "Consensus_Csi", "bmrb-Csi", "Csi", _entityAssemblyID,
+	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	  _sample, _sampleConditions, dataSource, "Consensus_Csi",
+	  "bmrb-Csi", "Csi", _entityAssemblyID,
 	  S2DResidues.POLYMER_TYPE_PROTEIN));
     }
 
@@ -777,19 +805,22 @@ public class S2DProteinChemShift extends S2DChemShift {
 	  frameIndex;
 
 	String dataName = "% 1H assign per res [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "assigForH", "bmrb-Percent", "ChemShiftPercentage",
-	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	  _sample, _sampleConditions, dataSource, "assigForH",
+	  "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
+	  S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	dataName = "% 13C assign per res [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName,
-	  dataSource, "assigForC", "bmrb-Percent", "ChemShiftPercentage",
-	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	  _sample, _sampleConditions, dataSource, "assigForC",
+	  "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
+	  S2DResidues.POLYMER_TYPE_PROTEIN));
 
 	dataName = "% 15N assign per res [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName, 
-	  dataSource, "assigForN", "bmrb-Percent", "ChemShiftPercentage",
-	  _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	dataSets.addElement(new S2DDatasetInfo(dataName,  _frameDetails,
+	  _sample, _sampleConditions, dataSource, "assigForN",
+	  "bmrb-Percent", "ChemShiftPercentage", _entityAssemblyID,
+	  S2DResidues.POLYMER_TYPE_PROTEIN));
     }
 
     //===================================================================

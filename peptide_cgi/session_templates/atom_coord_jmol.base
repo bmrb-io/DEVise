@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: Aug 24 2010 16:06:59
-# DEVise version: 1.11.1cursor_x1
-# DEVise date: Aug 24 2010
+# file date: Oct 08 2010 15:36:09
+# DEVise version: 1.11.1
+# DEVise date: Sep 24 2010
 # DEVise endHeader
 
 # Session description
@@ -342,7 +342,7 @@ DEVise setViewAutoFilter {ViewDataTypeSelect} {0}
 DEVise setDupElim {ViewDataTypeSelect} {0}
 DEVise setNiceAxes {ViewDataTypeSelect} 0 0
 # Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
-DEVise viewSetDisabledActions {ViewDataTypeSelect} 1 0 1 1
+DEVise viewSetDisabledActions {ViewDataTypeSelect} 1 0 0 1
 DEVise setViewHelp {ViewDataTypeSelect} {Data select view: use the cursor to select which variable
 is shown in the data view}
 DEVise setShowMouseLocation {ViewDataTypeSelect} {1}
@@ -1033,17 +1033,17 @@ DEVise setMappingColors {.15083d1#ViewDataScrollFixChild} {35} {35} {0}
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
-DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.219167 0.541250 0.501667 0 0
-DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.344167 0.126250 0.374167 0 0
-DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.724167 0.685000 0.127500 0 0
-DEVise create {window} {TileLayout} DEViseWn8 0.012500 0.854167 0.685000 0.021667 0 0
-DEVise create {window} {TileLayout} DEViseWn11 0.848750 0.781667 0.085625 0.121667 1 0
-DEVise create {window} {TileLayout} DEViseWn10 0.012500 0.190000 0.685000 0.026667 0 0
-DEVise create {window} {TileLayout} DEViseWn12 0.012500 0.879167 0.685000 0.029167 0 0
-DEVise create {window} {TileLayout} DEViseWn1 0.136250 0.344167 0.016250 0.371667 0 0
-DEVise create {window} {TileLayout} DEViseWn3 0.012500 0.220000 0.140625 0.119167 0 0
-DEVise create {window} {TileLayout} DEViseWn5 0.728750 0.166667 0.085625 0.101667 1 0
-DEVise create {window} {TileLayout} DEViseWn6 0.697500 0.190000 0.005000 0.717500 0 0
+DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.218519 0.541146 0.500926 0 0
+DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.343519 0.126042 0.374074 0 0
+DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.724074 0.684896 0.126852 0 0
+DEVise create {window} {TileLayout} DEViseWn8 0.012500 0.853704 0.684896 0.021296 0 0
+DEVise create {window} {TileLayout} DEViseWn11 0.848437 0.781481 0.085417 0.121296 1 0
+DEVise create {window} {TileLayout} DEViseWn10 0.012500 0.189815 0.684896 0.025926 0 0
+DEVise create {window} {TileLayout} DEViseWn12 0.012500 0.878704 0.684896 0.028704 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.135937 0.343519 0.016146 0.371296 0 0
+DEVise create {window} {TileLayout} DEViseWn3 0.012500 0.219444 0.140625 0.118519 0 0
+DEVise create {window} {TileLayout} DEViseWn5 0.728646 0.166667 0.085417 0.100926 1 0
+DEVise create {window} {TileLayout} DEViseWn6 0.697396 0.189815 0.004687 0.716667 0 0
 
 # Set up window layouts
 
@@ -1347,14 +1347,20 @@ DEVise setPileStackState {DEViseWn6} 1
 
 DEVise clearViewHistory {ViewUnselectedDataChild}
 DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {14.5} {0.615} -1
+DEVise insertViewHistory {ViewUnselectedDataChild} {0.5} {0} {14.5} {0.615} 0
 
 DEVise clearViewHistory {ViewSelectedDataChild}
+DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {14.5} {0.615} 0
 DEVise insertViewHistory {ViewSelectedDataChild} {0.5} {0} {14.5} {0.615} 0
 
 DEVise clearViewHistory {ViewDataDotsChild}
 DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {14.5} {0.615} 0
+DEVise insertViewHistory {ViewDataDotsChild} {0.5} {0} {14.5} {0.615} 0
 
 DEVise clearViewHistory {ViewDataValueSelectChild}
+DEVise insertViewHistory {ViewDataValueSelectChild} {4} {0.15375} {11} {0.46125} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {4} {0.15375} {11} {0.46125} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {4} {0.15375} {11} {0.46125} 0
 DEVise insertViewHistory {ViewDataValueSelectChild} {4} {0.15375} {11} {0.46125} 0
 
 DEVise clearViewHistory {View3DMain}

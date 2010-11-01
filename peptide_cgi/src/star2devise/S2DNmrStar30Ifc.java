@@ -21,6 +21,60 @@
 // $Id$
 
 // $Log$
+// Revision 1.23.8.11  2010/10/29 21:57:11  wenger
+// Changed how things work for 3.0/3.1 files -- we follow the experiment
+// ID to get the sample info if necessary; tests changed accordingly.
+//
+// Revision 1.23.8.10  2010/10/29 14:32:34  wenger
+// Added test of sample conditions with 6838; fixed code to make sure
+// we don't get multiple copies of the same sample info.
+//
+// Revision 1.23.8.9  2010/10/28 17:04:32  wenger
+// Added sample details to the sample information we put into drill-down
+// data.
+//
+// Revision 1.23.8.8  2010/10/27 18:29:04  wenger
+// Fixed all existing tests to work with the new sample conditions drill-
+// down code.
+//
+// Revision 1.23.8.7  2010/10/22 16:57:35  wenger
+// Hopefully final cleanup of 3.0/3.1 code for sample conditions, etc.
+//
+// Revision 1.23.8.6  2010/10/19 22:21:09  wenger
+// Added units to sample conditions.
+//
+// Revision 1.23.8.5  2010/10/19 19:44:19  wenger
+// Sample conditions, etc., are now working for 3.0/3.1 files (still need
+// cleanup).
+//
+// Revision 1.23.8.4  2010/10/19 17:55:41  wenger
+// Added some temporary NMR-STAR 3.1 code so we don't get null pointers
+// on 3.1 files.
+//
+// Revision 1.23.8.3  2010/10/19 00:39:36  wenger
+// Removed some no-longer-used sample conditions code, and added
+// separation of values with semicolons.
+//
+// Revision 1.23.8.2  2010/10/16 01:32:26  wenger
+// Getting sample conditions save frame names now works for 2.1 files.
+//
+// Revision 1.23.8.1  2010/10/15 15:29:02  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.23.6.2  2010/10/10 16:40:02  wenger
+// More fixes to getting frame details for 3.0/3.1 files.
+//
+// Revision 1.23.6.1  2010/10/08 21:17:41  wenger
+// We now put save frame details into the drill-down data for the data
+// selection view in 3D visualizations; also fixed a bug in getting save
+// frame details for 3.0/3.1 files.
+//
+// Revision 1.23  2010/06/04 14:24:15  wenger
+// Added note that bug 062 was fixed somewhere along the line; also
+// added a bit of extra debug output as a result of looking into this.
+//
 // Revision 1.22  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -218,15 +272,69 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
     private static final int DEBUG = 0;
 
+    protected String CHEM_SHIFT_EXPT_ID =
+      "_Chem_shift_experiment.Experiment_ID";
+    protected String CHEM_SHIFT_SAMPLE =
+      "_Chem_shift_experiment.Sample_label";
+    protected String CHEM_SHIFT_SAMPLE_COND =
+      "_Assigned_chem_shift_list.Sample_condition_list_label";
+    protected String COUPLING_CONST_DETAILS =
+      "_Coupling_constant_list.Details";
+    protected String COUPLING_CONST_EXPT_ID =
+      "_Coupling_constant_experiment.Experiment_ID";
+    protected String COUPLING_CONST_SAMPLE =
+      "_Coupling_constant_experiment.Sample_label";
+    protected String COUPLING_CONST_SAMPLE_COND =
+      "_Coupling_constant_list.Sample_condition_list_label";
+
+    protected String DELTA_CHEM_SHIFTS_DETAILS =
+      "_Assigned_chem_shift_list.Details";
     protected String DELTA_CHEM_SHIFTS_MODEL_TYPE_SINGLE = "single";
     protected String DELTA_CHEM_SHIFTS_MODEL_TYPE_AVG = "average";
     protected String DELTA_CHEM_SHIFTS_MODEL_TYPE =
       "_Entity_delta_chem_shifts.Conformer_type";
+
     protected String ENTITY_ASSEMBLY_ID = "_Entity_assembly.ID";
     protected String ENTITY_ASSEMBLY_ENTITY_ID = "_Entity_assembly.Entity_ID";
     protected String ENTITY_ID = "_Entity.ID";
+    protected String EXPT_ID = "_Experiment.ID";
+    protected String EXPT_LIST = "experiment_list";
+    protected String EXPT_SAMPLE_LABEL = "_Experiment.Sample_label";
+    protected String EXPT_SF_CAT = "_Experiment_list.Sf_category";
+
+    protected String HET_NOE_DETAILS = "_Heteronucl_NOE_list.Details";
+    protected String HET_NOE_EXPT_ID =
+      "_Heteronucl_NOE_experiment.Experiment_ID";
+    protected String HET_NOE_SAMPLE =
+      "_Heteronucl_NOE_experiment.Sample_label";
+    protected String HET_NOE_SAMPLE_COND =
+      "_Heteronucl_NOE_list.Sample_condition_list_label";
+
+    protected String ORDER_PARAM_DETAILS = "_Order_parameter_list.Details";
+    protected String ORDER_PARAM_EXPT_ID =
+      "_Order_parameter_experiment.Experiment_ID";
+    protected String ORDER_PARAM_SAMPLE =
+      "_Order_parameter_experiment.Sample_label";
+    protected String ORDER_PARAM_SAMPLE_COND =
+      "_Order_parameter_list.Sample_condition_list_label";
+
     protected String REP_CONF_ENTITY_ASSEMBLY_ID =
       "_Rep_conf.Entity_assembly_ID";
+
+    protected String T1_RELAX_DETAILS = "_Heteronucl_T1_list.Details";
+    protected String T1_RELAX_EXPT_ID =
+      "_Heteronucl_T1_experiment.Experiment_ID";
+    protected String T1_RELAX_SAMPLE =
+      "_Heteronucl_T1_experiment.Sample_label";
+    protected String T1_RELAX_SAMPLE_COND =
+      "_Heteronucl_T1_list.Sample_condition_list_label";
+    protected String T2_RELAX_DETAILS = "_Heteronucl_T2_list.Details";
+    protected String T2_RELAX_EXPT_ID =
+      "_Heteronucl_T2_experiment.Experiment_ID";
+    protected String T2_RELAX_SAMPLE =
+      "_Heteronucl_T2_experiment.Sample_label";
+    protected String T2_RELAX_SAMPLE_COND =
+      "_Heteronucl_T2_list.Sample_condition_list_label";
 
     // Maps EntityID (String) to polymer type.
     private Hashtable _framePolymerType = new Hashtable();
@@ -328,6 +436,153 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	}
 
         return result;
+    }
+
+    //-------------------------------------------------------------------
+    // Get the sample info (sample and sample conditions) save frames
+    // associated with the given save frame.
+    // Note: do we need to split things out by
+    // _Chem_shift_experiment.Assigned_chem_shift_list_ID? wenger 2010-10-29
+    public Vector getSampleInfoSaveFrames(SaveFrameNode frame,
+      int type)
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DNmrStar30Ifc.getSampleInfoSaveFrames(" +
+	      getFrameName(frame) + ", " + type + ")");
+	}
+
+	Vector result = new Vector();
+
+	// Find out what type of save frame this is, and get the tag
+	// name for the frame details accordingly.
+	String frameCat = getFrameCat(frame);
+	String sampleTag = "";
+	String sampleCondTag = "";
+	String exptTag = "";
+	if (frameCat.equals(ASSIGNED_CHEM_SHIFTS)) {
+	    sampleTag = CHEM_SHIFT_SAMPLE;
+	    sampleCondTag = CHEM_SHIFT_SAMPLE_COND;
+	    exptTag = CHEM_SHIFT_EXPT_ID;
+
+	} else if (frameCat.equals(COUPLING_CONSTANTS)) {
+	    sampleTag = COUPLING_CONST_SAMPLE;
+	    sampleCondTag = COUPLING_CONST_SAMPLE_COND;
+	    exptTag = COUPLING_CONST_EXPT_ID;
+
+	} else if (frameCat.equals(HETERONUCLEAR_NOE)) {
+	    sampleTag = HET_NOE_SAMPLE;
+	    sampleCondTag = HET_NOE_SAMPLE_COND;
+	    exptTag = HET_NOE_EXPT_ID;
+
+	} else if (frameCat.equals(T1_RELAX)) {
+	    sampleTag = T1_RELAX_SAMPLE;
+	    sampleCondTag = T1_RELAX_SAMPLE_COND;
+	    exptTag = T1_RELAX_EXPT_ID;
+
+	} else if (frameCat.equals(T2_RELAX)) {
+	    sampleTag = T2_RELAX_SAMPLE;
+	    sampleCondTag = T2_RELAX_SAMPLE_COND;
+	    exptTag = T2_RELAX_EXPT_ID;
+
+	} else if (frameCat.equals(ORDER_PARAMETERS)) {
+	    sampleTag = ORDER_PARAM_SAMPLE;
+	    sampleCondTag = ORDER_PARAM_SAMPLE_COND;
+	    exptTag = ORDER_PARAM_EXPT_ID;
+
+	}
+
+	String tagName = null;
+
+	switch (type) {
+	case TYPE_SAMPLE:
+	    tagName = sampleTag;
+	    break;
+
+	case TYPE_SAMPLE_COND:
+	    tagName = sampleCondTag;
+	    break;
+
+	default:
+	    System.err.println("Illegal sample info type: " + type);
+	    break;
+	}
+
+	Vector frameNames = new Vector();
+
+	//
+	// Note: some 3.0/3.1 files have the sample labels directly
+	// in the experiment ID loop inside the data save frame,
+	// and some don't.  So we look for both the sample labels
+	// and the experiiment IDs, and then translate the experiment
+	// IDs to sample labels.
+	//
+	if (tagName != null) {
+	    frameNames = getSingleOrLoopValue(frame, tagName);
+	}
+
+	if (type == TYPE_SAMPLE) {
+	     Vector exptIds = getSingleOrLoopValue(frame, exptTag);
+	     exptIdsToSampleFrameNames(exptIds, frameNames);
+	}
+
+	// Find the actual save frame objects corresponding to the names
+	// we have.
+	for (int index = 0; index < frameNames.size(); index++) {
+	    String tmpName = (String)frameNames.elementAt(index);
+	    if (!tmpName.equals(".")) {
+	        if (tmpName.charAt(0) == '$') {
+		    tmpName = tmpName.substring(1);
+		}
+	        try {
+		    String frameName = "save_" + tmpName;
+	            result.addElement(getFrameByName(frameName));
+	        } catch (S2DException ex) {
+	            System.err.println("Error getting save frame: " +
+		      ex.toString());
+	        }
+	    }
+	}
+
+	return result;
+    }
+
+    //-------------------------------------------------------------------
+    // Translate experiment ID values to the related sample frame names.
+    public void exptIdsToSampleFrameNames(Vector exptIds, Vector frameNames)
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println(
+	      "S2DNmrStar30Ifc.exptIdsToSampleFrameNames()");
+	}
+
+	try {
+	    SaveFrameNode frame = getOneDataFrameByCat(EXPT_SF_CAT,
+	      EXPT_LIST);
+
+	    String[] frameExptIds = getFrameValues(frame, EXPT_ID,
+	      EXPT_ID);
+	    String[] frameSampleLabels = getFrameValues(frame, EXPT_ID,
+	      EXPT_SAMPLE_LABEL);
+
+	    for (int index = 0; index < exptIds.size(); index++) {
+	        String exptId = (String)exptIds.elementAt(index);
+		if (!exptId.equals(".")) {
+	            for (int index2 = 0; index2 < frameExptIds.length;
+		      index2++) {
+		        if (exptId.equals(frameExptIds[index2])) {
+			    String sampleName = frameSampleLabels[index2];
+			    if (!frameNames.contains(sampleName)) {
+			        frameNames.addElement(sampleName);
+			    }
+			    break;
+		        }
+		    }
+		}
+	    }
+	} catch (S2DException ex) {
+	    System.err.println("Warning (" + ex.toString() +
+	      "): unable to translate experiment IDs to sample labels");
+	}
     }
 
     //-------------------------------------------------------------------
@@ -468,6 +723,90 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         if (doDebugOutput(12)) {
             System.out.println(
 	      "    S2DNmrStar30Ifc.getPolymerType() result: " + result);
+        }
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    // Get the frame details for the given save frame (we need the complexity
+    // of this function because in NMR-STAR 3.0/3.1 the tag for the frame
+    // details is different depending on the save frame category).
+    public String getFrameDetails(SaveFrameNode frame)
+    {
+        if (doDebugOutput(12)) {
+            System.out.println("  S2DNmrStar30.getFrameDetails(" +
+	      getFrameName(frame) + ")");
+        }
+
+    	String result = "-";
+
+	if (frame != null) {
+
+	    // Find out what type of save frame this is, and get the tag
+	    // name for the frame details accordingly.
+	    String frameCat = getFrameCat(frame);
+	    String tagName = "";
+	    if (frameCat.equals(ASSIGNED_CHEM_SHIFTS)) {
+	        tagName = DELTA_CHEM_SHIFTS_DETAILS;
+	    } else if (frameCat.equals(COUPLING_CONSTANTS)) {
+	        tagName = COUPLING_CONST_DETAILS;
+	    } else if (frameCat.equals(HETERONUCLEAR_NOE)) {
+	        tagName = HET_NOE_DETAILS;
+	    } else if (frameCat.equals(T1_RELAX)) {
+	        tagName = T1_RELAX_DETAILS;
+	    } else if (frameCat.equals(T2_RELAX)) {
+	        tagName = T2_RELAX_DETAILS;
+	    } else if (frameCat.equals(ORDER_PARAMETERS)) {
+	        tagName = ORDER_PARAM_DETAILS;
+	    }
+
+	    // Now get the frame details value.
+	    try {
+	        result = getOneFrameValueStrict(frame, tagName);
+	    } catch (Exception ex) {
+                if (doDebugOutput(2)) {
+	            System.out.println("Warning: no frame details value (" +
+		      ex.toString() + ")");
+	        }
+	    }
+	}
+
+        if (doDebugOutput(12)) {
+            System.out.println("  frame details value: <" + result + ">");
+        }
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    // Get the frame category for the given save frame.  (Note that this
+    // won't work for *every* type of save frame, just ones like delta
+    // shifts, heteronuclear NOEs, etc.
+    public String getFrameCat(SaveFrameNode frame)
+    {
+        if (doDebugOutput(12)) {
+            System.out.println("  S2DNmrStar30.getFrameCat(" +
+	      getFrameName(frame) + ")");
+        }
+
+	String result = null;
+
+	String[] catTags = {ATOM_COORD_SF_CAT, CHEM_SHIFT_SF_CAT,
+	  COUPLING_SF_CAT, DELTA_SHIFT_SF_CAT, HET_NOE_SF_CAT,
+	  T1_RELAX_SF_CAT, T2_RELAX_SF_CAT, ORDER_SF_CAT};
+
+	for (int index = 0; index < catTags.length; index++) {
+	    try {
+	        result = getOneFrameValueStrict(frame, catTags[index]);
+		break;
+	    } catch (Exception ex) {
+	        // Just go on to try the next one...
+	    }
+	}
+
+        if (doDebugOutput(12)) {
+            System.out.println("  frame category value: " + result);
         }
 
 	return result;
@@ -797,6 +1136,9 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	CHEM_SHIFT_SF_CAT = "_Assigned_chem_shift_list.Sf_category";
 	CHEM_SHIFT_VALUE = "_Atom_chem_shift.Chem_shift_val";
 
+	CONCENTRATION_UNITS = "_Sample_component.Concentration_val_units";
+	CONCENTRATION_VALUE = "_Sample_component.Concentration_val";
+
         COUPLING_ATOM_NAME_1 = "_Coupling_constant.Atom_ID_1";
         COUPLING_ATOM_NAME_2 = "_Coupling_constant.Atom_ID_2";
         COUPLING_CONSTANT_CODE = "_Coupling_constant.Code";
@@ -848,6 +1190,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
         HET_NOE_VALUE = "_Heteronucl_NOE.Heteronucl_NOE_val";
         HET_NOE_VALUE_ERR = "_Heteronucl_NOE.Heteronucl_NOE_val_err";
 
+	MOL_LABEL = "_Sample_component.Mol_common_name";
 	MOL_SYSTEM = "assembly";
 	MOL_SYSTEM_SF_CAT = "_Assembly.Sf_category";
 	MONOMERIC_POLYMER = "entity";
@@ -855,8 +1198,11 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
         NMR_STAR_VERSION = "_Entry.NMR_STAR_version";
 
+	ORDER_PARAMETERS = "order_parameters";
+
 	RNA = "polyribonucleotide";
 
+	SAMPLE_DETAILS = "_Sample.Details";
 	SEQ_SUBJ_LENGTH = "_Entity_db_link.Seq_subject_length";
 	SEQ_IDENTITY = "_Entity_db_link.Seq_identity";
 
@@ -879,6 +1225,10 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	T2_SPEC_FREQ_1H = "_Heteronucl_T2_list.Spectrometer_frequency_1H";
         T2_VALUE = "_T2.T2_val";
         T2_VALUE_ERR = "_T2.T2_val_err";
+
+	VARIABLE_TYPE = "_Sample_condition_variable.Type";
+	VARIABLE_UNITS = "_Sample_condition_variable.Val_units";
+	VARIABLE_VALUE = "_Sample_condition_variable.Val";
     }
 
     //-------------------------------------------------------------------

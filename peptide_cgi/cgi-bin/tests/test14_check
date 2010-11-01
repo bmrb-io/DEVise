@@ -66,14 +66,6 @@ source tests/check4line
 set line = '^2 175 GLY -0.26 0.0 -1.0 0.0$'
 source tests/check4line
 
-set file = "data_dir/4867md.dat"
-set line = 'EA 2 (polypeptide(L))	2	HA delta chem shift \[2\]	4867d1	$HA_DeltaShift$'
-source tests/check4line
-set line = 'EA 2 (polypeptide(L))	2	% 15N assign per res \[2\]	4867p1	$assigForN$'
-source tests/check4line
-set line = 'EA 1 (RNA)	1	N3 delta chem shift \[1\]	4867d2	$N3_DeltaShift$'
-source tests/check4line
-
 set file = "data_dir/4867hn1.dat"
 set line = '^2 6 GLU 8.5 124.7 H N $'
 source tests/check4line

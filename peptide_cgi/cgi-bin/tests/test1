@@ -51,6 +51,33 @@ rm 1dfv.cif.gz
 
 source tests/test1_check
 
+# Sample data is somewhat different in 2.1 and 3.1...
+set file = "data_dir/4267md.dat"
+set attr = '$HA_DeltaShift'
+set line = "^EA 1 (polypeptide(L))	1	HA delta chem shift \[1\]	  Many methylene and valine/luecine methyl groups have been stereospecifically assigned.   those ...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL: 1.43 mM; sodium acetate: 50 mM; acetic ...	pH: 6.0; temperature: 298 K	4267d1	$attr"
+source tests/check4line
+set attr = '$HA_Csi'
+set line = "^EA 1 (polypeptide(L))	1	HA CSI \[1\]	  Many methylene and valine/luecine methyl groups have been stereospecifically assigned.   those ...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL: 1.43 mM; sodium acetate: 50 mM; acetic ...	pH: 6.0; temperature: 298 K	4267c1	$attr"
+source tests/check4line
+set attr = '$assigForH'
+set line = "^EA 1 (polypeptide(L))	1	% 1H assign per res \[1\]	  Many methylene and valine/luecine methyl groups have been stereospecifically assigned.   those ...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL: 1.43 mM; sodium acetate: 50 mM; acetic ...	pH: 6.0; temperature: 298 K	4267p1	$attr"
+source tests/check4line
+set attr = '$relax_value'
+set line = "^EA 1 (polypeptide(L))	1	T1 Relaxation (750) \[1\]	   N15 T1 relaxation data with decoupling of CSA/DD cross-relaxation,    water flipback.  Interle...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL: 1.43 mM; sodium acetate: 50 mM; acetic ...	pH: 6.0; temperature: 298 K	4267t11	$attr"
+source tests/check4line
+set attr = '$relax_value'
+set line = "^EA 1 (polypeptide(L))	1	T2 Relaxation (750) \[1\]	   N15 T2 relaxation data with decoupling of CSA/DD cross-relaxation,    water flipback.  Interle...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL: 1.43 mM; sodium acetate: 50 mM; acetic ...	pH: 6.0; temperature: 298 K	4267t21	$attr"
+source tests/check4line
+set attr = '$NOE_value'
+set line = "^EA 1 (polypeptide(L))	1	Het NOE (750) NE1 HE1 \[1\]	   N15{1H} Heteronuclear steady-state NOE using 3s 1H presat. time. water flipback.    Reference ...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL: 1.43 mM; sodium acetate: 50 mM; acetic ...	pH: 6.0; temperature: 298 K	4267n1	$attr"
+source tests/check4line
+set attr = '$Coupling_constant_value'
+set line = "^EA 1 (polypeptide(L))	1	3JHNHA coupling const \[1\]	        3JHNHA couplings measured from ratio of cross to diagonal peaks in an HNHA    experiment. 	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL: 1.43 mM; sodium acetate: 50 mM; acetic ...	pH: 6.0; temperature: 298 K	4267g1	$attr"
+source tests/check4line
+set attr = '$S2order_value'
+set line = "^EA 1 (polypeptide(L))	1	S2 Order Parameters \[1\]	  Order parameters are generalised, where applicable (i.e. S2=S2f\*S2s),   derived from model-free...	Uniformly 15N labelled sample, unliganded HNGAL. ; HNGAL: 1.43 mM; sodium acetate: 50 mM; acetic ...	pH: 6.0; temperature: 298 K	4267o1	$attr"
+source tests/check4line
+
 
 echo -n "Test1 result: "
 if ($result == 0) then
@@ -60,3 +87,4 @@ else
   echo "FAILED"
   exit 1
 endif
+

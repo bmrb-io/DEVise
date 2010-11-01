@@ -20,6 +20,50 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.8.11  2010/10/29 21:57:11  wenger
+// Changed how things work for 3.0/3.1 files -- we follow the experiment
+// ID to get the sample info if necessary; tests changed accordingly.
+//
+// Revision 1.22.8.10  2010/10/29 14:32:34  wenger
+// Added test of sample conditions with 6838; fixed code to make sure
+// we don't get multiple copies of the same sample info.
+//
+// Revision 1.22.8.9  2010/10/28 17:04:32  wenger
+// Added sample details to the sample information we put into drill-down
+// data.
+//
+// Revision 1.22.8.8  2010/10/22 16:57:35  wenger
+// Hopefully final cleanup of 3.0/3.1 code for sample conditions, etc.
+//
+// Revision 1.22.8.7  2010/10/19 22:21:09  wenger
+// Added units to sample conditions.
+//
+// Revision 1.22.8.6  2010/10/19 17:55:41  wenger
+// Added some temporary NMR-STAR 3.1 code so we don't get null pointers
+// on 3.1 files.
+//
+// Revision 1.22.8.5  2010/10/19 01:11:46  wenger
+// Cleaned up sample code for NMR-STAR 2.1.
+//
+// Revision 1.22.8.4  2010/10/19 00:39:36  wenger
+// Removed some no-longer-used sample conditions code, and added
+// separation of values with semicolons.
+//
+// Revision 1.22.8.3  2010/10/19 00:23:20  wenger
+// Split the actual sample info out from the sample conditions info,
+// including modifying ambiguity code and Pistachio metadata accordingly.
+//
+// Revision 1.22.8.2  2010/10/18 21:31:27  wenger
+// Getting actual sample conditions is now partly working for NMR-STAR
+// 2.1 only.
+//
+// Revision 1.22.8.1  2010/10/16 01:32:26  wenger
+// Getting sample conditions save frame names now works for 2.1 files.
+//
+// Revision 1.22  2010/07/02 21:57:48  wenger
+// Fixed bug 106 (Peptide-CGI fails on BMRB 4092 because it thinks it's
+// not a protein).
+//
 // Revision 1.21  2010/06/04 14:24:15  wenger
 // Added note that bug 062 was fixed somewhere along the line; also
 // added a bit of extra debug output as a result of looking into this.
@@ -280,6 +324,61 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	}
 
         return result;
+    }
+
+    //-------------------------------------------------------------------
+    // Get the sample info (sample and sample conditions) save frames
+    // associated with the given save frame.
+    public Vector getSampleInfoSaveFrames(SaveFrameNode frame,
+      int type)
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DNmrStar21Ifc.getSampleInfoSaveFrames(" +
+	      getFrameName(frame) + ", " + type + ")");
+	}
+	Vector result = new Vector();
+
+	String tagName = null;
+
+	switch (type) {
+	case TYPE_SAMPLE:
+	    tagName = SAMPLE_LABEL;
+	    break;
+
+	case TYPE_SAMPLE_COND:
+	    tagName = SAMPLE_CONDITIONS_LABEL;
+	    break;
+
+	default:
+	    System.err.println("Illegal sample info type: " + type);
+	    break;
+	}
+
+	Vector frameNames = new Vector();
+
+	if (tagName != null) {
+	    frameNames = getSingleOrLoopValue(frame, tagName);
+	}
+
+	// Find the actual save frame objects corresponding to the names
+	// we have.
+	for (int index = 0; index < frameNames.size(); index++) {
+	    String tmpName = (String)frameNames.elementAt(index);
+	    if (!tmpName.equals(".")) {
+	        if (tmpName.charAt(0) == '$') {
+		    tmpName = tmpName.substring(1);
+		}
+	        try {
+		    String frameName = "save_" + tmpName;
+	            result.addElement(getFrameByName(frameName));
+	        } catch (S2DException ex) {
+	            System.err.println("Error getting save frame: " +
+		  ex.toString());
+	        }
+	    }
+	}
+
+	return result;
     }
 
     //-------------------------------------------------------------------
@@ -701,6 +800,9 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
         CHEM_SHIFT_SF_CAT = "_Saveframe_category";
         CHEM_SHIFT_VALUE = "_Chem_shift_value";
 
+	CONCENTRATION_UNITS = "_Concentration_value_units";
+	CONCENTRATION_VALUE = "_Concentration_value";
+
         COUPLING_ATOM_NAME_1 = "_Atom_one_name";
         COUPLING_ATOM_NAME_2 = "_Atom_two_name";
         COUPLING_CONSTANT_CODE = "_Coupling_constant_code";
@@ -767,6 +869,10 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 
 	RNA = "RNA";
 
+	SAMPLE_CONDITIONS_LABEL = "_Sample_conditions_label";
+	SAMPLE_DETAILS = "_Details";
+	SAMPLE_LABEL = "_Sample_label";
+
         SEQ_SUBJ_LENGTH = "_Sequence_subject_length";
         SEQ_IDENTITY = "_Sequence_identity";
 
@@ -787,6 +893,10 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
 	T2_SPEC_FREQ_1H = "_Spectrometer_frequency_1H";
         T2_VALUE = "_T2_value";
         T2_VALUE_ERR = "_T2_value_error";
+
+	VARIABLE_TYPE = "_Variable_type";
+	VARIABLE_UNITS = "_Variable_value_units";
+	VARIABLE_VALUE = "_Variable_value";
     }
 
     //-------------------------------------------------------------------

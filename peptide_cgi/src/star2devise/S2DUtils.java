@@ -19,6 +19,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.24.8.1  2010/10/19 00:39:37  wenger
+// Removed some no-longer-used sample conditions code, and added
+// separation of values with semicolons.
+//
+// Revision 1.24  2010/04/23 16:51:09  wenger
+// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
+//
 // Revision 1.23  2010/03/11 20:31:29  wenger
 // Implemented to-do 126 (multiple NMR-STAR file paths), except that
 // not all config files are updated yet; added checks that the URL
@@ -399,6 +406,18 @@ public class S2DUtils
         }
         result.append(str.substring(s));
         return result.toString();
+    }
+
+    //-------------------------------------------------------------------
+    public static String appendWithSemicolon(String main, String suffix)
+    {
+        if (!main.equals("")) {
+	    main += "; ";
+	}
+
+	main += suffix;
+
+	return main;
     }
 
     //-------------------------------------------------------------------

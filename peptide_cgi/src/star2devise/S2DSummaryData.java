@@ -21,6 +21,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.10.2  2010/10/19 00:23:21  wenger
+// Split the actual sample info out from the sample conditions info,
+// including modifying ambiguity code and Pistachio metadata accordingly.
+//
+// Revision 1.9.10.1  2010/10/15 15:29:03  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.9.8.1  2010/10/08 21:17:42  wenger
+// We now put save frame details into the drill-down data for the data
+// selection view in 3D visualizations; also fixed a bug in getting save
+// frame details for 3.0/3.1 files.
+//
+// Revision 1.9  2010/02/17 18:48:41  wenger
+// Fixed bug 093 (incorrect entity assembly IDs in 3D data sets).
+//
 // Revision 1.8  2009/03/26 21:29:08  wenger
 // Found and fixed bug 081 (needed to force 3D metadata to be ordered
 // by entity assembly, so we don't have gaps if save frames are not
@@ -131,7 +148,9 @@ public class S2DSummaryData
 	      _name + " 3D visualization\n");
 	    writer.write("# Schema: bmrb-summary\n");
 	    writer.write("# Attributes: Entity_assembly_name; " +
-	      "Entity_assembly_ID; name; data_source; y_attribute\n");
+	      "Entity_assembly_ID; name; " +
+	      "Details; Sample; Sample_conditions; " +
+	      "data_source; y_attribute\n");
             writer.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
             writer.write("# Generation date: " +
@@ -147,6 +166,9 @@ public class S2DSummaryData
                 writer.write(info.getEntityAssemblyName() + "\t" +
 		  info.getEntityAssemblyID() + "\t" +
 		  info.getName() + "\t" +
+		  info.getDetails() + "\t" +
+		  info.getSample() + "\t" +
+		  info.getSampleConditions() + "\t" +
 		  info.getDataSourceName() + "\t" +
 		  "$" + info.getYAttribute() + "\n");
 	    }

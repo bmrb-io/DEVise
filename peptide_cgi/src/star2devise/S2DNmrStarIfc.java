@@ -21,6 +21,69 @@
 // $Id$
 
 // $Log$
+// Revision 1.34.6.13  2010/10/28 17:04:32  wenger
+// Added sample details to the sample information we put into drill-down
+// data.
+//
+// Revision 1.34.6.12  2010/10/27 18:29:04  wenger
+// Fixed all existing tests to work with the new sample conditions drill-
+// down code.
+//
+// Revision 1.34.6.11  2010/10/22 16:57:35  wenger
+// Hopefully final cleanup of 3.0/3.1 code for sample conditions, etc.
+//
+// Revision 1.34.6.10  2010/10/19 22:21:09  wenger
+// Added units to sample conditions.
+//
+// Revision 1.34.6.9  2010/10/19 19:44:19  wenger
+// Sample conditions, etc., are now working for 3.0/3.1 files (still need
+// cleanup).
+//
+// Revision 1.34.6.8  2010/10/19 17:55:41  wenger
+// Added some temporary NMR-STAR 3.1 code so we don't get null pointers
+// on 3.1 files.
+//
+// Revision 1.34.6.7  2010/10/19 01:11:46  wenger
+// Cleaned up sample code for NMR-STAR 2.1.
+//
+// Revision 1.34.6.6  2010/10/19 00:39:37  wenger
+// Removed some no-longer-used sample conditions code, and added
+// separation of values with semicolons.
+//
+// Revision 1.34.6.5  2010/10/19 00:23:20  wenger
+// Split the actual sample info out from the sample conditions info,
+// including modifying ambiguity code and Pistachio metadata accordingly.
+//
+// Revision 1.34.6.4  2010/10/18 22:09:59  wenger
+// Getting sample and sample conditions together now working for 2.1 --
+// I decided that I need to split them out...
+//
+// Revision 1.34.6.3  2010/10/18 21:31:28  wenger
+// Getting actual sample conditions is now partly working for NMR-STAR
+// 2.1 only.
+//
+// Revision 1.34.6.2  2010/10/16 01:32:26  wenger
+// Getting sample conditions save frame names now works for 2.1 files.
+//
+// Revision 1.34.6.1  2010/10/15 15:29:02  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.34.4.2  2010/10/11 14:38:33  wenger
+// Started on method to get sample conditions for data save frames; I'm
+// just committing a preliminary version until I make a change on the trunk
+// to move all of the code for actually getting the relevant frame values
+// down into the data-specific classes like I've already done with the
+// delta shifts.
+//
+// Revision 1.34.4.1  2010/10/10 16:40:03  wenger
+// More fixes to getting frame details for 3.0/3.1 files.
+//
+// Revision 1.34  2010/08/02 18:54:47  wenger
+// Fixed a problem that prevented Peptide-CGI from correctly processing
+// entry 6939 (dealing with "?" for residue count).
+//
 // Revision 1.33  2010/07/14 21:47:54  wenger
 // Fixed Peptide-CGI bug 110.
 //
@@ -269,8 +332,22 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     //===================================================================
     // VARIABLES
 
+    public String CONCENTRATION_UNITS = "";
+    public String CONCENTRATION_VALUE = "";
+
+    public String SAMPLE_CONDITIONS_LABEL = "";
+    public String SAMPLE_DETAILS = "";
+    public String SAMPLE_LABEL = "";
+
+    public String VARIABLE_TYPE = "";
+    public String VARIABLE_UNITS = "";
+    public String VARIABLE_VALUE = "";
+
     public static String CHEMASSG_FILE = "chem_info" +
       File.separator + "assignments.txt";
+
+    public static final int TYPE_SAMPLE = 1;
+    public static final int TYPE_SAMPLE_COND = 2;
 
     private static final int DEBUG = 0;
 
@@ -561,6 +638,14 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     }
 
     //-------------------------------------------------------------------
+    // Get the sample info (sample and sample conditions) save frames
+    // associated with the given save frame.
+    public Vector getSampleInfoSaveFrames(SaveFrameNode frame, int type)
+    {
+        return null;
+    }
+
+    //-------------------------------------------------------------------
     // Get the residues from the given save frame.  This method will
     // read either the one-letter or three-letter codes; if both exist
     // they are both read and compared to make sure they are identical.
@@ -706,7 +791,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     //-------------------------------------------------------------------
     public String getFrameDetails(SaveFrameNode frame)
     {
-        String result = null;
+        String result = "-";
 
 	if (frame != null) {
             VectorCheckType details = frame.searchByName(DETAILS);
@@ -715,6 +800,98 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	        result = node.getValue();
             }
 	}
+
+        return result;
+    }
+
+    // ----------------------------------------------------------------------
+    // Get the sample data in this save frame as a single, semicolon-
+    // separated, string.
+    public String getFrameSample(SaveFrameNode frame)
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DNmrStarIfc.getFrameSample(" +
+	      getFrameName(frame) + ")");
+	}
+
+	String result = "";
+
+	Vector sampleFrames = getSampleInfoSaveFrames(frame, TYPE_SAMPLE);
+
+	for (int index = 0; index < sampleFrames.size(); index++) {
+	    SaveFrameNode sf = (SaveFrameNode)sampleFrames.elementAt(index);
+	    try {
+	        String details = getOneFrameValueStrict(sf,
+		  SAMPLE_DETAILS);
+	        if (!details.equals(".") && !details.equals("")) {
+		    result = S2DUtils.appendWithSemicolon(result, details);
+		}
+	    } catch (S2DException ex) {
+	        System.err.println("Warning: " + ex.toString());
+	    }
+
+	    try {
+		String[] molLabels = getFrameValues(sf, MOL_LABEL, MOL_LABEL);
+		String[] concValues = getFrameValues(sf, MOL_LABEL,
+		  CONCENTRATION_VALUE);
+		String[] concUnits = getFrameValues(sf, MOL_LABEL,
+		  CONCENTRATION_UNITS);
+		for (int index2 = 0; index2 < molLabels.length; index2++) {
+		    result = S2DUtils.appendWithSemicolon(result,
+		      molLabels[index2] + ": " + concValues[index2] +
+		      " " + concUnits[index2]);
+		}
+	    } catch (S2DException ex) {
+	        System.err.println("Warning: " + ex.toString());
+	    }
+	}
+
+	if (result.equals("")) result = "-";
+	result = result.trim();
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    // Get the sample conditions data in this save frame as a single,
+    // semicolon- separated, string.
+    public String getFrameSampleConditions(SaveFrameNode frame)
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DNmrStarIfc.getFrameSampleConditions(" +
+	      getFrameName(frame) + ")");
+	}
+
+	String result = "";
+
+	Vector sampleFrames = getSampleInfoSaveFrames(frame,
+	  TYPE_SAMPLE_COND);
+
+	for (int index = 0; index < sampleFrames.size(); index++) {
+	    SaveFrameNode sf = (SaveFrameNode)sampleFrames.elementAt(index);
+	    try {
+		String[] varTypes = getFrameValues(sf, VARIABLE_TYPE,
+		  VARIABLE_TYPE);
+		String[] varValues = getFrameValues(sf, VARIABLE_TYPE,
+		  VARIABLE_VALUE);
+		String[] varUnits = getFrameValues(sf, VARIABLE_TYPE,
+		  VARIABLE_UNITS);
+		for (int index2 = 0; index2 < varTypes.length; index2++) {
+		    String condition = varTypes[index2] + ": " +
+		      varValues[index2];
+		    if (!varUnits[index2].equals("n/a")) {
+		        condition += " " + varUnits[index2];
+		    }
+		    result = S2DUtils.appendWithSemicolon(result,
+		      condition);
+		}
+	    } catch (S2DException ex) {
+	        System.err.println("Warning: " + ex.toString());
+	    }
+	}
+
+	if (result.equals("")) result = "-";
+	result = result.trim();
 
         return result;
     }

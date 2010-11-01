@@ -21,6 +21,14 @@ endif
 
 source tests/test14_check
 
+# The 2.1 and 3.1 files have slightly different sample data.
+set file = "data_dir/4867md.dat"
+set line = 'EA 2 (polypeptide(L))	2	HA delta chem shift \[2\]	-	sNRE: 1 mM; RBD12: 1 mM	pH: 6.2; temperature: 303 K; ionic strength: 150 mM	4867d1	\$HA_DeltaShift$'
+source tests/check4line
+set line = 'EA 2 (polypeptide(L))	2	% 15N assign per res \[2\]	-	sNRE: 1 mM; RBD12: 1 mM	pH: 6.2; temperature: 303 K; ionic strength: 150 mM	4867p1	\$assigForN$'
+source tests/check4line
+set line = 'EA 1 (RNA)	1	N3 delta chem shift \[1\]	-	sNRE: 1 mM; RBD12: 1 mM; D2O: 100 %	pH: 6.2; temperature: 303 K; ionic strength: 150 mM	4867d2	\$N3_DeltaShift$'
+source tests/check4line
 
 echo -n "Test14 result: "
 if ($result == 0) then

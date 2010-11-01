@@ -21,10 +21,56 @@
 // $Id$
 
 // $Log$
+// Revision 1.235.2.8  2010/10/29 21:57:10  wenger
+// Changed how things work for 3.0/3.1 files -- we follow the experiment
+// ID to get the sample info if necessary; tests changed accordingly.
+//
+// Revision 1.235.2.7  2010/10/29 14:32:34  wenger
+// Added test of sample conditions with 6838; fixed code to make sure
+// we don't get multiple copies of the same sample info.
+//
+// Revision 1.235.2.6  2010/10/28 17:04:31  wenger
+// Added sample details to the sample information we put into drill-down
+// data.
+//
+// Revision 1.235.2.5  2010/10/27 18:29:03  wenger
+// Fixed all existing tests to work with the new sample conditions drill-
+// down code.
+//
+// Revision 1.235.2.4  2010/10/22 16:57:34  wenger
+// Hopefully final cleanup of 3.0/3.1 code for sample conditions, etc.
+//
+// Revision 1.235.2.3  2010/10/19 19:44:19  wenger
+// Sample conditions, etc., are now working for 3.0/3.1 files (still need
+// cleanup).
+//
+// Revision 1.235.2.2  2010/10/16 01:32:26  wenger
+// Getting sample conditions save frame names now works for 2.1 files.
+//
+// Revision 1.235.2.1  2010/10/15 15:29:02  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.235  2010/10/13 21:42:37  wenger
+// Oops -- should have incremented version x count in previous commit.
+//
 // Revision 1.234  2010/10/13 20:44:02  wenger
 // Finished restructuring Peptide-CGI code so that we get values from
 // the STAR files in the relevant object constructors, instead of in the
 // S2DMain class.
+//
+// Revision 1.233.2.2  2010/10/11 14:38:33  wenger
+// Started on method to get sample conditions for data save frames; I'm
+// just committing a preliminary version until I make a change on the trunk
+// to move all of the code for actually getting the relevant frame values
+// down into the data-specific classes like I've already done with the
+// delta shifts.
+//
+// Revision 1.233.2.1  2010/10/08 21:17:41  wenger
+// We now put save frame details into the drill-down data for the data
+// selection view in 3D visualizations; also fixed a bug in getting save
+// frame details for 3.0/3.1 files.
 //
 // Revision 1.233  2010/10/06 13:25:12  wenger
 // We now default to printing more messages about skipping saving residue
@@ -1428,7 +1474,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.7x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.7x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

@@ -21,6 +21,35 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.2.3  2010/10/19 00:23:20  wenger
+// Split the actual sample info out from the sample conditions info,
+// including modifying ambiguity code and Pistachio metadata accordingly.
+//
+// Revision 1.9.2.2  2010/10/16 01:32:26  wenger
+// Getting sample conditions save frame names now works for 2.1 files.
+//
+// Revision 1.9.2.1  2010/10/15 15:29:03  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.9  2010/10/13 20:44:02  wenger
+// Finished restructuring Peptide-CGI code so that we get values from
+// the STAR files in the relevant object constructors, instead of in the
+// S2DMain class.
+//
+// Revision 1.8.6.2  2010/10/11 14:38:33  wenger
+// Started on method to get sample conditions for data save frames; I'm
+// just committing a preliminary version until I make a change on the trunk
+// to move all of the code for actually getting the relevant frame values
+// down into the data-specific classes like I've already done with the
+// delta shifts.
+//
+// Revision 1.8.6.1  2010/10/08 21:17:42  wenger
+// We now put save frame details into the drill-down data for the data
+// selection view in 3D visualizations; also fixed a bug in getting save
+// frame details for 3.0/3.1 files.
+//
 // Revision 1.8  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -97,6 +126,8 @@ public class S2DS2Order {
     private S2DSummaryHtml _summary;
     private int _entityAssemblyID;
     private String _frameDetails;
+    private String _sample;
+    private String _sampleConditions;
 
     private String[] _resSeqCodes;
     private String[] _resLabels;
@@ -125,6 +156,8 @@ public class S2DS2Order {
         _sessionDir = sessionDir;
         _summary = summary;
 	_frameDetails = star.getFrameDetails(frame);
+	_sample = star.getFrameSample(frame);
+	_sampleConditions = star.getFrameSampleConditions(frame);
 	_starVersion = star.version();
 
 	//
@@ -247,9 +280,9 @@ public class S2DS2Order {
         // Note: attribute names must match the bmrb-s2order schema.
 	String dataSource = _name + S2DNames.ORDER_SUFFIX + frameIndex;
 	String dataName = "S2 Order Parameters [" + _entityAssemblyID + "]";
-	dataSets.addElement(new S2DDatasetInfo(dataName, dataSource,
-	  "S2order_value", "bmrb-s2", "s2", _entityAssemblyID,
-	  polymerType));
+	dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	  _sample, _sampleConditions, dataSource, "S2order_value",
+	  "bmrb-s2", "s2", _entityAssemblyID, polymerType));
     }
 
     //===================================================================

@@ -21,6 +21,32 @@
 // $Id$
 
 // $Log$
+// Revision 1.33.2.2  2010/10/19 00:23:19  wenger
+// Split the actual sample info out from the sample conditions info,
+// including modifying ambiguity code and Pistachio metadata accordingly.
+//
+// Revision 1.33.2.1  2010/10/15 15:29:01  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.33  2010/10/13 20:44:02  wenger
+// Finished restructuring Peptide-CGI code so that we get values from
+// the STAR files in the relevant object constructors, instead of in the
+// S2DMain class.
+//
+// Revision 1.32.6.2  2010/10/11 14:38:30  wenger
+// Started on method to get sample conditions for data save frames; I'm
+// just committing a preliminary version until I make a change on the trunk
+// to move all of the code for actually getting the relevant frame values
+// down into the data-specific classes like I've already done with the
+// delta shifts.
+//
+// Revision 1.32.6.1  2010/10/08 21:17:40  wenger
+// We now put save frame details into the drill-down data for the data
+// selection view in 3D visualizations; also fixed a bug in getting save
+// frame details for 3.0/3.1 files.
+//
 // Revision 1.32  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -282,6 +308,8 @@ public class S2DChemShift {
     protected String _sessionDir;
     protected S2DSummaryHtml _summary;
     protected String _frameDetails;
+    protected String _sample;
+    protected String _sampleConditions;
 
     protected int[] _resSeqCodes;
     protected String[] _residueLabels;
@@ -405,6 +433,8 @@ public class S2DChemShift {
 	_sessionDir = sessionDir;
 	_summary = summary;
 	_frameDetails = star.getFrameDetails(frame);
+	_sample = star.getFrameSample(frame);
+	_sampleConditions = star.getFrameSampleConditions(frame);
 
 	_entityAssemblyID = star.getEntityAssemblyID(frame,
 	  entityAssemblyID);
@@ -541,30 +571,33 @@ public class S2DChemShift {
 	String dataName;
 	if (_atomSet.contains("HA")) {
 	    dataName = "HA delta chem shift [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName,
-	      dataSource, "HA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	      _sample, _sampleConditions, dataSource, "HA_DeltaShift",
+	      "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_atomSet.contains("C")) {
 	    dataName = "C delta chem shift [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName,
-	      dataSource, "C_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	      _sample, _sampleConditions, dataSource, "C_DeltaShift",
+	      "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_atomSet.contains("CA")) {
 	    dataName = "CA delta chem shift [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName,
-	      dataSource, "CA_DeltaShift", "bmrb-DeltaShift", "DeltaShift",
-	      _entityAssemblyID, S2DResidues.POLYMER_TYPE_PROTEIN));
+	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	      _sample, _sampleConditions, dataSource, "CA_DeltaShift",
+	      "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
+	      S2DResidues.POLYMER_TYPE_PROTEIN));
         }
 
 	if (_hasRealCBShifts) {
 	    dataName = "CB delta chem shift [" + _entityAssemblyID + "]";
-	    dataSets.addElement(new S2DDatasetInfo(dataName,
-	      dataSource, "CB_DeltaShift", "bmrb-DeltaShift",
-	      "DeltaShift", _entityAssemblyID,
+	    dataSets.addElement(new S2DDatasetInfo(dataName, _frameDetails,
+	      _sample, _sampleConditions, dataSource, "CB_DeltaShift",
+	      "bmrb-DeltaShift", "DeltaShift", _entityAssemblyID,
 	      S2DResidues.POLYMER_TYPE_PROTEIN));
 	}
     }

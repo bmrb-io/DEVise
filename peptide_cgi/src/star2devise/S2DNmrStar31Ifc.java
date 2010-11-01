@@ -20,6 +20,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.8.1  2010/10/15 15:29:02  wenger
+// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
+// sample_cond2_br (to get the latest code refactoring from the trunk
+// into the sample conditions code).
+//
+// Revision 1.9.6.1  2010/10/10 16:40:03  wenger
+// More fixes to getting frame details for 3.0/3.1 files.
+//
+// Revision 1.9  2010/07/02 19:30:21  wenger
+// Fixed bug 105 (most "production.3.0..." files should be treated as
+// 3.1, not 3.0) (modified a couple of old test_data files to correspond
+// to the code changes).
+//
 // Revision 1.8  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -183,7 +196,6 @@ public class S2DNmrStar31Ifc extends S2DNmrStar30Ifc {
 	//TEMPTEMP -- make sure that all of these are correct
 	ORDER_ATOM_NAME = "_Order_param.Atom_ID";
 	ORDER_ENTITY_ASSEMBLY_ID = "_Order_param.Entity_assembly_ID";
-	ORDER_PARAMETERS = "order_parameters";
 	ORDER_RES_LABEL = "_Order_param.Comp_ID";
 	ORDER_RES_SEQ_CODE = "_Order_param.Seq_ID";
 	ORDER_SF_CAT = "_Order_parameter_list.Sf_category";
