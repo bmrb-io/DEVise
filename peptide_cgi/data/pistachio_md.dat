@@ -4,9 +4,9 @@
 #   Details; Sample; Sample_condtions; data_source; y_attribute
 # $Id$
 #
--	-	Backbone proton < 95%		-	-	-	-	$hnLT95
--	-	Backbone proton >= 95%		-	-	-	-	$hnGE95
+-	-	Backbone proton < 95%	-	-	-	-	$hnLT95
+-	-	Backbone proton >= 95%	-	-	-	-	$hnGE95
 -	-	Side chain < 95%	-	-	-	-	$sideChainLT95
 -	-	Side chain >= 95%	-	-	-	-	$sideChainGE95
--	-	Backbone < 95%		-	-	-	-	$backboneLT95
--	-	Backbone >= 95%		-	-	-	-	$backboneGE95
+-	-	Backbone < 95%	-	-	-	-	$backboneLT95
+-	-	Backbone >= 95%	-	-	-	-	$backboneGE95
