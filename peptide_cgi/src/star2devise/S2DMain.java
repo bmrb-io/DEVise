@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.239  2010/11/02 01:35:19  wenger
+// Changed version to 11.8.7 for release.
+//
 // Revision 1.238  2010/11/01 21:02:48  wenger
 // Fixed the Pistachio meta-data.
 //
@@ -1485,7 +1488,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.7";
+    public static final String PEP_CGI_VERSION = "11.8.8x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
