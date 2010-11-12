@@ -4396,6 +4396,12 @@ java.security.AccessControlException: access denied
 			also applies to DEVise server switching.
 			(Fixed by wenger, 8/10/10.)
 
+1003 11/12/10	OPEN	Copying a view doesn't copy the string table
+			assignment. (wenger)
+
+1004 11/12/10	OPEN	The string table GUI doesn't seem to show existing
+			assignments. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
