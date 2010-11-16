@@ -4402,6 +4402,9 @@ java.security.AccessControlException: access denied
 1004 11/12/10	OPEN	The string table GUI doesn't seem to show existing
 			assignments. (wenger)
 
+1005 11/16/10	OPEN	Jmol loses state (e.g., ribbons turned on) when you
+			resize the JavaScreen. (gabrielc/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
