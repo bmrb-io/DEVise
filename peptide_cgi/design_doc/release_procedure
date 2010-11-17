@@ -9,6 +9,9 @@ Note: this is pretty preliminary right now.
 - Make sure DEVISE_MIN_VERSION and JS_CLIENT_MIN_VERSION are up-to-date
   in S2DMain.java.
 
+- Make sure the Bugs and ToDo files have been updated with stuff that's
+  been done.
+
 - Create a preliminary tarball.
 
 - Go through the testing procedure in "testing", BASED ON THE PRELIMINARY
