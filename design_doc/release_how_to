@@ -15,7 +15,11 @@ mainly just a reminder to myself so I don't miss any steps.  RKW, 2002-09-24.
 
 - Make sure the version history is complete.
 
-- Get rid of the x<whatever> on the DEVise version -- e.g., change "1.9.2x3" to "1.9.2".
+- Make sure the Bugs and ToDo2 files have been updated with stuff that's
+  been done.
+
+- Get rid of the x<whatever> on the DEVise version -- e.g., change
+  "1.9.2x3" to "1.9.2".
 
 - Update sources.
     - Check out/update sources (make sure they're on the right branch,
