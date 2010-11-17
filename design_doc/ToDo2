@@ -218,6 +218,10 @@ a cursor. (wenger)
 Add mouseover capability, at least for views that contain text that's
 drawn on the client side. (wenger)
 
+09.026 11/16/10	OPEN	1
+Add recognition of the new BMRB two-entry visualizations to the session-
+opening GUI. (wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
