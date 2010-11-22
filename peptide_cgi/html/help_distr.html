@@ -19,7 +19,10 @@ Sections of this document:
 </p>
 
 <ul>
-<li><a href'#main_window">Main window</a>
+<li><a href="#main_window">Main window</a>
+<li><a href="#restraint_selection">Restraint selection</a>
+<li><a href="#main_window_v02">Main window (violations > 0.02 A)</a>
+<li><a href="#main_window_nv">Main window (non-violated only)</a>
 <li><a href="#main_window_closeup">Main window (structure closeup)</a>
 <li><a href="#structure_selection">Structure selection window</a>
 <li><a href="#js_menubar_jmol">JavaScreen menubar Jmol menu</a>
@@ -55,8 +58,10 @@ drawn in this view according to the selections in the
 <a href="#ea_select_view">entity assembly select view</a>, the
 <a href="#vio_select_view">violation select view</a>, the
 <a href="#ambig_select_view">ambiguity select view</a>, the
-<a href="#length_select_view">restraint length select view</a> and the
-<a href="#data_view">data view</a>.
+<a href="#length_select_view">restraint length select view</a>, the
+<a href="#data_view">data view</a>, and the
+<a href="#violation_magnitude_view">violation magnitude view</a>
+(see <a href="#restraint_selection">restraint selection</a> below).
 </p>
 
 <p>
@@ -208,6 +213,19 @@ to the data values -- a residue for which the red tip of the bar
 is enclosed in the cursor is selected.
 </p>
 
+<a name="violation_magnitude_view"></a>
+<p>
+The <strong>violation magnitude view</strong> shows the magnitude
+of the violation for each restraint selected by the 
+<a href="#ea_select_view">entity assembly select view</a>, the
+<a href="#vio_select_view">violation select view</a>, the
+<a href="#ambig_select_view">ambiguity select view</a>, the
+<a href="#length_select_view">restraint length select view</a>, and the
+<a href="#data_view">data view</a>.
+The DEVise cursor in this view selects the restraints to be shown in
+the <strong>structure (main) view</strong>.
+</p>
+
 <p>
 The <strong>data scroll view</strong> scrolls the X axis of the data
 view.  The DEVise cursor selects the range of residues shown in the data view
@@ -250,6 +268,56 @@ the view help (F1 key) to see the Peptide-CGI version and exact
 generation timestamp.
 </p>
 
+
+<a name="restraint_selection"></a>
+<h3>Restraint Selection</h3>
+
+<p>
+There is a multi-step process to select which restraints are actually
+shown in the <strong>structure view</strong>.  First, the cursors in
+the <strong>entity assembly view</strong>, <strong>violation select
+view</strong>, <strong>ambiguity select view</strong>, and
+<strong>restraint length select view</strong> determine which violations
+are counted for each residue in the <strong>data view</strong>.  Then,
+the cursor in the <strong>data view</strong> determines which restraints
+are shown in the <strong>violation magnitude view</strong>.  Finally,
+the cursor in that view determines which restraints are actually shown
+in the <strong>structure view</strong>.  This sequence of selections
+is represented graphically below.
+</p>
+
+<p>
+<center>
+<img src="distr_selection.png">
+</center>
+</p>
+
+<a name="main_window_v02"></a>
+<h3>Main Visualization Window (violations > 0.02 A)</h3>
+
+The image below shows the use of the <strong>violation magnitude
+view</strong> to select only restraints with a violation of greater
+than approximately 0.02 angstroms.
+
+<p>
+<center>
+<img src="distr_main_v02.png">
+</center>
+</p>
+
+<a name="main_window_nv"></a>
+<h3>Main Visualization Window (non-violated only)</h3>
+
+The image below shows what happens when only non-violated restraints
+are selected in the <strong>violation select view</strong>.  You can
+see that only maxiumum violations of 0 show up in the <strong>violation
+magnitude view</strong>.
+
+<p>
+<center>
+<img src="distr_main_nv.png">
+</center>
+</p>
 
 <a name="main_window_closeup"></a>
 <h3>Main Visualization Window (structure closeup)</h3>

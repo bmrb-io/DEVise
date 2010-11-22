@@ -22,6 +22,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.12.2  2010/11/17 20:16:08  wenger
+// Eliminated the 'doesCount' attribute from restraint data (this is
+// something that never got used in the session -- it was part of working
+// towards having the violation magitude link also affect the restraint
+// counts shown in the data window).
+//
+// Revision 1.6.12.1  2010/11/10 17:42:34  wenger
+// Merged violation_select_br_1 thru violation_select_br_2 to
+// violation_select2_br.
+//
+// Revision 1.6.4.1  2010/11/10 17:08:01  wenger
+// Committing all violation changes so I can "bounce" this branch off
+// the trunk to fix problems with schema incompatibilities.
+//
+// Revision 1.6  2010/04/29 22:39:32  wenger
+// Fixed Peptide-CGI bug 096 (problem with distance restraint selection).
+// Note that the tests aren't updated yet to correspond to the fixed data,
+// and the distance restraint visualization generates DEVise error messages
+// that don't seem to cause actual problems (see DEVise bug 1001).
+//
 // Revision 1.5  2010/04/27 18:47:07  wenger
 // Fixed bugs Eldon found in testing of whether restraints info exists
 // (for *_LEVEL_LINK_CHECK level of restraint processing).
@@ -915,7 +935,7 @@ public class S2DDistRestraint extends S2DRestraint {
     }
 
     //-------------------------------------------------------------------
-    //
+    //TEMP -- document...
     private int processPseudoAtoms(int restraintIndex,
       RestraintInfo restraintInfo, Vector atom1List, Vector atom2List,
       String entityAssembly1Id, String resSeq1Code,

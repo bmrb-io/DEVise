@@ -21,6 +21,29 @@
 // $Id$
 
 // $Log$
+// Revision 1.240.2.4  2010/11/17 20:16:08  wenger
+// Eliminated the 'doesCount' attribute from restraint data (this is
+// something that never got used in the session -- it was part of working
+// towards having the violation magitude link also affect the restraint
+// counts shown in the data window).
+//
+// Revision 1.240.2.3  2010/11/17 19:24:41  wenger
+// Changed how links work so that only data already selected by existing
+// filters (e.g., violated/non-violated) shows up in the violation
+// magnitude view.
+//
+// Revision 1.240.2.2  2010/11/17 17:55:59  wenger
+// Changed the maximum violation view to more clearly show that it's
+// displaying a list of the maximum violation for the selected data,
+// and changed the top and bottom margins from 0.05 to 0.01 A.
+//
+// Revision 1.240.2.1  2010/11/10 17:42:34  wenger
+// Merged violation_select_br_1 thru violation_select_br_2 to
+// violation_select2_br.
+//
+// Revision 1.240  2010/11/02 21:42:41  wenger
+// Changed version to 11.8.8x1 and added 11.8.8 version history section.
+//
 // Revision 1.239  2010/11/02 01:35:19  wenger
 // Changed version to 11.8.7 for release.
 //
@@ -92,6 +115,10 @@
 //
 // Revision 1.232  2010/09/29 18:14:30  wenger
 // Merged violation_select_br_0 thru violation_select_br_1 to trunk.
+//
+// Revision 1.231.2.1  2010/11/10 17:08:01  wenger
+// Committing all violation changes so I can "bounce" this branch off
+// the trunk to fix problems with schema incompatibilities.
 //
 // Revision 1.231  2010/09/27 17:22:40  wenger
 // Changed Peptide-CGI version to 11.8.7x1, added 11.8.7 version history
@@ -1488,7 +1515,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.8x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.8_x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
