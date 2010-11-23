@@ -572,7 +572,7 @@ Num Date        Status  Pri     Description
 				angle restraints). (wenger)
 				(Done by wenger, ?/?/10.)
 
-134 4/23/10	OPEN	2	Update structre selection window image and
+134 4/23/10	OPEN	2	Update structure selection window image and
 				Jmol menu images in help pages to match
 				the current JS client version. (wenger)
 
@@ -647,9 +647,10 @@ Num Date        Status  Pri     Description
 				else) for 4096 coordinates visualization.
 				(wenger)
 
-146 8/16/10	OPEN	1	Be able to select distance restraints based
+146 8/16/10	DONE	1	Be able to select distance restraints based
 				on the magnitude of the violation.
 				(elu/wenger)
+				(Done by wenger, 11/22/10.)
 
 147 8/17/10	OPEN	2	Check that BMRB residue numbers and PDB/
 				coordinate residue numbers are matched
@@ -661,10 +662,11 @@ Num Date        Status  Pri     Description
 				coordinate entity assembly IDs correctly
 				with coordindate data. (wenger)
 
-149 9/1/10	OPEN	2	Provide a better interface for entries with
+149 9/1/10	DONE?	2	Provide a better interface for entries with
 				multiple sets of chemical shift values (e.g.,
 				different sample conditions), especially
 				in the 3D visualizations. (elu/wenger)
+				(At least partially done by wenger, 10/29/10)
 
 150 10/15/10	OPEN	1	Add logging of how long each invocation of
 				Peptide-CGI takes, and whether it used the
