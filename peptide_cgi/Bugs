@@ -548,6 +548,11 @@ Num Date        Status  Description
 			listed in 2.1 and 3 files.  (See 15080/test67 for
 			an example.) (wenger)
 
+118 11/24/10	ACTIVE	The Data Scroll View in the distance and torsion angle
+			restraint visualizations does not update its visual
+			filter correctly when switching entity assemblies
+			(try 15209 to test). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
