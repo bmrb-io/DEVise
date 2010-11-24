@@ -453,9 +453,10 @@ Num Date        Status  Pri     Description
 				Maybe allow a test name to be passed
 				to make_view??
 
-113 1/22/10	OPEN	4	Change PDB ID of "none" to "internal" (or
+113 1/22/10	DONE	4	Change PDB ID of "none" to "internal" (or
 				something else) for 4096 summary page.
 				(wenger)
+				(Done by wenger, 11/24/10.)
 
 114 2/2/10	DONE	1	Add note about violoations being determined
 				by CING. (elu/wenger)
@@ -643,7 +644,7 @@ Num Date        Status  Pri     Description
 				save frames.  I guess I could combine them
 				for testing.)
 
-145 8/6/10	OPEN	3	Change "none" to "internal" (or something
+145 8/6/10	DUP	3	Change "none" to "internal" (or something
 				else) for 4096 coordinates visualization.
 				(wenger)
 

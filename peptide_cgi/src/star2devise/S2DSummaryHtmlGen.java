@@ -36,6 +36,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.33  2010/07/07 20:54:13  wenger
+// Changed Peptide-CGI to work with new JavaScreen re-sizing feature
+// (since the user can now re-size the JS, we don't generate html
+// pages for different sizes of visualization; this also includes
+// eliminating the different-size pages for the histograms).
+//
 // Revision 1.32  2010/07/07 18:46:09  wenger
 // Fixed bug 108 (Peptide-CGI version history link doesn't work).
 //
@@ -951,7 +957,7 @@ TEMP?*/
 	    System.out.println("S2DSummaryHtmlGen.writeAtomicCoords()");
 	}
 
-	String linkStr = "none";
+	String linkStr = "internal";
 	if (pdbId != null) {
 	    linkStr = pdbId;
 	}
@@ -978,7 +984,7 @@ TEMP?*/
 
         String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
-	String linkStr = "none";
+	String linkStr = "internal";
 	if (pdbId != null) {
 	    linkStr = pdbId;
 	}

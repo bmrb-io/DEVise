@@ -10,6 +10,9 @@ the violation.
 Fixed bug 118 (Data Scroll View not working correctly in restraint
 visualizations).
 
+Changed the coordinates link for entry 4096 from "none" to "internal"
+to be clearer (to-do 113).
+
 
 Peptide-CGI 11.8.7
 ------------------
