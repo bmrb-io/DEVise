@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Sep 29 2010 10:35:16
+# file date: Nov 24 2010 11:34:35
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -60,6 +60,7 @@ DEVise setColorMode 0
 DEVise dteInsertCatalogEntry . {"4020rrac1" UNIXFILE 4020rrac1.dat bmrb-jmol_atom_coord $DEVISE_SCHEMA/physical/bmrb-jmol_atom_coord "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4020rrtar-md1" UNIXFILE 4020rrtar-md1.dat bmrb-tar-meta $DEVISE_SCHEMA/physical/bmrb-tar-meta "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4020rrtar1" UNIXFILE 4020rrtar1.dat bmrb-TorsionAngle $DEVISE_SCHEMA/physical/bmrb-TorsionAngle "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4020rl" UNIXFILE 4020rl.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResList "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVISE_SCHEMA/physical/bmrb-AxisLabel "" 100 50 "$DEVISE_DAT/bmrb" ""}
 DEVise dteInsertCatalogEntry . {"pistachio_at_legend" UNIXFILE pistachio_at_legend.dat bmrb-pistachio_legend $DEVISE_SCHEMA/physical/bmrb-pistachio_legend "" 100 50 "$DEVISE_DAT/bmrb" ""}
 
@@ -69,7 +70,7 @@ DEVise dteInsertCatalogEntry . {"pistachio_at_legend" UNIXFILE pistachio_at_lege
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} ViewAngleUnselectedDataChild 14.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
+DEVise create {view} {SortedX} ViewAngleUnselectedDataChild 0.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
 DEVise setLabel {ViewAngleUnselectedDataChild} 1 16 {Phi angle lower/upper [1]}
 DEVise setViewStatistics {ViewAngleUnselectedDataChild} 00000000
 DEVise setViewDimensions {ViewAngleUnselectedDataChild} 2
@@ -116,7 +117,7 @@ DEVise setViewSaveFilter {ViewAngleUnselectedDataChild} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} ViewAngleSelectedDataChild 14.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
+DEVise create {view} {SortedX} ViewAngleSelectedDataChild 0.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
 DEVise setLabel {ViewAngleSelectedDataChild} 1 16 {Phi angle lower/upper [1]}
 DEVise setViewStatistics {ViewAngleSelectedDataChild} 00000000
 DEVise setViewDimensions {ViewAngleSelectedDataChild} 2
@@ -160,7 +161,7 @@ DEVise setViewSaveFilter {ViewAngleSelectedDataChild} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} ViewAngleDataDotsChild 14.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
+DEVise create {view} {SortedX} ViewAngleDataDotsChild 0.500000 32.500000 -180.000000 360.000000 37 0 0 37 0 37
 DEVise setLabel {ViewAngleDataDotsChild} 1 16 {Phi angle lower/upper/avg}
 DEVise setViewStatistics {ViewAngleDataDotsChild} 00000000
 DEVise setViewDimensions {ViewAngleDataDotsChild} 2
@@ -204,7 +205,7 @@ DEVise setViewSaveFilter {ViewAngleDataDotsChild} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} ViewDataValueSelectChild 19.000000 28.000000 -45.000000 225.000000 0 37 0 37 0 37
+DEVise create {view} {SortedX} ViewDataValueSelectChild 8.500000 24.500000 -45.000000 225.000000 0 37 0 37 0 37
 DEVise setLabel {ViewDataValueSelectChild} 1 16 {Phi angle lower/upper [1]}
 DEVise setViewStatistics {ViewDataValueSelectChild} 00000000
 DEVise setViewDimensions {ViewDataValueSelectChild} 2
@@ -344,11 +345,11 @@ DEVise viewSetUseJmol {ViewDataTypeSelect} {0}
 DEVise setExcludeFromDrillDown {ViewDataTypeSelect} {0}
 DEVise setViewSaveFilter {ViewDataTypeSelect} 0 0
 
-# View {ViewDataXControl} uses mapping {.4020ac1#ViewDataXControl}
+# View {ViewDataXControl} uses mapping {.4020rl#ViewDataXControl}
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewDataXControl 14.500000 32.500000 -0.300000 0.300000 37 0 0 37 0 37
+DEVise create {view} {Scatter} ViewDataXControl 0.375000 32.625000 -0.300000 0.300000 37 0 0 37 0 37
 DEVise setLabel {ViewDataXControl} 0 12 {Residues}
 DEVise setViewStatistics {ViewDataXControl} 00000000
 DEVise setViewDimensions {ViewDataXControl} 2
@@ -359,9 +360,9 @@ DEVise setFont {ViewDataXControl} {title} 2 14 0 0
 DEVise setFont {ViewDataXControl} {x axis} 0 12 0 0
 DEVise setFont {ViewDataXControl} {y axis} 0 12 0 0
 # Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
-DEVise viewSetHome {ViewDataXControl} 0 0 1 0 0.000000 0.250000 0.000000 0.000000 100.000000 100.000000
+DEVise viewSetHome {ViewDataXControl} 1 0 1 0 0.500000 0.000000 0.000000 0.000000 100.000000 100.000000
 # Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
-DEVise viewSetImplicitHome {ViewDataXControl} 0 0 1 0 0.25 0 0 0 100 100
+DEVise viewSetImplicitHome {ViewDataXControl} 1 0 1 0 0.5 0 0 0 100 100
 DEVise viewSetHorPan {ViewDataXControl} 1 0.500000 1.000000
 DEVise viewSetVerPan {ViewDataXControl} 1 0.500000 1.000000
 DEVise setViewGDS {ViewDataXControl} 1 0 0 "" 1 " " 1
@@ -788,9 +789,9 @@ DEVise setMappingColors {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2} {7} {$Atom_typ
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Residue_seq_code_vs_recId} .4020rrac1 .4020ac1#ViewDataXControl {} {$Residue_seq_code} 0 {} 36 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
-DEVise setPixelWidth {.4020ac1#ViewDataXControl} 1
-DEVise setMappingColors {.4020ac1#ViewDataXControl} {36} {1} {0}
+DEVise create {mapping} {Residue_seq_code_vs_recId} .4020rl .4020rl#ViewDataXControl {} {$Residue_seq_code} 0 {} 36 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
+DEVise setPixelWidth {.4020rl#ViewDataXControl} 1
+DEVise setMappingColors {.4020rl#ViewDataXControl} {36} {36} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -880,14 +881,14 @@ DEVise setMappingColors {.4020ta#ViewDataScrollFixChild} {35} {35} {0}
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.218519 0.541146 0.500926 0 0
-DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.343519 0.140625 0.374074 0 0
-DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.724074 0.684896 0.126852 0 0
-DEVise create {window} {TileLayout} DEViseWn8 0.012500 0.853704 0.684896 0.021296 0 0
-DEVise create {window} {TileLayout} DEViseWn11 0.848437 0.781481 0.085417 0.121296 1 0
+DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.343519 0.140625 0.368519 0 0
+DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.718519 0.684896 0.126852 0 0
+DEVise create {window} {TileLayout} DEViseWn8 0.012500 0.853704 0.684896 0.018519 0 0
+DEVise create {window} {TileLayout} DEViseWn11 0.847917 0.780556 0.085417 0.118519 1 0
 DEVise create {window} {TileLayout} DEViseWn10 0.012500 0.189815 0.684896 0.025926 0 0
 DEVise create {window} {TileLayout} DEViseWn12 0.012500 0.878704 0.684896 0.028704 0 0
-DEVise create {window} {TileLayout} DEViseWn3 0.012500 0.219444 0.140625 0.118519 0 0
-DEVise create {window} {TileLayout} DEViseWn5 0.728646 0.166667 0.148958 0.109259 1 0
+DEVise create {window} {TileLayout} DEViseWn3 0.012500 0.218519 0.140625 0.118519 0 0
+DEVise create {window} {TileLayout} DEViseWn5 0.728646 0.166667 0.148438 0.105556 1 0
 
 # Set up window layouts
 
@@ -1089,7 +1090,7 @@ DEVise insertMapping {ViewAngleDataDotsChild} {.4020ta#ViewAngleDataDotsChild}
 DEVise insertMapping {ViewDataValueSelectChild} {.4020ta#ViewDataValueSelectChild}
 DEVise insertMapping {View3DMain} {.4020ac1#Atom_coord_y_vs_Atom_coord_x}
 DEVise insertMapping {ViewDataTypeSelect} {.4020tar-md1#name_vs_recId}
-DEVise insertMapping {ViewDataXControl} {.4020ac1#ViewDataXControl}
+DEVise insertMapping {ViewDataXControl} {.4020rl#ViewDataXControl}
 DEVise insertMapping {ViewSelectedDataParent} {.4020tar-md1#name_vs_recId 3}
 DEVise insertMapping {ViewUnselectedDataParent} {.4020tar-md1#name_vs_recId 4}
 DEVise insertMapping {ViewDataValueSelectParent} {.4020tar-md1#name_vs_recId 5}
@@ -1137,6 +1138,7 @@ DEVise insertLink {entity_assembly_data_link} {ViewAngleUnselectedDataChild}
 DEVise insertLink {entity_assembly_data_link} {ViewAngleSelectedDataChild}
 DEVise insertLink {entity_assembly_data_link} {ViewAngleDataDotsChild}
 DEVise insertLink {entity_assembly_data_link} {ViewDataValueSelectChild}
+DEVise insertLink {entity_assembly_data_link} {ViewDataXControl}
 DEVise setLinkMaster {entity_assembly_data_link} {ViewDataTypeSelect 4}
 
 # Insert views into windows
@@ -1166,16 +1168,16 @@ DEVise setPileStackState {DEViseWn5} 1
 # Init history of view
 
 DEVise clearViewHistory {ViewAngleUnselectedDataChild}
-DEVise insertViewHistory {ViewAngleUnselectedDataChild} {14.5} {-180} {32.5} {360} -1
+DEVise insertViewHistory {ViewAngleUnselectedDataChild} {0.5} {-180} {32.5} {360} 0
 
 DEVise clearViewHistory {ViewAngleSelectedDataChild}
-DEVise insertViewHistory {ViewAngleSelectedDataChild} {14.5} {-180} {32.5} {360} 0
+DEVise insertViewHistory {ViewAngleSelectedDataChild} {0.5} {-180} {32.5} {360} -1
 
 DEVise clearViewHistory {ViewAngleDataDotsChild}
-DEVise insertViewHistory {ViewAngleDataDotsChild} {14.5} {-180} {32.5} {360} 0
+DEVise insertViewHistory {ViewAngleDataDotsChild} {0.5} {-180} {32.5} {360} 0
 
 DEVise clearViewHistory {ViewDataValueSelectChild}
-DEVise insertViewHistory {ViewDataValueSelectChild} {19} {-45} {28} {225} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {8.5} {-45} {24.5} {225} 0
 
 DEVise clearViewHistory {View3DMain}
 DEVise insertViewHistory {View3DMain} {-9.754} {-7.386} {8.979} {12.71} 0
@@ -1184,7 +1186,7 @@ DEVise clearViewHistory {ViewDataTypeSelect}
 DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-4.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataXControl}
-DEVise insertViewHistory {ViewDataXControl} {14.5} {-0.3} {32.5} {0.3} 0
+DEVise insertViewHistory {ViewDataXControl} {0.375} {-0.3} {32.625} {0.3} 0
 
 DEVise clearViewHistory {ViewSelectedDataParent}
 DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0

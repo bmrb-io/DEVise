@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2010/05/26 15:29:43  wenger
+// Moved acdd files to entry-specific subdirectories and changed tests
+// accordingly; fixed some problems with set_modes.
+//
 // Revision 1.28  2010/05/24 20:06:15  wenger
 // Changed Peptide-CGI to put all sessions for a given entry in a
 // subdirectory, and use the JSA instead of the JSB, so it's possible to
@@ -277,6 +281,9 @@ public class S2DSession {
 	String searchString4 = null;
 	String replaceString4 = null;
 
+	String searchString5 = null;
+	String replaceString5 = null;
+
 	// The dummy visualization info string in the base file.
 	String visInfoSearchString = "Visualization info";
 
@@ -486,6 +493,8 @@ TEMP*/
 	    replaceString2 = name + S2DNames.TAR_MD_SUFFIX + frameIndex;
 	    searchString3 = "4020tar1";
 	    replaceString3 = name + S2DNames.TAR_SUFFIX + frameIndex;
+	    searchString4 = "4020rl";
+	    replaceString4 = name + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_RRTORSION_ANGLE:
@@ -498,6 +507,8 @@ TEMP*/
 	    replaceString2 = name + S2DNames.RRTAR_MD_SUFFIX + frameIndex;
 	    searchString3 = "4020rrtar1";
 	    replaceString3 = name + S2DNames.RRTAR_SUFFIX + frameIndex;
+	    searchString4 = "4020rl";
+	    replaceString4 = name + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_DIST_RESTR:
@@ -512,6 +523,8 @@ TEMP*/
 	    replaceString3 = name + S2DNames.DISTR_SUFFIX + frameIndex;
 	    searchString4 = "15209distrc1";
 	    replaceString4 = name + S2DNames.DISTRC_SUFFIX + frameIndex;
+	    searchString5 = "15209rl";
+	    replaceString5 = name + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_RRDIST_RESTR:
@@ -526,6 +539,8 @@ TEMP*/
 	    replaceString3 = name + S2DNames.RRDISTR_SUFFIX + frameIndex;
 	    searchString4 = "15209distrc1";
 	    replaceString4 = name + S2DNames.RRDISTRC_SUFFIX + frameIndex;
+	    searchString5 = "15209rl";
+	    replaceString5 = name + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	default:
@@ -610,6 +625,11 @@ TEMP*/
                 if (searchString4 != null) {
 	            line = S2DUtils.replace(line, searchString4,
 		      replaceString4);
+		}
+
+                if (searchString5 != null) {
+	            line = S2DUtils.replace(line, searchString5,
+		      replaceString5);
 		}
 
 		line = S2DUtils.replace(line, visInfoSearchString, visInfo);

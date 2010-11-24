@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.241  2010/11/22 23:24:46  wenger
+// Merged violation_select2_br_0 thru violation_select2_br_1 to trunk,
+// including cleaning up a couple of leftover temporary comments.
+//
 // Revision 1.240.2.4  2010/11/17 20:16:08  wenger
 // Eliminated the 'doesCount' attribute from restraint data (this is
 // something that never got used in the session -- it was part of working
@@ -1515,7 +1519,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.8_x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.8_x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
