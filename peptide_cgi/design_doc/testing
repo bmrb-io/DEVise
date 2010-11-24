@@ -130,24 +130,23 @@ The following testing steps must be done:
   gets updated.
 
 - (Torsion angle restraints) View the following visualizations for
-  entry 15209:
-    - Restraints grid torsion angles for 2OQS (make sure that torsion
+  entry 5246:
+    - Restraints grid torsion angles for 1LKQ (make sure that torsion
       angle data shows up for both entity assemblies, and that atoms
       in the correct entity assembly are highlighted in the 3D view).
-    - Remediated restraints torsion angles for 2OQS (make sure that torsion
+    - Remediated restraints torsion angles for 1LKQ (make sure that torsion
       angle data shows up for both entity assemblies, and that atoms
       in the correct entity assembly are highlighted in the 3D view).
     - Test torsion angle help page.
-    - 3D structure for 2OQS (make sure the right data sets show up, and
+    - 3D structure for 1LKQ (make sure the right data sets show up, and
       highlighting works).
 
-
 - (Distance restraints) View the following visualizations for
-  entry 15209:
-    - Restraints grid distance restraints for 2OQS (make sure that distance
+  entry 5246:
+    - Restraints grid distance restraints for 1LKQ (make sure that distance
       restraint data shows up for both entity assemblies, and that the
       restraints connect correct atoms in the 3D view).
-    - Remediated restraints distance restraints for 2OQS (make sure that
+    - Remediated restraints distance restraints for 1LKQ (make sure that
       distance restraint data shows up for both entity assemblies, and
       that the restraints connect correct atoms in the 3D view).
     - Test distance restraints help page.
