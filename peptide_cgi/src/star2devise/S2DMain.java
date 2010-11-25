@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.243  2010/11/24 18:47:41  wenger
+// Implemented to-do 113 (changed the coordinates link for entry 4096
+// from "none" to "internal" to be clearer).
+//
 // Revision 1.242  2010/11/24 17:52:58  wenger
 // Fixed bug 118 (Data Scroll View not working correctly in restraint
 // visualizations).  The actual fix is as follows (matching what was
@@ -1530,7 +1534,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.8_x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "11.8.8";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
