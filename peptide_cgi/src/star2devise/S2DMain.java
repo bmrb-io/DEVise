@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.244  2010/11/25 16:57:30  wenger
+// Changed version to 11.8.8 for release.
+//
 // Revision 1.243  2010/11/24 18:47:41  wenger
 // Implemented to-do 113 (changed the coordinates link for entry 4096
 // from "none" to "internal" to be clearer).
@@ -1534,7 +1537,7 @@ public class S2DMain {
     private static boolean _extraGC = false;
 
     // Change version to 11.3.1 when S2 order stuff is implemented.
-    public static final String PEP_CGI_VERSION = "11.8.8";
+    public static final String PEP_CGI_VERSION = "11.8.9_x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
