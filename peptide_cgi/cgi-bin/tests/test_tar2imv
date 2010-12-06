@@ -9,7 +9,7 @@ set result = 0
 rm -r -f */16270*
 
 echo -n "Processing NMR-STAR: "
-./make_view number=16270
+./make_view number=16270\&force=1
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
@@ -17,7 +17,7 @@ endif
 mv tmp/s2d.out tmp/s2d.out1
 
 echo -n "Processing mmCIF and torsion angle restraints: "
-./make_view number=16270\&pdbid=2kid\&coord_index=2\&do_tar=3
+./make_view number=16270\&pdbid=2kid\&coord_index=2\&do_tar=3\&force=1
 if ($status != 0) then
   echo "Second invocation of s2d failed!"
   set result = 1

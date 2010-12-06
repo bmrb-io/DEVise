@@ -11,7 +11,7 @@ rm -r -f */*/test2_out*
 rm -r -f */.*/test2_out*
 
 echo -n "Processing NMR-STAR and mmCIF: "
-./make_uvd file=bmr4267.str\&name=test2_out\&force=1\&lacs_file=test_data/bmr4267_LACS.str
+./make_uvd file=bmr4267.str\&name=test2_out\&force=1\&lacs_file=test_data/bmr4267_LACS.str\&force=1
 if ($status != 0) then
   echo "First invocation of make_uvd failed!"
   set result = 1

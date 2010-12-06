@@ -8,7 +8,7 @@ rm -r -f */*/16270*
 rm -r -f */.*/16270*
 
 echo -n "Processing NMR-STAR: "
-./make_uvd name=16270\&file=test_data/bmr16270.str
+./make_uvd name=16270\&file=test_data/bmr16270.str\&force=1
 if ($status != 0) then
   echo "First invocation of make_uvd failed!"
   set result = 1
@@ -16,7 +16,7 @@ endif
 mv tmp/uvd.out tmp/uvd.out1
 
 echo -n "Processing coordinates and distance restraints: "
-./make_uvd name=16270\&file=test_data/bmr16270.str\&pdbid=2kid\&coord_index=2\&do_rrdist=3
+./make_uvd name=16270\&file=test_data/bmr16270.str\&pdbid=2kid\&coord_index=2\&do_rrdist=3\&force=1
 if ($status != 0) then
   echo "Second invocation of make_uvd failed!"
   set result = 1

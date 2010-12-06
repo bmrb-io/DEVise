@@ -9,7 +9,7 @@ rm -r -f */*/uvd16385*
 rm -r -f */.*/uvd16385*
 
 echo -n "Processing NMR-STAR: "
-./make_uvd file=test_data/sd16385_3.str\&name=uvd16385\&force=1\&sparta_file=test_data/bmr16385_3_sparta.str
+./make_uvd file=test_data/sd16385_3.str\&name=uvd16385\&force=1\&sparta_file=test_data/bmr16385_3_sparta.str\&force=1
 if ($status != 0) then
   echo "First invocation of s2d failed!"
   set result = 1
