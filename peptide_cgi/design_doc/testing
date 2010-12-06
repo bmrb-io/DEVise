@@ -151,6 +151,7 @@ The following testing steps must be done:
       that the restraints connect correct atoms in the 3D view).
     - Test distance restraints help page.
 
+#TEMPTEMP -- need fixes in this section
 - (PDB-only restraints) Go to
   http://devise.cs.wisc.edu/devise/bmrb/restraint_select.html, view the
   following visualizations for 1eza:

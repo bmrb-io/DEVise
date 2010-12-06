@@ -21,22 +21,19 @@ Note: this is pretty preliminary right now.
 
 - Commit the sources.
 
-- Recompile and install on teal, run test_all.
+- Recompile and make the distribution tarball.
+
+- Install on teal (from the distribution tarball), run test_all.
 
 - Check at least one visualization on teal.
+
+- Put the distribution tarball into the appropriate /p/devise/ftp/Devise-*
+  directory.
 
 - Tag the sources with a tag of the form peptide_cgi_x_y_z, where
   x_y_z is the version.
 
 - Archive the sources.
-
-- Make the distribution tarball.
-
-- Untar the distribution tarball, link the right Makefile.config.*, do
-  a 'make setup testsetup', and finally do a test_all in cgi-bin.
-
-- Put the distribution tarball into the appropriate /p/devise/ftp/Devise-*
-  directory.
 
 - Install on manatee at BMRB and test things, including the visualization
   server and visualization server restart IDs.
@@ -45,10 +42,10 @@ Note: this is pretty preliminary right now.
 
 - Announce the release to BMRB and mirrors.
 
-- Update /scratch/wenger/peptide_cgi_test and recompile.
-
 - Increment the version in the sources (11.0.2 -> 11.0.3x1, for example).
 
 - Add a new section to pep-version-history.
 
 - Commit the sources.
+
+- Update /scratch/wenger/peptide_cgi_test and recompile.
