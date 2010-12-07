@@ -20,68 +20,10 @@
 // $Id$
 
 // $Log$
-// Revision 1.9.8.1  2010/10/15 15:29:02  wenger
-// Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
-// sample_cond2_br (to get the latest code refactoring from the trunk
-// into the sample conditions code).
+// Revision 1.10  2010/11/01 00:51:12  wenger
+// Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
-// Revision 1.9.6.1  2010/10/10 16:40:03  wenger
-// More fixes to getting frame details for 3.0/3.1 files.
-//
-// Revision 1.9  2010/07/02 19:30:21  wenger
-// Fixed bug 105 (most "production.3.0..." files should be treated as
-// 3.1, not 3.0) (modified a couple of old test_data files to correspond
-// to the code changes).
-//
-// Revision 1.8  2010/03/10 22:36:16  wenger
-// Added NMR-STAR file version to summary html page and detailed
-// visualization version info (to-do 072).  (Doing this before I
-// add multiple NMR-STAR paths so we can see which NMR-STAR file
-// was used.)
-//
-// Revision 1.7  2008/12/01 20:37:52  wenger
-// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
-//
-// Revision 1.6.2.3  2008/11/19 20:25:18  wenger
-// Fixed problems with getEntityFrame(), added test13_3 to check changes.
-//
-// Revision 1.6.2.2  2008/11/13 23:26:30  wenger
-// Heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters now
-// work for multiple entities in 3.1 files (all tests now work).
-//
-// Revision 1.6.2.1  2008/11/05 00:37:43  wenger
-// Fixed a bunch of problems with getting coordinates from NMR-STAR
-// files (e.g., 4096) -- test4 and test4_3 now work.
-//
-// Revision 1.6  2008/07/20 20:43:07  wenger
-// Made a bunch of cleanups in the course of working on bug 065.
-//
-// Revision 1.5  2008/02/20 17:41:07  wenger
-// Committing (disabled) partially-implemented S2 Order visualization
-// code and tests.
-//
-// Revision 1.4  2007/09/26 20:47:15  wenger
-// Changed x.Seq_ID to x.Comp_index_ID for NMR-STAR 3.1 processing as
-// per Eldon's request; added some more debug output.
-//
-// Revision 1.3  2007/08/20 20:26:08  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.2  2007/01/12 18:41:06  wenger
-// Merged for_chemshift_br_0 thru for_chemshift_br_1 to trunk.
-//
-// Revision 1.1.2.2  2007/01/09 22:48:20  wenger
-// Peptide-CGI now works with all data types in 4267, at least (see
-// test41) -- this includes capability to specially deal with optional
-// values that are "?" in the file.  Still need to find out how to deal
-// with Heternonuclear NOE labels.
-//
-// Revision 1.1.2.1  2007/01/08 21:59:22  wenger
-// First version of NMR-STAR 3.1 capability -- added test38 to test
-// this.
-//
+// ...
 
 // ========================================================================
 

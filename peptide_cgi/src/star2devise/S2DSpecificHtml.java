@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2010/09/01 18:49:56  wenger
+// Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+//
 // Revision 1.20.2.1  2010/07/29 17:58:42  wenger
 // Added specification of the JS command port to the configuration, and
 // made other changes so that the "test" Peptide-CGI setup at CS can use
@@ -30,85 +33,6 @@
 // (since the user can now re-size the JS, we don't generate html
 // pages for different sizes of visualization; this also includes
 // eliminating the different-size pages for the histograms).
-//
-// Revision 1.19  2010/07/02 15:40:11  wenger
-// Fixed bug 104 (help page links were broken by changes in 11.8.3).
-//
-// Revision 1.18  2010/06/07 16:49:11  wenger
-// We now delete html files for an entry when the session files are
-// deleted (so you don't accidentally end up with an html file for,
-// say, coordinates, for which no session exists); this involved moving
-// all of the html files into a separate directory for each entry,
-// so they can be easily deleted.
-//
-// Revision 1.17  2010/06/01 15:00:02  wenger
-// Implemented to-do 132 (links from individual visualization pages back
-// to the summary pages).
-//
-// Revision 1.16  2010/05/26 16:05:22  wenger
-// Fixed problems with incorrect links to different-size visualization
-// pages in visualization-specific html pages.
-//
-// Revision 1.15  2010/05/24 20:06:15  wenger
-// Changed Peptide-CGI to put all sessions for a given entry in a
-// subdirectory, and use the JSA instead of the JSB, so it's possible to
-// switch between related sessions in the JavaScreen (see to-do 136).
-// (Note: using the JSA is also a first step in allowing arbitrary
-// re-sizing.)
-//
-// Revision 1.14  2010/04/23 16:51:08  wenger
-// Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
-//
-// Revision 1.13.18.1  2010/04/08 18:45:41  wenger
-// Temporarily changed the Jmol page templates to use cmdport 6266 to
-// run with the 'test' DEVise server; also changed torsion angle
-// and distance restrain visualizations to use the Jmol version of the
-// html templates (which should have been done before).
-//
-// Revision 1.13  2009/03/24 19:04:50  wenger
-// Fixed layout of nucleic acid deltashift session (made windows line
-// up better, etc.); fixed nucleotide counts in summary html page, and
-// changed residue to nucleotide where appropriate; fixed nucleic acid
-// deltashift html pages so that they link to the nucleic-acid-specific
-// help page.
-//
-// Revision 1.12  2009/02/20 22:54:24  wenger
-// RNA visualization now works, using the DNA template; added stub
-// help file for nucleic acid deltashift visualizations.
-//
-// Revision 1.11  2008/04/09 19:35:42  wenger
-// Added frame details to individual visualization pages in preparation
-// for summary page changes; spelled out Linear Analysis of Chemical
-// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
-// constructors.
-//
-// Revision 1.10  2007/12/20 16:49:03  wenger
-// Improved ChemShiftRef error messages; ChemShift calculation failing
-// is no longer considered an error at the top level of the program;
-// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
-// class could inherit from it correctly; some cache checking output
-// is now printed at a lower versbosity setting.
-//
-// Revision 1.9  2007/11/15 17:15:36  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.8  2007/08/20 20:26:09  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.7  2007/03/07 16:37:58  wenger
-// Phase 2 of "upload and visualize data" -- mostly working, I think,
-// but still needs chem shift reference capability and hasn't been
-// hooked up to Dimitri's upload scripts yet.
-//
-// Revision 1.6  2007/03/05 18:14:27  wenger
-// First phase of support for "upload and visualize data" setup -- still
-// needs quite a few changes.
-//
-// Revision 1.5  2006/05/26 16:50:55  wenger
-// Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
-// to the trunk.
 //
 // ...
 

@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2010/07/20 17:49:06  wenger
+// Fixed Peptide-CGI for changes to NMR-STAR files -- residues for DNA
+// are now DA, DC, etc., instead of just A, C, etc. (note: test68/
+// bmr15083.str still has old labels; test68_3/bmr15083_3.str has new
+// labels); 2kid has disappeared from the remediated restraints.
+//
 // Revision 1.16  2010/07/02 18:01:03  wenger
 // We now print the details of residue mismatches at the default
 // verbosity; also, we print the exact version of each NMR-STAR file
@@ -30,81 +36,6 @@
 // Final cleanup of some of the nucleic-acid-related code, especially
 // getting polymer types correctly for mmCIF files; added nucleic acid
 // tests to pre-release testing document.
-//
-// Revision 1.14  2009/03/12 17:30:19  wenger
-// Changed entity assembly names to things like "EA 1 (polypeptide(L))"
-// as requested by Eldon; changed tests accordingly.
-//
-// Revision 1.13  2009/02/19 22:40:42  wenger
-// DNA and RNA deltashift calculations now work (still need to check
-// that all values are correct); added value checks to relevant tests.
-//
-// Revision 1.12  2009/02/18 18:10:50  wenger
-// Fixed bug 065 (don't process non-polymer entities).
-//
-// Revision 1.11  2009/02/17 20:06:19  wenger
-// Fixed bug 078 (5531/1LUU combination causes a null pointer error).
-//
-// Revision 1.10  2009/02/05 20:24:37  wenger
-// All tests now work (including new nucleic acid tests), but lots of
-// cleanup to be done plus actually writing correct deltashifts for
-// nucleic acids.
-//
-// Revision 1.9  2009/01/29 22:04:57  wenger
-// Made protein, DNA, and RNA subclasses of S2DChemShift to make further
-// stuff easier; added some file checking to test64 and test65 (but
-// delta shifts and CSI don't work yet for nucleic acids); committing
-// again with nucleic acid stuff disabled.
-//
-// Revision 1.8  2009/01/29 16:43:31  wenger
-// A lot of the nucleic acid code is working, but I need to add in
-// the detection of what type of polymer we're processing -- so I'm
-// just committing this with 'protein' hard-coded in for now, so
-// the existing stuff all works.
-//
-// Revision 1.7  2008/12/01 20:37:53  wenger
-// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
-//
-// Revision 1.6.2.4  2008/12/01 16:34:43  wenger
-// We now try to match all combinations of PDB chains and BMRB entity
-// assemblies (not just A->1, B->2, etc.); renamed DataSequence and
-// TALOS classes to avoid conflict with ChemShift.
-//
-// Revision 1.6.2.3  2008/11/26 21:10:18  wenger
-// Added the TALOS matching from ChemShift to try to match sequences
-// with differences at the beginning and end.  (TALOS.java is a stripped-
-// down version of the class from ChemShift, with just the stuff we
-// need to try to match the sequences without adjusting the data for
-// each atom.)
-//
-// Revision 1.6.2.2  2008/11/25 22:48:18  wenger
-// More cleanup of PDB vs. BMRB matching code.
-//
-// Revision 1.6.2.1  2008/11/25 20:37:41  wenger
-// Okay, at least phase 1 of the BMRB/PDB entity assembly/chain
-// sequence match checking is mostly done; there's still a ton of
-// debug code here, and some places where it's not 100% done, but
-// it's at least close.  Test27 and test27_3 currently fail.
-//
-// Revision 1.6  2007/11/15 17:15:36  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.5  2007/10/03 15:38:40  wenger
-// We now allow single-letter residue codes in chemical shift loops,
-// etc.
-//
-// Revision 1.4  2007/10/02 18:54:24  wenger
-// More improvements to error and warning messages, including printing
-// fewer at the default verbosity setting.
-//
-// Revision 1.3  2007/08/20 20:26:09  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.2  2006/02/01 20:23:12  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
 //
 // ...
 

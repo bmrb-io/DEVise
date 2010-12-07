@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2010/09/01 18:49:56  wenger
+// Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+//
 // Revision 1.16.2.1  2010/07/29 17:58:42  wenger
 // Added specification of the JS command port to the configuration, and
 // made other changes so that the "test" Peptide-CGI setup at CS can use
@@ -39,136 +42,6 @@
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
 // s2d_remediated_rest_1002_br_end).
-//
-// Revision 1.14.6.3  2010/02/09 22:41:21  wenger
-// Mostly done getting coordinates from remediated restraint files --
-// seems to work, but still needs some checking.
-//
-// Revision 1.14.6.2  2010/02/05 20:46:13  wenger
-// Partially implemented getting remediated restraints file template from
-// properties.
-//
-// Revision 1.14.6.1  2010/02/03 23:13:19  wenger
-// Torsion angle output from remediated restraints files now has different
-// suffixes to avoid conflict with the restraint grid output; meta-data
-// for remediated restraints doesn't have violations
-//
-// Revision 1.14  2009/12/05 22:26:31  wenger
-// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
-// to the trunk.
-//
-// Revision 1.13.4.4  2009/12/01 23:25:25  wenger
-// Cleaned up a bunch of the temporary code for finding the torsion
-// angle violations in the restraint grid; tested it at Osaka and
-// Florence, added torsion-angle-related items to config files.
-//
-// Revision 1.13.4.3  2009/11/30 18:09:01  wenger
-// Got rid of sessions and specific html pages for (now obsolete) torsion
-// angle violation visualizations.
-//
-// Revision 1.13.4.2  2009/10/29 20:06:43  wenger
-// For torsion angles, the session files and specific html files are
-// now created; there are some cursor behavior problems in the session
-// files that need to be fixed, and also they are not loading right
-// in the JavaScreen (I wonder if I need to have some kind of different
-// setup in the JS client to handle the different highlighting).
-// (There also seem to be problems with DEVise drawing the high/low
-// symbols in some cases!)
-//
-// Revision 1.13.4.1  2009/10/22 17:11:31  wenger
-// "Bounced" s2d_torsion_rest_0909_br off the trunk -- created new
-// s2d_torsion_rest_0910_br, merged s2d_torsion_rest_0909_br_0 thru
-// s2d_torsion_rest_0909_br_end to the new branch.
-//
-// Revision 1.13.2.1  2009/10/08 16:20:23  wenger
-// Partway along the processing of torsion angle restraints -- just
-// committing for safety.
-//
-// Revision 1.13  2009/08/25 18:15:57  wenger
-// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
-// to trunk.
-//
-// Revision 1.12  2009/07/20 22:33:48  wenger
-// Implemented Peptide-CGI to-do 093 (derive Atom_type values from
-// Atom_ID values if the Atom_type values don't exist).
-//
-// Revision 1.11.4.6  2009/08/21 19:29:38  wenger
-// Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
-// But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
-// (Tagging with s2d_sparta_deltashift_br_1 before this commit,
-// s2d_sparta_deltashift_br_2 after.)
-//
-// Revision 1.11.4.5  2009/08/19 20:11:05  wenger
-// Changed SPARTA processing to deal with SPARTA data being in a
-// separate file from the main BMRB entry (requested by Eldon
-// yesterday).  (This includes modifying existing tests and adding
-// a new test.)
-//
-// Revision 1.11.4.4  2009/07/22 20:20:22  wenger
-// Fixed residue numbering in SPARTA delta shift visualizations;
-// changed "theoretical" to "SPARTA-calculated" and changed method
-// names, etc., to match.
-//
-// Revision 1.11.4.3  2009/07/15 19:50:46  wenger
-// Changed SPARTA version from 11.7.0 to 11.6.1; changed HN to H in
-// SPARTA processing and visualization.
-//
-// Revision 1.11.4.2  2009/07/15 17:36:31  wenger
-// Added processing of N and HN deltashifts for SPARTA; added N and
-// HN views to the session template (now split off from the "normal"
-// deltashift template); partially added provision for multiple models.
-//
-// Revision 1.11.4.1  2009/07/01 20:57:50  wenger
-// Data is now generated for SPARTA deltashift values; the link in
-// the summary page is not written yet, though.
-//
-// Revision 1.11  2009/04/15 16:21:04  wenger
-// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
-// fixed test61 and test61_3.
-//
-// Revision 1.10.2.1  2009/04/09 20:20:54  wenger
-// HvsC simulated spectrum stuff is partly in place -- data is generated
-// (but not fully tested, plus lots of temporary code still in place);
-// schema and session template have been generated; processing does not
-// yet generate the session file, specific HTML file, or the link in
-// the summary HTML file.
-//
-// Revision 1.10  2009/02/05 20:24:37  wenger
-// All tests now work (including new nucleic acid tests), but lots of
-// cleanup to be done plus actually writing correct deltashifts for
-// nucleic acids.
-//
-// Revision 1.9  2008/11/14 21:14:59  wenger
-// Fixed bugs 070 and 075 (problems with percent assignment values
-// sometimes being greater than 100% for NMR-STAR 3.1 files).
-//
-// Revision 1.8  2008/07/02 18:23:52  wenger
-// Changed version to 11.3.1 for release; final choice of suffix
-// for S2 order params.
-//
-// Revision 1.7  2008/02/20 17:41:07  wenger
-// Committing (disabled) partially-implemented S2 Order visualization
-// code and tests.
-//
-// Revision 1.6  2007/11/15 17:15:35  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.5  2007/03/07 16:37:58  wenger
-// Phase 2 of "upload and visualize data" -- mostly working, I think,
-// but still needs chem shift reference capability and hasn't been
-// hooked up to Dimitri's upload scripts yet.
-//
-// Revision 1.4  2006/08/21 21:01:11  wenger
-// Added second summary page for direct access to all large-size
-// visualizations; updated all tests accordingly.
-//
-// Revision 1.3  2006/02/01 21:34:32  wenger
-// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
-// to the trunk.
-//
-// Revision 1.2  2006/02/01 20:23:11  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
 //
 // ...
 

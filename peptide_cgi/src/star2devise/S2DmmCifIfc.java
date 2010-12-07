@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.17  2010/03/11 20:31:29  wenger
+// Implemented to-do 126 (multiple NMR-STAR file paths), except that
+// not all config files are updated yet; added checks that the URL
+// exists to all methods for getting URLs.  Also changed a few tests
+// affected by using the 3.1 files instead of 2.1 files.
+//
 // Revision 1.16  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -30,121 +36,6 @@
 // Revision 1.15  2010/01/21 16:32:16  wenger
 // Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
 // to trunk.
-//
-// Revision 1.14.2.2  2010/01/19 19:07:29  wenger
-// Minor cleanups of PDB-only processing code.
-//
-// Revision 1.14.2.1  2010/01/07 23:26:10  wenger
-// First cut at "PDB-only" torsion angle restraint processing -- basically
-// just cut out some steps for this case.  It *seems* to work okay -- comes
-// up with a visualization that works, but I want to do some more checking
-// before I say it's ready.
-//
-// Revision 1.14  2010/01/06 23:03:40  wenger
-// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
-//
-// Revision 1.13.2.1  2010/01/04 18:57:00  wenger
-// Added new S2DNmrStarIfcFactory class as part 1 of cleaning up the
-// creation of various S2D*Ifc objects.
-//
-// Revision 1.13  2009/12/10 00:01:37  wenger
-// Got the new -pdb_file argument working -- test works, just needs a bit
-// more manual checking to make sure everything is okay.
-//
-// Revision 1.12  2009/12/09 22:39:50  wenger
-// First version of test for new -pdb_file command-line argument -- the
-// test currently uses a PDB ID referenced in the NMR-STAR file itself.
-// I'll change the test as soon as the new argument is actually implemented.
-//
-// Revision 1.11  2009/03/25 21:49:09  wenger
-// Final cleanup of some of the nucleic-acid-related code, especially
-// getting polymer types correctly for mmCIF files; added nucleic acid
-// tests to pre-release testing document.
-//
-// Revision 1.10  2009/02/05 20:24:37  wenger
-// All tests now work (including new nucleic acid tests), but lots of
-// cleanup to be done plus actually writing correct deltashifts for
-// nucleic acids.
-//
-// Revision 1.9  2009/01/29 22:04:57  wenger
-// Made protein, DNA, and RNA subclasses of S2DChemShift to make further
-// stuff easier; added some file checking to test64 and test65 (but
-// delta shifts and CSI don't work yet for nucleic acids); committing
-// again with nucleic acid stuff disabled.
-//
-// Revision 1.8  2009/01/29 16:43:31  wenger
-// A lot of the nucleic acid code is working, but I need to add in
-// the detection of what type of polymer we're processing -- so I'm
-// just committing this with 'protein' hard-coded in for now, so
-// the existing stuff all works.
-//
-// Revision 1.7  2008/12/01 20:37:53  wenger
-// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
-//
-// Revision 1.6.2.10  2008/12/01 16:34:43  wenger
-// We now try to match all combinations of PDB chains and BMRB entity
-// assemblies (not just A->1, B->2, etc.); renamed DataSequence and
-// TALOS classes to avoid conflict with ChemShift.
-//
-// Revision 1.6.2.9  2008/11/30 02:43:48  wenger
-// If we only have one PDB chain and one BMRB entity assembly, we assume
-// they match without checking the sequences.
-//
-// Revision 1.6.2.8  2008/11/26 21:10:18  wenger
-// Added the TALOS matching from ChemShift to try to match sequences
-// with differences at the beginning and end.  (TALOS.java is a stripped-
-// down version of the class from ChemShift, with just the stuff we
-// need to try to match the sequences without adjusting the data for
-// each atom.)
-//
-// Revision 1.6.2.7  2008/11/26 16:08:31  wenger
-// Changed residue list parser to treat EOLs as tokens, to make
-// sure we stay synced to lines even if we goof up a token.
-//
-// Revision 1.6.2.6  2008/11/25 22:48:18  wenger
-// More cleanup of PDB vs. BMRB matching code.
-//
-// Revision 1.6.2.5  2008/11/25 20:50:53  wenger
-// Commented out a lot of the debug code from the previous commit.
-//
-// Revision 1.6.2.4  2008/11/25 20:37:41  wenger
-// Okay, at least phase 1 of the BMRB/PDB entity assembly/chain
-// sequence match checking is mostly done; there's still a ton of
-// debug code here, and some places where it's not 100% done, but
-// it's at least close.  Test27 and test27_3 currently fail.
-//
-// Revision 1.6.2.3  2008/11/19 23:21:19  wenger
-// Partially fixed up entity assembly ID/chain conversions -- still
-// need to check whether sequences match.
-//
-// Revision 1.6.2.2  2008/10/28 15:00:55  wenger
-// Ambiguity code visualizations now work with multiple-entity fix, and
-// work for the first time with 3.1 files.
-//
-// Revision 1.6.2.1  2008/08/19 21:24:10  wenger
-// Now generating atomic coordinate data with "real" entity assembly IDs
-// (right now just a direct mapping from A->1, etc -- needs to be changed);
-// changed 3D session to use "master" residue list rather than the
-// individual ones.
-//
-// Revision 1.6  2007/11/15 17:15:37  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.5  2007/08/21 18:56:30  wenger
-// Improved debug output -- better verbosity levels, etc.
-//
-// Revision 1.4  2007/08/20 20:26:10  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.3  2006/02/01 21:34:32  wenger
-// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
-// to the trunk.
-//
-// Revision 1.2  2006/02/01 20:23:13  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
 //
 // ...
 

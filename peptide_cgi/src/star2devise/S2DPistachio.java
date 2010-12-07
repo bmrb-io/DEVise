@@ -21,75 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2010/10/13 20:44:02  wenger
+// Finished restructuring Peptide-CGI code so that we get values from
+// the STAR files in the relevant object constructors, instead of in the
+// S2DMain class.
+//
 // Revision 1.13  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
 // add multiple NMR-STAR paths so we can see which NMR-STAR file
 // was used.)
-//
-// Revision 1.12  2009/03/25 21:49:09  wenger
-// Final cleanup of some of the nucleic-acid-related code, especially
-// getting polymer types correctly for mmCIF files; added nucleic acid
-// tests to pre-release testing document.
-//
-// Revision 1.11  2009/02/25 21:33:14  wenger
-// Added residue labels to all data that were missing them (in preparation
-// for selection by nucleotide in nucleotide visualizations; also allows
-// user to drill down to see residue label in protein deltashift, CSI,
-// etc., visualizations); changed tests accordingly; also fixed up some
-// tests that weren't checking for entity assembly IDs in data.
-//
-// Revision 1.10  2008/12/01 20:37:52  wenger
-// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
-//
-// Revision 1.9.2.3  2008/11/17 19:28:07  wenger
-// Added entity assembly IDs to summary page and specific visualization pages.
-//
-// Revision 1.9.2.2  2008/10/06 20:01:10  wenger
-// Pistachio processing now works again; still need to change session
-// to add a link on entity assembly ID, and test this on something with
-// multiple entities.
-//
-// Revision 1.9.2.1  2008/07/30 16:13:56  wenger
-// First steps towards fixing bug 037/etc -- added (dummy) entity
-// assembly ID values to generated data; updated schemas and tests
-// accordingly.
-//
-// Revision 1.9  2008/04/09 19:35:42  wenger
-// Added frame details to individual visualization pages in preparation
-// for summary page changes; spelled out Linear Analysis of Chemical
-// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
-// constructors.
-//
-// Revision 1.8  2007/12/20 16:49:03  wenger
-// Improved ChemShiftRef error messages; ChemShift calculation failing
-// is no longer considered an error at the top level of the program;
-// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
-// class could inherit from it correctly; some cache checking output
-// is now printed at a lower versbosity setting.
-//
-// Revision 1.7  2007/11/15 17:15:35  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.6  2007/10/02 18:54:24  wenger
-// More improvements to error and warning messages, including printing
-// fewer at the default verbosity setting.
-//
-// Revision 1.5  2007/10/01 21:32:29  wenger
-// Changes to how we get chemical shift entity ID values: added check for
-// _Atom_chem_shift.Entity_assembly_ID if _Atom_chem_shift.Entity_ID is
-// not found; change "?" to "1" in values.  This makes the new test50 work
-// at least somewhat, but that still needs more checking.  Also added
-// some more error checking for problems I found while working on this.
-//
-// Revision 1.4  2007/08/20 20:26:08  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.3  2006/02/01 21:34:32  wenger
-// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
-// to the trunk.
 //
 // ...
 

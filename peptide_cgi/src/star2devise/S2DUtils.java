@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2010/11/01 00:51:13  wenger
+// Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
+//
 // Revision 1.24.8.1  2010/10/19 00:39:37  wenger
 // Removed some no-longer-used sample conditions code, and added
 // separation of values with semicolons.
@@ -31,149 +34,6 @@
 // not all config files are updated yet; added checks that the URL
 // exists to all methods for getting URLs.  Also changed a few tests
 // affected by using the 3.1 files instead of 2.1 files.
-//
-// Revision 1.22.2.2  2010/03/05 23:30:02  wenger
-// We now create the session-specific HTML files for distance
-// restraint visualizations.
-//
-// Revision 1.22.2.1  2010/03/05 23:12:36  wenger
-// Creation of distance restraint session files is now (at least mostly)
-// working.
-//
-// Revision 1.22  2010/02/20 00:19:29  wenger
-// Oops -- minor typo in last commit.
-//
-// Revision 1.21  2010/02/20 00:18:36  wenger
-// Finished getting SPARTA processing to work with multiple entity
-// assemblies (to-do 117) and multiple chemical shift lists per entity
-// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
-//
-// Revision 1.20  2010/02/11 22:13:11  wenger
-// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
-// to trunk (note: s2d_remediated_rest_1002_br_1 ==
-// s2d_remediated_rest_1002_br_end).
-//
-// Revision 1.19.6.1  2010/02/03 23:13:20  wenger
-// Torsion angle output from remediated restraints files now has different
-// suffixes to avoid conflict with the restraint grid output; meta-data
-// for remediated restraints doesn't have violations
-//
-// Revision 1.19  2009/12/05 22:26:32  wenger
-// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
-// to the trunk.
-//
-// Revision 1.18.4.4  2009/12/05 21:17:03  wenger
-// Converted dots to zeros in numerical torsion angle data so DEVise
-// can read the data correctly.
-//
-// Revision 1.18.4.3  2009/11/30 18:09:01  wenger
-// Got rid of sessions and specific html pages for (now obsolete) torsion
-// angle violation visualizations.
-//
-// Revision 1.18.4.2  2009/10/29 20:06:43  wenger
-// For torsion angles, the session files and specific html files are
-// now created; there are some cursor behavior problems in the session
-// files that need to be fixed, and also they are not loading right
-// in the JavaScreen (I wonder if I need to have some kind of different
-// setup in the JS client to handle the different highlighting).
-// (There also seem to be problems with DEVise drawing the high/low
-// symbols in some cases!)
-//
-// Revision 1.18.4.1  2009/10/22 18:28:31  wenger
-// Early phases of setting up "atom IDs" (entity assembly ID/residue
-// sequence code/atom name) values to facilitate linking of torsion
-// angle data to coordinate data.
-//
-// Revision 1.18  2009/08/25 18:15:57  wenger
-// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
-// to trunk.
-//
-// Revision 1.17  2009/07/20 22:33:48  wenger
-// Implemented Peptide-CGI to-do 093 (derive Atom_type values from
-// Atom_ID values if the Atom_type values don't exist).
-//
-// Revision 1.16.4.2  2009/07/22 20:20:23  wenger
-// Fixed residue numbering in SPARTA delta shift visualizations;
-// changed "theoretical" to "SPARTA-calculated" and changed method
-// names, etc., to match.
-//
-// Revision 1.16.4.1  2009/07/01 20:57:51  wenger
-// Data is now generated for SPARTA deltashift values; the link in
-// the summary page is not written yet, though.
-//
-// Revision 1.16  2009/04/15 16:21:04  wenger
-// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
-// fixed test61 and test61_3.
-//
-// Revision 1.15.2.1  2009/04/14 22:09:07  wenger
-// Session file, visualization-specific HTML file and summary page link
-// are now created; removed "legend view" from session template;
-// documented and cleaned up code.  (Still needs help for H vs C
-// visualization.)
-//
-// Revision 1.15  2009/03/24 19:04:50  wenger
-// Fixed layout of nucleic acid deltashift session (made windows line
-// up better, etc.); fixed nucleotide counts in summary html page, and
-// changed residue to nucleotide where appropriate; fixed nucleic acid
-// deltashift html pages so that they link to the nucleic-acid-specific
-// help page.
-//
-// Revision 1.14  2009/02/20 22:54:24  wenger
-// RNA visualization now works, using the DNA template; added stub
-// help file for nucleic acid deltashift visualizations.
-//
-// Revision 1.13  2009/02/20 18:41:47  wenger
-// Preliminary version of DNA deltashift session template is now in place
-// (still needs cleanup); Peptide-CGI code uses that session template for
-// DNA processing.
-//
-// Revision 1.12  2009/02/18 21:43:07  wenger
-// Added S2DNAChemShift class to clean up nucleic acid code (this class
-// will do the actual calculation and writing of chemical shift deltas
-// for nucleic acids); added schemas for nucleic acid deltashift
-// visualizations; updated tests to reflect the fact that (at least
-// initially) we're not going to generate CSI visualizations for nucleic
-// acids.
-//
-// Revision 1.11  2008/06/27 15:23:33  wenger
-// Added the option to explicitly call the garbage collector a number
-// of times during processing; added memory usage printout at debug
-// level 2.
-//
-// Revision 1.10  2008/06/17 23:07:53  wenger
-// Fixed to-do 073:  we no longer generate figure of merit or ambiguity
-// code visualizations if the values are all null (".").
-//
-// Revision 1.9  2008/02/20 17:41:08  wenger
-// Committing (disabled) partially-implemented S2 Order visualization
-// code and tests.
-//
-// Revision 1.8  2007/12/20 16:49:03  wenger
-// Improved ChemShiftRef error messages; ChemShift calculation failing
-// is no longer considered an error at the top level of the program;
-// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
-// class could inherit from it correctly; some cache checking output
-// is now printed at a lower versbosity setting.
-//
-// Revision 1.7  2007/11/15 17:15:36  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.6  2007/10/02 18:54:24  wenger
-// More improvements to error and warning messages, including printing
-// fewer at the default verbosity setting.
-//
-// Revision 1.5  2007/10/02 17:39:53  wenger
-// More debug output; updated the version history with changes from last
-// commit.
-//
-// Revision 1.4  2007/08/20 20:26:10  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.3  2006/02/01 21:34:32  wenger
-// Merged peptide_cgi_10_8_0_br_0 thru peptide_cgi_10_8_0_br_2
-// to the trunk.
 //
 // ...
 

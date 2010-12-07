@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.14  2010/11/01 00:51:12  wenger
+// Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
+//
 // Revision 1.13.2.3  2010/10/19 00:23:19  wenger
 // Split the actual sample info out from the sample conditions info,
 // including modifying ambiguity code and Pistachio metadata accordingly.
@@ -62,70 +65,6 @@
 // Revision 1.10  2009/03/12 17:30:19  wenger
 // Changed entity assembly names to things like "EA 1 (polypeptide(L))"
 // as requested by Eldon; changed tests accordingly.
-//
-// Revision 1.9  2009/03/11 19:53:14  wenger
-// Implemented two-stage selection of data sets in coordinate
-// visualizations (select entity assembly, then select data set); updated
-// tests accordingly.  Updated test14 because it now generates data for
-// entity assembly 1.
-//
-// Revision 1.8  2008/12/01 20:37:52  wenger
-// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
-//
-// Revision 1.7.2.3  2008/11/17 19:28:07  wenger
-// Added entity assembly IDs to summary page and specific visualization pages.
-//
-// Revision 1.7.2.2  2008/11/11 20:47:50  wenger
-// Progress on getting entity assembly IDs correct for coupling constants,
-// heteronuclear NOE, T1 & T2 relaxation, and S2 order parameters
-// (working for 2.1, but not yet for 3.1).
-//
-// Revision 1.7.2.1  2008/07/30 16:13:55  wenger
-// First steps towards fixing bug 037/etc -- added (dummy) entity
-// assembly ID values to generated data; updated schemas and tests
-// accordingly.
-//
-// Revision 1.7  2008/07/02 16:29:19  wenger
-// S2 order parameter visualizations are done and approved by Eldon;
-// tests at least partially updated for S2 order stuff;
-// reversed the order of data sets in the data selection view of
-// 3D visualizations (more closely matches the summary page); minor
-// fix to testclean target in top-level makefile; minor fix to
-// relaxation session template (bar widths now set); added indices
-// to data set titles in 3D visualizations.
-//
-// Revision 1.6  2008/04/09 19:35:41  wenger
-// Added frame details to individual visualization pages in preparation
-// for summary page changes; spelled out Linear Analysis of Chemical
-// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
-// constructors.
-//
-// Revision 1.5  2007/12/20 16:49:03  wenger
-// Improved ChemShiftRef error messages; ChemShift calculation failing
-// is no longer considered an error at the top level of the program;
-// S2DSpecificHtml methods are no longer static so new S2DCSRErrorHtml
-// class could inherit from it correctly; some cache checking output
-// is now printed at a lower versbosity setting.
-//
-// Revision 1.4  2007/11/15 17:15:34  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.3  2007/08/20 20:26:07  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.2  2006/02/01 20:23:10  wenger
-// Merged V2_1b4_br_0 thru peptide_cgi_10_8_0_base to the
-// trunk.
-//
-// Revision 1.1.2.7  2004/12/08 23:07:17  wenger
-// Oops -- re-fixed deltashift session template; added titles to
-// specific html pages; enlarges the JavaScreen.
-//
-// Revision 1.1.2.6  2004/12/03 17:18:34  wenger
-// Added BMRB accession number, PDB ID (if relevant), timestamp and
-// Peptide-CGI version number to Peptide-CGI visualizations.
 //
 // ...
 

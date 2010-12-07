@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.30  2010/11/24 17:52:59  wenger
+// Fixed bug 118 (Data Scroll View not working correctly in restraint
+// visualizations).  The actual fix is as follows (matching what was
+// already in place for the coordinates visualization; I don't know why
+// the restraints weren't the same):
+// 1) Change Data Scroll views to use the rl (residue list) data source
+// instead of the ac (atomic coordinates) data source.
+// 2) Filter the records in the Data Scroll Views by entity assembly ID.
+// 3) Enable X home (keyboard and implicit) for the Data SCroll Views
+// (with a margin of 0.5).
+//
 // Revision 1.29  2010/05/26 15:29:43  wenger
 // Moved acdd files to entry-specific subdirectories and changed tests
 // accordingly; fixed some problems with set_modes.
@@ -34,187 +45,6 @@
 //
 // Revision 1.27  2010/04/23 16:51:08  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
-//
-// Revision 1.26  2010/03/10 23:09:57  wenger
-// Slight cleanup of STAR file version in session info.
-//
-// Revision 1.25  2010/03/10 22:36:17  wenger
-// Added NMR-STAR file version to summary html page and detailed
-// visualization version info (to-do 072).  (Doing this before I
-// add multiple NMR-STAR paths so we can see which NMR-STAR file
-// was used.)
-//
-// Revision 1.24.2.2  2010/04/19 14:49:48  wenger
-// Changed session code to match previous change in distance restraint
-// session template (coord_index changed from 2 to 1).
-//
-// Revision 1.24.2.1  2010/03/05 23:12:36  wenger
-// Creation of distance restraint session files is now (at least mostly)
-// working.
-//
-// Revision 1.24  2010/02/17 21:24:40  wenger
-// Fixed some errors in changing strings in the SPARTA session files.
-//
-// Revision 1.23  2010/02/11 22:13:11  wenger
-// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
-// to trunk (note: s2d_remediated_rest_1002_br_1 ==
-// s2d_remediated_rest_1002_br_end).
-//
-// Revision 1.22.2.2  2010/02/10 17:04:59  wenger
-// Made a separate session template for remediated restraint torsion
-// angle visualizations -- still needs to be modified to work how we
-// want.
-//
-// Revision 1.22.2.1  2010/02/03 23:13:19  wenger
-// Torsion angle output from remediated restraints files now has different
-// suffixes to avoid conflict with the restraint grid output; meta-data
-// for remediated restraints doesn't have violations
-//
-// Revision 1.22  2010/01/21 16:32:15  wenger
-// Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
-// to trunk.
-//
-// Revision 1.21.4.2  2010/01/19 19:07:29  wenger
-// Minor cleanups of PDB-only processing code.
-//
-// Revision 1.21.4.1  2010/01/07 23:26:10  wenger
-// First cut at "PDB-only" torsion angle restraint processing -- basically
-// just cut out some steps for this case.  It *seems* to work okay -- comes
-// up with a visualization that works, but I want to do some more checking
-// before I say it's ready.
-//
-// Revision 1.21  2009/12/05 22:26:32  wenger
-// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
-// to the trunk.
-//
-// Revision 1.20.4.2  2009/11/30 18:09:01  wenger
-// Got rid of sessions and specific html pages for (now obsolete) torsion
-// angle violation visualizations.
-//
-// Revision 1.20.4.1  2009/10/29 20:06:43  wenger
-// For torsion angles, the session files and specific html files are
-// now created; there are some cursor behavior problems in the session
-// files that need to be fixed, and also they are not loading right
-// in the JavaScreen (I wonder if I need to have some kind of different
-// setup in the JS client to handle the different highlighting).
-// (There also seem to be problems with DEVise drawing the high/low
-// symbols in some cases!)
-//
-// Revision 1.20  2009/08/25 18:15:57  wenger
-// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
-// to trunk.
-//
-// Revision 1.19.4.3  2009/07/22 20:20:22  wenger
-// Fixed residue numbering in SPARTA delta shift visualizations;
-// changed "theoretical" to "SPARTA-calculated" and changed method
-// names, etc., to match.
-//
-// Revision 1.19.4.2  2009/07/15 17:36:31  wenger
-// Added processing of N and HN deltashifts for SPARTA; added N and
-// HN views to the session template (now split off from the "normal"
-// deltashift template); partially added provision for multiple models.
-//
-// Revision 1.19.4.1  2009/07/01 20:57:51  wenger
-// Data is now generated for SPARTA deltashift values; the link in
-// the summary page is not written yet, though.
-//
-// Revision 1.19  2009/05/11 22:22:46  wenger
-// Added "Force reprocessing" button to summary pages (mainly for
-// testing).
-//
-// Revision 1.18  2009/04/15 16:21:04  wenger
-// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
-// fixed test61 and test61_3.
-//
-// Revision 1.17.2.1  2009/04/14 22:09:07  wenger
-// Session file, visualization-specific HTML file and summary page link
-// are now created; removed "legend view" from session template;
-// documented and cleaned up code.  (Still needs help for H vs C
-// visualization.)
-//
-// Revision 1.17  2009/03/25 15:42:51  wenger
-// Changed version to 11.5.0 (because I think this is a big enough
-// change for a new minor version, not just a new revision); fixed
-// up help for atomic coordinates, and added help for nucleic acid
-// delta shifts.
-//
-// Revision 1.16  2009/03/18 18:36:29  wenger
-// Changed atom_coord_jmol.base to work off of 15083 instead of 4267,
-// so we have multiple entities, and both a protein and a nucleic acid;
-// fixed an error in test4_check (still referred to 4267).
-//
-// Revision 1.15  2009/03/04 18:22:18  wenger
-// Deltashift visualization now works for RNA.
-//
-// Revision 1.14  2009/02/20 22:54:24  wenger
-// RNA visualization now works, using the DNA template; added stub
-// help file for nucleic acid deltashift visualizations.
-//
-// Revision 1.13  2009/02/20 18:41:47  wenger
-// Preliminary version of DNA deltashift session template is now in place
-// (still needs cleanup); Peptide-CGI code uses that session template for
-// DNA processing.
-//
-// Revision 1.12  2009/02/18 21:43:07  wenger
-// Added S2DNAChemShift class to clean up nucleic acid code (this class
-// will do the actual calculation and writing of chemical shift deltas
-// for nucleic acids); added schemas for nucleic acid deltashift
-// visualizations; updated tests to reflect the fact that (at least
-// initially) we're not going to generate CSI visualizations for nucleic
-// acids.
-//
-// Revision 1.11  2008/12/01 20:37:53  wenger
-// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
-//
-// Revision 1.10.2.3  2008/10/28 15:00:55  wenger
-// Ambiguity code visualizations now work with multiple-entity fix, and
-// work for the first time with 3.1 files.
-//
-// Revision 1.10.2.2  2008/08/19 21:24:10  wenger
-// Now generating atomic coordinate data with "real" entity assembly IDs
-// (right now just a direct mapping from A->1, etc -- needs to be changed);
-// changed 3D session to use "master" residue list rather than the
-// individual ones.
-//
-// Revision 1.10.2.1  2008/07/30 16:54:17  wenger
-// Changed atom_coord_jmol.base to use 4267, since the appropriate
-// data is generated by test1.
-//
-// Revision 1.10  2008/07/09 18:09:23  wenger
-// Changed 3D (Jmol) session template to be based on 4001 instead of
-// 4096 to make it easier to fix bug 061.
-//
-// Revision 1.9  2008/07/02 16:29:19  wenger
-// S2 order parameter visualizations are done and approved by Eldon;
-// tests at least partially updated for S2 order stuff;
-// reversed the order of data sets in the data selection view of
-// 3D visualizations (more closely matches the summary page); minor
-// fix to testclean target in top-level makefile; minor fix to
-// relaxation session template (bar widths now set); added indices
-// to data set titles in 3D visualizations.
-//
-// Revision 1.8  2008/02/20 17:41:08  wenger
-// Committing (disabled) partially-implemented S2 Order visualization
-// code and tests.
-//
-// Revision 1.7  2007/11/15 17:15:36  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.6  2007/08/21 18:56:30  wenger
-// Improved debug output -- better verbosity levels, etc.
-//
-// Revision 1.5  2007/08/20 20:26:09  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.4  2006/05/26 16:50:55  wenger
-// Merged peptide_cgi_jmol_proto_br_0 thru peptide_cgi_jmol_proto_br_1
-// to the trunk.
-//
-// Revision 1.3.2.1  2006/02/20 21:57:40  wenger
-// Peptide-CGI now generates data, sessions, etc., that use
-// Jmol for 3D molecule visualization.
 //
 // ...
 

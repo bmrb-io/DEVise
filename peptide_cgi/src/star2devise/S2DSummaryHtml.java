@@ -31,6 +31,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2010/07/07 20:54:13  wenger
+// Changed Peptide-CGI to work with new JavaScreen re-sizing feature
+// (since the user can now re-size the JS, we don't generate html
+// pages for different sizes of visualization; this also includes
+// eliminating the different-size pages for the histograms).
+//
 // Revision 1.24  2010/06/07 16:49:11  wenger
 // We now delete html files for an entry when the session files are
 // deleted (so you don't accidentally end up with an html file for,
@@ -40,164 +46,6 @@
 //
 // Revision 1.23  2010/04/23 16:51:08  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
-//
-// Revision 1.22  2010/03/10 22:36:17  wenger
-// Added NMR-STAR file version to summary html page and detailed
-// visualization version info (to-do 072).  (Doing this before I
-// add multiple NMR-STAR paths so we can see which NMR-STAR file
-// was used.)
-//
-// Revision 1.21.2.1  2010/03/08 19:16:24  wenger
-// Now writing distance restraint links in summary html pages.
-//
-// Revision 1.21  2010/02/20 00:18:36  wenger
-// Finished getting SPARTA processing to work with multiple entity
-// assemblies (to-do 117) and multiple chemical shift lists per entity
-// assembly (to-do 118); updated test_sparta 7 and test_sparta8 accordingly.
-//
-// Revision 1.20  2010/02/11 22:13:11  wenger
-// Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
-// to trunk (note: s2d_remediated_rest_1002_br_1 ==
-// s2d_remediated_rest_1002_br_end).
-//
-// Revision 1.19.2.1  2010/02/04 00:08:27  wenger
-// Now writing remediated restraint links in summary page -- CGI links
-// don't seem to work right yet.
-//
-// Revision 1.19  2010/01/21 16:32:15  wenger
-// Merged s2d_pdb_only_tar_1001_br_0 thru s2d_pdb_only_tar_1001_br_end
-// to trunk.
-//
-// Revision 1.18.2.2  2010/01/08 23:28:32  wenger
-// Fixed 'Force reprocessing' functionality for restraint-only summary
-// page; fixed error message in make_view for restraint-only processing.
-//
-// Revision 1.18.2.1  2010/01/08 16:29:30  wenger
-// Added changes to make the summary html file have only the relevant
-// things for restraint-only processing.
-//
-// Revision 1.18  2010/01/06 23:03:40  wenger
-// Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
-//
-// Revision 1.17.2.1  2009/12/16 00:07:56  wenger
-// Added S2DDistRestraint and S2DNmrStarDistRIfc classes (mostly
-// stubs so far); added a bunch of notes based on today's BMRB
-// staff meeting discussions; also added stubbed-in classes in
-// S2DSummaryHtml, etc.
-//
-// Revision 1.17  2009/12/05 22:26:32  wenger
-// Merged s2d_torsion_rest_0910_br_0 thru s2d_torsion_rest_0910_br_0
-// to the trunk.
-//
-// Revision 1.16.4.4  2009/12/05 21:45:39  wenger
-// Hopefully final cleanup before merge(!).
-//
-// Revision 1.16.4.3  2009/12/02 21:38:45  wenger
-// Added the new TAR_LEVEL_LINK_CHECK processing level, and made it
-// the default; partially implemented passing the torsion angle URL
-// thru the CGI script arguments as an optimization.  Added the capability
-// of running some subsets of the tests in test_all.
-//
-// Revision 1.16.4.2  2009/12/02 17:26:53  wenger
-// The torsion angle CGI links now work for the "standard" NMR Browser
-// setup (haven't tested it yet with the visualization server).
-// A bunch of clean up still needed...  Added a new test for "all-in-one"
-// processing, but that doesn't work yet.
-//
-// Revision 1.16.4.1  2009/11/17 23:25:18  wenger
-// Writing of torsion angle sessions, etc., now mostly working (links in
-// summary page are still not right, lots of other cleanup, finding
-// data in restraint grid still needed).
-//
-// Revision 1.16  2009/08/25 18:15:57  wenger
-// Merged s2d_sparta_deltashift_br_0 thru s2d_sparta_deltashift_br_3
-// to trunk.
-//
-// Revision 1.15.4.4  2009/08/21 19:29:38  wenger
-// Peptide-CGI now creates the new "all-in-one" SPARTA visualization.
-// But some existing tests fail -- DON'T MERGE UNTIL THAT IS FIXED.
-// (Tagging with s2d_sparta_deltashift_br_1 before this commit,
-// s2d_sparta_deltashift_br_2 after.)
-//
-// Revision 1.15.4.3  2009/07/28 22:40:01  wenger
-// Added processing of SPARTA-calculated delta shift average values.
-//
-// Revision 1.15.4.2  2009/07/22 20:20:22  wenger
-// Fixed residue numbering in SPARTA delta shift visualizations;
-// changed "theoretical" to "SPARTA-calculated" and changed method
-// names, etc., to match.
-//
-// Revision 1.15.4.1  2009/07/06 20:37:23  wenger
-// Summary pages now have links for SPARTA-calculated deltashifts.
-//
-// Revision 1.15  2009/05/11 22:22:46  wenger
-// Added "Force reprocessing" button to summary pages (mainly for
-// testing).
-//
-// Revision 1.14  2009/04/15 16:21:04  wenger
-// Merged s2d_hc_spectrum_br_0 thru s2d_hc_spectrum_br_end to trunk;
-// fixed test61 and test61_3.
-//
-// Revision 1.13.2.1  2009/04/14 22:09:07  wenger
-// Session file, visualization-specific HTML file and summary page link
-// are now created; removed "legend view" from session template;
-// documented and cleaned up code.  (Still needs help for H vs C
-// visualization.)
-//
-// Revision 1.13  2009/03/24 19:04:50  wenger
-// Fixed layout of nucleic acid deltashift session (made windows line
-// up better, etc.); fixed nucleotide counts in summary html page, and
-// changed residue to nucleotide where appropriate; fixed nucleic acid
-// deltashift html pages so that they link to the nucleic-acid-specific
-// help page.
-//
-// Revision 1.12  2008/12/01 20:37:53  wenger
-// Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
-//
-// Revision 1.11.2.1  2008/11/17 19:28:07  wenger
-// Added entity assembly IDs to summary page and specific visualization pages.
-//
-// Revision 1.11  2008/07/02 16:29:20  wenger
-// S2 order parameter visualizations are done and approved by Eldon;
-// tests at least partially updated for S2 order stuff;
-// reversed the order of data sets in the data selection view of
-// 3D visualizations (more closely matches the summary page); minor
-// fix to testclean target in top-level makefile; minor fix to
-// relaxation session template (bar widths now set); added indices
-// to data set titles in 3D visualizations.
-//
-// Revision 1.10  2008/06/04 21:12:01  wenger
-// New Peptide-CGI summary page is implemented, test work except for
-// test52 for some weird reason.  (Still may need some other changes
-// before release, though.)
-//
-// Revision 1.9  2008/04/09 19:35:42  wenger
-// Added frame details to individual visualization pages in preparation
-// for summary page changes; spelled out Linear Analysis of Chemical
-// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
-// constructors.
-//
-// Revision 1.8  2007/11/15 17:15:36  wenger
-// Cleaned out cvs history in source files.
-//
-// Revision 1.7  2007/08/20 20:26:10  wenger
-// Added -verb command-line flag and property so we can turn on debug
-// output without recompiling; added debug_level property corresponding
-// to the existing -debug command-line flag.
-//
-// Revision 1.6  2007/03/07 16:37:58  wenger
-// Phase 2 of "upload and visualize data" -- mostly working, I think,
-// but still needs chem shift reference capability and hasn't been
-// hooked up to Dimitri's upload scripts yet.
-//
-// Revision 1.5  2006/08/21 21:01:11  wenger
-// Added second summary page for direct access to all large-size
-// visualizations; updated all tests accordingly.
-//
-// Revision 1.4  2006/05/11 21:10:25  wenger
-// Fixed problems with some html page titles being based on the BMRB
-// ID rather than the name, etc.  Fixed test36 to work with new LACS
-// file names.
 //
 // ...
 
