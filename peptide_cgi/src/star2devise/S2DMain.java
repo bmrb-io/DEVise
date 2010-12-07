@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.247  2010/12/07 20:03:18  wenger
+// To-do #150: added logging of how long each invocation of Peptide-CGI
+// takes, and whether it uses the cache.
+//
 // Revision 1.246  2010/12/07 17:41:15  wenger
 // Did another version history purge.
 //
@@ -383,6 +387,7 @@ public class S2DMain {
 	    result = "SUCCESS";
 	} catch (S2DCancel ex) {
 	    // Just catch this so we don't pass it on to higher levels.
+	    result = "CANCELLED";
 	} catch (S2DWarning ex) {
 	    System.err.println("Top-level warning: ");
 	    System.err.println(ex.toString());
