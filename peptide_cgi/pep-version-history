@@ -4,7 +4,8 @@ Peptide-CGI 11.8.9
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
 
-(Nothing yet.)
+* Added logging of all Peptide-CGI runs, including elapsed time and
+whether the cache was used.
 
 
 Peptide-CGI 11.8.8

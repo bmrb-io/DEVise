@@ -669,9 +669,10 @@ Num Date        Status  Pri     Description
 				in the 3D visualizations. (elu/wenger)
 				(At least partially done by wenger, 10/29/10)
 
-150 10/15/10	OPEN	1	Add logging of how long each invocation of
+150 10/15/10	DONE	1	Add logging of how long each invocation of
 				Peptide-CGI takes, and whether it used the
 				cache. (miron/wenger)
+				(Done by wenger, 12/7/10)
 
 151 11/1/10	OPEN	1	Check whether 'whitespace' should be changed					to 'separator' in schema files to prevent
 				quotes issue. (wenger)

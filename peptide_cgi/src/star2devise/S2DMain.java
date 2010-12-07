@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.246  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.245  2010/11/29 22:41:33  wenger
 // Changed version to 11.8.9_x1, added new version history section.
 //
@@ -224,10 +227,11 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    // Change version to 11.3.1 when S2 order stuff is implemented.
     public static final String PEP_CGI_VERSION = "11.8.9_x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
+
+    private static FileWriter _logWriter = null;
 
     private String _masterBmrbId = ""; // accession number the user requested
 
@@ -354,6 +358,7 @@ public class S2DMain {
     private static final int CSR_TIMEOUT_DEFAULT = 120;
     private int _csrTimeout = CSR_TIMEOUT_DEFAULT;
 
+    private static Date _startDate;
     private static String _timestamp;
     private static String _shortTimestamp;
 
@@ -369,9 +374,13 @@ public class S2DMain {
 	_retrying = false;
 
 	setTimestamps();
+	logLine("");
+	logArgs(args);
 
+	String result = "FAILURE";
 	try {
 	    run(args);
+	    result = "SUCCESS";
 	} catch (S2DCancel ex) {
 	    // Just catch this so we don't pass it on to higher levels.
 	} catch (S2DWarning ex) {
@@ -382,6 +391,8 @@ public class S2DMain {
 	    ex.printStackTrace();
 	    System.err.println(ex.toString());
 	    throw new S2DError("NMR-Star to DEVise conversion failed");
+	} finally {
+	    logFinish(result);
 	}
     }
 
@@ -402,10 +413,13 @@ public class S2DMain {
 	    s2d._rrDistRLevel = RRDISTR_LEVEL_NONE;
 	}
 
+	logLine("Processing " + s2d.getName() + "...");
 	try {
 	    if (!s2d.useCache()) {
+	        logLine("...not using cache");
 	        s2d.process();
 	    } else {
+	        logLine("...using cache");
 	        if (doDebugOutput(1)) {
 		    System.out.println("Cache files used");
 		}
@@ -436,6 +450,65 @@ public class S2DMain {
     public static String getShortTimestamp() { return _shortTimestamp; }
     
     //-------------------------------------------------------------------
+    // Log the arguments of this process.
+    static void logArgs(String args[])
+    {
+    	String line = "s2d(";
+	for (int index = 0; index < args.length; index++) {
+	    line += "<" + args[index] + "> ";
+	}
+	line += ")";
+
+	logLine(line);
+    }
+
+    //-------------------------------------------------------------------
+    // Finish the logging for this process -- print the result and
+    // elapsed time, and close the log file.
+    static void logFinish(String result)
+    {
+        Date date = new Date();
+	double elapsedTime =
+	  (date.getTime() - _startDate.getTime()) / 1000.0;
+        logLine("result: " + result + " (elapsed time: " +
+	  elapsedTime + " s)");
+
+	if (_logWriter != null) {
+	    try {
+	        _logWriter.close();
+	    } catch (IOException ex) {
+	        System.err.println("Error (" + ex.toString() +
+	          ") closing log file!");
+	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Log a line to the log file.
+    public static void logLine(String line)
+    {
+	try {
+    	    if (_logWriter == null) {
+	        _logWriter = new FileWriter("s2d.log", true);
+	    }
+
+	    if (line.equals("")) {
+	        _logWriter.write("\n");
+	    } else {
+                Date date = new Date();
+	        DateFormat dtf = DateFormat.getDateTimeInstance(
+	          DateFormat.MEDIUM, DateFormat.MEDIUM);
+	        String timestamp = dtf.format(date);
+	        _logWriter.write(timestamp + ": " + line + "\n");
+	    }
+
+	} catch (Exception ex) {
+	    System.err.println("Error (" + ex.toString() +
+	      ") writing to log file");
+	}
+    }
+
+    //-------------------------------------------------------------------
     // Constructor.
     public S2DMain(String args[]) throws S2DException
     {
@@ -461,19 +534,26 @@ public class S2DMain {
 	System.out.println("Peptide-CGI version " + PEP_CGI_VERSION);
     }
 
+    //-------------------------------------------------------------------
+    // Get the name of the data we're currently processing.
+    String getName()
+    {
+        return _name;
+    }
+
     //===================================================================
     // PRIVATE METHODS
 
     //-------------------------------------------------------------------
     public static void setTimestamps()
     {
-        Date date = new Date();
+        _startDate = new Date();
 	DateFormat dtf = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
 	  DateFormat.MEDIUM);
-	_timestamp = dtf.format(date);
+	_timestamp = dtf.format(_startDate);
 
 	dtf = DateFormat.getDateInstance(DateFormat.MEDIUM);
-	_shortTimestamp = dtf.format(date);
+	_shortTimestamp = dtf.format(_startDate);
     }
 
     //-------------------------------------------------------------------
