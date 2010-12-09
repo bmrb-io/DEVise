@@ -4405,6 +4405,12 @@ java.security.AccessControlException: access denied
 1005 11/16/10	OPEN	Jmol loses state (e.g., ribbons turned on) when you
 			resize the JavaScreen. (gabrielc/wenger)
 
+1006 12/9/10	OPEN	If you have a child view selected, setting many
+			window-level properties doesn't seem to work (e.g.,
+			print configuration, background color, stack
+			control).  (I'm guessing it sets that for the parent
+			view rather than the actual window.) (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
