@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.93  2010/09/27 16:45:53  wenger
+  Changed DEVise version to 1.11.2x1, added 1.11.2 version history section.
+
   Revision 1.92  2010/09/24 17:56:49  wenger
   Changed DEVise version to 1.11.1 for release.
 
@@ -60,6 +63,9 @@
   Revision 1.82  2009/12/03 16:15:14  wenger
   Changed DEVise version to 1.11.0x1 and JS version to 5.13.0; added
   appropriate version history sections.
+
+  Revision 1.81.2.7  2010/12/09 22:36:25  wenger
+  Fixed DEVise bug 924 (sends cursor commands to JS for hidden views).
 
   Revision 1.81.2.6  2010/02/23 22:24:48  wenger
   Changed version to 1.10.2x1 and added 1.10.2 version history section;
@@ -565,7 +571,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.2x1"/*TEMP*/;
+static const char *	version = "1.11.2x2"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2010";

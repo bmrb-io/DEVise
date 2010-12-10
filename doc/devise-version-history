@@ -32,7 +32,10 @@ records in the follower view(s).
 DEVise 1.10.2
 -------------
 
-(Nothing yet.)
+* Fixed DEVise bug 924 (DEVise sends cursor commands to JS for hidden
+views).
+
+* Fixed DEVise bug 923 (DEVise sends GData to JS for hidden views).
 
 
 DEVise 1.10.1

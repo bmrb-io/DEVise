@@ -3100,9 +3100,11 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			pumori but nowhere else.)
 			(Fixed by rkw, 3/12/02.)
 
-759 3/26/02	OPEN	JavaScreen: if a view containing a cursor has 'exclude'
+759 3/26/02	FIXED	JavaScreen: if a view containing a cursor has 'exclude'
 			set in the print configuration, the JavaScreen can't
 			open the session at all. (rkw)
+			(See also 924.)
+			(Fixed in 1.10.2 by wenger, 12/9/10.)
 
 760 3/26/02	FIXED	JavaScreen: client has index out of range errors
 			when trying to draw axis labels for the session
@@ -3928,17 +3930,20 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			to change the visual filter of one of the views first).
 			(wenger)
 
-923 9/22/06	OPEN	If a view is excluded from printing, but has "send
+923 9/22/06	FIXED	If a view is excluded from printing, but has "send
 			GData to JS" set to true, DEVise still sends the
 			associated GData, which of course confuses the JS.
 			(wenger)
+			(Fixed in 1.10.2 by wenger, 12/10/10.)
 
-924 9/22/06	OPEN	If a view is excluded from printing, but has a
+924 9/22/06	FIXED	If a view is excluded from printing, but has a
 			cursor in it, DEVise still tells the JS to draw
 			the cursor, which of course confuses it. (wenger)
 			(Maybe work around this by having the client treat
 			a cursor draw on a non-existant view as a warning
 			rather than an error.)
+			(See also 759.)
+			(Fixed in 1.10.2 by wenger, 12/9/10.)
 
 925 9/22/06	OPEN	Print modes don't work for Jmol view. (wenger)
 

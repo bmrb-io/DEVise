@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,12 @@
   $Id$
 
   $Log$
+  Revision 1.50.4.1  2010/12/09 22:36:18  wenger
+  Fixed DEVise bug 924 (sends cursor commands to JS for hidden views).
+
+  Revision 1.50  2008/09/23 22:55:34  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.49  2005/12/06 20:03:12  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -427,6 +433,10 @@ class ViewWin : public Coloring
     }
 
     ViewWin *GetParent() { return _parent; }
+
+	/** Get the DEVise Window containing this object.
+	*/
+	ViewWin *GetDevWindow();
     
     /* Return true if window is iconified */
     Boolean Iconified();

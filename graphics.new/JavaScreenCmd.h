@@ -21,6 +21,13 @@
   $Id$
 
   $Log$
+  Revision 1.53  2010/08/10 21:36:10  wenger
+  Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
+  correctly on JavaScreen resize).
+
+  Revision 1.52.4.1  2010/12/10 21:25:01  wenger
+  Fixed DEVise bug 923 (DEVise sends GData to JS for hidden views).
+
   Revision 1.52  2008/10/13 19:45:27  wenger
   More const-ifying, especially Control- and csgroup-related.
 
@@ -373,9 +380,10 @@ class JavaScreenCmd
 			SET_VIEW_COLORS,
 			SET_USE_JMOL,
 
-			DONE,
-			ERROR,
-			FAIL,
+			DONE, // success
+			CANCEL, // cancelled, but not an error
+			ERROR, // non-fatal error
+			FAIL, // severe error -- close client connection
 
 			CONTROLCMD_NUM,
 			NULL_COMMAND

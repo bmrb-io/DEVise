@@ -21,11 +21,21 @@
   $Id$
 
   $Log$
+  Revision 1.141  2010/08/10 21:36:10  wenger
+  Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
+  correctly on JavaScreen resize).
+
   Revision 1.140  2010/08/10 17:05:48  wenger
   Implemented Peptide-CGI to-do 137 (make session switching work for the
   visualization server).  (All changes actually are on the DEVise end,
   not in Peptide-CGI.)  Also added provision to run the JavaScreen on
   the local Peptide-CGI's sessions, data, etc.
+
+  Revision 1.139.4.2  2010/12/10 21:25:00  wenger
+  Fixed DEVise bug 923 (DEVise sends GData to JS for hidden views).
+
+  Revision 1.139.4.1  2010/12/09 22:36:25  wenger
+  Fixed DEVise bug 924 (sends cursor commands to JS for hidden views).
 
   Revision 1.139  2008/10/13 19:45:26  wenger
   More const-ifying, especially Control- and csgroup-related.
@@ -2339,7 +2349,7 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 	_properCmdTermination = true;
 
 	// return either DONE/ERROR/FAIL to current JAVA client
-	if (status == DONE)
+	if (status == DONE || status == CANCEL)
 	{
 		ReturnVal(1,&_controlCmdName[DONE]);
 		return 1;
@@ -2667,15 +2677,13 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 			  view->GetName());
             DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
-   			ControlCmdType tmpResult = DONE;
 
-			if (RequestUpdateGData(view) == DONE) {
+            ControlCmdType tmpResult = RequestUpdateGData(view);
+			if (tmpResult == DONE) {
 				dirtyGdataList.Append(view);
-			} else {
-				tmpResult = ERROR;
+			} else if (tmpResult != CANCEL) {
+			    result = tmpResult;
 			}
-
-			if (tmpResult != DONE) result = tmpResult;
 
 			// Tell the JS to redraw all cursors in this view and its
 			// child views.
@@ -2783,6 +2791,18 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
+	// Don't send GData if this view is in a window that's not shown
+	// in the JS.
+    ViewWin *window = view->GetDevWindow();
+	if (window->GetPrintExclude()) {
+#if defined (DEBUG_LOG)
+        sprintf(logBuf, "No GData sent for view %s because it is "
+		  "excluded from printing.\n", view->GetName());
+        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
+		return CANCEL;
+	}
+
 	//
 	// Make sure the GData is dumped to a file, rather than to the data
 	// socket, and get the size of the file.
@@ -2868,6 +2888,18 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 			_drawnCursors.Append(cursor);
 		}
 		return;
+	}
+
+	// Don't send a cursor draw request if this view is in a window
+	// that's not shown in the JS.
+    ViewWin *window = view->GetDevWindow();
+	if (window->GetPrintExclude()) {
+#if defined (DEBUG_LOG)
+        sprintf(logBuf, "No cursor draw in view %s because it is "
+		  "excluded from printing.\n", view->GetName());
+        DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
+#endif
+        return;
 	}
 
 	int xPixLow, yPixLow, xPixHigh, yPixHigh;
@@ -3253,8 +3285,10 @@ void
 JavaScreenCmd::DrawViewCursors(View *view)
 {
 #if defined(DEBUG_LOG)
-    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1,
+	int formatted = snprintf(logBuf, sizeof(logBuf),
 	  "JavaScreenCmd::DrawViewCursors(%s)\n", view->GetName());
+	checkAndTermBuf2(logBuf, formatted);
+    DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
 	// Draw this view's cursors.
@@ -3308,6 +3342,10 @@ JavaScreenCmd::DoCloseSession()
 }
 
 //====================================================================
+// Note: we need to check for errors before we get here, because by
+// the time we get here the JAVAC_UpdateGData command has already
+// been sent, so if we don't actually send the GData, the JavaScreen
+// client will hang.
 JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendViewGData(ViewGraph *view)
 {
@@ -3322,6 +3360,8 @@ JavaScreenCmd::SendViewGData(ViewGraph *view)
 	view->GetSendParams(gdParams);
 
 	if (gdParams.file == NULL) {
+		// Note: we should never get here, because this situation
+		// should be caught in RequestUpdateGData().
 		char errBuf[1024];
 		sprintf(errBuf, "Can't send GData for view %s; must send GData "
 		  "to file, not socket", view->GetName());

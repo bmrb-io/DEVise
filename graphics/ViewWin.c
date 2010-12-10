@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2010
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.72.12.1  2010/12/09 22:36:18  wenger
+  Fixed DEVise bug 924 (sends cursor commands to JS for hidden views).
+
+  Revision 1.72  2005/12/06 20:03:12  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.71.14.2  2003/11/05 17:01:44  wenger
   First part of display modes for printing is implemented (view foreground
   and background colors work, haven't done anything for symbol colors yet).
@@ -1040,6 +1047,18 @@ int ViewWin::TotalWeight()
   return w;
 }
 
+ViewWin *
+ViewWin::GetDevWindow()
+{
+  DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
+  if (_parent) {
+    return _parent->GetDevWindow();
+  }
+
+  return this;
+}
+
 Boolean ViewWin::Iconified()
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
@@ -1050,8 +1069,9 @@ Boolean ViewWin::Iconified()
   }
 
   /* no parent: this is a top level window. */
-  if (Mapped() && !_iconified)
+  if (Mapped() && !_iconified) {
     return false;
+  }
 
   return true;
 }
