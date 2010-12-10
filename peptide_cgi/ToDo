@@ -682,6 +682,10 @@ Num Date        Status  Pri     Description
 				2010 email from Gabriel Cornilescu).
 				(gabrielc/wenger)
 
+153 12/10/10	OPEN	4	Add chemical shift values to the coordinate
+				data so the user can see chemical shifts
+				if they drill down on an atom. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
