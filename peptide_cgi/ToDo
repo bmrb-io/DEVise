@@ -686,6 +686,9 @@ Num Date        Status  Pri     Description
 				data so the user can see chemical shifts
 				if they drill down on an atom. (wenger)
 
+154 12/17/10	OPEN	1	Add restraint color legend to distance
+				restraint visualizations. (wenger/elu)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
