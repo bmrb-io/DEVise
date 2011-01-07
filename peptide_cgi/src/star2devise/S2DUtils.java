@@ -19,12 +19,28 @@
 // $Id$
 
 // $Log$
+// Revision 1.26.2.1  2010/12/07 23:43:50  wenger
+// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
+// s2d_multi_entry2_br.
+//
+// Revision 1.26  2010/12/07 17:41:16  wenger
+// Did another version history purge.
+//
 // Revision 1.25  2010/11/01 00:51:13  wenger
 // Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
 // Revision 1.24.8.1  2010/10/19 00:39:37  wenger
 // Removed some no-longer-used sample conditions code, and added
 // separation of values with semicolons.
+//
+// Revision 1.24.10.2  2010/11/13 00:05:25  wenger
+// Basic creation of session-specific HTML pages for two-entry
+// visualizations is now in place (includes removing some leftover
+// provisions for the "large" specific HTML files).
+//
+// Revision 1.24.10.1  2010/11/12 22:03:19  wenger
+// Basic creation of two-entry H vs. N and H vs. C sessions is now
+// working (but still needs lots of enhancements).
 //
 // Revision 1.24  2010/04/23 16:51:09  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
@@ -63,7 +79,8 @@ public class S2DUtils
       TYPE_DNA_DELTASHIFT = 19, TYPE_RNA_DELTASHIFT = 20,
       TYPE_HVSC_CHEM_SHIFTS = 21, TYPE_SPARTA_DELTASHIFT = 22,
       TYPE_TORSION_ANGLE = 23, TYPE_RRTORSION_ANGLE = 24,
-      TYPE_DIST_RESTR = 25, TYPE_RRDIST_RESTR = 26;
+      TYPE_DIST_RESTR = 25, TYPE_RRDIST_RESTR = 26,
+      TYPE_HVSN_2_ENTRY = 27, TYPE_HVSC_2_ENTRY = 28;
 
     //===================================================================
     // PUBLIC METHODS
@@ -395,10 +412,12 @@ public class S2DUtils
 	    break;
 
 	case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
+	case S2DUtils.TYPE_HVSN_2_ENTRY:
 	    dataSuffix = S2DNames.HVSN_CHEM_SHIFT_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_HVSC_CHEM_SHIFTS:
+	case S2DUtils.TYPE_HVSC_2_ENTRY:
 	    dataSuffix = S2DNames.HVSC_CHEM_SHIFT_SUFFIX;
 	    break;
 

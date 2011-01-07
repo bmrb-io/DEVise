@@ -19,6 +19,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.30.3  2011/01/05 18:21:19  wenger
+// Hopefully final code cleanup, updated multi-entry help pages.
+//
+// Revision 1.5.30.2  2010/12/09 20:13:08  wenger
+// Got STAR file version working for multiple-entry processing.
+//
+// Revision 1.5.30.1  2010/12/07 23:43:49  wenger
+// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
+// s2d_multi_entry2_br.
+//
+// Revision 1.5.26.1  2010/11/16 00:01:17  wenger
+// We now create a "two-entry" summary HTML page (but it doesn't have the
+// right links yet); added "two-entry" HTML pages to the tests.
+//
+// Revision 1.5  2009/05/11 22:22:46  wenger
+// Added "Force reprocessing" button to summary pages (mainly for
+// testing).
+//
 // Revision 1.4  2007/08/20 20:26:10  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -83,8 +101,8 @@ public class S2DSummaryFileData extends S2DFileData
      * @param The master accession number.
      * @return True iff the data was gotten successfully.
      */
-    public boolean getSummaryData(String name, String htmlDir,
-      String masterBmrbId)
+    public boolean getSummaryData(String name, String fullName,
+      String htmlDir, String masterBmrbId)
     {
     	if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryFileData.getSummaryData(" +
@@ -99,10 +117,12 @@ public class S2DSummaryFileData extends S2DFileData
 
 	pdbIds = new Vector();
 
-	String filename = S2DSummaryHtml.fileName(htmlDir, name);
+	String filename = S2DSummaryHtml.fileName(htmlDir, name,
+	  fullName);
 
 	boolean result = getData(filename);
 
+	//TEMP -- only do this if result is true?
 	if (doDebugOutput(12)) {
 	    System.out.println("fileVersion: " + fileVersion);
 	    System.out.println("fileDate: " + fileDate);

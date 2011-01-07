@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2010
+// (c) Copyright 2009-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,54 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.4.11  2011/01/05 20:57:40  wenger
+// Fixed a bug that caused improper processing for the uploaded data/
+// entry combination.
+//
+// Revision 1.9.4.10  2011/01/05 18:21:19  wenger
+// Hopefully final code cleanup, updated multi-entry help pages.
+//
+// Revision 1.9.4.9  2011/01/05 15:33:16  wenger
+// More cleanup, including at least temporarily(?) just eliminating
+// some things for the multi-entry visualizations, such as system name
+// and frame title.
+//
+// Revision 1.9.4.8  2011/01/03 21:47:33  wenger
+// Cleaned up the getInfo()-related stuff in S2DSummaryHtml.
+//
+// Revision 1.9.4.7  2010/12/29 22:42:39  wenger
+// Fixed HTML page title and session info for two-entry visualizations.
+//
+// Revision 1.9.4.6  2010/12/29 17:49:37  wenger
+// The multi-entry code now gets frame index, entity assembly ID, and
+// peak count info from comments in the single-entry summary HTML files.
+//
+// Revision 1.9.4.5  2010/12/28 23:15:29  wenger
+// We now print comments in the single-entry summary HTML pages that we
+// will use to figure out what data we have for the multi-entry processing
+// (reading the comments is not implemented yet).
+//
+// Revision 1.9.4.4  2010/12/16 00:11:07  wenger
+// Changed how we come up with the list of available data for each
+// entry so that we don't need the -force option anymore for multi-entry
+// processing.
+//
+// Revision 1.9.4.3  2010/12/14 20:58:52  wenger
+// Moved the protein chemical shift-specific multi-entry code into the
+// S2DProteinChemShift class; added missing multi-entry files in some
+// of the multi-entry test checks.
+//
+// Revision 1.9.4.2  2010/12/08 22:17:22  wenger
+// Fixed output of HE1/NE1 lines (added name) (!); added checks (I thought
+// I already had checks for that, but apparently not).
+//
+// Revision 1.9.4.1  2010/12/07 23:43:49  wenger
+// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
+// s2d_multi_entry2_br.
+//
+// Revision 1.9  2010/11/01 00:51:12  wenger
+// Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
+//
 // Revision 1.8.8.2  2010/10/19 00:23:20  wenger
 // Split the actual sample info out from the sample conditions info,
 // including modifying ambiguity code and Pistachio metadata accordingly.
@@ -42,6 +90,11 @@
 // We now put save frame details into the drill-down data for the data
 // selection view in 3D visualizations; also fixed a bug in getting save
 // frame details for 3.0/3.1 files.
+//
+// Revision 1.8.10.1  2010/11/15 17:39:36  wenger
+// Added the entry ID/name to the H vs. C and H vs. N data, so it shows up
+// in drill-down (did some funky stuff with the schemas so we don't goof
+// up the other Peptide-CGI installation at CS).
 //
 // Revision 1.8  2010/03/10 22:36:17  wenger
 // Added NMR-STAR file version to summary html page and detailed
@@ -527,7 +580,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    hnWriter.write("# Data: H vs. N chemical shifts for " +
 	      _name + "\n");
 	    hnWriter.write("# Schema: bmrb-HvsN\n");
-	    hnWriter.write("# Attributes: Entity_assembly_ID; " +
+	    hnWriter.write("# Attributes: Entry; Entity_assembly_ID; " +
 	      "Residue_seq_code; AcidName; Hshift; Nshift; Hatom; Natom\n");
             hnWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -632,7 +685,8 @@ public class S2DProteinChemShift extends S2DChemShift {
 	        //
 	        // Write the link in the summary html file.
 	        //
-	        _summary.writeHvsNShifts(frameIndex, hnCount);
+	        _summary.writeHvsNShifts(frameIndex, _entityAssemblyID,
+		  hnCount);
 	    }
 
 	} catch (IOException ex) {
@@ -668,7 +722,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    hcWriter.write("# Data: H vs. C chemical shifts for " +
 	      _name + "\n");
 	    hcWriter.write("# Schema: bmrb-HvsC\n");
-	    hcWriter.write("# Attributes: Entity_assembly_ID; " +
+	    hcWriter.write("# Attributes: Entry; Entity_assembly_ID; " +
 	      "Residue_seq_code; AcidName; Hshift; Cshift; Hatom; Catom\n");
             hcWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -735,7 +789,8 @@ public class S2DProteinChemShift extends S2DChemShift {
 	        //
 	        // Write the link in the summary html file.
 	        //
-	        _summary.writeHvsCShifts(frameIndex, hcCount);
+	        _summary.writeHvsCShifts(frameIndex, _entityAssemblyID,
+		  hcCount);
 	    }
         } catch(IOException ex) {
 	    System.err.println(
@@ -823,6 +878,104 @@ public class S2DProteinChemShift extends S2DChemShift {
 	  S2DResidues.POLYMER_TYPE_PROTEIN));
     }
 
+    //-------------------------------------------------------------------
+    public static void writeMultiEntrySessions(String masterName,
+      String fullName, String extraId, String sessionDir, String htmlDir,
+      S2DSummaryHtml summary2)
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println(
+	      "S2DProteinChemShift.writeMultiEntrySessions(" +
+	      masterName + ", " + extraId + ")");
+	}
+
+	String info = "Visualization of " + masterName + "/" + extraId;
+
+	//
+	// Write the H vs. C sessions.
+	//
+	Vector entry1InfoList = S2DSummaryHtml.getInfo(htmlDir, masterName,
+	  S2DUtils.TYPE_HVSC_CHEM_SHIFTS);
+	Vector entry2InfoList = S2DSummaryHtml.getInfo(htmlDir, extraId,
+	  S2DUtils.TYPE_HVSC_CHEM_SHIFTS);
+
+	for (int index1 = 0; index1 < entry1InfoList.size(); index1++) {
+	    S2DSummaryHtml.DatasetInfo entry1Info =
+	      ((S2DSummaryHtml.DatasetInfo)entry1InfoList.elementAt(index1));
+	    for (int index2 = 0; index2 < entry2InfoList.size(); index2++) {
+	        S2DSummaryHtml.DatasetInfo entry2Info =
+		  ((S2DSummaryHtml.DatasetInfo)entry2InfoList.elementAt(index2));
+		try {
+                    String title = "Simulated 1H-13C HSQC spectra (" +
+		      masterName + " EA " + entry1Info._entityAssemblyId +
+		      "/" + extraId + " EA " +
+		      entry2Info._entityAssemblyId + ")";
+		    String starVersion = ""; //TEMP -- put real value here?
+	            S2DSession.write(sessionDir, S2DUtils.TYPE_HVSC_2_ENTRY,
+	              masterName, fullName,
+	              masterName, extraId, entry1Info._frameIndex,
+		      entry2Info._frameIndex, info, title, false,
+		      starVersion);
+		    String frameDetails = ""; //TEMP -- put real value here?
+	            S2DSpecificHtml specHtml = new S2DSpecificHtml(htmlDir,
+	              S2DUtils.TYPE_HVSC_2_ENTRY,
+	              masterName, fullName, entry1Info._frameIndex,
+		      entry2Info._frameIndex, title, frameDetails);
+	            specHtml.write();
+		    summary2.write2EntHvsCShifts(entry1Info._frameIndex,
+		      entry2Info._frameIndex, entry1Info._entityAssemblyId,
+		      entry2Info._entityAssemblyId, entry1Info._peakCount,
+		      entry2Info._peakCount);
+                } catch (Exception ex) {
+		    System.err.println("Error (" + ex.toString() +
+		      " writing multi-entry H vs. C sessions");
+                }
+	    }
+	}
+
+	//
+	// Write the H vs. N sessions.
+	//
+	entry1InfoList = S2DSummaryHtml.getInfo(htmlDir, masterName,
+	  S2DUtils.TYPE_HVSN_CHEM_SHIFTS);
+	entry2InfoList = S2DSummaryHtml.getInfo(htmlDir, extraId,
+	  S2DUtils.TYPE_HVSN_CHEM_SHIFTS);
+
+	for (int index1 = 0; index1 < entry1InfoList.size(); index1++) {
+	    S2DSummaryHtml.DatasetInfo entry1Info =
+	      ((S2DSummaryHtml.DatasetInfo)entry1InfoList.elementAt(index1));
+	    for (int index2 = 0; index2 < entry2InfoList.size(); index2++) {
+	        S2DSummaryHtml.DatasetInfo entry2Info =
+		  ((S2DSummaryHtml.DatasetInfo)entry2InfoList.elementAt(index2));
+		try {
+                    String title = "Simulated 1H-15N backbone HSQC spectra (" +
+		      masterName + " EA " + entry1Info._entityAssemblyId +
+		      "/" + extraId + " EA " +
+		      entry2Info._entityAssemblyId + ")";
+		    String starVersion = ""; //TEMP -- put real value here?
+	            S2DSession.write(sessionDir, S2DUtils.TYPE_HVSN_2_ENTRY,
+	              masterName, fullName,
+	              masterName, extraId, entry1Info._frameIndex,
+		      entry2Info._frameIndex, info, title, false,
+		      starVersion);
+		    String frameDetails = ""; //TEMP -- put real value here?
+	            S2DSpecificHtml specHtml = new S2DSpecificHtml(htmlDir,
+	              S2DUtils.TYPE_HVSN_2_ENTRY,
+	              masterName, fullName, entry1Info._frameIndex,
+		      entry2Info._frameIndex, title, frameDetails);
+	            specHtml.write();
+		    summary2.write2EntHvsNShifts(entry1Info._frameIndex,
+		      entry2Info._frameIndex, entry1Info._entityAssemblyId,
+		      entry2Info._entityAssemblyId, entry1Info._peakCount,
+		      entry2Info._peakCount);
+                } catch (Exception ex) {
+		    System.err.println("Error (" + ex.toString() +
+		      " writing multi-entry H vs. N sessions");
+                }
+	    }
+	}
+    }
+
     //===================================================================
     // PRIVATE METHODS
 
@@ -858,7 +1011,8 @@ public class S2DProteinChemShift extends S2DChemShift {
 
 	// Note: we can have H/N and HE1/NE1 for the same residue.
         if (info.hasH && info.hasN) {
-	    hnWriter.write(_entityAssemblyID + " " +
+	    hnWriter.write(_name + " " +
+	      _entityAssemblyID + " " +
 	      info.prevSeqCode + " " +
 	      info.prevResLabel + " " +
 	      info.hShift + " " +
@@ -867,7 +1021,8 @@ public class S2DProteinChemShift extends S2DChemShift {
 	}
 
 	if (info.hasHE1 && info.hasNE1) {
-	    hnWriter.write(_entityAssemblyID + " " +
+	    hnWriter.write(_name + " " +
+	      _entityAssemblyID + " " +
 	      info.prevSeqCode + " " +
 	      info.prevResLabel + " " +
 	      info.he1Shift + " " +
@@ -922,9 +1077,13 @@ public class S2DProteinChemShift extends S2DChemShift {
 	        Double hChemshift = (Double) info.hChemshifts.get(hAtomName);
 	        Double cChemshift = (Double) info.cChemshifts.get(cAtomName);
 		if (hChemshift != null && cChemshift != null) {
-                    writer.write(_entityAssemblyID + " " +
-		      info.residueSeqCode + " " + info.residueName + " " +
-		      hChemshift + " " + cChemshift + " " + hAtomName + " " +
+                    writer.write(_name + " " +
+		      _entityAssemblyID + " " +
+		      info.residueSeqCode + " " +
+		      info.residueName + " " +
+		      hChemshift + " " +
+		      cChemshift + " " +
+		      hAtomName + " " +
 		      cAtomName + "\n");
 		    peakCount++;
 		}

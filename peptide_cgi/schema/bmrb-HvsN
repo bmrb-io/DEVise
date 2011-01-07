@@ -11,6 +11,7 @@ type HvsN ascii
 comment #
 whitespace ' ''	'
 
+attr Entry string 30
 attr Entity_assembly_ID int
 attr Residue_seq_code int
 attr AcidName string 4

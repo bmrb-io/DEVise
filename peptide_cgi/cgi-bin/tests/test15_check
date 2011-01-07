@@ -53,11 +53,13 @@ set line = '^1 73 SER -0.18 0.0 1.6 2.0$'
 source tests/check4line
 
 set file = "data_dir/4317hn1.dat"
-set line = '^1 2 ASP 8.96 125.7 H N $'
+set line = '^4317 1 2 ASP 8.96 125.7 H N $'
 source tests/check4line
-set line = '^1 72 GLU 7.74 119.3 H N $'
+set line = '^4317 1 16 TRP 10.52 128.6 HE1 NE1$'
 source tests/check4line
-set line = '^1 73 SER 7.9 122.6 H N $'
+set line = '^4317 1 72 GLU 7.74 119.3 H N $'
+source tests/check4line
+set line = '^4317 1 73 SER 7.9 122.6 H N $'
 source tests/check4line
 
 if ($noleech) then

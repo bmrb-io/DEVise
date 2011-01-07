@@ -75,7 +75,7 @@ set line = '^1 228 SER 0.0 0.0 1.6 1.9$'
 source tests/check4line
 
 set file = "data_dir/15303hn2.dat"
-set line = '^2 3 LEU 8.51 121.4 H N $'
+set line = '^15303 2 3 LEU 8.51 121.4 H N $'
 source tests/check4line
-set line = '^2 227 MET 8.28 121.2 H N $'
+set line = '^15303 2 227 MET 8.28 121.2 H N $'
 source tests/check4line

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2010
+// (c) Copyright 2001-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,32 @@
 // $Id$
 
 // $Log$
+// Revision 1.22.2.3  2011/01/04 19:19:37  wenger
+// Added two-entry help pages (still need changes to the text) and changed
+// the specific HTML code so that two-entry pages link to the right help
+// pages.
+//
+// Revision 1.22.2.2  2010/12/16 00:11:07  wenger
+// Changed how we come up with the list of available data for each
+// entry so that we don't need the -force option anymore for multi-entry
+// processing.
+//
+// Revision 1.22.2.1  2010/12/07 23:43:49  wenger
+// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
+// s2d_multi_entry2_br.
+//
+// Revision 1.22  2010/12/07 17:41:16  wenger
+// Did another version history purge.
+//
+// Revision 1.21.8.2  2010/11/16 00:01:17  wenger
+// We now create a "two-entry" summary HTML page (but it doesn't have the
+// right links yet); added "two-entry" HTML pages to the tests.
+//
+// Revision 1.21.8.1  2010/11/13 00:05:25  wenger
+// Basic creation of session-specific HTML pages for two-entry
+// visualizations is now in place (includes removing some leftover
+// provisions for the "large" specific HTML files).
+//
 // Revision 1.21  2010/09/01 18:49:56  wenger
 // Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
 //
@@ -54,12 +80,12 @@ public class S2DSpecificHtml {
     protected String _htmlDir;
     protected int _dataType;
     protected String _name;
-    protected int _frameIndex;
+    protected String _fullName;
+    protected String _frameIndexStr;
     protected String _title;
     protected String _dataSuffix;
 
     private static final String searchString1 = "4264d1.ds";
-    private static final String searchString1a = "4264d1_large.html";
     private static final String searchString1b = "4264d1.html";
     private static final String searchString2 = "bmr4264.str";
     private static final String searchString3 = "help_d.html";
@@ -70,7 +96,6 @@ public class S2DSpecificHtml {
       "\"cmdport\" value=\"6666\"";
 
     private String _replaceString1;
-    private String _replaceString1a;
     private String _replaceString1b;
     private String _replaceString2;
     private String _replaceString3;
@@ -78,6 +103,8 @@ public class S2DSpecificHtml {
     private String _replaceString5;
     private String _replaceString6;
     private String _replaceString7;
+
+    private boolean _multiEntry = false;
 
     //===================================================================
     // PUBLIC METHODS
@@ -93,38 +120,26 @@ public class S2DSpecificHtml {
 	      frameIndex + ")");
 	}
 
-	_htmlDir = htmlDir;
-	_dataType = dataType;
-	_name = name;
-	_frameIndex = frameIndex;
-	_title = title;
-
-	_dataSuffix = S2DUtils.dataType2Suffix(_dataType);
-        _replaceString1 = _name + File.separator + _name + _dataSuffix +
-	  _frameIndex + ".ds";
-        _replaceString1a =  _name + _dataSuffix +
-	  _frameIndex + "_large.html";
-        _replaceString1b =  _name + _dataSuffix +
-	  _frameIndex + ".html";
-
-        _replaceString2 = _name;
-	String helpSuffix = _dataSuffix;
-	if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
-	  dataType == S2DUtils.TYPE_RNA_DELTASHIFT) {
-	    helpSuffix += "_na";
-	}
-        _replaceString3 = "../help_" + helpSuffix + ".html";
-        _replaceString4 = _title;
-	if (frameDetails != null && !frameDetails.equals("")) {
-	    _replaceString5 = "<h3>\n  Frame details: " + frameDetails +
-	      "\n  </h3>";
-        } else {
-	    _replaceString5 = "";
+	init(htmlDir, dataType, name, name, frameIndex, 0, title,
+	  frameDetails);
+    }
+    
+    //-------------------------------------------------------------------
+    // Constructor (for two-entry files).
+    public S2DSpecificHtml(String htmlDir, int dataType, String name,
+      String fullName, int frameIndex1, int frameIndex2, String title,
+      String frameDetails) throws S2DError
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
+	      htmlDir + ", " + dataType + ", " + name + ", " +
+	      frameIndex1 + ", " + frameIndex2 + ")");
 	}
 
-	_replaceString6 = name + S2DNames.SUMMARY_HTML_SUFFIX;
-	_replaceString7 = "\"cmdport\" value=\"" +
-	  S2DNames.JS_CMD_PORT + "\"";
+	_multiEntry = true;
+
+	init(htmlDir, dataType, name, fullName, frameIndex1,
+	  frameIndex2, title, frameDetails);
     }
 
     //-------------------------------------------------------------------
@@ -142,8 +157,8 @@ public class S2DSpecificHtml {
 	}
 
 	// Write the "normal size" file.
-	String templateFile = TemplateFileName(false);
-        writeOne(templateFile, "");
+	String templateFile = TemplateFileName();
+        writeOne(templateFile);
     }
 
     //===================================================================
@@ -151,7 +166,7 @@ public class S2DSpecificHtml {
 
     //-------------------------------------------------------------------
     // Get the template file name.
-    protected String TemplateFileName(boolean isLarge)
+    protected String TemplateFileName()
     {
 	boolean isJmol = (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) ||
 	  (_dataType == S2DUtils.TYPE_TORSION_ANGLE) ||
@@ -160,18 +175,10 @@ public class S2DSpecificHtml {
 	  (_dataType == S2DUtils.TYPE_RRDIST_RESTR);
 
 	String templateFile = "html_templates" + File.separator;
-	if (isLarge) {
-	    if (isJmol) {
-	        templateFile += "specific_html_large_jmol.base";
-	    } else {
-	        templateFile += "specific_html_large.base";
-            }
+	if (isJmol) {
+	    templateFile += "specific_html_jmol.base";
 	} else {
-	    if (isJmol) {
-	        templateFile += "specific_html_jmol.base";
-	    } else {
-	        templateFile += "specific_html.base";
-	    }
+	    templateFile += "specific_html.base";
 	}
 
 	return templateFile;
@@ -179,11 +186,11 @@ public class S2DSpecificHtml {
 
     //-------------------------------------------------------------------
     // Get the output file name we need to generate.
-    protected String OutFileName(String sizeSuffix) throws S2DError
+    protected String OutFileName() throws S2DError
     {
         String outFileName = _htmlDir + File.separator + _name +
-	  File.separator + _name + _dataSuffix + _frameIndex +
-	  sizeSuffix + ".html";
+	  File.separator + _fullName + _dataSuffix + _frameIndexStr +
+	  S2DNames.HTML_SUFFIX;
     	return outFileName;
     }
 
@@ -195,8 +202,6 @@ public class S2DSpecificHtml {
 	String line = inLine;
 	line = S2DUtils.replace(line, searchString1,
 	  _replaceString1);
-	line = S2DUtils.replace(line, searchString1a,
-	  _replaceString1a);
 	line = S2DUtils.replace(line, searchString1b,
 	  _replaceString1b);
 	line = S2DUtils.replace(line, searchString2,
@@ -226,12 +231,59 @@ public class S2DSpecificHtml {
     // PRIVATE METHODS
 
     //-------------------------------------------------------------------
-    private void writeOne(String templateFile, String sizeSuffix)
+    // Initialize the members of this object -- moved code to this method
+    // so that we don't have lots of duplicate code between the single-
+    // and two-entry constructors.
+    public void init(String htmlDir, int dataType, String name,
+      String fullName, int frameIndex1, int frameIndex2, String title,
+      String frameDetails) throws S2DError
+    {
+	_htmlDir = htmlDir;
+	_dataType = dataType;
+	_name = name;
+	_fullName = fullName;
+	_frameIndexStr = "" + frameIndex1;
+	if (frameIndex2 > 0) {
+	    _frameIndexStr += "+" + frameIndex2;
+	}
+	_title = title;
+
+	_dataSuffix = S2DUtils.dataType2Suffix(_dataType);
+        _replaceString1 = _name + File.separator + _fullName + _dataSuffix +
+	  _frameIndexStr + S2DNames.SESSION_SUFFIX;
+        _replaceString1b =  _fullName + _dataSuffix +
+	  _frameIndexStr + S2DNames.HTML_SUFFIX;
+
+        _replaceString2 = _fullName;
+	String helpSuffix = _dataSuffix;
+	if (dataType == S2DUtils.TYPE_DNA_DELTASHIFT ||
+	  dataType == S2DUtils.TYPE_RNA_DELTASHIFT) {
+	    helpSuffix += "_na";
+	}
+	if (_multiEntry) {
+	    helpSuffix += "2";
+	}
+        _replaceString3 = "../help_" + helpSuffix + S2DNames.HTML_SUFFIX;
+        _replaceString4 = _title;
+	if (frameDetails != null && !frameDetails.equals("")) {
+	    _replaceString5 = "<h3>\n  Frame details: " + frameDetails +
+	      "\n  </h3>";
+        } else {
+	    _replaceString5 = "";
+	}
+
+	_replaceString6 = name + S2DNames.SUMMARY_HTML_SUFFIX;
+	_replaceString7 = "\"cmdport\" value=\"" +
+	  S2DNames.JS_CMD_PORT + "\"";
+    }
+
+    //-------------------------------------------------------------------
+    private void writeOne(String templateFile)
       throws S2DException
     {
 	try {
             FileWriter writer = S2DFileWriter.create(
-	      OutFileName(sizeSuffix));
+	      OutFileName());
 	    BufferedReader reader = new BufferedReader(
 	      new FileReader(templateFile));
 

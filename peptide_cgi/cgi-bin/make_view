@@ -77,6 +77,7 @@ my $dist_url = $query->param('dist_url');
 my $do_tar = $query->param('do_tar');
 my $do_rrtar = $query->param('do_rrtar');
 my $tar_url = $query->param('tar_url');
+my $xbmrbid = $query->param('xbmrbid');
 
 print "  acc_num = $acc_num\n" if ($debug);
 print "  restraint_id = $restraint_id\n" if ($debug);
@@ -119,6 +120,10 @@ if (defined($restraint_id)) {
   print "  has RRTAR\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $acc_num . 'rrtar' . 
     $coord_index . $size_str . '.html';
+} elsif (defined($xbmrbid)) {
+  print "  Multi-entry\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $acc_num . '+' .
+    $xbmrbid . "y.html";
 } else {
   print "  does not have PDB or CSR\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $acc_num . 'y' . $size_str .
@@ -151,6 +156,9 @@ if ($tar_url) {
 }
 if ($force) {
   $cmd = $cmd . " -force";
+}
+if ($xbmrbid) {
+  $cmd = $cmd . " -xbmrbid " . $xbmrbid;
 }
 
 print "Cmd: <$cmd>\n" if ($debug);

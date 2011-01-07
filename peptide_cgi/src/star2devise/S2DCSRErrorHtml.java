@@ -20,6 +20,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.34.1  2010/12/07 23:43:49  wenger
+// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
+// s2d_multi_entry2_br.
+//
+// Revision 1.2.30.1  2010/11/13 00:05:24  wenger
+// Basic creation of session-specific HTML pages for two-entry
+// visualizations is now in place (includes removing some leftover
+// provisions for the "large" specific HTML files).
+//
+// Revision 1.2  2008/04/09 19:35:41  wenger
+// Added frame details to individual visualization pages in preparation
+// for summary page changes; spelled out Linear Analysis of Chemical
+// Shifts; removed some unneeded parameters from the S2DSummaryHtml*
+// constructors.
+//
 // Revision 1.1  2007/12/20 16:49:02  wenger
 // Improved ChemShiftRef error messages; ChemShift calculation failing
 // is no longer considered an error at the top level of the program;
@@ -72,7 +87,7 @@ public class S2DCSRErrorHtml extends S2DSpecificHtml {
 
     //-------------------------------------------------------------------
     // Get the template file name.
-    protected String TemplateFileName(boolean isLarge)
+    protected String TemplateFileName()
     {
 	String templateFile = "html_templates" + File.separator;
 	if (_timedOut) {

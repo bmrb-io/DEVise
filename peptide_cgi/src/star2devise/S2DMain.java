@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,100 @@
 // $Id$
 
 // $Log$
+// Revision 1.248  2010/12/07 20:46:50  wenger
+// Added 'CANCELLED' to result possibilities for log.
+//
+// Revision 1.247.2.22  2011/01/05 20:57:39  wenger
+// Fixed a bug that caused improper processing for the uploaded data/
+// entry combination.
+//
+// Revision 1.247.2.21  2011/01/05 18:21:18  wenger
+// Hopefully final code cleanup, updated multi-entry help pages.
+//
+// Revision 1.247.2.20  2011/01/05 16:46:22  wenger
+// Finished cleanup of multi-entry code in S2DMain.
+//
+// Revision 1.247.2.19  2011/01/05 15:33:15  wenger
+// More cleanup, including at least temporarily(?) just eliminating
+// some things for the multi-entry visualizations, such as system name
+// and frame title.
+//
+// Revision 1.247.2.18  2011/01/04 19:19:37  wenger
+// Added two-entry help pages (still need changes to the text) and changed
+// the specific HTML code so that two-entry pages link to the right help
+// pages.
+//
+// Revision 1.247.2.17  2011/01/04 18:28:20  wenger
+// Fixed up data structure of two-entry summary page.
+//
+// Revision 1.247.2.16  2011/01/03 23:39:30  wenger
+// Cleaned up two-entry summary page (with inefficient data structure
+// for now).
+//
+// Revision 1.247.2.15  2011/01/03 21:16:54  wenger
+// Added legends to the multi-entry visualizations -- using multiple
+// views with a single record each to avoid having to make a new data
+// file for the legend.
+//
+// Revision 1.247.2.14  2010/12/29 22:42:39  wenger
+// Fixed HTML page title and session info for two-entry visualizations.
+//
+// Revision 1.247.2.13  2010/12/29 21:52:03  wenger
+// Fixed a bug that caused two-entry sessions with 4099 as the first
+// entry to not actually show the 4099 data.
+//
+// Revision 1.247.2.12  2010/12/28 23:15:28  wenger
+// We now print comments in the single-entry summary HTML pages that we
+// will use to figure out what data we have for the multi-entry processing
+// (reading the comments is not implemented yet).
+//
+// Revision 1.247.2.11  2010/12/21 00:24:44  wenger
+// Got rid of 'sizeString' stuff in summary HTML code; started putting
+// multi-entry summary page links into a table.
+//
+// Revision 1.247.2.10  2010/12/16 18:30:51  wenger
+// Some minor cleanups -- we now check for "extra" BMRB IDs duplicating
+// each other and the "main" ID, etc.
+//
+// Revision 1.247.2.9  2010/12/16 00:11:06  wenger
+// Changed how we come up with the list of available data for each
+// entry so that we don't need the -force option anymore for multi-entry
+// processing.
+//
+// Revision 1.247.2.8  2010/12/14 20:58:51  wenger
+// Moved the protein chemical shift-specific multi-entry code into the
+// S2DProteinChemShift class; added missing multi-entry files in some
+// of the multi-entry test checks.
+//
+// Revision 1.247.2.7  2010/12/14 20:02:37  wenger
+// Made some cleanups of the multi-entry summary HTML file; added
+// test_mult4 (to make sure 4096/4038 combination works with multi-
+// entry processing).
+//
+// Revision 1.247.2.6  2010/12/10 22:09:07  wenger
+// Decided to change the version to 12.0.0 for the first multi-entry
+// version.
+//
+// Revision 1.247.2.5  2010/12/09 20:13:07  wenger
+// Got STAR file version working for multiple-entry processing.
+//
+// Revision 1.247.2.4  2010/12/08 22:17:22  wenger
+// Fixed output of HE1/NE1 lines (added name) (!); added checks (I thought
+// I already had checks for that, but apparently not).
+//
+// Revision 1.247.2.3  2010/12/08 21:01:46  wenger
+// Got first version of html interface to initiate multi-entry processing
+// working; changed s2d.log file to go into the tmp directory because of
+// permission issues.
+//
+// Revision 1.247.2.2  2010/12/08 18:20:30  wenger
+// Added Peptide-CGI version to log, and cleaned up the argument logging
+// a bit.
+//
+// Revision 1.247.2.1  2010/12/07 23:43:49  wenger
+// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
+// s2d_multi_entry2_br.
+//
 // Revision 1.247  2010/12/07 20:03:18  wenger
 // To-do #150: added logging of how long each invocation of Peptide-CGI
 // takes, and whether it uses the cache.
@@ -120,6 +214,42 @@
 // Merged sample_cond_br_0 thru sample_cond_br_1/sample_cond_br_end to
 // sample_cond2_br (to get the latest code refactoring from the trunk
 // into the sample conditions code).
+//
+// Revision 1.235.4.8  2010/12/04 00:34:53  wenger
+// Got preliminary multi-entry summary page working.
+//
+// Revision 1.235.4.7  2010/11/16 22:45:42  wenger
+// First steps in creating two-entry visualizations for all save frame
+// combos; fixed an error that caused the second entry to get processed
+// twice.
+//
+// Revision 1.235.4.6  2010/11/16 00:01:17  wenger
+// We now create a "two-entry" summary HTML page (but it doesn't have the
+// right links yet); added "two-entry" HTML pages to the tests.
+//
+// Revision 1.235.4.5  2010/11/15 17:39:35  wenger
+// Added the entry ID/name to the H vs. C and H vs. N data, so it shows up
+// in drill-down (did some funky stuff with the schemas so we don't goof
+// up the other Peptide-CGI installation at CS).
+//
+// Revision 1.235.4.4  2010/11/13 00:05:25  wenger
+// Basic creation of session-specific HTML pages for two-entry
+// visualizations is now in place (includes removing some leftover
+// provisions for the "large" specific HTML files).
+//
+// Revision 1.235.4.3  2010/11/12 22:03:18  wenger
+// Basic creation of two-entry H vs. N and H vs. C sessions is now
+// working (but still needs lots of enhancements).
+//
+// Revision 1.235.4.2  2010/11/12 17:21:28  wenger
+// Added test_mult3 to test visualization server/multi-entry combination;
+// some cleanup of S2DMain.
+//
+// Revision 1.235.4.1  2010/11/05 21:28:39  wenger
+// First phase of multi-entry processing -- we can now specify more than
+// one entry on the command line, and the individual processing for each
+// entry is done correctly.  No multiple-entry session files are generated,
+// though.
 //
 // Revision 1.235  2010/10/13 21:42:37  wenger
 // Oops -- should have incremented version x count in previous commit.
@@ -231,7 +361,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "11.8.9_x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.0.0MEx18"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
@@ -239,12 +369,19 @@ public class S2DMain {
 
     private String _masterBmrbId = ""; // accession number the user requested
 
+    // "Extra" BMRB ID(s) for multiple-entry visualizations.
+    private Vector _extraBmrbIdList = new Vector();
+    private int _extraBmrbIdIndex = 0;
+
     // A list of all BMRB IDs (now stored as Strings) we need to access
     // for this entry.
     private Vector _bmrbIds = new Vector();
 
     // A list of all local files to process.
+    //TEMP -- when does this ever have more than one element???
     private Vector _localFiles = new Vector();
+    // Save _localFiles list for multi-entry processing.
+    private Vector _originalLocalFiles = new Vector();
 
     // A list of related PDB files we want to process for this entry.
     private Vector _pdbIds = new Vector(); // Vector contains Strings
@@ -255,10 +392,22 @@ public class S2DMain {
     private String _sessionDir;
     private String _connectionFile;
 
-    // The name of this data set -- all output files generated will consist
-    // of the name plus various suffixes.
+    // The name of this data set (e.g., "4001") -- all output files
+    // generated will consist of the name plus various suffixes.
     private String _name = "";
+
+    // If we're processing a single entry, _masterName is the same as
+    // _name; for multiple entries, this is the name based on the "master"
+    // BMRB ID or name, not the one(s) specified by -xbmrbid.
+    private String _masterName = "";
+
+    // The same as name, expect possibly with some additional info
+    // (e.g., "BMRB 4001").
     private String _longName = null;
+
+    // A combination of the long names for all entries we're processing
+    // (e.g., "BMRB 4001 + BMRB 4099").
+    private String _fullLongName = "";
     
     private boolean _force = false;
     private boolean _useLocalFiles = false;
@@ -379,6 +528,7 @@ public class S2DMain {
 
 	setTimestamps();
 	logLine("");
+	logLine("Peptide-CGI version " + PEP_CGI_VERSION);
 	logArgs(args);
 
 	String result = "FAILURE";
@@ -406,6 +556,10 @@ public class S2DMain {
     // running out of memory and we were trying to get data from PDB.
     public static void run(String args[]) throws S2DException
     {
+        if (doDebugOutput(2)) {
+	    System.out.println("S2DMain.run()");
+	}
+
         S2DMain s2d = new S2DMain(args);
 
 	if (_retrying) {
@@ -418,20 +572,26 @@ public class S2DMain {
 	    s2d._rrDistRLevel = RRDISTR_LEVEL_NONE;
 	}
 
-	logLine("Processing " + s2d.getName() + "...");
 	try {
-	    if (!s2d.useCache()) {
-	        logLine("...not using cache");
-	        s2d.process();
-	    } else {
-	        logLine("...using cache");
-	        if (doDebugOutput(1)) {
-		    System.out.println("Cache files used");
-		}
+	    doProcessing(s2d);
+	    while (s2d.nextBmrbId()) {
+	        doProcessing(s2d);
 	    }
+	    if (s2d.multiEntry()) {
+		s2d.createMultiEntrySessions();
+	    }
+	    // This code should be enabled for testing only!
+            if (!_retrying && false) {
+	        System.out.println("Retrying for test");
+
+		s2d = null;
+		System.gc();
+	        _retrying = true;
+		run(args);
+            }
         } catch (OutOfMemoryError mem) {
 	    System.err.println("OutOfMemoryError: " + mem.toString());
-	    if (s2d._pdbLevel == PDB_LEVEL_PROCESS) {
+	    if (s2d._pdbLevel == PDB_LEVEL_PROCESS && !_retrying) {
 	        System.out.println("Retrying without accessing PDB");
 
 		s2d = null;
@@ -443,6 +603,27 @@ public class S2DMain {
 		  "because of insufficient memory");
 	    }
 	}
+    }
+
+    //-------------------------------------------------------------------
+    public static void doProcessing(S2DMain s2d) throws S2DException
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("S2DMain.doProcessing(" + s2d._name +
+	      ")");
+	}
+
+	logLine("Processing " + s2d.getName() + "...");
+
+        if (!s2d.useCache()) {
+	    logLine("...not using cache");
+            s2d.process();
+        } else {
+	    logLine("...using cache");
+            if (doDebugOutput(1)) {
+                System.out.println("Cache files used");
+            }
+        }
     }
 
     //-------------------------------------------------------------------
@@ -458,11 +639,10 @@ public class S2DMain {
     // Log the arguments of this process.
     static void logArgs(String args[])
     {
-    	String line = "s2d(";
+    	String line = "Arguments: ";
 	for (int index = 0; index < args.length; index++) {
 	    line += "<" + args[index] + "> ";
 	}
-	line += ")";
 
 	logLine(line);
     }
@@ -494,7 +674,7 @@ public class S2DMain {
     {
 	try {
     	    if (_logWriter == null) {
-	        _logWriter = new FileWriter("s2d.log", true);
+	        _logWriter = new FileWriter("tmp/s2d.log", true);
 	    }
 
 	    if (line.equals("")) {
@@ -536,6 +716,8 @@ public class S2DMain {
 
 	checkArgs(args);
 
+	_masterName = _name;
+
 	System.out.println("Peptide-CGI version " + PEP_CGI_VERSION);
     }
 
@@ -544,6 +726,63 @@ public class S2DMain {
     String getName()
     {
         return _name;
+    }
+
+    //-------------------------------------------------------------------
+    // Determine whether we're doing multi-entry processing.
+    public boolean multiEntry()
+    {
+        return _extraBmrbIdList.size() > 0;
+    }
+
+    //-------------------------------------------------------------------
+    // If there is another BMRB ID in the "extra" list, set the current
+    // master BMRB ID to that ID and return true.  If there are no more
+    // "extra" BMRB IDs, return false.
+    public boolean nextBmrbId()
+    {
+	boolean result = false;
+
+	if (!_fullLongName.equals("")) {
+	    _fullLongName += " + ";
+	}
+	_fullLongName += _longName;
+
+	//TEMP -- hmm -- should we just create a new S2DMain object here
+	// to make sure everything is reset?  Or make a sub-object with
+	// all the values that need to be reset?
+        _bmrbIds = new Vector();
+        _pdbIds = new Vector();
+	_csrPdbIds = new Vector();
+        _localFiles = new Vector();
+	_spartaFile = null;
+	_haveCoords = false;
+
+	// Note: when doing processing combining uploaded data and a
+	// BMRB entry, the summary page for the entry will be created
+	// within the uvd directory, and will therefore be inaccessible.
+
+	if (_extraBmrbIdIndex < _extraBmrbIdList.size()) {
+	    _masterBmrbId =
+	      (String)_extraBmrbIdList.elementAt(_extraBmrbIdIndex);
+
+	    _name = _masterBmrbId;
+	    S2DException.setName(_name);
+	    _longName = "BMRB " + _name;
+
+	    addBmrbId(_masterBmrbId);
+	    if (_masterBmrbId.equals("4038")) {
+	        _longName += "/4096";
+	    } else if (_masterBmrbId.equals("4096")) {
+	        _longName += "/4038";
+	    }
+
+	    _extraBmrbIdIndex++;
+
+	    result = true;
+	}
+
+	return result;
     }
 
     //===================================================================
@@ -1256,6 +1495,7 @@ public class S2DMain {
 		    throw new S2DError("-file argument needs value");
 		}
 		_localFiles.addElement(args[index]);
+		_originalLocalFiles.addElement(args[index]);
 
 	    } else if ("-force".equals(args[index])) {
 		_force = true;
@@ -1409,6 +1649,18 @@ public class S2DMain {
 		      ex.toString());
 	        }
 
+	    } else if ("-xbmrbid".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-xbmrbid argument needs value");
+		}
+		if (_name.equals(args[index]) ||
+		  _extraBmrbIdList.contains(args[index])) {
+		    throw new S2DError("-xbmrbid value " + args[index] +
+		      " duplicates previous value");
+		}
+		_extraBmrbIdList.addElement(args[index]);
+
 	    } else {
 	        throw new S2DError("Unrecognized command-line argument: " +
 		  args[index]);
@@ -1554,6 +1806,10 @@ public class S2DMain {
 	    System.out.println("_name = {" + _name + "}");
 	    System.out.println("_longName = {" + _longName + "}");
 	    System.out.println("_masterBmrbId/BMRB ID = " + _masterBmrbId);
+	    for (int xid = 0; xid < _extraBmrbIdList.size(); xid++) {
+	        System.out.println("_extraBmrbId = " +
+		  (String)_extraBmrbIdList.elementAt(xid));
+	    }
 	    System.out.println("_cmdPdbId = " + _cmdPdbId);
 	    System.out.println("_connectionFile = {" + _connectionFile + "}");
 	    System.out.println("_cmdFrameIndex = " + _cmdFrameIndex);
@@ -1620,8 +1876,12 @@ public class S2DMain {
 	    //
 	    S2DSummaryFileData summaryData = new S2DSummaryFileData();
 	    boolean summaryFileOk = summaryData.getSummaryData(_name,
-	      _htmlDir, _masterBmrbId);
+	      _name, _htmlDir, _masterBmrbId);
             if (!summaryFileOk) {
+		if (doDebugOutput(2)) {
+		    System.out.println("Error getting summary file data; " +
+		      "cache not used");
+		}
 	        break check;
 	    }
 
@@ -1751,7 +2011,6 @@ public class S2DMain {
 		    }
 		}
 	    }
-
 
 	    result = true;
 	}
@@ -1982,8 +2241,8 @@ public class S2DMain {
 	    if (_restraintOnly) {
 	    	id = _cmdPdbId;
 	    }
-	    _summary = new S2DSummaryHtml(tmpSummaryFile, _longName,
-	      id, _localFiles, _htmlDir, "starFileName",
+	    _summary = new S2DSummaryHtml(tmpSummaryFile, tmpSummaryFile,
+	      _longName, id, _localFiles, _htmlDir, "starFileName",
 	      "systemName", "frameTitle", _restraintOnly);
 
 	    //
@@ -2064,14 +2323,14 @@ public class S2DMain {
             masterStar = (new S2DNmrStarStdIfcFactory()).createFromId(
 	      _masterBmrbId, _useLocalFiles);
 
-	    _summary = new S2DSummaryHtml(_name, _longName, _masterBmrbId,
-	      _localFiles, _htmlDir, masterStar.getFileName(),
-	      masterStar.getSystemName(), masterStar.getEntryTitle(),
-	      _restraintOnly);
+	    _summary = new S2DSummaryHtml(_name, _name, _longName,
+	      _masterBmrbId, _originalLocalFiles, _htmlDir,
+	      masterStar.getFileName(), masterStar.getSystemName(),
+	      masterStar.getEntryTitle(), _restraintOnly);
 	} else {
-	    _summary = new S2DSummaryHtml(_name, _longName, "99999",
-	      _localFiles, _htmlDir, _name, ""/*TEMP?*/, ""/*TEMP?*/,
-	      _restraintOnly);
+	    _summary = new S2DSummaryHtml(_name, _name, _longName,
+	      "99999", _originalLocalFiles, _htmlDir, _name, ""/*TEMP?*/,
+	      ""/*TEMP?*/, _restraintOnly);
 	}
 
 	//
@@ -2205,10 +2464,16 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
-    // Process all specified BMRB entries.
+    // Process all specified BMRB entries.  Note: this only applies to
+    // two entries that contain data for the same sample (e.g., 4038/
+    // 4096), not in the case of two-entry visualizations in general.
     private S2DNmrStarIfc processAllBMRBs(S2DNmrStarIfc masterStar)
       throws S2DException
     {
+	if (doDebugOutput(0)) {
+	    System.out.println("S2DMain.processAllBMRBs()");
+	}
+
         S2DNmrStarIfc star = masterStar;
 
         for (int index = 0; index < _bmrbIds.size(); index++) {
@@ -3102,6 +3367,41 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Create the multi-entry sessions (so far, at least, they just
+    // use existing data from the individual entries).
+    private void createMultiEntrySessions() throws S2DException
+    {
+        if (doDebugOutput(3)) {
+	    System.out.println("S2DMain.createMultiEntrySessions()");
+	}
+
+	logLine("Creating multi-entry sessions");
+
+    	if (_extraBmrbIdList.size() > 1) {
+	    throw new S2DError("Too many 'extra' BMRB IDs " +
+	      "specified -- current max is 1");
+	}
+
+	String extraId = (String)_extraBmrbIdList.elementAt(0);
+
+	String fullName = _masterName + "+" + extraId;
+
+	//TEMP -- we may want to eventually change these...
+	String systemName = "";
+	String frameTitle = "";
+	S2DSummaryHtml summary2 = new S2DSummaryHtml(_masterName,
+	  fullName, _fullLongName, _masterBmrbId, extraId,
+	  _originalLocalFiles, _htmlDir, "", systemName, frameTitle, false);
+
+        S2DProteinChemShift.writeMultiEntrySessions(_masterName,
+	  fullName, extraId, _sessionDir, _htmlDir, summary2);
+
+	//TEMP -- we may eventually want to pass something here for
+	// related BMRB IDs...
+	summary2.close(null, null, null);
+    }
+
+    //-------------------------------------------------------------------
     // Save residue counts (and the residue list) corresponding to
     // the given save frame.  (The save frame passed in here should
     // be a save frame containing data such as chemical shifts.)
@@ -3303,7 +3603,6 @@ public class S2DMain {
 	    // line.
 	    System.err.println(ex.toString());
 	}
-
 
 	try {
 	    chemShift.writeHvsCShifts(_connectionFile, frameIndex);

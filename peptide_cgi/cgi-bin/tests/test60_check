@@ -161,9 +161,11 @@ set line = '^3JHNHA 2 178 ASP H 178 ASP HA 8.9 0$'
 source tests/check4line
 
 set file = "data_dir/4267_2enthn2.dat"
-set line = '^2 3 ASP 7.47 122.81 H N $'
+set line = '^4267_2ent 2 3 ASP 7.47 122.81 H N $'
 source tests/check4line
-set line = '^2 179 GLY 7.66 113.37 H N $'
+set line = '^4267_2ent 2 32 TRP 8.46 126.66 HE1 NE1$'
+source tests/check4line
+set line = '^4267_2ent 2 179 GLY 7.66 113.37 H N $'
 source tests/check4line
 
 set file = "data_dir/4267_2entn4.dat"

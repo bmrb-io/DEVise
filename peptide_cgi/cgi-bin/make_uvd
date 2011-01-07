@@ -68,6 +68,7 @@ my $tar_url = $query->param('tar_url');
 my $pdb_file = $query->param('pdb_file');
 my $lacs_file = $query->param('lacs_file');
 my $sparta_file = $query->param('sparta_file');
+my $xbmrbid = $query->param('xbmrbid');
 
 print "  file = $file\n" if ($debug);
 print "  name = $name\n" if ($debug);
@@ -102,6 +103,10 @@ if ($do_pdb) {
   print "  has RRTAR\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $name . 'rrtar' . $coord_index .
     $size_str . '.html';
+} elsif (defined($xbmrbid)) {
+  print "  Multi-entry\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . '+' .
+    $xbmrbid . "y.html";
 } else {
   print "  does not have PDB or CSR\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $name . 'y' . $size_str .
@@ -141,6 +146,9 @@ if ($sparta_file) {
 }
 if ($force) {
   $cmd = $cmd . " -force";
+}
+if ($xbmrbid) {
+  $cmd = $cmd . " -xbmrbid " . $xbmrbid;
 }
 
 print "Cmd: <$cmd>\n" if ($debug);

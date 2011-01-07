@@ -12,8 +12,9 @@ my $do_all = 1;
 my $do_sparta = 0;
 my $do_tar = 0;
 my $do_dist = 0;
+my $do_mult = 0;
 
-my $usage = "Usage: test_all [-sparta] [-tar] [-dist]";
+my $usage = "Usage: test_all [-sparta] [-tar] [-dist] [-mult]";
 
 my $arg;
 while ($arg = shift) {
@@ -26,6 +27,9 @@ while ($arg = shift) {
   } elsif ($arg eq -dist) {
     $do_all = 0;
     $do_dist = 1;
+  } elsif ($arg eq -mult) {
+    $do_all = 0;
+    $do_mult = 1;
   } elsif ($arg eq -usage) {
      print "$usage\n";
      exit 0;
@@ -205,6 +209,15 @@ if (($do_all != 0) or ($do_dist != 0)) {
   RunTest("test_dist3rri");
   RunTest("test_dist3rgimv");
   RunTest("test_dist3rrimv");
+}
+
+if (($do_all != 0) or ($do_mult != 0)) {
+  RunTest("test_mult1");
+  RunTest("test_mult1mv");
+  RunTest("test_mult2");
+  RunTest("test_mult3");
+  RunTest("test_mult3mu");
+  RunTest("test_mult4");
 }
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)

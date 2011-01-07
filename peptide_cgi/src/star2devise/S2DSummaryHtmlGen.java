@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2010
+// (c) Copyright 2006-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -36,9 +36,70 @@
 // $Id$
 
 // $Log$
+// Revision 1.35.2.12  2011/01/05 15:33:17  wenger
+// More cleanup, including at least temporarily(?) just eliminating
+// some things for the multi-entry visualizations, such as system name
+// and frame title.
+//
+// Revision 1.35.2.11  2011/01/04 18:46:53  wenger
+// Finished cleaning up changes to S2DSummaryHtmlGen.
+//
+// Revision 1.35.2.10  2011/01/04 18:28:22  wenger
+// Fixed up data structure of two-entry summary page.
+//
+// Revision 1.35.2.9  2011/01/03 23:39:30  wenger
+// Cleaned up two-entry summary page (with inefficient data structure
+// for now).
+//
+// Revision 1.35.2.8  2010/12/29 17:49:37  wenger
+// The multi-entry code now gets frame index, entity assembly ID, and
+// peak count info from comments in the single-entry summary HTML files.
+//
+// Revision 1.35.2.7  2010/12/28 23:15:29  wenger
+// We now print comments in the single-entry summary HTML pages that we
+// will use to figure out what data we have for the multi-entry processing
+// (reading the comments is not implemented yet).
+//
+// Revision 1.35.2.6  2010/12/21 00:24:45  wenger
+// Got rid of 'sizeString' stuff in summary HTML code; started putting
+// multi-entry summary page links into a table.
+//
+// Revision 1.35.2.5  2010/12/16 18:30:53  wenger
+// Some minor cleanups -- we now check for "extra" BMRB IDs duplicating
+// each other and the "main" ID, etc.
+//
+// Revision 1.35.2.4  2010/12/16 00:11:07  wenger
+// Changed how we come up with the list of available data for each
+// entry so that we don't need the -force option anymore for multi-entry
+// processing.
+//
+// Revision 1.35.2.3  2010/12/14 20:02:37  wenger
+// Made some cleanups of the multi-entry summary HTML file; added
+// test_mult4 (to make sure 4096/4038 combination works with multi-
+// entry processing).
+//
+// Revision 1.35.2.2  2010/12/08 21:01:47  wenger
+// Got first version of html interface to initiate multi-entry processing
+// working; changed s2d.log file to go into the tmp directory because of
+// permission issues.
+//
+// Revision 1.35.2.1  2010/12/07 23:43:50  wenger
+// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
+// s2d_multi_entry2_br.
+//
+// Revision 1.35  2010/12/07 17:41:16  wenger
+// Did another version history purge.
+//
 // Revision 1.34  2010/11/24 18:47:41  wenger
 // Implemented to-do 113 (changed the coordinates link for entry 4096
 // from "none" to "internal" to be clearer).
+//
+// Revision 1.33.10.2  2010/12/04 00:34:55  wenger
+// Got preliminary multi-entry summary page working.
+//
+// Revision 1.33.10.1  2010/11/16 00:01:18  wenger
+// We now create a "two-entry" summary HTML page (but it doesn't have the
+// right links yet); added "two-entry" HTML pages to the tests.
 //
 // Revision 1.33  2010/07/07 20:54:13  wenger
 // Changed Peptide-CGI to work with new JavaScreen re-sizing feature
@@ -74,9 +135,21 @@ public abstract class S2DSummaryHtmlGen {
     public static final String PDB_ID_LABEL = "Related_PDB_ID";
 
     private String _masterId;
+    private String _extraId;
     private String _htmlDir = null;
+
+    // The "master" name for the processing we're doing (e.g., "4001" or
+    // "16270vs").
     private String _name;
+
+    // The name of all entries we're processing (e.g., "4001+4099" or
+    // "16270vs+4879").
+    private String _fullName;
+
+    // The name of all entries we're processing, with additional info
+    // (e.g., "BMRB 4001 + BMRB 4099" or "16270vs + BMRB 4879").
     private String _longName;
+
     private Vector _localFiles;
 
     protected FileWriter _writer = null;
@@ -94,6 +167,8 @@ public abstract class S2DSummaryHtmlGen {
 
     private static boolean _restraintOnly = false;
 
+    private boolean _multiEntry = false;
+
     private class IntKeyHashtable extends Hashtable {
         public synchronized Object get(int key)
 	{
@@ -107,6 +182,30 @@ public abstract class S2DSummaryHtmlGen {
 	    return put(keyObj, value);
 	}
     };
+
+    private class IntIntKeyHashtable {
+	private IntKeyHashtable ht = new IntKeyHashtable();
+
+        public synchronized Object get(int key1, int key2)
+	{
+	    IntKeyHashtable subHt = (IntKeyHashtable)ht.get(key1);
+	    if (subHt != null) {
+	    	return subHt.get(key2);
+	    } else {
+	        return null;
+	    }
+	}
+
+	public synchronized Object put(int key1, int key2, Object value)
+	{
+	    IntKeyHashtable subHt = (IntKeyHashtable)ht.get(key1);
+	    if (subHt == null) {
+	        subHt = new IntKeyHashtable();
+		ht.put(key1, subHt);
+	    }
+	    return subHt.put(key2, value);
+	}
+    }
 
     private Vector _saveFrameDetails = new Vector();
 
@@ -167,6 +266,16 @@ public abstract class S2DSummaryHtmlGen {
     private int _maxRRTorsionAngleFrame = 0;
     private IntKeyHashtable _rrTorsionAngleInfo = new IntKeyHashtable();
 
+    private int _maxEntry1Frame = 0;
+    private int _maxEntry2Frame = 0;
+    private class TwoEntInfo {
+        int _eaId1;
+        int _eaId2;
+	String _hCLink;
+	String _hNLink;
+    }
+    private IntIntKeyHashtable _twoEntInfo = new IntIntKeyHashtable();
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -178,9 +287,6 @@ public abstract class S2DSummaryHtmlGen {
     }
 
     //-------------------------------------------------------------------
-    public abstract String sizeString();
-
-    //-------------------------------------------------------------------
     public String directory()
     {
         return S2DSummaryHtml.directory(_htmlDir, _name);
@@ -189,32 +295,60 @@ public abstract class S2DSummaryHtmlGen {
     //-------------------------------------------------------------------
     public String fileName()
     {
-        return S2DSummaryHtml.fileName(_htmlDir, _name, sizeString());
+        return S2DSummaryHtml.fileName(_htmlDir, _name, _fullName);
     }
 
     //-------------------------------------------------------------------
     public String fileNameShort()
     {
-        return S2DSummaryHtml.fileNameShort(_name, sizeString());
+        return S2DSummaryHtml.fileNameShort(_fullName);
     }
 
     //-------------------------------------------------------------------
-    // Constructor.  Opens the html file and writes the header.
-    public S2DSummaryHtmlGen(String name, String longName,
-      String masterId, Vector localFiles,
+    // Constructor for single-entry summary page.  Opens the html file
+    // and writes the header.
+    public S2DSummaryHtmlGen(String name, String fullName,
+      String longName, String masterId, Vector localFiles,
       String htmlDir, boolean restraintOnly) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtmlGen.S2DSummaryHtmlGen(" +
-	      name + ", " + masterId + ")");
+	      name + ", " + fullName + ", " + masterId + ")");
 	}
 
 	_name = name;
+	_fullName = fullName;
 	_longName = longName;
         _masterId = masterId;
 	_localFiles = localFiles;
 	_htmlDir = htmlDir;
 	_restraintOnly = restraintOnly;
+	_multiEntry = false;
+    }
+
+    //-------------------------------------------------------------------
+    // Constructor for multi-entry summary page.  Opens the html file
+    // and writes the header.
+    public S2DSummaryHtmlGen(String name, String fullName,
+      String longName, String masterId, String extraId,
+      Vector localFiles, String htmlDir, boolean restraintOnly)
+      throws S2DException
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DSummaryHtmlGen.S2DSummaryHtmlGen(" +
+	      name + ", " + fullName + ", " + longName + ", " +
+	      masterId + ", " + extraId + ")");
+	}
+
+	_name = name;
+	_fullName = fullName;
+	_longName = longName;
+        _masterId = masterId;
+        _extraId = extraId;
+	_localFiles = localFiles;
+	_htmlDir = htmlDir;
+	_restraintOnly = restraintOnly;
+	_multiEntry = true;
     }
 
     //-------------------------------------------------------------------
@@ -294,6 +428,35 @@ public abstract class S2DSummaryHtmlGen {
 	      "\">DEVise/JavaScreen\n");
             _writer.write("tutorial videos</a>\n");
 	    _writer.write("</p>\n");
+	    _writer.write("<hr>\n\n");
+
+	    if (!_multiEntry) {
+	        _writer.write("\n<p>\n");
+	        _writer.write("<b>Multi-entry visualizations</b>\n");
+
+                String action = _isUvd ? S2DNames.UVD_CGI_URL :
+		  S2DNames.CGI_URL;
+	        _writer.write("\n<form name=\"multi-entry\" action=\"" +
+		  action + "\" " + "method=\"get\">\n");
+	        _writer.write("<label for=\"xbmrbid\">Enter a BMRB " +
+		  "accession number (e.g., 4081) for multi-entry " +
+		  "visualizations with this entry:</label>\n");
+	        _writer.write(
+		  "<input type=\"text\" name=\"xbmrbid\" size=\"5\">\n");
+	        if (_isUvd) {
+	            _writer.write("<input type=\"hidden\" name=\"file\" " +
+		      "value=\"" + (String)_localFiles.elementAt(0) +
+		      "\">\n");
+	            _writer.write("<input type=\"hidden\" name=\"name\" " +
+		      "value=\"" + _name + "\">\n");
+	        } else {
+	            _writer.write("<input type=\"hidden\" name=\"number\" " +
+	              "value=\"" + _name + "\">\n");
+	        }
+	        _writer.write("<input type=\"submit\" value=\"View data\">\n");
+	        _writer.write("</form>\n");
+	        _writer.write("</p>\n\n");
+	    }
 
 	} catch(IOException ex) {
 	    System.err.println("IOException opening or writing to summary " +
@@ -325,22 +488,27 @@ public abstract class S2DSummaryHtmlGen {
 TEMP?*/
 
 		// Write out the tables that now contain the actual links.
-		if (!_restraintOnly) {
-		    writeCoordTable();
-		}
+		if (_multiEntry) {
+                    write2EntryTable();
 
-		writeBothDistRestrTables();
-		writeBothTorsionAngleTables();
+		} else {
+		    if (!_restraintOnly) {
+		        writeCoordTable();
+		    }
 
-		if (!_restraintOnly) {
-		    writeChemShiftTable();
-		    writeSpartaDeltaShiftTable();
-		    writeChemShiftRefTable();
-		    writeLacsTable();
-		    writeCouplingTable();
-		    writeRelaxationTable();
-		    writeHetNOETable();
-		    writeS2OrderTable();
+		    writeBothDistRestrTables();
+		    writeBothTorsionAngleTables();
+
+		    if (!_restraintOnly) {
+		        writeChemShiftTable();
+		        writeSpartaDeltaShiftTable();
+		        writeChemShiftRefTable();
+		        writeLacsTable();
+		        writeCouplingTable();
+		        writeRelaxationTable();
+		        writeHetNOETable();
+		        writeS2OrderTable();
+		    }
 		}
 
 		// Write the details about the save frames.
@@ -365,17 +533,21 @@ TEMP?*/
 		    _writer.write("<input type=\"hidden\" name=\"number\" " +
 		      "value=\"" + _name + "\">\n");
 		}
+		if (_multiEntry) {
+		    _writer.write("<input type=\"hidden\" name=\"xbmrbid\" " +
+		      "value=\"" + _extraId + "\">\n");
+		}
 		_writer.write("<input type=\"hidden\" name=\"force\" " +
 		  "value=\"1\">\n");
-		_writer.write("<input type=\"hidden\" name=\"size_str\" " +
-		  "value=\"" + sizeString() + "\">\n");
 
 		_writer.write("<input type=\"submit\" value=\"Force " +
 		  "reprocessing\">\n");
 		_writer.write("</form>\n");
 
-	        _writer.write("\n<p>" + FILE_VERSION_LABEL + ": {" +
-	          starVersion + "}</p>\n");
+		if (starVersion != null) {
+	            _writer.write("\n<p>" + FILE_VERSION_LABEL + ": {" +
+	              starVersion + "}</p>\n");
+		}
 	        _writer.write("<p>" + VERSION_LABEL + ": {" +
 	          S2DMain.PEP_CGI_VERSION + "}</p>\n");
 	        _writer.write("<p>" + GEN_DATE_LABEL + ": {" +
@@ -501,7 +673,7 @@ TEMP?*/
 
 	String resNuc = isNucleicAcid ? "nucleotides" : "residues";
 	value = "<a href=\"" + _name + S2DNames.DELTASHIFT_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
+	  frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">" + residueCount + " " + resNuc + "</a>";
 	_deltaShiftInfo.put(frameIndex, value);
     }
@@ -527,7 +699,7 @@ TEMP?*/
 	String resNuc = "residues";
 	value = "<a href=\"" + _name +
 	  S2DNames.SPARTA_DELTASHIFT_SUFFIX + frameIndex +
-	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + residueCount +
+	  S2DNames.HTML_SUFFIX + "\">" + residueCount +
 	  " " + resNuc + "</a>";
 	_spartaDeltaShiftInfo.put(frameIndex, value);
     }
@@ -544,7 +716,7 @@ TEMP?*/
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
 	String value = "<a href=\"" + _name + S2DNames.CSI_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
+	  frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">" + residueCount + " residues</a>";
 	_csiInfo.put(frameIndex, value);
     }
@@ -561,7 +733,7 @@ TEMP?*/
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
 	String value = "<a href=\"" + _name +
-	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + sizeString() +
+	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex +
 	  S2DNames.HTML_SUFFIX + "\">" + residueCount + " residues</a>";
 	_pctAssignInfo.put(frameIndex, value);
     }
@@ -580,7 +752,7 @@ TEMP?*/
 	_maxCouplingFrame = Math.max(_maxCouplingFrame, frameIndex);
 
 	String value = "<a href=\"" + _name + S2DNames.COUPLING_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">" +
 	  valueCount + " values (" + entityAssemblyID + ")</a>";
 	_couplingInfo.put(frameIndex, value);
     }
@@ -598,7 +770,7 @@ TEMP?*/
 	_maxRelaxFrame = Math.max(_maxRelaxFrame, frameIndex);
 
         String value = "<a href=\"" + _name + suffix + frameIndex +
-	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + valueCount +
+	  S2DNames.HTML_SUFFIX + "\">" + valueCount +
 	  " values (" + entityAssemblyID + ")</a>";
 
         switch (dataType) {
@@ -631,7 +803,7 @@ TEMP?*/
 
         String value = "<a href=\"" + _name + 
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
-	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + name +
+	  S2DNames.HTML_SUFFIX + "\">" + name +
 	  " (" + valueCount + " values) (" + entityAssemblyID + ")</a>";
 	_hetNOEInfo.put(frameIndex, value);
 
@@ -650,41 +822,47 @@ TEMP?*/
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
 	String value = "<a href=\"" + _name +
-	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + sizeString() +
+	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex +
 	  S2DNames.HTML_SUFFIX + "\">" + shiftCount + " shifts</a>";
 	_allShiftsInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
     // Writes the H vs. N chemical shifts link.
-    protected void writeHvsNShifts(int frameIndex, int peakCount)
-      throws IOException
+    protected void writeHvsNShifts(int frameIndex, int entityAssemblyID,
+      int peakCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeHvsNShifts()");
 	}
 
+	_writer.write("<!-- Info_HvsN eaId:" + entityAssemblyID +
+	  " frameIndex:" + frameIndex + " peakCount:" + peakCount + " -->\n");
+
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
 	String value = "<a href=\"" + _name +
-	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex + sizeString() +
+	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
 	  S2DNames.HTML_SUFFIX + "\">" + peakCount + " peaks</a>";
 	_hVsNInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
     // Writes the H vs. C chemical shifts link.
-    protected void writeHvsCShifts(int frameIndex, int peakCount)
-      throws IOException
+    protected void writeHvsCShifts(int frameIndex, int entityAssemblyID,
+      int peakCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeHvsCShifts()");
 	}
 
+	_writer.write("<!-- Info_HvsC eaId:" + entityAssemblyID +
+	  " frameIndex:" + frameIndex + " peakCount:" + peakCount + " -->\n");
+
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
 	String value = "<a href=\"" + _name +
-	  S2DNames.HVSC_CHEM_SHIFT_SUFFIX + frameIndex + sizeString() +
+	  S2DNames.HVSC_CHEM_SHIFT_SUFFIX + frameIndex +
 	  S2DNames.HTML_SUFFIX + "\">" + peakCount + " peaks</a>";
 	_hVsCInfo.put(frameIndex, value);
     }
@@ -707,7 +885,7 @@ TEMP?*/
 
         String value = "<a href=\"" + _name +
 	  S2DNames.ATOMIC_COORD_SUFFIX + frameIndex +
-	  sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	  S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
 	_coordInfo.put(frameIndex, value);
     }
 
@@ -740,7 +918,7 @@ TEMP?*/
 	    value += "&number=" + _name;
 	}
 	value += "&do_pdb=" + S2DMain.PDB_LEVEL_PROCESS +
-	  "&coord_index=" + frameIndex + "&size_str=" + sizeString() +
+	  "&coord_index=" + frameIndex + "&size_str=" +
 	  "\">" + linkStr + "</a>";
 	_coordInfo.put(frameIndex, value);
     }
@@ -769,15 +947,15 @@ TEMP?*/
 	_csrPdbIdInfo.put(frameIndex, pdbId);
 
         String value = "<a href=\"" + _name + S2DNames.CSR1_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">Go</a>";
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">Go</a>";
         _csrHistogramInfo.put(frameIndex, value);
 
         value = "<a href=\"" + _name + S2DNames.CSR2_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">Go</a>";
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">Go</a>";
         _csrDiffsInfo.put(frameIndex, value);
 
         value = "<a href=\"" + _name + S2DNames.CSR3_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">Go</a>";
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">Go</a>";
         _csrScatterInfo.put(frameIndex, value);
     }
 
@@ -809,19 +987,19 @@ TEMP?*/
 
         String value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
 	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
-	  frameIndex + "&csr_index=1" + "&size_str=" + sizeString() +
+	  frameIndex + "&csr_index=1" + "&size_str=" +
 	  "\">Go</a>";
         _csrHistogramInfo.put(frameIndex, value);
 
         value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
 	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
-	    frameIndex + "&csr_index=2" + "&size_str=" + sizeString() +
+	    frameIndex + "&csr_index=2" + "&size_str=" +
 	    "\">Go</a>";
         _csrDiffsInfo.put(frameIndex, value);
 
         value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
 	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
-	  frameIndex + "&csr_index=3" + "&size_str=" + sizeString() +
+	  frameIndex + "&csr_index=3" + "&size_str=" +
 	  "\">Go</a>";
         _csrScatterInfo.put(frameIndex, value);
     }
@@ -836,7 +1014,7 @@ TEMP?*/
 	}
 
         String value = "<a href=\"" + _name + S2DNames.PISTACHIO_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
+	  frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Go</a>";
 	_pistachioInfo.put(frameIndex, value);
 
@@ -854,7 +1032,7 @@ TEMP?*/
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
 	String value = "<a href=\"" + _name + S2DNames.AMBIGUITY_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX +
+	  frameIndex + S2DNames.HTML_SUFFIX +
 	  "\">Go</a>";
 	_ambiguityInfo.put(frameIndex, value);
     }
@@ -871,7 +1049,7 @@ TEMP?*/
 	_maxLacsFrame = Math.max(_maxLacsFrame, frameIndex);
 
         String value = "<a href=\"" + _name + S2DNames.LACS_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">" +
 	  title + "</a>";
 	_lacsInfo.put(frameIndex, value);
     }
@@ -890,7 +1068,7 @@ TEMP?*/
 	_maxS2OrderFrame = Math.max(_maxS2OrderFrame, frameIndex);
 
 	String value = "<a href=\"" + _name + S2DNames.ORDER_SUFFIX +
-	  frameIndex + sizeString() + S2DNames.HTML_SUFFIX + "\">" +
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">" +
 	  valueCount + " values (" + entityAssemblyID + ")</a>";
 	_s2OrderInfo.put(frameIndex, value);
     }
@@ -924,7 +1102,7 @@ TEMP?*/
 
             String value = "<a href=\"" + _name +
 	      suffix + frameIndex +
-	      sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	      S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
 	    info.put(frameIndex, value);
 	}
     }
@@ -979,7 +1157,7 @@ TEMP?*/
 */
 	    value += doStr + 
 	      "&coord_index=" + frameIndex + "&size_str=" +
-	      sizeString() + "\">" + linkStr + "</a>";
+	      "\">" + linkStr + "</a>";
 	    info.put(frameIndex, value);
 	}
     }
@@ -1013,7 +1191,7 @@ TEMP?*/
 
             String value = "<a href=\"" + _name +
 	      suffix + frameIndex +
-	      sizeString() + S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	      S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
 	    info.put(frameIndex, value);
 	}
     }
@@ -1068,9 +1246,75 @@ TEMP?*/
 */
 	    value += doStr + 
 	      "&coord_index=" + frameIndex + "&size_str=" +
-	      sizeString() + "\">" + linkStr + "</a>";
+	      "\">" + linkStr + "</a>";
 	    info.put(frameIndex, value);
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the two-entry H vs. N chemical shifts link.
+    protected void write2EntHvsNShifts(int frameIndex1, int frameIndex2,
+      int eaId1, int eaId2, int peakCount1, int peakCount2)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.write2EntHvsNShifts()");
+	}
+
+	_maxEntry1Frame = Math.max(_maxEntry1Frame, frameIndex1);
+	_maxEntry2Frame = Math.max(_maxEntry2Frame, frameIndex2);
+
+	TwoEntInfo info = (TwoEntInfo)_twoEntInfo.get(frameIndex1,
+	  frameIndex2);
+        if (info == null) {
+	    info = new TwoEntInfo();
+	    _twoEntInfo.put(frameIndex1, frameIndex2, info);
+	    info._eaId1 = eaId1;
+	    info._eaId2 = eaId2;
+	} else {
+	    if (info._eaId1 != eaId1 || info._eaId2 != eaId2) {
+	        System.err.println("Warning: entity assembly ID mismatch: "
+		  + info._eaId1 + "/" + eaId1 + " or " + info._eaId2 +
+		  "/" + eaId2);
+	    }
+	}
+
+	info._hNLink = "<a href=\"" + _name + "+" + _extraId + "hn" +
+	  frameIndex1 + "+" + frameIndex2 + ".html\">" + peakCount1 + "/"
+	  + peakCount2 + " peaks</a>";
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the two-entry H vs. C chemical shifts link.
+    protected void write2EntHvsCShifts(int frameIndex1, int frameIndex2,
+      int eaId1, int eaId2, int peakCount1, int peakCount2)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.write2EntHvsCShifts()");
+	}
+
+	_maxEntry1Frame = Math.max(_maxEntry1Frame, frameIndex1);
+	_maxEntry2Frame = Math.max(_maxEntry2Frame, frameIndex2);
+
+	TwoEntInfo info = (TwoEntInfo)_twoEntInfo.get(frameIndex1,
+	  frameIndex2);
+        if (info == null) {
+	    info = new TwoEntInfo();
+	    _twoEntInfo.put(frameIndex1, frameIndex2, info);
+	    info._eaId1 = eaId1;
+	    info._eaId2 = eaId2;
+	} else {
+	    if (info._eaId1 != eaId1 || info._eaId2 != eaId2) {
+	        System.err.println("Warning: entity assembly ID mismatch: "
+		  + info._eaId1 + "/" + eaId1 + " or " + info._eaId2 +
+		  "/" + eaId2);
+	    }
+	}
+
+	info._hCLink = "<a href=\"" + _name + "+" + _extraId + "hc" +
+	  frameIndex1 + "+" + frameIndex2 + ".html\">" + peakCount1 +
+	  "/" + peakCount2 + " peaks</a>";
     }
 
     //-------------------------------------------------------------------
@@ -1091,7 +1335,7 @@ TEMP?*/
     {
         _writer.write("\n<hr>\n");
         if (_maxChemShiftFrame > 0) {
-	    _writer.write("<p><b>Chemical shift data</b></p>");
+	    _writer.write("<p><b>Chemical shift data</b></p>\n");
             _writer.write("<table border>\n");
             _writer.write("  <tr>\n");
 	    // Get rid of frame details.
@@ -1591,6 +1835,43 @@ TEMP?*/
             _writer.write("  </tr>\n");
             _writer.write("</table>\n");
         }
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of two-entry data.
+    protected void write2EntryTable() throws IOException
+    {
+        _writer.write("<p><b>Chemical shift data</b></p>\n");
+        _writer.write("<table border>\n");
+        _writer.write("  <tr>\n");
+        _writer.write("    <th>" + _name +
+          " entity assembly ID</th>\n");
+        _writer.write("    <th>" + _extraId +
+          " entity assembly ID</th>\n");
+        _writer.write("    <th>Simulated 1H-15N backbone " +
+          "HSQC spectrum</th>\n");
+        _writer.write("    <th>Simulated 1H-13C HSQC " +
+          "spectrum</th>\n");
+        _writer.write("  </tr>\n");
+
+	for (int index1 = 1; index1 <= _maxEntry1Frame; index1++) {
+	    for (int index2 = 1; index2 <= _maxEntry2Frame; index2++) {
+	        TwoEntInfo info = (TwoEntInfo)_twoEntInfo.get(index1, index2);
+		if (info != null) {
+                    _writer.write("  <tr>\n");
+		    _writer.write("<td>" + info._eaId1 + "</td>\n");
+		    _writer.write("<td>" + info._eaId2 + "</td>\n");
+		    String value = info._hNLink != null ?
+		      info._hNLink : "<br>";
+		    _writer.write("<td>" + value + "</td>\n");
+		    value = info._hCLink != null ? info._hCLink : "<br>";
+		    _writer.write("<td>" + value + "</td>\n");
+                    _writer.write("  </tr>\n");
+		}
+	    }
+	}
+
+        _writer.write("</table>\n");
     }
 
     //-------------------------------------------------------------------

@@ -19,6 +19,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.2.1  2010/12/16 00:11:07  wenger
+// Changed how we come up with the list of available data for each
+// entry so that we don't need the -force option anymore for multi-entry
+// processing.
+//
+// Revision 1.18  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.17  2010/09/01 18:49:56  wenger
 // Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
 //
@@ -229,6 +237,11 @@ public class S2DNames
     //
     public static final String HTML_SUFFIX = ".html";
     public static final String SUMMARY_HTML_SUFFIX = "y";
+
+    //
+    // Session file suffixes.
+    //
+    public static final String SESSION_SUFFIX = ".ds";
 }
 
 // ========================================================================

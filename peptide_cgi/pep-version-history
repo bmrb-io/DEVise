@@ -1,5 +1,13 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 12.0.0
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Added the first multi-entry visualizations: simulated 1H-15N backbone
+HSQC spectrum and simulated 1H-13C HSQC spectrum.
+
+
 Peptide-CGI 11.8.9
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)

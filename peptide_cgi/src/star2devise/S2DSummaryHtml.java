@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -31,6 +31,45 @@
 // $Id$
 
 // $Log$
+// Revision 1.26.2.7  2011/01/05 20:57:40  wenger
+// Fixed a bug that caused improper processing for the uploaded data/
+// entry combination.
+//
+// Revision 1.26.2.6  2011/01/05 15:33:17  wenger
+// More cleanup, including at least temporarily(?) just eliminating
+// some things for the multi-entry visualizations, such as system name
+// and frame title.
+//
+// Revision 1.26.2.5  2011/01/03 21:47:33  wenger
+// Cleaned up the getInfo()-related stuff in S2DSummaryHtml.
+//
+// Revision 1.26.2.4  2010/12/29 17:49:37  wenger
+// The multi-entry code now gets frame index, entity assembly ID, and
+// peak count info from comments in the single-entry summary HTML files.
+//
+// Revision 1.26.2.3  2010/12/28 23:15:29  wenger
+// We now print comments in the single-entry summary HTML pages that we
+// will use to figure out what data we have for the multi-entry processing
+// (reading the comments is not implemented yet).
+//
+// Revision 1.26.2.2  2010/12/21 00:24:45  wenger
+// Got rid of 'sizeString' stuff in summary HTML code; started putting
+// multi-entry summary page links into a table.
+//
+// Revision 1.26.2.1  2010/12/07 23:43:49  wenger
+// Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
+// s2d_multi_entry2_br.
+//
+// Revision 1.26  2010/12/07 17:41:16  wenger
+// Did another version history purge.
+//
+// Revision 1.25.10.2  2010/12/04 00:34:55  wenger
+// Got preliminary multi-entry summary page working.
+//
+// Revision 1.25.10.1  2010/11/16 00:01:17  wenger
+// We now create a "two-entry" summary HTML page (but it doesn't have the
+// right links yet); added "two-entry" HTML pages to the tests.
+//
 // Revision 1.25  2010/07/07 20:54:13  wenger
 // Changed Peptide-CGI to work with new JavaScreen re-sizing feature
 // (since the user can now re-size the JS, we don't generate html
@@ -81,23 +120,17 @@ public class S2DSummaryHtml {
     }
 
     //-------------------------------------------------------------------
-    public static String fileName(String htmlDir, String name)
-    {
-	return fileName(htmlDir, name, "");
-    }
-
-    //-------------------------------------------------------------------
     public static String fileName(String htmlDir, String name,
-      String sizeString)
+      String fullName)
     {
 	return directory(htmlDir, name) + File.separator +
-	  fileNameShort(name, sizeString);
+	  fileNameShort(fullName);
     }
 
     //-------------------------------------------------------------------
-    public static String fileNameShort(String name, String sizeString)
+    public static String fileNameShort(String fullName)
     {
-	return name + S2DNames.SUMMARY_HTML_SUFFIX + sizeString +
+	return fullName + S2DNames.SUMMARY_HTML_SUFFIX +
 	  S2DNames.HTML_SUFFIX;
     }
 
@@ -109,10 +142,11 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Constructor.  Opens the html file and writes the header.
-    public S2DSummaryHtml(String name, String longName, String masterId,
-      Vector localFiles, String htmlDir, String starFileName,
-      String systemName, String frameTitle, boolean restraintOnly)
-      throws S2DException
+    //TEMP -- starFileName is not used
+    public S2DSummaryHtml(String name, String fullName, String longName,
+      String masterId, Vector localFiles, String htmlDir,
+      String starFileName, String systemName, String frameTitle,
+      boolean restraintOnly) throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
@@ -121,8 +155,30 @@ public class S2DSummaryHtml {
 
 	_htmlDir = htmlDir;
 
-	_normal = new S2DSummaryHtmlNormal(name, longName, masterId,
-	  localFiles, htmlDir, restraintOnly);
+	_normal = new S2DSummaryHtmlNormal(name, fullName, longName,
+	  masterId, localFiles, htmlDir, restraintOnly);
+
+	_normal.initialize(systemName, frameTitle);
+    }
+
+    //-------------------------------------------------------------------
+    // Constructor for multi-entry summary page.  Opens the html file and
+    // writes the header.
+    //TEMP -- starFileName is not used
+    public S2DSummaryHtml(String name, String fullName, String longName,
+      String masterId, String extraId, Vector localFiles, String htmlDir,
+      String starFileName, String systemName, String frameTitle,
+      boolean restraintOnly) throws S2DException
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DSummaryHtml.S2DSummaryHtml(" +
+	      name + ", " + masterId + ", " + extraId + ")");
+	}
+
+	_htmlDir = htmlDir;
+
+	_normal = new S2DSummaryHtmlNormal(name, fullName, longName,
+	  masterId, extraId, localFiles, htmlDir, restraintOnly);
 
 	_normal.initialize(systemName, frameTitle);
     }
@@ -276,26 +332,26 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the H vs. N chemical shifts link.
-    public void writeHvsNShifts(int frameIndex, int count)
-      throws IOException
+    public void writeHvsNShifts(int frameIndex, int entityAssemblyID,
+      int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeHvsNShifts()");
 	}
 
-	_normal.writeHvsNShifts(frameIndex, count);
+	_normal.writeHvsNShifts(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
     // Writes the H vs. C chemical shifts link.
-    public void writeHvsCShifts(int frameIndex, int count)
-      throws IOException
+    public void writeHvsCShifts(int frameIndex, int entityAssemblyID,
+      int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeHvsCShifts()");
 	}
 
-	_normal.writeHvsCShifts(frameIndex, count);
+	_normal.writeHvsCShifts(frameIndex, entityAssemblyID, count);
     }
 
     //-------------------------------------------------------------------
@@ -457,14 +513,136 @@ public class S2DSummaryHtml {
     }
 
     //-------------------------------------------------------------------
+    // Writes the two-entry H vs. N chemical shifts link.
+    protected void write2EntHvsNShifts(int frameIndex1, int frameIndex2,
+      int eaId1, int eaId2, int peakCount1, int peakCount2)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.write2EntHvsNShifts()");
+	}
+
+        _normal.write2EntHvsNShifts(frameIndex1, frameIndex2, eaId1,
+	  eaId2, peakCount1, peakCount2);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the two-entry H vs. C chemical shifts link.
+    protected void write2EntHvsCShifts(int frameIndex1, int frameIndex2,
+      int eaId1, int eaId2, int peakCount1, int peakCount2)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.write2EntHvsCShifts()");
+	}
+
+        _normal.write2EntHvsCShifts(frameIndex1, frameIndex2, eaId1,
+	  eaId2, peakCount1, peakCount2);
+    }
+
+    //-------------------------------------------------------------------
     // Write a message to the summary html file.
     public void writeMessage(String msg, boolean horRule)
     {
 	_normal.writeMessage(msg, horRule);
     }
 
+    //-------------------------------------------------------------------
+    // Information about data sets.
+    public static class DatasetInfo {
+        int _entityAssemblyId;
+	int _frameIndex;
+	int _peakCount;
+    }
+
+    //-------------------------------------------------------------------
+    // Get info about what data sets of the given dataType are available
+    // for the specified entry (we get this information by parsing
+    // special comments in the summary HTML file).
+    public static Vector getInfo(String htmlDir, String name,
+      int dataType)
+    {
+	if (doDebugOutput(11)) {
+	    System.out.println("S2DSummaryHtml.getInfo(" + htmlDir +
+	      ", " + name + ", " + dataType + ")");
+	}
+
+    	Vector result = new Vector();
+
+	try {
+	    String infoTag = "";
+
+	    switch (dataType) {
+	    case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
+	        infoTag = "Info_HvsN";
+	        break;
+
+	    case S2DUtils.TYPE_HVSC_CHEM_SHIFTS:
+	        infoTag = "Info_HvsC";
+	        break;
+
+	    default:
+		throw new S2DError("Unsupported data type: " + dataType);
+	    }
+
+	    String fn = fileName(htmlDir, name, name);
+
+	    BufferedReader reader = new BufferedReader(new FileReader(fn));
+
+	    String line;
+	    while ((line = reader.readLine()) != null) {
+		if (line.indexOf(infoTag) >= 0) {
+		    DatasetInfo info = new DatasetInfo();
+                    info._entityAssemblyId = getIntValue(line, "eaId");
+	            info._frameIndex = getIntValue(line, "frameIndex");
+	            info._peakCount = getIntValue(line, "peakCount");
+		    result.addElement(info);
+		}
+	    }
+
+            reader.close();
+	} catch (Exception ex) {
+	    System.err.println("Error (" + ex.toString() +
+	      ") getting data set info for " + name);
+	}
+
+	if (doDebugOutput(12)) {
+	    for (int index = 0; index < result.size(); index++) {
+		DatasetInfo info = (DatasetInfo)result.elementAt(index);
+	        System.out.println("  " + info._entityAssemblyId + ", " +
+		  info._frameIndex + ", " + info._peakCount);
+	    }
+	}
+
+	return result;
+    }
+
     //===================================================================
     // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // Get an integer value from line, where line is of the form
+    // "...<tag>:<value>..."
+    private static int getIntValue(String line, String valueTag)
+      throws S2DException
+    {
+	valueTag += ":";
+        int index1 = line.indexOf(valueTag);
+	if (index1 < 0) {
+	    throw new S2DError("No " + valueTag + " tag found in " + line);
+	}
+	String str1 = line.substring(index1 + valueTag.length());
+	int index2 = str1.indexOf(" ");
+	String str2;
+	if ( index1 < 0) {
+	    str2 = str1;
+	} else {
+	    str2 = str1.substring(0, index2);
+	}
+        int result = Integer.parseInt(str2);
+
+	return result;
+    }
 
     //-------------------------------------------------------------------
     // Determine whether to do debug output based on the current debug
