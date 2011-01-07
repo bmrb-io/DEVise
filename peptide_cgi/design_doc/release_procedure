@@ -2,6 +2,7 @@
 	$Id$
 
 Note: this is pretty preliminary right now.
+TEMP -- may need more changes...
 
 - Make sure pep-version-history is up to date (make sure DEVise and
   JavaScreen client versions are correct).
