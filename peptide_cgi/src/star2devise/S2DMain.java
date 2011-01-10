@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.249  2011/01/07 22:10:28  wenger
+// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
+//
 // Revision 1.248  2010/12/07 20:46:50  wenger
 // Added 'CANCELLED' to result possibilities for log.
 //
@@ -361,7 +364,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.0.0MEx18"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.0.0x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

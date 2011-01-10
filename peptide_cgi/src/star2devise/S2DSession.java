@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.32  2011/01/07 22:10:28  wenger
+// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
+//
 // Revision 1.31.2.6  2011/01/05 18:21:19  wenger
 // Hopefully final code cleanup, updated multi-entry help pages.
 //
@@ -137,32 +140,36 @@ public class S2DSession {
 	    frameIndexStr += "+" + frameIndex2;
 	}
 
+	String[] searchStrings = new String[6];
+	String[] replaceStrings = new String[6];
+	boolean allowMultipleReplace = true;
+
 	// The "main" data source in the base file.
-	String searchString1 = null;
+	searchStrings[0] = null;
 
 	// The "main" data source in the file we're writing.
-        String replaceString1 = null;
+        replaceStrings[0] = null;
 
 	// The residue count data source in the base file.
-	String searchString2 = null;
+	searchStrings[1] = null;
 
 	// The residue count data source for the file we're writing.
-        String replaceString2 = null;
+        replaceStrings[1] = null;
 
 	// The summary data source in the base file.
-	String searchString3 = null;
+	searchStrings[2] = null;
 
 	// The summary data for the 3D atomic coordinates visualization.
-	String replaceString3 = null;
+	replaceStrings[2] = null;
 
-	String searchString4 = null;
-	String replaceString4 = null;
+	searchStrings[3] = null;
+	replaceStrings[3] = null;
 
-	String searchString5 = null;
-	String replaceString5 = null;
+	searchStrings[4] = null;
+	replaceStrings[4] = null;
 
-	String searchString6 = null;
-	String replaceString6 = null;
+	searchStrings[5] = null;
+	replaceStrings[5] = null;
 
 	// The dummy visualization info string in the base file.
 	String visInfoSearchString = "Visualization info";
@@ -184,73 +191,73 @@ public class S2DSession {
 	    baseName = "deltashift.base";
 	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4081d1";
+	    searchStrings[0] = "4081d1";
 	    break;
 
 	case S2DUtils.TYPE_DNA_DELTASHIFT:
 	    baseName = "deltashift_dna.base";
 	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "15083d1";
+	    searchStrings[0] = "15083d1";
 	    break;
 
 	case S2DUtils.TYPE_RNA_DELTASHIFT:
 	    baseName = "deltashift_dna.base";
 	    dataSuffix = S2DNames.DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "15083d1";
-	    searchString2 = "DNADeltaShift";
-	    replaceString2 = "RNADeltaShift";
-	    searchString3 = "dna_";
-	    replaceString3 = "rna_";
+	    searchStrings[0] = "15083d1";
+	    searchStrings[1] = "DNADeltaShift";
+	    replaceStrings[1] = "RNADeltaShift";
+	    searchStrings[2] = "dna_";
+	    replaceStrings[2] = "rna_";
 	    break;
 
 	case S2DUtils.TYPE_CSI:
 	    baseName = "csi.base";
 	    dataSuffix = S2DNames.CSI_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4081c1";
+	    searchStrings[0] = "4081c1";
 	    break;
 
 	case S2DUtils.TYPE_PCT_ASSIGN:
 	    baseName = "percent.base";
 	    dataSuffix = S2DNames.PERCENT_ASSIGN_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4081p1";
+	    searchStrings[0] = "4081p1";
 	    break;
 
 	case S2DUtils.TYPE_ALL_CHEM_SHIFTS:
 	    baseName = "allshift.base";
 	    dataSuffix = S2DNames.ALL_CHEM_SHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4267as1";
-	    searchString2 = "4267rc1";
-	    replaceString2 = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
+	    searchStrings[0] = "4267as1";
+	    searchStrings[1] = "4267rc1";
+	    replaceStrings[1] = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
 	    break;
 
 	case S2DUtils.TYPE_HVSN_CHEM_SHIFTS:
 	    baseName = "h_vs_n.base";
 	    dataSuffix = S2DNames.HVSN_CHEM_SHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4267hn1";
-	    searchString2 = "4267rc1";
-	    replaceString2 = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
+	    searchStrings[0] = "4267hn1";
+	    searchStrings[1] = "4267rc1";
+	    replaceStrings[1] = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
 	    break;
 
 	case S2DUtils.TYPE_HVSC_CHEM_SHIFTS:
 	    baseName = "h_vs_c.base";
 	    dataSuffix = S2DNames.HVSC_CHEM_SHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4267hc1";
-	    searchString2 = "4267rc1";
-	    replaceString2 = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
+	    searchStrings[0] = "4267hc1";
+	    searchStrings[1] = "4267rc1";
+	    replaceStrings[1] = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
 	    break;
 
         case S2DUtils.TYPE_COUPLING:
 	    baseName = "coupling.base";
 	    dataSuffix = S2DNames.COUPLING_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4096g1";
+	    searchStrings[0] = "4096g1";
 	    break;
 
 /*TEMP
@@ -258,7 +265,7 @@ public class S2DSession {
 	    baseName = "hxrates.base";
 	    dataSuffix = S2DNames.HX_RATE_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4096r";
+	    searchStrings[s0] = "4096r";
 	    break;
 TEMP*/
 
@@ -266,203 +273,205 @@ TEMP*/
 	    baseName = "order.base";
 	    dataSuffix = S2DNames.ORDER_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4689o1";
+	    searchStrings[0] = "4689o1";
 	    break;
 
         case S2DUtils.TYPE_T1_RELAX:
 	    baseName = "relax.base";
 	    dataSuffix = S2DNames.T1_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4267t11";
+	    searchStrings[0] = "4267t11";
 	    break;
 
         case S2DUtils.TYPE_T2_RELAX:
 	    baseName = "relax.base";
 	    dataSuffix = S2DNames.T2_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4267t11";
+	    searchStrings[0] = "4267t11";
 	    break;
 
         case S2DUtils.TYPE_HETNOE:
 	    baseName = "het_noe.base";
 	    dataSuffix = S2DNames.HETERONUCLEAR_NOE_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4267n1";
+	    searchStrings[0] = "4267n1";
 	    break;
 
         case S2DUtils.TYPE_ATOMIC_COORDS:
 	    baseName = "atom_coord_jmol.base";
 	    dataSuffix = S2DNames.ATOMIC_COORD_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "15083ac1";
-	    searchString3 = "15083md";
-	    replaceString3 = id1 + S2DNames.SUMMARY_DATA_SUFFIX;
+	    searchStrings[0] = "15083ac1";
+	    searchStrings[2] = "15083md";
+	    replaceStrings[2] = id1 + S2DNames.SUMMARY_DATA_SUFFIX;
 	    break;
 
         case S2DUtils.TYPE_CHEM_SHIFT_REF1:
 	    baseName = "chem_shift_ref.base";
 	    dataSuffix = S2DNames.CSR_SUFFIX;
 	    sessionSuffix = S2DNames.CSR1_SUFFIX;
-	    searchString1 = "4974csr1";
+	    searchStrings[0] = "4974csr1";
 	    break;
 
         case S2DUtils.TYPE_CHEM_SHIFT_REF2:
 	    baseName = "chem_shift_ref2.base";
 	    dataSuffix = S2DNames.CSR_SUFFIX;
 	    sessionSuffix = S2DNames.CSR2_SUFFIX;
-	    searchString1 = "4974csr1";
+	    searchStrings[0] = "4974csr1";
 	    break;
 
         case S2DUtils.TYPE_CHEM_SHIFT_REF3:
 	    baseName = "chem_shift_ref3.base";
 	    dataSuffix = S2DNames.CSR_SUFFIX;
 	    sessionSuffix = S2DNames.CSR3_SUFFIX;
-	    searchString1 = "4974csr1";
+	    searchStrings[0] = "4974csr1";
 	    break;
 
 	case S2DUtils.TYPE_PISTACHIO:
 	    baseName = "pistachio.base";
 	    dataSuffix = S2DNames.PISTACHIO_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "6318ps1";
-	    searchString2 = "6318psac1";
-	    replaceString2 = id1 + S2DNames.PISTACHIO_ATOMIC_COORD_SUFFIX +
+	    searchStrings[0] = "6318ps1";
+	    searchStrings[1] = "6318psac1";
+	    replaceStrings[1] = id1 + S2DNames.PISTACHIO_ATOMIC_COORD_SUFFIX +
 	      frameIndex1;
-	    searchString3 = "6318rl1";
-	    replaceString3 = id1 + S2DNames.RES_LIST_SUFFIX + frameIndex1;
+	    searchStrings[2] = "6318rl1";
+	    replaceStrings[2] = id1 + S2DNames.RES_LIST_SUFFIX + frameIndex1;
 	    break;
 
 	case S2DUtils.TYPE_AMBIGUITY:
 	    baseName = "ambiguity.base";
 	    dataSuffix = S2DNames.AMBIGUITY_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4081am1";
-	    searchString2 = "4081amac1";
-	    replaceString2 = id1 + S2DNames.AMBIGUITY_ATOMIC_COORD_SUFFIX +
+	    searchStrings[0] = "4081am1";
+	    searchStrings[1] = "4081amac1";
+	    replaceStrings[1] = id1 + S2DNames.AMBIGUITY_ATOMIC_COORD_SUFFIX +
 	      frameIndex1;
-	    searchString3 = "4081rl";
-	    replaceString3 = id1 + S2DNames.RES_LIST_SUFFIX;
+	    searchStrings[2] = "4081rl";
+	    replaceStrings[2] = id1 + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_LACS:
 	    baseName = "lacs.base";
 	    dataSuffix = S2DNames.LACS_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4081lacsl1";
-	    replaceString1 = id1 + S2DNames.LACS_LINE_SUFFIX + frameIndex1;
-	    searchString2 = "4081lacsp1";
-	    replaceString2 = id1 + S2DNames.LACS_POINT_SUFFIX + frameIndex1;
-	    searchString3 = "4081lacsc1";
-	    replaceString3 = id1 + S2DNames.LACS_COORD_SUFFIX + frameIndex1;
+	    searchStrings[0] = "4081lacsl1";
+	    replaceStrings[0] = id1 + S2DNames.LACS_LINE_SUFFIX + frameIndex1;
+	    searchStrings[1] = "4081lacsp1";
+	    replaceStrings[1] = id1 + S2DNames.LACS_POINT_SUFFIX + frameIndex1;
+	    searchStrings[2] = "4081lacsc1";
+	    replaceStrings[2] = id1 + S2DNames.LACS_COORD_SUFFIX + frameIndex1;
 	    break;
 
 	case S2DUtils.TYPE_SPARTA_DELTASHIFT:
 	    baseName = "deltashift_sparta.base";
 	    dataSuffix = S2DNames.SPARTA_DELTASHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "16385sd1";
+	    searchStrings[0] = "16385sd1";
 	    break;
 
 	case S2DUtils.TYPE_TORSION_ANGLE:
 	    baseName = "torsion_angle.base";
 	    dataSuffix = S2DNames.TAR_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4020ac1";
-	    replaceString1 = id1 + S2DNames.ATOMIC_COORD_SUFFIX + frameIndex1;
-	    searchString2 = "4020tar-md1";
-	    replaceString2 = id1 + S2DNames.TAR_MD_SUFFIX + frameIndex1;
-	    searchString3 = "4020tar1";
-	    replaceString3 = id1 + S2DNames.TAR_SUFFIX + frameIndex1;
-	    searchString4 = "4020rl";
-	    replaceString4 = id1 + S2DNames.RES_LIST_SUFFIX;
+	    searchStrings[0] = "4020ac1";
+	    replaceStrings[0] = id1 + S2DNames.ATOMIC_COORD_SUFFIX + frameIndex1;
+	    searchStrings[1] = "4020tar-md1";
+	    replaceStrings[1] = id1 + S2DNames.TAR_MD_SUFFIX + frameIndex1;
+	    searchStrings[2] = "4020tar1";
+	    replaceStrings[2] = id1 + S2DNames.TAR_SUFFIX + frameIndex1;
+	    searchStrings[3] = "4020rl";
+	    replaceStrings[3] = id1 + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_RRTORSION_ANGLE:
 	    baseName = "torsion_angle_rr.base";
 	    dataSuffix = S2DNames.RRTAR_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4020rrac1";
-	    replaceString1 = id1 + S2DNames.RRATOMIC_COORD_SUFFIX + frameIndex1;
-	    searchString2 = "4020rrtar-md1";
-	    replaceString2 = id1 + S2DNames.RRTAR_MD_SUFFIX + frameIndex1;
-	    searchString3 = "4020rrtar1";
-	    replaceString3 = id1 + S2DNames.RRTAR_SUFFIX + frameIndex1;
-	    searchString4 = "4020rl";
-	    replaceString4 = id1 + S2DNames.RES_LIST_SUFFIX;
+	    searchStrings[0] = "4020rrac1";
+	    replaceStrings[0] = id1 + S2DNames.RRATOMIC_COORD_SUFFIX + frameIndex1;
+	    searchStrings[1] = "4020rrtar-md1";
+	    replaceStrings[1] = id1 + S2DNames.RRTAR_MD_SUFFIX + frameIndex1;
+	    searchStrings[2] = "4020rrtar1";
+	    replaceStrings[2] = id1 + S2DNames.RRTAR_SUFFIX + frameIndex1;
+	    searchStrings[3] = "4020rl";
+	    replaceStrings[3] = id1 + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_DIST_RESTR:
 	    baseName = "distance_rest.base";
 	    dataSuffix = S2DNames.DISTR_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "15209ac1";
-	    replaceString1 = id1 + S2DNames.ATOMIC_COORD_SUFFIX + frameIndex1;
-	    searchString2 = "15209distr-md1";
-	    replaceString2 = id1 + S2DNames.DISTR_MD_SUFFIX + frameIndex1;
-	    searchString3 = "15209distr1";
-	    replaceString3 = id1 + S2DNames.DISTR_SUFFIX + frameIndex1;
-	    searchString4 = "15209distrc1";
-	    replaceString4 = id1 + S2DNames.DISTRC_SUFFIX + frameIndex1;
-	    searchString5 = "15209rl";
-	    replaceString5 = id1 + S2DNames.RES_LIST_SUFFIX;
+	    searchStrings[0] = "15209ac1";
+	    replaceStrings[0] = id1 + S2DNames.ATOMIC_COORD_SUFFIX + frameIndex1;
+	    searchStrings[1] = "15209distr-md1";
+	    replaceStrings[1] = id1 + S2DNames.DISTR_MD_SUFFIX + frameIndex1;
+	    searchStrings[2] = "15209distr1";
+	    replaceStrings[2] = id1 + S2DNames.DISTR_SUFFIX + frameIndex1;
+	    searchStrings[3] = "15209distrc1";
+	    replaceStrings[3] = id1 + S2DNames.DISTRC_SUFFIX + frameIndex1;
+	    searchStrings[4] = "15209rl";
+	    replaceStrings[4] = id1 + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_RRDIST_RESTR:
 	    baseName = "distance_rest.base";
 	    dataSuffix = S2DNames.RRDISTR_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "15209ac1";
-	    replaceString1 = id1 + S2DNames.RRATOMIC_COORD_SUFFIX + frameIndex1;
-	    searchString2 = "15209distr-md1";
-	    replaceString2 = id1 + S2DNames.RRDISTR_MD_SUFFIX + frameIndex1;
-	    searchString3 = "15209distr1";
-	    replaceString3 = id1 + S2DNames.RRDISTR_SUFFIX + frameIndex1;
-	    searchString4 = "15209distrc1";
-	    replaceString4 = id1 + S2DNames.RRDISTRC_SUFFIX + frameIndex1;
-	    searchString5 = "15209rl";
-	    replaceString5 = id1 + S2DNames.RES_LIST_SUFFIX;
+	    searchStrings[0] = "15209ac1";
+	    replaceStrings[0] = id1 + S2DNames.RRATOMIC_COORD_SUFFIX + frameIndex1;
+	    searchStrings[1] = "15209distr-md1";
+	    replaceStrings[1] = id1 + S2DNames.RRDISTR_MD_SUFFIX + frameIndex1;
+	    searchStrings[2] = "15209distr1";
+	    replaceStrings[2] = id1 + S2DNames.RRDISTR_SUFFIX + frameIndex1;
+	    searchStrings[3] = "15209distrc1";
+	    replaceStrings[3] = id1 + S2DNames.RRDISTRC_SUFFIX + frameIndex1;
+	    searchStrings[4] = "15209rl";
+	    replaceStrings[4] = id1 + S2DNames.RES_LIST_SUFFIX;
 	    break;
 
 	case S2DUtils.TYPE_HVSN_2_ENTRY:
 	    baseName = "h_vs_n2.base";
 	    dataSuffix = S2DNames.HVSN_CHEM_SHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4001hn1";
-	    replaceString1 = id1 + S2DNames.HVSN_CHEM_SHIFT_SUFFIX +
+	    searchStrings[0] = "4001hn1";
+	    replaceStrings[0] = id1 + S2DNames.HVSN_CHEM_SHIFT_SUFFIX +
 	      frameIndex1;
-	    searchString2 = "4001rc1";
-	    replaceString2 = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
-	    searchString3 = "4099hn1";
-	    replaceString3 = id2 + S2DNames.HVSN_CHEM_SHIFT_SUFFIX +
+	    searchStrings[1] = "4001rc1";
+	    replaceStrings[1] = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
+	    searchStrings[2] = "4099hn1";
+	    replaceStrings[2] = id2 + S2DNames.HVSN_CHEM_SHIFT_SUFFIX +
 	      frameIndex2;
-	    searchString4 = "4099rc1";
-	    replaceString4 = id2 + S2DNames.RES_COUNT_SUFFIX + frameIndex2;
+	    searchStrings[3] = "4099rc1";
+	    replaceStrings[3] = id2 + S2DNames.RES_COUNT_SUFFIX + frameIndex2;
 	    // For legend in visualization...
-	    searchString5 = "4001 H";
-	    replaceString5 = id1 + " H";
-	    searchString6 = "4099 H";
-	    replaceString6 = id2 + " H";
+	    searchStrings[4] = "4001 H";
+	    replaceStrings[4] = id1 + " H";
+	    searchStrings[5] = "4099 H";
+	    replaceStrings[5] = id2 + " H";
+	    allowMultipleReplace = false;
 	    break;
 
 	case S2DUtils.TYPE_HVSC_2_ENTRY:
 	    baseName = "h_vs_c2.base";
 	    dataSuffix = S2DNames.HVSC_CHEM_SHIFT_SUFFIX;
 	    sessionSuffix = dataSuffix;
-	    searchString1 = "4001hc1";
-	    replaceString1 = id1 + S2DNames.HVSC_CHEM_SHIFT_SUFFIX +
+	    searchStrings[0] = "4001hc1";
+	    replaceStrings[0] = id1 + S2DNames.HVSC_CHEM_SHIFT_SUFFIX +
 	      frameIndex1;
-	    searchString2 = "4001rc1";
-	    replaceString2 = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
-	    searchString3 = "4099hc1";
-	    replaceString3 = id2 + S2DNames.HVSC_CHEM_SHIFT_SUFFIX +
+	    searchStrings[1] = "4001rc1";
+	    replaceStrings[1] = id1 + S2DNames.RES_COUNT_SUFFIX + frameIndex1;
+	    searchStrings[2] = "4099hc1";
+	    replaceStrings[2] = id2 + S2DNames.HVSC_CHEM_SHIFT_SUFFIX +
 	      frameIndex2;
-	    searchString4 = "4099rc1";
-	    replaceString4 = id2 + S2DNames.RES_COUNT_SUFFIX + frameIndex2;
+	    searchStrings[3] = "4099rc1";
+	    replaceStrings[3] = id2 + S2DNames.RES_COUNT_SUFFIX + frameIndex2;
 	    // For legend in visualization...
-	    searchString5 = "4001 H";
-	    replaceString5 = id1 + " H";
-	    searchString6 = "4099 H";
-	    replaceString6 = id2 + " H";
+	    searchStrings[4] = "4001 H";
+	    replaceStrings[4] = id1 + " H";
+	    searchStrings[5] = "4099 H";
+	    replaceStrings[5] = id2 + " H";
+	    allowMultipleReplace = false;
 	    break;
 
 	default:
@@ -494,8 +503,8 @@ TEMP*/
 	      S2DMain.getTimestamp() + "}\n\n");
 
 	    // The "main" data source for the file we're writing.
-	    if (replaceString1 == null) {
-                replaceString1 = name + dataSuffix + frameIndex1;
+	    if (replaceStrings[0] == null) {
+                replaceStrings[0] = name + dataSuffix + frameIndex1;
 	    }
 
 	    boolean printSummaryData = false;
@@ -509,11 +518,11 @@ TEMP*/
 
 		if (dataType == S2DUtils.TYPE_ATOMIC_COORDS) {
 		    if (line.indexOf("dteInsertCatalogEntry") >= 0) {
-		        if (line.indexOf(searchString1) >= 0) {
+		        if (line.indexOf(searchStrings[0]) >= 0) {
 			    // 15083ac1 should get replaced below...
 		        } else if (line.indexOf("15083rl") >= 0) {
 			    // 15083rl should get replaced below...
-		        } else if (line.indexOf(searchString3) >= 0) {
+		        } else if (line.indexOf(searchStrings[2]) >= 0) {
 			    // 15083md should get replaced below...
 		            printSummaryData = true;
 			} else {
@@ -531,33 +540,18 @@ TEMP*/
 		      name + S2DNames.RES_LIST_SUFFIX);
 		}
 
-		// If/else if structure prevents a given line from getting
-		// changed more than once (this caused problems for two-
-		// entry visualizations in which 4099 was the first entry).
-		if (searchString1 != null &&
-		  line.indexOf(searchString1) >= 0) {
-	            line = S2DUtils.replace(line, searchString1,
-		      replaceString1);
-		} else if (searchString2 != null &&
-		  line.indexOf(searchString2) >= 0) {
-	            line = S2DUtils.replace(line, searchString2,
-		      replaceString2);
-		} else if (searchString3 != null &&
-		  line.indexOf(searchString3) >= 0) {
-	            line = S2DUtils.replace(line, searchString3,
-		      replaceString3);
-		} else if (searchString4 != null &&
-		  line.indexOf(searchString4) >= 0) {
-	            line = S2DUtils.replace(line, searchString4,
-		      replaceString4);
-		} else if (searchString5 != null &&
-		  line.indexOf(searchString5) >= 0) {
-	            line = S2DUtils.replace(line, searchString5,
-		      replaceString5);
-		} else if (searchString6 != null &&
-		  line.indexOf(searchString6) >= 0) {
-	            line = S2DUtils.replace(line, searchString6,
-		      replaceString6);
+                for (int strNum = 0; strNum < searchStrings.length; strNum++) {
+		    if (searchStrings[strNum] != null &&
+		      line.indexOf(searchStrings[strNum]) >= 0) {
+	                line = S2DUtils.replace(line, searchStrings[strNum],
+		          replaceStrings[strNum]);
+			if (!allowMultipleReplace) {
+			    // Breaking out of the loop here fixes
+			    // problems with multi-entry sessions for
+			    // which 4099 is the first entry.
+			    break;
+			}
+		    }
 		}
 
 		line = S2DUtils.replace(line, visInfoSearchString, visInfo);
