@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.250  2011/01/10 18:52:43  wenger
+// Fixed problem with RNA chem shift delta visualizations caused by
+// the changes for the multi-entry visualizations.
+//
 // Revision 1.249  2011/01/07 22:10:28  wenger
 // Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
 //
@@ -364,7 +368,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.0.0x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.0.0";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
