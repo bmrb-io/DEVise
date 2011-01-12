@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.251  2011/01/10 23:22:47  wenger
+// Changed version to 12.0.0 for release.
+//
 // Revision 1.250  2011/01/10 18:52:43  wenger
 // Fixed problem with RNA chem shift delta visualizations caused by
 // the changes for the multi-entry visualizations.
@@ -368,7 +371,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.0.0";
+    public static final String PEP_CGI_VERSION = "12.0.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
