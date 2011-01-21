@@ -4340,7 +4340,7 @@ java.lang.NullPointerException: null pData
 			with local sessions. (wenger)
 
 995 2/12/10	OPEN	JavaScreen axis tick labels get garbled if you
-			zooom in too far (see bug995.png). (corbeille/wenger)
+			zoom in too far (see bug995.png). (corbeille/wenger)
 
 996 2/15/10	FIXED	JS: open the 15418tar5.ds in the JavaScreen,
 			switch the entity assembly several times (1, 2, 3,
@@ -4407,7 +4407,7 @@ java.security.AccessControlException: access denied
 1004 11/12/10	OPEN	The string table GUI doesn't seem to show existing
 			assignments. (wenger)
 
-1005 11/16/10	OPEN	Jmol loses state (e.g., ribbons turned on) when you
+1005 11/16/10	ACTIVE	Jmol loses state (e.g., ribbons turned on) when you
 			resize the JavaScreen. (gabrielc/wenger)
 
 1006 12/9/10	OPEN	If you have a child view selected, setting many
