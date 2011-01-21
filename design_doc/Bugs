@@ -4419,9 +4419,16 @@ java.security.AccessControlException: access denied
 1007 1/21/11	ACTIVE	For distance restraints, just changing what's
 			highlighted in the data view destroys the Jmol
 			state (see also 1005). (wenger)
+			I'll bet this is because the View3DHighlight view
+			isn't a DEVise highligh view in this visualization.
 
 1008 1/21/11	OPEN	DEVise shouldn't crash if data source files don't
 			exist. (wenger)
+
+1009 1/21/11	OPEN	Setting view highlight on for the View3DHighlight
+			view in the distance restraints visualization
+			crashes DEVise (PoPClip underflow). (wenger)
+
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
