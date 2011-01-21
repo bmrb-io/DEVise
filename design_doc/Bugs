@@ -4416,6 +4416,10 @@ java.security.AccessControlException: access denied
 			control).  (I'm guessing it sets that for the parent
 			view rather than the actual window.) (wenger)
 
+1007 1/21/11	ACTIVE	For distance restraints, just changing what's
+			highlighted in the data view destroys the Jmol
+			state (see also 1005). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
