@@ -89,6 +89,12 @@ Number Date	Status  Pri
 07.001 ?	DONE?	?
 JavaScreen: need to clean up temporary session files.
 
+07.002 1/21/11	OPEN	2
+Add Jmol commands to the session postscripts, so that things like
+setting Jmol to wireframe mode for restraints is done in the session
+as opposed to by special-case code in the JavaScreen.  (Obviously, this
+will need some changes in the JS itself, too.) (miron/wenger)
+
 ...........................................................................
 SECTION 08 (DEVise, misc.)
 Number Date	Status  Pri
