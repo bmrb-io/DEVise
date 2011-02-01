@@ -57,9 +57,9 @@ DEVise color SessionPalette {#000000000000 black
 DEVise setColorMode 0
 
 # Per-session data source definitions
-DEVise dteInsertCatalogEntry . {"4001hc1" UNIXFILE 4001hc1.dat HvsN $DEVISE_SCHEMA/physical/bmrb-HvsC "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4001hc1" UNIXFILE 4001hc1.dat bmrb-HvsC $DEVISE_SCHEMA/physical/bmrb-HvsC "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4001rc1" UNIXFILE 4001rc1.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResCount "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
-DEVise dteInsertCatalogEntry . {"4099hc1" UNIXFILE 4099hc1.dat HvsN $DEVISE_SCHEMA/physical/bmrb-HvsC "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
+DEVise dteInsertCatalogEntry . {"4099hc1" UNIXFILE 4099hc1.dat bmrb-HvsC $DEVISE_SCHEMA/physical/bmrb-HvsC "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"4099rc1" UNIXFILE 4099rc1.dat ResCount $DEVISE_SCHEMA/physical/bmrb-ResCount "" 100 50 "$DEVISE_DAT/bmrb/dynamic_data" ""}
 DEVise dteInsertCatalogEntry . {"label" UNIXFILE label.dat bmrb-AxisLabel $DEVISE_SCHEMA/physical/bmrb-AxisLabel "" 100 50 "$DEVISE_DAT/bmrb" ""}
 DEVise dteInsertCatalogEntry . {"h_vs_n_legend" UNIXFILE h_vs_n_legend.dat bmrb-legend $DEVISE_SCHEMA/physical/bmrb-legend "" 100 50 "$DEVISE_DAT/bmrb" ""}

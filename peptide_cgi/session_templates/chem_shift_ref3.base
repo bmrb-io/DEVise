@@ -1,8 +1,8 @@
 # DEVise startHeader
 # file type: session
-# file date: May 08 2006 16:07:07
-# DEVise version: 1.7.19
-# DEVise date: Dec  5 2005
+# file date: Jan 31 2011 18:51:58
+# DEVise version: 1.11.1
+# DEVise date: Sep 24 2010
 # DEVise endHeader
 
 # Session description
@@ -67,6 +67,9 @@ DEVise dteInsertCatalogEntry . {"csr3_legend" UNIXFILE csr3_legend.dat bmrb-lege
 
 # Create views
 
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} {View 2} 0.000000 100.000000 0.000000 100.000000 37 0 0 37 0 37
 DEVise setLabel {View 2} 1 16 {Value() vs. Bucket}
 DEVise setViewStatistics {View 2} 00000000
@@ -77,13 +80,15 @@ DEVise setViewDisplayDataValues {View 2} 0
 DEVise setFont {View 2} {title} 0 12 0 0
 DEVise setFont {View 2} {x axis} 0 12 0 0
 DEVise setFont {View 2} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 2} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
 DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 2} -7.584 8.813 0
+DEVise setHistogram {View 2} -0.5 0.5 0
 DEVise setCountMapping {View 2} 0 {} {} 0
 DEVise viewSetIsHighlight {View 2} 0
 DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
@@ -93,15 +98,23 @@ DEVise setYAxisFloatFormat {View 2} {%.4g}
 DEVise setViewAutoFilter {View 2} {0}
 DEVise setDupElim {View 2} {0}
 DEVise setNiceAxes {View 2} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 2} 0 0 0 0
 DEVise setShowMouseLocation {View 2} {1}
 DEVise setLinkMultFact {View 2} {X} 1
 DEVise setLinkMultFact {View 2} {Y} 1
 DEVise setGAttrLinkMode {View 2} 0
 DEVise setDoHomeOnVisLink {View 2} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {View 2} {1}
+DEVise viewSetUseJmol {View 2} {0}
+DEVise setExcludeFromDrillDown {View 2} {0}
+DEVise setViewSaveFilter {View 2} 0 0
 
 # View {View 1} uses mapping {4974csr1_1#csObs_vs_resID}
-DEVise create {view} {Scatter} {View 1} 173.959998 179.984003 171.567007 179.575006 37 0 0 37 0 37
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 1} -500.100000 500.100000 -500.100000 500.100000 37 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -111,7 +124,9 @@ DEVise setViewDisplayDataValues {View 1} 0
 DEVise setFont {View 1} {title} 2 12 0 0
 DEVise setFont {View 1} {x axis} 2 12 0 0
 DEVise setFont {View 1} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 1} 1 1 1 0 0.100000 0.100000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 1} 1 1 1 0 0.1 0.1 0 0 100 100
 DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
@@ -127,6 +142,7 @@ DEVise setYAxisFloatFormat {View 1} {%.4g}
 DEVise setViewAutoFilter {View 1} {1}
 DEVise setDupElim {View 1} {0}
 DEVise setNiceAxes {View 1} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 1} 0 0 0 0
 DEVise setViewHelp {View 1} {This view displays the observed versus
 calculated chemical shift values for the selected
@@ -140,9 +156,16 @@ DEVise setLinkMultFact {View 1} {X} 1
 DEVise setLinkMultFact {View 1} {Y} 1
 DEVise setGAttrLinkMode {View 1} 0
 DEVise setDoHomeOnVisLink {View 1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 1} {1}
+DEVise viewSetUseJmol {View 1} {0}
+DEVise setExcludeFromDrillDown {View 1} {0}
+DEVise setViewSaveFilter {View 1} 0 0
 
 # View {View 3} uses mapping {4974csr1_1#csObs_vs_resID 2}
-DEVise create {view} {Scatter} {View 3} 173.959998 179.984003 171.567007 179.575006 37 0 0 37 0 37
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 3} -500.100000 500.100000 -500.100000 500.100000 37 0 0 37 0 37
 DEVise setLabel {View 3} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 3} 00000000
 DEVise setViewDimensions {View 3} 2
@@ -152,7 +175,9 @@ DEVise setViewDisplayDataValues {View 3} 0
 DEVise setFont {View 3} {title} 2 12 0 0
 DEVise setFont {View 3} {x axis} 2 12 0 0
 DEVise setFont {View 3} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 3} 1 1 1 0 0.100000 0.100000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 3} 1 1 1 0 0.1 0.1 0 0 100 100
 DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
@@ -168,14 +193,22 @@ DEVise setYAxisFloatFormat {View 3} {%.4g}
 DEVise setViewAutoFilter {View 3} {1}
 DEVise setDupElim {View 3} {0}
 DEVise setNiceAxes {View 3} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 3} 0 0 0 0
 DEVise setShowMouseLocation {View 3} {1}
 DEVise setLinkMultFact {View 3} {X} 1
 DEVise setLinkMultFact {View 3} {Y} 1
 DEVise setGAttrLinkMode {View 3} 0
 DEVise setDoHomeOnVisLink {View 3} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 3} {1}
+DEVise viewSetUseJmol {View 3} {0}
+DEVise setExcludeFromDrillDown {View 3} {0}
+DEVise setViewSaveFilter {View 3} 0 0
 
 # View {View 4} uses mapping {4974csr1_1#atomName_vs_atomName}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 4} -0.500000 0.500000 -0.500000 0.500000 37 17 37 17 37 17
 DEVise setLabel {View 4} 1 16 {atom_name_link leader}
 DEVise setViewStatistics {View 4} 00000000
@@ -186,7 +219,9 @@ DEVise setViewDisplayDataValues {View 4} 0
 DEVise setFont {View 4} {title} 0 12 0 0
 DEVise setFont {View 4} {x axis} 0 12 0 0
 DEVise setFont {View 4} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 4} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 4} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 4} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 4} 1 0.500000 1.000000
@@ -202,14 +237,22 @@ DEVise setYAxisFloatFormat {View 4} {%.4g}
 DEVise setViewAutoFilter {View 4} {0}
 DEVise setDupElim {View 4} {1}
 DEVise setNiceAxes {View 4} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 4} 0 0 0 0
 DEVise setShowMouseLocation {View 4} {1}
 DEVise setLinkMultFact {View 4} {X} 1
 DEVise setLinkMultFact {View 4} {Y} 1
 DEVise setGAttrLinkMode {View 4} 0
 DEVise setDoHomeOnVisLink {View 4} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 4} {1}
+DEVise viewSetUseJmol {View 4} {0}
+DEVise setExcludeFromDrillDown {View 4} {0}
+DEVise setViewSaveFilter {View 4} 0 0
 
 # View {View 5} uses mapping {4974csr1_1#atomName_vs_atomName 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 5} -1.000000 1.000000 6.500000 7.500000 37 17 37 17 37 17
 DEVise setLabel {View 5} 1 16 {helix_link leader}
 DEVise setViewStatistics {View 5} 00000000
@@ -220,7 +263,9 @@ DEVise setViewDisplayDataValues {View 5} 0
 DEVise setFont {View 5} {title} 0 12 0 0
 DEVise setFont {View 5} {x axis} 0 12 0 0
 DEVise setFont {View 5} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 5} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 5} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 5} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 5} 1 0.500000 1.000000
@@ -236,14 +281,22 @@ DEVise setYAxisFloatFormat {View 5} {%.4g}
 DEVise setViewAutoFilter {View 5} {0}
 DEVise setDupElim {View 5} {1}
 DEVise setNiceAxes {View 5} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 5} 0 0 0 0
 DEVise setShowMouseLocation {View 5} {1}
 DEVise setLinkMultFact {View 5} {X} 1
 DEVise setLinkMultFact {View 5} {Y} 1
 DEVise setGAttrLinkMode {View 5} 0
 DEVise setDoHomeOnVisLink {View 5} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 5} {1}
+DEVise viewSetUseJmol {View 5} {0}
+DEVise setExcludeFromDrillDown {View 5} {0}
+DEVise setViewSaveFilter {View 5} 0 0
 
 # View {View 6} uses mapping {4974csr1_1#atomName_vs_atomName 3}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 7.500000 8.500000 37 17 37 17 37 17
 DEVise setLabel {View 6} 1 16 {sheet_link leader}
 DEVise setViewStatistics {View 6} 00000000
@@ -254,7 +307,9 @@ DEVise setViewDisplayDataValues {View 6} 0
 DEVise setFont {View 6} {title} 0 12 0 0
 DEVise setFont {View 6} {x axis} 0 12 0 0
 DEVise setFont {View 6} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 6} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 6} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 6} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 6} 1 0.500000 1.000000
@@ -270,14 +325,22 @@ DEVise setYAxisFloatFormat {View 6} {%.4g}
 DEVise setViewAutoFilter {View 6} {0}
 DEVise setDupElim {View 6} {1}
 DEVise setNiceAxes {View 6} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 6} 0 0 0 0
 DEVise setShowMouseLocation {View 6} {1}
 DEVise setLinkMultFact {View 6} {X} 1
 DEVise setLinkMultFact {View 6} {Y} 1
 DEVise setGAttrLinkMode {View 6} 0
 DEVise setDoHomeOnVisLink {View 6} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 6} {1}
+DEVise viewSetUseJmol {View 6} {0}
+DEVise setExcludeFromDrillDown {View 6} {0}
+DEVise setViewSaveFilter {View 6} 0 0
 
 # View {View 7} uses mapping {4974csr1_1#atomName_vs_atomName 4}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 7} -0.500000 0.500000 -4.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {View 7} 0 12 {atomName() vs. atomName}
 DEVise setViewStatistics {View 7} 00000000
@@ -288,7 +351,9 @@ DEVise setViewDisplayDataValues {View 7} 0
 DEVise setFont {View 7} {title} 0 12 0 0
 DEVise setFont {View 7} {x axis} 0 12 0 0
 DEVise setFont {View 7} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 7} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 7} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 7} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 7} 1 0.500000 1.000000
@@ -304,6 +369,7 @@ DEVise setYAxisFloatFormat {View 7} {%.4g}
 DEVise setViewAutoFilter {View 7} {0}
 DEVise setDupElim {View 7} {1}
 DEVise setNiceAxes {View 7} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 7} 1 0 1 1
 DEVise setViewHelp {View 7} {Use the DEVise cursor in this view to
 which atom's data is shown in the main view to the right.}
@@ -312,8 +378,15 @@ DEVise setLinkMultFact {View 7} {X} 1
 DEVise setLinkMultFact {View 7} {Y} 1
 DEVise setGAttrLinkMode {View 7} 0
 DEVise setDoHomeOnVisLink {View 7} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 7} {1}
+DEVise viewSetUseJmol {View 7} {0}
+DEVise setExcludeFromDrillDown {View 7} {0}
+DEVise setViewSaveFilter {View 7} 0 0
 
 # View {View 8} uses mapping {.4974csr1src#Source_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 8} -50.000000 50.000000 -50.000000 50.000000 37 13 0 37 0 37
 DEVise setLabel {View 8} 0 12 {Source() vs. recId}
 DEVise setViewStatistics {View 8} 00000000
@@ -324,7 +397,9 @@ DEVise setViewDisplayDataValues {View 8} 0
 DEVise setFont {View 8} {title} 0 12 0 0
 DEVise setFont {View 8} {x axis} 0 12 0 0
 DEVise setFont {View 8} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 8} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 8} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 8} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 8} 1 0.500000 1.000000
@@ -340,15 +415,23 @@ DEVise setYAxisFloatFormat {View 8} {%.4g}
 DEVise setViewAutoFilter {View 8} {0}
 DEVise setDupElim {View 8} {0}
 DEVise setNiceAxes {View 8} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 8} 1 1 1 1
 DEVise setShowMouseLocation {View 8} {1}
 DEVise setLinkMultFact {View 8} {X} 1
 DEVise setLinkMultFact {View 8} {Y} 1
 DEVise setGAttrLinkMode {View 8} 0
 DEVise setDoHomeOnVisLink {View 8} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 8} {1}
+DEVise viewSetUseJmol {View 8} {0}
+DEVise setExcludeFromDrillDown {View 8} {0}
+DEVise setViewSaveFilter {View 8} 0 0
 
 # View {View 9} uses mapping {.4974csr1_1#csObs_vs_resID}
-DEVise create {view} {Scatter} {View 9} 173.959998 179.984003 171.567007 179.575006 37 0 0 37 0 37
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 9} -500.100000 500.100000 -500.100000 500.100000 37 0 0 37 0 37
 DEVise setLabel {View 9} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 9} 00000000
 DEVise setViewDimensions {View 9} 2
@@ -358,7 +441,9 @@ DEVise setViewDisplayDataValues {View 9} 0
 DEVise setFont {View 9} {title} 2 12 0 0
 DEVise setFont {View 9} {x axis} 2 12 0 0
 DEVise setFont {View 9} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 9} 1 1 1 0 0.100000 0.100000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 9} 1 1 1 0 0.1 0.1 0 0 100 100
 DEVise viewSetHorPan {View 9} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 9} 1 0.500000 1.000000
@@ -374,14 +459,22 @@ DEVise setYAxisFloatFormat {View 9} {%.4g}
 DEVise setViewAutoFilter {View 9} {1}
 DEVise setDupElim {View 9} {0}
 DEVise setNiceAxes {View 9} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 9} 0 0 0 0
 DEVise setShowMouseLocation {View 9} {1}
 DEVise setLinkMultFact {View 9} {X} 1
 DEVise setLinkMultFact {View 9} {Y} 1
 DEVise setGAttrLinkMode {View 9} 0
 DEVise setDoHomeOnVisLink {View 9} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 9} {1}
+DEVise viewSetUseJmol {View 9} {0}
+DEVise setExcludeFromDrillDown {View 9} {0}
+DEVise setViewSaveFilter {View 9} 0 0
 
 # View {View 16} uses mapping {.4974csr1_1#csObs_vs_resID 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 16} -0.500000 2.500000 -0.100000 0.100000 37 17 37 17 37 17
 DEVise setLabel {View 16} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 16} 00000000
@@ -392,7 +485,9 @@ DEVise setViewDisplayDataValues {View 16} 0
 DEVise setFont {View 16} {title} 2 12 0 0
 DEVise setFont {View 16} {x axis} 2 12 0 0
 DEVise setFont {View 16} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 16} 1 1 1 0 0.100000 0.100000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 16} 1 1 1 0 0.1 0.1 0 0 100 100
 DEVise viewSetHorPan {View 16} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 16} 1 0.500000 1.000000
@@ -408,14 +503,22 @@ DEVise setYAxisFloatFormat {View 16} {%.4g}
 DEVise setViewAutoFilter {View 16} {0}
 DEVise setDupElim {View 16} {0}
 DEVise setNiceAxes {View 16} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 16} 0 0 0 0
 DEVise setShowMouseLocation {View 16} {1}
 DEVise setLinkMultFact {View 16} {X} 1
 DEVise setLinkMultFact {View 16} {Y} 1
 DEVise setGAttrLinkMode {View 16} 0
 DEVise setDoHomeOnVisLink {View 16} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 16} {1}
+DEVise viewSetUseJmol {View 16} {0}
+DEVise setExcludeFromDrillDown {View 16} {0}
+DEVise setViewSaveFilter {View 16} 0 0
 
 # View {View 17} uses mapping {.4974csr1_1#csObs_vs_resID 3}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 17} -0.500000 2.500000 -0.100000 0.100000 37 17 37 17 37 17
 DEVise setLabel {View 17} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 17} 00000000
@@ -426,7 +529,9 @@ DEVise setViewDisplayDataValues {View 17} 0
 DEVise setFont {View 17} {title} 2 12 0 0
 DEVise setFont {View 17} {x axis} 2 12 0 0
 DEVise setFont {View 17} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 17} 1 1 1 0 0.100000 0.100000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 17} 1 1 1 0 0.1 0.1 0 0 100 100
 DEVise viewSetHorPan {View 17} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 17} 1 0.500000 1.000000
@@ -442,14 +547,22 @@ DEVise setYAxisFloatFormat {View 17} {%.4g}
 DEVise setViewAutoFilter {View 17} {0}
 DEVise setDupElim {View 17} {0}
 DEVise setNiceAxes {View 17} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 17} 0 0 0 0
 DEVise setShowMouseLocation {View 17} {1}
 DEVise setLinkMultFact {View 17} {X} 1
 DEVise setLinkMultFact {View 17} {Y} 1
 DEVise setGAttrLinkMode {View 17} 0
 DEVise setDoHomeOnVisLink {View 17} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 17} {1}
+DEVise viewSetUseJmol {View 17} {0}
+DEVise setExcludeFromDrillDown {View 17} {0}
+DEVise setViewSaveFilter {View 17} 0 0
 
 # View {View 18} uses mapping {.4974csr1_1#csObs_vs_resID 4}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 18} -0.500000 2.500000 -0.100000 0.100000 37 17 37 17 37 17
 DEVise setLabel {View 18} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 18} 00000000
@@ -460,7 +573,9 @@ DEVise setViewDisplayDataValues {View 18} 0
 DEVise setFont {View 18} {title} 2 12 0 0
 DEVise setFont {View 18} {x axis} 2 12 0 0
 DEVise setFont {View 18} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 18} 1 1 1 0 0.100000 0.100000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 18} 1 1 1 0 0.1 0.1 0 0 100 100
 DEVise viewSetHorPan {View 18} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 18} 1 0.500000 1.000000
@@ -476,15 +591,23 @@ DEVise setYAxisFloatFormat {View 18} {%.4g}
 DEVise setViewAutoFilter {View 18} {0}
 DEVise setDupElim {View 18} {0}
 DEVise setNiceAxes {View 18} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 18} 0 0 0 0
 DEVise setShowMouseLocation {View 18} {1}
 DEVise setLinkMultFact {View 18} {X} 1
 DEVise setLinkMultFact {View 18} {Y} 1
 DEVise setGAttrLinkMode {View 18} 0
 DEVise setDoHomeOnVisLink {View 18} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 18} {1}
+DEVise viewSetUseJmol {View 18} {0}
+DEVise setExcludeFromDrillDown {View 18} {0}
+DEVise setViewSaveFilter {View 18} 0 0
 
 # View {View 19} uses mapping {.label#View 19}
-DEVise create {view} {Scatter} {View 19} 173.959998 179.984003 171.567007 179.575006 37 0 0 37 0 37
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} {View 19} -500.100000 500.100000 -500.100000 500.100000 37 0 0 37 0 37
 DEVise setLabel {View 19} 1 16 {Observed vs. Calculated Chemical Shifts}
 DEVise setViewStatistics {View 19} 00000000
 DEVise setViewDimensions {View 19} 2
@@ -494,8 +617,10 @@ DEVise setViewDisplayDataValues {View 19} 0
 DEVise setFont {View 19} {title} 2 12 0 0
 DEVise setFont {View 19} {x axis} 2 12 0 0
 DEVise setFont {View 19} {y axis} 2 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 19} 0 0 1 0 0.100000 0.100000 0.000000 0.000000 100.000000 100.000000
-DEVise viewSetImplicitHome {View 19} 1 1 1 0 0.1 0.1 0 0 100 100
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {View 19} 0 0 1 0 0.1 0.1 0 0 100 100
 DEVise viewSetHorPan {View 19} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 19} 1 0.500000 1.000000
 DEVise setViewGDS {View 19} 1 0 0 "" 1 " " 1
@@ -510,15 +635,22 @@ DEVise setYAxisFloatFormat {View 19} {%.4g}
 DEVise setViewAutoFilter {View 19} {1}
 DEVise setDupElim {View 19} {0}
 DEVise setNiceAxes {View 19} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 19} 0 0 0 0
 DEVise setShowMouseLocation {View 19} {1}
 DEVise setLinkMultFact {View 19} {X} 1
 DEVise setLinkMultFact {View 19} {Y} 1
 DEVise setGAttrLinkMode {View 19} 0
 DEVise setDoHomeOnVisLink {View 19} {0}
+DEVise setDoHomeOnVisLinkIfInvisible {View 19} {1}
+DEVise viewSetUseJmol {View 19} {0}
 DEVise setExcludeFromDrillDown {View 19} {1}
+DEVise setViewSaveFilter {View 19} 0 0
 
 # View {View 110} uses mapping {.csr3_layout#y_vs_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 110} -0.560000 0.500000 -0.560000 0.600000 0 0 0 37 0 37
 DEVise setLabel {View 110} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 110} 00000000
@@ -529,7 +661,9 @@ DEVise setViewDisplayDataValues {View 110} 0
 DEVise setFont {View 110} {title} 0 12 0 0
 DEVise setFont {View 110} {x axis} 0 12 0 0
 DEVise setFont {View 110} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 110} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 110} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 110} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 110} 1 0.500000 1.000000
@@ -545,6 +679,7 @@ DEVise setYAxisFloatFormat {View 110} {%.4g}
 DEVise setViewAutoFilter {View 110} {0}
 DEVise setDupElim {View 110} {0}
 DEVise setNiceAxes {View 110} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 110} 1 1 1 1
 DEVise setViewHelp {View 110} {none}
 DEVise setShowMouseLocation {View 110} {1}
@@ -552,8 +687,15 @@ DEVise setLinkMultFact {View 110} {X} 1
 DEVise setLinkMultFact {View 110} {Y} 1
 DEVise setGAttrLinkMode {View 110} 0
 DEVise setDoHomeOnVisLink {View 110} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 110} {1}
+DEVise viewSetUseJmol {View 110} {0}
+DEVise setExcludeFromDrillDown {View 110} {0}
+DEVise setViewSaveFilter {View 110} 0 0
 
 # View {View 111} uses mapping {.label#Label_text_vs_recId 9}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 111} -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
 DEVise setLabel {View 111} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 111} 00000000
@@ -564,7 +706,9 @@ DEVise setViewDisplayDataValues {View 111} 0
 DEVise setFont {View 111} {title} 0 12 0 0
 DEVise setFont {View 111} {x axis} 0 12 0 0
 DEVise setFont {View 111} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 111} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 111} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 111} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 111} 1 0.500000 1.000000
@@ -580,6 +724,7 @@ DEVise setYAxisFloatFormat {View 111} {%.4g}
 DEVise setViewAutoFilter {View 111} {0}
 DEVise setDupElim {View 111} {0}
 DEVise setNiceAxes {View 111} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 111} 1 1 1 1
 DEVise setViewHelp {View 111} {axis label}
 DEVise setShowMouseLocation {View 111} {1}
@@ -587,8 +732,15 @@ DEVise setLinkMultFact {View 111} {X} 1
 DEVise setLinkMultFact {View 111} {Y} 1
 DEVise setGAttrLinkMode {View 111} 0
 DEVise setDoHomeOnVisLink {View 111} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 111} {1}
+DEVise viewSetUseJmol {View 111} {0}
+DEVise setExcludeFromDrillDown {View 111} {0}
+DEVise setViewSaveFilter {View 111} 0 0
 
 # View {View 112} uses mapping {.label#Label_text_vs_recId 10}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 112} -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
 DEVise setLabel {View 112} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 112} 00000000
@@ -599,7 +751,9 @@ DEVise setViewDisplayDataValues {View 112} 0
 DEVise setFont {View 112} {title} 0 12 0 0
 DEVise setFont {View 112} {x axis} 0 12 0 0
 DEVise setFont {View 112} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 112} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 112} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 112} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 112} 1 0.500000 1.000000
@@ -615,6 +769,7 @@ DEVise setYAxisFloatFormat {View 112} {%.4g}
 DEVise setViewAutoFilter {View 112} {0}
 DEVise setDupElim {View 112} {0}
 DEVise setNiceAxes {View 112} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 112} 1 1 1 1
 DEVise setViewHelp {View 112} {axis label}
 DEVise setShowMouseLocation {View 112} {1}
@@ -622,8 +777,15 @@ DEVise setLinkMultFact {View 112} {X} 1
 DEVise setLinkMultFact {View 112} {Y} 1
 DEVise setGAttrLinkMode {View 112} 0
 DEVise setDoHomeOnVisLink {View 112} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 112} {1}
+DEVise viewSetUseJmol {View 112} {0}
+DEVise setExcludeFromDrillDown {View 112} {0}
+DEVise setViewSaveFilter {View 112} 0 0
 
 # View {View 113} uses mapping {.csr3_legend#y_vs_x}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 113} -0.500000 2.500000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {View 113} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 113} 00000000
@@ -634,7 +796,9 @@ DEVise setViewDisplayDataValues {View 113} 0
 DEVise setFont {View 113} {title} 0 12 0 0
 DEVise setFont {View 113} {x axis} 0 12 0 0
 DEVise setFont {View 113} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 113} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 113} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 113} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 113} 1 0.500000 1.000000
@@ -650,6 +814,7 @@ DEVise setYAxisFloatFormat {View 113} {%.4g}
 DEVise setViewAutoFilter {View 113} {0}
 DEVise setDupElim {View 113} {0}
 DEVise setNiceAxes {View 113} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 113} 1 0 1 1
 DEVise setViewHelp {View 113} {Use the DEVise cursor in this view
 to select which types of secondary structure data
@@ -660,8 +825,15 @@ DEVise setLinkMultFact {View 113} {X} 1
 DEVise setLinkMultFact {View 113} {Y} 1
 DEVise setGAttrLinkMode {View 113} 0
 DEVise setDoHomeOnVisLink {View 113} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 113} {1}
+DEVise viewSetUseJmol {View 113} {0}
+DEVise setExcludeFromDrillDown {View 113} {0}
+DEVise setViewSaveFilter {View 113} 0 0
 
 # View {View 114} uses mapping {.csr3_legend#y_vs_x 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 114} -0.500000 2.500000 -0.500000 0.500000 37 0 0 37 0 37
 DEVise setLabel {View 114} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 114} 00000000
@@ -672,7 +844,9 @@ DEVise setViewDisplayDataValues {View 114} 0
 DEVise setFont {View 114} {title} 0 12 0 0
 DEVise setFont {View 114} {x axis} 0 12 0 0
 DEVise setFont {View 114} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 114} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 114} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 114} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 114} 1 0.500000 1.000000
@@ -688,14 +862,22 @@ DEVise setYAxisFloatFormat {View 114} {%.4g}
 DEVise setViewAutoFilter {View 114} {0}
 DEVise setDupElim {View 114} {0}
 DEVise setNiceAxes {View 114} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 114} 1 0 1 1
 DEVise setShowMouseLocation {View 114} {1}
 DEVise setLinkMultFact {View 114} {X} 1
 DEVise setLinkMultFact {View 114} {Y} 1
 DEVise setGAttrLinkMode {View 114} 0
 DEVise setDoHomeOnVisLink {View 114} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 114} {1}
+DEVise viewSetUseJmol {View 114} {0}
+DEVise setExcludeFromDrillDown {View 114} {0}
+DEVise setViewSaveFilter {View 114} 0 0
 
 # View {View 10} uses mapping {.4974csr1src#Source_vs_recId 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {Scatter} {View 10} -50.000000 50.000000 -50.000000 50.000000 37 13 0 37 0 37
 DEVise setLabel {View 10} 0 12 {Source() vs. recId}
 DEVise setViewStatistics {View 10} 00000000
@@ -706,7 +888,9 @@ DEVise setViewDisplayDataValues {View 10} 0
 DEVise setFont {View 10} {title} 0 12 0 0
 DEVise setFont {View 10} {x axis} 0 12 0 0
 DEVise setFont {View 10} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetHome {View 10} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
 DEVise viewSetImplicitHome {View 10} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 10} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 10} 1 0.500000 1.000000
@@ -722,6 +906,7 @@ DEVise setYAxisFloatFormat {View 10} {%.4g}
 DEVise setViewAutoFilter {View 10} {0}
 DEVise setDupElim {View 10} {0}
 DEVise setNiceAxes {View 10} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
 DEVise viewSetDisabledActions {View 10} 1 1 1 1
 DEVise setViewHelp {View 10} {Visualization info}
 DEVise setShowMouseLocation {View 10} {1}
@@ -729,6 +914,10 @@ DEVise setLinkMultFact {View 10} {X} 1
 DEVise setLinkMultFact {View 10} {Y} 1
 DEVise setGAttrLinkMode {View 10} 0
 DEVise setDoHomeOnVisLink {View 10} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {View 10} {1}
+DEVise viewSetUseJmol {View 10} {0}
+DEVise setExcludeFromDrillDown {View 10} {0}
+DEVise setViewSaveFilter {View 10} 0 0
 
 # Create interpreted mapping classes
 DEVise createMappingClass {csObs_vs_resID}
@@ -740,122 +929,180 @@ DEVise createMappingClass {y_vs_x}
 
 # Create mapping instances (GData)
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 4974csr1_1#csObs_vs_resID {} {$csCalc} {$csObs} {} 32 0 0 0 1 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#csObs_vs_resID} 5
 DEVise setMappingColors {4974csr1_1#csObs_vs_resID} {32} {32} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 {4974csr1_1#csObs_vs_resID 2} {} {$csCalc} {$csObs} {} 6 0 0 0 1 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#csObs_vs_resID 2} 5
 DEVise setMappingColors {4974csr1_1#csObs_vs_resID 2} {6} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 .4974csr1_1#csObs_vs_resID {} {$csCalc} {$csObs} {} 36 0 0 0 1 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#csObs_vs_resID} 5
 DEVise setMappingColors {.4974csr1_1#csObs_vs_resID} {36} {33} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 {.4974csr1_1#csObs_vs_resID 2} {} 0 0 {} 32 0 0 0 1 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#csObs_vs_resID 2} 5
 DEVise setMappingColors {.4974csr1_1#csObs_vs_resID 2} {32} {6} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 {.4974csr1_1#csObs_vs_resID 3} {} 1 0 {} 6 0 0 0 1 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#csObs_vs_resID 3} 5
 DEVise setMappingColors {.4974csr1_1#csObs_vs_resID 3} {6} {6} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {csObs_vs_resID} .4974csr1_1 {.4974csr1_1#csObs_vs_resID 4} {} 2 0 {} 36 0 0 0 1 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_1#csObs_vs_resID 4} 5
 DEVise setMappingColors {.4974csr1_1#csObs_vs_resID 4} {36} {6} {0}
 
-DEVise create {mapping} {csObs_vs_resID} .label {.label#View 19} {} {$x} {$y} {} 37 1 0 0 7 1000 1000 {} {} {} {} {} {} {} {} {} {} {} {} {}
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {csObs_vs_resID} .label {.label#View 19} {} 0 0 {} 37 1 0 0 7 1000 1000 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#View 19} 1
 DEVise setMappingColors {.label#View 19} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 4974csr1_1#atomName_vs_atomName {} 0 {-$atomName} {} 8 12 0 0 16 {$atomName} {} {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName} 1
 DEVise setMappingColors {4974csr1_1#atomName_vs_atomName} {8} {8} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 {4974csr1_1#atomName_vs_atomName 2} {} 0 {$secondary} {} 8 12 0 0 16 {$secondary} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName 2} 1
 DEVise setMappingColors {4974csr1_1#atomName_vs_atomName 2} {8} {8} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 {4974csr1_1#atomName_vs_atomName 3} {} 0 {$secondary} {} 8 12 0 0 16 {$secondary} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName 3} 1
 DEVise setMappingColors {4974csr1_1#atomName_vs_atomName 3} {8} {8} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {atomName_vs_atomName} .4974csr1_1 {4974csr1_1#atomName_vs_atomName 4} {} 0 {-$atomName} {} 36 12 0 0 16 {$atomName} {} 0 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {4974csr1_1#atomName_vs_atomName 4} 1
 DEVise setMappingColors {4974csr1_1#atomName_vs_atomName 4} {36} {9} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Source_vs_recId} .4974csr1src .4974csr1src#Source_vs_recId {} 0 0 {} 37 12 0 0 16 {$Source} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1src#Source_vs_recId} 1
 DEVise setMappingColors {.4974csr1src#Source_vs_recId} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Source_vs_recId} .4974csr1src {.4974csr1src#Source_vs_recId 2} {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1src#Source_vs_recId 2} 1
 DEVise setMappingColors {.4974csr1src#Source_vs_recId 2} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 .4974csr1_4#tolerance_vs_avgDiff {} {$avgDiff} 100 {} 31 1 -22 0 2 {$tolerance*2} {} {$atomName} {$secondary} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_4#tolerance_vs_avgDiff} 1
 DEVise setMappingColors {.4974csr1_4#tolerance_vs_avgDiff} {31} {31} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {tolerance_vs_avgDiff} .4974csr1_4 {.4974csr1_4#tolerance_vs_avgDiff 2} {} {$avgDiff} 100 {} 31 1 -22 0 2 {$tolerance*2} {} {$atomName} {$secondary} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4974csr1_4#tolerance_vs_avgDiff 2} 1
 DEVise setMappingColors {.4974csr1_4#tolerance_vs_avgDiff 2} {31} {31} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 1.3 0 {} 6 12 0 0 16 {"Sheet"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 DEVise setMappingColors {.label#Label_text_vs_recId} {6} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0.3 0 {} 32 12 0 0 16 {"Helix"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 2} {32} {32} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 3} {} 2.3 0 {} 36 12 0 0 16 {"Other"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 3} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 3} {36} {33} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 4} {} 0.9 0 {} 6 1 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 4} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 4} {6} {3} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 5} {} 1 0 {} 32 12 0 0 16 {"Helix"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 5} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 5} {32} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 6} {} 2 0 {} 36 12 0 0 16 {"Other"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 6} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 6} {36} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 7} {} -0.1 0 {} 32 1 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 7} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 7} {32} {32} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 8} {} 1.9 0 {} 36 1 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 8} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 8} {36} {33} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 9} {} 0 0 {} 37 12 0 90 16 {"Observed chemical shift, ppm"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 9} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 9} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 10} {} 0 0 {} 37 12 0 0 16 {"Calculated chemical shift, ppm"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 10} 1
 DEVise setMappingColors {.label#Label_text_vs_recId 10} {37} {0} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .csr3_layout .csr3_layout#y_vs_x {} {$x} {$y} {} {} 0.99 0 0 17 {$view} {$width} {$height} {} {$pile} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.csr3_layout#y_vs_x} 1
 DEVise setMappingColors {.csr3_layout#y_vs_x} {} {37} {37}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .csr3_legend .csr3_legend#y_vs_x {} {$x-0.1} {$y} {} {$color_norm} 0.2 0 0 0 1 2 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.csr3_legend#y_vs_x} 1
 DEVise setMappingColors {.csr3_legend#y_vs_x} {$color_norm} {$color_c_print} {0}
 
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {y_vs_x} .csr3_legend {.csr3_legend#y_vs_x 2} {} {$x+0.2} {$y} {} {$color_norm} 12 0 0 16 {$text} {} {} 2 2 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.csr3_legend#y_vs_x 2} 1
 DEVise setMappingColors {.csr3_legend#y_vs_x 2} {$color_norm} {$color_c_print} {0}
 
 # Create windows
-DEVise create {window} {TileLayout} DEViseWn1 0.746094 0.502930 0.168750 0.284180 1 0
-DEVise create {window} {TileLayout} DEViseWn5 0.704688 0.817383 0.240625 0.100586 1 0
-DEVise create {window} {TileLayout} DEViseWn6 0.058594 0.204102 0.534375 0.587891 0 0
+# Params: <category> <class> <name> <x> <y> <width> <height>
+#   <exclude from print> <print pixmap>
+DEVise create {window} {TileLayout} DEViseWn1 0.745313 0.502778 0.168750 0.282407 1 0
+DEVise create {window} {TileLayout} DEViseWn5 0.704688 0.816667 0.240625 0.100000 1 0
+DEVise create {window} {TileLayout} DEViseWn6 0.057813 0.203704 0.534375 0.586111 0 0
 
 # Set up window layouts
 
@@ -1028,15 +1275,21 @@ DEVise setAxisMultFact {View 10} {Y} 1
 
 # Put action into view
 
-# Put views in cursors
+# Put cursors into views and set cursor properties
 DEVise setCursorSrc {atom_select_cursor} {View 4}
 DEVise setCursorDst {atom_select_cursor} {View 7}
 DEVise color SetCursorColor {atom_select_cursor} #ffffffffffff
 DEVise setCursorConstraints {atom_select_cursor} 1 0 1
+DEVise setCursorSaveSrcFilter {atom_select_cursor} 0 0
+DEVise setCursorKeepProp {atom_select_cursor} 0 0
+
 DEVise setCursorSrc {secondary_select_cursor} {View 17}
 DEVise setCursorDst {secondary_select_cursor} {View 113}
 DEVise color SetCursorColor {secondary_select_cursor} #ffffffffffff
 DEVise setCursorConstraints {secondary_select_cursor} 0 0 1
+DEVise setCursorSaveSrcFilter {secondary_select_cursor} 0 0
+DEVise setCursorKeepProp {secondary_select_cursor} 0 0
+
 
 # Put axis label into views
 
@@ -1108,52 +1361,50 @@ DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {0} {0} {100} {100} 0
 
 DEVise clearViewHistory {View 1}
-DEVise insertViewHistory {View 1} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 1} {-0.6} {-0.6} {179.984} {179.575} 0
 DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
 DEVise insertViewHistory {View 1} {3.652} {2.858} {179.984} {179.575} 0
 DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
 DEVise insertViewHistory {View 1} {-500.1} {-500.1} {500.1} {500.1} 0
 DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {3.652} {2.858} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 1} {55.294} {54.251} {178.778} {178.716} 0
+DEVise insertViewHistory {View 1} {51.669} {51.707} {178.778} {178.716} 0
+DEVise insertViewHistory {View 1} {45.27} {44.418} {65.46} {66.466} 0
+DEVise insertViewHistory {View 1} {45.27} {44.418} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {3.652} {2.858} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 1} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 1} {-500.1} {-500.1} {500.1} {500.1} 0
 
 DEVise clearViewHistory {View 3}
-DEVise insertViewHistory {View 3} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 3} {-0.6} {-0.6} {179.984} {179.575} 0
 DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
 DEVise insertViewHistory {View 3} {3.652} {2.858} {179.984} {179.575} 0
 DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
 DEVise insertViewHistory {View 3} {-500.1} {-500.1} {500.1} {500.1} 0
 DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {3.652} {2.858} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 3} {55.294} {54.251} {178.778} {178.716} 0
+DEVise insertViewHistory {View 3} {51.669} {51.707} {178.778} {178.716} 0
+DEVise insertViewHistory {View 3} {45.27} {44.418} {65.46} {66.466} 0
+DEVise insertViewHistory {View 3} {45.27} {44.418} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {3.652} {2.858} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 3} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 3} {-500.1} {-500.1} {500.1} {500.1} 0
 
 DEVise clearViewHistory {View 4}
-DEVise insertViewHistory {View 4} {-0.5} {-0.5} {0.5} {0.5} 0
-DEVise insertViewHistory {View 4} {-0.5} {-1} {0.5} {0} 0
 DEVise insertViewHistory {View 4} {-0.5} {-1.5} {0.5} {-0.5} 0
 DEVise insertViewHistory {View 4} {-0.5} {-1} {0.5} {0} 0
 DEVise insertViewHistory {View 4} {-0.5} {-0.5} {0.5} {0.5} 0
@@ -1171,6 +1422,8 @@ DEVise insertViewHistory {View 4} {-0.5} {-0.5} {0.5} {0.5} 0
 DEVise insertViewHistory {View 4} {-0.5} {-1.5} {0.5} {-0.5} 0
 DEVise insertViewHistory {View 4} {-0.5} {-2.5} {0.5} {-1.5} 0
 DEVise insertViewHistory {View 4} {-0.5} {-3.5} {0.5} {-2.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-0.5} {0.5} {0.5} 0
+DEVise insertViewHistory {View 4} {-0.5} {-1.5} {0.5} {-0.5} 0
 DEVise insertViewHistory {View 4} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {View 5}
@@ -1215,26 +1468,26 @@ DEVise insertViewHistory {View 8} {-50} {0} {50} {100} 0
 DEVise insertViewHistory {View 8} {-50} {-50} {50} {50} 0
 
 DEVise clearViewHistory {View 9}
-DEVise insertViewHistory {View 9} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 9} {-0.6} {-0.6} {179.984} {179.575} 0
 DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
 DEVise insertViewHistory {View 9} {3.652} {2.858} {179.984} {179.575} 0
 DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
 DEVise insertViewHistory {View 9} {-500.1} {-500.1} {500.1} {500.1} 0
 DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {3.652} {2.858} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 9} {55.294} {54.251} {178.778} {178.716} 0
+DEVise insertViewHistory {View 9} {51.669} {51.707} {178.778} {178.716} 0
+DEVise insertViewHistory {View 9} {45.27} {44.418} {65.46} {66.466} 0
+DEVise insertViewHistory {View 9} {45.27} {44.418} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {3.652} {2.858} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 9} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 9} {-500.1} {-500.1} {500.1} {500.1} 0
 
 DEVise clearViewHistory {View 16}
 DEVise insertViewHistory {View 16} {-0.5} {-0.1} {2.5} {0.1} 0
@@ -1303,26 +1556,26 @@ DEVise insertViewHistory {View 18} {-0.5} {-0.1} {0.5} {0.1} 0
 DEVise insertViewHistory {View 18} {-0.5} {-0.1} {2.5} {0.1} 0
 
 DEVise clearViewHistory {View 19}
-DEVise insertViewHistory {View 19} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {3.652} {2.858} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {-0.6} {-0.6} {199.6} {199.6} 0
-DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
-DEVise insertViewHistory {View 19} {-0.6} {-0.6} {179.984} {179.575} 0
 DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
 DEVise insertViewHistory {View 19} {3.652} {2.858} {179.984} {179.575} 0
 DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
 DEVise insertViewHistory {View 19} {-500.1} {-500.1} {500.1} {500.1} 0
 DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {3.652} {2.858} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 19} {55.294} {54.251} {178.778} {178.716} 0
+DEVise insertViewHistory {View 19} {51.669} {51.707} {178.778} {178.716} 0
+DEVise insertViewHistory {View 19} {45.27} {44.418} {65.46} {66.466} 0
+DEVise insertViewHistory {View 19} {45.27} {44.418} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {3.652} {2.858} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {-500.1} {-500.1} {500.1} {500.1} 0
+DEVise insertViewHistory {View 19} {173.96} {171.567} {179.984} {179.575} 0
+DEVise insertViewHistory {View 19} {-500.1} {-500.1} {500.1} {500.1} 0
 
 DEVise clearViewHistory {View 110}
 DEVise insertViewHistory {View 110} {-1} {-0.475} {1} {1.525} 0
