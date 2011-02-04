@@ -4429,6 +4429,10 @@ java.security.AccessControlException: access denied
 			view in the distance restraints visualization
 			crashes DEVise (PoPClip underflow). (wenger)
 
+1010 2/4/11	OPEN	JS: Some Jmol features (including the fix to
+			bug 1005) don't work correctly with multiple
+			Jmol instances in a visualization (see
+			bmrb/test/4096_2jmol.ds). (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
