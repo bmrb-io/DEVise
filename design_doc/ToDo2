@@ -228,6 +228,10 @@ drawn on the client side. (wenger)
 Add recognition of the new BMRB two-entry visualizations to the session-
 opening GUI. (wenger)
 
+09.027 2/4/11	OPEN	3
+Add some additional Jmol-related menu options, such as turning ribbons
+on and off while still displaying atoms.
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
