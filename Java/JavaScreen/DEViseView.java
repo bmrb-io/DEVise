@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.79  2008/09/25 22:44:21  wenger
+// Workaround for bug 939: fixed off-by-one errors in the JS client
+// so this no longer happens for the JS; no fix on the server side,
+// though.
+//
 // Revision 1.78  2008/07/22 19:17:06  wenger
 // Fixed a case in JavaScreen bug 968 that I missed the first time around.
 //
@@ -663,6 +668,9 @@ public class DEViseView
 	    System.out.println("DEViseView(" + viewName +
 	      ").printAxisLabels(" + isChildView + ")");
 	}
+
+	// Only draw axis labels for the base view of a pile.
+	if (pileBaseView != null) return;
 
 	Color labelColor = new Color(viewFg);
 	if (DEBUG >= 2) {

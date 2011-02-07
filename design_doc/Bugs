@@ -4339,8 +4339,9 @@ java.lang.NullPointerException: null pData
 			the jsdemo area -- it should be set up to work
 			with local sessions. (wenger)
 
-995 2/12/10	OPEN	JavaScreen axis tick labels get garbled if you
-			zoom in too far (see bug995.png). (corbeille/wenger)
+995 2/12/10	FIXED	JavaScreen axis tick labels get garbled if you
+			zooom in too far (see bug995.png). (corbeille/wenger)
+			(Fixed in JS 5.13.4 by wenger, 2/7/11.)
 
 996 2/15/10	FIXED	JS: open the 15418tar5.ds in the JavaScreen,
 			switch the entity assembly several times (1, 2, 3,
