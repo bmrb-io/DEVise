@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.253  2011/02/01 01:10:38  wenger
+// Fixed minor errors and warnings in session templates.
+//
 // Revision 1.252  2011/01/12 20:38:59  wenger
 // Changed version to 12.0.1, added new version history section; added
 // config file for pacu.
@@ -375,7 +378,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.0.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.0.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

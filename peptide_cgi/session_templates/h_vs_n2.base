@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Jan 03 2011 12:40:31
+# file date: Feb 07 2011 15:46:56
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -543,7 +543,7 @@ DEVise viewSetImplicitHome {View 7} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 7} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 7} 1 0.500000 1.000000
 DEVise setViewGDS {View 7} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 7} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 7} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View 7} -1 1 10
 DEVise setCountMapping {View 7} 0 {} {} 0
 DEVise viewSetIsHighlight {View 7} 0
@@ -587,7 +587,7 @@ DEVise viewSetImplicitHome {View 8} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 8} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 8} 1 0.500000 1.000000
 DEVise setViewGDS {View 8} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 8} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 8} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View 8} -1 1 10
 DEVise setCountMapping {View 8} 0 {} {} 0
 DEVise viewSetIsHighlight {View 8} 0
@@ -631,7 +631,7 @@ DEVise viewSetImplicitHome {View 13} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 13} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 13} 1 0.500000 1.000000
 DEVise setViewGDS {View 13} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 13} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 13} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View 13} -1 1 10
 DEVise setCountMapping {View 13} 0 {} {} 0
 DEVise viewSetIsHighlight {View 13} 0
@@ -675,7 +675,7 @@ DEVise viewSetImplicitHome {View 14} 1 1 1 0 0 0 0 0 100 100
 DEVise viewSetHorPan {View 14} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 14} 1 0.500000 1.000000
 DEVise setViewGDS {View 14} 1 0 0 "" 1 " " 1
-DEVise viewSetJSSendP {View 14} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {View 14} 0 1 0 "" 1 " " 1
 DEVise setHistogram {View 14} -1 1 10
 DEVise setCountMapping {View 14} 0 {} {} 0
 DEVise viewSetIsHighlight {View 14} 0
@@ -1036,7 +1036,6 @@ DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
-DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
@@ -1044,6 +1043,7 @@ DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
+DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
@@ -1053,7 +1053,6 @@ DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} -25
-DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 0
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
 DEVise insertViewHistory {View 2} {-10.22} {-133.21} {-6.28} {-104.18} 0
 DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
@@ -1066,6 +1065,7 @@ DEVise insertViewHistory {View 2} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 2} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 2} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 2} {-9.915} {-128.07} {-6.505} {-106.78} 0
+DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
@@ -1091,12 +1091,14 @@ DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
+DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
 
 DEVise clearViewHistory {View 10}
 DEVise insertViewHistory {View 10} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 10} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 10} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 10} {-9.915} {-128.07} {-6.505} {-106.78} 0
+DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0

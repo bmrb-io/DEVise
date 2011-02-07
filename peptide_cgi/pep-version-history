@@ -6,6 +6,9 @@ Peptide-CGI 12.0.1
 
 * Minor cleanups of session templates.
 
+* Changed the legends for the simulated 1H-15N and simulated 1H-13C
+spectra to client-side rendering of the fonts, for better appearance.
+
 
 Peptide-CGI 12.0.0
 ------------------
