@@ -4152,9 +4152,10 @@ v726 11/01/01	FIXED	JavaScreen: if the jspop is running, but there is
 			views. (wenger)
 			(Fixed by wenger, 3/5/08.)
 
-963 2/22/08	OPEN	JS: JavaScreen release should include the jsj
+963 2/22/08	FIXED	JS: JavaScreen release should include the jsj
 			script so you can test run the client application
 			in the release directory. (wenger)
+			(Fixed by wenger, 3/6/08.)
 
 964 3/5/08	OPEN	JS: in DNA or RNA histograms -- shift-click produced
 			a drill-down dialog, but seemed to never actually
