@@ -4283,10 +4283,13 @@ java.lang.NullPointerException: null pData
 			a view that doesn't have any DEVise cursors. (wenger)
 			(Fixed by wenger, 9/9/09.)
 
-984 9/10/09	OPEN	JS: in the 4267hc1.ds session, <escape> gets you back
+984 9/10/09	ACTIVE	JS: in the 4267hc1.ds session, <escape> gets you back
 			to default toolbar mode when the mouse is in the main
 			view, but not when it's in the amino acid list view.
 			(wenger)
+			(Note: if you move the mouse into a different
+			view, and then into the amino acid list view,
+			<escape> works.
 
 985 9/10/09	FIXED	JS: change 'Reset Filters' to 'Reset Axis Ranges'
 			in the View menu. (wenger)

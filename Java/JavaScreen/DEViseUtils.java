@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2010
+// (c) Copyright 2003-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2010/05/28 19:29:11  wenger
+// Changed open session dialog to show BMRB visualization types (with
+// numbers) as the "main" value if they are available, with the new
+// hidebmrbsess applet parameter and command-line argument to hide the
+// file names completely if visualization types are available; added
+// histogram visualization types.
+//
 // Revision 1.5  2010/05/28 14:35:56  wenger
 // Added visualization "numbers" to type strings.
 //
@@ -91,8 +98,11 @@ public class DEViseUtils
 	    Matcher m = vtn._p.matcher(sessionName);
 	    if (m.matches()) {
 		String visType = vtn._type;
-		if (m.groupCount() > 0) {
+		if (m.groupCount() == 1) {
 		    visType += " " + m.group(1);
+		} else if (m.groupCount() == 4) {
+		    visType = m.group(1) + "/" + m.group(2) + visType +
+		      m.group(3) + "/" + m.group(4);
 		}
 	        return visType;
 	    }
@@ -149,6 +159,10 @@ public class DEViseUtils
 	_visTypes.addElement(
 	  new VisTypeName(".*as(\\d+)\\.ds",
 	  "chem shift dist by AA/nucleotide"));
+	_visTypes.addElement(
+	  new VisTypeName("(.*)\\+(.*)hn(\\d+)\\+(\\d+)\\.ds", " simulated 1H-15N spectrum "));
+	_visTypes.addElement(
+	  new VisTypeName("(.*)\\+(.*)hc(\\d+)\\+(\\d+)\\.ds", " simulated 1H-13C spectrum "));
 	_visTypes.addElement(
 	  new VisTypeName(".*hn(\\d+)\\.ds", "simulated 1H-15N spectrum"));
 	_visTypes.addElement(
