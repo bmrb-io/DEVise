@@ -4412,8 +4412,9 @@ java.security.AccessControlException: access denied
 1004 11/12/10	OPEN	The string table GUI doesn't seem to show existing
 			assignments. (wenger)
 
-1005 11/16/10	ACTIVE	Jmol loses state (e.g., ribbons turned on) when you
+1005 11/16/10	FIXED	Jmol loses state (e.g., ribbons turned on) when you
 			resize the JavaScreen. (gabrielc/wenger)
+			(Fixed in JS 5.13.4 by wenger, 2/13/11)
 
 1006 12/9/10	OPEN	If you have a child view selected, setting many
 			window-level properties doesn't seem to work (e.g.,
