@@ -10,4 +10,4 @@
 
 unsetenv CLASSPATH
 set javaexec = `cat bin2/java`
-$javaexec -Xmx128M -cp .:JmolApplet.jar JavaScreen.js -cgiurl/cgi-bin/js.cgi $*
+$javaexec -Xmx128M -cp .:JmolApplet.jar JavaScreen.js -cgiurl/cgi-bin/js.cgi -sessionbmrb/dynamic_sessions/15209/15209distr1.ds -screensize700x500 $*

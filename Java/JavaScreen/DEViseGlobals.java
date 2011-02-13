@@ -20,6 +20,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.140  2011/02/07 20:04:26  wenger
+// Fixed bug 995: we now only draw axis labels for the base view of a
+// pile.
+//
+// Revision 1.139.4.2  2011/02/09 16:18:00  wenger
+// Committing test changes, including sleep in
+// DEViseCmdDispatcher.waitForCmds(), that seems to fix the problem with the Jmol restore state code hanging the JS on my laptop.
+//
+// Revision 1.139.4.1  2011/02/04 22:39:47  wenger
+// Saving Jmol state: this is pretty much working; leaving in a bunch
+// of debug code and temporary comments for now (although I'm wondering
+// if we could avoid destroying and re-creating the selection trees
+// by saving and re-using the entire DEViseCanvas3DJmol object...).
+//
 // Revision 1.139  2010/07/21 19:15:59  wenger
 // Changed version to 5.13.4x1, added new version history section.
 //
@@ -852,7 +866,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.4x2"/*TEMP*/);
+    public static final String VERSION = new String("5.13.4x3"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

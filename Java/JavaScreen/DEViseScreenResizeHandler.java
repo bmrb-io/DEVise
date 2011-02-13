@@ -28,6 +28,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.2  2011/02/13 02:43:00  wenger
+// Got rid of debug output.
+//
+// Revision 1.2.4.1  2011/02/09 18:31:44  wenger
+// Okay, more test changes -- sleep in DEViseCanvas3DJmol.restoreJmoState()
+// seems to fix things, but is not what I want for a "real" fix.
+//
+// Revision 1.2  2010/07/15 19:01:13  wenger
+// Minor updates to the help page, etc., related to resizing.
+//
 // Revision 1.1  2010/07/01 17:32:59  wenger
 // Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
 // while a session is open, added new view menu options to enlarge and

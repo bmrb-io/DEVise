@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2010
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -42,6 +42,55 @@
 // $Id$
 
 // $Log$
+// Revision 1.24.4.10  2011/02/13 22:42:19  wenger
+// Pretty much finished cleaning up the Jmol state preservation code.
+//
+// Revision 1.24.4.9  2011/02/13 02:43:00  wenger
+// Got rid of debug output.
+//
+// Revision 1.24.4.8  2011/02/13 01:48:40  wenger
+// The 'saving Jmol state on resizes' feature is now working at home
+// -- the fix was putting the stuff that actually restores the Jmol
+// state into the event dispatched thread.  (Lots of debug code still
+// in place.)
+//
+// Revision 1.24.4.7  2011/02/09 18:31:44  wenger
+// Okay, more test changes -- sleep in DEViseCanvas3DJmol.restoreJmoState()
+// seems to fix things, but is not what I want for a "real" fix.
+//
+// Revision 1.24.4.6  2011/02/09 16:18:00  wenger
+// Committing test changes, including sleep in
+// DEViseCmdDispatcher.waitForCmds(), that seems to fix the problem with the Jmol restore state code hanging the JS on my laptop.
+//
+// Revision 1.24.4.5  2011/02/04 23:25:47  wenger
+// Saving Jmol state: okay, trying to re-use the canvas didn't seem to
+// work right (it didn't want to have the right size and location);
+// got rid of temporary debug code.  Hmm -- maybe I can save the selection
+// tree objects with the Jmol state...
+//
+// Revision 1.24.4.4  2011/02/04 22:39:47  wenger
+// Saving Jmol state: this is pretty much working; leaving in a bunch
+// of debug code and temporary comments for now (although I'm wondering
+// if we could avoid destroying and re-creating the selection trees
+// by saving and re-using the entire DEViseCanvas3DJmol object...).
+//
+// Revision 1.24.4.3  2011/01/21 22:10:23  wenger
+// Removed javaGDatas from DEViseScreen because we never used it for
+// anything; added some more debug output and comments to DEViseScreen;
+// some temporary debug output for working on bug 1007.
+//
+// Revision 1.24.4.2  2011/01/21 19:37:50  wenger
+// Cleaned up some of the temporary code.
+//
+// Revision 1.24.4.1  2011/01/21 19:18:37  wenger
+// Initial part of fix of bug 1005 (Jmol loses state on resize) -- it's
+// basically working, but needs cleanup because it relies on static
+// variables in the DEViseCanvas3DJmol class, etc.; also, there's still
+// some test code in place.
+//
+// Revision 1.24  2010/04/21 17:10:10  wenger
+// Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+//
 // Revision 1.23.4.13  2010/04/20 21:56:27  wenger
 // Made restraints thinner.
 //
@@ -352,6 +401,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     // The panel holding the actual Jmol viewer.
     private JmolPanel jmolPanel = null;
 
+    private class JmolState {
+        public JmolPanel jmolPanel;
+    }
+
     // The frame holding the Atom Display and Atom Selection trees.
     private JFrame treeFrame;
 
@@ -526,6 +579,96 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     }
 
     //-------------------------------------------------------------------
+    // Save the Jmol state for this canvas (part of bug 1005 fix).
+    public Object saveJmolState()
+    {
+    	if (DEBUG >= 2) {
+	    System.out.println("DEViseCanvas3DJmol.saveJmol()");
+	}
+
+	// We need to do this to *reliably* save the orientation and
+	// zoom of the molecule.
+	//TEMP -- do we need semicolon at end below?
+	jmolEvalStringErr(viewer, "save state saved1");
+
+	JmolState jmolState = new JmolState();
+	jmolState.jmolPanel = jmolPanel;
+
+	return jmolState;
+    }
+
+    //-------------------------------------------------------------------
+    // Restore the Jmol state for this canvas (part of bug 1005 fix).
+    public void restoreJmolState(Object jmState)
+    {
+    	if (DEBUG >= 2) {
+	    System.out.println(Thread.currentThread() + ":");
+	    System.out.println("  DEViseCanvas3DJmol.restoreJmol()");
+	}
+
+	if (jmState == null) {
+	    return;
+	}
+
+	if (!(jmState instanceof JmolState)) {
+	    System.err.println("Error: DEViseCanvas3DJmol.restoreJmol() " +
+	      "called with an object that is not a JmolState!");
+	}
+
+	JmolState jmolState = (JmolState)jmState;
+        Runnable doRestore = new DoRestoreJmol(jmolState);
+
+        SwingUtilities.invokeLater(doRestore);
+    }
+
+    //-------------------------------------------------------------------
+    // This class is used to allow us to actually do the restoring
+    // of Jmol state in the event dispatched thread -- fixes problems
+    // I ran into with things locking up on Windows.
+    private class DoRestoreJmol implements Runnable {
+        private JmolState _jmolState;
+
+	DoRestoreJmol(JmolState jmolState) {
+	    _jmolState = jmolState;
+	}
+
+	public void run() {
+	    if (_jmolState.jmolPanel != null) {
+	        if (jmolPanel != null) {
+	            remove(jmolPanel);
+	            jmolPanel = null;
+	        }
+
+	        setJmolPanel(_jmolState.jmolPanel);
+
+	        // We need to do this to *reliably* restore the orientation and
+	        // zoom of the molecule.
+	        //TEMP -- do we need semicolon at end below?
+	        jmolEvalStringErr(viewer, "restore state saved1");
+	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Restart Jmol -- this allows the user to reset Jmol's state to
+    // the default, in case we get goofed up trying to preserve the Jmol
+    // state.
+    public void restartJmol()
+    {
+    	if (DEBUG >= 2) {
+	    System.out.println("DEViseCanvas3DJmol.restartJmol()");
+	}
+
+	if (jmolPanel != null) {
+	    remove(jmolPanel);
+	    jmolPanel = null;
+	}
+	createJmol();
+	structUpdated = true;
+	repaint();
+    }
+
+    //-------------------------------------------------------------------
     /**
      * Force the window containing the selection trees to be shown.
      */
@@ -671,9 +814,11 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 		// Note: we're assuming here that the "normal" color is
 		// CPK; that may not always be true, but I don't know
 		// what else to do for now.  wenger 2006-06027.
+		//TEMP -- do we need semicolon at end below?
                 jmolEvalStringErr(viewer, "color atoms CPK");
 	    } else {
 	        viewer.setSelectionHalos(false);
+		//TEMP -- do we need semicolon at end below?
                 jmolEvalStringErr(viewer, "color atoms lime");
 	    }
 	    highlightWithHalos = halosOn;
@@ -689,7 +834,7 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
      */
     public static void jmolEvalStringErr(JmolViewer viewer, String script)
     {
-	if (DEBUG >= 2) {
+	if (DEBUG >= 3) {
 	    System.out.println("DEViseCanvas3DJmol.jmolEvalStringErr(" +
 	      script + ")");
 	}
@@ -860,20 +1005,17 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	  !SwingUtilities.isEventDispatchThread())) {
 	    System.out.println(Thread.currentThread() +
 	    " calls DEViseCanvas3DJmol.createJmol()");
+	    if (!SwingUtilities.isEventDispatchThread()) {
+	        System.out.println("  Warning: not event " +
+		  "dispatched thread!");
+	    }
 	}
 
         if (jmolPanel == null) {
 	    //
 	    // Create the actual Jmol panel.
 	    //
-            jmolPanel = new JmolPanel(jsc);
-            add(jmolPanel);
-            jmolPanel.setSize(canvasDim.width, canvasDim.height);
-            jmolPanel.setVisible(true);
-
-            viewer = jmolPanel.getViewer();
-            myCallbackListener = new MyCallbackListener();
-	    viewer.setJmolCallbackListener(myCallbackListener);
+	    setJmolPanel(new JmolPanel(jsc));
 
 	    setToWireframe = false;
 	}
@@ -889,6 +1031,24 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 	} else {
 	    setHighlightFromData();
 	}
+    }
+
+    //-------------------------------------------------------------------
+    /**
+     * Set the given JmolPanel to be the JmolPanel of this canvas,
+     * and set up callbacks accordingly.
+     * @param The JmolPanel.
+     */
+    protected void setJmolPanel(JmolPanel jmPanel)
+    {
+        jmolPanel = jmPanel;
+        add(jmolPanel);
+        jmolPanel.setSize(canvasDim.width, canvasDim.height);
+        jmolPanel.setVisible(true);
+
+        viewer = jmolPanel.getViewer();
+        myCallbackListener = new MyCallbackListener();
+	viewer.setJmolCallbackListener(myCallbackListener);
     }
 
     //===================================================================
@@ -1238,19 +1398,23 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
         jmolEvalStringErr(viewer, selectCmd);
 
 	if (highlightWithHalos) {
+	    //TEMP -- do we need semicolon at end below?
        	    jmolEvalStringErr(viewer, "color selectionHalos limegreen");
 	    viewer.setSelectionHalos(true);
 	}
     }
 
+    //-------------------------------------------------------------------
     private void drawRestraints()
     {
 	if (view.viewName.indexOf("wireframe") >= 0 && !setToWireframe) {
+	    //TEMP -- do we need semicolon at end below?
             jmolEvalStringErr(viewer, "select; wireframe only; select 0");
 	    setToWireframe = true;
 	}
 
 	// Delete any restraints we drew previously.
+	//TEMP -- do we need semicolon at end below?
         jmolEvalStringErr(viewer, "draw delete");
 
 	if (distRestraints != null) {
@@ -1262,9 +1426,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
 		cmd += " diameter 0.05 {atomno=" + restraint.atom1Num + "}";
 		cmd += " {atomno=" + restraint.atom2Num + "}";
 		cmd += " color " + color;
-		if (DEBUG >= 2) {
+		if (DEBUG >= 3) {
                     System.out.println("Restraint cmd: <" + cmd + ">");
 		}
+		//TEMP -- do we need semicolon at end below?
 	        jmolEvalStringErr(viewer, cmd);
 	    }
 	}

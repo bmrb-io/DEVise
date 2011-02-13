@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2010
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -32,6 +32,62 @@
 // $Id$
 
 // $Log$
+// Revision 1.87.4.11  2011/02/13 22:42:19  wenger
+// Pretty much finished cleaning up the Jmol state preservation code.
+//
+// Revision 1.87.4.10  2011/02/13 02:43:00  wenger
+// Got rid of debug output.
+//
+// Revision 1.87.4.9  2011/02/13 01:48:41  wenger
+// The 'saving Jmol state on resizes' feature is now working at home
+// -- the fix was putting the stuff that actually restores the Jmol
+// state into the event dispatched thread.  (Lots of debug code still
+// in place.)
+//
+// Revision 1.87.4.8  2011/02/09 18:31:44  wenger
+// Okay, more test changes -- sleep in DEViseCanvas3DJmol.restoreJmoState()
+// seems to fix things, but is not what I want for a "real" fix.
+//
+// Revision 1.87.4.7  2011/02/09 16:18:01  wenger
+// Committing test changes, including sleep in
+// DEViseCmdDispatcher.waitForCmds(), that seems to fix the problem with the Jmol restore state code hanging the JS on my laptop.
+//
+// Revision 1.87.4.6  2011/02/04 23:25:48  wenger
+// Saving Jmol state: okay, trying to re-use the canvas didn't seem to
+// work right (it didn't want to have the right size and location);
+// got rid of temporary debug code.  Hmm -- maybe I can save the selection
+// tree objects with the Jmol state...
+//
+// Revision 1.87.4.5  2011/02/04 22:39:47  wenger
+// Saving Jmol state: this is pretty much working; leaving in a bunch
+// of debug code and temporary comments for now (although I'm wondering
+// if we could avoid destroying and re-creating the selection trees
+// by saving and re-using the entire DEViseCanvas3DJmol object...).
+//
+// Revision 1.87.4.4  2011/01/21 22:42:50  wenger
+// Cleanups (with no change in functionality) to DEViseSCreen: consolidated
+// allViews into viewTable, and removed some other variables that weren't
+// really used for anything; other minor code cleanups.
+//
+// Revision 1.87.4.3  2011/01/21 22:10:23  wenger
+// Removed javaGDatas from DEViseScreen because we never used it for
+// anything; added some more debug output and comments to DEViseScreen;
+// some temporary debug output for working on bug 1007.
+//
+// Revision 1.87.4.2  2011/01/21 19:37:50  wenger
+// Cleaned up some of the temporary code.
+//
+// Revision 1.87.4.1  2011/01/21 19:18:37  wenger
+// Initial part of fix of bug 1005 (Jmol loses state on resize) -- it's
+// basically working, but needs cleanup because it relies on static
+// variables in the DEViseCanvas3DJmol class, etc.; also, there's still
+// some test code in place.
+//
+// Revision 1.87  2010/07/09 23:46:27  wenger
+// Changed the JavaScreen client to do the session re-opening for
+// a resize in separate thread, so that the GUI isn't locked up while
+// the re-opening is happening.
+//
 // Revision 1.86  2010/07/01 17:32:59  wenger
 // Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
 // while a session is open, added new view menu options to enlarge and
@@ -357,37 +413,46 @@ public class DEViseScreen extends JPanel
     Dimension screenDim = new Dimension(600, 400);
 
     // Hongyu says that having these three vectors for canvases is related
-    // to making things thread-safe.
+    // to making things thread-safe.  I guess it's so we only actually
+    // add and remove objects to/from the screen in the paint() method,
+    // which should be called in the GUI thread.
     Vector allCanvas = new Vector();
     Vector newCanvas = new Vector();
     Vector obsoleteCanvas = new Vector();
 
-    // Hongyu says that we have both a Vector and a HashTable of views
-    // for efficiency.  I'm a bit worried about the possibility of
-    // inconsistencies...  RKW 2000-05-04.
-    Vector allViews = new Vector();
+    // A list of all of the DEViseView objects we have, indexed by the
+    // view name.
     Hashtable viewTable = new Hashtable();
 
-    Vector javaGDatas = new Vector();
+    // This is for dealing with GData symbols that are rendered as
+    // actual Java GUI objects (e.g., buttons).
     Vector newGData = new Vector();
     Vector obsoleteGData = new Vector();
+
+    // Note: this must *not* get reset when we open or close a session,
+    // because we're preserving Jmol state across some session opens/closes.
+    Hashtable jmolStates = null;
 
     private DEViseView currentView = null; // the view the mouse is in
     public DEViseView lastActionView = null;
     public boolean guiAction = false;
-    private String lastCommand = null;
 
     private static final int DEBUG = 0; // 0 - 3
 
     boolean isDimChanged = false;
-    boolean helpclicked = false;
 
     public Image offScrImg = null;
 
     public Point finalMousePosition = new Point(-1, -1);
 
+    //-------------------------------------------------------------------
+    // Constructor.
     public DEViseScreen(jsdevisec what)
     {
+	if (DEBUG >= 1) {
+            System.out.println("DEViseScreen.DEViseScreen()");
+        }
+
         jsc = what;
 
         screenDim = new Dimension(jsc.jsValues.uiglobals.screenSize.width,
@@ -425,16 +490,19 @@ public class DEViseScreen extends JPanel
 	addKeyListener(new DSKeyListener());
     }
 
+    //-------------------------------------------------------------------
     protected void setToPermanentCursor()
     {
         jsc.mouseCursor.setToPermanentCursor(this);
     }
 
+    //-------------------------------------------------------------------
     protected void setTemporaryCursor(Cursor cursor)
     {
         jsc.mouseCursor.setTemporaryCursor(cursor, this);
     }
 
+    //-------------------------------------------------------------------
     protected void processMouseEvent(MouseEvent event)
     {
         if (event.getID() == MouseEvent.MOUSE_EXITED) {
@@ -448,6 +516,7 @@ public class DEViseScreen extends JPanel
         super.processMouseEvent(event);
     }
 
+    //-------------------------------------------------------------------
     // Hongyu says that we have both this method and a mouse motion
     // listener because this method gets both move and drag events,
     // which we want in order to update the mouse location display.
@@ -459,6 +528,7 @@ public class DEViseScreen extends JPanel
         super.processMouseMotionEvent(event);
     }
 
+    //-------------------------------------------------------------------
     //TEMP -- what does this actually do?  Disabling it doesn't seem
     // to make any obvious difference...  wenger 2007-06-25
     public void reEvaluateMousePosition()
@@ -467,6 +537,7 @@ public class DEViseScreen extends JPanel
 	SwingUtilities.invokeLater(doReEvaluateMosePosition);
     }
 
+    //-------------------------------------------------------------------
     // Hongyu says that this code has something to do with fixing a
     // case where Java does things wrong.
     private class DoReEvaluateMousePosition implements Runnable {
@@ -510,11 +581,13 @@ public class DEViseScreen extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------
     public Dimension getPreferredSize()
     {
         return screenDim;
     }
 
+    //-------------------------------------------------------------------
     public Dimension getMinimumSize()
     {
 	// Give the layout manager some room to work!!
@@ -524,6 +597,7 @@ public class DEViseScreen extends JPanel
 	return minSize;
     }
 
+    //-------------------------------------------------------------------
     // At this time, you can not change the size of the screen after a session
     // is opened. If you really want to change the screen size, you will need
     // to close the session, re-set the size of the screen and reopen the
@@ -561,10 +635,17 @@ public class DEViseScreen extends JPanel
         repaint();
     }
 
+    //-------------------------------------------------------------------
     private class SessionReopen implements Runnable
     {
         public void run()
         {
+	    if (DEBUG >= 1) {
+                System.out.println("DEViseScreen.SessionReopen.run()");
+            }
+
+	    saveJmolStates();
+
 	    // Save and close the current session.
 	    String command = new String();
 	    command = DEViseCommands.SAVE_CUR_SESSION + "\n";
@@ -581,12 +662,20 @@ public class DEViseScreen extends JPanel
 	      jsc.jsValues.uiglobals.screenRes + "\n";
 	    command += DEViseCommands.REOPEN_SESSION + "\n";
 	    jsc.dispatcher.start(command);
+	    jsc.dispatcher.waitForCmds();
+
+	    restoreJmolStates();
         }
     }
 
+    //-------------------------------------------------------------------
     // Show help messages in all views.
     public synchronized void showAllHelp()
     {
+	if (DEBUG >= 2) {
+            System.out.println("DEViseScreen.showAllHelp()");
+        }
+
         String cmd = "";
         for (int i = 0; i < allCanvas.size(); i++) {
             DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
@@ -603,9 +692,14 @@ public class DEViseScreen extends JPanel
         jsc.dispatcher.start(cmd);
     }
 
+    //-------------------------------------------------------------------
     // Hide help messages in all views.
     public synchronized void hideAllHelp()
     {
+	if (DEBUG >= 2) {
+            System.out.println("DEViseScreen.hideAllHelp()");
+        }
+
 	for (int i = 0; i < allCanvas.size(); i++) {
 	    DEViseCanvas c = (DEViseCanvas)allCanvas.elementAt(i);
 	    c.helpMsg = null;
@@ -618,15 +712,22 @@ public class DEViseScreen extends JPanel
 	repaint();
     }
 
-
+    //-------------------------------------------------------------------
     public void addView(DEViseView view)
     {
-        if (view == null)
+	if (DEBUG >= 1) {
+            System.out.println("DEViseScreen.addView(" +
+	      view.viewName + ")");
+        }
+
+        if (view == null) {
             return;
+        }
 
         // view already exists
-        if (viewTable.get(view.viewName) != null)
+        if (viewTable.get(view.viewName) != null) {
             return;
+        }
 
         // parent view always created before view symbol
         if (view.parentView != null) {
@@ -638,11 +739,10 @@ public class DEViseScreen extends JPanel
             view.pileBaseView.addPiledView(view);
         }
 
-        allViews.addElement(view);
-
         viewTable.put(view.viewName, view);
     }
 
+    //-------------------------------------------------------------------
     // Put an image into a view, creating the appropriate DEViseCanvas
     // object if necessary.
     // Only the base view (not view symbols, not non-base views in piles)
@@ -650,13 +750,20 @@ public class DEViseScreen extends JPanel
     // canvas; a canvas will only be assiciated one view and one view only.
     public void updateViewImage(String name, Image image)
     {
-        if (name == null || image == null)
+        if (name == null || image == null) {
             return;
+        }
+
+	if (DEBUG >= 2) {
+            System.out.println("DEViseScreen.updateViewImage(" +
+	      name + ")");
+        }
 
         DEViseView view = getView(name);
 
-        if (view == null)
+        if (view == null) {
             return;
+        }
 
         if (view.canvas == null) {
 	    DEViseCanvas canvas = null;
@@ -696,6 +803,7 @@ public class DEViseScreen extends JPanel
         repaint();
     }
 
+    //-------------------------------------------------------------------
     // Remove the given view by name.
     //
     // When we remove a view, everything assiciated with this view is removed,
@@ -703,17 +811,24 @@ public class DEViseScreen extends JPanel
     // views (if the view to be removed is a base view).
     public void removeView(String name)
     {
-        if (name == null)
+        if (name == null) {
             return;
+        }
 
         removeView(getView(name));
     }
 
+    //-------------------------------------------------------------------
     // Remove the given view by object reference.
     public synchronized void removeView(DEViseView view)
     {
         if (view == null) {
             return;
+        }
+
+	if (DEBUG >= 1) {
+            System.out.println("DEViseScreen.removeView(" +
+	      view.viewName + ")");
         }
 
         Vector vector = null;
@@ -733,7 +848,6 @@ public class DEViseScreen extends JPanel
             for (int i = 0; i < vector.size(); i++) {
                 DEViseGData data = (DEViseGData)vector.elementAt(i);
                 if (data.isJavaSymbol) {
-                    javaGDatas.removeElement(data);
                     obsoleteGData.addElement(data);
                 }
             }
@@ -768,26 +882,34 @@ public class DEViseScreen extends JPanel
         }
 
         // remove this view from view table
-        allViews.removeElement(view);
         viewTable.remove(view.viewName);
 
         repaint();
 
     }
 
+    //-------------------------------------------------------------------
     // remove the child views only
     public void removeChildViews(String viewName)
     {
-        if (viewName == null)
+        if (viewName == null) {
             return;
+        }
 
         removeChildViews(getView(viewName));
     }
 
+    //-------------------------------------------------------------------
     public void removeChildViews(DEViseView view)
     {
-        if (view == null)
+        if (view == null) {
             return;
+        }
+
+	if (DEBUG >= 1) {
+            System.out.println("DEViseScreen.removeChildViews(" +
+	      view.viewName + ")");
+        }
 
         Vector vector = view.viewChilds;
         while (vector.size() > 0) {
@@ -811,22 +933,31 @@ public class DEViseScreen extends JPanel
         repaint();
     }
 
+    //-------------------------------------------------------------------
     // Translate view name into view object.
     public DEViseView getView(String name)
     {
-        if (name == null)
+        if (name == null) {
             return null;
+        }
 
         return (DEViseView)viewTable.get(name);
     }
 
+    //-------------------------------------------------------------------
     public DEViseView getCurrentView()
     {
         return currentView;
     }
 
+    //-------------------------------------------------------------------
     public void setCurrentView(DEViseView view)
     {
+	if (DEBUG >= 3) {
+            System.out.println("DEViseScreen.setCurrentView(" +
+	      view != null ? view.viewName : "null" + ")");
+        }
+
         if (currentView != null) {
             if (currentView.getCanvas() != null) {
                 currentView.getCanvas().repaint();
@@ -847,10 +978,16 @@ public class DEViseScreen extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------
     // Remove the given view's current GData and add the new GData;
     // force a repaint.
     public synchronized void updateViewGData(String viewName, Vector gdList)
     {
+	if (DEBUG >= 2) {
+            System.out.println("DEViseScreen.updateViewGData(" +
+	      viewName + ")");
+        }
+
         DEViseView view = getView(viewName);
 
         if (view == null) {
@@ -862,7 +999,6 @@ public class DEViseScreen extends JPanel
             for (int i = 0; i < viewGD.size(); i++) {
                 DEViseGData data = (DEViseGData)viewGD.elementAt(i);
                 if (data.isJavaSymbol) {
-                    javaGDatas.removeElement(data);
                     obsoleteGData.addElement(data);
                 }
             }
@@ -874,7 +1010,6 @@ public class DEViseScreen extends JPanel
             for (int i = 0; i < gdList.size(); i++) {
                 DEViseGData g = (DEViseGData)gdList.elementAt(i);
                 if (g.isJavaSymbol) {
-                    javaGDatas.addElement(g);
                     newGData.addElement(g);
                 }
 
@@ -927,6 +1062,7 @@ public class DEViseScreen extends JPanel
         repaint();
     }
 
+    //-------------------------------------------------------------------
     // Add the given cursor to the named view.
     public void updateCursor(String viewName, DEViseCursor cursor)
     {
@@ -948,6 +1084,7 @@ public class DEViseScreen extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------
     // Remove the named cursor from the named view.
     public void hideCursor(String cursorName, String viewname)
     {
@@ -960,6 +1097,7 @@ public class DEViseScreen extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------
     public void updateViewDataRange(String viewName, String axis,
 	   float min, float max, String format, float factor, 
 	   int label, int type, int size, int bold, int italic)
@@ -972,10 +1110,9 @@ public class DEViseScreen extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------
     public synchronized void setLastAction(String cmd)
     {
-        lastCommand = cmd;
-
         if (guiAction) {
             guiAction = false;
             if (currentView != null) {
@@ -993,10 +1130,15 @@ public class DEViseScreen extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------
     // Update the JS when a session is opened or closed.
-    public synchronized void updateScreen(boolean flag)
+    public synchronized void updateScreen(boolean opening)
     {
-        if (flag) {
+	if (DEBUG >= 1) {
+            System.out.println("DEViseScreen.updateScreen(" + opening + ")");
+        }
+
+        if (opening) {
             jsc.isSessionOpened = true;
 
 	    if (jsc.parentFrame != null && jsc._currentVisType != null) {
@@ -1013,8 +1155,9 @@ public class DEViseScreen extends JPanel
 
 	    // Remove the view's references to all of its GData records,
 	    // so they hopefully get garbage collected. RKW 2000-03-31.
-            for (int viewNum = 0; viewNum < allViews.size(); viewNum++) {
-	        DEViseView tmpView = (DEViseView)allViews.elementAt(viewNum);
+	    Enumeration views = viewTable.elements();
+	    while (views.hasMoreElements()) {
+	        DEViseView tmpView = (DEViseView)views.nextElement();
 	        tmpView.removeAllGData();
 	    }
 
@@ -1028,8 +1171,6 @@ public class DEViseScreen extends JPanel
             removeAll();
 
             allCanvas = new Vector();
-            allViews = new Vector();
-            javaGDatas = new Vector();
             obsoleteGData = new Vector();
             newGData = new Vector();
             newCanvas = new Vector();
@@ -1039,8 +1180,6 @@ public class DEViseScreen extends JPanel
 
             currentView = null;
             lastActionView = null;
-
-	    helpclicked = false;
 
             jsc.isSessionOpened = false;
 
@@ -1064,6 +1203,7 @@ public class DEViseScreen extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------
     // Show the given help message in the named view.
     public synchronized void showHelpMsg(String viewName, String msg)
     {
@@ -1095,8 +1235,9 @@ public class DEViseScreen extends JPanel
 	}
     }
 
+    //-------------------------------------------------------------------
     // Enable double-buffering
-    //TEMPTEMP -- hmm -- does this goof up Jmol?
+    //TEMP -- hmm -- does this goof up Jmol?
     public synchronized void update(Graphics gc)
     {
 	if (offScrImg == null) {
@@ -1113,6 +1254,7 @@ public class DEViseScreen extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------
     public void paint(Graphics g)
     {
         if (isDimChanged) {
@@ -1130,13 +1272,16 @@ public class DEViseScreen extends JPanel
             jsc.repaint();
         }
 
-	// ADD COMMENT -- what is this stuff for??
+	// Actually remove from the GUI any canvases that are no longer
+	// needed (doing this here so it's done in the GUI thread).
         while (obsoleteCanvas.size() > 0) {
             DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
             remove(c);
             obsoleteCanvas.removeElement(c);
         }
 
+	// Actually add to the GUI any  new canvases (doing this here
+	// so it's done in the GUI thread).
         while (newCanvas.size() > 0) {
             DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
             add(c, c.posZ);
@@ -1144,13 +1289,20 @@ public class DEViseScreen extends JPanel
             newCanvas.removeElement(c);
         }
 
+	// Actually remove from the GUI any GUI objects (e.g., buttons)
+	// corresponding to GData that's no longer valid (doing this
+	// here so it's done in the GUI thread).  ("Normal" GDatas never
+	// get into the obsoleteGData list.)
         while (obsoleteGData.size() > 0) {
             DEViseGData gdata = (DEViseGData)obsoleteGData.firstElement();
             remove(gdata.symbol);
             obsoleteGData.removeElement(gdata);
         }
-        //obsoleteGData = new Vector();
 
+	// Actually add to the GUI any GUI objects (e.g., buttons)
+	// corresponding to new GData records (doing this here so
+	// it's done in the GUI thread).  ("Normal" GDatas never
+	// get into the newGData list.)
         while (newGData.size() > 0) {
             DEViseGData gdata = (DEViseGData)newGData.firstElement();
             Component gs = gdata.symbol;
@@ -1158,11 +1310,11 @@ public class DEViseScreen extends JPanel
             gs.setBounds(gdata.GDataLocInScreen);
             newGData.removeElement(gdata);
         }
-        //newGData = new Vector();
 
         super.paint(g);
     }
 
+    //-------------------------------------------------------------------
     // Find the DEViseCanvas (if any) that the mouse pointer is currently
     // within.
     private DEViseCanvas findMouseCanvas()
@@ -1177,6 +1329,64 @@ public class DEViseScreen extends JPanel
         return null;
     }
 
+    //-------------------------------------------------------------------
+    // Save the Jmol states for all Jmol canvases.  Note: this hasn't
+    // really been tested with multiple Jmol canvases in a single
+    // session (part of bug 1005 fix).
+    private void saveJmolStates()
+    {
+	if (DEBUG >= 1) {
+            System.out.println("DEViseScreen.saveJmolStates()");
+        }
+
+	jmolStates = new Hashtable();
+
+	Enumeration views = viewTable.elements();
+	while (views.hasMoreElements()) {
+	    DEViseView tmpView = (DEViseView)views.nextElement();
+	    DEViseCanvas canvas = tmpView.canvas;
+	    if (canvas != null) {
+	        Object jmState = canvas.saveJmolState();
+	        if (jmState != null) {
+		    if (DEBUG >= 1) {
+		        System.out.println("Saving Jmol state for view " +
+		          tmpView.viewName);
+		    }
+	            jmolStates.put(tmpView.viewName, jmState);
+	        }
+	    }
+        }
+    }
+
+    //-------------------------------------------------------------------
+    // Restore the Jmol states for all Jmol canvases.  Note: this hasn't
+    // really been tested with multiple Jmol canvases in a single
+    // session (part of bug 1005 fix).
+    private void restoreJmolStates()
+    {
+	if (DEBUG >= 1) {
+            System.out.println("DEViseScreen.restoreJmolStates()");
+        }
+
+	Enumeration views = viewTable.elements();
+	while (views.hasMoreElements()) {
+	    DEViseView tmpView = (DEViseView)views.nextElement();
+	    DEViseCanvas canvas = tmpView.canvas;
+	    Object jmState = jmolStates.get(tmpView.viewName);
+	    if (jmState != null) {
+		if (DEBUG >= 1) {
+		    System.out.println("Restoring Jmol state for view " +
+		      tmpView.viewName);
+		}
+	        canvas.restoreJmolState(jmState);
+	        // Make sure we don't restore more than once from one
+	        // save.
+	        jmolStates.remove(tmpView.viewName);
+	    }
+        }
+    }
+
+    //-------------------------------------------------------------------
     //
     // Note: we don't absolutely need this class; it's here just to help
     // debug the problem with input focus sometimes improperly getting
@@ -1184,6 +1394,7 @@ public class DEViseScreen extends JPanel
     //
     class DSFocusListener extends FocusAdapter
     {
+        //---------------------------------------------------------------
         public void focusGained(FocusEvent event)
 	{
 	    if (DEBUG >= 1) {
@@ -1191,6 +1402,7 @@ public class DEViseScreen extends JPanel
 	    }
 	}
 
+        //---------------------------------------------------------------
 	public void focusLost(FocusEvent event)
 	{
 	    if (DEBUG >= 1) {
@@ -1199,6 +1411,7 @@ public class DEViseScreen extends JPanel
 	}
     }
 
+    //-------------------------------------------------------------------
     //
     // Note: the methods here should not generally get called; however,
     // the JVM sometimes gets confused, and transfers input focus
@@ -1208,6 +1421,7 @@ public class DEViseScreen extends JPanel
     //
     class DSKeyListener extends KeyAdapter
     {
+        //---------------------------------------------------------------
         public void keyPressed(KeyEvent event)
 	{
 	    if (DEBUG >= 2) {
@@ -1221,6 +1435,7 @@ public class DEViseScreen extends JPanel
 	    }
 	}
 
+        //---------------------------------------------------------------
         public void keyReleased(KeyEvent event)
 	{
 	    if (DEBUG >= 2) {
@@ -1235,34 +1450,24 @@ public class DEViseScreen extends JPanel
 	}
     }
 
+    //-------------------------------------------------------------------
     // Following methods are for collaboration JavaScreens to 
     // process 3D view actions.
-    
     public void collab3DView(String[] args)
     {
-	DEViseView view = null;
-	DEViseCanvas canvas = null;
-	DEViseCrystal crystal = null;
-	int i = 0, j = 0;
-
-	for (i = 0; i < allViews.size(); i++) {
-	    view = (DEViseView)allViews.elementAt(i);
-	    if (view.viewName.equals(args[1]))
-		break;
-	}
-
-	if ((i == allViews.size()) || (view == null)) {
+	DEViseView view = getView(args[1]);
+	if (view == null) {
 	    jsc.pn("No view found!");
 	    return;
 	}
 
-	canvas = view.getCanvas();
+	DEViseCanvas canvas = view.getCanvas();
 	if (canvas == null) {
 	    jsc.pn("No canvas found!");
 	    return;
 	}
 
-	crystal = canvas.crystal;
+	DEViseCrystal crystal = canvas.crystal;
 	if (crystal == null) {
 	    jsc.pn("No crystal found!");
 	    return;
@@ -1274,13 +1479,14 @@ public class DEViseScreen extends JPanel
 	float[] origin = new float[3];
 	Float f = null;
 
-	for (i=0; i<3; i++) 
-	    for (j=0; j<3; j++) {
+	for (int i=0; i<3; i++) {
+	    for (int j=0; j<3; j++) {
 		f = new Float(args[3*i+j+2]);
 		data[i][j] = f.floatValue();
 	    }
+	}
 
-	for (i=0; i<3; i++) {
+	for (int i=0; i<3; i++) {
 	    f = new Float(args[11+i]);
 	    origin[i] = f.floatValue();
 	}
@@ -1295,13 +1501,4 @@ public class DEViseScreen extends JPanel
 	canvas.repaint();
 	repaint();
     }
-
-    private void debugOut(String msg)
-    {
-	//jsc.jsValues.debug.log(msg);
-	//jsc.pn(msg);
-	//System.out.println(msg);
-    }
 }
-
-

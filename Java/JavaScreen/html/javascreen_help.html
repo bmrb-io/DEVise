@@ -460,10 +460,12 @@ with the mouse.  However, on a Mac, the visualization may not be resized
 appropriately.
 </p>
 <h3>Stop Button</h3>
-Cause the JavaScreen to stop its current
+<ul>
+<li>Cause the JavaScreen to stop its current
 communication with the server.  This should only be done if the
 JavaScreen becomes unresponsive -- stopping communication may leave
 the client and server in inconsistent states.
+</ul>
 <h3>Help Menu</h3>
 <ul>
 <li><b>JavaScreen Help (in browser window)</b>: show this page in
@@ -474,6 +476,24 @@ current session.
 <li><b>JavaScreen Help (in Java window)</b>: show this page in a
 Java window (this does not provide all of the functionality of
 viewing the page in a browser window).
+</ul>
+<h3>Jmol Menu (only available for 3D visualizations incorporating Jmol)</h3>
+<ul>
+<li><b>Edit sub-menu</b>: select various atoms in the Jmol viewer.
+<li><b>Display sub-menu</b>: control display parameters, such as which atoms
+are shown and how atoms and bonds are rendered.
+<li><b>View sub-menu</b>: control parameters such as whether selected atoms
+are highlighted with selection halos or by coloring the atoms themselves.
+<li><b>Tools sub-menu</b>: control things such as the units used to display
+distances.
+<li><b>Restart Jmol</b>: restart the Jmol viewer within the JavaScreen (in
+case Jmol has gotten into a bad state).
+</ul>
+<h3>Show Selection Trees Button (only available for 3D visualizations
+incorporating Jmol)</h3>
+<ul>
+<li>Show the Structure Selection window containing the Structure Type,
+Atom Display, and Atom Select trees.
 </ul>
 
 <p>* These menu items are not available to the user in many JavaScreen
@@ -498,6 +518,8 @@ Version 5.13.4
 views (see bug 995).
 <li>The JavaScreen now recognizes the two-entry simulated 1H-15N
 spectrum and simulated 1H-13C spectrum session files (see to-do 09.026).
+<li>Jmol state is now preserved across JavaScreen resizes (see bug 1005).
+<li>Added the 'Restart Jmol' option.
 </ul>
 
 <h3>

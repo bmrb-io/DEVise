@@ -23,6 +23,37 @@
 // $Id$
 
 // $Log$
+// Revision 1.132.4.6  2011/02/13 02:43:00  wenger
+// Got rid of debug output.
+//
+// Revision 1.132.4.5  2011/02/13 01:48:41  wenger
+// The 'saving Jmol state on resizes' feature is now working at home
+// -- the fix was putting the stuff that actually restores the Jmol
+// state into the event dispatched thread.  (Lots of debug code still
+// in place.)
+//
+// Revision 1.132.4.4  2011/02/09 18:31:44  wenger
+// Okay, more test changes -- sleep in DEViseCanvas3DJmol.restoreJmoState()
+// seems to fix things, but is not what I want for a "real" fix.
+//
+// Revision 1.132.4.3  2011/02/09 16:18:00  wenger
+// Committing test changes, including sleep in
+// DEViseCmdDispatcher.waitForCmds(), that seems to fix the problem with the Jmol restore state code hanging the JS on my laptop.
+//
+// Revision 1.132.4.2  2011/01/21 19:37:50  wenger
+// Cleaned up some of the temporary code.
+//
+// Revision 1.132.4.1  2011/01/21 19:18:37  wenger
+// Initial part of fix of bug 1005 (Jmol loses state on resize) -- it's
+// basically working, but needs cleanup because it relies on static
+// variables in the DEViseCanvas3DJmol class, etc.; also, there's still
+// some test code in place.
+//
+// Revision 1.132  2010/07/01 17:32:59  wenger
+// Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
+// while a session is open, added new view menu options to enlarge and
+// reduce by a fixed amount.
+//
 // Revision 1.131  2008/07/17 20:28:00  wenger
 // (Mostly) fixed bug 968 (JavaScreen doesn't correctly handle cursors
 // that are entirely outside the destination view's visual filter).
@@ -753,6 +784,7 @@ public class DEViseCmdDispatcher implements Runnable
     // want to sort that out right now.  RKW 2000-10-18.
     public boolean _connectedAlready = false;
 
+    // Note: this is never set!  What is it supposed to do?
     private boolean _cmdWaiting = false;
 
     // Version information about the software we're connected to.
@@ -1310,7 +1342,8 @@ public class DEViseCmdDispatcher implements Runnable
     private void processCmd(String command) throws YException
     {
         if (_debug) {
-            System.out.println("DEViseCmdDispatcher.processCmd(" +
+            System.out.println(Thread.currentThread() + ":");
+	    System.out.println("  DEViseCmdDispatcher.processCmd(" +
 	      command + ")");
         }
 
@@ -1369,7 +1402,8 @@ public class DEViseCmdDispatcher implements Runnable
       throws YException
     {
 	if (_debug) {
-	    System.out.println("DEViseCmdDispatcher.processReceivedCommand(" +
+            System.out.println(Thread.currentThread() + ":");
+	    System.out.println("  DEViseCmdDispatcher.processReceivedCommand(" +
 	      command + ", " + response + ")");
 	}
 

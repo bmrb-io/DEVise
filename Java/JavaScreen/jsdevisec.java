@@ -22,6 +22,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.184.4.2  2011/01/21 19:37:50  wenger
+// Cleaned up some of the temporary code.
+//
+// Revision 1.184.4.1  2011/01/21 19:18:38  wenger
+// Initial part of fix of bug 1005 (Jmol loses state on resize) -- it's
+// basically working, but needs cleanup because it relies on static
+// variables in the DEViseCanvas3DJmol class, etc.; also, there's still
+// some test code in place.
+//
+// Revision 1.184  2010/07/01 17:32:59  wenger
+// Implemented JavaScreen to-do 09.019 -- JS window can now be re-sized
+// while a session is open, added new view menu options to enlarge and
+// reduce by a fixed amount.
+//
 // Revision 1.183  2010/06/04 16:29:13  wenger
 // Enabled auto resizing in drill-down dialog JTable to improve appearance.
 //

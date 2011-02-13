@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.4.2  2011/01/21 19:37:50  wenger
+// Cleaned up some of the temporary code.
+//
+// Revision 1.11.4.1  2011/01/21 19:18:37  wenger
+// Initial part of fix of bug 1005 (Jmol loses state on resize) -- it's
+// basically working, but needs cleanup because it relies on static
+// variables in the DEViseCanvas3DJmol class, etc.; also, there's still
+// some test code in place.
+//
+// Revision 1.11  2010/04/21 17:10:10  wenger
+// Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+//
 // Revision 1.10.8.3  2010/04/19 14:18:44  wenger
 // Minor cleanups.
 //
@@ -228,6 +240,7 @@ public class DEViseJmolMenuButton extends DEViseButton
     private static final String STR_PHOSPHORUS = "Phosphorus";
     private static final String STR_PICOMETERS = "Picometers 1E-12";
     private static final String STR_PREV_FREQ = "Previous frequency";
+    private static final String STR_RESTART = "Restart Jmol";
     private static final String STR_REWIND = "Rewind to first frame";
     private static final String STR_RIGHT = "Right";
     private static final String STR_SCALE_02 = "Scale 0.2";
@@ -426,6 +439,11 @@ public class DEViseJmolMenuButton extends DEViseButton
 	addMenuItem(vibrateMenu, STR_PREV_FREQ);
 
 	//
+	// Restart menu item.
+	//
+	addMenuItem(jmolMenu, STR_RESTART);
+
+	//
 	// Help menu.
 	//
 	// addMenuItem(jmolMenu, STR_HELP);
@@ -618,6 +636,9 @@ public class DEViseJmolMenuButton extends DEViseButton
 
 	} else if (event.getActionCommand().equals(STR_PREV_FREQ)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "frame prev");
+
+	} else if (event.getActionCommand().equals(STR_RESTART)) {
+	    jmolCanvas.restartJmol();
 
 	} else if (event.getActionCommand().equals(STR_REWIND)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "frame 1");

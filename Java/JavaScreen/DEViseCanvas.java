@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2009
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -30,6 +30,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.108.8.1  2011/02/04 22:39:47  wenger
+// Saving Jmol state: this is pretty much working; leaving in a bunch
+// of debug code and temporary comments for now (although I'm wondering
+// if we could avoid destroying and re-creating the selection trees
+// by saving and re-using the entire DEViseCanvas3DJmol object...).
+//
+// Revision 1.108  2009/09/10 22:17:29  wenger
+// Fixed JavaScreen bug 987 (axis value labels overwriting view help).
+//
 // Revision 1.107  2009/09/09 21:50:18  wenger
 // Fixed JavaScreen bugs 960 and 983 (problems with the mouse cursor
 // not changing correctly according to the toolbar mode and the state
@@ -2142,6 +2151,17 @@ public class DEViseCanvas extends Container
     
     //TEMP -- document this
     public void clear3DViewer()
+    {
+    }
+
+    //TEMP -- document this
+    public Object saveJmolState()
+    {
+    	return null;
+    }
+
+    //TEMP -- document this
+    public void restoreJmolState(Object jmState)
     {
     }
 
