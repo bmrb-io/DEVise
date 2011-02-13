@@ -4444,6 +4444,12 @@ java.security.AccessControlException: access denied
 			to highlighting by halos -- that doesn't work.
 			(wenger)
 
+1012 2/13/11	OPEN	JS: the fix to bug 1005 still ends up doing a lot
+			more work than it would have to, at some level.
+			Maybe we could implement things on the DEVise end
+			to resize all of the windows without actually
+			closing and re-opening the session. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
