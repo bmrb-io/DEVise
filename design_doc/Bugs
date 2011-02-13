@@ -4439,6 +4439,11 @@ java.security.AccessControlException: access denied
 			Jmol instances in a visualization (see
 			bmrb/test/4096_2jmol.ds). (wenger)
 
+1011 2/13/11	OPEN	JS: in a Jmol session, change to highlighting by
+			color instead of halos, resize, and then change back
+			to highlighting by halos -- that doesn't work.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
