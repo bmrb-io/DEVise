@@ -4460,6 +4460,11 @@ java.security.AccessControlException: access denied
 			the canvases are drawn, the JS window is blank
 			when you come back to that workspace. (wenger)
 
+1015 2/17/11	OPEN	JS: the embedded version of the JavaScreen applet
+			still shows the "Larger" and "Smaller" options
+			in the view menu, and selecting them goofs
+			up the visualization. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
