@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.142  2011/02/17 17:15:24  wenger
+// Changed version to 5.13.4 for release.
+//
 // Revision 1.141  2011/02/13 23:56:23  wenger
 // Merged bug_1005_br_0 thru bug_1005_br_1 to trunk.
 //
@@ -869,7 +872,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.4");
+    public static final String VERSION = new String("5.13.5x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
