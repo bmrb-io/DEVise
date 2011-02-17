@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.141  2011/02/13 23:56:23  wenger
+// Merged bug_1005_br_0 thru bug_1005_br_1 to trunk.
+//
 // Revision 1.140  2011/02/07 20:04:26  wenger
 // Fixed bug 995: we now only draw axis labels for the base view of a
 // pile.
@@ -866,7 +869,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.4x3"/*TEMP*/);
+    public static final String VERSION = new String("5.13.4");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
