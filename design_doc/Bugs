@@ -4455,6 +4455,11 @@ java.security.AccessControlException: access denied
 			visualization (4264tar1.ds), the data cursor doesn't
 			come up with the right size/location. (wenger)
 
+1014 2/17/11	OPEN	JS: if you switch to a different workspace on the
+			desktop after the JS window appears, but before
+			the canvases are drawn, the JS window is blank
+			when you come back to that workspace. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
