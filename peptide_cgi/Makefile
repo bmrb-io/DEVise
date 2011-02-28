@@ -55,10 +55,12 @@ UVD_HTML_HOME = $(PEP_HTML_HOME)/uvd
 S2D_PROPS_FILE = cgi-bin/s2d.props
 ERROR_EMAIL_FILE = cgi-bin/error_email
 SELECT_HTML_FILE = bmrb_select.html
+SELECT2_HTML_FILE = bmrb_select2.html
 VUR_CONFIG_FILE = cgi-bin/vur_config
 RESTRAINT_SELECT_HTML_FILE = restraint_select.html
 
-setup: s2d_props bin select_html error_email tmp vur_config restraint_select
+setup: s2d_props bin select_html select2_html error_email tmp \
+	vur_config restraint_select
 
 testsetup:
 	mkdir test_html; cd test_html; ln -s ../html/* .
@@ -112,6 +114,7 @@ clean:
 	-rm -rf cgi-bin/bin
 	-rm -rf cgi-bin/tmp
 	-rm $(SELECT_HTML_FILE)
+	-rm $(SELECT2_HTML_FILE)
 	-rm $(ERROR_EMAIL_FILE)
 	-rm $(VUR_CONFIG_FILE)
 	-rm vur_config
@@ -220,6 +223,11 @@ select_html: $(SELECT_HTML_FILE)
 $(SELECT_HTML_FILE): bmrb_select.tmpl
 	-rm -f $(SELECT_HTML_FILE)
 	sed -e 's%CGI_URL%$(CGI_URL)%' bmrb_select.tmpl > $(SELECT_HTML_FILE)
+
+select2_html: $(SELECT2_HTML_FILE)
+$(SELECT2_HTML_FILE): bmrb_select2.tmpl
+	-rm -f $(SELECT2_HTML_FILE)
+	sed -e 's%CGI_URL%$(CGI_URL)%' bmrb_select2.tmpl > $(SELECT2_HTML_FILE)
 
 restraint_select: $(RESTRAINT_SELECT_HTML_FILE)
 $(RESTRAINT_SELECT_HTML_FILE): restraint_select.tmpl

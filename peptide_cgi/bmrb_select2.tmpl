@@ -1,7 +1,7 @@
 <!--
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2000-2010
+  (c) Copyright 2000-2011
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -18,14 +18,15 @@
 
 <html>
 <head>
-<title>DEVise JavaScreen: select BMRB sample for visualizations</title>
+<title>DEVise JavaScreen: select 2 BMRB samples for visualization</title>
 </head>
 <body>
 
 <form method="get" name="get_by_bmrb" action="CGI_URL">
-  <label for="number">Enter a BMRB accession number (e.g., 4081)</label>
+  <label for="number">Enter two BMRB accession numbers (e.g., 16606 and 16607)</label>
   <p>
   <input type="text" name="number" size="5">
+  <input type="text" name="xbmrbid" size="5">
   </p>
   <p>
   <input type="submit" value="View data">
