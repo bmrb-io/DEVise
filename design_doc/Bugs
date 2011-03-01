@@ -4465,6 +4465,10 @@ java.security.AccessControlException: access denied
 			in the view menu, and selecting them goofs
 			up the visualization. (wenger)
 
+1016 3/1/11	OPEN	DEVise can't generate images for the JavaScreen
+			if it's running against a "real" X server (as
+			opposed to Xvfb). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
