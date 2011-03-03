@@ -42,6 +42,7 @@ peptide-cgi-setup:
 	ln -s ../../Makefile .
 	ln -s ../../Makefile.config.* .
 	ln -s ../../bmrb_select.tmpl .
+	ln -s ../../bmrb_select2.tmpl .
 	ln -s ../../restraint_select.tmpl .
 	ln -s ../../win_tar .
 	ln -s ../../view_entry .
