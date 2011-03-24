@@ -1,0 +1,5 @@
+type ext_data1 ascii
+comment #
+whitespace '	'
+
+attr name string 15

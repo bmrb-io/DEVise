@@ -1,0 +1,54 @@
+#! /usr/bin/env perl
+
+#  ========================================================================
+#  DEVise Data Visualization Software
+#  (c) Copyright 2001-2011
+#  By the DEVise Development Group
+#  Madison, Wisconsin
+#  All Rights Reserved.
+#  ========================================================================
+#
+#  Under no circumstances is this software to be copied, distributed,
+#  or altered in any way without prior permission from the DEVise
+#  Development Group.
+
+#  Script used to run programs for dynamic external data generation.
+#  The main function of this script is to pipe the program's output to
+#  an output file (specified as a command-line argument).
+
+############################################################
+
+#  $Id$
+
+#  $Log$
+#  Revision 1.2  2001/04/27 17:10:02  wenger
+#  Made various cleanups to external process dynamic data generation and
+#  added most GUI (still need special GUI for creating the data source);
+#  cleanups included finding and fixing bug 668.
+#
+#  Revision 1.1  2001/04/12 20:16:37  wenger
+#  First phase of external process dynamic data generation is in place
+#  for RectX symbols (needs GUI and some cleanup); added the ability to
+#  specify format for dates and ints in GData; various improvements to
+#  diagnostic output.
+#
+
+############################################################
+
+die "Usage: devise_ext_script <program> <output file> [arguments]"
+  if ($#ARGV < 1);
+
+# Get program name, remove it from arguments.
+$program = shift(@ARGV);
+
+# Get output file name, remove it from arguments.
+$outfile = shift(@ARGV);
+
+#TEMPTEMP -- more checking here?
+#TEMPTEMP -- do something with stderr?
+if (system("$program @ARGV > $outfile")) {
+  print "Running $program failed\n";
+  exit 1;
+}
+
+

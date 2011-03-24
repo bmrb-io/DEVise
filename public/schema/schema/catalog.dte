@@ -45,3 +45,4 @@
 "color2" UNIXFILE color2 color  $DEVISE_SCHEMA/physical/color "" 100 50  "$DEVISE_DAT" "" ; 
 "count_mapping" UNIXFILE count_mapping color  $DEVISE_SCHEMA/physical/color "" 100 50  "$DEVISE_DAT" "" ; 
 "url_test" UNIXFILE url_test url_test  $DEVISE_SCHEMA/physical/url_test "" 100 50  "$DEVISE_DAT" "" ; 
+"ext_data1" UNIXFILE concat.out ext_data1  $DEVISE_SCHEMA/physical/ext_data1 "" 100 50  "$DEVISE_EXACT_TMP" "" ; 
