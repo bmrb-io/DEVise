@@ -4469,6 +4469,10 @@ java.security.AccessControlException: access denied
 			if it's running against a "real" X server (as
 			opposed to Xvfb). (wenger)
 
+1017 4/7/11	OPEN	Changing a cursor from X/Y to X only in the "edit
+			cursor" GUI is not preserved when the session is
+			saved and re-opened. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
