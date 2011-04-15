@@ -33,7 +33,7 @@ done
 timestamp=`date`
 echo "$timestamp: starting devised for $idStr"
 
-info=`ports+files $idStr`
+info=`./ports+files $idStr`
 outfile=`echo $info | cut -d' ' -f6`
 
 # Figure out whether whether we need fontkludge turned on (needed on
