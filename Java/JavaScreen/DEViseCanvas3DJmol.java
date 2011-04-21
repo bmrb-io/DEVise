@@ -42,6 +42,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.25.2.1  2011/04/20 17:15:06  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.25  2011/02/13 23:56:23  wenger
+// Merged bug_1005_br_0 thru bug_1005_br_1 to trunk.
+//
 // Revision 1.24.4.10  2011/02/13 22:42:19  wenger
 // Pretty much finished cleaning up the Jmol state preservation code.
 //
@@ -712,6 +724,16 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     	    if (DEBUG >= 3) {
 	        System.out.println("  " + nodes);
 	    }
+            if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	      (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	      !SwingUtilities.isEventDispatchThread())) {
+	        System.out.println(Thread.currentThread() +
+	        " calls DEViseCanvas3DJmol.nodesSelected()");
+	        if (!SwingUtilities.isEventDispatchThread()) {
+		    System.out.println("  Warning: not event " +
+		      "dispatched thread!");
+		}
+	    }
 	}
 
 	//TEMP? jsc.parentFrame.setCursor(jsc.mouseCursor.waitCursor);
@@ -835,8 +857,10 @@ public class DEViseCanvas3DJmol extends DEViseCanvas3D implements
     public static void jmolEvalStringErr(JmolViewer viewer, String script)
     {
 	if (DEBUG >= 3) {
+	    System.out.print(Thread.currentThread() + ": ");
 	    System.out.println("DEViseCanvas3DJmol.jmolEvalStringErr(" +
 	      script + ")");
+	    //jsc.pn("DEViseCanvas3DJmol.jmolEvalStringErr(" + script + ")");
 	}
         String errStr = viewer.scriptWait(script);
 	if (errStr != null && errStr.indexOf("ERROR") != -1) {

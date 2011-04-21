@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,20 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.28.1  2011/04/20 17:15:08  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.12  2007/03/30 15:43:09  wenger
+// (Hopefully) cured the lockups we've been seeing with JS 5.8.0 (removed
+// a bunch of calls to validate() in the GUI); fixed up the client logging
+// functionality somewhat; various improvements to debug output.
+//
 // Revision 1.11  2003/01/13 19:23:44  wenger
 // Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 //
@@ -74,6 +88,7 @@ package JavaScreen;
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 
 public class YLogGUI extends Frame
 {
@@ -189,8 +204,12 @@ public class YLogGUI extends Frame
         if (level > loglevel || !isWindowValid()) {
             return;
         } else {
-            addNumber(msg.length());
-            textarea.append(msg);
+            if (SwingUtilities.isEventDispatchThread()) {
+	        dop(msg);
+	    } else {
+	        Runnable rundop = new RunDop(msg);
+		SwingUtilities.invokeLater(rundop);
+	    }
         }
     }
 
@@ -201,12 +220,7 @@ public class YLogGUI extends Frame
 
     public void pn(String msg, int level)
     {
-        if (level > loglevel || !isWindowValid()) {
-            return;
-        } else {
-            addNumber(msg.length() + 1);
-            textarea.append(msg + "\n");
-        }
+        p(msg + "\n");
     }
 
     public void pn(String msg)
@@ -241,6 +255,24 @@ public class YLogGUI extends Frame
     {
         isValid = false;
         dispose();
+    }
+
+    private class RunDop implements Runnable {
+        private String _msg;
+
+	RunDop(String msg) {
+	    _msg = msg;
+	}
+
+	public void run() {
+	    dop(_msg);
+	}
+    }
+
+    private void dop(String msg)
+    {
+        addNumber(msg.length());
+        textarea.append(msg);
     }
 }
 

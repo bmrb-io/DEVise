@@ -20,6 +20,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.143.2.1  2011/04/20 17:15:07  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.143  2011/02/17 21:49:01  wenger
+// Changed version to 5.13.5x1; added config files for pacu and piranha.
+//
 // Revision 1.142  2011/02/17 17:15:24  wenger
 // Changed version to 5.13.4 for release.
 //
@@ -872,7 +884,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.5x1"/*TEMP*/);
+    public static final String VERSION = new String("5.13.5x2"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
@@ -889,6 +901,7 @@ public final class DEViseGlobals
     public static final int KILLINTERVAL = 24 * 60 * 60 * 1000;
 
     public static final int DEBUG_THREADS = 0;
+    // Maybe leave this set to 1...
     public static final int DEBUG_GUI_THREADS = 0;
 
     // The default value for the maximum number of clients we allow (once we

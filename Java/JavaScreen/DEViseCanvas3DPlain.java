@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2006
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.20.1  2011/04/20 17:15:07  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.4  2007/08/03 20:17:27  wenger
+// Merged andyd_gui_br_6 thru andyd_gui_br_7 to trunk.
+//
 // Revision 1.3.2.1  2007/07/25 18:25:17  wenger
 // Moved cursor handling from DEViseUIGlobals to the new
 // UI/DEViseMouseCursor class, in preparation for changing the cursor
@@ -88,10 +100,11 @@ public class DEViseCanvas3DPlain extends DEViseCanvas3D
 	String s = null;
 
 	s = crystal.drillDown3D(p, atomList);
-	if (atomList.size() > 0)
+	if (atomList.size() > 0) {
 	    jsc.pn(s);
-	else 
+	} else {
 	    jsc.pn("No atom.");
+        }
 
 	if (atomList.size() > 0) {
 	    String cmd = DEViseCommands.SHOW_RECORDS3D + " " + 

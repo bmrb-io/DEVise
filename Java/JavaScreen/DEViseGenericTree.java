@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2008
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.14.1  2011/04/20 17:15:07  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.5  2008/09/03 19:15:59  wenger
+// Initial changes to JavaScreen client to support entity assembly
+// IDs in 3D Jmol visualizations.  (Still needs some cleanup.)
+//
 // Revision 1.4  2007/04/25 20:43:51  wenger
 // Greatly improved the documentation of the DEViseCanvas3DJmol class;
 // minor improvements to other classes.
@@ -148,9 +161,51 @@ public class DEViseGenericTree
     // Set which nodes in the tree are selected.
     public void setSelection(Vector selectedDevNodes)
     {
+        if (SwingUtilities.isEventDispatchThread()) {
+	    doSetSelection(selectedDevNodes);
+	} else {
+	    Runnable runSet = new RunSetSelection(selectedDevNodes);
+	    SwingUtilities.invokeLater(runSet);
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Select the top node in the tree.
+    public void selectTop()
+    {
+       tree.setSelectionRow(0);
+    }
+
+    //===================================================================
+    // PROTECTED METHODS
+
+    //===================================================================
+    // PRIVATE METHODS
+
+    //-------------------------------------------------------------------
+    // This class is used to allow us to actually set the selection
+    // in the event dispatched thread -- fixes a problem with selection
+    // not getting properly propagated to the trees and 3D view in
+    // some cases.
+    private class RunSetSelection implements Runnable {
+        private Vector _selectedDevNodes;
+
+	RunSetSelection(Vector selectedDevNodes) {
+	    _selectedDevNodes = selectedDevNodes;
+	}
+
+	public void run() {
+	    doSetSelection(_selectedDevNodes);
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // "Really" set which nodes in the tree are selected.
+    private void doSetSelection(Vector selectedDevNodes)
+    {
     	if (DEBUG >= 1) {
             System.out.println("DEViseGenericTree(" + treeName +
-	      ").setSelection()");
+	      ").doSetSelection()");
     	    if (DEBUG >= 3) {
 	        System.out.println("  " + selectedDevNodes);
 	    }
@@ -159,7 +214,7 @@ public class DEViseGenericTree
 	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
 	  !SwingUtilities.isEventDispatchThread())) {
 	    System.out.println(Thread.currentThread() +
-	    " calls DEViseGenericTree.setSelection()");
+	    " calls DEViseGenericTree.doSetSelection()");
 	}
 
 	tree.clearSelection();
@@ -182,20 +237,6 @@ public class DEViseGenericTree
 
 	tree.setSelectionPaths(pathArray);
     }
-
-    //-------------------------------------------------------------------
-    // Select the top node in the tree.
-    public void selectTop()
-    {
-       tree.setSelectionRow(0);
-    }
-
-    //===================================================================
-    // PROTECTED METHODS
-
-    //===================================================================
-    // PRIVATE METHODS
-
     //-------------------------------------------------------------------
     // Create nodes in the tree corresponding to devNode and its children,
     // and add them below node.

@@ -32,6 +32,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.88.2.2  2011/04/20 20:12:41  wenger
+// Removed debug code.
+//
+// Revision 1.88.2.1  2011/04/20 17:15:07  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.88  2011/02/13 23:56:24  wenger
+// Merged bug_1005_br_0 thru bug_1005_br_1 to trunk.
+//
 // Revision 1.87.4.11  2011/02/13 22:42:19  wenger
 // Pretty much finished cleaning up the Jmol state preservation code.
 //

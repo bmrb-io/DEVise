@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2010
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,24 @@
 // $Id$
 
 // $Log$
+// Revision 1.185.2.3  2011/04/20 21:04:06  wenger
+// Added recognition of s2 predicted vs. experimental session names.
+//
+// Revision 1.185.2.2  2011/04/20 20:12:41  wenger
+// Removed debug code.
+//
+// Revision 1.185.2.1  2011/04/20 17:15:08  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.185  2011/02/13 23:56:24  wenger
+// Merged bug_1005_br_0 thru bug_1005_br_1 to trunk.
+//
 // Revision 1.184.4.2  2011/01/21 19:37:50  wenger
 // Cleaned up some of the temporary code.
 //
@@ -1453,12 +1471,6 @@ public class jsdevisec extends JPanel
 
     public void showJmol(DEViseCanvas3DJmol canvas)
     {
-	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
-	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
-	  !SwingUtilities.isEventDispatchThread())) {
-	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showJmol()");
-	}
 	Runnable doShowJmol = new DoShowJmol(canvas);
 	SwingUtilities.invokeLater(doShowJmol);
     }

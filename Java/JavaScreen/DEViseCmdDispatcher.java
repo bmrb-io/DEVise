@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2010
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.133.2.2  2011/04/20 20:12:40  wenger
+// Removed debug code.
+//
+// Revision 1.133.2.1  2011/04/20 17:15:07  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.133  2011/02/13 23:56:23  wenger
+// Merged bug_1005_br_0 thru bug_1005_br_1 to trunk.
+//
 // Revision 1.132.4.6  2011/02/13 02:43:00  wenger
 // Got rid of debug output.
 //
@@ -2249,6 +2264,7 @@ public class DEViseCmdDispatcher implements Runnable
 	    }
 	    // sending command to server, and expect an immediate response
             // of "JAVAC_Ack"
+	    jsc.pn("~~~~~~~~~~~~~~~~~~~~~");
 	    jsc.pn("Sending: \"" + command + "\"");
 
             if (jsc.jsValues.connection.cgi) {

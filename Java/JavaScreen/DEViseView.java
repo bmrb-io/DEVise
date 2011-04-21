@@ -24,6 +24,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.80.2.2  2011/04/20 20:12:41  wenger
+// Removed debug code.
+//
+// Revision 1.80.2.1  2011/04/20 17:15:08  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.80  2011/02/07 20:04:26  wenger
+// Fixed bug 995: we now only draw axis labels for the base view of a
+// pile.
+//
 // Revision 1.79  2008/09/25 22:44:21  wenger
 // Workaround for bug 939: fixed off-by-one errors in the JS client
 // so this no longer happens for the JS; no fix on the server side,

@@ -19,6 +19,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.7.2.1  2011/04/20 21:04:06  wenger
+// Added recognition of s2 predicted vs. experimental session names.
+//
+// Revision 1.7  2011/02/10 20:23:26  wenger
+// Implemented to-do 09.026 (recognize new multi-entry visualizations in
+// JS session-opening GUI).
+//
 // Revision 1.6  2010/05/28 19:29:11  wenger
 // Changed open session dialog to show BMRB visualization types (with
 // numbers) as the "main" value if they are available, with the new
@@ -100,6 +107,8 @@ public class DEViseUtils
 		String visType = vtn._type;
 		if (m.groupCount() == 1) {
 		    visType += " " + m.group(1);
+		} else if (m.groupCount() == 2) {
+		    visType = visType + " " + m.group(1) + "-" + m.group(2);
 		} else if (m.groupCount() == 4) {
 		    visType = m.group(1) + "/" + m.group(2) + visType +
 		      m.group(3) + "/" + m.group(4);
@@ -160,9 +169,13 @@ public class DEViseUtils
 	  new VisTypeName(".*as(\\d+)\\.ds",
 	  "chem shift dist by AA/nucleotide"));
 	_visTypes.addElement(
-	  new VisTypeName("(.*)\\+(.*)hn(\\d+)\\+(\\d+)\\.ds", " simulated 1H-15N spectrum "));
+	  new VisTypeName("(.*)\\+(.*)hn(\\d+)\\+(\\d+)\\.ds",
+	  " simulated 1H-15N spectrum "));
 	_visTypes.addElement(
-	  new VisTypeName("(.*)\\+(.*)hc(\\d+)\\+(\\d+)\\.ds", " simulated 1H-13C spectrum "));
+	  new VisTypeName("(.*)\\+(.*)hc(\\d+)\\+(\\d+)\\.ds",
+	  " simulated 1H-13C spectrum "));
+	_visTypes.addElement(new VisTypeName(".*s2p(\\d+)-(\\d)\\.ds",
+	  "S2 predicted vs. experimental"));
 	_visTypes.addElement(
 	  new VisTypeName(".*hn(\\d+)\\.ds", "simulated 1H-15N spectrum"));
 	_visTypes.addElement(

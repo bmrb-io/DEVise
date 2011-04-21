@@ -20,6 +20,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.30.2  2011/04/20 20:12:41  wenger
+// Removed debug code.
+//
+// Revision 1.9.30.1  2011/04/20 17:15:07  wenger
+// Changed the DEViseGenericTree.setSelection() method and the YLogGUI
+// p() and pn() methods to only actually update the GUI in the event
+// dispatched thread, to hopefully cure problems with incorrect 3D
+// highlight updating in the s2pred visualization, and null pointer
+// problems when showing the log window.  (I actually meant to do some
+// earlier commits to this branch with more of the debug code in place,
+// but I forgot to do that.)
+//
+// Revision 1.9  2006/06/23 19:52:41  wenger
+// Merged devise_jmol_br_1 thru devise_jmol_br_2 to the trunk.
+//
 // Revision 1.8.4.2  2006/06/07 15:15:38  wenger
 // Removed ThreadDeath fixes from 26 May 2006 because for some reason
 // they prevent the JavaScreen from being able to be run more than
