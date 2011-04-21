@@ -108,6 +108,10 @@ COMMITTING AND MERGING
 
 * Merging from branch to trunk.  Here's what you need to do to do this:
 
+    * Tag the trunk; for example:
+
+        % cvs tage <name>_br_1-pre-merge
+
     * Tag the branch; for example:
 
 	% cvs tag <name>_br_1
