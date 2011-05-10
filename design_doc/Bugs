@@ -4473,6 +4473,10 @@ java.security.AccessControlException: access denied
 			cursor" GUI is not preserved when the session is
 			saved and re-opened. (wenger)
 
+1018 5/10/11	OPEN	JS: sometimes locks up when trying to open a new
+			session within the JS GUI (note: I've only seen
+			this on Linux within Firefox). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
