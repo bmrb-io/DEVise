@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.254  2011/02/07 22:00:53  wenger
+// Changed the legends for the simulated 1H-15N and simulated 1H-13C
+// spectra to client-side rendering of the fonts, for better appearance.
+//
 // Revision 1.253  2011/02/01 01:10:38  wenger
 // Fixed minor errors and warnings in session templates.
 //
@@ -2783,7 +2787,7 @@ public class S2DMain {
         saveSpartaDeltaShifts(star);
 	if (_extraGC) System.gc();
 	if (doDebugOutput(2)) S2DUtils.printMemory(
-	  "After saveDeltaShifts()");
+	  "After saveSpartaDeltaShifts()");
 
         saveT1Relaxation(star);
 	if (_extraGC) System.gc();
