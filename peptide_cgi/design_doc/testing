@@ -176,6 +176,9 @@ The following testing steps must be done:
     - Make sure that spectra show up for EA 1 and 3 of 15418 and
       EA 1 and 2 of 4099.
 
+- (s2predict) view the S2 predicted vs. experimental visualization
+  for 17306/2l6B and make sure it works.
+
 - Test http://devise.cs.wisc.edu/devise/bmrb/histograms/histogram.html
   (make sure drill-down works).
 
