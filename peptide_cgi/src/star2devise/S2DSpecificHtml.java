@@ -20,6 +20,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.23.2.1  2011/04/06 19:53:36  wenger
+// We now create the specific html files for the s2predicted visualizations.
+//
+// Revision 1.23  2011/01/07 22:10:28  wenger
+// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
+//
 // Revision 1.22.2.3  2011/01/04 19:19:37  wenger
 // Added two-entry help pages (still need changes to the text) and changed
 // the specific HTML code so that two-entry pages link to the right help
@@ -244,7 +250,11 @@ public class S2DSpecificHtml {
 	_fullName = fullName;
 	_frameIndexStr = "" + frameIndex1;
 	if (frameIndex2 > 0) {
-	    _frameIndexStr += "+" + frameIndex2;
+	    if (dataType != S2DUtils.TYPE_S2PRED) {
+	        _frameIndexStr += "+" + frameIndex2;
+	    } else {
+	        _frameIndexStr += "-" + frameIndex2;
+	    }
 	}
 	_title = title;
 

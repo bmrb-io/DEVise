@@ -1,0 +1,20 @@
+# DEVise startHeader
+# file type: physSchema
+# file date: Jul 12 1999 15:28:37
+# DEVise version: 1.6.3
+# DEVise date: Jun 30 1999
+# DEVise endHeader
+
+#TEMPTEMP -- explain
+
+# $Id$
+
+type bmrb-s2pred ascii
+comment #
+#TEMPTEMP? whitespace '	'
+whitespace ' '
+
+attr Entity_assembly_ID int
+attr Residue_seq_code int
+attr Experimental_S2 float
+attr Predicted_S2 float

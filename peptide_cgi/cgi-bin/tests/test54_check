@@ -103,7 +103,7 @@ set line = '^3 26 GLU OE2 O 10.3 -5.575 0 0 -0.15 0 all_hydrogens AMU -1$'
 source tests/check4line
 
 set file = "data_dir/5838rl.dat"
-set line = '^1	1	SER$'
+set line = '^1	1	SER	S$'
 source tests/check4line
-set line = '^4	26	GLU$'
+set line = '^4	26	GLU	E$'
 source tests/check4line

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2010
+#  (c) Copyright 1999-2011
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -78,11 +78,14 @@ my $do_tar = $query->param('do_tar');
 my $do_rrtar = $query->param('do_rrtar');
 my $tar_url = $query->param('tar_url');
 my $xbmrbid = $query->param('xbmrbid');
+my $do_s2p = $query->param('do_s2p');
+my $frame_index = $query->param('frame_index');
 
 print "  acc_num = $acc_num\n" if ($debug);
 print "  restraint_id = $restraint_id\n" if ($debug);
 print "  pdbid = $pdbid\n" if ($debug);
 print "  coord_index = $coord_index\n" if ($debug);
+print "  frame_index = $frame_index\n" if ($debug);
 
 # File name of the html page returned.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
@@ -120,6 +123,10 @@ if (defined($restraint_id)) {
   print "  has RRTAR\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $acc_num . 'rrtar' . 
     $coord_index . $size_str . '.html';
+} elsif ($do_s2p) {
+  print "  has s2p\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $acc_num . 's2p' . 
+    $coord_index . "-" . $frame_index . $size_str . '.html';
 } elsif (defined($xbmrbid)) {
   print "  Multi-entry\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $acc_num . '+' .
@@ -145,6 +152,8 @@ if (defined($restraint_id)) {
   $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_tar $do_tar -coord_index $coord_index";
 } elsif ($do_rrtar) {
   $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_rrtar $do_rrtar -coord_index $coord_index";
+} elsif ($do_s2p) {
+  $cmd = "./s2d -pdbid $pdbid -bmrbid $acc_num -do_s2p $do_s2p -coord_index $coord_index -s2_frame_index $frame_index";
 } else {
   $cmd = "./s2d -bmrbid $acc_num";
 }

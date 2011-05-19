@@ -69,13 +69,13 @@ foreach file ($files)
 end
 
 set file = "data_dir/6502rl.dat"
-set line = '^1	1	GLY$'
+set line = '^1	1	GLY	G$'
 source tests/check4line
-set line = '^1	100	LYS$'
+set line = '^1	100	LYS	K$'
 source tests/check4line
-set line = '^2	1	GLY$'
+set line = '^2	1	GLY	G$'
 source tests/check4line
-set line = '^2	83	PRO$'
+set line = '^2	83	PRO	P$'
 source tests/check4line
 
 

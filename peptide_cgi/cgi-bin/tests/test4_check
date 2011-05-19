@@ -55,9 +55,9 @@ set line = "^1 39 HIS 75.0 83.333336 100.0"
 source tests/check4line
 
 set file = "data_dir/4096rl.dat"
-set line = '^1	1	GLY$'
+set line = '^1	1	GLY	G$'
 source tests/check4line
-set line = '^1	147	SER$'
+set line = '^1	147	SER	S$'
 source tests/check4line
 set line = '^2	1	HEME$'
 # 2.1 doesn't have residues for entity 2

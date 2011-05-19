@@ -1,0 +1,119 @@
+#! /bin/csh -f
+
+# Test predicted vs. experimental S2 visualization.
+
+set result = 0
+
+set dummycsr = 0
+
+if ($#argv > 0) then
+  if (xx$1 == xx-dummycsr) then
+    set dummycsr = 1
+  endif
+endif
+
+rm -r -f */17306*
+
+if ($dummycsr) then
+  tests/dummy_csr_server -exit -time_limit 60 &
+  sleep 2
+endif
+
+echo -n "Processing NMR-STAR: "
+./s2d -nomail -bmrbid 17306 -force -check_res_list -check_pct \
+  -s2p_url file:test_data/
+if ($status != 0) then
+  echo "First invocation of s2d failed!"
+  set result = 1
+endif
+mv tmp/s2d.out tmp/s2d.out1
+
+echo -n "Processing predicted vs. experimental S2: "
+./s2d -nomail -pdbid 2L6B -bmrbid 17306 -do_s2p 2 -coord_index 1 \
+  -s2_frame_index 1 -s2p_url file:test_data/ -check_res_list -check_pct
+if ($status != 0) then
+  echo "Second invocation of s2d failed!"
+  set result = 1
+endif
+
+
+echo "Checking output files"
+
+set files = ( data_dir/17306ac1.dat \
+	data_dir/17306am1.dat \
+	data_dir/17306amac1.dat \
+	data_dir/17306as1.dat \
+	data_dir/17306c1.dat \
+	data_dir/17306d1.dat \
+	data_dir/17306hc1.dat \
+	data_dir/17306hn1.dat \
+	data_dir/17306md.dat \
+	data_dir/17306n1.dat \
+	data_dir/17306o1.dat \
+	data_dir/17306p1.dat \
+	data_dir/17306rc1.dat \
+	data_dir/17306rl.dat \
+	data_dir/17306s2p1-1.dat \
+	data_dir/17306ss1.dat \
+	data_dir/17306t11.dat \
+	data_dir/17306t21.dat \
+	data_dir/17306csr1_1.dat \
+	html_dir/17306/17306ac1.html \
+	html_dir/17306/17306am1.html \
+	html_dir/17306/17306as1.html \
+	html_dir/17306/17306c1.html \
+	html_dir/17306/17306d1.html \
+	html_dir/17306/17306hc1.html \
+	html_dir/17306/17306hn1.html \
+	html_dir/17306/17306n1.html \
+	html_dir/17306/17306o1.html \
+	html_dir/17306/17306p1.html \
+	html_dir/17306/17306s2p1-1.html \
+	html_dir/17306/17306t11.html \
+	html_dir/17306/17306t21.html \
+	html_dir/17306/17306y.html \
+	session_dir/17306/17306ac1.ds \
+	session_dir/17306/17306acdd \
+	session_dir/17306/17306am1.ds \
+	session_dir/17306/17306as1.ds \
+	session_dir/17306/17306c1.ds \
+	session_dir/17306/17306d1.ds \
+	session_dir/17306/17306hc1.ds \
+	session_dir/17306/17306hn1.ds \
+	session_dir/17306/17306n1.ds \
+	session_dir/17306/17306o1.ds \
+	session_dir/17306/17306p1.ds \
+	session_dir/17306/17306s2p1-1.ds \
+	session_dir/17306/17306t11.ds \
+	session_dir/17306/17306t21.ds )
+
+foreach file ($files)
+   if (! -f $file) then
+      echo "  Output file $file is missing"
+      set result = 1
+   endif
+end
+
+
+set file = "data_dir/17306s2p1-1.dat"
+set line = "1 2 1.0 0.5462738"
+source tests/check4line
+set line = "1 57 0.876 0.8762687"
+source tests/check4line
+set line = "1 106 1.0 0.33378202"
+source tests/check4line
+
+set file = "html_dir/17306/17306y.html"
+set line = '/make_view?pdbid=2L6B&number=17306&do_s2p=2&coord_index=1&frame_index=1&size_str=">2L6B</a></td>'
+source tests/check4line
+
+
+echo -n "Test_s2p3 result: "
+if ($result == 0) then
+  echo "OK"
+  exit 0
+else
+  echo "FAILED"
+  exit 1
+endif
+

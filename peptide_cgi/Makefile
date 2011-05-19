@@ -36,6 +36,8 @@ DO_TAR_DEFAULT = 1
 DO_RRTAR_DEFAULT = 1
 DO_DIST_DEFAULT = 1
 DO_RRDIST_DEFAULT = 1
+DO_S2PRED_DEFAULT = 0
+S2PRED_URL_DEFAULT = 
 JS_CMD_PORT = 6666
 
 include Makefile.config
@@ -192,6 +194,8 @@ s2d_props:
 	echo "bmrb_mirror.do_rrtar_default=$(DO_RRTAR_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.do_dist_default=$(DO_DIST_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.do_rrdist_default=$(DO_RRDIST_DEFAULT)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.do_s2p_default=$(DO_S2PRED_DEFAULT)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.s2p_url=$(S2PRED_URL_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.js_cmd_port=$(JS_CMD_PORT)" >> $(S2D_PROPS_FILE)
 
 error_email:

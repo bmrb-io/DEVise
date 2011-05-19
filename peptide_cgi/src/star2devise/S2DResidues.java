@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.4.2  2011/04/12 21:43:09  wenger
+// More cleanup.
+//
+// Revision 1.18.4.1  2011/04/01 22:27:05  wenger
+// Added single-letter residue codes to the residue list files; removed
+// a bunch of debug output from the s2predict code.
+//
+// Revision 1.18  2010/12/07 17:41:16  wenger
+// Did another version history purge.
+//
 // Revision 1.17  2010/07/20 17:49:06  wenger
 // Fixed Peptide-CGI for changes to NMR-STAR files -- residues for DNA
 // are now DA, DC, etc., instead of just A, C, etc. (note: test68/
@@ -52,6 +62,7 @@ public class S2DResidues {
     public int _resCount = -1;
     public int[] _resSeqCodes = null;
     public String[] _resLabels = null; // three-letter
+    public String[] _resLabelsSh = null; // one-letter
 
     public static final int POLYMER_TYPE_UNKNOWN = 0;
     public static final int POLYMER_TYPE_NONE = 1; // not a polymer
@@ -88,6 +99,8 @@ public class S2DResidues {
 
 	initializeTranslation();
     	ensureLegalResidues();
+
+        _resLabelsSh = generateShortLabels(_resLabels, _polymerType);
 
 	if (_polymerType == POLYMER_TYPE_DNA) {
 	    for (int index = 0; index < _resLabels.length; index++) {
@@ -148,6 +161,8 @@ public class S2DResidues {
 	}
 
     	ensureLegalResidues();
+
+        _resLabelsSh = generateShortLabels(_resLabels, _polymerType);
 
 	if (_polymerType == POLYMER_TYPE_DNA) {
 	    for (int index = 0; index < _resLabels.length; index++) {
@@ -416,6 +431,7 @@ public class S2DResidues {
 	    _acidTrans.put(new Character('W'), "TRP");
 	    _acidTrans.put(new Character('Y'), "TYR");
 	    _acidTrans.put(new Character('V'), "VAL");
+	    _acidTrans.put(new Character('X'), "X");
 	}
 
 	// Note: it would be nice to generate one table from the other
@@ -444,6 +460,7 @@ public class S2DResidues {
 	    _acidReverseTrans.put("TRP", "W");
 	    _acidReverseTrans.put("TYR", "Y");
 	    _acidReverseTrans.put("VAL", "V");
+	    _acidReverseTrans.put("X", "X");
 	}
     }
 
@@ -511,6 +528,55 @@ public class S2DResidues {
 	        }
 	    }
 	}
+    }
+
+    //-------------------------------------------------------------------
+    // Generate an array of one-letter labels from the array of three-
+    // letter labels.
+    private static String[] generateShortLabels(String[] resLabels,
+      int polymerType)
+    {
+        String[] resLabelsSh = new String[resLabels.length];
+
+	for (int index = 0; index < resLabels.length; index++) {
+	    switch (polymerType) {
+	    case POLYMER_TYPE_UNKNOWN:
+	    case POLYMER_TYPE_PROTEIN:
+	        resLabelsSh[index] = (String)_acidReverseTrans.get(
+		  resLabels[index]);
+	        break;
+
+	    case POLYMER_TYPE_DNA:
+		if (resLabels[index].startsWith("D")) {
+		    if (resLabels[index].length() == 2) {
+	                resLabelsSh[index] = resLabels[index].substring(1, 2);
+		    } else {
+			System.err.println("Warning: unexpected DNA " +
+			  "residue type: " + resLabels[index]);
+	                resLabelsSh[index] = "X";
+		    }
+		} else {
+	            resLabelsSh[index] = resLabels[index];
+		}
+	        break;
+
+	    case POLYMER_TYPE_RNA:
+	        resLabelsSh[index] = resLabels[index];
+	        break;
+
+	    case POLYMER_TYPE_NONE:
+		resLabelsSh[index] = "X";
+	        break;
+
+	    default:
+		System.out.println("Unexpected polymer type: " +
+		  polymerType + "!");
+		resLabelsSh[index] = "X";
+	        break;
+	    }
+	}
+
+	return resLabelsSh;
     }
 
     //-------------------------------------------------------------------

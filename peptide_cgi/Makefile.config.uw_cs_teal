@@ -171,6 +171,13 @@ DO_DIST_DEFAULT = 1
 # create link if appropriate distance restraint entry is available.
 DO_RRDIST_DEFAULT = 1
 
+# Default s2predict processing level: create link if appropriate data
+# is available.
+DO_S2PRED_DEFAULT = 1
+
+# The root URL of s2predict output files.
+S2PRED_URL_DEFAULT = file:test_data/
+
 #-----------------------------------------------------------
 # Other.
 

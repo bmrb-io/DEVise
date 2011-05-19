@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2007-2010
+#  (c) Copyright 2007-2011
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -69,11 +69,14 @@ my $pdb_file = $query->param('pdb_file');
 my $lacs_file = $query->param('lacs_file');
 my $sparta_file = $query->param('sparta_file');
 my $xbmrbid = $query->param('xbmrbid');
+my $do_s2p = $query->param('do_s2p');
+my $frame_index = $query->param('frame_index');
 
 print "  file = $file\n" if ($debug);
 print "  name = $name\n" if ($debug);
 print "  pdbid = $pdbid\n" if ($debug);
 print "  coord_index = $coord_index\n" if ($debug);
+print "  frame_index = $frame_index\n" if ($debug);
 
 # File name of the html page returned.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
@@ -103,6 +106,10 @@ if ($do_pdb) {
   print "  has RRTAR\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $name . 'rrtar' . $coord_index .
     $size_str . '.html';
+} elsif ($do_s2p) {
+  print "  has s2p\n" if ($debug);
+  $summary_page = $summary_page_dir . "/" . $name . 's2p' .
+    $coord_index . "-" . $frame_index . $size_str . '.html';
 } elsif (defined($xbmrbid)) {
   print "  Multi-entry\n" if ($debug);
   $summary_page = $summary_page_dir . "/" . $name . '+' .
@@ -112,6 +119,7 @@ if ($do_pdb) {
   $summary_page = $summary_page_dir . "/" . $name . 'y' . $size_str .
     '.html';
 }
+
 my $cmd;
 if ($do_pdb) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_pdb $do_pdb -coord_index $coord_index";
@@ -126,6 +134,8 @@ if ($do_pdb) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_tar $do_tar -coord_index $coord_index";
 } elsif ($do_rrtar) {
   $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_rrtar $do_rrtar -coord_index $coord_index";
+} elsif ($do_s2p) {
+  $cmd = "./uvd -pdbid $pdbid -file $file -name $name -do_s2p $do_s2p -coord_index $coord_index -s2_frame_index $frame_index";
 } else {
   $cmd = "./uvd -file $file -name $name";
 }

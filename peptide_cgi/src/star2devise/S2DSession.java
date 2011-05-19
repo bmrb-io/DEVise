@@ -20,6 +20,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.33.2.4  2011/05/10 21:29:39  wenger
+// Incorporated secondary structure into s2predict visualizations.
+//
+// Revision 1.33.2.3  2011/04/12 21:43:09  wenger
+// More cleanup.
+//
+// Revision 1.33.2.2  2011/04/06 19:53:36  wenger
+// We now create the specific html files for the s2predicted visualizations.
+//
+// Revision 1.33.2.1  2011/04/06 18:48:26  wenger
+// We now create the s2predicted sessions from the template.
+//
+// Revision 1.33  2011/01/10 18:52:43  wenger
+// Fixed problem with RNA chem shift delta visualizations caused by
+// the changes for the multi-entry visualizations.
+//
 // Revision 1.32  2011/01/07 22:10:28  wenger
 // Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
 //
@@ -472,6 +488,25 @@ TEMP*/
 	    searchStrings[5] = "4099 H";
 	    replaceStrings[5] = id2 + " H";
 	    allowMultipleReplace = false;
+	    break;
+
+	case S2DUtils.TYPE_S2PRED:
+	    baseName = "s2predicted.base";
+	    dataSuffix = S2DNames.S2PRED_SUFFIX;
+	    sessionSuffix = dataSuffix;
+	    searchStrings[0] = "15536ac1";
+	    replaceStrings[0] = id1 + S2DNames.ATOMIC_COORD_SUFFIX +
+	      frameIndex1;
+	    searchStrings[1] = "15536s2p1-1";
+	    replaceStrings[1] = id1 + S2DNames.S2PRED_SUFFIX + frameIndex1 +
+	      "-" + frameIndex2;
+	    searchStrings[2] = "15536rl";
+	    replaceStrings[2] = id1 + S2DNames.RES_LIST_SUFFIX;
+	    searchStrings[3] = "15536csr1_1";
+	    replaceStrings[3] = id1 + S2DNames.CSR_SUFFIX +
+	      frameIndex1 + "_1";
+
+	    frameIndexStr = "" + frameIndex1 + "-" + frameIndex2;
 	    break;
 
 	default:

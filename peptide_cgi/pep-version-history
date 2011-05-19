@@ -1,5 +1,15 @@
 			Peptide-CGI Version History
 
+Peptide-CGI 12.1.0
+------------------
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+
+* Added predicted vs. experimental S2 order parameter visualization.
+
+
+TEMPTEMP -- was 12.0.1 ever released?  maybe merge these sections
+
+
 Peptide-CGI 12.0.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.19.2.3  2011/04/12 21:43:08  wenger
+// More cleanup.
+//
+// Revision 1.19.2.2  2011/04/06 19:53:36  wenger
+// We now create the specific html files for the s2predicted visualizations.
+//
+// Revision 1.19.2.1  2011/03/30 19:53:15  wenger
+// The basic framework for s2 experimental vs. predicted processing is
+// now in place.
+//
+// Revision 1.19  2011/01/07 22:10:28  wenger
+// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
+//
 // Revision 1.18.2.1  2010/12/16 00:11:07  wenger
 // Changed how we come up with the list of available data for each
 // entry so that we don't need the -force option anymore for multi-entry
@@ -167,6 +180,8 @@ public class S2DNames
     //
     public static String RESTRAINT_GRID_ROOT = null;
 
+    public static String S2PRED_URL = null;
+
     //
     // Search string to use for torsion angle data (gets dihedral
     // angle violations -- filtered FRED) -- relative to
@@ -221,6 +236,8 @@ public class S2DNames
     public static final String RRTAR_SUFFIX = "rrtar";
     public static final String RRTAR_MD_SUFFIX = "rrtar-md";
     public static final String SPARTA_DELTASHIFT_SUFFIX = "sd";
+    public static final String S2PRED_SUFFIX = "s2p";
+    public static final String SEC_STRUCT_SUFFIX = "ss";
     public static final String SUMMARY_DATA_SUFFIX = "md";
     public static final String T1_SUFFIX = "t1";
     public static final String T2_SUFFIX = "t2";

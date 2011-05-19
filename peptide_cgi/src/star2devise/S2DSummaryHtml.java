@@ -31,6 +31,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.27.2.2  2011/05/13 17:02:45  wenger
+// Fixed up configuration for BMRB to point to "real" s2predict output files.
+//
+// Revision 1.27.2.1  2011/04/08 17:48:10  wenger
+// Writing s2predicted links in the summary html page is now partially
+// working.
+//
+// Revision 1.27  2011/01/07 22:10:29  wenger
+// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
+//
 // Revision 1.26.2.7  2011/01/05 20:57:40  wenger
 // Fixed a bug that caused improper processing for the uploaded data/
 // entry combination.
@@ -457,6 +467,32 @@ public class S2DSummaryHtml {
 	}
 
 	_normal.writeS2Order(frameIndex, entityAssemblyID, count);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the predicted vs. experimental S2 link.
+    public void writeS2Pred(String pdbId, int coordIndex, int frameIndex)
+      throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeS2Pred()");
+	}
+
+	_normal.writeS2Pred(pdbId, coordIndex, frameIndex);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the predicted vs. experimental S2 link, where the link is
+    // a CGI script invocation (we haven't already done the s2predict
+    // processing).
+    public void writeS2PredCGI(String pdbId, int coordIndex,
+      int frameIndex) throws IOException
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtml.writeS2PredCGI()");
+	}
+
+	_normal.writeS2PredCGI(pdbId, coordIndex, frameIndex);
     }
 
     //-------------------------------------------------------------------

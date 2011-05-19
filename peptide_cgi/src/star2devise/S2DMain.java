@@ -21,9 +21,100 @@
 // $Id$
 
 // $Log$
+// Revision 1.255  2011/05/14 18:04:15  wenger
+// Fixed minor typo in diagnostic output.
+//
 // Revision 1.254  2011/02/07 22:00:53  wenger
 // Changed the legends for the simulated 1H-15N and simulated 1H-13C
 // spectra to client-side rendering of the fonts, for better appearance.
+//
+// Revision 1.253.2.24  2011/05/14 17:56:14  wenger
+// A few more cleanups in preparation for merging to the trunk and
+// releasing.
+//
+// Revision 1.253.2.23  2011/05/13 19:33:27  wenger
+// Minor (hopefully final) cleanups.
+//
+// Revision 1.253.2.22  2011/05/13 18:05:33  wenger
+// Changed s2predict PDB IDs to show up as upper-case.
+//
+// Revision 1.253.2.21  2011/05/13 17:02:45  wenger
+// Fixed up configuration for BMRB to point to "real" s2predict output files.
+//
+// Revision 1.253.2.20  2011/05/11 20:53:31  wenger
+// Completed s2p tests and modified code so that they all work -- we do
+// the s2predict processing before the final ChemShiftRef processing, so
+// that PDB IDs found only from the s2predict output will get CSR processing
+// done.
+//
+// Revision 1.253.2.19  2011/05/10 21:29:39  wenger
+// Incorporated secondary structure into s2predict visualizations.
+//
+// Revision 1.253.2.18  2011/04/26 21:46:56  wenger
+// Doing ChemShiftRef processing for s2 predicted vs. experimental is
+// mostly working (I'm going to use the ChemShiftRef output for secondary
+// structures).  (Still have to get a few cases working right.)
+//
+// Revision 1.253.2.17  2011/04/13 20:55:25  wenger
+// Added test (not yet complete) to test s2predict processing in
+// vis server mode.
+//
+// Revision 1.253.2.16  2011/04/13 19:42:45  wenger
+// Summary page CGI link now works for s2predict processing; changed one
+// test to use make_view.
+//
+// Revision 1.253.2.15  2011/04/13 18:24:59  wenger
+// Fixed s2predict processing for PDB IDs that are not listed in the
+// NMR-STAR file.
+//
+// Revision 1.253.2.14  2011/04/12 21:03:51  wenger
+// Some cleanup to the s2predict-related code.
+//
+// Revision 1.253.2.13  2011/04/11 23:08:51  wenger
+// At least partially fixed the correspondence between coordinate indices
+// for s2predict and the "regular" atomic coordinates.
+//
+// Revision 1.253.2.12  2011/04/11 22:21:09  wenger
+// Added PDB ID to info in s2predict visualizations.
+//
+// Revision 1.253.2.11  2011/04/11 21:35:54  wenger
+// Made the s2predict tests more complete.
+//
+// Revision 1.253.2.10  2011/04/08 22:32:25  wenger
+// Finding s2predict output files now mostly in place.
+//
+// Revision 1.253.2.9  2011/04/08 17:48:09  wenger
+// Writing s2predicted links in the summary html page is now partially
+// working.
+//
+// Revision 1.253.2.8  2011/04/07 18:23:14  wenger
+// Fixed problem with 3D highlighting not working in 2dpredicted
+// visualizations.
+//
+// Revision 1.253.2.7  2011/04/06 19:53:35  wenger
+// We now create the specific html files for the s2predicted visualizations.
+//
+// Revision 1.253.2.6  2011/04/06 18:48:25  wenger
+// We now create the s2predicted sessions from the template.
+//
+// Revision 1.253.2.5  2011/04/06 16:05:37  wenger
+// Added creation of an empty secondary structure file, and modified the
+// s2predict template to use the correct secondary structure data source.
+//
+// Revision 1.253.2.4  2011/04/05 21:30:31  wenger
+// Reversed the sense of the s2predict output to match the S2 values in
+// BMRB entries; also added test_s2p1 to the test_all script.
+//
+// Revision 1.253.2.3  2011/04/01 22:27:05  wenger
+// Added single-letter residue codes to the residue list files; removed
+// a bunch of debug output from the s2predict code.
+//
+// Revision 1.253.2.2  2011/04/01 18:50:35  wenger
+// Basic output of the s2predict data for DEVise is in place.
+//
+// Revision 1.253.2.1  2011/03/30 19:53:14  wenger
+// The basic framework for s2 experimental vs. predicted processing is
+// now in place.
 //
 // Revision 1.253  2011/02/01 01:10:38  wenger
 // Fixed minor errors and warnings in session templates.
@@ -382,7 +473,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.0.1x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
@@ -502,6 +593,12 @@ public class S2DMain {
     public static final int RRDISTR_LEVEL_PROCESS = 3;
     private int _rrDistRLevel = RRDISTR_LEVEL_LINK_CHECK;
 
+    public static final int S2PRED_LEVEL_NONE = 0;
+    public static final int S2PRED_LEVEL_LINK = 1;
+    public static final int S2PRED_LEVEL_PROCESS = 2;
+    private int _s2PredLevel = S2PRED_LEVEL_LINK;
+    private int _s2FrameIndex = 0;
+
     private boolean _haveCoords = false;
 
     private S2DSummaryHtml _summary;
@@ -591,6 +688,7 @@ public class S2DMain {
 	    s2d._rrTarLevel = RRTAR_LEVEL_NONE;
 	    s2d._distRLevel = DISTR_LEVEL_NONE;
 	    s2d._rrDistRLevel = RRDISTR_LEVEL_NONE;
+	    s2d._s2PredLevel = S2PRED_LEVEL_NONE;
 	}
 
 	try {
@@ -1097,6 +1195,29 @@ public class S2DMain {
 		  "; using default"));
 	    }
 	}
+
+	String s2pTmp = props.getProperty("bmrb_mirror.do_s2p_default");
+	if (s2pTmp == null) {
+	    System.err.println(new S2DWarning("Unable to get value for " +
+	      "bmrb_mirror.do_s2p_default property"));
+	} else {
+	    try {
+	        _s2PredLevel = Integer.parseInt(s2pTmp);
+	    } catch(NumberFormatException ex) {
+	        System.err.println(new S2DWarning("Error parsing " +
+		  "do_s2p_default value " + ex.toString() +
+		  "; using default"));
+	    }
+	}
+
+	S2DNames.S2PRED_URL = props.getProperty("bmrb_mirror.s2p_url");
+	if (S2DNames.S2PRED_URL == null) {
+	    S2DError err = new S2DError("Unable to get value for " +
+	      "bmrb_mirror.s2p_url property; using default");
+	    S2DNames.S2PRED_URL = "file:./";
+	}
+
+
     }
 
     //-------------------------------------------------------------------
@@ -1216,6 +1337,11 @@ public class S2DMain {
           "        1: create links in summary file but don't process;\n" +
           "        3: process torsion angle restraint references\n" +
           "        (default is " + _rrTarLevel + ")\n" +
+          "    -do_s2p <0|1|2>\n" +
+          "        0: ignore s2predict results;\n" +
+	  "        1: create links if s2predict output exists;\n" +
+	  "        2: create visualizations if s2predict output exists\n" +
+          "        (default is " + _s2PredLevel + ")\n" +
           "    -do_tar <0|1|2|3>\n" +
           "        0: ignore torsion angle restraint references;\n" +
           "        1: if restraint grid entry exists create links in\n" +
@@ -1254,6 +1380,10 @@ public class S2DMain {
           "        the PDB ID to process (e.g., 1dfv)\n" +
 	  "    -rr_file <filename>\n" +
 	  "        file containing remediated restraint data\n" +
+	  "    -s2_frame_index <value>\n" +
+	  "        index of S2 order param save frame (for s2 pred)\n" +
+	  "    -s2p_url <url>\n" +
+	  "        URL of directory containing s2predict output files\n" +
           "    -session_dir <directory>\n" +
           "        the directory in which to store the session files (mandatory)\n" +
 	  "    -sparta_file <filename>\n" +
@@ -1420,7 +1550,7 @@ public class S2DMain {
 		    // For now, we're forcing coordinate processing to
 		    // happen whenever we do distance restraint processing.
 		    // This should eventually be changed to not re-
-		    // process coordinates if we already have them andy
+		    // process coordinates if we already have them and
 		    // they're up-to-date.
 		    if (_distRLevel == DISTR_LEVEL_PROCESS) {
 		        _pdbLevel = PDB_LEVEL_PROCESS;
@@ -1485,6 +1615,29 @@ public class S2DMain {
 	            System.err.println("Error parsing do_rrtar value: " +
 		      ex.toString());
 	            throw new S2DError("Error parsing do_rrtar value " +
+		      ex.toString());
+	        }
+
+	    } else if ("-do_s2p".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-do_s2p argument needs value");
+		}
+		try {
+	            _s2PredLevel = Integer.parseInt(args[index]);
+		    // For now, we're forcing coordinate processing to
+		    // happen whenever we do s2 experimental vs. predicted
+		    // processing.  This should eventually be changed to
+		    // not re-process coordinates if we already have them
+		    // and they're up-to-date.
+		    if (_s2PredLevel == S2PRED_LEVEL_PROCESS) {
+		        _pdbLevel = PDB_LEVEL_PROCESS;
+			_csrLevel = CSR_LEVEL_PROCESS;
+		    }
+	        } catch(NumberFormatException ex) {
+	            System.err.println("Error parsing do_s2p value: " +
+		      ex.toString());
+	            throw new S2DError("Error parsing do_s2p value " +
 		      ex.toString());
 	        }
 
@@ -1611,6 +1764,27 @@ public class S2DMain {
 		}
 		_spartaFile = args[index];
 
+	    } else if ("-s2_frame_index".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-s2_frame_index argument needs value");
+		}
+		try {
+	            _s2FrameIndex = Integer.parseInt(args[index]);
+	        } catch(NumberFormatException ex) {
+	            System.err.println("Error parsing s2_frame_index: " +
+		      ex.toString());
+	            throw new S2DError("Error parsing s2_frame_index " +
+		      ex.toString());
+	        }
+
+	    } else if ("-s2p_url".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-s2p_url argument needs value");
+		}
+		S2DNames.S2PRED_URL = args[index];
+
 	    } else if ("-sparta_url".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -1694,8 +1868,11 @@ public class S2DMain {
         // This should eventually be changed to not re-
         // process coordinates if we already have them andy
         // they're up-to-date.
+	//TEMP -- does this duplicate the similar code where we
+	// actually handle the arguments?
         if (_tarLevel == TAR_LEVEL_PROCESS ||
-	  _rrTarLevel == RRTAR_LEVEL_PROCESS) {
+	  _rrTarLevel == RRTAR_LEVEL_PROCESS ||
+	  _s2PredLevel == S2PRED_LEVEL_PROCESS) {
             _pdbLevel = PDB_LEVEL_PROCESS;
         }
 
@@ -1795,6 +1972,13 @@ public class S2DMain {
 	      RRDISTR_LEVEL_PROCESS + ")");
 	}
 
+	if (_s2PredLevel < S2PRED_LEVEL_NONE ||
+	  _pdbLevel > S2PRED_LEVEL_PROCESS) {
+	    throw new S2DError("illegal do_s2p value: " + _s2PredLevel +
+	      " (must be between " + S2PRED_LEVEL_NONE + " and " +
+	      S2PRED_LEVEL_PROCESS + ")");
+	}
+
 	//
 	// Set some defaults.
 	//
@@ -1863,6 +2047,9 @@ public class S2DMain {
 	    System.out.println("_spartaFile = " + _spartaFile);
 	    System.out.println("_extraGC = " + _extraGC);
 	    System.out.println("_restraintOnly = " + _restraintOnly);
+	    System.out.println("_s2PredLevel = " + _s2PredLevel);
+	    System.out.println("S2DNames.S2PRED_URL = " +
+	      S2DNames.S2PRED_URL);
 	}
     }
 
@@ -1962,7 +2149,8 @@ public class S2DMain {
 	    //
 	    if (_pdbLevel == PDB_LEVEL_PROCESS ||
 	      _tarLevel == TAR_LEVEL_PROCESS ||
-	      _rrTarLevel == RRTAR_LEVEL_PROCESS) {
+	      _rrTarLevel == RRTAR_LEVEL_PROCESS ||
+	      _s2PredLevel == S2PRED_LEVEL_PROCESS) {
 		Vector pdbIds2Check = null;
 	        if (_cmdPdbId != null) {
 		        // PDB ID was specified on the command line -- check
@@ -2031,6 +2219,8 @@ public class S2DMain {
 		        break check;
 		    }
 		}
+
+		//TEMP -- check for s2Pred stuff here?
 	    }
 
 	    result = true;
@@ -2318,6 +2508,13 @@ public class S2DMain {
 	        process1RRDistR(_rrFile, _cmdPdbId);
 	    }
 
+	    //
+	    // Do the s2predict processing.
+	    //
+	    if (_s2PredLevel == S2PRED_LEVEL_PROCESS) {
+		process1S2Pred(_cmdPdbId, _cmdFrameIndex, _s2FrameIndex);
+	    }
+
 	    _summary.close(null, null, "");
 
 	    // Note: we should delete this "junk" summary file here, but
@@ -2389,8 +2586,15 @@ public class S2DMain {
 	}
 
 	//
+	// Process any applicable s2predict output.
+	//
+        processAllS2Pred();
+
+	//
 	// Initiate chemical shift reference processing, if we didn't
-	// before and got a PDB ID from the NMR-STAR file.
+	// before and got a PDB ID from the NMR-STAR file.  (This is
+	// in case intermediate processing steps, such as the s2predict
+	// processing, added more PDB IDs.)
 	//
 	if (csr == null && _csrPdbIds.size() != 0 &&
 	  _csrLevel == CSR_LEVEL_PROCESS) {
@@ -2682,6 +2886,57 @@ public class S2DMain {
     }
 
     //-------------------------------------------------------------------
+    // Process all s2predict output files that apply to this data set.
+    private void processAllS2Pred()
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("processAllS2Pred()");
+	}
+
+	// Find any s2predict output files that apply to this data set.
+	Vector s2PredData = new Vector();
+	try {
+	    s2PredData = S2DS2Pred.FindData(_name);
+        } catch(S2DException ex) {
+	    System.err.println("Error (" + ex.toString() +
+	      ") finding s2predict output files");
+	}
+
+	// If the s2predict PDB ID exists already in the list of PDB
+	// IDs for this entry, we want to match the coordinate index
+	// to the existing one; otherwise we give it a coordinate
+	// index one past the last of the pre-existing ones.
+	for (int index = 0; index < s2PredData.size(); index++) {
+	    S2DS2Pred.S2PData data =
+	      (S2DS2Pred.S2PData)s2PredData.elementAt(index);
+	    int coordIndex = 0;
+	    for (int pdbIndex = 0; pdbIndex < _pdbIds.size(); pdbIndex++) {
+	        if (((String)_pdbIds.elementAt(pdbIndex)).equals(
+		  data._pdbId.toUpperCase())) {
+		    coordIndex = pdbIndex + 1;
+		    break;
+		}
+	    }
+	    if (coordIndex == 0) {
+		// If we get here, the PDB ID is not in the list in the
+		// actual NMR-STAR file.  We need to add it to the PDB
+		// list so coordinates get processed for it.
+	        coordIndex = _pdbIds.size() + index + 1;
+		Vector pdbs = new Vector();
+		pdbs.add(data._pdbId);
+		addPDB(pdbs);
+	    }
+	    try {
+	        process1S2Pred(data._pdbId, coordIndex, data._frameIndex);
+	    } catch(S2DException ex) {
+	        System.err.println("Error (" + ex.toString() +
+		  ") processing s2predict data for " + data._pdbId +
+		  ", " + coordIndex + ", " + data._frameIndex);
+	    }
+	}
+    }
+
+    //-------------------------------------------------------------------
     // Process the LACS file (if any).
     private void processLACS() throws S2DException
     {
@@ -2854,7 +3109,7 @@ public class S2DMain {
 	    resWriter.write("# Data: residue list for " + _name + "\n");
 	    resWriter.write("# Schema: bmrb-ResList\n");
 	    resWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; ResLabel\n");
+	      "Residue_seq_code; ResLabel; ResLabelSh\n");
 	    resWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
 	    resWriter.write("# Generation date: " +
@@ -2888,7 +3143,8 @@ public class S2DMain {
 	              resNum++) {
 	                resWriter.write(entityAssemblyId + "\t" +
 		          residues._resSeqCodes[resNum] + "\t" +
-		          residues._resLabels[resNum] + "\n");
+		          residues._resLabels[resNum] + "\t" +
+			  residues._resLabelsSh[resNum] + "\n");
 	            }
 		    // Flush here is VITAL to get stuff actually written out
 		    // if a later entity assembly fails...
@@ -4366,6 +4622,49 @@ public class S2DMain {
 	}
 
         _currentPdbId = null;
+    }
+
+    //-------------------------------------------------------------------
+    // Do s2predict processing for one PDB/S2 save frame combination.
+    private void process1S2Pred(String pdbId, int coordIndex,
+      int s2FrameIndex) throws S2DException
+    {
+        if (doDebugOutput(2)) {
+	    System.out.println("process1S2Pred(" + pdbId + ", " +
+	      coordIndex + ", " + s2FrameIndex + ")");
+	    System.out.println("_s2PredLevel: " + _s2PredLevel);
+	}
+
+	if (_s2PredLevel == S2PRED_LEVEL_LINK) {
+	    try {
+	        _summary.writeS2PredCGI(pdbId, coordIndex, s2FrameIndex);
+	    } catch(IOException ex) {
+                System.err.println(
+		  "IOException writing predicted S2: " +
+		  ex.toString());
+	        throw new S2DError("Can't predicted S2");
+	    } finally {
+	        _summary.endFrame();
+	    }
+
+	} else if (_s2PredLevel == S2PRED_LEVEL_PROCESS) {
+	    // s2predict only works for single-chain molecules.  wenger
+	    // 2011-04-18
+	    String entityAssemblyId = "1";
+	    S2DS2Pred s2Pred = new S2DS2Pred(_name, _longName,
+	      pdbId, coordIndex, s2FrameIndex, _dataDir, _sessionDir,
+	      _summary, entityAssemblyId);
+
+	    s2Pred.writeS2Pred();
+
+	    S2DSecStruct ss = new S2DSecStruct(_name, _longName,
+	      coordIndex, _dataDir, entityAssemblyId);
+	    ss.writeSecStruct();
+
+	} else {
+	    throw new S2DError("Illegal _s2PredLevel value: " +
+	      _s2PredLevel);
+	}
     }
 
     //-------------------------------------------------------------------

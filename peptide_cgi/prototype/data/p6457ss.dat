@@ -1,0 +1,8 @@
+# Secondary structure
+# Attributes: ResSeqId1; ResSeqId2; StructType; Color
+1	13	Alpha-helix	32
+14	21	Beta-sheet	6
+22	34	Random-coil	36
+35	59	Alpha-helix	32
+60	65	Turn		5
+66	76	Beta-sheet	6

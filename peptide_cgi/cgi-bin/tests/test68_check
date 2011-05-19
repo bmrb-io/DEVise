@@ -105,9 +105,9 @@ set line = '^15083 3 63 ILE 7.747 129.466 H N $'
 source tests/check4line
 
 set file = "data_dir/15083rl.dat"
-set line = '^1	1	DT$'
+set line = '^1	1	DT	T$'
 source tests/check4line
-set line = '^3	63	ILE$'
+set line = '^3	63	ILE	I$'
 source tests/check4line
 
 set file = "data_dir/15083ac1.dat"

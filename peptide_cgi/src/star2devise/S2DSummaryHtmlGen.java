@@ -36,6 +36,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.36.2.4  2011/05/13 19:33:28  wenger
+// Minor (hopefully final) cleanups.
+//
+// Revision 1.36.2.3  2011/04/13 19:42:45  wenger
+// Summary page CGI link now works for s2predict processing; changed one
+// test to use make_view.
+//
+// Revision 1.36.2.2  2011/04/12 21:43:09  wenger
+// More cleanup.
+//
+// Revision 1.36.2.1  2011/04/08 17:48:11  wenger
+// Writing s2predicted links in the summary html page is now partially
+// working.
+//
+// Revision 1.36  2011/01/07 22:10:29  wenger
+// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
+//
 // Revision 1.35.2.12  2011/01/05 15:33:17  wenger
 // More cleanup, including at least temporarily(?) just eliminating
 // some things for the multi-entry visualizations, such as system name
@@ -251,6 +268,8 @@ public abstract class S2DSummaryHtmlGen {
     private int _maxLacsFrame = 0;
     private IntKeyHashtable _lacsInfo = new IntKeyHashtable();
 
+    private int _s2PredCount = 0;
+    private IntKeyHashtable _s2PredInfo = new IntKeyHashtable();
     private int _maxS2OrderFrame = 0;
     private IntKeyHashtable _s2OrderInfo = new IntKeyHashtable();
 
@@ -507,6 +526,7 @@ TEMP?*/
 		        writeCouplingTable();
 		        writeRelaxationTable();
 		        writeHetNOETable();
+		        writeS2PredTable();
 		        writeS2OrderTable();
 		    }
 		}
@@ -1071,6 +1091,50 @@ TEMP?*/
 	  frameIndex + S2DNames.HTML_SUFFIX + "\">" +
 	  valueCount + " values (" + entityAssemblyID + ")</a>";
 	_s2OrderInfo.put(frameIndex, value);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the s2predicted link.
+    protected void writeS2Pred(String pdbId, int coordIndex,
+      int frameIndex)
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeS2Pred()");
+	}
+
+	_s2PredCount++;
+	String value = "<a href=\"" + _name + S2DNames.S2PRED_SUFFIX +
+	  coordIndex + "-" + frameIndex + S2DNames.HTML_SUFFIX + "\">" +
+	  pdbId + "</a>";
+	_s2PredInfo.put(_s2PredCount, value);
+    }
+
+    //-------------------------------------------------------------------
+    // Writes the s2predicted link, where the link is a CGI script
+    // invocation (we haven't already done the chem shift reference
+    // processing).
+    protected void writeS2PredCGI(String pdbId, int coordIndex,
+      int frameIndex)
+    {
+        if (doDebugOutput(12)) {
+	    System.out.println("S2DSummaryHtmlGen.writeS2PredCGI()");
+	}
+
+	_s2PredCount++;
+
+        String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
+
+	String value = "<a href=\"" + path + "?pdbid=" + pdbId;
+	if (_isUvd) {
+	    value += "&file=" + (String)_localFiles.elementAt(0) +
+	      "&name=" + _name;
+	} else {
+	    value += "&number=" + _name;
+	}
+	value += "&do_s2p=" + S2DMain.S2PRED_LEVEL_PROCESS +
+	  "&coord_index=" + coordIndex + "&frame_index=" + frameIndex +
+	  "&size_str=" + "\">" + pdbId + "</a>";
+	_s2PredInfo.put(_s2PredCount, value);
     }
 
     //-------------------------------------------------------------------
@@ -1703,11 +1767,40 @@ TEMP?*/
 
     //-------------------------------------------------------------------
     // Write the html table of S2 order parameter links.
-    protected void writeS2OrderTable() throws IOException
+    protected void writeS2PredTable() throws IOException
     {
 	final int maxPerRow = 8;
 
 	_writer.write("\n<hr>\n");
+        if (_s2PredCount > 0) {
+	    _writer.write("<p><b>S2 predicted vs. experimental</b></p>\n");
+
+            _writer.write("<table border cellpadding=5>\n");
+            _writer.write("  <tr>\n");
+
+            for (int index = 1; index <= _s2PredCount; index++ ) {
+                writeTableCell(_s2PredInfo, index);
+		if ( index % maxPerRow == 0) {
+                    _writer.write("  </tr>\n");
+                    _writer.write("  <tr>\n");
+		}
+            }
+
+            _writer.write("  </tr>\n");
+            _writer.write("</table>\n");
+
+        } else {
+	    _writer.write("<p><b>No S2 predicted vs. experimental data " +
+	      "available for this entry</b></p>\n");
+	}
+    }
+
+    //-------------------------------------------------------------------
+    // Write the html table of S2 order parameter links.
+    protected void writeS2OrderTable() throws IOException
+    {
+	final int maxPerRow = 8;
+
         if (_maxS2OrderFrame > 0) {
 	    _writer.write("<p><b>S2 Order Parameters</b></p>\n");
 	    _writer.write("<p>(number of values, entity assembly ID)</p>\n");

@@ -19,6 +19,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.27.2.2  2011/04/06 19:53:36  wenger
+// We now create the specific html files for the s2predicted visualizations.
+//
+// Revision 1.27.2.1  2011/04/06 18:48:26  wenger
+// We now create the s2predicted sessions from the template.
+//
+// Revision 1.27  2011/01/07 22:10:29  wenger
+// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
+//
 // Revision 1.26.2.1  2010/12/07 23:43:50  wenger
 // Merged s2d_multi_entry_br_0 thru s2d_multi_entry_br_1 to
 // s2d_multi_entry2_br.
@@ -80,7 +89,7 @@ public class S2DUtils
       TYPE_HVSC_CHEM_SHIFTS = 21, TYPE_SPARTA_DELTASHIFT = 22,
       TYPE_TORSION_ANGLE = 23, TYPE_RRTORSION_ANGLE = 24,
       TYPE_DIST_RESTR = 25, TYPE_RRDIST_RESTR = 26,
-      TYPE_HVSN_2_ENTRY = 27, TYPE_HVSC_2_ENTRY = 28;
+      TYPE_HVSN_2_ENTRY = 27, TYPE_HVSC_2_ENTRY = 28, TYPE_S2PRED = 29;
 
     //===================================================================
     // PUBLIC METHODS
@@ -493,6 +502,10 @@ TEMP*/
 
 	case S2DUtils.TYPE_RRDIST_RESTR:
 	    dataSuffix = S2DNames.RRDISTR_SUFFIX;
+	    break;
+
+	case S2DUtils.TYPE_S2PRED:
+	    dataSuffix = S2DNames.S2PRED_SUFFIX;
 	    break;
 
 	default:

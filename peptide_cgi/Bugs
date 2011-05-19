@@ -554,6 +554,10 @@ Num Date        Status  Description
 			(try 15209 to test). (wenger)
 			(Fixed by wenger, 11/24/10)
 
+119 5/11/11	OPEN	Setting do_csr to 2 without specifying a PDB ID only
+			processes the first PDB ID in the BMRB file, not all
+			of them (see test_s2p1). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

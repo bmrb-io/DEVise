@@ -21,6 +21,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.16.2  2011/05/11 20:53:31  wenger
+// Completed s2p tests and modified code so that they all work -- we do
+// the s2predict processing before the final ChemShiftRef processing, so
+// that PDB IDs found only from the s2predict output will get CSR processing
+// done.
+//
+// Revision 1.10.16.1  2011/04/26 21:46:55  wenger
+// Doing ChemShiftRef processing for s2 predicted vs. experimental is
+// mostly working (I'm going to use the ChemShiftRef output for secondary
+// structures).  (Still have to get a few cases working right.)
+//
+// Revision 1.10  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.9  2008/12/01 20:37:52  wenger
 // Merged s2d_bug_037_br_0 thru s2d_bug_037_br_2 to trunk.
 //
