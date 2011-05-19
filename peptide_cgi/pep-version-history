@@ -6,14 +6,6 @@ Peptide-CGI 12.1.0
 
 * Added predicted vs. experimental S2 order parameter visualization.
 
-
-TEMPTEMP -- was 12.0.1 ever released?  maybe merge these sections
-
-
-Peptide-CGI 12.0.1
-------------------
-(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
-
 * Minor cleanups of session templates.
 
 * Changed the legends for the simulated 1H-15N and simulated 1H-13C

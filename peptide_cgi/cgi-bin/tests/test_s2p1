@@ -51,8 +51,6 @@ set files = ( data_dir/15536ac1.dat \
 	data_dir/15536rl.dat \
 	data_dir/15536s2p1-1.dat \
 	data_dir/15536s2p3-1.dat \
-	data_dir/15536ss1.dat \
-	data_dir/15536ss3.dat \
 	data_dir/15536csr1_1.dat \
 	#TEMP data_dir/15536csr3_1.dat \
 	html_dir/15536/15536ac1.html \

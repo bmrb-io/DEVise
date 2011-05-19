@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.256  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.255  2011/05/14 18:04:15  wenger
 // Fixed minor typo in diagnostic output.
 //
@@ -4656,10 +4659,6 @@ public class S2DMain {
 	      _summary, entityAssemblyId);
 
 	    s2Pred.writeS2Pred();
-
-	    S2DSecStruct ss = new S2DSecStruct(_name, _longName,
-	      coordIndex, _dataDir, entityAssemblyId);
-	    ss.writeSecStruct();
 
 	} else {
 	    throw new S2DError("Illegal _s2PredLevel value: " +

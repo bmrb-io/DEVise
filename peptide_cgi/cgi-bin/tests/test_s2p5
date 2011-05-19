@@ -62,7 +62,6 @@ set files = ( data_dir/uvd/test_s2p5_outac1.dat \
 	data_dir/uvd/test_s2p5_outrc1.dat \
 	data_dir/uvd/test_s2p5_outrl.dat \
 	data_dir/uvd/test_s2p5_outs2p1-1.dat \
-	data_dir/uvd/test_s2p5_outss1.dat \
 	data_dir/uvd/test_s2p5_outt11.dat \
 	data_dir/uvd/test_s2p5_outt12.dat \
 	data_dir/uvd/test_s2p5_outt13.dat \
