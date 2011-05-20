@@ -81,8 +81,8 @@ if ($do_all != 0) {
   RunTest("test17");
   RunTest("test18");
   RunTest("test19");
-  RunTest("test22", "-noleech");
-  RunTest("test23", "-noleech");
+  #TEMP RunTest("test22", "-noleech");
+  #TEMP RunTest("test23", "-noleech");
   RunTest("test24");
   RunTest("test26");
   RunTest("test27");
@@ -195,8 +195,8 @@ if (($do_all != 0) or ($do_tar != 0)) {
   #TEMP? RunTest("test_tar8i");
   #TEMP? RunTest("test_tar8imv");
   #TEMP? RunTest("test_tar8imu");
-  RunTest("test_tar9");
-  RunTest("test_tar9i");
+  #TEMP RunTest("test_tar9");
+  #TEMP RunTest("test_tar9i");
   RunTest("test_tar10");
   RunTest("test_bug090");
 }
@@ -207,8 +207,8 @@ if (($do_all != 0) or ($do_dist != 0)) {
   #TEMP? RunTest("test_dist1u");
   #TEMP? RunTest("test_dist1i");
   #TEMP? RunTest("test_dist1imu");
-  RunTest("test_dist2i");
-  RunTest("test_dist2imu");
+  #TEMP RunTest("test_dist2i");
+  #TEMP RunTest("test_dist2imu");
   RunTest("test_dist3rgi");
   RunTest("test_dist3rri");
   RunTest("test_dist3rgimv");
@@ -234,6 +234,9 @@ if (($do_all != 0) or ($do_s2p != 0)) {
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 #TEMP -- 4141 has protein and DNA
+
+print "Warning: test22, test23, test_tar9, test_tar9i, test_dist2i\n";
+print "and test_dis2imu are temporarily disabled\n";
 
 print "\nTest_all result: ";
 print LOGFILE "Test_all result (";

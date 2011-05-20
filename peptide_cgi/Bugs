@@ -558,6 +558,10 @@ Num Date        Status  Description
 			processes the first PDB ID in the BMRB file, not all
 			of them (see test_s2p1). (wenger)
 
+120 5/20/11	OPEN	The following tests fail because of changes to the
+			BMRB entries: test22, test23, test_tar9, test_tar9i,
+			test_dist2i and test_dist2imu. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

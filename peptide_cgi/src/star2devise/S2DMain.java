@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.257  2011/05/19 20:50:12  wenger
+// Did some post-merge cleanups of the s2predict stuff.
+//
 // Revision 1.256  2011/05/19 19:46:09  wenger
 // Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
 //
@@ -476,7 +479,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.0x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.0x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
