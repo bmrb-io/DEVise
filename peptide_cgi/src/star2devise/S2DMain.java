@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.259  2011/05/20 20:41:08  wenger
+// Changed version to 12.1.0 for release; made notes about parts of the
+// testing doc that are no longer correct.
+//
 // Revision 1.258  2011/05/20 15:37:16  wenger
 // Added bug 120 and temporarily disabled test22, test23, test_tar9,
 // test_tar9i, test_dist2i and test_dis2imu.
@@ -483,7 +487,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.0";
+    public static final String PEP_CGI_VERSION = "12.1.0.1";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

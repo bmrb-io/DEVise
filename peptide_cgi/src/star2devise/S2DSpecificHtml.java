@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.23.2.1  2011/04/06 19:53:36  wenger
 // We now create the specific html files for the s2predicted visualizations.
 //
@@ -146,6 +149,22 @@ public class S2DSpecificHtml {
 
 	init(htmlDir, dataType, name, fullName, frameIndex1,
 	  frameIndex2, title, frameDetails);
+    }
+
+    //-------------------------------------------------------------------
+    // Constructor (for s2predict).
+    public S2DSpecificHtml(String htmlDir, int dataType, String name,
+      int coordIndex, int frameIndex, String title,
+      String frameDetails) throws S2DError
+    {
+        if (doDebugOutput(11)) {
+	    System.out.println("S2DSpecificHtml.S2DSpecificHtml(" +
+	      htmlDir + ", " + dataType + ", " + name + ", " +
+	      coordIndex + ", " + frameIndex + ")");
+	}
+
+	init(htmlDir, dataType, name, name, coordIndex,
+	  frameIndex, title, frameDetails);
     }
 
     //-------------------------------------------------------------------

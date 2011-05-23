@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.2  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.1.2.11  2011/05/13 19:33:28  wenger
 // Minor (hopefully final) cleanups.
 //
@@ -251,7 +254,7 @@ public class S2DS2Pred {
 	    if (_pdbId != null) {
 	        info += " and PDB " + _pdbId;
 	    }
-	    String title = "Experimental vs. predicted S2 values (" +
+	    String title = "S2 predicted vs. experimental values (" +
 	      "entity assembly " + _entityAssemblyId + ")";
             S2DSession.write(_sessionDir, S2DUtils.TYPE_S2PRED, _name,
 	      _name, _name, null, _coordIndex, _frameIndex, info, title,
@@ -262,7 +265,7 @@ public class S2DS2Pred {
 	    //
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), S2DUtils.TYPE_S2PRED, _name,
-	      _name, _coordIndex, _frameIndex, title, "");
+	      _coordIndex, _frameIndex, title, "");
 	    specHtml.write();
 
 	    //
