@@ -4477,6 +4477,9 @@ java.security.AccessControlException: access denied
 			session within the JS GUI (note: I've only seen
 			this on Linux within Firefox). (wenger)
 
+1019 5/24/11	OPEN	JS: BMRB IDs sometimes show up blank in drill-down
+			dialog in BMRB histogram sessions. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
