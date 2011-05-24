@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.260  2011/05/23 19:47:17  wenger
+// Added S2 predicted vs. experimental help page; fixed some minor problems
+// with the s2 predicted vs. experiemental html page.
+//
 // Revision 1.259  2011/05/20 20:41:08  wenger
 // Changed version to 12.1.0 for release; made notes about parts of the
 // testing doc that are no longer correct.
@@ -487,7 +491,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.0.1";
+    public static final String PEP_CGI_VERSION = "12.1.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

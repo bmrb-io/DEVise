@@ -235,7 +235,7 @@ if (($do_all != 0) or ($do_s2p != 0)) {
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)
 #TEMP -- 4141 has protein and DNA
 
-print "Warning: test22, test23, test_tar9, test_tar9i, test_dist2i\n";
+print "\nWARNING: test22, test23, test_tar9, test_tar9i, test_dist2i\n";
 print "and test_dis2imu are temporarily disabled\n";
 
 print "\nTest_all result: ";
