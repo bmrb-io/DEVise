@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.144  2011/04/21 15:34:17  wenger
+// Merged js_highlight_thread_fix_br_0 thru js_highlight_thread_fix_br_1
+// to trunk.
+//
 // Revision 1.143.2.1  2011/04/20 17:15:07  wenger
 // Changed the DEViseGenericTree.setSelection() method and the YLogGUI
 // p() and pn() methods to only actually update the GUI in the event
@@ -884,7 +888,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.5x2"/*TEMP*/);
+    public static final String VERSION = new String("5.13.5");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
