@@ -34,6 +34,7 @@ The following testing steps must be done:
 - View the following visualizations for the entry 4267 and MAKE SURE THEY
   ARE CORRECT:
     - Chemical Shift Delta
+    	- Follow the link to the tutorial videos and make sure it works.
     - Chemical Shift Index
     - Percent Assigned Atoms
     - Chemical shift distributions by amino acid
@@ -49,6 +50,8 @@ The following testing steps must be done:
       initial size/location)
         - Make sure that frame details/sample/sample conditions drill-
 	  down works.
+    	- Follow the link to the tutorial videos and make sure it works.
+	- Re-size the JavaScreen and make sure that works correctly.
     - S2 order parameters
 - Click the 'Force Reprocessing' button and make sure the summary page
   gets updated.
