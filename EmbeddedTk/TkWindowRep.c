@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.6  1997/09/19 16:18:50  beyer
+  Added support for opening a url in netscape from tcl (see BrowserOpenURL())
+
   Revision 1.5  1997/06/13 18:00:45  wenger
   Added standard file header.
 
@@ -31,7 +34,7 @@
 #endif
 
 #include <iostream.h>
-#include <strstream.h>
+#include <strstream>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
