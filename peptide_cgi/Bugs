@@ -562,6 +562,9 @@ Num Date        Status  Description
 			BMRB entries: test22, test23, test_tar9, test_tar9i,
 			test_dist2i and test_dist2imu. (wenger)
 
+121 5/24/11	OPEN	S2predict visualizations don't work at Florence
+			(maybe because of no ChemShiftRef?). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
