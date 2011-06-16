@@ -565,6 +565,25 @@ Num Date        Status  Description
 121 5/24/11	OPEN	S2predict visualizations don't work at Florence
 			(maybe because of no ChemShiftRef?). (wenger)
 
+122 6/16/11	OPEN	In the H-N and H-C simulated spectrum visualizations
+			it should be possible to eliminate the red highlights
+			by shrinking the cursor to zero size.  For some reason
+			this doesn't work. (markley/wenger)
+
+123 6/16/11	OPEN	In the distance and torsion angle restraint
+			visualizations, the "All" options for the various
+			selections should be something like "All by
+			Violation" instead of just "All" to make things
+			more clear. (elu/wenger)
+
+124 6/16/11	OPEN	Make colors more contrasty in two-entry visualizations.
+			(madings/wenger)
+
+125 6/16/11	OPEN	If you generate a two-entry visualization that
+			includes one visualization server data set, the
+			name string in the visualization can get too long.
+			(elu/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
