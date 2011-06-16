@@ -571,11 +571,12 @@ Num Date        Status  Description
 			this doesn't work. (markley/wenger)
 			(Fixed by wenger, 6/16/11.)
 
-123 6/16/11	OPEN	In the distance and torsion angle restraint
+123 6/16/11	FIXED	In the distance and restraint
 			visualizations, the "All" options for the various
 			selections should be something like "All by
 			Violation" instead of just "All" to make things
 			more clear. (elu/wenger)
+			(Fixed by wenger, 6/16/11.)
 
 124 6/16/11	OPEN	Make colors more contrasty in two-entry visualizations.
 			(madings/wenger)

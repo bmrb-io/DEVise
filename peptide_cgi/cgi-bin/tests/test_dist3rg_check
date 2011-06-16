@@ -79,9 +79,9 @@ set line = '^1 60 1_60 20 5 15 0 0 0 20 5 15 7 1 6 0 0 0 7 1 6 2 0 2 0 0 0 2 0 2
 source tests/check4line
 
 set file = "data_dir/15209distr-md1.dat"
-set line = '^EA 1	1	All	All	All	\$All_viol-all_ambig-all	0	0	0	Restraints per residue (All \[1\])'
+set line = '^EA 1	1	All by violation	All	All by ambiguity	All	All by distance	All	\$All_viol-all_ambig-all	0	0	0	Restraints per residue (All \[1\])'
 source tests/check4line
-set line = '^EA 1	1	All	All	Intra-residue	\$Intra-res_viol-all_ambig-all	0	0	1	Restraints per residue (Intra-residue \[1\])'
+set line = '^EA 1	1	All by violation	All	All by ambiguity	All	Intra-residue	Intra-residue	\$Intra-res_viol-all_ambig-all	0	0	1	Restraints per residue (Intra-residue \[1\])'
 source tests/check4line
-set line = '^EA 2	2	Non-violated	All	Intermolecular	\$Inter-mol_viol-no_ambig-all	2	0	5	Restraints per residue (Intermolecular non-violated \[2\])'
+set line = '^EA 2	2	Non-violated	Non-violated	All by ambiguity	All	Intermolecular	Intermolecular	\$Inter-mol_viol-no_ambig-all	2	0	5	Restraints per residue (Intermolecular non-violated \[2\])'
 source tests/check4line

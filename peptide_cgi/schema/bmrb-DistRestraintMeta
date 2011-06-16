@@ -13,9 +13,12 @@ whitespace '	'
 
 attr Entity_assembly_name string 10
 attr Entity_assembly_ID	int
-attr All_or_violated string 15
-attr All_or_ambiguous string 15
-attr Restraint_length_type string 15
+attr All_or_violated string 25
+attr All_or_violated_link string 15
+attr All_or_ambiguous string 25
+attr All_or_ambiguous_link string 15
+attr Restraint_length_type string 25
+attr Restraint_length_type_link string 15
 attr ChildViewYAttribute string 40
 attr Viol_opt_index int
 attr Ambig_opt_index int

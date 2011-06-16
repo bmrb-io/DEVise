@@ -8,6 +8,10 @@ Peptide-CGI 12.1.1
 now move the highlight cursor to a blank space to not highlight any
 amino acid (bug 122).
 
+* In the distance restraint visualizations selection views, "All" to
+"All by violation", "All by ambiguity", etc., to make the selections
+clearer (bug 123).
+
 * Fixed the links from the specific visualization pages to the tutorial
 video page.
 

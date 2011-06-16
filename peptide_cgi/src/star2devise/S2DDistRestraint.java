@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2010
+// (c) Copyright 2009-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2010/11/22 23:24:46  wenger
+// Merged violation_select2_br_0 thru violation_select2_br_1 to trunk,
+// including cleaning up a couple of leftover temporary comments.
+//
 // Revision 1.6.12.2  2010/11/17 20:16:08  wenger
 // Eliminated the 'doesCount' attribute from restraint data (this is
 // something that never got used in the session -- it was part of working
@@ -766,8 +770,10 @@ public class S2DDistRestraint extends S2DRestraint {
 	      _name + "\n");
 	    distWriter.write("# Schema: bmrb-DistRestraintMeta\n");
             distWriter.write("# Attributes: Entity_assembly_name; " +
-	      "Entity_assembly_ID; All_or_violated; All_or_ambiguous " +
-	      "Restraint_length_type; ChildViewYAttribute; " +
+	      "Entity_assembly_ID; All_or_violated; All_or_violated_link; " +
+	      "All_or_ambiguous; All_or_ambiguous_link " +
+	      "Restraint_length_type; Restraint_length_type_link; " +
+	      "ChildViewYAttribute; " +
 	      "Viol_opt_index; Ambig_opt_index; Length_opt_index; Title\n");
             distWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
@@ -813,8 +819,11 @@ public class S2DDistRestraint extends S2DRestraint {
                     distWriter.write(eAName + "\t" +
 		      eANum + "\t" +
 		      option._violOpt + "\t" +
+		      option._violOptLink + "\t" +
 		      option._ambigOpt + "\t" +
+		      option._ambigOptLink + "\t" +
 		      option._lengthOpt + "\t" +
+		      option._lengthOptLink + "\t" +
 		      option._yAttr + "\t" +
 		      option._violOptIndex + "\t" +
 		      option._ambigOptIndex + "\t" +
@@ -992,19 +1001,26 @@ public class S2DDistRestraint extends S2DRestraint {
     // all, intra-residue/etc/all).
     private class Option {
         public String _violOpt;
+        public String _violOptLink;
         public String _ambigOpt;
+        public String _ambigOptLink;
         public String _lengthOpt;
+        public String _lengthOptLink;
         public String _yAttr;
         public int _violOptIndex;
         public int _ambigOptIndex;
         public int _lengthOptIndex;
         public String _title; // not including entity assembly ID
-        Option(String violOpt, String ambigOpt, String lengthOpt,
+        Option(String violOpt, String violOptLink, String ambigOpt,
+	  String ambigOptLink, String lengthOpt, String lengthOptLink,
 	  String yAttr, int violOptIndex, int ambigOptIndex,
 	  int lengthOptIndex, String title) {
             _violOpt = violOpt;
+            _violOptLink = violOptLink;
             _ambigOpt = ambigOpt;
+            _ambigOptLink = ambigOptLink;
             _lengthOpt = lengthOpt;
+            _lengthOptLink = lengthOptLink;
             _yAttr = yAttr;
             _violOptIndex = violOptIndex;
             _ambigOptIndex = ambigOptIndex;
@@ -1026,20 +1042,24 @@ public class S2DDistRestraint extends S2DRestraint {
       throws S2DException
     {
 	String violatedStr = "";
+	String violatedStrLink = "";
 	String violatedAttr = "";
         switch (violated) {
         case VIOLATED_ALL:
-	    violatedStr = "All";
+	    violatedStr = "All by violation";
+	    violatedStrLink = "All";
 	    violatedAttr = "viol-all";
 	    break;
 
         case VIOLATED_YES:
 	    violatedStr = "Violated";
+	    violatedStrLink = "Violated";
 	    violatedAttr = "viol-yes";
 	    break;
 
         case VIOLATED_NO:
 	    violatedStr = "Non-violated";
+	    violatedStrLink = "Non-violated";
 	    violatedAttr = "viol-no";
 	    break;
 
@@ -1048,20 +1068,24 @@ public class S2DDistRestraint extends S2DRestraint {
 	}
 
 	String ambiguousStr = "";
+	String ambiguousStrLink = "";
 	String ambigAttr = "";
         switch (ambiguous) {
         case AMBIGUOUS_ALL:
-	    ambiguousStr = "All";
+	    ambiguousStr = "All by ambiguity";
+	    ambiguousStrLink = "All";
 	    ambigAttr = "ambig-all";
 	    break;
 
         case AMBIGUOUS_YES:
 	    ambiguousStr = "Ambiguous";
+	    ambiguousStrLink = "Ambiguous";
 	    ambigAttr = "ambig-yes";
 	    break;
 
         case AMBIGUOUS_NO:
 	    ambiguousStr = "Non-ambiguous";
+	    ambiguousStrLink = "Non-ambiguous";
 	    ambigAttr = "ambig-no";
 	    break;
 
@@ -1071,85 +1095,98 @@ public class S2DDistRestraint extends S2DRestraint {
 	
 	String attrName;
 	String length;
+	String lengthLink;
 	String title;
 
         //TEMP -- move some of this stuff into the Option constructor?
 	attrName = "$All";
 	attrName += "_" + violatedAttr + "_" + ambigAttr;
-	length = "All";
-	title = length;
+	length = "All by distance";
+	lengthLink = "All";
+	title = lengthLink;
 	if (violated != VIOLATED_ALL) {
 	    title += " " + violatedStr.toLowerCase();
 	}
 	if (ambiguous != AMBIGUOUS_ALL) {
 	    title += " " + ambiguousStr.toLowerCase();
 	}
-	options.add(new Option(violatedStr, ambiguousStr, length,
-	  attrName, violated, ambiguous, 0, title));
+	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+	  ambiguousStrLink, length, lengthLink, attrName, violated,
+	  ambiguous, 0, title));
 
 	attrName = "$Intra-res";
 	attrName += "_" + violatedAttr + "_" + ambigAttr;
 	length = "Intra-residue";
-	title = length;
+	lengthLink = "Intra-residue";
+	title = lengthLink;
 	if (violated != VIOLATED_ALL) {
 	    title += " " + violatedStr.toLowerCase();
 	}
 	if (ambiguous != AMBIGUOUS_ALL) {
 	    title += " " + ambiguousStr.toLowerCase();
 	}
-	options.add(new Option(violatedStr, ambiguousStr, length, attrName,
+	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+	  ambiguousStrLink, length, lengthLink, attrName,
 	  violated, ambiguous, 1, title));
 
 	attrName = "$Sequential";
 	attrName += "_" + violatedAttr + "_" + ambigAttr;
 	length = "Sequential";
-	title = length;
+	lengthLink = "Sequential";
+	title = lengthLink;
 	if (violated != VIOLATED_ALL) {
 	    title += " " + violatedStr.toLowerCase();
 	}
 	if (ambiguous != AMBIGUOUS_ALL) {
 	    title += " " + ambiguousStr.toLowerCase();
 	}
-	options.add(new Option(violatedStr, ambiguousStr, length, attrName,
+	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+	  ambiguousStrLink, length, lengthLink, attrName,
 	  violated, ambiguous, 2, title));
 
 	attrName = "$Medium";
 	attrName += "_" + violatedAttr + "_" + ambigAttr;
 	length = "Medium-range";
-	title = length;
+	lengthLink = "Medium-range";
+	title = lengthLink;
 	if (violated != VIOLATED_ALL) {
 	    title += " " + violatedStr.toLowerCase();
 	}
 	if (ambiguous != AMBIGUOUS_ALL) {
 	    title += " " + ambiguousStr.toLowerCase();
 	}
-	options.add(new Option(violatedStr, ambiguousStr, length, attrName,
+	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+	  ambiguousStrLink, length, lengthLink, attrName,
 	  violated, ambiguous, 3, title));
 
 	attrName = "$Long";
 	attrName += "_" + violatedAttr + "_" + ambigAttr;
 	length = "Long-range";
-	title = length;
+	lengthLink = "Long-range";
+	title = lengthLink;
 	if (violated != VIOLATED_ALL) {
 	    title += " " + violatedStr.toLowerCase();
 	}
 	if (ambiguous != AMBIGUOUS_ALL) {
 	    title += " " + ambiguousStr.toLowerCase();
 	}
-	options.add(new Option(violatedStr, ambiguousStr, length, attrName,
+	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+	  ambiguousStrLink, length, lengthLink, attrName,
 	  violated, ambiguous, 4, title));
 
 	attrName = "$Inter-mol";
 	attrName += "_" + violatedAttr + "_" + ambigAttr;
 	length = "Intermolecular";
-	title = length;
+	lengthLink = "Intermolecular";
+	title = lengthLink;
 	if (violated != VIOLATED_ALL) {
 	    title += " " + violatedStr.toLowerCase();
 	}
 	if (ambiguous != AMBIGUOUS_ALL) {
 	    title += " " + ambiguousStr.toLowerCase();
 	}
-	options.add(new Option(violatedStr, ambiguousStr, length, attrName,
+	options.add(new Option(violatedStr, violatedStrLink, ambiguousStr,
+	  ambiguousStrLink, length, lengthLink, attrName,
 	  violated, ambiguous, 5, title));
     }
 }
