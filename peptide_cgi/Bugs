@@ -565,10 +565,11 @@ Num Date        Status  Description
 121 5/24/11	OPEN	S2predict visualizations don't work at Florence
 			(maybe because of no ChemShiftRef?). (wenger)
 
-122 6/16/11	OPEN	In the H-N and H-C simulated spectrum visualizations
+122 6/16/11	FIXED	In the H-N and H-C simulated spectrum visualizations
 			it should be possible to eliminate the red highlights
 			by shrinking the cursor to zero size.  For some reason
 			this doesn't work. (markley/wenger)
+			(Fixed by wenger, 6/16/11.)
 
 123 6/16/11	OPEN	In the distance and torsion angle restraint
 			visualizations, the "All" options for the various

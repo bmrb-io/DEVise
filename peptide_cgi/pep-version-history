@@ -4,6 +4,10 @@ Peptide-CGI 12.1.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
 
+* In the 1H-15N and 1H-13C simulated spectrum visualizations, the user can
+now move the highlight cursor to a blank space to not highlight any
+amino acid (bug 122).
+
 * Fixed the links from the specific visualization pages to the tutorial
 video page.
 
