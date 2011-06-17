@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Jun 17 2011 14:54:34
+# file date: Jun 17 2011 15:18:51
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -771,9 +771,9 @@ DEVise setMappingColors {.4001rc1#View 3} {64} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {AcidName_vs_ResNum} .4001rc1 .4001rc1#AcidName_vs_ResNum {} 0.5 {19-$ResLabel} {} 27 14 0 0 16 {$ResCount} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {AcidName_vs_ResNum} .4001rc1 .4001rc1#AcidName_vs_ResNum {} 0.5 {19-$ResLabel} {} 43 14 0 0 16 {$ResCount} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4001rc1#AcidName_vs_ResNum} 1
-DEVise setMappingColors {.4001rc1#AcidName_vs_ResNum} {27} {1} {0}
+DEVise setMappingColors {.4001rc1#AcidName_vs_ResNum} {43} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -795,9 +795,9 @@ DEVise setMappingColors {.label#Label_text_vs_recId} {64} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 27 14 0 0 16 {"4001 H/N"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label {.label#Label_text_vs_recId 2} {} 0 0 {} 43 14 0 0 16 {"4001 H/N"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId 2} 1
-DEVise setMappingColors {.label#Label_text_vs_recId 2} {27} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_recId 2} {43} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -969,7 +969,7 @@ DEVise setAxisMultFact {View 14} {Y} 1
 # Put cursors into views and set cursor properties
 DEVise setCursorSrc {amino_select_cursor} {View 4}
 DEVise setCursorDst {amino_select_cursor} {View 3}
-DEVise color SetCursorColor {amino_select_cursor} #aa0055005500
+DEVise color SetCursorColor {amino_select_cursor} #ffffffffffff
 DEVise setCursorConstraints {amino_select_cursor} 0 1 0
 DEVise setCursorSaveSrcFilter {amino_select_cursor} 0 0
 DEVise setCursorKeepProp {amino_select_cursor} 0 0
@@ -1066,8 +1066,8 @@ DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
-DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
-DEVise insertViewHistory {View 1} {-9.915} {-128.07} {-6.505} {-106.78} 0
+DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
+DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 1} {-10.465} {-132.45} {-6.255} {-106.78} 0
@@ -1084,12 +1084,12 @@ DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} -25
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
-DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
-DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 2} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 2} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 2} {-9.915} {-128.07} {-6.505} {-106.78} 0
+DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
+DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 2} {-10.465} {-132.45} {-6.255} {-106.78} 0
@@ -1108,14 +1108,14 @@ DEVise insertViewHistory {View 6} {-1} {-1} {1} {1} 0
 
 DEVise clearViewHistory {View 9}
 DEVise insertViewHistory {View 9} {-9.915} {-128.07} {-6.505} {-106.78} 0
-DEVise insertViewHistory {View 9} {-9.915} {-128.07} {-6.505} {-106.78} 0
-DEVise insertViewHistory {View 9} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-108.79} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-108.79} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-108.79} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-108.79} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-108.79} 0
 DEVise insertViewHistory {View 9} {-9.915} {-128.07} {-6.505} {-106.78} 0
+DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
+DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 9} {-10.465} {-132.45} {-6.255} {-106.78} 0
@@ -1133,6 +1133,8 @@ DEVise insertViewHistory {View 10} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 10} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 10} {-9.915} {-128.07} {-6.505} {-106.78} 0
 DEVise insertViewHistory {View 10} {-9.915} {-128.07} {-6.505} {-106.78} 0
+DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0
+DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0
 DEVise insertViewHistory {View 10} {-10.465} {-132.45} {-6.255} {-106.78} 0

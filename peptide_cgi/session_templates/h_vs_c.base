@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Jun 16 2011 15:38:24
+# file date: Jun 17 2011 15:20:35
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -13,44 +13,71 @@ $Id$}
 DEVise loadStringSpace $DEVISE_SESSION/bmrb/amino.str
 
 # Load color palette
-DEVise color SessionPalette {#000000000000 black
-#000000008b00 DarkBlue
-#00000000cd00 MediumBlue
-#00000000ff00 blue
-#000064000000 DarkGreen
-#00008b000000 green4
-#0000bf00ff00 DeepSkyBlue1
-#0000ff000000 green
-#0000ff00ff00 cyan
-#190019007000 MidnightBlue
-#1e009000ff00 DodgerBlue
-#1f001f001f00 gray12
-#22008b002200 ForestGreen
-#400040004000 gray25
-#610061006100 gray38
-#7f007f007f00 gray50
-#8b0000000000 DarkRed
-#8b0045001300 SaddleBrown
-#99003200cc00 DarkOrchid
-#a100a100a100 gray63
-#b20022002200 firebrick
-#b4005200cd00 MediumOrchid3
-#bf00bf00bf00 gray75
-#c000ff003e00 OliveDrab
-#e000e000e000 gray88
-#ee00ad000e00 Goldenrod2
-#ee00e800aa00 PaleGoldenrod
-#f000e6008c00 khaki
-#f500de00b300 wheat
-#fa00fa00d200 LightGoldenrodYellow
-#fd00f500e600 OldLace
-#ff0000000000 red
-#ff000000ff00 magenta
-#ff007f000000 DarkOrange1
-#ff00a5000000 orange
-#ff00d7000000 gold
-#ff00ff000000 yellow
-#ffffffffffff white
+DEVise color SessionPalette {#000000000000 
+#000000005500 
+#00000000aa00 
+#00000000ff00 
+#000055000000 
+#000055005500 
+#00005500aa00 
+#00005500ff00 
+#0000aa000000 
+#0000aa005500 
+#0000aa00aa00 
+#0000aa00ff00 
+#0000ff000000 
+#0000ff005500 
+#0000ff00aa00 
+#0000ff00ff00 
+#550000000000 
+#550000005500 
+#55000000aa00 
+#55000000ff00 
+#550055000000 
+#550055005500 
+#55005500aa00 
+#55005500ff00 
+#5500aa000000 
+#5500aa005500 
+#5500aa00aa00 
+#5500aa00ff00 
+#5500ff000000 
+#5500ff005500 
+#5500ff00aa00 
+#5500ff00ff00 
+#aa0000000000 
+#aa0000005500 
+#aa000000aa00 
+#aa000000ff00 
+#aa0055000000 
+#aa0055005500 
+#aa005500aa00 
+#aa005500ff00 
+#aa00aa000000 
+#aa00aa005500 
+#aa00aa00aa00 
+#aa00aa00ff00 
+#aa00ff000000 
+#aa00ff005500 
+#aa00ff00aa00 
+#aa00ff00ff00 
+#ff0000000000 
+#ff0000005500 
+#ff000000aa00 
+#ff000000ff00 
+#ff0055000000 
+#ff0055005500 
+#ff005500aa00 
+#ff005500ff00 
+#ff00aa000000 
+#ff00aa005500 
+#ff00aa00aa00 
+#ff00aa00ff00 
+#ff00ff000000 
+#ff00ff005500 
+#ff00ff00aa00 
+#ff00ff00ff00 
+#ffffffffffff 
 }
 
 # Set color mode (modulus or truncation)
@@ -86,7 +113,7 @@ DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
 DEVise setViewGDS {View 3} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 3} 0 1 0 "" 1 " " 1
-DEVise setHistogram {View 3} -0.5 19.5 10
+DEVise setHistogram {View 3} -0.5 20.5 10
 DEVise setCountMapping {View 3} 0 {} {} 0
 DEVise viewSetIsHighlight {View 3} 0
 DEVise setXAxisDateFormat {View 3} {%b %d %Y %T}
@@ -177,7 +204,7 @@ DEVise viewSetHorPan {View 5} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 5} 1 0.500000 1.000000
 DEVise setViewGDS {View 5} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 5} 0 1 0 "" 1 " " 1
-DEVise setHistogram {View 5} -0.5 19.5 10
+DEVise setHistogram {View 5} -0.5 20.5 10
 DEVise setCountMapping {View 5} 0 {} {} 0
 DEVise viewSetIsHighlight {View 5} 0
 DEVise setXAxisDateFormat {View 5} {%b %d %Y %T}
@@ -203,7 +230,7 @@ DEVise setViewSaveFilter {View 5} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 1} -7.925000 0.685000 -134.600006 -11.300000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 1} -7.925000 0.685000 -134.600006 -11.300000 64 0 0 37 0 37
 DEVise setLabel {View 1} 1 16 {C chem shift vs. H chem shift}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -221,7 +248,7 @@ DEVise viewSetHorPan {View 1} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 1} 1 0.500000 1.000000
 DEVise setViewGDS {View 1} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 1} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 1} -134.6 -23.2 10
+DEVise setHistogram {View 1} -134.6 -11.3 10
 DEVise setCountMapping {View 1} 0 {} {} 0
 DEVise viewSetIsHighlight {View 1} 0
 DEVise setXAxisDateFormat {View 1} {%b %d %Y %T}
@@ -271,7 +298,7 @@ DEVise viewSetHorPan {View 2} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 2} 1 0.500000 1.000000
 DEVise setViewGDS {View 2} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 2} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 2} -134.6 -23.2 10
+DEVise setHistogram {View 2} -134.6 -11.3 10
 DEVise setCountMapping {View 2} 0 {} {} 0
 DEVise viewSetIsHighlight {View 2} 0
 DEVise setXAxisDateFormat {View 2} {%b %d %Y %T}
@@ -297,7 +324,7 @@ DEVise setViewSaveFilter {View 2} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 0 13 0 37 0 37
+DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 0 42 0 37 0 37
 DEVise setLabel {View 6} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 6} 00000000
 DEVise setViewDimensions {View 6} 2
@@ -348,15 +375,15 @@ DEVise createMappingClass {y_vs_x}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Hshift_vs_Cshift} .4267hc1 .4267hc1#Hshift_vs_Cshift {} {-$Hshift} {-$Cshift} {} 10 0.5 -1 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Hshift_vs_Cshift} .4267hc1 .4267hc1#Hshift_vs_Cshift {} {-$Hshift} {-$Cshift} {} 43 0.5 -1 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hc1#Hshift_vs_Cshift} 1
-DEVise setMappingColors {.4267hc1#Hshift_vs_Cshift} {10} {3} {0}
+DEVise setMappingColors {.4267hc1#Hshift_vs_Cshift} {43} {3} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Hshift_vs_Cshift} .4267hc1 {.4267hc1#Hshift_vs_Cshift 2} {} {-$Hshift} {-$Cshift} {} 31 0.3 0 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Hshift_vs_Cshift} .4267hc1 {.4267hc1#Hshift_vs_Cshift 2} {} {-$Hshift} {-$Cshift} {} 48 0.3 0 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hc1#Hshift_vs_Cshift 2} 1
-DEVise setMappingColors {.4267hc1#Hshift_vs_Cshift 2} {31} {31} {0}
+DEVise setMappingColors {.4267hc1#Hshift_vs_Cshift 2} {48} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -366,21 +393,21 @@ DEVise setMappingColors {.4267hc1#AcidName_vs_ResNum 2} {37} {37} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 {.4267rc1#View 3} {} 0 {19-$ResLabel} {} 37 14 0 0 16 {$ResLabel} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 {.4267rc1#View 3} {} 0 {19-$ResLabel} {} 64 14 0 0 16 {$ResLabel} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267rc1#View 3} 1
-DEVise setMappingColors {.4267rc1#View 3} {37} {1} {0}
+DEVise setMappingColors {.4267rc1#View 3} {64} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 .4267rc1#AcidName_vs_ResNum {} 1 {19-$ResLabel} {} 37 14 0 0 16 {$ResCount} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 .4267rc1#AcidName_vs_ResNum {} 1 {19-$ResLabel} {} 64 14 0 0 16 {$ResCount} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267rc1#AcidName_vs_ResNum} 1
-DEVise setMappingColors {.4267rc1#AcidName_vs_ResNum} {37} {1} {0}
+DEVise setMappingColors {.4267rc1#AcidName_vs_ResNum} {64} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 64 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
-DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_recId} {64} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -397,10 +424,10 @@ DEVise setMappingColors {.h_vs_n_legend#y_vs_x 2} {$color_norm} {0} {0}
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
-DEVise create {window} {TileLayout} DEViseWn0 0.348438 0.289815 0.500000 0.531481 0 0
-DEVise create {window} {TileLayout} DEViseWn1 0.267188 0.289815 0.078125 0.531481 0 0
-DEVise create {window} {TileLayout} DEViseWn2 0.604167 0.046296 0.109375 0.191667 1 0
-DEVise create {window} {TileLayout} DEViseWn3 0.267188 0.262037 0.579167 0.025000 0 0
+DEVise create {window} {TileLayout} DEViseWn0 0.348438 0.289815 0.500000 0.530556 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.267188 0.289815 0.078125 0.530556 0 0
+DEVise create {window} {TileLayout} DEViseWn2 0.604167 0.044444 0.109375 0.191667 1 0
+DEVise create {window} {TileLayout} DEViseWn3 0.267188 0.260185 0.579167 0.025000 0 0
 
 # Set up window layouts
 
@@ -549,6 +576,8 @@ DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-7.925} {-134.6} {0.305} {-23.2} 0
 DEVise insertViewHistory {View 1} {-7.925} {-134.6} {0.305} {-23.2} 0
 DEVise insertViewHistory {View 1} {-7.925} {-134.6} {0.685} {-11.3} 0
+DEVise insertViewHistory {View 1} {-7.925} {-134.6} {0.685} {-11.3} 0
+DEVise insertViewHistory {View 1} {-7.925} {-134.6} {0.685} {-11.3} 0
 
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
@@ -565,6 +594,8 @@ DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-7.925} {-134.6} {0.305} {-23.2} 0
 DEVise insertViewHistory {View 2} {-7.925} {-134.6} {0.305} {-23.2} 0
+DEVise insertViewHistory {View 2} {-7.925} {-134.6} {0.685} {-11.3} 0
+DEVise insertViewHistory {View 2} {-7.925} {-134.6} {0.685} {-11.3} 0
 DEVise insertViewHistory {View 2} {-7.925} {-134.6} {0.685} {-11.3} 0
 
 DEVise clearViewHistory {View 6}

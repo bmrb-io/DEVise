@@ -578,8 +578,9 @@ Num Date        Status  Description
 			more clear. (elu/wenger)
 			(Fixed by wenger, 6/16/11.)
 
-124 6/16/11	OPEN	Make colors more contrasty in two-entry visualizations.
+124 6/16/11	FIXED	Make colors more contrasty in two-entry visualizations.
 			(madings/wenger)
+			(Fixed by wenger, 6/17/11.)
 
 125 6/16/11	OPEN	If you generate a two-entry visualization that
 			includes one visualization server data set, the

@@ -12,7 +12,8 @@ amino acid (bug 122).
 "All by violation", "All by ambiguity", etc., to make the selections
 clearer (bug 123).
 
-TEMP -- fixed bug 124
+* Improved colors in 1H-15N and 1H-13C simulated spectrum visualizations
+(bug 124).
 
 * Fixed the links from the specific visualization pages to the tutorial
 video page.
