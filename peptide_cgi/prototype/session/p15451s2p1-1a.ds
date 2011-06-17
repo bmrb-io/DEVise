@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Jun 13 2011 15:37:22
+# file date: Jun 17 2011 17:54:25
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -208,7 +208,7 @@ DEVise setViewSaveFilter {ViewUnselectedDataChild 2} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} {ViewDataValueSelectChild 2} 4.900000 5.100000 0.000000 1.000000 37 0 0 37 0 37
+DEVise create {view} {SortedX} {ViewDataValueSelectChild 2} 4.900000 5.100000 0.400000 0.600000 37 0 0 37 0 37
 DEVise setLabel {ViewDataValueSelectChild 2} 0 12 {HA delta chem shift [1]}
 DEVise setViewStatistics {ViewDataValueSelectChild 2} 00000000
 DEVise setViewDimensions {ViewDataValueSelectChild 2} 2
@@ -226,7 +226,7 @@ DEVise viewSetHorPan {ViewDataValueSelectChild 2} 1 0.500000 1.000000
 DEVise viewSetVerPan {ViewDataValueSelectChild 2} 1 0.500000 1.000000
 DEVise setViewGDS {ViewDataValueSelectChild 2} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {ViewDataValueSelectChild 2} 0 1 0 "" 1 " " 1
-DEVise setHistogram {ViewDataValueSelectChild 2} 0 1 10
+DEVise setHistogram {ViewDataValueSelectChild 2} 0.4 0.5 10
 DEVise setCountMapping {ViewDataValueSelectChild 2} 0 {} {} 0
 DEVise viewSetIsHighlight {ViewDataValueSelectChild 2} 0
 DEVise setXAxisDateFormat {ViewDataValueSelectChild 2} {%b %d %Y %T}
@@ -883,7 +883,7 @@ DEVise setMappingColors {.15451s2p1-1#ViewDataValueSelectChild} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .15451s2p1-1 {.15451s2p1-1#HA_Csi_vs_SeqNum 2} {} {$Residue_seq_code} 0.5 {} 31 0.9 0 0 15 {"/p/devise/demo/session/SearchEngine/ShowURL.tcl"} 3 {"http://condor.bmrb.wisc.edu/bbee/video/2JUO.mpg"} {"View edited dynamics movie"} {$Residue_seq_code} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15451s2p1-1 {.15451s2p1-1#HA_Csi_vs_SeqNum 2} {} {$Residue_seq_code} 0.5 {} 31 0.18 0 0 15 {"/p/devise/demo/session/SearchEngine/ShowURL.tcl"} 3 {"http://condor.bmrb.wisc.edu/bbee/video/2JUO.mpg"} {"View edited dynamics movie"} {$Residue_seq_code} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.15451s2p1-1#HA_Csi_vs_SeqNum 2} 1
 DEVise setMappingColors {.15451s2p1-1#HA_Csi_vs_SeqNum 2} {31} {31} {0}
 
@@ -1262,6 +1262,9 @@ DEVise insertViewHistory {ViewUnselectedDataChild 2} {1.5} {0.22167} {89.5} {1} 
 
 DEVise clearViewHistory {ViewDataValueSelectChild 2}
 DEVise insertViewHistory {ViewDataValueSelectChild 2} {4.9} {0} {5.1} {1} 0
+DEVise insertViewHistory {ViewDataValueSelectChild 2} {4.9} {0.45} {5.1} {0.55} 0
+DEVise insertViewHistory {ViewDataValueSelectChild 2} {4.9} {0.4} {5.1} {0.5} 0
+DEVise insertViewHistory {ViewDataValueSelectChild 2} {4.9} {0.4} {5.1} {0.6} 0
 
 DEVise clearViewHistory {View3DMain}
 DEVise insertViewHistory {View3DMain} {35.592} {-95.395} {66.35} {-67.827} 0
