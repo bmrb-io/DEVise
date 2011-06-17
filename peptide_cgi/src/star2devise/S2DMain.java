@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.262  2011/06/16 23:30:56  wenger
+// Fixed Peptide-CGI bug 123 (change "All" to "All by violation", etc., in
+// distance restraint selection views).
+//
 // Revision 1.261  2011/05/24 15:51:06  wenger
 // Changed version to 12.1.1, added version history section, made disabled
 // test warning more prominent in test_all.
@@ -495,7 +499,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
