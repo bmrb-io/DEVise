@@ -591,6 +591,9 @@ Num Date        Status  Description
 			view of torsion angle restraint visualizations.
 			(wenger)
 
+127 6/23/11	OPEN	Print mode colors don't work right for s2predict
+			visualizations. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
