@@ -587,6 +587,10 @@ Num Date        Status  Description
 			name string in the visualization can get too long.
 			(elu/wenger)
 
+126 6/23/11	OPEN	Some angle names get cut off in the data select
+			view of torsion angle restraint visualizations.
+			(wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

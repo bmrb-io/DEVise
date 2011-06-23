@@ -697,6 +697,16 @@ Num Date        Status  Pri     Description
 				noting the difference between red and
 				yellow data points. (wenger)
 
+157 6/23/11	OPEN	3	In two-entry visualizations, add a connection
+				between the dots representing the same two
+				atoms in the two entries (if the entries
+				correspond closely enough). (hongyang/wenger)
+
+158 6/23/11	OPEN	3	In two-entry visualizations, add some kind
+				of selection on the differences between
+				the same two atoms in the different entries
+				(see also #157). (hongyang/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
