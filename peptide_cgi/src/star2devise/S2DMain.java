@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.263  2011/06/17 20:02:18  wenger
+// Partway through fixing bug 124 (simulated spectrum colors) -- working
+// on H vs. N 2-entry vis.  At least close, but I may want to change things
+// just a tad again.
+//
 // Revision 1.262  2011/06/16 23:30:56  wenger
 // Fixed Peptide-CGI bug 123 (change "All" to "All by violation", etc., in
 // distance restraint selection views).
@@ -499,7 +504,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.1x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.1x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

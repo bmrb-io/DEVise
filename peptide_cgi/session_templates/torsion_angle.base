@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Nov 24 2010 11:33:37
+# file date: Jun 24 2011 10:53:46
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -250,7 +250,7 @@ DEVise setViewSaveFilter {ViewDataValueSelectChild} 0 0
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} ViewViolationUnselectedDataChild 0.500000 32.500000 -180.000000 180.000000 37 0 0 37 0 37
-DEVise setLabel {ViewViolationUnselectedDataChild} 1 16 {Phi angle violation}
+DEVise setLabel {ViewViolationUnselectedDataChild} 1 16 {Phi angle violation [1]}
 DEVise setViewStatistics {ViewViolationUnselectedDataChild} 00000000
 DEVise setViewDimensions {ViewViolationUnselectedDataChild} 2
 DEVise setViewSolid3D {ViewViolationUnselectedDataChild} 2
@@ -297,7 +297,7 @@ DEVise setViewSaveFilter {ViewViolationUnselectedDataChild} 0 0
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} ViewViolationSelectedDataChild 0.500000 32.500000 -180.000000 180.000000 37 0 0 37 0 37
-DEVise setLabel {ViewViolationSelectedDataChild} 1 16 {Phi angle violation}
+DEVise setLabel {ViewViolationSelectedDataChild} 1 16 {Phi angle violation [1]}
 DEVise setViewStatistics {ViewViolationSelectedDataChild} 00000000
 DEVise setViewDimensions {ViewViolationSelectedDataChild} 2
 DEVise setViewSolid3D {ViewViolationSelectedDataChild} 2
@@ -341,7 +341,7 @@ DEVise setViewSaveFilter {ViewViolationSelectedDataChild} 0 0
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
 DEVise create {view} {SortedX} ViewViolationDataDotsChild 0.500000 32.500000 -180.000000 180.000000 37 0 0 37 0 37
-DEVise setLabel {ViewViolationDataDotsChild} 1 16 {Phi angle violation}
+DEVise setLabel {ViewViolationDataDotsChild} 1 16 {Phi angle violation [1]}
 DEVise setViewStatistics {ViewViolationDataDotsChild} 00000000
 DEVise setViewDimensions {ViewViolationDataDotsChild} 2
 DEVise setViewSolid3D {ViewViolationDataDotsChild} 2
@@ -962,37 +962,37 @@ DEVise setMappingColors {.4020ac1#Atom_coord_y_vs_Atom_coord_x} {$Atom_type} {$A
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4020ac1 {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2} {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} 7 0.5 0 0 4 1 1 {$Atom_number} {$Atom_name} {} {$Residue_seq_code} {$Residue_label} {$Atom_type} {$Struct_type} {} {} {} {} {$Entity_assembly_ID} {$Atom_ID}
+DEVise create {mapping} {Atom_coord_y_vs_Atom_coord_x} .4020ac1 {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2} {} {$Atom_coord_x} {$Atom_coord_y} {$Atom_coord_z} {$Atom_type} 0.5 0 0 4 1 1 {$Atom_number} {$Atom_name} {} {$Residue_seq_code} {$Residue_label} {$Atom_type} {$Struct_type} {} {} {} {} {$Entity_assembly_ID} {$Atom_ID}
 DEVise setPixelWidth {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2} 1
 DEVise setMappingColors {.4020ac1#Atom_coord_y_vs_Atom_coord_x 2} {7} {$Atom_type} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Residue_seq_code_vs_recId} .4020rl .4020rl#ViewDataXControl {} {$Residue_seq_code} 0 {} 36 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
+DEVise create {mapping} {Residue_seq_code_vs_recId} .4020rl .4020rl#ViewDataXControl {} {$Residue_seq_code} 0 {} 2 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
 DEVise setPixelWidth {.4020rl#ViewDataXControl} 1
-DEVise setMappingColors {.4020rl#ViewDataXControl} {36} {36} {0}
+DEVise setMappingColors {.4020rl#ViewDataXControl} {36} {2} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4020tar-md1 .4020tar-md1#name_vs_recId {} 0 {-$recId} {} 36 0.020 0 0 16 {$name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {name_vs_recId} .4020tar-md1 .4020tar-md1#name_vs_recId {} 0 {-$recId} {} 1 0.020 0 0 16 {$name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4020tar-md1#name_vs_recId} 1
 DEVise setMappingColors {.4020tar-md1#name_vs_recId} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 2} {} 0 {-$recId} {} 0 0.98 0 0 17 {$ViewDataDotsChild} 1 1 {} {"Data Pile"} {} {} {} {} {} {$name} {} {} {} {}
+DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 2} {} 0 {-$recId} {} 37 0.98 0 0 17 {$ViewDataDotsChild} 1 1 {} {"Data Pile"} {} {} {} {} {} {$name} {} {} {} {}
 DEVise setPixelWidth {.4020tar-md1#name_vs_recId 2} 1
 DEVise setMappingColors {.4020tar-md1#name_vs_recId 2} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 3} {} 0 {-$recId} {} 0 0.98 0 0 17 {$ViewSelectedDataChild} 1 1 {} {"Data Pile"} {} {} {} {} {} {$name} {} {} {} {}
+DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 3} {} 0 {-$recId} {} 37 0.98 0 0 17 {$ViewSelectedDataChild} 1 1 {} {"Data Pile"} {} {} {} {} {} {$name} {} {} {} {}
 DEVise setPixelWidth {.4020tar-md1#name_vs_recId 3} 1
 DEVise setMappingColors {.4020tar-md1#name_vs_recId 3} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 4} {} 0 {-$recId} {} 0 0.98 0 0 17 {$ViewUnselectedDataChild} 1 1 {} {"Data Pile"} {} {} {} {} {} {$name} {} {} {} {$angle_type}
+DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 4} {} 0 {-$recId} {} 37 0.98 0 0 17 {$ViewUnselectedDataChild} 1 1 {} {"Data Pile"} {} {} {} {} {} {$name} {} {} {} {$angle_type}
 DEVise setPixelWidth {.4020tar-md1#name_vs_recId 4} 1
 DEVise setMappingColors {.4020tar-md1#name_vs_recId 4} {0} {37} {37}
 
@@ -1004,21 +1004,21 @@ DEVise setMappingColors {.4020tar-md1#name_vs_recId 5} {37} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 7} {} 0 {-$Entity_assembly_ID} {} 36 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 7} {} 0 {-$Entity_assembly_ID} {} 1 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4020tar-md1#name_vs_recId 7} 1
 DEVise setMappingColors {.4020tar-md1#name_vs_recId 7} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 8} {} 0 {-$Entity_assembly_ID} {} 36 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
+DEVise create {mapping} {name_vs_recId} .4020tar-md1 {.4020tar-md1#name_vs_recId 8} {} 0 {-$Entity_assembly_ID} {} 1 0.020 0 0 16 {$Entity_assembly_name} {} 0 2 {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
 DEVise setPixelWidth {.4020tar-md1#name_vs_recId 8} 1
 DEVise setMappingColors {.4020tar-md1#name_vs_recId 8} {36} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020tar1 .4020ta#ViewAngleUnselectedDataChild {} {$Residue_seq_code} {$Torsion_angle_upper_bound} {} 35 1 0 0 8 0.2 {$averageValue} {$Torsion_angle_lower_bound} {} {} 1 {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020tar1 .4020ta#ViewAngleUnselectedDataChild {} {$Residue_seq_code} {$Torsion_angle_upper_bound} {} 33 1 0 0 8 0.2 {$averageValue} {$Torsion_angle_lower_bound} {} {} 1 {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
 DEVise setPixelWidth {.4020ta#ViewAngleUnselectedDataChild} 1
-DEVise setMappingColors {.4020ta#ViewAngleUnselectedDataChild} {35} {35} {0}
+DEVise setMappingColors {.4020ta#ViewAngleUnselectedDataChild} {35} {33} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1028,9 +1028,9 @@ DEVise setMappingColors {.4020ta#ViewDataValueSelectChild} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020tar1 .4020ta#ViewAngleSelectedDataChild {} {$Residue_seq_code} {$Torsion_angle_upper_bound} {} 7 1 0 0 8 0.2 {$averageValue} {$Torsion_angle_lower_bound} {} {} 1 {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020tar1 .4020ta#ViewAngleSelectedDataChild {} {$Residue_seq_code} {$Torsion_angle_upper_bound} {} 5 1 0 0 8 0.2 {$averageValue} {$Torsion_angle_lower_bound} {} {} 1 {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
 DEVise setPixelWidth {.4020ta#ViewAngleSelectedDataChild} 1
-DEVise setMappingColors {.4020ta#ViewAngleSelectedDataChild} {7} {7} {0}
+DEVise setMappingColors {.4020ta#ViewAngleSelectedDataChild} {7} {5} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1040,15 +1040,15 @@ DEVise setMappingColors {.4020ta#ViewAngleDataDotsChild} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020tar1 .4020tar1#HA_Csi_vs_SeqNum {} {$Residue_seq_code} {$maxViolation} {} 35 1 0 0 2 0.2 {} {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020tar1 .4020tar1#HA_Csi_vs_SeqNum {} {$Residue_seq_code} {$maxViolation} {} 25 1 0 0 2 0.2 {} {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
 DEVise setPixelWidth {.4020tar1#HA_Csi_vs_SeqNum} 1
-DEVise setMappingColors {.4020tar1#HA_Csi_vs_SeqNum} {35} {35} {0}
+DEVise setMappingColors {.4020tar1#HA_Csi_vs_SeqNum} {35} {25} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020tar1 {.4020tar1#HA_Csi_vs_SeqNum 2} {} {$Residue_seq_code} {$maxViolation} {} 7 1 0 0 2 0.2 {} {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .4020tar1 {.4020tar1#HA_Csi_vs_SeqNum 2} {} {$Residue_seq_code} {$maxViolation} {} 5 1 0 0 2 0.2 {} {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {$angleType}
 DEVise setPixelWidth {.4020tar1#HA_Csi_vs_SeqNum 2} 1
-DEVise setMappingColors {.4020tar1#HA_Csi_vs_SeqNum 2} {7} {7} {0}
+DEVise setMappingColors {.4020tar1#HA_Csi_vs_SeqNum 2} {7} {5} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1064,19 +1064,19 @@ DEVise setMappingColors {.4020tar1#HA_Csi_vs_SeqNum 4} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 0 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {color_str_vs_recId} .pistachio_at_legend .pistachio_at_legend#color_str_vs_recId {} {$recId} 0 {} {$color_str} 0.02 0 0 16 {$color_str} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {color_str_vs_recId} .pistachio_at_legend .pistachio_at_legend#color_str_vs_recId {} {$recId} 0 {} 0 0.02 0 0 16 {$color_str} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.pistachio_at_legend#color_str_vs_recId} 1
 DEVise setMappingColors {.pistachio_at_legend#color_str_vs_recId} {$color_str} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Entity_assembly_ID_vs_recId} .4020tar-md1 .4020tar-md1#Entity_assembly_ID_vs_recId {} 0 {-$recId} {} 17 0.8 0 0 17 {"ViewDataScrollFixChild"} 1 1 {} {} {} {} {} {} {} {$name} {} {} {} {}
+DEVise create {mapping} {Entity_assembly_ID_vs_recId} .4020tar-md1 .4020tar-md1#Entity_assembly_ID_vs_recId {} 0 {-$recId} {} 0 0.8 0 0 17 {"ViewDataScrollFixChild"} 1 1 {} {} {} {} {} {} {} {$name} {} {} {} {}
 DEVise setPixelWidth {.4020tar-md1#Entity_assembly_ID_vs_recId} 1
 DEVise setMappingColors {.4020tar-md1#Entity_assembly_ID_vs_recId} {17} {0} {0}
 
@@ -1090,8 +1090,8 @@ DEVise setMappingColors {.4020ta#ViewDataScrollFixChild} {35} {35} {0}
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
 DEVise create {window} {TileLayout} DEViseWn0 0.156250 0.218519 0.541146 0.500926 0 0
-DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.343519 0.140625 0.370370 0 0
-DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.720370 0.684896 0.126852 0 0
+DEVise create {window} {TileLayout} DEViseWn7 0.012500 0.343519 0.140625 0.368519 0 0
+DEVise create {window} {TileLayout} DEViseWn9 0.012500 0.718519 0.684896 0.126852 0 0
 DEVise create {window} {TileLayout} DEViseWn8 0.012500 0.853704 0.684896 0.018519 0 0
 DEVise create {window} {TileLayout} DEViseWn11 0.847917 0.780556 0.085417 0.118519 1 0
 DEVise create {window} {TileLayout} DEViseWn10 0.012500 0.189815 0.684896 0.025926 0 0
@@ -1424,23 +1424,38 @@ DEVise setPileStackState {DEViseWn5} 1
 
 DEVise clearViewHistory {ViewAngleUnselectedDataChild}
 DEVise insertViewHistory {ViewAngleUnselectedDataChild} {0.5} {-180} {32.5} {180} -1
+DEVise insertViewHistory {ViewAngleUnselectedDataChild} {0.5} {0} {32.5} {10.11} 0
+DEVise insertViewHistory {ViewAngleUnselectedDataChild} {0.5} {-180} {32.5} {180} 0
 
 DEVise clearViewHistory {ViewAngleSelectedDataChild}
+DEVise insertViewHistory {ViewAngleSelectedDataChild} {0.5} {-180} {32.5} {180} 0
+DEVise insertViewHistory {ViewAngleSelectedDataChild} {0.5} {0} {32.5} {10.11} 0
 DEVise insertViewHistory {ViewAngleSelectedDataChild} {0.5} {-180} {32.5} {180} 0
 
 DEVise clearViewHistory {ViewAngleDataDotsChild}
 DEVise insertViewHistory {ViewAngleDataDotsChild} {0.5} {-180} {32.5} {180} 0
+DEVise insertViewHistory {ViewAngleDataDotsChild} {0.5} {0} {32.5} {10.11} 0
+DEVise insertViewHistory {ViewAngleDataDotsChild} {0.5} {-180} {32.5} {180} 0
 
 DEVise clearViewHistory {ViewDataValueSelectChild}
+DEVise insertViewHistory {ViewDataValueSelectChild} {8.5} {-90} {24.5} {90} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {8.5} {0} {24.5} {10.11} 0
+DEVise insertViewHistory {ViewDataValueSelectChild} {8.5} {2.5275} {24.5} {7.5825} 0
 DEVise insertViewHistory {ViewDataValueSelectChild} {8.5} {-90} {24.5} {90} 0
 
 DEVise clearViewHistory {ViewViolationUnselectedDataChild}
 DEVise insertViewHistory {ViewViolationUnselectedDataChild} {0.5} {-180} {32.5} {180} 0
+DEVise insertViewHistory {ViewViolationUnselectedDataChild} {0.5} {0} {32.5} {10.11} 0
+DEVise insertViewHistory {ViewViolationUnselectedDataChild} {0.5} {-180} {32.5} {180} 0
 
 DEVise clearViewHistory {ViewViolationSelectedDataChild}
 DEVise insertViewHistory {ViewViolationSelectedDataChild} {0.5} {-180} {32.5} {180} 0
+DEVise insertViewHistory {ViewViolationSelectedDataChild} {0.5} {0} {32.5} {10.11} 0
+DEVise insertViewHistory {ViewViolationSelectedDataChild} {0.5} {-180} {32.5} {180} 0
 
 DEVise clearViewHistory {ViewViolationDataDotsChild}
+DEVise insertViewHistory {ViewViolationDataDotsChild} {0.5} {-180} {32.5} {180} 0
+DEVise insertViewHistory {ViewViolationDataDotsChild} {0.5} {0} {32.5} {10.11} 0
 DEVise insertViewHistory {ViewViolationDataDotsChild} {0.5} {-180} {32.5} {180} 0
 
 DEVise clearViewHistory {View3DMain}
@@ -1451,17 +1466,25 @@ DEVise insertViewHistory {ViewDataTypeSelect} {-0.5} {-9.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataDotsParent}
 DEVise insertViewHistory {ViewDataDotsParent} {-0.5} {-0.5} {0.5} {0.5} 0
+DEVise insertViewHistory {ViewDataDotsParent} {-0.5} {-1.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {ViewDataDotsParent} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataXControl}
 DEVise insertViewHistory {ViewDataXControl} {0.375} {-0.3} {32.625} {0.3} -1
 
 DEVise clearViewHistory {ViewSelectedDataParent}
 DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
+DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-1.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {ViewSelectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewUnselectedDataParent}
 DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
+DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-1.5} {0.5} {-0.5} 0
+DEVise insertViewHistory {ViewUnselectedDataParent} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewDataValueSelectParent}
+DEVise insertViewHistory {ViewDataValueSelectParent} {-0.5} {-0.5} {0.5} {0.5} 0
+DEVise insertViewHistory {ViewDataValueSelectParent} {-0.5} {-1.5} {0.5} {-0.5} 0
 DEVise insertViewHistory {ViewDataValueSelectParent} {-0.5} {-0.5} {0.5} {0.5} 0
 
 DEVise clearViewHistory {ViewVisualizationInfo}

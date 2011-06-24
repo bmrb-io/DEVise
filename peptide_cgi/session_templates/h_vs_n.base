@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Jun 17 2011 15:19:18
+# file date: Jun 24 2011 10:35:25
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -95,7 +95,7 @@ DEVise dteInsertCatalogEntry . {"h_vs_n_legend" UNIXFILE h_vs_n_legend.dat bmrb-
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} {View 3} -0.500000 1.500000 -0.500000 20.500000 4 0 0 37 0 37
+DEVise create {view} {SortedX} {View 3} -0.500000 1.500000 -0.500000 20.500000 4 0 0 64 0 64
 DEVise setLabel {View 3} 0 12 {AcidName() vs. ResNum}
 DEVise setViewStatistics {View 3} 00000000
 DEVise setViewDimensions {View 3} 2
@@ -142,7 +142,7 @@ DEVise setViewSaveFilter {View 3} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} {View 4} -0.500000 1.500000 18.500000 19.500000 4 0 0 37 0 37
+DEVise create {view} {SortedX} {View 4} -0.500000 1.500000 18.500000 19.500000 4 0 0 64 0 64
 DEVise setLabel {View 4} 0 12 {AcidName() vs. ResNum}
 DEVise setViewStatistics {View 4} 00000000
 DEVise setViewDimensions {View 4} 2
@@ -186,7 +186,7 @@ DEVise setViewSaveFilter {View 4} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {SortedX} {View 5} -0.500000 1.500000 -0.500000 20.500000 4 0 0 37 0 37
+DEVise create {view} {SortedX} {View 5} -0.500000 1.500000 -0.500000 20.500000 4 0 0 64 0 64
 DEVise setLabel {View 5} 0 12 {AcidName() vs. ResNum}
 DEVise setViewStatistics {View 5} 00000000
 DEVise setViewDimensions {View 5} 2
@@ -230,7 +230,7 @@ DEVise setViewSaveFilter {View 5} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 1} -10.305000 -6.285000 -133.210007 -104.180000 64 0 0 37 0 37
+DEVise create {view} {Scatter} {View 1} -10.305000 -6.285000 -133.210007 -104.180000 64 0 0 64 0 64
 DEVise setLabel {View 1} 1 16 {N chem shift vs. H chem shift}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -280,7 +280,7 @@ DEVise setViewSaveFilter {View 1} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 2} -10.305000 -6.285000 -133.210007 -104.180000 37 0 0 37 0 37
+DEVise create {view} {Scatter} {View 2} -10.305000 -6.285000 -133.210007 -104.180000 37 0 0 64 0 64
 DEVise setLabel {View 2} 1 16 {N chem shift vs. H chem shift}
 DEVise setViewStatistics {View 2} 00000000
 DEVise setViewDimensions {View 2} 2
@@ -324,7 +324,7 @@ DEVise setViewSaveFilter {View 2} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 0 42 0 37 0 37
+DEVise create {view} {Scatter} {View 6} -1.000000 1.000000 -1.000000 1.000000 0 42 0 64 0 64
 DEVise setLabel {View 6} 0 12 {Label_text() vs. recId}
 DEVise setViewStatistics {View 6} 00000000
 DEVise setViewDimensions {View 6} 2
@@ -369,7 +369,7 @@ DEVise setViewSaveFilter {View 6} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 7} -0.300000 1.500000 -0.300000 0.300000 0 0 0 37 0 37
+DEVise create {view} {Scatter} {View 7} -0.300000 1.500000 -0.300000 0.300000 0 0 0 64 0 64
 DEVise setLabel {View 7} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 7} 00000000
 DEVise setViewDimensions {View 7} 2
@@ -416,7 +416,7 @@ DEVise setViewSaveFilter {View 7} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 8} -0.300000 1.500000 -0.300000 0.300000 0 0 0 37 0 37
+DEVise create {view} {Scatter} {View 8} -0.300000 1.500000 -0.300000 0.300000 0 0 0 64 0 64
 DEVise setLabel {View 8} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 8} 00000000
 DEVise setViewDimensions {View 8} 2
@@ -466,49 +466,49 @@ DEVise createMappingClass {y_vs_x}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 .4267hn1#Hshift_vs_Nshift {} {-$Hshift} {-$Nshift} {} {$Hatom} 0.5 -1 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 .4267hn1#Hshift_vs_Nshift {} {-$Hshift} {-$Nshift} {} 0 0.5 -1 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hn1#Hshift_vs_Nshift} 1
 DEVise setMappingColors {.4267hn1#Hshift_vs_Nshift} {$Hatom} {$Hatom} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 {.4267hn1#Hshift_vs_Nshift 2} {} {-$Hshift} {-$Nshift} {} 48 0.3 0 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Hshift_vs_Nshift} .4267hn1 {.4267hn1#Hshift_vs_Nshift 2} {} {-$Hshift} {-$Nshift} {} 0 0.3 0 0 4 0.1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hn1#Hshift_vs_Nshift 2} 1
 DEVise setMappingColors {.4267hn1#Hshift_vs_Nshift 2} {48} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {AcidName_vs_ResNum} .4267hn1 {.4267hn1#AcidName_vs_ResNum 2} {} 0 {19-$AcidName} {} 37 1 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {AcidName_vs_ResNum} .4267hn1 {.4267hn1#AcidName_vs_ResNum 2} {} 0 {19-$AcidName} {} 0 1 0 0 0 1 0.5 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267hn1#AcidName_vs_ResNum 2} 1
 DEVise setMappingColors {.4267hn1#AcidName_vs_ResNum 2} {37} {37} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 {.4267rc1#View 3} {} 0 {19-$ResLabel} {} 64 14 0 0 16 {$ResLabel} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 {.4267rc1#View 3} {} 0 {19-$ResLabel} {} 0 14 0 0 16 {$ResLabel} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267rc1#View 3} 1
 DEVise setMappingColors {.4267rc1#View 3} {64} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 .4267rc1#AcidName_vs_ResNum {} 1 {19-$ResLabel} {} 64 14 0 0 16 {$ResCount} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {AcidName_vs_ResNum} .4267rc1 .4267rc1#AcidName_vs_ResNum {} 1 {19-$ResLabel} {} 0 14 0 0 16 {$ResCount} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4267rc1#AcidName_vs_ResNum} 1
 DEVise setMappingColors {.4267rc1#AcidName_vs_ResNum} {64} {1} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 64 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 0 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 DEVise setMappingColors {.label#Label_text_vs_recId} {64} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {y_vs_x} .h_vs_n_legend .h_vs_n_legend#y_vs_x {} {$x} {$y} {} {$color_norm} 0.3 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {y_vs_x} .h_vs_n_legend .h_vs_n_legend#y_vs_x {} {$x} {$y} {} 0 0.3 0 0 0 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.h_vs_n_legend#y_vs_x} 1
 DEVise setMappingColors {.h_vs_n_legend#y_vs_x} {$color_norm} {$color_norm} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {y_vs_x} .h_vs_n_legend {.h_vs_n_legend#y_vs_x 2} {} {$x+0.3} {$y} {} {$color_norm} 14 0 0 16 {$text} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {y_vs_x} .h_vs_n_legend {.h_vs_n_legend#y_vs_x 2} {} {$x+0.3} {$y} {} 0 14 0 0 16 {$text} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.h_vs_n_legend#y_vs_x 2} 1
 DEVise setMappingColors {.h_vs_n_legend#y_vs_x 2} {$color_norm} {$color_norm} {0}
 
@@ -691,6 +691,7 @@ DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
+DEVise insertViewHistory {View 1} {-10.305} {-133.21} {-6.285} {-104.18} 0
 
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
@@ -699,6 +700,7 @@ DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} -25
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 0
 DEVise insertViewHistory {View 2} {-10.2} {-132.96} {-6.31} {-104.43} 71
 DEVise insertViewHistory {View 2} {-10.22} {-133.21} {-6.28} {-104.18} 0
+DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0
 DEVise insertViewHistory {View 2} {-10.305} {-133.21} {-6.285} {-104.18} 0

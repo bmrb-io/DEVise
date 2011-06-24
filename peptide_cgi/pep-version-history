@@ -15,6 +15,8 @@ clearer (bug 123).
 * Improved colors in 1H-15N and 1H-13C simulated spectrum visualizations
 (bug 124).
 
+* Fixed print mode colors for a number of the visualizations.
+
 * Fixed the links from the specific visualization pages to the tutorial
 video page.
 

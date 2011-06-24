@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: May 10 2011 15:22:24
+# file date: Jun 24 2011 10:47:23
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -397,7 +397,7 @@ DEVise setViewSaveFilter {ViewVisualizationInfo} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 1} 1.500000 61.500000 -1.500000 0.500000 0 0 0 37 0 37
+DEVise create {view} {Scatter} {View 1} 1.500000 61.500000 -1.500000 0.500000 0 0 37 37 0 37
 DEVise setLabel {View 1} 0 12 {ResLabelSh() vs. Residue_seq_code}
 DEVise setViewStatistics {View 1} 00000000
 DEVise setViewDimensions {View 1} 2
@@ -777,15 +777,15 @@ DEVise setMappingColors {.15536rl#ViewDataXControl} {36} {36} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .15536s2p1-1 .15536s2p1-1#ViewUnselectedDataChild {} {$Residue_seq_code} {$Experimental_S2} {} 25 12 0 0 16 {"+"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15536s2p1-1 .15536s2p1-1#ViewUnselectedDataChild {} {$Residue_seq_code} {$Experimental_S2} {} 33 12 0 0 16 {"+"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.15536s2p1-1#ViewUnselectedDataChild} 1
-DEVise setMappingColors {.15536s2p1-1#ViewUnselectedDataChild} {25} {35} {0}
+DEVise setMappingColors {.15536s2p1-1#ViewUnselectedDataChild} {25} {33} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .15536s2p1-1 .15536s2p1-1#HA_Csi_vs_SeqNum {} {$Residue_seq_code} {$Predicted_S2} {} 6 12 0 0 16 {"+"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15536s2p1-1 .15536s2p1-1#HA_Csi_vs_SeqNum {} {$Residue_seq_code} {$Predicted_S2} {} 10 12 0 0 16 {"+"} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.15536s2p1-1#HA_Csi_vs_SeqNum} 1
-DEVise setMappingColors {.15536s2p1-1#HA_Csi_vs_SeqNum} {6} {35} {0}
+DEVise setMappingColors {.15536s2p1-1#HA_Csi_vs_SeqNum} {6} {10} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -795,7 +795,7 @@ DEVise setMappingColors {.15536s2p1-1#ViewDataValueSelectChild} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Label_text_vs_recId} .label .label#Label_text_vs_recId {} 0 0 {} 0 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_recId} 1
 DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
 
@@ -807,51 +807,51 @@ DEVise setMappingColors {.pistachio_at_legend#color_str_vs_recId} {$color_str} {
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {ResLabelSh_vs_Residue_seq_code} .15536rl .15536rl#ResLabelSh_vs_Residue_seq_code {} {$Residue_seq_code} 0 {} 35 10 0 0 16 {$ResLabelSh} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {ResLabelSh_vs_Residue_seq_code} .15536rl .15536rl#ResLabelSh_vs_Residue_seq_code {} {$Residue_seq_code} 0 {} 2 10 0 0 16 {$ResLabelSh} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.15536rl#ResLabelSh_vs_Residue_seq_code} 1
-DEVise setMappingColors {.15536rl#ResLabelSh_vs_Residue_seq_code} {35} {0} {0}
+DEVise setMappingColors {.15536rl#ResLabelSh_vs_Residue_seq_code} {35} {2} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {StructType_vs_ResSeqId1} .15536csr1_1 {.15536csr1_1#View 2} {} {$resID} -1 {} {$secondary} 1 0 0 0 1 0.5 {} {} 2 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.15536csr1_1#View 2} 1
-DEVise setMappingColors {.15536csr1_1#View 2} {$secondary} {$Color} {0}
+DEVise setMappingColors {.15536csr1_1#View 2} {$secondary} {$secondary} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_Label_text} .label .label#Label_text_vs_Label_text {} 0 0 {} 32 14 0 0 16 {"Alpha-helix"} 1 {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_Label_text} 1
-DEVise setMappingColors {.label#Label_text_vs_Label_text} {32} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_Label_text} {32} {32} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_Label_text} .label {.label#Label_text_vs_Label_text 2} {} 0 0 {} 6 14 0 0 16 {"Beta-sheet"} 1 {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_Label_text 2} 1
-DEVise setMappingColors {.label#Label_text_vs_Label_text 2} {6} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_Label_text 2} {6} {6} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_Label_text} .label {.label#Label_text_vs_Label_text 3} {} 0 0 {} 36 14 0 0 16 {"Random-coil"} 1 {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_Label_text 3} 1
-DEVise setMappingColors {.label#Label_text_vs_Label_text 3} {36} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_Label_text 3} {36} {36} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_Label_text} .label {.label#Label_text_vs_Label_text 4} {} 0 0 {} 5 14 0 0 16 {"Turn"} 1 {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_Label_text 4} 1
-DEVise setMappingColors {.label#Label_text_vs_Label_text 4} {5} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_Label_text 4} {5} {5} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_Label_text} .label {.label#Label_text_vs_Label_text 5} {} 0 0 {} 33 14 0 0 16 {"Bend"} 1 {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_Label_text 5} 1
-DEVise setMappingColors {.label#Label_text_vs_Label_text 5} {33} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_Label_text 5} {33} {33} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
 DEVise create {mapping} {Label_text_vs_Label_text} .label {.label#Label_text_vs_Label_text 6} {} 0 0 {} 19 14 0 0 16 {"Bridge"} 1 {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#Label_text_vs_Label_text 6} 1
-DEVise setMappingColors {.label#Label_text_vs_Label_text 6} {19} {0} {0}
+DEVise setMappingColors {.label#Label_text_vs_Label_text 6} {19} {19} {0}
 
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
@@ -1089,6 +1089,10 @@ DEVise setPileStackState {DEViseWn2} 4
 
 DEVise clearViewHistory {ViewUnselectedDataChild}
 DEVise insertViewHistory {ViewUnselectedDataChild} {1.5} {0.1685} {61.5} {1} -1
+DEVise insertViewHistory {ViewUnselectedDataChild} {1} {0.1685} {61} {1} 0
+DEVise insertViewHistory {ViewUnselectedDataChild} {1.5} {0.1685} {61.5} {1} 0
+DEVise insertViewHistory {ViewUnselectedDataChild} {1} {0.1685} {61} {1} 0
+DEVise insertViewHistory {ViewUnselectedDataChild} {1.5} {0.1685} {61.5} {1} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {1.5} {0.1685} {61.5} {1} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {1} {0.1685} {61} {1} 0
 DEVise insertViewHistory {ViewUnselectedDataChild} {1.5} {0.1685} {61.5} {1} 0
@@ -1109,6 +1113,10 @@ DEVise clearViewHistory {ViewDataValueSelectChild}
 DEVise insertViewHistory {ViewDataValueSelectChild} {4.9} {0} {5.1} {1} 0
 
 DEVise clearViewHistory {ViewUnselectedDataChild 2}
+DEVise insertViewHistory {ViewUnselectedDataChild 2} {1.5} {0.1685} {61.5} {1} 0
+DEVise insertViewHistory {ViewUnselectedDataChild 2} {1} {0.1685} {61} {1} 0
+DEVise insertViewHistory {ViewUnselectedDataChild 2} {1.5} {0.1685} {61.5} {1} 0
+DEVise insertViewHistory {ViewUnselectedDataChild 2} {1} {0.1685} {61} {1} 0
 DEVise insertViewHistory {ViewUnselectedDataChild 2} {1.5} {0.1685} {61.5} {1} 0
 DEVise insertViewHistory {ViewUnselectedDataChild 2} {1} {0.1685} {61} {1} 0
 DEVise insertViewHistory {ViewUnselectedDataChild 2} {1.5} {0.1685} {61.5} {1} 0
@@ -1137,8 +1145,16 @@ DEVise insertViewHistory {View 1} {1} {-1.5} {61} {0.5} 0
 DEVise insertViewHistory {View 1} {1.5} {-1.5} {61.5} {0.5} 0
 DEVise insertViewHistory {View 1} {1} {-1.5} {61} {0.5} 0
 DEVise insertViewHistory {View 1} {1.5} {-1.5} {61.5} {0.5} 0
+DEVise insertViewHistory {View 1} {1} {-1.5} {61} {0.5} 0
+DEVise insertViewHistory {View 1} {1.5} {-1.5} {61.5} {0.5} 0
+DEVise insertViewHistory {View 1} {1} {-1.5} {61} {0.5} 0
+DEVise insertViewHistory {View 1} {1.5} {-1.5} {61.5} {0.5} 0
 
 DEVise clearViewHistory {View 2}
+DEVise insertViewHistory {View 2} {1.5} {-1.5} {61.5} {0.5} 0
+DEVise insertViewHistory {View 2} {1} {-1.5} {61} {0.5} 0
+DEVise insertViewHistory {View 2} {1.5} {-1.5} {61.5} {0.5} 0
+DEVise insertViewHistory {View 2} {1} {-1.5} {61} {0.5} 0
 DEVise insertViewHistory {View 2} {1.5} {-1.5} {61.5} {0.5} 0
 DEVise insertViewHistory {View 2} {1} {-1.5} {61} {0.5} 0
 DEVise insertViewHistory {View 2} {1.5} {-1.5} {61.5} {0.5} 0

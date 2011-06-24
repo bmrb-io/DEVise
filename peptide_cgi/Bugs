@@ -596,7 +596,8 @@ Num Date        Status  Description
 
 128 6/24/11	OPEN	Color print colors don't work right in the coordinate
 			vis data view (not sure if this is a session problem
-			or an actual DEVise bug). (wenger)
+			or an actual DEVise bug). (wenger)  (Also see bug
+			116.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
