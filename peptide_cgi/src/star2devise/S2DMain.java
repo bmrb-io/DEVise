@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.264  2011/06/24 18:34:48  wenger
+// Made a bunch of fixes to print mode colors.  (Although for some reason
+// some of them are not working right -- the coordinate visualizations,
+// for example.  They work right in the session template, but when I use
+// a "real" coordinate visualization, switching to color print mode doesn't
+// switch colors correctly in the data view.  Seems like it may have
+// something to do with child views.)
+//
 // Revision 1.263  2011/06/17 20:02:18  wenger
 // Partway through fixing bug 124 (simulated spectrum colors) -- working
 // on H vs. N 2-entry vis.  At least close, but I may want to change things
@@ -504,7 +512,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.1x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.1x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Jun 24 2011 10:29:11
+# file date: Jun 24 2011 14:56:20
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -576,7 +576,7 @@ DEVise setViewSaveFilter {ViewVisualizationInfo} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} ViewLegend -0.500000 5.500000 -0.500000 0.500000 37 0 0 37 0 37
+DEVise create {view} {Scatter} ViewLegend -0.500000 5.500000 -0.500000 0.500000 37 0 0 22 0 37
 DEVise setLabel {ViewLegend} 0 12 {color_str() vs. recId}
 DEVise setViewStatistics {ViewLegend} 00000000
 DEVise setViewDimensions {ViewLegend} 2
@@ -1043,7 +1043,7 @@ DEVise setViewSaveFilter {ViewDataTypeSelect 8} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} View_ea_residue_select 0.000000 2268.250000 -0.750000 0.750000 37 17 0 37 0 37
+DEVise create {view} {Scatter} View_ea_residue_select 11.750000 2268.250000 -0.750000 0.750000 37 17 0 37 0 37
 DEVise setLabel {View_ea_residue_select} 1 16 {Entity_assembly1_ID() vs. recId}
 DEVise setViewStatistics {View_ea_residue_select} 00000000
 DEVise setViewDimensions {View_ea_residue_select} 2
@@ -1200,9 +1200,9 @@ DEVise setMappingColors {.15209distr1#View3DHighlight} {7} {7} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Residue_seq_code_vs_recId} .15209rl .15209rl#ViewDataXControl {} {$Residue_seq_code} 0 {} 36 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
+DEVise create {mapping} {Residue_seq_code_vs_recId} .15209rl .15209rl#ViewDataXControl {} {$Residue_seq_code} 0 {} 2 0.5 0 0 0 0.5 1 {} {} {} {} {} {} {} {} {} {} {} {$Entity_assembly_ID} {}
 DEVise setPixelWidth {.15209rl#ViewDataXControl} 1
-DEVise setMappingColors {.15209rl#ViewDataXControl} {36} {36} {0}
+DEVise setMappingColors {.15209rl#ViewDataXControl} {36} {2} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1308,9 +1308,9 @@ DEVise setMappingColors {.label#Label_text_vs_recId} {37} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {color_str_vs_recId} .pistachio_at_legend .pistachio_at_legend#color_str_vs_recId {} {$recId} 0 {} 0 0.02 0 0 16 {$color_str} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {color_str_vs_recId} .pistachio_at_legend .pistachio_at_legend#color_str_vs_recId {} {$recId} 0 {} {$color_str} 0.02 0 0 16 {$color_str} {} {} 2 1 {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.pistachio_at_legend#color_str_vs_recId} 1
-DEVise setMappingColors {.pistachio_at_legend#color_str_vs_recId} {$color_str} {0} {0}
+DEVise setMappingColors {.pistachio_at_legend#color_str_vs_recId} {$color_str} {$color_str} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
@@ -1870,6 +1870,11 @@ DEVise insertViewHistory {View_ea_residue_select} {11.75} {-0.75} {2268.25} {0.7
 DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268.25} {0.75} 0
 DEVise insertViewHistory {View_ea_residue_select} {11.75} {-0.75} {2268.25} {0.75} 0
 DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {11.75} {-0.75} {2268.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {11.75} {-0.75} {2268.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {0} {-0.75} {2268.25} {0.75} 0
+DEVise insertViewHistory {View_ea_residue_select} {11.75} {-0.75} {2268.25} {0.75} 0
 
 DEVise clearViewHistory {View 1}
 DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.25} 0
@@ -1877,20 +1882,24 @@ DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.25} 0
 DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.999} 0
 DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.25} 0
 DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.999} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.999} 0
+DEVise insertViewHistory {View 1} {-0.1} {-0.01} {0.1} {0.25} 0
 
 DEVise clearViewHistory {View 2}
 DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
 DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
+DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
 DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.999} 0
 DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.999} 0
-DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
-DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
-DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
-DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
-DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
-DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
-DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
-DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
 DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
 DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
 DEVise insertViewHistory {View 2} {-0.1} {-0.01} {0.1} {0.25} 0
