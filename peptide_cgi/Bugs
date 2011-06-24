@@ -594,6 +594,10 @@ Num Date        Status  Description
 127 6/23/11	OPEN	Print mode colors don't work right for s2predict
 			visualizations. (wenger)
 
+128 6/24/11	OPEN	Color print colors don't work right in the coordinate
+			vis data view (not sure if this is a session problem
+			or an actual DEVise bug). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
