@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.265  2011/06/24 20:40:26  wenger
+// More print mode color fixes...
+//
 // Revision 1.264  2011/06/24 18:34:48  wenger
 // Made a bunch of fixes to print mode colors.  (Although for some reason
 // some of them are not working right -- the coordinate visualizations,
@@ -512,7 +515,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.1x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.1";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
