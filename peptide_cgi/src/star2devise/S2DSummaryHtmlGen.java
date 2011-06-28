@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.36.2.4  2011/05/13 19:33:28  wenger
 // Minor (hopefully final) cleanups.
 //
@@ -443,7 +446,7 @@ public abstract class S2DSummaryHtmlGen {
 	    _writer.write("</p>\n");
 
 	    _writer.write("\n<p>\n");
-            _writer.write("<a target= \"js_videos\" href=\"js_videos.html" +
+            _writer.write("<a target= \"js_videos\" href=\"../js_videos.html" +
 	      "\">DEVise/JavaScreen\n");
             _writer.write("tutorial videos</a>\n");
 	    _writer.write("</p>\n");
