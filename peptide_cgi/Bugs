@@ -599,6 +599,14 @@ Num Date        Status  Description
 			or an actual DEVise bug). (wenger)  (Also see bug
 			116.)
 
+129 7/6/11	OPEN	Info view for LACS has wrong text color in color
+			print mode. (wenger)
+
+130 7/6/11	OPEN	Home on main view in CSR diff histograms doesn't do
+			home on Y axis. (wenger)
+
+131 7/6/11	OPEN	Test_sparta6_3, test_s2p5 fail on pacu. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
