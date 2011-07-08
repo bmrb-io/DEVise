@@ -4480,6 +4480,11 @@ java.security.AccessControlException: access denied
 1019 5/24/11	OPEN	JS: BMRB IDs sometimes show up blank in drill-down
 			dialog in BMRB histogram sessions. (wenger)
 
+1020 7/8/11	OPEN	JS: in Safari on a Mac, resizing the JS window
+			doesn't cause the visualization to resize (selecting
+			View->Larger or View->Smaller seems to work, though).
+			(elu/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
