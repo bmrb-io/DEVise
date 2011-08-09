@@ -298,6 +298,9 @@ loads of extra JS clients in the browser).
 13.003 ?	OPEN?	?
 JavaScreen: Allow multiple levels of child views.
 
+13.004 8/9/11	OPEN	4
+Make use of Java enums.
+
 ...........................................................................
 SECTION 14 (release/distribution)
 Number Date	Status  Pri
