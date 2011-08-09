@@ -707,6 +707,8 @@ Num Date        Status  Pri     Description
 				the same two atoms in the different entries
 				(see also #157). (hongyang/wenger)
 
+159 8/9/11	OPEN	4	Make use of Java enums. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
