@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2010
+#  (c) Copyright 2001-2011
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -27,8 +27,8 @@ PERL_BIN = /usr/bin
 
 #-----------------------------------------------------------
 # Where to find stuff on the web.
-INPUT_WEB_DOMAIN = bmrb.postgenomicnmr.net
-OUTPUT_WEB_DOMAIN = bmrb.postgenomicnmr.net
+INPUT_WEB_DOMAIN = bmrb.cerm.unifi.it
+OUTPUT_WEB_DOMAIN = bmrb.cerm.unifi.it
 
 STAR_URL = file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star3.1/;file:/bmrb/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
@@ -148,7 +148,7 @@ SPARTA_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/SPARTA/
 # Restraint-related configuration.
 
 # The root URL of the restraint grid (must end with "/").
-RESTRAINT_GRID_ROOT = "http://bmrb.postgenomicnmr.net/servlets/"
+RESTRAINT_GRID_ROOT = "http://restraintsgrid.bmrb.wisc.edu/NRG/"
 
 # Default torsion angle restraint processing level: create link
 # if appropriate restraint grid entry is available.
