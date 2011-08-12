@@ -4485,6 +4485,9 @@ java.security.AccessControlException: access denied
 			View->Larger or View->Smaller seems to work, though).
 			(elu/wenger)
 
+1021 8/12/11	OPEN	JS: session open dialog no longer shows the '..'
+			directory. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
