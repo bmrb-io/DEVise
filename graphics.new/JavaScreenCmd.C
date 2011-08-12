@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.142  2010/12/10 21:46:26  wenger
+  Merged devise_1_10_br_4 thru devise_1_10_br_5 to trunk.
+
   Revision 1.141  2010/08/10 21:36:10  wenger
   Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
   correctly on JavaScreen resize).
@@ -3120,6 +3123,9 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 
     //
 	// Make sure we're not going up from the base session directory.
+	// Note: it looks like if the user selects '..', the JS client strips
+	// off the last directory itself, rather than sending '..', so that's
+	// how we can go up a directory once we've already gone down a level.
 	//
 	if (strstr(newPath, "/..") != NULL) {
         errmsg = "Illegal session directory (can't go up from base)";
@@ -3127,11 +3133,6 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		_status = ERROR;
 		return;
 	}
-
-	//
-	// Figure out whether any part of the path below the base session
-	// directory is hidden; if so, we are going to return an empty
-	// list.
 
 	//
 	// Figure out whether the directory we're in is hidden; if so, we
@@ -3148,10 +3149,15 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		   	hidden = true;
 		}
 
+		//
+		// Also, if the next directory up is hidden, we don't allow
+		// the user to go into that directory.
+		//
 		char *dirWOLast = dirname(dirCopy);
 		char *dir2Copy = CopyString(dirWOLast);
 		const char *nextLastDir = basename(dir2Copy);
-		if (nextLastDir[0] == '.') {
+		// If the entire directory name is "." we *can* go up.
+		if (nextLastDir[0] == '.' && strlen(nextLastDir) > 1) {
 			cantGoUp = true;
 		}
 		FreeString(dir2Copy);
