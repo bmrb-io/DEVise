@@ -3,6 +3,9 @@
 DEVise 1.11.2
 -------------
 
+* Fixed a problem that sometimes prevented the "Open Session" dialog
+from being able to move up a directory (see bug 1021).
+
 * Got the external process capability working again, and set up an
 example session.
 
