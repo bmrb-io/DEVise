@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Jun 17 2011 17:54:25
+# file date: Aug 16 2011 15:00:01
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -226,7 +226,7 @@ DEVise viewSetHorPan {ViewDataValueSelectChild 2} 1 0.500000 1.000000
 DEVise viewSetVerPan {ViewDataValueSelectChild 2} 1 0.500000 1.000000
 DEVise setViewGDS {ViewDataValueSelectChild 2} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {ViewDataValueSelectChild 2} 0 1 0 "" 1 " " 1
-DEVise setHistogram {ViewDataValueSelectChild 2} 0.4 0.5 10
+DEVise setHistogram {ViewDataValueSelectChild 2} 0.4 0.6 10
 DEVise setCountMapping {ViewDataValueSelectChild 2} 0 {} {} 0
 DEVise viewSetIsHighlight {ViewDataValueSelectChild 2} 0
 DEVise setXAxisDateFormat {ViewDataValueSelectChild 2} {%b %d %Y %T}
@@ -883,7 +883,7 @@ DEVise setMappingColors {.15451s2p1-1#ViewDataValueSelectChild} {31} {31} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {HA_Csi_vs_SeqNum} .15451s2p1-1 {.15451s2p1-1#HA_Csi_vs_SeqNum 2} {} {$Residue_seq_code} 0.5 {} 31 0.18 0 0 15 {"/p/devise/demo/session/SearchEngine/ShowURL.tcl"} 3 {"http://condor.bmrb.wisc.edu/bbee/video/2JUO.mpg"} {"View edited dynamics movie"} {$Residue_seq_code} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {HA_Csi_vs_SeqNum} .15451s2p1-1 {.15451s2p1-1#HA_Csi_vs_SeqNum 2} {} {$Residue_seq_code} 0.5 {} 31 0.18 0 0 15 {"/p/devise/demo/session/SearchEngine/ShowURL.tcl"} 3 {"http://pike.bmrb.wisc.edu?entry=2JUO&start_time=0&end_time=.1&material=Transparent&submitted=yes"} {"View edited dynamics movie"} {"bmrb_dynamics_movie"} {$Residue_seq_code} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.15451s2p1-1#HA_Csi_vs_SeqNum 2} 1
 DEVise setMappingColors {.15451s2p1-1#HA_Csi_vs_SeqNum 2} {31} {31} {0}
 
