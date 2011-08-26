@@ -1,6 +1,6 @@
 # ========================================================================
 # DEVise Data Visualization Software
-# (c) Copyright 1992-2008
+# (c) Copyright 1992-2011
 # By the DEVise Development Group
 # Madison, Wisconsin
 # All Rights Reserved.
@@ -82,9 +82,6 @@ client: *.java
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java
 
-loader: *.java
-	$(JAVAC) jsb.java DEViseJSLoader.java
-
 jar:
 	make jara jarb jarjs
 	./js -version > js_version
@@ -93,9 +90,8 @@ jara:
 	make classclean
 	-rm jsa1.jar jsa2.jar
 	make jsa
-	make loader
-	jar cf jsa1.jar JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
-	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsa.class
+	jar cf jsa1.jar  JavaScreen/jsa.class
+	rm JavaScreen/jsa.class
 	jar cf jsa2.jar JavaScreen/*.class JavaScreen/UI/*.class \
  	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
  	    JavaScreen/resources/toolbar_cursors/*.png \
@@ -105,9 +101,8 @@ jarb:
 	make classclean
 	-rm jsb1.jar jsb2.jar
 	make jsb
-	make loader
-	jar cf jsb1.jar JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
-	rm JavaScreen/DEViseJSLoader.class JavaScreen/jsb.class
+	jar cf jsb1.jar JavaScreen/jsb.class
+	rm JavaScreen/jsb.class
 	jar cf jsb2.jar JavaScreen/*.class JavaScreen/UI/*.class \
 	    JavaScreen/*.gif JavaScreen/resources/toolbar_icons/*.png \
  	    JavaScreen/resources/toolbar_cursors/*.png \

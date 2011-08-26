@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2007
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.30.2  2011/08/25 21:35:53  wenger
+// Hopefully final cleanup of the JavaScreen embedded button fixes.
+//
+// Revision 1.11.30.1  2011/06/03 23:10:51  wenger
+// Working on getting embedded buttons in the JS working again -- big
+// change so far is getting rid of the paint() method in DEViseScreen
+// -- I think it was an error that that ever existed.  Lots of test/debug
+// code in place right now as I play around with getting buttons to work.
+//
+// Revision 1.11  2007/04/20 19:42:34  wenger
+// Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
+// merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
+//
 // Revision 1.10.38.2  2007/04/20 16:59:58  wenger
 // Fixed the problem with the JavaScreen buttons showing up with the
 // wrong font; improved handling of color arguments.
@@ -71,8 +84,11 @@
 package JavaScreen;
 
 import  java.awt.*;
+import  javax.swing.*;
 
-public class DEViseComponentPanel extends Panel
+// Note: if this extends Panel rather than JPanel, buttons embedded in
+// the visualization don't work.  wenger 2011-08-25.
+public class DEViseComponentPanel extends JPanel
 {
     public static final String LAYOUT_HORIZONTAL = "Horizontal";
     public static final String LAYOUT_VERTICAL = "Vertical";

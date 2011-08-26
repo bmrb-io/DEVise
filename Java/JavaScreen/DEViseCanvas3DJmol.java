@@ -42,6 +42,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.26.2.2  2011/06/03 23:21:28  wenger
+// Cleaned up some of the junk that was just commented out previously.
+//
+// Revision 1.26.2.1  2011/06/03 23:10:50  wenger
+// Working on getting embedded buttons in the JS working again -- big
+// change so far is getting rid of the paint() method in DEViseScreen
+// -- I think it was an error that that ever existed.  Lots of test/debug
+// code in place right now as I play around with getting buttons to work.
+//
+// Revision 1.26  2011/04/21 15:34:16  wenger
+// Merged js_highlight_thread_fix_br_0 thru js_highlight_thread_fix_br_1
+// to trunk.
+//
 // Revision 1.25.2.1  2011/04/20 17:15:06  wenger
 // Changed the DEViseGenericTree.setSelection() method and the YLogGUI
 // p() and pn() methods to only actually update the GUI in the event

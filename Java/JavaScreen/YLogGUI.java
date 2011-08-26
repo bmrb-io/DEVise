@@ -19,6 +19,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.13.2.2  2011/08/25 21:35:53  wenger
+// Hopefully final cleanup of the JavaScreen embedded button fixes.
+//
+// Revision 1.13.2.1  2011/06/03 23:10:51  wenger
+// Working on getting embedded buttons in the JS working again -- big
+// change so far is getting rid of the paint() method in DEViseScreen
+// -- I think it was an error that that ever existed.  Lots of test/debug
+// code in place right now as I play around with getting buttons to work.
+//
+// Revision 1.13  2011/04/21 15:34:17  wenger
+// Merged js_highlight_thread_fix_br_0 thru js_highlight_thread_fix_br_1
+// to trunk.
+//
 // Revision 1.12.28.1  2011/04/20 17:15:08  wenger
 // Changed the DEViseGenericTree.setSelection() method and the YLogGUI
 // p() and pn() methods to only actually update the GUI in the event
@@ -90,7 +103,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-public class YLogGUI extends Frame
+public class YLogGUI extends JFrame
 {
     protected TextArea textarea = null;
 

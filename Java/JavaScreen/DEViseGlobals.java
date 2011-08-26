@@ -18,10 +18,34 @@
 // ------------------------------------------------------------------------
 
 // $Id$
+// $Id$
 
 // $Log$
+// Revision 1.146  2011/05/27 19:03:32  wenger
+// Changed version to 5.13.6x1, added 5.13.6 version history section.
+//
 // Revision 1.145  2011/05/27 15:42:24  wenger
 // Changed version to 5.13.5 for release.
+//
+// Revision 1.144.2.5  2011/08/25 21:35:53  wenger
+// Hopefully final cleanup of the JavaScreen embedded button fixes.
+//
+// Revision 1.144.2.4  2011/08/16 22:37:31  wenger
+// JS client now has special code to append residue number to URL for
+// BMRB dynamics video generation.
+//
+// Revision 1.144.2.3  2011/08/15 18:51:17  wenger
+// Fixed a problem with "obsolete" buttons not getting removed correctly;
+// cleaned up a few other things.
+//
+// Revision 1.144.2.2  2011/06/03 23:21:28  wenger
+// Cleaned up some of the junk that was just commented out previously.
+//
+// Revision 1.144.2.1  2011/06/03 23:10:51  wenger
+// Working on getting embedded buttons in the JS working again -- big
+// change so far is getting rid of the paint() method in DEViseScreen
+// -- I think it was an error that that ever existed.  Lots of test/debug
+// code in place right now as I play around with getting buttons to work.
 //
 // Revision 1.144  2011/04/21 15:34:17  wenger
 // Merged js_highlight_thread_fix_br_0 thru js_highlight_thread_fix_br_1
@@ -891,7 +915,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.13.6x1"/*TEMP*/);
+    public static final String VERSION = new String("5.14.0x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

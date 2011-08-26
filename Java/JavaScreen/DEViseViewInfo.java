@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2010
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,19 @@
 // $Id$
 
 // $Log$
+// Revision 1.64.8.2  2011/08/25 21:35:53  wenger
+// Hopefully final cleanup of the JavaScreen embedded button fixes.
+//
+// Revision 1.64.8.1  2011/06/03 23:10:51  wenger
+// Working on getting embedded buttons in the JS working again -- big
+// change so far is getting rid of the paint() method in DEViseScreen
+// -- I think it was an error that that ever existed.  Lots of test/debug
+// code in place right now as I play around with getting buttons to work.
+//
+// Revision 1.64  2010/06/02 17:41:07  wenger
+// The JavaScreen now puts the BMRB visualization type into the JSA
+// window title if the hidebmrbsess parameter is turned on.
+//
 // Revision 1.63  2007/04/20 19:42:35  wenger
 // Merged andyd_gui_br_2 thru andyd_gui_br_5 to the trunk.
 // merged-andyd_gui_br_2-thru-andyd_gui_br_5-to-trunk
@@ -178,7 +191,7 @@ import java.math.*;
 import java.text.*;
 import javax.swing.*;
 
-public class DEViseViewInfo extends Panel
+public class DEViseViewInfo extends JPanel
 {
     private static final int DEBUG = 0;
 

@@ -22,6 +22,34 @@
 // $Id$
 
 // $Log$
+// Revision 1.186.2.6  2011/08/25 21:35:53  wenger
+// Hopefully final cleanup of the JavaScreen embedded button fixes.
+//
+// Revision 1.186.2.5  2011/08/16 22:37:31  wenger
+// JS client now has special code to append residue number to URL for
+// BMRB dynamics video generation.
+//
+// Revision 1.186.2.4  2011/08/15 18:51:18  wenger
+// Fixed a problem with "obsolete" buttons not getting removed correctly;
+// cleaned up a few other things.
+//
+// Revision 1.186.2.3  2011/06/06 21:50:12  wenger
+// Cleaned up the code that actually displays a URL when an embedded button
+// is clicked.
+//
+// Revision 1.186.2.2  2011/06/03 23:21:28  wenger
+// Cleaned up some of the junk that was just commented out previously.
+//
+// Revision 1.186.2.1  2011/06/03 23:10:51  wenger
+// Working on getting embedded buttons in the JS working again -- big
+// change so far is getting rid of the paint() method in DEViseScreen
+// -- I think it was an error that that ever existed.  Lots of test/debug
+// code in place right now as I play around with getting buttons to work.
+//
+// Revision 1.186  2011/04/21 15:34:17  wenger
+// Merged js_highlight_thread_fix_br_0 thru js_highlight_thread_fix_br_1
+// to trunk.
+//
 // Revision 1.185.2.3  2011/04/20 21:04:06  wenger
 // Added recognition of s2 predicted vs. experimental session names.
 //
@@ -1518,6 +1546,7 @@ public class jsdevisec extends JPanel
 	    System.out.println(Thread.currentThread() +
 	      " calls jsdevisec.showDocument()");
 	}
+	pn("Showing URL: <" + url + ">");
     	if (_parentApplet != null) {
 	     _parentApplet.showDocument(url, "_blank");
 	} else {
@@ -2514,7 +2543,7 @@ class RecordDlg extends Dialog
 
 // Dialog to show available session files and allow the user to select
 // one.
-class SessionDlg extends Frame
+class SessionDlg extends JFrame
 {
     private jsdevisec jsc = null;
 
@@ -3912,7 +3941,7 @@ class CollabSelectDlg extends Dialog
 
 // ------------------------------------------------------------------------
 // Dialog for setting collabrated JavaScreen ID.
-class CollabIdDlg extends Frame
+class CollabIdDlg extends JFrame
 {
     private jsdevisec jsc = null;
 

@@ -30,6 +30,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.109.4.2  2011/06/08 21:19:35  wenger
+// We no longer change the mouse cursor to the disabled cursor in a
+// view with a button in "standard" toolbar mode.
+//
+// Revision 1.109.4.1  2011/06/06 21:01:09  wenger
+// Okay, I think I pretty much have things working -- done by adding the
+// buttons to the appropriate *DEViseCanvas*, rather than directly to
+// the DEViseScreen -- keeps the buttons on top.
+//
+// Revision 1.109  2011/02/13 23:56:23  wenger
+// Merged bug_1005_br_0 thru bug_1005_br_1 to trunk.
+//
 // Revision 1.108.8.1  2011/02/04 22:39:47  wenger
 // Saving Jmol state: this is pretty much working; leaving in a bunch
 // of debug code and temporary comments for now (although I'm wondering
@@ -615,6 +627,8 @@ public class DEViseCanvas extends Container
     public String helpMsg = null;
     public Vector childViewHelpMsgs = new Vector();
 
+    public boolean _hasJavaSym; // e.g., a button
+
     //TEMP -- what are these? op is old point???
     Point sp = new Point(), ep = new Point(), op = new Point();
 
@@ -683,7 +697,6 @@ public class DEViseCanvas extends Container
             view.viewLocInCanvas.height = canvasDim.height;
             isImageUpdated = true;
         }
-
         this.enableEvents(AWTEvent.MOUSE_EVENT_MASK);
         this.enableEvents(AWTEvent.MOUSE_MOTION_EVENT_MASK);
         this.enableEvents(AWTEvent.KEY_EVENT_MASK);
@@ -1919,7 +1932,8 @@ public class DEViseCanvas extends Container
             } else if (jsc.toolBar.doNormal() &&
 	      (!activeView.isCursorMove ||
 	      activeView.getFirstCursor() == null) &&
-	      !activeView.isRubberBand) {
+	      !activeView.isRubberBand &&
+	      !_hasJavaSym) {
 	        jsc.mouseCursor.setTemporaryCursor(
 		  jsc.mouseCursor.disabledCursor, this);
 

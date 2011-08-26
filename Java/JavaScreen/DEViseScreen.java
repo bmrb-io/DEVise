@@ -32,6 +32,39 @@
 // $Id$
 
 // $Log$
+// Revision 1.89.2.7  2011/08/25 21:35:53  wenger
+// Hopefully final cleanup of the JavaScreen embedded button fixes.
+//
+// Revision 1.89.2.6  2011/08/15 18:51:18  wenger
+// Fixed a problem with "obsolete" buttons not getting removed correctly;
+// cleaned up a few other things.
+//
+// Revision 1.89.2.5  2011/06/08 21:19:35  wenger
+// We no longer change the mouse cursor to the disabled cursor in a
+// view with a button in "standard" toolbar mode.
+//
+// Revision 1.89.2.4  2011/06/07 18:00:58  wenger
+// More cleanup of no-longer-used code (including some test code I added
+// temporarily).
+//
+// Revision 1.89.2.3  2011/06/06 21:01:09  wenger
+// Okay, I think I pretty much have things working -- done by adding the
+// buttons to the appropriate *DEViseCanvas*, rather than directly to
+// the DEViseScreen -- keeps the buttons on top.
+//
+// Revision 1.89.2.2  2011/06/03 23:21:28  wenger
+// Cleaned up some of the junk that was just commented out previously.
+//
+// Revision 1.89.2.1  2011/06/03 23:10:51  wenger
+// Working on getting embedded buttons in the JS working again -- big
+// change so far is getting rid of the paint() method in DEViseScreen
+// -- I think it was an error that that ever existed.  Lots of test/debug
+// code in place right now as I play around with getting buttons to work.
+//
+// Revision 1.89  2011/04/21 15:34:17  wenger
+// Merged js_highlight_thread_fix_br_0 thru js_highlight_thread_fix_br_1
+// to trunk.
+//
 // Revision 1.88.2.2  2011/04/20 20:12:41  wenger
 // Removed debug code.
 //
@@ -815,6 +848,7 @@ public class DEViseScreen extends JPanel
             view.canvas.updateImage(image);
         }
 
+	updateObjects();
         repaint();
     }
 
@@ -899,8 +933,8 @@ public class DEViseScreen extends JPanel
         // remove this view from view table
         viewTable.remove(view.viewName);
 
+	updateObjects();
         repaint();
-
     }
 
     //-------------------------------------------------------------------
@@ -945,6 +979,7 @@ public class DEViseScreen extends JPanel
         //    removeView(view.getChild(i));
         //}
 
+	updateObjects();
         repaint();
     }
 
@@ -1074,6 +1109,7 @@ public class DEViseScreen extends JPanel
 	    }
         }
 
+	updateObjects();
         repaint();
     }
 
@@ -1094,6 +1130,7 @@ public class DEViseScreen extends JPanel
 
         if (cursor != null) {
             if (view.addCursor(cursor)) {
+	        updateObjects();
                 repaint();
             }
         }
@@ -1107,6 +1144,7 @@ public class DEViseScreen extends JPanel
 
         if (view != null) {
             if (view.hideCursor(cursorName)) {
+	        updateObjects();
                 repaint();
             }
         }
@@ -1214,6 +1252,7 @@ public class DEViseScreen extends JPanel
 	    // this should be a good time to garbage collect.
 	        System.gc();
 
+	    updateObjects();
             repaint();
         }
     }
@@ -1270,63 +1309,75 @@ public class DEViseScreen extends JPanel
     }
 
     //-------------------------------------------------------------------
-    public void paint(Graphics g)
+    // Update objects (canvases, buttons, etc.) -- remove obsolete ones
+    // and actually add new ones to the GUI.
+    private void updateObjects()
     {
-        if (isDimChanged) {
-            isDimChanged = false;
-            setSize(screenDim);
+        Runnable doUpdateObjects = new DoUpdateObjects();
+	SwingUtilities.invokeLater(doUpdateObjects);
+    }
 
-            if (jsc.jsValues.uiglobals.inBrowser) {
-		//TEMP  AWT uses validate to cause a container to lay out its subcomponents again after the components it contains have been added to or modified
-		//TEMP -- do we really need to call validate here?
-                jsc.validate();
-            } else {
-                jsc.parentFrame.pack();
+    //-------------------------------------------------------------------
+    // This class allows us to make sure that we actually do the object
+    // updating in the GUI thread.
+    private class DoUpdateObjects implements Runnable {
+        public void run() {
+            if (isDimChanged) {
+                isDimChanged = false;
+                setSize(screenDim);
+
+                if (jsc.jsValues.uiglobals.inBrowser) {
+		    //TEMP  AWT uses validate to cause a container to lay out its subcomponents again after the components it contains have been added to or modified
+		    //TEMP -- do we really need to call validate here?
+                    jsc.validate();
+                } else {
+                    jsc.parentFrame.pack();
+                }
+
+                jsc.repaint();
             }
 
-            jsc.repaint();
-        }
+	    // Actually remove from the GUI any canvases that are no longer
+	    // needed (doing this here so it's done in the GUI thread).
+            while (obsoleteCanvas.size() > 0) {
+                DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
+                remove(c);
+                obsoleteCanvas.removeElement(c);
+            }
 
-	// Actually remove from the GUI any canvases that are no longer
-	// needed (doing this here so it's done in the GUI thread).
-        while (obsoleteCanvas.size() > 0) {
-            DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
-            remove(c);
-            obsoleteCanvas.removeElement(c);
-        }
-
-	// Actually add to the GUI any  new canvases (doing this here
-	// so it's done in the GUI thread).
-        while (newCanvas.size() > 0) {
-            DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
-            add(c, c.posZ);
-            c.setBounds(c.getLocInScreen());
+	    // Actually add to the GUI any  new canvases (doing this here
+	    // so it's done in the GUI thread).
+            while (newCanvas.size() > 0) {
+                DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
+                add(c, c.posZ);
+                c.setBounds(c.getLocInScreen());
             newCanvas.removeElement(c);
-        }
+            }
 
-	// Actually remove from the GUI any GUI objects (e.g., buttons)
-	// corresponding to GData that's no longer valid (doing this
-	// here so it's done in the GUI thread).  ("Normal" GDatas never
-	// get into the obsoleteGData list.)
-        while (obsoleteGData.size() > 0) {
-            DEViseGData gdata = (DEViseGData)obsoleteGData.firstElement();
-            remove(gdata.symbol);
-            obsoleteGData.removeElement(gdata);
-        }
+	    // Actually remove from the GUI any GUI objects (e.g., buttons)
+	    // corresponding to GData that's no longer valid (doing this
+	    // here so it's done in the GUI thread).  ("Normal" GDatas never
+	    // get into the obsoleteGData list.)
+            while (obsoleteGData.size() > 0) {
+                DEViseGData gdata = (DEViseGData)obsoleteGData.firstElement();
+		gdata.parentView.canvas.remove(gdata.symbol);
+                obsoleteGData.removeElement(gdata);
+		gdata.parentView.canvas._hasJavaSym = false;
+            }
 
-	// Actually add to the GUI any GUI objects (e.g., buttons)
-	// corresponding to new GData records (doing this here so
-	// it's done in the GUI thread).  ("Normal" GDatas never
-	// get into the newGData list.)
-        while (newGData.size() > 0) {
-            DEViseGData gdata = (DEViseGData)newGData.firstElement();
-            Component gs = gdata.symbol;
-            add(gs);
-            gs.setBounds(gdata.GDataLocInScreen);
-            newGData.removeElement(gdata);
-        }
-
-        super.paint(g);
+	    // Actually add to the GUI any GUI objects (e.g., buttons)
+	    // corresponding to new GData records (doing this here so
+	    // it's done in the GUI thread).  ("Normal" GDatas never
+	    // get into the newGData list.)
+            while (newGData.size() > 0) {
+                DEViseGData gdata = (DEViseGData)newGData.firstElement();
+                Component gs = gdata.symbol;
+		gdata.parentView.canvas.add(gs);
+		gs.setBounds(gdata.GDataLoc);
+                newGData.removeElement(gdata);
+		gdata.parentView.canvas._hasJavaSym = true;
+            }
+	}
     }
 
     //-------------------------------------------------------------------

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2010
+// (c) Copyright 1999-2011
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -29,6 +29,46 @@
 // $Id$
 
 // $Log$
+// Revision 1.42.8.9  2011/08/25 21:35:53  wenger
+// Hopefully final cleanup of the JavaScreen embedded button fixes.
+//
+// Revision 1.42.8.8  2011/08/16 22:37:31  wenger
+// JS client now has special code to append residue number to URL for
+// BMRB dynamics video generation.
+//
+// Revision 1.42.8.7  2011/08/15 18:51:15  wenger
+// Fixed a problem with "obsolete" buttons not getting removed correctly;
+// cleaned up a few other things.
+//
+// Revision 1.42.8.6  2011/06/08 21:19:35  wenger
+// We no longer change the mouse cursor to the disabled cursor in a
+// view with a button in "standard" toolbar mode.
+//
+// Revision 1.42.8.5  2011/06/07 18:00:57  wenger
+// More cleanup of no-longer-used code (including some test code I added
+// temporarily).
+//
+// Revision 1.42.8.4  2011/06/06 21:50:11  wenger
+// Cleaned up the code that actually displays a URL when an embedded button
+// is clicked.
+//
+// Revision 1.42.8.3  2011/06/06 21:01:09  wenger
+// Okay, I think I pretty much have things working -- done by adding the
+// buttons to the appropriate *DEViseCanvas*, rather than directly to
+// the DEViseScreen -- keeps the buttons on top.
+//
+// Revision 1.42.8.2  2011/06/03 23:21:28  wenger
+// Cleaned up some of the junk that was just commented out previously.
+//
+// Revision 1.42.8.1  2011/06/03 23:10:51  wenger
+// Working on getting embedded buttons in the JS working again -- big
+// change so far is getting rid of the paint() method in DEViseScreen
+// -- I think it was an error that that ever existed.  Lots of test/debug
+// code in place right now as I play around with getting buttons to work.
+//
+// Revision 1.42  2010/04/21 17:10:10  wenger
+// Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+//
 // Revision 1.41.8.3  2010/04/19 16:15:01  wenger
 // Changed the JavaScreen slightly to get coloring of ambiguous restraints
 // working correctly.
@@ -179,15 +219,15 @@ package JavaScreen;
 
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 import java.net.*;
 
 public class DEViseGData
 {
     public jsdevisec jsc = null; //TEMP -- do we really need this for *every* GData record???
-    private DEViseView parentView = null; //TEMP -- do we really need this for *every* GData record???
+    public DEViseView parentView = null;
 
-    //public Rectangle GDataLoc = null;
-    public Rectangle GDataLocInScreen = null;
+    public Rectangle GDataLoc = null;
 
     //TEMP -- why do we need x, y, etc, *and* GDataLoc
     // x, y, z are x0, y0, z0 converted from data units to pixels.
@@ -315,8 +355,7 @@ public class DEViseGData
 	    DefaultSymbol(data, size, xm, ym);
         }
 
-        //GDataLoc = new Rectangle(x, y, width, height);
-        GDataLocInScreen = getLocInScreen();
+        GDataLoc = new Rectangle(x, y, width, height);
     }
 
     protected void finalize() {
@@ -531,24 +570,18 @@ public class DEViseGData
             y = 0;
         */
 
-        Button button = new Button(data[11]);
-        button.setActionCommand(data[10]);
+	JButton button = new DEViseButton(data[11], jsc.jsValues);
+	String cmd = data[10];
+	if (data[12].equals("bmrb_dynamics_movie") && !data[13].equals("")) {
+	    cmd += "&residues=" + data[13];
+	}
+        button.setActionCommand(cmd);
         button.setFont(DEViseFonts.getFont(10, DEViseFonts.MONOSPACED, 0, 0));
         button.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent event)
                 {
-                    if (jsc.jsValues.uiglobals.isApplet) {
-                        if (jsc.jsValues.uiglobals.browser != null) {
-                            try {
-                                URL url = new URL(event.getActionCommand());
-                                //DEViseUIGlobals.browser.showDocument(url, "_blank");
-                                jsc.jsValues.uiglobals.browser.showDocument(url, "_parent");
-                            } catch (MalformedURLException e) {
-                                //YGlobals.Ydebugpn("Invalid URL {" + event.getActionCommand() + "}");
-                            }
-                        }
-                    }
+                    jsc.showDocument(event.getActionCommand());
                 }
             });
 
