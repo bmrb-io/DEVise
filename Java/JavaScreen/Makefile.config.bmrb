@@ -45,7 +45,7 @@ IDSTR = regular
 DEVISE_VIS = /p/devise/demo
 
 # This is who gets email about any errors.
-ERROR_EMAIL = zoo@bmrb.wisc.edu
+ERROR_EMAIL = devise@cs.wisc.edu
 
 INSTALL_HOST = aden.bmrb.wisc.edu
 
