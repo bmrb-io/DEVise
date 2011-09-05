@@ -285,10 +285,11 @@ Num Date        Status  Pri     Description
 				sets in entries that have many of them.
 				(elu/wenger)
 
-075 6/23/08	OPEN	2	(At least for uvd) have summary page and error
+075 6/23/08	DONE	2	(At least for uvd) have summary page and error
 				page have a link back to a copy of uvd.out,
 				and maybe the warning and error files.
 				(wenger)
+				(Done by wenger, 9/5/11.)
 
 076 9/19/08	DONE	3	Put "no Java" warnings into html pages (see
 				Scribble.html). (wenger)

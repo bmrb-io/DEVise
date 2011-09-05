@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.269  2011/07/06 16:13:25  wenger
+// Changed version to 12.1.2 and added 12.1.2 version history section again.
+//
 // Revision 1.268  2011/06/28 02:09:07  wenger
 // Fixed tutorial videos link for summary visualization pages.
 //
@@ -524,7 +527,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.2x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.2x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 

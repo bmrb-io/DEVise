@@ -167,7 +167,33 @@ my $result = `$cmd`;
 chomp $result;
 if ($result ne "OK") {
   my ($tmpmsg);
-  $tmpmsg = "<p>Unable to process data for " . $name;
+  $tmpmsg = "<p>Unable to process data for " . $name . "</p>\n";
+  $tmpmsg = $tmpmsg . "<pre>\n";
+  if (-e "tmp/s2d.$name.err") {
+    $tmpmsg = $tmpmsg . "---------------------------------------------\n";
+    $tmpmsg = $tmpmsg . "### Errors:\n";
+    open(OUTPUT, "tmp/s2d.$name.err") or dienice("Couldn't open error file: $!\n");
+    while (<OUTPUT>) {
+      $tmpmsg = $tmpmsg . $_;
+    }
+  }
+  if (-e "tmp/s2d.$name.warn") {
+    $tmpmsg = $tmpmsg . "---------------------------------------------\n";
+    $tmpmsg = $tmpmsg . "### Warnings:\n";
+    open(OUTPUT, "tmp/s2d.$name.warn") or dienice("Couldn't open warning file: $!\n");
+    while (<OUTPUT>) {
+      $tmpmsg = $tmpmsg . $_;
+    }
+  }
+  if (-e "tmp/uvd.out") {
+    $tmpmsg = $tmpmsg . "---------------------------------------------\n";
+    $tmpmsg = $tmpmsg . "### Full output:\n";
+    open(OUTPUT, "tmp/uvd.out") or dienice("Couldn't open output file: $!\n");
+    while (<OUTPUT>) {
+      $tmpmsg = $tmpmsg . $_;
+    }
+  }
+  $tmpmsg = $tmpmsg . "</pre>\n";
   dienice($tmpmsg);
 }
 

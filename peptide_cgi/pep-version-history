@@ -4,7 +4,8 @@ Peptide-CGI 12.1.2
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
 
-(Nothing yet.)
+* The visualization server now displays error messages and warnings
+in the case of a failure.
 
 
 Peptide-CGI 12.1.1.1
