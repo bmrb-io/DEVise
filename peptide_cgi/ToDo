@@ -107,7 +107,7 @@ Num Date        Status  Pri     Description
 027 4/9/03	OPEN	4	Output a separate session list file for
 				the visualization server stuff. (wenger)
 
-028 4/9/03	OPEN	2	Production version of restraint/constraint
+028 4/9/03	DONE	2	Production version of restraint/constraint
 				code. (wenger)
 
 029 4/9/03	OPEN	2	Fix systemName and frameName in visualization
@@ -183,7 +183,7 @@ Num Date        Status  Pri     Description
 				exchange protection factor and S2 parameters).
 				(bmrb/wenger)
 
-048 6/9/04	OPEN	2	Visualization of data from nucleic acids.
+048 6/9/04	DONE	2	Visualization of data from nucleic acids.
 				(bmrb/wenger)
 
 049 3/22/05	OPEN	2	Calculate Pistachio percentages based on
@@ -191,7 +191,7 @@ Num Date        Status  Pri     Description
 				just the ones we have chem shifts for.
 				(hamid/wenger)
 
-050 10/20/04	OPEN	3	Make a test case with a file that has more
+050 10/20/04	DONE	3	Make a test case with a file that has more
 				than one polymer (e.g., 4264). (wenger)
 
 051 12/7/04	OPEN	3	Find *and document* an entry that can be
@@ -223,10 +223,10 @@ Num Date        Status  Pri     Description
 				understandable. (elu/wenger)
 				(Done by wenger, 5/9/07.)
 
-058 10/3/07	OPEN	4	Have Osaka config set up to get PDB files
+058 10/3/07	DONE	4	Have Osaka config set up to get PDB files
 				from pdbj. (wenger)
 
-059 10/8/07	OPEN	2	Figure out NMR-STAR 3.1 problems -- files
+059 10/8/07	DONE	2	Figure out NMR-STAR 3.1 problems -- files
 				are broken or Peptide-CGI code is wrong?
 				(See test1_3, test27_3, test49.) (wenger)
 
@@ -400,7 +400,7 @@ Num Date        Status  Pri     Description
 				(e.g., 6311) add a note to the summary page saying why.
 				(elu/wenger)
 
-101 11/17/09	OPEN	2	Enable torsion angle restraint visualizations
+101 11/17/09	DONE	2	Enable torsion angle restraint visualizations
 				for PDB entries that have no assocated
 				BMRB entry. (elu/wenger)
 
@@ -419,10 +419,10 @@ Num Date        Status  Pri     Description
 105 1/5/10	ACTIVE	1	Get distance restraint visualizations
 				working. (elu/wenger)
 
-106 1/5/10	OPEN	2	Produce "PDB-only" interface to generate
+106 1/5/10	DONE	2	Produce "PDB-only" interface to generate
 				restraint visualizations. (elu/wenger)
 
-107 1/5/10	OPEN	1	Get distance restraints working with both
+107 1/5/10	DONE	1	Get distance restraints working with both
 				the remediated restraint files (from
 				http://www.bmrb.wisc.edu/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/all/nmr-star...)
 				and the data from the restraint grid.
@@ -434,7 +434,7 @@ Num Date        Status  Pri     Description
 				grid it already uses. (elu/wenger)
 				(Done by wenger, 2/11/10.)
 
-109 1/6/10	OPEN	2	Change html pages to use the non-embedded
+109 1/6/10	DONE	2	Change html pages to use the non-embedded
 				JavaScreen (JSA) so we can allow resizing.
 				(elu/wenger)
 
@@ -486,9 +486,10 @@ Num Date        Status  Pri     Description
 				4001). (dmaziuk/elu/wenger)
 				(Done by wenger, 2/19/10.)
 
-119 2/2/10	OPEN	2	Visualization server should provide the user
+119 2/2/10	DONE	2	Visualization server should provide the user
 				more info if processing fails (maybe echo
 				the uvd.out or the error file). (elu/wenger)
+				(See also 075.)
 
 120 2/2/10	OPEN	4	Visualization server should give the user
 				an option (via a button?) to reprocess with
