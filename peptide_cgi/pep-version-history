@@ -12,6 +12,9 @@ in the case of a failure.
 
 * Added a legend to the LACS visualizations (to-do 156).
 
+* Added a restraint color legend to the distance violation visualizations
+(to-do 154).
+
 
 Peptide-CGI 12.1.1.1
 ------------------

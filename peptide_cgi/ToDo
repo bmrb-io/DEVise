@@ -688,8 +688,9 @@ Num Date        Status  Pri     Description
 				data so the user can see chemical shifts
 				if they drill down on an atom. (wenger)
 
-154 12/17/10	OPEN	1	Add restraint color legend to distance
+154 12/17/10	DONE	1	Add restraint color legend to distance
 				restraint visualizations. (wenger/elu)
+				(Done by wenger, 9/12/11)
 
 155 1/10/11	OPEN	1	As part of the install process, touch
 				tmp/s2d.log and set the permissions to
