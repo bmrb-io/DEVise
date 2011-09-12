@@ -391,11 +391,12 @@ Num Date        Status  Description
 			(wenger)  (No longer relevant because of upcoming
 			3D data cursor changes.  wenger, 8/6/10)
 
-084 9/4/09	OPEN	Fix problems with cursor behavior (especially when
+084 9/4/09	FIXED	Fix problems with cursor behavior (especially when
 			switching data sets) in the 3D sessions, etc.
 			(miron/wenger)  (Sit down with Eldon to decide on
 			what behavior we want, figure out how to do it --
 			will probably require DEVise server changes.)
+			(Fixed by wenger, ?/?/?)
 
 085 9/22/09	OPEN	In 3D session, if you switch back and forth between
 			entity assemblies, the cursors in the data select
@@ -591,16 +592,18 @@ Num Date        Status  Description
 			view of torsion angle restraint visualizations.
 			(wenger)
 
-127 6/23/11	OPEN	Print mode colors don't work right for s2predict
+127 6/23/11	FIXED?	Print mode colors don't work right for s2predict
 			visualizations. (wenger)
+			(Fixed? by wenger, 6/24/11.)
 
 128 6/24/11	OPEN	Color print colors don't work right in the coordinate
 			vis data view (not sure if this is a session problem
 			or an actual DEVise bug). (wenger)  (Also see bug
 			116.)
 
-129 7/6/11	OPEN	Info view for LACS has wrong text color in color
+129 7/6/11	FIXED	Info view for LACS has wrong text color in color
 			print mode. (wenger)
+			(Fixed by wenger, 9/12/11.)
 
 130 7/6/11	OPEN	Home on main view in CSR diff histograms doesn't do
 			home on Y axis. (wenger)

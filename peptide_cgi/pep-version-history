@@ -7,6 +7,9 @@ Peptide-CGI 12.1.2
 * The visualization server now displays error messages and warnings
 in the case of a failure.
 
+* Fixed color print mode info view font color in LACS visualizations
+(bug 129).
+
 
 Peptide-CGI 12.1.1.1
 ------------------
