@@ -10,6 +10,8 @@ in the case of a failure.
 * Fixed color print mode info view font color in LACS visualizations
 (bug 129).
 
+* Added a legend to the LACS visualizations (to-do 156).
+
 
 Peptide-CGI 12.1.1.1
 ------------------

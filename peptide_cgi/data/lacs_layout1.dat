@@ -10,3 +10,6 @@ ViewPoints	0.0	0.0	0.0	1.0	1.0	main
 
 ViewXLabel	0.0	-0.53	0.0	1.0	0.06	none
 ViewYLabel	-0.52	0.0	0.0	0.06	1.0	none
+
+ViewLegend1	-0.25	-0.6	0.0	0.4	0.06	none
+ViewLegend2	0.25	-0.6	0.0	0.4	0.06	none

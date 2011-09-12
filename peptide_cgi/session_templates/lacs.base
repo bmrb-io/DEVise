@@ -1,6 +1,6 @@
 # DEVise startHeader
 # file type: session
-# file date: Sep 12 2011 12:58:31
+# file date: Sep 12 2011 14:20:20
 # DEVise version: 1.11.1
 # DEVise date: Sep 24 2010
 # DEVise endHeader
@@ -153,7 +153,7 @@ DEVise setViewSaveFilter {ViewPoints} 0 0
 # Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
 #   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
 #   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
-DEVise create {view} {Scatter} {View 3} -0.550000 0.500000 -0.550000 0.560000 0 0 0 37 0 37
+DEVise create {view} {Scatter} {View 3} -0.550000 0.500000 -0.640000 0.560000 0 0 0 37 0 37
 DEVise setLabel {View 3} 0 12 {y() vs. x}
 DEVise setViewStatistics {View 3} 00000000
 DEVise setViewDimensions {View 3} 2
@@ -171,7 +171,7 @@ DEVise viewSetHorPan {View 3} 1 0.500000 1.000000
 DEVise viewSetVerPan {View 3} 1 0.500000 1.000000
 DEVise setViewGDS {View 3} 1 0 0 "" 1 " " 1
 DEVise viewSetJSSendP {View 3} 1 0 0 "" 1 " " 1
-DEVise setHistogram {View 3} -0.53 0.53 10
+DEVise setHistogram {View 3} -0.6 0.53 10
 DEVise setCountMapping {View 3} 0 {} {} 0
 DEVise viewSetIsHighlight {View 3} 0
 DEVise setXAxisDateFormat {View 3} {%b %d %Y %T}
@@ -381,6 +381,96 @@ DEVise viewSetUseJmol {ViewPointsDD} {0}
 DEVise setExcludeFromDrillDown {ViewPointsDD} {0}
 DEVise setViewSaveFilter {ViewPointsDD} 0 0
 
+# View {ViewLegend1} uses mapping {.label#foo_vs_recId}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewLegend1 -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
+DEVise setLabel {ViewLegend1} 0 12 {foo() vs. recId}
+DEVise setViewStatistics {ViewLegend1} 00000000
+DEVise setViewDimensions {ViewLegend1} 2
+DEVise setViewSolid3D {ViewLegend1} 2
+DEVise setViewXYZoom {ViewLegend1} 1
+DEVise setViewDisplayDataValues {ViewLegend1} 0
+DEVise setFont {ViewLegend1} {title} 0 12 0 0
+DEVise setFont {ViewLegend1} {x axis} 0 12 0 0
+DEVise setFont {ViewLegend1} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewLegend1} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewLegend1} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {ViewLegend1} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewLegend1} 1 0.500000 1.000000
+DEVise setViewGDS {ViewLegend1} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewLegend1} 0 1 0 "" 1 " " 1
+DEVise setHistogram {ViewLegend1} -1 1 10
+DEVise setCountMapping {ViewLegend1} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewLegend1} 0
+DEVise setXAxisDateFormat {ViewLegend1} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewLegend1} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewLegend1} {%.4g}
+DEVise setYAxisFloatFormat {ViewLegend1} {%.4g}
+DEVise setViewAutoFilter {ViewLegend1} {0}
+DEVise setDupElim {ViewLegend1} {0}
+DEVise setNiceAxes {ViewLegend1} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewLegend1} 1 1 1 1
+DEVise setViewHelp {ViewLegend1} {Visualization info}
+DEVise setShowMouseLocation {ViewLegend1} {1}
+DEVise setLinkMultFact {ViewLegend1} {X} 1
+DEVise setLinkMultFact {ViewLegend1} {Y} 1
+DEVise setGAttrLinkMode {ViewLegend1} 0
+DEVise setDoHomeOnVisLink {ViewLegend1} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewLegend1} {1}
+DEVise viewSetUseJmol {ViewLegend1} {0}
+DEVise setExcludeFromDrillDown {ViewLegend1} {0}
+DEVise setViewSaveFilter {ViewLegend1} 0 0
+
+# View {ViewLegend2} uses mapping {.label#foo_vs_recId 2}
+# Params: <category> <class> <name> <xlow> <xhigh> <ylow> <yhigh>
+#   <fgcolor (normal)> <bgcolor (normal)> <fgcolor (color print)>
+#   <bgcolor (color print)> <fgcolor (b/w print)> <bgcolor (b/w print)>
+DEVise create {view} {Scatter} ViewLegend2 -1.000000 1.000000 -1.000000 1.000000 0 0 0 37 0 37
+DEVise setLabel {ViewLegend2} 0 12 {foo() vs. recId}
+DEVise setViewStatistics {ViewLegend2} 00000000
+DEVise setViewDimensions {ViewLegend2} 2
+DEVise setViewSolid3D {ViewLegend2} 2
+DEVise setViewXYZoom {ViewLegend2} 1
+DEVise setViewDisplayDataValues {ViewLegend2} 0
+DEVise setFont {ViewLegend2} {title} 0 12 0 0
+DEVise setFont {ViewLegend2} {x axis} 0 12 0 0
+DEVise setFont {ViewLegend2} {y axis} 0 12 0 0
+# Params: <viewName> [<doHomeX> <doHomeY>] <mode> [<autoYMinZero>]<autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetHome {ViewLegend2} 1 1 1 0 0.000000 0.000000 0.000000 0.000000 100.000000 100.000000
+# Params: <viewName> <doHomeX> <doHomeY> <mode> <autoYMinZero> <autoXMargin> <autoYMargin> <manXLo> <manYLo> <manXHi> <manYHi>
+DEVise viewSetImplicitHome {ViewLegend2} 1 1 1 0 0 0 0 0 100 100
+DEVise viewSetHorPan {ViewLegend2} 1 0.500000 1.000000
+DEVise viewSetVerPan {ViewLegend2} 1 0.500000 1.000000
+DEVise setViewGDS {ViewLegend2} 1 0 0 "" 1 " " 1
+DEVise viewSetJSSendP {ViewLegend2} 0 1 0 "" 1 " " 1
+DEVise setHistogram {ViewLegend2} -1 1 10
+DEVise setCountMapping {ViewLegend2} 0 {} {} 0
+DEVise viewSetIsHighlight {ViewLegend2} 0
+DEVise setXAxisDateFormat {ViewLegend2} {%b %d %Y %T}
+DEVise setYAxisDateFormat {ViewLegend2} {%b %d %Y %T}
+DEVise setXAxisFloatFormat {ViewLegend2} {%.4g}
+DEVise setYAxisFloatFormat {ViewLegend2} {%.4g}
+DEVise setViewAutoFilter {ViewLegend2} {0}
+DEVise setDupElim {ViewLegend2} {0}
+DEVise setNiceAxes {ViewLegend2} 0 0
+# Params: <viewName> <rubberband disabled> <cursor move disabled> <drill down disabled> <keys disabled>
+DEVise viewSetDisabledActions {ViewLegend2} 1 1 1 1
+DEVise setViewHelp {ViewLegend2} {Visualization info}
+DEVise setShowMouseLocation {ViewLegend2} {1}
+DEVise setLinkMultFact {ViewLegend2} {X} 1
+DEVise setLinkMultFact {ViewLegend2} {Y} 1
+DEVise setGAttrLinkMode {ViewLegend2} 0
+DEVise setDoHomeOnVisLink {ViewLegend2} {1}
+DEVise setDoHomeOnVisLinkIfInvisible {ViewLegend2} {1}
+DEVise viewSetUseJmol {ViewLegend2} {0}
+DEVise setExcludeFromDrillDown {ViewLegend2} {0}
+DEVise setViewSaveFilter {ViewLegend2} 0 0
+
 # Create interpreted mapping classes
 DEVise createMappingClass {line_y1_vs_recId}
 DEVise createMappingClass {Y_coord_val_vs_X_coord_val}
@@ -397,44 +487,56 @@ DEVise setMappingColors {.4081lacs1#line_y1_vs_recId} {$line_type * 21 + 6} {$li
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Y_coord_val_vs_X_coord_val} .4081lacsp1 .4081lacs2#Y_coord_val_vs_X_coord_val {} {$X_coord_val} {$Y_coord_val} {} {31-28*$Designator} 12 0 0 16 {"O"} {} 0 0 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Y_coord_val_vs_X_coord_val} .4081lacsp1 .4081lacs2#Y_coord_val_vs_X_coord_val {} {$X_coord_val} {$Y_coord_val} {} {31+5*$Designator} 12 0 0 16 {"O"} {} 0 0 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacs2#Y_coord_val_vs_X_coord_val} 1
 DEVise setMappingColors {.4081lacs2#Y_coord_val_vs_X_coord_val} {31+5*$Designator} {31-28*$Designator} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {Y_coord_val_vs_X_coord_val} .4081lacsp1 .4081lacsp1#Y_coord_val_vs_X_coord_val {} {$X_coord_val} {$Y_coord_val} {} 37 0.2 0 0 4 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {Y_coord_val_vs_X_coord_val} .4081lacsp1 .4081lacsp1#Y_coord_val_vs_X_coord_val {} {$X_coord_val} {$Y_coord_val} {} 0 0.2 0 0 4 1 1 {} {} {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacsp1#Y_coord_val_vs_X_coord_val} 1
 DEVise setMappingColors {.4081lacsp1#Y_coord_val_vs_X_coord_val} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {y_vs_x} .lacs_layout1 .lacs_layout1#y_vs_x {} {$x} {$y} {} 37 1 0 0 17 {$view} {$width} {$height} {} {$pile} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {y_vs_x} .lacs_layout1 .lacs_layout1#y_vs_x {} {$x} {$y} {} 0 1 0 0 17 {$view} {$width} {$height} {} {$pile} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.lacs_layout1#y_vs_x} 1
 DEVise setMappingColors {.lacs_layout1#y_vs_x} {0} {37} {37}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {foo_vs_recId} .4081lacsc1 .4081lacsc1#ViewYLabel {} 0 0 {} 0 12 0 90 16 {$y_coord_name} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {foo_vs_recId} .4081lacsc1 .4081lacsc1#ViewYLabel {} 0 0 {} 37 12 0 90 16 {$y_coord_name} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacsc1#ViewYLabel} 1
 DEVise setMappingColors {.4081lacsc1#ViewYLabel} {37} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {foo_vs_recId} .4081lacsc1 .4081lacsc1#ViewXLabel {} 0 0 {} 0 12 0 0 16 {$x_coord_name} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {foo_vs_recId} .4081lacsc1 .4081lacsc1#ViewXLabel {} 0 0 {} 37 12 0 0 16 {$x_coord_name} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.4081lacsc1#ViewXLabel} 1
 DEVise setMappingColors {.4081lacsc1#ViewXLabel} {37} {0} {0}
 
 # Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
 #   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
-DEVise create {mapping} {foo_vs_recId} .label .label#ViewHeader {} 0 0 {} 0 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise create {mapping} {foo_vs_recId} .label .label#ViewHeader {} 0 0 {} 37 12 0 0 16 {"Visualization short info"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
 DEVise setPixelWidth {.label#ViewHeader} 1
 DEVise setMappingColors {.label#ViewHeader} {37} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {foo_vs_recId} .label .label#foo_vs_recId {} 0 0 {} 31 12 0 0 16 {"Outlier"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#foo_vs_recId} 1
+DEVise setMappingColors {.label#foo_vs_recId} {31} {0} {0}
+
+# Params: <category> <class> <TData> <name> <?> <x> <y> <z> <color> <size>
+#   <pattern> <orientation> <shape> <shape attr 0> ... <shape attr 14>
+DEVise create {mapping} {foo_vs_recId} .label {.label#foo_vs_recId 2} {} 0 0 {} 36 12 0 0 16 {"Normal point"} {} {} 2 {} {} {} {} {} {} {} {} {} {} {}
+DEVise setPixelWidth {.label#foo_vs_recId 2} 1
+DEVise setMappingColors {.label#foo_vs_recId 2} {36} {0} {0}
 
 # Create windows
 # Params: <category> <class> <name> <x> <y> <width> <height>
 #   <exclude from print> <print pixmap>
-DEVise create {window} {TileLayout} DEViseWn1 0.390625 0.348148 0.500000 0.500000 0 0
+DEVise create {window} {TileLayout} DEViseWn1 0.390625 0.344444 0.500000 0.500000 0 0
 
 # Set up window layouts
 
@@ -501,6 +603,20 @@ DEVise setAxisTicks {ViewPointsDD} {Y} 1
 DEVise setAxisMultFact {ViewPointsDD} {X} 1
 DEVise setAxisMultFact {ViewPointsDD} {Y} 1
 
+DEVise setAxisDisplay {ViewLegend1} {X} 0
+DEVise setAxisDisplay {ViewLegend1} {Y} 0
+DEVise setAxisTicks {ViewLegend1} {X} 1
+DEVise setAxisTicks {ViewLegend1} {Y} 1
+DEVise setAxisMultFact {ViewLegend1} {X} 1
+DEVise setAxisMultFact {ViewLegend1} {Y} 1
+
+DEVise setAxisDisplay {ViewLegend2} {X} 0
+DEVise setAxisDisplay {ViewLegend2} {Y} 0
+DEVise setAxisTicks {ViewLegend2} {X} 1
+DEVise setAxisTicks {ViewLegend2} {Y} 1
+DEVise setAxisMultFact {ViewLegend2} {X} 1
+DEVise setAxisMultFact {ViewLegend2} {Y} 1
+
 # Put action into view
 
 # Put cursors into views and set cursor properties
@@ -515,6 +631,8 @@ DEVise insertMapping {ViewXLabel} {.4081lacsc1#ViewXLabel}
 DEVise insertMapping {ViewYLabel} {.4081lacsc1#ViewYLabel}
 DEVise insertMapping {ViewHeader} {.label#ViewHeader}
 DEVise insertMapping {ViewPointsDD} {.4081lacsp1#Y_coord_val_vs_X_coord_val}
+DEVise insertMapping {ViewLegend1} {.label#foo_vs_recId}
+DEVise insertMapping {ViewLegend2} {.label#foo_vs_recId 2}
 
 # Link views
 
@@ -532,10 +650,6 @@ DEVise setPileStackState {DEViseWn1} 1
 # Init history of view
 
 DEVise clearViewHistory {ViewLines}
-DEVise insertViewHistory {ViewLines} {-0.5} {-4.49} {1.5} {-1.23} 0
-DEVise insertViewHistory {ViewLines} {-7.86} {-3.99} {8.4} {6.77} 0
-DEVise insertViewHistory {ViewLines} {-8.36} {-4.49} {8.9} {7.27} 0
-DEVise insertViewHistory {ViewLines} {-1.86396} {-0.701544} {2.37258} {2.87644} 0
 DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewLines} {-5.53589} {-4.14} {-3.74025} {6.59} 0
@@ -552,22 +666,26 @@ DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewLines} {-7.96} {-4.14} {8.5} {6.59} 0
 
 DEVise clearViewHistory {ViewPoints}
-DEVise insertViewHistory {ViewPoints} {-7.86} {-3.99} {8.4} {6.77} 0
-DEVise insertViewHistory {ViewPoints} {-8.36} {-4.49} {8.9} {7.27} 0
-DEVise insertViewHistory {ViewPoints} {-1.86396} {-0.701544} {2.37258} {2.87644} 0
-DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
-DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
-DEVise insertViewHistory {ViewPoints} {-5.53589} {-4.14} {-3.74025} {6.59} 0
-DEVise insertViewHistory {ViewPoints} {-5.05597} {-4.14} {-4.70337} {6.59} 0
-DEVise insertViewHistory {ViewPoints} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPoints} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPoints} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPoints} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPoints} {-7.86} {-4.04} {8.4} {6.49} 0
 DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPoints} {-0.029273} {-4.14} {0.868545} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPoints} {-7.96} {-4.14} {8.5} {6.59} 0
@@ -584,6 +702,9 @@ DEVise insertViewHistory {View 3} {-0.55} {-0.55} {0.5} {0.5} 0
 DEVise insertViewHistory {View 3} {-0.55} {-0.55} {0.5} {0.56} 0
 DEVise insertViewHistory {View 3} {-0.56} {-0.56} {0.5} {0.56} 0
 DEVise insertViewHistory {View 3} {-0.55} {-0.55} {0.5} {0.56} -88
+DEVise insertViewHistory {View 3} {-0.55} {-0.7} {0.5} {0.56} 0
+DEVise insertViewHistory {View 3} {-0.55} {-0.65} {0.5} {0.56} 0
+DEVise insertViewHistory {View 3} {-0.55} {-0.64} {0.5} {0.56} 0
 
 DEVise clearViewHistory {ViewXLabel}
 DEVise insertViewHistory {ViewXLabel} {-1} {-1} {1} {1} 0
@@ -606,6 +727,16 @@ DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
 DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
+DEVise insertViewHistory {ViewPointsDD} {-7.96} {-4.14} {8.5} {6.59} 0
+
+DEVise clearViewHistory {ViewLegend1}
+DEVise insertViewHistory {ViewLegend1} {-1} {-1} {1} {1} 0
+
+DEVise clearViewHistory {ViewLegend2}
+DEVise insertViewHistory {ViewLegend2} {-1} {-1} {1} {1} 0
 
 # Set camera location for each view
 DEVise set3DLocation {ViewLines} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
@@ -615,6 +746,8 @@ DEVise set3DLocation {ViewXLabel} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {ViewYLabel} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {ViewHeader} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 DEVise set3DLocation {ViewPointsDD} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewLegend1} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
+DEVise set3DLocation {ViewLegend2} NegZ -2.5 2.5 -2.5 2.5 -2.5 2.5 0 0
 
 # Set string tables for each view
 

@@ -695,9 +695,10 @@ Num Date        Status  Pri     Description
 				tmp/s2d.log and set the permissions to
 				666. (wenger)
 
-156 2/1/11	OPEN	2	Add a legend to the LACS visualizations
+156 2/1/11	DONE	2	Add a legend to the LACS visualizations
 				noting the difference between red and
 				yellow data points. (wenger)
+				(Done by wenger, 9/12/11)
 
 157 6/23/11	OPEN	3	In two-entry visualizations, add a connection
 				between the dots representing the same two
