@@ -23,12 +23,11 @@
 </head>
 <body>
 
-<br>
 <h3>Two-entry visualizations</h3>
-<br>
 
 <form method="get" name="get_by_bmrb" action="CGI_URL">
-  <label for="number">Enter two BMRB accession numbers (e.g., 16606 and 16607)</label>
+  <label for="number">Enter two BMRB accession numbers (e.g., 16606 and
+    16607) here to generate visualizations comparing the entries.</label>
   <p>
   <input type="text" name="number" size="5">
   <input type="text" name="xbmrbid" size="5">
@@ -37,6 +36,36 @@
   <input type="submit" value="View data">
   </p>
 </form>
+
+<p>
+You can also upload data to the <a href="../../vis_serv">
+Visualization Server</a> and compare it to a released entry (first
+upload your data to the visualization server and generate the
+visualizations; once you've done that you can enter an accession number
+for generating the two-entry visualizations).
+</p>
+
+<br>
+<p>
+Currently two two-entry visualizations are available: the simulated
+1H-15N backbone HSQC spectrum and the simulated 1H-13C HSQC spectrum.
+Examples of each are shown below, with links to the help pages offering
+detailed explanations.
+</p>
+
+<h5>Simulated 1H-15N backbone HSQC spectrum example</h5>
+<img src=figures/multi_entry_nh.png>
+<p>
+<a href="html/help_hn2.html">Help about this
+visualization</a>
+</p>
+
+<h5>Simulated 1H-13C HSQC spectrum example</h5>
+<img src=figures/multi_entry_ch.png>
+<p>
+<a href="html/help_hc2.html">Help about this
+visualization</a>
+</p>
 
 </body>
 </html>
