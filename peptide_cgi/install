@@ -162,6 +162,9 @@ if ($pephome != null) then
 
     cp -p restraint_select.html $targetdir
     chmod a+r $targetdir/restraint_select.html
+
+    cp -p -r figures $targetdir
+    chmod -r a+r $targetdir/figures
   endif
 endif
 
