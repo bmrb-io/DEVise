@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2010
+#  (c) Copyright 2000-2011
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -310,6 +310,9 @@ if (! -e $targetdir/tmp) then
   mkdir -p $targetdir/tmp
 endif
 chmod a+rwx $targetdir/tmp
+
+touch $targetdir/tmp/s2d.log
+chmod 666 $targetdir/tmp/s2d.log
 
 cd cgi-bin
 # Line below only works with GNU tar.

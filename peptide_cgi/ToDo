@@ -692,9 +692,10 @@ Num Date        Status  Pri     Description
 				restraint visualizations. (wenger/elu)
 				(Done by wenger, 9/12/11)
 
-155 1/10/11	OPEN	1	As part of the install process, touch
+155 1/10/11	DONE	1	As part of the install process, touch
 				tmp/s2d.log and set the permissions to
 				666. (wenger)
+				(Done by wenger, 9/13/11)
 
 156 2/1/11	DONE	2	Add a legend to the LACS visualizations
 				noting the difference between red and

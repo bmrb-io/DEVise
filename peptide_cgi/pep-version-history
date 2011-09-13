@@ -15,6 +15,9 @@ in the case of a failure.
 * Added a restraint color legend to the distance violation visualizations
 (to-do 154).
 
+* The tmp/s2d.log file is created with permissions of 666 during the
+installation process (to-do 155).
+
 
 Peptide-CGI 12.1.1.1
 ------------------
