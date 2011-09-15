@@ -177,7 +177,7 @@ DO_RRDIST_DEFAULT = 1
 DO_S2PRED_DEFAULT = 1
 
 # The root URL of s2predict output files.
-S2PRED_URL_DEFAULT = http://www.bmrb.wisc.edu/ftp/pub/bmrb/validation_reports/s2predict/
+S2PRED_URL_DEFAULT = http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/s2predict/
 
 #-----------------------------------------------------------
 # Other.
