@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.272  2011/09/14 19:47:44  wenger
+// Changed version to 12.1.2 for release.
+//
 // Revision 1.271  2011/09/12 19:27:34  wenger
 // Implemented to-do 156 (add legend to LACS visualizations).
 //
@@ -534,7 +537,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.2";
+    public static final String PEP_CGI_VERSION = "12.1.3x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
