@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2011/05/23 19:47:17  wenger
+// Added S2 predicted vs. experimental help page; fixed some minor problems
+// with the s2 predicted vs. experiemental html page.
+//
 // Revision 1.24  2011/05/19 19:46:09  wenger
 // Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
 //
@@ -325,6 +329,8 @@ public class S2DSpecificHtml {
 
 		if (_isUvd) {
 		    outLine = S2DUtils.replace(outLine, "../..", "../../..");
+		    outLine = S2DUtils.replace(outLine, "../js_videos.html",
+		      "../../js_videos.html");
 		    outLine = S2DUtils.replace(outLine, "dynamic_sessions",
 		      "dynamic_sessions/.uvd");
 		}

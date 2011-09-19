@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  2011/06/28 02:09:07  wenger
+// Fixed tutorial videos link for summary visualization pages.
+//
 // Revision 1.37  2011/05/19 19:46:09  wenger
 // Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
 //
@@ -446,8 +449,14 @@ public abstract class S2DSummaryHtmlGen {
 	    _writer.write("</p>\n");
 
 	    _writer.write("\n<p>\n");
-            _writer.write("<a target= \"js_videos\" href=\"../js_videos.html" +
-	      "\">DEVise/JavaScreen\n");
+	    String videoDir;
+	    if (_isUvd) {
+	    	videoDir = "../..";
+	    } else {
+	    	videoDir = "..";
+	    }
+            _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
+	      "/js_videos.html\">DEVise/JavaScreen\n");
             _writer.write("tutorial videos</a>\n");
 	    _writer.write("</p>\n");
 	    _writer.write("<hr>\n\n");

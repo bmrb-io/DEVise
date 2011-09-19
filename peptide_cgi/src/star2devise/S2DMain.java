@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.273  2011/09/15 19:04:31  wenger
+// Changed version to 12.1.3x1, added 12.1.3 version history section.
+//
 // Revision 1.272  2011/09/14 19:47:44  wenger
 // Changed version to 12.1.2 for release.
 //
@@ -537,7 +540,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.3x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.3";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.13.3";
 
