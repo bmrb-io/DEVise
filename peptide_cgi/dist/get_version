@@ -1,5 +1,5 @@
 #! /bin/csh -f
-cd peptide-cgi/src
+cd ../cgi-bin
 setenv CLASSPATH ./s2d.jar
 java star2devise.S2DMain -version
-cd ../..
+cd ../dist
