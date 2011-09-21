@@ -17,56 +17,78 @@
 -->
 
 <html>
-<head>
-  <title>DEVise JavaScreen: select 2 BMRB samples for visualization</title>
-  <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
-</head>
-<body>
+  <head>
+    <title>DEVise JavaScreen: select 2 BMRB samples for visualization</title>
+    <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
+  </head>
 
-<h3>Two-entry visualizations</h3>
+  <body>
 
-<form method="get" name="get_by_bmrb" action="CGI_URL">
-  <label for="number">Enter two BMRB accession numbers (e.g., 16606 and
-    16607) here to generate visualizations comparing the entries.</label>
-  <p>
-  <input type="text" name="number" size="5">
-  <input type="text" name="xbmrbid" size="5">
-  </p>
-  <p>
-  <input type="submit" value="View data">
-  </p>
-</form>
+    <CENTER><TABLE BORDER="0" CELLPADDING="0" ALIGN="CENTER"  WIDTH="100%">
+      <tr>
+        <TD class="titlesearch" HEIGHT="40">
+          <A HREF="/"><IMG SRC="figures/logo.gif" ALT="BMRB Logo" BORDER="0"></A>
+        </TD>
 
-<p>
-You can also upload data to the <a href="../../vis_serv">
-Visualization Server</a> and compare it to a released entry (first
-upload your data to the visualization server and generate the
-visualizations; once you've done that you can enter an accession number
-for generating the two-entry visualizations).
-</p>
+        <TD class="titlesearch" WIDTH="100%" ALIGN="CENTER"  >
+          <H2><i>Biological Magnetic Resonance Data Bank</i></H2><BR>
+          <i>A Repository for Data from NMR Spectroscopy on
+	   Proteins, Peptides, Nucleic Acids, and other Biomolecules </i>
+        </TD>
+      </tr>
+    </table>
+    </center>
 
-<br>
-<p>
-Currently two two-entry visualizations are available: the simulated
-1H-15N backbone HSQC spectrum and the simulated 1H-13C HSQC spectrum.
-Examples of each are shown below, with links to the help pages offering
-detailed explanations.
-</p>
+    <center>
+      <h2>Two-entry visualizations</h2>
+    </center>
 
-<h5>Simulated 1H-15N backbone HSQC spectrum example</h5>
-<img src=figures/multi_entry_nh.png>
-<p>
-<a href="html/help_hn2.html">Help about this
-visualization</a>
-</p>
+    <br>
 
-<h5>Simulated 1H-13C HSQC spectrum example</h5>
-<img src=figures/multi_entry_ch.png>
-<p>
-<a href="html/help_hc2.html">Help about this
-visualization</a>
-</p>
+    <form method="get" name="get_by_bmrb" action="CGI_URL">
+      <fieldset>
+      <label for="number">Enter two BMRB accession numbers (e.g., 16606 and
+        16607) here to generate visualizations comparing the entries.</label>
+      <p>
+      <input type="text" name="number" size="5">
+      <input type="text" name="xbmrbid" size="5">
+      </p>
+      <p>
+      <input type="submit" value="View data">
+      </p>
+      </fieldset>
+    </form>
 
-</body>
+    <br>
+
+    <p>
+    You can also upload data to the <a href="../../vis_serv">
+    Visualization Server</a> and compare it to a released entry (first
+    upload your data to the visualization server and generate the
+    visualizations; once you've done that you can enter an accession number
+    for generating the two-entry visualizations).
+    </p>
+
+    <br>
+    <p>
+    Currently two two-entry visualizations are available: the simulated
+    1H-15N backbone HSQC spectrum and the simulated 1H-13C HSQC spectrum.
+    Examples of each are shown below, with links to the help pages offering
+    detailed explanations.
+    </p>
+
+    <h3>Simulated 1H-15N backbone HSQC spectrum example</h3>
+    <img src=figures/multi_entry_nh.png>
+    <p>
+    <a href="html/help_hn2.html">Help about this visualization</a>
+    </p>
+
+    <h3>Simulated 1H-13C HSQC spectrum example</h3>
+    <img src=figures/multi_entry_ch.png>
+    <p>
+    <a href="html/help_hc2.html">Help about this visualization</a>
+    </p>
+
+  </body>
 </html>
 
