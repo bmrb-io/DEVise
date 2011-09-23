@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.147  2011/08/26 15:37:34  wenger
+// Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
 // Revision 1.146  2011/05/27 19:03:32  wenger
 // Changed version to 5.13.6x1, added 5.13.6 version history section.
 //
@@ -915,7 +918,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.0x1"/*TEMP*/);
+    public static final String VERSION = new String("5.14.0x2"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

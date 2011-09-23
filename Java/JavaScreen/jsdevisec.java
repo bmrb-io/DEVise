@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.187  2011/08/26 15:37:35  wenger
+// Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
 // Revision 1.186.2.6  2011/08/25 21:35:53  wenger
 // Hopefully final cleanup of the JavaScreen embedded button fixes.
 //
@@ -2575,8 +2578,8 @@ class SessionDlg extends JFrame
         okButton = new DEViseButton("OK", jsc.jsValues);
         cancelButton = new DEViseButton("Cancel", jsc.jsValues);
 
-        setBackground(jsc.jsValues.uiglobals.bg);
-        setForeground(jsc.jsValues.uiglobals.fg);
+        getContentPane().setBackground(jsc.jsValues.uiglobals.bg);
+        getContentPane().setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("JavaScreen Open Dialog");
@@ -2599,6 +2602,7 @@ class SessionDlg extends JFrame
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+        panel.setBackground(jsc.jsValues.uiglobals.bg);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -3441,6 +3445,7 @@ class SetCgiUrlDlg extends Dialog
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+        panel.setBackground(jsc.jsValues.uiglobals.bg);
 
         gridbag.setConstraints(panel, c);
         add(panel);
@@ -3595,6 +3600,7 @@ class SetLogFileDlg extends Dialog
         checkbox[1] = original;
         DEViseComponentPanel panel1 = new DEViseComponentPanel(checkbox,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+        panel1.setBackground(jsc.jsValues.uiglobals.bg);
 
         gridbag.setConstraints(panel1, c);
         add(panel1);
@@ -3604,6 +3610,7 @@ class SetLogFileDlg extends Dialog
         button[1] = cancelButton;
         DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+        panel2.setBackground(jsc.jsValues.uiglobals.bg);
 
         gridbag.setConstraints(panel2, c);
         add(panel2);
@@ -3964,8 +3971,8 @@ class CollabIdDlg extends JFrame
         okButton = new DEViseButton("OK", jsc.jsValues);
         cancelButton = new DEViseButton("Cancel", jsc.jsValues);
 
-        setBackground(jsc.jsValues.uiglobals.bg);
-        setForeground(jsc.jsValues.uiglobals.fg);
+        getContentPane().setBackground(jsc.jsValues.uiglobals.bg);
+        getContentPane().setForeground(jsc.jsValues.uiglobals.fg);
         setFont(jsc.jsValues.uiglobals.font);
 
         setTitle("Collaboration JavaScreen Dialog");
@@ -3982,6 +3989,7 @@ class CollabIdDlg extends JFrame
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+        panel.setBackground(jsc.jsValues.uiglobals.bg);
 
         // set layout manager
         GridBagLayout  gridbag = new GridBagLayout();
@@ -4184,7 +4192,7 @@ class CollabPassDlg extends Dialog
         button[1] = cancelButton;
         DEViseComponentPanel panel = new DEViseComponentPanel(button,
 	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
-
+        panel.setBackground(jsc.jsValues.uiglobals.bg);
 
         c.gridwidth = 1;
 	Label label1 = new Label("Collaboration Name:");
