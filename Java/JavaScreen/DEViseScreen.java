@@ -32,6 +32,37 @@
 // $Id$
 
 // $Log$
+// Revision 1.90  2011/08/26 15:37:34  wenger
+// Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
+// Revision 1.89.2.13  2011/10/10 19:27:03  wenger
+// More cleanup of session-specific menus: we now properly get rid of
+// any session-specific menu items when we close a session.
+//
+// Revision 1.89.2.12  2011/10/05 23:44:51  wenger
+// Early version of "session-specific" menu working -- only works for
+// showing URLs at this point.
+//
+// Revision 1.89.2.11  2011/10/05 17:48:07  wenger
+// Okay, removed the debug code.
+//
+// Revision 1.89.2.10  2011/10/05 17:40:28  wenger
+// Lots of extra debug output to try to figure out the button/Jmol lockup
+// problem on Macs.  No luck, though, I'm going to take a different
+// approach...
+//
+// Revision 1.89.2.9  2011/10/04 17:00:28  wenger
+// This amount of debug output makes things work on the Union South kiosks,
+// if you have the log window showing...
+//
+// Revision 1.89.2.8  2011/09/29 17:55:17  wenger
+// We now actually create embedded buttons in DEViseScreen instead of
+// in DEViseGData, so that they're created by the event queue thread instead
+// of a command thread (this didn't actually solve the Mac Jmol/button
+// lockup problem, but it seems safer).  Also changed the DEViseCanvas
+// class to extend JComponent rather than Container, in case this works
+// better for adding JButtons to it.
+//
 // Revision 1.89.2.7  2011/08/25 21:35:53  wenger
 // Hopefully final cleanup of the JavaScreen embedded button fixes.
 //
@@ -896,7 +927,7 @@ public class DEViseScreen extends JPanel
         if (vector.size() > 0) {
             for (int i = 0; i < vector.size(); i++) {
                 DEViseGData data = (DEViseGData)vector.elementAt(i);
-                if (data.isJavaSymbol) {
+                if (data.symbol != null) {
                     obsoleteGData.addElement(data);
                 }
             }
@@ -1048,7 +1079,7 @@ public class DEViseScreen extends JPanel
         if (viewGD.size() > 0) {
             for (int i = 0; i < viewGD.size(); i++) {
                 DEViseGData data = (DEViseGData)viewGD.elementAt(i);
-                if (data.isJavaSymbol) {
+                if (data.symbol != null) {
                     obsoleteGData.addElement(data);
                 }
             }
@@ -1221,6 +1252,16 @@ public class DEViseScreen extends JPanel
 		canvas.close();
 	    }
 
+	    // Get rid of any session-specific menu items we have.
+	    jsc.hideSessionMenu();
+
+	    // Note: I'm wondering if some of this stuff should only happen
+	    // in the event thread, and the fact that it's happening in
+	    // a command thread here might be causing us some problems.
+	    // But when I moved it to the event thread using
+	    // SwingUtilities.invokeLater, things didn't work -- it seemed
+	    // like some stuff here was not happening in the correct order
+	    // relative to other parts of the command.  wenger 2011-10-10
             removeAll();
 
             allCanvas = new Vector();
@@ -1345,13 +1386,13 @@ public class DEViseScreen extends JPanel
                 obsoleteCanvas.removeElement(c);
             }
 
-	    // Actually add to the GUI any  new canvases (doing this here
+	    // Actually add to the GUI any new canvases (doing this here
 	    // so it's done in the GUI thread).
             while (newCanvas.size() > 0) {
                 DEViseCanvas c = (DEViseCanvas)newCanvas.firstElement();
                 add(c, c.posZ);
                 c.setBounds(c.getLocInScreen());
-            newCanvas.removeElement(c);
+                newCanvas.removeElement(c);
             }
 
 	    // Actually remove from the GUI any GUI objects (e.g., buttons)
@@ -1371,11 +1412,41 @@ public class DEViseScreen extends JPanel
 	    // get into the newGData list.)
             while (newGData.size() > 0) {
                 DEViseGData gdata = (DEViseGData)newGData.firstElement();
-                Component gs = gdata.symbol;
-		gdata.parentView.canvas.add(gs);
-		gs.setBounds(gdata.GDataLoc);
                 newGData.removeElement(gdata);
-		gdata.parentView.canvas._hasJavaSym = true;
+		if (gdata._menuType.equals("")) {
+	            if (gdata.symbol == null) {
+	                JButton button = new DEViseButton(gdata._buttonLabel,
+		          jsc.jsValues);
+                        button.setActionCommand(gdata._buttonCmd);
+                        button.setFont(DEViseFonts.getFont(10,
+		          DEViseFonts.MONOSPACED, 0, 0));
+                        button.addActionListener(new ActionListener()
+                            {
+                                public void actionPerformed(ActionEvent event)
+                                {
+				    // Note: this is very specific to BMRB
+				    // dynamics movies.
+		                    if (event.getActionCommand().contains(
+				      "&residues=")) {
+		                        if (!jsc.showDynamicsMovieDlg()) {
+			                    // User clicked "Cancel".
+			                    return;
+			                }
+		                    }
+                                    jsc.showDocument(event.getActionCommand());
+                                }
+                            });
+
+                        gdata.symbol = button;
+	            }
+                    Component gs = gdata.symbol;
+		    gdata.parentView.canvas.add(gs);
+		    gs.setBounds(gdata.GDataLoc);
+		    gdata.parentView.canvas._hasJavaSym = true;
+		} else {
+		    jsc.createSessionMenuItem(gdata._menuType,
+		      gdata._menuName, gdata._buttonLabel, gdata._buttonCmd);
+		}
             }
 	}
     }

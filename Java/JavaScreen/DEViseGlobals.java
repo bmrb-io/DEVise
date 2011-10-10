@@ -18,9 +18,11 @@
 // ------------------------------------------------------------------------
 
 // $Id$
-// $Id$
 
 // $Log$
+// Revision 1.148  2011/09/23 21:47:29  wenger
+// Fixed background colors of some dialogs.
+//
 // Revision 1.147  2011/08/26 15:37:34  wenger
 // Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
 //
@@ -29,6 +31,30 @@
 //
 // Revision 1.145  2011/05/27 15:42:24  wenger
 // Changed version to 5.13.5 for release.
+//
+// Revision 1.144.2.10  2011/10/10 19:27:03  wenger
+// More cleanup of session-specific menus: we now properly get rid of
+// any session-specific menu items when we close a session.
+//
+// Revision 1.144.2.9  2011/10/06 15:52:03  wenger
+// Some more cleanup of the "session-specific" menu code.
+//
+// Revision 1.144.2.8  2011/10/05 17:40:28  wenger
+// Lots of extra debug output to try to figure out the button/Jmol lockup
+// problem on Macs.  No luck, though, I'm going to take a different
+// approach...
+//
+// Revision 1.144.2.7  2011/10/04 17:00:28  wenger
+// This amount of debug output makes things work on the Union South kiosks,
+// if you have the log window showing...
+//
+// Revision 1.144.2.6  2011/09/29 17:55:16  wenger
+// We now actually create embedded buttons in DEViseScreen instead of
+// in DEViseGData, so that they're created by the event queue thread instead
+// of a command thread (this didn't actually solve the Mac Jmol/button
+// lockup problem, but it seems safer).  Also changed the DEViseCanvas
+// class to extend JComponent rather than Container, in case this works
+// better for adding JButtons to it.
 //
 // Revision 1.144.2.5  2011/08/25 21:35:53  wenger
 // Hopefully final cleanup of the JavaScreen embedded button fixes.
@@ -918,7 +944,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.0x2"/*TEMP*/);
+    public static final String VERSION = new String("5.14.0x3"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 

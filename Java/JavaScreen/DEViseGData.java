@@ -29,6 +29,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2011/08/26 15:37:34  wenger
+// Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
+// Revision 1.42.8.12  2011/10/05 23:44:51  wenger
+// Early version of "session-specific" menu working -- only works for
+// showing URLs at this point.
+//
+// Revision 1.42.8.11  2011/09/29 17:55:16  wenger
+// We now actually create embedded buttons in DEViseScreen instead of
+// in DEViseGData, so that they're created by the event queue thread instead
+// of a command thread (this didn't actually solve the Mac Jmol/button
+// lockup problem, but it seems safer).  Also changed the DEViseCanvas
+// class to extend JComponent rather than Container, in case this works
+// better for adding JButtons to it.
+//
+// Revision 1.42.8.10  2011/09/27 20:27:48  wenger
+// The movie generation dialog is mostly in place -- the layout needs to
+// be fixed.
+//
 // Revision 1.42.8.9  2011/08/25 21:35:53  wenger
 // Hopefully final cleanup of the JavaScreen embedded button fixes.
 //
@@ -238,6 +257,10 @@ public class DEViseGData
     //public String[] data = null;
     public Component symbol = null;
     public boolean isJavaSymbol = false;
+    public String _buttonLabel;
+    public String _buttonCmd;
+    public String _menuType;
+    public String _menuName;
     public int symbolType = 0;
 
     // Note: I should probably make subclasses of DEViseGData...
@@ -570,22 +593,13 @@ public class DEViseGData
             y = 0;
         */
 
-	JButton button = new DEViseButton(data[11], jsc.jsValues);
-	String cmd = data[10];
+	_buttonLabel = data[11];
+	_buttonCmd = data[10];
 	if (data[12].equals("bmrb_dynamics_movie") && !data[13].equals("")) {
-	    cmd += "&residues=" + data[13];
+	    _buttonCmd += "&residues=" + data[13];
 	}
-        button.setActionCommand(cmd);
-        button.setFont(DEViseFonts.getFont(10, DEViseFonts.MONOSPACED, 0, 0));
-        button.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent event)
-                {
-                    jsc.showDocument(event.getActionCommand());
-                }
-            });
-
-        symbol = button;
+        _menuType = data[21];
+        _menuName = data[22];
     }
 
     protected void Oval(String[] data, float size, float xm, float ym)

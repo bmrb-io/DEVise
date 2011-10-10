@@ -23,6 +23,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.134.2.2  2011/10/05 17:48:06  wenger
+// Okay, removed the debug code.
+//
+// Revision 1.134.2.1  2011/10/05 17:40:28  wenger
+// Lots of extra debug output to try to figure out the button/Jmol lockup
+// problem on Macs.  No luck, though, I'm going to take a different
+// approach...
+//
+// Revision 1.134  2011/04/21 15:34:16  wenger
+// Merged js_highlight_thread_fix_br_0 thru js_highlight_thread_fix_br_1
+// to trunk.
+//
 // Revision 1.133.2.2  2011/04/20 20:12:40  wenger
 // Removed debug code.
 //
@@ -2509,7 +2521,7 @@ public class DEViseCmdDispatcher implements Runnable
 		    }
 		} else {
 		    end = true;
-		    jsc.pn("###### Reconnecting successed.");
+		    jsc.pn("###### Reconnecting succeeded.");
 		    jsc.socketMode();
 		}
 	    }

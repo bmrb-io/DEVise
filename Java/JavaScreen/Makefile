@@ -77,7 +77,7 @@ client: *.java
     UI/DEViseMenuPanel.java UI/DEViseStatusMessage.java UI/DEViseToolBar.java \
     UI/DEViseToolBarButton.java UI/DEViseToolBarButtonAction.java \
     UI/DEViseMouseCursor.java UI/DEViseHtmlWindow.java \
-    DEViseScreenResizeHandler.java
+    DEViseScreenResizeHandler.java DEViseSessionMenuButton.java
 
 appletclass: DEViseJSApplet.java 
 	$(JAVAC) DEViseJSApplet.java DEViseJSTimer.java

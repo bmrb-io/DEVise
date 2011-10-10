@@ -19,6 +19,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.12.4.1  2011/10/05 19:11:58  wenger
+// Moved the "Show Selection Trees" button to the Jmol menu to save space.
+//
+// Revision 1.12  2011/02/13 23:56:24  wenger
+// Merged bug_1005_br_0 thru bug_1005_br_1 to trunk.
+//
 // Revision 1.11.4.2  2011/01/21 19:37:50  wenger
 // Cleaned up some of the temporary code.
 //
@@ -251,6 +257,7 @@ public class DEViseJmolMenuButton extends DEViseButton
     private static final String STR_SEL_TREES = "Selection trees...";
     private static final String STR_SELECT = "Select";
     private static final String STR_SELECT_ALL = "Select All";
+    private static final String STR_SHOW_TREES = "Show Selection Trees...";
     private static final String STR_START_VIBE = "Start vibration";
     private static final String STR_STOP_ANIMATION = "Stop animation";
     private static final String STR_STOP_VIBE = "Stop vibration";
@@ -284,6 +291,8 @@ public class DEViseJmolMenuButton extends DEViseButton
 
 	jmolMenu = new PopupMenu();
 	MenuItem treeMenuItem;
+
+	addMenuItem(jmolMenu, STR_SHOW_TREES);
 
 	//
 	// Edit menu.
@@ -669,6 +678,9 @@ public class DEViseJmolMenuButton extends DEViseButton
 	} else if (event.getActionCommand().equals(STR_SELECT_ALL)) {
 	    // This doesn't seem to always work for restraints...
 	    viewer.selectAll();
+
+	} else if (event.getActionCommand().equals(STR_SHOW_TREES)) {
+	    jmolCanvas.showTrees();
 
 	} else if (event.getActionCommand().equals(STR_START_VIBE)) {
 	    jmolCanvas.jmolEvalStringErr(viewer, "frame 1; vibration on");

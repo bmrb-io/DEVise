@@ -22,8 +22,35 @@
 // $Id$
 
 // $Log$
+// Revision 1.188  2011/09/23 21:47:29  wenger
+// Fixed background colors of some dialogs.
+//
 // Revision 1.187  2011/08/26 15:37:35  wenger
 // Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
+// Revision 1.186.2.13  2011/10/10 20:29:27  wenger
+// Fixed up the 'edited dynamics movie' dialog.
+//
+// Revision 1.186.2.12  2011/10/10 19:27:04  wenger
+// More cleanup of session-specific menus: we now properly get rid of
+// any session-specific menu items when we close a session.
+//
+// Revision 1.186.2.11  2011/10/06 15:52:04  wenger
+// Some more cleanup of the "session-specific" menu code.
+//
+// Revision 1.186.2.10  2011/10/05 23:44:51  wenger
+// Early version of "session-specific" menu working -- only works for
+// showing URLs at this point.
+//
+// Revision 1.186.2.9  2011/10/05 19:11:58  wenger
+// Moved the "Show Selection Trees" button to the Jmol menu to save space.
+//
+// Revision 1.186.2.8  2011/10/05 17:48:07  wenger
+// Okay, removed the debug code.
+//
+// Revision 1.186.2.7  2011/09/27 20:27:49  wenger
+// The movie generation dialog is mostly in place -- the layout needs to
+// be fixed.
 //
 // Revision 1.186.2.6  2011/08/25 21:35:53  wenger
 // Hopefully final cleanup of the JavaScreen embedded button fixes.
@@ -961,6 +988,7 @@ public class jsdevisec extends JPanel
     public RecordDlg recorddlg = null;
     public ServerStateDlg statedlg = null;
     private SettingDlg settingdlg = null;
+    private DynMovieDlg dynMovieDlg = null;
     private SetCgiUrlDlg setcgiurldlg = null;
     private SetLogFileDlg setlogfiledlg = null;
     private CollabSelectDlg collabSelectDlg = null;
@@ -970,7 +998,7 @@ public class jsdevisec extends JPanel
     public CollabStateDlg collabstatedlg = null;
 
     private DEViseJmolMenuButton jmolButton;
-    private DEViseButton treeButton;
+    private DEViseSessionMenuButton sessionMenuButton;
 
     public boolean isSessionOpened = false; 
     // Visualization type for BMRB sessions.
@@ -1124,16 +1152,10 @@ public class jsdevisec extends JPanel
         jmolButton = new DEViseJmolMenuButton(jsValues);
 	buttonPanel.add(jmolButton);
 	jmolButton.hide();
-	treeButton = new DEViseButton("Show Selection Trees...", jsValues);
-        treeButton.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent event)
-                {
-		    toolBar.getJmolCanvas().showTrees();
-                }
-            });
-	buttonPanel.add(treeButton);
-	treeButton.hide();
+
+	sessionMenuButton = new DEViseSessionMenuButton(this);
+	buttonPanel.add(sessionMenuButton);
+	sessionMenuButton.hide();
 
 	// viewInfo contains the process counter
 	viewInfo = new DEViseViewInfo(this, images);
@@ -1515,7 +1537,6 @@ public class jsdevisec extends JPanel
 
 	public void run() {
             jmolButton.show(_canvas);
-	    treeButton.show();
 	    toolBar.setJmolCanvas(_canvas);
 	    validate();
 	}
@@ -1532,13 +1553,30 @@ public class jsdevisec extends JPanel
         Runnable doHideJmol = new Runnable() {
 	    public void run() {
                 jmolButton.hide();
-		treeButton.hide();
 	        toolBar.setJmolCanvas(null);
 	        validate();
 	    }
 	};
 
 	SwingUtilities.invokeLater(doHideJmol);
+    }
+
+    public void createSessionMenuItem(String menuType, String menuName,
+      String label, String cmd)
+    {
+        sessionMenuButton.addMenuItem(menuType, menuName, label, cmd);
+    }
+
+    public void hideSessionMenu()
+    {
+        Runnable doHideSessionMenu = new Runnable() {
+	    public void run() {
+	        sessionMenuButton.hide();
+	        validate();
+	    }
+	};
+
+	SwingUtilities.invokeLater(doHideSessionMenu);
     }
 
     public void showDocument(String url)
@@ -1911,6 +1949,22 @@ public class jsdevisec extends JPanel
         settingdlg = null;
     }
 
+    public boolean showDynamicsMovieDlg()
+    {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showDynamicsMovieDialog()");
+	}
+        dynMovieDlg = new DynMovieDlg(this, parentFrame,
+	  isCenterScreen);
+        dynMovieDlg.open();
+	boolean result = dynMovieDlg.isOk;
+        dynMovieDlg = null;
+	return result;
+    }
+
     public void setCgiUrl()
     {
 	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
@@ -1959,7 +2013,9 @@ public class jsdevisec extends JPanel
 
     public boolean isShowingMsg()
     {
-        if (sessiondlg != null || settingdlg != null || statedlg != null || recorddlg != null || msgbox != null || setcgiurldlg != null) {
+        if (sessiondlg != null || settingdlg != null || statedlg != null ||
+	  recorddlg != null || msgbox != null || setcgiurldlg != null ||
+	  dynMovieDlg != null) {
             return true;
         } else {
             return false;
@@ -4575,6 +4631,145 @@ class CollabStateDlg extends Dialog
             status = false;
         }
 	jsc.jsValues.debug.log("Closed CollabStateDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}
+
+// ------------------------------------------------------------------------
+// Dialog to confirm that users really want to generate edited dynamics
+// movies.  Note: this should eventually get extended to allow the user
+// to modify the movie parameters.
+class DynMovieDlg extends Dialog
+{
+    private jsdevisec jsc = null;
+
+    private Label msg;
+    private DEViseButton okButton;
+    private DEViseButton cancelButton;
+
+    private boolean status = false; // true means this dialog is showing
+    public boolean isOk = false;
+
+    public DynMovieDlg(jsdevisec what, Frame owner, boolean isCenterScreen)
+    {
+        super(owner, true);
+
+	what.jsValues.debug.log("Creating DynMovieDlg");
+
+        jsc = what;
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("Create Edited Dynamics Movie");
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+    	msg = new Label(
+	  "Creating edited dynamics movie -- this may take several minutes.");
+
+        c.gridwidth = 1;
+	c.gridx = 0;
+	c.gridx = 0;
+	c.ipadx = 20;
+	c.ipady = 20;
+        gridbag.setConstraints(msg, c);
+        add(msg);
+
+        okButton = new DEViseButton("OK", jsc.jsValues);
+        cancelButton = new DEViseButton("Cancel", jsc.jsValues);
+
+        DEViseButton [] button = new DEViseButton[2];
+        button[0] = okButton;
+        button[1] = cancelButton;
+        DEViseComponentPanel panel = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+        panel.setBackground(jsc.jsValues.uiglobals.bg);
+
+	c.gridx = 0;
+	c.gridy = 1;
+	c.ipadx = 10;
+	c.ipady = 10;
+        gridbag.setConstraints(panel, c);
+        add(panel);
+
+        pack();
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        okButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+		    isOk = true;
+                    close();
+                }
+            });
+
+        cancelButton.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent event)
+                {
+                    close();
+                }
+            });
+
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening CollabPassDlg");
+        status = true;
+        setVisible(true);
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed DynMovieDlg");
     }
 
     // true means this dialog is showing

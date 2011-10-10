@@ -30,6 +30,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.110  2011/08/26 15:37:34  wenger
+// Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
+// Revision 1.109.4.3  2011/09/29 17:55:15  wenger
+// We now actually create embedded buttons in DEViseScreen instead of
+// in DEViseGData, so that they're created by the event queue thread instead
+// of a command thread (this didn't actually solve the Mac Jmol/button
+// lockup problem, but it seems safer).  Also changed the DEViseCanvas
+// class to extend JComponent rather than Container, in case this works
+// better for adding JButtons to it.
+//
 // Revision 1.109.4.2  2011/06/08 21:19:35  wenger
 // We no longer change the mouse cursor to the disabled cursor in a
 // view with a button in "standard" toolbar mode.
@@ -583,8 +594,9 @@ import  java.awt.*;
 import  java.awt.event.*;
 import  java.awt.image.*;
 import  java.util.*;
+import  javax.swing.*;
 
-public class DEViseCanvas extends Container
+public class DEViseCanvas extends JComponent
 {
     protected jsdevisec jsc = null;
     protected DEViseScreen jscreen = null;
@@ -850,7 +862,7 @@ public class DEViseCanvas extends Container
         if (!_paintRubberbandOnly) {
             // draw 3D molecular view
             if (paintCrystal(gc)) {
-                paintBorder(gc);
+                paintHighlight(gc);
                 paintHelpMsg(gc);
                 return;
             }
@@ -877,7 +889,7 @@ public class DEViseCanvas extends Container
 
         if (!_paintRubberbandOnly) {
             // draw highlight border
-            paintBorder(gc);
+            paintHighlight(gc);
 
 	    // draw sxis labels
 	    paintAxisLabel(gc);
@@ -1079,7 +1091,7 @@ public class DEViseCanvas extends Container
     {
     }
 
-    private synchronized void paintBorder(Graphics gc)
+    private synchronized void paintHighlight(Graphics gc)
     {
        // Border for Active view is disabled. - no highlighting
 	/* if (activeView != null && activeView == jscreen.getCurrentView()) {

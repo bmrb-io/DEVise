@@ -42,6 +42,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.27  2011/08/26 15:37:34  wenger
+// Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
+//
+// Revision 1.26.2.5  2011/10/05 17:48:06  wenger
+// Okay, removed the debug code.
+//
+// Revision 1.26.2.4  2011/10/05 17:40:27  wenger
+// Lots of extra debug output to try to figure out the button/Jmol lockup
+// problem on Macs.  No luck, though, I'm going to take a different
+// approach...
+//
+// Revision 1.26.2.3  2011/09/29 17:55:16  wenger
+// We now actually create embedded buttons in DEViseScreen instead of
+// in DEViseGData, so that they're created by the event queue thread instead
+// of a command thread (this didn't actually solve the Mac Jmol/button
+// lockup problem, but it seems safer).  Also changed the DEViseCanvas
+// class to extend JComponent rather than Container, in case this works
+// better for adding JButtons to it.
+//
 // Revision 1.26.2.2  2011/06/03 23:21:28  wenger
 // Cleaned up some of the junk that was just commented out previously.
 //
