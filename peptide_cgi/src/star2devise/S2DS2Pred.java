@@ -22,6 +22,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.2.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.3  2011/05/23 19:47:17  wenger
+// Added S2 predicted vs. experimental help page; fixed some minor problems
+// with the s2 predicted vs. experiemental html page.
+//
 // Revision 1.2  2011/05/19 19:46:09  wenger
 // Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
 //
@@ -258,7 +267,7 @@ public class S2DS2Pred {
 	      "entity assembly " + _entityAssemblyId + ")";
             S2DSession.write(_sessionDir, S2DUtils.TYPE_S2PRED, _name,
 	      _name, _name, null, _coordIndex, _frameIndex, info, title,
-	      false, "");
+	      false, "", _pdbId);
 
 	    //
 	    // Write the session-specific html file.

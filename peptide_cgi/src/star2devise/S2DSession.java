@@ -20,6 +20,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.34.2.3  2011/09/22 21:22:11  wenger
+// We now don't show the movie buttons if a movie is not available; also
+// improved the way the movie configuration works.
+//
+// Revision 1.34.2.2  2011/09/22 16:02:00  wenger
+// Added configuration for the dynamics movie URLs.
+//
+// Revision 1.34.2.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.34  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.33.2.4  2011/05/10 21:29:39  wenger
 // Incorporated secondary structure into s2predict visualizations.
 //
@@ -104,6 +119,7 @@ package star2devise;
 
 import java.io.*;
 import java.util.*;
+import java.net.*;
 
 public class S2DSession {
     //===================================================================
@@ -116,6 +132,9 @@ public class S2DSession {
     // files are only used on UNIX...
     private static final String _defaultJSDataDir = "bmrb/dynamic_data";
 
+    private static String _dynMovieUrl;
+    private static String _dynMovieGenUrl;
+
     //===================================================================
     // PUBLIC METHODS
 
@@ -126,19 +145,41 @@ public class S2DSession {
     }
 
     //-------------------------------------------------------------------
+    static void getProperties(Properties props) throws S2DException
+    {
+        _dynMovieUrl = props.getProperty("bmrb_mirror.dyn_movie_url");
+        if (_dynMovieUrl == null) {
+            if (doDebugOutput(2)) {
+                System.out.println("bmrb_mirror.dyn_movie_url " +
+                  "property value not defined; using default");
+            }
+            _dynMovieUrl = "http://condor.bmrb.wisc.edu/bbee/video/";
+        }
+
+        _dynMovieGenUrl = props.getProperty("bmrb_mirror.dyn_movie_gen_url");
+        if (_dynMovieGenUrl == null) {
+            if (doDebugOutput(2)) {
+                System.out.println("bmrb_mirror.dyn_movie_gen_url " +
+                  "property value not defined; using default");
+            }
+            _dynMovieGenUrl = "http://pike.bmrb.wisc.edu?entry=2JUO&start_time=0&end_time=.1&material=Transparent&submitted=yes";
+        }
+    }
+
+    //-------------------------------------------------------------------
     static void write(String sessionDir, int dataType, String name,
       int frameIndex, String info, String title, boolean hasRealCBShifts,
-      String starVersion) throws S2DException
+      String starVersion, String s2pPdbId) throws S2DException
     {
     	write(sessionDir, dataType, name, name, name, null, frameIndex,
-	  0, info, title, hasRealCBShifts, starVersion);
+	  0, info, title, hasRealCBShifts, starVersion, s2pPdbId);
     }
 
     //-------------------------------------------------------------------
     static void write(String sessionDir, int dataType, String name,
       String fullName, String id1, String id2, int frameIndex1,
       int frameIndex2, String info, String title, boolean hasRealCBShifts,
-      String starVersion)
+      String starVersion, String s2pPdbId)
       throws S2DException
     {
         if (doDebugOutput(11)) {
@@ -156,8 +197,8 @@ public class S2DSession {
 	    frameIndexStr += "+" + frameIndex2;
 	}
 
-	String[] searchStrings = new String[6];
-	String[] replaceStrings = new String[6];
+	String[] searchStrings = new String[8];
+	String[] replaceStrings = new String[8];
 	boolean allowMultipleReplace = true;
 
 	// The "main" data source in the base file.
@@ -186,6 +227,12 @@ public class S2DSession {
 
 	searchStrings[5] = null;
 	replaceStrings[5] = null;
+
+	searchStrings[6] = null;
+	replaceStrings[6] = null;
+
+	searchStrings[7] = null;
+	replaceStrings[7] = null;
 
 	// The dummy visualization info string in the base file.
 	String visInfoSearchString = "Visualization info";
@@ -505,8 +552,26 @@ TEMP*/
 	    searchStrings[3] = "15536csr1_1";
 	    replaceStrings[3] = id1 + S2DNames.CSR_SUFFIX +
 	      frameIndex1 + "_1";
+	    searchStrings[4] = "http://condor.bmrb.wisc.edu/bbee/video/2JUO.mpg";
+	    replaceStrings[4] = S2DUtils.replace(_dynMovieUrl, "*",
+	      s2pPdbId.toUpperCase());
+	    searchStrings[5] = "http://pike.bmrb.wisc.edu?entry=2JUO&start_time=0&end_time=.1&material=Transparent&submitted=yes";
+	    replaceStrings[5] = S2DUtils.replace(_dynMovieGenUrl, "*",
+	      s2pPdbId.toUpperCase());
 
 	    frameIndexStr = "" + frameIndex1 + "-" + frameIndex2;
+
+	    if (!dynMovieExists(s2pPdbId)) {
+	        // Turn off sending GData to the JS for View 3 and View 10.
+		searchStrings[6] = 
+		  "DEVise viewSetJSSendP {View 3} 0 1 0 \"\" 1 \" \" 1";
+		replaceStrings[6] = 
+		  "DEVise viewSetJSSendP {View 3} 0 0 0 \"\" 1 \" \" 1";
+		searchStrings[7] =
+		  "DEVise viewSetJSSendP {View 10} 0 1 0 \"\" 1 \" \" 1";
+		replaceStrings[7] = 
+		  "DEVise viewSetJSSendP {View 10} 0 0 0 \"\" 1 \" \" 1";
+	    }
 	    break;
 
 	default:
@@ -704,6 +769,30 @@ TEMP*/
 	 while ((line = reader.readLine()) != null) {
 	    writer.write(line + "\n");
 	 }
+    }
+
+    //-------------------------------------------------------------------
+    // Figure out whether a dynamics movie exists for the given PDB ID.
+    static boolean dynMovieExists(String s2pPdbId)
+    {
+	boolean result = true;
+
+	try {
+	    String urlName = S2DUtils.replace(_dynMovieUrl, "*",
+	      s2pPdbId.toUpperCase());
+	    URL url = new URL(urlName);
+	    HttpURLConnection connection =
+	      (HttpURLConnection)url.openConnection();
+	    result = connection.getResponseCode() == HttpURLConnection.HTTP_OK;
+        } catch (Exception ex) {
+            if (doDebugOutput(1)) {
+	        System.err.println("Exception checking for movie URL: "
+		  + ex.toString());
+	    }
+	    result = false;
+	}
+
+    	return result;
     }
 
     //-------------------------------------------------------------------

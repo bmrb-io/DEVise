@@ -22,6 +22,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.2.1  2011/09/21 20:46:09  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.8  2011/06/16 23:30:56  wenger
+// Fixed Peptide-CGI bug 123 (change "All" to "All by violation", etc., in
+// distance restraint selection views).
+//
 // Revision 1.7  2010/11/22 23:24:46  wenger
 // Merged violation_select2_br_0 thru violation_select2_br_1 to trunk,
 // including cleaning up a couple of leftover temporary comments.
@@ -846,7 +855,7 @@ public class S2DDistRestraint extends S2DRestraint {
 	        info += " and PDB " + _pdbId;
 	    }
 	    S2DSession.write(_sessionDir, type, _name, frameIndex,
-	      info, null, true, _starVersion);
+	      info, null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html files.

@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.2.1  2011/09/21 20:46:09  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.11  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.10.16.2  2011/05/11 20:53:31  wenger
 // Completed s2p tests and modified code so that they all work -- we do
 // the s2predict processing before the final ChemShiftRef processing, so
@@ -289,13 +297,13 @@ public class S2DChemShiftRef
 	    // Write the session files.
 	    //
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF1, _name,
-	      _frameIndex, "", null, true, _starVersion);
+	      _frameIndex, "", null, true, _starVersion, "");
 
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF2, _name,
-	      _frameIndex, "", null, true, _starVersion);
+	      _frameIndex, "", null, true, _starVersion, "");
 
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CHEM_SHIFT_REF3, _name,
-	      _frameIndex, "", null, true, _starVersion);
+	      _frameIndex, "", null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html files.

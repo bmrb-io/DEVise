@@ -21,6 +21,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.20.1  2011/09/21 20:46:09  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.17  2010/03/10 22:36:15  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.16  2010/02/11 22:13:10  wenger
 // Merged s2d_remediated_rest_1002_br_0 thru s2d_remediated_rest_1002_br_1
 // to trunk (note: s2d_remediated_rest_1002_br_1 ==
@@ -430,7 +441,7 @@ public class S2DAtomicCoords {
 	            info += " and PDB " + _pdbId;
 	        }
 	        S2DSession.write(_sessionDir, S2DUtils.TYPE_ATOMIC_COORDS,
-	          _name, frameIndex, info, null, true, _starVersion);
+	          _name, frameIndex, info, null, true, _starVersion, "");
 
 	        //
 	        // Write the session-specific html file.
@@ -547,7 +558,7 @@ public class S2DAtomicCoords {
 	        info += " and PDB " + _pdbId;
 	    }
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ATOMIC_COORDS,
-	      _name, frameIndex, info, null, true, _starVersion);
+	      _name, frameIndex, info, null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.

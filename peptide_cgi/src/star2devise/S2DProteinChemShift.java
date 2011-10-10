@@ -22,6 +22,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.6.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.10  2011/01/07 22:10:28  wenger
+// Merged s2d_multi_entry2_br_0 thru s2d_multi_entry2_br_1 to trunk.
+//
 // Revision 1.9.4.11  2011/01/05 20:57:40  wenger
 // Fixed a bug that caused improper processing for the uploaded data/
 // entry combination.
@@ -269,7 +277,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    // Write the session file
 	    //
 	    S2DSession.write(_sessionDir, sessionType, _name, frameIndex,
-	      _info, null, _hasRealCBShifts, _starVersion);
+	      _info, null, _hasRealCBShifts, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.
@@ -392,7 +400,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    // Write the session file.
 	    //
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_CSI, _name,
-	      frameIndex, _info, null, _hasRealCBShifts, _starVersion);
+	      frameIndex, _info, null, _hasRealCBShifts, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.
@@ -531,7 +539,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	    // Write the session file.
 	    //
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_PCT_ASSIGN,
-	      _name, frameIndex, _info, null, true, _starVersion);
+	      _name, frameIndex, _info, null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.
@@ -669,7 +677,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	        // Write the session file.
 	        //
 	        S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSN_CHEM_SHIFTS,
-	          _name, frameIndex, _info, null, true, _starVersion);
+	          _name, frameIndex, _info, null, true, _starVersion, "");
 
 	        //
 	        // Write the session-specific html file.
@@ -773,7 +781,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	        // Write the session file.
 	        //
 	        S2DSession.write(_sessionDir, S2DUtils.TYPE_HVSC_CHEM_SHIFTS,
-	          _name, frameIndex, _info, null, true, _starVersion);
+	          _name, frameIndex, _info, null, true, _starVersion, "");
 
 	        //
 	        // Write the session-specific html file.
@@ -915,7 +923,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	              masterName, fullName,
 	              masterName, extraId, entry1Info._frameIndex,
 		      entry2Info._frameIndex, info, title, false,
-		      starVersion);
+		      starVersion, "");
 		    String frameDetails = ""; //TEMP -- put real value here?
 	            S2DSpecificHtml specHtml = new S2DSpecificHtml(htmlDir,
 	              S2DUtils.TYPE_HVSC_2_ENTRY,
@@ -957,7 +965,7 @@ public class S2DProteinChemShift extends S2DChemShift {
 	              masterName, fullName,
 	              masterName, extraId, entry1Info._frameIndex,
 		      entry2Info._frameIndex, info, title, false,
-		      starVersion);
+		      starVersion, "");
 		    String frameDetails = ""; //TEMP -- put real value here?
 	            S2DSpecificHtml specHtml = new S2DSpecificHtml(htmlDir,
 	              S2DUtils.TYPE_HVSN_2_ENTRY,

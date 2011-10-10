@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.8.1  2011/09/21 20:46:09  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.15  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.14  2010/11/01 00:51:12  wenger
 // Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
@@ -241,7 +249,7 @@ public class S2DCoupling {
 	    //
 	    String info = "Visualization of " + _longName;
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_COUPLING,
-	      _name, frameIndex, info, null, true, _starVersion);
+	      _name, frameIndex, info, null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.

@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.18.8.1  2011/09/22 21:22:11  wenger
+// We now don't show the movie buttons if a movie is not available; also
+// improved the way the movie configuration works.
+//
+// Revision 1.18  2010/12/07 17:41:16  wenger
+// Did another version history purge.
+//
 // Revision 1.17  2010/03/11 20:31:29  wenger
 // Implemented to-do 126 (multiple NMR-STAR file paths), except that
 // not all config files are updated yet; added checks that the URL
@@ -121,7 +128,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	    long timestamp = connection.getLastModified();
 	    date = new Date(timestamp);
         } catch (Exception ex) {
-	    System.err.println("IOException: " + ex.toString());
+	    System.err.println("Exception: " + ex.toString());
 	}
 
 	return date;

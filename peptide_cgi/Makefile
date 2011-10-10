@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2010
+#  (c) Copyright 2001-2011
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -39,6 +39,8 @@ DO_RRDIST_DEFAULT = 1
 DO_S2PRED_DEFAULT = 0
 S2PRED_URL_DEFAULT = 
 JS_CMD_PORT = 6666
+DYNAMICS_MOVIE_URL = "http://condor.bmrb.wisc.edu/bbee/video/*.mpg"
+DYNAMICS_MOVIE_GEN_URL = "http://pike.bmrb.wisc.edu?entry=*\&start_time=0\&end_time=.02\&display_x=400\&display_y=400\&material=Transparent\&submitted=yes"
 
 include Makefile.config
 
@@ -197,6 +199,8 @@ s2d_props:
 	echo "bmrb_mirror.do_s2p_default=$(DO_S2PRED_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.s2p_url=$(S2PRED_URL_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.js_cmd_port=$(JS_CMD_PORT)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.dyn_movie_url=$(DYNAMICS_MOVIE_URL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.dyn_movie_gen_url=$(DYNAMICS_MOVIE_GEN_URL)" >> $(S2D_PROPS_FILE)
 
 error_email:
 	-rm -f $(ERROR_EMAIL_FILE)

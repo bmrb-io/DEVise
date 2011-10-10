@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.8.14.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.8  2010/10/13 20:44:02  wenger
+// Finished restructuring Peptide-CGI code so that we get values from
+// the STAR files in the relevant object constructors, instead of in the
+// S2DMain class.
+//
 // Revision 1.7  2010/03/10 22:36:16  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -349,7 +359,7 @@ public class S2DLacs {
 	    //
 	    String info = "Visualization of " + _longName;
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_LACS,
-	      _name, frameIndex, info, _title, true, _starVersion);
+	      _name, frameIndex, info, _title, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.

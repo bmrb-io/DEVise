@@ -2,7 +2,10 @@
 
 Peptide-CGI 12.1.4
 ------------------
-(Needs DEVise 1.11.1 or higher, JavaScreen client 5.13.3 or higher.)
+(Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.0 or higher.)
+
+* Added buttons to display dynamics movies to the S2 predicted vs.
+experimental visualization.
 
 * Fixed some problems with the installation of the multi-entry selection
 page images.

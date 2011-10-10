@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.15.8.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.15  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.14  2010/10/13 20:44:02  wenger
 // Finished restructuring Peptide-CGI code so that we get values from
 // the STAR files in the relevant object constructors, instead of in the
@@ -233,7 +241,7 @@ public class S2DPistachio {
 	    String info = "Visualization of " + _name +
 	      " assignment figure of merit data";
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_PISTACHIO,
-	      _name, frameIndex, info, null, true, _starVersion);
+	      _name, frameIndex, info, null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.

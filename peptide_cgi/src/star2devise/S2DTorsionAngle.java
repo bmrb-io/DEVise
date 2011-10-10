@@ -24,6 +24,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.8.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.10  2010/12/07 17:41:16  wenger
+// Did another version history purge.
+//
 // Revision 1.9  2010/07/15 21:37:33  wenger
 // Fixed Peptide-CGI bug 111.
 //
@@ -527,7 +535,7 @@ public class S2DTorsionAngle extends S2DRestraint {
 	        info += " and PDB " + _pdbId;
 	    }
 	    S2DSession.write(_sessionDir, type, _name, frameIndex,
-	      info, null, true, _starVersion);
+	      info, null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html files.

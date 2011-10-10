@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.16.8.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.16  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.15  2010/11/01 00:51:12  wenger
 // Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
@@ -179,7 +187,7 @@ public class S2DRelaxation {
 	    //
 	    String info = "Visualization of " + _longName;
 	    S2DSession.write(_sessionDir, _dataType,
-	      _name, frameIndex, info, _title, true, _starVersion);
+	      _name, frameIndex, info, _title, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.

@@ -21,6 +21,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.16.14.1  2011/09/21 20:46:09  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.16  2010/10/13 20:44:01  wenger
+// Finished restructuring Peptide-CGI code so that we get values from
+// the STAR files in the relevant object constructors, instead of in the
+// S2DMain class.
+//
 // Revision 1.15  2010/03/10 22:36:15  wenger
 // Added NMR-STAR file version to summary html page and detailed
 // visualization version info (to-do 072).  (Doing this before I
@@ -264,7 +274,7 @@ public class S2DAmbiguity {
 	    String info = "Visualization of BMRB " + _name +
 	      " chemical shift ambiguity data";
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_AMBIGUITY,
-	      _name, frameIndex, info, null, true, _starVersion);
+	      _name, frameIndex, info, null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.

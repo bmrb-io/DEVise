@@ -24,6 +24,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.20.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.11  2010/03/10 22:36:16  wenger
+// Added NMR-STAR file version to summary html page and detailed
+// visualization version info (to-do 072).  (Doing this before I
+// add multiple NMR-STAR paths so we can see which NMR-STAR file
+// was used.)
+//
 // Revision 1.10  2009/10/22 17:26:34  wenger
 // Refactored the experimental chemical shifts to match the new-style
 // Sparta processing where we get the appropriate data values in
@@ -174,7 +185,7 @@ public class S2DNAChemShift extends S2DChemShift {
 	    // Write the session file
 	    //
 	    S2DSession.write(_sessionDir, sessionType, _name, frameIndex,
-	      _info, null, true, _starVersion);
+	      _info, null, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.

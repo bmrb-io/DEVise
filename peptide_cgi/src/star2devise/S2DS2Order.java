@@ -21,6 +21,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.10.10.1  2011/09/21 20:46:10  wenger
+// The s2predicted session movie buttons are now updated for the correct
+// PDB ID -- I should probably have configuration for the URL, though,
+// and also only show the button if the movie is available.
+//
+// Revision 1.10  2010/11/01 00:51:12  wenger
+// Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
+//
 // Revision 1.9.2.3  2010/10/19 00:23:20  wenger
 // Split the actual sample info out from the sample conditions info,
 // including modifying ambiguity code and Pistachio metadata accordingly.
@@ -245,7 +253,7 @@ public class S2DS2Order {
 	    String title = "S2 Order Parameters (entity assembly " +
 	      _entityAssemblyID + ")";
 	    S2DSession.write(_sessionDir, S2DUtils.TYPE_ORDER,
-	      _name, frameIndex, info, title, true, _starVersion);
+	      _name, frameIndex, info, title, true, _starVersion, "");
 
 	    //
 	    // Write the session-specific html file.
