@@ -40,7 +40,7 @@ DO_S2PRED_DEFAULT = 0
 S2PRED_URL_DEFAULT = 
 JS_CMD_PORT = 6666
 DYNAMICS_MOVIE_URL = "http://condor.bmrb.wisc.edu/bbee/video/*.mpg"
-DYNAMICS_MOVIE_GEN_URL = "http://pike.bmrb.wisc.edu?entry=*\&start_time=0\&end_time=.02\&display_x=400\&display_y=400\&material=Transparent\&submitted=yes"
+DYNAMICS_MOVIE_GEN_URL = "http://pike.bmrb.wisc.edu?entry=*\&start_time=0\&end_time=.04\&display_x=300\&display_y=300\&scale=1.5\&slowdown=3\&material=Transparent\&submitted=yes"
 
 include Makefile.config
 
