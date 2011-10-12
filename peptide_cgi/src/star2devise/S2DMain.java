@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.276  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.275  2011/09/20 19:44:54  wenger
 // Changed version to 12.1.4x1, added 12.1.4 version history section.
 //
@@ -572,7 +576,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.4x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.4";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.0";
 
