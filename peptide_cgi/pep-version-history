@@ -7,6 +7,10 @@ Peptide-CGI 12.1.5
 * Temporarily disabled dynamics movie menus in S2 predicted vs. 
 experimental visualization.
 
+* Improvments to S2 predicted vs. experimental visualizations: made the 
+dynamics movie button view very thin (almost invisible) and reduced
+the gaps between other views.
+
 
 Peptide-CGI 12.1.4
 ------------------
