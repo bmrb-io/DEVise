@@ -110,6 +110,7 @@ endif
 chmod a+rwx $targetdir
 cp -p histograms/html/*.html $targetdir
 cp -p histograms/html/*.png $targetdir
+cp -p histograms/html/*.gif $targetdir
 chmod a+r $targetdir/*.html
 
 

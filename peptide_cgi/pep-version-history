@@ -14,7 +14,7 @@ the gaps between other views.
 * Cleaned up the single-entry selection page and added example images
 (matching the two-entry page).
 
-* Added histogram index page.
+* Added histogram index page with thumbnails of the histograms.
 
 * Added DOCTYPE to all html pages and templates.
 
