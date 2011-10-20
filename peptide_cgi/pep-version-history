@@ -11,6 +11,9 @@ experimental visualization.
 dynamics movie button view very thin (almost invisible) and reduced
 the gaps between other views.
 
+* Cleaned up the single-entry selection page and added example images
+(matching the two-entry page).
+
 
 Peptide-CGI 12.1.4
 ------------------

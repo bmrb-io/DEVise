@@ -1,7 +1,7 @@
 <!--
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2000-2010
+  (c) Copyright 2000-2011
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,17 +21,65 @@
   <title>DEVise JavaScreen: select BMRB sample for visualizations</title>
   <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
 </head>
+
 <body>
 
-<form method="get" name="get_by_bmrb" action="CGI_URL">
-  <label for="number">Enter a BMRB accession number (e.g., 4081)</label>
-  <p>
-  <input type="text" name="number" size="5">
-  </p>
-  <p>
-  <input type="submit" value="View data">
-  </p>
-</form>
+    <CENTER><TABLE BORDER="0" CELLPADDING="0" ALIGN="CENTER"  WIDTH="100%">
+      <tr>
+        <TD class="titlesearch" HEIGHT="40">
+          <A HREF="/"><IMG SRC="figures/logo.gif" ALT="BMRB Logo" BORDER="0"></A>
+        </TD>
+
+        <TD class="titlesearch" WIDTH="100%" ALIGN="CENTER"  >
+          <H2><i>Biological Magnetic Resonance Data Bank</i></H2><BR>
+          <i>A Repository for Data from NMR Spectroscopy on
+	   Proteins, Peptides, Nucleic Acids, and other Biomolecules </i>
+        </TD>
+      </tr>
+    </table>
+    </center>
+
+    <center>
+      <h2>BMRB entry visualizations</h2>
+    </center>
+
+    <form method="get" name="get_by_bmrb" action="CGI_URL">
+      <fieldset>
+      <label for="number">Enter a BMRB accession number (e.g., 4081)
+        to generate visualizations for that entry</label>
+      <p>
+      <input type="text" name="number" size="5">
+      </p>
+      <p>
+      <input type="submit" value="View data">
+      </p>
+      </fieldset>
+    </form>
+
+    <p>
+    You can also upload data to the <a href="../../vis_serv">
+    Visualization Server</a> to visualize it without making it public.
+    </p>
+
+    <h3>3D structure example</h3>
+    <img src=figures/single_entry_ac.png>
+    <p>
+    <a href="html/help_ac.html">Help about this visualization</a>
+    </p>
+
+
+    <h3>Chemical shift distributions by amino acid example</h3>
+    <img src=figures/cs_by_aa.png>
+    <p>
+    <a href="html/help_as.html">Help about this visualization</a>
+    </p>
+
+
+    <h3>Observed vs. calculated chemical shifts example</h3>
+    <img src=figures/single_entry_csr3.png>
+    <p>
+    <a href="html/help_csr3.html">Help about this visualization</a>
+    </p>
 
 </body>
 </html>
