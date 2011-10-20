@@ -16,6 +16,8 @@ the gaps between other views.
 
 * Added histogram index page.
 
+* Added DOCTYPE to all html pages and templates.
+
 
 Peptide-CGI 12.1.4
 ------------------

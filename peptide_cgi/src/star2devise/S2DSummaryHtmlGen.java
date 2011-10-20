@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.39  2011/09/19 19:14:42  wenger
+// Fixed tutorial video links for the visualization server.
+//
 // Revision 1.38  2011/06/28 02:09:07  wenger
 // Fixed tutorial videos link for summary visualization pages.
 //
@@ -414,6 +417,7 @@ public abstract class S2DSummaryHtmlGen {
 
 	    _writer = S2DFileWriter.create(fileName());
 
+	    _writer.write("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n");
 	    _writer.write("<html>\n<head>\n" +
 	      "<title>Summary for " + _longName + "</title>\n" +
 	      "<link REL=\"stylesheet\" TYPE=\"text/css\" " +

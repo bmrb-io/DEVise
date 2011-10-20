@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.279  2011/10/19 22:07:15  wenger
+// Improvments to S2 predicted vs. experimental visualizations: made the
+// dynamics movie button view very thin (almost invisible) and reduced
+// the gaps between other views.
+//
 // Revision 1.278  2011/10/13 15:04:33  wenger
 // Changed version to 12.1.5x1 and added 12.1.5 version history section.
 //
@@ -582,7 +587,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.5x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.5x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.0";
 
