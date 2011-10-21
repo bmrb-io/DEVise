@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.280  2011/10/20 19:09:33  wenger
+// Added DOCTYPE to all html pages and templates.
+//
 // Revision 1.279  2011/10/19 22:07:15  wenger
 // Improvments to S2 predicted vs. experimental visualizations: made the
 // dynamics movie button view very thin (almost invisible) and reduced
@@ -1200,6 +1203,13 @@ public class S2DMain {
 	    S2DNames.JS_CMD_PORT = "6666";
 	}
 
+	S2DNames.S2PRED_URL = props.getProperty("bmrb_mirror.s2p_url");
+	if (S2DNames.S2PRED_URL == null) {
+	    S2DError err = new S2DError("Unable to get value for " +
+	      "bmrb_mirror.s2p_url property; using default");
+	    S2DNames.S2PRED_URL = "file:./";
+	}
+
 	S2DSession.getProperties(props);
 
         return props;
@@ -1325,15 +1335,6 @@ public class S2DMain {
 		  "; using default"));
 	    }
 	}
-
-	S2DNames.S2PRED_URL = props.getProperty("bmrb_mirror.s2p_url");
-	if (S2DNames.S2PRED_URL == null) {
-	    S2DError err = new S2DError("Unable to get value for " +
-	      "bmrb_mirror.s2p_url property; using default");
-	    S2DNames.S2PRED_URL = "file:./";
-	}
-
-
     }
 
     //-------------------------------------------------------------------
