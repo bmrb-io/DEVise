@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.281  2011/10/21 22:18:43  wenger
+// Moved getting the bmrb_mirror.s2p_url property from getPropertiesDynamic()
+// to getProperties() -- it should have been there originally.
+//
 // Revision 1.280  2011/10/20 19:09:33  wenger
 // Added DOCTYPE to all html pages and templates.
 //
@@ -590,7 +594,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.5x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.5x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.0";
 
@@ -1210,6 +1214,14 @@ public class S2DMain {
 	    S2DNames.S2PRED_URL = "file:./";
 	}
 
+	S2DNames.DSSP_FILE_URL = props.getProperty(
+	  "bmrb_mirror.dssp_file_url");
+	if (S2DNames.DSSP_FILE_URL == null) {
+	    S2DError err = new S2DError("Unable to get value for " +
+	      "bmrb_mirror.dssp_file_url property; using default");
+	    S2DNames.S2PRED_URL = "file:./";
+	}
+
 	S2DSession.getProperties(props);
 
         return props;
@@ -1749,7 +1761,6 @@ public class S2DMain {
 		    // and they're up-to-date.
 		    if (_s2PredLevel == S2PRED_LEVEL_PROCESS) {
 		        _pdbLevel = PDB_LEVEL_PROCESS;
-			_csrLevel = CSR_LEVEL_PROCESS;
 		    }
 	        } catch(NumberFormatException ex) {
 	            System.err.println("Error parsing do_s2p value: " +
@@ -4773,6 +4784,11 @@ public class S2DMain {
 	      _summary, entityAssemblyId);
 
 	    s2Pred.writeS2Pred();
+
+	    S2DSecStruct ss = new S2DSecStruct(_name, 
+	      pdbId, coordIndex, s2FrameIndex, _dataDir);
+
+	    ss.writeSecStruct();
 
 	} else {
 	    throw new S2DError("Illegal _s2PredLevel value: " +

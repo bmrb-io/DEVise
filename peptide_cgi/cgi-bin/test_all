@@ -225,11 +225,11 @@ if (($do_all != 0) or ($do_mult != 0)) {
 }
 
 if (($do_all != 0) or ($do_s2p != 0)) {
-  RunTest("test_s2p1 -dummycsr");
-  RunTest("test_s2p2 -dummycsr");
-  RunTest("test_s2p3 -dummycsr");
-  RunTest("test_s2p4 -dummycsr");
-  RunTest("test_s2p5 -dummycsr");
+  RunTest("test_s2p1");
+  RunTest("test_s2p2");
+  RunTest("test_s2p3");
+  RunTest("test_s2p4");
+  RunTest("test_s2p5");
 }
 
 #TEMP -- maybe add test of 4547 (has only RNA and DNA)

@@ -4,6 +4,10 @@ Peptide-CGI 12.1.5
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.0 or higher.)
 
+* In the S2 predicted vs. experimental visualizations the secondary
+structures are now obtained from DSSP output files instead of from the
+chemical shift reference back calculations.
+
 * Temporarily disabled dynamics movie menus in S2 predicted vs. 
 experimental visualization.
 

@@ -43,6 +43,7 @@ JS_CMD_PORT = 6666
 DYNAMICS_MOVIE_URL = 
 #TEMP DYNAMICS_MOVIE_GEN_URL = "http://pike.bmrb.wisc.edu?entry=*\&start_time=0\&end_time=.04\&display_x=300\&display_y=300\&scale=1.5\&slowdown=3\&material=Transparent\&submitted=yes"
 DYNAMICS_MOVIE_GEN_URL =
+DSSP_FILE_URL = http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/dssp/all
 
 include Makefile.config
 
@@ -91,7 +92,7 @@ testsetup:
 	cd test_session; ln -s ../prototype/session/*.ds .
 
 # Goofiness here is because we don't want to use Gnu make's .PHONY feature.
-install: histogram_install uvd_install
+install: do_install histogram_install uvd_install
 do_install: 
 	./install $(DEV_DEMO_HOME) $(WWW_HOME) $(PEP_HOME) $(CGI_HOME) \
 	  $(PEP_SESSION_HOME) $(PEP_DATA_HOME) $(PEP_HTML_HOME) \
@@ -203,6 +204,7 @@ s2d_props:
 	echo "bmrb_mirror.js_cmd_port=$(JS_CMD_PORT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.dyn_movie_url=$(DYNAMICS_MOVIE_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.dyn_movie_gen_url=$(DYNAMICS_MOVIE_GEN_URL)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.dssp_file_url=$(DSSP_FILE_URL)" >> $(S2D_PROPS_FILE)
 
 error_email:
 	-rm -f $(ERROR_EMAIL_FILE)

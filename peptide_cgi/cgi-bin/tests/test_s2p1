@@ -19,10 +19,6 @@ if ($dummycsr) then
   sleep 2
 endif
 
-#TEMP -- the java code doesn't run csr on the second pdb id (see bug 119)
-# I'm going to not worry about this for now because we don't normally
-# process all s2predict outputs at once.  wenger 2011-05-11
-
 echo -n "Processing NMR-STAR and predicted vs. experimental S2: "
 ./s2d -nomail -bmrbid 15536 -force -check_res_list -check_pct \
   -s2p_url file:test_data/ -do_s2p 2
@@ -51,8 +47,8 @@ set files = ( data_dir/15536ac1.dat \
 	data_dir/15536rl.dat \
 	data_dir/15536s2p1-1.dat \
 	data_dir/15536s2p3-1.dat \
-	data_dir/15536csr1_1.dat \
-	#TEMP data_dir/15536csr3_1.dat \
+	data_dir/15536ss1-1.dat \
+	data_dir/15536ss3-1.dat \
 	html_dir/15536/15536ac1.html \
 	html_dir/15536/15536am1.html \
 	html_dir/15536/15536as1.html \

@@ -19,6 +19,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.19.2.3  2011/04/12 21:43:08  wenger
 // More cleanup.
 //
@@ -181,6 +184,8 @@ public class S2DNames
     public static String RESTRAINT_GRID_ROOT = null;
 
     public static String S2PRED_URL = null;
+
+    public static String DSSP_FILE_URL = null;
 
     //
     // Search string to use for torsion angle data (gets dihedral

@@ -62,7 +62,7 @@ set jarhome = $8
 
 # Make sure we've already done a 'make setup'.
 if (! -e cgi-bin/s2d.props) then
-  echo "Do must do 'make setup' before doing 'make install'"
+  echo "You must do 'make setup' before doing 'make install'"
   exit 1
 endif
 

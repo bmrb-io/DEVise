@@ -51,7 +51,7 @@ set files = ( data_dir/15562ac1.dat \
 	data_dir/15562t12.dat \
 	data_dir/15562t21.dat \
 	data_dir/15562t22.dat \
-	data_dir/15562csr1_1.dat \
+	data_dir/15562ss1-1.dat \
 	html_dir/15562/15562ac1.html \
 	html_dir/15562/15562am1.html \
 	html_dir/15562/15562as1.html \

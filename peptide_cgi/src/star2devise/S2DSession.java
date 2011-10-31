@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.35  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.34.2.3  2011/09/22 21:22:11  wenger
 // We now don't show the movie buttons if a movie is not available; also
 // improved the way the movie configuration works.
@@ -549,9 +553,9 @@ TEMP*/
 	      "-" + frameIndex2;
 	    searchStrings[2] = "15536rl";
 	    replaceStrings[2] = id1 + S2DNames.RES_LIST_SUFFIX;
-	    searchStrings[3] = "15536csr1_1";
-	    replaceStrings[3] = id1 + S2DNames.CSR_SUFFIX +
-	      frameIndex1 + "_1";
+	    searchStrings[3] = "15536ss1-1";
+	    replaceStrings[3] = id1 + S2DNames.SEC_STRUCT_SUFFIX +
+	      frameIndex1 + "-1";
 	    searchStrings[4] = "http://condor.bmrb.wisc.edu/bbee/video/2JUO.mpg";
 	    replaceStrings[4] = S2DUtils.replace(_dynMovieUrl, "*",
 	      s2pPdbId.toUpperCase());

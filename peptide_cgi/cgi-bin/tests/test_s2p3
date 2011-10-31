@@ -56,7 +56,7 @@ set files = ( data_dir/17306ac1.dat \
 	data_dir/17306s2p1-1.dat \
 	data_dir/17306t11.dat \
 	data_dir/17306t21.dat \
-	data_dir/17306csr1_1.dat \
+	data_dir/17306ss1-1.dat \
 	html_dir/17306/17306ac1.html \
 	html_dir/17306/17306am1.html \
 	html_dir/17306/17306as1.html \
