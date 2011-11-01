@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.282  2011/10/31 20:18:37  wenger
+// In the S2 predicted vs. experimental visualizations the secondary
+// structures are now obtained from DSSP output files instead of from the
+// chemical shift reference back calculations.
+//
 // Revision 1.281  2011/10/21 22:18:43  wenger
 // Moved getting the bmrb_mirror.s2p_url property from getPropertiesDynamic()
 // to getProperties() -- it should have been there originally.
@@ -594,7 +599,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.1.5x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.1.5";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.0";
 
