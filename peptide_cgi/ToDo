@@ -717,11 +717,12 @@ Num Date        Status  Pri     Description
 160 10/17/11	OPEN	1	Update help for S2 predicted vs. experimental
 				to include info about movies. (wenger)
 
-161 10/20/11	OPEN	2	Get secondoary structure for S2 predicted vs.
+161 10/20/11	DONE	2	Get secondoary structure for S2 predicted vs.
 				experimental visualization from DSSP, not
 				chem shift ref (see
 				http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/dssp/).
 				(elu/wenger)
+				(Done by wenger, 10/31/11)
 
 * Status:
 OPEN = item has not yet been addressed
