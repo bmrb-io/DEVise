@@ -3,15 +3,10 @@
 <title>Summary for BMRB 4267</title>
 <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
 </head>
+<!-- TEMP?
 <body bgcolor = #FFFFCC>
 <font color = #660000>
-
-<h2>
-<p>
-<a href="../../../../data_library/generate_summary.php?bmrbId=4267&chooseAccOrDep=useAcc">Back to main entry page</a>
-</p>
-</h2>
-<hr>
+-->
 
 <h3>DEVise plots for BMRB 4267:
 apo-HNGAL Human Neutrophil Gelatinase-Associated Lipocalin</h3>
@@ -30,6 +25,12 @@ Comments or questions?  Contact <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp
 <a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
 tutorial videos</a>
 </p>
+
+<h3>
+<p>
+<a href="../../../../data_library/generate_summary.php?bmrbId=4267&chooseAccOrDep=useAcc">Back to main entry page</a>
+</p>
+</h3>
 <hr>
 
 
@@ -46,6 +47,38 @@ tutorial videos</a>
 
 <!-- Info_HvsN eaId:1 frameIndex:1 peakCount:164 -->
 <!-- Info_HvsC eaId:1 frameIndex:1 peakCount:764 -->
+
+<hr>
+
+<b>Visualizations for this entry</b>
+
+<form name="select_visualization">
+  <select name="visualization_type">
+    <optgroup label="Coordinates">
+      <option value="1NGL">1NGL</option>
+      <option value="1DFV">1DFV</option>
+    </optgroup>
+    <optgroup label="Chemical shifts">
+      <option value="deltashifts">Chemical shift delta</option>
+      <option value="cs_index">Chemical shift index</option>
+      <option value="pct_assigned">Percent assigned atoms</option>
+      <option value="cs_dist">Chem shift dist by AA/nucleotide</option>
+      <option value="1h-15n">Simulated 1H-15N backbone HSQC spectrum</option>
+      <option value="1h-13c">Simulated 1H-13C HSQC spectrum</option>
+      <option value="ambig">Assigned chemical shift ambiguity code data assigned atoms</option>
+    </optgroup>
+    <optgroup label="Linear Analysis of Chemical shifts">
+      <option value="lacs_ca">CA vs. CA-CB</option>
+      <option value="lacs_cb">CB vs. CA-CB</option>
+      <option value="lacs_ha">HA vs. CA-CB</option>
+      <option value="lacs_co">CO vs. CA-CB</option>
+    </optgroup>
+  </select>
+  <input type="submit" value="Visualize in DEVise">
+</form>
+
+
+
 
 <hr>
 <p><b>
