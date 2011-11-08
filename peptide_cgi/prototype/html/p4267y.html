@@ -59,13 +59,13 @@ tutorial videos</a>
       <option value="1DFV">1DFV</option>
     </optgroup>
     <optgroup label="Chemical shifts">
-      <option value="deltashifts">Chemical shift delta</option>
-      <option value="cs_index">Chemical shift index</option>
-      <option value="pct_assigned">Percent assigned atoms</option>
-      <option value="cs_dist">Chem shift dist by AA/nucleotide</option>
-      <option value="1h-15n">Simulated 1H-15N backbone HSQC spectrum</option>
-      <option value="1h-13c">Simulated 1H-13C HSQC spectrum</option>
-      <option value="ambig">Assigned chemical shift ambiguity code data assigned atoms</option>
+      <option value="deltashifts">Chemical shift delta (178 residues) (EA 1)</option>
+      <option value="cs_index">Chemical shift index (178 residues) (EA 1)</option>
+      <option value="pct_assigned">Percent assigned atoms (178 residues) (EA 1)</option>
+      <option value="cs_dist">Chem shift dist by AA/nucleotide (2005 shifts) (EA 1)</option>
+      <option value="1h-15n">Simulated 1H-15N backbone HSQC spectrum (164 peaks) (EA 1)</option>
+      <option value="1h-13c">Simulated 1H-13C HSQC spectrum (764 peaks) (EA 1)</option>
+      <option value="ambig">Assigned chemical shift ambiguity code data assigned atoms (EA 1)</option>
     </optgroup>
     <optgroup label="Linear Analysis of Chemical shifts">
       <option value="lacs_ca">CA vs. CA-CB</option>
@@ -73,13 +73,35 @@ tutorial videos</a>
       <option value="lacs_ha">HA vs. CA-CB</option>
       <option value="lacs_co">CO vs. CA-CB</option>
     </optgroup>
+    <optgroup label="Coupling constants">
+      <option value="g1">125 values (1)</option>
+    </optgroup>
+    <optgroup label="T1/T2 relaxation">
+      <option value="t13">T1, 500 MHz (141 values) (EA 1)</option>
+      <option value="t12">T1, 600 MHz (151 values) (EA 1)</option>
+      <option value="t11">T1, 750 MHz (151 values) (EA 1)</option>
+      <option value="t23">T2, 500 MHz (143 values) (EA 1)</option>
+      <option value="t22">T2, 600 MHz (150 values) (EA 1)</option>
+      <option value="t21">T2, 750 MHz (152 values) (EA 1)</option>
+    </optgroup>
+    <optgroup label="Heteronuclear NOE">
+      <option value="n1">750 MHz NE1 HE1 (2 values) (EA 1)</option>
+      <option value="n2">750 MHz NE HE (2 values) (EA 1)</option>
+      <option value="n3">750 MHz N H (146 values) (EA 1)</option>
+      <option value="n4">600 MHz NE1 HE1 (2 values) (EA 1)</option>
+      <option value="n5">600 MHz NE HE (3 values) (EA 1)</option>
+      <option value="n6">600 MHz N H (146 values) (EA 1)</option>
+      <option value="n7">500 MHz NE1 HE1 (2 values) (EA 1)</option>
+      <option value="n8">500 MHz NE HE (2 values) (EA 1)</option>
+      <option value="n9">500 MHz N H (138 values) (EA 1)</option>
+    </optgroup>
   </select>
   <input type="submit" value="Visualize in DEVise">
 </form>
 
 
 
-
+<!--TEMP
 <hr>
 <p><b>
 NMR experimental data plots linked to Jmol 3D structure visualization
@@ -197,6 +219,7 @@ NMR experimental data plots linked to Jmol 3D structure visualization
     <td><a href="4267o1.html">152 values (1)</a></td>
   </tr>
 </table>
+TEMP-->
 <hr>
 
 <form name="input" action="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view" method="get">
