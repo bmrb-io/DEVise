@@ -4489,6 +4489,9 @@ java.security.AccessControlException: access denied
 			directory. (wenger)
 			(Fixed by wenger, 8/12/11.)
 
+1022 11/9/11	OPEN	JS: the "reset axis ranges" command should re-run
+			the session post script. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
