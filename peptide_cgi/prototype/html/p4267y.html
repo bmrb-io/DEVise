@@ -49,71 +49,19 @@ tutorial videos</a>
 <!-- Info_HvsC eaId:1 frameIndex:1 peakCount:764 -->
 
 <hr>
-
-<b>Visualizations for this entry</b>
-
-<form name="select_visualization">
-  <select name="visualization_type">
-    <optgroup label="Coordinates">
-      <option value="1NGL">1NGL</option>
-      <option value="1DFV">1DFV</option>
-    </optgroup>
-    <optgroup label="Chemical shifts">
-      <option value="deltashifts">Chemical shift delta (178 residues) (EA 1)</option>
-      <option value="cs_index">Chemical shift index (178 residues) (EA 1)</option>
-      <option value="pct_assigned">Percent assigned atoms (178 residues) (EA 1)</option>
-      <option value="cs_dist">Chem shift dist by AA/nucleotide (2005 shifts) (EA 1)</option>
-      <option value="1h-15n">Simulated 1H-15N backbone HSQC spectrum (164 peaks) (EA 1)</option>
-      <option value="1h-13c">Simulated 1H-13C HSQC spectrum (764 peaks) (EA 1)</option>
-      <option value="ambig">Assigned chemical shift ambiguity code data assigned atoms (EA 1)</option>
-    </optgroup>
-    <optgroup label="Linear Analysis of Chemical shifts">
-      <option value="lacs_ca">CA vs. CA-CB</option>
-      <option value="lacs_cb">CB vs. CA-CB</option>
-      <option value="lacs_ha">HA vs. CA-CB</option>
-      <option value="lacs_co">CO vs. CA-CB</option>
-    </optgroup>
-    <optgroup label="Coupling constants">
-      <option value="g1">125 values (1)</option>
-    </optgroup>
-    <optgroup label="T1/T2 relaxation">
-      <option value="t13">T1, 500 MHz (141 values) (EA 1)</option>
-      <option value="t12">T1, 600 MHz (151 values) (EA 1)</option>
-      <option value="t11">T1, 750 MHz (151 values) (EA 1)</option>
-      <option value="t23">T2, 500 MHz (143 values) (EA 1)</option>
-      <option value="t22">T2, 600 MHz (150 values) (EA 1)</option>
-      <option value="t21">T2, 750 MHz (152 values) (EA 1)</option>
-    </optgroup>
-    <optgroup label="Heteronuclear NOE">
-      <option value="n1">750 MHz NE1 HE1 (2 values) (EA 1)</option>
-      <option value="n2">750 MHz NE HE (2 values) (EA 1)</option>
-      <option value="n3">750 MHz N H (146 values) (EA 1)</option>
-      <option value="n4">600 MHz NE1 HE1 (2 values) (EA 1)</option>
-      <option value="n5">600 MHz NE HE (3 values) (EA 1)</option>
-      <option value="n6">600 MHz N H (146 values) (EA 1)</option>
-      <option value="n7">500 MHz NE1 HE1 (2 values) (EA 1)</option>
-      <option value="n8">500 MHz NE HE (2 values) (EA 1)</option>
-      <option value="n9">500 MHz N H (138 values) (EA 1)</option>
-    </optgroup>
-  </select>
-  <input type="submit" value="Visualize in DEVise">
-</form>
-
-
-
-<!--TEMP
-<hr>
 <p><b>
 NMR experimental data plots linked to Jmol 3D structure visualization
 (note: processing may take several minutes)
 </b></p>
-<table border cellpadding=5>
-  <tr>
-    <th>PDB ID</th>
-    <td><a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=1NGL&number=4267&do_pdb=2&coord_index=1&size_str=">1NGL</a></td>
-    <td><a href="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view?pdbid=1DFV&number=4267&do_pdb=2&coord_index=2&size_str=">1DFV</a></td>
-  </tr>
-</table>
+
+<form name="select_3d_visualization">
+  <select name="visualization_type">
+    <option value="1NGL">1NGL</option>
+    <option value="1DFV">1DFV</option>
+  </select>
+  <input type="submit" value="Visualize in DEVise">
+</form>
+
 
 <hr>
 <p><b>No distance restraint data available for this entry</b></p>
@@ -123,103 +71,84 @@ NMR experimental data plots linked to Jmol 3D structure visualization
 
 <hr>
 <p><b>Chemical shift data</b></p>
-<table border>
-  <tr>
-    <th>Entity assembly ID</th>
-    <th>Chemical shift delta</th>
-    <th>Chemical shift index</th>
-    <th>Percent assigned atoms</th>
-    <th>Chem shift distributions by AA/nucleotide</th>
-    <th>Simulated 1H-15N backbone HSQC spectrum</th>
-    <th>Simulated 1H-13C HSQC spectrum</th>
-    <th>Assigned chemical shift ambiguity code data</th>
-  </tr>
-  <tr>
-    <td>1</td>
-    <td><a href="4267d1.html">178 residues</a></td>
-    <td><a href="4267c1.html">178 residues</a></td>
-    <td><a href="4267p1.html">178 residues</a></td>
-    <td><a href="4267as1.html">2005 shifts</a></td>
-    <td><a href="4267hn1.html">164 peaks</a></td>
-    <td><a href="4267hc1.html">764 peaks</a></td>
-    <td><a href="4267am1.html">Go</a></td>
-  </tr>
-</table>
+
+<form name="select_chem_shift_visualization">
+  <select name="visualization_type">
+    <option value="deltashifts">Chemical shift delta (178 residues) (EA 1)</option>
+    <option value="cs_index">Chemical shift index (178 residues) (EA 1)</option>
+    <option value="pct_assigned">Percent assigned atoms (178 residues) (EA 1)</option>
+    <option value="cs_dist">Chem shift dist by AA/nucleotide (2005 shifts) (EA 1)</option>
+    <option value="1h-15n">Simulated 1H-15N backbone HSQC spectrum (164 peaks) (EA 1)</option>
+    <option value="1h-13c">Simulated 1H-13C HSQC spectrum (764 peaks) (EA 1)</option>
+    <option value="ambig">Assigned chemical shift ambiguity code data assigned atoms (EA 1)</option>
+  </select>
+  <input type="submit" value="Visualize in DEVise">
+</form>
 
 <hr>
 <p><b>No back calculated chemical shift referencing visualizations available for this entry</b></p>
 
 <hr>
 <p><b><a target="lacs_ref" href="http://www.ncbi.nlm.nih.gov/pubmed/16041479">Linear Analysis of Chemical Shifts</a></b></p>
-<table border cellpadding=5>
-  <tr>
-    <td><a href="4267lacs1.html">CA vs. CA-CB</a></td>
-    <td><a href="4267lacs2.html">CB vs. CA-CB</a></td>
-    <td><a href="4267lacs3.html">HA vs. CA-CB</a></td>
-    <td><a href="4267lacs4.html">CO vs. CA-CB</a></td>
-  </tr>
-</table>
+<form name="select_lacs_visualization">
+  <select name="visualization_type">
+    <option value="lacs_ca">CA vs. CA-CB</option>
+    <option value="lacs_cb">CB vs. CA-CB</option>
+    <option value="lacs_ha">HA vs. CA-CB</option>
+    <option value="lacs_co">CO vs. CA-CB</option>
+  </select>
+  <input type="submit" value="Visualize in DEVise">
+</form>
 
 <hr>
 <p><b>Coupling Constants</b></p>
-<p>(number of values, entity assembly ID)</p>
-<table border cellpadding=5>
-  <tr>
-    <td><a href="4267g1.html">125 values (1)</a></td>
-  </tr>
-</table>
+<form name="select_coupling_visualization">
+  <select name="visualization_type">
+    <option value="g1">125 values (EA 1)</option>
+  </select>
+  <input type="submit" value="Visualize in DEVise">
+</form>
 
 <hr>
 <p><b>T1/T2 Relaxation</b></p>
-<p>(number of values, entity assembly ID)</p>
-<table border>
-  <tr>
-    <th>T1, 500 MHz</th>
-    <th>T1, 600 MHz</th>
-    <th>T1, 750 MHz</th>
-    <th>T2, 500 MHz</th>
-    <th>T2, 600 MHz</th>
-    <th>T2, 750 MHz</th>
-  </tr>
-  <tr>
-    <td><a href="4267t13.html">141 values (1)</a></td>
-    <td><a href="4267t12.html">151 values (1)</a></td>
-    <td><a href="4267t11.html">151 values (1)</a></td>
-    <td><a href="4267t23.html">143 values (1)</a></td>
-    <td><a href="4267t22.html">150 values (1)</a></td>
-    <td><a href="4267t21.html">152 values (1)</a></td>
-  </tr>
-</table>
+<form name="select_relaxation_visualization">
+  <select name="visualization_type">
+    <option value="t13">T1, 500 MHz (141 values) (EA 1)</option>
+    <option value="t12">T1, 600 MHz (151 values) (EA 1)</option>
+    <option value="t11">T1, 750 MHz (151 values) (EA 1)</option>
+    <option value="t23">T2, 500 MHz (143 values) (EA 1)</option>
+    <option value="t22">T2, 600 MHz (150 values) (EA 1)</option>
+    <option value="t21">T2, 750 MHz (152 values) (EA 1)</option>
+  </select>
+  <input type="submit" value="Visualize in DEVise">
+</form>
 
 <hr>
 <p><b>Heteronuclear NOE</b></p>
-<p>(spectrometer frequency, atom one, atom two, number of values, entity assembly ID)</p>
-<table border>
-  <tr>
-    <td><a href="4267n1.html">750 MHz NE1 HE1 (2 values) (1)</a></td>
-    <td><a href="4267n2.html">750 MHz NE HE (2 values) (1)</a></td>
-    <td><a href="4267n3.html">750 MHz N H (146 values) (1)</a></td>
-    <td><a href="4267n4.html">600 MHz NE1 HE1 (2 values) (1)</a></td>
-    <td><a href="4267n5.html">600 MHz NE HE (3 values) (1)</a></td>
-  </tr>
-  <tr>
-    <td><a href="4267n6.html">600 MHz N H (146 values) (1)</a></td>
-    <td><a href="4267n7.html">600 MHz NE1 HE1 (2 values) (1)</a></td>
-    <td><a href="4267n8.html">600 MHz NE HE (2 values) (1)</a></td>
-    <td><a href="4267n9.html">500 MHz N H (138 values) (1)</a></td>
-  </tr>
-</table>
+<form name="select_het_noe_visualization">
+  <select name="visualization_type">
+    <option value="n1">750 MHz NE1 HE1 (2 values) (EA 1)</option>
+    <option value="n2">750 MHz NE HE (2 values) (EA 1)</option>
+    <option value="n3">750 MHz N H (146 values) (EA 1)</option>
+    <option value="n4">600 MHz NE1 HE1 (2 values) (EA 1)</option>
+    <option value="n5">600 MHz NE HE (3 values) (EA 1)</option>
+    <option value="n6">600 MHz N H (146 values) (EA 1)</option>
+    <option value="n7">500 MHz NE1 HE1 (2 values) (EA 1)</option>
+    <option value="n8">500 MHz NE HE (2 values) (EA 1)</option>
+    <option value="n9">500 MHz N H (138 values) (EA 1)</option>
+  </select>
+  <input type="submit" value="Visualize in DEVise">
+</form>
 
 <hr>
 <p><b>No S2 predicted vs. experimental data available for this entry</b></p>
 <p><b>S2 Order Parameters</b></p>
-<p>(number of values, entity assembly ID)</p>
-<table border cellpadding=5>
-  <tr>
-    <td><a href="4267o1.html">152 values (1)</a></td>
-  </tr>
-</table>
-TEMP-->
+<form name="select_s2order_visualization">
+  <select name="visualization_type">
+    <option value="o1">(152 values) (EA 1)</option>
+  </select>
+  <input type="submit" value="Visualize in DEVise">
+</form>
 <hr>
 
 <form name="input" action="http://devise.cs.wisc.edu/cgi-bin/bmrb/make_view" method="get">
