@@ -2,11 +2,20 @@
 <head>
 <title>Summary for BMRB 4267</title>
 <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
-</head>
 <!-- TEMP?
 <body bgcolor = #FFFFCC>
 <font color = #660000>
 -->
+
+<style type="text/css">
+#vis {
+  border: 2px solid #99BBFF;
+  border-collapse:collapse;
+}
+#vis th {
+  background-color: #99BBFF;
+}
+</style>
 
 <h3>DEVise plots for BMRB 4267:
 apo-HNGAL Human Neutrophil Gelatinase-Associated Lipocalin</h3>
@@ -47,20 +56,28 @@ tutorial videos</a>
 <!-- Info_HvsN eaId:1 frameIndex:1 peakCount:164 -->
 <!-- Info_HvsC eaId:1 frameIndex:1 peakCount:764 -->
 
-<hr>
-<p><b>
-NMR experimental data plots linked to Jmol 3D structure visualization
-(note: processing may take several minutes)
-</b></p>
-
-<form name="select_3d_visualization">
-  <select name="visualization_type">
-    <option value="1NGL">1NGL</option>
-    <option value="1DFV">1DFV</option>
-  </select>
-  <input type="submit" value="Visualize in DEVise">
-</form>
-
+<table id="vis" cellpadding=5>
+  <tr>
+    <th colspan="2">
+      NMR experimental data plots linked to Jmol 3D structure visualization
+      (note: processing may take several minutes)
+    </th>
+  </tr>
+    <td>
+      <form name="select_3d_visualization">
+        <select name="visualization_type">
+          <option value="1NGL">1NGL</option>
+          <option value="1DFV">1DFV</option>
+        </select>
+        <input type="submit" value="Visualize in DEVise">
+      </form>
+    </td>
+    <td align="right">
+      <img src="images/3d_thumb.png" alt="">
+    </td>
+  <tr>
+  </tr>
+</table>
 
 <hr>
 <p><b>No distance restraint data available for this entry</b></p>
