@@ -16,6 +16,41 @@
   background-color: #99FF99;
 }
 </style>
+
+<style type="text/css">
+.thumbnail{
+position: relative;
+z-index: 0;
+}
+
+.thumbnail:hover{
+background-color: transparent;
+z-index: 50;
+}
+
+.thumbnail span{ /*CSS for enlarged image*/
+position: absolute;
+background-color: lightyellow;
+padding: 5px;
+left: -1000px;
+border: 1px dashed gray;
+visibility: hidden;
+color: black;
+text-decoration: none;
+}
+
+.thumbnail span img{ /*CSS for enlarged image*/
+border-width: 0;
+padding: 2px;
+}
+
+.thumbnail:hover span{ /*CSS for enlarged image on hover*/
+visibility: visible;
+top: 0;
+left: 60px; /*position where enlarged image should offset horizontally */
+
+}
+</style>
 </head>
 
 <h3>DEVise plots for BMRB 4267:
@@ -70,6 +105,9 @@ tutorial videos</a>
       (note: processing may take several minutes)
     </th>
   </tr>
+    <td align="left">
+      <a class="thumbnail" href="#thumb"><img src="images/3d_thumb.png"><span><img src="images/3d.png"></span></a>
+    </td>
     <td>
       <form name="select_3d_visualization">
         <select name="visualization_type">
@@ -78,9 +116,6 @@ tutorial videos</a>
         </select>
         <input type="submit" value="Visualize in DEVise">
       </form>
-    </td>
-    <td align="right">
-      <img src="images/3d_thumb.png" alt="">
     </td>
   <tr>
   </tr>
@@ -111,6 +146,9 @@ tutorial videos</a>
       Chemical shift data
     </th>
   </tr>
+    <td align="left">
+      <a class="thumbnail" href="#thumb"><img src="images/cs_dist_thumb.png"><span><img src="images/cs_dist.png"></span></a>
+    </td>
     <td>
       <form name="select_chem_shift_visualization">
         <select name="visualization_type">
@@ -124,9 +162,6 @@ tutorial videos</a>
         </select>
         <input type="submit" value="Visualize in DEVise">
       </form>
-    </td>
-    <td align="right">
-      <img src="images/cs_dist_thumb.png" alt="">
     </td>
   </tr>
 </table>
@@ -147,6 +182,9 @@ tutorial videos</a>
       <a target="lacs_ref" href="http://www.ncbi.nlm.nih.gov/pubmed/16041479">Linear Analysis of Chemical Shifts</a>
     </th>
   </tr>
+    <td align="left">
+      <a class="thumbnail" href="#thumb"><img src="images/lacs_thumb.png"><span><img src="images/lacs.png"></span></a>
+    </td>
     <td>
       <form name="select_lacs_visualization">
         <select name="visualization_type">
@@ -158,9 +196,6 @@ tutorial videos</a>
         <input type="submit" value="Visualize in DEVise">
       </form>
     </td>
-    <td align="right">
-      <img src="images/lacs_thumb.png" alt="">
-    </td>
   </tr>
 </table>
 
@@ -171,6 +206,9 @@ tutorial videos</a>
       Coupling Constants
     </th>
   </tr>
+    <td align="left">
+      <a class="thumbnail" href="#thumb"><img src="images/coupling_thumb.png"><span><img src="images/coupling.png"></span></a>
+    </td>
     <td>
       <form name="select_coupling_visualization">
         <select name="visualization_type">
@@ -178,9 +216,6 @@ tutorial videos</a>
         </select>
         <input type="submit" value="Visualize in DEVise">
       </form>
-    </td>
-    <td align="right">
-      <img src="images/coupling_thumb.png" alt="">
     </td>
   </tr>
 </table>
@@ -192,6 +227,9 @@ tutorial videos</a>
       T1/T2 Relaxation
     </th>
   </tr>
+    <td align="left">
+      <a class="thumbnail" href="#thumb"><img src="images/t1_thumb.png"><span><img src="images/t1.png"></span></a>
+    </td>
     <td>
       <form name="select_relaxation_visualization">
         <select name="visualization_type">
@@ -205,9 +243,6 @@ tutorial videos</a>
         <input type="submit" value="Visualize in DEVise">
       </form>
     </td>
-    <td align="right">
-      <img src="images/t1_thumb.png" alt="">
-    </td>
   </tr>
 </table>
 
@@ -218,6 +253,9 @@ tutorial videos</a>
       Heteronuclear NOE
     </th>
   </tr>
+    <td align="left">
+      <a class="thumbnail" href="#thumb"><img src="images/het_noe_thumb.png"><span><img src="images/het_noe.png"></span></a>
+    </td>
     <td>
       <form name="select_het_noe_visualization">
         <select name="visualization_type">
@@ -233,9 +271,6 @@ tutorial videos</a>
         </select>
         <input type="submit" value="Visualize in DEVise">
       </form>
-    </td>
-    <td align="right">
-      <img src="images/het_noe_thumb.png" alt="">
     </td>
   </tr>
 </table>
@@ -256,6 +291,9 @@ tutorial videos</a>
       S2 Order Parameters
     </th>
   </tr>
+    <td align="left">
+      <a class="thumbnail" href="#thumb"><img src="images/s2_thumb.png"><span><img src="images/s2.png"></span></a>
+    </td>
     <td>
       <form name="select_s2order_visualization">
         <select name="visualization_type">
@@ -263,9 +301,6 @@ tutorial videos</a>
         </select>
         <input type="submit" value="Visualize in DEVise">
       </form>
-    </td>
-    <td align="right">
-      <img src="images/s2_thumb.png" alt="">
     </td>
   </tr>
 </table>
