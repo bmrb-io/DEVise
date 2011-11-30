@@ -9,73 +9,69 @@
 
 <style type="text/css">
 #vis {
-  border: 2px solid #66bbbb;
+  border: 2px solid #bdd3ff;
   border-collapse:collapse;
 }
 #vis th {
-  background-color: #66bbbb;
+  background-color: #bdd3ff;
 }
-</style>
-
-<style type="text/css"> 
-div
-{
-border:2px solid #a1a1a1;
-padding-left: 25px;
-padding-right: 25px;
-padding-top: 10px;
-padding-bottom: 10px;
-background:#ededed;
-border-radius:25px;
--moz-border-radius:25px; /* Firefox 3.6 and earlier */
+#header {
+  /* border:2px solid #33527b; */
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background:#cbdbff;
 }
-</style>
-
-<style type="text/css">
-.thumbnail{
-position: relative;
-z-index: 0;
+#content {
+  border:2px solid #33527b;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background:#ededed;
+  border-radius:25px;
+  -moz-border-radius:25px; /* Firefox 3.6 and earlier */
 }
-
-.thumbnail:hover{
-background-color: transparent;
-z-index: 50;
+.thumbnail {
+  position: relative;
+  z-index: 0;
 }
-
-.thumbnail span{ /*CSS for enlarged image*/
-position: absolute;
-background-color: lightyellow;
-padding: 5px;
-left: -1000px;
-border: 1px dashed gray;
-visibility: hidden;
-color: black;
-text-decoration: none;
+.thumbnail:hover {
+  background-color: transparent;
+  z-index: 50;
 }
-
-.thumbnail span img{ /*CSS for enlarged image*/
-border-width: 0;
-padding: 2px;
+.thumbnail span { /*CSS for enlarged image*/
+  position: absolute;
+  background-color: lightyellow;
+  padding: 5px;
+  left: -1000px;
+  border: 1px dashed gray;
+  visibility: hidden;
+  color: black;
+  text-decoration: none;
 }
-
-.thumbnail:hover span{ /*CSS for enlarged image on hover*/
-visibility: visible;
-top: 0;
-left: 60px; /*position where enlarged image should offset horizontally */
-
+.thumbnail span img { /*CSS for enlarged image*/
+  border-width: 0;
+  padding: 2px;
+}
+.thumbnail:hover span { /*CSS for enlarged image on hover*/
+  visibility: visible;
+  top: 0;
+  left: 60px; /*position where enlarged image should offset horizontally */
 }
 </style>
 </head>
 
+<div id="header" width="100%">
 <center><h3>DEVise plots for BMRB 4267:
 apo-HNGAL Human Neutrophil Gelatinase-Associated Lipocalin</h3></center>
 Title: Chemical shift assignments, 3JHNHA coupling constants and secondary structure of
  HNGAL (Human Neutrophil Gelatinase-Associated Lipocalin) in its apo form.
-
+</div>
 
 <br>
-<br>
-<div width="100%">
+<div id="content" width="100%">
 <p>
 <a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
 tutorial videos</a>
@@ -92,7 +88,7 @@ tutorial videos</a>
 <!-- Info_HvsC eaId:1 frameIndex:1 peakCount:764 -->
 
 <br>
-<div width="100%">
+<div id="content" width="100%">
 
 <br>
 <table id="vis" cellpadding=5 width="100%">
@@ -311,7 +307,7 @@ tutorial videos</a>
 
 
 <br>
-<div width="100%">
+<div id="content" width="100%">
 <table id="vis" cellpadding=5 width="100%">
   <tr>
     <td align="left" rowspan="2" width="120">
@@ -336,7 +332,7 @@ tutorial videos</a>
 
 
 <br>
-<div width="100%">
+<div id="content" width="100%">
   <p>Comments or questions?  Contact <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a></p>
   <p>Data_file_version: {NMR-STAR 2.1 (2.1)}</p>
   <p>PepCgi_version: {12.1.2x1}</p>
