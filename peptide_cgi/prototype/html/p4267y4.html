@@ -38,6 +38,27 @@
     <div id="image_block">
       <a class="thumbnail" href="#thumb"><img src="images/cs_dist_thumb.png"><span><img src="images/cs_dist.png"></span></a>
     </div>
+    <div id="select_header">
+      <h3>
+      Chemical shift data
+      </h3>
+    </div>
+    <div id="select_block">
+      <center>
+      <form name="select_chem_shift_visualization">
+        <select name="visualization_type">
+          <option value="deltashifts">Chemical shift delta (178 residues) (EA 1)</option>
+          <option value="cs_index">Chemical shift index (178 residues) (EA 1)</option>
+          <option value="pct_assigned">Percent assigned atoms (178 residues) (EA 1)</option>
+          <option value="cs_dist">Chem shift dist by AA/nucleotide (2005 shifts) (EA 1)</option>
+          <option value="1h-15n">Simulated 1H-15N backbone HSQC spectrum (164 peaks) (EA 1)</option>
+          <option value="1h-13c">Simulated 1H-13C HSQC spectrum (764 peaks) (EA 1)</option>
+          <option value="ambig">Assigned chemical shift ambiguity code data assigned atoms (EA 1)</option>
+        </select>
+        <input type="submit" value="Visualize in DEVise">
+      </form>
+      </center>
+    </div>
   </div>
 </div>
 
