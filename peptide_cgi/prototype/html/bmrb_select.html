@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+  <title>DEVise JavaScreen: select BMRB sample for visualizations</title>
+  <link href="visualization.css" rel="stylesheet" type="text/css" media="all">
+</head>
+
+<body>
+
+<div id="header">
+ 
+     <table width="100%" align="CENTER" border="0" cellpadding="0">
+
+<tbody><tr>
+    <td class="titlesearch" height="40">
+       <a href="http://sunfish.bmrb.wisc.edu/"><img src="images/logo.gif" alt="BMRB Logo" border="0"></a>
+    </td>
+
+    <td class="titlesearch" width="80%" align="left">
+       <h2><i>Biological Magnetic Resonance Data Bank</i></h2><br>
+       <i>A Repository for Data from NMR Spectroscopy on
+	   Proteins, Peptides, Nucleic Acids, and other Biomolecules </i>
+    </td>
+</tr>
+</tbody></table>
+
+</div>
+
+    <center>
+      <h2>BMRB entry visualizations</h2>
+    </center>
+
+<div id="content">
+    <form method="get" name="get_by_bmrb" action="http://devise.cs.wisc.edu/cgi-bin/bmrb_test/make_view">
+      <label for="number">Enter a BMRB accession number (e.g., 4081)
+        to generate visualizations for that entry</label>
+      <p>
+      <input type="text" name="number" size="5">
+      </p>
+      <p>
+      <input type="submit" value="View data">
+      </p>
+    </form>
+</div>
+
+    <p>
+    You can also upload data to the <a href="../../vis_serv">
+    Visualization Server</a> to visualize it without making it public.
+    </p>
+
+<div id="content">
+    <h3>3D structure example</h3>
+    <img src=images/single_entry_ac.png>
+    <p>
+    <a href="html/help_ac.html">Help about this visualization</a>
+    </p>
+</div>
+
+<br>
+<div id="content">
+    <h3>Chemical shift distributions by amino acid example</h3>
+    <img src=images/cs_by_aa.png>
+    <p>
+    <a href="html/help_as.html">Help about this visualization</a>
+    </p>
+</div>
+
+<br>
+<div id="content">
+    <h3>Observed vs. calculated chemical shifts example</h3>
+    <img src=images/single_entry_csr3.png>
+    <p>
+    <a href="html/help_csr3.html">Help about this visualization</a>
+    </p>
+</div>
+
+<br>
+<div id="content">
+  <p>Comments or questions?  Contact
+    <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
+  </p>
+  <p>Problems with the visualization software?  Contact <a
+    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+  </p>
+</div>
+
+</body>
+</html>
+
