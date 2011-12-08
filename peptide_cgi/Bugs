@@ -610,6 +610,10 @@ Num Date        Status  Description
 
 131 7/6/11	OPEN	Test_sparta6_3, test_s2p5 fail on pacu. (wenger)
 
+132 12/8/11	OPEN	Restraint-only visualizations (accessed by PDB ID)
+			don't seem to have any data in the data scroll
+			view. (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
