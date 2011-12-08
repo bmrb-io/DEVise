@@ -114,6 +114,7 @@ uvd_install: do_install
 proto_install:
 	cp -p prototype/data/*.dat $(PEP_DATA_HOME)
 	cp -p prototype/html/*.html $(PEP_HTML_HOME)
+	cp -p prototype/html/*.css $(PEP_HTML_HOME)
 	cp -p prototype/html/images/*.* $(PEP_HTML_HOME)/images
 	cp -p prototype/session/*.ds $(PEP_SESSION_HOME)
 

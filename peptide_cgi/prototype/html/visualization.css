@@ -1,3 +1,7 @@
+body {
+  background-color: #fafcff;
+}
+
 #vis {
   border: 2px solid #bdd3ff;
   border-collapse: collapse;
@@ -16,7 +20,7 @@
   padding-right: 25px;
   padding-top: 10px;
   padding-bottom: 10px;
-  background: #cbdbff;
+  background-color: #cbdbff;
 }
 
 #content {
@@ -26,7 +30,7 @@
   padding-right: 25px;
   padding-top: 10px;
   padding-bottom: 10px;
-  background: #ededed;
+  background-color: #ededed;
   border-radius: 25px;
   -moz-border-radius: 25px; /* Firefox 3.6 and earlier */
 }
