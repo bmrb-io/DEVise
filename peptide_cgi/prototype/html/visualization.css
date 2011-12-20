@@ -63,6 +63,6 @@ body {
 
 .thumbnail:hover span { /*CSS for enlarged image on hover*/
   visibility: visible;
-  top: 0;
-  left: 60px; /*position where enlarged image should offset horizontally */
+  top: -200px;
+  left: 120px; /*position where enlarged image should offset horizontally */
 }
