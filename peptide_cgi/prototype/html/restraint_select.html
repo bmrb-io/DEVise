@@ -38,8 +38,6 @@
   <label for="restraint_id">Enter a PDB ID (e.g., 1brv) to generate restraint visualizations:</label>
   <p>
   <input type="text" name="restraint_id" size="4">
-  </p>
-  <p>
   <input type="submit" value="View data">
   </p>
 </form>
@@ -47,20 +45,46 @@
 
 <br>
 <div id="content">
-    <h3>Distance restraint example</h3>
-    <a class="thumbnail" href="#thumb"><img src="images/distance_restraint_thumb.png"><span><img src="images/distance_restraint.png"></span></a>
-    <p>
-    <a href="html/help_distr.html">Help about this visualization</a>
-    </p>
-</div>
 
-<br>
-<div id="content">
-    <h3>Torsion angle restraint example</h3>
-    <a class="thumbnail" href="#thumb"><img src="images/torsion_angle_thumb.png"><span><img src="images/torsion_angle.png"></span></a>
-    <p>
-    <a href="html/help_tar.html">Help about this visualization</a>
-    </p>
+<table width="100%" cellpadding="5">
+<tr>
+<td width="50%">
+<table id="vis">
+  <tr>
+    <td align="left" rowspan="2" width="120">
+      <a class="thumbnail" href="#thumb"><img src="images/distance_restraint_thumb.png"><span><img src="images/distance_restraint.png"></span></a>
+    </td>
+    <th align="left">
+      Distance restraint example
+    </th>
+  </tr>
+    <td align="center">
+      <a href="html/help_distr.html">Help about this visualization</a>
+    </td>
+  <tr>
+  </tr>
+</table>
+</td>
+
+<td width="50%">
+<table id="vis">
+  <tr>
+    <td align="left" rowspan="2" width="120">
+      <a class="thumbnail" href="#thumb"><img src="images/torsion_angle_thumb.png"><span><img src="images/torsion_angle.png"></span></a>
+    </td>
+    <th align="left">
+      Torsion angle restraint example
+    </th>
+  </tr>
+    <td align="center">
+      <a href="html/help_tar.html">Help about this visualization</a>
+    </td>
+  </tr>
+</table>
+</td>
+</tr>
+</table>
+
 </div>
 
 <br>

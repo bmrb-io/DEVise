@@ -9,6 +9,8 @@
 
 <body>
 
+<!-- TEMP -- get rid of single_entry* stuff, just use regular for selection pages... -->
+
 <div id="header">
  
      <table width="100%" align="CENTER" border="0" cellpadding="0">
@@ -38,8 +40,6 @@
         to generate visualizations for that entry</label>
       <p>
       <input type="text" name="number" size="5">
-      </p>
-      <p>
       <input type="submit" value="View data">
       </p>
     </form>
@@ -50,30 +50,67 @@
     Visualization Server</a> to visualize it without making it public.
     </p>
 
-<div id="content">
-    <h3>3D structure example</h3>
-    <a class="thumbnail" href="#thumb"><img src="images/3d_thumb.png"><span><img src="images/3d.png"></span></a>
-    <p>
-    <a href="html/help_ac.html">Help about this visualization</a>
-    </p>
-</div>
-
 <br>
 <div id="content">
-    <h3>Chemical shift distributions by amino acid example</h3>
-    <a class="thumbnail" href="#thumb"><img src="images/cs_dist_thumb.png"><span><img src="images/cs_dist.png"></span></a>
-    <p>
-    <a href="html/help_as.html">Help about this visualization</a>
-    </p>
-</div>
 
-<br>
-<div id="content">
-    <h3>Observed vs. calculated chemical shifts example</h3>
-    <a class="thumbnail" href="#thumb"><img src="images/single_entry_csr3_thumb.png"><span><img src="images/single_entry_csr3.png"></span></a>
-    <p>
-    <a href="html/help_csr3.html">Help about this visualization</a>
-    </p>
+<table width="100%" cellpadding="5">
+<tr>
+<td width="50%">
+<table id="vis">
+  <tr>
+    <td align="left" rowspan="2" width="120">
+      <a class="thumbnail" href="#thumb"><img src="images/3d_thumb.png"><span><img src="images/3d.png"></span></a>
+    </td>
+    <th align="left">
+      3D structure example
+    </th>
+  </tr>
+    <td align="center">
+      <a href="html/help_ac.html">Help about this visualization</a>
+    </td>
+  <tr>
+  </tr>
+</table>
+</td>
+
+<td width="50%">
+<table id="vis">
+  <tr>
+    <td align="left" rowspan="2" width="120">
+      <a class="thumbnail" href="#thumb"><img src="images/cs_dist_thumb.png"><span><img src="images/cs_dist.png"></span></a>
+    </td>
+    <th align="left">
+      Chemical shift distributions by amino acid example
+    </th>
+  </tr>
+    <td align="center">
+      <a href="html/help_as.html">Help about this visualization</a>
+    </td>
+  </tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td>
+<table id="vis">
+  <tr>
+    <td align="left" rowspan="2" width="120">
+      <a class="thumbnail" href="#thumb"><img src="images/single_entry_csr3_thumb.png"><span><img src="images/single_entry_csr3.png"></span></a>
+    </td>
+    <th align="left">
+      Observed vs. calculated chemical shifts example
+    </th>
+  </tr>
+    <td align="center">
+      <a href="html/help_csr3.html">Help about this visualization</a>
+    </td>
+  </tr>
+</table>
+</td>
+</tr>
+</table>
+
 </div>
 
 <br>
