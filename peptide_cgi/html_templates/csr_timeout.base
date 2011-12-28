@@ -1,13 +1,29 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!--
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 2000-2011
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+-->
+
+<!--
+  $Id$
+-->
+
 <html>
 <head>
   <title>Chemical shift reference timeout</title>
-  <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
+  <link REL="stylesheet" TYPE="text/css" HREF="../visualization.css" TITLE="main stylesheet">
 </head>
 
-<body bgcolor = #FFFFCC>
-<font color = #660000>
-
+<body>
   <center> <h2>
   Chemical shift reference calculation timed out
   </h2> </center>
@@ -20,15 +36,15 @@
   and then re-clicking the chemical shift reference link.
   </p>
 
-  <br><br>
-  <center>
-  <h5>Comments or questions?  Contact
-    <a href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
-  </h5>
-  <h5>Problems with the visualization software?  Contact <a
-    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
-  </h5>
-  </center>
+  <br>
+  <div id="content">
+    <p>Comments or questions?  Contact
+      <a href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
+    </p>
+    <p>Problems with the visualization software?  Contact <a
+      href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+    </p>
+  </div>
 
   <!-- code to track usage -->
   <script type="text/javascript">

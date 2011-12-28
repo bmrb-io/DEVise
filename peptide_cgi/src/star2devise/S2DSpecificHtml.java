@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2011/09/19 19:14:42  wenger
+// Fixed tutorial video links for the visualization server.
+//
 // Revision 1.25  2011/05/23 19:47:17  wenger
 // Added S2 predicted vs. experimental help page; fixed some minor problems
 // with the s2 predicted vs. experiemental html page.
@@ -103,7 +106,7 @@ public class S2DSpecificHtml {
     private static final String searchString2 = "bmr4264.str";
     private static final String searchString3 = "help_d.html";
     private static final String searchString4 = "Dummy title";
-    private static final String searchString5 = "<p>Dummy details</p>";
+    private static final String searchString5 = "Dummy details";
     private static final String searchString6 = "4264y";
     private static final String searchString7 =
       "\"cmdport\" value=\"6666\"";
@@ -299,8 +302,7 @@ public class S2DSpecificHtml {
         _replaceString3 = "../help_" + helpSuffix + S2DNames.HTML_SUFFIX;
         _replaceString4 = _title;
 	if (frameDetails != null && !frameDetails.equals("")) {
-	    _replaceString5 = "<h3>\n  Frame details: " + frameDetails +
-	      "\n  </h3>";
+	    _replaceString5 = "Frame details: " + frameDetails;
         } else {
 	    _replaceString5 = "";
 	}

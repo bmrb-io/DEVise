@@ -136,9 +136,9 @@ source tests/check4line
 
 #TEMP -- add checks for *all* data types in summary html file
 set file = "html_dir/4267/4267d1.html"
-set line = '^  Chemical Shift Delta (entity assembly 1)$'
+set line = '^    Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line
-set line = '^    <param name="session" value="bmrb/dynamic_sessions/4267/4267d1.ds">$'
+set line = '^      <param name="session" value="bmrb/dynamic_sessions/4267/4267d1.ds">$'
 source tests/check4line
 
 set file = "html_dir/4267/4267y.html"

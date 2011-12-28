@@ -1,90 +1,99 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!--
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 2000-2011
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+-->
+
+<!--
+  $Id$
+-->
+
 <html>
 <head>
-  <title>BMRB Data Viewer for bmr4264.str</title>
-  <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
+  <title>BMRB Data Viewer for 4264</title>
+  <link href="../visualization.css" rel="stylesheet" type="text/css" media="all">
 </head>
 
-<body bgcolor = #FFFFCC>
-<font color = #660000>
-  <table cellspacing=10>
-    <tr>
-      <td><a target = "_blank" href="../../collab.html">JavaScreen
-        collaboration</a></td>
-    </tr>
-    <tr>
-      <td><a href="http://www.cs.wisc.edu/~devise">DEVise home page</a></td>
-    </tr>
-  </table>
+<body>
+  <div id="header">
+    <center> <h2>
+    Dummy title
+    </h2> </center>
+    <h3>
+    Dummy details
+    </h3>
+  </div>
 
-  <hr>
+  <br>
+  <div id="content">
+    <p><a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
+      tutorial videos</a></p>
+    <p><a target = "_blank" href="../../collab.html">JavaScreen collaboration</a></p>
+    <p><a href="http://www.cs.wisc.edu/~devise">DEVise home page</a></p>
+    <h3>
+    <p><a href="4264y.html">Back to all visualizations for this entry</a></p>
+    </h3>
+  </div>
 
-  <h2>
-  <p><a href="4264y.html">Back to all visualizations for this entry</a></p>
-  </h2>
+  <br>
+  <div id="content">
+    <center>
+    <applet code=JavaScreen.jsa.class archive=../../../jsa1.jar,../../../jsa2.jar,../../../JmolApplet.jar width=400 height=30>
+      <param name="applet" value="JavaScreen.jsa">
+      <param name="debug" value="0">
+      <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
+      <param name="cmdport" value="6666">
+      <param name="cgiurl" value="/cgi-bin/js.cgi">
+      <param name="rubberbandlimit" value="4x4">
+      <!-- old bgcolor     <param name="bgcolor" value="64+96+0"> -->
+      <param name="bgcolor" value="0+0+0">
+      <param name="screensize" value="800x600">
+      <param name="hidebmrbsess" value="1">
+      <hr>
+      <p>Your browser does not support Java, or Java is not enabled.  Sorry!</p>
+      <p>If you are using IE 8, you may need to restart your browser to
+      enable add-ons.</p>
+      <hr>
+    </applet>
+    </center>
+    <h3>
+      3D rendering by <a href="http://jmol.sourceforge.net/">Jmol</a>
+    </h3>
+    <h3>
+      <p><a target= "nmr_vis_help" href="../help_d.html">Help about this
+        visualization</a></p>
+    </h3>
+    <p>
+      <b>Switching visualizations:</b> to switch between visualizations
+      for this entry, select Session->Open/Switch in the JavaScreen.  This
+      will show a dialog listing the visualizations that are currently
+      available for this entry.  Note that some visualizations (such as
+      coordinates and restraints) require additional processing on the
+      server, so you may have to go back to the "all visualizations" page
+      for this entry to access them.  Also, if you switch visualizations
+      inside the JavaScreen, the "help on this visualization" link will
+      no longer correspond to the visualization you are viewing.
+    </p>
+  </div>
 
-  <hr>
-
-  <center> <h2>
-  Dummy title
-  </h2> </center>
-
-  <p>Dummy details</p>
-
-  <h3>
-  <p><a target= "nmr_vis_help" href="help_d.html">Help about this
-    visualization</a></p>
-  </h3>
-
-  <h3>
-  <p><a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
-    tutorial videos</a></p>
-  </h3>
-
-  <center>
-  <applet code=JavaScreen.jsa.class archive=../../../jsa1.jar,../../../jsa2.jar,../../../JmolApplet.jar width=400 height=30>
-    <param name="applet" value="JavaScreen.jsa">
-    <param name="debug" value="0">
-    <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
-    <param name="cmdport" value="6666">
-    <param name="cgiurl" value="/cgi-bin/js.cgi">
-    <param name="rubberbandlimit" value="4x4">
-    <!-- old bgcolor     <param name="bgcolor" value="64+96+0"> -->
-    <param name="bgcolor" value="0+0+0">
-    <param name="screensize" value="800x600">
-    <param name="hidebmrbsess" value="1">
-    <hr>
-    <p>Your browser does not support Java, or Java is not enabled.  Sorry!</p>
-    <p>If you are using IE 8, you may need to restart your browser to
-    enable add-ons.</p>
-    <hr>
-  </applet>
-  </center>
-    
-  <p>
-  <b>Switching visualizations:</b> to switch between visualizations
-  for this entry, select Session->Open/Switch in the JavaScreen.  This
-  will show a dialog listing the visualizations that are currently
-  available for this entry.  Note that some visualizations (such as
-  coordinates and restraints) require additional processing on the
-  server, so you may have to go back to the "all visualizations" page
-  for this entry to access them.  Also, if you switch visualizations
-  inside the JavaScreen, the "help on this visualization" link will
-  no longer correspond to the visualization you are viewing.
-  </p>
-
-  <br><br>
-  <center>
-  <h3>
-  3D rendering by <a href="http://jmol.sourceforge.net/">Jmol</a>
-  </h3>
-  <h5>Comments or questions?  Contact
-    <a href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
-  </h5>
-  <h5>Problems with the visualization software?  Contact <a
-    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
-  </h5>
-  </center>
+  <br>
+  <div id="content">
+    <p>Comments or questions?  Contact
+      <a href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
+    </p>
+    <p>Problems with the visualization software?  Contact <a
+      href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+    </p>
+  </div>
 
   <!-- code to track usage -->
   <script type="text/javascript">

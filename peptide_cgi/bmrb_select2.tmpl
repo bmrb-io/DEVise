@@ -18,78 +18,122 @@
 -->
 
 <html>
-  <head>
-    <title>DEVise JavaScreen: select 2 BMRB samples for visualization</title>
-    <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
-  </head>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>DEVise JavaScreen: select 2 BMRB samples for visualizations</title>
+  <link href="visualization.css" rel="stylesheet" type="text/css" media="all">
+</head>
 
-  <body>
+<body>
 
-    <CENTER><TABLE BORDER="0" CELLPADDING="0" ALIGN="CENTER"  WIDTH="100%">
-      <tr>
-        <TD class="titlesearch" HEIGHT="40">
-          <A HREF="/"><IMG SRC="figures/logo.gif" ALT="BMRB Logo" BORDER="0"></A>
-        </TD>
+  <div id="header">
+ 
+    <table width="100%" align="CENTER" border="0" cellpadding="0">
+      <tbody><tr>
+        <td class="titlesearch" height="40">
+	  <!-- TEMP -- need to change URL here -->
+          <a href="http://www.bmrb.wisc.edu/"><img src="figures/logo.gif" alt="BMRB Logo" border="0"></a>
+        </td>
 
-        <TD class="titlesearch" WIDTH="100%" ALIGN="CENTER"  >
-          <H2><i>Biological Magnetic Resonance Data Bank</i></H2><BR>
+        <td class="titlesearch" width="80%" align="left">
+          <h2><i>Biological Magnetic Resonance Data Bank</i></h2><br>
           <i>A Repository for Data from NMR Spectroscopy on
-	   Proteins, Peptides, Nucleic Acids, and other Biomolecules </i>
-        </TD>
+	    Proteins, Peptides, Nucleic Acids, and other Biomolecules </i>
+        </td>
       </tr>
-    </table>
-    </center>
+   </tbody></table>
 
-    <center>
-      <h2>Two-entry visualizations</h2>
-    </center>
+  </div>
 
-    <br>
+  <center>
+    <h2>BMRB two-entry visualizations</h2>
+  </center>
 
+  <br>
+
+  <div id="content">
     <form method="get" name="get_by_bmrb" action="CGI_URL">
-      <fieldset>
       <label for="number">Enter two BMRB accession numbers (e.g., 16606 and
         16607) here to generate visualizations comparing the entries.</label>
       <p>
       <input type="text" name="number" size="5">
       <input type="text" name="xbmrbid" size="5">
-      </p>
-      <p>
       <input type="submit" value="View data">
       </p>
-      </fieldset>
     </form>
+  </div>
 
-    <br>
+  <br>
+  <p>
+  You can also upload data to the <a href="../../vis_serv">
+  Visualization Server</a> and compare it to a released entry (first
+  upload your data to the visualization server and generate the
+  visualizations; once you've done that you can enter an accession number
+  for generating the two-entry visualizations).
+  </p>
 
-    <p>
-    You can also upload data to the <a href="../../vis_serv">
-    Visualization Server</a> and compare it to a released entry (first
-    upload your data to the visualization server and generate the
-    visualizations; once you've done that you can enter an accession number
-    for generating the two-entry visualizations).
+  <p>
+  Currently two two-entry visualizations are available: the simulated
+  1H-15N backbone HSQC spectrum and the simulated 1H-13C HSQC spectrum.
+  Examples of each are shown below, with links to the help pages offering
+  detailed explanations.
+  </p>
+
+  <br>
+  <div id="content">
+
+    <table width="100%" cellpadding="5">
+      <tr>
+        <td width="50%">
+          <table id="vis">
+            <tr>
+              <td align="left" rowspan="2" width="120">
+                <a class="thumbnail" href="#thumb"><img src="figures/multi_entry_nh_thumb.png"><span><img src="figures/multi_entry_nh.png"></span></a>
+              </td>
+              <th align="left">
+                Simulated 1H-15N backbone HSQC spectrum example
+              </th>
+            </tr>
+            <tr>
+              <td align="center">
+                <a href="html/help_hn2.html">Help about this visualization</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+
+        <td width="50%">
+          <table id="vis">
+            <tr>
+              <td align="left" rowspan="2" width="120">
+                <a class="thumbnail" href="#thumb"><img src="figures/multi_entry_ch_thumb.png"><span><img src="figures/multi_entry_ch.png"></span></a>
+              </td>
+              <th align="left">
+                Simulated 1H-13C HSQC spectrum example
+              </th>
+            </tr>
+	    <tr>
+              <td align="center">
+                <a href="html/help_hc2.html">Help about this visualization</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
+  <br>
+  <div id="content">
+    <p>Comments or questions?  Contact
+      <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
     </p>
-
-    <br>
-    <p>
-    Currently two two-entry visualizations are available: the simulated
-    1H-15N backbone HSQC spectrum and the simulated 1H-13C HSQC spectrum.
-    Examples of each are shown below, with links to the help pages offering
-    detailed explanations.
+    <p>Problems with the visualization software?  Contact <a
+      href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
     </p>
+  </div>
 
-    <h3>Simulated 1H-15N backbone HSQC spectrum example</h3>
-    <img src=figures/multi_entry_nh.png>
-    <p>
-    <a href="html/help_hn2.html">Help about this visualization</a>
-    </p>
-
-    <h3>Simulated 1H-13C HSQC spectrum example</h3>
-    <img src=figures/multi_entry_ch.png>
-    <p>
-    <a href="html/help_hc2.html">Help about this visualization</a>
-    </p>
-
-  </body>
+</body>
 </html>
 

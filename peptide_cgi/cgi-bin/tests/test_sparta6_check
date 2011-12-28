@@ -68,7 +68,7 @@ set line = '^    <td><a href="11017sd1.html">91 residues</a></td>$'
 source tests/check4line
 
 set file = "html_dir/11017/11017sd1.html"
-set line = '^  SPARTA-calculated Chemical Shift Delta (entity assembly 1)$'
+set line = '^    SPARTA-calculated Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line
 
 set file = "data_dir/11017sd1_models.dat"

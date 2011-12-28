@@ -19,68 +19,128 @@
 
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>DEVise JavaScreen: select BMRB sample for visualizations</title>
-  <link REL="stylesheet" TYPE="text/css" HREF="/stylesheets/main.css" TITLE="main stylesheet">
+  <link href="visualization.css" rel="stylesheet" type="text/css" media="all">
 </head>
 
 <body>
 
-    <CENTER><TABLE BORDER="0" CELLPADDING="0" ALIGN="CENTER"  WIDTH="100%">
-      <tr>
-        <TD class="titlesearch" HEIGHT="40">
-          <A HREF="/"><IMG SRC="figures/logo.gif" ALT="BMRB Logo" BORDER="0"></A>
-        </TD>
+<!-- TEMP -- get rid of single_entry* stuff, just use regular for selection pages... -->
 
-        <TD class="titlesearch" WIDTH="100%" ALIGN="CENTER"  >
-          <H2><i>Biological Magnetic Resonance Data Bank</i></H2><BR>
+  <div id="header">
+ 
+    <table width="100%" align="CENTER" border="0" cellpadding="0">
+      <tbody><tr>
+        <td class="titlesearch" height="40">
+	  <!-- TEMP -- need to change URL here -->
+          <a href="http://www.bmrb.wisc.edu/"><img src="figures/logo.gif" alt="BMRB Logo" border="0"></a>
+        </td>
+
+        <td class="titlesearch" width="80%" align="left">
+          <h2><i>Biological Magnetic Resonance Data Bank</i></h2><br>
           <i>A Repository for Data from NMR Spectroscopy on
-	   Proteins, Peptides, Nucleic Acids, and other Biomolecules </i>
-        </TD>
-      </tr>
+	    Proteins, Peptides, Nucleic Acids, and other Biomolecules </i>
+        </td>
+      </tr></tbody>
     </table>
-    </center>
 
-    <center>
-      <h2>BMRB entry visualizations</h2>
-    </center>
+  </div>
 
+  <center>
+    <h2>BMRB entry visualizations</h2>
+  </center>
+
+  <div id="content">
     <form method="get" name="get_by_bmrb" action="CGI_URL">
-      <fieldset>
       <label for="number">Enter a BMRB accession number (e.g., 4081)
         to generate visualizations for that entry</label>
       <p>
       <input type="text" name="number" size="5">
-      </p>
-      <p>
       <input type="submit" value="View data">
       </p>
-      </fieldset>
     </form>
+  </div>
 
-    <p>
-    You can also upload data to the <a href="../../vis_serv">
-    Visualization Server</a> to visualize it without making it public.
+  <p>
+  You can also upload data to the <a href="../../vis_serv">
+  Visualization Server</a> to visualize it without making it public.
+  </p>
+
+  <br>
+  <div id="content">
+
+    <table width="100%" cellpadding="5">
+      <tr>
+        <td width="50%">
+          <table id="vis">
+            <tr>
+              <td align="left" rowspan="2" width="120">
+                <a class="thumbnail" href="#thumb"><img src="figures/3d_thumb.png"><span><img src="figures/3d.png"></span></a>
+              </td>
+              <th align="left">
+                3D structure example
+              </th>
+            </tr>
+            <tr>
+              <td align="center">
+                <a href="html/help_ac.html">Help about this visualization</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+
+        <td width="50%">
+          <table id="vis">
+            <tr>
+              <td align="left" rowspan="2" width="120">
+                <a class="thumbnail" href="#thumb"><img src="figures/cs_dist_thumb.png"><span><img src="figures/cs_dist.png"></span></a>
+              </td>
+              <th align="left">
+                Chemical shift distributions by amino acid example
+              </th>
+            </tr>
+	    <tr>
+              <td align="center">
+                <a href="html/help_as.html">Help about this visualization</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <tr>
+        <td>
+          <table id="vis">
+            <tr>
+              <td align="left" rowspan="2" width="120">
+                <a class="thumbnail" href="#thumb"><img src="figures/csr3_thumb.png"><span><img src="figures/csr3.png"></span></a>
+              </td>
+              <th align="left">
+                Observed vs. calculated chemical shifts example
+              </th>
+            </tr>
+	    <tr>
+              <td align="center">
+                <a href="html/help_csr3.html">Help about this visualization</a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
+  <br>
+  <div id="content">
+    <p>Comments or questions?  Contact
+      <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
     </p>
-
-    <h3>3D structure example</h3>
-    <img src=figures/single_entry_ac.png>
-    <p>
-    <a href="html/help_ac.html">Help about this visualization</a>
+    <p>Problems with the visualization software?  Contact <a
+      href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
     </p>
-
-
-    <h3>Chemical shift distributions by amino acid example</h3>
-    <img src=figures/cs_by_aa.png>
-    <p>
-    <a href="html/help_as.html">Help about this visualization</a>
-    </p>
-
-
-    <h3>Observed vs. calculated chemical shifts example</h3>
-    <img src=figures/single_entry_csr3.png>
-    <p>
-    <a href="html/help_csr3.html">Help about this visualization</a>
-    </p>
+  </div>
 
 </body>
 </html>

@@ -67,7 +67,7 @@ VUR_CONFIG_FILE = cgi-bin/vur_config
 RESTRAINT_SELECT_HTML_FILE = restraint_select.html
 
 setup: s2d_props bin select_html select2_html error_email tmp \
-	vur_config restraint_select
+	vur_config restraint_select css
 
 testsetup:
 	mkdir test_html; cd test_html; ln -s ../html/* .
@@ -128,6 +128,8 @@ clean:
 	-rm $(VUR_CONFIG_FILE)
 	-rm vur_config
 	-rm $(RESTRAINT_SELECT_HTML_FILE)
+	-rm visualization.css
+	-rm histograms/html/visualization.css
 
 testclean:
 	-rm -rf test_data test_session test_html test_html_unreleased
@@ -247,3 +249,7 @@ restraint_select: $(RESTRAINT_SELECT_HTML_FILE)
 $(RESTRAINT_SELECT_HTML_FILE): restraint_select.tmpl
 	-rm -f $(RESTRAINT_SELECT_HTML_FILE)
 	sed -e 's%CGI_URL%$(CGI_URL)%' restraint_select.tmpl > $(RESTRAINT_SELECT_HTML_FILE)
+
+css:
+	ln -s html/visualization.css .
+	ln -s html/visualization.css histograms/html
