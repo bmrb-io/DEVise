@@ -29,4 +29,4 @@ if ($answer == y || $answer == Y) then
   set tested_suffix = ""
 endif
 
-tar cvfzh peptide-cgi_$version$tested_suffix.tgz peptide-cgi_$version
+tar cvfzhX peptide-cgi_$version$tested_suffix.tgz exclude_file peptide-cgi_$version

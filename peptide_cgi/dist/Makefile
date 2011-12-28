@@ -116,6 +116,7 @@ html-setup:
 	ln -s ../../../html/*.jpg .
 	ln -s ../../../html/*.js .
 	ln -s ../../../html/*.txt .
+	ln -s ../../../html/*.css .
 
 .PHONEY : html_templates-setup
 html_templates-setup:

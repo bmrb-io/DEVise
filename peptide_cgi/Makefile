@@ -252,4 +252,4 @@ $(RESTRAINT_SELECT_HTML_FILE): restraint_select.tmpl
 
 css:
 	ln -s html/visualization.css .
-	ln -s html/visualization.css histograms/html
+	cd histograms/html; ln -s ../../html/visualization.css .
