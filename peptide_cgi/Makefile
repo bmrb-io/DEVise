@@ -88,6 +88,7 @@ testsetup:
 	mkdir test_data/uvd
 	mkdir test_session/.uvd
 	mkdir test_html/uvd
+	cd test_html/uvd; ln -s ../../html/*.css .
 	cd test_data; ln -s ../prototype/data/*.dat .
 	cd test_session; ln -s ../prototype/session/*.ds .
 

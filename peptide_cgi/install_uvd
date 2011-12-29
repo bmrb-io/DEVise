@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2007
+#  (c) Copyright 2007-2011
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -58,6 +58,11 @@ ln -s -f ../*.jpg .
 ln -s -f ../*.gif .
 ln -s -f ../*.png .
 ln -s -f ../*.txt .
+popd
+
+# Link the CSS files into the uvd directory.
+pushd $htmlhome
+ln -s -f ../*.css .
 popd
 
 #-----------------------------------------------------------
