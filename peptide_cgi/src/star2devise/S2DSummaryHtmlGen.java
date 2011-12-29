@@ -37,6 +37,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.41  2011/12/29 23:10:41  wenger
+// Visualization summary page is now partly converted to the new color
+// scheme and layout.
+//
 // Revision 1.40  2011/10/20 19:09:33  wenger
 // Added DOCTYPE to all html pages and templates.
 //
@@ -445,12 +449,7 @@ public abstract class S2DSummaryHtmlGen {
 	    //
 	    _writer.write("<br>\n<div id=\"content\">\n");
 	    _writer.write("\n<p>\n");
-	    String videoDir;
-	    if (_isUvd) {
-	    	videoDir = "../..";
-	    } else {
-	    	videoDir = "..";
-	    }
+	    String videoDir = _isUvd ? "../.." : "..";
             _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
 	      "/js_videos.html\">DEVise/JavaScreen\n");
             _writer.write("tutorial videos</a>\n");
@@ -562,8 +561,18 @@ TEMP?*/
 		//
 	        if (!_multiEntry) {
 		    _writer.write("<br>\n<div id=\"content\">\n");
-	            _writer.write("\n<p>\n");
-	            _writer.write("<b>Multi-entry visualizations</b>\n");
+		    _writer.write("<table id=\"vis\">\n");
+		    _writer.write("<tr>\n");
+		    _writer.write("<td align=\"left\" rowspan=\"2\" width=\"120\">\n");
+	            String imageDir = _isUvd ? "../.." : "..";
+		    _writer.write("<a class=\"thumbnail\" href=\"#thumb\"><img src=\"" + imageDir + "/two_entry_thumb.png\"><span><img src=\"" + imageDir + "/two_entry.png\"></span></a>\n");
+		    _writer.write("</td>\n");
+		    _writer.write("<th align=\"left\">\n");
+		    _writer.write("Multi-entry visualizations</b>\n");
+		    _writer.write("</th>\n");
+		    _writer.write("</tr>\n");
+		    _writer.write("<tr>\n");
+		    _writer.write("<td>\n");
 
 	            _writer.write("\n<form name=\"multi-entry\" action=\"" +
 		      action + "\" " + "method=\"get\">\n");
@@ -584,7 +593,10 @@ TEMP?*/
 	            }
 	            _writer.write("<input type=\"submit\" value=\"View data\">\n");
 	            _writer.write("</form>\n");
-	            _writer.write("</p>\n\n");
+		    
+		    _writer.write("</td>\n");
+		    _writer.write("</tr>\n");
+		    _writer.write("</table>\n");
 		    _writer.write("</div>\n");
 	        }
 
