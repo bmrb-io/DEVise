@@ -100,7 +100,7 @@ do_install:
 
 histogram_install:
 	./install_histogram $(DEV_DEMO_HOME) $(WWW_HOME) \
-	  $(HISTOGRAM_DATA_HOME) $(HISTOGRAM_HTML_HOME)
+	  $(HISTOGRAM_DATA_HOME) $(HISTOGRAM_HTML_HOME) $(PEP_HTML_HOME)
 
 vur_install:
 	./install -vur $(DEV_DEMO_HOME) /dev/null $(VUR_FRONTEND_DIR) \

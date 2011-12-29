@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2007
+#  (c) Copyright 2000-2011
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -25,9 +25,9 @@
 #-----------------------------------------------------------
 # Check and get the arguments.
 
-if ($#argv != 4) then
+if ($#argv != 5) then
   echo "Usage: install_histogram <dev_demo_home> <www_home>"
-  echo "  <histogram_data_home> <histogram_html_home>"
+  echo "  <histogram_data_home> <histogram_html_home> <pep_html_home>"
   exit 1;
 endif
 
@@ -35,6 +35,7 @@ set demohome = $1
 set wwwhome = $2
 set datahome = $3
 set htmlhome = $4
+set pephtmlhome = $5
 
 
 # Make sure the demo home and www home directories already exist.
@@ -109,9 +110,22 @@ if (! -e $targetdir) then
 endif
 chmod a+rwx $targetdir
 cp -p histograms/html/*.html $targetdir
-cp -p histograms/html/*.png $targetdir
-cp -p histograms/html/*.gif $targetdir
 chmod a+r $targetdir/*.html
+
+pushd $targetdir
+\rm *.css
+ln -s $pephtmlhome/*.css .
+popd
+
+set targetdir = $targetdir/figures
+if (! -e $targetdir) then
+  mkdir -p $targetdir
+endif
+chmod a+rwx $targetdir
+cp -p histograms/html/figures/*.png $targetdir
+chmod a+r $targetdir/*.png
+cp -p histograms/html/figures/*.gif $targetdir
+chmod a+r $targetdir/*.gif
 
 
 # Copy the schemas to the demo area.
