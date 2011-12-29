@@ -1,10 +1,11 @@
 			Peptide-CGI Version History
 
-Peptide-CGI 12.1.6
+Peptide-CGI 12.2.0
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.0 or higher.)
 
-(Nothing yet.)
+* Changed all visualization-related pages to the new color scheme and
+layout.
 
 
 Peptide-CGI 12.1.5

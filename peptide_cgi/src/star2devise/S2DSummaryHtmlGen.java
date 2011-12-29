@@ -1,3 +1,4 @@
+//TEMPTEMP -- make sure we have variables everywhere we need them (e.g., for uvd)
 // ========================================================================
 // DEVise Data Visualization Software
 // (c) Copyright 2006-2011
@@ -36,6 +37,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.40  2011/10/20 19:09:33  wenger
+// Added DOCTYPE to all html pages and templates.
+//
 // Revision 1.39  2011/09/19 19:14:42  wenger
 // Fixed tutorial video links for the visualization server.
 //
@@ -417,41 +421,29 @@ public abstract class S2DSummaryHtmlGen {
 
 	    _writer = S2DFileWriter.create(fileName());
 
+	    //
+	    // Header.
+	    //
 	    _writer.write("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n");
 	    _writer.write("<html>\n<head>\n" +
+	      "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" + 
 	      "<title>Summary for " + _longName + "</title>\n" +
-	      "<link REL=\"stylesheet\" TYPE=\"text/css\" " +
-	      "HREF=\"/stylesheets/main.css\" TITLE=\"main stylesheet\">\n" + 
-	      "</head>\n" +
-	      "<body bgcolor = #FFFFCC>\n" +
-	      "<font color = #660000>\n\n");
+	      "<link href=\"../visualization.css\" rel=\"stylesheet\" type=\"text/css\" media=\"all\">\n" +
+	      "</head>\n\n");
 
-	    if (!_isUvd && !_masterId.equals("")) {
-	        _writer.write("<h2>\n");
-	        _writer.write("<p>\n");
-	        _writer.write("<a href=\"../../../../data_library/" +
-		  "generate_summary.php?bmrbId=" + _name +
-		  "&chooseAccOrDep=useAcc\">Back to main entry page</a>\n");
-	        _writer.write("</p>\n");
-	        _writer.write("</h2>\n");
-	        _writer.write("<hr>\n\n");
-	    }
-
-	    _writer.write("<h3>DEVise plots for " + _longName + ":\n");
-	    _writer.write(systemName + "</h3>\n");
+            _writer.write("<div id=\"header\">\n");
+	    _writer.write("<center><h3>DEVise plots for " +
+              _longName + ":\n");
+	    _writer.write(systemName + "</h3></center>\n");
 	    if (!entryTitle.equals("")) {
-	        _writer.write("Title: <tt>" + entryTitle + "</tt>\n");
+	        _writer.write("Title: " + entryTitle + "\n");
 	    }
+	    _writer.write("</div>\n");
 
-	    _writer.write("\n<p>\n");
-	    _writer.write("Comments or questions?  Contact <a href=\"mailto:" +
-	      S2DNames.COMMENT_EMAIL + "\">" + S2DNames.COMMENT_EMAIL +
-	      "</a>\n");
-	    _writer.write("</p>\n");
-
-	    _writer.write("\n<p>\n");
-	    _writer.write("</p>\n");
-
+	    //
+	    // Tutorial video and main entry page links.
+	    //
+	    _writer.write("<br>\n<div id=\"content\">\n");
 	    _writer.write("\n<p>\n");
 	    String videoDir;
 	    if (_isUvd) {
@@ -463,35 +455,16 @@ public abstract class S2DSummaryHtmlGen {
 	      "/js_videos.html\">DEVise/JavaScreen\n");
             _writer.write("tutorial videos</a>\n");
 	    _writer.write("</p>\n");
-	    _writer.write("<hr>\n\n");
-
-	    if (!_multiEntry) {
-	        _writer.write("\n<p>\n");
-	        _writer.write("<b>Multi-entry visualizations</b>\n");
-
-                String action = _isUvd ? S2DNames.UVD_CGI_URL :
-		  S2DNames.CGI_URL;
-	        _writer.write("\n<form name=\"multi-entry\" action=\"" +
-		  action + "\" " + "method=\"get\">\n");
-	        _writer.write("<label for=\"xbmrbid\">Enter a BMRB " +
-		  "accession number (e.g., 4081) for multi-entry " +
-		  "visualizations with this entry:</label>\n");
-	        _writer.write(
-		  "<input type=\"text\" name=\"xbmrbid\" size=\"5\">\n");
-	        if (_isUvd) {
-	            _writer.write("<input type=\"hidden\" name=\"file\" " +
-		      "value=\"" + (String)_localFiles.elementAt(0) +
-		      "\">\n");
-	            _writer.write("<input type=\"hidden\" name=\"name\" " +
-		      "value=\"" + _name + "\">\n");
-	        } else {
-	            _writer.write("<input type=\"hidden\" name=\"number\" " +
-	              "value=\"" + _name + "\">\n");
-	        }
-	        _writer.write("<input type=\"submit\" value=\"View data\">\n");
-	        _writer.write("</form>\n");
-	        _writer.write("</p>\n\n");
+	    if (!_isUvd && !_masterId.equals("")) {
+	        _writer.write("<h3>\n");
+	        _writer.write("<p>\n");
+	        _writer.write("<a href=\"../../../../data_library/" +
+		  "generate_summary.php?bmrbId=" + _name +
+		  "&chooseAccOrDep=useAcc\">Back to main entry page</a>\n");
+	        _writer.write("</p>\n");
+	        _writer.write("</h3>\n");
 	    }
+            _writer.write("</div>\n");
 
 	} catch(IOException ex) {
 	    System.err.println("IOException opening or writing to summary " +
@@ -523,6 +496,8 @@ public abstract class S2DSummaryHtmlGen {
 TEMP?*/
 
 		// Write out the tables that now contain the actual links.
+	        _writer.write("<br>\n<div id=\"content\">\n");
+
 		if (_multiEntry) {
                     write2EntryTable();
 
@@ -580,6 +555,46 @@ TEMP?*/
 		  "reprocessing\">\n");
 		_writer.write("</form>\n");
 
+	        _writer.write("</div\n");
+
+		//
+		// Multi-entry visualization form.
+		//
+	        if (!_multiEntry) {
+		    _writer.write("<br>\n<div id=\"content\">\n");
+	            _writer.write("\n<p>\n");
+	            _writer.write("<b>Multi-entry visualizations</b>\n");
+
+	            _writer.write("\n<form name=\"multi-entry\" action=\"" +
+		      action + "\" " + "method=\"get\">\n");
+	            _writer.write("<label for=\"xbmrbid\">Enter a BMRB " +
+		      "accession number (e.g., 4081) for multi-entry " +
+		      "visualizations with this entry:</label>\n");
+	            _writer.write(
+		      "<input type=\"text\" name=\"xbmrbid\" size=\"5\">\n");
+	            if (_isUvd) {
+	                _writer.write("<input type=\"hidden\" name=\"file\" " +
+		          "value=\"" + (String)_localFiles.elementAt(0) +
+		          "\">\n");
+	                _writer.write("<input type=\"hidden\" name=\"name\" " +
+		          "value=\"" + _name + "\">\n");
+	            } else {
+	                _writer.write("<input type=\"hidden\" name=\"number\" " +
+	                  "value=\"" + _name + "\">\n");
+	            }
+	            _writer.write("<input type=\"submit\" value=\"View data\">\n");
+	            _writer.write("</form>\n");
+	            _writer.write("</p>\n\n");
+		    _writer.write("</div>\n");
+	        }
+
+		//
+		// Miscellaneous info.
+		//
+	        _writer.write("<br>\n<div id=\"content\">\n");
+	        _writer.write("<p>Comments or questions?  Contact <a href=\"mailto:" +
+	          S2DNames.COMMENT_EMAIL + "\">" + S2DNames.COMMENT_EMAIL +
+	          "</a></p>\n");
 		if (starVersion != null) {
 	            _writer.write("\n<p>" + FILE_VERSION_LABEL + ": {" +
 	              starVersion + "}</p>\n");
@@ -592,8 +607,11 @@ TEMP?*/
 		  "<a href=\"../pep-version-history.txt\">" +
 		  "version history</a></p>\n");
                 //TEMP -- save Star description here
+		_writer.write("</div>\n");
 
+		//
 		// Save any related BMRB accession numbers.
+		//
 		if (bmrbIds != null) {
 	            _writer.write("\n");
 		    for (int index = 0; index < bmrbIds.size(); index++) {
@@ -605,7 +623,9 @@ TEMP?*/
 		    }
 		}
 
+		//
 		// Save any related PDB IDs.
+		//
 		if (pdbIds != null) {
 	            _writer.write("\n");
 		    for (int index = 0; index < pdbIds.size(); index++) {
@@ -615,7 +635,9 @@ TEMP?*/
 		    }
 		}
 
+		//
                 // Write Google Analytics script to track usage.
+		//
                 _writer.write("\n\n");
                 _writer.write("<!-- code to track usage -->\n");
                 _writer.write("<script type=\"text/javascript\">\n");
@@ -1681,7 +1703,6 @@ TEMP?*/
     // Write the html table of coordinate links.
     protected void writeCoordTable() throws IOException
     {
-        _writer.write("\n<hr>\n");
         if (_maxCoordFrame > 0) {
 
 	    final int maxPerRow = 10;
