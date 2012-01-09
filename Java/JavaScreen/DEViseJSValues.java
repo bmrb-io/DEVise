@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2010/05/28 19:29:11  wenger
+// Changed open session dialog to show BMRB visualization types (with
+// numbers) as the "main" value if they are available, with the new
+// hidebmrbsess applet parameter and command-line argument to hide the
+// file names completely if visualization types are available; added
+// histogram visualization types.
+//
 // Revision 1.20  2010/04/21 17:10:10  wenger
 // Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
 //
@@ -216,12 +223,12 @@ public final class DEViseJSValues
 	public int screenRes = -1;
 	public Dimension rubberBandLimit = new Dimension(4, 4);
 /*	public Color bg = new Color(64, 96, 0);*/
-	public Color bg = new Color(247, 246, 220);
+	public Color bg = new Color(237, 237, 237);// ededed
 	public Color bg_warn = new Color(255, 0, 0);
 /*	public Color fg = Color.white;*/
 	public Color fg = Color.black;
 /*	public Color screenBg = new Color(64, 192, 0);*/
-	public Color screenBg = new Color(229, 227, 207);
+	public Color screenBg = new Color(220, 220, 220);
 /*	public Font font = DEViseFonts.getFont(14, DEViseFonts.SERIF, 0, 0);*/
 	public Font font = DEViseFonts.getFont(14, DEViseFonts.SANS_SERIF, 0, 0);
 	public Font font2 = DEViseFonts.getFont(12, DEViseFonts.SANS_SERIF, 0, 0);
