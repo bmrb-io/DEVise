@@ -1,7 +1,8 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <!--
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2002-2004
+  (c) Copyright 2002-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,14 +22,24 @@
 <title>DEVise JavaScreen Collaboration Follower</title>
 </head>
 
-<body background="logo_background.gif">
+<body>
+
+<center>
+<h1>
+DEVise JavaScreen Collaboration Follower
+</h1>
+</center>
+
+<p>This is an instance of the JavaScreen, without any session opened,
+so it is ready to become a follower of another JavaScreen.</p>
+<br>
 
 <p><a target="_blank" href="keyboard.html">Help on keyboard shortcuts</a>
 <p><a target="_blank" href="collab.html">Help on collaboration</a>
 <p>
 
-<applet code=JavaScreen.jsb.class archive=jsb1.jar,jsb2.jar,JmolApplet.jar width=800 height=600>
-<param name="applet" value="JavaScreen.jsb">
+<applet code=JavaScreen.jsa.class archive=jsa1.jar,jsa2.jar,JmolApplet.jar width=400 height=30>
+<param name="applet" value="JavaScreen.jsa">
 <param name="debug" value="0">
 <param name="cmdport" value="6666">
 <param name="cgiurl" value="/cgi-bin/js.cgi">

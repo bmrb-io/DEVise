@@ -238,6 +238,11 @@ Display the name of the currently-open session (with the name as it's
 shown in the session opening dialog, not just the "raw" file name).
 (wenger)
 
+09.029 1/17/12	OPEN	1
+Clean up JavaScreen html pages (collab.html, collabf.html, keyboard.html,
+maybe others) to match new color scheme/layout of BMRB visualization
+pages. (wenger)
+
 ...........................................................................
 SECTION 10 (JavaScreen, JSPoP)
 Number Date	Status  Pri
