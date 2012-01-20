@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2010
+// (c) Copyright 2009-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.11.4.1  2012/01/09 22:32:31  wenger
+// S2d no longer sends error emails in a number of cases that are
+// instances of faulty inputs rather than actual software errors
+// (see to-do 139).  (Note:  this still needs some work/more checking.)
+//
+// Revision 1.11  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.10.8.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -325,6 +334,7 @@ public class S2DTorsionAngle extends S2DRestraint {
     	}
 
 	if (frameIndex == 1) {
+	    S2DMain._noMail = true;
 	    throw new S2DError("No torsion angle save frames found");
 	}
     }

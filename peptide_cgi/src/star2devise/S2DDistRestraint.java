@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2011
+// (c) Copyright 2009-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.4.1  2012/01/09 22:32:30  wenger
+// S2d no longer sends error emails in a number of cases that are
+// instances of faulty inputs rather than actual software errors
+// (see to-do 139).  (Note:  this still needs some work/more checking.)
+//
+// Revision 1.9  2011/10/10 23:43:38  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.8.2.1  2011/09/21 20:46:09  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -649,6 +658,7 @@ public class S2DDistRestraint extends S2DRestraint {
     	}
 
 	if (frameIndex == 1) {
+	    S2DMain._noMail = true;
 	    throw new S2DError("No distance restraint save frames found");
 	}
     }

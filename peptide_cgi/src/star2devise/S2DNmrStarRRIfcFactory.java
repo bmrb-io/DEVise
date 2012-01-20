@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.5.24.1  2012/01/09 22:32:30  wenger
+// S2d no longer sends error emails in a number of cases that are
+// instances of faulty inputs rather than actual software errors
+// (see to-do 139).  (Note:  this still needs some work/more checking.)
+//
+// Revision 1.5  2010/05/10 19:49:31  wenger
+// Fixed bug 098 (remediated restraints visualization links are created
+// even if file doesn't exist).
+//
 // Revision 1.4  2010/04/27 18:47:07  wenger
 // Fixed bugs Eldon found in testing of whether restraints info exists
 // (for *_LEVEL_LINK_CHECK level of restraint processing).
@@ -110,6 +119,7 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
 	    InputStream is = (new URL(url)).openStream(); 
 	    is.close();
 	} catch(IOException ex) {
+	    S2DMain._noMail = true;
 	    throw new S2DError("URL " + url + " doesn't exist (" +
 	      ex.toString() + ")");
 	}

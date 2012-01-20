@@ -7,6 +7,13 @@ Peptide-CGI 12.2.0
 * Changed all visualization-related pages to the new color scheme and
 layout.
 
+* Peptide-CGI now automatically re-does "basic" processing if necessary
+when doing processing of coordinates, restraints, etc.
+
+* S2d no longer sends error emails in a number of cases that are
+instances of faulty inputs rather than actual software errors (see
+to-do 139).
+
 
 Peptide-CGI 12.1.5
 ------------------

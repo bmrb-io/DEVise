@@ -198,7 +198,7 @@ Num Date        Status  Pri     Description
 				used to test the "no real CB" features.
 				(wenger)
 
-052 12/27/04	OPEN	4	Put -nomail flagi in CSR-only links generated
+052 12/27/04	OPEN	4	Put -nomail flag in CSR-only links generated
 				by do_csr 1. (wenger)
 
 053 12/30/04	OPEN	4	Add a warning to the summary page about not
@@ -597,10 +597,11 @@ Num Date        Status  Pri     Description
 138 6/29/10	OPEN	4	Treat "?" as 0.0 (in some cases, anyhow)
 				(like we do now with "."). (wenger)
 
-139 7/2/10	OPEN	2	Avoid sending error emails if torsion angle
+139 7/2/10	DONE	2	Avoid sending error emails if torsion angle
 				or distance restraint save frames are not
 				found in remediated restraints file.
 				(wenger)
+				(Done by wenger, 1/6/12)
 
 140 7/9/10	OPEN	3	Have visualization help accessed via the
 				JS rather than via a link in the html page,

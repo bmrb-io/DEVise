@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,17 @@
 // $Id$
 
 // $Log$
+// Revision 1.3.24.1  2012/01/09 22:32:30  wenger
+// S2d no longer sends error emails in a number of cases that are
+// instances of faulty inputs rather than actual software errors
+// (see to-do 139).  (Note:  this still needs some work/more checking.)
+//
+// Revision 1.3  2010/03/11 20:31:29  wenger
+// Implemented to-do 126 (multiple NMR-STAR file paths), except that
+// not all config files are updated yet; added checks that the URL
+// exists to all methods for getting URLs.  Also changed a few tests
+// affected by using the 3.1 files instead of 2.1 files.
+//
 // Revision 1.2  2010/01/06 23:03:40  wenger
 // Merged s2d_dist_rest_0912_br_0 thru s2d_dist_rest_0912_br_1 to trunk.
 //
@@ -83,7 +94,8 @@ public class S2DNmrStarStdIfcFactory extends S2DNmrStarIfcFactory {
 
 	if (_urlName == null || _urlName.equals("")) {
 	    _urlName = "";
-	    throw new S2DError("Unable to valid find URL for " +
+	    S2DMain._noMail = true;
+	    throw new S2DError("Unable to find valid URL for " +
 	      fileName);
 	}
 

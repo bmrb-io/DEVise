@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2011
+// (c) Copyright 2000-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,9 +21,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.286  2011/12/29 23:10:41  wenger
+// Visualization summary page is now partly converted to the new color
+// scheme and layout.
+//
 // Revision 1.285  2011/12/28 21:08:02  wenger
 // Updated selection pages, per-visualization pages (but not histograms),
 // and help pages to the new layout and color scheme.
+//
+// Revision 1.284.2.3  2012/01/19 22:25:56  wenger
+// Finished cleaning "unnecessary mail reduction" fixes.
+//
+// Revision 1.284.2.2  2012/01/13 00:59:03  wenger
+// Added automatic 'basic' processing, so we don't get errors if
+// someone tries to do coordinate processing without having done the
+// 'basic' processing first.
+//
+// Revision 1.284.2.1  2012/01/09 22:32:30  wenger
+// S2d no longer sends error emails in a number of cases that are
+// instances of faulty inputs rather than actual software errors
+// (see to-do 139).  (Note:  this still needs some work/more checking.)
 //
 // Revision 1.284  2011/11/02 16:38:00  wenger
 // Changed version to 12.1.6x1, added 12.1.6 version history section.
@@ -606,10 +623,15 @@ public class S2DMain {
 
     private static final int DEBUG = 0;
     public static int _verbosity = 0;
+
+    	// Set this to true for errors that should not generate
+	// email.
+    public static boolean _noMail = false;
+
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.0x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.2.0x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.0";
 
@@ -799,7 +821,11 @@ public class S2DMain {
 	    System.err.println("\n*** Top-level error: ");
 	    ex.printStackTrace();
 	    System.err.println(ex.toString());
-	    throw new S2DError("NMR-Star to DEVise conversion failed");
+	    if (_noMail) {
+	        System.exit(2);
+	    } else {
+	        throw new S2DError("NMR-Star to DEVise conversion failed");
+	    }
 	} finally {
 	    logFinish(result);
 	}
@@ -814,7 +840,7 @@ public class S2DMain {
 	    System.out.println("S2DMain.run()");
 	}
 
-        S2DMain s2d = new S2DMain(args);
+        S2DMain s2d = new S2DMain(args, false);
 
 	if (_retrying) {
 	    s2d._pdbLevel = PDB_LEVEL_NONE;
@@ -825,6 +851,21 @@ public class S2DMain {
 	    s2d._distRLevel = DISTR_LEVEL_NONE;
 	    s2d._rrDistRLevel = RRDISTR_LEVEL_NONE;
 	    s2d._s2PredLevel = S2PRED_LEVEL_NONE;
+	}
+
+	// If we're processing coordinates, restraints, etc., make sure
+	// the 'basic' processing has been done.  (Under normal conditions
+	// we should only do the 'secondary' processing if we've already
+	// done the 'basic' processing, but we could end up otherwise
+	// if the user has an old version of a summary page cached or
+	// something.  At any rate, we do see that happening sometimes.)
+	// Note: test_tar1 tests this.
+        if (!s2d._masterBmrbId.equals("") && s2d._cmdFrameIndex != -1) {
+            if (doDebugOutput(1)) {
+	        System.out.println("Doing 'basic' processing");
+	    }
+	    S2DMain s2dBasic = new S2DMain(args, true);
+	    doProcessing(s2dBasic);
 	}
 
 	try {
@@ -842,6 +883,7 @@ public class S2DMain {
 		s2d = null;
 		System.gc();
 	        _retrying = true;
+		_noMail = false;
 		run(args);
             }
         } catch (OutOfMemoryError mem) {
@@ -852,6 +894,7 @@ public class S2DMain {
 		s2d = null;
 		System.gc();
 	        _retrying = true;
+		_noMail = false;
 		run(args);
 	    } else {
 	        throw new S2DError("NMR-Star to DEVise conversion failed " +
@@ -950,7 +993,7 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Constructor.
-    public S2DMain(String args[]) throws S2DException
+    public S2DMain(String args[], boolean basic) throws S2DException
     {
         if (doDebugOutput(2)) {
 	    String sep = "";
@@ -969,7 +1012,7 @@ public class S2DMain {
 	Properties props = getProperties();
 	getPropertiesDynamic(props);
 
-	checkArgs(args);
+	checkArgs(args, basic);
 
 	_masterName = _name;
 
@@ -1389,7 +1432,7 @@ public class S2DMain {
 
     //-------------------------------------------------------------------
     // Check arguments to constructor, set member variables accordingly.
-    private void checkArgs(String args[]) throws S2DException
+    private void checkArgs(String args[], boolean basic) throws S2DException
     {
         if (doDebugOutput(2)) {
 	    System.out.println("Arguments: ");
@@ -1601,14 +1644,16 @@ public class S2DMain {
 		if (index >= args.length) {
 		    throw new S2DError("-coord_index argument needs value");
 		}
-		try {
-	            _cmdFrameIndex = Integer.parseInt(args[index]);
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing frame index: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing frame index " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _cmdFrameIndex = Integer.parseInt(args[index]);
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing frame index: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing frame index " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-csr_data_dir".equals(args[index])) {
 	        index++;
@@ -1675,136 +1720,152 @@ public class S2DMain {
 		if (index >= args.length) {
 		    throw new S2DError("-do_csr argument needs value");
 		}
-		try {
-	            _csrLevel = Integer.parseInt(args[index]);
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing do_csr value: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing do_csr value " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _csrLevel = Integer.parseInt(args[index]);
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_csr value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_csr value " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-do_dist".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-do_dist argument needs value");
 		}
-		try {
-	            _distRLevel = Integer.parseInt(args[index]);
-		    // For now, we're forcing coordinate processing to
-		    // happen whenever we do distance restraint processing.
-		    // This should eventually be changed to not re-
-		    // process coordinates if we already have them and
-		    // they're up-to-date.
-		    if (_distRLevel == DISTR_LEVEL_PROCESS) {
-		        _pdbLevel = PDB_LEVEL_PROCESS;
-		    }
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing do_dist value: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing do_dist value " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _distRLevel = Integer.parseInt(args[index]);
+		        // For now, we're forcing coordinate processing to
+		        // happen whenever we do distance restraint processing.
+		        // This should eventually be changed to not re-
+		        // process coordinates if we already have them and
+		        // they're up-to-date.
+		        if (_distRLevel == DISTR_LEVEL_PROCESS) {
+		            _pdbLevel = PDB_LEVEL_PROCESS;
+		        }
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_dist value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_dist value " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-do_lacs".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-do_lacs argument needs value");
 		}
-		try {
-	            _lacsLevel = Integer.parseInt(args[index]);
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing do_lacs value: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing do_lacs value " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _lacsLevel = Integer.parseInt(args[index]);
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_lacs value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_lacs value " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-do_pdb".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-do_pdb argument needs value");
 		}
-		try {
-	            _pdbLevel = Integer.parseInt(args[index]);
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing do_pdb value: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing do_pdb value " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _pdbLevel = Integer.parseInt(args[index]);
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_pdb value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_pdb value " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-do_rrdist".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-do_rrdist argument needs value");
 		}
-		try {
-	            _rrDistRLevel = Integer.parseInt(args[index]);
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing do_rrdist value: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing do_rrdist value " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _rrDistRLevel = Integer.parseInt(args[index]);
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_rrdist value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_rrdist value " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-do_rrtar".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-do_rrtar argument needs value");
 		}
-		try {
-	            _rrTarLevel = Integer.parseInt(args[index]);
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing do_rrtar value: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing do_rrtar value " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _rrTarLevel = Integer.parseInt(args[index]);
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_rrtar value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_rrtar value " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-do_s2p".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-do_s2p argument needs value");
 		}
-		try {
-	            _s2PredLevel = Integer.parseInt(args[index]);
-		    // For now, we're forcing coordinate processing to
-		    // happen whenever we do s2 experimental vs. predicted
-		    // processing.  This should eventually be changed to
-		    // not re-process coordinates if we already have them
-		    // and they're up-to-date.
-		    if (_s2PredLevel == S2PRED_LEVEL_PROCESS) {
-		        _pdbLevel = PDB_LEVEL_PROCESS;
-		    }
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing do_s2p value: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing do_s2p value " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _s2PredLevel = Integer.parseInt(args[index]);
+		        // For now, we're forcing coordinate processing to
+		        // happen whenever we do s2 experimental vs. predicted
+		        // processing.  This should eventually be changed to
+		        // not re-process coordinates if we already have them
+		        // and they're up-to-date.
+		        if (_s2PredLevel == S2PRED_LEVEL_PROCESS) {
+		            _pdbLevel = PDB_LEVEL_PROCESS;
+		        }
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_s2p value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_s2p value " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-do_tar".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-do_tar argument needs value");
 		}
-		try {
-	            _tarLevel = Integer.parseInt(args[index]);
-		    // For now, we're forcing coordinate processing to
-		    // happen whenever we do torsion angle restraint processing.
-		    // This should eventually be changed to not re-
-		    // process coordinates if we already have them andy
-		    // they're up-to-date.
-		    if (_tarLevel == TAR_LEVEL_PROCESS) {
-		        _pdbLevel = PDB_LEVEL_PROCESS;
-		    }
-	        } catch(NumberFormatException ex) {
-	            System.err.println("Error parsing do_tar value: " +
-		      ex.toString());
-	            throw new S2DError("Error parsing do_tar value " +
-		      ex.toString());
-	        }
+		if (!basic) {
+		    try {
+	                _tarLevel = Integer.parseInt(args[index]);
+		        // For now, we're forcing coordinate processing to
+		        // happen whenever we do torsion angle restraint processing.
+		        // This should eventually be changed to not re-
+		        // process coordinates if we already have them andy
+		        // they're up-to-date.
+		        if (_tarLevel == TAR_LEVEL_PROCESS) {
+		            _pdbLevel = PDB_LEVEL_PROCESS;
+		        }
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_tar value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_tar value " +
+		          ex.toString());
+	            }
+		}
 
 	    } else if ("-file".equals(args[index])) {
 	        index++;
@@ -1815,7 +1876,9 @@ public class S2DMain {
 		_originalLocalFiles.addElement(args[index]);
 
 	    } else if ("-force".equals(args[index])) {
-		_force = true;
+		if (!basic) {
+		    _force = true;
+		}
 
 	    } else if ("-html_dir".equals(args[index])) {
 	        index++;
@@ -1869,22 +1932,26 @@ public class S2DMain {
 		if (index >= args.length) {
 		    throw new S2DError("-pdb_file argument needs value");
 		}
-		String url = "file:" + args[index];
-	        _cmdPdbId = url;
-		_pdbIds.addElement(url);
-		// ChemShift needs changes to work with local file.
-		// _csrPdbIds.addElement(_cmdPdbId);
-		_pdbLevel = PDB_LEVEL_PROCESS;
+		if (!basic) {
+		    String url = "file:" + args[index];
+	            _cmdPdbId = url;
+		    _pdbIds.addElement(url);
+		    // ChemShift needs changes to work with local file.
+		    // _csrPdbIds.addElement(_cmdPdbId);
+		    _pdbLevel = PDB_LEVEL_PROCESS;
+		}
 
 	    } else if ("-pdbid".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
 		    throw new S2DError("-pdbid argument needs value");
 		}
-	        _cmdPdbId = args[index];
-		_cmdPdbId = _cmdPdbId.toUpperCase();
-		_pdbIds.addElement(_cmdPdbId);
-		_csrPdbIds.addElement(_cmdPdbId);
+		if (!basic) {
+	            _cmdPdbId = args[index];
+		    _cmdPdbId = _cmdPdbId.toUpperCase();
+		    _pdbIds.addElement(_cmdPdbId);
+		    _csrPdbIds.addElement(_cmdPdbId);
+		}
 
 	    } else if ("-rr_file".equals(args[index])) {
 	        index++;
@@ -1992,12 +2059,15 @@ public class S2DMain {
 		if (index >= args.length) {
 		    throw new S2DError("-xbmrbid argument needs value");
 		}
-		if (_name.equals(args[index]) ||
-		  _extraBmrbIdList.contains(args[index])) {
-		    throw new S2DError("-xbmrbid value " + args[index] +
-		      " duplicates previous value");
+		if (!basic) {
+		    if (_name.equals(args[index]) ||
+		      _extraBmrbIdList.contains(args[index])) {
+		        _noMail = true;
+		        throw new S2DError("-xbmrbid value " + args[index] +
+		          " duplicates previous value");
+		    }
+		    _extraBmrbIdList.addElement(args[index]);
 		}
-		_extraBmrbIdList.addElement(args[index]);
 
 	    } else {
 	        throw new S2DError("Unrecognized command-line argument: " +

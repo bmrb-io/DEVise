@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2009-2010
+// (c) Copyright 2009-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,18 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.24.2  2012/01/19 22:25:56  wenger
+// Finished cleaning "unnecessary mail reduction" fixes.
+//
+// Revision 1.6.24.1  2012/01/09 22:32:30  wenger
+// S2d no longer sends error emails in a number of cases that are
+// instances of faulty inputs rather than actual software errors
+// (see to-do 139).  (Note:  this still needs some work/more checking.)
+//
+// Revision 1.6  2010/04/27 18:47:07  wenger
+// Fixed bugs Eldon found in testing of whether restraints info exists
+// (for *_LEVEL_LINK_CHECK level of restraint processing).
+//
 // Revision 1.5  2010/04/23 16:51:08  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
 //
@@ -153,8 +165,8 @@ public class S2DRestraint {
 	    writer.close();
 
         } catch (IOException ex) {
-	    throw new S2DError("Error creating temp file for torsion " +
-	      "angle data: " + ex.toString());
+	    throw new S2DError("Error creating temp file for restraint " +
+	      "data: " + ex.toString());
 	}
 
     	return tmpFile.getPath();
@@ -256,6 +268,7 @@ public class S2DRestraint {
 	    reader.close();
 
 	    if (violationUrlName == null) {
+		S2DMain._noMail = true;
 	        throw new S2DError("No " + typeString +
 		  " violation URL found for PDB " +
 	          pdbId + " (in " + requestUrlName + ")");
