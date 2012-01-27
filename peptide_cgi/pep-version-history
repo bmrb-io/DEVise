@@ -17,6 +17,9 @@ to-do 139).
 * Added the -do_dyn_movie argument and bmrb_mirror.do_dyn_movie_default
 property to control whether the molecular dynamics movies are enabled.
 
+* Added the -s2p_name and -dyn_movie_demo arguments and generate_movies
+script to allow generation of visualizations for demo dynamics movies.
+
 
 Peptide-CGI 12.1.5
 ------------------

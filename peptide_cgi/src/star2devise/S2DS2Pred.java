@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2011
+// (c) Copyright 2011-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.3.2.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -117,10 +121,10 @@ public class S2DS2Pred {
     //-------------------------------------------------------------------
     // Find any s2predict output files for the current entry/uploaded
     // data.
-    public static Vector FindData(String name) throws S2DException
+    public static Vector FindData(String s2PName) throws S2DException
     {
         if (doDebugOutput(11)) {
-	    System.out.println("S2DS2Pred.FindData(" + name + ")");
+	    System.out.println("S2DS2Pred.FindData(" + s2PName + ")");
 	}
 
 	Vector s2PredData = new Vector();
@@ -131,13 +135,20 @@ public class S2DS2Pred {
 	    BufferedReader reader =
 	      new BufferedReader(new InputStreamReader(is));
 
-	    Pattern pat = Pattern.compile(".*s2pred-" + name +
+	    Pattern pat = Pattern.compile(".*s2pred-" + s2PName +
 	      "-(.*)-(.*).out.*");
+            if (doDebugOutput(21)) {
+	        System.out.println("s2predict pattern: " + pat);
+	    }
 
             String line;
 	    while ((line = reader.readLine()) != null) {
 		Matcher matcher = pat.matcher(line);
 		if (matcher.matches()) {
+                    if (doDebugOutput(21)) {
+		        System.out.println("Line " + line +
+			  " matches s2predict pattern");
+		    }
 		    S2PData data = new S2PData();
 		    data._pdbId = matcher.group(1).toUpperCase();
 		    data._frameIndex = Integer.parseInt(matcher.group(2));
@@ -159,11 +170,13 @@ public class S2DS2Pred {
     // Constructor.
     public S2DS2Pred(String name, String longName, String pdbId,
       int coordIndex, int s2FrameIndex, String dataDir, String sessionDir,
-      S2DSummaryHtml summary, String entityAssemblyId) throws S2DException
+      S2DSummaryHtml summary, String entityAssemblyId, String s2PName)
+      throws S2DException
     {
         if (doDebugOutput(11)) {
 	    System.out.println("S2DS2Pred.S2DS2Pred(" + name + ", " +
-	      pdbId + ", " + coordIndex + ", " + s2FrameIndex + ")");
+	      pdbId + ", " + coordIndex + ", " + s2FrameIndex + ", " +
+	      s2PName + ")");
 	}
 
 	_name = name;
@@ -177,7 +190,7 @@ public class S2DS2Pred {
 	_entityAssemblyId = entityAssemblyId;
 
 	try {
-	    String filename = getFilename(name, pdbId, s2FrameIndex);
+	    String filename = getFilename(s2PName, pdbId, s2FrameIndex);
 	    URL s2PredUrl = new URL(filename);
 	    InputStream is = s2PredUrl.openStream();
 	    BufferedReader reader =

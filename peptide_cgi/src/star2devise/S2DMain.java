@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.288  2012/01/27 17:43:10  wenger
+// Added the -do_dyn_movie argument and bmrb_mirror.do_dyn_movie_default
+// property to control whether the molecular dynamics movies are enabled.
+//
 // Revision 1.287  2012/01/20 16:09:21  wenger
 // Merged s2d_mailfix_br_0 thru s2d_mailfix_br_1 to trunk.
 //
@@ -759,6 +763,8 @@ public class S2DMain {
     public static final int S2PRED_LEVEL_PROCESS = 2;
     private int _s2PredLevel = S2PRED_LEVEL_LINK;
     private int _s2FrameIndex = 0;
+    // Name to use to find s2predict values (if not the "regular" name).
+    private String _s2PName;
 
     private boolean _haveCoords = false;
 
@@ -1503,6 +1509,9 @@ public class S2DMain {
           "        1: create links in summary file but don't process;\n" +
           "        3: process distance restraint references\n" +
           "        (default is " + _distRLevel + ")\n" +
+          "    -do_dyn_movie <0|1>\n" +
+          "        0: don't create movie links\n" +
+          "        1: create movie links if movie exists\n" +
           "    -do_lacs <0|1|2>\n" +
           "        0: don't attempt LACS processing\n" +
           "        1: attempt LACS processing, failure is not an error\n" +
@@ -1539,6 +1548,8 @@ public class S2DMain {
           "        1: create links in summary file but don't process;\n" +
           "        3: process torsion angle restraint references\n" +
           "        (default is " + _tarLevel + ")\n" +
+	  "    -dyn_movie_demo\n" +
+	  "        dynamics movies are demos only\n" +
 	  "    -file <filename>\n" +
 	  "        local file containing data to be processed\n" +
           "    -force\n" +
@@ -1572,6 +1583,9 @@ public class S2DMain {
 	  "        file containing remediated restraint data\n" +
 	  "    -s2_frame_index <value>\n" +
 	  "        index of S2 order param save frame (for s2 pred)\n" +
+	  "    -s2p_name <name>\n" +
+	  "        name to use to look for s2predict output (if not the\n" +
+	  "        normal name)\n" +
 	  "    -s2p_url <url>\n" +
 	  "        URL of directory containing s2predict output files\n" +
           "    -session_dir <directory>\n" +
@@ -1887,6 +1901,9 @@ public class S2DMain {
 	            }
 		}
 
+	    } else if ("-dyn_movie_demo".equals(args[index])) {
+		S2DSession._dynMovieDemo = true;
+
 	    } else if ("-file".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -2007,6 +2024,13 @@ public class S2DMain {
 	            throw new S2DError("Error parsing s2_frame_index " +
 		      ex.toString());
 	        }
+
+	    } else if ("-s2p_name".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-s2p_name argument needs value");
+		}
+		_s2PName = args[index];
 
 	    } else if ("-s2p_url".equals(args[index])) {
 	        index++;
@@ -3135,7 +3159,8 @@ public class S2DMain {
 	// Find any s2predict output files that apply to this data set.
 	Vector s2PredData = new Vector();
 	try {
-	    s2PredData = S2DS2Pred.FindData(_name);
+	    String name = _s2PName != null ? _s2PName : _name;
+	    s2PredData = S2DS2Pred.FindData(name);
         } catch(S2DException ex) {
 	    System.err.println("Error (" + ex.toString() +
 	      ") finding s2predict output files");
@@ -4890,9 +4915,10 @@ public class S2DMain {
 	    // s2predict only works for single-chain molecules.  wenger
 	    // 2011-04-18
 	    String entityAssemblyId = "1";
+	    String name = _s2PName != null ? _s2PName : _name;
 	    S2DS2Pred s2Pred = new S2DS2Pred(_name, _longName,
 	      pdbId, coordIndex, s2FrameIndex, _dataDir, _sessionDir,
-	      _summary, entityAssemblyId);
+	      _summary, entityAssemblyId, name);
 
 	    s2Pred.writeS2Pred();
 

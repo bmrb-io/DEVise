@@ -91,6 +91,7 @@ cgi-bin-setup:
 	ln -s ../../../cgi-bin/get_version .
 	ln -s ../../../cgi-bin/get_version_cgi .
 	ln -s ../../../cgi-bin/delete_sessions .
+	ln -s ../../../cgi-bin/generate_movies .
 	mkdir tests
 	cd tests; ln -s ../../../../cgi-bin/tests/* .
 	mkdir test_data

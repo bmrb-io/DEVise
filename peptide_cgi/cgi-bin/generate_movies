@@ -1,0 +1,10 @@
+#! /bin/csh -f
+# Generate visualizations for dynamics movies.
+
+./s2d -bmrbid 15451 -name 15451_dyn_movie \
+  -s2p_url http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/s2predict/ \
+  -s2p_name 15451 -do_s2p 2 -do_dyn_movie 1 -force -dyn_movie_demo
+
+./s2d -bmrbid 17306 -name 17306_dyn_movie \
+  -s2p_url http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/s2predict/ \
+  -s2p_name 17306 -do_s2p 2 -do_dyn_movie 1 -force -dyn_movie_demo

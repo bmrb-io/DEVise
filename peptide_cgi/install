@@ -282,7 +282,8 @@ endif
 chmod a+rx $targetdir
 
 set executables = (make_view get_version get_version_cgi s2d vsc set_modes \
-	test_all vur view_unreleased uvd make_uvd delete_sessions)
+	test_all vur view_unreleased uvd make_uvd delete_sessions \
+	generate_movies)
 foreach exec ($executables)
   cp -p cgi-bin/$exec $targetdir
   chmod a+rx $targetdir/$exec

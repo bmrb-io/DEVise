@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2012/01/27 17:43:11  wenger
+// Added the -do_dyn_movie argument and bmrb_mirror.do_dyn_movie_default
+// property to control whether the molecular dynamics movies are enabled.
+//
 // Revision 1.36  2011/10/31 20:18:37  wenger
 // In the S2 predicted vs. experimental visualizations the secondary
 // structures are now obtained from DSSP output files instead of from the
@@ -146,6 +150,7 @@ public class S2DSession {
     protected static int _dynMovieLevel = DYN_MOVIE_LEVEL_NONE;
     protected static String _dynMovieUrl;
     protected static String _dynMovieGenUrl;
+    protected static boolean _dynMovieDemo = false;
 
     //===================================================================
     // PUBLIC METHODS
@@ -224,8 +229,8 @@ public class S2DSession {
 	    frameIndexStr += "+" + frameIndex2;
 	}
 
-	String[] searchStrings = new String[8];
-	String[] replaceStrings = new String[8];
+	String[] searchStrings = new String[9];
+	String[] replaceStrings = new String[9];
 	boolean allowMultipleReplace = true;
 
 	// The "main" data source in the base file.
@@ -603,6 +608,10 @@ TEMP*/
 		  "DEVise viewSetJSSendP {View 10} 0 1 0 \"\" 1 \" \" 1";
 		replaceStrings[7] = 
 		  "DEVise viewSetJSSendP {View 10} 0 0 0 \"\" 1 \" \" 1";
+	    }
+	    if (_dynMovieDemo) {
+	        searchStrings[8] = "Dynamics movies";
+	        replaceStrings[8] = "Demo dynamics movies";
 	    }
 	    break;
 
