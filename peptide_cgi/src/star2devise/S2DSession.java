@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2011
+// (c) Copyright 2001-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2011/10/31 20:18:37  wenger
+// In the S2 predicted vs. experimental visualizations the secondary
+// structures are now obtained from DSSP output files instead of from the
+// chemical shift reference back calculations.
+//
 // Revision 1.35  2011/10/10 23:43:39  wenger
 // Reduced edited movie time from .1 to .02, and set the resolution to
 // 400x400 to speed up generation time (just took 2:44 in a test).
@@ -136,8 +141,11 @@ public class S2DSession {
     // files are only used on UNIX...
     private static final String _defaultJSDataDir = "bmrb/dynamic_data";
 
-    private static String _dynMovieUrl;
-    private static String _dynMovieGenUrl;
+    public static final int DYN_MOVIE_LEVEL_NONE = 0;
+    public static final int DYN_MOVIE_LEVEL_LINK = 1;
+    protected static int _dynMovieLevel = DYN_MOVIE_LEVEL_NONE;
+    protected static String _dynMovieUrl;
+    protected static String _dynMovieGenUrl;
 
     //===================================================================
     // PUBLIC METHODS
@@ -168,6 +176,21 @@ public class S2DSession {
             }
             _dynMovieGenUrl = "http://pike.bmrb.wisc.edu?entry=2JUO&start_time=0&end_time=.1&material=Transparent&submitted=yes";
         }
+
+	String dynMovieTmp =
+	  props.getProperty("bmrb_mirror.do_dyn_movie_default");
+	if (dynMovieTmp == null) {
+            System.out.println("bmrb_mirror.do_dyn_movie_gen_default " +
+              "property value not defined; using default");
+	} else {
+	    try {
+	        _dynMovieLevel = Integer.parseInt(dynMovieTmp);
+	    } catch(NumberFormatException ex) {
+	        System.err.println(new S2DWarning("Error parsing " +
+		  "do_dyn_movie_default value " + ex.toString() +
+		  "; using default"));
+	    }
+	}
     }
 
     //-------------------------------------------------------------------
@@ -565,7 +588,12 @@ TEMP*/
 
 	    frameIndexStr = "" + frameIndex1 + "-" + frameIndex2;
 
-	    if (!dynMovieExists(s2pPdbId)) {
+	    if (!dynMovieExists(s2pPdbId) ||
+	      _dynMovieLevel != DYN_MOVIE_LEVEL_LINK) {
+                if (doDebugOutput(3)) {
+		    System.out.println("Disabling dynamics movie GUI");
+		}
+
 	        // Turn off sending GData to the JS for View 3 and View 10.
 		searchStrings[6] = 
 		  "DEVise viewSetJSSendP {View 3} 0 1 0 \"\" 1 \" \" 1";

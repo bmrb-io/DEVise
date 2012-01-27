@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.287  2012/01/20 16:09:21  wenger
+// Merged s2d_mailfix_br_0 thru s2d_mailfix_br_1 to trunk.
+//
 // Revision 1.286  2011/12/29 23:10:41  wenger
 // Visualization summary page is now partly converted to the new color
 // scheme and layout.
@@ -1755,6 +1758,23 @@ public class S2DMain {
 	            }
 		}
 
+	    } else if ("-do_dyn_movie".equals(args[index])) {
+	        index++;
+		if (index >= args.length) {
+		    throw new S2DError("-do_dyn_movie argument needs value");
+		}
+		if (!basic) {
+		    try {
+	                S2DSession._dynMovieLevel =
+			  Integer.parseInt(args[index]);
+	            } catch(NumberFormatException ex) {
+	                System.err.println("Error parsing do_dyn_movie value: " +
+		          ex.toString());
+	                throw new S2DError("Error parsing do_dyn_movie value " +
+		          ex.toString());
+	            }
+		}
+
 	    } else if ("-do_lacs".equals(args[index])) {
 	        index++;
 		if (index >= args.length) {
@@ -2263,6 +2283,12 @@ public class S2DMain {
 	    System.out.println("_s2PredLevel = " + _s2PredLevel);
 	    System.out.println("S2DNames.S2PRED_URL = " +
 	      S2DNames.S2PRED_URL);
+	    System.out.println("S2DSession._dynMovieLevel = " +
+	      S2DSession._dynMovieLevel);
+	    System.out.println("S2DSession._dynMovieUrl = " +
+	      S2DSession._dynMovieUrl);
+	    System.out.println("S2DSession._dynMovieGenUrl = " +
+	      S2DSession._dynMovieGenUrl);
 	}
     }
 

@@ -14,6 +14,9 @@ when doing processing of coordinates, restraints, etc.
 instances of faulty inputs rather than actual software errors (see
 to-do 139).
 
+* Added the -do_dyn_movie argument and bmrb_mirror.do_dyn_movie_default
+property to control whether the molecular dynamics movies are enabled.
+
 
 Peptide-CGI 12.1.5
 ------------------

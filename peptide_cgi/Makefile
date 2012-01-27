@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2011
+#  (c) Copyright 2001-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -39,10 +39,9 @@ DO_RRDIST_DEFAULT = 1
 DO_S2PRED_DEFAULT = 0
 S2PRED_URL_DEFAULT = 
 JS_CMD_PORT = 6666
-#TEMP DYNAMICS_MOVIE_URL = "http://condor.bmrb.wisc.edu/bbee/video/*.mpg"
-DYNAMICS_MOVIE_URL = 
-#TEMP DYNAMICS_MOVIE_GEN_URL = "http://pike.bmrb.wisc.edu?entry=*\&start_time=0\&end_time=.04\&display_x=300\&display_y=300\&scale=1.5\&slowdown=3\&material=Transparent\&submitted=yes"
-DYNAMICS_MOVIE_GEN_URL =
+DO_DYN_MOVIE_DEFAULT = 0
+DYNAMICS_MOVIE_URL = "http://condor.bmrb.wisc.edu/bbee/video/*.mpg"
+DYNAMICS_MOVIE_GEN_URL = "http://pike.bmrb.wisc.edu?entry=*\&start_time=0\&end_time=.04\&display_x=300\&display_y=300\&scale=1.5\&slowdown=3\&material=Transparent\&submitted=yes"
 DSSP_FILE_URL = http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/dssp/all
 
 include Makefile.config
@@ -207,6 +206,7 @@ s2d_props:
 	echo "bmrb_mirror.do_s2p_default=$(DO_S2PRED_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.s2p_url=$(S2PRED_URL_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.js_cmd_port=$(JS_CMD_PORT)" >> $(S2D_PROPS_FILE)
+	echo "bmrb_mirror.do_dyn_movie_default=$(DO_DYN_MOVIE_DEFAULT)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.dyn_movie_url=$(DYNAMICS_MOVIE_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.dyn_movie_gen_url=$(DYNAMICS_MOVIE_GEN_URL)" >> $(S2D_PROPS_FILE)
 	echo "bmrb_mirror.dssp_file_url=$(DSSP_FILE_URL)" >> $(S2D_PROPS_FILE)

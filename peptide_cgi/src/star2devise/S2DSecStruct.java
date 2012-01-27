@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2011
+// (c) Copyright 2011-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.4  2011/10/31 20:18:37  wenger
+// In the S2 predicted vs. experimental visualizations the secondary
+// structures are now obtained from DSSP output files instead of from the
+// chemical shift reference back calculations.
+//
 
 // ========================================================================
 
@@ -181,7 +186,8 @@ public class S2DSecStruct {
 
 	} else {
 	    System.err.println(
-	      "Warning: unexpected secondary structure code " + structCode);
+	      "Warning: unexpected secondary structure code (" +
+	        structCode + ")");
 	    result = "-";
 	}
 
