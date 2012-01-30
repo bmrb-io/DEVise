@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.289  2012/01/27 23:19:37  wenger
+// Added the -s2p_name and -dyn_movie_demo arguments and generate_movies
+// script to allow generation of visualizations for demo dynamics movies.
+//
 // Revision 1.288  2012/01/27 17:43:10  wenger
 // Added the -do_dyn_movie argument and bmrb_mirror.do_dyn_movie_default
 // property to control whether the molecular dynamics movies are enabled.
@@ -638,7 +642,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.0x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.2.0x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.0";
 

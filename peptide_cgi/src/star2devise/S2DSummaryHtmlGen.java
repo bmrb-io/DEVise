@@ -1,7 +1,6 @@
-//TEMPTEMP -- make sure we have variables everywhere we need them (e.g., for uvd)
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2011
+// (c) Copyright 2006-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -37,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.42  2011/12/29 23:46:20  wenger
+// Finished the multi-entry section -- now has correct table, thumbnail
+// with mouseover.
+//
 // Revision 1.41  2011/12/29 23:10:41  wenger
 // Visualization summary page is now partly converted to the new color
 // scheme and layout.
@@ -447,7 +450,7 @@ public abstract class S2DSummaryHtmlGen {
 	    //
 	    // Tutorial video and main entry page links.
 	    //
-	    _writer.write("<br>\n<div id=\"content\">\n");
+	    _writer.write("\n<br>\n<div id=\"content\">\n");
 	    _writer.write("\n<p>\n");
 	    String videoDir = _isUvd ? "../.." : "..";
             _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
@@ -495,7 +498,7 @@ public abstract class S2DSummaryHtmlGen {
 TEMP?*/
 
 		// Write out the tables that now contain the actual links.
-	        _writer.write("<br>\n<div id=\"content\">\n");
+	        _writer.write("\n<br>\n<div id=\"content\">\n");
 
 		if (_multiEntry) {
                     write2EntryTable();
@@ -554,13 +557,13 @@ TEMP?*/
 		  "reprocessing\">\n");
 		_writer.write("</form>\n");
 
-	        _writer.write("</div\n");
+	        _writer.write("</div>\n");
 
 		//
 		// Multi-entry visualization form.
 		//
 	        if (!_multiEntry) {
-		    _writer.write("<br>\n<div id=\"content\">\n");
+		    _writer.write("\n<br>\n<div id=\"content\">\n");
 		    _writer.write("<table id=\"vis\">\n");
 		    _writer.write("<tr>\n");
 		    _writer.write("<td align=\"left\" rowspan=\"2\" width=\"120\">\n");
@@ -603,7 +606,7 @@ TEMP?*/
 		//
 		// Miscellaneous info.
 		//
-	        _writer.write("<br>\n<div id=\"content\">\n");
+	        _writer.write("\n<br>\n<div id=\"content\">\n");
 	        _writer.write("<p>Comments or questions?  Contact <a href=\"mailto:" +
 	          S2DNames.COMMENT_EMAIL + "\">" + S2DNames.COMMENT_EMAIL +
 	          "</a></p>\n");
