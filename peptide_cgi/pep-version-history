@@ -20,6 +20,8 @@ property to control whether the molecular dynamics movies are enabled.
 * Added the -s2p_name and -dyn_movie_demo arguments and generate_movies
 script to allow generation of visualizations for demo dynamics movies.
 
+* Added demo molecular dynamics page.
+
 
 Peptide-CGI 12.1.5
 ------------------
