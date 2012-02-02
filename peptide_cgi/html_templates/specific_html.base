@@ -19,12 +19,15 @@
 
 <html>
 <head>
-  <title>BMRB Data Viewer for 4264</title>
+  <title>BMRB Data Viewer for bmr4264.str</title>
   <link href="../visualization.css" rel="stylesheet" type="text/css" media="all">
 </head>
 
 <body>
   <div id="header">
+    <center> <h2>
+    BMRB Data Viewer for bmr4264.str
+    </h2> </center>
     <center> <h2>
     Dummy title
     </h2> </center>

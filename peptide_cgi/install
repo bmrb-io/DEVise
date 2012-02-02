@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2011
+#  (c) Copyright 2000-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -209,13 +209,15 @@ endif
 chmod a+rwx $targetdir
 
 cp -p html/[a-z]* $targetdir
+#TEMP -- remove this line when movie server is ready
+rm $targetdir/dynamics_movie_demo.html
 if (! -e $targetdir/help_rrdistr.html) then
   ln -s $targetdir/help_distr.html $targetdir/help_rrdistr.html
 endif
 if (! -e $targetdir/help_rrtar.html) then
   ln -s $targetdir/help_tar.html $targetdir/help_rrtar.html
 endif
-chmod a+r $targetdir/help*
+chmod a+r $targetdir/*.html
 chmod a+r $targetdir/*.jpg
 chmod a+r $targetdir/*.gif
 chmod a+r $targetdir/*.png
