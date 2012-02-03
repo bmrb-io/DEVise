@@ -4492,6 +4492,22 @@ java.security.AccessControlException: access denied
 1022 11/9/11	OPEN	JS: the "reset axis ranges" command should re-run
 			the session post script. (wenger)
 
+1023 2/3/12	OPEN	JS: when drilling down on the BMRB histogram
+			visualizations, sometimes the value for the
+			BMRB_entry doesn't show up in the drill-down dialog.
+			*Something* is there, though, because if you click
+			on the blank cell in the table, the link works.
+			Also, this is very inconsistent -- sometimes it
+			works and sometimes it doesn't, on the exact
+			same visualization (the RNA one seems to produce
+			it most often).  But it seems like it's something
+			funky going on with the JVM -- restarting the JVM
+			can make it show up or go away.  It also seems like
+			the problem happens more often when running at BMRB
+			than on teal; and I haven't been able to make it
+			happen at all running the JS client outside of
+			a browser.  (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

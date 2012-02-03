@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2011
+// (c) Copyright 1999-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.189  2011/10/10 20:44:06  wenger
+// Merged js_button_fix_br_1 thru js_button_fix_br_2 to trunk.
+//
 // Revision 1.188  2011/09/23 21:47:29  wenger
 // Fixed background colors of some dialogs.
 //
@@ -2346,6 +2349,8 @@ class RecordDlg extends Dialog
 	String[] attributes = new String[attrCount];
 	String[] values = new String[attrCount];
         for (int i = 0; i < attrCount; i++) {
+	    //TEMP: eliminate this line when bug 1023 is fixed
+            jsc.pn("DIAG data: <" + data[i+1] + ">");//TEMP
 	    String delimiter = ": ";
 	    int tempIndex = data[i+1].indexOf(delimiter);
 	    if (tempIndex != -1) {
@@ -2356,6 +2361,10 @@ class RecordDlg extends Dialog
 	        attributes[i] = new String(data[i+1]);
 	        values[i] = new String("");
 	    }
+	    //TEMP: eliminate this line when bug 1023 is fixed
+            jsc.pn("  DIAG attribute: <" + attributes[i] + ">");//TEMP
+	    //TEMP: eliminate this line when bug 1023 is fixed
+            jsc.pn("  DIAG value: <" + values[i] + ">");//TEMP
 	}
 
 	//
@@ -2495,6 +2504,8 @@ class RecordDlg extends Dialog
     //
 
     private String str2Description(String value) {
+	//TEMP: eliminate this line when bug 1023 is fixed
+	jsc.pn("    DIAG str2Description(" + value + ")");//TEMP
 	String desc = value;
 	if (value.startsWith("{")) {
 	    int end = value.indexOf('}', 1);
@@ -2502,6 +2513,8 @@ class RecordDlg extends Dialog
 	    	desc = value.substring(1, end);
 	    }
 	}
+	//TEMP: eliminate this line when bug 1023 is fixed
+	jsc.pn("      DIAG desc <" + desc + ">");//TEMP
         return "<html><u>" + desc + "</u></html>";
     }
 
