@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.290  2012/01/30 19:39:06  wenger
+// Minor fixes to the visualization summary pages.
+//
 // Revision 1.289  2012/01/27 23:19:37  wenger
 // Added the -s2p_name and -dyn_movie_demo arguments and generate_movies
 // script to allow generation of visualizations for demo dynamics movies.
@@ -642,7 +645,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.0x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.2.0";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.0";
 
