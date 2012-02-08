@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2011
+// (c) Copyright 1999-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.152  2012/02/03 16:42:56  wenger
+// Found JS bug 1023, added extra debug code to try to diagnose it when
+// it recurs.
+//
 // Revision 1.151  2011/10/13 16:02:48  wenger
 // Changed version to 5.14.1x1 and added 5.14.1 version history section.
 //
@@ -953,7 +957,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.1x2"/*TEMP*/);
+    public static final String VERSION = new String("5.14.1");
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
