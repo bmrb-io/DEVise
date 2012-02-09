@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.153  2012/02/08 18:17:56  wenger
+// Changed version to 5.14.1; added version history item about adding extra
+// debug output for BMRB histogram drill-down.
+//
 // Revision 1.152  2012/02/03 16:42:56  wenger
 // Found JS bug 1023, added extra debug code to try to diagnose it when
 // it recurs.
@@ -957,7 +961,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.1");
+    public static final String VERSION = new String("5.14.2x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("16.0");
 
