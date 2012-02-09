@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.291  2012/02/07 18:36:07  wenger
+// Changed version to 12.2.0 for release.
+//
 // Revision 1.290  2012/01/30 19:39:06  wenger
 // Minor fixes to the visualization summary pages.
 //
@@ -645,9 +648,9 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.0";
+    public static final String PEP_CGI_VERSION = "12.2.1x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
-    public static final String JS_CLIENT_MIN_VERSION = "5.14.0";
+    public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
     private static FileWriter _logWriter = null;
 
