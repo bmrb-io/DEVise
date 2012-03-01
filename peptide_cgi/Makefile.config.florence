@@ -136,8 +136,7 @@ LACS_URL = file:/bmrb/ftp/pub/bmrb/validation_reports/LACS/
 HISTOGRAM_HTML_HOME = $(WWW_HOME)/devise
 
 # The directory containing the "real" histogram data.
-HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/stats/chem_shifts/full/devise
-#TEMP HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/bmrb/statistics/chem_shifts/full/devise
+HISTOGRAM_DATA_HOME = /bmrb/ftp/pub/data/statistics/chem_shifts/full/devise
 
 #-----------------------------------------------------------
 # SPARTA-related configuration
