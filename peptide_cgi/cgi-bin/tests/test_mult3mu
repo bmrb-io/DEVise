@@ -119,11 +119,11 @@ end
 set file = "html_dir/uvd/16270vs/16270vs+4879y.html"
 set line = '<td><a href="16270vs+4879hn1+1.html">137/134 peaks</a></td>'
 source tests/check4line
-set line = '<td><a href="16270vs+4879hc1+1.html">666/657 peaks</a></td>'
+set line = '<td><a href="16270vs+4879hc1+1.html">666/805 peaks</a></td>'
 source tests/check4line
 set line = '<td><a href="16270vs+4879hn2+1.html">3/134 peaks</a></td>'
 source tests/check4line
-set line = '<td><a href="16270vs+4879hc2+1.html">18/657 peaks</a></td>'
+set line = '<td><a href="16270vs+4879hc2+1.html">18/805 peaks</a></td>'
 source tests/check4line
 
 echo -n "Test_mult3mu result: "
