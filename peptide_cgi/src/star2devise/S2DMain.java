@@ -21,6 +21,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.292  2012/02/09 20:48:02  wenger
+// Changed version to 12.2.1x1; added 12.2.1 version history section;
+// changed associated JS client version to 5.14.1 (not absolutely necessary,
+// but colors don't match otherwise).
+//
 // Revision 1.291  2012/02/07 18:36:07  wenger
 // Changed version to 12.2.0 for release.
 //
@@ -648,7 +653,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.1x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.2.1x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 

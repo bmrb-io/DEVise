@@ -614,6 +614,10 @@ Num Date        Status  Description
 			don't seem to have any data in the data scroll
 			view. (wenger)
 
+133 3/7/11	FIXED	System name doesn't show up correctly for 16387.
+			(elu/wenger)
+			(Fixed in 12.2.1 by wenger, 3/7/11.)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place

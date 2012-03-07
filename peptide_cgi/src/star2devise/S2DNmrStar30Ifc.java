@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2010
+// (c) Copyright 2004-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.25  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.24  2010/11/01 00:51:12  wenger
 // Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
@@ -961,6 +964,7 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 
 	MOL_LABEL = "_Sample_component.Mol_common_name";
 	MOL_SYSTEM = "assembly";
+	MOL_SYSTEM_NAME = "_Assembly.Name";
 	MOL_SYSTEM_SF_CAT = "_Assembly.Sf_category";
 	MONOMERIC_POLYMER = "entity";
 	MONOMERIC_POLYMER_SF_CAT = "_Entity.Sf_category";

@@ -1,10 +1,11 @@
 			Peptide-CGI Version History
 
-Peptide-CGI 12.2.0
+Peptide-CGI 12.2.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
-(Nothing yet.)
+* Fixed a problem with getting the system name in NMR-STAR 3.1 files
+(see bug 133).
 
 
 Peptide-CGI 12.2.0
