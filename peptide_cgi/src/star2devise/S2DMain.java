@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.293  2012/03/07 22:39:45  wenger
+// Fixed bug 133 (problem with getting the system name in NMR-STAR
+// 3.1 files).
+//
 // Revision 1.292  2012/02/09 20:48:02  wenger
 // Changed version to 12.2.1x1; added 12.2.1 version history section;
 // changed associated JS client version to 5.14.1 (not absolutely necessary,
@@ -42,6 +46,40 @@
 //
 // Revision 1.287  2012/01/20 16:09:21  wenger
 // Merged s2d_mailfix_br_0 thru s2d_mailfix_br_1 to trunk.
+//
+// Revision 1.286.2.9  2012/03/11 23:38:01  wenger
+// Fixed images on multi-entry summary page; other minor cleanup.
+//
+// Revision 1.286.2.8  2012/03/10 00:07:34  wenger
+// Fixed problems with cache not being used for coordinate visualizations,
+// etc.
+//
+// Revision 1.286.2.7  2012/03/07 18:33:55  wenger
+// Fixed tests for summary page changes.
+//
+// Revision 1.286.2.6  2012/03/06 18:34:02  wenger
+// Fixed example figures for SPARTA visualizations.
+//
+// Revision 1.286.2.5  2012/03/06 00:12:55  wenger
+// Added writeFormStart() and writeFormEnd() methods to further reduce
+// duplicate code.
+//
+// Revision 1.286.2.4  2012/03/05 23:53:34  wenger
+// Changed SPARTA links to new form (except for images); lots of cleanup,
+// including adding the writeDataTableStart() and writeDataTableEnd()
+// methods to reduce duplicate code.
+//
+// Revision 1.286.2.3  2012/02/20 22:41:04  wenger
+// Changed summary page order so that all of the "no data" stuff comes
+// out at the end; the "chemical shift data" section has the new table
+// arrangement.
+//
+// Revision 1.286.2.2  2012/01/20 21:00:03  wenger
+// Got a bunch of the visualization summary page menus working.
+//
+// Revision 1.286.2.1  2012/01/18 17:41:03  wenger
+// Partway to getting menus to work for summary page selection (fixed
+// menu items right now just to get the form and CGI script working).
 //
 // Revision 1.286  2011/12/29 23:10:41  wenger
 // Visualization summary page is now partly converted to the new color
@@ -653,7 +691,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.1x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.2.1x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
@@ -3533,7 +3571,7 @@ public class S2DMain {
             doSaveSpartaDeltaShifts(star, spartaStar, true);
             doSaveSpartaDeltaShifts(star, spartaStar, false);
 	} catch (Exception ex) {
-	    System.err.println("Error processing SPARTA-calculated " +
+	    System.err.println("Error processing SPARTA back calculated " +
 	      "deltashifts: " + ex.toString());
 	} finally {
 	    _checkResList = checkResListTmp;

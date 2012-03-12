@@ -68,7 +68,7 @@ set line = '^1 1 60 MET 0.228 0.0 -3.258 0.0 0.0 -0.437$'
 source tests/check4line
 
 set file = "html_dir/16350/16350y.html"
-set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
+set line = '^<p><b>SPARTA back calculated chemical shift deltas</b></p><table border>$'
 source tests/check4line
 set line = '^    <td><a href="16350sd1.html">59 residues</a></td>$'
 source tests/check4line

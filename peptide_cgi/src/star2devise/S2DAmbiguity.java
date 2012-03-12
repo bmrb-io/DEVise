@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2005-2010
+// (c) Copyright 2005-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.17.6.1  2012/01/20 21:00:03  wenger
+// Got a bunch of the visualization summary page menus working.
+//
+// Revision 1.17  2011/10/10 23:43:38  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.16.14.1  2011/09/21 20:46:09  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -290,7 +297,7 @@ public class S2DAmbiguity {
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeAmbiguity(frameIndex);
+	    _summary.writeAmbiguity(frameIndex, _entityAssemblyID);
 
 	} catch (IOException ex) {
 	    System.err.println("IOException writing ambiguity values: " +

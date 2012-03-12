@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1999-2011
+#  (c) Copyright 1999-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -80,15 +80,30 @@ my $tar_url = $query->param('tar_url');
 my $xbmrbid = $query->param('xbmrbid');
 my $do_s2p = $query->param('do_s2p');
 my $frame_index = $query->param('frame_index');
+#TEMPTEMP -- maybe change "url" to something less generic?
+my $url = $query->param('url');
 
 print "  acc_num = $acc_num\n" if ($debug);
 print "  restraint_id = $restraint_id\n" if ($debug);
 print "  pdbid = $pdbid\n" if ($debug);
 print "  coord_index = $coord_index\n" if ($debug);
 print "  frame_index = $frame_index\n" if ($debug);
+print "  url = $url\n" if ($debug);
 
 # File name of the html page returned.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
+
+if (defined($url)) {
+  my $foourl;
+  if ($url =~/^http/) {
+    $foourl = $url;
+  } else {
+    $foourl = $summary_page_dir . "/" . $url;#TEMPTEMP -- better name
+  }
+  print $query->redirect($foourl);
+  exit;
+}
+
 if (defined($restraint_id)) {
   $summary_page_dir = $summary_page_dir . "/" . $restraint_id;
 } else {

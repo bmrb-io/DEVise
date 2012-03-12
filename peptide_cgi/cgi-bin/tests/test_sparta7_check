@@ -91,19 +91,19 @@ set line = '^3 3 34 SER -0.11 2.215 0.645 0.708 2.202 0.835$'
 source tests/check4line
 
 set file = "html_dir/15418/15418y.html"
-set line = '<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>'
+set line = 'SPARTA back calculated chemical shift deltas$'
 source tests/check4line
-set line = '<td><a href="15418sd1.html">64 residues</a></td>'
+set line = '<option value="15418/15418sd1.html">(64 residues) (EA 1)</option>$'
 source tests/check4line
-set line = '<td><a href="15418sd2.html">29 residues</a></td>'
+set line = '<option value="15418/15418sd2.html">(29 residues) (EA 3)</option>$'
 source tests/check4line
 
 set file = "html_dir/15418/15418sd1.html"
-set line = 'SPARTA-calculated Chemical Shift Delta (entity assembly 1)'
+set line = 'SPARTA back calculated Chemical Shift Delta (entity assembly 1)'
 source tests/check4line
 
 set file = "html_dir/15418/15418sd2.html"
-set line = 'SPARTA-calculated Chemical Shift Delta (entity assembly 3)'
+set line = 'SPARTA back calculated Chemical Shift Delta (entity assembly 3)'
 source tests/check4line
 
 set file = "data_dir/15418sd1_models.dat"

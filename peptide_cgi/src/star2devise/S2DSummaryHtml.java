@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2011
+// (c) Copyright 2000-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -31,6 +31,15 @@
 // $Id$
 
 // $Log$
+// Revision 1.28.8.2  2012/01/20 21:23:13  wenger
+// Make some fixes to the T1/T2 relaxation menus.
+//
+// Revision 1.28.8.1  2012/01/20 21:00:04  wenger
+// Got a bunch of the visualization summary page menus working.
+//
+// Revision 1.28  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.27.2.2  2011/05/13 17:02:45  wenger
 // Fixed up configuration for BMRB to point to "real" s2predict output files.
 //
@@ -270,24 +279,26 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the CSI link.
-    public void writeCSI(int frameIndex, int count) throws IOException
+    public void writeCSI(int entityAssemblyID, int frameIndex, int count)
+      throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeCSI()");
 	}
 
-    	_normal.writeCSI(frameIndex, count);
+    	_normal.writeCSI(entityAssemblyID, frameIndex, count);
     }
 
     //-------------------------------------------------------------------
     // Writes the percent assignment link.
-    public void writePctAssign(int frameIndex, int count) throws IOException
+    public void writePctAssign(int entityAssemblyID, int frameIndex,
+      int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writePctAssign()");
 	}
 
-    	_normal.writePctAssign(frameIndex, count);
+    	_normal.writePctAssign(entityAssemblyID, frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -330,14 +341,14 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the all chemical shifts link.
-    public void writeAllShifts(int frameIndex, int count)
-      throws IOException
+    public void writeAllShifts(int entityAssemblyID, int frameIndex,
+      int count) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeAllShifts()");
 	}
 
-	_normal.writeAllShifts(frameIndex, count);
+	_normal.writeAllShifts(entityAssemblyID, frameIndex, count);
     }
 
     //-------------------------------------------------------------------
@@ -436,13 +447,14 @@ public class S2DSummaryHtml {
 
     //-------------------------------------------------------------------
     // Writes the ambiguity link.
-    public void writeAmbiguity(int frameIndex) throws IOException
+    public void writeAmbiguity(int frameIndex, int entityAssemblyID)
+      throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtml.writeAmbiguity()");
 	}
 
-	_normal.writeAmbiguity(frameIndex);
+	_normal.writeAmbiguity(frameIndex, entityAssemblyID);
     }
 
     //-------------------------------------------------------------------

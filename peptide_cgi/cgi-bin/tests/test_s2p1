@@ -101,9 +101,9 @@ set line = "1 61 0.1685 0.20943683"
 source tests/check4line
 
 set file = "html_dir/15536/15536y.html"
-set line = '<td><a href="15536s2p1-1.html">1ENH</a></td>'
+set line = '<option value="15536/15536s2p1-1.html">1ENH</option>'
 source tests/check4line
-set line = '<td><a href="15536s2p3-1.html">2JWT</a></td>'
+set line = '<option value="15536/15536s2p3-1.html">2JWT</option>'
 source tests/check4line
 
 

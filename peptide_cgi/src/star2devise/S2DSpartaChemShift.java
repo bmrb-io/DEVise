@@ -24,6 +24,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.7.6.1  2012/03/07 18:33:55  wenger
+// Fixed tests for summary page changes.
+//
+// Revision 1.7  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.6.14.1  2011/09/21 20:46:10  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -300,7 +307,7 @@ public class S2DSpartaChemShift extends S2DChemShift {
 	    } else {
                 deltashiftWriter = S2DFileWriter.create(fileName);
 
-	        deltashiftWriter.write("# Data: SPARTA-calculated " +
+	        deltashiftWriter.write("# Data: SPARTA back calculated " +
 		  "delta shift values for " + _name + "\n");
 	        deltashiftWriter.write("# Schema: bmrb-SpartaDeltaShift\n");
 
@@ -356,7 +363,7 @@ public class S2DSpartaChemShift extends S2DChemShift {
 	    //
 	    String title = "Chemical Shift Delta (entity assembly " +
 	      _entityAssemblyID + ")";
-	    title = "SPARTA-calculated " + title;
+	    title = "SPARTA back calculated " + title;
 	    S2DSpecificHtml specHtml = new S2DSpecificHtml(
 	      _summary.getHtmlDir(), sessionType, _name, frameIndex,
 	      title, _frameDetails);
@@ -406,7 +413,7 @@ public class S2DSpartaChemShift extends S2DChemShift {
 	    } else {
                 spartaWriter = S2DFileWriter.create(fileName);
 
-	        spartaWriter.write("# Data: models for SPARTA-calculated "
+	        spartaWriter.write("# Data: models for SPARTA back calculated "
 		  + "delta shift values for " + _name + "\n");
 	        spartaWriter.write("# Schema: bmrb-SpartaModel\n");
 

@@ -36,6 +36,83 @@
 // $Id$
 
 // $Log$
+// Revision 1.43  2012/01/30 19:39:07  wenger
+// Minor fixes to the visualization summary pages.
+//
+// Revision 1.42.2.21  2012/03/11 23:38:02  wenger
+// Fixed images on multi-entry summary page; other minor cleanup.
+//
+// Revision 1.42.2.20  2012/03/10 00:07:34  wenger
+// Fixed problems with cache not being used for coordinate visualizations,
+// etc.
+//
+// Revision 1.42.2.19  2012/03/09 22:52:02  wenger
+// Implemented summary page menus for the multi-entry pages (except
+// for images); fixed up tests accordingly.
+//
+// Revision 1.42.2.18  2012/03/07 18:33:56  wenger
+// Fixed tests for summary page changes.
+//
+// Revision 1.42.2.17  2012/03/06 18:34:02  wenger
+// Fixed example figures for SPARTA visualizations.
+//
+// Revision 1.42.2.16  2012/03/06 16:48:18  wenger
+// Added the top-level table to organize things into rows of two.
+//
+// Revision 1.42.2.15  2012/03/06 00:12:55  wenger
+// Added writeFormStart() and writeFormEnd() methods to further reduce
+// duplicate code.
+//
+// Revision 1.42.2.14  2012/03/05 23:53:34  wenger
+// Changed SPARTA links to new form (except for images); lots of cleanup,
+// including adding the writeDataTableStart() and writeDataTableEnd()
+// methods to reduce duplicate code.
+//
+// Revision 1.42.2.13  2012/03/05 21:05:43  wenger
+// Set up table for data types for which there is no data available.
+//
+// Revision 1.42.2.12  2012/02/22 23:26:01  wenger
+// Fixed up the images in the summary page.
+//
+// Revision 1.42.2.11  2012/02/21 00:27:40  wenger
+// Changed all of the data sections to the new table arrangement (still
+// needs lots of cleanup, and needs to top-level table to put things into
+// two columns); 'make testsetup' now links the figures directory into
+// cgi-bin so that the images in the summary page work for testing.
+//
+// Revision 1.42.2.10  2012/02/20 22:41:04  wenger
+// Changed summary page order so that all of the "no data" stuff comes
+// out at the end; the "chemical shift data" section has the new table
+// arrangement.
+//
+// Revision 1.42.2.9  2012/01/23 23:20:18  wenger
+// Got S2 predicted vs. experimental and "regular" menus working.
+//
+// Revision 1.42.2.8  2012/01/23 22:27:08  wenger
+// Got chemical shift reference menus working.
+//
+// Revision 1.42.2.7  2012/01/23 21:22:14  wenger
+// Got torsion angle restraint menus working.
+//
+// Revision 1.42.2.6  2012/01/23 19:23:03  wenger
+// Got distance restraint menus working.
+//
+// Revision 1.42.2.5  2012/01/22 21:20:36  wenger
+// Got things working for coordinates (except caching doesn't seem to work).
+//
+// Revision 1.42.2.4  2012/01/20 21:52:18  wenger
+// Got Heteronuclear NOE menu working.
+//
+// Revision 1.42.2.3  2012/01/20 21:23:13  wenger
+// Make some fixes to the T1/T2 relaxation menus.
+//
+// Revision 1.42.2.2  2012/01/20 21:00:04  wenger
+// Got a bunch of the visualization summary page menus working.
+//
+// Revision 1.42.2.1  2012/01/18 17:41:03  wenger
+// Partway to getting menus to work for summary page selection (fixed
+// menu items right now just to get the form and CGI script working).
+//
 // Revision 1.42  2011/12/29 23:46:20  wenger
 // Finished the multi-entry section -- now has correct table, thumbnail
 // with mouseover.
@@ -263,7 +340,6 @@ public abstract class S2DSummaryHtmlGen {
     private IntKeyHashtable _ambiguityInfo = new IntKeyHashtable();
 
     private int _maxSpartaFrameIndex = 0;
-    private IntKeyHashtable _spartaDSEntAssemIDInfo = new IntKeyHashtable();
     private IntKeyHashtable _spartaDeltaShiftInfo = new IntKeyHashtable();
 
     private int _maxCoordFrame = 0;
@@ -314,6 +390,10 @@ public abstract class S2DSummaryHtmlGen {
 	String _hNLink;
     }
     private IntIntKeyHashtable _twoEntInfo = new IntIntKeyHashtable();
+
+    // The counts the "sections" of data we've output -- used to
+    // organize sections in to rows of two.
+    private int _sectionCount;
 
     //===================================================================
     // PUBLIC METHODS
@@ -445,7 +525,7 @@ public abstract class S2DSummaryHtmlGen {
 	    if (!entryTitle.equals("")) {
 	        _writer.write("Title: " + entryTitle + "\n");
 	    }
-	    _writer.write("</div>\n");
+	    _writer.write("</div>\n\n");
 
 	    //
 	    // Tutorial video and main entry page links.
@@ -466,7 +546,7 @@ public abstract class S2DSummaryHtmlGen {
 	        _writer.write("</p>\n");
 	        _writer.write("</h3>\n");
 	    }
-            _writer.write("</div>\n");
+            _writer.write("</div>\n\n");
 
 	} catch(IOException ex) {
 	    System.err.println("IOException opening or writing to summary " +
@@ -500,39 +580,59 @@ TEMP?*/
 		// Write out the tables that now contain the actual links.
 	        _writer.write("\n<br>\n<div id=\"content\">\n");
 
-		if (_multiEntry) {
-                    write2EntryTable();
-
-		} else {
-		    if (!_restraintOnly) {
-		        writeCoordTable();
+		// The first time through the loop, we create the
+		// entries for the things that do have data; the second
+		// time we write the list of stuff for which we don't
+		// have data.
+		boolean writeNoData = false;
+		for (int index = 0; index <= 1; index++) {
+		    if (writeNoData) {
+		        _writer.write("\n<table id=\"vis\" width=\"100%\">\n");
+		    } else {
+		        _writer.write("\n<br>\n");
+		        _writer.write("<table>\n");
 		    }
 
-		    writeBothDistRestrTables();
-		    writeBothTorsionAngleTables();
+		    _sectionCount = 0;
 
-		    if (!_restraintOnly) {
-		        writeChemShiftTable();
-		        writeSpartaDeltaShiftTable();
-		        writeChemShiftRefTable();
-		        writeLacsTable();
-		        writeCouplingTable();
-		        writeRelaxationTable();
-		        writeHetNOETable();
-		        writeS2PredTable();
-		        writeS2OrderTable();
+		    if (_multiEntry) {
+                        write2EntryTable(writeNoData);
+
+		    } else {
+		        if (!_restraintOnly) {
+		            writeCoordTable(writeNoData);
+		        }
+
+		        writeBothDistRestrTables(writeNoData);
+		        writeBothTorsionAngleTables(writeNoData);
+
+		        if (!_restraintOnly) {
+		            writeChemShiftTable(writeNoData);
+		            writeSpartaDeltaShiftTable(writeNoData);
+		            writeChemShiftRefTable(writeNoData);
+		            writeLacsTable(writeNoData);
+		            writeCouplingTable(writeNoData);
+		            writeRelaxationTable(writeNoData);
+		            writeHetNOETable(writeNoData);
+		            writeS2PredTable(writeNoData);
+		            writeS2OrderTable(writeNoData);
+		        }
 		    }
+
+		    _writer.write("</table>\n");
+
+		    writeNoData = true;
 		}
 
 		// Write the details about the save frames.
 	        // Get rid of frame details.
 		// writeFrameDetails();
 
-		_writer.write("<hr>\n");
+		_writer.write("\n<br>\n");
 
                 String action = _isUvd ? S2DNames.UVD_CGI_URL :
 		  S2DNames.CGI_URL;
-		_writer.write("\n<form name=\"input\" action=\"" + action +
+		_writer.write("<form name=\"force\" action=\"" + action +
 		  "\" " + "method=\"get\">\n");
 	        if (_isUvd) {
 		    _writer.write("<input type=\"hidden\" name=\"file\" " +
@@ -745,9 +845,10 @@ TEMP?*/
         _dsEntAssemIDInfo.put(frameIndex, value);
 
 	String resNuc = isNucleicAcid ? "nucleotides" : "residues";
-	value = "<a href=\"" + _name + S2DNames.DELTASHIFT_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">" + residueCount + " " + resNuc + "</a>";
+	value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.DELTASHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">Chemical shift delta (" + residueCount + " " + resNuc +
+	  ") (EA " + entityAssemblyID + ")</option>";
 	_deltaShiftInfo.put(frameIndex, value);
     }
 
@@ -767,20 +868,20 @@ TEMP?*/
 	  frameIndex);
 
 	String value = "" + entityAssemblyID;
-        _spartaDSEntAssemIDInfo.put(frameIndex, value);
 
 	String resNuc = "residues";
-	value = "<a href=\"" + _name +
+	value = "<option value=\"" + _name + "/" + _name +
 	  S2DNames.SPARTA_DELTASHIFT_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + residueCount +
-	  " " + resNuc + "</a>";
+	  S2DNames.HTML_SUFFIX +
+	  "\">(" + residueCount + " " + resNuc +
+	  ") (EA " + entityAssemblyID + ")</option>";
 	_spartaDeltaShiftInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
     // Writes the CSI link.
-    protected void writeCSI(int frameIndex, int residueCount)
-      throws IOException
+    protected void writeCSI(int entityAssemblyID, int frameIndex,
+      int residueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeCSI()");
@@ -788,16 +889,18 @@ TEMP?*/
 
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-	String value = "<a href=\"" + _name + S2DNames.CSI_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">" + residueCount + " residues</a>";
+	String resNuc = "residues";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.CSI_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">Chemical shift index (" + residueCount + " " + resNuc +
+	  ") (EA " + entityAssemblyID + ")</option>";
 	_csiInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
     // Writes the percent assignment link.
-    protected void writePctAssign(int frameIndex, int residueCount)
-      throws IOException
+    protected void writePctAssign(int entityAssemblyID, int frameIndex,
+      int residueCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writePctAssign()");
@@ -805,9 +908,11 @@ TEMP?*/
 
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-	String value = "<a href=\"" + _name +
-	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + residueCount + " residues</a>";
+	String resNuc = "residues";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.PERCENT_ASSIGN_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">Percent assigned atoms (" + residueCount + " " + resNuc +
+	  ") (EA " + entityAssemblyID + ")</option>";
 	_pctAssignInfo.put(frameIndex, value);
     }
 
@@ -824,27 +929,31 @@ TEMP?*/
 
 	_maxCouplingFrame = Math.max(_maxCouplingFrame, frameIndex);
 
-	String value = "<a href=\"" + _name + S2DNames.COUPLING_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX + "\">" +
-	  valueCount + " values (" + entityAssemblyID + ")</a>";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.COUPLING_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">" + valueCount + " values (EA " + entityAssemblyID +
+	  ")</option>";
 	_couplingInfo.put(frameIndex, value);
     }
 
     //-------------------------------------------------------------------
     // Writes the relaxation link.  (See S2DUtils for dataType.)
+    // suffix is "t1" or "t2".
     protected void writeRelax(int dataType, int frequency, String suffix,
       String name, int frameIndex, int entityAssemblyID, int valueCount)
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtmlGen.writeRelax()");
+	    System.out.println("S2DSummaryHtmlGen.writeRelax(" +
+	      dataType + ", " + frequency + ", " + suffix + ")");
 	}
 
 	_maxRelaxFrame = Math.max(_maxRelaxFrame, frameIndex);
 
-        String value = "<a href=\"" + _name + suffix + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + valueCount +
-	  " values (" + entityAssemblyID + ")</a>";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  suffix + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">" + suffix.toUpperCase() + ", " + frequency + "MHz (" +
+	  valueCount + " values) (EA " + entityAssemblyID + ")</option>";
 
         switch (dataType) {
 	case S2DUtils.TYPE_T1_RELAX:
@@ -874,10 +983,11 @@ TEMP?*/
 
 	_maxHetNOEFrame = Math.max(_maxHetNOEFrame, frameIndex);
 
-        String value = "<a href=\"" + _name + 
+	String value = "<option value=\"" + _name + "/" + _name +
 	  S2DNames.HETERONUCLEAR_NOE_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + name +
-	  " (" + valueCount + " values) (" + entityAssemblyID + ")</a>";
+	  S2DNames.HTML_SUFFIX + "\">" + name + " (" +
+	  valueCount + " values ) (EA " +
+	  entityAssemblyID + ")</option>";
 	_hetNOEInfo.put(frameIndex, value);
 
         //TEMP? _wroteLink = true;
@@ -885,8 +995,8 @@ TEMP?*/
 
     //-------------------------------------------------------------------
     // Writes the all chemical shifts link.
-    protected void writeAllShifts(int frameIndex, int shiftCount)
-      throws IOException
+    protected void writeAllShifts(int entityAssemblyID, int frameIndex,
+      int shiftCount) throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeAllShifts()");
@@ -894,9 +1004,10 @@ TEMP?*/
 
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-	String value = "<a href=\"" + _name +
-	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + shiftCount + " shifts</a>";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.ALL_CHEM_SHIFT_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">Chemical shift dist by AA/nucleotide (" + shiftCount +
+	  " shifts) (EA " + entityAssemblyID + ")</option>";
 	_allShiftsInfo.put(frameIndex, value);
     }
 
@@ -914,9 +1025,11 @@ TEMP?*/
 
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-	String value = "<a href=\"" + _name +
+	String value = "<option value=\"" + _name + "/" + _name +
 	  S2DNames.HVSN_CHEM_SHIFT_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + peakCount + " peaks</a>";
+	  S2DNames.HTML_SUFFIX +
+	  "\">Simulated 1H-15N backbone HSQC spectrum (" + peakCount +
+	  " peaks) (EA " + entityAssemblyID + ")</option>";
 	_hVsNInfo.put(frameIndex, value);
     }
 
@@ -934,9 +1047,11 @@ TEMP?*/
 
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-	String value = "<a href=\"" + _name +
+	String value = "<option value=\"" + _name + "/" + _name +
 	  S2DNames.HVSC_CHEM_SHIFT_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + peakCount + " peaks</a>";
+	  S2DNames.HTML_SUFFIX +
+	  "\">Simulated 1H-13C HSQC spectrum (" + peakCount + " peaks" +
+	  ") (EA " + entityAssemblyID + ")</option>";
 	_hVsCInfo.put(frameIndex, value);
     }
 
@@ -956,9 +1071,9 @@ TEMP?*/
 
 	_maxCoordFrame = Math.max(_maxCoordFrame, frameIndex);
 
-        String value = "<a href=\"" + _name +
-	  S2DNames.ATOMIC_COORD_SUFFIX + frameIndex +
-	  S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.ATOMIC_COORD_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">" + linkStr + "</option>";
 	_coordInfo.put(frameIndex, value);
     }
 
@@ -983,7 +1098,7 @@ TEMP?*/
 
 	_maxCoordFrame = Math.max(_maxCoordFrame, frameIndex);
 
-	String value = "<a href=\"" + path + "?pdbid=" + pdbId;
+	String value = "<option value=\"" + path + "?pdbid=" + pdbId;
 	if (_isUvd) {
 	    value += "&file=" + (String)_localFiles.elementAt(0) +
 	      "&name=" + _name;
@@ -992,7 +1107,7 @@ TEMP?*/
 	}
 	value += "&do_pdb=" + S2DMain.PDB_LEVEL_PROCESS +
 	  "&coord_index=" + frameIndex + "&size_str=" +
-	  "\">" + linkStr + "</a>";
+	  "\">" + linkStr + "</option>";
 	_coordInfo.put(frameIndex, value);
     }
 
@@ -1019,16 +1134,22 @@ TEMP?*/
 
 	_csrPdbIdInfo.put(frameIndex, pdbId);
 
-        String value = "<a href=\"" + _name + S2DNames.CSR1_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX + "\">Go</a>";
+        String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.CSR1_SUFFIX +
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
+	  " (difference histograms)</option>";
         _csrHistogramInfo.put(frameIndex, value);
 
-        value = "<a href=\"" + _name + S2DNames.CSR2_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX + "\">Go</a>";
+        value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.CSR2_SUFFIX +
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
+	  " (differences by residue)</option>";
         _csrDiffsInfo.put(frameIndex, value);
 
-        value = "<a href=\"" + _name + S2DNames.CSR3_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX + "\">Go</a>";
+        value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.CSR3_SUFFIX +
+	  frameIndex + S2DNames.HTML_SUFFIX + "\">" + pdbId +
+	  " (observed vs. calculated chemical shift values)</option>";
         _csrScatterInfo.put(frameIndex, value);
     }
 
@@ -1058,22 +1179,23 @@ TEMP?*/
 
 	_csrPdbIdInfo.put(frameIndex, pdbId);
 
-        String value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
+        String value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
 	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
 	  frameIndex + "&csr_index=1" + "&size_str=" +
-	  "\">Go</a>";
+	  "\">" + pdbId + " (difference histograms)</option>";
         _csrHistogramInfo.put(frameIndex, value);
 
-        value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
+        value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
 	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
 	    frameIndex + "&csr_index=2" + "&size_str=" +
-	    "\">Go</a>";
+	    "\">" + pdbId + " (differences by residue)</option>";
         _csrDiffsInfo.put(frameIndex, value);
 
-        value = "<a href=\"" + path + "?pdbid=" + pdbId + dataId +
+        value = "<option value=\"" + path + "?pdbid=" + pdbId + dataId +
 	  "&do_csr=" + S2DMain.CSR_LEVEL_PROCESS + "&coord_index=" +
 	  frameIndex + "&csr_index=3" + "&size_str=" +
-	  "\">Go</a>";
+	  "\">" + pdbId +
+	  " (observed vs. calculated chemical shift values)</option>";
         _csrScatterInfo.put(frameIndex, value);
     }
 
@@ -1096,7 +1218,8 @@ TEMP?*/
 
     //-------------------------------------------------------------------
     // Writes the ambiguity link.
-    protected void writeAmbiguity(int frameIndex) throws IOException
+    protected void writeAmbiguity(int frameIndex, int entityAssemblyID)
+      throws IOException
     {
         if (doDebugOutput(12)) {
 	    System.out.println("S2DSummaryHtmlGen.writeAmbiguity()");
@@ -1104,9 +1227,10 @@ TEMP?*/
 
 	_maxChemShiftFrame = Math.max(_maxChemShiftFrame, frameIndex);
 
-	String value = "<a href=\"" + _name + S2DNames.AMBIGUITY_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Go</a>";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.AMBIGUITY_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">Assigned chemical shift ambiguity code data (EA " +
+	  entityAssemblyID + ")</option>";
 	_ambiguityInfo.put(frameIndex, value);
     }
 
@@ -1116,14 +1240,15 @@ TEMP?*/
       throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtmlGen.writeLACS()");
+	    System.out.println("S2DSummaryHtmlGen.writeLACS(" +
+	      title + ")");
 	}
 
 	_maxLacsFrame = Math.max(_maxLacsFrame, frameIndex);
 
-        String value = "<a href=\"" + _name + S2DNames.LACS_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX + "\">" +
-	  title + "</a>";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.LACS_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">" + title + "</option>";
 	_lacsInfo.put(frameIndex, value);
     }
 
@@ -1140,9 +1265,10 @@ TEMP?*/
 
 	_maxS2OrderFrame = Math.max(_maxS2OrderFrame, frameIndex);
 
-	String value = "<a href=\"" + _name + S2DNames.ORDER_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX + "\">" +
-	  valueCount + " values (" + entityAssemblyID + ")</a>";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.ORDER_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">" + valueCount + " values (EA " + entityAssemblyID +
+	  ")</option>";
 	_s2OrderInfo.put(frameIndex, value);
     }
 
@@ -1156,9 +1282,10 @@ TEMP?*/
 	}
 
 	_s2PredCount++;
-	String value = "<a href=\"" + _name + S2DNames.S2PRED_SUFFIX +
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.S2PRED_SUFFIX +
 	  coordIndex + "-" + frameIndex + S2DNames.HTML_SUFFIX + "\">" +
-	  pdbId + "</a>";
+	  pdbId + "</option>";
 	_s2PredInfo.put(_s2PredCount, value);
     }
 
@@ -1177,7 +1304,7 @@ TEMP?*/
 
         String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
-	String value = "<a href=\"" + path + "?pdbid=" + pdbId;
+	String value = "<option value=\"" + path + "?pdbid=" + pdbId;
 	if (_isUvd) {
 	    value += "&file=" + (String)_localFiles.elementAt(0) +
 	      "&name=" + _name;
@@ -1186,7 +1313,7 @@ TEMP?*/
 	}
 	value += "&do_s2p=" + S2DMain.S2PRED_LEVEL_PROCESS +
 	  "&coord_index=" + coordIndex + "&frame_index=" + frameIndex +
-	  "&size_str=" + "\">" + pdbId + "</a>";
+	  "&size_str=" + "\">" + pdbId + "</option>";
 	_s2PredInfo.put(_s2PredCount, value);
     }
 
@@ -1197,11 +1324,13 @@ TEMP?*/
       boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtmlGen.writeDistRestr()");
+	    System.out.println("S2DSummaryHtmlGen.writeDistRestr(" +
+	      pdbId + ", " + frameIndex + ", " + isRR + ")");
 	}
 
 	if (pdbId != null) {
-	    String linkStr = pdbId;
+	    String linkStr = pdbId + (isRR ?
+	      " (from remediated restraints)" : " (from restraints grid)");
 
 	    String suffix = null;
 	    IntKeyHashtable info = null;
@@ -1217,9 +1346,9 @@ TEMP?*/
 		info = _distRestrInfo;
 	    }
 
-            String value = "<a href=\"" + _name +
+            String value = "<option value=\"" + _name + "/" + _name +
 	      suffix + frameIndex +
-	      S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	      S2DNames.HTML_SUFFIX + "\">" + linkStr + "</option>";
 	    info.put(frameIndex, value);
 	}
     }
@@ -1233,11 +1362,13 @@ TEMP?*/
       int frameIndex, boolean isRR) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtmlGen.writeDistRestrCGI()");
+	    System.out.println("S2DSummaryHtmlGen.writeDistRestrCGI(" +
+	      pdbId + ", " + frameIndex + ", " + isRR + ")");
 	}
 
 	if (pdbId != null) {
-	    String linkStr = pdbId;
+	    String linkStr = pdbId + (isRR ?
+	      " (from remediated restraints)" : " (from restraints grid)");
 
             String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
@@ -1256,7 +1387,7 @@ TEMP?*/
 	    }
 
 //TEMP -- test vis server
-	    String value = "<a href=\"" + path + "?pdbid=" + pdbId;
+	    String value = "<option value=\"" + path + "?pdbid=" + pdbId;
 	    if (_isUvd) {
 	        value += "&file=" + (String)_localFiles.elementAt(0) +
 	          "&name=" + _name;
@@ -1274,7 +1405,7 @@ TEMP?*/
 */
 	    value += doStr + 
 	      "&coord_index=" + frameIndex + "&size_str=" +
-	      "\">" + linkStr + "</a>";
+	      "\">" + linkStr + "</option>";
 	    info.put(frameIndex, value);
 	}
     }
@@ -1290,7 +1421,8 @@ TEMP?*/
 	}
 
 	if (pdbId != null) {
-	    String linkStr = pdbId;
+	    String linkStr = pdbId + (isRR ?
+	      " (from remediated restraints)" : " (from restraints grid)");
 
 	    String suffix = null;
 	    IntKeyHashtable info = null;
@@ -1306,9 +1438,9 @@ TEMP?*/
 		info = _torsionAngleInfo;
 	    }
 
-            String value = "<a href=\"" + _name +
+            String value = "<option value=\"" + _name +
 	      suffix + frameIndex +
-	      S2DNames.HTML_SUFFIX + "\">" + linkStr + "</a>";
+	      S2DNames.HTML_SUFFIX + "\">" + linkStr + "</option>";
 	    info.put(frameIndex, value);
 	}
     }
@@ -1326,7 +1458,8 @@ TEMP?*/
 	}
 
 	if (pdbId != null) {
-	    String linkStr = pdbId;
+	    String linkStr = pdbId + (isRR ?
+	      " (from remediated restraints)" : " (from restraints grid)");
 
             String path = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 
@@ -1345,7 +1478,7 @@ TEMP?*/
 	    }
 
 //TEMP -- test vis server
-	    String value = "<a href=\"" + path + "?pdbid=" + pdbId;
+	    String value = "<option value=\"" + path + "?pdbid=" + pdbId;
 	    if (_isUvd) {
 	        value += "&file=" + (String)_localFiles.elementAt(0) +
 	          "&name=" + _name;
@@ -1363,7 +1496,7 @@ TEMP?*/
 */
 	    value += doStr + 
 	      "&coord_index=" + frameIndex + "&size_str=" +
-	      "\">" + linkStr + "</a>";
+	      "\">" + linkStr + "</option>";
 	    info.put(frameIndex, value);
 	}
     }
@@ -1396,9 +1529,11 @@ TEMP?*/
 	    }
 	}
 
-	info._hNLink = "<a href=\"" + _name + "+" + _extraId + "hn" +
-	  frameIndex1 + "+" + frameIndex2 + ".html\">" + peakCount1 + "/"
-	  + peakCount2 + " peaks</a>";
+	info._hNLink = "<option value=\"" + _name + "/" + _name +
+	  "+" + _extraId + "hn" + frameIndex1 + "+" + frameIndex2 +
+	  ".html\">Simulated 1H-15N backbone HSQC spectrum (" +
+	    peakCount1 + "/" + peakCount2 + " peaks) (" + _name +
+	    " EA " + eaId1 + "/" + _extraId + " EA "+ eaId2 + ")</option>";
     }
 
     //-------------------------------------------------------------------
@@ -1429,9 +1564,11 @@ TEMP?*/
 	    }
 	}
 
-	info._hCLink = "<a href=\"" + _name + "+" + _extraId + "hc" +
-	  frameIndex1 + "+" + frameIndex2 + ".html\">" + peakCount1 +
-	  "/" + peakCount2 + " peaks</a>";
+	info._hCLink = "<option value=\"" + _name + "/" + _name +
+	  "+" + _extraId + "hc" + frameIndex1 + "+" + frameIndex2 +
+	  ".html\">Simulated 1H-13C HSQC spectrum (" +
+	    peakCount1 + "/" + peakCount2 + " peaks) (" + _name +
+	    " EA " + eaId1 + "/" + _extraId + "EA " + eaId2 + ")</option>";
     }
 
     //-------------------------------------------------------------------
@@ -1448,449 +1585,319 @@ TEMP?*/
 
     //-------------------------------------------------------------------
     // Write the html table of chemical shift links.
-    protected void writeChemShiftTable() throws IOException
+    protected void writeChemShiftTable(boolean writeNoData)
+      throws IOException
     {
-        _writer.write("\n<hr>\n");
-        if (_maxChemShiftFrame > 0) {
-	    _writer.write("<p><b>Chemical shift data</b></p>\n");
-            _writer.write("<table border>\n");
-            _writer.write("  <tr>\n");
-	    // Get rid of frame details.
-            // _writer.write("    <td><br></td>\n");
-            _writer.write("    <th>Entity assembly ID</th>\n");
-	    if (!_deltaShiftInfo.isEmpty()) {
-                _writer.write("    <th>Chemical shift delta</th>\n");
-	    }
-	    if (!_csiInfo.isEmpty()) {
-                _writer.write("    <th>Chemical shift index</th>\n");
-	    }
-	    if (!_pctAssignInfo.isEmpty()) {
-                _writer.write("    <th>Percent assigned atoms</th>\n");
-	    }
-	    if (!_allShiftsInfo.isEmpty()) {
-                _writer.write("    <th>Chem shift distributions by " +
-		  "AA/nucleotide</th>\n");
-	    }
-	    if (!_hVsNInfo.isEmpty()) {
-                _writer.write("    <th>Simulated 1H-15N backbone HSQC " +
-		  "spectrum</th>\n");
-	    }
-	    if (!_hVsCInfo.isEmpty()) {
-                _writer.write("    <th>Simulated 1H-13C HSQC " +
-		  "spectrum</th>\n");
-	    }
-	    if (!_pistachioInfo.isEmpty()) {
-                _writer.write("    <th>Assignment figure of merit data</th>\n");
-	    }
-	    if (!_ambiguityInfo.isEmpty()) {
-                _writer.write("    <th>Assigned chemical shift ambiguity " +
-		  "code data</th>\n");
-	    }
-            _writer.write("  </tr>\n");
-
+        if (_maxChemShiftFrame > 0 && !writeNoData) {
+            writeDataTableStart("Chemical shift data", "cs_dist.png",
+	      "cs_dist_thumb.png");
+            writeFormStart("select_chem_shift_visualization");
 
             for (int index = 1; index <= _maxChemShiftFrame; index++ ) {
-                _writer.write("  <tr>\n");
-		// Get rid of frame details.
-		// _writer.write("    <th><a href=\"#Frame" + index +
-		  // "\">Frame&nbsp;" + index + "</a></th>\n");
-
-		writeTableCell(_dsEntAssemIDInfo, index);
 	        if (!_deltaShiftInfo.isEmpty()) {
-		    writeTableCell(_deltaShiftInfo, index);
+		    writeMenuItem(_deltaShiftInfo, index);
 		}
 		if (!_csiInfo.isEmpty()) {
-		    writeTableCell(_csiInfo, index);
+		    writeMenuItem(_csiInfo, index);
 		}
 		if (!_pctAssignInfo.isEmpty()) {
-		    writeTableCell(_pctAssignInfo, index);
+		    writeMenuItem(_pctAssignInfo, index);
 		}
 		if (!_allShiftsInfo.isEmpty()) {
-		    writeTableCell(_allShiftsInfo, index);
+		    writeMenuItem(_allShiftsInfo, index);
 		}
 		if (!_hVsNInfo.isEmpty()) {
-		    writeTableCell(_hVsNInfo, index);
+		    writeMenuItem(_hVsNInfo, index);
 		}
 		if (!_hVsCInfo.isEmpty()) {
-		    writeTableCell(_hVsCInfo, index);
+		    writeMenuItem(_hVsCInfo, index);
 		}
 	        if (!_pistachioInfo.isEmpty()) {
-		    writeTableCell(_pistachioInfo, index);
+		    writeMenuItem(_pistachioInfo, index);
 		}
 		if (!_ambiguityInfo.isEmpty()) {
-		    writeTableCell(_ambiguityInfo, index);
+		    writeMenuItem(_ambiguityInfo, index);
 		}
-
-                _writer.write("  </tr>\n");
 	    }
 
-            _writer.write("</table>\n");
+            writeFormEnd();
+            writeDataTableEnd();
 
             //TEMP? _wroteLink = true;
-        } else {
-	    _writer.write("<p><b>No chemical shift data available " +
-	      "in this entry</b></p>\n");
+        } else if (_maxChemShiftFrame == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No chemical shift data available " +
+	      "in this entry</th></tr>\n");
 	}
     }
 
     //-------------------------------------------------------------------
     // Write the html table of SPARTA-calculated delta shifts.
-    protected void writeSpartaDeltaShiftTable() throws IOException
+    protected void writeSpartaDeltaShiftTable(boolean writeNoData)
+      throws IOException
     {
-        if (_maxSpartaFrameIndex > 0) {
-            _writer.write("\n<hr>\n");
-	    _writer.write("<p><b>SPARTA-calculated chemical shift " +
-	      "deltas</b></p>");
-            _writer.write("<table border>\n");
-            _writer.write("  <tr>\n");
-	    // Get rid of frame details.
-            // _writer.write("    <td><br></td>\n");
-            _writer.write("    <th>Entity assembly ID</th>\n");
-	    if (!_spartaDeltaShiftInfo.isEmpty()) {
-                _writer.write("    <th>Chemical shift delta</th>\n");
-	    }
-            _writer.write("  </tr>\n");
+        if (_maxSpartaFrameIndex > 0 && !writeNoData) {
+            writeDataTableStart("SPARTA back calculated chemical shift " +
+	      "deltas", "sparta.png", "sparta_thumb.png");
+            writeFormStart("select_sparta_visualization");
 
             for (int index = 1; index <= _maxSpartaFrameIndex; index++ ) {
-                _writer.write("  <tr>\n");
 		// Get rid of frame details.
 		// _writer.write("    <th><a href=\"#Frame" + index +
 		  // "\">Frame&nbsp;" + index + "</a></th>\n");
 
 		if (_spartaDeltaShiftInfo.get(index) != null) {
-		    writeTableCell(_spartaDSEntAssemIDInfo, index);
-		    writeTableCell(_spartaDeltaShiftInfo, index);
+		    writeMenuItem(_spartaDeltaShiftInfo, index);
 		}
-
-                _writer.write("  </tr>\n");
 	    }
 
-            _writer.write("</table>\n");
+            writeFormEnd();
+            writeDataTableEnd();
 
             //TEMP? _wroteLink = true;
+        } else if (_maxSpartaFrameIndex == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No SPARTA back calculated " +
+	      "chemical shift deltas available in this entry</th></tr>\n");
 	}
     }
 
     //-------------------------------------------------------------------
     // Write the html table of T1/T2 relaxation links.
-    protected void writeRelaxationTable() throws IOException
+    protected void writeRelaxationTable(boolean writeNoData)
+      throws IOException
     {
-	_writer.write("\n<hr>\n");
-        if (_maxRelaxFrame > 0) {
-	    _writer.write("<p><b>T1/T2 Relaxation</b></p>\n");
-	    _writer.write("<p>(number of values, entity assembly ID)</p>\n");
+        if (_maxRelaxFrame > 0 && !writeNoData) {
+            writeDataTableStart("T1/T2 relaxation", "t1.png",
+	      "t1_thumb.png");
+            writeFormStart("select_relax_visualization");
 
-	    int maxLen = 0;
-	    int numCols = 0;
-
-            _writer.write("<table border>\n");
-            _writer.write("  <tr>\n");
-
-	    // Write the header, and figure out how many rows and
-	    // columns we have.
 	    Object[] t1Freqs = _t1RelaxInfo.keySet().toArray();
 	    Arrays.sort(t1Freqs);
 	    for (int index = 0; index < t1Freqs.length; index++) {
 	        Integer frequency = (Integer)t1Freqs[index];
-		_writer.write("    <th>T1, " + frequency + " MHz</th>\n");
 		Vector values = (Vector)_t1RelaxInfo.get(frequency.intValue());
-		maxLen = Math.max(maxLen, values.size());
-		numCols++;
-	    }
+		for (int row = 0; row < values.size(); row++) {
+	            _writer.write("    " + (String)values.elementAt(row) +
+		    "\n");
+		}
+            }
 
 	    Object[] t2Freqs = _t2RelaxInfo.keySet().toArray();
 	    Arrays.sort(t2Freqs);
 	    for (int index = 0; index < t2Freqs.length; index++) {
 	        Integer frequency = (Integer)t2Freqs[index];
-		_writer.write("    <th>T2, " + frequency + " MHz</th>\n");
-		Vector values = (Vector)_t2RelaxInfo.get(frequency.intValue());
-		maxLen = Math.max(maxLen, values.size());
-		numCols++;
-	    }
-
-            _writer.write("  </tr>\n");
-
-	    // Now assemble the data into an array that matches the
-	    // table layout.
-	    String[][] table = new String[numCols][maxLen];
-
-	    int column = 0;
-
-	    for (int index = 0; index < t1Freqs.length; index++) {
-	        Integer frequency = (Integer)t1Freqs[index];
-		Vector values = (Vector)_t1RelaxInfo.get(frequency.intValue());
-		for (int row = 0; row < values.size(); row++) {
-		    table[column][row] = (String)values.elementAt(row);
-		}
-	        column++;
-	    }
-
-	    for (int index = 0; index < t2Freqs.length; index++) {
-	        Integer frequency = (Integer)t2Freqs[index];
 		Vector values = (Vector)_t2RelaxInfo.get(frequency.intValue());
 		for (int row = 0; row < values.size(); row++) {
-		    table[column][row] = (String)values.elementAt(row);
+	            _writer.write("    " + (String)values.elementAt(row) +
+		    "\n");
 		}
-	        column++;
-	    }
+            }
 
+            writeFormEnd();
+            writeDataTableEnd();
 
-	    // And finally, print it out.
-            for (int row = 0; row < maxLen; row++) {
-                _writer.write("  <tr>\n");
-	        for (column = 0; column < numCols; column++) {
-		    _writer.write("    <td>" + table[column][row] +
-		      "</td>\n");
-		}
-                _writer.write("  </tr>\n");
-	    }
-
-            _writer.write("</table>\n");
-        } else {
-	    _writer.write("<p><b>No T1/T2 relaxation data available " +
-	      "in this entry</b></p>\n");
+        } else if (_maxRelaxFrame == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No T1/T2 relaxation data available " +
+	      "in this entry</th></tr>\n");
 	}
     }
 
     //-------------------------------------------------------------------
     // Write the html table of heteronuclear NOE links.
-    protected void writeHetNOETable() throws IOException
+    protected void writeHetNOETable(boolean writeNoData)
+      throws IOException
     {
-	final int maxPerRow = 5;
-
-	_writer.write("\n<hr>\n");
-        if (_maxHetNOEFrame > 0) {
-	    _writer.write("<p><b>Heteronuclear NOE" +
-	      "</b></p>\n");
-	    _writer.write("<p>(spectrometer frequency, atom one, " +
-	      "atom two, number of values, entity assembly ID)</p>\n");
-
-            _writer.write("<table border>\n");
-            _writer.write("  <tr>\n");
+        if (_maxHetNOEFrame > 0 && !writeNoData) {
+            writeDataTableStart("Heteronuclear NOE", "het_noe.png",
+	      "het_noe_thumb.png");
+            writeFormStart("select_chem_hetnoe_visualization");
 
             for (int index = 1; index <= _maxHetNOEFrame; index++ ) {
-                writeTableCell(_hetNOEInfo, index);
-		if ( index % maxPerRow == 0) {
-                    _writer.write("  </tr>\n");
-                    _writer.write("  <tr>\n");
-		}
+                writeMenuItem(_hetNOEInfo, index);
             }
 
-            _writer.write("  </tr>\n");
-            _writer.write("</table>\n");
-        } else {
-	    _writer.write("<p><b>No Heteronuclear NOE data available " +
-	      "in this entry</b></p>\n");
+            writeFormEnd();
+            writeDataTableEnd();
+
+        } else if (_maxHetNOEFrame == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No Heteronuclear NOE data available " +
+	      "in this entry</th></tr>\n");
         }
     }
 
     //-------------------------------------------------------------------
     // Write the html table of coupling constant links.
-    protected void writeCouplingTable() throws IOException
+    protected void writeCouplingTable(boolean writeNoData)
+      throws IOException
     {
-	final int maxPerRow = 8;
-
-	_writer.write("\n<hr>\n");
-        if (_maxCouplingFrame > 0) {
-	    _writer.write("<p><b>Coupling Constants</b></p>\n");
-	    _writer.write("<p>(number of values, entity assembly ID)</p>\n");
-
-            _writer.write("<table border cellpadding=5>\n");
-            _writer.write("  <tr>\n");
+        if (_maxCouplingFrame > 0 && !writeNoData) {
+            writeDataTableStart("Coupling constants", "coupling.png",
+	      "coupling_thumb.png");
+            writeFormStart("select_chem_coupling_visualization");
 
             for (int index = 1; index <= _maxCouplingFrame; index++ ) {
-                writeTableCell(_couplingInfo, index);
-		if ( index % maxPerRow == 0) {
-                    _writer.write("  </tr>\n");
-                    _writer.write("  <tr>\n");
-		}
+                writeMenuItem(_couplingInfo, index);
             }
 
-            _writer.write("  </tr>\n");
-            _writer.write("</table>\n");
-        } else {
-	    _writer.write("<p><b>No coupling constants available in " +
-	      "this entry</b></p>\n");
+            writeFormEnd();
+            writeDataTableEnd();
+
+        } else if (_maxCouplingFrame == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No coupling constants available in " +
+	      "this entry</th></tr>\n");
         }
     }
 
     //-------------------------------------------------------------------
     // Write the html table of coordinate links.
-    protected void writeCoordTable() throws IOException
+    protected void writeCoordTable(boolean writeNoData)
+      throws IOException
     {
-        if (_maxCoordFrame > 0) {
-
-	    final int maxPerRow = 10;
-
-            _writer.write("<p><b>\n" +
-	      "NMR experimental data plots linked to Jmol 3D structure " +
-	      "visualization\n" +
-	      "(note: processing may take several minutes)\n" +
-	      "</b></p>\n");
-
-            _writer.write("<table border cellpadding=5>\n");
-            _writer.write("  <tr>\n");
-	    _writer.write("    <th>PDB ID</th>\n");
+        if (_maxCoordFrame > 0 && !writeNoData) {
+            writeDataTableStart("NMR experimental data plots linked to " +
+	      "Jmol 3D structure visualization\n" +
+	      "(note: processing may take several minutes)",
+	      "3d.png", "3d_thumb.png");
+            writeFormStart("select_coord_shift_visualization");
 
             for (int index = 1; index <= _maxCoordFrame; index++ ) {
-                writeTableCell(_coordInfo, index);
-		if ( index % maxPerRow == 0) {
-                    _writer.write("  </tr>\n");
-                    _writer.write("  <tr>\n");
-	            _writer.write("    <th>PDB ID</th>\n");
-		}
+                writeMenuItem(_coordInfo, index);
             }
 
-            _writer.write("  </tr>\n");
-            _writer.write("</table>\n");
+            writeFormEnd();
+            writeDataTableEnd();
 
             //TEMP? _wroteLink = true;
-        } else {
-	    _writer.write("<p><b>No coordinate data available for " +
-	      "this entry</b></p>\n");
+        } else if (_maxCoordFrame == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No coordinate data available for " +
+	      "this entry</th></tr>\n");
 	}
     }
 
     //-------------------------------------------------------------------
     // Write the html table of chemical shift reference links.
-    protected void writeChemShiftRefTable() throws IOException
+    protected void writeChemShiftRefTable(boolean writeNoData)
+      throws IOException
     {
-	_writer.write("\n<hr>\n");
-        if (_maxChemShiftRefFrame > 0) {
-	    _writer.write("<p><b>Chemical Shift Referencing " +
-	      "Visualizations (note: processing may take several " +
-	      "minutes)</b></p>\n");
-
-            _writer.write("<table border>\n");
-            _writer.write("  <tr>\n");
-	    _writer.write("    <th>PDB ID</th>\n");
-	    _writer.write("    <th>Difference histograms</th>\n");
-	    _writer.write("    <th>Differences by residue</th>\n");
-	    _writer.write("    <th>Observed vs. calculated chemical " +
-	      "shift values</th>\n");
-	    _writer.write("  </tr>\n");
+        if (_maxChemShiftRefFrame > 0 && !writeNoData) {
+            writeDataTableStart("Chemical shift referencing " +
+	      "visualizations (note: processing may take several " +
+	      "minutes)", "csr3.png", "csr3_thumb.png");
+            writeFormStart("select_chemshiftref_visualization");
 
             for (int index = 1; index <= _maxChemShiftRefFrame; index++ ) {
-                _writer.write("  <tr>\n");
-                writeTableCell(_csrPdbIdInfo, index, true);
-                writeTableCell(_csrHistogramInfo, index);
-                writeTableCell(_csrDiffsInfo, index);
-                writeTableCell(_csrScatterInfo, index);
-                _writer.write("  </tr>\n");
+                writeMenuItem(_csrHistogramInfo, index);
+                writeMenuItem(_csrDiffsInfo, index);
+                writeMenuItem(_csrScatterInfo, index);
             }
 
-            _writer.write("</table>\n");
-        } else {
-	    _writer.write("<p><b>No back calculated chemical shift " +
+            writeFormEnd();
+            writeDataTableEnd();
+
+        } else if (_maxChemShiftRefFrame == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No back calculated chemical shift " +
 	      "referencing visualizations available for this entry" +
-	      "</b></p>\n");
+	      "</th></tr>\n");
 	}
     }
 
     //-------------------------------------------------------------------
     // Write the html table of LACS links.
-    protected void writeLacsTable() throws IOException
+    protected void writeLacsTable(boolean writeNoData) throws IOException
     {
-	_writer.write("\n<hr>\n");
-        if (_maxLacsFrame > 0) {
-	    _writer.write("<p><b><a target=\"lacs_ref\" " + 
+        if (_maxLacsFrame > 0 && !writeNoData) {
+            writeDataTableStart("<a target=\"lacs_ref\" " +
 	      "href=\"http://www.ncbi.nlm.nih.gov/pubmed/16041479\">" +
-	      "Linear Analysis of Chemical Shifts" +
-	      "</a></b></p>\n");
-
-            _writer.write("<table border cellpadding=5>\n");
-            _writer.write("  <tr>\n");
+	      "Linear Analysis of Chemical Shifts</a>", "lacs.png",
+	      "lacs_thumb.png");
+            writeFormStart("select_lacs_visualization");
 
             for (int index = 1; index <= _maxLacsFrame; index++ ) {
-                writeTableCell(_lacsInfo, index);
+                writeMenuItem(_lacsInfo, index);
             }
 
-            _writer.write("  </tr>\n");
-            _writer.write("</table>\n");
+            writeFormEnd();
+            writeDataTableEnd();
 
             //TEMP? _wroteLink = true;
-        } else {
-	    _writer.write("<p><b>No <a target=\"lacs_ref\" " +
+        } else if (_maxLacsFrame == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No <a target=\"lacs_ref\" " +
 	      "href=\"http://www.ncbi.nlm.nih.gov/pubmed/16041479\">" +
 	      "Linear Analysis of Chemical Shifts</a> data available for " +
-	      "this entry</b></p>\n");
+	      "this entry</th></tr>\n");
 	}
     }
 
     //-------------------------------------------------------------------
     // Write the html table of S2 order parameter links.
-    protected void writeS2PredTable() throws IOException
+    protected void writeS2PredTable(boolean writeNoData)
+      throws IOException
     {
-	final int maxPerRow = 8;
-
-	_writer.write("\n<hr>\n");
-        if (_s2PredCount > 0) {
-	    _writer.write("<p><b>S2 predicted vs. experimental</b></p>\n");
-
-            _writer.write("<table border cellpadding=5>\n");
-            _writer.write("  <tr>\n");
+        if (_s2PredCount > 0 && !writeNoData) {
+            writeDataTableStart("S2 predicted vs. experimental",
+	      "s2pred.png", "s2pred_thumb.png");
+            writeFormStart("select_s2pred_visualization");
 
             for (int index = 1; index <= _s2PredCount; index++ ) {
-                writeTableCell(_s2PredInfo, index);
-		if ( index % maxPerRow == 0) {
-                    _writer.write("  </tr>\n");
-                    _writer.write("  <tr>\n");
-		}
-            }
+                writeMenuItem(_s2PredInfo, index);
+	    }
 
-            _writer.write("  </tr>\n");
-            _writer.write("</table>\n");
+            writeFormEnd();
+            writeDataTableEnd();
 
-        } else {
-	    _writer.write("<p><b>No S2 predicted vs. experimental data " +
-	      "available for this entry</b></p>\n");
+        } else if (_s2PredCount == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No S2 predicted vs. experimental data " +
+	      "available for this entry</th></tr>\n");
 	}
     }
 
     //-------------------------------------------------------------------
     // Write the html table of S2 order parameter links.
-    protected void writeS2OrderTable() throws IOException
+    protected void writeS2OrderTable(boolean writeNoData)
+      throws IOException
     {
-	final int maxPerRow = 8;
-
-        if (_maxS2OrderFrame > 0) {
-	    _writer.write("<p><b>S2 Order Parameters</b></p>\n");
-	    _writer.write("<p>(number of values, entity assembly ID)</p>\n");
-
-            _writer.write("<table border cellpadding=5>\n");
-            _writer.write("  <tr>\n");
+        if (_maxS2OrderFrame > 0 && !writeNoData) {
+            writeDataTableStart("S2 order parameters", "s2.png",
+	      "s2_thumb.png");
+            writeFormStart("select_s2_visualization");
 
             for (int index = 1; index <= _maxS2OrderFrame; index++ ) {
-                writeTableCell(_s2OrderInfo, index);
-		if ( index % maxPerRow == 0) {
-                    _writer.write("  </tr>\n");
-                    _writer.write("  <tr>\n");
-		}
-            }
+                writeMenuItem(_s2OrderInfo, index);
+	    }
 
-            _writer.write("  </tr>\n");
-            _writer.write("</table>\n");
-        } else {
-	    _writer.write("<p><b>No S2 order parameters available in " +
-	      "this entry</b></p>\n");
+            writeFormEnd();
+            writeDataTableEnd();
+
+        } else if (_maxS2OrderFrame == 0 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No S2 order parameters available in " +
+	      "this entry</th></tr>\n");
         }
     }
 
     //-------------------------------------------------------------------
-    // Write the tables for restraing grid and remediated restraint
+    // Write the tables for restraint grid and remediated restraint
     // distance restraints.
-    protected void writeBothDistRestrTables() throws IOException
+    protected void writeBothDistRestrTables(boolean writeNoData)
+      throws IOException
     {
-	_writer.write("\n<hr>\n");
+    	if ((_maxDistRestrFrame > 0 || _maxRRDistRestrFrame > 0) &&
+	  !writeNoData) {
+            writeDataTableStart("Distance restraints " +
+	      "(note: processing may take several minutes)",
+	      "distance_restraint.png", "distance_restraint_thumb.png");
+            writeFormStart("select_distance_restraint_visualization");
 
-	writeDistRestrTable(_maxDistRestrFrame,
-	  _distRestrInfo, false);
-	writeDistRestrTable(_maxRRDistRestrFrame,
-	  _rrDistRestrInfo, true);
+	    writeDistRestrTable(_maxDistRestrFrame,
+	      _distRestrInfo, false);
+	    writeDistRestrTable(_maxRRDistRestrFrame,
+	      _rrDistRestrInfo, true);
 
-    	if (_maxDistRestrFrame < 1 && _maxRRDistRestrFrame < 1) {
-	    _writer.write("<p><b>No distance restraint data available " +
-	      "for this entry</b></p>\n");
+            writeFormEnd();
+            writeDataTableEnd();
+
+    	} else if (_maxDistRestrFrame < 1 && _maxRRDistRestrFrame < 1 &&
+	  writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No distance restraint data available " +
+	      "for this entry</th></tr>\n");
 	}
     }
 
@@ -1899,52 +1906,38 @@ TEMP?*/
     protected void writeDistRestrTable(int maxFrame,
       IntKeyHashtable info, boolean isRR) throws IOException
     {
-	final int maxPerRow = 10;
-
-        if (maxFrame > 0) {
-	    String title = isRR ?
-	      S2DDistRestraint.STR_REMEDIATED_RESTRANTS + " ":
-	      S2DDistRestraint.STR_RESTRANTS_GRID + " ";
-            _writer.write("<p><b>\n" + title +
-	      "(note: processing may take several minutes)\n" +
-	      "</b></p>\n");
-
-            _writer.write("<table border cellpadding=5>\n");
-            _writer.write("  <tr>\n");
-	    _writer.write("    <th>PDB ID</th>\n");
-
-            for (int index = 1; index <= maxFrame; index++ ) {
-		if (info.get(index) != null) {
-                    writeTableCell(info, index);
-		    if ( index % maxPerRow == 0) {
-                        _writer.write("  </tr>\n");
-                        _writer.write("  <tr>\n");
-	                _writer.write("    <th>PDB ID</th>\n");
-		    }
-		}
-            }
-
-            _writer.write("  </tr>\n");
-            _writer.write("</table>\n");
+        for (int index = 1; index <= maxFrame; index++) {
+            writeMenuItem(info, index);
         }
     }
 
     //-------------------------------------------------------------------
-    // Write the tables for restraing grid and remediated restraint
+    // Write the tables for restraint grid and remediated restraint
     // torsion angles.
-    protected void writeBothTorsionAngleTables() throws IOException
+    protected void writeBothTorsionAngleTables(boolean writeNoData)
+      throws IOException
     {
-	_writer.write("\n<hr>\n");
+    	if ((_maxTorsionAngleFrame > 0 || _maxRRTorsionAngleFrame > 0) &&
+	  !writeNoData) {
+            writeDataTableStart("Torsion angle restraints " +
+	      "(note: processing may take several minutes)",
+	      "torsion_angle.png", "torsion_angle_thumb.png");
+            writeFormStart("select_torsion_angle_restraint_visualization");
 
-	writeTorsionAngleTable(_maxTorsionAngleFrame,
-	  _torsionAngleInfo, false);
-	writeTorsionAngleTable(_maxRRTorsionAngleFrame,
-	  _rrTorsionAngleInfo, true);
+	    writeTorsionAngleTable(_maxTorsionAngleFrame,
+	      _torsionAngleInfo, false);
+	    writeTorsionAngleTable(_maxRRTorsionAngleFrame,
+	      _rrTorsionAngleInfo, true);
 
-    	if (_maxTorsionAngleFrame < 1 && _maxRRTorsionAngleFrame < 1) {
-	    _writer.write("<p><b>No torsion angle data available for " +
-	      "this entry</b></p>\n");
-	}
+            writeFormEnd();
+            writeDataTableEnd();
+
+    	} else if (_maxTorsionAngleFrame < 1 &&
+	  _maxRRTorsionAngleFrame < 1 && writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No torsion angle data available for " +
+	      "this entry</th></tr>\n");
+
+        }
     }
 
     //-------------------------------------------------------------------
@@ -1952,73 +1945,42 @@ TEMP?*/
     protected void writeTorsionAngleTable(int maxFrame,
       IntKeyHashtable info, boolean isRR) throws IOException
     {
-	final int maxPerRow = 10;
-
-        if (maxFrame > 0) {
-	    String title = isRR ?
-	      S2DTorsionAngle.STR_REMEDIATED_RESTRANTS + " ":
-	      S2DTorsionAngle.STR_RESTRANTS_GRID + " ";
-            _writer.write("<p><b>\n" + title +
-	      "(note: processing may take several minutes)\n" +
-	      "</b></p>\n");
-
-            _writer.write("<table border cellpadding=5>\n");
-            _writer.write("  <tr>\n");
-	    _writer.write("    <th>PDB ID</th>\n");
-
-            for (int index = 1; index <= maxFrame; index++ ) {
-		if (info.get(index) != null) {
-                    writeTableCell(info, index);
-		    if ( index % maxPerRow == 0) {
-                        _writer.write("  </tr>\n");
-                        _writer.write("  <tr>\n");
-	                _writer.write("    <th>PDB ID</th>\n");
-		    }
-		}
-            }
-
-            _writer.write("  </tr>\n");
-            _writer.write("</table>\n");
+        for (int index = 1; index <= maxFrame; index++ ) {
+            writeMenuItem(info, index);
         }
     }
 
     //-------------------------------------------------------------------
     // Write the html table of two-entry data.
-    protected void write2EntryTable() throws IOException
+    protected void write2EntryTable(boolean writeNoData) throws IOException
     {
-        _writer.write("<p><b>Chemical shift data</b></p>\n");
-        _writer.write("<table border>\n");
-        _writer.write("  <tr>\n");
-        _writer.write("    <th>" + _name +
-          " entity assembly ID</th>\n");
-        _writer.write("    <th>" + _extraId +
-          " entity assembly ID</th>\n");
-        _writer.write("    <th>Simulated 1H-15N backbone " +
-          "HSQC spectrum</th>\n");
-        _writer.write("    <th>Simulated 1H-13C HSQC " +
-          "spectrum</th>\n");
-        _writer.write("  </tr>\n");
+	if ((_maxEntry1Frame > 0 || _maxEntry2Frame > 0) &&!writeNoData) {
+            writeDataTableStart("Chemical shift data", "multi_entry_nh.png",
+	      "multi_entry_nh_thumb.png");
 
-	for (int index1 = 1; index1 <= _maxEntry1Frame; index1++) {
-	    for (int index2 = 1; index2 <= _maxEntry2Frame; index2++) {
-	        TwoEntInfo info = (TwoEntInfo)_twoEntInfo.get(index1, index2);
-		if (info != null) {
-                    _writer.write("  <tr>\n");
-		    _writer.write("<td>" + info._eaId1 + "</td>\n");
-		    _writer.write("<td>" + info._eaId2 + "</td>\n");
-		    String value = info._hNLink != null ?
-		      info._hNLink : "<br>";
-		    _writer.write("<td>" + value + "</td>\n");
-		    value = info._hCLink != null ? info._hCLink : "<br>";
-		    _writer.write("<td>" + value + "</td>\n");
-                    _writer.write("  </tr>\n");
-		}
+            writeFormStart("select_multi-entry_visualization");
+
+	    for (int index1 = 1; index1 <= _maxEntry1Frame; index1++) {
+	        for (int index2 = 1; index2 <= _maxEntry2Frame; index2++) {
+	            TwoEntInfo info = (TwoEntInfo)_twoEntInfo.get(index1, index2);
+		    if (info != null) {
+		        _writer.write(info._hNLink + "\n");
+		        _writer.write(info._hCLink + "\n");
+		    }
+	        }
 	    }
-	}
 
-        _writer.write("</table>\n");
+            writeFormEnd();
+            writeDataTableEnd();
+
+	} else if (_maxEntry1Frame == 0 && _maxEntry2Frame == 0 &&
+	  !writeNoData) {
+	    _writer.write("  <tr><th align=\"left\">No chemical shift " +
+	      "data available in these entries</th></tr>\n");
+	}
     }
 
+/*
     //-------------------------------------------------------------------
     // Write out save frame details.
     protected void writeFrameDetails() throws IOException
@@ -2057,6 +2019,18 @@ TEMP?*/
 	_writer.write("    <" + cellTag + ">" + value + "</" + cellTag +
 	  ">\n");
     }
+*/
+
+    //-------------------------------------------------------------------
+    // Write out a menu item for the given information.
+    protected void writeMenuItem(IntKeyHashtable info, int frameIndex)
+      throws IOException
+    {
+	String value = (String)info.get(frameIndex);
+	if (value != null) {
+	    _writer.write("    " + value + "\n");
+	}
+    }
 
     //===================================================================
     // PRIVATE METHODS
@@ -2071,6 +2045,66 @@ TEMP?*/
 	    relaxInfo.put(frequency, entries);
 	}
 	entries.addElement(value);
+    }
+
+    //-------------------------------------------------------------------
+    // Write out the start of the table for a given "section" of data.
+    private void writeDataTableStart(String dataName, String image,
+      String thumbnail) throws IOException
+    {
+	if (_sectionCount % 2 == 0) {
+	    _writer.write("<tr>\n");
+	}
+	_sectionCount++;
+
+        _writer.write("\n<td width = \"50%\">\n");
+        _writer.write("<table id=\"vis\">\n");
+        _writer.write("  <tr>\n");
+        _writer.write("    <td align=\"left\" rowspan=\"2\" width=\"120\">\n");
+        _writer.write("      <a class=\"thumbnail\" href=\"#thumb\">" +
+	  "<img src=\"../../figures/" + thumbnail +
+	  "\"><span><img src=\"../../figures/" + image + "\"></span></a>\n");
+        _writer.write("    </td>\n");
+        _writer.write("    <th align=\"left\">\n");
+
+        _writer.write(dataName + "\n");
+
+        _writer.write("    </th>\n");
+        _writer.write("  </tr>\n");
+        _writer.write("    <td align=\"center\">\n");
+    }
+
+    //-------------------------------------------------------------------
+    // Write out the end of the table for a "section" of data.
+    private void writeDataTableEnd() throws IOException
+    {
+        _writer.write("    </td>\n");
+        _writer.write("  </tr>\n");
+        _writer.write("</table>\n");
+        _writer.write("</td>\n");
+	if (_sectionCount % 2 == 0) {
+	    _writer.write("</tr>\n");
+        }
+    }
+
+    //-------------------------------------------------------------------
+    // Write out the beginning of the form for a "section" of data.
+    private void writeFormStart(String formName) throws IOException
+    {
+        String action = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
+	_writer.write("\n<form name=\"" + formName + "\" action=\"" +
+	  action + "\" " + "method=\"get\">\n");
+        _writer.write("  <select name=\"url\">\n");
+    }
+
+    //-------------------------------------------------------------------
+    // Write out the end of the form for a "section" of data.
+    private void writeFormEnd() throws IOException
+    {
+        _writer.write("  </select>\n");
+	_writer.write(
+	  "  <input type=\"submit\" value=\"Visualize in DEVise\">\n");
+	_writer.write("</form>\n");
     }
 
     //-------------------------------------------------------------------

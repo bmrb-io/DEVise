@@ -62,13 +62,13 @@ source tests/check4line
 
 
 set file = "html_dir/16387/16387y.html"
-set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
+set line = 'SPARTA back calculated chemical shift deltas$'
 source tests/check4line
-set line = '^    <td><a href="16387sd1.html">79 residues</a></td>$'
+set line = '<option value="16387/16387sd1.html">(79 residues) (EA 1)</option>$'
 source tests/check4line
 
 set file = "html_dir/16387/16387sd1.html"
-set line = '^    SPARTA-calculated Chemical Shift Delta (entity assembly 1)$'
+set line = '^    SPARTA back calculated Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line
 
 set file = "data_dir/16387sd1_models.dat"

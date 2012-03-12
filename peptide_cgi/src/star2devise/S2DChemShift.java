@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.36.6.1  2012/01/20 21:00:03  wenger
+// Got a bunch of the visualization summary page menus working.
+//
+// Revision 1.36  2011/10/10 23:43:38  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.35.8.1  2011/09/21 20:46:09  wenger
 // The s2predicted session movie buttons are now updated for the correct
 // PDB ID -- I should probably have configuration for the URL, though,
@@ -315,7 +322,8 @@ public class S2DChemShift {
 	    //
 	    // Write the link in the summary html file.
 	    //
-	    _summary.writeAllShifts(frameIndex, _resSeqCodes.length);
+	    _summary.writeAllShifts(_entityAssemblyID, frameIndex,
+	      _resSeqCodes.length);
 
 	} catch (IOException ex) {
 	    System.err.println("IOException writing all chem shifts: " +

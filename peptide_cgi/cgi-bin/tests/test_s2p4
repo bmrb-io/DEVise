@@ -106,7 +106,7 @@ set line = "1 116 1.0 0.45856732"
 source tests/check4line
 
 set file = "html_dir/15562/15562y.html"
-set line = '<td><a href="15562s2p1-1.html">2JXN</a></td>'
+set line = '<option value="15562/15562s2p1-1.html">2JXN</option>'
 source tests/check4line
 
 

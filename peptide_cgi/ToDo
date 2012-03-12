@@ -725,6 +725,12 @@ Num Date        Status  Pri     Description
 				(elu/wenger)
 				(Done by wenger, 10/31/11)
 
+162 3/7/12	OPEN	3	Change summary page menus so that the
+				visualization page is brought up as soon
+				as the user makes a selection in the menu,
+				and get rid of the 'Visualize in DEVise'
+				button. (elu/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

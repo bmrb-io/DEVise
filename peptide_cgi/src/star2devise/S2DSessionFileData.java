@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2007
+// (c) Copyright 2004-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,14 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.42.1  2012/03/10 00:07:34  wenger
+// Fixed problems with cache not being used for coordinate visualizations,
+// etc.
+//
+// Revision 1.4  2009/05/11 22:22:46  wenger
+// Added "Force reprocessing" button to summary pages (mainly for
+// testing).
+//
 // Revision 1.3  2007/08/20 20:26:09  wenger
 // Added -verb command-line flag and property so we can turn on debug
 // output without recompiling; added debug_level property corresponding
@@ -74,7 +82,7 @@ public class S2DSessionFileData extends S2DFileData
 	fileDate = null;
 
 	String filename = sessionDir + File.separator + name +
-	  suffix + ".ds";
+	  File.separator + name + suffix + ".ds";
 
 	boolean result = getData(filename);
 

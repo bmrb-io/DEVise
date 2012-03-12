@@ -104,7 +104,7 @@ set line = "1 89 1.0 0.22167045"
 source tests/check4line
 
 set file = "html_dir/15451/15451y.html"
-set line = '/make_view?pdbid=2JUO&number=15451&do_s2p=2&coord_index=1&frame_index=1&size_str=">2JUO</a></td>'
+set line = '<option value="http://.*/make_view?pdbid=2JUO&number=15451&do_s2p=2&coord_index=1&frame_index=1&size_str=">2JUO</option>'
 source tests/check4line
 
 

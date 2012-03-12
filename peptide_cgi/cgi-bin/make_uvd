@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2007-2011
+#  (c) Copyright 2007-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -71,6 +71,8 @@ my $sparta_file = $query->param('sparta_file');
 my $xbmrbid = $query->param('xbmrbid');
 my $do_s2p = $query->param('do_s2p');
 my $frame_index = $query->param('frame_index');
+#TEMPTEMP -- maybe change "url" to something less generic?
+my $url = $query->param('url');
 
 print "  file = $file\n" if ($debug);
 print "  name = $name\n" if ($debug);
@@ -81,6 +83,16 @@ print "  frame_index = $frame_index\n" if ($debug);
 # File name of the html page returned.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
 $summary_page_dir = $summary_page_dir . "/uvd/" . $name;
+if (defined($url)) {
+  my $foourl;
+  if ($url =~/^http/) {
+    $foourl = $url;
+  } else {
+    $foourl = $summary_page_dir . "/" . $url;#TEMPTEMP -- better name
+  }
+  print $query->redirect($foourl);
+  exit;
+}
 
 if ($do_pdb) {
   print "  has PDB\n" if ($debug);

@@ -103,15 +103,15 @@ set line = '^1 4 2 SER -0.328 -0.278 0.298 0.232 -4.604 0.236$'
 source tests/check4line
 
 set file = "html_dir/11030/11030y.html"
-set line = '^<p><b>SPARTA-calculated chemical shift deltas</b></p><table border>$'
+set line = 'SPARTA back calculated chemical shift deltas$'
 source tests/check4line
-set line = '^    <td><a href="11030sd1.html">106 residues</a></td>$'
+set line = '<option value="11030/11030sd1.html">(106 residues) (EA 1)</option>$'
 source tests/check4line
-set line = '^    <td><a href="11030sd2.html">106 residues</a></td>$'
+set line = '<option value="11030/11030sd2.html">(106 residues) (EA 1)</option>$'
 source tests/check4line
 
 set file = "html_dir/11030/11030sd1.html"
-set line = '^    SPARTA-calculated Chemical Shift Delta (entity assembly 1)$'
+set line = '^    SPARTA back calculated Chemical Shift Delta (entity assembly 1)$'
 source tests/check4line
 
 set file = "data_dir/11030sd1_models.dat"

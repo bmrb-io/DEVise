@@ -81,6 +81,7 @@ testsetup:
 	cd cgi-bin; ln -s ../session_templates .
 	cd cgi-bin; ln -s ../html_templates .
 	cd cgi-bin; ln -s ../src/s2d.jar .
+	cd cgi-bin; ln -s ../figures .
 	mkdir test_data/vis_server
 	mkdir test_session/vis_server
 	mkdir test_session/.unreleased
