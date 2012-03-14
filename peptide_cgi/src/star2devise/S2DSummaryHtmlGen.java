@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.44  2012/03/12 01:08:48  wenger
+// Merged vis_page_fix_base thru vis_page_fix_br_1 to trunk (includes
+// fixing of some tests to be more general).
+//
 // Revision 1.43  2012/01/30 19:39:07  wenger
 // Minor fixes to the visualization summary pages.
 //
@@ -978,7 +982,8 @@ TEMP?*/
       int entityAssemblyID, int valueCount) throws IOException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DSummaryHtmlGen.writeHetNOE()");
+	    System.out.println("S2DSummaryHtmlGen.writeHetNOE(" +
+	      name + ", " + frameIndex + ", " + entityAssemblyID + ")");
 	}
 
 	_maxHetNOEFrame = Math.max(_maxHetNOEFrame, frameIndex);
