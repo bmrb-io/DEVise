@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.45  2012/03/14 21:07:14  wenger
+// Added a little debug code as the result of Het NOE problems with 3.1
+// files.
+//
 // Revision 1.44  2012/03/12 01:08:48  wenger
 // Merged vis_page_fix_base thru vis_page_fix_br_1 to trunk (includes
 // fixing of some tests to be more general).
@@ -1213,9 +1217,9 @@ TEMP?*/
 	      frameIndex + ")");
 	}
 
-        String value = "<a href=\"" + _name + S2DNames.PISTACHIO_SUFFIX +
-	  frameIndex + S2DNames.HTML_SUFFIX +
-	  "\">Go</a>";
+	String value = "<option value=\"" + _name + "/" + _name +
+	  S2DNames.PISTACHIO_SUFFIX + frameIndex + S2DNames.HTML_SUFFIX +
+	  "\">Assignment figure of merit data</option>";
 	_pistachioInfo.put(frameIndex, value);
 
         //TEMP? _wroteLink = true;
