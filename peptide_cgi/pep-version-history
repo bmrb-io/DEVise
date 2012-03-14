@@ -4,6 +4,9 @@ Peptide-CGI 12.2.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
+* Converted visualization summary pages from tables to menus so the
+page layout is more compact.
+
 * Fixed a problem with getting the system name in NMR-STAR 3.1 files
 (see bug 133).
 
