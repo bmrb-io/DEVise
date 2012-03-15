@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.295  2012/03/14 22:33:28  wenger
+// Fixed assignment figure of merit menu.
+//
 // Revision 1.294  2012/03/12 01:08:48  wenger
 // Merged vis_page_fix_base thru vis_page_fix_br_1 to trunk (includes
 // fixing of some tests to be more general).
@@ -695,7 +698,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.1x4"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.2.1x5"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 

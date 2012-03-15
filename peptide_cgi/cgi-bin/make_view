@@ -80,7 +80,6 @@ my $tar_url = $query->param('tar_url');
 my $xbmrbid = $query->param('xbmrbid');
 my $do_s2p = $query->param('do_s2p');
 my $frame_index = $query->param('frame_index');
-#TEMPTEMP -- maybe change "url" to something less generic?
 my $url = $query->param('url');
 
 print "  acc_num = $acc_num\n" if ($debug);
@@ -94,13 +93,13 @@ print "  url = $url\n" if ($debug);
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
 
 if (defined($url)) {
-  my $foourl;
+  my $fullurl;
   if ($url =~/^http/) {
-    $foourl = $url;
+    $fullurl = $url;
   } else {
-    $foourl = $summary_page_dir . "/" . $url;#TEMPTEMP -- better name
+    $fullurl = $summary_page_dir . "/" . $url;
   }
-  print $query->redirect($foourl);
+  print $query->redirect($fullurl);
   exit;
 }
 

@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.46  2012/03/14 22:33:28  wenger
+// Fixed assignment figure of merit menu.
+//
 // Revision 1.45  2012/03/14 21:07:14  wenger
 // Added a little debug code as the result of Het NOE problems with 3.1
 // files.
@@ -675,6 +678,8 @@ TEMP?*/
 		    _writer.write("<table id=\"vis\">\n");
 		    _writer.write("<tr>\n");
 		    _writer.write("<td align=\"left\" rowspan=\"2\" width=\"120\">\n");
+		    //TEMP -- we should get images here from the figures
+		    // directory...
 	            String imageDir = _isUvd ? "../.." : "..";
 		    _writer.write("<a class=\"thumbnail\" href=\"#thumb\"><img src=\"" + imageDir + "/two_entry_thumb.png\"><span><img src=\"" + imageDir + "/two_entry.png\"></span></a>\n");
 		    _writer.write("</td>\n");
@@ -2066,13 +2071,14 @@ TEMP?*/
 	}
 	_sectionCount++;
 
+	String figuresDir = (_isUvd ? "../" : "") + "../../figures/";
         _writer.write("\n<td width = \"50%\">\n");
         _writer.write("<table id=\"vis\">\n");
         _writer.write("  <tr>\n");
         _writer.write("    <td align=\"left\" rowspan=\"2\" width=\"120\">\n");
         _writer.write("      <a class=\"thumbnail\" href=\"#thumb\">" +
-	  "<img src=\"../../figures/" + thumbnail +
-	  "\"><span><img src=\"../../figures/" + image + "\"></span></a>\n");
+	  "<img src=\"" + figuresDir + thumbnail +
+	  "\"><span><img src=\"" + figuresDir + image + "\"></span></a>\n");
         _writer.write("    </td>\n");
         _writer.write("    <th align=\"left\">\n");
 

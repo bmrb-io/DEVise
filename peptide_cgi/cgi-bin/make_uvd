@@ -71,7 +71,6 @@ my $sparta_file = $query->param('sparta_file');
 my $xbmrbid = $query->param('xbmrbid');
 my $do_s2p = $query->param('do_s2p');
 my $frame_index = $query->param('frame_index');
-#TEMPTEMP -- maybe change "url" to something less generic?
 my $url = $query->param('url');
 
 print "  file = $file\n" if ($debug);
@@ -82,17 +81,19 @@ print "  frame_index = $frame_index\n" if ($debug);
 
 # File name of the html page returned.
 my $summary_page_dir = getProperty("bmrb_mirror.summary_page_dir");
-$summary_page_dir = $summary_page_dir . "/uvd/" . $name;
+$summary_page_dir = $summary_page_dir . "/uvd";
 if (defined($url)) {
-  my $foourl;
+  my $fullurl;
   if ($url =~/^http/) {
-    $foourl = $url;
+    $fullurl = $url;
   } else {
-    $foourl = $summary_page_dir . "/" . $url;#TEMPTEMP -- better name
+    $fullurl = $summary_page_dir . "/" . $url;
   }
-  print $query->redirect($foourl);
+  print $query->redirect($fullurl);
   exit;
 }
+
+$summary_page_dir = $summary_page_dir . "/" . $name;
 
 if ($do_pdb) {
   print "  has PDB\n" if ($debug);
