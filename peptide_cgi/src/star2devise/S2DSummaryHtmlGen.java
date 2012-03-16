@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.47  2012/03/15 19:58:30  wenger
+// Fixed path problems for the visualization server.
+//
 // Revision 1.46  2012/03/14 22:33:28  wenger
 // Fixed assignment figure of merit menu.
 //
@@ -1452,7 +1455,7 @@ TEMP?*/
 		info = _torsionAngleInfo;
 	    }
 
-            String value = "<option value=\"" + _name +
+            String value = "<option value=\"" + _name + "/" + _name +
 	      suffix + frameIndex +
 	      S2DNames.HTML_SUFFIX + "\">" + linkStr + "</option>";
 	    info.put(frameIndex, value);
