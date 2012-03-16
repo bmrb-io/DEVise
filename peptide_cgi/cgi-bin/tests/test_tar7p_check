@@ -24,5 +24,5 @@ set line = '^1 30 HIS -140.0 -100.0 1_29_C C 1_30_N N 1_30_CA CA 1_30_C C phi 0.
 source tests/check4line
 
 set file = "html_dir/tar_1brv/tar_1brvy.html"
-set line = '<option value="tar_1brvrrtar1.html">1BRV (from remediated restraints)</option>'
+set line = '<option value="tar_1brv/tar_1brvrrtar1.html">1BRV (from remediated restraints)</option>'
 source tests/check4line
