@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.297  2012/03/16 16:39:04  wenger
+// Fixed path problems for pre-processed torsion angle restraints.
+//
 // Revision 1.296  2012/03/15 19:58:30  wenger
 // Fixed path problems for the visualization server.
 //
@@ -701,7 +704,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.1x6"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.2.1";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
