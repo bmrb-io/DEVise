@@ -4,7 +4,12 @@ Peptide-CGI 12.2.2
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
-(Nothing yet.)
+* In the visualization summary pages, selecting a visualization in
+a menu now immediately goes to that visualization, without having to
+click a separate button.
+
+* Changed the "note: processing may take several minutes" messages to
+red to make them more visible.
 
 
 Peptide-CGI 12.2.1

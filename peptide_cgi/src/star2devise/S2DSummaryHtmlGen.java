@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.48  2012/03/16 16:39:05  wenger
+// Fixed path problems for pre-processed torsion angle restraints.
+//
 // Revision 1.47  2012/03/15 19:58:30  wenger
 // Fixed path problems for the visualization server.
 //
@@ -1772,8 +1775,8 @@ TEMP?*/
         if (_maxCoordFrame > 0 && !writeNoData) {
             writeDataTableStart("NMR experimental data plots linked to " +
 	      "Jmol 3D structure visualization\n" +
-	      "(note: processing may take several minutes)",
-	      "3d.png", "3d_thumb.png");
+	      "<font color=\"red\">(note: processing may take several " +
+	      "minutes)</font>", "3d.png", "3d_thumb.png");
             writeFormStart("select_coord_shift_visualization");
 
             for (int index = 1; index <= _maxCoordFrame; index++ ) {
@@ -1797,8 +1800,9 @@ TEMP?*/
     {
         if (_maxChemShiftRefFrame > 0 && !writeNoData) {
             writeDataTableStart("Chemical shift referencing " +
-	      "visualizations (note: processing may take several " +
-	      "minutes)", "csr3.png", "csr3_thumb.png");
+	      "visualizations " +
+	      "<font color=\"red\">(note: processing may take several " +
+	      "minutes)</font>", "csr3.png", "csr3_thumb.png");
             writeFormStart("select_chemshiftref_visualization");
 
             for (int index = 1; index <= _maxChemShiftRefFrame; index++ ) {
@@ -1899,7 +1903,8 @@ TEMP?*/
     	if ((_maxDistRestrFrame > 0 || _maxRRDistRestrFrame > 0) &&
 	  !writeNoData) {
             writeDataTableStart("Distance restraints " +
-	      "(note: processing may take several minutes)",
+	      "<font color=\"red\">(note: processing may take several " +
+	      "minutes)</font>",
 	      "distance_restraint.png", "distance_restraint_thumb.png");
             writeFormStart("select_distance_restraint_visualization");
 
@@ -1937,7 +1942,8 @@ TEMP?*/
     	if ((_maxTorsionAngleFrame > 0 || _maxRRTorsionAngleFrame > 0) &&
 	  !writeNoData) {
             writeDataTableStart("Torsion angle restraints " +
-	      "(note: processing may take several minutes)",
+	      "<font color=\"red\">(note: processing may take several " +
+	      "minutes)</font>",
 	      "torsion_angle.png", "torsion_angle_thumb.png");
             writeFormStart("select_torsion_angle_restraint_visualization");
 
@@ -2112,7 +2118,11 @@ TEMP?*/
         String action = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
 	_writer.write("\n<form name=\"" + formName + "\" action=\"" +
 	  action + "\" " + "method=\"get\">\n");
-        _writer.write("  <select name=\"url\">\n");
+        _writer.write(
+	  "  <select name=\"url\" onchange='this.form.submit()'>\n");
+        _writer.write("    <option selected=\"selected\" value=\"" +
+	  _name + "/" + _name + S2DNames.SUMMARY_HTML_SUFFIX +
+	  S2DNames.HTML_SUFFIX + "\">Select visualization</option>\n");
     }
 
     //-------------------------------------------------------------------
@@ -2120,8 +2130,8 @@ TEMP?*/
     private void writeFormEnd() throws IOException
     {
         _writer.write("  </select>\n");
-	_writer.write(
-	  "  <input type=\"submit\" value=\"Visualize in DEVise\">\n");
+	// _writer.write(
+	  // "  <input type=\"submit\" value=\"Visualize in DEVise\">\n");
 	_writer.write("</form>\n");
     }
 
