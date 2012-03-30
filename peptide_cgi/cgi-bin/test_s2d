@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2004
+#  (c) Copyright 2001-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -31,22 +31,20 @@ mkdir "data_dir/bad_data";
 mkdir "html_dir/bad_html";
 
 my($err_file);
-$err_file = "error_summary";
+$err_file = "test_s2d.error_summary";
 unlink $err_file;
 open(ERRFILE, ">$err_file") or die "Can't open error summary file: $!\n";
 
 #TEMP -- arg for file name??
 my($input_file);
-$input_file = "star_file_list.txt";
+$input_file = "entry_list";
 open(INPUT, $input_file) or die "Can't open $input_file: $!\n";
 
 my($line);
 while ($line = <INPUT>) {
-  if ($line =~ m/bmrbId=(.{1,4})>/) {
-    my($star_file);
-    $star_file = $1;
-    test_star($star_file);
-  }
+  my $accession_num = $line;
+  chomp($accession_num);
+  test_star($accession_num);
 }
 
 close(INPUT);
@@ -56,29 +54,26 @@ close(ERRFILE);
 # Test a specific star file.
 
 # Parameters:
-#   0: star file name
+#   0: accession number
 
 sub test_star {
-  my($star_name, $star_num);
-  $star_name = $_[0];
-
-  $star_num = $star_name;
-  $star_num =~ s/^bmr//;
-  $star_num =~ s/.str$//;
+  my($star_num);
+  $star_num = $_[0];
 
   my($dat_names, $html_names, $sess_names);
   $dat_names = $star_num . '*.dat';
-  $html_names = $star_num . '*.html';
-  $sess_names = $star_num . '*.ds';
+  $html_names = $star_num;
+  $sess_names = $star_num;
 
-  my $cmd = "./s2d -nomail -bmrbid $star_num -do_pdb 1";
+  #TEMP -- other args here?
+  my $cmd = "./s2d -nomail -bmrbid $star_num -force -do_pdb 1";
   my $result = `$cmd`;
   chomp $result;
 
   if ($result ne "OK") {
-    print STDERR "ERROR processing star file $star_name\n";
+    print STDERR "ERROR processing entry $star_num\n";
     print ERRFILE "-----------------\n";
-    print ERRFILE "ERROR processing star file $star_name\n\n";
+    print ERRFILE "ERROR processing entry $star_num\n\n";
     copy_resfile();
 
     system("mv tmp/s2d.out tmp/s2d.out.$star_num");
@@ -86,9 +81,9 @@ sub test_star {
     system("mv data_dir/$html_names data_dir/bad_data");
     system("mv session_dir/$sess_names session_dir/bad_sessions");
   } elsif ($show_warnings && -s "tmp/s2d.out") {
-    print STDERR "Possible error or warning processing star file $star_name\n";
+    print STDERR "Possible error or warning processing entry $star_num\n";
     print ERRFILE "-----------------\n";
-    print ERRFILE "Possible error or warning processing star file $star_name\n\n";
+    print ERRFILE "Possible error or warning processing entry $star_num\n\n";
     copy_resfile();
 
     system("mv tmp/s2d.out tmp/s2d.out.$star_num");
@@ -102,10 +97,10 @@ sub test_star {
       system("rm session_dir/$sess_names");
     }
   } else {
-    print "Successfully processed star file $star_name\n";
+    print "Successfully processed entry $star_num\n";
     system("rm data_dir/$dat_names");
-    system("rm html_dir/$html_names");
-    system("rm session_dir/$sess_names");
+    system("rm -r html_dir/$html_names");
+    system("rm -r session_dir/$sess_names");
   }
 }
 
