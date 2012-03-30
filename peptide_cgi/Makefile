@@ -137,6 +137,7 @@ testclean:
 	-rm cgi-bin/data_dir cgi-bin/session_dir cgi-bin/s2d.jar
 	-rm cgi-bin/html_dir cgi-bin/html_unreleased
 	-rm cgi-bin/session_templates cgi-bin/chem_info cgi-bin/html_templates
+	-rm cgi-bin/figures
 	-rm -rf test_data/vis_server
 
 dev_test:
