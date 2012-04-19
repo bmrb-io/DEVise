@@ -1,0 +1,11 @@
+		Routine Tasks to Maintain Visualizations
+		$Id$
+
+- Check devise email (what to look for)
+- Do tests
+- How to deal with things if stuff goes wrong
+- Where is stuff installed on different sites? (check crontabs)
+- Also, where is stuff uploaded?
+- JS not restarting automatically -- turn off cron job, remove lock files, wait, try manual restart
+- What about automatic nightly peptide-cgi tests?  Maybe run as DEVise?
+?- Other

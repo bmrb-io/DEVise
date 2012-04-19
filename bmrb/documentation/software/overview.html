@@ -174,7 +174,11 @@ developed by Gabriel Cornilescu, that calculates differences between
 actual and predicted chemical shift values.  It uses MOLMOL and
 NMRPipe to do parts of the calculation.  ChemShift is run by Peptide-CGI
 when necessary, and generates output files that can be read by
-DEVise.
+DEVise.  ChemShift now actually incorporates the Peptide-CGI jar file,
+because it uses Peptide-CGI code to do the high-level parsing of
+NMR-STAR files.  This replaced some buggy separate parsing code
+that ChemShift used to have; it also means that ChemShift automatically
+picks up all of the 2.1/3.1 code in Peptide-CGI.
 </p>
 
 
@@ -289,12 +293,13 @@ DEVise
   </tr>
   <tr>
     <td>Quality assurance installation:</td>
-    <td>/afs/cs.wisc.edu/p/devise/release/</td>
+    <td>/afs/cs.wisc.edu/p/devise/release/;
+      manatee.bmrb.wisc.edu:/website/devise</td>
   </tr>
   <tr>
     <td>Production installations:</td>
-    <td>moray.bmrb.wisc.edu:/home/web/devise/devise_install;
-      swordfish.bmrb.wisc.edu:/website/devise;
+    <td>pacu.bmrb.wisc.edu:/website/devise;
+      piranha.bmrb.wisc.edu:/website/devise;
       bmrbweb.protein.osaka-u.ac.jp:/bmrb/devise;
       bmrb.postgenomicnmr.net:/bmrb/devise</td>
   </tr>
@@ -320,15 +325,17 @@ JavaScreen
   <tr>
     <td>Quality assurance installation:</td>
     <td>teal.cs.wisc.edu:/scratch/devise/js.regular (see
-      Makefile.config.uw_cs</td>
+      Makefile.config.uw_cs);
+      manatee.bmrb.wisc.edu:/website/devise/js.installed (see
+      Makefile.config.bmrb_manatee)</td>
   </tr>
   <tr>
     <td>Production installations:</td>
-    <td>moray.bmrb.wisc.edu:/website/devise/js.installed,
-      swordfish.bmrb.wisc.edu:/website/devise/js.installed (see
-      moray.bmrb.wisc.edu:/home/web/devise/devise_install/JavaScreen-*,
-      swordfish.bmrb.wisc.edu:/website/devise/JavaScreen,
-      Makefile.config.bmrb_moray);
+    <td>pacu.bmrb.wisc.edu:/website/devise/js.installed,
+      piranha.bmrb.wisc.edu:/website/devise/js.installed (see
+      pacu.bmrb.wisc.edu:/website/devise/JavaScreen-*,
+      piranha.bmrb.wisc.edu:/website/devise/JavaScreen-*,
+      Makefile.config.bmrb_pacu, Makefile.config.bmrb_piranha);
       bmrbweb.protein.osaka-u.ac.jp:/bmrb/devise_installed/js.installed
       (see bmrbweb.protein.osaka-u.ac.jp:/bmrb/devise/JavaScreen-*,
       Makefile.config.osaka2);
@@ -359,15 +366,17 @@ Peptide-CGI
   <tr>
     <td>Quality assurance installation:</td>
     <td>http://devise.cs.wisc.edu/devise/bmrb/bmrb_select.html (see
-      Makefile.config.uw_cs_teal)</td>
+      Makefile.config.uw_cs_teal);
+      http://manatee.bmrb.wisc.edu/devise/peptide-cgi/bmrb_select.html
+      (see Makefile.config.bmrb_manatee)</td>
   </tr>
   <tr>
     <td>Production installations:</td>
     <td>http://www.bmrb.wisc.edu/devise/peptide-cgi/bmrb_select.html
-      (see moray.bmrb.wisc.edu:/home/web/devise/devise_install/peptide-cgi_*,
-      Makefile.config.bmrb_moray,
-      swordfish.bmrb.wisc.edu:/website/devise/peptide-cgi_*,
-      Makefile.config.bmrb_swordfish);
+      (see pacu.bmrb.wisc.edu:/website/devise/peptide-cgi/peptide-cgi_*,
+      Makefile.config.bmrb_pacu,
+      piranha.bmrb.wisc.edu:/website/devise/peptide-cgi/peptide-cgi_*,
+      Makefile.config.bmrb_piranha);
       http://bmrb.protein.osaka-u.ac.jp/devise/peptide-cgi/bmrb_select.html
       (see bmrbweb.protein.osaka-u.ac.jp:/bmrb/devise/peptide-cgi_*,
       Makefile.config.osaka2);
@@ -397,12 +406,12 @@ ChemShift
   </tr>
   <tr>
     <td>Quality assurance installation:</td>
-    <td></td>
+    <td>manate.bmrb.wisc.edu:/website/devise/ChemShift/ChemShift_current</td>
   </tr>
   <tr>
     <td>Production installations:</td>
-    <td>moray.bmrb.wisc.edu:/website/devise/ChemShift;
-      swordfish.bmrb.wisc.edu:/website/devise/ChemShift;
+    <td>pacu.bmrb.wisc.edu:/website/devise/ChemShift;
+      piranha.bmrb.wisc.edu:/website/devise/ChemShift;
       bmrbweb.protein.osaka-u.ac.jp:/bmrb/devise_installed/ChemShift</td>
   </tr>
 </table>
