@@ -53,11 +53,15 @@ KEY ACTIONS, SYMBOL DISPLAY
 
 
 KEY ACTIONS, MISCELLANEOUS
-<c> or <C>: expand or contract cursor(s) to exactly fill view.
+<c> or <C>: expand or contract cursor(s) to exactly
+fill view.
 
 <f> or <F>: flip pile or stack.
 
 <h> or <H>: set histogram width to filter.
+
+<t> or <T>: download TData of current view (or views,
+if piled) to the file data_download.csv.
 
 <Escape> or <menu>: raise control panel.
 

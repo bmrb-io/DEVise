@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.95  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.94.4.2  2012/04/27 21:55:29  wenger
   Added dialog with the URL that's shown when we try to get the browser
   to show a document.
@@ -581,7 +584,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.2x3"/*TEMP*/;
+static const char *	version = "1.11.2";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2012";
