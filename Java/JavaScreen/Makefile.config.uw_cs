@@ -44,6 +44,10 @@ IDSTR = regular
 # Where the DEVise sessions, schemas, etc., are installed.
 DEVISE_VIS = /p/devise/demo
 
+# Data download setup.
+DEVISE_JS_DATA_DOWNLOAD_DIR = /var/home/www/public/html/devise/test/data_download
+DEVISE_JS_DATA_DOWNLOAD_URL = http://devise.cs.wisc.edu/devise/test/data_download/
+
 # This is who gets email about any errors.
 ERROR_EMAIL = devise@cs.wisc.edu
 

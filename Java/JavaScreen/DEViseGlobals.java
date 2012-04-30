@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.155  2012/04/30 22:20:17  wenger
+// Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+//
 // Revision 1.154.4.4  2012/04/27 21:55:21  wenger
 // Added dialog with the URL that's shown when we try to get the browser
 // to show a document.
@@ -981,7 +984,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.2x2"/*TEMP*/);
+    public static final String VERSION = new String("5.14.2");
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 
