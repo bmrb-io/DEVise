@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2010
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,16 @@
   $Id$
 
   $Log$
+  Revision 1.94.4.2  2012/04/27 21:55:29  wenger
+  Added dialog with the URL that's shown when we try to get the browser
+  to show a document.
+
+  Revision 1.94.4.1  2012/04/11 21:42:50  wenger
+  Initial setup for js_data_save_br branch.
+
+  Revision 1.94  2010/12/10 21:46:26  wenger
+  Merged devise_1_10_br_4 thru devise_1_10_br_5 to trunk.
+
   Revision 1.93  2010/09/27 16:45:53  wenger
   Changed DEVise version to 1.11.2x1, added 1.11.2 version history section.
 
@@ -571,13 +581,13 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.2x2"/*TEMP*/;
+static const char *	version = "1.11.2x3"/*TEMP*/;
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-2010";
+static const char *	copyright = "Copyright (c) 1992-2012";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 2010";
+static const char *	winLogo = "Visualization by DEVise (tm) 2012";
 
 
 #if !defined(lint) && defined(RCSID)

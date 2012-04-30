@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,19 @@
   $Id$
 
   $Log$
+  Revision 1.150.12.3  2012/04/30 20:39:58  wenger
+  (Hopefully final) cleanup.
+
+  Revision 1.150.12.2  2012/04/27 16:46:16  wenger
+  Cleaned up a bunch of temporary/debug code.
+
+  Revision 1.150.12.1  2012/04/13 21:16:06  wenger
+  More work on JavaScreen data saving -- some "real" code, a lot of
+  debug code to re-figure out how drill down works, etc.
+
+  Revision 1.150  2008/09/23 22:55:34  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.149  2005/12/06 20:03:15  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)

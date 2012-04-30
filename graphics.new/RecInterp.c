@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.8.12.1  2012/04/24 20:46:53  wenger
+  Actual data saving now working except for some things like escaping
+  commas; the code still needs some cleanup; JS GUI and help still need work.
+
+  Revision 1.8  2008/09/23 17:56:53  wenger
+  Fixed string const problems in generic and some related modules.
+
   Revision 1.7  2005/12/06 20:04:12  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -147,7 +154,7 @@ void RecInterp::PrintAttr(char *buf, int bufLen, int attrNum,
       if (printAttrName) {
         formatted = snprintf(buf, bufLen, "%s: %d", info->name, *intVal);
       } else {
-        formatted = snprintf(buf, bufLen, "%d ", *intVal);
+        formatted = snprintf(buf, bufLen, "%d", *intVal);
       }
     }
     break;

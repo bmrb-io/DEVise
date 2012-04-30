@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2003-2006
+  (c) Copyright 2003-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,17 @@
   $Id$
 
   $Log$
+  Revision 1.5.12.2  2012/04/27 16:46:25  wenger
+  Cleaned up a bunch of temporary/debug code.
+
+  Revision 1.5.12.1  2012/04/26 22:57:39  wenger
+  Created the DrillDown::AdjustFilterForCountMapping() method, and
+  DataDownload uses DrillDown::GAttrLinkFollower() to remove
+  duplicate code; removed some debug/test code.
+
+  Revision 1.5  2008/09/23 22:55:41  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.4  2006/12/08 16:24:49  wenger
   Merged V1_8b0_br_1 thru V1_8b0_br_2 to the trunk (took some manual
   changes to merge the DEViseCanvas.java stuff correctly).
@@ -98,6 +109,33 @@ public:
      */
     static Boolean EmptyTData(ViewGraph *view);
 
+protected:
+    friend class DataDownload;
+
+    /**
+     * If the specified view has a count mapping, adjust the visual filter
+     * for drill-down to accomodate that.
+     * @param The view
+     * @param The visual filter
+     */
+    static void AdjustFilterForCountMapping(ViewData *view,
+      VisualFilter &filter);
+
+    /**
+     * Test all records against any GAttr links of which the drill-down
+     * view is a follower.
+     * @param The view in which the drill-down is occurring.
+     * @param The TDataMap (mapping).
+     * @param The first record ID of this batch of TData.
+     * @param The buffer containing the TData records.
+     * @param The number of TData records.
+     * @param The symbol info array (holds a flag for whether a given
+     *        record passes the GAttr links).
+     */
+    static void GAttrLinkFollower(ViewData *view, TDataMap *map,
+      RecId startRid, char *tdBuf, int numRecs,
+      ViewData::SymbolInfo symInfo[]);
+
 private:
     /**
      * Constructor.
@@ -152,21 +190,6 @@ private:
      */
     DevStatus ProcessData(ViewData *view, QueryProc *qp, TData *tdata,
       TDataMap *map, Boolean &gotData);
-
-    /**
-     * Test all records against any GAttr links of which the drill-down
-     * view is a follower.
-     * @param The view in which the drill-down is occurring.
-     * @param The TDataMap (mapping).
-     * @param The first record ID of this batch of TData.
-     * @param The buffer containing the TData records.
-     * @param The number of TData records.
-     * @param The symbol info array (holds a flag for whether a given
-     *        record passes the GAttr links).
-     */
-    static void GAttrLinkFollower(ViewData *view, TDataMap *map,
-      RecId startRid, char *tdBuf, int numRecs,
-      ViewData::SymbolInfo symInfo[]);
 
     /**
      * Show the data of the record currently being processed.

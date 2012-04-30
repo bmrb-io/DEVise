@@ -20,6 +20,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.154.4.4  2012/04/27 21:55:21  wenger
+// Added dialog with the URL that's shown when we try to get the browser
+// to show a document.
+//
+// Revision 1.154.4.3  2012/04/27 16:46:01  wenger
+// Cleaned up a bunch of temporary/debug code.
+//
+// Revision 1.154.4.2  2012/04/12 23:27:22  wenger
+// Initial implementation of command framework for JavaScreen data saving
+// (the command doesn't really do anything on the devised end yet).  Note
+// that the toolbar icons for data saving are just a copy of the icons
+// for drill down right now -- I want to get things implemented on the
+// devised end before I put time into farting around making new icons.
+//
+// Revision 1.154.4.1  2012/04/11 21:42:29  wenger
+// Initial setup for js_data_save_br branch.
+//
+// Revision 1.154  2012/02/09 21:29:38  wenger
+// Changed version to 5.14.2x1; added 5.14.2 version history section.
+//
 // Revision 1.153  2012/02/08 18:17:56  wenger
 // Changed version to 5.14.1; added version history item about adding extra
 // debug output for BMRB histogram drill-down.
@@ -961,9 +981,9 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.2x1"/*TEMP*/);
+    public static final String VERSION = new String("5.14.2x2"/*TEMP*/);
 
-    public static final String PROTOCOL_VERSION = new String("16.0");
+    public static final String PROTOCOL_VERSION = new String("17.0");
 
     public static final int DEFAULTID = 0;
     public static final String DEFAULTUSER = new String("guest");

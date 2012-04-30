@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 1992-2003
+#  (c) Copyright 1992-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -17,6 +17,14 @@
 #  $Id$
 
 #  $Log$
+#  Revision 1.105.20.1  2012/04/24 20:09:59  wenger
+#  Saving of actual data values now mostly working (print format
+#  needs some fixes).
+#
+#  Revision 1.105  2005/12/06 20:04:06  wenger
+#  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+#  be the end of the V1_7b0_br branch.)
+#
 #  Revision 1.104  2003/01/13 19:25:23  wenger
 #  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 #
@@ -380,7 +388,7 @@ QPSrc = CompositeParser.c MappingInterp.c MapInterpClassInfo.c \
 	ETkWindowShape.C DrawTimer.c ViewShape.C NativeExpr.c CountMapping.c \
 	CmdContainer.C DeviseCommand.C ExtStack.C DeviseLink.c DebugLog.c \
 	JavaScreenCmd.C JavaScreenCache.c DRUtils.c DupElim.c DrillDown3D.c \
-	DrillDown.c
+	DrillDown.c DataDownload.c
 
 QPSrcc = $(filter %.c,$(QPSrc))
 QPSrcC = $(filter %.C,$(QPSrc))

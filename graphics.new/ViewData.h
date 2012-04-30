@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.11.20.1  2012/04/24 20:09:59  wenger
+  Saving of actual data values now mostly working (print format
+  needs some fixes).
+
+  Revision 1.11  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.10  2003/01/13 19:25:28  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -188,6 +196,7 @@ class ViewData : public ViewGraph
 	protected:
 		friend class DrillDown;
 		friend class DrillDown3D;
+		friend class DataDownload;
 
         class SymbolInfo {
         public:

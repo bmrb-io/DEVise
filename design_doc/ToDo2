@@ -148,9 +148,18 @@ Add a link to email to devise-support to all JS pages and, especially,
 help pages. (wenger)
 (Done by wenger, 5/29/03.)
 
-09.010 5/4/02	OPEN	3
+09.010 5/4/02	ACTIVE	3
 Be able to save data from the drill-down dialog. (BMRB advisory board)
 Maybe generate a saveable html page. (miron)
+Note: this has changed into saving all data for the view, not just
+what's in the drill-down dialog.
+Phase 1: save records in visual filter, all columns.  Create a temporary
+file, redirect the user's browser to that file (in a new tab).
+Phase 2: select whether you want all records or just those in the
+visual filter; add stuff to mappings to specify which columns to save.
+Maybe also allow the user to input their email address and have the
+data mailed to them.  Also add a description to each view that's printed
+as a comment in the download file.
 
 09.011 5/4/02	ACTIVE	3
 Be able to print from the JavaScreen.  We probably need to generate

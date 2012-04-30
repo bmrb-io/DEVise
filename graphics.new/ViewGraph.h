@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2010
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,29 @@
   $Id$
 
   $Log$
+  Revision 1.95.4.4  2012/04/24 16:38:46  wenger
+  Improved how data download code handles opening the data file; we
+  now exclude views from the data download that are excluded from
+  drill down.
+
+  Revision 1.95.4.3  2012/04/23 18:48:49  wenger
+  Data download now handles piles (still with dummy data); partway to
+  correctly doing Miron's requested change of creating a file that we
+  redirect the user's browser to.
+
+  Revision 1.95.4.2  2012/04/20 20:52:03  wenger
+  I'm committing what I have in the "show data in a dialog" path before
+  switching over to Miron's preferred "create a file to redirect the
+  user's browser to" implementation.
+
+  Revision 1.95.4.1  2012/04/16 23:27:08  wenger
+  The JavaScreen data saving code now sends dummy data from the DEVised
+  to the JS client -- needs lots of cleanup, and we don't actually show
+  the data in a dialog yet.
+
+  Revision 1.95  2010/09/01 18:44:17  wenger
+  Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+
   Revision 1.94  2010/08/10 21:36:10  wenger
   Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
   correctly on JavaScreen resize).
@@ -489,6 +512,7 @@
 //******************************************************************************
 
 #include <sys/time.h>
+#include <string>
 
 #include "View.h"
 #include "DList.h"
@@ -628,6 +652,7 @@ class ViewGraph : public View
 		friend class JavaScreenCmd; // for HandlePopUp
 		friend class PileStack;
 		friend class DeviseCommand_keyToView; // for HandlePopUp
+		friend class Action; // for HandleDataDownload
 
 	private:
 
@@ -1044,6 +1069,11 @@ public:
 		virtual Boolean HandlePopUp(WindowRep*, int x, int y, int button,
 									const char**& msgs, int& numMsgs);
         static void NiceAxisRange(Coord &low, Coord &high);
+
+		// Returns true on success.
+		Boolean HandleDataDownload(const char *file, 
+		  Boolean useVisualFilter = true, Boolean topLevel = true,
+		  FILE *fp = NULL);
 
     private:
 	    ObjectValid _objectValid;

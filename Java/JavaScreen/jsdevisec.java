@@ -22,6 +22,27 @@
 // $Id$
 
 // $Log$
+// Revision 1.190.4.4  2012/04/30 20:39:38  wenger
+// (Hopefully final) cleanup.
+//
+// Revision 1.190.4.3  2012/04/30 19:07:47  wenger
+// Fixed toolbar icons for data download; added mouse cursor icon for
+// data download, and set the mouse cursor when we go into data download
+// mode; added data download info to the JavaScreen help page; updated
+// JS & DEVise version histories; put view names back into the download
+// files because I think piles are too confusing otherwise.
+//
+// Revision 1.190.4.2  2012/04/27 21:55:22  wenger
+// Added dialog with the URL that's shown when we try to get the browser
+// to show a document.
+//
+// Revision 1.190.4.1  2012/04/27 16:46:01  wenger
+// Cleaned up a bunch of temporary/debug code.
+//
+// Revision 1.190  2012/02/03 16:42:56  wenger
+// Found JS bug 1023, added extra debug code to try to diagnose it when
+// it recurs.
+//
 // Revision 1.189  2011/10/10 20:44:06  wenger
 // Merged js_button_fix_br_1 thru js_button_fix_br_2 to trunk.
 //
@@ -999,6 +1020,7 @@ public class jsdevisec extends JPanel
     public CollabPassDlg collabpassdlg = null;
     public EnterCollabPassDlg entercollabpassdlg = null;
     public CollabStateDlg collabstatedlg = null;
+    public ShowUrlDlg showUrlDlg = null;
 
     private DEViseJmolMenuButton jmolButton;
     private DEViseSessionMenuButton sessionMenuButton;
@@ -1582,7 +1604,7 @@ public class jsdevisec extends JPanel
 	SwingUtilities.invokeLater(doHideSessionMenu);
     }
 
-    public void showDocument(String url)
+    public void showDocument(String url, boolean showDialog)
     {
 	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
 	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
@@ -1592,7 +1614,8 @@ public class jsdevisec extends JPanel
 	}
 	pn("Showing URL: <" + url + ">");
     	if (_parentApplet != null) {
-	     _parentApplet.showDocument(url, "_blank");
+	     _parentApplet.showDocument(url, "_blank",
+	       showDialog ? this : null);
 	} else {
 	     System.out.println("Can't show document " + url +
 	       " because not an applet");
@@ -1958,7 +1981,7 @@ public class jsdevisec extends JPanel
 	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
 	  !SwingUtilities.isEventDispatchThread())) {
 	    System.out.println(Thread.currentThread() +
-	      " calls jsdevisec.showDynamicsMovieDialog()");
+	      " calls jsdevisec.showDynamicsMovieDlg()");
 	}
         dynMovieDlg = new DynMovieDlg(this, parentFrame,
 	  isCenterScreen);
@@ -2256,6 +2279,19 @@ public class jsdevisec extends JPanel
 	jsValues.uiglobals.screenRes = oldScreenRes;
     }
 
+    public void showUrlMsg(String url)
+    {
+	if (DEViseGlobals.DEBUG_GUI_THREADS >= 2 ||
+	  (DEViseGlobals.DEBUG_GUI_THREADS >= 1 &&
+	  !SwingUtilities.isEventDispatchThread())) {
+	    System.out.println(Thread.currentThread() +
+	      " calls jsdevisec.showUrlMsg()");
+	}
+        showUrlDlg = new ShowUrlDlg(url, this, parentFrame, isCenterScreen);
+        showUrlDlg.open();
+        showUrlDlg = null;
+    }
+
     public static Image loadImage(String imagePath, DEViseJSValues jsValues)
       throws YException, IOException
     {
@@ -2431,7 +2467,7 @@ class RecordDlg extends Dialog
 	    public void mouseClicked(MouseEvent me) {
 		if (table.getSelectedColumn() == 1 &&
 		  urls[table.getSelectedRow()] != null) {
-		    jsc.showDocument(urls[table.getSelectedRow()]);
+		    jsc.showDocument(urls[table.getSelectedRow()], true);
 		}
 	    }
 	});
@@ -4783,6 +4819,162 @@ class DynMovieDlg extends Dialog
             status = false;
         }
 	jsc.jsValues.debug.log("Closed DynMovieDlg");
+    }
+
+    // true means this dialog is showing
+    public synchronized boolean getStatus()
+    {
+        return status;
+    }
+}
+
+// ------------------------------------------------------------------------
+// Dialog for showing URL that browser should display
+class ShowUrlDlg extends Dialog
+{
+    private jsdevisec jsc = null;
+    private Label msg1 = new Label("Your browser should show the document " +
+      "listed below in a");
+    private Label msg2 = new Label("new window or tab; if not, please " +
+      "paste the URL into your browser.");
+    private TextField urlText = new TextField(50);
+    private DEViseButton okButton;
+    private boolean status = false; // true means this dialog is showing
+
+    public ShowUrlDlg(String url, jsdevisec what, Frame owner,
+      boolean isCenterScreen)
+    {
+        super(owner, true);
+
+	what.jsValues.debug.log("Creating ShowUrlDlg");
+
+        jsc = what;
+
+        okButton = new DEViseButton("   OK   ", jsc.jsValues);
+
+        setBackground(jsc.jsValues.uiglobals.bg);
+        setForeground(jsc.jsValues.uiglobals.fg);
+        setFont(jsc.jsValues.uiglobals.font);
+
+        setTitle("Showing Web Document");
+
+        urlText.setBackground(jsc.jsValues.uiglobals.textBg);
+	urlText.setForeground(jsc.jsValues.uiglobals.textFg);
+        urlText.setFont(jsc.jsValues.uiglobals.textFont);
+	urlText.setText(url);
+	urlText.setEditable(false);
+
+        // set layout manager
+        GridBagLayout  gridbag = new GridBagLayout();
+        GridBagConstraints  c = new GridBagConstraints();
+        setLayout(gridbag);
+
+        c.fill = GridBagConstraints.HORIZONTAL;
+        c.anchor = GridBagConstraints.CENTER;
+        c.weightx = 1.0;
+        c.weighty = 1.0;
+        c.insets = new Insets(5, 5, 0, 5);
+	c.ipadx = 0;
+	c.ipady = 0;
+        c.gridwidth = 1;
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+	c.gridx = 0;
+	c.gridy = 0;
+	msg1.setAlignment(Label.CENTER);
+        gridbag.setConstraints(msg1, c);
+        add(msg1);
+
+        c.insets = new Insets(0, 5, 5, 5);
+	c.gridy = 1;
+	msg2.setAlignment(Label.CENTER);
+        gridbag.setConstraints(msg2, c);
+        add(msg2);
+
+        Label label = new Label("URL:");
+        c.insets = new Insets(10, 5, 5, 5);
+        c.gridwidth = 1;
+	c.gridx = 0;
+	c.gridy = 2;
+        gridbag.setConstraints(label, c);
+        add(label);
+
+        c.gridwidth = GridBagConstraints.REMAINDER;
+	c.gridx = 1;
+	c.gridy = 2;
+        gridbag.setConstraints(urlText, c);
+        add(urlText);
+
+        DEViseButton [] button = new DEViseButton[1];
+        button[0] = okButton;
+        DEViseComponentPanel panel2 = new DEViseComponentPanel(button,
+	  DEViseComponentPanel.LAYOUT_HORIZONTAL, 20, jsc);
+        panel2.setBackground(jsc.jsValues.uiglobals.bg);
+
+	c.gridx = 0;
+	c.gridy = 3;
+        gridbag.setConstraints(panel2, c);
+        add(panel2);
+
+        pack();
+
+        // reposition the window
+        Point parentLoc = null;
+        Dimension parentSize = null;
+
+        if (isCenterScreen) {
+            Toolkit kit = Toolkit.getDefaultToolkit();
+            parentSize = kit.getScreenSize();
+            parentLoc = new Point(0, 0);
+        } else {
+            parentLoc = owner.getLocation();
+            parentSize = owner.getSize();
+        }
+
+        Dimension mysize = getSize();
+        parentLoc.y += parentSize.height / 2;
+        parentLoc.x += parentSize.width / 2;
+        parentLoc.y -= mysize.height / 2;
+        parentLoc.x -= mysize.width / 2;
+        setLocation(parentLoc);
+
+        this.enableEvents(AWTEvent.WINDOW_EVENT_MASK);
+
+        okButton.addActionListener(new ActionListener()
+                {
+                    public void actionPerformed(ActionEvent event)
+                    {
+			close();
+                    }
+                });
+    }
+
+    protected void processEvent(AWTEvent event)
+    {
+        if (event.getID() == WindowEvent.WINDOW_CLOSING) {
+            close();
+            return;
+        }
+
+        super.processEvent(event);
+    }
+
+    public void open()
+    {
+	jsc.jsValues.debug.log("Opening ShowUrlDlg");
+        status = true;
+        setVisible(true);
+	toFront();
+    }
+
+    public synchronized void close()
+    {
+        if (status) {
+            dispose();
+
+            status = false;
+        }
+	jsc.jsValues.debug.log("Closed ShowUrlDlg");
     }
 
     // true means this dialog is showing

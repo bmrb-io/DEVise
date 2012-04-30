@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2010
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,21 @@
   $Id$
 
   $Log$
+  Revision 1.83.4.2  2012/04/23 18:48:49  wenger
+  Data download now handles piles (still with dummy data); partway to
+  correctly doing Miron's requested change of creating a file that we
+  redirect the user's browser to.
+
+  Revision 1.83.4.1  2012/04/12 23:27:51  wenger
+  Initial implementation of command framework for JavaScreen data saving
+  (the command doesn't really do anything on the devised end yet).  Note
+  that the toolbar icons for data saving are just a copy of the icons
+  for drill down right now -- I want to get things implemented on the
+  devised end before I put time into farting around making new icons.
+
+  Revision 1.83  2010/09/01 18:44:17  wenger
+  Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+
   Revision 1.82.6.3  2010/08/31 17:28:29  wenger
   Changed the names of some of the new commands and methods to better
   reflect their functions; documented the new methods.  (Note: cursor
@@ -722,6 +737,12 @@ DECLARE_CLASS_END
 //Class definition
 //
 DECLARE_CLASS_DeviseCommand_(JAVAC_SetDisplayMode)
+DECLARE_CLASS_END
+
+//
+//Class definition
+//
+DECLARE_CLASS_DeviseCommand_(JAVAC_GetViewData)
 DECLARE_CLASS_END
 
 //-------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.46.10.1  2012/04/27 15:36:15  wenger
+  We now escape any commas in the actual data strings for data download.
+
+  Revision 1.46  2009/05/13 22:41:23  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.45.2.2  2009/05/06 20:19:13  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -245,6 +252,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <string>
 
 #if defined (SGI)
   #define STAT_BAVAIL f_bfree
@@ -523,6 +531,24 @@ const char *DateString(time_t tm, const char *format)
   }
 
   return result;
+}
+
+DevStatus
+EscapeChars(char buf[], int bufSize, const char *toEscape)
+{
+  char *src = buf;
+  std::string tmpStr = "";
+
+  while (*src) {
+    // Escape specified characters and '\'.
+    if (*src == '\\' || strchr(toEscape, *src) != NULL) {
+      tmpStr += '\\';
+    }
+    tmpStr += *src;
+    ++src;
+  }
+
+  return nice_strncpy(buf, tmpStr.c_str(), bufSize);
 }
 
 void ClearDir(const char *dir)

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2011
+// (c) Copyright 2000-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.2.4.2  2012/04/30 20:39:37  wenger
+// (Hopefully final) cleanup.
+//
+// Revision 1.2.4.1  2012/04/27 21:55:22  wenger
+// Added dialog with the URL that's shown when we try to get the browser
+// to show a document.
+//
+// Revision 1.2  2011/10/10 20:44:06  wenger
+// Merged js_button_fix_br_1 thru js_button_fix_br_2 to trunk.
+//
 // Revision 1.1.2.3  2011/10/10 19:27:03  wenger
 // More cleanup of session-specific menus: we now properly get rid of
 // any session-specific menu items when we close a session.
@@ -142,7 +152,7 @@ public class DEViseSessionMenuButton extends DEViseButton
 	            return;
 	        }
 	    }
-	    _jsc.showDocument(event.getActionCommand());
+	    _jsc.showDocument(event.getActionCommand(), true);
 	}
 
     }

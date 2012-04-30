@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2009
+// (c) Copyright 1999-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,26 @@
 // $Id$
 
 // $Log$
+// Revision 1.9.16.3  2012/04/27 16:46:00  wenger
+// Cleaned up a bunch of temporary/debug code.
+//
+// Revision 1.9.16.2  2012/04/23 18:48:24  wenger
+// Data download now handles piles (still with dummy data); partway to
+// correctly doing Miron's requested change of creating a file that we
+// redirect the user's browser to.
+//
+// Revision 1.9.16.1  2012/04/12 23:27:21  wenger
+// Initial implementation of command framework for JavaScreen data saving
+// (the command doesn't really do anything on the devised end yet).  Note
+// that the toolbar icons for data saving are just a copy of the icons
+// for drill down right now -- I want to get things implemented on the
+// devised end before I put time into farting around making new icons.
+//
+// Revision 1.9  2009/09/09 21:50:18  wenger
+// Fixed JavaScreen bugs 960 and 983 (problems with the mouse cursor
+// not changing correctly according to the toolbar mode and the state
+// of the active view).
+//
 // Revision 1.8  2009/05/19 18:13:42  wenger
 // Implementation of JavaScreen drill-down marker is mostly done --
 // committing now with it disabled to make sure changes don't get lost.
@@ -246,6 +266,12 @@ public class DEViseCanvas2D extends DEViseCanvas
 	    } else if (jsc.toolBar.doViewHelp()) {
 		// jsc.toolBar.setNormal();
 		showHideHelp();
+
+	    } else if (jsc.toolBar.doDataDownload()) {
+                if (activeView.isDrillDown) {
+                    cmd = DEViseCommands.GET_VIEW_DATA + " " +
+                      activeView.getCurlyName() + " 1";
+	        }
 
 	    } else if (jsc.toolBar.doHome()) {
 		cmd = DEViseCommands.KEY_ACTION + " " +

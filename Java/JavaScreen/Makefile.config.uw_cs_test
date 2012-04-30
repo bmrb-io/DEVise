@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2002
+#  (c) Copyright 2001-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -44,6 +44,10 @@ IDSTR = test
 
 # Where the DEVise sessions, schemas, etc., are installed.
 DEVISE_VIS = /p/devise/demo
+
+# Data download setup.
+DEVISE_JS_DATA_DOWNLOAD_DIR = /var/home/www/public/html/devise/test/data_download
+DEVISE_JS_DATA_DOWNLOAD_URL = http://devise.cs.wisc.edu/devise/test/data_download/
 
 # This is who gets email about any errors.
 ERROR_EMAIL = devise@cs.wisc.edu

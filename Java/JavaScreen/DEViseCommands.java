@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2006
+// (c) Copyright 2000-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,21 @@
 // $Id$
 
 // $Log$
+// Revision 1.23.36.2  2012/04/23 18:48:25  wenger
+// Data download now handles piles (still with dummy data); partway to
+// correctly doing Miron's requested change of creating a file that we
+// redirect the user's browser to.
+//
+// Revision 1.23.36.1  2012/04/12 23:27:22  wenger
+// Initial implementation of command framework for JavaScreen data saving
+// (the command doesn't really do anything on the devised end yet).  Note
+// that the toolbar icons for data saving are just a copy of the icons
+// for drill down right now -- I want to get things implemented on the
+// devised end before I put time into farting around making new icons.
+//
+// Revision 1.23  2006/05/26 16:22:15  wenger
+// Merged devise_jmol_br_0 thru devise_jmol_br_1 to the trunk.
+//
 // Revision 1.22.4.1  2006/02/23 22:08:39  wenger
 // Added flag for whether or not 3D views should use Jmol.
 //
@@ -258,6 +273,8 @@ public final class DEViseCommands
 
     public static final String GET_SESSION_LIST = JS_PREFIX + "GetSessionList";
 
+    public static final String GET_VIEW_DATA = JS_PREFIX + "GetViewData";
+
     public static final String GET_VIEW_HELP = JS_PREFIX + "GetViewHelp";
 
     public static final String HEART_BEAT = JS_PREFIX + "HeartBeat";
@@ -334,6 +351,8 @@ public final class DEViseCommands
     public static final String USER = JS_PREFIX + "User";
 
     public static final String VIEW_DATA_AREA = JS_PREFIX + "ViewDataArea";
+
+    public static final String VIEW_DATA_URL = JS_PREFIX + "ViewDataUrl";
 
     public static final String UPDATEJS = JS_PREFIX + "UpdateJS";
     

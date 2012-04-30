@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2003-2009
+  (c) Copyright 2003-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,24 @@
   $Id$
 
   $Log$
+  Revision 1.6.10.3  2012/04/30 20:40:05  wenger
+  (Hopefully final) cleanup.
+
+  Revision 1.6.10.2  2012/04/26 22:57:39  wenger
+  Created the DrillDown::AdjustFilterForCountMapping() method, and
+  DataDownload uses DrillDown::GAttrLinkFollower() to remove
+  duplicate code; removed some debug/test code.
+
+  Revision 1.6.10.1  2012/04/13 21:16:14  wenger
+  More work on JavaScreen data saving -- some "real" code, a lot of
+  debug code to re-figure out how drill down works, etc.
+
+  Revision 1.6  2009/05/15 20:29:47  wenger
+  Implemented to-do 04.001 (be able to exclude views from drill-down;
+  this is needed to fix Peptide-CGI bug 071); also fixed some dangerous
+  code (strcpy, strcat) in Session.c; added GUI for setting drill-down
+  exclusion and copying it when copying a view.
+
   Revision 1.5  2008/09/23 22:55:41  wenger
   More const-ifying, especially drill-down-related stuff.
 
@@ -279,22 +297,7 @@ DrillDown::RunQuery(ViewData *view, Coord drillX, Coord drillY, Coord pixelX,
     filter.yHigh = drillY + pixelY * pixelTol;
 
     // If there's a count mapping, change the query filter accordingly.
-    Boolean enabled;
-    const char *countAttr;
-    const char *putAttr;
-    int initialValue;
-    view->GetCountMapping(enabled, countAttr, putAttr, initialValue);
-    if (enabled) {
-        if (!strcmp(putAttr, "X")) {
-	    // Don't query on X; note that we can't do a query with the
-	    // flag set to VISUAL_Y;
-	    filter.xLow = -MAXFLOAT;
-	    filter.xHigh = MAXFLOAT;
-	} else if (!strcmp(putAttr, "Y")) {
-	    // Don't query on Y.
-            filter.flag = VISUAL_X;
-	}
-    }
+    AdjustFilterForCountMapping(view, filter);
 
     if (DEBUG >= 2) {
         printf("  Filter for query: %d x:(%f,%f) y:(%f,%f)\n", filter.flag,
@@ -316,6 +319,29 @@ DrillDown::RunQuery(ViewData *view, Coord drillX, Coord drillY, Coord pixelX,
     }
 
     return result;
+}
+
+//-----------------------------------------------------------------------------
+void
+DrillDown::AdjustFilterForCountMapping(ViewData *view,
+  VisualFilter &filter)
+{
+    Boolean enabled;
+    const char *countAttr;
+    const char *putAttr;
+    int initialValue;
+    view->GetCountMapping(enabled, countAttr, putAttr, initialValue);
+    if (enabled) {
+        if (!strcmp(putAttr, "X")) {
+	    // Don't query on X; note that we can't do a query with the
+	    // flag set to VISUAL_Y;
+	    filter.xLow = -MAXFLOAT;
+	    filter.xHigh = MAXFLOAT;
+	} else if (!strcmp(putAttr, "Y")) {
+	    // Don't query on Y.
+            filter.flag = VISUAL_X;
+	}
+    }
 }
 
 //-----------------------------------------------------------------------------

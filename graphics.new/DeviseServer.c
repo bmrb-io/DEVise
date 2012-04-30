@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,20 @@
   $Id$
 
   $Log$
+  Revision 1.22.12.3  2012/04/30 20:40:05  wenger
+  (Hopefully final) cleanup.
+
+  Revision 1.22.12.2  2012/04/27 16:46:25  wenger
+  Cleaned up a bunch of temporary/debug code.
+
+  Revision 1.22.12.1  2012/04/16 23:27:08  wenger
+  The JavaScreen data saving code now sends dummy data from the DEVised
+  to the JS client -- needs lots of cleanup, and we don't actually show
+  the data in a dialog yet.
+
+  Revision 1.22  2008/09/11 20:55:37  wenger
+  A few more compile warning fixes...
+
   Revision 1.21  2008/09/10 17:49:50  wenger
   Got DEVise to compile on moray at BMRB (gcc 4.3.0) (compiling in the
   linux_amd64 directory) -- still lots of warnings, though.

@@ -3,6 +3,8 @@
 DEVise 1.11.2
 -------------
 
+* Added provision for JavaScreen data download.
+
 * Fixed a problem that sometimes prevented the "Open Session" dialog
 from being able to move up a directory (see bug 1021).
 

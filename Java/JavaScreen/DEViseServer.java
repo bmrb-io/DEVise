@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2005
+// (c) Copyright 1999-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -27,6 +27,23 @@
 // $Id$
 
 // $Log$
+// Revision 1.82.16.3  2012/04/27 16:46:01  wenger
+// Cleaned up a bunch of temporary/debug code.
+//
+// Revision 1.82.16.2  2012/04/23 18:48:25  wenger
+// Data download now handles piles (still with dummy data); partway to
+// correctly doing Miron's requested change of creating a file that we
+// redirect the user's browser to.
+//
+// Revision 1.82.16.1  2012/04/16 23:26:54  wenger
+// The JavaScreen data saving code now sends dummy data from the DEVised
+// to the JS client -- needs lots of cleanup, and we don't actually show
+// the data in a dialog yet.
+//
+// Revision 1.82  2009/08/28 15:42:18  wenger
+// Drill-down marker is now working; cleaned up version history, since
+// 5.9.5 was never released.
+//
 // Revision 1.81  2005/12/06 20:00:19  wenger
 // Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
 // be the end of the V1_7b0_br branch.)

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2008
+// (c) Copyright 2003-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -19,6 +19,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.6.16.2  2012/04/30 19:07:56  wenger
+// Fixed toolbar icons for data download; added mouse cursor icon for
+// data download, and set the mouse cursor when we go into data download
+// mode; added data download info to the JavaScreen help page; updated
+// JS & DEVise version histories; put view names back into the download
+// files because I think piles are too confusing otherwise.
+//
+// Revision 1.6.16.1  2012/04/12 23:27:29  wenger
+// Initial implementation of command framework for JavaScreen data saving
+// (the command doesn't really do anything on the devised end yet).  Note
+// that the toolbar icons for data saving are just a copy of the icons
+// for drill down right now -- I want to get things implemented on the
+// devised end before I put time into farting around making new icons.
+//
+// Revision 1.6  2009/09/09 21:50:24  wenger
+// Fixed JavaScreen bugs 960 and 983 (problems with the mouse cursor
+// not changing correctly according to the toolbar mode and the state
+// of the active view).
+//
 // Revision 1.5  2008/02/13 22:38:25  wenger
 // Added a button to show the Jmol selection trees without having to
 // go into a menu.
@@ -142,6 +161,7 @@ public final class DEViseToolBar extends JToolBar {
 	
 	private DEViseToolBarButton drillDownButton = null;
 	private DEViseToolBarButton helpButton = null;
+	private DEViseToolBarButton dataDownloadButton = null;
 	private DEViseToolBarButton toggleTextDisplayButton = null;
 	private DEViseToolBarButton[] infoButtonSet = null;
 
@@ -185,14 +205,17 @@ public final class DEViseToolBar extends JToolBar {
 			  "Drill down (show data records)", "drill-down", jsValues);
 			helpButton = new DEViseToolBarButton("Show help for selected view",
 			  "show_view_help", jsValues);
+			dataDownloadButton = new DEViseToolBarButton(
+			  "Download data for selected view", "data_download", jsValues);
 			toggleTextDisplayButton = new DEViseToolBarButton(
 				"Toggle text display for selected view",
 				"toggle_text_display", jsValues);
 	    infoButtonSet = new DEViseToolBarButton[] {
 		    drillDownButton,
 				helpButton,
+				dataDownloadButton,
 				// Temporarily hidden until it's functional.
-				// toggleTextDisplayButton,
+				//toggleTextDisplayButton,
 	    };
 
 		normalButton = new DEViseToolBarButton(
@@ -349,6 +372,10 @@ public final class DEViseToolBar extends JToolBar {
 		return selectedButton == helpButton;
 	}
 
+	public boolean doDataDownload() {
+		return selectedButton == dataDownloadButton;
+	}
+
 	public boolean doHome() {
 		return selectedButton == homeButton;
 	}
@@ -440,6 +467,9 @@ public final class DEViseToolBar extends JToolBar {
 
 		} else if (button == helpButton) {
 			mouseCursor.setPermanentCursor(mouseCursor.helpCursor, null);
+
+		} else if (button == dataDownloadButton) {
+			mouseCursor.setPermanentCursor(mouseCursor.dataDownloadCursor, null);
 
 		} else if (button == normalButton) {
 			mouseCursor.setPermanentCursor(mouseCursor.defaultCursor, null);

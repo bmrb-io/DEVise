@@ -2,7 +2,7 @@
         $Id$
 
 Version: this document refers to the JavaScreen communication protocol
-version 16.0.
+version 17.0.
 
 For the details of the format in which commands are sent on the socket,
 see comments in DEViseCommSocket.java.
@@ -386,6 +386,16 @@ see comments in DEViseCommSocket.java.
     Arguments: 1
         <display mode>: 0 = normal; 1 = color print; 2 = b/w print
 
+    4.24 JAVAC_GetViewData
+    Purpose: requests that the devised return all TData record information 
+             for the given view (and any other views in the same pile).
+	     (Note: for stacked views you only get data from the top view.)
+    Arguments: 2
+        <view name>: name of view for which records are to be shown.
+	<use visual filter>: true if we want only records that match
+		the visual filter; otherwise we get all records (still
+		filtered by record and GAttr links, though).
+
 5. Devised to JavaScreen (via JSPoP)
 
     5.1 JAVAC_UpdateSessionList
@@ -583,6 +593,12 @@ see comments in DEViseCommSocket.java.
         <view name>: name of view for which whether to use Jmol is to be
 	             set
         <use Jmol>: whether to use Jmol (0 or 1)
+
+    5.15 JAVAC_ViewDataUrl
+    Purpose: tells the JavaScreen the URL of a file containing the
+    		data generated in response to a JAVAC_GetViewData command.
+    Arguments: 1
+	<data file url>: the URL of the data file.
 
 6. JSPoP to JSS
 

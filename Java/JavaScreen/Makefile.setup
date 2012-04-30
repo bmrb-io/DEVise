@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2007
+#  (c) Copyright 2001-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -87,6 +87,10 @@ vis_setup:
 	echo 'setenv DEVISE_TMP_SESSION	$(DEVISE_TMP_SESSION)' \
 		>> scripts/dev_vis.js
 	echo 'setenv DEVISE_HOME_TABLE	$(DEVISE_HOME_TABLE)' \
+		>> scripts/dev_vis.js
+	echo 'setenv DEVISE_JS_DATA_DOWNLOAD_DIR $(DEVISE_JS_DATA_DOWNLOAD_DIR)' \
+		>> scripts/dev_vis.js
+	echo 'setenv DEVISE_JS_DATA_DOWNLOAD_URL $(DEVISE_JS_DATA_DOWNLOAD_URL)' \
 		>> scripts/dev_vis.js
 	scripts/setup_test_vis
 

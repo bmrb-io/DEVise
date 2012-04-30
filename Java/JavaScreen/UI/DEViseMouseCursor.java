@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2007-2009
+// (c) Copyright 2007-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -24,6 +24,25 @@
 // $Id$
 
 // $Log$
+// Revision 1.4.16.1  2012/04/30 19:07:56  wenger
+// Fixed toolbar icons for data download; added mouse cursor icon for
+// data download, and set the mouse cursor when we go into data download
+// mode; added data download info to the JavaScreen help page; updated
+// JS & DEVise version histories; put view names back into the download
+// files because I think piles are too confusing otherwise.
+//
+// Revision 1.4  2009/09/09 16:17:07  wenger
+// Fixed JavaScreen bug 982 (mouse cursor appearance on Windows).  For
+// some reason, Windows insists on displaying the cursor as 32x32,
+// so it just doubled the size of our original cursor images, which
+// made them look really crude (and also goofed up the hot spot
+// location).  To fix this, we made all of the cursor images 32x32 (but
+// only the upper-left 16x16 pixels have anything "interesting" all of
+// the rest is transparent, so the images actually look the same as
+// they did originally, except that Windows doesn't double their size).
+// (This change means that we can also remove the special code to "fix"
+// the hot spot location when the cursor image is doubled.)
+//
 // Revision 1.3  2009/09/02 22:58:35  wenger
 // Probably fixed DEVise/JS bug 978 (mouse cursor hot spot problems).
 // (Needs some more testing.)
@@ -74,6 +93,7 @@ public class DEViseMouseCursor
     public Cursor decSymSizeCursor;
     public Cursor disabledCursor;
     public Cursor drillDownCursor;
+    public Cursor dataDownloadCursor;
     public Cursor fillViewCursor;
     public Cursor homeCursor;
     public Cursor incSymSizeCursor;
@@ -116,6 +136,9 @@ public class DEViseMouseCursor
 
 		drillDownCursor = createCursor("drill-down.png",
 		  4, 11, "drill down");
+
+		dataDownloadCursor = createCursor("data_download.png",
+		  4, 11, "data download");
 
 		fillViewCursor = createCursor("full_screen_filter.png",
 		  7, 7, "cursor fills view");

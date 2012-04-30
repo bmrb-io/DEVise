@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2010
+  (c) Copyright 1998-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,25 @@
   $Id$
 
   $Log$
+  Revision 1.54.4.3  2012/04/23 18:48:49  wenger
+  Data download now handles piles (still with dummy data); partway to
+  correctly doing Miron's requested change of creating a file that we
+  redirect the user's browser to.
+
+  Revision 1.54.4.2  2012/04/13 21:16:15  wenger
+  More work on JavaScreen data saving -- some "real" code, a lot of
+  debug code to re-figure out how drill down works, etc.
+
+  Revision 1.54.4.1  2012/04/12 23:27:51  wenger
+  Initial implementation of command framework for JavaScreen data saving
+  (the command doesn't really do anything on the devised end yet).  Note
+  that the toolbar icons for data saving are just a copy of the icons
+  for drill down right now -- I want to get things implemented on the
+  devised end before I put time into farting around making new icons.
+
+  Revision 1.54  2010/12/10 21:46:26  wenger
+  Merged devise_1_10_br_4 thru devise_1_10_br_5 to trunk.
+
   Revision 1.53  2010/08/10 21:36:10  wenger
   Fixed DEVise/JS bug 1002 (current axis ranges not always preserved
   correctly on JavaScreen resize).
@@ -360,6 +379,7 @@ class JavaScreenCmd
 			SET_TMP_SESSION_DIR,
 			GET_DEVISE_VERSION,
 			SET_DISPLAY_MODE,
+			GET_VIEW_DATA,
 
 			NULL_SVC_CMD
 		} ServiceCmdType;
@@ -379,6 +399,7 @@ class JavaScreenCmd
 			DEVISE_VERSION,
 			SET_VIEW_COLORS,
 			SET_USE_JMOL,
+			VIEW_DATA_URL,
 
 			DONE, // success
 			CANCEL, // cancelled, but not an error
@@ -430,6 +451,7 @@ class JavaScreenCmd
 		void MouseAction_Click();
 		void ShowRecords();
 		void ShowRecords3D();
+		void GetViewData();
 		void MouseAction_RubberBand();
 		void SetDisplaySize();
 		void KeyAction();

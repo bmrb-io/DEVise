@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2010
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,20 @@
   $Id$
 
   $Log$
+  Revision 1.51.4.3  2012/04/30 20:39:58  wenger
+  (Hopefully final) cleanup.
+
+  Revision 1.51.4.2  2012/04/27 16:46:15  wenger
+  Cleaned up a bunch of temporary/debug code.
+
+  Revision 1.51.4.1  2012/04/20 20:51:55  wenger
+  I'm committing what I have in the "show data in a dialog" path before
+  switching over to Miron's preferred "create a file to redirect the
+  user's browser to" implementation.
+
+  Revision 1.51  2010/12/10 21:46:19  wenger
+  Merged devise_1_10_br_4 thru devise_1_10_br_5 to trunk.
+
   Revision 1.50.4.1  2010/12/09 22:36:18  wenger
   Fixed DEVise bug 924 (sends cursor commands to JS for hidden views).
 

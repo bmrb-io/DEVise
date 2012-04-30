@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2012
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,21 @@
   $Id$
 
   $Log$
+  Revision 1.54.12.3  2012/04/30 20:40:04  wenger
+  (Hopefully final) cleanup.
+
+  Revision 1.54.12.2  2012/04/20 20:52:03  wenger
+  I'm committing what I have in the "show data in a dialog" path before
+  switching over to Miron's preferred "create a file to redirect the
+  user's browser to" implementation.
+
+  Revision 1.54.12.1  2012/04/13 21:16:14  wenger
+  More work on JavaScreen data saving -- some "real" code, a lot of
+  debug code to re-figure out how drill down works, etc.
+
+  Revision 1.54  2008/10/13 19:45:24  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.53  2008/09/23 22:55:40  wenger
   More const-ifying, especially drill-down-related stuff.
 

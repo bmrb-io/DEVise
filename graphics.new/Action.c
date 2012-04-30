@@ -1,7 +1,7 @@
 /*
    ========================================================================
    DEVise Data Visualization Software
-   (c) Copyright 1992-2002
+   (c) Copyright 1992-2012
    By the DEVise Development Group
    Madison, Wisconsin
    All Rights Reserved.
@@ -16,6 +16,29 @@
   $Id$
 
   $Log$
+  Revision 1.44.26.5  2012/04/30 20:40:04  wenger
+  (Hopefully final) cleanup.
+
+  Revision 1.44.26.4  2012/04/27 16:46:24  wenger
+  Cleaned up a bunch of temporary/debug code.
+
+  Revision 1.44.26.3  2012/04/23 18:48:48  wenger
+  Data download now handles piles (still with dummy data); partway to
+  correctly doing Miron's requested change of creating a file that we
+  redirect the user's browser to.
+
+  Revision 1.44.26.2  2012/04/20 20:52:03  wenger
+  I'm committing what I have in the "show data in a dialog" path before
+  switching over to Miron's preferred "create a file to redirect the
+  user's browser to" implementation.
+
+  Revision 1.44.26.1  2012/04/13 21:16:14  wenger
+  More work on JavaScreen data saving -- some "real" code, a lot of
+  debug code to re-figure out how drill down works, etc.
+
+  Revision 1.44  2002/06/17 19:41:06  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.43.10.1  2002/05/10 21:52:58  wenger
   Fixed problem of X-only zoom in DEVise not working when the Y pixels
   of the mouse drag are exactly the same.
@@ -633,6 +656,23 @@ void Action::KeySelected(ViewGraph *view, int key, Coord x, Coord y)
 
   case DeviseKey::BACKSPACE: {
     view->BackOne();
+    break;
+  }
+
+  case 't': // table
+  case 'T': {
+    /* print/download TData of current view */
+    // Only do this on the first view in a pile or stack.  We do this
+    // because we want the pile/stack logic to be inside
+    // ViewGraph::HandleDataDownload(), so that for JavaScreen support
+    // we can just call ViewGraph::HandleDataDownload() once.
+    if (!view->IsInPileMode() ||
+        view->GetParentPileStack()->GetFirstView() == view) {
+      if (!view->HandleDataDownload("./data_download.csv")) {
+	reportErrNosys("Error attempting data download");
+      }
+    }
+    break;
   }
 
   default:

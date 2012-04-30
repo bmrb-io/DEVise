@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 1999-2011
+// (c) Copyright 1999-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -32,6 +32,16 @@
 // $Id$
 
 // $Log$
+// Revision 1.91.4.2  2012/04/30 20:39:37  wenger
+// (Hopefully final) cleanup.
+//
+// Revision 1.91.4.1  2012/04/27 21:55:22  wenger
+// Added dialog with the URL that's shown when we try to get the browser
+// to show a document.
+//
+// Revision 1.91  2011/10/10 20:44:06  wenger
+// Merged js_button_fix_br_1 thru js_button_fix_br_2 to trunk.
+//
 // Revision 1.90  2011/08/26 15:37:34  wenger
 // Merged js_button_fix_br_0 thru js_button_fix_br_1 to trunk.
 //
@@ -1433,7 +1443,8 @@ public class DEViseScreen extends JPanel
 			                    return;
 			                }
 		                    }
-                                    jsc.showDocument(event.getActionCommand());
+                                    jsc.showDocument(event.getActionCommand(),
+				      true);
                                 }
                             });
 

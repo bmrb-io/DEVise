@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,22 @@
 // $Id$
 
 // $Log$
+// Revision 1.24.12.3  2012/04/30 20:39:37  wenger
+// (Hopefully final) cleanup.
+//
+// Revision 1.24.12.2  2012/04/27 21:55:22  wenger
+// Added dialog with the URL that's shown when we try to get the browser
+// to show a document.
+//
+// Revision 1.24.12.1  2012/04/26 22:57:31  wenger
+// Created the DrillDown::AdjustFilterForCountMapping() method, and
+// DataDownload uses DrillDown::GAttrLinkFollower() to remove
+// duplicate code; removed some debug/test code.
+//
+// Revision 1.24  2010/06/02 15:12:05  wenger
+// The JSA startInfo text object is no longer displayed if the applet
+// height is less than 50 pixels (Eldon asked me to get rid of this).
+//
 // Revision 1.23  2010/05/28 19:29:11  wenger
 // Changed open session dialog to show BMRB visualization types (with
 // numbers) as the "main" value if they are available, with the new
@@ -315,7 +331,8 @@ public abstract class DEViseJSApplet extends Applet
         }
     }
 
-    public void showDocument(String url, String targetWindow)
+    // Note: if jsc is not null, we show a dialog with the URL.
+    public void showDocument(String url, String targetWindow, jsdevisec jsc)
     {
         try {
 	    String newUrl = null;
@@ -329,6 +346,9 @@ public abstract class DEViseJSApplet extends Applet
 		newUrl = tmpBase.substring(0, lastSlash) + "/" + url;
 	    }
             getAppletContext().showDocument(new URL(newUrl), targetWindow);
+	    if (jsc != null) {
+	        jsc.showUrlMsg(url);
+	    }
         } catch (MalformedURLException ex) {
             System.err.println("Bad URL: " + ex);
         }
@@ -355,7 +375,7 @@ public abstract class DEViseJSApplet extends Applet
 	    helpUrl = DEViseGlobals.JS_HELP_URL;
 	}
 
-        showDocument(helpUrl, "_blank");
+        showDocument(helpUrl, "_blank", null);
     }
 
 
