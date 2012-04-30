@@ -148,7 +148,7 @@ Add a link to email to devise-support to all JS pages and, especially,
 help pages. (wenger)
 (Done by wenger, 5/29/03.)
 
-09.010 5/4/02	ACTIVE	3
+09.010 5/4/02	PARTLY DONE	3 (4/30/12: phase 1 is done)
 Be able to save data from the drill-down dialog. (BMRB advisory board)
 Maybe generate a saveable html page. (miron)
 Note: this has changed into saving all data for the view, not just
