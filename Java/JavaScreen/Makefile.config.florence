@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2008
+#  (c) Copyright 2001-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -44,8 +44,12 @@ IDSTR = regular
 # Where the DEVise sessions, schemas, etc., are installed.
 DEVISE_VIS = /bmrb/devise/installed/demo
 
+# Data download setup.
+DEVISE_JS_DATA_DOWNLOAD_DIR = /bmrb/htdocs/devise/html/data_download
+DEVISE_JS_DATA_DOWNLOAD_URL = http://bmrb.cerm.unifi.it/devise/html/data_download/
+
 # This is who gets email about any errors.
-ERROR_EMAIL = devise@cs.wisc.edu
+ERROR_EMAIL = devise@bmrb.wisc.edu
 
 INSTALL_HOST = icnm.cerm.unifi.it
 

@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.96  2012/04/30 23:24:51  wenger
+  Changed version to 1.11.2 for release; added 't/T' command to key/mouse
+  help document; moved me to first place after PIs in the DEVise
+  contributors list.
+
   Revision 1.95  2012/04/30 22:21:19  wenger
   Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 
@@ -584,7 +589,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.2";
+static const char *	version = "1.11.3x1"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2012";

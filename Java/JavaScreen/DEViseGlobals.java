@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.156  2012/04/30 23:36:41  wenger
+// Changed JavaScreen version to 5.14.2 for release; added data download
+// setup to standard CS config file.
+//
 // Revision 1.155  2012/04/30 22:20:17  wenger
 // Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 //
@@ -984,7 +988,7 @@ public final class DEViseGlobals
     public static final int DEFAULTCMDPORT = 6666, DEFAULTIMGPORT = 6644,
       JSSPORT = 1688, JSPOPPORT = 1689;
     public static final String JSPOPHOST = new String("localhost");
-    public static final String VERSION = new String("5.14.2");
+    public static final String VERSION = new String("5.14.3x1"/*TEMP*/);
 
     public static final String PROTOCOL_VERSION = new String("17.0");
 
