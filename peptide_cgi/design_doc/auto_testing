@@ -19,6 +19,9 @@ This is the cron entry used to run the tests:
     08 23 * * * cd /scratch/wenger/peptide_cgi_test/peptide_cgi/cgi-bin;
       ./test_all
 
+TEMPTEMP -- need to update this for the test in
+/p/devise/ext11/peptide-cgi_test/peptide_cgi
+
 Once this is done, just keep updating the Peptide-CGI version as things
 change, and monitor the emails from the cron job.
 

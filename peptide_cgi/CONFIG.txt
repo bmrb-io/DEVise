@@ -1,6 +1,7 @@
 		Peptide-CGI Configuration Information
 		$Id$
 
+TEMPTEMP -- this needs new stuff
 
 * INTRODUCTION
 
