@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2012/04/30 22:20:18  wenger
+// Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+//
 // Revision 1.2.4.2  2012/04/30 20:39:37  wenger
 // (Hopefully final) cleanup.
 //
@@ -107,12 +110,13 @@ public class DEViseSessionMenuButton extends DEViseButton
 	    }
 	}
 
-	if (!haveMenuItem(label)) {
-	    MenuItem menuItem = new MenuItem(label);
-	    menuItem.setActionCommand(cmd);
+	MenuItem menuItem = findMenuItem(label);
+	if (menuItem == null) {
+	    menuItem = new MenuItem(label);
 	    menuItem.addActionListener(this);
 	    _sessionMenu.add(menuItem);
 	}
+	menuItem.setActionCommand(cmd);
 
 	show();
     }
@@ -171,15 +175,15 @@ public class DEViseSessionMenuButton extends DEViseButton
     // PRIVATE METHODS
 
     //-------------------------------------------------------------------
-    private boolean haveMenuItem(String label)
+    private MenuItem findMenuItem(String label)
     {
         for (int index = 0; index < _sessionMenu.getItemCount(); index++) {
 	    MenuItem item = _sessionMenu.getItem(index);
 	    if (label.equals(item.getLabel())) {
-	        return true;
+	        return item;
 	    }
 	}
 
-	return false;
+	return null;
     }
 }
