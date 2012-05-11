@@ -4508,6 +4508,14 @@ java.security.AccessControlException: access denied
 			happen at all running the JS client outside of
 			a browser.  (wenger)
 
+1024 5/11/12	OPEN	Data download from histograms at BMRB can cause
+			GData buffer overflow:
+			An internal error has occurred. The reason is:
+			GData buffer overflow
+			(../../graphics.new/MappingInterp.c:2325)
+			(wenger)
+
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
