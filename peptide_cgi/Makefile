@@ -40,8 +40,8 @@ DO_S2PRED_DEFAULT = 0
 S2PRED_URL_DEFAULT = 
 JS_CMD_PORT = 6666
 DO_DYN_MOVIE_DEFAULT = 0
-DYNAMICS_MOVIE_URL = "http://condor.bmrb.wisc.edu/bbee/video/*.mpg"
-DYNAMICS_MOVIE_GEN_URL = "http://144.92.217.22?entry=*\&devise=1\&submitted=yes"
+DYNAMICS_MOVIE_URL = "http://144.92.217.22/videos/*.mpg"
+DYNAMICS_MOVIE_GEN_URL = "http://144.92.217.22?entry=*\&start_time=0\&end_time=.04\&display_x=300\&display_y=300\&scale=1.5\&slowdown=3\&material=Invisible\&radius=5\&submitted=yes"
 DSSP_FILE_URL = http://www.bmrb.wisc.edu/ftp/pub/bmrb/derived_data/dssp/all
 
 include Makefile.config
