@@ -20,6 +20,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  2012/01/27 23:19:37  wenger
+// Added the -s2p_name and -dyn_movie_demo arguments and generate_movies
+// script to allow generation of visualizations for demo dynamics movies.
+//
 // Revision 1.37  2012/01/27 17:43:11  wenger
 // Added the -do_dyn_movie argument and bmrb_mirror.do_dyn_movie_default
 // property to control whether the molecular dynamics movies are enabled.
@@ -199,7 +203,7 @@ public class S2DSession {
     }
 
     //-------------------------------------------------------------------
-    static void write(String sessionDir, int dataType, String name,
+    public static void write(String sessionDir, int dataType, String name,
       int frameIndex, String info, String title, boolean hasRealCBShifts,
       String starVersion, String s2pPdbId) throws S2DException
     {
@@ -208,7 +212,7 @@ public class S2DSession {
     }
 
     //-------------------------------------------------------------------
-    static void write(String sessionDir, int dataType, String name,
+    public static void write(String sessionDir, int dataType, String name,
       String fullName, String id1, String id2, int frameIndex1,
       int frameIndex2, String info, String title, boolean hasRealCBShifts,
       String starVersion, String s2pPdbId)
@@ -833,7 +837,7 @@ TEMP*/
 	    result = false;
 	}
 
-    	return result;
+        return result;
     }
 
     //-------------------------------------------------------------------
