@@ -618,6 +618,10 @@ Num Date        Status  Description
 			(elu/wenger)
 			(Fixed in 12.2.1 by wenger, 3/7/11.)
 
+134 9/19/12	OPEN	Visualization summary pages don't show up correctly
+			in Chrome and Firefox on my netbook (the big images
+			are always shown, not just on mouseover). (wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
