@@ -622,7 +622,8 @@ Num Date        Status  Description
 			in Chrome and Firefox on my netbook (the big images
 			are always shown, not just on mouseover). (wenger)
 			(This is true at Madison, but not Florence!  (Both
-			v12.2.2))
+			v12.2.2))  (The problem may exist only for the
+			visualization server.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
