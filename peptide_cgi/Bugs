@@ -621,6 +621,8 @@ Num Date        Status  Description
 134 9/19/12	OPEN	Visualization summary pages don't show up correctly
 			in Chrome and Firefox on my netbook (the big images
 			are always shown, not just on mouseover). (wenger)
+			(This is true at Madison, but not Florence!  (Both
+			v12.2.2))
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
