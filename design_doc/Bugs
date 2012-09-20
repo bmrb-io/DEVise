@@ -4515,6 +4515,9 @@ java.security.AccessControlException: access denied
 			(../../graphics.new/MappingInterp.c:2325)
 			(wenger)
 
+1025 9/20/12	OPEN	When running the JS (from BMRB, at least) if you
+			view the help in a Java window, the toolbar icons
+			don't show up.  (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
