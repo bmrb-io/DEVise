@@ -4508,16 +4508,21 @@ java.security.AccessControlException: access denied
 			happen at all running the JS client outside of
 			a browser.  (wenger)
 
-1024 5/11/12	OPEN	Data download from histograms at BMRB can cause
+1024 5/11/12	FIXED	Data download from histograms at BMRB can cause
 			GData buffer overflow:
 			An internal error has occurred. The reason is:
 			GData buffer overflow
 			(../../graphics.new/MappingInterp.c:2325)
 			(wenger)
+			(Fixed by wenger, 9/24/12)
 
 1025 9/20/12	OPEN	When running the JS (from BMRB, at least) if you
 			view the help in a Java window, the toolbar icons
 			don't show up.  (wenger)
+
+1026 9/24/12	OPEN	JS data download files have CRLF, LF line
+			terminators.  (Look like they come from the
+			original files from Eldon.)  (wenger)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

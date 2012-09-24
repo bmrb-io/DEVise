@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.55  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.54.4.3  2012/04/23 18:48:49  wenger
   Data download now handles piles (still with dummy data); partway to
   correctly doing Miron's requested change of creating a file that we
@@ -436,6 +439,7 @@ class JavaScreenCmd
 
 		ControlCmdType	_status;
 		const char		*errmsg;
+		string			_errStr;
 
 		static Boolean	_postponeCursorCmds;
 

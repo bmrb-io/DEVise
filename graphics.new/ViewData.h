@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.12  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.11.20.1  2012/04/24 20:09:59  wenger
   Saving of actual data values now mostly working (print format
   needs some fixes).
@@ -220,6 +223,11 @@ class ViewData : public ViewGraph
             Coord bBULx, bBULy, bBLRx, bBLRy;
         };
 
+		// 
+		// Test the GData records against any GAttr links this view follows.
+		// Records that pass the filtering will have the inGAttrLink set to
+		// true in the corresponding entry in symArray[].
+		//
         void GAttrLinkFollower(TDataMap *mapping, void *gdata, int numGData,
 		  int gRecSize, SymbolInfo symArray[]);
 

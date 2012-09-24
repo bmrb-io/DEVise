@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.7  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.6.10.3  2012/04/30 20:40:05  wenger
   (Hopefully final) cleanup.
 
@@ -399,15 +402,16 @@ DrillDown::GAttrLinkFollower(ViewData *view, TDataMap *map, RecId startRid,
         printf("DrillDown::GAttrLinkFollower()\n");
     }
 
-    const int GDATA_BUF_SIZE = 6400 * sizeof(double);
+    int gDataBufSize = numRecs * map->GDataRecordSize();
     // Force buffer to be aligned on double.
-    double alignBuf[GDATA_BUF_SIZE / sizeof(double)];
+    double *alignBuf = new double[gDataBufSize / sizeof(double)];
     char *gdBuf = (char *)alignBuf;
 
-    map->ConvertToGData(startRid, tdBuf, numRecs, gdBuf, GDATA_BUF_SIZE);
+    map->ConvertToGData(startRid, tdBuf, numRecs, gdBuf, gDataBufSize);
     
     view->GAttrLinkFollower(map, gdBuf, numRecs, map->GDataRecordSize(),
       symInfo);
+    delete [] alignBuf;
 }
 
 //-----------------------------------------------------------------------------

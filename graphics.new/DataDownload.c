@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.2  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.1.2.6  2012/04/30 20:40:04  wenger
   (Hopefully final) cleanup.
 
@@ -85,6 +88,9 @@ DataDownload::GetInstance()
 DevStatus
 DataDownload::SaveData(ViewData *view, Boolean useVisualFilter, FILE *fp)
 {
+    if (DEBUG >= 1) {
+	printf("DataDownload::SaveData(%s)\n", view->GetName());
+    }
     DevStatus result(StatusOk);
 
     _fp = fp;
@@ -218,7 +224,7 @@ DevStatus
 DataDownload::ProcessData(ViewData *view, QueryProc *qp)
 {
     if (DEBUG >= 2) {
-        printf("DataDownload::ProcessData()\n");
+        printf("DataDownload::ProcessData(%s)\n", view->GetName());
     }
 
     DevStatus result(StatusOk);

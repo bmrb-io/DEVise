@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.105  2009/05/13 22:41:30  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.104.2.2  2009/05/04 19:17:01  wenger
   Fixed some memory problems found by valgrind (looking for the problems
   that are causing core dumps on swordfish@bmrb).
@@ -2141,7 +2145,7 @@ void MappingInterp::ConvertToGDataComplex(RecId startRecId, void *buf,
 					  int gdBufSize)
 {
 #if defined(DEBUG)
-  printf("ConvertToGDataComplex\n");
+  printf("ConvertToGDataComplex(%ld, %d)\n", startRecId, numRecs);
 #endif
 
   int tRecSize = TDataRecordSize();

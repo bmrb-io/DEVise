@@ -21,6 +21,9 @@
   $Id$
 
   $Log$
+  Revision 1.144  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.143.4.8  2012/04/30 20:40:05  wenger
   (Hopefully final) cleanup.
 
@@ -1297,6 +1300,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	_argc = argc;
 	_argv = new char*[argc];
 	errmsg = NULL;
+	_errStr = "";
 
     for (i=0; i< _argc; ++i)
     {
@@ -1932,8 +1936,12 @@ JavaScreenCmd::GetViewData()
 
 	int tmpFd = mkstemp(tmpFile);
 	if (tmpFd == -1) {
+		_errStr = "mkstemp(";
+		_errStr += tmpFile;
+		_errStr += ") failed";
+		reportErrSys(_errStr.c_str());
+		// Don't report path to user for security.
 		errmsg = "mkstemp() failed";
-		reportErrSys(errmsg);
 		_status = ERROR;
 		return;
 	}
