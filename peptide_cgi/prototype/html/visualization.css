@@ -36,15 +36,15 @@ body {
 }
 
 #example {
-  border: 2px solid #33527b;
+  border: 0px solid #33527b;
   width: auto;
   padding-left: 5px;
   padding-right: 5px;
-  padding-top: 0px;
+  padding-top: 5px;
   padding-bottom: 5px;
   background-color: #ededed;
-  border-radius: 15px;
-  -moz-border-radius: 15px; /* Firefox 3.6 and earlier */
+  border-radius: 0px;
+  -moz-border-radius: 0px; /* Firefox 3.6 and earlier */
 }
 
 .thumbnail {
