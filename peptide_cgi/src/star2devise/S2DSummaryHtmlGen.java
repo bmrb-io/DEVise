@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.49  2012/03/28 18:55:29  wenger
+// Changed summary page menus to immediately go to the selected
+// visualization; changed process time warning to red.
+//
 // Revision 1.48  2012/03/16 16:39:05  wenger
 // Fixed path problems for pre-processed torsion angle restraints.
 //
@@ -687,7 +691,7 @@ TEMP?*/
 		    //TEMP -- we should get images here from the figures
 		    // directory...
 	            String imageDir = _isUvd ? "../.." : "..";
-		    _writer.write("<a class=\"thumbnail\" href=\"#thumb\"><img src=\"" + imageDir + "/two_entry_thumb.png\"><span><img src=\"" + imageDir + "/two_entry.png\"></span></a>\n");
+		    _writer.write("<a class=\"thumbnail\"><img src=\"" + imageDir + "/two_entry_thumb.png\"><span><img src=\"" + imageDir + "/two_entry.png\"></span></a>\n");
 		    _writer.write("</td>\n");
 		    _writer.write("<th align=\"left\">\n");
 		    _writer.write("Multi-entry visualizations</b>\n");
@@ -2085,7 +2089,7 @@ TEMP?*/
         _writer.write("<table id=\"vis\">\n");
         _writer.write("  <tr>\n");
         _writer.write("    <td align=\"left\" rowspan=\"2\" width=\"120\">\n");
-        _writer.write("      <a class=\"thumbnail\" href=\"#thumb\">" +
+        _writer.write("      <a class=\"thumbnail\">" +
 	  "<img src=\"" + figuresDir + thumbnail +
 	  "\"><span><img src=\"" + figuresDir + image + "\"></span></a>\n");
         _writer.write("    </td>\n");
