@@ -36,6 +36,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.50  2012/10/08 20:20:28  wenger
+// Fixed up mouseover images in histogram page, selection pages, and
+// generated summary pages -- in histogram pages, the thumbnail is now
+// a link to the actual histogram page; in the other pages, the thumbnail
+// is not a link at all.
+//
 // Revision 1.49  2012/03/28 18:55:29  wenger
 // Changed summary page menus to immediately go to the selected
 // visualization; changed process time warning to red.
@@ -2080,12 +2086,14 @@ TEMP?*/
       String thumbnail) throws IOException
     {
 	if (_sectionCount % 2 == 0) {
-	    _writer.write("<tr>\n");
+	    _writer.write("\n<tr>\n");
+	} else {
+	    _writer.write("\n");
 	}
 	_sectionCount++;
 
 	String figuresDir = (_isUvd ? "../" : "") + "../../figures/";
-        _writer.write("\n<td width = \"50%\">\n");
+        _writer.write("<td width = \"50%\">\n");
         _writer.write("<table id=\"vis\">\n");
         _writer.write("  <tr>\n");
         _writer.write("    <td align=\"left\" rowspan=\"2\" width=\"120\">\n");
@@ -2099,6 +2107,7 @@ TEMP?*/
 
         _writer.write("    </th>\n");
         _writer.write("  </tr>\n");
+        _writer.write("\n  <tr>\n");
         _writer.write("    <td align=\"center\">\n");
     }
 
@@ -2120,7 +2129,7 @@ TEMP?*/
     private void writeFormStart(String formName) throws IOException
     {
         String action = _isUvd ? S2DNames.UVD_CGI_URL : S2DNames.CGI_URL;
-	_writer.write("\n<form name=\"" + formName + "\" action=\"" +
+	_writer.write("<form name=\"" + formName + "\" action=\"" +
 	  action + "\" " + "method=\"get\">\n");
         _writer.write(
 	  "  <select name=\"url\" onchange='this.form.submit()'>\n");
