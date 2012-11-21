@@ -731,6 +731,70 @@ Num Date        Status  Pri     Description
 				and get rid of the 'Visualize in DEVise'
 				button. (elu/wenger)
 
+163 10/23/12	OPEN	1	Change header div to match the new version
+				in Dimitri's page. (wenger)
+
+164 10/23/12	~DONE	4	Rationalize the way the html files are in
+				CVS (match the way they're installed so
+				links, etc., are simpler to set up).  (E.g.,
+				have html2/devise/peptide-cgi in CVS, etc.)
+				(wenger)
+				(Mostly done by wenger, 10/24/12.)
+
+165 10/25/12	OPEN	3	Add the wwPDB logo to Peptide-CGI pages.
+
+166 10/26/12	OPEN	2	Create a getting started guide (for the
+				whole visualization system, not just the
+				JavaScreen).  Probably HTML-based, with
+				lots of screen shots.  Should cover various
+				ways of getting to entries (histograms,
+				search, etc.) (wenger)
+
+167 10/26/12	OPEN	2	Validate all pages (including samples of
+				automatically-generated ones) (probably
+				use http://validator.w3.org). (wenger)
+
+168 11/13/12	OPEN	3	Change tables to divs in the visualization
+				section of the home page. (wenger)
+
+169 11/13/12	OPEN	2	Clean up the html (e.g., remove deprecated
+				<center> tags). (broman/wenger)
+
+170 11/13/12	DUP	2	Validate the Peptide-CGI html. (wenger)
+				(Duplicate of 167.)
+
+171 11/13/12	DONE?	2	Add BMRB/wwPDB header to all pages. (wenger)
+				(Done by wenger, 11/16/12.)
+
+172 11/13/12	OPEN	4	Individual pages for the example
+				visualizations that explain how they work.
+				(miron/wenger)
+
+173 11/13/12	OPEN	4	Better thumbnails (especially 1H-15N, etc.).
+				(eldon/wenger)
+
+174 11/14/12	OPEN	3	Make images on selection pages link to
+				actual example visualizations. (wenger)
+
+175 11/14/12	OPEN	2	Use a template for visualization summary
+				pages. (wenger)
+
+176 11/14/12	~DONE	1	Individual visualization pages should have
+				links to selection pages and a form to
+				enter an accession number (elu/wenger)
+				(Mostly done by wenger, 11/15/12.)
+
+177 11/15/12	DONE	3	Get down to only one copy of the BMRB
+				logo in CVS. (wenger)
+				(Done by wenger, 11/19/12.)
+
+178 11/19/12	OPEN	4	Have the install script work from the dist
+				directory -- that way everything would be
+				consistent. (wenger)
+
+179 11/21/12	OPEN	3	Put new BMRB/wwPDB header in
+				dynamics_movie_demo.html. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed

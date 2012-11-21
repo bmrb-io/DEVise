@@ -37,7 +37,7 @@
   </p>
 
   <br>
-  <div id="content">
+  <div class="content">
     <p>Comments or questions?  Contact
       <a href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
     </p>

@@ -60,15 +60,14 @@ UVD_HTML_HOME = $(PEP_HTML_HOME)/uvd
 
 S2D_PROPS_FILE = cgi-bin/s2d.props
 ERROR_EMAIL_FILE = cgi-bin/error_email
-SELECT_HTML_FILE = bmrb_select.html
-SELECT2_HTML_FILE = bmrb_select2.html
 VUR_CONFIG_FILE = cgi-bin/vur_config
-RESTRAINT_SELECT_HTML_FILE = restraint_select.html
 
-setup: s2d_props bin select_html select2_html error_email tmp \
-	vur_config restraint_select css
+#TEMP -- maybe add something to this target that removes obsolete directories (histograms/html, bmrb_home, vis_examples; other?)
+setup: s2d_props bin error_email tmp vur_config
+	cd html2; make setup
 
-testsetup:
+testsetup: do_testsetup
+do_testsetup:
 	mkdir test_html; cd test_html; ln -s ../html/* .
 	mkdir test_data; cd test_data; ln -s ../data/* .
 	mkdir test_session; cd test_session; ln -s ../dynamic_sessions/* .
@@ -81,7 +80,7 @@ testsetup:
 	cd cgi-bin; ln -s ../session_templates .
 	cd cgi-bin; ln -s ../html_templates .
 	cd cgi-bin; ln -s ../src/s2d.jar .
-	cd cgi-bin; ln -s ../figures .
+	# cd cgi-bin; ln -s ../html2/devise/peptide-cgi/figures .
 	mkdir test_data/vis_server
 	mkdir test_session/vis_server
 	mkdir test_session/.unreleased
@@ -114,30 +113,37 @@ uvd_install: do_install
 
 proto_install:
 	cp -p prototype/data/*.dat $(PEP_DATA_HOME)
-	cp -p prototype/html/*.html $(PEP_HTML_HOME)
-	cp -p prototype/html/*.css $(PEP_HTML_HOME)
-	cp -p prototype/html/images/*.* $(PEP_HTML_HOME)/images
+	cp -p prototype/html2/*.html $(PEP_HTML_HOME)
 	cp -p prototype/session/*.ds $(PEP_SESSION_HOME)
+	mkdir -p $(PEP_HOME)/prototype/images
+	cp -p prototype/html/*.html $(PEP_HOME)/prototype
+	cp -p prototype/html/*.css $(PEP_HOME)/prototype
+	cp -p prototype/html/images/*.* $(PEP_HOME)/prototype/images
+	mkdir -p $(PEP_HOME)/prototype/bmrb_home_files
+	cp -p prototype/html/bmrb_home_files/*.* $(PEP_HOME)/prototype/bmrb_home_files
+
+# Note: this must *not* be done as part of the normal install; it's only
+# for testing at CS, and doing the install at BMRB would goof thing up.
+home_install:
+	cp -p html2/bmrb_home.html $(HTML_HOME)
+	mkdir -p $(HTML_HOME)/bmrb_home_files
+	cp -p html2/bmrb_home_files/*.* $(HTML_HOME)/bmrb_home_files
 
 clean:
 	-rm $(S2D_PROPS_FILE)
 	-rm -rf cgi-bin/bin
 	-rm -rf cgi-bin/tmp
-	-rm $(SELECT_HTML_FILE)
-	-rm $(SELECT2_HTML_FILE)
 	-rm $(ERROR_EMAIL_FILE)
 	-rm $(VUR_CONFIG_FILE)
 	-rm vur_config
-	-rm $(RESTRAINT_SELECT_HTML_FILE)
-	-rm visualization.css
-	-rm histograms/html/visualization.css
+	cd html2; make clean
 
 testclean:
 	-rm -rf test_data test_session test_html test_html_unreleased
 	-rm cgi-bin/data_dir cgi-bin/session_dir cgi-bin/s2d.jar
 	-rm cgi-bin/html_dir cgi-bin/html_unreleased
 	-rm cgi-bin/session_templates cgi-bin/chem_info cgi-bin/html_templates
-	-rm cgi-bin/figures
+	# -rm cgi-bin/figures
 	-rm -rf test_data/vis_server
 
 dev_test:
@@ -237,22 +243,3 @@ vur_config:
 	echo "set vur_login = $(VUR_LOGIN)" >> $(VUR_CONFIG_FILE)
 	echo "set vur_script = $(VUR_SCRIPT)" >> $(VUR_CONFIG_FILE)
 	ln -s $(VUR_CONFIG_FILE) .
-
-select_html: $(SELECT_HTML_FILE)
-$(SELECT_HTML_FILE): bmrb_select.tmpl
-	-rm -f $(SELECT_HTML_FILE)
-	sed -e 's%CGI_URL%$(CGI_URL)%' bmrb_select.tmpl > $(SELECT_HTML_FILE)
-
-select2_html: $(SELECT2_HTML_FILE)
-$(SELECT2_HTML_FILE): bmrb_select2.tmpl
-	-rm -f $(SELECT2_HTML_FILE)
-	sed -e 's%CGI_URL%$(CGI_URL)%' bmrb_select2.tmpl > $(SELECT2_HTML_FILE)
-
-restraint_select: $(RESTRAINT_SELECT_HTML_FILE)
-$(RESTRAINT_SELECT_HTML_FILE): restraint_select.tmpl
-	-rm -f $(RESTRAINT_SELECT_HTML_FILE)
-	sed -e 's%CGI_URL%$(CGI_URL)%' restraint_select.tmpl > $(RESTRAINT_SELECT_HTML_FILE)
-
-css:
-	ln -s html/visualization.css .
-	cd histograms/html; ln -s ../../html/visualization.css .

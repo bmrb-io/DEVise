@@ -1,10 +1,23 @@
 			Peptide-CGI Version History
 
-Peptide-CGI 12.2.3
+Peptide-CGI 12.3.0
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
-(Nothing yet.)
+* Added visualization examples page and a script to generate the
+corresponding actual visualizations.
+
+* Added a copy of the BMRB home page, with the new "NMR data
+visualizations" section.
+
+* Improved links between various visualization pages.
+
+* Removed "JavaScreen collaboration" and "DEVise home page" links
+from the visualization pages.
+
+* Reorganized the HTML directories (slightly in how they're installed,
+significantly in the sources); fixed broken link from histogram pages
+to JavaScreen collaboration page.
 
 
 Peptide-CGI 12.2.2

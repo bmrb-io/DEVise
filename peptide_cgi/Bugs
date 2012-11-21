@@ -618,13 +618,27 @@ Num Date        Status  Description
 			(elu/wenger)
 			(Fixed in 12.2.1 by wenger, 3/7/11.)
 
-134 9/19/12	ACTIVE	Visualization summary pages don't show up correctly
+134 9/19/12	FIXED	Visualization summary pages don't show up correctly
 			in Chrome and Firefox on my netbook (the big images
 			are always shown, not just on mouseover). (wenger)
 			(This is true at Madison, but not Florence!  (Both
 			v12.2.2))  (The problem may exist only for the
 			visualization server.)
 			(This is because uvd/visualization.css was deleted.)
+
+135 10/10/12	OPEN	Fix all errors/warnings in install scripts. (wenger)
+
+136 10/23/12	FIXED	Some .png files are really GIFs(!). (wenger)
+			(Fixed by wenger, 11/?/12.)
+
+137 10/25/12	OPEN	Visualization summary page for entry 15188 shows
+			chem shift reference visualizations, even though
+			the entry has no chem shifts. (wenger)
+
+138 11/16/12	FIXED	BMRB link in headers of some pages doesn't go to
+			the correct place (individual visualization pages,
+			at least).  (wenger)
+			(Fixed by wenger, 11/16/12.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

@@ -21,6 +21,64 @@
 // $Id$
 
 // $Log$
+// Revision 1.302.2.11  2012/11/20 00:18:08  wenger
+// Fixed problems with the figures, especially conflict in setup between
+// files as in CVS and files in the distribution.
+//
+// Revision 1.302.2.10  2012/11/16 23:11:08  wenger
+// Fixed bug 138 (broken BMRB home page links in some pages).
+//
+// Revision 1.302.2.9  2012/11/16 17:13:58  wenger
+// Added BMRB/wwPDB header to visualization summary pages, specific
+// visualization pages, histogram pages, entry selection pages,
+// visualization examples page.
+//
+// Revision 1.302.2.8  2012/11/16 17:13:01  wenger
+// Added BMRB/wwPDB header to visualization summary pages, specific
+// visualization pages, histogram pages, entry selection pages,
+// visualization examples page.
+//
+// Revision 1.302.2.7  2012/11/14 21:49:18  wenger
+// Added selection page, etc., links to individual histogram pages and
+// visualization-specific pages; home page histogram thumbnail now links
+// to the example histogram visualization.
+//
+// Revision 1.302.2.6  2012/11/13 18:08:34  wenger
+// Argh -- version in code was incorrect!
+//
+// Revision 1.302.2.5  2012/11/13 16:51:31  wenger
+// Fixed up uw_cs_test config file; fixed up distribution scripts to
+// properly put new html2 stuff into the tarball.
+//
+// Revision 1.302.2.4  2012/11/01 20:26:23  wenger
+// Removed "JavaScreen collaboration" and "DEVise home page" links as
+// per request from Miron.
+//
+// Revision 1.302.2.3  2012/10/24 22:07:07  wenger
+// At least mostly did to-do item 164: Reorganized the HTML directories
+// (slightly in how they're installed, significantly in the sources --
+// sources now pretty much match the way they're installed, so we don't
+// need nearly as much tricky stuff to make things work in the source
+// tree); fixed broken link from histogram pages to JavaScreen
+// collaboration page in the process.
+//
+// Revision 1.302.2.2  2012/10/17 19:26:17  wenger
+// Added links from the various visualization selection pages to the others,
+// including histograms, and vice-versa; added links from the visualization
+// summary pages back to the appropriate visualization selection pages;
+// added links from the individual histogram pages back to the histogram
+// index page.  Added the restraint-only visualizations to the visualizations
+// list on the home page.  Changed home_install to install the home page as
+// index2.html, so we don't accidentally overwrite the "real" home page.
+//
+// Revision 1.302.2.1  2012/10/11 17:18:45  wenger
+// Added BMRB home page to Peptide-CGI (for testing at CS); changed the
+// configuration at CS to install things in the same (relative) directory
+// structure as at BMRB, so links work the same, etc.
+//
+// Revision 1.302  2012/10/08 20:39:15  wenger
+// Updated x part of version.
+//
 // Revision 1.301  2012/03/29 20:57:45  wenger
 // Changed version to 12.2.3x1; added 12.2.3 version history section;
 //
@@ -716,7 +774,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.2.3x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.0x1"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 

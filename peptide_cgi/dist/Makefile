@@ -1,6 +1,6 @@
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2001-2011
+#  (c) Copyright 2001-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -41,15 +41,11 @@ peptide-cgi-setup:
 	ln -s ../../CONFIG.txt .
 	ln -s ../../Makefile .
 	ln -s ../../Makefile.config.* .
-	ln -s ../../bmrb_select.tmpl .
-	ln -s ../../bmrb_select2.tmpl .
-	ln -s ../../restraint_select.tmpl .
 	ln -s ../../win_tar .
 	ln -s ../../view_entry .
 	ln -s ../../scripts .
 	ln -s ../../pep-version-history .
 	ln -s ../../histograms .
-	ln -s ../../figures .
 	mkdir cgi-bin; cd cgi-bin; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist cgi-bin-setup; rm Makefile.dist
 	mkdir chem_info; cd chem_info; ln -s ../Makefile.dist .; \
@@ -61,6 +57,8 @@ peptide-cgi-setup:
 	  make -f Makefile.dist dynamic_sessions-setup; rm Makefile.dist
 	mkdir html; cd html; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist html-setup; rm Makefile.dist
+	mkdir html2; cd html2; ln -s ../Makefile.dist .; \
+	  make -f Makefile.dist html2-setup; rm Makefile.dist
 	mkdir html_templates; cd html_templates; ln -s ../Makefile.dist .; \
 	  make -f Makefile.dist html_templates-setup; rm Makefile.dist
 	ln -s ../../install .
@@ -92,6 +90,7 @@ cgi-bin-setup:
 	ln -s ../../../cgi-bin/get_version_cgi .
 	ln -s ../../../cgi-bin/delete_sessions .
 	ln -s ../../../cgi-bin/generate_movies .
+	ln -s ../../../cgi-bin/generate_examples .
 	mkdir tests
 	cd tests; ln -s ../../../../cgi-bin/tests/* .
 	mkdir test_data
@@ -118,6 +117,11 @@ html-setup:
 	ln -s ../../../html/*.js .
 	ln -s ../../../html/*.txt .
 	ln -s ../../../html/*.css .
+
+.PHONEY : html2-setup
+html2-setup:
+	ln -s ../../../html2/Makefile .
+	make dist
 
 .PHONEY : html_templates-setup
 html_templates-setup:

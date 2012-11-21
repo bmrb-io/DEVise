@@ -46,6 +46,7 @@ UVD_CGI_URL = http://$(OUTPUT_WEB_DOMAIN)/cgi-bin/peptide-cgi/make_uvd
 DEV_DEMO_HOME = /website/devise/demo
 
 WWW_HOME = /website/htdocs
+HTML_HOME = $(WWW_HOME)
 
 # The directory where the "front-end" file will be put.
 PEP_HOME = $(WWW_HOME)/devise/peptide-cgi

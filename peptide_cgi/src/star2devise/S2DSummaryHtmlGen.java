@@ -36,6 +36,38 @@
 // $Id$
 
 // $Log$
+// Revision 1.51.2.6  2012/11/20 00:18:08  wenger
+// Fixed problems with the figures, especially conflict in setup between
+// files as in CVS and files in the distribution.
+//
+// Revision 1.51.2.5  2012/11/16 23:11:08  wenger
+// Fixed bug 138 (broken BMRB home page links in some pages).
+//
+// Revision 1.51.2.4  2012/11/16 17:13:02  wenger
+// Added BMRB/wwPDB header to visualization summary pages, specific
+// visualization pages, histogram pages, entry selection pages,
+// visualization examples page.
+//
+// Revision 1.51.2.3  2012/11/14 23:25:00  wenger
+// Added form to enter accession number and selection page, etc., links
+// to the summary html pages.
+//
+// Revision 1.51.2.2  2012/11/13 17:10:07  wenger
+// Changed 'id' to 'class' in html as recommended by broman.
+//
+// Revision 1.51.2.1  2012/10/17 19:26:17  wenger
+// Added links from the various visualization selection pages to the others,
+// including histograms, and vice-versa; added links from the visualization
+// summary pages back to the appropriate visualization selection pages;
+// added links from the individual histogram pages back to the histogram
+// index page.  Added the restraint-only visualizations to the visualizations
+// list on the home page.  Changed home_install to install the home page as
+// index2.html, so we don't accidentally overwrite the "real" home page.
+//
+// Revision 1.51  2012/10/08 20:27:32  wenger
+// Found and fixed a small bug in the html of the BMRB visualization
+// summary pages.
+//
 // Revision 1.50  2012/10/08 20:20:28  wenger
 // Fixed up mouseover images in histogram page, selection pages, and
 // generated summary pages -- in histogram pages, the thumbnail is now
@@ -545,19 +577,41 @@ public abstract class S2DSummaryHtmlGen {
 	      "<link href=\"../visualization.css\" rel=\"stylesheet\" type=\"text/css\" media=\"all\">\n" +
 	      "</head>\n\n");
 
-            _writer.write("<div id=\"header\">\n");
+            _writer.write("<body>\n");
+	    _writer.write("<div class=\"header\">\n");
+	    _writer.write("<table width=\"100%\" align=\"CENTER\" border=\"0\" cellpadding=\"10px\">\n");
+	    _writer.write("<tbody><tr>\n");
+	    _writer.write("<td style=\"text-align: left;\">\n");
+	    _writer.write("<a href=\"../../../..\"><img src=\"../../../figures/logo.png\" style=\"margin-left: 2em;\" alt=\"BMRB\" title=\"BMRB homepage\" height=\"60\" width=\"56\"></a>\n");
+	    _writer.write("</td>\n");
+	    _writer.write("<td style=\"text-align: center\">\n");
+	    _writer.write("<h2 style=\"font-style: italic; margin-bottom: 0;\">Biological Magnetic Resonance Data Bank</h2><br>\n");
+	    _writer.write("<span style=\"font-style: italic;\">A Repository for Data from NMR Spectroscopy on Proteins,\n");
+	    _writer.write("Peptides, Nucleic Acids, and other Biomolecules</span>\n");
+	    _writer.write("</td>\n");
+	    _writer.write("<td style=\"text-align: right\">\n");
+	    _writer.write("<a href=\"http://www.wwpdb.org/\" target=\"_blank\" style=\"padding-right: 2em;\">\n");
+	    _writer.write("<img src=\"../../../figures/wwpdb.png\" alt=\"WWPDB\" title=\"World Wide Protein Data Bank\" height=\"60\" width=\"183\">\n");
+	    _writer.write("</a>\n");
+	    _writer.write("</td>\n");
+	    _writer.write("</tr></tbody>\n");
+	    _writer.write("</table>\n");
+	    _writer.write("</div>\n");
+
+	    _writer.write("<br>\n");
 	    _writer.write("<center><h3>DEVise plots for " +
               _longName + ":\n");
 	    _writer.write(systemName + "</h3></center>\n");
 	    if (!entryTitle.equals("")) {
+	        _writer.write("<p>\n");
 	        _writer.write("Title: " + entryTitle + "\n");
+	        _writer.write("</p>\n");
 	    }
-	    _writer.write("</div>\n\n");
 
 	    //
 	    // Tutorial video and main entry page links.
 	    //
-	    _writer.write("\n<br>\n<div id=\"content\">\n");
+	    _writer.write("\n<br>\n<div class=\"content\">\n");
 	    _writer.write("\n<p>\n");
 	    String videoDir = _isUvd ? "../.." : "..";
             _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
@@ -572,6 +626,26 @@ public abstract class S2DSummaryHtmlGen {
 		  "&chooseAccOrDep=useAcc\">Back to main entry page</a>\n");
 	        _writer.write("</p>\n");
 	        _writer.write("</h3>\n");
+	        _writer.write("<h3>\n");
+	        _writer.write("<p>\n");
+		if (_restraintOnly) {
+		    _writer.write("<a href=\"../../restraint_select.html\">Back to restraint visualization selection page</a>\n");
+		} else if (_multiEntry) {
+		    _writer.write("<a href=\"../../bmrb_select2.html\">Back to two-entry visualization selection page</a>\n");
+		} else {
+		    _writer.write("<a href=\"../../bmrb_select.html\">Back to visualization selection page</a>\n");
+		}
+	        _writer.write("</p>\n");
+	        _writer.write("</h3>\n");
+		_writer.write("<hr>\n");
+		_writer.write("<form method=\"get\" name=\"get_by_bmrb\" action=\"" + S2DNames.CGI_URL + "\">\n");
+		_writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., 4081)\n");
+		_writer.write("to generate visualizations for that entry</label>\n");
+		_writer.write("<p>\n");
+		_writer.write("<input type=\"text\" name=\"number\" size=\"5\">\n");
+		_writer.write("<input type=\"submit\" value=\"View data\">\n");
+		_writer.write("</p>\n");
+		_writer.write("</form>\n");
 	    }
             _writer.write("</div>\n\n");
 
@@ -605,7 +679,7 @@ public abstract class S2DSummaryHtmlGen {
 TEMP?*/
 
 		// Write out the tables that now contain the actual links.
-	        _writer.write("\n<br>\n<div id=\"content\">\n");
+	        _writer.write("\n<br>\n<div class=\"content\">\n");
 
 		// The first time through the loop, we create the
 		// entries for the things that do have data; the second
@@ -614,7 +688,7 @@ TEMP?*/
 		boolean writeNoData = false;
 		for (int index = 0; index <= 1; index++) {
 		    if (writeNoData) {
-		        _writer.write("\n<table id=\"vis\" width=\"100%\">\n");
+		        _writer.write("\n<table class=\"vis\" width=\"100%\">\n");
 		    } else {
 		        _writer.write("\n<br>\n");
 		        _writer.write("<table>\n");
@@ -684,14 +758,13 @@ TEMP?*/
 		  "reprocessing\">\n");
 		_writer.write("</form>\n");
 
-	        _writer.write("</div>\n");
-
 		//
 		// Multi-entry visualization form.
 		//
 	        if (!_multiEntry) {
-		    _writer.write("\n<br>\n<div id=\"content\">\n");
-		    _writer.write("<table id=\"vis\">\n");
+		    _writer.write("\n<hr>\n");
+		    _writer.write("<br>\n");
+		    _writer.write("<table class=\"vis\">\n");
 		    _writer.write("<tr>\n");
 		    _writer.write("<td align=\"left\" rowspan=\"2\" width=\"120\">\n");
 		    //TEMP -- we should get images here from the figures
@@ -729,13 +802,35 @@ TEMP?*/
 		    _writer.write("</td>\n");
 		    _writer.write("</tr>\n");
 		    _writer.write("</table>\n");
-		    _writer.write("</div>\n");
 	        }
+
+		_writer.write("</div>\n");
+		
+		//
+		// Links to visualization selection pages.
+		//
+		_writer.write("<br>\n");
+		_writer.write("<div class=\"content\">\n");
+		_writer.write("<center>\n");
+		_writer.write("<strong>Other visualization options</strong>\n");
+		_writer.write("</center>\n");
+		_writer.write("<p><a href=\"../../bmrb_select.html\">Single-entry visualization selection page</a>\n");
+		_writer.write("</p>\n");
+		_writer.write("<p><a href=\"../../bmrb_select2.html\">Two-entry visualization selection page</a>\n");
+		_writer.write("</p>\n");
+		_writer.write("<p><a href=\"../../restraint_select.html\">Restraints by PDB ID</a>\n");
+		_writer.write("</p>\n");
+		_writer.write("<p><a href=\"../../../histograms/index.html\">Database-wide histograms</a>\n");
+		_writer.write("</p>\n");
+		_writer.write("<p><a href=\"../../../../vis_serv\">Visualization server</a> (upload and\n");
+		_writer.write("visualize data without making it public)\n");
+		_writer.write("</p>\n");
+		_writer.write("</div>\n");
 
 		//
 		// Miscellaneous info.
 		//
-	        _writer.write("\n<br>\n<div id=\"content\">\n");
+	        _writer.write("\n<br>\n<div class=\"content\">\n");
 	        _writer.write("<p>Comments or questions?  Contact <a href=\"mailto:" +
 	          S2DNames.COMMENT_EMAIL + "\">" + S2DNames.COMMENT_EMAIL +
 	          "</a></p>\n");
@@ -2094,7 +2189,7 @@ TEMP?*/
 
 	String figuresDir = (_isUvd ? "../" : "") + "../../figures/";
         _writer.write("<td width = \"50%\">\n");
-        _writer.write("<table id=\"vis\">\n");
+        _writer.write("<table class=\"vis\">\n");
         _writer.write("  <tr>\n");
         _writer.write("    <td align=\"left\" rowspan=\"2\" width=\"120\">\n");
         _writer.write("      <a class=\"thumbnail\">" +

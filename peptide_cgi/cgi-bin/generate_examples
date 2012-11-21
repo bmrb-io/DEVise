@@ -1,0 +1,70 @@
+#! /bin/csh -f
+# Generate visualizations for examples.
+
+# Note: run 'tests/dummy_csr_server -exit_on_success &' if not at BMRB Madison.
+
+# See ../vis_examples/entry_list.txt for detailed visualization type/
+# entry correspondences.
+
+# 7144 for "standard" chem shift stuff.
+echo "7114x"
+./s2d -bmrbid 7114 -name 7114x -force
+mv tmp/s2d.out tmp/7114x.out
+
+# 4264/3EZA for 3D.
+echo "4264x/3EZA"
+./s2d -bmrbid 4264 -name 4264x -force
+mv tmp/s2d.out tmp/4264x1.out
+./s2d -bmrbid 4264 -name 4264x -pdbid 3EZA -coord_index 8 \
+  -do_pdb 2 -force
+mv tmp/s2d.out tmp/4264x2.out
+
+# 10844/2LLE for chem shift reference.
+echo "10844x/2LLE"
+./s2d -bmrbid 18044 -name 18044x -force
+mv tmp/s2d.out tmp/18044x1.out
+./s2d -bmrbid 18044 -name 18044x -pdbid 2LLE -coord_index 1 \
+  -do_csr 2 -force
+mv tmp/s2d.out tmp/18044x2.out
+
+# 15209/2OQS for restraints.
+echo "15209x/2OQS"
+./s2d -nomail -bmrbid 15209 -name 15209x -force
+mv tmp/s2d.out tmp/15209x1.out
+./s2d -nomail -bmrbid 15209 -name 15209x -pdbid 2oqs \
+  -coord_index 1 -force -do_dist 3
+mv tmp/s2d.out tmp/15209x2.out
+./s2d -nomail -bmrbid 15209 -name 15209x -pdbid 2oqs \
+  -coord_index 1 -force -do_tar 3
+mv tmp/s2d.out tmp/15209x3.out
+
+# 15783/15960 for two-entry visualizations.
+echo "15783x/15960"
+./s2d -bmrbid 15783 -xbmrbid 15960 -name 15783x -force
+mv tmp/s2d.out tmp/15783x.out
+
+# 4267 for LACS, coupling constants, T1/T2 relaxation.
+echo "4267x"
+./s2d -bmrbid 4267 -name 4267x -force
+mv tmp/s2d.out tmp/4267x.out
+
+# 15451/2JUO for S2 predicted vs. experimental.
+echo "15451x/2JUO"
+./s2d -nomail -bmrbid 15451 -name 15451x -force
+mv tmp/s2d.out tmp/15451x1.out
+cd test_data
+ln -s s2pred-15451-2juo-1.out s2pred-15451x-2juo-1.out
+cd ..
+./s2d -nomail -bmrbid 15451 -name 15451x -pdbid 2JUO -do_s2p 2 \
+  -coord_index 1 -s2_frame_index 1
+rm test_data/s2pred-15451x-2juo-1.out
+mv tmp/s2d.out tmp/15451x2.out
+
+# 15063 for SPARTA.
+echo "15063x"
+./s2d -bmrbid 15063 -name 15063x -force
+mv tmp/s2d.out tmp/15063x.out
+
+# 5167 for DNA chem shift deltas.
+./s2d -bmrbid 5167 -name 5167x -force
+mv tmp/s2d.out tmp/5167x.out

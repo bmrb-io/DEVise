@@ -133,6 +133,16 @@ if ($bmrbId eq "4974" && $pdbId eq "2CI2") {
   system("touch", $name . ".done");
   exit(0);
 
+} elsif ($bmrbId eq "18044" && $pdbId eq "2LLE") {
+  system("cp", "test_data/18044_2lle.1", $name . "_1.dat");
+  system("cp", "test_data/18044_2lle.2", $name . "_2.dat");
+  system("cp", "test_data/18044_2lle.3", $name . "_3.dat");
+  system("cp", "test_data/18044_2lle.4", $name . "_4.dat");
+  system("cp", "test_data/18044_2lle.5", $name . "_5.dat");
+  system("chmod", "644", glob($name . "_?.dat"));
+  system("touch", $name . ".done");
+  exit(0);
+
 } else {
   # We can't handle the request.
   print "dummy_csr error ($bmrbId $pdbId)\n";

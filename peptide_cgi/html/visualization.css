@@ -2,30 +2,30 @@ body {
   background-color: #fafcff;
 }
 
-#vis {
+.vis {
   border: 2px solid #bdd3ff;
   border-collapse: collapse;
 }
 
-#vis th {
+.vis th {
   background-color: #bdd3ff;
   padding: 5;
   width: 100%;
 }
 
-#sub-vis {
+.sub-vis {
   border: 2px solid #33527b;
   border-collapse: collapse;
   padding: 20px;
 }
 
-#sub-vis th {
+.sub-vis th {
   background-color: #bdd3ff;
   padding: 5;
   width: 100%;
 }
 
-#header {
+.header {
   border: 1px solid #33527b;
   width: auto;
   padding-left: 25px;
@@ -35,16 +35,28 @@ body {
   background-color: #cbdbff;
 }
 
-#content {
+.content {
   border: 2px solid #33527b;
   width: auto;
   padding-left: 25px;
   padding-right: 25px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #ededed;
+  border-radius: 10px;
+  -moz-border-radius: 10px; /* Firefox 3.6 and earlier */
+}
+
+.vis-ex-toplevel {
+  width:32%; float: left;
+}
+
+.thumbnail-holder {
+  float: left;
+  padding-left: 10px;
+  padding-right: 10px;
   padding-top: 10px;
   padding-bottom: 10px;
-  background-color: #ededed;
-  border-radius: 25px;
-  -moz-border-radius: 25px; /* Firefox 3.6 and earlier */
 }
 
 .thumbnail {

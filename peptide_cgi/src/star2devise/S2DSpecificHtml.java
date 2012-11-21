@@ -20,6 +20,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.27.6.1  2012/11/14 22:49:26  wenger
+// Added form to enter accession number to visualization-specific pages.
+//
+// Revision 1.27  2011/12/28 21:08:03  wenger
+// Updated selection pages, per-visualization pages (but not histograms),
+// and help pages to the new layout and color scheme.
+//
 // Revision 1.26  2011/09/19 19:14:42  wenger
 // Fixed tutorial video links for the visualization server.
 //
@@ -110,6 +117,7 @@ public class S2DSpecificHtml {
     private static final String searchString6 = "4264y";
     private static final String searchString7 =
       "\"cmdport\" value=\"6666\"";
+    private static final String searchString8 = "CGI_URL";
 
     private String _replaceString1;
     private String _replaceString1b;
@@ -119,6 +127,7 @@ public class S2DSpecificHtml {
     private String _replaceString5;
     private String _replaceString6;
     private String _replaceString7;
+    private String _replaceString8;
 
     private boolean _multiEntry = false;
 
@@ -248,6 +257,8 @@ public class S2DSpecificHtml {
 	  _replaceString6);
 	line = S2DUtils.replace(line, searchString7,
 	  _replaceString7);
+	line = S2DUtils.replace(line, searchString8,
+	  _replaceString8);
 	if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
 	  _dataType == S2DUtils.TYPE_PISTACHIO ||
 	  _dataType == S2DUtils.TYPE_AMBIGUITY) {
@@ -310,6 +321,7 @@ public class S2DSpecificHtml {
 	_replaceString6 = name + S2DNames.SUMMARY_HTML_SUFFIX;
 	_replaceString7 = "\"cmdport\" value=\"" +
 	  S2DNames.JS_CMD_PORT + "\"";
+	_replaceString8 = S2DNames.CGI_URL;
     }
 
     //-------------------------------------------------------------------

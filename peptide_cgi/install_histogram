@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2011
+#  (c) Copyright 2000-2012
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -103,28 +103,23 @@ ln -s $datahome $targetdir
 
 # Create and set up the html directory.
 
-set targetdir = $htmlhome
+set targetdir = $htmlhome/histograms
 echo "Installing histogram html files in $targetdir"
 if (! -e $targetdir) then
   mkdir -p $targetdir
 endif
 chmod a+rwx $targetdir
-cp -p histograms/html/*.html $targetdir
+cp -p html2/devise/histograms/*.html $targetdir
 chmod a+r $targetdir/*.html
-
-pushd $targetdir
-\rm *.css
-ln -s $pephtmlhome/*.css .
-popd
 
 set targetdir = $targetdir/figures
 if (! -e $targetdir) then
   mkdir -p $targetdir
 endif
 chmod a+rwx $targetdir
-cp -p histograms/html/figures/*.png $targetdir
+cp -p html2/devise/histograms/figures/*.png $targetdir
 chmod a+r $targetdir/*.png
-cp -p histograms/html/figures/*.gif $targetdir
+cp -p html2/devise/histograms/figures/*.gif $targetdir
 chmod a+r $targetdir/*.gif
 
 

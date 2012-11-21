@@ -24,7 +24,28 @@
 </head>
 
 <body>
-  <div id="header">
+
+  <div class="header">
+    <table width="100%" align="CENTER" border="0" cellpadding="10px">
+      <tbody><tr>
+        <td style="text-align: left;">
+            <a href="../../../.."><img src="../../../figures/logo.png" style="margin-left: 2em;" alt="BMRB" title="BMRB homepage" height="60" width="56"></a>
+        </td>
+        <td style="text-align: center">
+          <h2 style="font-style: italic; margin-bottom: 0;">Biological Magnetic Resonance Data Bank</h2><br>
+          <span style="font-style: italic;">A Repository for Data from NMR Spectroscopy on Proteins,
+          Peptides, Nucleic Acids, and other Biomolecules</span>
+        </td>
+        <td style="text-align: right">
+            <a href="http://www.wwpdb.org/" target="_blank" style="padding-right: 2em;">
+                <img src="../../../figures/wwpdb.png" alt="WWPDB" title="World Wide Protein Data Bank" height="60" width="183">
+            </a>
+        </td>
+      </tr></tbody>
+    </table>
+  </div>
+
+  <br>
     <center> <h2>
     BMRB Data Viewer for bmr4264.str
     </h2> </center>
@@ -34,21 +55,27 @@
     <h3>
     Dummy details
     </h3>
-  </div>
 
   <br>
-  <div id="content">
+  <div class="content">
     <p><a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
       tutorial videos</a></p>
-    <p><a target = "_blank" href="../../../collab.html">JavaScreen collaboration</a></p>
-    <p><a target = "_blank" href="http://www.cs.wisc.edu/~devise">DEVise home page</a></p>
     <h3>
     <p><a href="4264y.html">Back to all visualizations for this entry</a></p>
     </h3>
+    <hr>
+    <form method="get" name="get_by_bmrb" action="CGI_URL">
+      <label for="number">Enter a BMRB accession number (e.g., 4081)
+        to generate visualizations for that entry</label>
+      <p>
+      <input type="text" name="number" size="5">
+      <input type="submit" value="View data">
+      </p>
+    </form>
   </div>
 
   <br>
-  <div id="content">
+  <div class="content">
     <center>
     <applet code=JavaScreen.jsa.class archive=../../../jsa1.jar,../../../jsa2.jar,../../../JmolApplet.jar width=400 height=30>
       <param name="applet" value="JavaScreen.jsa">
@@ -89,7 +116,25 @@
   </div>
 
   <br>
-  <div id="content">
+  <div class="content">
+    <center>
+    <strong>Other visualization options</strong>
+    </center>
+    <p><a href="../../bmrb_select.html">Single-entry visualization selection page</a>
+    </p>
+    <p><a href="../../bmrb_select2.html">Two-entry visualization selection page</a>
+    </p>
+    <p><a href="../../restraint_select.html">Restraints by PDB ID</a>
+    </p>
+    <p><a href="../../../histograms/index.html">Database-wide histograms</a>
+    </p>
+    <p><a href="../../../../vis_serv">Visualization server</a> (upload and
+    visualize data without making it public)
+    </p>
+  </div>
+
+  <br>
+  <div class="content">
     <p>Comments or questions?  Contact
       <a href="mailto:COMMENT_EMAIL">COMMENT_EMAIL</a>
     </p>
