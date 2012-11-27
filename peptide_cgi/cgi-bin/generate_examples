@@ -66,5 +66,6 @@ echo "15063x"
 mv tmp/s2d.out tmp/15063x.out
 
 # 5167 for DNA chem shift deltas.
+echo "5167x"
 ./s2d -bmrbid 5167 -name 5167x -force
 mv tmp/s2d.out tmp/5167x.out
