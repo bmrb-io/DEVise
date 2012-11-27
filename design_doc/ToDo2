@@ -315,6 +315,10 @@ JavaScreen: Allow multiple levels of child views.
 13.004 8/9/11	OPEN	4
 Make use of Java enums.
 
+13.005 11/27/12	OPEN	3
+Clean up JavaScreen html pages (remove deprecated tags like "center"
+and "name", run through w3c validator, etc. (wenger)
+
 ...........................................................................
 SECTION 14 (release/distribution)
 Number Date	Status  Pri
