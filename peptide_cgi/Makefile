@@ -123,11 +123,17 @@ proto_install:
 	cp -p prototype/html/bmrb_home_files/*.* $(PEP_HOME)/prototype/bmrb_home_files
 
 # Note: this must *not* be done as part of the normal install; it's only
-# for testing at CS, and doing the install at BMRB would goof thing up.
+# for testing at CS, and doing the install at BMRB would goof things up.
 home_install:
 	cp -p html2/bmrb_home.html $(HTML_HOME)
 	mkdir -p $(HTML_HOME)/bmrb_home_files
 	cp -p html2/bmrb_home_files/*.* $(HTML_HOME)/bmrb_home_files
+
+# Note: this must *not* be done as part of the normal install; it's only
+# for testing at CS, and doing the install at BMRB would goof things up.
+uvd_test_install:
+	mkdir -p $(HTML_HOME)/uvd
+	cp -p uvd*.html $(HTML_HOME)/uvd
 
 clean:
 	-rm $(S2D_PROPS_FILE)
