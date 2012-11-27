@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.52  2012/11/21 21:18:03  wenger
+// Merged vis_examples_br_0 thru vis_examples_br_2 to trunk.
+//
 // Revision 1.51.2.6  2012/11/20 00:18:08  wenger
 // Fixed problems with the figures, especially conflict in setup between
 // files as in CVS and files in the distribution.
@@ -570,6 +573,9 @@ public abstract class S2DSummaryHtmlGen {
 	    //
 	    // Header.
 	    //
+	    String figuresDir = (_isUvd ? "../" : "") + "../../../figures/";
+	    String homeDir = (_isUvd ? "../" : "") + "../../../../";
+
 	    _writer.write("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n");
 	    _writer.write("<html>\n<head>\n" +
 	      "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" + 
@@ -582,7 +588,7 @@ public abstract class S2DSummaryHtmlGen {
 	    _writer.write("<table width=\"100%\" align=\"CENTER\" border=\"0\" cellpadding=\"10px\">\n");
 	    _writer.write("<tbody><tr>\n");
 	    _writer.write("<td style=\"text-align: left;\">\n");
-	    _writer.write("<a href=\"../../../..\"><img src=\"../../../figures/logo.png\" style=\"margin-left: 2em;\" alt=\"BMRB\" title=\"BMRB homepage\" height=\"60\" width=\"56\"></a>\n");
+	    _writer.write("<a href=\"" + homeDir + "\"><img src=\"" + figuresDir + "logo.png\" style=\"margin-left: 2em;\" alt=\"BMRB\" title=\"BMRB homepage\" height=\"60\" width=\"56\"></a>\n");
 	    _writer.write("</td>\n");
 	    _writer.write("<td style=\"text-align: center\">\n");
 	    _writer.write("<h2 style=\"font-style: italic; margin-bottom: 0;\">Biological Magnetic Resonance Data Bank</h2><br>\n");
@@ -591,7 +597,7 @@ public abstract class S2DSummaryHtmlGen {
 	    _writer.write("</td>\n");
 	    _writer.write("<td style=\"text-align: right\">\n");
 	    _writer.write("<a href=\"http://www.wwpdb.org/\" target=\"_blank\" style=\"padding-right: 2em;\">\n");
-	    _writer.write("<img src=\"../../../figures/wwpdb.png\" alt=\"WWPDB\" title=\"World Wide Protein Data Bank\" height=\"60\" width=\"183\">\n");
+	    _writer.write("<img src=\"" + figuresDir + "wwpdb.png\" alt=\"WWPDB\" title=\"World Wide Protein Data Bank\" height=\"60\" width=\"183\">\n");
 	    _writer.write("</a>\n");
 	    _writer.write("</td>\n");
 	    _writer.write("</tr></tbody>\n");
@@ -607,47 +613,6 @@ public abstract class S2DSummaryHtmlGen {
 	        _writer.write("Title: " + entryTitle + "\n");
 	        _writer.write("</p>\n");
 	    }
-
-	    //
-	    // Tutorial video and main entry page links.
-	    //
-	    _writer.write("\n<br>\n<div class=\"content\">\n");
-	    _writer.write("\n<p>\n");
-	    String videoDir = _isUvd ? "../.." : "..";
-            _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
-	      "/js_videos.html\">DEVise/JavaScreen\n");
-            _writer.write("tutorial videos</a>\n");
-	    _writer.write("</p>\n");
-	    if (!_isUvd && !_masterId.equals("")) {
-	        _writer.write("<h3>\n");
-	        _writer.write("<p>\n");
-	        _writer.write("<a href=\"../../../../data_library/" +
-		  "generate_summary.php?bmrbId=" + _name +
-		  "&chooseAccOrDep=useAcc\">Back to main entry page</a>\n");
-	        _writer.write("</p>\n");
-	        _writer.write("</h3>\n");
-	        _writer.write("<h3>\n");
-	        _writer.write("<p>\n");
-		if (_restraintOnly) {
-		    _writer.write("<a href=\"../../restraint_select.html\">Back to restraint visualization selection page</a>\n");
-		} else if (_multiEntry) {
-		    _writer.write("<a href=\"../../bmrb_select2.html\">Back to two-entry visualization selection page</a>\n");
-		} else {
-		    _writer.write("<a href=\"../../bmrb_select.html\">Back to visualization selection page</a>\n");
-		}
-	        _writer.write("</p>\n");
-	        _writer.write("</h3>\n");
-		_writer.write("<hr>\n");
-		_writer.write("<form method=\"get\" name=\"get_by_bmrb\" action=\"" + S2DNames.CGI_URL + "\">\n");
-		_writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., 4081)\n");
-		_writer.write("to generate visualizations for that entry</label>\n");
-		_writer.write("<p>\n");
-		_writer.write("<input type=\"text\" name=\"number\" size=\"5\">\n");
-		_writer.write("<input type=\"submit\" value=\"View data\">\n");
-		_writer.write("</p>\n");
-		_writer.write("</form>\n");
-	    }
-            _writer.write("</div>\n\n");
 
 	} catch(IOException ex) {
 	    System.err.println("IOException opening or writing to summary " +
@@ -805,7 +770,48 @@ TEMP?*/
 	        }
 
 		_writer.write("</div>\n");
-		
+
+	        //
+	        // Tutorial video and main entry page links.
+	        //
+	        _writer.write("\n<br>\n<div class=\"content\">\n");
+	        _writer.write("\n<p>\n");
+	        String videoDir = _isUvd ? "../.." : "..";
+                _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
+	          "/js_videos.html\">DEVise/JavaScreen\n");
+                _writer.write("tutorial videos</a>\n");
+	        _writer.write("</p>\n");
+	        if (!_isUvd && !_masterId.equals("")) {
+	            _writer.write("<h3>\n");
+	            _writer.write("<p>\n");
+	            _writer.write("<a href=\"../../../../data_library/" +
+		      "generate_summary.php?bmrbId=" + _name +
+		      "&chooseAccOrDep=useAcc\">Back to main entry page</a>\n");
+	            _writer.write("</p>\n");
+	            _writer.write("</h3>\n");
+	            _writer.write("<h3>\n");
+	            _writer.write("<p>\n");
+		    if (_restraintOnly) {
+		        _writer.write("<a href=\"../../restraint_select.html\">Back to restraint visualization selection page</a>\n");
+		    } else if (_multiEntry) {
+		        _writer.write("<a href=\"../../bmrb_select2.html\">Back to two-entry visualization selection page</a>\n");
+		    } else {
+		        _writer.write("<a href=\"../../bmrb_select.html\">Back to visualization selection page</a>\n");
+		    }
+	            _writer.write("</p>\n");
+	            _writer.write("</h3>\n");
+		    _writer.write("<hr>\n");
+		    _writer.write("<form method=\"get\" name=\"get_by_bmrb\" action=\"" + S2DNames.CGI_URL + "\">\n");
+		    _writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., 4081)\n");
+		    _writer.write("to generate visualizations for that entry</label>\n");
+		    _writer.write("<p>\n");
+		    _writer.write("<input type=\"text\" name=\"number\" size=\"5\">\n");
+		    _writer.write("<input type=\"submit\" value=\"View data\">\n");
+		    _writer.write("</p>\n");
+		    _writer.write("</form>\n");
+	        }
+                _writer.write("</div>\n\n");
+
 		//
 		// Links to visualization selection pages.
 		//

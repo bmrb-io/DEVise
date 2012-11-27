@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.303  2012/11/21 21:18:03  wenger
+// Merged vis_examples_br_0 thru vis_examples_br_2 to trunk.
+//
 // Revision 1.302.2.11  2012/11/20 00:18:08  wenger
 // Fixed problems with the figures, especially conflict in setup between
 // files as in CVS and files in the distribution.
@@ -774,7 +777,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.0x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.0x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
