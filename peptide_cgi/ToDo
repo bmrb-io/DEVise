@@ -758,7 +758,8 @@ Num Date        Status  Pri     Description
 				section of the home page. (wenger)
 
 169 11/13/12	OPEN	2	Clean up the html (e.g., remove deprecated
-				<center> tags). (broman/wenger)
+				<center> tags). (name is also deprecated)
+				(broman/wenger)
 
 170 11/13/12	DUP	2	Validate the Peptide-CGI html. (wenger)
 				(Duplicate of 167.)
