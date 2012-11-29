@@ -58,11 +58,20 @@
 
   <br>
   <div class="content">
-    <p><a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
-      tutorial videos</a></p>
-    <h3>
-    <p><a href="4264y.html">Back to all visualizations for this entry</a></p>
+    <div style="width:49%; float: left;">
+    <h3 style="text-align:center;">
+    <a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
+      tutorial videos</a>
     </h3>
+    </div>
+
+    <div style="width:49%; float: left;">
+    <h3 style="text-align:center;">
+    <p><a href="4264y.html">All visualizations for this entry</a></p>
+    </h3>
+    </div>
+    <p style="clear: both"></p>
+
     <hr>
     <form method="get" name="get_by_bmrb" action="CGI_URL">
       <label for="number">Enter a BMRB accession number (e.g., 4081)

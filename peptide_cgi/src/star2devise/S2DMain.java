@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.305  2012/11/29 00:41:38  wenger
+// Visualization summary page modifications as per 121127 emails with
+// Eldon.
+//
 // Revision 1.304  2012/11/27 01:04:05  wenger
 // Switched order of divs in summary page to bring actual visualization
 // menus higher on the page; fixed some path problems for images and
@@ -782,7 +786,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.0x3"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.0x4"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
