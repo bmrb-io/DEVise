@@ -7,6 +7,11 @@ Peptide-CGI 12.3.0
 * Added visualization examples page and a script to generate the
 corresponding actual visualizations.
 
+* Added the "BMRB/wwPDB" header to a bunch of the Peptide-CGI pages
+(both static and dynamic).
+
+* Made some improvements to the layout of the visualization summary pages.
+
 * Added a copy of the BMRB home page, with the new "NMR data
 visualizations" section.
 

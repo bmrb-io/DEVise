@@ -36,6 +36,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.53  2012/11/27 01:04:05  wenger
+// Switched order of divs in summary page to bring actual visualization
+// menus higher on the page; fixed some path problems for images and
+// BMRB home page links.
+//
 // Revision 1.52  2012/11/21 21:18:03  wenger
 // Merged vis_examples_br_0 thru vis_examples_br_2 to trunk.
 //
@@ -614,6 +619,62 @@ public abstract class S2DSummaryHtmlGen {
 	        _writer.write("</p>\n");
 	    }
 
+	    //
+	    // Tutorial video and main entry page links.
+	    //
+	    _writer.write("\n<br>\n<div class=\"content\">\n\n");
+
+            _writer.write("<div style=\"width:24%; float: left;\">\n");
+            _writer.write("<h3 style=\"text-align:center;\">\n");
+	    String videoDir = _isUvd ? "../.." : "..";
+            _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
+	      "/js_videos.html\">DEVise tutorial videos</a>\n");
+            _writer.write("</h3>\n");
+            _writer.write("</div>\n");
+
+	    // We only have an entry page (one level above the
+	    // visualization page) if this is a "real" entry.
+	    if (!_isUvd && !_masterId.equals("")) {
+                _writer.write("<div style=\"width:24%; float: left;\">\n");
+                _writer.write("<h3 style=\"text-align:center;\">\n");
+	        _writer.write("<a href=\"../../../../data_library/" +
+	          "generate_summary.php?bmrbId=" + _name +
+	          "&chooseAccOrDep=useAcc\">Main entry page</a>\n");
+                _writer.write("</h3>\n");
+                _writer.write("</div>\n");
+	    }
+
+            _writer.write("<div style=\"width:24%; float: left;\">\n");
+            _writer.write("<h3 style=\"text-align:center;\">\n");
+            _writer.write("<a href=\"#other_vis\">Other visualization options</a>\n");
+            _writer.write("</h3>\n");
+            _writer.write("</div>\n");
+
+	    String selectDir = (_isUvd ? "../" : "") + "../../";
+	    _writer.write("<div style=\"width:24%; float: left;\">\n");
+	    _writer.write("<h3 style=\"text-align:center;\">\n");
+	    if (_restraintOnly) {
+	        _writer.write("<a href=\"" + selectDir + "restraint_select.html\">Restraint visualization selection page</a>\n");
+	    } else if (_multiEntry) {
+	        _writer.write("<a href=\"" + selectDir + "bmrb_select2.html\">Two-entry visualization selection page</a>\n");
+	    } else {
+	        _writer.write("<a href=\"" + selectDir + "bmrb_select.html\">Visualization selection page</a>\n");
+	    }
+	    _writer.write("</h3>\n");
+	    _writer.write("</div>\n");
+	    
+	    _writer.write("<p style=\"clear: both\"></p>\n");
+	    _writer.write("<hr>\n");
+	    _writer.write("<form method=\"get\" name=\"get_by_bmrb\" action=\"" + S2DNames.CGI_URL + "\">\n");
+	    _writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., 4081)\n");
+	    _writer.write("to generate visualizations for that entry</label>\n");
+	    _writer.write("<p>\n");
+	    _writer.write("<input type=\"text\" name=\"number\" size=\"5\">\n");
+	    _writer.write("<input type=\"submit\" value=\"View data\">\n");
+	    _writer.write("</p>\n");
+	    _writer.write("</form>\n");
+	    _writer.write("</div>\n\n");
+
 	} catch(IOException ex) {
 	    System.err.println("IOException opening or writing to summary " +
 	      "html file: " + ex.toString());
@@ -771,55 +832,12 @@ TEMP?*/
 
 		_writer.write("</div>\n");
 
-	        //
-	        // Tutorial video and main entry page links.
-	        //
-	        _writer.write("\n<br>\n<div class=\"content\">\n");
-	        _writer.write("\n<p>\n");
-	        String videoDir = _isUvd ? "../.." : "..";
-                _writer.write("<a target= \"js_videos\" href=\"" + videoDir +
-	          "/js_videos.html\">DEVise/JavaScreen\n");
-                _writer.write("tutorial videos</a>\n");
-	        _writer.write("</p>\n");
-	        if (!_isUvd && !_masterId.equals("")) {
-	            _writer.write("<h3>\n");
-	            _writer.write("<p>\n");
-	            _writer.write("<a href=\"../../../../data_library/" +
-		      "generate_summary.php?bmrbId=" + _name +
-		      "&chooseAccOrDep=useAcc\">Back to main entry page</a>\n");
-	            _writer.write("</p>\n");
-	            _writer.write("</h3>\n");
-	            _writer.write("<h3>\n");
-	            _writer.write("<p>\n");
-		    if (_restraintOnly) {
-		        _writer.write("<a href=\"../../restraint_select.html\">Back to restraint visualization selection page</a>\n");
-		    } else if (_multiEntry) {
-		        _writer.write("<a href=\"../../bmrb_select2.html\">Back to two-entry visualization selection page</a>\n");
-		    } else {
-		        _writer.write("<a href=\"../../bmrb_select.html\">Back to visualization selection page</a>\n");
-		    }
-	            _writer.write("</p>\n");
-	            _writer.write("</h3>\n");
-		    _writer.write("<hr>\n");
-		    _writer.write("<form method=\"get\" name=\"get_by_bmrb\" action=\"" + S2DNames.CGI_URL + "\">\n");
-		    _writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., 4081)\n");
-		    _writer.write("to generate visualizations for that entry</label>\n");
-		    _writer.write("<p>\n");
-		    _writer.write("<input type=\"text\" name=\"number\" size=\"5\">\n");
-		    _writer.write("<input type=\"submit\" value=\"View data\">\n");
-		    _writer.write("</p>\n");
-		    _writer.write("</form>\n");
-	        }
-                _writer.write("</div>\n\n");
-
 		//
 		// Links to visualization selection pages.
 		//
 		_writer.write("<br>\n");
-		_writer.write("<div class=\"content\">\n");
-		_writer.write("<center>\n");
-		_writer.write("<strong>Other visualization options</strong>\n");
-		_writer.write("</center>\n");
+		_writer.write("<div class=\"content\" id=\"other_vis\">\n");
+		_writer.write("<h3 style=\"text-align: center\">Other visualization options</h3>\n");
 		_writer.write("<p><a href=\"../../bmrb_select.html\">Single-entry visualization selection page</a>\n");
 		_writer.write("</p>\n");
 		_writer.write("<p><a href=\"../../bmrb_select2.html\">Two-entry visualization selection page</a>\n");
