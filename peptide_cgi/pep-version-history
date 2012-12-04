@@ -20,6 +20,9 @@ visualizations" section.
 * Removed "JavaScreen collaboration" and "DEVise home page" links
 from the visualization pages.
 
+* Validated and (mostly) corrected the html pages that are part of
+Peptide-CGI.
+
 * Reorganized the HTML directories (slightly in how they're installed,
 significantly in the sources); fixed broken link from histogram pages
 to JavaScreen collaboration page.
