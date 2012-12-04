@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.307  2012/12/04 18:27:19  wenger
+// Did a bunch of validation and cleanup of html (both static and
+// dynamically-generated); still need to do some more, though.
+//
 // Revision 1.306  2012/11/29 17:25:36  wenger
 // Fixed up layout of specific visualization pages to better match the
 // new version of the visualization summary pages.
@@ -790,7 +794,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.0x5"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.0x6"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
@@ -1412,9 +1416,7 @@ public class S2DMain {
 		  "property value not defined; using default");
 	    }
 	    S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE =
-	      "http://www.bmrb.wisc.edu/ftp/pub/bmrb/" +
-	      "nmr_pdb_integrated_data/coordinates_restraints_chemshifts" +
-	      "/all/nmr-star/*/*_linked.str";
+	      "http://www.bmrb.wisc.edu/ftp/pub/bmrb/nmr_pdb_integrated_data/coordinates_restraints_chemshifts/divided/@/*/nmr-star/*_linked.str";
 	}
 
 	S2DNames.JS_CMD_PORT = props.getProperty("bmrb_mirror.js_cmd_port");

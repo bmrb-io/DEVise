@@ -23,6 +23,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.6  2012/01/20 16:09:21  wenger
+// Merged s2d_mailfix_br_0 thru s2d_mailfix_br_1 to trunk.
+//
 // Revision 1.5.24.1  2012/01/09 22:32:30  wenger
 // S2d no longer sends error emails in a number of cases that are
 // instances of faulty inputs rather than actual software errors
@@ -113,6 +116,9 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
 
         String url = S2DUtils.replace(
 	  S2DNames.REMEDIATED_RESTRAINTS_TEMPLATE, "*", pdbId);
+	// This is so we can use the "divided" directory...
+        String id2 = pdbId.substring(1, 3);
+        url = S2DUtils.replace(url, "@", id2);
 
 	// Throw an exception if the URL doesn't exist.
 	try {

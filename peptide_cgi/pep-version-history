@@ -24,6 +24,9 @@ from the visualization pages.
 significantly in the sources); fixed broken link from histogram pages
 to JavaScreen collaboration page.
 
+* We now get remediated restraints files from the "divided" rather than
+"all" directory.
+
 
 Peptide-CGI 12.2.2
 ------------------
