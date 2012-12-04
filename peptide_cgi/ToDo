@@ -796,6 +796,11 @@ Num Date        Status  Pri     Description
 179 11/21/12	OPEN	3	Put new BMRB/wwPDB header in
 				dynamics_movie_demo.html. (wenger)
 
+180 12/4/12	OPEN	2	Get PDB files from the "divided" section
+				(needs a way for config to specify the
+				two middle chars of the ID).  (dmaziuk/
+				wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
