@@ -750,7 +750,7 @@ Num Date        Status  Pri     Description
 				ways of getting to entries (histograms,
 				search, etc.) (wenger)
 
-167 10/26/12	OPEN	2	Validate all pages (including samples of
+167 10/26/12	ACTIVE	2	Validate all pages (including samples of
 				automatically-generated ones) (probably
 				use http://validator.w3.org). (wenger)
 

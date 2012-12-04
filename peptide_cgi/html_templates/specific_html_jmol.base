@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!--
   ========================================================================
   DEVise Data Visualization Software
@@ -19,6 +19,7 @@
 
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <title>BMRB Data Viewer for bmr4264.str</title>
   <link href="../visualization.css" rel="stylesheet" type="text/css" media="all">
 </head>
@@ -60,14 +61,13 @@
   <div class="content">
     <div style="width:49%; float: left;">
     <h3 style="text-align:center;">
-    <a target= "js_videos" href="../js_videos.html">DEVise/JavaScreen
-      tutorial videos</a>
+    <a target= "js_videos" href="../js_videos.html">DEVise tutorial videos</a>
     </h3>
     </div>
 
     <div style="width:49%; float: left;">
     <h3 style="text-align:center;">
-    <p><a href="4264y.html">All visualizations for this entry</a></p>
+    <a href="4264y.html">All visualizations for this entry</a>
     </h3>
     </div>
     <p style="clear: both"></p>
@@ -77,7 +77,7 @@
       <label for="number">Enter a BMRB accession number (e.g., 4081)
         to generate visualizations for that entry</label>
       <p>
-      <input type="text" name="number" size="5">
+      <input type="text" name="number" id="number" size="5">
       <input type="submit" value="View data">
       </p>
     </form>
@@ -86,7 +86,7 @@
   <br>
   <div class="content">
     <center>
-    <applet code=JavaScreen.jsa.class archive=../../../jsa1.jar,../../../jsa2.jar,../../../JmolApplet.jar width=400 height=30>
+    <applet code="JavaScreen.jsa.class" archive="../../../jsa1.jar,../../../jsa2.jar,../../../JmolApplet.jar" width="400" height="30">
       <param name="applet" value="JavaScreen.jsa">
       <param name="debug" value="0">
       <param name="session" value="bmrb/dynamic_sessions/4264d1.ds">
@@ -108,8 +108,8 @@
       3D rendering by <a href="http://jmol.sourceforge.net/">Jmol</a>
     </h3>
     <h3>
-      <p><a target= "nmr_vis_help" href="help_d.html">Help about this
-        visualization</a></p>
+      <a target= "nmr_vis_help" href="help_d.html">Help about this
+        visualization</a>
     </h3>
     <p>
       <b>Switching visualizations:</b> to switch between visualizations

@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <!--
   ========================================================================
   DEVise Data Visualization Software
@@ -54,18 +54,25 @@
 
 <br>
 <div class="content">
-  <p><a target= "js_videos" href="../peptide-cgi/html/js_videos.html">DEVise/JavaScreen
-    tutorial videos</a></p>
-  <h3>
-  <p><a href="index.html">Back to histogram selection page</a></p>
+  <div style="width:49%; float: left;">
+  <h3 style="text-align:center;">
+  <a target= "js_videos" href="../peptide-cgi/html/js_videos.html">DEVise tutorial videos</a>
   </h3>
+  </div>
+
+  <div style="width:49%; float: left;">
+  <h3 style="text-align:center;">
+  <a href="index.html">Histogram selection page</a>
+  </h3>
+  </div>
+  <p style="clear: both"></p>
 </div>
 
 <br>
 <div class="content">
 
 <center>
-<applet code=JavaScreen.jsa.class archive=../jsa1.jar,../jsa2.jar,../JmolApplet.jar width=400 height=30>
+<applet code=JavaScreen.jsa.class archive="../jsa1.jar,../jsa2.jar,../JmolApplet.jar" width="400" height="30">
 <param name="applet" value="JavaScreen.jsa">
 <param name="debug" value="0">
 <param name="session" value="bmrb/histogram2_example.ds">

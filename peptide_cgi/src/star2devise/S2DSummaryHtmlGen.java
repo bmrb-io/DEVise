@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.54  2012/11/29 00:41:38  wenger
+// Visualization summary page modifications as per 121127 emails with
+// Eldon.
+//
 // Revision 1.53  2012/11/27 01:04:05  wenger
 // Switched order of divs in summary page to bring actual visualization
 // menus higher on the page; fixed some path problems for images and
@@ -581,7 +585,7 @@ public abstract class S2DSummaryHtmlGen {
 	    String figuresDir = (_isUvd ? "../" : "") + "../../../figures/";
 	    String homeDir = (_isUvd ? "../" : "") + "../../../../";
 
-	    _writer.write("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n");
+	    _writer.write("<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">\n");
 	    _writer.write("<html>\n<head>\n" +
 	      "<meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" + 
 	      "<title>Summary for " + _longName + "</title>\n" +
@@ -799,7 +803,7 @@ TEMP?*/
 		    _writer.write("<a class=\"thumbnail\"><img src=\"" + imageDir + "/two_entry_thumb.png\"><span><img src=\"" + imageDir + "/two_entry.png\"></span></a>\n");
 		    _writer.write("</td>\n");
 		    _writer.write("<th align=\"left\">\n");
-		    _writer.write("Multi-entry visualizations</b>\n");
+		    _writer.write("Multi-entry visualizations\n");
 		    _writer.write("</th>\n");
 		    _writer.write("</tr>\n");
 		    _writer.write("<tr>\n");
@@ -820,7 +824,7 @@ TEMP?*/
 		          "value=\"" + _name + "\">\n");
 	            } else {
 	                _writer.write("<input type=\"hidden\" name=\"number\" " +
-	                  "value=\"" + _name + "\">\n");
+	                  "id=\"number\" value=\"" + _name + "\">\n");
 	            }
 	            _writer.write("<input type=\"submit\" value=\"View data\">\n");
 	            _writer.write("</form>\n");

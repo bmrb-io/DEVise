@@ -1,6 +1,7 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <title>Chemical Shift Difference Histograms Help Page</title>
 <link REL="stylesheet" TYPE="text/css" HREF="visualization.css" TITLE="main stylesheet">
 </head>
@@ -37,13 +38,13 @@ calculations.
 <p>
 All chemical shift referencing correction calculations exclude large
 outliers, i.e.
+</p>
 <ul>
 <li>CA, CB, C shifts that differ by more than 6.0 ppm from predicted
 values
 <li>N shifts that differ by more than 13.0 ppm from predicted values
 <li>HA shifts that differ by more than 1.0 ppm from predicted values
 </ul>
-</p>
 
 <p>
 For all atoms a chemical shift referencing correction is
@@ -53,6 +54,7 @@ needed (advised) if the average deviation is larger than
     3*rmsd(atom)/sqrt(N(atom))
 </pre>
 
+<p>
 i.e., only if the average deviation exceeds by more than a factor
 of three the expected random variation in this average. The width
 of the brown area represents this maximum expected average deviation
