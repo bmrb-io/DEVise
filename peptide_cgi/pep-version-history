@@ -30,6 +30,9 @@ to JavaScreen collaboration page.
 * We now get remediated restraints files from the "divided" rather than
 "all" directory.
 
+* Accession numbers, etc., in html forms now have example values
+prefilled.
+
 
 Peptide-CGI 12.2.2
 ------------------

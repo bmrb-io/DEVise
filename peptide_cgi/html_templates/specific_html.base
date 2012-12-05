@@ -76,7 +76,7 @@
       <label for="number">Enter a BMRB accession number (e.g., 4081)
         to generate visualizations for that entry</label>
       <p>
-      <input type="text" name="number" id="number" size="5">
+      <input type="text" name="number" id="number" size="5" value="4081">
       <input type="submit" value="View data">
       </p>
     </form>

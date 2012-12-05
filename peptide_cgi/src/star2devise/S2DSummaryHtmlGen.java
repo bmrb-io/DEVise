@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.55  2012/12/04 18:27:19  wenger
+// Did a bunch of validation and cleanup of html (both static and
+// dynamically-generated); still need to do some more, though.
+//
 // Revision 1.54  2012/11/29 00:41:38  wenger
 // Visualization summary page modifications as per 121127 emails with
 // Eldon.
@@ -673,7 +677,7 @@ public abstract class S2DSummaryHtmlGen {
 	    _writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., 4081)\n");
 	    _writer.write("to generate visualizations for that entry</label>\n");
 	    _writer.write("<p>\n");
-	    _writer.write("<input type=\"text\" name=\"number\" size=\"5\">\n");
+	    _writer.write("<input type=\"text\" name=\"number\" id=\"number\" size=\"5\" value=\"4081\">\n");
 	    _writer.write("<input type=\"submit\" value=\"View data\">\n");
 	    _writer.write("</p>\n");
 	    _writer.write("</form>\n");

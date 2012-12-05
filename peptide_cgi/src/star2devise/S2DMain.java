@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.308  2012/12/04 20:24:55  wenger
+// We now get remediated restraints files from the "divided" rather than
+// "all" directory.
+//
 // Revision 1.307  2012/12/04 18:27:19  wenger
 // Did a bunch of validation and cleanup of html (both static and
 // dynamically-generated); still need to do some more, though.
@@ -794,7 +798,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.0x6"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.0x7"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
