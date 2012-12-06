@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.309  2012/12/05 22:38:13  wenger
+// Accession numbers, etc., in html forms now have example values prefilled.
+//
 // Revision 1.308  2012/12/04 20:24:55  wenger
 // We now get remediated restraints files from the "divided" rather than
 // "all" directory.
@@ -798,7 +801,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.0x7"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.0x8"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
@@ -1289,10 +1292,10 @@ public class S2DMain {
 	      "bmrb_mirror.star_url property");
 	}
 
-	S2DNames.PDB_FILE_URL = props.getProperty("bmrb_mirror.pdb_file_url");
-	if (S2DNames.PDB_FILE_URL == null) {
+	S2DNames.MMCIF_TEMPLATE = props.getProperty("bmrb_mirror.mmcif_template");
+	if (S2DNames.MMCIF_TEMPLATE == null) {
 	    throw new S2DError("Unable to get value for " +
-	      "bmrb_mirror.pdb_file_url property");
+	      "bmrb_mirror.mmcif_template property");
 	}
 
 	S2DNames.BMRB_3D_URL = props.getProperty("bmrb_mirror.3d_url");

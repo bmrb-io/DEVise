@@ -19,6 +19,11 @@
 // $Id$
 
 // $Log$
+// Revision 1.21  2011/10/31 20:18:37  wenger
+// In the S2 predicted vs. experimental visualizations the secondary
+// structures are now obtained from DSSP output files instead of from the
+// chemical shift reference back calculations.
+//
 // Revision 1.20  2011/05/19 19:46:09  wenger
 // Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
 //
@@ -117,10 +122,10 @@ public class S2DNames
     public static String LACS_URL = null;
 
     //
-    // URL for getting mmCIF files from PDB.  Note: this will be
+    // Template for getting mmCIF files.  Note: this will be
     // set according to the s2d.props file value.
     //
-    public static String PDB_FILE_URL = null;
+    public static String MMCIF_TEMPLATE = null;
 
     //
     // URL for 3D example.  Note: this will be set according to the

@@ -27,8 +27,8 @@ Peptide-CGI.
 significantly in the sources); fixed broken link from histogram pages
 to JavaScreen collaboration page.
 
-* We now get remediated restraints files from the "divided" rather than
-"all" directory.
+* We now get mmCIF and remediated restraints files from the "divided"
+rather than "all" directories.
 
 * Accession numbers, etc., in html forms now have example values
 prefilled.

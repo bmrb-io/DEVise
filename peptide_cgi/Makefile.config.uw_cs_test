@@ -36,7 +36,7 @@ WWW_BASE = http://$(OUTPUT_WEB_DOMAIN)/devise/test/bmrb_test
 
 STAR_URL = http://$(INPUT_WEB_DOMAIN)/ftp/pub/bmrb/entry_lists/nmr-star3.1/;http://$(INPUT_WEB_DOMAIN)/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
-PDB_FILE_URL = http://www.rcsb.org/pdb/files/
+MMCIF_TEMPLATE = "http://www.bmrb.wisc.edu/ftp/pub/pdb/data/structures/divided/mmCIF/@/*"
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/bmrb/4096_side3h.html
 SUMMARY_PAGE_DIR = $(WWW_BASE)/devise/peptide-cgi/html

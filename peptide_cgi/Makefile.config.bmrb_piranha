@@ -32,7 +32,7 @@ OUTPUT_WEB_DOMAIN = www.bmrb.wisc.edu
 
 STAR_URL = file:/website/ftp/pub/bmrb/entry_lists/nmr-star3.1/;file:/website/ftp/pub/bmrb/entry_lists/nmr-star2.1/
 STAR_NAME_TEMPLATE = "bmr*.str"
-PDB_FILE_URL = file:/website/ftp/pub/pdb/data/structures/all/mmCIF/
+MMCIF_TEMPLATE = "file:/website/ftp/pub/pdb/data/structures/divided/mmCIF/@/*"
 
 3D_EXAMPLE_URL = http://$(OUTPUT_WEB_DOMAIN)/devise/4096_side3h.html
 SUMMARY_PAGE_DIR = http://$(OUTPUT_WEB_DOMAIN)/devise/peptide-cgi/html

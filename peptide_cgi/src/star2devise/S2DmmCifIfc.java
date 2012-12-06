@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2010
+// (c) Copyright 2002-2012
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2011/10/10 23:43:39  wenger
+// Reduced edited movie time from .1 to .02, and set the resolution to
+// 400x400 to speed up generation time (just took 2:44 in a test).
+//
 // Revision 1.18.8.1  2011/09/22 21:22:11  wenger
 // We now don't show the movie buttons if a movie is not available; also
 // improved the way the movie configuration works.
@@ -107,7 +111,11 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	if (fileName.startsWith("file:")) {
             urlName = fileName;
 	} else {
-            urlName = S2DNames.PDB_FILE_URL + fileName;
+	    urlName = S2DUtils.replace(S2DNames.MMCIF_TEMPLATE, "*",
+	      fileName);
+	    // This is so we can use the "divided" directory...
+	    String id2 = fileName.substring(1, 3);
+	    urlName = S2DUtils.replace(urlName, "@", id2);
 	}
 	S2DUtils.tryUrl(urlName);
 
