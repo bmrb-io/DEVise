@@ -725,11 +725,12 @@ Num Date        Status  Pri     Description
 				(elu/wenger)
 				(Done by wenger, 10/31/11)
 
-162 3/7/12	OPEN	3	Change summary page menus so that the
+162 3/7/12	DONE	3	Change summary page menus so that the
 				visualization page is brought up as soon
 				as the user makes a selection in the menu,
 				and get rid of the 'Visualize in DEVise'
 				button. (elu/wenger)
+				(Done by wenger, ?.)
 
 163 10/23/12	OPEN	1	Change header div to match the new version
 				in Dimitri's page. (wenger)
@@ -741,7 +742,7 @@ Num Date        Status  Pri     Description
 				(wenger)
 				(Mostly done by wenger, 10/24/12.)
 
-165 10/25/12	OPEN	3	Add the wwPDB logo to Peptide-CGI pages.
+165 10/25/12	DUP	3	Add the wwPDB logo to Peptide-CGI pages.
 
 166 10/26/12	OPEN	2	Create a getting started guide (for the
 				whole visualization system, not just the
