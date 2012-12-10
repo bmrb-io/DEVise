@@ -803,6 +803,9 @@ Num Date        Status  Pri     Description
 				(dmaziuk/wenger)
 				(Done by wenger, 12/4/12.)
 
+181 12/10/12	OPEN	3	Merge the Jmol and non-Jmol visualization
+				page templates. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
