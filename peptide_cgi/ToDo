@@ -815,6 +815,9 @@ Num Date        Status  Pri     Description
 184 12/11/12	OPEN	3	Remove chem shift reference-related stuff
 				from automated tests. (wenger)
 
+185 12/11/12	OPEN	2	Update Peptide-CGI for LACS changes.
+				(dmaziuk/wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
