@@ -156,4 +156,4 @@ COMMENT_EMAIL = garbage@foo.bar.edu
 MY_UNCOMPRESS = my_uncompress_unix
 
 # Default for whether to do the chem shift reference calculation.
-# DO_CSR_DEFAULT = 1
+DO_CSR_DEFAULT = 0

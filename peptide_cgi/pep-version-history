@@ -4,6 +4,9 @@ Peptide-CGI 12.3.0
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
+* Disabled back calculated chemical shift referencing visualizations,
+because these are now considered obsolete.
+
 * Added visualization examples page and a script to generate the
 corresponding actual visualizations.
 

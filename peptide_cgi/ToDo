@@ -806,7 +806,7 @@ Num Date        Status  Pri     Description
 181 12/10/12	OPEN	3	Merge the Jmol and non-Jmol visualization
 				page templates. (wenger)
 
-182 12/11/12	OPEN	1	Turn off chem shift reference visualizations.
+182 12/11/12	ACTIVE	1	Turn off chem shift reference visualizations.
 				(elu/wenger)
 
 183 12/11/12	OPEN	1	Remove chem shift reference visualizations

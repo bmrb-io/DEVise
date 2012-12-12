@@ -58,15 +58,6 @@ The following testing steps must be done:
 - Click the 'Force Reprocessing' button and make sure the summary page
   gets updated.
 
-- Run 'tests/test15 -noleech' in
-  /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on teal.
-
-- View the following visualizations for the entry 4317 and MAKE SURE THEY
-  ARE CORRECT:
-    - Difference Histograms
-    - Differences by Residue
-    - Observed vs. Calculated Chemical Shift Values
-
 - Run tests/test3 in /var/home/www/public/cgi-bin/[bmrb|bmrb_test] on teal.
 
 - View the following visualizations for the entry 4081 and MAKE SURE THEY

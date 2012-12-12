@@ -66,7 +66,7 @@ if ($do_all != 0) {
   RunTest("test3_3");
   RunTest("test4");
   RunTest("test4_3");
-  RunTest("test6", "-noleech");
+  #RunTest("test6", "-noleech");
   RunTest("test7");
   RunTest("test9");
   RunTest("test10");
@@ -75,9 +75,9 @@ if ($do_all != 0) {
   RunTest("test13_3");
   RunTest("test14");
   RunTest("test14_3");
-  RunTest("test15", "-noleech");
-  RunTest("test15_3", "-noleech");
-  RunTest("test16", "-noleech");
+  #RunTest("test15", "-noleech");
+  #RunTest("test15_3", "-noleech");
+  #RunTest("test16", "-noleech");
   RunTest("test17");
   RunTest("test18");
   RunTest("test19");
@@ -99,7 +99,7 @@ if ($do_all != 0) {
   RunTest("test40");
   RunTest("test41");
   RunTest("test46");
-  RunTest("test47", "-noleech");
+  #RunTest("test47", "-noleech");
   RunTest("test49");
   RunTest("test50");
   RunTest("test51");

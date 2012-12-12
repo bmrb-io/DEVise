@@ -1,7 +1,7 @@
 		Peptide-CGI Configuration Information
 		$Id$
 
-TEMPTEMP -- this needs new stuff
+TEMP -- this needs new stuff
 
 * INTRODUCTION
 

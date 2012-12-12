@@ -108,7 +108,7 @@ VUR_JS_DIR = /website/devise/js.installed
 VUR_INPUT_DIR = web@yellowtail:/share/subedit/Third.Ed
 
 # The level of chemical shift reference processing to do.
-VUR_CSR_LEVEL = 2
+VUR_CSR_LEVEL = 0
 
 # The user that the "front-end" script will log into the "main"
 # machine as.
@@ -189,4 +189,4 @@ COMMENT_EMAIL = bmrbhelp@bmrb.wisc.edu
 MY_UNCOMPRESS = my_uncompress_unix
 
 # Default for whether to do the chem shift reference calculation.
-DO_CSR_DEFAULT = 1
+DO_CSR_DEFAULT = 0
