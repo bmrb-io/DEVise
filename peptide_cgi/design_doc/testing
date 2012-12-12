@@ -89,7 +89,6 @@ The following testing steps must be done:
 - View the following visualizations for the entry 4001:
     - 3D structure from PDB ID 1QLK (make sure data cursor shows up at
       correct initial size/location)
-      TEMPTEMP -- 1QLK is no longer linked by 4001.
     - Chemical shift distributions by amino acid (from the first save
       frame)
 
