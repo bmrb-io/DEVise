@@ -817,6 +817,7 @@ Num Date        Status  Pri     Description
 
 185 12/11/12	OPEN	2	Update Peptide-CGI for LACS changes.
 				(dmaziuk/wenger)
+				(See bmr4998_LACS.str)
 
 * Status:
 OPEN = item has not yet been addressed
