@@ -39,7 +39,8 @@ TEMP -- may need more changes...
 - Install on manatee at BMRB and test things, including the visualization
   server and visualization server restart IDs.
 
-- Install the new version at BMRB and the mirror sites.
+- Install the new version at BMRB and the mirror sites.  (Be sure to run
+  generate_examples in the CGI directory at each site!)
 
 - Announce the release to BMRB and mirrors.
 
