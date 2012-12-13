@@ -36,6 +36,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.56  2012/12/05 22:38:14  wenger
+// Accession numbers, etc., in html forms now have example values prefilled.
+//
 // Revision 1.55  2012/12/04 18:27:19  wenger
 // Did a bunch of validation and cleanup of html (both static and
 // dynamically-generated); still need to do some more, though.
@@ -843,18 +846,19 @@ TEMP?*/
 		//
 		// Links to visualization selection pages.
 		//
+	        String extraDir = _isUvd ? "../" : "";
 		_writer.write("<br>\n");
 		_writer.write("<div class=\"content\" id=\"other_vis\">\n");
 		_writer.write("<h3 style=\"text-align: center\">Other visualization options</h3>\n");
-		_writer.write("<p><a href=\"../../bmrb_select.html\">Single-entry visualization selection page</a>\n");
+		_writer.write("<p><a href=\"" + extraDir + "../../bmrb_select.html\">Single-entry visualization selection page</a>\n");
 		_writer.write("</p>\n");
-		_writer.write("<p><a href=\"../../bmrb_select2.html\">Two-entry visualization selection page</a>\n");
+		_writer.write("<p><a href=\"" + extraDir + "../../bmrb_select2.html\">Two-entry visualization selection page</a>\n");
 		_writer.write("</p>\n");
-		_writer.write("<p><a href=\"../../restraint_select.html\">Restraints by PDB ID</a>\n");
+		_writer.write("<p><a href=\"" + extraDir + "../../restraint_select.html\">Restraints by PDB ID</a>\n");
 		_writer.write("</p>\n");
-		_writer.write("<p><a href=\"../../../histograms/index.html\">Database-wide histograms</a>\n");
+		_writer.write("<p><a href=\"" + extraDir + "../../../histograms/index.html\">Database-wide histograms</a>\n");
 		_writer.write("</p>\n");
-		_writer.write("<p><a href=\"../../../../vis_serv\">Visualization server</a> (upload and\n");
+		_writer.write("<p><a href=\"" + extraDir + "../../../../vis_serv\">Visualization server</a> (upload and\n");
 		_writer.write("visualize data without making it public)\n");
 		_writer.write("</p>\n");
 		_writer.write("</div>\n");

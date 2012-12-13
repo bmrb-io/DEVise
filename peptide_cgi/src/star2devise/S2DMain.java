@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.311  2012/12/12 20:01:45  wenger
+// Disabled back calculated chemical shift referencing visualizations,
+// because these are now considered obsolete; removed them from the
+// visualization examples page, the pre-release testing document, and
+// test_all.  Various other small cleanups.
+//
 // Revision 1.310  2012/12/06 01:14:07  wenger
 // We now get mmCIF files from the "divided" rather than "all" directory.
 //
@@ -804,7 +810,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.0x9"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.0x10"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
