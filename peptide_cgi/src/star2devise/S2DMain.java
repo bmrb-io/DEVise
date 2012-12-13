@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.312  2012/12/13 16:49:23  wenger
+// Fixed broken links for "other visualization options" in visualization
+// server summary pages.
+//
 // Revision 1.311  2012/12/12 20:01:45  wenger
 // Disabled back calculated chemical shift referencing visualizations,
 // because these are now considered obsolete; removed them from the
@@ -810,7 +814,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.0x10"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.0";
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
