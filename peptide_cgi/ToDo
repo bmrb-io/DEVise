@@ -814,12 +814,16 @@ Num Date        Status  Pri     Description
 				from example page. (elu/wenger)
 				(DOne by wenger, 12/12/12.)
 
-184 12/11/12	OPEN	3	Remove chem shift reference-related stuff
+184 12/11/12	DONE	3	Remove chem shift reference-related stuff
 				from automated tests. (wenger)
+				(Done by wenger, 12/12/12.)
 
 185 12/11/12	OPEN	2	Update Peptide-CGI for LACS changes.
 				(dmaziuk/wenger)
 				(See bmr4998_LACS.str)
+
+186 12/11/12	OPEN	3	Remove chem shift reference-related stuff
+				from generate_examples. (wenger)
 
 * Status:
 OPEN = item has not yet been addressed
