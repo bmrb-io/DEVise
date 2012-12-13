@@ -56,7 +56,7 @@ cd test_data
 ln -s s2pred-15451-2juo-1.out s2pred-15451x-2juo-1.out
 cd ..
 ./s2d -nomail -bmrbid 15451 -name 15451x -pdbid 2JUO -do_s2p 2 \
-  -coord_index 1 -s2_frame_index 1
+  -coord_index 1 -s2_frame_index 1 -s2p_url file:test_data/
 rm test_data/s2pred-15451x-2juo-1.out
 mv tmp/s2d.out tmp/15451x2.out
 
