@@ -825,6 +825,10 @@ Num Date        Status  Pri     Description
 186 12/11/12	OPEN	3	Remove chem shift reference-related stuff
 				from generate_examples. (wenger)
 
+187 12/17/12	OPEN	4	Make the "You don't have Java enabled"
+				warning a lot more prominent (maybe red?).
+				(wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
