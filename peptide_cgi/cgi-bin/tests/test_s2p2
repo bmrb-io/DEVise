@@ -28,7 +28,8 @@ endif
 mv tmp/s2d.out tmp/s2d.out1
 
 echo -n "Processing predicted vs. experimental S2: "
-./make_view pdbid=2JUO\&number=15451\&do_s2p=2\&coord_index=1\&frame_index=1
+./s2d -nomail -pdbid 2JUO -bmrbid 15451 -force -check_res_list -check_pct \
+  -s2p_url file:test_data/ -do_s2p 2 -coord_index 1 -s2_frame_index 1
 if ($status != 0) then
   echo "Second invocation of s2d failed!"
   set result = 1

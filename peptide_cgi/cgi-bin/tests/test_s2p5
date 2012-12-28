@@ -29,7 +29,10 @@ endif
 mv tmp/uvd.out tmp/uvd.out1
 
 echo -n "Processing predicted vs. experimental S2: "
-./make_uvd pdbid=1ngl\&name=test_s2p5_out\&file=test_data/bmr4267.str\&do_s2p=2\&coord_index=1\&frame_index=1
+./uvd -pdbid 1ngl -name test_s2p5_out -file test_data/bmr4267.str \
+  -force -check_res_list -check_pct -s2p_url file:test_data/ -do_s2p 2 \
+  -coord_index 1 -s2_frame_index 1
+
 if ($status != 0) then
   echo "Second invocation of uvd failed!"
   set result = 1
