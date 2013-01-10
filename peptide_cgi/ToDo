@@ -803,7 +803,7 @@ Num Date        Status  Pri     Description
 				(dmaziuk/wenger)
 				(Done by wenger, 12/4/12.)
 
-181 12/10/12	OPEN	3	Merge the Jmol and non-Jmol visualization
+181 12/10/12	ACTIVE	3	Merge the Jmol and non-Jmol visualization
 				page templates. (wenger)
 
 182 12/11/12	DONE	1	Turn off chem shift reference visualizations.
@@ -827,6 +827,11 @@ Num Date        Status  Pri     Description
 
 187 12/17/12	OPEN	4	Make the "You don't have Java enabled"
 				warning a lot more prominent (maybe red?).
+				(wenger)
+
+188 1/10/13	OPEN	2	Clean up the temporary histogram changes
+				(that get drill-down links to work) as
+				soon as the permanent fix is in place.
 				(wenger)
 
 * Status:
