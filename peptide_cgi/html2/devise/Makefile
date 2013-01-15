@@ -29,6 +29,9 @@ clean:
 	cd vis_examples; make clean
 
 dist:
+	# Temporary for histogram drill-down fix.
+	ln -s ../../../../html2/devise/*.html .
+
 	mkdir histograms
 	cd histograms; ln -s ../../../../../html2/devise/histograms/Makefile .; make dist
 	mkdir peptide-cgi

@@ -2,7 +2,7 @@
 
 #  ========================================================================
 #  DEVise Data Visualization Software
-#  (c) Copyright 2000-2012
+#  (c) Copyright 2000-2013
 #  By the DEVise Development Group
 #  Madison, Wisconsin
 #  All Rights Reserved.
@@ -109,7 +109,8 @@ if (! -e $targetdir) then
   mkdir -p $targetdir
 endif
 chmod a+rwx $targetdir
-cp -p html2/devise/histograms/*.html $targetdir
+#TEMP cp -p html2/devise/histograms/*.html $targetdir
+cp -p html2/devise/histograms/index.html $targetdir
 chmod a+r $targetdir/*.html
 
 set targetdir = $targetdir/figures
@@ -121,6 +122,14 @@ cp -p html2/devise/histograms/figures/*.png $targetdir
 chmod a+r $targetdir/*.png
 cp -p html2/devise/histograms/figures/*.gif $targetdir
 chmod a+r $targetdir/*.gif
+
+
+# This section is temporary, to work around the histogram link problem.
+
+set targetdir = $htmlhome
+echo "Installing histogram html files in $targetdir"
+cp -p html2/devise/*hist*.html $targetdir
+chmod a+r $targetdir/*.html
 
 
 # Copy the schemas to the demo area.

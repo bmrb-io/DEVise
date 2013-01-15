@@ -4,7 +4,10 @@ Peptide-CGI 12.3.1
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
-(Nothing yet.)
+Cleaned up "temporary" fix for histogram drill-down links (moved the
+histogram html files up one directory so that the relative links work).
+
+Minor fixes to some tests so that they work on all machines.
 
 
 Peptide-CGI 12.3.0

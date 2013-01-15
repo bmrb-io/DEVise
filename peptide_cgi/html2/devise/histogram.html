@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--
+  ========================================================================
+  DEVise Data Visualization Software
+  (c) Copyright 1999-2013
+  By the DEVise Development Group
+  Madison, Wisconsin
+  All Rights Reserved.
+  ========================================================================
+
+  Under no circumstances is this software to be copied, distributed,
+  or altered in any way without prior permission from the DEVise
+  Development Group.
+-->
+
+<!--
+  $Id$
+-->
+
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>DEVise JavaScreen: Chemical Shift Distribution Histograms</title>
+  <link href="visualization.css" rel="stylesheet" type="text/css" media="all">
+</head>
+
+<body>
+
+  <div class="header">
+    <table width="100%" align="CENTER" border="0" cellpadding="10px">
+      <tbody><tr>
+        <td style="text-align: left;">
+            <a href=".."><img src="figures/logo.png" style="margin-left: 2em;" alt="BMRB" title="BMRB homepage" height="60" width="56"></a>
+        </td>
+        <td style="text-align: center">
+          <h2 style="font-style: italic; margin-bottom: 0;">Biological Magnetic Resonance Data Bank</h2><br>
+          <span style="font-style: italic;">A Repository for Data from NMR Spectroscopy on Proteins,
+          Peptides, Nucleic Acids, and other Biomolecules</span>
+        </td>
+        <td style="text-align: right">
+            <a href="http://www.wwpdb.org/" target="_blank" style="padding-right: 2em;">
+                <img src="figures/wwpdb.png" alt="WWPDB" title="World Wide Protein Data Bank" height="60" width="183">
+            </a>
+        </td>
+      </tr></tbody>
+    </table>
+  </div>
+
+<br>
+<center> <h2>
+  Chemical Shift Distribution Histograms
+</h2> </center>
+
+<br>
+<div class="content">
+  <div style="width:49%; float: left;">
+  <h3 style="text-align:center;">
+  <a target= "js_videos" href="peptide-cgi/html/js_videos.html">DEVise tutorial videos</a>
+  </h3>
+  </div>
+
+  <div style="width:49%; float: left;">
+  <h3 style="text-align:center;">
+  <a href="histograms/index.html">Histogram selection page</a>
+  </h3>
+  </div>
+  <p style="clear: both"></p>
+</div>
+
+<br>
+<div class="content">
+
+<center>
+<applet code=JavaScreen.jsa.class archive="jsa1.jar,jsa2.jar,JmolApplet.jar" width="400" height="30">
+<param name="applet" value="JavaScreen.jsa">
+<param name="debug" value="0">
+<param name="session" value="bmrb/histogram.ds">
+<param name="cmdport" value="6666">
+<param name="cgiurl" value="/cgi-bin/js.cgi">
+<param name="rubberbandlimit" value="4x4">
+<param name="bgcolor" value="64+96+0">
+<param name="screensize" value="800x600">
+<param name="hidebmrbsess" value="1">
+<hr>
+<p>Your browser does not support Java, or Java is not enabled.  Sorry!</p>
+<p>If you are using IE 8, you may need to restart your browser to
+enable add-ons.</p>
+<hr>
+</applet>
+</center>
+
+<p>
+Note: you can drill down on a histogram bar to view a
+dialog that, among other information, has links to the entries contributing
+to that histogram bucket.  To drill down, switch to drill-down mode
+(select this <img src="figures/drill-down.default.png"> icon) in the
+toolbar on the left side of the JavaScreen, and then left-click on the
+desired bar.
+<strong>For these links to work, you may have to
+turn off popup blocking in your web browser.</strong>
+</p>
+</div>
+
+  <br>
+  <div class="content">
+    <center>
+    <strong>Other visualization options</strong>
+    </center>
+    <p><a href="peptide-cgi/bmrb_select.html">Single-entry visualization selection page</a>
+    </p>
+    <p><a href="peptide-cgi/bmrb_select2.html">Two-entry visualization selection page</a>
+    </p>
+    <p><a href="peptide-cgi/restraint_select.html">Restraints by PDB ID</a>
+    </p>
+    <p><a href="histograms/index.html">Database-wide histograms</a>
+    </p>
+    <p><a href="../vis_serv">Visualization server</a> (upload and
+    visualize data without making it public)
+    </p>
+  </div>
+
+<br>
+<div class="content">
+  <p>Comments or questions?  Contact
+    <a href="mailto:bmrbhelp@bmrb.wisc.edu">bmrbhelp@bmrb.wisc.edu</a>
+  </p>
+  <p>Problems with the visualization software?  Contact <a
+    href="mailto:devise-sup@cs.wisc.edu">devise-sup@cs.wisc.edu</a>
+  </p>
+</div>
+
+<!-- code to track usage -->
+<script type="text/javascript">
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+  try {
+    var pageTracker = _gat._getTracker("UA-10448758-1");
+    pageTracker._trackPageview();
+  } catch(err) {}
+</script>
+
+</body>
+</html>
+

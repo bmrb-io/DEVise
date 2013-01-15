@@ -833,6 +833,9 @@ Num Date        Status  Pri     Description
 				(that get drill-down links to work) as
 				soon as the permanent fix is in place.
 				(wenger)
+				(All html files in html2/devise; changes
+				to links in histograms/index.html and
+				vis_examples/vis_examples_all.tmpl.)
 
 * Status:
 OPEN = item has not yet been addressed
