@@ -4,6 +4,10 @@ DEVise 1.11.3
 -------------
 
 (Nothing yet.)
+* Fixed DEVise/JS bug 1024 (JS data download problem).
+
+* Enabled better JavaScreen command error messages; a few other
+improvements to debug output.
 
 
 DEVise 1.11.2
