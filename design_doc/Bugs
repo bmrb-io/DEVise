@@ -4524,17 +4524,19 @@ java.security.AccessControlException: access denied
 			terminators.  (Look like they come from the
 			original files from Eldon.)  (wenger)
 
-1027 1/23/13	OPEN	JS: data download attempt on histograms causes
+1027 1/23/13	FIXED	JS: data download attempt on histograms causes
 			fatal DEVise error.  (dmaziuk/wenger)
 GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residue_vs_AtomName.Range), 0x0x9eda2f0open file: : No such file or directory
 DEVise error: Fatal error
   at ../../graphics.new/GDataRangeMap.c: 183
   [Jan 23 2013 13:10:41]
 GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residue_vs_AtomName.Range), 0x0x9eda2f0open file: : No such file or directory
+			(Fixed by wenger, 1/25/13)
 
-1028 1/23/13	OPEN	Having stuff in /tmp can be a problem -- if DEVise
+1028 1/23/13	FIXED	Having stuff in /tmp can be a problem -- if DEVise
 			is idle for too long, it can get deleted and then
 			DEVise fails. (wenger)
+			(Fixed by wenger, 1/25/13)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

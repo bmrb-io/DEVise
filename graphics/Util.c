@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2012
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.47  2012/04/30 22:21:10  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.46.10.1  2012/04/27 15:36:15  wenger
   We now escape any commas in the actual data strings for data download.
 
@@ -297,6 +300,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <libgen.h>
 
 #include "Util.h"
 #include "Exit.h"
@@ -614,8 +618,15 @@ void CheckAndMakeDirectory(const char *dir, Boolean clear, Boolean errorIsFatal)
 	}
   } else {
     /* path does not exist; make new directory */
-    /* note: it would be really nice if this did the equivalent of
-     * 'mkdir -p' on the command line */
+    /* if necessary we recursively call this function to make higher-
+     * level directories */
+    char *tmpDir = CopyString(dir);
+    char *upOne = dirname(tmpDir);
+    if (strcmp(upOne, ".") && strcmp(upOne, "/")) {
+      CheckAndMakeDirectory(upOne, false, errorIsFatal);
+    }
+    FreeString(tmpDir);
+
     int code = mkdir(dir, 0777);
     if (code < 0 ){
 	  char errBuf[1024];
