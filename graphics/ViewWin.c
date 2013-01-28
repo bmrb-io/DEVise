@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2010
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.73  2010/12/10 21:46:19  wenger
+  Merged devise_1_10_br_4 thru devise_1_10_br_5 to trunk.
+
   Revision 1.72.12.1  2010/12/09 22:36:18  wenger
   Fixed DEVise bug 924 (sends cursor commands to JS for hidden views).
 
@@ -660,7 +663,9 @@ ViewWin::ExportImage(DisplayExportFormat format, const char *filename)
 
 #if defined(VIEWWIN_TIMER)
   char timeBuf[256];
-  sprintf(timeBuf, "View(%s)::ExportImage()", GetName());
+  int formatted = snprintf(timeBuf, sizeof(timeBuf),
+      "View(%s)::ExportImage()", GetName());
+  checkAndTermBuf2(timeBuf, formatted);
   et.ReportTime(timeBuf);
 #endif
 
@@ -743,7 +748,9 @@ void ViewWin::Map(int x, int y, unsigned w, unsigned h)
 #endif
   if (_mapped) {
     char errBuf[1024];
-    sprintf(errBuf, "ViewWin <%s> already mapped", GetName());
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+        "ViewWin <%s> already mapped", GetName());
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     Exit::DoExit(1);
   }
@@ -916,8 +923,10 @@ void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h)
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "ViewWin(%s)::GetGeometry(%d, %d, %d, %d)\n", GetName(),
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+          "ViewWin(%s)::GetGeometry(%d, %d, %d, %d)\n", GetName(),
 	  x, y, w, h);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -927,7 +936,9 @@ void ViewWin::SetGeometry(int x, int y, unsigned w, unsigned h)
   _height = h;
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with ViewWin::SetGeometry()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+        "  Done with ViewWin::SetGeometry()\n");
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }
@@ -1013,8 +1024,10 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "ViewWin(%s, 0x%p)::MoveResize(%d, %d, %u, %u)\n",
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+          "ViewWin(%s, 0x%p)::MoveResize(%d, %d, %u, %u)\n",
 	  GetName(), this, x, y, w, h);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -1028,7 +1041,9 @@ void ViewWin::MoveResize(int x, int y, unsigned w, unsigned h)
   }
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with ViewWin::MoveResize()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+        "  Done with ViewWin::MoveResize()\n");
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }
@@ -1297,8 +1312,10 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "ViewWin(%s, 0x%p)::HandleResize %d, %d, %u, %u\n",
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+          "ViewWin(%s, 0x%p)::HandleResize %d, %d, %u, %u\n",
 	  GetName(), this, xlow, ylow, width, height);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -1312,7 +1329,9 @@ void	ViewWin::HandleResize(WindowRep* w, int xlow, int ylow,
     }
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with ViewWin::HandleResize()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+        "  Done with ViewWin::HandleResize()\n");
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }

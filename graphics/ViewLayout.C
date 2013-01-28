@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1995
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.18  2000/03/14 21:51:38  wenger
+  Added more invalid object checking; had to take some memory checking
+  out of client-side stuff for linking reasons.
+
   Revision 1.17  2000/03/14 17:05:14  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -88,6 +92,7 @@
 
 #include "ViewLayout.h"
 #include "DebugLog.h"
+#include "Util.h"
 
 //#define DEBUG
 
@@ -232,8 +237,10 @@ void	ViewLayout::HandleResize(WindowRep* win, int x, int y,
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "ViewLayout::HandleResize 0x%p at %d,%d, size %u,%u\n",
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+      "ViewLayout::HandleResize 0x%p at %d,%d, size %u,%u\n",
       this, x, y, w, h);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -244,7 +251,9 @@ void	ViewLayout::HandleResize(WindowRep* win, int x, int y,
     }
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with ViewLayout::HandleResize()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+      "  Done with ViewLayout::HandleResize()\n");
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }

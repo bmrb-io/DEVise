@@ -1,6 +1,6 @@
 /* ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2012
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -15,6 +15,9 @@
   $Id$
 
   $Log$
+  Revision 1.44  2012/04/30 22:21:11  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.43.12.3  2012/04/30 20:39:58  wenger
   (Hopefully final) cleanup.
 
@@ -230,6 +233,7 @@
 #include "WindowRep.h"
 #include "Display.h"
 #include "DebugLog.h"
+#include "Util.h"
 
 //#define DEBUG
 
@@ -290,7 +294,9 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "WindowRep::HandleResize(%d,%d,%d,%d)\n",x,y,width,height);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+        "WindowRep::HandleResize(%d,%d,%d,%d)\n",x,y,width,height);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -302,7 +308,9 @@ void WindowRep::HandleResize(int x, int y, unsigned width, unsigned height)
   DoneIterator(index);
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with WindowRep::HandleResize()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+        "  Done with WindowRep::HandleResize()\n");
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }

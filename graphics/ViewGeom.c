@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2005
+  (c) Copyright 1999-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  2005/12/06 20:03:12  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.3.14.1  2005/09/06 21:20:10  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -301,7 +305,9 @@ ViewGeom::SplitWindow(ViewWin *window)
 
     // Note that we're bypassing WinClassInfo here.
     char nameBuf[256];
-    sprintf(nameBuf, "%s window", view->GetName());
+    int formatted = snprintf(nameBuf, sizeof(nameBuf),
+        "%s window", view->GetName());
+    checkAndTermBuf2(nameBuf, formatted);
     char *tmpName = CopyString(nameBuf);
     newWindows[viewNum] = new Layout(tmpName, viewX, viewY, viewW, viewH, false,
       false);

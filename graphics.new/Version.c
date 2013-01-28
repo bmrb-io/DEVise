@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2012
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,13 @@
   $Id$
 
   $Log$
+  Revision 1.97  2012/05/08 18:04:28  wenger
+  Changed DEVise version to 1.11.3x1 and JavaScreen version to 5.14.3x1;
+  added 1.11.3 and 5.14.3 sections to the DEVise and JavaScreen version
+  histories; updated JavaScreen configuration files for data download
+  and devise@bmrb.wisc.edu email; added config file, etc., for compiling
+  DEVise on manatee.
+
   Revision 1.96  2012/04/30 23:24:51  wenger
   Changed version to 1.11.2 for release; added 't/T' command to key/mouse
   help document; moved me to first place after PIs in the DEVise
@@ -582,20 +589,20 @@
 #include "Version.h"
 #include "CompDate.h"
 #include "machdep.h"
-
+#include "Util.h"
 
 /*
  * Static global variables.
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.3x1"/*TEMP*/;
+static const char *	version = "1.11.3x2"/*TEMP*/;
 
 // Master DEVise copyright dates.
-static const char *	copyright = "Copyright (c) 1992-2012";
+static const char *	copyright = "Copyright (c) 1992-2013";
 
 // Trademark logo for each DEVise window.
-static const char *	winLogo = "Visualization by DEVise (tm) 2012";
+static const char *	winLogo = "Visualization by DEVise (tm) 2013";
 
 
 #if !defined(lint) && defined(RCSID)
@@ -650,7 +657,8 @@ Version::PrintInfo(LogFunc logFunc)
   // if (logFunc) logFunc(msg);
 
   char buf[256];
-  sprintf(buf, "%s\n", copyright);
+  int formatted = snprintf(buf, sizeof(buf), "%s\n", copyright);
+  //TEMP checkAndTermBuf2(buf, formatted);
   printf("%s", buf);
   // if (logFunc) logFunc(buf);
 
@@ -662,11 +670,15 @@ Version::PrintInfo(LogFunc logFunc)
   printf("%s", msg);
   // if (logFunc) logFunc(msg);
 
-  sprintf(buf, "Version %s (%s)\n", version, ARCH_NAME);
+  formatted = snprintf(buf, sizeof(buf), "Version %s (%s)\n", version,
+     ARCH_NAME);
+  //TEMP checkAndTermBuf2(buf, formatted);
   printf("%s", buf);
   // if (logFunc) logFunc(buf);
 
-  sprintf(buf, "Compile date: %s\n", CompDate::Get());
+  formatted = snprintf(buf, sizeof(buf), "Compile date: %s\n",
+      CompDate::Get());
+  //TEMP checkAndTermBuf2(buf, formatted);
   printf("%s", buf);
   // if (logFunc) logFunc(buf);
 
@@ -682,7 +694,9 @@ Version::PrintInfo(LogFunc logFunc)
         value = "null";
       }
       char buf[MAXPATHLEN * 2];
-      sprintf(buf, "$%s = <%s>", envVars[index], value);
+      formatted = snprintf(buf, sizeof(buf), "$%s = <%s>",
+          envVars[index], value);
+      //TEMP checkAndTermBuf2(buf, formatted);
       logFunc(buf);
     }
   }

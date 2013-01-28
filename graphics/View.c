@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2010
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.255  2010/09/01 18:44:10  wenger
+  Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+
   Revision 1.254.6.6  2010/08/31 19:14:42  wenger
   Fixed the cursor behavior problems in the ambiguity code and Pistachio
   visualizations by calling RestoreCursorState() at a different point.
@@ -1623,13 +1626,17 @@ void View::SetVisualFilterCommand(const VisualFilter &filter,
     args.AddArg(GetName());
 
     char tmpBuf[128];
-    sprintf(tmpBuf, "%.20g", filter.xLow);
+    int formatted = snprintf(tmpBuf, sizeof(tmpBuf), "%.20g", filter.xLow);
+    checkAndTermBuf2(tmpBuf, formatted);
     args.AddArg(tmpBuf);
-    sprintf(tmpBuf, "%.20g", filter.yLow);
+    formatted = snprintf(tmpBuf, sizeof(tmpBuf), "%.20g", filter.yLow);
+    checkAndTermBuf2(tmpBuf, formatted);
     args.AddArg(tmpBuf);
-    sprintf(tmpBuf, "%.20g", filter.xHigh);
+    formatted = snprintf(tmpBuf, sizeof(tmpBuf), "%.20g", filter.xHigh);
+    checkAndTermBuf2(tmpBuf, formatted);
     args.AddArg(tmpBuf);
-    sprintf(tmpBuf, "%.20g", filter.yHigh);
+    formatted = snprintf(tmpBuf, sizeof(tmpBuf), "%.20g", filter.yHigh);
+    checkAndTermBuf2(tmpBuf, formatted);
     args.AddArg(tmpBuf);
 
     CmdContainer::GenerateCommand(args.GetCount(), args.GetArgs());
@@ -1652,12 +1659,14 @@ void View::SetVisualFilter(const VisualFilter &filter, Boolean registerEvent)
 #if defined(DEBUG_LOG)
   {
     char logBuf[1024];
-    sprintf(logBuf, "View(%s)::SetVisualFilter()\n"
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+        "View(%s)::SetVisualFilter()\n"
         "  Old filter: (%g, %g), (%g, %g) %d\n"
         "  New filter: (%g, %g), (%g, %g) %d\n",
         GetName(), _filter.xLow, _filter.yLow, _filter.xHigh, _filter.yHigh,
 	_filter.flag, newFilter.xLow, newFilter.yLow, newFilter.xHigh,
 	newFilter.yHigh, newFilter.flag);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
@@ -1985,8 +1994,10 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "View(%s)::SetGeometry(%d, %d, %d, %d)\n", GetName(),
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+      "View(%s)::SetGeometry(%d, %d, %d, %d)\n", GetName(),
       x, y, wd, ht);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -2004,7 +2015,9 @@ void View::SetGeometry(int x, int y, unsigned wd, unsigned ht)
   Refresh();
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with View::SetGeometry()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+      "  Done with View::SetGeometry()\n");
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }
@@ -4179,9 +4192,11 @@ void View::UpdateViewTable()
     printf("UpdateViewtable: %g %g %d %s\n", (double)x0, (double)y0, bgid, 
 	   name);
 #endif
-    sprintf(line, "%g %g %d %s\n", (double)x0, (double)y0, bgid, name );
+    int formatted = snprintf(line, sizeof(line), "%g %g %d %s\n",
+	    (double)x0, (double)y0, bgid, name );
+	DevStatus bufCheck = checkAndTermBuf2(line, formatted);
+	DOASSERT(bufCheck == StatusOk);
     int len = strlen(line);
-    DOASSERT(len < (int)sizeof(line), "too much data in sprintf");
     DOASSERT(_viewTableBuffer,"no view table buffer");
     if ( (int) _viewTableBuffer->Write(line, len) != len) {
       fprintf(stderr, "Out of viewtable space\n");
@@ -4245,7 +4260,9 @@ void	View::Run(void)
 #if defined(DEBUG_LOG)
 	{
       char logBuf[256];
-	  sprintf(logBuf, "View(%s)::Run()\n", GetName());
+	  int formatted = snprintf(logBuf, sizeof(logBuf),
+	    "View(%s)::Run()\n", GetName());
+	  checkAndTermBuf2(logBuf, formatted);
 	  DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 	}
 #endif
@@ -4281,8 +4298,10 @@ void	View::Run(void)
       _filterQueue->Enqueue(_filter, _filter.marked);
 	  char errBuf[256];
 #if defined(DEBUG)
-	  sprintf(errBuf, "(warning) view <%s> current filter does not match "
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	      "(warning) view <%s> current filter does not match "
 	      "last history filter", GetName());
+	  checkAndTermBuf2(errBuf, formatted);
 	  reportErrNosys(errBuf);
 #endif
 	}
@@ -4829,8 +4848,10 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(),
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+          "View(%s)::HandleResize(%d,%d,%d,%d)\n", GetName(),
 	  xlow, ylow, width, height);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -4841,7 +4862,9 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
 	if (_hasGeometry && (_x == xlow) && (_y == ylow) &&
 		(_width == width) && (_height == height)) {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with View::HandleResize()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+        "  Done with View::HandleResize()\n");
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 		return;
@@ -4854,7 +4877,9 @@ void	View::HandleResize(WindowRep* w, int xlow, int ylow,
     Refresh(true);
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with View::HandleResize()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	    "  Done with View::HandleResize()\n");
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }
@@ -5456,33 +5481,38 @@ View::ShowMouseLocation(int *mouseX, int *mouseY)
   const int mouseFieldWidth = 6;
   const int mouseFieldPrec = 4;
   char xBuf[32], yBuf[32];
+  int formatted;
   if (mouseX) {
 	if (GetXAxisAttrType() == DateAttr) {
-	  strcpy(xBuf, DateString((time_t)dataX, GetXAxisDateFormat()));
+	  formatted = snprintf(xBuf, sizeof(xBuf), "%s",
+	      DateString((time_t)dataX, GetXAxisDateFormat()));
 	} else {
 	  if (!strcmp(GetXAxisFloatFormat(), DevAxis::_blankFloatFormat)) {
-        sprintf(xBuf, "%*s", mouseFieldWidth, "");
+        formatted = snprintf(xBuf, sizeof(xBuf), "%*s", mouseFieldWidth, "");
 	  } else {
-        sprintf(xBuf, GetXAxisFloatFormat(), dataX);
+        formatted = snprintf(xBuf, sizeof(xBuf), GetXAxisFloatFormat(), dataX);
 	  }
 	}
   } else {
-    sprintf(xBuf, "%*s", mouseFieldWidth, "");
+    formatted = snprintf(xBuf, sizeof(xBuf), "%*s", mouseFieldWidth, "");
   }
+  checkAndTermBuf2(xBuf, formatted);
 
   if (mouseY) {
 	if (GetYAxisAttrType() == DateAttr) {
-	  strcpy(yBuf, DateString((time_t)dataY, GetYAxisDateFormat()));
+	  formatted = snprintf(yBuf, sizeof(yBuf), "%s",
+	      DateString((time_t)dataY, GetYAxisDateFormat()));
 	} else {
 	  if (!strcmp(GetYAxisFloatFormat(), DevAxis::_blankFloatFormat)) {
-        sprintf(yBuf, "%*s", mouseFieldWidth, "");
+        formatted = snprintf(yBuf, sizeof(yBuf), "%*s", mouseFieldWidth, "");
 	  } else {
-        sprintf(yBuf, GetYAxisFloatFormat(), dataY);
+        formatted = snprintf(yBuf, sizeof(yBuf), GetYAxisFloatFormat(), dataY);
 	  }
 	}
   } else {
-    sprintf(yBuf, "%*s", mouseFieldWidth, "");
+    formatted = snprintf(yBuf, sizeof(yBuf), "%*s", mouseFieldWidth, "");
   }
+  checkAndTermBuf2(yBuf, formatted);
 
   ControlPanel::Instance()->ShowMouseLocation(xBuf, yBuf);
 }

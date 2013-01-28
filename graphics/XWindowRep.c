@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2012
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.151  2012/04/30 22:21:11  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.150.12.3  2012/04/30 20:39:58  wenger
   (Hopefully final) cleanup.
 
@@ -1209,8 +1212,10 @@ void XWindowRep::ExportImage(DisplayExportFormat format, const char *filename)
 
   /* Otherwise, translate the GIF file to PostScript. */
   char cmd[256];
-  sprintf(cmd, "giftopnm %s | pnmtops -rle -noturn -nocenter > %s",
+  int formatted = snprintf(cmd, sizeof(cmd),
+    "giftopnm %s | pnmtops -rle -noturn -nocenter > %s",
     gifFile, filename);
+  checkAndTermBuf2(cmd, formatted);
 
 #ifdef DEBUG
   printf("ExportImage: executing %s\n", cmd);
@@ -3537,12 +3542,15 @@ void XWindowRep::SetDashes(int dashCount, int dashes[], int startOffset)
     for (dashNum = 0; dashNum < dashCount; dashNum++) {
       int dash = dashes[dashNum];
       if (dash <= 0) {
-	sprintf(errBuf, "Illegal dash value (%d)", dash);
+	int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Illegal dash value (%d)", dash);
+	checkAndTermBuf2(errBuf, formatted);
 	reportErrNosys(errBuf);
         dashList[dashNum] = 1;
       } else if (dash > maxChar) {
-	sprintf(errBuf, "Illegal dash value (%d)", dash);
-	sprintf(errBuf, "Illegal dash value (%d)", dash);
+	int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Illegal dash value (%d)", dash);
+	checkAndTermBuf2(errBuf, formatted);
 	reportErrNosys(errBuf);
         dashList[dashNum] = maxChar;
       } else {
@@ -3673,8 +3681,10 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "Moving XWindowRep 0x%p to %d,%d, size %u,%u\n", this,
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+          "Moving XWindowRep 0x%p to %d,%d, size %u,%u\n", this,
 	  x, y, w, h);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -3710,7 +3720,9 @@ void XWindowRep::MoveResize(int x, int y, unsigned w, unsigned h)
   UpdateWinDimensions();
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with XWindowRep::MoveResize()\n");
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+        "  Done with XWindowRep::MoveResize()\n");
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }

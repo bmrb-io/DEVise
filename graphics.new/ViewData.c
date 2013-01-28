@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.33  2009/05/13 22:41:30  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.32.10.2  2009/05/06 20:19:19  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -283,7 +287,9 @@ ViewData::QueryInit(void* userData)
     DerivedTable *table = _derivedTables.Next(index);
     if (!table->Initialize().IsComplete()) {
 	  char errBuf[1024];
-         sprintf(errBuf, "Error initializing table %s", table->GetName());
+         int formatted = snprintf(errBuf, sizeof(errBuf),
+	   "Error initializing table %s", table->GetName());
+	 checkAndTermBuf2(errBuf, formatted);
 	  reportErrNosys(errBuf);
     }
   }
@@ -318,8 +324,9 @@ ViewData::QueryDone(int bytes, void* userData, Boolean allDataReturned,
     DerivedTable *table = _derivedTables.Next(index);
     if (!table->Done().IsComplete()) {
 	  char errBuf[1024];
-         sprintf(errBuf, "Error terminating table %s", table->GetName());
-
+         int formatted = snprintf(errBuf, sizeof(errBuf),
+	   "Error terminating table %s", table->GetName());
+	 checkAndTermBuf2(errBuf, formatted);
     }
   }
   _derivedTables.DoneIterator(index);
@@ -490,8 +497,10 @@ ViewData::InsertValues(TData *tdata, int recCount, void **tdataRecs)
 	  DerivedTable *table = _derivedTables.Next(index);
 	  if (!table->InsertValues(tdata, recCount, tdataRecs).IsComplete()) {
 		char errBuf[1024];
-        sprintf(errBuf, "Error inserting values into table %s",
+        int formatted = snprintf(errBuf, sizeof(errBuf),
+		"Error inserting values into table %s",
 		    table->GetName());
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 	  }
 	}
@@ -514,9 +523,11 @@ ViewData::CreateDerivedTable(char *namePrefix, char *masterAttrName)
   TData *tdata = tdMap->GetPhysTData();
   if (tdata == NULL) return NULL;
 
-  int namelen = strlen(namePrefix) + strlen(masterAttrName) + 1;
-  char *name = new char[namelen + 1];
-  sprintf(name, "%s:%s", namePrefix, masterAttrName);
+  int namelen = strlen(namePrefix) + strlen(masterAttrName) + 2;
+  char *name = new char[namelen];
+  int formatted = snprintf(name, namelen, "%s:%s", namePrefix,
+    masterAttrName);
+  checkAndTermBuf(name, namelen, formatted);
   DevStatus result;
   DerivedTable *table = new DerivedTable(name, tdata, masterAttrName, result);
   if (!result.IsComplete()) {
@@ -555,7 +566,9 @@ ViewData::DestroyDerivedTable(char *tableName)
 
   if (!found) {
 	char errBuf[1024];
-	sprintf(errBuf, "Table %s not found in table list", tableName);
+	int formatted = snprintf(errBuf, sizeof(errBuf),
+	  "Table %s not found in table list", tableName);
+	checkAndTermBuf2(errBuf, formatted);
 	reportErrNosys(errBuf);
   }
 }

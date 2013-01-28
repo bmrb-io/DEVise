@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.95  2009/05/13 22:41:23  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.94.2.2  2009/05/06 20:19:13  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -728,8 +732,10 @@ void XDisplay::ExportView(DisplayExportFormat format, char *filename)
 	   int index2 = win->_children.InitIterator();
 	   while(win->_children.More(index2)) {
 	      XWindowRep *winc = win->_children.Next(index2);
-	      char fn[strlen(filename) + 10];
-	      sprintf(fn,"%s.%d.gif", filename, i);
+	      int bufLen = strlen(filename) + 10;
+	      char fn[bufLen];
+	      int formatted = snprintf(fn, bufLen, "%s.%d.gif", filename, i);
+	      checkAndTermBuf(fn, bufLen, formatted);
 #if defined(DEBUG)
 	      printf("Saving the view to file %s\n", fn);
 #endif
@@ -868,8 +874,11 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
 	     winc->Origin(sub_x, sub_y);
 	     winc->Dimensions(sub_w, sub_h);
 	     char temp[LINE_SIZE];
-  	     sprintf(temp, "rect %s?%s+%d %d,%d %u,%u\n", url, p_start, i, sub_x+(rx-x), 
+  	     int formatted = snprintf(temp, sizeof(temp),
+	     		"rect %s?%s+%d %d,%d %u,%u\n",
+	     		url, p_start, i, sub_x+(rx-x), 
 			sub_y+(ry-y)+23, sub_w+sub_x+(rx-x), sub_h+sub_y+(ry-y)+23); 
+	     checkAndTermBuf2(temp, formatted);
 	     i++;
 	     fprintf(fp2, temp);
 	 }

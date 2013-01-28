@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.23  2000/02/16 18:51:42  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.22  2000/01/13 23:07:09  wenger
   Got DEVise to compile with new (much fussier) compiler (g++ 2.95.2).
 
@@ -128,8 +131,10 @@ static char *MakeFileName(char *linkname)
 {
   const char *fname = StripPath(linkname);
   int nameLen = strlen(Init::TmpDir()) + 1 + strlen(fname) + 5 + 1;
-  char *name = new char [nameLen];
-  sprintf(name, "%s/%s.link", Init::TmpDir(), fname);
+  char *name = new char[nameLen];
+  int formatted = snprintf(name, nameLen, "%s/%s.link", Init::TmpDir(),
+      fname);
+  checkAndTermBuf(name, nameLen, formatted);
   return name;
 }
 
