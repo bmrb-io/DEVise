@@ -837,6 +837,10 @@ Num Date        Status  Pri     Description
 				to links in histograms/index.html and
 				vis_examples/vis_examples_all.tmpl.)
 
+189 1/29/13	OPEN	3	Incorporate visualizations.html (from
+				the BMRB home page) into Peptide-CGI.
+				(wenger/dmaziuk)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
