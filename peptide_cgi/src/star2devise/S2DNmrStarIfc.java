@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.36  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.35  2010/11/01 00:51:12  wenger
 // Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
@@ -434,11 +437,13 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	if (residueCount != -1) {
 	    if (resList1 != null && residueCount != resList1._resCount) {
 	        throw new S2DError("Residue count (" + residueCount +
+		  ", from " + ENTITY_RESIDUE_COUNT +
 		  ") disagrees with residue list (" + resList1._resCount +
 		  " residues)");
 	    }
 	    if (resList2 != null && residueCount != resList2._resCount) {
-		throw new S2DError("Residue count (" + residueCount +
+	        throw new S2DError("Residue count (" + residueCount +
+		  ", from " + ENTITY_RESIDUE_COUNT +
 		  ") disagrees with residue list (" + resList2._resCount +
 		  " residues)");
 	    }
