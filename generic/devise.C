@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1996
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.24  2005/12/06 20:02:51  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.23.12.3  2005/09/28 17:14:36  wenger
   Fixed a bunch of possible buffer overflows (sprintfs and
   strcats) in DeviseCommand.C and Dispatcher.c; changed a bunch
@@ -182,6 +186,7 @@
 #include "ClientAPI.h"
 #include "DeviseClient.h"
 #include "Version.h"
+#include "Util.h"
 
 #define  DOASSERT(c,r) {if (!(c)) DoAbort(r); } 
 #undef	DEBUG
@@ -204,7 +209,8 @@ static void DoAbort(char *reason)
 {
     fprintf(stderr, "An internal error has occurred. Reason:\n  %s\n", reason);
     char cmd[256];
-    sprintf(cmd, "AbortProgram {%s}", reason);
+    int formatted = snprintf(cmd, sizeof(cmd), "AbortProgram {%s}", reason);
+    //TEMP checkAndTermBuf2(cmd, formatted);
     (void) _client->EvalCmd(cmd);
     delete _client;
     exit(1);
@@ -421,7 +427,9 @@ void SetupConnection()
     char *control;
     char buf[256];
     if (envPath) {
-        sprintf(buf, "%s/%s", envPath, controlFile);
+        int formatted = snprintf(buf, sizeof(buf), "%s/%s", envPath,
+	  controlFile);
+    	//TEMP checkAndTermBuf2(buf, formatted);
         control = buf;
     } else {
         control = controlFile;
@@ -439,7 +447,9 @@ void SetupConnection()
     if (_restoreFile) {
         if(!_quiet) printf("Restoring session file %s\n", _restoreFile);
         char buf[MAXPATHLEN + 256];
-        sprintf(buf, "DEVise openSession %s", _restoreFile);
+        int formatted = snprintf(buf, sizeof(buf),
+	  "DEVise openSession %s", _restoreFile);
+    	//TEMP checkAndTermBuf2(buf, formatted);
         int code = Tcl_Eval(_client->Interp(), buf);
         if (code != TCL_OK) {
             fprintf(stderr, "Cannot restore session file %s\n", _restoreFile);

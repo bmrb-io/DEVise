@@ -1,7 +1,8 @@
+//TEMPTEMP -- test this on bmrb/4096_full.ds
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +21,10 @@
   $Id$
 
   $Log$
+  Revision 1.21  2009/05/13 22:41:23  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.20.2.3  2009/05/06 20:19:13  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -231,7 +236,9 @@ GDataSock::GDataSock(Params &params)
       _fd = open(_params.file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
       if (_fd < 0) {
         char buf[2048];
-        sprintf(buf, "Can't open data channel (to file {%s})", _params.file);
+        int formatted = snprintf(buf, sizeof(buf),
+	    "Can't open data channel (to file {%s})", _params.file);
+	checkAndTermBuf2(buf, formatted);
         reportErrSys(buf);
         _status = StatusFailed;
       }
@@ -306,7 +313,9 @@ GDataSock::Send(ViewGraph *view, void **gdataArray, TDataMap *tdMap,
     AttrInfo *attrInfos[MAX_SHAPE_ATTRS];
     for (int attrNum = 0; attrNum < MAX_SHAPE_ATTRS; attrNum++) {
       char buf[128];
-      sprintf(buf, "%s%d", gdataShapeAttrName, attrNum);
+      int formatted = snprintf(buf, sizeof(buf), "%s%d",
+          gdataShapeAttrName, attrNum);
+      checkAndTermBuf2(buf, formatted);
       attrInfos[attrNum] = attrList->Find(buf);
     }
 
@@ -402,7 +411,9 @@ GDataSock::GetShapeAttr(int attrNum, const AttrInfo *attrInfo,
           tmpStr) < 0) {
         tmpStr = "<error>";
         char buf[1024];
-        sprintf(buf, "String not found for %s", attrInfo->name);
+        int formatted = snprintf(buf, sizeof(buf),
+	    "String not found for %s", attrInfo->name);
+        checkAndTermBuf2(buf, formatted);
         reportErrNosys(buf);
         result += StatusFailed;
       }
@@ -436,6 +447,17 @@ GDataSock::PrintRecordVals(const RecordVals &vals)
   char sep = _params.separator;
 
   if (result.IsComplete()) {
+#if 0 //TEMPTEMP
+    int formatted = snprintf(&buf[offset], sizeof(buf)-offset,
+        "%g%c%g%c%g%c", vals._x, sep, vals._y, sep, vals._z, sep);
+    if (formatted < 0 || checkAndTermBuf(&buf[offset], sizeof(buf)-offset,
+        formatted) != StatusOk) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+#else //TEMPTEMP
     if (sprintf(&buf[offset], "%g%c%g%c%g%c", vals._x, sep, vals._y,
         sep, vals._z, sep) < 0) {
       reportErrSys("Error formatting output");
@@ -443,6 +465,7 @@ GDataSock::PrintRecordVals(const RecordVals &vals)
     } else {
       IncAndCheckOffset(buf, offset, bufSize, result);
     }
+#endif //TEMPTEMP
   }
 
   if (result.IsComplete()) {
@@ -451,29 +474,67 @@ GDataSock::PrintRecordVals(const RecordVals &vals)
       if (PM_GetRGB(vals._color, rgb)) {
         string colorStr = rgb.ToString();
 
+#if 0 //TEMPTEMP
+        int formatted = snprintf(&buf[offset], sizeof(buf)-offset,
+	    "%s%c", colorStr.c_str(), sep);
+    if (formatted < 0 || checkAndTermBuf(&buf[offset], sizeof(buf)-offset,
+        formatted) != StatusOk) {
+          reportErrSys("Error formatting output");
+          result = StatusFailed;
+        } else {
+          IncAndCheckOffset(buf, offset, bufSize, result);
+        }
+#else //TEMPTEMP
         if (sprintf(&buf[offset], "%s%c", colorStr.c_str(), sep) < 0) {
           reportErrSys("Error formatting output");
           result = StatusFailed;
         } else {
           IncAndCheckOffset(buf, offset, bufSize, result);
         }
+#endif //TEMPTEMP
       } else {
 	char errBuf[256];
-        sprintf(errBuf, "Error converting PColorID %ld to RGB", vals._color);
+        int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Error converting PColorID %ld to RGB", vals._color);
         reportErrNosys(errBuf);
 	result = StatusFailed;
       }
     } else {
+#if 0 //TEMPTEMP
+      int formatted = snprintf(&buf[offset], sizeof(buf)-offset,
+          "%g%c", (Coord)vals._color, sep);
+    if (formatted < 0 || checkAndTermBuf(&buf[offset], sizeof(buf)-offset,
+        formatted) != StatusOk) {
+        reportErrSys("Error formatting output");
+        result = StatusFailed;
+      } else {
+        IncAndCheckOffset(buf, offset, bufSize, result);
+      }
+#else //TEMPTEMP
       if (sprintf(&buf[offset], "%g%c", (Coord)vals._color, sep) < 0) {
         reportErrSys("Error formatting output");
         result = StatusFailed;
       } else {
         IncAndCheckOffset(buf, offset, bufSize, result);
       }
+#endif //TEMPTEMP
     }
   }
 
   if (result.IsComplete()) {
+#if 0 //TEMPTEMP
+    int formatted = snprintf(&buf[offset], sizeof(buf)-offset,
+        "%g%c%g%c%g%c%g", vals._size, sep,
+        (Coord)vals._pattern, sep, vals._orientation, sep,
+	(Coord)vals._symbolType);
+    if (formatted < 0 || checkAndTermBuf(&buf[offset], sizeof(buf)-offset,
+        formatted) != StatusOk) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+#else //TEMPTEMP
     if (sprintf(&buf[offset], "%g%c%g%c%g%c%g", vals._size, sep,
         (Coord)vals._pattern, sep, vals._orientation, sep,
 	(Coord)vals._symbolType) < 0) {
@@ -482,6 +543,7 @@ GDataSock::PrintRecordVals(const RecordVals &vals)
     } else {
       IncAndCheckOffset(buf, offset, bufSize, result);
     }
+#endif //TEMPTEMP
   }
 
   for (int attrNum = 0;
@@ -491,12 +553,23 @@ GDataSock::PrintRecordVals(const RecordVals &vals)
   }
 
   if (result.IsComplete()) {
+#if 0 //TEMPTEMP
+    int formatted = snprintf(&buf[offset], sizeof(buf)-offset, "\n");
+    if (formatted < 0 || checkAndTermBuf(&buf[offset], sizeof(buf)-offset,
+        formatted) != StatusOk) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+#else //TEMPTEMP
     if (sprintf(&buf[offset], "\n") < 0) {
       reportErrSys("Error formatting output");
       result = StatusFailed;
     } else {
       IncAndCheckOffset(buf, offset, bufSize, result);
     }
+#endif //TEMPTEMP
   }
 
   //
@@ -541,6 +614,17 @@ GDataSock::PrintShapeAttr(const AttrVals &attrVal, char buf[], int &offset,
       formatStr = "%c%s";
     }
 
+#if 0 //TEMPTEMP
+    int formatted = snprintf(&buf[offset], sizeof(buf)-offset,
+        formatStr, _params.separator, attrVal.stringValue);
+    if (formatted < 0 || checkAndTermBuf(&buf[offset], sizeof(buf)-offset,
+        formatted) != StatusOk) {
+      reportErrSys("Error formatting output");
+      result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+#else //TEMPTEMP
     if (sprintf(&buf[offset], formatStr, _params.separator,
         attrVal.stringValue) < 0) {
       reportErrSys("Error formatting output");
@@ -548,7 +632,19 @@ GDataSock::PrintShapeAttr(const AttrVals &attrVal, char buf[], int &offset,
     } else {
       IncAndCheckOffset(buf, offset, bufSize, result);
     }
+#endif //TEMPTEMP
   } else {
+#if 0 //TEMPTEMP
+    int formatted = snprintf(&buf[offset], sizeof(buf)-offset,
+        "%c%g", _params.separator, attrVal.numericalValue);
+    if (formatted < 0 || checkAndTermBuf(&buf[offset], sizeof(buf)-offset,
+        formatted) != StatusOk) {
+      reportErrSys("Error formatting output");
+      //TEMPTEMP!!!! result = StatusFailed;
+    } else {
+      IncAndCheckOffset(buf, offset, bufSize, result);
+    }
+#else //TEMPTEMP
     if (sprintf(&buf[offset], "%c%g", _params.separator,
 	attrVal.numericalValue) < 0) {
       reportErrSys("Error formatting output");
@@ -556,6 +652,7 @@ GDataSock::PrintShapeAttr(const AttrVals &attrVal, char buf[], int &offset,
     } else {
       IncAndCheckOffset(buf, offset, bufSize, result);
     }
+#endif //TEMPTEMP
   }
 
   //

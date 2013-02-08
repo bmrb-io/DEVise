@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2001-2002
+  (c) Copyright 2001-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.3  2003/01/13 19:25:09  wenger
+  Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
+
   Revision 1.2.10.1  2002/09/04 13:57:54  wenger
   More Purifying -- fixed some leaks and mismatched frees.
 
@@ -135,9 +138,10 @@ DeviseHistory::AllQueriesDone()
 
     if (_currentTag <= _highestCheckpointed) {
       char buf[256];
-      sprintf(buf,
+      int formatted = snprintf(buf, sizeof (buf),
         "Already checkpointed current tag %d (highest checkpointed = %d)",
 	_currentTag, _highestCheckpointed);
+      checkAndTermBuf2(buf, formatted);
       reportErrNosys(buf);
     } else {
       TagAllFilters();
@@ -331,7 +335,9 @@ DeviseHistory::TagAllFilters()
     View *view = View::FindViewByName(vi->_viewName);
     if (view == NULL) {
       char buf[256];
-      sprintf(buf, "View %s not found", vi->_viewName);
+      int formatted = snprintf(buf, sizeof(buf), "View %s not found",
+          vi->_viewName);
+      checkAndTermBuf2(buf, formatted);
       reportErrNosys(buf);
     } else {
       VisualFilter *viewFilter = view->GetVisualFilter();
@@ -382,15 +388,19 @@ DeviseHistory::SetAllFilters()
       View *view = View::FindViewByName(vi->_viewName);
       if (view == NULL) {
         char buf[256];
-        sprintf(buf, "View %s not found", vi->_viewName);
+        int formatted = snprintf(buf, sizeof(buf), "View %s not found",
+	    vi->_viewName);
+        checkAndTermBuf2(buf, formatted);
         reportErrNosys(buf);
       } else {
         view->SetVisualFilter(*filter);
       }
     } else {
       char buf[256];
-      sprintf(buf, "Can't find filter values for view %s, tag %d\n",
+      int formatted = snprintf(buf, sizeof(buf),
+        "Can't find filter values for view %s, tag %d\n",
         vi->_viewName, _currentTag);
+      checkAndTermBuf2(buf, formatted);
       reportErrNosys(buf);
     }
   }

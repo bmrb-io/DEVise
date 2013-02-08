@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.4  2005/12/06 20:03:05  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.3.14.3  2005/10/02 16:00:08  wenger
   Got DEVise/JavaScreen to work on basslet by turning off hangCheck.
 
@@ -142,7 +146,9 @@ HangCheck::TimerWake(int arg)
 #endif
 #if defined(DEBUG_LOG)
   char logBuf[256];
-  sprintf(logBuf, "HangCheck()::TimerWake(%d)\n", tag);
+  int formatted = snprintf(logBuf, sizeof(logBuf),
+      "HangCheck()::TimerWake(%d)\n", tag);
+  checkAndTermBuf2(logBuf, formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -165,7 +171,9 @@ HangCheck::TimerWake(int arg)
   printf(" ...done\n");
 #endif
 #if defined(DEBUG_LOG)
-  sprintf(logBuf, "  Done with HangCheck()::TimerWake()\n");
+  formatted = snprintf(logBuf, sizeof(logBuf),
+      "  Done with HangCheck()::TimerWake()\n");
+  checkAndTermBuf2(logBuf, formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2012
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.145  2012/09/24 22:19:42  wenger
+  Fixed DEVise/JS bug 1024 (JS data download problem); enabled better
+  JavaScreen command error messages; a few other improvements to debug
+  output.
+
   Revision 1.144  2012/04/30 22:21:19  wenger
   Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 
@@ -818,6 +823,8 @@ static char *_baseSessionDir = NULL;
 static char *_tmpSessionDirBase = NULL;
 static char *_tmpSessionDir = NULL;
 
+DevStatus JavaScreenCmd::_javaCmdStatus;
+
 // commands we receive
 // be very careful that this order agrees with the ServiceCmdType definition
 const char *JavaScreenCmd::_serviceCmdName[] =
@@ -871,6 +878,7 @@ const char* JavaScreenCmd::_controlCmdName[JavaScreenCmd::CONTROLCMD_NUM]=
 	"JAVAC_ViewDataUrl",
 
 	"JAVAC_Done",
+	"JAVAC_Cancel",
 	"JAVAC_Error",
 	"JAVAC_Fail"
 };
@@ -1300,7 +1308,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	_argc = argc;
 	_argv = new char*[argc];
 	errmsg = NULL;
-	_errStr = "";
+	if (ctype != NULL_SVC_CMD) _javaCmdStatus = StatusOk;
 
     for (i=0; i< _argc; ++i)
     {
@@ -1332,7 +1340,7 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
             }
             else
             {
-                fprintf(stderr, " { expected\n"); // } balance braces
+                fprintf(stderr, " { expected\n");
                 startPos = -1;
             }
         }
@@ -1486,6 +1494,8 @@ JavaScreenCmd::Run()
 		default:
 			fprintf(stderr, "Undefined JAVA Screen Command:%d\n", _ctype);
 	}
+
+	CheckCmdStatus();
 
     if (_status == ERROR) {
 		const char *session = Session::GetCurrentSession();
@@ -1726,6 +1736,7 @@ JavaScreenCmd::DoOpenSession(char *fullpath, Boolean disableHome)
 	}
 	_topLevelViews.DoneIterator(viewIndex);
 
+	CheckCmdStatus();
     if (_status == DONE) {
 	    SendChangedViews(false);
 	}
@@ -1936,10 +1947,11 @@ JavaScreenCmd::GetViewData()
 
 	int tmpFd = mkstemp(tmpFile);
 	if (tmpFd == -1) {
-		_errStr = "mkstemp(";
-		_errStr += tmpFile;
-		_errStr += ") failed";
-		reportErrSys(_errStr.c_str());
+		string errStr;
+		errStr = "mkstemp(";
+		errStr += tmpFile;
+		errStr += ") failed";
+		reportErrSys(errStr.c_str());
 		// Don't report path to user for security.
 		errmsg = "mkstemp() failed";
 		_status = ERROR;
@@ -2452,10 +2464,11 @@ JavaScreenCmd::CmdTerminate()
 
 //====================================================================
 int // 1 = OK, -1 = error
-JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
+JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType status)
 {
 #if defined(DEBUG)
-    printf("JavaScreenCmd::ControlCmd(%d)\n", status);
+    printf("JavaScreenCmd::ControlCmd(%d, %s)\n", status,
+	  _controlCmdName[_status]);
 #endif
 
 	_properCmdTermination = true;
@@ -2463,7 +2476,7 @@ JavaScreenCmd::ControlCmd(JavaScreenCmd::ControlCmdType  status)
 	// return either DONE/ERROR/FAIL to current JAVA client
 	if (status == DONE || status == CANCEL)
 	{
-		ReturnVal(1,&_controlCmdName[DONE]);
+		ReturnVal(1, &_controlCmdName[DONE]);
 		return 1;
 	}
 	if (status == FAIL)
@@ -2817,6 +2830,7 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	//
 	// Send DONE here so jspop and js start reading from the image socket.
 	//
+	CheckCmdStatus();
     if (_status == DONE) {
 		JSArgs args(1);
 		args.FillString(_controlCmdName[DONE]);
@@ -4094,6 +4108,31 @@ JavaScreenCmd::DoSetTmpSessionDir(const char *popMachine, const char *popPort)
 	int formatted = snprintf(_tmpSessionDir, length, "%s/%s%s",
 	  _tmpSessionDirBase, popMachine, popPort);
 	checkAndTermBuf(_tmpSessionDir, length, formatted);
+}
+
+//====================================================================
+// Update the JavaScreen command status according to the given status.
+void
+JavaScreenCmd::UpdateCmdStatus(DevStatus cmdStatus)
+{
+	_javaCmdStatus += cmdStatus;
+}
+
+//====================================================================
+// Update this command's _status variable according to the static
+// _javaCmdStatus (which may have been set by other parts of the
+// DEVise code that don't have other ways to pass back an error.
+void
+JavaScreenCmd::CheckCmdStatus()
+{
+	if (_javaCmdStatus == StatusFailed && _status != FAIL) {
+		errmsg = DevError::GetLatestError();
+	    _status = ERROR;
+	} else if (_javaCmdStatus.IsCancel() && _status != ERROR &&
+	  _status != FAIL) {
+		errmsg = DevError::GetLatestError();
+	    _status = CANCEL;
+	}
 }
 
 //====================================================================

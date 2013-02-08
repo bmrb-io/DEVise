@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.106  2012/09/24 22:19:42  wenger
+  Fixed DEVise/JS bug 1024 (JS data download problem); enabled better
+  JavaScreen command error messages; a few other improvements to debug
+  output.
+
   Revision 1.105  2009/05/13 22:41:30  wenger
   Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
   the trunk.
@@ -524,6 +529,7 @@
 #include "Init.h"
 #include "StringStorage.h"
 #include "NativeExpr.h"
+#include "JavaScreenCmd.h"
 
 #include "Color.h"
 
@@ -950,7 +956,11 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
 #if defined(DEBUG)
     printf("  sending %d GData records to socket\n", recordsProcessed);
 #endif
-    (void) view->Send(gdataArray, this, recordsProcessed);
+    DevStatus status = view->Send(gdataArray, this, recordsProcessed);
+    if (!status.IsComplete()) {
+      reportErrNosys("Error: sending GData to socket failed!");
+      JavaScreenCmd::UpdateCmdStatus(StatusFailed);
+    }
   }
 
 #if defined(DEBUG)

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2012
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -21,6 +21,11 @@
   $Id$
 
   $Log$
+  Revision 1.56  2012/09/24 22:19:42  wenger
+  Fixed DEVise/JS bug 1024 (JS data download problem); enabled better
+  JavaScreen command error messages; a few other improvements to debug
+  output.
+
   Revision 1.55  2012/04/30 22:21:19  wenger
   Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 
@@ -354,6 +359,7 @@ class JavaScreenCmd
 	friend class JavaScreenCache;
 
 	public:
+		// IMPORTANT NOTE:  this must match _serviceCmdName!!!
 		typedef enum 
 		{
 			GETSESSIONLIST, 
@@ -387,6 +393,7 @@ class JavaScreenCmd
 			NULL_SVC_CMD
 		} ServiceCmdType;
 
+		// IMPORTANT NOTE:  this must match _controlCmdName!!!
 		typedef enum
 		{
 			UPDATESESSIONLIST = 0,
@@ -411,7 +418,7 @@ class JavaScreenCmd
 
 			CONTROLCMD_NUM,
 			NULL_COMMAND
-		}ControlCmdType;
+		} ControlCmdType;
 
 		// argv does not contain the command name!
 		JavaScreenCmd(ControlPanel* server,
@@ -422,6 +429,8 @@ class JavaScreenCmd
 		static const char* JavaScreenCmdName(JavaScreenCmd::ControlCmdType);
 		static void CmdInit();
 		static void CmdTerminate();
+
+		static void UpdateCmdStatus(DevStatus cmdStatus);
 
 	protected:
 		// < 0 if error
@@ -439,7 +448,13 @@ class JavaScreenCmd
 
 		ControlCmdType	_status;
 		const char		*errmsg;
-		string			_errStr;
+
+		// Other parts of the code can set this variable to indicate
+		// warnings or errors.  Note:  if _javaCmdStatus is okay,
+		// that can be overridden by other error indications.  This
+		// variable is mostly for problems that cannot otherwise be
+		// easily passed back to this class.
+		static DevStatus _javaCmdStatus;
 
 		static Boolean	_postponeCursorCmds;
 
@@ -488,6 +503,7 @@ class JavaScreenCmd
 		void DoCloseSession();
 		void DoOpenSession(char *fullpath, Boolean disableHome);
 		void DoSetTmpSessionDir(const char *popMachine, const char *popPort);
+		void CheckCmdStatus();
 
 		// < 0 if error
 		int CreateView(View *view, View *parent);

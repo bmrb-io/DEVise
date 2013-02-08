@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.25  2008/10/13 19:45:15  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.24  2003/01/13 19:25:09  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -323,7 +326,9 @@ AttrInfo *AttrList::Find(const char *name)
 AttrInfo *AttrList::FindShapeAttr(int i)
 {
     char attrName[40];
-    sprintf(attrName, "%s%d", gdataShapeAttrName, i);
+    int formatted = snprintf(attrName, sizeof(attrName), "%s%d",
+      gdataShapeAttrName, i);
+    checkAndTermBuf2(attrName, formatted);
     return Find(attrName);
 }
 
@@ -351,7 +356,9 @@ AttrInfo *AttrList::Get(int n)
     )
     {
       char errBuf[256];
-      sprintf(errBuf, "Attribute %d does not exist", n);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Attribute %d does not exist", n);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
     }
     return NULL;
@@ -450,7 +457,8 @@ void AttrList::Write(int fd)
     if (infoP->type == StringAttr)
     {
       char buf[100];
-      sprintf(buf, "%d ", infoP->length);
+      int formatted = snprintf(buf, sizeof(buf), "%d ", infoP->length);
+      checkAndTermBuf2(buf, formatted);
       write (fd, buf, strlen(buf));
     }
 
@@ -569,26 +577,32 @@ WriteVal(int fd, AttrVal *aval, AttrType atype)
 {
   char buf[100];
 
+  int formatted;
   switch(atype)
   {
   case IntAttr:
-    sprintf(buf, "%d ", aval->intVal);
+    formatted = snprintf(buf, sizeof(buf), "%d ", aval->intVal);
+    checkAndTermBuf2(buf, formatted);
     break;
 
   case FloatAttr:
-    sprintf(buf, "%f ", aval->floatVal);
+    formatted = snprintf(buf, sizeof(buf), "%f ", aval->floatVal);
+    checkAndTermBuf2(buf, formatted);
     break;
 
   case DoubleAttr:
-    sprintf(buf, "%f ", aval->doubleVal);
+    formatted = snprintf(buf, sizeof(buf), "%f ", aval->doubleVal);
+    checkAndTermBuf2(buf, formatted);
     break;
 
   case StringAttr:
-    sprintf(buf, "%s ", aval->strVal);
+    formatted = snprintf(buf, sizeof(buf), "%s ", aval->strVal);
+    checkAndTermBuf2(buf, formatted);
     break;
 
   case DateAttr:
-    sprintf(buf, "%ld ", (long)aval->dateVal);//TEMP?
+    formatted = snprintf(buf, sizeof(buf), "%ld ", (long)aval->dateVal);//TEMP?
+    checkAndTermBuf2(buf, formatted);
     break;
 
   default:

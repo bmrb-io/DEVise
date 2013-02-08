@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.31  2008/09/11 20:28:04  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.30  2003/01/13 19:25:09  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -174,8 +177,9 @@ void ClassDir::InsertCategory(const char *name)
     CategoryRec *catRec = _categories[catIndex];
     if (!strcmp(catRec->name, name)) {
       char errBuf[1024];
-      sprintf(errBuf, "Attempt to add duplicate category name '%s'\n",
-        name);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Attempt to add duplicate category name '%s'\n", name);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys("Fatal error");//TEMP -- replace with better message
       Exit::DoAbort(errBuf, __FILE__, __LINE__);
     }
@@ -210,8 +214,10 @@ void ClassDir::InsertClass(ClassInfo *cInfo)
 	ClassRec *classRec = catRec->_classRecs[classIndex];
 	if (!strcmp(classRec->classInfo->ClassName(), className)) {
 	  char errBuf[1024];
-	  sprintf(errBuf, "Attempt to add duplicate class name '%s::%s'\n",
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Attempt to add duplicate class name '%s::%s'\n",
 	    catName, className);
+          checkAndTermBuf2(errBuf, formatted);
 	  reportErrNosys(errBuf);
 	  return;
 	}
@@ -379,8 +385,10 @@ const char *ClassDir::CreateWithParams(const char *category,
 	  if (iInfo) {
 	    if (FindInstance(iInfo->InstanceName()) != NULL) {
 	      char errBuf[1024];
-	      sprintf(errBuf, "Attempt to add duplicate instance name '%s'\n",
+	      int formatted = snprintf(errBuf, sizeof(errBuf),
+	        "Attempt to add duplicate instance name '%s'\n",
 		iInfo->InstanceName());
+          checkAndTermBuf2(errBuf, formatted);
           reportErrNosys("Fatal error");//TEMP -- replace with better message
 	      Exit::DoAbort(errBuf, __FILE__, __LINE__);
 	    }
@@ -521,8 +529,10 @@ void ClassDir::DestroyAllInstances()
 
   if (_instanceCount != 0) {
     char errBuf[128];
-    sprintf(errBuf, "Warning: end of ClassDir::DestroyAllInstances(), "
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+      "Warning: end of ClassDir::DestroyAllInstances(), "
       "but instance count is %d!", _instanceCount);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     _instanceCount = 0;
   }
@@ -591,7 +601,9 @@ Boolean ClassDir::DestroyInstance(const char *name)
   }
 
   char errBuf[256];
-  sprintf(errBuf, "Instance <%s> not found", name);
+  int formatted = snprintf(errBuf, sizeof(errBuf),
+    "Instance <%s> not found", name);
+  checkAndTermBuf2(errBuf, formatted);
   reportErrNosys(errBuf);
   return false;
 }

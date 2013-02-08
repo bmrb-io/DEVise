@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  2010/09/01 18:44:10  wenger
+  Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+
   Revision 1.45.4.9  2010/08/31 19:14:42  wenger
   Fixed the cursor behavior problems in the ambiguity code and Pistachio
   visualizations by calling RestoreCursorState() at a different point.
@@ -1146,9 +1149,11 @@ DeviseCursor::GetDestPixels(Coord dataXLow, Coord dataYLow, Coord dataXHigh,
 	    MAX(pixY1, pixY2) < 0 || MIN(pixY1, pixY2) > (int)dstHeight) {
 #if defined(DEBUG)
 	  char errBuf[1024];
-	  sprintf(errBuf, "Cursor <%s> is in view <%s> according to visual "
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	      "Cursor <%s> is in view <%s> according to visual "
 	      "filters but not according to pixels -- WindowRep transform may "
 		  "be incorrect", GetName(), _dst->GetName());
+	  checkAndTermBuf2(errBuf, formatted);
 	  reportErrNosys(errBuf);
 #endif
 	  result = false;

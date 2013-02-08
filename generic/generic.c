@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   University of Wisconsin at Madison
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.71  2008/09/23 17:56:45  wenger
+  Fixed string const problems in generic and some related modules.
+
   Revision 1.70  2008/06/11 19:16:49  wenger
   Fixed a problem that sometimes caused DEVise to free the same FontStruct
   twice; more flexible generation of font names (horizontal and vertical
@@ -371,26 +374,34 @@ static time_t GetTime(struct tm &now)
     /* tm_isdst of -1 tells mktime to not adjust the time (we get the
      * time we specified). */
     if (now.tm_isdst != -1) {
-      sprintf(errBuf, "Illegal daylight savings flag; set to false");
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Illegal daylight savings flag; set to false");
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       now.tm_isdst = -1;
     }
 
     if (now.tm_mday < 1 || now.tm_mday > 366) {
-      sprintf(errBuf, "Illegal day value %d; set to 1", now.tm_mday);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Illegal day value %d; set to 1", now.tm_mday);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       now.tm_mday = 1;
     }
 
     if (now.tm_hour < 0 || now.tm_hour > 24) {
-      sprintf(errBuf, "Illegal hour value %d; set to 0", now.tm_hour);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Illegal hour value %d; set to 0", now.tm_hour);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       now.tm_hour = 0;
     }
 
     if (now.tm_mon < 0 || now.tm_mon > 11) {
-      sprintf(errBuf, "Illegal month value %d; set to 0 (January)",
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Illegal month value %d; set to 0 (January)",
 	now.tm_mon);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       now.tm_mon = 0;
     }
@@ -402,7 +413,9 @@ static time_t GetTime(struct tm &now)
       now.tm_year += 100;
     } else if (now.tm_year < 70) {
 #if 0
-      sprintf(errBuf, "Illegal year value %d; set to (19)70", now.tm_year);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Illegal year value %d; set to (19)70", now.tm_year);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
 #endif
       now.tm_sec = 0;
@@ -819,7 +832,9 @@ void ISODateDecode(char *recBuf, int dateOffset, int timeOffset,
   if (sscanf(recBuf + dateOffset, "%d-%d-%d", &now.tm_year, &now.tm_mon,
       &now.tm_mday) != 3) {
     char errBuf[256];
-    sprintf(errBuf, "Improper date string: <%s>", recBuf + dateOffset);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Improper date string: <%s>", recBuf + dateOffset);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
 
     now.tm_year = 1970;
@@ -836,7 +851,9 @@ void ISODateDecode(char *recBuf, int dateOffset, int timeOffset,
     if (sscanf(recBuf + timeOffset, "%d:%d", &now.tm_hour,
         &now.tm_min) != 2) {
       char errBuf[256];
-      sprintf(errBuf, "Improper time string: <%s>", recBuf + timeOffset);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Improper time string: <%s>", recBuf + timeOffset);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
 
       now.tm_hour = 0;
@@ -895,7 +912,9 @@ public:
 	AttrInfo *info;
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
 	  char errBuf[128];
-	  sprintf(errBuf, "Cannot find attribute %s\n", primAttrs[i]);
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	      "Cannot find attribute %s\n", primAttrs[i]);
+          checkAndTermBuf2(errBuf, formatted);
 	  DOASSERT(0, errBuf);
 	}
 	if (!strcmp(info->name, "Timestamp") && (info->type != DateAttr)) {
@@ -961,14 +980,18 @@ public:
 	AttrInfo *info;
 	if (!(info = recInterp->GetAttrInfo(primAttrs[i]))) {
 	  char errBuf[128];
-	  sprintf(errBuf, "Cannot find attribute %s\n", primAttrs[i]);
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	      "Cannot find attribute %s\n", primAttrs[i]);
+          checkAndTermBuf2(errBuf, formatted);
 	  DOASSERT(0, errBuf);
 	  break;
 	}
 	if ((!strcmp(info->name, "Timestamp1") ||
 	    !strcmp(info->name, "Timestamp2")) && (info->type != DateAttr)) {
 	  char errBuf[128];
-	  sprintf(errBuf, "Type of %s attribute is not date", info->name);
+	  int formatted = snprintf(errBuf, sizeof(errBuf),
+	      "Type of %s attribute is not date", info->name);
+          checkAndTermBuf2(errBuf, formatted);
 	  reportErrNosys(errBuf);
 	}
 	_attrOffset[i] = info->offset;
@@ -1865,7 +1888,8 @@ int main(int argc, char **argv)
       const char *header = "source ";
       int bufLen = strlen(header) + strlen(Init::TclScript()) + 1;
       char *buf = new char[bufLen];
-      int formatted = snprintf(buf, bufLen, "%s%s", header, Init::TclScript());
+      int formatted = snprintf(buf, bufLen, "%s%s",
+          header, Init::TclScript());
       checkAndTermBuf(buf, bufLen, formatted);
       ctrl->NotifyFrontEnd(buf);
       delete [] buf;
