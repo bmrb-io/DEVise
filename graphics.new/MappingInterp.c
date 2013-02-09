@@ -16,6 +16,14 @@
   $Id$
 
   $Log$
+  Revision 1.107  2013/02/08 23:09:43  wenger
+  Changed a bunch more sprintfs to snprintfs; fixed errors in the
+  error return in JavaScreenCmd; added provision for other parts of
+  the DEVise code to "register" errors in JavaScreenCmd (if they can't
+  return an error code up the call stack) -- MappingInterp now uses
+  this functionality.  Working on sprintf->snprintf conversion in
+  GDataSock (not finished).
+
   Revision 1.106  2012/09/24 22:19:42  wenger
   Fixed DEVise/JS bug 1024 (JS data download problem); enabled better
   JavaScreen command error messages; a few other improvements to debug
@@ -957,9 +965,9 @@ void MappingInterp::DrawGDataArray(ViewGraph *view, WindowRep *win,
     printf("  sending %d GData records to socket\n", recordsProcessed);
 #endif
     DevStatus status = view->Send(gdataArray, this, recordsProcessed);
-    if (!status.IsComplete()) {
+    if (status == StatusFailed) {
       reportErrNosys("Error: sending GData to socket failed!");
-      JavaScreenCmd::UpdateCmdStatus(StatusFailed);
+      JavaScreenCmd::UpdateCmdStatus(status);
     }
   }
 
