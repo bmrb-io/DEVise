@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.6  2000/03/14 17:05:26  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.5  2000/02/16 18:51:36  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -83,7 +87,8 @@ void ActionClassInfo::ParamNames(int &argc, const char **&argv){
 	argv = args;
 	if (_instName != NULL){
 		args[0] = buf1;
-		sprintf(buf1,"name %s",_instName);
+		int formatted = snprintf(buf1, sizeof(buf1), "name %s", _instName);
+		checkAndTermBuf2(buf1, formatted);
 	}
 	else args[0] = "name";
 }
@@ -122,5 +127,6 @@ void ActionClassInfo::CreateParams(int &argc, const char **&argv) {
 	argc = 1;
 	argv= args;
 	args[0] = buf1;
-	sprintf(buf1,"%s",_instName);
+	int formatted = snprintf(buf1, sizeof(buf1), "%s", _instName);
+	checkAndTermBuf2(buf1, formatted);
 }

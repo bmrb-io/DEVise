@@ -21,6 +21,14 @@
   $Id$
 
   $Log$
+  Revision 1.146  2013/02/08 23:09:43  wenger
+  Changed a bunch more sprintfs to snprintfs; fixed errors in the
+  error return in JavaScreenCmd; added provision for other parts of
+  the DEVise code to "register" errors in JavaScreenCmd (if they can't
+  return an error code up the call stack) -- MappingInterp now uses
+  this functionality.  Working on sprintf->snprintf conversion in
+  GDataSock (not finished).
+
   Revision 1.145  2012/09/24 22:19:42  wenger
   Fixed DEVise/JS bug 1024 (JS data download problem); enabled better
   JavaScreen command error messages; a few other improvements to debug
@@ -1012,7 +1020,8 @@ JSArgs::FillInt(int value)
 
   DOASSERT(_argc < _maxArgs, "Too many arguments");
   char buf[128];
-  sprintf(buf, "%d", value);
+  int formatted = snprintf(buf, sizeof(buf), "%d", value);
+  checkAndTermBuf2(buf, formatted);
   _argv[_argc] = CopyString(buf);
   _dynamic[_argc] = true;
   _argc++;
@@ -1028,7 +1037,8 @@ JSArgs::FillDouble(double value)
 
   DOASSERT(_argc < _maxArgs, "Too many arguments");
   char buf[128];
-  sprintf(buf, "%.10g", value);
+  int formatted = snprintf(buf, sizeof(buf), "%.10g", value);
+  checkAndTermBuf2(buf, formatted);
   _argv[_argc] = CopyString(buf);
   _dynamic[_argc] = true;
   _argc++;
@@ -1074,8 +1084,10 @@ FillScreen()
 	DevWindow::GetBoundingBox(left, right, top, bottom);
 
 #if defined(DEBUG_LOG)
-	sprintf(logBuf, "top = %d\nbottom = %d\nleft = %d\nright = %d\n",
+	int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "top = %d\nbottom = %d\nleft = %d\nright = %d\n",
 	  top, bottom, left, right);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -1111,8 +1123,10 @@ FillScreen()
 		winH = (int)(winH * yMult);
 
 #if defined(DEBUG_LOG)
-        sprintf(logBuf, "window %s geometry changed to = %d, %d, %d, %d\n",
+        int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "window %s geometry changed to = %d, %d, %d, %d\n",
 		  window->GetName(), winX, winY, winW, winH);
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -1201,7 +1215,9 @@ CreateViewLists()
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, "Top-level views:");
 	int viewIndex = _topLevelViews.InitIterator();
 	while (_topLevelViews.More(viewIndex)) {
-	  sprintf(logBuf, "  <%s>", _topLevelViews.Next(viewIndex)->GetName());
+	  int formatted = snprintf(logBuf, sizeof(logBuf),
+	    "  <%s>", _topLevelViews.Next(viewIndex)->GetName());
+	  checkAndTermBuf2(logBuf, formatted);
       DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 	}
 	_topLevelViews.DoneIterator(viewIndex);
@@ -1209,7 +1225,9 @@ CreateViewLists()
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, "GIF views:");
 	viewIndex = _gifViews.InitIterator();
 	while (_gifViews.More(viewIndex)) {
-	  sprintf(logBuf, "  <%s>", _gifViews.Next(viewIndex)->GetName());
+	  int formatted = snprintf(logBuf, sizeof(logBuf),
+	    "  <%s>", _gifViews.Next(viewIndex)->GetName());
+	  checkAndTermBuf2(logBuf, formatted);
       DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 	}
 	_gifViews.DoneIterator(viewIndex);
@@ -1217,7 +1235,9 @@ CreateViewLists()
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, "GData views:");
 	viewIndex = _gdataViews.InitIterator();
 	while (_gdataViews.More(viewIndex)) {
-	  sprintf(logBuf, "  <%s>", _gdataViews.Next(viewIndex)->GetName());
+	  int formatted = snprintf(logBuf, sizeof(logBuf), "  <%s>",
+	    _gdataViews.Next(viewIndex)->GetName());
+	  checkAndTermBuf2(logBuf, formatted);
       DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 	}
 	_gdataViews.DoneIterator(viewIndex);
@@ -1245,8 +1265,10 @@ SetGDataFiles()
 		FreeString(params.file);
 		params.file = tempnam(Init::TmpDir(), NULL);
 #if defined(DEBUG_LOG)
-		sprintf(logBuf, "Setting GData file for view %s to %s\n",
+		int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "Setting GData file for view %s to %s\n",
 		  view->GetName(), params.file);
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		view->SetSendParams(params);
@@ -1273,7 +1295,9 @@ DeleteGDataFiles()
 		view->GetSendParams(params);
 		if (params.file != NULL) {
 #if defined(DEBUG_LOG)
-			sprintf(logBuf, "Deleting GData file: %s\n", params.file);
+			int formatted = snprintf(logBuf, sizeof(logBuf),
+			  "Deleting GData file: %s\n", params.file);
+	        checkAndTermBuf2(logBuf, formatted);
             DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 			(void) unlink(params.file);
@@ -1289,8 +1313,10 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 	ServiceCmdType ctype, int argc, char** argv)
 {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd(0x%p)::JavaScreenCmd(%d = %s): ", this,
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd(0x%p)::JavaScreenCmd(%d = %s): ", this,
 	  (int)ctype, _serviceCmdName[(int)ctype]);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf, argc, argv);
 #endif
 #if defined(DEBUG)
@@ -1369,13 +1395,15 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 			_tmpSessionDirBase = new char[length];
 			int formatted = snprintf(_tmpSessionDirBase, length, "%s/%s",
 			  _baseSessionDir, tmpPath);
-			checkAndTermBuf(_tmpSessionDirBase, length, formatted);
+			DevStatus tmpStatus = 
+			  checkAndTermBuf(_tmpSessionDirBase, length, formatted);
+			DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 
 			char errBuf[MAXPATHLEN * 2];
-			formatted = snprintf(errBuf, MAXPATHLEN * 2,
+			formatted = snprintf(errBuf, sizeof(errBuf),
 			  "Warning: DEVISE_TMP_SESSION environment variable is not set;"
 			  " using %s", _tmpSessionDirBase);
-			checkAndTermBuf(errBuf, MAXPATHLEN * 2, formatted);
+			checkAndTermBuf2(errBuf, formatted);
 		    reportErrNosys(errBuf);
 		}
 	}
@@ -1385,8 +1413,9 @@ JavaScreenCmd::JavaScreenCmd(ControlPanel* control,
 JavaScreenCmd::~JavaScreenCmd()
 {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this,
-	  (int)_ctype);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd(0x%p)::~JavaScreenCmd(%d)\n", this, (int)_ctype);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -1401,7 +1430,9 @@ int // 1 = OK, -1 = error
 JavaScreenCmd::Run()
 {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd(0x%p)::Run(%d)\n", this, _ctype);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -1552,13 +1583,21 @@ JavaScreenCmd::OpenSession()
 	// contents of that directory; otherwise, assume the file is a
 	// session file and go ahead and open it.
 	char fullpath[MAXPATHLEN];
-	sprintf(fullpath, "%s/%s", _baseSessionDir, _argv[0]);
+	int formatted = snprintf(fullpath, sizeof(fullpath), "%s/%s",
+	  _baseSessionDir, _argv[0]);
+	if (!checkAndTermBuf2(fullpath, formatted).IsComplete()) {
+		errmsg = "File path is too long";
+		_status = ERROR;
+		return;
+	}
 
 	struct stat buf;
 	if (stat(fullpath, &buf) != 0) {
 		char errBuf[MAXPATHLEN + 128];
 		errmsg = "Can't get status for requested file or directory";
-		sprintf(errBuf, "%s <%s>", errmsg, fullpath);
+		int formatted = snprintf(errBuf, sizeof(errBuf), "%s <%s>",
+		  errmsg, fullpath);
+		checkAndTermBuf2(errBuf, formatted);
 	    reportErrSys(errBuf);
 		_status = ERROR;
 	} else {
@@ -1589,9 +1628,9 @@ JavaScreenCmd::OpenTmpSession()
 
 	const int bufLen = MAXPATHLEN;
 	char fullpath[bufLen];
-	int formatted = snprintf(fullpath, bufLen, "%s/%s", _tmpSessionDir,
-	  _argv[0]);
-    if (formatted >= bufLen) {
+	int formatted = snprintf(fullpath, sizeof(fullpath), "%s/%s",
+	  _tmpSessionDir, _argv[0]);
+	if (!checkAndTermBuf2(fullpath, formatted).IsComplete()) {
 		errmsg = "File path is too long";
 		_status = ERROR;
 		return;
@@ -1774,7 +1813,9 @@ JavaScreenCmd::DoOpenSession(char *fullpath, Boolean disableHome)
 #endif
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "End of OpenSession; _status = %d\n", _status);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "End of OpenSession; _status = %d\n", _status);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 }
@@ -1944,6 +1985,11 @@ JavaScreenCmd::GetViewData()
 	char tmpFile[MAXPATHLEN];
 	int formatted = snprintf(tmpFile, sizeof(tmpFile), "%s/XXXXXX", dataDir);
 	checkAndTermBuf2(tmpFile, formatted);
+	if (!checkAndTermBuf2(tmpFile, formatted).IsComplete()) {
+		errmsg = "File path is too long";
+		_status = ERROR;
+		return;
+	}
 
 	int tmpFd = mkstemp(tmpFile);
 	if (tmpFd == -1) {
@@ -2027,8 +2073,10 @@ JavaScreenCmd::MouseAction_RubberBand()
 	}
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "Rubberband from (%d, %d) to (%d, %d) in view %s\n",
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "Rubberband from (%d, %d) to (%d, %d) in view %s\n",
 	  startX, startY, endX, endY, view->GetName());
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -2157,9 +2205,9 @@ JavaScreenCmd::SaveTmpSession()
 
 	const int bufLen = MAXPATHLEN;
 	char fullpath[bufLen];
-	int formatted = snprintf(fullpath, bufLen, "%s/%s", _tmpSessionDir,
-	  _argv[0]);
-    if (formatted >= bufLen) {
+	int formatted = snprintf(fullpath, sizeof(fullpath), "%s/%s",
+	  _tmpSessionDir, _argv[0]);
+	if (!checkAndTermBuf2(fullpath, formatted).IsComplete()) {
 		errmsg = "File path is too long";
 		_status = ERROR;
 		return;
@@ -2264,8 +2312,10 @@ JavaScreenCmd::CursorChanged()
 	int pixWidth = atoi(_argv[3]);
 	int pixHeight = atoi(_argv[4]);
 #if defined(DEBUG_LOG)
-	sprintf(logBuf, "x, y = %d, %d; width, height = %d, %d\n", pixX, pixY,
+	int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "x, y = %d, %d; width, height = %d, %d\n", pixX, pixY,
 	  pixWidth, pixHeight);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -2314,9 +2364,11 @@ JavaScreenCmd::JSProtocolVersion()
 	    sscanf(_argv[0], "%d.%d", &jsMajor, &jsMinor);
         if (jsMajor != protocolMajorVersion) {
 			char errBuf[1024];
-			sprintf(errBuf, "Expected protocol version %d.%d; JavaScreen "
+			int formatted = snprintf(errBuf, sizeof(errBuf),
+			    "Expected protocol version %d.%d; JavaScreen "
 			    "has version %d.%d", protocolMajorVersion,
 				protocolMinorVersion, jsMajor, jsMinor);
+			checkAndTermBuf2(errBuf, formatted);
 			reportErrNosys(errBuf);
 
 		    errmsg = "Protocol version mismatch";
@@ -2514,7 +2566,9 @@ JavaScreenCmd::SendWindowData(const char* fileName, Boolean doChecksum,
   int &checksumValue)
 {
 #if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::SendWindowData(%s)\n", fileName);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd::SendWindowData(%s)\n", fileName);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -2571,8 +2625,10 @@ JavaScreenCmd::SendWindowData(const char* fileName, Boolean doChecksum,
 			} else if (bytesWritten != bytesRead) {
 				// Note: we may want to re-try the write here.  RKW 1998-09-14.
 				char errBuf[2048];
-				sprintf(errBuf, "Expected to write %d bytes; wrote %d",
+				int formatted = snprintf(errBuf, sizeof(errBuf),
+				  "Expected to write %d bytes; wrote %d",
 				  bytesRead, bytesWritten);
+				checkAndTermBuf2(errBuf, formatted);
 				reportErrSys(errBuf);
 				break;
 			}
@@ -2583,7 +2639,9 @@ JavaScreenCmd::SendWindowData(const char* fileName, Boolean doChecksum,
 			}
 
 #if defined(DEBUG_LOG)
-        	sprintf(logBuf, "    %d bytes sent\n", filesize);
+        	int formatted = snprintf(logBuf, sizeof(logBuf),
+			  "    %d bytes sent\n", filesize);
+	        checkAndTermBuf2(logBuf, formatted);
         	DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		}
@@ -2592,21 +2650,26 @@ JavaScreenCmd::SendWindowData(const char* fileName, Boolean doChecksum,
 		}
 		close(fd);
 #if defined(DEBUG_LOG)
-        sprintf(logBuf, "  Image file size = %d\n", filesize);
+        int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "  Image file size = %d\n", filesize);
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 	}
 	checksumValue = tmpChecksum.value;
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  done sending window image or GData\n  status = %d\n",
-	  status);
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	  "  done sending window image or GData\n  status = %d\n", status);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
 #if defined(JS_TIMER)
 	char timeBuf[MAXPATHLEN * 2];
-	sprintf(timeBuf, "Sending file <%s>", fileName);
+	formatted = snprintf(timeBuf, sizeof(timeBuf), "Sending file <%s>",
+	  fileName);
+	checkAndTermBuf2(timeBuf, formatted);
 	et.ReportTime(timeBuf);
 #endif
 
@@ -2618,7 +2681,9 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendChangedViews(Boolean update)
 {
 #if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::SendChangedViews(%d)\n", update);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd::SendChangedViews(%d)\n", update);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 #if JS_TIMER
@@ -2681,8 +2746,10 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	while (_topLevelViews.More(viewIndex)) {
 		View *view = (View *)_topLevelViews.Next(viewIndex);
 #if defined(DEBUG_LOG)
-        sprintf(logBuf, "Checking view <%s>; GetGifDirty() = %d\n",
+        int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "Checking view <%s>; GetGifDirty() = %d\n",
 		  view->GetName(), view->GetGifDirty());
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
         if (view->GetGifDirty()) {
@@ -2723,8 +2790,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		View *view = (View *)_gifViews.Next(viewIndex);
         if (view->GetGifDirty()) {
 #if defined(DEBUG_LOG)
-	        sprintf(logBuf, "GIF of view <%s> is \"dirty\".\n",
-			  view->GetName());
+	        int formatted = snprintf(logBuf, sizeof(logBuf),
+			  "GIF of view <%s> is \"dirty\".\n", view->GetName());
+	        checkAndTermBuf2(logBuf, formatted);
             DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		    dirtyGifList.Append(view);
@@ -2744,7 +2812,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 			}
 	
 #if defined(DEBUG_LOG)
-            sprintf(logBuf, "  Image file size = %d\n", filesize);
+            formatted = snprintf(logBuf, sizeof(logBuf),
+			  "  Image file size = %d\n", filesize);
+	        checkAndTermBuf2(logBuf, formatted);
             DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 			if (filesize > 0)
@@ -2798,8 +2868,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 		if (gdParams.file != NULL && access(gdParams.file, F_OK) == 0 &&
 		  view->Mapped()) {
 #if defined(DEBUG_LOG)
-	        sprintf(logBuf, "GData of view <%s> is \"dirty\".\n",
-			  view->GetName());
+	        int formatted = snprintf(logBuf, sizeof(logBuf),
+			  "GData of view <%s> is \"dirty\".\n", view->GetName());
+	        checkAndTermBuf2(logBuf, formatted);
             DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -2843,16 +2914,19 @@ JavaScreenCmd::SendChangedViews(Boolean update)
     for (int winNum = 0; winNum < dirtyGifCount; winNum++) {
 		if (result == DONE) {
 #if 0
-            sprintf(logBuf, "Sending image data for view <%s>\n",
-			  viewNames[winNum]);
+            int formatted = snprintf(logBuf, sizeof(logBuf),
+			  "Sending image data for view <%s>\n", viewNames[winNum]);
+	        checkAndTermBuf2(logBuf, formatted);
     		DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 			int checksumValue;
 			(void) SendWindowData(imageNames[winNum], DO_CHECKSUM,
 			  checksumValue);
 #if DO_CHECKSUM
-            sprintf(logBuf, "Checksum value for view <%s> GIF is 0x%x\n",
+            int formatted = snprintf(logBuf, sizeof(logBuf),
+			   "Checksum value for view <%s> GIF is 0x%x\n",
 			   viewNames[winNum], checksumValue);
+	        checkAndTermBuf2(logBuf, formatted);
     		DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		}
@@ -2889,7 +2963,9 @@ JavaScreenCmd::SendChangedViews(Boolean update)
 	_topLevelViews.DoneIterator(viewIndex);
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "End of SendChangedViews; result = %d\n", result);
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	  "End of SendChangedViews; result = %d\n", result);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 #if JS_TIMER
@@ -2912,8 +2988,9 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 {
 #if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::RequestUpdateGData(%s)\n",
-	  view->GetName());
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd::RequestUpdateGData(%s)\n", view->GetName());
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -2922,8 +2999,10 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
     ViewWin *window = view->GetDevWindow();
 	if (window->GetPrintExclude()) {
 #if defined (DEBUG_LOG)
-        sprintf(logBuf, "No GData sent for view %s because it is "
+        int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "No GData sent for view %s because it is "
 		  "excluded from printing.\n", view->GetName());
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		return CANCEL;
@@ -2938,8 +3017,10 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 
 	if (gdParams.file == NULL) {
 		char errBuf[1024];
-		sprintf(errBuf, "Can't update GData for view %s; must send GData "
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "Can't update GData for view %s; must send GData "
 		  "to file, not socket", view->GetName());
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 		return ERROR;
 	}
@@ -2960,8 +3041,9 @@ JavaScreenCmd::RequestUpdateGData(ViewGraph *view)
 	transform->GetCoords(a00, a01, a02, a10, a11, a12);
 	if (a01 != 0.0 || a10 != 0.0) {
 		char errBuf[1024];
-		sprintf(errBuf, "Transform for view %s has rotation\n",
-		  view->GetName());
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "Transform for view %s has rotation\n", view->GetName());
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 		return ERROR;
 	}
@@ -3000,14 +3082,18 @@ void
 JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 {
 #if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::DrawCursor(%s, %s)\n", view->GetName(),
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd::DrawCursor(%s, %s)\n", view->GetName(),
       cursor->GetName());
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
 	if (_postponeCursorCmds) {
 #if defined (DEBUG_LOG)
-        sprintf(logBuf, "Cursor draw temporarily postponed.\n");
+        int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "Cursor draw temporarily postponed.\n");
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		if (!_drawnCursors.Find(cursor)) {
@@ -3021,8 +3107,10 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
     ViewWin *window = view->GetDevWindow();
 	if (window->GetPrintExclude()) {
 #if defined (DEBUG_LOG)
-        sprintf(logBuf, "No cursor draw in view %s because it is "
+        int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "No cursor draw in view %s because it is "
 		  "excluded from printing.\n", view->GetName());
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
         return;
@@ -3037,8 +3125,10 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
     }
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "Pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow,
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	  "Pixels: (%d, %d), (%d, %d)\n", xPixLow, yPixLow,
 	  xPixHigh, yPixHigh);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3059,8 +3149,10 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
     }
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "Modified pixels: (%d, %d), (%d, %d)\n", xPixLow,
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	  "Modified pixels: (%d, %d), (%d, %d)\n", xPixLow,
 	  yPixLow, xPixHigh, yPixHigh);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3069,8 +3161,10 @@ JavaScreenCmd::DrawCursor(View *view, DeviseCursor *cursor)
 	int width = (int)ABS(xPixHigh - xPixLow) + 1;
 	int height = (int)ABS(yPixHigh - yPixLow) + 1;
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "x, y: (%d, %d), width, height: (%d, %d)\n", xLoc,
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	  "x, y: (%d, %d), width, height: (%d, %d)\n", xLoc,
 	  yLoc, width, height);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3155,8 +3249,10 @@ void
 JavaScreenCmd::EraseCursor(View *view, DeviseCursor *cursor)
 {
 #if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::EraseCursor(%s, %s)\n", view->GetName(),
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd::EraseCursor(%s, %s)\n", view->GetName(),
       cursor->GetName());
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3186,11 +3282,15 @@ int
 JavaScreenCmd::ReturnVal(int argc, const char* const * argv)
 {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd(0x%p, %s)::ReturnVal(", this,
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd(0x%p, %s)::ReturnVal(", this,
 	  _serviceCmdName[_ctype]);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf, argc, argv,
 	  ")\n");
-    sprintf(logBuf, "_cache.IsPlayingBack() = %d", _cache.IsPlayingBack());
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	  "_cache.IsPlayingBack() = %d", _cache.IsPlayingBack());
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 #if defined(DEBUG)
@@ -3239,7 +3339,13 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	//
 	char newPath[MAXPATHLEN];
 	if (dirName != NULL) {
-	    sprintf(newPath, "%s/%s", _baseSessionDir, dirName);
+	    int formatted = snprintf(newPath, sizeof(newPath), "%s/%s",
+		  _baseSessionDir, dirName);
+	    if (!checkAndTermBuf2(newPath, formatted).IsComplete()) {
+		    errmsg = "File path is too long";
+		    _status = ERROR;
+		    return;
+	    }
 	} else {
 	    strcpy(newPath, _baseSessionDir);
 	}
@@ -3299,7 +3405,9 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		DIR *directory = opendir(sessionDir);
 		if (directory == NULL) {
 	    	char errBuf[MAXPATHLEN * 2];
-			sprintf(errBuf, "Can't open session directory (%s)", sessionDir);
+			int formatted = snprintf(errBuf, sizeof(errBuf),
+			  "Can't open session directory (%s)", sessionDir);
+			checkAndTermBuf2(errBuf, formatted);
 			reportErrSys(errBuf);
 
 	    	// Reset things to the "base" session directory and try again.
@@ -3311,7 +3419,9 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 		}
 		if (directory == NULL) {
 	    	char errBuf[MAXPATHLEN * 2];
-			sprintf(errBuf, "Can't open session directory (%s)", sessionDir);
+			int formatted = snprintf(errBuf, sizeof(errBuf),
+			  "Can't open session directory (%s)", sessionDir);
+			checkAndTermBuf2(errBuf, formatted);
 			reportErrSys(errBuf);
 			errmsg = "Can't open session directory";
 			_status = ERROR;
@@ -3342,7 +3452,13 @@ void JavaScreenCmd::UpdateSessionList(char *dirName)
 	for (int index = 0; index < files.GetCount(); index++) {
 		const char *file = files.GetArgs()[index];
 		char fullpath[MAXPATHLEN];
-		sprintf(fullpath, "%s/%s", sessionDir, file);
+		int formatted = snprintf(fullpath, sizeof(fullpath),
+		  "%s/%s", sessionDir, file);
+	    if (!checkAndTermBuf2(fullpath, formatted).IsComplete()) {
+		    errmsg = "File path is too long";
+		    _status = ERROR;
+		    return;
+	    }
 
 		struct stat buf;
 		stat(fullpath, &buf);
@@ -3479,7 +3595,9 @@ JavaScreenCmd::ControlCmdType
 JavaScreenCmd::SendViewGData(ViewGraph *view)
 {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::SendViewGData(%s)\n", view->GetName());
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd::SendViewGData(%s)\n", view->GetName());
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3492,16 +3610,20 @@ JavaScreenCmd::SendViewGData(ViewGraph *view)
 		// Note: we should never get here, because this situation
 		// should be caught in RequestUpdateGData().
 		char errBuf[1024];
-		sprintf(errBuf, "Can't send GData for view %s; must send GData "
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "Can't send GData for view %s; must send GData "
 		  "to file, not socket", view->GetName());
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 		status = ERROR;
 	} else {
 		int checksumValue;
 		status = SendWindowData(gdParams.file, DO_CHECKSUM, checksumValue);
 #if DO_CHECKSUM
-        sprintf(logBuf, "Checksum value for view <%s> GData is 0x%x\n",
+        int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "Checksum value for view <%s> GData is 0x%x\n",
 		  view->GetName(), checksumValue);
+	    checkAndTermBuf2(logBuf, formatted);
     	DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3520,8 +3642,10 @@ int
 JavaScreenCmd::CreateView(View *view, View* parent)
 {
 #if defined(DEBUG_LOG)
-	sprintf(logBuf, "CreateView(%s, %s)\n", view->GetName(),
+	int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "CreateView(%s, %s)\n", view->GetName(),
 	  parent ? parent->GetName() : "none");
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3534,14 +3658,18 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	unsigned viewWidth, viewHeight;
 	view->RealGeometry(viewX, viewY, viewWidth, viewHeight);
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "window RealGeometry = %d, %d, %d, %d\n", viewX,
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	  "window RealGeometry = %d, %d, %d, %d\n", viewX,
 	  viewY, viewWidth, viewHeight);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
 	view->AbsoluteOrigin(viewX, viewY);
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "view AbsoluteOrigin = %d, %d\n", viewX, viewY);
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	  "view AbsoluteOrigin = %d, %d\n", viewX, viewY);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3559,7 +3687,9 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		int tmpX, tmpY;
 		view->GetParent()->AbsoluteOrigin(tmpX, tmpY);
 #if defined(DEBUG_LOG)
-    	sprintf(logBuf, "parent AbsoluteOrigin = %d, %d\n", tmpX, tmpY);
+    	int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "parent AbsoluteOrigin = %d, %d\n", tmpX, tmpY);
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		viewX -= tmpX;
@@ -3570,7 +3700,9 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 		int tmpX, tmpY;
 		view->GetParent()->AbsoluteOrigin(tmpX, tmpY);
 #if defined(DEBUG_LOG)
-    	sprintf(logBuf, "parent AbsoluteOrigin = %d, %d\n", tmpX, tmpY);
+    	int formatted = snprintf(logBuf, sizeof(logBuf),
+		  "parent AbsoluteOrigin = %d, %d\n", tmpX, tmpY);
+	    checkAndTermBuf2(logBuf, formatted);
         DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 		viewX += tmpX;
@@ -3581,8 +3713,10 @@ JavaScreenCmd::CreateView(View *view, View* parent)
 	double viewZ = view->GetZ();
 	if (viewZ < 0.0) {
 		char errBuf[1024];
-		sprintf(errBuf, "Invalid Z value (%g) for view <%s>", viewZ,
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		  "Invalid Z value (%g) for view <%s>", viewZ,
 		  view->GetName());
+		checkAndTermBuf2(errBuf, formatted);
 		reportErrNosys(errBuf);
 	}
 
@@ -3751,7 +3885,9 @@ void
 JavaScreenCmd::DeleteChildViews(View *view)
 {
 #if defined(DEBUG_LOG)
-	sprintf(logBuf, "DeleteChildViews(%s)\n", view->GetName());
+	int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "DeleteChildViews(%s)\n", view->GetName());
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3767,7 +3903,9 @@ void
 JavaScreenCmd::SendViewDataArea(View *view)
 {
 #if defined(DEBUG_LOG)
-	sprintf(logBuf, "SendViewDataArea(%s)\n", view->GetName());
+	int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "SendViewDataArea(%s)\n", view->GetName());
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -3867,8 +4005,10 @@ void
 JavaScreenCmd::UpdateViewImage(View *view, int imageSize)
 {
 #if defined (DEBUG_LOG)
-    sprintf(logBuf, "JavaScreenCmd::UpdateViewImage(%s, %d)\n",
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "JavaScreenCmd::UpdateViewImage(%s, %d)\n",
 	  view->GetName(), imageSize);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -4108,6 +4248,11 @@ JavaScreenCmd::DoSetTmpSessionDir(const char *popMachine, const char *popPort)
 	int formatted = snprintf(_tmpSessionDir, length, "%s/%s%s",
 	  _tmpSessionDirBase, popMachine, popPort);
 	checkAndTermBuf(_tmpSessionDir, length, formatted);
+	if (!checkAndTermBuf(_tmpSessionDir, length, formatted).IsComplete()) {
+		errmsg = "File path is too long";
+		_status = ERROR;
+		return;
+	}
 }
 
 //====================================================================
@@ -4153,9 +4298,9 @@ JavaScreenCmd::DeleteTmpSession()
 
 	const int bufLen = MAXPATHLEN;
 	char fullpath[bufLen];
-	int formatted = snprintf(fullpath, bufLen, "%s/%s", _tmpSessionDir,
-	  _argv[0]);
-    if (formatted >= bufLen) {
+	int formatted = snprintf(fullpath, sizeof(fullpath), "%s/%s",
+	  _tmpSessionDir, _argv[0]);
+	if (!checkAndTermBuf2(fullpath, formatted).IsComplete()) {
 		errmsg = "File path is too long";
 		_status = ERROR;
 		return;
@@ -4186,9 +4331,9 @@ JavaScreenCmd::GetDeviseVersion()
 
     const int bufLen = 128;
 	char buf[bufLen];
-	int formatted = snprintf(buf, bufLen, "%s %s", Version::Get(),
+	int formatted = snprintf(buf, sizeof(buf), "%s %s", Version::Get(),
 	  CompDate::Get());
-    checkAndTermBuf(buf, bufLen, formatted);
+    checkAndTermBuf2(buf, formatted);
 
 	JSArgs args(2);
 	args.FillString(_controlCmdName[DEVISE_VERSION]);

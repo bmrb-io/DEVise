@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2008
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -26,6 +26,9 @@
   $Id$
 
   $Log$
+  Revision 1.35  2008/09/23 22:55:33  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.34  2008/09/11 20:28:04  wenger
   Committed more of the "easy" compile warning fixes.
 
@@ -276,7 +279,9 @@ PileStack::PileStack(const char *name, ViewLayout *window)
 
   if (FindByName(name)) {
     char errBuf[1024];
-    sprintf(errBuf, "PileStack <%s> already exists", name);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+        "PileStack <%s> already exists", name);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     //TEMP -- should probably throw an exception
     return;
@@ -557,8 +562,10 @@ PileStack::InsertView(ViewWin *view)
   while (More(index)) {
     ViewWin *tmpView = Next(index);
     if (tmpView == view) {
-      sprintf(errBuf, "View <%s> is already in PileStack <%s>",
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "View <%s> is already in PileStack <%s>",
           view->GetName(), GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       DoneIterator(index);
       _disablePileRefresh = false;
@@ -569,9 +576,11 @@ PileStack::InsertView(ViewWin *view)
 
   // Make sure the view isn't already in another PileStack.
   if (view->GetParentPileStack()) {
-    sprintf(errBuf, "Inserting view <%s> into PileStack <%s>; but it "
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Inserting view <%s> into PileStack <%s>; but it "
         "already belongs to PileStack<%s>", view->GetName(), GetName(),
 	view->GetParentPileStack()->GetName());
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     _disablePileRefresh = false;
     return;
@@ -581,10 +590,11 @@ PileStack::InsertView(ViewWin *view)
   // in the PileStack, or the parent views are in the same pile.
   if (GetFirstView()) {
     if (!SameViewOrSamePile(view->GetParent(), GetFirstView()->GetParent())) {
-      sprintf(errBuf,
+      int formatted = snprintf(errBuf, sizeof(errBuf),
 	  "View <%s> has different parent view or pile than other views "
 	  "in PileStack <%s>",
 	  view->GetName(), GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       _disablePileRefresh = false;
       return;
@@ -596,9 +606,11 @@ PileStack::InsertView(ViewWin *view)
     // Make sure this view is consistent with other views in the pile
     // in terms of using or not using Jmol.
     if (GetFirstView()->GetUseJmol() != view->GetUseJmol()) {
-      sprintf(errBuf, "Inserting view <%s> into PileStack <%s>; but its "
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Inserting view <%s> into PileStack <%s>; but its "
           "use of Jmol is inconsistent with the rest of the pile",
 	  view->GetName(), GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       _disablePileRefresh = false;
       return;
@@ -692,8 +704,10 @@ PileStack::DeleteView(ViewWin *view)
 
   if (!GetViewList()->Delete(view)) {
     char errBuf[1024];
-    sprintf(errBuf, "Trying to delete view %s; view is not in PileStack %s",
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Trying to delete view %s; view is not in PileStack %s",
         view->GetName(), GetName());
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
     _disablePileRefresh = false;
     return;
@@ -961,7 +975,8 @@ PileStack::CreatePileLink()
   // RKW 1998-12-23.
   //
   char linkName[128];
-  sprintf(linkName, "%s_link", GetName());
+  int formatted = snprintf(linkName, sizeof(linkName), "%s_link", GetName());
+  checkAndTermBuf2(linkName, formatted);
   _link = new VisualLink(CopyString(linkName), VISUAL_X | VISUAL_Y);
 
   //
@@ -1705,9 +1720,11 @@ PileStack::QueryDone(View *view)
     // called twice in a row.  RKW 1999-05-12.
     } else if (_currentQueryView != NULL) {
       char errBuf[1024];
-      sprintf(errBuf, "View <%s> reporting query done, but pile <%s> records "
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "View <%s> reporting query done, but pile <%s> records "
           "that view <%s> was running query", view->GetName(), GetName(),
 	  _currentQueryView->GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       DOASSERT(0, "bad query");
     }
@@ -1782,25 +1799,28 @@ PileStack::PileOk()
     View *view = (View *)GetViewList()->Next(index);
     parent = view->GetParent();
     if (view->GetParentPileStack() != this) {
-      sprintf(errBuf,
+      int formatted = snprintf(errBuf, sizeof(errBuf),
           "View <%s> is in PileStack <%s>, but does not point to it",
 	  view->GetName(), GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
     }
   }
   while (GetViewList()->More(index)) {
     View *view = (View *)GetViewList()->Next(index);
     if (!SameViewOrSamePile(view->GetParent(), parent)) {
-      sprintf(errBuf,
+      int formatted = snprintf(errBuf, sizeof(errBuf),
           "Pile <%s> has views with different parent views or piles",
 	  GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       result = false;
     }
     if (view->GetParentPileStack() != this) {
-      sprintf(errBuf,
+      int formatted = snprintf(errBuf, sizeof(errBuf),
           "View <%s> is in PileStack <%s>, but does not point to it",
 	  view->GetName(), GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
     }
   }
@@ -1810,8 +1830,10 @@ PileStack::PileOk()
   if (ViewIsSelected()) {
     View *view = (View *)GetFirstView();
     if (!view->IsSelected()) {
-      sprintf(errBuf, "A view other than the first view of PileStack <%s> "
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "A view other than the first view of PileStack <%s> "
           "is selected", GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
     }
   }

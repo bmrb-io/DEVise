@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.72  2009/05/13 22:41:30  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.71.2.2  2009/05/06 20:19:19  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -514,8 +518,10 @@ void TDataAscii::BuildIndex()
   DOASSERT(_lastPos >= currPos, "Incorrect file position");
 
   char logBuf[1024];
-  sprintf(logBuf, "Index for %s: %ld total records, %ld new", _name,
+  int formatted = snprintf(logBuf, sizeof(logBuf),
+          "Index for %s: %ld total records, %ld new", _name,
 	  _totalRecs, _totalRecs - oldTotal);
+  checkAndTermBuf2(logBuf, formatted);
   DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #if (DEBUGLVL >= 3)
   printf("%s\n", logBuf);

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.106  2009/05/13 22:41:30  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.105.2.3  2009/05/06 20:19:19  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -2800,10 +2804,13 @@ void DumpFilter(QPFullData *query)
   char filter[500];
   char schema[100];
 
-  sprintf(schema, "4 double double double double\nxlo xhi ylo yhi ;\n");
-  sprintf(filter, "%f %f %f %f\n", 
+  int formatted = snprintf(schema, sizeof(schema),
+          "4 double double double double\nxlo xhi ylo yhi ;\n");
+  checkAndTermBuf2(schema, formatted);
+  formatted = snprintf(filter, sizeof(filter), "%f %f %f %f\n", 
 	  query->filter.xLow, query->filter.xHigh, 
 	  query->filter.yLow, query->filter.yHigh);
+  checkAndTermBuf2(filter, formatted);
   
   MSLinkList *recLinkList = query->callback->GetMasterLinkList();
   if (!recLinkList) return;

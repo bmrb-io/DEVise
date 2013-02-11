@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.108  2013/02/09 23:22:46  wenger
+  Fixed up GDataSock stuff.
+
   Revision 1.107  2013/02/08 23:09:43  wenger
   Changed a bunch more sprintfs to snprintfs; fixed errors in the
   error return in JavaScreenCmd; added provision for other parts of
@@ -1388,14 +1391,22 @@ MappingInterp::InitCmdSimple(StringStorage *xStringTable,
 	    SetDefaultShapeAttr(shapeAttr,
 		    (Coord)_simpleCmd->shapeAttrCmd[shapeAttr].cmd.num);
 	    char attrName [80];
-	    sprintf(attrName, "%s%d", gdataShapeAttrName, shapeAttr);
+	    int formatted = snprintf(attrName, sizeof(attrName), "%s%d",
+		    gdataShapeAttrName, shapeAttr);
+		if (!checkAndTermBuf2(attrName, formatted).IsComplete()) {
+          JavaScreenCmd::UpdateCmdStatus(StatusFailed);
+	    }
 	    attrList->InsertAttr(attrNum++, attrName, -1, sizeof(ShapeAttr),
 			     attrType, false, NULL, false, isSorted);
       } else {
 	    char attrName [80];
-	    sprintf(attrName, "%s%d", gdataShapeAttrName, shapeAttr);
+	    int formatted = snprintf(attrName, sizeof(attrName), "%s%d",
+		    gdataShapeAttrName, shapeAttr);
           _offsets->_shapeAttrOffset[shapeAttr] = InsertAttr(attrList,
 		      attrNum, attrName, offset, sizeof(ShapeAttr), attrType, isSorted);
+		if (!checkAndTermBuf2(attrName, formatted).IsComplete()) {
+          JavaScreenCmd::UpdateCmdStatus(StatusFailed);
+	    }
       }
     }
   }
@@ -1554,7 +1565,11 @@ MappingInterp::InitCmdComplex(StringStorage *xStringTable,
   _maxGDataShapeAttrNum = -1;
   for(int shapeAttr = 0; shapeAttr < MAX_SHAPE_ATTRS; shapeAttr++) {
     char attrName [80];
-    sprintf(attrName, "%s%d", gdataShapeAttrName, shapeAttr);
+    int formatted = snprintf(attrName, sizeof(attrName), "%s%d",
+	    gdataShapeAttrName, shapeAttr);
+		if (!checkAndTermBuf2(attrName, formatted).IsComplete()) {
+          JavaScreenCmd::UpdateCmdStatus(StatusFailed);
+	    }
     if (_cmdAttrFlag & (1 << shapeAttr)) {
       _maxGDataShapeAttrNum = shapeAttr;
       if (IsConstCmd(_internalCmd->shapeAttrCmd[shapeAttr], attrList, constVal,
@@ -1799,8 +1814,10 @@ char *MappingInterp::ConvertCmd(const char *cmd, AttrType &attrType,
 			    if (!info) {
 			      /* can't find variable name */
 			      char errBuf[256];
-			      sprintf(errBuf, "Can't find attribute '%s' requested by mapping %s",
+			      int formatted = snprintf(errBuf, sizeof(errBuf),
+				      "Can't find attribute '%s' requested by mapping %s",
 			              buf, GetName());
+				checkAndTermBuf2(errBuf, formatted);
 		        reportErrNosys(errBuf);
 			    } else {
 			      /* found the attribute */
@@ -1817,7 +1834,11 @@ char *MappingInterp::ConvertCmd(const char *cmd, AttrType &attrType,
 			        _maxTDataAttrNum = info->attrNum;
 			      _tdataFlag->SetBit(info->attrNum);
 			  
-		         sprintf(buf, "$interpAttr_%d", info->attrNum);
+		         int formatted = snprintf(buf, sizeof(buf),
+				     "$interpAttr_%d", info->attrNum);
+				 if (!checkAndTermBuf2(buf, formatted).IsComplete()) {
+				   JavaScreenCmd::UpdateCmdStatus(StatusFailed);
+				 }
 			       InsertString(buf);
 			    }
 		    }
