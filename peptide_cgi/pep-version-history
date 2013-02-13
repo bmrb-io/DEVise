@@ -4,7 +4,12 @@ Peptide-CGI 12.3.2
 ------------------
 (Needs DEVise 1.11.1 or higher, JavaScreen client 5.14.1 or higher.)
 
-(Nothing yet.)
+* Changed histogram image on home page to link to histogram selection
+page, instead of the single-protein examples; the "main" examples page
+now links to the "regular" histogram pages because of problems in the
+example sessions.
+
+* Fixed drill-down icon thumbnail in histogram visualization pages.
 
 
 Peptide-CGI 12.3.1
