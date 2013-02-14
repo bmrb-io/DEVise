@@ -129,11 +129,6 @@ chmod a+r $targetdir/*.gif
 set targetdir = $htmlhome
 echo "Installing histogram html files in $targetdir"
 cp -p html2/devise/*hist*.html $targetdir
-# Possibly temporary until histogram example sessions are fixed.
-# Okay, temporary change *really* temporarily commented out because
-# home page fix hasn't gotten rsynched yet...
-# wenger 2013-02-13
-#rm $targetdir/*_example.html
 chmod a+r $targetdir/*.html
 
 
