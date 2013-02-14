@@ -128,6 +128,8 @@ home_install:
 	cp -p html2/bmrb_home.html $(HTML_HOME)
 	mkdir -p $(HTML_HOME)/bmrb_home_files
 	cp -p html2/bmrb_home_files/*.* $(HTML_HOME)/bmrb_home_files
+	mkdir -p $(HTML_HOME)/vis_serv
+	cp -p html2/vis_serv/*.html $(HTML_HOME)/vis_serv
 
 # Note: this must *not* be done as part of the normal install; it's only
 # for testing at CS, and doing the install at BMRB would goof things up.

@@ -32,3 +32,5 @@ dist:
 	ln -s ../../../html2/README .
 	mkdir devise
 	cd devise; ln -s ../../../../html2/devise/Makefile .; make dist
+	mkdir vis_serv
+	cd vis_serv; ln -s ../../../../html2/vis_serv/index.html .
