@@ -81,6 +81,8 @@ Allow 2 X axes per view (top and bottom). (wavelet)
 SECTION 06 (DEVise, data sources)
 Number Date	Status  Pri
 ------ --------	------	---
+06.001 2/18/13	OPEN	?
+Make a test session that has embedded data source definitions.
 
 ...........................................................................
 SECTION 07 (DEVise, JavaScreen support)
