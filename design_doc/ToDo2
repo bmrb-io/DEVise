@@ -83,6 +83,7 @@ Number Date	Status  Pri
 ------ --------	------	---
 06.001 2/18/13	OPEN	?
 Make a test session that has embedded data source definitions.
+(wenger)
 
 ...........................................................................
 SECTION 07 (DEVise, JavaScreen support)
@@ -113,6 +114,10 @@ raise all of the windows before printing. (wenger)
 
 08.003 5/28/03	DONE?	3
 Eliminate all dependencies on having /p/devise for a DEVise installation.
+(wenger)
+
+08.004 2/18/13	OPEN	?
+Add a test session with a session postscript.
 (wenger)
 
 ...........................................................................
