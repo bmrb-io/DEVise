@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  2002/06/17 19:41:00  wenger
+  Merged V1_7b0_br_1 thru V1_7b0_br_2 to trunk.
+
   Revision 1.15.14.1  2002/05/27 18:15:53  wenger
   Got DEVise to compile with gcc 2.96 (so I can compile it at NRG).
 
@@ -218,7 +221,8 @@ static int GetMonth(char *month)
 int ParseFloatDate(const char *input, double &val)
 {
   char line[256];
-  strcpy(line, input);
+  DevStatus tmpStatus = nice_strncpy(line, input, sizeof(line));
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 
   // convert string to upper case
   char *ptr = line;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 2000
+  (c) Copyright 2000-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2008/09/11 20:28:04  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.4  2000/07/17 21:41:17  wenger
   Tokens are now enclosed in double quotes so output is easier to parse.
 
@@ -429,7 +432,7 @@ MetaVisDesc::WriteLink(FILE *file, DeviseLink *link, Boolean writeComments)
     // Link type.
     //
     char linkType[32];
-    result += SessionDesc::LinkTypeString(link, linkType);
+    result += SessionDesc::LinkTypeString(link, linkType, sizeof(linkType));
     fprintf(file, _tableFormat, link->GetName(), _linkTypeStr, linkType);
 
     //

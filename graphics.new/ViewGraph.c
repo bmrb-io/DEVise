@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2012
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.164  2012/04/30 22:21:19  wenger
+  Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
+
   Revision 1.163.4.8  2012/04/27 16:46:25  wenger
   Cleaned up a bunch of temporary/debug code.
 
@@ -2116,7 +2119,8 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
     for(i = 0; i < gMaxNumColors; i++) {
 //	if( _stats[i].GetStatVal(STAT_COUNT) > 0 ) {
 #if !VIEW_MIN_STATS
-	    sprintf(line, "%d %d %g %g %g %g %g %g %g %g %g %g\n",
+	    int formatted = snprintf(line, sizeof(line),
+		      "%d %d %g %g %g %g %g %g %g %g %g %g\n",
 		      i, (int)_stats[i].GetStatVal(STAT_COUNT),	
 		      _stats[i].GetStatVal(STAT_YSUM),
 		      _stats[i].GetStatVal(STAT_MIN),
@@ -2129,14 +2133,15 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 		      _stats[i].GetStatVal(STAT_ZVAL95L),
 		      _stats[i].GetStatVal(STAT_ZVAL95H));
 #else
-        sprintf(line, "NO STATS!!!\n");
+        int formatted = snprintf(line, sizeof(line), "NO STATS!!!\n");
 #endif
+		DevStatus tmpStatus = checkAndTermBuf2(line, formatted);
+		DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 	    int len = strlen(line);
 #if defined(DEBUG) || 0
     printf("Color stat buf line is %s\n", line);
 #endif
 
-	    DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 	    if( (int) _statBuffer->Write(line, len) != len ) {
 #ifdef DEBUG
 		fprintf(stderr, "Out of statistics buffer space\n");
@@ -2178,14 +2183,20 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 	printf("Histogram min is %g, max is %g\n", _allStats.GetHistMin(), _allStats.GetHistMax());
 #endif
 	for(i = 0; i < _allStats.GetnumBuckets(); i++) {
+	    int formatted;
 	    if (y_is_date) {
 		date_string = DateString(pos);
 		date = ExtractDate(date_string);
-		sprintf(line, "%d %s %s %d\n", findMonth(date[0]),
+		formatted = snprintf(line, sizeof(line),
+		        "%d %s %s %d\n", findMonth(date[0]),
                  	date[1], date[2], _allStats.GetHistVal(i));
-	    } else sprintf(line, "%.4e %d\n", pos, _allStats.GetHistVal(i));
+	    } else {
+	        formatted = snprintf(line, sizeof(line), "%.4e %d\n", pos,
+		        _allStats.GetHistVal(i));
+	    }
+	    DevStatus tmpStatus = checkAndTermBuf2(line, formatted);
+	    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 	    int len = strlen(line);
-	    DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 	    if( (int) _histBuffer->Write(line, len) != len ) {
 	        fprintf(stderr, "*****Warning: Out of histogram buffer space\n");
 	        break;
@@ -2224,24 +2235,29 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 	double i = _glistX.Next(index); 
 	if (_gstatX.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
+	   int formatted;
 	   if (x_is_date) {
 		date_string = DateString(i);
 		date = ExtractDate(date_string);
-		sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]), 
+		formatted = snprintf(line, sizeof(line),
+		             "%d %s %s %d %g %g %g %g\n", findMonth(date[0]), 
 			     date[1], date[2], (int)bs->GetStatVal(STAT_COUNT),
 			     bs->GetStatVal(STAT_YSUM),
 			     bs->GetStatVal(STAT_MIN),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MAX));
-	   } else sprintf(line, "%g %d %g %g %g %g\n",
+	   } else {
+	       formatted = snprintf(line, sizeof(line), "%g %d %g %g %g %g\n",
 			     i, (int)bs->GetStatVal(STAT_COUNT),
 			     bs->GetStatVal(STAT_YSUM),
 			     bs->GetStatVal(STAT_MIN),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MAX));
+	   }
+	   DevStatus tmpStatus = checkAndTermBuf2(line, formatted);
+	   DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 	   len = strlen(line);
 	   total += len;
-	   DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 #if defined(DEBUG) || 0
 	    	printf("_gstatX buf line is %s\n", line);
 #endif
@@ -2262,18 +2278,22 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 
 	date_string = DateString(low);
 	date = ExtractDate(date_string);
-	sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+	int formatted = snprintf(line, sizeof(line),
+	         "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
 		 date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+	DevStatus tmpStatus = checkAndTermBuf2(line, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
        	len = strlen(line);
-        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 	if( (int) _gdataStatBufferX->Write(line, len) != len ) {
     		fprintf(stderr, "******Out of GData Stat Buffer space\n");
     }
 // 	printf("_gstatX buf line is %s\n", line);
 
-	sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
+	formatted = snprintf(line, sizeof(line), "%g %d %g %g %g %g\n",
+	        low, 0, 0.0, 0.0, 0.0, 0.0);
+	tmpStatus = checkAndTermBuf2(line, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
         len = strlen(line);
-        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 
 #if defined(DEBUG) || 0
         printf("_gstatX buf line is %s\n", line);
@@ -2285,18 +2305,22 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 
         date_string = DateString(high);
         date = ExtractDate(date_string); 
-        sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+        formatted = snprintf(line, sizeof(line),
+	           "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
                    date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+	tmpStatus = checkAndTermBuf2(line, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
         len = strlen(line);
-        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
         if( (int) _gdataStatBufferX->Write(line, len) != len ) {
         	fprintf(stderr, "******Out of GData Stat Buffer space\n");
         }
 //           printf("_gstatX buf line is %s\n", line);
 
-        sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
+        formatted = snprintf(line, sizeof(line),
+	        "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
+	tmpStatus = checkAndTermBuf2(line, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
         len = strlen(line);
-        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 
 #if defined(DEBUG) || 0
            printf("_gstatX buf line is %s\n", line);
@@ -2312,23 +2336,28 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 	double i = _glistY.Next(index); 
 	if (_gstatY.Lookup(i, bs)) {
 	   DOASSERT(bs,"HashTable lookup error\n");
+	   int formatted;
 	   if (y_is_date) {
         	date_string = DateString(i);
         	date = ExtractDate(date_string);
-		sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]), 
+		formatted = snprintf(line, sizeof(line),
+		             "%d %s %s %d %g %g %g %g\n", findMonth(date[0]), 
                              date[1], date[2], (int)bs->GetStatVal(STAT_COUNT),
                              bs->GetStatVal(STAT_YSUM),
                              bs->GetStatVal(STAT_MIN),
                              bs->GetStatVal(STAT_MEAN),
                              bs->GetStatVal(STAT_MAX));
-	   } else sprintf(line, "%g %d %g %g %g %g\n",
+	   } else {
+	       formatted = snprintf(line, sizeof(line), "%g %d %g %g %g %g\n",
 			     i, (int)bs->GetStatVal(STAT_COUNT),
 			     bs->GetStatVal(STAT_YSUM),
 			     bs->GetStatVal(STAT_MIN),
 			     bs->GetStatVal(STAT_MEAN),
 			     bs->GetStatVal(STAT_MAX));
+	   }
+	   DevStatus tmpStatus = checkAndTermBuf2(line, formatted);
+	   DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 	   len = strlen(line);
-	   DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 #if defined(DEBUG) || 0
 	    printf("_gstatY buf line is %s\n", line);
 #endif
@@ -2349,17 +2378,21 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 
 	date_string = DateString(low);
         date = ExtractDate(date_string);
-        sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+        int formatted = snprintf(line, sizeof(line),
+	         "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
                  date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+	DevStatus tmpStatus = checkAndTermBuf2(line, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
         len = strlen(line);
-        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
         if( (int) _gdataStatBufferY->Write(line, len) != len ) {
                 fprintf(stderr, "******Out of GData Stat Buffer space\n");
         }
 
-        sprintf(line, "%g %d %g %g %g %g\n", low, 0, 0.0, 0.0, 0.0, 0.0);
+        formatted = snprintf(line, sizeof(line), "%g %d %g %g %g %g\n",
+	        low, 0, 0.0, 0.0, 0.0, 0.0);
+	tmpStatus = checkAndTermBuf2(line, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
         len = strlen(line);
-        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 
 #if defined(DEBUG) || 0
         printf("_gstatY buf line is %s\n", line);
@@ -2370,17 +2403,21 @@ void ViewGraph::PrepareStatsBuffer(TDataMap *map)
 
         date_string = DateString(high);
         date = ExtractDate(date_string); 
-        sprintf(line, "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
+        formatted = snprintf(line, sizeof(line),
+	           "%d %s %s %d %g %g %g %g\n", findMonth(date[0]),
                    date[1], date[2], 0, 0.0, 0.0, 0.0, 0.0);
+	tmpStatus = checkAndTermBuf2(line, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
         len = strlen(line);
-        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
         if( (int) _gdataStatBufferY->Write(line, len) != len ) {
                 fprintf(stderr, "******Out of GData Stat Buffer space\n");
         }
 
-        sprintf(line, "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
+        formatted = snprintf(line, sizeof(line),
+	        "%g %d %g %g %g %g\n", high, 0, 0.0, 0.0, 0.0, 0.0);
+	tmpStatus = checkAndTermBuf2(line, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
         len = strlen(line);
-        DOASSERT(len < (int) sizeof(line), "too much data in sprintf");
 
 #if defined(DEBUG) || 0
         printf("_gstatY buf line is %s\n", line);
@@ -2463,7 +2500,9 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
 #if defined(DEBUG_LOG)
   {
     char logBuf[256];
-    sprintf(logBuf, "ViewGraph(%s)::DerivedStartQuery()\n", GetName());
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+          "ViewGraph(%s)::DerivedStartQuery()\n", GetName());
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
@@ -2524,7 +2563,9 @@ void ViewGraph::DerivedStartQuery(VisualFilter &filter, int timestamp)
     if (_sendToSocket) {
       if (_gds != NULL) {
 	char buf[512];
-        sprintf(buf, "Duplicate GDataSock creation in view %s", GetName());
+        int formatted = snprintf(buf, sizeof(buf),
+	     "Duplicate GDataSock creation in view %s", GetName());
+	checkAndTermBuf2(buf, formatted);
         reportErrNosys(buf);
       } else if ((_gdsParams.file != NULL && strcmp(_gdsParams.file, "")) ||
           (_gdsParams.portNum != 0)) {
@@ -2578,7 +2619,9 @@ void ViewGraph::DerivedAbortQuery()
 #if defined(DEBUG_LOG)
   {
     char logBuf[256];
-    sprintf(logBuf, "ViewGraph(%s)::DerivedAbortQuery()\n", GetName());
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+        "ViewGraph(%s)::DerivedAbortQuery()\n", GetName());
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
@@ -2700,7 +2743,9 @@ void	ViewGraph::QueryDone(int bytes, void* userData,
 #if defined(DEBUG_LOG)
   {
     char logBuf[256];
-    sprintf(logBuf, "ViewGraph(%s)::QueryDone(%d)\n", GetName(), bytes);
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+        "ViewGraph(%s)::QueryDone(%d)\n", GetName(), bytes);
+    checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
   }
 #endif
@@ -3494,8 +3539,10 @@ ViewGraph::SwitchTData(const char *tdName)
   char namebuf[1024];
   if (tdName[0] != '.') {
     // DTE goes nuts if first char of TData name isn't '.'.
-    sprintf(namebuf, ".%s", tdName);
+    int formatted = snprintf(namebuf, sizeof(namebuf), ".%s", tdName);
 	tdName = namebuf;
+    DevStatus tmpStatus = checkAndTermBuf2(namebuf, formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
   }
 
   //
@@ -3503,13 +3550,15 @@ ViewGraph::SwitchTData(const char *tdName)
   //
   if (result.IsComplete()) {
     if (_mappings.Size() == 0) {
-      sprintf(errBuf, "View <%s> has no mapping; cannot switch TData",
-          GetName());
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "View <%s> has no mapping; cannot switch TData", GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       result = StatusFailed;
     } else if (_mappings.Size() > 1) {
-      sprintf(errBuf, "View <%s> has multiple mappings; cannot switch TData",
-          GetName());
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "View <%s> has multiple mappings; cannot switch TData", GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       result = StatusFailed;
     }
@@ -3550,7 +3599,9 @@ ViewGraph::SwitchTData(const char *tdName)
 	  argv[0] = tdName;
 
       char newName[1024];
-      sprintf(newName, "%s#%s", tdName, GetName());
+      int formatted = snprintf(newName, sizeof(newName), "%s#%s",
+          tdName, GetName());
+      result += checkAndTermBuf2(newName, formatted);
       argv[1] = newName;
 #if defined(DEBUG)
       printf("Creating new mapping: <%s>\n", newName);
@@ -3580,8 +3631,10 @@ ViewGraph::SwitchTData(const char *tdName)
 
 	  if (failed) {
 		char errBuf[1024];
-		sprintf(errBuf, "Unable to create mapping %s; not switching TData "
+		int formatted = snprintf(errBuf, sizeof(errBuf),
+		    "Unable to create mapping %s; not switching TData "
 		    "of view <%s>", newName, GetName());
+		checkAndTermBuf2(errBuf, formatted);
 	    classDir->DestroyInstance(newName);
 	    result = StatusFailed;
       } else {

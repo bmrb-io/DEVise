@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2009
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.16  2009/05/13 22:41:23  wenger
+  Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
+  the trunk.
+
   Revision 1.15.10.2  2009/05/06 20:19:13  wenger
   Got rid of extra debug output, cleaned up a few things.
 
@@ -195,8 +199,10 @@ void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "Layout(%s, 0x%p)::SetLayoutProperties(%d, %d, %d)\n",
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "Layout(%s, 0x%p)::SetLayoutProperties(%d, %d, %d)\n",
       GetName(), this, mode, rows, columns);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -214,7 +220,9 @@ void Layout::SetLayoutProperties(LayoutMode mode, int rows, int columns)
   }
 
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with Layout::SetLayoutProperties()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	    "  Done with Layout::SetLayoutProperties()\n");
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }
@@ -287,14 +295,18 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-    sprintf(logBuf, "Layout(%s, 0x%p)::MapChildren(0x%p, %d)\n", GetName(),
+    int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "Layout(%s, 0x%p)::MapChildren(0x%p, %d)\n", GetName(),
       this, single, resize);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
   
   if ( _mode == CUSTOM) {
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with Layout::MapChildren()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	    "  Done with Layout::MapChildren()\n");
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
     return;
@@ -328,7 +340,9 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
       *h = _h;
     }
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with Layout::MapChildren()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	    "  Done with Layout::MapChildren()\n");
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
     return;
@@ -405,7 +419,9 @@ void Layout::MapChildren(ViewWin *single, Boolean resize,
     }
   }
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with Layout::MapChildren()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	    "  Done with Layout::MapChildren()\n");
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }
@@ -531,7 +547,10 @@ void Layout::ScaleChildren(int oldX, int oldY, unsigned oldW, unsigned oldH,
   }
   char buf[100];
   if (!resize) {
-    sprintf(buf,"DEViseWindowMoved {%s}", GetName());
+    int formatted = snprintf(buf, sizeof(buf), "DEViseWindowMoved {%s}",
+	    GetName());
+	DevStatus tmpStatus = checkAndTermBuf2(buf, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     ControlPanel::Instance()->NotifyFrontEnd(buf);
     return;
   }
@@ -593,8 +612,10 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 #endif
 #if defined(DEBUG_LOG)
     char logBuf[1024];
-	sprintf(logBuf, "Layout(%s, 0x%p)::HandleResize at %d,%d, size %u,%u\n",
+	int formatted = snprintf(logBuf, sizeof(logBuf),
+	  "Layout(%s, 0x%p)::HandleResize at %d,%d, size %u,%u\n",
       GetName(), this, x, y, w, h);
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 
@@ -614,14 +635,19 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
         }
 
 		char	buf[100];
-		sprintf(buf,"DEViseWindowResize {%s}", GetName());
+		int formatted = snprintf(buf, sizeof(buf),
+		    "DEViseWindowResize {%s}", GetName());
+        DevStatus tmpStatus = checkAndTermBuf2(buf, formatted);
+		DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 #ifdef DEBUG
 		printf("%s\n", buf);
 #endif
 		ControlPanel::Instance()->NotifyFrontEnd(buf);
 	}
 #if defined(DEBUG_LOG)
-    sprintf(logBuf, "  Done with Layout::HandleResize()\n");
+    formatted = snprintf(logBuf, sizeof(logBuf),
+	    "  Done with Layout::HandleResize()\n");
+	checkAndTermBuf2(logBuf, formatted);
     DebugLog::DefaultLog()->Message(DebugLog::LevelInfo2, logBuf);
 #endif
 }
@@ -629,30 +655,32 @@ void	Layout::HandleResize(WindowRep* win, int x, int y,
 void	Layout::HandleWindowMappedInfo(WindowRep* win, Boolean mapped)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
 	char	buf[100];
-
 	ViewWin::HandleWindowMappedInfo(win, mapped);
-	sprintf(buf,"DEViseWindowMapped {%s}", GetName());
-
+	int formatted = snprintf(buf, sizeof(buf), "DEViseWindowMapped {%s}",
+	    GetName());
+    DevStatus tmpStatus = checkAndTermBuf2(buf, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 #ifdef DEBUG
 	printf("%s\n", buf);
 #endif
-
 	ControlPanel::Instance()->NotifyFrontEnd(buf);
 }
 
 Boolean		Layout::HandleWindowDestroy(WindowRep*	win)
 {
   DOASSERT(_objectValid.IsValid(), "operation on invalid object");
+
 	char	buf[100];
-
 	ViewWin::HandleWindowDestroy(win);
-	sprintf(buf,"DEViseWindowDestroy {%s}", GetName());
-
+	int formatted = snprintf(buf, sizeof(buf), "DEViseWindowDestroy {%s}",
+	    GetName());
+    DevStatus tmpStatus = checkAndTermBuf2(buf, formatted);
+	DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 #ifdef DEBUG
 	printf("%s\n", buf);
 #endif
-
 	ControlPanel::Instance()->NotifyFrontEnd(buf);
 	return true;
 }

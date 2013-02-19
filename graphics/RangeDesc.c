@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2000
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/03/14 17:05:09  wenger
+  Fixed bug 569 (group/ungroup causes crash); added more memory checking,
+  including new FreeString() function.
+
   Revision 1.4  2000/02/16 18:51:21  wenger
   Massive "const-ifying" of strings in ClassDir and its subclasses.
 
@@ -98,7 +102,9 @@ RangeDesc::Dump(const char *filename)
   FILE *file = fopen(filename, "w");
   if (file == NULL) {
     char errBuf[MAXPATHLEN * 2];
-    sprintf(errBuf, "Unable to open file: %s", filename);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Unable to open file: %s", filename);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrSys(errBuf);
     result += StatusFailed;
   } else {
@@ -148,7 +154,10 @@ RangeDesc::Build()
   int rangeCount = 0;
   while (_unassignedXViews.Size() > 0) {
     char rangeName[128];
-    sprintf(rangeName, "X%d", ++rangeCount);
+    int formatted = snprintf(rangeName, sizeof(rangeName), "X%d",
+        ++rangeCount);
+    DevStatus tmpStatus = checkAndTermBuf2(rangeName, formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     Range *xRange = new Range(rangeName, RangeX);
     DOASSERT(xRange != NULL, "Out of memory");
 
@@ -160,7 +169,10 @@ RangeDesc::Build()
   rangeCount = 0;
   while (_unassignedYViews.Size() > 0) {
     char rangeName[128];
-    sprintf(rangeName, "Y%d", ++rangeCount);
+    int formatted = snprintf(rangeName, sizeof(rangeName), "Y%d",
+        ++rangeCount);
+    DevStatus tmpResult = checkAndTermBuf2(rangeName, formatted);
+    DOASSERT(tmpResult.IsComplete(), "Buffer overflow");
     Range *yRange = new Range(rangeName, RangeY);
     DOASSERT(yRange != NULL, "Out of memory");
 

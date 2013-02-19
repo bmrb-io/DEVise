@@ -16,6 +16,11 @@
   $Id$
 
   $Log$
+  Revision 1.48  2013/01/25 22:13:16  wenger
+  Fixed DEVise/JS bugs 1027 and 1028 -- we now re-make DEVise tmp and
+  work dirs before we try to use them, in case /tmp cleaner has
+  removed them.
+
   Revision 1.47  2012/04/30 22:21:10  wenger
   Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 
@@ -372,12 +377,13 @@ char *CopyString(const char *str)
   if (str == NULL) return NULL;
   // Changed from new to malloc here so the stack doesn't get too deep
   // for Purify to show.  RKW 1999-03-01.
-  char *result = (char *)malloc(strlen(str) + 1);
+  int bufSize = strlen(str) + 1;
+  char *result = (char *)malloc(bufSize);
   if (!result) {
     reportErrNosys("Fatal error: out of memory");
     Exit::DoExit(2);
   }
-  strcpy(result, str);
+  strncpy(result, str, bufSize);
   return result;
 }
 
@@ -453,29 +459,46 @@ AddEnvToPath(const char *envVar, const char *path)
         "Error getting value for environment variable %s", envVar);
     (void) checkAndTermBuf2(errBuf, formatted);
     reportErrSys(errBuf);
+    // Note: if we get here, we still want to continue through the
+    // rest of the function and copy the string at the end.
   }
 
   char *match = NULL;
-  if (envVal) match = strstr(path, envVal);
+  if (envVal) {
+    match = strstr(path, envVal);
+  }
 
   if (match) {
     char tmpBuf[MAXPATHLEN * 2];
     char *outP = tmpBuf;
+    int bufLeft = sizeof(tmpBuf);
 
     // Copy the stuff before the match.
     int beginLen = match - path;
-    strncpy(outP, path, beginLen);
+    DOASSERT(beginLen < bufLeft, "Buffer overflow");
+    // We only copy *part* of the path string.
+    memcpy(outP, path, beginLen);
     outP += beginLen;
+    bufLeft -= beginLen;
 
     // Copy in the environment variable name.
+    DOASSERT(1 < bufLeft, "Buffer overflow");
     *outP++ = '$';
+    bufLeft--;
+
     int varLen = strlen(envVar);
-    strncpy(outP, envVar, varLen);
+    DOASSERT(varLen < bufLeft, "Buffer overflow");
+    // We *don't* want to copy the terminating null.
+    memcpy(outP, envVar, varLen);
     outP += varLen;
+    bufLeft -= varLen;
 
     // Copy in the stuff after the match
     int valLen = strlen(envVal);
-    strcpy(outP, path + beginLen + valLen);
+    int endLen = strlen(path + beginLen + valLen);
+    DOASSERT(endLen < bufLeft, "Buffer overflow");
+    // Here we *do* want to copy the terminating null.
+    strncpy(outP, path + beginLen + valLen, bufLeft);
 
     result = CopyString(tmpBuf);
   } else {

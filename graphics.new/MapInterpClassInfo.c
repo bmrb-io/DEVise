@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.33  2008/09/11 20:28:13  wenger
+  Committed more of the "easy" compile warning fixes.
+
   Revision 1.32  2005/12/06 20:04:07  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -322,7 +325,8 @@ MapInterpClassInfo::ExtractCommand(int argc, const char * const *argv,
   } else {
     // DTE goes nuts if first char of TData name isn't '.'.
     char namebuf[1024];
-    sprintf(namebuf, ".%s", argv[0]);
+    int formatted = snprintf(namebuf, sizeof(namebuf), ".%s", argv[0]);
+    DevStatus tmpStatus = checkAndTermBuf2(namebuf, formatted);
     tdataAlias = CopyString(namebuf);
   }
 
@@ -330,9 +334,10 @@ MapInterpClassInfo::ExtractCommand(int argc, const char * const *argv,
   if (info) {
     if (strcmp("tdata", info->CategoryName())) {
     char errBuf[1024];
-      sprintf(errBuf,
+      int formatted = snprintf(errBuf, sizeof(errBuf),
           "Name conflict: a non-TData object named <%s> already exists",
 	  tdataAlias);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       return StatusFailed;
     } else {
@@ -449,19 +454,22 @@ void MapInterpClassInfo::ParamNames(int &argc, const char **&argv)
   argc = 11 + MAX_SHAPE_ATTRS;
   argv = args;
 
+  int formatted;
   if (_fileAlias) {
-    sprintf(buf[0], "File_Alias {%s}", _fileAlias);
+    formatted = snprintf(buf[0], sizeof(buf[0]), "File_Alias {%s}", _fileAlias);
   } else {
-    strcpy(buf[0], "File_Alias {foobar}");
+    formatted = snprintf(buf[0], sizeof(buf[0]), "File_Alias {foobar}");
   }
-  DOASSERT(strlen(buf[0]) < bufLen, "param string too long");
+  DevStatus tmpStatus = checkAndTermBuf2(buf[0], formatted);
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 
   if (_name) {
-    sprintf(buf[1], "Map_Name {%s}", _name);
+    formatted = snprintf(buf[1], sizeof(buf[1]), "Map_Name {%s}", _name);
   } else {
-    strcpy(buf[1], "Map_Name {foobar}");
+    formatted = snprintf(buf[1], sizeof(buf[1]), "Map_Name {foobar}");
   }
-  DOASSERT(strlen(buf[1]) < bufLen, "param string too long");
+  tmpStatus = checkAndTermBuf2(buf[1], formatted);
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 
   args[0] = buf[0];
   args[1] = buf[1];
@@ -473,64 +481,75 @@ void MapInterpClassInfo::ParamNames(int &argc, const char **&argv)
   }
   
   if (_cmd->xCmd) {
-    sprintf(buf[3], "X {%s}", _cmd->xCmd);
-    DOASSERT(strlen(buf[3]) < bufLen, "param string too long");
+    formatted = snprintf(buf[3], sizeof(buf[3]), "X {%s}", _cmd->xCmd);
+    tmpStatus = checkAndTermBuf2(buf[3], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[3] = buf[3];
   } else {
     args[3] = "X";
   }
     
   if (_cmd->yCmd) {
-    sprintf(buf[4], "Y {%s}", _cmd->yCmd);
-    DOASSERT(strlen(buf[4]) < bufLen, "param string too long");
+    formatted = snprintf(buf[4], sizeof(buf[4]), "Y {%s}", _cmd->yCmd);
+    tmpStatus = checkAndTermBuf2(buf[4], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[4] = buf[4];
   } else {
     args[4] = "Y";
   }
     
   if (_cmd->zCmd) {
-    sprintf(buf[5], "Z {%s}", _cmd->zCmd);
-    DOASSERT(strlen(buf[5]) < bufLen, "param string too long");
+    formatted = snprintf(buf[5], sizeof(buf[5]), "Z {%s}", _cmd->zCmd);
+    tmpStatus = checkAndTermBuf2(buf[5], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[5] = buf[5];
   } else {
     args[5] = "Z";
   }
     
   if (_cmd->colorCmd) {
-    sprintf(buf[6], "Color {%s}", _cmd->colorCmd);
-    DOASSERT(strlen(buf[6]) < bufLen, "param string too long");
+    formatted = snprintf(buf[6], sizeof(buf[6]), "Color {%s}", _cmd->colorCmd);
+    tmpStatus = checkAndTermBuf2(buf[6], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[6] = buf[6];
   } else {
       args[6] = "Color";
   }
     
   if ( _cmd->sizeCmd) {
-    sprintf(buf[7], "Size {%s}", _cmd->sizeCmd);
-    DOASSERT(strlen(buf[7]) < bufLen, "param string too long");
+    formatted = snprintf(buf[7], sizeof(buf[7]), "Size {%s}", _cmd->sizeCmd);
+    tmpStatus = checkAndTermBuf2(buf[7], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[7] = buf[7];
   } else {
     args[7] = "Size";
   }
     
   if ( _cmd->patternCmd) {
-    sprintf(buf[8], "Pattern {%s}", _cmd->patternCmd);
-    DOASSERT(strlen(buf[8]) < bufLen, "param string too long");
+    formatted = snprintf(buf[8], sizeof(buf[8]), "Pattern {%s}",
+        _cmd->patternCmd);
+    tmpStatus = checkAndTermBuf2(buf[8], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[8] = buf[8];
   } else {
     args[8] = "Pattern";
   }
   
   if ( _cmd->orientationCmd) {
-    sprintf(buf[9], "Orientation {%s}", _cmd->orientationCmd);
-    DOASSERT(strlen(buf[9]) < bufLen, "param string too long");
+    formatted = snprintf(buf[9], sizeof(buf[9]), "Orientation {%s}",
+        _cmd->orientationCmd);
+    tmpStatus = checkAndTermBuf2(buf[9], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[9] = buf[9];
   } else {
     args[9] = "Orientation";
   }
     
   if ( _cmd->shapeCmd) {
-    sprintf(buf[10], "Shape {%s}", _cmd->shapeCmd);
-    DOASSERT(strlen(buf[10]) < bufLen, "param string too long");
+    formatted = snprintf(buf[10], sizeof(buf[10]), "Shape {%s}",
+        _cmd->shapeCmd);
+    tmpStatus = checkAndTermBuf2(buf[10], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[10] = buf[10];
   } else {
     args[10] = "Shape";
@@ -538,11 +557,13 @@ void MapInterpClassInfo::ParamNames(int &argc, const char **&argv)
     
   for(int i = 0; i < MAX_SHAPE_ATTRS; i++) {
     if ( _cmd->shapeAttrCmd[i]) {
-      sprintf(buf[11 + i], "ShapeAttr%d {%s}", i, _cmd->shapeAttrCmd[i]);
+      formatted = snprintf(buf[11 + i], sizeof(buf[11+i]),
+          "ShapeAttr%d {%s}", i, _cmd->shapeAttrCmd[i]);
     } else {
-      sprintf(buf[11 + i], "ShapeAttr%d", i);
+      formatted = snprintf(buf[11 + i], sizeof(buf[11+i]), "ShapeAttr%d", i);
     }
-    DOASSERT(strlen(buf[11 + i]) < bufLen, "param string too long");
+    tmpStatus = checkAndTermBuf2(buf[11+i], formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     args[11 + i] = buf[11 + i];
   }
 }

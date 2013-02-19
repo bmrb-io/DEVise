@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.28  2000/06/16 19:45:16  wenger
+  Fixed bug 596 (height of text in JavaScreen vs. "regular" DEVise).
+
   Revision 1.27  2000/03/14 17:05:16  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -179,15 +182,19 @@ DevWindow::GetBoundingBox(int &left, int &right, int &top, int &bottom)
       window->RealGeometry(winX, winY, winW, winH);
 #if defined(DEBUG_LOG)
       char logBuf[1024];
-      sprintf(logBuf, "window <%s> RealGeometry = %d, %d, %d, %d\n",
+      int formatted = snprintf(logBuf, sizeof(logBuf),
+          "window <%s> RealGeometry = %d, %d, %d, %d\n",
           window->GetName(), winX, winY, winW, winH);
+      checkAndTermBuf2(logBuf, formatted);
       DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
       window->AbsoluteOrigin(winX, winY);
 #if defined(DEBUG_LOG)
-      sprintf(logBuf, "window <%s> AbsoluteOrigin = %d, %d\n",
+      formatted = snprintf(logBuf, sizeof(logBuf),
+          "window <%s> AbsoluteOrigin = %d, %d\n",
           window->GetName(), winX, winY);
+      checkAndTermBuf2(logBuf, formatted);
       DebugLog::DefaultLog()->Message(DebugLog::LevelInfo1, logBuf);
 #endif
 
@@ -280,25 +287,46 @@ void TileLayoutInfo::ParamNames(int &argc, const char **&argv)
   args[5] = buf6;
   args[6] = buf7;
 
-  strcpy(buf1, "Name {foobar}");
+  nice_strncpy(buf1, "Name {foobar}", sizeof(buf1));
   int numDefaults;
   const char **defaults;
   GetDefaultParams(numDefaults, defaults);
   
+  int formatted;
+  DevStatus tmpStatus(StatusOk);
   if (numDefaults == 4) {
-    sprintf(buf2, "X %s", defaults[0]);
-    sprintf(buf3, "Y %s", defaults[1]);
-    sprintf(buf4, "Width %s", defaults[2]);
-    sprintf(buf5, "Height %s", defaults[3]);
+    formatted = snprintf(buf2, sizeof(buf2), "X %s", defaults[0]);
+    tmpStatus += checkAndTermBuf2(buf2, formatted);
+
+    formatted = snprintf(buf3, sizeof(buf3), "Y %s", defaults[1]);
+    tmpStatus += checkAndTermBuf2(buf3, formatted);
+
+    formatted = snprintf(buf4, sizeof(buf4), "Width %s", defaults[2]);
+    tmpStatus += checkAndTermBuf2(buf4, formatted);
+
+    formatted = snprintf(buf5, sizeof(buf5), "Height %s", defaults[3]);
+    tmpStatus += checkAndTermBuf2(buf5, formatted);
   } else {
-    sprintf(buf2, "X 0.0");
-    sprintf(buf3, "Y 0.0");
-    sprintf(buf4, "Width 0.5");
-    sprintf(buf5, "Height 0.5");
+    formatted = snprintf(buf2, sizeof(buf2), "X 0.0");
+    tmpStatus += checkAndTermBuf2(buf2, formatted);
+
+    formatted = snprintf(buf3, sizeof(buf3), "Y 0.0");
+    tmpStatus += checkAndTermBuf2(buf3, formatted);
+
+    formatted = snprintf(buf4, sizeof(buf4), "Width 0.5");
+    tmpStatus += checkAndTermBuf2(buf4, formatted);
+
+    formatted = snprintf(buf5, sizeof(buf5), "Height 0.5");
+    tmpStatus += checkAndTermBuf2(buf5, formatted);
   }
 
-  sprintf(buf6, "{Exclude from Print} 0");
-  sprintf(buf7, "{Print Pixmap} 0");
+  formatted = snprintf(buf6, sizeof(buf6), "{Exclude from Print} 0");
+  tmpStatus += checkAndTermBuf2(buf6, formatted);
+
+  formatted = snprintf(buf7, sizeof(buf7), "{Print Pixmap} 0");
+  tmpStatus += checkAndTermBuf2(buf7, formatted);
+
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 }
 
 ClassInfo *TileLayoutInfo::CreateWithParams(int argc, const char * const *argv)
@@ -343,7 +371,9 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, const char * const *argv)
   // because ViewWins that are views rather than windows should not have a
   // PileStack object.
   char buf[256];
-  sprintf(buf, "%s_pile", name);
+  int formatted = snprintf(buf, sizeof(buf), "%s_pile", name);
+  DevStatus tmpStatus = checkAndTermBuf2(buf, formatted);
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
   PileStack *ps = new PileStack(buf, win);
   win->SetMyPileStack(ps);
 
@@ -399,10 +429,19 @@ void TileLayoutInfo::CreateParams(int &argc, const char **&argv)
 #if defined(DEBUG)
     printf("Session opened by JavaScreen; window cannot have been resized.\n");
 #endif
-    sprintf(buf2, "%f", _relativeX);
-    sprintf(buf3, "%f", _relativeY);
-    sprintf(buf4, "%f", _relativeWidth);
-    sprintf(buf5, "%f", _relativeHeight);
+    int formatted = snprintf(buf2, sizeof(buf2), "%f", _relativeX);
+    DevStatus tmpStatus = checkAndTermBuf2(buf2, formatted);
+
+    formatted = snprintf(buf3, sizeof(buf3), "%f", _relativeY);
+    tmpStatus += checkAndTermBuf2(buf3, formatted);
+
+    formatted = snprintf(buf4, sizeof(buf4), "%f", _relativeWidth);
+    tmpStatus += checkAndTermBuf2(buf4, formatted);
+
+    formatted = snprintf(buf5, sizeof(buf5), "%f", _relativeHeight);
+    tmpStatus += checkAndTermBuf2(buf5, formatted);
+
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
   } else {
 #if defined(DEBUG)
     printf("Session not opened JavaScreen; window may have been resized.\n");
@@ -420,14 +459,26 @@ void TileLayoutInfo::CreateParams(int &argc, const char **&argv)
       relY -= floor(relY);
     }
 
-    sprintf(buf2, "%f", relX);
-    sprintf(buf3, "%f", relY);
-    sprintf(buf4, "%f", (double)w / dispWidth);
-    sprintf(buf5, "%f", (double)h / dispHeight);
+    int formatted = snprintf(buf2, sizeof(buf2), "%f", relX);
+    DevStatus tmpStatus = checkAndTermBuf2(buf2, formatted);
+
+    formatted = snprintf(buf3, sizeof(buf3), "%f", relY);
+    tmpStatus += checkAndTermBuf2(buf3, formatted);
+
+    formatted = snprintf(buf4, sizeof(buf4), "%f", (double)w / dispWidth);
+    tmpStatus += checkAndTermBuf2(buf4, formatted);
+
+    formatted = snprintf(buf5, sizeof(buf5), "%f", (double)h / dispHeight);
+    tmpStatus += checkAndTermBuf2(buf5, formatted);
   }
 
-  sprintf(buf6, "%d", _win->GetPrintExclude());
-  sprintf(buf7, "%d", _win->GetPrintPixmap());
+  int formatted = snprintf(buf6, sizeof(buf6), "%d", _win->GetPrintExclude());
+  DevStatus tmpStatus = checkAndTermBuf2(buf6, formatted);
+
+  formatted = snprintf(buf7, sizeof(buf7), "%d", _win->GetPrintPixmap());
+  tmpStatus += checkAndTermBuf2(buf7, formatted);
+
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 
 #if defined(DEBUG)
   PrintArgs(stdout, argc, argv);

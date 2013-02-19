@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1998-2010
+  (c) Copyright 1998-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  2010/09/01 18:44:18  wenger
+  Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+
   Revision 1.33.8.7  2010/08/31 19:14:48  wenger
   Fixed the cursor behavior problems in the ambiguity code and Pistachio
   visualizations by calling RestoreCursorState() at a different point.
@@ -358,7 +361,9 @@ void FullMapping_ViewShape::DrawGDataArray(WindowRep *win,
     ViewGraph *viewsym = (ViewGraph *)classDir->FindInstance(viewname);
     if (!viewsym) {
       char errBuf[1024];
-      sprintf(errBuf, "View <%s> not found", viewname);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "View <%s> not found", viewname);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       continue;
     }
@@ -509,7 +514,10 @@ FullMapping_ViewShape::SetChildValue(TDataMap *map, AttrList *attrList,
 #endif
       }
     } else {
-      sprintf(valBuf, "%g", map->GetShapeAttr(gdata, 9));
+      int formatted = snprintf(valBuf, sizeof(valBuf), "%g",
+          map->GetShapeAttr(gdata, 9));
+      DevStatus tmpStatus = checkAndTermBuf2(valBuf, formatted);
+      DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
       mapStr = valBuf;
     }
 #if defined(DEBUG)
@@ -575,7 +583,10 @@ FullMapping_ViewShape::ShapeAttrToFilterVal(TDataMap *map, AttrList *attrList,
   Boolean gotValue = false;
 
   char attrName[128];
-  sprintf(attrName, "%s%d", gdataShapeAttrName, attrNum);
+  int formatted = snprintf(attrName, sizeof(attrName), "%s%d",
+      gdataShapeAttrName, attrNum);
+  DevStatus tmpStatus = checkAndTermBuf2(attrName, formatted);
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
   AttrInfo *info = attrList->Find(attrName);
   if (info) {
     if (info->type == StringAttr) {

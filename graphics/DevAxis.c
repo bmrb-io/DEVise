@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1999-2003
+  (c) Copyright 1999-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.14  2005/12/06 20:02:59  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.13  2003/01/13 19:25:09  wenger
   Merged V1_7b0_br_3 thru V1_7b0_br_4 to trunk.
 
@@ -487,7 +491,7 @@ DevAxis::DrawFloatTicks(WindowRep *win, AxisInfo &info)
 	const int bufSize = 32;
     char buf[bufSize];
 	if (!strcmp(_floatFormat, _blankFloatFormat)) {
-      strcpy(buf, "");
+      nice_strncpy(buf, "", sizeof(buf));
 	} else {
 	  Coord labelValue = tickMark;
 	  labelValue = tickMark;

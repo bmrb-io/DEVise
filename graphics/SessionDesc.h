@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.3  2000/07/12 20:49:15  wenger
+  Added first version of metavisualization session description; changed
+  DEVise version to 1.7.1.
+
   Revision 1.2  1998/03/27 15:08:42  wenger
   Added dumping of logical session description, added GUI for dumping
   logical or physical description; cleaned up some of the command code
@@ -46,7 +50,8 @@ class SessionDesc
 {
   public:
     static DevStatus Write(char *filename, Boolean physical = true);
-    static DevStatus LinkTypeString(DeviseLink *link, char buffer[]);
+    static DevStatus LinkTypeString(DeviseLink *link, char buffer[],
+        int bufSize);
 };
 
 

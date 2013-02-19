@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-1997
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,13 @@
   $Id$
 
   $Log$
+  Revision 1.4  1999/11/30 22:28:00  wenger
+  Temporarily added extra debug logging to figure out Omer's problems;
+  other debug logging improvements; better error checking in setViewGeometry
+  command and related code; added setOpeningSession command so Omer can add
+  data sources to the temporary catalog; added removeViewFromPile (the start
+  of allowing piling of only some views in a window).
+
   Revision 1.3  1997/11/24 23:14:09  weaver
   Changes for the new ColorManager.
 
@@ -109,7 +116,7 @@ valType &AssoArray<valType>::operator[](const char *index){
 
 	pp = &vec[free++];
 	pp->name = new char[strlen(index)+1];
-	strcpy(pp->name, index);
+	nice_strncpy(pp->name, index, strlen(index)+1);
 	pp->val = 0;
 	return pp->val;
 }

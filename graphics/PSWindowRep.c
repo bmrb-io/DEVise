@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2008
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.46  2008/10/13 19:45:16  wenger
+  More const-ifying, especially Control- and csgroup-related.
+
   Revision 1.45  2008/09/11 20:28:04  wenger
   Committed more of the "easy" compile warning fixes.
 
@@ -717,25 +720,33 @@ void PSWindowRep::SetDashes(int dashCount, int dashes[], int startOffset)
     TransPixToPoint(1.0, 0.0, tx2, ty2);
     Coord scale = tx2 - tx1;
 
-    strcpy(_dashList, "[");
+    nice_strncpy(_dashList, "[", sizeof(_dashList]);
     int dashNum;
     char buffer[32];
     for (dashNum = 0; dashNum < dashCount; dashNum++) {
       Coord dash = dashes[dashNum] * scale;
       if (dash < 0.0) {
-	sprintf(errBuf, "Illegal dash value (%f)", dash);
+	int formatted = snprintf(errBuf, sizeof(errBuf),
+	    "Illegal dash value (%f)", dash);
+	checkAndTermBuf2(errBuf, formatted);
 	reportErrNosys(errBuf);
 	dash = 0.0;
       }
-      sprintf(buffer, "%f ", dash);
-      strncat(_dashList, buffer, _dashListSize);
+      int formatted = snprintf(buffer, sizeof(buffer), "%f ", dash);
+      DevStatus tmpStatus = checkAndTermBuf2(buffer, formatted);
+      DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
+      tmpStatus = nice_strncat(_dashList, buffer, _dashListSize);
+      DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     }
 
     // Make sure there's room for start offset.
     _dashList[_dashListSize - 32] = '\0';
-    strcat(_dashList, "] ");
-    sprintf(buffer, "%d", startOffset);
-    strncat(_dashList, buffer, _dashListSize);
+    nice_strncat(_dashList, "] ", sizeof(_dashList));
+    int formatted = snprintf(buffer, sizeof(buffer), "%d", startOffset);
+    DevStatus tmpStatus = checkAndTermBuf2(buffer, formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
+    tmpStatus = nice_strncat(_dashList, buffer, sizeof(_dashList));
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 
     // Make sure the string is terminated even if we ran out of space.
     _dashList[_dashListSize - 1] = '\0';

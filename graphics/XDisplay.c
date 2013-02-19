@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.96  2013/01/28 20:37:36  wenger
+  Changed a bunch more sprintfs to snprintfs.
+
   Revision 1.95  2009/05/13 22:41:23  wenger
   Merged x86_64_centos5_br_0 thru x86_64_centos5_br_1/dist_1_9_1x2 to
   the trunk.
@@ -782,7 +785,7 @@ void XDisplay::ExportImageAndMap(DisplayExportFormat format, char *gifFilename,
       }
 
       char prename[strlen(gifFilename) + 1];
-      strcpy(prename, gifFilename);
+      nice_strncpy(prename, gifFilename, sizeof(prename));
       char *p = strstr(prename, ".gif");
       char *p_start = strrchr(prename, '/');
       if (p_start) p_start++;

@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2002
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  2008/01/24 22:08:33  wenger
+  Got rid of a bunch of compile warnings.
+
   Revision 1.15  2005/12/06 20:04:14  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -347,7 +350,9 @@ StringStorage::LoadAll(const char *filename)
 
   if (ClearAll() < 0) {
     char errBuf[1024];
-    sprintf(errBuf, "Error clearing string tables");
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Error clearing string tables");
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
   }
 

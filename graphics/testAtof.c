@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2005
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.5  2005/12/06 20:03:17  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.4.18.1  2005/09/06 21:20:11  wenger
   Got DEVise to compile with gcc 4.0.1.
 
@@ -71,10 +75,10 @@ int main(){
   startTime = getTime();
   char buf[128];
   for (i=0; i < ITERATIONS; i++){
-    strcpy(buf, number);
+    strncpy(buf, number, sizeof(buf));
   }
   stopTime = getTime();
-  printf("%d iterations of strcpy() took %f seconds\n", ITERATIONS,
+  printf("%d iterations of strncpy() took %f seconds\n", ITERATIONS,
     stopTime - startTime);
 
 

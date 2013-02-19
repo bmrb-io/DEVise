@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.10  2008/09/23 22:55:33  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.9  2008/09/11 20:28:04  wenger
   Committed more of the "easy" compile warning fixes.
 
@@ -109,7 +112,9 @@ SessionDesc::Write(char *filename, Boolean physical)
   FILE *file = fopen(filename, "w");
   if (file == NULL) {
     char errBuf[MAXPATHLEN+100];
-    sprintf(errBuf, "Unable to open file '%s'\n", filename);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Unable to open file '%s'\n", filename);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrSys(errBuf);
     result += StatusFailed;
   } else {
@@ -124,7 +129,9 @@ SessionDesc::Write(char *filename, Boolean physical)
 
     if (fclose(file) != 0) {
       char errBuf[MAXPATHLEN+100];
-      sprintf(errBuf, "Unable to close file '%s'\n", filename);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Unable to close file '%s'\n", filename);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrSys(errBuf);
       result += StatusFailed;
     }
@@ -138,7 +145,7 @@ SessionDesc::Write(char *filename, Boolean physical)
  * Get the string corresponding to the type of the given link.
  */
 DevStatus
-SessionDesc::LinkTypeString(DeviseLink *link, char buffer[])
+SessionDesc::LinkTypeString(DeviseLink *link, char buffer[], int bufSize)
 {
 #if defined(DEBUG)
   printf("SessionDesc::LinkTypeString(%s)\n", link->GetName());
@@ -154,18 +161,22 @@ SessionDesc::LinkTypeString(DeviseLink *link, char buffer[])
 
   if (flag & VISUAL_RECORD) {
     RecordLinkType recLinkType = link->GetLinkType();
+    int formatted;
     if (recLinkType == Positive) {
-      sprintf(buffer, "reclink+");
+      formatted = snprintf(buffer, bufSize, "reclink+");
     } else if (recLinkType == Negative) {
-      sprintf(buffer, "reclink-");
+      formatted = snprintf(buffer, bufSize, "reclink-");
     } else {
-      sprintf(buffer, "reclink?");
+      formatted = snprintf(buffer, bufSize, "reclink?");
     }
+    checkAndTermBuf(buffer, bufSize, formatted);
 
     if (flag & ~VISUAL_RECORD) {
       char errBuf[256];
-      sprintf(errBuf, "Warning: record link %s also has other link attributes",
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+          "Warning: record link %s also has other link attributes",
 	  link->GetName());
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
       result += StatusWarn;
     }
@@ -175,7 +186,9 @@ SessionDesc::LinkTypeString(DeviseLink *link, char buffer[])
     if (!leaderAttr) leaderAttr= "";
     const char *followerAttr = setLink->GetSlaveAttrName();
     if (!followerAttr) followerAttr = "";
-    sprintf(buffer, "set (%s/%s)", leaderAttr, followerAttr);
+    int formatted = snprintf(buffer, bufSize, "set (%s/%s)", leaderAttr,
+        followerAttr);
+    checkAndTermBuf(buffer, bufSize, formatted);
   } else {
     //
     // Non-pile (user-created) links are not allowed to have a
@@ -187,15 +200,17 @@ SessionDesc::LinkTypeString(DeviseLink *link, char buffer[])
       baseStr = "vislink";
     }
 
+    int formatted;
     if ((flag & VISUAL_X) && (flag & VISUAL_Y)) {
-      sprintf(buffer, "%sXY", baseStr);
+      formatted = snprintf(buffer, bufSize, "%sXY", baseStr);
     } else if (flag & VISUAL_X) {
-      sprintf(buffer, "%sX", baseStr);
+      formatted = snprintf(buffer, bufSize, "%sX", baseStr);
     } else if (flag & VISUAL_Y) {
-      sprintf(buffer, "%sY", baseStr);
+      formatted = snprintf(buffer, bufSize, "%sY", baseStr);
     } else {
-      sprintf(buffer, "unknown");
+      formatted = snprintf(buffer, bufSize, "unknown");
     }
+    checkAndTermBuf(buffer, bufSize, formatted);
   }
 
   return result;
@@ -416,7 +431,8 @@ SessionDescPrv::LogWriteLinks(FILE *file)
 	// Figure out the type of link.
 	//
 	char linkType[32];
-	status += SessionDesc::LinkTypeString(link, linkType);
+	status += SessionDesc::LinkTypeString(link, linkType,
+	    sizeof(linkType));
 
 	//
 	// Get a list of the views connected to this link.

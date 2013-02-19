@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2003
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -17,6 +17,12 @@
   $Id$
 
   $Log$
+  Revision 1.84  2009/11/16 21:48:46  wenger
+  Added new 'isAngle' field to the mapping for HighLow symbols -- if
+  this is turned on, the HighLow symbols treat the data as angles
+  from -180 to 180 degrees, with special provision for angles that
+  "wrap around" the -180 to 180 boundary (low > high in the data).
+
   Revision 1.83  2008/09/11 20:28:13  wenger
   Committed more of the "easy" compile warning fixes.
 
@@ -1833,7 +1839,10 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     char defaultFile[MAXPATHLEN];
     char *directory = getenv("PWD");
     DOASSERT(directory != NULL, "Can't get current directory");
-    sprintf(defaultFile, "%s/image.gif", directory);
+    int formatted = snprintf(defaultFile, sizeof(defaultFile),
+      "%s/image.gif", directory);
+    DevStatus tmpStatus = checkAndTermBuf2(defaultFile, formatted);
+    DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
     
     const GDataAttrOffset *offset = map->GetGDataOffset();
 	StringStorage *stringTable = map->GetStringTable(TDataMap::TableGen);
@@ -1878,7 +1887,9 @@ void FullMapping_GifImageShape::DrawGDataArray(WindowRep *win,
     if (map->HasShapeAttr(0)) {
 #if defined(DEBUG)
 	  char errBuf[1024];
-      sprintf(errBuf, "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+      int formatted = snprintf(errBuf, sizeof(errBuf),
+        "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+      checkAndTermBuf2(errBuf, formatted);
       reportErrNosys(errBuf);
 #endif
     } else {
@@ -2160,7 +2171,9 @@ GetTextAttrInfo(AttrList *attrList,
     labelAttrValid = false;
 #if defined(DEBUG)
     char errBuf[1024];
-    sprintf(errBuf, "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+      "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
 #endif
   } else {
@@ -2174,7 +2187,9 @@ GetTextAttrInfo(AttrList *attrList,
     labelFormatValid = false;
 #if defined(DEBUG)
     char errBuf[1024];
-    sprintf(errBuf, "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+    int formatted = snprintf(errBuf, sizeof(errBuf),
+      "Can't find AttrInfo for %s\n", gdataShapeAttr0Name);
+    checkAndTermBuf2(errBuf, formatted);
     reportErrNosys(errBuf);
 #endif
   } else {
