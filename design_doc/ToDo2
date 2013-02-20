@@ -116,9 +116,9 @@ raise all of the windows before printing. (wenger)
 Eliminate all dependencies on having /p/devise for a DEVise installation.
 (wenger)
 
-08.004 2/18/13	OPEN	?
-Add a test session with a session postscript.
-(wenger)
+08.004 2/18/13	DONE	?
+Add a test session with a session postscript.  (wenger)
+(Done by wenger, 2/19/13.)
 
 ...........................................................................
 SECTION 09 (JavaScreen, GUI)

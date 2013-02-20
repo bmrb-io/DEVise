@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.98  2013/01/28 20:37:43  wenger
+  Changed a bunch more sprintfs to snprintfs.
+
   Revision 1.97  2012/05/08 18:04:28  wenger
   Changed DEVise version to 1.11.3x1 and JavaScreen version to 5.14.3x1;
   added 1.11.3 and 5.14.3 sections to the DEVise and JavaScreen version
@@ -596,7 +599,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.3x2"/*TEMP*/;
+static const char *	version = "1.11.3x3"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";

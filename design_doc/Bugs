@@ -4489,8 +4489,9 @@ java.security.AccessControlException: access denied
 			directory. (wenger)
 			(Fixed by wenger, 8/12/11.)
 
-1022 11/9/11	OPEN	JS: the "reset axis ranges" command should re-run
+1022 11/9/11	DONE	JS: the "reset axis ranges" command should re-run
 			the session post script. (wenger)
+			(Fixed by wenger, 2/19/13.)
 
 1023 2/3/12	OPEN	JS: when drilling down on the BMRB histogram
 			visualizations, sometimes the value for the

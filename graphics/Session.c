@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2010
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.115  2010/09/01 18:44:10  wenger
+  Merged fix_3d_cursor_br_0 thru fix_3d_cursor_br_1 to trunk.
+
   Revision 1.114.6.2  2010/08/31 17:28:22  wenger
   Changed the names of some of the new commands and methods to better
   reflect their functions; documented the new methods.  (Note: cursor
@@ -1968,6 +1971,13 @@ Session::FilterCommand(ControlPanelSimple *control, int argc, char *argv[])
     // Don't check result here, otherwise we stop if a view is missing, for
     // example.
     DEViseCmd(control, args.GetCount(), args.GetArgs());
+
+  } else if (!strcmp(argv[0], "DEVise") && !strcmp(argv[1], "sessionPost")) {
+    // Without the WaitForQueries() call here, links don't get updated
+    // properly, because this is all happening within the resetFilters
+    // command.  wenger 2013-02-19
+    Dispatcher::Current()->WaitForQueries();
+    DEViseCmd(control, argc, argv);
   }
 
   return result;
