@@ -4469,9 +4469,10 @@ java.security.AccessControlException: access denied
 			if it's running against a "real" X server (as
 			opposed to Xvfb). (wenger)
 
-1017 4/7/11	OPEN	Changing a cursor from X/Y to X only in the "edit
+1017 4/7/11	DONE	Changing a cursor from X/Y to X only in the "edit
 			cursor" GUI is not preserved when the session is
 			saved and re-opened. (wenger)
+			(Fixed by wenger, 2/21/13.)
 
 1018 5/10/11	OPEN	JS: sometimes locks up when trying to open a new
 			session within the JS GUI (note: I've only seen

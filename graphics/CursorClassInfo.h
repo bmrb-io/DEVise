@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.5  2000/02/16 18:51:20  wenger
+  Massive "const-ifying" of strings in ClassDir and its subclasses.
+
   Revision 1.4  1997/07/22 15:36:23  wenger
   Added capability to dump human-readable information about all links
   and cursors.
@@ -98,6 +101,9 @@ public:
   void Dump(FILE *fp);
 
 private:
+  // Note: I'm not sure if we really need _flag and _name here, since
+  // those are also stored in the Cursor object (and _flag in that object
+  // can get changed).  wenger 2013-02-21
   VisualFlag _flag;
   const char *_name;
   DeviseCursor *_cursor;

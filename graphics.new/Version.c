@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.100  2013/02/21 20:55:28  wenger
+  We now print an error message if the chmod() on a data download fails.
+
   Revision 1.99  2013/02/20 01:36:59  wenger
   Fixed DEVise bug 1022 (the "reset axis ranges" command should re-run
   the session post script); also added a test session with a session
@@ -604,7 +607,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.3x4"/*TEMP*/;
+static const char *	version = "1.11.3x5"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";

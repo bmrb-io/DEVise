@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.34  2013/02/19 00:06:51  wenger
+  Got rid of more sprintfs, strcpys and strcats.
+
   Revision 1.33  2008/09/11 20:28:13  wenger
   Committed more of the "easy" compile warning fixes.
 
@@ -173,8 +176,9 @@
 
 static const char *rootClassName = "interpreted";
 static const unsigned int bufLen = 256;
-static char buf[11 + MAX_SHAPE_ATTRS][bufLen];
-static const char *args[11 + MAX_SHAPE_ATTRS];
+static const int arg_count = 11 + MAX_SHAPE_ATTRS;
+static char buf[arg_count][bufLen];
+static const char *args[arg_count];
 
 MapInterpClassInfo::MapInterpClassInfo()
 {
@@ -309,9 +313,9 @@ MapInterpClassInfo::ExtractCommand(int argc, const char * const *argv,
     return StatusFailed;
   }
 
-  if (argc > 11 + MAX_SHAPE_ATTRS) {
+  if (argc > arg_count) {
     fprintf(stderr, "Ignoring extraneous shape attributes\n");
-    argc = 11 + MAX_SHAPE_ATTRS;
+    argc = arg_count;
   }
 
   cmd->xCmd = cmd->yCmd = cmd->zCmd = cmd->colorCmd = cmd->sizeCmd = 0;
@@ -451,7 +455,7 @@ void MapInterpClassInfo::ParamNames(int &argc, const char **&argv)
 
   /* params for an existing interpreted mapping */
 
-  argc = 11 + MAX_SHAPE_ATTRS;
+  argc = arg_count;
   argv = args;
 
   int formatted;
@@ -581,8 +585,9 @@ void MapInterpClassInfo::ChangeParams(int argc, const char* const *argv)
   printf(")\n");
 #endif
 
-  if (!_cmd)
+  if (!_cmd) {
     return;
+  }
 
   char *tdataAlias;
   char *name;
@@ -696,61 +701,71 @@ void MapInterpClassInfo::CreateParams(int &argc, const char **&argv)
 
   /* parameters are: fileAlias, mapName, x, y, color, size, 
      pattern, orientation, shape, and shapeAttrs */
-  argc = 11 + MAX_SHAPE_ATTRS;
+  argc = arg_count;
   argv = args;
   
   args[0] = _fileAlias;
   args[1] = _name;
 
-  if (_numDimensions == 1)
+  if (_numDimensions == 1) {
     args[2] = "X";
-  else
+  } else {
     args[2] = "";
+  }
   
-  if (_cmd->xCmd)
+  if (_cmd->xCmd) {
     args[3] = _cmd->xCmd;
-  else
+  } else {
     args[3] = "";
+  }
   
-  if (_cmd->yCmd)
+  if (_cmd->yCmd) {
     args[4] = _cmd->yCmd;
-  else
+  } else {
     args[4] = "";
+  }
   
-  if (_cmd->zCmd)
+  if (_cmd->zCmd) {
     args[5] = _cmd->zCmd;
-  else
+  } else {
     args[5] = "";
+  }
   
-  if ( _cmd->colorCmd)
+  if ( _cmd->colorCmd) {
     args[6] = _cmd->colorCmd;
-  else
+  } else {
     args[6] = "";
+  }
   
-  if ( _cmd->sizeCmd)
+  if ( _cmd->sizeCmd) {
     args[7] = _cmd->sizeCmd;
-  else
+  } else {
     args[7] = "";
+  }
   
-  if ( _cmd->patternCmd)
+  if ( _cmd->patternCmd) {
     args[8] = _cmd->patternCmd;
-  else
+  } else {
     args[8] = "";
+  }
   
-  if ( _cmd->orientationCmd)
+  if ( _cmd->orientationCmd) {
     args[9] = _cmd->orientationCmd;
-  else
+  } else {
     args[9] = "";
+  }
   
-  if ( _cmd->shapeCmd)
+  if ( _cmd->shapeCmd) {
     args[10] = _cmd->shapeCmd;
-  else
+  } else {
     args[10] = "";
+  }
   
   for(int i = 0; i < MAX_SHAPE_ATTRS; i++) {
-    if ( _cmd->shapeAttrCmd[i])
+    if ( _cmd->shapeAttrCmd[i]) {
       args[11 + i] = _cmd->shapeAttrCmd[i];
-    else
+    } else {
       args[11 + i] = "";
+    }
   }
 }

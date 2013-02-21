@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.22  2005/12/06 20:04:15  wenger
+  Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
+  be the end of the V1_7b0_br branch.)
+
   Revision 1.21.14.1  2003/11/05 17:01:53  wenger
   First part of display modes for printing is implemented (view foreground
   and background colors work, haven't done anything for symbol colors yet).
@@ -241,51 +245,52 @@ void ViewClassInfo::ParamNames(int &argc, const char **&argv)
     args[i] = buf[i];
   }
 
-  nice_strncpy(buf[0], "name {foobar}", BUFLEN);
+  DevStatus tmpStatus = nice_strncpy(buf[0], "name {foobar}", BUFLEN);
 
   int formatted;
 
   if (numDefaults == 4) {
     formatted = snprintf(buf[1], BUFLEN, "xlow {%s}", defaults[0]);
-    checkAndTermBuf(buf[1], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[1], BUFLEN, formatted);
 
     formatted = snprintf(buf[2], BUFLEN, "xhigh {%s}", defaults[1]);
-    checkAndTermBuf(buf[2], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[2], BUFLEN, formatted);
 
     formatted = snprintf(buf[3], BUFLEN, "ylow {%s}", defaults[2]);
-    checkAndTermBuf(buf[3], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[3], BUFLEN, formatted);
 
     formatted = snprintf(buf[4], BUFLEN, "yhigh {%s}", defaults[3]);
-    checkAndTermBuf(buf[4], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[4], BUFLEN, formatted);
   } else {
-    nice_strncpy(buf[1], "xlow -10.0", BUFLEN);
-    nice_strncpy(buf[2], "xhigh 10.0", BUFLEN);
-    nice_strncpy(buf[3], "ylow -10.0", BUFLEN);
-    nice_strncpy(buf[4], "yhigh 10.0", BUFLEN);
+    tmpStatus += nice_strncpy(buf[1], "xlow -10.0", BUFLEN);
+    tmpStatus += nice_strncpy(buf[2], "xhigh 10.0", BUFLEN);
+    tmpStatus += nice_strncpy(buf[3], "ylow -10.0", BUFLEN);
+    tmpStatus += nice_strncpy(buf[4], "yhigh 10.0", BUFLEN);
   }
 
   formatted = snprintf(buf[5], BUFLEN, "{fgcolor (normal)} {%ld}",
       GetPColorID(defForeColor));
-  checkAndTermBuf(buf[5], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[5], BUFLEN, formatted);
   formatted = snprintf(buf[6], BUFLEN, "{bgcolor (normal)} {%ld}",
       GetPColorID(defBackColor));
-  checkAndTermBuf(buf[6], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[6], BUFLEN, formatted);
 
   //TEMP -- defaults aren't correct here -- wenger 2003-11-03
   formatted = snprintf(buf[7], BUFLEN, "{fgcolor (color print)} {%ld}",
       GetPColorID(defForeColor));
-  checkAndTermBuf(buf[7], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[7], BUFLEN, formatted);
   formatted = snprintf(buf[8], BUFLEN, "{bgcolor (color print)} {%ld}",
       GetPColorID(defBackColor));
-  checkAndTermBuf(buf[8], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[8], BUFLEN, formatted);
 
   //TEMP -- defaults aren't correct here -- wenger 2003-11-03
   formatted = snprintf(buf[9], BUFLEN, "{fgcolor (b/w print)} {%ld}",
       GetPColorID(defForeColor));
-  checkAndTermBuf(buf[9], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[9], BUFLEN, formatted);
   formatted = snprintf(buf[10], BUFLEN, "{bgcolor (b/w print)} {%ld}",
       GetPColorID(defBackColor));
-  checkAndTermBuf(buf[10], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[10], BUFLEN, formatted);
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 }
 
 void ViewClassInfo::CreateParams(int &argc, const char **&argv)
@@ -297,7 +302,7 @@ void ViewClassInfo::CreateParams(int &argc, const char **&argv)
     args[i] = buf[i];
   }
 
-  nice_strncpy(buf[0], _name, BUFLEN);
+  DevStatus tmpStatus = nice_strncpy(buf[0], _name, BUFLEN);
 
   VisualFilter *filter = _view->GetVisualFilter();
 
@@ -305,52 +310,53 @@ void ViewClassInfo::CreateParams(int &argc, const char **&argv)
   
   if (_view->GetXAxisAttrType() == DateAttr) {
     formatted = snprintf(buf[1], BUFLEN, "%s", DateString(filter->xLow));
-    checkAndTermBuf(buf[1], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[1], BUFLEN, formatted);
     formatted = snprintf(buf[2], BUFLEN, "%s", DateString(filter->xHigh));
-    checkAndTermBuf(buf[2], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[2], BUFLEN, formatted);
   } else {
     formatted = snprintf(buf[1], BUFLEN, "%f", filter->xLow);;
-    checkAndTermBuf(buf[1], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[1], BUFLEN, formatted);
     formatted = snprintf(buf[2], BUFLEN, "%f", filter->xHigh);
-    checkAndTermBuf(buf[2], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[2], BUFLEN, formatted);
   }
 
   if (_view->GetYAxisAttrType() == DateAttr){
     formatted = snprintf(buf[3], BUFLEN, "%s", DateString(filter->yLow));
-    checkAndTermBuf(buf[3], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[3], BUFLEN, formatted);
     formatted = snprintf(buf[4], BUFLEN, "%s", DateString(filter->yHigh));
-    checkAndTermBuf(buf[4], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[4], BUFLEN, formatted);
   } else {
     formatted = snprintf(buf[3], BUFLEN, "%f", filter->yLow);
-    checkAndTermBuf(buf[3], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[3], BUFLEN, formatted);
     formatted = snprintf(buf[4], BUFLEN, "%f", filter->yHigh);
-    checkAndTermBuf(buf[4], BUFLEN, formatted);
+    tmpStatus += checkAndTermBuf(buf[4], BUFLEN, formatted);
   }
 
   PColorID foreColor = _view->GetForeground(DisplayMode::ModeNormal);
   formatted = snprintf(buf[5], BUFLEN, "%ld", foreColor);
-  checkAndTermBuf(buf[5], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[5], BUFLEN, formatted);
 
   PColorID backColor = _view->GetBackground(DisplayMode::ModeNormal);
   formatted = snprintf(buf[6], BUFLEN, "%ld", backColor);
-  checkAndTermBuf(buf[6], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[6], BUFLEN, formatted);
 
   PColorID color;
   color = _view->GetForeground(DisplayMode::ModeColorPrint);
   formatted = snprintf(buf[7], BUFLEN, "%ld", color);
-  checkAndTermBuf(buf[7], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[7], BUFLEN, formatted);
 
   color = _view->GetBackground(DisplayMode::ModeColorPrint);
   formatted = snprintf(buf[8], BUFLEN, "%ld", color);
-  checkAndTermBuf(buf[8], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[8], BUFLEN, formatted);
 
   color = _view->GetForeground(DisplayMode::ModeBWPrint);
   formatted = snprintf(buf[9], BUFLEN, "%ld", color);
-  checkAndTermBuf(buf[9], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[9], BUFLEN, formatted);
 
   color = _view->GetBackground(DisplayMode::ModeBWPrint);
   formatted = snprintf(buf[10], BUFLEN, "%ld", color);
-  checkAndTermBuf(buf[10], BUFLEN, formatted);
+  tmpStatus += checkAndTermBuf(buf[10], BUFLEN, formatted);
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 }
 
 ViewXInfo::ViewXInfo(const char *name, ViewData *view)

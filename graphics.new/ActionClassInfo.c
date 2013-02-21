@@ -16,6 +16,10 @@
   $Id$
 
   $Log$
+  Revision 1.7  2013/02/11 22:28:59  wenger
+  More sprintf->snprintf conversions, and more error checking in
+  JavaScreenCmd.
+
   Revision 1.6  2000/03/14 17:05:26  wenger
   Fixed bug 569 (group/ungroup causes crash); added more memory checking,
   including new FreeString() function.
@@ -80,10 +84,11 @@ const char *ActionClassInfo::ClassName(){
 	return _className;
 }
 
-static const char *args[2];
-static char buf1[80], buf2[80];
+static const int arg_count = 1;
+static const char *args[1];
+static char buf1[80];
 void ActionClassInfo::ParamNames(int &argc, const char **&argv){
-	argc = 1;
+	argc = arg_count;
 	argv = args;
 	if (_instName != NULL){
 		args[0] = buf1;
@@ -124,7 +129,7 @@ void *ActionClassInfo::GetInstance(){
 
 /* Get parameters that can be used to re-create this instance */
 void ActionClassInfo::CreateParams(int &argc, const char **&argv) {
-	argc = 1;
+	argc = arg_count;
 	argv= args;
 	args[0] = buf1;
 	int formatted = snprintf(buf1, sizeof(buf1), "%s", _instName);

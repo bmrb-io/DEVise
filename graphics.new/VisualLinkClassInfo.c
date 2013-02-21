@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2010
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.17  2010/04/21 17:10:46  wenger
+  Merged devise_dist_rest_1003_br_0 thru devise_dist_rest_1003_br_1 to trunk.
+
   Revision 1.16.6.1  2010/04/07 19:06:26  wenger
   Finished implementation of "all" option in GAttrLinks, except for GUI
   to control it.
@@ -338,22 +341,41 @@ void VisualLinkClassInfo::CreateParams(int &argc, const char **&argv)
 {
   argc = 2;
   argv = args;
+
   args[0] = _name;
-  sprintf(buf1, "%d", _flag);
+
+  int formatted = snprintf(buf1, sizeof(buf1), "%d", _flag);
+  DevStatus tmpStatus = checkAndTermBuf2(buf1, formatted);
   args[1] = buf1;
+
   if (_flag & VISUAL_TATTR) {
     argc = 4;
-    sprintf(buf2, "%s", ((TAttrLink *)_link)->GetMasterAttrName());
+
+    formatted = snprintf(buf2, sizeof(buf2), "%s",
+	    ((TAttrLink *)_link)->GetMasterAttrName());
+    tmpStatus += checkAndTermBuf2(buf2, formatted);
     args[2] = buf2;
-    sprintf(buf3, "%s", ((TAttrLink *)_link)->GetSlaveAttrName());
+
+    formatted = snprintf(buf3, sizeof(buf3), "%s",
+	    ((TAttrLink *)_link)->GetSlaveAttrName());
+    tmpStatus += checkAndTermBuf2(buf3, formatted);
     args[3] = buf3;
   } else if (_flag & VISUAL_GATTR) {
     argc = 5;
-    sprintf(buf2, "%s", ((GAttrLink *)_link)->GetLeaderAttrName());
+
+    formatted = snprintf(buf2, sizeof(buf2), "%s",
+	    ((GAttrLink *)_link)->GetLeaderAttrName());
+    tmpStatus += checkAndTermBuf2(buf2, formatted);
     args[2] = buf2;
-    sprintf(buf3, "%s", ((GAttrLink *)_link)->GetFollowerAttrName());
+
+    formatted = snprintf(buf3, sizeof(buf3), "%s",
+	    ((GAttrLink *)_link)->GetFollowerAttrName());
+    tmpStatus += checkAndTermBuf2(buf3, formatted);
     args[3] = buf3;
-    sprintf(buf4, "%d", ((GAttrLink *)_link)->GetAllEnabled());
+
+    formatted = snprintf(buf4, sizeof(buf4), "%d",
+	    ((GAttrLink *)_link)->GetAllEnabled());
+    tmpStatus += checkAndTermBuf2(buf4, formatted);
     args[4] = buf4;
   }
 }

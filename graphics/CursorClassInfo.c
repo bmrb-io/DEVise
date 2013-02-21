@@ -1,7 +1,7 @@
 /*
   ========================================================================
   DEVise Data Visualization Software
-  (c) Copyright 1992-2000
+  (c) Copyright 1992-2013
   By the DEVise Development Group
   Madison, Wisconsin
   All Rights Reserved.
@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.16  2008/09/23 22:55:33  wenger
+  More const-ifying, especially drill-down-related stuff.
+
   Revision 1.15  2005/12/06 20:02:58  wenger
   Merged V1_7b0_br_4 thru V1_7b0_br_5 to trunk.  (This should
   be the end of the V1_7b0_br branch.)
@@ -147,11 +150,12 @@ const char *CursorClassInfo::ClassName()
   return "Cursor";
 }
 
-static const char *args[5];
+static const int arg_count = 6;
+static const char *args[arg_count];
 
 void CursorClassInfo::ParamNames(int &argc, const char **&argv)
 {
-  argc = 6;
+  argc = arg_count;
   argv = args;
   args[0] = "Name cursor";
   args[1] = "flags 2";
@@ -211,22 +215,28 @@ void CursorClassInfo::CreateParams(int &argc, const char **&argv)
 {
   argc = 6;
   argv= args;
-  args[0] = _name;
-  sprintf(buf1, "%d", _flag);
+  args[0] = _cursor->GetName();
+  int formatted = snprintf(buf1, sizeof(buf1), "%d", _cursor->GetFlag());
+  DevStatus tmpStatus = checkAndTermBuf2(buf1, formatted);
   args[1] = buf1;
   Boolean useGrid;
   Coord gridX, gridY;
   Boolean edgeGrid;
   _cursor->GetGrid(useGrid, gridX, gridY, edgeGrid);
 
-  sprintf(buf2, "%d", useGrid);
+  formatted = snprintf(buf2, sizeof(buf2), "%d", useGrid);
+  tmpStatus += checkAndTermBuf2(buf2, formatted);
   args[2] = buf2;
-  sprintf(buf3, "%f", gridX);
+  formatted = snprintf(buf3, sizeof(buf3), "%f", gridX);
+  tmpStatus += checkAndTermBuf2(buf3, formatted);
   args[3] = buf3;
-  sprintf(buf4, "%f", gridY);
+  formatted = snprintf(buf4, sizeof(buf4), "%f", gridY);
+  tmpStatus += checkAndTermBuf2(buf4, formatted);
   args[4] = buf4;
-  sprintf(buf5, "%d", edgeGrid);
+  formatted = snprintf(buf5, sizeof(buf5), "%d", edgeGrid);
+  tmpStatus += checkAndTermBuf2(buf5, formatted);
   args[5] = buf5;
+  DOASSERT(tmpStatus.IsComplete(), "Buffer overflow");
 }
 
 void

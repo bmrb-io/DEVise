@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.29  2013/02/19 00:06:46  wenger
+  Got rid of more sprintfs, strcpys and strcats.
+
   Revision 1.28  2000/06/16 19:45:16  wenger
   Fixed bug 596 (height of text in JavaScreen vs. "regular" DEVise).
 
@@ -154,7 +157,8 @@
 //#define DEBUG
 #define DEBUG_LOG
 
-static const char *args[7];
+static const int arg_count = 7;
+static const char *args[arg_count];
 static char buf1[256], buf2[80], buf3[80], buf4[80], buf5[80], buf6[80],
   buf7[80];
 
@@ -277,7 +281,7 @@ TileLayoutInfo::~TileLayoutInfo()
 
 void TileLayoutInfo::ParamNames(int &argc, const char **&argv)
 {
-  argc = 7;
+  argc = arg_count;
   argv = args;
   args[0] = buf1;
   args[1] = buf2;
@@ -346,7 +350,6 @@ ClassInfo *TileLayoutInfo::CreateWithParams(int argc, const char * const *argv)
   if (argc >= 6) printExclude = atoi(argv[5]);
   if (argc >= 7) printPixmap = atoi(argv[6]);
 
-
   double relativeX = atof(argv[1]);
   double relativeY = atof(argv[2]);
   double relativeWidth = atof(argv[3]);
@@ -399,7 +402,7 @@ void TileLayoutInfo::CreateParams(int &argc, const char **&argv)
   printf("TileLayoutInfo(%s)::CreateParams()\n", InstanceName());
 #endif
 
-  argc = 7;
+  argc = arg_count;
   argv = args;
   args[0] = _name;
   args[1] = buf2;
