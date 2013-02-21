@@ -20,6 +20,11 @@
   $Id$
 
   $Log$
+  Revision 1.99  2013/02/20 01:36:59  wenger
+  Fixed DEVise bug 1022 (the "reset axis ranges" command should re-run
+  the session post script); also added a test session with a session
+  postscript (to-do 08.004).
+
   Revision 1.98  2013/01/28 20:37:43  wenger
   Changed a bunch more sprintfs to snprintfs.
 
@@ -599,7 +604,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.3x3"/*TEMP*/;
+static const char *	version = "1.11.3x4"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";

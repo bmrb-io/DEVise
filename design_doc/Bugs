@@ -4539,8 +4539,10 @@ GDataRangeMap::WriteRecords(/tmp/devise-devise-tmp/DEVise_4690/.hist_list#Residu
 			DEVise fails. (wenger)
 			(Fixed by wenger, 1/25/13)
 
-1029 2/20/13	OPEN	Data download files need to have 644 permissions.
+1029 2/20/13	NB	Data download files need to have 644 permissions.
 			(wenger)
+			(Okay, this was just a problem because of the old
+			download code crapping out before the chmod.)
 
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.

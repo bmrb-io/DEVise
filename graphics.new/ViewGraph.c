@@ -16,6 +16,9 @@
   $Id$
 
   $Log$
+  Revision 1.165  2013/02/19 00:06:51  wenger
+  Got rid of more sprintfs, strcpys and strcats.
+
   Revision 1.164  2012/04/30 22:21:19  wenger
   Merged js_data_save_br_0 thru js_data_save_br_1 to trunk.
 
@@ -3169,7 +3172,9 @@ ViewGraph::HandleDataDownload(const char *file, Boolean useVisualFilter,
 
 	if (topLevel) {
 		fclose(fp);
-		chmod(file, 0644);
+		if (chmod(file, 0644) != 0) {
+		    reportErrSys("Can't change mode of data download file");
+		}
 	}
 
 	return result;
