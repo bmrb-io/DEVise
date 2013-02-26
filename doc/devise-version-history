@@ -3,8 +3,16 @@
 DEVise 1.11.3
 -------------
 
-(Nothing yet.)
 * Fixed DEVise/JS bug 1024 (JS data download problem).
+
+* Fixed DEVise/JS bugs 1027 and 1028 -- we now re-make DEVise tmp and
+work dirs before we try to use them, in case /tmp cleaner has
+removed them.
+
+* Fixed DEVise bug 1022 (the "reset axis ranges" command should re-run
+the session post script).
+
+* Fixed bug 1017 (cursor type flag not being saved properly).
 
 * Enabled better JavaScreen command error messages; a few other
 improvements to debug output.
