@@ -20,6 +20,10 @@
   $Id$
 
   $Log$
+  Revision 1.101  2013/02/21 23:02:42  wenger
+  Fixed bug 1017 (cursor flag not being saved properly); other *ClassInfo
+  fixed; more sprintf->snprintf conversions.
+
   Revision 1.100  2013/02/21 20:55:28  wenger
   We now print an error message if the chmod() on a data download fails.
 
@@ -607,7 +611,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.3x5"/*TEMP*/;
+static const char *	version = "1.11.3";
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";
