@@ -20,6 +20,9 @@
   $Id$
 
   $Log$
+  Revision 1.102  2013/02/27 23:34:04  wenger
+  Changed version to 1.11.3 for release.
+
   Revision 1.101  2013/02/21 23:02:42  wenger
   Fixed bug 1017 (cursor flag not being saved properly); other *ClassInfo
   fixed; more sprintf->snprintf conversions.
@@ -611,7 +614,7 @@
  */
 
 // Master DEVise version number.
-static const char *	version = "1.11.3";
+static const char *	version = "1.11.4x1"/*TEMP*/;
 
 // Master DEVise copyright dates.
 static const char *	copyright = "Copyright (c) 1992-2013";
