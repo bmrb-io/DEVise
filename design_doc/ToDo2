@@ -283,6 +283,11 @@ Automatic enabling/initiation of collaboration. (miron)
 10.006 6/9/04	OPEN	?
 Allow switching of collaboration leaders. (bmrb/wenger)
 
+10.007 2/28/13	OPEN	?
+Change things to just use ps (or else /proc) instead of the *_pid*
+files.  (Probably have some kind of configuration for the ps arguments,
+and what to look for in the output.) (wenger)
+
 ...........................................................................
 SECTION 11 (JavaScreen, JSS)
 Number Date	Status  Pri
