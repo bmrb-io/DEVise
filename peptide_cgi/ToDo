@@ -841,6 +841,11 @@ Num Date        Status  Pri     Description
 				the BMRB home page) into Peptide-CGI.
 				(wenger/dmaziuk)
 
+190 3/6/13	OPEN	2	Somehow make it more obvious that you
+				need to make a selection in one of the
+				menus on the visualization summary page
+				to actually see a visualization. (wenger)
+
 * Status:
 OPEN = item has not yet been addressed
 ACTIVE = item is being addressed
