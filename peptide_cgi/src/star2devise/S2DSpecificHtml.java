@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2001-2011
+// (c) Copyright 2001-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.28  2012/11/21 21:18:03  wenger
+// Merged vis_examples_br_0 thru vis_examples_br_2 to trunk.
+//
 // Revision 1.27.6.1  2012/11/14 22:49:26  wenger
 // Added form to enter accession number to visualization-specific pages.
 //
@@ -130,6 +133,7 @@ public class S2DSpecificHtml {
     private String _replaceString8;
 
     private boolean _multiEntry = false;
+    private boolean _isJmol = false;
 
     //===================================================================
     // PUBLIC METHODS
@@ -209,18 +213,14 @@ public class S2DSpecificHtml {
     // Get the template file name.
     protected String TemplateFileName()
     {
-	boolean isJmol = (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) ||
+	_isJmol = (_dataType == S2DUtils.TYPE_ATOMIC_COORDS) ||
 	  (_dataType == S2DUtils.TYPE_TORSION_ANGLE) ||
 	  (_dataType == S2DUtils.TYPE_RRTORSION_ANGLE) ||
 	  (_dataType == S2DUtils.TYPE_DIST_RESTR) ||
 	  (_dataType == S2DUtils.TYPE_RRDIST_RESTR);
 
 	String templateFile = "html_templates" + File.separator;
-	if (isJmol) {
-	    templateFile += "specific_html_jmol.base";
-	} else {
-	    templateFile += "specific_html.base";
-	}
+        templateFile += "specific_html_jmol.base";
 
 	return templateFile;
     }
@@ -336,6 +336,14 @@ public class S2DSpecificHtml {
 
             String inLine;
 	    while ((inLine = reader.readLine()) != null) {
+
+	        // Filter out Jmol line if necessary.
+		if (!_isJmol) {
+		    if (inLine.indexOf("3D rendering by") >= 0) {
+		        continue;
+		    }
+		}
+
 		String outLine = FilterLine(inLine);
 
 		outLine = S2DUtils.replace(outLine, "COMMENT_EMAIL",

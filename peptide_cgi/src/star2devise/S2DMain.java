@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.319  2013/02/14 22:13:09  wenger
+// Changed version to 12.3.3x1; added 12.3.3 version history section;
+// fixed visualization server link in the visualization examples page.
+//
 // Revision 1.318  2013/02/14 19:57:22  wenger
 // Changed version to 12.3.2 for release.
 //
@@ -833,7 +837,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.3x1"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.3x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 

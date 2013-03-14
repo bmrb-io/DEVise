@@ -803,8 +803,9 @@ Num Date        Status  Pri     Description
 				(dmaziuk/wenger)
 				(Done by wenger, 12/4/12.)
 
-181 12/10/12	ACTIVE	3	Merge the Jmol and non-Jmol visualization
+181 12/10/12	DONE	3	Merge the Jmol and non-Jmol visualization
 				page templates. (wenger)
+				(Done by wenger, 3/14/13)
 
 182 12/11/12	DONE	1	Turn off chem shift reference visualizations.
 				(elu/wenger)
@@ -841,10 +842,11 @@ Num Date        Status  Pri     Description
 				the BMRB home page) into Peptide-CGI.
 				(wenger/dmaziuk)
 
-190 3/6/13	ACTIVE	2	Somehow make it more obvious that you
+190 3/6/13	DONE	2	Somehow make it more obvious that you
 				need to make a selection in one of the
 				menus on the visualization summary page
 				to actually see a visualization. (wenger)
+				(Done by wenger, 3/14/13)
 
 * Status:
 OPEN = item has not yet been addressed

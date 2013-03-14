@@ -9,6 +9,9 @@ examples page.
 
 * Added "select from menus..." message to summary html page.
 
+* Implemented to-do 181 (merge the Jmol and non-Jmol visualization
+page templates).
+
 
 Peptide-CGI 12.3.2
 ------------------
