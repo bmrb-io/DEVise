@@ -7,6 +7,8 @@ Peptide-CGI 12.3.3
 * Fixed the link to the visualization server in the visualization
 examples page.
 
+* Added "select from menus..." message to summary html page.
+
 
 Peptide-CGI 12.3.2
 ------------------

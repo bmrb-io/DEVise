@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2006-2012
+// (c) Copyright 2006-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.57  2012/12/13 16:49:23  wenger
+// Fixed broken links for "other visualization options" in visualization
+// server summary pages.
+//
 // Revision 1.56  2012/12/05 22:38:14  wenger
 // Accession numbers, etc., in html forms now have example values prefilled.
 //
@@ -629,6 +633,13 @@ public abstract class S2DSummaryHtmlGen {
 	        _writer.write("Title: " + entryTitle + "\n");
 	        _writer.write("</p>\n");
 	    }
+
+	    //
+	    // Note about selecting from menus.
+	    //
+	    _writer.write("<h3 style=\"text-align: center\">" +
+	      "<font color=\"red\">" +
+	      "Select from menus below to see visualizations</font></h3>\n");
 
 	    //
 	    // Tutorial video and main entry page links.
