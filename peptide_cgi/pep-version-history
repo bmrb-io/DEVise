@@ -12,6 +12,10 @@ examples page.
 * Implemented to-do 181 (merge the Jmol and non-Jmol visualization
 page templates).
 
+* Changed the default BMRB accession number in the web forms to
+15381; when you visualize a specific entry, that entry's accession
+number becomes the default in the forms associated with that entry.
+
 
 Peptide-CGI 12.3.2
 ------------------

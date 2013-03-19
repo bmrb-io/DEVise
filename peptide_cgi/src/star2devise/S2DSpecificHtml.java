@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.29  2013/03/14 18:36:21  wenger
+// To-do 181:  merged the Jmol and non-Jmol visualization page templates.
+//
 // Revision 1.28  2012/11/21 21:18:03  wenger
 // Merged vis_examples_br_0 thru vis_examples_br_2 to trunk.
 //
@@ -121,6 +124,7 @@ public class S2DSpecificHtml {
     private static final String searchString7 =
       "\"cmdport\" value=\"6666\"";
     private static final String searchString8 = "CGI_URL";
+    private static final String searchString9 = "4081";
 
     private String _replaceString1;
     private String _replaceString1b;
@@ -131,6 +135,7 @@ public class S2DSpecificHtml {
     private String _replaceString6;
     private String _replaceString7;
     private String _replaceString8;
+    private String _replaceString9;
 
     private boolean _multiEntry = false;
     private boolean _isJmol = false;
@@ -259,6 +264,8 @@ public class S2DSpecificHtml {
 	  _replaceString7);
 	line = S2DUtils.replace(line, searchString8,
 	  _replaceString8);
+	line = S2DUtils.replace(line, searchString9,
+	  _replaceString9);
 	if (_dataType == S2DUtils.TYPE_ATOMIC_COORDS ||
 	  _dataType == S2DUtils.TYPE_PISTACHIO ||
 	  _dataType == S2DUtils.TYPE_AMBIGUITY) {
@@ -322,6 +329,8 @@ public class S2DSpecificHtml {
 	_replaceString7 = "\"cmdport\" value=\"" +
 	  S2DNames.JS_CMD_PORT + "\"";
 	_replaceString8 = S2DNames.CGI_URL;
+
+	_replaceString9 = _isUvd ? S2DMain.DEFAULT_ACCESSION_NUM : name;
     }
 
     //-------------------------------------------------------------------

@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.320  2013/03/14 18:36:21  wenger
+// To-do 181:  merged the Jmol and non-Jmol visualization page templates.
+//
 // Revision 1.319  2013/02/14 22:13:09  wenger
 // Changed version to 12.3.3x1; added 12.3.3 version history section;
 // fixed visualization server link in the visualization examples page.
@@ -840,6 +843,10 @@ public class S2DMain {
     public static final String PEP_CGI_VERSION = "12.3.3x2"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
+
+    // Default accession number to put into html forms (also see
+    // html2/devise/peptide-cgi/bmrb_select.tmpl).
+    public static final String DEFAULT_ACCESSION_NUM = "15381";
 
     private static FileWriter _logWriter = null;
 
@@ -1664,7 +1671,7 @@ public class S2DMain {
           "\n" +
           "Options are:\n" +
           "    -bmrbid <value>\n" +
-          "        the BMRB accession number to process (e.g., 4081)\n" +
+          "        the BMRB accession number to process (e.g., " + DEFAULT_ACCESSION_NUM + ")\n" +
 	  "        (mandatory if pdbid is specified)\n" +
 	  "    -check_pct\n" +
 	  "        check percent assigned values & fail if > 100%\n" +

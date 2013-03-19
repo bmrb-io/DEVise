@@ -36,6 +36,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.58  2013/03/14 17:48:24  wenger
+// Added "select from menus..." message to summary html page (not yet
+// confirmed as the final version).
+//
 // Revision 1.57  2012/12/13 16:49:23  wenger
 // Fixed broken links for "other visualization options" in visualization
 // server summary pages.
@@ -685,13 +689,17 @@ public abstract class S2DSummaryHtmlGen {
 	    _writer.write("</h3>\n");
 	    _writer.write("</div>\n");
 	    
+	    String defaultAccessionNum = _isUvd ?
+	      S2DMain.DEFAULT_ACCESSION_NUM : _name;
 	    _writer.write("<p style=\"clear: both\"></p>\n");
 	    _writer.write("<hr>\n");
 	    _writer.write("<form method=\"get\" name=\"get_by_bmrb\" action=\"" + S2DNames.CGI_URL + "\">\n");
-	    _writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., 4081)\n");
+	    _writer.write("<label for=\"number\">Enter a BMRB accession number (e.g., " +
+	      defaultAccessionNum + ")\n");
 	    _writer.write("to generate visualizations for that entry</label>\n");
 	    _writer.write("<p>\n");
-	    _writer.write("<input type=\"text\" name=\"number\" id=\"number\" size=\"5\" value=\"4081\">\n");
+	    _writer.write("<input type=\"text\" name=\"number\" id=\"number\" size=\"5\" value=\"" +
+	      defaultAccessionNum + "\">\n");
 	    _writer.write("<input type=\"submit\" value=\"View data\">\n");
 	    _writer.write("</p>\n");
 	    _writer.write("</form>\n");
@@ -827,10 +835,15 @@ TEMP?*/
 		    _writer.write("<tr>\n");
 		    _writer.write("<td>\n");
 
+		    // Always use the default here (don't fill in the current
+		    // value because that wouldn't make any sense for two-
+		    // entry visualizations).
 	            _writer.write("\n<form name=\"multi-entry\" action=\"" +
 		      action + "\" " + "method=\"get\">\n");
 	            _writer.write("<label for=\"xbmrbid\">Enter a BMRB " +
-		      "accession number (e.g., 4081) for multi-entry " +
+		      "accession number (e.g., " +
+		      S2DMain.DEFAULT_ACCESSION_NUM +
+		      ") for multi-entry " +
 		      "visualizations with this entry:</label>\n");
 	            _writer.write(
 		      "<input type=\"text\" name=\"xbmrbid\" size=\"5\">\n");
