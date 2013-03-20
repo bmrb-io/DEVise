@@ -98,6 +98,10 @@ setting Jmol to wireframe mode for restraints is done in the session
 as opposed to by special-case code in the JavaScreen.  (Obviously, this
 will need some changes in the JS itself, too.) (miron/wenger)
 
+07.003 3/20/13	OPEN	3
+Add info about the visual filter, and the number of records included
+vs. the total, to data download files.
+
 ...........................................................................
 SECTION 08 (DEVise, misc.)
 Number Date	Status  Pri
