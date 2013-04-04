@@ -77,6 +77,9 @@ Number Date	Status  Pri
 05.001 9/10/01	OPEN	?
 Allow 2 X axes per view (top and bottom). (wavelet)
 
+05.002 4/4/13	OPEN	?
+Allow relative margins for home settings. (wenger)
+
 ...........................................................................
 SECTION 06 (DEVise, data sources)
 Number Date	Status  Pri
