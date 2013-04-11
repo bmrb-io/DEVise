@@ -643,6 +643,9 @@ Num Date        Status  Description
 139 2/20/13	OPEN	JS_CMD_PORT setting should be propagated into
 			histogram pages. (wenger)
 
+140 4/11/13	OPEN	17960/3si5 doesn't correctly show 3D structure.
+			(elu/wenger)
+
 OPEN = problem/bug exists and needs to be addressed.
 FIXED = bug fixed.
 WORK = workaround for bug in place
