@@ -142,6 +142,7 @@ if ($do_all != 0) {
   RunTest("test_pdb_file1mu");
   RunTest("test70");
   RunTest("test_sc1");
+  #RunTest("test_bug141");
 }
 
 if (($do_all != 0) or ($do_sparta != 0)) {

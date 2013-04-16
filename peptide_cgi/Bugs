@@ -646,7 +646,7 @@ Num Date        Status  Description
 140 4/11/13	OPEN	17960/3si5 doesn't correctly show 3D structure.
 			(elu/wenger)
 
-141 4/12/13	OPEN	's2d -pdbid 1DT7 -bmrbid 4099 -do_rrtar 3
+141 4/12/13	ACTIVE	's2d -pdbid 1DT7 -bmrbid 4099 -do_rrtar 3
 			-coord_index 1' fails (because
 			S2DmmCifIfc.getBmrbResLists() incorrectly determines
 			the polymer type). (wenger)
