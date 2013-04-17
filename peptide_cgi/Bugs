@@ -644,7 +644,9 @@ Num Date        Status  Description
 			histogram pages. (wenger)
 
 140 4/11/13	OPEN	17960/3si5 doesn't correctly show 3D structure.
-			(elu/wenger)
+			(elu/wenger)  (Note:  the structure should be
+			shown even if none of the chains match; we just
+			shouldn't highlight in that case.)
 
 141 4/12/13	ACTIVE	's2d -pdbid 1DT7 -bmrbid 4099 -do_rrtar 3
 			-coord_index 1' fails (because
