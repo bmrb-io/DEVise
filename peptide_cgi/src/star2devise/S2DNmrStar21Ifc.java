@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2010
+// (c) Copyright 2004-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -20,6 +20,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2010/12/07 17:41:15  wenger
+// Did another version history purge.
+//
 // Revision 1.23  2010/11/01 00:51:12  wenger
 // Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
@@ -495,6 +498,17 @@ public class S2DNmrStar21Ifc extends S2DNmrStarIfc {
      * @return The corresponding entity ID
      */
     public String entAssemID2entID(String entityAssemblyID)
+    {
+    	return "";
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Translate an entity ID to the corresponding entity assembly ID.
+     * @param The entity ID
+     * @return The corresponding entity assembly ID
+     */
+    public String entID2entAssemID(String entityID)
     {
     	return "";
     }

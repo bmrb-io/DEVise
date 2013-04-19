@@ -130,9 +130,9 @@ set line = '^3 21 TRP HH2 H 6.99$'
 source tests/check4line
 
 set file = "data_dir/4310rl.dat"
-set line = '^1	1	ALA	A$'
+set line = '^1	1	ALA	A	2$'
 source tests/check4line
-set line = '^4	21	TRP	W$'
+set line = '^4	21	TRP	W	2$'
 source tests/check4line
 
 

@@ -16,3 +16,4 @@ attr Entity_assembly_ID int
 attr Residue_seq_code int
 attr ResLabel string 4
 attr ResLabelSh string 2
+attr PolymerType int

@@ -229,13 +229,13 @@ foreach file ($files)
 end
 
 set file = "data_dir/4970rl.dat"
-set line = '^1	1	ALA	A$'
+set line = '^1	1	ALA	A	2$'
 source tests/check4line
-set line = '^1	148	LYS	K$'
+set line = '^1	148	LYS	K	2$'
 source tests/check4line
-set line = '^2	1	GLY	G$'
+set line = '^2	1	GLY	G	2$'
 source tests/check4line
-set line = '^2	21	SER	S$'
+set line = '^2	21	SER	S	2$'
 source tests/check4line
 
 echo -n "Test28 result: "

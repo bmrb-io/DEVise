@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2012
+// (c) Copyright 2002-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2012/12/06 01:14:07  wenger
+// We now get mmCIF files from the "divided" rather than "all" directory.
+//
 // Revision 1.19  2011/10/10 23:43:39  wenger
 // Reduced edited movie time from .1 to .02, and set the resolution to
 // 400x400 to speed up generation time (just took 2:44 in a test).
@@ -426,7 +429,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	        // Create a residue list for this entity to match against
 	        // the BMRB ones.
 	        S2DResidues pdbResidues = new S2DResidues(resSeqCodes,
-		  resLabels, polymerType);
+		  resLabels, polymerType, 0, chain);
 
 		// Now compare this chain against all unmatched BMRB
 		// entity assemblies.
@@ -530,6 +533,7 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	    public int entityAssemblyID;
 	    public int resNum;
 	    public String resLabel;
+	    public int polymerType;
 	};
 	Vector resListInfo = new Vector();
 
@@ -566,6 +570,10 @@ public class S2DmmCifIfc extends S2DStarIfc {
     
 		    st.nextToken();
 	            rlr.resLabel = st.sval;
+
+		    st.nextToken(); // skip single-letter residue code
+		    st.nextToken();
+		    rlr.polymerType = (int)st.nval;
 
 		    // Consume any other junk in this line.
 		    while (st.nextToken() != st.TT_EOL) {
@@ -613,6 +621,12 @@ public class S2DmmCifIfc extends S2DStarIfc {
             if (doDebugOutput(41)) {
                 System.out.println("Residue count: " + resCount);
 	    }
+	    int polymerType = ((ResListRecord)resListInfo.
+	      elementAt(resInfoIndex)).polymerType;
+            if (doDebugOutput(41)) {
+                System.out.println("Polymer type: " + polymerType);
+	    }
+
 	    int [] resNums = new int[resCount];
 	    String [] resLabels = new String[resCount];
 	    for (int resIndex = 0; resIndex < resCount; resIndex++) {
@@ -627,22 +641,8 @@ public class S2DmmCifIfc extends S2DStarIfc {
 	        }
 	    }
 
-	    // Figure out polymer type -- very kludgey!!  wenger 2009-03-25.
-	    int polymerType = S2DResidues.POLYMER_TYPE_UNKNOWN;
-
-	    if (resLabels[0].length() == 1) {
-	        polymerType = S2DResidues.POLYMER_TYPE_RNA;
-
-	    } else if (resLabels[0].length() == 2) {
-	        polymerType = S2DResidues.POLYMER_TYPE_DNA;
-
-	    } else if (resLabels[0].length() == 3) {
-	        polymerType = S2DResidues.POLYMER_TYPE_PROTEIN;
-
-	    }
-
 	    S2DResidues resList = new S2DResidues(resNums, resLabels,
-	      polymerType);
+	      polymerType, entityAssemblyID, "");
 	    residueLists.add(resList);
 	}
 

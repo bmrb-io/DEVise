@@ -111,9 +111,9 @@ set line = '^1 179 GLY 100.0 100.0 100.0$'
 source tests/check4line
 
 set file = "data_dir/4267rl.dat"
-set line = '^1	1	MET	M$'
+set line = '^1	1	MET	M	2$'
 source tests/check4line
-set line = '^1	179	GLY	G$'
+set line = '^1	179	GLY	G	2$'
 source tests/check4line
 
 set file = "data_dir/4267t11.dat"

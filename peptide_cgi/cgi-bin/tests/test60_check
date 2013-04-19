@@ -193,9 +193,9 @@ set line = '^VAL 13$'
 source tests/check4line
 
 set file = "data_dir/4267_2entrl.dat"
-set line = '^1	1	MET	M$'
+set line = '^1	1	MET	M	2$'
 source tests/check4line
-set line = '^2	179	GLY	G$'
+set line = '^2	179	GLY	G	2$'
 source tests/check4line
 
 set file = "data_dir/4267_2entt13.dat"

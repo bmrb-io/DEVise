@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2002-2010
+// (c) Copyright 2002-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -25,6 +25,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.24  2010/12/07 17:41:16  wenger
+// Did another version history purge.
+//
 // Revision 1.23  2010/11/01 00:51:12  wenger
 // Merged sample_cond2_br_0 thru sample_cond2_br_1 to trunk.
 //
@@ -309,7 +312,8 @@ public abstract class S2DStarIfc {
 
 //TEMP -- move this to S2DNmrStarIfc after merge?
     //-------------------------------------------------------------------
-    public S2DResidues getResidues(SaveFrameNode frame) throws S2DException
+    public S2DResidues getResidues(SaveFrameNode frame,
+      int entityAssemblyId) throws S2DException
     {
         return null;
     }

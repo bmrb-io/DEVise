@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2003-2010
+// (c) Copyright 2003-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.19  2011/05/19 19:46:09  wenger
+// Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
+//
 // Revision 1.18.4.2  2011/04/12 21:43:09  wenger
 // More cleanup.
 //
@@ -81,21 +84,30 @@ public class S2DResidues {
     // Translate three-letter to single-letter amino acid codes.
     private static Hashtable _acidReverseTrans = null;
 
+    // These are mainly for debugging.
+    private int _entityAssemblyId;
+    private String _chain;
+
     //===================================================================
     // PUBLIC METHODS
 
     //-------------------------------------------------------------------
     // Constructor.  Contruct a residue list from three-letter info.
     public S2DResidues(int[] resSeqCodes, String[] resLabels,
-      int polymerType) throws S2DException
+      int polymerType, int entityAssemblyId, String chain)
+      throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DResidues.S2DResidues()");
+	    System.out.println("S2DResidues.S2DResidues(" +
+	      polymerType + ", " + entityAssemblyId + ", " +
+	      chain + ")");
 	}
 
 	_polymerType = polymerType;
         _resSeqCodes = resSeqCodes;
 	_resLabels = S2DUtils.arrayToUpper(resLabels);
+	_entityAssemblyId = entityAssemblyId;
+	_chain = chain;
 
 	initializeTranslation();
     	ensureLegalResidues();
@@ -114,6 +126,9 @@ public class S2DResidues {
 	setCount();
 
         if (doDebugOutput(12)) {
+	    System.out.println(toString());
+	}
+        if (doDebugOutput(13)) {
 	    System.out.println("residues: ");
 	    for (int index = 0; index < _resLabels.length; index++) {
 	        System.out.println("  " + _resSeqCodes[index] + " " +
@@ -124,13 +139,18 @@ public class S2DResidues {
 
     //-------------------------------------------------------------------
     // Constructor.  Contruct a residue list from one-letter info.
-    public S2DResidues(String resSeq, int polymerType) throws S2DException
+    public S2DResidues(String resSeq, int polymerType,
+      int entityAssemblyId, String chain) throws S2DException
     {
         if (doDebugOutput(12)) {
-	    System.out.println("S2DResidues.S2DResidues(" + resSeq + ")");
+	    System.out.println("S2DResidues.S2DResidues(" + resSeq +
+	      ", " + polymerType + ", " + entityAssemblyId + ", " +
+	      chain + ")");
 	}
 
 	_polymerType = polymerType;
+	_entityAssemblyId = entityAssemblyId;
+	_chain = chain;
 
 	// In case any chars in the input string are lower-case.
 	resSeq = resSeq.toUpperCase();
@@ -171,12 +191,34 @@ public class S2DResidues {
 	}
 
         if (doDebugOutput(12)) {
+	    System.out.println(toString());
+	}
+        if (doDebugOutput(13)) {
 	    System.out.println("residues: ");
 	    for (int index = 0; index < _resLabels.length; index++) {
 	        System.out.println("  " + _resSeqCodes[index] + " " +
 		  _resLabels[index]);
 	    }
 	}
+    }
+
+
+    //-------------------------------------------------------------------
+    // Return a string representing this object.
+    public String toString()
+    {
+    	String result = "S2DResidues(";
+
+	result += _entityAssemblyId;
+	result += "/";
+	result += _chain;
+	result += "): ";
+
+        for (int index = 0; index < _resLabelsSh.length; index++) {
+            result += _resLabelsSh[index];
+        }
+
+	return result;
     }
 
     /** -----------------------------------------------------------------
@@ -220,7 +262,9 @@ public class S2DResidues {
 		  _resLabels[index])) {
 		    System.err.println("Amino acid mismatch at residue " +
 		      (index + 1) + "; " + other._resLabels[index] +
-		      " vs. " + _resLabels[index]);
+		      " vs. " + _resLabels[index] + " (" +
+		      _entityAssemblyId + "/" + _chain + " vs " +
+		      other._entityAssemblyId + "/" + other._chain + ")");
 		    result = false;
 		}
 	    }

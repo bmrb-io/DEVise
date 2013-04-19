@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,9 @@
 // $Id$
 
 // $Log$
+// Revision 1.37  2013/02/05 21:41:59  wenger
+// Minor improvements to error messages.
+//
 // Revision 1.36  2010/12/07 17:41:15  wenger
 // Did another version history purge.
 //
@@ -362,7 +365,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
     // The residue count is also read (if present) and checked against
     // the residue list(s).  If it is not present, it is calculated from
     // the residue list(s).
-    public S2DResidues getResidues(SaveFrameNode frame) throws S2DException
+    public S2DResidues getResidues(SaveFrameNode frame,
+      int entityAssemblyId) throws S2DException
     {
         if (doDebugOutput(12)) {
             System.out.println("  S2DNmrStarIfc.getResidues(" +
@@ -387,7 +391,7 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	      ENTITY_RES_SEQ_CODE, ENTITY_RES_LABEL);
 
 	    resList1 = new S2DResidues(resSeqCodes, resLabels,
-	      polymerType);
+	      polymerType, entityAssemblyId, "");
             if (doDebugOutput(13)) {
 	        System.out.println("Got three-letter residue list");
 	    }
@@ -407,7 +411,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	try {
             String molResSeq = getTagValue(frame, ENTITY_SEQ_1LETTER);
 
-	    resList2 = new S2DResidues(molResSeq, polymerType);
+	    resList2 = new S2DResidues(molResSeq, polymerType,
+	      entityAssemblyId, "");
             if (doDebugOutput(13)) {
 	        System.out.println("Got one-letter residue list");
 	    }
@@ -1005,11 +1010,22 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 
     // ----------------------------------------------------------------------
     /**
-     * Translate a molecular system component name to an entity assembly ID.
-     * @param The molecular system component name.
+     * Translate an entity assembly ID to the corresponding entity ID.
+     * @param The entity assembly ID
      * @return The corresponding entity assembly ID.
      */
     public String entAssemID2entID(String entityAssemblyID)
+    {
+    	return null;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Translate an entity ID to the corresponding entity assembly ID.
+     * @param The entity ID
+     * @return The corresponding entity assembly ID
+     */
+    public String entID2entAssemID(String entityID)
     {
     	return null;
     }

@@ -21,6 +21,12 @@
 // $Id$
 
 // $Log$
+// Revision 1.321  2013/03/19 19:10:26  wenger
+// Changed the default BMRB accession number in the web forms to
+// 15381; when you visualize a specific entry, that entry's accession
+// number becomes the default in the forms associated with that entry.
+// (Note: still needs approval from Eldon.)
+//
 // Revision 1.320  2013/03/14 18:36:21  wenger
 // To-do 181:  merged the Jmol and non-Jmol visualization page templates.
 //
@@ -3577,7 +3583,7 @@ public class S2DMain {
 	    resWriter.write("# Data: residue list for " + _name + "\n");
 	    resWriter.write("# Schema: bmrb-ResList\n");
 	    resWriter.write("# Attributes: Entity_assembly_ID; " +
-	      "Residue_seq_code; ResLabel; ResLabelSh\n");
+	      "Residue_seq_code; ResLabel; ResLabelSh; PolymerType\n");
 	    resWriter.write("# Peptide-CGI version: " +
 	      S2DMain.PEP_CGI_VERSION + "\n");
 	    resWriter.write("# Generation date: " +
@@ -3605,14 +3611,16 @@ public class S2DMain {
 		}
 
 		try {
-	            S2DResidues residues = star.getResidues(frame);
+	            S2DResidues residues = star.getResidues(frame,
+		      entityAssemblyId);
 
 	            for (int resNum = 0; resNum < residues._resSeqCodes.length;
 	              resNum++) {
 	                resWriter.write(entityAssemblyId + "\t" +
 		          residues._resSeqCodes[resNum] + "\t" +
 		          residues._resLabels[resNum] + "\t" +
-			  residues._resLabelsSh[resNum] + "\n");
+			  residues._resLabelsSh[resNum] + "\t" +
+			  polymerType + "\n");
 	            }
 		    // Flush here is VITAL to get stuff actually written out
 		    // if a later entity assembly fails...
@@ -4175,7 +4183,8 @@ public class S2DMain {
 	    }
 	}
 
-        S2DResidues residues = saveResList(star, tmpFrame, frameIndex);
+        S2DResidues residues = saveResList((S2DNmrStarIfc)star,
+	  tmpFrame, frameIndex, entityID);
 
 	if (_checkResList) {
 	    //
@@ -4223,12 +4232,14 @@ public class S2DMain {
     // Save the residue count and residue list for the given save frame.
     // (The save frame passed in here must be the save frame that
     // actually contains the residue lists.)
-    private S2DResidues saveResList(S2DStarIfc star,
-      SaveFrameNode monoPolyFrame, int frameIndex) throws S2DException
+    private S2DResidues saveResList(S2DNmrStarIfc star,
+      SaveFrameNode monoPolyFrame, int frameIndex, String entityId)
+      throws S2DException
     {
         if (doDebugOutput(4)) {
 	    System.out.println("    S2DMain.saveResList(" +
-	      star.getFrameName(monoPolyFrame) + ", " + frameIndex + ")");
+	      star.getFrameName(monoPolyFrame) + ", " + frameIndex +
+	      ", " + entityId + ")");
 	}
 
 	// Note: star.getEntityFrame() will throw an exception if there
@@ -4239,7 +4250,15 @@ public class S2DMain {
 	    monoPolyFrame = star.getEntityFrame();
 	}
 
-        S2DResidues residues = star.getResidues(monoPolyFrame);
+	String entityAssemblyIdTmp = star.entID2entAssemID(entityId);
+	int entityAssemblyId;
+	if (entityAssemblyIdTmp.equals("")) {
+	    entityAssemblyId = 0;
+	} else {
+	    entityAssemblyId = new Integer(entityAssemblyIdTmp).intValue();
+	}
+        S2DResidues residues = star.getResidues(monoPolyFrame,
+	  entityAssemblyId);
 
         S2DResCount resCount = new S2DResCount(_name, _dataDir,
 	  residues._resSeqCodes, residues._resLabels,

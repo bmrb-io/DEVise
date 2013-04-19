@@ -39,9 +39,9 @@ set line = '^1 20 C 0.788 0.0 3.231 -1.532 0.0 2.544 1.841 0.0 1.475 0.0 0.0 0.2
 source tests/check4line
 
 set file = "data_dir/15080rl.dat"
-set line = '^1	1	G	G$'
+set line = '^1	1	G	G	4$'
 source tests/check4line
-set line = '^1	20	C	C$'
+set line = '^1	20	C	C	4$'
 source tests/check4line
 
 set file = "data_dir/15080ac1.dat"

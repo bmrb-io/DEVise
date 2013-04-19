@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2004-2012
+// (c) Copyright 2004-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -21,6 +21,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.26  2012/03/07 22:39:45  wenger
+// Fixed bug 133 (problem with getting the system name in NMR-STAR
+// 3.1 files).
+//
 // Revision 1.25  2010/12/07 17:41:15  wenger
 // Did another version history purge.
 //
@@ -746,6 +750,44 @@ public class S2DNmrStar30Ifc extends S2DNmrStarIfc {
 	    // (e.g., some visualization server uploads).
 	    System.err.println(
 	      "Warning in S2DNmrStar30Ifc.entAssemID2entID(): " + 
+	      ex.toString());
+	    result = "1";
+	}
+
+	return result;
+    }
+
+    // ----------------------------------------------------------------------
+    /**
+     * Translate an entity ID to the corresponding entity assembly ID.
+     * @param The entity ID
+     * @return The corresponding entity assembly ID
+     */
+    public String entID2entAssemID(String entityID)
+    {
+	String result = "";
+
+	try {
+	    SaveFrameNode molSysFrame = getOneDataFrameByCat(MOL_SYSTEM_SF_CAT,
+	      MOL_SYSTEM);
+
+	    String[] entityAssemblyIDs = getFrameValues(molSysFrame,
+	      ENTITY_ASSEMBLY_ID, ENTITY_ASSEMBLY_ID);
+
+	    String[] entityIDs = getFrameValues(molSysFrame,
+	      ENTITY_ASSEMBLY_ID, ENTITY_ASSEMBLY_ENTITY_ID);
+
+	    for (int index = 0; index < entityIDs.length; index++) {
+	        if (entityID.equals(entityIDs[index])) {
+		    result = entityAssemblyIDs[index];
+		    break;
+		}
+	    }
+	} catch (S2DException ex) {
+	    // We probably get here if there is no assembly save frame
+	    // (e.g., some visualization server uploads).
+	    System.err.println(
+	      "Warning in S2DNmrStar30Ifc.entID2entAssemID(): " + 
 	      ex.toString());
 	    result = "1";
 	}

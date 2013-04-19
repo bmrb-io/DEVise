@@ -77,7 +77,7 @@ set line = '^2 6 VAL O O 10.6 0.225 0 0 -0.15 0 backbone AMU -1$'
 source tests/check4line
 
 set file = "data_dir/15209rl.dat"
-set line = '^1	1	MET	M$'
+set line = '^1	1	MET	M	2$'
 source tests/check4line
-set line = '^2	6	VAL	V$'
+set line = '^2	6	VAL	V	2$'
 source tests/check4line
