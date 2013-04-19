@@ -33,4 +33,6 @@ Selection" panels in the "Structure Selection" dialog, should I primarily
 designate things by the PDB chain ID instead of the entity assembly ID?
 I think I'd have to do that if we're going to display all of the coordinate
 data, even if the sequence in the PDB data doesn't match the sequence in
-the BMRB data.
+the BMRB data.  This would mean that I'd have to add the PDB chain ID
+to the coordinate data, and I'd also have to pass something to the client
+that showed how the chain IDs and entity assembly IDs match.
