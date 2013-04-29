@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.20  2013/04/19 19:28:47  wenger
+// Working on bug 141:  fixed problems with how we determine the polymer
+// type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
+// bug 141); also added code to print the entity assembly ID and chain ID
+// when we have a sequence mismatch (so it's easier to figure out what's
+// going on).
+//
 // Revision 1.19  2011/05/19 19:46:09  wenger
 // Merged s2d_mol_dyn_br_0 thru s2d_mol_dyn_br_2 to trunk.
 //
@@ -174,7 +181,8 @@ public class S2DResidues {
         for (int index = 0; index < resSeq2.length(); index++) {
 	    _resSeqCodes[index] = index + 1;
 	    if (treatAsProtein()) {
-	        _resLabels[index] = translate(resSeq2.charAt(index));
+	        _resLabels[index] = translate(resSeq2.charAt(index),
+		  _resSeqCodes[index]);
 	    } else {
 	        _resLabels[index] = "" + resSeq2.charAt(index);
 	    }
@@ -341,7 +349,8 @@ public class S2DResidues {
 		    switch (_polymerType) {
 		    case POLYMER_TYPE_PROTEIN:
 		    case POLYMER_TYPE_UNKNOWN:
-	                residueLabels[index] = translate(label.charAt(0));
+	                residueLabels[index] = translate(label.charAt(0),
+			  index + 1);
 			break;
 
 		    case POLYMER_TYPE_DNA:
@@ -511,13 +520,17 @@ public class S2DResidues {
     //-------------------------------------------------------------------
     // Translate a one-letter residue code to a three-letter residue
     // code.
-    private static String translate(char acidIn) throws S2DException
+    private static String translate(char acidIn, int residue)
+      throws S2DException
     {
         String acidOut = (String)_acidTrans.get(new Character(acidIn));
 
 	if (acidOut == null) {
-	    throw new S2DError(
-	      "Illegal one-letter amino acid abbreviation: " + acidIn);
+	    S2DError err = new S2DError(
+	      "Illegal one-letter amino acid abbreviation: <" + acidIn +
+	      "> at residue " + residue);
+	    System.err.println(err.toString());
+	    throw err;
 	}
 
 	return acidOut;
