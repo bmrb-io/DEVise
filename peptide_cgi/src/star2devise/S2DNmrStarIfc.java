@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.38  2013/04/19 19:28:47  wenger
+// Working on bug 141:  fixed problems with how we determine the polymer
+// type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
+// bug 141); also added code to print the entity assembly ID and chain ID
+// when we have a sequence mismatch (so it's easier to figure out what's
+// going on).
+//
 // Revision 1.37  2013/02/05 21:41:59  wenger
 // Minor improvements to error messages.
 //
@@ -399,7 +406,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
         } catch (S2DException ex) {
 	    resList1 = null;
             if (doDebugOutput(13)) {
-	        System.out.println("Did not get three-letter residue list");
+	        System.out.println("Did not get three-letter residue list" +
+		  ex.toString());
 	    }
 	}
 
@@ -420,7 +428,8 @@ public abstract class S2DNmrStarIfc extends S2DStarIfc {
 	} catch (S2DException ex) {
 	    resList2 = null;
             if (doDebugOutput(13)) {
-	        System.out.println("Did not get one-letter residue list");
+	        System.out.println("Did not get one-letter residue list: " +
+		  ex.toString());
 	    }
 	}
 
