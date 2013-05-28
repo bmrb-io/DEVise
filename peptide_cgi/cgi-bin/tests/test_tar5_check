@@ -62,11 +62,11 @@ foreach file ($files)
 end
 
 set file = "data_dir/15209tar1.dat"
-set line = '^1 14 PHE 30.00 90.00 1_14_N N 1_14_CA CA 1_14_CB CB 1_14_CG CG chi-1 59.56 0'
+set line = '^1 14 PHE 35.00 -35.00 1_14_N N 1_14_CA CA 1_14_CB CB 1_14_CG CG chi-1 62.56 0'
 source tests/check4line
-set line = '^1 91 SER -68.00 -8.00 1_91_N N 1_91_CA CA 1_91_C C 1_92_N N psi -42.97 0'
+set line = '^1 91 SER -85.00 -165.00 1_91_N N 1_91_CA CA 1_91_C C 1_92_N N psi -157.31 0.51'
 source tests/check4line
-set line = '^2 2 ARG 60.00 180.00 2_2_N N 2_2_CA CA 2_2_C C 2_3_N N psi 129.77 0'
+set line = '^2 2 ARG -85.00 -165.00 2_2_N N 2_2_CA CA 2_2_C C 2_3_N N psi 23.72 0'
 source tests/check4line
-set line = '^2 5 GLN 60.00 180.00 2_5_N N 2_5_CA CA 2_5_C C 2_6_N N psi 152.29 0'
+set line = '^2 5 GLN 15.00 5.00 2_5_N N 2_5_CA CA 2_5_C C 2_6_N N psi 158.89 0'
 source tests/check4line

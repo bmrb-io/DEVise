@@ -21,6 +21,13 @@
 // $Id$
 
 // $Log$
+// Revision 1.322  2013/04/19 19:28:47  wenger
+// Working on bug 141:  fixed problems with how we determine the polymer
+// type in S2DmmCifIfc.getBmrbResLists() (although this didn't fully fix
+// bug 141); also added code to print the entity assembly ID and chain ID
+// when we have a sequence mismatch (so it's easier to figure out what's
+// going on).
+//
 // Revision 1.321  2013/03/19 19:10:26  wenger
 // Changed the default BMRB accession number in the web forms to
 // 15381; when you visualize a specific entry, that entry's accession
@@ -846,7 +853,7 @@ public class S2DMain {
     	// Whether to do "extra" calls to System.gc().
     private static boolean _extraGC = false;
 
-    public static final String PEP_CGI_VERSION = "12.3.3x2"/*TEMP*/;
+    public static final String PEP_CGI_VERSION = "12.3.3x3"/*TEMP*/;
     public static final String DEVISE_MIN_VERSION = "1.11.1";
     public static final String JS_CLIENT_MIN_VERSION = "5.14.1";
 
