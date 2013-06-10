@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2012
+// (c) Copyright 2000-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -23,6 +23,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.7  2012/12/04 20:24:55  wenger
+// We now get remediated restraints files from the "divided" rather than
+// "all" directory.
+//
 // Revision 1.6  2012/01/20 16:09:21  wenger
 // Merged s2d_mailfix_br_0 thru s2d_mailfix_br_1 to trunk.
 //
@@ -159,6 +163,7 @@ public class S2DNmrStarRRIfcFactory extends S2DNmrStarIfcFactory {
 	    System.out.println("S2DNmrStarRRIfcFactory.createFromUrl(" +
 	      urlName + ")");
 	}
+	System.out.println("Using remediated restraints file " + urlName);
 
 	S2DNmrStarRRIfc ifc;
 

@@ -1,6 +1,6 @@
 // ========================================================================
 // DEVise Data Visualization Software
-// (c) Copyright 2000-2010
+// (c) Copyright 2000-2013
 // By the DEVise Development Group
 // Madison, Wisconsin
 // All Rights Reserved.
@@ -22,6 +22,10 @@
 // $Id$
 
 // $Log$
+// Revision 1.3  2010/04/27 18:47:07  wenger
+// Fixed bugs Eldon found in testing of whether restraints info exists
+// (for *_LEVEL_LINK_CHECK level of restraint processing).
+//
 // Revision 1.2  2010/04/23 16:51:07  wenger
 // Merged s2d_dist_rest_1002_br_0 thru s2d_dist_rest_1002_br_1 to trunk.
 //
@@ -128,6 +132,7 @@ public class S2DNmrStarRGIfcFactory extends S2DNmrStarIfcFactory {
 	    System.out.println("S2DNmrStarRGIfcFactory.createFromUrl(" +
 	      urlName + ")");
 	}
+	System.out.println("Using restraint grid file: " + urlName);
 
 	S2DNmrStarRGIfc ifc;
 
