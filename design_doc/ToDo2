@@ -18,6 +18,11 @@ The print dialog should remember previous values. (kola/wenger)
 Create GUI to control whether the "All" option is turned on in GAttr
 links.
 
+01.005 6/11/13	OPEN	2
+Get DEVise to compile with a more recent version of X (e.g., X11R7.4).
+(I suspect that the xv stuff may be a problem.)
+(wenger)
+
 ...........................................................................
 SECTION 02 (DEVise, links)
 Number Date	Status  Pri
