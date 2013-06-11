@@ -23,6 +23,11 @@ Get DEVise to compile with a more recent version of X (e.g., X11R7.4).
 (I suspect that the xv stuff may be a problem.)
 (wenger)
 
+01.006 6/11/13	OPEN	2
+Make sure the xv code incorporated into DEVise is up-to-date (see
+patches in http://www.trilon.com/xv/downloads.html).
+(wenger)
+
 ...........................................................................
 SECTION 02 (DEVise, links)
 Number Date	Status  Pri
